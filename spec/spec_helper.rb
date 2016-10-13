@@ -13,6 +13,8 @@ require 'will_paginate/array'
 require 'fakeweb'
 require 'webmock/rspec'
 require 'simplecov'
+require 'sidekiq/testing'
+Sidekiq::Testing.fake!
 
 if ENV['JOB_NAME']
   require 'simplecov-rcov'
@@ -43,6 +45,9 @@ Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
 ActiveRecord::Migration.maintain_test_schema!
 
 RSpec.configure do |config|
+  config.before(:each) do
+    Sidekiq::Worker.clear_all
+  end
 
   #Capybara.exact = true
   Capybara.javascript_driver = :poltergeist

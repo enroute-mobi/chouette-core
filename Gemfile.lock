@@ -7,14 +7,15 @@ GIT
 
 GIT
   remote: git@github.com:AF83/stif-codifline-api.git
-  revision: e38210d88c447ca793b9fc3af6ec4c2a682f054c
+  revision: aee8bb5320bf03369fe15fd2f000b55e12c8b915
   specs:
     codifligne (0.0.2)
       nokogiri (~> 1.6)
 
 GIT
   remote: git@github.com:AF83/stif-reflex-api.git
-  revision: f91087c65d2e2b0a80e30acb6f7a0e863a10f8b4
+  revision: 2c01010dce3a6cb39339995c373faf89ae00f3f3
+  branch: sax_refactoring
   specs:
     reflex (0.0.1)
       nokogiri (~> 1.6)
@@ -26,6 +27,7 @@ GEM
     RedCloth (4.2.9)
     RedCloth (4.2.9-java)
     SyslogLogger (2.0)
+    aasm (4.5.2)
     actionmailer (4.1.10)
       actionpack (= 4.1.10)
       actionview (= 4.1.10)
@@ -110,6 +112,9 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.9.1)
+    concurrent-ruby (1.0.2)
+    concurrent-ruby (1.0.2-java)
+    connection_pool (2.2.0)
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
     cucumber (2.4.0)
@@ -162,6 +167,11 @@ GEM
     docile (1.1.5)
     dr-ffi-proj4 (0.0.3)
       ffi (>= 1.0.0)
+    draper (2.1.0)
+      actionpack (>= 3.0)
+      activemodel (>= 3.0)
+      activesupport (>= 3.0)
+      request_store (~> 1.0)
     easy_translate (0.5.0)
       json
       thread
@@ -285,10 +295,9 @@ GEM
     net-ssh-gateway (1.2.0)
       net-ssh (>= 2.6.5)
     newrelic_rpm (3.11.2.286)
-    nokogiri (1.6.8)
+    nokogiri (1.6.8.1)
       mini_portile2 (~> 2.1.0)
-      pkg-config (~> 1.1.7)
-    nokogiri (1.6.8-java)
+    nokogiri (1.6.8.1-java)
     notiffany (0.0.6)
       nenv (~> 0.1)
       shellany (~> 0.0)
@@ -297,7 +306,6 @@ GEM
     parser (2.2.0.3)
       ast (>= 1.1, < 3.0)
     pg (0.18.1)
-    pkg-config (1.1.7)
     poltergeist (1.6.0)
       capybara (~> 2.1)
       cliver (~> 0.3.1)
@@ -317,11 +325,15 @@ GEM
       spoon (~> 0.0)
     pry-rails (0.3.4)
       pry (>= 0.9.10)
+    pundit (1.1.0)
+      activesupport (>= 3.0.0)
     quiet_assets (1.1.0)
       railties (>= 3.1, < 5.0)
     rabl (0.11.6)
       activesupport (>= 2.3.14)
     rack (1.5.3)
+    rack-protection (1.5.3)
+      rack
     rack-test (0.6.3)
       rack (>= 1.0)
     rails (4.1.10)
@@ -391,7 +403,9 @@ GEM
       ffi (>= 0.5.0)
     rdoc (4.2.0)
       json (~> 1.4)
+    redis (3.3.1)
     ref (2.0.0)
+    request_store (1.3.1)
     responders (1.1.2)
       railties (>= 3.2, < 4.2)
     rgeo (0.5.2)
@@ -443,6 +457,10 @@ GEM
     shellany (0.0.1)
     shoulda-matchers (2.8.0)
       activesupport (>= 3.0.0)
+    sidekiq (4.1.0)
+      concurrent-ruby (~> 1.0)
+      connection_pool (~> 2.2, >= 2.2.0)
+      redis (~> 3.2, >= 3.2.1)
     simple_form (3.1.0)
       actionpack (~> 4.0)
       activemodel (~> 4.0)
@@ -453,6 +471,10 @@ GEM
     simplecov-html (0.10.0)
     simplecov-rcov (0.2.3)
       simplecov (>= 0.4.1)
+    sinatra (1.4.7)
+      rack (~> 1.5)
+      rack-protection (~> 1.4)
+      tilt (>= 1.3, < 3)
     slim (3.0.7)
       temple (~> 0.7.6)
       tilt (>= 1.3.3, < 2.1)
@@ -533,6 +555,7 @@ PLATFORMS
 DEPENDENCIES
   RedCloth
   SyslogLogger
+  aasm
   activerecord-postgis-adapter
   acts-as-taggable-on (>= 3)
   acts_as_list (~> 0.6.0)
@@ -560,6 +583,7 @@ DEPENDENCIES
   devise-i18n
   devise_cas_authenticatable
   devise_invitable
+  draper
   enumerize (~> 0.10.0)
   fabrication (~> 2.14.1)
   factory_girl_rails (~> 4.0)
@@ -590,6 +614,7 @@ DEPENDENCIES
   poltergeist
   polylines
   pry-rails
+  pundit
   quiet_assets (~> 1.0)
   rabl
   rails (~> 4.1.10)
@@ -620,9 +645,11 @@ DEPENDENCIES
   sawyer (~> 0.6.0)
   sdoc (~> 0.4.0)
   shoulda-matchers
+  sidekiq
   simple_form (~> 3.1.0)
   simplecov
   simplecov-rcov
+  sinatra
   slim-rails (~> 3.1)
   spring
   sqlite3

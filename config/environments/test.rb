@@ -60,6 +60,9 @@ Rails.application.configure do
     url: "http://localhost:3000"
   }
 
+  # Reflex api url
+  config.reflex_api_url = "https://195.46.215.128/ws/reflex/V1/service=getData"
+
   # file to data for demo
   config.demo_data = "tmp/demo.zip"
 

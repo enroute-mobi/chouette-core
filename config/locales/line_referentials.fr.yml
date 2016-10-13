@@ -2,13 +2,10 @@ fr:
   line_referentials:
     actions:
       edit: "Modifier ce référentiel"
+      sync: "Lancer une synchronisation Codifligne"
+      cancel_sync: "Annuler la synchronisation Codifligne"
     edit:
       title: "Modifier le référentiel %{line_referential}"
-  synchronization:
-    codifligne:
-      message:
-        success: "Synchronisation réussie après %{time} secondes avec %{imported} éléments importés de Codifligne. %{deleted} éléments ont été supprimés."
-        failure: "Synchronisation interrompue après %{time} secondes."
   activerecord:
     models:
       line_referential:

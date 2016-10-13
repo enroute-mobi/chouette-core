@@ -15,7 +15,6 @@ describe Chouette::StopArea, :type => :model do
 
   it { is_expected.to belong_to(:stop_area_referential) }
   it { is_expected.to validate_presence_of :name }
-  it { is_expected.to validate_presence_of :area_type }
   it { is_expected.to validate_numericality_of :latitude }
   it { is_expected.to validate_numericality_of :longitude }
 

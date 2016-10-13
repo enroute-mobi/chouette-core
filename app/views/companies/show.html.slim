@@ -44,12 +44,15 @@
 
 - content_for :sidebar do
   ul.actions
-    li
-      = link_to t('companies.actions.new'), new_line_referential_company_path(@line_referential), class: 'add'
-    li
-      = link_to t('companies.actions.edit'), edit_line_referential_company_path(@line_referential, @company), class: 'edit'
-    li
-      = link_to  t('companies.actions.destroy'), line_referential_company_path(@line_referential, @company), :method => :delete,  :data => {:confirm =>  t('companies.actions.destroy_confirm')}, class: 'remove'
-    br
+    - if policy(Chouette::Company).create?
+      li
+        = link_to t('companies.actions.new'), new_line_referential_company_path(@line_referential), class: 'add'
+    - if policy(@company).update?
+      li
+        = link_to t('companies.actions.edit'), edit_line_referential_company_path(@line_referential, @company), class: 'edit'
+    - if policy(@company).destroy?
+      li
+        = link_to  t('companies.actions.destroy'), line_referential_company_path(@line_referential, @company), :method => :delete,  :data => {:confirm =>  t('companies.actions.destroy_confirm')}, class: 'remove'
+      br
 
   = creation_tag(@company)

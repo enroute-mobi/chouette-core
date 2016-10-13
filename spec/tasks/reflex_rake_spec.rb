@@ -4,7 +4,7 @@ describe 'reflex:sync' do
   context 'On first sync' do
     before(:each) do
       ['getOP', 'getOR'].each do |method|
-        stub_request(:get, "https://reflex.stif.info/ws/reflex/V1/service=getData/?format=xml&idRefa=0&method=#{method}").
+        stub_request(:get, "#{Rails.application.config.reflex_api_url}/?format=xml&idRefa=0&method=#{method}").
         to_return(body: File.open("#{fixture_path}/reflex.zip"), status: 200)
       end
 
@@ -30,7 +30,6 @@ describe 'reflex:sync' do
 
     it 'should map xml data to StopArea attribute' do
       stop_area = Chouette::StopArea.find_by(objectid: 'FR:77153:LDA:69325:STIF')
-      expect(stop_area.city_name).to eq 'Dammartin-en-Goële'
       expect(stop_area.zip_code).to eq '77153'
       expect(stop_area.area_type).to eq 'StopPlace'
     end
@@ -38,15 +37,10 @@ describe 'reflex:sync' do
     context 'On next sync' do
       before(:each) do
         ['getOP', 'getOR'].each do |method|
-          stub_request(:get, "https://reflex.stif.info/ws/reflex/V1/service=getData/?format=xml&idRefa=0&method=#{method}").
+          stub_request(:get, "#{Rails.application.config.reflex_api_url}/?format=xml&idRefa=0&method=#{method}").
           to_return(body: File.open("#{fixture_path}/reflex_updated.zip"), status: 200)
         end
         Stif::ReflexSynchronization.synchronize
-      end
-
-      it 'should log sync operations' do
-        expect(StopAreaSyncOperation.count).to eq 2
-        expect(StopAreaSyncOperation.take.status).to eq "ok"
       end
 
       it 'should not create duplicate stop_area' do

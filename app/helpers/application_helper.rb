@@ -1,5 +1,7 @@
 module ApplicationHelper
 
+  include RefobjectsHelper
+
   def font_awesome_classic_tag(name)
     name = "fa-file-text-o" if name == "fa-file-csv-o"
     name = "fa-file-code-o" if name == "fa-file-xml-o"

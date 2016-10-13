@@ -8,7 +8,7 @@
     .panel-heading
       .input-group.col-md-9
         = f.text_field :name_cont, placeholder: "#{t('.name')}", class: 'form-control'
-        
+
         .input-group-btn
           button.btn.btn-default type="submit"
             i.fa.fa-search
@@ -27,6 +27,7 @@
 
 - content_for :sidebar do
   ul.actions
-    li = link_to t('stop_areas.actions.new'), new_stop_area_referential_stop_area_path(@stop_area_referential), class: 'add'
-    li
+    - if policy(Chouette::StopArea).create?
+      li = link_to t('stop_areas.actions.new'), new_stop_area_referential_stop_area_path(@stop_area_referential), class: 'add'
+
       / = link_to t('stop_areas.actions.default_geometry'), default_geometry_referential_stop_areas_path(@stop_area_referential), :method => :put, :class => "calculator"

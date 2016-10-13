@@ -1,5 +1,5 @@
 class BreadcrumbController < InheritedResources::Base
-
+  include Pundit
   include BreadcrumbHelper
 
   def show

@@ -11,11 +11,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160909130810) do
+ActiveRecord::Schema.define(version: 20161010135256) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "postgis"
+  enable_extension "hstore"
 
   create_table "access_links", force: true do |t|
     t.integer  "access_point_id",                        limit: 8
@@ -272,10 +273,24 @@ ActiveRecord::Schema.define(version: 20160909130810) do
     t.boolean "owner"
   end
 
+  create_table "line_referential_sync_messages", force: true do |t|
+    t.integer  "criticity"
+    t.string   "message_key"
+    t.hstore   "message_attributs"
+    t.integer  "line_referential_sync_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "line_referential_sync_messages", ["line_referential_sync_id"], :name => "line_referential_sync_id"
+
   create_table "line_referential_syncs", force: true do |t|
     t.integer  "line_referential_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.datetime "started_at"
+    t.datetime "ended_at"
+    t.string   "status"
   end
 
   add_index "line_referential_syncs", ["line_referential_id"], :name => "index_line_referential_syncs_on_line_referential_id"
@@ -286,16 +301,6 @@ ActiveRecord::Schema.define(version: 20160909130810) do
     t.datetime "updated_at"
     t.integer  "sync_interval", default: 1
   end
-
-  create_table "line_sync_operations", force: true do |t|
-    t.string   "status"
-    t.integer  "line_referential_sync_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "message"
-  end
-
-  add_index "line_sync_operations", ["line_referential_sync_id"], :name => "index_line_sync_operations_on_line_referential_sync_id"
 
   create_table "lines", force: true do |t|
     t.integer  "network_id",                      limit: 8
@@ -347,15 +352,6 @@ ActiveRecord::Schema.define(version: 20160909130810) do
   add_index "networks", ["objectid"], :name => "networks_objectid_key", :unique => true
   add_index "networks", ["registration_number"], :name => "networks_registration_number_key"
 
-  create_table "offer_workbenches", force: true do |t|
-    t.string   "name"
-    t.integer  "organisation_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "offer_workbenches", ["organisation_id"], :name => "index_offer_workbenches_on_organisation_id"
-
   create_table "organisations", force: true do |t|
     t.string   "name"
     t.datetime "created_at"
@@ -396,7 +392,7 @@ ActiveRecord::Schema.define(version: 20160909130810) do
     t.string   "data_format"
     t.integer  "line_referential_id"
     t.integer  "stop_area_referential_id"
-    t.integer  "offer_workbench_id"
+    t.integer  "workbench_id"
     t.datetime "archived_at"
   end
 
@@ -407,10 +403,10 @@ ActiveRecord::Schema.define(version: 20160909130810) do
     t.integer  "object_version"
     t.datetime "creation_time"
     t.string   "creator_id"
-    t.spatial  "input_geometry",     limit: {:srid=>4326, :type=>"line_string"}
-    t.spatial  "processed_geometry", limit: {:srid=>4326, :type=>"line_string"}
     t.float    "distance"
     t.boolean  "no_processing"
+    t.spatial  "input_geometry",     limit: {:srid=>4326, :type=>"line_string"}
+    t.spatial  "processed_geometry", limit: {:srid=>4326, :type=>"line_string"}
   end
 
   create_table "routes", force: true do |t|
@@ -449,10 +445,24 @@ ActiveRecord::Schema.define(version: 20160909130810) do
     t.boolean "owner"
   end
 
+  create_table "stop_area_referential_sync_messages", force: true do |t|
+    t.integer  "criticity"
+    t.string   "message_key"
+    t.hstore   "message_attributs"
+    t.integer  "stop_area_referential_sync_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "stop_area_referential_sync_messages", ["stop_area_referential_sync_id"], :name => "stop_area_referential_sync_id"
+
   create_table "stop_area_referential_syncs", force: true do |t|
     t.integer  "stop_area_referential_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.datetime "ended_at"
+    t.datetime "started_at"
+    t.string   "status"
   end
 
   add_index "stop_area_referential_syncs", ["stop_area_referential_id"], :name => "index_stop_area_referential_syncs_on_stop_area_referential_id"
@@ -462,16 +472,6 @@ ActiveRecord::Schema.define(version: 20160909130810) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
-
-  create_table "stop_area_sync_operations", force: true do |t|
-    t.string   "status"
-    t.integer  "stop_area_referential_sync_id"
-    t.string   "message"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "stop_area_sync_operations", ["stop_area_referential_sync_id"], :name => "stop_area_referential_sync_id"
 
   create_table "stop_areas", force: true do |t|
     t.integer  "parent_id",                       limit: 8
@@ -676,6 +676,15 @@ ActiveRecord::Schema.define(version: 20160909130810) do
 
   add_index "vehicle_journeys", ["objectid"], :name => "vehicle_journeys_objectid_key", :unique => true
   add_index "vehicle_journeys", ["route_id"], :name => "index_vehicle_journeys_on_route_id"
+
+  create_table "workbenches", force: true do |t|
+    t.string   "name"
+    t.integer  "organisation_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "workbenches", ["organisation_id"], :name => "index_workbenches_on_organisation_id"
 
   Foreigner.load
   add_foreign_key "access_links", "access_points", name: "aclk_acpt_fkey", dependent: :delete

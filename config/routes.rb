@@ -1,6 +1,7 @@
-ChouetteIhm::Application.routes.draw do
+require 'sidekiq/web'
 
-  resources :offer_workbenches, :only => [:show]
+ChouetteIhm::Application.routes.draw do
+  resources :workbenches, :only => [:show]
 
   devise_for :users, :controllers => {
     :registrations => 'users/registrations', :invitations => 'users/invitations'
@@ -52,10 +53,12 @@ ChouetteIhm::Application.routes.draw do
   end
 
   resources :stop_area_referentials, :only => [:show] do
+    post :sync, on: :member
     resources :stop_areas
   end
 
   resources :line_referentials, :only => [:show, :edit, :update] do
+    post :sync, on: :member
     resources :lines
     resources :group_of_lines
     resources :companies

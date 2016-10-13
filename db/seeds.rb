@@ -17,7 +17,7 @@ stif.users.find_or_create_by!(username: "admin") do |user|
   user.name = "STIF Administrateur"
 end
 
-OfferWorkbench.find_or_create_by(name: "Gestion de l'offre", organisation: stif)
+Workbench.find_or_create_by(name: "Gestion de l'offre", organisation: stif)
 
 operator = Organisation.find_or_create_by!(code: 'transporteur-a') do |organisation|
   organisation.name = "Transporteur A"
@@ -53,14 +53,14 @@ StopAreaReferentialSync.find_or_create_by(stop_area_referential: stop_area_refer
 end
 
 
-offer_workbench = OfferWorkbench.find_or_create_by(name: "Gestion de l'offre", organisation: operator)
+workbench = Workbench.find_or_create_by(name: "Gestion de l'offre", organisation: operator)
 
 [["parissudest201604", "Paris Sud-Est Avril 2016"],
  ["parissudest201605", "Paris Sud-Est Mai 2016"]].each do |slug, name|
   operator.referentials.find_or_create_by!(slug: slug) do |referential|
     referential.name = name
     referential.prefix = slug
-    referential.offer_workbench = offer_workbench
+    referential.workbench = workbench
     referential.line_referential = line_referential
     referential.stop_area_referential = stop_area_referential
   end

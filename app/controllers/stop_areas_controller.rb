@@ -63,6 +63,7 @@ class StopAreasController < BreadcrumbController
   end
 
   def new
+    authorize resource_class
     @map = StopAreaMap.new( Chouette::StopArea.new).with_helpers(self)
     @map.editable = true
     new! do
@@ -71,6 +72,7 @@ class StopAreasController < BreadcrumbController
   end
 
   def create
+    authorize resource_class
     @map = StopAreaMap.new( Chouette::StopArea.new).with_helpers(self)
     @map.editable = true
 
@@ -92,6 +94,7 @@ class StopAreasController < BreadcrumbController
   end
 
   def edit
+    authorize stop_area
     edit! do
       stop_area.position ||= stop_area.default_position
       map.editable = true
@@ -99,7 +102,13 @@ class StopAreasController < BreadcrumbController
    end
   end
 
+  def destroy
+    authorize stop_area
+    super
+  end
+
   def update
+    authorize stop_area
     stop_area.position ||= stop_area.default_position
     map.editable = true
 

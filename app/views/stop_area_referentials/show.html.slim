@@ -9,12 +9,22 @@
       span.badge = @stop_area_referential.stop_areas.size
       = link_to Referential.human_attribute_name("stop_areas"), stop_area_referential_stop_areas_path(@stop_area_referential)
 
-- unless @stop_area_referential.stop_area_referential_sync.stop_area_sync_operations.empty?
+- unless @stop_area_referential.stop_area_referential_syncs.empty?
   h3 Historique des synchronisations
 
   ul.list-group width="75%"
-    - @stop_area_referential.stop_area_referential_sync.stop_area_sync_operations.each do |sync|
-      li = "#{sync.created_at.to_formatted_s(:short)} - #{sync.message}"
+  - @stop_area_referential.stop_area_referential_syncs.each do |sync|
+    - unless sync.stop_area_referential_sync_messages.empty?
+      - sync.stop_area_referential_sync_messages.last.tap do |log|
+        - if log.criticity = log.criticity
+          li.alert class="alert-#{log.criticity}"
+            strong = l(log.created_at, format: :short) + " : "
+            / [:processing_time] unit conversion
+            - data = log.message_attributs.symbolize_keys!
+            - data[:processing_time] = distance_of_time_in_words(data[:processing_time].to_i)
+
+            = t("stop_area_referential_sync.message.#{log.message_key}", log.message_attributs.symbolize_keys!)
 
 - content_for :sidebar do
   ul.actions
+    li = link_to t('stop_area_referentials.actions.sync'), sync_stop_area_referential_path(@stop_area_referential), class: 'sync', method: :post

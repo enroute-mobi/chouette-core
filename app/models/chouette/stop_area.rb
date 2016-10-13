@@ -34,8 +34,6 @@ class Chouette::StopArea < Chouette::ActiveRecord
 
   validates_format_of :registration_number, :with => %r{\A[\d\w_\-]+\Z}, :allow_blank => true
   validates_presence_of :name
-  validates_presence_of :area_type
-
   validates_presence_of :latitude, :if => :longitude
   validates_presence_of :longitude, :if => :latitude
   validates_numericality_of :latitude, :less_than_or_equal_to => 90, :greater_than_or_equal_to => -90, :allow_nil => true

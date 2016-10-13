@@ -1,5 +1,5 @@
 en:
-  synchronization:
-    reflex:
-      message: "Synchronization successful in %{time} seconds with %{imported} objects from Reflex. %{deleted} objects were deleted."
-      failure: "Synchronization interrupted after %{time} seconds."
+  stop_area_referentials:
+    actions:
+      sync: "Launch a new reflex synchronization"
+      cancel_sync: "Cancel reflex synchronization"

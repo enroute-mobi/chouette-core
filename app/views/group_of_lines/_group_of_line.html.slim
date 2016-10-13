@@ -2,11 +2,11 @@
   .panel-heading
     .panel-title.clearfix
       span.pull-right
-        - if edit
+        - if edit && policy(group_of_line).update?
           = link_to edit_line_referential_group_of_line_path(@line_referential, group_of_line), class: 'btn btn-default btn-sm' do
             span.fa.fa-pencil
-
-        = link_to('<span class="fa fa-trash-o"></span>'.html_safe, line_referential_group_of_line_path(@line_referential, group_of_line), :method => :delete, :data => {:confirm =>  t('group_of_lines.actions.destroy_confirm')}, class: 'btn btn-danger btn-sm') if delete
+        - if delete && policy(group_of_line).destroy?
+          = link_to('<span class="fa fa-trash-o"></span>'.html_safe, line_referential_group_of_line_path(@line_referential, group_of_line), :method => :delete, :data => {:confirm =>  t('group_of_lines.actions.destroy_confirm')}, class: 'btn btn-danger btn-sm')
 
       h5
         = link_to [@line_referential, group_of_line], :class => "preview", :title => "#{Chouette::GroupOfLine.model_name.human.capitalize} #{group_of_line.name}" do

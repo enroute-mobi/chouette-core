@@ -12,7 +12,7 @@ class Organisation < ActiveRecord::Base
   has_many :line_referential_memberships
   has_many :line_referentials, through: :line_referential_memberships
 
-  has_many :offer_workbenches
+  has_many :workbenches
 
   validates :name, :presence => true, :uniqueness => true
 

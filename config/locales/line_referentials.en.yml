@@ -2,11 +2,10 @@ en:
   line_referentials:
     actions:
       edit: "Edit this referential"
+      sync: "Launch a new codifligne synchronization"
+      cancel_sync: "Cancel codifligne synchronization"
     edit:
       title: "Edit %{line_referential} referential"
-  synchronization:
-    message: "Synchronization successful in %{time} seconds with %{imported} objects from Codifligne. %{deleted} objects were deleted."
-    failure: "Synchronization interrupted after %{time} seconds."
   activerecord:
     models:
       line_referential:

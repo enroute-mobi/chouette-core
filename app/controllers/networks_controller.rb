@@ -1,6 +1,6 @@
 class NetworksController < BreadcrumbController
   include ApplicationHelper
-
+  before_action :check_policy, :only => [:edit, :update, :destroy]
   defaults :resource_class => Chouette::Network
   respond_to :html
   respond_to :xml
@@ -15,6 +15,14 @@ class NetworksController < BreadcrumbController
     show! do
       build_breadcrumb :show
     end
+  end
+
+  def new
+    authorize resource_class
+  end
+
+  def create
+    authorize resource_class
   end
 
   def index
@@ -45,8 +53,11 @@ class NetworksController < BreadcrumbController
 
   alias_method :line_referential, :parent
 
+  def check_policy
+    authorize resource
+  end
+
   def network_params
     params.require(:network).permit(:objectid, :object_version, :creation_time, :creator_id, :version_date, :description, :name, :registration_number, :source_name, :source_type_name, :source_identifier, :comment )
   end
-
 end

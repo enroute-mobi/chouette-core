@@ -1,0 +1,19 @@
+en:
+  activerecord:
+    errors:
+      models:
+        stop_area_referential_sync:
+          attributes:
+            base:
+              multiple_process: 'There is already an synchronisation in progress'
+  stop_area_referential_sync:
+    synchronization:
+      message:
+        new: "New synchronisation added"
+        pending: "Synchronization pending"
+        successful: "Synchronization successful after %{processing_time} with %{imported} objects. %{deleted} objects were deleted.."
+        failed: "Synchronization failed after %{processing_time} with error: %{error}."
+  notice:
+    stop_area_referential_sync:
+      created: 'Your synchronisation request has been created'
+

@@ -1,6 +1,5 @@
 fr:
-  synchronization:
-    reflex:
-      message:
-        success: "Synchronisation réussie après %{time} secondes avec %{imported} éléments importés de Reflex. %{deleted} éléments ont été supprimés."
-        failure: "Synchronisation interrompue après %{time} secondes."
+  stop_area_referentials:
+    actions:
+      sync: "Lancer une synchronisation Reflex"
+      cancel_sync: "Annuler la synchronisation Reflex"

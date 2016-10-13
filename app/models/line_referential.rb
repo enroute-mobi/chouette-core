@@ -7,7 +7,7 @@ class LineReferential < ActiveRecord::Base
   has_many :companies, class_name: 'Chouette::Company'
   has_many :networks, class_name: 'Chouette::Network'
 
-  has_one :line_referential_sync
+  has_many :line_referential_syncs, -> { order created_at: :desc}
 
   def add_member(organisation, options = {})
     attributes = options.merge organisation: organisation
@@ -21,5 +21,9 @@ class LineReferential < ActiveRecord::Base
 
   def operating_lines
     lines.where(deactivated: false)
+  end
+
+  def last_sync
+    line_referential_syncs.last
   end
 end

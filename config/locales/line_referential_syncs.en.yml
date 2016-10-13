@@ -1,0 +1,19 @@
+en:
+  activerecord:
+    errors:
+      models:
+        line_referential_sync:
+          attributes:
+            base:
+              multiple_process: 'There is already an synchronisation in progress'
+  line_referential_sync:
+    message:
+      new: "New synchronisation added"
+      pending: "Synchronisation en cours"
+      successful: "Synchronisation réussie après %{processing_time} secondes avec %{imported} éléments importés. %{deleted} éléments ont été supprimés."
+      failed: "Synchronisation interrompue après %{processing_time} secondes avec l'erreur : %{error}."
+
+  notice:
+    line_referential_sync:
+      created: 'Your synchronisation request has been created'
+

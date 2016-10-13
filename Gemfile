@@ -51,13 +51,16 @@ gem 'polylines'
 # Codifligne API
 gem 'codifligne', git: 'git@github.com:AF83/stif-codifline-api.git'
 # Reflex API
-gem 'reflex', git: 'git@github.com:AF83/stif-reflex-api.git'
+gem 'reflex', git: 'git@github.com:AF83/stif-reflex-api.git', branch: 'sax_refactoring'
 
 # Authentication
 gem 'devise', '~> 3.4.0'
 gem 'devise_cas_authenticatable'
 gem 'devise-encryptable'
 gem 'devise_invitable'
+
+# Authorization
+gem 'pundit'
 
 # Map, Geolocalization
 gem 'map_layers', '0.0.4'
@@ -93,6 +96,8 @@ gem 'will_paginate', '~> 3.0.7'
 gem 'ransack'
 gem 'squeel'
 
+gem 'draper'
+
 gem 'enumerize', '~> 0.10.0'
 gem 'foreigner', '~> 1.7.4'
 gem 'deep_cloneable', '~> 2.0.0'
@@ -103,11 +108,14 @@ gem 'acts_as_tree', '~> 2.1.0', require: 'acts_as_tree'
 
 gem 'rabl'
 
+gem 'sidekiq'
+gem 'sinatra'
 gem 'delayed_job_active_record'
 gem 'whenever', github: 'af83/whenever', require: false # '~> 0.9'
 gem 'rake'
 gem 'devise-async'
 gem 'apartment', '~> 1.0.0'
+gem 'aasm'
 
 gem 'newrelic_rpm'
 gem 'letter_opener'

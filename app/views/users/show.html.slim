@@ -4,7 +4,9 @@
   p
     label = "#{User.human_attribute_name('name')} : "
     = @user.name
-
+  p
+    label = "#{User.human_attribute_name('username')} : "
+    = @user.username
   p
     label = "#{User.human_attribute_name('email')} : "
     = @user.email

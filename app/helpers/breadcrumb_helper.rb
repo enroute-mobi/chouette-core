@@ -58,8 +58,8 @@ module BreadcrumbHelper
       organisation_breadcrumb action
     when "Api::V1::ApiKey"
       referential_breadcrumb
-    when "OfferWorkbench"
-      offer_workbench_breadcrumb action
+    when "Workbench"
+      workbench_breadcrumb action
     else
       Rails.logger.info "---------"
       Rails.logger.info ">>>>>>> "+resource_class.to_s+" unmapped"
@@ -68,9 +68,9 @@ module BreadcrumbHelper
     end
   end
 
-  def offer_workbench_breadcrumb(action)
+  def workbench_breadcrumb(action)
     add_breadcrumb I18n.t("breadcrumbs.referentials"), referentials_path
-    add_breadcrumb breadcrumb_label(@offer_workbench), offer_workbench_path(@offer_workbench), :title => breadcrumb_tooltip(@offer_workbench)
+    add_breadcrumb breadcrumb_label(@workbench), workbench_path(@workbench), :title => breadcrumb_tooltip(@workbench)
   end
 
   def network_breadcrumb(action)

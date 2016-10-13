@@ -29,9 +29,10 @@ class User < ActiveRecord::Base
   after_destroy :check_destroy_organisation
 
   def cas_extra_attributes=(extra_attributes)
-    extra      = extra_attributes.inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
-    self.name  = extra[:full_name]
-    self.email = extra[:email]
+    extra         = extra_attributes.inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
+    self.name     = extra[:full_name]
+    self.email    = extra[:email]
+    self.username = extra[:username]
 
     self.organisation = Organisation.find_or_create_by(code: extra[:organisation_code]).tap do |org|
       org.name      = extra[:organisation_name]

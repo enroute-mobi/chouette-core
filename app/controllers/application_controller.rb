@@ -1,8 +1,12 @@
 class ApplicationController < ActionController::Base
+  include Pundit
+  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
+
   # TODO : Delete hack to authorize Cross Request for js and json get request from javascript
   protect_from_forgery unless: -> { request.get? && (request.format.json? || request.format.js?) }
   before_action :authenticate_user!
   before_action :set_locale
+
 
   # Load helpers in rails engine
   helper LanguageEngine::Engine.helpers
@@ -12,6 +16,10 @@ class ApplicationController < ActionController::Base
   end
 
   protected
+
+  def user_not_authorized
+    render :file => "#{Rails.root}/public/403.html", :status => :forbidden, :layout => false
+  end
 
   def current_organisation
     current_user.organisation if current_user

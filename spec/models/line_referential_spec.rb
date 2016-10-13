@@ -6,5 +6,6 @@ RSpec.describe LineReferential, :type => :model do
   end
 
   it { should validate_presence_of(:name) }
+  it { is_expected.to have_many(:line_referential_syncs) }
   it { should validate_presence_of(:sync_interval) }
 end

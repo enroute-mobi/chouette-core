@@ -36,12 +36,15 @@
 
 - content_for :sidebar do
   ul.actions
-    li
-      = link_to t('networks.actions.new'), new_line_referential_network_path(@line_referential), class: 'add'
-    li
-      = link_to t('networks.actions.edit'), edit_line_referential_network_path(@line_referential, @network), class: 'edit'
-    li
-      = link_to t('networks.actions.destroy'), line_referential_network_path(@line_referential, @network), method: :delete, data: { :confirm => t('networks.actions.destroy_confirm')}, class: 'remove'
+    - if policy(Chouette::Network).create?
+      li
+        = link_to t('networks.actions.new'), new_line_referential_network_path(@line_referential), class: 'add'
+    - if policy(@network).update?
+      li
+        = link_to t('networks.actions.edit'), edit_line_referential_network_path(@line_referential, @network), class: 'edit'
+    - if policy(@network).destroy?
+      li
+        = link_to t('networks.actions.destroy'), line_referential_network_path(@line_referential, @network), method: :delete, data: { :confirm => t('networks.actions.destroy_confirm')}, class: 'remove'
     br
 
   = creation_tag(@network)

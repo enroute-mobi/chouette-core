@@ -13,9 +13,10 @@ en:
       title: "User %{user}"
     index:
       title: "Users"
-  activerecord:        
-    models:        
+  activerecord:
+    models:
       user: "user"
     attributes:
       user:
-        name: "Full name" 
+        name: "Full name"
+        username: "Username"

@@ -58,6 +58,7 @@ Rails.application.configure do
 
   # Reflex api url
   config.reflex_api_url = "https://195.46.215.128/ws/reflex/V1/service=getData"
+  config.codifligne_api_url = "https://pprod.codifligne.stif.info/rest/v1/lc/getlist"
 
   # config.chouette_authentication_settings = {
   #   type: "database"

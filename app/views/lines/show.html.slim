@@ -131,12 +131,15 @@ h3.routes = t('.itineraries')
 
 - content_for :sidebar do
   ul.actions
-    li
-      = link_to t('lines.actions.new'), new_line_referential_line_path(@line_referential), class: 'add'
-    li
-      = link_to t('lines.actions.edit'), edit_line_referential_line_path(@line_referential, @line), class: 'edit'
-    li
-      = link_to t('lines.actions.destroy'), line_referential_line_path(@line_referential, @line), method: :delete, :data => {:confirm =>  t('lines.actions.destroy_confirm')}, class: 'remove'
+    - if policy(Chouette::Line).create?
+      li
+        = link_to t('lines.actions.new'), new_line_referential_line_path(@line_referential), class: 'add'
+    - if policy(@line).update?
+      li
+        = link_to t('lines.actions.edit'), edit_line_referential_line_path(@line_referential, @line), class: 'edit'
+    - if policy(@line).destroy?
+      li
+        = link_to t('lines.actions.destroy'), line_referential_line_path(@line_referential, @line), method: :delete, :data => {:confirm =>  t('lines.actions.destroy_confirm')}, class: 'remove'
 
     - if !@line.hub_restricted? || (@line.hub_restricted? && @line.routes.size < 2)
       / FIXME #825

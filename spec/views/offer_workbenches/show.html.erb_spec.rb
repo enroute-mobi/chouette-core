@@ -1,5 +1,5 @@
 require 'rails_helper'
 
-RSpec.describe "offer_workbenches/show.html.erb", :type => :view do
-  
+RSpec.describe "workbenches/show.html.erb", :type => :view do
+
 end

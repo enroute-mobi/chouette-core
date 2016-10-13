@@ -1,73 +1,56 @@
 module Stif
   module CodifLineSynchronization
     class << self
-      # Don't check last synchronizations if force_sync
-      def synchronize force_sync = false
-        # Check last synchronization and synchronization interval
-        date = DateTime.now.to_date - LineReferential.first.sync_interval.days
-        last_sync = LineReferential.first.line_referential_sync.line_sync_operations.where(status: :ok).last.try(:created_at)
-        return if last_sync.present? && last_sync.to_date > date && !force_sync
-
+      def synchronize
         start_time = Process.clock_gettime(Process::CLOCK_MONOTONIC, :second)
-        # TODO Check exceptions and status messages
-        begin
-          # Fetch Codifline data
-          client = Codifligne::API.new
-          operators       = client.operators
-          lines           = client.lines
-          networks        = client.networks
-          groups_of_lines = client.groups_of_lines
+        # Fetch Codifline data
+        client = Codifligne::API.new
+        operators       = client.operators
+        lines           = client.lines
+        networks        = client.networks
+        # groups_of_lines = client.groups_of_lines
 
-          Rails.logger.info "Codifligne:sync - Codifligne request processed in #{elapsed_time_since start_time} seconds"
+        Rails.logger.info "Codifligne:sync - Codifligne request processed in #{elapsed_time_since start_time} seconds"
 
-          # Create or update Companies
-          stime = Process.clock_gettime(Process::CLOCK_MONOTONIC, :second)
-          operators.map       { |o| create_or_update_company(o) }
-          log_create_or_update "Companies", operators.count, stime
+        # Create or update Companies
+        stime = Process.clock_gettime(Process::CLOCK_MONOTONIC, :second)
+        operators.map       { |o| create_or_update_company(o) }
+        log_create_or_update "Companies", operators.count, stime
 
-          # Create or update Lines
-          stime = Process.clock_gettime(Process::CLOCK_MONOTONIC, :second)
-          lines.map           { |l| create_or_update_line(l) }
-          log_create_or_update "Lines", lines.count, stime
+        # Create or update Lines
+        stime = Process.clock_gettime(Process::CLOCK_MONOTONIC, :second)
+        lines.map           { |l| create_or_update_line(l) }
+        log_create_or_update "Lines", lines.count, stime
 
-          # Create or update Networks
-          stime = Process.clock_gettime(Process::CLOCK_MONOTONIC, :second)
-          networks.map        { |n| create_or_update_network(n) }
-          log_create_or_update "Networks", networks.count, stime
+        # Create or update Networks
+        stime = Process.clock_gettime(Process::CLOCK_MONOTONIC, :second)
+        networks.map        { |n| create_or_update_network(n) }
+        log_create_or_update "Networks", networks.count, stime
 
-          # Create or update Group of lines
-          stime = Process.clock_gettime(Process::CLOCK_MONOTONIC, :second)
-          groups_of_lines.map { |g| create_or_update_group_of_lines(g) }
-          log_create_or_update "Group of lines", groups_of_lines.count, stime
+        # # Create or update Group of lines
+        # stime = Process.clock_gettime(Process::CLOCK_MONOTONIC, :second)
+        # groups_of_lines.map { |g| create_or_update_group_of_lines(g) }
+        # log_create_or_update "Group of lines", groups_of_lines.count, stime
 
-          # Delete deprecated Group of lines
-          deleted_gr = delete_deprecated(groups_of_lines, Chouette::GroupOfLine)
-          log_deleted "Group of lines", deleted_gr unless deleted_gr == 0
+        # # Delete deprecated Group of lines
+        # deleted_gr = delete_deprecated(groups_of_lines, Chouette::GroupOfLine)
+        # log_deleted "Group of lines", deleted_gr unless deleted_gr == 0
 
-          # Delete deprecated Networks
-          deleted_ne = delete_deprecated(networks, Chouette::Network)
-          log_deleted "Networks", deleted_ne unless deleted_ne == 0
+        # Delete deprecated Networks
+        deleted_ne = delete_deprecated(networks, Chouette::Network)
+        log_deleted "Networks", deleted_ne unless deleted_ne == 0
 
-          # Delete deprecated Lines
-          deleted_li = delete_deprecated_lines(lines)
-          log_deleted "Lines", deleted_li unless deleted_li == 0
+        # Delete deprecated Lines
+        deleted_li = delete_deprecated_lines(lines)
+        log_deleted "Lines", deleted_li unless deleted_li == 0
 
-          # Delete deprecated Operators
-          deleted_op = delete_deprecated(operators, Chouette::Company)
-          log_deleted "Operators", deleted_op unless deleted_op == 0
-
-          # Building log message
-          total_codifligne_elements = operators.count + lines.count + networks.count + groups_of_lines.count
-          total_deleted = deleted_op + deleted_li + deleted_ne + deleted_gr
-          total_time = elapsed_time_since start_time
-
-          LineReferential.first.line_referential_sync.record_status :ok, I18n.t('synchronization.codifligne.message.success', time: total_time, imported: total_codifligne_elements, deleted: total_deleted)
-        rescue Exception => e
-          total_time = elapsed_time_since start_time
-
-          Rails.logger.error "Codifligne:sync - Error: #{e}, ended after #{total_time} seconds"
-          LineReferential.first.line_referential_sync.record_status :ko, I18n.t('synchronization.codifligne.message.failure', time: total_time)
-        end
+        # Delete deprecated Operators
+        deleted_op = delete_deprecated(operators, Chouette::Company)
+        log_deleted "Operators", deleted_op unless deleted_op == 0
+        {
+          imported: operators.count + lines.count + networks.count,
+          deleted: deleted_op + deleted_li + deleted_ne
+        }
       end
 
       def create_or_update_company(api_operator)

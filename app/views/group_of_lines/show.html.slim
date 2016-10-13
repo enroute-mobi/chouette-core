@@ -2,7 +2,7 @@
 
 .group_of_line_show
   = @map.to_html
-  
+
   .summary
     p
       label = "#{@group_of_line.human_attribute_name('registration_number')} : "
@@ -13,19 +13,22 @@
       = @group_of_line.comment
 
   p.after_map
-  
+
   h3.group_of_line_lines = t('.lines')
   .lines_detail
-    == render partial: "lines_detail" 
+    == render partial: "lines_detail"
 
 - content_for :sidebar do
   ul.actions
-    li
-      = link_to t('group_of_lines.actions.new'), new_line_referential_group_of_line_path(@line_referential), class: 'add'
-    li
-      = link_to t('group_of_lines.actions.edit'), edit_line_referential_group_of_line_path(@line_referential, @group_of_line), class: 'edit'
-    li
-      = link_to  t('group_of_lines.actions.destroy'), line_referential_group_of_line_path(@line_referential, @group_of_line), :method => :delete, :data => {:confirm =>  t('group_of_lines.actions.destroy_confirm')} , class: 'remove'
+    - if policy(Chouette::GroupOfLine).create?
+      li
+        = link_to t('group_of_lines.actions.new'), new_line_referential_group_of_line_path(@line_referential), class: 'add'
+    - if policy(@group_of_line).edit?
+      li
+        = link_to t('group_of_lines.actions.edit'), edit_line_referential_group_of_line_path(@line_referential, @group_of_line), class: 'edit'
+    - if policy(@group_of_line).destroy?
+      li
+        = link_to  t('group_of_lines.actions.destroy'), line_referential_group_of_line_path(@line_referential, @group_of_line), :method => :delete, :data => {:confirm =>  t('group_of_lines.actions.destroy_confirm')} , class: 'remove'
     br
 
   = creation_tag(@group_of_line)

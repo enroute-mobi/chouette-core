@@ -123,9 +123,12 @@ p.after_map
     tr
       td
         ul.actions
-          li = link_to t('stop_areas.actions.new'), new_stop_area_referential_stop_area_path(@stop_area_referential), class: 'add'
-          li = link_to t('stop_areas.actions.edit'), edit_stop_area_referential_stop_area_path(@stop_area_referential, @stop_area), class: 'edit'
-          li = link_to t('stop_areas.actions.destroy'), stop_area_referential_stop_area_path(@stop_area_referential, @stop_area), method: :delete, :data => {:confirm =>  t('stop_areas.actions.destroy_confirm')}, class: 'remove'
+          - if policy(Chouette::StopArea).new?
+            li = link_to t('stop_areas.actions.new'), new_stop_area_referential_stop_area_path(@stop_area_referential), class: 'add'
+          - if policy(@stop_area).update?
+            li = link_to t('stop_areas.actions.edit'), edit_stop_area_referential_stop_area_path(@stop_area_referential, @stop_area), class: 'edit'
+          - if policy(@stop_area).destroy?
+            li = link_to t('stop_areas.actions.destroy'), stop_area_referential_stop_area_path(@stop_area_referential, @stop_area), method: :delete, :data => {:confirm =>  t('stop_areas.actions.destroy_confirm')}, class: 'remove'
 
     - if manage_itl #Fixme
 

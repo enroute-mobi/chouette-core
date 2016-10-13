@@ -18,6 +18,7 @@
 
 - content_for :sidebar do
   ul.actions
-    li
-      = link_to t('networks.actions.new'), new_line_referential_network_path(@line_referential), class: 'add'
-    br
+    - if policy(Chouette::Network).create?
+      li
+        = link_to t('networks.actions.new'), new_line_referential_network_path(@line_referential), class: 'add'
+      br

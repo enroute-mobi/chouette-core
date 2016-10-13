@@ -13,21 +13,31 @@
       span.badge = @line_referential.networks.size
       = link_to Referential.human_attribute_name("networks"), line_referential_networks_path(@line_referential)
 
-    li.list-group-item
-      span.badge = @line_referential.group_of_lines.size
-      = link_to Referential.human_attribute_name("group_of_lines"), line_referential_group_of_lines_path(@line_referential)
+    / li.list-group-item
+    /   span.badge = @line_referential.group_of_lines.size
+    /   = link_to Referential.human_attribute_name("group_of_lines"), line_referential_group_of_lines_path(@line_referential)
 
     li.list-group-item
       span.badge = @line_referential.lines.size
       = link_to Referential.human_attribute_name("lines"), line_referential_lines_path(@line_referential)
 
-- unless @line_referential.line_referential_sync.line_sync_operations.empty?
+- unless @line_referential.line_referential_syncs.empty?
   h3 Historique des synchronisations
 
   ul.list-group width="75%"
-    - @line_referential.line_referential_sync.line_sync_operations.each do |sync|
-      li = "#{sync.created_at.to_formatted_s(:short)} - #{sync.message}"
+  - @line_referential.line_referential_syncs.each do |sync|
+    - unless sync.line_referential_sync_messages.empty?
+      - sync.line_referential_sync_messages.last.tap do |log|
+        - if log.criticity = log.criticity
+          li.alert class="alert-#{log.criticity}"
+            strong = l(log.created_at, format: :short) + " : "
+            / [:processing_time] unit conversion
+            - data = log.message_attributs.symbolize_keys!
+            - data[:processing_time] = distance_of_time_in_words(data[:processing_time].to_i)
+
+            = t("line_referential_sync.message.#{log.message_key}", log.message_attributs.symbolize_keys!)
 
 - content_for :sidebar do
   ul.actions
-    = link_to t('line_referentials.actions.edit'), edit_line_referential_path(@line_referential), class: 'edit'
+    li = link_to t('line_referentials.actions.edit'), edit_line_referential_path(@line_referential), class: 'edit'
+    li = link_to t('line_referentials.actions.sync'), sync_line_referential_path(@line_referential), class: 'sync', method: :post

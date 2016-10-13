@@ -3,9 +3,9 @@ module PaginationHelper
   def paginated_content(models, default_partial_name = nil, options = {})
     default_options = {:delete => true, :edit => true}
     options = default_options.merge(options)
-    
-    return "" if models.blank?
-    
+
+    # return "" if models.blank?
+
     html = ""
     models.each_slice(3) do |row_models|
       html += '<div class="row">'
@@ -16,6 +16,6 @@ module PaginationHelper
       html += '</div>'
     end
 
-    html.html_safe
+    return html.html_safe unless models.blank?
   end
 end

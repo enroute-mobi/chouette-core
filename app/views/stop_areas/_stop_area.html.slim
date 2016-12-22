@@ -11,7 +11,7 @@
             span.fa.fa-trash-o
 
       h5
-        = link_to([@stop_area_referential, stop_area], class: 'preview', :title => t("area_types.label.#{stop_area.stop_area_type}") + " #{stop_area.name}") do
+        = link_to([@stop_area_referential, stop_area], class: 'preview', :title => "#{stop_area.area_type} #{stop_area.name}") do
           span.name
             = image_tag "map/" + stop_area.stop_area_type + ".png"
             = truncate(stop_area.name, :length => 20)

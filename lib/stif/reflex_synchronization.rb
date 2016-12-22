@@ -45,8 +45,9 @@ module Stif
           time = Benchmark.measure do
             stop_areas.each do |entry|
               next unless is_valid_type_of_place_ref?(method, entry)
-              self.processed << entry['id']
+              entry['TypeOfPlaceRef'] = self.stop_area_area_type entry, method
               self.create_or_update_stop_area entry
+              self.processed << entry['id']
             end
           end
           log_processing_time("Create or update StopArea", time.real)
@@ -66,7 +67,13 @@ module Stif
       def is_valid_type_of_place_ref? method, entry
         return true if entry["TypeOfPlaceRef"].nil?
         return true if method == 'getOR' && ['ZDL', 'LDA', 'ZDE'].include?(entry["TypeOfPlaceRef"])
-        return true if method == 'getOP' && ['ZDE'].include?(entry["TypeOfPlaceRef"])
+        return true if method == 'getOP' && ['ZDE', 'ZDL'].include?(entry["TypeOfPlaceRef"])
+      end
+
+      def stop_area_area_type entry, method
+        type = entry['type'] == 'Quay' ? 'zde' : entry['TypeOfPlaceRef']
+        type = "#{type.to_s}#{method.last}" unless type == 'LDA'
+        type.downcase
       end
 
       def set_deleted_stop_area
@@ -128,7 +135,7 @@ module Stif
         stop.stop_area_referential = self.defaut_referential
         {
           :name           => 'Name',
-          :area_type      => 'type',
+          :area_type      => 'TypeOfPlaceRef',
           :object_version => 'version',
           :zip_code       => 'PostalRegion',
           :city_name      => 'Town'

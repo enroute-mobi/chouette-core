@@ -85,7 +85,13 @@ en:
         cableway: Cableway
         funicular: Funicular
         other: Other
-
+    stop_area:
+        area_type:
+            zdep: ZDEp
+            zder: ZDEr
+            zdlp: ZDLp
+            zdlr: ZDLr
+            lda: LDA
     line:
       transport_mode:
         interchange: Interchange

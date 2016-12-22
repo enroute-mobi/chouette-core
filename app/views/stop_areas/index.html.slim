@@ -25,7 +25,7 @@
             .col-sm-3
               = f.text_field :city_name_cont, placeholder: "#{t('.city_name')}", class: 'form-control typeahead', style: 'width: 100%'
             .col-sm-3
-              = f.select(:area_type_cont, options_from_collection_for_select(Chouette::StopArea.stop_area_types, 'name', Proc.new { |stop_area_type| t("area_types.label.#{stop_area_type}") } ), { include_blank: '' }, { class: 'form-control', style: 'width: 100%', 'data-select2ed': 'true', 'data-select2ed-placeholder': t(".area_type") })
+              = f.select(:area_type_cont, Chouette::StopArea.area_type.options, { include_blank: t('.area_type') }, { class: 'form-control' })
 #stop_areas
   = render 'stop_areas'
 

@@ -92,7 +92,8 @@ class BSelect2 extends React.Component{
             delay: '500',
             data: function(params) {
               return {
-                q: params.term
+                q: params.term,
+                target_type: 'zdep'
               };
             },
             processResults: function(data, params) {

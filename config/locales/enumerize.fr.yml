@@ -84,7 +84,13 @@ fr:
         cableway: Téléphérique
         funicular: Funiculaire
         other: Autre
-
+    stop_area:
+        area_type:
+            zdep: ZDEp
+            zder: ZDEr
+            zdlp: ZDLp
+            zdlr: ZDLr
+            lda: LDA
     line:
       transport_mode:
         interchange: Interconnection

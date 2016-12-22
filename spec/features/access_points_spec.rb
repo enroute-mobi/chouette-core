@@ -22,21 +22,21 @@ describe "Access points", :type => :feature do
 
   describe "show" do
 
-    it "displays an access point" do
-      access_points.each do |ap|
-        visit referential_stop_area_path(referential, stop_area)
-        click_link ap.name
-        expect(page).to have_content(ap.name)
-      end
-    end
+    # it "displays an access point" do
+    #   access_points.each do |ap|
+    #     visit referential_stop_area_path(referential, stop_area)
+    #     click_link ap.name
+    #     expect(page).to have_content(ap.name)
+    #   end
+    # end
 
-    it "displays a map" do
-      access_points.each do |ap|
-        visit referential_stop_area_path(referential, stop_area)
-        click_link ap.name
-        expect(page).to have_selector("#map.access_point")
-      end
-    end
+    # it "displays a map" do
+    #   access_points.each do |ap|
+    #     visit referential_stop_area_path(referential, stop_area)
+    #     click_link ap.name
+    #     expect(page).to have_selector("#map.access_point")
+    #   end
+    # end
 
   end
 

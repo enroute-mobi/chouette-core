@@ -14,25 +14,20 @@ class AutocompleteStopAreasController < InheritedResources::Base
   protected
 
   def collection
-    result = []
-    if physical_filter?
-     result = referential.stop_areas.physical
-    elsif itl_exclude_filter?
-      result = Chouette::StopArea.where("area_type != 'ITL'")
-    elsif target_type? && relation_parent?
-     result = Chouette::StopArea.new( :area_type => params[ :target_type ] ).possible_parents
-    elsif target_type? && relation_children?
-     result = Chouette::StopArea.new( :area_type => params[ :target_type ] ).possible_children
-    else
-      result = referential.stop_areas
+    scope = referential.stop_areas
+    scope = scope.physical if physical_filter?
+    if target_type?
+      scope = scope.where(area_type: params[:target_type])
+      scope = scope.possible_parents if relation_parent?
+      scope = scope.possible_parents if relation_children?
     end
     args = [].tap{|arg| 3.times{arg << "%#{params[:q]}%"}}
-    @stop_areas = result.where("name ILIKE ? OR registration_number ILIKE ? OR objectid ILIKE ?", *args).limit(50)
+    @stop_areas = scope.where("name ILIKE ? OR registration_number ILIKE ? OR objectid ILIKE ?", *args).limit(50)
     @stop_areas
   end
 
   def target_type?
-    params.has_key?( :target_type) && params.has_key?( :relation )
+    params.has_key?( :target_type)
   end
 
   def relation_parent?
@@ -43,12 +38,7 @@ class AutocompleteStopAreasController < InheritedResources::Base
     params[ :relation ] == "children"
   end
 
-  def itl_exclude_filter?
-    params[:filter] == "itl_excluded"
-  end
-
   def physical_filter?
     params[:filter] == "physical"
   end
-
 end

@@ -32,6 +32,8 @@ class WorkbenchesController < BreadcrumbController
 
   private
   def resource
+    require 'pry'
+    binding.pry
     @workbench = current_organisation.workbenches.find params[:id]
   end
 

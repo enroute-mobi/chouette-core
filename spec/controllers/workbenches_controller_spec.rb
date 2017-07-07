@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 RSpec.describe WorkbenchesController, :type => :controller do
-  let(:workbench) { create :workbench }
+  let(:workbench) { build_stubbed :workbench }
 
   describe "GET show" do
     it "returns http success" do

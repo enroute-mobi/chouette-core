@@ -1,15 +1,21 @@
 module DeviseRequestHelper
   include Warden::Test::Helpers
 
-  def login_user
-    organisation = Organisation.where(:code => "first").first_or_create(attributes_for(:organisation))
-    @user ||= create(:user, :organisation => organisation,
-                     :permissions => ['routes.create', 'routes.update', 'routes.destroy', 'journey_patterns.create', 'journey_patterns.update', 'journey_patterns.destroy',
-                                      'vehicle_journeys.create', 'vehicle_journeys.update', 'vehicle_journeys.destroy', 'time_tables.create', 'time_tables.update', 'time_tables.destroy',
-                                      'footnotes.update', 'footnotes.create', 'footnotes.destroy', 'routing_constraint_zones.create', 'routing_constraint_zones.update', 'routing_constraint_zones.destroy',
-                                      'access_points.create', 'access_points.update', 'access_points.destroy', 'access_links.create', 'access_links.update', 'access_links.destroy',
-                                      'connection_links.create', 'connection_links.update', 'connection_links.destroy', 'route_sections.create', 'route_sections.update', 'route_sections.destroy',
-                                      'referentials.create', 'referentials.update', 'referentials.destroy'])
+
+  def login_user(stubbed: false)
+    organisation = 
+      if stubbed
+        build_stubbed :organisation
+      else
+        Organisation.where(:code => "first").first_or_create(attributes_for(:organisation))
+      end
+    @user ||=
+      if stubbed
+        build_stubbed :allmighty_user, organisation: organisation
+      else
+       create :allmighty_user, :organisation => organisation
+      end
+
     login_as @user, :scope => :user
     # post_via_redirect user_session_path, 'user[email]' => @user.email, 'user[password]' => @user.password
   end
@@ -22,9 +28,9 @@ module DeviseRequestHelper
 
   module ClassMethods
 
-    def login_user
+    def login_user(stubbed: false)
       before(:each) do
-        login_user
+        login_user(stubbed: stubbed)
       end
       after(:each) do
         Warden.test_reset!

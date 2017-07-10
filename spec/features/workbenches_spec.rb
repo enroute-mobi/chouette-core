@@ -1,18 +1,23 @@
-# coding: utf-8
 
 describe 'Workbenches', type: :feature do
   login_user
 
-  let(:line_ref) { create :line_referential }
-  let(:line) { create :line, line_referential: line_ref }
-  let(:ref_metadata) { create(:referential_metadata, lines: [line]) }
+  before do
+    @user.organisation = organisation
+  end
 
-  let!(:workbench) { create(:workbench, line_referential: line_ref, organisation: @user.organisation) }
-  let!(:referential) { create :referential, workbench: workbench, metadatas: [ref_metadata], organisation: @user.organisation }
+  let( :organisation ){ build_stubbed :organisation }
+
+  let(:line_ref) { build_stubbed :line_referential }
+  let(:line) { build_stubbed :line, line_referential: line_ref }
+  let(:ref_metadata) { build_stubbed(:referential_metadata, lines: [line]) }
+
+  let!(:workbench) { build_stubbed(:workbench, line_referential: line_ref, organisation: organisation) }
+  let!(:referential) { build_stubbed :referential, workbench: workbench, metadatas: [ref_metadata], organisation: @user.organisation }
 
   describe 'show' do
     context 'ready' do
-      it 'should show ready referentials' do
+      it 'should show ready referentials', :wip do
         visit workbench_path(workbench)
         expect(page).to have_content(referential.name)
       end

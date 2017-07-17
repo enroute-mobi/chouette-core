@@ -23,6 +23,8 @@ class ImportsController < BreadcrumbController
   end
 
   def create
+    require 'pry'
+    binding.pry
     create! { workbench_import_path(parent, resource) }
   end
 

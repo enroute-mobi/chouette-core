@@ -32,25 +32,26 @@ ChouetteIhm::Application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resources :time_tables, :only => [:index, :show]
-      resources :connection_links, :only => [:index, :show]
-      resources :companies, :only => [:index, :show]
-      resources :networks, :only => [:index, :show]
-      resources :stop_areas, :only => [:index, :show]
-      resources :group_of_lines, :only => [:index, :show]
-      resources :access_points, :only => [:index, :show]
-      resources :access_links, :only => [:index, :show]
-      resources :lines, :only => [:index, :show] do
-        resources :journey_patterns, :only => [:index, :show]
-        resources :routes, :only => [:index, :show] do
-          resources :vehicle_journeys, :only => [:index, :show]
-          resources :journey_patterns, :only => [:index, :show]
-          resources :stop_areas, :only => [:index, :show]
+      resources :access_links, only: [:index, :show]
+      resources :access_points, only: [:index, :show]
+      resources :connection_links, only: [:index, :show]
+      resources :companies, only: [:index, :show]
+      resources :group_of_lines, only: [:index, :show]
+      resources :imports, only: :create
+      resources :journey_patterns, only: :show
+      resources :lines, only: [:index, :show] do
+        resources :journey_patterns, only: [:index, :show]
+        resources :routes, only: [:index, :show] do
+          resources :vehicle_journeys, only: [:index, :show]
+          resources :journey_patterns, only: [:index, :show]
+          resources :stop_areas, only: [:index, :show]
         end
       end
-      resources :routes, :only => :show
-      resources :journey_patterns, :only => :show
-      resources :vehicle_journeys, :only => :show
+      resources :networks, only: [:index, :show]
+      resources :routes, only: :show
+      resources :stop_areas, only: [:index, :show]
+      resources :time_tables, only: [:index, :show]
+      resources :vehicle_journeys, only: :show
     end
   end
 
@@ -180,7 +181,7 @@ ChouetteIhm::Application.routes.draw do
     resources :timebands
 
     resources :access_points do
-       resources :access_links
+      resources :access_links
     end
 
     resources :stop_areas, controller: "referential_stop_areas" do

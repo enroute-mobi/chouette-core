@@ -1,4 +1,3 @@
-# coding: utf-8
 class ImportTasksController < ChouetteController
   defaults :resource_class => ImportTask
   

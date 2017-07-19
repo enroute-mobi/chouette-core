@@ -9,5 +9,10 @@ FactoryGirl.define do
     status :new
     started_at nil
     ended_at nil
+
+    factory :netex_import do
+      type 'NetexImport'
+      file {Rails.root.join('spec', 'fixtures', 'terminated_job.json')}
+    end
   end
 end

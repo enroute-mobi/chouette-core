@@ -1,6 +1,4 @@
-require 'spec_helper'
-
-describe GroupOfLinesController do
+RSpec.describe GroupOfLinesController do
   describe "routing" do
     it "not recognize #routes" do
       expect(get( "/line_referentials/1/group_of_lines/2/routes")).not_to route_to(

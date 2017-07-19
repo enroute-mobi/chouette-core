@@ -1,5 +1,9 @@
 module ApiKeyHelper
 
+  def authorization_token_header(key)
+    {'Authorization' => "Token token=#{key}"}
+  end
+
   def get_api_key
     Api::V1::ApiKey.first_or_create( :referential_id => referential.id, :name => "test")
   end

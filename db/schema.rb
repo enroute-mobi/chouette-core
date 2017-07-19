@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170607141317) do
+ActiveRecord::Schema.define(version: 20170715041954) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -285,6 +285,8 @@ ActiveRecord::Schema.define(version: 20170607141317) do
     t.datetime "ended_at"
     t.string   "token_download"
     t.string   "type",                  limit: 255
+    t.integer  "parent_id",             limit: 8
+    t.string   "parent_type"
   end
 
   add_index "imports", ["referential_id"], name: "index_imports_on_referential_id", using: :btree

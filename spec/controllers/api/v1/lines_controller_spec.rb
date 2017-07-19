@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Api::V1::LinesController, :type => :controller do
   let!(:line) { referential.lines.first || create(:line) }
 
-  it_behaves_like "api key protected controller" do
+  it_behaves_like "api key protected controller", :wip do
     let(:data){line}
   end
   describe "GET #index" do

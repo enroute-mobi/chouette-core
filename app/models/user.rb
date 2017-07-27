@@ -43,17 +43,11 @@ class User < ActiveRecord::Base
     conf = Rails.application.config.try(:stif_portail_api)
     raise 'Rails.application.config.stif_portail_api settings is not defined' unless conf
 
-    conn = Faraday.new(:url => conf[:url]) do |c|
-      c.headers['Authorization'] = %{Token token="#{conf[:key]}"}
-      c.adapter  Faraday.default_adapter
-    end
-
-    resp = conn.get '/api/v1/users'
-    if resp.status == 200
-      JSON.parse resp.body
-    else
-      raise "Error on api request status : #{resp.status} => #{resp.body}"
-    end
+    HTTPService.get_resource(
+      host: conf[:url],
+      path: '/api/v1/users',
+      parse_json: true,
+      token: conf[:key])
   end
 
   def self.portail_sync

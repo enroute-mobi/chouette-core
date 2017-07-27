@@ -19,7 +19,7 @@ module Api
       def netex_import_params
         params
           .require('netex_import')
-          .permit(:file, :name, :referential_id)
+          .permit(:file, :name, :referential_id, :workbench_id)
       end
     end
   end

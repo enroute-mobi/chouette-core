@@ -4,7 +4,7 @@ RSpec.describe "NetexImport", type: :request do
 
     let( :referential ){ create :referential }
 
-    let( :file_path ){'spec/fixtures/neptune.zip'}
+    let( :file_path ){ fixtures_path 'singleref.zip' }
     let( :file ){ fixture_file_upload( file_path ) }
 
     let( :post_request ) do
@@ -19,7 +19,8 @@ RSpec.describe "NetexImport", type: :request do
       {
         name: 'hello world',
         file: file,
-        referential_id: referential.id
+        referential_id: referential.id,
+        workbench_id:   referential.workbench_id
       }
     end 
 

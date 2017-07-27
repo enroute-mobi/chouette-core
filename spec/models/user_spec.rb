@@ -67,7 +67,7 @@ RSpec.describe User, :type => :model do
     let(:conf) { Rails.application.config.stif_portail_api }
     before :each do
       stub_request(:get, "#{conf[:url]}/api/v1/users").
-        with(headers: { 'Authorization' => "Token token=\"#{conf[:key]}\"" }).
+        with(stub_headers(authorization_token: conf[:key])).
         to_return(body: File.open(File.join(Rails.root, 'spec', 'fixtures', 'users.json')), status: 200)
     end
 

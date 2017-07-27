@@ -15,6 +15,7 @@ RSpec.describe ImportsController, :type => :controller do
     it 'should be successful' do
       get :download, workbench_id: workbench.id, id: import.id, token: import.token_download
       expect(response).to be_success
+      expect( response.body ).to eq(import.file.read)
     end
   end
 end

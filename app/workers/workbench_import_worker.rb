@@ -32,12 +32,23 @@ class WorkbenchImportWorker
     # end
   end
 
+  def log_failure reason, count
+    logger.warn "HTTP POST failed with #{reason}, count = #{count}"
+  end
+
+  def try_again
+    raise RetryService::Retry
+  end
 
   def upload
     @zip_service.entry_group_streams.each(&method(:upload_entry_group))
   end
 
   def upload_entry_group key_pair
+    retry_service = RetryService.new(delay: RETRY_DELAYS, rescue_from: Timeout, &method(:log_failure)) 
+  end
+
+  def try_upload_entry_group key_pair
     eg_name, eg_stream = key_pair
     logger.warn  "HTTP POST #{export_url} (for #{complete_entry_group_name(eg_name)})"
     HTTPService.post_resource(

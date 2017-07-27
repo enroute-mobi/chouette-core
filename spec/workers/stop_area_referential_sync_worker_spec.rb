@@ -1,4 +1,3 @@
-require 'rails_helper'
 RSpec.describe StopAreaReferentialSyncWorker, type: :worker do
   let!(:stop_area_referential_sync) { create :stop_area_referential_sync }
 

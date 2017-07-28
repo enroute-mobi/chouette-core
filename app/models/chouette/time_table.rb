@@ -530,28 +530,20 @@ class Chouette::TimeTable < Chouette::TridentActiveRecord
   # merge effective days from another timetable
   def merge!(another_tt)
     transaction do
-      self.periods = another_tt.clone_periods + self.periods
-
-      # For included dates
-      another_tt.included_days.map{ |d| add_included_day(d) }
-
-      # For excluded dates
-      self.dates.where(in_out: false).each do |d|
-        self.dates.delete d if another_tt.include_in_periods?(d.date) && !another_tt.excluded_date?(d.date)
+      days = Array.new.tap do |array|
+        array.push(*self.included_days_in_dates_and_periods, *another_tt.effective_days)
+        array.uniq!
       end
 
-      another_tt.excluded_days.each do |d|
-        unless self.reload.excluded_date?(d)
-          self.dates << Chouette::TimeTableDate.new(date: d, in_out: false)
-        end
-        self.save!
-      end
+      self.dates.clear
+      self.periods.clear
 
-      self.convert_continuous_dates_to_periods
-      self.periods = self.optimize_continuous_dates_and_periods
-      self.convert_continuous_periods_into_one
-      self.periods = self.optimize_overlapping_periods
+      days.each do |day|
+        self.dates << Chouette::TimeTableDate.new(date: day, in_out: true)
+      end
+      self.save!
     end
+    self.convert_continuous_dates_to_periods
   end
 
   def included_days_in_dates_and_periods
@@ -567,9 +559,15 @@ class Chouette::TimeTable < Chouette::TridentActiveRecord
   # remove dates form tt which aren't in another_tt
   def intersect!(another_tt)
     transaction do
-      days = self.included_days_in_dates_and_periods & another_tt.included_days_in_dates_and_periods
+      days = Array.new.tap do |array|
+        array.push(*self.included_days_in_dates_and_periods)
+        array.delete_if {|day| !another_tt.effective_days.include?(day) }
+        array.uniq!
+      end
+
       self.dates.clear
       self.periods.clear
+
       days.sort.each do |d|
         self.dates << Chouette::TimeTableDate.new(:date => d, :in_out => true)
       end
@@ -581,9 +579,15 @@ class Chouette::TimeTable < Chouette::TridentActiveRecord
   # remove days from another calendar
   def disjoin!(another_tt)
     transaction do
-      days = self.included_days_in_dates_and_periods - another_tt.included_days_in_dates_and_periods
+      days = Array.new.tap do |array|
+        array.push(*self.included_days_in_dates_and_periods)
+        array.delete_if {|day| another_tt.effective_days.include?(day) }
+        array.uniq!
+      end
+
       self.dates.clear
       self.periods.clear
+
       days.sort.each do |d|
         self.dates << Chouette::TimeTableDate.new(:date => d, :in_out => true)
       end

@@ -52,20 +52,19 @@ describe Chouette::TimeTable, :type => :model do
       expect(subject.int_day_types).to eq int_day_types
     end
 
-    it 'should merge date in_out false' do
+    it 'should not merge date in_out false' do
       another_tt.dates.last.in_out = false
       another_tt.save
 
       subject.merge!(another_tt)
-      expect(subject.dates.map(&:date)).to include(another_tt.dates.last.date)
+      expect(subject.dates.map(&:date)).not_to include(another_tt.dates.last.date)
     end
 
-    it 'should remove date in_out false if other tt doesnt have them' do
+    it 'should remove all date in_out false' do
       subject.dates.create(in_out: false, date: Date.today + 5.day + 1.year)
-
-      expect {
-        subject.merge!(another_tt)
-      }.to change {subject.reload.excluded_days.count}.by(-1)
+      another_tt.dates.last.in_out = false
+      subject.merge!(another_tt)
+      expect(subject.reload.excluded_days.count).to eq(0)
     end
   end
 

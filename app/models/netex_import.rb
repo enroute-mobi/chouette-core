@@ -1,5 +1,8 @@
 require 'net/http'
 class NetexImport < Import
+  validates :referential_id, presence: true
+  validates :workbench_id, presence: true
+
   after_commit :launch_java_import
 
 

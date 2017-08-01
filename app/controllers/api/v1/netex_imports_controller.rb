@@ -5,7 +5,12 @@ module Api
       def create
         respond_to do | format |
           format.json do 
-            @import = NetexImport.create(netex_import_params)
+            referential = Referential.find(netex_import_params[:referential_id])
+
+            @import = NetexImport.create(netex_import_params.merge({
+              workbench_id: referential.workbench_id
+            }))
+
             unless @import.valid?
               render json: {errors: @import.errors}, status: 406
             end

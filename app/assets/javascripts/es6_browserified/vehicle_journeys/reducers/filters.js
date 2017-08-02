@@ -1,9 +1,13 @@
 var _ = require('lodash')
 var actions = require("../actions")
-let newQuery, newInterval
+let newQuery, newInterval, newEditMode
 
 const filters = (state = {}, action) => {
   switch (action.type) {
+    case "ENTER_EDIT_MODE":
+      return _.assign({}, state, {editMode: true})
+      case "EXIT_EDIT_MODE":
+        return _.assign({}, state, {editMode: false})
     case 'RESET_FILTERS':
       let interval = {
         start:{

@@ -9,6 +9,8 @@ class SaveVehicleJourneys extends Component{
   }
 
   render() {
+    const buttonText = this.props.filters.editMode ? "Valider" : "Editer"
+
     if(this.props.filters.policy['vehicle_journeys.update'] == false) {
       return false
     }else{
@@ -21,10 +23,10 @@ class SaveVehicleJourneys extends Component{
                 type='button'
                 onClick={e => {
                   e.preventDefault()
-                  actions.submitVehicleJourneys(this.props.dispatch, this.props.vehicleJourneys)
+                  this.props.filters.editMode ? this.props.onSubmitVehicleJourneys(this.props.dispatch, this.props.vehicleJourneys) : this.props.onEnterEditMode(e)
                 }}
               >
-                Valider
+                {buttonText}
               </button>
             </form>
           </div>
@@ -38,7 +40,9 @@ SaveVehicleJourneys.propTypes = {
   vehicleJourneys: PropTypes.array.isRequired,
   page: PropTypes.number.isRequired,
   status: PropTypes.object.isRequired,
-  filters: PropTypes.object.isRequired
+  filters: PropTypes.object.isRequired,
+  onEnterEditMode: PropTypes.func.isRequired,
+  onSubmitVehicleJourneys: PropTypes.func.isRequired
 }
 
 module.exports = SaveVehicleJourneys

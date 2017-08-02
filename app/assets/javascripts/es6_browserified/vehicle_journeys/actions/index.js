@@ -7,6 +7,12 @@ if (!window.Promise) {
 var batchActions = require('../batch').batchActions
 
 const actions = {
+  enterEditMode: () => ({
+    type: "ENTER_EDIT_MODE"
+  }),
+  exitEditMode: () => ({
+    type: "EXIT_EDIT_MODE"
+  }),
   receiveVehicleJourneys : (json) => ({
     type: "RECEIVE_VEHICLE_JOURNEYS",
     json

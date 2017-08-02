@@ -8,10 +8,10 @@ var actions = require("./actions")
 var enableBatching = require('./batch').enableBatching
 
 // logger, DO NOT REMOVE
-// var applyMiddleware = require('redux').applyMiddleware
-// var createLogger = require('redux-logger')
-// var thunkMiddleware = require('redux-thunk').default
-// var promise = require('redux-promise')
+var applyMiddleware = require('redux').applyMiddleware
+var createLogger = require('redux-logger')
+var thunkMiddleware = require('redux-thunk').default
+var promise = require('redux-promise')
 
 var selectedJP = []
 
@@ -21,6 +21,7 @@ if (window.journeyPatternId)
 var initialState = {
   filters: {
     selectedJourneyPatterns : selectedJP,
+    editMode: false,
     policy: window.perms,
     toggleArrivals: false,
     queryString: '',
@@ -85,12 +86,12 @@ if (window.jpOrigin){
   initialState.filters.queryString = actions.encodeParams(params)
 }
 
-// const loggerMiddleware = createLogger()
+const loggerMiddleware = createLogger()
 
 let store = createStore(
   enableBatching(vehicleJourneysApp),
-  initialState
-  // applyMiddleware(thunkMiddleware, promise, loggerMiddleware)
+  initialState,
+  applyMiddleware(thunkMiddleware, promise, loggerMiddleware)
 )
 
 render(

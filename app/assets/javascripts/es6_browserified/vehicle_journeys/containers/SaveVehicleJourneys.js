@@ -12,6 +12,19 @@ const mapStateToProps = (state) => {
   }
 }
 
-const SaveVehicleJourneys = connect(mapStateToProps)(SaveVehicleJourneysComponent)
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onEnterEditMode: (e) => {
+      e.preventDefault()
+      dispatch(actions.enterEditMode())
+    },
+    onSubmitVehicleJourneys: (next, state) => {
+      actions.submitVehicleJourneys(dispatch, state, next)
+      dispatch(actions.exitEditMode())
+    }
+  }
+}
+
+const SaveVehicleJourneys = connect(mapStateToProps, mapDispatchToProps)(SaveVehicleJourneysComponent)
 
 module.exports = SaveVehicleJourneys

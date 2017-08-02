@@ -9,28 +9,34 @@ var NotesEditVehicleJourney = require('../containers/tools/NotesEditVehicleJourn
 var TimetablesEditVehicleJourney = require('../containers/tools/TimetablesEditVehicleJourney')
 var actions = require('../actions')
 
-const Tools = ({vehicleJourneys, onCancelSelection}) => {
+const Tools = ({vehicleJourneys, onCancelSelection, filters: {policy, editMode}}) => {
   return (
-    <div className='select_toolbox'>
-      <ul>
-        <AddVehicleJourney />
-        <DuplicateVehicleJourney />
-        <ShiftVehicleJourney />
-        <EditVehicleJourney />
-        <TimetablesEditVehicleJourney />
-        <NotesEditVehicleJourney />
-        <DeleteVehicleJourneys />
-      </ul>
+    <div>
+      {
+        (policy['vehicle_journeys.create'] && policy['vehicle_journeys.update'] && policy['vehicle_journeys.destroy'] && editMode) &&
+        <div className='select_toolbox'>
+          <ul>
+            <AddVehicleJourney />
+            <DuplicateVehicleJourney />
+            <ShiftVehicleJourney />
+            <EditVehicleJourney />
+            <TimetablesEditVehicleJourney />
+            <NotesEditVehicleJourney />
+            <DeleteVehicleJourneys />
+          </ul>
 
-      <span className='info-msg'>{actions.getSelected(vehicleJourneys).length} course(s) sélectionnée(s)</span>
-      <button className='btn btn-xs btn-link pull-right' onClick={onCancelSelection}>Annuler la sélection</button>
+          <span className='info-msg'>{actions.getSelected(vehicleJourneys).length} course(s) sélectionnée(s)</span>
+          <button className='btn btn-xs btn-link pull-right' onClick={onCancelSelection}>Annuler la sélection</button>
+        </div>
+      }
     </div>
   )
 }
 
 Tools.propTypes = {
   vehicleJourneys : PropTypes.array.isRequired,
-  onCancelSelection: PropTypes.func.isRequired
+  onCancelSelection: PropTypes.func.isRequired,
+  filters: PropTypes.object.isRequired
 }
 
 module.exports = Tools

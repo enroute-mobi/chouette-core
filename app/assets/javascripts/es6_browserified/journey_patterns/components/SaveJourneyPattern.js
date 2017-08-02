@@ -21,10 +21,10 @@ class SaveJourneyPattern extends Component{
                 type='button'
                 onClick={e => {
                   e.preventDefault()
-                  actions.submitJourneyPattern(this.props.dispatch, this.props.journeyPatterns)
+                  this.props.status.editMode ? this.props.onSubmitJourneyPattern(this.props.dispatch, this.props.journeyPatterns) : this.props.onEnterEditMode(e)
                 }}
                 >
-                Valider
+                {this.props.status.editMode ? "Valider" : "Editer"}
               </button>
             </form>
           </div>

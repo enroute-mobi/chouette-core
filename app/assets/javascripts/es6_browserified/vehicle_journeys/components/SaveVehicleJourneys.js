@@ -9,9 +9,7 @@ class SaveVehicleJourneys extends Component{
   }
 
   render() {
-    const buttonText = this.props.filters.editMode ? "Valider" : "Editer"
-
-    if(this.props.filters.policy['vehicle_journeys.update'] == false) {
+    if (this.props.filters.policy['vehicle_journeys.update'] == false) {
       return false
     }else{
       return (
@@ -26,7 +24,7 @@ class SaveVehicleJourneys extends Component{
                   this.props.filters.editMode ? this.props.onSubmitVehicleJourneys(this.props.dispatch, this.props.vehicleJourneys) : this.props.onEnterEditMode(e)
                 }}
               >
-                {buttonText}
+                {this.props.filters.editMode ? "Valider" : "Editer"}
               </button>
             </form>
           </div>

@@ -14,6 +14,7 @@ var App = require('./components/App')
 var initialState = {
   status: {
     policy: window.perms,
+    editMode: false,
     fetchSuccess: true,
     isFetching: false
   },
@@ -35,7 +36,7 @@ var initialState = {
 
 let store = createStore(
   journeyPatternsApp,
-  initialState
+  initialState,
   // applyMiddleware(thunkMiddleware, promise, loggerMiddleware)
 )
 

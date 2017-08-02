@@ -11,6 +11,10 @@ const status = (state = {}, action) => {
       return _.assign({}, state, {fetchSuccess: true, isFetching: false})
     case 'RECEIVE_ERRORS':
       return _.assign({}, state, {isFetching: false})
+    case 'ENTER_EDIT_MODE':
+      return _.assign({}, state, {editMode: true})
+    case 'EXIT_EDIT_MODE':
+      return _.assign({}, state, {editMode: false})
     default:
       return state
   }

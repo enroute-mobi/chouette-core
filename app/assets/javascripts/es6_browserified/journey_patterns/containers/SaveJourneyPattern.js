@@ -11,6 +11,19 @@ const mapStateToProps = (state) => {
   }
 }
 
-const SaveJourneyPattern = connect(mapStateToProps)(SaveJourneyPatternComponent)
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onEnterEditMode: (e) => {
+      e.preventDefault()
+      dispatch(actions.enterEditMode())
+    },
+    onSubmitJourneyPattern: (next, state) => {
+      actions.submitJourneyPattern(dispatch, state, next)
+      dispatch(actions.exitEditMode())
+    }
+  }
+}
+
+const SaveJourneyPattern = connect(mapStateToProps, mapDispatchToProps)(SaveJourneyPatternComponent)
 
 module.exports = SaveJourneyPattern

@@ -6,6 +6,12 @@ if (!window.Promise) {
 }
 
 const actions = {
+  enterEditMode: () => ({
+    type: "ENTER_EDIT_MODE"
+  }),
+  exitEditMode: () => ({
+    type: "EXIT_EDIT_MODE"
+  }),
   receiveJourneyPatterns : (json) => ({
     type: "RECEIVE_JOURNEY_PATTERNS",
     json

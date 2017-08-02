@@ -34,7 +34,7 @@ class JourneyPattern extends Component{
             type='checkbox'
             id={sp.id}
             checked={sp.checked}
-            disabled={(this.props.value.deletable || this.props.status.policy['journey_patterns.update'] == false) ? 'disabled' : ''}
+            disabled={(this.props.value.deletable || this.props.status.policy['journey_patterns.update'] == false || this.props.status.editMode == false) ? 'disabled' : ''}
             >
           </input>
           <span className='radio-label'></span>
@@ -78,7 +78,7 @@ class JourneyPattern extends Component{
               <span className='fa fa-cog'></span>
             </div>
             <ul className='dropdown-menu'>
-              <li className={(this.props.value.deletable || this.props.status.policy['journey_patterns.update'] == false) ? 'disabled' : ''}>
+              <li className={(this.props.status.policy['journey_patterns.update'] == false || this.props.status.editMode == false) ? 'disabled' : ''}>
                 <button
                   type='button'
                   onClick={this.props.onOpenEditModal}
@@ -91,10 +91,10 @@ class JourneyPattern extends Component{
               <li className={this.props.value.object_id ? '' : 'disabled'}>
                 {this.vehicleJourneyURL(this.props.value.object_id)}
               </li>
-              <li className={'delete-action' + ((this.props.status.policy['journey_patterns.update'] == false)? ' disabled' : '')}>
+              <li className={'delete-action' + ((this.props.status.policy['journey_patterns.destroy'] == false || this.props.status.editMode == false) ? ' disabled' : '')}>
                 <button
                   type='button'
-                  disabled={(this.props.status.policy['journey_patterns.update'] == false)? 'disabled' : ''}
+                  disabled={(this.props.status.policy['journey_patterns.destroy'] == false || this.props.status.editMode == false)? 'disabled' : ''}
                   onClick={(e) => {
                     e.preventDefault()
                     this.props.onDeleteJourneyPattern(this.props.index)}

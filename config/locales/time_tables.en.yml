@@ -29,6 +29,10 @@ en:
       title: "Duplicate timetable"
     edit:
       title: "Update timetable %{time_table}"
+      error_modal:
+        title: "Error"
+        withoutPeriodsWithDaysTypes: "A timetable can't have day type(s) without period(s)."
+        withPeriodsWithoutDayTypes: "A tiemetable can't have period(s) swithout day type(s)."  
     show:
       title: "Timetable %{time_table}"
       dates: "Application dates"

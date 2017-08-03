@@ -29,6 +29,10 @@ fr:
       title: "Dupliquer un calendrier"
     edit:
       title: "Editer le calendrier %{time_table}"
+      error_modal:
+        title: "Erreur"
+        withoutPeriodsWithDaysTypes: "Un calendrier d'application ne peut pas avoir de journée(s) d'application sans période(s)."
+        withPeriodsWithoutDayTypes: "Un calendrier d'application ne peut pas avoir de période(s) sans journée(s) d'application."  
     show:
       title: Calendrier %{time_table}
       dates: "Dates d'application"

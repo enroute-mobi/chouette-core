@@ -10,6 +10,7 @@
     #periods
 
 = javascript_tag do
-  | window.actionType = "#{raw params[:action]}"
+  | window.actionType = "#{raw params[:action]}";
+  | window.I18n = #{(I18n.backend.send(:translations).to_json).html_safe};
 
 = javascript_include_tag 'es6_browserified/time_tables/index.js'

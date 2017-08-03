@@ -12,12 +12,15 @@ let current_month = [{"day":"lundi","date":"2017-05-01","wday":1,"wnumber":"18",
 
 let newCurrentMonth = [{"day":"lundi","date":"2017-05-01","wday":1,"wnumber":"18","mday":1,"include_date":false,"excluded_date":false,"in_periods":true},{"day":"mardi","date":"2017-05-02","wday":2,"wnumber":"18","mday":2,"include_date":false,"excluded_date":false,"in_periods":true},{"day":"mercredi","date":"2017-05-03","wday":3,"wnumber":"18","mday":3,"include_date":false,"excluded_date":false,"in_periods":true},{"day":"jeudi","date":"2017-05-04","wday":4,"wnumber":"18","mday":4,"include_date":false,"excluded_date":false,"in_periods":true},{"day":"vendredi","date":"2017-05-05","wday":5,"wnumber":"18","mday":5,"include_date":false,"excluded_date":false,"in_periods":false},{"day":"samedi","date":"2017-05-06","wday":6,"wnumber":"18","mday":6,"include_date":false,"excluded_date":false,"in_periods":false},{"day":"dimanche","date":"2017-05-07","wday":0,"wnumber":"18","mday":7,"include_date":false,"excluded_date":false,"in_periods":false},{"day":"lundi","date":"2017-05-08","wday":1,"wnumber":"19","mday":8,"include_date":false,"excluded_date":false,"in_periods":false},{"day":"mardi","date":"2017-05-09","wday":2,"wnumber":"19","mday":9,"include_date":false,"excluded_date":false,"in_periods":false},{"day":"mercredi","date":"2017-05-10","wday":3,"wnumber":"19","mday":10,"include_date":false,"excluded_date":false,"in_periods":false},{"day":"jeudi","date":"2017-05-11","wday":4,"wnumber":"19","mday":11,"include_date":false,"excluded_date":false,"in_periods":false},{"day":"vendredi","date":"2017-05-12","wday":5,"wnumber":"19","mday":12,"include_date":false,"excluded_date":false,"in_periods":false},{"day":"samedi","date":"2017-05-13","wday":6,"wnumber":"19","mday":13,"include_date":false,"excluded_date":false,"in_periods":false},{"day":"dimanche","date":"2017-05-14","wday":0,"wnumber":"19","mday":14,"include_date":false,"excluded_date":false,"in_periods":true},{"day":"lundi","date":"2017-05-15","wday":1,"wnumber":"20","mday":15,"include_date":false,"excluded_date":false,"in_periods":true},{"day":"mardi","date":"2017-05-16","wday":2,"wnumber":"20","mday":16,"include_date":false,"excluded_date":false,"in_periods":true},{"day":"mercredi","date":"2017-05-17","wday":3,"wnumber":"20","mday":17,"include_date":false,"excluded_date":false,"in_periods":true},{"day":"jeudi","date":"2017-05-18","wday":4,"wnumber":"20","mday":18,"include_date":false,"excluded_date":false,"in_periods":true},{"day":"vendredi","date":"2017-05-19","wday":5,"wnumber":"20","mday":19,"include_date":false,"excluded_date":false,"in_periods":true},{"day":"samedi","date":"2017-05-20","wday":6,"wnumber":"20","mday":20,"include_date":false,"excluded_date":false,"in_periods":true},{"day":"dimanche","date":"2017-05-21","wday":0,"wnumber":"20","mday":21,"include_date":false,"excluded_date":false,"in_periods":true},{"day":"lundi","date":"2017-05-22","wday":1,"wnumber":"21","mday":22,"include_date":false,"excluded_date":false,"in_periods":true},{"day":"mardi","date":"2017-05-23","wday":2,"wnumber":"21","mday":23,"include_date":false,"excluded_date":false,"in_periods":true},{"day":"mercredi","date":"2017-05-24","wday":3,"wnumber":"21","mday":24,"include_date":false,"excluded_date":false,"in_periods":true},{"day":"jeudi","date":"2017-05-25","wday":4,"wnumber":"21","mday":25,"include_date":false,"excluded_date":false,"in_periods":false},{"day":"vendredi","date":"2017-05-26","wday":5,"wnumber":"21","mday":26,"include_date":false,"excluded_date":false,"in_periods":false},{"day":"samedi","date":"2017-05-27","wday":6,"wnumber":"21","mday":27,"include_date":false,"excluded_date":false,"in_periods":false},{"day":"dimanche","date":"2017-05-28","wday":0,"wnumber":"21","mday":28,"include_date":false,"excluded_date":false,"in_periods":false},{"day":"lundi","date":"2017-05-29","wday":1,"wnumber":"22","mday":29,"include_date":false,"excluded_date":false,"in_periods":false},{"day":"mardi","date":"2017-05-30","wday":2,"wnumber":"22","mday":30,"include_date":false,"excluded_date":false,"in_periods":false},{"day":"mercredi","date":"2017-05-31","wday":3,"wnumber":"22","mday":31,"include_date":false,"excluded_date":false,"in_periods":false}]
 
+let time_table_dates = current_month.filter( ({include_date}) => !!include_date)
+
 let json = {
   current_month: current_month,
   current_periode_range: current_periode_range,
   periode_range: periode_range,
   time_table_periods: time_table_periods,
-  day_types: strDayTypes
+  day_types: strDayTypes,
+  time_table_dates: time_table_dates
 }
 
 describe('timetable reducer with empty state', () => {
@@ -59,6 +62,7 @@ describe('timetable reducer with filled state', () => {
       current_periode_range: current_periode_range,
       periode_range: periode_range,
       time_table_periods: time_table_periods,
+      time_table_dates: time_table_dates
     }
   })
 
@@ -177,7 +181,8 @@ describe('timetable reducer with filled state', () => {
         timeTablePeriods: state.time_table_periods,
         metas: {
           day_types: arrDayTypes
-        }
+        },
+        timeTableDates: state.time_table_dates
       })
     ).toEqual(state)
   })

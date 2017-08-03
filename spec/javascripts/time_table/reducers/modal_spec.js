@@ -170,12 +170,14 @@ describe('modal reducer', () => {
     }
 
     let ttperiods = []
+    let ttdates = []
 
     expect(
       modalReducer(state, {
         type: 'VALIDATE_PERIOD_FORM',
         modalProps : modProps,
-        timeTablePeriods: ttperiods
+        timeTablePeriods: ttperiods,
+        timeTableDates: ttdates
       })
     ).toEqual(Object.assign({}, state, {modalProps: newModalProps}))
   })
@@ -222,6 +224,8 @@ describe('modal reducer', () => {
       {id: 265, period_start: '2017-05-14', period_end: '2017-05-24'}
     ]
 
+    let ttdates2 = []
+
     let newModalProps2 = {
       active: true,
       begin: {
@@ -242,8 +246,74 @@ describe('modal reducer', () => {
       modalReducer(state2, {
         type: 'VALIDATE_PERIOD_FORM',
         modalProps : modProps2,
-        timeTablePeriods: ttperiods2
+        timeTablePeriods: ttperiods2,
+        timeTableDates: ttdates2
       })
     ).toEqual(Object.assign({}, state2, {modalProps: newModalProps2}))
+  })
+
+  it('should handle VALIDATE_PERIOD_FORM and throw error if period overlaps date', () => {
+    let state3 = {
+      confirmModal: {},
+      modalProps: {
+        active: false,
+        begin: {
+          day: '01',
+          month: '08',
+          year: '2017'
+        },
+        end: {
+          day: '09',
+          month: '08',
+          year: '2017'
+        },
+        index: false,
+        error: ''
+      },
+      type: ''
+    }
+    let modProps3 = {
+      active: false,
+      begin: {
+        day: '01',
+        month: '08',
+        year: '2017'
+      },
+      end: {
+        day: '09',
+        month: '08',
+        year: '2017'
+      },
+      index: false,
+      error: ''
+    }
+    let ttperiods3 = []
+
+    let ttdates3 = [{date: "2017-08-04", include_date: true}]
+
+    let newModalProps3 = {
+      active: true,
+      begin: {
+        day: '01',
+        month: '08',
+        year: '2017'
+      },
+      end: {
+        day: '09',
+        month: '08',
+        year: '2017'
+      },
+      index: false,
+      error: "Une période ne peut chevaucher une date dans un calendrier"
+    }
+
+    expect(
+      modalReducer(state3, {
+        type: 'VALIDATE_PERIOD_FORM',
+        modalProps : modProps3,
+        timeTablePeriods: ttperiods3,
+        timeTableDates: ttdates3
+      })
+    ).toEqual(Object.assign({}, state3, {modalProps: newModalProps3}))
   })
 })

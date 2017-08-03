@@ -64,7 +64,9 @@ const modal = (state = {}, action) => {
       }
 
       let newPeriods = JSON.parse(JSON.stringify(action.timeTablePeriods))
+      let newDays = JSON.parse(JSON.stringify(action.timeTableDates))
       let error = actions.checkErrorsInPeriods(period_start, period_end, action.modalProps.index, newPeriods)
+      if (error == '') error = actions.checkErrorsInDates(period_start, period_end, newDays)
       newModalProps.error = error
       newModalProps.active = (error == '') ? false : true
       return _.assign({}, state, {modalProps: newModalProps})

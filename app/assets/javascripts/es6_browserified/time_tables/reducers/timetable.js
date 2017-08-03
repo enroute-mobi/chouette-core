@@ -64,7 +64,10 @@ const timetable = (state = {}, action) => {
         return state
       }
       let newPeriods = JSON.parse(JSON.stringify(action.timeTablePeriods))
+      let newDays = JSON.parse(JSON.stringify(action.timeTableDates))
       let error = actions.checkErrorsInPeriods(period_start, period_end, action.modalProps.index, newPeriods)
+      if (error == '') error = actions.checkErrorsInDates(period_start, period_end, newDays)
+
       if(error != ''){
         return state
       }

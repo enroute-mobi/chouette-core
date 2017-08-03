@@ -105,11 +105,12 @@ const actions = {
     group,
     selectType
   }),
-  validatePeriodForm: (modalProps, timeTablePeriods, metas) => ({
+  validatePeriodForm: (modalProps, timeTablePeriods, metas, timeTableDates) => ({
     type: 'VALIDATE_PERIOD_FORM',
     modalProps,
     timeTablePeriods,
-    metas
+    metas,
+    timeTableDates
   }),
   includeDateInPeriod: (index, dayTypes) => ({
     type: 'INCLUDE_DATE_IN_PERIOD',
@@ -207,7 +208,7 @@ const actions = {
   formatDate: (props) => {
     return props.year + '-' + props.month + '-' + props.day
   },
-  checkErrorsInPeriods: (start, end, index, periods) => {
+  checkErrorsInPeriods: (start, end, index, periods, days) => {
     let error = ''
     start = new Date(start)
     end = new Date(end)
@@ -215,6 +216,18 @@ const actions = {
       if(index !== i && !period.deleted){
         if((new Date(period.period_start) <= start && new Date(period.period_end) >= start) || (new Date(period.period_start) <= end && new Date(period.period_end) >= end) || (start >= new Date(period.period_start) && end <= new Date(period.period_end)) || (start <= new Date(period.period_start) && end >= new Date(period.period_end)))
         error = 'Les périodes ne peuvent pas se chevaucher'
+      }
+    })
+    return error
+  },
+  checkErrorsInDates: (start, end, days) => {
+    let error = ''
+    start = new Date(start)
+    end = new Date(end)
+
+    _.each(days, ({date}) => {
+      if (start <= new Date(date) && end >= new Date(date)) {
+        error = 'Une période ne peut chevaucher une date dans un calendrier'
       }
     })
     return error

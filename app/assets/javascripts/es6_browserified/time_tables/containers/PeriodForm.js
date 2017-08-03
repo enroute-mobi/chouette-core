@@ -27,8 +27,8 @@ const mapDispatchToProps = (dispatch) => {
       val = (val < 10) ? '0' + String(val) : String(val)
       dispatch(actions.updatePeriodForm(val, group, 'day'))
     },
-    onValidatePeriodForm: (modalProps, timeTablePeriods, metas) => {
-      dispatch(actions.validatePeriodForm(modalProps, timeTablePeriods, metas))
+    onValidatePeriodForm: (modalProps, timeTablePeriods, metas, timeTableDates) => {
+      dispatch(actions.validatePeriodForm(modalProps, timeTablePeriods, metas, timeTableDates))
     }
   }
 }

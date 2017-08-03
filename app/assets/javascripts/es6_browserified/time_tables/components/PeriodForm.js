@@ -1,5 +1,6 @@
 var React = require('react')
 var PropTypes = require('react').PropTypes
+var _ = require('lodash')
 let monthsArray = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
 
 const formatNumber = (val) => {
@@ -107,7 +108,7 @@ const PeriodForm = ({modal, timetable, metas, onOpenAddPeriodForm, onClosePeriod
                 <button
                   type='button'
                   className='btn btn-outline-primary mr-sm'
-                  onClick={() => onValidatePeriodForm(modal.modalProps, timetable.time_table_periods, metas)}
+                  onClick={() => onValidatePeriodForm(modal.modalProps, timetable.time_table_periods, metas, _.reject(timetable.current_month, ['include_date', false]))}
                 >
                   Valider
                 </button>

@@ -21,7 +21,11 @@ const modal = (state = {}, action) => {
       })
     case 'OPEN_ERROR_MODAL':
       $('#ErrorModal').modal('show')
-      return _.assign({}, state, {type: 'error'})
+      newModalProps = _.assign({}, state.modalProps, {error: action.error})
+      return _.assign({}, state, {type: 'error'}, {modalProps: newModalProps})
+    case 'RESET_MODAL_ERRORS':
+      newModalProps = _.assign({}, state.modalProps, {error: ''})
+      return _.assign({}, state, {type: ''}, {modalProps: newModalProps})
     case 'CLOSE_PERIOD_FORM':
       newModalProps = _.assign({}, state.modalProps, {active: false})
       return _.assign({}, state, {modalProps: newModalProps})

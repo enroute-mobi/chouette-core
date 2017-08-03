@@ -13,8 +13,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onShowErrorModal: () => {
-      dispatch(actions.showErrorModal())
+    onShowErrorModal: (errorKey) => {
+      dispatch(actions.showErrorModal(errorKey))
     },
     getDispatch: () => {
       return dispatch

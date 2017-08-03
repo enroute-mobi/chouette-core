@@ -10,6 +10,10 @@ class SaveTimetable extends Component{
   }
 
   render() {
+    const withoutPeriodsWithDaysTypes = _.reject(this.props.timetable.time_table_periods, 'deleted').length == 0 && _.some(this.props.metas.day_types)
+    const withPeriodsWithoutDayTypes = _.reject(this.props.timetable.time_table_periods, 'deleted').length > 0 &&  _.every(this.props.metas.day_types, dt => dt == false)
+    const errorKey = withoutPeriodsWithDaysTypes ? "withoutPeriodsWithDaysTypes" : "withPeriodsWithoutDayTypes"
+
     return (
       <div className='row mt-md'>
         <div className='col-lg-12 text-right'>
@@ -19,9 +23,9 @@ class SaveTimetable extends Component{
               type='button'
               onClick={e => {
                 e.preventDefault()
-                if(this.props.timetable.time_table_periods.length == 0 && _.some(this.props.metas.day_types)){
-                  this.props.onShowErrorModal()
-                }else{
+                if (withoutPeriodsWithDaysTypes || withPeriodsWithoutDayTypes) {
+                  this.props.onShowErrorModal(errorKey)
+                } else {
                   actions.submitTimetable(this.props.getDispatch(), this.props.timetable, this.props.metas)
                 }
               }}

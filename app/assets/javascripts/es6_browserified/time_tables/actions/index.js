@@ -96,6 +96,9 @@ const actions = {
   closePeriodForm: () => ({
     type: 'CLOSE_PERIOD_FORM'
   }),
+  resetModalErrors: () => ({
+    type: 'RESET_MODAL_ERRORS'
+  }),
   updatePeriodForm: (val, group, selectType) => ({
     type: 'UPDATE_PERIOD_FORM',
     val,
@@ -122,8 +125,9 @@ const actions = {
     type : 'OPEN_CONFIRM_MODAL',
     callback
   }),
-  showErrorModal: () => ({
-    type: 'OPEN_ERROR_MODAL'
+  showErrorModal: (error) => ({
+    type: 'OPEN_ERROR_MODAL',
+    error
   }),
   closeModal : () => ({
     type : 'CLOSE_MODAL'

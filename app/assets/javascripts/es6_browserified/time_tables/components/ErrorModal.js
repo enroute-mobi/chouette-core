@@ -2,6 +2,10 @@ var React = require('react')
 var Component = require('react').Component
 var PropTypes = require('react').PropTypes
 
+const withoutPeriodsWithDaysTypes = "Un calendrier d'application ne peut pas avoir de journée(s) d'application sans période(s)."
+const withPeriodsWithoutDayTypes = "Un calendrier d'application ne peut pas avoir de période(s) sans journée(s) d'application."
+
+
 const ErrorModal = ({dispatch, modal, onModalClose}) => (
   <div className={ 'modal fade ' + ((modal.type == 'error') ? 'in' : '') } id='ErrorModal'>
     <div className='modal-container'>
@@ -12,7 +16,7 @@ const ErrorModal = ({dispatch, modal, onModalClose}) => (
           </div>
           <div className='modal-body'>
             <div className='mt-md mb-md'>
-              <p>Un calendrier d'application ne peut pas avoir de journée(s) d'application sans période(s).</p>
+              <p>{(modal.modalProps.error == "withoutPeriodsWithDaysTypes") ? withoutPeriodsWithDaysTypes : withPeriodsWithoutDayTypes}</p>
             </div>
           </div>
           <div className='modal-footer'>

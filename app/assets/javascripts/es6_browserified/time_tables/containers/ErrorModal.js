@@ -12,6 +12,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     onModalClose: () =>{
       dispatch(actions.closeModal())
+      dispatch(actions.resetModalErrors())
     }
   }
 }

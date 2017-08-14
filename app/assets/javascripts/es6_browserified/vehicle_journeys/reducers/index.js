@@ -4,6 +4,7 @@ var pagination = require('./pagination')
 var modal = require('./modal')
 var status = require('./status')
 var filters = require('./filters')
+var editMode = require('./editMode')
 var stopPointsList = require('./stopPointsList')
 
 const vehicleJourneysApp = combineReducers({
@@ -12,6 +13,7 @@ const vehicleJourneysApp = combineReducers({
   modal,
   status,
   filters,
+  editMode,
   stopPointsList
 })
 

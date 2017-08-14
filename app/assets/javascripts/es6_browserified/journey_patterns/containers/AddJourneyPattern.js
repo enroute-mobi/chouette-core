@@ -6,6 +6,7 @@ const mapStateToProps = (state) => {
   return {
     modal: state.modal,
     journeyPatterns: state.journeyPatterns,
+    editMode: state.editMode,
     status: state.status
   }
 }

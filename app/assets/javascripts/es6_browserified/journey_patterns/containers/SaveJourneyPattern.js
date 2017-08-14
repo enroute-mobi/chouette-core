@@ -6,6 +6,7 @@ var SaveJourneyPatternComponent = require('../components/SaveJourneyPattern')
 const mapStateToProps = (state) => {
   return {
     journeyPatterns: state.journeyPatterns,
+    editMode: state.editMode,
     page: state.pagination.page,
     status: state.status
   }
@@ -13,8 +14,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onEnterEditMode: (e) => {
-      e.preventDefault()
+    onEnterEditMode: () => {
       dispatch(actions.enterEditMode())
     },
     onSubmitJourneyPattern: (next, state) => {

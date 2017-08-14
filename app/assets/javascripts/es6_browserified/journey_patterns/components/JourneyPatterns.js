@@ -133,6 +133,7 @@ class JourneyPatterns extends Component{
                       onOpenEditModal= {() => this.props.onOpenEditModal(index, journeyPattern)}
                       onDeleteJourneyPattern={() => this.props.onDeleteJourneyPattern(index)}
                       status= {this.props.status}
+                      editMode= {this.props.editMode}
                       />
                   )}
                 </div>

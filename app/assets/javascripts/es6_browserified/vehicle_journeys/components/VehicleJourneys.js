@@ -131,6 +131,7 @@ class VehicleJourneys extends Component{
                       value={vj}
                       key={index}
                       index={index}
+                      editMode={this.props.editMode}
                       filters={this.props.filters}
                       onUpdateTime={this.props.onUpdateTime}
                       onSelectVehicleJourney={this.props.onSelectVehicleJourney}

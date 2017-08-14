@@ -6,6 +6,7 @@ const mapStateToProps = (state) => {
   return {
     journeyPatterns: state.journeyPatterns,
     status: state.status,
+    editMode: state.editMode,
     stopPointsList: state.stopPointsList
   }
 }

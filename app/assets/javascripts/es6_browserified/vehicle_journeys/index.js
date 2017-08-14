@@ -19,9 +19,9 @@ if (window.journeyPatternId)
   selectedJP.push(window.journeyPatternId)
 
 var initialState = {
+  editMode: false,
   filters: {
     selectedJourneyPatterns : selectedJP,
-    editMode: false,
     policy: window.perms,
     toggleArrivals: false,
     queryString: '',

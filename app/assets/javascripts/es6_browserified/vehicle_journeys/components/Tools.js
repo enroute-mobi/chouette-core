@@ -9,7 +9,7 @@ var NotesEditVehicleJourney = require('../containers/tools/NotesEditVehicleJourn
 var TimetablesEditVehicleJourney = require('../containers/tools/TimetablesEditVehicleJourney')
 var actions = require('../actions')
 
-const Tools = ({vehicleJourneys, onCancelSelection, filters: {policy, editMode}}) => {
+const Tools = ({vehicleJourneys, onCancelSelection, filters: {policy}, editMode}) => {
   return (
     <div>
       {

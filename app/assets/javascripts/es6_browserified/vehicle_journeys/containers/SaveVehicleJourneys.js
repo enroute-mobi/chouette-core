@@ -5,6 +5,7 @@ var SaveVehicleJourneysComponent = require('../components/SaveVehicleJourneys')
 
 const mapStateToProps = (state) => {
   return {
+    editMode: state.editMode,
     vehicleJourneys: state.vehicleJourneys,
     page: state.pagination.page,
     status: state.status,
@@ -14,8 +15,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onEnterEditMode: (e) => {
-      e.preventDefault()
+    onEnterEditMode: () => {
       dispatch(actions.enterEditMode())
     },
     onSubmitVehicleJourneys: (next, state) => {

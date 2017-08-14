@@ -4,6 +4,7 @@ var VehicleJourneys = require('../components/VehicleJourneys')
 
 const mapStateToProps = (state) => {
   return {
+    editMode: state.editMode,
     vehicleJourneys: state.vehicleJourneys,
     status: state.status,
     filters: state.filters,

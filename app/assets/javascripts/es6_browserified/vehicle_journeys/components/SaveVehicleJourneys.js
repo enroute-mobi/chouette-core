@@ -21,10 +21,10 @@ class SaveVehicleJourneys extends Component{
                 type='button'
                 onClick={e => {
                   e.preventDefault()
-                  this.props.filters.editMode ? this.props.onSubmitVehicleJourneys(this.props.dispatch, this.props.vehicleJourneys) : this.props.onEnterEditMode(e)
+                  this.props.editMode ? this.props.onSubmitVehicleJourneys(this.props.dispatch, this.props.vehicleJourneys) : this.props.onEnterEditMode()
                 }}
               >
-                {this.props.filters.editMode ? "Valider" : "Editer"}
+                {this.props.editMode ? "Valider" : "Editer"}
               </button>
             </form>
           </div>

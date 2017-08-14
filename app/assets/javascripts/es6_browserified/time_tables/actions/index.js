@@ -105,12 +105,12 @@ const actions = {
     group,
     selectType
   }),
-  validatePeriodForm: (modalProps, timeTablePeriods, metas, timeTableDates) => ({
+  validatePeriodForm: (modalProps, timeTablePeriods, metas, currentMonthDaysIn) => ({
     type: 'VALIDATE_PERIOD_FORM',
     modalProps,
     timeTablePeriods,
     metas,
-    timeTableDates
+    currentMonthDaysIn
   }),
   includeDateInPeriod: (index, dayTypes) => ({
     type: 'INCLUDE_DATE_IN_PERIOD',

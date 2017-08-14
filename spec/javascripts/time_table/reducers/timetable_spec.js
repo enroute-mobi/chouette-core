@@ -182,7 +182,7 @@ describe('timetable reducer with filled state', () => {
         metas: {
           day_types: arrDayTypes
         },
-        timeTableDates: state.time_table_dates
+        currentMonthDaysIn: time_table_dates
       })
     ).toEqual(state)
   })

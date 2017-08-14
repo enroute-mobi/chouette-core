@@ -192,11 +192,11 @@ const actions = {
     })
     return improvedCM
   },
-
   checkConfirmModal: (event, callback, stateChanged, dispatch, metas, timetable) => {
-    if(stateChanged === true){
-      if(timetable.time_table_periods.length == 0 && _.some(metas.day_types)){
-        return actions.showErrorModal()
+    if(stateChanged){
+      const error = actions.errorModalKey(timetable.time_table_periods, metas.day_types)
+      if(error){
+        return actions.showErrorModal(error)
       }else{
         return actions.openConfirmModal(callback)
       }
@@ -292,6 +292,24 @@ const actions = {
           }
         }
       })
+  },
+  errorModalKey: (periods, dayTypes) => {
+    const withoutPeriodsWithDaysTypes = _.reject(periods, 'deleted').length == 0 && _.some(dayTypes) && "withoutPeriodsWithDaysTypes"
+    const withPeriodsWithoutDayTypes = _.reject(periods, 'deleted').length > 0 &&  _.every(dayTypes, dt => dt == false) && "withPeriodsWithoutDayTypes"
+
+    return (withoutPeriodsWithDaysTypes || withPeriodsWithoutDayTypes) && (withoutPeriodsWithDaysTypes ? "withoutPeriodsWithDaysTypes" : "withPeriodsWithoutDayTypes")
+
+  },
+  errorModalMessage: (errorKey) => {
+    switch (errorKey) {
+      case "withoutPeriodsWithDaysTypes":
+        return window.I18n.fr.time_tables.edit.error_modal.withoutPeriodsWithDaysTypes
+      case "withPeriodsWithoutDayTypes":
+        return window.I18n.fr.time_tables.edit.error_modal.withPeriodsWithoutDayTypes
+      default:
+        return errorKey
+
+    }
   }
 }
 

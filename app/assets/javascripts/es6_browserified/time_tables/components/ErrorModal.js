@@ -1,6 +1,7 @@
 var React = require('react')
 var Component = require('react').Component
 var PropTypes = require('react').PropTypes
+var errorModalMessage = require('../actions').errorModalMessage
 
 const ErrorModal = ({dispatch, modal, onModalClose}) => (
   <div className={ 'modal fade ' + ((modal.type == 'error') ? 'in' : '') } id='ErrorModal'>
@@ -12,7 +13,7 @@ const ErrorModal = ({dispatch, modal, onModalClose}) => (
           </div>
           <div className='modal-body'>
             <div className='mt-md mb-md'>
-              <p>{(modal.modalProps.error == "withoutPeriodsWithDaysTypes") ? window.I18n.fr.time_tables.edit.error_modal.withoutPeriodsWithDaysTypes : window.I18n.fr.time_tables.edit.error_modal.withPeriodsWithoutDayTypes}</p>
+              <p>{errorModalMessage(modal.modalProps.error)}</p>
             </div>
           </div>
           <div className='modal-footer'>

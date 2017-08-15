@@ -15,11 +15,11 @@ const mapDispatchToProps = (dispatch) => {
     onDeletePeriod: (index, dayTypes) =>{
       dispatch(actions.deletePeriod(index, dayTypes))
     },
-    onExcludeDateFromPeriod: (index, dayTypes) => {
-      dispatch(actions.excludeDateFromPeriod(index, dayTypes))
+    onExcludeDateFromPeriod: (index, dayTypes, date) => {
+      dispatch(actions.excludeDateFromPeriod(index, dayTypes, date))
     },
-    onIncludeDateInPeriod: (index, dayTypes) => {
-      dispatch(actions.includeDateInPeriod(index, dayTypes))
+    onIncludeDateInPeriod: (index, dayTypes, date) => {
+      dispatch(actions.includeDateInPeriod(index, dayTypes, date))
     },
     onOpenEditPeriodForm: (period, index) => {
       dispatch(actions.openEditPeriodForm(period, index))

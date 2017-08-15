@@ -158,35 +158,39 @@ describe('actions', () => {
     let modalProps = {}
     let timeTablePeriods = []
     let metas = {}
-    let currentMonthDaysIn = []
+    let timetableInDates = []
     const expectedAction = {
       type: 'VALIDATE_PERIOD_FORM',
       modalProps,
       timeTablePeriods,
       metas,
-      currentMonthDaysIn
+      timetableInDates
     }
-    expect(actions.validatePeriodForm(modalProps, timeTablePeriods, metas, currentMonthDaysIn)).toEqual(expectedAction)
+    expect(actions.validatePeriodForm(modalProps, timeTablePeriods, metas, timetableInDates)).toEqual(expectedAction)
   })
 
   it('should create an action to include date in period', () => {
     let index = 1
+    let date = actions.formatDate(new Date)
     const expectedAction = {
       type: 'INCLUDE_DATE_IN_PERIOD',
       index,
-      dayTypes
+      dayTypes,
+      date
     }
-    expect(actions.includeDateInPeriod(index, dayTypes)).toEqual(expectedAction)
+    expect(actions.includeDateInPeriod(index, dayTypes, date)).toEqual(expectedAction)
   })
 
   it('should create an action to exclude date from period', () => {
     let index = 1
+    let date = actions.formatDate(new Date)
     const expectedAction = {
       type: 'EXCLUDE_DATE_FROM_PERIOD',
       index,
-      dayTypes
+      dayTypes,
+      date
     }
-    expect(actions.excludeDateFromPeriod(index, dayTypes)).toEqual(expectedAction)
+    expect(actions.excludeDateFromPeriod(index, dayTypes, date)).toEqual(expectedAction)
   })
 
   it('should create an action to open confirm modal', () => {

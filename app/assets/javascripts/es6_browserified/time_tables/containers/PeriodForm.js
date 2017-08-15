@@ -8,7 +8,6 @@ const mapStateToProps = (state) => {
     modal: state.modal,
     timetable: state.timetable,
     metas: state.metas,
-    currentMonthDaysIn: _.filter(state.timetable.current_month, ['include_date', true])
   }
 }
 
@@ -28,8 +27,8 @@ const mapDispatchToProps = (dispatch) => {
       val = (val < 10) ? '0' + String(val) : String(val)
       dispatch(actions.updatePeriodForm(val, group, 'day'))
     },
-    onValidatePeriodForm: (modalProps, timeTablePeriods, metas, currentMonthDaysIn) => {
-      dispatch(actions.validatePeriodForm(modalProps, timeTablePeriods, metas, currentMonthDaysIn))
+    onValidatePeriodForm: (modalProps, timeTablePeriods, metas, timetableInDates) => {
+      dispatch(actions.validatePeriodForm(modalProps, timeTablePeriods, metas, timetableInDates))
     }
   }
 }

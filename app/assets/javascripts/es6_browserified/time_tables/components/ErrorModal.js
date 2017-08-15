@@ -3,7 +3,7 @@ var Component = require('react').Component
 var PropTypes = require('react').PropTypes
 var errorModalMessage = require('../actions').errorModalMessage
 
-const ErrorModal = ({dispatch, modal, onModalClose}) => (
+const ErrorModal = ({dispatch, modal, I18n, onModalClose}) => (
   <div className={ 'modal fade ' + ((modal.type == 'error') ? 'in' : '') } id='ErrorModal'>
     <div className='modal-container'>
       <div className='modal-dialog'>

@@ -177,7 +177,7 @@ describe('modal reducer', () => {
         type: 'VALIDATE_PERIOD_FORM',
         modalProps : modProps,
         timeTablePeriods: ttperiods,
-        currentMonthDaysIn: ttdates
+        timetableInDates: ttdates
       })
     ).toEqual(Object.assign({}, state, {modalProps: newModalProps}))
   })
@@ -247,7 +247,7 @@ describe('modal reducer', () => {
         type: 'VALIDATE_PERIOD_FORM',
         modalProps : modProps2,
         timeTablePeriods: ttperiods2,
-        currentMonthDaysIn: ttdates2
+        timetableInDates: ttdates2
       })
     ).toEqual(Object.assign({}, state2, {modalProps: newModalProps2}))
   })
@@ -312,7 +312,7 @@ describe('modal reducer', () => {
         type: 'VALIDATE_PERIOD_FORM',
         modalProps : modProps3,
         timeTablePeriods: ttperiods3,
-        currentMonthDaysIn: ttdates3
+        timetableInDates: ttdates3
       })
     ).toEqual(Object.assign({}, state3, {modalProps: newModalProps3}))
   })

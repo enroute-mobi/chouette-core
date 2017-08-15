@@ -1,6 +1,7 @@
 const _ = require('lodash')
 var actions = require('../actions')
 let newState = {}
+let newDates = []
 
 const timetable = (state = {}, action) => {
   switch (action.type) {
@@ -9,7 +10,8 @@ const timetable = (state = {}, action) => {
         current_month: action.json.current_month,
         current_periode_range: action.json.current_periode_range,
         periode_range: action.json.periode_range,
-        time_table_periods: action.json.time_table_periods
+        time_table_periods: action.json.time_table_periods,
+        time_table_dates: action.json.time_table_dates
       })
       return _.assign({}, fetchedState, {current_month: actions.updateSynthesis(fetchedState, actions.strToArrayDayTypes(action.json.day_types))})
     case 'RECEIVE_MONTH':
@@ -38,22 +40,24 @@ const timetable = (state = {}, action) => {
       newState = _.assign({}, state, {time_table_periods : ttperiods})
       return _.assign({}, newState, {current_month: actions.updateSynthesis(newState, action.dayTypes)})
     case 'INCLUDE_DATE_IN_PERIOD':
+      newDates = actions.checkIfTTHasDate(state.time_table_dates, {date: action.date, in_out: true})
       let newCMi = state.current_month.map((d, i) => {
         if(i == action.index){
           d.include_date = !d.include_date
         }
         return d
       })
-      newState = _.assign({}, state, {current_month: newCMi})
+      newState = _.assign({}, state, {current_month: newCMi, time_table_dates: newDates})
       return _.assign({}, newState, {current_month: actions.updateSynthesis(newState, action.dayTypes)})
     case 'EXCLUDE_DATE_FROM_PERIOD':
+      newDates = actions.checkIfTTHasDate(state.time_table_dates, {date: action.date, in_out: false})
       let newCMe = state.current_month.map((d, i) => {
         if(i == action.index){
           d.excluded_date = !d.excluded_date
         }
         return d
       })
-      newState = _.assign({}, state, {current_month: newCMe})
+      newState = _.assign({}, state, {current_month: newCMe, time_table_dates: newDates})
       return _.assign({}, newState, {current_month: actions.updateSynthesis(newState, action.dayTypes)})
     case 'UPDATE_CURRENT_MONTH_FROM_DAYTYPES':
       return _.assign({}, state, {current_month: actions.updateSynthesis(state, action.dayTypes)})
@@ -64,7 +68,7 @@ const timetable = (state = {}, action) => {
         return state
       }
       let newPeriods = JSON.parse(JSON.stringify(action.timeTablePeriods))
-      let newDays = JSON.parse(JSON.stringify(action.currentMonthDaysIn))
+      let newDays = JSON.parse(JSON.stringify(action.timetableInDates))
       let error = actions.checkErrorsInPeriods(period_start, period_end, action.modalProps.index, newPeriods)
       if (error == '') error = actions.checkErrorsInDates(period_start, period_end, newDays)
 

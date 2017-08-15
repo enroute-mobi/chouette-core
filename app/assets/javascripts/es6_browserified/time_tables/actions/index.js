@@ -105,22 +105,24 @@ const actions = {
     group,
     selectType
   }),
-  validatePeriodForm: (modalProps, timeTablePeriods, metas, currentMonthDaysIn) => ({
+  validatePeriodForm: (modalProps, timeTablePeriods, metas, timetableInDates) => ({
     type: 'VALIDATE_PERIOD_FORM',
     modalProps,
     timeTablePeriods,
     metas,
-    currentMonthDaysIn
+    timetableInDates
   }),
-  includeDateInPeriod: (index, dayTypes) => ({
+  includeDateInPeriod: (index, dayTypes, date) => ({
     type: 'INCLUDE_DATE_IN_PERIOD',
     index,
-    dayTypes
+    dayTypes,
+    date
   }),
-  excludeDateFromPeriod: (index, dayTypes) => ({
+  excludeDateFromPeriod: (index, dayTypes, date) => ({
     type: 'EXCLUDE_DATE_FROM_PERIOD',
     index,
-    dayTypes
+    dayTypes,
+    date
   }),
   openConfirmModal : (callback) => ({
     type : 'OPEN_CONFIRM_MODAL',
@@ -166,16 +168,15 @@ const actions = {
       // We compare periods & currentDate, to determine if it is included or not
       let testDate = false
       periods.map((p, i) => {
-        if(p.deleted){
-          return false
-        }
+        if (p.deleted) return false
+
         let begin = new Date(p.period_start)
         let end = new Date(p.period_end)
 
         if(testDate === false){
           if(currentDate >= begin && currentDate <= end) {
             testDate = true
-            p.include_date = false
+            // p.include_date = false
           }
         }
       })
@@ -220,12 +221,12 @@ const actions = {
     })
     return error
   },
-  checkErrorsInDates: (start, end, days) => {
+  checkErrorsInDates: (start, end, in_days) => {
     let error = ''
     start = new Date(start)
     end = new Date(end)
 
-    _.each(days, ({date}) => {
+    _.each(in_days, ({date}) => {
       if (start <= new Date(date) && end >= new Date(date)) {
         error = 'Une période ne peut chevaucher une date dans un calendrier'
       }
@@ -310,6 +311,13 @@ const actions = {
         return errorKey
 
     }
+  },
+  checkIfTTHasDate: (dates, date) => {
+    if (_.some(dates, date)) {
+       return _.reject(dates, ['date', date.date])
+     } else {
+       return dates.concat(date)
+     }
   }
 }
 

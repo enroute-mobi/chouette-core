@@ -32,7 +32,7 @@ const makeYearsOptions = (yearSelected) => {
   return arr
 }
 
-const PeriodForm = ({modal, timetable, metas, currentMonthDaysIn, onOpenAddPeriodForm, onClosePeriodForm, onUpdatePeriodForm, onValidatePeriodForm}) => (
+const PeriodForm = ({modal, timetable, metas, onOpenAddPeriodForm, onClosePeriodForm, onUpdatePeriodForm, onValidatePeriodForm}) => (
   <div className="container-fluid">
     <div className="row">
       <div className="col lg-6 col-lg-offset-3">
@@ -108,7 +108,7 @@ const PeriodForm = ({modal, timetable, metas, currentMonthDaysIn, onOpenAddPerio
                 <button
                   type='button'
                   className='btn btn-outline-primary mr-sm'
-                  onClick={() => onValidatePeriodForm(modal.modalProps, timetable.time_table_periods, metas, currentMonthDaysIn)}
+                  onClick={() => onValidatePeriodForm(modal.modalProps, timetable.time_table_periods, metas, _.filter(timetable.time_table_dates, ['in_out', true]))}
                 >
                   Valider
                 </button>

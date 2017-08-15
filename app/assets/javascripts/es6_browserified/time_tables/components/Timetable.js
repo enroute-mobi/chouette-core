@@ -79,6 +79,7 @@ class Timetable extends Component{
                     <ExceptionsInDay
                       index={i}
                       value={this.props.timetable}
+                      currentDate={d.date}
                       metas={this.props.metas}
                       blueDaytype={this.props.metas.day_types[d.wday]}
                       onExcludeDateFromPeriod={this.props.onExcludeDateFromPeriod}

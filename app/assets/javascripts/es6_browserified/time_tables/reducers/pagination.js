@@ -26,6 +26,8 @@ const pagination = (state = {}, action) => {
     case 'VALIDATE_PERIOD_FORM':
     case 'UPDATE_COMMENT':
     case 'UPDATE_COLOR':
+    case 'UPDATE_DAY_TYPES':
+    case 'UPDATE_CURRENT_MONTH_FROM_DAYTYPES':
       toggleOnConfirmModal('modal')
       return _.assign({}, state, {stateChanged: true})
     default:

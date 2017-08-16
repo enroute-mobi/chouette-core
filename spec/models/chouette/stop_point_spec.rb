@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe Chouette::StopPoint, :type => :model do
   let!(:vehicle_journey) { create(:vehicle_journey)}
   subject { Chouette::Route.find( vehicle_journey.route_id).stop_points.first }

@@ -28,7 +28,7 @@ module Stif
 
     def destructive_permissions_for(models)
       @__destructive_permissions_for__ ||=
-        models.product( %w{create destroy update} ).map{ |model_action| model_action.join('.') }
+        models.product( %w{create destroy import update} ).map{ |model_action| model_action.join('.') }
     end
 
     def extra_permission_translation extra_permission

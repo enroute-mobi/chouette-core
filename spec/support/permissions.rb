@@ -8,7 +8,7 @@ module Support
     private
 
     def _destructive_permissions
-      _permitted_resources.product( %w{create destroy update} ).map{ |model_action| model_action.join('.') }
+      _permitted_resources.product( %w{create destroy import update} ).map{ |model_action| model_action.join('.') }
     end
 
     def _permitted_resources

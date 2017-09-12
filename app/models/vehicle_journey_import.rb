@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 class VehicleJourneyImport
   include ActiveModel::Validations
   include ActiveModel::Conversion

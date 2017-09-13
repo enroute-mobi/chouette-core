@@ -5,9 +5,15 @@ RSpec.describe ImportsController, :type => :controller do
   let(:import)    { create :import, workbench: workbench }
 
   describe 'GET #new' do
-    it 'should be successful' do
+    it 'should be successful if authorized' do
       get :new, workbench_id: workbench.id
       expect(response).to be_success
+    end
+
+    it 'should be unsuccessful unless authorized' do
+      remove_permissions('imports.create', from_user: @user, save: true)
+      get :new, workbench_id: workbench.id
+      expect(response).not_to be_success
     end
   end
 
@@ -18,4 +24,5 @@ RSpec.describe ImportsController, :type => :controller do
       expect( response.body ).to eq(import.file.read)
     end
   end
+
 end

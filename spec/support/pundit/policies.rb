@@ -3,18 +3,18 @@ require 'pundit/rspec'
 module Support
   module Pundit
     module Policies
-      def add_permissions(*permissions, for_user:)
-        for_user.permissions ||= []
-        for_user.permissions += permissions.flatten
+      def add_permissions(*permissions, to_user:)
+        to_user.permissions ||= []
+        to_user.permissions += permissions.flatten
       end
 
       def create_user_context(user:, referential:)
         UserContext.new(user, referential: referential)
       end
 
-      def add_permissions(*permissions, for_user:)
-        for_user.permissions ||= []
-        for_user.permissions += permissions.flatten
+      def remove_permissions(*permissions, from_user:, save: false)
+        from_user.permissions -= permissions.flatten
+        from_user.save! if save
       end
 
     end
@@ -30,7 +30,7 @@ module Support
       end
       def with_user_permission(permission, &blk)
         it "with user permission #{permission.inspect}" do
-          add_permissions(permission, for_user: user)
+          add_permissions(permission, to_user: user)
           blk.()
         end
       end
@@ -41,7 +41,7 @@ module Support
         perms, options = permissions.partition{|x| String === x}
         context "with permissions #{perms.inspect}...", *options do
           before do
-            add_permissions(*permissions, for_user: @user)
+            add_permissions(*permissions, to_user: @user)
           end
           instance_eval(&blk)
         end
@@ -51,6 +51,7 @@ module Support
 end
 
 RSpec.configure do | c |
+  c.include Support::Pundit::Policies, type: :controller
   c.include Support::Pundit::Policies, type: :policy
   c.extend Support::Pundit::PoliciesMacros, type: :policy
   c.include Support::Pundit::Policies, type: :feature

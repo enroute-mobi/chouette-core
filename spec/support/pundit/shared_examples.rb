@@ -18,7 +18,7 @@ RSpec.shared_examples 'always allowed' do
 
   context 'different organisations →' do
     before do
-      add_permissions(permission, for_user: user)
+      add_permissions(permission, to_user: user)
     end
     it "allows a user with a different organisation" do
       expect_it.to permit(user_context, record)
@@ -51,7 +51,7 @@ RSpec.shared_examples 'always forbidden' do
 
   context 'different organisations →' do
     before do
-      add_permissions(permission, for_user: user)
+      add_permissions(permission, to_user: user)
     end
     it "denies a user with a different organisation" do
       expect_it.not_to permit(user_context, record)
@@ -80,7 +80,7 @@ RSpec.shared_examples 'permitted policy and same organisation' do
 
   context 'permission present → '  do
     before do
-      add_permissions(permission, for_user: user)
+      add_permissions(permission, to_user: user)
     end
 
     it 'denies a user with a different organisation' do
@@ -113,7 +113,7 @@ RSpec.shared_examples 'permitted policy' do
 
   context 'permission present → '  do
     before do
-      add_permissions(permission, for_user: user)
+      add_permissions(permission, to_user: user)
     end
 
     it 'allows user' do

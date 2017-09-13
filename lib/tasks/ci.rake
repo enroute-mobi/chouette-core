@@ -19,7 +19,11 @@ namespace :ci do
   end
 
   def deploy_env
-    git_branch.in?(deploy_envs) ? git_branch : "dev"
+    if git_branch == "master"
+      "dev"
+    elsif git_branch.in?(deploy_envs)
+      git_branch
+    end
   end
 
   desc "Check security aspects"
@@ -37,7 +41,11 @@ namespace :ci do
 
   desc "Deploy after CI"
   task :deploy do
-    sh "cap #{deploy_env} deploy:migrations"
+    if deploy_env
+      sh "cap #{deploy_env} deploy:migrations"
+    else
+      puts "No deploy for branch #{git_branch}"
+    end
   end
 
   desc "Clean test files"

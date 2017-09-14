@@ -1,28 +1,27 @@
-require 'rails_helper'
-
 RSpec.describe ApiKeyPolicy do
 
-  let(:user) { User.new }
+  let( :record ){ build_stubbed :api_key }
+  before { stub_policy_scope(record) }
 
   subject { described_class }
 
-  permissions ".scope" do
-    pending "add some examples to (or delete) #{__FILE__}"
+  permissions :index? do
+    it_behaves_like 'always allowed'
   end
 
   permissions :show? do
-    pending "add some examples to (or delete) #{__FILE__}"
+    it_behaves_like 'always allowed'
   end
 
   permissions :create? do
-    pending "add some examples to (or delete) #{__FILE__}"
+    it_behaves_like 'permitted policy and same organisation', 'api_keys.create'
   end
 
   permissions :update? do
-    pending "add some examples to (or delete) #{__FILE__}"
+    it_behaves_like 'permitted policy and same organisation', 'api_keys.update'
   end
 
   permissions :destroy? do
-    pending "add some examples to (or delete) #{__FILE__}"
+    it_behaves_like 'permitted policy and same organisation', 'api_keys.destroy'
   end
 end

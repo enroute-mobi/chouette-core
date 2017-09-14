@@ -1,4 +1,3 @@
-# coding: utf-8
 RSpec.describe Stif::PermissionTranslator do
 
   context "No SSO Permissions" do

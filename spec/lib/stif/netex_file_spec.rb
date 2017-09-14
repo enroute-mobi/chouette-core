@@ -1,5 +1,3 @@
-require "rails_helper"
-
 RSpec.describe STIF::NetexFile do
 
   let( :zip_file ){ fixtures_path 'OFFRE_TRANSDEV_2017030112251.zip' }

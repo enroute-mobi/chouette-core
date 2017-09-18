@@ -7,10 +7,6 @@ describe Chouette::TimeTablePeriod, :type => :model do
   it { is_expected.to validate_presence_of :period_start }
   it { is_expected.to validate_presence_of :period_end }
 
-  describe 'checksum' do
-    it_behaves_like 'checksum support', :time_table_period
-  end
-
   describe "#overlap" do
     context "when periods intersect, " do
       it "should detect period overlap" do

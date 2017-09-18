@@ -1,9 +1,6 @@
 require 'spec_helper'
 
 describe Chouette::JourneyPattern, :type => :model do
-  describe 'checksum' do
-    it_behaves_like 'checksum support', :journey_pattern
-  end
 
   # context 'validate minimum stop_points size' do
   #   let(:journey_pattern) { create :journey_pattern }

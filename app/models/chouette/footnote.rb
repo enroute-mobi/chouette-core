@@ -8,6 +8,6 @@ class Chouette::Footnote < Chouette::ActiveRecord
 
   def checksum_attributes
     attrs = ['code', 'label']
-    self.slice(*attrs).values
+    slice(*attrs).values
   end
 end

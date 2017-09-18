@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe Chouette::TimeTable, :type => :model do
   subject { create(:time_table) }
   let(:subject_periods_to_range) { subject.periods.map{|p| p.period_start..p.period_end } }
@@ -1045,10 +1043,6 @@ end
 
   # it { is_expected.to validate_presence_of :comment }
   # it { is_expected.to validate_uniqueness_of :objectid }
-
-  describe 'checksum' do
-    it_behaves_like 'checksum support', :time_table
-  end
 
   describe "#excluded_days" do
       before do

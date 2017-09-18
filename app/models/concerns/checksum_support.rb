@@ -4,24 +4,26 @@ module ChecksumSupport
   VALUE_FOR_NIL_ATTRIBUTE = '-'
 
   included do
-    before_save :set_current_checksum_source, :update_checksum
+    before_save :update_checksum
   end
 
   def checksum_attributes
-    self.attributes.values
+    raise NotImplementedError,
+      "all models including #{ChecksumSupport} need to implement class instance method #{__method__}" 
+  end
+  def dependency_checksums
+    []
   end
 
   def current_checksum_source
-    source = self.checksum_attributes.map{ |x| x unless x.try(:empty?) }
-    source = source.map{ |x| x || VALUE_FOR_NIL_ATTRIBUTE }
-    source.map(&:to_s).join(SEPARATOR)
-  end
-
-  def set_current_checksum_source
-    self.checksum_source = self.current_checksum_source
+    checksum_attributes.map do | value |
+      value.blank? ? VALUE_FOR_NIL_ATTRIBUTE : value
+    end
+     .join(SEPARATOR)
   end
 
   def update_checksum
+    self.checksum_source = current_checksum_source
     if self.checksum_source_changed?
       self.checksum = Digest::SHA256.new.hexdigest(self.checksum_source)
     end

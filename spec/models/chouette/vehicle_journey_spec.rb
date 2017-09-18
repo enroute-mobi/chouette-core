@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe Chouette::VehicleJourney, :type => :model do
   it "must be valid with an at-stop day offset of 1" do
     vehicle_journey = create(
@@ -15,10 +13,6 @@ describe Chouette::VehicleJourney, :type => :model do
     )
 
     expect(vehicle_journey).to be_valid
-  end
-
-  describe 'checksum' do
-    it_behaves_like 'checksum support', :vehicle_journey
   end
 
   describe "vjas_departure_time_must_be_before_next_stop_arrival_time",

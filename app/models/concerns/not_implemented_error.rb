@@ -1,0 +1,1 @@
+NotImplementedError = Class.new RuntimeError

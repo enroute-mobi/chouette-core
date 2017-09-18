@@ -27,9 +27,9 @@ class Chouette::JourneyPattern < Chouette::TridentActiveRecord
   end
 
   def checksum_attributes
-    values = self.slice(*['name', 'published_name', 'registration_number']).values
-    values << self.stop_points.map(&:stop_area).map(&:user_objectid)
-    values.flatten
+    values = slice('name', 'published_name', 'registration_number').values
+    # values << self.stop_points.map(&:stop_area).map(&:user_objectid)
+    # values.flatten
   end
 
   def self.state_update route, state

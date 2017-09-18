@@ -1,9 +1,6 @@
 RSpec.describe Chouette::Route, :type => :model do
 
   subject { create(:route) }
-  describe 'checksum' do
-    it_behaves_like 'checksum support', :route
-  end
 
   describe '#objectid' do
     subject { super().objectid }

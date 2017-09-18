@@ -1,3 +1,4 @@
+require_relative 'data_modifier/enum'
 module Support
   module Helpers
     module DataModifier
@@ -7,6 +8,9 @@ module Support
         base_atts.keys.map do | key |
           modify_att base_atts, key
         end.compact
+      end
+
+      def enum_value(*enum_values)
       end
 
       private
@@ -27,10 +31,16 @@ module Support
           true
         when Float
           value * 1.1
+        when Value
+          value.next.value
         else
           raise CannotModify
         end
       end
     end
   end
+end
+
+RSpec.configure do | c |
+  c.include Support::Helpers::DataModifier, type: :checksum
 end

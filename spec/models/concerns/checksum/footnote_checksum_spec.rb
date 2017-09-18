@@ -1,4 +1,4 @@
-RSpec.describe Chouette::Footnote do
+RSpec.describe Chouette::Footnote, type: :checksum do
 
   let( :factory ){ :footnote }
   let( :base_atts ){ {code: 'alpha', label: 'a'} }

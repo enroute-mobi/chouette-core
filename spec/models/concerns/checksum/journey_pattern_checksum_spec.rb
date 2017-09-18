@@ -1,4 +1,4 @@
-RSpec.describe Chouette::JourneyPattern do
+RSpec.describe Chouette::JourneyPattern, type: :checksum do
 
   let( :factory ){ :journey_pattern }
   let( :base_atts ){{

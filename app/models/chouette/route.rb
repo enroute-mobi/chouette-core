@@ -128,7 +128,7 @@ class Chouette::Route < Chouette::TridentActiveRecord
   end
 
   def checksum_attributes
-    values = self.slice(*['name', 'published_name', 'wayback']).values
+    values = slice('name', 'published_name', 'wayback').values
     values.tap do |attrs|
       attrs << self.stop_points.map{|sp| "#{sp.stop_area.user_objectid}#{sp.for_boarding}#{sp.for_alighting}" }.join
       attrs << self.routing_constraint_zones.map(&:checksum)

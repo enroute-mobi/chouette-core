@@ -9,7 +9,7 @@ RSpec.describe ReferentialPolicy, type: :policy do
 
   permissions :create? do
     it 'permissions present → allowed' do
-      add_permissions('referentials.create', for_user: user)
+      add_permissions('referentials.create', to_user: user)
       expect_it.to permit(user_context, record)
     end
     it 'permissions absent → forbidden' do
@@ -19,7 +19,7 @@ RSpec.describe ReferentialPolicy, type: :policy do
 
   permissions :new? do
     it 'permissions present → allowed' do
-      add_permissions('referentials.create', for_user: user)
+      add_permissions('referentials.create', to_user: user)
       expect_it.to permit(user_context, record)
     end
     it 'permissions absent → forbidden' do
@@ -53,7 +53,7 @@ RSpec.describe ReferentialPolicy, type: :policy do
 
     context 'permission present →' do
       before do
-        add_permissions('referentials.update', for_user: user)
+        add_permissions('referentials.update', to_user: user)
       end
 
       context 'same organisation →' do
@@ -108,7 +108,7 @@ RSpec.describe ReferentialPolicy, type: :policy do
 
     context 'permission present →' do
       before do
-        add_permissions('referentials.update', for_user: user)
+        add_permissions('referentials.update', to_user: user)
       end
 
       context 'same organisation →' do

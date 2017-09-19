@@ -1,4 +1,5 @@
 class ImportsController < BreadcrumbController
+  include PolicyChecker
   skip_before_action :authenticate_user!, only: [:download]
   defaults resource_class: Import, collection_name: 'imports', instance_name: 'import'
   before_action :ransack_started_at_params, only: [:index]

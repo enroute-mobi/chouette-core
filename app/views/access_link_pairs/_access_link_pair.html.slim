@@ -2,6 +2,7 @@ tr
   td
     .link
       .access_point
+        - require 'pry'; binding.pry
         = link_to([@referential, @stop_area, access_link_pair.access_point]) do
           = image_tag "map/access_#{access_link_pair.access_point.access_point_type}.png"
           span = access_link_pair.access_point.name

@@ -13,22 +13,33 @@ RSpec.describe Chouette::Route, type: :checksum do
   it_behaves_like 'checksummed model'
 
   context 'stop areas influence checksum too' do 
-    let( :route1 ){ create factory }
+    let( :route ){ create factory }
 
     it 'as follows' do
-      current_checksum = route1.checksum
-      sa = route1.stop_points.first.stop_area
+      current_checksum = route.checksum
+      sa = route.stop_points.first.stop_area
       sa.update objectid: "#{sa.objectid}a"
-      expect( route1.update_checksum.checksum ).not_to eq(current_checksum)
-      current_checksum = route1.checksum
+      expect( route.update_checksum.checksum ).not_to eq(current_checksum)
+      current_checksum = route.checksum
       
-      sp = route1.stop_points.first
+      sp = route.stop_points.first
       sp.update for_boarding: 'normal' 
-      expect( route1.update_checksum.checksum ).not_to eq(current_checksum)
-      current_checksum = route1.checksum
+      expect( route.update_checksum.checksum ).not_to eq(current_checksum)
+      current_checksum = route.checksum
 
       sp.update for_alighting: 'normal'
-      expect( route1.update_checksum.checksum ).not_to eq(current_checksum)
+      expect( route.update_checksum.checksum ).not_to eq(current_checksum)
+    end
+  end
+
+  context 'routing constraint zones checksums' do 
+    let( :route ){ create factory }
+    let!( :routing_constraint_zone ){ create :routing_constraint_zone, route: route }
+
+    it 'influence route\'s checksums' do
+      current_checksum = route.checksum
+      routing_constraint_zone.update checksum: random_hex
+      expect( route.update_checksum.checksum ).not_to eq(current_checksum)
     end
   end
 end

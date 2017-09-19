@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 describe "Lines", :type => :feature do
   login_user
 

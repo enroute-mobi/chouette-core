@@ -1,5 +1,3 @@
-require 'rails_helper'
-
 RSpec.describe Api::V1::IbooController, type: :controller do
   context '#authenticate' do
     include_context 'iboo authenticated api user'

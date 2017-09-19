@@ -9,9 +9,11 @@ shared_examples 'checksummed model' do
 
   it 'creates checksums depending on certain attribute values' do
     # Same data --> same checksum
-    expect( create(factory, **stripped_base_atts).checksum ).to eq(reference.checksum)
+    same_object = create(factory, **stripped_base_atts)
+    expect(same_object.checksum).to eq(reference.checksum)
     # Same checksum related data --> same checksum
-    expect( create(factory, **stripped_same_atts).checksum ).to eq(reference.checksum)
+    same_att_object = create(factory, **stripped_same_atts)
+    expect( same_att_object.checksum ).to eq(reference.checksum)
     # Different checksum related data --> different checksum
     modify_atts(base_atts).each do | delta_atts |
       expect( create(factory, **Box.unbox( delta_atts )).checksum ).not_to eq(reference.checksum)

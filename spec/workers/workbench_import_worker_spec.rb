@@ -5,7 +5,7 @@ RSpec.describe WorkbenchImportWorker, type: [:worker, :request] do
 
   let( :workbench ){ import.workbench }
   let( :referential ){ import.referential }
-  let( :api_key ){ build_stubbed :api_key, referential: referential, token: "#{referential.id}-#{SecureRandom.hex}" }
+  let( :api_key ){ build_stubbed :api_key, referential: referential, token: "#{referential.id}-#{random_hex}" }
 
   # http://www.example.com/workbenches/:workbench_id/imports/:id/download
   let( :host ){ Rails.configuration.rails_host }
@@ -13,7 +13,7 @@ RSpec.describe WorkbenchImportWorker, type: [:worker, :request] do
 
   let( :downloaded_zip ){ double("downloaded zip") }
   let( :download_zip_response ){ OpenStruct.new( body: downloaded_zip ) }
-  let( :download_token ){ SecureRandom.urlsafe_base64 }
+  let( :download_token ){ random_string }
 
 
   let( :upload_path ) { api_v1_netex_imports_path(format: :json) }

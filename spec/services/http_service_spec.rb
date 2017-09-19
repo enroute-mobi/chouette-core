@@ -5,7 +5,7 @@ RSpec.describe HTTPService do
   %i{host params path result}.each do |param|
     let(param){ double(param) }
   end
-  let( :token ){ SecureRandom.hex }
+  let( :token ){ random_hex }
 
   let( :faraday_connection ){ double('faraday_connection') }
   let( :headers ){ {} }
@@ -54,7 +54,7 @@ RSpec.describe HTTPService do
 
   context 'get_json_resource' do
 
-    let( :content ){ SecureRandom.hex }
+    let( :content ){ random_hex }
 
     it 'delegates an parses the response' do
       expect_it.to receive(:get_resource)

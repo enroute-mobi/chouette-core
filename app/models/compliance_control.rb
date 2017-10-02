@@ -3,9 +3,6 @@ class ComplianceControl < ActiveRecord::Base
   belongs_to :compliance_control_set
   belongs_to :compliance_control_block
 
-  @@default_criticity = :warning
-  @@default_code = ""
-
   enumerize :criticity, in: %i(info warning error), scope: true, default: :info
 
   validates :criticity, presence: true
@@ -14,24 +11,28 @@ class ComplianceControl < ActiveRecord::Base
   validates :origin_code, presence: true
   validates :compliance_control_set, presence: true
 
-  def self.policy_class
-    ComplianceControlPolicy
-  end
+  class << self
+    def default_criticity; :warning end
+    def default_code; "" end
 
-  def self.inherited(child)
-    child.instance_eval do
-      def model_name
-        ComplianceControl.model_name
-      end
+    def policy_class
+      ComplianceControlPolicy
     end
-    super
+
+    def inherited(child)
+      child.instance_eval do
+        def model_name
+          ComplianceControl.model_name
+        end
+      end
+      super
+    end
   end
 
   before_validation(on: :create) do
    self.name ||= self.class.name
-   self.code ||= @@default_code
-   self.origin_code ||= @@default_code
-   self.criticity ||= @@default_criticity
+   self.code ||= self.class.default_code
+   self.origin_code ||= self.class.default_code
   end
 
 end

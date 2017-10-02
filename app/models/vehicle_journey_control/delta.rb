@@ -3,7 +3,6 @@ module VehicleJourneyControl
 
     hstore_accessor :control_attributes, delta: :integer
 
-    @@default_criticity = :warning
-    @@default_code = "3-VehicleJourney-3"
+    def self.default_code; "3-VehicleJourney-3" end
   end
 end

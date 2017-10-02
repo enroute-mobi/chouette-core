@@ -1,5 +1,3 @@
-require 'rails_helper'
-
 RSpec.describe ComplianceControl, type: :model do
 
   let(:compliance_control) { create :compliance_control }

@@ -5,10 +5,7 @@ module GenericAttributeControl
     validates :minimum, numericality: true, allow_nil: true
     validates :maximum, numericality: true, allow_nil: true
     #validates :target, presence: true
-    validate :min_max_values
-    def min_max_values
-      true
-    end
+    include MinMaxValuesValidation
 
     class << self
       def attribute_type; :integer end

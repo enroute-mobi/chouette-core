@@ -1,5 +1,6 @@
 fr:
   compliance_controls:
+    min_max_values: "la valeur de minimum (%{min}) ne doit pas être superieur à la valuer du maximum (%{max})"
     errors:
       incoherent_control_sets: "Le contrôle ne peut pas être associé à un jeu de contrôle (id: %{direct_set_name}) différent de celui de son groupe (id: %{indirect_set_name})"
       mandatory_control_type: "Un type de contrôle doit être sélectionné"

@@ -1,5 +1,6 @@
 en:
   compliance_controls:
+    min_max_values: "the minimum (%{min}) is not supposed to be greater than the maximum (%{max})"
     errors:
       incoherent_control_sets: "Impossible to assign a control to a set (id: %{direct_set_name}) differing from the one of its group (id: %{indirect_set_name})"
     show:

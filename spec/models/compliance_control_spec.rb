@@ -4,10 +4,6 @@ RSpec.describe ComplianceControl, type: :model do
 
     let(:compliance_control) { build_stubbed :compliance_control }
 
-    it 'should have a valid factory' do
-      expect(compliance_control).to be_valid
-    end
-
     it { should belong_to :compliance_control_set }
     it { should belong_to :compliance_control_block }
 

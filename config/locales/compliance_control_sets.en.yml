@@ -1,7 +1,7 @@
 en:
   compliance_control_sets:
     clone:
-      prefix: 'Copie de'
+      prefix: 'Copy of'
     errors:
       operation_in_progress: "The clone operation is in progress. Please wait and refresh the page in a few moments"
     index:

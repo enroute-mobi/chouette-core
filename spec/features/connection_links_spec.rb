@@ -1,4 +1,4 @@
-RSpec.describe "ConnectionLinks", :type => :feature do
+RSpec.describe "ConnectionLinks", type: :feature do
   login_user
 
   let!(:connection_links) { Array.new(2) { create(:connection_link) } }

@@ -116,6 +116,7 @@ module TableBuilderHelper
           hcont << content_tag(:th, checkbox(id_name: '0', value: 'all'))
         end
 
+  require 'pry'; binding.pry
         columns.each do |column|
           if overhead.empty?
             hcont << content_tag(:th, build_column_header(

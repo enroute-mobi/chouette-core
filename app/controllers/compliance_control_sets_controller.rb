@@ -29,6 +29,13 @@ class ComplianceControlSetsController < BreadcrumbController
     redirect_to(compliance_control_sets_path)
   end
 
+  def grouping
+    show! do | format |
+      format.html do
+        @controls = @compliance_control_set.compliance_controls.to_a
+      end
+    end
+  end
   protected
 
   def begin_of_association_chain

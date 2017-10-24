@@ -75,6 +75,7 @@ ChouetteIhm::Application.routes.draw do
 
   resources :compliance_control_sets do
     get :clone, on: :member
+    get :grouping, on: :member
     resources :compliance_controls, except: :index do
       get :select_type, on: :collection
     end

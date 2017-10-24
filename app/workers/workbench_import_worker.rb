@@ -33,29 +33,24 @@ class WorkbenchImportWorker
   end
 
   def upload zip_service
-    entry_group_streams = zip_service.subdirs
-    @workbench_import.update total_steps: entry_group_streams.size
-    entry_group_streams.each_with_index(&method(:upload_entry_group))
+    entry_group_files = zip_service.subdirs
+    @workbench_import.update total_steps: entry_group_files.size
+    entry_group_files.each_with_index(&method(:upload_entry_group))
   rescue Exception => e
     logger.error e.message
-    @workbench_import.update( current_step: entry_group_streams.size, status: 'failed' )
+    @workbench_import.update( current_step: entry_group_files.size, status: 'failed' )
     raise
   end
 
   def upload_entry_group entry_pair, element_count
     @workbench_import.update( current_step: element_count.succ )
-    # status = retry_service.execute(&upload_entry_group_proc(entry_pair))
-    eg_name = entry_pair.name
-    eg_stream = entry_pair.stream
+    eg_name     = entry_pair.name
+    eg_filename = entry_pair.filename
 
     FileUtils.mkdir_p(Rails.root.join('tmp', 'imports'))
 
-    eg_file = File.new(Rails.root.join('tmp', 'imports', "WorkbenchImport_#{eg_name}_#{$$}.zip"), 'wb').tap do |file|
-      eg_stream.rewind
-      file.write eg_stream.read
-    end
-    eg_file.close
-    eg_file = File.new(Rails.root.join('tmp', 'imports', "WorkbenchImport_#{eg_name}_#{$$}.zip"))
+    #eg_file = File.new(Rails.root.join('tmp', 'imports', "WorkbenchImport_#{eg_name}_#{$$}.zip"), 'wb').tap do |file|
+    eg_file = File.new(eg_filename)
     result = execute_post eg_name, eg_file
     if result && result.status < 400
       result
@@ -63,6 +58,10 @@ class WorkbenchImportWorker
       raise StopIteration, result.body
     end
   ensure
+    # N.B. IIANM we can unlink the uploaded file as Java will access the copy kept by Carrier Wave in its
+    # cache.
+    # Therefore we do not need to remove this file in one of the cronjobs.
+    # However the question arises: Who cleans out Carrier Wave's cache, and **when**?
     eg_file.close rescue nil
     eg_file.unlink rescue nil
   end

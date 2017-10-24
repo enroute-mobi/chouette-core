@@ -1,7 +1,7 @@
 class ZipService
   # TODO: Remove me before merge https://github.com/rubyzip/rubyzip
 
-  class Subdir < Struct.new(:name, :stream)
+  class Subdir < Struct.new(:name, :filename)
   end
 
   attr_reader :current_key, :current_output, :yielder
@@ -48,10 +48,8 @@ class ZipService
 
   def finish_current_output
     if current_output
-      @yielder  << Subdir.new(
-        current_key,
-        # Second part of the solution, yield the closed stream
-        current_output.close_buffer)
+      filename = create_subdir_file current_key, current_output.close_buffer
+      @yielder << Subdir.new(current_key, filename)
     end
   end
 
@@ -64,5 +62,15 @@ class ZipService
   def entry_key entry
     # last dir name File.dirname.split("/").last
     entry.name.split('/', -1)[-2]
+  end
+
+  def create_subdir_file eg_name, eg_stream
+    Rails.root.join('tmp', 'imports', "WorkbenchImport_#{eg_name}_#{$$}.zip")
+      .tap do | filename |
+      File.open(filename, 'wb').tap do |file|
+        eg_stream.rewind
+        file.write eg_stream.read
+      end
+    end
   end
 end

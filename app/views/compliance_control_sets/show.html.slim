@@ -30,7 +30,7 @@
       .row
         .col-lg-12
           .select_table
-            = table_builder_2 @compliance_controls_without_block,
+            = table_builder_2 @compliance_controls.delete(nil),
                     [ \
                 TableBuilderHelper::Column.new( \
                   key: :code, \
@@ -53,9 +53,10 @@
                 ), \
               ],
               sortable: true,
-              cls: 'table has-filter has-search'
+              cls: 'table has-filter has-search',
+              model: ComplianceControl
 
-    - @compliance_control_set.compliance_control_blocks.each do |block|
+    - @compliance_controls.each do |block, compliance_controls|
       .row
         .col-lg-12
           h2
@@ -70,7 +71,7 @@
         .row
           .col-lg-12
             .select_table
-              = table_builder_2 ModelDecorator.decorate(block.compliance_controls, with: ComplianceControlDecorator),
+              = table_builder_2 compliance_controls,
                       [ \
                   TableBuilderHelper::Column.new( \
                     key: :code, \
@@ -93,7 +94,8 @@
                   ), \
                 ],
                 sortable: true,
-                cls: 'table has-filter has-search'
+                cls: 'table has-filter has-search',
+                model: ComplianceControl
     .select_toolbox
       ul
         li.st_action.with_text

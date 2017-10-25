@@ -18,7 +18,9 @@ class ComplianceControlSetsController < BreadcrumbController
     show! do |format|
       format.html {
         @compliance_control_set = @compliance_control_set.decorate
-        @compliance_controls_without_block = decorate_compliance_controls(@compliance_control_set.compliance_controls.where(compliance_control_block_id: nil))
+        @compliance_controls    =
+          decorate_compliance_controls(@compliance_control_set.compliance_controls)
+            .group_by(&:compliance_control_block)
       }
     end
   end
@@ -29,13 +31,6 @@ class ComplianceControlSetsController < BreadcrumbController
     redirect_to(compliance_control_sets_path)
   end
 
-  def grouping
-    show! do | format |
-      format.html do
-        @controls = @compliance_control_set.compliance_controls.to_a
-      end
-    end
-  end
   protected
 
   def begin_of_association_chain

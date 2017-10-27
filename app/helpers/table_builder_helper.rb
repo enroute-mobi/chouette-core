@@ -83,17 +83,21 @@ module TableBuilderHelper
     cls: '',
 
     # A set of content, over the th line...
-    overhead: []
+    overhead: [],
+
+    # Possibility to override the result of collection.model
+    model: nil
+
   )
     content_tag :table,
-      thead(collection, columns, sortable, selectable, links.any?, overhead) +
+      thead(collection, columns, sortable, selectable, links.any?, overhead, model || collection.model) +
         tbody(collection, columns, selectable, links, overhead),
       class: cls
   end
 
   private
 
-  def thead(collection, columns, sortable, selectable, has_links, overhead)
+  def thead(collection, columns, sortable, selectable, has_links, overhead, model )
     content_tag :thead do
       # Inserts overhead content if any specified
       over_head = ''
@@ -121,7 +125,7 @@ module TableBuilderHelper
             hcont << content_tag(:th, build_column_header(
               column,
               sortable,
-              collection.model,
+              model,
               params,
               params[:sort],
               params[:direction]
@@ -137,7 +141,7 @@ module TableBuilderHelper
                 hcont << content_tag(:th, build_column_header(
                   column,
                   sortable,
-                  collection.model,
+                  model,
                   params,
                   params[:sort],
                   params[:direction]
@@ -147,7 +151,7 @@ module TableBuilderHelper
                 hcont << content_tag(:th, build_column_header(
                   column,
                   sortable,
-                  collection.model,
+                  model,
                   params,
                   params[:sort],
                   params[:direction]
@@ -160,7 +164,7 @@ module TableBuilderHelper
               hcont << content_tag(:th, build_column_header(
                 column,
                 sortable,
-                collection.model,
+                model,
                 params,
                 params[:sort],
                 params[:direction]
@@ -299,14 +303,14 @@ module TableBuilderHelper
   def build_column_header(
     column,
     table_is_sortable,
-    collection_model,
+    model,
     params,
     sort_on,
     sort_direction
   )
 
     if !table_is_sortable || !column.sortable
-      return column.header_label(collection_model)
+      return column.header_label(model)
     end
 
     direction =
@@ -331,7 +335,7 @@ module TableBuilderHelper
       arrow_icons = content_tag :span, arrow_up + arrow_down, class: 'orderers'
 
       (
-        column.header_label(collection_model) +
+        column.header_label(model) +
         arrow_icons
       ).html_safe
     end

@@ -63,6 +63,7 @@ ChouetteIhm::Application.routes.draw do
       resources :stop_areas, only: [:index, :show]
       resources :time_tables, only: [:index, :show]
       resources :vehicle_journeys, only: :show
+      post 'compliance_check_sets/validated', to: 'compliance_check_sets#validated'
     end
   end
 

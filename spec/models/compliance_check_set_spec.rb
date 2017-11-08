@@ -27,5 +27,41 @@ RSpec.describe ComplianceCheckSet, type: :model do
 
       expect(check_set.status).to eq('successful')
     end
+
+    it "updates :status to failed when one resource is ERROR" do
+      check_set = create(:compliance_check_set)
+      create(
+        :compliance_check_resource,
+        compliance_check_set: check_set,
+        status: 'OK'
+      )
+      create(
+        :compliance_check_resource,
+        compliance_check_set: check_set,
+        status: 'ERROR'
+      )
+
+      check_set.update_status
+
+      expect(check_set.status).to eq('failed')
+    end
+
+    it "updates :status to warning when one resource is WARNING" do
+      check_set = create(:compliance_check_set)
+      create(
+        :compliance_check_resource,
+        compliance_check_set: check_set,
+        status: 'OK'
+      )
+      create(
+        :compliance_check_resource,
+        compliance_check_set: check_set,
+        status: 'WARNING'
+      )
+
+      check_set.update_status
+
+      expect(check_set.status).to eq('warning')
+    end
   end
 end

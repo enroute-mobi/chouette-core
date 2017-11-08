@@ -18,4 +18,6 @@ class ComplianceCheckSet < ActiveRecord::Base
     where('created_at BETWEEN :begin AND :end', begin: period_range.begin, end: period_range.end)
   end
 
+  def update_status
+  end
 end

@@ -12,4 +12,20 @@ RSpec.describe ComplianceCheckSet, type: :model do
 
   it { should have_many :compliance_checks }
   it { should have_many :compliance_check_blocks }
+
+  describe "#update_status" do
+    it "updates :status to successful when all resources are OK" do
+      check_set = create(:compliance_check_set)
+      create_list(
+        :compliance_check_resource,
+        2,
+        compliance_check_set: check_set,
+        status: 'OK'
+      )
+
+      check_set.update_status
+
+      expect(check_set.status).to eq('successful')
+    end
+  end
 end

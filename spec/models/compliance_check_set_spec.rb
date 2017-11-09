@@ -41,8 +41,9 @@ RSpec.describe ComplianceCheckSet, type: :model do
         status: 'OK'
       )
 
-      check_set.update_status
+      updated = check_set.update_status
 
+      expect(updated).to be true
       expect(check_set.status).to eq('failed')
     end
 

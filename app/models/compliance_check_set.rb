@@ -22,18 +22,16 @@ class ComplianceCheckSet < ActiveRecord::Base
     statuses = compliance_check_resources.map do |resource|
       case resource.status
       when 'ERROR'
-        update(status: 'failed')
-        return
+        return update(status: 'failed')
       when 'WARNING'
-        update(status: 'warning')
-        return
+        return update(status: 'warning')
       else
         resource.status
       end
     end
 
     if all_statuses_are_ok(statuses)
-      update(status: 'successful')
+      return update(status: 'successful')
     end
   end
 

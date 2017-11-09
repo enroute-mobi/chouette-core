@@ -33,12 +33,12 @@ RSpec.describe ComplianceCheckSet, type: :model do
       create(
         :compliance_check_resource,
         compliance_check_set: check_set,
-        status: 'OK'
+        status: 'ERROR'
       )
       create(
         :compliance_check_resource,
         compliance_check_set: check_set,
-        status: 'ERROR'
+        status: 'OK'
       )
 
       check_set.update_status
@@ -51,12 +51,12 @@ RSpec.describe ComplianceCheckSet, type: :model do
       create(
         :compliance_check_resource,
         compliance_check_set: check_set,
-        status: 'OK'
+        status: 'WARNING'
       )
       create(
         :compliance_check_resource,
         compliance_check_set: check_set,
-        status: 'WARNING'
+        status: 'OK'
       )
 
       check_set.update_status

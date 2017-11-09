@@ -23,10 +23,12 @@ class ComplianceCheckSet < ActiveRecord::Base
       case resource.status
       when 'ERROR'
         update(status: 'failed')
-        return
+
+        return false
       when 'WARNING'
         update(status: 'warning')
-        return
+
+        return false
       else
         resource.status
       end
@@ -34,7 +36,11 @@ class ComplianceCheckSet < ActiveRecord::Base
 
     if all_statuses_are_ok(statuses)
       update(status: 'successful')
+
+      return true
     end
+
+    false
   end
 
   private

@@ -19,5 +19,15 @@ class ComplianceCheckSet < ActiveRecord::Base
   end
 
   def update_status
+    compliance_check_resources.each do |resource|
+      case resource.status
+      when 'OK'
+        update(status: 'successful')
+      when 'ERROR'
+        update(status: 'failed')
+      when 'WARNING'
+        update(status: 'warning')
+      end
+    end
   end
 end

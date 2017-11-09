@@ -30,14 +30,14 @@ class ComplianceCheckSet < ActiveRecord::Base
       end
     end
 
-    if all_statuses_ok(statuses)
+    if all_statuses_ok?(statuses)
       return update(status: 'successful')
     end
   end
 
   private
 
-  def all_statuses_ok(statuses)
+  def all_statuses_ok?(statuses)
     uniform_statuses = statuses.uniq
     uniform_statuses.length == 1 && uniform_statuses.first == 'OK'
   end

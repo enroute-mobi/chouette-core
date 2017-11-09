@@ -19,15 +19,28 @@ class ComplianceCheckSet < ActiveRecord::Base
   end
 
   def update_status
-    compliance_check_resources.each do |resource|
+    statuses = compliance_check_resources.map do |resource|
       case resource.status
-      when 'OK'
-        update(status: 'successful')
       when 'ERROR'
         update(status: 'failed')
+        return
       when 'WARNING'
         update(status: 'warning')
+        return
+      else
+        resource.status
       end
     end
+
+    if all_statuses_are_ok(statuses)
+      update(status: 'successful')
+    end
+  end
+
+  private
+
+  def all_statuses_are_ok(statuses)
+    uniform_statuses = statuses.uniq
+    uniform_statuses.length == 1 && uniform_statuses.first == 'OK'
   end
 end

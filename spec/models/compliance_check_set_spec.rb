@@ -63,27 +63,5 @@ RSpec.describe ComplianceCheckSet, type: :model do
 
       expect(check_set.status).to eq('warning')
     end
-
-    it "returns true when setting :status to successful" do
-      check_set = create(:compliance_check_set)
-      create(
-        :compliance_check_resource,
-        compliance_check_set: check_set,
-        status: 'OK'
-      )
-
-      expect(check_set.update_status).to be true
-    end
-
-    it "returns false when setting :status to anything except successful" do
-      check_set = create(:compliance_check_set)
-      create(
-        :compliance_check_resource,
-        compliance_check_set: check_set,
-        status: 'ERROR'
-      )
-
-      expect(check_set.update_status).to be false
-    end
   end
 end

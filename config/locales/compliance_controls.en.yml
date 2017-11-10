@@ -28,6 +28,12 @@ en:
       title: "Add a new compliance control"
     edit:
       title: "Update compliance control"
+    actions:
+      new: Add
+      edit: Edit
+      show: Show
+      destroy: Destroy
+      destroy_confirm: Are you sure ?
     metas:
       no_prerequisite: "None"
     actions:

@@ -27,6 +27,12 @@ fr:
       title: "Editer un contrôle"
     select_type:
       title: "Sélectionner un type de contrôle"
+    actions:
+      new: Ajouter
+      edit: Editer
+      show: Consulter
+      destroy: Supprimer
+      destroy_confirm: Etes vous sûr de supprimer ce contrôle ?
     metas:
       no_prerequisite: "Aucun"
     actions:

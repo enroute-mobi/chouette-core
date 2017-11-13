@@ -30,15 +30,26 @@ class ComplianceCheckSet < ActiveRecord::Base
       end
     end
 
-    if all_statuses_ok?(statuses)
+    if statuses_ok_or_ignored?(statuses)
       return update(status: 'successful')
     end
   end
 
   private
 
-  def all_statuses_ok?(statuses)
+  def statuses_ok_or_ignored?(statuses)
     uniform_statuses = statuses.uniq
-    uniform_statuses.length == 1 && uniform_statuses.first == 'OK'
+
+    (
+      # All statuses OK
+      uniform_statuses.length == 1 &&
+        uniform_statuses.first == 'OK'
+    ) ||
+    (
+      # Statuses OK or IGNORED
+      uniform_statuses.length == 2 &&
+        uniform_statuses.include?('OK') &&
+        uniform_statuses.include?('IGNORED')
+    )
   end
 end

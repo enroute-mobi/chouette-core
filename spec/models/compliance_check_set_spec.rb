@@ -64,5 +64,23 @@ RSpec.describe ComplianceCheckSet, type: :model do
 
       expect(check_set.status).to eq('warning')
     end
+
+    it "updates :status to successful when resources are IGNORED" do
+      check_set = create(:compliance_check_set)
+      create(
+        :compliance_check_resource,
+        compliance_check_set: check_set,
+        status: 'IGNORED'
+      )
+      create(
+        :compliance_check_resource,
+        compliance_check_set: check_set,
+        status: 'OK'
+      )
+
+      check_set.update_status
+
+      expect(check_set.status).to eq('successful')
+    end
   end
 end

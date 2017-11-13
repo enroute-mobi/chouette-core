@@ -33,6 +33,8 @@ class ComplianceCheckSet < ActiveRecord::Base
     if statuses_ok_or_ignored?(statuses)
       return update(status: 'successful')
     end
+
+    true
   end
 
   private

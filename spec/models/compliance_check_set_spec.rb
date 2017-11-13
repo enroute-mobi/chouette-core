@@ -82,5 +82,11 @@ RSpec.describe ComplianceCheckSet, type: :model do
 
       expect(check_set.status).to eq('successful')
     end
+
+    it "returns true when the status did not get updated" do
+      check_set = create(:compliance_check_set)
+
+      expect(check_set.update_status).to be true
+    end
   end
 end

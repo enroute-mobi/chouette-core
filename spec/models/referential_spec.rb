@@ -3,11 +3,6 @@ require 'spec_helper'
 describe Referential, :type => :model do
   let(:ref) { create :workbench_referential, metadatas: [create(:referential_metadata)] }
 
-  # it "create a rule_parameter_set" do
-  #   referential = create(:referential)
-  #   expect(referential.rule_parameter_sets.size).to eq(1)
-  # end
-
   it { should have_many(:metadatas) }
   it { should belong_to(:workbench) }
   it { should belong_to(:referential_suite) }

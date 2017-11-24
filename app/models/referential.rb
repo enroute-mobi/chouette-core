@@ -192,8 +192,8 @@ class Referential < ActiveRecord::Base
   before_validation :assign_line_and_stop_area_referential, :on => :create, if: :workbench
   before_validation :assign_slug, :on => :create
   before_validation :assign_prefix, :on => :create
-  before_create :create_schema
   after_create :clone_schema, if: :created_from
+  after_commit :create_schema
 
   before_destroy :destroy_schema
   before_destroy :destroy_jobs

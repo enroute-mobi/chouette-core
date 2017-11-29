@@ -24,19 +24,19 @@ RSpec.describe CompanyPolicy, type: :policy do
 
   context 'Destructive actions →' do
     permissions :create? do
-      it_behaves_like 'always forbidden', 'companies.create', archived: true
+      it_behaves_like 'permitted policy and same organisation', 'companies.create', archived: true
     end
     permissions :destroy? do
-      it_behaves_like 'always forbidden', 'companies.destroy', archived: true
+      it_behaves_like 'permitted policy and same organisation', 'companies.destroy', archived: true
     end
     permissions :edit? do
-      it_behaves_like 'always forbidden', 'companies.update', archived: true
+      it_behaves_like 'permitted policy and same organisation', 'companies.update', archived: true
     end
     permissions :new? do
-      it_behaves_like 'always forbidden', 'companies.create', archived: true
+      it_behaves_like 'permitted policy and same organisation', 'companies.create', archived: true
     end
     permissions :update? do
-      it_behaves_like 'always forbidden', 'companies.update', archived: true
+      it_behaves_like 'permitted policy and same organisation', 'companies.update', archived: true
     end
   end
 end

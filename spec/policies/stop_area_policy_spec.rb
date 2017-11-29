@@ -24,19 +24,19 @@ RSpec.describe StopAreaPolicy, type: :policy do
 
   context 'Destructive actions →' do
     permissions :create? do
-      it_behaves_like 'always forbidden', 'stop_areas.create', archived: true
+      it_behaves_like 'permitted policy and same organisation', 'stop_areas.create', archived: true
     end
     permissions :destroy? do
-      it_behaves_like 'always forbidden', 'stop_areas.destroy', archived: true
+      it_behaves_like 'permitted policy and same organisation', 'stop_areas.destroy', archived: true
     end
     permissions :edit? do
-      it_behaves_like 'always forbidden', 'stop_areas.update', archived: true
+      it_behaves_like 'permitted policy and same organisation', 'stop_areas.update', archived: true
     end
     permissions :new? do
-      it_behaves_like 'always forbidden', 'stop_areas.create', archived: true
+      it_behaves_like 'permitted policy and same organisation', 'stop_areas.create', archived: true
     end
     permissions :update? do
-      it_behaves_like 'always forbidden', 'stop_areas.update', archived: true
+      it_behaves_like 'permitted policy and same organisation', 'stop_areas.update', archived: true
     end
   end
 end

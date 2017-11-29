@@ -8,13 +8,13 @@ class ReferentialsController < InheritedResources::Base
 
   def new
     new! do
-      build_referenial
+      build_referential
     end
   end
 
   def create
     create! do |format|
-      build_referenial
+      build_referential
 
       if !!@referential.created_from_id
         format.html { redirect_to workbench_path(@referential.workbench) }
@@ -132,7 +132,7 @@ class ReferentialsController < InheritedResources::Base
     super
   end
 
-  def build_referenial
+  def build_referential
     if params[:from]
       source_referential = Referential.find(params[:from])
       @referential = Referential.new_from(source_referential, current_functional_scope)

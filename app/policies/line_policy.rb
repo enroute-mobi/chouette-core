@@ -6,18 +6,15 @@ class LinePolicy < ApplicationPolicy
     end
   end
 
-  def create_footnote?
-    !archived? && organisation_match? && user.has_permission?('footnotes.create')
+  def create?
+    user.has_permission?('lines.create')
   end
 
-  def edit_footnote?
-    !archived? && organisation_match? && user.has_permission?('footnotes.update')
+  def update?
+    user.has_permission?('lines.update')
   end
 
-  def destroy_footnote?
-    !archived? && organisation_match? && user.has_permission?('footnotes.destroy')
+  def destroy?
+    user.has_permission?('lines.destroy')
   end
-
-  def update_footnote?  ; edit_footnote? end
-  def new_footnote?     ; create_footnote? end
 end

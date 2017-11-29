@@ -4,7 +4,7 @@
              "Notes sur la ligne #{@line.name}",
              'Lorem ipsum dolor sit amet',
              '',
-             (policy(@line).update_footnote? ? link_to(t('actions.edit'), edit_referential_line_footnotes_path(@referential, @line), class: 'btn btn-primary') : '')
+             (policy(Chouette::Footnote).update? ? link_to(t('actions.edit'), edit_referential_line_footnotes_path(@referential, @line), class: 'btn btn-primary') : '')
 
 / PageContent
 .page_content

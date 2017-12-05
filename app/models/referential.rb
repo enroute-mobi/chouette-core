@@ -140,8 +140,8 @@ class Referential < ActiveRecord::Base
   end
 
   def self.new_from(from, functional_scope)
-    Referential.new(
-      name: I18n.t("activerecord.copy", :name => from.name),
+e    Referential.new(
+      name: I18n.t("activerecord.copy", name: from.name),
       slug: "#{from.slug}_clone",
       prefix: from.prefix,
       time_zone: from.time_zone,

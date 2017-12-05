@@ -127,10 +127,11 @@ class Referential < ActiveRecord::Base
     Chouette::RoutingConstraintZone.all
   end
 
-  after_initialize :define_default_attributes
+  before_validation :define_default_attributes
 
   def define_default_attributes
     self.time_zone ||= Time.zone.name
+    self.objectid_format ||= workbench.try(:objectid_format) || ObjectidFormatterSupport.legal_formats.first
   end
 
   def switch
@@ -140,7 +141,7 @@ class Referential < ActiveRecord::Base
   end
 
   def self.new_from(from, functional_scope)
-e    Referential.new(
+     Referential.new(
       name: I18n.t("activerecord.copy", name: from.name),
       slug: "#{from.slug}_clone",
       prefix: from.prefix,
@@ -149,6 +150,7 @@ e    Referential.new(
       line_referential: from.line_referential,
       stop_area_referential: from.stop_area_referential,
       created_from: from,
+      objectid_format: from.objectid_format,
       metadatas: from.metadatas.map { |m| ReferentialMetadata.new_from(m, functional_scope) }
     )
   end

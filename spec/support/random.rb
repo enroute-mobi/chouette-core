@@ -10,6 +10,15 @@ module Support
     def random_element from
       from[random_int(from.size)]
     end
+    
+    def random_elements( from, count: )
+      (1..count).map{ |_| random_element from }
+    end
+
+    def distinct_random_elements( from, count: )
+      f = from.dup
+      (1..count).map { |_| f.delete_at( random_int(f.size) ) }
+    end
 
     def random_int max_plus_one=PRETTY_LARGE_INT
       (random_number * max_plus_one).to_i

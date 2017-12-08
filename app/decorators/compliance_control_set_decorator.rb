@@ -5,7 +5,7 @@ class ComplianceControlSetDecorator < Draper::Decorator
     policy = h.policy(object)
     links = []
 
-    if policy.edit?
+    if policy.update?
       links << Link.new(
         content: h.t('compliance_control_sets.actions.edit'),
         href:  h.edit_compliance_control_set_path(object.id)

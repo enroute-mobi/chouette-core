@@ -10,11 +10,12 @@ class ApiKeyDecorator < Draper::Decorator
       content: h.t('api_keys.actions.show'),
       href: h.organisation_api_key_path(object),
     )
-
-    links << Link.new(
-      content: h.t('api_keys.actions.edit'),
-      href: h.edit_organisation_api_key_path(object),
-    )
+    if h.policy(object).update?
+      links << Link.new(
+        content: h.t('api_keys.actions.edit'),
+        href: h.edit_organisation_api_key_path(object),
+      )
+    end
 
     if h.policy(object).destroy?
       links << Link.new(

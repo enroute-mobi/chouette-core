@@ -10,18 +10,18 @@ class TimeTableDecorator < Draper::Decorator
   def action_links
     links = []
 
-    if object.calendar
-      links << Link.new(
-        content: h.t('actions.actualize'),
-        href: h.actualize_referential_time_table_path(
-          context[:referential],
-          object
-        ),
-        method: :post
-      )
-    end
+    if h.policy(object).actualize? && object.calendar
+        links << Link.new(
+          content: h.t('actions.actualize'),
+          href: h.actualize_referential_time_table_path(
+            context[:referential],
+            object
+          ),
+          method: :post
+        )
+      end
 
-    if h.policy(object).edit?
+    if h.policy(object).update?
       links << Link.new(
         content: h.t('actions.combine'),
         href: h.new_referential_time_table_time_table_combination_path(

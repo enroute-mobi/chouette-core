@@ -37,7 +37,7 @@ class CompanyDecorator < Draper::Decorator
 
     if h.policy(object).destroy?
       links << Link.new(
-        content: t('companies.actions.destroy'),
+        content: h.t('companies.actions.destroy'),
         href: h.line_referential_company_path(
           context[:referential],
           object

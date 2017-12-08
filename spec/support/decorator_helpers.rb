@@ -13,6 +13,10 @@ module Support
       end
     end
 
+    def stub_policy(actions)
+      allow(helpers).to receive(:policy).and_return(double("policy", *actions))
+    end
+
     def expect_action_link_hrefs
       expect( subject.action_links.select(&Link.method(:===)).map(&:href) )
     end

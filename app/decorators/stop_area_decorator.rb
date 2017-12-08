@@ -7,7 +7,7 @@ class StopAreaDecorator < Draper::Decorator
     links = []
     stop_area ||= object
 
-    if h.policy(Chouette::StopArea).new?
+    if h.policy(Chouette::StopArea).create?
       links << Link.new(
         content: h.t('stop_areas.actions.new'),
         href: h.new_stop_area_referential_stop_area_path(

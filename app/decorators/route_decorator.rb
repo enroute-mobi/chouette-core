@@ -13,7 +13,7 @@ class RouteDecorator < Draper::Decorator
 
     if object.stop_points.any?
       links << Link.new(
-        content: h.t('journey_patterns.index.title'),
+        content: h.t('journey_patterns.index.title', route: object.name),
         href: [
           context[:referential],
           context[:line],

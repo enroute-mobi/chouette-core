@@ -1,13 +1,13 @@
 require 'spec_helper'
 
-describe ApiKeyDecorator do
-  let(:object) { build_stubbed :api_key }
+describe ComplianceControlDecorator do
+  let(:object) { build_stubbed :compliance_control }
   let(:user) { build_stubbed :user }
 
   describe 'action links' do
     before do
-      allow(helpers).to receive(:organisation_api_key_path).and_return('/show_path')
-      allow(helpers).to receive(:edit_organisation_api_key_path).and_return('/edit_path')
+      allow(helpers).to receive(:edit_compliance_control_set_compliance_control_path).and_return('/edit_path')
+      allow(helpers).to receive(:compliance_control_set_compliance_control_path).and_return('/show_path')
       allow(helpers).to receive(:destroy_link_content).and_return('destroy_link_content')
     end
 
@@ -17,7 +17,7 @@ describe ApiKeyDecorator do
       end
 
       it 'should render edit link' do
-        expect(subject.action_links.map(&:content)).to include(I18n.t('api_keys.actions.edit'))
+        expect(subject.action_links.map(&:content)).to include(I18n.t('compliance_controls.actions.edit'))
         expect_action_link_hrefs.to include('/edit_path')
       end
 
@@ -32,7 +32,7 @@ describe ApiKeyDecorator do
       end
 
       it 'should not render edit link' do
-        expect(subject.action_links.map(&:content)).to_not include(I18n.t('api_keys.actions.edit'))
+        expect(subject.action_links.map(&:content)).to_not include(I18n.t('compliance_controls.actions.edit'))
         expect_action_link_hrefs.to_not include('/edit_path')
       end
 

@@ -1,4 +1,3 @@
-# coding: utf-8
 RSpec.describe LinePolicy, type: :policy do
 
   let( :record ){ build_stubbed :line }

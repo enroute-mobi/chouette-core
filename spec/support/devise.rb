@@ -1,12 +1,12 @@
 module DeviseRequestHelper
   include Warden::Test::Helpers
 
-  def login_user
+  def login_user(permissions: Support::Permissions.all_permissions)
     organisation = Organisation.where(:code => "first").first_or_create(attributes_for(:organisation))
     @user ||=
       create(:user,
              :organisation => organisation,
-             :permissions => Support::Permissions.all_permissions)
+             :permissions => permissions)
 
     login_as @user, :scope => :user
     # post_via_redirect user_session_path, 'user[email]' => @user.email, 'user[password]' => @user.password

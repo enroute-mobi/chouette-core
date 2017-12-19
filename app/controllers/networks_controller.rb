@@ -1,6 +1,7 @@
 class NetworksController < ChouetteController
   include ApplicationHelper
   include PolicyChecker
+  include LineReferentialInOrganisationChecker
   defaults :resource_class => Chouette::Network
   respond_to :html
   respond_to :xml

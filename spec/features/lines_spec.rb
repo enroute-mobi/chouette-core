@@ -7,6 +7,7 @@ describe "Lines", type: :feature do
   let!(:lines) { Array.new(2) { create :line_with_stop_areas, network: network, company: company, line_referential: line_referential } }
   let!(:group_of_line) { create(:group_of_line) }
   subject { lines.first }
+  before { @user.organisation.line_referentials << line_referential }
 
   with_permissions "boiv:read" do
     describe "index" do

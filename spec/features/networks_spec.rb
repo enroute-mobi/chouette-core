@@ -1,12 +1,10 @@
-# -*- coding: utf-8 -*-
-require 'spec_helper'
-
-describe "Networks", :type => :feature do
+describe "Networks", type: :feature do
   login_user
 
   let(:line_referential) { create :line_referential }
   let!(:networks) { Array.new(2) { create(:network, line_referential: line_referential) } }
   subject { networks.first }
+  before { @user.organisation.line_referentials << line_referential }
 
   describe "index" do
     before(:each) { visit line_referential_networks_path(line_referential) }

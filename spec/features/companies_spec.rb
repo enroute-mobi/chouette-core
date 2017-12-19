@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
-require 'spec_helper'
-
-describe "Companies", :type => :feature do
+describe "Companies", type: :feature do
   login_user
 
   let(:line_referential) { create :line_referential }
   let!(:companies) { Array.new(2) { create :company, line_referential: line_referential } }
   subject { companies.first }
+
+  before{ @user.organisation.line_referentials << line_referential }
 
   describe "index" do
     before(:each) { visit line_referential_companies_path(line_referential) }

@@ -1,7 +1,4 @@
-# -*- coding: utf-8 -*-
-require 'spec_helper'
-
-describe "Group of lines", :type => :feature do
+describe "Group of lines", type: :feature do
   login_user
 
   let!(:network) { create(:network) }
@@ -14,6 +11,7 @@ describe "Group of lines", :type => :feature do
 
   before :each do
     subject.lines << line
+    @user.organisation.line_referentials << line_referential
   end
 
   describe "index" do

@@ -3,7 +3,6 @@ require 'rails_helper'
 RSpec.describe ComplianceControlBlocksController, type: :controller do
   login_user
 
-
   let(:compliance_control_block)        { create(:compliance_control_block) }
   let!(:compliance_control_set)         { compliance_control_block.compliance_control_set }
   let(:compliance_control_block_params) { compliance_control_block.as_json.merge(transport_mode: "bus") }

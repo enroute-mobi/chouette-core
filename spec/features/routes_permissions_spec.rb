@@ -15,12 +15,12 @@ describe "Routes", :type => :feature do
 
     describe 'on show view' do
       let( :path ){ referential_line_route_path(referential, line, route) }
+      let( :expected_delete_url ){ referential_line_route_path(referential, line, route) }
+      let( :expected_edit_url ){ edit_referential_line_route_path(referential, line, route) }
 
       context 'if present → ' do
         let( :permission ){ true }
         it 'view shows the corresponding buttons' do
-          expected_edit_url   = edit_referential_line_route_path(referential, line, route)
-          expected_delete_url = referential_line_route_path(referential, line, route)
           expect( page ).to have_link('Editer', href: expected_edit_url)
           expect( page ).to have_link('Supprimer', href: expected_delete_url)
         end
@@ -29,8 +29,8 @@ describe "Routes", :type => :feature do
       context 'if absent → ' do
         let( :permission ){ false }
         it 'view does not show the corresponding buttons' do
-          expect( page ).not_to have_link('Editer')
-          expect( page ).not_to have_link('Supprimer')
+          expect( page ).not_to have_link('Editer', href: expected_edit_url)
+          expect( page ).not_to have_link('Supprimer', href: expected_delete_url)
         end
       end
     end

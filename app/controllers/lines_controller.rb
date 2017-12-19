@@ -1,6 +1,8 @@
 class LinesController < ChouetteController
   include ApplicationHelper
   include PolicyChecker
+  include LineReferentialInOrganisationChecker
+
   defaults :resource_class => Chouette::Line
   respond_to :html
   respond_to :xml
@@ -9,6 +11,7 @@ class LinesController < ChouetteController
   respond_to :js, :only => :index
 
   belongs_to :line_referential
+
 
   def index
     @hide_group_of_line = line_referential.group_of_lines.empty?
@@ -51,24 +54,11 @@ class LinesController < ChouetteController
   end
 
   # overwrite inherited resources to use delete instead of destroy
-  # foreign keys will propagate deletion)
+  # foreign keys will propagate deletion
   def destroy_resource(object)
     object.delete
   end
 
-  def delete_all
-    objects =
-      get_collection_ivar || set_collection_ivar(end_of_association_chain.where(:id => params[:ids]))
-    objects.each { |object| object.delete }
-    respond_with(objects, :location => smart_collection_url)
-  end
-
-  def name_filter
-    respond_to do |format|
-      format.json { render :json => filtered_lines_maps}
-    end
-
-  end
 
   protected
 
@@ -100,7 +90,21 @@ class LinesController < ChouetteController
 
   alias_method :line_referential, :parent
 
+
   private
+
+  def delete_all
+    objects =
+      get_collection_ivar || set_collection_ivar(end_of_association_chain.where(:id => params[:ids]))
+    objects.each { |object| object.delete }
+    respond_with(objects, :location => smart_collection_url)
+  end
+
+  def name_filter
+    respond_to do |format|
+      format.json { render :json => filtered_lines_maps}
+    end
+  end
 
   def sort_column
     (Chouette::Line.column_names + ['companies.name', 'networks.name']).include?(params[:sort]) ? params[:sort] : 'number'

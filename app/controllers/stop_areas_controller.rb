@@ -1,5 +1,6 @@
 class StopAreasController < ChouetteController
   include ApplicationHelper
+  include StopAreaInOrganisationChecker
 
   defaults :resource_class => Chouette::StopArea
 

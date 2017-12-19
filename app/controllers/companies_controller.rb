@@ -1,6 +1,7 @@
 class CompaniesController < ChouetteController
   include ApplicationHelper
   include PolicyChecker
+  include LineReferentialInOrganisationChecker
   defaults :resource_class => Chouette::Company
   respond_to :html
   respond_to :xml

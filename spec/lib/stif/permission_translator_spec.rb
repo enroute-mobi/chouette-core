@@ -15,15 +15,15 @@ RSpec.describe Stif::PermissionTranslator do
   context "SSO Permission boiv:edit-offer →" do
 
     it "all permissions" do
-      expect( described_class.translate(%w{boiv:edit-offer}) ).to match_array(Support::Permissions.all_permissions)
+      expect( described_class.translate(%w{boiv:edit-offer}) ).to match_array(Support::Permissions.all_stif_permissions)
     end
 
     it "all permissions, no doubletons" do
-      expect( described_class.translate(%w{boiv:edit-offer boiv:read-offer}) ).to match_array(Support::Permissions.all_permissions)
+      expect( Set.new(described_class.translate(%w{boiv:edit-offer boiv:read-offer})) ).to match_array(Support::Permissions.all_stif_permissions)
     end
 
     it "all permissions, input order agnostic" do
-      expect( described_class.translate(%w{boiv:read-offer boiv:edit-offer}) ).to match_array(Support::Permissions.all_permissions)
+      expect( described_class.translate(%w{boiv:read-offer boiv:edit-offer}) ).to match_array(Support::Permissions.all_stif_permissions)
     end
   end
 
@@ -39,7 +39,8 @@ RSpec.describe Stif::PermissionTranslator do
     it "does not add garbage or doubletons for boiv:edit-offer level" do
       expect(
         described_class.translate(%w{xxx boiv:read-offer lines.delete boiv:edit-offer footnotes.update})
-      ).to match_array(Support::Permissions.all_permissions)
+      ).to match_array(Support::Permissions.all_stif_permissions)
     end
   end
+
 end

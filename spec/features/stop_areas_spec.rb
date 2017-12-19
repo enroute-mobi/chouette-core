@@ -1,12 +1,12 @@
-# -*- coding: utf-8 -*-
-require 'spec_helper'
-
 describe "StopAreas", :type => :feature do
   login_user
 
   let(:stop_area_referential) { create :stop_area_referential }
   let!(:stop_areas) { Array.new(2) { create :stop_area, stop_area_referential: stop_area_referential } }
   subject { stop_areas.first }
+  before do
+    @user.organisation.stop_area_referentials << stop_area_referential
+  end
 
   describe "index" do
     before(:each) { visit stop_area_referential_stop_areas_path(stop_area_referential) }

@@ -3,9 +3,10 @@ require 'pundit/rspec'
 module Support
   module Pundit
     module Policies
-      def add_permissions(*permissions, to_user:)
+      def add_permissions(*permissions, to_user:, save: false)
         to_user.permissions ||= []
         to_user.permissions += permissions.flatten
+        to_user.save! if save
       end
 
       def create_user_context(user:, referential:)
@@ -52,8 +53,9 @@ end
 
 RSpec.configure do | c |
   c.include Support::Pundit::Policies, type: :controller
-  c.include Support::Pundit::Policies, type: :policy
-  c.extend Support::Pundit::PoliciesMacros, type: :policy
   c.include Support::Pundit::Policies, type: :feature
+  c.include Support::Pundit::Policies, type: :policy
+
+  c.extend Support::Pundit::PoliciesMacros, type: :policy
   c.extend Support::Pundit::FeaturePermissionMacros, type: :feature
 end

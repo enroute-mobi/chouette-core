@@ -12,3 +12,8 @@ fr:
         zero: "espace de travail"
         one: "espace de travail"
         other: "espaces de travail"
+  info:
+    selected_elements: "élément(s) sélectionné(s)"
+
+  actions:
+    confirm: "Etes-vous sûr(e) de vouloir effectuer cette action ?"

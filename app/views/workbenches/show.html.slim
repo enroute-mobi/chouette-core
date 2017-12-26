@@ -61,7 +61,7 @@
               links: [:show, :edit],
               cls: 'table has-filter has-search'
 
-            = multiple_selection_toolbox([:delete], collection_name: 'referentials')
+            = multiple_selection_toolbox(@workbench.id, :delete, collection_name: 'referentials')
 
           = new_pagination @wbench_refs, 'pull-right'
 

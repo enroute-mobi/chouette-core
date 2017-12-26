@@ -22,3 +22,7 @@ en:
         zero: "workbench"
         one: "workbench"
         other: "workbenches"
+  info:
+    selected_elements: "chosen element(s)"
+  actions:
+    confirm: "Are you sure to really execute this action?"

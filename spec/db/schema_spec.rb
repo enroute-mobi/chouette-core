@@ -37,13 +37,7 @@ RSpec::Matchers.define :use_bigint_keys do
   failure_message do |filename|
     <<-EOS
 expected #{filename.inspect} to use bigint keys
-Diff: #{diff}
+Diff: #{colorized_diff @original, @expected}
     EOS
-  end
-
-  def diff
-    RSpec::Support::Differ.new(
-      color: RSpec::Matchers.configuration.color?
-    ).diff_as_string(@expected, @original)
   end
 end

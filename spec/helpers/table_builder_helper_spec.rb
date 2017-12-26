@@ -1,5 +1,3 @@
-require 'htmlbeautifier'
-
 module TableBuilderHelper
   include Pundit
 end
@@ -152,7 +150,7 @@ describe TableBuilderHelper, type: :helper do
         cls: 'table has-filter has-search'
       )
 
-      beautified_html = HtmlBeautifier.beautify(html_str, indent: '    ')
+      beautified_html = beautify_html(html_str, indent: 4)
 
       expect(beautified_html).to eq(expected.chomp)
     end
@@ -264,7 +262,7 @@ describe TableBuilderHelper, type: :helper do
         cls: 'table has-search'
       )
 
-      beautified_html = HtmlBeautifier.beautify(html_str, indent: '    ')
+      beautified_html = beautify_html(html_str, indent: 4)
 
       expect(beautified_html).to eq(expected.chomp)
     end
@@ -377,7 +375,7 @@ describe TableBuilderHelper, type: :helper do
         cls: 'table has-search'
       )
 
-      beautified_html = HtmlBeautifier.beautify(html_str, indent: '    ')
+      beautified_html = beautify_html(html_str, indent: 4)
 
       expect(beautified_html).to eq(expected.chomp)
     end

@@ -16,5 +16,13 @@ FactoryGirl.define do
         ref.workbench.organisation = ref.organisation
       end
     end
+
+    trait :with_metadatas do
+      ready { false }
+      after(:create) do |ref|
+        ref.metadatas = [create(:referential_metadata, referential: ref)]
+        ref.update_attribute :ready, true
+      end
+    end
   end
 end

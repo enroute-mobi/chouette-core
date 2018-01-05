@@ -45,7 +45,7 @@ class Referential < ActiveRecord::Base
   has_many :companies, through: :line_referential
   has_many :group_of_lines, through: :line_referential
   has_many :networks, through: :line_referential
-  has_many :metadatas, class_name: "ReferentialMetadata", inverse_of: :referential, dependent: :destroy
+  has_many :metadatas, class_name: "ReferentialMetadata", inverse_of: :referential, dependent: :destroy, after_remove: :did_update_metadatas
   accepts_nested_attributes_for :metadatas
 
   belongs_to :stop_area_referential
@@ -158,7 +158,7 @@ class Referential < ActiveRecord::Base
   end
 
   def self.new_from(from, functional_scope)
-    Referential.new(
+    new_referential = Referential.new(
       name: I18n.t("activerecord.copy", name: from.name),
       slug: "#{from.slug}_clone",
       prefix: from.prefix,
@@ -170,6 +170,9 @@ class Referential < ActiveRecord::Base
       objectid_format: from.objectid_format,
       metadatas: from.metadatas.map { |m| ReferentialMetadata.new_from(m, functional_scope) }
     )
+    yield new_referential if block_given?
+
+    new_referential
   end
 
   def self.available_srids
@@ -219,9 +222,15 @@ class Referential < ActiveRecord::Base
 
   before_create :create_schema
   after_create :clone_schema, if: :created_from
+  after_save :perform_cleanup_if_needed
 
   before_destroy :destroy_schema
   before_destroy :destroy_jobs
+
+  def perform_cleanup_if_needed
+    return unless ready_changed? && ready
+    perform_cleanup
+  end
 
   def in_workbench?
     workbench_id.present?
@@ -400,6 +409,17 @@ class Referential < ActiveRecord::Base
     not metadatas_overlap?
   end
 
+  def did_update_metadatas args=nil
+    return unless ready?
+    perform_cleanup
+  end
+
+  def perform_cleanup
+    remaining_line_ids = self.metadatas.reload.pluck(:line_ids).flatten.uniq
+    switch
+    Chouette::Route.where.not(line_id: remaining_line_ids).destroy_all
+  end
+
   private
 
   def lock_table
@@ -409,4 +429,5 @@ class Referential < ActiveRecord::Base
       'LOCK referentials IN ACCESS EXCLUSIVE MODE'
     )
   end
+
 end

@@ -1,9 +1,21 @@
 describe Referential, :type => :model do
-  let(:ref) { create :workbench_referential, metadatas: [create(:referential_metadata)] }
+  let(:ref) { create :workbench_referential, :with_metadatas }
+  let(:context) { Chouette::Line.all.pluck(:objectid) }
 
   it { should have_many(:metadatas) }
   it { should belong_to(:workbench) }
   it { should belong_to(:referential_suite) }
+
+  def check_data_are_consistent(ref)
+    ref.switch
+    remaining_line_ids = ref.metadatas.pluck(:line_ids).flatten
+    Chouette::Route.all.each do |route|
+      expect(remaining_line_ids).to include(route.line_id)
+    end
+    Chouette::VehicleJourney.all.each do |vj|
+      expect(remaining_line_ids).to include(vj.route.line_id)
+    end
+  end
 
   context "validation" do
     subject { build_stubbed(:referential) }
@@ -27,7 +39,27 @@ describe Referential, :type => :model do
 
   context "Cloning referential" do
     let(:clone) do
-      Referential.new_from(ref, [])
+      Referential.new_from(ref, context) do |r|
+        r.organisation = ref.organisation
+        r.workbench = ref.workbench
+        r.metadatas.first.lines.pop
+        periode = r.metadatas.first.periodes.first
+        periode = (periode.end+1.day..periode.end+2.day)
+        r.metadatas.first.periodes = [periode]
+      end
+    end
+
+    before(:each) do
+      allow_any_instance_of(Referential).to receive(:clone_schema) do |this|
+        ReferentialCloning.create(source_referential: this.created_from, target_referential: this).clone!
+      end
+    end
+
+    it "should preserve the data consistency" do
+      expect(ref.lines.pluck(:objectid).sort).to eq context.sort
+      clone.save!
+      check_data_are_consistent(clone)
+      check_data_are_consistent(ref)
     end
 
     # let(:saved_clone) do
@@ -52,6 +84,7 @@ describe Referential, :type => :model do
     xit 'should clone referential_metadatas' do
       expect(metadatas_attributes(clone)).to eq(metadatas_attributes(ref))
     end
+
   end
 
   describe "metadatas" do
@@ -125,4 +158,34 @@ describe Referential, :type => :model do
     end
   end
 
+  context 'with data' do
+    before(:each) do
+      ref.switch
+      Chouette::Line.all.each do |line|
+        route = create(:route, line: line)
+        pattern = create(:journey_pattern, route: route)
+        create(:vehicle_journey, journey_pattern: pattern)
+      end
+      check_data_are_consistent(ref)
+    end
+
+    context "after a metadata deletion" do
+      it "should ensure the data are coherent" do
+        expect(ref).to receive(:did_update_metadatas).and_call_original
+        ref.metadatas = []
+        check_data_are_consistent(ref)
+      end
+    end
+
+    context "after a change in the metadatas" do
+      it "should ensure the data are coherent" do
+        expect(ref).to receive(:did_update_metadatas).and_call_original
+        m = ref.metadatas.first
+        m.lines = m.lines[0..0]
+        m.save!
+
+        check_data_are_consistent(ref)
+      end
+    end
+  end
 end

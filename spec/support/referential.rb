@@ -60,7 +60,7 @@ RSpec.configure do |config|
       line_referential: line_referential,
       stop_area_referential: stop_area_referential
     )
-    referential = FactoryGirl.create(
+    FactoryGirl.create(
       :referential,
       prefix: "first",
       name: "first",
@@ -69,6 +69,19 @@ RSpec.configure do |config|
       workbench: workbench,
       objectid_format: "stif_netex"
     )
+  end
+
+  # Alas this still might not be sufficiant in certain cases (interruption of tests)
+  # to fix the problem of `rake db:rollback; rake db:migrate`. However the test database
+  # can also be cleanded by means of
+  # ```
+  #    RAILS_ENV=test bundle exec ruby -I. -r environment.rb -e 'Referential.pluck(:slug).each{|s|Apartment::Tenant.drop(n)};Referential.delete_all'` 
+  #
+  config.after :suite do
+    Referential.pluck(:slug).each do |name|
+      Apartment::Tenant.drop(name) rescue nil
+    end
+    Referential.delete_all
   end
 
   config.before(:each) do

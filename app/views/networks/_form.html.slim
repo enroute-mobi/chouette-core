@@ -4,11 +4,11 @@
       = f.input :name, :input_html => { :title => t("formtastic.titles#{format_restriction_for_locales(@line_referential)}.network.name")}
       = f.input :registration_number, :input_html => { :title => t("formtastic.titles#{format_restriction_for_locales(@line_referential)}.network.registration_number")}
       = f.input :comment
-      = f.input :version_date, :label_html => { :class => 'string optional col-sm-4 col-xs-5 control-label' }, :wrapper => :multi_select_inline
-      = f.input :description
-      = f.input :source_name
-      = f.input :source_type_name, as: :select, :collection => Chouette::Network.source_type_name.options, :include_blank => true
-      = f.input :source_identifier
+      / = f.input :version_date, :label_html => { :class => 'string optional col-sm-4 col-xs-5 control-label' }, :wrapper => :multi_select_inline
+      / = f.input :description
+      / = f.input :source_name
+      / = f.input :source_type_name, as: :select, :collection => Chouette::Network.source_type_name.options, :include_blank => true
+      / = f.input :source_identifier
   .separator
 
     = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'network_form'

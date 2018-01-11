@@ -35,7 +35,7 @@ class NetworkDecorator < Draper::Decorator
           object
         ),
         method: :delete,
-        data: { confirm: t('networks.actions.destroy_confirm') }
+        data: { confirm: h.t('networks.actions.destroy_confirm') }
       )
     end
 

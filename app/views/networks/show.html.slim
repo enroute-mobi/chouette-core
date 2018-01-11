@@ -14,4 +14,8 @@
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = definition_list t('metadatas'),
-          { 'ID Codif' => @network.try(:get_objectid).try(:short_id) }
+          { @network.human_attribute_name(:id) => @network.get_objectid.try(:short_id), \
+            @network.human_attribute_name(:name) => @network.name, \
+            @network.human_attribute_name(:registration_number) => @network.registration_number, \
+            @network.human_attribute_name(:comment) => (@network.comment.presence || '-'), \
+           }

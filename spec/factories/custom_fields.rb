@@ -4,6 +4,6 @@ FactoryGirl.define do
     resource_type "VehicleJourney"
     sequence(:name){|n| "custom field ##{n}"}
     field_type "list"
-    options( { "capacity" => "0" } )
+    options( { capacity: "0" } )
   end
 end

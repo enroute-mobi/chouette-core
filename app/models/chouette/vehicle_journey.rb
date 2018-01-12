@@ -3,6 +3,7 @@ module Chouette
   class VehicleJourney < Chouette::TridentActiveRecord
     has_paper_trail
     include ChecksumSupport
+    include CustomFieldsSupport
     include VehicleJourneyRestrictions
     include ObjectidSupport
     include StifTransportModeEnumerations
@@ -338,21 +339,6 @@ module Chouette
       extra_vjas_in_relation_to_a_journey_pattern(selected_journey_pattern).each do |vjas|
         vjas._destroy = true
       end
-    end
-
-    def self.custom_fields
-      CustomField.where(resource_type: self.name.split("::").last)
-    end
-
-
-    def custom_fields
-      Hash[*self.class.custom_fields.map do |v|
-        [v.code, v.slice(:code, :name, :field_type, :options).update(value: custom_field_value(v.code))]
-      end.flatten]
-    end
-
-    def custom_field_value key
-      (custom_field_values || {})[key.to_s]
     end
 
     def self.matrix(vehicle_journeys)

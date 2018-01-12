@@ -44,6 +44,15 @@ RSpec.describe CustomField, type: :model do
     it "should cast the value" do
       expect(vj.custom_fields[:energy].value).to eq 99
     end
+
+    it "should validate the value" do
+      vj = build :vehicle_journey, custom_field_values: {energy: "99"}
+      expect(vj.validate).to be_truthy
+
+      vj = build :vehicle_journey, custom_field_values: {energy: "azerty"}
+      expect(vj.validate).to be_falsy
+      expect(vj.errors.messages[:"custom_fields.energy"]).to be_present
+    end
   end
 
   context "with a 'string' field_type" do

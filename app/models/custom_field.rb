@@ -8,17 +8,18 @@ class CustomField < ActiveRecord::Base
   validates :code, uniqueness: {scope: [:resource_type, :workgroup_id], case_sensitive: false}
 
   class Value
-    def self.new custom_field, value
+    def self.new owner, custom_field, value
       field_type = custom_field.options["field_type"]
       klass_name = field_type && "CustomField::Value::#{field_type.classify}"
       klass = klass_name && const_defined?(klass_name) ? klass_name.constantize : CustomField::Value::Base
-      klass.new custom_field, value
+      klass.new owner, custom_field, value
     end
 
     class Base
-      def initialize custom_field, value
+      def initialize owner, custom_field, value
         @custom_field = custom_field
         @raw_value = value
+        @owner = owner
       end
 
       %i(code name field_type options).each do |attr|
@@ -27,14 +28,28 @@ class CustomField < ActiveRecord::Base
         end
       end
 
+      def valid?
+        true
+      end
+
       def value
         @raw_value
+      end
+
+      def errors_key
+        "custom_fields.#{code}"
       end
     end
 
     class Integer < Base
       def value
         @raw_value.to_i
+      end
+
+      def valid?
+        unless ActiveRecord::Base::NumericalityValidator.new(attributes: 42).send(:parse_raw_value_as_an_integer, @raw_value).present?
+          @owner.errors.add errors_key, "'#{@raw_value}' is not a valid integer"
+        end
       end
     end
 

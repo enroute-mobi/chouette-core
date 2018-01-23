@@ -46,12 +46,20 @@ RSpec.describe CustomField, type: :model do
     end
 
     it "should validate the value" do
-      vj = build :vehicle_journey, custom_field_values: {energy: "99"}
-      expect(vj.validate).to be_truthy
-
-      vj = build :vehicle_journey, custom_field_values: {energy: "azerty"}
-      expect(vj.validate).to be_falsy
-      expect(vj.errors.messages[:"custom_fields.energy"]).to be_present
+      {
+        "99" => true,
+        "azerty" => false,
+        "91a" => false,
+        "a91" => false
+      }.each do |val, valid|
+        vj = build :vehicle_journey, custom_field_values: {energy: val}
+        if valid
+          expect(vj.validate).to be_truthy
+        else
+          expect(vj.validate).to be_falsy
+          expect(vj.errors.messages[:"custom_fields.energy"]).to be_present
+        end
+      end
     end
   end
 

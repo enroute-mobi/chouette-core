@@ -20,16 +20,20 @@ class CustomField < ActiveRecord::Base
         @custom_field = custom_field
         @raw_value = value
         @owner = owner
+        @errors = []
+        @validated = false
+        @valid = false
       end
 
-      %i(code name field_type options).each do |attr|
-        define_method attr do
-          @custom_field.send(attr)
-        end
+      delegate :code, :name, :field_type, :options, to: :@custom_field
+
+      def validate
+        @valid = true
       end
 
       def valid?
-        true
+        validate unless @validated
+        @valid
       end
 
       def value
@@ -46,9 +50,11 @@ class CustomField < ActiveRecord::Base
         @raw_value.to_i
       end
 
-      def valid?
-        unless ActiveRecord::Base::NumericalityValidator.new(attributes: 42).send(:parse_raw_value_as_an_integer, @raw_value).present?
+      def validate
+        @valid = true
+        unless @raw_value =~ /\A\d*\Z/
           @owner.errors.add errors_key, "'#{@raw_value}' is not a valid integer"
+          @valid = false
         end
       end
     end

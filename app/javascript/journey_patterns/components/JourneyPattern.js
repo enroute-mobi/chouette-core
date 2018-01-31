@@ -109,7 +109,7 @@ export default class JourneyPattern extends Component{
     }
     else{
       let hours = parseInt(time/60)
-      return hours + " h " + (time - 60*hours) + " min"
+      return hours + " h " + (time - 60*hours)
     }
   }
 

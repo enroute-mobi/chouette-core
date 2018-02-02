@@ -6,5 +6,5 @@ routes = JSON.parse(decodeURIComponent(routes))
 
 var map = new RoutesMap('routes_map')
 map.addRoutes(routes)
-// map.addRoutesLabels()
+map.addRoutesLabels()
 map.fitZoom()

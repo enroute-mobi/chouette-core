@@ -2,15 +2,21 @@
   .list-group-item &
     margin-top: 15px
 
-  .routes-labels
+  .ol-routes-layers
+    position: absolute
+    right: 42px
+    top: .5em
     padding: 0
     display: flex
     justify-content: space-between
     flex-wrap: wrap
     margin: 5px -5px
-    li
+    max-width: 80%
+    background-color: transparentize(white, 0.2)
+    border-radius: 3px
+    div
       list-style-type: none
-      flex: 1 0 25%
+      flex: 1 0 15%
       border: 1px solid $lightgrey
       padding: 5px
       margin: 5px
@@ -18,10 +24,18 @@
       cursor: pointer
       color: $blue
       white-space: nowrap
+      text-overflow: ellipsis
+      overflow: hidden
+      font-size: 0.6em
 
-      &:hover
-        background: $orange
+      &.active
+        background: $blue
         color: white
+
+  .ol-routes-layers-button-wrapper
+    position: absolute
+    right: .5em
+    top: .5em
 
   .ol-scale-line
     background-color: transparent
@@ -55,20 +69,20 @@
   .ol-zoom
     background-color: transparent
 
-    .ol-zoom-in, .ol-zoom-out
-      background-color: $darkblue
-      color: #fff
-      border-radius: 3px
-      margin: 0
+  .ol-zoom-in, .ol-zoom-out, .ol-routes-layers-button
+    background-color: $darkblue
+    color: #fff
+    border-radius: 3px
+    margin: 0
 
-    .ol-zoom-in
-      border-bottom-left-radius: 0
-      border-bottom-right-radius: 0
+  .ol-zoom-in
+    border-bottom-left-radius: 0
+    border-bottom-right-radius: 0
 
-    .ol-zoom-out
-      margin-top: 1px
-      border-top-left-radius: 0
-      border-top-right-radius: 0
+  .ol-zoom-out
+    margin-top: 1px
+    border-top-left-radius: 0
+    border-top-right-radius: 0
 
   .ol-zoomslider
     margin: 2px

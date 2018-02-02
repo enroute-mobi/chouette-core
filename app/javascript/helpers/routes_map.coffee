@@ -1,3 +1,56 @@
+RoutesLayersButton = (options) ->
+  menu = options.menu
+
+  toggleMenu = (e)=>
+    $(menu.element).toggleClass 'hidden'
+    button.innerHTML = if button.innerHTML == "+" then "-" else "+"
+
+  button = document.createElement("button")
+  button.innerHTML = "+"
+  button.addEventListener('click', toggleMenu, false)
+  button.addEventListener('touchstart', toggleMenu, false)
+  button.className = "ol-routes-layers-button"
+
+  element = document.createElement('div');
+  element.className = 'ol-control ol-routes-layers-button-wrapper';
+
+  element.appendChild(button)
+
+  ol.control.Control.call(this, {
+    element
+    target: options.target
+  })
+
+ol.inherits RoutesLayersButton, ol.control.Control
+
+RoutesLayersControl = (routes, routes_map) ->
+
+  element = document.createElement('div')
+  element.className = 'ol-unselectable ol-routes-layers hidden'
+  Object.keys(routes).forEach (id)=>
+    route = routes[id]
+    route.active = true
+    label = document.createElement('div')
+    label.className = 'active'
+    label.innerHTML = route.name
+    element.appendChild label
+    label.addEventListener "click", =>
+      console.log "click"
+      route.active = !route.active
+      $(label).toggleClass "active"
+      route.active
+      route.vectorPtsLayer.setStyle routes_map.defaultStyles(route.active)
+      route.vectorEdgesLayer.setStyle routes_map.edgeStyles(route.active)
+      route.vectorLnsLayer.setStyle routes_map.lineStyle(route.active)
+      routes_map.fitZoom()
+  #
+
+  ol.control.Control.call(this, {
+    element
+  })
+
+ol.inherits RoutesLayersControl, ol.control.Control
+
 class RoutesMap
   constructor: (@target)->
     @initMap()
@@ -20,6 +73,7 @@ class RoutesMap
   addRoute: (route)->
     geoColPts = []
     geoColLns = []
+    route.active = true
     @routes[route.id] = route if route.id
     stops = route.stops || route
     geoColEdges = [
@@ -77,68 +131,49 @@ class RoutesMap
     @map.addLayer vectorEdgesLayer
     @map.addLayer vectorLnsLayer
 
-  lineStyle: (highlighted=false)->
+  lineStyle: (active=true)->
     new ol.style.Style
       stroke: new ol.style.Stroke
-        color: if highlighted then "#ed7f00" else '#007fbb'
-        width: 3
+        color: '#007fbb'
+        width: if active then 3 else 0
 
-  edgeStyles: (highlighted=false)->
+  edgeStyles: (active=true)->
     new ol.style.Style
       image: new ol.style.Circle
         radius: 5
         stroke: new ol.style.Stroke
-          color: if highlighted then "#ed7f00" else '#007fbb'
-          width: 2
+          color: '#007fbb'
+          width: if active then 3 else 0
         fill: new ol.style.Fill
-          color: if highlighted then "#ed7f00" else '#007fbb'
-          width: 2
+          color: '#007fbb'
+          width: if active then 3 else 0
 
-  defaultStyles: (highlighted=false)->
+  defaultStyles: (active=true)->
     new ol.style.Style
       image: new ol.style.Circle
         radius: 4
         stroke: new ol.style.Stroke
-          color: if highlighted then "#ed7f00" else '#007fbb'
-          width: 2
+          color: '#007fbb'
+          width: if active then 3 else 0
         fill: new ol.style.Fill
           color: '#ffffff'
-          width: 2
+          width: if active then 3 else 0
 
   addRoutesLabels: ->
-    labelsContainer = $("<ul class='routes-labels'></ul>")
-    labelsContainer.appendTo $("##{@target}")
-    @vectorPtsLayer = null
-    @vectorEdgesLayer = null
-    @vectorLnsLayer = null
+    menu = new RoutesLayersControl(@routes, this)
+    @map.addControl menu
+    @map.addControl new RoutesLayersButton(menu: menu)
+
+  fitZoom: ()->
+    area = []
+    found = false
     Object.keys(@routes).forEach (id)=>
       route = @routes[id]
-      label = $("<li>#{route.name}</ul>")
-      label.appendTo labelsContainer
-      label.mouseleave =>
-        route.vectorPtsLayer.setStyle @defaultStyles(false)
-        route.vectorEdgesLayer.setStyle @edgeStyles(false)
-        route.vectorLnsLayer.setStyle @lineStyle(false)
-        route.vectorPtsLayer.setZIndex 2
-        route.vectorEdgesLayer.setZIndex 3
-        route.vectorLnsLayer.setZIndex 1
-        @fitZoom()
-      label.mouseenter =>
-        route.vectorPtsLayer.setStyle @defaultStyles(true)
-        route.vectorEdgesLayer.setStyle @edgeStyles(true)
-        route.vectorLnsLayer.setStyle @lineStyle(true)
-        route.vectorPtsLayer.setZIndex 11
-        route.vectorEdgesLayer.setZIndex 12
-        route.vectorLnsLayer.setZIndex 10
-        @fitZoom(route)
-
-  fitZoom: (route)->
-    if route
-      area = []
-      route.stops.forEach (stop, i) =>
-        area.push [parseFloat(stop.longitude), parseFloat(stop.latitude)]
-    else
-      area = @area
+      if route.active
+        found = true
+        route.stops.forEach (stop, i) =>
+          area.push [parseFloat(stop.longitude), parseFloat(stop.latitude)]
+    area = @area unless found
     boundaries = ol.extent.applyTransform(
       ol.extent.boundingExtent(area), ol.proj.getTransform('EPSG:4326', 'EPSG:3857')
     )

@@ -9,6 +9,16 @@ describe Referential, :type => :model do
     subject { build_stubbed(:referential) }
 
     it { should validate_presence_of(:objectid_format) }
+
+    it 'should authorize slug with nummerical value' do
+      subject.slug = '2018-hiver-jezequel-mm-lyon-nice'
+      expect(subject).to be_valid
+    end
+
+    it 'should authorize slug with accents' do
+      subject.slug = 'écolê-été-hiver-lyon-nice'
+      expect(subject).to be_valid
+    end
   end
 
   context ".referential_ids_in_periode" do

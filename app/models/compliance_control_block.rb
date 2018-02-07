@@ -12,11 +12,7 @@ class ComplianceControlBlock < ActiveRecord::Base
   validates :transport_mode, presence: true
   validates :compliance_control_set, presence: true
 
-  validate def unique_transport_mode_submode_combination
-    same_cc_block = ComplianceControlBlock.where("compliance_control_set_id = ? AND condition_attributes->'transport_mode' = ? AND condition_attributes->'transport_submode' = ?", self.compliance_control_set_id, self.transport_mode, self.transport_submode)
-    return true if same_cc_block.empty?
-    errors.add(:duplicate, I18n.t('activerecord.errors.models.compliance_control_block.attributes.condition_attributes.duplicate'))
-  end
+  validates_uniqueness_of :condition_attributes, scope: :compliance_control_set_id
 
   def name
     ApplicationController.helpers.transport_mode_text(self)

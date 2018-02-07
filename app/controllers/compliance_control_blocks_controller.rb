@@ -4,11 +4,11 @@ class ComplianceControlBlocksController < ChouetteController
   belongs_to :compliance_control_set
   actions :all, :except => [:show, :index]
 
-  after_action :check_duplicate, only: :create
+  after_action :check_duplicate, only: [:create, :update]
 
   def check_duplicate
-    unless @compliance_control_block.errors[:duplicate].empty?
-      flash[:error] = @compliance_control_block.errors[:duplicate].first
+    unless @compliance_control_block.errors[:condition_attributes].empty?
+      flash[:error] = I18n.t('activerecord.errors.models.compliance_control_block.attributes.condition_attributes.duplicate')
     end
   end
 

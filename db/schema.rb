@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180227151937) do
+ActiveRecord::Schema.define(version: 20180129141656) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -90,6 +90,7 @@ ActiveRecord::Schema.define(version: 20180227151937) do
     t.integer   "organisation_id", limit: 8
     t.datetime  "created_at"
     t.datetime  "updated_at"
+    t.integer   "workgroup_id",    limit: 8
     t.integer   "int_day_types"
     t.date      "excluded_dates",                            array: true
     t.integer   "workgroup_id",    limit: 8
@@ -421,9 +422,9 @@ ActiveRecord::Schema.define(version: 20180227151937) do
     t.string   "type"
     t.integer  "parent_id",             limit: 8
     t.string   "parent_type"
-    t.datetime "notified_parent_at"
     t.integer  "current_step",                    default: 0
     t.integer  "total_steps",                     default: 0
+    t.datetime "notified_parent_at"
     t.string   "creator"
   end
 

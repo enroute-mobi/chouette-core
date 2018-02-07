@@ -9,6 +9,12 @@ fr:
       compliance_control_blocks:
         transport_mode: Transport mode
         sub_transport_mode: Transport submode
+    errors:
+      models:
+        compliance_control_block:
+          attributes:
+            condition_attributes:
+              duplicate: The same compliance control block already exists in this compliance control set
   compliance_control_blocks:
     clone:
       prefix: 'Copy of'
@@ -16,7 +22,11 @@ fr:
       destroy_confirm: Are you sure you want to destroy this block ?
     new:
       title: Create a control block
+    create:
+      title: Create a control block
     edit:
+      title: "Edit the control block : %{name}"
+    update:
       title: "Edit the control block : %{name}"
     metas:
       control:

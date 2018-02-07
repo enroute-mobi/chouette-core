@@ -9,6 +9,12 @@ fr:
       compliance_control_blocks:
         transport_mode: Mode de transport
         transport_submode: Sous-mode de transport
+    errors:
+      models:
+        compliance_control_block:
+          attributes:
+            condition_attributes:
+              duplicate: Un groupe de contrôle identique existe déjà au sein de ce jeux de contrôles
   compliance_control_blocks:
     clone:
       prefix: 'Copie de'
@@ -16,7 +22,11 @@ fr:
       destroy_confirm: Etes vous sûr de supprimer ce bloc ?
     new:
       title: Créer un groupe de contrôle(s)
+    create:
+      title: Créer un groupe de contrôle(s)
     edit:
+      title: "Editer le groupe de contrôle : %{name}"
+    update:
       title: "Editer le groupe de contrôle : %{name}"
     metas:
       control:

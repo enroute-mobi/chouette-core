@@ -11,6 +11,8 @@ describe "referentials/show", type: :view do
   let(:organisation){ referential.try(:organisation) }
   let(:permissions){ [] }
   let(:current_organisation) { organisation }
+  let(:organisation) { referential.organisation }
+  #let(:current_offer_workbench) { create :workbench, organisation: current_organisation}
   let(:readonly){ false }
 
   before :each do

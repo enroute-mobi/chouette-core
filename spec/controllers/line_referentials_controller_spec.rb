@@ -6,8 +6,8 @@ RSpec.describe LineReferentialsController, :type => :controller do
   describe 'PUT sync' do
     let(:request){ put :sync, id: line_referential.id }
 
-    it 'should redirect to 403' do
-       expect(request).to redirect_to "/403"
+    it 'should respond with 403' do
+       expect(request).to have_http_status 403
     end
 
     with_permission "line_referentials.synchronize" do

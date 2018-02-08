@@ -7,8 +7,8 @@ RSpec.describe StopAreasController, :type => :controller do
   describe 'PUT deactivate' do
     let(:request){ put :deactivate, id: stop_area.id, stop_area_referential_id: stop_area_referential.id }
 
-    it 'should redirect to 403' do
-       expect(request).to redirect_to "/403"
+    it 'should respond with 403' do
+      expect(request).to have_http_status 403
     end
 
     with_permission "stop_areas.change_status" do
@@ -24,8 +24,8 @@ RSpec.describe StopAreasController, :type => :controller do
     before(:each){
       stop_area.deactivate!
     }
-    it 'should redirect to 403' do
-       expect(request).to redirect_to "/403"
+    it 'should respond with 403' do
+      expect(request).to have_http_status 403
     end
 
     with_permission "stop_areas.change_status" do

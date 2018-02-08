@@ -28,7 +28,7 @@ class ApplicationController < ActionController::Base
   protected
 
   def user_not_authorized
-    redirect_to forbidden_path
+    render 'errors/forbidden', status: 403
   end
 
   def current_organisation

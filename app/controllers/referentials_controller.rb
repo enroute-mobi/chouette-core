@@ -7,6 +7,8 @@ class ReferentialsController < ChouetteController
   respond_to :json, :only => :show
   respond_to :js, :only => :show
 
+  before_action :check_cloning_source_is_accessible, only: %i(new create)
+
   def new
     new! do
       build_referential
@@ -173,6 +175,12 @@ class ReferentialsController < ChouetteController
       :workbench_id,
       metadatas_attributes: [:id, :first_period_begin, :first_period_end, periods_attributes: [:begin, :end, :id, :_destroy], :lines => []]
     )
+  end
+
+  def check_cloning_source_is_accessible
+    return unless params[:from]
+    source = Referential.find params[:from]
+    return user_not_authorized unless current_user.organisation.workgroups.include?(source.workbench.workgroup)
   end
 
   def load_workbench

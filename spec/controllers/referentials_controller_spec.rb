@@ -6,6 +6,42 @@ describe ReferentialsController, :type => :controller do
   let(:organisation) { create :organisation }
   let(:other_referential) { create :referential, organisation: organisation }
 
+  describe "GET new" do
+    let(:request){ get :new }
+    before{ request }
+
+    it 'returns http success' do
+      expect(response).to have_http_status(200)
+    end
+
+    context "when cloning another referential" do
+      let(:source){ referential }
+      let(:request){ get :new, from: source.id }
+
+      it 'returns http success' do
+        expect(response).to have_http_status(200)
+      end
+
+      context "when the referential is in another organisation but accessible by the user" do
+        let(:source){ create(:workbench_referential) }
+        before do
+          source.workbench.update_attribute :workgroup_id, referential.workbench.workgroup_id
+        end
+
+        it 'returns http forbidden' do
+          expect(response).to have_http_status(403)
+        end
+      end
+
+      context "when the referential is not accessible by the user" do
+        let(:source){ create(:workbench_referential) }
+        it 'returns http forbidden' do
+          expect(response).to have_http_status(403)
+        end
+      end
+    end
+  end
+
   describe 'PUT archive' do
     context "user's organisation matches referential's organisation" do
       it 'returns http success' do

@@ -13,6 +13,8 @@ class Organisation < ActiveRecord::Base
   has_many :line_referentials, through: :line_referential_memberships
 
   has_many :workbenches
+  has_many :workgroups, through: :workbenches
+
   has_many :calendars
   has_many :api_keys, class_name: 'Api::V1::ApiKey'
 

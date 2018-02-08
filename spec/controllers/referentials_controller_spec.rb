@@ -7,7 +7,7 @@ describe ReferentialsController, :type => :controller do
   let(:other_referential) { create :referential, organisation: organisation }
 
   describe "GET new" do
-    let(:request){ get :new }
+    let(:request){ get :new, workbench_id: referential.workbench_id }
     before{ request }
 
     it 'returns http success' do
@@ -16,7 +16,7 @@ describe ReferentialsController, :type => :controller do
 
     context "when cloning another referential" do
       let(:source){ referential }
-      let(:request){ get :new, from: source.id }
+      let(:request){ get :new, workbench_id: referential.workbench_id, from: source.id }
 
       it 'returns http success' do
         expect(response).to have_http_status(200)

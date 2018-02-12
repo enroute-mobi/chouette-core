@@ -441,6 +441,53 @@ describe TableBuilderHelper, type: :helper do
         allow(helper).to receive(:mutual_workbench).and_return(referential.workbench)
       }
 
+      context "with a condition" do
+        let(:columns){
+          [
+            TableBuilderHelper::Column.new(
+              key: :name,
+              attribute: 'name',
+              if: condition
+            ),
+          ]
+        }
+
+        context "when the condition is true" do
+          let(:condition){ ->(obj){true} }
+          it "should show the value" do
+            items.each do |i|
+              tr = helper.send(:tr, i, columns, selectable, links, overhead, model_name, :index)
+              klass = "#{TableBuilderHelper.item_row_class_name([referential])}-#{i.id}"
+              expect(tr).to include(i.name)
+            end
+          end
+        end
+
+        context "when the condition depends on the object" do
+          let(:condition){ ->(obj){ obj == referential } }
+          it "should show the value accordingly" do
+            tr = helper.send(:tr, item, columns, selectable, links, overhead, model_name, :index)
+            klass = "#{TableBuilderHelper.item_row_class_name([referential])}-#{referential.id}"
+            expect(tr).to include(referential.name)
+            tr = helper.send(:tr, other_item, columns, selectable, links, overhead, model_name, :index)
+            klass = "#{TableBuilderHelper.item_row_class_name([referential])}-#{other_referential.id}"
+            expect(tr).to_not include(other_referential.name)
+          end
+        end
+
+        context "when the condition is false" do
+          let(:condition){ ->(obj){false} }
+          it "should not show the value" do
+            items.each do |i|
+              tr = helper.send(:tr, i, columns, selectable, links, overhead, model_name, :index)
+              klass = "#{TableBuilderHelper.item_row_class_name([referential])}-#{i.id}"
+              expect(tr).to_not include(i.name)
+            end
+          end
+        end
+
+      end
+
       context "with all rows non-selectable" do
         let(:selectable){ false }
         it "sets all rows as non selectable" do

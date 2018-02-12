@@ -3,7 +3,10 @@ class WorkbenchesController < ChouetteController
   include RansackDateFilter
   before_action only: [:show] { set_date_time_params("validity_period", Date) }
   defaults resource_class: Workbench
-  respond_to :html, only: [:show, :index]
+
+  include PolicyChecker
+  
+  respond_to :html
 
   def index
     redirect_to dashboard_path
@@ -24,7 +27,10 @@ class WorkbenchesController < ChouetteController
         current_workbench_id: params[:id]
       }
     )
-    show!
+  end
+
+  def edit
+    edit!
   end
 
   def delete_referentials
@@ -38,6 +44,11 @@ class WorkbenchesController < ChouetteController
   end
 
   private
+
+  def workbench_params
+    params.require(:workbench).permit(:import_compliance_control_set_id, :merge_compliance_control_set_id)
+  end
+
   def resource
     @workbench = current_organisation.workbenches.find params[:id]
   end

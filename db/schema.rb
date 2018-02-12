@@ -1008,17 +1008,21 @@ ActiveRecord::Schema.define(version: 20180301142531) do
 
   create_table "workbenches", id: :bigserial, force: :cascade do |t|
     t.string   "name"
-    t.integer  "organisation_id",          limit: 8
+    t.integer  "organisation_id",                  limit: 8
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "line_referential_id",      limit: 8
-    t.integer  "stop_area_referential_id", limit: 8
-    t.integer  "output_id",                limit: 8
+    t.integer  "line_referential_id",              limit: 8
+    t.integer  "stop_area_referential_id",         limit: 8
+    t.integer  "output_id",                        limit: 8
     t.string   "objectid_format"
-    t.integer  "workgroup_id",             limit: 8
+    t.integer  "workgroup_id",                     limit: 8
+    t.integer  "import_compliance_control_set_id", limit: 8
+    t.integer  "merge_compliance_control_set_id",  limit: 8
   end
 
+  add_index "workbenches", ["import_compliance_control_set_id"], name: "index_workbenches_on_import_compliance_control_set_id", using: :btree
   add_index "workbenches", ["line_referential_id"], name: "index_workbenches_on_line_referential_id", using: :btree
+  add_index "workbenches", ["merge_compliance_control_set_id"], name: "index_workbenches_on_merge_compliance_control_set_id", using: :btree
   add_index "workbenches", ["organisation_id"], name: "index_workbenches_on_organisation_id", using: :btree
   add_index "workbenches", ["stop_area_referential_id"], name: "index_workbenches_on_stop_area_referential_id", using: :btree
   add_index "workbenches", ["workgroup_id"], name: "index_workbenches_on_workgroup_id", using: :btree

@@ -53,17 +53,18 @@ class WorkbenchImportWorker
   end
 
   def upload_entry_group_stream eg_name, eg_stream
-    FileUtils.mkdir_p(Rails.root.join('tmp', 'imports'))
-
-    File.open(Rails.root.join('tmp', 'imports', "WorkbenchImport_#{eg_name}_#{$$}.zip"), 'wb') do |file|
+    eg_file_path = Tempfile.open(
+      ["WorkbenchImport_#{eg_name}_", '.zip'],
+      temp_directory
+    ) do |f|
       eg_stream.rewind
-      file.write eg_stream.read
+      f.write eg_stream.read
+
+      f.path
     end
 
-    upload_entry_group_tmpfile eg_name, File.new(Rails.root.join('tmp', 'imports', "WorkbenchImport_#{eg_name}_#{$$}.zip"))
-  end
-    
-  def upload_entry_group_tmpfile eg_name, eg_file
+    eg_file = File.open(eg_file_path)
+
     result = execute_post eg_name, eg_file
     if result && result.status < 400
       @entries += 1
@@ -115,6 +116,11 @@ class WorkbenchImportWorker
         workbench_id: workbench_import.workbench_id,
         name: name,
         file: HTTPService.upload(file, 'application/zip', "#{name}.zip") } }
+  end
+
+  def temp_directory
+    Rails.application.config.try(:import_temporary_directory) ||
+      Rails.root.join('tmp', 'imports')
   end
 
   # Lazy Values

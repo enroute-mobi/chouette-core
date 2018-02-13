@@ -2,12 +2,27 @@ fr:
   workbenches:
     show:
       title: "%{name}"
+    edit:
+      title: "Configurer l'espace de travail"
+    update:
+      title: "Configurer l'espace de travail"
     referential_count:
       zero: "Aucun jeu de données dans cet espace de travail"
       one: "1 jeu de données dans cet espace de travail"
       other: "#{count} jeux de données dans cet espace de travail"
+    index:
+      title: "%{organisation} dashboard"
+      offers:
+        title: "Transport offers"
+        organisation: "Organisation offers"
+        idf: "IDF offers"
+        referentials: "Referentials"
+        calendars: "Calendars"
+        see: "Voir la liste"
+        no_content: "No content yet."
     actions:
       show_output: "Finaliser l'Offre"
+      configure: "Configurer"
   activerecord:
     models:
       workbench:

@@ -2,6 +2,14 @@ en:
   workbenches:
     show:
       title: "%{name}"
+    edit:
+      title: "Configure the workbench"
+    update:
+      title: "Configure the workbench"
+    referential_count:
+      zero: "There is no referential in your workbench"
+      one: "There is one referential in your workbench"
+      other: "There are #{count} referentials in your workbench"
     index:
       title: "%{organisation} dashboard"
       offers:
@@ -12,10 +20,9 @@ en:
         calendars: "Calendars"
         see: "See the list"
         no_content: "No content yet."
-    referential_count:
-      zero: "There is no referential in your workbench"
-      one: "There is one referential in your workbench"
-      other: "There are #{count} referentials in your workbench"
+    actions:
+      show_output: "Merge offer"
+      affect_ccset: "Configure"
   activerecord:
     models:
       workbench:

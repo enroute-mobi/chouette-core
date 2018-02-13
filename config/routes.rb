@@ -174,7 +174,7 @@ ChouetteIhm::Application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resources :workbenches, only: [:index, :show] do
+      resources :workbenches, except: [:destroy] do
         resources :imports, only: [:index, :show, :create]
       end
       resources :access_links, only: [:index, :show]

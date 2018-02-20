@@ -53,6 +53,8 @@ class WorkbenchImportWorker
   end
 
   def upload_entry_group_stream eg_name, eg_stream
+    FileUtils.mkdir_p(temp_directory)
+
     eg_file_path = Tempfile.open(
       ["WorkbenchImport_#{eg_name}_", '.zip'],
       temp_directory

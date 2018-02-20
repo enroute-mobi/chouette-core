@@ -76,8 +76,8 @@ class WorkbenchImportWorker
       raise StopIteration, result.body
     end
   ensure
-    eg_file.close rescue nil
-    eg_file.unlink rescue nil
+    eg_file.close
+    File.unlink(eg_file.path)
   end
 
 

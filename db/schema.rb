@@ -15,9 +15,10 @@ ActiveRecord::Schema.define(version: 20180202170009) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "postgis"
   enable_extension "hstore"
+  enable_extension "postgis"
   enable_extension "unaccent"
+  enable_extension "objectid"
 
   create_table "access_links", id: :bigserial, force: :cascade do |t|
     t.integer  "access_point_id",                        limit: 8
@@ -119,6 +120,7 @@ ActiveRecord::Schema.define(version: 20180202170009) do
     t.datetime "updated_at"
     t.date     "end_date"
     t.string   "date_type"
+    t.string   "mode"
   end
 
   add_index "clean_ups", ["referential_id"], name: "index_clean_ups_on_referential_id", using: :btree
@@ -722,6 +724,13 @@ ActiveRecord::Schema.define(version: 20180202170009) do
   create_table "routing_constraints_lines", id: false, force: :cascade do |t|
     t.integer "stop_area_id", limit: 8
     t.integer "line_id",      limit: 8
+  end
+
+  create_table "simple_importers", id: :bigserial, force: :cascade do |t|
+    t.string "configuration_name"
+    t.string "filepath"
+    t.string "status"
+    t.json   "journal"
   end
 
   create_table "stop_area_referential_memberships", id: :bigserial, force: :cascade do |t|

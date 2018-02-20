@@ -15,8 +15,9 @@ describe TableBuilderHelper, type: :helper do
 
   describe "#table_builder_2" do
     it "builds a table" do
-      referential = build_stubbed(:workbench_referential)
+      referential = create(:workbench_referential)
       workbench = referential.workbench
+      referential.organisation.workbenches << workbench
 
       user_context = UserContext.new(
         build_stubbed(
@@ -30,7 +31,8 @@ describe TableBuilderHelper, type: :helper do
         ),
         referential: referential
       )
-      allow(helper).to receive(:current_user).and_return(user_context)
+      allow(helper).to receive(:pundit_user).and_return(user_context)
+      allow(helper).to receive(:current_user).and_return(user_context.user)
 
       referentials = [referential]
 
@@ -90,7 +92,7 @@ describe TableBuilderHelper, type: :helper do
                         </ul>
                         <ul class="other">
                             <li class=""><a href="/referentials/#{referential.id}/time_tables">Calendriers</a></li>
-                            <li class=""><a href="/referentials/new?from=#{referential.id}">Dupliquer</a></li>
+                            <li class=""><a href="/workbenches/#{workbench.id}/referentials/new?from=#{referential.id}">Dupliquer</a></li>
                             <li class=""><a href="/referentials/#{referential.id}/select_compliance_control_set">Valider</a></li>
                             <li class=""><a rel="nofollow" data-method="put" href="/referentials/#{referential.id}/archive">Conserver</a></li>
                         </ul>
@@ -193,7 +195,8 @@ describe TableBuilderHelper, type: :helper do
         ),
         referential: referential
       )
-      allow(helper).to receive(:current_user).and_return(user_context)
+      allow(helper).to receive(:pundit_user).and_return(user_context)
+      allow(helper).to receive(:current_user).and_return(user_context.user)
       allow(helper).to receive(:current_referential)
         .and_return(referential)
 
@@ -307,7 +310,8 @@ describe TableBuilderHelper, type: :helper do
         ),
         referential: referential
       )
-      allow(helper).to receive(:current_user).and_return(user_context)
+      allow(helper).to receive(:pundit_user).and_return(user_context)
+      allow(helper).to receive(:current_user).and_return(user_context.user)
       allow(helper).to receive(:current_referential)
         .and_return(referential)
 
@@ -398,8 +402,8 @@ describe TableBuilderHelper, type: :helper do
     end
 
     context "on a single row" do
-      let(:referential){ build_stubbed :referential }
-      let(:other_referential){ build_stubbed :referential }
+      let(:referential){ build_stubbed :workbench_referential }
+      let(:other_referential){ build_stubbed :workbench_referential }
       let(:user_context){
         UserContext.new(
           build_stubbed(
@@ -432,7 +436,9 @@ describe TableBuilderHelper, type: :helper do
       let(:items){ [item, other_item] }
 
       before(:each){
-        allow(helper).to receive(:current_user).and_return(user_context)
+        allow(helper).to receive(:pundit_user).and_return(user_context)
+        allow(helper).to receive(:current_user).and_return(user_context.user)
+        allow(helper).to receive(:mutual_workbench).and_return(referential.workbench)
       }
 
       context "with all rows non-selectable" do

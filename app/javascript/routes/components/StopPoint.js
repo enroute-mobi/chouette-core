@@ -18,15 +18,15 @@ export default function StopPoint(props, {I18n}) {
 
         <div>
           <select className='form-control' value={props.value.for_boarding} id="for_boarding" onChange={props.onSelectChange}>
-            <option value="normal">{I18n.routes.edit.stop_point.boarding.normal}</option>
-            <option value="forbidden">{I18n.routes.edit.stop_point.boarding.forbidden}</option>
+            <option value="normal">{I18n.t('routes.edit.stop_point.boarding.normal')}</option>
+            <option value="forbidden">{I18n.t('routes.edit.stop_point.boarding.forbidden')}</option>
           </select>
         </div>
 
         <div>
           <select className='form-control' value={props.value.for_alighting} id="for_alighting" onChange={props.onSelectChange}>
-            <option value="normal">{I18n.routes.edit.stop_point.alighting.normal}</option>
-            <option value="forbidden">{I18n.routes.edit.stop_point.alighting.forbidden}</option>
+            <option value="normal">{I18n.t('routes.edit.stop_point.alighting.normal')}</option>
+            <option value="forbidden">{I18n.t('routes.edit.stop_point.alighting.forbidden')}</option>
           </select>
         </div>
 
@@ -77,7 +77,7 @@ export default function StopPoint(props, {I18n}) {
   )
 }
 
-StopPoint.PropTypes = {
+StopPoint.propTypes = {
   onToggleMap: PropTypes.func.isRequired,
   onToggleEdit: PropTypes.func.isRequired,
   onDeleteClick: PropTypes.func.isRequired,

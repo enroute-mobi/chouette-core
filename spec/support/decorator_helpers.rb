@@ -8,6 +8,7 @@ module Support
         let( :features ){ [] }
         let( :filtered_action_links){}
         before do
+          allow(subject.h).to receive(:duplicate_workbench_referential_path).and_return new_workbench_referential_path(referential.workbench, from: referential.id)
           allow_any_instance_of(Draper::HelperProxy).to receive(:policy).and_return policy
           allow_any_instance_of(AF83::Decorator::Link).to receive(:check_feature){|f|
             features.include?(f)

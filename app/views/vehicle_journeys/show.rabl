@@ -23,6 +23,12 @@ end
 
 child(:time_tables, :object_root => false) do |time_tables|
   attributes :id, :objectid, :comment, :color
+  node(:days) do |tt|
+    tt.display_day_types
+  end
+  node(:bounding_dates) do |tt|
+    tt.presenter.time_table_bounding
+  end
   child(:calendar) do
     attributes :id, :name, :date_ranges, :dates, :shared
   end

@@ -25,7 +25,7 @@ module PaginationHelper
 
     if collection.total_pages > 1
       links = content_tag :div, '', class: 'page_links' do
-        will_paginate collection, container: false, page_links: false, previous_label: '', next_label: '', param_name: collection.try(:pagination_param_name)
+        will_paginate collection, container: false, page_links: false, previous_label: '', next_label: '', param_name: (collection.try(:pagination_param_name) || "page")
       end
 
       content_tag :div, pinfos.concat(links).html_safe, class: "pagination #{cls}"

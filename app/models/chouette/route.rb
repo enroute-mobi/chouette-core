@@ -133,7 +133,7 @@ module Chouette
     def checksum_attributes
       values = self.slice(*['name', 'published_name', 'wayback']).values
       values.tap do |attrs|
-        attrs << self.stop_points.sort_by(&:position).map{|sp| "#{sp.stop_area.user_objectid}#{sp.for_boarding}#{sp.for_alighting}" }.join
+        attrs << self.stop_points.sort_by(&:position).map{|sp| [sp.stop_area.user_objectid, sp.for_boarding, sp.for_alighting]}
         attrs << self.routing_constraint_zones.map(&:checksum)
       end
     end
@@ -183,6 +183,12 @@ module Chouette
       end
 
       return true
+    end
+
+    def full_journey_pattern
+      journey_pattern = journey_patterns.find_or_create_by registration_number: self.number, name: self.name
+      journey_pattern.stop_points = self.stop_points
+      journey_pattern
     end
 
     protected

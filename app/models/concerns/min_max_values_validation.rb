@@ -2,6 +2,7 @@ module MinMaxValuesValidation
   extend ActiveSupport::Concern
 
   included do
+    validates_presence_of :minimum, :maximum
     validate :min_max_values_validation
   end
 

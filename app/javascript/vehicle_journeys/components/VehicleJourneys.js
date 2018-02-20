@@ -12,6 +12,7 @@ export default class VehicleJourneys extends Component {
       this.stopPoints(),
       this.props.filters.features
     )
+    this.toggleTimetables = this.toggleTimetables.bind(this)
   }
 
   isReturn() {
@@ -48,9 +49,35 @@ export default class VehicleJourneys extends Component {
     return this.headerManager.showHeader(object_id)
   }
 
+  allTimeTables() {
+    if(this._allTimeTables){
+      return this._allTimeTables
+    }
+    let keys = []
+    this._allTimeTables = []
+    this.vehicleJourneysList().map((vj, index) => {
+      vj.time_tables.map((tt, _) => {
+        if(keys.indexOf(tt.id) < 0){
+            keys.push(tt.id)
+            this._allTimeTables.push(tt)
+        }
+      })
+    })
+    return this._allTimeTables
+  }
+
+  toggleTimetables(e) {
+    $('.table-2entries .detailed-timetables').toggleClass('hidden')
+    $('.table-2entries .detailed-timetables-bt').toggleClass('active')
+    this.componentDidUpdate()
+    e.preventDefault()
+    false
+  }
+
   componentDidUpdate(prevProps, prevState) {
     if(this.props.status.isFetching == false){
       $('.table-2entries').each(function() {
+        $(this).find('.th').css('height', 'auto')
         var refH = []
         var refCol = []
 
@@ -91,9 +118,19 @@ export default class VehicleJourneys extends Component {
     }
   }
 
+  timeTableURL(tt) {
+    let refURL = window.location.pathname.split('/', 3).join('/')
+    let ttURL = refURL + '/time_tables/' + tt.id
+
+    return (
+      <a href={ttURL} title='Voir le calendrier'><span className='fa fa-calendar' style={{color: (tt.color ? tt.color : '#4B4B4B')}}></span>{tt.days || tt.comment}</a>
+    )
+  }
+
   render() {
     this.previousBreakpoint = undefined
-
+    this._allTimeTables = null
+    let detailed_calendars = this.hasFeature('detailed_calendars') && !this.isReturn() && (this.allTimeTables().length > 0)
     if(this.props.status.isFetching == true) {
       return (
         <div className="isLoading" style={{marginTop: 80, marginBottom: 80}}>
@@ -133,8 +170,28 @@ export default class VehicleJourneys extends Component {
                   <div>{I18n.attribute_name("vehicle_journey", "name")}</div>
                   <div>{I18n.attribute_name("vehicle_journey", "journey_pattern_id")}</div>
                   <div>{I18n.model_name("company")}</div>
-                  <div>{I18n.model_name("time_table", "plural": true)}</div>
                   { this.hasFeature('purchase_windows') && <div>{I18n.model_name("purchase_window", "plural": true)}</div> }
+                  <div>
+                    { detailed_calendars &&
+                      <a href='#' onClick={this.toggleTimetables} className='detailed-timetables-bt'>
+                        <span className='fa fa-angle-up'></span>
+                        {I18n.model_name("time_table", "plural": true)}
+                      </a>
+                    }
+                    { !detailed_calendars && I18n.model_name("time_table", "plural": true)}
+                  </div>
+                  { !this.isReturn() &&
+                    <div className="detailed-timetables hidden">
+                      {this.allTimeTables().map((tt, i)=>
+                        <div key={i}>
+                          <p>
+                            {this.timeTableURL(tt)}
+                          </p>
+                          <p>{tt.bounding_dates}</p>
+                        </div>
+                      )}
+                    </div>
+                  }
                 </div>
                 {this.stopPoints().map((sp, i) =>{
                   return (
@@ -159,6 +216,7 @@ export default class VehicleJourneys extends Component {
                       onSelectVehicleJourney={this.props.onSelectVehicleJourney}
                       vehicleJourneys={this}
                       disabled={this.isReturn()}
+                      allTimeTables={this.allTimeTables()}
                       />
                   )}
                 </div>

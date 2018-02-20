@@ -40,6 +40,7 @@ en:
         label: Journey departure range
         start: Start
         end: End
+      ending_stop: "Arrival"
       infos: Informations
       set: "Set"
       show_arrival_time: "Show and edit arrival times"
@@ -49,6 +50,7 @@ en:
       slide_departure: "departure time at first stop"
       slide_title: "Shift all vehicle passing times"
       slide: "Shift"
+      starting_stop: "Departure"
       stop_title: "Stop"
       submit_frequency_edit: "Edit frequency vehicle journey"
       submit_frequency: "Create frequency vehicle journey"

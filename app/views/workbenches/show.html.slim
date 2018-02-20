@@ -5,7 +5,7 @@
     .col-lg-12.text-right
       - if policy(Referential).create?
         = link_to t('actions.import'), workbench_imports_path(@workbench), class: 'btn btn-primary'
-        = link_to t('actions.add'), new_referential_path(workbench_id: @workbench), class: 'btn btn-primary'
+        = link_to t('actions.add'), new_workbench_referential_path(@workbench), class: 'btn btn-primary'
       = link_to t('workbenches.actions.show_output'), workbench_output_path(@workbench), class: 'btn btn-primary'
 
 .page_content
@@ -25,7 +25,7 @@
                   key: :name, \
                   attribute: 'name', \
                   link_to: lambda do |referential| \
-                    referential_path(referential, current_workbench_id: params[:id]) \
+                    referential_path(referential) \
                   end \
                 ), \
                 TableBuilderHelper::Column.new( \

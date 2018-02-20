@@ -1,8 +1,8 @@
 RSpec.describe Chouette::Route, :type => :model do
-
   subject { create(:route) }
+
   describe 'checksum' do
-    it_behaves_like 'checksum support', :route
+    it_behaves_like 'checksum support'
   end
 
   it { is_expected.to enumerize(:direction).in(:straight_forward, :backward, :clockwise, :counter_clockwise, :north, :north_west, :west, :south_west, :south, :south_east, :east, :north_east) }

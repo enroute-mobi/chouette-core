@@ -8,7 +8,7 @@ const I18n = clone(window, "I18n")
 
 const actions = {
   weekDays: (index) => {
-    return range(1, 8).map(n => I18n.time_tables.edit.metas.days[n])
+    return range(1, 8).map(n => I18n.t('time_tables.edit.metas.days')[n])
   },
   strToArrayDayTypes: (str) =>{
     return actions.weekDays().map(day => str.indexOf(day) !== -1)
@@ -155,7 +155,7 @@ const actions = {
     type : 'CLOSE_MODAL'
   }),
   monthName(strDate) {
-    let monthList = range(1,13).map(n => I18n.calendars.months[n])
+    let monthList = range(1,13).map(n => I18n.t('calendars.months.'+ n ))
     let date = new Date(strDate)
     return monthList[date.getUTCMonth()]
   },
@@ -225,7 +225,7 @@ const actions = {
       let period = periods[i]
       if (index !== i && !period.deleted) {
         if (new Date(period.period_start) <= end && new Date(period.period_end) >= start)  {
-          error = I18n.time_tables.edit.error_submit.periods_overlaps
+          error = I18n.t('time_tables.edit.error_submit.periods_overlaps')
           break
         }
       }
@@ -239,7 +239,7 @@ const actions = {
 
     for (let day of in_days) {
       if (start <= new Date(day.date) && end >= new Date(day.date)) {
-        error = I18n.time_tables.edit.error_submit.dates_overlaps
+        error = I18n.t('time_tables.edit.error_submit.dates_overlaps')
         break
       }
     }
@@ -316,9 +316,9 @@ const actions = {
   errorModalMessage: (errorKey) => {
     switch (errorKey) {
       case "withoutPeriodsWithDaysTypes":
-        return I18n.time_tables.edit.error_modal.withoutPeriodsWithDaysTypes
+        return I18n.t('time_tables.edit.error_modal.withoutPeriodsWithDaysTypes')
       case "withPeriodsWithoutDayTypes":
-        return I18n.time_tables.edit.error_modal.withPeriodsWithoutDayTypes
+        return I18n.t('time_tables.edit.error_modal.withPeriodsWithoutDayTypes')
       default:
         return errorKey
 

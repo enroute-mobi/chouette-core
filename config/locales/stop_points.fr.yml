@@ -52,6 +52,7 @@ fr:
   simple_form:
     labels:
       stop_point:
-        name: Arrêt 
+        name: Arrêt
         for_boarding: "Montée"
         for_alighting: "Descente"
+        reflex_id: ID

@@ -154,7 +154,7 @@ class VehicleJourneysController < ChouetteController
 
   private
   def load_custom_fields
-    @custom_fields = current_workgroup.custom_fields_definitions
+    @custom_fields = referential.workgroup&.custom_fields_definitions || {}
   end
 
   def map_stop_points points
@@ -185,7 +185,9 @@ class VehicleJourneysController < ChouetteController
         :long_lat_type => sp.stop_area.try(:long_lat_type),
         :country_code => sp.stop_area.try(:country_code),
         :country_name => sp.stop_area.try(:country_name),
-        :street_name => sp.stop_area.try(:street_name)
+        :street_name => sp.stop_area.try(:street_name),
+        :waiting_time => sp.stop_area.try(:waiting_time),
+        :waiting_time_text => sp.stop_area.decorate.try(:waiting_time_text),
       }
     end
   end

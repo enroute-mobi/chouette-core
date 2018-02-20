@@ -1,4 +1,4 @@
-RSpec.describe ParentImportNotifier do
+RSpec.describe ParentNotifier do
   let(:workbench_import) { create(:workbench_import) }
 
   describe ".notify_when_finished" do
@@ -20,7 +20,7 @@ RSpec.describe ParentImportNotifier do
         expect(netex_import).to receive(:notify_parent)
       end
 
-      ParentImportNotifier.notify_when_finished(netex_imports)
+      ParentNotifier.new(Import).notify_when_finished(netex_imports)
     end
 
     it "doesn't call #notify_parent if its `notified_parent_at` is set" do
@@ -33,11 +33,11 @@ RSpec.describe ParentImportNotifier do
 
       expect(netex_import).not_to receive(:notify_parent)
 
-      ParentImportNotifier.notify_when_finished
+      ParentNotifier.new(Import).notify_when_finished
     end
   end
 
-  describe ".imports_pending_notification" do
+  describe ".objects_pending_notification" do
     it "includes imports with a parent and `notified_parent_at` unset" do
       netex_import = create(
         :netex_import,
@@ -47,7 +47,7 @@ RSpec.describe ParentImportNotifier do
       )
 
       expect(
-        ParentImportNotifier.imports_pending_notification
+        ParentNotifier.new(Import).objects_pending_notification
       ).to eq([netex_import])
     end
 
@@ -55,7 +55,7 @@ RSpec.describe ParentImportNotifier do
       create(:import, parent: nil)
 
       expect(
-        ParentImportNotifier.imports_pending_notification
+        ParentNotifier.new(Import).objects_pending_notification
       ).to be_empty
     end
 
@@ -70,7 +70,7 @@ RSpec.describe ParentImportNotifier do
       end
 
       expect(
-        ParentImportNotifier.imports_pending_notification
+        ParentNotifier.new(Import).objects_pending_notification
       ).to be_empty
     end
 
@@ -83,7 +83,7 @@ RSpec.describe ParentImportNotifier do
       )
 
       expect(
-        ParentImportNotifier.imports_pending_notification
+        ParentNotifier.new(Import).objects_pending_notification
       ).to be_empty
     end
   end

@@ -51,7 +51,9 @@ class Referential < ActiveRecord::Base
   belongs_to :stop_area_referential
   validates_presence_of :stop_area_referential
   has_many :stop_areas, through: :stop_area_referential
+
   belongs_to :workbench
+  delegate :workgroup, to: :workbench, allow_nil: true
 
   belongs_to :referential_suite
 
@@ -62,6 +64,7 @@ class Referential < ActiveRecord::Base
   scope :order_by_validity_period, ->(dir) { joins(:metadatas).order("unnest(periodes) #{dir}") }
   scope :order_by_lines, ->(dir) { joins(:metadatas).group("referentials.id").order("sum(array_length(referential_metadata.line_ids,1)) #{dir}") }
   scope :not_in_referential_suite, -> { where referential_suite_id: nil }
+  scope :blocked, -> { where('ready = ? AND created_at < ?', false, 4.hours.ago) }
 
   def save_with_table_lock_timeout(options = {})
     save_without_table_lock_timeout(options)

@@ -17,6 +17,10 @@ module Chouette
       (column_names + ['tag_search']) + _ransackers.keys
     end
 
+    ransacker :unaccented_comment, formatter: ->(val){ val.parameterize } do
+      Arel.sql('unaccent(comment)')
+    end
+
     has_and_belongs_to_many :vehicle_journeys, :class_name => 'Chouette::VehicleJourney'
 
     has_many :dates, -> {order(:date)}, inverse_of: :time_table, :validate => :true, :class_name => "Chouette::TimeTableDate", :dependent => :destroy
@@ -44,10 +48,10 @@ module Chouette
         attrs << self.int_day_types
         dates = self.dates
         dates += TimeTableDate.where(time_table_id: self.id)
-        attrs << dates.map(&:checksum).map(&:to_s).sort
+        attrs << dates.map(&:checksum).map(&:to_s).uniq.sort
         periods = self.periods
         periods += TimeTablePeriod.where(time_table_id: self.id)
-        attrs << periods.map(&:checksum).map(&:to_s).sort
+        attrs << periods.map(&:checksum).map(&:to_s).uniq.sort
       end
     end
 

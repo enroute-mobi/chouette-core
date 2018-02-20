@@ -152,7 +152,7 @@ describe('vehicleJourneys reducer', () => {
       },
       departure_time : {
         hour: 23,
-        minute: 2
+        minute: 12
       },
       departure_day_offset: -1,
       arrival_day_offset: -1,
@@ -178,11 +178,11 @@ describe('vehicleJourneys reducer', () => {
       delta : 0,
       arrival_time : {
         hour: 0,
-        minute: 32
+        minute: 42
       },
       departure_time : {
         hour: 0,
-        minute: 32
+        minute: 42
       },
       stop_point_objectid: 'test-4',
       stop_area_cityname: 'city',
@@ -219,7 +219,7 @@ describe('vehicleJourneys reducer', () => {
         type: 'ADD_VEHICLEJOURNEY',
         data: fakeData,
         selectedJourneyPattern: fakeSelectedJourneyPattern,
-        stopPointsList: [{object_id: 'test-1', city_name: 'city', stop_area_id: 1, id: 1, time_zone_offset: 0}, {object_id: 'test-2', city_name: 'city', stop_area_id: 2, id: 2, time_zone_offset: -3600}, {object_id: 'test-3', city_name: 'city', stop_area_id: 3, id: 3, time_zone_offset: 0}, {object_id: 'test-4', city_name: 'city', stop_area_id: 4, id: 4, time_zone_offset: 0}],
+        stopPointsList: [{object_id: 'test-1', city_name: 'city', stop_area_id: 1, id: 1, time_zone_offset: 0, waiting_time: null}, {object_id: 'test-2', city_name: 'city', stop_area_id: 2, id: 2, time_zone_offset: -3600, waiting_time: 10}, {object_id: 'test-3', city_name: 'city', stop_area_id: 3, id: 3, time_zone_offset: 0, waiting_time: 20}, {object_id: 'test-4', city_name: 'city', stop_area_id: 4, id: 4, time_zone_offset: 0}],
         selectedCompany: fakeSelectedCompany
       })
     ).toEqual([{

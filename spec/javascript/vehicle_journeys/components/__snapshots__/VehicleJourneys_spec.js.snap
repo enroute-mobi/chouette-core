@@ -33,6 +33,9 @@ exports[`stopPointHeader should display the city name 1`] = `
           <div>
             calendrier
           </div>
+          <div
+            className="detailed-timetables hidden"
+          />
         </div>
         <div
           className="td"
@@ -123,6 +126,9 @@ exports[`stopPointHeader with the "long_distance_routes" feature should display 
           <div>
             calendrier
           </div>
+          <div
+            className="detailed-timetables hidden"
+          />
         </div>
         <div
           className="td"

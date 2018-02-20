@@ -47,7 +47,7 @@
       - if @dashboard.referentials.present?
         .list-group
           - @dashboard.referentials.first(5).each_with_index do |referential, i|
-            = link_to referential.name, referential_path(referential, workbench_id: referential.workbench_id, current_workbench_id: @dashboard.workbench.id), class: 'list-group-item' if i < 6
+            = link_to referential.name, referential_path(referential), class: 'list-group-item' if i < 6
 
       - else
         .panel-body
@@ -60,12 +60,12 @@
           span.badge.ml-xs = @dashboard.calendars.count if @dashboard.calendars.present?
 
           div
-            = link_to '', workgroup_calendars_path(current_workgroup), class: ' fa fa-chevron-right pull-right', title: t('.see')
+            = link_to '', workgroup_calendars_path(@dashboard.workbench.workgroup), class: ' fa fa-chevron-right pull-right', title: t('.see')
 
       - if @dashboard.calendars.present?
         .list-group
           - @dashboard.calendars.first(5).each_with_index do |calendar, i|
-            = link_to calendar.name, workgroup_calendar_path(current_workgroup, calendar), class: 'list-group-item' if i < 6
+            = link_to calendar.name, workgroup_calendar_path(@dashboard.workbench.workgroup, calendar), class: 'list-group-item' if i < 6
 
       - else
         .panel-body

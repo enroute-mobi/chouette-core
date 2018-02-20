@@ -7,7 +7,7 @@
           abbr title='Champ requis' *
         = f.input :combined_type, as: :boolean, checked_value: 'time_table', unchecked_value: 'calendar', required: false, label: content_tag(:span, t("time_table_combinations.combined_type.#{@combination.combined_type}"), class: 'switch-label', data: { checkedValue: 'Calendriers', uncheckedValue: 'Modèles de calendriers' }), wrapper_html: { class: 'col-sm-8 col-xs-7' }
 
-      = f.input :time_table_id, as: :select, input_html: {class: 'tt_combination_target', style: "width: 100%", data: { 'select2-ajax': 'true', 'select2ed-placeholder': 'Indiquez un calendrier...', term: 'comment_or_objectid_cont_any', url: referential_autocomplete_time_tables_path(@referential, format: :json, :source_id => @combination.source_id)}}, wrapper_html: {class: @combination.combined_type != 'time_table' ? 'hidden' : ''}
+      = f.input :time_table_id, as: :select, input_html: {class: 'tt_combination_target', style: "width: 100%", data: { 'select2-ajax': 'true', 'select2ed-placeholder': 'Indiquez un calendrier...', term: 'unaccented_comment_or_objectid_cont_any', url: referential_autocomplete_time_tables_path(@referential, format: :json, :source_id => @combination.source_id)}}, wrapper_html: {class: @combination.combined_type != 'time_table' ? 'hidden' : ''}
 
       = f.input :calendar_id, as: :select, input_html: { class: 'tt_combination_target', style: "width: 100%", data: { 'select2-ajax': 'true', 'select2ed-placeholder': 'Indiquez un modèle de calendrier...', term: 'name_cont', url: autocomplete_calendars_path}}, wrapper_html: {class: @combination.combined_type != 'calendar' ? 'hidden' : ''}
 

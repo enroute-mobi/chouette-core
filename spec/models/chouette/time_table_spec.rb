@@ -1049,7 +1049,7 @@ end
   # it { is_expected.to validate_uniqueness_of :objectid }
 
   describe 'checksum' do
-    it_behaves_like 'checksum support', :time_table
+    it_behaves_like 'checksum support'
 
     it "handles newly built dates and periods" do
       time_table = build(:time_table)

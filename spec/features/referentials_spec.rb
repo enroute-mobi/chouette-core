@@ -55,7 +55,7 @@ describe "Referentials", :type => :feature do
 
     context 'user has the permission to create referentials' do
       it 'shows the clone link for referetnial' do
-        expect(page).to have_link(I18n.t('actions.clone'), href: new_referential_path(from: referential.id))
+        expect(page).to have_link(I18n.t('actions.clone'), href: new_workbench_referential_path(referential.workbench, from: referential.id))
       end
     end
 
@@ -63,7 +63,7 @@ describe "Referentials", :type => :feature do
       it 'does not show the clone link for referetnial' do
         @user.update_attribute(:permissions, [])
         visit referential_path(referential)
-        expect(page).not_to have_link(I18n.t('actions.clone'), href: new_referential_path(from: referential.id))
+        expect(page).not_to have_link(I18n.t('actions.clone'), href: new_workbench_referential_path(referential.workbench, from: referential.id))
       end
     end
 
@@ -108,8 +108,9 @@ describe "Referentials", :type => :feature do
   end
 
   describe "create" do
+    let(:workbench){ @user.organisation.workbenches.last }
     it "should" do
-      visit new_referential_path
+      visit new_workbench_referential_path(workbench)
       fill_in "Nom", :with => "Test"
       click_button "Valider"
 
@@ -132,7 +133,7 @@ describe "Referentials", :type => :feature do
     context "when user is from the same organisation" do
 
       xit "should" do
-        visit new_referential_path(from: referential.id, current_workbench_id: @user.organisation.workbenches.first.id)
+        visit new_workbench_referential_path(referential.workbench, from: referential.id, current_workbench_id: @user.organisation.workbenches.first.id)
 
         select "2018", :from => "referential_metadatas_attributes_0_periods_attributes_0_begin_1i"
 
@@ -187,7 +188,8 @@ describe "Referentials", :type => :feature do
   end
 
   describe "destroy" do
-    let(:referential) {  create(:referential, :organisation => @user.organisation) }
+    let(:workbench){ @user.organisation.workbenches.last }
+    let(:referential) {  create(:referential, :organisation => @user.organisation, workbench: workbench) }
 
     it "should remove referential" do
       visit referential_path(referential)

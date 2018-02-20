@@ -24,14 +24,14 @@
 
     #miTwo.panel-collapse.collapse
       .list-group
-        - if current_user
-          = link_to workbench_path(current_offer_workbench), class: "list-group-item #{params[:controller] == 'workbenches' ? 'active' : ''}" do
+        - current_user.workbenches.each do |current_workbench|
+          = link_to workbench_path(current_workbench), class: "list-group-item #{params[:controller] == 'workbenches' ? 'active' : ''}" do
             span Jeux de données
-          = link_to workbench_imports_path(current_offer_workbench), class: "list-group-item #{(params[:controller] == 'imports') ? 'active' : ''}" do
+          = link_to workbench_imports_path(current_workbench), class: "list-group-item #{(params[:controller] == 'imports') ? 'active' : ''}" do
             span Import
-          = link_to workgroup_calendars_path(current_workgroup), class: 'list-group-item' do
+          = link_to workgroup_calendars_path(current_workbench.workgroup), class: 'list-group-item' do
             span Modèles de calendrier
-          = link_to workbench_compliance_check_sets_path(current_offer_workbench), class: 'list-group-item' do
+          = link_to workbench_compliance_check_sets_path(current_workbench), class: 'list-group-item' do
             span Rapport de contrôle
           = link_to compliance_control_sets_path, class: 'list-group-item' do
             span Jeux de contrôle

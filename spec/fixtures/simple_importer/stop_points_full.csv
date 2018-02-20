@@ -1,0 +1,11 @@
+"id";"timetable_route_id";"route_name";"stop_sequence";"stop_distance";"station_code";"station_name";"border"
+3354;1136;"Paris centre - Bercy > Lille > Londres";1;0;"XPB";"Paris City Center - Bercy";f
+3355;1136;"Paris centre - Bercy > Lille > Londres";2;232;"XDB";"Lille";f
+3749;1136;"Paris centre - Bercy > Lille > Londres";3;350;"COF";"Coquelles - France";t
+4772;1136;"Paris centre - Bercy > Lille > Londres";4;350;"COU";"Coquelles - UK";t
+3357;1136;"Paris centre - Bercy > Lille > Londres";5;527;"ZEP";"London";f
+3358;1137;"Londres > Lille > Paris centre - Bercy";1;0;"ZEP";"London";f
+3559;1137;"Londres > Lille > Paris centre - Bercy";2;177;"COU";"Coquelles - UK";t
+3743;1137;"Londres > Lille > Paris centre - Bercy";3;177;"COF";"Coquelles - France";t
+3360;1137;"Londres > Lille > Paris centre - Bercy";4;295;"XDB";"Lille";f
+3361;1137;"Londres > Lille > Paris centre - Bercy";5;527;"XPB";"Paris City Center - Bercy";f

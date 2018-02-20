@@ -13,6 +13,8 @@ class Import < ActiveRecord::Base
     where('started_at BETWEEN :begin AND :end', begin: period_range.begin, end: period_range.end)
    end
 
+  scope :blocked, -> { where('created_at < ? AND status = ?', 4.hours.ago, 'running') }
+
   extend Enumerize
   enumerize :status, in: %w(new pending successful warning failed running aborted canceled), scope: true, default: :new
 
@@ -40,6 +42,14 @@ class Import < ActiveRecord::Base
 
   def self.finished_statuses
     %w(successful failed warning aborted canceled)
+  end
+
+  def self.abort_old
+    where(
+      'created_at < ? AND status NOT IN (?)',
+      4.hours.ago,
+      finished_statuses
+    ).update_all(status: 'aborted')
   end
 
   def notify_parent

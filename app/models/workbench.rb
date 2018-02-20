@@ -1,4 +1,6 @@
 class Workbench < ActiveRecord::Base
+  DEFAULT_WORKBENCH_NAME = "Gestion de l'offre"
+
   include ObjectidFormatterSupport
   belongs_to :organisation
   belongs_to :line_referential
@@ -38,6 +40,11 @@ class Workbench < ActiveRecord::Base
         .ready
         .not_in_referential_suite
     end
+  end
+
+  def self.default
+    self.last if self.count == 1
+    where(name: DEFAULT_WORKBENCH_NAME).last
   end
 
   private

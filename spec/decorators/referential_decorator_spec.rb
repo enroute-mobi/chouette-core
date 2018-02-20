@@ -1,7 +1,8 @@
 RSpec.describe ReferentialDecorator, type: [:helper, :decorator] do
   include Support::DecoratorHelpers
 
-  let( :object ){ build_stubbed :referential }
+  let( :workbench ){ build_stubbed :workbench }
+  let( :object ){ build_stubbed :referential, workbench: workbench }
   let( :referential ){ object }
   let( :user ){ build_stubbed :user }
 
@@ -35,7 +36,7 @@ RSpec.describe ReferentialDecorator, type: [:helper, :decorator] do
           expect_action_link_hrefs.to eq([
             [object],
             referential_time_tables_path(object),
-            new_referential_path(from: object)
+            new_workbench_referential_path(referential.workbench, from: object.id)
           ])
         end
       end
@@ -50,8 +51,8 @@ RSpec.describe ReferentialDecorator, type: [:helper, :decorator] do
               [object],
               [:edit, object],
               referential_time_tables_path(object),
-              new_referential_path(from: object),
-              referential_select_compliance_control_set_path(object),
+              new_workbench_referential_path(referential.workbench, from: object.id),
+              select_compliance_control_set_referential_path(object),
               archive_referential_path(object),
               referential_path(object)
             ])
@@ -65,8 +66,8 @@ RSpec.describe ReferentialDecorator, type: [:helper, :decorator] do
             expect_action_link_hrefs(action).to eq([
               [:edit, object],
               referential_time_tables_path(object),
-              new_referential_path(from: object),
-              referential_select_compliance_control_set_path(object),
+              new_workbench_referential_path(referential.workbench, from: object.id),
+              select_compliance_control_set_referential_path(object),
               archive_referential_path(object),
               "#",
               referential_path(object)
@@ -91,7 +92,7 @@ RSpec.describe ReferentialDecorator, type: [:helper, :decorator] do
           expect_action_link_hrefs.to eq([
             [object],
             referential_time_tables_path(object),
-            new_referential_path(from: object)
+            new_workbench_referential_path(referential.workbench, from: object.id)
           ])
         end
       end

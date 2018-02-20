@@ -22,7 +22,7 @@ describe 'Workbenches', type: :feature do
         let( :permission ){ true }
 
         it 'shows the corresponding button' do
-          expected_href = new_referential_path(workbench_id: workbench)
+          expected_href = new_workbench_referential_path(workbench)
           expect( page ).to have_link('Créer', href: expected_href)
         end
       end

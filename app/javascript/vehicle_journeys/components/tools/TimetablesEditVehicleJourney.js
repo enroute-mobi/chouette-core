@@ -99,7 +99,7 @@ export default class TimetablesEditVehicleJourney extends Component {
                                       <TimetableSelect2
                                         onSelect2Timetable={this.props.onSelect2Timetable}
                                         chunkURL={'/autocomplete_time_tables.json'}
-                                        searchKey={"comment_or_objectid_cont_any"}
+                                        searchKey={"unaccented_comment_or_objectid_cont_any"}
                                         isFilter={false}
                                       />
                                     </div>

@@ -22,12 +22,12 @@ class ReferentialDecorator < AF83::Decorator
 
     instance_decorator.action_link policy: :clone, secondary: :show do |l|
       l.content t('actions.clone')
-      l.href { h.new_referential_path(from: object.id, current_workbench_id: context[:current_workbench_id]) }
+      l.href { h.duplicate_workbench_referential_path(object) }
     end
 
     instance_decorator.action_link policy: :validate, secondary: :show do |l|
       l.content t('actions.validate')
-      l.href { h.referential_select_compliance_control_set_path(object.id) }
+      l.href { h.select_compliance_control_set_referential_path(object.id) }
     end
 
     instance_decorator.action_link policy: :archive, secondary: :show do |l|

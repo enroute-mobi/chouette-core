@@ -23,7 +23,7 @@ class AutocompleteTimeTablesController < ChouetteController
   end
 
   def split_params! search
-    params[:q][search] = params[:q][search].split(" ") if params[:q][search]
+    params[:q][search] = params[:q][search].split(" ") if params[:q] && params[:q][search]
   end
 
   def collection

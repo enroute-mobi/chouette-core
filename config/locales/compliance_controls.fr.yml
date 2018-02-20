@@ -7,8 +7,8 @@ fr:
       name: "Chercher le nom ou code d'un contrôle"
       subclass: Objet
       subclasses:
-        generic: 'Généric'
-        journey_pattern: 'JourneyPattern'
+        generic: 'Générique'
+        journey_pattern: 'Mission'
         line: 'Ligne'
         route: 'Itinéraire'
         routing_constraint_zone: 'ITL'

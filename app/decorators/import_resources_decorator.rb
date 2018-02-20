@@ -1,4 +1,4 @@
-class ImportResourcesDecorator < ModelDecorator
+class ImportResourcesDecorator < AF83::Decorator
   delegate :where
 
   def lines_imported

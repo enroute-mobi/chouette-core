@@ -41,7 +41,7 @@ module Chouette
           :arrival_day_offset,
           I18n.t(
             'vehicle_journey_at_stops.errors.day_offset_must_not_exceed_max',
-            short_id: vehicle_journey.get_objectid.short_id,
+            short_id: vehicle_journey&.get_objectid&.short_id,
             max: DAY_OFFSET_MAX + 1
           )
         )
@@ -52,7 +52,7 @@ module Chouette
           :departure_day_offset,
           I18n.t(
             'vehicle_journey_at_stops.errors.day_offset_must_not_exceed_max',
-            short_id: vehicle_journey.get_objectid.short_id,
+            short_id: vehicle_journey&.get_objectid&.short_id,
             max: DAY_OFFSET_MAX + 1
           )
         )
@@ -69,8 +69,8 @@ module Chouette
 
     def checksum_attributes
       [].tap do |attrs|
-        attrs << self.departure_time.try(:to_s, :time)
-        attrs << self.arrival_time.try(:to_s, :time)
+        attrs << self.departure_time&.utc.try(:to_s, :time)
+        attrs << self.arrival_time&.utc.try(:to_s, :time)
         attrs << self.departure_day_offset.to_s
         attrs << self.arrival_day_offset.to_s
       end

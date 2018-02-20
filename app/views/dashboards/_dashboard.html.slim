@@ -9,30 +9,30 @@
               span.badge.ml-xs = workbench.referentials.count if workbench.referentials.present?
 
             div
-              = link_to '', workbench_path(workbench), class: ' fa fa-chevron-right pull-right', title: t('.offers.see')
+              = link_to '', workbench_path(workbench), class: ' fa fa-chevron-right pull-right', title: t('workbenches.index.offers.see')
 
         - if workbench.referentials.present?
           .list-group
             - workbench.referentials.limit(5).each do |referential|
-              = link_to referential.name, referential_path(referential, workbench_id: referential.workbench_id, current_workbench_id: workbench.id), class: 'list-group-item'
+              = link_to referential.name, referential_path(referential), class: 'list-group-item'
         - else
           .panel-body
-            em.small.text-muted = t('.offers.no_content')
+            em.small.text-muted = t('workbenches.index.offers.no_content')
 
-    .panel.panel-default
-      .panel-heading
-        h3.panel-title.with_actions
-          = link_to I18n.t("activerecord.models.calendar", count: @dashboard.current_organisation.calendars.size), workgroup_calendars_path(current_workgroup)
-          div
-            = link_to '', workgroup_calendars_path(current_workgroup), class: ' fa fa-chevron-right pull-right'
-      - if @dashboard.current_organisation.calendars.present?
-        .list-group
-          - @dashboard.current_organisation.calendars.order("updated_at desc").limit(5).each do |calendar|
-            = link_to calendar.name, workgroup_calendars_path(current_workgroup, calendar), class: 'list-group-item'
-      - else
-        .panel-body
-          em.small.text-muted
-            = t('dasboard.calendars.none')
+      .panel.panel-default
+        .panel-heading
+          h3.panel-title.with_actions
+            = link_to I18n.t("activerecord.models.calendar", count: @dashboard.current_organisation.calendars.size), workgroup_calendars_path(workbench.workgroup)
+            div
+              = link_to '', workgroup_calendars_path(workbench.workgroup), class: ' fa fa-chevron-right pull-right'
+        - if @dashboard.current_organisation.calendars.present?
+          .list-group
+            - @dashboard.current_organisation.calendars.order("updated_at desc").limit(5).each do |calendar|
+              = link_to calendar.name, workgroup_calendars_path(workbench.workgroup, calendar), class: 'list-group-item'
+        - else
+          .panel-body
+            em.small.text-muted
+              = t('dasboard.calendars.none')
 
   .col-lg-6.col-md-6.col-sm-6.col-xs-12
     .panel.panel-default
@@ -51,4 +51,4 @@
         .list-group
             = link_to Chouette::Line.model_name.human.pluralize.capitalize, line_referential_lines_path(referential), class: 'list-group-item'
             = link_to Chouette::Company.model_name.human.pluralize.capitalize, line_referential_companies_path(referential), class: 'list-group-item'
-            = link_to "Réseaux", line_referential_networks_path(referential), class: 'list-group-item'
+            = link_to Chouette::Network.model_name.human.pluralize.capitalize, line_referential_networks_path(referential), class: 'list-group-item'

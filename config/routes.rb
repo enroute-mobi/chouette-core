@@ -19,99 +19,10 @@ ChouetteIhm::Application.routes.draw do
 
     resource :output, controller: :workbench_outputs
     resources :merges
+
+    resources :referentials, only: %w(new create)
   end
 
-  devise_for :users, :controllers => {
-    :registrations => 'users/registrations', :invitations => 'users/invitations'
-  }
-
-  devise_scope :user do
-    authenticated :user do
-      root :to => 'workbenches#index', as: :authenticated_root
-    end
-
-    unauthenticated :user do
-      target = 'devise/sessions#new'
-
-      if Rails.application.config.chouette_authentication_settings[:type] == "cas"
-        target = 'devise/cas_sessions#new'
-      end
-
-      root :to => target, as: :unauthenticated_root
-    end
-  end
-
-  mount Sidekiq::Web => '/sidekiq'
-
-  namespace :api do
-    namespace :v1 do
-      resources :workbenches, only: [:index, :show] do
-        resources :imports, only: [:index, :show, :create]
-      end
-      resources :access_links, only: [:index, :show]
-      resources :access_points, only: [:index, :show]
-      resources :connection_links, only: [:index, :show]
-      resources :companies, only: [:index, :show]
-      resources :group_of_lines, only: [:index, :show]
-      resources :netex_imports, only: :create
-      resources :journey_patterns, only: :show
-      resources :lines, only: [:index, :show] do
-        resources :journey_patterns, only: [:index, :show]
-        resources :routes, only: [:index, :show] do
-          resources :vehicle_journeys, only: [:index, :show]
-          resources :journey_patterns, only: [:index, :show]
-          resources :stop_areas, only: [:index, :show]
-        end
-      end
-      resources :networks, only: [:index, :show]
-      resources :routes, only: :show
-      resources :stop_areas, only: [:index, :show]
-      resources :time_tables, only: [:index, :show]
-      resources :vehicle_journeys, only: :show
-      namespace :internals do
-        get 'compliance_check_sets/:id/notify_parent', to: 'compliance_check_sets#notify_parent'
-        get 'netex_imports/:id/notify_parent', to: 'netex_imports#notify_parent'
-      end
-    end
-  end
-
-  resource :organisation, :only => [:show, :edit, :update] do
-    resources :users
-  end
-
-  resources :api_keys, :only => [:edit, :update, :new, :create, :destroy]
-
-  resources :compliance_control_sets do
-    get :simple, on: :member
-    get :clone, on: :member
-    resources :compliance_controls, except: :index do
-      get :select_type, on: :collection
-    end
-    resources :compliance_control_blocks, :except => [:show, :index]
-  end
-
-  deactivable = Proc.new do
-    put :deactivate, on: :member
-    put :activate, on: :member
-  end
-
-  resources :stop_area_referentials, :only => [:show] do
-    post :sync, on: :member
-    resources :stop_areas do
-      put :deactivate, on: :member
-      put :activate, on: :member
-      get :autocomplete, on: :collection
-    end
-  end
-
-  resources :line_referentials, :only => [:show, :edit, :update] do
-    post :sync, on: :member
-    resources :lines, &deactivable
-    resources :group_of_lines
-    resources :companies
-    resources :networks
-  end
-  
   resources :workgroups do
     resources :calendars do
       get :autocomplete, on: :collection, controller: 'autocomplete_calendars'
@@ -121,25 +32,25 @@ ChouetteIhm::Application.routes.draw do
     end
   end
 
-  resources :referentials, except: :index do
+  resources :referentials, except: %w(new create) do
+
+    member do
+      put :archive
+      put :unarchive
+      get :select_compliance_control_set
+      post :validate
+    end
+
     resources :autocomplete_stop_areas, only: [:show, :index] do
       get 'around', on: :member
     end
     resources :autocomplete_purchase_windows, only: [:index]
-    get :select_compliance_control_set
-    post :validate, on: :member
     resources :autocomplete_time_tables, only: [:index]
     resources :autocomplete_timebands
     resources :group_of_lines, controller: "referential_group_of_lines" do
       collection do
         get 'name_filter'
       end
-    end
-
-    # Archive/unarchive
-    member do
-      put :archive
-      put :unarchive
     end
 
     resources :networks, controller: "referential_networks"
@@ -239,6 +150,105 @@ ChouetteIhm::Application.routes.draw do
     resources :clean_ups
   end
 
+  devise_for :users, :controllers => {
+    :registrations => 'users/registrations', :invitations => 'users/invitations'
+  }
+
+  devise_scope :user do
+    authenticated :user do
+      root :to => 'workbenches#index', as: :authenticated_root
+    end
+
+    unauthenticated :user do
+      target = 'devise/sessions#new'
+
+      if Rails.application.config.chouette_authentication_settings[:type] == "cas"
+        target = 'devise/cas_sessions#new'
+      end
+
+      root :to => target, as: :unauthenticated_root
+    end
+  end
+
+  mount Sidekiq::Web => '/sidekiq'
+
+  namespace :api do
+    namespace :v1 do
+      resources :workbenches, only: [:index, :show] do
+        resources :imports, only: [:index, :show, :create]
+      end
+      resources :access_links, only: [:index, :show]
+      resources :access_points, only: [:index, :show]
+      resources :connection_links, only: [:index, :show]
+      resources :companies, only: [:index, :show]
+      resources :group_of_lines, only: [:index, :show]
+      resources :netex_imports, only: :create
+      resources :journey_patterns, only: :show
+      resources :lines, only: [:index, :show] do
+        resources :journey_patterns, only: [:index, :show]
+        resources :routes, only: [:index, :show] do
+          resources :vehicle_journeys, only: [:index, :show]
+          resources :journey_patterns, only: [:index, :show]
+          resources :stop_areas, only: [:index, :show]
+        end
+      end
+      resources :networks, only: [:index, :show]
+      resources :routes, only: :show
+      resources :stop_areas, only: [:index, :show]
+      resources :time_tables, only: [:index, :show]
+      resources :vehicle_journeys, only: :show
+      namespace :internals do
+        get 'compliance_check_sets/:id/notify_parent', to: 'compliance_check_sets#notify_parent'
+        get 'netex_imports/:id/notify_parent', to: 'netex_imports#notify_parent'
+      end
+    end
+  end
+
+  resource :organisation, :only => [:show, :edit, :update] do
+    resources :users
+  end
+
+  resources :api_keys, :only => [:edit, :update, :new, :create, :destroy]
+
+  resources :compliance_control_sets do
+    get :simple, on: :member
+    get :clone, on: :member
+    resources :compliance_controls, except: :index do
+      get :select_type, on: :collection
+    end
+    resources :compliance_control_blocks, :except => [:show, :index]
+  end
+
+  deactivable = Proc.new do
+    put :deactivate, on: :member
+    put :activate, on: :member
+  end
+
+  resources :stop_area_referentials, :only => [:show] do
+    post :sync, on: :member
+    resources :stop_areas do
+      put :deactivate, on: :member
+      put :activate, on: :member
+      get :autocomplete, on: :collection
+    end
+  end
+
+  resources :line_referentials, :only => [:show, :edit, :update] do
+    post :sync, on: :member
+    resources :lines, &deactivable
+    resources :group_of_lines
+    resources :companies
+    resources :networks
+  end
+
+  resources :calendars do
+    get :autocomplete, on: :collection, controller: 'autocomplete_calendars'
+    member do
+      get 'month', defaults: { format: :json }
+    end
+  end
+
+
   root :to => "dashboards#show"
 
   if Rails.env.development? || Rails.env.test?
@@ -255,5 +265,7 @@ ChouetteIhm::Application.routes.draw do
   match '/403', to: 'errors#forbidden', via: :all, as: 'forbidden'
   match '/422', to: 'errors#server_error', via: :all, as: 'unprocessable_entity'
   match '/500', to: 'errors#server_error', via: :all, as: 'server_error'
+
+  match '/status', to: 'statuses#index', via: :get
 
 end

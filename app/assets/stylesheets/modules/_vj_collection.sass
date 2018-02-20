@@ -86,6 +86,20 @@
         &:after
           bottom: 50%
 
+
+  .table-2entries .t2e-head
+    .detailed-timetables
+      .fa
+        margin-right: 5px
+    .detailed-timetables-bt
+      text-decoration: none
+      .fa
+        margin-right: 5px
+        color: $red
+        transition: transform 0.1s
+      &.active .fa
+        transform: rotate(180deg)
+
   .table-2entries .t2e-head > .td:nth-child(2) > div,
   .table-2entries .t2e-head > .td:last-child > div,
   .table-2entries.no_result .t2e-head > .td:last-child > div
@@ -102,6 +116,54 @@
       left: -23px
       top: 50%
       margin-top: -8px
+
+  .detailed-timetables
+    padding-top: 10px
+    text-align: left
+    margin-bottom: -5px
+
+    & > div
+      position: relative
+      border-left: 1px solid $lightgrey
+      padding-left: 10px
+      a
+        text-decoration: none
+        border: none
+      &:before
+        position: absolute
+        left: 0px
+        top: 0
+        right: -8px
+        content: ""
+        border-top: 1px solid $lightgrey
+      font-size: 0.8em
+      height: 44px
+      position: relative
+      padding-bottom: 5px
+
+      p
+        margin: 0
+      p:first-child
+        padding-top: 8px
+        font-weight: bold
+
+  .t2e-item-list .detailed-timetables > div
+    border-left: none
+    &:after
+      top: 50%
+      left: 50%
+      content: ""
+      border: 1px solid black
+      width: 20px
+      height: 20px
+      margin-left: -10px
+      margin-top: -10px
+      position: absolute
+      border-radius: 20px
+    &.active:after
+      background: black
+    &:before
+      left: -8px
 
   // Errors
   .table-2entries .t2e-item-list

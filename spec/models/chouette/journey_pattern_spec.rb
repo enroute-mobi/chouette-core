@@ -2,9 +2,10 @@ require 'spec_helper'
 
 describe Chouette::JourneyPattern, :type => :model do
   it { is_expected.to be_versioned }
+  subject { create(:journey_pattern) }
 
   describe 'checksum' do
-    it_behaves_like 'checksum support', :journey_pattern
+    it_behaves_like 'checksum support'
   end
 
   # context 'validate minimum stop_points size' do
@@ -67,6 +68,30 @@ describe Chouette::JourneyPattern, :type => :model do
         journey_pattern.costs = generate_journey_pattern_costs(10, 10)
       }
       it { should be_truthy }
+    end
+  end
+
+  describe "set_distances" do
+    let(:journey_pattern) { create :journey_pattern }
+    let(:distances){ [] }
+    it "should raise an error" do
+      expect{journey_pattern.set_distances(distances)}.to raise_error
+    end
+
+    context "with consistent data" do
+      let(:distances){ [0, 100, "200", 500, 1000] }
+
+      it "should set costs" do
+        expect{journey_pattern.set_distances(distances)}.to_not raise_error
+        start, stop = journey_pattern.stop_points[0..1]
+        expect(journey_pattern.costs_between(start, stop)[:distance]).to eq 100
+        start, stop = journey_pattern.stop_points[1..2]
+        expect(journey_pattern.costs_between(start, stop)[:distance]).to eq 100
+        start, stop = journey_pattern.stop_points[2..3]
+        expect(journey_pattern.costs_between(start, stop)[:distance]).to eq 300
+        start, stop = journey_pattern.stop_points[3..4]
+        expect(journey_pattern.costs_between(start, stop)[:distance]).to eq 500
+      end
     end
   end
 

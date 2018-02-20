@@ -48,12 +48,24 @@ export default class VehicleJourney extends Component {
     }
   }
 
+  hasTimeTable(time_tables, tt) {
+    let found = false
+    time_tables.map((t, index) => {
+      if(t.id == tt.id){
+        found = true
+        return
+      }
+    })
+    return found
+  }
+
   isDisabled(bool1, bool2) {
     return (bool1 || bool2)
   }
 
   render() {
     this.previousCity = undefined
+    let detailed_calendars = this.hasFeature('detailed_calendars') && !this.disabled
     let {time_tables, purchase_windows} = this.props.value
 
     return (
@@ -68,20 +80,20 @@ export default class VehicleJourney extends Component {
           <div>{this.props.value.published_journey_name && this.props.value.published_journey_name != I18n.t('undefined') ? this.props.value.published_journey_name : '-'}</div>
           <div>{this.props.value.journey_pattern.short_id || '-'}</div>
           <div>{this.props.value.company ? this.props.value.company.name : '-'}</div>
+          { this.hasFeature('purchase_windows') &&
+            <div>
+            {purchase_windows.slice(0,3).map((tt, i)=>
+              <span key={i} className='vj_tt'>{this.purchaseWindowURL(tt)}</span>
+            )}
+            {purchase_windows.length > 3 && <span className='vj_tt'> + {purchase_windows.length - 3}</span>}
+            </div>
+          }
           <div>
             {time_tables.slice(0,3).map((tt, i)=>
               <span key={i} className='vj_tt'>{this.timeTableURL(tt)}</span>
             )}
             {time_tables.length > 3 && <span className='vj_tt'> + {time_tables.length - 3}</span>}
           </div>
-          { this.hasFeature('purchase_windows') &&
-            <div>
-              {purchase_windows.slice(0,3).map((tt, i)=>
-                <span key={i} className='vj_tt'>{this.purchaseWindowURL(tt)}</span>
-              )}
-              {purchase_windows.length > 3 && <span className='vj_tt'> + {purchase_windows.length - 3}</span>}
-            </div>
-          }
           {!this.props.disabled && <div className={(this.props.value.deletable ? 'disabled ' : '') + 'checkbox'}>
             <input
               id={this.props.index}
@@ -94,7 +106,16 @@ export default class VehicleJourney extends Component {
             ></input>
             <label htmlFor={this.props.index}></label>
           </div>}
+
           {this.props.disabled && <VehicleJourneyInfoButton vehicleJourney={this.props.value} />}
+
+          { detailed_calendars &&
+            <div className="detailed-timetables hidden">
+            {this.props.allTimeTables.map((tt, i) =>
+              <div key={i} className={(this.hasTimeTable(time_tables, tt) ? "active" : "inactive")}></div>
+            )}
+            </div>
+          }
         </div>
         {this.props.value.vehicle_journey_at_stops.map((vj, i) =>
           <div key={i} className='td text-center'>
@@ -174,4 +195,5 @@ VehicleJourney.propTypes = {
   onUpdateTime: PropTypes.func.isRequired,
   onSelectVehicleJourney: PropTypes.func.isRequired,
   vehicleJourneys: PropTypes.object.isRequired,
+  allTimeTables: PropTypes.array.isRequired,
 }

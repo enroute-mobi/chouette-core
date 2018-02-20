@@ -1,4 +1,6 @@
-= simple_form_for @referential, html: {class: 'form-horizontal', id: 'referential_form'}, wrapper: :horizontal_form do |form|
+- url = @referential.new_record? ? [@workbench, @referential] : [@referential]
+
+= simple_form_for @referential, url: url, html: {class: 'form-horizontal', id: 'referential_form'}, wrapper: :horizontal_form do |form|
 
   .row
     .col-lg-12

@@ -40,6 +40,7 @@ fr:
         label: Plage horaire au départ de la course
         start: Début
         end: Fin
+      ending_stop: "Arrivée"
       infos: Informations
       set: "Fixer"
       show_arrival_time: "Afficher et éditer les horaires d'arrivée"
@@ -49,6 +50,7 @@ fr:
       slide_departure: "horaire de départ au 1° arrêt à"
       slide_title: "Décaler l'ensemble des horaires de course"
       slide: "Décaler"
+      starting_stop: "Origine"
       stop_title: "Arrêt"
       submit_frequency_edit: "Editer course en fréquence"
       submit_frequency: "Créer course en fréquence"

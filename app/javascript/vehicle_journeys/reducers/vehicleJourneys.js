@@ -19,26 +19,17 @@ const vehicleJourney= (state = {}, action, keep) => {
         current_time.minute = parseInt(action.data["start_time.minute"].value) || 0
       }
       _.each(action.stopPointsList, (sp) =>{
+        let inJourney = false
         if(action.selectedJourneyPattern.full_schedule && action.selectedJourneyPattern.costs && action.selectedJourneyPattern.costs[prevSp.stop_area_id + "-" + sp.stop_area_id]){
           let delta = parseInt(action.selectedJourneyPattern.costs[prevSp.stop_area_id + "-" + sp.stop_area_id].time)
-          let delta_hour = parseInt(delta/60)
-          let delta_minute = delta - 60*delta_hour
-          current_time.hour += delta_hour
-          current_time.minute += delta_minute
-          let extra_hours = parseInt(current_time.minute/60)
-          current_time.hour += extra_hours
-          current_time.minute -= extra_hours*60
-          current_time.hour = current_time.hour % 24
+          current_time = actions.addMinutesToTime(current_time, delta)
           prevSp = sp
+          inJourney = true
         }
         let offsetHours = sp.time_zone_offset / 3600
         let offsetminutes = sp.time_zone_offset/60 - 60*offsetHours
         let newVjas = {
           delta: 0,
-          departure_time:{
-            hour: (24 + current_time.hour + offsetHours) % 24,
-            minute: current_time.minute + offsetminutes
-          },
           arrival_time:{
             hour: (24 + current_time.hour + offsetHours) % 24,
             minute: current_time.minute + offsetminutes
@@ -47,6 +38,16 @@ const vehicleJourney= (state = {}, action, keep) => {
           stop_area_cityname: sp.city_name,
           dummy: true
         }
+
+        if(sp.waiting_time && inJourney){
+          current_time = actions.addMinutesToTime(current_time, parseInt(sp.waiting_time))
+        }
+
+        newVjas.departure_time = {
+          hour: (24 + current_time.hour + offsetHours) % 24,
+          minute: current_time.minute + offsetminutes
+        }
+
         if(current_time.hour + offsetHours > 24){
           newVjas.departure_day_offset = 1
           newVjas.arrival_day_offset = 1

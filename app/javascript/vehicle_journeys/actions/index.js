@@ -348,21 +348,11 @@ const actions = {
             var purchaseWindows = []
             let tt
             for (tt of val.time_tables){
-              timeTables.push({
-                objectid: tt.objectid,
-                comment: tt.comment,
-                id: tt.id,
-                color: tt.color
-              })
+              timeTables.push(tt)
             }
             if(val.purchase_windows){
               for (tt of val.purchase_windows){
-                purchaseWindows.push({
-                  objectid: tt.objectid,
-                  name: tt.name,
-                  id: tt.id,
-                  color: tt.color
-                })
+                purchaseWindows.push(tt)
               }
             }
             let vjasWithDelta = val.vehicle_journey_at_stops.map((vjas, i) => {
@@ -527,6 +517,22 @@ const actions = {
         minute: actions.simplePad(newArrivalDT.getUTCMinutes())
       }
     }
+  },
+  addMinutesToTime: (time, minutes) => {
+    let res = {
+      hour: time.hour,
+      minute: time.minute
+    }
+    let delta_hour = parseInt(minutes/60)
+    let delta_minute = minutes - 60*delta_hour
+    res.hour += delta_hour
+    res.minute += delta_minute
+    let extra_hours = parseInt(res.minute/60)
+    res.hour += extra_hours
+    res.minute -= extra_hours*60
+    res.hour = res.hour % 24
+
+    return res
   }
 }
 

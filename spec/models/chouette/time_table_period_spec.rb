@@ -10,7 +10,7 @@ describe Chouette::TimeTablePeriod, :type => :model do
   it { is_expected.to validate_presence_of :period_end }
 
   describe 'checksum' do
-    it_behaves_like 'checksum support', :time_table_period
+    it_behaves_like 'checksum support'
   end
 
   describe "#overlap" do

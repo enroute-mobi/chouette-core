@@ -13,7 +13,7 @@ export default function Metas({metas, onUpdateDayTypes, onUpdateComment, onUpdat
           {/* comment (name) */}
           <div className="form-group">
             <label htmlFor="" className="control-label col-sm-4 required">
-              {I18n.time_tables.edit.metas.name} <abbr title="">*</abbr>
+              {I18n.t('time_tables.edit.metas.name')} <abbr title="">*</abbr>
             </label>
             <div className="col-sm-8">
               <input
@@ -28,7 +28,7 @@ export default function Metas({metas, onUpdateDayTypes, onUpdateComment, onUpdat
 
           {/* color */}
           {metas.color !== undefined && <div className="form-group">
-            <label htmlFor="" className="control-label col-sm-4">{I18n.activerecord.attributes.time_table.color}</label>
+            <label htmlFor="" className="control-label col-sm-4">{I18n.attribute_name('time_table', 'color')}</label>
             <div className="col-sm-8">
               <div className="dropdown color_selector">
                 <button
@@ -73,7 +73,7 @@ export default function Metas({metas, onUpdateDayTypes, onUpdateComment, onUpdat
 
           {/* tags */}
           {metas.tags !== undefined && <div className="form-group">
-            <label htmlFor="" className="control-label col-sm-4">{I18n.activerecord.attributes.time_table.tag_list}</label>
+            <label htmlFor="" className="control-label col-sm-4">{I18n.attribute_name('time_table', 'tag_list')}</label>
             <div className="col-sm-8">
               <TagsSelect2
                 initialTags={metas.initial_tags}
@@ -86,16 +86,16 @@ export default function Metas({metas, onUpdateDayTypes, onUpdateComment, onUpdat
 
           {/* calendar */}
           {metas.calendar !== null && <div className="form-group">
-            <label htmlFor="" className="control-label col-sm-4">{I18n.activerecord.attributes.time_table.calendar}</label>
+            <label htmlFor="" className="control-label col-sm-4">{I18n.attribute_name('time_table', 'calendar')}</label>
             <div className="col-sm-8">
-              <span>{metas.calendar ? metas.calendar.name : I18n.time_tables.edit.metas.no_calendar}</span>
+              <span>{metas.calendar ? metas.calendar.name : I18n.t('time_tables.edit.metas.no_calendar')}</span>
             </div>
           </div>}
 
           {/* day_types */}
           <div className="form-group">
             <label htmlFor="" className="control-label col-sm-4">
-              {I18n.time_tables.edit.metas.day_types}
+              {I18n.t('time_tables.edit.metas.day_types')}
             </label>
             <div className="col-sm-8">
               <div className="form-group labelled-checkbox-group">

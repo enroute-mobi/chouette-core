@@ -29,11 +29,11 @@ export default class BSelect4 extends Component {
         val = this.props.selection.selectedJPModal
       }
     }
-    if(this.useAjax()){
-      val = val.published_name
-    }
-    else{
-      if(val){
+    if(val){
+      if(this.useAjax()){
+        val = val.published_name
+      }
+      else{
         val = val.id
       }
     }

@@ -14,4 +14,8 @@ Sidekiq.configure_client do |config|
   config.redis = { url: ENV.fetch('SIDEKIQ_REDIS_URL', 'redis://localhost:6379/12') }
 end
 
+Sidekiq.configure_client do |config|
+  config.redis = { url: ENV.fetch('SIDEKIQ_REDIS_URL', 'redis://localhost:6379/12') }
+end
+
 Sidekiq.default_worker_options = { retry: false }

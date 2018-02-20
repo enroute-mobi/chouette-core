@@ -23,12 +23,12 @@ end
 
 crumb :referential do |referential|
   link breadcrumb_name(referential), referential_path(referential)
-  parent :workbench, current_offer_workbench
+  parent :workbench, mutual_workbench(referential.workbench)
 end
 
 crumb :referentials do |referential|
-  link I18n.t('referentials.index.title'), referentials_path()
-  parent :workbench, current_offer_workbench
+  link I18n.t('referentials.index.title'), workbench_path(current_workbench)
+  parent :workbench, mutual_workbench(current_workbench)
 end
 
 crumb :referential_companies do |referential|

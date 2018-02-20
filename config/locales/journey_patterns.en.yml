@@ -6,6 +6,7 @@ en:
       vehicle_journeys_count: "Vehicle journeys: %{count}"
       vehicle_journey_at_stops: "Vehicle journey at stops"
     actions:
+      index: "Journey patterns"
       new: "Add a new journey_pattern"
       edit: "Edit this journey pattern"
       destroy: "Remove this journey pattern"

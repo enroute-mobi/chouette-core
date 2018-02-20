@@ -40,7 +40,7 @@ export default class TagsSelect2 extends Component {
           allowClear: true,
           theme: 'bootstrap',
           width: '100%',
-          placeholder: this.context.I18n.time_tables.edit.select2.tag.placeholder,
+          placeholder: this.context.I18n.t('time_tables.edit.select2.tag.placeholder'),
           ajax: {
             url: origin + path + '/tags.json',
             dataType: 'json',

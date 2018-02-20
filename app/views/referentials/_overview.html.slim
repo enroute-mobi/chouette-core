@@ -9,7 +9,7 @@
               span.fa.fa-search
         .form-group.togglable
           = f.label Chouette::Line.human_attribute_name(:company_id), required: false, class: 'control-label'
-          = f.input :company_id_eq_any, collection: overview.referential_lines.map(&:company).uniq.sort_by(&:name), as: :check_boxes, label: false, label_method: lambda{|l| ("<span>" + l.name + "</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list'}
+          = f.input :company_id_eq_any, collection: overview.referential_lines.map(&:company).compact.uniq.sort_by(&:name), as: :check_boxes, label: false, label_method: lambda{|l| ("<span>" + l.name + "</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list'}
 
         .form-group.togglable
           = f.label Chouette::Line.human_attribute_name(:transport_mode), required: false, class: 'control-label'

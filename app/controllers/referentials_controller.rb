@@ -1,5 +1,6 @@
 class ReferentialsController < ChouetteController
   defaults :resource_class => Referential
+  before_action :load_workbench
   include PolicyChecker
 
   respond_to :html
@@ -30,7 +31,7 @@ class ReferentialsController < ChouetteController
   def show
     resource.switch
     show! do |format|
-      @referential = @referential.decorate(context: { current_workbench_id: params[:current_workbench_id] } )
+      @referential = @referential.decorate()
       @reflines = lines_collection.paginate(page: params[:page], per_page: 10)
       @reflines = ReferentialLineDecorator.decorate(
         @reflines,
@@ -141,7 +142,6 @@ class ReferentialsController < ChouetteController
     if params[:from]
       source_referential = Referential.find(params[:from])
       @referential = Referential.new_from(source_referential, current_functional_scope)
-      @referential.workbench_id = params[:current_workbench_id]
     end
 
     @referential.data_format = current_organisation.data_format
@@ -175,4 +175,12 @@ class ReferentialsController < ChouetteController
     )
   end
 
+  def load_workbench
+    @workbench ||= Workbench.find(params[:workbench_id]) if params[:workbench_id]
+    @workbench ||= resource&.workbench if params[:id]
+    @workbench
+  end
+
+  alias_method :current_workbench, :load_workbench
+  helper_method :current_workbench
 end

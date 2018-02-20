@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe Chouette::VehicleJourney, :type => :model do
+  subject { create(:vehicle_journey) }
+
   it { is_expected.to be_versioned }
   it { should have_and_belong_to_many(:purchase_windows) }
 
@@ -21,7 +23,7 @@ describe Chouette::VehicleJourney, :type => :model do
   end
 
   describe 'checksum' do
-    it_behaves_like 'checksum support', :vehicle_journey
+    it_behaves_like 'checksum support'
     it "changes when a vjas is updated" do
       vehicle_journey = create(:vehicle_journey)
       expect{vehicle_journey.vehicle_journey_at_stops.last.update_attribute(:departure_time, Time.now)}.to change{vehicle_journey.reload.checksum}

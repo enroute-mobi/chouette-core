@@ -80,4 +80,8 @@ class Organisation < ActiveRecord::Base
     features && features.include?(feature.to_s)
   end
 
+  def default_workbench
+    workbenches.default
+  end
+
 end

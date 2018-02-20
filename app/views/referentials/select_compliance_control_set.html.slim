@@ -2,7 +2,7 @@
   .container-fluid
     .row
       .col-lg-8.col-lg-offset-2.col-md-8.col-md-offset-2.col-sm-10.col-sm-offset-1
-        = form_tag validate_referential_path(params[:referential_id]), {class: 'form-horizontal', id: 'select_compliance_control_set', wrapper: :horizontal_form} do
+        = form_tag validate_referential_path(@referential), {class: 'form-horizontal', id: 'select_compliance_control_set', wrapper: :horizontal_form} do
           .row
             .col-lg-12
               .form-group

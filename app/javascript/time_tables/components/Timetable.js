@@ -31,11 +31,11 @@ export default class Timetable extends Component {
         <div className="table table-2entries mb-sm">
           <div className="t2e-head w20">
             <div className="th">
-              <div className="strong">{this.context.I18n.time_tables.synthesis}</div>
+              <div className="strong">{this.context.I18n.t('time_tables.edit.synthesis')}</div>
             </div>
-            <div className="td"><span>{this.context.I18n.time_tables.edit.day_types}</span></div>
-            <div className="td"><span>{this.context.I18n.time_tables.edit.periods}</span></div>
-            <div className="td"><span>{this.context.I18n.time_tables.edit.exceptions}</span></div>
+            <div className="td"><span>{this.context.I18n.t('time_tables.edit.day_types')}</span></div>
+            <div className="td"><span>{this.context.I18n.t('time_tables.edit.periods')}</span></div>
+            <div className="td"><span>{this.context.I18n.t('time_tables.edit.exceptions')}</span></div>
           </div>
           <div className="t2e-item-list w80">
             <div>

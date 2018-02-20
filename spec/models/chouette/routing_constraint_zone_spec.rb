@@ -11,7 +11,7 @@ describe Chouette::RoutingConstraintZone, type: :model do
   it { is_expected.to be_versioned }
 
   describe 'checksum' do
-    it_behaves_like 'checksum support', :routing_constraint_zone
+    it_behaves_like 'checksum support'
   end
 
   describe 'validations' do

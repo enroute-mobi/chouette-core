@@ -13,8 +13,8 @@
                 ComplianceControl.human_attribute_name(:code) => @compliance_control.code,
                 ComplianceControl.human_attribute_name(:criticity) => @compliance_control.criticity,
                 ComplianceControl.human_attribute_name(:comment) => @compliance_control.comment,
-                I18n.t('activerecord.attributes.compliance_control.predicate') => @compliance_control.class.predicate,
-                I18n.t('activerecord.attributes.compliance_control.prerequisite') => @compliance_control.class.prerequisite,
+                I18n.t('activerecord.attributes.compliance_control.predicate') => @compliance_control.predicate,
+                I18n.t('activerecord.attributes.compliance_control.prerequisite') => @compliance_control.prerequisite,
               }.merge( \
                 {}.tap do |hash| \
                   @compliance_control.class.dynamic_attributes.each do |attribute| \

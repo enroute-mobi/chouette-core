@@ -46,6 +46,7 @@ yarn install
 bundle config build.libv8 --with-system-v8
 bundle
 ```
+
 or
 
 ```sh
@@ -95,6 +96,46 @@ On mac/OS :
 brew install postgis
 ```
 
+<<<<<<< HEAD
+### Authentication
+
+See `config.chouette_authentication_settings`.
+
+Use the database authentication or get an invitation to [STIF Portail](http://stif-portail-dev.af83.priv/).
+
+### Run seed
+
+Run :
+
+      bundle exec rake db:seed
+
+Two users are created : stif-boiv@af83.com/secret and stif-boiv+transporteur@af83.com/secret
+
+If you have access to STIF CodifLigne and Reflex :
+
+      bundle exec rake codifligne:sync
+      bundle exec rake reflex:sync
+
+To create Referential with some data (Route, JourneyPattern, VehicleJourney, etc) :
+
+      bundle exec rake referential:create
+
+# Troubleshooting
+
+If PG complains about illegal type `hstore` in your tests that is probably because the shared extension is not installed, here is what to do:
+
+#### Check installation
+
+* Run tests
+
+      bundle exec rake spec
+      bundle exec rake teaspoon
+
+* Start local server
+
+      bundle exec rails server
+
+=======
 On debian/ubuntu system :
 
 ```sh
@@ -135,6 +176,7 @@ RAILS_ENV=test bundle exec rake db:create db:migrate
 ```
 
 #### Load seed datas
+>>>>>>> master
 
 ```sh
 bundle exec rake db:seed:stif
@@ -169,7 +211,7 @@ bundle exec rake referential:create
 
 #### Run tests
 
-#### Rspec 
+#### Rspec
 
 ```sh
 bundle exec rake spec

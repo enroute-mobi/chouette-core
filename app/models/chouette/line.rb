@@ -41,6 +41,7 @@ module Chouette
 
     validates_presence_of :name
 
+
     scope :by_text, ->(text) { where('lower(name) LIKE :t or lower(published_name) LIKE :t or lower(objectid) LIKE :t or lower(comment) LIKE :t or lower(number) LIKE :t',
       t: "%#{text.downcase}%") }
 
@@ -78,6 +79,14 @@ module Chouette
 
     def companies
       line_referential.companies.where(id: ([company_id] + Array(secondary_company_ids)).compact)
+    end
+
+    def deactivate
+      self.deactivated = true
+    end
+
+    def activate
+      self.deactivated = false
     end
 
     def deactivate!

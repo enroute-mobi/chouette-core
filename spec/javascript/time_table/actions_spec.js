@@ -61,7 +61,6 @@ describe('actions', () => {
     expect(actions.unselect2Tags(selectedItem)).toEqual(expectedAction)
   })
 
-
   it('should create an action to go to previous page', () => {
     let pagination = {
       currentPage: '2017-01-01',

@@ -10,7 +10,7 @@ export default function ErrorModal({dispatch, modal, onModalClose}, {I18n}) {
         <div className='modal-dialog'>
           <div className='modal-content'>
             <div className='modal-header'>
-              <h4 className='modal-title'>{I18n.time_tables.edit.error_modal.title}</h4>
+              <h4 className='modal-title'>{I18n.t('time_tables.edit.error_modal.title')}</h4>
             </div>
             <div className='modal-body'>
               <div className='mt-md mb-md'>
@@ -24,7 +24,7 @@ export default function ErrorModal({dispatch, modal, onModalClose}, {I18n}) {
                 type='button'
                 onClick={() => { onModalClose() }}
               >
-                {I18n.back}
+                {I18n.t('back')}
               </button>
             </div>
           </div>

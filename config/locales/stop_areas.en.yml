@@ -48,10 +48,14 @@ en:
       area_type: Type an area type...
     new:
       title: "Add a new stop"
+    update:
+      title: "Add a new stop"
     form:
       address: "246 Boulevard Saint-Germain, 75007 Paris"
       geolocalize: "Pinpoint "
     edit:
+      title: "Update stop %{stop_area}"
+    update:
       title: "Update stop %{stop_area}"
     show:
       title: "Stop %{stop_area}"

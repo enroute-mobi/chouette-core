@@ -15,8 +15,7 @@ describe ReferentialsController, :type => :controller do
     end
 
     context "user's organisation doesn't match referential's organisation" do
-      pending "hotfix opens all unknow actions need to close the uneeded later" do
-      #it 'raises a ActiveRecord::RecordNotFound' do
+      it 'raises a ActiveRecord::RecordNotFound' do
         expect { put :archive, id: other_referential.id }.to raise_error(ActiveRecord::RecordNotFound)
       end
     end
@@ -26,7 +25,7 @@ describe ReferentialsController, :type => :controller do
     it 'gets compliance control set for current organisation' do
       compliance_control_set = create(:compliance_control_set, organisation: @user.organisation)
       create(:compliance_control_set)
-      get :select_compliance_control_set, referential_id: referential.id
+      get :select_compliance_control_set, id: referential.id
       expect(assigns[:compliance_control_sets]).to eq([compliance_control_set])
     end
   end
@@ -43,16 +42,51 @@ describe ReferentialsController, :type => :controller do
     end
   end
 
-  describe "POST #create" do
+  describe "GET #new" do
     context "when duplicating" do
-      it "displays a flash message", pending: 'requires more params to create a valid Referential' do
-        post :create,
-          from: referential.id,
-          current_workbench_id: referential.workbench_id,
-          referential: {
-            name: 'Duplicated'
-          }
+      let(:workbench){ create :workbench}
+      let(:request){
+        get :new,
+          workbench_id: workbench.id,
+          from: referential.id
+      }
 
+      it "duplicates the given referential" do
+        request
+        new_referential = assigns(:referential)
+        expect(new_referential.line_referential).to eq referential.line_referential
+        expect(new_referential.stop_area_referential).to eq referential.stop_area_referential
+        expect(new_referential.objectid_format).to eq referential.objectid_format
+        expect(new_referential.prefix).to eq referential.prefix
+        expect(new_referential.slug).to eq "#{referential.slug}_clone"
+        expect(new_referential.workbench).to eq workbench
+      end
+    end
+  end
+
+  describe "POST #create" do
+    let(:workbench){ create :workbench}
+    context "when duplicating" do
+      let(:request){
+        post :create,
+        workbench_id: workbench.id,
+        referential: {
+          name: 'Duplicated',
+          created_from_id: referential.id,
+          stop_area_referential: referential.stop_area_referential,
+          line_referential: referential.line_referential,
+          objectid_format: referential.objectid_format,
+          workbench_id: referential.workbench_id
+        }
+      }
+
+      it "creates the new referential" do
+        expect{request}.to change{Referential.count}.by 1
+        expect(Referential.last.name).to eq "Duplicated"
+      end
+
+      it "displays a flash message" do
+        request
         expect(controller).to set_flash[:notice].to(
           I18n.t('notice.referentials.duplicate')
         )

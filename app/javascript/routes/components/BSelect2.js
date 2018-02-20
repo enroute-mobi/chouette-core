@@ -85,7 +85,7 @@ class BSelect2 extends Component{
         onSelect={ this.props.onSelect }
         ref='newSelect'
         options={{
-          placeholder: this.context.I18n.routes.edit.select2.placeholder,
+          placeholder: this.context.I18n.t("routes.edit.select2.placeholder"),
           allowClear: true,
           language: 'fr', /* Doesn't seem to work... :( */
           theme: 'bootstrap',

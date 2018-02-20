@@ -170,5 +170,21 @@ module Chouette
       end
       full
     end
+
+    def set_distances distances
+      raise "inconsistent data: #{distances.count} values for #{stop_points.count} stops" unless distances.count == stop_points.count
+      prev = distances[0].to_i
+      _costs = self.costs
+      distances[1..-1].each_with_index do |distance, i|
+        distance = distance.to_i
+        relative = distance - prev
+        prev = distance
+        start, stop = stop_points[i..i+1]
+        key = "#{start.stop_area_id}-#{stop.stop_area_id}"
+        _costs[key] ||= {}
+        _costs[key]["distance"] = relative
+      end
+      self.costs = _costs
+    end
   end
 end

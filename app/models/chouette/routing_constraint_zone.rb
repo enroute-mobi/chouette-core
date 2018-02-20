@@ -25,7 +25,9 @@ module Chouette
     end
 
     def checksum_attributes
-      self.stop_points.map(&:stop_area).map(&:user_objectid)
+      [
+        self.stop_points.map(&:stop_area).map(&:user_objectid)
+      ]
     end
 
     def stop_points_belong_to_route

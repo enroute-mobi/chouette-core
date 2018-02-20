@@ -28,7 +28,7 @@
   },
   "license": "MIT",
   "engines": {
-    "node": "~6.12.0"
+    "node": "^6.12.3"
   },
   "devDependencies": {
     "es6-object-assign": "1.1.0",

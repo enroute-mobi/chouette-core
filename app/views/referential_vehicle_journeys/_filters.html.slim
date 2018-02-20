@@ -40,9 +40,18 @@
         = f.input :published_journey_name_gteq, label: false, wrapper_html: { class: 'w45'}
         .form-group.w10.to= I18n.t('vehicle_journeys.form.to')
         = f.input :published_journey_name_lteq, label: false, wrapper_html: { class: 'w45'}
-    .form-group.togglable class=filter_item_class(params[:q], :stop_area_ids)
+    .form-group.togglable class=filter_item_class(params[:q], :stop_areas)
       = f.label Chouette::StopArea.model_name.human.pluralize, required: false, class: 'control-label'
-      = f.input :stop_area_ids, collection: @all_stop_areas.select(:id, :name).order(name: :asc), checked: params[:q] && params[:q][:stop_area_ids], as: :check_boxes, label: false, label_method: lambda{|l| ("<span>" + l.name + "</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list'}, multiple: true
+      .filter_menu.stop-areas
+        = f.simple_fields_for :stop_areas do |p|
+          - json_url = referential_autocomplete_stop_areas_path(@referential, :format => :json)
+          - opts = {as: :select, label: false, required: false, wrapper_html: { class: 'filter_menu-item select2ed' }, input_html: {style: "width: 100%", data: { 'select2-ajax': 'true', 'select2ed-placeholder': '', url: json_url, 'select2ed-allow-clear': true}}}
+          - opts = opts.update({collection: [@starting_stop].compact, selected: @starting_stop&.id})
+          - opts[:input_html][:data][:'select2ed-placeholder'] = I18n.t('vehicle_journeys.form.starting_stop')
+          = p.input :start, opts
+          - opts = opts.update({collection: [@ending_stop].compact, selected: @ending_stop&.id})
+          - opts[:input_html][:data][:'select2ed-placeholder'] = I18n.t('vehicle_journeys.form.ending_stop')
+          = p.input :end, opts
     .form-group.togglable class=filter_item_class(params[:q], :purchase_window)
       = f.label Chouette::VehicleJourney.human_attribute_name(:purchase_window), class: 'control-label'
       .filter_menu

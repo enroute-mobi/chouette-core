@@ -61,7 +61,6 @@ class RouteDecorator < AF83::Decorator
       policy: :duplicate
     ) do |l|
       l.content h.t('routes.duplicate.title')
-      l.method :post
       l.href do
         h.duplicate_referential_line_route_path(
           context[:referential],

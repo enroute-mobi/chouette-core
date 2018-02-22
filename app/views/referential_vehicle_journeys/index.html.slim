@@ -39,13 +39,13 @@
                 ), \
                 TableBuilderHelper::Column.new( \
                   key: :departure_time, \
-                  attribute: Proc.new {|v| v.vehicle_journey_at_stops.first&.departure }, \
+                  attribute: Proc.new {|v| v.vehicle_journey_at_stops.first&.departure_local }, \
                   sortable: false, \
                   name: @starting_stop&.name, \
                 ), \
                 TableBuilderHelper::Column.new( \
                   key: :arrival_time, \
-                  attribute: Proc.new {|v| v.vehicle_journey_at_stops.last&.arrival }, \
+                  attribute: Proc.new {|v| v.vehicle_journey_at_stops.last&.arrival_local }, \
                   sortable: false, \
                   name: @ending_stop&.name, \
                 ), \

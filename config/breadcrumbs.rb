@@ -8,7 +8,7 @@ end
 
 crumb :workbench_output do |workbench|
   link I18n.t('workbench_outputs.show.title'), workbench_output_path(workbench)
-  parent :workbench, current_offer_workbench
+  parent :workbench, workbench
 end
 
 crumb :merges do |workbench|

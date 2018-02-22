@@ -24,14 +24,15 @@
         = f.input :route_line_id_eq,
             as: :select,
             include_blank: t(".all"),
-            collection: @vehicle_journeys.lines,
-            selected: params[:q] && params[:q][:route_line_id_eq],
             input_html: { \
-              'data-select2ed': 'true',
-              'data-select2ed-placeholder': t('referentials.filters.line') \
+              data: { \
+                'select2-ajax': 'true',
+                'select2ed-placeholder': t('referentials.filters.line'),
+                url: referential_autocomplete_lines_path(@referential, format: :json),
+                'select2ed-allow-clear': true \
+              } \
             },
             label: false,
-            label_method: :display_name,
             wrapper_html: { class: 'filter_menu-item select2ed' }
 
     .form-group.togglable.name-filter class=filter_item_class(params[:q], :published_journey_name_gteq)

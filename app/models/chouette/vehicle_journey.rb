@@ -409,6 +409,7 @@ module Chouette
         .where('"time_tables_vehicle_journeys"."vehicle_journey_id" IS NULL')
     end
 
+    # TODO: delete this
     def self.lines
       lines_query = joins(:route).select("routes.line_id").reorder(nil).except(:group).pluck(:'routes.line_id')
       Chouette::Line.where(id: lines_query)

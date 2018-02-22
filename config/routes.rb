@@ -41,6 +41,7 @@ ChouetteIhm::Application.routes.draw do
       post :validate
     end
 
+    resources :autocomplete_lines, only: :index
     resources :autocomplete_stop_areas, only: [:show, :index] do
       get 'around', on: :member
     end

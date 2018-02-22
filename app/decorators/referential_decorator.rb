@@ -52,6 +52,13 @@ class ReferentialDecorator < AF83::Decorator
       }}
     end
 
+    instance_decorator.action_link policy: :edit, secondary: :show, on: :show do |l|
+      l.content t('actions.empty')
+      l.href { h.empty_referential_path(object.id) }
+      l.method :post
+      l.data {{ confirm: h.t('referentials.actions.empty_confirm') }}
+    end
+
     instance_decorator.destroy_action_link  do |l|
       l.href { h.referential_path(object) }
       l.data {{ confirm: h.t('referentials.actions.destroy_confirm') }}

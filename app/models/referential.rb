@@ -339,6 +339,12 @@ class Referential < ActiveRecord::Base
     end
   end
 
+  def empty!
+    metadatas.each do |m|
+      m.update_attribute :lines, []
+    end
+  end
+
   def self.referential_ids_in_periode(range)
     subquery = "SELECT DISTINCT(public.referential_metadata.referential_id) FROM public.referential_metadata, LATERAL unnest(periodes) period "
     subquery << "WHERE period && '#{range_to_string(range)}'"

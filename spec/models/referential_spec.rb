@@ -133,6 +133,18 @@ describe Referential, :type => :model do
         expect(first_metadata.lines).to eq(lines)
       end
     end
+
+    describe "#empty!" do
+      before do
+        line = create(:line, line_referential: ref.line_referential)
+        create(:referential_metadata, lines: [line], referential: ref)
+      end
+      it "should remove all lines from the metadatas" do
+        expect(ref.reload.metadatas_lines).to_not be_empty
+        expect{ref.empty!}.to_not change{Chouette::Line.count}
+        expect(ref.metadatas_lines).to be_empty
+      end
+    end
   end
 
   context "lines" do

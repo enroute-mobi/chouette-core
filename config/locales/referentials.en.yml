@@ -36,6 +36,7 @@ en:
     actions:
       new: "Add a data space"
       destroy_confirm: "Do you confirm to destroy this data space ?"
+      empty_confirm: "Do you confirm to empty this data space ?"
       destroy: "Destroy this data space"
       edit: "Edit this data space"
       clone: "Clone this data space"

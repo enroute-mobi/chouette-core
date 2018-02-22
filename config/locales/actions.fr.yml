@@ -1,30 +1,31 @@
 fr:
   actions:
-    edit: 'Editer'
     activate: 'Activer'
-    deactivate: 'Désactiver'
-    destroy: 'Supprimer'
-    delete: 'Supprimer'
-    search: "Chercher"
-    submit: "Valider"
-    processing: "En cours…"
-    add: 'Créer'
-    new: 'Créer'
-    show: 'Consulter'
-    archive: 'Conserver'
-    unarchive: 'Déconserver'
-    clone: 'Dupliquer'
-    duplicate: 'Dupliquer'
-    clean_up: 'Purger'
-    sync: 'Synchroniser'
-    combine: 'Combiner'
     actualize: 'Actualiser'
-    import: 'Importer'
-    validate: 'Valider'
-    filter: 'Filtrer'
-    erase: 'Effacer'
+    add: 'Créer'
+    archive: 'Conserver'
+    clean_up: 'Purger'
+    clone: 'Dupliquer'
+    combine: 'Combiner'
     create_api_key: "Créer une clé d'API"
+    deactivate: 'Désactiver'
+    delete: 'Supprimer'
+    destroy: 'Supprimer'
+    duplicate: 'Dupliquer'
+    edit: 'Editer'
+    empty: 'Vider'
+    erase: 'Effacer'
+    filter: 'Filtrer'
+    import: 'Importer'
+    new: 'Créer'
+    processing: "En cours…"
+    search: "Chercher"
     select: Sélectionner
+    show: 'Consulter'
+    submit: "Valider"
+    sync: 'Synchroniser'
+    unarchive: 'Déconserver'
+    validate: 'Valider'
     wait_for_submission: "Validation..."
   or: "ou"
   cancel: "Annuler"

@@ -1,30 +1,31 @@
 en:
   actions:
-    edit: "Edit"
     activate: 'Activate'
-    deactivate: 'Deactivate'
-    destroy: "Destroy"
-    delete: "Delete"
-    search: "Search"
-    submit: "Submit"
-    processing: "Processing…"
-    add: "Add new"
-    new: "Add new"
-    show: "See"
-    archive: "Archive"
-    unarchive: "Unarchive"
-    clone: 'Clone'
-    duplicate: 'Clone'
-    clean_up: 'Clean up'
-    sync: 'Synchronize'
-    combine: 'Combine'
     actualize: 'Actualize'
-    import: 'Import'
-    validate: 'Validate'
-    filter: 'Filter'
-    erase: 'Erase'
+    add: "Add new"
+    archive: "Archive"
+    clean_up: 'Clean up'
+    clone: 'Clone'
+    combine: 'Combine'
     create_api_key: "Create an API key"
+    deactivate: 'Deactivate'
+    delete: "Delete"
+    destroy: "Destroy"
+    duplicate: 'Clone'
+    edit: "Edit"
+    empty: "Empty"
+    erase: 'Erase'
+    filter: 'Filter'
+    import: 'Import'
+    new: "Add new"
+    processing: "Processing…"
+    search: "Search"
     select: Select
+    show: "See"
+    submit: "Submit"
+    sync: 'Synchronize'
+    unarchive: "Unarchive"
+    validate: 'Validate'
     wait_for_submission: "Please wait..."
   or: "or"
   cancel: "Cancel"

@@ -36,6 +36,7 @@ fr:
     actions:
       new: "Créer un jeu de données"
       destroy_confirm: "Etes vous sûr de vouloir supprimer ce jeu de données ?"
+      empty_confirm: "Etes vous sûr de vouloir vider ce jeu de données ?"
       destroy: "Supprimer ce jeu de données"
       edit: "Editer ce jeu de données"
       clone: "Cloner ce jeu de données"

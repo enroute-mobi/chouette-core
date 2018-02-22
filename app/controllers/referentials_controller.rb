@@ -81,6 +81,11 @@ class ReferentialsController < ChouetteController
     redirect_to workbench_path(referential.workbench_id), notice: t('notice.referential.archived')
   end
 
+  def empty
+    referential.empty!
+    redirect_to referential
+  end
+
   def unarchive
     if referential.unarchive!
       flash[:notice] = t('notice.referential.unarchived')

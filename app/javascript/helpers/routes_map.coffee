@@ -35,7 +35,6 @@ RoutesLayersControl = (routes, routes_map) ->
     label.innerHTML = route.name
     element.appendChild label
     label.addEventListener "click", =>
-      console.log "click"
       route.active = !route.active
       $(label).toggleClass "active"
       route.active
@@ -43,7 +42,16 @@ RoutesLayersControl = (routes, routes_map) ->
       route.vectorEdgesLayer.setStyle routes_map.edgeStyles(route.active)
       route.vectorLnsLayer.setStyle routes_map.lineStyle(route.active)
       routes_map.fitZoom()
-  #
+    label.addEventListener "mouseenter", =>
+      route.vectorPtsLayer.setStyle routes_map.defaultStyles(true)
+      route.vectorEdgesLayer.setStyle routes_map.edgeStyles(true)
+      route.vectorLnsLayer.setStyle routes_map.lineStyle(true)
+
+    label.addEventListener "mouseleave", =>
+      route.vectorPtsLayer.setStyle routes_map.defaultStyles(route.active)
+      route.vectorEdgesLayer.setStyle routes_map.edgeStyles(route.active)
+      route.vectorLnsLayer.setStyle routes_map.lineStyle(route.active)
+
 
   ol.control.Control.call(this, {
     element

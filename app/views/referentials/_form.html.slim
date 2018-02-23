@@ -47,8 +47,13 @@
             = link_to_add_association t('simple_form.labels.referential.actions.add_period'), subform, :periods, class: 'btn btn-outline-primary'
 
     .separator
+    .row
+      .col-lg-11
+        = subform.input :lines, as: :select, collection: Chouette::Line.includes(:company).order(:name).where(objectid: current_functional_scope), selected: subform.object.line_ids, label_method: :display_name, input_html: { 'data-select2ed': 'true', 'data-select2ed-placeholder': t('simple_form.labels.referential.placeholders.select_lines'), 'multiple': 'multiple', style: 'width: 100%' }
+      .col-lg-1
+        a.clear-lines.btn.btn-default href='#'
+          .fa.fa-trash
 
-    = subform.input :lines, as: :select, collection: Chouette::Line.includes(:company).order(:name).where(objectid: current_functional_scope), selected: subform.object.line_ids, label_method: :display_name, input_html: { 'data-select2ed': 'true', 'data-select2ed-placeholder': t('simple_form.labels.referential.placeholders.select_lines'), 'multiple': 'multiple', style: 'width: 100%' }
 
   .hidden = form.input :workbench_id, as: :hidden
 
@@ -58,3 +63,10 @@
       class: 'btn btn-default formSubmitr',
       data: { disable_with: t('actions.processing') },
       form: 'referential_form'
+
+  - content_for :javascript do
+    coffee:
+      $(".clear-lines").click (e)->
+        e.preventDefault()
+        $(e.currentTarget).parents('.row').first().find('[name*=line]').val('').trigger('change')
+        false

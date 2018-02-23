@@ -203,11 +203,10 @@ const actions = {
       let field = fields[key]
       if(field.validity && !field.validity.valid){
         valid = false
-        $(field).parent().addClass('has-error').children('.help-block').remove()
+        $(field).parent().parent().addClass('has-error').children('.help-block').remove()
         $(field).parent().append("<span class='small help-block'>" + field.validationMessage + "</span>")
       }
     })
-
     return valid
   },
   toggleArrivals : () => ({

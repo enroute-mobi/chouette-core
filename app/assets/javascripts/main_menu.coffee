@@ -21,8 +21,9 @@ $ ->
 
   sticker = () ->
     limit = 51
+    offset = 30
 
-    if $(window).scrollTop() >= limit
+    if $(window).scrollTop() >= limit + offset
       if stickyActions.length == 0
         if ($('.page-action .small').length > 0)
           stickyActions.push
@@ -53,7 +54,7 @@ $ ->
           for child in item.content
             child.appendTo $('.sticky-paction')
 
-    else
+    else if $(window).scrollTop() <= limit - offset
       $('#main_nav').removeClass 'sticky'
 
       if $('#menu_top').find('.sticky-content').length > 0

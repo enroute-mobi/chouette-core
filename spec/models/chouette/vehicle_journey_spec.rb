@@ -260,7 +260,7 @@ describe Chouette::VehicleJourney, :type => :model do
         item['purchase_windows']         = []
         item['footnotes']                = []
         item['purchase_windows']         = []
-        item['custom_fields']            = vj.custom_fields
+        item['custom_fields']            = vj.custom_fields.to_hash
 
         vj.vehicle_journey_at_stops.each do |vjas|
           item['vehicle_journey_at_stops'] << vehicle_journey_at_stop_to_state(vjas)
@@ -282,7 +282,6 @@ describe Chouette::VehicleJourney, :type => :model do
         Chouette::VehicleJourney.state_update(route, collection)
       }.to change {Chouette::VehicleJourney.count}.by(1)
 
-
       obj = Chouette::VehicleJourney.last
       expect(obj).to receive(:after_commit_objectid).and_call_original
 
@@ -292,7 +291,7 @@ describe Chouette::VehicleJourney, :type => :model do
 
       expect(collection.last['objectid']).to eq obj.objectid
       expect(obj.published_journey_name).to eq 'dummy'
-      expect(obj.custom_fields["energy"]["value"]).to eq 99
+      expect(obj.custom_fields["energy"].value).to eq 99
     end
 
     it 'should expect local times' do

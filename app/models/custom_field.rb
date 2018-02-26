@@ -7,6 +7,19 @@ class CustomField < ActiveRecord::Base
   validates :name, uniqueness: {scope: [:resource_type, :workgroup_id]}
   validates :code, uniqueness: {scope: [:resource_type, :workgroup_id], case_sensitive: false}
 
+  class Collection < HashWithIndifferentAccess
+    def initialize object
+      vals = object.class.custom_fields.map do |v|
+        [v.code, CustomField::Value.new(object, v, object.custom_field_value(v.code))]
+      end
+      super Hash[*vals.flatten]
+    end
+
+    def to_hash
+      HashWithIndifferentAccess[*self.map{|k, v| [k, v.to_hash]}.flatten(1)]
+    end
+  end
+
   class Value
     def self.new owner, custom_field, value
       field_type = custom_field.options["field_type"]
@@ -42,6 +55,10 @@ class CustomField < ActiveRecord::Base
 
       def errors_key
         "custom_fields.#{code}"
+      end
+
+      def to_hash
+        HashWithIndifferentAccess[*%w(code name field_type options value).map{|k| [k, send(k)]}.flatten(1)]
       end
     end
 

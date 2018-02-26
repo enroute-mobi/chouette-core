@@ -9,9 +9,7 @@ module CustomFieldsSupport
     end
 
     def custom_fields
-      HashWithIndifferentAccess[*self.class.custom_fields.map do |v|
-        [v.code, CustomField::Value.new(self, v, custom_field_value(v.code))]
-      end.flatten]
+      CustomField::Collection.new self
     end
 
     def custom_field_value key

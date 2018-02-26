@@ -9,13 +9,15 @@ class AutocompleteLinesController < ChouetteController
     @lines = referential.line_referential.lines
 
     filter = <<~SQL
-      number LIKE ?
-      OR name LIKE ?
+      lines.number LIKE ?
+      OR lines.name LIKE ?
+      OR companies.name ILIKE ?
     SQL
     @lines = @lines
+      .joins(:company)
       .where(
         filter,
-        *Array.new(2, "#{params[:q]}%")
+        *Array.new(3, "%#{params[:q]}%")
       )
       .search(params[:q])
       .result

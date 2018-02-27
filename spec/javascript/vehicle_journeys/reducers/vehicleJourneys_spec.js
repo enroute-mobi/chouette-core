@@ -219,7 +219,7 @@ describe('vehicleJourneys reducer', () => {
         type: 'ADD_VEHICLEJOURNEY',
         data: fakeData,
         selectedJourneyPattern: fakeSelectedJourneyPattern,
-        stopPointsList: [{object_id: 'test-1', city_name: 'city', stop_area_id: 1, id: 1, time_zone_offset: 0, waiting_time: null}, {object_id: 'test-2', city_name: 'city', stop_area_id: 2, id: 2, time_zone_offset: -3600, waiting_time: 10}, {object_id: 'test-3', city_name: 'city', stop_area_id: 3, id: 3, time_zone_offset: 0, waiting_time: 20}, {object_id: 'test-4', city_name: 'city', stop_area_id: 4, id: 4, time_zone_offset: 0}],
+        stopPointsList: [{object_id: 'test-1', city_name: 'city', stop_area_id: 1, id: 1, time_zone_offset: 0, waiting_time: 10}, {object_id: 'test-2', city_name: 'city', stop_area_id: 2, id: 2, time_zone_offset: -3600, waiting_time: 10}, {object_id: 'test-3', city_name: 'city', stop_area_id: 3, id: 3, time_zone_offset: 0, waiting_time: 20}, {object_id: 'test-4', city_name: 'city', stop_area_id: 4, id: 4, time_zone_offset: 0, waiting_time: 100}],
         selectedCompany: fakeSelectedCompany
       })
     ).toEqual([{

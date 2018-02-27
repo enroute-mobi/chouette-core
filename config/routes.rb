@@ -1,5 +1,3 @@
-require 'sidekiq/web'
-
 ChouetteIhm::Application.routes.draw do
   resource :dashboard
 
@@ -179,8 +177,10 @@ ChouetteIhm::Application.routes.draw do
     end
   end
 
-  mount Sidekiq::Web => '/sidekiq'
-
+  authenticate :user do
+    mount Sidekiq::Web => '/sidekiq'
+  end
+  
   namespace :api do
     namespace :v1 do
       resources :workbenches, except: [:destroy] do

@@ -67,6 +67,10 @@ class User < ActiveRecord::Base
     permissions && permissions.include?(permission)
   end
 
+  def can_monitor_sidekiq?
+    has_permission?("sidekiq.monitor")
+  end
+
   private
 
   # remove organisation and referentials if last user of it

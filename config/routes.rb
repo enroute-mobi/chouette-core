@@ -177,10 +177,10 @@ ChouetteIhm::Application.routes.draw do
     end
   end
 
-  authenticate :user do
+  authenticate :user, lambda { |u| u.can_monitor_sidekiq? } do
     mount Sidekiq::Web => '/sidekiq'
   end
-  
+
   namespace :api do
     namespace :v1 do
       resources :workbenches, except: [:destroy] do

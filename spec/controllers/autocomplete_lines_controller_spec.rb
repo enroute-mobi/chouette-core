@@ -13,6 +13,15 @@ RSpec.describe AutocompleteLinesController, type: :controller do
       )
     end
 
+    let!(:line_without_company) do
+      create(
+        :line,
+        number: '15',
+        name: 'Continent Express',
+        company: nil
+      )
+    end
+
     before(:each) do
       excluded_company = create(:company, name: 'excluded company')
       create(
@@ -28,7 +37,7 @@ RSpec.describe AutocompleteLinesController, type: :controller do
         referential_id: referential.id,
         q: '15'
 
-      expect(assigns(:lines)).to eq([line])
+      expect(assigns(:lines).order(:id)).to eq([line, line_without_company])
     end
 
     it "filters by `name`" do
@@ -36,7 +45,15 @@ RSpec.describe AutocompleteLinesController, type: :controller do
         referential_id: referential.id,
         q: 'Continent'
 
-      expect(assigns(:lines)).to eq([line])
+      expect(assigns(:lines).order(:id)).to eq([line, line_without_company])
+    end
+
+    it "escapes the query" do
+      get :index,
+        referential_id: referential.id,
+        q: 'Continent%'
+
+      expect(assigns(:lines).order(:id)).to be_empty
     end
 
     it "filters by company `name`" do
@@ -44,7 +61,7 @@ RSpec.describe AutocompleteLinesController, type: :controller do
         referential_id: referential.id,
         q: 'standard'
 
-      expect(assigns(:lines)).to eq([line])
+      expect(assigns(:lines).to_a).to eq([line])
     end
   end
 end

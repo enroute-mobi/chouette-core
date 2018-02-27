@@ -48,6 +48,14 @@ export default class VehicleJourney extends Component {
     }
   }
 
+  displayDelta(delta) {
+    if(delta > 99){
+      return "+"
+    }
+    return delta
+  }
+
+
   hasTimeTable(time_tables, tt) {
     let found = false
     time_tables.map((t, index) => {
@@ -150,7 +158,7 @@ export default class VehicleJourney extends Component {
                 }
                 <div className={(this.columnHasDelta() ? '' : 'hidden')}>
                   {(vj.delta != 0) &&
-                    <span className='sb sb-chrono sb-lg text-warning' data-textinside={vj.delta}></span>
+                    <span className='sb sb-chrono sb-lg text-warning' data-textinside={this.displayDelta(vj.delta)}></span>
                   }
                 </div>
                 <div data-headline={I18n.t("vehicle_journeys.form.departure_at")}>

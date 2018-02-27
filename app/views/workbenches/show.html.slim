@@ -3,6 +3,8 @@
 - content_for :page_header_content do
   .row.mb-sm
     .col-lg-12.text-right
+      - if policy(Workbench).update?
+        = link_to t('workbenches.actions.configure'), edit_workbench_path(@workbench), class: 'btn btn-primary'
       - if policy(Referential).create?
         = link_to t('actions.import'), workbench_imports_path(@workbench), class: 'btn btn-primary'
         = link_to t('actions.add'), new_workbench_referential_path(@workbench), class: 'btn btn-primary'

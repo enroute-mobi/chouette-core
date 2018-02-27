@@ -17,6 +17,10 @@ set :default_environment, {
   'NODE_ENV' => "production"
 }
 
+set :default_environment, {
+  'PATH' => "/var/lib/gems/#{ruby_version}/bin:$PATH"
+}
+
 set :keep_releases, -> { fetch(:kept_releases, 5) }
 after "deploy:restart", "deploy:cleanup"
 

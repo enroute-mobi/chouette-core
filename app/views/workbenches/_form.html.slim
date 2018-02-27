@@ -1,0 +1,9 @@
+= simple_form_for @workbench, html: { class: 'form-horizontal', id: 'workbench_form' }, wrapper: :horizontal_form do |f|
+  .row
+    .col-lg-12
+      = f.input :import_compliance_control_set_id, as: :select, collection: ComplianceControlSet.where(organisation: current_organisation), value_method: lambda {|t| t.id}
+      = f.input :merge_compliance_control_set_id, as: :select, collection: ComplianceControlSet.where(organisation: current_organisation), value_method: lambda {|t| t.id}
+
+  .separator
+
+  = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'workbench_form'

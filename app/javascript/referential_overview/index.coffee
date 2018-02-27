@@ -110,4 +110,17 @@ class window.ReferentialOverview
 
 
 
+
+  documentScroll: (e)->
+    if @sticky
+      if e.pageY < @top() || e.pageY > @bottom()
+        @container.removeClass "sticky"
+        @sticky = false
+    else
+      if e.pageY > @top() && e.pageY < @bottom()
+        @sticky = true
+        @container.addClass "sticky"
+
+
+
 export default ReferentialOverview

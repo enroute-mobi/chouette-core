@@ -21,6 +21,8 @@ class Calendar < ActiveRecord::Base
 
   after_initialize :set_defaults
 
+  after_initialize :set_defaults
+
   def self.ransackable_scopes(auth_object = nil)
     [:contains_date]
   end

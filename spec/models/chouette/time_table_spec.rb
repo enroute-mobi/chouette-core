@@ -926,7 +926,6 @@ end
       end
     end
   end
-
   describe "#validity_out_between?" do
     let(:empty_tm) {build(:time_table)}
     it "should be false if empty calendar" do

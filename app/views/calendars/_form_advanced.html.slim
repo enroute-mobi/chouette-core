@@ -3,6 +3,6 @@
 = javascript_tag do
   | window.actionType = "#{raw params[:action]}";
   // | window.I18n = #{(I18n.backend.send(:translations)[I18n.locale].to_json).html_safe};
-  | window.timetablesUrl = "#{calendar_url(@calendar).html_safe}";
+  | window.timetablesUrl = "#{workgroup_calendar_url(@workgroup, @calendar).html_safe}";
 
 = javascript_pack_tag 'calendars/edit.js'

@@ -31,10 +31,11 @@ class CalendarsController < ChouetteController
   end
 
   def create
-    create! do
-      if @calendar.valid? && has_feature?('application_days_on_calendars')
-        redirect_to([:edit, @calendar])
-        return
+    create! do |success, failure|
+      if has_feature?('application_days_on_calendars')
+        success.html do
+          redirect_to([:edit, @workgroup, @calendar])
+        end
       end
     end
   end

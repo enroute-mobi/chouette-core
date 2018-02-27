@@ -14,7 +14,7 @@ fr:
         compliance_control_block:
           attributes:
             condition_attributes:
-              duplicate: Un groupe de contrôle identique existe déjà au sein de ce jeux de contrôles
+              taken: Un groupe de contrôle identique existe déjà au sein de ce jeux de contrôles
   compliance_control_blocks:
     clone:
       prefix: 'Copie de'

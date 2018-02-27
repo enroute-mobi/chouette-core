@@ -14,7 +14,7 @@ fr:
         compliance_control_block:
           attributes:
             condition_attributes:
-              duplicate: The same compliance control block already exists in this compliance control set
+              taken: The same compliance control block already exists in this compliance control set
   compliance_control_blocks:
     clone:
       prefix: 'Copy of'

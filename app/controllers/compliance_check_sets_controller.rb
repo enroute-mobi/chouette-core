@@ -12,7 +12,7 @@ class ComplianceCheckSetsController < ChouetteController
       @q_for_form = scope.ransack(params[:q])
       format.html {
         @compliance_check_sets = ComplianceCheckSetDecorator.decorate(
-          @q_for_form.result.order(created_at: :desc)
+          @q_for_form.result.order(created_at: :desc).paginate(page: params[:page], per_page: 30)
         )
       }
     end

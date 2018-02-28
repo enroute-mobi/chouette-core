@@ -208,7 +208,11 @@ class ReferentialOverview
     end
 
     def span
-      h.l(@start_date, format: "#{@start_date.day}-#{@end_date.day} %b")
+      if @start_date.month == @end_date.month
+        h.l(@start_date, format: "#{@start_date.day}-#{@end_date.day} %b %Y")
+      else
+        "#{h.l(@start_date, format: "%d %b")} - #{h.l(@end_date, format: "%d %b %Y")}"
+      end
     end
 
     def number

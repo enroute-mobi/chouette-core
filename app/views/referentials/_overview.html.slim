@@ -35,9 +35,12 @@
         .lines= I18n.t("referentials.overview.head.lines")
       .lines
         - overview.lines.each do |line|
-          .line
-            a.number style="background-color: #{line.color.present? ? "##{line.color}" : 'whitesmoke'}" title=line.name
-              = line.number
+          a.line title=line.name
+            - if line.number.present?
+              .number style="background-color: #{line.color.present? ? "##{line.color}" : 'whitesmoke'}"
+                = line.number
+            - else
+              .name= line.name
             .company= line.company&.name
             .mode= line.transport_mode.present? ? t("enumerize.transport_mode.#{line.transport_mode}") : ""
     .right

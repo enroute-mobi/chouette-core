@@ -42,6 +42,8 @@
               ],
               sortable: true,
               cls: 'table has-filter has-search'
+              
+            = new_pagination @compliance_check_sets, 'pull-right'
     - unless @compliance_check_sets.any?
       .row.mt-xs
         .col-lg-12

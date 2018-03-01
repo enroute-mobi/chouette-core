@@ -8,6 +8,9 @@ RSpec.describe "ComplianceControlSets", type: :feature do
   let( :control_set ){ create :compliance_control_set, organisation: organisation }
   let( :controls ){ control_set.compliance_controls }
 
+  let(:other_orga) { create :organisation }
+  let(:other_control_cset) { create :compliance_control_set, organisation: other_orga }
+
   let(:blox){
     2.times.map{ | _ | create :compliance_control_block, compliance_control_set: control_set }
   }
@@ -93,6 +96,18 @@ RSpec.describe "ComplianceControlSets", type: :feature do
       end
     end
 
+  end
+
+  describe 'index' do
+
+    before do
+      visit compliance_control_sets_path
+    end
+    
+    it "only showw compliance control sets from user organisation" do
+      expect(page).not_to have_content (other_orga.name)
+      expect(page).to have_content (organisation.name)
+    end
   end
 
   def make_control ccblock=nil, times: 1, severity: :warning

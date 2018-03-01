@@ -27,4 +27,16 @@ class Dashboard
   def current_organisation
     context.send(:current_organisation)
   end
+
+  def workbench
+    @workbench ||= current_organisation.workbenches.default
+  end
+
+  def workgroup
+    workbench.workgroup
+  end
+
+  def calendars
+    workgroup.calendars.where('(organisation_id = ? OR shared = ?)', current_organisation.id, true)
+  end
 end

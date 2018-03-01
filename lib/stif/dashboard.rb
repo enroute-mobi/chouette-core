@@ -1,7 +1,7 @@
 module Stif
   class Dashboard < ::Dashboard
     def workbench
-      @workbench ||= current_organisation.workbenches.find_by(name: "Gestion de l'offre")
+      @workbench ||= current_organisation.workbenches.default
     end
 
     def workgroup

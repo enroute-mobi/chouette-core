@@ -224,7 +224,7 @@ module TableBuilderHelper
 
         if column.linkable?
           path = column.link_to(item)
-          link = link_to(value, path)
+          link = value.present? && path.present? ? link_to(value, path) : ""
 
           if overhead.empty?
             bcont << content_tag(:td, link, title: 'Voir')

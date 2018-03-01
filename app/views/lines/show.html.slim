@@ -6,13 +6,13 @@
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = definition_list t('metadatas'),
-          {  'ID Codif' => @line.get_objectid.short_id,
-             'Activé' => (@line.deactivated? ? t('false') : t('true')),
+          {  t('id_codif') => @line.get_objectid.short_id,
+             @line.human_attribute_name(:deactivated) => (@line.deactivated? ? t('false') : t('true')),
              @line.human_attribute_name(:network_id) => (@line.network.nil? ? t('lines.index.unset') : @line.network.name),
              @line.human_attribute_name(:company_id) => (@line.company.nil? ? t('lines.index.unset') : @line.company.name),
-             'Transporteur(s) secondaire(s)' => (@line.secondary_companies.nil? ? t('lines.index.unset') : array_to_html_list(@line.secondary_companies.collect(&:name))),
-             'Nom court' => @line.number,
-             'Code public' => (@line.registration_number ? @line.registration_number : '-'),
+             @line.human_attribute_name(:secondary_companies) => (@line.secondary_companies.nil? ? t('lines.index.unset') : array_to_html_list(@line.secondary_companies.collect(&:name))),
+             @line.human_attribute_name(:number) => @line.number,
+             @line.human_attribute_name(:registration_number) => (@line.registration_number ? @line.registration_number : '-'),
              @line.human_attribute_name(:transport_mode) => (@line.transport_mode.present? ? t("enumerize.transport_mode.#{@line.transport_mode}") : '-'),
              @line.human_attribute_name(:transport_submode) => (@line.transport_submode.present? ? t("enumerize.transport_submode.#{@line.transport_submode}") : '-'),
              @line.human_attribute_name(:url) => (@line.url ? @line.url : '-'),

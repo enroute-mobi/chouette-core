@@ -26,12 +26,14 @@ class ImportMessageExport
   end
 
   def to_csv(options = {})
-    CSV.generate(options) do |csv|
+    csv_string = CSV.generate(options) do |csv|
       csv << column_names
       import_messages.each do |import_message|
         csv << [import_message.criticity, import_message.message_key, I18n.t("import_messages.#{import_message.message_key}", import_message.message_attributes.deep_symbolize_keys), *import_message.resource_attributes.values_at("filename", "line_number", "column_number")  ]
       end
     end
+    # We add a BOM to indicate we use UTF-8
+    "\uFEFF" + csv_string
   end
 
   def to_zip(temp_file,options = {})

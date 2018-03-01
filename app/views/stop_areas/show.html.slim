@@ -20,7 +20,7 @@
             @stop_area.human_attribute_name(:zip_code) => @stop_area.zip_code,
             @stop_area.human_attribute_name(:city_name) => @stop_area.city_name,
             @stop_area.human_attribute_name(:country_code) => @stop_area.country_code.presence || '-',
-            'Etat' => (@stop_area.deleted_at ? 'Supprimé' : 'Actif'),
+            t('activerecord.attributes.stop_area.state') => (@stop_area.deleted_at ? t('stop_areas.show.state.deactivated') : t('stop_areas.show.state.active')),
             @stop_area.human_attribute_name(:comment) => @stop_area.try(:comment),
             })
         = definition_list t('metadatas'), attributes

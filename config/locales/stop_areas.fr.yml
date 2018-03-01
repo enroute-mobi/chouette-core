@@ -67,6 +67,9 @@ fr:
       access_managment: "Gestion des accès et liens associés"
       access_points: "Points d'accès"
       not_editable: "Le type d'arrêt est non modifiable"
+      state:
+        active: Actif
+        deactivated: Désactivé
     genealogical:
       genealogical: "Lien entre arrêts"
       genealogical_routing: "Liens de l'ITL"
@@ -141,6 +144,7 @@ fr:
         created_at: "Créé le"
         updated_at: "Edité le"
         waiting_time: Temps de desserte (minutes)
+        state: État
   formtastic:
     titles:
       stop_area:

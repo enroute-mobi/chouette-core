@@ -66,6 +66,9 @@ en:
       access_managment: "Access Points and Links managment"
       access_points: "Access Points"
       not_editable: "Le type d'arrêt est non modifiable"
+      state:
+        active: Active
+        deactivated: Deactivated
     genealogical:
       genealogical: "Links between stop area"
       genealogical_routing: "Routing constraint's links"
@@ -139,6 +142,7 @@ en:
         created_at: Created at
         updated_at: Updated at
         waiting_time: Waiting time (minutes)
+        state: State
   formtastic:
     titles:
       stop_area:

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180129141656) do
+ActiveRecord::Schema.define(version: 20180301142531) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -93,7 +93,6 @@ ActiveRecord::Schema.define(version: 20180129141656) do
     t.integer   "workgroup_id",    limit: 8
     t.integer   "int_day_types"
     t.date      "excluded_dates",                            array: true
-    t.integer   "workgroup_id",    limit: 8
   end
 
   add_index "calendars", ["organisation_id"], name: "index_calendars_on_organisation_id", using: :btree
@@ -726,11 +725,12 @@ ActiveRecord::Schema.define(version: 20180129141656) do
     t.integer "line_id",      limit: 8
   end
 
-  create_table "simple_importers", id: :bigserial, force: :cascade do |t|
+  create_table "simple_interfaces", id: :bigserial, force: :cascade do |t|
     t.string "configuration_name"
     t.string "filepath"
     t.string "status"
     t.json   "journal"
+    t.string "type"
   end
 
   create_table "stop_area_referential_memberships", id: :bigserial, force: :cascade do |t|

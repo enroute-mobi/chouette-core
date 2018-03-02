@@ -29,10 +29,6 @@ class WorkbenchesController < ChouetteController
     )
   end
 
-  def edit
-    edit!
-  end
-
   def delete_referentials
     referentials = resource.referentials.where(id: params[:referentials])
     referentials.each do |referential|

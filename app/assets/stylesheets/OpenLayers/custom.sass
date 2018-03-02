@@ -7,16 +7,15 @@
     right: 42px
     top: .5em
     padding: 0
-    display: flex
-    justify-content: space-between
-    flex-wrap: wrap
     margin: 5px -5px
-    max-width: 80%
+    width: 30%
     background-color: transparentize(white, 0.2)
     border-radius: 3px
-    div
-      list-style-type: none
-      flex: 1 0 15%
+    max-height: 90%
+    overflow-y: scroll
+    a
+      display: block
+      width: calc(100% - 10px)
       border: 1px solid $lightgrey
       padding: 5px
       margin: 5px
@@ -27,6 +26,8 @@
       text-overflow: ellipsis
       overflow: hidden
       font-size: 0.6em
+      &:hover
+        text-decoration: none
 
       &.active
         background: $blue

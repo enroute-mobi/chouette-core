@@ -30,7 +30,8 @@ RoutesLayersControl = (routes, routes_map) ->
   Object.keys(routes).forEach (id)=>
     route = routes[id]
     route.active = true
-    label = document.createElement('div')
+    label = document.createElement('a')
+    label.title = route.name
     label.className = 'active'
     label.innerHTML = route.name
     element.appendChild label

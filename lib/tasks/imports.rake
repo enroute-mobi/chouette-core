@@ -1,4 +1,5 @@
 require 'csv'
+require 'tasks/helpers/simple_interfaces'
 
 namespace :import do
   desc "Notify parent imports when children finish"
@@ -11,25 +12,10 @@ namespace :import do
     NetexImport.abort_old
   end
 
-  def importer_output_to_csv importer, output_dir
-    filepath =  File.join output_dir, + "#{importer.configuration_name}_#{Time.now.strftime "%y%m%d%H%M"}_out.csv"
-    cols = %w(line kind event message error)
-    if importer.reload.journal.size > 0
-      keys = importer.journal.first["row"].map(&:first)
-      CSV.open(filepath, "w") do |csv|
-        csv << cols + keys
-        importer.journal.each do |j|
-          csv << cols.map{|c| j[c]} + j["row"].map(&:last)
-        end
-      end
-      puts "Import Output written in #{filepath}"
-    end
-  end
-
   desc "import the given file with the corresponding importer"
-  task :import, [:configuration_name, :filepath, :referential_id, :output_dir] => :environment do |t, args|
-    args.with_defaults(output_dir: "./log/importers/")
-    FileUtils.mkdir_p args[:output_dir]
+  task :import, [:configuration_name, :filepath, :referential_id, :logs_output_dir] => :environment do |t, args|
+    args.with_defaults(logs_output_dir: "./log/importers/")
+    FileUtils.mkdir_p args[:logs_output_dir]
 
     importer = SimpleImporter.create configuration_name: args[:configuration_name], filepath: args[:filepath]
 
@@ -37,46 +23,32 @@ namespace :import do
       referential = Referential.find args[:referential_id]
       importer.configure do |config|
         config.add_value :referential, referential
-        config.context = {referential: referential, output_dir: args[:output_dir]}
+        config.context = {referential: referential, logs_output_dir: args[:logs_output_dir]}
       end
     end
-    puts "\e[33m***\e[0m Start importing"
-    begin
-      importer.import(verbose: true)
-    rescue Interrupt
-      raise
-    ensure
-      puts "\n\e[33m***\e[0m Import done, status: " + (importer.status == "success" ? "\e[32m" : "\e[31m" ) + (importer.status || "") + "\e[0m"
-      importer_output_to_csv importer, args[:output_dir]
-    end
+
+    SimpleInterfacesHelper.run_interface_controlling_interruption importer, :import, args
   end
 
   desc "import the given file with the corresponding importer in the given StopAreaReferential"
   task :import_in_stop_area_referential, [:referential_id, :configuration_name, :filepath] => :environment do |t, args|
-    args.with_defaults(output_dir: "./log/importers/")
-    FileUtils.mkdir_p args[:output_dir]
+    args.with_defaults(logs_output_dir: "./log/importers/")
+    FileUtils.mkdir_p args[:logs_output_dir]
 
     referential = StopAreaReferential.find args[:referential_id]
     importer = SimpleImporter.create configuration_name: args[:configuration_name], filepath: args[:filepath]
     importer.configure do |config|
       config.add_value :stop_area_referential, referential
-      config.context = {stop_area_referential: referential, output_dir: args[:output_dir]}
+      config.context = {stop_area_referential: referential, logs_output_dir: args[:logs_output_dir]}
     end
-    puts "\e[33m***\e[0m Start importing"
-    begin
-      importer.import(verbose: true)
-    rescue Interrupt
-      raise
-    ensure
-      puts "\n\e[33m***\e[0m Import done, status: " + (importer.status == "success" ? "\e[32m" : "\e[31m" ) + (importer.status || "") + "\e[0m"
-      importer_output_to_csv importer, args[:output_dir]
-    end
+
+    SimpleInterfacesHelper.run_interface_controlling_interruption importer, :import, args
   end
 
   desc "import the given routes files"
   task :import_routes, [:referential_id, :configuration_name, :mapping_filepath, :filepath] => :environment do |t, args|
-    args.with_defaults(output_dir: "./log/importers/")
-    FileUtils.mkdir_p args[:output_dir]
+    args.with_defaults(logs_output_dir: "./log/importers/")
+    FileUtils.mkdir_p args[:logs_output_dir]
 
     referential = Referential.find args[:referential_id]
     referential.switch
@@ -84,38 +56,24 @@ namespace :import do
     importer = SimpleImporter.create configuration_name: args[:configuration_name], filepath: args[:filepath]
     importer.configure do |config|
       config.add_value :stop_area_referential, referential
-      config.context = {stop_area_referential: stop_area_referential, mapping_filepath: args[:mapping_filepath], output_dir: args[:output_dir]}
+      config.context = {stop_area_referential: stop_area_referential, mapping_filepath: args[:mapping_filepath], logs_output_dir: args[:logs_output_dir]}
     end
-    puts "\e[33m***\e[0m Start importing"
-    begin
-      importer.import(verbose: true)
-    rescue Interrupt
-      raise
-    ensure
-      puts "\n\e[33m***\e[0m Import done, status: " + (importer.status == "success" ? "\e[32m" : "\e[31m" ) + (importer.status || "") + "\e[0m"
-      importer_output_to_csv importer, args[:output_dir]
-    end
+
+    SimpleInterfacesHelper.run_interface_controlling_interruption importer, :import, args
   end
 
   desc "import the given file with the corresponding importer in the given LineReferential"
-  task :import_in_line_referential, [:referential_id, :configuration_name, :filepath, :output_dir] => :environment do |t, args|
-    args.with_defaults(output_dir: "./log/importers/")
-    FileUtils.mkdir_p args[:output_dir]
+  task :import_in_line_referential, [:referential_id, :configuration_name, :filepath, :logs_output_dir] => :environment do |t, args|
+    args.with_defaults(logs_output_dir: "./log/importers/")
+    FileUtils.mkdir_p args[:logs_output_dir]
 
     referential = LineReferential.find args[:referential_id]
     importer = SimpleImporter.create configuration_name: args[:configuration_name], filepath: args[:filepath]
     importer.configure do |config|
       config.add_value :line_referential, referential
-      config.context = {line_referential: referential, output_dir: args[:output_dir]}
+      config.context = {line_referential: referential, logs_output_dir: args[:logs_output_dir]}
     end
-    puts "\e[33m***\e[0m Start importing"
-    begin
-      importer.import(verbose: true)
-    rescue Interrupt
-      raise
-    ensure
-      puts "\n\e[33m***\e[0m Import done, status: " + (importer.status == "success" ? "\e[32m" : "\e[31m" ) + (importer.status || "") + "\e[0m"
-      importer_output_to_csv importer, args[:output_dir]
-    end
+
+    SimpleInterfacesHelper.run_interface_controlling_interruption importer, :import, args
   end
 end

@@ -13,13 +13,13 @@ fr:
     index:
       title: "%{organisation} dashboard"
       offers:
-        title: "Transport offers"
-        organisation: "Organisation offers"
-        idf: "IDF offers"
-        referentials: "Referentials"
-        calendars: "Calendars"
+        title: "Offre de transport"
+        organisation: "Offres de  mon Organisation"
+        idf: "Offres IDF"
+        referentials: "Jeux de donnée"
+        calendars: "Calendriers"
         see: "Voir la liste"
-        no_content: "No content yet."
+        no_content: "Aucun contenu"
     actions:
       show_output: "Finaliser l'Offre"
       configure: "Configurer"

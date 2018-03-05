@@ -141,7 +141,7 @@ class SimpleJsonExporter < SimpleExporter
       @current_scope ||= []
       node = Node.new({name: name.to_s, scope: @current_scope.dup}.update(opts))
       yield node.configuration
-      @current_scope.push node
+      @nodes.push node
     end
 
     def add_nodes name, opts={}, &block

@@ -77,8 +77,9 @@ class SimpleInterface < ActiveRecord::Base
   protected
 
   def push_in_journal data
-    line = @current_line + 1
+    line = (@current_line || 0) + 1
     line += 1 if configuration.headers
+    @errors ||= []
     self.journal.push data.update(line: line, row: @current_row)
     if data[:kind] == :error || data[:kind] == :warning
       @errors.push data
@@ -178,10 +179,10 @@ class SimpleInterface < ActiveRecord::Base
     end
 
     def on_relation relation_name
-      @scope ||= []
-      @scope.push relation_name
+      @current_scope ||= []
+      @current_scope.push relation_name
       yield
-      @scope.pop
+      @current_scope.pop
     end
 
     def duplicate
@@ -228,8 +229,8 @@ class SimpleInterface < ActiveRecord::Base
     end
 
     def add_column name, opts={}
-      @scope ||= []
-      @columns.push Column.new({name: name.to_s, scope: @scope.dup}.update(opts))
+      @current_scope ||= []
+      @columns.push Column.new({name: name.to_s, scope: @current_scope.dup}.update(opts))
     end
 
     def add_value attribute, value

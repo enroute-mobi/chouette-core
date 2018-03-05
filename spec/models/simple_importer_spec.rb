@@ -49,7 +49,7 @@ RSpec.describe SimpleImporter do
     end
 
     it "should import the given file" do
-      expect{importer.import verbose: false}.to change{Chouette::StopArea.count}.by 1
+      expect{importer.import verbose: true}.to change{Chouette::StopArea.count}.by 1
       expect(importer.status).to eq "success"
       stop = Chouette::StopArea.last
       expect(stop.name).to eq "Nom du Stop"

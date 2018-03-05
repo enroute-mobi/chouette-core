@@ -157,11 +157,11 @@ module Chouette
     end
 
     def sales_start
-      purchase_windows.map{|p| p.date_ranges.first}.min
+      purchase_windows.map{|p| p.date_ranges.map &:first}.flatten.min
     end
 
     def sales_end
-      purchase_windows.map{|p| p.date_ranges.last}.max
+      purchase_windows.map{|p| p.date_ranges.map &:last}.flatten.max
     end
 
     def calculate_vehicle_journey_at_stop_day_offset

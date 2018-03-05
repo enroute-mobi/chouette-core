@@ -33,7 +33,7 @@ class SimpleInterface < ActiveRecord::Base
     @errors = []
     @messages = []
     @padding = 1
-    @current_line = 0
+    @current_line = -1
     @padding = [1, Math.log([@number_of_lines, 1].max, 10).ceil()].max
   end
 
@@ -278,6 +278,10 @@ class SimpleInterface < ActiveRecord::Base
 
       def required?
         !!@options[:required]
+      end
+
+      def omit_nil?
+        !!@options[:omit_nil]
       end
 
       def scope

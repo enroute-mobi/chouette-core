@@ -68,7 +68,9 @@ class SimpleJsonExporter < SimpleExporter
 
   def resolve_node item, node
     vals = []
-    [item.send(node.attribute)].flatten.each do |node_item|
+    scoped_item = node.scope.inject(item){|tmp, scope| tmp.send(scope)}
+
+    [scoped_item.send(node.attribute)].flatten.each do |node_item|
       item_val = {}
       apply_configuration node_item, node.configuration, item_val
       vals.push item_val
@@ -79,7 +81,7 @@ class SimpleJsonExporter < SimpleExporter
   def apply_configuration item, configuration, output
     configuration.columns.each do |col|
       val = resolve_value item, col
-      output[col.name] = val
+      output[col.name] = val unless val.nil? && col.omit_nil?
     end
 
     configuration.nodes.each do |node|
@@ -89,20 +91,25 @@ class SimpleJsonExporter < SimpleExporter
   end
 
   def handle_item item
-    serialized_item = {}
-    @current_row = item.attributes
-    @current_row = @current_row.slice(*configuration.logged_attributes) if configuration.logged_attributes.present?
-    @new_status = nil
+    number_of_lines = @number_of_lines
+    @current_item = item
+    map_item_to_rows(item).each_with_index do |item, i|
+      @number_of_lines = number_of_lines + i
+      serialized_item = {}
+      @current_row = item.attributes
+      @current_row = @current_row.slice(*configuration.logged_attributes) if configuration.logged_attributes.present?
+      @new_status = nil
 
-    apply_configuration item, self.configuration, serialized_item
+      apply_configuration item, self.configuration, serialized_item
 
-    @new_status ||= colorize("✓", :green)
+      @new_status ||= colorize("✓", :green)
 
-    push_in_journal({event: :success, kind: :log})
-    @statuses += @new_status
-    print_state if @current_line % 20 == 0
-    @current_line += 1
-    append_item serialized_item
+      push_in_journal({event: :success, kind: :log})
+      @statuses += @new_status
+      print_state if @current_line % 20 == 0 || i > 0
+      @current_line += 1
+      append_item serialized_item
+    end
   end
 
   def append_item serialized_item
@@ -116,13 +123,23 @@ class SimpleJsonExporter < SimpleExporter
     alias_method :add_field, :add_column
 
     def initialize import_name, opts={}
-      @nodes = []
       super import_name, opts
+      @collection = opts[:collection]
+      @nodes = opts[:nodes] || []
+      @root = opts[:root]
+    end
+
+    def options
+      super.update({
+        nodes: @nodes,
+        root: @root,
+      })
     end
 
     def add_node name, opts={}
       @nodes ||= []
-      node = Node.new({name: name.to_s}.update(opts))
+      @scope ||= []
+      node = Node.new({name: name.to_s, scope: @scope.dup}.update(opts))
       yield node.configuration
       @nodes.push node
     end
@@ -154,11 +171,15 @@ class SimpleJsonExporter < SimpleExporter
     end
 
     def attribute
-      name
+      @options[:attribute] || name
     end
 
     def multiple
       !!@options[:multiple]
+    end
+
+    def scope
+      @options[:scope] || []
     end
   end
 end

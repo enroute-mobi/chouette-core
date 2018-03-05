@@ -99,6 +99,7 @@ class SimpleExporter < SimpleInterface
 
   def handle_item item
     number_of_lines = @number_of_lines
+    @current_item = item
     map_item_to_rows(item).each_with_index do |item, i|
       @number_of_lines = number_of_lines + i
       @current_row = item.attributes
@@ -112,7 +113,7 @@ class SimpleExporter < SimpleInterface
       end
       push_in_journal({event: :success, kind: :log})
       @statuses += @new_status
-      print_state if @current_line % 20 == 0
+      print_state if @current_line % 20 == 0 || i > 0
       @current_line += 1
       @csv << row
     end

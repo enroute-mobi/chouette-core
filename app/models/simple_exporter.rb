@@ -1,3 +1,4 @@
+# coding: utf-8
 class SimpleExporter < SimpleInterface
   def export opts={}
     configuration.validate!
@@ -80,7 +81,7 @@ class SimpleExporter < SimpleInterface
         val = instance_exec(scoped_item, &val)
       else
         attributes = [col.attribute].flatten
-        val = attributes.inject(scoped_item){|tmp, attr| tmp.send(attr)}
+        val = attributes.inject(scoped_item){|tmp, attr| tmp.send(attr) if tmp }
       end
     end
     if val.nil? && !col.omit_nil?

@@ -1,17 +1,8 @@
 class SimpleExporter < SimpleInterface
   def export opts={}
     configuration.validate!
-    @verbose = opts.delete :verbose
 
-    @resolution_queue = Hash.new{|h,k| h[k] = []}
-    @errors = []
-    @messages = []
-    @number_of_lines = 0
-    @padding = 1
-    @current_line = -1
-    @number_of_lines = collection.size
-
-    @padding = [1, Math.log(@number_of_lines, 10).ceil()].max
+    init_env opts
 
     @csv = nil
     fail_with_error "Unable to write in file: #{self.filepath}" do
@@ -52,6 +43,12 @@ class SimpleExporter < SimpleInterface
   end
 
   protected
+  def init_env opts
+    @number_of_lines = collection.size
+
+    super opts
+  end
+
   def process_collection
     self.configuration.before_actions(:all).each do |action| action.call self end
     log "Starting export ...", color: :green
@@ -75,6 +72,31 @@ class SimpleExporter < SimpleInterface
     configuration.item_to_rows_mapping.call(item).map {|row| row.is_a?(ActiveRecord::Base) ? row : CustomRow.new(row) }
   end
 
+  def resolve_value item, col
+    scoped_item = col.scope.inject(item){|tmp, scope| tmp.send(scope)}
+    val = col[:value]
+    if val.nil? || val.is_a?(Proc)
+      if val.is_a?(Proc)
+        val = instance_exec(scoped_item, &val)
+      else
+        attributes = [col.attribute].flatten
+        val = attributes.inject(scoped_item){|tmp, attr| tmp.send(attr)}
+      end
+    end
+    if val.nil?
+      push_in_journal({event: :attribute_not_found, message: "Value missing for: #{[col.scope, col.attribute].flatten.join('.')}", kind: :warning})
+      self.status ||= :success_with_warnings
+    end
+
+    if val.nil? && col.required?
+      @new_status = colorize("x", :red)
+      raise "MISSING VALUE FOR COLUMN #{col.name}"
+    end
+
+    val = encode_string(val) if val.is_a?(String)
+    val
+  end
+
   def handle_item item
     number_of_lines = @number_of_lines
     map_item_to_rows(item).each_with_index do |item, i|
@@ -84,27 +106,8 @@ class SimpleExporter < SimpleInterface
       row = []
       @new_status = nil
       self.configuration.columns.each do |col|
-        scoped_item = col.scope.inject(item){|tmp, scope| tmp.send(scope)}
-        val = col[:value]
-        if val.nil? || val.is_a?(Proc)
-          if val.is_a?(Proc)
-            val = instance_exec(scoped_item, &val)
-          else
-            attributes = [col.attribute].flatten
-            val = attributes.inject(scoped_item){|tmp, attr| tmp.send(attr)}
-          end
-        end
-        if val.nil?
-          push_in_journal({event: :attribute_not_found, message: "Value missing for: #{[col.scope, col.attribute].flatten.join('.')}", kind: :warning})
-          self.status ||= :success_with_warnings
-        end
-
-        if val.nil? && col.required?
-          @new_status = colorize("x", :red)
-          raise "MISSING VALUE FOR COLUMN #{col.name}"
-        end
+        val = resolve_value item, col
         @new_status ||= colorize("✓", :green)
-        val = encode_string(val) if val.is_a?(String)
         row << val
       end
       push_in_journal({event: :success, kind: :log})

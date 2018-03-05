@@ -27,6 +27,16 @@ class SimpleInterface < ActiveRecord::Base
     self.journal ||= []
   end
 
+  def init_env opts
+    @verbose = opts.delete :verbose
+
+    @errors = []
+    @messages = []
+    @padding = 1
+    @current_line = 0
+    @padding = [1, Math.log([@number_of_lines, 1].max, 10).ceil()].max
+  end
+
   def configure
     new_config = configuration.duplicate
     yield new_config

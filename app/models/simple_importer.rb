@@ -1,5 +1,4 @@
 class SimpleImporter < SimpleInterface
-
   def resolve col_name, value, &block
     val = block.call(value)
     return val if val.present?
@@ -9,18 +8,14 @@ class SimpleImporter < SimpleInterface
 
   def import opts={}
     configuration.validate!
-    @verbose = opts.delete :verbose
 
-    @resolution_queue = Hash.new{|h,k| h[k] = []}
-    @errors = []
-    @messages = []
-    @number_of_lines = 0
-    @padding = 1
-    @current_line = 0
     fail_with_error "File not found: #{self.filepath}" do
       @number_of_lines = CSV.read(self.filepath, self.configuration.csv_options).length
-      @padding = [1, Math.log(@number_of_lines, 10).ceil()].max
     end
+
+    init_env opts
+
+    @resolution_queue = Hash.new{|h,k| h[k] = []}
 
     self.configuration.before_actions(:parsing).each do |action| action.call self end
 

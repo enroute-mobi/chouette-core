@@ -19,7 +19,7 @@ RSpec.describe SimpleExporter do
         expect{SimpleExporter.find_configuration(:foo)}.to_not raise_error
         expect{SimpleExporter.new(configuration_name: :foo, filepath: "").export}.to_not raise_error
         expect{SimpleExporter.find_configuration(:bar)}.to raise_error
-        expect{SimpleExporter.new(configuration_name: :bar, filepath: "")}.to_not raise_error
+        expect{SimpleExporter.new(configuration_name: :bar, filepath: "")}.to raise_error
         expect{SimpleExporter.new(configuration_name: :bar, filepath: "").export}.to raise_error
         expect{SimpleExporter.create(configuration_name: :foo, filepath: "")}.to change{SimpleExporter.count}.by 1
       end
@@ -64,7 +64,7 @@ RSpec.describe SimpleExporter do
       end
 
       it "should export the given file" do
-        expect{exporter.export verbose: true}.to_not raise_error
+        expect{exporter.export verbose: false}.to_not raise_error
         expect(exporter.status).to eq "success"
         expect(File.exists?(filepath)).to be_truthy
         csv = CSV.read(filepath, headers: true, col_sep: ";")
@@ -102,7 +102,7 @@ RSpec.describe SimpleExporter do
       end
 
       it "should export the given file" do
-        expect{exporter.export verbose: true}.to_not raise_error
+        expect{exporter.export verbose: false}.to_not raise_error
         expect(exporter.status).to eq "success"
         expect(File.exists?(filepath)).to be_truthy
         csv = CSV.read(filepath, headers: true)

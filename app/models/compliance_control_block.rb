@@ -12,6 +12,8 @@ class ComplianceControlBlock < ActiveRecord::Base
   validates :transport_mode, presence: true
   validates :compliance_control_set, presence: true
 
+  validates_uniqueness_of :condition_attributes, scope: :compliance_control_set_id
+
   def name
     ApplicationController.helpers.transport_mode_text(self)
   end

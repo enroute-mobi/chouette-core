@@ -17,4 +17,16 @@ RSpec.describe ComplianceControlBlock, type: :model do
   it { should_not allow_values( *%w{ demandResponseBus nightus irportLinkBus highrequencyBus expressBUs
                                      Shuttle suburban regioalRail interregion4lRail })
         .for(:transport_submode) }
+
+  context "transport mode & submode uniqueness" do
+    let(:cc_block) {create :compliance_control_block, transport_mode: 'bus', transport_submode: 'nightBus'}
+    let(:cc_set1) { cc_block.compliance_control_set }
+    let(:cc_set2) { create :compliance_control_set }     
+
+  it "sould be unique in a compliance control set" do
+    expect( ComplianceControlBlock.new(transport_mode: 'bus', transport_submode: 'nightBus', compliance_control_set: cc_set1) ).not_to be_valid
+    expect( ComplianceControlBlock.new(transport_mode: 'bus', transport_submode: 'nightBus', compliance_control_set: cc_set2) ).to be_valid
+  end
+
+end
 end

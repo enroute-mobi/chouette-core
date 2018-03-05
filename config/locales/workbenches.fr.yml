@@ -14,7 +14,7 @@ fr:
       title: "%{organisation} dashboard"
       offers:
         title: "Offre de transport"
-        organisation: "Offres de  mon Organisation"
+        organisation: "Offres de mon Organisation"
         idf: "Offres IDF"
         referentials: "Jeux de données"
         calendars: "Calendriers"

@@ -41,7 +41,6 @@ ChouetteIhm::Application.routes.draw do
       post :validate
     end
 
-    resources :autocomplete_lines, only: :index
     resources :autocomplete_stop_areas, only: [:show, :index] do
       get 'around', on: :member
     end
@@ -58,6 +57,8 @@ ChouetteIhm::Application.routes.draw do
 
     match 'lines' => 'lines#destroy_all', :via => :delete
     resources :lines, controller: "referential_lines", except: :index do
+      get :autocomplete, on: :collection, to: 'autocomplete_lines#index'
+
       resource :footnotes, controller: "line_footnotes"
       delete :index, on: :collection, action: :delete_all
       collection do

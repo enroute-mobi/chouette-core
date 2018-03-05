@@ -9,8 +9,6 @@ module Chouette
     include ForAlightingEnumerations
     include ObjectidSupport
 
-    # FIXME http://jira.codehaus.org/browse/JRUBY-6358
-    self.primary_key = "id"
 
     belongs_to :stop_area
     belongs_to :route, inverse_of: :stop_points

@@ -4,8 +4,6 @@ module Chouette
     include ChecksumSupport
     include JourneyPatternRestrictions
     include ObjectidSupport
-    # FIXME http://jira.codehaus.org/browse/JRUBY-6358
-    self.primary_key = "id"
 
     belongs_to :route
     has_many :vehicle_journeys, :dependent => :destroy

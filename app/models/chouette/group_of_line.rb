@@ -5,8 +5,6 @@ module Chouette
     include GroupOfLineRestrictions
     include LineReferentialSupport
 
-    # FIXME http://jira.codehaus.org/browse/JRUBY-6358
-    self.primary_key = "id"
 
     has_and_belongs_to_many :lines, :class_name => 'Chouette::Line', :order => 'lines.name'
 

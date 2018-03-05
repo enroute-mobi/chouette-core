@@ -10,7 +10,6 @@ module Chouette
   class Timeband < Chouette::TridentActiveRecord
     include ObjectidSupport
     has_paper_trail
-    self.primary_key = "id"
 
     validates :start_time, :end_time, presence: true
     validates_with Chouette::TimebandValidator

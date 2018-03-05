@@ -7,8 +7,6 @@ module Chouette
     include VehicleJourneyRestrictions
     include ObjectidSupport
     include StifTransportModeEnumerations
-    # FIXME http://jira.codehaus.org/browse/JRUBY-6358
-    self.primary_key = "id"
 
     enum journey_category: { timed: 0, frequency: 1 }
 

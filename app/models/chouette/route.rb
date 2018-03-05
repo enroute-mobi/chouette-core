@@ -12,8 +12,6 @@ module Chouette
     enumerize :direction, in: %i(straight_forward backward clockwise counter_clockwise north north_west west south_west south south_east east north_east)
     enumerize :wayback, in: %i(outbound inbound), default: :outbound
 
-    # FIXME http://jira.codehaus.org/browse/JRUBY-6358
-    self.primary_key = "id"
 
     def self.nullable_attributes
       [:published_name, :comment, :number, :name, :direction, :wayback]

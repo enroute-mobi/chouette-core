@@ -7,8 +7,6 @@ module Chouette
     include ApplicationDaysSupport
     include TimetableSupport
 
-    # FIXME http://jira.codehaus.org/browse/JRUBY-6358
-    self.primary_key = "id"
     acts_as_taggable
 
     attr_accessor :tag_search

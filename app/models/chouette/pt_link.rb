@@ -3,8 +3,6 @@ require 'geokit'
 module Chouette
   class PtLink < Chouette::ActiveRecord
     has_paper_trail
-    # FIXME http://jira.codehaus.org/browse/JRUBY-6358
-    self.primary_key = "id"
     include Geokit::Mappable
 
     def geometry

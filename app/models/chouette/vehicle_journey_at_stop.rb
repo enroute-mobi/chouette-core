@@ -6,8 +6,6 @@ module Chouette
 
     DAY_OFFSET_MAX = 1
 
-    # FIXME http://jira.codehaus.org/browse/JRUBY-6358
-    self.primary_key = "id"
 
     belongs_to :stop_point
     belongs_to :vehicle_journey

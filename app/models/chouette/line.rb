@@ -8,8 +8,6 @@ module Chouette
     include StifTransportSubmodeEnumerations
     extend ActiveModel::Naming
 
-    # FIXME http://jira.codehaus.org/browse/JRUBY-6358
-    self.primary_key = "id"
 
     belongs_to :company
     belongs_to :network

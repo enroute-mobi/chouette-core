@@ -42,6 +42,10 @@ class Workbench < ActiveRecord::Base
     end
   end
 
+  def calendars
+    workgroup.calendars.where('(organisation_id = ? OR shared = ?)', organisation.id, true)
+  end
+
   def self.default
     self.last if self.count == 1
     where(name: DEFAULT_WORKBENCH_NAME).last

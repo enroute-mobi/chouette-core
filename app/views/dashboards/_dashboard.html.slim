@@ -22,12 +22,12 @@
       .panel.panel-default
         .panel-heading
           h3.panel-title.with_actions
-            = link_to I18n.t("activerecord.models.calendar", count: @dashboard.calendars.size), workgroup_calendars_path(workbench.workgroup)
+            = link_to I18n.t("activerecord.models.calendar", count: workbench.calendars.size), workgroup_calendars_path(workbench.workgroup)
             div
               = link_to '', workgroup_calendars_path(workbench.workgroup), class: ' fa fa-chevron-right pull-right'
-        - if @dashboard.calendars.present?
+        - if workbench.calendars.present?
           .list-group
-            - @dashboard.calendars.order("updated_at desc").limit(5).each do |calendar|
+            - workbench.calendars.order("updated_at desc").limit(5).each do |calendar|
               = link_to calendar.name, workgroup_calendars_path(workbench.workgroup, calendar), class: 'list-group-item'
         - else
           .panel-body

@@ -9,13 +9,7 @@ class AutocompleteLinesController < ChouetteController
     @lines = referential.line_referential.lines
 
     @lines = @lines
-      .joins(:company)
-      .where('
-        lines.number LIKE ?
-        OR lines.name LIKE ?
-        OR companies.name ILIKE ?',
-        *Array.new(3, "%#{params[:q]}%")
-      )
+      .by_name(params[:q])
       .search(params[:q])
       .result
       .paginate(page: params[:page])

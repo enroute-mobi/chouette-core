@@ -43,6 +43,16 @@ module Chouette
     scope :by_text, ->(text) { where('lower(name) LIKE :t or lower(published_name) LIKE :t or lower(objectid) LIKE :t or lower(comment) LIKE :t or lower(number) LIKE :t',
       t: "%#{text.downcase}%") }
 
+    scope :by_name, ->(name) {
+      joins(:company)
+        .where('
+          lines.number LIKE :q
+          OR lines.name LIKE :q
+          OR companies.name ILIKE :q',
+          q: "%#{sanitize_sql_like(name)}%"
+        )
+    }
+
     def self.nullable_attributes
       [:published_name, :number, :comment, :url, :color, :text_color, :stable_id]
     end

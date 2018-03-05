@@ -1,5 +1,6 @@
 module SimpleInterfacesHelper
   def self.interface_output_to_csv interface, output_dir
+    FileUtils.mkdir_p output_dir
     filepath =  File.join output_dir, + "#{interface.configuration_name}_#{Time.now.strftime "%y%m%d%H%M"}_out.csv"
     cols = %w(line kind event message error)
     if interface.reload.journal.size > 0 && interface.journal.first["row"].present?

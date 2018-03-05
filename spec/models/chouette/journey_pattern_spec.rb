@@ -71,6 +71,23 @@ describe Chouette::JourneyPattern, :type => :model do
     end
   end
 
+  describe "distance_to" do
+    let(:journey_pattern) { create :journey_pattern }
+    before do
+      journey_pattern.costs = generate_journey_pattern_costs(10, 10)
+    end
+    subject{ journey_pattern.distance_to stop}
+    context "for the first stop" do
+      let(:stop){ journey_pattern.stop_points.first }
+      it { should eq 0 }
+    end
+
+    context "for the last stop" do
+      let(:stop){ journey_pattern.stop_points.last }
+      it { should eq 40 }
+    end
+  end
+
   describe "set_distances" do
     let(:journey_pattern) { create :journey_pattern }
     let(:distances){ [] }

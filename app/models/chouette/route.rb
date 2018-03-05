@@ -191,6 +191,11 @@ module Chouette
       journey_pattern
     end
 
+    def generated_name
+      return "" unless stop_points.size > 1
+      [stop_points.first, stop_points.last].map(&:name).join ' > '
+    end
+
     protected
 
     def self.vehicle_journeys_timeless(stop_point_id)

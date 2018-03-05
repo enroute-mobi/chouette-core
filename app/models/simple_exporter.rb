@@ -72,7 +72,7 @@ class SimpleExporter < SimpleInterface
 
   def map_item_to_rows item
     return [item] unless configuration.item_to_rows_mapping
-    configuration.item_to_rows_mapping.call(item).map {|row| CustomRow.new row }
+    configuration.item_to_rows_mapping.call(item).map {|row| row.is_a?(ActiveRecord::Base) ? row : CustomRow.new(row) }
   end
 
   def handle_item item

@@ -171,6 +171,19 @@ module Chouette
       full
     end
 
+    def distance_to stop
+      val = 0
+      i = 0
+      _end = stop_points.first
+      while _end != stop
+        i += 1
+        _start = _end
+        _end = stop_points[i]
+        val += costs_between(_start, _end)[:distance]
+      end
+      val
+    end
+
     def set_distances distances
       raise "inconsistent data: #{distances.count} values for #{stop_points.count} stops" unless distances.count == stop_points.count
       prev = distances[0].to_i

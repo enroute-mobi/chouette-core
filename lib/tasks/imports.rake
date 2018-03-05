@@ -31,7 +31,7 @@ namespace :import do
   end
 
   desc "import the given file with the corresponding importer in the given StopAreaReferential"
-  task :import_in_stop_area_referential, [:referential_id, :configuration_name, :filepath] => :environment do |t, args|
+  task :import_in_stop_area_referential, [:referential_id, :configuration_name, :filepath, :logs_output_dir] => :environment do |t, args|
     args.with_defaults(logs_output_dir: "./log/importers/")
     FileUtils.mkdir_p args[:logs_output_dir]
 
@@ -46,7 +46,7 @@ namespace :import do
   end
 
   desc "import the given routes files"
-  task :import_routes, [:referential_id, :configuration_name, :mapping_filepath, :filepath] => :environment do |t, args|
+  task :import_routes, [:referential_id, :configuration_name, :mapping_filepath, :filepath, :logs_output_dir] => :environment do |t, args|
     args.with_defaults(logs_output_dir: "./log/importers/")
     FileUtils.mkdir_p args[:logs_output_dir]
 
@@ -56,7 +56,7 @@ namespace :import do
     importer = SimpleImporter.create configuration_name: args[:configuration_name], filepath: args[:filepath]
     importer.configure do |config|
       config.add_value :stop_area_referential, referential
-      config.context = {stop_area_referential: stop_area_referential, mapping_filepath: args[:mapping_filepath], logs_output_dir: args[:logs_output_dir]}
+      config.context = {stop_area_referential: stop_area_referential, line_referential: line_referential, mapping_filepath: args[:mapping_filepath], logs_output_dir: args[:logs_output_dir]}
     end
 
     SimpleInterfacesHelper.run_interface_controlling_interruption importer, :import, args

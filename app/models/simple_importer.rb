@@ -1,3 +1,4 @@
+# coding: utf-8
 class SimpleImporter < SimpleInterface
   def resolve col_name, value, &block
     val = block.call(value)
@@ -40,7 +41,7 @@ class SimpleImporter < SimpleInterface
   end
 
   def dump_csv_from_context
-    dir = context[:output_dir] || "log/importers"
+    dir = context[:logs_output_dir] || "log/importers"
     filepath = File.join dir, "#{self.configuration_name}_#{Time.now.strftime "%y%m%d%H%M"}.csv"
     # for some reason, context[:csv].to_csv does not work
     CSV.open(filepath, 'w') do |csv|

@@ -7,7 +7,7 @@ en:
     update:
       title: "Configure the workbench"
     referential_count:
-      zero: "There is no referentials in your workbench"
+      zero: "There are no referentials in your workbench"
       one: "There is one referential in your workbench"
       other: "There are #{count} referentials in your workbench"
     index:

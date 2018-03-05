@@ -83,7 +83,7 @@ class SimpleExporter < SimpleInterface
         val = attributes.inject(scoped_item){|tmp, attr| tmp.send(attr)}
       end
     end
-    if val.nil?
+    if val.nil? && !col.omit_nil?
       push_in_journal({event: :attribute_not_found, message: "Value missing for: #{[col.scope, col.attribute].flatten.join('.')}", kind: :warning})
       self.status ||= :success_with_warnings
     end

@@ -6,7 +6,7 @@ class WorkbenchesController < ChouetteController
 
   include PolicyChecker
   
-  respond_to :html
+  respond_to :html, except: :destroy
 
   def index
     redirect_to dashboard_path

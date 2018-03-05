@@ -15,41 +15,34 @@ module ApplicationDaysSupport
   end
 
   def day_by_mask(flag)
-    int_day_types & flag == flag
-  end
-
-  def self.day_by_mask(int_day_types,flag)
-    int_day_types & flag == flag
-  end
-
-  def valid_days
-    # Build an array with day of calendar week (1-7, Monday is 1).
-    [].tap do |valid_days|
-      valid_days << 1  if monday
-      valid_days << 2  if tuesday
-      valid_days << 3  if wednesday
-      valid_days << 4  if thursday
-      valid_days << 5  if friday
-      valid_days << 6  if saturday
-      valid_days << 7  if sunday
-    end
+    self.class.day_by_mask int_day_types, flag
   end
 
   def valid_day? wday
     valid_days.include?(wday)
   end
 
-  def self.valid_days(int_day_types)
-    # Build an array with day of calendar week (1-7, Monday is 1).
-    [].tap do |valid_days|
-      valid_days << 1  if day_by_mask(int_day_types,MONDAY)
-      valid_days << 2  if day_by_mask(int_day_types,TUESDAY)
-      valid_days << 3  if day_by_mask(int_day_types,WEDNESDAY)
-      valid_days << 4  if day_by_mask(int_day_types,THURSDAY)
-      valid_days << 5  if day_by_mask(int_day_types,FRIDAY)
-      valid_days << 6  if day_by_mask(int_day_types,SATURDAY)
-      valid_days << 7  if day_by_mask(int_day_types,SUNDAY)
+  included do
+    def self.valid_days(int_day_types)
+      # Build an array with day of calendar week (1-7, Monday is 1).
+      [].tap do |valid_days|
+        valid_days << 1  if day_by_mask(int_day_types,MONDAY)
+        valid_days << 2  if day_by_mask(int_day_types,TUESDAY)
+        valid_days << 3  if day_by_mask(int_day_types,WEDNESDAY)
+        valid_days << 4  if day_by_mask(int_day_types,THURSDAY)
+        valid_days << 5  if day_by_mask(int_day_types,FRIDAY)
+        valid_days << 6  if day_by_mask(int_day_types,SATURDAY)
+        valid_days << 7  if day_by_mask(int_day_types,SUNDAY)
+      end
     end
+
+    def self.day_by_mask(int_day_types,flag)
+      int_day_types & flag == flag
+    end
+  end
+
+  def valid_days
+    self.class.valid_days int_day_types
   end
 
   def monday

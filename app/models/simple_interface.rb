@@ -167,6 +167,13 @@ class SimpleInterface < ActiveRecord::Base
       @scope = opts[:scope]
     end
 
+    def on_relation relation_name
+      @scope ||= []
+      @scope.push relation_name
+      yield
+      @scope.pop
+    end
+
     def duplicate
       self.class.new @import_name, self.options
     end
@@ -211,7 +218,8 @@ class SimpleInterface < ActiveRecord::Base
     end
 
     def add_column name, opts={}
-      @columns.push Column.new({name: name.to_s}.update(opts))
+      @scope ||= []
+      @columns.push Column.new({name: name.to_s, scope: @scope.dup}.update(opts))
     end
 
     def add_value attribute, value
@@ -260,6 +268,10 @@ class SimpleInterface < ActiveRecord::Base
 
       def required?
         !!@options[:required]
+      end
+
+      def scope
+        @options[:scope] || []
       end
 
       def [](key)

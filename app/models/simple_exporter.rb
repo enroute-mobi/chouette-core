@@ -10,10 +10,13 @@ class SimpleExporter < SimpleInterface
     @padding = 1
     @current_line = -1
     @number_of_lines = collection.size
+
     @padding = [1, Math.log(@number_of_lines, 10).ceil()].max
 
     @csv = nil
     fail_with_error "Unable to write in file: #{self.filepath}" do
+      dir = Pathname.new(self.filepath).dirname
+      FileUtils.mkdir_p dir
       @csv = CSV.open(self.filepath, 'w', self.configuration.csv_options)
     end
 
@@ -54,56 +57,100 @@ class SimpleExporter < SimpleInterface
     log "Starting export ...", color: :green
     log "Export will be written in #{filepath}", color: :green
     @csv << self.configuration.columns.map(&:name)
-    ids = collection.pluck :id
-    ids.in_groups_of(configuration.batch_size).each do |batch_ids|
-      collection.where(id: batch_ids).each do |item|
-        @current_row = item.attributes
-        @current_row = @current_row.slice(*configuration.logged_attributes) if configuration.logged_attributes.present?
-        row = []
-        @new_status = nil
-        self.configuration.columns.each do |col|
-          val = col[:value]
-          if val.nil? || val.is_a?(Proc)
-            if item.respond_to? col.attribute
-              if val.is_a?(Proc)
-                val = instance_exec(item.send(col.attribute), &val)
-              else
-                val = item.send(col.attribute)
-              end
-            else
-              push_in_journal({event: :attribute_not_found, message: "Attribute not found: #{col.attribute}", kind: :warning})
-              self.status ||= :success_with_warnings
-            end
-          end
-
-          if val.nil? && col.required?
-            @new_status = colorize("x", :red)
-            raise "MISSING VALUE FOR COLUMN #{col.name}"
-          end
-          @new_status ||= colorize("✓", :green)
-          val = encode_string(val) if val.is_a?(String)
-          row << val
+    if collection.is_a?(ActiveRecord::Relation) && collection.model.column_names.include?("id")
+      ids = collection.pluck :id
+      ids.in_groups_of(configuration.batch_size).each do |batch_ids|
+        collection.where(id: batch_ids).each do |item|
+          handle_item item
         end
-        push_in_journal({event: :success, kind: :log})
-        @statuses += @new_status
-        print_state if @current_line % 20 == 0
-        @current_line += 1
-        @csv << row
       end
+    else
+      collection.each{|item| handle_item item }
     end
     print_state
+  end
+
+  def map_item_to_rows item
+    return [item] unless configuration.item_to_rows_mapping
+    configuration.item_to_rows_mapping.call(item).map {|row| CustomRow.new row }
+  end
+
+  def handle_item item
+    number_of_lines = @number_of_lines
+    map_item_to_rows(item).each_with_index do |item, i|
+      @number_of_lines = number_of_lines + i
+      @current_row = item.attributes
+      @current_row = @current_row.slice(*configuration.logged_attributes) if configuration.logged_attributes.present?
+      row = []
+      @new_status = nil
+      self.configuration.columns.each do |col|
+        scoped_item = col.scope.inject(item){|tmp, scope| tmp.send(scope)}
+        val = col[:value]
+        if val.nil? || val.is_a?(Proc)
+          if val.is_a?(Proc)
+            val = instance_exec(scoped_item, &val)
+          else
+            attributes = [col.attribute].flatten
+            val = attributes.inject(scoped_item){|tmp, attr| tmp.send(attr)}
+          end
+        end
+        if val.nil?
+          push_in_journal({event: :attribute_not_found, message: "Value missing for: #{[col.scope, col.attribute].flatten.join('.')}", kind: :warning})
+          self.status ||= :success_with_warnings
+        end
+
+        if val.nil? && col.required?
+          @new_status = colorize("x", :red)
+          raise "MISSING VALUE FOR COLUMN #{col.name}"
+        end
+        @new_status ||= colorize("✓", :green)
+        val = encode_string(val) if val.is_a?(String)
+        row << val
+      end
+      push_in_journal({event: :success, kind: :log})
+      @statuses += @new_status
+      print_state if @current_line % 20 == 0
+      @current_line += 1
+      @csv << row
+    end
+  end
+
+  class CustomRow < OpenStruct
+    def initialize data
+      super data
+      @data = data
+    end
+
+    def attributes
+      flatten_hash @data
+    end
+
+    protected
+    def flatten_hash h
+      h.each_with_object({}) do |(k, v), h|
+        if v.is_a? Hash
+          flatten_hash(v).map do |h_k, h_v|
+            h["#{k}.#{h_k}".to_sym] = h_v
+          end
+        else
+          h[k] = v
+        end
+      end
+    end
   end
 
   class Configuration < SimpleInterface::Configuration
     attr_accessor :collection
     attr_accessor :batch_size
     attr_accessor :logged_attributes
+    attr_accessor :item_to_rows_mapping
 
     def initialize import_name, opts={}
       super import_name, opts
       @collection = opts[:collection]
       @batch_size = opts[:batch_size] || 1000
       @logged_attributes = opts[:logged_attributes]
+      @item_to_rows_mapping = opts[:item_to_rows_mapping]
     end
 
     def options
@@ -111,7 +158,12 @@ class SimpleExporter < SimpleInterface
         collection: collection,
         batch_size: batch_size,
         logged_attributes: logged_attributes,
+        item_to_rows_mapping: item_to_rows_mapping,
       })
+    end
+
+    def map_item_to_rows &block
+      @item_to_rows_mapping = block
     end
 
     def add_column name, opts={}

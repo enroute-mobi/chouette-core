@@ -90,7 +90,6 @@ module Chouette
       end
     }
 
-
     scope :in_purchase_window, ->(range){
       purchase_windows = Chouette::PurchaseWindow.overlap_dates(range)
       sql = purchase_windows.joins(:vehicle_journeys).select('vehicle_journeys.id').uniq.to_sql
@@ -155,6 +154,14 @@ module Chouette
       if number.nil?
         self.number = 0
       end
+    end
+
+    def sales_start
+      purchase_windows.map{|p| p.date_ranges.first}.min
+    end
+
+    def sales_end
+      purchase_windows.map{|p| p.date_ranges.last}.max
     end
 
     def calculate_vehicle_journey_at_stop_day_offset

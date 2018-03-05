@@ -13,7 +13,7 @@ module Stif
     end
 
     def calendars
-      @calendars ||= Calendar.where('(organisation_id = ? OR shared = ?) AND workgroup_id = ?', current_organisation.id, true, workgroup.id)
+      workbench.calendars
     end
   end
 end

@@ -57,7 +57,7 @@
       .panel-heading
         h3.panel-title.with_actions
           = I18n.t("calendars.index.title")
-          span.badge.ml-xs = @dashboard.calendars.count if @dashboard.calendars.present?
+          span.badge.ml-xs = @dashboard.workbench.calendars.count if @dashboard.calendars.present?
 
           div
             = link_to '', workgroup_calendars_path(@dashboard.workbench.workgroup), class: ' fa fa-chevron-right pull-right', title: t('.see')

@@ -23,7 +23,7 @@ RSpec.describe ComplianceControlSetCopier do
 
       context 'Directed Acyclic Graph is copied correctly' do
         let(:cc_blox){
-          3.times.map{ |_| create :compliance_control_block, compliance_control_set: cc_set }
+          3.times.map{ |n| create :compliance_control_block, compliance_control_set: cc_set, transport_mode: StifTransportModeEnumerations.transport_modes[n], transport_submode: StifTransportSubmodeEnumerations.transport_submodes[n] }
         }
         let!(:direct_ccs){
           3.times.map{ |n| create :compliance_control, compliance_control_set: cc_set, name: "direct #{n.succ}", code: "direct-#{n.succ}" }

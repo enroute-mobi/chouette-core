@@ -44,7 +44,7 @@ module Chouette
       t: "%#{text.downcase}%") }
 
     scope :by_name, ->(name) {
-      joins(:company)
+      joins('LEFT OUTER JOIN public.companies ON companies.id = lines.company_id')
         .where('
           lines.number LIKE :q
           OR lines.name LIKE :q

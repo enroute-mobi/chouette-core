@@ -30,6 +30,17 @@ module Chouette
 
     delegate :name, to: :stop_area
 
+    after_commit :set_defaults
+    def set_defaults
+      if stop_area.kind == 'commercial'
+        update_attribute :for_boarding, 'normal'
+        update_attribute :for_alighting, 'normal'
+      else
+        update_attribute :for_boarding, 'forbidden'
+        update_attribute :for_alighting, 'forbidden'
+      end
+    end
+
     before_destroy :remove_dependent_journey_pattern_stop_points
     def remove_dependent_journey_pattern_stop_points
       route.journey_patterns.each do |jp|

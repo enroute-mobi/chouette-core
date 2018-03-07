@@ -78,15 +78,32 @@ RSpec.describe Chouette::Route, :type => :model do
   end
 
   describe "#stop_points" do
+    let(:first_stop_point) { subject.stop_points.first}
     context "#find_by_stop_area" do
       context "when arg is first quay id" do
-        let(:first_stop_point) { subject.stop_points.first}
         it "should return first quay" do
           expect(subject.stop_points.find_by_stop_area( first_stop_point.stop_area_id)).to eq( first_stop_point)
         end
       end
     end
+
+    context 'defaults attributes' do
+      it 'should have the correct default attributes' do
+        first_stop_point.stop_area.update_attributes(kind: 'non_commercial')
+        subject.stop_points.each do |sp|
+          sp.run_callbacks(:commit)
+          if sp.stop_area.commercial?
+            expect(sp.for_boarding).to eq('normal')
+            expect(sp.for_alighting).to eq('normal')
+          else
+            expect(sp.for_boarding).to eq('forbidden')
+            expect(sp.for_alighting).to eq('forbidden')
+          end
+        end
+      end
+    end
   end
+
   describe "#stop_areas" do
     let(:line){ create(:line)}
     let(:route_1){ create(:route, :line => line)}

@@ -9,6 +9,7 @@ class ApplicationController < ActionController::Base
   protect_from_forgery unless: -> { request.get? && (request.format.json? || request.format.js?) }
   before_action :authenticate_user!
   before_action :set_locale
+  after_action :reset_locale
 
 
   # Load helpers in rails engine
@@ -19,6 +20,11 @@ class ApplicationController < ActionController::Base
     # For testing different locales w/o restarting the server
     I18n.locale = (params['lang'] || session[:language] || I18n.default_locale).to_sym
     logger.info "locale set to #{I18n.locale.inspect}"
+    String.send :alias_method, :pluralize, :pluralize_with_i18n
+  end
+
+  def reset_locale
+    String.send :alias_method, :pluralize, :pluralize_without_i18n
   end
 
   def pundit_user

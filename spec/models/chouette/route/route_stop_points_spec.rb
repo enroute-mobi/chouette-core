@@ -88,10 +88,12 @@ RSpec.describe Chouette::Route, :type => :model do
     end
 
     context 'defaults attributes' do
+      let(:new_stop_area) { create :stop_area, kind: 'non_commercial', area_type: 'deposit' }
+      let(:new_stop_point) { create :stop_point, stop_area_id: new_stop_area.id }
       it 'should have the correct default attributes' do
-        first_stop_point.stop_area.update_attributes(kind: 'non_commercial')
+        subject.stop_points << new_stop_point
         subject.stop_points.each do |sp|
-          sp.run_callbacks(:commit)
+          # binding.pry
           if sp.stop_area.commercial?
             expect(sp.for_boarding).to eq('normal')
             expect(sp.for_alighting).to eq('normal')

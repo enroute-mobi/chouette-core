@@ -136,5 +136,9 @@ module ApplicationHelper
     url_for(:controller => "/help", :action => "show") + '/' + target
   end
 
-
+  def permitted_custom_fields_params custom_fields
+    [{
+      custom_field_values: custom_fields.map(&:code)
+    }]
+  end
 end

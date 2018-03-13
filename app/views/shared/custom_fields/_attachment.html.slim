@@ -1,1 +1,4 @@
-= link_to I18n.t("custom_fields.#{field.owner.class.name.demodulize.underscore}.#{field.code}.link"), field.value.url
+- if field.value.present?
+  = link_to I18n.t("custom_fields.#{field.owner.class.name.demodulize.underscore}.#{field.code}.link"), field.value.url
+- else
+  = "-"

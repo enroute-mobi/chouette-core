@@ -15,13 +15,14 @@ module CustomFieldsSupport
 
     def custom_field_values= vals
       out = {}
-      vals.each do |k, val|
-        out[k] = custom_fields[k]&.preprocess_value_for_assignment(val)
+      custom_fields.each do |code, field|
+        out[code] = field.preprocess_value_for_assignment(vals[code])
       end
       self.write_attribute :custom_field_values, out
     end
 
     def initialize_custom_fields
+      self.custom_field_values ||= {}
       custom_fields.values.each &:initialize_custom_field
     end
 

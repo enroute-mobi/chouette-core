@@ -7,10 +7,12 @@ class CustomField < ActiveRecord::Base
   validates :name, uniqueness: {scope: [:resource_type, :workgroup_id]}
   validates :code, uniqueness: {scope: [:resource_type, :workgroup_id], case_sensitive: false}
 
+  scope :for_workgroup, ->(workgroup){ where workgroup_id: workgroup.id }
+
   class Collection < HashWithIndifferentAccess
     def initialize object
       vals = object.class.custom_fields.map do |v|
-        [v.code, CustomField::Value.new(object, v, object.custom_field_value(v.code))]
+        [v.code, CustomField::Instance.new(object, v, object.custom_field_value(v.code))]
       end
       super Hash[*vals.flatten]
     end
@@ -20,11 +22,11 @@ class CustomField < ActiveRecord::Base
     end
   end
 
-  class Value
+  class Instance
     def self.new owner, custom_field, value
       field_type = custom_field.field_type
-      klass_name = field_type && "CustomField::Value::#{field_type.classify}"
-      klass = klass_name && const_defined?(klass_name) ? klass_name.constantize : CustomField::Value::Base
+      klass_name = field_type && "CustomField::Instance::#{field_type.classify}"
+      klass = klass_name.safe_constantize || CustomField::Instance::Base
       klass.new owner, custom_field, value
     end
 
@@ -37,7 +39,8 @@ class CustomField < ActiveRecord::Base
         @validated = false
         @valid = false
       end
-      attr_accessor :owner
+
+      attr_accessor :owner, :custom_field
 
       delegate :code, :name, :field_type, to: :@custom_field
 
@@ -56,6 +59,14 @@ class CustomField < ActiveRecord::Base
 
       def value
         @raw_value
+      end
+
+      def input form_helper
+        @input ||= begin
+          klass_name = field_type && "CustomField::Instance::#{field_type.classify}::Input"
+          klass = klass_name.safe_constantize || CustomField::Instance::Base::Input
+          klass.new self, form_helper
+        end
       end
 
       def errors_key
@@ -82,6 +93,46 @@ class CustomField < ActiveRecord::Base
           :partial => "shared/custom_fields/#{field_type}",
           :locals => { field: self}
         )
+      end
+
+      class Input
+        def initialize instance, form_helper
+          @instance = instance
+          @form_helper = form_helper
+        end
+
+        def custom_field
+          @instance.custom_field
+        end
+
+        delegate :custom_field, :value, :options, to: :@instance
+        delegate :code, :name, :field_type, to: :custom_field
+
+        def to_s
+          out = form_input
+          out.html_safe
+        end
+
+        protected
+
+        def form_input_id
+          "custom_field_#{code}"
+        end
+
+        def form_input_name
+          "#{@form_helper.object_name}[custom_field_values][#{code}]"
+        end
+
+        def form_input_options
+          {
+            input_html: {value: value, name: form_input_name},
+            label: name
+          }
+        end
+
+        def form_input
+          @form_helper.input form_input_id, form_input_options
+        end
       end
     end
 
@@ -111,7 +162,16 @@ class CustomField < ActiveRecord::Base
       end
 
       def display_value
-        options["list_values"][value]
+        options["list_values"][value.to_s]
+      end
+
+      class Input < Base::Input
+        def form_input_options
+          super.update({
+            selected: value,
+            collection: options["list_values"].map(&:reverse)
+          })
+        end
       end
     end
 
@@ -152,7 +212,11 @@ class CustomField < ActiveRecord::Base
       end
 
       def preprocess_value_for_assignment val
-        owner.send "#{uploader_name}=", val
+        if val.present?
+          owner.send "#{uploader_name}=", val
+        else
+          @raw_value
+        end
       end
 
       def value
@@ -173,6 +237,15 @@ class CustomField < ActiveRecord::Base
 
       def display_value
         render_partial
+      end
+
+      class Input < Base::Input
+        def form_input_options
+          super.update({
+            as: :file,
+            wrapper: :horizontal_file_input
+          })
+        end
       end
     end
 

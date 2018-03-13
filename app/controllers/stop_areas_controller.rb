@@ -161,7 +161,7 @@ class StopAreasController < ChouetteController
   helper_method :current_referential
 
   def stop_area_params
-    params.require(:stop_area).permit(
+    fields = [
       :area_type,
       :children_ids,
       :city_name,
@@ -192,7 +192,8 @@ class StopAreasController < ChouetteController
       :kind,
       :status,
       localized_names: Chouette::StopArea::AVAILABLE_LOCALIZATIONS
-    )
+    ] + permitted_custom_fields_params(Chouette::StopArea.custom_fields) # XXX filter on the workgroup
+    params.require(:stop_area).permit(fields)
   end
 
    # Fake ransack filter

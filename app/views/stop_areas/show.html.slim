@@ -23,4 +23,6 @@
             t('activerecord.attributes.stop_area.state') => stop_area_status(@stop_area),
             @stop_area.human_attribute_name(:comment) => @stop_area.try(:comment),
             })
+        - @stop_area.custom_fields.each do |code, field|
+          - attributes.merge!(field.name => field.display_value)
         = definition_list t('metadatas'), attributes

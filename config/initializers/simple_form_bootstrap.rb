@@ -72,9 +72,9 @@ SimpleForm.setup do |config|
     b.use :placeholder
     b.optional :maxlength
     b.optional :readonly
-    b.use :label, class: 'col-sm-3 control-label'
+    b.use :label, class: 'col-sm-4 col-xs-5 control-label'
 
-    b.wrapper tag: 'div', class: 'col-sm-9' do |ba|
+    b.wrapper tag: 'div', class: 'col-sm-8 col-xs-7' do |ba|
       ba.use :input
       ba.use :error, wrap_with: { tag: 'span', class: 'help-block small' }
       ba.use :hint,  wrap_with: { tag: 'p', class: 'help-block small' }

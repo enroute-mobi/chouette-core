@@ -7,6 +7,7 @@ module Chouette
     include StopAreaRestrictions
     include StopAreaReferentialSupport
     include ObjectidSupport
+    include CustomFieldsSupport
 
     extend Enumerize
     enumerize :area_type, in: Chouette::AreaType::ALL

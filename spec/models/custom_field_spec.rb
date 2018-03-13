@@ -38,8 +38,35 @@ RSpec.describe CustomField, type: :model do
     it { expect(vj.custom_field_value("energy")).to eq(99) }
   end
 
+  context "with a 'list' field_type" do
+    let!(:field){ [create(:custom_field, code: :energy, field_type: 'list', options: {list_values: %w(foo bar baz)})] }
+    let!( :vj ){ create :vehicle_journey, custom_field_values: {energy: "1"} }
+    it "should cast the value" do
+      expect(vj.custom_fields[:energy].value).to eq 1
+      expect(vj.custom_fields[:energy].display_value).to eq "bar"
+    end
+
+    it "should validate the value" do
+      {
+        "1" => true,
+        1 => true,
+        "azerty" => false,
+        "10" => false,
+        10 => false
+      }.each do |val, valid|
+        vj = build :vehicle_journey, custom_field_values: {energy: val}
+        if valid
+          expect(vj.validate).to be_truthy
+        else
+          expect(vj.validate).to be_falsy
+          expect(vj.errors.messages[:"custom_fields.energy"]).to be_present
+        end
+      end
+    end
+  end
+
   context "with an 'integer' field_type" do
-    let!(:field){ [create(:custom_field, code: :energy, options: {field_type: 'integer'})] }
+    let!(:field){ [create(:custom_field, code: :energy, field_type: 'integer')] }
     let!( :vj ){ create :vehicle_journey, custom_field_values: {energy: "99"} }
     it "should cast the value" do
       expect(vj.custom_fields[:energy].value).to eq 99
@@ -47,6 +74,7 @@ RSpec.describe CustomField, type: :model do
 
     it "should validate the value" do
       {
+        99 => true,
         "99" => true,
         "azerty" => false,
         "91a" => false,
@@ -64,10 +92,39 @@ RSpec.describe CustomField, type: :model do
   end
 
   context "with a 'string' field_type" do
-    let!(:field){ [create(:custom_field, code: :energy, options: {field_type: 'string'})] }
+    let!(:field){ [create(:custom_field, code: :energy, field_type: 'string')] }
     let!( :vj ){ create :vehicle_journey, custom_field_values: {energy: 99} }
     it "should cast the value" do
       expect(vj.custom_fields[:energy].value).to eq '99'
+    end
+  end
+
+  context "with a 'attachment' field_type" do
+    let!(:field){ [create(:custom_field, code: :energy, field_type: 'attachment')] }
+    let( :vj ){ create :vehicle_journey, custom_field_values: {energy: File.open(Rails.root.join('spec', 'fixtures', 'users.json'))} }
+    it "should cast the value" do
+      expect(vj.custom_fields[:energy].value.class).to be CustomFieldAttachmentUploader
+      path = vj.custom_fields[:energy].value.path
+      expect(File.exists?(path)).to be_truthy
+      expect(vj).to receive(:remove_custom_field_energy!).and_call_original
+      vj.destroy
+      vj.run_callbacks(:commit)
+      expect(File.exists?(path)).to be_falsy
+    end
+
+    it "should display a link" do
+      val = vj.custom_fields[:energy].value
+      out = vj.custom_fields[:energy].display_value
+      expect(out).to match(val.url)
+      expect(out).to match(/\<a.*\>/)
+    end
+
+    context "with a whitelist" do
+      let!(:field){ [create(:custom_field, code: :energy, field_type: 'attachment', options: {extension_whitelist: %w(zip)})] }
+      it "should validate extension" do
+        expect(build(:vehicle_journey, custom_field_values: {energy: File.open(Rails.root.join('spec', 'fixtures', 'users.json'))})).to_not be_valid
+        expect(build(:vehicle_journey, custom_field_values: {energy: File.open(Rails.root.join('spec', 'fixtures', 'nozip.zip'))})).to be_valid
+      end
     end
   end
 end

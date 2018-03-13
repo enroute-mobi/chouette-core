@@ -3,7 +3,7 @@ FactoryGirl.define do
     code "code"
     resource_type "VehicleJourney"
     sequence(:name){|n| "custom field ##{n}"}
-    field_type "list"
+    field_type "integer"
     options( { capacity: "0" } )
   end
 end

@@ -2,7 +2,7 @@ class CustomField < ActiveRecord::Base
 
   extend Enumerize
   belongs_to :workgroup
-  enumerize :field_type, in: %i{list}
+  enumerize :field_type, in: %i{list integer string attachment}
 
   validates :name, uniqueness: {scope: [:resource_type, :workgroup_id]}
   validates :code, uniqueness: {scope: [:resource_type, :workgroup_id], case_sensitive: false}
@@ -22,7 +22,7 @@ class CustomField < ActiveRecord::Base
 
   class Value
     def self.new owner, custom_field, value
-      field_type = custom_field.options["field_type"]
+      field_type = custom_field.field_type
       klass_name = field_type && "CustomField::Value::#{field_type.classify}"
       klass = klass_name && const_defined?(klass_name) ? klass_name.constantize : CustomField::Value::Base
       klass.new owner, custom_field, value
@@ -37,7 +37,8 @@ class CustomField < ActiveRecord::Base
         @validated = false
         @valid = false
       end
-
+      attr_accessor :owner
+      
       delegate :code, :name, :field_type, to: :@custom_field
 
       def options
@@ -64,19 +65,113 @@ class CustomField < ActiveRecord::Base
       def to_hash
         HashWithIndifferentAccess[*%w(code name field_type options value).map{|k| [k, send(k)]}.flatten(1)]
       end
+
+      def display_value
+        value
+      end
+
+      def initialize_custom_field
+      end
+
+      def preprocess_value_for_assignment
+      end
+
+      def render_partial
+        ActionView::Base.new(Rails.configuration.paths["app/views"].first).render(
+          :partial => "shared/custom_fields/#{field_type}",
+          :locals => { field: self}
+        )
+      end
     end
 
     class Integer < Base
       def value
-        @raw_value.to_i
+        @raw_value&.to_i
       end
 
       def validate
         @valid = true
-        unless @raw_value =~ /\A\d*\Z/
+        return if @raw_value.is_a?(Fixnum) || @raw_value.is_a?(Float)
+        unless @raw_value.to_s =~ /\A\d*\Z/
           @owner.errors.add errors_key, "'#{@raw_value}' is not a valid integer"
           @valid = false
         end
+      end
+    end
+
+    class List < Integer
+      def validate
+        super
+        return unless value.present?
+        unless value >= 0 && value < options["list_values"].size
+          @owner.errors.add errors_key, "'#{@raw_value}' is not a valid value"
+          @valid = false
+        end
+      end
+
+      def display_value
+        options["list_values"][value]
+      end
+    end
+
+    class Attachment < Base
+      def initialize_custom_field
+        custom_field_code = self.code
+        _attr_name = attr_name
+        _uploader_name = uploader_name
+        owner.send :define_singleton_method, "read_uploader" do |attr|
+          if attr.to_s == _attr_name
+            custom_field_values[custom_field_code]
+          else
+            read_attribute attr
+          end
+        end
+
+        owner.send :define_singleton_method, "write_uploader" do |attr, val|
+          if attr.to_s == _attr_name
+            custom_field_values[custom_field_code] = val
+          else
+            write_attribute attr, val
+          end
+        end
+
+        owner.send :define_singleton_method, "#{_attr_name}_will_change!" do
+          custom_field_values_will_change!
+        end
+
+        _extension_whitelist = options["extension_whitelist"]
+
+        owner.send :define_singleton_method, "#{_uploader_name}_extension_whitelist" do
+          _extension_whitelist
+        end
+
+        unless owner.class.uploaders.has_key? _uploader_name.to_sym
+          owner.class.mount_uploader _uploader_name, CustomFieldAttachmentUploader, mount_on: "custom_field_#{code}_raw_value"
+        end
+      end
+
+      def preprocess_value_for_assignment val
+        owner.send "#{uploader_name}=", val
+      end
+
+      def value
+        owner.send "custom_field_#{code}"
+      end
+
+      def raw_value
+        @raw_value
+      end
+
+      def attr_name
+        "custom_field_#{code}_raw_value"
+      end
+
+      def uploader_name
+        "custom_field_#{code}"
+      end
+
+      def display_value
+        render_partial
       end
     end
 

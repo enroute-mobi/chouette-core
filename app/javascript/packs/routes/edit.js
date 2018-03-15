@@ -29,6 +29,7 @@ const getInitialState = () => {
     state.push({
       stoppoint_id: v.stoppoint_id,
       stoparea_id: v.stoparea_id,
+      stoparea_kind: v.stoparea_kind,
       user_objectid: v.user_objectid,
       short_name: v.short_name ? v.short_name.replace("&#39;", "\'") : '',
       area_type: v.area_type,

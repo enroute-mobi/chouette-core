@@ -26,6 +26,7 @@ const getInitialState = () => {
     state.push({
       stoppoint_id: v.stoppoint_id,
       stoparea_id: v.stoparea_id,
+      stoparea_kind: v.stoparea_kind,
       user_objectid: v.user_objectid,
       short_name: v.short_name ? v.short_name.replace("&#39;", "\'") : '',
       area_type: v.area_type,
@@ -36,8 +37,8 @@ const getInitialState = () => {
       name: v.name ? v.name.replace("&#39;", "\'") : '',
       registration_number: v.registration_number,
       text: fancyText,
-      for_boarding: v.for_boarding || "normal",
-      for_alighting: v.for_alighting || "normal",
+      for_boarding: v.for_boarding || '',
+      for_alighting: v.for_alighting || '',
       longitude: v.longitude || 0,
       latitude: v.latitude || 0,
       comment: v.comment ? v.comment.replace("&#39;", "\'") : '',

@@ -15,7 +15,8 @@ node do |stop_area|
     :latitude                  => stop_area.latitude,
     :area_type                 => stop_area.area_type,
     :comment                   => stop_area.comment,
-    :text                      => "<span class='small label label-info'>#{I18n.t("area_types.label.#{stop_area.area_type}")}</span>#{stop_area.full_name}"
+    :text                      => "<span class='small label label-info'>#{I18n.t("area_types.label.#{stop_area.area_type}")}</span>#{stop_area.full_name}",
+    :kind                      => stop_area.kind
   }
 end
 

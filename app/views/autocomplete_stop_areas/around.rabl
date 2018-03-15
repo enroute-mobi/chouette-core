@@ -15,6 +15,7 @@ child @stop_areas, root: :features, object_root: false do
       area_type: Chouette::AreaType.find(s.area_type).label,
       registration_number: s.registration_number,
       stoparea_id: s.id,
+      stoparea_kind: s.kind,
       text: "#{s.name}, #{s.zip_code} #{s.city_name}",
       user_objectid: s.user_objectid,
       zip_code: s.zip_code,

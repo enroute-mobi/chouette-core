@@ -56,7 +56,12 @@ const actions = {
   unselectMarker: (index) => ({
     type: 'UNSELECT_MARKER',
     index
-  })
+  }),
+  defaultAttribute: (attribute, stopAreaKind) => {
+    if (attribute !== '') return attribute
+    if (stopAreaKind === undefined) return ''
+    return stopAreaKind === "commercial" ? "normal" : "forbidden" 
+  } 
 }
 
 module.exports = actions

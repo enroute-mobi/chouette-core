@@ -4,6 +4,8 @@ import PropTypes from 'prop-types'
 import BSelect2 from './BSelect2'
 import OlMap from './OlMap'
 
+import { defaultAttribute } from '../actions' 
+
 export default function StopPoint(props, {I18n}) {
   return (
     <div className='nested-fields'>
@@ -17,14 +19,14 @@ export default function StopPoint(props, {I18n}) {
         </div>
 
         <div>
-          <select className='form-control' value={props.value.for_boarding} id="for_boarding" onChange={props.onSelectChange}>
+          <select className='form-control' value={defaultAttribute(props.value.for_boarding, props.value.stoparea_kind)} id="for_boarding" onChange={props.onSelectChange}>
             <option value="normal">{I18n.t('routes.edit.stop_point.boarding.normal')}</option>
             <option value="forbidden">{I18n.t('routes.edit.stop_point.boarding.forbidden')}</option>
           </select>
         </div>
 
         <div>
-          <select className='form-control' value={props.value.for_alighting} id="for_alighting" onChange={props.onSelectChange}>
+          <select className='form-control' value={defaultAttribute(props.value.for_alighting, props.value.stoparea_kind)} id="for_alighting" onChange={props.onSelectChange}>
             <option value="normal">{I18n.t('routes.edit.stop_point.alighting.normal')}</option>
             <option value="forbidden">{I18n.t('routes.edit.stop_point.alighting.forbidden')}</option>
           </select>

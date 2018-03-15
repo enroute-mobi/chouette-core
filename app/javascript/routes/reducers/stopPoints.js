@@ -8,8 +8,8 @@ const stopPoint = (state = {}, action, length) => {
         text: '',
         index: length,
         edit: true,
-        for_boarding: 'normal',
-        for_alighting: 'normal',
+        for_boarding: '',
+        for_alighting: '',
         olMap: {
           isOpened: false,
           json: {}
@@ -68,6 +68,7 @@ const stopPoints = (state = [], action) => {
               stoppoint_id: t.stoppoint_id,
               text: action.text.text,
               stoparea_id: action.text.stoparea_id,
+              stoparea_kind: action.text.stoparea_kind,
               user_objectid: action.text.user_objectid,
               latitude: action.text.latitude,
               longitude: action.text.longitude,

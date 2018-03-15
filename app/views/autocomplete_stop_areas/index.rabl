@@ -15,7 +15,8 @@ node do |stop_area|
   :latitude => stop_area.latitude,
   :area_type => Chouette::AreaType.find(stop_area.area_type).label,
   :comment => stop_area.comment,
-  :text => stop_area.full_name
+  :text => stop_area.full_name,
+  :kind => stop_area.kind
   }
 end
 

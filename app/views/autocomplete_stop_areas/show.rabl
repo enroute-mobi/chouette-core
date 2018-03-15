@@ -9,7 +9,8 @@ node do |stop_area|
   :short_name => truncate(stop_area.name, :length => 30) || "",
   :zip_code => stop_area.zip_code || "",
   :city_name => stop_area.city_name || "",
-  :short_city_name => truncate(stop_area.city_name, :length => 15) || ""
+  :short_city_name => truncate(stop_area.city_name, :length => 15) || "",
+  :kind => stop_area.kind
   }
 end
 

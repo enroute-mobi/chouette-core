@@ -15,9 +15,10 @@ ActiveRecord::Schema.define(version: 20180319043333) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "postgis"
   enable_extension "hstore"
+  enable_extension "postgis"
   enable_extension "unaccent"
+  enable_extension "objectid"
 
   create_table "access_links", id: :bigserial, force: :cascade do |t|
     t.integer  "access_point_id",                        limit: 8
@@ -83,20 +84,18 @@ ActiveRecord::Schema.define(version: 20180319043333) do
 
   create_table "calendars", id: :bigserial, force: :cascade do |t|
     t.string    "name"
-    t.string    "short_name"
     t.daterange "date_ranges",                               array: true
     t.date      "dates",                                     array: true
     t.boolean   "shared",                    default: false
     t.integer   "organisation_id", limit: 8
     t.datetime  "created_at"
     t.datetime  "updated_at"
-    t.integer   "workgroup_id",    limit: 8
     t.integer   "int_day_types"
     t.date      "excluded_dates",                            array: true
+    t.integer   "workgroup_id",    limit: 8
   end
 
   add_index "calendars", ["organisation_id"], name: "index_calendars_on_organisation_id", using: :btree
-  add_index "calendars", ["short_name"], name: "index_calendars_on_short_name", unique: true, using: :btree
   add_index "calendars", ["workgroup_id"], name: "index_calendars_on_workgroup_id", using: :btree
 
   create_table "clean_up_results", id: :bigserial, force: :cascade do |t|
@@ -119,6 +118,7 @@ ActiveRecord::Schema.define(version: 20180319043333) do
     t.datetime "updated_at"
     t.date     "end_date"
     t.string   "date_type"
+    t.string   "mode"
   end
 
   add_index "clean_ups", ["referential_id"], name: "index_clean_ups_on_referential_id", using: :btree
@@ -299,18 +299,58 @@ ActiveRecord::Schema.define(version: 20180319043333) do
 
   add_index "custom_fields", ["resource_type"], name: "index_custom_fields_on_resource_type", using: :btree
 
-  create_table "exports", id: :bigserial, force: :cascade do |t|
-    t.integer  "referential_id",  limit: 8
-    t.string   "status"
-    t.string   "type"
-    t.string   "options"
+  create_table "export_messages", id: :bigserial, force: :cascade do |t|
+    t.string   "criticity"
+    t.string   "message_key"
+    t.hstore   "message_attributes"
+    t.integer  "export_id",           limit: 8
+    t.integer  "resource_id",         limit: 8
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "references_type"
-    t.string   "reference_ids"
+    t.hstore   "resource_attributes"
+  end
+
+  add_index "export_messages", ["export_id"], name: "index_export_messages_on_export_id", using: :btree
+  add_index "export_messages", ["resource_id"], name: "index_export_messages_on_resource_id", using: :btree
+
+  create_table "export_resources", id: :bigserial, force: :cascade do |t|
+    t.integer  "export_id",     limit: 8
+    t.string   "status"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "resource_type"
+    t.string   "reference"
+    t.string   "name"
+    t.hstore   "metrics"
+  end
+
+  add_index "export_resources", ["export_id"], name: "index_export_resources_on_export_id", using: :btree
+
+  create_table "exports", id: :bigserial, force: :cascade do |t|
+    t.string   "status"
+    t.string   "current_step_id"
+    t.float    "current_step_progress"
+    t.integer  "workbench_id",          limit: 8
+    t.integer  "referential_id",        limit: 8
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "file"
+    t.datetime "started_at"
+    t.datetime "ended_at"
+    t.string   "token_upload"
+    t.string   "type"
+    t.integer  "parent_id",             limit: 8
+    t.string   "parent_type"
+    t.datetime "notified_parent_at"
+    t.integer  "current_step",                    default: 0
+    t.integer  "total_steps",                     default: 0
+    t.string   "creator"
+    t.hstore   "options"
   end
 
   add_index "exports", ["referential_id"], name: "index_exports_on_referential_id", using: :btree
+  add_index "exports", ["workbench_id"], name: "index_exports_on_workbench_id", using: :btree
 
   create_table "facilities", id: :bigserial, force: :cascade do |t|
     t.integer  "stop_area_id",       limit: 8
@@ -766,6 +806,7 @@ ActiveRecord::Schema.define(version: 20180319043333) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "objectid_format"
+    t.string   "registration_number_format"
   end
 
   create_table "stop_areas", id: :bigserial, force: :cascade do |t|
@@ -802,6 +843,8 @@ ActiveRecord::Schema.define(version: 20180319043333) do
     t.string   "kind"
     t.jsonb    "localized_names"
     t.datetime "confirmed_at"
+    t.json     "custom_field_values"
+
   end
 
   add_index "stop_areas", ["name"], name: "index_stop_areas_on_name", using: :btree

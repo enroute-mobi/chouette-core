@@ -64,13 +64,13 @@ class CalendarsController < ChouetteController
   end
 
   def calendar_params
-    permitted_params = [:id, :name, :short_name, :shared, periods_attributes: [:id, :begin, :end, :_destroy], date_values_attributes: [:id, :value, :_destroy]]
+    permitted_params = [:id, :name, :shared, periods_attributes: [:id, :begin, :end, :_destroy], date_values_attributes: [:id, :value, :_destroy]]
     permitted_params << :shared if policy(Calendar).share?
     params.require(:calendar).permit(*permitted_params)
   end
 
   def sort_column
-    Calendar.column_names.include?(params[:sort]) ? params[:sort] : 'short_name'
+    Calendar.column_names.include?(params[:sort]) ? params[:sort] : 'name'
   end
 
   def sort_direction

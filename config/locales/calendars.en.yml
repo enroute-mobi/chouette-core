@@ -64,7 +64,6 @@ en:
     attributes:
       calendar:
         name: Name
-        short_name: Short name
         date_ranges: Date ranges
         dates: Dates
         shared: Shared

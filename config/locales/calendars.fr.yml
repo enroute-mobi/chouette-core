@@ -64,7 +64,6 @@ fr:
     attributes:
       calendar:
         name: Nom
-        short_name: Nom court
         date_ranges: Intervalles de dates
         dates: Dates
         shared: Partagé

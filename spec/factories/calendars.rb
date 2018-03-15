@@ -1,7 +1,6 @@
 FactoryGirl.define do
   factory :calendar do
     sequence(:name) { |n| "Calendar #{n}" }
-    sequence(:short_name) { |n| "Cal #{n}" }
     date_ranges { [generate(:date_range)] }
     sequence(:dates) { |n| [ Date.yesterday - n, Date.yesterday - 2*n ] }
     shared false
@@ -14,4 +13,3 @@ FactoryGirl.define do
     date..(date+1)
   end
 end
-

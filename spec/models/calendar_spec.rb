@@ -4,8 +4,6 @@ RSpec.describe Calendar, :type => :model do
 
   it { is_expected.to validate_presence_of(:organisation) }
   it { is_expected.to validate_presence_of(:name) }
-  it { is_expected.to validate_presence_of(:short_name) }
-  it { is_expected.to validate_uniqueness_of(:short_name) }
   it { is_expected.to be_versioned }
 
   describe '#to_time_table' do

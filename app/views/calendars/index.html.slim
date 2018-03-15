@@ -20,10 +20,6 @@
                 end \
               ), \
               TableBuilderHelper::Column.new( \
-                key: :short_name, \
-                attribute: 'short_name' \
-              ), \
-              TableBuilderHelper::Column.new( \
                 key: :organisation, \
                 attribute: Proc.new { |c| c.organisation.name } \
               ), \

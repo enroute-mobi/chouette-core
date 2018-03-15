@@ -6,8 +6,7 @@
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = definition_list t('metadatas'),
-          { 'Nom court' => resource.try(:short_name),
-            Calendar.human_attribute_name(:shared) => t("#{resource.shared}"),
+          { Calendar.human_attribute_name(:shared) => t("#{resource.shared}"),
             'Organisation' => resource.organisation.name,
             Calendar.human_attribute_name(:dates) =>  resource.dates.collect{|d| l(d, format: :short)}.join(', ').html_safe,
             Calendar.human_attribute_name(:date_ranges) => resource.periods.map{|d| t('validity_range', debut: l(d.begin, format: :short), end: l(d.end, format: :short))}.join('<br>').html_safe }

@@ -1,7 +1,7 @@
 = search_form_for @q, url: workgroup_calendars_path(@workgroup), builder: SimpleForm::FormBuilder, html: { method: :get, class: 'form form-filter' } do |f|
   .ffg-row
-    .input-group.search_bar class=filter_item_class(params[:q], :name_or_short_name_cont)
-      = f.search_field :name_or_short_name_cont, class: 'form-control', placeholder: 'Indiquez un nom/nom court de calendrier...'
+    .input-group.search_bar class=filter_item_class(params[:q], :name_cont)
+      = f.search_field :name_cont, class: 'form-control', placeholder: 'Indiquez un nom/nom court de calendrier...'
       span.input-group-btn
         button.btn.btn-default#search_btn type='submit'
           span.fa.fa-search

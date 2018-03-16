@@ -1,10 +1,12 @@
 - breadcrumb :vehicle_journeys, @referential, @route
 - content_for :page_header_title, t('vehicle_journeys.index.title', route: @route.name)
-- if @route.opposite_route.present?
-  - content_for :page_header_content do
-    .row.mb-sm
-     .col-lg-12.text-right
-       = link_to(t('routes.actions.opposite_route_timetable'), [@referential, @route.line, @route.opposite_route, :vehicle_journeys], class: 'btn btn-primary sticky-action')
+- content_for :page_header_content do
+  .row.mb-sm
+    .col-lg-12.text-right
+      = link_to I18n.t("time_tables.index.title"), [@referential, :time_tables], class: 'btn btn-primary sticky-action', target: :blank
+      = link_to I18n.t("purchase_windows.index.title"), [@referential, :purchase_windows], class: 'btn btn-primary sticky-action', target: :blank
+      - if @route.opposite_route.present?
+        = link_to(t('routes.actions.opposite_route_timetable'), [@referential, @route.line, @route.opposite_route, :vehicle_journeys], class: 'btn btn-primary sticky-action')
 
 
 .page_content

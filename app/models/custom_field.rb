@@ -44,6 +44,10 @@ class CustomField < ActiveRecord::Base
 
       delegate :code, :name, :field_type, to: :@custom_field
 
+      def default_value
+        options["default"]
+      end
+
       def options
         @custom_field.options || {}
       end

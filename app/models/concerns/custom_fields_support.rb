@@ -24,6 +24,9 @@ module CustomFieldsSupport
     def initialize_custom_fields
       self.custom_field_values ||= {}
       custom_fields.values.each &:initialize_custom_field
+      custom_fields.each do |k, v|
+        custom_field_values[k] ||= v.default_value
+      end
     end
 
     def custom_field_value key

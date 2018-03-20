@@ -80,7 +80,6 @@ export default class JourneyPattern extends Component{
     let from = null
     this.props.value.stop_points.map((stopPoint, i) =>{
       let usePoint = stopPoint.checked
-      console.log(stopPoint)
       if(onlyCommercial && (i == 0 || i == this.props.value.stop_points.length - 1) && stopPoint.kind == "non_commercial"){
         usePoint = false
       }
@@ -131,12 +130,9 @@ export default class JourneyPattern extends Component{
     }
   }
 
-  componentWillUpdate() {
-    [this.totalTime, this.totalDistance] = this.totals(false)
-  }
-
   render() {
     this.previousSpId = undefined
+    let [totalTime, totalDistance] = this.totals(false)
     let [commercialTotalTime, commercialTotalDistance] = this.totals(true)
     return (
       <div className={'t2e-item' + (this.props.value.deletable ? ' disabled' : '') + (this.props.value.object_id ? '' : ' to_record') + (this.props.value.errors ? ' has-error': '') + (this.hasFeature('costs_in_journey_patterns') ? ' with-costs' : '')}>
@@ -146,8 +142,8 @@ export default class JourneyPattern extends Component{
           <div>{actions.getChecked(this.props.value.stop_points).length} arrêt(s)</div>
           {this.hasFeature('costs_in_journey_patterns') &&
             <div className="small row totals">
-              <span className="col-md-6"><i className="fa fa-arrows-h"></i>{this.totalDistance}</span>
-              <span className="col-md-6"><i className="fa fa-clock-o"></i>{this.totalTime}</span>
+              <span className="col-md-6"><i className="fa fa-arrows-h"></i>{totalDistance}</span>
+              <span className="col-md-6"><i className="fa fa-clock-o"></i>{totalTime}</span>
             </div>
           }
           {this.hasFeature('costs_in_journey_patterns') &&

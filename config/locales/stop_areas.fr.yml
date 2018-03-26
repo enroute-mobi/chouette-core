@@ -206,6 +206,9 @@ fr:
           comment: "Longueur maximale = 255."
           coordinates: "Les coordonnées sont obligatoires."
           projection_xy: "x,y dans le référentiel secondaire, le séparateur de décimales est 'point'"
-
+    hints:
+      stop_area:
+        registration_number: Laisser blanc pour assigner une valeur automatiquement.
+        
   referential_stop_areas:
     <<: *fr_stop_areas

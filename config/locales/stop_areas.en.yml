@@ -204,6 +204,9 @@ en:
           comment: "Maximum length = 255."
           coordinates: "Coordinates are mandatory."
           projection_xy: "x,y in secondary referential, dot for decimal separator"
+    hints:
+      stop_area:
+        registration_number: Leave empty for automatic value.
 
   referential_stop_areas:
     <<: *en_stop_areas

@@ -49,7 +49,7 @@ module Chouette
     validate :registration_number_is_set
 
     before_validation do
-      self.registration_number ||= self.stop_area_referential.generate_registration_number
+      self.registration_number = self.stop_area_referential.generate_registration_number unless self.registration_number.present?
     end
 
     def self.nullable_attributes

@@ -68,6 +68,10 @@ module StopAreasHelper
   end
 
   def stop_area_registration_number_value stop_area
-    stop_area&.registration_number || stop_area&.stop_area_referential&.generate_registration_number
+    stop_area&.registration_number
+  end
+
+  def stop_area_registration_number_hint
+    t "formtastic.hints.stop_area.registration_number"
   end
 end

@@ -48,7 +48,7 @@
           - if has_feature?(:stop_area_waiting_time)
             = f.input :waiting_time, input_html: { min: 0 }
 
-          = f.input :registration_number, required: stop_area_registration_number_is_required(f.object), :input_html => {title: stop_area_registration_number_title(f.object), value: stop_area_registration_number_value(f.object)}
+          = f.input :registration_number, required: stop_area_registration_number_is_required(f.object), :input_html => {title: stop_area_registration_number_title(f.object), value: stop_area_registration_number_value(f.object)}, hint: stop_area_registration_number_hint
           = f.input :fare_code
           = f.input :nearest_topic_name, :input_html => {:title => t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.nearest_topic_name")}
           = f.input :comment, as: :text, :input_html => {:rows => 5, :title => t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.comment")}

@@ -27,6 +27,19 @@ export default class CustomFieldsInputs extends Component {
     )
   }
 
+  stringInput(cf){
+    return(
+      <input
+        type='text'
+        ref={'custom_fields.' + cf.code}
+        className='form-control'
+        disabled={this.props.disabled}
+        defaultValue={cf.value}
+        onChange={(e) => this.props.onUpdate(cf.code, e.target.value) }
+        />
+    )
+  }
+
   render() {
     return (
       <div>

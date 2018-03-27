@@ -38,7 +38,11 @@ class CustomField < ActiveRecord::Base
         @valid = false
       end
 
-      delegate :code, :name, :field_type, :options, to: :@custom_field
+      delegate :code, :name, :field_type, to: :@custom_field
+
+      def options
+        @custom_field.options || {}
+      end
 
       def validate
         @valid = true

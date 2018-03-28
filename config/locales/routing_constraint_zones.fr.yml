@@ -26,7 +26,11 @@ fr:
               stop_points_not_from_route: "Arrêt sur séquence d'arrêts n'appartient pas à la Route de cette Zone de contrainte."
               all_stop_points_selected: "Une ITL ne peut pas couvrir tous les arrêts d'un itinéraire."
   routing_constraint_zones:
-    search_no_results: "Aucune ITL ne correspond à votre recherche"
+    filters:
+      associated_route: 
+        title: Itinéraire associé
+        placeholder: Indiquez un itinéraire...
+      name_or_objectid_cont:  Indiquez un nom d'ITL ou un ID...
     actions:
       destroy_confirm: Etes vous sûr de supprimer cette ITL ?
     new:
@@ -37,3 +41,4 @@ fr:
       title: "Zone de contrainte %{name}"
     index:
       title: "Interdictions de trafic local"
+      search_no_results: "Aucune ITL ne correspond à votre recherche"

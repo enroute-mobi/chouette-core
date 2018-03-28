@@ -13,7 +13,7 @@
           = table_builder_2 @routing_constraint_zones,
             [ \
               TableBuilderHelper::Column.new( \
-                name: 'ID', \
+                name: t('objectid'), \
                 attribute: Proc.new { |n| n.get_objectid.local_id }, \
                 sortable: false \
               ), \
@@ -43,4 +43,4 @@
     - unless @routing_constraint_zones.any?
       .row.mt-xs
         .col-lg-12
-          = replacement_msg t('routing_constraint_zones.search_no_results')
+          = replacement_msg t('.search_no_results')

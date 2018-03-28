@@ -26,7 +26,11 @@ en:
               stop_points_not_from_route: 'Stop point does not belong to the Route of this Routing constraint zone.'
               all_stop_points_selected: 'All stop points from route cannot be selected.'
   routing_constraint_zones:
-    search_no_results: "No ITL matches your query"
+    filters:
+      associated_route: 
+        title: Associated route
+        placeholder: Put the name of a route...
+      name_or_objectid_cont:  Search by name or ID...
     actions:
       destroy_confirm: Are you sure you want to delete this routing constraint zone?
     new:
@@ -36,4 +40,5 @@ en:
     show:
       title: "Routing constraint zone %{name}"
     index:
-      title: "Interdictions of local trafficous"
+      title: "Routing constraint zones"
+      search_no_results: "No ITL matches your query"

@@ -7,16 +7,16 @@
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = definition_list t('metadatas'),
           {  t('id_codif') => @line.get_objectid.short_id,
-             'Activé' => (@line.deactivated? ? t('false') : t('true')),
-             @line.human_attribute_name(:network) => (@line.network.nil? ? t('lines.index.unset') : link_to(@line.network.name, [@referential, @line.network]) ),
-             @line.human_attribute_name(:company) => (@line.company.nil? ? t('lines.index.unset') : link_to(@line.company.name, [@referential, @line.company]) ),
-             'Transporteur(s) secondaire(s)' => (@line.secondary_companies.nil? ? t('lines.index.unset') : @line.secondary_companies.collect(&:name).join(', ')),
-             'Nom court' => @line.number,
-             'Code public' => (@line.registration_number ? @line.registration_number : '-'),
-             @line.human_attribute_name(:transport_mode) => (@line.transport_mode.present? ? t("enumerize.transport_mode.#{@line.transport_mode}") : '-'),
-             @line.human_attribute_name(:transport_submode) => (@line.transport_submode.present? ? t("enumerize.transport_submode.#{@line.transport_submode}") : '-'),
-             @line.human_attribute_name(:url) => (@line.url ? @line.url : '-'),
-             @line.human_attribute_name(:seasonal) => (@line.seasonal? ? t('true') : t('false')),}
+             Chouette::Line.tmf('activated') => (@line.deactivated? ? t('false') : t('true')),
+             Chouette::Line.tmf('network_id') => (@line.network.nil? ? t('lines.index.unset') : link_to(@line.network.name, [@referential, @line.network]) ),
+             Chouette::Line.tmf('company') => (@line.company.nil? ? t('lines.index.unset') : link_to(@line.company.name, [@referential, @line.company]) ),
+             Chouette::Line.tmf('secondary_company') => (@line.secondary_companies.nil? ? t('lines.index.unset') : @line.secondary_companies.collect(&:name).join(', ')),
+             Chouette::Line.tmf('registration_number') => @line.number,
+             Chouette::Line.tmf('published_name') => (@line.registration_number ? @line.registration_number : '-'),
+             Chouette::Line.tmf('transport_mode') => (@line.transport_mode.present? ? t("enumerize.transport_mode.#{@line.transport_mode}") : '-'),
+             Chouette::Line.tmf('transport_submode') => (@line.transport_submode.present? ? t("enumerize.transport_submode.#{@line.transport_submode}") : '-'),
+             Chouette::Line.tmf('url') => (@line.url ? @line.url : '-'),
+             Chouette::Line.tmf('seasonal') => (@line.seasonal? ? t('true') : t('false')),}
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         #routes_map.map.mb-lg
     .row
@@ -53,12 +53,12 @@
                     attribute: 'wayback_text' \
                   ), \
                   TableBuilderHelper::Column.new( \
-                    name: 'Arrêt de départ', \
+                    name: Chouette::Route.tmf('stop_area_departure'), \
                     attribute: Proc.new { |r| r.try(:stop_points).first.try(:stop_area).try(:name) }, \
                     sortable: false \
                   ), \
                   TableBuilderHelper::Column.new( \
-                    name: "Arrêt d'arrivée", \
+                    name: Chouette::Route.tmf('stop_area_arrival'), \
                     attribute: Proc.new{ |r| r.try(:stop_points).last.try(:stop_area).try(:name) }, \
                     sortable: false \
                   ), \
@@ -79,7 +79,7 @@
         - unless @routes.any?
           .row.mt-xs
             .col-lg-12
-              = replacement_msg t('routes.search_no_results')
+              = replacement_msg t('routes.filters.no_results')
 
 = javascript_tag do
   | window.routes = "#{URI.escape(@routes.select{|r| r.wayback == :outbound}.map{|r| {name: r.name, id: r.id, stops: route_json_for_edit(r, serialize: false)}}.to_json)}"

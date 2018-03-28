@@ -43,7 +43,7 @@ class ReferentialDecorator < AF83::Decorator
     end
 
     instance_decorator.action_link policy: :edit, secondary: :show, on: :show do |l|
-      l.content 'Purger'
+      l.content t('actions.clean_up')
       l.href '#'
       l.type 'button'
       l.data {{

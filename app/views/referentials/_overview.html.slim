@@ -16,8 +16,8 @@
           = f.input :transport_mode_eq_any, collection: overview.referential_lines.map(&:transport_mode).compact.uniq.sort, as: :check_boxes, label: false, label_method: lambda{|l| ("<span>" + t("enumerize.transport_mode.#{l}") + "</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list'}
 
       .actions
-        = link_to 'Effacer', url_for() + "##{overview.pagination_param_name}", class: 'btn btn-link'
-        = f.submit 'Filtrer', class: 'btn btn-default'
+        = link_to t('actions.erase'), url_for() + "##{overview.pagination_param_name}", class: 'btn btn-link'
+        = f.submit t('actions.filter'), class: 'btn btn-default'
 
   .time-travel
     .btn-group

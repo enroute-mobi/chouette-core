@@ -21,9 +21,9 @@ en:
     actions:
       new: "Add a new stop"
       create: "Add a new stop"
-      edit: "Edit this stop"
-      update: "Edit this stop"
-      destroy: "Remove"
+      edit: "Edit stop areas"
+      update: "Edit stop areas"
+      destroy: "Delete stop area"
       activate: "Activate this stop"
       deactivate: "Deactivate this stop"
       activate_confirm: "Are you sure you want to activate this stop ?"

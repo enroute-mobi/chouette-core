@@ -3,7 +3,7 @@ en:
     filters:
       name_or_number_or_objectid: 'Search by name, number or objectid'
       name: 'Search by name'
-      line: 'Seach by associated lines'
+      line: 'Search by associated lines'
     search_no_results: 'No data space matching your query'
     error_period_filter: "The period filter must have valid bounding dates"
     index:
@@ -51,7 +51,7 @@ en:
     overview:
       head:
         dates: Dates
-        lines: Lignes
+        lines: Lines
         today: Today
         prev_page: Prev. page
         next_page: Next page
@@ -64,7 +64,7 @@ en:
         other: "data spaces"
     attributes:
       referential:
-        name: "Data space name"
+        name: "Name"
         status: "Status"
         slug: "Code"
         prefix: "Neptune Object Id prefix"
@@ -105,7 +105,7 @@ en:
         created_from: 'Created from'
         updated_at: "Updated"
         created_at: "Created"
-        organisation: 'Organisation'
+        organisation: 'Organization'
         number_of_lines: 'No. of lines'
   formtastic:
     titles:

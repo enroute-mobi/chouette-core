@@ -5,7 +5,7 @@ en:
     success_jp: "%{count} journey patterns deleted"
     failure: "Fail when clean_up : %{error_message}"
     actions:
-      clean_up: "clean up"
+      clean_up: "Clean up"
       confirm: "Clean up will destroy time tables which ended on requested date\nand next recursively all object without any time table\nPlease confirm this action"
   activemodel:
     attributes:

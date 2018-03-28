@@ -63,7 +63,7 @@ en:
         one: purchase window
         other: purchase windows
     attributes:
-      purchase_windows:
+      purchase_window:
         name: Name
         date_ranges: Date ranges
         referential: Referential
@@ -71,7 +71,7 @@ en:
         bounding_dates: Bounding Dates
     errors:
       models:
-        purchase_windows:
+        purchase_window:
           attributes:
             dates:
               date_in_date_ranges: A date can not be in Dates and in Date ranges.

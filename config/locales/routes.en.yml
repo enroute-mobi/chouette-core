@@ -1,6 +1,8 @@
 en:
   routes:
-    search_no_results: "No route matching your query"
+    filters:
+      placeholder: Search by name or ID
+      no_results: "No route matching your query"
     actions:
       new: "Add a new route"
       edit: "Edit this route"
@@ -55,7 +57,7 @@ en:
       for_boarding: "Boarding"
       for_alighting: "Alighting"
     duplicate:
-      title: "Duplicate route"
+      title: "Clone route"
       success: "Route cloned with success"
     route:
       no_journey_pattern: "No Journey pattern"
@@ -82,7 +84,7 @@ en:
         number: "Number"
         direction: "Direction"
         wayback: "Direction"
-        stop_points: "Nb Stop points"
+        stop_points: "Nb Stop areas"
         opposite_route: "Reversed route"
         opposite_route_id: "Reversed route"
         objectid: "Neptune identifier"
@@ -91,6 +93,8 @@ en:
         updated_at: Updated at
         creator_id: "Created by"
         no_journey_pattern: "No journey pattern"
+        stop_area_departure: Stop area departure 
+        stop_area_arrival: Stop area arrival 
   formtastic:
     titles:
       route:

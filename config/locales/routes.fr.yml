@@ -1,6 +1,8 @@
 fr:
   routes:
-    search_no_results: "Aucun itinéraire ne correspond à votre recherche"
+    filters:
+      placeholder: Indiquez un nom d'itinéraire ou un ID...
+      no_results: "Aucun itinéraire ne correspond à votre recherche"
     actions:
       new: "Ajouter un itinéraire"
       edit: "Editer cet itinéraire"
@@ -95,6 +97,8 @@ fr:
         updated_at: "Edité le"
         creator_id: "Créé par"
         no_journey_pattern: "Pas de mission"
+        stop_area_departure: Arrêt de départ
+        stop_area_arrival: Arrêt d'arrivée
   formtastic:
     titles:
       route:

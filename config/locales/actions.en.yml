@@ -16,7 +16,7 @@ en:
     unarchive: "Unarchive"
     clone: 'Clone'
     duplicate: 'Clone'
-    clean_up: 'Clean up'
+    clean_up: 'Purge'
     sync: 'Synchronize'
     combine: 'Combine'
     actualize: 'Actualize'

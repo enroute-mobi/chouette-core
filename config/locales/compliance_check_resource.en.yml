@@ -1,0 +1,8 @@
+en:
+  activerecord:
+    attributes:
+      compliance_check_resource:
+        name: Name
+        status: Status
+        metrics: Metrics
+        download: Download

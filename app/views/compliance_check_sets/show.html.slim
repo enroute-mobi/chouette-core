@@ -39,7 +39,7 @@
               attribute: Proc.new { |n| I18n.t('compliance_check_sets.show.metrics', n.metrics.deep_symbolize_keys) } \
             ), \
             TableBuilderHelper::Column.new( \
-              name: 'Téléchargement' , \
+              key: :download , \
               attribute: Proc.new { |n| '<i class="fa fa-download" aria-hidden="true"></i>'.html_safe }, \
               sortable: false, \
               link_to: lambda do |compliance_check_resource| \

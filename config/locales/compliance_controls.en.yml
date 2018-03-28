@@ -29,6 +29,8 @@ en:
       title: "Add a new compliance control"
     edit:
       title: "Update compliance control"
+    select_type:
+      title: "Select a control type"
     actions:
       new: Add
       edit: Edit

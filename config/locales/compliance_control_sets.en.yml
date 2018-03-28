@@ -10,6 +10,12 @@ en:
       new_control: Creating a Control
       select_types: Control Type Selection
       edit: Edit compliance control set
+    new:
+      title: New compliance control set %{name}
+    show:
+      title: Consult compliance control set %{name}
+    edit:
+      title: Edit compliance control set %{name}
     actions:
       new: Add
       edit: Edit
@@ -18,6 +24,7 @@ en:
       add_compliance_control: Compliance Control
       add_compliance_control_block: Compliance Control Block
       destroy_confirm: Are you sure ?
+      loaded: Load the control
     filters:
       name: 'Enter name ...'
     search_no_results: 'No compliance control set found'

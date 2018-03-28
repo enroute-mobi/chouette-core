@@ -1,6 +1,8 @@
 fr:
   calendars:
-    search_no_results: 'Aucun calendrier ne correspond à votre recherche'
+    filters:
+      name_or_short_name_cont: 'Indiquez un nom/nom court de calendrier...'
+      no_results: 'Aucun calendrier ne correspond à votre recherche'
     days:
       monday: L
       tuesday: Ma

@@ -1,7 +1,7 @@
 = search_form_for @q, url: workgroup_calendars_path(@workgroup), builder: SimpleForm::FormBuilder, html: { method: :get, class: 'form form-filter' } do |f|
   .ffg-row
-    .input-group.search_bar class=filter_item_class(params[:q], :name_cont)
-      = f.search_field :name_cont, class: 'form-control', placeholder: 'Indiquez un nom/nom court de calendrier...'
+    .input-group.search_bar class=filter_item_class(params[:q], :name_or_short_name_cont)
+      = f.search_field :name_or_short_name_cont, class: 'form-control', placeholder: I18n.t('calendars.filters.name_or_short_name_cont')
       span.input-group-btn
         button.btn.btn-default#search_btn type='submit'
           span.fa.fa-search
@@ -10,13 +10,13 @@
     .form-group.togglable class=filter_item_class(params[:q], :shared_true)
       = f.label Calendar.human_attribute_name(:shared), required: false, class: 'control-label'
       .form-group.checkbox_list
-        = f.input :shared_true, as: :boolean, label: ("<span>Oui</span>").html_safe, wrapper_html: { class: 'checkbox-wrapper' }
-        = f.input :shared_false, as: :boolean, label: ("<span>Non</span>").html_safe, wrapper_html: { class: 'checkbox-wrapper' }
+        = f.input :shared_true, as: :boolean, label: ("<span>#{I18n.t('yes')}</span>").html_safe, wrapper_html: { class: 'checkbox-wrapper' }
+        = f.input :shared_false, as: :boolean, label: ("<span>#{I18n.t('no')}</span>").html_safe, wrapper_html: { class: 'checkbox-wrapper' }
 
     .form-group class=filter_item_class(params[:q], :contains_date)
       = f.label Calendar.human_attribute_name(:date), class: 'control-label'
       = f.input :contains_date, as: :date, label: false, wrapper_html: { class: 'date smart_date' }, class: 'form-control', include_blank: true
 
   .actions
-    = link_to 'Effacer', workgroup_calendars_path(@workgroup), class: 'btn btn-link'
-    = f.submit 'Filtrer', id: 'calendar_filter_btn', class: 'btn btn-default'
+    = link_to I18n.t('actions.erase'), workgroup_calendars_path(@workgroup), class: 'btn btn-link'
+    = f.submit I18n.t('actions.filter'), id: 'calendar_filter_btn', class: 'btn btn-default'

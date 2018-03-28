@@ -1,5 +1,7 @@
 en:
   calendars:
+    filters:
+      name_or_short_name_cont: Search by name/short name
     search_no_results: 'No calendar matching your query'
     days:
       monday: M
@@ -37,7 +39,7 @@ en:
       all: All
       shared: Shared
       not_shared: Not shared
-      search_no_results: No calendar matching your query
+      search_no_results: No calendar templates matching your query
       date: Date
     new:
       title: Add a new calendar
@@ -59,8 +61,8 @@ en:
   activerecord:
     models:
       calendar:
-        one: calendar
-        other: calendars
+        one: calendar template
+        other: calendar templates
     attributes:
       calendar:
         name: Name

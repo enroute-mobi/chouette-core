@@ -26,6 +26,13 @@ fr:
       compliance_check: "Test de conformité"
       compliance_check_of: "Validation de l'import : "
       import_of_validation: "L'import de la validation"
+      data_recorvery: Récupération des données
+      filename: Nom de l'archive
+      referential_name: Nom du référentiel
+      stif_control: Contrôle STIF
+      organisation_control: Contrôle organisation
+      results: "%{count} jeu(x) de données validé(s) sur %{total}"
+      summary: Bilan des jeux de contrôles d'import <span title="Lorem ipsum..." class="fa fa-lg fa-info-circle text-info"></span>
     compliance_check_task: "Validation"
     severities:
       info: "Information"

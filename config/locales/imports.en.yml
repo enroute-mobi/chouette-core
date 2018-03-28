@@ -26,6 +26,12 @@ en:
       compliance_check: "Validation report"
       compliance_check_of: "Validation of import: "
       import_of_validation: "Import of the validation"
+      data_recovery: Data recovery
+      filname: Filname
+      stif_control: STIF Control
+      organisation_control: Organization control
+      results: "%{count} validated referential(s) out of %{total} in the file"
+      summary: Summay of import compliance check sets <span title="Lorem ipsum..." class="fa fa-lg fa-info-circle text-info"></span>
     compliance_check_task: "Validate Report"
     severities:
       info: "Information"

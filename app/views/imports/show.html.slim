@@ -6,7 +6,7 @@
   .container-fluid
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        = definition_list t('metadatas'), { 'Récupération des données' => '-', "Nom de l'archive" => @import.try(:file_identifier)}
+        = definition_list t('metadatas'), { t('.data_recovery') => '-', t('.filename') => @import.try(:file_identifier)}
 
     .row
       .col-lg-12
@@ -19,7 +19,7 @@
           = table_builder_2 @import.children,
             [ \
               TableBuilderHelper::Column.new( \
-                name: 'Nom du jeu de données', \
+                name: t('.referential_name'), \
                 attribute: 'name', \
                 sortable: false, \
                 link_to: lambda do |import| \
@@ -35,12 +35,12 @@
                 end \
               ), \
               TableBuilderHelper::Column.new( \
-                name: 'Contrôle STIF', \
+                name: t('.stif_control'), \
                 attribute: '', \
                 sortable: false, \
               ), \
               TableBuilderHelper::Column.new( \
-                name: 'Contrôle organisation', \
+                name: t('.organisation_control'), \
                 attribute: '', \
                 sortable: false, \
               ) \
@@ -49,11 +49,11 @@
             overhead: [ \
               {}, \
               { \
-                title: "#{@import.children_succeedeed} jeu de données validé sur #{@import.children.count} présent(s) dans l'archive", \
+                title: I18n.t('imports.show.results', count: @import.children_succeedeed, total: @import.children.count), \
                 width: 1, \
                 cls: "#{@import.import_status_css_class} full-border" \
               }, { \
-                title: 'Bilan des jeux de contrôles d\'import <span title="Lorem ipsum..." class="fa fa-lg fa-info-circle text-info"></span>', \
+                title: I18n.t('imports.show.summary').html_safe, \
                 width: 2, \
                 cls: 'overheaded-default colspan="2"' \
               } \

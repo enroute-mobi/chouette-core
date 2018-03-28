@@ -14,14 +14,17 @@ module ApplicationHelper
   def page_header_title(object)
     # Unwrap from decorator, we want to know the object model name
     object = object.object if object.try(:object)
-
+    
     if Referential === object
       return object.full_name
     end
 
     local = "#{object.model_name.name.underscore.pluralize}.#{params[:action]}.title"
+
+    arg = object.organisation.name if Workbench === object
+
     if object.try(:name)
-      t(local, name: object.name || object.id)
+      t(local, name: arg || object.name || object.id)
     else
       t(local)
     end

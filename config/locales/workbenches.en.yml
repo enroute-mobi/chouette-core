@@ -1,7 +1,7 @@
 en:
   workbenches:
     show:
-      title: "%{name}"
+      title: "Transport offer %{name}"
     edit:
       title: "Configure the workbench"
     update:
@@ -21,7 +21,7 @@ en:
         see: "See the list"
         no_content: "No content yet."
     actions:
-      show_output: "Merge offer"
+      show_output: "Merge Transport Offer"
       affect_ccset: "Configure"
   activerecord:
     models:

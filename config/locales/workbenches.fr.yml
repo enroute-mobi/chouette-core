@@ -1,7 +1,7 @@
 fr:
   workbenches:
     show:
-      title: "%{name}"
+      title: "Offre de transport %{name}"
     edit:
       title: "Configurer l'espace de travail"
     update:

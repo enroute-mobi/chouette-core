@@ -35,7 +35,7 @@ export default class SaveButton extends Component{
                     this.props.editMode ? this.submitForm() : this.props.onEnterEditMode()
                   }}
                 >
-                  {this.props.editMode ? "Valider" : "Editer"}
+                  {this.props.editMode ? I18n.t('actions.submit') : I18n.t('actions.edit')}
                 </button>
               </div>
             </form>

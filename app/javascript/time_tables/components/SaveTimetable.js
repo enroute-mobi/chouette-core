@@ -26,7 +26,7 @@ export default class SaveTimetable extends Component{
                 }
               }}
             >
-              Valider
+              {I18n.t('actions.submit')}
             </button>
           </form>
         </div>

@@ -2,7 +2,7 @@ en:
   calendars:
     filters:
       name_or_short_name_cont: Search by name/short name
-    search_no_results: 'No calendar matching your query'
+    search_no_results: 'No calendar template matching your query'
     days:
       monday: M
       tuesday: Tu

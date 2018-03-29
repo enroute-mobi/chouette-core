@@ -27,7 +27,8 @@ en:
       compliance_check_of: "Validation of import: "
       import_of_validation: "Import of the validation"
       data_recovery: Data recovery
-      filname: Filname
+      filename: Filename
+      referential_name: Referential name
       stif_control: STIF Control
       organisation_control: Organization control
       results: "%{count} validated referential(s) out of %{total} in the file"

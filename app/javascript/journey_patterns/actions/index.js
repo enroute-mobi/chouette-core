@@ -220,7 +220,16 @@ const actions = {
       })
   },
   fetchRouteCosts: (dispatch, key, index) => {
-    if (actions.routeCostsCache) {
+    if(actions.fetchingRouteCosts){
+        // A request is already sent, wait for it
+        if(!actions.waitingForRouteCosts){
+          actions.waitingForRouteCosts = []
+        }
+        actions.waitingForRouteCosts.push([key, index])
+        return
+    }
+
+    if(actions.routeCostsCache) {
       // Dispatch asynchronously to prevent warning when
       // this executes during `render()`
       requestAnimationFrame(() => {
@@ -231,6 +240,7 @@ const actions = {
         ))
       })
     } else {
+      actions.fetchingRouteCosts = true
       fetch(window.routeCostsUrl, {
         credentials: 'same-origin',
       }).then(response => {
@@ -240,6 +250,12 @@ const actions = {
         actions.routeCostsCache = costs
 
         dispatch(actions.receiveRouteCosts(costs, key, index))
+        if(actions.waitingForRouteCosts){
+          actions.waitingForRouteCosts.map(function(item, i) {
+            dispatch(actions.receiveRouteCosts(costs, item[0], item[1]))
+          })
+        }
+        actions.fetchingRouteCosts = false
       })
     }
   },

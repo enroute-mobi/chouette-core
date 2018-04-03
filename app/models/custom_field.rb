@@ -166,7 +166,7 @@ class CustomField < ActiveRecord::Base
       end
 
       def display_value
-        options["list_values"][value.to_s]
+        options["list_values"][value.to_i]
       end
 
       class Input < Base::Input

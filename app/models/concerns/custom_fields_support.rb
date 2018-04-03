@@ -16,7 +16,7 @@ module CustomFieldsSupport
     def custom_field_values= vals
       out = {}
       custom_fields.each do |code, field|
-        out[code] = field.preprocess_value_for_assignment(vals[code])
+        out[code] = field.preprocess_value_for_assignment(vals.symbolize_keys[code.to_sym])
       end
       self.write_attribute :custom_field_values, out
     end
@@ -30,7 +30,7 @@ module CustomFieldsSupport
     end
 
     def custom_field_value key
-      (custom_field_values || {})[key.to_s]
+      (custom_field_values&.stringify_keys || {})[key.to_s]
     end
 
     private

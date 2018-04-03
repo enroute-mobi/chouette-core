@@ -90,7 +90,7 @@ module Chouette
       end
 
       unless self.stop_area_referential.validates_registration_number(self.registration_number)
-        errors.add(:registration_number, I18n.t('stop_areas.errors.registration_number.invalid'))
+        errors.add(:registration_number, I18n.t('stop_areas.errors.registration_number.invalid', mask: self.stop_area_referential.registration_number_format))
       end
     end
 

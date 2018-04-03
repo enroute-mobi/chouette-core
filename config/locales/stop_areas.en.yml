@@ -8,7 +8,7 @@ en:
       registration_number:
         already_taken: Already taken
         cannot_be_empty: This field is mandatory
-        invalid: Incorrect value
+        invalid: "Incorrect value (expected value: \"%{mask}\")"
     default_geometry_success: "%{count} modified stop areas"
     stop_area:
       no_position: "No Position"

@@ -9,7 +9,7 @@ fr:
       registration_number:
         already_taken: Déjà utilisé
         cannot_be_empty: Ce champ est requis
-        invalid: Valeur invalide
+        invalid: "Valeur invalide (valeur attendue: \"%{mask}\")"
     default_geometry_success: "%{count} arrêts édités"
     stop_area:
       no_position: "Pas de position"
@@ -209,6 +209,6 @@ fr:
     hints:
       stop_area:
         registration_number: Laisser blanc pour assigner une valeur automatiquement.
-        
+
   referential_stop_areas:
     <<: *fr_stop_areas

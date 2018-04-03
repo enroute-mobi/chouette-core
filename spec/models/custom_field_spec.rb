@@ -47,7 +47,6 @@ RSpec.describe CustomField, type: :model do
     let!(:field){ [create(:custom_field, code: :energy, field_type: 'list', options: {list_values: %w(foo bar baz)})] }
     let!( :vj ){ create :vehicle_journey, custom_field_values: {energy: "1"} }
     it "should cast the value" do
-      p vj.custom_fields
       expect(vj.custom_fields[:energy].value).to eq 1
       expect(vj.custom_fields[:energy].display_value).to eq "bar"
     end

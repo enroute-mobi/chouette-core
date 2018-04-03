@@ -24,4 +24,55 @@ RSpec.describe Chouette::PurchaseWindow, :type => :model do
     end
   end
 
+  describe "intersect_periods!" do
+    let(:date_ranges){[
+      (1.month.from_now).to_date..(1.month.from_now+2.day).to_date,
+      (2.months.from_now).to_date..(2.months.from_now+2.day).to_date
+    ]}
+    let(:purchase_window){ create :purchase_window, referential: referential, date_ranges: date_ranges }
+    let(:range_bottom){ purchase_window.date_ranges.map(&:first).min }
+    let(:range_top){ purchase_window.date_ranges.map(&:last).max }
+    context "with an empty mask" do
+      let(:mask){ [] }
+      it "should do nothing" do
+        date_ranges = purchase_window.date_ranges
+        purchase_window.intersect_periods! mask
+        expect(purchase_window.date_ranges).to eq date_ranges
+      end
+    end
+
+    context "with an englobbing mask" do
+      let(:mask){ [
+          (range_bottom..range_top)
+        ] }
+      it "should do nothing" do
+        date_ranges = purchase_window.date_ranges
+        purchase_window.intersect_periods! mask
+        expect(purchase_window.date_ranges).to eq date_ranges
+      end
+    end
+
+    context "with a non-overlapping mask" do
+      let(:mask){ [
+          ((range_top+1.day)..(range_top+2.days))
+        ] }
+      it "should clear range" do
+        purchase_window.intersect_periods! mask
+        expect(purchase_window.date_ranges).to eq []
+      end
+    end
+
+    context "with a partially matching mask" do
+      let(:mask){ [
+          (1.month.from_now+1.day).to_date..(2.month.from_now + 1.day).to_date,
+        ] }
+      it "should intersct ranges" do
+        purchase_window.intersect_periods! mask
+        expect(purchase_window.date_ranges).to eq [
+          (1.month.from_now+1.day).to_date..(1.month.from_now+2.day).to_date,
+          (2.months.from_now).to_date..(2.months.from_now+1.day).to_date
+        ]
+      end
+    end
+  end
 end

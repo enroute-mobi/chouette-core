@@ -2,6 +2,7 @@ FactoryGirl.define do
 
   factory :vehicle_journey_common, :class => Chouette::VehicleJourney do
     sequence(:objectid) { |n| "organisation:VehicleJourney:lineid-#{n}:LOC" }
+    sequence(:published_journey_name) { |n| "VehicleJourney ##{n}" }
 
     factory :vehicle_journey_empty do
       association :journey_pattern, :factory => :journey_pattern

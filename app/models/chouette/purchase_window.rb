@@ -46,8 +46,18 @@ module Chouette
       ]
     end
 
-    # def checksum_attributes
-    # end
-
+    def intersect_periods! mask_periods
+      return unless mask_periods.present?
+      out = []
+      date_ranges.each do |range|
+        intersecting = mask_periods.select { |p| p.intersect? range }
+        next unless intersecting.any?
+        intersecting.each do |p|
+          range &= p
+        end
+        out << range
+      end
+      self.update_attribute :date_ranges, out
+    end
   end
 end

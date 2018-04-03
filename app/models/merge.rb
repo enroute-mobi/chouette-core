@@ -340,7 +340,7 @@ class Merge < ActiveRecord::Base
 
           unless existing_time_table
             objectid = Chouette::TimeTable.where(objectid: time_table.objectid).exists? ? nil : time_table.objectid
-            candidate_time_table.objectid = objectid
+              candidate_time_table.objectid = objectid
 
             candidate_time_table.save!
 
@@ -359,6 +359,10 @@ class Merge < ActiveRecord::Base
         end
       end
     end
+
+
+    # PurchaseWindows
+    merge_purchase_windows new, referential
   end
 
   def save_current
@@ -376,6 +380,42 @@ class Merge < ActiveRecord::Base
 
   def child_change
 
+  end
+
+  protected
+  def merge_purchase_windows new, referential
+    referential_purchase_windows = referential.switch do
+      Hash[referential.purchase_windows.joins(:vehicle_journeys).pluck(:id, "vehicle_journeys.checksum").inject(Hash.new { |h,k| h[k] = [] }) do |hash, row|
+        id, vehicle_journey_checksum = row
+        hash[referential.purchase_windows.find(id)] << vehicle_journey_checksum
+        hash
+      end]
+    end
+
+    new.switch do
+      referential_purchase_windows.each do |purchase_window, vehicle_journey_checksums|
+
+        new_purchase_window = new.purchase_windows.find_by name: purchase_window.name
+        new_purchase_window ||= begin
+          attributes = purchase_window.attributes.merge(id: nil)
+
+          new_purchase_window = new.purchase_windows.build attributes
+          new_purchase_window.intersect_periods! new.metadatas.map(&:periodes).flatten
+
+          objectid = Chouette::PurchaseWindow.where(objectid: new_purchase_window.objectid).exists? ? nil : new_purchase_window.objectid
+          new_purchase_window.objectid = objectid
+
+          new_purchase_window.save!
+          new_purchase_window
+        end
+
+        vehicle_journey_checksums.each do |vehicle_journey_checksum|
+          # associate VehicleJourney
+          associated_vehicle_journey = new.vehicle_journeys.find_by!(checksum: vehicle_journey_checksum)
+          associated_vehicle_journey.purchase_windows << new_purchase_window
+        end
+      end
+    end
   end
 
   class MetadatasMerger

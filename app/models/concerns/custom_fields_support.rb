@@ -16,7 +16,7 @@ module CustomFieldsSupport
     def custom_field_values= vals
       out = {}
       vals.each do |k, val|
-        out[k] = custom_fields[k].preprocess_value_for_assignment(val)
+        out[k] = custom_fields[k]&.preprocess_value_for_assignment(val)
       end
       self.write_attribute :custom_field_values, out
     end

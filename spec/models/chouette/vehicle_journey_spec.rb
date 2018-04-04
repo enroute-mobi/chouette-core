@@ -420,6 +420,7 @@ describe Chouette::VehicleJourney, :type => :model do
       state['published_journey_name']       = 'edited_name'
       state['published_journey_identifier'] = 'edited_identifier'
       state['custom_fields'] = {energy: {value: 99}}
+      create :custom_field, field_type: :integer, code: :energy, name: :energy
 
       Chouette::VehicleJourney.state_update(route, collection)
       expect(state['errors']).to be_nil

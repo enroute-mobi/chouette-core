@@ -35,6 +35,10 @@ RSpec.describe CustomField, type: :model do
   end
 
   context "custom field_values for a resource" do
+    before do
+      create :custom_field, field_type: :integer, code: :energy, name: :energy
+    end
+
     it { expect(vj.custom_field_value("energy")).to eq(99) }
   end
 

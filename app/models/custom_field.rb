@@ -38,7 +38,7 @@ class CustomField < ActiveRecord::Base
         @valid = false
       end
       attr_accessor :owner
-      
+
       delegate :code, :name, :field_type, to: :@custom_field
 
       def options
@@ -73,7 +73,8 @@ class CustomField < ActiveRecord::Base
       def initialize_custom_field
       end
 
-      def preprocess_value_for_assignment
+      def preprocess_value_for_assignment val
+        val
       end
 
       def render_partial

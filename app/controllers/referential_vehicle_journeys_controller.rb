@@ -35,8 +35,9 @@ class ReferentialVehicleJourneysController < ChouetteController
     @vehicle_journeys ||= @q.result
     @vehicle_journeys = parse_order @vehicle_journeys
     @vehicle_journeys = @vehicle_journeys.paginate page: params[:page], per_page: params[:per_page] || 10
-    @all_companies = Chouette::Company.where("id IN (#{@referential.vehicle_journeys.select(:company_id).to_sql})").distinct
-
+    @all_companies = Chouette::Company.where("id IN (#{@referential.vehicle_journeys.select(:company_id).to_sql})").group("companies.id")
+    # @all_companies = Chouette::Company.where(id: @referential.vehicle_journeys.pluck(:company_id).uniq).group()
+    binding.pry
   end
 
   def parse_order scope

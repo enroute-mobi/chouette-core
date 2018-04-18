@@ -109,7 +109,7 @@ RSpec.describe Merge do
       end
     end
 
-    expect(output.state).to eq :ready
+    expect(output.state).to eq :active
     expect(referential.reload.state).to eq :archived
 
   end

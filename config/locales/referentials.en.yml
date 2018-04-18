@@ -71,6 +71,7 @@ en:
       referential:
         name: "Name"
         state: "Status"
+        status: "Status"
         slug: "Code"
         prefix: "Neptune Object Id prefix"
         projection_type: "Optional spatial reference system code (SRID)"

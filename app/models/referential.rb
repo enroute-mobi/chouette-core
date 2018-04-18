@@ -59,12 +59,12 @@ class Referential < ApplicationModel
 
 
   scope :pending, -> { where(ready: false, failed_at: nil, archived_at: nil) }
-  scope :ready, -> { where(ready: true, failed_at: nil, archived_at: nil) }
+  scope :active, -> { where(ready: true, failed_at: nil, archived_at: nil) }
   scope :failed, -> { where.not(failed_at: nil) }
   scope :archived, -> { where.not(archived_at: nil) }
 
-  scope :ready, -> { where(ready: true, failed_at: nil, archived_at: nil) }
-  scope :ready, -> { where(ready: true, failed_at: nil, archived_at: nil) }
+  scope :ready, -> { where(ready: true) }
+
   scope :in_periode, ->(periode) { where(id: referential_ids_in_periode(periode)) }
   scope :include_metadatas_lines, ->(line_ids) { where('referential_metadata.line_ids && ARRAY[?]::bigint[]', line_ids) }
   scope :order_by_validity_period, ->(dir) { joins(:metadatas).order("unnest(periodes) #{dir}") }
@@ -120,6 +120,20 @@ class Referential < ApplicationModel
 
   def self.models_with_checksum
     @_models_with_checksum || []
+  end
+
+  OPERATIONS = [Import::Netex, Import::Gtfs, CleanUp]
+
+  def last_operation
+    operations = []
+    Referential::OPERATIONS.each do |klass|
+      operations << klass.for_referential(self).limit(1).select("'#{klass.name}' as kind, id, created_at").order('created_at DESC').to_sql
+    end
+    sql = "SELECT * FROM ((#{operations.join(') UNION (')})) AS subquery ORDER BY subquery.created_at DESC"
+    res = ActiveRecord::Base.connection.execute(sql).first
+    if res
+      res["kind"].constantize.find(res["id"])
+    end
   end
 
   def lines
@@ -538,7 +552,7 @@ class Referential < ApplicationModel
   def state
     return :failed if failed_at.present?
     return :archived if archived_at.present?
-    ready ? :ready : :pending
+    ready? ? :active : :pending
   end
 
   def pending!
@@ -549,12 +563,18 @@ class Referential < ApplicationModel
     update ready: false, failed_at: Time.now, archived_at: nil
   end
 
-  def ready!
+  def active!
     update ready: true, failed_at: nil, archived_at: nil
   end
 
   def archived!
     update failed_at: nil, archived_at: Time.now
+  end
+
+  %i(pending active failed archived).each do |s|
+    define_method "#{s}?" do
+      state == s
+    end
   end
 
   def pending_while

@@ -12,6 +12,16 @@ module ReferentialsHelper
     end
   end
 
+  def referential_state referential
+    out = if referential.archived?
+      "<div class='td-block'><span class='fa fa-archive'></span><span>#{t('activerecord.attributes.referential.archived_at')}</span></div>"
+    else
+      "<div class='td-block'>#{"referentials.states.#{referential.state}".t}</div>"
+    end
+
+    out.html_safe
+  end
+
   def referential_overview referential
     service = ReferentialOverview.new referential, self
     render partial: "referentials/overview", locals: {referential: referential, overview: service}

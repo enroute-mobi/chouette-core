@@ -6,88 +6,100 @@
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         - attributes = {}
-        - attributes[@referential.human_attribute_name(:status)] = @referential.referential_read_only? ? "<div class='td-block'><span class='fa fa-archive'></span><span>#{t('activerecord.attributes.referential.archived_at')}</span></div>".html_safe : "<div class='td-block'><span class='sb sb-lg sb-preparing'></span><span>#{t('activerecord.attributes.referential.archived_at_null')}</span></div>".html_safe unless @referential.in_referential_suite?
+        - attributes[@referential.human_attribute_name(:state)] = referential_state(@referential) unless @referential.in_referential_suite?
         - attributes[@referential.human_attribute_name(:validity_period)] = (@referential.validity_period.present? ? t('validity_range', debut: l(@referential.try(:validity_period).try(:begin), format: :short), end: l(@referential.try(:validity_period).try(:end), format: :short)) : '-')
         - attributes[@referential.human_attribute_name(:organisation)] = @referential.organisation.name
         - attributes[@referential.human_attribute_name(:merged_at)] = @referential.merged_at ? l(@referential.merged_at, format: :short) : '-' unless @referential.in_referential_suite?
         = definition_list t('metadatas'), attributes
 
-    - if params[:q].present? or @reflines.any?
-      .row
-        .col-lg-12
-          = render 'filters'
+    - unless @referential.ready?
+      - operation = @referential.last_operation
+      .jumbotron
+          = import_status(operation.status)
+          - url = operation.is_a?(Import::Base) ? [operation.workbench, operation.parent || operation] : [@referential, operation]
+          = link_to url do
+            | &nbsp;
+            span
+              strong= operation.try(:name) || operation.created_at.l(format: :short)
+            | &nbsp;
+            span= "(#{operation.class.ts})"
 
-    - if @reflines.any?
-      .row
-        .col-lg-12
-          / ID Codif, nom court, nom de la ligne, réseau, mode, transporteur principal, actions = [show, edit_notes]
-          = table_builder_2 @reflines,
-            [ \
-              TableBuilderHelper::Column.new( \
-                name: t('id_codif'), \
-                attribute: Proc.new { |n| n.get_objectid.short_id }, \
-                sortable: false \
-              ), \
-              TableBuilderHelper::Column.new( \
-                key: :number, \
-                attribute: 'number' \
-              ), \
-              TableBuilderHelper::Column.new( \
-                key: :name, \
-                attribute: 'name', \
-                link_to: lambda do |line| \
-                  referential_line_path(@referential, line) \
-                end \
-              ), \
-              TableBuilderHelper::Column.new( \
-                key: :status, \
-                attribute: Proc.new { |n| line_status(n.status) } \
-              ), \
-              TableBuilderHelper::Column.new( \
-                key: :transport_mode, \
-                attribute: Proc.new { |n| n.transport_mode ? t("enumerize.transport_mode.#{n.transport_mode}") : '' }, \
-              ), \
-              TableBuilderHelper::Column.new( \
-                key: 'networks.name', \
-                attribute: Proc.new { |n| n.try(:network).try(:name) } \
-              ), \
-              TableBuilderHelper::Column.new( \
-                key: 'companies.name', \
-                attribute: Proc.new { |n| n&.company&.name || "-" } \
-              ) \
-            ],
-            cls: 'table has-filter has-search',
-            action: :index
-
-          = new_pagination @reflines, 'pull-right'
-
-    - unless @reflines.any?
-      .row.mt-xs
-        .col-lg-12
-          = replacement_msg t('referential_lines.search_no_results')
-
-
-    = referential_overview resource
-
-/ Modal(s)
-= modalbox 'purgeModal' do
-  = simple_form_for [@referential, CleanUp.new] do |f|
-    .modal-header
-      h4.modal-title #{t('simple_form.labels.clean_up.title')}
-    .modal-body
-      .container-fluid
+    - else
+      - if params[:q].present? or @reflines.any?
         .row
-          .col-lg-8.col-ld-offset-2.col-md-8.col-md-offset-2.col-sm-8.col-sm-offset-2.col-xs-12
-            = f.input :date_type, as: :radio_buttons, label: false
+          .col-lg-12
+            = render 'filters'
+      - if @reflines.any?
+        .row
+          .col-lg-12
+            / ID Codif, nom court, nom de la ligne, réseau, mode, transporteur principal, actions = [show, edit_notes]
+            = table_builder_2 @reflines,
+              [ \
+                TableBuilderHelper::Column.new( \
+                  name: t('id_codif'), \
+                  attribute: Proc.new { |n| n.get_objectid.short_id }, \
+                  sortable: false \
+                ), \
+                TableBuilderHelper::Column.new( \
+                  key: :number, \
+                  attribute: 'number' \
+                ), \
+                TableBuilderHelper::Column.new( \
+                  key: :name, \
+                  attribute: 'name', \
+                  link_to: lambda do |line| \
+                    referential_line_path(@referential, line) \
+                  end \
+                ), \
+                TableBuilderHelper::Column.new( \
+                  key: :status, \
+                  attribute: Proc.new { |n| line_status(n.status) } \
+                ), \
+                TableBuilderHelper::Column.new( \
+                  key: :transport_mode, \
+                  attribute: Proc.new { |n| n.transport_mode ? t("enumerize.transport_mode.#{n.transport_mode}") : '' }, \
+                ), \
+                TableBuilderHelper::Column.new( \
+                  key: 'networks.name', \
+                  attribute: Proc.new { |n| n.try(:network).try(:name) } \
+                ), \
+                TableBuilderHelper::Column.new( \
+                  key: 'companies.name', \
+                  attribute: Proc.new { |n| n&.company&.name || "-" } \
+                ) \
+              ],
+              cls: 'table has-filter has-search',
+              action: :index
 
-          .col-lg-8.col-ld-offset-2.col-md-8.col-md-offset-2.col-sm-8.col-sm-offset-2.col-xs-12
-            label.control-label.begin_date = t('titles.clean_up.begin_date')
-            label.control-label.end_date.hidden = t('titles.clean_up.end_date')
-            = f.input :begin_date, as: :date, label: false, wrapper_html: { class: 'date smart_date' }
+            = new_pagination @reflines, 'pull-right'
 
-            = f.input :end_date, as: :date, label: t('titles.clean_up.end_date'), wrapper_html: { class: 'date cleanup_end_date_wrapper smart_date', id: "end_date" }
+      - unless @reflines.any?
+        .row.mt-xs
+          .col-lg-12
+            = replacement_msg t('referential_lines.search_no_results')
 
-    .modal-footer
-      button.btn.btn-link type='button' data-dismiss='modal' #{t('cancel')}
-      - unless policy(@referential).referential_read_only?
-        = f.button :submit, t('actions.clean_up') , class: 'btn btn-primary'
+
+      = referential_overview resource
+
+  / Modal(s)
+  = modalbox 'purgeModal' do
+    = simple_form_for [@referential, CleanUp.new] do |f|
+      .modal-header
+        h4.modal-title #{t('simple_form.labels.clean_up.title')}
+      .modal-body
+        .container-fluid
+          .row
+            .col-lg-8.col-ld-offset-2.col-md-8.col-md-offset-2.col-sm-8.col-sm-offset-2.col-xs-12
+              = f.input :date_type, as: :radio_buttons, label: false
+
+            .col-lg-8.col-ld-offset-2.col-md-8.col-md-offset-2.col-sm-8.col-sm-offset-2.col-xs-12
+              label.control-label.begin_date = t('titles.clean_up.begin_date')
+              label.control-label.end_date.hidden = t('titles.clean_up.end_date')
+              = f.input :begin_date, as: :date, label: false, wrapper_html: { class: 'date smart_date' }
+
+              = f.input :end_date, as: :date, label: t('titles.clean_up.end_date'), wrapper_html: { class: 'date cleanup_end_date_wrapper smart_date', id: "end_date" }
+
+      .modal-footer
+        button.btn.btn-link type='button' data-dismiss='modal' #{t('cancel')}
+        - unless policy(@referential).referential_read_only?
+          = f.button :submit, t('actions.clean_up') , class: 'btn btn-primary'

@@ -5,6 +5,10 @@ class ReferentialPolicy < ApplicationPolicy
     end
   end
 
+  def browse?
+    record.ready? || record.archived?
+  end
+
   def create?
     user.has_permission?('referentials.create')
   end

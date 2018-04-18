@@ -12,6 +12,10 @@ class CleanUp < ApplicationModel
   validate :end_date_must_be_greater_that_begin_date
   after_commit :perform_cleanup, :on => :create
 
+  scope :for_referential, ->(referential) do
+    where(referential_id: referential.id)
+  end
+
   def end_date_must_be_greater_that_begin_date
     if self.end_date && self.date_type == 'between' && self.begin_date >= self.end_date
       errors.add(:base, I18n.t('activerecord.errors.models.clean_up.invalid_period'))

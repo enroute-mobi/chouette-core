@@ -3,6 +3,8 @@ class CleanUpsController < ChouetteController
   respond_to :html, :only => [:create]
   belongs_to :referential
 
+  defaults :resource_class => CleanUp
+
   def create
     @clean_up = CleanUp.new(clean_up_params)
     @clean_up.referential = @referential

@@ -23,6 +23,10 @@ en:
         begin_date: "Begin date of clean up"
         end_date: "End date of clean up"
   activerecord:
+    models:
+      clean_up:
+        one: Cleanup
+        other: Cleanups
     errors:
       models:
         clean_up:

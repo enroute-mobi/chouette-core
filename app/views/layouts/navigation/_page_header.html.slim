@@ -1,5 +1,6 @@
 - action_links = resource.action_links(params[:action]) rescue nil
 - action_links ||= decorated_collection.action_links(params[:action]) rescue nil
+- action_links = nil if response.status != 200
 .page_header
   .container-fluid
     .row

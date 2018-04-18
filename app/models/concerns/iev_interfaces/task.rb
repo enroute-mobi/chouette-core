@@ -23,6 +23,10 @@ module IevInterfaces::Task
       where('started_at BETWEEN :begin AND :end', begin: period_range.begin, end: period_range.end)
     end
 
+    scope :for_referential, ->(referential) do
+      where(referential_id: referential.id)
+    end
+
     scope :blocked, -> { where('created_at < ? AND status = ?', 4.hours.ago, 'running') }
 
     before_save :initialize_fields, on: :create

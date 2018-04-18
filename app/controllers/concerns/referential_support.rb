@@ -8,6 +8,7 @@ module ReferentialSupport
   end
 
   def switch_referential
+    authorize referential, :browse?
     Apartment::Tenant.switch!(referential.slug)
   end
 

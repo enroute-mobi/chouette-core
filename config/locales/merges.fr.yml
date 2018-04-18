@@ -9,9 +9,18 @@ fr:
       title: "Finalisation de l'offre %{name}"
     actions:
       create: Finaliser des Jeux de Données
+    statuses:
+      new: Nouveau
+      pending: En attente
+      successful: Succès
+      failed: Erreur
+      running: En cours
   activerecord:
     models:
-      merge: "Finalisation de l'offre"
+      merge:
+        zero:  "Finalisations d'offre"
+        one:   "Finalisation de l'offre"
+        other: "Finalisations d'offre"
     attributes:
       merge:
         created_at: "Créé le"

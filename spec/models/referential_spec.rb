@@ -29,6 +29,71 @@ describe Referential, :type => :model do
     end
   end
 
+  context ".last_operation" do
+    subject(:operation){ referential.last_operation }
+    it "should return nothing" do
+      expect(operation).to be_nil
+    end
+
+    context "with a netex import" do
+      let!(:import) do
+        import = create :netex_import
+        import.referential = referential
+        import.save
+        import
+      end
+
+      it "should return the import" do
+        expect(operation).to eq import
+      end
+    end
+
+    context "with 2 netex imports" do
+      let!(:other_import) do
+        import = create :netex_import
+        import.referential = referential
+        import.save
+        import
+      end
+      let!(:import) do
+        import = create :netex_import
+        import.referential = referential
+        import.save
+        import
+      end
+
+      it "should return the last import" do
+        expect(operation).to eq import
+      end
+    end
+
+    context "with a gtfs import" do
+      let!(:import) do
+        import = create :gtfs_import
+        import.referential = referential
+        import.save
+        import
+      end
+
+      it "should return the import" do
+        expect(operation).to eq import
+      end
+    end
+
+    context "with a cleanup" do
+      let!(:cleanup) do
+        cleanup = create :clean_up
+        cleanup.referential = referential
+        cleanup.save
+        cleanup
+      end
+
+      it "should return the cleanup" do
+        expect(operation).to eq cleanup
+      end
+    end
+  end
+
   context ".state" do
     it "should return the expected values" do
       referential = build :referential
@@ -38,7 +103,7 @@ describe Referential, :type => :model do
       expect(referential.state).to eq :failed
       referential.ready = true
       referential.failed_at = nil
-      expect(referential.state).to eq :ready
+      expect(referential.state).to eq :active
       referential.archived_at = Time.now
       expect(referential.state).to eq :archived
     end
@@ -48,28 +113,28 @@ describe Referential, :type => :model do
         referential = create :referential, ready: false
         expect(Referential.pending).to include referential
         expect(Referential.failed).to_not include referential
-        expect(Referential.ready).to_not include referential
+        expect(Referential.active).to_not include referential
         expect(Referential.archived).to_not include referential
 
         referential = create :referential
         referential.failed!
         expect(Referential.pending).to_not include referential
         expect(Referential.failed).to include referential
-        expect(Referential.ready).to_not include referential
+        expect(Referential.active).to_not include referential
         expect(Referential.archived).to_not include referential
 
         referential = create :referential
-        referential.ready!
+        referential.active!
         expect(Referential.pending).to_not include referential
         expect(Referential.failed).to_not include referential
-        expect(Referential.ready).to include referential
+        expect(Referential.active).to include referential
         expect(Referential.archived).to_not include referential
 
         referential = create :referential
         referential.archived!
         expect(Referential.pending).to_not include referential
         expect(Referential.failed).to_not include referential
-        expect(Referential.ready).to_not include referential
+        expect(Referential.active).to_not include referential
         expect(Referential.archived).to include referential
       end
     end

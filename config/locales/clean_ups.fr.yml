@@ -22,6 +22,10 @@ fr:
         begin_date: "Date de début de la purge"
         end_date: "Date de fin de la purge"
   activerecord:
+    models:
+      clean_up:
+        one: Purge
+        other: Purges
     errors:
       models:
         clean_up:

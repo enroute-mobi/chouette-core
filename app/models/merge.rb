@@ -39,10 +39,14 @@ class Merge < ApplicationModel
   rescue => e
     Rails.logger.error "Merge failed: #{e} #{e.backtrace.join("\n")}"
     update status: :failed
+    new&.failed!
     raise e if Rails.env.test?
   ensure
     attributes = { ended_at: Time.now }
-    attributes[:status] = :successful if status == :running
+    if status == :running
+      attributes[:status] = :successful
+      referentials.each &:archived!
+    end
     update attributes
   end
 

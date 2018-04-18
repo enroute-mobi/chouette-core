@@ -10,12 +10,13 @@ class Import::Gtfs < Import::Base
 
     import_without_status
     update status: 'successful', ended_at: Time.now
+    referential&.ready!
   rescue Exception => e
     update status: 'failed', ended_at: Time.now
     Rails.logger.error "Error in GTFS import: #{e} #{e.backtrace.join('\n')}"
+    referential&.failed!
   ensure
     notify_parent
-    referential&.update ready: true
   end
 
   def self.accept_file?(file)

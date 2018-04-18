@@ -109,6 +109,9 @@ RSpec.describe Merge do
       end
     end
 
+    expect(output.state).to eq :ready
+    expect(referential.reload.state).to eq :archived
+
   end
 
 end

@@ -73,6 +73,26 @@ describe Referential, :type => :model do
         expect(Referential.archived).to include referential
       end
     end
+
+    context 'pending_while' do
+      it "should preserve the state" do
+        referential = create :referential
+        referential.archived!
+        expect(referential.state).to eq :archived
+        referential.pending_while do
+          expect(referential.state).to eq :pending
+        end
+        expect(referential.state).to eq :archived
+        begin
+          referential.pending_while do
+            expect(referential.state).to eq :pending
+            raise
+          end
+        rescue
+        end
+        expect(referential.state).to eq :archived
+      end
+    end
   end
 
   context ".referential_ids_in_periode" do

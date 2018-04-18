@@ -24,28 +24,29 @@ class CleanUp < ApplicationModel
 
   def clean
     referential.switch
+    referential.pending_while do
+      {}.tap do |result|
+        if date_type
+          processed = send("destroy_time_tables_#{self.date_type}")
+          if processed
+            result['time_table']      = processed[:time_tables].try(:count)
+            result['vehicle_journey'] = processed[:vehicle_journeys].try(:count)
+          end
+          result['time_table_date']   = send("destroy_time_tables_dates_#{self.date_type}").try(:count)
+          result['time_table_period'] = send("destroy_time_tables_periods_#{self.date_type}").try(:count)
+          self.overlapping_periods.each do |period|
+            exclude_dates_in_overlapping_period(period)
+          end
+        end
 
-    {}.tap do |result|
-      if date_type
-        processed = send("destroy_time_tables_#{self.date_type}")
-        if processed
-          result['time_table']      = processed[:time_tables].try(:count)
-          result['vehicle_journey'] = processed[:vehicle_journeys].try(:count)
-        end
-        result['time_table_date']   = send("destroy_time_tables_dates_#{self.date_type}").try(:count)
-        result['time_table_period'] = send("destroy_time_tables_periods_#{self.date_type}").try(:count)
-        self.overlapping_periods.each do |period|
-          exclude_dates_in_overlapping_period(period)
-        end
+        destroy_vehicle_journeys_outside_referential
+        # Disabled for the moment. See #5372
+        # destroy_time_tables_outside_referential
+
+        destroy_vehicle_journeys
+        destroy_journey_patterns
+        destroy_routes
       end
-
-      destroy_vehicle_journeys_outside_referential
-      # Disabled for the moment. See #5372
-      # destroy_time_tables_outside_referential
-
-      destroy_vehicle_journeys
-      destroy_journey_patterns
-      destroy_routes
     end
   end
 

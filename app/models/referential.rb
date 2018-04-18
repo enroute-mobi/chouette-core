@@ -58,7 +58,7 @@ class Referential < ApplicationModel
   belongs_to :referential_suite
 
 
-  scope :pending, -> { where(ready: false, failed_at: nil, archived_at: nil, failed_at: nil) }
+  scope :pending, -> { where(ready: false, failed_at: nil, archived_at: nil) }
   scope :ready, -> { where(ready: true, failed_at: nil, archived_at: nil) }
   scope :failed, -> { where.not(failed_at: nil) }
   scope :archived, -> { where.not(archived_at: nil) }
@@ -120,24 +120,6 @@ class Referential < ApplicationModel
 
   def self.models_with_checksum
     @_models_with_checksum || []
-  end
-
-  def state
-    return :failed if failed_at.present?
-    return :archived if archived_at.present?
-    ready ? :ready : :pending
-  end
-
-  def failed!
-    update ready: false, failed_at: Time.now, archived_at: nil
-  end
-
-  def ready!
-    update ready: true, failed_at: nil, archived_at: nil
-  end
-
-  def archived!
-    update ready: true, failed_at: nil, archived_at: Time.now
   end
 
   def lines
@@ -549,6 +531,40 @@ class Referential < ApplicationModel
 
   def self.mergeable
     ready.not_merged.not_in_referential_suite
+  end
+
+  ### STATE
+
+  def state
+    return :failed if failed_at.present?
+    return :archived if archived_at.present?
+    ready ? :ready : :pending
+  end
+
+  def pending!
+    update ready: false, failed_at: nil, archived_at: nil
+  end
+
+  def failed!
+    update ready: false, failed_at: Time.now, archived_at: nil
+  end
+
+  def ready!
+    update ready: true, failed_at: nil, archived_at: nil
+  end
+
+  def archived!
+    update failed_at: nil, archived_at: Time.now
+  end
+
+  def pending_while
+    vals = attributes.slice(*%w(ready archived_at failed_at))
+    pending!
+    begin
+      yield
+    ensure
+      update vals
+    end
   end
 
   private

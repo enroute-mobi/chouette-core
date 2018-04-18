@@ -58,7 +58,7 @@ en:
     states:
       pending:  Pending
       failed:   Failed
-      ready:    Ready
+      active:   Ready
       archived: Archived
 
   activerecord:

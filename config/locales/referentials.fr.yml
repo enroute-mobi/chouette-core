@@ -58,7 +58,7 @@ fr:
     states:
       pending:  En cours de traitement
       failed:   En erreur
-      ready:    En édition
+      active:   En édition
       archived: Archivé
 
   activerecord:

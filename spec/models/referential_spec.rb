@@ -29,6 +29,52 @@ describe Referential, :type => :model do
     end
   end
 
+  context ".state" do
+    it "should return the expected values" do
+      referential = build :referential
+      referential.ready = false
+      expect(referential.state).to eq :pending
+      referential.failed_at = Time.now
+      expect(referential.state).to eq :failed
+      referential.ready = true
+      referential.failed_at = nil
+      expect(referential.state).to eq :ready
+      referential.archived_at = Time.now
+      expect(referential.state).to eq :archived
+    end
+
+    context "the scopes" do
+      it "should filter the referentials" do
+        referential = create :referential, ready: false
+        expect(Referential.pending).to include referential
+        expect(Referential.failed).to_not include referential
+        expect(Referential.ready).to_not include referential
+        expect(Referential.archived).to_not include referential
+
+        referential = create :referential
+        referential.failed!
+        expect(Referential.pending).to_not include referential
+        expect(Referential.failed).to include referential
+        expect(Referential.ready).to_not include referential
+        expect(Referential.archived).to_not include referential
+
+        referential = create :referential
+        referential.ready!
+        expect(Referential.pending).to_not include referential
+        expect(Referential.failed).to_not include referential
+        expect(Referential.ready).to include referential
+        expect(Referential.archived).to_not include referential
+
+        referential = create :referential
+        referential.archived!
+        expect(Referential.pending).to_not include referential
+        expect(Referential.failed).to_not include referential
+        expect(Referential.ready).to_not include referential
+        expect(Referential.archived).to include referential
+      end
+    end
+  end
+
   context ".referential_ids_in_periode" do
     it 'should retrieve referential id in periode range' do
       range = ref.metadatas.first.periodes.sample

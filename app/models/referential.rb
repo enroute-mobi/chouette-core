@@ -58,7 +58,13 @@ class Referential < ApplicationModel
   belongs_to :referential_suite
 
 
-  scope :ready, -> { where(ready: true) }
+  scope :pending, -> { where(ready: false, failed_at: nil, archived_at: nil, failed_at: nil) }
+  scope :ready, -> { where(ready: true, failed_at: nil, archived_at: nil) }
+  scope :failed, -> { where.not(failed_at: nil) }
+  scope :archived, -> { where.not(archived_at: nil) }
+
+  scope :ready, -> { where(ready: true, failed_at: nil, archived_at: nil) }
+  scope :ready, -> { where(ready: true, failed_at: nil, archived_at: nil) }
   scope :in_periode, ->(periode) { where(id: referential_ids_in_periode(periode)) }
   scope :include_metadatas_lines, ->(line_ids) { where('referential_metadata.line_ids && ARRAY[?]::bigint[]', line_ids) }
   scope :order_by_validity_period, ->(dir) { joins(:metadatas).order("unnest(periodes) #{dir}") }
@@ -114,6 +120,24 @@ class Referential < ApplicationModel
 
   def self.models_with_checksum
     @_models_with_checksum || []
+  end
+
+  def state
+    return :failed if failed_at.present?
+    return :archived if archived_at.present?
+    ready ? :ready : :pending
+  end
+
+  def failed!
+    update ready: false, failed_at: Time.now, archived_at: nil
+  end
+
+  def ready!
+    update ready: true, failed_at: nil, archived_at: nil
+  end
+
+  def archived!
+    update ready: true, failed_at: nil, archived_at: Time.now
   end
 
   def lines

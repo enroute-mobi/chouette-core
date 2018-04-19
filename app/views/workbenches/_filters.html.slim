@@ -11,11 +11,11 @@
       = f.label t('activerecord.models.line.one').upcase, required: false, class: 'control-label'
       = f.input :associated_lines_id_eq, as: :select, collection: @workbench.lines.includes(:company).order(:name), input_html: { 'data-select2ed': 'true', 'data-select2ed-placeholder': t('referentials.filters.line') }, label: false, label_method: :display_name, wrapper_html: { class: 'select2ed'}
 
-    .form-group.togglable class=filter_item_class(params[:q], :archived_at_not_null)
+    .form-group.togglable class=filter_item_class(params[:q], :state)
       = f.label Referential.human_attribute_name(:status), required: false, class: 'control-label'
       .form-group.checkbox_list
-        = f.input :archived_at_not_null, label: ("<span>#{t('activerecord.attributes.referential.archived_at')}<span class='fa fa-archive'></span></span>").html_safe, as: :boolean, wrapper_html: { class: 'checkbox-wrapper' }
-        = f.input :archived_at_null, label: ("<span>#{t('activerecord.attributes.referential.archived_at_null')}<span class='sb sb-lg sb-preparing'></span></span>").html_safe, as: :boolean, wrapper_html: { class: 'checkbox-wrapper' }
+        - Referential::STATES.each do |s|
+          = f.input "state[#{s}]", input_html: {checked: (params[:q] && params[:q][:state] && params[:q][:state][s]) == "1"}, label: ("<span>#{"referentials.states.#{s}".t}#{icon_for_referential_state(s)}</span>").html_safe, as: :boolean, wrapper_html: { class: 'checkbox-wrapper' }
 
     .form-group.togglable class=filter_item_class(params[:q], :organisation_name_eq_any)
       = f.label t('activerecord.models.organisation.one'), required: false, class: 'control-label'

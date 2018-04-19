@@ -34,7 +34,7 @@
                 TableBuilderHelper::Column.new( \
                   key: :archived_at, \
                   name: Referential.tmf('status'), \
-                  attribute: Proc.new {|w| w.referential_read_only? ? ("<div class='td-block'><span class='fa fa-archive'></span><span>#{t('activerecord.attributes.referential.archived_at')}</span></div>").html_safe : ("<div class='td-block'><span class='sb sb-lg sb-preparing'></span><span>#{t('activerecord.attributes.referential.archived_at_null')}</span></div>").html_safe} \
+                  attribute: Proc.new {|w| "<a href='' title='#{"referentials.states.#{w.state}".t}'>#{icon_for_referential_state(w.state)}</a>".html_safe} \
                 ), \
                 TableBuilderHelper::Column.new( \
                   key: :organisation, \

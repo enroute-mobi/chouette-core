@@ -5,7 +5,7 @@ class WorkbenchesController < ChouetteController
   defaults resource_class: Workbench
 
   include PolicyChecker
-  
+
   respond_to :html, except: :destroy
 
   def index
@@ -50,7 +50,7 @@ class WorkbenchesController < ChouetteController
   end
 
   def sort_result collection
-    col = (Workbench.find(params[:id]).referentials.column_names + %w{lines validity_period}).include?(params[:sort]) ? params[:sort] : 'name'
+    col = (Referential.column_names + %w{lines validity_period}).include?(params[:sort]) ? params[:sort] : 'name'
     dir = %w[asc desc].include?(params[:direction]) ?  params[:direction] : 'asc'
 
     if ['lines', 'validity_period'].include?(col)
@@ -75,16 +75,41 @@ class WorkbenchesController < ChouetteController
 
   # Fake ransack filter
   def ransack_status scope
-    archived   = !params[:q]['archived_at_not_null'].to_i.zero?
-    unarchived = !params[:q]['archived_at_null'].to_i.zero?
+    sql = scope.to_sql
+    filters = []
+    (params[:q] && params[:q][:state] || {}).each do |k, v|
+      if v == "1"
 
-    # Both status checked, means no filter
-    return scope unless archived || unarchived
-    return scope if archived && unarchived
+        # We get the specific part of the SQL QUERY
+        # It looks a bit weird, bu this way we don't have to duplicate the
+        # logic of the scopes
+        filter_sql = scope.send(k).to_sql
+        j = 0
+        while filter_sql[j] == sql[j]
+          j += 1
+        end
+        i = j
+        while filter_sql[j] != sql[i]
+          j += 1
+        end
 
-    scope = scope.where(archived_at: nil) if unarchived
-    scope = scope.where("archived_at is not null") if archived
-    scope
+        filter_sql = filter_sql[i..j]
+        filter_sql = filter_sql.strip
+        filter_sql = filter_sql.gsub /^AND\s*/i, ''
+        filters << filter_sql
+      end
+    end
+
+    # archived   = !params[:q]['archived_at_not_null'].to_i.zero?
+    # unarchived = !params[:q]['archived_at_null'].to_i.zero?
+    #
+    # # Both status checked, means no filter
+    # return scope unless archived || unarchived
+    # return scope if archived && unarchived
+    #
+    # scope = scope.where(archived_at: nil) if unarchived
+    # scope = scope.where("archived_at is not null") if archived
+    scope.where filters.map{|f| "(#{f})"}.join('OR')
   end
 
   # Ignore archived_at_not_null/archived_at_null managed by ransack_status scope

@@ -3,6 +3,8 @@ class Referential < ApplicationModel
   include DataFormatEnumerations
   include ObjectidFormatterSupport
 
+  STATES = %i(pending active failed archived)
+
   validates_presence_of :name
   validates_presence_of :slug
   validates_presence_of :prefix
@@ -571,7 +573,7 @@ class Referential < ApplicationModel
     update failed_at: nil, archived_at: Time.now
   end
 
-  %i(pending active failed archived).each do |s|
+  STATES.each do |s|
     define_method "#{s}?" do
       state == s
     end

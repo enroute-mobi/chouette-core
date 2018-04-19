@@ -12,6 +12,19 @@ module ReferentialsHelper
     end
   end
 
+  def icon_for_referential_state state
+    case state.to_s
+    when "pending"
+      "<span class='fa fa-clock-o'></span>"
+    when "failed"
+      "<span class='fa fa-times'></span>"
+    when "archived"
+      "<span class='fa fa-archive'></span>"
+    else
+      "<span class='sb sb-lg sb-preparing'></span>"
+    end.html_safe
+  end
+
   def referential_state referential
     out = if referential.archived?
       "<div class='td-block'><span class='fa fa-archive'></span><span>#{t('activerecord.attributes.referential.archived_at')}</span></div>"

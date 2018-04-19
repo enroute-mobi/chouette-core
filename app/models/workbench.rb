@@ -38,7 +38,6 @@ class Workbench < ApplicationModel
         .referentials
         .joins(:metadatas)
         .where(['referential_metadata.line_ids && ARRAY[?]::bigint[]', line_ids])
-        .ready
         .not_in_referential_suite
     end
   end

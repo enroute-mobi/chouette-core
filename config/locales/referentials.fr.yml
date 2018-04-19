@@ -107,7 +107,7 @@ fr:
         updated_at: "Edité le"
         created_at: "Créé le"
         merged_at: "Finalisé le"
-        archived_at: "Conservé"
+        archived_at: "Archivé"
         archived_at_null: "En préparation"
         created_from: 'Créé à partir de'
         organisation: 'Organisation'

@@ -29,7 +29,11 @@
                 'select2-ajax': 'true',
                 'select2ed-placeholder': t('referentials.filters.line'),
                 url: autocomplete_referential_lines_path(@referential, format: :json),
-                'select2ed-allow-clear': true \
+                'select2ed-allow-clear': true, \
+                initvalue: { \
+                  id: @filtered_line&.id,
+                  text: @filtered_line&.name \
+                } \
               } \
             },
             label: false,

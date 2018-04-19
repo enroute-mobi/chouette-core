@@ -12,6 +12,16 @@ class ReferentialVehicleJourneysController < ChouetteController
 
   requires_feature :referential_vehicle_journeys
 
+  def index
+    if params[:q] && params[:q][:route_line_id_eq].present?
+      @filtered_line = Chouette::Line
+        .select(:id, :name)
+        .find(params[:q][:route_line_id_eq])
+    end
+
+    index!
+  end
+
   private
 
   def collection

@@ -13,8 +13,8 @@ fr:
     remove: Retirer
     new: 'Créer'
     show: 'Consulter'
-    archive: 'Conserver'
-    unarchive: 'Déconserver'
+    archive: 'Archiver'
+    unarchive: 'Désarchiver'
     clone: 'Dupliquer'
     duplicate: 'Dupliquer'
     clean_up: 'Purger'

@@ -25,14 +25,9 @@ module ReferentialsHelper
     end.html_safe
   end
 
-  def referential_state referential
-    out = if referential.archived?
-      "<div class='td-block'><span class='fa fa-archive'></span><span>#{t('activerecord.attributes.referential.archived_at')}</span></div>"
-    else
-      "<div class='td-block'>#{"referentials.states.#{referential.state}".t}</div>"
-    end
-
-    out.html_safe
+  def referential_state referential, icon: true
+    state_icon = icon && icon_for_referential_state(@referential.state)
+    "<div class='td-block'>#{state_icon}<span>#{"referentials.states.#{referential.state}".t}</span></div>".html_safe
   end
 
   def referential_overview referential

@@ -13,16 +13,16 @@
         = definition_list t('metadatas'), attributes
 
     - unless @referential.ready?
-      - operation = @referential.last_operation
-      .jumbotron
-          = import_status(operation.status)
-          - url = operation.is_a?(Import::Base) ? [operation.workbench, operation.parent || operation] : [@referential, operation]
-          = link_to url do
-            | &nbsp;
-            span
-              strong= operation.try(:name) || operation.created_at.l(format: :short)
-            | &nbsp;
-            span= "(#{operation.class.ts})"
+      - if operation = @referential.last_operation
+        .jumbotron
+            = import_status(operation.status)
+            - url = operation.is_a?(Import::Base) ? [operation.workbench, operation.parent || operation] : [@referential, operation]
+            = link_to url do
+              | &nbsp;
+              span
+                strong= operation.try(:name) || operation.created_at.l(format: :short)
+              | &nbsp;
+              span= "(#{operation.class.ts})"
 
     - else
       - if params[:q].present? or @reflines.any?

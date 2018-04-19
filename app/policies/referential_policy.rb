@@ -6,7 +6,7 @@ class ReferentialPolicy < ApplicationPolicy
   end
 
   def browse?
-    record.ready? || record.archived?
+    record.active? || record.archived?
   end
 
   def create?
@@ -45,5 +45,4 @@ class ReferentialPolicy < ApplicationPolicy
   def referential_ready?
     record.ready?
   end
-
 end

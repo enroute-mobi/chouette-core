@@ -9,9 +9,18 @@ fr:
       title: "Merged offer %{name}"
     actions:
       create: Merge data spaces
+    statuses:
+      new: New
+      pending: Pending
+      successful: Successful
+      failed: Failed
+      running: Running
   activerecord:
     models:
-      merge: "Merged offer"
+      merge:
+        zero: "Merged offers"
+        one: "Merged offer"
+        other: "Merged offers"
     attributes:
       merge:
         created_at: "Created at"

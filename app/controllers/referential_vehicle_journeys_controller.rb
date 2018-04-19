@@ -14,9 +14,7 @@ class ReferentialVehicleJourneysController < ChouetteController
 
   def index
     if params[:q] && params[:q][:route_line_id_eq].present?
-      @filtered_line = Chouette::Line
-        .select(:id, :name)
-        .find(params[:q][:route_line_id_eq])
+      @filtered_line = Chouette::Line.find(params[:q][:route_line_id_eq])
     end
 
     index!

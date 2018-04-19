@@ -14,6 +14,8 @@ module Chouette
 
     attr_accessor :_destroy, :dummy
 
+    delegate :registration_number, to: :stop_point
+
     validate :arrival_must_be_before_departure
     def arrival_must_be_before_departure
       # security against nil values

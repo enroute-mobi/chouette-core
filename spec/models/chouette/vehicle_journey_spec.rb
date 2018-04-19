@@ -877,7 +877,7 @@ describe Chouette::VehicleJourney, :type => :model do
     end
   end
 
-  describe "#fill_passing_time_at_borders" do
+  describe "#fill_passing_times" do
     before do
       start = create :stop_area
       border = create :stop_area, kind: :non_commercial, area_type: :border
@@ -897,7 +897,7 @@ describe Chouette::VehicleJourney, :type => :model do
       journey_pattern.stop_points << end_point = create(:stop_point, stop_area: _end, position: 6)
       journey_pattern.update_attribute :costs, {
         "#{start_point.stop_area_id}-#{border_point.stop_area_id}" => {distance: 50},
-        "#{border_point.stop_area_id}-#{border_point_2.stop_area_id}" => {distance: 0},
+        "#{border_point.stop_area_id}-#{border_point_2.stop_area_id}" => {distance: 50},
         "#{border_point_2.stop_area_id}-#{middle_point.stop_area_id}" => {distance: 100},
         "#{middle_point.stop_area_id}-#{border_point_3.stop_area_id}" => {distance: 100},
         "#{border_point_3.stop_area_id}-#{border_point_4.stop_area_id}" => {distance: 0},
@@ -915,11 +915,11 @@ describe Chouette::VehicleJourney, :type => :model do
     end
 
     it "should compute passing time" do
-      @journey.reload.fill_passing_time_at_borders
-      expect(@target.reload.arrival_time.to_i).to eq (@start.reload.departure_time + 1.0/3 * (@middle.reload.arrival_time - @start.departure_time)).to_i
-      expect(@target_2.reload.arrival_time).to eq @target.arrival_time
+      @journey.reload.fill_passing_times
+      expect(@target.reload.arrival_time.to_i).to eq (@start.reload.departure_time + 1.0/4 * (@middle.reload.arrival_time - @start.departure_time)).to_i
+      expect(@target_2.reload.arrival_time.to_i).to eq (@start.reload.departure_time + 1.0/2 * (@middle.reload.arrival_time - @start.departure_time)).to_i
       expect(@target.departure_time).to eq @target.arrival_time
-      expect(@target_2.departure_time).to eq @target.arrival_time
+      expect(@target_2.departure_time).to eq @target_2.arrival_time
       expect(@target_3.reload.arrival_time.to_i).to eq (@middle.reload.departure_time + 0.5 * (@end.reload.arrival_time - @middle.departure_time)).to_i
       expect(@target_4.reload.arrival_time).to eq @target_3.arrival_time
       expect(@target_3.departure_time).to eq @target_3.arrival_time

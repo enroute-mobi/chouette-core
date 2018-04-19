@@ -5,13 +5,14 @@ module Chouette
     end
 
     def time_from_fake_date fake_date
+      return unless fake_date.present?
       fake_date - fake_date.to_date.to_time
     end
 
     def calculate!
       offset = 0
       tz_offset = @at_stops.first&.time_zone_offset
-      @at_stops.inject(nil) do |prior_stop, stop|
+      @at_stops.select{|s| s.arrival_time.present? && s.departure_time.present? }.inject(nil) do |prior_stop, stop|
         next stop if prior_stop.nil?
 
         # we only compare time of the day, not actual times

@@ -17,7 +17,6 @@ module Chouette
 
     acts_as_list :scope => :route, top_of_list: 0
 
-
     validates_presence_of :stop_area
     validate :stop_area_id_validation
     def stop_area_id_validation
@@ -28,7 +27,7 @@ module Chouette
 
     scope :default_order, -> { order("position") }
 
-    delegate :name, to: :stop_area
+    delegate :name, :registration_number, to: :stop_area
 
     before_destroy :remove_dependent_journey_pattern_stop_points
     def remove_dependent_journey_pattern_stop_points

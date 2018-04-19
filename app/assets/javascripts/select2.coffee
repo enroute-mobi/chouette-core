@@ -28,7 +28,8 @@ bind_select2_ajax = (el, cfg = {}) ->
     escapeMarkup: (markup) ->
       markup
 
-  if _this.data('initvalue')
+  initValue = _this.data('initvalue')
+  if initValue && initValue.id && initValue.text
     cfg["initSelection"] = (item, callback) -> callback(_this.data('initvalue'))
 
   bind_select2(el, cfg)

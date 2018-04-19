@@ -23,6 +23,7 @@
       .form-inline.filter_menu
         = f.input :route_line_id_eq,
             as: :select,
+            collection: [],
             include_blank: t(".all"),
             input_html: { \
               data: { \

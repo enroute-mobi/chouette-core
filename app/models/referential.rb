@@ -327,7 +327,7 @@ class Referential < ApplicationModel
   before_destroy :destroy_jobs
 
   def referential_read_only?
-    in_referential_suite? || archived?
+    !ready? || in_referential_suite? || archived?
   end
 
   def in_referential_suite?

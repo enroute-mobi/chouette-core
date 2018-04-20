@@ -4,8 +4,9 @@ class Import::Netex < Import::Base
 
   after_commit :call_iev_callback, on: :create
 
-  before_save def abort_unless_referential
+  before_save do
     self.status = 'aborted' unless referential
+    self.referential&.failed! if self.status == 'aborted' || self.status == 'failed'
   end
 
   validates_presence_of :parent

@@ -124,7 +124,7 @@ class Referential < ApplicationModel
     @_models_with_checksum || []
   end
 
-  OPERATIONS = [Import::Netex, Import::Gtfs, CleanUp]
+  OPERATIONS = [Import::Netex, Import::Gtfs]
 
   def last_operation
     operations = []

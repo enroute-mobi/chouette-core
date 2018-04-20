@@ -10,7 +10,7 @@ class ReferentialPolicy < ApplicationPolicy
   end
 
   def destroy?
-    !referential_read_only? && organisation_match? && user.has_permission?('referentials.destroy')
+    organisation_match? && user.has_permission?('referentials.destroy')
   end
 
   def update?

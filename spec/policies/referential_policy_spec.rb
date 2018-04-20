@@ -33,7 +33,7 @@ RSpec.describe ReferentialPolicy, type: :policy do
   # ---------------------------------------
 
   permissions :destroy? do
-    it_behaves_like 'permitted policy and same organisation', 'referentials.destroy', archived_and_finalised: true
+    it_behaves_like 'permitted policy and same organisation', 'referentials.destroy'
   end
   permissions :edit? do
     it_behaves_like 'permitted policy and same organisation', 'referentials.update', archived_and_finalised: true

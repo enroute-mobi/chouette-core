@@ -11,9 +11,9 @@
             div
               = link_to '', workbench_path(workbench), class: ' fa fa-chevron-right pull-right', title: t('workbenches.index.offers.see')
 
-        - if workbench.referentials.present?
+        - if workbench.all_referentials.present?
           .list-group
-            - workbench.referentials.limit(5).each do |referential|
+            - workbench.all_referentials.limit(5).each do |referential|
               = link_to referential.name, referential_path(referential), class: 'list-group-item'
         - else
           .panel-body

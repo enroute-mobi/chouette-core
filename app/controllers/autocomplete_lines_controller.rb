@@ -6,6 +6,8 @@ class AutocompleteLinesController < ChouetteController
   protected
 
   def collection
+    return [] if !params[:q]
+
     @lines = referential.line_referential.lines
 
     @lines = @lines

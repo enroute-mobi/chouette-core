@@ -63,5 +63,13 @@ RSpec.describe AutocompleteLinesController, type: :controller do
 
       expect(assigns(:lines).to_a).to eq([line])
     end
+
+    it "doesn't error when no `q` is sent" do
+      get :index,
+        referential_id: referential.id
+
+      expect(assigns(:lines).to_a).to be_empty
+      expect(response).to be_success
+    end
   end
 end

@@ -51,7 +51,6 @@ RSpec.describe Referential do
       expect( described_class )
         .to receive(:new)
         .with(name: I18n.t("activerecord.copy", name: source.name),
-      slug: "#{source.slug}_clone",
       prefix: source.prefix,
       time_zone: source.time_zone,
       bounds: source.bounds,

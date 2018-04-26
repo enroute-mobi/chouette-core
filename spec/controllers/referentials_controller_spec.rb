@@ -94,7 +94,7 @@ describe ReferentialsController, :type => :controller do
         expect(new_referential.stop_area_referential).to eq referential.stop_area_referential
         expect(new_referential.objectid_format).to eq referential.objectid_format
         expect(new_referential.prefix).to eq referential.prefix
-        expect(new_referential.slug).to eq "#{referential.slug}_clone"
+        expect(new_referential.slug).to be_nil
         expect(new_referential.workbench).to eq workbench
       end
     end

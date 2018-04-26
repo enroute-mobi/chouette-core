@@ -242,7 +242,6 @@ class Referential < ApplicationModel
   def self.new_from(from, organisation)
     Referential.new(
       name: I18n.t("activerecord.copy", name: from.name),
-      slug: "#{from.slug}_clone",
       prefix: from.prefix,
       time_zone: from.time_zone,
       bounds: from.bounds,
@@ -434,7 +433,7 @@ class Referential < ApplicationModel
 
   def assign_slug(time_reference = Time)
     self.slug ||= begin
-      prefix = name.parameterize.gsub('-','_').gsub(/[^a-zA-Z_]/,'').gsub(/^_/,'')
+      prefix = name.parameterize.gsub('-','_').gsub(/[^a-zA-Z_]/,'').gsub(/^_/,'')[0..12]
       prefix = "referential" if prefix.blank?
       "#{prefix}_#{time_reference.now.to_i}"
     end if name

@@ -14,10 +14,10 @@ describe Referential, :type => :model do
       time_reference = double(now: 1234567890)
 
       conditions = {
-        "2018-Hiver-Jezequel-MM-Lyon-Nice": "hiver_jezequel_mm_lyon_nice_1234567890",
-        "2018-Hiver-Jezequel-23293MM-Lyon-Nice": "hiver_jezequel_mm_lyon_nice_1234567890",
-        "-Hiver-Jezequel-MM-Lyon-Nice": "hiver_jezequel_mm_lyon_nice_1234567890",
-        "Hiver-Jezequel-MM-Lyon-Nice": "hiver_jezequel_mm_lyon_nice_1234567890",
+        "2018-Hiver-Jezequel-MM-Lyon-Nice": "hiver_jezeque_1234567890",
+        "2018-Hiver-Jezequel-23293MM-Lyon-Nice": "hiver_jezeque_1234567890",
+        "-Hiver-Jezequel-MM-Lyon-Nice": "hiver_jezeque_1234567890",
+        "Hiver-Jezequel-MM-Lyon-Nice": "hiver_jezeque_1234567890",
         "20179282": "referential_1234567890"
       }
 

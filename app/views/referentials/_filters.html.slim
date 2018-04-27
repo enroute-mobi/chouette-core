@@ -11,13 +11,15 @@
       = f.label Chouette::Line.human_attribute_name(:transport_mode), required: false, class: 'control-label'
       = f.input :transport_mode_eq_any, collection: @referential.lines.pluck(:transport_mode).uniq.compact, as: :check_boxes, label: false, label_method: lambda{|l| ("<span>" + t("enumerize.transport_mode.#{l}") + "</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list' }
 
-    .form-group.togglable class=filter_item_class(params[:q], :network_id_eq_any)
-      = f.label  t('activerecord.attributes.referential.networks'), required: false, class: 'control-label'
-      = f.input :network_id_eq_any, collection: @referential.lines.pluck(:network_id).uniq, as: :check_boxes, label: false, label_method: lambda{|l| ("<span>#{LineReferential.first.networks.find(l).name}</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list' }
+    - if (network_ids = @referential.lines.pluck(:network_id).uniq.compact).size > 1
+      .form-group.togglable class=filter_item_class(params[:q], :network_id_eq_any)
+        = f.label  t('activerecord.attributes.referential.networks'), required: false, class: 'control-label'
+        = f.input :network_id_eq_any, collection: network_ids, as: :check_boxes, label: false, label_method: lambda{|l| ("<span>#{LineReferential.first.networks.find(l).name}</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list' }
 
-    .form-group.togglable class=filter_item_class(params[:q], :company_id_eq_any)
-      = f.label t('activerecord.attributes.referential.companies'), required: false, class: 'control-label'
-      = f.input :company_id_eq_any, collection: @referential.lines.pluck(:company_id).uniq, as: :check_boxes, label: false, label_method: lambda{|l| ("<span>#{LineReferential.first.companies.find(l).name}</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list' }
+    - if (company_ids = @referential.lines.pluck(:company_id).uniq.compact).size > 1
+      .form-group.togglable class=filter_item_class(params[:q], :company_id_eq_any)
+        = f.label t('activerecord.attributes.referential.companies'), required: false, class: 'control-label'
+        = f.input :company_id_eq_any, collection: company_ids, as: :check_boxes, label: false, label_method: lambda{|l| ("<span>#{LineReferential.first.companies.find(l).name}</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list' }
 
   .actions
     = link_to t('actions.erase'), @workbench, class: 'btn btn-link'

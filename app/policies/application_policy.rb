@@ -100,7 +100,7 @@ class ApplicationPolicy
   #  -------
 
   def referential
-    @referential ||=  current_referential || record_referential
+    @referential ||=  record.is_a?(Referential) && record || current_referential || record_referential
   end
 
   def record_referential

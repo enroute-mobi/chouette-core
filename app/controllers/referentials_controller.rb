@@ -31,7 +31,7 @@ class ReferentialsController < ChouetteController
   end
 
   def show
-    resource.switch
+    resource.switch if resource.ready?
     show! do |format|
       @referential = @referential.decorate()
       @reflines = lines_collection.paginate(page: params[:page], per_page: 10)

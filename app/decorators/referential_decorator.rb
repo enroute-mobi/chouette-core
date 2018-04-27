@@ -5,17 +5,17 @@ class ReferentialDecorator < AF83::Decorator
     instance_decorator.show_action_link
     instance_decorator.edit_action_link
 
-    instance_decorator.action_link feature: :referential_vehicle_journeys, secondary: :show, on: :show do |l|
+    instance_decorator.action_link feature: :referential_vehicle_journeys, secondary: :show, on: :show, policy: :browse do |l|
       l.content t('referential_vehicle_journeys.index.title')
       l.href { h.referential_vehicle_journeys_path(object) }
     end
 
-    instance_decorator.action_link feature: :purchase_windows, secondary: :show, on: :show do |l|
+    instance_decorator.action_link feature: :purchase_windows, secondary: :show, on: :show, policy: :browse do |l|
       l.content t('purchase_windows.index.title')
       l.href { h.referential_purchase_windows_path(object) }
     end
 
-    instance_decorator.action_link secondary: :show do |l|
+    instance_decorator.action_link secondary: :show, policy: :browse do |l|
       l.content t('time_tables.index.title')
       l.href { h.referential_time_tables_path(object) }
     end

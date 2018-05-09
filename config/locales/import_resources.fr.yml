@@ -1,12 +1,17 @@
 fr:
   import:
     resources: &resources
-      index:
-        title: "Rapport de conformité NeTEx"
+      table: &table
         table_state: "%{lines_imported} ligne(s) importée(s) sur %{lines_in_zipfile} présente(s) dans l'archive"
         table_title: "Etat des fichiers analysés"
         table_explanation: "Dans le cas ou le(s) fichiers calendriers.xml et/ou commun.xml sont dans un état non importé, alors tous les fichiers lignes sont automatiquement dans un état non traité."
+      index:
+        <<: *table
+        title: "Rapport de conformité NeTEx"
         metrics: "%{error_count} errors, %{warning_count} warnings"
+      show:
+        <<: *table
+        title: Rapport d'import
   import_resources:
     <<: *resources
   activerecord:

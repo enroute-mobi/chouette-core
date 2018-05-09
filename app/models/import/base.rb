@@ -32,12 +32,26 @@ class Import::Base < ApplicationModel
     Rails.logger.info "update_referentials for #{inspect}"
     return unless self.class.finished_statuses.include?(status)
 
-    children.each do |import|
-      import.referential.update(ready: true) if import.referential
+    # We treat all created referentials in a batch
+    # If a single fails, we consider they all failed
+    # Ohana means family !
+    if self.successful?
+      children.map(&:referential).compact.each &:active!
+    else
+      children.map(&:referential).compact.each &:failed!
     end
   end
 
   private
+
+  def failed!
+    update status: :failed
+  end
+
+  def aborted!
+    Rails.logger.info "=== aborted ==="
+    update status: :aborted
+  end
 
   def initialize_fields
     super

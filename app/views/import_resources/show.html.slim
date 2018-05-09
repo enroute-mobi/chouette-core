@@ -1,0 +1,52 @@
+- breadcrumb :import_resource, @import_resource
+
+.page_content.import_messages
+  .container-fluid
+    .row
+      .col-lg-12
+        - metadata = { 'Bilan d\'import' => link_to(@import_resource.root_import.name, workbench_import_path(@import_resource.root_import.workbench, @import_resource.root_import) ),
+            'Jeu de données associé' => ( @import_resource.referential.present? ? link_to(@import_resource.referential.name, referential_path(@import_resource.referential)) : '-' ) }
+        - metadata = metadata.update({t('.status') => import_status(@import_resource.status, verbose: true) })
+        = definition_list t('metadatas'), metadata
+
+
+      .col-lg-12
+        .error_messages
+          = render 'shared/iev_interfaces/messages', messages: @import_resource.messages
+
+
+      // XXX
+      //- if @import_resource.children.present?
+      - if @import_resource&.netex_import&.resources.present?
+        .col-lg-12
+          h2 = t('.table_title')
+        .col-lg-12
+          = t('.table_explanation')
+        .col-lg-12
+          = table_builder_2 @import_resource.netex_import.resources.where(resource_type: :file),
+            [ \
+              TableBuilderHelper::Column.new( \
+                key: :name, \
+                attribute: 'name', \
+                sortable: false, \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :status, \
+                attribute: Proc.new { |n| import_resource_status(n.status) }, \
+                sortable: false, \
+              ), \
+              TableBuilderHelper::Column.new( \
+                name: 'Résultat des tests' , \
+                attribute: Proc.new { |n| I18n.t('import_resources.index.metrics', n.metrics.deep_symbolize_keys) }, \
+                sortable: false, \
+              ), \
+              TableBuilderHelper::Column.new( \
+                name: 'Téléchargement' , \
+                attribute: Proc.new { |n| '<i class="fa fa-download" aria-hidden="true"></i>'.html_safe }, \
+                sortable: false, \
+                link_to: lambda do |import_resource| \
+                  workbench_import_import_resource_import_messages_path(import_resource.import.workbench, import_resource.import, import_resource, format: 'csv' ) \
+                end \
+              ), \
+            ],
+            cls: 'table has-search'

@@ -41,6 +41,16 @@ en:
       warning: "Warning"
       error: "Error"
       fatal: "Fatal"
+    status:
+      new:        New
+      pending:    Pending
+      successful: Successful
+      ok:         Successful
+      warning:    Warning
+      failed:     Failed
+      running:    Running
+      aborted:    Aborted
+      canceled:   Canceled
   activerecord:
     models:
       import:

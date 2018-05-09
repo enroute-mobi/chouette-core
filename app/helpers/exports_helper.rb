@@ -17,7 +17,7 @@ module ExportsHelper
       message.message_attributes["text"]
     else
       t([message.class.name.underscore.gsub('/', '_').pluralize, message.message_key].join('.'), message.message_attributes&.symbolize_keys || {})
-    end
+    end.html_safe
   end
 
   def fields_for_export_task_format(form)

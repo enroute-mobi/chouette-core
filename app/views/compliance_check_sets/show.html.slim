@@ -9,6 +9,7 @@
         = definition_list( t('metadatas'),
           { I18n.t("compliance_check_sets.show.metadatas.referential") => (@compliance_check_set.referential.nil? ? '' : link_to(@compliance_check_set.referential.name, referential_path(@compliance_check_set.referential)) ),
             I18n.t("compliance_check_sets.show.metadatas.referential_type") => 'Jeu de données',
+            I18n.t("compliance_check_sets.show.metadatas.status") => import_status(@compliance_check_set.status, verbose: true),
             I18n.t("compliance_check_sets.show.metadatas.compliance_check_set_executed") => link_to(@compliance_check_set.name, executed_workbench_compliance_check_set_path(@compliance_check_set.workbench_id, @compliance_check_set)),
             I18n.t("compliance_check_sets.show.metadatas.compliance_control_owner") => @compliance_check_set.organisation.name,
             I18n.t("compliance_check_sets.show.metadatas.import") => '' })

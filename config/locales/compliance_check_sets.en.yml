@@ -30,6 +30,7 @@ en:
         compliance_check_set_executed: "Compliance check set executed"
         compliance_control_owner: "Compliance control owner"
         import: "Import"
+        status: Status
     errors:
       no_parent: "The compliance check set doesn't have any parent"
   activerecord:

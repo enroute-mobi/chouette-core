@@ -23,4 +23,8 @@ class Workgroup < ApplicationModel
   def has_export? export_name
     export_types.include? export_name
   end
+
+  def import_compliance_control_sets
+    @import_compliance_control_sets ||= import_compliance_control_set_ids.map{|id| ComplianceControlSet.find(id)}
+  end
 end

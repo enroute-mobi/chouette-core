@@ -1,0 +1,42 @@
+.row
+  .col-lg-6.col-md-6.col-sm-12.col-xs-12
+    - metadata = { t('.parent') => link_to(@import.parent.name, [@import.parent.workbench, @import.parent]) }
+    - metadata = metadata.update({t('.status') => import_status(@import.status, verbose: true) })
+    - metadata = metadata.update({t('.referential') => @import.referential ? link_to(@import.referential.name, [@import.referential]) : "-" })
+    = definition_list t('metadatas'), metadata
+
+.col-lg-12
+  .error_messages
+    = render 'shared/iev_interfaces/messages', messages: @import.main_resource.messages
+
+- if @import.resources.any?
+  .col-lg-12
+    = table_builder_2 @import.resources,
+      [ \
+        TableBuilderHelper::Column.new( \
+          name: t('.referential_name'), \
+          attribute: 'name', \
+          sortable: false, \
+          link_to: lambda do |item| \
+            referential_path(item.referential) if item.referential.present? \
+          end \
+        ), \
+        TableBuilderHelper::Column.new( \
+          key: :status, \
+          attribute: Proc.new { |n| import_status(n.status, verbose: true, default_status: :pending) }, \
+          sortable: false, \
+          link_to: lambda do |item| \
+            item.netex_import.present? ? [@import.workbench, item.netex_import] : [@import.workbench, @import, item] \
+          end \
+        )\
+      ],
+      cls: 'table',
+      overhead: [ \
+        {}, \
+        {}, \
+        { \
+          title: I18n.t('imports.show.summary').html_safe, \
+          width: controls.size, \
+          cls: 'overheaded-default colspan="2"' \
+        } \
+      ]

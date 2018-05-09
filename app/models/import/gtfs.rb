@@ -1,8 +1,26 @@
 class Import::Gtfs < Import::Base
   after_commit :launch_worker, :on => :create
 
+  after_commit do
+    main_resource.update_status_from_importer self.status
+    true
+  end
+
   def launch_worker
     GtfsImportWorker.perform_async id
+  end
+
+  def main_resource
+    @resource ||= parent.resources.find_or_create_by(name: self.name, resource_type: "referential", reference: self.name)
+  end
+
+  def notify_parent
+    super
+    main_resource.update_status_from_importer self.status
+  end
+
+  def create_message args
+    main_resource.messages.create args
   end
 
   def import
@@ -10,10 +28,11 @@ class Import::Gtfs < Import::Base
 
     import_without_status
     update status: 'successful', ended_at: Time.now
-    referential&.ready!
+    referential&.active!
   rescue Exception => e
     update status: 'failed', ended_at: Time.now
     Rails.logger.error "Error in GTFS import: #{e} #{e.backtrace.join('\n')}"
+    create_message criticity: :error, message_key: :full_text, message_attributes: {text: e.message}
     referential&.failed!
   ensure
     notify_parent
@@ -35,6 +54,7 @@ class Import::Gtfs < Import::Base
       workbench_id: workbench.id,
       metadatas: [referential_metadata]
     )
+    main_resource.update referential: referential
   end
 
   def referential_metadata
@@ -131,17 +151,21 @@ class Import::Gtfs < Import::Base
   end
 
   def import_agencies
+    count = 0
     Chouette::Company.transaction do
       source.agencies.each do |agency|
         company = line_referential.companies.find_or_initialize_by(registration_number: agency.id)
         company.attributes = { name: agency.name }
 
         save_model company
+        count += 1
       end
     end
+    create_message criticity: "info", message_key: "gtfs.agencies.imported", message_attributes: {count: count}
   end
 
   def import_stops
+    count = 0
     Chouette::StopArea.transaction do
       source.stops.each do |stop|
         stop_area = stop_area_referential.stop_areas.find_or_initialize_by(registration_number: stop.id)
@@ -155,11 +179,14 @@ class Import::Gtfs < Import::Base
         # TODO correct default timezone
 
         save_model stop_area
+        count += 1
       end
+      create_message criticity: "info", message_key: "gtfs.stops.imported", message_attributes: {count: count}
     end
   end
 
   def import_routes
+    count = 0
     Chouette::Line.transaction do
       source.routes.each do |route|
         line = line_referential.lines.find_or_initialize_by(registration_number: route.id)
@@ -178,7 +205,9 @@ class Import::Gtfs < Import::Base
         line.url = route.url
 
         save_model line
+        count += 1
       end
+      create_message criticity: "info", message_key: "gtfs.routes.imported", message_attributes: {count: count}
     end
   end
 
@@ -187,6 +216,7 @@ class Import::Gtfs < Import::Base
   end
 
   def import_trips
+    count = 0
     source.trips.each_slice(100) do |slice|
       slice.each do |trip|
         Chouette::Route.transaction do
@@ -205,18 +235,20 @@ class Import::Gtfs < Import::Base
           vehicle_journey = journey_pattern.vehicle_journeys.build route: route
           vehicle_journey.published_journey_name = trip.headsign.presence || trip.id
           save_model vehicle_journey
+          count += 1
 
           time_table = referential.time_tables.find_by(id: time_tables_by_service_id[trip.service_id]) if time_tables_by_service_id[trip.service_id]
           if time_table
             vehicle_journey.time_tables << time_table
           else
-            messages.create! criticity: "warning", message_key: "gtfs.trips.unkown_service_id", message_attributes: {service_id: trip.service_id}
+            create_message criticity: "warning", message_key: "gtfs.trips.unkown_service_id", message_attributes: {service_id: trip.service_id}
           end
 
           vehicle_journey_by_trip_id[trip.id] = vehicle_journey.id
         end
       end
     end
+    create_message criticity: "info", message_key: "gtfs.trips.imported", message_attributes: {count: count}
   end
 
   def import_stop_times
@@ -262,6 +294,7 @@ class Import::Gtfs < Import::Base
   end
 
   def import_calendars
+    count = 0
     source.calendars.each_slice(500) do |slice|
       Chouette::TimeTable.transaction do
         slice.each do |calendar|
@@ -272,11 +305,13 @@ class Import::Gtfs < Import::Base
           time_table.periods.build period_start: calendar.start_date, period_end: calendar.end_date
 
           save_model time_table
+          count += 1
 
           time_tables_by_service_id[calendar.service_id] = time_table.id
         end
       end
     end
+    create_message criticity: "info", message_key: "gtfs.calendars.imported", message_attributes: {count: count}
   end
 
   def import_calendar_dates

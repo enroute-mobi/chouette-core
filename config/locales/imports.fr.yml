@@ -41,6 +41,17 @@ fr:
       warning: "Alerte"
       error: "Erreur"
       fatal: "Fatal"
+    status:
+      new:        Nouveau
+      pending:    En attente
+      successful: Succès
+      ok:         Succès
+      warning:    Avertissement
+      failed:     Échec
+      error:      Échec
+      running:    En cours
+      aborted:    Annulé
+      canceled:   Annulé
   import:
     base:
       <<: *imports

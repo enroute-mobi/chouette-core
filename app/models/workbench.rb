@@ -51,6 +51,10 @@ class Workbench < ApplicationModel
     where(name: DEFAULT_WORKBENCH_NAME).last
   end
 
+  def import_compliance_control_set
+    import_compliance_control_set_id && ComplianceControlSet.find(import_compliance_control_set_id)
+  end
+
   private
 
   def initialize_output

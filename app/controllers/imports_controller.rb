@@ -4,6 +4,7 @@ class ImportsController < ChouetteController
   include IevInterfaces
   skip_before_action :authenticate_user!, only: [:download]
   defaults resource_class: Import::Base, collection_name: 'imports', instance_name: 'import'
+  before_action :notify_parents
 
   def download
     if params[:token] == resource.token_download
@@ -18,7 +19,7 @@ class ImportsController < ChouetteController
   def index_model
     Import::Workbench
   end
-  
+
   def build_resource
     @import ||= Import::Workbench.new(*resource_params) do |import|
       import.workbench = parent
@@ -42,5 +43,11 @@ class ImportsController < ChouetteController
         workbench: @workbench
       }
     )
+  end
+
+  def notify_parents
+    if Rails.env.development?
+      ParentNotifier.new(Import::Base).notify_when_finished
+    end
   end
 end

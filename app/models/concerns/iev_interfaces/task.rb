@@ -56,13 +56,14 @@ module IevInterfaces::Task
   end
 
   def notify_parent
-    return unless self.class.finished_statuses.include?(status)
+    return false unless self.class.finished_statuses.include?(status)
 
-    return unless parent.present?
-    return if notified_parent_at
+    return false unless parent.present?
+    return false if notified_parent_at
     parent.child_change
 
     update_column :notified_parent_at, Time.now
+    true
   end
 
   def children_succeedeed
@@ -92,6 +93,10 @@ module IevInterfaces::Task
     end
 
     update attributes
+  end
+
+  def successful?
+    status.to_s == "successful"
   end
 
   def child_change

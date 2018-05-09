@@ -9,14 +9,18 @@ class Import::Workbench < Import::Base
     end
   end
 
+  # def main_resource
+  #   @resource ||= resources.find_or_create_by(name: self.name, resource_type: "workbench_import")
+  # end
+
   def import_gtfs
     update_column :status, 'running'
     update_column :started_at, Time.now
 
-    Import::Gtfs.create! parent_id: self.id, workbench: workbench, file: File.new(file.path), name: "Import GTFS", creator: "Web service"
+    Import::Gtfs.create! parent_type: self.class.name, parent_id: self.id, workbench: workbench, file: File.new(file.path), name: "Import GTFS", creator: "Web service"
 
-    update_column :status, 'successful'
-    update_column :ended_at, Time.now
+    # update_column :status, 'successful'
+    # update_column :ended_at, Time.now
   rescue Exception => e
     Rails.logger.error "Error while processing GTFS file: #{e}"
 

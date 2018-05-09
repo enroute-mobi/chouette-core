@@ -68,6 +68,11 @@ class ComplianceCheckSet < ApplicationModel
     end
 
     update attributes
+    import_resource&.next_step
+  end
+
+  def import_resource
+    referential&.import_resources.main_resources.last
   end
 
 

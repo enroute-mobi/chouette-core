@@ -4,8 +4,21 @@ fr:
     inconsistent_zip_file: "Le fichier zip contient des repertoires non prévus : %{spurious_dirs} qui seront ignorés"
     missing_calendar_in_zip_file: "Le dossier %{source_filename} ne contient pas de calendrier"
     wrong_calendar_in_zip_file: "Le calendrier contenu dans %{source_filename} contient des données incorrectes ou incohérentes"
-    referential_creation: "Le référentiel %{referential_name} n'a pas pu être créé car un référentiel existe déjà sur les mêmes périodes et lignes"
+    referential_creation: "Le référentiel %{referential_name} n'a pas pu être créé."
+    referential_creation_overlapping_existing_referential: "Le référentiel %{referential_name} n'a pas pu être créé car un référentiel existe déjà sur les mêmes périodes et lignes: <a href='%{overlapped_url}'>%{overlapped_name}</a>"
     referential_creation_missing_lines: "Le référentiel %{referential_name} n'a pas pu être créé car aucune ligne ne correspond"
+    referential_creation_lines_found: "Lignes lues dans le dossier: %{line_objectids}"
+    gtfs:
+      agencies:
+        imported: "%{count} agence(s) importée(s)"
+      stops:
+        imported: "%{count} arrêt(s) importé(s)"
+      routes:
+        imported: "%{count} itinéraire(s) importé(s)"
+      trips:
+        imported: "%{count} course(s) importée(s)"
+      calendars:
+        imported: "%{count} calendrier(s) importé(s)"
     1_netexstif_2: "Le fichier %{source_filename} ne respecte pas la syntaxe XML ou la XSD NeTEx : erreur '%{error_value}' rencontré"
     1_netexstif_5: "%{source_filename}-Ligne %{source_line_number}-Colonne %{source_column_number} : l'objet %{source_label} d'identifiant %{source_objectid} a une date de mise à jour dans le futur"
     2_netexstif_1_1: "Le fichier commun.xml ne contient pas de frame nommée NTEX_COMMUN"

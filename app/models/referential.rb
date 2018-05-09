@@ -26,6 +26,7 @@ class Referential < ApplicationModel
 
   has_one :user
   has_many :api_keys, class_name: 'Api::V1::ApiKey', dependent: :destroy
+  has_many :import_resources, class_name: 'Import::Resource', dependent: :destroy
 
   belongs_to :organisation
   validates_presence_of :organisation
@@ -398,7 +399,7 @@ class Referential < ApplicationModel
 
     query = "select distinct(public.referential_metadata.referential_id) FROM public.referential_metadata, unnest(line_ids) line, LATERAL unnest(periodes) period
     WHERE public.referential_metadata.referential_id
-    IN (SELECT public.referentials.id FROM public.referentials WHERE referentials.workbench_id = #{workbench_id} and referentials.archived_at is null and referentials.referential_suite_id is null #{not_myself})
+    IN (SELECT public.referentials.id FROM public.referentials WHERE referentials.workbench_id = #{workbench_id} and referentials.archived_at is null and referentials.referential_suite_id is null #{not_myself} AND referentials.failed_at IS NULL)
     AND line in (#{line_ids.join(',')}) and (#{periods_query});"
 
     self.class.connection.select_values(query).map(&:to_i)

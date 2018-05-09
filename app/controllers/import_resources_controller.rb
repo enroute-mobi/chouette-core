@@ -24,6 +24,15 @@ class ImportResourcesController < ChouetteController
     @import_resources ||= parent.resources
   end
 
+  def resource
+    @import ||= Import::Base.find params[:import_id]
+    @import_resource ||= begin
+      import_resource = Import::Resource.find params[:id]
+      raise ActiveRecord::RecordNotFound unless import_resource.import == @import
+      import_resource
+    end
+  end
+
   private
 
   def decorate_import_resources(import_resources)

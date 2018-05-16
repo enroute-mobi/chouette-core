@@ -73,13 +73,6 @@ en:
         zero:  "import"
         one:   "NeTEx import"
         other: "imports"
-    errors:
-      models:
-        import:
-          base:
-            attributes:
-              file:
-                wrong_file_extension: "The imported file must be a zip file"
     attributes:
       attrs: &attrs
         resources: "File to import"
@@ -99,6 +92,9 @@ en:
         <<: *attrs
         base:
           <<: *attrs
+  errors:
+    messages:
+      extension_whitelist_error: "You are not allowed to upload %{extension} files, allowed types: %{allowed_types}"
   flash:
     imports:
       create:

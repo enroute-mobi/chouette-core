@@ -1,6 +1,5 @@
 class Import::Base < ApplicationModel
   self.table_name = "imports"
-  validates :file, presence: true
 
   def self.messages_class_name
     "Import::Message"

@@ -35,6 +35,8 @@ class Merge < ApplicationModel
       merge_referential referential
     end
 
+    clean_new
+
     save_current
   rescue => e
     Rails.logger.error "Merge failed: #{e} #{e.backtrace.join("\n")}"
@@ -81,6 +83,10 @@ class Merge < ApplicationModel
 
     output.update new: new
     @new = new
+  end
+
+  def clean_new
+    CleanUp.new(referential: new, methods: [:destroy_empty]).clean
   end
 
   def merge_referential(referential)

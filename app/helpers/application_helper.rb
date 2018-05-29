@@ -117,8 +117,6 @@ module ApplicationHelper
       "stop_areas"
     when path.include?("/time_tables")
       "time_tables"
-    when path.include?("/import_tasks")
-      "imports"
     when path.include?("/exports")
       "exports"
     when path.include?("/compliance_check_tasks")

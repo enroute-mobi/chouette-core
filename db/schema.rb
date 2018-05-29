@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180517190722) do
+ActiveRecord::Schema.define(version: 20180528125333) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -92,9 +92,9 @@ ActiveRecord::Schema.define(version: 20180517190722) do
     t.integer   "organisation_id", limit: 8
     t.datetime  "created_at"
     t.datetime  "updated_at"
+    t.integer   "workgroup_id",    limit: 8
     t.integer   "int_day_types"
     t.date      "excluded_dates",                            array: true
-    t.integer   "workgroup_id",    limit: 8
     t.jsonb     "metadata",                  default: {}
   end
 
@@ -472,28 +472,14 @@ ActiveRecord::Schema.define(version: 20180517190722) do
     t.string   "type"
     t.integer  "parent_id",             limit: 8
     t.string   "parent_type"
+    t.datetime "notified_parent_at"
     t.integer  "current_step",                    default: 0
     t.integer  "total_steps",                     default: 0
-    t.datetime "notified_parent_at"
     t.string   "creator"
   end
 
   add_index "imports", ["referential_id"], name: "index_imports_on_referential_id", using: :btree
   add_index "imports", ["workbench_id"], name: "index_imports_on_workbench_id", using: :btree
-
-  create_table "journey_frequencies", id: :bigserial, force: :cascade do |t|
-    t.integer  "vehicle_journey_id",         limit: 8
-    t.time     "scheduled_headway_interval",                           null: false
-    t.time     "first_departure_time",                                 null: false
-    t.time     "last_departure_time"
-    t.boolean  "exact_time",                           default: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "timeband_id",                limit: 8
-  end
-
-  add_index "journey_frequencies", ["timeband_id"], name: "index_journey_frequencies_on_timeband_id", using: :btree
-  add_index "journey_frequencies", ["vehicle_journey_id"], name: "index_journey_frequencies_on_vehicle_journey_id", using: :btree
 
   create_table "journey_patterns", id: :bigserial, force: :cascade do |t|
     t.integer  "route_id",                limit: 8
@@ -967,17 +953,6 @@ ActiveRecord::Schema.define(version: 20180517190722) do
   add_index "time_tables_vehicle_journeys", ["time_table_id"], name: "index_time_tables_vehicle_journeys_on_time_table_id", using: :btree
   add_index "time_tables_vehicle_journeys", ["vehicle_journey_id"], name: "index_time_tables_vehicle_journeys_on_vehicle_journey_id", using: :btree
 
-  create_table "timebands", id: :bigserial, force: :cascade do |t|
-    t.string   "objectid",                              null: false
-    t.integer  "object_version", limit: 8
-    t.string   "name"
-    t.time     "start_time",                            null: false
-    t.time     "end_time",                              null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.jsonb    "metadata",                 default: {}
-  end
-
   create_table "users", id: :bigserial, force: :cascade do |t|
     t.string   "email",                            default: "", null: false
     t.string   "encrypted_password",               default: ""
@@ -1110,8 +1085,6 @@ ActiveRecord::Schema.define(version: 20180517190722) do
   add_foreign_key "compliance_controls", "compliance_control_sets"
   add_foreign_key "group_of_lines_lines", "group_of_lines", name: "groupofline_group_fkey", on_delete: :cascade
   add_foreign_key "import_resources", "referentials"
-  add_foreign_key "journey_frequencies", "timebands", on_delete: :nullify
-  add_foreign_key "journey_frequencies", "vehicle_journeys", on_delete: :nullify
   add_foreign_key "journey_patterns", "routes", name: "jp_route_fkey", on_delete: :cascade
   add_foreign_key "journey_patterns", "stop_points", column: "arrival_stop_point_id", name: "arrival_point_fkey", on_delete: :nullify
   add_foreign_key "journey_patterns", "stop_points", column: "departure_stop_point_id", name: "departure_point_fkey", on_delete: :nullify

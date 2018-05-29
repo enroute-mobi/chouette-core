@@ -17,7 +17,6 @@ class AddMetadataToOtherModels < ActiveRecord::Migration
       Chouette::StopArea,
       Chouette::StopPoint,
       Chouette::TimeTable,
-      Chouette::Timeband,
       Chouette::VehicleJourney,
       ComplianceCheckSet,
       ComplianceControlSet,

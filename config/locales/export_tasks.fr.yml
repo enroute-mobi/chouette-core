@@ -41,7 +41,6 @@ fr:
         reference_ids: "Données incluses"
         object_id_prefix: "Préfixe d'identifiants"
         max_distance_for_commercial: "Distance max pour créer les zones"
-        max_distance_for_connection_link: "Distance max pour créer les correspondances"
         ignore_last_word: "ignorer le dernier mot"
         ignore_end_chars: "ignorer les n derniers caractères"
   formtastic:
@@ -54,6 +53,5 @@ fr:
         dates:
           not_nul: "Export HUB interrompu. Les dates de début et de fin doivent êtres renseignées."
         max_distance_for_commercial: "Distance maximale entre deux arrêts homonymes pour créer les zones d'arrêt (en mètre)"
-        max_distance_for_connection_link: "Distance maximale entre deux arrêts pour créer les correspondances (en mètre)"
         ignore_last_word: "Ignorer le dernier mot pour détecter l'homonymie des noms d'arrêt (inapplicable quand le nom ne comporte qu'un mot)"
         ignore_end_chars: "Ignorer les n derniers caractères du nom de l'arrêt pour détecter l'homonymie"

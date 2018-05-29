@@ -81,10 +81,6 @@ nav.navbar.navbar-default.navbar-fixed-top role="navigation"
                   span.badge.pull-right = @referential.time_tables.size
                   = Referential.human_attribute_name("time_tables")
 
-              li
-                = link_to referential_timebands_path(@referential) do
-                  span.badge.pull-right = @referential.timebands.size
-                  = Referential.human_attribute_name("timebands")
           li
             = link_to Referential.human_attribute_name("exports"), referential_exports_path(@referential)
           li

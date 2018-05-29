@@ -101,7 +101,6 @@ fr:
         compliance_checks: "Validations"
         data_format_restrictions: "Format d'export privilégié"
         data_format: "Format d'export privilégié"
-        timebands: "Créneaux horaires"
         routing_constraint_zone: Zone de contrainte
         validity_period: "Période de validité englobante"
         updated_at: "Edité le"

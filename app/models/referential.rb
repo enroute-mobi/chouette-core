@@ -192,9 +192,6 @@ class Referential < ApplicationModel
     Chouette::TimeTableDate.all
   end
 
-  def timebands
-    Chouette::Timeband.all
-  end
 
   def connection_links
     Chouette::ConnectionLink.all

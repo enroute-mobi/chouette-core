@@ -1,9 +1,0 @@
-- breadcrumb :timeband, @referential, @timeband
-= title_tag t( 'timebands.show.title', timeband: @timeband.name )
-
-.summary
-  p
-    label = "#{@timeband.name} : "
-    = "#{l(@timeband.start_time, format: :hour)} - #{l(@timeband.end_time, format: :hour)}"
-
-== render 'sidebar'

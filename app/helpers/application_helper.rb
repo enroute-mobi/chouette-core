@@ -115,12 +115,8 @@ module ApplicationHelper
       "access_points_links"
     when path.include?("/stop_areas")
       "stop_areas"
-    when path.include?("/connection_links")
-      "connection_links"
     when path.include?("/time_tables")
       "time_tables"
-    when path.include?("/timebands")
-      "timebands"
     when path.include?("/import_tasks")
       "imports"
     when path.include?("/exports")

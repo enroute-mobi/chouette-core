@@ -50,7 +50,6 @@ ChouetteIhm::Application.routes.draw do
     end
     resources :autocomplete_purchase_windows, only: [:index]
     resources :autocomplete_time_tables, only: [:index]
-    resources :autocomplete_timebands
     resources :group_of_lines, controller: "referential_group_of_lines" do
       collection do
         get 'name_filter'
@@ -125,8 +124,6 @@ ChouetteIhm::Application.routes.draw do
       resources :time_table_periods
       resources :time_table_combinations
     end
-
-    resources :timebands
 
     resources :access_points do
       resources :access_links

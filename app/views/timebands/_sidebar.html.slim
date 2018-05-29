@@ -1,9 +1,0 @@
-- content_for :sidebar do
-  ul.actions
-    li = link_to t('timebands.actions.new'), new_referential_timeband_path(@referential), class: "add"
-
-    - if @timeband
-      li
-        = link_to t('timebands.actions.edit'), edit_referential_timeband_path(@referential, @timeband), class: "edit"
-      li
-        = link_to t('timebands.actions.destroy'), referential_timeband_path(@referential, @timeband), :method => :delete, :data => {:confirm =>  t('timebands.actions.destroy_confirm')}, class: "remove"

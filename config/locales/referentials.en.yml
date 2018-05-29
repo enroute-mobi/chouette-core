@@ -101,7 +101,6 @@ en:
         compliance_checks: "Validations"
         data_format_restrictions: "Data format constraint"
         data_format: "Favorite format for export"
-        timebands: "Time bands"
         routing_constraint_zone: Routing constraint zone
         validity_period: "Inclusive validity period"
         updated_at: "Updated"

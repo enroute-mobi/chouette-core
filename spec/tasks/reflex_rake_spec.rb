@@ -15,12 +15,6 @@ describe 'reflex:sync' do
 
     it 'should create stopArea on successfull request' do
       expect(Chouette::StopArea.count).to eq 6
-      expect(Chouette::AccessPoint.count).to eq 2
-    end
-
-    it 'should convert StopPlaceEntrance to AccessPoint' do
-      access = Chouette::AccessPoint.find_by(name: 'Montgeron Crosne - Rue Du Moulin De Senlis')
-      expect(access.stop_area.name).to eq 'First stopPlace children'
     end
 
     it 'should store object_status on stif_type attribute' do
@@ -50,7 +44,6 @@ describe 'reflex:sync' do
 
       it 'should not create duplicate stop_area' do
         expect(Chouette::StopArea.count).to eq 6
-        expect(Chouette::AccessPoint.count).to eq 2
       end
 
       it 'should flag deleted_at for missing element from last sync' do

@@ -120,34 +120,6 @@ module Stif
         end
       end
 
-      def access_point_access_type entry
-        if entry['IsEntry'] ==  'true' && entry['IsExit'] == 'true'
-          'in_out'
-        elsif entry['IsEntry'] == 'true'
-          'in'
-        elsif entry['IsExit'] == 'true'
-          'out'
-        end
-      end
-
-      def create_or_update_access_point entry, stop_area
-        access = Chouette::AccessPoint.find_or_create_by(objectid: entry['id'])
-        # Hack, on save object_version will be incremented by 1
-        entry['version']   = entry['version'].to_i + 1  if access.persisted?
-        access.access_type = self.access_point_access_type(entry)
-        access.stop_area = stop_area
-        {
-          :name           => 'Name',
-          :object_version => 'version',
-          :zip_code       => 'PostalRegion',
-          :city_name      => 'Town'
-        }.each do |k, v| access[k] = entry[v] end
-        if entry['gml:pos']
-          access['longitude'] = entry['gml:pos'][:lng]
-          access['latitude']  = entry['gml:pos'][:lat]
-        end
-        save_if_valid(access) if access.changed?
-      end
 
       def create_or_update_stop_area entry
         stop = Chouette::StopArea.find_or_create_by(objectid: entry['id'], stop_area_referential: self.defaut_referential )
@@ -177,12 +149,7 @@ module Stif
           increment_counts prop, 1
           save_if_valid(stop)
         end
-        # Create AccessPoint from StopPlaceEntrance
-        if entry[:stop_place_entrances]
-          entry[:stop_place_entrances].each do |entrance|
-            self.create_or_update_access_point entrance, stop
-          end
-        end
+        
         stop
       end
     end

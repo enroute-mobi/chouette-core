@@ -81,16 +81,6 @@ crumb :time_table do |referential, time_table|
   parent :time_tables, referential
 end
 
-crumb :timebands do |referential|
-  link I18n.t('timebands.index.title'), referential_timebands_path(referential)
-  parent :referential, referential
-end
-
-crumb :timeband do |referential, timeband|
-  link breadcrumb_name(timeband), referential_timeband_path(referential, timeband)
-  parent :timebands, referential
-end
-
 crumb :compliance_check_sets do |workbench|
   link I18n.t('compliance_check_sets.index.title'), workbench_compliance_check_sets_path(workbench)
   parent :workbench, workbench

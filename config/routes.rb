@@ -50,7 +50,6 @@ ChouetteIhm::Application.routes.draw do
     end
     resources :autocomplete_purchase_windows, only: [:index]
     resources :autocomplete_time_tables, only: [:index]
-    resources :autocomplete_timebands
     resources :group_of_lines, controller: "referential_group_of_lines" do
       collection do
         get 'name_filter'
@@ -95,13 +94,6 @@ ChouetteIhm::Application.routes.draw do
 
     resources :vehicle_journeys, controller: 'referential_vehicle_journeys', only: [:index]
 
-    resources :import_tasks, :only => [:new, :create]
-    resources :export_tasks, :only => [:new, :create] do
-      collection do
-        get 'references'
-      end
-    end
-
     resources :exports, :only => [:index, :show, :destroy]  do
       member do
         get "exported_file"
@@ -126,15 +118,11 @@ ChouetteIhm::Application.routes.draw do
       resources :time_table_combinations
     end
 
-    resources :timebands
-
     resources :access_points do
       resources :access_links
     end
 
     resources :stop_areas, controller: "referential_stop_areas" do
-      resources :access_points
-      resources :stop_area_copies
       resources :stop_area_routing_lines
       member do
         get 'add_children'

@@ -20,15 +20,6 @@ describe Import::Gtfs, :type => :model do
 
  # end
 
- # describe "#max_distance_for_connection_link" do
-
- #   it "should be included in import_options" do
- #     subject.max_distance_for_connection_link = 300
- #     expect(subject.parameter_set["max_distance_for_connection_link"]).to eq(300)
- #   end
-
- # end
-
  # describe "#ignore_last_word" do
 
  #   it "should be included in import_options" do

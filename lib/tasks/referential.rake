@@ -82,30 +82,36 @@ namespace :referential do
         print "⎯"*(80-head.size)
         print "  "
         count = klass.count
-        klass.find_each do |o|
-          o.update_checksum!
-          if j%10 == 0
-            out = "#{"\b"*prev_size}\e[33m#{thing[i]}\e[0m (#{j}/#{count})"
-            prev_size = out.size - prev_size - 9
-            print out
-            i = (i+1) % thing.size
+        klass.cache do
+          klass.find_in_batches(batch_size: 500) do |batch|
+            klass.transaction do
+              batch.each do |o|
+                o.update_checksum!
+                if j%10 == 0
+                  out = "#{"\b"*prev_size}\e[33m#{thing[i]}\e[0m (#{j}/#{count})"
+                  prev_size = out.size - prev_size - 9
+                  print out
+                  i = (i+1) % thing.size
+                end
+                j += 1
+              end
+            end
           end
-          j += 1
         end
+
         print "#{"\b"*prev_size}\e[32m✓\e[0m (#{count}/#{count})\n"
       end
     end
   end
 
   desc 'Update all the checksums in the given referential'
-  task :update_checksums_in_referential, [:slug] => :environment do |t, args|
-    referential = Referential.find_by_slug(args[:slug])
+  task :update_checksums_in_referential, [:id] => :environment do |t, args|
+    referential = Referential.find(args[:id])
     update_checksums_for_referential referential
   end
 
   desc 'Update all the checksums in the given organisation'
   task :update_checksums_in_organisation, [:organisation_id] => :environment do |t, args|
-    thing = %w(\\ | / —)
     Organisation.find(args[:organisation_id]).referentials.find_each do |referential|
       update_checksums_for_referential referential
     end

@@ -10,7 +10,7 @@ module Chouette
     include ObjectidSupport
 
     belongs_to :stop_area
-    belongs_to :stop_area_light, -> {select(:name, :city_name, :zip_code, :time_zone, :registration_number)}, class_name: "Chouette::StopArea", foreign_key: :stop_area_id
+    belongs_to :stop_area_light, -> {select(:name, :city_name, :zip_code, :time_zone, :registration_number, :kind, :area_type, :time_zone)}, class_name: "Chouette::StopArea", foreign_key: :stop_area_id
     belongs_to :route, inverse_of: :stop_points
     has_many :journey_patterns, through: :route
     has_many :vehicle_journey_at_stops, :dependent => :destroy

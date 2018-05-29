@@ -1,10 +1,10 @@
 require 'spec_helper'
 
 RSpec.describe Chouette::VehicleJourneyAtStop, type: :model do
-  subject { create(:vehicle_journey_at_stop) }
+  subject { build_stubbed(:vehicle_journey_at_stop) }
 
   describe 'checksum' do
-    let(:at_stop) { build_stubbed(:vehicle_journey_at_stop) }
+    let(:at_stop) { create(:vehicle_journey_at_stop) }
 
     it_behaves_like 'checksum support'
 
@@ -43,7 +43,7 @@ RSpec.describe Chouette::VehicleJourneyAtStop, type: :model do
   end
 
   context "the different times" do
-    let (:at_stop) { build_stubbed(:vehicle_journey_at_stop) }
+    let (:at_stop) { create(:vehicle_journey_at_stop) }
 
     describe "without a TimeZone" do
       it "should not offset times" do
@@ -52,11 +52,10 @@ RSpec.describe Chouette::VehicleJourneyAtStop, type: :model do
       end
     end
 
-
     describe "with a TimeZone" do
       before(:each) do
         stop = at_stop.stop_point.stop_area
-        stop.time_zone = "Mexico City"
+        stop.update time_zone: "Mexico City"
       end
 
       it "should offset times" do

@@ -7,7 +7,7 @@ module IevInterfaces::Task
     belongs_to :referential
 
     mount_uploader :file, ImportUploader
-    validates_presence_of :file, presence: true, unless: Proc.new {|import| import.errors[:file].present? }
+    validates_presence_of :file, unless: Proc.new {|import| import.errors[:file].present? }
     validates_integrity_of :file
 
     has_many :children, foreign_key: :parent_id, class_name: self.name, dependent: :destroy

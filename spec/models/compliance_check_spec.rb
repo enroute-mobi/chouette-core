@@ -4,6 +4,10 @@ RSpec.describe ComplianceCheck, type: :model do
     expect(FactoryGirl.build(:compliance_check)).to be_valid
   end
 
+  it 'should rely on IEV by default' do
+    expect(FactoryGirl.build(:compliance_check).iev_enabled_check).to be_truthy
+  end
+
   it 'has STI disabled' do
     expect( described_class.inheritance_column ).to be_blank
   end

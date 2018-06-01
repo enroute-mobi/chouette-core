@@ -32,6 +32,10 @@ class ComplianceCheckSet < ApplicationModel
     status.to_s == "successful"
   end
 
+  def should_call_iev?
+    true
+  end
+
   def self.abort_old
     where(
       'created_at < ? AND status NOT IN (?)',

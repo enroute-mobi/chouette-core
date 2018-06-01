@@ -67,6 +67,7 @@ class ComplianceControlSetCopier
       comment: compliance_control.comment,
       code: compliance_control.code,
       origin_code: compliance_control.origin_code,
+      iev_enabled_check: compliance_control.iev_enabled_check,
       compliance_control_name: compliance_control.class.name
     ).tap do | compliance_check |
       control_id_to_check.update compliance_control.id => compliance_check

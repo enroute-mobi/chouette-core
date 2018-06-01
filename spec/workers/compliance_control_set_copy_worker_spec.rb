@@ -13,6 +13,9 @@ RSpec.describe ComplianceControlSetCopyWorker do
     allow_any_instance_of(
       ComplianceControlSetCopier
     ).to receive(:copy).and_return(check_set)
+    allow(
+      check_set
+    ).to receive(:should_call_iev?).and_return(true)
 
     stub_validation_request
   end
@@ -31,5 +34,17 @@ RSpec.describe ComplianceControlSetCopyWorker do
     ComplianceControlSetCopyWorker.new.perform(control_set_id, referential_id)
 
     expect(stub_validation_request).to have_been_requested
+  end
+
+  context "when JAVA is not needed" do
+    before do
+      expect(check_set).to receive(:should_call_iev?).and_return(false)
+    end
+
+    it "should not call it" do
+      expect(stub_validation_request).to_not have_been_requested
+      expect(check_set).to receive :perform_internal_checks
+      ComplianceControlSetCopyWorker.new.perform(control_set_id, referential_id)
+    end
   end
 end

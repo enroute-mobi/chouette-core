@@ -20,14 +20,15 @@ class ComplianceControl < ApplicationModel
         line: 'Line',
         route: 'Route',
         routing_constraint_zone: 'RoutingConstraint',
-        vehicle_journey: 'VehicleJourney'
+        vehicle_journey: 'VehicleJourney',
+        dummy: 'Dummy',
       }
     end
 
     def subclasses_to_hash
       ComplianceControl.subclasses.inject(Hash.new{ |h, k| h[k] = [] } ) do |h, klass|
         h[ComplianceControl.subclass_patterns.key(klass.object_type)] << klass
-        h 
+        h
       end
     end
 
@@ -113,3 +114,4 @@ require_dependency 'vehicle_journey_control/waiting_time'
 require_dependency 'vehicle_journey_control/speed'
 require_dependency 'vehicle_journey_control/time_table'
 require_dependency 'vehicle_journey_control/vehicle_journey_at_stops'
+require_dependency 'dummy_control/dummy'

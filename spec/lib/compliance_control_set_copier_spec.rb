@@ -75,6 +75,7 @@ RSpec.describe ComplianceControlSetCopier do
         let!( :control ){ create :compliance_control,
                           compliance_control_set: cc_set,
                           compliance_control_block: cc_block,
+                          iev_enabled_check: false,
                           name: 'control' }
 
         let( :cck_set )    { ComplianceCheckSet.last }
@@ -92,7 +93,7 @@ RSpec.describe ComplianceControlSetCopier do
           expect( cck_block.condition_attributes ).to eq(cc_block.condition_attributes)
 
           # Control/Check
-          att_names = %w{  control_attributes code criticity comment origin_code }
+          att_names = %w{control_attributes code criticity comment origin_code iev_enabled_check}
           expected  = control.attributes.values_at(*att_names) << mk_name(control.name)
           actual    = cck.attributes.values_at(*(att_names << 'name'))
 

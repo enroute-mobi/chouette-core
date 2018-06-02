@@ -255,15 +255,19 @@ en:
       travel_agency: "Travel_agency"
       individual_subject_of_travel_itinerary: "Individual subject of travel itinerary"
       other_information: "Other information"
-    purchase_window:
-      color:
+    color:
+      9B9B9B: "Grey"
+      FFA070: "Light orange"
+      C67300: "Orange"
+      7F551B: "Dark orange"
+      41CCE3: "Light blue"
+      09B09C: "Green"
+      3655D7: "Blue"
+      6321A0: "Purple"
+      E796C6: "Light pink"
+      DD2DAA: "Pink"
+    line:
+      text_color:
+        "000000": Black
         9B9B9B: "Grey"
-        FFA070: "Light orange"
-        C67300: "Orange"
-        7F551B: "Dark orange"
-        41CCE3: "Light blue"
-        09B09C: "Green"
-        3655D7: "Blue"
-        6321A0: "Purple"
-        E796C6: "Light pink"
-        DD2DAA: "Pink"
+        FFFFFF: White

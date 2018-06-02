@@ -3,13 +3,10 @@ require_relative '../calendar/period'
 
 module Chouette
   class PurchaseWindow < Chouette::TridentActiveRecord
-    # include ChecksumSupport
     include ObjectidSupport
     include PeriodSupport
     include ChecksumSupport
-    extend Enumerize
-
-    enumerize :color, in: %w(#9B9B9B #FFA070 #C67300 #7F551B #41CCE3 #09B09C #3655D7 #6321A0 #E796C6 #DD2DAA)
+    include ColorSupport
 
     has_metadata
     belongs_to :referential
@@ -32,10 +29,6 @@ module Chouette
       [:contains_date]
     end
 
-    def self.colors_i18n
-      Hash[*color.values.map{|c| [I18n.t("enumerize.purchase_window.color.#{c[1..-1]}"), c]}.flatten]
-    end
-
     def local_id
       "IBOO-#{self.referential.id}-#{self.id}"
     end
@@ -51,11 +44,6 @@ module Chouette
         date_ranges.map(&:first).min,
         date_ranges.map(&:max).max,
       ]
-    end
-
-    def color
-      _color = read_attribute(:color)
-      _color.present? ? _color : nil
     end
   end
 end

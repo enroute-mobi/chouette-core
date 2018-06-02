@@ -6,6 +6,9 @@ module Chouette
     include ObjectidSupport
     include StifTransportModeEnumerations
     include StifTransportSubmodeEnumerations
+    include ColorSupport
+    extend Enumerize
+    enumerize :text_color, in: %w(#000000 #9B9B9B #FFFFFF)
 
     belongs_to :company
     belongs_to :network
@@ -117,6 +120,15 @@ module Chouette
 
     def status
       activated? ? :activated : :deactivated
+    end
+
+    def text_color
+      _text_color = read_attribute(:text_color)
+      _text_color.present? ? _text_color : nil
+    end
+
+    def self.text_colors_i18n
+      Hash[*text_color.values.map{|c| [I18n.t("enumerize.line.text_color.#{c[1..-1]}"), c]}.flatten]
     end
   end
 end

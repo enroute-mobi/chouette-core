@@ -93,7 +93,12 @@ RSpec.describe Merge do
     merge = Merge.create!(workbench: referential.workbench, referentials: [referential, referential])
     merge.merge!
 
+    expect(merge.status). to eq :successful
+
     output = merge.output.current
+
+    expect(merge.new_id). to eq output.id
+
     output.switch
 
     output.routes.each do |route|

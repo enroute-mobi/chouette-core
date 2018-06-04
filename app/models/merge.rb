@@ -44,7 +44,11 @@ class Merge < ApplicationModel
     new&.failed!
     raise e if Rails.env.test?
   ensure
-    attributes = { ended_at: Time.now }
+    attributes = { 
+      ended_at: Time.now,
+      new_id: new.try(:id) 
+    }
+
     if status == :running
       attributes[:status] = :successful
       referentials.each &:archived!

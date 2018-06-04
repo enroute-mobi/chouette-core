@@ -33,7 +33,7 @@ class ComplianceCheckSet < ApplicationModel
   end
 
   def should_call_iev?
-    true
+    compliance_checks.externals.exists?
   end
 
   def self.abort_old
@@ -85,5 +85,9 @@ class ComplianceCheckSet < ApplicationModel
     referential&.import_resources.main_resources.last
   end
 
-
+  def perform_internal_checks
+    update status: :pending
+    compliance_checks.internals.each &:process
+    update_status
+  end
 end

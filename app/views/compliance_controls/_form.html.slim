@@ -3,6 +3,7 @@
     .col-lg-12
       = f.input :name
       = f.input :type, as: :hidden
+      = f.input :iev_enabled_check, as: :hidden, input_html: { value: @compliance_control.class.iev_enabled_check }
       = f.input :compliance_control_set_id, as: :hidden, input_html: { value: @compliance_control_set.id }
       = f.input :code
       = f.input :criticity

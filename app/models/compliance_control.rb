@@ -9,8 +9,8 @@ class ComplianceControl < ApplicationModel
       ComplianceControlPolicy
     end
 
-    def block_class
-      self.parent.to_s.sub('Control', '').underscore 
+    def iev_enabled_check
+      true
     end
 
     def subclass_patterns

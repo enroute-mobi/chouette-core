@@ -19,16 +19,17 @@ module Api
 
         def notify_parent
           find_compliance_check_set
+          @compliance_check_set.perform_internal_checks
           check_parent
 
-          if  @compliance_check_set.notify_parent
+          if @compliance_check_set.notify_parent
             render json: {
               status: "ok",
               message:"#{@compliance_check_set.parent_type} (id: #{@compliance_check_set.parent_id}) successfully notified at #{l(@compliance_check_set.notified_parent_at)}"
             }
           else
             render json: {status: "error", message: @compliance_check_set.errors.full_messages }
-          end         
+          end
         end
 
         private
@@ -44,12 +45,12 @@ module Api
           @compliance_check_set = ComplianceCheckSet.find(params[:id])
         rescue ActiveRecord::RecordNotFound
           render json: {
-            status: "error", 
+            status: "error",
             message: "Record not found"
           }
-          finish_action!   
+          finish_action!
         end
       end
     end
   end
-end  
+end

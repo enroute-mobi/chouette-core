@@ -91,4 +91,32 @@ RSpec.describe ComplianceCheckSet, type: :model do
         .to change{ ComplianceControlSet.count }.by(-1)
     end
   end
+
+  describe '#perform_internal_checks' do
+    let(:compliance_check_set) { create :compliance_check_set }
+    it "should look for external checks" do
+      expect(compliance_check_set.should_call_iev?).to be_falsy
+      compliance_check_set.compliance_checks.create(criticity: :warning, name: :internal, code: "00-xx-00", origin_code: "00-xx-00", iev_enabled_check: false)
+      expect(compliance_check_set.should_call_iev?).to be_falsy
+      compliance_check_set.compliance_checks.create(criticity: :warning, name: :external, code: "00-xx-00", origin_code: "00-xx-00", iev_enabled_check: true)
+      expect(compliance_check_set.should_call_iev?).to be_truthy
+    end
+  end
+
+  describe '#perform_internal_checks' do
+    let(:compliance_check_set) { create :compliance_check_set }
+
+    it "should call #process on internals checks" do
+      compliance_check_set.compliance_checks.create(criticity: :warning, name: :internal, code: "00-xx-00", origin_code: "00-xx-00", iev_enabled_check: false)
+      compliance_check_set.compliance_checks.create(criticity: :warning, name: :external, code: "00-xx-00", origin_code: "00-xx-00", iev_enabled_check: true)
+
+      allow_any_instance_of(
+        ComplianceCheck
+      ).to receive(:process) {|c|
+        expect(c).to be_internal
+      }
+
+      compliance_check_set.perform_internal_checks
+    end
+  end
 end

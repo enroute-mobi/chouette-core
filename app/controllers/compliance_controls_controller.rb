@@ -5,7 +5,7 @@ class ComplianceControlsController < ChouetteController
   actions :all, :except => [:index]
 
   def select_type
-    @compliance_controls_by_group = ComplianceControl.subclasses.group_by {|compliance_control| compliance_control.block_class}
+    @sti_subclasses ||= ComplianceControl.subclasses_to_hash
   end
 
   def show
@@ -56,7 +56,7 @@ class ComplianceControlsController < ChouetteController
   end
 
   def compliance_control_params
-    base = [:name, :code, :origin_code, :criticity, :comment, :control_attributes, :type, :compliance_control_block_id, :compliance_control_set_id]
+    base = [:name, :code, :origin_code, :criticity, :comment, :control_attributes, :type, :compliance_control_block_id, :compliance_control_set_id, :iev_enabled_check]
     permitted = base + dynamic_attributes_params
     params.require(:compliance_control).permit(permitted)
   end

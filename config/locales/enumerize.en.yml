@@ -266,8 +266,7 @@ en:
       6321A0: "Purple"
       E796C6: "Light pink"
       DD2DAA: "Pink"
-    line:
-      text_color:
-        "000000": Black
-        9B9B9B: "Grey"
-        FFFFFF: White
+    text_color:
+      "000000": Black
+      9B9B9B: "Grey"
+      FFFFFF: White

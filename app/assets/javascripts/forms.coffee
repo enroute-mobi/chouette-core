@@ -32,7 +32,7 @@ isEdge = !isIE && !!window.StyleMedia
 
 @colorSelector = ->
   $('.form-group .dropdown.color_selector').each ->
-    selectedStatusColor = $(this).children('.dropdown-toggle').children('.fa-circle')
+    selectedStatusColor = $(this).children('.dropdown-toggle').children('.fa-circle, .fa-font')
     selectedStatusLabel = $(this).children('.dropdown-toggle')
     self = this
     $(this).on 'click', "input[type='radio']", (e) ->
@@ -46,10 +46,13 @@ isEdge = !isIE && !!window.StyleMedia
         $(selectedStatusLabel).contents().filter( -> this.nodeType == 3 ).filter(':first').text = ""
         hidden?.val ""
       else
-        $(selectedStatusColor).css('color', selectedValue)
+        actualColor = selectedValue
+        actualColor = "##{actualColor}" if selectedValue[0] != "#"
+
+        $(selectedStatusColor).css('color', actualColor)
         $(selectedStatusLabel).contents().filter( -> this.nodeType == 3 ).first().replaceWith selectedText
         hidden?.val selectedValue
-        
+
       $(self).find('.dropdown-toggle').click()
 
 $ ->

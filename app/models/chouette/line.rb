@@ -6,9 +6,11 @@ module Chouette
     include ObjectidSupport
     include StifTransportModeEnumerations
     include StifTransportSubmodeEnumerations
+
+
     include ColorSupport
-    extend Enumerize
-    enumerize :text_color, in: %w(#000000 #9B9B9B #FFFFFF)
+    color_attribute
+    color_attribute :text_color, %w(000000 9B9B9B FFFFFF)
 
     belongs_to :company
     belongs_to :network
@@ -35,11 +37,8 @@ module Chouette
     # validates_format_of :registration_number, :with => %r{\A[\d\w_\-]+\Z}, :allow_nil => true, :allow_blank => true
     validates_format_of :stable_id, :with => %r{\A[\d\w_\-]+\Z}, :allow_nil => true, :allow_blank => true
     validates_format_of :url, :with => %r{\Ahttps?:\/\/([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?\Z}, :allow_nil => true, :allow_blank => true
-    validates_format_of :color, :with => %r{\A[0-9a-fA-F]{6}\Z}, :allow_nil => true, :allow_blank => true
-    validates_format_of :text_color, :with => %r{\A[0-9a-fA-F]{6}\Z}, :allow_nil => true, :allow_blank => true
 
     validates_presence_of :name
-
 
     scope :by_text, ->(text) { where('lower(name) LIKE :t or lower(published_name) LIKE :t or lower(objectid) LIKE :t or lower(comment) LIKE :t or lower(number) LIKE :t',
       t: "%#{text.downcase}%") }
@@ -120,15 +119,6 @@ module Chouette
 
     def status
       activated? ? :activated : :deactivated
-    end
-
-    def text_color
-      _text_color = read_attribute(:text_color)
-      _text_color.present? ? _text_color : nil
-    end
-
-    def self.text_colors_i18n
-      Hash[*text_color.values.map{|c| [I18n.t("enumerize.line.text_color.#{c[1..-1]}"), c]}.flatten]
     end
   end
 end

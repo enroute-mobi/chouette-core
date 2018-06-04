@@ -6,6 +6,7 @@ class ColorSelectInput < SimpleForm::Inputs::CollectionInput
     label = if selected_color
       collection.find{|i| i.is_a?(Enumerable) && i.last == selected_color}.try(:first)
     end
+    selected_color = selected_color.present? ? "##{selected_color}" : nil
 
     out = @builder.hidden_field attribute_name, value: selected_color
     tag_name = ActionView::Helpers::Tags::Base.new( ActiveModel::Naming.param_key(object), attribute_name, :dummy ).send(:tag_name)
@@ -28,11 +29,12 @@ class ColorSelectInput < SimpleForm::Inputs::CollectionInput
     collection.each do |color|
       name = nil
       name, color = color if color.is_a?(Enumerable)
+      full_color = "##{color}"
       select += <<-eos
-        <span class="radio" key=#{color} >
+        <span class="radio" key=#{full_color} >
           <label>
             <input type='radio' class='color_selector' value='#{color}' data-for='#{tag_name}'/>
-            <span class='#{font_awesome} mr-xs' style='color: #{color == nil ? 'transparent' : color}'></span>
+            <span class='#{font_awesome} mr-xs' style='color: #{color == nil ? 'transparent' : full_color}'></span>
             #{name}
           </label>
         </span>

@@ -573,6 +573,11 @@ class Referential < ApplicationModel
     update failed_at: nil, archived_at: Time.now
   end
 
+  def merged!
+    now = Time.now
+    update failed_at: nil, archived_at: now, merged_at: now
+  end
+
   STATES.each do |s|
     define_method "#{s}?" do
       state == s

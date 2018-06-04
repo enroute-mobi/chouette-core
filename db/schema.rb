@@ -590,6 +590,7 @@ ActiveRecord::Schema.define(version: 20180528125333) do
     t.datetime "ended_at"
     t.datetime "created_at",                null: false
     t.datetime "updated_at",                null: false
+    t.integer  "new_id",          limit: 8
   end
 
   add_index "merges", ["workbench_id"], name: "index_merges_on_workbench_id", using: :btree

@@ -50,6 +50,14 @@ class Workgroup < ApplicationModel
     compliance_control_sets_labels all_compliance_control_sets.grep(/^after_import/)
   end
 
+  def before_merge_compliance_control_sets
+    compliance_control_sets_labels all_compliance_control_sets.grep(/^before_merge/)
+  end
+
+  def after_merge_compliance_control_sets
+    compliance_control_sets_labels all_compliance_control_sets.grep(/^after_merge/)
+  end
+
   private
   def compliance_control_sets_labels(keys)
     keys.inject({}) do |h, k|

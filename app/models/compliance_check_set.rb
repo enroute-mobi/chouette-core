@@ -22,6 +22,8 @@ class ComplianceCheckSet < ApplicationModel
 
   scope :blocked, -> { where('created_at < ? AND status = ?', 4.hours.ago, 'running') }
 
+  scope :unfinished, -> { where 'status NOT IN (?)', finished_statuses }
+
   def self.finished_statuses
     %w(successful failed warning aborted canceled)
   end
@@ -39,8 +41,8 @@ class ComplianceCheckSet < ApplicationModel
   end
 
   def notify_parent
-    if parent
-      # parent.child_change
+    if parent && notified_parent_at.nil?
+      parent.child_change
       update(notified_parent_at: DateTime.now)
     end
   end

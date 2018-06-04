@@ -2,18 +2,58 @@ class Merge < ApplicationModel
   extend Enumerize
 
   belongs_to :workbench
+  belongs_to :new, class_name: 'Referential'
   validates :workbench, presence: true
 
   enumerize :status, in: %w[new pending successful failed running], default: :new
 
   has_array_of :referentials, class_name: 'Referential'
+  has_many :compliance_check_sets, foreign_key: :parent_id
 
   delegate :output, to: :workbench
 
   after_commit :merge, :on => :create
 
   def merge
-    MergeWorker.perform_async(id)
+    # Step 1 : Before
+    update_column :started_at, Time.now
+    update_column :status, :running
+
+    if before_merge_compliance_control_sets.present?
+      create_before_merge_compliance_check_sets
+    else
+      MergeWorker.perform_async(id)
+    end
+  end
+
+  def before_merge_compliance_control_sets
+    workbench.workgroup.before_merge_compliance_control_sets.map do |key, label|
+      workbench.compliance_control_set(key)
+    end.compact
+  end
+
+  def after_merge_compliance_control_sets
+    workbench.workgroup.after_merge_compliance_control_sets.map do |key, label|
+      workbench.compliance_control_set(key)
+    end.compact
+  end
+
+  def create_before_merge_compliance_check_sets
+    referentials.each do |referential|
+      before_merge_compliance_control_sets.each do |compliance_control_set|
+        create_compliance_check_set compliance_control_set, referential
+      end
+    end
+  end
+
+  def create_after_merge_compliance_check_sets
+    after_merge_compliance_control_sets.each do |compliance_control_set|
+      create_compliance_check_set compliance_control_set, new
+    end
+  end
+
+  def create_compliance_check_set(control_set, referential)
+    ComplianceControlSetCopyWorker.perform_async control_set.id, referential.id, self.class.name, id
   end
 
   def name
@@ -24,11 +64,7 @@ class Merge < ApplicationModel
     referentials.map(&:name).to_sentence
   end
 
-  attr_reader :new
-
   def merge!
-    update started_at: Time.now, status: :running
-
     prepare_new
 
     referentials.each do |referential|
@@ -37,19 +73,16 @@ class Merge < ApplicationModel
 
     clean_new
 
-    save_current
+    if after_merge_compliance_control_sets.present?
+      create_after_merge_compliance_check_sets
+    else
+      save_current
+    end
   rescue => e
     Rails.logger.error "Merge failed: #{e} #{e.backtrace.join("\n")}"
-    update status: :failed
+    update status: :failed, ended_at: Time.now
     new&.failed!
     raise e if Rails.env.test?
-  ensure
-    attributes = { ended_at: Time.now }
-    if status == :running
-      attributes[:status] = :successful
-      referentials.each &:archived!
-    end
-    update attributes
   end
 
   def prepare_new
@@ -82,7 +115,7 @@ class Merge < ApplicationModel
     new.save!
 
     output.update new: new
-    @new = new
+    update new: new
   end
 
   def clean_new
@@ -510,18 +543,36 @@ class Merge < ApplicationModel
   def save_current
     output.update current: new, new: nil
     output.current.update referential_suite: output, ready: true
+    referentials.each &:merged!
 
-    referentials.update_all merged_at: created_at, archived_at: created_at
-  end
-
-  def fixme_functional_scope
-    if attribute = workbench.organisation.sso_attributes.try(:[], "functional_scope")
-      JSON.parse(attribute)
-    end
+    update status: :successful, ended_at: Time.now
   end
 
   def child_change
+    Rails.logger.debug "Merge #{self.inspect} child_change"
 
+    unless new
+      # Before Merge validations
+
+      # Wait next child change if one of the check isn't finished
+      return if compliance_check_sets.unfinished.exists?
+
+      if compliance_check_sets.all? { |c| c.status.in? %w{successful warning} }
+        # Next Step, let's merge
+        MergeWorker.perform_async(id)
+      else
+        update status: :failed, ended_at: Time.now
+      end
+    else
+      # After Merge validation
+
+      return if compliance_check_sets.unfinished.exists?
+      if compliance_check_sets.all? { |c| c.status.in? %w{successful warning} }
+        save_current
+      else
+        update status: :failed, ended_at: Time.now
+      end
+    end
   end
 
   class MetadatasMerger

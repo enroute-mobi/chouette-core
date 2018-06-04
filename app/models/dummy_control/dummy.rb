@@ -14,7 +14,6 @@ module DummyControl
 
     def self.resolve_compound_status status1, status2
       # Available statuses: (OK ERROR WARNING IGNORED)
-      # XXX SPEC
       return [status1, status2].compact.last if status1.nil? || status2.nil?
       sorted_statuses = %w(IGNORED OK WARNING ERROR)
       sorted_statuses[[status1, status2].map{|k| sorted_statuses.index(k)}.max]
@@ -37,6 +36,7 @@ module DummyControl
         unless resources.present?
           referential.lines.each do |line|
             compliance_check.compliance_check_set.compliance_check_resources.create do |res|
+              res.reference = line.objectid
               res.resource_type = "line"
               res.name = line.name
             end

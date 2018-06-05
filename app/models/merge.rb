@@ -575,6 +575,12 @@ class Merge < ApplicationModel
     end
   end
 
+  def compliance_check_set(key, referential = nil)
+    referential ||= new
+    control = workbench.compliance_control_set(key)
+    compliance_check_sets.where(compliance_control_set_id: control.id).find_by(referential_id: referential.id) if control
+  end
+
   class MetadatasMerger
 
     attr_reader :merge_metadatas, :referential

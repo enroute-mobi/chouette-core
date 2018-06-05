@@ -44,6 +44,15 @@ RSpec.describe CompanyControl::NameIsPresent, :type => :model do
         resource = ComplianceCheckResource.last
         expect(resource.status).to eq "WARNING"
       end
+
+      it "should create a message" do
+        expect{compliance_check.process}.to change{ComplianceCheckMessage.count}.by 1
+        message = ComplianceCheckMessage.last
+        expect(message.status).to eq "WARNING"
+        expect(message.compliance_check_set).to eq compliance_check_set
+        expect(message.compliance_check).to eq compliance_check
+        expect(message.compliance_check_resource).to eq ComplianceCheckResource.last
+      end
     end
 
     context "when the criticity is error" do
@@ -51,6 +60,15 @@ RSpec.describe CompanyControl::NameIsPresent, :type => :model do
         expect{compliance_check.process}.to change{ComplianceCheckResource.count}.by 1
         resource = ComplianceCheckResource.last
         expect(resource.status).to eq "ERROR"
+      end
+
+      it "should create a message" do
+        expect{compliance_check.process}.to change{ComplianceCheckMessage.count}.by 1
+        message = ComplianceCheckMessage.last
+        expect(message.status).to eq "ERROR"
+        expect(message.compliance_check_set).to eq compliance_check_set
+        expect(message.compliance_check).to eq compliance_check
+        expect(message.compliance_check_resource).to eq ComplianceCheckResource.last
       end
     end
   end

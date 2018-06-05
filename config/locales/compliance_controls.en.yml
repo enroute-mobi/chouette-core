@@ -38,7 +38,7 @@ en:
         route: Route
         routing_constraint_zone: Routing constraint zone
         journey_pattern: Journey pattern
-        vehicle_journey: Vehicle journey    
+        vehicle_journey: Vehicle journey
     actions:
       new: Add
       edit: Edit
@@ -177,7 +177,10 @@ en:
       3_shape_3: "Le tracé de l'itinéraire %{source_objectid} est en écart avec la voirie sur %{error_value} sections"
     dummy_control/dummy:
       description: "Test control"
-      prerequisite: "Aucun"
+      prerequisite: "None"
+    company_control/name_is_present:
+      description: "A company must have a name"
+      prerequisite: "None"
 
   activerecord:
     models:
@@ -236,6 +239,8 @@ en:
         one: "Attribute uniqueness of an object in a line"
       dummy_control/dummy:
         one: "Dummy"
+      company_control/name_is_present:
+        one: "Company name is present"
 
     attributes:
       compliance_control:

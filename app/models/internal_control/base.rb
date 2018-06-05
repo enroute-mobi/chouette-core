@@ -1,9 +1,19 @@
 module InternalControl
   class Base < ComplianceControl
+    extend Rails.application.routes.url_helpers
+
     enumerize :criticity, in: %i(warning error), scope: true, default: :error
 
     def self.iev_enabled_check
       false
+    end
+
+    def self.optimize_routes_generation?
+      false
+    end
+
+    def self.url_options
+      {}
     end
 
     def self.resolve_compound_status status1, status2
@@ -15,6 +25,31 @@ module InternalControl
 
     def self.status_ok_if test, compliance_check
       test ? "OK" : compliance_check.criticity.upcase
+    end
+
+    def self.message_key
+      self.default_code.downcase.underscore
+    end
+
+    def self.resource_attributes compliance_check, model
+      label_attr = :name
+      {
+        label: model.send(label_attr),
+        objectid: model.objectid,
+        attribute: label_attr,
+        object_path: object_path(compliance_check, model)
+      }
+    end
+
+    def self.create_message_for_model compliance_check, model, status, message_attributes
+      compliance_check.compliance_check_set.compliance_check_messages.create do |message|
+        message.compliance_check_resource = find_or_create_resource compliance_check, model
+        message.compliance_check = compliance_check
+        message.message_attributes = message_attributes
+        message.message_key = message_key
+        message.status = status
+        message.resource_attributes = resource_attributes(compliance_check, model)
+      end
     end
 
     def self.find_or_create_resource compliance_check, model

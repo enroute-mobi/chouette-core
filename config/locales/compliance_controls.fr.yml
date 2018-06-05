@@ -175,6 +175,9 @@ fr:
     dummy_control/dummy:
       description: "Controle de test"
       prerequisite: "Aucun"
+    company_control/name_is_present:
+      description: "Un transporteur doit avoir un nom commercial"
+      prerequisite: "Aucun"
 
   activerecord:
     models:
@@ -233,6 +236,8 @@ fr:
         one: "Unicité d'un attribut d'un objet dans une ligne"
       dummy_control/dummy:
         one: "Dummy"
+      company_control/name_is_present:
+        one: "Présence du nom des transporteurs"
 
     attributes:
       compliance_control:

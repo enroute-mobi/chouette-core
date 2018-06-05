@@ -6,14 +6,24 @@ module DummyControl
 
     def self.default_code; "00-Dummy-00" end
 
-    def self.check compliance_check
-      dummy_status = compliance_check.control_attributes["status"]
-      referential = compliance_check.referential
-      referential.switch do
-        referential.lines.each do |line|
-          update_model_with_status compliance_check, line, dummy_status
-        end
-      end
+    def self.object_path compliance_check, line
+      line_referential_line_path(line.line_referential, line)
+    end
+
+    def self.collection referential
+      referential.lines
+    end
+
+    def self.compliance_test compliance_check, _
+      %w(ignored ok).include? compliance_check.control_attributes["status"].downcase
+    end
+
+    def self.status_ok_if test, compliance_check
+      compliance_check.control_attributes["status"]
+    end
+
+    def self.custom_message_attributes compliance_check, line
+      {name: line.name}
     end
   end
 end

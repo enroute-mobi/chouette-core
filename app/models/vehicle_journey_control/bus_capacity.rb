@@ -10,11 +10,11 @@ module VehicleJourneyControl
       referential.vehicle_journeys
     end
 
-    def self.compliance_test vehicle_journey
+    def self.compliance_test compliance_check, vehicle_journey
       vehicle_journey.custom_fields[:capacity]&.value.present?
     end
 
-    def self.message_attributes vehicle_journey
+    def self.custom_message_attributes compliance_check, vehicle_journey
       {vehicle_journey_name: vehicle_journey.published_journey_name}
     end
 

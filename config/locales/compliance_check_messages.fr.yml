@@ -30,7 +30,9 @@ fr:
     3_shape_1: "Tracé %{source_objectid} : le tracé passe trop loin de l'arrêt %{target_0_label} (%{target_0_objectid}) : %{error_value} > %{reference_value}"
     3_shape_2: "Tracé %{source_objectid} : le tracé n'est pas défini entre les arrêts %{target_0_label} (%{target_0_objectid}) et %{target_1_label} (%{target_1_objectid})"
     3_shape_3: "Le tracé de l'itinéraire %{source_objectid} est en écart avec la voirie sur %{error_value} sections"
+    00_dummy_00: "Message sur la ligne \"#%{name}\""
     3_company_1: "Le transporteur #%{company_id} doit avoir un nom commercial"
+    3_vehiclejourney_9: "La course \"%{vehicle_journey_name}\" doit avoir une capacité de bus"
     compliance_check_set_errors: erreurs_validation
   activerecord:
     attributes:

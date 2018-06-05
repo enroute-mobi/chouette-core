@@ -10,11 +10,11 @@ module CompanyControl
       Chouette::Company.where id: referential.lines.pluck(:company_id)
     end
 
-    def self.compliance_test company
+    def self.compliance_test compliance_check, company
       company.name.present?
     end
 
-    def self.message_attributes company
+    def self.custom_message_attributes compliance_check, company
       {company_id: company.id}
     end
   end

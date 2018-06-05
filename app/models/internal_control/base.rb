@@ -20,11 +20,11 @@ module InternalControl
       referential = compliance_check.referential
       referential.switch do
         collection(referential).each do |obj|
-          valid = compliance_test(obj)
+          valid = compliance_test(compliance_check, obj)
           status = status_ok_if(valid, compliance_check)
           update_model_with_status compliance_check, obj, status
           unless valid
-            create_message_for_model compliance_check, obj, status, message_attributes(obj)
+            create_message_for_model compliance_check, obj, status, message_attributes(compliance_check, obj)
           end
         end
       end
@@ -52,6 +52,18 @@ module InternalControl
         attribute: label_attr,
         object_path: object_path(compliance_check, model)
       }
+    end
+
+    def self.custom_message_attributes compliance_check, vehicle_journey
+      {}
+    end
+
+    def self.message_attributes compliance_check, obj
+      {
+        test_id: compliance_check.origin_code,
+        source_objectid: obj.objectid,
+        source_object_path: object_path(compliance_check, obj)
+      }.update(custom_message_attributes(compliance_check, obj))
     end
 
     def self.create_message_for_model compliance_check, model, status, message_attributes

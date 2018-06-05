@@ -6,18 +6,16 @@ module CompanyControl
       line_referential_company_path(company.line_referential, company)
     end
 
-    def self.check compliance_check
-      referential = compliance_check.referential
-      referential.switch do
-        referential.companies.each do |company|
-          valid = company.name.present?
-          status = status_ok_if(valid, compliance_check)
-          update_model_with_status compliance_check, company, status
-          unless valid
-            create_message_for_model compliance_check, company, status, company_id: company.id
-          end
-        end
-      end
+    def self.collection referential
+      referential.companies
+    end
+
+    def self.compliance_test company
+      company.name.present?
+    end
+
+    def self.message_attributes company
+      {company_id: company.id}
     end
   end
 end

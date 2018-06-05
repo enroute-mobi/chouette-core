@@ -16,6 +16,20 @@ module InternalControl
       {}
     end
 
+    def self.check compliance_check
+      referential = compliance_check.referential
+      referential.switch do
+        collection(referential).each do |obj|
+          valid = compliance_test(obj)
+          status = status_ok_if(valid, compliance_check)
+          update_model_with_status compliance_check, obj, status
+          unless valid
+            create_message_for_model compliance_check, obj, status, message_attributes(obj)
+          end
+        end
+      end
+    end
+
     def self.resolve_compound_status status1, status2
       # Available statuses: (OK ERROR WARNING IGNORED)
       return [status1, status2].compact.last if status1.nil? || status2.nil?

@@ -21,7 +21,7 @@
               ), \
               TableBuilderHelper::Column.new( \
                 key: :color, \
-                attribute: Proc.new { |tt| tt.color ? content_tag(:span, '', class: 'fa fa-circle', style: "color:#{tt.color}") : '-' }\
+                attribute: Proc.new { |tt| tt.color ? content_tag(:span, '', class: 'fa fa-circle', style: "color:##{tt.color}") : '-' }\
               ), \
               TableBuilderHelper::Column.new( \
                 key: :bounding_dates, \

@@ -550,28 +550,19 @@ class Merge < ApplicationModel
 
   def child_change
     Rails.logger.debug "Merge #{self.inspect} child_change"
+    # Wait next child change if one of the check isn't finished
+    return if compliance_check_sets.unfinished.exists?
 
-    unless new
-      # Before Merge validations
-
-      # Wait next child change if one of the check isn't finished
-      return if compliance_check_sets.unfinished.exists?
-
-      if compliance_check_sets.all? { |c| c.status.in? %w{successful warning} }
-        # Next Step, let's merge
-        MergeWorker.perform_async(id)
-      else
-        update status: :failed, ended_at: Time.now
-      end
-    else
-      # After Merge validation
-
-      return if compliance_check_sets.unfinished.exists?
-      if compliance_check_sets.all? { |c| c.status.in? %w{successful warning} }
+    if compliance_check_sets.all? { |c| c.status.in? %w{successful warning} }
+      if new
+        # We are done
         save_current
       else
-        update status: :failed, ended_at: Time.now
+        # We just passed 'before' validations
+        MergeWorker.perform_async(id)
       end
+    else
+      update status: :failed, ended_at: Time.now
     end
   end
 

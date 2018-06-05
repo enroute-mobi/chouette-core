@@ -46,7 +46,6 @@ module InternalControl
     end
 
     def self.resource_attributes compliance_check, model
-      label_attr = :name
       {
         label: model.send(label_attr),
         objectid: model.objectid,
@@ -66,11 +65,15 @@ module InternalControl
       end
     end
 
+    def self.label_attr
+      :name
+    end
+
     def self.find_or_create_resource compliance_check, model
       compliance_check.compliance_check_set.compliance_check_resources.find_or_create_by(
         reference: model.objectid,
         resource_type: model.class.model_name.singular,
-        name: model.name
+        name: model.send(label_attr)
       )
     end
 

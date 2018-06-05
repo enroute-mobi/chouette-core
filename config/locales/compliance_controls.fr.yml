@@ -123,9 +123,14 @@ fr:
       prerequisite: "Aucun"
     vehicle_journey_control/vehicle_journey_at_stops:
       messages:
-        3_vehiclejourney_5_1: "La course %{source_objectid} a un horaire d'arrivé %{error_value} supérieur à l'horaire de départ %{reference_value} à l'arrêt %{target_0_label} (%{target_0_objectid})"
+        3_vehiclejourney_5_1: "La course %{source_objectid} a un horaire d'arrivée %{error_value} supérieur à l'horaire de départ %{reference_value} à l'arrêt %{target_0_label} (%{target_0_objectid})"
         3_vehiclejourney_5_2: "La course %{source_objectid} a un horaire de départ %{error_value} à l'arrêt %{target_0_label} (%{target_0_objectid}) supérieur à l'horaire d'arrivé %{reference_value} à l'arrêt suivant"
       description: "L'horaire d'arrivée à un arrêt doit être antérieur à l'horaire de départ de cet arrêt ET les horaires de départ aux arrêts doivent être dans l'ordre chronologique croissant."
+      prerequisite: "Aucun"
+    vehicle_journey_control/bus_capacity:
+      messages:
+        3_vehiclejourney_9: "La course %{vehicle_journey_name} doit avoir une capacité de bus"
+      description: "Une course doit avoir une capacité de bus"
       prerequisite: "Aucun"
     routing_constraint_zone_control/unactivated_stop_point:
       messages:
@@ -178,6 +183,8 @@ fr:
     company_control/name_is_present:
       description: "Un transporteur doit avoir un nom commercial"
       prerequisite: "Aucun"
+      messages:
+        3_company_1: "Le transporteur #%{company_id} doit avoir un nom commercial"
 
   activerecord:
     models:

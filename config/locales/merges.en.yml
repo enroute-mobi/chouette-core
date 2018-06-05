@@ -30,3 +30,5 @@ fr:
         status: "Status"
         creator: "Creator"
         referentials: "Data spaces"
+        new: Finalized dataset
+        operator: User

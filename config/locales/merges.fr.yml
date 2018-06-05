@@ -30,3 +30,5 @@ fr:
         status: "Etat"
         creator: "Demandeur"
         referentials: "Jeux de données"
+        new: Jeu de données finalisé
+        operator: Utilisateur

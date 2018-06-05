@@ -26,7 +26,7 @@ class ComplianceControl < ApplicationModel
     end
 
     def subclasses_to_hash
-      ComplianceControl.subclasses.inject(Hash.new{ |h, k| h[k] = [] } ) do |h, klass|
+      ComplianceControl.subclasses.select{|k| k.default_code.present?}.inject(Hash.new{ |h, k| h[k] = [] } ) do |h, klass|
         h[ComplianceControl.subclass_patterns.key(klass.object_type)] << klass
         h
       end

@@ -135,6 +135,11 @@ fr:
         3_vehiclejourney_9: "La course %{vehicle_journey_name} doit avoir une capacité de bus"
       description: "Une course doit avoir une capacité de bus"
       prerequisite: "Aucun"
+    vehicle_journey_control/purchase_window:
+      messages:
+        3_vehiclejourney_6: "La course %{vehicle_journey_name} doit avoir au moins un calendrier de vente"
+      description: "Une course doit avoir au moins un calendrier de vente"
+      prerequisite: "Aucun"
     routing_constraint_zone_control/unactivated_stop_point:
       messages:
         3_routingconstraint_1: "L'ITL %{source_objectid} référence un arrêt (ZDEp) désactivé %{target_0_label} (%{target_0_objectid})"

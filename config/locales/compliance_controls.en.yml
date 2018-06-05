@@ -134,7 +134,12 @@ en:
       messages:
         3_vehiclejourney_9: "The vehicle journey %{vehicle_journey_name} lacks a bus capacity"
       description: "All journeys must have a bus capacity"
-      prerequisite: "Aucun"
+      prerequisite: "None"
+    vehicle_journey_control/purchse_window:
+      messages:
+        3_vehiclejourney_6: "The vehicle journey %{vehicle_journey_name} lacks a purchase window"
+      description: "All journeys must have at least one purchase window"
+      prerequisite: "None"
     routing_constraint_zone_control/vehicle_journey_at_stops:
       messages:
         3_routingconstraint_1: "The Routing Constraint Zone %{source_objectid} references an unactivated stop point (ZDEp) %{target_0_label} (%{target_0_objectid})"

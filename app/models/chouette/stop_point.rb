@@ -28,6 +28,8 @@ module Chouette
 
     scope :default_order, -> { order("position") }
 
+    scope :commercial, -> { joins(:stop_area).where("stop_areas.kind = ?", "commercial") }
+
     delegate :name, :registration_number, :kind, :area_type, to: :stop_area_light
 
     before_destroy :remove_dependent_journey_pattern_stop_points

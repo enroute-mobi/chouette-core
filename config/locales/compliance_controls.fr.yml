@@ -93,6 +93,11 @@ fr:
         3_route_10: "L'itinéraire %{source_objectid} référence un arrêt (ZDEp) désactivé %{target_0_label} (%{target_0_objectid})"
       description: "Les arrêts d'un itinéraire ne doivent pas être désactivés"
       prerequisite: "Aucun"
+    route_control/stop_points_boarding_and_alighting:
+      messages:
+        3_route_12: "Tous les arrêts commerciaux de l'itinéraire %{source_objectid} n'ont pas une montée / descente interdites"
+      description: "Tous les arrêts commerciaux d'un itinéraire doivent avoir une montée / descente interdites"
+      prerequisite: "Aucun"
     journey_pattern_control/duplicates:
       messages:
         3_journeypattern_1: "La mission %{source_objectid} est identique à la mission %{target_0_objectid}"
@@ -212,6 +217,8 @@ fr:
         one: "Itinéraire & arrêt désactivé"
       route_control/stop_points_in_journey_pattern:
         one: "Utilisation des arrêts par les missions"
+      route_control/stop_points_boarding_and_alighting:
+        one: "Les arrêts commerciaux ont une montée / descente interdites"
       journey_pattern_control/duplicates:
         one: "Doublon de missions dans une ligne"
       journey_pattern_control/vehicle_journey:

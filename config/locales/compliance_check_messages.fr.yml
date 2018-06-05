@@ -9,6 +9,7 @@ fr:
     3_route_8: "l'arrêt %{target_0_label} (%{target_0_objectid}) de l'itinéraire %{source_objectid} n'est desservi par aucune mission"
     3_route_9: "L'itinéraire %{source_objectid} n'a aucune mission desservant l'ensemble de ses arrêts"
     3_route_10: "L'itinéraire %{source_objectid} référence un arrêt (ZDEp) désactivé %{target_0_label} (%{target_0_objectid})"
+    3_route_12: "Tous les arrêts commerciaux de l'itinéraire %{source_objectid} n'ont pas une montée / descente interdites"
     3_journeypattern_1: "La mission %{source_objectid} est identique à la mission %{target_0_objectid}"
     3_journeypattern_2: "La mission %{source_objectid} n'a pas de course"
     3_vehiclejourney_1: "Sur la course %{source_objectid}, le temps d'attente %{error_value} à l'arrêt %{target_0_label} (%{target_0_objectid}) est supérieur au seuil toléré (%{reference_value})"

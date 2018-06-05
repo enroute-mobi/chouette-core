@@ -11,6 +11,7 @@ en:
     3_route_10: "L'itinéraire %{source_objectid} référence un arrêt (ZDEp) désactivé %{target_0_label} (%{target_0_objectid})"
     3_journeypattern_1: "The journey pattern with objectid %{source_objectid} is identical with another one %{target_0_objectid}"
     3_journeypattern_2: "The journey pattern with %{source_objectid} objectid doesn't have any vehicle journey"
+    3_journeypattern_3: "The journey pattern with %{source_objectid} objectid has less than 2 stop points"
     3_vehiclejourney_1: "On the following vehicle journey %{source_objectid}, the waiting time %{error_value} a this stop point %{target_0_label} (%{target_0_objectid}) is greater than the threshold (%{reference_value})"
     3_vehiclejourney_2_1: "On the following vehicle journey %{source_objectid}, the computed speed %{error_value} between the stop points %{target_0_label} (%{target_0_objectid}) and %{target_1_label} (%{target_1_objectid}) is greater than the threshold (%{reference_value})"
     3_vehiclejourney_2_2: "On the following vehicle journey %{source_objectid}, the computed speed %{error_value} between the stop points %{target_0_label} (%{target_0_objectid}) and %{target_1_label} (%{target_1_objectid}) is smaller than the threshold (%{reference_value})"

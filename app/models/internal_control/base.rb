@@ -20,10 +20,10 @@ module InternalControl
       referential = compliance_check.referential
       referential.switch do
         collection(referential).each do |obj|
-          valid = compliance_test(compliance_check, obj)
-          status = status_ok_if(valid, compliance_check)
+          compliant = compliance_test(compliance_check, obj)
+          status = status_ok_if(compliant, compliance_check)
           update_model_with_status compliance_check, obj, status
-          unless valid
+          unless compliant
             create_message_for_model compliance_check, obj, status, message_attributes(compliance_check, obj)
           end
         end
@@ -37,8 +37,8 @@ module InternalControl
       sorted_statuses[[status1, status2].map{|k| sorted_statuses.index(k)}.max]
     end
 
-    def self.status_ok_if test, compliance_check
-      test ? "OK" : compliance_check.criticity.upcase
+    def self.status_ok_if compliant, compliance_check
+      compliant ? "OK" : compliance_check.criticity.upcase
     end
 
     def self.message_key
@@ -103,16 +103,10 @@ module InternalControl
           warning_count: 0,
           error_count: 0
         }
-        iev_metrics = resource.metrics["iev_metrics"]
-        if iev_metrics
-          iev_metrics = eval iev_metrics
-        else
-          iev_metrics = resource.metrics.dup
-          resource.metrics["iev_metrics"] = iev_metrics
-        end
+
         new_status = resolve_compound_status resource.status, status
-        metrics = resource.metrics
-        metrics[metrics_key(new_status)] = [iev_metrics[metrics_key(new_status)].to_i, 0].max + 1
+        metrics = resource.metrics.symbolize_keys
+        metrics[metrics_key(status)] = [metrics[metrics_key(status)].to_i, 0].max + 1
         resource.update! status: new_status, metrics: metrics
       end
     end

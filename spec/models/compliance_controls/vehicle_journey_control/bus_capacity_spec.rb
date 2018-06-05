@@ -8,7 +8,8 @@ RSpec.describe VehicleJourneyControl::BusCapacity, :type => :model do
   let(:custom_field){ create :custom_field, field_type: :string, code: :capacity, name: "bus capacity", resource_type: "VehicleJourney", workgroup: workgroup }
   let(:succeeding){ create :vehicle_journey, custom_field_values: {capacity: "12"}, journey_pattern: journey_pattern }
   let(:failing){ create :vehicle_journey, journey_pattern: journey_pattern }
-  let(:failing_too){ create :vehicle_journey, custom_field_values: {capacity: ""} }
+  let(:failing_too){ create :vehicle_journey, journey_pattern: journey_pattern, custom_field_values: {capacity: ""} }
+  let(:failing_too_too){ create :vehicle_journey, custom_field_values: {capacity: ""} }
   let(:control_attributes){
     {}
   }
@@ -28,6 +29,7 @@ RSpec.describe VehicleJourneyControl::BusCapacity, :type => :model do
       custom_field
       failing
       failing_too
+      failing_too_too
       succeeding
       expect(succeeding.custom_fields[:capacity]).to be_present
     end
@@ -37,9 +39,11 @@ RSpec.describe VehicleJourneyControl::BusCapacity, :type => :model do
     expect{compliance_check.process}.to change{ComplianceCheckResource.count}.by 2
     resource = ComplianceCheckResource.where(reference: succeeding.route.line.objectid).last
     expect(resource.status).to eq "ERROR"
-    expect(resource.compliance_check_messages.size).to eq 1
+    expect(resource.compliance_check_messages.size).to eq 2
     expect(resource.compliance_check_messages.last.status).to eq "ERROR"
-    resource = ComplianceCheckResource.where(reference: failing_too.line.objectid).last
+    expect(resource.metrics["error_count"]).to eq "2"
+    expect(resource.metrics["ok_count"]).to eq "1"
+    resource = ComplianceCheckResource.where(reference: failing_too_too.line.objectid).last
     expect(resource.status).to eq "ERROR"
     expect(resource.compliance_check_messages.size).to eq 1
     expect(resource.compliance_check_messages.last.status).to eq "ERROR"

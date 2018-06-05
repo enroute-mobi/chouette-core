@@ -105,6 +105,11 @@ fr:
         3_journeypattern_2: "La mission %{source_objectid} n'a pas de course"
       description: "Une mission doit avoir au moins une course"
       prerequisite: "Aucun"
+    journey_pattern_control/minimum_length:
+      messages:
+        3_journeypattern_3: "La mission %{source_objectid} n'a pas suffisament d'arrêts (minimum 2 arrêts requis)"
+      description: "Une mission doit contenir au moins 2 arrêts"
+      prerequisite: "Aucun"
     vehicle_journey_control/waiting_time:
       messages:
         3_vehiclejourney_1: "Sur la course %{source_objectid}, le temps d'attente %{error_value} à l'arrêt %{target_0_label} (%{target_0_objectid}) est supérieur au seuil toléré (%{reference_value})"
@@ -233,6 +238,8 @@ fr:
         one: "Doublon de missions dans une ligne"
       journey_pattern_control/vehicle_journey:
         one: "Présence de courses"
+      journey_pattern_control/minimum_length:
+        one: "Définition minimale d'une mission"
       vehicle_journey_control/waiting_time:
         one: "La durée d’attente à un arrêt ne doit pas être trop grande"
       vehicle_journey_control/speed:

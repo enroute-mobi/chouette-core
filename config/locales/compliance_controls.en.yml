@@ -105,6 +105,11 @@ en:
         3_journeypattern_2: "The journey pattern with %{source_objectid} objectid doesn't have any vehicle journey"
       description: "A journey pattern must have at least one vehicle journey"
       prerequisite: "None"
+    journey_pattern_control/minimum_length:
+      messages:
+        3_journeypattern_3: "The journey pattern with %{source_objectid} objectid has less than 2 stop points"
+      description: "A journey pattern must have at least has less than 2 stop points"
+      prerequisite: "None"
     vehicle_journey_control/waiting_time:
       messages:
         3_vehiclejourney_1: "On the following vehicle journey %{source_objectid}, the waiting time %{error_value} a this stop point %{target_0_label} (%{target_0_objectid}) is greater than the threshold (%{reference_value})"
@@ -235,6 +240,8 @@ en:
         one: "Journey patterns duplicates in a line"
       journey_pattern_control/vehicle_journey:
         one: "Presence of vehicle journeys"
+      journey_pattern_control/minimum_length:
+        one: ""Minimum length of a journey pattern"
       vehicle_journey_control/waiting_time:
         one: "The wating time at a stop point should'nt be too long"
       vehicle_journey_control/speed:
@@ -254,9 +261,9 @@ en:
       routing_constraint_zone_control/vehicle_journey_at_stops:
         one: "Incresing chronology of the vehicle journey at stops"
       routing_constraint_zone_control/maximum_length:
-        one: "Maximum length of s routing contraint zone"
+        one: "Maximum length of a routing contraint zone"
       routing_constraint_zone_control/minimum_length:
-        one: "Minimum length of s routing contraint zone"
+        one: "Minimum length of a routing contraint zone"
       routing_constraint_zone_control/unactivated_stop_point:
         one: "Unactivated stop points"
       line_control/route:

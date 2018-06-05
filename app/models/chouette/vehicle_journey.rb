@@ -24,6 +24,8 @@ module Chouette
     belongs_to :journey_pattern_only_objectid, -> {select("journey_patterns.objectid")}, class_name: "Chouette::JourneyPattern", foreign_key: :journey_pattern_id
     has_many :stop_areas, through: :journey_pattern
 
+    delegate :line, to: :route
+
     has_and_belongs_to_many :footnotes, :class_name => 'Chouette::Footnote'
     has_and_belongs_to_many :purchase_windows, :class_name => 'Chouette::PurchaseWindow'
     has_array_of :ignored_routing_contraint_zones, class_name: 'Chouette::RoutingConstraintZone'

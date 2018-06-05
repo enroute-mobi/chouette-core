@@ -55,13 +55,15 @@ module InternalControl
     end
 
     def self.create_message_for_model compliance_check, model, status, message_attributes
-      compliance_check.compliance_check_set.compliance_check_messages.create do |message|
-        message.compliance_check_resource = find_or_create_resource compliance_check, model
-        message.compliance_check = compliance_check
-        message.message_attributes = message_attributes
-        message.message_key = message_key
-        message.status = status
-        message.resource_attributes = resource_attributes(compliance_check, model)
+      find_or_create_resources(compliance_check, model).each do |resource|
+        compliance_check.compliance_check_set.compliance_check_messages.create do |message|
+          message.compliance_check_resource = resource
+          message.compliance_check = compliance_check
+          message.message_attributes = message_attributes
+          message.message_key = message_key
+          message.status = status
+          message.resource_attributes = resource_attributes(compliance_check, model)
+        end
       end
     end
 
@@ -69,33 +71,38 @@ module InternalControl
       :name
     end
 
-    def self.find_or_create_resource compliance_check, model
-      compliance_check.compliance_check_set.compliance_check_resources.find_or_create_by(
-        reference: model.objectid,
-        resource_type: model.class.model_name.singular,
-        name: model.send(label_attr)
-      )
+    def self.find_or_create_resources compliance_check, model
+      lines = [model] if model.is_a?(Chouette::Line)
+      lines ||= model.respond_to?(:lines) ? model.lines : [model.line]
+      lines.map do |line|
+        compliance_check.compliance_check_set.compliance_check_resources.find_or_create_by(
+          reference: line.objectid,
+          resource_type: line.class.model_name.singular,
+          name: line.name
+        )
+      end
     end
 
     def self.update_model_with_status compliance_check, model, status
-      resource = find_or_create_resource compliance_check, model
-      resource.metrics ||= {
-        uncheck_count: 0,
-        ok_count: 0,
-        warning_count: 0,
-        error_count: 0
-      }
-      iev_metrics = resource.metrics["iev_metrics"]
-      if iev_metrics
-        iev_metrics = eval iev_metrics
-      else
-        iev_metrics = resource.metrics.dup
-        resource.metrics["iev_metrics"] = iev_metrics
+      find_or_create_resources(compliance_check, model).each do |resource|
+        resource.metrics ||= {
+          uncheck_count: 0,
+          ok_count: 0,
+          warning_count: 0,
+          error_count: 0
+        }
+        iev_metrics = resource.metrics["iev_metrics"]
+        if iev_metrics
+          iev_metrics = eval iev_metrics
+        else
+          iev_metrics = resource.metrics.dup
+          resource.metrics["iev_metrics"] = iev_metrics
+        end
+        new_status = resolve_compound_status resource.status, status
+        metrics = resource.metrics
+        metrics[metrics_key(new_status)] = [iev_metrics[metrics_key(new_status)].to_i, 0].max + 1
+        resource.update! status: new_status, metrics: metrics
       end
-      new_status = resolve_compound_status resource.status, status
-      metrics = resource.metrics
-      metrics[metrics_key(new_status)] = [iev_metrics[metrics_key(new_status)].to_i, 0].max + 1
-      resource.update! status: new_status, metrics: metrics
     end
 
     def self.metrics_key status

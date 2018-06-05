@@ -2,10 +2,13 @@ require 'rails_helper'
 
 RSpec.describe VehicleJourneyControl::BusCapacity, :type => :model do
   let(:workgroup){ referential.workgroup }
+  let(:line){ create :line, line_referential: workgroup.line_referential }
+  let(:route){ create :route, line: line }
+  let(:journey_pattern){ create :journey_pattern, route: route }
   let(:custom_field){ create :custom_field, field_type: :string, code: :capacity, name: "bus capacity", resource_type: "VehicleJourney", workgroup: workgroup }
-  let(:failing){ create :vehicle_journey }
+  let(:succeeding){ create :vehicle_journey, custom_field_values: {capacity: "12"}, journey_pattern: journey_pattern }
+  let(:failing){ create :vehicle_journey, journey_pattern: journey_pattern }
   let(:failing_too){ create :vehicle_journey, custom_field_values: {capacity: ""} }
-  let(:succeeding){ create :vehicle_journey, custom_field_values: {capacity: "12"} }
   let(:control_attributes){
     {}
   }
@@ -31,15 +34,12 @@ RSpec.describe VehicleJourneyControl::BusCapacity, :type => :model do
   end
 
   it "should detect missing bus capacities" do
-    expect{compliance_check.process}.to change{ComplianceCheckResource.count}.by 3
-    resource = ComplianceCheckResource.where(reference: succeeding.objectid).last
-    expect(resource.status).to eq "OK"
-    expect(resource.compliance_check_messages.size).to eq 0
-    resource = ComplianceCheckResource.where(reference: failing.objectid).last
+    expect{compliance_check.process}.to change{ComplianceCheckResource.count}.by 2
+    resource = ComplianceCheckResource.where(reference: succeeding.route.line.objectid).last
     expect(resource.status).to eq "ERROR"
     expect(resource.compliance_check_messages.size).to eq 1
     expect(resource.compliance_check_messages.last.status).to eq "ERROR"
-    resource = ComplianceCheckResource.where(reference: failing_too.objectid).last
+    resource = ComplianceCheckResource.where(reference: failing_too.line.objectid).last
     expect(resource.status).to eq "ERROR"
     expect(resource.compliance_check_messages.size).to eq 1
     expect(resource.compliance_check_messages.last.status).to eq "ERROR"

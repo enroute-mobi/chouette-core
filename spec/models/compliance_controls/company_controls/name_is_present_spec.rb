@@ -22,6 +22,7 @@ RSpec.describe CompanyControl::NameIsPresent, :type => :model do
   before(:each){
     referential.switch do
       Chouette::Company.where(id: company.id).update_all(name: company_name)
+      create :line, company: company, line_referential: line_referential
     end
   }
 

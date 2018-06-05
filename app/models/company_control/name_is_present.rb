@@ -7,7 +7,7 @@ module CompanyControl
     end
 
     def self.collection referential
-      referential.companies
+      Chouette::Company.where id: referential.lines.pluck(:company_id)
     end
 
     def self.compliance_test company

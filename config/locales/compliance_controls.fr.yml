@@ -14,6 +14,7 @@ fr:
         routing_constraint_zone: 'ITL'
         vehicle_journey: 'Course'
         dummy: 'Test'
+        company: Transporteur
     search_no_results: 'Aucun contrôle ne correspond à votre recherche'
     min_max_values: "la valeur minimum (%{min}) ne doit pas être supérieure à la valeur maximum (%{max})"
     errors:
@@ -30,12 +31,14 @@ fr:
     select_type:
       title: "Sélectionner un type de contrôle"
       compliance_control_groups:
-        generic_attribute: Générique
+        generic: Générique
         line: Ligne
         route: Itinéraire
         routing_constraint_zone: ITL
         journey_pattern: Mission
         vehicle_journey: Course
+        dummy: Dummy
+        company: Transporteur
     actions:
       new: Ajouter
       edit: Editer
@@ -200,7 +203,7 @@ fr:
       route_control/duplicates:
         one: "Détection de double définition d'itinéraire"
       route_control/opposite_route_terminus:
-       one: "Vérification des terminus de l'itinéraire inverse"
+        one: "Vérification des terminus de l'itinéraire inverse"
       route_control/minimum_length:
         one: "Un itinéraire doit contenir au moins 2 arrêts"
       route_control/omnibus_journey_pattern:
@@ -223,6 +226,8 @@ fr:
         one: "Une course doit avoir au moins un calendrier d’application"
       vehicle_journey_control/vehicle_journey_at_stops:
         one: "Chronologie croissante des horaires"
+      vehicle_journey_control/bus_capacity:
+        one: "Présence de la capacité du bus"
       routing_constraint_zone_control/vehicle_journey_at_stops:
         one: "Chronologie croissante des horaires"
       routing_constraint_zone_control/maximum_length:

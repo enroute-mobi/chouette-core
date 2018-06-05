@@ -22,13 +22,23 @@ class ComplianceControl < ApplicationModel
         routing_constraint_zone: 'RoutingConstraint',
         vehicle_journey: 'VehicleJourney',
         dummy: 'Dummy',
+        company: 'Company',
       }
     end
 
     def subclasses_to_hash
-      ComplianceControl.subclasses.select{|k| k.default_code.present?}.inject(Hash.new{ |h, k| h[k] = [] } ) do |h, klass|
-        h[ComplianceControl.subclass_patterns.key(klass.object_type)] << klass
-        h
+      if self.subclasses.empty?
+        return {ComplianceControl.subclass_patterns.key(self.object_type) => [self]}
+      else
+        out = {}
+        self.subclasses.each do |k|
+          sub_hash = k.subclasses_to_hash
+          sub_hash.each do |k, v|
+            out[k] ||= []
+            out[k] += v
+          end
+        end
+        return out
       end
     end
 
@@ -114,4 +124,6 @@ require_dependency 'vehicle_journey_control/waiting_time'
 require_dependency 'vehicle_journey_control/speed'
 require_dependency 'vehicle_journey_control/time_table'
 require_dependency 'vehicle_journey_control/vehicle_journey_at_stops'
+require_dependency 'vehicle_journey_control/bus_capacity'
+require_dependency 'company_control/name_is_present'
 require_dependency 'dummy_control/dummy'

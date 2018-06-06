@@ -240,6 +240,10 @@ ChouetteIhm::Application.routes.draw do
     resources :networks
   end
 
+  resources :companies do
+    get :autocomplete, on: :collection, controller: 'autocomplete_companies'
+  end
+
   resources :calendars do
     get :autocomplete, on: :collection, controller: 'autocomplete_calendars'
     member do

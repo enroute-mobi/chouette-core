@@ -7,7 +7,7 @@ module RouteControl
     end
 
     def self.collection referential
-      Chouette::Route.where id: referential.routes.pluck(:id)
+      referential.routes
     end
 
     def self.compliance_test compliance_check, route

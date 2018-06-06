@@ -11,7 +11,7 @@ module JourneyPatternControl
     end
 
     def self.collection referential
-      Chouette::JourneyPattern.where route_id: referential.routes.pluck(:id)
+      referential.journey_patterns
     end
 
     def self.compliance_test compliance_check, journey_pattern

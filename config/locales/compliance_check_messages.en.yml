@@ -19,6 +19,7 @@ en:
     3_vehiclejourney_4: "The vehicle journey with %{source_objectid} objectid does not have a timetable"
     3_vehiclejourney_5_1: "The vehicle journey with %{source_objectid} objectid has an arrival time %{error_value} greater than the departure time %{reference_value} at the stop point %{target_0_label} (%{target_0_objectid})"
     3_vehiclejourney_5_2: "The vehicle journey with %{source_objectid} objectid has an departure time %{error_value} at stop point %{target_0_label} (%{target_0_objectid}) greater than the arrival %{reference_value} at the next stop point"
+    3_vehiclejourney_7: The end date of journey's %{source_objectid} purchase windows must be before or equal of the end date of circulation
     3_routingconstraint_1: "The Routing Constraint Zone %{source_objectid} references an unactivated stop point (ZDEp) %{target_0_label} (%{target_0_objectid})"
     3_routingconstraint_2: "The Routing Constraint Zone %{source_objectid} covers all the stop points of its related route : %{target_0_objectid}."
     3_routingconstraint_3: "The Routing Constraint Zone %{source_objectid} has less than 2 stop points"

@@ -135,6 +135,11 @@ fr:
         3_vehiclejourney_5_2: "La course %{source_objectid} a un horaire de départ %{error_value} à l'arrêt %{target_0_label} (%{target_0_objectid}) supérieur à l'horaire d'arrivé %{reference_value} à l'arrêt suivant"
       description: "L'horaire d'arrivée à un arrêt doit être antérieur à l'horaire de départ de cet arrêt ET les horaires de départ aux arrêts doivent être dans l'ordre chronologique croissant."
       prerequisite: "Aucun"
+    vehicle_journey_control/purchase_window_dates:
+      messages:
+        3_vehiclejourney_7: La date de fin du calendrier commercial de la course %{source_objectid} doit être inférieure ou égale à la date de fin de circulation
+      description: Cohérence date de fin de vente - date de fin de circulation
+      prerequisite: "Aucun"
     vehicle_journey_control/bus_capacity:
       messages:
         3_vehiclejourney_9: "La course %{vehicle_journey_name} doit avoir une capacité de bus"
@@ -240,6 +245,8 @@ fr:
         one: "Chronologie croissante des horaires"
       vehicle_journey_control/bus_capacity:
         one: "Présence de la capacité du bus"
+      vehicle_journey_control/purchase_window:
+        one: Cohérence date de fin de vente - date de fin de circulation
       routing_constraint_zone_control/vehicle_journey_at_stops:
         one: "Chronologie croissante des horaires"
       routing_constraint_zone_control/maximum_length:

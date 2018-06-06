@@ -137,6 +137,11 @@ fr:
         3_vehiclejourney_8: La course %{source_objectid} doit avoir un numéro de service compris entre %{min} et %{max} pour le transporteur %{company_name}
       description: Valeur du numéro de service pour un transporteur donné
       prerequisite: "Aucun"
+    vehicle_journey_control/purchase_window:
+      messages:
+        3_vehiclejourney_7: La date de fin du calendrier commercial de la course %{source_objectid} doit être inférieure ou égale à la date de fin de circulation
+      description: Cohérence date de fin de vente - date de fin de circulation
+      prerequisite: "Aucun"
     vehicle_journey_control/bus_capacity:
       messages:
         3_vehiclejourney_9: "La course %{vehicle_journey_name} doit avoir une capacité de bus"
@@ -242,6 +247,8 @@ fr:
         one: "Présence de la capacité du bus"
       vehicle_journey_control/published_journey_name:
         one: Valeur du numéro de service pour un transporteur donné
+      vehicle_journey_control/purchase_window:
+        one: Cohérence date de fin de vente - date de fin de circulation
       routing_constraint_zone_control/vehicle_journey_at_stops:
         one: "Chronologie croissante des horaires"
       routing_constraint_zone_control/maximum_length:

@@ -336,10 +336,10 @@ module Chouette
     def time_table_tokens=(ids)
       self.time_table_ids = ids.split(",")
     end
-    def bounding_dates
+    def bounding_dates(collection=:time_tables)
       dates = []
 
-      time_tables.each do |tm|
+      self.send(collection).each do |tm|
         dates << tm.start_date if tm.start_date
         dates << tm.end_date if tm.end_date
       end

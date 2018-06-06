@@ -15,6 +15,8 @@ fr:
         vehicle_journey: 'Course'
         dummy: 'Test'
         company: Transporteur
+    form:
+      company_name: Indiquez le nom d'un transporteur
     search_no_results: 'Aucun contrôle ne correspond à votre recherche'
     min_max_values: "la valeur minimum (%{min}) ne doit pas être supérieure à la valeur maximum (%{max})"
     errors:
@@ -135,6 +137,10 @@ fr:
         3_vehiclejourney_5_2: "La course %{source_objectid} a un horaire de départ %{error_value} à l'arrêt %{target_0_label} (%{target_0_objectid}) supérieur à l'horaire d'arrivé %{reference_value} à l'arrêt suivant"
       description: "L'horaire d'arrivée à un arrêt doit être antérieur à l'horaire de départ de cet arrêt ET les horaires de départ aux arrêts doivent être dans l'ordre chronologique croissant."
       prerequisite: "Aucun"
+    vehicle_journey_control/published_journey_name:
+      messages:
+        3_vehiclejourney_8: La course %{source_objectid} doit avoir un numéro de service compris entre %{min} et %{max} pour le transporteur %{company_name}
+      description: Valeur du numéro de service pour un transporteur donné
     vehicle_journey_control/purchase_window_dates:
       messages:
         3_vehiclejourney_7: La date de fin du calendrier commercial de la course %{source_objectid} doit être inférieure ou égale à la date de fin de circulation
@@ -245,6 +251,8 @@ fr:
         one: "Chronologie croissante des horaires"
       vehicle_journey_control/bus_capacity:
         one: "Présence de la capacité du bus"
+      vehicle_journey_control/published_journey_name:
+        one: Valeur du numéro de service pour un transporteur donné
       vehicle_journey_control/purchase_window:
         one: Cohérence date de fin de vente - date de fin de circulation
       routing_constraint_zone_control/vehicle_journey_at_stops:

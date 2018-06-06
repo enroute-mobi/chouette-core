@@ -20,6 +20,8 @@ fr:
     3_vehiclejourney_5_1: "La course %{source_objectid} a un horaire d'arrivé %{error_value} supérieur à l'horaire de départ %{reference_value} à l'arrêt %{target_0_label} (%{target_0_objectid})"
     3_vehiclejourney_5_2: "La course %{source_objectid} a un horaire de départ %{error_value} à l'arrêt %{target_0_label} (%{target_0_objectid}) supérieur à l'horaire d'arrivé %{reference_value} à l'arrêt suivant"
     3_vehiclejourney_7: La date de fin du calendrier commercial de la course %{source_objectid} doit être inférieure ou égale à la date de fin de circulation
+    3_vehiclejourney_8: La course %{source_objectid} doit avoir un numéro de service compris entre %{min} et %{max} pour le transporteur %{company_name}
+    3_vehiclejourney_9: "La course %{vehicle_journey_name} doit avoir une capacité de bus"
     3_routingconstraint_1: "L'ITL %{source_objectid} référence un arrêt (ZDEp) désactivé %{target_0_label} (%{target_0_objectid})"
     3_routingconstraint_2: "L'ITL %{source_objectid} couvre tous les arrêts de l'itinéraire %{target_0_objectid}."
     3_routingconstraint_3: "L'ITL %{source_objectid} n'a pas suffisament d'arrêts (minimum 2 arrêts requis)"

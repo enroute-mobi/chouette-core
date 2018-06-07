@@ -53,7 +53,6 @@ class StopAreasController < ChouetteController
 
     index! do |format|
       format.html {
-        # binding.pry
         if collection.out_of_bounds?
           redirect_to params.merge(:page => 1)
         end

@@ -19,9 +19,16 @@ RSpec.describe RouteControl::StopPointsBoardingAndAlighting, :type => :model do
       criticity: criticity
   }
 
+  before {
+    stop_area = create :stop_area, kind: :non_commercial, area_type: :border
+    route.stop_points.create stop_area: stop_area
+    expect(ref.stop_points.non_commercial.count).to be > 0
+    expect(ref.stop_points.commercial.count).to be > 0
+  }
+
   context "when the stop points have all boarding & alighting set to forbidden" do
     before do
-      ref.stop_points.update_all(for_boarding: "forbidden", for_alighting: "forbidden")
+      ref.stop_points.non_commercial.update_all(for_boarding: "forbidden", for_alighting: "forbidden")
     end
     it "should pass" do
       expect{compliance_check.process}.to change{ComplianceCheckResource.count}.by 1
@@ -31,6 +38,9 @@ RSpec.describe RouteControl::StopPointsBoardingAndAlighting, :type => :model do
   end
 
   context "when at least one stop point have boarding or alighting set to normal" do
+    before do
+      ref.stop_points.non_commercial.last.update(for_boarding: "normal", for_alighting: "normal")
+    end
 
     context "when the criticity is warning" do
 

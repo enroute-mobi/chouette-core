@@ -29,6 +29,7 @@ module Chouette
     scope :default_order, -> { order("position") }
 
     scope :commercial, -> { joins(:stop_area).where("stop_areas.kind = ?", "commercial") }
+    scope :non_commercial, -> { joins(:stop_area).where("stop_areas.kind = ?", "non_commercial") }
 
     delegate :name, :registration_number, :kind, :area_type, to: :stop_area_light
 

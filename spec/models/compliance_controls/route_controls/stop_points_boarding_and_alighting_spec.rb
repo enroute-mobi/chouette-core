@@ -24,7 +24,6 @@ RSpec.describe RouteControl::StopPointsBoardingAndAlighting, :type => :model do
       ref.stop_points.update_all(for_boarding: "forbidden", for_alighting: "forbidden")
     end
     it "should pass" do
-      binding.pry
       expect{compliance_check.process}.to change{ComplianceCheckResource.count}.by 1
       resource = ComplianceCheckResource.last
       expect(resource.status).to eq "OK"

@@ -95,6 +95,11 @@ fr:
         3_route_10: "L'itinéraire %{source_objectid} référence un arrêt (ZDEp) désactivé %{target_0_label} (%{target_0_objectid})"
       description: "Les arrêts d'un itinéraire ne doivent pas être désactivés"
       prerequisite: "Aucun"
+    route_control/unactivated_stop_point:
+      messages:
+        3_route_11: "L'itinéraire %{source_objectid} contient un nombre de frontières incohérent "
+      description: "Nombre de frontières en fonction du nombre de pays dans l'itinéraire"
+      prerequisite: "Aucun"
     route_control/stop_points_boarding_and_alighting:
       messages:
         3_route_12: "Tous les arrêts commerciaux de l'itinéraire %{source_objectid} n'ont pas une montée / descente interdites"

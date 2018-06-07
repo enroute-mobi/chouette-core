@@ -95,6 +95,11 @@ en:
         3_route_10: "The route with %{source_objectid} objectid references a deactivated stop area %{target_0_label} (%{target_0_objectid})"
       description: "All route's stop points must be activated"
       prerequisite: "None"
+    route_control/border_count:
+      messages:
+        3_route_11: "The borders count of route (%{source_objectid}) does not match the countries of its stops"
+      description: "Borders count given the stops countries"
+      prerequisite: "None"
     route_control/stop_points_boarding_and_alighting:
       messages:
         3_route_12: "All of route's (%{source_objectid}) commercial stop points don't have boarding and alighting attributes set to forbidden"

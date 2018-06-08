@@ -54,8 +54,8 @@ module InternalControl
       }
     end
 
-    def self.custom_message_attributes compliance_check, vehicle_journey
-      {}
+    def self.custom_message_attributes compliance_check, object
+      {source_objectid: object.objectid}
     end
 
     def self.message_attributes compliance_check, obj

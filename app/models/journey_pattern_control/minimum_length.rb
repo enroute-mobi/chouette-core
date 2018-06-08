@@ -17,9 +17,5 @@ module JourneyPatternControl
     def self.compliance_test compliance_check, journey_pattern
       journey_pattern.stop_points.length >= MINIMUM_LENGTH
     end
-
-    def self.custom_message_attributes compliance_check, journey_pattern
-      {source_objectid: journey_pattern.objectid}
-    end
   end
 end

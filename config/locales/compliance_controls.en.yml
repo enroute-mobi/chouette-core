@@ -102,7 +102,7 @@ en:
       prerequisite: "None"
     route_control/stop_points_boarding_and_alighting:
       messages:
-        3_route_12: "All of route's (%{source_objectid}) commercial stop points don't have boarding and alighting attributes set to forbidden"
+        3_route_12: "All of route's (%{source_objectid}) non-commercial stop points don't have boarding and alighting attributes set to forbidden"
       description: "A route's commercial stop points must have boarding and alighting attributes set to forbidden"
       prerequisite: "None"
     journey_pattern_control/duplicates:
@@ -154,17 +154,22 @@ en:
       prerequisite: "None"
     vehicle_journey_control/purchase_window:
       messages:
+        3_vehiclejourney_6: "The vehicle journey %{source_objectid} lacks a purchase window"
+      description: "All vehicle journeys must have a purchase window"
+      prerequisite: "Aucun"
+    vehicle_journey_control/purchase_window_dates:
+      messages:
         3_vehiclejourney_7: The end date of journey's %{source_objectid} purchase windows must be before or equal of the end date of circulation
       description: The end of sales must be before end of circulation
       prerequisite: "None"
     vehicle_journey_control/bus_capacity:
       messages:
-        3_vehiclejourney_9: "The vehicle journey %{vehicle_journey_name} lacks a bus capacity"
+        3_vehiclejourney_9: "The vehicle journey %{source_objectid} lacks a bus capacity"
       description: "All journeys must have a bus capacity"
       prerequisite: "None"
     vehicle_journey_control/purchse_window:
       messages:
-        3_vehiclejourney_6: "The vehicle journey %{vehicle_journey_name} lacks a purchase window"
+        3_vehiclejourney_6: "The vehicle journey %{source_objectid} lacks a purchase window"
       description: "All journeys must have at least one purchase window"
       prerequisite: "None"
 
@@ -221,7 +226,7 @@ en:
       description: "A company must have a name"
       prerequisite: "None"
       messages:
-        3_company_1: "The company #%{company_id} lacks a name"
+        3_company_1: "The company #%{source_objectid} lacks a name"
 
   activerecord:
     models:

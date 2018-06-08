@@ -13,9 +13,5 @@ module CompanyControl
     def self.compliance_test compliance_check, company
       company.name.present?
     end
-
-    def self.custom_message_attributes compliance_check, company
-      {company_id: company.id}
-    end
   end
 end

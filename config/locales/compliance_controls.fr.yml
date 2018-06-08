@@ -95,15 +95,15 @@ fr:
         3_route_10: "L'itinéraire %{source_objectid} référence un arrêt (ZDEp) désactivé %{target_0_label} (%{target_0_objectid})"
       description: "Les arrêts d'un itinéraire ne doivent pas être désactivés"
       prerequisite: "Aucun"
-    route_control/unactivated_stop_point:
+    route_control/border_count:
       messages:
         3_route_11: "L'itinéraire %{source_objectid} contient un nombre de frontières incohérent "
       description: "Nombre de frontières en fonction du nombre de pays dans l'itinéraire"
       prerequisite: "Aucun"
     route_control/stop_points_boarding_and_alighting:
       messages:
-        3_route_12: "Tous les arrêts commerciaux de l'itinéraire %{source_objectid} n'ont pas une montée / descente interdites"
-      description: "Tous les arrêts commerciaux d'un itinéraire doivent avoir une montée / descente interdites"
+        3_route_12: "Tous les arrêts non-commerciaux de l'itinéraire %{source_objectid} n'ont pas une montée / descente interdites"
+      description: "Tous les arrêts non-commerciaux d'un itinéraire doivent avoir une montée / descente interdites"
       prerequisite: "Aucun"
     journey_pattern_control/duplicates:
       messages:
@@ -159,12 +159,12 @@ fr:
       prerequisite: "Aucun"
     vehicle_journey_control/bus_capacity:
       messages:
-        3_vehiclejourney_9: "La course %{vehicle_journey_name} doit avoir une capacité de bus"
+        3_vehiclejourney_9: "La course %{source_objectid} doit avoir une capacité de bus"
       description: "Une course doit avoir une capacité de bus"
       prerequisite: "Aucun"
     vehicle_journey_control/purchase_window:
       messages:
-        3_vehiclejourney_6: "La course %{vehicle_journey_name} doit avoir au moins un calendrier de vente"
+        3_vehiclejourney_6: "La course %{source_objectid} doit avoir au moins un calendrier de vente"
       description: "Une course doit avoir au moins un calendrier de vente"
       prerequisite: "Aucun"
     routing_constraint_zone_control/unactivated_stop_point:
@@ -219,7 +219,7 @@ fr:
       description: "Un transporteur doit avoir un nom commercial"
       prerequisite: "Aucun"
       messages:
-        3_company_1: "Le transporteur #%{company_id} doit avoir un nom commercial"
+        3_company_1: "Le transporteur #%{source_objectid} doit avoir un nom commercial"
 
   activerecord:
     models:
@@ -245,7 +245,9 @@ fr:
       route_control/stop_points_in_journey_pattern:
         one: "Utilisation des arrêts par les missions"
       route_control/stop_points_boarding_and_alighting:
-        one: "Les arrêts commerciaux ont une montée / descente interdites"
+        one: "Les arrêts non-commerciaux ont une montée / descente interdites"
+      route_control/border_count:
+        one: "Nombre de frontières en fonction du nombre de pays dans l'itinéraire"
       journey_pattern_control/duplicates:
         one: "Doublon de missions dans une ligne"
       journey_pattern_control/vehicle_journey:

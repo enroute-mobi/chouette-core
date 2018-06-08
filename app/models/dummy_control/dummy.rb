@@ -21,9 +21,5 @@ module DummyControl
     def self.status_ok_if test, compliance_check
       compliance_check.control_attributes["status"]
     end
-
-    def self.custom_message_attributes compliance_check, line
-      {name: line.name}
-    end
   end
 end

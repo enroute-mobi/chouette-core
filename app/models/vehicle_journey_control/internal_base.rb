@@ -8,10 +8,6 @@ module VehicleJourneyControl
       referential.vehicle_journeys
     end
 
-    def self.custom_message_attributes compliance_check, vehicle_journey
-      {vehicle_journey_name: vehicle_journey.published_journey_name}
-    end
-
     def self.label_attr
       :published_journey_name
     end

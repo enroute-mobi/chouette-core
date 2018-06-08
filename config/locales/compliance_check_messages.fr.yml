@@ -10,7 +10,7 @@ fr:
     3_route_9: "L'itinéraire %{source_objectid} n'a aucune mission desservant l'ensemble de ses arrêts"
     3_route_10: "L'itinéraire %{source_objectid} référence un arrêt (ZDEp) désactivé %{target_0_label} (%{target_0_objectid})"
     3_route_11: "L'itinéraire %{source_objectid} contient un nombre de frontières incohérent"
-    3_route_12: "Tous les arrêts commerciaux de l'itinéraire %{source_objectid} n'ont pas une montée / descente interdites"
+    3_route_12: "Tous les arrêts non-commerciaux de l'itinéraire %{source_objectid} n'ont pas une montée / descente interdites"
     3_journeypattern_1: "La mission %{source_objectid} est identique à la mission %{target_0_objectid}"
     3_journeypattern_2: "La mission %{source_objectid} n'a pas de course"
     3_journeypattern_3: "La mission %{source_objectid} n'a pas suffisament d'arrêts (minimum 2 arrêts requis)"
@@ -36,10 +36,10 @@ fr:
     3_shape_1: "Tracé %{source_objectid} : le tracé passe trop loin de l'arrêt %{target_0_label} (%{target_0_objectid}) : %{error_value} > %{reference_value}"
     3_shape_2: "Tracé %{source_objectid} : le tracé n'est pas défini entre les arrêts %{target_0_label} (%{target_0_objectid}) et %{target_1_label} (%{target_1_objectid})"
     3_shape_3: "Le tracé de l'itinéraire %{source_objectid} est en écart avec la voirie sur %{error_value} sections"
-    00_dummy_00: "Message sur la ligne \"#%{name}\""
-    3_company_1: "Le transporteur #%{company_id} doit avoir un nom commercial"
-    3_vehiclejourney_9: "La course \"%{vehicle_journey_name}\" doit avoir une capacité de bus"
-    3_vehiclejourney_6: "La course \"%{vehicle_journey_name}\" doit avoir au minimum un calendrier commercial"
+    00_dummy_00: "Message sur la ligne \"#%{source_objectid}\""
+    3_company_1: "Le transporteur #%{source_objectid} doit avoir un nom commercial"
+    3_vehiclejourney_9: "La course \"%{source_objectid}\" doit avoir une capacité de bus"
+    3_vehiclejourney_6: "La course \"%{source_objectid}\" doit avoir au minimum un calendrier commercial"
     compliance_check_set_errors: erreurs_validation
   activerecord:
     attributes:

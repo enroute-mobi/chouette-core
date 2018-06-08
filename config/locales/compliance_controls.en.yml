@@ -148,7 +148,7 @@ en:
       description: "The arrival time of a stop point must be smaller than the departure time of this stop point AND the departure time of the stop points must be in chronological order"
       prerequisite: "None"
     vehicle_journey_control/published_journey_name:
-     messages:
+      messages:
         3_vehiclejourney_8: "The vehicle journey with %{source_objectid} must have a published journey name between %{min} and %{max} for the company : %{company_name}"
       description: Published journey name value for a company
       prerequisite: "None"
@@ -258,7 +258,7 @@ en:
       journey_pattern_control/vehicle_journey:
         one: "Presence of vehicle journeys"
       journey_pattern_control/minimum_length:
-        one: ""Minimum length of a journey pattern"
+        one: "Minimum length of a journey pattern"
       vehicle_journey_control/waiting_time:
         one: "The wating time at a stop point should'nt be too long"
       vehicle_journey_control/speed:

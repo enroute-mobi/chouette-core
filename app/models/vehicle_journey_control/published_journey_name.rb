@@ -6,9 +6,13 @@ module VehicleJourneyControl
     include MinMaxValuesValidation
 
     def self.default_code; "3-VehicleJourney-8" end
-
+    
     def self.compliance_test compliance_check, vj
-      vj&.published_journey_name&.to_i.between?(compliance_check.control_attributes["minimum"].to_i, compliance_check.control_attributes["maximum"].to_i)
+      if vj.company_id == compliance_check.control_attributes['company_id'].to_i
+        vj&.published_journey_name&.to_i.between?(compliance_check.control_attributes["minimum"].to_i, compliance_check.control_attributes["maximum"].to_i)
+      else
+        true
+      end
     end
 
     def self.custom_message_attributes compliance_check, vj

@@ -198,21 +198,21 @@ describe TableBuilderHelper, type: :helper do
       allow(helper).to receive(:pundit_user).and_return(user_context)
       allow(helper).to receive(:current_user).and_return(user_context.user)
       allow(helper).to receive(:current_referential)
-        .and_return(referential)
+        .and_return(line_referential)
 
       companies = [company]
 
       allow(companies).to receive(:model).and_return(Chouette::Company)
 
       allow(helper).to receive(:params).and_return({
-        controller: 'referential_companies',
+        controller: 'companies',
         action: 'index',
-        referential_id: referential.id
+        line_referential_id: line_referential.id
       })
 
       companies = CompanyDecorator.decorate(
         companies,
-        context: { referential: referential }
+        context: { referential: line_referential }
       )
       stub_policy_scope(company)
 
@@ -221,17 +221,17 @@ describe TableBuilderHelper, type: :helper do
     <thead>
         <tr>
             <th>ID Codif</th>
-            <th><a href="/referentials/#{referential.id}/companies?direction=desc&amp;sort=name">Nom<span class="orderers"><span class="fa fa-sort-asc active"></span><span class="fa fa-sort-desc "></span></span></a></th>
-            <th><a href="/referentials/#{referential.id}/companies?direction=desc&amp;sort=phone">Numéro de téléphone<span class="orderers"><span class="fa fa-sort-asc active"></span><span class="fa fa-sort-desc "></span></span></a></th>
-            <th><a href="/referentials/#{referential.id}/companies?direction=desc&amp;sort=email">Email<span class="orderers"><span class="fa fa-sort-asc active"></span><span class="fa fa-sort-desc "></span></span></a></th>
-            <th><a href="/referentials/#{referential.id}/companies?direction=desc&amp;sort=url">Page web associée<span class="orderers"><span class="fa fa-sort-asc active"></span><span class="fa fa-sort-desc "></span></span></a></th>
+            <th><a href="/line_referentials/#{company.referential.id}/companies?direction=desc&amp;sort=name">Nom<span class="orderers"><span class="fa fa-sort-asc active"></span><span class="fa fa-sort-desc "></span></span></a></th>
+            <th><a href="/line_referentials/#{company.referential.id}/companies?direction=desc&amp;sort=phone">Numéro de téléphone<span class="orderers"><span class="fa fa-sort-asc active"></span><span class="fa fa-sort-desc "></span></span></a></th>
+            <th><a href="/line_referentials/#{company.referential.id}/companies?direction=desc&amp;sort=email">Email<span class="orderers"><span class="fa fa-sort-asc active"></span><span class="fa fa-sort-desc "></span></span></a></th>
+            <th><a href="/line_referentials/#{company.referential.id}/companies?direction=desc&amp;sort=url">Page web associée<span class="orderers"><span class="fa fa-sort-asc active"></span><span class="fa fa-sort-desc "></span></span></a></th>
             <th></th>
         </tr>
     </thead>
     <tbody>
         <tr class="company company-#{company.id}">
             <td>#{company.get_objectid.local_id}</td>
-            <td title="Voir" class="name"><a href="/referentials/#{referential.id}/companies/#{company.id}">#{company.name}</a></td>
+            <td title="Voir" class="name"><a href="/line_referentials/#{company.referential.id}/companies/#{company.id}">#{company.name}</a></td>
             <td class="phone"></td>
             <td class="email"></td>
             <td class="url"></td>
@@ -240,7 +240,7 @@ describe TableBuilderHelper, type: :helper do
                     <div class="btn dropdown-toggle" data-toggle="dropdown"><span class="fa fa-cog"></span></div>
                     <div class="dropdown-menu">
                         <ul class="primary">
-                            <li class=""><a href="/referentials/#{referential.id}/companies/#{company.id}">Consulter</a></li>
+                            <li class=""><a href="/line_referentials/#{company.referential.id}/companies/#{company.id}">Consulter</a></li>
                         </ul>
                     </div>
                 </div>
@@ -262,7 +262,7 @@ describe TableBuilderHelper, type: :helper do
             key: :name,
             attribute: 'name',
             link_to: lambda do |company|
-              referential_company_path(referential, company)
+              line_referential_company_path(company.line_referential, company)
             end
           ),
           TableBuilderHelper::Column.new(
@@ -313,16 +313,16 @@ describe TableBuilderHelper, type: :helper do
       allow(helper).to receive(:pundit_user).and_return(user_context)
       allow(helper).to receive(:current_user).and_return(user_context.user)
       allow(helper).to receive(:current_referential)
-        .and_return(referential)
+        .and_return(line_referential)
 
       companies = [company]
 
       allow(companies).to receive(:model).and_return(Chouette::Company)
 
       allow(helper).to receive(:params).and_return({
-        controller: 'referential_companies',
+        controller: 'companies',
         action: 'index',
-        referential_id: referential.id
+        line_referential_id: line_referential.id
       })
 
       companies = CompanyDecorator.decorate(
@@ -346,7 +346,7 @@ describe TableBuilderHelper, type: :helper do
     <tbody>
         <tr class="company company-#{company.id}">
             <td>#{company.get_objectid.local_id}</td>
-            <td title="Voir" class="name"><a href="/referentials/#{referential.id}/companies/#{company.id}">#{company.name}</a></td>
+            <td title="Voir" class="name"><a href="/line_referentials/#{company.line_referential.id}/companies/#{company.id}">#{company.name}</a></td>
             <td class="phone"></td>
             <td class="email"></td>
             <td class="url"></td>
@@ -376,7 +376,7 @@ describe TableBuilderHelper, type: :helper do
             key: :name,
             attribute: 'name',
             link_to: lambda do |company|
-              referential_company_path(referential, company)
+              line_referential_company_path(line_referential, company)
             end
           ),
           TableBuilderHelper::Column.new(

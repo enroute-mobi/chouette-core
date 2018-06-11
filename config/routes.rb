@@ -51,11 +51,6 @@ ChouetteIhm::Application.routes.draw do
     end
     resources :autocomplete_purchase_windows, only: [:index]
     resources :autocomplete_time_tables, only: [:index]
-    resources :group_of_lines, controller: "referential_group_of_lines" do
-      collection do
-        get 'name_filter'
-      end
-    end
 
     resources :networks, controller: "referential_networks"
 
@@ -101,8 +96,6 @@ ChouetteIhm::Application.routes.draw do
       end
     end
 
-    resources :companies, controller: "referential_companies"
-
     resources :purchase_windows
 
     resources :time_tables do
@@ -117,31 +110,6 @@ ChouetteIhm::Application.routes.draw do
       resources :time_table_dates
       resources :time_table_periods
       resources :time_table_combinations
-    end
-
-    resources :access_points do
-      resources :access_links
-    end
-
-    resources :stop_areas, controller: "referential_stop_areas" do
-      resources :stop_area_routing_lines
-      member do
-        get 'add_children'
-        get 'select_parent'
-        get 'add_routing_lines'
-        get 'add_routing_stops'
-        get 'access_links'
-      end
-      collection do
-        put 'default_geometry'
-      end
-    end
-
-    resources :connection_links do
-      resources :stop_areas
-      member do
-        get 'select_areas'
-      end
     end
     resources :clean_ups
   end

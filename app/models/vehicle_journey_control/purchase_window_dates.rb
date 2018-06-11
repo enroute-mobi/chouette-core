@@ -11,7 +11,7 @@ module VehicleJourneyControl
     end
 
     def self.compliance_test compliance_check, vehicle_journey
-      vehicle_journey.bounding_dates(:purchase_windows).last <= vehicle_journey.bounding_dates.last
+      vehicle_journey.selling_bounding_dates.last <= vehicle_journey.bounding_dates.last
     end
 
     def self.custom_message_attributes compliance_check, vehicle_journey

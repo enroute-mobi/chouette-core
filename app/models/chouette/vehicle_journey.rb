@@ -336,15 +336,26 @@ module Chouette
     def time_table_tokens=(ids)
       self.time_table_ids = ids.split(",")
     end
-    def bounding_dates(collection=:time_tables)
+
+    def bounding_dates
       dates = []
 
-      self.send(collection).each do |tm|
+      time_tables.each do |tm|
         dates << tm.start_date if tm.start_date
         dates << tm.end_date if tm.end_date
       end
 
       dates.empty? ? [] : [dates.min, dates.max]
+    end
+
+    def selling_bounding_dates
+      purchase_windows.inject([]) do |memo, pw|
+        pw.date_ranges.each do |date_range|
+          memo[0] = date_range.min if memo[0].nil? || date_range.min <= memo.min
+          memo[1] = date_range.max if memo[1].nil? || date_range.max >= memo.max
+        end
+        memo
+      end
     end
 
     def update_journey_pattern( selected_journey_pattern)

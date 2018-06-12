@@ -6,7 +6,7 @@ class ColorSelectInput < SimpleForm::Inputs::CollectionInput
     label = if selected_color
       collection.find{|i| i.is_a?(Enumerable) && i.last == selected_color}.try(:first)
     end
-    selected_color = selected_color.present? ? "##{selected_color}" : nil
+    selected_color_formatted = selected_color.present? ? "##{selected_color}" : nil
 
     out = @builder.hidden_field attribute_name, value: selected_color
     tag_name = ActionView::Helpers::Tags::Base.new( ActiveModel::Naming.param_key(object), attribute_name, :dummy ).send(:tag_name)
@@ -16,7 +16,7 @@ class ColorSelectInput < SimpleForm::Inputs::CollectionInput
     <button type='button' class="btn btn-default dropdown-toggle" data-toggle='dropdown' aria-haspopup='true' aria-expanded='true'
       ><span
         class='#{font_awesome} mr-xs'
-        style='color: #{selected_color == nil ? 'transparent' : selected_color}'
+        style='color: #{selected_color_formatted == nil ? 'transparent' : selected_color_formatted}'
         >
       </span>
       #{label}

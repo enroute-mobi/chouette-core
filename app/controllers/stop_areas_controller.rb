@@ -121,32 +121,23 @@ class StopAreasController < ChouetteController
     scope = parent.present? ? parent.stop_areas : referential.stop_areas
     @q = scope.search(params[:q])
 
-    if sort_column && sort_direction
-      @stop_areas ||=
-        begin
-          if sort_column == "area_type"
-            sorted_area_type_labels = Chouette::AreaType.options(:all, I18n.locale).sort.transpose.last
-            sorted_area_type_labels = sorted_area_type_labels.reverse if sort_direction != 'asc'
-            order_by = ["CASE"]
-            sorted_area_type_labels.each_with_index do |area_type, index|
-              order_by << "WHEN area_type='#{area_type}' THEN #{index}"
-            end
-            order_by << "END"
-            stop_areas = @q.result.order(order_by.join(" "))
-          else
-            stop_areas = @q.result.order(sort_column + ' ' + sort_direction)
+    @stop_areas ||=
+      begin
+        if sort_column == "area_type"
+          sorted_area_type_labels = Chouette::AreaType.options(:all, I18n.locale).sort.transpose.last
+          sorted_area_type_labels = sorted_area_type_labels.reverse if sort_direction != 'asc'
+          order_by = ["CASE"]
+          sorted_area_type_labels.each_with_index do |area_type, index|
+            order_by << "WHEN area_type='#{area_type}' THEN #{index}"
           end
-          stop_areas = stop_areas.paginate(:page => params[:page], :per_page => @per_page) if @per_page.present?
-          stop_areas
+          order_by << "END"
+          stop_areas = @q.result.order(order_by.join(" "))
+        else
+          stop_areas = sort_result(@q.result)
         end
-    else
-      @stop_areas ||=
-        begin
-          stop_areas = @q.result.order(:name)
-          stop_areas = stop_areas.paginate(:page => params[:page], :per_page => @per_page) if @per_page.present?
-          stop_areas
-        end
-    end
+        stop_areas = stop_areas.paginate(:page => params[:page], :per_page => @per_page) if @per_page.present?
+        stop_areas
+      end
   end
 
   def begin_of_association_chain
@@ -156,14 +147,23 @@ class StopAreasController < ChouetteController
   private
 
   def sort_column
-    if parent.present?
-      parent.stop_areas.column_names.include?(params[:sort]) ? params[:sort] : 'name'
-    else
-      referential.stop_areas.column_names.include?(params[:sort]) ? params[:sort] : 'name'
-    end
+    ref = parent.present? ? parent : referential
+    (ref.stop_areas.column_names + %w{status}).include?(params[:sort]) ? params[:sort] : 'name'
   end
+
   def sort_direction
     %w[asc desc].include?(params[:direction]) ?  params[:direction] : 'asc'
+  end
+
+  def sort_result collection
+    col_names = parent.present? ? parent.stop_areas.column_names : referential.stop_areas.column_names
+    col = (col_names + %w{status}).include?(params[:sort]) ? params[:sort] : 'name'
+
+    if ['status'].include?(col)
+      collection.send("order_by_#{col}", sort_direction)
+    else
+      collection.order("#{col} #{sort_direction}")
+    end
   end
 
   alias_method :current_referential, :stop_area_referential

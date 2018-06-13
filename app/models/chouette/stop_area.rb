@@ -405,6 +405,12 @@ module Chouette
       Chouette::StopArea.where(query.join(' OR '))
     end
 
+    def self.order_by_status(dir)
+      states = ["confirmed_at #{dir}", "deleted_at #{dir}"]
+      states.reverse! if dir == 'asc'
+      order(*states)
+    end
+
     def activated?
       !!(deleted_at.nil? && confirmed_at)
     end

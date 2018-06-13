@@ -32,7 +32,7 @@
                   end \
                 ), \
                 TableBuilderHelper::Column.new( \
-                  key: :archived_at, \
+                  key: :state, \
                   name: Referential.tmf('status'), \
                   attribute: Proc.new {|w| "<a href='' title='#{"referentials.states.#{w.state}".t}'>#{icon_for_referential_state(w.state)}</a>".html_safe} \
                 ), \

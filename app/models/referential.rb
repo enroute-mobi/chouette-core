@@ -75,6 +75,12 @@ class Referential < ApplicationModel
   scope :not_in_referential_suite, -> { where referential_suite_id: nil }
   scope :blocked, -> { where('ready = ? AND created_at < ?', false, 4.hours.ago) }
 
+  def self.order_by_state(dir)
+    states = ["ready #{dir}", "archived_at #{dir}", "failed_at #{dir}"]
+    states.reverse! if dir == 'asc'
+    Referential.order(*states)
+  end
+
   def save_with_table_lock_timeout(options = {})
     save_without_table_lock_timeout(options)
   rescue ActiveRecord::StatementInvalid => e

@@ -340,13 +340,13 @@ module TableBuilderHelper
       content_tag :span, '', class: 'fa fa-cog'
     end
 
-    action_links = item.action_links
+    action_links = item.action_links.in_gear_menu
     if action_links.is_a?(AF83::Decorator::ActionLinks)
       menu = content_tag :div, class: 'dropdown-menu' do
-        item.action_links(action).grouped_by(:primary, :secondary, :footer).map do |group, _links|
+        item.action_links(action).in_gear_menu.grouped_by(:primary, :secondary, :footer).map do |group, _links|
           if _links.any?
             content_tag :ul, class: group do
-              _links.map{|link| gear_menu_link(link)}.join.html_safe
+              _links.select{|link| link.in_gear_menu?}.map{|link| gear_menu_link(link)}.join.html_safe
             end
           end
         end.join.html_safe
@@ -355,7 +355,7 @@ module TableBuilderHelper
       menu = content_tag :ul, class: 'dropdown-menu' do
         (
           CustomLinks.new(item, pundit_user, links, referential, workgroup).links +
-          action_links.select { |link| link.is_a?(Link) }
+          action_links.select { |link| link.is_a?(Link) && link.in_gear_menu? }
         ).map do |link|
           gear_menu_link(link)
         end.join.html_safe

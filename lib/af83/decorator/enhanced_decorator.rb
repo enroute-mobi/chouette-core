@@ -94,7 +94,7 @@ module AF83::Decorator::EnhancedDecorator
 
     def parse_options args
       options = {}
-      %i(weight primary secondary footer on action actions policy feature if groups group before_block).each do |k|
+      %i(weight primary secondary footer on action actions policy feature if groups group before_block in_gear_menu).each do |k|
         options[k] = args.delete(k) if args.has_key?(k)
       end
       link_options = args.dup
@@ -117,10 +117,11 @@ module AF83::Decorator::EnhancedDecorator
       link_options[:_groups][:primary] ||= options.delete :primary
       link_options[:_groups][:secondary] ||= options.delete :secondary
       link_options[:_groups][:footer] ||= options.delete :footer
+      link_options[:_groups][:in_gear_menu] ||= options.delete(:in_gear_menu).nil?
 
       link_options[:_if] = options.delete(:if)
       link_options[:_policy] = options.delete(:policy)
-      link_options[:_feature] = options.delete(:feature)
+
       [options, link_options]
     end
   end

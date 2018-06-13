@@ -14,7 +14,7 @@ class StopAreaDecorator < AF83::Decorator
       l.content t('stop_areas.actions.edit')
     end
 
-    instance_decorator.action_link policy: :deactivate, secondary: true do |l|
+    instance_decorator.action_link policy: :deactivate, secondary: true, in_gear_menu: false do |l|
       l.content { h.deactivate_link_content('stop_areas.actions.deactivate') }
       l.href do
         h.deactivate_stop_area_referential_stop_area_path(
@@ -27,7 +27,7 @@ class StopAreaDecorator < AF83::Decorator
       l.add_class 'delete-action'
     end
 
-    instance_decorator.action_link policy: :activate, secondary: true do |l|
+    instance_decorator.action_link policy: :activate, secondary: true, in_gear_menu: false do |l|
       l.content { h.activate_link_content('stop_areas.actions.activate') }
       l.href do
         h.activate_stop_area_referential_stop_area_path(

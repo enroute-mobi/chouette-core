@@ -166,7 +166,6 @@ export default class VehicleJourney extends Component {
               style={{display: 'none'}}
               onChange={(e) => this.props.onSelectVehicleJourney(this.props.index)}
               type='checkbox'
-              disabled={this.props.value.deletable}
               checked={this.props.value.selected}
             ></input>
             <label htmlFor={this.props.index}></label>

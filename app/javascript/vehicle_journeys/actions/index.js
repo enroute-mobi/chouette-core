@@ -190,6 +190,9 @@ const actions = {
   deleteVehicleJourneys : () => ({
     type: 'DELETE_VEHICLEJOURNEYS'
   }),
+  cancelDeletion : () => ({
+    type: 'CANCEL_DELETION'
+  }),
   openConfirmModal : (callback) => ({
     type : 'OPEN_CONFIRM_MODAL',
     callback
@@ -447,6 +450,9 @@ const actions = {
     return vj.filter((obj) =>{
       return obj.selected
     })
+  },
+  getSelectedDeletables: (vj) => {
+    return actions.getSelected(vj).filter(obj => obj.deletable)
   },
   simplePad: (d) => {
     if(d.toString().length == 1){

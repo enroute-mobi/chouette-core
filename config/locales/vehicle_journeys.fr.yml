@@ -8,6 +8,7 @@ fr:
         purchase_window: Filtrer par calendrier commercial...
         constraint_zone: Choisir une ITL
       cancel_selection: "Annuler la sélection"
+      cancel_destroy: "Annuler la suppression"
       fetching_error: "La récupération des missions a rencontré un problème. Rechargez la page pour tenter de corriger le problème."
       line_routes: "Séquences d'arrêts de la ligne"
       modal_confirm: 'Voulez-vous valider vos modifications avant de changer de page?'

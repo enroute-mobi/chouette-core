@@ -7,6 +7,8 @@ const vehicleJourney= (state = {}, action, keep) => {
       return _.assign({}, state, {selected: !state.selected})
     case 'CANCEL_SELECTION':
       return _.assign({}, state, {selected: false})
+    case 'CANCEL_DELETION':
+      return _.assign({}, state, {deletable: false})
     case 'ADD_VEHICLEJOURNEY':
       let pristineVjasList = []
       let prevSp
@@ -324,6 +326,14 @@ export default function vehicleJourneys(state = [], action) {
     case 'CANCEL_SELECTION':
       return state.map((vj) => {
         return vehicleJourney(vj, action)
+      })
+    case 'CANCEL_DELETION':
+      return state.map((vj) => {
+        if (vj.selected && vj.deletable) {
+          return vehicleJourney(vj, action)
+        } else {
+          return vj
+        } 
       })
     case 'UPDATE_TIME':
       return state.map((vj, i) =>{

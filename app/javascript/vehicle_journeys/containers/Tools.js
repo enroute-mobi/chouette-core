@@ -14,6 +14,9 @@ const mapDispatchToProps = (dispatch) => {
   return {
     onCancelSelection: () => {
       dispatch(actions.cancelSelection())
+    },
+    onCancelDeletion: () => {
+      dispatch(actions.cancelDeletion())
     }
   }
 }

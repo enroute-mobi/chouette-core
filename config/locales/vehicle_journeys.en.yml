@@ -8,6 +8,7 @@ en:
         constraint_zone: Select a routing constraint zone
         purchase_window: Filter by purchase window
       cancel_selection: "Cancel Selection"
+      cancel_destroy: "Cancel Destroy"
       fetching_error: "There has been a problem fetching the data. Please reload the page to try again."
       line_routes: "Line's routes"
       modal_confirm: 'Do you want to save mofications before moving on to the next page ?'

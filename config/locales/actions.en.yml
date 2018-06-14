@@ -28,6 +28,7 @@ en:
     create_api_key: "Create an API key"
     select: Select
     wait_for_submission: "Please wait..."
+    cancel_destroy: Cancel destroy
   or: "or"
   cancel: "Cancel"
   back: "Go Back"

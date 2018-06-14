@@ -577,6 +577,17 @@ describe('vehicleJourneys reducer', () => {
     ).toEqual([newVJ, state[1]])
   })
 
+  it('should handle CANCEL_DELETION', () => {
+    const index = 1
+    const newVJ = Object.assign({}, state[0], { deletable: false })
+    expect(
+      vjReducer(state, {
+        type: 'CANCEL_DELETION',
+        index
+      })
+    ).toEqual([newVJ, state[1]])
+  })
+
   it('should handle SHIFT_VEHICLEJOURNEY', () => {
     let newVJAS = [{
       delta: 627,

@@ -1,25 +1,39 @@
-$ ->
 
-  stickyActions = []
-  ptitleCont = ""
+stickyActions = []
+ptitleCont = ""
+
+@handleOpenMenu = ->
+  $('#main_nav').find('.openMenu').on 'click', (e) ->
+    $(this).parent().addClass 'open'
+
+@handleCloseMenu = ->
+  closeMenu = ->
+    $('#menu_left.nav-menu').removeClass 'open'
+    
+  $('#main_nav').find('.closeMenu').on 'click', (e) ->
+    closeMenu()
+
+  $(document).on 'keyup', (e) ->
+    if $('#main_nav').find('.closeMenu').length == 1 && e.keyCode == 27
+      closeMenu()
+
+  $(document).on 'click', (e) ->
+    unless $('#main_nav').is(e.target) || $('#main_nav').has(e.target).length > 0
+      closeMenu()
+
+@handleResetMenu = ->
   $(document).on 'page:before-change', ->
     stickyActions = []
     ptitleCont = ""
 
-  $el = $('#main_nav')
-    # Opening/closing left-side menu
-  $el.find('.openMenu').on 'click', (e) ->
-    $(this).parent().addClass 'open'
-
-  $el.find('.closeMenu').on 'click', (e) ->
-    $(this).closest('.nav-menu').removeClass 'open'
-
-  # Opening menu panel according to current url
-  selectedItem = $el.find('.active')
+@handleOpenMenuPanel = ->
+  selectedItem = $('#main_nav').find('.active')
   selectedItem.closest('.panel-collapse').addClass 'in'
   selectedItem.closest('.panel-title').children('a').attr('aria-expanded') == true
 
-  sticker = () ->
+@sticker = ->
+  # Sticky behavior
+  $(document).on 'scroll', () ->
     limit = 51
     offset = 30
 
@@ -63,6 +77,10 @@ $ ->
             child.appendTo item.originalParent
         $('.sticky-content').remove()
 
+$ ->
+
+  handleOpenMenu()
+  handleCloseMenu()
+  handleResetMenu()
+  handleOpenMenuPanel()
   sticker()
-  # Sticky behavior
-  $(document).on 'scroll', sticker

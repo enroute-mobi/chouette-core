@@ -1,25 +1,24 @@
-
 stickyActions = []
 ptitleCont = ""
+mainNav = $('#main_nav')
+navMenu = $('#menu_left.nav-menu')
 
 @handleOpenMenu = ->
-  $('#main_nav').find('.openMenu').on 'click', (e) ->
-    $(this).parent().addClass 'open'
+  mainNav.find('.openMenu').on 'click', (e) ->
+    navMenu.addClass 'open'
 
 @handleCloseMenu = ->
   closeMenu = ->
-    $('#menu_left.nav-menu').removeClass 'open'
+    navMenu.removeClass 'open'
     
-  $('#main_nav').find('.closeMenu').on 'click', (e) ->
+  mainNav.find('.closeMenu').on 'click', (e) ->
     closeMenu()
 
   $(document).on 'keyup', (e) ->
-    if $('#main_nav').find('.closeMenu').length == 1 && e.keyCode == 27
-      closeMenu()
+    closeMenu() if  navMenu.hasClass('open') && e.keyCode == 27
 
   $(document).on 'click', (e) ->
-    unless $('#main_nav').is(e.target) || $('#main_nav').has(e.target).length > 0
-      closeMenu()
+    closeMenu() unless mainNav.is(e.target) || mainNav.has(e.target).length > 0
 
 @handleResetMenu = ->
   $(document).on 'page:before-change', ->
@@ -27,7 +26,7 @@ ptitleCont = ""
     ptitleCont = ""
 
 @handleOpenMenuPanel = ->
-  selectedItem = $('#main_nav').find('.active')
+  selectedItem = mainNav.find('.active')
   selectedItem.closest('.panel-collapse').addClass 'in'
   selectedItem.closest('.panel-title').children('a').attr('aria-expanded') == true
 
@@ -59,7 +58,7 @@ ptitleCont = ""
       stickyContent = $('<div class="sticky-content"></div>')
       stickyContent.append $("<div class='sticky-ptitle'>#{ptitleCont}</div>")
       stickyContent.append $('<div class="sticky-paction"></div>')
-      $('#main_nav').addClass 'sticky'
+      mainNav.addClass 'sticky'
 
       if $('#menu_top').find('.sticky-content').length == 0
         if ptitleCont.length > 0
@@ -69,7 +68,7 @@ ptitleCont = ""
             child.appendTo $('.sticky-paction')
 
     else if $(window).scrollTop() <= limit - offset
-      $('#main_nav').removeClass 'sticky'
+      mainNav.removeClass 'sticky'
 
       if $('#menu_top').find('.sticky-content').length > 0
         for item in stickyActions
@@ -78,6 +77,11 @@ ptitleCont = ""
         $('.sticky-content').remove()
 
 $ ->
+
+  stickyActions = []
+  ptitleCont = ""
+  mainNav = $('#main_nav')
+  navMenu = $('#menu_left.nav-menu')
 
   handleOpenMenu()
   handleCloseMenu()

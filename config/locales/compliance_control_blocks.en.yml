@@ -6,7 +6,7 @@ en:
         one:   Control block
         other: Control blocks
     attributes:
-      compliance_control_blocks:
+      compliance_control_block:
         transport_mode: Transport mode
         sub_transport_mode: Transport submode
     errors:

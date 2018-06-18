@@ -35,6 +35,8 @@ en:
       destroy_confirm: Are you sure you want to delete this routing constraint zone?
     new:
       title: Add a new routings constraint zone
+      stop_area: Stop Area
+      city: City
     edit:
       title: "Update routing constraint zone %{name}"
     show:

@@ -6,7 +6,7 @@ fr:
         one:   "Groupe de contrôle"
         other: "Groupes de contrôles"
     attributes:
-      compliance_control_blocks:
+      compliance_control_block:
         transport_mode: Mode de transport
         transport_submode: Sous-mode de transport
     errors:

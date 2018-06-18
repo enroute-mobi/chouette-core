@@ -29,16 +29,15 @@
               ), \
               TableBuilderHelper::Column.new( \
                 key: :bounding_dates, \
-                name: "Période englobante", \
                 attribute: Proc.new { |tt| tt.object.bounding_dates.empty? ? '-' : t('bounding_dates', debut: l(tt.object.bounding_dates.min), end: l(tt.object.bounding_dates.max)) }, \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :vehicle_journeys_count, \
-                name: "Nombre de courses associées", \
+                name: Chouette::TimeTable.tmf('associated_vehicle_journeys'), \
                 attribute: Proc.new{ |tt| tt.vehicle_journeys.count }, \
               ), \
               TableBuilderHelper::Column.new( \
-                name: "Journées d'application", \
+                name: Chouette::TimeTable.tmf('day_types'), \
                 attribute: Proc.new { |tt| (%w(monday tuesday wednesday thursday friday saturday sunday).collect{|d| tt.send(d) ? t("calendars.days.#{d}") : '' }).reject{|a| a.empty?}.join(', ').html_safe }, \
                 sortable: false \
               ), \

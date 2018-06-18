@@ -35,6 +35,8 @@ fr:
       destroy_confirm: Etes vous sûr de supprimer cette ITL ?
     new:
       title: Créer une ITL
+      stop_area: Arrêt
+      city: Commune
     edit:
       title: "Editer l'ITL : %{name}"
     show:

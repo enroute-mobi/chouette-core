@@ -25,6 +25,7 @@ en:
       success: "Actualize succeded"
     new:
       title: "Add a new timetable"
+      calendar: Search by calendar
     duplicate:
       title: "Duplicate timetable"
     edit:
@@ -85,7 +86,7 @@ en:
       resume_empty: "Empty timetable"
     index:
       comment: "Search by name"
-      tag_search: "Tags : hollidays,public holliday"
+      tag_search: "Search by tag"
       from: "From: "
       to: " to: "
       start_date: "mm/jj/aaaa"
@@ -133,6 +134,7 @@ en:
         period_end: "to"
         tag_search: "Tags"
         tag_list: "Tags"
+        associated_vehicle_journeys: Number of associated vehicle journeys
   formtastic:
     titles:
       time_table:

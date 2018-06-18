@@ -8,8 +8,8 @@
       = f.input :published_name
       = f.input :registration_number
       = f.input :number
-      = f.input :transport_mode, as: :select, collection: Chouette::Line.sorted_transport_modes, label: t('activerecord.attributes.compliance_control_blocks.transport_mode'), label_method: lambda {|t| ("<span>" + t("enumerize.transport_mode.#{t}") + "</span>").html_safe}, required: true, :include_blank => false
-      = f.input :transport_submode, as: :select, collection: Chouette::Line.sorted_transport_submodes, label: t('activerecord.attributes.compliance_control_blocks.transport_submode'), label_method: lambda {|t| ("<span>" + t("enumerize.transport_submode.#{t}") + "</span>").html_safe}, :include_blank => true
+      = f.input :transport_mode, as: :select, collection: Chouette::Line.sorted_transport_modes, label: ComplianceControlBlock.tmf('transport_mode'), label_method: lambda {|t| ("<span>" + t("enumerize.transport_mode.#{t}") + "</span>").html_safe}, required: true, :include_blank => false
+      = f.input :transport_submode, as: :select, collection: Chouette::Line.sorted_transport_submodes, label: ComplianceControlBlock.tmf('sub_transport_mode'), label_method: lambda {|t| ("<span>" + t("enumerize.transport_submode.#{t}") + "</span>").html_safe}, :include_blank => true
       = f.input :color, as: :color_select, collection: Chouette::Line.colors_i18n
       = f.input :text_color, as: :color_select, collection: Chouette::Line.text_colors_i18n
       = f.input :stable_id

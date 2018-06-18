@@ -94,7 +94,7 @@ en:
         color: "Line color"
         text_color: "Text color"
         mobility_restricted_suitability: "PRM accessibility"
-        flexible_service: "On demond transportation"
+        flexible_service: "On demand transportation"
         unspecified_mrs: "Not specified"
         accessible: "Accessible"
         not_accessible: "Not accessible"

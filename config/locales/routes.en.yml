@@ -56,6 +56,8 @@ en:
       stop_area_name: "Stop area name"
       for_boarding: "Boarding"
       for_alighting: "Alighting"
+    create_opposite:
+      title: "Create opposite route"
     duplicate:
       title: "Clone route"
       success: "Route cloned with success"

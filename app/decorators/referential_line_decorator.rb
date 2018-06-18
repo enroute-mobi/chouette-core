@@ -13,7 +13,7 @@ class ReferentialLineDecorator < AF83::Decorator
     instance_decorator.show_action_link
 
     instance_decorator.action_link secondary: true do |l|
-      l.content Chouette::Line.tmf(:footnotes)
+      l.content { Chouette::Line.tmf(:footnotes) }
       l.href { h.referential_line_footnotes_path(context[:referential], object) }
     end
 

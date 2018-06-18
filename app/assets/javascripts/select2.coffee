@@ -2,9 +2,11 @@ bind_select2 = (el, cfg = {}) ->
   target = $(el)
   default_cfg =
     theme: 'bootstrap'
-    language: 'fr'
+    language: I18n.locale
     placeholder: target.data('select2ed-placeholder')
     allowClear: !!target.data('select2ed-allow-clear')
+    searchingText: I18n.t('actions.searching_term')
+    noResultsText: I18n.t('actions.no_result_text')
 
   target.select2 $.extend({}, default_cfg, cfg)
 

@@ -1,77 +1,63 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import mapKeys from 'lodash/mapKeys'
-import map from 'lodash/map'
-import filter from 'lodash/filter'
-import assign from 'lodash/assign'
-import Select2 from 'react-select2-wrapper'
+import Select2 from 'react-select/lib/Creatable'
+import select2Fecth from '../../helpers/select2_fetch_generator.js'
 
 // get JSON full path
-let origin = window.location.origin
-let path = window.location.pathname.split('/', 4).join('/')
+const origin = window.location.origin
+const path = window.location.pathname.split('/', 4).join('/')
 
 export default class TagsSelect2 extends Component {
-  constructor(props, context) {
-    super(props, context)
+  constructor(props) {
+    super(props)
+    this.handleChange = this.handleChange.bind(this)
+    this.handleInputChange = this.handleInputChange.bind(this)
+    this.url = origin + path + '/tags.json',
+
+      this.state = {
+        inputValue: '',
+        options: []
+      }
   }
 
-  mapKeys(array){
-    return array.map((item) =>
-      mapKeys(item, (v, k) =>
-        ((k == 'name') ? 'text' : k)
-      )
-    )
+  handleInputChange(inputValue) {
+    this.setState({ inputValue })
+  }
+
+  handleChange(newValue) {
+    let newTags = newValue.reduce((tags, { value, label }) => {
+      return [...tags, { value, label }]
+    }, [])
+    this.props.onSetNewTags(newTags)
+  }
+
+  filterResults(collection, input) {
+    return collection.filter(i => i.label.toLowerCase().includes(input.toLowerCase()))
+  }
+
+  componentDidMount() {
+    select2Fecth(this.url, this.state.inputValue, this.filterResults).then(options => this.setState({ options }))
   }
 
   render() {
+    let { filterResults, handleChange, handleInputChange, url, props: { tags }, state: { inputValue, options } } = this
     return (
       <Select2
-        value={(this.props.tags.length) ? map(this.props.tags, 'id') : undefined}
-        data={(this.props.tags.length) ? this.mapKeys(this.props.tags) : undefined}
-        onSelect={(e) => this.props.onSelect2Tags(e)}
-        onUnselect={(e) => setTimeout( () => this.props.onUnselect2Tags(e, 150))}
-        multiple={true}
-        ref='tags_id'
-        options={{
-          tags:true,
-          createTag: function(params) {
-            return {name: params.term, text: params.term, id: params.term}
-          },
-          allowClear: true,
-          theme: 'bootstrap',
-          width: '100%',
-          placeholder: I18n.t('time_tables.edit.select2.tag.placeholder'),
-          ajax: {
-            url: origin + path + '/tags.json',
-            dataType: 'json',
-            delay: '500',
-            data: function(params) {
-              return {
-                tag: params.term,
-              };
-            },
-            processResults: function(data, params) {
-              let items = filter(data, ({name}) => name.includes(params.term) )
-              return {
-                results: items.map(
-                  item => assign(
-                    {},
-                    item,
-                    {text: item.name}
-                  )
-                )
-              };
-            },
-            cache: true
-          },
-          minimumInputLength: 1,
-          templateResult: formatRepo
-        }}
+        name='tags_id'
+        isMulti
+        isClearable
+        inputValue={inputValue}
+        value={tags}
+        onChange={handleChange}
+        onInputChange={handleInputChange}
+        placeholder={I18n.t('time_tables.edit.select2.tag.placeholder')}
+        options={options}
       />
     )
   }
 }
 
-const formatRepo = (props) => {
-  if(props.name) return props.name
+TagsSelect2.propTypes = {
+  tags: PropTypes.array.isRequired,
+  onSetNewTags: PropTypes.func.isRequired
 }

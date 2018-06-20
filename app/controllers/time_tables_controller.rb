@@ -113,7 +113,7 @@ class TimeTablesController < ChouetteController
     # @tags = ActsAsTaggableOn::Tag.where("tags.name = ?", "%#{params[:tag]}%")
     @tags = Chouette::TimeTable.tags_on(:tags)
     respond_to do |format|
-      format.json { render :json => @tags.map{|t| {:id => t.id, :name => t.name }} }
+      format.json { render :json => @tags.map{|t| { value: t.id.to_s, label: t.name }} }
     end
   end
 

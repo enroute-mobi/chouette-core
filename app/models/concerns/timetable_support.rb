@@ -111,7 +111,7 @@ module TimetableSupport
 
   def state_update state
     update_attributes(self.class.state_permited_attributes(state))
-    self.tag_list    = state['tags'].collect{|t| t['name']}.join(', ') if state['tags']
+    self.tag_list    = state['tags'].collect{|t| t['label']}.join(', ') if state['tags']
     self.calendar_id = nil if self.respond_to?(:calendar_id) && !state['calendar']
 
     days = state['day_types'].split(',')

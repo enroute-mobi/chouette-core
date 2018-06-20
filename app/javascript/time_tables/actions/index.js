@@ -70,19 +70,9 @@ const actions = {
     type: 'UPDATE_COLOR',
     color
   }),
-  select2Tags: (selectedTag) => ({
-    type: 'UPDATE_SELECT_TAG',
-    selectedItem: {
-      id: selectedTag.id,
-      name: selectedTag.name
-    }
-  }),
-  unselect2Tags: (selectedTag) => ({
-    type: 'UPDATE_UNSELECT_TAG',
-    selectedItem: {
-      id: selectedTag.id,
-      name: selectedTag.name
-    }
+  setNewTags: (tagList) => ({
+    type: 'SET_NEW_TAGS',
+    tagList
   }),
   deletePeriod: (index, dayTypes) => ({
     type: 'DELETE_PERIOD',
@@ -260,21 +250,21 @@ const actions = {
     fetch(urlJSON, {
       credentials: 'same-origin',
     }).then(response => {
-        if(response.status == 500) {
-          hasError = true
+      if(response.status == 500) {
+        hasError = true
+      }
+      return response.json()
+    }).then((json) => {
+      if(hasError == true) {
+        dispatch(actions.unavailableServer())
+      } else {
+        if(nextPage){
+          dispatch(actions.receiveMonth(json))
+        }else{
+          dispatch(actions.receiveTimeTables(json))
         }
-        return response.json()
-      }).then((json) => {
-        if(hasError == true) {
-          dispatch(actions.unavailableServer())
-        } else {
-          if(nextPage){
-            dispatch(actions.receiveMonth(json))
-          }else{
-            dispatch(actions.receiveTimeTables(json))
-          }
-        }
-      })
+      }
+    })
   },
   submitTimetable: (dispatch, timetable, metas, next) => {
     dispatch(actions.fetchingApi())
@@ -294,20 +284,20 @@ const actions = {
       }
     }).then(response => {
         if(!response.ok) {
-          hasError = true
-        }
-        return response.json()
-      }).then((json) => {
-        if(hasError == true) {
-          dispatch(actions.receiveErrors(json))
+        hasError = true
+      }
+      return response.json()
+    }).then((json) => {
+      if(hasError == true) {
+        dispatch(actions.receiveErrors(json))
+      } else {
+        if(next) {
+          dispatch(next)
         } else {
-          if(next) {
-            dispatch(next)
-          } else {
-            dispatch(actions.receiveTimeTables(json))
-          }
+          dispatch(actions.receiveTimeTables(json))
         }
-      })
+      }
+    })
   },
   errorModalKey: (periods, dayTypes) => {
     // const withoutPeriodsWithDaysTypes = reject(periods, 'deleted').length == 0 && some(dayTypes) && "withoutPeriodsWithDaysTypes"

@@ -4,7 +4,7 @@ attributes :id, :comment
 node do |tt|
   {
     time_table_bounding: tt.presenter.time_table_bounding,
-    tags: tt.tags.map{ |tag| {id: tag.id, name: tag.name}},
+    tags: tt.tags.map{ |tag| {value: tag.id.to_s, label: tag.name}},
     day_types: %w(monday tuesday wednesday thursday friday saturday sunday).select{ |d| tt.send(d) }.map{ |d| tt.human_attribute_name(d).first(2)}.join(''),
     current_month: tt.month_inspect(Date.today),
     periode_range: month_periode_enum(3),

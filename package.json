@@ -12,6 +12,7 @@
     "coffee-loader": "^0.9.0",
     "coffeescript": "1.12.7",
     "es6-symbol": "^3.1.1",
+    "hoek": "~> 4.2.1",
     "jquery": "3.2.1",
     "lodash": "4.17.4",
     "polyfill-array-includes": "^1.0.0",
@@ -20,15 +21,15 @@
     "react": "16.2.0",
     "react-dom": "16.2.0",
     "react-redux": "5.0.6",
+    "react-select": "^2.0.0-beta.6",
     "react-select2-wrapper": "^1.0.4-beta5",
     "redux": "3.7.2",
     "redux-logger": "3.0.6",
     "redux-promise": "0.5.3",
     "redux-thunk": "2.2.0",
-    "uglify-js": "3.3.2",
-    "whatwg-fetch": "^2.0.4",
     "ssri": "~> 5.2.2",
-    "hoek": "~> 4.2.1"
+    "uglify-js": "3.3.2",
+    "whatwg-fetch": "^2.0.4"
   },
   "license": "MIT",
   "engines": {

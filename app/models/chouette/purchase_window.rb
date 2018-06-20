@@ -11,7 +11,6 @@ module Chouette
     color_attribute
 
     has_metadata
-    belongs_to :referential
     has_and_belongs_to_many :vehicle_journeys, :class_name => 'Chouette::VehicleJourney'
 
     validates_presence_of :name, :referential, :date_ranges

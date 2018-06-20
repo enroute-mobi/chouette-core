@@ -4,7 +4,7 @@ RSpec.describe AutocompletePurchaseWindowsController, type: :controller do
   login_user
 
   let(:referential) { Referential.first }
-  let!(:window) { create :purchase_window, referential: referential, name: 'écolà militaire' }
+  let!(:window) { create :purchase_window, name: 'écolà militaire' }
 
   describe 'GET #index' do
     it 'should be unauthorized' do

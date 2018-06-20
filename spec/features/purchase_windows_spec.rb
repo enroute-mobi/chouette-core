@@ -39,7 +39,6 @@ describe "PurchaseWindows", type: :feature do
         expected_name = 'Updated purchase window'
         create(
           :purchase_window,
-          referential: first_referential,
           name: actual_name
         )
 
@@ -61,7 +60,6 @@ describe "PurchaseWindows", type: :feature do
         name = 'Existing purchase window'
         create(
           :purchase_window,
-          referential: first_referential,
           name: name
         )
 

@@ -25,7 +25,6 @@ class PurchaseWindowsController < ChouetteController
   protected
 
   def create_resource(purchase_window)
-    purchase_window.referential = @referential
     super
   end
 

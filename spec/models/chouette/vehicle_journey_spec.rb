@@ -137,18 +137,18 @@ describe Chouette::VehicleJourney, :type => :model do
 
     let!(:without_purchase_window){ create :vehicle_journey }
     let!(:without_matching_purchase_window){
-      pw = create :purchase_window, referential: Referential.first, date_ranges: [(end_date+1.day..end_date+2.days)]
-      pw2 = create :purchase_window, referential: Referential.first, date_ranges: [(end_date+10.day..end_date+20.days)]
+      pw = create :purchase_window, date_ranges: [(end_date+1.day..end_date+2.days)]
+      pw2 = create :purchase_window, date_ranges: [(end_date+10.day..end_date+20.days)]
       create :vehicle_journey, purchase_windows: [pw, pw2]
     }
     let!(:included_purchase_window){
-      pw = create :purchase_window, referential: Referential.first, date_ranges: [(start_date..end_date)]
-      pw2 = create :purchase_window, referential: Referential.first
+      pw = create :purchase_window, date_ranges: [(start_date..end_date)]
+      pw2 = create :purchase_window
       create :vehicle_journey, purchase_windows: [pw, pw2]
     }
     let!(:overlapping_purchase_window){
-      pw = create :purchase_window, referential: Referential.first, date_ranges: [(end_date..end_date+1.day)]
-      pw2 = create :purchase_window, referential: Referential.first
+      pw = create :purchase_window, date_ranges: [(end_date..end_date+1.day)]
+      pw2 = create :purchase_window
       create :vehicle_journey, purchase_windows: [pw, pw2]
     }
 
@@ -420,7 +420,7 @@ describe Chouette::VehicleJourney, :type => :model do
     end
 
     it 'should update vj purchase_windows association from state' do
-      2.times{state['purchase_windows'] << create(:purchase_window, referential: referential).slice('id', 'name', 'objectid', 'color')}
+      2.times{state['purchase_windows'] << create(:purchase_window).slice('id', 'name', 'objectid', 'color')}
       vehicle_journey.update_has_and_belongs_to_many_from_state(state)
 
       expected = state['purchase_windows'].map{|tt| tt['id']}
@@ -429,7 +429,7 @@ describe Chouette::VehicleJourney, :type => :model do
     end
 
     it 'should clear vj purchase_windows association when remove from state' do
-      vehicle_journey.purchase_windows << create(:purchase_window, referential: referential)
+      vehicle_journey.purchase_windows << create(:purchase_window)
       state['purchase_windows'] = []
       vehicle_journey.update_has_and_belongs_to_many_from_state(state)
 
@@ -1086,9 +1086,7 @@ describe Chouette::VehicleJourney, :type => :model do
       end
 
       it "should compute passing time" do
-        p @journey.reload.vehicle_journey_at_stops.map &:checksum_source
         @journey.reload.fill_passing_times!
-        p @journey.vehicle_journey_at_stops.map &:checksum_source
         expect{@journey.reload.calculate_vehicle_journey_at_stop_day_offset}.to_not change{ @journey.vehicle_journey_at_stops.map(&:checksum_source).join(' ') }
       end
     end

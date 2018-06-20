@@ -8,7 +8,7 @@ describe "PurchaseWindows", :type => :feature do
     @user.organisation.update features: %w{purchase_windows}
   end
 
-  let(:purchase_window) { create :purchase_window, referential: first_referential}
+  let(:purchase_window) { create :purchase_window}
 
   describe 'permissions' do
     before do

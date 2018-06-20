@@ -23,12 +23,22 @@ export default class TagsSelect2 extends Component {
     )
   }
 
+  handleSelect(e) {
+    let tagId = e.params.data['id']
+    if (Number.isInteger(tagId)) {
+      $(this.refs.tags_id.el).find(`option[value=${tagId}]`).remove()
+    } else {
+      $(this.refs.tags_id.el).find('[data-select2-tag]').remove()
+    }
+    this.props.onSelect2Tags(e)
+  }
+
   render() {
     return (
       <Select2
         value={(this.props.tags.length) ? map(this.props.tags, 'id') : undefined}
         data={(this.props.tags.length) ? this.mapKeys(this.props.tags) : undefined}
-        onSelect={(e) => this.props.onSelect2Tags(e)}
+        onSelect={(e) => this.handleSelect(e)}
         onUnselect={(e) => setTimeout( () => this.props.onUnselect2Tags(e, 150))}
         multiple={true}
         ref='tags_id'

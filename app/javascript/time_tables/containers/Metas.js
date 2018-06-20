@@ -24,7 +24,6 @@ const mapDispatchToProps = (dispatch) => {
     },
     onSelect2Tags: (e) => {
       e.preventDefault()
-      $(e.target).find('[data-select2-tag]').remove()
       dispatch(actions.select2Tags(e.params.data))
     },
     onUnselect2Tags: (e) => {

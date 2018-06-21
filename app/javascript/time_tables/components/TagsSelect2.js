@@ -12,6 +12,7 @@ export default class TagsSelect2 extends Component {
     super(props)
     this.handleChange = this.handleChange.bind(this)
     this.handleInputChange = this.handleInputChange.bind(this)
+    this.filteredOptions = this.filteredOptions.bind(this)
     this.url = origin + path + '/tags.json',
 
       this.state = {
@@ -31,16 +32,22 @@ export default class TagsSelect2 extends Component {
     this.props.onSetNewTags(newTags)
   }
 
-  filterResults(collection, input) {
-    return collection.filter(i => i.label.toLowerCase().includes(input.toLowerCase()))
+  filteredOptions() {
+    const {options, inputValue} = this.state
+
+    if (inputValue == '') {
+      return options
+    } else {
+      return options.filter(i => i.label.toLowerCase().includes(inputValue.toLowerCase()))
+    }
   }
 
   componentDidMount() {
-    select2Fecth(this.url, this.state.inputValue, this.filterResults).then(options => this.setState({ options }))
+    select2Fecth(this.url).then(options => this.setState({ options }))
   }
 
   render() {
-    let { filterResults, handleChange, handleInputChange, url, props: { tags }, state: { inputValue, options } } = this
+    const { filteredOptions, handleChange, handleInputChange, url, props: { tags }, state: { inputValue } } = this
     return (
       <Select2
         name='tags_id'
@@ -51,7 +58,8 @@ export default class TagsSelect2 extends Component {
         onChange={handleChange}
         onInputChange={handleInputChange}
         placeholder={I18n.t('time_tables.edit.select2.tag.placeholder')}
-        options={options}
+        options={filteredOptions()}
+        formatCreateLabel={() => I18n.t('time_tables.edit.select2.tag.create_tag_label', {tag: inputValue})}
       />
     )
   }

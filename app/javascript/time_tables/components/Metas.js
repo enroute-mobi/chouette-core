@@ -129,7 +129,5 @@ Metas.propTypes = {
   metas: PropTypes.object.isRequired,
   onUpdateDayTypes: PropTypes.func.isRequired,
   onUpdateColor: PropTypes.func.isRequired,
-  onUpdateColor: PropTypes.func.isRequired,
-  onSelect2Tags: PropTypes.func.isRequired,
-  onUnselect2Tags: PropTypes.func.isRequired
+  onSetNewTags: PropTypes.func.isRequired
 }

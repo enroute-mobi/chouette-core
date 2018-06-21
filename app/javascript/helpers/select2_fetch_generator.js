@@ -6,10 +6,8 @@ export default function select2Fecth(url, input, callback) {
 
 function* fetchWithTimeout(url, input, callback, component) {
   try {
-    let hasInputValue = input != '' && input != undefined
     let response = yield timeoutPromise(url)
     let object = yield response.json()
-    if (hasInputValue) object = callback.apply(null, [object, input])
     return object
   } catch (error) {
     console.error("Error in Fetch : \n", error)

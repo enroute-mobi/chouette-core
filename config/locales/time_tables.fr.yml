@@ -60,6 +60,7 @@ fr:
       select2:
         tag:
           placeholder: Ajoutez ou cherchez une étiquette...
+          create_tag_label: "Créer nouvelle étiquette : '%{tag}'"
       period_form:
         begin: Début de période
         end: Fin de période

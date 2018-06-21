@@ -60,6 +60,7 @@ en:
       select2:
         tag:
           placeholder: Add or search a tag...
+          create_tag_label: "Create new tag : '%{tag}'"
       period_form:
         begin: Period start
         end: Period end

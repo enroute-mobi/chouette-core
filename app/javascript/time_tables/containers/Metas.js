@@ -22,8 +22,11 @@ const mapDispatchToProps = (dispatch) => {
     onUpdateColor: (color) => {
       dispatch(actions.updateColor(color))
     },
-    onSetNewTags: (tags) => {
-      dispatch(actions.setNewTags(tags))
+    onSetNewTags: (newValue) => {
+      let newTags = newValue.reduce((tags, { value, label }) => {
+          return [...tags, { value, label }]
+        }, [])
+      dispatch(actions.setNewTags(newTags))
     }
   }
 }

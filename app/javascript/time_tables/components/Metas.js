@@ -4,6 +4,8 @@ import PropTypes from 'prop-types'
 import actions from '../actions'
 import TagsSelect2 from './TagsSelect2'
 
+const tagsUrl = window.location.origin + window.location.pathname.split('/', 4).join('/') + '/tags.json'
+
 export default function Metas({ metas, onUpdateDayTypes, onUpdateComment, onUpdateColor, onSetNewTags }) {
   let colorList = ["", "#9B9B9B", "#FFA070", "#C67300", "#7F551B", "#41CCE3", "#09B09C", "#3655D7",   "#6321A0", "#E796C6", "#DD2DAA"]
   return (
@@ -76,8 +78,9 @@ export default function Metas({ metas, onUpdateDayTypes, onUpdateComment, onUpda
             <label htmlFor="" className="control-label col-sm-4">{I18n.attribute_name('time_table', 'tag_list')}</label>
             <div className="col-sm-8">
               <TagsSelect2
-                tags={metas.tags}
-                onSetNewTags={onSetNewTags}
+                url={tagsUrl}
+                value={metas.tags}
+                onHandleChange={onSetNewTags}
               />
             </div>
           </div>}

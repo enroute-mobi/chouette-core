@@ -53,7 +53,7 @@ export default class Tools extends Component {
           <DeleteVehicleJourneys disabled={!hasPolicy("destroy") || !editMode || hasDeletedVJ()}/>
         </ul>
         <div className='pull-left'>
-          <span className='info-msg' style={leftSpan}>{I18n.t('vehicle_journeys.vehicle_journeys_matrix.selected_journeys', { count: actions.getSelected(vehicleJourneys).length })}</span>
+          <span className='info-msg left-span'>{I18n.t('vehicle_journeys.vehicle_journeys_matrix.selected_journeys', { count: actions.getSelected(vehicleJourneys).length })}</span>
         </div>
         <button className='btn btn-xs btn-link' 
                 disabled={actions.getSelected(vehicleJourneys).length == 0}
@@ -74,12 +74,4 @@ Tools.propTypes = {
   vehicleJourneys : PropTypes.array.isRequired,
   onCancelSelection: PropTypes.func.isRequired,
   filters: PropTypes.object.isRequired
-}
-
-const leftSpan = {
-  marginRight: '15px',
-  padding: '1px 5px',
-  fontSize: '12px',
-  lineHeight: 1.5,
-  borderRadius: '3px'
 }

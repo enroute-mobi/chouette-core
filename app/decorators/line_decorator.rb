@@ -40,7 +40,7 @@ class LineDecorator < AF83::Decorator
     ### the option :policy will automatically check for the corresponding method
     ### on the object's policy
 
-    instance_decorator.action_link policy: :deactivate, secondary: :show, footer: :index, in_gear_menu: false do |l|
+    instance_decorator.action_link policy: :deactivate, secondary: :show, footer: :index, on: %i(show) do |l|
       l.content  { h.deactivate_link_content('lines.actions.deactivate') }
       l.href     { h.deactivate_line_referential_line_path(context[:line_referential], object) }
       l.method   :put
@@ -48,7 +48,7 @@ class LineDecorator < AF83::Decorator
       l.add_class "delete-action"
     end
 
-    instance_decorator.action_link policy: :activate, secondary: :show, footer: :index, in_gear_menu: false do |l|
+    instance_decorator.action_link policy: :activate, secondary: :show, footer: :index, on: %i(show) do |l|
       l.content  { h.activate_link_content('lines.actions.activate') }
       l.href     { h.activate_line_referential_line_path(context[:line_referential], object) }
       l.method   :put

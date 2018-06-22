@@ -50,10 +50,10 @@ class WorkbenchesController < ChouetteController
   end
 
   def sort_result collection
-    col = (Referential.column_names + %w{lines validity_period}).include?(params[:sort]) ? params[:sort] : 'name'
+    col = (Referential.column_names + %w{lines validity_period organisation_name}).include?(params[:sort]) ? params[:sort] : 'name'
     dir = %w[asc desc].include?(params[:direction]) ?  params[:direction] : 'asc'
 
-    if ['lines', 'validity_period'].include?(col)
+    if ['lines', 'validity_period', 'organisation_name'].include?(col)
       collection.send("order_by_#{col}", dir)
     else
       collection.order("#{col} #{dir}")

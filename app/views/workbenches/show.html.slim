@@ -37,7 +37,8 @@
                   attribute: Proc.new {|w| "<a href='' title='#{"referentials.states.#{w.state}".t}'>#{icon_for_referential_state(w.state)}</a>".html_safe} \
                 ), \
                 TableBuilderHelper::Column.new( \
-                  key: :organisation, \
+                  key: :organisation_name, \
+                  name: Referential.tmf('organisation'), \
                   attribute: Proc.new {|w| w.organisation.name} \
                 ), \
                 TableBuilderHelper::Column.new( \

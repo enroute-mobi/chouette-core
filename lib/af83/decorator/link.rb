@@ -85,10 +85,6 @@ class AF83::Decorator::Link
     in_group_for_action? :secondary
   end
 
-  def in_gear_menu?
-    in_group_for_action? :in_gear_menu
-  end
-
   def disabled?
     !!disabled
   end

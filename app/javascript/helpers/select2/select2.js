@@ -50,5 +50,15 @@ export default function createSelect2(WrappedComponent) {
         />)
     }
   }
+
+  Select2.propTypes = {
+    url: PropTypes.string.isRequired,
+    value: PropTypes.oneOfType([
+      PropTypes.array,
+      PropTypes.string
+    ]).isRequired,
+    onHandleChange: PropTypes.func.isRequired
+  }
+
   return Select2
 }

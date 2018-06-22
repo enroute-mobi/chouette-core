@@ -14,11 +14,7 @@ class StopAreaDecorator < AF83::Decorator
       l.content t('stop_areas.actions.edit')
     end
 
-<<<<<<< HEAD
-    instance_decorator.action_link policy: :deactivate, secondary: true, in_gear_menu: false do |l|
-=======
     instance_decorator.action_link policy: :deactivate, secondary: true, on: %i(show) do |l|
->>>>>>> Refs #6484 Fix gear only on show for line & stop area
       l.content { h.deactivate_link_content('stop_areas.actions.deactivate') }
       l.href do
         h.deactivate_stop_area_referential_stop_area_path(
@@ -30,12 +26,8 @@ class StopAreaDecorator < AF83::Decorator
       l.data {{ confirm: h.t('stop_areas.actions.deactivate_confirm') }}
       l.add_class 'delete-action'
     end
-
-<<<<<<< HEAD
-    instance_decorator.action_link policy: :activate, secondary: true, in_gear_menu: false do |l|
-=======
+    
     instance_decorator.action_link policy: :activate, secondary: true, on: %i(show) do |l|
->>>>>>> Refs #6484 Fix gear only on show for line & stop area
       l.content { h.activate_link_content('stop_areas.actions.activate') }
       l.href do
         h.activate_stop_area_referential_stop_area_path(

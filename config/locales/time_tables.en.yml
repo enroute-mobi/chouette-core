@@ -61,6 +61,7 @@ en:
         tag:
           placeholder: Add or search a tag...
           create_tag_label: "Create new tag : '%{tag}'"
+          no_options: "No options"
       period_form:
         begin: Period start
         end: Period end

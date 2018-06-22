@@ -61,6 +61,7 @@ fr:
         tag:
           placeholder: Ajoutez ou cherchez une étiquette...
           create_tag_label: "Créer nouvelle étiquette : '%{tag}'"
+          no_options: "Aucune étiquette disponible"
       period_form:
         begin: Début de période
         end: Fin de période

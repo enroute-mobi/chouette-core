@@ -43,22 +43,10 @@ describe('actions', () => {
       name: 'test'
     }
     const expectedAction = {
-      type: 'UPDATE_SELECT_TAG',
-      selectedItem: selectedItem
+      type: 'SET_NEW_TAGS',
+      tagList: selectedItem
     }
-    expect(actions.select2Tags(selectedItem)).toEqual(expectedAction)
-  })
-
-  it('should create an action to update unselected tags', () => {
-    let selectedItem = {
-      id: 1,
-      name: 'test'
-    }
-    const expectedAction = {
-      type: 'UPDATE_UNSELECT_TAG',
-      selectedItem: selectedItem
-    }
-    expect(actions.unselect2Tags(selectedItem)).toEqual(expectedAction)
+    expect(actions.setNewTags(selectedItem)).toEqual(expectedAction)
   })
 
   it('should create an action to go to previous page', () => {

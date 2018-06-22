@@ -10,6 +10,7 @@ function TagsSelect2(props) {
       isMulti
       isClearable
       placeholder={I18n.t('time_tables.edit.select2.tag.placeholder')}
+      noOptionsMessage={() => I18n.t('time_tables.edit.select2.tag.no_options')}
       formatCreateLabel={() => I18n.t('time_tables.edit.select2.tag.create_tag_label', {tag: props.inputValue})}
       {...props}
     />

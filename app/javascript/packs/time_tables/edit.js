@@ -34,7 +34,6 @@ let initialState = {
     comment: '',
     day_types: [],
     tags: [],
-    initial_tags: [],
     color: '',
     calendar: null
   },

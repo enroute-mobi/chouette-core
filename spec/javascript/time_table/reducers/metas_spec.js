@@ -5,14 +5,13 @@ let state = {}
 describe('metas reducer', () => {
   beforeEach(() => {
     let tag = {
-      id: 0,
-      name: 'test'
+      value: '0',
+      label: 'test'
     }
     state = {
       comment: 'test',
       day_types: [true, true, true, true, true, true, true],
       color: 'blue',
-      initial_tags: [tag],
       tags: [tag]
     }
   })
@@ -51,27 +50,29 @@ describe('metas reducer', () => {
     ).toEqual(Object.assign({}, state, {color: '#ffffff'}))
   })
 
-  it('should handle UPDATE_SELECT_TAG', () => {
-    expect(
-      metasReducer(state, {
-        type: 'UPDATE_SELECT_TAG',
-        selectedItem:{
-          id: 1,
-          name: 'great'
-        }
+  describe('SET_NEW_TAGS action', () => {
+    context('when tagList is empty', () => {
+      it('should set state.tags to an empty array', () => {
+        let newState = Object.assign({}, state, { tags: [] })
+        expect(
+          metasReducer(state, {
+            type: 'SET_NEW_TAGS',
+            tagList: []
+          })
+        ).toEqual(newState)
       })
-    ).toEqual(Object.assign({}, state, {tags: [...state.tags, {id: 1, name:'great'}]}))
-  })
-
-  it('should handle UPDATE_UNSELECT_TAG', () => {
-    expect(
-      metasReducer(state, {
-        type: 'UPDATE_UNSELECT_TAG',
-        selectedItem:{
-          id: 0,
-          name: 'test'
-        }
+    })
+    context('when tagList is not empty', () => {
+      it('should set state.tags to tagList', () => {
+        let newTags = [...state.tags, { value: '1', label: 'great' }]
+        let newState = Object.assign({}, state, { tags: newTags })
+        expect(
+          metasReducer(state, {
+            type: 'SET_NEW_TAGS',
+            tagList: newTags
+          })
+        ).toEqual(newState)
       })
-    ).toEqual(Object.assign({}, state, {tags: []}))
+    })
   })
 })

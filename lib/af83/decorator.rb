@@ -76,10 +76,6 @@ class AF83::Decorator < ModelDecorator
       for_group :secondary
     end
 
-    def in_gear_menu
-      for_group :in_gear_menu
-    end
-
     def resolve
       out = @options[:links].map{|l| l.bind_to_context(@options[:context], @options[:action])}.select{|l| l.enabled?}
       if @options[:groups].present?

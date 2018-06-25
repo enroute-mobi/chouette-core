@@ -1,3 +1,5 @@
+require 'rgeo_ext'
+
 class WayCost
   attr_reader :departure, :arrival, :id
   attr_accessor :distance, :time
@@ -23,5 +25,10 @@ class WayCost
       @distance == other.distance &&
       @time == other.time &&
       @id == other.id
+  end
+
+  def calculate_distance
+    distance_meters = departure.distance_to(arrival, units: :kms) * 1000
+    distance_meters
   end
 end

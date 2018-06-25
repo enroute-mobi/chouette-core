@@ -8,7 +8,6 @@ class RouteWayCostUnitConverter
     end
   end
 
-  # Round to 2 decimal places to appease JavaScript validation
   def self.meters_to_kilometers(num)
     return 0 unless num
 

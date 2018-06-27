@@ -489,10 +489,18 @@ module Chouette
 
         unless modified_ranges.empty?
           modified_ranges.each_with_index do |modified_range, index|
-            new_period = index == 0 ? period : periods.build
+            if modified_range.min != modified_range.max
+              new_period = index == 0 ? period : periods.build
 
-            new_period.period_start, new_period.period_end =
-                                     modified_range.min, modified_range.max
+              new_period.period_start, new_period.period_end =
+                                       modified_range.min, modified_range.max
+            else
+              remaining_date = modified_range.min
+              if applicable_date?(remaining_date)
+                dates.build in_out: true, date: modified_range.min
+              end
+              periods.delete period if index == 0
+            end
           end
         else
           periods.delete period

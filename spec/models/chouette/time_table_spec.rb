@@ -315,7 +315,7 @@ describe Chouette::TimeTable, :type => :model do
     it 'should save new tags' do
       subject.tag_list = "awesome, great"
       subject.save
-      state['tags'] << {'value' => false, 'label' => 'new_tag'}
+      state['tags'] << {'id' => false, 'name' => 'new_tag'}
 
       subject.state_update state
       expect(subject.reload.tags.map(&:name)).to include('new_tag')
@@ -1262,7 +1262,7 @@ end
   end
 
   describe "#remove_periods!" do
-    let(:time_table) { Chouette::TimeTable.new }
+    let(:time_table) { Chouette::TimeTable.new int_day_types: Chouette::TimeTable::EVERYDAY }
     let(:periods) do
       [
         Date.new(2018, 1, 1)..Date.new(2018, 2, 1),
@@ -1307,6 +1307,38 @@ end
         Date.new(2018,2,2)..Date.new(2018,3,1)
       ]
       expect(time_table.periods.map(&:range)).to eq(expected_ranges)
+    end
+
+    it "creates a included Date if a single day remains from a period" do
+      time_table.periods.build period_start: Date.new(2018, 1, 1), period_end: Date.new(2018, 2, 2)
+      time_table.remove_periods! periods
+
+      expect(time_table.periods.empty?).to be_truthy
+      expect(time_table.dates.size).to eq(1)
+
+      created_date = time_table.dates.first
+      expect(created_date.date).to eq(Date.new(2018, 2, 2))
+      expect(created_date.in_out).to be_truthy
+    end
+
+    it "creates a two included Dates if two days remain from a period" do
+      time_table.periods.build period_start: Date.new(2017, 12, 31), period_end: Date.new(2018, 2, 2)
+      time_table.remove_periods! periods
+
+      expect(time_table.periods).to be_empty
+      expect(time_table.dates.size).to eq(2)
+
+      expect(time_table.dates.map(&:date)).to eq([Date.new(2017, 12, 31), Date.new(2018, 2, 2)])
+      expect(time_table.dates.map(&:in_out).uniq).to eq([true])
+    end
+
+    it "doesn't create an included Date outside circulation dates" do
+      time_table.int_day_types = 0
+      time_table.periods.build period_start: Date.new(2017, 12, 31), period_end: Date.new(2018, 2, 2)
+      time_table.remove_periods! periods
+
+      expect(time_table.periods).to be_empty
+      expect(time_table.dates).to be_empty
     end
 
   end

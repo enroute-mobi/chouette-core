@@ -11,6 +11,7 @@ module ApplicationDaysSupport
   EVERYDAY  = MONDAY | TUESDAY | WEDNESDAY | THURSDAY | FRIDAY | SATURDAY | SUNDAY
 
   ALL_DAYS = %w(monday tuesday wednesday thursday friday saturday sunday).freeze
+  RUBY_WEEKDAYS = [SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY].freeze
 
   def display_day_types
     ALL_DAYS.select{ |d| self.send(d) }.map{ |d| self.human_attribute_name(d).first(2)}.join(', ')
@@ -18,6 +19,16 @@ module ApplicationDaysSupport
 
   def day_by_mask(flag)
     self.class.day_by_mask int_day_types, flag
+  end
+
+  def applicable_date?(date)
+    applicable_weekday? date.wday if date
+  end
+
+  # Returns if the day of week (0-6, Sunday is zero) is selected
+  def applicable_weekday?(weekday)
+    return false unless weekday >= 0 and weekday < RUBY_WEEKDAYS.size
+    day_by_mask(RUBY_WEEKDAYS[weekday])
   end
 
   def valid_day? wday

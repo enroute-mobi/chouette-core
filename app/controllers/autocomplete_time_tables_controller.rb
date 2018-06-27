@@ -27,7 +27,7 @@ class AutocompleteTimeTablesController < ChouetteController
   end
 
   def collection
-    split_params! :comment_or_objectid_cont_any
+    split_params! :unaccented_comment_or_objectid_cont_any
     @time_tables = select_time_tables.search(params[:q]).result.paginate(page: params[:page])
   end
 end

@@ -36,6 +36,14 @@ RSpec.describe AutocompleteTimeTablesController, type: :controller do
         expect(assigns(:time_tables)).to include(blargh)
         expect(assigns(:time_tables)).to_not include(other_time_table)
       end
+
+      it 'should handle whitespaces' do
+        get :index, referential_id: referential.id, q: {unaccented_comment_or_objectid_cont_any: 'écolà militaire'}, format: :json
+        expect(response).to be_success
+        expect(assigns(:time_tables)).to include(time_table)
+        expect(assigns(:time_tables)).to include(blargh)
+        expect(assigns(:time_tables)).to_not include(other_time_table) 
+      end
     end
 
     context "within a route" do
@@ -55,6 +63,14 @@ RSpec.describe AutocompleteTimeTablesController, type: :controller do
           expect(assigns(:time_tables)).to include(blargh)
           expect(assigns(:time_tables)).to_not include(other_time_table)
         end
+
+        it 'should handle whitespaces' do
+          get :index, referential_id: referential.id, q: {unaccented_comment_or_objectid_cont_any: 'écolà militaire'}, format: :json
+          expect(response).to be_success
+          expect(assigns(:time_tables)).to include(time_table)
+          expect(assigns(:time_tables)).to include(blargh)
+          expect(assigns(:time_tables)).to_not include(other_time_table) 
+      end
       end
     end
   end

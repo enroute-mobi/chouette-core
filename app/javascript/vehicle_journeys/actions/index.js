@@ -385,8 +385,8 @@ const actions = {
                 published_journey_name: val.published_journey_name || '',
                 published_journey_identifier: val.published_journey_identifier || '',
                 company: val.company || {name: ''},
-                transport_mode: val.route.line.transport_mode || '',
-                transport_submode: val.route.line.transport_submode || ''
+                transport_mode: val.route.line.transport_mode || 'undefined',
+                transport_submode: val.route.line.transport_submode || 'undefined'
               })
             )
           }

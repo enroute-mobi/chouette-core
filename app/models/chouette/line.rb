@@ -15,6 +15,7 @@ module Chouette
     belongs_to :company
     belongs_to :network
     belongs_to :line_referential
+    belongs_to :company_light, -> {select(:id, :name)}, class_name: "Chouette::Company", foreign_key: :company_id
 
     has_array_of :secondary_companies, class_name: 'Chouette::Company'
 
@@ -94,7 +95,7 @@ module Chouette
     end
 
     def display_name
-      [self.get_objectid.short_id, number, name, company.try(:name)].compact.join(' - ').truncate(50)
+      [self.get_objectid.short_id, number, name, company_light.try(:name)].compact.join(' - ').truncate(50)
     end
 
     def companies

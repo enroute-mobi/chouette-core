@@ -48,7 +48,7 @@ module Chouette
       joins('LEFT OUTER JOIN public.companies ON companies.id = lines.company_id')
         .where('
           lines.number LIKE :q
-          OR unaccent(lines.name) LIKE unaccent(:q)
+          OR unaccent(lines.name) ILIKE unaccent(:q)
           OR unaccent(companies.name) ILIKE unaccent(:q)',
           q: "%#{sanitize_sql_like(name)}%"
         )

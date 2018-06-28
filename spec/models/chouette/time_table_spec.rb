@@ -315,7 +315,7 @@ describe Chouette::TimeTable, :type => :model do
     it 'should save new tags' do
       subject.tag_list = "awesome, great"
       subject.save
-      state['tags'] << {'id' => false, 'name' => 'new_tag'}
+      state['tags'] << {'value' => false, 'label' => 'new_tag'}
 
       subject.state_update state
       expect(subject.reload.tags.map(&:name)).to include('new_tag')

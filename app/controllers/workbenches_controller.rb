@@ -51,8 +51,8 @@ class WorkbenchesController < ChouetteController
 
   def sort_result collection
     extra_cols = %w{lines validity_period state organisation_name}
-    col = (Referential.column_names + extra_cols).include?(params[:sort]) ? params[:sort] : 'name'
-    dir = %w[asc desc].include?(params[:direction]) ?  params[:direction] : 'asc'
+    col = (Referential.column_names + extra_cols).include?(params[:sort]) ? params[:sort] : 'created_at'
+    dir = %w[asc desc].include?(params[:direction]) ?  params[:direction] : 'desc'
 
     if extra_cols.include?(col)
       collection.send("order_by_#{col}", dir)
@@ -62,7 +62,7 @@ class WorkbenchesController < ChouetteController
   end
 
   def query_params
-    params[:q] ||= {}
+    params[:q] ||= {organisation_name_eq_any: current_organisation.name}
     params[:q].delete_if { |query, value| value.blank? }
   end
 

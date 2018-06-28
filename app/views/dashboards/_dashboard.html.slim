@@ -31,7 +31,7 @@
 
         - if workbench.all_referentials.present?
           .list-group
-            - workbench.all_referentials.limit(5).each do |referential|
+            - workbench.all_referentials.order(created_at: :desc).limit(5).each do |referential|
               = link_to referential.name, referential_path(referential), class: 'list-group-item'
         - else
           .panel-body

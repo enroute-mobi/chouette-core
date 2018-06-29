@@ -167,7 +167,7 @@ module Chouette
     end
 
     def sales_end
-      purchase_windows.map{|p| p.date_ranges.map &:last}.flatten.max
+      purchase_windows.map{|p| p.date_ranges.map &:max}.flatten.max
     end
 
     def calculate_vehicle_journey_at_stop_day_offset

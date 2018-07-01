@@ -155,6 +155,7 @@ module Chouette
     end
 
     has_checksum_children VehicleJourneyAtStop
+    has_checksum_children PurchaseWindow
 
     def set_default_values
       if number.nil?

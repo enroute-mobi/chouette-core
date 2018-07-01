@@ -28,8 +28,30 @@ module ChecksumSupport
         end
       end
 
+      child_load_parents = Proc.new do
+        parents = []
+        parents << self.send(belongs_to) if klass.reflections[belongs_to].present?
+        parents += self.send(has_many) if klass.reflections[has_many].present?
+        parents.compact!
+
+        Rails.logger.debug "Prepare request for #{klass.name} deletion checksum updates for #{parents.count} #{parent_class} parent(s)"
+
+        @_parents_for_checksum_update ||= []
+        @_parents_for_checksum_update.concat parents
+      end
+
+      child_update_loaded_parents = Proc.new do
+        if @_parents_for_checksum_update.present?
+          parents = @_parents_for_checksum_update
+          Rails.logger.debug "Request from #{klass.name} checksum updates for #{parents.count} #{parent_class} parent(s)"
+          parents.compact.each &:update_checksum_without_callbacks!
+        end
+      end
+
       klass.after_save &child_update_parent
-      klass.after_destroy &child_update_parent
+
+      klass.before_destroy &child_load_parents
+      klass.after_destroy &child_update_loaded_parents
     end
   end
 

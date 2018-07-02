@@ -69,6 +69,14 @@ describe Chouette::VehicleJourney, :type => :model do
       expect{footnote.destroy; footnote.run_callbacks(:commit)}.to change{vehicle_journey.reload.checksum}
     end
 
+    it "changes when a RoutingConstraintZone is deleted" do
+      vehicle_journey = create(:vehicle_journey)
+      rcz = create  :routing_constraint_zone, route_id: vehicle_journey.route.id
+      vehicle_journey.ignored_routing_contraint_zone_ids = [rcz.id]
+      vehicle_journey.save!
+      expect{rcz.destroy; rcz.run_callbacks(:commit)}.to change{vehicle_journey.reload.checksum}
+    end
+
     context "when custom_field_values change" do
       let(:vehicle_journey){ create(:vehicle_journey, custom_field_values: {custom_field.code.to_s => former_value}) }
       let(:custom_field){ create :custom_field, field_type: :string, code: :energy, name: :energy, resource_type: "VehicleJourney" }

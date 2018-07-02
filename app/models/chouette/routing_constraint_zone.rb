@@ -13,6 +13,7 @@ module Chouette
       vehicle_journeys.each(&:update_checksum!)
     end
     after_save :update_vehicle_journey_checksums
+    after_commit :clean_ignored_routing_contraint_zone_ids, on: :destroy
 
     validates_presence_of :name, :stop_points, :route_id
     # validates :stop_point_ids, length: { minimum: 2, too_short: I18n.t('activerecord.errors.models.routing_constraint_zone.attributes.stop_points.not_enough_stop_points') }
@@ -29,6 +30,12 @@ module Chouette
     scope :order_by_route_name, ->(direction) do
       joins(:route)
         .order("routes.name #{direction}")
+    end
+
+    def clean_ignored_routing_contraint_zone_ids
+      vehicle_journeys.find_each do |vj|
+        vj.update ignored_routing_contraint_zone_ids: vj.ignored_routing_contraint_zone_ids - [self.id]
+      end
     end
 
     def checksum_attributes

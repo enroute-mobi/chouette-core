@@ -18,21 +18,24 @@ module ChecksumSupport
 
       Rails.logger.debug "Define callback in #{klass} to update checksums #{self.model_name} (via #{has_many}/#{belongs_to})"
 
+
+      load_parents = ->(child){
+        parents = []
+        parents << child.send(belongs_to) if child.class.reflections[belongs_to].present?
+        parents += child.send(has_many) if child.class.reflections[has_many].present?
+        parents.compact
+      }
+
       child_update_parent = Proc.new do
         if changed? || destroyed?
-          parents = []
-          parents << self.send(belongs_to) if klass.reflections[belongs_to].present?
-          parents += self.send(has_many) if klass.reflections[has_many].present?
+          parents = load_parents.call(self)
           Rails.logger.debug "Request from #{klass.name} checksum updates for #{parents.count} #{parent_class} parent(s)"
-          parents.compact.each &:update_checksum_without_callbacks!
+          parents.each &:update_checksum_without_callbacks!
         end
       end
 
       child_load_parents = Proc.new do
-        parents = []
-        parents << self.send(belongs_to) if klass.reflections[belongs_to].present?
-        parents += self.send(has_many) if klass.reflections[has_many].present?
-        parents.compact!
+        parents = load_parents.call(self)
 
         Rails.logger.debug "Prepare request for #{klass.name} deletion checksum updates for #{parents.count} #{parent_class} parent(s)"
 
@@ -44,7 +47,7 @@ module ChecksumSupport
         if @_parents_for_checksum_update.present?
           parents = @_parents_for_checksum_update
           Rails.logger.debug "Request from #{klass.name} checksum updates for #{parents.count} #{parent_class} parent(s)"
-          parents.compact.each &:update_checksum_without_callbacks!
+          parents.each &:update_checksum_without_callbacks!
         end
       end
 

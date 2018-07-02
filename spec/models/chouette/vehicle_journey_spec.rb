@@ -42,8 +42,31 @@ describe Chouette::VehicleJourney, :type => :model do
         create(:vehicle_journey_at_stop, vehicle_journey: vehicle_journey).run_callbacks(:commit)
       end
       vjas = vehicle_journey.vehicle_journey_at_stops.last
-      expect(vehicle_journey).to receive(:update_checksum_without_callbacks!).at_least(:once).and_call_original
       expect{vjas.destroy; vjas.run_callbacks(:commit)}.to change{vehicle_journey.reload.checksum}
+    end
+
+    it "changes when a footnote is added" do
+      vehicle_journey = create(:vehicle_journey)
+      footnote = create :footnote
+
+      expect{vehicle_journey.footnotes << footnote; vehicle_journey.save}.to change{vehicle_journey.checksum}
+    end
+
+    it "changes when a footnote is updated" do
+      vehicle_journey = create(:vehicle_journey)
+      footnote = create :footnote
+      vehicle_journey.footnotes << footnote
+      expect{footnote.reload.update(label: "mkmkmk")}.to change{vehicle_journey.reload.checksum}
+    end
+
+    it "changes when a footnote is deleted" do
+      vehicle_journey = create(:vehicle_journey)
+      footnote = create :footnote
+      vehicle_journey.footnotes << footnote
+      vehicle_journey.save
+      footnote.reload
+
+      expect{footnote.destroy; footnote.run_callbacks(:commit)}.to change{vehicle_journey.reload.checksum}
     end
 
     context "when custom_field_values change" do

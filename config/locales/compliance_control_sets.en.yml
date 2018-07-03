@@ -11,7 +11,7 @@ en:
       select_types: Control Type Selection
       edit: Edit compliance control set
     new:
-      title: New compliance control set %{name}
+      title: New compliance control set
     show:
       title: Consult compliance control set %{name}
     edit:
@@ -38,5 +38,5 @@ en:
         name: Name
         assigned_to: Assigned to
         owner_jdc: Owner of the control game
-        control_numbers: Nb contrôle
-        updated_at: Update
+        control_numbers: Nb of controls
+        updated_at: Update at

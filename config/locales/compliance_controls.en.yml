@@ -35,7 +35,7 @@ en:
     select_type:
       title: "Select a control type"
       compliance_control_groups:
-        generic_attribute: Generic
+        generic: Generic
         line: Line
         route: Route
         routing_constraint_zone: Routing constraint zone
@@ -123,7 +123,7 @@ en:
     vehicle_journey_control/waiting_time:
       messages:
         3_vehiclejourney_1: "On the following vehicle journey %{source_objectid}, the waiting time %{error_value} a this stop point %{target_0_label} (%{target_0_objectid}) is greater than the threshold (%{reference_value})"
-      description: "The waiting time, in minutes, at a specific stop point cannot be too big"
+      description: "The waiting time, in minutes, at a specific stop point shouldn't be too long"
       prerequisite: "None"
     vehicle_journey_control/speed:
       messages:
@@ -145,7 +145,7 @@ en:
       messages:
         3_vehiclejourney_5_1: "The vehicle journey with %{source_objectid} objectid has an arrival time %{error_value} greater than the departure time %{reference_value} at the stop point %{target_0_label} (%{target_0_objectid})"
         3_vehiclejourney_5_2: "The vehicle journey with %{source_objectid} objectid has an departure time %{error_value} at stop point %{target_0_label} (%{target_0_objectid}) greater than the arrival %{reference_value} at the next stop point"
-      description: "The arrival time of a stop point must be smaller than the departure time of this stop point AND the departure time of the stop points must be in chronological order"
+      description: Increasing chronology of the vehicle journey at stops
       prerequisite: "None"
     vehicle_journey_control/published_journey_name:
       messages:
@@ -174,7 +174,7 @@ en:
       prerequisite: "None"
 
       prerequisite: "None"
-    routing_constraint_zone_control/vehicle_journey_at_stops:
+    routing_constraint_zone_control/unactivated_stop_point:
       messages:
         3_routingconstraint_1: "The Routing Constraint Zone %{source_objectid} references an unactivated stop point (ZDEp) %{target_0_label} (%{target_0_objectid})"
       description: "The stop points of a Routing Constraint Zone must be activated"

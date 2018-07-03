@@ -143,6 +143,7 @@ fr:
       cableway: Téléphérique
       funicular: Funiculaire
       other: Autre
+      all: Tous les modes de transport
     transport_submode:
       unknown: 'Inconnu'
       undefined: 'Non défini'

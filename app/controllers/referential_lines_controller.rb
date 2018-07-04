@@ -12,7 +12,9 @@ class ReferentialLinesController < ChouetteController
   belongs_to :referential
 
   def show
-    @routes = resource.routes.order(:objectid)
+
+    @q = resource.routes.ransack(params[:q])
+    @routes = @q.result
 
     case sort_route_column
     when "stop_points", "journey_patterns"
@@ -20,11 +22,8 @@ class ReferentialLinesController < ChouetteController
 
       @routes = @routes.joins(left_join).group(:id).order("count(#{sort_route_column}.route_id) #{sort_route_direction}")
     else
-      @routes = @routes.order("#{sort_route_column} #{sort_route_direction}")
+      @routes = @routes.order("lower(#{sort_route_column}) #{sort_route_direction}")
     end
-
-    @q = @routes.ransack(params[:q])
-    @routes = @q.result
 
     @routes = @routes.paginate(page: params[:page], per_page: 10)
 
@@ -110,6 +109,9 @@ class ReferentialLinesController < ChouetteController
   end
   def sort_direction
     %w[asc desc].include?(params[:direction]) ?  params[:direction] : 'asc'
+  end
+
+  def route_collection
   end
 
   def sort_route_column

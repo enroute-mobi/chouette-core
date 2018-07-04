@@ -27,7 +27,7 @@ module Support
         case value
         when String
           "#{value}."
-        when Fixnum
+        when Integer
           value + 1
         when TrueClass
           false

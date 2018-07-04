@@ -155,7 +155,7 @@ class CustomField < ApplicationModel
 
       def validate
         @valid = true
-        return if @raw_value.is_a?(Fixnum)
+        return if @raw_value.is_a?(Integer)
         unless @raw_value.to_s =~ /\A-?\d*\Z/
           @owner.errors.add errors_key, "'#{@raw_value}' is not a valid integer"
           @valid = false
@@ -178,7 +178,7 @@ class CustomField < ApplicationModel
 
       def validate
         @valid = true
-        return if @raw_value.is_a?(Fixnum) || @raw_value.is_a?(Float)
+        return if @raw_value.is_a?(Integer) || @raw_value.is_a?(Float)
         unless @raw_value.to_s =~ /\A-?\d*(\.\d+)?\Z/
           @owner.errors.add errors_key, "'#{@raw_value}' is not a valid float"
           @valid = false

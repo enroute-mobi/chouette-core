@@ -68,7 +68,7 @@ export default class PurchaseWindowsEditVehicleJourney extends Component {
                                 <div className='nested-fields' key={i}>
                                   <div className='wrapper'>
                                     <div> <a href={this.purchaseWindowURL(tt)} target="_blank">
-                                      <span className="fa fa-circle mr-xs" style={{color: tt.color}}></span>
+                                      <span className="fa fa-circle mr-xs" style={{ color: tt.color ? `#${tt.color}` : '#4B4B4B'}}></span>
                                       {tt.name}
                                     </a> </div>
                                     {

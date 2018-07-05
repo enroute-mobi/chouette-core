@@ -9,6 +9,26 @@ RSpec.describe CalendarObserver, type: :observer do
   let(:user_1)     { create(:user, organisation: create(:organisation, workbenches: [create(:workbench, workgroup_id: workgroup_1.id)] )) }
   let(:user_2)     { create(:user, organisation: create(:organisation, workbenches: [create(:workbench, workgroup_id: workgroup_2.id)] )) }
 
+  context "when CalendarObserver is disabled" do
+    around(:each) do |example|
+      Rails.application.config.enable_calendar_observer = false
+      example.run
+      Rails.application.config.enable_calendar_observer = true
+    end
+
+    it "should not send any mail if disabled on update" do
+      calendar.name = 'edited_name'
+      expect(MailerJob).to_not receive(:perform_later).with 'CalendarMailer', 'updated', [calendar.id, user_1.id]
+      expect(MailerJob).to_not receive(:perform_later).with 'CalendarMailer', 'updated', [calendar.id, user_2.id]
+      calendar.save
+    end
+
+    it "should not send any mail if disabled on create" do
+      expect(MailerJob).to_not receive(:perform_later).with 'CalendarMailer', 'created', [anything, user_1.id]
+      build(:calendar, shared: true, workgroup_id: workgroup_1.id).save
+    end
+  end
+
   context 'after_update' do
     it 'should observe calendar updates' do
       expect(CalendarObserver.instance).to receive(:after_update).with calendar
@@ -34,17 +54,6 @@ RSpec.describe CalendarObserver, type: :observer do
       expect(MailerJob).to_not receive(:perform_later).with 'CalendarMailer', 'updated', [calendar.id, user_2.id]
       calendar.save
     end
-
-    it "should not send any mail if disabled on update" do
-      Rails.application.config.enable_calendar_observer = false
-
-      calendar.name = 'edited_name'
-      expect(MailerJob).to_not receive(:perform_later).with 'CalendarMailer', 'updated', [calendar.id, user_1.id]
-      expect(MailerJob).to_not receive(:perform_later).with 'CalendarMailer', 'updated', [calendar.id, user_2.id]
-      calendar.save
-
-      Rails.application.config.enable_calendar_observer = true
-    end
   end
 
   context 'after_create' do
@@ -61,15 +70,6 @@ RSpec.describe CalendarObserver, type: :observer do
     it 'should not schedule mailer for any shared calendar on create' do
       expect(MailerJob).to_not receive(:perform_later).with 'CalendarMailer', 'created', [anything, user_1.id]
       build(:calendar, shared: false, workgroup_id: workgroup_1.id).save
-    end
-
-    it "should not send any mail if disabled on create" do
-      Rails.application.config.enable_calendar_observer = false
-
-      expect(MailerJob).to_not receive(:perform_later).with 'CalendarMailer', 'created', [anything, user_1.id]
-      build(:calendar, shared: true, workgroup_id: workgroup_1.id).save
-
-      Rails.application.config.enable_calendar_observer = true
     end
   end
 end

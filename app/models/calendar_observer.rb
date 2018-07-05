@@ -19,7 +19,7 @@ class CalendarObserver < ActiveRecord::Observer
 
   def enabled?
     return true unless Rails.configuration.respond_to?(:enable_calendar_observer)
-    Rails.configuration.enable_calendar_observer.presence
+    !!Rails.configuration.enable_calendar_observer
   end
 
   def email_sendable_for?(calendar)

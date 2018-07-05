@@ -18,6 +18,7 @@ export default class BSelect3 extends Component {
       text: e.currentTarget.textContent,
       stoparea_id: e.currentTarget.value,
       stoparea_kind: e.params.data.kind,
+      stop_area_referential_id: e.params.data.stop_area_referential_id,
       user_objectid: e.params.data.user_objectid,
       longitude: e.params.data.longitude,
       latitude: e.params.data.latitude,
@@ -65,7 +66,7 @@ export default class BSelect3 extends Component {
         return (
           <a
             className='navlink'
-            href={origin + path + '/stop_areas/' + this.props.value.stoparea_id}
+            href={origin + '/stop_areas_referentials/' + this.props.value.stop_area_referential_id + '/stop_areas/' + this.props.value.stoparea_id}
             title="Voir l'arrêt"
           >
             {this.parsedText(this.props.value.text)}

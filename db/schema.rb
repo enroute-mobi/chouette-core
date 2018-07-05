@@ -11,12 +11,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180528125333) do
+ActiveRecord::Schema.define(version: 20180611211106) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "postgis"
   enable_extension "hstore"
+  enable_extension "postgis"
   enable_extension "unaccent"
 
   create_table "access_links", id: :bigserial, force: :cascade do |t|
@@ -92,9 +92,9 @@ ActiveRecord::Schema.define(version: 20180528125333) do
     t.integer   "organisation_id", limit: 8
     t.datetime  "created_at"
     t.datetime  "updated_at"
-    t.integer   "workgroup_id",    limit: 8
     t.integer   "int_day_types"
     t.date      "excluded_dates",                            array: true
+    t.integer   "workgroup_id",    limit: 8
     t.jsonb     "metadata",                  default: {}
   end
 
@@ -223,10 +223,11 @@ ActiveRecord::Schema.define(version: 20180528125333) do
     t.string   "code"
     t.string   "criticity"
     t.text     "comment"
-    t.datetime "created_at",                          null: false
-    t.datetime "updated_at",                          null: false
+    t.datetime "created_at",                                         null: false
+    t.datetime "updated_at",                                         null: false
     t.string   "origin_code"
     t.string   "compliance_control_name"
+    t.boolean  "iev_enabled_check",                   default: true
   end
 
   add_index "compliance_checks", ["compliance_check_block_id"], name: "index_compliance_checks_on_compliance_check_block_id", using: :btree
@@ -260,10 +261,11 @@ ActiveRecord::Schema.define(version: 20180528125333) do
     t.string   "code"
     t.string   "criticity"
     t.text     "comment"
-    t.datetime "created_at",                            null: false
-    t.datetime "updated_at",                            null: false
+    t.datetime "created_at",                                           null: false
+    t.datetime "updated_at",                                           null: false
     t.string   "origin_code"
     t.integer  "compliance_control_block_id", limit: 8
+    t.boolean  "iev_enabled_check",                     default: true
   end
 
   add_index "compliance_controls", ["code", "compliance_control_set_id"], name: "index_compliance_controls_on_code_and_compliance_control_set_id", unique: true, using: :btree
@@ -1085,7 +1087,6 @@ ActiveRecord::Schema.define(version: 20180528125333) do
   add_foreign_key "compliance_controls", "compliance_control_blocks"
   add_foreign_key "compliance_controls", "compliance_control_sets"
   add_foreign_key "group_of_lines_lines", "group_of_lines", name: "groupofline_group_fkey", on_delete: :cascade
-  add_foreign_key "import_resources", "referentials"
   add_foreign_key "journey_patterns", "routes", name: "jp_route_fkey", on_delete: :cascade
   add_foreign_key "journey_patterns", "stop_points", column: "arrival_stop_point_id", name: "arrival_point_fkey", on_delete: :nullify
   add_foreign_key "journey_patterns", "stop_points", column: "departure_stop_point_id", name: "departure_point_fkey", on_delete: :nullify

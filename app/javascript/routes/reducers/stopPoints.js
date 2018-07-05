@@ -79,6 +79,7 @@ const stopPoints = (state = [], action) => {
               city_name: action.text.city_name,
               comment: action.text.comment,
               registration_number: action.text.registration_number,
+              stop_area_referential_id: action.text.stop_area_referential_id,
               for_alighting: forAlightingAndBoarding,
               for_boarding: forAlightingAndBoarding
             }

@@ -41,6 +41,7 @@ const getInitialState = () => {
       zip_code: v.zip_code,
       name: v.name ? v.name.replace("&#39;", "\'") : '',
       registration_number: v.registration_number,
+      stop_area_referential_id: v.stop_area_referential_id,
       text: fancyText,
       for_boarding: v.for_boarding,
       for_alighting: v.for_alighting,

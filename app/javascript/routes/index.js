@@ -27,6 +27,7 @@ const getInitialState = () => {
     state.push({
       stoppoint_id: v.stoppoint_id,
       stoparea_id: v.stoparea_id,
+      stop_area_referential_id: v.stop_area_referential_id,
       stoparea_kind: v.stoparea_kind,
       user_objectid: v.user_objectid,
       short_name: v.short_name ? v.short_name.replace("&#39;", "\'") : '',
@@ -77,6 +78,6 @@ document.querySelector('input[name=commit]').addEventListener('click', (event)=>
     event.preventDefault()
     handleForm("#route_name", "#route_published_name")
   }
-    
+
   handleStopPoints(event, state)
 })

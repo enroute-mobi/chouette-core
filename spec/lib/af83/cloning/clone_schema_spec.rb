@@ -1,4 +1,4 @@
-RSpec.describe AF83::SchemaCloner, type: :pg_catalog do
+RSpec.describe AF83::SchemaCloner, type: :pg_catalog, skip: "See #7540" do
   let( :source_schema ){ "source_schema" }
   let( :target_schema ){ "target_schema" }
   let( :child_table ){ "children" }
@@ -65,7 +65,7 @@ RSpec.describe AF83::SchemaCloner, type: :pg_catalog do
       insert source_schema, child_table, "#{parent_table}_id" => 1, some_key: 400
       insert target_schema, child_table, "#{parent_table}_id" => 1, some_key: 400
       reinsert_sql = "INSERT INTO #{source_schema}.#{child_table} (#{parent_table}_id, some_key) VALUES (1, 400)"
-      expect{ execute(reinsert_sql) rescue nil}.not_to change{ execute("SELECT COUNT(*) FROM #{source_schema}.#{child_table}") } 
+      expect{ execute(reinsert_sql) rescue nil}.not_to change{ execute("SELECT COUNT(*) FROM #{source_schema}.#{child_table}") }
 
       # expect{  insert(target_schema, child_table, "#{parent_table}_id" => 1, some_key: 400) }.to raise_error(ActiveRecord::RecordNotUnique)
     end

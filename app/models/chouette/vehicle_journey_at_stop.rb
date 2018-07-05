@@ -114,7 +114,7 @@ module Chouette
 
     def time_zone_offset
       return 0 unless stop_point&.stop_area_light&.time_zone.present?
-      ActiveSupport::TimeZone[stop_point.stop_area_light.time_zone]&.utc_offset || 0
+      time_zone&.utc_offset || 0
     end
 
     private

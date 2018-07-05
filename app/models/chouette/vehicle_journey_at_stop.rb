@@ -100,6 +100,18 @@ module Chouette
       format_time arrival_local_time
     end
 
+    def departure_time_with_zone
+      departure_time.in_time_zone(time_zone).change(day: 1)
+    end
+
+    def arrival_time_with_zone
+      arrival_time.in_time_zone(time_zone).change(day: 1)
+    end
+
+    def time_zone
+      ActiveSupport::TimeZone[stop_point.stop_area_light.time_zone]
+    end
+
     def time_zone_offset
       return 0 unless stop_point&.stop_area_light&.time_zone.present?
       ActiveSupport::TimeZone[stop_point.stop_area_light.time_zone]&.utc_offset || 0

@@ -1,6 +1,6 @@
 import _ from 'lodash'
 
-let vehicleJourneysModal, newModalProps, vehicleJourney
+let vehicleJourneysModal, newModalProps, vehicleJourney, alreadyPresent, notAlreadyPresent
 
 export default function modal(state = {}, action) {
   switch (action.type) {
@@ -122,13 +122,13 @@ export default function modal(state = {}, action) {
       return _.assign({}, state, {modalProps: newModalProps})
     case 'SELECT_CONSTRAINT_ZONE_MODAL':
       let selectedConstraintZones = state.modalProps.selectedConstraintZones
-      let already_present = false
+      alreadyPresent = false
       selectedConstraintZones.map((zone_id, i)=>{
         if(zone_id == parseInt(action.selectedZone.id)){
-          already_present = true
+          alreadyPresent = true
         }
       })
-      if(already_present){ return state }
+      if(alreadyPresent){ return state }
       selectedConstraintZones.push(parseInt(action.selectedZone.id))
       newModalProps = _.assign({}, state.modalProps, {selectedConstraintZones})
       return _.assign({}, state, {modalProps: newModalProps})
@@ -151,11 +151,12 @@ export default function modal(state = {}, action) {
         return _.assign({}, state, {modalProps: newModalProps})
       }
     case 'ADD_SELECTED_PURCHASE_WINDOW':
-      if(state.modalProps.selectedPurchaseWindow){
-        newModalProps = JSON.parse(JSON.stringify(state.modalProps))
-        if (!_.find(newModalProps.purchase_windows, newModalProps.selectedPurchaseWindow)){
-          newModalProps.purchase_windows.push(newModalProps.selectedPurchaseWindow)
-        }
+      let { modalProps } = state
+      notAlreadyPresent = !modalProps.purchase_windows.find(({ id }) => id == modalProps.selectedPurchaseWindow.id)
+
+      if (modalProps.selectedPurchaseWindow && notAlreadyPresent){
+        newModalProps = JSON.parse(JSON.stringify(modalProps))
+        newModalProps.purchase_windows.push(newModalProps.selectedPurchaseWindow)
         return _.assign({}, state, {modalProps: newModalProps})
       }
     case 'DELETE_CALENDAR_MODAL':

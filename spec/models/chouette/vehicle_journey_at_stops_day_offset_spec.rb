@@ -127,26 +127,35 @@ describe Chouette::VehicleJourneyAtStop do
       it "should apply the TZ" do
         at_stops = []
 
-        stop_area = create(:stop_area, time_zone: "Atlantic Time (Canada)")
-        stop_point = create(:stop_point, stop_area: stop_area)
-        vehicle_journey_at_stop = build_stubbed(
-          :vehicle_journey_at_stop,
-          stop_point: stop_point,
-          arrival_time: '09:00',
-          departure_time: '09:05'
-        )
-
-        at_stops << vehicle_journey_at_stop
-
         stop_area = create(:stop_area, time_zone: "Paris")
         stop_point = create(:stop_point, stop_area: stop_area)
         vehicle_journey_at_stop = build_stubbed(
           :vehicle_journey_at_stop,
           stop_point: stop_point,
-          arrival_time: '05:00',
-          departure_time: '05:05'
+          arrival_time: '23:00',
+          departure_time: '23:55'
+        )
+
+        at_stops << vehicle_journey_at_stop
+
+        stop_area = create(:stop_area, time_zone: "Portugal")
+        stop_point = create(:stop_point, stop_area: stop_area)
+        vehicle_journey_at_stop = build_stubbed(
+          :vehicle_journey_at_stop,
+          stop_point: stop_point,
+          arrival_time: '23:05',
+          departure_time: '23:10'
         )
         at_stops << vehicle_journey_at_stop
+
+        vehicle_journey_at_stop = build_stubbed(
+          :vehicle_journey_at_stop,
+          stop_point: stop_point,
+          arrival_time: '00:05',
+          departure_time: '00:10'
+        )
+        at_stops << vehicle_journey_at_stop
+
 
         offsetter = Chouette::VehicleJourneyAtStopsDayOffset.new(at_stops)
 
@@ -155,8 +164,11 @@ describe Chouette::VehicleJourneyAtStop do
         expect(at_stops[0].arrival_day_offset).to eq(0)
         expect(at_stops[0].departure_day_offset).to eq(0)
 
-        expect(at_stops[1].arrival_day_offset).to eq(1)
-        expect(at_stops[1].departure_day_offset).to eq(1)
+        expect(at_stops[1].arrival_day_offset).to eq(0)
+        expect(at_stops[1].departure_day_offset).to eq(0)
+
+        expect(at_stops[2].arrival_day_offset).to eq(1)
+        expect(at_stops[2].departure_day_offset).to eq(1)
       end
     end
   end

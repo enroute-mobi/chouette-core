@@ -62,6 +62,11 @@ en:
       advanced_search: "Advanced Search"
       color: "Color"
     form:
+      sections:
+        identification: "Identification"
+        location: "Location"
+        publication_data: "Publication Data"
+        general: "General"
       group_of_lines: "Associated groups of lines"
       no_group_of_line: "No group of line"
       several_group_of_lines: "%{count} groups of lines"

@@ -1,23 +1,36 @@
 = simple_form_for [@line_referential, @line], html: {class: 'form-horizontal', id: 'lines_form'}, wrapper: :horizontal_form do |f|
   .row
     .col-lg-12
+      h2.mb-lg= t("lines.form.sections.identification")
       = f.input :name
-      = f.input :network_id, as: :select, :collection => @line_referential.networks.order('lower(name) asc'), include_blank: true
-      = f.input :company_id, as: :select, :collection => @line_referential.companies.order('lower(name) asc'), include_blank: true
-      = f.input :secondary_company_ids, :collection => @line_referential.companies.order('lower(name) asc'), include_blank: false, input_html: { multiple: true, 'data-select2ed': true }, label: Chouette::Line.tmf(:secondary_companies)
       = f.input :published_name
       = f.input :registration_number
       = f.input :number
       = f.input :transport_mode, as: :select, collection: Chouette::Line.sorted_transport_modes, label: Chouette::Line.tmf('transport_mode'), label_method: lambda {|t| ("<span>" + t("enumerize.transport_mode.#{t}") + "</span>").html_safe}, required: true, :include_blank => false
       = f.input :transport_submode, as: :select, collection: Chouette::Line.sorted_transport_submodes, label: Chouette::Line.tmf('transport_submode'), label_method: lambda {|t| ("<span>" + t("enumerize.transport_submode.#{t}") + "</span>").html_safe}, :include_blank => true
+      = f.input :stable_id
+  .separator.section_separator
+  .row
+    .col-lg-12
+      h2.mb-lg= t("lines.form.sections.location")
+      = f.input :network_id, as: :select, :collection => @line_referential.networks.order('lower(name) asc'), include_blank: true
+      = f.input :company_id, as: :select, :collection => @line_referential.companies.order('lower(name) asc'), include_blank: true
+      = f.input :secondary_company_ids, :collection => @line_referential.companies.order('lower(name) asc'), include_blank: false, input_html: { multiple: true, 'data-select2ed': true }, label: Chouette::Line.tmf(:secondary_companies)
+  .separator.section_separator
+  .row
+    .col-lg-12
+      h2.mb-lg= t("lines.form.sections.publication_data")
       = f.input :color, as: :color_select, collection: Chouette::Line.colors_i18n
       = f.input :text_color, as: :color_select, collection: Chouette::Line.text_colors_i18n
-      = f.input :stable_id
       = f.input :url
       = f.input :seasonal
+  .separator.section_separator
+  .row
+    .col-lg-12
+      h2.mb-lg= t("lines.form.sections.general")
       = f.input :mobility_restricted_suitability, as: :select, :collection => [[@line.human_attribute_name("accessible"), true], [@line.human_attribute_name("not_accessible"), false]], :include_blank => true
       = f.input :flexible_service, as: :select, :collection => [[@line.human_attribute_name("on_demaond_fs"), true], [@line.human_attribute_name("regular_fs"), false]], :include_blank => true
       = f.input :comment
   .separator
 
-  = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'lines_form'
+  = f.button :submit, t('actions.submit'), class: 'btn btn-default formubmitr', form: 'lines_form'

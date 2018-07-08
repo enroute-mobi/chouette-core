@@ -618,7 +618,7 @@ class Referential < ApplicationModel
     # No explicit unlock is needed as it will be released at the end of the
     # transaction.
     ActiveRecord::Base.connection.execute(
-      'LOCK public.referentials IN ACCESS EXCLUSIVE MODE'
+      'LOCK public.referentials IN EXCLUSIVE MODE'
     )
   end
 end

@@ -107,6 +107,9 @@ class SimpleJsonExporter < SimpleExporter
       print_state if @current_line % 20 == 0 || i > 0
       @current_line += 1
       append_item serialized_item
+      self.configuration.after_actions(:each_item).each do |action|
+        action.call self
+      end
     end
   end
 

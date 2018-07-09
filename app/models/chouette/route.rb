@@ -228,6 +228,20 @@ module Chouette
       journey_pattern
     end
 
+    def partial_journey_pattern_with stop_points
+      signature = stop_points.map { |s| s.stop_area&.id }.join('-')
+      candidate = journey_patterns.with_stop_areas_signature(signature).last
+      candidate ||= begin
+        journey_pattern = journey_patterns.build
+        journey_pattern.stop_points = stop_points
+        journey_pattern.registration_number = "#{self.number} - #{journey_patterns.size - 1}"
+        journey_pattern.name = "#{self.name} - #{journey_patterns.size - 1}"
+        journey_pattern.save!
+        journey_pattern
+      end
+      candidate
+    end
+
     def calculate_costs!
       RouteWayCostWorker.perform_async(referential.id, id)
     end

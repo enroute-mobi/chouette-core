@@ -3,8 +3,6 @@ class SimpleExportWorker
 
   def perform(export_id)
     export = Export::Base.find(export_id)
-    export.update(status: 'running', started_at: Time.now)
-    export.call_exporter
-    export.update(ended_at: Time.now)
+    export.do_call_exporter
   end
 end

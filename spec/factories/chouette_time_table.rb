@@ -10,6 +10,11 @@ FactoryGirl.define do
       periods_count 4
     end
 
+    trait :empty do
+      dates_count 0
+      periods_count 0
+    end
+
     after(:create) do |time_table, evaluator|
       unless time_table.dates.any?
         evaluator.dates_count.times do |i|

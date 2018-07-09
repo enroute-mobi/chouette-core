@@ -55,16 +55,19 @@ class SimpleInterfacesGroup
     @interfaces.each do |i|
       out << "#{i[:name].rjust(@interfaces.map{|i| i[:name].size}.max)}:\t#{SimpleInterface.colorize i[:interface].status, SimpleInterface.status_color(i[:interface].status)}"
     end
-    out << ""
-    out << SimpleInterface.colorize("=== OUTPUTS ===", :green)
-    out << ""
-    @interfaces.each do |i|
-      if i[:interface].is_a? SimpleExporter
-        out << "#{i[:name].rjust(@interfaces.map{|i| i[:name].size}.max)}:\t#{i[:interface].filepath}"
+
+    if @interfaces.any?{|i| i[:interface].is_a? SimpleExporter}
+      out << ""
+      out << SimpleInterface.colorize("=== OUTPUTS ===", :green)
+      out << ""
+      @interfaces.each do |i|
+        if i[:interface].is_a? SimpleExporter
+          out << "#{i[:name].rjust(@interfaces.map{|i| i[:name].size}.max)}:\t#{i[:interface].filepath}"
+        end
       end
+      out << ""
+      out << ""
     end
-    out << ""
-    out << ""
     out << SimpleInterface.colorize("=== DEBUG OUTPUTS ===", :green)
     out << ""
     @interfaces.each do |i|

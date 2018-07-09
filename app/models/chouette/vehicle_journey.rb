@@ -423,6 +423,13 @@ module Chouette
       end
     end
 
+    def fill_passing_times
+      fill_passing_times!
+      nil
+    rescue => e
+      Rails.logger.error "Error in fill_passing_times for #{inspect}: #{e.message}"
+    end
+
     def self.matrix(vehicle_journeys)
       Hash[*VehicleJourneyAtStop.where(vehicle_journey_id: vehicle_journeys.pluck(:id)).map do |vjas|
         [ "#{vjas.vehicle_journey_id}-#{vjas.stop_point_id}", vjas]

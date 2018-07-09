@@ -25,6 +25,10 @@ class Export::Base < ActiveRecord::Base
     %w(zip csv json)
   end
 
+  def has_metadata?
+    false
+  end
+
   def upload_file file
     url = URI.parse upload_workbench_export_url(self.workbench_id, self.id, host: Rails.application.config.rails_host)
     res = nil
@@ -78,7 +82,11 @@ class Export::Base < ActiveRecord::Base
 
     if opts[:serialize]
       define_method name do
-        JSON.parse(options[name.to_s]) rescue opts[:serialize].new
+        val = options.stringify_keys[name.to_s]
+        unless val.is_a? opts[:serialize]
+          val = JSON.parse(val) rescue opts[:serialize].new
+        end
+        val
       end
     end
 

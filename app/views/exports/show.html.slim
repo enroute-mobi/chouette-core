@@ -13,13 +13,13 @@
         - if @export.children.any?
           - files = @export.children.map(&:file).select(&:present?)
           - if files.any?
-            - metadatas = metadatas.update({I18n.t("activerecord.attributes.export.files") => ""})
+            - metadatas = metadatas.update({I18n.t("activerecord.attributes.export.files") => @export.file.present? ? link_to(@export.file.file.filename, @export.file.url, target: :blank) : "-"})
             - @export.children.each do |e|
-              - metadatas = metadatas.update({"- #{e.class.human_name}" => e.file.present? ? link_to(e.file.file.filename, e.file.url) : "-"})
+              - metadatas = metadatas.update({"- #{e.class.human_name}" => e.file.present? ? link_to(e.file.file.filename, e.file.url, target: :blank) : "-"})
           - else
             - metadatas = metadatas.update({I18n.t("activerecord.attributes.export.files") => "-"})
         - else
-          - metadatas = metadatas.update({I18n.t("activerecord.attributes.export.file") => (@export.file.present? ? link_to(t("actions.download"), @export.file.url) : "-")})
+          - metadatas = metadatas.update({I18n.t("activerecord.attributes.export.file") => (@export.file.present? ? link_to(t("actions.download"), @export.file.url, target: :blank) : "-")})
         = definition_list t('metadatas'), metadatas
 
     .row
@@ -30,7 +30,7 @@
     - if @export.children.any?
       .row
         .col-lg-12
-        - coll = @export.children.paginate(page: params[:page] || 1)
+        - coll = @export.children.order(:created_at).paginate(page: params[:page] || 1)
         = table_builder_2 coll,
           [ \
             TableBuilderHelper::Column.new( \

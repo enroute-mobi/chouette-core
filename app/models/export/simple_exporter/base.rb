@@ -1,5 +1,8 @@
 class Export::SimpleExporter::Base < Export::Base
-  after_commit :call_exporter_async, on: :create
+  after_commit :call_exporter, on: :create
+  attr_accessor :synchronous
+
+  option :filepath
 
   def self.user_visible?
     false
@@ -15,12 +18,16 @@ class Export::SimpleExporter::Base < Export::Base
     end
   end
 
-  def call_exporter_async
-    SimpleExportWorker.perform_async(id)
+  def call_exporter
+    return if @skip_callback
+    if self.synchronous
+      do_call_exporter
+    else
+      SimpleExportWorker.perform_async(id)
+    end
   end
 
   def simple_exporter_configuration_name
-
   end
 
   def exporter
@@ -38,17 +45,21 @@ class Export::SimpleExporter::Base < Export::Base
   def configure_exporter config
   end
 
-  def call_exporter
-    tmp = Tempfile.new [simple_exporter_configuration_name.to_s, ".json"]
+  def do_call_exporter
+    @skip_callback = true
+    tmp_dir = Dir.mktmpdir
+    tmp = File.new(File.join(tmp_dir, "#{archive_name}.json"), 'w+')
     referential.switch
+    self.filepath = tmp.path
     exporter.configure do |config|
       configure_exporter config
     end
-    exporter.filepath = tmp.path
+    exporter.filepath = self.filepath
     exporter.export
     set_status_from_exporter
     convert_exporter_journal_to_messages
     self.save!
+    @skip_callback = false
     upload_file tmp
   end
 

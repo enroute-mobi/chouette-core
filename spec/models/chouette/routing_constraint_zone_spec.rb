@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Chouette::RoutingConstraintZone, type: :model do
 
-  subject { create(:routing_constraint_zone) }
+  subject(:routing_constraint_zone) { create(:routing_constraint_zone) }
 
   it { is_expected.to validate_presence_of :name }
   it { is_expected.to validate_presence_of :route_id }
@@ -34,11 +34,19 @@ describe Chouette::RoutingConstraintZone, type: :model do
       }.to raise_error(ActiveRecord::RecordInvalid)
     end
 
-    xit 'validates that not all stop points from the route are selected' do
+    it 'validates that not all stop points from the route are selected' do
       routing_constraint_zone.stop_points = routing_constraint_zone.route.stop_points
       expect {
         subject.save!
       }.to raise_error(ActiveRecord::RecordInvalid)
+    end
+
+    it 'allows that all stop points from the route are selected' do
+      routing_constraint_zone.stop_points = routing_constraint_zone.route.stop_points
+      routing_constraint_zone.allow_entire_journey = true
+      expect {
+        subject.save!
+      }.to_not raise_error
     end
   end
 

@@ -14,6 +14,8 @@ module Chouette
 
     attr_accessor :_destroy, :dummy
 
+    delegate :registration_number, to: :stop_point
+
     validate :arrival_must_be_before_departure
     def arrival_must_be_before_departure
       # security against nil values
@@ -28,6 +30,8 @@ module Chouette
     end
 
     validate :day_offset_must_be_within_range
+
+    delegate :stop_area, to: :stop_point
 
     after_initialize :set_virtual_attributes
     def set_virtual_attributes

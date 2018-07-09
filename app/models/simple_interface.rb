@@ -161,14 +161,14 @@ class SimpleInterface < ApplicationModel
     return if !@last_repaint.nil? && (Time.now - @last_repaint < 0.1) && !force
 
     @status_width ||= begin
-      @term_width = %x(tput cols).to_i
+      @term_width = [%x(tput cols).to_i, 100].max
       @term_width - @padding - 10
     rescue
       100
     end
 
     @status_height ||= begin
-      term_height = %x(tput lines).to_i
+      term_height = [%x(tput lines).to_i, 50].max
       term_height - 3
     rescue
       50
@@ -246,12 +246,12 @@ class SimpleInterface < ApplicationModel
       @headers = opts.has_key?(:headers) ? opts[:headers] : true
       @separator = opts[:separator] || ","
       @encoding = opts[:encoding]
-      @columns = opts[:columns] || []
+      @columns = opts[:columns]&.dup || []
       @custom_handler = opts[:custom_handler]
       @before = opts[:before]
       @after = opts[:after]
       @ignore_failures = opts[:ignore_failures]
-      @context = opts[:context] || {}
+      @context = opts[:context]&.dup || {}
       @scope = opts[:scope]
     end
 

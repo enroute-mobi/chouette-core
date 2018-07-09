@@ -177,7 +177,7 @@ module Chouette
     end
 
     def self.commercial
-      where :area_type => "CommercialStopPoint"
+      where kind: "commercial"
     end
 
     def self.stop_place
@@ -187,7 +187,6 @@ module Chouette
     def self.physical
       where :area_type => [ "BoardingPosition", "Quay" ]
     end
-
 
     def to_lat_lng
       Geokit::LatLng.new(latitude, longitude) if latitude and longitude
@@ -487,6 +486,10 @@ module Chouette
 
     def commercial?
       kind == "commercial"
+    end
+
+    def non_commercial?
+      !commercial?
     end
   end
 end

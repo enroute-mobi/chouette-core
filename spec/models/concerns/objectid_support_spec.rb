@@ -1,4 +1,4 @@
-RSpec.describe ObjectidSupport do 
+RSpec.describe ObjectidSupport do
 
   context 'when referential has an objectid format of stif_netex' do
     let(:object) { create(:time_table, objectid: nil) }
@@ -31,18 +31,62 @@ RSpec.describe ObjectidSupport do
         expect(object.get_objectid).to be_kind_of(Chouette::Objectid::StifNetex)
       end
 
+      context "#objectid" do
+
+        it 'should build objectid on create' do
+          object.save
+          object.run_callbacks(:commit)
+          objectid = object.get_objectid
+          id = "#{objectid.provider_id}:#{objectid.object_type}:#{objectid.local_id}:#{objectid.creation_id}"
+          expect(object.read_attribute(:objectid)).to eq(id)
+        end
+
+        it 'should not build new objectid is already set' do
+          id = "first:TimeTable:1-1:LOC"
+          object.attributes = {objectid: id}
+          object.save
+          expect(object.objectid).to eq(id)
+        end
+
+        it 'should create a new objectid when cleared' do
+          object.save
+          object.attributes = { objectid: nil}
+          object.save
+          expect(object.objectid).to be_truthy
+        end
+      end
+
       context "#to_s" do
         it "should return a string" do
           expect(object.get_objectid.to_s).to be_kind_of(String)
         end
 
-        it "should be the same as the db attribute" do 
+        it "should be the same as the db attribute" do
           expect(object.get_objectid.to_s).to eq(object.read_attribute(:objectid))
           expect(object.get_objectid.to_s).to eq(object.objectid)
         end
-    
-    context "#objectid" do
+      end
+    end
+  end
 
+  context 'when referential has an objectid format of netex' do
+    let(:referential){
+      create :referential, objectid_format: 'netex'
+    }
+
+    before(:each) do
+      referential.switch
+    end
+
+    let(:object) { create(:time_table, objectid: nil) }
+
+    context "#objectid_format" do
+      it "should be netex" do
+        expect(object.referential.objectid_format).to eq('netex')
+      end
+    end
+
+    context "#objectid" do
       it 'should build objectid on create' do
         object.save
         object.run_callbacks(:commit)
@@ -63,23 +107,6 @@ RSpec.describe ObjectidSupport do
         object.attributes = { objectid: nil}
         object.save
         expect(object.objectid).to be_truthy
-      end
-    end
-      end
-    end
-  end
-
-  context 'when referential has an objectid format of netex' do
-    before(:all) do
-      Referential.first.update(objectid_format: 'netex')
-    end
-
-    let(:object) { create(:time_table, objectid: nil) }
-
-
-    context "#objectid_format" do 
-      it "should be netex" do
-        expect(object.referential.objectid_format).to eq('netex')
       end
     end
 
@@ -102,37 +129,12 @@ RSpec.describe ObjectidSupport do
           expect(object.get_objectid.to_s).to be_kind_of(String)
         end
 
-        it "should be the same as the db attribute" do 
+        it "should be the same as the db attribute" do
           expect(object.get_objectid.to_s).to eq(object.read_attribute(:objectid))
           expect(object.get_objectid.to_s).to eq(object.objectid)
         end
-    
-    context "#objectid" do
-
-      it 'should build objectid on create' do
-        object.save
-        object.run_callbacks(:commit)
-        objectid = object.get_objectid
-        id = "#{objectid.provider_id}:#{objectid.object_type}:#{objectid.local_id}:#{objectid.creation_id}"
-        expect(object.read_attribute(:objectid)).to eq(id)
-      end
-
-      it 'should not build new objectid is already set' do
-        id = "first:TimeTable:1-1:LOC"
-        object.attributes = {objectid: id}
-        object.save
-        expect(object.objectid).to eq(id)
-      end
-
-      it 'should create a new objectid when cleared' do
-        object.save
-        object.attributes = { objectid: nil}
-        object.save
-        expect(object.objectid).to be_truthy
-      end
-    end
       end
     end
   end
-  
+
 end

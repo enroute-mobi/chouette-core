@@ -16,7 +16,12 @@ module Chouette
     validates_presence_of :name
 
     delegate :line, to: :route
-    #validates :stop_points, length: { minimum: 2, too_short: :minimum }, on: :update
+
+    scope :with_stop_areas_signature, ->(signature){
+      sql = self.joins(:stop_points).group("journey_patterns.id").select("journey_patterns.id, string_agg(stop_points.stop_area_id::text, '-' ORDER BY stop_points.position) AS signature").to_sql
+      ids = JourneyPattern.connection.exec_query("SELECT id FROM (#{sql}) AS signed_journey_patterns where signed_journey_patterns.signature = '#{signature}'").rows.flatten
+      where(id: ids)
+    }
 
     attr_accessor  :control_checked
 

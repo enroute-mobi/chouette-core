@@ -111,9 +111,6 @@ class ReferentialLinesController < ChouetteController
     %w[asc desc].include?(params[:direction]) ?  params[:direction] : 'asc'
   end
 
-  def route_collection
-  end
-
   def sort_route_column
     (@line.routes.column_names + %w{stop_points journey_patterns}).include?(params[:sort]) ? params[:sort] : 'name'
   end

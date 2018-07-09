@@ -10,10 +10,12 @@ RSpec.describe CalendarObserver, type: :observer do
   let(:user_2)     { create(:user, organisation: create(:organisation, workbenches: [create(:workbench, workgroup_id: workgroup_2.id)] )) }
 
   context "when CalendarObserver is disabled" do
-    around(:each) do |example|
-      Rails.application.config.enable_calendar_observer = false
-      example.run
-      Rails.application.config.enable_calendar_observer = true
+    before(:each) do
+      allow(Rails.configuration)
+        .to receive(:enable_calendar_observer)
+        .and_return( false )
+
+      expect(Rails.configuration.enable_calendar_observer).to be_falsy
     end
 
     it "should not send any mail if disabled on update" do

@@ -40,6 +40,7 @@ module ChouetteIhm
     )
 
     config.development_toolbar = false
+    config.enable_calendar_observer = true
     config.vehicle_journeys_extra_headers = []
 
     unless Rails.env.production?

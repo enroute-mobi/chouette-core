@@ -15,8 +15,6 @@ en:
       no_object: "Nothing"
       lines: "Lines"
       address: "Address"
-      general: "General"
-      localisation: "Localisation"
       accessibility: "Accessibility"
       custom_fields: "Custom fields"
     actions:
@@ -56,6 +54,10 @@ en:
     update:
       title: "Add a new stop"
     form:
+      sections:
+        identification: "Identification"
+        general: "General"
+        location: "Location"
       address: "246 Boulevard Saint-Germain, 75007 Paris"
       geolocalize: "Pinpoint "
     edit:

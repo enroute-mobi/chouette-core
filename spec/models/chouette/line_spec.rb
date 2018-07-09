@@ -9,6 +9,15 @@ describe Chouette::Line, :type => :model do
   it { should validate_presence_of :name }
   
 
+  describe '#url' do
+    it { should allow_value("http://foo.bar").for(:url) }
+    it { should allow_value("https://foo.bar").for(:url) }
+    it { should allow_value("http://www.foo.bar").for(:url) }
+    it { should allow_value("https://www.foo.bar").for(:url) }
+    it { should allow_value("www.foo.bar").for(:url) }
+    it { should_not allow_value("foo.bar").for(:url) }
+  end
+
   describe '#display_name' do
     it 'should display local_id, number, name and company name' do
       display_name = "#{subject.get_objectid.local_id} - #{subject.number} - #{subject.name} - #{subject.company.try(:name)}"

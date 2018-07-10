@@ -3,6 +3,7 @@ import VehicleJourneysList from '../containers/VehicleJourneysList'
 import Navigate from '../containers/Navigate'
 import ToggleArrivals from '../containers/ToggleArrivals'
 import Filters from '../containers/Filters'
+import CancelVehicleJourneys from '../containers/CancelVehicleJourneys'
 import SaveVehicleJourneys from '../containers/SaveVehicleJourneys'
 import ConfirmModal from '../containers/ConfirmModal'
 import Tools from '../containers/Tools'
@@ -30,6 +31,7 @@ export default function App() {
         </div>
       </div>
 
+      <CancelVehicleJourneys />
       <SaveVehicleJourneys />
       <Tools />
 

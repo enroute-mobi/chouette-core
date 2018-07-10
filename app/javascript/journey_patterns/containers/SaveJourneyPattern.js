@@ -13,6 +13,9 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    onExitEditMode: () => {
+      dispatch(actions.exitEditMode())
+    },
     onEnterEditMode: () => {
       dispatch(actions.enterEditMode())
     },

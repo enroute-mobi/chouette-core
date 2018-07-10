@@ -32,6 +32,7 @@ fr:
     add_referential: Ajoutez un jeu de données
   or: "ou"
   cancel: "Annuler"
+  cancel_confirm: Etes vous sûr de vouloir annuler l'action en cours ?
   back: "Retour"
   search_hint: "Entrez un texte à rechercher"
   no_result_text: "Aucun résultat"

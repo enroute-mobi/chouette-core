@@ -32,6 +32,7 @@ en:
     add_referential: Add a referential
   or: "or"
   cancel: "Cancel"
+  cancel_firm: You're about to cancel your current work. Are you sure ?
   back: "Go Back"
   search_hint: "Type in a search term"
   no_result_text: "No Results"

@@ -4,7 +4,7 @@
 .page_header
   .container-fluid
     .row
-      .col-lg-9.col-md-8.col-sm-7.col-xs-7
+      .col-lg-8.col-md-8.col-sm-7.col-xs-7
         - if defined?(resource_class)
           .page-icon
             span.sb class="sb-#{resource_class.model_name.name.underscore}"
@@ -15,7 +15,7 @@
             - if defined?(resource_class)
               h1 = resource_class.t_action(params[:action])
 
-      .col-lg-3.col-md-4.col-sm-5.col-xs-5.text-right
+      .col-lg-4.col-md-4.col-sm-5.col-xs-5.text-right
         .page-action
           - if content_for? :page_header_meta
             = yield :page_header_meta

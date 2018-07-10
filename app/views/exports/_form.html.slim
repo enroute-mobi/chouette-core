@@ -12,6 +12,7 @@
           - child.options.each do |attr, option_def|
             = export_option_input form, export, attr, option_def, child, workbench.referentials.exportable
 
+  = cancel_button([workbench, export])
   = form.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'wb_export_form'
 
 = javascript_pack_tag "exports/new"

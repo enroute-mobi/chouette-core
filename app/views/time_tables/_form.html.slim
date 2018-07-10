@@ -11,4 +11,5 @@
         = form.input :created_from, disabled: true, input_html: { value: @time_table.created_from.comment }
         .hidden = form.input :created_from_id, as: :hidden
 
+  = cancel_button(new: [@referential, @time_table])
   = form.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'timetable_form'

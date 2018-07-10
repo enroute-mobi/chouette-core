@@ -11,4 +11,5 @@
       / = f.input :source_identifier
   .separator
 
+    = cancel_button([@line_referential, @network])
     = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'network_form'

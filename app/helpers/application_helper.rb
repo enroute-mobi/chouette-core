@@ -139,4 +139,20 @@ module ApplicationHelper
     end
   res
   end
+
+  def cancel_button(options)
+    if options.is_a?(Hash)
+      url = options[params[:action].to_sym]
+    elsif options.is_a?(String)
+      url = options
+    else
+      *options = options
+      url = options.inject([]) do |memo, option|
+        option = (options.last == option && params[:action] == 'new' && !option.is_a?(Symbol)) ? option.class : option
+        memo.push(option)
+        memo
+      end
+    end
+    link_to t('cancel'), polymorphic_url(url), method: :get, class: 'btn btn-primary formSubmitr', data: {:confirm =>  t('cancel_confirm')}
+  end
 end

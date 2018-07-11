@@ -1,8 +1,11 @@
 {
   "name": "stif-boiv",
+  "scripts": {
+    "jest": "jest"
+  },
   "dependencies": {
     "@rails/webpacker": "3.2.0",
-    "babel-jest": "22.0.4",
+    "babel-jest": "23.2.0",
     "babel-polyfill": "^6.26.0",
     "babel-preset-es2015": "6.24.1",
     "babel-preset-react": "6.24.1",
@@ -36,11 +39,12 @@
     "node": "^6.12.3"
   },
   "devDependencies": {
+    "babel-loader": "^7.1.5",
     "es6-object-assign": "1.1.0",
     "grunt": "^1.0.1",
     "grunt-contrib-watch": "^1.0.0",
     "grunt-watch-change": "^0.1.1",
-    "jest": "22.0.4",
+    "jest": "^23.3.0",
     "jest-context": "^2.1.0",
     "jest-environment-jsdom-global": "^1.0.2",
     "jest-set": "^2.0.0",

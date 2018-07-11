@@ -32,5 +32,5 @@
                   .nested-fields
                     = render( partial: 'routing_constraint_zones/stop_points', locals: { routing_constraint_zone: @routing_constraint_zone, stop_points: @routing_constraint_zone.route.stop_points } )
 
-              = cancel_button([@referential, @line, @routing_constraint_zone])
+              = cancel_button
               = form.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'itl_form'

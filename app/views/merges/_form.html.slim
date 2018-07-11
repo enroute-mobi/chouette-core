@@ -35,7 +35,7 @@
       ul.target.connectedSortable
         li.remaining-placeholder= "actions.add_referential".t
 
-  = cancel_button([workbench, :output])
+  = cancel_button
   = form.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'wb_merge_form'
 
 = javascript_pack_tag 'merges/new.js'

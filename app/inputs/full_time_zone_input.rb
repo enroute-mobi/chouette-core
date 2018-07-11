@@ -27,6 +27,12 @@ class FullTimeZoneInput < SimpleForm::Inputs::CollectionSelectInput
     [label, value]
   end
 
+  def input_html_options
+    options = super
+    options[:data] = (options[:data] || {}).merge(select2ed: true)
+    options
+  end
+
   def input(wrapper_options = {})
     super wrapper_options
   end

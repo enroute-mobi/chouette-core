@@ -496,31 +496,39 @@ const actions = {
     return 0
   },
   getDelta: (vjas, allowNegative=false) => {
+    let { hasAllAttributes, departure_time, arrival_time} = actions.scheduleToDates(vjas)
     let delta = 0
-    if (vjas.departure_time.hour != '' && vjas.departure_time.minute != '' && vjas.arrival_time.hour != '' && vjas.departure_time.minute != ''){
-      delta = (parseInt(vjas.departure_time.hour) - parseInt(vjas.arrival_time.hour)) * 60 + (parseInt(vjas.departure_time.minute) - parseInt(vjas.arrival_time.minute))
+
+    if (hasAllAttributes) {
+      if (arrival_time.getHours() == 23 && arrival_time.getMinutes() >= 55 && departure_time.getHours() == 0 && departure_time.getMinutes() <= 5) {
+        departure_time.setDate(arrival_time.getDate() + 1)
+      }
+      
+      // We want the delta in minutes
+      delta = (departure_time.getTime() - arrival_time.getTime()) / 60000
     }
-    if(!true && delta < 0){
-      delta += 24*60
+
+    if (!allowNegative && delta < 0) {
+      delta = 0
     }
     vjas.delta = delta
     return vjas
   },
-  adjustSchedule: (action, schedule, enforceConsistency=false) => {
+  adjustSchedule: (action, schedule, isFirstOrLastStop, enforceConsistency=false) => {
     // we enforce that the departure time remains after the arrival time
-    actions.getDelta(schedule, true)
-    if(enforceConsistency && schedule.delta < 0){
-      if(schedule.arrival_time.hour < 23 || schedule.departure_time.hour > 0){
-        if(action.isDeparture){
-          schedule.arrival_time = schedule.departure_time
-        }
-        else{
-          schedule.departure_time = schedule.arrival_time
-        }
+    if (!enforceConsistency && (!(schedule.arrival_time.hour < 23 || schedule.departure_time.hour > 0))) return schedule
+
+    let newSchedule = actions.getDelta(schedule, true)
+
+    if (newSchedule.delta < 0 || isFirstOrLastStop) {
+      if (action.isDeparture) {
+        newSchedule.arrival_time = newSchedule.departure_time
       }
-      actions.getDelta(schedule)
+      else {
+        newSchedule.departure_time = newSchedule.arrival_time
+      }
     }
-    return schedule
+    return actions.getDelta(newSchedule)
   },
   getShiftedSchedule: ({departure_time, arrival_time}, additional_time) => {
     // We create dummy dates objects to manipulate time more easily
@@ -539,6 +547,17 @@ const actions = {
         hour: actions.simplePad(newArrivalDT.getUTCHours()),
         minute: actions.simplePad(newArrivalDT.getUTCMinutes())
       }
+    }
+  },
+  scheduleToDates: (vjas) =>{
+    let { departure_time: { hour: depHour, minute: depMinute } } = vjas
+    let { arrival_time: { hour: arrHour, minute: arrMinute } } = vjas
+
+    let hasAllAttributes = depHour != '' && depMinute != '' && arrHour != '' && arrMinute != ''
+    return {
+      hasAllAttributes,
+      departure_time: hasAllAttributes && new Date(2017, 2, 1, parseInt(depHour), parseInt(depMinute)),
+      arrival_time: hasAllAttributes && new Date(2017, 2, 1, parseInt(arrHour), parseInt(arrMinute))
     }
   },
   addMinutesToTime: (time, minutes) => {

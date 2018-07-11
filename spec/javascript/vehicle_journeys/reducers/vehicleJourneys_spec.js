@@ -1,4 +1,5 @@
 import vjReducer from '../../../../app/javascript/vehicle_journeys/reducers/vehicleJourneys'
+import actions from '../../../../app/javascript/vehicle_journeys/actions/index'
 
 let state = []
 let stateModal = {
@@ -27,17 +28,41 @@ let fakeTimeTables = [{
   objectid: '3'
 }]
 let fakeVJAS = [{
-  delta : 627,
+  delta : 0,
   arrival_time : {
-    hour: '11',
-    minute: '55'
+    hour: '07',
+    minute: '02'
   },
   departure_time : {
-    hour: '22',
-    minute: '22'
+    hour: '07',
+    minute: '02'
   },
-  stop_area_object_id : "FR:92024:ZDE:420553:STIF"
-}]
+  stop_area_object_id: "chouette:StopArea:8000b367-e07c-43b8-b1be-766f1bfe542a:LOC"
+}, 
+  {
+    delta: 627,
+    arrival_time: {
+      hour: '11',
+      minute: '55'
+    },
+    departure_time: {
+      hour: '22',
+      minute: '22'
+    },
+    stop_area_object_id: "chouette:StopArea:c9d50c53-e4f4-4ccb-b5bd-6b80c4a3e6d0:LOC"
+  },
+  {
+    delta: 0,
+    arrival_time: {
+      hour: '23',
+      minute: '00'
+    },
+    departure_time: {
+      hour: '23',
+      minute: '00'
+    },
+    stop_area_object_id: "chouette:StopArea:25821842-d8b9-4171-81d2-9b7f905c5291:LOC"
+  }]
 
 describe('vehicleJourneys reducer', () => {
   beforeEach(()=>{
@@ -524,32 +549,80 @@ describe('vehicleJourneys reducer', () => {
     ).toEqual(state)
   })
 
-  it('should handle UPDATE_TIME', () => {
-    const val = '33', subIndex = 0, index = 0, timeUnit = 'minute', isDeparture = true, isArrivalsToggled = true
-    let newVJAS = [{
-      delta: 638,
-      arrival_time : {
-        hour: '11',
-        minute: '55'
-      },
-      departure_time : {
-        hour: '22',
-        minute: '33'
-      },
-      stop_area_object_id : "FR:92024:ZDE:420553:STIF"
-    }]
-    let newVJ = Object.assign({}, state[0], {vehicle_journey_at_stops: newVJAS})
-    expect(
-      vjReducer(state, {
-        type: 'UPDATE_TIME',
-        val,
-        subIndex,
-        index,
-        timeUnit,
-        isDeparture,
-        isArrivalsToggled
+  describe('UPDATE_TIME', () => {
+    const val = '33', index = 0, timeUnit = 'minute', isDeparture = true, isArrivalsToggled = true
+
+    context('first or last stop of a VJ', () => {
+      set('subIndex', () => 0)
+      set('updatedVJAS', () => {
+        return {
+          delta: 0,
+          arrival_time: {
+            hour: '07',
+            minute: val
+          },
+          departure_time: {
+            hour: '07',
+            minute: val
+          },
+          stop_area_object_id: "chouette:StopArea:8000b367-e07c-43b8-b1be-766f1bfe542a:LOC"
+        }
       })
-    ).toEqual([newVJ, state[1]])
+
+      it('should set departure time & arrival time to the same value', () => {
+        const vjas = state[index]['vehicle_journey_at_stops']
+        const newVJAS = [updatedVJAS, ...vjas.slice(1)] 
+        const newVJ = Object.assign({}, state[subIndex], { vehicle_journey_at_stops: newVJAS })
+
+        expect(
+          vjReducer(state, {
+            type: 'UPDATE_TIME',
+            val,
+            subIndex,
+            index,
+            timeUnit,
+            isDeparture,
+            isArrivalsToggled
+          })
+        ).toEqual([newVJ, state[1]])
+      })
+    })
+
+    context('other stops', () => {
+      set('subIndex', () => 1)
+      set('updatedVJAS', () => {
+        return {
+          delta: 638,
+          arrival_time: {
+            hour: '11',
+            minute: '55'
+          },
+          departure_time: {
+            hour: '22',
+            minute: '33'
+          },
+          stop_area_object_id: "chouette:StopArea:c9d50c53-e4f4-4ccb-b5bd-6b80c4a3e6d0:LOC"
+        }
+      })
+
+      it('should not set departure time & arrival time to the same value', () => {
+        // const newState = JSON.parse(JSON.stringify(state))
+        const vjas = state[index]['vehicle_journey_at_stops']
+        const newVJAS = [...vjas.slice(0, 1), updatedVJAS, ...vjas.slice(2)]
+        const newVJ = Object.assign({}, state[index], { vehicle_journey_at_stops: newVJAS })
+        expect(
+          vjReducer(state, {
+            type: 'UPDATE_TIME',
+            val,
+            subIndex,
+            index,
+            timeUnit,
+            isDeparture,
+            isArrivalsToggled
+          })
+        ).toEqual([newVJ, state[1]])
+      })
+    })
   })
 
   it('should handle SELECT_VEHICLEJOURNEY', () => {
@@ -596,44 +669,59 @@ describe('vehicleJourneys reducer', () => {
   })
 
   it('should handle SHIFT_VEHICLEJOURNEY', () => {
-    let newVJAS = [{
-      delta: 627,
-      arrival_time : {
-        hour: '12',
-        minute: '00'
-      },
-      departure_time : {
-        hour: '22',
-        minute: '27'
-      },
-      stop_area_object_id : "FR:92024:ZDE:420553:STIF"
-    }]
-    let addtionalTime = 5
-    let newVJ = Object.assign({}, state[0], {vehicle_journey_at_stops: newVJAS})
+    const addtionalTime = 5
+    const newState = JSON.parse(JSON.stringify(state))
+
+    const newVJAS = newState[0].vehicle_journey_at_stops.map(vjas => {
+      let { hasAllAttributes, departure_time, arrival_time } = actions.scheduleToDates(vjas)
+      let shiftedDT = new Date(departure_time.getTime() + (addtionalTime * 60000))
+      let shiftedAT = new Date(arrival_time.getTime() + (addtionalTime * 60000))
+      return {
+        delta: vjas.delta,
+        stop_area_object_id: vjas.stop_area_object_id,
+        departure_time: {
+          hour: actions.simplePad(shiftedDT.getHours()),
+          minute: actions.simplePad(shiftedDT.getMinutes())
+        },
+        arrival_time: {
+          hour: actions.simplePad(shiftedAT.getHours()),
+          minute: actions.simplePad(shiftedAT.getMinutes())
+        }
+      }
+    })
+    
+    let newVJ = Object.assign({}, newState[0], {vehicle_journey_at_stops: newVJAS})
     expect(
-      vjReducer(state, {
+      vjReducer(newState, {
         type: 'SHIFT_VEHICLEJOURNEY',
         addtionalTime
       })
-    ).toEqual([newVJ, state[1]])
+    ).toEqual([newVJ, newState[1]])
   })
 
   it('should handle DUPLICATE_VEHICLEJOURNEY', () => {
-    let newVJAS = [{
-      delta: 627,
-      arrival_time : {
-        hour: '12',
-        minute: '01'
-      },
-      departure_time : {
-        hour: '22',
-        minute: '28'
-      },
-      stop_area_object_id : "FR:92024:ZDE:420553:STIF"
-    }]
+    // const newState = JSON.parse(JSON.stringify(state))
     let departureDelta = 1
     let addtionalTime = 5
     let duplicateNumber = 1
+
+    const newVJAS = state[0].vehicle_journey_at_stops.map(vjas => {
+      let { hasAllAttributes, departure_time, arrival_time } = actions.scheduleToDates(vjas)
+      let shiftedDT = new Date(departure_time.getTime() + ((addtionalTime + departureDelta) * 60000))
+      let shiftedAT = new Date(arrival_time.getTime() + ((addtionalTime + departureDelta) * 60000))
+      return {
+        delta: vjas.delta,
+        stop_area_object_id: vjas.stop_area_object_id,
+        departure_time: {
+          hour: actions.simplePad(shiftedDT.getHours()),
+          minute: actions.simplePad(shiftedDT.getMinutes())
+        },
+        arrival_time: {
+          hour: actions.simplePad(shiftedAT.getHours()),
+          minute: actions.simplePad(shiftedAT.getMinutes())
+        }
+      }
+    })
 
     let newVJ = Object.assign({}, state[0], {vehicle_journey_at_stops: newVJAS, selected: false})
     newVJ.published_journey_name = state[0].published_journey_name + '-0'

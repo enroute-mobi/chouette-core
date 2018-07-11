@@ -151,6 +151,7 @@ const vehicleJourney= (state = {}, action, keep) => {
     case 'UPDATE_TIME':
       let vj, vjas, vjasArray, newSchedule
       let val = action.val
+      let isFirstOrLastStop = action.subIndex == 0 || action.subIndex == (state.vehicle_journey_at_stops.length - 1)
       if(val != ''){
         val = parseInt(val)
         if(action.timeUnit == "minute"){
@@ -170,11 +171,11 @@ const vehicleJourney= (state = {}, action, keep) => {
             newSchedule.departure_time[action.timeUnit] = actions.pad(val, action.timeUnit)
             if(!action.isArrivalsToggled)
               newSchedule.arrival_time[action.timeUnit] = newSchedule.departure_time[action.timeUnit]
-            newSchedule = actions.adjustSchedule(action, newSchedule, action.enforceConsistency)
+            newSchedule = actions.adjustSchedule(action, newSchedule, isFirstOrLastStop, action.enforceConsistency)
             return _.assign({}, state.vehicle_journey_at_stops[action.subIndex], {arrival_time: newSchedule.arrival_time, departure_time: newSchedule.departure_time, delta: newSchedule.delta})
           }else{
             newSchedule.arrival_time[action.timeUnit] = actions.pad(val, action.timeUnit)
-            newSchedule = actions.adjustSchedule(action, newSchedule, action.enforceConsistency)
+            newSchedule = actions.adjustSchedule(action, newSchedule, isFirstOrLastStop, action.enforceConsistency)
             return _.assign({}, state.vehicle_journey_at_stops[action.subIndex],  {arrival_time: newSchedule.arrival_time, departure_time: newSchedule.departure_time, delta: newSchedule.delta})
           }
         }else{

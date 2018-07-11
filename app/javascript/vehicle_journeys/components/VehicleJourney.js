@@ -194,8 +194,8 @@ export default class VehicleJourney extends Component {
                       className='form-control'
                       disabled={!this.props.editMode || this.isDisabled(this.props.value.deletable, vj.dummy) || this.props.filters.policy['vehicle_journeys.update'] == false}
                       readOnly={!this.props.editMode && !vj.dummy}
-                    onChange={(e) => {this.props.onUpdateTime(e, i, this.props.index, 'hour', false, false)}}
-                    onBlur={(e) => {this.props.onUpdateTime(e, i, this.props.index, 'hour', false, false, true)}}
+                      onChange={(e) => {this.props.onUpdateTime(e, i, this.props.index, 'hour', false, false)}}
+                      onBlur={(e) => {this.props.onUpdateTime(e, i, this.props.index, 'hour', false, false, true)}}
                       value={vj.arrival_time['hour']}
                       />
                     <span>:</span>
@@ -204,8 +204,8 @@ export default class VehicleJourney extends Component {
                       className='form-control'
                       disabled={!this.props.editMode || this.isDisabled(this.props.value.deletable, vj.dummy) || this.props.filters.policy['vehicle_journeys.update'] == false}
                       readOnly={!this.props.editMode && !vj.dummy}
-                    onChange={(e) => {this.props.onUpdateTime(e, i, this.props.index, 'minute', false, false)}}
-                    onBlur={(e) => {this.props.onUpdateTime(e, i, this.props.index, 'minute', false, false, true)}}
+                      onChange={(e) => {this.props.onUpdateTime(e, i, this.props.index, 'minute', false, false)}}
+                      onBlur={(e) => {this.props.onUpdateTime(e, i, this.props.index, 'minute', false, false, true)}}
                       value={vj.arrival_time['minute']}
                       />
                   </span>
@@ -223,8 +223,8 @@ export default class VehicleJourney extends Component {
                       className='form-control'
                       disabled={!this.props.editMode || this.isDisabled(this.props.value.deletable, vj.dummy) || this.props.filters.policy['vehicle_journeys.update'] == false}
                       readOnly={!this.props.editMode && !vj.dummy}
-                    onChange={(e) => {this.props.onUpdateTime(e, i, this.props.index, 'hour', true, this.props.filters.toggleArrivals)}}
-                    onBlur={(e) => {this.props.onUpdateTime(e, i, this.props.index, 'hour', true, this.props.filters.toggleArrivals, true)}}
+                      onChange={(e) => {this.props.onUpdateTime(e, i, this.props.index, 'hour', true, this.props.filters.toggleArrivals)}}
+                      onBlur={(e) => {this.props.onUpdateTime(e, i, this.props.index, 'hour', true, this.props.filters.toggleArrivals, true)}}
                       value={vj.departure_time['hour']}
                       />
                     <span>:</span>
@@ -233,8 +233,8 @@ export default class VehicleJourney extends Component {
                       className='form-control'
                       disabled={!this.props.editMode || this.isDisabled(this.props.value.deletable, vj.dummy) || this.props.filters.policy['vehicle_journeys.update'] == false}
                       readOnly={!this.props.editMode && !vj.dummy}
-                    onChange={(e) => {this.props.onUpdateTime(e, i, this.props.index, "minute", true,  this.props.filters.toggleArrivals)}}
-                    onBlur={(e) => {this.props.onUpdateTime(e, i, this.props.index, "minute", true,  this.props.filters.toggleArrivals, true)}}
+                      onChange={(e) => {this.props.onUpdateTime(e, i, this.props.index, "minute", true,  this.props.filters.toggleArrivals)}}
+                      onBlur={(e) => {this.props.onUpdateTime(e, i, this.props.index, "minute", true,  this.props.filters.toggleArrivals, true)}}
                       value={vj.departure_time['minute']}
                       />
                 </span>

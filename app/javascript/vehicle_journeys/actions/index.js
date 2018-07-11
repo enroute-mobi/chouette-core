@@ -500,7 +500,7 @@ const actions = {
     let delta = 0
 
     if (hasAllAttributes) {
-      if (arrival_time.getHours() == 23 && arrival_time.getMinutes() >= 55 && departure_time.getHours() == 0 && departure_time.getMinutes() <= 5) {
+      if (arrival_time.getHours() == 23 && (departure_time.getHours() == 0 || (departure_time.getHours() == 1 && departure_time.getMinutes() == 0)))  {
         departure_time.setDate(arrival_time.getDate() + 1)
       }
       

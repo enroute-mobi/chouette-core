@@ -150,7 +150,9 @@ gem 'redis-rails'
 gem 'newrelic_rpm'
 gem 'letter_opener'
 
-gem 'gtfs'
+#gem 'gtfs'
+gem 'gtfs', af83: 'gtfs'
+
 
 group :development do
   gem 'capistrano', '2.13.5'

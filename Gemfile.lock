@@ -1,4 +1,13 @@
 GIT
+  remote: https://github.com/af83/gtfs.git
+  revision: 9be8a7b1f3c091bc8606b87edf52e1b11ef5f70e
+  specs:
+    gtfs (0.2.5)
+      multi_json
+      rake
+      rubyzip (~> 1.1)
+
+GIT
   remote: https://github.com/af83/has_array_of.git
   revision: 1a012c4a63c75e6a96f0a43cba07d2786ad54ae0
   specs:
@@ -259,10 +268,6 @@ GEM
     google-analytics-rails (1.1.0)
     gretel (3.0.9)
       rails (>= 3.1.0)
-    gtfs (0.2.5)
-      multi_json
-      rake
-      rubyzip (~> 1.1)
     has_scope (0.7.0)
       actionpack (>= 4.1, < 5.1)
       activesupport (>= 4.1, < 5.1)
@@ -663,7 +668,7 @@ DEPENDENCIES
   georuby-ext (= 0.0.5)
   google-analytics-rails
   gretel
-  gtfs
+  gtfs!
   has_array_of!
   htmlbeautifier
   i18n-js

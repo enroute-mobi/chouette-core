@@ -19,6 +19,10 @@ module GTFS
 
     FORMAT = /(\d{1,2}):(\d{2}):(\d{2})/
 
+    def self.format_datetime (date_time, offset)
+      "#{date_time.hour+(24*offset)}:#{date_time.min}:#{date_time.sec}"
+    end
+
     def self.parse(definition)
       if definition.to_s =~ FORMAT
         new *[$1, $2, $3].map(&:to_i)

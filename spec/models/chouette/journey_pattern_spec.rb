@@ -41,6 +41,28 @@ describe Chouette::JourneyPattern, :type => :model do
   #   end
   # end
 
+  describe 'costs' do
+    let(:journey_pattern) { create :journey_pattern }
+
+    context "with a negative distance" do
+      before(:each){
+        journey_pattern.costs = generate_journey_pattern_costs(->(i){i == 1 ? -1 : 10}, 10)
+      }
+      it 'should not be valid' do
+        expect(journey_pattern).to_not be_valid
+      end
+    end
+
+    context "with a negative time" do
+      before(:each){
+        journey_pattern.costs = generate_journey_pattern_costs(10, ->(i){i == 1 ? -1 : 10})
+      }
+      it 'should not be valid' do
+        expect(journey_pattern).to_not be_valid
+      end
+    end
+  end
+
   describe "full_schedule?" do
     let(:journey_pattern) { create :journey_pattern }
     subject{ journey_pattern.full_schedule? }
@@ -77,7 +99,6 @@ describe Chouette::JourneyPattern, :type => :model do
       }
       it { should be_truthy }
     end
-
   end
 
   describe "distance_to" do

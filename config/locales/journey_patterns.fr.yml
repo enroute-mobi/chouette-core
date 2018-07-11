@@ -38,6 +38,9 @@ fr:
           attributes:
             stop_points:
               minimum: 'Une mission doit avoir au minimum deux arrêts'
+            costs:
+              distance: La distance entre deux arrêts d'une mission ne peut pas avoir une valeur négative
+              time: Le temps de desserte d'un arrêt d'une mission ne peut pas avoir une valeur négative
     models:
       journey_pattern:
         zero:  "mission"

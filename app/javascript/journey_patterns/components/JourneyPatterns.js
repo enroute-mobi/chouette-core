@@ -93,13 +93,16 @@ export default class JourneyPatterns extends Component {
               <div className="alert alert-danger mt-sm">
                 <strong> {I18n.t('error')} : </strong>
                 {this.props.journeyPatterns.map((jp, index) =>
-                  jp.errors && jp.errors.map((err, i) => {
-                    return (
-                      <ul key={i}>
-                        <li>{err}</li>
-                      </ul>
-                    )
-                  })
+                  jp.errors && Object.keys(jp.errors).map((key) =>
+                    jp.errors[key].map((error, i) => {
+                      return (
+                        <ul key={i}>
+                          <li>{jp.errors[key]}</li>
+                          <br />
+                        </ul>
+                      )
+                    })
+                  )
                 )}
               </div>
             )}

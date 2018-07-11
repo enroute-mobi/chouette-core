@@ -38,6 +38,9 @@ en:
           attributes:
             stop_points:
               minimum: 'Must at least have two stop points'
+            costs:
+              distance: The distance between 2 journey pattern's stop points cannot have a negative value
+              time: A journey pattern's stop point waiting time cannot have a negative value
     models:
       journey_pattern:
         zero:  "journey pattern"

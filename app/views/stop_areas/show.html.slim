@@ -15,6 +15,9 @@
         - attributes.merge!({ Chouette::StopArea.tmf('stop_area_type') => Chouette::AreaType.find(@stop_area.area_type).try(:label),
             Chouette::StopArea.tmf('registration_number') => @stop_area.registration_number,
             })
+        - providers = @stop_area.stop_area_providers.map do |provider|
+          - link_to provider.name, [provider.stop_area_referential, provider]
+        - attributes.merge!({ StopAreaProvider.t.capitalize => providers.to_sentence.html_safe })
         - attributes.merge!(Chouette::StopArea.tmf('waiting_time') => @stop_area.waiting_time_text) if has_feature?(:stop_area_waiting_time)
         - attributes.merge!({ "Coordonnées" => geo_data(@stop_area, @stop_area_referential),
             Chouette::StopArea.tmf('zip_code') => @stop_area.zip_code,

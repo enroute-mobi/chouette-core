@@ -8,6 +8,7 @@ module Stif
         self.updated_count  = 0
         self.deleted_count  = 0
         self.processed      = []
+        @_stop_area_provider_cache = {}
       end
 
       def processed_counts
@@ -27,7 +28,7 @@ module Stif
       end
 
       def defaut_referential
-        StopAreaReferential.find_by(name: "Reflex")
+        @defaut_referential ||= StopAreaReferential.find_by(name: "Reflex")
       end
 
       def find_by_object_id objectid
@@ -44,24 +45,44 @@ module Stif
 
       def synchronize
         reset_counts
-        ['getOR', 'getOP'].each do |method|
+        # ['getOR', 'getOP'].each do |method|
+        ['getOP'].each do |method|
           start   = Time.now
           results = Reflex::API.new().process(method)
           log_processing_time("Process #{method}", Time.now - start)
           stop_areas = results[:Quay] | results[:StopPlace]
+          operators = results[:Operator]
 
           time = Benchmark.measure do
-            stop_areas.each do |entry|
-              next unless is_valid_type_of_place_ref?(method, entry)
-              entry['TypeOfPlaceRef'] = self.stop_area_area_type entry, method
-              self.create_or_update_stop_area entry
-              self.processed << entry['id']
+            StopAreaProvider.transaction do
+              operators.each do |entry|
+                self.create_or_update_operator entry
+              end
+            end
+
+            stop_areas.each_slice(1000) do |entries|
+              Chouette::StopArea.transaction do
+                Chouette::StopArea.cache do
+                  entries.each do |entry|
+                    next unless is_valid_type_of_place_ref?(method, entry)
+                    entry['TypeOfPlaceRef'] = self.stop_area_area_type entry, method
+                    self.create_or_update_stop_area entry
+                    self.processed << entry['id']
+                  end
+                end
+              end
             end
           end
           log_processing_time("Create or update StopArea", time.real)
 
           time = Benchmark.measure do
-            stop_areas.map{|entry| self.stop_area_set_parent(entry)}
+            stop_areas.each_slice(1000) do |entries|
+              Chouette::StopArea.transaction do
+                Chouette::StopArea.cache do
+                  entries.map {|entry| self.stop_area_set_parent(entry) }
+                end
+              end
+            end
           end
           log_processing_time("StopArea set parent", time.real)
         end
@@ -149,8 +170,12 @@ module Stif
         save_if_valid(access) if access.changed?
       end
 
+      def get_stop_area_provider objectid
+        @_stop_area_provider_cache[objectid] ||= defaut_referential.stop_area_providers.find_or_create_by(objectid: objectid)
+      end
+
       def create_or_update_stop_area entry
-        stop = Chouette::StopArea.find_or_create_by(objectid: entry['id'], stop_area_referential: self.defaut_referential )
+        stop = defaut_referential.stop_areas.find_or_create_by(objectid: entry['id'])
         {
           comment:       'Description',
           name:          'Name',
@@ -177,6 +202,11 @@ module Stif
           increment_counts prop, 1
           save_if_valid(stop)
         end
+
+        if entry["dataSourceRef"]
+          stop_area_provider = get_stop_area_provider entry["dataSourceRef"]
+          stop_area_provider.stop_areas << stop unless stop_area_provider.stop_areas.include?(stop)
+        end
         # Create AccessPoint from StopPlaceEntrance
         if entry[:stop_place_entrances]
           entry[:stop_place_entrances].each do |entrance|
@@ -184,6 +214,13 @@ module Stif
           end
         end
         stop
+      end
+
+      def create_or_update_operator entry
+        stop_area_provider = get_stop_area_provider entry['id']
+        stop_area_provider.name = entry["name"]
+        stop_area_provider.save
+        stop_area_provider
       end
     end
   end

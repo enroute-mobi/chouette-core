@@ -80,6 +80,7 @@ Apartment.configure do |config|
     'StopAreaReferentialMembership',
     'StopAreaReferentialSync',
     'StopAreaReferentialSyncMessage',
+    'StopAreaProvider',
     'User',
     'VehicleJourneyControl::Delta',
     'VehicleJourneyControl::Speed',

@@ -50,7 +50,7 @@ class User < ApplicationModel
     extra             = extra_attributes.inject({}){|memo,(k,v)| memo[k.to_sym] = v; memo}
     self.name         = extra[:full_name]
     self.email        = extra[:email]
-    self.organisation = Organisation.sync_update extra[:organisation_code], extra[:organisation_name], extra[:functional_scope]
+    self.organisation = Organisation.sync_update extra[:organisation_code], extra[:organisation_name], extra
     self.permissions  = Stif::PermissionTranslator.translate(extra[:permissions], self.organisation)
   end
 
@@ -70,7 +70,7 @@ class User < ApplicationModel
       user.name         = "#{el['firstname']} #{el['lastname']}"
       user.email        = el['email']
       user.locked_at    = el['locked_at']
-      user.organisation = Organisation.sync_update el['organization_code'], el['organization_name'], el['functional_scope']
+      user.organisation = Organisation.sync_update el['organization_code'], el['organization_name'], el
       user.synced_at    = Time.now
       user.permissions  = Stif::PermissionTranslator.translate(el['permissions'])
       user.save

@@ -36,6 +36,11 @@
                 attribute: Proc.new { |s| stop_area_status(s.status) } \
               ), \
               TableBuilderHelper::Column.new( \
+                key: :stop_area_providers, \
+                attribute: Proc.new { |s| s.stop_area_providers.map{|p| link_to(p.name, [p.stop_area_referential, p])}.to_sentence.html_safe }, \
+                sortable: false\
+              ), \
+              TableBuilderHelper::Column.new( \
                 key: :zip_code, \
                 attribute: 'zip_code' \
               ), \

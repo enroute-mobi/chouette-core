@@ -4,13 +4,20 @@ class AutocompleteStopAreasController < ChouetteController
   include ReferentialSupport
 
   def around
-    stop_area   = referential.stop_areas.find params[:id]
+    stop_area   = initial_scope.find params[:id]
     @stop_areas = stop_area.around(referential.stop_areas.where(area_type: params[:target_type]), 300)
   end
 
   protected
+
+  def initial_scope
+    parent = referential.workbench.present? ? referential.workbench : referential
+    parent_scope = parent.stop_areas
+    parent_scope.where(deleted_at: nil)
+  end
+
   def collection
-    scope = referential.stop_areas.where(deleted_at: nil)
+    scope = initial_scope
     scope = scope.physical if physical_filter?
     if target_type?
       scope = scope.where(area_type: params[:target_type])

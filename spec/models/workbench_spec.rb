@@ -64,6 +64,54 @@ RSpec.describe Workbench, :type => :model do
     end
   end
 
+  context '.stop_areas' do
+    let(:sso_attributes){{stop_area_providers: %w(blublublu)}}
+    let!(:organisation) { create :organisation, sso_attributes: sso_attributes }
+    let(:workbench) { create :workbench, organisation: organisation, stop_area_referential: stop_area_referential }
+    let(:stop_area_provider){ create :stop_area_provider, objectid: "blublublu" }
+    let(:stop_area_referential){ create :stop_area_referential }
+    let(:stop){ create :stop_area, stop_area_referential: stop_area_referential }
+    let(:stop_2){ create :stop_area, stop_area_referential: stop_area_referential }
+
+    before(:each) do
+      Workgroup.workbench_scopes_class = WorkbenchScopes::All
+      stop
+      stop_area_provider.stop_areas << stop_2
+    end
+
+    context 'with a functional_scope' do
+      it 'should filter stops based on the stop_area_referential' do
+        stops = workbench.stop_areas
+        expect(stops.count).to eq 2
+        expect(stops).to include stop_2
+        expect(stops).to include stop
+      end
+    end
+
+    context 'without a functional_scope' do
+      it 'should filter stops based on the stop_area_referential' do
+        stops = workbench.stop_areas
+        expect(stops.count).to eq 2
+        expect(stops).to include stop_2
+        expect(stops).to include stop
+      end
+    end
+
+    context "with a scope policy based on the sso_attributes" do
+      before do
+        Workgroup.workbench_scopes_class = Stif::WorkbenchScopes
+      end
+
+      it 'should filter lines based on my organisation stop_area_providers' do
+        stops = workbench.stop_areas
+        expect(stops.count).to eq 1
+        expect(stops).to include stop_2
+        expect(stops).to_not include stop
+      end
+    end
+  end
+
+
   describe ".create" do
     it "must automatically create a ReferentialSuite when being created" do
       workbench = Workbench.create

@@ -9,6 +9,7 @@ class StopAreaReferential < ApplicationModel
   has_many :stop_area_referential_syncs, -> {order created_at: :desc}
   has_many :workbenches
   has_one  :workgroup
+  has_many :stop_area_providers
 
   def add_member(organisation, options = {})
     attributes = options.merge organisation: organisation

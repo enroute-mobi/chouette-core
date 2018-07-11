@@ -78,7 +78,11 @@ class StopAreasController < ChouetteController
         format.kml {
           render :nothing => true, :status => :not_found
         }
-
+      end
+      format.json do
+        attributes = stop_area.attributes.slice(*%w(id name objectid comment area_type registration_number longitude latitude long_lat_type country_code time_zone street_name kind custom_field_values metadata))
+        attributes[:text] = "<span class='small label label-info'>#{I18n.t("area_types.label.#{stop_area.area_type}")}</span>#{stop_area.full_name}"
+        render json: attributes
       end
 
       @stop_area = @stop_area.decorate
@@ -200,7 +204,8 @@ class StopAreasController < ChouetteController
       :zip_code,
       :kind,
       :status,
-      localized_names: Chouette::StopArea::AVAILABLE_LOCALIZATIONS
+      localized_names: Chouette::StopArea::AVAILABLE_LOCALIZATIONS,
+      stop_area_provider_ids: []
     ] + permitted_custom_fields_params(Chouette::StopArea.custom_fields(stop_area_referential.workgroup))
     params.require(:stop_area).permit(fields)
   end

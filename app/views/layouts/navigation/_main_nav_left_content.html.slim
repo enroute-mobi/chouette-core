@@ -44,6 +44,10 @@
       = main_nav_menu_item 'layouts.navbar.stop_area_referential'.t do
         = link_to stop_area_referential_stop_areas_path(workbench.stop_area_referential), class: "list-group-item" do
           span = Chouette::StopArea.t.capitalize
+        - if policy(StopAreaProvider).create?
+          = link_to [workbench.stop_area_referential, :stop_area_providers], class: 'list-group-item' do
+            span = StopAreaProvider.t.capitalize
+
 
     .menu-item.panel
       = main_nav_menu_item 'layouts.navbar.configuration'.t do

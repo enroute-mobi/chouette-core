@@ -41,7 +41,7 @@ class TimeTablesController < ChouetteController
     end
 
     created_from = duplicate_source
-    @time_table  = created_from ? created_from.duplicate : Chouette::TimeTable.new(tt_params)
+    @time_table  = created_from ? created_from.duplicate(tt_params) : Chouette::TimeTable.new(tt_params)
 
     if calendar
       @time_table.int_day_types = calendar.int_day_types

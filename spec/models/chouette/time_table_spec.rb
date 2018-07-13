@@ -1191,20 +1191,25 @@ end
       expect(subject.duplicate.tag_list).to include('tag1', 'tag2')
     end
 
-      it "should be a copy of" do
-        target=subject.duplicate
-        expect(target.id).to be_nil
-        expect(target.comment).to eq(I18n.t("activerecord.copy", name: subject.comment))
-        expect(target.int_day_types).to eq(subject.int_day_types)
-        expect(target.dates.size).to eq(subject.dates.size)
-        target.dates.each do |d|
-          expect(d.time_table_id).to be_nil
-        end
-        expect(target.periods.size).to eq(subject.periods.size)
-        target.periods.each do |p|
-          expect(p.time_table_id).to be_nil
-        end
+    it "should be a copy of" do
+      target=subject.duplicate
+      expect(target.id).to be_nil
+      expect(target.comment).to eq(I18n.t("activerecord.copy", name: subject.comment))
+      expect(target.int_day_types).to eq(subject.int_day_types)
+      expect(target.dates.size).to eq(subject.dates.size)
+      target.dates.each do |d|
+        expect(d.time_table_id).to be_nil
       end
+      expect(target.periods.size).to eq(subject.periods.size)
+      target.periods.each do |p|
+        expect(p.time_table_id).to be_nil
+      end
+    end
+
+    it "should accept a custom comment" do
+      target=subject.duplicate(comment: "custom comment")
+      expect(target.comment).to eq("custom comment")
+    end
   end
 
   describe "#tags" do

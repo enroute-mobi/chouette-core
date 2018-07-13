@@ -446,11 +446,11 @@ module Chouette
       self.convert_continuous_dates_to_periods
     end
 
-    def duplicate
-      tt = self.deep_clone :include => [:periods, :dates], :except => [:object_version, :objectid]
+    def duplicate(tt_params = {})
+      tt = self.deep_clone include: [:periods, :dates], except: [:object_version, :objectid]
       tt.tag_list.add(*self.tag_list) unless self.tag_list.empty?
       tt.created_from = self
-      tt.comment      = I18n.t("activerecord.copy", :name => self.comment)
+      tt.comment      = tt_params[:comment].presence || I18n.t("activerecord.copy", :name => self.comment)
       tt
     end
 

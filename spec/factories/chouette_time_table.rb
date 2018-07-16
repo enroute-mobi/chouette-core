@@ -13,7 +13,11 @@ FactoryGirl.define do
     after(:create) do |time_table, evaluator|
       unless time_table.dates.any?
         evaluator.dates_count.times do |i|
-          time_table.dates  << create(:time_table_date, :time_table => time_table, :date => i.days.since.to_date, :in_out => true)
+          a = rand(0..80)
+          while (time_table.dates.select{|date| date.date==a.days.since.to_date}).any? do 
+            a = rand(0..80)
+          end
+          time_table.dates  << create(:time_table_date, :time_table => time_table, :date => a.days.since.to_date, :in_out => true)
         end
       end
 

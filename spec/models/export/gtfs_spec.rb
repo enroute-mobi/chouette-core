@@ -1,18 +1,312 @@
 RSpec.describe Export::GTFS, type: :model do
-  describe ".export_companies_to target" do
-    it "should xxx" do
-      # instancier exporter
+  let(:stop_area_referential){ create :stop_area_referential }
+  let(:line_referential){ create :line_referential }
+  let(:company){ create :company, line_referential: line_referential }
+  let(:workbench){ create :workbench, line_referential: line_referential, stop_area_referential: stop_area_referential }
+  let(:referential_metadata){ create(:referential_metadata, lines: line_referential.lines.limit(3)) }
+  let(:referential){
+    create :referential,
+    workbench: workbench,
+    organisation: workbench.organisation,
+    metadatas: [referential_metadata]
+  }
 
-      tmp_dir = Dir.mktmpdir
-      zip_path = File.join(tmp_dir, '/test.zip')
+  before(:each) do
+    2.times { create :line, line_referential: line_referential, company: company, network: nil }
+    10.times { create :stop_area, stop_area_referential: stop_area_referential }
+  end
 
-      GTFS::Target.open(zip_path) do |target|
-        exporter.export_companies_to target
+  let(:gtfs_export) { create :gtfs_export, referential: referential, workbench: workbench, duration: 5}
+
+  it "should correctly export data as valid GTFS output" do
+    # Create context for the tests
+    factor = 2
+    selected_vehicle_journeys = []
+    selected_stop_areas_hash = {}
+    date_range = []
+
+    # Create two levels parents stop_areas
+    6.times do |index|
+      sa = referential.stop_areas.sample
+      new_parent = FactoryGirl.create :stop_area, stop_area_referential: stop_area_referential
+      sa.parent = new_parent
+      sa.save
+      if index.even?
+        new_parent.parent = FactoryGirl.create :stop_area, stop_area_referential: stop_area_referential
+        new_parent.save
+      end
+    end
+
+    referential.switch do
+      line_referential.lines.each do |line|
+        # 2*2 routes with 5 stop_areas each
+        factor.times do
+          stop_areas = stop_area_referential.stop_areas.order("random()").limit(5)
+          FactoryGirl.create :route, line: line, stop_areas: stop_areas, stop_points_count: 0
+        end
       end
 
-      source = GTFS::Source.build(zip_path)
+      referential.routes.each_with_index do |route, index|
+        route.stop_points.each do |sp|
+          sp.set_list_position 0
+        end
 
-      # source.agencies.length.should eq(2)
+        if index.even?
+          route.wayback = :outbound
+        else
+          route.update_column :wayback, :inbound
+          route.opposite_route = route.opposite_route_candidates.sample
+        end
+
+        route.save!
+
+        # 4*2 journey_pattern with 3 stop_points each
+        factor.times do
+          FactoryGirl.create :journey_pattern, route: route, stop_points: route.stop_points.sample(3)
+        end
+      end
+
+      # 8*2 vehicle_journey
+      referential.journey_patterns.each do |journey_pattern|
+        factor.times do
+          FactoryGirl.create :vehicle_journey, journey_pattern: journey_pattern, company: company
+        end
+      end
+
+      # 16+1 different time_tables
+      shared_time_table = FactoryGirl.create :time_table
+
+      referential.vehicle_journeys.each do |vehicle_journey|
+        vehicle_journey.time_tables << shared_time_table
+        specific_time_table = FactoryGirl.create :time_table
+        vehicle_journey.time_tables << specific_time_table
+      end
+
+      #selected_vehicle_journeys = referential.vehicle_journeys.where(route_id: referential.routes.first)
+      date_range = gtfs_export.date_range
+      #selected_vehicle_journeys = Chouette::VehicleJourney.with_matching_timetable (gtfs_export.instance_variable_get('@date_range'))
+      selected_vehicle_journeys = Chouette::VehicleJourney.with_matching_timetable date_range
+      gtfs_export.instance_variable_set('@journeys', selected_vehicle_journeys)
+    end
+
+    tmp_dir = Dir.mktmpdir
+
+    ################################
+    # Test (1) agencies.txt export
+    ################################
+
+    agencies_zip_path = File.join(tmp_dir, '/test_agencies.zip')
+
+    referential.switch do
+      GTFS::Target.open(agencies_zip_path) do |target|
+        gtfs_export.export_companies_to target
+      end
+
+      # The processed export files are re-imported through the GTFS gem
+      source = GTFS::Source.build agencies_zip_path, strict: false
+      source.agencies.length.should eq(1)
+      agency = source.agencies.first
+      agency.id.should eq(company.registration_number)
+      agency.name.should eq(company.name)
+    end
+
+    ################################
+    # Test (2) stops.txt export
+    ################################
+
+    stops_zip_path = File.join(tmp_dir, '/test_stops.zip')
+
+    # Fetch the expected exported stop_areas
+    referential.switch do
+      selected_vehicle_journeys.each do |vehicle_journey|
+          vehicle_journey.route.stop_points.each do |stop_point|
+            (selected_stop_areas_hash[stop_point.stop_area.id] = stop_point.stop_area) if (stop_point.stop_area && !selected_stop_areas_hash[stop_point.stop_area.id])
+          end
+      end
+      selected_stop_areas = []
+      selected_stop_areas = gtfs_export.export_stop_areas_recursively(selected_stop_areas_hash.values)
+
+      GTFS::Target.open(stops_zip_path) do |target|
+        # reset export sort variable
+        gtfs_export.instance_variable_set('@stop_area_stop_hash', {})
+        gtfs_export.export_stop_areas_to target
+      end
+
+      # The processed export files are re-imported through the GTFS gem
+      source = GTFS::Source.build stops_zip_path, strict: false
+
+      # Same size
+      source.stops.length.should eq(selected_stop_areas.length)
+      # Randomly pick a stop_area and find the correspondant stop exported in GTFS
+      random_stop_area = selected_stop_areas.sample
+
+      # Find matching random stop in exported stops.txt file
+      random_gtfs_stop = source.stops.detect {|e| e.id == (random_stop_area.registration_number.presence || random_stop_area.id.to_s)}
+      random_gtfs_stop.should_not be_nil
+      random_gtfs_stop.name.should eq(random_stop_area.name)
+      random_gtfs_stop.location_type.should eq(random_stop_area.area_type == 'zdlp' ? '1' : '0')
+      # Checks if the parents are similar
+      random_gtfs_stop.parent_station.should eq(((random_stop_area.parent.registration_number.presence || random_stop_area.parent.id) if random_stop_area.parent))
+    end
+
+    ################################
+    # Test (3) lines.txt export
+    ################################
+
+    lines_zip_path = File.join(tmp_dir, '/test_lines.zip')
+    referential.switch do
+      GTFS::Target.open(lines_zip_path) do |target|
+        gtfs_export.export_lines_to target
+      end
+
+      # The processed export files are re-imported through the GTFS gem, and the computed
+      source = GTFS::Source.build lines_zip_path, strict: false
+      selected_routes = {}
+      selected_vehicle_journeys.each do |vehicle_journey|
+        selected_routes[vehicle_journey.route.line.id] = vehicle_journey.route.line
+      end
+
+      source.routes.length.should eq(selected_routes.length)
+      route = source.routes.first
+      line = referential.lines.first
+
+      route.id.should eq(line.registration_number)
+      route.agency_id.should eq(line.company.registration_number)
+      route.long_name.should eq(line.published_name)
+      route.short_name.should eq(line.number)
+      route.type.should eq(line.gtfs_type)
+      route.desc.should eq(line.comment)
+      route.url.should eq(line.url)
+    end
+
+    ####################################################
+    # Test (4) calendars.txt and calendar_dates.txt export #
+    ####################################################
+
+    calendars_zip_path = File.join(tmp_dir, '/test_calendars.zip')
+
+    referential.switch do
+      GTFS::Target.open(calendars_zip_path) do |target|
+        gtfs_export.export_time_tables_to target
+      end
+
+      # The processed export files are re-imported through the GTFS gem
+      source = GTFS::Source.build calendars_zip_path, strict: false
+
+      # Get VJ Timetables
+      periods = []
+      selected_vehicle_journeys.each do |vehicle_journey|
+        vehicle_journey.time_tables.each do |time_table|
+          time_table.periods.each do |period|
+            (periods << period) unless (period.period_end<date_range.begin || period.period_start>date_range.end)
+          end
+        end
+      end
+
+      periods = periods.uniq
+
+      # Same size
+      source.calendars.length.should eq(periods.length)
+      # Randomly pick a time_table_period and find the correspondant calendar exported in GTFS
+      random_period = periods.sample
+      # Find matching random stop in exported stops.txt file
+      random_gtfs_calendar = source.calendars.detect {|e| e.service_id == (random_period.id.to_s)}
+
+      random_gtfs_calendar.should_not be_nil
+      (random_period.period_start..random_period.period_end).overlaps?(date_range.begin..date_range.end).should be_truthy
+
+      random_gtfs_calendar.start_date.should eq(random_period.period_start.strftime('%Y%m%d'))
+      random_gtfs_calendar.end_date.should eq(random_period.period_end.strftime('%Y%m%d'))
+
+      random_gtfs_calendar.monday.should eq(random_period.time_table.monday ? "1" : "0")
+      random_gtfs_calendar.tuesday.should eq(random_period.time_table.tuesday ? "1" : "0")
+      random_gtfs_calendar.wednesday.should eq(random_period.time_table.wednesday ? "1" : "0")
+      random_gtfs_calendar.thursday.should eq(random_period.time_table.thursday ? "1" : "0")
+      random_gtfs_calendar.friday.should eq(random_period.time_table.friday ? "1" : "0")
+      random_gtfs_calendar.saturday.should eq(random_period.time_table.saturday ? "1" : "0")
+      random_gtfs_calendar.sunday.should eq(random_period.time_table.sunday ? "1" : "0")
+
+      # Test time_table_dates
+      vj_dates = selected_vehicle_journeys.map{|vj| vj.time_tables.map {|time_table|time_table.dates}}.flatten.uniq.select {|date| (date_range.begin..date_range.end) === date.date}
+
+      vj_dates.length.should eq(source.calendar_dates.length)
+      vj_dates.each do |date|
+        period = nil
+        if date.in_out
+          period = date.time_table.periods.first
+        else
+          period = date.time_table.periods.detect {|period| (period.period_start..period.period_end) === date.date}
+        end
+        period.should_not be_nil
+
+        calendar_date = source.calendar_dates.detect {|c| c.service_id == (period.id.to_s) && c.date == date.date.strftime('%Y%m%d')}
+        calendar_date.should_not be_nil
+        calendar_date.exception_type.should eq(date.in_out ? '1' : '2')
+      end
+
+    ################################
+    # Test (5) trips.txt export
+    ################################
+
+    targets_zip_path = File.join(tmp_dir, '/test_trips.zip')
+
+      GTFS::Target.open(targets_zip_path) do |target|
+        gtfs_export.export_vehicle_journeys_to target
+      end
+
+      # The processed export files are re-imported through the GTFS gem, and the computed
+      source = GTFS::Source.build targets_zip_path, strict: false
+
+      vj_periods = []
+      selected_vehicle_journeys.each do |vehicle_journey|
+        vehicle_journey.time_tables.each do |time_table|
+          time_table.periods.each do |period|
+            vj_periods << [period,vehicle_journey] if (periods.include? period)
+          end
+        end
+      end
+
+      # Same size
+      source.trips.length.should eq(vj_periods.length)
+
+      # Randomly pick a vehicule_journey / period couple and find the correspondant trip exported in GTFS
+      random_vj_period = vj_periods.sample
+
+      # Find matching random stop in exported trips.txt file
+      random_gtfs_trip = source.trips.detect {|t| t.service_id == random_vj_period.first.id.to_s && t.route_id == random_vj_period.last.route.line.registration_number.to_s}
+      random_gtfs_trip.should_not be_nil
+
+    ################################
+    # Test (6) stop_times.txt export
+    ################################
+
+    stop_times_zip_path = File.join(tmp_dir, '/stop_times.zip')
+      GTFS::Target.open(stop_times_zip_path) do |target|
+        gtfs_export.export_vehicle_journey_at_stops_to target
+      end
+
+      # The processed export files are re-imported through the GTFS gem, and the computed
+      source = GTFS::Source.build stop_times_zip_path, strict: false
+
+      expected_stop_times_length = vj_periods.map{|vj| vj.last.vehicle_journey_at_stops}.flatten.length
+
+      # Same size
+      source.stop_times.length.should eq(expected_stop_times_length)
+
+      # Count the number of stop_times generated by a random VJ and period couple (sop_times depends on a vj, a period and a stop_area)
+      vehicle_journey_at_stops = random_vj_period.last.vehicle_journey_at_stops
+
+      # Fetch all the stop_times entries exported in GTFS related to the trip (matching the previous VJ / period couple)
+      stop_times = source.stop_times.select{|stop_time| stop_time.trip_id == random_gtfs_trip.id }
+
+      # Same size 2
+      stop_times.length.should eq(vehicle_journey_at_stops.length)
+
+      # A random stop_time is picked
+      random_vehicle_journey_at_stop = vehicle_journey_at_stops.sample
+      stop_time = stop_times.detect{|stop_time| stop_time.arrival_time == GTFS::Time.format_datetime(random_vehicle_journey_at_stop.arrival_time, random_vehicle_journey_at_stop.arrival_day_offset) }
+      stop_time.should_not be_nil
+      stop_time.departure_time.should eq(GTFS::Time.format_datetime(random_vehicle_journey_at_stop.departure_time, random_vehicle_journey_at_stop.departure_day_offset))
     end
   end
 end

@@ -105,6 +105,11 @@ en:
         3_route_12: "All of route's (%{source_objectid}) non-commercial stop points don't have boarding and alighting attributes set to forbidden"
       description: "A route's commercial stop points must have boarding and alighting attributes set to forbidden"
       prerequisite: "None"
+    route_control/valid_stop_areas:
+      messages:
+        3_route_13: "The {route_name} route ({source_objectid}) is using stop_areas {[stop_area_ids]} not belonging to the organisation {organisation_name}"
+      description: "A route must not use Stop Areas not belonging to its owner's organisation"
+      prerequisite: "None"
     journey_pattern_control/duplicates:
       messages:
         3_journeypattern_1: "The journey pattern with objectid %{source_objectid} is identical with another one %{target_0_objectid}"

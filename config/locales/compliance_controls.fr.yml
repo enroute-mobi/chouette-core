@@ -105,6 +105,11 @@ fr:
         3_route_12: "Tous les arrêts non-commerciaux de l'itinéraire %{source_objectid} n'ont pas une montée / descente interdites"
       description: "Tous les arrêts non-commerciaux d'un itinéraire doivent avoir une montée / descente interdites"
       prerequisite: "Aucun"
+    route_control/stop_points_boarding_and_alighting:
+      messages:
+        3_route_13: "L'itinéraire {route_name}({source_objectid}) utilise des points d’arrêt {[stop_area_ids]} qui ne font pas partie du périmètre fonctionnel de l'organisation {organisation_name}"
+      description: "Tous les arrêts non-commerciaux d'un itinéraire doivent avoir une montée / descente interditesUn itinéraire ne doit pas définir d'offre faisant intervenir des arrêts ZDEp qui ne font pas partie du périmètre fonctionnel de l'organisation propriétaire"
+      prerequisite: "Aucun"
     journey_pattern_control/duplicates:
       messages:
         3_journeypattern_1: "La mission %{source_objectid} est identique à la mission %{target_0_objectid}"

@@ -28,7 +28,7 @@ module Stif
       end
 
       def defaut_referential
-        StopAreaReferential.find_by(name: "Reflex")
+        @defaut_referential ||= StopAreaReferential.find_by(name: "Reflex")
       end
 
       def find_by_object_id objectid
@@ -53,21 +53,35 @@ module Stif
           operators = results[:Operator]
 
           time = Benchmark.measure do
-            operators.each do |entry|
-              self.create_or_update_operator entry
+            StopAreaProvider.transaction do
+              operators.each do |entry|
+                self.create_or_update_operator entry
+              end
             end
 
-            stop_areas.each do |entry|
-              next unless is_valid_type_of_place_ref?(method, entry)
-              entry['TypeOfPlaceRef'] = self.stop_area_area_type entry, method
-              self.create_or_update_stop_area entry
-              self.processed << entry['id']
+            stop_areas.each_slice(1000) do |entries|
+              Chouette::StopArea.transaction do
+                Chouette::StopArea.cache do
+                  entries.each do |entry|
+                    next unless is_valid_type_of_place_ref?(method, entry)
+                    entry['TypeOfPlaceRef'] = self.stop_area_area_type entry, method
+                    self.create_or_update_stop_area entry
+                    self.processed << entry['id']
+                  end
+                end
+              end
             end
           end
           log_processing_time("Create or update StopArea", time.real)
 
           time = Benchmark.measure do
-            stop_areas.map{|entry| self.stop_area_set_parent(entry)}
+            stop_areas.each_slice(1000) do |entries|
+              Chouette::StopArea.transaction do
+                Chouette::StopArea.cache do
+                  entries.map {|entry| self.stop_area_set_parent(entry) }
+                end
+              end
+            end
           end
           log_processing_time("StopArea set parent", time.real)
         end

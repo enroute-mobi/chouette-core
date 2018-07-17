@@ -35,8 +35,8 @@
   &:before
     content: attr(on)
     padding-left: 6px
-    background-color: #35A692
-    color: #FFFFFF
+    background-color: lighten($blue, 50%)
+    color: $blue
   &:after
     content: attr(off)
     padding-right: 6px
@@ -48,16 +48,19 @@
   display: block
   width: 14px
   margin: 4px
-  background: #FFFFFF
+  background: lighten($blue, 50%)
   position: absolute
   top: 0
   bottom: 0
   right: 35px
-  border: 1px solid #E3E3E3
+  border: 1px solid lighten($blue, 50%)
   border-radius: 50px
   transition: all 0.3s ease-in 0s
 
 .onoffswitch-checkbox:checked + .onoffswitch-label
+  .onoffswitch-switch
+    border: 1px solid $blue
+    background: $blue
   .onoffswitch-inner
     margin-left: 0
   .onoffswitch-switch

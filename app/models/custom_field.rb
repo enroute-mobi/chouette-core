@@ -388,7 +388,7 @@ class CustomField < ApplicationModel
           out = "<div class = 'custom_field_attachment_wrapper form-group'>"
           out += @form_helper.label form_input_id, name, class: "file optional col-sm-4 col-xs-5 control-label"
           out += "<div class='col-sm-8 col-xs-7'>"
-          out += "<div class='btn btn-success col-sm-8'>"
+          out += "<div class='btn btn-primary'>"
           out += "<span class='fa fa-upload'></span>"
           out += preview
           out += "</div>"

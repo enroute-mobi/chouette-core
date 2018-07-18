@@ -38,15 +38,6 @@ fr:
     workgroup: Groupe de travail
     netex:     Netex
     referential_companies: Transporteurs
-    sqills: Sqills
-    sqills_companies: Transporteurs
-    sqills_stop_areas: Stops
-    sqills_journeys: Services
-    sqills_schedules: Horaires
-    sqills_routes: Routes
-    sqills_od_pairs: OD pairs
-    sqills_sales_restrictions: Sales restrictions
-    sqills_automated: Sqills (automatique)
     gtfs: GTFS
     base:
       <<: *exports

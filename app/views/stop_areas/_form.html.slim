@@ -44,12 +44,12 @@
         - if @stop_area.projection.present? && @stop_area.projection_type_label.present?
           = f.input :projection_xy, label: t("activerecord.attributes.stop_area.projection_xy", projection: @referential.projection_type_label), input_html: { title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.projection_xy") }
 
-        = f.input :coordinates, input_html: {title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.coordinates")}
+        = f.input :coordinates, input_html: { title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.coordinates") }
         = f.input :street_name
-        = f.input :zip_code, input_html: {title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.zip_code")}
+        = f.input :zip_code, input_html: { title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.zip_code") }
         = f.input :city_name, required: format_restriction_for_locales(@referential) == '.hub', input_html: {title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.city_name")}
         = f.input :country_code, as: :country, priority: ['FR', 'GB', 'DE', 'ES'], include_blank: true, input_html: { data: { select2ed: true } }
-        = f.input :nearest_topic_name, input_html: {title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.nearest_topic_name")}
+        = f.input :nearest_topic_name, input_html: { title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.nearest_topic_name") }
         = f.input :time_zone, as: :full_time_zone, include_blank: true
 
     .separator.section_separator

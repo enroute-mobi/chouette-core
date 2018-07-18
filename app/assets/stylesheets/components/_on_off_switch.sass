@@ -28,32 +28,30 @@
     padding: 0
     line-height: 20px
     font-size: 13px
-    color: white
+    color: $darkgrey
     font-family: Trebuchet, Arial, sans-serif
     font-weight: bold
     box-sizing: border-box
   &:before
     content: attr(on)
     padding-left: 6px
-    background-color: lighten($blue, 50%)
-    color: $blue
+    background-color: $lightergrey
   &:after
     content: attr(off)
     padding-right: 6px
     background-color: #FFFFFF
-    color: #666666
     text-align: right
 
 .onoffswitch-switch
   display: block
   width: 14px
   margin: 4px
-  background: lighten($blue, 50%)
+  background: $lightergrey
   position: absolute
   top: 0
   bottom: 0
   right: 35px
-  border: 1px solid lighten($blue, 50%)
+  border: 1px solid $lightergrey
   border-radius: 50px
   transition: all 0.3s ease-in 0s
 

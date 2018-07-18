@@ -108,7 +108,7 @@ en:
     route_control/valid_stop_areas:
       messages:
         3_route_13: "The {route_name} route ({source_objectid}) is using stop_areas {[stop_area_ids]} not belonging to the organisation {organisation_name}"
-      description: "A route must not use Stop Areas not belonging to its owner's organisation"
+      description: "A route must not use stop areas not belonging to its organisation"
       prerequisite: "None"
     journey_pattern_control/duplicates:
       messages:

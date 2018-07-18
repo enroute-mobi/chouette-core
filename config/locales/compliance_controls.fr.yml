@@ -108,7 +108,7 @@ fr:
     route_control/stop_points_boarding_and_alighting:
       messages:
         3_route_13: "L'itinéraire {route_name}({source_objectid}) utilise des points d’arrêt {[stop_area_ids]} qui ne font pas partie du périmètre fonctionnel de l'organisation {organisation_name}"
-      description: "Tous les arrêts non-commerciaux d'un itinéraire doivent avoir une montée / descente interditesUn itinéraire ne doit pas définir d'offre faisant intervenir des arrêts ZDEp qui ne font pas partie du périmètre fonctionnel de l'organisation propriétaire"
+      description: "Un itinéraire ne doit pas utiliser des arrêts n'appartenant pas à son organisation"
       prerequisite: "Aucun"
     journey_pattern_control/duplicates:
       messages:

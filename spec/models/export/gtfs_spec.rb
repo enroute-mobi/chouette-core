@@ -1,4 +1,4 @@
-RSpec.describe Export::GTFS, type: :model do
+RSpec.describe Export::Gtfs, type: :model do
   let(:stop_area_referential){ create :stop_area_referential }
   let(:line_referential){ create :line_referential }
   let(:company){ create :company, line_referential: line_referential }
@@ -104,10 +104,10 @@ RSpec.describe Export::GTFS, type: :model do
 
       # The processed export files are re-imported through the GTFS gem
       source = GTFS::Source.build agencies_zip_path, strict: false
-      source.agencies.length.should eq(1)
+      expect(source.agencies.length).to eq(1)
       agency = source.agencies.first
-      agency.id.should eq(company.registration_number)
-      agency.name.should eq(company.name)
+      expect(agency.id).to eq(company.registration_number)
+      expect(agency.name).to eq(company.name)
     end
 
     ################################
@@ -136,17 +136,17 @@ RSpec.describe Export::GTFS, type: :model do
       source = GTFS::Source.build stops_zip_path, strict: false
 
       # Same size
-      source.stops.length.should eq(selected_stop_areas.length)
+      expect(source.stops.length).to eq(selected_stop_areas.length)
       # Randomly pick a stop_area and find the correspondant stop exported in GTFS
       random_stop_area = selected_stop_areas.sample
 
       # Find matching random stop in exported stops.txt file
       random_gtfs_stop = source.stops.detect {|e| e.id == (random_stop_area.registration_number.presence || random_stop_area.id.to_s)}
-      random_gtfs_stop.should_not be_nil
-      random_gtfs_stop.name.should eq(random_stop_area.name)
-      random_gtfs_stop.location_type.should eq(random_stop_area.area_type == 'zdlp' ? '1' : '0')
+      expect(random_gtfs_stop).not_to be_nil
+      expect(random_gtfs_stop.name).to eq(random_stop_area.name)
+      expect(random_gtfs_stop.location_type).to eq(random_stop_area.area_type == 'zdlp' ? '1' : '0')
       # Checks if the parents are similar
-      random_gtfs_stop.parent_station.should eq(((random_stop_area.parent.registration_number.presence || random_stop_area.parent.id) if random_stop_area.parent))
+      expect(random_gtfs_stop.parent_station).to eq(((random_stop_area.parent.registration_number.presence || random_stop_area.parent.id) if random_stop_area.parent))
     end
 
     ################################
@@ -166,17 +166,17 @@ RSpec.describe Export::GTFS, type: :model do
         selected_routes[vehicle_journey.route.line.id] = vehicle_journey.route.line
       end
 
-      source.routes.length.should eq(selected_routes.length)
+      expect(source.routes.length).to eq(selected_routes.length)
       route = source.routes.first
       line = referential.lines.first
 
-      route.id.should eq(line.registration_number)
-      route.agency_id.should eq(line.company.registration_number)
-      route.long_name.should eq(line.published_name)
-      route.short_name.should eq(line.number)
-      route.type.should eq(line.gtfs_type)
-      route.desc.should eq(line.comment)
-      route.url.should eq(line.url)
+      expect(route.id).to eq(line.registration_number)
+      expect(route.agency_id).to eq(line.company.registration_number)
+      expect(route.long_name).to eq(line.published_name)
+      expect(route.short_name).to eq(line.number)
+      expect(route.type).to eq(gtfs_export.gtfs_line_type line)
+      expect(route.desc).to eq(line.comment)
+      expect(route.url).to eq(line.url)
     end
 
     ####################################################
@@ -193,56 +193,55 @@ RSpec.describe Export::GTFS, type: :model do
       # The processed export files are re-imported through the GTFS gem
       source = GTFS::Source.build calendars_zip_path, strict: false
 
-      # Get VJ Timetables
+      # Get VJ merged periods
       periods = []
       selected_vehicle_journeys.each do |vehicle_journey|
-        vehicle_journey.time_tables.each do |time_table|
-          time_table.periods.each do |period|
-            (periods << period) unless (period.period_end<date_range.begin || period.period_start>date_range.end)
-          end
-        end
+        periods << vehicle_journey.flattened_circulation_periods.select{|period| period.range & date_range}
       end
 
-      periods = periods.uniq
+      periods = periods.flatten.uniq
 
       # Same size
-      source.calendars.length.should eq(periods.length)
+      expect(source.calendars.length).to eq(periods.length)
       # Randomly pick a time_table_period and find the correspondant calendar exported in GTFS
       random_period = periods.sample
       # Find matching random stop in exported stops.txt file
-      random_gtfs_calendar = source.calendars.detect {|e| e.service_id == (random_period.id.to_s)}
+      random_gtfs_calendar = source.calendars.detect do |e|
+        e.service_id == random_period.object_id
+        e.start_date == (random_period.period_start.strftime('%Y%m%d'))
+        e.end_date == (random_period.period_end.strftime('%Y%m%d'))
 
-      random_gtfs_calendar.should_not be_nil
-      (random_period.period_start..random_period.period_end).overlaps?(date_range.begin..date_range.end).should be_truthy
-
-      random_gtfs_calendar.start_date.should eq(random_period.period_start.strftime('%Y%m%d'))
-      random_gtfs_calendar.end_date.should eq(random_period.period_end.strftime('%Y%m%d'))
-
-      random_gtfs_calendar.monday.should eq(random_period.time_table.monday ? "1" : "0")
-      random_gtfs_calendar.tuesday.should eq(random_period.time_table.tuesday ? "1" : "0")
-      random_gtfs_calendar.wednesday.should eq(random_period.time_table.wednesday ? "1" : "0")
-      random_gtfs_calendar.thursday.should eq(random_period.time_table.thursday ? "1" : "0")
-      random_gtfs_calendar.friday.should eq(random_period.time_table.friday ? "1" : "0")
-      random_gtfs_calendar.saturday.should eq(random_period.time_table.saturday ? "1" : "0")
-      random_gtfs_calendar.sunday.should eq(random_period.time_table.sunday ? "1" : "0")
-
-      # Test time_table_dates
-      vj_dates = selected_vehicle_journeys.map{|vj| vj.time_tables.map {|time_table|time_table.dates}}.flatten.uniq.select {|date| (date_range.begin..date_range.end) === date.date}
-
-      vj_dates.length.should eq(source.calendar_dates.length)
-      vj_dates.each do |date|
-        period = nil
-        if date.in_out
-          period = date.time_table.periods.first
-        else
-          period = date.time_table.periods.detect {|period| (period.period_start..period.period_end) === date.date}
-        end
-        period.should_not be_nil
-
-        calendar_date = source.calendar_dates.detect {|c| c.service_id == (period.id.to_s) && c.date == date.date.strftime('%Y%m%d')}
-        calendar_date.should_not be_nil
-        calendar_date.exception_type.should eq(date.in_out ? '1' : '2')
+        e.monday == (random_period.monday ? "1" : "0")
+        e.tuesday == (random_period.tuesday ? "1" : "0")
+        e.wednesday == (random_period.wednesday ? "1" : "0")
+        e.thursday == (random_period.thursday ? "1" : "0")
+        e.friday == (random_period.friday ? "1" : "0")
+        e.saturday == (random_period.saturday ? "1" : "0")
+        e.sunday == (random_period.sunday ? "1" : "0")
       end
+
+      expect(random_gtfs_calendar).not_to be_nil
+      expect((random_period.period_start..random_period.period_end).overlaps?(date_range.begin..date_range.end)).to be_truthy
+
+      # TO MODIFY IF NEEDED : the method vehicle_journeys#flattened_circulation_periods casts any time_table_dates into a single day period/calendar.
+      # Thus, for the moment, no time_table_dates / calendar_dates.txt 'll be exported
+      # Test time_table_dates
+      # vj_dates = selected_vehicle_journeys.map{|vj| vj.time_tables.map {|time_table|time_table.dates}}.flatten.uniq.select {|date| (date_range.begin..date_range.end) === date.date}
+      #
+      # vj_dates.length.should eq(source.calendar_dates.length)
+      # vj_dates.each do |date|
+      #   period = nil
+      #   if date.in_out
+      #     period = date.time_table.periods.first
+      #   else
+      #     period = date.time_table.periods.detect {|period| (period.period_start..period.period_end) === date.date}
+      #   end
+      #   period.should_not be_nil
+      #
+      #   calendar_date = source.calendar_dates.detect {|c| c.service_id == (period.id.to_s) && c.date == date.date.strftime('%Y%m%d')}
+      #   calendar_date.should_not be_nil
+      #   calendar_date.exception_type.should eq(date.in_out ? '1' : '2')
+      # end
 
     ################################
     # Test (5) trips.txt export
@@ -257,24 +256,23 @@ RSpec.describe Export::GTFS, type: :model do
       # The processed export files are re-imported through the GTFS gem, and the computed
       source = GTFS::Source.build targets_zip_path, strict: false
 
+      # Get VJ merged periods
       vj_periods = []
       selected_vehicle_journeys.each do |vehicle_journey|
-        vehicle_journey.time_tables.each do |time_table|
-          time_table.periods.each do |period|
-            vj_periods << [period,vehicle_journey] if (periods.include? period)
-          end
+        vehicle_journey.flattened_circulation_periods.select{|period| period.range & date_range}.each do |period|
+          vj_periods << [period,vehicle_journey]
         end
       end
 
       # Same size
-      source.trips.length.should eq(vj_periods.length)
+      expect(source.trips.length).to eq(vj_periods.length)
 
       # Randomly pick a vehicule_journey / period couple and find the correspondant trip exported in GTFS
       random_vj_period = vj_periods.sample
 
       # Find matching random stop in exported trips.txt file
-      random_gtfs_trip = source.trips.detect {|t| t.service_id == random_vj_period.first.id.to_s && t.route_id == random_vj_period.last.route.line.registration_number.to_s}
-      random_gtfs_trip.should_not be_nil
+      random_gtfs_trip = source.trips.detect {|t| t.service_id == random_vj_period.first.object_id.to_s && t.route_id == random_vj_period.last.route.line.registration_number.to_s}
+      expect(random_gtfs_trip).not_to be_nil
 
     ################################
     # Test (6) stop_times.txt export
@@ -291,7 +289,7 @@ RSpec.describe Export::GTFS, type: :model do
       expected_stop_times_length = vj_periods.map{|vj| vj.last.vehicle_journey_at_stops}.flatten.length
 
       # Same size
-      source.stop_times.length.should eq(expected_stop_times_length)
+      expect(source.stop_times.length).to eq(expected_stop_times_length)
 
       # Count the number of stop_times generated by a random VJ and period couple (sop_times depends on a vj, a period and a stop_area)
       vehicle_journey_at_stops = random_vj_period.last.vehicle_journey_at_stops
@@ -300,13 +298,13 @@ RSpec.describe Export::GTFS, type: :model do
       stop_times = source.stop_times.select{|stop_time| stop_time.trip_id == random_gtfs_trip.id }
 
       # Same size 2
-      stop_times.length.should eq(vehicle_journey_at_stops.length)
+      expect(stop_times.length).to eq(vehicle_journey_at_stops.length)
 
       # A random stop_time is picked
       random_vehicle_journey_at_stop = vehicle_journey_at_stops.sample
       stop_time = stop_times.detect{|stop_time| stop_time.arrival_time == GTFS::Time.format_datetime(random_vehicle_journey_at_stop.arrival_time, random_vehicle_journey_at_stop.arrival_day_offset) }
-      stop_time.should_not be_nil
-      stop_time.departure_time.should eq(GTFS::Time.format_datetime(random_vehicle_journey_at_stop.departure_time, random_vehicle_journey_at_stop.departure_day_offset))
+      expect(stop_time).not_to be_nil
+      expect(stop_time.departure_time).to eq(GTFS::Time.format_datetime(random_vehicle_journey_at_stop.departure_time, random_vehicle_journey_at_stop.departure_day_offset))
     end
   end
 end

@@ -38,6 +38,16 @@ en:
     workgroup: Workgroup
     netex:     Netex
     referential_companies: Companies
+    sqills: Sqills
+    sqills_companies: Services Types
+    sqills_stop_areas: Stops
+    sqills_journeys: Services
+    sqills_schedules: Schedules
+    sqills_routes: Routes
+    sqills_od_pairs: OD pairs
+    sqills_sales_restrictions: Sales restrictions
+    sqills_automated: Sqills (automated)
+    gtfs: GTFS
     base:
       <<: *exports
   activerecord:
@@ -93,6 +103,14 @@ en:
         base:
           <<: *attrs
         netex:
+          <<: *attrs
+          duration: Duration (in days)
+          line_code: Line
+          export_type: Export subtype
+          export_type_collection:
+            line: By line
+            full: Full
+        gtfs:
           <<: *attrs
           duration: Duration (in days)
           line_code: Line

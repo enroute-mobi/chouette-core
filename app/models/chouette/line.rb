@@ -90,15 +90,6 @@ module Chouette
       [self.get_objectid.short_id, number, name, company_light.try(:name)].compact.join(' - ').truncate(50)
     end
 
-    def gtfs_type
-      case transport_mode
-      when 'rail'
-        '2'
-      else
-        '3'
-      end
-    end
-
     def companies
       line_referential.companies.where(id: ([company_id] + Array(secondary_company_ids)).compact)
     end

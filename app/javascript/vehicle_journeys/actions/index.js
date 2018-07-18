@@ -516,7 +516,7 @@ const actions = {
   },
   adjustSchedule: (action, schedule, isFirstOrLastStop, enforceConsistency=false) => {
     // we enforce that the departure time remains after the arrival time
-    if (!enforceConsistency && (!(schedule.arrival_time.hour < 23 || schedule.departure_time.hour > 0))) return schedule
+    if (!enforceConsistency) return schedule
 
     let newSchedule = actions.getDelta(schedule, true)
 

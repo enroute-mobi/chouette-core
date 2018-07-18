@@ -107,7 +107,7 @@ en:
       prerequisite: "None"
     route_control/valid_stop_areas:
       messages:
-        3_route_13: "The {route_name} route ({source_objectid}) is using stop_areas {[stop_area_ids]} not belonging to the organisation {organisation_name}"
+        3_route_13: "The %{route_name} route (%{source_objectid}) is using stop_areas %{stop_area_ids} not belonging to the organisation %{organisation_name}"
       description: "A route must not use stop areas not belonging to its organisation"
       prerequisite: "None"
     journey_pattern_control/duplicates:
@@ -152,11 +152,6 @@ en:
         3_vehiclejourney_5_2: "The vehicle journey with %{source_objectid} objectid has an departure time %{error_value} at stop point %{target_0_label} (%{target_0_objectid}) greater than the arrival %{reference_value} at the next stop point"
       description: Increasing chronology of the vehicle journey at stops
       prerequisite: "None"
-    vehicle_journey_control/published_journey_name:
-      messages:
-        3_vehiclejourney_8: "The vehicle journey with %{source_objectid} must have a published journey name between %{min} and %{max} for the company : %{company_name}"
-      description: Published journey name value for a company
-      prerequisite: "None"
     vehicle_journey_control/purchase_window:
       messages:
         3_vehiclejourney_6: "The vehicle journey %{source_objectid} lacks a purchase window"
@@ -167,17 +162,15 @@ en:
         3_vehiclejourney_7: The end date of journey's %{source_objectid} purchase windows must be before or equal of the end date of circulation
       description: The end of sales must be before end of circulation
       prerequisite: "None"
+    vehicle_journey_control/published_journey_name:
+      messages:
+        3_vehiclejourney_8: "The vehicle journey with %{source_objectid} must have a published journey name between %{min} and %{max} for the company : %{company_name}"
+      description: Published journey name value for a company
+      prerequisite: "None"
     vehicle_journey_control/bus_capacity:
       messages:
         3_vehiclejourney_9: "The vehicle journey %{source_objectid} lacks a bus capacity"
       description: "All journeys must have a bus capacity"
-      prerequisite: "None"
-    vehicle_journey_control/purchse_window:
-      messages:
-        3_vehiclejourney_6: "The vehicle journey %{source_objectid} lacks a purchase window"
-      description: "All journeys must have at least one purchase window"
-      prerequisite: "None"
-
       prerequisite: "None"
     routing_constraint_zone_control/unactivated_stop_point:
       messages:
@@ -256,8 +249,12 @@ en:
         one: "Route and unactivated stop point"
       route_control/stop_points_in_journey_pattern:
         one: "The stop points of a route must be used by at least one journey pattern"
+      route_control/border_count:
+        one: "Borders count given the stops countries"
       route_control/stop_points_boarding_and_alighting:
         one: "The commercial stop points of a route must have forbidden boarding and alighting"
+      route_control/valid_stop_areas:
+        one: "A route must not use stop areas not belonging to its organisation"
       journey_pattern_control/duplicates:
         one: "Journey patterns duplicates in a line"
       journey_pattern_control/vehicle_journey:

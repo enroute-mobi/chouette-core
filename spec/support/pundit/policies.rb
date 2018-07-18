@@ -6,6 +6,7 @@ module Support
       def add_permissions(*permissions, to_user:)
         to_user.permissions ||= []
         to_user.permissions += permissions.flatten
+        # to_user.save if to_user.persisted?
       end
 
       def create_user_context(user:, referential:)
@@ -13,7 +14,7 @@ module Support
       end
 
       def finalise_referential
-        referential.referential_suite_id = random_int 
+        referential.referential_suite_id = random_int
       end
 
       def remove_permissions(*permissions, from_user:, save: false)

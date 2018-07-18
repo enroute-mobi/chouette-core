@@ -2,15 +2,15 @@ class LineReferential < ApplicationModel
   include ObjectidFormatterSupport
   extend StifTransportModeEnumerations
 
-  has_many :line_referential_memberships
+  has_many :line_referential_memberships, dependent: :destroy
   has_many :organisations, through: :line_referential_memberships
-  has_many :lines, class_name: 'Chouette::Line'
-  has_many :group_of_lines, class_name: 'Chouette::GroupOfLine'
-  has_many :companies, class_name: 'Chouette::Company'
-  has_many :networks, class_name: 'Chouette::Network'
-  has_many :line_referential_syncs, -> { order created_at: :desc }
-  has_many :workbenches
-  has_one  :workgroup
+  has_many :lines, class_name: 'Chouette::Line', dependent: :destroy
+  has_many :group_of_lines, class_name: 'Chouette::GroupOfLine', dependent: :destroy
+  has_many :companies, class_name: 'Chouette::Company', dependent: :destroy
+  has_many :networks, class_name: 'Chouette::Network', dependent: :destroy
+  has_many :line_referential_syncs, -> { order created_at: :desc }, dependent: :destroy
+  has_many :workbenches, dependent: :nullify
+  has_one  :workgroup, dependent: :nullify
 
   def add_member(organisation, options = {})
     attributes = options.merge organisation: organisation

@@ -8,7 +8,7 @@ class CustomField < ApplicationModel
   validates :code, uniqueness: {scope: [:resource_type, :workgroup_id], case_sensitive: false}, presence: true
   validates :workgroup, :resource_type, :field_type, presence: true
 
-  after_create do
+  after_save do
     if resource_type
       resource_class = resource_type.safe_constantize
       resource_class ||= "Chouette::#{resource_type}".constantize
@@ -17,15 +17,38 @@ class CustomField < ApplicationModel
   end
 
   class Collection < HashWithIndifferentAccess
-    def initialize object, workgroup=nil
+    def initialize(object, workgroup=nil)
       vals = object.class.custom_fields(workgroup).map do |v|
         [v.code, CustomField::Instance.new(object, v, object.custom_field_value(v.code))]
       end
       super Hash[*vals.flatten]
     end
 
+    def self.new(object, workgroup=nil)
+      return object if object.is_a?(Collection)
+      super
+    end
+
     def to_hash
       HashWithIndifferentAccess[*self.map{|k, v| [k, v.to_hash]}.flatten(1)]
+    end
+
+    def for_section(section)
+      select do |_code, field|
+        field.options["section"] == section
+      end
+    end
+
+    def without_section
+      select do |_code, field|
+        field.options["section"].blank?
+      end
+    end
+
+    def except_for_sections(sections)
+      reject do |_code, field|
+        field.options["section"].blank? || sections.include?(field.options["section"])
+      end
     end
   end
 

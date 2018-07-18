@@ -21,8 +21,8 @@ module Chouette
 
     has_and_belongs_to_many :vehicle_journeys, :class_name => 'Chouette::VehicleJourney'
 
-    has_many :dates, -> {order(:date)}, inverse_of: :time_table, :validate => :true, :class_name => "Chouette::TimeTableDate", :dependent => :destroy
-    has_many :periods, -> {order(:period_start)}, inverse_of: :time_table, :validate => :true, :class_name => "Chouette::TimeTablePeriod", :dependent => :destroy
+    has_many :dates, -> {order(:date)}, inverse_of: :time_table, :validate => :true, :class_name => "Chouette::TimeTableDate", dependent: :destroy
+    has_many :periods, -> {order(:period_start)}, inverse_of: :time_table, :validate => :true, :class_name => "Chouette::TimeTablePeriod", dependent: :destroy
 
     belongs_to :calendar
     belongs_to :created_from, class_name: 'Chouette::TimeTable'

@@ -30,8 +30,8 @@ RSpec.describe JourneyPatternsCollectionsController, :type => :controller do
     login_user
 
     let( :referential ){ Referential.first }
-    let( :line ){ create(:line) }
-    let( :route ){ create(:route, line: line) }
+    let( :line ){ route.line }
+    let( :route ){ create(:route, referential: referential) }
 
     let(:request){
       get :show, referential_id: referential.id, line_id: line.id, route_id: route.id, format: :json

@@ -14,27 +14,33 @@
                   key: :name, \
                   attribute: 'name', \
                   link_to: lambda do |compliance_control_set| \
-                      compliance_control_set_path(compliance_control_set) \
-                    end \
+                    compliance_control_set_path(compliance_control_set) \
+                  end, \
+                  sortable: true,\
                 ), \
                 TableBuilderHelper::Column.new( \
                   key: :assigned_to, \
-                  attribute: 'assignment' \
+                  attribute: Proc.new {|n| \
+                    n.assignments(current_user).to_sentence\
+                  }, \
+                  sortable: false,\
                 ), \
                 TableBuilderHelper::Column.new( \
                   key: :owner_jdc, \
-                  attribute: Proc.new {|n| n.organisation.name } \
+                  attribute: Proc.new {|n| n.organisation.name }, \
+                  sortable: true,\
                 ), \
                 TableBuilderHelper::Column.new( \
                   key: :control_numbers, \
-                  attribute: Proc.new {|n| n.compliance_controls.count }\
+                  attribute: Proc.new {|n| n.compliance_controls.count },\
+                  sortable: true,\
                 ), \
                 TableBuilderHelper::Column.new( \
                   key: :updated_at, \
                   attribute: Proc.new { |n| l(n.updated_at, format: :long) if n.updated_at }, \
+                  sortable: true,\
                 ) \
               ],
-              sortable: true,
               cls: 'table has-filter has-search'
 
           = new_pagination @compliance_control_sets, 'pull-right'

@@ -4,8 +4,8 @@ require 'spec_helper'
 describe "JourneyPatterns", :type => :feature do
   login_user
 
-  let!(:line) { create(:line) }
-  let!(:route) { create(:route, :line => line) }
+  let!(:line) { route.line }
+  let!(:route) { create(:route, referential: referential) }
   let!(:journey_pattern) { create(:journey_pattern, :route => route) }
 
   describe 'show' do

@@ -27,6 +27,7 @@ en:
       configuration: Settings
       workgroup_configuration:  Application
       workbench_configuration: Workbench
+      organisation_configuration: My organization
       tools: Tools
       sync: Synchronization
       sync_icar: iCAR synchronization

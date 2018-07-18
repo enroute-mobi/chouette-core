@@ -8,6 +8,8 @@ RSpec.describe Range do
     it "is the smaller of two if one is part of the other" do
       expect( (1..2).intersection(0..3) ).to eq 1..2
       expect( (0..2).intersection(1..2) ).to eq 1..2
+      expect( (2..2).intersection(1..2) ).to eq 2..2
+      expect( (1..2).intersection(2..2) ).to eq 2..2
     end
 
     it "is the intersection otherwise" do
@@ -19,10 +21,15 @@ RSpec.describe Range do
   describe "intersect?" do
     it 'is true when the given range includes begin' do
       expect( (2..4).intersect? (1..3) ).to be_truthy
+      expect( (2..4).intersect? (2..2) ).to be_truthy
+      expect( (2..2).intersect? (2..4) ).to be_truthy
+      expect( (2..2).intersect? (2..2) ).to be_truthy
     end
 
     it 'is true when the given range includes end' do
       expect( (2..4).intersect? (3..5) ).to be_truthy
+      expect( (5..5).intersect? (3..5) ).to be_truthy
+      expect( (3..5).intersect? (5..5) ).to be_truthy
     end
 
     it 'is true when the given range includes both begin and end' do
@@ -37,8 +44,12 @@ RSpec.describe Range do
       expect( (2..4).intersect? (5..7) ).to be_falsey
     end
 
+    it 'is true when the range overlaps on a single value' do
+      expect( (2..4).intersect? (4..7) ).to be_truthy
+    end
+
     it 'is false when the given range is before' do
-      expect( (2..4).intersect? (0..2) ).to be_falsey
+      expect( (3..4).intersect? (0..2) ).to be_falsey
     end
   end
 

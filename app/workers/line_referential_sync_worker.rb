@@ -1,5 +1,7 @@
 class LineReferentialSyncWorker
   include Sidekiq::Worker
+  include Concerns::LongRunningWorker
+  
   sidekiq_options retry: true
 
   def process_time

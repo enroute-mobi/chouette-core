@@ -135,6 +135,7 @@ gem 'carrierwave', '~> 1.0'
 gem 'rmagick'
 
 gem 'sidekiq', require: ['sidekiq', 'sidekiq/web']
+gem 'sidekiq-limit_fetch'
 gem 'whenever', github: 'af83/whenever', require: false # '~> 0.9'
 gem 'rake'
 gem 'devise-async'

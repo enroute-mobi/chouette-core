@@ -88,6 +88,26 @@ RSpec.describe RouteControl::BorderCount, :type => :model do
     end
   end
 
+  context "with the right borders and a stop without contry|  }" do
+    before do
+      route = create :route, line: line, stop_points_count: 0
+      stop_areas = []
+      stop_areas << create(:stop_area, country_code: :fr)
+      stop_areas << create(:stop_area, country_code: nil)
+      stop_areas << create(:stop_area, country_code: :fr, kind: :non_commercial, area_type: :border)
+      stop_areas << create(:stop_area, country_code: :de, kind: :non_commercial, area_type: :border)
+      stop_areas << create(:stop_area, country_code: :de)
+      stop_areas.each do |s|
+        route.stop_points.create stop_area: s
+      end
+    end
+    it "should pass" do
+      expect{compliance_check.process}.to change{ComplianceCheckResource.count}.by 1
+      resource = ComplianceCheckResource.last
+      expect(resource.status).to eq "OK"
+    end
+  end
+
   context "when the route changes country twice" do
     context "without border" do
       before do

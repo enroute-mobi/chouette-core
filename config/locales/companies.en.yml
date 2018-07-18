@@ -18,6 +18,11 @@ en:
       name: "Search by name..."
       name_or_objectid: "Search by name or by ID..."
       advanced_search: "Advanced search"
+    form:
+      sections:
+        identification: "Identification"
+        contact: "Contact"
+        general: "General"
   activerecord:
     models:
       company:

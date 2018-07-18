@@ -6,6 +6,8 @@ en:
         name: Name
         comment: Comment
         criticity: Criticity
+        context_i18n: Context
+        context: Context
   compliance_checks:
     filters:
       subclass: Object

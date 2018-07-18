@@ -5,6 +5,7 @@ class ApplicationPolicy
     @user                = user_context.user
     @current_referential = user_context.context[:referential]
     @record              = record
+    @user_context        = user_context
   end
 
   # HMMM: Maybe one can tie index? to show? again by replacing record.class as follows:

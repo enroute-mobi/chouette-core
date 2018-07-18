@@ -1,6 +1,9 @@
 class Merge < ApplicationModel
   extend Enumerize
 
+  @@keep_merges = 20
+  mattr_accessor :keep_merges
+
   belongs_to :workbench
   belongs_to :new, class_name: 'Referential'
 
@@ -10,11 +13,15 @@ class Merge < ApplicationModel
   enumerize :status, in: %w[new pending successful failed running], default: :new
 
   has_array_of :referentials, class_name: 'Referential'
-  has_many :compliance_check_sets, foreign_key: :parent_id
+  has_many :compliance_check_sets, foreign_key: :parent_id, dependent: :destroy
 
   delegate :output, to: :workbench
 
   after_commit :merge, :on => :create
+
+  def self.keep_merges=(value)
+    @@keep_merges = [value, 1].max # we cannot keep less than 1 merge
+  end
 
   def merge
     # Step 1 : Before
@@ -37,32 +44,34 @@ class Merge < ApplicationModel
 
   def before_merge_compliance_control_sets
     workbench.workgroup.before_merge_compliance_control_sets.map do |key, label|
-      workbench.compliance_control_set(key)
+      cc_set = workbench.compliance_control_set(key)
+      cc_set.present? ? [key, cc_set] : nil
     end.compact
   end
 
   def after_merge_compliance_control_sets
     workbench.workgroup.after_merge_compliance_control_sets.map do |key, label|
-      workbench.compliance_control_set(key)
+      cc_set = workbench.compliance_control_set(key)
+      cc_set.present? ? [key, cc_set] : nil
     end.compact
   end
 
   def create_before_merge_compliance_check_sets
     referentials.each do |referential|
-      before_merge_compliance_control_sets.each do |compliance_control_set|
-        create_compliance_check_set compliance_control_set, referential
+      before_merge_compliance_control_sets.each do |key, compliance_control_set|
+        create_compliance_check_set key, compliance_control_set, referential
       end
     end
   end
 
   def create_after_merge_compliance_check_sets
-    after_merge_compliance_control_sets.each do |compliance_control_set|
-      create_compliance_check_set compliance_control_set, new
+    after_merge_compliance_control_sets.each do |key, compliance_control_set|
+      create_compliance_check_set key, compliance_control_set, new
     end
   end
 
-  def create_compliance_check_set(control_set, referential)
-    ComplianceControlSetCopier.new.copy control_set.id, referential.id, self.class.name, id
+  def create_compliance_check_set(context, control_set, referential)
+    ComplianceControlSetCopier.new.copy control_set.id, referential.id, self.class.name, id, context
   end
 
   def name
@@ -234,7 +243,7 @@ class Merge < ApplicationModel
           end
 
           # We need to create StopPoints to known new primary keys
-          new_route.save!
+          save_model! new_route
 
           route_ids_mapping[route.id] = new_route.id
 
@@ -261,10 +270,9 @@ class Merge < ApplicationModel
               stop_point_ids: stop_point_ids,
             )
             new_route.routing_constraint_zones.build attributes
-
           end
 
-          new_route.save!
+          save_model! new_route
 
           if new_route.checksum != route.checksum
             raise "Checksum has changed: \"#{route.checksum}\", \"#{route.checksum_source}\" -> \"#{new_route.checksum}\", \"#{new_route.checksum_source}\""
@@ -376,7 +384,7 @@ class Merge < ApplicationModel
           )
           new_footnote = new.footnotes.build attributes
 
-          new_footnote.save!
+          save_model! new_footnote
 
           if new_footnote.checksum != footnote.checksum
             raise "Checksum has changed: \"#{footnote.checksum}\", \"#{footnote.checksum_source}\" -> \"#{new_footnote.checksum}\", \"#{new_footnote.checksum_source}\""
@@ -468,7 +476,7 @@ class Merge < ApplicationModel
                 objectid: objectid
               )
               new_purchase_window = new.purchase_windows.build attributes
-              new_purchase_window.save!
+              save_model! new_purchase_window
 
               if new_purchase_window.checksum != purchase_window.checksum
                 raise "Checksum has changed: #{purchase_window.checksum_source} #{new_purchase_window.checksum_source}"
@@ -488,7 +496,7 @@ class Merge < ApplicationModel
 
           # Rewrite ignored_routing_contraint_zone_ids
           new_vehicle_journey.ignored_routing_contraint_zone_ids = referential_routing_constraint_zones_new_ids.values_at(*vehicle_journey.ignored_routing_contraint_zone_ids).compact
-          new_vehicle_journey.save!
+          save_model! new_vehicle_journey
 
           if new_vehicle_journey.checksum != vehicle_journey.checksum
             raise "Checksum has changed: \"#{vehicle_journey.checksum_source}\" \"#{vehicle_journey.checksum}\" -> \"#{new_vehicle_journey.checksum_source}\" \"#{new_vehicle_journey.checksum}\""
@@ -571,7 +579,8 @@ class Merge < ApplicationModel
             objectid = Chouette::TimeTable.where(objectid: time_table.objectid).exists? ? nil : time_table.objectid
             candidate_time_table.objectid = objectid
 
-            candidate_time_table.save!
+            puts "candidate_time_table.periods: #{candidate_time_table.periods.inspect}"
+            save_model! candidate_time_table
 
             # Checksum is changed by #intersect_periods
             # if new_time_table.checksum != time_table.checksum
@@ -599,8 +608,13 @@ class Merge < ApplicationModel
     output.update current: new, new: nil
     output.current.update referential_suite: output, ready: true
     referentials.each &:merged!
+    clean_previous_merges
 
     update status: :successful, ended_at: Time.now
+  end
+
+  def clean_previous_merges
+    workbench.merges.order("created_at desc").offset(Merge.keep_merges).each { |m| m.new&.destroy ; m.destroy }
   end
 
   def child_change
@@ -625,6 +639,14 @@ class Merge < ApplicationModel
     referential ||= new
     control = workbench.compliance_control_set(key)
     compliance_check_sets.where(compliance_control_set_id: control.id).find_by(referential_id: referential.id) if control
+  end
+
+  def save_model!(model)
+    unless model.save
+      Rails.logger.info "Can't save #{model.class.name} : #{model.errors.inspect}"
+      raise ActiveRecord::RecordNotSaved.new("Invalid #{model.class.name} : #{model.errors.inspect}")
+    end
+    Rails.logger.debug { "Created #{model.inspect}" }
   end
 
   class MetadatasMerger
@@ -676,8 +698,5 @@ class Merge < ApplicationModel
     def empty_metadatas
       merge_metadatas.select { |m| m.periodes.empty? }
     end
-
-
   end
-
 end

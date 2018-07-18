@@ -8,11 +8,12 @@ class ComplianceCheckSetsController < ChouetteController
 
   def index
     index! do |format|
-      scope = self.ransack_period_range(scope: @compliance_check_sets, error_message: t('compliance_check_sets.filters.error_period_filter'), query: :where_created_at_between)
+      scope = self.ransack_period_range(scope: @compliance_check_sets.joins(:compliance_control_set), error_message: t('compliance_check_sets.filters.error_period_filter'), query: :where_created_at_between)
+      scope = joins_with_associated_objects(scope).order(sort_column + ' ' + sort_direction) if sort_column && sort_direction
       @q_for_form = scope.ransack(params[:q])
       format.html {
         @compliance_check_sets = ComplianceCheckSetDecorator.decorate(
-          @q_for_form.result.order(created_at: :desc).paginate(page: params[:page], per_page: 30)
+          @q_for_form.result.paginate(page: params[:page], per_page: 30)
         )
       }
     end
@@ -31,6 +32,27 @@ class ComplianceCheckSetsController < ChouetteController
     end
   end
 
+  def sort_column
+    if params[:sort] == "compliance_control_set"
+      'lower(compliance_control_sets.name)'
+    elsif params[:sort] == "associated_object"
+      'lower(referentials.name)'
+    else
+      ComplianceCheckSet.column_names.include?(params[:sort]) ? params[:sort] : 'compliance_check_sets.created_at'
+    end
+  end
+
+  def joins_with_associated_objects(collection)
+    if params[:sort] == "associated_object"
+      collection.joins('LEFT JOIN referentials ON compliance_check_sets.referential_id = referentials.id')
+    else
+      collection
+    end
+  end
+
+  def sort_direction
+    %w[asc desc].include?(params[:direction]) ?  params[:direction] : 'desc'
+  end
 
   private
 

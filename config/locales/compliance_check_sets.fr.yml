@@ -33,11 +33,15 @@ fr:
     attributes:
       compliance_check_set:
         ref: Ref
+        id: Ref
         creation_date: Date et heure de création
         associated_object: Objet associé
-        assigned_to: Affectation
+        assigned_to: Affectations
         compliance_control_set: Jeu de contrôle exécuté
         name: Nom
+        context: Contexte
+        context_i18n: Contexte
+        status: Statut
       compliance_check_resource:
         name: Nom de la ligne
         status: État

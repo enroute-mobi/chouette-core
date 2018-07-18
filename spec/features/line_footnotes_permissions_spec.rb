@@ -1,7 +1,7 @@
 describe 'Line Footnotes', type: :feature do
   login_user
 
-  let!(:line) { create :line_with_stop_areas, network: network, company: company, line_referential: line_referential }
+  let!(:line) { create :line_with_stop_areas, network: network, company: company, line_referential: line_referential, referential: referential }
   let(:referential) { Referential.first }
   let( :line_referential ){ referential.line_referential }
   let(:network) { create(:network) }
@@ -17,7 +17,7 @@ describe 'Line Footnotes', type: :feature do
     describe 'on show view' do
       let( :path ){ referential_line_footnotes_path(line_referential, line) }
 
-      context 'if present → ' do 
+      context 'if present → ' do
         let( :permission ){ true }
 
         it 'displays the corresponding button' do
@@ -25,7 +25,7 @@ describe 'Line Footnotes', type: :feature do
         end
       end
 
-      context 'if absent → ' do 
+      context 'if absent → ' do
         let( :permission ){ false }
 
         it 'does not display the corresponding button' do

@@ -13,18 +13,18 @@ class Workbench < ApplicationModel
   has_many :networks, through: :line_referential
   has_many :companies, through: :line_referential
   has_many :group_of_lines, through: :line_referential
-  has_many :imports, class_name: Import::Base
-  has_many :exports, class_name: Export::Base
-  has_many :workbench_imports, class_name: Import::Workbench
-  has_many :compliance_check_sets
-  has_many :compliance_control_sets
-  has_many :merges
+  has_many :imports, class_name: Import::Base, dependent: :destroy
+  has_many :exports, class_name: Export::Base, dependent: :destroy
+  has_many :workbench_imports, class_name: Import::Workbench, dependent: :destroy
+  has_many :compliance_check_sets, dependent: :destroy
+  has_many :compliance_control_sets, dependent: :destroy
+  has_many :merges, dependent: :destroy
 
   validates :name, presence: true
   validates :organisation, presence: true
   validates :output, presence: true
 
-  has_many :referentials
+  has_many :referentials, dependent: :destroy
   has_many :referential_metadatas, through: :referentials, source: :metadatas
 
   before_validation :initialize_output

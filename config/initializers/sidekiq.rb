@@ -1,3 +1,23 @@
+class Sidekiq::Middleware::Server::Logging
+  def call(worker, item, queue)
+    begin
+      start = Time.now
+      logger.info("#{queue_name queue} # start")
+      yield
+      logger.info("#{queue_name queue} # done: #{elapsed(start)} sec")
+    rescue Exception
+      logger.info("#{queue_name queue} # fail: #{elapsed(start)} sec")
+      raise
+    end
+  end
+
+  private
+
+  def queue_name queue
+    '%-20.20s' % queue
+  end
+end
+
 Sidekiq.configure_server do |config|
   if ENV["CHOUETTE_SIDEKIQ_CANCEL_SYNCS_ON_BOOT"]
     [

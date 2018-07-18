@@ -18,6 +18,11 @@ fr:
       name: "Recherche par nom..."
       name_or_objectid: "Recherche par nom ou ID Codifligne..."
       advanced_search: "Recherche avancée"
+    form:
+      sections:
+        identification: "Identification"
+        contact: "Contact"
+        general: "Général"
   activerecord:
     models:
       company:

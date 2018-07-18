@@ -1,60 +1,78 @@
-# require 'rails_helper'
-#
-# RSpec.describe ComplianceControlSetsController, type: :controller do
-#   login_user
-#
-#   let(:compliance_control_set) { create :compliance_control_set }
-#
-#   describe "GET show" do
-#     it 'should be successful' do
-#       get :show, id: compliance_control_set.id
-#       expect(response).to be_success
-#     end
-#   end
-#
-#   describe "GET index" do
-#     it 'should be successful' do
-#       get :index, id: compliance_control_set.id
-#       expect(response).to be_success
-#     end
-#   end
-#
-#   describe "GET #edit" do
-#     it 'should be successful' do
-#       get :edit, id: compliance_control_set.id
-#       expect(response).to be_success
-#     end
-#   end
-#
-#   describe 'GET #new' do
-#     it 'should be successful' do
-#       get :new, id: compliance_control_set.id
-#       expect(response).to be_success
-#     end
-#   end
-#
-#   describe 'POST #create' do
-#     it 'should be successful' do
-#       post :create, compliance_control_set: build(:compliance_control_set).as_json
-#       expect(response).to have_http_status(302)
-#       # expect(flash[:notice]).to eq(I18n.t('notice.compliance_control.created'))
-#     end
-#   end
-#
-#   describe 'POST #update' do
-#     it 'should be successful' do
-#       post :update, id: compliance_control_set.id, compliance_control_set: compliance_control_set.as_json
-#       expect(response).to redirect_to compliance_control_set_path(compliance_control_set)
-#       # expect(flash[:notice]).to eq(I18n.t('notice.compliance_control.updated'))
-#     end
-#   end
-#
-#   describe 'DELETE #destroy' do
-#     it 'should be successful' do
-#       delete :destroy, id: compliance_control_set.id
-#       # expect(flash[:notice]).to eq I18n.t('notice.compliance_control.destroyed')
-#     end
-#   end
-#
-#
-# end
+require 'rails_helper'
+
+RSpec.describe ComplianceControlSetsController, type: :controller do
+  login_user
+
+  let(:owner){ create :organisation }
+  let(:workgroup){create :workgroup, owner: owner}
+  let(:other_organisation){
+    o  = create :organisation
+    @owner_workbench = create :workbench, workgroup: workgroup, organisation: o
+    o
+  }
+
+  before do
+    @workbench = create :workbench, workgroup: workgroup, organisation: @user.organisation
+  end
+
+  let!(:same_organisation_cc_set){ create :compliance_control_set, organisation: @user.organisation }
+  let!(:different_organisation_cc_set){ create :compliance_control_set, organisation: other_organisation }
+  let!(:workgroups_owner_cc_set){ create :compliance_control_set, organisation: owner }
+
+  describe "GET index" do
+    it 'should be successful' do
+      get :index
+      expect(response).to be_success
+      expect(assigns(:compliance_control_sets)).to include(same_organisation_cc_set)
+      expect(assigns(:compliance_control_sets)).to_not include(workgroups_owner_cc_set)
+      expect(assigns(:compliance_control_sets)).to_not include(different_organisation_cc_set)
+    end
+
+    context "with filters" do
+      let(:assigned_to_slots){ [""] }
+
+      it "should filter the output" do
+        get :index, q: {assigned_to_slots: assigned_to_slots}
+        expect(response).to be_success
+        expect(assigns(:compliance_control_sets)).to include(same_organisation_cc_set)
+        expect(assigns(:compliance_control_sets)).to_not include(workgroups_owner_cc_set)
+        expect(assigns(:compliance_control_sets)).to_not include(different_organisation_cc_set)
+      end
+
+      context "when filtering on one assigned slots" do
+        let(:assigned_to_slots){ ["after_import_by_workgroup", ""] }
+        before do
+          @workbench.update owner_compliance_control_set_ids: {after_import_by_workgroup: same_organisation_cc_set.id}
+        end
+
+        it "should filter the output" do
+          get :index, q: {assigned_to_slots: assigned_to_slots}
+          expect(response).to be_success
+          expect(assigns(:compliance_control_sets)).to include(same_organisation_cc_set)
+          expect(assigns(:compliance_control_sets)).to_not include(workgroups_owner_cc_set)
+          expect(assigns(:compliance_control_sets)).to_not include(different_organisation_cc_set)
+        end
+      end
+
+      context "when filtering on multiple assigned slots" do
+        let(:assigned_to_slots){ ["after_import_by_workgroup", "before_merge", ""] }
+        let!(:other_cc_set){
+          create :compliance_control_set, organisation: @user.organisation
+        }
+        before do
+          @workbench.update owner_compliance_control_set_ids: {after_import_by_workgroup: same_organisation_cc_set.id, before_merge: other_cc_set.id}
+          @owner_workbench.update owner_compliance_control_set_ids: {before_merge: workgroups_owner_cc_set.id}
+        end
+
+        it "should filter the output" do
+          get :index, q: {assigned_to_slots: assigned_to_slots}
+          expect(response).to be_success
+          expect(assigns(:compliance_control_sets).object).to include(same_organisation_cc_set)
+          expect(assigns(:compliance_control_sets).object).to include(other_cc_set)
+          expect(assigns(:compliance_control_sets).object).to_not include(workgroups_owner_cc_set)
+          expect(assigns(:compliance_control_sets).object).to_not include(different_organisation_cc_set)
+        end
+      end
+    end
+  end
+end

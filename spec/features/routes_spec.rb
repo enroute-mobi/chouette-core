@@ -1,9 +1,9 @@
 describe "Routes", :type => :feature do
   login_user
 
-  let(:line) { create :line }
-  let!(:route) { create(:route, :line => line) }
-  let!(:route2) { create(:route, :line => line) }
+  let(:line) { create :line, referential: referential }
+  let!(:route) { create(:route, line: line) }
+  let!(:route2) { create(:route, line: line) }
   #let!(:stop_areas) { Array.new(4) { create(:stop_area) } }
   let!(:stop_points) { Array.new(4) { create(:stop_point, :route => route) } }
   let!(:journey_pattern) { create(:journey_pattern, route: route) }

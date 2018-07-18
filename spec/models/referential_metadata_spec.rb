@@ -16,7 +16,7 @@ RSpec.describe ReferentialMetadata, :type => :model do
     let(:referential_metadata) { create :referential_metadata, referential: referential }
     let(:new_referential_metadata) { ReferentialMetadata.new_from(referential_metadata, referential.workbench) }
     before do
-      Workgroup.workbench_scopes_class = WorkbenchScopes::All
+      allow(Workgroup).to receive(:workbench_scopes_class).and_return(WorkbenchScopes::All)
       referential_metadata.line_ids.each do |id|
         Chouette::Line.find(id).update_attribute :line_referential_id, line_referential.id
       end
@@ -47,7 +47,7 @@ RSpec.describe ReferentialMetadata, :type => :model do
       let(:new_referential_metadata) { ReferentialMetadata.new_from(referential_metadata, referential.workbench) }
       before do
         referential.workbench.update organisation: organisation
-        Workgroup.workbench_scopes_class = Stif::WorkbenchScopes
+        allow(Workgroup).to receive(:workbench_scopes_class).and_return(Stif::WorkbenchScopes)
       end
 
       it "should scope the lines" do

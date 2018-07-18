@@ -9,5 +9,5 @@
         = render partial: "shared/controls/metadatas"
         - if @compliance_control.compliance_control_block
           = definition_list t('compliance_controls.show.metadatas.compliance_control_block'),
-            I18n.t('activerecord.attributes.compliance_control_blocks.transport_mode') => I18n.t("enumerize.transport_mode.#{@compliance_control.compliance_control_block.transport_mode}"),
-            I18n.t('activerecord.attributes.compliance_control_blocks.transport_submode') => @compliance_control.compliance_control_block.transport_submode.empty? ? I18n.t("enumerize.transport_submode.undefined") : I18n.t("enumerize.transport_submode.#{@compliance_control.compliance_control_block.transport_submode}")
+            ComplianceControlBlock.tmf('transport_mode') => I18n.t("enumerize.transport_mode.#{@compliance_control.compliance_control_block.transport_mode}"),
+            ComplianceControlBlock.tmf('transport_submode') => @compliance_control.compliance_control_block.transport_submode.empty? ? I18n.t("enumerize.transport_submode.undefined") : I18n.t("enumerize.transport_submode.#{@compliance_control.compliance_control_block.transport_submode}")

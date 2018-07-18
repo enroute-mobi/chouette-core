@@ -11,6 +11,8 @@ export default function Navigate({ dispatch, metas, timetable, pagination, statu
     let pageIndex = pagination.periode_range.indexOf(pagination.currentPage)
     let firstPage = pageIndex == 0
     let lastPage = pageIndex == pagination.periode_range.length - 1
+
+    monthSelectScrollHandler()
     return (
       <div className="pagination pull-right">
         <form className='form-inline' onSubmit={e => {e.preventDefault()}}>
@@ -28,12 +30,14 @@ export default function Navigate({ dispatch, metas, timetable, pagination, statu
                 <span className='caret'></span>
               </div>
               <ul
+                id='month-list'
                 className='dropdown-menu'
                 aria-labelledby='date_selector'
-                >
+              >
                 {map(pagination.periode_range, (month, i) => (
-                  <li key={i}>
+                  <li key={i}> 
                     <button
+                      id={month == pagination.currentPage ? 'selectedMonth' : ''} 
                       type='button'
                       value={month}
                       onClick={e => {
@@ -80,6 +84,17 @@ export default function Navigate({ dispatch, metas, timetable, pagination, statu
   } else {
     return false
   }
+}
+
+let monthSelectScrollHandler = () => {
+  $(document).ready(() => {
+    $('.month_selector').on('shown.bs.dropdown', () => {
+      let monthTopPosition = $('#month-list').find('li > button#selectedMonth').position().top
+      $('#month-list').scrollTop(monthTopPosition)
+    })
+
+    $('.month_selector').on('hide.bs.dropdown', () => $('#month-list').scrollTop(0) )
+  })  
 }
 
 Navigate.propTypes = {

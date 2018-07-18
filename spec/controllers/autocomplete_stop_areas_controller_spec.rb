@@ -1,3 +1,4 @@
+# coding: utf-8
 require 'rails_helper'
 
 RSpec.describe AutocompleteStopAreasController, type: :controller do
@@ -9,6 +10,10 @@ RSpec.describe AutocompleteStopAreasController, type: :controller do
   let!(:other_referential_stop_area) { create :stop_area, name: 'écolà militaire', referential: other_referential }
   let!(:zdep_stop_area) { create :stop_area, area_type: "zdep", referential: referential }
   let!(:not_zdep_stop_area) { create :stop_area, area_type: "lda", referential: referential }
+
+  before(:each) do
+    allow(Workgroup).to receive(:workbench_scopes_class).and_return(WorkbenchScopes::All)
+  end
 
   describe 'GET #index' do
     it 'should be successful' do

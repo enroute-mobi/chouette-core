@@ -1,29 +1,32 @@
 - breadcrumb :organisation, @organisation
+- page_header_content_for @organisation
 
-= title_tag @organisation.name
+.page_content
+  .container-fluid
+    .row
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        - attributes = {}
+        - attributes[Organisation.human_attribute_name(:name)] = @organisation.name
+        - attributes[Organisation.human_attribute_name(:code)] = @organisation.code
+        = definition_list t('metadatas'), attributes
 
-.summary
-  p
-    label = "#{Organisation.human_attribute_name('data_format_restrictions_by_default')} : "
-    = @organisation.data_format
+    .row
+      .col-lg-12
+        h2= t(".users")
 
-#accordion.panel-group
-  .panel.panel-default
-    .panel-heading
-      h4.panel-title
-        a data-toggle="collapse" data-parent="#accordion" href="#users"
-          = t('.users')
-
-    #users.panel-collapse.collapse
-      .panel-body
-        .users.paginated_content
-          = paginated_content(@organisation.users, "users/user")
-
-- content_for :sidebar do
-  ul.actions
-    / FIXME ref #819
-    - if false
-      li
-        = link_to t('organisations.actions.edit'), edit_organisation_path, class: 'edit'
-      li
-        = link_to t('users.actions.new'), new_organisation_user_path, class: 'add'
+        / Nom complet, Email
+        = table_builder_2 @organisation.users,
+          [ \
+            TableBuilderHelper::Column.new( \
+              key: :name, \
+              attribute: 'name', \
+              sortable: false \
+            ), \
+            TableBuilderHelper::Column.new( \
+              key: :email, \
+              attribute: 'email', \
+              sortable: false \
+            ), \
+          ],
+          cls: 'table has-filter has-search',
+          action: :index

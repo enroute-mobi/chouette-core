@@ -7,6 +7,9 @@
         span = t('layouts.navbar.workbench_outputs.organisation')
       = link_to '#', class: 'list-group-item disabled' do
         span = t('layouts.navbar.workbench_outputs.workgroup')
+      - if policy(workbench.workgroup).edit?
+        = link_to [:edit, workbench.workgroup], class: 'list-group-item' do
+          span = t('layouts.navbar.workbench_outputs.edit_workgroup')
 
     = main_nav_menu_item 'activerecord.models.workbench.one'.t.capitalize do
       = link_to workbench_path(workbench), class: "list-group-item" do
@@ -21,6 +24,9 @@
         span = t('activerecord.models.compliance_check_set.other').capitalize
       = link_to compliance_control_sets_path, class: 'list-group-item' do
         span = t('activerecord.models.compliance_control_set.other').capitalize
+      - if policy(workbench).edit?
+        = link_to [:edit, workbench], class: 'list-group-item' do
+          span = t('workbenches.edit.link')
 
     = main_nav_menu_item 'layouts.navbar.line_referential'.t do
       = link_to line_referential_path(workbench.line_referential), class: "list-group-item" do
@@ -45,23 +51,25 @@
       - if policy(workbench.workgroup).edit?
         = link_to [:edit, workbench.workgroup], class: 'list-group-item' do
           span = t('layouts.navbar.workgroup_configuration')
+      = link_to organisation_path, class: 'list-group-item' do
+        span = 'layouts.navbar.organisation_configuration'.t
 
     = main_nav_menu_item 'layouts.navbar.tools'.t do
       = link_to Rails.application.config.try(:portal_url), target: '_blank', class: 'list-group-item' do
         span
           span.fa.fa-2x.fa-circle
           = t('layouts.navbar.portal')
-      
+
       = link_to Rails.application.config.try(:codifligne_url), target: '_blank', class: 'list-group-item' do
         span
           span.fa.fa-2x.fa-circle
           = t('layouts.navbar.ilico')
-      
+
       = link_to Rails.application.config.try(:reflex_url), target: '_blank', class: 'list-group-item' do
         span
           span.fa.fa-2x.fa-circle
           = t('layouts.navbar.icar')
-      
+
       = link_to '#', target: '_blank', class: 'list-group-item' do
         span
           span.fa.fa-2x.fa-circle

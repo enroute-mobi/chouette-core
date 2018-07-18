@@ -14,7 +14,7 @@ class Calendar < ApplicationModel
 
   validates_presence_of :name, :organisation, :workgroup
 
-  has_many :time_tables
+  has_many :time_tables, dependent: :nullify
 
   scope :contains_date, ->(date) { where('date ? = any (dates) OR date ? <@ any (date_ranges)', date, date) }
 

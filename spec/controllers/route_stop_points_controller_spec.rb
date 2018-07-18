@@ -4,7 +4,7 @@ RSpec.describe RouteStopPointsController, type: :controller do
   login_user
 
   let(:referential) { Referential.first }
-  let!(:line) { create :line }
+  let!(:line) { create :line, referential: referential }
   let!(:route) { create :route, line: line }
 
   describe 'GET index' do

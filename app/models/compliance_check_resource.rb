@@ -2,7 +2,7 @@ class ComplianceCheckResource < ApplicationModel
   extend Enumerize
 
   belongs_to :compliance_check_set
-  has_many :compliance_check_messages
+  has_many :compliance_check_messages, dependent: :destroy
 
   enumerize :status, in: %i(OK ERROR WARNING IGNORED)
 

@@ -6,16 +6,16 @@ class Organisation < ApplicationModel
   has_many :referentials, dependent: :destroy
   has_many :compliance_control_sets, dependent: :destroy
 
-  has_many :stop_area_referential_memberships
+  has_many :stop_area_referential_memberships, dependent: :destroy
   has_many :stop_area_referentials, through: :stop_area_referential_memberships
 
-  has_many :line_referential_memberships
+  has_many :line_referential_memberships, dependent: :destroy
   has_many :line_referentials, through: :line_referential_memberships
 
   has_many :workbenches, dependent: :destroy
   has_many :workgroups, through: :workbenches
 
-  has_many :calendars
+  has_many :calendars, dependent: :destroy
   has_many :api_keys, class_name: 'Api::V1::ApiKey'
 
   validates_presence_of :name
@@ -33,12 +33,23 @@ class Organisation < ApplicationModel
         token: conf[:key])
     end
 
-    def sync_update code, name, scope
+    def sync_update code, name, scopes
       org = Organisation.find_or_initialize_by(code: code)
-      if scope
+      scopes = scopes.symbolize_keys
+      functional_scope = scopes[:functional_scope]
+      if functional_scope
         org.sso_attributes ||= {}
-        if org.sso_attributes['functional_scope'] != scope
-          org.sso_attributes['functional_scope'] = scope
+        if org.sso_attributes['functional_scope'] != functional_scope
+          org.sso_attributes['functional_scope'] = functional_scope
+          # FIXME see #1941
+          org.sso_attributes_will_change!
+        end
+      end
+      stop_area_providers = scopes[:organisation_reflex_codes]
+      if stop_area_providers
+        org.sso_attributes ||= {}
+        if org.sso_attributes['stop_area_providers'] != stop_area_providers
+          org.sso_attributes['stop_area_providers'] = stop_area_providers
           # FIXME see #1941
           org.sso_attributes_will_change!
         end
@@ -51,7 +62,7 @@ class Organisation < ApplicationModel
 
     def portail_sync
       portail_api_request.each do |el|
-        org = self.sync_update el['code'], el['name'], el['functional_scope']
+        org = self.sync_update el['code'], el['name'], el
         puts "✓ Organisation #{org.name} has been updated" unless Rails.env.test?
       end
     end

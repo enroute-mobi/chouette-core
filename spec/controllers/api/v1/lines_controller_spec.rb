@@ -1,7 +1,8 @@
 require 'spec_helper'
 
 describe Api::V1::LinesController, :type => :controller do
-  let!(:line) { referential.lines.first || create(:line) }
+  let!(:line) { create(:line, referential: referential) }
+  let!(:other_line) { create(:line) }
 
   it_behaves_like "api key protected controller" do
     let(:data){line}

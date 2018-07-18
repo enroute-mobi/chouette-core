@@ -12,7 +12,7 @@ const actionType = clone(window, "actionType", true)
 
 // logger, DO NOT REMOVE
 // var applyMiddleware = require('redux').applyMiddleware
-// var createLogger = require('redux-logger')
+// import { createLogger } from 'redux-logger';
 // var thunkMiddleware = require('redux-thunk').default
 // var promise = require('redux-promise')
 

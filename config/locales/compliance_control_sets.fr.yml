@@ -32,7 +32,7 @@ fr:
     attributes:
       compliance_control_set:
         name: Nom
-        assigned_to: Affectation
+        assigned_to: Affectations
         owner_jdc: Propriétaire du jeu de contrôle
         control_numbers: Nb contrôle
         updated_at: Mis a jour

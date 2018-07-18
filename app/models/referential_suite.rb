@@ -15,5 +15,5 @@ class ReferentialSuite < ApplicationModel
                I18n.t('referential_suites.errors.inconsistent_current', name: current.name))
   end
 
-  has_many :referentials, -> { order "created_at desc" }
+  has_many :referentials, -> { order "created_at desc" }, dependent: :destroy
 end

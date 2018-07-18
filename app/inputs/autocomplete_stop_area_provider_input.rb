@@ -1,0 +1,2 @@
+class AutocompleteStopAreaProviderInput < AutocompleteStopAreaInput
+end

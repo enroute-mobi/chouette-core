@@ -31,8 +31,8 @@ RSpec.describe VehicleJourneysController, :type => :controller do
     render_views
 
     context "in JSON" do
-      let(:vehicle_journey){ create :vehicle_journey }
-      let(:route){ vehicle_journey.route }
+      let!(:vehicle_journey){ create :vehicle_journey, journey_pattern: route.full_journey_pattern }
+      let(:route){ create :route, referential: referential }
       let(:line){ route.line }
       let!(:request){ get :index, referential_id: referential.id, line_id: line.id, route_id: route.id, format: :json}
       let(:parsed_response){ JSON.parse response.body }

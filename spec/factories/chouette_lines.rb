@@ -15,6 +15,22 @@ FactoryGirl.define do
 
     sequence(:registration_number) { |n| "test-#{n}" }
 
+    transient do
+      referential nil
+    end
+
+    after(:create) do |line, evaluator|
+      if evaluator.referential && evaluator.referential.workbench
+        organisation = evaluator.referential.workbench.organisation
+        organisation.sso_attributes ||= {}
+        functional_scope = organisation.sso_attributes['functional_scope'] || "[]"
+        functional_scope = JSON.parse functional_scope
+        functional_scope << line.objectid
+        organisation.sso_attributes['functional_scope'] = functional_scope.to_json
+        organisation.save
+      end
+    end
+
     factory :line_with_stop_areas do
 
       transient do

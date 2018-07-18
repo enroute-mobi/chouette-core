@@ -8,7 +8,7 @@
 //= require jquery_ujs
 //= require modernizr
 //= require cocoon
-//= require  ./OpenLayers/ol.js
+//= require ./OpenLayers/ol.js
 //= require bootstrap-sass-official
 //= require select2-full
 //= require select2_locale_fr
@@ -30,7 +30,7 @@
 //= require jquery-ui/widgets/sortable
 
 $(document).ready(function() {
-    $('a[disabled=disabled]').click(function(event){
-        event.preventDefault(); // Prevent link from following its href
-    });
-});
+  $('a[disabled=disabled]').click(function(event){
+      event.preventDefault(); // Prevent link from following its href
+  });
+})

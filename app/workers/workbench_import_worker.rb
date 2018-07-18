@@ -1,5 +1,7 @@
 class WorkbenchImportWorker
   include Sidekiq::Worker
+  include Concerns::LongRunningWorker
+
   include Rails.application.routes.url_helpers
   include Configurable
 

@@ -17,6 +17,10 @@
           = p.input :start_date, as: :date, label: false, wrapper_html: {class: 'date smart_date filter_menu-item'}, default: @begin_range, include_blank: @begin_range ? false : true
           = p.input :end_date, as: :date, label: false, wrapper_html: {class: 'date smart_date filter_menu-item'}, default: @end_range, include_blank: @end_range ? false : true
 
+    .form-group.togglable class=filter_item_class(params[:q], :assigned_to_slots)
+      = f.label ComplianceControlSet.tmf(:assigned_to), required: false, class: 'control-label'
+      = f.input :assigned_to_slots, collection: Workgroup.compliance_control_sets_by_workgroup.update(Workgroup.compliance_control_sets_by_workbench).to_a, as: :check_boxes, value_method: :first, label: false, label_method: lambda {|w| ("<span>#{w.last}</span>").html_safe}, required: false, wrapper_html: {class: 'checkbox_list'}, checked: ->(val){params[:q].try(:[], :assigned_to_slots).try(:include?, val.first.to_s)}
+
   .actions
     = link_to t('actions.erase'), @compliance_control_set, class: 'btn btn-link'
     = f.submit t('actions.filter'), class: 'btn btn-default', id: 'compliance_control_set_filter_btn'

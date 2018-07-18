@@ -5,7 +5,7 @@ require 'csv'
 describe "VehicleJourneyImports", :type => :feature do
   login_user
 
-  let!(:route) { create :route }
+  let!(:route) { create :route, referential: referential }
 
   let(:valid_file_path) {
     csv_file = update_csv_file_with_factory_data("vehicle_journey_imports_valid.csv")

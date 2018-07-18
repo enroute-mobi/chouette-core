@@ -27,10 +27,17 @@ class ComplianceControlSetsController < ChouetteController
     redirect_to(compliance_control_sets_path)
   end
 
+  def create
+    @compliance_control_set = ComplianceControlSet.new(params[:compliance_control_set].permit(:name))
+    @compliance_control_set.organisation = current_organisation
+    create!
+  end
+
   protected
 
-  def begin_of_association_chain
-    current_organisation
+  def end_of_association_chain
+    assigned_to_my_workbenches = current_organisation.workbenches.map{|w| (w.owner_compliance_control_set_ids || {}).values}.flatten.uniq.select(&:present?)
+    ComplianceControlSet.where("compliance_control_sets.organisation_id = ? OR compliance_control_sets.id IN (?)", current_organisation.id, assigned_to_my_workbenches)
   end
 
   private
@@ -38,6 +45,7 @@ class ComplianceControlSetsController < ChouetteController
   def collection
     @compliance_control_sets ||= begin
       scope = end_of_association_chain.all
+      scope = scope.assigned_to_slots(current_organisation, params[:q].try(:[], :assigned_to_slots))
       scope = self.ransack_period_range(scope: scope, error_message: t('imports.filters.error_period_filter'), query: :where_updated_at_between)
       @q_for_form = scope.ransack(params[:q])
       compliance_control_sets = @q_for_form.result

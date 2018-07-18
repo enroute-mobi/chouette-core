@@ -9,11 +9,31 @@ RSpec.describe ComplianceControlPolicy do
     it_behaves_like 'permitted policy outside referential', 'compliance_controls.create'
   end
 
-  permissions :update? do
-    it_behaves_like 'permitted policy outside referential', 'compliance_controls.update'
+  context "when the user can update the parent control set" do
+    before(:each){
+      allow_any_instance_of(ComplianceControlSetPolicy).to receive(:update?).and_return(true)
+    }
+
+    permissions :update? do
+      it_behaves_like 'permitted policy outside referential', 'compliance_controls.update'
+    end
+
+    permissions :destroy? do
+      it_behaves_like 'permitted policy outside referential', 'compliance_controls.destroy'
+    end
   end
 
-  permissions :destroy? do
-    it_behaves_like 'permitted policy outside referential', 'compliance_controls.destroy'
+  context "when the user cannot update the parent control set" do
+    before(:each){
+      allow_any_instance_of(ComplianceControlSetPolicy).to receive(:update?).and_return(false)
+    }
+
+    permissions :update? do
+      it_behaves_like 'always forbidden', 'compliance_controls.update'
+    end
+
+    permissions :destroy? do
+      it_behaves_like 'always forbidden', 'compliance_controls.destroy'
+    end
   end
 end

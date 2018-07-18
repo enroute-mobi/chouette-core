@@ -46,6 +46,26 @@ RSpec.configure do |config|
   config.include IntegrationSpecHelper, type: :view
 end
 
+RSpec::Matchers.define :have_menu_title do |title|
+  match do
+    expect(rendered).to have_selector("#menu-items .panel-heading h4", text: title)
+  end
+  description { "have '#{title}' menu title" }
+  failure_message do
+    "Did not find a menu block with title '#{title}'"
+  end
+end
+
+RSpec::Matchers.define :have_menu_link_to do |url|
+  match do
+    expect(rendered).to have_selector("#menu-items a[href='#{url}']")
+  end
+  description { "have a menu link pointing to '#{url}'" }
+  failure_message do
+    "Did not find a menu link pointing to '#{url}'"
+  end
+end
+
 RSpec::Matchers.define :have_link_for_each_item do |collection, name, opts|
   opts = {href: opts} unless opts.is_a? Hash
   href = opts[:href]

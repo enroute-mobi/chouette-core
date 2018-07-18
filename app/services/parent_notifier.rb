@@ -9,11 +9,15 @@ class ParentNotifier
   end
 
   def objects_pending_notification
-    @klass
-      .where(
-        notified_parent_at: nil,
-        status: @klass.finished_statuses
-      )
-      .where.not(parent: nil)
+    if @klass.respond_to?(:objects_pending_notification)
+      @klass.objects_pending_notification
+    else
+      @klass
+        .where(
+          notified_parent_at: nil,
+          status: @klass.finished_statuses
+        )
+        .where.not(parent: nil)
+    end
   end
 end

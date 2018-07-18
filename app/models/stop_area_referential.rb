@@ -2,13 +2,14 @@ class StopAreaReferential < ApplicationModel
   validates :registration_number_format, format: { with: /\AX*\z/ }
 
   include ObjectidFormatterSupport
-  has_many :stop_area_referential_memberships
+  has_many :stop_area_referential_memberships, dependent: :destroy
   has_many :organisations, through: :stop_area_referential_memberships
 
   has_many :stop_areas, class_name: 'Chouette::StopArea'
   has_many :stop_area_referential_syncs, -> {order created_at: :desc}
-  has_many :workbenches
-  has_one  :workgroup
+  has_many :workbenches, dependent: :nullify
+  has_one  :workgroup, dependent: :nullify
+  has_many :stop_area_providers
 
   def add_member(organisation, options = {})
     attributes = options.merge organisation: organisation

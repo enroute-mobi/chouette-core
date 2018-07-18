@@ -4,7 +4,7 @@ require 'spec_helper'
 describe "StopPoints", :type => :feature do
   login_user
 
-  let!(:line) { create(:line) }
+  let!(:line) { create(:line, referential: referential) }
   let!(:route) { create(:route, :line => line) }
   let!(:route2) { create(:route, :line => line) }
 

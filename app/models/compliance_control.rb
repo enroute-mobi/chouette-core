@@ -18,13 +18,22 @@ class ComplianceControl < ApplicationModel
     end
 
     def available_for_organisation? organisation
-      return true unless @required_features.present?
-      (organisation.features.map(&:to_sym) & @required_features.map(&:to_sym)).size == @required_features.map(&:to_sym).size
+      out = @required_features.present? ? ((organisation.features.map(&:to_sym) & @required_features.map(&:to_sym)).size == @required_features.map(&:to_sym).size) : true
+      out && (@constraints || []).all?{|test| !!test.call(organisation) }
     end
 
     def required_features *features
       @required_features ||= []
       @required_features += features
+    end
+
+    def only_if test
+      @constraints ||= []
+      @constraints << test
+    end
+
+    def only_with_custom_field klass, field_code
+      only_if ->(organisation) { organisation.workgroups.any?{|workgroup| klass.custom_fields(workgroup).where(code: field_code).exists? }}
     end
 
     def subclass_patterns

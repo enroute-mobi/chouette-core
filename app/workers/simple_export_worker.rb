@@ -1,5 +1,6 @@
 class SimpleExportWorker
   include Sidekiq::Worker
+  include Concerns::LongRunningWorker
 
   def perform(export_id)
     export = Export::Base.find(export_id)

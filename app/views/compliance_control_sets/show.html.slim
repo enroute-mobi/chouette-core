@@ -34,4 +34,5 @@
       .col-lg-12
         = replacement_msg t('compliance_controls.search_no_results')
 
-  = floating_links @compliance_control_set.id
+  - if policy(@compliance_control_set).update?
+    = floating_links @compliance_control_set.id

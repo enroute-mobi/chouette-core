@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180611211106) do
+ActiveRecord::Schema.define(version: 20180625090623) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -623,12 +623,13 @@ ActiveRecord::Schema.define(version: 20180611211106) do
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "data_format",    default: "neptune"
+    t.string   "data_format",                     default: "neptune"
     t.string   "code"
     t.datetime "synced_at"
     t.hstore   "sso_attributes"
     t.string   "custom_view"
-    t.string   "features",       default: [],        array: true
+    t.string   "features",                        default: [],        array: true
+    t.integer  "stop_area_provider_id", limit: 8
   end
 
   add_index "organisations", ["code"], name: "index_organisations_on_code", unique: true, using: :btree
@@ -783,6 +784,15 @@ ActiveRecord::Schema.define(version: 20180611211106) do
     t.string "type"
   end
 
+  create_table "stop_area_providers", id: :bigserial, force: :cascade do |t|
+    t.string   "objectid"
+    t.string   "name"
+    t.integer  "stop_area_referential_id", limit: 8
+    t.integer  "workgroup_id",             limit: 8
+    t.datetime "created_at",                         null: false
+    t.datetime "updated_at",                         null: false
+  end
+
   create_table "stop_area_referential_memberships", id: :bigserial, force: :cascade do |t|
     t.integer "organisation_id",          limit: 8
     t.integer "stop_area_referential_id", limit: 8
@@ -855,6 +865,7 @@ ActiveRecord::Schema.define(version: 20180611211106) do
     t.datetime "confirmed_at"
     t.jsonb    "custom_field_values"
     t.jsonb    "metadata",                                                            default: {}
+    t.string   "local_code"
   end
 
   add_index "stop_areas", ["name"], name: "index_stop_areas_on_name", using: :btree
@@ -862,6 +873,13 @@ ActiveRecord::Schema.define(version: 20180611211106) do
   add_index "stop_areas", ["parent_id"], name: "index_stop_areas_on_parent_id", using: :btree
   add_index "stop_areas", ["stop_area_referential_id", "registration_number"], name: "index_stop_areas_on_referential_id_and_registration_number", using: :btree
   add_index "stop_areas", ["stop_area_referential_id"], name: "index_stop_areas_on_stop_area_referential_id", using: :btree
+
+  create_table "stop_areas_stop_area_providers", id: :bigserial, force: :cascade do |t|
+    t.integer "stop_area_provider_id", limit: 8
+    t.integer "stop_area_id",          limit: 8
+  end
+
+  add_index "stop_areas_stop_area_providers", ["stop_area_provider_id", "stop_area_id"], name: "stop_areas_stop_area_providers_compound", using: :btree
 
   create_table "stop_areas_stop_areas", id: false, force: :cascade do |t|
     t.integer "child_id",  limit: 8

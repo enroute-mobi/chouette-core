@@ -34,6 +34,21 @@ RSpec.describe Merge do
     end
   end
 
+  it "should clean previous merges" do
+    3.times do
+      other_workbench = create(:workbench)
+      other_referential = create(:referential, workbench: other_workbench, organisation: other_workbench.organisation)
+      m = Merge.create!(workbench: other_workbench, referentials: [other_referential])
+      m.update status: :successful
+      m = Merge.create!(workbench: referential.workbench, referentials: [referential, referential])
+      m.update status: :successful
+    end
+    expect(Merge.count).to eq 6
+    Merge.keep_merges = 2
+    Merge.last.clean_previous_merges
+    expect(Merge.count).to eq 5
+  end
+
   it "should work" do
 
     factor = 2
@@ -120,6 +135,7 @@ RSpec.describe Merge do
     end
 
     merge = Merge.create!(workbench: referential.workbench, referentials: [referential, referential])
+    expect(merge).to receive(:clean_previous_merges)
     merge.merge!
 
     expect(merge.status). to eq :successful

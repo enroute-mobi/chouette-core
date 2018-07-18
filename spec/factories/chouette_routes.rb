@@ -8,12 +8,15 @@ FactoryGirl.define do
     sequence(:direction) { |n| Chouette::Route.direction.values[n % 12] }
     sequence(:objectid) { |n| "organisation:Route:lineId-routeId#{n}:LOC" }
 
-    association :line, :factory => :line
-
     factory :route do
 
       transient do
         stop_points_count 5
+        referential nil
+      end
+
+      after(:build) do |route, evaluator|
+        route.line ||= create(:line, referential: evaluator.referential)
       end
 
       after(:create) do |route, evaluator|

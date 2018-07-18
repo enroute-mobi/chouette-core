@@ -21,16 +21,36 @@ RSpec.describe ComplianceCheckSet, type: :model do
         "#{Rails.configuration.iev_url}/boiv_iev/referentials/validator/new?id=#{check_set.id }"
       )
     end
-    let(:check_set){create :compliance_check_set}
+    let(:check_set){create :compliance_check_set, parent: create(:netex_import)}
     context "when JAVA is needed" do
       before do
-        expect(check_set).to receive(:should_call_iev?).and_return(true)
+        allow(check_set).to receive(:should_call_iev?).and_return(true)
         stub_validation_request
       end
 
       it "calls the Java API to launch validation" do
         check_set.perform
         expect(stub_validation_request).to have_been_requested
+      end
+
+      context "once java is done" do
+        context "without internal checks" do
+          it "should notify parent" do
+            expect(check_set.parent).to receive(:child_change)
+            check_set.notify_parent
+          end
+        end
+
+        context "with internal checks" do
+          before do
+            check_set.compliance_checks.internals.create name: "foo", code: "foo", origin_code: "foo", compliance_control_name: "Dummy"
+          end
+          it "should perform internal checks and THEN notify parent" do
+            expect(check_set.parent).to_not receive(:child_change)
+            expect(check_set).to receive(:perform_async).with(true)
+            check_set.notify_parent
+          end
+        end
       end
     end
 
@@ -42,7 +62,8 @@ RSpec.describe ComplianceCheckSet, type: :model do
 
       it "should not call it" do
         expect(stub_validation_request).to_not have_been_requested
-        expect(check_set).to receive :perform_internal_checks
+        expect(check_set.parent).to receive(:child_change)
+        expect(check_set).to receive(:perform_internal_checks).and_call_original
         check_set.perform
       end
     end

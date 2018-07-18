@@ -20,7 +20,7 @@ class Permission
 
   def self.referentials
     permissions = []
-    %w{stop_areas lines companies networks}.each do |resources|
+    %w{stop_areas stop_area_providers lines companies networks}.each do |resources|
       actions = %w{edit update create}
       actions << (%w{stop_areas lines}.include?(resources) ? "change_status" : "destroy")
 

@@ -5,7 +5,7 @@ class Import::Resource < ApplicationModel
 
   belongs_to :import, class_name: Import::Base
   belongs_to :referential
-  has_many :messages, class_name: "Import::Message", foreign_key: :resource_id
+  has_many :messages, class_name: "Import::Message", foreign_key: :resource_id, dependent: :destroy
 
   scope :main_resources, ->{ where(resource_type: "referential") }
 
@@ -24,7 +24,7 @@ class Import::Resource < ApplicationModel
         next unless (control_set = workbench.compliance_control_set(key)).present?
         compliance_check_set = workbench_import_check_set key
         if compliance_check_set.nil?
-          ComplianceControlSetCopier.new.copy control_set.id, referential_id, root_import.class.name, root_import.id
+          ComplianceControlSetCopier.new.copy control_set.id, referential_id, root_import.class.name, root_import.id, key
         end
       end
     end

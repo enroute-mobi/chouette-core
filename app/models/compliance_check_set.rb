@@ -24,8 +24,16 @@ class ComplianceCheckSet < ApplicationModel
 
   scope :unfinished, -> { where 'status NOT IN (?)', finished_statuses }
 
+  scope :assigned_to_slots, ->(organisation, slots) do
+    joins(:compliance_control_set).merge(ComplianceControlSet.assigned_to_slots(organisation, slots))
+  end
+
   def self.finished_statuses
     %w(successful failed warning aborted canceled)
+  end
+
+  def self.objects_pending_notification
+    scope = self.where(notified_parent_at: nil)
   end
 
   def successful?
@@ -34,6 +42,11 @@ class ComplianceCheckSet < ApplicationModel
 
   def should_call_iev?
     compliance_checks.externals.exists?
+  end
+
+  def should_process_internal_checks_before_notifying_parent?
+    # if we don't call IEV, then we will have processed internal checks right away
+    compliance_checks.internals.exists? && should_call_iev?
   end
 
   def self.abort_old
@@ -45,8 +58,18 @@ class ComplianceCheckSet < ApplicationModel
   end
 
   def notify_parent
-    if parent && notified_parent_at.nil?
-      parent.child_change
+    # The JAVA part is done, and want us to tell our parent
+    # If we have internal chacks, we must run them beforehand
+    if should_process_internal_checks_before_notifying_parent?
+      perform_async(true)
+    else
+      do_notify_parent
+    end
+  end
+
+  def do_notify_parent
+    if notified_parent_at.nil?
+      parent&.child_change
       update(notified_parent_at: DateTime.now)
     end
   end
@@ -85,17 +108,18 @@ class ComplianceCheckSet < ApplicationModel
     referential&.import_resources.main_resources.last
   end
 
-  def perform_async
-    ComplianceCheckSetWorker.perform_async self.id
+  def perform_async only_internals=false
+    ComplianceCheckSetWorker.perform_async self.id, only_internals
   end
 
-  def perform
-    if should_call_iev?
+  def perform only_internals=false
+    if should_call_iev? && !only_internals
       begin
         Net::HTTP.get(URI("#{Rails.configuration.iev_url}/boiv_iev/referentials/validator/new?id=#{id}"))
       rescue Exception => e
         logger.error "IEV server error : #{e.message}"
         logger.error e.backtrace.inspect
+        update status: 'failed'
       end
     else
       perform_internal_checks
@@ -106,5 +130,10 @@ class ComplianceCheckSet < ApplicationModel
     update status: :pending
     compliance_checks.internals.each &:process
     update_status
+    do_notify_parent
+  end
+
+  def context_i18n
+    context.present? ? Workgroup.compliance_control_sets_label(context) : Workgroup.compliance_control_sets_label(:manual)
   end
 end

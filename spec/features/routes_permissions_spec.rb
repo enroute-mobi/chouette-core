@@ -1,8 +1,8 @@
 describe "Routes", :type => :feature do
   login_user
 
-  let(:line)  { create :line }
-  let(:route) { create(:route, :line => line) }
+  let(:line)  { create :line, referential: referential }
+  let(:route) { create(:route, line: line) }
 
 
   describe 'permissions' do

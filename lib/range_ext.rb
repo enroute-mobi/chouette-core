@@ -7,7 +7,7 @@ class Range
   alias_method :&, :intersection
 
   def intersect?(other)
-    self.max > other.min and other.max > self.min
+    self.max >= other.min and other.max >= self.min
   end
 
   def remove(other)

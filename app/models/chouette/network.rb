@@ -5,7 +5,7 @@ module Chouette
     include LineReferentialSupport
     include ObjectidSupport
     extend Enumerize
-    has_many :lines
+    has_many :lines, dependent: :nullify
 
     attr_accessor :source_type_name
 

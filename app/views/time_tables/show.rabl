@@ -7,7 +7,7 @@ node do |tt|
     tags: tt.tags.map{ |tag| {value: tag.id.to_s, label: tag.name}},
     day_types: %w(monday tuesday wednesday thursday friday saturday sunday).select{ |d| tt.send(d) }.map{ |d| tt.human_attribute_name(d).first(2)}.join(''),
     current_month: tt.month_inspect(Date.today),
-    periode_range: month_periode_enum(3),
+    periode_range: month_periode_enum(tt.bounding_dates, 5),
     current_periode_range: Date.today.beginning_of_month,
     color: tt.color ? tt.color : '',
     short_id: tt.get_objectid.short_id

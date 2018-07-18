@@ -64,7 +64,7 @@ module AF83::Decorator::EnhancedDecorator
           l.content { h.destroy_link_content }
           l.href { [scope, object] }
           l.method :delete
-          l.data {{ confirm: h.t('actions.destroy_confirm') }}
+          l.data {{ confirm: object.class.t_action(:destroy_confirm) }}
         }
       }
       action_link opts.update(args), &block

@@ -4,7 +4,7 @@ class ComplianceCheckBlock < ApplicationModel
 
   belongs_to :compliance_check_set
 
-  has_many :compliance_checks
+  has_many :compliance_checks, dependent: :nullify
 
   store_accessor :condition_attributes,
     :transport_mode,

@@ -17,11 +17,11 @@ describe "workbenches/show", :type => :view do
   let!(:ids) { ['STIF:CODIFLIGNE:Line:C00840', 'STIF:CODIFLIGNE:Line:C00086'] }
   let!(:lines) {
     ids.map do |id|
-      create :line, objectid: id, line_referential: workbench.line_referential
+      create :line, objectid: id, line_referential: workbench.line_referential, referential: same_organisation_referential
     end
   }
   let!(:workbench){ assign :workbench, create(:workbench) }
-  let!(:same_organisation_referential){ create :workbench_referential, workbench: workbench, metadatas: [create(:referential_metadata, lines: lines)] }
+  let!(:same_organisation_referential){ create :workbench_referential, workbench: workbench }
   let!(:different_organisation_referential) do
     create(
       :workbench_referential,
@@ -35,6 +35,7 @@ describe "workbenches/show", :type => :view do
   }
   let!(:q) { assign :q_for_form, Ransack::Search.new(Referential) }
   before :each do
+    same_organisation_referential.update metadatas: [create(:referential_metadata, lines: lines)]
     lines
     controller.request.path_parameters[:id] = workbench.id
     expect(workbench.referentials).to     include same_organisation_referential

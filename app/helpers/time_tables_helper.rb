@@ -2,9 +2,15 @@ require 'date'
 
 module TimeTablesHelper
 
-  def month_periode_enum(years)
-    start_date = Date.today - years.years
-    end_date   = Date.today + years.years
+  def month_periode_enum(bounding_dates, years)
+    if bounding_dates.empty?
+      start_date = Date.today - years.years
+      end_date = Date.today + years.years
+    else
+      start_date = (bounding_dates.min > Date.today ? Date.today : bounding_dates.min) - years.years
+      end_date   = (bounding_dates.max < Date.today ? Date.today : bounding_dates.max) + years.years
+    end
+    
     (start_date..end_date).map(&:beginning_of_month).uniq.map(&:to_s)
   end
 

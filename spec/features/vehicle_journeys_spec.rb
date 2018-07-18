@@ -4,7 +4,7 @@ describe 'VehicleJourneys', type: :feature do
   login_user
 
   let(:referential) { Referential.first }
-  let!(:line) { create(:line) }
+  let!(:line) { create(:line, referential: referential) }
   let!(:route) { create(:route, line: line) }
   let!(:journey_pattern) { create(:journey_pattern, route: route) }
   let!(:vehicle_journey) { create(:vehicle_journey, journey_pattern: journey_pattern) }

@@ -6,11 +6,11 @@ class ComplianceControlSetPolicy < ApplicationPolicy
   end
 
   def show?
-    organisation_match?
+    own_or_workgroup_cc_set?
   end
 
   def destroy?
-    user.has_permission?('compliance_control_sets.destroy')
+    own_cc_set? && user.has_permission?('compliance_control_sets.destroy')
   end
 
   def create?
@@ -18,10 +18,18 @@ class ComplianceControlSetPolicy < ApplicationPolicy
   end
 
   def update?
-    user.has_permission?('compliance_control_sets.update')
+    own_cc_set? && user.has_permission?('compliance_control_sets.update')
   end
 
   def clone?
-    create?
+    own_or_workgroup_cc_set? && create?
+  end
+
+  def own_cc_set?
+    @record.organisation == @user.organisation
+  end
+
+  def own_or_workgroup_cc_set?
+    own_cc_set? || @user.workgroups.pluck(:owner_id).include?(@record.organisation.id)
   end
 end

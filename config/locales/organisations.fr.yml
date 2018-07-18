@@ -8,6 +8,7 @@ fr:
       key_not_registered: "Pas de clé"
     show:
       users: "Utilisateurs"
+      title: "Mon organisation"
   activerecord:
     models:
       organisation:

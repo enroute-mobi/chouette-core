@@ -13,7 +13,7 @@ RUN apt-get update && mkdir -p /usr/share/man/man1 /usr/share/man/man7 && \
 
 
 COPY stif-boiv-release.tar.gz /
-RUN mkdir /app && apt-get update &&\
+RUN mkdir -p /app/tmp && apt-get update &&\
     apt-get -y install --no-install-recommends build-essential ruby2.3-dev libpq-dev libxml2-dev zlib1g-dev libproj-dev libmagic1 libmagic-dev libmagickwand-dev && \
     tar -C /app -zxf stif-boiv-release.tar.gz && \
     cd /app && bundle install --local && \

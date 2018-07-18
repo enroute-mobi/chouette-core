@@ -65,7 +65,53 @@ RSpec.describe ComplianceControl, type: :model do
         end
       end
     end
+
+    context "without constraint" do
+      let(:control) {
+        control = Class.new(ComplianceControl)
+        control
+      }
+
+      it "should be true" do
+        expect(control.available_for_organisation?(organisation)).to be_truthy
+      end
+
+      context "when not available for the organisation entirely" do
+        before do
+          expect(control).to receive(:available_for_organisation?).with(organisation).and_return(false)
+        end
+        it "should be false" do
+          expect(control.available_for_organisation?(organisation)).to be_falsy
+        end
+      end
+    end
+
+    context "with a matched constraint" do
+      let(:control) {
+        control = Class.new(ComplianceControl)
+        control.only_if ->(o){ true }
+        control
+      }
+
+      it "should be true" do
+        expect(control.available_for_organisation?(organisation)).to be_truthy
+      end
+    end
+
+    context "with a not matched constraint" do
+      let(:control) {
+        control = Class.new(ComplianceControl)
+        control.only_if ->(o){ false }
+        control
+      }
+
+      it "should be false" do
+        expect(control.available_for_organisation?(organisation)).to be_falsy
+      end
+    end
   end
+
+
 
   context 'standard validation' do
 

@@ -58,6 +58,15 @@ class Export::Gtfs < Export::Base
 
     tmp_dir = Dir.mktmpdir
     export_to_dir tmp_dir
+    file = File.open File.join(tmp_dir, "#{zip_file_name}.zip")
+    upload_file file
+    self.status = :successful
+    self.save!
+  rescue => e
+    Rails.logger.info "Failed: #{e.message}"
+    Rails.logger.info e.backtrace.join("\n")
+    self.status = :failed
+    self.save!
   end
 
   def export_to_dir(directory)

@@ -105,7 +105,7 @@ fr:
         3_route_12: "Tous les arrêts non-commerciaux de l'itinéraire %{source_objectid} n'ont pas une montée / descente interdites"
       description: "Tous les arrêts non-commerciaux d'un itinéraire doivent avoir une montée / descente interdites"
       prerequisite: "Aucun"
-    route_control/stop_points_boarding_and_alighting:
+    route_control/valid_stop_areas:
       messages:
         3_route_13: "L'itinéraire {route_name}({source_objectid}) utilise des points d’arrêt {[stop_area_ids]} qui ne font pas partie du périmètre fonctionnel de l'organisation {organisation_name}"
       description: "Un itinéraire ne doit pas utiliser des arrêts n'appartenant pas à son organisation"

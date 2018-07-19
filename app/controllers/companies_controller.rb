@@ -20,7 +20,7 @@ class CompaniesController < ChouetteController
       }
 
       format.json {
-        @companies = decorate_companies(@companies)
+        render json: @companies.to_json
       }
     end
   end

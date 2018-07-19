@@ -6,9 +6,8 @@ import actions from '../../../actions'
 
 // get JSON full path
 let origin = window.location.origin
-let path = window.location.pathname.split('/', 3).join('/')
+let path = window.companies_path
 let line = window.location.pathname.split('/')[4]
-
 
 export default class BSelect4 extends Component {
   constructor(props) {
@@ -33,7 +32,7 @@ export default class BSelect4 extends Component {
           placeholder: I18n.t('vehicle_journeys.vehicle_journeys_matrix.affect_company'),
           language: require('./language'),
           ajax: {
-            url: origin + path + '/companies.json' + '?line_id=' + line,
+            url: path + '.json?line_id=' + line,
             dataType: 'json',
             delay: '500',
             data: function(params) {

@@ -107,7 +107,7 @@ fr:
       prerequisite: "Aucun"
     route_control/valid_stop_areas:
       messages:
-        3_route_13: "L'itinéraire {route_name}({source_objectid}) utilise des points d’arrêt {[stop_area_ids]} qui ne font pas partie du périmètre fonctionnel de l'organisation {organisation_name}"
+        3_route_13: "L'itinéraire {route_name} ({source_objectid}) utilise des points d’arrêt ({[stop_area_ids]}) qui ne font pas partie du périmètre fonctionnel de l'organisation {organisation_name}"
       description: "Un itinéraire ne doit pas utiliser des arrêts n'appartenant pas à son organisation"
       prerequisite: "Aucun"
     journey_pattern_control/duplicates:
@@ -124,11 +124,6 @@ fr:
       messages:
         3_journeypattern_3: "La mission %{source_objectid} n'a pas suffisament d'arrêts (minimum 2 arrêts requis)"
       description: "Une mission doit contenir au moins 2 arrêts"
-      prerequisite: "Aucun"
-    journey_pattern_control/valid_stop_areas:
-      messages:
-        3_route_13: "l'itinéraire {route_name}({objectid}) utilise des points d’arrêt {stop_area_ids} qui ne font pas partie du périmètre fonctionnel de l'organisation {organisation_name}"
-      description: " Un itinéraire ne doit pas définir d'offre faisant intervenir des arrêts ZDEp qui ne font pas partie du périmètre fonctionnel de l'organisation propriétaire"
       prerequisite: "Aucun"
     vehicle_journey_control/waiting_time:
       messages:

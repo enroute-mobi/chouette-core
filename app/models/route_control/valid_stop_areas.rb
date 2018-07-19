@@ -18,9 +18,10 @@ module RouteControl
     end
 
     def self.custom_message_attributes compliance_check, route
+      invalid_stop_areas = route.stop_areas.where.not(id: compliance_check.referential.workbench.stop_areas.pluck(:id))
       {
         route_name: route.name,
-        stop_area_ids: [].to_sentence,
+        stop_area_ids: invalid_stop_areas.pluck(:id).to_sentence,
         organisation_name: route.referential.workbench.organisation.name
       }
     end

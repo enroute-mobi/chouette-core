@@ -503,7 +503,7 @@ const actions = {
       if (arrival_time.getHours() == 23 && (departure_time.getHours() == 0 || (departure_time.getHours() == 1 && departure_time.getMinutes() == 0)))  {
         departure_time.setDate(arrival_time.getDate() + 1)
       }
-      
+
       // We want the delta in minutes
       delta = (departure_time.getTime() - arrival_time.getTime()) / 60000
     }
@@ -516,7 +516,7 @@ const actions = {
   },
   adjustSchedule: (action, schedule, isFirstOrLastStop, enforceConsistency=false) => {
     // we enforce that the departure time remains after the arrival time
-    if (!enforceConsistency) return schedule
+    if (!enforceConsistency) return actions.getDelta(schedule, false)
 
     let newSchedule = actions.getDelta(schedule, true)
 

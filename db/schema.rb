@@ -11,12 +11,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180625090623) do
+ActiveRecord::Schema.define(version: 20180717124110) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "hstore"
   enable_extension "postgis"
+  enable_extension "hstore"
   enable_extension "unaccent"
 
   create_table "access_links", id: :bigserial, force: :cascade do |t|
@@ -73,16 +73,13 @@ ActiveRecord::Schema.define(version: 20180625090623) do
   add_index "access_points", ["objectid"], name: "access_points_objectid_key", unique: true, using: :btree
 
   create_table "api_keys", id: :bigserial, force: :cascade do |t|
-    t.integer  "referential_id",  limit: 8
     t.string   "token"
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "organisation_id", limit: 8
-    t.jsonb    "metadata",                  default: {}
+    t.jsonb    "metadata",     default: {}
+    t.integer  "workbench_id"
   end
-
-  add_index "api_keys", ["organisation_id"], name: "index_api_keys_on_organisation_id", using: :btree
 
   create_table "calendars", id: :bigserial, force: :cascade do |t|
     t.string    "name"
@@ -92,9 +89,9 @@ ActiveRecord::Schema.define(version: 20180625090623) do
     t.integer   "organisation_id", limit: 8
     t.datetime  "created_at"
     t.datetime  "updated_at"
+    t.integer   "workgroup_id",    limit: 8
     t.integer   "int_day_types"
     t.date      "excluded_dates",                            array: true
-    t.integer   "workgroup_id",    limit: 8
     t.jsonb     "metadata",                  default: {}
   end
 
@@ -207,6 +204,7 @@ ActiveRecord::Schema.define(version: 20180625090623) do
     t.datetime "ended_at"
     t.datetime "notified_parent_at"
     t.jsonb    "metadata",                            default: {}
+    t.string   "context"
   end
 
   add_index "compliance_check_sets", ["compliance_control_set_id"], name: "index_compliance_check_sets_on_compliance_control_set_id", using: :btree
@@ -788,7 +786,6 @@ ActiveRecord::Schema.define(version: 20180625090623) do
     t.string   "objectid"
     t.string   "name"
     t.integer  "stop_area_referential_id", limit: 8
-    t.integer  "workgroup_id",             limit: 8
     t.datetime "created_at",                         null: false
     t.datetime "updated_at",                         null: false
   end
@@ -865,7 +862,6 @@ ActiveRecord::Schema.define(version: 20180625090623) do
     t.datetime "confirmed_at"
     t.jsonb    "custom_field_values"
     t.jsonb    "metadata",                                                            default: {}
-    t.string   "local_code"
   end
 
   add_index "stop_areas", ["name"], name: "index_stop_areas_on_name", using: :btree
@@ -1091,7 +1087,6 @@ ActiveRecord::Schema.define(version: 20180625090623) do
   end
 
   add_foreign_key "access_links", "access_points", name: "aclk_acpt_fkey"
-  add_foreign_key "api_keys", "organisations"
   add_foreign_key "compliance_check_blocks", "compliance_check_sets"
   add_foreign_key "compliance_check_messages", "compliance_check_resources"
   add_foreign_key "compliance_check_messages", "compliance_check_sets"

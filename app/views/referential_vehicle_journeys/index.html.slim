@@ -3,6 +3,9 @@
 
 .page_content
   .container-fluid
+    .row
+      .col-lg-3.col-lg-offset-9
+        = render 'display_parameters'
     - if params[:q].present? or @vehicle_journeys.present?
       .row
         .col-lg-12

@@ -3,6 +3,7 @@ module Cron
 
     def every_day_at_3AM
       sync_reflex
+      get_missing_routes_costs
     end
 
     def every_day_at_4AM
@@ -71,6 +72,28 @@ module Cron
       begin
         ParentNotifier.new(Import::Base).notify_when_finished
         Import::Netex.abort_old
+      rescue => e
+        Rails.logger.error(e.inspect)
+      end
+    end
+
+    def get_missing_routes_costs
+      begin
+        Rails.logger.info "Getting missing routes costs from TomTom"
+        referentials = Referential.not_in_referential_suite
+        referentials += Workbench.all.map { |w| w.output.current }.compact
+        remaining = 1000 #we process only 1000 routes a day
+        referentials.sort_by(&:created_at).reverse.each do |referential|
+          break if remaining == 0
+          referential.switch do
+            Rails.logger.info "\n \e[33m***\e[0m Referential #{referential.name}"
+            missing_costs =  Chouette::Route.where(costs: nil).limit(remaining)
+            Rails.logger.info "found #{missing_costs.count} Routes with no costs"
+            remaining -= missing_costs.count
+            missing_costs.each &:calculate_costs
+            Rails.logger.info "remaining credits: #{remaining}"
+          end
+        end
       rescue => e
         Rails.logger.error(e.inspect)
       end

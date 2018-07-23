@@ -9,12 +9,12 @@
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = definition_list t('metadatas'),
-          { "Période d'application" => (@time_table.bounding_dates.empty? ? '-' : t('bounding_dates', debut: l(@time_table.bounding_dates.min), end: l(@time_table.bounding_dates.max))),
-            'Couleur associée' => (@time_table.color.nil? ? '-' : content_tag(:span, '', class: 'fa fa-circle', style: "color:#{@time_table.try(:color)}")),
-            'Etiquettes' => @time_table.tag_list,
-            'Modèle de calendrier' => (@time_table.calendar ? link_to(@time_table.calendar.name, @time_table.calendar) : '-'),
-            "Journées d'application pour les périodes ci-dessous" => %w(monday tuesday wednesday thursday friday saturday sunday).collect{ |d| content_tag(:span, t("calendars.days.#{d}"), class: "label label-default #{@time_table.send(d) ? '' : 'disabled'}") }.join.html_safe,
-              Chouette::TimeTable.human_attribute_name(:checksum) => @time_table.checksum}
+          { Chouette::TimeTable.tmf(:bounding_dates) => (@time_table.bounding_dates.empty? ? '-' : t('bounding_dates', debut: l(@time_table.bounding_dates.min), end: l(@time_table.bounding_dates.max))),
+            Chouette::TimeTable.tmf(:color)  => (@time_table.color.nil? ? '-' : content_tag(:span, '', class: 'fa fa-circle', style: "color:#{@time_table.try(:color)}")),
+            Chouette::TimeTable.tmf(:tag_list)  => @time_table.tag_list,
+            Chouette::TimeTable.tmf(:calendar)  => (@time_table.calendar ? link_to(@time_table.calendar.name, @time_table.calendar) : '-'),
+            Chouette::TimeTable.tmf(:day_types) => %w(monday tuesday wednesday thursday friday saturday sunday).collect{ |d| content_tag(:span, t("calendars.days.#{d}"), class: "label label-default #{@time_table.send(d) ? '' : 'disabled'}") }.join.html_safe,
+            Chouette::TimeTable.tmf(:checksum) => @time_table.checksum}
 
     .row
       .col-lg-12.mb-sm
@@ -24,4 +24,4 @@
             = link_to '', referential_time_table_path(@referential, @time_table, year: (@year - 1)), class: 'previous_page'
             = link_to '', referential_time_table_path(@referential, @time_table, year: (@year + 1)), class: 'next_page'
 
-    = render 'show_time_table', time_table: @time_table
+    = render 'show_time_table', time_table: @time_table, edit_url: [:edit, @referential, @time_table]

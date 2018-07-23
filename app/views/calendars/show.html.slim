@@ -20,4 +20,4 @@
               = link_to '', workgroup_calendar_path(@workgroup, @calendar, year: (@year - 1)), class: 'previous_page'
               = link_to '', workgroup_calendar_path(@workgroup, @calendar, year: (@year + 1)), class: 'next_page'
 
-      = render 'time_tables/show_time_table', time_table: @calendar
+      = render 'time_tables/show_time_table', time_table: @calendar, edit_url: [:edit, @workgroup, @calendar]

@@ -1,7 +1,7 @@
 module DeviseRequestHelper
   include Warden::Test::Helpers
 
-  def login_user permissions=nil
+  def login_user permissions: nil
     permissions ||= Support::Permissions.all_permissions
     organisation = Organisation.where(:code => "first").first_or_create(attributes_for(:organisation))
     @user ||=
@@ -21,9 +21,9 @@ module DeviseRequestHelper
 
   module ClassMethods
 
-    def login_user permissions=nil
+    def login_user permissions: nil
       before(:each) do
-        login_user permissions
+        login_user permissions: permissions
       end
       after(:each) do
         Warden.test_reset!

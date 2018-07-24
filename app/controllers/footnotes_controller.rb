@@ -1,6 +1,7 @@
 class FootnotesController < ChouetteController
   include ReferentialSupport
-  include PolicyChecker
+
+  before_action :authorize_resource
 
   defaults resource_class: Chouette::Footnote
 
@@ -30,4 +31,7 @@ class FootnotesController < ChouetteController
       { footnotes_attributes: [ :code, :label, :_destroy, :id ] } )
   end
 
+  def authorize_resource
+    authorize resource_class, "#{action_name}?".to_sym
+  end
 end

@@ -20,6 +20,11 @@ module Chouette
     scope :overlap_dates, ->(date_range) { where('daterange(?, ?) && any (date_ranges)', date_range.first, date_range.max + 1.day) }
     scope :matching_dates, ->(date_range) { where('ARRAY[daterange(?, ?)] = date_ranges', date_range.first, date_range.max + 1.day) }
 
+    scope :not_associated, -> {
+      joins('LEFT JOIN "purchase_windows_vehicle_journeys" ON purchase_windows_vehicle_journeys.purchase_window_id = purchase_windows.id')
+      .where("purchase_windows_vehicle_journeys.vehicle_journey_id is null")
+    }
+
     # VehicleJourneys include PurchaseWindow checksums in their checksums
     # OPTIMIZEME
     def update_vehicle_journey_checksums

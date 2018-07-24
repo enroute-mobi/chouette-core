@@ -137,7 +137,7 @@ class Merge < ApplicationModel
   end
 
   def clean_new
-    CleanUp.new(referential: new, methods: [:destroy_empty]).clean
+    CleanUp.new(referential: new, methods: [:destroy_empty, :destroy_unassociated_calendars]).clean
   end
 
   def merge_referential(referential)

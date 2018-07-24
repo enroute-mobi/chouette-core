@@ -128,6 +128,11 @@ class CleanUp < ApplicationModel
     Chouette::Footnote.not_associated.destroy_all
   end
 
+  def destroy_unassociated_calendars
+    Chouette::TimeTable.not_associated.destroy_all
+    Chouette::PurchaseWindow.not_associated.destroy_all
+  end
+
   def destroy_empty
     destroy_vehicle_journeys
     destroy_journey_patterns

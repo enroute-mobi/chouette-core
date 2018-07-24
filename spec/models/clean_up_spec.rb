@@ -275,7 +275,7 @@ RSpec.describe CleanUp, :type => :model do
     it "destroys routes not in the the referential" do
       route = create :route
       opposite = create :route, line: route.line, opposite_route: route, wayback: route.opposite_wayback
-      
+
       cleaner.destroy_routes_outside_referential
 
       expect(Chouette::Route.exists?(route.id)).to be false
@@ -311,6 +311,34 @@ RSpec.describe CleanUp, :type => :model do
       vj.footnotes << create(:footnote)
       expect{cleaner.destroy_unassociated_footnotes
       }.to_not change { Chouette::Footnote.count }
+    end
+  end
+
+  describe "#destroy_unassociated_calendars" do
+    let(:cleaner) { create(:clean_up) }
+    it "should destroy all time_tables that are not associated with a vehicle joruney" do
+      tt = create(:time_table)
+      pw = create(:purchase_window)
+
+      cleaner.destroy_unassociated_calendars
+
+      expect(Chouette::TimeTable.exists?(tt.id)).to be false
+      expect(Chouette::PurchaseWindow.exists?(pw.id)).to be false
+    end
+
+
+    it "should not destroy time_tables nor purchase windows that are associated with a vehicle joruney" do
+      vj = create(:vehicle_journey)
+      tt = create(:time_table)
+      pw = create(:purchase_window)
+
+      vj.time_tables << tt
+      vj.purchase_windows << pw
+
+      cleaner.destroy_unassociated_calendars
+
+      expect(Chouette::TimeTable.exists?(tt.id)).to be true
+      expect(Chouette::PurchaseWindow.exists?(pw.id)).to be true
     end
   end
 

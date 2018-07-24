@@ -35,6 +35,11 @@ module Chouette
       .where("(time_table_periods.period_start <= :end AND time_table_periods.period_end >= :begin) OR (time_table_dates.date BETWEEN :begin AND :end)", {begin: period_range.begin, end: period_range.end})
     end
 
+    scope :not_associated, -> {
+      joins('LEFT JOIN "time_tables_vehicle_journeys" ON time_tables_vehicle_journeys.time_table_id = time_tables.id')
+      .where("time_tables_vehicle_journeys.vehicle_journey_id is null")
+    }
+
     after_save :save_shortcuts
 
     def local_id

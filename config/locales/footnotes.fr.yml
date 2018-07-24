@@ -1,19 +1,21 @@
 fr:
   notice:
     footnotes:
-      updated: 'Note mise à jour'
+      updated: 'Note de bas de page mise à jour'
   footnotes:
     actions:
       add_footnote: "Ajouter une note"
+      edit_all: "Editer les notes de bas de page"
+      update_all: "Editer les notes de bas de page"
       destroy_confirm: Etes vous sûr de supprimer cette note ?
     index:
-      title: "Notes"
+      title: "Notes de bas de page"
   activerecord:
     models:
       footnote:
-        zero: "note"
-        one: "note"
-        other: "notes"
+        zero: "Note de bas de page"
+        one: "Note de bas de page"
+        other: "Notes de bas de page"
     attributes:
       footnote:
         code: "Titre"

@@ -1,16 +1,14 @@
-- breadcrumb :line_footnotes, @referential, @line
+- breadcrumb :footnotes, @referential, @line
 
 - content_for :page_header_actions do
-  - if policy(@line).update_footnote?
-    = link_to(t('actions.edit'), edit_referential_line_footnotes_path(@referential, @line), class: 'btn btn-primary')
-
-- page_header_content_for @line
+  - if policy(Chouette::Footnote).edit_all?
+    = link_to(t('actions.edit'), edit_all_referential_line_footnotes_path(@referential, @line), class: 'btn btn-primary')
 
 .page_content
   .container-fluid
     .row
-      - if @line.footnotes.any?
-        - @line.footnotes.each do |footnote|
+      - if @footnotes.any?
+        - @footnotes.each do |footnote|
           .col-lg-4.col-md-4.col-sm-6.col-xs-12
             .panel.panel-default
               .panel-heading = footnote.code
@@ -26,4 +24,3 @@
 
       - else
         = replacement_msg 'Aucune note ne correspond à votre recherche'
-

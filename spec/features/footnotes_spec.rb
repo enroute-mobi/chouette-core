@@ -1,8 +1,7 @@
-describe 'Line Footnotes', type: :feature do
+describe 'Footnotes', type: :feature do
   login_user
 
   let(:referential) { Referential.first }
-  #let!(:line_referential) { create :line_referential }
   let!(:network) { create(:network) }
   let!(:company) { create(:company) }
   let!(:line) { create :line_with_stop_areas, network: network, company: company, line_referential: referential.line_referential, referential: referential }
@@ -10,7 +9,7 @@ describe 'Line Footnotes', type: :feature do
   subject { footnotes.first }
 
   describe 'index' do
-    before(:each) { visit referential_line_footnotes_path(referential.line_referential, line) }
+    before(:each) { visit referential_line_footnotes_path(referential, line) }
 
     it 'displays line footnotes' do
       expect(page).to have_content(subject.label)

@@ -246,8 +246,8 @@ crumb :referential_line do |referential, line|
   parent :referential, referential
 end
 
-crumb :line_footnotes do |referential, line|
-  link breadcrumb_name(line), referential_line_footnotes_path(referential, line)
+crumb :footnotes do |referential, line|
+  link I18n.t('footnotes.index.title'), referential_line_footnotes_path(referential, line)
   parent :referential_line, referential, line
 end
 

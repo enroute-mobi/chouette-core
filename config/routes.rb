@@ -62,7 +62,12 @@ ChouetteIhm::Application.routes.draw do
     resources :lines, controller: "referential_lines", except: :index do
       get :autocomplete, on: :collection, to: 'autocomplete_lines#index'
 
-      resource :footnotes, controller: "line_footnotes"
+      resources :footnotes do
+        collection do
+          get 'edit_all'
+          post 'update_all'
+        end
+      end
       delete :index, on: :collection, action: :delete_all
       collection do
         get 'name_filter'

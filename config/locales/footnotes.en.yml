@@ -5,6 +5,8 @@ en:
   footnotes:
     actions:
       add_footnote: "add footnote"
+      edit_all: "Edit footnotes"
+      update_all: "Edit footnotes"
       destroy_confirm: Are you sure you want to delete this footnote ?
     index:
       title: "Footnotes"
@@ -19,4 +21,3 @@ en:
         code: "Number"
         checksum: Checksum
         label: "Line text"
-

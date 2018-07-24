@@ -25,18 +25,4 @@ class LinePolicy < ApplicationPolicy
     user.has_permission?('lines.update')
   end
 
-  def create_footnote?
-    !referential_read_only? && organisation_match? && user.has_permission?('footnotes.create')
-  end
-
-  def edit_footnote?
-    !referential_read_only? && organisation_match? && user.has_permission?('footnotes.update')
-  end
-
-  def destroy_footnote?
-    !referential_read_only? && organisation_match? && user.has_permission?('footnotes.destroy')
-  end
-
-  def update_footnote?  ; edit_footnote? end
-  def new_footnote?     ; create_footnote? end
 end

@@ -1,4 +1,4 @@
-describe 'Line Footnotes', type: :feature do
+describe 'Footnotes', type: :feature do
   login_user
 
   let!(:line) { create :line_with_stop_areas, network: network, company: company, line_referential: line_referential, referential: referential }
@@ -10,7 +10,7 @@ describe 'Line Footnotes', type: :feature do
 
   describe 'permissions' do
     before do
-      allow_any_instance_of(LinePolicy).to receive(:update_footnote?).and_return permission
+      allow_any_instance_of(FootnotePolicy).to receive(:edit_all?).and_return permission
       visit path
     end
 
@@ -21,7 +21,7 @@ describe 'Line Footnotes', type: :feature do
         let( :permission ){ true }
 
         it 'displays the corresponding button' do
-          expect( page ).to have_link('Editer', href: edit_referential_line_footnotes_path(line_referential, line))
+          expect( page ).to have_link('Editer', href: edit_all_referential_line_footnotes_path(line_referential, line))
         end
       end
 
@@ -29,7 +29,7 @@ describe 'Line Footnotes', type: :feature do
         let( :permission ){ false }
 
         it 'does not display the corresponding button' do
-          expect( page ).not_to have_link('Editer', href: edit_referential_line_footnotes_path(line_referential, line))
+          expect( page ).not_to have_link('Editer', href: edit_all_referential_line_footnotes_path(line_referential, line))
         end
       end
     end

@@ -40,20 +40,4 @@ RSpec.describe LinePolicy, type: :policy do
     end
   end
 
-
-  #
-  #  Custom Footnote Permissions
-  #  ---------------------------
-
-  permissions :create_footnote? do
-    it_behaves_like 'permitted policy and same organisation', 'footnotes.create', archived_and_finalised: true
-  end
-
-  permissions :destroy_footnote? do
-    it_behaves_like 'permitted policy and same organisation', 'footnotes.destroy', archived_and_finalised: true
-  end
-
-  permissions :update_footnote? do
-    it_behaves_like 'permitted policy and same organisation', 'footnotes.update', archived_and_finalised: true
-  end
 end

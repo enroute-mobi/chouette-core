@@ -5,7 +5,7 @@ module Chouette
     include LineReferentialSupport
     include ObjectidSupport
     include NetexTransportModeEnumerations
-    include StifTransportSubmodeEnumerations
+    include NetexTransportSubmodeEnumerations
 
 
     include ColorSupport

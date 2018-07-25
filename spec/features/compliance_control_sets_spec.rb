@@ -12,7 +12,7 @@ RSpec.describe "ComplianceControlSets", type: :feature do
   let(:other_control_cset) { create :compliance_control_set, organisation: other_orga }
 
   let(:blox){
-    2.times.map{ |n| create :compliance_control_block, compliance_control_set: control_set, transport_mode: NetexTransportModeEnumerations.transport_modes[n], transport_submode: StifTransportSubmodeEnumerations.transport_submodes[n] }
+    2.times.map{ |n| create :compliance_control_block, compliance_control_set: control_set, transport_mode: NetexTransportModeEnumerations.transport_modes[n], transport_submode: NetexTransportSubmodeEnumerations.transport_submodes[n] }
   }
 
   before do

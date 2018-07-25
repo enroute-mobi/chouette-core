@@ -1,6 +1,6 @@
 class ComplianceControlBlock < ApplicationModel
   include NetexTransportModeEnumerations
-  include StifTransportSubmodeEnumerations
+  include NetexTransportSubmodeEnumerations
 
   belongs_to :compliance_control_set
   has_many :compliance_controls, dependent: :destroy

@@ -21,7 +21,7 @@
 
     .form-group.togglable class=filter_item_class(params[:q], :transport_submode_eq_any)
       = f.label Chouette::Line.tmf(:transport_submode), required: false, class: 'control-label'
-      = f.input :transport_submode_eq_any, collection: StifTransportSubmodeEnumerations.sorted_transport_submodes, as: :check_boxes, label: false, label_method: lambda{|l| ("<span>" + t("enumerize.transport_submode.#{l}") + "</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list'}
+      = f.input :transport_submode_eq_any, collection: NetexTransportSubmodeEnumerations.sorted_transport_submodes, as: :check_boxes, label: false, label_method: lambda{|l| ("<span>" + t("enumerize.transport_submode.#{l}") + "</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list'}
 
     .form-group.togglable class=filter_item_class(params[:q], :status)
       = f.label Chouette::Line.tmf(:status), required: false, class: 'control-label'

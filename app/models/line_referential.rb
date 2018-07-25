@@ -1,6 +1,6 @@
 class LineReferential < ApplicationModel
   include ObjectidFormatterSupport
-  extend StifTransportModeEnumerations
+  extend NetexTransportModeEnumerations
 
   has_many :line_referential_memberships, dependent: :destroy
   has_many :organisations, through: :line_referential_memberships

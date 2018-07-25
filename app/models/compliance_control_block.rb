@@ -1,5 +1,5 @@
 class ComplianceControlBlock < ApplicationModel
-  include StifTransportModeEnumerations
+  include NetexTransportModeEnumerations
   include StifTransportSubmodeEnumerations
 
   belongs_to :compliance_control_set

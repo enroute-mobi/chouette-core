@@ -4,7 +4,7 @@ module Chouette
     include LineRestrictions
     include LineReferentialSupport
     include ObjectidSupport
-    include StifTransportModeEnumerations
+    include NetexTransportModeEnumerations
     include StifTransportSubmodeEnumerations
 
 

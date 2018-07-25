@@ -86,8 +86,12 @@ module Chouette
       self.vehicle_journeys.unscoped.where(journey_category: 1).count > 0
     end
 
+    def full_display_name
+      [self.get_objectid.short_id, number, name, company_light.try(:name)].compact.join(' - ')
+    end
+
     def display_name
-      [self.get_objectid.short_id, number, name, company_light.try(:name)].compact.join(' - ').truncate(50)
+      full_display_name.truncate(50)
     end
 
     def companies

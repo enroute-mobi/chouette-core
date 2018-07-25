@@ -7,6 +7,10 @@ bind_select2 = (el, cfg = {}) ->
     allowClear: !!target.data('select2ed-allow-clear')
     searchingText: I18n.t('actions.searching_term')
     noResultsText: I18n.t('actions.no_result_text')
+    templateResult: (item) ->
+      item.text.substring(0, 50) + '...'
+    templateSelection: (item) ->
+      item.text.substring(0, 50) + '...'
 
   target.select2 $.extend({}, default_cfg, cfg)
 

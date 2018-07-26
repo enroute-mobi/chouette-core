@@ -39,7 +39,7 @@ Rails.application.configure do
   #config.active_record.auto_explain_threshold_in_seconds = (RUBY_PLATFORM == "java" ? nil : 0.5)
 
   config.action_mailer.default_url_options = { :host => ENV.fetch('RAILS_HOST', 'http://localhost:3000') }
-  config.action_mailer.default_options     = { from: 'Stif BOIV <stif-boiv@af83.com>' }
+  config.action_mailer.default_options     = { from: 'Chouette <chouette@af83.com>' }
   config.action_mailer.delivery_method     = :letter_opener
   config.action_mailer.asset_host          = ENV.fetch('RAILS_HOST', 'http://localhost:3000')
 
@@ -49,50 +49,25 @@ Rails.application.configure do
   config.action_mailer.default :charset => "utf-8"
 
   # Configure the e-mail address which will be shown in Devise::Mailer
-  config.mailer_sender = "appli@chouette.mobi"
+  config.mailer_sender = "chouette@af83.com"
   config.to_prepare do
     Devise::Mailer.layout "mailer"
   end
 
-  # Specific theme for each company
-  config.company_name = "STIF"
-  config.company_theme = "#66b4e0"
-  config.company_contact = "http://www.chouette.mobi/club-utilisateurs/contact-support/"
-  config.accept_user_creation = ENV.fetch('ACCEPT_USER_CREATION','0')=='1'?true:false
+  config.accept_user_creation = true
 
-  # Reflex api url
-  config.reflex_api_url = "https://pprod.reflex.stif.info/ws/reflex/V1/service=getData"
-  config.codifligne_api_url = "https://pprod.codifligne.stif.info/rest/v1/lc/getlist"
+  config.chouette_authentication_settings = {
+    type: "database"
+  }
 
-  if config.accept_user_creation || ENV['NO_VPN']
-    config.chouette_authentication_settings = {
-      type: "database"
-    }
-  else
-    config.chouette_authentication_settings = {
-      type: "cas",
-      cas_server: "http://stif-portail-dev.cloud.af83.priv/sessions"
-    }
-  end
   config.stif_portail_api = {
     key: "Ohphie1Voo6the5hohpi",
     url: "http://stif-portail-dev.cloud.af83.priv"
   }
 
-  # Ext. apps links
-  config.reflex_url = "https://195.46.215.128"
-  config.codifligne_url = "https://pprod.codifligne.stif.info"
-  config.portal_url = "http://stif-boiv-staging.af83.priv"
-
   # IEV url
   config.iev_url    = ENV.fetch('IEV_URL', 'http://localhost:8080')
   config.rails_host = ENV.fetch('RAILS_HOST', 'http://localhost:3000')
-
-  # file to data for demo
-  config.demo_data = "tmp/demo.zip"
-
-  # link to validation specification pages
-  config.validation_spec = "http://www.chouette.mobi/neptune-validation/v21/"
 
   config.i18n.available_locales = [:fr, :en]
 
@@ -109,7 +84,8 @@ Rails.application.configure do
 
   # config.cache_store = :redis_store, "redis://localhost:6379/0/cache", { expires_in: 90.minutes }
 
-  config.subscriptions_notifications_recipients = %w{foo@example.com bar@example.com}
+  # config.subscriptions_notifications_recipients = %w{foo@example.com bar@example.com}
+
   config.development_toolbar = false
   if ENV['TOOLBAR'] && File.exists?("config/development_toolbar.rb")
     config.development_toolbar = OpenStruct.new

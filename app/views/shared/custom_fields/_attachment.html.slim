@@ -4,7 +4,7 @@
     = link_to field.value.url do
       = image_tag version ? field.value.send(version).url : field.value.url, class: "custom_field_attachment"
   - else
-    - label = field.options["label"] || I18n.t("custom_fields.#{field.owner.class.name.demodulize.underscore}.#{field.code}.link")
+    - label = field.options["label"] || I18n.t("actions.download")
     = link_to label, field.value.url
 - else
   = "-"

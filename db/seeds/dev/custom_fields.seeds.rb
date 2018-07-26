@@ -40,7 +40,7 @@ Workgroup.find_each do |workgroup|
 
   workgroup.custom_fields.seed_by(code: "stop_area_test_integer") do |field|
     field.resource_type = "StopArea"
-    field.name = "Test de Nomber"
+    field.name = "Test de Nombre"
     field.field_type = "integer"
   end
 

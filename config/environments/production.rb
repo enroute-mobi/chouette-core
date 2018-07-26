@@ -143,13 +143,12 @@ Rails.application.configure do
 
   config.subscriptions_notifications_recipients = %w{support@enroute.paris chouette-marcom@af83.com}
 
-  # FIXME See #5896
-  # config.middleware.insert_before ActionDispatch::Static, CacheSettings, {
-  #   /\/assets\/.*/ => {
-  #     cache_control: "max-age=#{1.year.to_i}, public",
-  #     expires: 1.year.to_i
-  #   }
-  # }
+  config.middleware.insert_after Rack::Sendfile, CacheSettings, {
+    /\/assets\/.*/ => {
+      cache_control: "max-age=#{1.year.to_i}, public",
+      expires: 1.year.to_i
+    }
+  }
 
   # Set node env for browserify-rails
   # config.browserify_rails.node_env = "production"

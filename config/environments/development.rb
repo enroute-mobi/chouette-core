@@ -100,7 +100,7 @@ Rails.application.configure do
 
   config.middleware.insert_after(ActionDispatch::Static, Rack::LiveReload) if ENV['LIVERELOAD']
   config.middleware.use I18n::JS::Middleware
-  config.middleware.insert_before ActionDispatch::Static, CacheSettings, {
+  config.middleware.insert_after Rack::Sendfile, CacheSettings, {
     /\/assets\/.*/ => {
       cache_control: "max-age=86400, public",
       expires: 86400

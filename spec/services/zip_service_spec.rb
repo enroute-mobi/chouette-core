@@ -123,7 +123,24 @@ RSpec.describe ZipService, type: :zip do
     expect( subdir.spurious ).to be_empty
     subdir.stream.tap do | stream |
       stream.rewind
-      expect( stream.read ).to eq(expected_zip.data)
+
+      stream_content = [].tap do |arr|
+        Zip::InputStream.open(stream) do |io|
+          while (entry = io.get_next_entry) do
+            arr << entry
+          end
+        end
+      end
+
+      expected_zip_content = [].tap do |arr|
+        Zip::InputStream.open(StringIO.new(expected_zip.data)) do |io|
+          while (entry = io.get_next_entry) do
+            arr << entry
+          end
+        end
+      end
+
+      expect(stream_content).to eq(expected_zip_content)
     end
   end
 

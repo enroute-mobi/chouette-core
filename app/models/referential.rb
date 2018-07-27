@@ -87,6 +87,8 @@ class Referential < ApplicationModel
   scope :blocked, -> { where('ready = ? AND created_at < ?', false, 4.hours.ago) }
   scope :created_before, -> (date) { where('created_at < ? ', date) }
 
+  after_save :notify_state
+
   def self.order_by_state(dir)
     states = ["ready #{dir}", "archived_at #{dir}", "failed_at #{dir}"]
     states.reverse! if dir == 'asc'
@@ -155,6 +157,10 @@ class Referential < ApplicationModel
     if res
       res["kind"].constantize.find(res["id"])
     end
+  end
+
+  def notify_state
+    Notification.create! channel: "/referentials/#{self.id}", payload: {state: self.state}
   end
 
   def lines
@@ -589,11 +595,13 @@ class Referential < ApplicationModel
   def archive!
     # self.archived = true
     touch :archived_at
+    notify_state
   end
   def unarchive!
     return false unless can_unarchive?
     # self.archived = false
     update_column :archived_at, nil
+    notify_state
   end
 
   def can_unarchive?
@@ -627,6 +635,7 @@ class Referential < ApplicationModel
     else
       assign_attributes vals
     end
+    notify_state
   end
 
   def pending!
@@ -650,6 +659,7 @@ class Referential < ApplicationModel
   def merged!
     now = Time.now
     update_columns failed_at: nil, archived_at: now, merged_at: now, ready: true
+    notify_state
   end
 
   def unmerged!

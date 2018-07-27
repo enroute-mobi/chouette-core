@@ -72,6 +72,11 @@ fr:
       failed:   En erreur
       active:   En édition
       archived: Archivé
+      changed:
+        pending:  Ce Jeu de Données est désormais en cours de traitement, vos modifications ne pourront pas être enregistrées
+        failed:   Ce Jeu de Données est désormais en erreur, vos modifications ne pourront pas être enregistrées
+        active:   Ce Jeu de Données est désormais en édition, rechargez la page pour pouvoir apporter vos modifications
+        archived: Ce Jeu de Données vient d'être archivé, vos modifications ne pourront pas être enregistrées
 
   activerecord:
     errors:

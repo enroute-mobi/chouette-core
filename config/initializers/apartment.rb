@@ -59,6 +59,7 @@ Apartment.configure do |config|
     'LineReferentialSync',
     'LineReferentialSyncMessage',
     'Merge',
+    'Notification',
     'Organisation',
     'Publication',
     'PublicationApi',

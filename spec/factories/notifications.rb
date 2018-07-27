@@ -1,7 +1,7 @@
 FactoryGirl.define do
   factory :notification do
-    objectid "MyString"
-    payload ""
-    channel "MyString"
+    objectid nil
+    payload nil
+    channel "channel"
   end
 end

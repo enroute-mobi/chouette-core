@@ -1,15 +1,14 @@
-window.client ||= new Faye.Client('/faye')
+#= require notifications_center
 
 class ReferentialStateUpdater
   constructor: (@channel)->
     console.log "subscribing to #{@channel}"
     @currentState = $('meta[name=referential_state]').attr('content')
     console.log "current state is #{@currentState}"
+    new NotificationCenter(@channel, this)
 
-    window.client.subscribe @channel, (payload) =>
-      @receivedState payload.state
-
-  receivedState: (newState)->
+  receivedNotification: (payload)->
+    newState = payload.state
     if newState != @currentState
       @updateState newState
 

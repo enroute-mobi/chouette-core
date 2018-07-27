@@ -8,6 +8,8 @@ git_source(:af83) { |name| "https://github.com/af83/#{name}.git" }
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 4.2.11'
 gem 'rack-protection', '~> 1.5.5'
+gem 'faye-rails'
+gem 'thin'
 
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 4.0.3'
@@ -149,6 +151,7 @@ gem 'rake'
 gem 'devise-async'
 gem 'apartment', '~> 1.0.0'
 gem 'aasm'
+gem 'activerecord-nulldb-adapter' if ENV['RAILS_DB_ADAPTER'] == 'nulldb'
 gem 'puma', '~> 3.10.0'
 
 # Cache

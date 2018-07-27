@@ -1,4 +1,4 @@
-//----------//
+s//----------//
 //  Alerts  //
 //----------//
 
@@ -25,8 +25,21 @@
   &.mb-lg
     margin-bottom: 40px
 
+  &.state-update
+    font-size: 1.25em
+
+  span.fa
+    margin-right: 10px
+
   #main_nav + &
     padding: 10px 50px
+
+  #main_nav.sticky + &
+    position: fixed
+    top: 80px
+    left: 0
+    right: 0
+    z-index: 2002
 
   .fa + span
     margin-left: 10px

@@ -71,6 +71,12 @@ en:
       failed:   Failed
       active:   Ready
       archived: Archived
+      changed:
+        pending:  This data space is currently undergoing an operation, you may not be able to save your changes
+        failed:   This data space est désormais en erreur, vos modifications ne pourront pas être enregistrées
+        active:   This data space est désormais en édition, rechargez la page pour pouvoir apporter vos modifications
+        archived: This data space vient d'être archivé, vos modifications ne pourront pas être enregistrées
+
 
   activerecord:
     errors:

@@ -235,6 +235,8 @@ RSpec.describe Merge do
     it "should work" do
       merge = Merge.create!(workbench: referential.workbench, referentials: [referential])
       expect(merge).to receive(:clean_previous_merges)
+      expect(MergeWorker).to receive(:perform_async)
+      merge.merge
       merge.merge!
 
       expect(merge.status). to eq :successful
@@ -280,6 +282,7 @@ RSpec.describe Merge do
 
       expect(output.state).to eq :active
       expect(referential.reload.state).to eq :archived
+      expect(referential.reload.ready?).to be_truthy
     end
   end
 end

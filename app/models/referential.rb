@@ -605,7 +605,7 @@ class Referential < ApplicationModel
 
   def merged!
     now = Time.now
-    update_columns failed_at: nil, archived_at: now, merged_at: now
+    update_columns failed_at: nil, archived_at: now, merged_at: now, ready: true
   end
 
   STATES.each do |s|

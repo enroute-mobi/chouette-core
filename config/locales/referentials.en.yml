@@ -31,8 +31,11 @@ en:
       duplicated:
         title: 'Clone a data space'
       submit: "Create a data space"
-    select_jdc:
+    select_compliance_control_set:
         title: "Select a Compliance Control Set"
+        select:
+          empty_list: You need to have a compliance control set to validate this referential
+          no_item_selected: You need to select a compliance control set from the list
     actions:
       new: "Add a data space"
       destroy_confirm: "Do you confirm to destroy this data space ?"

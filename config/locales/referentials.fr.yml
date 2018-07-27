@@ -33,6 +33,9 @@ fr:
       submit: "Valider"
     select_compliance_control_set:
       title: "Sélection du jeu de contrôles"
+      select:
+          empty_list: You need to have a compliance control set to validate this referential
+          no_item_selected: You need to select a compliance control set from the list
     actions:
       new: "Créer un jeu de données"
       destroy_confirm: "Etes vous sûr de vouloir supprimer ce jeu de données ?"

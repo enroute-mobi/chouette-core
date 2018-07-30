@@ -124,18 +124,12 @@ RSpec.describe ZipService, type: :zip do
     subdir.stream.tap do | stream |
       stream.rewind
 
-      stream_content = [].tap do |arr|
-        Zip::InputStream.open(stream) do |io|
-          while (entry = io.get_next_entry) do
-            arr << entry
-          end
-        end
-      end
-
-      expected_zip_content = [].tap do |arr|
-        Zip::InputStream.open(StringIO.new(expected_zip.data)) do |io|
-          while (entry = io.get_next_entry) do
-            arr << entry
+      stream_content, expected_zip_content = [stream, StringIO.new(expected_zip.data)].map do |s|
+        [].tap do |arr|
+          Zip::InputStream.open(s) do |io|
+            while (entry = io.get_next_entry) do
+              arr << entry
+            end
           end
         end
       end

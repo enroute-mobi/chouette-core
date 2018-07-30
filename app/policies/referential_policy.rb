@@ -26,7 +26,7 @@ class ReferentialPolicy < ApplicationPolicy
   end
 
   def validate?
-    !referential_read_only? && create? && organisation_match?
+    record.archived_at.blank?  && organisation_match?
   end
 
   def archive?

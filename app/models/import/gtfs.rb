@@ -63,7 +63,7 @@ class Import::Gtfs < Import::Base
 
   def create_referential
     self.referential ||=  Referential.new(
-      name: "GTFS Import",
+      name: self.name,
       organisation_id: workbench.organisation_id,
       workbench_id: workbench.id,
       metadatas: [referential_metadata]
@@ -98,6 +98,10 @@ class Import::Gtfs < Import::Base
   attr_accessor :download_host
   def download_host
     @download_host ||= Rails.application.config.rails_host
+  end
+
+  def name
+    self[:name].presence || local_file.basename.to_s
   end
 
   def local_temp_directory

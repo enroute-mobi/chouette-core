@@ -9,7 +9,6 @@ describe Subscription, type: :model do
       user_name: "John Doe",
       email: "john.doe@example.com",
       password: "password",
-      password: "password",
       password_confirmation: "password",
       organisation_name: "The Daily Planet"
     })

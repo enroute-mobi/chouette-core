@@ -30,7 +30,7 @@ Rails.application.configure do
   # The :test delivery method accumulates sent emails in the
   # ActionMailer::Base.deliveries array.
   config.action_mailer.delivery_method = :test
-  config.action_mailer.default_options = { from: 'Stif BOIV <stif-boiv@af83.com>' }
+  config.action_mailer.default_options = { from: 'Chouette <chouette@example.com>' }
 
   # Print deprecation notices to the stderr.
   config.active_support.deprecation = :stderr
@@ -38,29 +38,12 @@ Rails.application.configure do
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
 
-  # Specific theme for each company
-  # AFIMB
-  config.company_name = "afimb"
-  config.company_theme = "#61970b" # AFIMB color
-  config.company_contact = "http://www.chouette.mobi/club-utilisateurs/contact-support/"
   config.accept_user_creation = false
 
-  # config.chouette_authentication_settings = {
-  #   type: "database"
-  # }
   config.chouette_authentication_settings = {
     type: "cas",
-    cas_server: "http://stif-portail-dev.af83.priv/sessions"
+    cas_server: "http://cas-portal.example.com/sessions"
   }
-
-  config.stif_portail_api =
-  {
-    key: "411e6b8d259bc9900c0caf9db6072013",
-    url: "http://localhost:3000"
-  }
-
-  # Reflex api url
-  config.reflex_api_url = "https://195.46.215.128/ws/reflex/V1/service=getData"
 
   # IEV url
   config.iev_url = ENV.fetch('IEV_URL', 'http://localhost:8080')
@@ -69,13 +52,10 @@ Rails.application.configure do
   # file to data for demo
   config.demo_data = "tmp/demo.zip"
 
-  # link to validation specification pages
-  config.validation_spec = "http://www.chouette.mobi/neptune-validation/v21/"
-
   config.action_mailer.default_url_options = { :host => 'localhost:3000' }
 
   # Configure the e-mail address which will be shown in Devise::Maile
-  config.mailer_sender = "appli@chouette.mobi"
+  config.mailer_sender = "chouette@example.com"
   # change to true to allow email to be sent during development
   config.action_mailer.perform_deliveries = false
   config.action_mailer.raise_delivery_errors = false

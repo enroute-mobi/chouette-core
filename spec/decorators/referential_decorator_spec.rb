@@ -81,9 +81,12 @@ RSpec.describe ReferentialDecorator, type: [:helper, :decorator] do
           }
           context "on index" do
             it 'has corresponding actions' do
-              expect_action_link_elements(action).to eq ["Consulter", "<span class=\"fa fa-trash mr-xs\"></span>Supprimer"]
+              expect_action_link_elements(action).to eq [
+                "Consulter", "Valider", "<span class=\"fa fa-trash mr-xs\"></span>Supprimer"
+              ]
               expect_action_link_hrefs(action).to eq([
                 [object],
+                select_compliance_control_set_referential_path(object),
                 referential_path(object),
               ])
             end
@@ -92,8 +95,13 @@ RSpec.describe ReferentialDecorator, type: [:helper, :decorator] do
           context "on show" do
             let( :action){ :show }
             it 'has corresponding actions' do
-              expect_action_link_elements(action).to eq ["<span class=\"fa fa-trash mr-xs\"></span>Supprimer"]
-              expect_action_link_hrefs(action).to eq([referential_path(object)])
+              expect_action_link_elements(action).to eq [
+                "Valider", "<span class=\"fa fa-trash mr-xs\"></span>Supprimer"
+              ]
+              expect_action_link_hrefs(action).to eq([
+                select_compliance_control_set_referential_path(object),
+                referential_path(object)
+              ])
             end
           end
         end

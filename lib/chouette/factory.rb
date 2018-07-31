@@ -158,7 +158,7 @@ module Chouette
     }.freeze
 
     def self.create(&block)
-      context = Context.new(Type.root)
+      context = Context.new(root)
       context.evaluate &block
       context.build
       context.save

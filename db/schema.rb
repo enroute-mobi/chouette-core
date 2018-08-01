@@ -872,7 +872,7 @@ ActiveRecord::Schema.define(version: 20180717124110) do
   end
 
   add_index "stop_areas", ["name"], name: "index_stop_areas_on_name", using: :btree
-  add_index "stop_areas", ["objectid"], name: "stop_areas_objectid_key", using: :btree
+  add_index "stop_areas", ["objectid", "stop_area_referential_id"], name: "stop_areas_objectid_key", unique: true, using: :btree
   add_index "stop_areas", ["parent_id"], name: "index_stop_areas_on_parent_id", using: :btree
   add_index "stop_areas", ["stop_area_referential_id", "registration_number"], name: "index_stop_areas_on_referential_id_and_registration_number", using: :btree
   add_index "stop_areas", ["stop_area_referential_id"], name: "index_stop_areas_on_stop_area_referential_id", using: :btree

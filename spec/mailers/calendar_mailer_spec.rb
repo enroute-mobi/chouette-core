@@ -12,7 +12,7 @@ RSpec.describe CalendarMailer, type: :mailer do
     end
 
     it 'should have correct from' do
-      expect(email.from).to eq(['stif-boiv@af83.com'])
+      expect(email.from).to eq(['chouette@example.com'])
     end
 
     it 'should have subject' do

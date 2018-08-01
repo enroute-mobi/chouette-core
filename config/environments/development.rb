@@ -60,11 +60,6 @@ Rails.application.configure do
     type: "database"
   }
 
-  config.stif_portail_api = {
-    key: "Ohphie1Voo6the5hohpi",
-    url: "http://stif-portail-dev.cloud.af83.priv"
-  }
-
   # IEV url
   config.iev_url    = ENV.fetch('IEV_URL', 'http://localhost:8080')
   config.rails_host = ENV.fetch('RAILS_HOST', 'http://localhost:3000')
@@ -83,8 +78,6 @@ Rails.application.configure do
   }
 
   # config.cache_store = :redis_store, "redis://localhost:6379/0/cache", { expires_in: 90.minutes }
-
-  # config.subscriptions_notifications_recipients = %w{foo@example.com bar@example.com}
 
   config.development_toolbar = false
   if ENV['TOOLBAR'] && File.exists?("config/development_toolbar.rb")

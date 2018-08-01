@@ -13,7 +13,7 @@ RSpec.describe Devise::CasSessionsController, type: :controller do
     it 'to #service' do
       get :new
       expect( response ).to be_redirect
-      expect( response.redirect_url ).to eq("http://stif-portail-dev.af83.priv/sessions/login?service=http%3A%2F%2Ftest.host%2Fusers%2Fservice")
+      expect( response.redirect_url ).to eq("http://cas-portal.example.com/sessions/login?service=http%3A%2F%2Ftest.host%2Fusers%2Fservice")
     end
   end
 
@@ -23,7 +23,7 @@ RSpec.describe Devise::CasSessionsController, type: :controller do
     it 'cannot login and will be redirected to the login page, with a corresponding message' do
       get :service
       expect(controller).to set_flash[:alert].to(%r{Vous ne pouvez pas vous connecter car vous n'avez pas les permissions})
-      expect(response).to redirect_to "http://stif-portail-dev.af83.priv/sessions/logout?service=http%3A%2F%2Ftest.host%2Fusers%2Fservice"
+      expect(response).to redirect_to "http://cas-portal.example.com/sessions/logout?service=http%3A%2F%2Ftest.host%2Fusers%2Fservice"
     end
   end
 

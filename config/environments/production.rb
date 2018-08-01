@@ -92,38 +92,20 @@ Rails.application.configure do
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
 
-
-  config.action_mailer.default_url_options = { :host => ENV.fetch('MAIL_HOST','iboo.stif.info') }
+  config.action_mailer.default_url_options = { :host => ENV.fetch('MAIL_HOST') }
 
   # Configure the e-mail address which will be shown in Devise::Maile
-  config.mailer_sender = ENV.fetch('MAIL_FROM', 'STIF Iboo <noreply@stif.info>')
-  config.action_mailer.default_options = { from: ENV.fetch('MAIL_FROM', 'STIF Iboo <noreply@stif.info>') }
-  config.action_mailer.smtp_settings = { address: ENV.fetch('SMTP_HOST', 'mail.stif.info') }
-  config.action_mailer.asset_host          = ENV.fetch('MAIL_ASSETS_URL_BASE','http://iboo.stif.info')
+  config.mailer_sender = ENV.fetch('MAIL_FROM')
+  config.action_mailer.default_options = { from: ENV.fetch('MAIL_FROM') }
+  config.action_mailer.smtp_settings = { address: ENV.fetch('SMTP_HOST') }
+  config.action_mailer.asset_host    = ENV.fetch('MAIL_ASSETS_URL_BASE')
 
-  # Specific theme for each company
-  # AFIMB
-  config.company_name = ENV.fetch('COMPANY_NAME',"STIF")
-  config.company_theme = ENV.fetch('COMPANY_THEME',"#61970b") # AFIMB color
-  config.company_contact = ENV.fetch('COMPANY_CONTACT',"http://www.chouette.mobi/club-utilisateurs/contact-support/")
   config.accept_user_creation = ENV.fetch('ACCEPT_USER_CREATION','0')=='1'?true:false
 
   config.chouette_authentication_settings = JSON.parse(ENV.fetch('AUTH_SETTINGS','{
-    "type": "cas",
-    "cas_server": "https://portail.stif.info/sessions",
-    "cas_validate_url": "http://portail.stif.info/sessions/proxyValidate"
+    "type": "database"
   }'),{symbolize_names: true})
 
-  config.stif_portail_api = JSON.parse(ENV.fetch('SESAME_API_SETTINGS','{
-    "key": "xxxxxxxxxxx",
-    "url": "http://portail.stif.info"
-  }'),{symbolize_names: true})
-
-  # file to data for demo
-  # config.demo_data = "/path/to/demo.zip"
-
-  # link to validation specification pages
-  config.validation_spec = "http://www.chouette.mobi/neptune-validation/v22/"
 
   # paths for external resources
   config.to_prepare do
@@ -132,16 +114,9 @@ Rails.application.configure do
 
   config.i18n.available_locales = [:fr, :en]
 
-  # REFLEX api url
-  config.reflex_api_url = ENV.fetch('REFLEX_API_URL',"https://pprod.reflex.stif.info/ws/reflex/V1/service=getData")
-  # CODIFLIGNE api url
-  config.codifligne_api_url = ENV.fetch('CODIFLIGNE_API_URL',"https://pprod.codifligne.stif.info/rest/v1/lc/getlist")
-
   # IEV
   config.iev_url = ENV.fetch('IEV_URL',"http://iev:8080")
   config.rails_host = ENV.fetch('RAILS_HOST','http://front:3000')
-
-  config.subscriptions_notifications_recipients = %w{support@enroute.paris chouette-marcom@af83.com}
 
   config.middleware.insert_after Rack::Sendfile, CacheSettings, {
     /\/assets\/.*/ => {

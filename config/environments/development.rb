@@ -90,3 +90,7 @@ Rails.application.configure do
     end
   end
 end
+
+Dir[File.join(File.dirname(__FILE__), File.basename(__FILE__, ".rb"), "*.rb")].each do |f|
+  eval File.read(f), nil, f
+end

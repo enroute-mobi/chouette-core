@@ -63,3 +63,7 @@ Rails.application.configure do
 
   config.i18n.available_locales = [:fr, :en]
 end
+
+Dir[File.join(File.dirname(__FILE__), File.basename(__FILE__, ".rb"), "*.rb")].each do |f|
+  eval File.read(f), nil, f
+end

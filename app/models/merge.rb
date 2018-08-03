@@ -19,6 +19,8 @@ class Merge < ApplicationModel
 
   after_commit :merge, :on => :create
 
+  scope :successful, ->{ where status: :successful }
+
   def self.keep_merges=(value)
     @@keep_merges = [value, 1].max # we cannot keep less than 1 merge
   end
@@ -111,6 +113,10 @@ class Merge < ApplicationModel
           clone.inline_clone = true
         end
       else
+        if workbench.merges.successful.count > 0
+          # there had been previous merges, we should have a current output
+          raise "Trying to create a new referential to merge into from Merge##{self.id}, while there had been previous merges in the same workbench"
+        end
         Rails.logger.debug "Create a new output"
         # 'empty' one
         attributes = {

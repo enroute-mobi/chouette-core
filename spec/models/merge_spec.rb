@@ -49,6 +49,29 @@ RSpec.describe Merge do
     expect(Merge.count).to eq 5
   end
 
+  context "#prepare_new" do
+    context "with no current output" do
+      let(:merge){Merge.create(workbench: workbench, referentials: [referential, referential]) }
+
+      before(:each) do
+        workbench.output.update current_id: Referential.last.id + 1
+        expect(workbench.output.current).to be_nil
+      end
+
+      it "should not allow the creation of a referential from scratch if the workbench has previous merges" do
+        m = Merge.create(workbench: workbench, referentials: [referential, referential])
+        m.update status: :successful
+        expect{ merge.prepare_new }.to raise_error
+      end
+
+      it "should allow the creation of a referential from scratch if the workbench has no previous merges" do
+        m = Merge.create(workbench: workbench, referentials: [referential, referential])
+        m.update status: :failed
+        expect{ merge.prepare_new }.to_not raise_error
+      end
+    end
+  end
+
   context "with before_merge compliance_control_sets" do
     let(:merge) { Merge.create(workbench: workbench, referentials: [referential, referential]) }
     before do

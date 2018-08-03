@@ -41,7 +41,7 @@ ChouetteIhm::Application.routes.draw do
     end
   end
 
-  resources :referentials, except: %w(new create) do
+  resources :referentials, except: %w(new create index) do
 
     member do
       put :archive

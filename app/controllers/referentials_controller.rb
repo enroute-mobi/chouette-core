@@ -15,10 +15,6 @@ class ReferentialsController < ChouetteController
     end
   end
 
-  def index
-    redirect_to current_user.organisation.workbenches.first
-  end
-
   def create
     create! do |success, failure|
       success.html do

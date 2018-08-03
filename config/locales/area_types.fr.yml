@@ -1,14 +1,7 @@
 fr:
   area_types:
     label:
-      zdep: ZDEp
-      zder: ZDEr
-      zdlp: ZDLp
-      zdlr: ZDLr
-      lda: LDA
-      gdl: GDL
-      deposit: Dépôt
-      border: Frontière
-      service_area: Aire de service / Pause
-      relief: Point de relève
-      other: Autre
+      zdep: "Zone d'Embarquement"
+      zdlp: "Zone de Lieu"
+      lda: "Lieu d'Arrêt"
+      gdl: "Groupe de Lieux"

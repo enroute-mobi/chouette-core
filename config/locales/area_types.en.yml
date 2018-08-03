@@ -1,14 +1,7 @@
 en:
   area_types:
     label:
-      zdep: ZDEp
-      zder: ZDEr
-      zdlp: ZDLp
-      zdlr: ZDLr
-      lda: LDA
-      gdl: GDL
-      deposit: Deposit
-      border: Border
-      service_area: Service Area
-      relief: Relief point
-      other: Other
+      zdep: "Quay"
+      zdlp: "Monomodal Stop Place"
+      lda: "Stop Place"
+      gdl: "Group of Stop Places"

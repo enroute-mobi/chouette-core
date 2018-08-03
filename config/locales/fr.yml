@@ -56,8 +56,8 @@ fr:
   bounding_dates: '%{debut} > %{end}'
   metadatas: 'Informations'
 
-  id_codif: 'ID Codifligne'
-  id_reflex: 'ID Reflex'
+  id_codif: 'ID'
+  id_reflex: 'ID'
   codif_data: 'Données Codifligne'
   reflex_data: 'Données Reflex'
   objectid: 'ID'

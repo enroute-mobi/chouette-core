@@ -7,7 +7,7 @@ fr:
     edit:
       title: "Editer le référentiel %{name}"
     show:
-      title: 'Synchronisation iLICO'
+      title: 'Référentiel de Lignes'
       synchronized: Synchronisé
       status: Statut
       message: Message

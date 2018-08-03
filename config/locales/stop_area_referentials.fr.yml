@@ -4,10 +4,10 @@ fr:
       sync: "Lancer une synchronisation Reflex"
       cancel_sync: "Annuler la synchronisation Reflex"
     show:
-      title: 'Synchronisation iCAR'
+      title: "Référentiel d'Arrêts"
       synchronized: Synchronisé
       status: Statut
-      message: Message      
+      message: Message
   activerecord:
     models:
       stop_area_referential:

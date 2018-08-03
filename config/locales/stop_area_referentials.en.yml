@@ -4,7 +4,7 @@ en:
       sync: "Launch a new reflex synchronization"
       cancel_sync: "Cancel reflex synchronization"
     show:
-      title: 'Synchronization iCAR'
+      title: 'Stop area referential'
       synchronized: Synchronized
       status: status
       message: Message

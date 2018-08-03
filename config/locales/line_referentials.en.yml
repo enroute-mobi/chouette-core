@@ -2,8 +2,8 @@ en:
   line_referentials:
     actions:
       edit: "Edit this referential"
-      sync: "Launch a new codifligne synchronization"
-      cancel_sync: "Cancel codifligne synchronization"
+      sync: "Launch a new synchronization"
+      cancel_sync: "Cancel synchronization"
     edit:
       title: "Edit %{name} referential"
     show:

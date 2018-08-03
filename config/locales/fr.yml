@@ -58,8 +58,6 @@ fr:
 
   id_codif: 'ID'
   id_reflex: 'ID'
-  codif_data: 'Données Codifligne'
-  reflex_data: 'Données Reflex'
   objectid: 'ID'
   brandname: Chouette
   error: "Erreur"

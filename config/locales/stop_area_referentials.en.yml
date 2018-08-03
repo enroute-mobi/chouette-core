@@ -1,8 +1,8 @@
 en:
   stop_area_referentials:
     actions:
-      sync: "Launch a new reflex synchronization"
-      cancel_sync: "Cancel reflex synchronization"
+      sync: "Launch a new synchronization"
+      cancel_sync: "Cancel synchronization"
     show:
       title: 'Stop area referential'
       synchronized: Synchronized

@@ -2,8 +2,8 @@ fr:
   line_referentials:
     actions:
       edit: "Editer ce référentiel"
-      sync: "Lancer une synchronisation Codifligne"
-      cancel_sync: "Annuler la synchronisation Codifligne"
+      sync: "Lancer une synchronisation"
+      cancel_sync: "Annuler la synchronisation"
     edit:
       title: "Editer le référentiel %{name}"
     show:

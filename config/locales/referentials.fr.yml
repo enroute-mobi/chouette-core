@@ -34,7 +34,7 @@ fr:
     select_compliance_control_set:
       title: "Sélection du jeu de contrôles"
       select:
-          empty_list: Vous devez avoie un jeu de contrôle pour valider ce jeu de données
+          empty_list: Vous devez avoir un jeu de contrôle pour valider ce jeu de données
           no_item_selected: Vous devez sélectionner un jeu de contrôle de la liste
     actions:
       new: "Créer un jeu de données"

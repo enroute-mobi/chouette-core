@@ -1,6 +1,3 @@
 - flash.each do |type, message|
-  div class="alert #{bootstrap_class_for(type)} fade in" role="alert"
-    button.close data-dismiss="alert"
-      |x
-    
-    = flash_message_for type, message
+  - if msg.is_a?(String)
+    = display_flash_message(name, msg)

@@ -131,22 +131,27 @@ describe ReferentialsController, :type => :controller do
   end
 
   describe 'GET show' do
-    context 'referential with lines outside functional scope' do
-      it 'does displays a warning message to the user' do
+
+    context 'STIF' do
+      before(:each) do
         line = create(:line, line_referential: referential.line_referential) 
-        metadata = create(:referential_metadata, lines: [line]) 
-        referential.metadatas << metadata
-        referential.workgroup.class.workbench_scopes_class = Stif::WorkbenchScopes
-        out_scope_lines = referential.lines_outside_of_scope
-        message = I18n.t("referentials.show.lines_outside_of_scope", count: out_scope_lines.count, lines: out_scope_lines.pluck(:name).join(", "), organisation: referential.organisation.name)
+        referential.metadatas << create(:referential_metadata, lines: [line]) 
+        allow(Workgroup).to receive(:workbench_scopes_class).and_return(Stif::WorkbenchScopes)
+      end
 
-        get :show, id: referential.id
+      context 'referential with lines outside functional scope' do
+        it 'does displays a warning message to the user' do
+          out_scope_lines = referential.lines_outside_of_scope
+          message = I18n.t("referentials.show.lines_outside_of_scope", count: out_scope_lines.count, lines: out_scope_lines.pluck(:name).join(", "), organisation: referential.organisation.name)
 
-        expect(out_scope_lines.count).to eq(1)
-        expect(referential.organisation.lines_scope).to be_nil
-        expect(flash[:warning]).to be
-        expect(flash[:warning]).to eq(message)
-      end 
+          get :show, id: referential.id
+
+          expect(out_scope_lines.count).to eq(1)
+          expect(referential.organisation.lines_scope).to be_nil
+          expect(flash[:warning]).to be
+          expect(flash[:warning]).to eq(message)
+        end 
+      end
     end
   end
 end

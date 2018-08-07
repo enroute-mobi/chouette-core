@@ -70,11 +70,12 @@ RSpec.configure do |config|
       organisation: organisation,
       workgroup: workgroup,
       line_referential: line_referential,
-      stop_area_referential: stop_area_referential
+      stop_area_referential: stop_area_referential,
+      prefix: organisation.code
     )
     referential = FactoryGirl.create(
       :referential,
-      prefix: "first",
+      prefix: workbench.prefix,
       name: "first",
       slug: "first",
       organisation: organisation,

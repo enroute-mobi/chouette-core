@@ -22,6 +22,7 @@ class Workbench < ApplicationModel
 
   validates :name, presence: true
   validates :organisation, presence: true
+  validates :prefix, presence: true
   validates :output, presence: true
 
   has_many :referentials, dependent: :destroy

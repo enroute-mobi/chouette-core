@@ -11,7 +11,7 @@ module Chouette
       end
 
       def after_commit(model)
-        oid = Chouette::Objectid::StifNetex.new(provider_id: "stif", object_type: model.class.name.gsub('Chouette::',''), local_id: model.local_id)
+        oid = Chouette::Objectid::StifNetex.new(provider_id: model.referential.prefix, object_type: model.class.name.gsub('Chouette::',''), local_id: model.local_id)
         model.update(objectid: oid.to_s) if oid.valid?
       end
 

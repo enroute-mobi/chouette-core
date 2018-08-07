@@ -40,6 +40,16 @@ RSpec.describe ObjectidSupport do
           expect(object.get_objectid.to_s).to eq(object.read_attribute(:objectid))
           expect(object.get_objectid.to_s).to eq(object.objectid)
         end
+      end
+
+      context '#provider_id' do
+        it 'should be the same as the referential prefix' do
+          expect(referential.prefix).to eq(object.get_objectid.provider_id)
+        end
+      end
+    end
+
+
     
     context "#objectid" do
 
@@ -63,8 +73,6 @@ RSpec.describe ObjectidSupport do
         object.attributes = { objectid: nil}
         object.save
         expect(object.objectid).to be_truthy
-      end
-    end
       end
     end
   end

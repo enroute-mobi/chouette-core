@@ -21,7 +21,7 @@ module Chouette
     attr_accessor  :control_checked
 
     def local_id
-      "IBOO-#{self.referential.id}-#{self.route.line.get_objectid.local_id}-#{self.id}"
+      "local-#{self.referential.id}-#{self.route.line.get_objectid.local_id}-#{self.id}"
     end
 
     def checksum_attributes

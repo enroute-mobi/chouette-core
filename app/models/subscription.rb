@@ -81,6 +81,7 @@ class Subscription
       w.stop_area_referential = stop_area_referential
       w.workgroup             = workgroup
       w.objectid_format       = 'netex'
+      w.prefix = organisation.code
     end
   end
 

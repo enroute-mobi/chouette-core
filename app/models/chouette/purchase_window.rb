@@ -37,7 +37,7 @@ module Chouette
     end
 
     def local_id
-      "IBOO-#{self.referential.id}-#{self.id}"
+      "local-#{self.referential.id}-#{self.id}"
     end
 
     def checksum_attributes

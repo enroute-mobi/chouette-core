@@ -43,7 +43,7 @@ module Chouette
     after_save :save_shortcuts
 
     def local_id
-      "IBOO-#{self.referential.id}-#{self.id}"
+      "local-#{self.referential.id}-#{self.id}"
     end
 
     def checksum_attributes

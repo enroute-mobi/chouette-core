@@ -135,7 +135,7 @@ module Chouette
     end
 
     def local_id
-      "IBOO-#{self.referential.id}-#{self.route.line.get_objectid.local_id}-#{self.id}"
+      "local-#{self.referential.id}-#{self.route.line.get_objectid.local_id}-#{self.id}"
     end
 
     def checksum_attributes

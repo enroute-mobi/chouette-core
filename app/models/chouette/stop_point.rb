@@ -54,7 +54,7 @@ module Chouette
     end
 
     def local_id
-      "IBOO-#{self.referential.id}-#{self.route.line.get_objectid.local_id}-#{self.route.id}-#{self.id}"
+      "local-#{self.referential.id}-#{self.route.line.get_objectid.local_id}-#{self.route.id}-#{self.id}"
     end
 
     def self.area_candidates

@@ -483,7 +483,7 @@ class Referential < ApplicationModel
   end
 
   def assign_prefix
-    self.prefix = organisation.name.parameterize.gsub('-', '_') if organisation
+    self.prefix = workbench.prefix
   end
 
   def assign_line_and_stop_area_referential

@@ -20,6 +20,9 @@ fr:
       api_keys: "Clés d'authentification pour un accès à l'API REST"
       show_all_referentials: Voir tous les jeux de données
       from_this_workbench: "Voir les jeux de données de cet gestion de l'offre"
+      lines_outside_of_scope:
+        one: La ligne %{lines} ne fait pas partie du périmètre fonctionnel du transporteur %{organisation}
+        other: Les lignes %{lines} ne font pas partie du périmètre fonctionnel du transporteur %{organisation}
     counts:
       objects: "Eléments"
       count: "Qté"

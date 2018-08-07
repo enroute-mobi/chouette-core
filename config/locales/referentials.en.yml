@@ -20,6 +20,9 @@ en:
       api_keys: "Authentification keys for an API REST access"
       show_all_referentials: Show all referentials
       from_this_workbench: Show referentials from this workbench
+      lines_outside_of_scope:
+        one: The %{lines} line is outside of %{organisation} functional scope
+        other: The lines %{lines} are outside of %{organisation} functional scope
     counts:
       objects: "Data space elements"
       count: "count"

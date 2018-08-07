@@ -8,6 +8,7 @@ class ReferentialsController < ChouetteController
   respond_to :js, :only => :show
 
   before_action :check_cloning_source_is_accessible, only: %i(new create)
+  before_action :check_lines_outside_of_functional_scope, only: :show
 
   def new
     new! do
@@ -180,6 +181,13 @@ class ReferentialsController < ChouetteController
     return unless params[:from]
     source = Referential.find params[:from]
     return user_not_authorized unless current_user.organisation.workgroups.include?(source.workbench.workgroup)
+  end
+
+  def check_lines_outside_of_functional_scope
+    lines = @referential.lines_outside_of_scope
+    if lines.count > 0
+      flash[:warning] = I18n.t("referentials.show.lines_outside_of_scope", count: lines.count, lines: lines.pluck(:name).join(", "), organisation: @referential.organisation.name)
+    end
   end
 
   def load_workbench

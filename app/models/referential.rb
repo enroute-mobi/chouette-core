@@ -158,6 +158,11 @@ class Referential < ApplicationModel
       metadatas_lines
     end
   end
+  
+  def lines_outside_of_scope
+    func_scope = workbench.workbench_scopes.lines_scope(associated_lines).pluck(:objectid)
+    lines.where.not(objectid: func_scope)
+  end
 
   def slug_excluded_values
     if ! slug.nil?

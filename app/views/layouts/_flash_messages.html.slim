@@ -13,3 +13,10 @@
           span.fa.fa-times-circle aria-hidden='true'
         span.fa.fa-lg.fa-exclamation-circle
         span = msg
+
+    - if name == 'warning'
+      .alert.alert-warning.alert-dismissible role="alert"
+        button.close type='button' data-dismiss='alert' aria-label='Fermer'
+          span.fa.fa-times-circle aria-hidden='true'
+        span.fa.fa-lg.fa-exclamation-triangle
+        span = msg

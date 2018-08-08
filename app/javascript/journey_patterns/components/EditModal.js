@@ -109,7 +109,7 @@ export default class EditModal extends Component {
                         type='text'
                         ref='checksum'
                         className='form-control'
-                        disabled='disabled'
+                        readOnly={true}
                         value={this.props.modal.modalProps.journeyPattern.checksum}
                         />
                     </div>

@@ -26,6 +26,7 @@ class Import::Gtfs < Import::Base
     update status: 'running', started_at: Time.now
 
     import_without_status
+    referential&.pending!
     update status: 'successful', ended_at: Time.now
     referential&.active!
   rescue Exception => e

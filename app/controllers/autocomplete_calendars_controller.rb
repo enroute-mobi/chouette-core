@@ -1,8 +1,14 @@
-class AutocompleteCalendarsController < ApplicationController
+class AutocompleteCalendarsController < ChouetteController
   respond_to :json, :only => [:autocomplete]
+  
+  belongs_to :workgroup
 
   def autocomplete
-    scope = Calendar.where('organisation_id = ? OR shared = true', current_organisation.id)
+    scope = workgroup.calendars.where('organisation_id = ? OR shared = ?', current_organisation.id, true)
     @calendars = scope.search(params[:q]).result.paginate(page: params[:page])
   end
+
+  protected
+
+  alias_method :workgroup, :parent
 end

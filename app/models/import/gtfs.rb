@@ -25,8 +25,8 @@ class Import::Gtfs < Import::Base
   def import
     update status: 'running', started_at: Time.now
 
-    import_without_status
     referential&.pending!
+    import_without_status
     update status: 'successful', ended_at: Time.now
     referential&.active!
   rescue Exception => e

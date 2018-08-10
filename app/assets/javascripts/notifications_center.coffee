@@ -7,7 +7,13 @@ class window.NotificationCenter
       @receivedNotification payload
 
   receivedNotification: (payload)=>
-    @receiver.receivedNotification payload
+    if payload.action == "reloadState"
+      @receiver.loadState()
+    else
+      @receiver.receivedNotification payload
+
+  reloadState: =>
+    window.client.publish @channel, {action: "reloadState"}
 
   setCookie: (name, value, days=null) ->
     if days

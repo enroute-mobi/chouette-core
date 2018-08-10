@@ -6,7 +6,7 @@
 
 .col-lg-12
   .error_messages
-    = render 'shared/iev_interfaces/messages', messages: @import.messages
+    = render 'shared/iev_interfaces/messages.html', messages: @import.messages
 
 - if @import.resources.any?
   - controls = import_controls(@import.workbench)

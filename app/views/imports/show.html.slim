@@ -3,4 +3,9 @@
 
 .page_content
   .container-fluid
-    = render partial: "imports/#{@import.type.tableize.singularize}"
+    #import-fragment= render partial: "imports/#{@import.type.tableize.singularize}"
+
+- content_for :javascript do
+  coffee:
+    $ ->
+      notificationCenter.replaceFragment "import-fragment"

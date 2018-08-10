@@ -5,12 +5,23 @@ class ImportsController < ChouetteController
   skip_before_action :authenticate_user!, only: [:download]
   defaults resource_class: Import::Base, collection_name: 'imports', instance_name: 'import'
   before_action :notify_parents
+  respond_to :json, :html
 
   def download
     if params[:token] == resource.token_download
       send_file resource.file.path
     else
       user_not_authorized
+    end
+  end
+
+  def show
+    respond_to do |format|
+      format.html
+      format.json do
+        fragment = render_to_string(partial: "imports/#{@import.type.tableize.singularize}.html")
+        render json: {fragment: fragment}
+      end
     end
   end
 

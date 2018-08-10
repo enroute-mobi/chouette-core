@@ -36,6 +36,7 @@ module IevInterfaces::Task
 
     before_save :initialize_fields, on: :create
     after_save :notify_parent
+    after_commit :notify_state
 
     status.values.each do |s|
       define_method "#{s}!" do
@@ -86,14 +87,15 @@ module IevInterfaces::Task
   end
 
   def notify_state
-    return if parent.present?
-
-    payload = self.slice(:id, :status, :name)
+    payload = self.slice(:id, :status, :name, :parent_id)
     payload.update({
       status_html: import_status(self.status).html_safe,
       message_key: "#{self.class.name.underscore.gsub('/', '.')}.#{self.status}",
       url: polymorphic_url([self.workbench, self], only_path: true)
     })
+    if self.class < Import::Base
+      payload[:fragment] = "import-fragment"
+    end
     Notification.create! channel: workbench.notifications_channel, payload: payload
   end
 
@@ -120,7 +122,6 @@ module IevInterfaces::Task
     end
 
     update attributes
-    notify_state
   end
 
   def finished?

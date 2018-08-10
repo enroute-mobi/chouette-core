@@ -12,7 +12,10 @@ class WorkbenchNotification
     close.appendTo @container
     close.click (e)=>
       e.preventDefault()
-      @remove()
+      if e.shiftKey
+        @owner.removeAll()
+      else
+        @remove()
       false
     @container.prependTo $('.notifications')
 
@@ -36,28 +39,43 @@ class WorkbenchNotificationsCenter
     @notificationCenter = new NotificationCenter(@channel, this)
     @stateMaxSize = 5
     @loadState()
-    for notif in @state
-      notif.show(false)
 
   receivedNotification: (payload)->
-    console.log({payload})
-    console.log("notification url: #{payload.url}")
-    console.log("current url: #{document.location.pathname}")
-    if document.location.pathname != payload.url
+    if !payload.parent_id
       notif = new WorkbenchNotification(payload, this)
       @pushToState(notif)
       $(".notifications .notification:nth-child(#{@stateMaxSize})").remove()
       $('.notifications .notification').removeClass 'new-notification'
       notif.show()
+    if document.location.pathname == payload.url
+      @replaceFragment payload.fragment
+
+  replaceFragment: (fragment)->
+    url = document.location.pathname + ".json"
+    if document.location.search.length > 0
+      url += document.location.search + "&"
+    else
+      url += "?"
+    url += "fragment=#{fragment}"
+    fetch(url).then (response)->
+      if response.status == 200
+        response.json().then (json) =>
+          $("##{fragment}").html json.fragment
 
   pushToState: (notification)->
     @state.shift() while @state.length >= @stateMaxSize
     @state.push notification
     @saveState()
 
+  removeAll: ()->
+    @state = []
+    @saveState()
+    @notificationCenter.reloadState()
+
   removeNotification: (notif)->
     @state.splice @state.indexOf(notif), 1
     @saveState()
+    @notificationCenter.reloadState()
 
   saveState: ()->
     bak = []
@@ -67,12 +85,15 @@ class WorkbenchNotificationsCenter
 
   loadState: =>
     @state = []
+    $('.notifications').html ""
     bak = @notificationCenter.getCookie @channel
     if bak?
       bak = JSON.parse bak
       for item in bak
-        @pushToState new WorkbenchNotification(item, this)
+        notif = new WorkbenchNotification(item, this)
+        @pushToState notif
+        notif.show(false)
 
 $ ->
   for meta in $('meta[name=current_workbench_notifications_channel]')
-    new WorkbenchNotificationsCenter $(meta).attr('content')
+    window.notificationCenter = new WorkbenchNotificationsCenter $(meta).attr('content')

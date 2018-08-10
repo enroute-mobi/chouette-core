@@ -1,0 +1,7 @@
+fr:
+  notifications:
+    import:
+      workbench:
+        failed: "%{status_html} L'import %{name} a échoué"
+        running: "%{status_html} L'import %{name} a commencé"
+        successful: "%{status_html} L'import %{name} est terminé"

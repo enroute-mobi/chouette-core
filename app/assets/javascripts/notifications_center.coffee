@@ -6,19 +6,10 @@ class window.NotificationCenter
     window.client.subscribe @channel, (payload) =>
       @receivedNotification payload
 
-  cookieKey: ->
-     "notifications_#{@channel.replace(/\//g, '_')}_last_seen"
-
   receivedNotification: (payload)=>
-    @setLastSeen payload.created_at
     @receiver.receivedNotification payload
 
-  setLastSeen: (timestamp)=>
-    @lastSeen = timestamp
-    @setCookie "notifications_#{@channel}_last_seen", @lastSeen
-
-  setCookie: (value, days) ->
-    name = @cookieKey()
+  setCookie: (name, value, days=null) ->
     if days
       date = new Date()
       date.setTime date.getTime() + (days * 24 * 60 * 60 * 1000)
@@ -27,8 +18,7 @@ class window.NotificationCenter
       expires = ""
     document.cookie = name + "=" + value + expires + "; path=/"
 
-  getCookie: () ->
-    name = @cookieKey()
+  getCookie: (name) ->
     nameEQ = name + "="
     ca = document.cookie.split(";")
     i = 0

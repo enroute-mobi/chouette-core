@@ -53,7 +53,8 @@ class Calendar < ApplicationModel
         tt.periods << Chouette::TimeTablePeriod.new(period_start: p.begin, period_end: p.end)
       end
       tt.int_day_types = self.int_day_types
-      tt.comment = comment 
+      tt.comment = comment
+      tt.calendar = self
     end
   end
 

@@ -37,9 +37,8 @@ class TimeTablesController < ChouetteController
     tt_params = time_table_params
     if tt_params[:calendar_id] && tt_params[:calendar_id] != ""
       calendar = Calendar.find(tt_params[:calendar_id])
-      comment = tt_params[:comment] if tt_params[:comment] && tt_params[:comment] != ""
+      comment = tt_params[:comment].presence
       @time_table = calendar.convert_to_time_table(comment)
-      @time_table.calendar = calendar
       tt_params[:calendar_id] = nil if tt_params.has_key?(:dates_attributes) || tt_params.has_key?(:periods_attributes)
     end
 

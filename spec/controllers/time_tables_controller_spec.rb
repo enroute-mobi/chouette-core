@@ -24,9 +24,9 @@ RSpec.describe TimeTablesController, :type => :controller do
 
         expect(tt.comment).to eq "test"
         expect(tt.calendar).to eq calendar
-        expect(get_dates(tt.dates, true)).to match_array(calendar.dates)
-        expect(get_dates(tt.dates, false)).to match_array(calendar.dates)
-        expect 
+        
+        expect(get_dates(tt.dates, in_out: true)).to match_array(calendar.dates)
+        expect(get_dates(tt.dates, in_out: false)).to match_array(calendar.excluded_dates)
         %i(monday tuesday wednesday thursday friday saturday sunday).each do |d|
           expect(tt.send(d)).to eq calendar.send(d)
         end

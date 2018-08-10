@@ -6,6 +6,11 @@ html lang=I18n.locale
 
     - if @referential.present?
       meta name="referential_state" content="#{@referential.state}"
+    - if @workbench.present?
+      meta name="current_workbench_notifications_channel" content="#{@workbench.notifications_channel}"
+    - if @workbenches.present?
+      - @workbenches.each do |workbench|
+        meta name="current_workbench_notifications_channel" content="#{workbench.notifications_channel}"
 
     = csrf_meta_tag
 
@@ -28,6 +33,7 @@ html lang=I18n.locale
       = render 'layouts/navigation/main_nav_left'
       // Top menu content
       = render 'layouts/navigation/main_nav_top'
+    .notifications
     = render 'layouts/flash_messages', flash: flash
     = render 'layouts/navigation/page_header'
     = yield

@@ -1,0 +1,49 @@
+.notifications
+  position: fixed
+  top: 158px
+  right: 10px
+  width: 300px
+  z-index: 2002
+
+  .sticky + &
+    top: 90px
+
+  .notification
+    border-radius: 5px
+    margin-bottom: 10px
+    font-size: 0.8em
+    position: relative
+    overflow: hidden
+    &:hover
+      .close-notification
+        opacity: 1
+    &.new-notification
+      a
+        background-color: $green
+    a
+      background-color: $brand-color-secondary
+      transition: background-color 0.2s
+      padding: 10px
+      padding-right: 40px
+      display: block
+      color: $brand-color-secondary-contrast
+      text-decoration: none
+      &:hover
+        background-color: $brand-color-primary
+      &.close-notification
+        position: absolute
+        transition: opacity 0.2s
+        padding: 0
+        top: 0
+        right: 0
+        bottom: 0
+        width: 30px
+        background-color: $brand-color-secondary
+        opacity: 0
+        &:hover
+          background-color: $brand-color-primary
+        span
+          position: absolute
+          top: 50%
+          left: 50%
+          transform: translate(-50%, -50%)

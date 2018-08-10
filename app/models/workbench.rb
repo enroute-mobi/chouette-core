@@ -80,6 +80,14 @@ class Workbench < ApplicationModel
     end
   end
 
+  def notifications_channel
+    if Rails.env.development?
+      "/workbenches/#{id}"
+    else
+      "/workbenches/#{hash}"
+    end
+  end
+
   def referential_to_aggregate
     locked_referential_to_aggregate || output.current
   end

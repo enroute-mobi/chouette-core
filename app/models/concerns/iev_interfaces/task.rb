@@ -1,5 +1,8 @@
 module IevInterfaces::Task
   extend ActiveSupport::Concern
+  include Rails.application.routes.url_helpers
+  include ActionView::Helpers::TagHelper
+  include ImportsHelper
 
   included do
     belongs_to :parent, polymorphic: true
@@ -82,6 +85,18 @@ module IevInterfaces::Task
     children.with_status(:successful, :warning).count
   end
 
+  def notify_state
+    return if parent.present?
+
+    payload = self.slice(:id, :status, :name)
+    payload.update({
+      status_html: import_status(self.status).html_safe,
+      message_key: "#{self.class.name.underscore.gsub('/', '.')}.#{self.status}",
+      url: polymorphic_url([self.workbench, self], only_path: true)
+    })
+    Notification.create! channel: workbench.notifications_channel, payload: payload
+  end
+
   def update_status
     Rails.logger.info "update_status for #{inspect}"
     status =
@@ -105,6 +120,7 @@ module IevInterfaces::Task
     end
 
     update attributes
+    notify_state
   end
 
   def finished?

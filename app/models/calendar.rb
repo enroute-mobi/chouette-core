@@ -41,8 +41,11 @@ class Calendar < ApplicationModel
   def shortcuts_update(date=nil)
   end
 
-  def convert_to_time_table
+  def convert_to_time_table(comment = nil)
     Chouette::TimeTable.new.tap do |tt|
+      self.excluded_dates.each do |d|
+        tt.dates << Chouette::TimeTableDate.new(date: d, in_out: false)
+      end
       self.dates.each do |d|
         tt.dates << Chouette::TimeTableDate.new(date: d, in_out: true)
       end
@@ -50,6 +53,7 @@ class Calendar < ApplicationModel
         tt.periods << Chouette::TimeTablePeriod.new(period_start: p.begin, period_end: p.end)
       end
       tt.int_day_types = self.int_day_types
+      tt.comment = comment 
     end
   end
 

@@ -1,4 +1,5 @@
 RSpec.describe Calendar, :type => :model do
+  include Support::TimeTableHelper
 
   it { should belong_to(:organisation) }
 
@@ -15,7 +16,9 @@ RSpec.describe Calendar, :type => :model do
       expect(time_table.int_day_types).to eq calendar.int_day_types
       expect(time_table.periods[0].period_start).to eq(calendar.periods[0].begin)
       expect(time_table.periods[0].period_end).to eq(calendar.periods[0].end)
-      expect(time_table.dates.map(&:date)).to match_array(calendar.dates)
+
+      expect(get_dates(time_table.dates, in_out: true)).to match_array(calendar.dates)
+      expect(get_dates(time_table.dates, in_out: false)).to match_array(calendar.excluded_dates)
     end
   end
 
@@ -127,10 +130,11 @@ RSpec.describe Calendar, :type => :model do
           next unless day['include_date']
           day['include_date']  = false
           day['excluded_date'] = true
+          day
         end
-
+        expect {
         subject.state_update state
-        expect(subject.reload.excluded_days.count).to eq (updated.compact.count)
+      }.to change {subject.excluded_dates.count}.by(updated.compact.count)
     end
 
     it 'should create new include date' do

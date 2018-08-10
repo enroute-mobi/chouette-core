@@ -37,21 +37,13 @@ class TimeTablesController < ChouetteController
     tt_params = time_table_params
     if tt_params[:calendar_id] && tt_params[:calendar_id] != ""
       calendar = Calendar.find(tt_params[:calendar_id])
+      comment = tt_params[:comment] if tt_params[:comment] && tt_params[:comment] != ""
+      @time_table = calendar.convert_to_time_table(comment)
+      @time_table.calendar = calendar
       tt_params[:calendar_id] = nil if tt_params.has_key?(:dates_attributes) || tt_params.has_key?(:periods_attributes)
     end
 
-    created_from = duplicate_source
-    @time_table  = created_from ? created_from.duplicate(tt_params) : Chouette::TimeTable.new(tt_params)
-
-    if calendar
-      @time_table.int_day_types = calendar.int_day_types
-      calendar.dates.each_with_index do |date, i|
-        @time_table.dates << Chouette::TimeTableDate.new(date: date, position: i, in_out: true)
-      end
-      calendar.periods.each_with_index do |period, i|
-        @time_table.periods << Chouette::TimeTablePeriod.new(period_start: period.begin, period_end: period.end, position: i)
-      end
-    end
+    @time_table  ||= duplicate_source ? duplicate_source.duplicate(tt_params) : Chouette::TimeTable.new(tt_params)
 
     create! do |success, failure|
       success.html do

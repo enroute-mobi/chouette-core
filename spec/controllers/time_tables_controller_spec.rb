@@ -1,4 +1,6 @@
 RSpec.describe TimeTablesController, :type => :controller do
+  include Support::TimeTableHelper
+
   login_user
 
   describe 'POST create' do
@@ -18,10 +20,15 @@ RSpec.describe TimeTablesController, :type => :controller do
       let(:time_table_params){{comment: "test", calendar_id: calendar.id}}
       it "should create a timetable" do
         expect{request}.to change{ Chouette::TimeTable.count }.by 1
-        expect(Chouette::TimeTable.last.comment).to eq "test"
-        expect(Chouette::TimeTable.last.calendar).to eq calendar
+        tt = Chouette::TimeTable.last
+
+        expect(tt.comment).to eq "test"
+        expect(tt.calendar).to eq calendar
+        expect(get_dates(tt.dates, true)).to match_array(calendar.dates)
+        expect(get_dates(tt.dates, false)).to match_array(calendar.dates)
+        expect 
         %i(monday tuesday wednesday thursday friday saturday sunday).each do |d|
-          expect(Chouette::TimeTable.last.send(d)).to eq calendar.send(d)
+          expect(tt.send(d)).to eq calendar.send(d)
         end
       end
     end

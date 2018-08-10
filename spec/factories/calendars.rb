@@ -3,6 +3,7 @@ FactoryGirl.define do
     sequence(:name) { |n| "Calendar #{n}" }
     date_ranges { [generate(:date_range)] }
     sequence(:dates) { |n| [ Date.yesterday - n, Date.yesterday - 2*n ] }
+    sequence(:excluded_dates) { |n| [ Date.yesterday - n.month, Date.yesterday - (2*n).month ] }
     shared false
     organisation
     workgroup

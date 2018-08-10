@@ -1,4 +1,5 @@
 require 'spec_helper'
+include Support::TimeTableHelper
 
 describe Chouette::TimeTable, :type => :model do
   subject { create(:time_table) }
@@ -242,7 +243,8 @@ describe Chouette::TimeTable, :type => :model do
     end
 
     it 'should override dates' do
-      expect(subject.dates.map(&:date)).to match_array calendar.dates
+      expect(get_dates(subject.dates, in_out: true)).to match_array calendar.dates
+      expect(get_dates(subject.dates, in_out: false)).to match_array calendar.excluded_dates
     end
 
     it 'should override periods' do

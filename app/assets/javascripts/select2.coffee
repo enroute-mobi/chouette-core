@@ -8,9 +8,9 @@ bind_select2 = (el, cfg = {}) ->
     searchingText: I18n.t('actions.searching_term')
     noResultsText: I18n.t('actions.no_result_text')
     templateResult: (item) ->
-      item.text.substring(0, 50) + '...'
+      if item.text.length > 50 then item.text.substring(0, 47) + '...' else item.text
     templateSelection: (item) ->
-      item.text.substring(0, 50) + '...'
+      if item.text.length > 50 then item.text.substring(0, 47) + '...' else item.text
 
   target.select2 $.extend({}, default_cfg, cfg)
 

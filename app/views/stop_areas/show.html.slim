@@ -22,23 +22,31 @@
         - providers = @stop_area.stop_area_providers.map do |provider|
           - link_to provider.name, [provider.stop_area_referential, provider]
         - attributes.merge!(StopAreaProvider.t.capitalize => providers.to_sentence.html_safe)
+        = definition_list t("stop_areas.form.sections.identification"), attributes
+
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        - attributes = {}
         - attributes.merge!("Coordonnées" => geo_data(@stop_area, @stop_area_referential),
             Chouette::StopArea.tmf('zip_code') => @stop_area.zip_code,
             Chouette::StopArea.tmf('city_name') => @stop_area.city_name,
             Chouette::StopArea.tmf('country_code') => @stop_area.country_code.presence || '-',
             Chouette::StopArea.tmf('time_zone') => @stop_area.time_zone.presence || '-',
           )
+        = definition_list t("stop_areas.form.sections.location"), attributes
+        
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        - attributes = {}
         - attributes.merge!(Chouette::StopArea.tmf('waiting_time') => @stop_area.waiting_time_text) if has_feature?(:stop_area_waiting_time)
         - attributes.merge!(Chouette::StopArea.tmf('fare_code') => @stop_area.fare_code,
             Chouette::StopArea.tmf('url') => @stop_area.url,
           )
         - unless manage_itl
-          - attributes.merge!(Chouette::StopArea.tmf('mobility_restricted_suitability') => @stop_area.mobility_restricted_suitability? ? "oui" : "non",
-              Chouette::StopArea.tmf('stairs_availability') => @stop_area.stairs_availability? ? "oui" : "non",
-              Chouette::StopArea.tmf('lift_availability') => @stop_area.lift_availability? ? "oui" : "non",
+          - attributes.merge!(Chouette::StopArea.tmf('mobility_restricted_suitability') => @stop_area.mobility_restricted_suitability? ? "yes".t : "no".t,
+              Chouette::StopArea.tmf('stairs_availability') => @stop_area.stairs_availability? ? "yes".t : "no".t,
+              Chouette::StopArea.tmf('lift_availability') => @stop_area.lift_availability? ? "yes".t : "no".t,
             )
         - @stop_area.custom_fields.each do |code, field|
           - attributes.merge!(field.name => field.display_value)
         - attributes.merge!(Chouette::StopArea.tmf('comment') => @stop_area.try(:comment))
 
-        = definition_list t('metadatas'), attributes
+        = definition_list t("stop_areas.form.sections.general"), attributes

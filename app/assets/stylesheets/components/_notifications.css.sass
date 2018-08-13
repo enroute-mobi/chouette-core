@@ -12,18 +12,32 @@
     font-size: 0.8em
     position: relative
     overflow: hidden
+    background-color: $brand-color-secondary
+    transition: background-color 0.2s
+    .progress
+      z-index: 9
+      position: absolute
+      left: 0
+      top: 0
+      bottom: 0
+      background-color: transparentize($brand-color-primary, 0.5)
+      transition: width 0.2s
+      margin: 0
+      border-radius: 0
+      height: auto
     &:hover
       .close-notification
         opacity: 1
-    &.new-notification
-      a
-        background-color: $green
+
+    &.new-notification, &.updated-notification
+      background-color: $green
+
     a
-      background-color: $brand-color-secondary
-      transition: background-color 0.2s
       padding: 10px
       padding-right: 40px
       display: block
+      z-index: 10
+      position: relative
       color: $brand-color-secondary-contrast
       text-decoration: none
       &:hover
@@ -38,6 +52,7 @@
         width: 30px
         background-color: $brand-color-secondary
         opacity: 0
+        z-index: 11
         &:hover
           background-color: $brand-color-primary
         span

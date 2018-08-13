@@ -52,7 +52,12 @@ class Import::Gtfs < Import::Base
     prepare_referential
     referential.pending!
 
-    import_resources :calendars, :calendar_dates unless check_calendar_files_missing_and_create_message
+    @progress = 0
+    if check_calendar_files_missing_and_create_message
+      @progress += 0.4
+    else
+      import_resources :calendars, :calendar_dates
+    end
     import_resources :trips, :stop_times
   end
 

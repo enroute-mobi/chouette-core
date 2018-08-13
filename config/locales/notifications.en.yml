@@ -4,4 +4,5 @@ en:
       workbench:
         failed: "%{status_html} Import %{name} has failed"
         running: "%{status_html} Import %{name} has started"
-        running: "%{status_html} Import %{name} succeeded"
+        successful: "%{status_html} Import %{name} succeeded"
+        progress: "%{status_html} Import %{name}: %{progress}%"

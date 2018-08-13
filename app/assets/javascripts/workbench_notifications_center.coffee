@@ -3,11 +3,23 @@
 class WorkbenchNotification
   constructor: (@payload, @owner)->
 
+  unique_identifier: ->
+    @payload.unique_identifier
+
+  update: (payload)->
+    return unless payload.progress != @payload.progress || payload.message_key != @payload.message_key
+    @payload = payload
+    @updateContainer()
+
+    requestAnimationFrame =>
+      @container.addClass "updated-notification"
+    setTimeout =>
+      @container.removeClass "updated-notification"
+    , 500
+
   show: (fancy=true)->
     @container = $('<div class="notification"></div>')
-    link = $("<a href='#{@payload.url}'></a>")
-    link.html I18n.t("notifications.#{@payload.message_key}", @payload)
-    link.appendTo @container
+    @updateContainer()
     close = $("<a class='close-notification' href='#'><span class='fa fa-times'></span></a>")
     close.appendTo @container
     close.click (e)=>
@@ -26,6 +38,20 @@ class WorkbenchNotification
         @container.removeClass "new-notification"
       , 500
 
+  updateContainer: ->
+    @container.find('.content').remove()
+    link = $("<a class='content' href='#{@payload.url}'></a>")
+    link.html I18n.t("notifications.#{@payload.message_key}", @payload)
+    link.appendTo @container
+    progress = @container.find('.progress')
+    if @payload.progress
+      if progress.length == 0
+        progress = $("<div class='progress'></div>")
+        progress.prependTo @container
+      progress.css width: "#{@payload.progress}%"
+    else
+      progress.remove()
+
   remove: ->
     @container.remove()
     @owner.removeNotification(this)
@@ -42,11 +68,21 @@ class WorkbenchNotificationsCenter
 
   receivedNotification: (payload)->
     if !payload.parent_id
-      notif = new WorkbenchNotification(payload, this)
-      @pushToState(notif)
-      $(".notifications .notification:nth-child(#{@stateMaxSize})").remove()
-      $('.notifications .notification').removeClass 'new-notification'
-      notif.show()
+      notif = null
+      console.log({unique_identifier: payload.unique_identifier})
+      if payload.unique_identifier
+        for existing_notif in @state
+          notif = existing_notif if existing_notif.unique_identifier() == payload.unique_identifier
+
+      if notif?
+        notif.update payload
+        @saveState()
+      else
+        notif = new WorkbenchNotification(payload, this)
+        @pushToState(notif)
+        $(".notifications .notification:nth-child(#{@stateMaxSize})").remove()
+        $('.notifications .notification').removeClass 'new-notification'
+        notif.show()
     if document.location.pathname == payload.url
       @replaceFragment payload.fragment
 

@@ -91,12 +91,37 @@ module IevInterfaces::Task
     payload.update({
       status_html: import_status(self.status).html_safe,
       message_key: "#{self.class.name.underscore.gsub('/', '.')}.#{self.status}",
-      url: polymorphic_url([self.workbench, self], only_path: true)
+      url: polymorphic_url([self.workbench, self], only_path: true),
+      unique_identifier: "#{self.class.name.underscore.gsub('/', '.')}-#{self.id}"
     })
     if self.class < Import::Base
       payload[:fragment] = "import-fragment"
     end
     Notification.create! channel: workbench.notifications_channel, payload: payload
+  end
+
+  def notify_child_progress child, progress
+    index = self.children.index child
+    notify_progress (index+progress)/self.children.count
+  end
+
+  def notify_progress progress
+    if parent
+      parent.notify_child_progress self, progress
+    else
+      payload = self.slice(:id, :status, :name, :parent_id)
+      payload.update({
+        message_key: "#{self.class.name.underscore.gsub('/', '.')}.progress",
+        status_html: import_status(self.status).html_safe,
+        url: polymorphic_url([self.workbench, self], only_path: true),
+        unique_identifier: "#{self.class.name.underscore.gsub('/', '.')}-#{self.id}",
+        progress: (progress*100).to_i
+      })
+      # if self.class < Import::Base
+      #   payload[:fragment] = "import-fragment"
+      # end
+      Notification.create! channel: workbench.notifications_channel, payload: payload
+    end
   end
 
   def update_status

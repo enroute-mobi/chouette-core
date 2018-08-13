@@ -42,6 +42,8 @@ module LocalImportSupport
   def import_resources(*resources)
     resources.each do |resource|
       Chouette::Benchmark.log "#{self.class.name} import #{resource}" do
+        @progress += 0.2
+        notify_progress @progress
         send "import_#{resource}"
       end
     end
@@ -138,7 +140,7 @@ module LocalImportSupport
 
     unless model.save
       Rails.logger.error "Can't save #{model.class.name} : #{model.errors.inspect}"
-      
+
       model.errors.details.each do |key, messages|
         messages.each do |message|
           message.each do |criticity, error|

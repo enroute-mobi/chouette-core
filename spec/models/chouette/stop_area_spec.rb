@@ -13,7 +13,7 @@ describe Chouette::StopArea, :type => :model do
   it { should validate_presence_of :kind }
   it { should validate_numericality_of :latitude }
   it { should validate_numericality_of :longitude }
-  
+
 
   describe "#area_type" do
     it "should validate the value is correct regarding to the kind" do
@@ -21,6 +21,14 @@ describe Chouette::StopArea, :type => :model do
       expect(build(:stop_area, kind: :non_commercial, area_type: :relief)).to be_valid
       expect(build(:stop_area, kind: :commercial, area_type: :relief)).to_not be_valid
       expect(build(:stop_area, kind: :non_commercial, area_type: :gdl)).to_not be_valid
+    end
+  end
+
+  describe "#objectid" do
+    it "should be uniq in a StopAreaReferential" do
+      subject
+      expect{ create(:stop_area, stop_area_referential: subject.stop_area_referential, objectid: subject.objectid) }.to raise_error ActiveRecord::RecordInvalid
+      expect{ build(:stop_area, objectid: subject.objectid) }.to_not raise_error
     end
   end
 

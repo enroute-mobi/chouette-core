@@ -128,7 +128,7 @@ RSpec.describe ZipService, type: :zip do
         [].tap do |arr|
           Zip::InputStream.open(s) do |io|
             while (entry = io.get_next_entry) do
-              arr << entry
+              arr << [entry.name, entry.size]
             end
           end
         end

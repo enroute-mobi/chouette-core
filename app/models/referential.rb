@@ -66,7 +66,7 @@ class Referential < ApplicationModel
 
   scope :ready, -> { where(ready: true) }
   scope :exportable, -> {
-    joins("LEFT JOIN referential_suites ON referentials.referential_suite_id = referential_suites.id").where("ready = ? AND merged_at IS NULL AND (referential_suite_id IS NULL OR referential_suites.current_id = referentials.id)", true)
+    joins("LEFT JOIN public.referential_suites ON referentials.referential_suite_id = referential_suites.id").where("ready = ? AND merged_at IS NULL AND (referential_suite_id IS NULL OR referential_suites.current_id = referentials.id)", true)
   }
   scope :autocomplete, ->(q) {
     if q.present?

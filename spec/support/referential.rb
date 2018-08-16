@@ -63,7 +63,7 @@ RSpec.configure do |config|
       line_referential: line_referential,
       stop_area_referential: stop_area_referential
     )
-
+    
     workbench = FactoryGirl.create(
       :workbench,
       name: "Gestion de l'offre",

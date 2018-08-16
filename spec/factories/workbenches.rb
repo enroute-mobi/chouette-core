@@ -8,5 +8,9 @@ FactoryGirl.define do
     association :stop_area_referential
     association :output, factory: :referential_suite
     association :workgroup
+
+    after(:create) do |workbench, evaluator|
+      workbench.prefix ||= evaluator.organisation.code
+    end
   end
 end

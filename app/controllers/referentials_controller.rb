@@ -184,8 +184,7 @@ class ReferentialsController < ChouetteController
   end
 
   def check_lines_outside_of_functional_scope
-    lines = @referential.lines_outside_of_scope
-    if lines.count > 0
+    if @referential.lines_outside_of_scope.exists?
       flash[:warning] = I18n.t("referentials.show.lines_outside_of_scope", count: lines.count, lines: lines.pluck(:name).to_sentence, organisation: @referential.organisation.name)
     end
   end

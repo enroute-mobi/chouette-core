@@ -161,7 +161,7 @@ export default class VehicleJourneys extends Component {
     let refURL = window.location.pathname.split('/', 3).join('/')
     let ttURL = refURL + '/purchase_windows/' + tt.id
     return (
-      <a href={ttURL} title='Voir le calendrier commercial'><span className='fa fa-calendar' style={{color: (tt.color ? tt.color : '#4B4B4B')}}></span>{tt.name}</a>
+      <a href={ttURL} title='Voir le calendrier commercial'><span className='fa fa-calendar' style={{color: (tt.color ? `#${tt.color}` : '#4B4B4B')}}></span>{tt.name}</a>
     )
   }
 

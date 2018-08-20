@@ -40,11 +40,15 @@ export default class BSelect4 extends Component {
             processResults: function(data, params) {
               return {
                 results: data.map(
-                  item => _.assign(
-                    {},
-                    item,
-                    {text: '<strong>' + "<span class='fa fa-circle' style='color:" + (item.color ? `#${item.color}` : '#4B4B4B') + "'></span> " + (item.comment || item.name) + ' - ' + item.short_id + '</strong><br/><small>' + (item.day_types ? item.day_types.match(/[A-Z]?[a-z]+/g).join(', ') : "") + '</small>'}
-                  )
+                  item => {
+                    let isPurchaseWindow = item.objectid.includes('PurchaseWindow')
+                    let color = item.color ? (isPurchaseWindow ? `#${item.color}` : item.color) : '#4B4B4B'
+                    return _.assign(
+                      {},
+                      item,
+                      { text: '<strong>' + "<span class='fa fa-circle' style='color:" + color + "'></span> " + (item.comment || item.name) + ' - ' + item.short_id + '</strong><br/><small>' + (item.day_types ? item.day_types.match(/[A-Z]?[a-z]+/g).join(', ') : "") + '</small>' }
+                    )
+                  }
                 )
               };
             },

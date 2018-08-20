@@ -145,6 +145,7 @@ class LinesController < ChouetteController
       :text_color,
       :stable_id,
       :transport_submode,
+      :seasonal,
       :secondary_company_ids => [],
       footnotes_attributes: [:code, :label, :_destroy, :id]
     )

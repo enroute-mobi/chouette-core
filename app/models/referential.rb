@@ -483,7 +483,7 @@ class Referential < ApplicationModel
   end
 
   def assign_prefix
-    self.prefix = organisation.code
+    self.prefix = workbench.prefix
   end
 
   def assign_line_and_stop_area_referential

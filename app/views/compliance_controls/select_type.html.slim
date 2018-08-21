@@ -18,5 +18,5 @@
                 = I18n.t("activerecord.models.#{compliance_control.name.underscore}.one")
 
           .text-right
-            = cancel_button(select_type: parent)
+            = cancel_button
             = submit_tag t('compliance_control_sets.actions.loaded'), class: "btn btn-default formSubmitr", form: 'select_type_form'

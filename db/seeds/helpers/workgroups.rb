@@ -173,8 +173,9 @@ class Seed::Workgroup
       organisation.workbenches.seed_by(name: workbench_name) do |w|
         w.line_referential      = line_referential
         w.stop_area_referential = stop_area_referential
-        w.workgroup = workgroup
-        w.objectid_format = 'netex'
+        w.workgroup             = workgroup
+        w.objectid_format       = 'netex'
+        w.prefix                = organisation.code
 
         @workbench_block&.call w
       end

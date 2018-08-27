@@ -67,8 +67,26 @@ namespace :ci do
   desc "Check security aspects"
   task :check_security do
     unless ENV["CI_CHECKSECURITY_DISABLED"]
-      sh "bundle exec bundle-audit check --update"
+      command = "bundle exec bundle-audit check --update"
+      ignoring_lapse = 1.month
+      if File.exists? '.bundle-audit-ignore'
+        ignored = []
+        File.open('.bundle-audit-ignore').each_line do |line|
+          id, date = line.split('#').map(&:strip)
+          date = date.to_date
+          puts "Found vulnerability #{id}, ignored until #{date + ignoring_lapse}"
+          if date > ignoring_lapse.ago
+            ignored << id
+          end
+        end
+        command += " --ignore #{ignored.join(' ')}" if ignored.present?
+      end
+      sh command
     end
+  end
+
+  task :add_temporary_security_check_ignore, [:id] do |t, args|
+    `echo "#{args[:id]} # #{Time.now}" >> .bundle-audit-ignore`
   end
 
   task :assets do

@@ -69,7 +69,6 @@ class WorkbenchNotificationsCenter
   receivedNotification: (payload)->
     if !payload.parent_id
       notif = null
-      console.log({unique_identifier: payload.unique_identifier})
       if payload.unique_identifier
         for existing_notif in @state
           notif = existing_notif if existing_notif.unique_identifier() == payload.unique_identifier

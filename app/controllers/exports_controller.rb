@@ -17,6 +17,17 @@ class ExportsController < ChouetteController
     end
   end
 
+  def show
+    @export = ExportDecorator.decorate(@export)
+    respond_to do |format|
+      format.html
+      format.json do
+        fragment = render_to_string(partial: "exports/show.html")
+        render json: {fragment: fragment}
+      end
+    end
+  end
+
   private
 
   def index_model

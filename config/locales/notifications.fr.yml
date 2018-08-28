@@ -6,3 +6,9 @@ fr:
         running: "%{status_html} L'import %{name} a commencé"
         successful: "%{status_html} L'import %{name} est terminé"
         progress: "%{status_html} Import %{name}: %{progress}%"
+    export:
+      gtfs:
+        failed: "%{status_html} L'export %{name} a échoué"
+        running: "%{status_html} L'export %{name} a commencé"
+        successful: "%{status_html} L'export %{name} est terminé"
+        progress: "%{status_html} Export %{name}: %{progress}%"

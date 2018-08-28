@@ -21,46 +21,19 @@ module Chouette
         @attributes ||= {}
       end
 
-      def save
-        if model.root?
-          children.each(&:save)
-        else
-          instance&.save!
-        end
-      end
+      delegate :root?, to: :model
 
-      def build
-        unless model.root?
+      def create_instance
+        unless root?
           self.instance = build_instance
-          puts instance.inspect
+          instance.save!
         end
-        children.each(&:build)
+
+        children.each(&:create_instance)
       end
 
       def build_instance
-        puts "Create #{model.name} #{model.klass.inspect}"
-
-        build_attributes = attributes
-
-        new_instance =
-          if parent.model.root?
-            model.klass.new build_attributes
-          else
-            parent_instance = parent.instance
-
-            # Try Parent#model
-            if parent_instance.respond_to?("build_#{model.name}")
-              parent_instance.send("build_#{model.name}", build_attributes)
-            else
-              # Then Parent#models
-              parent_instance.send(model.name.to_s.pluralize).build build_attributes
-            end
-          end
-
-        puts parent.instance.inspect
-        puts "Created #{new_instance.inspect}"
-
-        new_instance
+        model.build_instance self
       end
 
       attr_accessor :model
@@ -77,6 +50,21 @@ module Chouette
             new_context = Context.new(sub_model, new_context)
           end
           new_context
+        end
+      end
+
+      def build_model(name)
+        context = self
+
+        loop do
+          if model_context = context.create(name)
+            return model_context.build_instance
+          end
+
+          if context.root?
+            raise "Can't build model #{name} from #{self.inspect}"
+          end
+          context = context.parent
         end
       end
 

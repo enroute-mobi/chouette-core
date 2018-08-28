@@ -7,10 +7,12 @@ module Chouette
       def initialize(name, options = {})
         @name = name
 
-        {required: false}.merge(options).each do |k,v|
+        {required: false, count: 1}.merge(options).each do |k,v|
           send "#{k}=", v
         end
       end
+
+      alias_method :required?, :required
 
       def define(&block)
         dsl.instance_eval &block
@@ -34,6 +36,10 @@ module Chouette
 
       def after_callbacks
         @after_callbacks ||= []
+      end
+
+      def around_models=(proc)
+        @around_models = proc
       end
 
       def root?
@@ -64,13 +70,56 @@ module Chouette
         nil
       end
 
-      class Attribute
+      def build_attributes(context)
+        attributes.each_with_object({}) do |(name, attribute), evaluated|
+          evaluated[name] = attribute.evaluate(context)
+        end
+      end
 
-        attr_reader :name, :value
-        def initialize(name, value)
-          @name, @value = name, value
+      def build_instance(context, parent = nil)
+        puts "Create #{name} #{klass.inspect}"
+
+        attributes_values = build_attributes(context)
+        parent ||= context.parent.instance
+
+        new_instance =
+          if parent
+            # Try Parent#build_model
+            if parent.respond_to?("build_#{name}")
+              parent.send("build_#{name}", attributes_values)
+            else
+              # Then Parent#models
+              parent.send(name.to_s.pluralize).build attributes_values
+            end
+          else
+            klass.new attributes_values
+          end
+
+        models.each do |_, model|
+          if model.required?
+            model.count.times do
+              model.build_instance Context.new(model, context), new_instance
+            end
+          end
         end
 
+        after_callbacks.each do |after_callback|
+          after_dsl = AfterDSL.new(self, new_instance, context)
+
+          if after_callback.arity > 0
+            after_callback.call new_instance
+          else
+            after_dsl.instance_eval &after_callback
+          end
+        end
+
+        unless new_instance.valid?
+          puts "Invalid instance: #{new_instance.inspect} #{new_instance.errors.inspect}"
+        end
+
+        puts "Created #{new_instance.inspect}"
+
+        new_instance
       end
 
       class DSL
@@ -94,6 +143,28 @@ module Chouette
 
         def after(&block)
           @model.after_callbacks << block
+        end
+
+        def around_models(&block)
+          @model.around_models = block
+        end
+
+      end
+
+      class AfterDSL
+
+        attr_reader :model, :new_instance, :context
+
+        def initialize(model, new_instance, context)
+          @model, @new_instance, @context = model, new_instance, context
+        end
+
+        def transient(name)
+          model.transients[name.to_sym].evaluate(context)
+        end
+
+        def parent
+          context.parent.instance
         end
 
       end

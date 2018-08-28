@@ -3,7 +3,6 @@ module Chouette
     module Definition
       def define(&block)
         root.define &block
-        puts root.inspect
       end
 
       @@root = nil

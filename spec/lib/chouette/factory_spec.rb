@@ -24,12 +24,22 @@ RSpec.describe Chouette::Factory do
     }.to change { LineReferential.count }
   end
 
-  it "should create line" do
+  it "should create referential" do
+    expect {
+      Chouette::Factory.create { referential }
+    }.to change { Referential.count }
+  end
+
+  it "should create Referential and VehicleJourney" do
     expect {
       Chouette::Factory.create do
         vehicle_journey
       end
-    }.to change { LineReferential.count }
+    }.to change { Referential.count }
+
+    Referential.first.switch do
+      expect(Chouette::VehicleJourney.count).to eq(1)
+    end
   end
 
 end

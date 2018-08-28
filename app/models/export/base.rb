@@ -16,6 +16,7 @@ class Export::Base < ActiveRecord::Base
   validates :type, :referential_id, presence: true
 
   after_create :purge_exports
+  after_commit :notify_state
   attr_accessor :synchronous
 
   scope :not_used_by_publication_apis, -> {
@@ -60,6 +61,45 @@ class Export::Base < ActiveRecord::Base
     messages.create(criticity: :error, message_attributes: { text: e.message }, message_key: :full_text)
     update status: 'failed'
     raise
+  end
+
+  def notify_state
+    payload = self.slice(:id, :status, :name, :parent_id)
+    payload.update({
+      status_html: import_status(self.status).html_safe,
+      message_key: "#{self.class.name.underscore.gsub('/', '.')}.#{self.status}",
+      url: polymorphic_url([self.referential.workbench, self], only_path: true),
+      unique_identifier: "#{self.class.name.underscore.gsub('/', '.')}-#{self.id}"
+    })
+
+    if self.class < Export::Base
+      payload[:fragment] = "export-fragment"
+    end
+    Notification.create! channel: referential.workbench.notifications_channel, payload: payload
+  end
+
+  def notify_child_progress child, progress
+    index = self.children.index child
+    notify_progress (index+progress)/self.children.count
+  end
+
+  def notify_progress progress
+    @previous_progress ||= 0
+    return unless progress - @previous_progress >= 0.01
+    @previous_progress = progress
+    if parent
+      parent.notify_child_progress self, progress
+    else
+      payload = self.slice(:id, :status, :name, :parent_id)
+      payload.update({
+        message_key: "#{self.class.name.underscore.gsub('/', '.')}.progress",
+        status_html: import_status(self.status).html_safe,
+        url: polymorphic_url([self.referential.workbench, self], only_path: true),
+        unique_identifier: "#{self.class.name.underscore.gsub('/', '.')}-#{self.id}",
+        progress: (progress*100).to_i
+      })
+      Notification.create! channel: referential.workbench.notifications_channel, payload: payload
+    end
   end
 
   def purge_exports

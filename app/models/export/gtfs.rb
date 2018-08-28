@@ -63,14 +63,20 @@ class Export::Gtfs < Export::Base
   def export_to_dir(directory)
     GTFS::Target.open(File.join(directory, "#{zip_file_name}.zip")) do |target|
       export_companies_to target
+      notify_progress 1.0/6
       export_stop_areas_to target
+      notify_progress 2.0/6
       export_lines_to target
+      notify_progress 3.0/6
       # Export Calendar & Calendar_dates
       export_time_tables_to target
+      notify_progress 4.0/6
       # Export Trips
       export_vehicle_journeys_to target
+      notify_progress 5.0/6
       # Export stop_times.txt
       export_vehicle_journey_at_stops_to target
+      notify_progress 6.0/6
       # Export files fare_rules, fare_attributes, shapes, frequencies, transfers
       # and feed_info aren't yet implemented as import nor export features from
       # the chouette model
@@ -199,8 +205,9 @@ class Export::Gtfs < Export::Base
   # Export Calendar & Calendar_dates
   def export_time_tables_to(target)
     date_range
-    i = 0
-    journeys.each do|vehicle_journey|
+    start_progress = 3.0/6
+    count = journeys.count
+    journeys.each_with_index do |vehicle_journey, i|
       vehicle_journey.flattened_circulation_periods.select{|period| period.range & date_range}.each do |period|
         service_id = period.object_id
         target.calendars << {
@@ -236,6 +243,7 @@ class Export::Gtfs < Export::Base
         journey_periods_hash[vehicle_journey.id] ||= []
         journey_periods_hash[vehicle_journey.id] << service_id
       end
+      notify_progress start_progress + i/6.0/count
     end
   end
 

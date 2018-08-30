@@ -1,5 +1,6 @@
 class VehicleJourneysCollectionsController < ChouetteController
   include ReferentialSupport
+
   respond_to :json
   belongs_to :referential do
     belongs_to :line, :parent_class => Chouette::Line do
@@ -7,6 +8,7 @@ class VehicleJourneysCollectionsController < ChouetteController
     end
   end
   alias_method :route, :parent
+  include PolicyChecker
 
   def update
     state = JSON.parse request.raw_post

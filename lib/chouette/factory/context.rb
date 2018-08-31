@@ -9,6 +9,24 @@ module Chouette
         parent.children << self if parent
       end
 
+      def with_instance(instance)
+        clone = self.dup
+        clone.instance = instance
+        clone
+      end
+
+      def path
+        @path ||=
+          begin
+            prefix = "#{parent.path} > " if parent
+            "#{prefix}#{@model.name}"
+          end
+      end
+
+      def to_s
+        path
+      end
+
       def evaluate(&block)
         dsl.instance_eval &block
       end

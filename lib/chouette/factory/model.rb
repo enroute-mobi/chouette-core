@@ -77,7 +77,7 @@ module Chouette
       end
 
       def build_instance(context, parent = nil)
-        puts "Create #{name} #{klass.inspect}"
+        puts "Create #{name} #{klass.inspect} in #{context}"
 
         attributes_values = build_attributes(context)
         parent ||= context.parent.instance
@@ -98,7 +98,7 @@ module Chouette
         models.each do |_, model|
           if model.required?
             model.count.times do
-              model.build_instance Context.new(model, context), new_instance
+              model.build_instance(Context.new(model, context.with_instance(new_instance)), new_instance)
             end
           end
         end

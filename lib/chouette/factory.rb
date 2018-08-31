@@ -1,3 +1,4 @@
+# coding: utf-8
 module Chouette
   module Factory
     extend Definition
@@ -116,12 +117,15 @@ module Chouette
             end
 
             model :route do
+              attribute(:name) { |n| "Route #{n}" }
+              attribute(:published_name) { |n| "Published Route Name #{n}" }
+
               attribute(:line) { parent.metadatas_lines.first }
 
               model :stop_point, count: 3, required: true do
                 attribute(:stop_area) do
                   # TODO create a StopArea with Factory::Model ?
-                  stop_area_referential = parent.parent.stop_area_referential
+                  stop_area_referential = parent.referential.stop_area_referential
 
                   attributes = {
                     name: "Stop Area #{sequence_number}",
@@ -130,7 +134,7 @@ module Chouette
                     latitude: 48.8584 - 5 + 10 * rand,
                     longitude: 2.2945 - 2 + 4 * rand
                   }
-                  stop_area_referential.stop_areas.create attributes
+                  stop_area_referential.stop_areas.create! attributes
                 end
               end
               model :journey_pattern do

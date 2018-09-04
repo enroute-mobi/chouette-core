@@ -37,6 +37,7 @@ fr:
       itineraries: "Liste des séquences d'arrêts de la ligne"
       group_of_lines: "Groupes de lignes"
       search_no_results: "Aucune ligne ne correspond à votre recherche"
+      map: "Carte"
     index:
       deactivated: "Ligne désactivée"
       title: "Lignes"

@@ -36,6 +36,7 @@ en:
         title: "Routes list"
       group_of_lines: "Groups of lines"
       search_no_results: "No line matching your query"
+      map: "Map"
     index:
       deactivated: "Disabled line"
       title: "Lines"

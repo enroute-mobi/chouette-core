@@ -10,6 +10,14 @@ module OptionsSupport
         end
       end
 
+      if opts[:type].to_s == "boolean"
+        define_method "#{name}_with_cast" do
+          val = send "#{name}_without_cast"
+          val.is_a?(String) ? ["1", "true"].include?(val) : val
+        end
+        alias_method_chain name, :cast
+      end
+
       if !!opts[:required]
         if opts[:depends]
           validates name, presence: true, if: ->(record){ record.send(opts[:depends][:option]) == opts[:depends][:value]}
@@ -35,7 +43,7 @@ module OptionsSupport
   end
 
   def visible_options
-    options.select{|k, v| ! k.match  /^_/}
+    (options || {}).select{|k, v| ! k.match  /^_/}
   end
 
   def display_option_value option_name, context

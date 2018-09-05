@@ -11,12 +11,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180816124512) do
+ActiveRecord::Schema.define(version: 20180905131655) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "postgis"
   enable_extension "hstore"
+  enable_extension "postgis"
   enable_extension "unaccent"
 
   create_table "access_links", id: :bigserial, force: :cascade do |t|
@@ -89,9 +89,9 @@ ActiveRecord::Schema.define(version: 20180816124512) do
     t.integer   "organisation_id", limit: 8
     t.datetime  "created_at"
     t.datetime  "updated_at"
-    t.integer   "workgroup_id",    limit: 8
     t.integer   "int_day_types"
     t.date      "excluded_dates",                            array: true
+    t.integer   "workgroup_id",    limit: 8
     t.jsonb     "metadata",                  default: {}
   end
 
@@ -476,6 +476,7 @@ ActiveRecord::Schema.define(version: 20180816124512) do
     t.integer  "current_step",                    default: 0
     t.integer  "total_steps",                     default: 0
     t.string   "creator"
+    t.hstore   "options"
   end
 
   add_index "imports", ["referential_id"], name: "index_imports_on_referential_id", using: :btree
@@ -502,6 +503,7 @@ ActiveRecord::Schema.define(version: 20180816124512) do
   end
 
   add_index "journey_patterns", ["objectid"], name: "journey_patterns_objectid_key", unique: true, using: :btree
+  add_index "journey_patterns", ["route_id"], name: "index_journey_patterns_on_route_id", using: :btree
 
   create_table "journey_patterns_stop_points", id: false, force: :cascade do |t|
     t.integer "journey_pattern_id", limit: 8
@@ -616,6 +618,14 @@ ActiveRecord::Schema.define(version: 20180816124512) do
   add_index "networks", ["line_referential_id"], name: "index_networks_on_line_referential_id", using: :btree
   add_index "networks", ["objectid"], name: "networks_objectid_key", unique: true, using: :btree
   add_index "networks", ["registration_number"], name: "networks_registration_number_key", using: :btree
+
+  create_table "notifications", id: :bigserial, force: :cascade do |t|
+    t.string   "objectid"
+    t.json     "payload"
+    t.string   "channel"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "organisations", id: :bigserial, force: :cascade do |t|
     t.string   "name"
@@ -753,6 +763,7 @@ ActiveRecord::Schema.define(version: 20180816124512) do
     t.jsonb    "metadata"
   end
 
+  add_index "routes", ["line_id"], name: "index_routes_on_line_id", using: :btree
   add_index "routes", ["objectid"], name: "routes_objectid_key", unique: true, using: :btree
 
   create_table "routing_constraint_zones", id: :bigserial, force: :cascade do |t|
@@ -896,6 +907,7 @@ ActiveRecord::Schema.define(version: 20180816124512) do
   end
 
   add_index "stop_points", ["objectid"], name: "stop_points_objectid_key", unique: true, using: :btree
+  add_index "stop_points", ["route_id"], name: "index_stop_points_on_route_id", using: :btree
 
   create_table "taggings", id: :bigserial, force: :cascade do |t|
     t.integer  "tag_id",        limit: 8

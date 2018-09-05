@@ -99,6 +99,8 @@ en:
         <<: *attrs
         base:
           <<: *attrs
+        workbench:
+          automatic_merge: Automatic Merge
   errors:
     messages:
       extension_whitelist_error: "You are not allowed to upload %{extension} files, allowed types: %{allowed_types}"

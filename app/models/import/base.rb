@@ -26,9 +26,12 @@ class Import::Base < ApplicationModel
 
   def child_change
     Rails.logger.info "child_change for #{inspect}"
-    return if self.class.finished_statuses.include?(status)
+    if self.class.finished_statuses.include?(status)
+      done! if self.compliance_check_sets.all? &:successful?
+    else
+      super
+    end
 
-    super
   end
 
   private

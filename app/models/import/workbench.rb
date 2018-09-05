@@ -1,6 +1,9 @@
 class Import::Workbench < Import::Base
   after_commit :launch_worker, :on => :create
 
+
+  option :automatic_merge, type: :boolean, default_value: false
+
   def launch_worker
     unless Import::Gtfs.accept_file?(file.path)
       WorkbenchImportWorker.perform_async(id)
@@ -26,5 +29,16 @@ class Import::Workbench < Import::Base
 
     update_column :status, 'failed'
     update_column :ended_at, Time.now
+  end
+
+
+  def compliance_check_sets
+    ComplianceCheckSet.where parent_id: self.id, parent_type: "Import::Workbench"
+  end
+
+  def done!
+    if (successful? || warning?) && automatic_merge
+      Merge.create creator: self.creator, workbench: self.workbench, referentials: self.resources.map(&:referential).compact
+    end
   end
 end

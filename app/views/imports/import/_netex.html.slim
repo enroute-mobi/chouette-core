@@ -4,6 +4,7 @@
   .col-lg-6.col-md-6.col-sm-12.col-xs-12
     - metadata = {Import::Base.tmf(:status) => import_status(@import.status, verbose: true) }
     - metadata = metadata.update({Import::Base.tmf(:referential) => @import.referential ? link_to(@import.referential.name, [@import.referential]) : "-" })
+    - metadata = metadata.update Hash[*@import.visible_options.map{|k, v| [t("activerecord.attributes.import.#{@import.object.class.name.demodulize.underscore}.#{k}"), @import.display_option_value(k, self)]}.flatten]
     = definition_list t('metadatas'), metadata
 
 .col-lg-12

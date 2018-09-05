@@ -15,8 +15,11 @@ module ExportsHelper
       end
       out.html_safe
     else
-      opts = { required: option_def[:required], input_html: {value: export.try(attr) || option_def[:default_value]}, as: option_def[:type], selected:  export.try(attr) || option_def[:default_value]}
-
+      opts = { required: option_def[:required], input_html: {value: export.try(attr) || option_def[:default_value]}, as: option_def[:type], selected: export.try(attr) || option_def[:default_value]}
+      if option_def[:type].to_s == "boolean"
+        opts[:as] = :switchable_checkbox
+        opts[:input_html][:checked] = export.try(attr) || option_def[:default_value]
+      end
       if option_def.has_key?(:collection)
         if option_def[:collection].is_a?(Array) && !option_def[:collection].first.is_a?(Array)
           opts[:collection] = option_def[:collection].map{|k| [export.class.tmf("#{type.name.demodulize.underscore}.#{attr}_collection.#{k}"), k]}
@@ -35,6 +38,10 @@ module ExportsHelper
       end
       out
     end
+  end
+
+  def import_option_input form, export, attr, option_def, type
+    export_option_input form, export, attr, option_def, type, nil
   end
 
   def export_message_content message

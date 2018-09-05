@@ -28,12 +28,9 @@ class ImportsController < ChouetteController
   end
 
   def import_params
-    params.require(:import).permit(
-      :name,
-      :file,
-      :type,
-      :referential_id
-    )
+    permitted_keys = %i(name file type referential_id)
+    permitted_keys += Import::Workbench.options.keys
+    params.require(:import).permit(permitted_keys)
   end
 
   def decorate_collection(imports)

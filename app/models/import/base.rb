@@ -1,5 +1,6 @@
 class Import::Base < ApplicationModel
   self.table_name = "imports"
+  include OptionsSupport
 
   def self.messages_class_name
     "Import::Message"

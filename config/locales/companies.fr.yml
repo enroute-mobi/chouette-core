@@ -16,7 +16,7 @@ fr:
     index:
       title: "Transporteurs"
       name: "Recherche par nom..."
-      name_or_short_id_cont: "Recherche par nom ou ID Codifligne..."
+      name_or_short_id_cont: "Recherche par nom ou ID..."
       advanced_search: "Recherche avancée"
     form:
       sections:

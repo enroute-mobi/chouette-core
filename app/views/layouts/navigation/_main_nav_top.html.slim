@@ -7,8 +7,8 @@
 
     - if user_signed_in?
       .menu-item-group.pull-right
-        = link_to '#', class: 'menu-item', data: { panel: 'toggle', target: '#operations_panel' }, title: 'Opérations' do
-          span.fa.fa-lg.fa-tasks
+        //= link_to '#', class: 'menu-item', data: { panel: 'toggle', target: '#operations_panel' }, title: 'Opérations' do
+        //  span.fa.fa-lg.fa-tasks
 
         = link_to '#', class: 'menu-item', data: { panel: 'toggle', target: '#profile_panel' }, title: 'Profil' do
           span = current_user.name

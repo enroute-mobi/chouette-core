@@ -1,4 +1,4 @@
-class StopAreaProvidersController < ChouetteController
+  class StopAreaProvidersController < ChouetteController
   include ApplicationHelper
 
   belongs_to :stop_area_referential
@@ -24,7 +24,7 @@ class StopAreaProvidersController < ChouetteController
       format.json do
         render json: resource.attributes.update(text: resource.name)
       end
-      @stop_area_provider = resource.decorate
+      @stop_area_provider = resource.decorate(context: {referential: parent})
       format.html
     end
   end

@@ -16,7 +16,7 @@ module Chouette
     after_commit :clean_ignored_routing_contraint_zone_ids, on: :destroy
 
     validates_presence_of :name, :stop_points, :route_id
-    validate :stop_points_belong_to_route, :not_all_stop_points_selected, :at_least_one_stop_point_selected
+    validate :stop_points_belong_to_route, :not_all_stop_points_selected, :at_least_two_stop_points_selected
 
     def local_id
       "local-#{self.referential.id}-#{self.route&.line&.get_objectid&.local_id}-#{self.route_id}-#{self.id}"
@@ -57,10 +57,10 @@ module Chouette
       errors.add(:stop_point_ids, I18n.t('activerecord.errors.models.routing_constraint_zone.attributes.stop_points.all_stop_points_selected')) if stop_points.length == route.stop_points.length
     end
 
-    def at_least_one_stop_point_selected
+    def at_least_two_stop_points_selected
       return unless route
 
-      errors.add(:stop_point_ids, I18n.t('activerecord.errors.models.routing_constraint_zone.attributes.stop_points.not_enough_stop_points')) if stop_points.empty?
+      errors.add(:stop_point_ids, I18n.t('activerecord.errors.models.routing_constraint_zone.attributes.stop_points.not_enough_stop_points')) if stop_points.size < 2
     end
 
     def stop_points_count

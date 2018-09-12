@@ -22,7 +22,7 @@ fr:
         routing_constraint_zone:
           attributes:
             stop_points:
-              not_enough_stop_points: "Une ITL doit contenir au moins un arrêt sur la séquence"
+              not_enough_stop_points: "Une ITL doit contenir au moins 2 arrêts sur la séquence"
               stop_points_not_from_route: "Arrêt sur séquence d'arrêts n'appartient pas à la Route de cette Zone de contrainte."
               all_stop_points_selected: "Une ITL ne peut pas couvrir tous les arrêts d'un itinéraire."
   routing_constraint_zones:

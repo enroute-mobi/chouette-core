@@ -22,7 +22,7 @@ en:
         routing_constraint_zone:
           attributes:
             stop_points:
-              not_enough_stop_points: 'You should specify at least 1 stop point.'
+              not_enough_stop_points: 'You should specify at least 2 stop points.'
               stop_points_not_from_route: 'Stop point does not belong to the Route of this Routing constraint zone.'
               all_stop_points_selected: 'All stop points from route cannot be selected.'
   routing_constraint_zones:

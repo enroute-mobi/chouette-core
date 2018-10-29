@@ -10,6 +10,7 @@ class ComplianceCheckSetsController < ChouetteController
       scope = joins_with_associated_objects(scope).order(sort_column + ' ' + sort_direction) if sort_column && sort_direction
       @q_for_form = scope.ransack(params[:q])
       format.html {
+        @workbench = Workbench.find(params[:workbench_id])
         @compliance_check_sets = ComplianceCheckSetDecorator.decorate(
           @q_for_form.result.paginate(page: params[:page], per_page: 30)
         )

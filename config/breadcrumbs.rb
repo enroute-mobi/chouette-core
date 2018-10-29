@@ -103,7 +103,8 @@ crumb :time_table do |referential, time_table|
 end
 
 crumb :compliance_check_sets do |ccset_parent|
-  link I18n.t('compliance_check_sets.index.title'), [ccset_parent, :compliance_check_sets]
+  binding.pry
+  link I18n.t('compliance_check_sets.index.title'), workbench_compliance_check_sets_path(ccset_parent)
   parent ccset_parent.class.name.downcase.intern, ccset_parent
 end
 

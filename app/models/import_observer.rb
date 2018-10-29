@@ -9,12 +9,7 @@ class ImportObserver < ActiveRecord::Observer
 
   private
 
-  def enabled?
-    return true unless Rails.configuration.respond_to?(:enable_subscriptions_notifications)
-    !!Rails.configuration.enable_subscriptions_notifications
-  end
-
   def email_sendable_for?(import)
-    enabled? && import.finished?
+    import.finished?
   end
 end

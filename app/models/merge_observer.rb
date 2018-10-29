@@ -9,12 +9,7 @@ class MergeObserver < ActiveRecord::Observer
 
   private
 
-  def enabled?
-    return true unless Rails.configuration.respond_to?(:enable_subscriptions_notifications)
-    !!Rails.configuration.enable_subscriptions_notifications
-  end
-
   def email_sendable_for?(merge)
-    enabled? && Merge.finished_statuses.include?(merge.status)
+    Merge.finished_statuses.include?(merge.status)
   end
 end

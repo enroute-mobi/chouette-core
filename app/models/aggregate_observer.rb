@@ -9,12 +9,7 @@ class AggregateObserver < ActiveRecord::Observer
 
   private
 
-  def enabled?
-    return true unless Rails.configuration.respond_to?(:enable_subscriptions_notifications)
-    !!Rails.configuration.enable_subscriptions_notifications
-  end
-
   def email_sendable_for?(aggregate)
-    enabled? && Aggregate.finished_statuses.include?(aggregate.status)
+    Aggregate.finished_statuses.include?(aggregate.status)
   end
 end

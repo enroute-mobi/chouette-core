@@ -8,12 +8,7 @@ class ComplianceCheckSetObserver < ActiveRecord::Observer
 
   private
 
-  def enabled?
-    return true unless Rails.configuration.respond_to?(:enable_subscriptions_notifications)
-    !!Rails.configuration.enable_subscriptions_notifications
-  end
-
   def email_sendable_for?(ccset)
-    enabled? && ComplianceCheckSet.finished_statuses.include?(ccset.status)
+    ComplianceCheckSet.finished_statuses.include?(ccset.status)
   end
 end

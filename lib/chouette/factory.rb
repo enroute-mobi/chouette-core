@@ -76,6 +76,7 @@ module Chouette
           attribute(:name) { |n| "Workbench #{n}" }
           attribute(:organisation) { build_model :organisation }
           attribute :objectid_format, "netex"
+          attribute(:prefix) { |n| "prefix-#{n}" }
 
           after do
             # TODO shouldn't be explicit but managed by Workbench model
@@ -134,16 +135,24 @@ module Chouette
                     latitude: 48.8584 - 5 + 10 * rand,
                     longitude: 2.2945 - 2 + 4 * rand
                   }
+
                   stop_area_referential.stop_areas.create! attributes
                 end
               end
               model :journey_pattern do
+                attribute(:name) { |n| "JourneyPattern #{n}" }
+
                 after do |journey_pattern|
                   journey_pattern.stop_points = journey_pattern.route.stop_points
                 end
 
                 model :vehicle_journey do
                   attribute(:published_journey_name) { |n| "Vehicle Journey #{n}" }
+
+                  after do |vehicle_journey|
+                    # TODO move this in the VehicleJourney model
+                    vehicle_journey.route = vehicle_journey.journey_pattern.route
+                  end
 
                   # TODO vehicle_journey_at_stop
                 end

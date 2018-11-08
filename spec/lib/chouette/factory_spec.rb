@@ -37,7 +37,7 @@ RSpec.describe Chouette::Factory do
       end
     }.to change { Referential.count }
 
-    Referential.first.switch do
+    Referential.last.switch do
       expect(Chouette::VehicleJourney.count).to eq(1)
     end
   end

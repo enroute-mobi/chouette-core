@@ -41,6 +41,7 @@ module Chouette
       def around_models=(proc)
         @around_models = proc
       end
+      attr_accessor :around_models
 
       def root?
         @name == :root
@@ -82,42 +83,46 @@ module Chouette
         attributes_values = build_attributes(context)
         parent ||= context.parent.instance
 
-        new_instance =
-          if parent
-            # Try Parent#build_model
-            if parent.respond_to?("build_#{name}")
-              parent.send("build_#{name}", attributes_values)
+        new_instance = nil
+
+        context.parent.around_models do
+          new_instance =
+            if parent
+              # Try Parent#build_model
+              if parent.respond_to?("build_#{name}")
+                parent.send("build_#{name}", attributes_values)
+              else
+                # Then Parent#models
+                parent.send(name.to_s.pluralize).build attributes_values
+              end
             else
-              # Then Parent#models
-              parent.send(name.to_s.pluralize).build attributes_values
+              klass.new attributes_values
             end
-          else
-            klass.new attributes_values
-          end
 
-        models.each do |_, model|
-          if model.required?
-            model.count.times do
-              model.build_instance(Context.new(model, context.with_instance(new_instance)), new_instance)
+          models.each do |_, model|
+            if model.required?
+              model.count.times do
+                model.build_instance(Context.new(model, context.with_instance(new_instance)), new_instance)
+              end
             end
           end
-        end
 
-        after_callbacks.each do |after_callback|
-          after_dsl = AfterDSL.new(self, new_instance, context)
+          after_callbacks.each do |after_callback|
+            after_dsl = AfterDSL.new(self, new_instance, context)
 
-          if after_callback.arity > 0
-            after_callback.call new_instance
-          else
-            after_dsl.instance_eval &after_callback
+            if after_callback.arity > 0
+              after_callback.call new_instance
+            else
+              after_dsl.instance_eval &after_callback
+            end
           end
-        end
 
-        unless new_instance.valid?
-          puts "Invalid instance: #{new_instance.inspect} #{new_instance.errors.inspect}"
-        end
+          unless new_instance.valid?
+            puts "Invalid instance: #{new_instance.inspect} #{new_instance.errors.inspect}"
+          end
 
-        puts "Created #{new_instance.inspect}"
+          puts "Created #{new_instance.inspect}"
+        end
 
         new_instance
       end

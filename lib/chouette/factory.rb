@@ -197,13 +197,13 @@ module Chouette
               attribute :int_day_types, TimeTable::EVERYDAY
 
               after do
-                transient(:dates_included).each do
-                  # TODO
+                Array(transient(:dates_included)).each do |date|
+                  new_instance.dates.build in_out: true, date: date
                 end
-                transient(:dates_excluded).each do |data|
-                  new_instance.dates.buiild in_out: false, date: date
+                Array(transient(:dates_excluded)).each do |date|
+                  new_instance.dates.build in_out: false, date: date
                 end
-                transient(:periods).each do |period|
+                Array(transient(:periods)).each do |period|
                   new_instance.periods.build period_start: period.min, period_end: period.max
                 end
               end

@@ -64,6 +64,64 @@ RSpec.describe Chouette::Factory do
       end
     end
 
+    describe "{ time_table dates_excluded: Date.today }" do
+      before do
+        Chouette::Factory.create do
+          time_table dates_excluded: Date.today
+        end
+      end
+
+      it "should create TimeTable with default period" do
+        Referential.last.switch do
+          expect(Chouette::TimeTable.count).to eq(1)
+
+          expect(Chouette::TimeTable.last.periods.count).to eq(1)
+          period = Chouette::TimeTable.last.periods.first
+          expect(period.range).to eq(Date.today.beginning_of_year..Date.today.end_of_year)
+        end
+      end
+
+      it "should create TimeTable with specified excluded date" do
+        Referential.last.switch do
+          time_table = Chouette::TimeTable.last
+          expect(time_table.dates.count).to eq(1)
+
+          date = time_table.dates.first
+          expect(date.in_out).to be_falsy
+          expect(date.date).to eq(Date.today)
+        end
+      end
+    end
+
+    describe "{ time_table dates_included: Date.today }" do
+      before do
+        Chouette::Factory.create do
+          time_table dates_included: Date.today
+        end
+      end
+
+      it "should create TimeTable with default period" do
+        Referential.last.switch do
+          expect(Chouette::TimeTable.count).to eq(1)
+
+          expect(Chouette::TimeTable.last.periods.count).to eq(1)
+          period = Chouette::TimeTable.last.periods.first
+          expect(period.range).to eq(Date.today.beginning_of_year..Date.today.end_of_year)
+        end
+      end
+
+      it "should create TimeTable with specified included date" do
+        Referential.last.switch do
+          time_table = Chouette::TimeTable.last
+          expect(time_table.dates.count).to eq(1)
+
+          date = time_table.dates.first
+          expect(date.in_out).to be_truthy
+          expect(date.date).to eq(Date.today)
+        end
+      end
+    end
+
   end
 
 end

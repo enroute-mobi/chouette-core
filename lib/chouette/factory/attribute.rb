@@ -14,14 +14,18 @@ module Chouette
 
       def evaluate(context)
         @evaluated_value =
-          if Proc === value
-            if value.arity == 0
-              DSL.new(context).instance_eval(&value)
-            else
-              value.call sequence_number
-            end
+          if context_value = context.attributes[name]
+            context_value
           else
-            value
+            if Proc === value
+              if value.arity == 0
+                DSL.new(context).instance_eval(&value)
+              else
+                value.call sequence_number
+              end
+            else
+              value
+            end
           end
       end
 

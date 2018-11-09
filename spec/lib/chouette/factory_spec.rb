@@ -44,4 +44,26 @@ RSpec.describe Chouette::Factory do
     end
   end
 
+  describe "TimeTables" do
+
+    describe "{ time_table }" do
+      before do
+        Chouette::Factory.create do
+          time_table
+        end
+      end
+
+      it "should create TimeTable with default period" do
+        Referential.last.switch do
+          expect(Chouette::TimeTable.count).to eq(1)
+          expect(Chouette::TimeTable.last.periods.count).to eq(1)
+
+          period = Chouette::TimeTable.last.periods.first
+          expect(period.range).to eq(Date.today.beginning_of_year..Date.today.end_of_year)
+        end
+      end
+    end
+
+  end
+
 end

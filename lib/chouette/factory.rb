@@ -196,15 +196,15 @@ module Chouette
               attribute(:comment) { |n| "TimeTable #{n}" }
               attribute :int_day_types, TimeTable::EVERYDAY
 
-              after do |time_table|
+              after do
                 transient(:dates_included).each do
                   # TODO
                 end
-                transient(:dates_excluded).each do
-                  # TODO
+                transient(:dates_excluded).each do |data|
+                  new_instance.dates.buiild in_out: false, date: date
                 end
-                transient(:periods).each do
-                  # TODO
+                transient(:periods).each do |period|
+                  new_instance.periods.build period_start: period.min, period_end: period.max
                 end
               end
             end

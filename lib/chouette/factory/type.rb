@@ -1,5 +1,5 @@
 module Chouette
-  module Factory
+  class Factory
     class Type
 
       attr_accessor :name

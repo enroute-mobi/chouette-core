@@ -1,5 +1,5 @@
 module Chouette
-  module Factory
+  class Factory
     module Definition
       def define(&block)
         root.define &block

@@ -1,6 +1,6 @@
 # coding: utf-8
 module Chouette
-  module Factory
+  class Factory
     extend Definition
 
     define do
@@ -218,10 +218,25 @@ module Chouette
     end
 
     def self.create(&block)
-      context = Context.new(root)
-      context.evaluate &block
-      context.create_instance
+      new.tap do |factory|
+        factory.evaluate &block
+      end
     end
+
+    def initialize
+      @root_context = Context.new(self.class.root)
+    end
+
+    def instance(name)
+      root_context.named_instances[name]
+    end
+
+    def evaluate(&block)
+      root_context.evaluate &block
+      root_context.create_instance
+    end
+
+    attr_reader :root_context
 
   end
 end

@@ -1,8 +1,8 @@
 module Chouette
-  module Factory
+  class Factory
     class Context
 
-      attr_accessor :instance, :attributes, :parent
+      attr_accessor :instance, :instance_name, :attributes, :parent
 
       def initialize(model, parent = nil)
         @model, @parent = model, parent
@@ -45,6 +45,10 @@ module Chouette
         unless root?
           self.instance = build_instance
           instance.save!
+
+          if instance_name
+            named_instances[instance_name] = instance
+          end
         end
 
         children.each(&:create_instance)
@@ -55,6 +59,14 @@ module Chouette
       end
 
       attr_accessor :model
+
+      def named_instances
+        unless root?
+          parent.named_instances
+        else
+          @named_instances ||= {}
+        end
+      end
 
       def children
         @children ||= []

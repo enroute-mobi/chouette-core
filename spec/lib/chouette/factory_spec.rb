@@ -24,23 +24,58 @@ RSpec.describe Chouette::Factory do
     }.to change { LineReferential.count }
   end
 
-  it "should create referential" do
-    expect {
-      Chouette::Factory.create { referential }
-    }.to change { Referential.count }
+  describe "Referentials" do
+    describe "{ referential }" do
+      before do
+        Chouette::Factory.create { referential }
+      end
+
+      it "should create a Referential" do
+        expect(Referential.count).to eq(2)
+      end
+
+    end
+
+    describe "{ referential name: 'Test' }" do
+      before do
+        Chouette::Factory.create { referential name: "Test" }
+      end
+
+      it "should create a Referential with name 'Test'" do
+        expect(Referential.last.name).to eq('Test')
+      end
+    end
+
+    describe "{ referential :test, name: 'Test' }" do
+      let(:factory) do
+        Chouette::Factory.create { referential :test, name: "Test" }
+      end
+
+      let(:referential) { factory.instance :test }
+
+      it "should create a Referential :test with name 'Test'" do
+        expect(referential.name).to eq('Test')
+      end
+    end
   end
 
-  it "should create Referential and VehicleJourney" do
-    expect {
-      Chouette::Factory.create do
-        vehicle_journey
+  describe "VehicleJourneys" do
+    describe "{ vehicle_journey }" do
+      before do
+        Chouette::Factory.create { vehicle_journey }
       end
-    }.to change { Referential.count }
 
-    Referential.last.switch do
-      expect(Chouette::VehicleJourney.count).to eq(1)
+      it "should create VehicleJourney" do
+        Referential.last.switch do
+          expect(Chouette::VehicleJourney.count).to eq(1)
+        end
+      end
 
-      expect(Chouette::VehicleJourney.last.vehicle_journey_at_stops.count).to eq(3)
+      it "should create VehicleJourney with 3 stops" do
+        Referential.last.switch do
+          expect(Chouette::VehicleJourney.last.vehicle_journey_at_stops.count).to eq(3)
+        end
+      end
     end
   end
 

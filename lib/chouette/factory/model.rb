@@ -1,5 +1,5 @@
 module Chouette
-  module Factory
+  class Factory
     class Model
 
       attr_reader :name

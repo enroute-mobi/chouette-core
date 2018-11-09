@@ -154,7 +154,25 @@ module Chouette
                     vehicle_journey.route = vehicle_journey.journey_pattern.route
                   end
 
-                  # TODO vehicle_journey_at_stop
+                  transient :with_stops, true
+                  transient :departure_time, '12:00:00'
+
+                  after do
+                    first_departure_time = Time.parse(transient(:departure_time))
+
+                    parent.stop_points.each_with_index do |stop_point, index|
+                      arrival_time = first_departure_time + index * 5.minute
+                      departure_time = arrival_time + 1.minute
+
+                      attributes = {
+                        stop_point: stop_point,
+                        arrival_time: "2000-01-01 #{arrival_time.strftime("%H:%M:%S")} UTC",
+                        departure_time: "2000-01-01 #{departure_time.strftime("%H:%M:%S")} UTC"
+                      }
+
+                      new_instance.vehicle_journey_at_stops.build attributes
+                    end if transient(:with_stops)
+                  end
                 end
               end
               model :routing_constraint_zone do

@@ -46,7 +46,10 @@ module Chouette
     before_validation :set_default_values,
       :calculate_vehicle_journey_at_stop_day_offset
 
-    scope :with_companies, ->(ids){ where(company_id: ids) }
+    scope :with_companies, ->(ids) do
+      filtered_ids = ids.map(&:presence).compact
+      filtered_ids.present? ? where(company_id: filtered_ids) : all
+    end
 
     scope :with_stop_area_ids, ->(ids){
       _ids = ids.select(&:present?).map(&:to_i)

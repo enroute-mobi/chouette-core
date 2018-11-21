@@ -11,6 +11,10 @@ gem 'rack-protection'
 
 gem 'sinatra', '~> 2.0.0.beta2'
 
+gem 'lograge'
+gem 'lograge-sql'
+gem 'ddtrace'
+
 # Use SCSS for stylesheets
 gem 'sassc-rails'
 # Use Uglifier as compressor for JavaScript assets

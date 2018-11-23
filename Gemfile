@@ -221,6 +221,7 @@ group :production do
 end
 
 # I18n
+gem 'i18n', '~> 0.8'
 gem 'rails-i18n', '~> 4.0.0'
 gem 'devise-i18n'
 gem 'i18n-tasks'

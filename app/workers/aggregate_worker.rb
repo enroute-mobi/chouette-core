@@ -3,6 +3,11 @@ class AggregateWorker
   include Concerns::ImportantWorker
 
   def perform(id)
-    Aggregate.find(id).aggregate!
+    aggregate = Aggregate.find(id)
+    begin
+      aggregate.aggregate!
+    rescue
+      aggregate.failed!
+    end
   end
 end

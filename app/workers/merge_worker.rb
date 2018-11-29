@@ -3,6 +3,11 @@ class MergeWorker
   include Concerns::ImportantWorker
 
   def perform(id)
-    Merge.find(id).merge!
+    merge = Merge.find(id)
+    begin 
+      merge.merge!
+    rescue
+      merge.failed!
+    end
   end
 end

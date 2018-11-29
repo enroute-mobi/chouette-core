@@ -20,5 +20,7 @@ class GTFSExportWorker
       gtfs_export.update( status: 'failed' )
     end
     raise
+  rescue
+    @gtfs_export.failed!
   end
 end

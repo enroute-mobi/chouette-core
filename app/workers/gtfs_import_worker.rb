@@ -3,6 +3,11 @@ class GtfsImportWorker
   include Concerns::LongRunningWorker
 
   def perform(import_id)
-    Import::Gtfs.find(import_id).import
+    import = Import::Gtfs.find(import_id)
+    begin
+      import.import
+    rescue
+      import.failed!
+    end
   end
 end

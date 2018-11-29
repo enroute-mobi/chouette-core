@@ -3,6 +3,11 @@ class ReferentialCloningWorker
   include Concerns::ImportantWorker
 
   def perform(id)
-    ReferentialCloning.find(id).clone_with_status!
+    ref = ReferentialCloning.find(id)
+    begin
+      ref.clone_with_status!
+    rescue
+      ref.failed!
+    end
   end
 end

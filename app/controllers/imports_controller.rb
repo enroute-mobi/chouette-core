@@ -16,6 +16,9 @@ class ImportsController < ChouetteController
   end
 
   def show
+    instance_variable_set "@#{collection_name.singularize}", resource.decorate(context: {
+      workbench: @workbench
+    })
     respond_to do |format|
       format.html
       format.json do

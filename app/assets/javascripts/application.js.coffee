@@ -6,7 +6,6 @@
 #
 #= require jquery
 #= require jquery_ujs
-#= require faye
 #= require modernizr
 #= require cocoon
 #= require ./OpenLayers/ol.js
@@ -29,7 +28,32 @@
 #= require jquery-ui/widgets/draggable
 #= require jquery-ui/widgets/droppable
 #= require jquery-ui/widgets/sortable
+#= require ellipsis
 
 $ ->
   $('a[disabled=disabled]').click (event)->
     event.preventDefault(); # Prevent link from following its href
+
+  $('.custom_field_attachment_wrapper input[type=file]').change (e)->
+    if e.target.value
+      $(e.target).parents(".custom_field_attachment_wrapper").find('.delete-wrapper').removeClass('hidden')
+      $(e.target).parents(".custom_field_attachment_wrapper").find('.btn label').html(e.target.value.split(/[\\/]/).pop())
+      $(e.target).parents(".custom_field_attachment_wrapper").find('.delete-wrapper input[type=checkbox]')[0].checked = false
+    else
+      $(e.target).parents(".custom_field_attachment_wrapper").find('.delete-wrapper').addClass('hidden')
+      $(e.target).parents(".custom_field_attachment_wrapper").find('.btn label').html(I18n.t("actions.select"))
+
+  $('.custom_field_attachment_wrapper .delete-wrapper input').change (e)->
+    if $(e.target).is(":checked")
+      $(e.target).parents(".custom_field_attachment_wrapper").find('.btn label').html(I18n.t("actions.select"))
+      $(e.target).parents(".delete-wrapper").addClass('hidden')
+
+  $('.page-title h1').ellipsis()
+
+  cooldown = null
+  $(window).resize ->
+    clearTimeout(cooldown) if cooldown
+    cooldown = setTimeout ->
+      $('.page-title h1').ellipsis()
+      cooldown = null
+    , 200

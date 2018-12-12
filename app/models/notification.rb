@@ -14,9 +14,10 @@ class Notification < ActiveRecord::Base
   end
 
   def publish
-    Thread.new do
-      uri = URI.parse "#{Rails.application.config.rails_host}/faye"
-      Net::HTTP.post_form(uri, { message: { data: payload, channel: channel}.to_json })
-    end
+    # we do nothing for now
+  end
+
+  def full_payload
+    payload.update({ id: id })
   end
 end

@@ -1,6 +1,7 @@
 ChouetteIhm::Application.routes.draw do
   resource :dashboard
   resource :subscriptions, only: :create
+  resources :notifications, only: :index
 
   resources :exports, only: :upload do
     post :upload, on: :member, controller: :export_uploads

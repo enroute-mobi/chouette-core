@@ -6,5 +6,6 @@ class CreateNotifications < ActiveRecord::Migration
 
       t.timestamps null: false
     end
+    add_index :notifications, :channel
   end
 end

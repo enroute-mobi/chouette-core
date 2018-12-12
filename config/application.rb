@@ -70,9 +70,6 @@ module ChouetteIhm
 
     config.active_job.queue_adapter = :delayed_job
 
-    config.middleware.delete Rack::Lock
-    config.middleware.use FayeRails::Middleware, mount: '/faye', :timeout => 25 
-
     config.action_dispatch.rescue_responses.merge!(
       'FeatureChecker::NotAuthorizedError' => :unauthorized
     )

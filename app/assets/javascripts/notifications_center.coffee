@@ -1,19 +1,38 @@
-window.client ||= new Faye.Client('/faye')
-
 class window.NotificationCenter
   constructor: (@channel, @receiver)->
-    @lastSeen = @getCookie
-    window.client.subscribe @channel, (payload) =>
-      @receivedNotification payload
+    @lastSeen = @getCookie @channel + "_lastSeen"
+    @lastReload = Date.now()
+    @period = 1000
+    @checkNotifications()
 
-  receivedNotification: (payload)=>
-    if payload.action == "reloadState"
-      @receiver.loadState()
+  checkNotifications: =>
+    reload = @getCookie @channel + "_reloadState"
+    if reload && reload > @lastReload
+       @receiver.loadState()
+       @lastReload = Date.now()
     else
-      @receiver.receivedNotification payload
+      url = "/notifications?channel=" + @channel
+      if @lastSeen
+        url = url + "&lastSeen=" + @lastSeen if @lastSeen?
+        $.get(url).then (response)=>
+          for payload in response
+            @lastSeen = payload.id
+            @setCookie @channel + "_lastSeen", @lastSeen
+            @receiver.receivedNotification(payload)
+          setTimeout =>
+            @checkNotifications()
+          , @period
+      else
+        $.get(url).then (response)=>
+          payload = response[0]
+          @lastSeen = payload.id
+          @setCookie @channel + "_lastSeen", @lastSeen
+          setTimeout =>
+            @checkNotifications()
+          , @period
 
   reloadState: =>
-    window.client.publish @channel, {action: "reloadState"}
+    @setCookie @channel + "_reloadState", Date.now()
 
   setCookie: (name, value, days=null) ->
     if days

@@ -49,4 +49,10 @@ class ImportsController < ChouetteController
       ParentNotifier.new(Import::Base).notify_when_finished
     end
   end
+
+  protected
+
+   def begin_of_association_chain
+    Workgroup.find(params[:workgroup_id])
+  end
 end

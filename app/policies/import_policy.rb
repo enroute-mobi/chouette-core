@@ -5,6 +5,10 @@ class ImportPolicy < ApplicationPolicy
     end
   end
 
+  def show?
+    user.workgroups.pluck(:id).include?(record.workbench.workgroup_id)
+  end
+
   def create?
     user.has_permission?('imports.create')
   end

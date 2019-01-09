@@ -204,7 +204,7 @@ class Import::Gtfs < Import::Base
     prepare_referential
     referential.pending!
 
-    import_resources :cleandars, :calendar_dates
+    import_resources :calendars, :calendar_dates
     import_resources :trips, :stop_times
   end
 

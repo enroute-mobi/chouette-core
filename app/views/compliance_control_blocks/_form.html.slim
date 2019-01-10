@@ -8,11 +8,11 @@
               - @compliance_control_block.errors[:condition_attributes].each do |msg|
                 p.small = "- #{msg}"
 
-      - if @block_kinds.size > 1
+      - if block_kinds.size > 1
         .form-group
-          = f.input :block_kind, collection: @block_kinds.map{|k| ["compliance_control_blocks.block_kinds.#{k}".t, k]}
+          = f.input :block_kind, as: :select, collection: block_kinds.map{|k| ["compliance_control_blocks.block_kinds.#{k}".t, k]}, include_blank: false, required: true
       - else
-        = f.hidden_field :block_kind, value: @block_kinds.first
+        = f.hidden_field :block_kind, value: block_kinds.first
 
       .slave data-master="[name='compliance_control_block[block_kind]']" data-value="stop_areas_in_countries"
         .form-group

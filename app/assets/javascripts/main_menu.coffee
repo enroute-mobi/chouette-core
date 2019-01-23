@@ -60,6 +60,7 @@ navMenu = $('#menu_left.nav-menu')
       stickyContent.append $("<div class='sticky-ptitle'>#{ptitleCont}</div>")
       stickyContent.append $('<div class="sticky-paction"></div>')
       mainNav.addClass 'sticky'
+      $('body').addClass 'sticky'
 
       if $('#menu_top').find('.sticky-content').length == 0
         if ptitleCont.length > 0
@@ -70,6 +71,7 @@ navMenu = $('#menu_left.nav-menu')
 
     else if $(window).scrollTop() <= limit - offset
       mainNav.removeClass 'sticky'
+      $('body').removeClass 'sticky'
 
       if $('#menu_top').find('.sticky-content').length > 0
         for item in stickyActions

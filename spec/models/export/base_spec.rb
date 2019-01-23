@@ -12,7 +12,7 @@ RSpec.describe Export::Base, type: :model do
   it { should allow_value(fixture_file_upload('OFFRE_TRANSDEV_2017030112251.zip')).for(:file) }
   it { should_not allow_value(fixture_file_upload('reflex_updated.xml')).for(:file).with_message(I18n.t('errors.messages.extension_whitelist_error', extension: '"xml"', allowed_types: "zip, csv, json")) }
 
-  let(:workgroup_export) {netex_export.parent}
+  let(:workgroup_export) { netex_export.parent }
   let(:workgroup_export_with_completed_steps) do
     build_stubbed(
       :workgroup_export,
@@ -21,11 +21,7 @@ RSpec.describe Export::Base, type: :model do
     )
   end
 
-  let(:netex_export) do
-    create(
-      :netex_export
-    )
-  end
+  let(:netex_export) { create(:netex_export, :with_parent) }
 
   describe ".purge_exports" do
     let(:workbench) { create(:workbench) }
@@ -142,7 +138,7 @@ RSpec.describe Export::Base, type: :model do
 
   describe "#destroy" do
     it "must destroy all child exports" do
-      netex_export = create(:netex_export)
+      netex_export = create(:netex_export, :with_parent)
 
       netex_export.parent.destroy
 

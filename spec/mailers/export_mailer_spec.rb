@@ -2,9 +2,9 @@ require "rails_helper"
 
 RSpec.describe ExportMailer, type: :mailer do
 
-  let(:user)    { create(:user) }
-  let(:export) {create :gtfs_export, creator: user.name, status: 'successful'}
-  let(:email)    { ExportMailer.send('finished', export.id, [user.email_recipient]) }
+  let(:user)   { create(:user) }
+  let(:export) { create :gtfs_export, creator: user.name, status: 'successful' }
+  let(:email)  { ExportMailer.send('finished', export.id, [user.email_recipient]) }
 
   it 'should deliver email to user' do
     expect(email).to bcc_to user.email

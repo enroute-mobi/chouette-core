@@ -681,6 +681,13 @@ ActiveRecord::Schema.define(version: 20190225161809) do
   add_index "networks", ["objectid"], name: "networks_objectid_key", unique: true, using: :btree
   add_index "networks", ["registration_number"], name: "networks_registration_number_key", using: :btree
 
+  create_table "notifications", id: :bigserial, force: :cascade do |t|
+    t.json     "payload"
+    t.string   "channel"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+  
   create_table "notification_rules", id: :bigserial, force: :cascade do |t|
     t.string    "notification_type"
     t.daterange "period"
@@ -689,6 +696,8 @@ ActiveRecord::Schema.define(version: 20190225161809) do
     t.datetime  "created_at"
     t.datetime  "updated_at"
   end
+
+  add_index "notifications", ["channel"], name: "index_notifications_on_channel", using: :btree
 
   create_table "organisations", id: :bigserial, force: :cascade do |t|
     t.string   "name"

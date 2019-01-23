@@ -73,7 +73,7 @@ module IevInterfaces::Task
   end
 
   def workbench_for_notifications
-    workbench || referential.workgroup.owner_workbench
+    workbench || referential.workbench || referential.workgroup&.owner_workbench
   end
 
   def notify_parent
@@ -91,12 +91,18 @@ module IevInterfaces::Task
     children.with_status(:successful, :warning).count
   end
 
+  def url_for_notifications
+    object = self
+    object = parent if self.try(:parent)
+    [workbench_for_notifications, object]
+  end
+
   def notify_state
     payload = self.slice(:id, :status, :name, :parent_id)
     payload.update({
       status_html: operation_status(self.status).html_safe,
       message_key: "#{self.class.name.underscore.gsub('/', '.')}.#{self.status}",
-      url: polymorphic_url([workbench_for_notifications, self], only_path: true),
+      url: polymorphic_url(url_for_notifications, only_path: true),
       unique_identifier: "#{self.class.name.underscore.gsub('/', '.')}-#{self.id}"
     })
     if self.class < Import::Base
@@ -124,7 +130,7 @@ module IevInterfaces::Task
       payload.update({
         message_key: "#{self.class.name.underscore.gsub('/', '.')}.progress",
         status_html: operation_status(self.status).html_safe,
-        url: polymorphic_url([workbench_for_notifications, self], only_path: true),
+        url: polymorphic_url(url_for_notifications, only_path: true),
         unique_identifier: "#{self.class.name.underscore.gsub('/', '.')}-#{self.id}",
         progress: (progress*100).to_i
       })

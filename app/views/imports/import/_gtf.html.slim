@@ -6,7 +6,7 @@
 
 .col-lg-12
   .error_messages
-    = render 'shared/iev_interfaces/messages', messages: @import.main_resource.messages
+    = render 'shared/iev_interfaces/messages.html', messages: @import.main_resource.messages
 
 - if @import.resources.any?
   .col-lg-12

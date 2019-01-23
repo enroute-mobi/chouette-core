@@ -2,7 +2,7 @@ module IevInterfaces::Task
   extend ActiveSupport::Concern
   include Rails.application.routes.url_helpers
   include ActionView::Helpers::TagHelper
-  include ImportsHelper
+  include OperationsHelper
 
   included do
     belongs_to :parent, polymorphic: true
@@ -36,11 +36,12 @@ module IevInterfaces::Task
 
     before_save :initialize_fields, on: :create
     after_save :notify_parent
-    after_commit :notify_state
+    # after_commit :notify_state, if: :status_changed?
 
     status.values.each do |s|
       define_method "#{s}!" do
         update_column :status, s
+        notify_state
       end
 
       define_method "#{s}?" do
@@ -89,13 +90,16 @@ module IevInterfaces::Task
   def notify_state
     payload = self.slice(:id, :status, :name, :parent_id)
     payload.update({
-      status_html: import_status(self.status).html_safe,
+      status_html: operation_status(self.status).html_safe,
       message_key: "#{self.class.name.underscore.gsub('/', '.')}.#{self.status}",
-      url: polymorphic_url([self.workbench, self], only_path: true),
+      url: polymorphic_url([workbench, self], only_path: true),
       unique_identifier: "#{self.class.name.underscore.gsub('/', '.')}-#{self.id}"
     })
     if self.class < Import::Base
       payload[:fragment] = "import-fragment"
+    end
+    if self.class < Export::Base
+      payload[:fragment] = "export-fragment"
     end
     Notification.create! channel: workbench.notifications_channel, payload: payload
   end
@@ -106,20 +110,23 @@ module IevInterfaces::Task
   end
 
   def notify_progress progress
+    @previous_progress ||= 0
+    return unless progress - @previous_progress >= 0.01
+    @previous_progress = progress
     if parent
       parent.notify_child_progress self, progress
     else
       payload = self.slice(:id, :status, :name, :parent_id)
       payload.update({
         message_key: "#{self.class.name.underscore.gsub('/', '.')}.progress",
-        status_html: import_status(self.status).html_safe,
-        url: polymorphic_url([self.workbench, self], only_path: true),
+        status_html: operation_status(self.status).html_safe,
+        url: polymorphic_url([workbench, self], only_path: true),
         unique_identifier: "#{self.class.name.underscore.gsub('/', '.')}-#{self.id}",
         progress: (progress*100).to_i
       })
-      # if self.class < Import::Base
-      #   payload[:fragment] = "import-fragment"
-      # end
+      if self.class < Import::Base
+        payload[:fragment] = "import-fragment"
+      end
       Notification.create! channel: workbench.notifications_channel, payload: payload
     end
   end
@@ -147,6 +154,7 @@ module IevInterfaces::Task
     end
 
     update attributes
+    notify_state
   end
 
   def finished?

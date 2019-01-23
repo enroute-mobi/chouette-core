@@ -51,12 +51,12 @@ class Import::Gtfs < Import::Base
   end
 
   def import_without_status
+    @progress = 0
     prepare_referential
     referential.pending!
-
-    @progress = 0
     import_resources :calendars, :calendar_dates
     import_resources :trips, :stop_times
+    @progress = nil
   end
 
   def import_agencies

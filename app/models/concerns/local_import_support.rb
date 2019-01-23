@@ -37,13 +37,16 @@ module LocalImportSupport
     main_resource&.save
     save
     notify_parent
+    notify_state
   end
 
   def import_resources(*resources)
     resources.each do |resource|
       Chouette::Benchmark.log "#{self.class.name} import #{resource}" do
-        @progress += 0.2
-        notify_progress @progress
+        if @progress
+          @progress += 1.0/7
+          notify_progress @progress
+        end
         send "import_#{resource}"
       end
     end

@@ -10,6 +10,7 @@
 #= require cocoon
 #= require ./OpenLayers/ol.js
 #= require bootstrap-sass-official
+#= require bootstrap/clockpicker
 #= require select2-full
 #= require select2_locale_fr
 #= require jquery-tokeninput

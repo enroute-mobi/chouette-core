@@ -72,6 +72,10 @@ module IevInterfaces::Task
     end
   end
 
+  def workbench_for_notifications
+    workbench || referential.workgroup.owner_workbench
+  end
+
   def notify_parent
     return false unless self.class.finished_statuses.include?(status)
 
@@ -92,7 +96,7 @@ module IevInterfaces::Task
     payload.update({
       status_html: operation_status(self.status).html_safe,
       message_key: "#{self.class.name.underscore.gsub('/', '.')}.#{self.status}",
-      url: polymorphic_url([workbench, self], only_path: true),
+      url: polymorphic_url([workbench_for_notifications, self], only_path: true),
       unique_identifier: "#{self.class.name.underscore.gsub('/', '.')}-#{self.id}"
     })
     if self.class < Import::Base
@@ -101,7 +105,7 @@ module IevInterfaces::Task
     if self.class < Export::Base
       payload[:fragment] = "export-fragment"
     end
-    Notification.create! channel: workbench.notifications_channel, payload: payload
+    Notification.create! channel: workbench_for_notifications.notifications_channel, payload: payload
   end
 
   def notify_child_progress child, progress
@@ -120,14 +124,14 @@ module IevInterfaces::Task
       payload.update({
         message_key: "#{self.class.name.underscore.gsub('/', '.')}.progress",
         status_html: operation_status(self.status).html_safe,
-        url: polymorphic_url([workbench, self], only_path: true),
+        url: polymorphic_url([workbench_for_notifications, self], only_path: true),
         unique_identifier: "#{self.class.name.underscore.gsub('/', '.')}-#{self.id}",
         progress: (progress*100).to_i
       })
       if self.class < Import::Base
         payload[:fragment] = "import-fragment"
       end
-      Notification.create! channel: workbench.notifications_channel, payload: payload
+      Notification.create! channel: workbench_for_notifications.notifications_channel, payload: payload
     end
   end
 

@@ -4,9 +4,9 @@ class NotificationsController < ChouetteController
 
     notifications = Notification.where(channel: params[:channel]).order(:created_at)
     if params[:lastSeen] && params[:lastSeen].to_i > 0
-      notifications = notifications.where('id > ?', params[:lastSeen])
+      notifications = notifications.where('id > ?', params[:lastSeen].to_i)
     else
-      notifications = notifications.last(1)
+      notifications = [notifications.last]
     end
     render json: notifications.map(&:full_payload)
   end

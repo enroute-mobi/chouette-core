@@ -1,7 +1,8 @@
 RSpec.describe Api::V1::Internals::NetexExportsController, type: :controller do
   let( :user ){ create :user }
-  let(:export_1) { create :netex_export, creator: user.name }
-  let(:export_2) { create :netex_export, status: "successful", creator: user.name }
+  let(:workgroup_export) { create :workgroup_export }
+  let(:export_1) { create :netex_export, creator: user.name, parent: workgroup_export }
+  let(:export_2) { create :netex_export, status: "successful", creator: user.name, parent: workgroup_export }
 
   describe "GET #notify_parent" do
     context 'unauthenticated' do

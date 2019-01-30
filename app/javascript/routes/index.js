@@ -4,7 +4,7 @@ import { Provider } from 'react-redux'
 import { createStore } from 'redux'
 import reducers from './reducers'
 import App from './components/App'
-import { handleForm, handleStopPoints } from './form_helper'
+import { RouteFormHelper } from './form_helper'
 import clone from '../helpers/clone'
 let datas = clone(window, "itinerary_stop", true)
 datas = JSON.parse(decodeURIComponent(datas))
@@ -69,15 +69,13 @@ render(
   document.getElementById('stop_points')
 )
 
-document.querySelector('input[name=commit]').addEventListener('click', (event)=>{
-  let state = store.getState()
-
-  let name = $("#route_name").val()
-  let publicName = $("#route_published_name").val()
-  if (name == "" || publicName == "") {
-    event.preventDefault()
-    handleForm("#route_name", "#route_published_name")
-  }
-
-  handleStopPoints(event, state)
+document.querySelector('input[name=commit]').addEventListener('click', (event) => {
+  let formHelper = new RouteFormHelper({
+    inputIds: [
+      '#route_name',
+      '#route_published_name'
+    ],
+    stopPoints: store.getState().stopPoints
+  })
+  formHelper.handleSubmit(event)
 })

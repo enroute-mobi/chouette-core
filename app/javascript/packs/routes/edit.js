@@ -9,7 +9,7 @@ import { createStore } from 'redux'
 
 import reducers from '../../routes/reducers'
 import App from '../../routes/components/App'
-import formHelper from '../../routes/form_helper'
+import RouteFormHelper from '../../routes/form_helper'
 import clone from '../../helpers/clone'
 let datas = clone(window, "itinerary_stop", true)
 datas = JSON.parse(decodeURIComponent(datas))
@@ -87,14 +87,12 @@ render(
 )
 
 document.querySelector('input[name=commit]').addEventListener('click', (event) => {
-  let state = store.getState()
-
-  let name = $("#route_name").val()
-  let publicName = $("#route_published_name").val()
-  if (name == "" || publicName == "") {
-    event.preventDefault()
-    formHelper.handleForm("#route_name", "#route_published_name")
-  }
-
-  formHelper.handleStopPoints(event, state)
+  let formHelper = new RouteFormHelper({
+    inputIds: [
+      '#route_name',
+      '#route_published_name'
+    ],
+    stopPoints: store.getState().stopPoints
+  })
+  formHelper.handleSubmit(event)
 })

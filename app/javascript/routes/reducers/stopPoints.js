@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import formHelper from '../form_helper'
+import RouteFormHelper from '../form_helper'
 
 const stopPoint = (state = {}, action, length) => {
   switch (action.type) {
@@ -20,15 +20,9 @@ const stopPoint = (state = {}, action, length) => {
   }
 }
 
-const updateFormForDeletion = (stop) =>{
-  if (stop.stoppoint_id !== undefined){
-    let now = Date.now()
-    formHelper.addInput('id', stop.stoppoint_id, now)
-    formHelper.addInput('_destroy', 'true', now)
-  }
-}
-
 const stopPoints = (state = [], action) => {
+  const formHelper = new RouteFormHelper({ stopPoints: state })
+
   switch (action.type) {
     case 'ADD_STOP':
       return [
@@ -50,7 +44,7 @@ const stopPoints = (state = [], action) => {
         ...state.slice(action.index + 2)
       ]
     case 'DELETE_STOP':
-      updateFormForDeletion(state[action.index])
+      formHelper.onDeleteStopPoint(action.index)
       return [
         ...state.slice(0, action.index),
         ...state.slice(action.index + 1).map((stopPoint)=>{

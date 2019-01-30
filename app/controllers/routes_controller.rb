@@ -56,7 +56,9 @@ class RoutesController < ChouetteController
   end
 
   def create
+    binding.pry
     create! do |success, failure|
+      binding.pry
       success.html { redirect_to referential_line_path(@referential,@line) }
       failure.html { flash[:alert] = route.errors[:flash]; render :action => :new }
     end

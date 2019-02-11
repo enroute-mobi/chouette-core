@@ -14,10 +14,6 @@ module LocalExportSupport
     end
   end
 
-  def zip_file_name
-    @zip_file_name ||= "chouette-its-#{Time.now.to_i}"
-  end
-
   def date_range
     @date_range ||= Time.now.to_date..self.duration.to_i.days.from_now.to_date
   end
@@ -38,7 +34,7 @@ module LocalExportSupport
       return
     end
 
-    generate_export_file
+    upload_file generate_export_file
     self.status = :successful
     self.ended_at = Time.now
     self.save!

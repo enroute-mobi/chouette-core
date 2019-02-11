@@ -40,6 +40,7 @@ fr:
       default: Netex
       line: Netex par ligne
       full: Netex complet
+    netex_full: Netex Full
     referential_companies: Transporteurs
     gtfs: GTFS
     base:
@@ -108,6 +109,9 @@ fr:
           export_type_collection:
             line: Par ligne
             full: Complet
+        netex_full:
+          <<: *attrs
+          duration: Durée (en jours)
         gtfs:
           <<: *attrs
           duration: Durée (en jours)

@@ -24,6 +24,7 @@ class ExportDecorator < AF83::Decorator
       end
       l.href   { object.file.url }
       l.disabled { !object.file.present? }
+      l.target :blank
     end
 
   end

@@ -7,6 +7,10 @@ class Export::Gtfs < Export::Base
     GTFSExportWorker
   end
 
+  def zip_file_name
+    @zip_file_name ||= "chouette-its-#{Time.now.to_i}"
+  end
+
   def stop_area_stop_hash
     @stop_area_stop_hash ||= {}
   end
@@ -42,8 +46,7 @@ class Export::Gtfs < Export::Base
   def generate_export_file
     tmp_dir = Dir.mktmpdir
     export_to_dir tmp_dir
-    file = File.open File.join(tmp_dir, "#{zip_file_name}.zip")
-    upload_file file
+    File.open File.join(tmp_dir, "#{zip_file_name}.zip")
   end
 
   def gtfs_line_type line

@@ -1,26 +1,10 @@
 class Export::Gtfs < Export::Base
-  after_commit :launch_worker, :on => :create
+  include LocalExportSupport
 
   option :duration, required: true, type: :integer, default_value: 200
 
-  def launch_worker
-    if synchronous
-      run unless status == "running"
-    else
-      GTFSExportWorker.perform_async_or_fail(self)
-    end
-  end
-
-  def zip_file_name
-    @zip_file_name ||= "chouette-its-#{Time.now.to_i}"
-  end
-
-  def journeys
-    @journeys ||= Chouette::VehicleJourney.with_matching_timetable (date_range)
-  end
-
-  def date_range
-    @date_range ||= Time.now.to_date..self.duration.to_i.days.from_now.to_date
+  def worker_class
+    GTFSExportWorker
   end
 
   def stop_area_stop_hash
@@ -55,6 +39,13 @@ class Export::Gtfs < Export::Base
     stop_area.registration_number.presence || stop_area.object_id
   end
 
+  def generate_export_file
+    tmp_dir = Dir.mktmpdir
+    export_to_dir tmp_dir
+    file = File.open File.join(tmp_dir, "#{zip_file_name}.zip")
+    upload_file file
+  end
+
   def gtfs_line_type line
     case line.transport_mode
     when 'rail'
@@ -62,32 +53,6 @@ class Export::Gtfs < Export::Base
     else
       '3'
     end
-  end
-
-  def export
-    referential.switch
-
-    if journeys.count == 0
-      self.update status: :successful, ended_at: Time.now
-      vals = {}
-      vals[:criticity] = :info
-      vals[:message_key] = :no_matching_journey
-      self.messages.create vals
-      return
-    end
-
-    tmp_dir = Dir.mktmpdir
-    export_to_dir tmp_dir
-    file = File.open File.join(tmp_dir, "#{zip_file_name}.zip")
-    upload_file file
-    self.status = :successful
-    self.ended_at = Time.now
-    self.save!
-  rescue => e
-    Rails.logger.info "Failed: #{e.message}"
-    Rails.logger.info e.backtrace.join("\n")
-    self.status = :failed
-    self.save!
   end
 
   def export_to_dir(directory)

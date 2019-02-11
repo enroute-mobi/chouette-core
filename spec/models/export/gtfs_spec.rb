@@ -1,26 +1,4 @@
-RSpec.describe Export::Gtfs, type: :model do
-  let(:stop_area_referential){ create :stop_area_referential }
-  let(:line_referential){ create :line_referential }
-  let(:company){ create :company, line_referential: line_referential }
-  let(:workbench){ create :workbench, line_referential: line_referential, stop_area_referential: stop_area_referential }
-  let(:referential_metadata){ create(:referential_metadata, lines: line_referential.lines.limit(3)) }
-  let(:referential){
-    create :referential,
-    workbench: workbench,
-    organisation: workbench.organisation,
-    metadatas: [referential_metadata]
-  }
-
-  before(:each) do
-    2.times { create :line, line_referential: line_referential, company: company, network: nil }
-    8.times { create :stop_area, stop_area_referential: stop_area_referential }
-    2.times { create :stop_area,
-      stop_area_referential: stop_area_referential,
-      kind: "non_commercial",
-      area_type: Chouette::AreaType.non_commercial.sample
-    }
-  end
-
+RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
   let(:gtfs_export) { create :gtfs_export, referential: referential, workbench: workbench, duration: 5}
 
   it "should create a default company and generate a message if the journey or its line doesn't have a company" do

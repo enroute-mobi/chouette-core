@@ -1,18 +1,4 @@
-class Chouette::Netex::Operator
-  include Chouette::Netex::Helpers
-
-  attr_accessor :company
-
-  def initialize(company)
-    @company = company
-  end
-
-  def custom_field_values
-    company.custom_fields.values.select{ |v| v.display_value.present? }.map do |v|
-      [v.code, v.display_value]
-    end
-  end
-
+class Chouette::Netex::Operator < Chouette::Netex::Resource
   def attributes
     {
       'PublicCode'  => 'code',
@@ -31,28 +17,15 @@ class Chouette::Netex::Operator
   end
 
   def to_xml(builder)
-    builder.Operator(
-      version: :any,
-      created: format_time(company.created_at),
-      changed: format_time(company.updated_at),
-      id: company.objectid) do
+    builder.Operator(resource_metas) do
       builder.keyList do
-        custom_field_values.each do |k, v|
-          builder.KeyValue do
-            builder.Key k
-            builder.Value v
-          end
-        end
+        custom_fields_as_key_values(builder)
       end
 
-      attributes.each do |tag, attr|
-        builder.send(tag, company.send(attr))
-      end
+      attributes_mapping builder
 
       builder.ContactDetails do
-        contact_attributes.each do |tag, attr|
-          builder.send(tag, company.send(attr))
-        end
+        attributes_mapping(builder, contact_attributes)
       end
     end
   end

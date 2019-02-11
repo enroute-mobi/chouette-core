@@ -1,6 +1,6 @@
 RSpec.describe Export::NetexFull, type: [:model, :with_exportable_referential] do
 
-  let(:export) { create :netex_export_full, referential: referential, workbench: workbench, duration: 5, synchronous: synchronous}
+  let(:export) { create :netex_export_full, referential: referential, workbench: workbench, synchronous: synchronous}
   let(:synchronous){ false }
   it 'should call a worker' do
     expect(NetexFullExportWorker).to receive(:perform_async_or_fail)

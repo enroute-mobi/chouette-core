@@ -8,7 +8,7 @@ module StopAreaReferentialSupport
   end
 
   def workgroup
-    @workgroup ||= Workgroup.where(stop_area_referential_id: stop_area_referential_id).last
+    @workgroup ||= self.class.current_workgroup || Workgroup.where(stop_area_referential_id: stop_area_referential_id).last
   end
 
   def hub_restricted?

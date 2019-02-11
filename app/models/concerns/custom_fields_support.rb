@@ -28,6 +28,16 @@ module CustomFieldsSupport
       Hash[*custom_fields(workgroup).map{|cf| [cf.code, cf]}.flatten]
     end
 
+    def self.within_workgroup workgroup
+      @_current_workgroup = workgroup
+      yield
+      @_current_workgroup = nil
+    end
+
+    def self.current_workgroup
+      @_current_workgroup
+    end
+
     def method_missing method_name, *args
       if !@custom_fields_initialized && method_name =~ /custom_field_*/ && method_name.to_sym != :custom_field_values
         initialize_custom_fields

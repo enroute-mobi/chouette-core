@@ -12,7 +12,6 @@ RSpec.describe Chouette::Netex::Operator do
 
   it 'should have correct attributes' do
     Timecop.freeze '2000-01-01 12:00 UTC' do
-      node = result.doc.css('Operator').first
       expect(node['version']).to eq 'any'
       expect(node['id']).to eq company.objectid
       expect(node['created']).to eq '2000-01-01T12:00:00.0Z'
@@ -34,20 +33,20 @@ RSpec.describe Chouette::Netex::Operator do
       expect(keyvalue.css('Key')[0].text).to eq 'energy'
       expect(keyvalue.css('Value')[0].text).to eq 'foo'
     end
+  end
 
-    {
-      'PublicCode' => 'code',
-      'CompanyCode' => 'registration_number',
-      'Name' => 'name',
-      'ShortName' => 'short_name',
-      'ContactDetails > Email' => 'email',
-      'ContactDetails > Phone' => 'phone',
-      'ContactDetails > Url' => 'url'
-    }.each do |tag, attribute|
-      it "should have a #{tag} child matching #{attribute} attribute" do
-        expect(node.css(tag).size).to eq 1
-        expect(node.css(tag).first.text.presence).to eq company.send(attribute)
-      end
+  {
+    'PublicCode' => 'code',
+    'CompanyCode' => 'registration_number',
+    'Name' => 'name',
+    'ShortName' => 'short_name',
+    'ContactDetails > Email' => 'email',
+    'ContactDetails > Phone' => 'phone',
+    'ContactDetails > Url' => 'url'
+  }.each do |tag, attribute|
+    it "should have a #{tag} child matching #{attribute} attribute" do
+      expect(node.css(tag).size).to eq 1
+      expect(node.css(tag).first.text.presence).to eq company.send(attribute)
     end
   end
 end

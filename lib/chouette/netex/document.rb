@@ -8,20 +8,22 @@ class Chouette::Netex::Document
   end
 
   def build
-    @builder = Nokogiri::XML::Builder.new(encoding: 'utf-8') do |xml|
-      xml.PublicationDelivery(
-        'xmlns' => 'http://www.netex.org.uk/netex',
-        'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
-        'xmlns:gml' => 'http://www.opengis.net/gml/3.2',
-        'xmlns:siri' => 'http://www.siri.org.uk/siri',
-        'version' => '1.04:NO-NeTEx-networktimetable:1.0'
-      ) do
-        xml.PublicationTimestamp format_time(Time.now)
-        xml.ParticipantRef participant_ref
-        xml.dataObjects do
-          xml.CompositeFrame(version: :any, id: 'Chouette:CompositeFrame:1') do
-            xml.frames do
-              self.frames(xml)
+    ActiveRecord::Base.cache do
+      @builder = Nokogiri::XML::Builder.new(encoding: 'utf-8') do |xml|
+        xml.PublicationDelivery(
+          'xmlns' => 'http://www.netex.org.uk/netex',
+          'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
+          'xmlns:gml' => 'http://www.opengis.net/gml/3.2',
+          'xmlns:siri' => 'http://www.siri.org.uk/siri',
+          'version' => '1.04:NO-NeTEx-networktimetable:1.0'
+        ) do
+          xml.PublicationTimestamp format_time(Time.now)
+          xml.ParticipantRef participant_ref
+          xml.dataObjects do
+            xml.CompositeFrame(version: :any, id: 'Chouette:CompositeFrame:1') do
+              xml.frames do
+                self.frames(xml)
+              end
             end
           end
         end
@@ -52,15 +54,34 @@ class Chouette::Netex::Document
         operators builder
       end
     end
+    builder.ResourceFrame(version: :any, id: 'Chouette:SiteFrame:1') do
+      builder.stopPlaces do
+        stop_places builder
+      end
+    end
   end
 
   def operators(builder)
-    companies.each do |company|
-      Chouette::Netex::Operator.new(company).to_xml(builder)
+    Chouette::Company.within_workgroup(referential.workgroup) do
+      companies.find_each do |company|
+        Chouette::Netex::Operator.new(company, companies).to_xml(builder)
+      end
+    end
+  end
+
+  def stop_places(builder)
+    Chouette::StopArea.within_workgroup(referential.workgroup) do
+      stop_areas.where('stop_areas.area_type != ? OR stop_areas.parent_id IS NULL', :zdep).includes(:parent).find_each do |stop_area|
+        Chouette::Netex::StopPlace.new(stop_area, stop_areas).to_xml(builder)
+      end
     end
   end
 
   def companies
     @companies ||= referential.line_referential.companies
+  end
+
+  def stop_areas
+    @stop_areas ||= referential.stop_area_referential.stop_areas
   end
 end

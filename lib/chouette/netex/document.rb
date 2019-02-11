@@ -1,7 +1,10 @@
 class Chouette::Netex::Document
-  def initialize(referential, date_range)
+  include Chouette::Netex::Helpers
+
+  attr_accessor :referential
+
+  def initialize(referential)
     @referential = referential
-    @date_range = date_range
   end
 
   def build
@@ -12,17 +15,17 @@ class Chouette::Netex::Document
         'xmlns:gml' => 'http://www.opengis.net/gml/3.2',
         'xmlns:siri' => 'http://www.siri.org.uk/siri',
         'version' => '1.04:NO-NeTEx-networktimetable:1.0'
-      ) {
-        xml.PublicationTimestamp Time.now.utc.strftime('%Y-%m-%dT%H:%M:%S.%1NZ')
+      ) do
+        xml.PublicationTimestamp format_time(Time.now)
         xml.ParticipantRef participant_ref
-        xml.dataObjects {
-          xml.CompositeFrame(version: :any, id: 'Chouette:CompositeFrame:1') {
-            xml.frames {
+        xml.dataObjects do
+          xml.CompositeFrame(version: :any, id: 'Chouette:CompositeFrame:1') do
+            xml.frames do
               self.frames(xml)
-            }
-          }
-        }
-      }
+            end
+          end
+        end
+      end
     end
   end
 
@@ -41,7 +44,23 @@ class Chouette::Netex::Document
     "enRoute"
   end
 
+  protected
+
   def frames(builder)
-    
+    builder.ResourceFrame(version: :any, id: 'Chouette:ResourceFrame:1') do
+      builder.organisations do
+        operators builder
+      end
+    end
+  end
+
+  def operators(builder)
+    companies.each do |company|
+      Chouette::Netex::Operator.new(company).to_xml(builder)
+    end
+  end
+
+  def companies
+    @companies ||= referential.line_referential.companies
   end
 end

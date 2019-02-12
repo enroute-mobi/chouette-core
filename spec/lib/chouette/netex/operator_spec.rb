@@ -21,12 +21,19 @@ RSpec.describe Chouette::Netex::Operator, type: :netex_resource do
   end
 
   it_behaves_like 'it has children matching attributes', {
-    'PublicCode' => 'code',
-    'CompanyCode' => 'registration_number',
-    'Name' => 'name',
-    'ShortName' => 'short_name',
-    'ContactDetails > Email' => 'email',
-    'ContactDetails > Phone' => 'phone',
-    'ContactDetails > Url' => 'url'
+    'PublicCode' => :code,
+    'CompanyCode' => :registration_number,
+    'Name' => :name,
+    'ShortName' => :short_name,
+    'ContactDetails > Email' => :email,
+    'ContactDetails > Phone' => :phone,
+    'ContactDetails > Url' => :url
   }
+
+  context 'without contact attributes' do
+    before(:each) do
+      resource.update email: nil, phone: nil, url: nil
+    end
+    it_behaves_like 'it has no child', 'ContactDetails'
+  end
 end

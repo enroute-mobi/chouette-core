@@ -1,6 +1,6 @@
 RSpec.describe Chouette::Netex::StopPlace, type: :netex_resource do
   let(:collection) { Chouette::StopArea.all }
-  let(:resource){ create :stop_area, longitude: 12, latitude: 45.12, localized_names: {gb: 'Foo'} }
+  let(:resource){ create :stop_area, longitude: 12, latitude: 45.12, localized_names: {gb: 'Foo'}, comment: 'Lorem ipsum' }
 
   it_behaves_like 'it has default netex resource attributes', { status: 'active' }
   it_behaves_like 'it has one child with value', 'Centroid Location Longitude', ->{ resource.longitude.to_s }
@@ -16,19 +16,31 @@ RSpec.describe Chouette::Netex::StopPlace, type: :netex_resource do
     it_behaves_like 'it has default netex resource attributes', { status: 'inactive' }
   end
 
+  context 'without geolocation' do
+    before(:each) do
+      resource.update latitude: nil, longitude: nil
+    end
+
+    it_behaves_like 'it has no child', 'Centroid'
+  end
+
   it_behaves_like 'it has children matching attributes', {
-    '> Name' => 'name',
-    'Description' => 'comment',
-    'Url' => 'url',
-    'PrivateCode' => 'registration_number'
+    '> Name' => :name,
+    'Description' => :comment,
+    'Url' => :url,
+    'PrivateCode' => :registration_number
   }
 
   context 'with ZDEP children' do
-    it 'should add quays' do
+    before(:each) do
       resource.update area_type: :gdl, kind: :commercial
       create :stop_area, parent: resource, area_type: :zdep, kind: :commercial
+    end
+    it 'should add quays' do
       expect(node.css('Quay').count).to eq 1
     end
+
+    it_behaves_like 'it has no child', 'Quay keyList'
   end
 
   context 'the typeOfPlace' do
@@ -56,12 +68,13 @@ RSpec.describe Chouette::Netex::StopPlace, type: :netex_resource do
       end
     end
 
-    it 'should fill the PostalAddress' do
-      resource.update country_code: :fr
-      expect(node.css('PostalAddress CountryRef').last.text).to eq 'FR'
-      expect(node.css('PostalAddress Town').last.text).to eq resource.city_name
-      expect(node.css('PostalAddress AddressLine1').last.text).to eq resource.street_name
-      expect(node.css('PostalAddress PostCode').last.text).to eq resource.zip_code
+
+    context 'PostalAddress' do
+      before(:each) { resource.update country_code: :fr }
+      it_behaves_like 'it has one child with ref', 'PostalAddress CountryRef', 'FR'
+      it_behaves_like 'it has one child with value', 'PostalAddress Town', :city_name
+      it_behaves_like 'it has one child with value', 'PostalAddress AddressLine1', :street_name
+      it_behaves_like 'it has one child with value', 'PostalAddress PostCode', :zip_code
     end
 
     it 'should fill the keyList' do

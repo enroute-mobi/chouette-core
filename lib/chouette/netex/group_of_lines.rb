@@ -7,9 +7,9 @@ class Chouette::Netex::GroupOfLines < Chouette::Netex::Resource
     }
   end
 
-  def to_xml(builder)
-    builder.GroupOfLines(resource_metas) do
-      attributes_mapping builder
+  def build_xml
+    @builder.GroupOfLines(resource_metas) do
+      attributes_mapping
     end
   end
 end

@@ -12,9 +12,7 @@ class Chouette::Netex::Line < Chouette::Netex::Resource
       'PublicCode' => :number,
       'PrivateCode' => :registration_number,
       'TransportMode' => :transport_mode,
-      'TransportSubmode' => :transport_submode,
-      'OperatorRef' => ->{ resource.company_light&.objectid },
-      'RepresentedByGroupRef' => ->{ resource.network&.objectid }
+      'TransportSubmode' => :transport_submode
     }
   end
 
@@ -25,11 +23,13 @@ class Chouette::Netex::Line < Chouette::Netex::Resource
     }
   end
 
-  def to_xml(builder)
-    builder.Line(resource_metas) do
-      attributes_mapping builder
-      builder.Presentation do
-        attributes_mapping builder, presentation_attributes
+  def build_xml
+    @builder.Line(resource_metas) do
+      attributes_mapping
+      ref 'OperatorRef', resource.company_light&.objectid
+      ref 'RepresentedByGroupRef', resource.network&.objectid
+      @builder.Presentation do
+        attributes_mapping presentation_attributes
       end
     end
   end

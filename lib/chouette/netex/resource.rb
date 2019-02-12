@@ -28,11 +28,19 @@ class Chouette::Netex::Resource
     @collection
   end
 
-  def attributes_mapping(builder, mapping=nil)
+  def to_xml(builder)
+    @builder = builder
+    build_xml
+    @builder = nil
+  end
+
+  def attributes_mapping(mapping=nil, target=nil)
     mapping ||= attributes
+    target ||= resource
 
     mapping.each do |tag, attr|
-      builder.send(tag, attr_to_val(attr))
+      val = attr_to_val(attr, target)
+      @builder.send(tag, val) if val.present?
     end
   end
 
@@ -57,30 +65,49 @@ class Chouette::Netex::Resource
     end
   end
 
-  def custom_fields_as_key_values(builder, source=nil)
+  def custom_fields_as_key_values(source=nil)
     custom_field_values(source).each do |k, v|
-      key_value(k, v, builder)
+      key_value(k, v)
     end
   end
 
-  def attr_to_val(attr)
+  def attr_to_val(attr, target=nil)
+    target ||= resource
+
     if attr.is_a?(Proc)
       val = attr.call
     elsif attr.is_a?(Symbol)
-      val = resource.send(attr)
+      val = target.send(attr)
     else
       val = attr
     end
   end
 
-  def key_value(name, attr, builder)
+  def key_value(name, attr)
     val = attr_to_val(attr)
+    return unless val.present?
 
-    if val.present?
-      builder.KeyValue do
-        builder.Key name
-        builder.Value val
-      end
+    @builder.KeyValue do
+      @builder.Key name
+      @builder.Value val
+    end
+  end
+
+  def ref(name, val)
+    return unless val.present?
+
+    @builder.send(name, ref: val)
+  end
+
+  def node_if_content name, &block
+    built = @builder.send name, &block
+    node = built.instance_variable_get("@node")
+    node.remove if node.children.count.zero?
+  end
+
+  def node_with_attributes_mapping name, attributes
+    node_if_content name do
+      attributes_mapping(attributes)
     end
   end
 end

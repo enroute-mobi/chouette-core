@@ -16,17 +16,15 @@ class Chouette::Netex::Operator < Chouette::Netex::Resource
     }
   end
 
-  def to_xml(builder)
-    builder.Operator(resource_metas) do
-      builder.keyList do
-        custom_fields_as_key_values(builder)
+  def build_xml
+    @builder.Operator(resource_metas) do
+      node_if_content 'keyList' do
+        custom_fields_as_key_values
       end
 
-      attributes_mapping builder
+      attributes_mapping
 
-      builder.ContactDetails do
-        attributes_mapping(builder, contact_attributes)
-      end
+      node_with_attributes_mapping 'ContactDetails', contact_attributes
     end
   end
 end

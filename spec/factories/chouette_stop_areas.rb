@@ -10,6 +10,7 @@ FactoryGirl.define do
     city_name 'Bordeaux'
     zip_code '33800'
     street_name "Parc du couvent, Avenue Steve Biko"
+    url   { Faker::Internet.url }
 
     association :stop_area_referential
 

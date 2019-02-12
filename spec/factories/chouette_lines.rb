@@ -2,8 +2,10 @@ FactoryGirl.define do
 
   factory :line, :class => Chouette::Line do
     sequence(:name) { |n| "Line #{n}" }
+    sequence(:published_name) { |n| "Line-#{n}" }
     sequence(:objectid) { |n| "STIF:CODIFLIGNE:Line:#{n}" }
     sequence(:number, 1)
+
 
     association :network, :factory => :network
     association :company, :factory => :company
@@ -15,6 +17,8 @@ FactoryGirl.define do
     end
 
     sequence(:registration_number) { |n| "test-#{n}" }
+
+    url { Faker::Internet.url }
 
     transient do
       referential nil

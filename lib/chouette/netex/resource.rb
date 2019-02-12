@@ -1,7 +1,7 @@
 class Chouette::Netex::Resource
   include Chouette::Netex::Helpers
 
-  def initialize(resource, collection)
+  def initialize(resource, collection=nil)
     @resource = resource
     @collection = collection
   end
@@ -18,7 +18,7 @@ class Chouette::Netex::Resource
     mapping ||= attributes
 
     mapping.each do |tag, attr|
-      builder.send(tag, resource.send(attr))
+      builder.send(tag, attr_to_val(attr))
     end
   end
 
@@ -49,7 +49,7 @@ class Chouette::Netex::Resource
     end
   end
 
-  def key_value(name, attr, builder)
+  def attr_to_val(attr)
     if attr.is_a?(Proc)
       val = attr.call
     elsif attr.is_a?(Symbol)
@@ -57,6 +57,10 @@ class Chouette::Netex::Resource
     else
       val = attr
     end
+  end
+
+  def key_value(name, attr, builder)
+    val = attr_to_val(attr)
 
     if val.present?
       builder.KeyValue do

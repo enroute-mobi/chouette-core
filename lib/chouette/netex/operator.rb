@@ -1,18 +1,18 @@
 class Chouette::Netex::Operator < Chouette::Netex::Resource
   def attributes
     {
-      'PublicCode'  => 'code',
-      'CompanyCode' => 'registration_number',
-      'Name'        => 'name',
-      'ShortName'   => 'short_name'
+      'PublicCode'  => :code,
+      'CompanyCode' => :registration_number,
+      'Name'        => :name,
+      'ShortName'   => :short_name
     }
   end
 
   def contact_attributes
     {
-      'Email' => 'email',
-      'Phone' => 'phone',
-      'Url'   => 'url'
+      'Email' => :email,
+      'Phone' => :phone,
+      'Url'   => :url
     }
   end
 

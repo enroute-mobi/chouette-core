@@ -18,7 +18,10 @@ RSpec.describe Export::NetexFull, type: [:model, :with_exportable_referential] d
       include_context 'with exportable journeys'
 
       it 'should create a new Netex document' do
-        expect(Chouette::Netex::Document).to receive(:new)
+        expect(Chouette::Netex::Document).to receive(:new).and_call_original
+        expect_any_instance_of(Chouette::Netex::Document).to receive(:build)
+        expect_any_instance_of(Chouette::Netex::Document).to receive(:to_xml)
+        expect(export).to receive :upload_file
         export.run_callbacks(:commit)
       end
     end

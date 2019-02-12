@@ -35,10 +35,10 @@ class Chouette::Netex::StopPlace < Chouette::Netex::Resource
 
   def attributes
     {
-      'Name' => 'name',
-      'Description' => 'comment',
-      'Url' => 'url',
-      'PrivateCode' => 'registration_number'
+      'Name' => :name,
+      'Description' => :comment,
+      'Url' => :url,
+      'PrivateCode' => :registration_number
     }
   end
 

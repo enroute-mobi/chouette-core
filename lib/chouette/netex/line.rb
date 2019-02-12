@@ -28,7 +28,7 @@ class Chouette::Netex::Line < Chouette::Netex::Resource
       attributes_mapping
       ref 'OperatorRef', resource.company_light&.objectid
       ref 'RepresentedByGroupRef', resource.network&.objectid
-      @builder.Presentation do
+      node_if_content 'Presentation' do
         attributes_mapping presentation_attributes
       end
     end

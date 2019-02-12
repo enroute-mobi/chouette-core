@@ -7,6 +7,7 @@ RSpec.describe Chouette::Netex::Document do
     expect(subject).to receive :netex_stop_places
     expect(subject).to receive :netex_lines
     expect(subject).to receive :netex_groups_of_lines
+    expect(subject).to receive :netex_routes
 
     subject.build
   end

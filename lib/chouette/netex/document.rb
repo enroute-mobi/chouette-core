@@ -31,8 +31,12 @@ class Chouette::Netex::Document
     end
   end
 
+  def reset_xml
+    @xml = nil
+  end
+
   def to_xml
-    @builder.to_xml
+    @xml ||= @builder.to_xml
   end
 
   def temp_file
@@ -60,8 +64,20 @@ class Chouette::Netex::Document
       end
     end
     builder.ServiceFrame(version: :any, id: 'Chouette:ServiceFrame:1') do
-      builder.routePoints
-      builder.routes
+      if routes.exists?
+        builder.routePoints do
+          netex_route_points builder
+        end
+        builder.routes do
+          netex_routes builder
+        end
+        builder.scheduledStopPoints do
+          netex_scheduled_stop_points builder
+        end
+        builder.stopAssignements do
+          netex_stop_assignements builder
+        end
+      end
       builder.lines do
         netex_lines builder
       end
@@ -99,6 +115,30 @@ class Chouette::Netex::Document
     end
   end
 
+  def netex_routes(builder)
+    routes.find_each do |route|
+      Chouette::Netex::Route.new(route).to_xml(builder)
+    end
+  end
+
+  def netex_scheduled_stop_points(builder)
+    stop_points.select(:id, :objectid).find_each do |stop_point|
+      Chouette::Netex::ScheduledStopPoint.new(stop_point).to_xml(builder)
+    end
+  end
+
+  def netex_stop_assignements(builder)
+    stop_points.includes(:stop_area_light).find_each do |stop_point|
+      Chouette::Netex::PassengerStopAssignment.new(stop_point).to_xml(builder)
+    end
+  end
+
+  def netex_route_points(builder)
+    stop_points.includes(:stop_area_light).find_each do |stop_point|
+      Chouette::Netex::RoutePoint.new(stop_point).to_xml(builder)
+    end
+  end
+
   def companies
     @companies ||= referential.line_referential.companies
   end
@@ -113,5 +153,13 @@ class Chouette::Netex::Document
 
   def networks
     @networks ||= referential.line_referential.networks
+  end
+
+  def routes
+    @routes ||= referential.routes
+  end
+
+  def stop_points
+    @stop_points ||= referential.stop_points
   end
 end

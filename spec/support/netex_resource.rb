@@ -8,7 +8,8 @@ RSpec.shared_context 'with a netex resource' do
      end
    end
 
-   let(:node){ result.doc.children.first }
+   let(:doc){ result.doc }
+   let(:node){ doc.children.first }
 
    before(:each) do
      described_class.reset_cache

@@ -1,5 +1,7 @@
 class Chouette::Netex::Document
-  include Chouette::Netex::Helpers
+  include Chouette::Netex::Concerns::Helpers
+  include Chouette::Netex::Concerns::EntityCollections
+  include Chouette::Netex::Concerns::SourceCollections
 
   attr_accessor :referential
 
@@ -52,124 +54,60 @@ class Chouette::Netex::Document
 
   protected
 
+  def resource_frame(builder)
+    return unless companies.exists?
+
+    builder.ResourceFrame(version: :any, id: 'Chouette:ResourceFrame:1') do
+      builder.organisations do
+        netex_operators builder
+      end
+    end
+  end
+
+  def site_frame(builder)
+    return unless stop_areas.exists?
+
+    builder.SiteFrame(version: :any, id: 'Chouette:SiteFrame:1') do
+      builder.stopPlaces do
+        netex_stop_places builder
+      end
+    end
+  end
+
+  def service_frame(builder)
+    return unless routes.exists? || lines.exists? || networks.exists?
+
+    builder.ServiceFrame(version: :any, id: 'Chouette:ServiceFrame:1') do
+      if routes.exists?
+        builder.routePoints do
+          netex_route_points builder
+        end
+        builder.routes do
+          netex_routes builder
+        end
+        builder.scheduledStopPoints do
+          netex_scheduled_stop_points builder
+        end
+        builder.stopAssignements do
+          netex_stop_assignements builder
+        end
+      end
+      if lines.exists?
+        builder.lines do
+          netex_lines builder
+        end
+      end
+      if networks.exists?
+        builder.groupsOfLines do
+          netex_groups_of_lines builder
+        end
+      end
+    end
+  end
+
   def frames(builder)
-    if companies.exists?
-      builder.ResourceFrame(version: :any, id: 'Chouette:ResourceFrame:1') do
-        builder.organisations do
-          netex_operators builder
-        end
-      end
-    end
-    if stop_areas.exists?
-      builder.ResourceFrame(version: :any, id: 'Chouette:SiteFrame:1') do
-        builder.stopPlaces do
-          netex_stop_places builder
-        end
-      end
-    end
-    if routes.exists? || lines.exists? || networks.exists?
-      builder.ServiceFrame(version: :any, id: 'Chouette:ServiceFrame:1') do
-        if routes.exists?
-          builder.routePoints do
-            netex_route_points builder
-          end
-          builder.routes do
-            netex_routes builder
-          end
-          builder.scheduledStopPoints do
-            netex_scheduled_stop_points builder
-          end
-          builder.stopAssignements do
-            netex_stop_assignements builder
-          end
-        end
-        if lines.exists?
-          builder.lines do
-            netex_lines builder
-          end
-        end
-        if networks.exists?
-          builder.groupsOfLines do
-            netex_groups_of_lines builder
-          end
-        end
-      end
-    end
-  end
-
-  def netex_operators(builder)
-    Chouette::Company.within_workgroup(referential.workgroup) do
-      companies.find_each do |company|
-        Chouette::Netex::Operator.new(company).to_xml(builder)
-      end
-    end
-  end
-
-  def netex_stop_places(builder)
-    Chouette::StopArea.within_workgroup(referential.workgroup) do
-      stop_areas.where('stop_areas.area_type != ? OR stop_areas.parent_id IS NULL', :zdep).includes(:parent).find_each do |stop_area|
-        Chouette::Netex::StopPlace.new(stop_area, stop_areas).to_xml(builder)
-      end
-    end
-  end
-
-  def netex_lines(builder)
-    lines.find_each do |line|
-      Chouette::Netex::Line.new(line).to_xml(builder)
-    end
-  end
-
-  def netex_groups_of_lines(builder)
-    networks.find_each do |network|
-      Chouette::Netex::GroupOfLines.new(network).to_xml(builder)
-    end
-  end
-
-  def netex_routes(builder)
-    routes.find_each do |route|
-      Chouette::Netex::Route.new(route).to_xml(builder)
-    end
-  end
-
-  def netex_scheduled_stop_points(builder)
-    stop_points.select(:id, :objectid).find_each do |stop_point|
-      Chouette::Netex::ScheduledStopPoint.new(stop_point).to_xml(builder)
-    end
-  end
-
-  def netex_stop_assignements(builder)
-    stop_points.includes(:stop_area_light).find_each do |stop_point|
-      Chouette::Netex::PassengerStopAssignment.new(stop_point).to_xml(builder)
-    end
-  end
-
-  def netex_route_points(builder)
-    stop_points.includes(:stop_area_light).find_each do |stop_point|
-      Chouette::Netex::RoutePoint.new(stop_point).to_xml(builder)
-    end
-  end
-
-  def companies
-    @companies ||= referential.line_referential.companies
-  end
-
-  def stop_areas
-    @stop_areas ||= referential.stop_area_referential.stop_areas
-  end
-
-  def lines
-    @lines ||= referential.lines.includes(:network, :company_light)
-  end
-
-  def networks
-    @networks ||= referential.line_referential.networks
-  end
-
-  def routes
-    @routes ||= referential.routes
-  end
-
-  def stop_points
-    @stop_points ||= referential.stop_points
+    resource_frame(builder)
+    site_frame(builder)
+    service_frame(builder)
   end
 end

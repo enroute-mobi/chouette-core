@@ -1,4 +1,4 @@
-module Chouette::Netex::Helpers
+module Chouette::Netex::Concerns::Helpers
   def format_time(time)
     time.utc.strftime('%Y-%m-%dT%H:%M:%S.%1NZ')
   end

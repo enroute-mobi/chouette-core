@@ -63,7 +63,7 @@ RSpec.describe Chouette::Netex::StopPlace, type: :netex_resource do
         if k == :border
           expect(node.css('PublicUse').last.text).to eq 'staffOnly'
         else
-          expect(node.css('PublicUse').last.text).to be_empty
+          expect(node.css('PublicUse')).to be_empty
         end
       end
     end

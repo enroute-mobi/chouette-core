@@ -69,13 +69,24 @@ class Chouette::Netex::StopPlace < Chouette::Netex::Resource
     key_value('TimeZoneOffset', ->{ resource.time_zone_offset / 3600 })
   end
 
+  def centroid_location(target)
+    node_if_content 'Location' do
+      @builder.Longitude(target.longitude) if target.longitude
+      @builder.Latitude(target.latitude) if target.latitude
+    end
+  end
+
   def centroid(target=nil)
     target ||= resource
     node_if_content 'Centroid' do
-      node_if_content 'Location' do
-        @builder.Longitude(target.longitude) if target.longitude
-        @builder.Latitude(target.latitude) if target.latitude
-      end
+      centroid_location(target)
+    end
+  end
+
+  def alternative_name(lang, name)
+    @builder.AlternativeName do
+      @builder.NameType 'translation'
+      @builder.Name(name, lang: lang)
     end
   end
 
@@ -86,12 +97,7 @@ class Chouette::Netex::StopPlace < Chouette::Netex::Resource
 
     node_if_content 'alternativeNames' do
       target.localized_names.each do |k, v|
-        if v.present?
-          @builder.AlternativeName do
-            @builder.NameType 'translation'
-            @builder.Name(v, lang: k)
-          end
-        end
+        alternative_name(k, v) if v.present?
       end
     end
   end
@@ -112,35 +118,36 @@ class Chouette::Netex::StopPlace < Chouette::Netex::Resource
     end
   end
 
+  def stop_metas
+    unless resource.commercial?
+      @builder.PublicUse(public_use) if public_use
+      if resource.area_type == 'border'
+        @builder.BorderCrossing true
+      end
+    end
+
+    @builder.StopPlaceType :other
+  end
+
   def build_xml
     @builder.StopPlace(resource_metas) do
       attributes_mapping
+      stop_metas
+      quays
+      centroid
+      alternative_names
 
-      unless resource.commercial?
-        @builder.PublicUse(public_use) if public_use
-        if resource.area_type == 'border'
-          @builder.BorderCrossing true
-        end
-      end
-
-      @builder.StopPlaceType :other
       ref 'ParentSiteRef', resource.parent&.objectid
 
       @builder.PostalAddress(version: :any, id: postal_address_id) do
         postal_address
       end
 
-      node_if_content 'keyList' do
-        key_list
-      end
+      node_if_content('keyList' ){ key_list }
 
       @builder.placeTypes do
         ref 'TypeOfPlaceRef', type_of_place
       end
-
-      quays
-      centroid
-      alternative_names
     end
   end
 end

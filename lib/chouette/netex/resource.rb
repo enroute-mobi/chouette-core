@@ -1,5 +1,5 @@
 class Chouette::Netex::Resource
-  include Chouette::Netex::Helpers
+  include Chouette::Netex::Concerns::Helpers
 
   def initialize(resource, collection=nil)
     @resource = resource

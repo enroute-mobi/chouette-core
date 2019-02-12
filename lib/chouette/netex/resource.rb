@@ -6,6 +6,20 @@ class Chouette::Netex::Resource
     @collection = collection
   end
 
+  def self.reset_cache
+    @cache = nil
+  end
+
+  def self.set_cache key, val
+    @cache ||= {}
+    @cache[key] = val
+  end
+
+  def self.get_cache key
+    @cache ||= {}
+    @cache[key]
+  end
+
   def resource
     @resource
   end

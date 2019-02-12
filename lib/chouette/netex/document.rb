@@ -65,6 +65,9 @@ class Chouette::Netex::Document
       builder.lines do
         netex_lines builder
       end
+      builder.groupsOfLines do
+        netex_groups_of_lines builder
+      end
     end
   end
 
@@ -90,6 +93,12 @@ class Chouette::Netex::Document
     end
   end
 
+  def netex_groups_of_lines(builder)
+    networks.find_each do |network|
+      Chouette::Netex::GroupOfLines.new(network).to_xml(builder)
+    end
+  end
+
   def companies
     @companies ||= referential.line_referential.companies
   end
@@ -100,5 +109,9 @@ class Chouette::Netex::Document
 
   def lines
     @lines ||= referential.lines.includes(:network, :company_light)
+  end
+
+  def networks
+    @networks ||= referential.line_referential.networks
   end
 end

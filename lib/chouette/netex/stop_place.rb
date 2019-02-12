@@ -1,11 +1,11 @@
 class Chouette::Netex::StopPlace < Chouette::Netex::Resource
   def self.zdep_parents
-    @zdep_parents
+    get_cache :zdep_parents
   end
 
   def build_cache
     parent_ids = collection.where(area_type: :zdep).where.not(parent_id: nil).distinct.pluck(:parent_id)
-    self.class.instance_variable_set '@zdep_parents', parent_ids
+    self.class.set_cache :zdep_parents, parent_ids
   end
 
   def zdep_parents

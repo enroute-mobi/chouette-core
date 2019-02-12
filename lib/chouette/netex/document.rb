@@ -53,36 +53,46 @@ class Chouette::Netex::Document
   protected
 
   def frames(builder)
-    builder.ResourceFrame(version: :any, id: 'Chouette:ResourceFrame:1') do
-      builder.organisations do
-        netex_operators builder
+    if companies.exists?
+      builder.ResourceFrame(version: :any, id: 'Chouette:ResourceFrame:1') do
+        builder.organisations do
+          netex_operators builder
+        end
       end
     end
-    builder.ResourceFrame(version: :any, id: 'Chouette:SiteFrame:1') do
-      builder.stopPlaces do
-        netex_stop_places builder
+    if stop_areas.exists?
+      builder.ResourceFrame(version: :any, id: 'Chouette:SiteFrame:1') do
+        builder.stopPlaces do
+          netex_stop_places builder
+        end
       end
     end
-    builder.ServiceFrame(version: :any, id: 'Chouette:ServiceFrame:1') do
-      if routes.exists?
-        builder.routePoints do
-          netex_route_points builder
+    if routes.exists? || lines.exists? || networks.exists?
+      builder.ServiceFrame(version: :any, id: 'Chouette:ServiceFrame:1') do
+        if routes.exists?
+          builder.routePoints do
+            netex_route_points builder
+          end
+          builder.routes do
+            netex_routes builder
+          end
+          builder.scheduledStopPoints do
+            netex_scheduled_stop_points builder
+          end
+          builder.stopAssignements do
+            netex_stop_assignements builder
+          end
         end
-        builder.routes do
-          netex_routes builder
+        if lines.exists?
+          builder.lines do
+            netex_lines builder
+          end
         end
-        builder.scheduledStopPoints do
-          netex_scheduled_stop_points builder
+        if networks.exists?
+          builder.groupsOfLines do
+            netex_groups_of_lines builder
+          end
         end
-        builder.stopAssignements do
-          netex_stop_assignements builder
-        end
-      end
-      builder.lines do
-        netex_lines builder
-      end
-      builder.groupsOfLines do
-        netex_groups_of_lines builder
       end
     end
   end

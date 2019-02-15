@@ -806,6 +806,8 @@ DEPENDENCIES
   devise-i18n
   devise_cas_authenticatable
   devise_invitable
+  dogapi
+  dogstatsd-ruby
   draper
   email_spec
   enumerize (~> 2.1.2)

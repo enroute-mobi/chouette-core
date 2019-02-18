@@ -21,11 +21,16 @@ module SmartEnv
     @integer_keys ||= []
   end
 
+  def self.hash_keys
+    @hash_keys ||= []
+  end
+
   def self.reset!
     @keys = nil
     @required_keys = nil
     @boolean_keys = nil
     @integer_keys = nil
+    @hash_keys = nil
     @default_values = nil
   end
 
@@ -47,6 +52,10 @@ module SmartEnv
     if opts.has_key?(:integer)
       integer_keys.delete key
       integer_keys << key if opts[:integer]
+    end
+    if opts.has_key?(:hash) || opts[:default].is_a?(Hash)
+      hash_keys.delete key
+      hash_keys << key if opts[:hash] || opts[:default].is_a?(Hash)
     end
     if opts.has_key?(:default)
       default_values[key] = opts[:default]
@@ -79,6 +88,10 @@ module SmartEnv
     self.fetch key, opts.update({boolean: true})
   end
 
+  def self.hash key, opts={}
+    self.fetch key, opts.update({hash: true})
+  end
+
   def self.fetch key, opts={}
     key = key.to_s
     unless keys.include?(key)
@@ -86,14 +99,24 @@ module SmartEnv
       keys << key
     end
 
+    is_hash = opts[:hash] || hash_keys.include?(key)
+    is_boolean = opts[:boolean] || boolean_keys.include?(key)
+
     default = nil
     default = opts[:default] if opts.has_key?(:default)
     default = yield if block_given?
 
-    val = ENV.fetch(key, nil) || default || default_values[key]
-    val = cast_boolean(val) if opts[:boolean] || boolean_keys.include?(key)
-    val = cast_integer(val) if opts[:integer] || integer_keys.include?(key)
-    val
+    default ||= default_values[key]
+    default ||= {} if is_hash
+    default ||= false if is_boolean
+
+    val = ENV.fetch(key, nil)
+    if val
+      val = cast_boolean(val) if is_boolean
+      val = cast_integer(val) if opts[:integer] || integer_keys.include?(key)
+      val = cast_hash(val) if is_hash
+    end
+    val || default
   end
 
   @@default_logger = nil
@@ -114,6 +137,10 @@ module SmartEnv
 
   def self.cast_integer value
     value.to_i
+  end
+
+  def self.cast_hash value
+    JSON.parse(value, symbolize_names: true) rescue nil
   end
 
   class MissingKey < Exception

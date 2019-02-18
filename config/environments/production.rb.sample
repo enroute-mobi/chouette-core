@@ -6,10 +6,14 @@ Rails.application.configure do
   SmartEnv.add :MAIL_DELIVERY_METHOD, default: "smtp"
   SmartEnv.add :MAIL_HOST
   SmartEnv.add :SMTP_HOST
+
   SmartEnv.add_boolean :ACCEPT_USER_CREATION, default: false
   SmartEnv.set :IEV_URL, default: "http://iev:8080"
   SmartEnv.set :RAILS_DB_PASSWORD, required: true
   SmartEnv.set :RAILS_HOST, default: 'http://front:3000'
+
+  SmartEnv.add :MAIL_ASSETS_URL_BASE
+  SmartEnv.add :AUTH_SETTINGS, default: { type: 'database' }
 
   # Settings specified here will take precedence over those in config/application.rb.
 
@@ -114,10 +118,7 @@ Rails.application.configure do
 
   config.accept_user_creation = SmartEnv.boolean('ACCEPT_USER_CREATION')
 
-  config.chouette_authentication_settings = JSON.parse(ENV.fetch('AUTH_SETTINGS','{
-    "type": "database"
-  }'),{symbolize_names: true})
-
+  config.chouette_authentication_settings = SmartEnv.hash('AUTH_SETTINGS')
 
   # paths for external resources
   config.to_prepare do

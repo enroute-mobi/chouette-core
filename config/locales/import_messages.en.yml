@@ -18,6 +18,7 @@ en:
     invalid_time_zone: 'Time zone %{time_zone} is invalid'
     unknown_file_format: "The supplied file does not match any known format"
     wrong_calendar_in_zip_file: "The calendar file %{source_filename} cannot be parsed, or contains inconsistant data"
+    missing_calendar_or_calendar_dates_in_zip_file: "Missing required source file calendar.txt or calendar_dates.txt"
     gtfs:
       agencies:
         imported: "%{count} agency(ies) imported"

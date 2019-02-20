@@ -54,7 +54,7 @@ class Import::Gtfs < Import::Base
     prepare_referential
     referential.pending!
 
-    import_resources :calendars, :calendar_dates
+    import_resources :calendars, :calendar_dates unless check_calendar_files_missing_and_create_message
     import_resources :trips, :stop_times
   end
 
@@ -394,6 +394,18 @@ class Import::Gtfs < Import::Base
     end
     return time_zone
   end
+
+def check_calendar_files_missing_and_create_message
+  return false if source.entries.include?('calendar.txt') || source.entries.include?('calendar_dates.txt')
+  create_message(
+    {
+      criticity: :error,
+      message_key: 'missing_calendar_or_calendar_dates_in_zip_file',
+    },
+    resource: resource, commit: true
+  )
+  @status = 'failed'
+end
 
   class InvalidTripNonZeroFirstOffsetError < StandardError; end
   class InvalidTripTimesError < StandardError; end

@@ -39,8 +39,7 @@ export default class RouteFormHelper {
     if (this.hasErrors) {
       event.preventDefault()
     } else {
-      this.stopPoints.forEach((stopPoint, i) => this.addStopPoint(stopPoint, i))
-      console.log('prout')
+      this.stopPoints.forEach(this.addStopPoint)
     }
   }
 
@@ -84,6 +83,8 @@ export default class RouteFormHelper {
     // Check if route has empty stop points
     if (this.blankStopPointInputs.length > 0) {
       this.handleStopPointError($emptyError, emptyId, 'emptyStopPoint')
+      this.blankStopPointInputs.parent().addClass('has-error')
+      this.blankStopPointInputs.parent().append(`<span class='help-block small'>${'Aucun arrêt défini'}</span>`)
     } else {
       this.cleanStopPointError($emptyError, 'emptyStopPoint')
     }

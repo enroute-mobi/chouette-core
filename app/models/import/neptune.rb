@@ -13,7 +13,7 @@ class Import::Neptune < Import::Base
   end
 
   def launch_worker
-    NeptuneImportWorker.perform_async_or_fail(self)
+    delay.import
   end
 
   def import_without_status

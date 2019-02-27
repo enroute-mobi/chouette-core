@@ -6,6 +6,7 @@ Rails.application.configure do
   SmartEnv.set :RAILS_HOST, default: 'http://localhost:3000'
   SmartEnv.set :IEV_URL, default: "http://localhost:8080"
   SmartEnv.add_boolean :TOOLBAR
+  SmartEnv.set :BYPASS_AUTH_FOR_SIDEKIQ, default: true
 
   # In the development environment your application's code is reloaded on
   # every request. This slows down response time but is perfect for development

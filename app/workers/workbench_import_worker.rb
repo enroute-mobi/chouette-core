@@ -1,7 +1,7 @@
 class WorkbenchImportWorker
-  include Sidekiq::Worker
-  include Concerns::LongRunningWorker
-  extend Concerns::FailingSupport
+  # include Sidekiq::Worker
+  # include Concerns::LongRunningWorker
+  # extend Concerns::FailingSupport
 
   include Rails.application.routes.url_helpers
 

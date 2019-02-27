@@ -179,9 +179,11 @@ ChouetteIhm::Application.routes.draw do
 
   if SmartEnv.boolean "BYPASS_AUTH_FOR_SIDEKIQ"
     mount Sidekiq::Web => '/sidekiq'
+    match "/delayed_job" => DelayedJobWeb, :anchor => false, :via => [:get, :post]
   else
     authenticate :user, lambda { |u| u.can_monitor_sidekiq? } do
       mount Sidekiq::Web => '/sidekiq'
+      match "/delayed_job" => DelayedJobWeb, :anchor => false, :via => [:get, :post]
     end
   end
 

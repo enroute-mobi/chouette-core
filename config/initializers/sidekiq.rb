@@ -40,3 +40,8 @@ Sidekiq.configure_client do |config|
 end
 
 Sidekiq.default_worker_options = { retry: false }
+
+Sidekiq.hook_rails!
+
+# We keep the delay method for DJ
+Sidekiq.remove_delay!

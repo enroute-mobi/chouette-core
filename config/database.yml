@@ -2,11 +2,12 @@ default: &default
   adapter: postgis
   encoding: unicode
   port: 5432
-  host: localhost
+  # host: localhost
   schema_search_path: 'public,shared_extensions'
   username: chouette
   password: chouette
   postgis_schema: 'shared_extensions'
+  pool: 10
 
 development:
   <<: *default

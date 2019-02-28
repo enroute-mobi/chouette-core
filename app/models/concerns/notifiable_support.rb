@@ -20,7 +20,7 @@ module NotifiableSupport
     mailer_params = yield(recipients)
 
     begin
-      MailerJob.perform_later(mailer, action, mailer_params)
+      mailer.constantize.public_send(action, *mailer_params).deliver_later
     rescue => e
       # TODO #8018
       Rails.logger.error "Can't notify users: #{e.message} #{e.backtrace.join("\n")}"

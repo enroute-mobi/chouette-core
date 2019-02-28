@@ -38,6 +38,7 @@ Apartment.configure do |config|
     'ComplianceControlSet',
     'CustomField',
     'Delayed::Job',
+    'Delayed::Heartbeat::Worker',
     'Destination',
     'DestinationReport',
     'Export::Base',

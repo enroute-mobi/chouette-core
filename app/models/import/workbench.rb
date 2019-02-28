@@ -15,7 +15,7 @@ class Import::Workbench < Import::Base
     when :gtfs
       import_gtfs
     when :netex
-      delay.netex_import
+      delay(queue: :imports).netex_import
     when :neptune
       import_neptune
     else

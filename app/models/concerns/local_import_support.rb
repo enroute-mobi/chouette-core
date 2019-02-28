@@ -3,9 +3,10 @@ module LocalImportSupport
 
   included do |into|
     include ImportResourcesSupport
-    after_commit :launch_worker, on: :create
+    after_commit :import, on: :create
 
     delegate :line_referential, :stop_area_referential, to: :workbench
+    handle_asynchronously :import, queue: :imports
   end
 
   def import
@@ -37,6 +38,14 @@ module LocalImportSupport
     main_resource&.save
     save
     notify_parent
+  end
+
+  def worker_died
+    update status: 'failed', ended_at: Time.now
+    referential&.failed!
+    notify_parent
+
+    Rails.logger.error "Import #{self.inspect} failed due to worker being dead"
   end
 
   def import_resources(*resources)

@@ -86,5 +86,11 @@ module Cron
         AuditMailer.audit_if_enabled
       end
     end
+
+    def handle_dead_workers
+      protected_action do
+        Delayed::Heartbeat::Worker.handle_dead_workers
+      end
+    end
   end
 end

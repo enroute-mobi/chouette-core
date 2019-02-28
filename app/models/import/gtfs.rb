@@ -3,10 +3,6 @@ class Import::Gtfs < Import::Base
 
   after_commit :update_main_resource_status, on:  [:create, :update]
 
-  def launch_worker
-    delay.import
-  end
-
   def self.accepts_file?(file)
     Zip::File.open(file) do |zip_file|
       zip_file.glob('agency.txt').size == 1

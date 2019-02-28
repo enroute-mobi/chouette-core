@@ -11,13 +11,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190201150549) do
+ActiveRecord::Schema.define(version: 20190304112108) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "postgis"
   enable_extension "hstore"
   enable_extension "unaccent"
+  enable_extension "postgis"
 
   create_table "access_links", id: :bigserial, force: :cascade do |t|
     t.integer  "access_point_id",                        limit: 8
@@ -76,14 +76,14 @@ ActiveRecord::Schema.define(version: 20190201150549) do
     t.integer  "workgroup_id",           limit: 8
     t.string   "status"
     t.string   "name"
-    t.integer  "referential_ids",        limit: 8,                               array: true
+    t.integer  "referential_ids",        limit: 8,              array: true
     t.integer  "new_id",                 limit: 8
-    t.datetime "created_at",                                        null: false
-    t.datetime "updated_at",                                        null: false
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
     t.string   "creator"
     t.datetime "started_at"
     t.datetime "ended_at"
-    t.string   "notification_target",              default: "none"
+    t.string   "notification_target"
     t.datetime "notified_recipients_at"
     t.integer  "user_id",                limit: 8
     t.string   "type"
@@ -108,9 +108,9 @@ ActiveRecord::Schema.define(version: 20190201150549) do
     t.integer   "organisation_id", limit: 8
     t.datetime  "created_at"
     t.datetime  "updated_at"
-    t.integer   "workgroup_id",    limit: 8
     t.integer   "int_day_types"
     t.date      "excluded_dates",                            array: true
+    t.integer   "workgroup_id",    limit: 8
     t.jsonb     "metadata",                  default: {}
   end
 
@@ -214,8 +214,8 @@ ActiveRecord::Schema.define(version: 20190201150549) do
     t.string   "status"
     t.integer  "parent_id",                 limit: 8
     t.string   "parent_type"
-    t.datetime "created_at",                                           null: false
-    t.datetime "updated_at",                                           null: false
+    t.datetime "created_at",                                       null: false
+    t.datetime "updated_at",                                       null: false
     t.string   "current_step_id"
     t.float    "current_step_progress"
     t.string   "name"
@@ -224,7 +224,7 @@ ActiveRecord::Schema.define(version: 20190201150549) do
     t.datetime "notified_parent_at"
     t.jsonb    "metadata",                            default: {}
     t.string   "context"
-    t.string   "notification_target",                 default: "none"
+    t.string   "notification_target"
     t.datetime "notified_recipients_at"
     t.integer  "user_id",                   limit: 8
   end
@@ -330,9 +330,9 @@ ActiveRecord::Schema.define(version: 20190201150549) do
   add_index "custom_fields", ["resource_type"], name: "index_custom_fields_on_resource_type", using: :btree
 
   create_table "delayed_jobs", id: :bigserial, force: :cascade do |t|
-    t.integer  "priority",   default: 0, null: false
-    t.integer  "attempts",   default: 0, null: false
-    t.text     "handler",                null: false
+    t.integer  "priority",                  default: 0, null: false
+    t.integer  "attempts",                  default: 0, null: false
+    t.text     "handler",                               null: false
     t.text     "last_error"
     t.datetime "run_at"
     t.datetime "locked_at"
@@ -341,9 +341,20 @@ ActiveRecord::Schema.define(version: 20190201150549) do
     t.string   "queue"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "organisation_id", limit: 8
+    t.string   "operation_type"
   end
 
+  add_index "delayed_jobs", ["organisation_id"], name: "index_delayed_jobs_on_organisation_id", using: :btree
   add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority", using: :btree
+
+  create_table "delayed_workers", id: :bigserial, force: :cascade do |t|
+    t.string   "name"
+    t.string   "version"
+    t.datetime "last_heartbeat_at"
+    t.string   "host_name"
+    t.string   "label"
+  end
 
   create_table "destination_reports", id: :bigserial, force: :cascade do |t|
     t.integer  "destination_id",  limit: 8
@@ -422,7 +433,7 @@ ActiveRecord::Schema.define(version: 20190201150549) do
     t.integer  "total_steps",                      default: 0
     t.string   "creator"
     t.hstore   "options"
-    t.string   "notification_target",              default: "none"
+    t.string   "notification_target"
     t.datetime "notified_recipients_at"
     t.integer  "user_id",                limit: 8
     t.integer  "publication_id",         limit: 8
@@ -549,7 +560,7 @@ ActiveRecord::Schema.define(version: 20190201150549) do
     t.integer  "total_steps",                      default: 0
     t.string   "creator"
     t.hstore   "options"
-    t.string   "notification_target",              default: "none"
+    t.string   "notification_target"
     t.datetime "notified_recipients_at"
     t.integer  "user_id",                limit: 8
   end
@@ -660,15 +671,15 @@ ActiveRecord::Schema.define(version: 20190201150549) do
 
   create_table "merges", id: :bigserial, force: :cascade do |t|
     t.integer  "workbench_id",           limit: 8
-    t.integer  "referential_ids",        limit: 8,                               array: true
+    t.integer  "referential_ids",        limit: 8,              array: true
     t.string   "creator"
     t.string   "status"
     t.datetime "started_at"
     t.datetime "ended_at"
-    t.datetime "created_at",                                        null: false
-    t.datetime "updated_at",                                        null: false
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
     t.integer  "new_id",                 limit: 8
-    t.string   "notification_target",              default: "none"
+    t.string   "notification_target"
     t.datetime "notified_recipients_at"
     t.integer  "user_id",                limit: 8
   end
@@ -697,14 +708,14 @@ ActiveRecord::Schema.define(version: 20190201150549) do
   add_index "networks", ["objectid"], name: "networks_objectid_key", unique: true, using: :btree
   add_index "networks", ["registration_number"], name: "networks_registration_number_key", using: :btree
 
-  create_table "notification_rules", id: :bigserial, force: :cascade do |t|
-    t.string    "notification_type"
-    t.daterange "period"
-    t.integer   "line_id",           limit: 8
-    t.integer   "workbench_id",      limit: 8
-    t.datetime  "created_at"
-    t.datetime  "updated_at"
+  create_table "notifications", id: :bigserial, force: :cascade do |t|
+    t.json     "payload"
+    t.string   "channel"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
+
+  add_index "notifications", ["channel"], name: "index_notifications_on_channel", using: :btree
 
   create_table "organisations", id: :bigserial, force: :cascade do |t|
     t.string   "name"
@@ -836,6 +847,7 @@ ActiveRecord::Schema.define(version: 20190201150549) do
     t.datetime  "created_at"
     t.datetime  "updated_at"
     t.daterange "periodes",                        array: true
+    t.datetime  "flagged_urgent_at"
   end
 
   add_index "referential_metadata", ["line_ids"], name: "index_referential_metadata_on_line_ids", using: :gin
@@ -1261,7 +1273,7 @@ ActiveRecord::Schema.define(version: 20190201150549) do
     t.boolean  "nightly_aggregate_enabled",                       default: false
     t.datetime "nightly_aggregated_at"
     t.datetime "aggregated_at"
-    t.string   "nightly_aggregate_notification_target"
+    t.string   "nightly_aggregate_notification_target",           default: "none"
   end
 
   add_foreign_key "access_links", "access_points", name: "aclk_acpt_fkey"

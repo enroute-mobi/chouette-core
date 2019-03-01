@@ -17,48 +17,49 @@ class WorkbenchImportService
     private
 
     def update_foreign_lines entry
-      return if entry.foreign_lines.empty?
-      resource(entry).messages.create(
-        criticity: :error,
-        message_key: 'foreign_lines_in_referential',
-        message_attributes: {
+      update_with_error(
+        entry,
+        'foreign_lines_in_referential',
+        {
           'source_filename' => workbench_import.file.file.file,
           'foreign_lines'   => entry.foreign_lines.join(', ')
-        })
-      resource(entry).update status: :ERROR
+        }
+      ) do
+        entry.foreign_lines.present?
+      end
     end
 
     def update_spurious entry
-      return if entry.spurious.empty?
-      resource(entry).messages.create(
-        criticity: :error,
-        message_key: 'inconsistent_zip_file',
-        message_attributes: {
+      update_with_error(
+        entry,
+        'inconsistent_zip_file',
+        {
           'source_filename' => workbench_import.file.file.file,
           'spurious_dirs'   => entry.spurious.join(', ')
-        })
-      resource(entry).update status: :ERROR
+        }
+      ) do
+        entry.spurious.present?
+      end
     end
 
     def update_missing_calendar entry
-      return unless entry.missing_calendar
-      resource(entry).messages.create(
-        criticity: :error,
-        message_key: 'missing_calendar_in_zip_file',
-        message_attributes: {
-          'source_filename' => entry.name
-        })
-      resource(entry).update status: :ERROR
+      update_with_error entry, 'missing_calendar_in_zip_file', 'source_filename' => entry.name do
+        entry.missing_calendar
+      end
     end
 
     def update_wrong_calendar entry
-      return unless entry.wrong_calendar
+      update_with_error entry, 'wrong_calendar_in_zip_file', 'source_filename' => entry.name do
+        entry.wrong_calendar
+      end
+    end
+
+    def update_with_error(entry, message_key, message_attributes)
+      return unless yield entry
       resource(entry).messages.create(
         criticity: :error,
-        message_key: 'wrong_calendar_in_zip_file',
-        message_attributes: {
-          'source_filename' => entry.name
-        })
+        message_key: message_key,
+        message_attributes: message_attributes)
       resource(entry).update status: :ERROR
     end
   end

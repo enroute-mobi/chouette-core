@@ -36,7 +36,7 @@ class Delayed::Job
   def initialize_with_organisation(options)
     initialize_without_organisation options
     payload_object = options[:payload_object]
-    object = payload_object&.object
+    object = payload_object.try(:object)
     if object&.respond_to?(:organisation)
       self.organisation_id = object.organisation&.id
     end

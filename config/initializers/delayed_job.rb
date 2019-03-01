@@ -3,15 +3,12 @@ require 'delayed_job'
 class AutoKillPlugin < Delayed::Plugin
   callbacks do |lifecycle|
     lifecycle.after(:perform) do |worker, job|
-      if autokill_queues.include? job.queue
-        worker.say "Job done, Killing myself"
+      worker.say "Job done, using #{worker.memory_use.to_i}M"
+      if worker.memory_used > 1024
+        worker.say "Killing myself"
         worker.stop
       end
     end
-  end
-
-  def self.autokill_queues
-    %w[imports exports]
   end
 end
 
@@ -26,6 +23,12 @@ class Delayed::Heartbeat::Worker
 
   def self.handle_dead_workers
     dead_workers(SmartEnv[:DELAYED_JOB_REAPER_HEARTBEAT_TIMEOUT_SECONDS]).each(&:fail_jobs).each &:delete
+  end
+end
+
+class Delayed::Worker
+  def memory_used
+    NewRelic::Agent::Samplers::MemorySampler.new.sampler.get_sample
   end
 end
 

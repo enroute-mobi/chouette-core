@@ -42,7 +42,7 @@ class Import::Resource < ApplicationModel
     workbench.workgroup
   end
 
-  def netex_import
+  def child_import
     return unless self.resource_type == "referential"
     import.children.where(name: self.reference).last
   end

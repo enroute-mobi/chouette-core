@@ -23,10 +23,10 @@
         ), \
         TableBuilderHelper::Column.new( \
           key: :status, \
-          attribute: Proc.new { |n| operation_status(n.netex_import&.status || n.status, verbose: true, default_status: :pending) }, \
+          attribute: Proc.new { |n| operation_status(n.child_import&.status || n.status, verbose: true, default_status: :pending) }, \
           sortable: false, \
           link_to: lambda do |item| \
-            item.netex_import.present? ? [@import.workbench, item.netex_import] : [@import.workbench, @import, item] \
+            item.child_import.present? ? [@import.workbench, item.child_import] : [@import.workbench, @import, item] \
           end \
         ), *controls \
       ],

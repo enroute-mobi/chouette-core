@@ -1,5 +1,4 @@
-
-class WorkbenchImportWorker
+class WorkbenchImportService
   module ObjectStateUpdater
 
     def resource entry

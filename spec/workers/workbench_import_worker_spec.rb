@@ -1,4 +1,4 @@
-RSpec.describe WorkbenchImportWorker, type: [:worker, :request, :zip] do
+RSpec.describe WorkbenchImportService, type: [:request, :zip] do
 
   def self.expect_upload_with *entry_names, &blk
     let(:expected_upload_names){ Set.new(entry_names.flatten) }

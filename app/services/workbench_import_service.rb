@@ -1,16 +1,17 @@
-class WorkbenchImportWorker
-  # include Sidekiq::Worker
-  # include Concerns::LongRunningWorker
-  # extend Concerns::FailingSupport
-
+class WorkbenchImportService
   include Rails.application.routes.url_helpers
 
   include ObjectStateUpdater
 
   attr_reader :entries, :workbench_import
 
-  # Workers
-  # =======
+  class << self
+    attr_accessor :import_dir
+  end
+
+  def logger
+    Rails.logger
+  end
 
   def perform(import_id)
     @entries = 0
@@ -148,5 +149,4 @@ class WorkbenchImportWorker
         logger.info  "HTTP GET #{import_url}"
       end
   end
-
 end

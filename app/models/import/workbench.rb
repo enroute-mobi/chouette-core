@@ -31,8 +31,7 @@ class Import::Workbench < Import::Base
   end
 
   def netex_import
-    # XXX this will do for a Q&D test
-    WorkbenchImportWorker.new.perform(self)
+    WorkbenchImportService.new.perform(self)
   end
 
   def import_gtfs

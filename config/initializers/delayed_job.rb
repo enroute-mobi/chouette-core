@@ -3,7 +3,7 @@ require 'delayed_job'
 class AutoKillPlugin < Delayed::Plugin
   callbacks do |lifecycle|
     lifecycle.after(:perform) do |worker, job|
-      worker.say "Job done, using #{worker.memory_use.to_i}M"
+      worker.say "Job done, using #{worker.memory_used.to_i}M"
       if worker.memory_used > 1024
         worker.say "Killing myself"
         worker.stop

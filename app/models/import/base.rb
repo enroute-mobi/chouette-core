@@ -42,6 +42,10 @@ class Import::Base < ApplicationModel
     ActiveModel::Name.new Import::Base, Import::Base, "Import"
   end
 
+  def operation_type
+    :import
+  end
+
   def child_change
     Rails.logger.info "child_change for #{inspect}"
     if self.class.finished_statuses.include?(status)

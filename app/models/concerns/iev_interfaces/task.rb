@@ -4,6 +4,7 @@ module IevInterfaces::Task
   included do
     belongs_to :parent, polymorphic: true
     belongs_to :workbench, class_name: "::Workbench"
+    has_one :organisation, through: :workbench
     belongs_to :referential
 
     mount_uploader :file, ImportUploader
@@ -30,6 +31,7 @@ module IevInterfaces::Task
 
     scope :blocked, -> { where('created_at < ? AND status = ?', 4.hours.ago, 'running') }
     scope :successful, -> { where(status: :successful) }
+    scope :new_or_pending, -> { where(status: [:new, :pending]) }
 
     before_save :initialize_fields, on: :create
     after_save :notify_parent

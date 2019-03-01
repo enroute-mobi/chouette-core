@@ -18,19 +18,19 @@ class Import::Resource < ApplicationModel
   def next_step
     if root_import.class == Import::Workbench
 
-      return unless netex_import&.successful? || netex_import&.warning?
+      return unless child_import&.successful? || child_import&.warning?
 
-      wait_for_controls = false
+      controls_present = false
       workbench.workgroup.import_compliance_control_sets.map do |key, label|
         next unless (control_set = workbench.compliance_control_set(key)).present?
         compliance_check_set = workbench_import_check_set key
         if compliance_check_set.nil?
           ComplianceControlSetCopier.new.copy control_set.id, referential_id, nil, root_import.class.name, root_import.id, key
-          wait_for_controls = true
         end
+        controls_present = true
       end
 
-      root_import.done! unless wait_for_controls
+      root_import.done! unless controls_present
     end
   end
 

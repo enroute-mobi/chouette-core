@@ -33,7 +33,7 @@ RSpec.describe ComplianceCheckSetObserver, type: :observer do
       end
 
       it 'should not schedule mailer when finished' do
-        expect(MailerJob).to_not receive(:perform_later)
+        expect(ComplianceCheckSetMailer).to_not receive(:finished)
         subject.status = 'successful'
         subject.save
         expect(subject.notified_recipients?).to be_falsy
@@ -46,7 +46,7 @@ RSpec.describe ComplianceCheckSetObserver, type: :observer do
       end
 
       it 'should not schedule mailer when finished' do
-        expect(MailerJob).to_not receive(:perform_later)
+        expect(ComplianceCheckSetMailer).to_not receive(:finished)
         subject.status = 'successful'
         subject.save
         expect(subject.notified_recipients?).to be_falsy

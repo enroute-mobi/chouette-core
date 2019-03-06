@@ -3,7 +3,7 @@ class CalendarObserver < ActiveRecord::Observer
     return unless email_sendable_for?(calendar)
 
     calendar.organisation.users.each do |user|
-      MailerJob.perform_later('CalendarMailer', 'updated', [calendar.id, user.id])
+      CalendarMailer.updated(calendar.id, user.id).deliver_later
     end
   end
 
@@ -11,7 +11,7 @@ class CalendarObserver < ActiveRecord::Observer
     return unless email_sendable_for?(calendar)
 
     calendar.organisation.users.each do |user|
-      MailerJob.perform_later('CalendarMailer', 'created', [calendar.id, user.id])
+      CalendarMailer.created(calendar.id, user.id).deliver_later
     end
   end
 
@@ -19,7 +19,7 @@ class CalendarObserver < ActiveRecord::Observer
 
   def enabled?
     return true unless Rails.configuration.respond_to?(:enable_calendar_observer)
-    
+
     !!Rails.configuration.enable_calendar_observer
   end
 

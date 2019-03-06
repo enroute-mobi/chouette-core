@@ -20,14 +20,14 @@ RSpec.shared_examples_for 'a notifiable operation' do
     end
 
     it 'should not schedule mailer when finished' do
-      expect(MailerJob).to_not receive(:perform_later)
+      expect(mailer).to_not receive(:new)
       subject.status = 'successful'
       subject.save
       expect(subject.notified_recipients?).to be_falsy
     end
 
     it 'should not schedule mailer when not finished' do
-      expect(MailerJob).to_not receive(:perform_later)
+      expect(mailer).to_not receive(:new)
       subject.status = 'running'
       subject.save
       expect(subject.notified_recipients?).to be_falsy
@@ -40,7 +40,7 @@ RSpec.shared_examples_for 'a notifiable operation' do
     end
 
     it 'should schedule mailer when finished' do
-      expect(MailerJob).to receive(:perform_later).with(mailer.name, 'finished', [subject.id, [user.email_recipient], 'successful']).exactly(:once)
+      expect(mailer).to receive(:finished).with(subject.id, [user.email_recipient], 'successful').exactly(:once)
       subject.status = 'successful'
       subject.save
       expect(subject.notified_recipients?).to be_truthy
@@ -53,7 +53,7 @@ RSpec.shared_examples_for 'a notifiable operation' do
     end
 
     it 'should schedule mailer when finished' do
-      expect(MailerJob).to receive(:perform_later).with(mailer.name, 'finished', [subject.id, subject.workbench_for_notifications.users.map(&:email_recipient), 'successful']).exactly(:once)
+      expect(mailer).to receive(:finished).with(subject.id, subject.workbench_for_notifications.users.map(&:email_recipient), 'successful').exactly(:once)
       subject.status = 'successful'
       subject.save
       expect(subject.notified_recipients?).to be_truthy

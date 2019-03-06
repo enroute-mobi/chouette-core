@@ -3,8 +3,8 @@ require 'rails_helper'
 RSpec.describe CalendarObserver, type: :observer do
   let(:calendar) { create(:calendar, shared: true, organisation: user_1.organisation) }
 
-  let!(:user_1)     { create(:user) }
-  let!(:user_2)     { create(:user) }
+  let!(:user_1) { create(:user) }
+  let!(:user_2) { create(:user) }
 
   context "when CalendarObserver is disabled" do
     before(:each) do
@@ -17,13 +17,13 @@ RSpec.describe CalendarObserver, type: :observer do
 
     it "should not send any mail if disabled on update" do
       calendar.name = 'edited_name'
-      expect(MailerJob).to_not receive(:perform_later).with 'CalendarMailer', 'updated', [calendar.id, user_1.id]
-      expect(MailerJob).to_not receive(:perform_later).with 'CalendarMailer', 'updated', [calendar.id, user_2.id]
+      expect(CalendarMailer).to_not receive(:updated)
+      expect(CalendarMailer).to_not receive(:updated)
       calendar.save
     end
 
     it "should not send any mail if disabled on create" do
-      expect(MailerJob).to_not receive(:perform_later).with 'CalendarMailer', 'created', [anything, user_1.id]
+      expect(CalendarMailer).to_not receive(:created)
       build(:calendar, shared: true, organisation: user_1.organisation).save
     end
   end
@@ -45,21 +45,21 @@ RSpec.describe CalendarObserver, type: :observer do
 
       it 'should schedule mailer on calendar update' do
         calendar.name = 'edited_name'
-        expect(MailerJob).to receive(:perform_later).with 'CalendarMailer', 'updated', [calendar.id, user_1.id]
+        expect(CalendarMailer).to receive(:updated).with(calendar.id, user_1.id).and_call_original
         calendar.save
       end
 
       it 'should not schedule mailer for none shared calendar on update' do
         calendar = create(:calendar, shared: false)
         calendar.name = 'edited_name'
-        expect(MailerJob).to_not receive(:perform_later).with 'CalendarMailer', 'updated', [calendar.id, user_1.id]
+        expect(CalendarMailer).to_not receive(:updated)
         calendar.save
       end
 
       it "should only send mail to user from the same organisation" do
         calendar.name = 'edited_name'
-        expect(MailerJob).to receive(:perform_later).with 'CalendarMailer', 'updated', [calendar.id, user_1.id]
-        expect(MailerJob).to_not receive(:perform_later).with 'CalendarMailer', 'updated', [calendar.id, user_2.id]
+        expect(CalendarMailer).to receive(:updated).with(calendar.id, user_1.id).and_call_original
+        expect(CalendarMailer).to_not receive(:updated).with calendar.id, user_2.id
         calendar.save
       end
     end
@@ -71,12 +71,12 @@ RSpec.describe CalendarObserver, type: :observer do
       end
 
       it 'should schedule mailer on calendar create' do
-        expect(MailerJob).to receive(:perform_later).with 'CalendarMailer', 'created', [anything, user_1.id]
+        expect(CalendarMailer).to receive(:created).with(anything, user_1.id).and_call_original
         build(:calendar, shared: true, organisation: user_1.organisation).save
       end
 
       it 'should not schedule mailer for any shared calendar on create' do
-        expect(MailerJob).to_not receive(:perform_later).with 'CalendarMailer', 'created', [anything, user_1.id]
+        expect(CalendarMailer).to_not receive(:created)
         build(:calendar, shared: false, organisation: user_1.organisation).save
       end
     end

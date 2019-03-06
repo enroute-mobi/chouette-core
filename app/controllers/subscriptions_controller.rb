@@ -39,6 +39,6 @@ class SubscriptionsController < ChouetteController
   def notify_subscription
     return unless SubscriptionMailer.enabled?
     return unless resource.user.persisted?
-    MailerJob.perform_later("SubscriptionMailer", "created", resource.user.id)
+    SubscriptionMailer.created(resource.user.id).deliver_later
   end
 end

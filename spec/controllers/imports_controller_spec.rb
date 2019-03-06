@@ -38,10 +38,6 @@ RSpec.describe ImportsController, :type => :controller do
             name: 'Offre',
             file: fixture_file_upload('nozip.zip')
           }
-
-        expect(controller).to set_flash[:notice].to(
-          I18n.t('flash.imports.create.notice')
-        )
       end
     end
   end

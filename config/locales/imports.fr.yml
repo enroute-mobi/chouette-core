@@ -119,7 +119,4 @@ fr:
   errors:
     messages:
       extension_whitelist_error: "Vous n'êtes pas autorisé à uploader des fichiers %{extension}, types autorisés: %{allowed_types}"
-  flash:
-    imports:
-      create:
-        notice: "L'import est en cours, veuillez patienter. Actualiser votre page si vous voulez voir l'avancement de votre traitement."
+  

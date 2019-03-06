@@ -2,7 +2,7 @@ class window.NotificationCenter
   constructor: (@channel, @receiver)->
     @lastSeen = @getCookie @channel + "_lastSeen"
     @lastReload = Date.now()
-    @period = 1000
+    @period = 3000
     @checkNotifications()
 
   checkNotifications: =>

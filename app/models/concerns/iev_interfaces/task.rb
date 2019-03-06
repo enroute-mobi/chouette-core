@@ -93,10 +93,14 @@ module IevInterfaces::Task
     children.with_status(:successful, :warning).count
   end
 
-  def url_for_notifications
+  def url_for_notifications(use_self=false)
     object = self
-    object = parent if self.try(:parent)
+    object = parent if self.try(:parent) && !use_self
     [workbench_for_notifications, object]
+  end
+
+  def urls_to_refresh
+    ([self] + children).map{ |i| polymorphic_url(i.url_for_notifications(true), only_path: true) }
   end
 
   def notify_state
@@ -105,6 +109,7 @@ module IevInterfaces::Task
       status_html: operation_status(self.status).html_safe,
       message_key: "#{self.class.name.underscore.gsub('/', '.')}.#{self.status}",
       url: polymorphic_url(url_for_notifications, only_path: true),
+      urls_to_refresh: urls_to_refresh,
       unique_identifier: "#{self.class.name.underscore.gsub('/', '.')}-#{self.id}"
     })
     if self.class < Import::Base
@@ -133,6 +138,7 @@ module IevInterfaces::Task
         message_key: "#{self.class.name.underscore.gsub('/', '.')}.progress",
         status_html: operation_status(self.status).html_safe,
         url: polymorphic_url(url_for_notifications, only_path: true),
+        urls_to_refresh: urls_to_refresh,
         unique_identifier: "#{self.class.name.underscore.gsub('/', '.')}-#{self.id}",
         progress: (progress*100).to_i
       })
@@ -141,6 +147,17 @@ module IevInterfaces::Task
       end
       Notification.create! channel: workbench_for_notifications.notifications_channel, payload: payload
     end
+  end
+
+  def notify_operation_progress(operation_name)
+    if @progress
+      @progress += 1.0/(steps_count+2)
+      notify_progress @progress
+    end
+  end
+
+  def notify_sub_operation_progress(operation_name, progress)
+    notify_progress(@progress + 1.0/steps_count*progress) if @progress
   end
 
   def update_status

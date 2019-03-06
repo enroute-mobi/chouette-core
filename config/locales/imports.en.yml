@@ -111,7 +111,4 @@ en:
   errors:
     messages:
       extension_whitelist_error: "You are not allowed to upload %{extension} files, allowed types: %{allowed_types}"
-  flash:
-    imports:
-      create:
-        notice: "The import is in progress. Please wait and refresh the page in a few moments."
+  

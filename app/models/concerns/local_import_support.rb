@@ -11,8 +11,9 @@ module LocalImportSupport
 
   def import
     update status: 'running', started_at: Time.now
-
+    @progress = 0
     import_without_status
+    @progress = nil
     @status ||= 'successful'
     update status: @status, ended_at: Time.now
     referential&.active!
@@ -50,11 +51,9 @@ module LocalImportSupport
   def import_resources(*resources)
     resources.each do |resource|
       Chouette::Benchmark.log "#{self.class.name} import #{resource}" do
-        if @progress
-          @progress += 1.0/7
-          notify_progress @progress
-        end
         send "import_#{resource}"
+
+        notify_operation_progress(resource)
       end
     end
   end

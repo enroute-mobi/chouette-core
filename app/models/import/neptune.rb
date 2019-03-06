@@ -12,6 +12,11 @@ class Import::Neptune < Import::Base
     return false
   end
 
+  def steps_count
+    # does not account for create_referential and save_current
+    6
+  end
+
   def import_without_status
     prepare_referential
     referential.pending!
@@ -25,6 +30,7 @@ class Import::Neptune < Import::Base
     import_resources :lines, :companies, :networks
 
     create_referential
+    notify_operation_progress(:create_referential)
     referential.switch
   end
 
@@ -38,6 +44,7 @@ class Import::Neptune < Import::Base
 
   def each_source
     Zip::File.open(local_file) do |zip_file|
+      @source_count ||= zip_file.glob('*.xml').count
       zip_file.glob('*.xml').each do |f|
         yield Nokogiri::XML(f.get_input_stream), f.name
       end
@@ -46,17 +53,19 @@ class Import::Neptune < Import::Base
 
   def each_element_matching_css(selector, root=nil)
     if root
-      root[:_node].css(selector)\
-            .map(&method(:build_object_from_nokogiri_element))\
-            .each do |object|
-          yield object
+      coll = root[:_node].css(selector)
+      coll.map(&method(:build_object_from_nokogiri_element))\
+          .each_with_index do |object, i|
+          yield object, nil, i * 1.0 / coll.count
       end
     else
+      counter = 0
       each_source do |source, filename|
-        source.css(selector)\
-              .map(&method(:build_object_from_nokogiri_element))\
-              .each do |object|
-            yield object, filename
+        coll = source.css(selector)
+        coll.map(&method(:build_object_from_nokogiri_element))\
+            .each do |object|
+            yield object, filename, counter * 1.0 / coll.count / @source_count
+            counter += 1
         end
       end
     end
@@ -64,7 +73,7 @@ class Import::Neptune < Import::Base
 
   def get_associated_network(source_pt_network, filename)
     network = nil
-    each_element_matching_css('PTNetwork', source_pt_network) do |source_network|
+    each_element_matching_css('PTNetwork', source_pt_network) do |source_network, filename, progress|
       if network
         create_message(
           criticity: :warning,
@@ -80,7 +89,7 @@ class Import::Neptune < Import::Base
 
   def get_associated_company(source_pt_network, filename)
     company = nil
-    each_element_matching_css('Company', source_pt_network) do |source_company, filename|
+    each_element_matching_css('Company', source_pt_network) do |source_company, filename, progress|
       if company
         create_message(
           criticity: :warning,
@@ -95,11 +104,11 @@ class Import::Neptune < Import::Base
   end
 
   def import_lines
-    each_element_matching_css('ChouettePTNetwork') do |source_pt_network, filename|
+    each_element_matching_css('ChouettePTNetwork') do |source_pt_network, filename, progress|
       file_company = get_associated_company(source_pt_network, filename)
       file_network = get_associated_network(source_pt_network, filename)
 
-      each_element_matching_css('ChouetteLineDescription Line', source_pt_network) do |source_line|
+      each_element_matching_css('ChouetteLineDescription Line', source_pt_network) do |source_line, progress|
         line = line_referential.lines.find_or_initialize_by registration_number: source_line[:object_id]
         line.name = source_line[:name]
         line.number = source_line[:number]
@@ -113,30 +122,36 @@ class Import::Neptune < Import::Base
         @imported_line_ids ||= []
         @imported_line_ids << line.id
       end
+
+      notify_sub_operation_progress(:lines, progress)
     end
   end
 
   def import_companies
-    each_element_matching_css('ChouettePTNetwork Company') do |source_company|
+    each_element_matching_css('ChouettePTNetwork Company') do |source_company, filename, progress|
       company = line_referential.companies.find_or_initialize_by registration_number: source_company.delete(:object_id)
       company.assign_attributes source_company.slice(:name, :short_name, :code, :phone, :email, :fax, :organizational_unit, :operating_department_name)
 
       save_model company
+
+      notify_sub_operation_progress(:companies, progress)
     end
   end
 
   def import_networks
-    each_element_matching_css('ChouettePTNetwork PTNetwork') do |source_network|
+    each_element_matching_css('ChouettePTNetwork PTNetwork') do |source_network, filename, progress|
       network = line_referential.networks.find_or_initialize_by registration_number: source_network.delete(:object_id)
       network.assign_attributes source_network.slice(:name, :comment)
 
       save_model network
+
+      notify_sub_operation_progress(:networks, progress)
     end
   end
 
   def import_time_tables
     @time_tables = Hash.new{|h, k| h[k] = []}
-    each_element_matching_css('ChouettePTNetwork Timetable') do |source_timetable|
+    each_element_matching_css('ChouettePTNetwork Timetable') do |source_timetable, filename, progress|
       tt = Chouette::TimeTable.find_or_initialize_by objectid: source_timetable[:object_id]
       tt.int_day_types = int_day_types_mapping source_timetable[:day_type]
       tt.created_at = source_timetable[:creation_time]
@@ -148,6 +163,8 @@ class Import::Neptune < Import::Base
       make_enum(source_timetable[:vehicle_journey_id]).each do |vehicle_journey_id|
         @time_tables[vehicle_journey_id] << tt.id
       end
+
+      notify_sub_operation_progress(:time_tables, progress)
     end
   end
 
@@ -237,7 +254,7 @@ class Import::Neptune < Import::Base
 
   def import_stop_areas
     @parent_stop_areas = {}
-    each_element_matching_css('ChouettePTNetwork ChouetteArea') do |source_parent|
+    each_element_matching_css('ChouettePTNetwork ChouetteArea') do |source_parent, filename, progress|
       coordinates = {}
       each_element_matching_css('AreaCentroid', source_parent) do |centroid|
         coordinates[centroid[:object_id]] = centroid.slice(:latitude, :longitude)
@@ -266,6 +283,8 @@ class Import::Neptune < Import::Base
           @parent_stop_areas[child_registration_number] = stop_area.id
         end
       end
+
+      notify_sub_operation_progress(:stop_areas, progress)
     end
   end
 
@@ -280,7 +299,7 @@ class Import::Neptune < Import::Base
 
   def import_lines_content
     @opposite_route_id = {}
-    each_element_matching_css('ChouettePTNetwork ChouetteLineDescription') do |line_desc|
+    each_element_matching_css('ChouettePTNetwork ChouetteLineDescription') do |line_desc, filename, progress|
       line = line_referential.lines.find_by registration_number: line_desc[:line][:object_id]
       @routes = {}
       @stop_points = Hash.new{|h, k| h[k] = {}}
@@ -290,6 +309,8 @@ class Import::Neptune < Import::Base
       @journey_patterns = {}
       import_journey_patterns_in_line(line, line_desc[:journey_pattern])
       import_vehicle_journeys_in_line(line, line_desc[:vehicle_journey])
+
+      notify_sub_operation_progress(:lines_content, progress)
     end
   end
 

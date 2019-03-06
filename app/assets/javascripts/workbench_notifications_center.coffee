@@ -49,6 +49,7 @@ class WorkbenchNotification
         progress = $("<div class='progress'></div>")
         progress.prependTo @container
       progress.css width: "#{@payload.progress}%"
+      console.log "progress: #{@payload.progress}"
     else
       progress.remove()
 
@@ -82,8 +83,11 @@ class WorkbenchNotificationsCenter
         $(".notifications .notification:nth-child(#{@stateMaxSize})").remove()
         $('.notifications .notification').removeClass 'new-notification'
         notif.show()
-    if document.location.pathname == payload.url
-      @replaceFragment payload.fragment
+
+    for url in payload.urls_to_refresh
+      if document.location.pathname == url
+        @replaceFragment payload.fragment
+        return
 
   replaceFragment: (fragment)->
     url = document.location.pathname + ".json"

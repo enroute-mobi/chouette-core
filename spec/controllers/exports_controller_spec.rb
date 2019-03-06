@@ -42,13 +42,6 @@ RSpec.describe ExportsController, :type => :controller do
       it 'should be successful' do
         expect{request}.to change{Export::Netex.count}.by(1)
       end
-
-      it "displays a flash message" do
-        request
-        expect(controller).to set_flash[:notice].to(
-          I18n.t('flash.exports.create.notice')
-        )
-      end
     end
 
     context "with missing options" do

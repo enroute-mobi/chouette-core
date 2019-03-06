@@ -11,8 +11,6 @@ class Export::Base < ActiveRecord::Base
   belongs_to :referential
   belongs_to :publication
 
-  delegate :workbench, to: :referential
-
   has_many :publication_api_sources, foreign_key: :export_id
 
   validates :type, :referential_id, presence: true

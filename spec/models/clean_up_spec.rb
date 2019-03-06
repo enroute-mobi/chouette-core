@@ -131,8 +131,8 @@ RSpec.describe CleanUp, :type => :model do
 
     it "should set the referential state to the original_state value" do
       cleaner.original_state = :archived
+      expect(cleaner.referential).to receive :archived!
       cleaner.clean
-      expect(cleaner.referential.state).to eq :archived
     end
   end
 

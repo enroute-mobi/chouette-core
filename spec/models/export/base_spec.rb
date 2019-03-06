@@ -21,7 +21,7 @@ RSpec.describe Export::Base, type: :model do
     )
   end
 
-  let(:netex_export) { create(:netex_export, :with_parent) }
+  let(:netex_export) { create(:netex_export) }
 
   describe ".purge_exports" do
     let(:workbench) { create(:workbench) }
@@ -138,7 +138,7 @@ RSpec.describe Export::Base, type: :model do
 
   describe "#destroy" do
     it "must destroy all child exports" do
-      netex_export = create(:netex_export, :with_parent)
+      netex_export = create(:netex_export)
 
       netex_export.parent.destroy
 

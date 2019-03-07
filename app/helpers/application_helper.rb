@@ -46,6 +46,12 @@ module ApplicationHelper
     out.html_safe
   end
 
+  def page_title
+    title = t('brandname')
+    t = content_for(:page_header_title) || (defined?(resource_class) ? resource_class.t_action(params[:action]) : nil)
+    title += " | #{t}" if t
+  end
+
   def page_header_content_for(object)
     content_for :page_header_title, page_header_title(object)
     content_for :page_header_meta, page_header_meta(object)

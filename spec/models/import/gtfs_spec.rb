@@ -598,7 +598,7 @@ RSpec.describe Import::Gtfs do
       end
 
       it 'should set the importer as failed' do
-        import.import
+        import.import_without_delay
         expect(import.status).to eq 'failed'
       end
 
@@ -617,7 +617,7 @@ RSpec.describe Import::Gtfs do
       let(:import) { build_import 'google-sample-feed.zip' }
       it "should fail" do
         allow(import.source).to receive(:agencies){ raise GTFS::InvalidSourceException }
-        expect { import.import }.to_not raise_error
+        expect { import.import_without_delay }.to_not raise_error
         expect(import.status).to eq :failed
       end
     end

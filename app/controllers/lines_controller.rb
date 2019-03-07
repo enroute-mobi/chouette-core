@@ -44,6 +44,8 @@ class LinesController < ChouetteController
 
   def new
     authorize resource_class
+    build_resource
+    @line.transport_mode = Chouette::Line.sorted_transport_modes.first
     super
   end
 

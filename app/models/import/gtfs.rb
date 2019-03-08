@@ -20,10 +20,12 @@ class Import::Gtfs < Import::Base
     registration_numbers = source.routes.map(&:id)
     line_ids = line_referential.lines.where(registration_number: registration_numbers).pluck(:id)
 
-    start_dates, end_dates = source.calendars.map { |c| [c.start_date, c.end_date] }.transpose
+    start_dates = []
+    end_dates = []
 
-    start_dates ||= []
-    end_dates ||= []
+    if source.entries.include?('calendar.txt')
+      start_dates, end_dates = source.calendars.map { |c| [c.start_date, c.end_date] }.transpose
+    end
 
     included_dates = []
     if source.entries.include?('calendar_dates.txt')
@@ -313,6 +315,7 @@ class Import::Gtfs < Import::Base
   end
 
   def import_calendars
+    return unless source.entries.include?('calendar.txt')
     create_resource(:calendars).each(source.calendars, slice: 500, transaction: true) do |calendar, resource|
       time_table = referential.time_tables.build comment: "Calendar #{calendar.service_id}"
       Chouette::TimeTable.all_days.each do |day|
@@ -395,17 +398,20 @@ class Import::Gtfs < Import::Base
     return time_zone
   end
 
-def check_calendar_files_missing_and_create_message
-  return false if source.entries.include?('calendar.txt') || source.entries.include?('calendar_dates.txt')
-  create_message(
-    {
-      criticity: :error,
-      message_key: 'missing_calendar_or_calendar_dates_in_zip_file',
-    },
-    resource: resource, commit: true
-  )
-  @status = 'failed'
-end
+  def check_calendar_files_missing_and_create_message
+    if source.entries.include?('calendar.txt') || source.entries.include?('calendar_dates.txt')
+      return false
+    end
+
+    create_message(
+      {
+        criticity: :error,
+        message_key: 'missing_calendar_or_calendar_dates_in_zip_file',
+      },
+      resource: resource, commit: true
+    )
+    @status = 'failed'
+  end
 
   class InvalidTripNonZeroFirstOffsetError < StandardError; end
   class InvalidTripTimesError < StandardError; end

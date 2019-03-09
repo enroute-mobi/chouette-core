@@ -10,6 +10,9 @@ case $command in
     rm -rf tmp/pids/ && mkdir -p tmp/pids
     exec bundle exec sidekiq -e production
     ;;
+  async2)
+    exec bundle exec rake jobs:work
+    ;;
   sync)
     exec bash ./script/launch-cron
     ;;

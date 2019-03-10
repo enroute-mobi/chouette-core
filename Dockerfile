@@ -29,7 +29,7 @@ ENV RUN_PACKAGES="libpq5 libxml2 zlib1g libmagic1 imagemagick libproj-dev postgr
 
 # Install bundler packages
 COPY Gemfile Gemfile.lock /app/
-RUN apt-get -y install --no-install-recommends $DEV_PACKAGES $RUN_PACKAGES && \
+RUN apt-get update && apt-get -y install --no-install-recommends $DEV_PACKAGES $RUN_PACKAGES && \
     cd /app && bundle install --deployment --jobs 4 --without development test && \
     apt-get -y remove $DEV_PACKAGES && \
     rm -rf /var/lib/gems/2.3.0/cache/ vendor/bundle/ruby/2.3.0/cache /root/.bundle/ && \

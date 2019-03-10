@@ -136,7 +136,7 @@ class WorkbenchImportService
   # ===========
 
   def allowed_lines
-    @__allowed_lines__ ||= workbench_import.workbench.organisation.lines_set
+    @__allowed_lines__ ||= workbench_import.workbench.lines
   end
   def downloaded
     @__downloaded__ ||= download_response.body

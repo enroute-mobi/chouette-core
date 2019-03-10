@@ -13,7 +13,7 @@ class Organisation < ApplicationModel
   has_many :line_referentials, through: :line_referential_memberships
 
   has_many :workbenches, dependent: :destroy
-  has_many :workgroups, through: :workbenches 
+  has_many :workgroups, through: :workbenches
   has_many :custom_fields, through: :workgroups
   has_many :imports, through: :workbenches, class_name: "Import::Base"
   has_many :exports, through: :workbenches, class_name: "Export::Base"
@@ -43,10 +43,6 @@ class Organisation < ApplicationModel
 
   def functional_scope
     JSON.parse( (sso_attributes || {}).fetch('functional_scope', '[]') )
-  end
-
-  def lines_set
-    STIF::CodifligneLineId.lines_set_from_functional_scope( functional_scope )
   end
 
   def has_feature?(feature)

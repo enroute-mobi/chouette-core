@@ -8,15 +8,6 @@ describe Organisation, :type => :model do
     expect_it.to be_valid
   end
 
-  context 'lines_set' do
-    it 'has no lines' do
-      expect( subject.lines_set ).to eq(Set.new())
-    end
-    it 'has two lines' do
-      expect( build_stubbed(:org_with_lines).lines_set ).to eq(Set.new(%w{C00109 C00108}))
-    end
-  end
-
   describe "#has_feature?" do
 
     let(:organisation) { Organisation.new }
@@ -57,7 +48,7 @@ describe Organisation, :type => :model do
     let(:organisation) { create :organisation }
     let(:workbench) { create :workbench, organisation: organisation }
     let(:workgroup) { workbench.workgroup }
-    
+
     context "when referential belongs to organisation" do
       let(:organisation_ref) { create(:referential, organisation: organisation, workbench: workbench) }
 

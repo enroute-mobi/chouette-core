@@ -28,7 +28,7 @@ RUN apt-get update && mkdir -p /usr/share/man/man1 /usr/share/man/man7 && \
 
 # Install bundler packages
 COPY Gemfile Gemfile.lock /app/
-RUN apt-get -y install --no-install-recommends build-essential ruby2.3-dev libpq5 libxml2 zlib1g imagemagick libproj12 postgresql-client-common postgresql-client-9.6 libpq-dev libxml2-dev zlib1g-dev libproj-dev libmagic1 libmagic-dev libmagickwand-dev git-core && \
+RUN apt-get update && apt-get -y install --no-install-recommends build-essential ruby2.3-dev libpq5 libxml2 zlib1g imagemagick libproj12 postgresql-client-common postgresql-client-9.6 libpq-dev libxml2-dev zlib1g-dev libproj-dev libmagic1 libmagic-dev libmagickwand-dev git-core && \
     cd /app && bundle install --deployment
 
 # Install yarn packages

@@ -18,7 +18,7 @@
           - if workbench.output.referentials.present?
             .list-group
               - workbench.output.referentials.limit(5).each do |referential|
-                = link_to referential.name, referential_path(referential), class: 'list-group-item'
+                = link_to t('merges.referential_name', date:  I18n.l(referential.merged_at, format: :short_with_time)), referential_path(referential), class: 'list-group-item'
           - else
             .panel-body
               em.small.text-muted = t('dashboards.workbench_output.none')

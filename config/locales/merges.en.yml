@@ -15,7 +15,7 @@ en:
       create: Merge data spaces
       rollback: Rollback
       rollback_confirm: Are you sure to rollback to this finalized offer ?
-      see_associated_offer: Voir l'offre associée
+      see_associated_offer: See related data
     statuses:
       new: New
       pending: Pending

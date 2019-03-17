@@ -6,7 +6,7 @@ en:
       edit_aggregate: Setup Aggregation
       edit_hole_sentinel: Setup Offer analysis
     edit_controls: &edit_controls
-      title: "Workgroups Compliance Compliance Check Set Settings"
+      title: "Workgroups Compliance Check Set Settings"
     edit:
       <<: *edit_controls
     index:

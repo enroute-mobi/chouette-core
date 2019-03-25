@@ -1,13 +1,14 @@
 import '../../helpers/polyfills'
 
 import clone from '../../helpers/clone'
-import RoutesMap from '../../helpers/routes_map'
+import RoutesMap from '../../helpers/maps/RoutesMap'
 
 let routes = clone(window, "routes", true)
 routes = JSON.parse(decodeURIComponent(routes))
 
-new RoutesMap('routes_map').prepare().then(function(map){
+new RoutesMap('routes_map').prepare().then(generator => {
+  const map = generator.next().value
   map.addRoutes(routes)
-  map.addRoutesLabels()
-  map.fitZoom()
+  map.addLabels('routes')
+  generator.next()
 })

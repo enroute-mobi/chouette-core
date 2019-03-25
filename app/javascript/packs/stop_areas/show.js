@@ -1,13 +1,23 @@
 import '../../helpers/polyfills'
 
-import clone from '../../helpers/clone'
 import StopAreaMap from '../../helpers/maps/StopAreaMap'
 
-let stopArea = clone(window, "stopArea", true)
-stopArea = JSON.parse(decodeURIComponent(stopArea))
-
-new StopAreaMap('stop_area_map', stopArea).prepare().then(generator => {
-  const map = generator.next().value
+const updateeMap = handler => {
+  const map = handler.next().value
   map.addStopArea()
-  generator.next()
+  handler.next()
+}
+
+const generateMap = stopArea => {
+  new StopAreaMap('stop_area_map', stopArea).prepare()
+    .then(updateeMap)
+}
+
+const fecthStopArea = mapGenerator => {
+  fetch(`${window.location.href}.json`).then(res => {
+  const json = res.json()
+  json.then(mapGenerator)
 })
+}
+
+fecthStopArea(generateMap)

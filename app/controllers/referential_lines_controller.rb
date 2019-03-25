@@ -26,6 +26,8 @@ class ReferentialLinesController < ChouetteController
 
     @routes = @routes.paginate(page: params[:page], per_page: 10)
 
+    @outbound_routes = @routes.where(wayback: :outbound)
+
     @routes = RouteDecorator.decorate(
       @routes,
       context: {

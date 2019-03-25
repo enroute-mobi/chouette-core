@@ -1,9 +1,10 @@
 object @route
 
-attributes :name, :published_name, :direction, :opposite_route_id, :line_id
+attributes :id, :name, :wayback
 
-child :stop_points, object_root: false do |route|
-  node do |stop_point|
-    partial("routes/stop_points/show", object: stop_point)
+child :stop_points, :object_root => false do
+  attributes :id, :stop_area_id
+  [:longitude, :latitude].each do |attr|
+    node(attr) { |sp| sp.stop_area.send(attr) }
   end
 end

@@ -1,0 +1,1 @@
+object @stop_area

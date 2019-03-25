@@ -13,12 +13,10 @@
           url: 'http://services.esrifrance.fr/arcgis/rest/services/FranceRaster/France_FranceRaster_Premium/MapServer/tile/{z}/{x}/{y}?token=' + apiKey
         })
       })
-      $(document).trigger('mapSourceLoaded')
     })
 
 - else
   |
     $(document).ready(function(){
       window.mapBackgroundSource = new ol.layer.Tile({source: new ol.source.OSM()})
-      $(document).trigger('mapSourceLoaded')
     })

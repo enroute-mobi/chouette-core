@@ -11,8 +11,7 @@ export default class RoutesMap extends Map {
   }
 
   addRoutes(routes) {
-    return Array.from(routes).map((route) =>
-      this.addRoute(route))
+    routes.map(route => this.addRoute(route))
   }
 
   addRoute(route) {
@@ -20,7 +19,7 @@ export default class RoutesMap extends Map {
     const geoColLns = []
     route.active = true
     if (route.id) { this.routes[route.id] = route }
-    const stops = route.stops || route
+    const stops = route.stop_points || route
     const geoColEdges = [
       new ol.Feature({
         geometry: new ol.geom.Point(ol.proj.fromLonLat([parseFloat(stops[0].longitude), parseFloat(stops[0].latitude)]))
@@ -47,9 +46,9 @@ export default class RoutesMap extends Map {
         geoColPts.push(new ol.Feature({
           geometry: new ol.geom.Point(ol.proj.fromLonLat([parseFloat(stop.longitude), parseFloat(stop.latitude)]))
         }))
-        if (!(this.seenStopIds.indexOf(stop.stoparea_id) > 0)) {
+        if (!(this.seenStopIds.indexOf(stop.stop_area_id) > 0)) {
           this.area.push([parseFloat(stop.longitude), parseFloat(stop.latitude)])
-          return this.seenStopIds.push(stop.stoparea_id)
+          return this.seenStopIds.push(stop.stop_area_id)
         }
       }
     })
@@ -96,12 +95,12 @@ export default class RoutesMap extends Map {
       const route = this.routes[id]
       if (route.active) {
         found = true
-        return route.stops.forEach((stop, i) => {
+        return route.stop_points.forEach((stop, i) => {
           return area.push([parseFloat(stop.longitude), parseFloat(stop.latitude)])
         })
       }
     })
-    if (!found) { ({ area } = this) }
+    if (!found) area = this.area
     const boundaries = ol.extent.applyTransform(
       ol.extent.boundingExtent(area), ol.proj.getTransform('EPSG:4326', 'EPSG:3857')
     )

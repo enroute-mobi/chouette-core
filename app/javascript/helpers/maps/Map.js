@@ -1,8 +1,6 @@
 import LayersButton from './utilities/LayersButton'
 import LayersControl from './utilities/LayersControl'
 
-ol.inherits(LayersControl, ol.control.Control)
-
 export default class Map {
   constructor(target) {
     this.target = target
@@ -19,9 +17,7 @@ export default class Map {
 
   prepare() {
     return new Promise(resolve => {
-      return $(document).on('mapSourceLoaded', () => {
-        return resolve(this.prepareGenerator())
-      })
+      resolve(this.prepareGenerator())
     })
   }
 

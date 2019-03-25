@@ -1,13 +1,23 @@
 import '../../helpers/polyfills'
 
-import clone from '../../helpers/clone'
 import RoutesMap from '../../helpers/maps/RoutesMap'
 
-let route = clone(window, "route", true)
-route = JSON.parse(decodeURIComponent(route))
-
-new RoutesMap('route_map').prepare().then(generator => {
-  const map = generator.next().value
+const updateeMap = route => handler => {
+  const map = handler.next().value
   map.addRoute(route)
-  generator.next()
-})
+  handler.next()
+}
+
+const generateMap = route => {
+  new RoutesMap('route_map').prepare()
+    .then(updateeMap(route))
+}
+
+const fetchRoute = mapGenerator => {
+  fetch(`${window.location.href}.json`).then(res => {
+    const json = res.json()
+    json.then(mapGenerator)
+  })
+}
+
+fetchRoute(generateMap)

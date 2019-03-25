@@ -67,19 +67,23 @@ module LocalImportSupport
   rescue => e
     update status: 'failed', ended_at: Time.now
     Rails.logger.error "Error in #{file_type} import: #{e} #{e.backtrace.join('\n')}"
-    if (referential && overlapped_referential_ids = referential.overlapped_referential_ids).present?
-      overlapped = Referential.find overlapped_referential_ids.last
-      create_message(
-        criticity: :error,
-        message_key: "referential_creation_overlapping_existing_referential",
-        message_attributes: {
-          referential_name: referential.name,
-          overlapped_name: overlapped.name,
-          overlapped_url:  Rails.application.routes.url_helpers.referential_path(overlapped)
-        }
-      )
-    else
-      create_message criticity: :error, message_key: :full_text, message_attributes: {text: e.message}
+    begin
+      if (referential && overlapped_referential_ids = referential.overlapped_referential_ids).present?
+        overlapped = Referential.find overlapped_referential_ids.last
+        create_message(
+          criticity: :error,
+          message_key: "referential_creation_overlapping_existing_referential",
+          message_attributes: {
+            referential_name: referential.name,
+            overlapped_name: overlapped.name,
+            overlapped_url:  Rails.application.routes.url_helpers.referential_path(overlapped)
+          }
+        )
+      else
+        create_message criticity: :error, message_key: :full_text, message_attributes: {text: e.message}
+      end
+    rescue
+      Rails.logger.error "Error while looking for overlapping referentials"
     end
     referential&.failed!
   ensure

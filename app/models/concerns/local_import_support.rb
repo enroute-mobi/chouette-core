@@ -63,7 +63,7 @@ module LocalImportSupport
     update status: @status, ended_at: Time.now
   rescue => e
     update status: 'failed', ended_at: Time.now
-    Rails.logger.error "Error in #{file_type} import: #{e} #{e.backtrace.join('\n')}"
+    Rails.logger.error "Error in #{file_type} import: #{e} #{e.backtrace.join("\n")}"
     if (referential && overlapped_referential_ids = referential.overlapped_referential_ids).present?
       overlapped = Referential.find overlapped_referential_ids.last
       create_message(
@@ -239,6 +239,40 @@ module LocalImportSupport
       end
 
       Rails.logger.debug "Created #{model.inspect}"
+    end
+  end
+
+  def update_checkum_in_batches(collection)
+    collection.find_in_batches do |group|
+      ids = []
+      checksums = []
+      checksum_sources = []
+      group.each do |r|
+        ids << r.id
+        source = r.current_checksum_source(db_lookup: false)
+        checksum_sources << self.class.sanitize(source)
+        checksums << Digest::SHA256.new.hexdigest(source)
+      end
+      sql = <<SQL
+        UPDATE #{referential.slug}.#{collection.klass.table_name} tmp SET checksum_source = data_table.checksum_source, checksum = data_table.checksum
+        FROM
+        (select unnest(array[#{ids.join(",")}]) as id,
+        unnest(array['#{checksums.join("','")}']) as checksum,
+        unnest(array[#{checksum_sources.join(",")}]) as checksum_source) as data_table
+        where tmp.id = data_table.id;
+SQL
+      ActiveRecord::Base.connection.execute sql
+    end
+  end
+
+  def import_missing_checksums
+    Chouette::JourneyPattern.within_workgroup(workgroup) do
+      Chouette::VehicleJourney.within_workgroup(workgroup) do
+        update_checkum_in_batches referential.vehicle_journey_at_stops.select(:id, :departure_time, :arrival_time, :departure_day_offset, :arrival_day_offset)
+        update_checkum_in_batches referential.routes.select(:id, :name, :published_name, :wayback).includes(:stop_points, :routing_constraint_zones)
+        update_checkum_in_batches referential.journey_patterns.select(:id, :custom_field_values, :name, :published_name, :registration_number, :costs).includes(:stop_points)
+        update_checkum_in_batches referential.vehicle_journeys.select(:id, :custom_field_values, :published_journey_name, :published_journey_identifier, :ignored_routing_contraint_zone_ids, :ignored_stop_area_routing_constraint_ids, :company_id).includes(:company_light, :footnotes, :vehicle_journey_at_stops, :purchase_windows)
+      end
     end
   end
 

@@ -15,9 +15,9 @@ const generateMap = stopArea => {
 
 const fecthStopArea = mapGenerator => {
   fetch(`${window.location.href}.json`).then(res => {
-  const json = res.json()
-  json.then(mapGenerator)
-})
+    const json = res.json()
+    json.then(mapGenerator)
+  })
 }
 
 fecthStopArea(generateMap)

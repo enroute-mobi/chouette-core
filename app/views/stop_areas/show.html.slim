@@ -18,8 +18,5 @@
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = definition_list t("stop_areas.form.sections.general"), stop_area_general_metadatas(@stop_area)
 
-= javascript_tag do
-  | window.stopArea = "#{URI.escape(@stop_area.to_json)}"
-
-= javascript_include_tag 'OpenLayers/maps_backgrounds.js'
 = javascript_pack_tag 'stop_areas/show.js'
+= javascript_include_tag 'OpenLayers/maps_backgrounds.js'

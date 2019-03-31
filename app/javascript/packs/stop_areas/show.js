@@ -20,4 +20,4 @@ const fecthStopArea = mapGenerator => {
   })
 }
 
-fecthStopArea(generateMap)
+$(document).on('mapSourceLoaded', () => fecthStopArea(generateMap))

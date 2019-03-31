@@ -20,4 +20,4 @@ const fetchRoute = mapGenerator => {
   })
 }
 
-fetchRoute(generateMap)
+$(document).on('mapSourceLoaded', () => fetchRoute(generateMap))

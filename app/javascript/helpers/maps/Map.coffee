@@ -1,12 +1,7 @@
-import LayersButton from './utilities/LayersButton'
-import LayersControl from './utilities/LayersControl'
-
 export default class Map
   constructor: (target) ->
     @target = target
     @area = []
-    @seenStopIds = []
-    @routes = {}
 
     @prepareGenerator = -> 
       @initMap()

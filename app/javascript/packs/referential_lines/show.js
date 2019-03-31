@@ -10,7 +10,7 @@ const updateeMap = routes => handler => {
 }
 
 const generateMap = routes => {
-  new RoutesMap('lines_map').prepare()
+  new RoutesMap('routes_map').prepare()
     .then(updateeMap(routes))
 }
 
@@ -21,4 +21,4 @@ const fetchRoutes = mapGenerator => {
   })
 }
 
-fetchRoutes(generateMap)
+$(document).on('mapSourceLoaded', () => fetchRoutes(generateMap))

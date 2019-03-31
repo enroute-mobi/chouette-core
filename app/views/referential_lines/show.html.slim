@@ -82,8 +82,5 @@
             .col-lg-12
               = replacement_msg t('routes.filters.no_results')
 
-= javascript_tag do
-  | window.routes = "#{URI.escape(@routes.select{|r| r.wayback == :outbound}.map{|r| {name: r.name, id: r.id, stops: route_json_for_edit(r, serialize: false)}}.to_json)}"
-
-= javascript_include_tag 'OpenLayers/maps_backgrounds.js'
 = javascript_pack_tag 'referential_lines/show.js'
+= javascript_include_tag 'OpenLayers/maps_backgrounds.js'

@@ -299,6 +299,7 @@ class Import::Neptune < Import::Base
           stop_area.parent_id = @parent_stop_areas.delete(source_stop_area[:object_id])
 
           save_model stop_area
+          existing_stop_areas[source_stop_area[:object_id]] ||= stop_area
 
           contains = source_stop_area[:contains]
           contains = make_enum contains
@@ -376,8 +377,8 @@ class Import::Neptune < Import::Base
           journey_pattern.metadata = { creator_username: source_journey_pattern[:creator_id], created_at: source_journey_pattern[:creation_time] }
         end
 
-        add_stop_points_to_journey_pattern(journey_pattern, source_journey_pattern[:stop_point_list], source_journey_pattern[:route_id])
         save_model journey_pattern
+        add_stop_points_to_journey_pattern(journey_pattern, source_journey_pattern[:stop_point_list], source_journey_pattern[:route_id])
         @journey_patterns[source_journey_pattern[:object_id]] = journey_pattern
       end
     end

@@ -15,10 +15,14 @@ const generateMap = routes => {
 }
 
 const fetchRoutes = mapGenerator => {
-  fetch(`${window.location.href}.json`).then(res => {
+  const { origin, pathname } = window.location
+  const url = `${origin}${pathname}.json`
+  fetch(url)
+  .then(res => {
     const json = res.json()
     json.then(mapGenerator)
   })
+  .catch(e => console.error(e))
 }
 
 $(document).on('mapSourceLoaded', () => fetchRoutes(generateMap))

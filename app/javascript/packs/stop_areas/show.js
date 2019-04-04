@@ -9,8 +9,10 @@ const updateeMap = handler => {
 }
 
 const generateMap = stopArea => {
+  if (!!stopArea.longitude && !!stopArea.latitude) {
   new StopAreaMap('stop_area_map', stopArea).prepare()
     .then(updateeMap)
+  }
 }
 
 const fecthStopArea = mapGenerator => {

@@ -7,10 +7,11 @@
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = definition_list t("stop_areas.form.sections.identification"), stop_area_identification_metadatas(@stop_area, @stop_area_referential)
-      
-      .col-md-6.col-sm-12.col-xs-12
-          h4.underline= t('lines.show.map')
-          #stop_area_map.map.mb-lg
+
+      - unless @stop_area.coordinates.empty?
+        .col-md-6.col-sm-12.col-xs-12
+            h4.underline= t('lines.show.map')
+            #stop_area_map.map.mb-lg
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = definition_list t("stop_areas.form.sections.location"), stop_area_location_metadatas(@stop_area, @stop_area_referential)

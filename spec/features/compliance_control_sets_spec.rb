@@ -121,7 +121,7 @@ RSpec.describe "ComplianceControlSets", type: :feature do
   end
 
   def make_one_control ccblock, severity
-      create( :generic_attribute_control_min_max,
+      create( :generic_attribute_control_pattern,
         code: random_string,
         compliance_control_block: ccblock,
         compliance_control_set: control_set,

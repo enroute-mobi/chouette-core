@@ -1,7 +1,7 @@
 FactoryGirl.define do
   factory :compliance_control do
     sequence(:name) { |n| "Compliance control #{n}" }
-    type "GenericAttributeControl::MinMax"
+    type "GenericAttributeControl::Pattern"
     criticity :warning
     code "code"
     origin_code "code"

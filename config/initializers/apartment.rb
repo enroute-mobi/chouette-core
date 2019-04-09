@@ -44,7 +44,6 @@ Apartment.configure do |config|
     'Export::Base',
     'Export::Message',
     'Export::Resource',
-    'GenericAttributeControl::MinMax',
     'GenericAttributeControl::Pattern',
     'GenericAttributeControl::Uniqueness',
     'Import::Base',

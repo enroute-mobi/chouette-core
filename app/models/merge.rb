@@ -319,9 +319,8 @@ class Merge < ApplicationModel
               if new_route = new.routes.find_by(id: new_route_id)
                 new_route.update_column :opposite_route_id, new_opposite_route_id
               end
+              Rails.logger.warn "Merge ##{id}: Can't merge opposite route for Route #{route_id}" unless new_route
             end
-
-            Rails.logger.warn "Merge ##{id}: Can't merge opposite route for Route #{route_id}" unless new_route
           end
         end
       end

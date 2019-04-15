@@ -3,15 +3,16 @@ end
 
 crumb :workbench do |workbench|
   link workbench.name, workbench_path(workbench)
+  parent :workgroup, workbench.workgroup
 end
 
 crumb :workgroups do |workgroup|
   link Workgroup.t, workgroups_path()
 end
 
-crumb :workgroup do |workgroup|
+crumb :workgroup do |workgroup, display_parent|
   link workgroup.name, workgroup_path(workgroup)
-  parent :workgroups
+  parent :workgroups if display_parent
 end
 
 crumb :workbench_configure do |workbench|

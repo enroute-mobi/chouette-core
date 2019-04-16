@@ -10,8 +10,6 @@ class Aggregate < ActiveRecord::Base
 
   validates :workgroup, presence: true
 
-  after_commit :aggregate, on: :create
-
   delegate :output, to: :workgroup
 
   def parent
@@ -28,7 +26,7 @@ class Aggregate < ActiveRecord::Base
 
   def cancel!
     update status: :canceled
-    new.rollbacked!
+    new&.rollbacked!
   end
 
   def following_aggregates
@@ -42,6 +40,7 @@ class Aggregate < ActiveRecord::Base
 
     AggregateWorker.perform_async_or_fail(self)
   end
+  alias_method :run, :aggregate
 
   def aggregate!
     prepare_new
@@ -77,6 +76,11 @@ class Aggregate < ActiveRecord::Base
         DEFAULT_KEEP_AGGREGATES
       end
     end
+  end
+
+  def handle_queue
+    concurent_operations.pending.where('id < ?', self.id).each &:cancel!
+    super
   end
 
   private

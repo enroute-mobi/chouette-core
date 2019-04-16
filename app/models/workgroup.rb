@@ -98,7 +98,7 @@ class Workgroup < ApplicationModel
 
     return if target_referentials.empty?
 
-    aggregates.create!(referentials: aggregatable_referentials, creator: 'webservice', notification_target: nil)
+    aggregates.create!(referentials: aggregatable_referentials, creator: 'webservice', notification_target: nil, automatic_operation: true)
   end
 
   def nightly_aggregate!

@@ -12,8 +12,6 @@ class Merge < ApplicationModel
 
   delegate :workgroup, to: :workbench
 
-  after_commit :merge, :on => :create
-
   def parent
     workbench
   end
@@ -52,6 +50,7 @@ class Merge < ApplicationModel
       MergeWorker.perform_async_or_fail(self)
     end
   end
+  alias_method :run, :merge
 
   def before_merge_compliance_control_sets
     workbench.workgroup.before_merge_compliance_control_sets.map do |key, _|
@@ -668,6 +667,10 @@ class Merge < ApplicationModel
     end
 
     scope
+  end
+
+  def concurent_operations
+    parent.merges.where.not(id: self.id)
   end
 
   class MetadatasMerger

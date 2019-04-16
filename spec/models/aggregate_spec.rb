@@ -1,25 +1,104 @@
 require 'rails_helper'
 
 RSpec.describe Aggregate, type: :model do
-  context "with another concurent aggregate" do
-    before do
-       Aggregate.create(workgroup: referential.workbench.workgroup, referentials: [referential, referential])
+  context 'an automatic aggregate' do
+    context "without concurent aggregate" do
+      let(:aggregate){ Aggregate.new(workgroup: referential.workbench.workgroup, referentials: [referential, referential], automatic_operation: true) }
+      it 'should launch the aggregate' do
+        expect(aggregate).to receive(:run).and_call_original
+        aggregate.save
+        aggregate.run_callbacks(:commit)
+        expect(aggregate).to be_running
+      end
     end
 
-    it "should not be valid" do
-      aggregate = Aggregate.new(workgroup: referential.workbench.workgroup, referentials: [referential, referential])
-      expect(aggregate).to_not be_valid
+    context "with another concurent aggregate" do
+      let(:existing_aggregate_status){ :running }
+      let(:existing_aggregate){ Aggregate.create(workgroup: referential.workbench.workgroup, referentials: [referential, referential], status: existing_aggregate_status) }
+      let(:aggregate){ Aggregate.new(workgroup: referential.workbench.workgroup, referentials: [referential, referential], automatic_operation: true) }
+
+      it "should be valid" do
+        existing_aggregate
+        expect(aggregate).to be_valid
+      end
+
+      it "should be created as pending" do
+        existing_aggregate
+        aggregate.save && aggregate.run_callbacks(:commit)
+
+        expect(aggregate).to be_pending
+      end
+
+      context "with an already pending aggregate" do
+        let(:pending_aggregate){ Aggregate.create(workgroup: referential.workbench.workgroup, referentials: [referential, referential], status: :pending, automatic_operation: true) }
+
+        it 'should cancel it' do
+          existing_aggregate
+          pending_aggregate
+          aggregate.save && aggregate.run_callbacks(:commit)
+          expect(aggregate).to be_pending
+          expect(pending_aggregate.reload).to be_canceled
+        end
+      end
+    end
+
+    it "should run next pending aggregate once it's done" do
+      pending_aggregate = Aggregate.create(workgroup: referential.workbench.workgroup, referentials: [referential, referential], status: :pending)
+      aggregate = Aggregate.create(workgroup: referential.workbench.workgroup, referentials: [referential, referential], automatic_operation: true)
+
+      allow_any_instance_of(Aggregate).to receive(:run) do |m|
+        expect(m).to eq pending_aggregate
+      end
+
+      aggregate.run_pending_operations
+    end
+
+    it "should run next pending aggregate if it fails" do
+      pending_aggregate = Aggregate.create(workgroup: referential.workbench.workgroup, referentials: [referential, referential], status: :pending)
+      aggregate = Aggregate.create(workgroup: referential.workbench.workgroup, referentials: [referential, referential], automatic_operation: true)
+      expect(aggregate).to receive(:prepare_new){ raise "oops" }
+      allow_any_instance_of(Aggregate).to receive(:run) do |m|
+        expect(m).to eq pending_aggregate
+      end
+      begin
+        aggregate.aggregate!
+      rescue
+        nil
+      end
+    end
+
+    it "should clean previous aggregates" do
+      referential.workbench.workgroup.update(owner: referential.organisation)
+      15.times do
+        a = Aggregate.create!(workgroup: referential.workbench.workgroup, referentials: [referential, referential], automatic_operation: true)
+        a.update status: :successful
+      end
+      Aggregate.last.aggregate!
+      expect(Aggregate.count).to eq 10
     end
   end
 
-  it "should clean previous aggregates" do
-    referential.workbench.workgroup.update(owner: referential.organisation)
-    15.times do
-      a = Aggregate.create!(workgroup: referential.workbench.workgroup, referentials: [referential, referential])
-      a.update status: :successful
+  context 'a manuel aggregate' do
+    context "without concurent aggregate" do
+      let(:aggregate){ Aggregate.new(workgroup: referential.workbench.workgroup, referentials: [referential, referential]) }
+      it 'should launch the aggregate' do
+        expect(aggregate).to receive(:run).and_call_original
+        aggregate.save
+        aggregate.run_callbacks(:commit)
+        expect(aggregate).to be_running
+      end
     end
-    Aggregate.last.aggregate!
-    expect(Aggregate.count).to eq 10
+
+    context "with another concurent aggregate" do
+      let(:existing_aggregate_status){ :running }
+      let(:existing_aggregate){ Aggregate.create(workgroup: referential.workbench.workgroup, referentials: [referential, referential], status: existing_aggregate_status) }
+      let(:aggregate){ Aggregate.new(workgroup: referential.workbench.workgroup, referentials: [referential, referential]) }
+
+      it "should not be valid" do
+        existing_aggregate
+        expect(aggregate).to_not be_valid
+      end
+    end
   end
 
   context 'with publications' do

@@ -45,14 +45,93 @@ RSpec.describe Merge do
     end
   end
 
-  context "with another concurent merge" do
-    before do
-       Merge.create(workbench: referential.workbench, referentials: [referential, referential])
+  context 'an automatic merge' do
+    context "without concurent merge" do
+      let(:merge){ Merge.new(workbench: referential.workbench, referentials: [referential, referential], automatic_operation: true) }
+      it 'should launch the merge' do
+        expect(merge).to receive(:run).and_call_original
+        merge.save && merge.run_callbacks(:commit)
+        expect(merge).to be_running
+      end
     end
 
-    it "should not be valid" do
-      merge = Merge.new(workbench: referential.workbench, referentials: [referential, referential])
-      expect(merge).to_not be_valid
+    context "with another concurent merge" do
+      let(:existing_merge_status){ :running }
+      let(:existing_merge){ Merge.create(workbench: referential.workbench, referentials: [referential, referential], status: existing_merge_status) }
+      let(:merge){ Merge.new(workbench: referential.workbench, referentials: [referential, referential], automatic_operation: true) }
+
+      it "should be valid" do
+        existing_merge
+        expect(merge).to be_valid
+      end
+
+      it "should be created as pending" do
+        existing_merge
+        merge.save && merge.run_callbacks(:commit)
+
+        expect(merge).to be_pending
+      end
+
+      context "with an already pending merge" do
+        let(:pending_merge){ Merge.create(workbench: referential.workbench, referentials: [referential, referential], status: :pending, automatic_operation: true) }
+
+        it 'should not cancel it' do
+          existing_merge
+          pending_merge
+          merge.save && merge.run_callbacks(:commit)
+          expect(merge).to be_pending
+          expect(pending_merge.reload).to be_pending
+        end
+      end
+    end
+  end
+
+  context 'a manual merge' do
+    context "without concurent merge" do
+      let(:merge){ Merge.new(workbench: referential.workbench, referentials: [referential, referential]) }
+      it 'should launch the merge' do
+        expect(merge).to receive(:run).and_call_original
+        expect(merge).to be_valid
+        merge.save && merge.run_callbacks(:commit)
+        expect(merge).to be_running
+      end
+    end
+
+    context "with another concurent merge" do
+      let(:existing_merge_status){ :running }
+      let(:existing_merge){ Merge.create(workbench: referential.workbench, referentials: [referential, referential], status: existing_merge_status) }
+      let(:merge){ Merge.new(workbench: referential.workbench, referentials: [referential, referential]) }
+
+      it "should not be valid" do
+        existing_merge
+        expect(merge.manual_operation?).to be_truthy
+        expect(merge).to_not be_valid
+      end
+    end
+  end
+
+  it "should run next pending merge once it's done" do
+    pending_merge = Merge.create(workbench: referential.workbench, referentials: [referential, referential], status: :pending)
+    merge = Merge.create(workbench: referential.workbench, referentials: [referential, referential])
+
+    allow_any_instance_of(Merge).to receive(:run) do |m|
+      expect(m).to eq pending_merge
+    end
+
+    merge.run_pending_operations
+  end
+
+  it "should run next pending merge if it fails" do
+    pending_merge = Merge.create(workbench: referential.workbench, referentials: [referential, referential], status: :pending)
+    merge = Merge.create(workbench: referential.workbench, referentials: [referential, referential])
+    expect(merge).to receive(:prepare_new){ raise "oops" }
+    allow_any_instance_of(Merge).to receive(:run) do |m|
+      expect(m).to eq pending_merge
+    end
+    begin
+      merge.merge!
+    rescue
+      nil
     end
   end
 

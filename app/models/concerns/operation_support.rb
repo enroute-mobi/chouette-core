@@ -6,13 +6,21 @@ module OperationSupport
 
     enumerize :status, in: %w[new pending successful failed running canceled], default: :new
     scope :successful, ->{ where status: :successful }
+    scope :pending, ->{ where status: :pending }
+    scope :running, ->{ where status: :running }
 
     has_array_of :referentials, class_name: 'Referential'
     belongs_to :new, class_name: 'Referential'
     has_many :publications, as: :parent
 
     validate :has_at_least_one_referential, :on => :create
+
+    attr_accessor :automatic_operation
+
+    after_commit :handle_queue, on: :create, if: :automatic_operation?
+
     validate :check_other_operations, :on => :create
+    after_commit :run, on: :create, if: :manual_operation?
 
     into.extend ClassMethods
   end
@@ -31,6 +39,14 @@ module OperationSupport
     def finished_statuses
      %w(successful failed canceled)
     end
+  end
+
+  def manual_operation?
+    !automatic_operation?
+  end
+
+  def automatic_operation?
+    automatic_operation
   end
 
   def name
@@ -67,11 +83,32 @@ module OperationSupport
     parent&.send(self.class.name.tableize)
   end
 
+  def concurent_operations
+    clean_scope ? clean_scope.where.not(id: self.id) : self.class.none
+  end
+
   def check_other_operations
-    if clean_scope && clean_scope.where(status: [:new, :pending, :running]).exists?
+    return if automatic_operation?
+
+    if concurent_operations.where(status: [:new, :pending, :running]).exists?
       Rails.logger.warn "#{self.class.name} ##{self.id} - Pending #{self.class.name}(s) on #{parent.class.name} #{parent.name}/#{parent.id}"
       errors.add(:base, :multiple_process)
     end
+  end
+
+  def handle_queue
+    if concurent_operations.where(status: [:new, :pending, :running]).exists?
+      Rails.logger.warn "#{self.class.name} ##{self.id} - Pending #{self.class.name}(s) on #{parent.class.name} #{parent.name}/#{parent.id}"
+      pending!
+    else
+      run
+    end
+  end
+
+  def run_pending_operations
+    return if concurent_operations.running.exists?
+
+    concurent_operations.order(:created_at).pending.first&.run
   end
 
   def after_save_current
@@ -84,6 +121,7 @@ module OperationSupport
     after_save_current
 
     clean_previous_operations
+    run_pending_operations
     update status: :successful, ended_at: Time.now
   end
 
@@ -137,10 +175,22 @@ module OperationSupport
     update_columns status: :failed, ended_at: Time.now
     new&.failed!
     referentials.each &:active!
+    run_pending_operations
   end
 
-  def successful?
-    status.to_s == "successful"
+  def pending!
+    update_columns status: :pending
+  end
+
+  def cancel!
+    update_columns status: :canceled
+    run_pending_operations
+  end
+
+  %w[new pending successful failed running canceled].each do |s|
+    define_method "#{s}?" do
+      status.to_s == s
+    end
   end
 
   def current?

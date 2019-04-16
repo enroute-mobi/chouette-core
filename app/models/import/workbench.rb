@@ -62,7 +62,7 @@ class Import::Workbench < Import::Base
 
   def done!
     if (successful? || warning?) && automatic_merge
-      Merge.create creator: self.creator, workbench: self.workbench, referentials: self.resources.map(&:referential).compact, notification_target: self.notification_target, user: user
+      Merge.create creator: self.creator, workbench: self.workbench, referentials: self.resources.map(&:referential).compact, notification_target: self.notification_target, user: user, automatic_operation: true
     end
   end
 end

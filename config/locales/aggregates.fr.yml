@@ -42,8 +42,8 @@ fr:
         ended_at: Achevé à
         status: "Etat"
         creator: "Opérateur"
-        referentials: "Jeux de données"
-        new: Jeu de données agrégé
+        referentials: Offres finalisées
+        new: Offre finalisée
         operator: Utilisateur
         available_referentials: "Jeux de données disponibles"
         selected_referentials: "Jeux de données selectionnés"

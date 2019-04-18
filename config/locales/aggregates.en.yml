@@ -38,7 +38,7 @@ en:
         ended_at: Ended at
         status: "Status"
         creator: "Creator"
-        referentials: "Data sets"
+        referentials: Merged offers
         new: Aggregated dataset
         operator: User
         available_referentials: "Available data sets"

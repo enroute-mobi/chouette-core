@@ -116,26 +116,28 @@ module Chouette::ChecksumManager
   end
 
   def self.update_checkum_in_batches(collection, referential)
-    collection.find_in_batches do |group|
-      ids = []
-      checksums = []
-      checksum_sources = []
-      group.each do |r|
-        ids << r.id
-        source = r.current_checksum_source(db_lookup: false)
-        checksum_sources << ActiveRecord::Base.sanitize_sql(source).gsub(/'/, "''")
-        checksums << Digest::SHA256.new.hexdigest(source)
-      end
-      sql = <<SQL
-        UPDATE #{referential.slug}.#{collection.klass.table_name} tmp SET checksum_source = data_table.checksum_source, checksum = data_table.checksum
-        FROM
-        (select unnest(array[#{ids.join(",")}]) as id,
-        unnest(array['#{checksums.join("','")}']) as checksum,
-        unnest(array['#{checksum_sources.join("','")}']) as checksum_source) as data_table
-        where tmp.id = data_table.id;
+    referential.switch do
+      collection.find_in_batches do |group|
+        ids = []
+        checksums = []
+        checksum_sources = []
+        group.each do |r|
+          ids << r.id
+          source = r.current_checksum_source(db_lookup: false)
+          checksum_sources << ActiveRecord::Base.sanitize_sql(source).gsub(/'/, "''")
+          checksums << Digest::SHA256.new.hexdigest(source)
+        end
+        sql = <<SQL
+          UPDATE #{referential.slug}.#{collection.klass.table_name} tmp SET checksum_source = data_table.checksum_source, checksum = data_table.checksum
+          FROM
+          (select unnest(array[#{ids.join(",")}]) as id,
+          unnest(array['#{checksums.join("','")}']) as checksum,
+          unnest(array['#{checksum_sources.join("','")}']) as checksum_source) as data_table
+          where tmp.id = data_table.id;
 SQL
-      ActiveRecord::Base.connection.execute sql
-end
+        ActiveRecord::Base.connection.execute sql
+      end
+    end
   end
 
   def self.watch object, from: nil

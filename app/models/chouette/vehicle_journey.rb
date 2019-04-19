@@ -226,7 +226,7 @@ module Chouette
 
     def calculate_vehicle_journey_at_stop_day_offset(force_reset=false)
       Chouette::VehicleJourneyAtStopsDayOffset.new(
-        vehicle_journey_at_stops.sort_by{ |vjas| vjas.stop_point.position }
+        vehicle_journey_at_stops.includes(stop_point: :stop_area_light).sort_by{ |vjas| vjas.stop_point.position }
       ).update(force_reset)
     end
 

@@ -371,7 +371,7 @@ class Referential < ApplicationModel
     end
   end
 
-  def self.new_from(from, workbench)
+  def self.new_from(from, workbench, skip_metadatas=false)
     clone = Referential.new(
       name: I18n.t("activerecord.copy", name: from.name),
       organisation: workbench.organisation,
@@ -382,10 +382,12 @@ class Referential < ApplicationModel
       stop_area_referential: from.stop_area_referential,
       created_from: from,
       objectid_format: from.objectid_format,
-      metadatas: from.metadatas.map { |m| ReferentialMetadata.new_from(m, workbench) },
       ready: false
     )
-    clone.metadatas = clone.metadatas.select(&:valid?)
+    unless skip_metadatas
+      clone.metadatas = from.metadatas.map { |m| ReferentialMetadata.new_from(m, workbench) }
+      clone.metadatas = clone.metadatas.select(&:valid?)
+    end
     clone
   end
 
@@ -708,8 +710,8 @@ class Referential < ApplicationModel
     end
   end
 
-  def update_stats!
-    Stat::JourneyPatternCoursesByDate.compute_for_referential(self)
+  def update_stats!(lines: nil)
+    Stat::JourneyPatternCoursesByDate.compute_for_referential(self, lines: lines)
   end
 
   def rebuild_cross_referential_index!

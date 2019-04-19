@@ -1,6 +1,3 @@
-class JourneyPatternsStopPoint < ActiveRecord::Base
-end
-
 class Import::Gtfs < Import::Base
   include LocalImportSupport
 
@@ -339,7 +336,7 @@ class Import::Gtfs < Import::Base
                   stop_points = Chouette::StopPoint.find worker.result_sets.last.rows
                 end
                 profile_tag 'add_stop_points_to_jp' do
-                  JourneyPatternsStopPoint.bulk_insert do |worker|
+                  Chouette::JourneyPatternsStopPoint.bulk_insert do |worker|
                     stop_points.each do |stop_point|
                       worker.add journey_pattern_id: journey_pattern.id, stop_point_id: stop_point.id
                     end
@@ -475,7 +472,8 @@ class Import::Gtfs < Import::Base
 
   def import_calendars
     return unless source.entries.include?('calendar.txt')
-      Chouette::TimeTable.skipping_objectid_uniqueness do
+
+    Chouette::TimeTable.skipping_objectid_uniqueness do
       Chouette::ChecksumManager.no_updates do
         create_resource(:calendars).each(source.calendars, slice: 500, transaction: true) do |calendar, resource|
           time_table = referential.time_tables.build comment: "Calendar #{calendar.service_id}"
@@ -526,26 +524,7 @@ class Import::Gtfs < Import::Base
   end
 
   def update_checkum_in_batches(collection)
-    collection.find_in_batches do |group|
-      ids = []
-      checksums = []
-      checksum_sources = []
-      group.each do |r|
-        ids << r.id
-        source = r.current_checksum_source(db_lookup: false)
-        checksum_sources << self.class.sanitize_sql(source).gsub(/'/, "''")
-        checksums << Digest::SHA256.new.hexdigest(source)
-      end
-      sql = <<SQL
-        UPDATE #{referential.slug}.#{collection.klass.table_name} tmp SET checksum_source = data_table.checksum_source, checksum = data_table.checksum
-        FROM
-        (select unnest(array[#{ids.join(",")}]) as id,
-        unnest(array['#{checksums.join("','")}']) as checksum,
-        unnest(array['#{checksum_sources.join("','")}']) as checksum_source) as data_table
-        where tmp.id = data_table.id;
-SQL
-      ActiveRecord::Base.connection.execute sql
-    end
+    Chouette::ChecksumManager.update_checkum_in_batches(collection, referential)
   end
 
   def import_missing_checksums

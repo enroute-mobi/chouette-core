@@ -29,21 +29,6 @@ module CustomFieldsSupport
       Hash[*custom_fields(workgroup).map{|cf| [cf.code, cf]}.flatten]
     end
 
-    def self.within_workgroup workgroup
-      @current_workgroup = workgroup
-      value = nil
-      begin
-        value = yield
-      ensure
-        @current_workgroup = nil
-      end
-      value
-    end
-
-    def self.current_workgroup
-      @current_workgroup
-    end
-
     def method_missing method_name, *args
       if !@custom_fields_initialized && method_name =~ /custom_field_*/ && method_name.to_sym != :custom_field_values
         initialize_custom_fields
@@ -89,7 +74,7 @@ module CustomFieldsSupport
       return if custom_fields_initialized?
       return unless self.attributes.has_key?("custom_field_values")
       return unless self.workgroup.present?
-      
+
       self.custom_field_values ||= {}
       custom_fields.values.each &:initialize_custom_field
       custom_fields.each do |k, v|

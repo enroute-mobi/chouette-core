@@ -8,13 +8,14 @@ module Stat
     scope :for_line, ->(line) { where(line_id: line.id) }
     scope :for_route, ->(route) { where(route_id: route.id) }
 
-    def self.compute_for_referential(referential)
+    def self.compute_for_referential(referential, lines: nil)
       Chouette::Benchmark.log "JourneyPatternCoursesByDate computation" do
         referential.switch do
+          lines ||= referential.lines
           JourneyPatternCoursesByDate.delete_all
           ActiveRecord::Base.cache do
             ActiveRecord::Base.transaction do
-              referential.lines.select(:id).find_each do |line|
+              lines.select(:id).find_each do |line|
                 routes = referential.routes.where(line_id: line.id)
                 if routes.exists?
                   routes.includes(:journey_patterns).find_each do |route|

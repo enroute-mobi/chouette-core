@@ -29,47 +29,39 @@ module Chouette
       ActiveModel::Name.new self, Chouette, self.name.demodulize
     end
 
-    # TODO: Can we remove this?
-    # class << self
-    #   alias_method :create_reflection_without_chouette_naming, :create_reflection
+    class << self
+      def current_referential
+        Referential.where(slug: Apartment::Tenant.current).first!
+      end
 
-    #   def create_reflection(macro, name, options, active_record)
-    #     options =
-    #       Reflection.new(macro, name, options, active_record).options_with_default
+      def within_workgroup workgroup
+        raise "Already in another workgroup: #{@@current_workgroup.inspect}" if class_variable_defined?('@@current_workgroup') && @@current_workgroup && workgroup != @@current_workgroup
 
-    #     create_reflection_without_chouette_naming(macro, name, options, active_record)
-    #   end
-    # end
+        @@current_workgroup = workgroup
+        value = nil
+        begin
+          value = yield
+        ensure
+          @@current_workgroup = nil
+        end
+        value
+      end
 
+      def current_workgroup
+        @@current_workgroup
+      end
+    end
 
+    def referential
+      @referential ||= self.class.current_referential
+    end
 
-    # class Reflection
+    def referential_slug
+      Apartment::Tenant.current
+    end
 
-    #   attr_reader :macro, :name, :options, :active_record
-
-    #   def initialize(macro, name, options, active_record)
-    #     @macro, @name, @options, @active_record = macro, name.to_s, options, active_record
-    #   end
-
-    #   def collection?
-    #     macro == :has_many
-    #   end
-
-    #   def singular_name
-    #     collection? ? name.singularize : name
-    #   end
-
-    #   def class_name
-    #     "Chouette::#{singular_name.camelize}"
-    #   end
-
-    #   def options_with_default
-    #     options.dup.tap do |options|
-    #       options[:class_name] ||= class_name
-    #     end
-    #   end
-
-    # end
-
+    def workgroup
+      self.class.current_workgroup || referential&.workgroup
+    end
   end
 end

@@ -30,7 +30,7 @@ class ReferentialMetadata < ApplicationModel
   def urgent?
     flagged_urgent_at.present?
   end
-  
+
   class Period
     include ActiveAttr::Model
     include ActiveAttr::MultiParameterAttributes
@@ -173,10 +173,22 @@ class ReferentialMetadata < ApplicationModel
   end
   private :clear_periods
 
+  def self.bulk_insert_from(collection, workbench, referential)
+    @workbench_line_ids = workbench.line_ids
+    bulk_insert do |worker|
+      collection.map do |m|
+        m = ReferentialMetadata.new_from(m, workbench)
+        worker.add m.attributes.update(referential_id: referential.id)
+      end
+    end
+    @workbench_line_ids = nil
+  end
+
   def self.new_from(from, workbench)
     from.dup.tap do |metadata|
       metadata.referential_source_id = from.referential_id
-      metadata.line_ids = workbench.lines.where(id: metadata.line_ids).pluck(:id)
+      line_ids = @workbench_line_ids ? @workbench_line_ids & metadata.line_ids : workbench.lines.where(id: metadata.line_ids).pluck(:id)
+      metadata.line_ids = line_ids
       metadata.referential_id = nil
     end
   end

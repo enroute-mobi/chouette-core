@@ -21,14 +21,21 @@ module ProfilingSupport
     @profile_times ||= Hash.new{ |h, k| h[k] = [] }
     @computed_profile_stats ||= begin
       profile_stats = {}
-      @profile_times.each do |k, times|
+      @profile_times.each do |k, data|
+        times = data.map{|k| k[:time]}
+        mems = data.map{|k| k[:mem]}
         sum = times.sum
+        mem_sum = mems.sum
         profile_stats[k] = {
-          sum: sum,
-          count: times.count,
-          min: times.min,
-          max: times.max,
-          average: sum/times.count
+          count: data.count,
+          total_time: sum,
+          min_time: times.min,
+          max_time: times.max,
+          average_time: sum/data.count,
+          total_mem: mem_sum,
+          min_mem: mems.min,
+          max_mem: mems.max,
+          average_mem: mem_sum/data.count
         }
       end
       profile_stats
@@ -43,15 +50,18 @@ module ProfilingSupport
 
     @current_profile_scope ||= []
     @current_profile_scope << tag
-    out = time = nil
+    out = time = mem = nil
     begin
+      memory_before = Chouette::Benchmark.current_usage
       time = ::Benchmark.realtime do
         puts "START PROFILING #{@current_profile_scope.join('.')}"  if profile?
         out = yield
       end
-      add_profile_time @current_profile_scope.join('.'), time if profile?
+      memory_after = Chouette::Benchmark.current_usage
+      mem = memory_after - memory_before
+      add_profile_time @current_profile_scope.join('.'), { time: time, mem: mem } if profile?
     ensure
-      puts "END PROFILING #{@current_profile_scope.join('.')} in #{time}s" if profile?
+      puts "END PROFILING #{@current_profile_scope.join('.')} in #{time}s - mem delta: #{mem}" if profile?
       @current_profile_scope.pop
     end
     out

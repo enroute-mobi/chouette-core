@@ -91,6 +91,10 @@ Rails.application.configure do
 
   config.additional_compliance_controls << "dummy"
   config.additional_destinations << "dummy"
+
+  config.to_prepare do
+    Chouette::ChecksumManager.cleanup
+  end
 end
 
 Dir[File.join(File.dirname(__FILE__), File.basename(__FILE__, ".rb"), "*.rb")].each do |f|

@@ -81,6 +81,8 @@ module OperationSupport
 
   def save_current
     profile_tag :save_current do
+      previous_current = output.current
+      
       output.update current: new, new: nil
       output.current.update referential_suite: output, ready: true
       new.rebuild_cross_referential_index!

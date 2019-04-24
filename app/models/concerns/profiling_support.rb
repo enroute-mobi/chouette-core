@@ -54,17 +54,22 @@ module ProfilingSupport
     begin
       memory_before = Chouette::Benchmark.current_usage
       time = ::Benchmark.realtime do
-        puts "START PROFILING #{@current_profile_scope.join('.')}"  if profile?
+        log "START PROFILING #{@current_profile_scope.join('.')}" if profile?
         out = yield
       end
       memory_after = Chouette::Benchmark.current_usage
       mem = memory_after - memory_before
       add_profile_time @current_profile_scope.join('.'), { time: time, mem: mem } if profile?
     ensure
-      puts "END PROFILING #{@current_profile_scope.join('.')} in #{time}s - mem delta: #{mem}" if profile?
+      log "END PROFILING #{@current_profile_scope.join('.')} in #{time}s - mem delta: #{mem}" if profile?
       @current_profile_scope.pop
     end
     out
+  end
+
+  def log msg
+    msg = msg.try(:white) || msg
+    puts msg
   end
 
   def profile_operation(operation, &block)

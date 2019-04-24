@@ -671,11 +671,12 @@ class Merge < ApplicationModel
 
               # Create VehicleJourneyAtStops
               profile_tag 'vehicle_journey_at_stops' do
+                stop_point_ids = existing_associated_journey_pattern.stop_points.pluck(:id)
                 Chouette::VehicleJourneyAtStop.bulk_insert do |worker|
                   vehicle_journey.vehicle_journey_at_stops.each_with_index do |vehicle_journey_at_stop, index|
                     worker.add vehicle_journey_at_stop.attributes.merge(
                       vehicle_journey_id: new_vehicle_journey.id,
-                      stop_point_id: existing_associated_journey_pattern.stop_points[index].id,
+                      stop_point_id: stop_point_ids[index],
                     )
                   end
                 end

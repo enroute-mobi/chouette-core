@@ -556,7 +556,7 @@ class Merge < ApplicationModel
                   candidate_time_table.periods.build period_attributes
                 end
 
-                candidate_time_table.intersect_periods! line_periods.periods(line_id)
+                candidate_time_table.intersect_periods! @line_periods.periods(line_id)
                 unless candidate_time_table.empty?
 
                   # FIXME

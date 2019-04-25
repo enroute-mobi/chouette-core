@@ -10,6 +10,7 @@ RSpec.describe "ComplianceCheckSets", type: :feature do
   # We setup a control_set with two blocks and one direct control (meaning that it is not attached to a block)
   # Then we add one control to the first block and two controls to the second block
   let( :compliance_check_set ){ create :compliance_check_set, name: random_string }
+  let(:workgroup) { compliance_check_set.workbench.workgroup }
   let(:blox){[
     create( :compliance_check_block,
            compliance_check_set: compliance_check_set, transport_mode: 'bus', transport_submode: 'demandAndResponseBus'),
@@ -30,7 +31,7 @@ RSpec.describe "ComplianceCheckSets", type: :feature do
 
     it 'we can see the expected content' do
       # Breadcrumbs
-      expect_breadcrumb_links "Gestion de l'offre", "Rapports de contrôles"
+      expect_breadcrumb_links workgroup.name, "Gestion de l'offre", "Rapports de contrôles"
 
       # Headline
       expect( page ).to have_content(I18n.t("compliance_check_sets.executed.title", name: compliance_check_set.name))

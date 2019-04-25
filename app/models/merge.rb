@@ -119,8 +119,7 @@ class Merge < ApplicationModel
   def prepare_new
     profile_tag 'prepare_new' do
       clone_metadata = false
-      new =
-      if workbench.output.current && profile? && !profile_options[:new_output]
+      new = if workbench.output.current && profile? && !profile_options[:new_output]
         Rails.logger.debug "Merge ##{id}: Clone current output"
         clone_metadata = true
         Referential.new_from(workbench.output.current, workbench, true).tap do |clone|
@@ -776,59 +775,60 @@ class Merge < ApplicationModel
       scope
     end
   end
+end
 
-  class MetadatasMerger
-    attr_reader :merge_metadatas, :referential
-    def initialize(final_referential, referential)
-      @final_referential = final_referential
-      @merge_metadatas = final_referential.metadatas
-      @referential = referential
-    end
+class MetadatasMerger
+  attr_reader :merge_metadatas, :referential
+  def initialize(final_referential, referential)
+    @final_referential = final_referential
+    @merge_metadatas = final_referential.metadatas
+    @referential = referential
+  end
 
-    delegate :metadatas, to: :referential, prefix: :referential
+  delegate :metadatas, to: :referential, prefix: :referential
 
-    def merge
-      ReferentialMetadata.bulk_insert do |worker|
-        referential_metadatas.each do |metadata|
-          merge_one metadata, worker
-        end
+  def merge
+    ReferentialMetadata.bulk_insert do |worker|
+      referential_metadatas.each do |metadata|
+        merge_one metadata, worker
       end
-    end
-
-    def merged_line_metadatas(line_id)
-      merge_metadatas.select do |m|
-        m.line_ids.include? line_id
-      end
-    end
-
-    def merge_one(metadata, worker)
-      metadata.line_ids.each do |line_id|
-
-        line_metadatas = merged_line_metadatas(line_id)
-
-        metadata.periodes.each do |period|
-          line_metadatas.each do |m|
-            m.periodes = m.periodes.map do |existing_period|
-              existing_period.remove period
-            end.flatten
-          end
-
-          attributes = {
-            line_ids: [line_id],
-            periodes: [period],
-            referential_source_id: referential.id,
-            created_at: metadata.created_at, # TODO check required dates
-            flagged_urgent_at: metadata.urgent? ? Time.now : nil,
-            referential_id: @final_referential.id
-          }
-
-          # line_metadatas should not contain conflicted metadatas
-          worker.add attributes
-        end
-      end
-    end
-
-    def empty_metadatas
-      merge_metadatas.select { |m| m.periodes.empty? }
     end
   end
+
+  def merged_line_metadatas(line_id)
+    merge_metadatas.select do |m|
+      m.line_ids.include? line_id
+    end
+  end
+
+  def merge_one(metadata, worker)
+    metadata.line_ids.each do |line_id|
+
+      line_metadatas = merged_line_metadatas(line_id)
+
+      metadata.periodes.each do |period|
+        line_metadatas.each do |m|
+          m.periodes = m.periodes.map do |existing_period|
+            existing_period.remove period
+          end.flatten
+        end
+
+        attributes = {
+          line_ids: [line_id],
+          periodes: [period],
+          referential_source_id: referential.id,
+          created_at: metadata.created_at, # TODO check required dates
+          flagged_urgent_at: metadata.urgent? ? Time.now : nil,
+          referential_id: @final_referential.id
+        }
+
+        # line_metadatas should not contain conflicted metadatas
+        worker.add attributes
+      end
+    end
+  end
+
+  def empty_metadatas
+    merge_metadatas.select { |m| m.periodes.empty? }
+  end
+end

@@ -194,13 +194,13 @@ class Merge < ApplicationModel
 
         merge_referential_metadata(referential)
 
-        line_periods = LinePeriods.from_metadatas(referential.metadatas)
+        @line_periods = LinePeriods.from_metadatas(referential.metadatas)
 
         new.metadatas.reload
 
         profile_tag 'clean_timetables' do
           new.switch do
-            line_periods.each do |line_id, periods|
+            @line_periods.each do |line_id, periods|
               Rails.logger.debug "Merge ##{id}: Clean data for #{line_id} #{periods.inspect}"
               @altered_lines << line_id
               new.lines.find(line_id).time_tables.find_each do |time_table|
@@ -219,10 +219,10 @@ class Merge < ApplicationModel
 
         page = 0
         referential_routes = routes_batch(page, referential)
+        @new_vehicle_journey_ids = {}
 
         while referential_routes.present?
           profile_tag 'routes_batch' do
-
             @referential_routes_lines = nil
             @referential_routes_checksums = nil
             @referential_journey_patterns_checksums = nil
@@ -494,12 +494,10 @@ class Merge < ApplicationModel
 
   def merge_routes_vehicle_journeys(referential, referential_routes)
     # Vehicle Journeys
-    new_vehicle_journey_ids = {}
-
     profile_tag 'merge_routes_vehicle_journeys' do
       referential.switch do
         referential.vehicle_journeys.where(route_id: referential_routes.map(&:id)).includes(:vehicle_journey_at_stops, :purchase_windows, :footnotes).find_in_batches(batch_size: vehicle_journeys_batch_size) do |referential_vehicle_journeys|
-          merge_vehicle_journeys referential, referential_vehicle_journeys, new_vehicle_journey_ids
+          merge_vehicle_journeys referential, referential_vehicle_journeys
         end
       end
     end
@@ -569,7 +567,7 @@ class Merge < ApplicationModel
                   candidate_time_table.periods.build period_attributes
                 end
 
-                candidate_time_table.intersect_periods! line_periods.periods(line_id)
+                candidate_time_table.intersect_periods! @line_periods.periods(line_id)
                 unless candidate_time_table.empty?
 
                   # FIXME
@@ -599,7 +597,7 @@ class Merge < ApplicationModel
 
                   # associate VehicleJourney
 
-                  new_vehicle_journey_id = new_vehicle_journey_ids[properties[:vehicle_journey_id]]
+                  new_vehicle_journey_id = @new_vehicle_journey_ids[properties[:vehicle_journey_id]]
                   unless new_vehicle_journey_id
                     raise "TimeTable #{existing_time_table.inspect} associated to a not-merged VehicleJourney: #{properties[:vehicle_journey_id]}"
                   end
@@ -619,7 +617,7 @@ class Merge < ApplicationModel
     100
   end
 
-  def merge_vehicle_journeys(referential, referential_vehicle_journeys, new_vehicle_journey_ids)
+  def merge_vehicle_journeys(referential, referential_vehicle_journeys)
     vehicle_journey_ids = referential_vehicle_journeys.map(&:id)
 
     referential_purchase_windows_by_checksum = {}
@@ -652,7 +650,7 @@ class Merge < ApplicationModel
 
             if existing_vehicle_journey
               existing_vehicle_journey.merge_metadata_from vehicle_journey
-              new_vehicle_journey_ids[vehicle_journey.id] = existing_vehicle_journey.id
+              @new_vehicle_journey_ids[vehicle_journey.id] = existing_vehicle_journey.id
             else
               objectid = Chouette::VehicleJourney.where(objectid: vehicle_journey.objectid).exists? ? nil : vehicle_journey.objectid
               attributes = vehicle_journey.attributes.merge(
@@ -742,7 +740,7 @@ class Merge < ApplicationModel
                 raise "Checksum has changed: \"#{vehicle_journey.checksum_source}\" \"#{vehicle_journey.checksum}\" -> \"#{new_vehicle_journey.checksum_source}\" \"#{new_vehicle_journey.checksum}\""
               end
 
-              new_vehicle_journey_ids[vehicle_journey.id] = new_vehicle_journey.id
+              @new_vehicle_journey_ids[vehicle_journey.id] = new_vehicle_journey.id
             end
           end
         end
@@ -754,6 +752,8 @@ class Merge < ApplicationModel
     referentials.each(&:merged!)
     lines = new.switch { new.lines.where(id: @altered_lines) }
     new.update_stats!(lines: lines)
+
+    return if profile?
     aggregate_if_urgent_offer
     HoleSentinel.new(workbench).watch!
   end

@@ -44,6 +44,7 @@ class Merge < ApplicationModel
     source ||= w.referentials.mergeable.last
     merge = self.new referentials: [source], workbench: w
     merge.profile = true
+    merge.profile_options = opts
     merge.save!
     Referential.where(slug: "output_#{w.id}_#{merge.created_at.to_i}").destroy_all
 
@@ -119,14 +120,14 @@ class Merge < ApplicationModel
     profile_tag 'prepare_new' do
       clone_metadata = false
       new =
-        if workbench.output.current
+        if workbench.output.current && !profile_options[:new_output]
           Rails.logger.debug "Merge ##{id}: Clone current output"
           clone_metadata = true
           Referential.new_from(workbench.output.current, workbench, true).tap do |clone|
             clone.inline_clone = true
           end
         else
-          if workbench.merges.successful.count > 0
+          if workbench.merges.successful.count > 0 && !profile_options[:new_output]
             # there had been previous merges, we should have a current output
             raise "Trying to create a new referential to merge into from Merge##{self.id}, while there had been previous merges in the same workbench"
           end

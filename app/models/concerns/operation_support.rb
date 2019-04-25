@@ -6,6 +6,7 @@ module OperationSupport
 
     enumerize :status, in: %w[new pending successful failed running canceled], default: :new
     scope :successful, ->{ where status: :successful }
+    scope :except_successful, -> { where.not(status: :successful) }
 
     has_array_of :referentials, class_name: 'Referential'
     belongs_to :new, class_name: 'Referential'
@@ -52,6 +53,7 @@ module OperationSupport
   end
 
   def clean_previous_operations
+    yield(clean_scope.order("created_at asc").first&.created_at) if block_given?
     while clean_scope.successful.count > [self.class.keep_operations, 0].max do
       clean_scope.order("created_at asc").first.tap { |m| m.new&.destroy ; m.destroy }
     end

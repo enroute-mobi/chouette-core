@@ -56,7 +56,9 @@ class Aggregate < ActiveRecord::Base
       save_current
     end
 
-    clean_previous_operations
+    clean_previous_operations do |date|
+      Aggregate.except_successful.where('created_at < ?', date).destroy_all if date
+    end
     publish
     workgroup.aggregated!
   rescue => e

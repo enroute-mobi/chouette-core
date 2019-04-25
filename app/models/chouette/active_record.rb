@@ -48,7 +48,7 @@ module Chouette
       end
 
       def current_workgroup
-        @@current_workgroup
+        class_variable_defined?('@@current_workgroup') && @@current_workgroup
       end
     end
 

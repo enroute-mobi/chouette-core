@@ -161,6 +161,11 @@ class Referential < ApplicationModel
     end
   end
 
+  def audit
+    ReferentialAudit::FullReferential.new(self).perform
+    nil
+  end
+
   def notify_state
     Notification.create! channel: "/referentials/#{self.id}", payload: {state: self.state}
   end

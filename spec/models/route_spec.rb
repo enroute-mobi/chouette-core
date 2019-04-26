@@ -24,6 +24,48 @@ RSpec.describe Chouette::Route, :type => :model do
       expect(rcz_should_remain.reload.stop_point_ids.count).to eq 2
     end
   end
+
+  context 'opposite_route' do
+    context 'in a work referential' do
+      it 'should validate unicity' do
+        route = build(:route)
+        expect(route).to be_valid
+
+        opposite_route = create(:route, wayback: route.opposite_wayback, line: route.line)
+        route.opposite_route = opposite_route
+        route.validate
+        expect(route).to be_valid
+
+        opposite_route.update opposite_route: create(:route, wayback: route.wayback, line: route.line)
+        expect(opposite_route.reload.opposite_route).to be_present
+        route.validate
+        expect(route).to_not be_valid
+      end
+    end
+
+    context 'in a merged referential' do
+      before(:each) do
+        referential.update referential_suite: create(:referential_suite)
+        expect(referential.in_referential_suite?).to be_truthy
+      end
+
+      it 'should not validate unicity' do
+        route = build(:route)
+        expect(route).to be_valid
+
+        opposite_route = create(:route, wayback: route.opposite_wayback, line: route.line)
+        route.opposite_route = opposite_route
+        route.validate
+        expect(route).to be_valid
+
+        opposite_route.update opposite_route: create(:route, wayback: route.wayback, line: route.line)
+        expect(opposite_route.reload.opposite_route).to be_present
+        route.validate
+        expect(route).to be_valid
+      end
+    end
+  end
+
   context "metadatas" do
     it "should be empty at first" do
       expect(Chouette::Route.has_metadata?).to be_truthy

@@ -120,14 +120,14 @@ class Merge < ApplicationModel
     profile_tag 'prepare_new' do
       clone_metadata = false
       new =
-        if workbench.output.current && !profile_options[:new_output]
+        if workbench.output.current && profile? && !profile_options[:new_output]
           Rails.logger.debug "Merge ##{id}: Clone current output"
           clone_metadata = true
           Referential.new_from(workbench.output.current, workbench, true).tap do |clone|
             clone.inline_clone = true
           end
         else
-          if workbench.merges.successful.count > 0 && !profile_options[:new_output]
+          if workbench.merges.successful.count > 0 && profile? && !profile_options[:new_output]
             # there had been previous merges, we should have a current output
             raise "Trying to create a new referential to merge into from Merge##{self.id}, while there had been previous merges in the same workbench"
           end
@@ -170,13 +170,13 @@ class Merge < ApplicationModel
   end
 
   def clean_new
-    profile_tag 'clean_new' do
+    profile_operation 'clean_new' do
       CleanUp.new(referential: new, clean_methods: [:clean_irrelevant_data, :clean_unassociated_calendars]).clean
     end
   end
 
   def merge_referential_metadata(referential)
-    profile_tag 'merge_referential_metadata' do
+    profile_operation 'merge_referential_metadata' do
       metadata_merger = MetadatasMerger.new new, referential
       metadata_merger.merge
 
@@ -188,7 +188,7 @@ class Merge < ApplicationModel
 
   def merge_referential(referential)
     @altered_lines = []
-    profile_tag 'merge_referential' do
+    profile_operation 'merge_referential' do
       ActiveRecord::Base.cache do
         Rails.logger.debug "Merge ##{id}: Merge #{referential.slug}"
 
@@ -250,7 +250,7 @@ class Merge < ApplicationModel
   end
 
   def merge_routes(referential, referential_routes)
-    profile_tag 'merge_routes' do
+    profile_operation 'merge_routes' do
       @referential_routes_checksums = Hash[referential_routes.map { |r| [ r.id, r.checksum ] }]
       @referential_routes_lines = Hash[referential_routes.map { |r| [ r.id, r.line_id ] }]
 
@@ -463,7 +463,7 @@ class Merge < ApplicationModel
 
   def merge_footnotes(referential)
     # Footnotes
-    profile_tag 'merge_footnotes' do
+    profile_operation 'merge_footnotes' do
       referential_footnotes = referential.switch do
         # All footnotes associated to a VehicleJourney are loaded
         referential.footnotes.associated.all.to_a
@@ -494,7 +494,7 @@ class Merge < ApplicationModel
 
   def merge_routes_vehicle_journeys(referential, referential_routes)
     # Vehicle Journeys
-    profile_tag 'merge_routes_vehicle_journeys' do
+    profile_operation 'merge_routes_vehicle_journeys' do
       referential.switch do
         referential.vehicle_journeys.where(route_id: referential_routes.map(&:id)).includes(:vehicle_journey_at_stops, :purchase_windows, :footnotes).find_in_batches(batch_size: vehicle_journeys_batch_size) do |referential_vehicle_journeys|
           merge_vehicle_journeys referential, referential_vehicle_journeys

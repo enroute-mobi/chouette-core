@@ -53,6 +53,8 @@ module Chouette
     has_and_belongs_to_many :time_tables, :class_name => 'Chouette::TimeTable', :foreign_key => "vehicle_journey_id", :association_foreign_key => "time_table_id"
     has_many :stop_points, -> { order("stop_points.position") }, :through => :vehicle_journey_at_stops
 
+    attr_accessor :skip_calculate_vehicle_journey_at_stop_day_offset
+
     before_validation :set_default_values,
       :calculate_vehicle_journey_at_stop_day_offset
 
@@ -224,7 +226,13 @@ module Chouette
       purchase_windows.map{|p| p.date_ranges.map &:max}.flatten.max
     end
 
+    def skip_calculate_vehicle_journey_at_stop_day_offset?
+      @skip_calculate_vehicle_journey_at_stop_day_offset
+    end
+
     def calculate_vehicle_journey_at_stop_day_offset(force_reset=false)
+      return if skip_calculate_vehicle_journey_at_stop_day_offset?
+
       Chouette::VehicleJourneyAtStopsDayOffset.new(
         vehicle_journey_at_stops.includes(stop_point: :stop_area_light).sort_by{ |vjas| vjas.stop_point.position }
       ).update(force_reset)

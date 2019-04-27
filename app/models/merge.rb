@@ -490,6 +490,8 @@ class Merge < ApplicationModel
 
   def merge_routes_vehicle_journeys(referential, referential_routes)
     # Vehicle Journeys
+    @vehicle_journey_objectids = Chouette::VehicleJourney.where(route_id: referential_routes.map(&:id)).pluck(:objectid).compact
+    @journey_pattern_objectids = Chouette::JourneyPattern.where(route_id: referential_routes.map(&:id)).pluck(:objectid).compact
     profile_operation 'merge_routes_vehicle_journeys' do
       referential.switch do
         referential.vehicle_journeys.where(route_id: referential_routes.map(&:id)).includes(:vehicle_journey_at_stops, :purchase_windows, :footnotes).find_in_batches(batch_size: vehicle_journeys_batch_size) do |referential_vehicle_journeys|
@@ -625,112 +627,121 @@ class Merge < ApplicationModel
 
     new.switch do
       Chouette::VehicleJourney.transaction do
-        referential_vehicle_journeys.each do |vehicle_journey|
-          profile_tag 'vehicle_journey' do
-            # find parent journey pattern by checksum
-            associated_line_id = @referential_routes_lines[vehicle_journey.route_id]
-            associated_route_checksum = @referential_routes_checksums[vehicle_journey.route_id]
-            associated_journey_pattern_checksum = @referential_journey_patterns_checksums[vehicle_journey.journey_pattern_id]
+        Chouette::VehicleJourney.skipping_objectid_uniqueness do
+          referential_vehicle_journeys.each do |vehicle_journey|
+            profile_tag 'vehicle_journey' do
+              # find parent journey pattern by checksum
+              associated_line_id = @referential_routes_lines[vehicle_journey.route_id]
+              associated_route_checksum = @referential_routes_checksums[vehicle_journey.route_id]
+              associated_journey_pattern_checksum = @referential_journey_patterns_checksums[vehicle_journey.journey_pattern_id]
 
-            existing_associated_route = new.routes.find_by checksum: associated_route_checksum, line_id: associated_line_id
-            existing_associated_journey_pattern = existing_associated_route.journey_patterns.find_by checksum: associated_journey_pattern_checksum
+              existing_associated_route = new.routes.find_by checksum: associated_route_checksum, line_id: associated_line_id
+              existing_associated_journey_pattern = existing_associated_route.journey_patterns.find_by checksum: associated_journey_pattern_checksum
 
-            existing_vehicle_journey = new.vehicle_journeys.find_by journey_pattern_id: existing_associated_journey_pattern.id, checksum: vehicle_journey.checksum
+              existing_vehicle_journey = new.vehicle_journeys.find_by journey_pattern_id: existing_associated_journey_pattern.id, checksum: vehicle_journey.checksum
 
-            if existing_vehicle_journey
-              existing_vehicle_journey.merge_metadata_from vehicle_journey
-              @new_vehicle_journey_ids[vehicle_journey.id] = existing_vehicle_journey.id
-            else
-              objectid = Chouette::VehicleJourney.where(objectid: vehicle_journey.objectid).exists? ? nil : vehicle_journey.objectid
-              attributes = vehicle_journey.attributes.merge(
-                id: nil,
-                objectid: objectid,
+              if existing_vehicle_journey
+                existing_vehicle_journey.merge_metadata_from vehicle_journey
+                @new_vehicle_journey_ids[vehicle_journey.id] = existing_vehicle_journey.id
+              else
+                objectid = @vehicle_journey_objectids.include?(vehicle_journey.objectid) ? nil : vehicle_journey.objectid
+                attributes = vehicle_journey.attributes.merge(
+                  id: nil,
+                  objectid: objectid,
 
-                # all other primary must be changed
-                route_id: existing_associated_journey_pattern.route_id,
-                journey_pattern_id: existing_associated_journey_pattern.id,
-                ignored_routing_contraint_zone_ids: []
-              )
-              new_vehicle_journey = new.vehicle_journeys.build attributes
+                  # all other primary must be changed
+                  route_id: existing_associated_journey_pattern.route_id,
+                  journey_pattern_id: existing_associated_journey_pattern.id,
+                  ignored_routing_contraint_zone_ids: []
+                )
+                new_vehicle_journey = new.vehicle_journeys.build attributes
+                new_vehicle_journey.skip_calculate_vehicle_journey_at_stop_day_offset = true
 
-              Chouette::ChecksumManager.no_updates do
-                save_model! new_vehicle_journey
-              end
-
-
-              # Create VehicleJourneyAtStops
-              profile_tag 'vehicle_journey_at_stops' do
-                stop_point_ids = existing_associated_journey_pattern.stop_points.pluck(:id)
-                Chouette::VehicleJourneyAtStop.bulk_insert do |worker|
-                  vehicle_journey.vehicle_journey_at_stops.each_with_index do |vehicle_journey_at_stop, index|
-                    worker.add vehicle_journey_at_stop.attributes.merge(
-                      vehicle_journey_id: new_vehicle_journey.id,
-                      stop_point_id: stop_point_ids[index],
-                    )
-                  end
+                Chouette::ChecksumManager.no_updates do
+                  save_model! new_vehicle_journey
                 end
-              end
+                @vehicle_journey_objectids << new_vehicle_journey.objectid
 
-              new_vehicle_journey.vehicle_journey_at_stops.reload
+                # Create VehicleJourneyAtStops
+                profile_tag 'vehicle_journey_at_stops' do
+                  stop_point_ids = existing_associated_journey_pattern.stop_points.pluck(:id)
+                  Chouette::VehicleJourneyAtStop.bulk_insert do |worker|
+                    vehicle_journey.vehicle_journey_at_stops.each_with_index do |vehicle_journey_at_stop, index|
+                      worker.add vehicle_journey_at_stop.attributes.merge(
+                        vehicle_journey_id: new_vehicle_journey.id,
+                        stop_point_id: stop_point_ids[index],
+                      )
+                    end
+                  end
 
-              # Associate (and create if needed) PurchaseWindows
-              profile_tag 'purchase_windows' do
-                referential_vehicle_journey_purchase_window_checksums[vehicle_journey.id].each do |purchase_window_checksum|
-                  associated_purchase_window = new.purchase_windows.find_by(checksum: purchase_window_checksum)
+                  new_vehicle_journey.vehicle_journey_at_stops.reload
+                end
 
-                  unless associated_purchase_window
-                    purchase_window = referential_purchase_windows_by_checksum[purchase_window_checksum]
+                # Associate (and create if needed) PurchaseWindows
+                profile_tag 'purchase_windows' do
+                  referential_vehicle_journey_purchase_window_checksums[vehicle_journey.id].each do |purchase_window_checksum|
+                    associated_purchase_window = new.purchase_windows.find_by(checksum: purchase_window_checksum)
 
-                    objectid = new.purchase_windows.where(objectid: purchase_window.objectid).exists? ? nil : purchase_window.objectid
-                    attributes = purchase_window.attributes.merge(
-                      id: nil,
-                      objectid: objectid
-                    )
-                    new_purchase_window = new.purchase_windows.build attributes
-                    save_model! new_purchase_window
+                    unless associated_purchase_window
+                      purchase_window = referential_purchase_windows_by_checksum[purchase_window_checksum]
 
-                    if new_purchase_window.checksum != purchase_window.checksum
-                      raise "Checksum has changed: #{purchase_window.checksum_source} #{new_purchase_window.checksum_source}"
+                      objectid = new.purchase_windows.where(objectid: purchase_window.objectid).exists? ? nil : purchase_window.objectid
+                      attributes = purchase_window.attributes.merge(
+                        id: nil,
+                        objectid: objectid
+                      )
+                      new_purchase_window = new.purchase_windows.build attributes
+                      save_model! new_purchase_window
+
+                      if new_purchase_window.checksum != purchase_window.checksum
+                        raise "Checksum has changed: #{purchase_window.checksum_source} #{new_purchase_window.checksum_source}"
+                      end
+
+                      associated_purchase_window = new_purchase_window
                     end
 
-                    associated_purchase_window = new_purchase_window
+                    new_vehicle_journey.purchase_windows << associated_purchase_window
+                  end
+                end
+
+                # Associate Footnotes
+
+                if referential_vehicle_journey_footnote_checksums[vehicle_journey.id]
+                  referential_vehicle_journey_footnote_checksums[vehicle_journey.id].each do |footnote_checksum|
+                    associated_footnote = new.footnotes.find_by(line_id: associated_line_id, checksum: footnote_checksum)
+                    new_vehicle_journey.footnotes << associated_footnote
+                  end
+                end
+
+                # Rewrite ignored_routing_contraint_zone_ids
+                new_vehicle_journey.ignored_routing_contraint_zone_ids = @referential_routing_constraint_zones_new_ids.values_at(*vehicle_journey.ignored_routing_contraint_zone_ids).compact
+                Chouette::ChecksumManager.no_updates do
+                  save_model! new_vehicle_journey
+                end
+
+                profile_tag :update_checksum_without_callbacks do
+                  new_vehicle_journey.update_checksum_without_callbacks! db_lookup: false
+                end
+                
+                if new_vehicle_journey.checksum != vehicle_journey.checksum
+                  Rails.logger.info "failing vehicle journey:"
+                  Rails.logger.info "before:"
+                  Rails.logger.info vehicle_journey.inspect
+                  vehicle_journey.vehicle_journey_at_stops.each do |vjas|
+                    Rails.logger.info vjas.inspect
                   end
 
-                  new_vehicle_journey.purchase_windows << associated_purchase_window
+                  Rails.logger.info "after:"
+                  Rails.logger.info new_vehicle_journey.inspect
+                  new_vehicle_journey.vehicle_journey_at_stops.each do |vjas|
+                    Rails.logger.info vjas.inspect
+                  end
+
+                  raise "Checksum has changed: \"#{vehicle_journey.checksum_source}\" \"#{vehicle_journey.checksum}\" -> \"#{new_vehicle_journey.checksum_source}\" \"#{new_vehicle_journey.checksum}\""
                 end
+
+                @new_vehicle_journey_ids[vehicle_journey.id] = new_vehicle_journey.id
               end
-
-              # Associate Footnotes
-
-              if referential_vehicle_journey_footnote_checksums[vehicle_journey.id]
-                referential_vehicle_journey_footnote_checksums[vehicle_journey.id].each do |footnote_checksum|
-                  associated_footnote = new.footnotes.find_by(line_id: associated_line_id, checksum: footnote_checksum)
-                  new_vehicle_journey.footnotes << associated_footnote
-                end
-              end
-
-              # Rewrite ignored_routing_contraint_zone_ids
-              new_vehicle_journey.ignored_routing_contraint_zone_ids = @referential_routing_constraint_zones_new_ids.values_at(*vehicle_journey.ignored_routing_contraint_zone_ids).compact
-              save_model! new_vehicle_journey
-
-              if new_vehicle_journey.checksum != vehicle_journey.checksum
-                Rails.logger.info "failing vehicle journey:"
-                Rails.logger.info "before:"
-                Rails.logger.info vehicle_journey.inspect
-                vehicle_journey.vehicle_journey_at_stops.each do |vjas|
-                  Rails.logger.info vjas.inspect
-                end
-
-                Rails.logger.info "after:"
-                Rails.logger.info new_vehicle_journey.inspect
-                new_vehicle_journey.vehicle_journey_at_stops.each do |vjas|
-                  Rails.logger.info vjas.inspect
-                end
-
-                raise "Checksum has changed: \"#{vehicle_journey.checksum_source}\" \"#{vehicle_journey.checksum}\" -> \"#{new_vehicle_journey.checksum_source}\" \"#{new_vehicle_journey.checksum}\""
-              end
-
-              @new_vehicle_journey_ids[vehicle_journey.id] = new_vehicle_journey.id
             end
           end
         end

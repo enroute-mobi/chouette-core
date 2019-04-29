@@ -22,20 +22,14 @@ class ReferentialAudit
           profile_tag model.klass.name do
             model.klass.cache do
               model.find_each do |k|
-                profile_tag :checksum, silent: true do
-                  k.set_current_checksum_source(db_lookup: false)
-                  if k.checksum_source_changed?
-                    profile_tag :faulty, silent: true do
-                      faulty << { class_name: k.class.name, id: k.id }
-                    end
-                    next
-                  end
-                  k.update_checksum(force: true, silent: true)
-                  if k.checksum_changed?
-                    profile_tag :faulty, silent: true do
-                      faulty << { class_name: k.class.name, id: k.id }
-                    end
-                  end
+                k.set_current_checksum_source(db_lookup: false)
+                if k.checksum_source_changed?
+                  faulty << { class_name: k.class.name, id: k.id }
+                  next
+                end
+                k.update_checksum(force: true, silent: true)
+                if k.checksum_changed?
+                  faulty << { class_name: k.class.name, id: k.id }
                 end
               end
             end

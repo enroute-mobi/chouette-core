@@ -13,7 +13,7 @@ module Stat
         referential.switch do
           JourneyPatternCoursesByDate.delete_all
           ActiveRecord::Base.cache do
-            ActiveRecord::Base.transaction do
+            Chouette::JourneyPattern.within_workgroup referential.workgroup do
               referential.lines.select(:id).find_each do |line|
                 routes = referential.routes.where(line_id: line.id)
                 if routes.exists?

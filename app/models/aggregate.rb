@@ -2,7 +2,6 @@ class Aggregate < ActiveRecord::Base
   DEFAULT_KEEP_AGGREGATES = 10
 
   include OperationSupport
-
   include NotifiableSupport
 
   belongs_to :workgroup
@@ -10,12 +9,33 @@ class Aggregate < ActiveRecord::Base
 
   validates :workgroup, presence: true
 
-  after_commit :aggregate, on: :create
+  after_commit :aggregate, on: :create, unless: :profile?
 
   delegate :output, to: :workgroup
 
   def parent
     workgroup
+  end
+
+  def self.profile(referentials=nil, profile_options={})
+    referentials ||= [Workgroup.first.output.current]
+    referentials.compact!
+
+    raise 'Missing referential' unless referentials.present?
+
+    aggregate = self.new(referentials: referentials, workgroup: Workgroup.first)
+    aggregate.profile = true
+    aggregate.profile_options = profile_options
+    aggregate.name = "Aggregate profile #{Time.now}"
+
+    aggregate.save!
+
+    aggregate.profile_tag 'aggregate!' do
+      aggregate.aggregate!
+    end
+
+    pp aggregate.profile_stats
+    aggregate
   end
 
   def rollback!
@@ -46,8 +66,10 @@ class Aggregate < ActiveRecord::Base
   def aggregate!
     prepare_new
 
-    referentials.each do |source|
-      ReferentialCopy.new(source: source, target: new).copy!
+    profile_tag 'copy_data' do
+      referentials.each do |source|
+        ReferentialCopy.new(source: source, target: new, profiler: self).copy!
+      end
     end
 
     if after_aggregate_compliance_control_set.present?
@@ -82,35 +104,37 @@ class Aggregate < ActiveRecord::Base
   private
 
   def prepare_new
-    Rails.logger.debug "Create a new output"
-    # 'empty' one
-    attributes = {
-      organisation: workgroup.owner,
-      prefix: "aggregate_#{id}",
-      line_referential: workgroup.line_referential,
-      stop_area_referential: workgroup.stop_area_referential,
-      objectid_format: referentials.first.objectid_format
-    }
-    new = workgroup.output.referentials.new attributes
-    new.referential_suite = output
-    new.slug = "output_#{workgroup.id}_#{created_at.to_i}"
-    new.name = I18n.t("aggregates.referential_name", date: I18n.l(created_at, format: :short_with_time))
+    profile_tag 'prepare_new!' do
+      Rails.logger.debug "Create a new output"
+      # 'empty' one
+      attributes = {
+        organisation: workgroup.owner,
+        prefix: "aggregate_#{id}",
+        line_referential: workgroup.line_referential,
+        stop_area_referential: workgroup.stop_area_referential,
+        objectid_format: referentials.first.objectid_format
+      }
+      new = workgroup.output.referentials.new attributes
+      new.referential_suite = output
+      new.slug = "output_#{workgroup.id}_#{created_at.to_i}"
+      new.name = I18n.t("aggregates.referential_name", date: I18n.l(created_at, format: :short_with_time))
 
-    unless new.valid?
-      Rails.logger.error "New referential isn't valid : #{new.errors.inspect}"
+      unless new.valid?
+        Rails.logger.error "New referential isn't valid : #{new.errors.inspect}"
+      end
+
+      begin
+        new.save!
+      rescue
+        Rails.logger.debug "Errors on new referential: #{new.errors.messages}"
+        raise
+      end
+
+      new.pending!
+
+      output.update new: new
+      update new: new
     end
-
-    begin
-      new.save!
-    rescue
-      Rails.logger.debug "Errors on new referential: #{new.errors.messages}"
-      raise
-    end
-
-    new.pending!
-
-    output.update new: new
-    update new: new
   end
 
   def after_aggregate_compliance_control_set

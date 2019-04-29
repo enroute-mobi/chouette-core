@@ -42,9 +42,9 @@ module ProfilingSupport
     end
   end
 
-  def profile_tag(tag, &block)
+  def profile_tag(tag, opts={}, &block)
     if profiler
-      profiler.profile_tag tag, &block
+      profiler.profile_tag tag, opts, &block
       return
     end
 
@@ -54,20 +54,20 @@ module ProfilingSupport
     begin
       memory_before = Chouette::Benchmark.current_usage
       time = ::Benchmark.realtime do
-        log "START PROFILING #{@current_profile_scope.join('.')}" if profile?
+        ProfilingSupport.log "START PROFILING #{@current_profile_scope.join('.')}" if profile? && !opts[:silent]
         out = yield
       end
       memory_after = Chouette::Benchmark.current_usage
       mem = memory_after - memory_before
       add_profile_time @current_profile_scope.join('.'), { time: time, mem: mem } if profile?
     ensure
-      log "END PROFILING #{@current_profile_scope.join('.')} in #{time}s - mem delta: #{mem}" if profile?
+      ProfilingSupport.log "END PROFILING #{@current_profile_scope.join('.')} in #{time}s - mem delta: #{mem}" if profile? && !opts[:silent]
       @current_profile_scope.pop
     end
     out
   end
 
-  def log msg
+  def self.log msg
     msg = msg.try(:white) || msg
     puts msg
   end

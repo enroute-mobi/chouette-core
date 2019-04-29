@@ -1,5 +1,7 @@
 class ReferentialAudit
   class Base
+    include ProfilingSupport
+
     include Rails.application.routes.url_helpers
 
     attr_reader :status
@@ -8,8 +10,9 @@ class ReferentialAudit
       ReferentialAudit::FullReferential.register klass
     end
 
-    def initialize referential
+    def initialize referential, profiler: nil
       @referential = referential
+      @profiler = profiler
     end
 
     def faulty

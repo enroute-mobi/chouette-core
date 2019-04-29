@@ -1,6 +1,7 @@
 class ReferentialAudit
   class FullReferential
     include PrettyOutput
+    include ProfilingSupport
 
     attr_reader :referential
     attr_accessor :interfaces_group
@@ -26,25 +27,35 @@ class ReferentialAudit
       init_output
     end
 
+    def self.profile opts={}
+      referential = opts[:referential] || Referential.last
+      audit = self.new referential
+      audit.profile = true
+      audit.perform
+      audit.profile_stats
+    end
+
     def perform opts={}
       plain_output = !!opts.delete(:plain_output)
       @output = opts.delete(:output) || :console
       @status = :success
       referential.switch do
         self.class.items.each do |item|
-          instance = item.new(referential)
-          instance.perform(self)
-          if @status == :success || @status == :warning && instance.status == :error
-            @status = instance.status
+          profile_operation item.name do
+            instance = item.new(referential, profiler: self)
+            instance.perform(self)
+            if @status == :success || @status == :warning && instance.status == :error
+              @status = instance.status
+            end
+            res = send("#{instance.status}_status")
+            @statuses += res
+            log instance.pretty_name + " " + "." * (@left_part - instance.pretty_name.size) + " ", silent: plain_output
+            log res, append: true, silent: plain_output
+            unless plain_output
+              print_state
+            end
+            @current_line += 1
           end
-          res = send("#{instance.status}_status")
-          @statuses += res
-          log instance.pretty_name + " " + "." * (@left_part - instance.pretty_name.size) + " ", silent: plain_output
-          log res, append: true, silent: plain_output
-          unless plain_output
-            print_state
-          end
-          @current_line += 1
         end
       end
       @banner += ": " + send("#{@status}_status")

@@ -1,13 +1,9 @@
 class ReferentialAudit
   class JourneyPatternStopPoints < Base
-
+    include ReferentialAudit::Concerns::JourneyPatternBase
+    
     def message(record, output: :console)
-      record_name = "JourneyPattern ##{record.id}"
-      if output == :html
-        url = url_for([@referential, record.line, record.route, :journey_patterns_collection, host: base_host])
-        record_name = link_to record_name, url
-      end
-      "#{record_name} has only #{record.stop_points.count} stop_point(s)"
+      "#{record_name(record, output)} has only #{record.stop_points.count} stop_point(s)"
     end
 
     def find_faulty

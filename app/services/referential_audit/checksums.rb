@@ -1,7 +1,7 @@
 class ReferentialAudit
   class Checksums < Base
 
-    def message record
+    def message(record, output: :console)
       "#{record.class.name} ##{record.id} has an inconsistent checksum"
     end
 

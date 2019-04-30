@@ -1,8 +1,13 @@
 class ReferentialAudit
   class JourneyPatternDistances < Base
 
-    def message record
-      "JourneyPattern ##{record.id} has negative distances"
+    def message(record, output: :console)
+      record_name = "JourneyPattern ##{record.id}"
+      if output == :html
+        url = url_for([@referential, record.line, record.route, :journey_patterns_collection, host: base_host])
+        record_name = link_to record_name, url
+      end
+      "#{record_name} has negative distances"
     end
 
     def find_faulty

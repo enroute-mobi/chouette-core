@@ -3,24 +3,24 @@ class window.NotificationCenter
     @lastSeen = @getCookie @channel + "_lastSeen"
     @lastReload = Date.now()
     @period = 3000
-    @checkNotifications()
+    requestAnimationFrame(@checkNotifications.bind(this))
 
   checkNotifications: =>
     reload = @getCookie @channel + "_reloadState"
     if reload && reload > @lastReload
-       @receiver.loadState()
-       @lastReload = Date.now()
+      @receiver.loadState()
+      @lastReload = Date.now()
     else
       url = "/notifications?channel=" + @channel
       url = url + "&lastSeen=" + @lastSeen if @lastSeen?
-      
+
       $.get(url).then (response)=>
         for payload in response
           @lastSeen = payload.id
           @setCookie @channel + "_lastSeen", @lastSeen
           @receiver.receivedNotification(payload)
         setTimeout =>
-          @checkNotifications()
+          requestAnimationFrame(@checkNotifications.bind(this))
         , @period
 
   reloadState: =>

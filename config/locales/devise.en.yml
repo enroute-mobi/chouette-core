@@ -75,3 +75,8 @@ validating conformance of data wrt Neptune (French standard NFP 99 506)."
         password: Password
         password_confirmation: Password confirmation
         current_password: Current password
+  notice:
+    devise:
+      confirmation:
+        already_confirmed: Your account is already confirmed.
+        missing_token: You aren't authorized to resend a confirmation email

@@ -8,6 +8,7 @@
       .panel-body
         = simple_form_for(resource, :as => resource_name, :url => confirmation_path(resource_name), html: { :class => 'form-horizontal user', method: :post } ) do |form|
           = form.input :email, :label => false, input_html: { :class => "form-control" }
+          = form.input :confirmation_token, as: :hidden, input_htmal: { value: params[:confirmation_token] }
           .row
             .col-md-12
               = form.button :submit, t('.title'), class: 'btn-primary'

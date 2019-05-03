@@ -76,3 +76,9 @@ norme Neptune (NFP 99 506)"
         password: Mot de passe
         password_confirmation: Confirmation du mot de passe
         current_password: Mot de passe actuel
+  notice:
+    devise:
+      confirmation:
+        already_confirmed: Votre compte est déjà confirmé. Vous pouvez vous connecter
+        missing_token: Vous n'etes pas autorisé à renvoyer de mail de confirmation
+

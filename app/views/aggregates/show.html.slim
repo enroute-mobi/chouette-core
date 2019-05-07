@@ -28,11 +28,10 @@ ruby:
         [ \
           TableBuilderHelper::Column.new( \
             name: I18n.t('aggregates.show.finalized_offer'), \
-            attribute: Proc.new {|item| decorate_referential_name(item) }, \
-            sortable: false, \
-            link_to: lambda do |item| \
-              referential_path(item) if item.contains_urgent_offer? \
+            attribute: Proc.new do |item| \
+              link_to_if_i_can(decorate_referential_name(item), item) \
             end, \
+            sortable: false \
           ), \
           TableBuilderHelper::Column.new( \
             name: Organisation.ts.capitalize, \

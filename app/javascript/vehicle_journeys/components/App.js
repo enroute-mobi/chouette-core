@@ -13,16 +13,15 @@ export default class App extends Component {
 
   componentDidUpdate (prevProps) {
     if (prevProps.stateChanged != this.props.stateChanged && !!this.props.stateChanged) {
-      window.addEventListener('beforeunload', e => {
-        e.returnValue = 'true'
-      })
+      window.onbeforeunload = (e) => {
+        (e || window.event).returnValue = 'foobar'
+        return 'foobar'
+      }
     }
   }
 
   componentWillUnmount() {
-    window.removeEventListener('beforeunload', e => {
-      e.returnValue = 'true'
-    })
+    window.onbeforeunload = undefined
   }
 
   render () {

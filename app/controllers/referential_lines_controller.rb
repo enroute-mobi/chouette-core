@@ -12,7 +12,6 @@ class ReferentialLinesController < ChouetteController
   belongs_to :referential
 
   def show
-    raise "test datadog "
     @q = resource.routes.ransack(params[:q])
     @routes = @q.result
 

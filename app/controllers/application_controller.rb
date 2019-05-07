@@ -9,6 +9,11 @@ class ApplicationController < ActionController::Base
   protect_from_forgery unless: -> { request.get? && (request.format.json? || request.format.js?) }
   before_action :authenticate_user!
   before_action :set_locale
+  before_action :test_datadog
+
+  def test_datadog
+    raise(params[:error]) if params[:error]
+  end
 
   # Load helpers in rails engine
   helper LanguageEngine::Engine.helpers

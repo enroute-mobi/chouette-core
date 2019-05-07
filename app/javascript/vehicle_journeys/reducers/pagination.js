@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import actions from '../actions'
 
 export default function pagination(state = {}, action) {
   switch (action.type) {
@@ -18,7 +19,16 @@ export default function pagination(state = {}, action) {
     case 'ADD_VEHICLEJOURNEY':
     case 'UPDATE_TIME':
       toggleOnConfirmModal('modal')
-      return _.assign({}, state, {stateChanged: true})
+      return _.assign({}, state, { stateChanged: true })
+    case 'DELETE_VEHICLEJOURNEYS':
+    case 'DUPLICATE_VEHICLEJOURNEY':
+    case 'SHIFT_VEHICLEJOURNEY':
+    case 'EDIT_VEHICLEJOURNEY':
+    case 'EDIT_VEHICLEJOURNEY_NOTES':
+    case 'EDIT_VEHICLEJOURNEYS_TIMETABLES':
+    case 'EDIT_VEHICLEJOURNEYS_CONSTRAINT_ZONES':
+    case 'EDIT_VEHICLEJOURNEYS_PURCHASE_WINDOWS':
+      return _.assign({}, state, { stateChanged: true })
     case 'RESET_PAGINATION':
       return _.assign({}, state, {page: 1, stateChanged: false})
     case 'RECEIVE_TOTAL_COUNT':

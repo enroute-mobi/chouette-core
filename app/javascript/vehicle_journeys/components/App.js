@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Component } from 'react'
 import VehicleJourneysList from '../containers/VehicleJourneysList'
 import Navigate from '../containers/Navigate'
 import ToggleArrivals from '../containers/ToggleArrivals'
@@ -9,35 +9,52 @@ import ConfirmModal from '../containers/ConfirmModal'
 import CopyModal from '../containers/CopyModal'
 import Tools from '../containers/Tools'
 
-export default function App() {
-  return (
-    <div>
+export default class App extends Component {
 
-      <div className='row'>
-        <div className='col-lg-6 col-md-6 col-sm-6 col-xs-6'>
-          <ToggleArrivals />
+  componentDidUpdate (prevProps) {
+    if (prevProps.stateChanged != this.props.stateChanged && !!this.props.stateChanged) {
+      window.addEventListener('beforeunload', e => {
+        e.returnValue = 'true'
+      })
+    }
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('beforeunload', e => {
+      e.returnValue = 'true'
+    })
+  }
+
+  render () {
+    return (
+      <div>
+
+        <div className='row'>
+          <div className='col-lg-6 col-md-6 col-sm-6 col-xs-6'>
+            <ToggleArrivals />
+          </div>
+          <div className='col-lg-6 col-md-6 col-sm-6 col-xs-6 text-right'>
+            <Navigate />
+          </div>
         </div>
-        <div className='col-lg-6 col-md-6 col-sm-6 col-xs-6 text-right'>
-          <Navigate />
+
+        <Filters />
+        <VehicleJourneysList />
+        {window.returnRouteUrl && <VehicleJourneysList routeUrl={window.returnRouteUrl}/>}
+
+        <div className='row'>
+          <div className='col-lg-12 text-right'>
+            <Navigate />
+          </div>
         </div>
+
+        <CancelVehicleJourneys />
+        <SaveVehicleJourneys />
+        <Tools />
+
+        <ConfirmModal />
+        <CopyModal />
       </div>
-
-      <Filters />
-      <VehicleJourneysList />
-      {window.returnRouteUrl && <VehicleJourneysList routeUrl={window.returnRouteUrl}/>}
-
-      <div className='row'>
-        <div className='col-lg-12 text-right'>
-          <Navigate />
-        </div>
-      </div>
-
-      <CancelVehicleJourneys />
-      <SaveVehicleJourneys />
-      <Tools />
-
-      <ConfirmModal />
-      <CopyModal />
-    </div>
-  )
+    )
+  }
 }

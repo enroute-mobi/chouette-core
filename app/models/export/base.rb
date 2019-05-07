@@ -4,6 +4,7 @@ class Export::Base < ActiveRecord::Base
   include Rails.application.routes.url_helpers
   include OptionsSupport
   include NotifiableSupport
+  include RealtimeNotifiableSupport
   include PurgeableResource
 
   self.table_name = "exports"

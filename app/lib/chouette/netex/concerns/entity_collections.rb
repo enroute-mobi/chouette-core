@@ -9,8 +9,13 @@ module Chouette::Netex::Concerns::EntityCollections
 
   def netex_stop_places
     Chouette::StopArea.within_workgroup(workgroup) do
-      stop_areas.where('stop_areas.area_type != ? OR stop_areas.parent_id IS NULL', :zdep).includes(:parent).find_each do |stop_area|
+      rows_count = 0
+      collection = stop_areas.where('stop_areas.area_type != ? OR stop_areas.parent_id IS NULL', :zdep)
+      total_rows = collection.count
+      collection.includes(:parent).find_each do |stop_area|
         Chouette::Netex::StopPlace.new(self, stop_area, stop_areas).to_xml(@builder)
+        rows_count += 1
+        @export.notify_sub_operation_progress(:site_frame, rows_count.to_f/total_rows)
       end
     end
   end

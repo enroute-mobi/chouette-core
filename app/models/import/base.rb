@@ -3,6 +3,7 @@ class Import::Base < ApplicationModel
   include OptionsSupport
   include NotifiableSupport
   include PurgeableResource
+  include RealtimeNotifiableSupport
   include ProfilingSupport
 
   PERIOD_EXTREME_VALUE = 15.years

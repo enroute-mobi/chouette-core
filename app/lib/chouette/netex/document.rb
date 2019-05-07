@@ -173,6 +173,7 @@ class Chouette::Netex::Document
   def netex_frame name
     Chouette::Benchmark.log "NETEX FULL EXPORT: #{name} frame" do
       send("#{name}_frame")
+      @export.notify_operation_progress :"#{name}_frame"
     end
   end
 

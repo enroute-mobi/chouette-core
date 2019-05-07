@@ -41,7 +41,6 @@ module IevInterfaces::Task
 
     before_save :initialize_fields, on: :create
     after_save :notify_parent
-    # after_commit :notify_state, if: :status_changed?
 
     status.values.each do |s|
       define_method "#{s}!" do
@@ -106,7 +105,13 @@ module IevInterfaces::Task
     ([self] + children).map{ |i| polymorphic_url(i.url_for_notifications(true), only_path: true) }
   end
 
+  def automated_operation?
+    try(:publication).present?
+  end
+
   def notify_state
+    return if automated_operation?
+
     payload = self.slice(:id, :status, :name, :parent_id)
     payload.update({
       status_html: operation_status(self.status).html_safe,

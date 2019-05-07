@@ -63,9 +63,10 @@ class Export::Base < ActiveRecord::Base
     update_column :notified_parent_at, Time.now
     true
   end
-  
+
   def run
     update status: 'running', started_at: Time.now
+    notify_state
     export
     notify_state
   rescue Exception => e

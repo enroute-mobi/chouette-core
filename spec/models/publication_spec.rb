@@ -59,6 +59,9 @@ RSpec.describe Publication, type: :model do
       expect_any_instance_of(Export::Gtfs).to receive(:run)
       publication.run_export
       expect(publication.exports).to be_present
+      publication.exports.each do |export|
+        expect(export).to be_automated_operation
+      end
     end
 
     context 'when the export succeeds' do

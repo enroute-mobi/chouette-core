@@ -34,6 +34,11 @@
       = f.input :flexible_service, as: :switchable_checkbox
       = f.input :seasonal, as: :switchable_checkbox
       = f.input :comment, as: :text, input_html: { rows: 5, title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.comment") }
+  .separator.section_separator
+  .row
+    .col-lg-12
+      h2.mb-lg= t("lines.form.sections.line_notices")
+      = f.input :line_notice_ids, :collection => @line_referential.line_notices.order('lower(title) asc'), include_blank: false, input_html: { multiple: true, 'data-select2ed': true }, label: Chouette::Line.tmf(:line_notices)
   .separator
   - if policy(@line).update_activation_dates?
     .row

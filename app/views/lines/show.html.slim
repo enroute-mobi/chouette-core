@@ -19,7 +19,8 @@
           {  Chouette::Line.tmf(:mobility_restricted_suitability) => boolean_icon(@line.mobility_restricted_suitability),
              Chouette::Line.tmf(:flexible_service) => boolean_icon(@line.flexible_service),
              Chouette::Line.tmf(:seasonal) => boolean_icon(@line.seasonal),
-             Chouette::Line.tmf(:comment) => @line.comment.presence || '-' }
+             Chouette::Line.tmf(:comment) => @line.comment.presence || '-',
+             Chouette::Line.tmf(:line_notices) => (@line.line_notices.nil? ? t('lines.index.no_line_notices') : array_to_html_list(@line.line_notices.collect(&:name)))}
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = definition_list t("lines.form.sections.location"),

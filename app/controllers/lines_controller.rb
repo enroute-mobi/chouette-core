@@ -150,6 +150,7 @@ class LinesController < ChouetteController
       :transport_submode,
       :seasonal,
       :secondary_company_ids => [],
+      :line_notice_ids => [],
       footnotes_attributes: [:code, :label, :_destroy, :id]
     )
     out[:secondary_company_ids] = (out[:secondary_company_ids] || []).select(&:present?)

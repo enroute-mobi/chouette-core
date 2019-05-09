@@ -330,6 +330,15 @@ crumb :group_of_line do |group_of_line|
   parent :group_of_lines, group_of_line.line_referential
 end
 
+crumb :line_notices do |line_referential|
+  link I18n.t('line_notices.index.title'), line_referential_line_notices_path(line_referential)
+end
+
+crumb :line_notice do |line_notice|
+  link breadcrumb_name(line_notice), line_referential_line_notice_path(line_notice.line_referential, line_notice)
+  parent :line_notices, line_notice.line_referential
+end
+
 crumb :lines do |line_referential|
   link I18n.t('lines.index.title'), line_referential_lines_path
 end

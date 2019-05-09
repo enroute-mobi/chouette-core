@@ -274,6 +274,11 @@ ChouetteIhm::Application.routes.draw do
     resources :group_of_lines
     resources :companies
     resources :networks
+    resources :line_notices
+  end
+
+  resources :line_notices do
+    resources :line_notices
   end
 
   resources :companies do

@@ -1,0 +1,14 @@
+- breadcrumb :line_notice, @line_notice
+- page_header_content_for @line_notice
+
+.page_content
+  .container-fluid
+    .row
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = definition_list t('metadatas'),
+          { @line_notice.human_attribute_name(:id) => @line_notice.get_objectid.try(:short_id), \
+            @line_notice.human_attribute_name(:title) => @line_notice.title, \
+            @line_notice.human_attribute_name(:content) => (@line_notice.content.presence || '-'), \
+            @line_notice.human_attribute_name(:lines) => (@line_notice.lines.nil? ? t('line_notices.show.no_lines') : array_to_html_list(@line_notice.lines.collect(&:name))),
+           }
+           

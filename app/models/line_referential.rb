@@ -10,6 +10,7 @@ class LineReferential < ApplicationModel
   has_many :networks, class_name: 'Chouette::Network', dependent: :destroy
   has_many :line_referential_syncs, -> { order created_at: :desc }, dependent: :destroy
   has_many :workbenches, dependent: :nullify
+  has_many :line_notices, class_name: 'Chouette::LineNotice', inverse_of: :line_referential, dependent: :destroy
   has_one  :workgroup, dependent: :nullify
 
   def add_member(organisation, options = {})

@@ -80,7 +80,7 @@ class Permission
 
     def referentials
       permissions = []
-      %w{stop_areas stop_area_providers lines companies networks}.each do |resources|
+      %w{stop_areas stop_area_providers lines companies networks line_notices}.each do |resources|
         actions = %w{edit update create}
         if resources == 'lines'
           actions << "update_activation_dates"

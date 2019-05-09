@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_04_16_143445) do
+ActiveRecord::Schema.define(version: 2019_05_09_142514) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -156,6 +156,28 @@ ActiveRecord::Schema.define(version: 2019_04_16_143445) do
     t.datetime "updated_at"
     t.jsonb "custom_field_values", default: {}
     t.jsonb "metadata", default: {}
+    t.string "default_contact_name"
+    t.string "default_contact_email"
+    t.string "default_contact_phone"
+    t.string "default_contact_url"
+    t.text "default_contact_more"
+    t.string "private_contact_name"
+    t.string "private_contact_email"
+    t.string "private_contact_phone"
+    t.string "private_contact_url"
+    t.text "private_contact_more"
+    t.string "customer_service_contact_name"
+    t.string "customer_service_contact_email"
+    t.string "customer_service_contact_phone"
+    t.string "customer_service_contact_url"
+    t.text "customer_service_contact_more"
+    t.string "house_number"
+    t.string "address_line_1"
+    t.string "address_line_2"
+    t.string "street"
+    t.string "town"
+    t.string "postcode"
+    t.string "postcode_extension"
     t.index ["line_referential_id", "registration_number"], name: "index_companies_on_referential_id_and_registration_number"
     t.index ["line_referential_id"], name: "index_companies_on_line_referential_id"
     t.index ["objectid"], name: "companies_objectid_key", unique: true

@@ -11,6 +11,8 @@
         = link_to t('actions.new'), new_workbench_referential_path(@workbench), class: 'btn btn-primary'
       = link_to t('workbenches.actions.show_output'), workbench_output_path(@workbench), class: 'btn btn-primary'
 
+- content_for :page_header_resource_name { Referential.t.capitalize }
+
 .page_content
   .container-fluid
     - if params[:q].present? or @wbench_refs.any?

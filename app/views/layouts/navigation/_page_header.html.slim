@@ -9,9 +9,11 @@
           .page-icon
             span.sb class="sb-#{resource_class.model_name.name.underscore}"
         .page-title
+          - if content_for? :page_header_resource_name
+            h3 = yield :page_header_resource_name
+          - elsif defined?(resource_class)
+            h3 = resource_class.ts.capitalize
           - if content_for? :page_header_title
-            - if content_for? :page_header_resource_name
-              h3 = yield :page_header_resource_name
             h1 = yield :page_header_title
           - else
             - if defined?(resource_class)

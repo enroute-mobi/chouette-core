@@ -11,11 +11,6 @@ module ApplicationHelper
     end
   end
 
-  def page_header_resource_name(object)
-    return content_for(:page_header_resource_name) if content_for?(:page_header_resource_name)
-    resource_class.ts.capitalize
-  end
-
   def page_header_title(object)
     # Unwrap from decorator, we want to know the object model name
     return content_for(:page_header_title) if content_for?(:page_header_title)
@@ -48,7 +43,6 @@ module ApplicationHelper
   end
 
   def page_header_content_for(object)
-    content_for :page_header_resource_name, page_header_resource_name(object)
     content_for :page_header_title, page_header_title(object)
     content_for :page_header_meta, page_header_meta(object)
   end

@@ -68,7 +68,7 @@ class CompaniesController < ChouetteController
   helper_method :current_referential
 
   def company_params
-    fields = [:objectid, :object_version, :name, :short_name, :organizational_unit, :operating_department_name, :code, :phone, :fax, :email, :registration_number, :url, :time_zone]
+    fields = [:objectid, :object_version, :name, :short_name, :default_contact_organizational_unit, :default_contact_operating_department_name, :code, :default_contact_phone, :default_contact_fax, :default_contact_email, :registration_number, :default_contact_url, :time_zone]
     fields += permitted_custom_fields_params(Chouette::Company.custom_fields(line_referential.workgroup))
     fields += %w(default_contact private_contact customer_service_contact).product(%w(name email phone url)).map{ |k| k.join('_')}
     fields += permitted_custom_fields_params(Chouette::Company.custom_fields(line_referential.workgroup))

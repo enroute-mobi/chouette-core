@@ -12,13 +12,14 @@
 
   .row
     .col-lg-12
-      h2.mb-lg= t("companies.form.sections.contact")
-      = f.input :organizational_unit
-      = f.input :operating_department_name
-      = f.input :email, as: :email
-      = f.input :phone
-      = f.input :fax
-      = custom_fields_for_section(f, "contact")
+      h2.mb-lg= t("companies.form.sections.address")
+      = f.input :house_number
+      = f.input :address_line_1
+      = f.input :address_line_2
+      = f.input :street
+      = f.input :town
+      = f.input :postcode
+      = custom_fields_for_section(f, "address")
 
   .separator.section_separator
 
@@ -40,8 +41,9 @@
     .col-lg-12
       h2.mb-lg= Chouette::Company.tmf(:default_contact)
 
-      - %w(name email phone url more).each do |attr|
-        = f.input "default_contact_#{attr}"
+      - %w(name email phone fax url organizational_unit operating_department_name more).each do |attr|
+        = f.input "default_contact_#{attr}", as: :string
+      = custom_fields_for_section(f, "contact")
 
 
   .separator.section_separator.private_contact class=(f.object.has_private_contact? ? '' : 'hidden')

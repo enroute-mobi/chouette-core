@@ -7,6 +7,8 @@ fr:
       edit: "Editer ce transporteur"
       destroy: "Supprimer ce transporteur"
       destroy_confirm: "Etes vous sûr de supprimer ce transporteur ?"
+      add_private_contact: Ajouter un Contact privé
+      add_customer_service_contact: Ajouter un Contact Service Client
     new:
       title: "Ajouter un transporteur"
     edit:
@@ -47,6 +49,24 @@ fr:
         created_at: "Créé le"
         updated_at: "Edité le"
         creator_id: "Créé par"
+        default_contact: Contact par défaut
+        private_contact: Contact privé
+        customer_service_contact: Contact Service Client
+        default_contact_name: Nom
+        default_contact_email: Email
+        default_contact_phone: Téléphone
+        default_contact_url: Page Web
+        default_contact_more: Commentaires
+        private_contact_name: Nom
+        private_contact_email: Email
+        private_contact_phone: Téléphone
+        private_contact_url: Page Web
+        private_contact_more: Commentaires
+        customer_service_contact_name: Nom
+        customer_service_contact_email: Email
+        customer_service_contact_phone: Téléphone
+        customer_service_contact_url: Page Web
+        customer_service_contact_more: Commentaires
   formtastic:
     titles:
       company:

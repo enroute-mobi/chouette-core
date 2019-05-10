@@ -26,5 +26,13 @@ module Chouette
     def self.nullable_attributes
       [:organizational_unit, :operating_department_name, :code, :phone, :fax, :email, :url, :time_zone]
     end
+
+    def has_private_contact?
+      %w(private_contact).product(%w(name email phone url)).any?{ |k| send(k.join('_')).present? }
+    end
+    
+    def has_customer_service_contact?
+      %w(customer_service_contact).product(%w(name email phone url)).any?{ |k| send(k.join('_')).present? }
+    end
   end
 end

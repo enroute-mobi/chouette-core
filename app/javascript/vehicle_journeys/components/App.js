@@ -14,8 +14,8 @@ export default class App extends Component {
   componentDidUpdate (prevProps) {
     if (prevProps.stateChanged != this.props.stateChanged && !!this.props.stateChanged) {
       window.onbeforeunload = (e) => {
-        (e || window.event).returnValue = 'foobar'
-        return 'foobar'
+        (e || window.event).returnValue = I18n.t('vehicle_journeys.vehicle_journeys_matrix.leave_page_confirm')
+        return I18n.t('vehicle_journeys.vehicle_journeys_matrix.leave_page_confirm')
       }
     }
   }

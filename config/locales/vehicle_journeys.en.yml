@@ -13,6 +13,7 @@ en:
       fetching_error: "There has been a problem fetching the data. Please reload the page to try again."
       line_routes: "Line's routes"
       modal_confirm: 'Do you want to save mofications before moving on to the next page ?'
+      leave_page_confirm: "You didn't save your work.\nAre you sure you want to leave the page ?"
       selected_journeys: "%{count} selected journeys"
       show_purchase_window: 'Show the purchase window'
       show_timetable: 'Show calendar'

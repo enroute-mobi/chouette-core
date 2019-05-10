@@ -13,6 +13,7 @@ fr:
       fetching_error: "La récupération des missions a rencontré un problème. Rechargez la page pour tenter de corriger le problème."
       line_routes: "Séquences d'arrêts de la ligne"
       modal_confirm: 'Voulez-vous valider vos modifications avant de changer de page?'
+      leave_page_confirm: "Vous n'avez pas validé les modifications effectuées\n.Etes vous sûr de vouloir abandonner vos modifications ?"
       selected_journeys: "%{count} course(s) sélectionnée(s)"
       show_purchase_window: 'Voir le calendrier commercial'
       show_timetable: 'Voir le calendrier'

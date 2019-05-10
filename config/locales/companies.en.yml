@@ -7,6 +7,8 @@ en:
       edit: "Edit this company"
       destroy: "Remove this company"
       destroy_confirm: "Are you sure you want to destroy this company?"
+      add_private_contact: Add a Private Contact
+      add_customer_service_contact: Add a Customer Service Contact
     new:
       title: "Add a new company"
     edit:
@@ -47,6 +49,24 @@ en:
         created_at: Created at
         updated_at: Updated at
         creator_id: "Created by "
+        default_contact: Default Contact
+        private_contact: Private Contact
+        customer_service_contact: Customer Service Contact
+        default_contact_name: Name
+        default_contact_email: Email
+        default_contact_phone: Phone
+        default_contact_url: Web page
+        default_contact_more: Comments
+        private_contact_name: Name
+        private_contact_email: Email
+        private_contact_phone: Phone
+        private_contact_url: Web page
+        private_contact_more: Comments
+        customer_service_contact_name: Name
+        customer_service_contact_email: Email
+        customer_service_contact_phone: Phone
+        customer_service_contact_url: Web page
+        customer_service_contact_more: Comments
   formtastic:
     titles:
       company:

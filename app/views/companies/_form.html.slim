@@ -34,6 +34,46 @@
         - resource.custom_fields.without_section.each do |_code, field|
           = field.input(f).to_s
 
+  .separator.section_separator
+
+  .row
+    .col-lg-12
+      h2.mb-lg= Chouette::Company.tmf(:default_contact)
+
+      - %w(name email phone url more).each do |attr|
+        = f.input "default_contact_#{attr}"
+
+
+  .separator.section_separator.private_contact class=(f.object.has_private_contact? ? '' : 'hidden')
+
+  .row.private_contact class=(f.object.has_private_contact? ? '' : 'hidden')
+    .col-lg-12
+      h2.mb-lg= Chouette::Company.tmf(:private_contact)
+
+      - %w(name email phone url more).each do |attr|
+        = f.input "private_contact_#{attr}"
+
+
+  .separator.section_separator.customer_service_contact class=(f.object.has_customer_service_contact? ? '' : 'hidden')
+
+  .row.customer_service_contact class=(f.object.has_customer_service_contact? ? '' : 'hidden')
+    .col-lg-12
+      h2.mb-lg= Chouette::Company.tmf(:customer_service_contact)
+
+      - %w(name email phone url more).each do |attr|
+        = f.input "customer_service_contact_#{attr}"
+
+  .row.pull-right.form-group
+    .col-lg-12.btn-group
+      - unless f.object.has_private_contact?
+        = link_to '#', class: 'btn btn-primary add-private_contact' do
+          = fa_icon :plus
+          span= 'companies.actions.add_private_contact'.t
+      - unless f.object.has_customer_service_contact?
+        = link_to '#', class: 'btn btn-primary add-customer_service_contact' do
+          = fa_icon :plus
+          span= 'companies.actions.add_customer_service_contact'.t
+
   - other_custom_fields = resource.custom_fields.except_for_sections(%w(identification contact general))
   - if other_custom_fields.present?
     - other_custom_fields.map { |code, field| field.options["section"] }.each do |section|
@@ -48,3 +88,16 @@
 
   = cancel_button
   = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'company_form'
+
+- content_for :javascript do
+  coffee:
+    $('.add-private_contact').click (e) ->
+      $('.private_contact').show().removeClass('hidden')
+      $(e.currentTarget).hide()
+      e.preventDefault()
+      false
+    $('.add-customer_service_contact').click (e) ->
+      $('.customer_service_contact').show().removeClass('hidden')
+      $(e.currentTarget).hide()
+      e.preventDefault()
+      false

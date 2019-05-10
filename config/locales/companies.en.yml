@@ -25,6 +25,7 @@ en:
         identification: "Identification"
         contact: "Contact"
         general: "General"
+        address: Address
   activerecord:
     models:
       company:
@@ -36,14 +37,8 @@ en:
         registration_number: "Registration number"
         name: "Name"
         short_name: "Short name"
-        organizational_unit: "Unit"
-        operating_department_name: "Department"
         code: "Code"
-        phone: "Phone number"
-        fax: "Fax number"
-        email: "Email"
         time_zone: "Time zone"
-        url: "Web page"
         objectid: "Neptune identifier"
         object_version: "Version"
         created_at: Created at
@@ -52,11 +47,14 @@ en:
         default_contact: Default Contact
         private_contact: Private Contact
         customer_service_contact: Customer Service Contact
-        default_contact_name: Name
-        default_contact_email: Email
-        default_contact_phone: Phone
-        default_contact_url: Web page
+        default_contact_email: "Email"
+        default_contact_fax: "Fax number"
         default_contact_more: Comments
+        default_contact_name: Name
+        default_contact_operating_department_name: "Department"
+        default_contact_organizational_unit: "Unit"
+        default_contact_phone: "Phone number"
+        default_contact_url: "Web page"
         private_contact_name: Name
         private_contact_email: Email
         private_contact_phone: Phone
@@ -67,6 +65,13 @@ en:
         customer_service_contact_phone: Phone
         customer_service_contact_url: Web page
         customer_service_contact_more: Comments
+        house_number: House Number
+        address_line_1: Address (line 1)
+        address_line_2: Address (line 2)
+        street: Street
+        town: Town
+        postcode: Postcode
+        postcode_extension: Postcode Extension
   formtastic:
     titles:
       company:

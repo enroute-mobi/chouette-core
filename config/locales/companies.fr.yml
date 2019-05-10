@@ -25,6 +25,7 @@ fr:
         identification: "Identification"
         contact: "Contact"
         general: "Général"
+        address: "Adresse"
   activerecord:
     models:
       company:
@@ -36,14 +37,8 @@ fr:
         registration_number: "Numéro d'enregistrement"
         name: "Nom"
         short_name: "Nom court"
-        organizational_unit: "Nom d'unité dans la société"
-        operating_department_name: "Nom du département dans la société"
         code: "Code"
-        phone: "Numéro de téléphone"
-        fax: "Numéro de fax"
-        email: "Email"
         time_zone: "Fuseau horaire"
-        url: "Page web associée"
         objectid: "Identifiant Neptune"
         object_version: "Version"
         created_at: "Créé le"
@@ -53,20 +48,31 @@ fr:
         private_contact: Contact privé
         customer_service_contact: Contact Service Client
         default_contact_name: Nom
-        default_contact_email: Email
-        default_contact_phone: Téléphone
         default_contact_url: Page Web
         default_contact_more: Commentaires
+        default_contact_organizational_unit: "Nom d'unité dans la société"
+        default_contact_operating_department_name: "Nom du département dans la société"
+        default_contact_phone: "Numéro de téléphone"
+        default_contact_fax: "Numéro de fax"
+        default_contact_email: "Email"
+        default_contact_url: "Page web associée"
         private_contact_name: Nom
         private_contact_email: Email
-        private_contact_phone: Téléphone
-        private_contact_url: Page Web
+        private_contact_phone: "Numéro de téléphone"
         private_contact_more: Commentaires
+        private_contact_url: "Page web associée"
         customer_service_contact_name: Nom
         customer_service_contact_email: Email
-        customer_service_contact_phone: Téléphone
-        customer_service_contact_url: Page Web
+        customer_service_contact_phone: "Numéro de téléphone"
+        customer_service_contact_url: "Page web associée"
         customer_service_contact_more: Commentaires
+        house_number: Numéro
+        address_line_1: Adresse (ligne 1)
+        address_line_2: Adresse (ligne 2)
+        street: Rue
+        town: Ville
+        postcode: Code postal
+        postcode_extension: Extension de CP
   formtastic:
     titles:
       company:

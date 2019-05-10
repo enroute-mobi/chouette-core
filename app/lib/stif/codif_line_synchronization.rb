@@ -22,6 +22,7 @@ module Stif
       end
 
       def synchronize
+        Codifligne::API.api_version = 2
         reset_counts
         start_time = Process.clock_gettime(Process::CLOCK_MONOTONIC, :second)
         # Fetch Codifline data
@@ -78,6 +79,16 @@ module Stif
           objectid: api_operator.stif_id,
           import_xml: api_operator.xml
         }
+        params.update api_operator.address
+        api_operator.default_contact.each do |k,v|
+          params["default_contact_#{k}"] = v if v.present?
+        end
+        api_operator.private_contact.each do |k,v|
+          params["private_contact_#{k}"] = v if v.present?
+        end
+        api_operator.customer_service_contact.each do |k,v|
+          params["customer_service_contact_#{k}"] = v if v.present?
+        end
         save_or_update(params, Chouette::Company)
       end
 

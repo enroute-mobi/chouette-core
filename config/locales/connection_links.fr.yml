@@ -1,35 +1,37 @@
 fr:
   connection_links:
+    search_no_results: "Aucune correspondance ne correspond à votre recherche"
     actions:
-      new: "Ajouter une correspondance"
+      new: "Créer une correspondance entre arrêts"
       edit: "Editer cette correspondance"
       destroy: "Supprimer cette correspondance"
       destroy_confirm: "Etes vous sûr de supprimer cette correspondance ?"
-      select_areas: "Editer les départs/arrivées"
+      # select_areas: "Editer les départs/arrivées"
     new:
       title: "Ajouter une correspondance"
     edit:
-      title: "Editer la correspondance %{connection_link}"
+      title: "Editer la correspondance %{name}"
     show:
       title: "Correspondance %{name}"
-      durations: "Durées (hh mm ss) :"
+      # durations: "Durées (hh mm ss) :"
     connection_link:
-      from: "De"
-      to: "vers"
+      # from: "De"
+      # to: "vers"
+    ways:
+      both: "Double"
+      one: "Simple"
     index:
-      name: "Recherche par nom"
-      advanced_search: "Recherche avancée"
       title: "Correspondances"
-      departure: "Arrêt de départ"
-      arrival: "Arrêt d'arrivée"
-      selection: "Sélection"
-      selection_all: "Tous"
-    select_departure:
-      title: "Sélection de l'arrêt de départ de %{connection_link}"
-    select_arrival:
-      title: "Sélection de l'arrêt d'arrivée de %{connection_link}"
-    select_areas:
-      title: "Sélection des arrêts de départ et d'arrivée de %{connection_link}"
+      duration: "Durée"
+    form:
+      sections:
+        identification: "Identification"
+        path: "Parcours"
+        departure: "Premier arrêt"
+        arrival: "Deuxième arrêt"
+        general: "Général"
+    filters:
+      departure_or_arrival_name: "Recherche par nom de départ ou d'arrivée"
   activerecord:
     models:
       connection_link:
@@ -38,11 +40,12 @@ fr:
         other: "correspondances"
     attributes:
       connection_link:
+        both_ways: "Sens"
         departure: "Arrêt de départ"
         arrival: "Arrêt d'arrivée"
         departure_id: "Arrêt de départ"
         arrival_id: "Arrêt d'arrivée"
-        undefined: "non défini"
+        # undefined: "non défini"
         name: "Nom"
         comment: "Commentaire"
         link_distance: "Distance (m)"
@@ -59,24 +62,3 @@ fr:
         created_at: "Créé le"
         updated_at: "Edité le"
         creator_id: "Créé par"
-  formtastic:
-    titles:
-      connection_link:
-        objectid: "[prefixe]:ConnectionLink:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
-        link_distance: ""
-      neptune:
-        connection_link:
-          objectid: "[prefixe]:ConnectionLink:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
-          link_distance: ""
-      netex:
-        connection_link:
-          objectid: "[prefixe]:ConnectionLink:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
-          link_distance: ""
-      gtfs:
-        connection_link:
-          objectid: "[prefixe]:ConnectionLink:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
-          link_distance: ""
-      hub:
-        connection_link:
-          objectid: "[prefixe]:ConnectionLink:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
-          link_distance: "Au plus 10000.0 mètres."

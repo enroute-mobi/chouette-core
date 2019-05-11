@@ -48,18 +48,6 @@ class ConnectionLinksController < ChouetteController
     update!
   end
 
-  # def default_geometry
-  #   count = stop_area_referential.stop_areas.without_geometry.default_geometry!
-  #   flash[:notice] = I18n.translate("stop_areas.default_geometry_success", :count => count)
-  #   redirect_to stop_area_referential_stop_areas_path(@stop_area_referential)
-  # end
-
-  # def zip_codes
-  #   respond_to do |format|
-  #     format.json { render :json => referential.stop_areas.collect(&:zip_code).compact.uniq.to_json }
-  #   end
-  # end
-
   protected
 
   alias_method :connection_link, :resource
@@ -70,34 +58,11 @@ class ConnectionLinksController < ChouetteController
     @connection_links ||=
       begin
         connection_links = @q.result(:distinct => true).order(:name)
-        connection_links = connection_links.paginate(:page => params[:page]) if @per_page.present?
+        connection_links = connection_links.paginate(:page => params[:page])
         connection_links
       end
     @connection_links ||= parent.connection_links
   end
-
-  # def collection
-  #   scope = parent.present? ? parent.connection_links : referential.connection_links
-  #   @q = scope.search(params[:q])
-
-  #   @connection_links ||=
-  #     begin
-  #       # if sort_column == "area_type"
-  #       #   sorted_area_type_labels = Chouette::AreaType.options(:all, I18n.locale).sort.transpose.last
-  #       #   sorted_area_type_labels = sorted_area_type_labels.reverse if sort_direction != 'asc'
-  #       #   order_by = ["CASE"]
-  #       #   sorted_area_type_labels.each_with_index do |area_type, index|
-  #       #     order_by << "WHEN area_type='#{area_type}' THEN #{index}"
-  #       #   end
-  #       #   order_by << "END"
-  #       #   connection_links = @q.result.order(order_by.join(" "))
-  #       # else
-  #         connection_links = sort_result(@q.result)
-  #       # end
-  #       connection_links = connection_links.paginate(:page => params[:page], :per_page => @per_page) if @per_page.present?
-  #       connection_links
-  #     end
-  # end
 
   private
 
@@ -147,7 +112,6 @@ class ConnectionLinksController < ChouetteController
       :metadata,
       :both_ways
     ]
-     # + permitted_custom_fields_params(Chouette::StopArea.custom_fields(stop_area_referential.workgroup))
     params.require(:connection_link).permit(fields)
   end
 end

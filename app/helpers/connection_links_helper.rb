@@ -1,6 +1,6 @@
 module ConnectionLinksHelper
   def localized_both_ways(connection_link)
-    t("connection_links.attributes.#{connection_link.both_ways ? 'both_ways' : 'one_way'}")
+    t("connection_links.ways.#{connection_link.both_ways ? 'both' : 'one'}")
   end
 
   def connection_link_identification_metadatas(connection_link)

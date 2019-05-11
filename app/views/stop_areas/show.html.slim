@@ -35,16 +35,16 @@
           [ \
             TableBuilderHelper::Column.new( \
               name: "Arrêt", \
-              attribute: Proc.new { |n| n.associated_stop(@stop_area).try(:name) }, \
+              attribute: Proc.new { |c| c.associated_stop(@stop_area).try(:name) }, \
             ), \
             TableBuilderHelper::Column.new( \
               name: "Durée", \
-              attribute: Proc.new { |n| n.default_duration }, \
+              attribute: Proc.new { |c| c.default_duration }, \
               sortable: false \
             ), \
             TableBuilderHelper::Column.new( \
               name: "Sens", \
-              attribute: Proc.new { |n| n.direction @stop_area }, \
+              attribute: Proc.new { |c| c.direction @stop_area }, \
               sortable: false \
             ), \
             # TableBuilderHelper::Column.new( \

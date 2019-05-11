@@ -13,7 +13,7 @@
           = table_builder_2 @connection_links,
             [ \
               TableBuilderHelper::Column.new( \
-                name: 'premier arrêt', \
+                key: :departure, \
                 attribute: Proc.new { |c| c.departure.name }, \
                 link_to: lambda do |connection_link| \
                   stop_area_referential_stop_area_path( \
@@ -23,7 +23,7 @@
                 end \
               ), \
               TableBuilderHelper::Column.new( \
-                name: 'deuxième arrêt', \
+                key: :arrival, \
                 attribute: Proc.new { |c| c.arrival.name }, \
                 link_to: lambda do |connection_link| \
                   stop_area_referential_stop_area_path( \
@@ -33,18 +33,18 @@
                 end \
               ), \
               TableBuilderHelper::Column.new( \
-                key: :default_duration, \
-                attribute: 'default_duration', \
+                name: t('.duration'), \
+                attribute: Proc.new { |c| c.default_duration / 60 }, \
                 sortable: false \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :both_ways, \
-                attribute: 'both_ways' \
+                attribute: Proc.new { |c| localized_both_ways c } \
               ), \
             ].compact,
             cls: 'table has-filter has-search'
 
-          /= new_pagination @connection_links, 'pull-right'
+          = new_pagination @connection_links, 'pull-right'
 
     - unless @connection_links.any?
       .row.mt-xs

@@ -4,8 +4,8 @@
       h2.mb-lg= t("connection_links.form.sections.identification")
 
       = f.input :id, as: :hidden
-      = f.input :departure_id, as: :select, collection: [f.object.departure_id], input_html: { data: { select2ed_placeholder: Chouette::StopArea.tmf('departure'), select2ed_allow_clear: 'true', select2_ajax: 'true', url: autocomplete_stop_area_referential_stop_areas_path(@stop_area_referential), initvalue: {id: f.object.departure_id, text: f.object.departure.try(:full_name)}}}
-      = f.input :arrival_id, as: :select, collection: [f.object.arrival_id], input_html: { data: { select2ed_placeholder: Chouette::StopArea.tmf('arrival'), select2ed_allow_clear: 'true', select2_ajax: 'true', url: autocomplete_stop_area_referential_stop_areas_path(@stop_area_referential), initvalue: {id: f.object.arrival_id, text: f.object.arrival.try(:full_name)}}}
+      = f.input :departure_id, as: :select, collection: [f.object.departure_id], input_html: { data: { select2ed_placeholder: Chouette::ConnectionLink.tmf('departure'), select2ed_allow_clear: 'true', select2_ajax: 'true', url: autocomplete_stop_area_referential_stop_areas_path(@stop_area_referential), initvalue: {id: f.object.departure_id, text: f.object.departure.try(:full_name)}}}
+      = f.input :arrival_id, as: :select, collection: [f.object.arrival_id], input_html: { data: { select2ed_placeholder: Chouette::ConnectionLink.tmf('arrival'), select2ed_allow_clear: 'true', select2_ajax: 'true', url: autocomplete_stop_area_referential_stop_areas_path(@stop_area_referential), initvalue: {id: f.object.arrival_id, text: f.object.arrival.try(:full_name)}}}
       = f.input :both_ways, as: :switchable_checkbox
 
   .separator.section_separator
@@ -18,7 +18,8 @@
         .col-md-6.text-center
           .btn.btn-action#calculate_travel_times= t("connection_links.form.calculate_costs")
         - f.object.class.duration_kinds.each do |d|
-          .col-md-6= f.input d, as: :select, collection: (1..15).map { |x| [x,x*60]  }.to_h, wrapper: :horizontal_shrinked_select
+          .col-md-6
+            = f.input d, as: :select, collection: (1..15).map { |x| [x,x*60]  }.to_h, wrapper: :horizontal_shrinked_select
 
   .separator.section_separator
 

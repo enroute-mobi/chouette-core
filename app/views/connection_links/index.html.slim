@@ -38,7 +38,7 @@
                 sortable: false \
               ), \
               TableBuilderHelper::Column.new( \
-                key: :both_ways, \
+                name: t('connection_links.ways.name'), \
                 attribute: Proc.new { |c| localized_both_ways c } \
               ), \
             ].compact,

@@ -6,7 +6,7 @@ module ConnectionLinksHelper
   def connection_link_identification_metadatas(connection_link)
     {
       t('id_reflex') => connection_link.get_objectid.short_id,
-      Chouette::ConnectionLink.tmf('both_ways') => localized_both_ways(connection_link),
+      t('connection_links.ways.name') => localized_both_ways(connection_link),
     }
   end
 
@@ -42,7 +42,7 @@ module ConnectionLinksHelper
 
   def connection_link_general_metadatas(connection_link)
     {
-      Chouette::ConnectionLink.tmf('link_type') => connection_link.link_type,
+      Chouette::ConnectionLink.tmf('connection_link_type') => connection_link.link_type,
       Chouette::ConnectionLink.tmf('name') => connection_link.try(:name),
       Chouette::ConnectionLink.tmf('comment') => connection_link.try(:comment)
     }

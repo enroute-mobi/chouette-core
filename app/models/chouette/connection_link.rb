@@ -10,7 +10,7 @@ module Chouette
     belongs_to :departure, :class_name => 'Chouette::StopArea', required: true
     belongs_to :arrival, :class_name => 'Chouette::StopArea', required: true
 
-    validates_presence_of :link_distance
+    validates_presence_of :link_distance, :default_duration
 
     def self.nullable_attributes
       [:link_distance, :default_duration, :frequent_traveller_duration, :occasional_traveller_duration,

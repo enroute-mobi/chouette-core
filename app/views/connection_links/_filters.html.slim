@@ -1,14 +1,14 @@
 = search_form_for @q, url: stop_area_referential_connection_links_path(@stop_area_referential), html: {method: :get}, class: 'form form-filter' do |f|
   .ffg-row
     .input-group.search_bar class=filter_item_class(params[:q], :departure_name_or_short_id_cont)
-      = f.search_field :departure_name_or_short_id_or_registration_number_cont,
+      = f.search_field :departure_name_cont,
           placeholder: t('.name_or_objectid'),
           class: 'form-control'
       span.input-group-btn
         button.btn.btn-default#search-btn type='submit'
           span.fa.fa-search
     .input-group.search_bar class=filter_item_class(params[:q], :arrival_name_or_short_id_cont)
-      = f.search_field :arrival_name_or_short_id_or_registration_number_cont,
+      = f.search_field :arrival_name_cont,
           placeholder: t('.name_or_objectid'),
           class: 'form-control'
       span.input-group-btn

@@ -66,13 +66,13 @@ class ConnectionLinksController < ChouetteController
   alias_method :stop_area_referential, :parent
 
   def collection
-    # @q = parent.connection_links.search(params[:q])
-    # @connection_links ||=
-    #   begin
-    #     connection_links = @q.result(:distinct => true).order(:name)
-    #     connection_links = connection_links.paginate(:page => params[:page]) if @per_page.present?
-    #     connection_links
-    #   end
+    @q = parent.connection_links.search(params[:q])
+    @connection_links ||=
+      begin
+        connection_links = @q.result(:distinct => true).order(:name)
+        connection_links = connection_links.paginate(:page => params[:page]) if @per_page.present?
+        connection_links
+      end
     @connection_links ||= parent.connection_links
   end
 

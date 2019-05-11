@@ -171,25 +171,24 @@ module StopAreasHelper
     link_to(stop_area.name, stop_area_referential_stop_area_path(stop_area_referential, stop_area))
   end
 
-  def stop_area_connections(stop_area, stop_area_referential)
-    table_builder_2 stop_area.connection_links.limit(4),
+  def stop_area_connections(connection_links, stop_area, stop_area_referential)
+    table_builder_2 connection_links,
       [ \
         TableBuilderHelper::Column.new( \
           name: t('.connections.stop'), \
-          attribute: Proc.new { |c| associated_stop_link(c.associated_stop(stop_area.id), stop_area_referential) }, \
-          sortable: false \
+          attribute: Proc.new { |c| associated_stop_link(c.associated_stop(stop_area.id), stop_area_referential) } \
         ), \
         TableBuilderHelper::Column.new( \
           name: t('.connections.duration'), \
-          attribute: Proc.new { |c| c.default_duration / 60 }, \
-          sortable: false \
+          attribute: Proc.new { |c| c.default_duration / 60 } \
         ), \
         TableBuilderHelper::Column.new( \
           name: t('.connections.direction'), \
-          attribute: Proc.new { |c| t(".connections.#{c.direction stop_area.id}") }, \
-          sortable: false \
+          attribute: Proc.new { |c| t(".connections.#{c.direction stop_area.id}") } \
         ), \
       ].compact,
+      sortable: false,
+      links: [:show],
       cls: 'table'
   end
 

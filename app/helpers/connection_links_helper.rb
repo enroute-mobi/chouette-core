@@ -45,7 +45,7 @@ module ConnectionLinksHelper
   def connection_link_arrival_metadatas(connection_link, stop_area_referential)
     attributes = {
       t('id_reflex') => connection_link.arrival.get_objectid.short_id,
-      Chouette::StopArea.tmf('name') => connection_link.arrival.name,
+      Chouette::StopArea.tmf('name') => link_to(connection_link.arrival.name, stop_area_referential_stop_area_path(stop_area_referential, connection_link.arrival)),
     }
 
     attributes.merge!(Chouette::StopArea.tmf('parent') => connection_link.arrival.parent ? link_to(connection_link.arrival.parent.name, stop_area_referential_stop_area_path(stop_area_referential, connection_link.arrival.parent)) : "-") if connection_link.arrival.commercial?

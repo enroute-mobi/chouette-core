@@ -8,6 +8,7 @@ class ConnectionLinkDecorator < AF83::Decorator
 
   with_instance_decorator do |instance_decorator|
     set_scope { object.stop_area_referential }
+
     instance_decorator.show_action_link
 
     instance_decorator.edit_action_link do |l|

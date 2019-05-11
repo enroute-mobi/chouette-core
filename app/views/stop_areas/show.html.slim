@@ -31,12 +31,11 @@
     .row
   	  .col-lg-6.col-md-6.col-sm-12.col-xs-12
         h4.underline= t('.connections.title')
-        .row
-          - if @stop_area.connection_links.any?
-            = stop_area_connections(@stop_area, @stop_area_referential)
-          - unless @stop_area.connection_links.any?
-            .mb-xs
-              = replacement_msg t('.connections.no_connection')
+        - if @connection_links.any?
+          = stop_area_connections(@connection_links, @stop_area, @stop_area_referential)
+        - unless @connection_links.any?
+          .mb-xs
+            = replacement_msg t('.connections.no_connection')
 
         .row
           .col-md-8

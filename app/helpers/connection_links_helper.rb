@@ -59,4 +59,18 @@ module ConnectionLinksHelper
       Chouette::ConnectionLink.tmf('comment') => connection_link.try(:comment)
     }
   end
+
+  def connection_link_json_for_edit(connection_link, serialize: true)
+    data = connection_link.slice(:id, :name)
+    both_areas = connection_link.slice(:departure, :arrival).map do |key, value|
+      stop_area_attributes = value.attributes.slice("name","city_name", "zip_code", "registration_number", "longitude", "latitude", "area_type", "comment", "stop_area_referential_id")
+      # stop_area_attributes["short_name"] = truncate(stop_area_attributes["name"], :length => 30) || ""
+      stop_area_attributes.merge( stoparea_id: value.id, stoparea_kind: value.kind).merge(user_objectid: value.local_id)
+      {key => stop_area_attributes}
+    end
+    puts data
+    data = data.merge!(both_areas.reduce(:merge))
+    data = data.to_json if serialize
+    data
+  end
 end

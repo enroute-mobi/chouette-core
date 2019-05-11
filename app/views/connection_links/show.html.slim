@@ -10,15 +10,25 @@
 
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        h4.underline= t('lines.show.map')
+        #routes_map.map.mb-lg
+    .row
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = definition_list t("connection_links.form.sections.path"), connection_link_path_metadatas(@connection_link)
 
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = definition_list t("connection_links.form.sections.departure"), connection_link_departure_metadatas(@connection_link, @stop_area_referential)
-
+    .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = definition_list t("connection_links.form.sections.arrival"), connection_link_arrival_metadatas(@connection_link, @stop_area_referential)
 
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = definition_list t("connection_links.form.sections.general"), connection_link_general_metadatas(@connection_link)
+
+= javascript_tag do
+  | window.connection_link = "#{URI.escape(connection_link_json_for_edit(@connection_link, serialize: true))}"
+
+= javascript_pack_tag 'connection_links/show.js'
+= javascript_include_tag 'OpenLayers/maps_backgrounds.js'

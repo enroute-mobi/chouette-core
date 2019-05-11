@@ -1,4 +1,4 @@
-class RemoveDurationsFromConnectionLinks < ActiveRecord::Migration
+class RemoveDurationsFromConnectionLinks < ActiveRecord::Migration[4.2]
   def change
     remove_column :connection_links, :default_duration
     remove_column :connection_links, :frequent_traveller_duration

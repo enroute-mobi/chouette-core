@@ -16,7 +16,6 @@ ActiveRecord::Schema.define(version: 2019_06_05_124308) do
   enable_extension "hstore"
   enable_extension "plpgsql"
   enable_extension "postgis"
-  enable_extension "hstore"
   enable_extension "unaccent"
 
   create_table "access_links", id: :serial, force: :cascade do |t|
@@ -306,12 +305,8 @@ ActiveRecord::Schema.define(version: 2019_06_05_124308) do
     t.bigint "object_version"
     t.string "name"
     t.string "comment"
-    t.decimal "link_distance", precision: 19, scale: 2
+    t.integer "link_distance"
     t.string "link_type"
-    t.time "default_duration"
-    t.time "frequent_traveller_duration"
-    t.time "occasional_traveller_duration"
-    t.time "mobility_restricted_traveller_duration"
     t.boolean "mobility_restricted_suitability"
     t.boolean "stairs_availability"
     t.boolean "lift_availability"
@@ -319,7 +314,14 @@ ActiveRecord::Schema.define(version: 2019_06_05_124308) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.jsonb "metadata", default: {}
+    t.boolean "both_ways", default: false
+    t.integer "stop_area_referential_id"
+    t.integer "default_duration"
+    t.integer "frequent_traveller_duration"
+    t.integer "occasional_traveller_duration"
+    t.integer "mobility_restricted_traveller_duration"
     t.index ["objectid"], name: "connection_links_objectid_key", unique: true
+    t.index ["stop_area_referential_id"], name: "index_connection_links_on_stop_area_referential_id"
   end
 
   create_table "cross_referential_index_entries", id: :serial, force: :cascade do |t|

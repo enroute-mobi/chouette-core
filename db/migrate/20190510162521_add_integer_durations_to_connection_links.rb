@@ -1,4 +1,4 @@
-class AddIntegerDurationsToConnectionLinks < ActiveRecord::Migration
+class AddIntegerDurationsToConnectionLinks < ActiveRecord::Migration[4.2]
   def change
     add_column :connection_links, :default_duration, :integer
     add_column :connection_links, :frequent_traveller_duration, :integer

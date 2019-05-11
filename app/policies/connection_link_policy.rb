@@ -6,17 +6,14 @@ class ConnectionLinkPolicy < ApplicationPolicy
   end
 
   def create?
-    !referential_read_only? && organisation_match? && user.has_permission?('connection_links.create')
-    true
+    user.has_permission?('connection_links.create')
   end
 
   def destroy?
-    !referential_read_only? && organisation_match? && user.has_permission?('connection_links.destroy')
-    true
+    user.has_permission?('connection_links.destroy')
   end
 
   def update?
-    !referential_read_only? && organisation_match? && user.has_permission?('connection_links.update')
-    true
+    user.has_permission?('connection_links.update')
   end
 end

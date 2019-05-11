@@ -511,5 +511,9 @@ module Chouette
     def commercial?
       kind == "commercial"
     end
+
+    def connection_links
+      Chouette::ConnectionLink.where('departure_id = :id or arrival_id = :id', id: self.id)
+    end
   end
 end

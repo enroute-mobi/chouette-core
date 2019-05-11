@@ -11,7 +11,7 @@ fr:
     edit:
       title: "Editer la correspondance %{connection_link}"
     show:
-      title: "Correspondance %{connection_link}"
+      title: "Correspondance %{name}"
       durations: "Durées (hh mm ss) :"
     connection_link:
       from: "De"

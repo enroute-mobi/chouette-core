@@ -275,6 +275,10 @@ crumb :stop_areas do |stop_area_referential|
   link I18n.t('stop_areas.index.title'), stop_area_referential_stop_areas_path(stop_area_referential)
 end
 
+crumb :connection_links do |stop_area_referential|
+  link I18n.t('connection_links.index.title'), stop_area_referential_connection_links_path(stop_area_referential)
+end
+
 crumb :stop_area_providers do |stop_area_referential|
   link StopAreaProvider.t, stop_area_referential_stop_area_providers_path(stop_area_referential)
 end
@@ -297,6 +301,11 @@ end
 crumb :stop_area do |stop_area_referential, stop_area|
   link breadcrumb_name(stop_area), stop_area_referential_stop_area_path(stop_area_referential, stop_area)
   parent :stop_areas, stop_area_referential
+end
+
+crumb :connection_link do |stop_area_referential, connection_link|
+  link breadcrumb_name(connection_link), stop_area_referential_connection_link_path(stop_area_referential, connection_link)
+  parent :connection_links, stop_area_referential
 end
 
 crumb :line_referential do |line_referential|

@@ -16,6 +16,7 @@ ActiveRecord::Schema.define(version: 2019_06_05_124308) do
   enable_extension "hstore"
   enable_extension "plpgsql"
   enable_extension "postgis"
+  enable_extension "hstore"
   enable_extension "unaccent"
 
   create_table "access_links", id: :serial, force: :cascade do |t|

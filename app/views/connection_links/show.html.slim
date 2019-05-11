@@ -1,37 +1,29 @@
-- breadcrumb :stop_area, @stop_area_referential, @stop_area
-- page_header_content_for @stop_area
+- breadcrumb :connection_link, @stop_area_referential, @connection_link
+- page_header_content_for @connection_link
 
 / PageContent
 .page_content
   .container-fluid
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        = definition_list t("stop_areas.form.sections.identification"), stop_area_identification_metadatas(@stop_area, @stop_area_referential)
-
-    .row
-      .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        = definition_list t("stop_areas.form.sections.location"), stop_area_location_metadatas(@stop_area, @stop_area_referential)
+        = definition_list t("connection_links.form.sections.identification"), connection_link_identification_metadatas(@connection_link)
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        = definition_list t("stop_areas.form.sections.general"), stop_area_general_metadatas(@stop_area)
+        = definition_list t("connection_links.form.sections.path"), connection_link_path_metadatas(@connection_link)
 
-      - if @stop_area.is_referent
-        .row
-          .col-lg-6.col-md-6.col-sm-12.col-xs-12
-            h4.underline= Chouette::StopArea.tmf('specific_stops')
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = definition_list t("connection_links.form.sections.departure"), connection_link_departure_metadatas(@connection_link, @stop_area_referential)
 
-            - if @specific_stops.any?
-              = stop_area_specific_stops(@specific_stops, @stop_area_referential)
-              = new_pagination @specific_stops, 'pull-right'
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = definition_list t("connection_links.form.sections.arrival"), connection_link_arrival_metadatas(@connection_link, @stop_area_referential)
 
-            - unless @specific_stops.any?
-              .mb-xs
-                = replacement_msg t('stop_areas.no_specific_stops')
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = definition_list t("connection_links.form.sections.general"), connection_link_general_metadatas(@connection_link)
 
-  	  .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        h4.underline= t('lines.show.map')
+  	  /.col-lg-6.col-md-6.col-sm-12.col-xs-12
+        /h4.underline= t('lines.show.map')
         /- if @stop_area.connection_links.any?
-        = table_builder_2 @stop_area.connection_links,
+        /= table_builder_2 @stop_area.connection_links,
           [ \
             TableBuilderHelper::Column.new( \
               name: "Arrêt", \
@@ -44,7 +36,7 @@
             ), \
             TableBuilderHelper::Column.new( \
               name: "Sens", \
-              attribute: Proc.new { |n| n.direction @stop_area }, \
+              attribute: Proc.new { |n| n.direction }, \
               sortable: false \
             ), \
             # TableBuilderHelper::Column.new( \

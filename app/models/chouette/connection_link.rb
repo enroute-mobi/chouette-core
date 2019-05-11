@@ -3,17 +3,23 @@ module Chouette
     has_metadata
     include ObjectidSupport
     include ConnectionLinkRestrictions
+    include StopAreaReferentialSupport
 
     attr_accessor :connection_link_type
 
-    belongs_to :departure, :class_name => 'Chouette::StopArea'
-    belongs_to :arrival, :class_name => 'Chouette::StopArea'
+    belongs_to :departure, :class_name => 'Chouette::StopArea', required: true
+    belongs_to :arrival, :class_name => 'Chouette::StopArea', required: true
 
-    validates_presence_of :name
+    validates_presence_of :link_distance
 
     def self.nullable_attributes
       [:link_distance, :default_duration, :frequent_traveller_duration, :occasional_traveller_duration,
         :mobility_restricted_traveller_duration, :link_type]
+    end
+
+    def self.duration_kinds
+      [:default_duration, :frequent_traveller_duration, :occasional_traveller_duration,
+        :mobility_restricted_traveller_duration]
     end
 
     def connection_link_type
@@ -45,5 +51,13 @@ module Chouette
       Chouette::Geometry::ConnectionLinkPresenter.new self
     end
 
+    def associated_stop stop_area_id
+      departure_id == stop_area_id ? arrival : departure
+    end
+
+    def direction stop_area_id
+      return 'both_way' if both_ways
+      departure_id == stop_area_id ? 'to' : 'from'
+    end
   end
 end

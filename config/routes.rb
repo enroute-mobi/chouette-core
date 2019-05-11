@@ -266,6 +266,7 @@ ChouetteIhm::Application.routes.draw do
       put :activate, on: :member
       get :autocomplete, on: :collection
     end
+    resources :connection_links
   end
 
   resources :line_referentials, :only => [:show, :edit, :update] do

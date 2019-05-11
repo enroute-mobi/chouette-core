@@ -84,6 +84,19 @@
       background-color: $red
       color: #fff
 
+  &.btn-action
+    margin-bottom: 15px
+    background-color: $brand-color-secondary
+    border-color: darken($brand-color-secondary, 2.5%)
+    color: #fff
+    width: 50%
+
+    &:hover, &:focus, &.focus, &:active, &.active,
+    .open > .btn-primary.dropdown-toggle
+      background-color: darken($brand-color-secondary, 2.5%)
+      border-color: darken($brand-color-secondary, 2.5%)
+      color: #fff
+
   + .btn
     margin-left: 15px
 

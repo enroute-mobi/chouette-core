@@ -1,12 +1,24 @@
 module ConnectionLinksHelper
+  def connection_link_duration_select f, duration
+    content_tag(:div, class: 'col-md-6') do
+      f.input duration, as: :select, collection: (1..15).map { |x| [x,x*60]  }.to_h, wrapper: :horizontal_shrinked_select
+    end
+  end
+
   def localized_both_ways(connection_link)
-    t("connection_links.ways.#{connection_link.both_ways ? 'both' : 'one'}")
+    t("connection_links.direction.#{connection_link.both_ways ? 'both' : 'one'}")
+  end
+
+  def connection_link_type_options
+    Chouette::ConnectionLink.connection_link_types.map do |link_type|
+      [ t(link_type, scope: 'activerecord.attributes.connection_link'), link_type ]
+    end
   end
 
   def connection_link_identification_metadatas(connection_link)
     {
       t('id_reflex') => connection_link.get_objectid.short_id,
-      t('connection_links.ways.name') => localized_both_ways(connection_link),
+      t('connection_links.direction.name') => localized_both_ways(connection_link),
     }
   end
 
@@ -42,7 +54,7 @@ module ConnectionLinksHelper
 
   def connection_link_general_metadatas(connection_link)
     {
-      Chouette::ConnectionLink.tmf('connection_link_type') => connection_link.link_type,
+      Chouette::ConnectionLink.tmf('connection_link_type') => t(connection_link.link_type, scope: 'activerecord.attributes.connection_link'),
       Chouette::ConnectionLink.tmf('name') => connection_link.try(:name),
       Chouette::ConnectionLink.tmf('comment') => connection_link.try(:comment)
     }

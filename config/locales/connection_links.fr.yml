@@ -2,22 +2,17 @@ fr:
   connection_links:
     search_no_results: "Aucune correspondance ne correspond à votre recherche"
     actions:
-      new: "Créer une correspondance entre arrêts"
+      new: "Ajouter une correspondance"
       edit: "Editer cette correspondance"
       destroy: "Supprimer cette correspondance"
       destroy_confirm: "Etes vous sûr de supprimer cette correspondance ?"
-      # select_areas: "Editer les départs/arrivées"
     new:
-      title: "Ajouter une correspondance"
+      title: "Créer une correspondance entre arrêts"
     edit:
-      title: "Editer la correspondance %{name}"
+      title: "Editer la correspondance %{id}"
     show:
-      title: "Correspondance %{name}"
-      # durations: "Durées (hh mm ss) :"
-    connection_link:
-      # from: "De"
-      # to: "vers"
-    ways:
+      title: "Correspondance %{id}"
+    direction:
       name: "Sens"
       both: "Double"
       one: "Simple"
@@ -33,25 +28,27 @@ fr:
         arrival: "Deuxième arrêt"
         general: "Général"
     filters:
-      departure_or_arrival_name: "Recherche par nom de départ ou d'arrivée"
+      departure_or_arrival_name: "Recherche par nom d'arrêt"
   activerecord:
     models:
       connection_link:
-        zero:  "correspondance"
+        zero:  "correspondances"
         one:   "correspondance"
         other: "correspondances"
     attributes:
       connection_link:
         both_ways: "Correspondance dans les deux sens"
-        departure: "Arrêt de départ"
-        arrival: "Arrêt d'arrivée"
-        departure_id: "Arrêt de départ"
-        arrival_id: "Arrêt d'arrivée"
-        # undefined: "non défini"
+        departure: "Premier arrêt"
+        arrival: "Deuxième arrêt"
+        departure_id: "Premier arrêt"
+        arrival_id: "Deuxième arrêt"
         name: "Nom"
         comment: "Commentaire"
         link_distance: "Distance (m)"
         connection_link_type: "Type"
+        underground: "Couverte"
+        mixed: "Mixte"
+        overground: "Extérieure"
         default_duration: "Durée standard (minutes)"
         frequent_traveller_duration: "Voyageur régulier"
         occasional_traveller_duration: "Voyageur occasionnel"

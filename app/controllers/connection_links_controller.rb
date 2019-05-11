@@ -98,7 +98,7 @@ class ConnectionLinksController < ChouetteController
       :name,
       :comment,
       :link_distance,
-      :link_type,
+      :connection_link_type,
       :default_duration,
       :frequent_traveller_duration,
       :occasional_traveller_duration,

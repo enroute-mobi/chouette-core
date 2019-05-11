@@ -1,5 +1,5 @@
 - breadcrumb :connection_link, @stop_area_referential, @connection_link
-- page_header_content_for @connection_link
+= content_for :page_header_title, t('.title', id: @connection_link.get_objectid.short_id)
 
 .page_content
   .container-fluid

@@ -14,12 +14,16 @@
       h2.mb-lg= t("connection_links.form.sections.path")
 
       .form-group#travel_time_calculator
-        .col-md-6#distance= f.input :link_distance, as: :select, collection: (50..500).step(50), wrapper: :horizontal_shrinked_select
-        .col-md-6.text-center
-          .btn.btn-action#calculate_travel_times= t("connection_links.form.calculate_costs")
-        - f.object.class.duration_kinds.each do |d|
-          .col-md-6
-            = f.input d, as: :select, collection: (1..15).map { |x| [x,x*60]  }.to_h, wrapper: :horizontal_shrinked_select
+        .row
+          .col-md-6#distance= f.input :link_distance, as: :select, collection: (50..500).step(50), wrapper: :horizontal_shrinked_select
+          .col-md-6.text-center
+            .btn.btn-action#calculate_travel_times= t("connection_links.form.calculate_costs")
+        .row
+          = connection_link_duration_select f, :default_duration
+          = connection_link_duration_select f, :frequent_traveller_duration
+        .row
+          = connection_link_duration_select f, :occasional_traveller_duration
+          = connection_link_duration_select f, :mobility_restricted_traveller_duration
 
   .separator.section_separator
 
@@ -27,7 +31,7 @@
     .col-lg-12
       h2.mb-lg= t("connection_links.form.sections.general")
 
-      = f.input :link_type, as: :select, collection: f.object.class.connection_link_types
+      = f.input :connection_link_type, as: :select, collection: connection_link_type_options, include_blank: false
       = f.input :name
       = f.input :comment, as: :text, input_html: {rows: 5, title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.connection_links.comment")}
 

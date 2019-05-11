@@ -1,56 +1,58 @@
 en:
   connection_links:
+    search_no_results: "No connection matching your query"
     actions:
       new: "Add a new connection link"
       edit: "Edit this connection link"
       destroy: "Remove this connection link"
       destroy_confirm: "Are you sure you want destroy this connection link?"
-      select_areas: "Update start/end of link"
     new:
-      title: "Add a new connection link"
+      title: "Add a new connection between stop areas"
     edit:
-      title: "Update connection link %{connection_link}"
+      title: "Edit connection %{id}"
     show:
-      title: "Connection link %{connection_link}"
-      durations: "Durations (hh mm ss):"
-    connection_link:
-      from: "From"
-      to: "to"
+      title: "Connection %{id}"
+    direction:
+      name: "Direction"
+      both: "Both ways"
+      one: "One way"
     index:
-      title: "Connection links"
-      name: "Search by name"
-      advanced_search: "Advanced search"
-      departure: "Start of link"
-      arrival: "End of link"
-      selection: "Selection"
-      selection_all: "All"
-    select_departure:
-      title: "Select start stop area for %{connection_link}"
-    select_arrival:
-      title: "Select end stop area for %{connection_link}"
-    select_areas:
-      title: "Select start and end stops for %{connection_link}"
+      title: "Connections"
+      duration: "Duration"
+    form:
+      calculate_costs: "Recalculate durations"
+      sections:
+        identification: "Identification"
+        path: "Path"
+        departure: "First stop area"
+        arrival: "Second stop area"
+        general: "General"
+    filters:
+      departure_or_arrival_name: "Find by stop area name"
   activerecord:
     models:
       connection_link:
-        zero:  "connection link"
-        one:   "connection link"
-        other: "connection links"
+        zero:  "connections"
+        one:   "connection"
+        other: "connections"
     attributes:
       connection_link:
-        departure: "Start of link"
-        arrival: "End of link"
-        departure_id: "Start of link"
-        arrival_id: "End of link"
-        undefined: "not yet set"
+        both_ways: "Connection in both ways"
+        departure: "First stop"
+        arrival: "Second stop"
+        departure_id: "First stop"
+        arrival_id: "Second stop"
         name: "Name"
         comment: "Comment"
         link_distance: "Distance (m)"
         connection_link_type: "Type"
-        default_duration: "Average"
-        frequent_traveller_duration: "Regular passenger"
-        occasional_traveller_duration: "Occasional passenger"
-        mobility_restricted_traveller_duration: "Mobility reduced passenger"
+        underground: "Indoor"
+        mixed: "Mixed"
+        overground: "Outdoor"
+        default_duration: "Standard duration (minutes)"
+        frequent_traveller_duration: "Frequent traveller duration"
+        occasional_traveller_duration: "Occasional traveller duration"
+        mobility_restricted_traveller_duration: "Mobility restricted duration"
         mobility_restricted_suitability: "Mobility reduced passenger suitable"
         stairs_availability: "Escalator"
         lift_availability: "Lift"
@@ -59,24 +61,3 @@ en:
         created_at: Created at
         updated_at: Updated at
         creator_id: "Created by"
-  formtastic:
-    titles:
-      connection_link:
-        objectid: "[prefix]:ConnectionLink:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-        link_distance: ""
-      neptune:
-        connection_link:
-          objectid: "[prefix]:ConnectionLink:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-          link_distance: ""
-      netex:
-        connection_link:
-          objectid: "[prefix]:ConnectionLink:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-          link_distance: ""
-      gtfs:
-        connection_link:
-          objectid: "[prefix]:ConnectionLink:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-          link_distance: ""
-      hub:
-        connection_link:
-          objectid: "[prefix]:ConnectionLink:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-          link_distance: "At most 10000.0 meters."

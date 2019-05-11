@@ -7,10 +7,10 @@ module Chouette
 
     attr_accessor :connection_link_type
 
-    belongs_to :departure, :class_name => 'Chouette::StopArea', required: true
-    belongs_to :arrival, :class_name => 'Chouette::StopArea', required: true
+    belongs_to :departure, :class_name => 'Chouette::StopArea'
+    belongs_to :arrival, :class_name => 'Chouette::StopArea'
 
-    validates_presence_of :link_distance, :default_duration
+    validates_presence_of :link_distance, :default_duration, :departure_id, :arrival_id
 
     def self.nullable_attributes
       [:link_distance, :default_duration, :frequent_traveller_duration, :occasional_traveller_duration,
@@ -23,11 +23,11 @@ module Chouette
     end
 
     def connection_link_type
-      link_type && Chouette::ConnectionLinkType.new( link_type.underscore)
+      link_type && Chouette::ConnectionLinkType.new(link_type.underscore)
     end
 
     def connection_link_type=(connection_link_type)
-      self.link_type = (connection_link_type ? connection_link_type.camelcase : nil)
+      self.link_type = (connection_link_type ? connection_link_type : nil)
     end
 
     @@connection_link_types = nil

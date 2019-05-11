@@ -55,36 +55,23 @@ class ConnectionLinksController < ChouetteController
 
   def collection
     @q = parent.connection_links.search(params[:q])
-    @connection_links ||=
-      begin
-        connection_links = @q.result(:distinct => true).order(:name)
-        connection_links = connection_links.paginate(:page => params[:page])
-        connection_links
-      end
-    @connection_links ||= parent.connection_links
+    @connection_links ||= connection_links = @q.result(:distinct => true).includes(sort_param).order("#{sort_column} #{sort_direction}").paginate(:page => params[:page])
   end
 
   private
 
-  # def sort_column
-  #   ref = parent.present? ? parent : referential
-  #   (ref.stop_areas.column_names + %w{status}).include?(params[:sort]) ? params[:sort] : 'name'
-  # end
+  def sort_param
+    %w(departure arrival).include?(params[:sort]) ? params[:sort] : 'departure'
+  end
 
-  # def sort_direction
-  #   %w[asc desc].include?(params[:direction]) ?  params[:direction] : 'asc'
-  # end
+  def sort_column
+    return 'stop_areas.name' if params[:q].blank?
+    sort_param == 'arrival' ? 'arrivals_connection_links_2.name' : 'departures_connection_links.name'
+  end
 
-  # def sort_result collection
-  #   col_names = parent.present? ? parent.stop_areas.column_names : referential.stop_areas.column_names
-  #   col = (col_names + %w{status}).include?(params[:sort]) ? params[:sort] : 'name'
-
-  #   if ['status'].include?(col)
-  #     collection.send("order_by_#{col}", sort_direction)
-  #   else
-  #     collection.order("#{col} #{sort_direction}")
-  #   end
-  # end
+  def sort_direction
+    %w[asc desc].include?(params[:direction]) ?  params[:direction] : 'asc'
+  end
 
   # alias_method :current_referential, :stop_area_referential
   # helper_method :current_referential

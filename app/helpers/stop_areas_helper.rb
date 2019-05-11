@@ -167,6 +167,37 @@ module StopAreasHelper
     attributes.merge!(Chouette::StopArea.tmf('comment') => stop_area.try(:comment))
   end
 
+  def associated_stop_link(stop_area, stop_area_referential)
+    link_to(stop_area.name, stop_area_referential_stop_area_path(stop_area_referential, stop_area))
+  end
+
+  def stop_area_connections(stop_area, stop_area_referential)
+    table_builder_2 stop_area.connection_links.limit(4),
+      [ \
+        TableBuilderHelper::Column.new( \
+          name: t('.connections.stop'), \
+          attribute: Proc.new { |c| associated_stop_link(c.associated_stop(stop_area.id), stop_area_referential) }, \
+          sortable: false \
+        ), \
+        TableBuilderHelper::Column.new( \
+          name: t('.connections.duration'), \
+          attribute: Proc.new { |c| c.default_duration / 60 }, \
+          sortable: false \
+        ), \
+        TableBuilderHelper::Column.new( \
+          name: t('.connections.direction'), \
+          attribute: Proc.new { |c| t(".connections.#{c.direction stop_area.id}") }, \
+          sortable: false \
+        ), \
+      ].compact,
+      cls: 'table'
+  end
+
+  def more_connections_link(stop_area, stop_area_referential)
+    link_name = t('.connections.more', count: (stop_area.connection_links.count - 4))
+    link_path = stop_area_referential_connection_links_path(stop_area_referential, :'q[departure_name_or_arrival_name_cont]' => stop_area.name)
+    link_to link_name, link_path, class: 'btn btn-link'
+  end
   def stop_area_specific_stops(specific_stops, stop_area_referential)
     table_builder_2 specific_stops,
       [ \

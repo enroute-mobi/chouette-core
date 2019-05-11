@@ -56,7 +56,7 @@ module Chouette
     end
 
     def direction stop_area_id
-      return 'both_way' if both_ways
+      return 'both_ways' if both_ways
       departure_id == stop_area_id ? 'to' : 'from'
     end
   end

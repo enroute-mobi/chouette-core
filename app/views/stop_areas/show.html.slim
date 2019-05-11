@@ -12,84 +12,34 @@
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = definition_list t("stop_areas.form.sections.location"), stop_area_location_metadatas(@stop_area, @stop_area_referential)
 
+    .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = definition_list t("stop_areas.form.sections.general"), stop_area_general_metadatas(@stop_area)
 
-      - if @stop_area.is_referent
-        .row
-          .col-lg-6.col-md-6.col-sm-12.col-xs-12
-            h4.underline= Chouette::StopArea.tmf('specific_stops')
+    - if @stop_area.is_referent
+      .row
+        .col-lg-6.col-md-6.col-sm-12.col-xs-12
+          h4.underline= Chouette::StopArea.tmf('specific_stops')
 
-            - if @specific_stops.any?
-              = stop_area_specific_stops(@specific_stops, @stop_area_referential)
-              = new_pagination @specific_stops, 'pull-right'
+          - if @specific_stops.any?
+            = stop_area_specific_stops(@specific_stops, @stop_area_referential)
+            = new_pagination @specific_stops, 'pull-right'
 
-            - unless @specific_stops.any?
-              .mb-xs
-                = replacement_msg t('stop_areas.no_specific_stops')
-
+          - unless @specific_stops.any?
+            .mb-xs
+              = replacement_msg t('stop_areas.no_specific_stops')
+    .row
   	  .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        h4.underline= t('lines.show.map')
-        /- if @stop_area.connection_links.any?
-        = table_builder_2 @stop_area.connection_links,
-          [ \
-            TableBuilderHelper::Column.new( \
-              name: "Arrêt", \
-              attribute: Proc.new { |c| c.associated_stop(@stop_area).try(:name) }, \
-            ), \
-            TableBuilderHelper::Column.new( \
-              name: "Durée", \
-              attribute: Proc.new { |c| c.default_duration }, \
-              sortable: false \
-            ), \
-            TableBuilderHelper::Column.new( \
-              name: "Sens", \
-              attribute: Proc.new { |c| c.direction @stop_area }, \
-              sortable: false \
-            ), \
-            # TableBuilderHelper::Column.new( \
-            #   name: t('id_reflex'), \
-            #   attribute: Proc.new { |n| n.get_objectid.try(:short_id) }, \
-            #   sortable: false \
-            # ), \
-            # TableBuilderHelper::Column.new( \
-            #   key: :name, \
-            #   attribute: 'name', \
-            #   link_to: lambda do |stop_area| \
-            #     stop_area_referential_stop_area_path( \
-            #       @stop_area_referential, \
-            #       stop_area \
-            #     ) \
-            #   end \
-            # ), \
-            # TableBuilderHelper::Column.new( \
-            #   key: :registration_number, \
-            #   attribute: 'registration_number' \
-            # ), \
-            # TableBuilderHelper::Column.new( \
-            #   key: :status, \
-            #   attribute: Proc.new { |s| stop_area_status(s.status) } \
-            # ), \
-            # show_stop_area_providers ? TableBuilderHelper::Column.new( \
-            #   key: :stop_area_providers, \
-            #   attribute: Proc.new { |s| s.stop_area_providers.map{|p| link_to(p.name, [p.stop_area_referential, p])}.to_sentence.html_safe }, \
-            #   sortable: false\
-            # ) : nil, \
-            # TableBuilderHelper::Column.new( \
-            #   key: :zip_code, \
-            #   attribute: 'zip_code' \
-            # ), \
-            # TableBuilderHelper::Column.new( \
-            #   key: :city_name, \
-            #   attribute: 'city_name' \
-            # ), \
-            # TableBuilderHelper::Column.new( \
-            #   key: :area_type, \
-            #   attribute: Proc.new { |s| Chouette::AreaType.find(s.area_type).try :label } \
-            # ), \
-          ].compact,
-          cls: 'table has-filter'
-      /- unless @stop_area.connection_links.any?
-        .row.mt-xs
-          .col-lg-12
-            = replacement_msg t('stop_areas.search_no_results')
+        h4.underline= t('.connections.title')
+        .row
+          - if @stop_area.connection_links.any?
+            = stop_area_connections(@stop_area, @stop_area_referential)
+          - unless @stop_area.connection_links.any?
+            .mb-xs
+              = replacement_msg t('.connections.no_connection')
+
+        .row
+          .col-md-8
+            = link_to t('connection_links.actions.new'), new_stop_area_referential_connection_link_path, class: 'btn btn-action'
+          .col-md-4
+            = more_connections_link(@stop_area, @stop_area_referential) if @stop_area.connection_links.count > 4

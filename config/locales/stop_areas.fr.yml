@@ -80,6 +80,16 @@ fr:
       access_managment: "Gestion des accès et liens associés"
       access_points: "Points d'accès"
       not_editable: "Le type d'arrêt est non modifiable"
+      connections:
+        title: "Correspondances"
+        stop: "Arrêt"
+        duration: "Durée"
+        direction: "Sens"
+        both_ways: "Double"
+        to: "Aller"
+        from: "Retour"
+        no_connection: "Pas de correspondance associée"
+        more: "Et %{count} supplémentaire"
     genealogical:
       genealogical: "Lien entre arrêts"
       genealogical_routing: "Liens de l'ITL"

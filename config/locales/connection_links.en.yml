@@ -6,6 +6,8 @@ en:
       edit: "Edit this connection link"
       destroy: "Remove this connection link"
       destroy_confirm: "Are you sure you want destroy this connection link?"
+    errors:
+      same_arrival_and_departure: "The two stop areas must be distinct"
     new:
       title: "Add a new connection between stop areas"
     edit:

@@ -11,6 +11,7 @@ module Chouette
     belongs_to :arrival, :class_name => 'Chouette::StopArea'
 
     validates_presence_of :link_distance, :default_duration, :departure_id, :arrival_id
+    validate :different_departure_and_arrival
 
     def self.nullable_attributes
       [:link_distance, :default_duration, :frequent_traveller_duration, :occasional_traveller_duration,
@@ -59,5 +60,14 @@ module Chouette
       return 'both_ways' if both_ways
       departure_id == stop_area_id ? 'to' : 'from'
     end
+
+    private
+
+      def different_departure_and_arrival
+        if arrival_id == departure_id
+          errors.add(:departure_id, I18n.t('connection_links.errors.same_arrival_and_departure'))
+          errors.add(:arrival_id, I18n.t('connection_links.errors.same_arrival_and_departure'))
+        end
+      end
   end
 end

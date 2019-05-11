@@ -6,6 +6,8 @@ fr:
       edit: "Editer cette correspondance"
       destroy: "Supprimer cette correspondance"
       destroy_confirm: "Etes vous sûr de supprimer cette correspondance ?"
+    errors:
+      same_arrival_and_departure: "Les deux arrêts doivent être distincts"
     new:
       title: "Créer une correspondance entre arrêts"
     edit:

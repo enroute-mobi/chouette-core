@@ -1,23 +1,19 @@
 import '../../helpers/polyfills'
 
 import clone from '../../helpers/clone'
-import RoutesMap from '../../helpers/connection_links_map'
+import ConnectionLinksMap from '../../helpers/connection_links_map'
 
-console.log('test')
 let connection_link = clone(window, "connection_link", true)
 connection_link = JSON.parse(decodeURIComponent(connection_link))
-console.log(connection_link)
 
-new RoutesMap('routes_map').prepare().then(function(map){
+let map_pin_orange = clone(window, "map_pin_orange", true)
+map_pin_orange = decodeURIComponent(map_pin_orange)
+
+let map_pin_blue = clone(window, "map_pin_blue", true)
+map_pin_blue = decodeURIComponent(map_pin_blue)
+
+new ConnectionLinksMap('connection_link_map').prepare().then(function(map){
+  map.addMarker([map_pin_orange, map_pin_blue])
   map.addConnectionLink(connection_link)
-  // map.addRoutesLabels()
   map.fitZoom()
 })
-// let routes = clone(window, "routes", true)
-// routes = JSON.parse(decodeURIComponent(routes))
-//
-// new RoutesMap('routes_map').prepare().then(function(map){
-//   map.addRoutes(routes)
-//   map.addRoutesLabels()
-//   map.fitZoom()
-// })

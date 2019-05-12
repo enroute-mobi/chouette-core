@@ -15,6 +15,10 @@ module ConnectionLinksHelper
     end
   end
 
+  def connection_link_id_with_icon_color(color, text)
+    image_tag(asset_path("icons/map_pin_#{color}.png"), class: 'fa fa-square fa-lg') + text
+  end
+
   def connection_link_identification_metadatas(connection_link)
     {
       t('id_reflex') => connection_link.get_objectid.short_id,
@@ -34,7 +38,7 @@ module ConnectionLinksHelper
 
   def connection_link_departure_metadatas(connection_link, stop_area_referential)
     attributes = {
-      t('id_reflex') => connection_link.departure.get_objectid.short_id,
+      t('id_reflex') => connection_link_id_with_icon_color('orange', connection_link.departure.get_objectid.short_id),
       Chouette::StopArea.tmf('name') => link_to(connection_link.departure.name, stop_area_referential_stop_area_path(stop_area_referential, connection_link.departure)),
     }
 
@@ -44,7 +48,7 @@ module ConnectionLinksHelper
 
   def connection_link_arrival_metadatas(connection_link, stop_area_referential)
     attributes = {
-      t('id_reflex') => connection_link.arrival.get_objectid.short_id,
+      t('id_reflex') => connection_link_id_with_icon_color('blue', connection_link.arrival.get_objectid.short_id),
       Chouette::StopArea.tmf('name') => link_to(connection_link.arrival.name, stop_area_referential_stop_area_path(stop_area_referential, connection_link.arrival)),
     }
 
@@ -68,7 +72,6 @@ module ConnectionLinksHelper
       stop_area_attributes.merge( stoparea_id: value.id, stoparea_kind: value.kind).merge(user_objectid: value.local_id)
       {key => stop_area_attributes}
     end
-    puts data
     data = data.merge!(both_areas.reduce(:merge))
     data = data.to_json if serialize
     data

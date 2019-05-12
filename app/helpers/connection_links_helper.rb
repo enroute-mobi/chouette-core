@@ -19,6 +19,11 @@ module ConnectionLinksHelper
     image_tag(asset_path("icons/map_pin_#{color}.png"), class: 'fa fa-square fa-lg') + text
   end
 
+  def connection_link_durations_display(duration)
+    return '-' if duration.nil? || duration == 0
+    duration/60
+  end
+
   def connection_link_identification_metadatas(connection_link)
     {
       t('id_reflex') => connection_link.get_objectid.short_id,
@@ -28,10 +33,10 @@ module ConnectionLinksHelper
 
   def connection_link_path_metadatas(connection_link)
     {
-      Chouette::ConnectionLink.tmf('default_duration') => (connection_link.default_duration || 0) / 60,
-      Chouette::ConnectionLink.tmf('frequent_traveller_duration') => (connection_link.frequent_traveller_duration || 0) / 60,
-      Chouette::ConnectionLink.tmf('occasional_traveller_duration') => (connection_link.occasional_traveller_duration || 0) / 60,
-      Chouette::ConnectionLink.tmf('mobility_restricted_traveller_duration') => (connection_link.mobility_restricted_traveller_duration || 0) / 60,
+      Chouette::ConnectionLink.tmf('default_duration') => (connection_link_durations_display connection_link.default_duration),
+      Chouette::ConnectionLink.tmf('frequent_traveller_duration') => (connection_link_durations_display connection_link.frequent_traveller_duration),
+      Chouette::ConnectionLink.tmf('occasional_traveller_duration') => (connection_link_durations_display connection_link.occasional_traveller_duration),
+      Chouette::ConnectionLink.tmf('mobility_restricted_traveller_duration') => (connection_link_durations_display connection_link.mobility_restricted_traveller_duration),
       Chouette::ConnectionLink.tmf('link_distance') => connection_link.link_distance,
     }
   end
@@ -64,13 +69,10 @@ module ConnectionLinksHelper
     }
   end
 
-  def connection_link_json_for_edit(connection_link, serialize: true)
-    data = connection_link.slice(:id, :name)
+  def connection_link_json_for_show(connection_link, serialize: true)
+    data = connection_link.slice(:id)
     both_areas = connection_link.slice(:departure, :arrival).map do |key, value|
-      stop_area_attributes = value.attributes.slice("name","city_name", "zip_code", "registration_number", "longitude", "latitude", "area_type", "comment", "stop_area_referential_id")
-      # stop_area_attributes["short_name"] = truncate(stop_area_attributes["name"], :length => 30) || ""
-      stop_area_attributes.merge( stoparea_id: value.id, stoparea_kind: value.kind).merge(user_objectid: value.local_id)
-      {key => stop_area_attributes}
+      {key => value.attributes.slice("longitude", "latitude")}
     end
     data = data.merge!(both_areas.reduce(:merge))
     data = data.to_json if serialize

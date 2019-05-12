@@ -197,6 +197,16 @@ module StopAreasHelper
     link_path = stop_area_referential_connection_links_path(stop_area_referential, :'q[departure_name_or_arrival_name_cont]' => stop_area.name)
     link_to link_name, link_path, class: 'btn btn-link'
   end
+
+  def stop_and_connections_json(stop_area)
+    ([stop_area.slice(:id, :longitude, :latitude)] + (stop_area.connection_links.map{|c| connected_stop_json_for_show(c, stop_area.id)})).to_json
+  end
+
+  def connected_stop_json_for_show(connection_link, stop_id)
+    stop = (connection_link.departure_id == stop_id ? connection_link.arrival : connection_link.departure)
+    stop.slice(:id, :longitude, :latitude)
+  end
+  
   def stop_area_specific_stops(specific_stops, stop_area_referential)
     table_builder_2 specific_stops,
       [ \

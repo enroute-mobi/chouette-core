@@ -6,7 +6,6 @@ class ConnectionLinksMap
       $(document).on 'mapSourceLoaded', =>
         @initMap()
         @area = []
-        @cLink = null
         @marker = null
         resolve(this)
 
@@ -24,28 +23,50 @@ class ConnectionLinksMap
     @marker = markerPath
 
   addConnectionLink: (cLink)->
-    geoColPts = []
+    stops = []
 
     if cLink.departure.longitude && cLink.departure.latitude
       firstStop = new ol.Feature({
         geometry: new ol.geom.Point(ol.proj.fromLonLat([parseFloat(cLink.departure.longitude), parseFloat(cLink.departure.latitude)]))
       })
       firstStop.setStyle(@defaultStyles(true))
+      stops.push firstStop
+      @area.push [parseFloat(cLink.departure.longitude), parseFloat(cLink.departure.latitude)]
 
     if cLink.arrival.longitude && cLink.arrival.latitude
       secondStop = new ol.Feature({
         geometry: new ol.geom.Point(ol.proj.fromLonLat([parseFloat(cLink.arrival.longitude), parseFloat(cLink.arrival.latitude)]))
       })
       secondStop.setStyle(@defaultStyles())
-
-    @area = [
-      [parseFloat(cLink.departure.longitude), parseFloat(cLink.departure.latitude)],
-      [parseFloat(cLink.arrival.longitude), parseFloat(cLink.arrival.latitude)]
-    ]
+      stops.push secondStop
+      @area.push [parseFloat(cLink.arrival.longitude), parseFloat(cLink.arrival.latitude)]
 
     vectorPtsLayer = new ol.layer.Vector({
       source: new ol.source.Vector({
-        features: [firstStop, secondStop]
+        features: stops
+      }),
+      zIndex: 2
+    })
+    @map.addLayer vectorPtsLayer
+
+  addStops: (stops)->
+    geoColPts = []
+    seenStopIds = [] = []
+
+    stops.forEach (stop, i) =>
+      if stop.longitude && stop.latitude
+        unless seenStopIds.indexOf(stop.stoparea_id) > 0
+          s = new ol.Feature({
+            geometry: new ol.geom.Point(ol.proj.fromLonLat([parseFloat(stop.longitude), parseFloat(stop.latitude)]))
+          })
+          s.setStyle(@defaultStyles(if i==0 then true else false))
+          geoColPts.push(s)
+          @area.push [parseFloat(stop.longitude), parseFloat(stop.latitude)]
+          seenStopIds.push stop.id
+
+    vectorPtsLayer = new ol.layer.Vector({
+      source: new ol.source.Vector({
+        features: geoColPts
       }),
       zIndex: 2
     })

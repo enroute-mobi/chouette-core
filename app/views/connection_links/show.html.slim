@@ -25,7 +25,7 @@
         = definition_list t("connection_links.form.sections.general"), connection_link_general_metadatas(@connection_link)
 
 = javascript_tag do
-  | window.connection_link = "#{URI.escape(connection_link_json_for_edit(@connection_link, serialize: true))}";
+  | window.connection_link = "#{URI.escape(connection_link_json_for_show(@connection_link, serialize: true))}";
   | window.map_pin_orange = "#{URI.escape(asset_path('icons/map_pin_orange.png'))}";
   | window.map_pin_blue = "#{URI.escape(asset_path('icons/map_pin_blue.png'))}";
 

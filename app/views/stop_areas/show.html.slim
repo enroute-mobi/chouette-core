@@ -29,11 +29,14 @@
             .mb-xs
               = replacement_msg t('stop_areas.no_specific_stops')
     .row
-  	  .col-lg-6.col-md-6.col-sm-12.col-xs-12
+      - if @stop_area.connection_links.any?
         h4.underline= t('.connections.title')
+
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
         - if @connection_links.any?
           = stop_area_connections(@connection_links, @stop_area, @stop_area_referential)
         - unless @connection_links.any?
+          h4.underline= t('.connections.title')
           .mb-xs
             = replacement_msg t('.connections.no_connection')
 
@@ -42,3 +45,16 @@
             = link_to t('connection_links.actions.new'), new_stop_area_referential_connection_link_path, class: 'btn btn-action'
           .col-md-4
             = more_connections_link(@stop_area, @stop_area_referential) if @stop_area.connection_links.count > 4
+
+      - if @stop_area.connection_links.any?
+        .col-lg-6.col-md-6.col-sm-12.col-xs-12
+          #connection_link_map.map.mb-lg
+
+- if @stop_area.connection_links.any?
+  = javascript_tag do
+    | window.stop_areas = "#{URI.escape(stop_and_connections_json @stop_area)}";
+    | window.map_pin_orange = "#{URI.escape(asset_path('icons/map_pin_orange.png'))}";
+    | window.map_pin_blue = "#{URI.escape(asset_path('icons/map_pin_blue.png'))}";
+
+  = javascript_include_tag 'OpenLayers/maps_backgrounds.js'
+  = javascript_pack_tag 'stop_areas/show.js'

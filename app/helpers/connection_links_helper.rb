@@ -1,7 +1,7 @@
 module ConnectionLinksHelper
   def connection_link_duration_select f, duration
     content_tag(:div, class: 'col-md-6') do
-      f.input duration, as: :select, collection: (1..15).map { |x| [x,x*60]  }.to_h, wrapper: :horizontal_shrinked_select
+      f.input duration, as: :select, collection: (0..15).map { |x| [x,x*60]  }.to_h, wrapper: :horizontal_shrinked_select
     end
   end
 

@@ -176,7 +176,7 @@ module StopAreasHelper
       [ \
         TableBuilderHelper::Column.new( \
           name: t('.connections.stop'), \
-          attribute: Proc.new { |c| associated_stop_link(c.associated_stop(stop_area.id), stop_area_referential) } \
+          attribute: Proc.new { |c| link_to c.associated_stop(stop_area.id).name, stop_area_referential_connection_link_path(stop_area_referential, c) } \
         ), \
         TableBuilderHelper::Column.new( \
           name: t('.connections.duration'), \
@@ -198,8 +198,10 @@ module StopAreasHelper
     link_to link_name, link_path, class: 'btn btn-link'
   end
 
-  def stop_and_connections_json(stop_area)
-    ([stop_area.slice(:id, :longitude, :latitude)] + (stop_area.connection_links.map{|c| connected_stop_json_for_show(c, stop_area.id)})).to_json
+  def stop_and_connections_json(stop_area, add_connections)
+    a = [stop_area.slice(:id, :longitude, :latitude)]
+    a += (stop_area.connection_links.map{|c| connected_stop_json_for_show(c, stop_area.id)}) if add_connections
+    a.to_json
   end
 
   def connected_stop_json_for_show(connection_link, stop_id)

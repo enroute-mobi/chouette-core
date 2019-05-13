@@ -15,7 +15,7 @@
 
       .form-group#travel_time_calculator
         .row
-          .col-md-6#distance= f.input :link_distance, as: :select, collection: (50..500).step(50), wrapper: :horizontal_shrinked_select
+          .col-md-6= f.input :link_distance, wrapper: :horizontal_shrinked_select, input_html: { id: "distance" }
           .col-md-6.text-center
             .btn.btn-action#calculate_travel_times= t("connection_links.form.calculate_costs")
         .row

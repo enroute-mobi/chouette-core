@@ -15,7 +15,7 @@ class ConnectionLinkDecorator < AF83::Decorator
       l.content t('connection_links.actions.edit')
     end
 
-    instance_decorator.destroy_action_link do |l|
+    instance_decorator.destroy_action_link(footer: false) do |l|
       l.content { h.destroy_link_content('connection_links.actions.destroy') }
       l.data {{ confirm: h.t('connection_links.actions.destroy_confirm') }}
     end

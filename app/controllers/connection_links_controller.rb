@@ -15,7 +15,8 @@ class ConnectionLinksController < ChouetteController
   end
 
   def new
-    authorize resource_class
+    @connection_link = Chouette::ConnectionLink.new(departure_id: params[:departure_id])
+    authorize @connection_link
     new!
   end
 
@@ -40,7 +41,7 @@ class ConnectionLinksController < ChouetteController
 
   def destroy
     authorize connection_link
-    super
+    destroy! { request.referer }
   end
 
   def update

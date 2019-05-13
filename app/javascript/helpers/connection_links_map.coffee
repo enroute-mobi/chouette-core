@@ -85,6 +85,11 @@ class ConnectionLinksMap
       ol.extent.boundingExtent(@area), ol.proj.getTransform('EPSG:4326', 'EPSG:3857')
     )
     @map.getView().fit boundaries, @map.getSize()
+
+    if @area.length == 1
+      @map.getView().setZoom(19)
+      return
+
     tooCloseToBounds = false
     mapBoundaries = @map.getView().calculateExtent @map.getSize()
     mapWidth = mapBoundaries[2] - mapBoundaries[0]
@@ -98,6 +103,5 @@ class ConnectionLinksMap
     tooCloseToBounds = tooCloseToBounds || (mapBoundaries[3] - boundaries[3]) < heightMargin
     if tooCloseToBounds
       @map.getView().setZoom(@map.getView().getZoom() - 1)
-
 
 export default ConnectionLinksMap

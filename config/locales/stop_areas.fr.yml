@@ -89,7 +89,7 @@ fr:
         to: "Aller"
         from: "Retour"
         no_connection: "Pas de correspondance associée"
-        more: "Et %{count} supplémentaire"
+        more: "Et %{count} supplémentaire(s)"
     genealogical:
       genealogical: "Lien entre arrêts"
       genealogical_routing: "Liens de l'ITL"

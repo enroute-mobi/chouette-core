@@ -320,6 +320,7 @@ ActiveRecord::Schema.define(version: 2019_06_05_124308) do
     t.integer "frequent_traveller_duration"
     t.integer "occasional_traveller_duration"
     t.integer "mobility_restricted_traveller_duration"
+    t.jsonb "custom_field_values", default: {}
     t.index ["objectid"], name: "connection_links_objectid_key", unique: true
     t.index ["stop_area_referential_id"], name: "index_connection_links_on_stop_area_referential_id"
   end

@@ -11,7 +11,9 @@
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = definition_list t("stop_areas.form.sections.location"), stop_area_location_metadatas(@stop_area, @stop_area_referential)
-
+      - if @stop_area.longitude && @stop_area.latitude
+        .col-lg-6.col-md-6.col-sm-12.col-xs-12
+          #connection_link_map.map.mb-lg
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = definition_list t("stop_areas.form.sections.general"), stop_area_general_metadatas(@stop_area)
@@ -28,17 +30,22 @@
           - unless @specific_stops.any?
             .mb-xs
               = replacement_msg t('stop_areas.no_specific_stops')
-              
+
     - if has_feature?(:stop_area_connection_links)
       .row
-        - if @stop_area.connection_links.any?
-          h4.underline= t('.connections.title')
-
         .col-lg-6.col-md-6.col-sm-12.col-xs-12
+          h4.underline= t('.connections.title')
           - if @connection_links.any?
             = stop_area_connections(@connection_links, @stop_area, @stop_area_referential)
           - unless @connection_links.any?
-            h4.underline= t('.connections.title')
+            .mb-xs
+              = replacement_msg t('.connections.no_connection')
+
+          .row
+            .col-md-8
+              = link_to t('connection_links.actions.new'), new_stop_area_referential_connection_link_path(departure_id: @stop_area.id), class: 'btn btn-action large'
+            .col-md-4
+              = more_connections_link(@stop_area, @stop_area_referential) if @stop_area.connection_links.count > 4
 
           .col-lg-6.col-md-6.col-sm-12.col-xs-12
             - if @connection_links.any?
@@ -60,7 +67,7 @@
 
 - if has_feature?(:stop_area_connection_links) && @stop_area.connection_links.any?
   = javascript_tag do
-    | window.stop_areas = "#{URI.escape(stop_and_connections_json @stop_area)}";
+    | window.stop_areas = "#{URI.escape(stop_and_connections_json(@stop_area, has_feature?(:stop_area_connection_links)))}";
     | window.map_pin_orange = "#{URI.escape(asset_path('icons/map_pin_orange.png'))}";
     | window.map_pin_blue = "#{URI.escape(asset_path('icons/map_pin_blue.png'))}";
 

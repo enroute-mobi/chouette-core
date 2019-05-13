@@ -4,6 +4,7 @@ module Chouette
     include ObjectidSupport
     include ConnectionLinkRestrictions
     include StopAreaReferentialSupport
+    include CustomFieldsSupport
 
     attr_accessor :connection_link_type
 

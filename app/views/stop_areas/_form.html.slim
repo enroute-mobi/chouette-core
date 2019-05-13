@@ -20,6 +20,8 @@
               item_wrapper_class: 'radio-inline',
               wrapper: :horizontal_form,
               disabled: !@stop_area.new_record?
+          - unless @stop_area.new_record?
+              = f.input :kind, as: :hidden, input_html: { value: @stop_area.kind }
           .slave data-master="[name='stop_area[kind]']" data-value="commercial"
         - else
           = f.input :kind, as: :hidden, input_html: { value: :commercial }

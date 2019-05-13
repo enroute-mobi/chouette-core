@@ -57,6 +57,7 @@ class Aggregate < ActiveRecord::Base
     end
 
     clean_previous_operations do |date|
+      binding.pry
       Aggregate.except_successful.where('created_at < ?', date).destroy_all if date
     end
     publish

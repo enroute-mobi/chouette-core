@@ -22,6 +22,23 @@ RSpec.describe Aggregate, type: :model do
     expect(Aggregate.count).to eq 10
   end
 
+  it "should clean all non successful aggregates created before first successful" do
+    referential.workbench.workgroup.update(owner: referential.organisation)
+    5.times { Aggregate.create!(workgroup: referential.workbench.workgroup, referentials: [referential, referential], status: 'failed', created_at: DateTime.now) }
+
+    5.times { Aggregate.create!(workgroup: referential.workbench.workgroup, referentials: [referential, referential], status: 'successful', created_at: DateTime.now + 1.day) }
+
+    Aggregate.create!(workgroup: referential.workbench.workgroup, referentials: [referential, referential], status: 'failed', created_at: DateTime.now + 2.days)
+
+    5.times { Aggregate.create!(workgroup: referential.workbench.workgroup, referentials: [referential, referential], status: 'successful', created_at: DateTime.now + 3.days) }
+
+    binding.pry
+    Aggregate.last.aggregate!
+    binding.pry
+    expect(Aggregate.count).to eq 11
+    expect(Aggregate.except_successful.count).to eq 1
+  end
+
   context 'with publications' do
     let(:aggregate) { create :aggregate }
     let!(:enabled_publication_setup) { create :publication_setup, workgroup: aggregate.workgroup, enabled: true }

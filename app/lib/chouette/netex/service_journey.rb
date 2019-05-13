@@ -50,6 +50,16 @@ class Chouette::Netex::ServiceJourney < Chouette::Netex::Resource
     end
   end
 
+  def notices
+    node_if_content 'noticeAssignments'  do
+      resource.line_notices.each_with_index do |line_notice, i|
+        @builder.NoticeAssignment(id: id_with_entity('NoticeAssignment', line_notice), version: :any, order: i) do
+          ref 'NoticeRef', line_notice.objectid
+        end
+      end
+    end
+  end
+
   def build_xml
     @builder.ServiceJourney(resource_metas) do
       node_if_content 'keyList' do
@@ -58,7 +68,7 @@ class Chouette::Netex::ServiceJourney < Chouette::Netex::Resource
       end
 
       attributes_mapping
-
+      notices
       day_types
 
       ref 'JourneyPatternRef', resource.journey_pattern_only_objectid.objectid

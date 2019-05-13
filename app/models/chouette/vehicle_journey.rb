@@ -184,7 +184,9 @@ module Chouette
         footnotes = self.footnotes
         footnotes += Footnote.for_vehicle_journey(self) if db_lookup && !self.new_record?
         attrs << footnotes.uniq.map(&:checksum).sort
-
+        line_notices = self.line_notices
+        line_notices += Chouette::LineNotice.for_vehicle_journey(self) if db_lookup && !self.new_record?
+        attrs << line_notices.uniq.map(&:objectid).sort
         vjas =  self.vehicle_journey_at_stops
         vjas += VehicleJourneyAtStop.where(vehicle_journey_id: self.id) if db_lookup && !self.new_record?
         attrs << vjas.uniq.sort_by { |s| s.stop_point&.position }.map(&:checksum)
@@ -204,6 +206,7 @@ module Chouette
     has_checksum_children VehicleJourneyAtStop
     has_checksum_children PurchaseWindow
     has_checksum_children Footnote
+    has_checksum_children Chouette::LineNotice
     has_checksum_children StopPoint
 
     def set_default_values

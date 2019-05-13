@@ -28,6 +28,7 @@
           - unless @specific_stops.any?
             .mb-xs
               = replacement_msg t('stop_areas.no_specific_stops')
+              
     - if has_feature?(:stop_area_connection_links)
       .row
         - if @stop_area.connection_links.any?

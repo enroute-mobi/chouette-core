@@ -23,8 +23,8 @@ const mapDispatchToProps = (dispatch) => {
     onToggleFootnoteModal: (footnote, isShown) => {
       dispatch(actions.toggleFootnoteModal(footnote, isShown))
     },
-    onNotesEditVehicleJourney: (footnotes) =>{
-      dispatch(actions.editVehicleJourneyNotes(footnotes))
+    onNotesEditVehicleJourney: (footnotes, line_notices) =>{
+      dispatch(actions.editVehicleJourneyNotes(footnotes, line_notices))
     }
   }
 }

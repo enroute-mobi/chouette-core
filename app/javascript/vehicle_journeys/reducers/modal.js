@@ -23,10 +23,19 @@ export default function modal(state = {}, action) {
       }
     case 'TOGGLE_FOOTNOTE_MODAL':
       newModalProps = JSON.parse(JSON.stringify(state.modalProps))
-      if (action.isShown){
-        newModalProps.vehicleJourney.footnotes.push(action.footnote)
-      }else{
-        newModalProps.vehicleJourney.footnotes = newModalProps.vehicleJourney.footnotes.filter((f) => {return f.id != action.footnote.id })
+      if(action.footnote.line_notice){
+        if (action.isShown){
+          newModalProps.vehicleJourney.line_notices.push(action.footnote)
+        }else{
+          newModalProps.vehicleJourney.line_notices = newModalProps.vehicleJourney.line_notices.filter((f) => {return f.id != action.footnote.id })
+        }
+      }
+      else{
+        if (action.isShown){
+          newModalProps.vehicleJourney.footnotes.push(action.footnote)
+        }else{
+          newModalProps.vehicleJourney.footnotes = newModalProps.vehicleJourney.footnotes.filter((f) => {return f.id != action.footnote.id })
+        }
       }
       return _.assign({}, state, {modalProps: newModalProps})
     case 'EDIT_VEHICLEJOURNEY_MODAL':

@@ -224,9 +224,10 @@ const actions = {
     data,
     selectedCompany
   }),
-  editVehicleJourneyNotes : (footnotes) => ({
+  editVehicleJourneyNotes : (footnotes, line_notices) => ({
     type: 'EDIT_VEHICLEJOURNEY_NOTES',
-    footnotes
+    footnotes,
+    line_notices
   }),
   shiftVehicleJourney : (addtionalTime) => ({
     type: 'SHIFT_VEHICLEJOURNEY',
@@ -426,6 +427,10 @@ const actions = {
               return actions.getDelta(vjas)
             })
 
+            var line_notices = val['public.line_notices']
+            if(! line_notices.map){
+              line_notices = []
+            }
             vehicleJourneys.push(
               _.assign({}, val, {
                 time_tables: timeTables,
@@ -437,7 +442,8 @@ const actions = {
                 published_journey_identifier: val.published_journey_identifier || '',
                 company: val.company || {name: ''},
                 transport_mode: val.route.line.transport_mode || 'undefined',
-                transport_submode: val.route.line.transport_submode || 'undefined'
+                transport_submode: val.route.line.transport_submode || 'undefined',
+                line_notices: line_notices
               })
             )
           }

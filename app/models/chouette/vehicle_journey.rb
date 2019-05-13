@@ -32,6 +32,7 @@ module Chouette
     delegate :line, to: :route
 
     has_and_belongs_to_many :footnotes, :class_name => 'Chouette::Footnote'
+    has_and_belongs_to_many :line_notices, :class_name => 'Chouette::LineNotice'
     has_and_belongs_to_many :purchase_windows, :class_name => 'Chouette::PurchaseWindow'
     has_array_of :ignored_routing_contraint_zones, class_name: 'Chouette::RoutingConstraintZone'
     has_array_of :ignored_stop_area_routing_constraints, class_name: 'StopAreaRoutingConstraint'
@@ -283,7 +284,7 @@ module Chouette
     end
 
     def update_has_and_belongs_to_many_from_state item
-      ['time_tables', 'footnotes', 'purchase_windows'].each do |assos|
+      ['time_tables', 'footnotes', 'line_notices', 'purchase_windows'].each do |assos|
         saved = self.send(assos).map(&:id)
 
         (saved - item[assos].map{|t| t['id']}).each do |id|
@@ -662,6 +663,16 @@ module Chouette
       def weekdays
         ([1] * 7).join(',')
       end
+    end
+  end
+
+  def line_notices_as_footnotes
+    line_notices.map do |line_notice|
+      OpenStruct.new(
+        code: line_notice.title,
+        label: line_notice.content,
+        id: line_notice.id
+      )
     end
   end
 end

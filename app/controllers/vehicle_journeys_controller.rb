@@ -80,7 +80,16 @@ class VehicleJourneysController < ChouetteController
 
       @ppage = 20
       vehicle_journeys = @q.result.paginate(:page => params[:page], :per_page => @ppage)
-      @footnotes = route.line.footnotes.to_json
+      @footnotes = route.line.footnotes.map{|f| f.attributes.slice(*%w(label id code)) }
+      route.line.line_notices.each do |line_notice|
+        @footnotes << {
+          code: line_notice.title,
+          label: line_notice.content,
+          id: line_notice.id,
+          line_notice: true
+        }
+      end
+      @footnotes = @footnotes.to_json
       @matrix    = resource_class.matrix(vehicle_journeys)
       vehicle_journeys
     end

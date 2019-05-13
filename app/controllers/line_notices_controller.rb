@@ -35,7 +35,7 @@ class LineNoticesController < ChouetteController
   end
 
   def line_notice_params
-    params.require(:line_notice).permit( :title, :content, :object_id, :import_xml)
+    params.require(:line_notice).permit( :title, :content, :object_id)
     # TODO check if metadata needs to be included as param  t.jsonb "metadata", default: {}
   end
 end

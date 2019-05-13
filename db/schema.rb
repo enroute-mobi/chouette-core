@@ -601,13 +601,19 @@ ActiveRecord::Schema.define(version: 2019_05_02_080722) do
     t.index ["line_notice_id", "line_id"], name: "index_line_notices_lines_on_line_notice_id_and_line_id"
   end
 
-  create_table "line_referential_memberships", force: :cascade do |t|
+  create_table "line_notices_vehicle_journeys", id: false, force: :cascade do |t|
+    t.bigint "vehicle_journey_id"
+    t.bigint "line_notice_id"
+    t.index ["vehicle_journey_id", "line_notice_id"], name: "line_notices_vehicle_journeys_index"
+  end
+
+  create_table "line_referential_memberships", id: :serial, force: :cascade do |t|
     t.bigint "organisation_id"
     t.bigint "line_referential_id"
     t.boolean "owner"
   end
 
-  create_table "line_referential_sync_messages", force: :cascade do |t|
+  create_table "line_referential_sync_messages", id: :serial, force: :cascade do |t|
     t.integer "criticity"
     t.string "message_key"
     t.hstore "message_attributes"

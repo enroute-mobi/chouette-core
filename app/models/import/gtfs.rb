@@ -252,9 +252,11 @@ class Import::Gtfs < Import::Base
                   stop_points = profile_tag 'stop_points_mapping' do
                     stop_points_with_times.map do |s|
                       stop_point = s.last
-                      @objectid_formatter ||= Chouette::ObjectidFormatter.for_objectid_provider(StopAreaReferential, id: referential.stop_area_referential_id)
-                      stop_point[:route_id] = route.id
-                      stop_point[:objectid] = @objectid_formatter.objectid(stop_point)
+                      if stop_point
+                        @objectid_formatter ||= Chouette::ObjectidFormatter.for_objectid_provider(StopAreaReferential, id: referential.stop_area_referential_id)
+                        stop_point[:route_id] = route.id
+                        stop_point[:objectid] = @objectid_formatter.objectid(stop_point)
+                      end
                       stop_point
                     end
                   end

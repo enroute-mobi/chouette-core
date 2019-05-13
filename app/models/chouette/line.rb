@@ -28,7 +28,7 @@ module Chouette
 
     has_and_belongs_to_many :group_of_lines, :class_name => 'Chouette::GroupOfLine', :order => 'group_of_lines.name'
     has_and_belongs_to_many :footnotes, :class_name => 'Chouette::Footnote'
-    has_and_belongs_to_many :line_notices, :class_name => 'Chouette::LineNotice', :join_table => "line_notices_lines"
+    has_and_belongs_to_many :line_notices, :class_name => 'Chouette::LineNotice', :join_table => "public.line_notices_lines"
 
     has_many :footnotes, inverse_of: :line, validate: true
     accepts_nested_attributes_for :footnotes, reject_if: :all_blank, :allow_destroy => true

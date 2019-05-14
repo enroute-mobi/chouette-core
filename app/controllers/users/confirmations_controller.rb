@@ -1,13 +1,13 @@
 class Users::ConfirmationsController < Devise::ConfirmationsController
   skip_after_action :set_creator_metadata
 
-  def create
+  def show
     if !params[:confirmation_token]
       flash[:warning] = t('notice.devise.confirmation.missing_token')
-      redirect_to new_confirmation_path(:user)
-    elsif User.find_by_email(params[:email])&.confirmed?
+      redirect_to root_path
+    elsif User.find_by_confirmation_token(params[:confirmation_token])&.confirmed?
       flash[:success] = t('notice.devise.confirmation.already_confirmed')
-      redirect_to rooth_path
+      redirect_to root_path
     else
       super
     end

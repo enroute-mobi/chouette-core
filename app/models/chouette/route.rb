@@ -113,7 +113,8 @@ module Chouette
         journey_patterns.delete_all
         stop_points.delete_all
         routing_constraint_zones.delete_all
-        Chouette::Route.where(opposite_route_id: self.id).update_all(opposite_route_id: nil)
+        # all.only to reset the current scope
+        Chouette::Route.all.only.where(opposite_route_id: self.id).update_all(opposite_route_id: nil)
         self.delete
       end
     end

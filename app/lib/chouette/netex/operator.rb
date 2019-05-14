@@ -10,9 +10,9 @@ class Chouette::Netex::Operator < Chouette::Netex::Resource
 
   def contact_attributes
     {
-      'Email' => :email,
-      'Phone' => :phone,
-      'Url'   => :url
+      'Email' => :default_contact_email,
+      'Phone' => :default_contact_phone,
+      'Url'   => :default_contact_url
     }
   end
 

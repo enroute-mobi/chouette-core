@@ -1,5 +1,7 @@
 en:
   line_notices: &en_line_notices
+    filters:
+      title_or_content: 'Search by title or content'
     search_no_results: "No line notice matching your query"
     actions:
       new: "New line notice"

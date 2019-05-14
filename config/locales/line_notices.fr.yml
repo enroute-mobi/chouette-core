@@ -1,5 +1,7 @@
 fr:
   line_notices: &fr_line_notices
+    filters:
+      title_or_content: 'Indiquez un titre ou un contenu'
     search_no_results: "Aucune note de ligne ne correspond à votre recherche"
     actions:
       new: "Nouvelle note de ligne"

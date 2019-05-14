@@ -22,6 +22,7 @@ class LineNoticesController < ChouetteController
     create!
   end
 
+  alias_method :line_referential, :parent
 
   private
 
@@ -29,9 +30,25 @@ class LineNoticesController < ChouetteController
     super.decorate(context: { line_referential: parent })
   end
 
+  def sort_column
+    (line_referential.line_notices.column_names).include?(params[:sort]) ? params[:sort] : 'id'
+  end
+
+  def sort_direction
+    %w[asc desc].include?(params[:direction]) ?  params[:direction] : 'asc'
+  end
+
   def collection
-    scope = end_of_association_chain
-    @line_notices = scope.paginate(page: params[:page])
+    @line_notices ||= begin
+      scope = line_referential.line_notices
+      @q = scope.ransack(params[:q])
+      if sort_column && sort_direction
+        line_notices ||= @q.result(:distinct => true).order(sort_column + ' ' + sort_direction).paginate(:page => params[:page])
+      else
+        line_notices ||= @q.result(:distinct => true).order(:number).paginate(:page => params[:page])
+      end
+      line_notices
+    end
   end
 
   def line_notice_params

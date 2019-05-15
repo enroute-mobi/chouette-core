@@ -17,26 +17,27 @@ class LinesController < ChouetteController
     @hide_group_of_line = line_referential.group_of_lines.empty?
 
     # Selected2 autocompletion purpose
-    if request.format.json?
-      @lines = line_referential.lines
-      @lines = @lines.where("id IN (#{@lines.by_name(params[:q]).select(:id).to_sql}) OR id IN (#{@lines.ransack(number_or_company_name_cont: params[:q]).result.select(:id).to_sql})") if (params[:q].present?)
-      Rabl::Renderer.new('lines/index', @lines, :view_path => 'app/views', :format => 'json').render
-      return
-    end
+    respond_to do |format|
+      format.json do
+        @lines = line_referential.lines
+        @lines = @lines.where("id IN (#{@lines.by_name(params[:q]).select(:id).to_sql}) OR id IN (#{@lines.ransack(number_or_company_name_cont: params[:q]).result.select(:id).to_sql})") if (params[:q].present?)
+      end
 
-    index! do |format|
-      @lines = LineDecorator.decorate(
-        @lines,
-        context: {
-          line_referential: @line_referential,
-          current_organisation: current_organisation
-        }
-      )
-      format.html {
-        if collection.out_of_bounds?
-          redirect_to params.merge(:page => 1)
+      format.html do
+        index! do
+          @lines = LineDecorator.decorate(
+            @lines,
+            context: {
+              line_referential: @line_referential,
+              current_organisation: current_organisation
+            }
+          )
+
+          if collection.out_of_bounds?
+            redirect_to params.merge(:page => 1)
+          end
         end
-      }
+      end
     end
   end
 

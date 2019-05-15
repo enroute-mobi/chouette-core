@@ -219,9 +219,9 @@ describe TableBuilderHelper, type: :helper do
         <tr>
             <th>ID Codif</th>
             <th><a href="/line_referentials/#{company.referential.id}/companies?direction=desc&amp;sort=name">Nom<span class="orderers"><span class="fa fa-sort-asc "></span><span class="fa fa-sort-desc "></span></span></a></th>
-            <th><a href="/line_referentials/#{company.referential.id}/companies?direction=desc&amp;sort=phone">Numéro de téléphone<span class="orderers"><span class="fa fa-sort-asc "></span><span class="fa fa-sort-desc "></span></span></a></th>
-            <th><a href="/line_referentials/#{company.referential.id}/companies?direction=desc&amp;sort=email">Email<span class="orderers"><span class="fa fa-sort-asc "></span><span class="fa fa-sort-desc "></span></span></a></th>
-            <th><a href="/line_referentials/#{company.referential.id}/companies?direction=desc&amp;sort=url">Page web associée<span class="orderers"><span class="fa fa-sort-asc "></span><span class="fa fa-sort-desc "></span></span></a></th>
+            <th><a href="/line_referentials/#{company.referential.id}/companies?direction=desc&amp;sort=default_contact_phone">Numéro de téléphone<span class="orderers"><span class="fa fa-sort-asc "></span><span class="fa fa-sort-desc "></span></span></a></th>
+            <th><a href="/line_referentials/#{company.referential.id}/companies?direction=desc&amp;sort=default_contact_email">Email<span class="orderers"><span class="fa fa-sort-asc "></span><span class="fa fa-sort-desc "></span></span></a></th>
+            <th><a href="/line_referentials/#{company.referential.id}/companies?direction=desc&amp;sort=default_contact_url">Page web associée<span class="orderers"><span class="fa fa-sort-asc "></span><span class="fa fa-sort-desc "></span></span></a></th>
             <th></th>
         </tr>
     </thead>
@@ -229,9 +229,9 @@ describe TableBuilderHelper, type: :helper do
         <tr class="company company-#{company.id}">
             <td>#{company.get_objectid.local_id}</td>
             <td title="Voir" class="name"><a href="/line_referentials/#{company.referential.id}/companies/#{company.id}">#{company.name}</a></td>
-            <td class="phone">#{company.phone}</td>
-            <td class="email">#{company.email}</td>
-            <td class="url">#{company.url}</td>
+            <td class="default_contact_phone">#{company.default_contact_phone}</td>
+            <td class="default_contact_email">#{company.default_contact_email}</td>
+            <td class="default_contact_url">#{company.default_contact_url}</td>
             <td class="actions">
                 <div class="btn-group">
                     <div class="btn dropdown-toggle" data-toggle="dropdown"><span class="fa fa-cog"></span></div>
@@ -263,16 +263,16 @@ describe TableBuilderHelper, type: :helper do
             end
           ),
           TableBuilderHelper::Column.new(
-            key: :phone,
-            attribute: 'phone'
+            key: :default_contact_phone,
+            attribute: 'default_contact_phone'
           ),
           TableBuilderHelper::Column.new(
-            key: :email,
-            attribute: 'email'
+            key: :default_contact_email,
+            attribute: 'default_contact_email'
           ),
           TableBuilderHelper::Column.new(
-            key: :url,
-            attribute: 'url'
+            key: :default_contact_url,
+            attribute: 'default_contact_url'
           ),
         ],
         links: [:show, :edit, :delete],
@@ -341,9 +341,9 @@ describe TableBuilderHelper, type: :helper do
         <tr class="company company-#{company.id}">
             <td>#{company.get_objectid.local_id}</td>
             <td title="Voir" class="name"><a href="/line_referentials/#{company.line_referential.id}/companies/#{company.id}">#{company.name}</a></td>
-            <td class="phone">#{company.phone}</td>
-            <td class="email">#{company.email}</td>
-            <td class="url">#{company.url}</td>
+            <td class="default_contact_phone">#{company.default_contact_phone}</td>
+            <td class="default_contact_email">#{company.default_contact_email}</td>
+            <td class="default_contact_url">#{company.default_contact_url}</td>
             <td class="actions">
                 <div class="btn-group">
                     <div class="btn dropdown-toggle" data-toggle="dropdown"><span class="fa fa-cog"></span></div>
@@ -374,16 +374,16 @@ describe TableBuilderHelper, type: :helper do
             end
           ),
           TableBuilderHelper::Column.new(
-            key: :phone,
-            attribute: 'phone'
+            key: :default_contact_phone,
+            attribute: 'default_contact_phone'
           ),
           TableBuilderHelper::Column.new(
-            key: :email,
-            attribute: 'email'
+            key: :default_contact_email,
+            attribute: 'default_contact_email'
           ),
           TableBuilderHelper::Column.new(
-            key: :url,
-            attribute: 'url'
+            key: :default_contact_url,
+            attribute: 'default_contact_url'
           ),
         ],
         sortable: false,

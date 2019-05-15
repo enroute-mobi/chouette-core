@@ -11,14 +11,14 @@ RSpec.describe Chouette::Netex::Operator, type: :netex_resource do
     'CompanyNumber' => :registration_number,
     'Name' => :name,
     'ShortName' => :short_name,
-    'ContactDetails > Email' => :email,
-    'ContactDetails > Phone' => :phone,
-    'ContactDetails > Url' => :url
+    'ContactDetails > Email' => :default_contact_email,
+    'ContactDetails > Phone' => :default_contact_phone,
+    'ContactDetails > Url' => :default_contact_url
   }
 
   context 'without contact attributes' do
     before(:each) do
-      resource.update email: nil, phone: nil, url: nil
+      resource.update default_contact_email: nil, default_contact_phone: nil, default_contact_url: nil
     end
     it_behaves_like 'it has no child', 'ContactDetails'
   end

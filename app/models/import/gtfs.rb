@@ -78,7 +78,7 @@ class Import::Gtfs < Import::Base
     create_resource(:agencies).each(source.agencies) do |agency, resource|
       company = line_referential.companies.find_or_initialize_by(registration_number: agency.id)
       company.attributes = { name: agency.name }
-      company.url = agency.url
+      company.default_contact_url = agency.url
       @default_time_zone ||= check_time_zone_or_create_message(agency.timezone, resource)
       company.time_zone = @default_time_zone
 

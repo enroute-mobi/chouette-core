@@ -27,8 +27,7 @@
     .col-lg-12
       h2.mb-lg= t("companies.form.sections.general")
       = f.input :time_zone, as: :full_time_zone, include_blank: true
-      = f.input :url
-
+      
       = custom_fields_for_section(f, "general")
 
       - if resource.custom_fields.without_section.present?

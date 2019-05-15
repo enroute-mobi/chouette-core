@@ -408,7 +408,7 @@ describe Referential, :type => :model do
   context "lines" do
     describe "search" do
       it "should support Ransack search method" do
-        expect(ref.lines.search.result.to_a).to eq(ref.lines.to_a)
+        expect(ref.lines.ransack.result.to_a).to eq(ref.lines.to_a)
       end
     end
   end

@@ -14,8 +14,8 @@ describe TableBuilderHelper::Column do
     it "returns the I18n translation of @key if @name not present" do
       expect(
         TableBuilderHelper::Column.new(
-          key: :phone,
-          attribute: 'phone'
+          key: :default_contact_phone,
+          attribute: 'default_contact_phone'
         ).header_label(Chouette::Company)
       ).to eq('Numéro de téléphone')
     end

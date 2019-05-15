@@ -124,10 +124,10 @@ class Export::Gtfs < Export::Base
       target.agencies << {
         id: a_id,
         name: company.name,
-        url: company.url,
+        url: company.default_contact_url,
         timezone: time_zone,
-        phone: company.phone,
-        email: company.email
+        phone: company.default_contact_phone,
+        email: company.default_contact_email
         #lang: TO DO
         #fare_url: TO DO
       }

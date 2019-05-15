@@ -186,7 +186,7 @@ module Chouette
         attrs << footnotes.uniq.map(&:checksum).sort
         line_notices = self.line_notices
         line_notices += Chouette::LineNotice.for_vehicle_journey(self) if db_lookup && !self.new_record?
-        attrs << line_notices.uniq.map(&:objectid).sort
+        attrs << line_notices.uniq.map(&:objectid).sort if line_notices.present?
         vjas =  self.vehicle_journey_at_stops
         vjas += VehicleJourneyAtStop.where(vehicle_journey_id: self.id) if db_lookup && !self.new_record?
         attrs << vjas.uniq.sort_by { |s| s.stop_point&.position }.map(&:checksum)

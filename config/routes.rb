@@ -276,11 +276,7 @@ ChouetteIhm::Application.routes.draw do
     resources :networks
     resources :line_notices
   end
-
-  resources :line_notices do
-    resources :line_notices
-  end
-
+  
   resources :companies do
     get :autocomplete, on: :collection, controller: 'autocomplete_companies'
   end

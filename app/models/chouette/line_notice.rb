@@ -17,5 +17,10 @@ module Chouette
     validates_presence_of :title
 
     alias_attribute :name, :title
+
+    def self.nullable_attributes
+      [:content, :import_xml]
+    end
+
   end
 end

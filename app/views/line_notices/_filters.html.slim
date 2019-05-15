@@ -8,7 +8,7 @@
           span.fa.fa-search
 
   .ffg-row
-    .form-group class=filter_item_class(params[:q], :lines)
+    .form-group class=filter_item_class(params[:q], :lines_id_eq)
       = f.label t('activerecord.models.line.one').upcase, required: false, class: 'control-label'
       = f.input :lines_id_eq,
           as: :select,
@@ -31,4 +31,4 @@
 
   .actions
     = link_to t('actions.erase'), @workbench, class: 'btn btn-link'
-    = f.submit t('actions.filter'), class: 'btn btn-default'
+    = f.submit t('actions.filter'), class: 'btn btn-default', id: "search-btn"

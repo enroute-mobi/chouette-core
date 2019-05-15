@@ -23,13 +23,17 @@ module Stif
 
       def synchronize
         Codifligne::API.api_version = 2
+        Codifligne::API.base_url = 'https://pprod-ilico.iledefrance-mobilites.fr/rest/v2/lc/getlist'
+
         reset_counts
         start_time = Process.clock_gettime(Process::CLOCK_MONOTONIC, :second)
         # Fetch Codifline data
         client = Codifligne::API.new
+
         operators       = client.operators
         lines           = client.lines
         networks        = client.networks
+        line_notices    = client.line_notices
         # groups_of_lines = client.groups_of_lines
 
         Rails.logger.info "Codifligne:sync - Codifligne request processed in #{elapsed_time_since start_time} seconds"
@@ -49,6 +53,11 @@ module Stif
         networks.map        { |n| create_or_update_network(n) }
         log_create_or_update "Networks", networks.count, stime
 
+        # Create or update LineNotices
+        stime = Process.clock_gettime(Process::CLOCK_MONOTONIC, :second)
+        line_notices.map     { |n| create_or_update_line_notice(n) }
+        log_create_or_update "LineNotices", networks.count, stime
+
         # # Create or update Group of lines
         # stime = Process.clock_gettime(Process::CLOCK_MONOTONIC, :second)
         # groups_of_lines.map { |g| create_or_update_group_of_lines(g) }
@@ -61,6 +70,10 @@ module Stif
         # Delete deprecated Networks
         deleted_ne = delete_deprecated(networks, Chouette::Network)
         log_deleted "Networks", deleted_ne unless deleted_ne == 0
+
+        # Delete deprecated LineNotices
+        deleted_notices = delete_deprecated(line_notices, Chouette::LineNotice.unprotected)
+        log_deleted "LineNotices", deleted_notices unless deleted_ne == 0
 
         # Delete deprecated Lines
         deleted_li = delete_deprecated_lines(lines)
@@ -90,6 +103,17 @@ module Stif
           params["customer_service_contact_#{k}"] = v if v.present?
         end
         save_or_update(params, Chouette::Company)
+      end
+
+      def create_or_update_line_notice(api_line_notice)
+        params = {
+          title: api_line_notice.name,
+          content: api_line_notice.text,
+          objectid: api_line_notice.stif_id,
+          import_xml: api_line_notice.xml
+        }
+
+        save_or_update(params, Chouette::LineNotice)
       end
 
       def create_or_update_line(api_line)

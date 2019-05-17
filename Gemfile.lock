@@ -25,9 +25,9 @@ GIT
 
 GIT
   remote: https://github.com/af83/stif-codifline-api.git
-  revision: e87227d44ad2f4ef7ed326ac136cce98a7532e64
+  revision: 62e92669f04cfb8ce531fb3f89f51d43c717f7c3
   specs:
-    codifligne (0.1.12)
+    codifligne (0.1.13)
       nokogiri (>= 1.8.5)
 
 GIT

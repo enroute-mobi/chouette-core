@@ -8,8 +8,22 @@
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = definition_list t("stop_areas.form.sections.identification"), stop_area_identification_metadatas(@stop_area, @stop_area_referential)
 
+    .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = definition_list t("stop_areas.form.sections.location"), stop_area_location_metadatas(@stop_area, @stop_area_referential)
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = definition_list t("stop_areas.form.sections.general"), stop_area_general_metadatas(@stop_area)
+
+    - if @stop_area.is_referent
+      .row
+        .col-lg-6.col-md-6.col-sm-12.col-xs-12
+          h4.underline= Chouette::StopArea.tmf('specific_stops')
+
+          - if @specific_stops.any?
+            = stop_area_specific_stops(@specific_stops, @stop_area_referential)
+            = new_pagination @specific_stops, 'pull-right'
+
+          - unless @specific_stops.any?
+            .mb-xs
+              = replacement_msg t('stop_areas.no_specific_stops')

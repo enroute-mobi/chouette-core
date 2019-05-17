@@ -16,6 +16,7 @@ class StopAreasController < ChouetteController
 
   def autocomplete
     scope = stop_area_referential.stop_areas.where(deleted_at: nil)
+    scope = scope.referent_only if params[:referent_only]
     args  = [].tap{|arg| 4.times{arg << "%#{params[:q]}%"}}
     @stop_areas = scope.where("unaccent(name) ILIKE unaccent(?) OR unaccent(city_name) ILIKE unaccent(?) OR registration_number ILIKE ? OR objectid ILIKE ?", *args).limit(50)
     @stop_areas
@@ -89,6 +90,7 @@ class StopAreasController < ChouetteController
       end
 
       @stop_area = @stop_area.decorate
+      @specific_stops = @stop_area.specific_stops.paginate(:page => params[:page], :per_page => 5)
     end
   end
 
@@ -181,7 +183,9 @@ class StopAreasController < ChouetteController
       :coordinates,
       :country_code,
       :fare_code,
+      :referent_only,
       :int_user_needs,
+      :is_referent,
       :latitude,
       :lift_availability,
       :long_lat_type,
@@ -192,6 +196,7 @@ class StopAreasController < ChouetteController
       :object_version,
       :objectid,
       :parent_id,
+      :referent_id,
       :registration_number,
       :routing_line_ids,
       :routing_stop_ids,

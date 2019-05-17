@@ -12,8 +12,6 @@ module ReferentialIndexSupport
   included do
     class << self
       def belongs_to_public(rel_name, opts={})
-        belongs_to rel_name unless reflections[rel_name.to_s]
-
         rel = ReferentialIndexRelation.new(self, rel_name, :ascending, opts)
         referential_index_relations[rel.cache_key] = rel
 
@@ -138,6 +136,14 @@ module ReferentialIndexSupport
     end
 
     alias_method :to_a, :all
+
+    delegate :map, to: :all
+    delegate :include?, to: :all
+    delegate :inspect, to: :all
+
+    def exists?
+      all.present?
+    end
 
     def count
       count = 0

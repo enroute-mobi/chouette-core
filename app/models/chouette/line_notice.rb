@@ -9,11 +9,15 @@ module Chouette
     }
 
     # We will protect the notices that are used by vehicle_journeys
-    scope :unprotected, -> { all }
+    scope :unprotected, -> {
+      subquery = CrossReferentialIndexEntry.where(relation_name: :line_notices).select(:parent_id).distinct
+      where.not("id in (#{subquery.to_sql})" )
+    }
 
     belongs_to :line_referential, inverse_of: :line_notices
     has_and_belongs_to_many :lines, :class_name => 'Chouette::Line', :join_table => "line_notices_lines"
-    has_and_belongs_to_many :vehicle_journeys, :class_name => 'Chouette::VehicleJourney'
+    has_many_scattered :vehicle_journeys
+
     validates_presence_of :title
 
     alias_attribute :name, :title
@@ -22,5 +26,8 @@ module Chouette
       [:content, :import_xml]
     end
 
+    def protected?
+      vehicle_journeys.exists?
+    end
   end
 end

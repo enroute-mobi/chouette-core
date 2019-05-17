@@ -26,4 +26,25 @@ describe Chouette::LineNotice, :type => :model do
     end
   end
 
+  describe '#unprotected' do
+    let!(:line_notice) { create :line_notice }
+
+    it "should return unused notices" do
+      expect(Chouette::LineNotice.unprotected).to include line_notice
+      expect(line_notice).to_not be_protected
+    end
+
+    it "should  not return used notices" do
+      vj = nil
+      referential.switch do
+        vj = create(:vehicle_journey)
+        vj.line_notices = [line_notice]
+        vj.save
+      end
+
+      expect(line_notice.vehicle_journeys).to include vj
+      expect(Chouette::LineNotice.unprotected).to_not include line_notice
+      expect(line_notice).to be_protected
+    end
+  end
 end

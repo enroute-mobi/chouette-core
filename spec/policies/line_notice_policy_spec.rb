@@ -38,5 +38,19 @@ RSpec.describe Chouette::LineNoticePolicy, type: :policy do
     permissions :update? do
       it_behaves_like 'permitted policy', 'line_notices.update'
     end
+
+    context 'with a protected notice' do
+      before(:each) do
+        referential.switch do
+          vj = create(:vehicle_journey)
+          vj.line_notices = [record]
+          vj.save
+        end
+
+        permissions :destroy? do
+          it_behaves_like 'always forbidden'
+        end
+      end
+    end
   end
 end

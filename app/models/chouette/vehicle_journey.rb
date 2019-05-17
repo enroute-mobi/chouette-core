@@ -29,6 +29,10 @@ module Chouette
       collection_name: :ignored_stop_area_routing_constraints,
       index_collection: -> { Chouette::VehicleJourney.where.not('ignored_stop_area_routing_constraint_ids = ARRAY[]::integer[]') }
 
+    has_array_of :line_notices, class_name: 'Chouette::LineNotice'
+    belongs_to_public :line_notices,
+      index_collection: -> { Chouette::VehicleJourney.where.not('line_notices = ARRAY[]::integer[]') }
+
     delegate :line, to: :route
 
     has_and_belongs_to_many :footnotes, :class_name => 'Chouette::Footnote'
@@ -184,8 +188,6 @@ module Chouette
         footnotes = self.footnotes
         footnotes += Footnote.for_vehicle_journey(self) if db_lookup && !self.new_record?
         attrs << footnotes.uniq.map(&:checksum).sort
-        line_notices = self.line_notices
-        line_notices += Chouette::LineNotice.for_vehicle_journey(self) if db_lookup && !self.new_record?
         attrs << line_notices.uniq.map(&:objectid).sort if line_notices.present?
         vjas =  self.vehicle_journey_at_stops
         vjas += VehicleJourneyAtStop.where(vehicle_journey_id: self.id) if db_lookup && !self.new_record?

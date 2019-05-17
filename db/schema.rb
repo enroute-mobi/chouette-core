@@ -621,12 +621,6 @@ ActiveRecord::Schema.define(version: 2019_05_02_080722) do
     t.index ["line_notice_id", "line_id"], name: "index_line_notices_lines_on_line_notice_id_and_line_id"
   end
 
-  create_table "line_notices_vehicle_journeys", id: false, force: :cascade do |t|
-    t.bigint "vehicle_journey_id"
-    t.bigint "line_notice_id"
-    t.index ["vehicle_journey_id", "line_notice_id"], name: "line_notices_vehicle_journeys_index"
-  end
-
   create_table "line_referential_memberships", id: :serial, force: :cascade do |t|
     t.bigint "organisation_id"
     t.bigint "line_referential_id"
@@ -1258,6 +1252,7 @@ ActiveRecord::Schema.define(version: 2019_05_02_080722) do
     t.jsonb "metadata", default: {}
     t.integer "ignored_routing_contraint_zone_ids", default: [], array: true
     t.integer "ignored_stop_area_routing_constraint_ids", default: [], array: true
+    t.integer "line_notice_ids", array: true
     t.index ["journey_pattern_id"], name: "index_vehicle_journeys_on_journey_pattern_id"
     t.index ["objectid"], name: "vehicle_journeys_objectid_key", unique: true
     t.index ["route_id"], name: "index_vehicle_journeys_on_route_id"

@@ -262,6 +262,9 @@ GEM
     diff-lcs (1.3)
     digest-crc (0.4.1)
     docile (1.1.5)
+    dogapi (1.35.0)
+      multi_json
+    dogstatsd-ruby (4.2.0)
     draper (3.1.0)
       actionpack (>= 5.0)
       activemodel (>= 5.0)

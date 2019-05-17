@@ -10,6 +10,15 @@ Rails.application.configure do
   config.lograge.logger = ActiveSupport::Logger.new "#{Rails.root}/log/lograge_#{Rails.env}.log"
 
   config.lograge.custom_options = lambda do |event|
-    { :params => event.payload[:params] }
+    payload = {
+       params: event.payload[:params].reject { |k| %w(controller action).include? k },
+       level: event.payload[:level]
+    }
+    if event.payload[:exception_object]
+      payload[:error] = event.payload[:exception_object].message
+      payload[:backtrace] = event.payload[:exception_object].backtrace
+    end
+
+    payload
   end
 end

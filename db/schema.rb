@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_04_16_143445) do
+ActiveRecord::Schema.define(version: 2019_05_16_135555) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -285,12 +285,8 @@ ActiveRecord::Schema.define(version: 2019_04_16_143445) do
     t.bigint "object_version"
     t.string "name"
     t.string "comment"
-    t.decimal "link_distance", precision: 19, scale: 2
+    t.integer "link_distance"
     t.string "link_type"
-    t.time "default_duration"
-    t.time "frequent_traveller_duration"
-    t.time "occasional_traveller_duration"
-    t.time "mobility_restricted_traveller_duration"
     t.boolean "mobility_restricted_suitability"
     t.boolean "stairs_availability"
     t.boolean "lift_availability"
@@ -298,7 +294,15 @@ ActiveRecord::Schema.define(version: 2019_04_16_143445) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.jsonb "metadata", default: {}
+    t.boolean "both_ways", default: false
+    t.integer "stop_area_referential_id"
+    t.integer "default_duration"
+    t.integer "frequent_traveller_duration"
+    t.integer "occasional_traveller_duration"
+    t.integer "mobility_restricted_traveller_duration"
+    t.jsonb "custom_field_values", default: {}
     t.index ["objectid"], name: "connection_links_objectid_key", unique: true
+    t.index ["stop_area_referential_id"], name: "index_connection_links_on_stop_area_referential_id"
   end
 
   create_table "custom_fields", id: :serial, force: :cascade do |t|
@@ -1013,6 +1017,8 @@ ActiveRecord::Schema.define(version: 2019_04_16_143445) do
     t.datetime "confirmed_at"
     t.jsonb "custom_field_values"
     t.jsonb "metadata", default: {}
+    t.integer "referent_id"
+    t.boolean "is_referent", default: false
     t.index ["name"], name: "index_stop_areas_on_name"
     t.index ["objectid", "stop_area_referential_id"], name: "stop_areas_objectid_key", unique: true
     t.index ["parent_id"], name: "index_stop_areas_on_parent_id"

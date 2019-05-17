@@ -168,7 +168,7 @@ describe Chouette::VehicleJourney, :type => :model do
                     "changes when a line_notice is added",
                     -> {
                       line_notice = create :line_notice
-                      checksum_owner.line_notices << line_notice
+                      checksum_owner.line_notices = [line_notice]
                       checksum_owner.save
                     },
                     reload: true
@@ -178,7 +178,7 @@ describe Chouette::VehicleJourney, :type => :model do
                     -> { line_notice.reload.update(objectid: "foo:LineNotice:2:LOC") },
                     reload: true do
         let(:line_notice){ create :line_notice }
-        before { checksum_owner.line_notices << line_notice }
+        before { checksum_owner.update line_notices: [line_notice] }
     end
 
     it_behaves_like 'it works with both checksums modes',
@@ -189,8 +189,7 @@ describe Chouette::VehicleJourney, :type => :model do
                     reload: true do
         let(:line_notice){ create :line_notice }
         before do
-          checksum_owner.line_notices << line_notice
-          checksum_owner.save
+          checksum_owner.update line_notices: [line_notice]
           line_notice.reload
         end
     end

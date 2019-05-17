@@ -31,12 +31,11 @@ module Chouette
 
     has_array_of :line_notices, class_name: 'Chouette::LineNotice'
     belongs_to_public :line_notices,
-      index_collection: -> { Chouette::VehicleJourney.where.not('line_notices = ARRAY[]::integer[]') }
+      index_collection: -> { Chouette::VehicleJourney.where.not('line_notice_ids = ARRAY[]::integer[]') }
 
     delegate :line, to: :route
 
     has_and_belongs_to_many :footnotes, :class_name => 'Chouette::Footnote'
-    has_and_belongs_to_many :line_notices, :class_name => 'Chouette::LineNotice'
     has_and_belongs_to_many :purchase_windows, :class_name => 'Chouette::PurchaseWindow'
     has_array_of :ignored_routing_contraint_zones, class_name: 'Chouette::RoutingConstraintZone'
     has_array_of :ignored_stop_area_routing_constraints, class_name: 'StopAreaRoutingConstraint'

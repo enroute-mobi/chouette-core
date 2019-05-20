@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_16_135555) do
+ActiveRecord::Schema.define(version: 2019_05_20_081057) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -1071,6 +1071,7 @@ ActiveRecord::Schema.define(version: 2019_05_16_135555) do
     t.datetime "confirmed_at"
     t.jsonb "custom_field_values"
     t.jsonb "metadata", default: {}
+    t.string "postal_region"
     t.integer "referent_id"
     t.boolean "is_referent", default: false
     t.index ["name"], name: "index_stop_areas_on_name"

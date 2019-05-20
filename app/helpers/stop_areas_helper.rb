@@ -138,6 +138,7 @@ module StopAreasHelper
       Chouette::StopArea.tmf('street_name') => stop_area.street_name,
       Chouette::StopArea.tmf('zip_code') => stop_area.zip_code,
       Chouette::StopArea.tmf('city_name') => stop_area.city_name,
+      Chouette::StopArea.tmf('postal_region') => stop_area.postal_region,
       Chouette::StopArea.tmf('country_code') => stop_area.country_code.presence || '-',
       Chouette::StopArea.tmf('time_zone') => stop_area.time_zone.presence || '-',
     }

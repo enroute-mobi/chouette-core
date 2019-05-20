@@ -158,6 +158,7 @@ en:
         coordinates: "Coordinates (lat,lng) WGS84"
         zip_code: "Zip code"
         city_name: "City"
+        postal_region: "Postal region"
         waiting_time: Waiting time (minutes)
         status: Status
         stop_area_provider_ids: Stops Providers

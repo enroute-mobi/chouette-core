@@ -152,6 +152,7 @@ fr:
         coordinates: "Coordonnées (lat,lng) WGS84"
         zip_code: "Code postal"
         city_name: "Commune"
+        postal_region: "Région postale"
         waiting_time: Temps de desserte (minutes)
         status: État
         stop_area_provider_ids: Fournisseurs d'arrêts

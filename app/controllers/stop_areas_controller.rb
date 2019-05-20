@@ -192,6 +192,7 @@ class StopAreasController < ChouetteController
       :object_version,
       :objectid,
       :parent_id,
+      :postal_region,
       :registration_number,
       :routing_line_ids,
       :routing_stop_ids,

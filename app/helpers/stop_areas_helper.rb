@@ -97,7 +97,7 @@ module StopAreasHelper
 
   def area_type_options(kind = nil)
     kind ||= current_user.organisation.has_feature?("route_stop_areas_all_types") ? :all : :commercial
-    
+
     return [] if kind == :all && !current_user.organisation.has_feature?("route_stop_areas_all_types")
 
     Chouette::AreaType.options(kind)
@@ -123,7 +123,7 @@ module StopAreasHelper
     providers = stop_area.stop_area_providers.map do |provider|
       link_to provider.name, [provider.stop_area_referential, provider]
     end
-    
+
     attributes.merge!(StopAreaProvider.t.capitalize => providers.to_sentence.html_safe)
   end
 
@@ -133,9 +133,10 @@ module StopAreasHelper
       Chouette::StopArea.tmf('street_name') => stop_area.street_name,
       Chouette::StopArea.tmf('zip_code') => stop_area.zip_code,
       Chouette::StopArea.tmf('city_name') => stop_area.city_name,
+      Chouette::StopArea.tmf('postal_region') => stop_area.postal_region,
       Chouette::StopArea.tmf('country_code') => stop_area.country_code.presence || '-',
       Chouette::StopArea.tmf('time_zone') => stop_area.time_zone.presence || '-',
-    }            
+    }
   end
 
   def stop_area_general_metadatas(stop_area)

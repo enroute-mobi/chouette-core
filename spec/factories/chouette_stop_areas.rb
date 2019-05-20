@@ -9,6 +9,7 @@ FactoryGirl.define do
     kind "commercial"
     confirmed_at { Time.now }
     city_name 'Bordeaux'
+    postal_region '33063'
     zip_code '33800'
     street_name "Parc du couvent, Avenue Steve Biko"
     url   { Faker::Internet.url }

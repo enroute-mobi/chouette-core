@@ -22,7 +22,7 @@ module Chouette
       end
 
       def must_respect_format
-        self.to_s.match(self.class.format)
+        errors.add(:base, :invalid) unless self.to_s.match(self.class.format)
       end
 
       def short_id

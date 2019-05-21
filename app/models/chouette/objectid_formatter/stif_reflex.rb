@@ -15,8 +15,15 @@ module Chouette
       end
 
       def get_objectid(definition)
-        parts = definition.try(:split, ":")
-        Chouette::Objectid::StifReflex.new(country_code: parts[0], zip_code: parts[1], object_type: parts[2], local_id: parts[3], provider_id: parts[4])
+        parts = definition.try(:split, ":", -1)
+
+        if parts.size == 4 && parts[3].blank?
+          Chouette::Objectid::StifReflex.new(provider_id: parts[0], object_type: parts[1], local_id: parts[2])
+        elsif parts.size == 5
+          Chouette::Objectid::StifReflex.new(country_code: parts[0], object_type: parts[2], local_id: parts[3], provider_id: parts[4])
+        else
+          Chouette::Objectid::StifReflex.new()
+        end
       end
     end
   end

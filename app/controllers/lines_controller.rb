@@ -41,6 +41,18 @@ class LinesController < ChouetteController
     end
   end
 
+  def available_line_notices
+    resource
+    autocomplete_collection = @line.line_referential.line_notices
+    if params[:q].present?
+      autocomplete_collection = autocomplete_collection.autocomplete(params[:q]).order(:name)
+    else
+      autocomplete_collection = autocomplete_collection.order('created_at desc')
+    end
+
+    render json: autocomplete_collection.select(:title, :id).limit(10).map{|r| {name: r.title, id: r.id}}
+  end
+
   def show
     @group_of_lines = resource.group_of_lines
     show! do
@@ -61,6 +73,16 @@ class LinesController < ChouetteController
   def create
     authorize resource_class
     super
+  end
+
+  def update
+    update! do
+      if line_params[:line_notice_ids]
+        [@line_referential, @line, :line_notices]
+      else
+        [@line_referential, @line]
+      end
+    end
   end
 
   # overwrite inherited resources to use delete instead of destroy
@@ -131,7 +153,8 @@ class LinesController < ChouetteController
   helper_method :current_referential
 
   def line_params
-    out = params.require(:line).permit(
+    out = params.require(:line)
+    out = out.permit(
       :activated,
       :active_from,
       :active_until,
@@ -158,10 +181,11 @@ class LinesController < ChouetteController
       :stable_id,
       :transport_submode,
       :seasonal,
+      :line_notice_ids,
       :secondary_company_ids => [],
-      :line_notice_ids => [],
       footnotes_attributes: [:code, :label, :_destroy, :id]
     )
+    out[:line_notice_ids] = out[:line_notice_ids].split(',') if out[:line_notice_ids]
     out[:secondary_company_ids] = (out[:secondary_company_ids] || []).select(&:present?)
     out
   end

@@ -19,6 +19,7 @@ en:
       show: 'Show'
       show_network: 'Show network'
       show_company: 'Show company'
+      add_notice: 'Add a notice'
     search_no_results: "No results found"
     filters:
       name_or_short_id_cont: "Search by name or objectid"
@@ -39,6 +40,8 @@ en:
       group_of_lines: "Groups of lines"
       search_no_results: "No line matching your query"
       map: "Map"
+      line_notices:
+        title: "Line notices list"
     index:
       deactivated: "Disabled line"
       title: "Lines"
@@ -144,6 +147,7 @@ en:
         active_until_date: Active until %{to}
         active_from: Active from
         active_until: Active until
+        associated_notices: Associated notices
   formtastic:
     titles:
       line:

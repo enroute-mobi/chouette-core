@@ -10,6 +10,14 @@ module Chouette
       where.not("id in (#{subquery.to_sql})" )
     }
 
+    scope :autocomplete, ->(q) {
+      if q.present?
+        where("title ILIKE '%#{sanitize_sql_like(q)}%'")
+      else
+        all
+      end
+    }
+
     belongs_to :line_referential, inverse_of: :line_notices
     has_and_belongs_to_many :lines, :class_name => 'Chouette::Line', :join_table => "line_notices_lines"
     has_many_scattered :vehicle_journeys

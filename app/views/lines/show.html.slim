@@ -15,12 +15,12 @@
              Chouette::Line.tmf(:transport_mode) => (@line.transport_mode.present? ? t("enumerize.transport_mode.#{@line.transport_mode}") : '-'),
              Chouette::Line.tmf(:transport_submode) => (@line.transport_submode.present? ? t("enumerize.transport_submode.#{@line.transport_submode}") : '-'),
              Chouette::Line.tmf(:objectid) => @line.objectid }
+
         = definition_list t("lines.form.sections.general"),
           {  Chouette::Line.tmf(:mobility_restricted_suitability) => boolean_icon(@line.mobility_restricted_suitability),
              Chouette::Line.tmf(:flexible_service) => boolean_icon(@line.flexible_service),
              Chouette::Line.tmf(:seasonal) => boolean_icon(@line.seasonal),
-             Chouette::Line.tmf(:comment) => @line.comment.presence || '-',
-             Chouette::Line.tmf(:line_notices) => (@line.line_notices.nil? ? t('lines.index.no_line_notices') : array_to_html_list(@line.line_notices.collect(&:name)))}
+             Chouette::Line.tmf(:comment) => @line.comment.presence || '-' }
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = definition_list t("lines.form.sections.location"),
@@ -31,4 +31,4 @@
         = definition_list t("lines.form.sections.publication_data"),
           {  Chouette::Line.tmf(:color) => color_icon(@line.color),
              Chouette::Line.tmf(:text_color) => color_icon(@line.text_color),
-             Chouette::Line.tmf(:url) => (@line.url.present? ? link_to(@line.url, @line.url, target: :blank) : t('lines.index.unset'))}
+             Chouette::Line.tmf(:url) => (@line.url.present? ? link_to(@line.url, @line.url, target: :blank) : t('lines.index.unset')) }

@@ -167,6 +167,23 @@ class AF83::Decorator::Link
     out
   end
 
+  def content(*args, &block)
+    if block_given?
+      @options[:content] = block
+    elsif args.size == 0
+      out = ""
+      if @options[:icon].present?
+        out << "<span class='mr-xs fa fa-#{@options[:icon]}'></span>"
+      end
+      content = @options[:content]
+      content = context.instance_exec(self, &content) if content.is_a?(Proc)
+      out << content
+      out.html_safe
+    else
+      @options[:content] = args.first
+    end
+  end
+
   def to_html
     if block_given?
       link = AF83::Decorator::Link.new(@options).bind_to_context(context, @action)

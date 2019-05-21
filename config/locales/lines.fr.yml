@@ -19,6 +19,7 @@ fr:
       show: 'Consulter'
       show_network: 'Voir le réseau'
       show_company: 'Voir le transporteur principal'
+      add_notice: 'Ajouter une note'
     search_no_results: "Aucun résultat"
     filters:
       name_or_short_id_cont: "Indiquez un nom d'itinéraire ou un ID..."
@@ -40,6 +41,8 @@ fr:
       group_of_lines: "Groupes de lignes"
       search_no_results: "Aucune ligne ne correspond à votre recherche"
       map: "Carte"
+      line_notices:
+        title: "Liste des notes de ligne"
     index:
       deactivated: "Ligne désactivée"
       title: "Lignes"
@@ -144,6 +147,7 @@ fr:
         active_until_date: Active jusqu'au %{to}
         active_from: Active à partir du
         active_until: Active jusqu'au
+        associated_notices: Notes de ligne associées
   formtastic:
     titles:
       line:

@@ -1,9 +1,4 @@
-- breadcrumb :line_notices, @line_referential
-- content_for :page_header_content do
-  .row.mb-sm
-    .col-lg-12.text-right
-      - if policy(Chouette::LineNotice.new(line_referential: @line_referential)).create?
-        = link_to t('line_notices.actions.create'), new_line_referential_line_notice_path(@line_referential), class: 'btn btn-primary'
+- breadcrumb :line_notices, @line_referential, @line
 
 .page_content
   .container-fluid

@@ -330,13 +330,19 @@ crumb :group_of_line do |group_of_line|
   parent :group_of_lines, group_of_line.line_referential
 end
 
-crumb :line_notices do |line_referential|
+crumb :line_notices do |line_referential, line|
   link I18n.t('line_notices.index.title'), line_referential_line_notices_path(line_referential)
+  parent line if line
 end
 
 crumb :line_notice do |line_notice|
   link breadcrumb_name(line_notice), line_referential_line_notice_path(line_notice.line_referential, line_notice)
   parent :line_notices, line_notice.line_referential
+end
+
+crumb :attach_notice do |line_referential, line|
+  link 'line_notices.actions.attach'.t
+  parent line, line_referential
 end
 
 crumb :lines do |line_referential|

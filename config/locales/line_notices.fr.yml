@@ -4,11 +4,15 @@ fr:
       title_or_content: 'Indiquez un titre ou un contenu'
     search_no_results: "Aucune note de ligne ne correspond à votre recherche"
     actions:
-      new: "Nouvelle note de ligne"
-      create: "Ajouter une note de ligne"
-      edit: "Editer cette note de ligne"
-      destroy: "Supprimer cette note de ligne"
-      destroy_confirm: "Etes vous sûr de supprimer cette note de ligne ?"
+      new: "Nouvelle Note de ligne"
+      create: "Ajouter une Note de ligne"
+      edit: "Editer cette Note de ligne"
+      destroy: "Supprimer cette Note de ligne"
+      destroy_confirm: "Etes vous sûr de supprimer cette Note de ligne ?"
+      attach: "Associer une Note de ligne"
+      detach: "Dissocier"
+    confirm:
+      detach: "Êtes-vous sur de vouloir dissocier cette note de cette ligne ?"
     new:
       title: "Ajouter une note de ligne"
     edit:

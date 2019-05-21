@@ -270,13 +270,26 @@ ChouetteIhm::Application.routes.draw do
 
   resources :line_referentials, :only => [:show, :edit, :update] do
     post :sync, on: :member
-    resources :lines
+    resources :lines do
+      member do
+        get :available_line_notices
+      end
+      resources :line_notices do
+        collection do
+          get :attach
+        end
+
+        member do
+          post :detach
+        end
+      end
+    end
     resources :group_of_lines
     resources :companies
     resources :networks
     resources :line_notices
   end
-  
+
   resources :companies do
     get :autocomplete, on: :collection, controller: 'autocomplete_companies'
   end

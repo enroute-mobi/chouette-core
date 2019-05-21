@@ -29,6 +29,11 @@ class LineDecorator < AF83::Decorator
       l.disabled { object.company.nil? }
     end
 
+    instance_decorator.action_link secondary: :show do |l|
+      l.content  { Chouette::LineNotice.t.capitalize }
+      l.href     { [scope, object, :line_notices] }
+    end
+
     can_edit_line = ->(){ h.policy(Chouette::Line).create? && context[:line_referential].organisations.include?(context[:current_organisation]) }
 
     instance_decorator.with_condition can_edit_line do

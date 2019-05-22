@@ -4,6 +4,8 @@ en:
     help: "Help"
     home: "Home"
     operations: Operations
+    language: Language
+    go_to_to_support_center: Go to Support Center
     user:
       profile: "My Profile"
       sign_out: "Sign out"

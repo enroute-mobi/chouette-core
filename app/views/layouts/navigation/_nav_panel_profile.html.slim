@@ -6,3 +6,16 @@
     p = current_organisation.name
     p = mail_to current_user.email, current_user.email
     p = t('last_sync', time: l(current_user.synced_at)) if current_user.synced_at
+    - if I18n.available_locales.size > 1
+      .dropdown.languages.menu-item
+        = link_to 'javascript:void(0)', class: 'dropdown-toggle', style: "color:#4b4b4b;", data: { toggle: 'dropdown' } do
+          span = t('layouts.language')
+          b.caret
+          = image_tag("language_engine/#{selected_language}_flag.png", { :'data-locale' => "#{selected_language}", style: "margin-left:5px;"} )
+
+        ul.dropdown-menu
+          - I18n.available_locales.each do |locale|
+            li= link_to_language locale, { class: language_class( locale ) }
+    p = link_to destroy_user_session_path, method: :delete, class: 'menu-item', title: t('devise.links.sign_out'), data: {:confirm =>  t('devise.links.sign_out_confirm')}  do
+      = t('devise.links.sign_out')
+      span.fa.fa-lg.fa-sign-out style="margin-left:5px;"

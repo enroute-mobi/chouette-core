@@ -1,7 +1,10 @@
 <div class="container-fluid"><div class="row">
 <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
 <div class="page-icon"><span class="sb sb-network"></span></div>
-<div class="page-title"><h1>Réseaux</h1></div>
+<div class="page-title">
+<h3>Réseau</h3>
+<h1>Réseaux</h1>
+</div>
 </div>
 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 text-right"><div class="page-action"></div></div>
 </div></div>

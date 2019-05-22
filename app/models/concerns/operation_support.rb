@@ -54,9 +54,12 @@ module OperationSupport
 
   def clean_previous_operations
     yield(clean_scope.successful.order(created_at: :asc).first&.created_at) if block_given?
+
     while clean_scope.successful.count > [self.class.keep_operations, 0].max do
       clean_scope.order("created_at asc").first.tap { |m| m.new&.destroy ; m.destroy }
     end
+
+    yield(clean_scope.successful.order(created_at: :asc).first&.created_at) if block_given?
   end
 
   def has_at_least_one_referential

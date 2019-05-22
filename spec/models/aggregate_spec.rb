@@ -26,15 +26,17 @@ RSpec.describe Aggregate, type: :model do
     referential.workbench.workgroup.update(owner: referential.organisation)
     5.times { Aggregate.create!(workgroup: referential.workbench.workgroup, referentials: [referential, referential], status: 'failed', created_at: DateTime.now) }
 
-    5.times { Aggregate.create!(workgroup: referential.workbench.workgroup, referentials: [referential, referential], status: 'successful', created_at: DateTime.now + 1.day) }
-
+    Aggregate.create!(workgroup: referential.workbench.workgroup, referentials: [referential, referential], status: 'successful', created_at: DateTime.now + 1.day)
+    
     Aggregate.create!(workgroup: referential.workbench.workgroup, referentials: [referential, referential], status: 'failed', created_at: DateTime.now + 2.days)
 
     5.times { Aggregate.create!(workgroup: referential.workbench.workgroup, referentials: [referential, referential], status: 'successful', created_at: DateTime.now + 3.days) }
 
-    binding.pry
+    Aggregate.create!(workgroup: referential.workbench.workgroup, referentials: [referential, referential], status: 'failed', created_at: DateTime.now + 4.days)
+
+    5.times { Aggregate.create!(workgroup: referential.workbench.workgroup, referentials: [referential, referential], status: 'successful', created_at: DateTime.now + 5.days) }
+
     Aggregate.last.aggregate!
-    binding.pry
     expect(Aggregate.count).to eq 11
     expect(Aggregate.except_successful.count).to eq 1
   end

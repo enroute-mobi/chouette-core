@@ -13,7 +13,7 @@ module Chouette
     enumerize :area_type, in: Chouette::AreaType::ALL
     enumerize :kind, in: %i(commercial non_commercial)
 
-    AVAILABLE_LOCALIZATIONS = %i(gb nl de fr it es)
+    AVAILABLE_LOCALIZATIONS = %i(en_GB nl_NL de_DE fr_FR it_IT es_ES)
 
     with_options dependent: :destroy do |assoc|
       assoc.has_many :stop_points

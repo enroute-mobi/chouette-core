@@ -12,6 +12,7 @@ module StopAreasHelper
   end
 
   def label_for_country country, txt=nil
+    country = country.to_s.split('_').last.downcase if country.to_s =~ /_/ # en_GB => gb
     "#{txt} <span title='#{ISO3166::Country[country]&.translation(I18n.locale)}' class='flag-icon flag-icon-#{country.downcase} mr-xs'></span>".html_safe
   end
 

@@ -1,5 +1,5 @@
 - breadcrumb @notification_rule
-- page_header_content_for @notification_rule
+- content_for(:page_header_title) { @notification_rule.name }
 
 .page_content
   .container-fluid

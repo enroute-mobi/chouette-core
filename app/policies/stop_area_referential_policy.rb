@@ -6,6 +6,9 @@ class StopAreaReferentialPolicy < ApplicationPolicy
   end
 
   def synchronize?; instance_permission("synchronize") end
+  def edit?; update? end
+  def update?;  instance_permission("update") end
+
 
   private
   def instance_permission permission

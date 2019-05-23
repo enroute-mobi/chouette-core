@@ -1,29 +1,47 @@
 - breadcrumb :stop_area_referential, @stop_area_referential
-- page_header_content_for @stop_area_referential
+- content_for :page_header_title, StopAreaReferential.ts.capitalize
 
-.page_content
+.page_content.stop_area_referential_show
   .container-fluid
+    h2= StopAreaReferential.tmf(:locales)
     .row
-      .col-lg-12
-          = table_builder_2 @stop_area_referential.stop_area_referential_syncs,
-            [ \
-              TableBuilderHelper::Column.new( \
-                name: t('.synchronized'), \
-                attribute: Proc.new { |sync| stop_area_referential_sync_created_at(sync) }, \
-              ), \
-              TableBuilderHelper::Column.new( \
-                name: t('.status'), \
-                attribute: Proc.new { |sync| stop_area_referential_sync_status(sync) }, \
-              ), \
-              TableBuilderHelper::Column.new( \
-                name: t('.message'), \
-                attribute: Proc.new { |sync| stop_area_referential_sync_message(sync) }, \
-              ), \
-            ],
-            sortable: false,
-            cls: 'table'
+      .col-lg-8
+        .row.header
+          .col-md-1
+          .col-md-4= StopAreaReferential.tmf(:locale_name)
+          .col-md-4= StopAreaReferential.tmf(:locale_code)
+          .col-md-3= StopAreaReferential.tmf(:locale_default)
+        .locales
+          - @stop_area_referential.sorted_locales.each_with_index do |locale, i|
+            .row
+              .col-md-1= label_for_country @stop_area_referential.translate_code_to_official(locale['code'])
+              .col-md-4= @stop_area_referential.locale_name(locale)
+              .col-md-4= locale['code']
+              .col-md-3= boolean_icon locale['default']
 
-    - unless @stop_area_referential.stop_area_referential_syncs.any?
-      .row.mt-xs
+    - if policy(@stop_area_referential).synchronize?
+      h2= StopAreaReferentialSync.t
+      .row
         .col-lg-12
-          = replacement_msg t('stop_area_referential_syncs.search_no_results')
+            = table_builder_2 @stop_area_referential.stop_area_referential_syncs,
+              [ \
+                TableBuilderHelper::Column.new( \
+                  name: t('.synchronized'), \
+                  attribute: Proc.new { |sync| stop_area_referential_sync_created_at(sync) }, \
+                ), \
+                TableBuilderHelper::Column.new( \
+                  name: t('.status'), \
+                  attribute: Proc.new { |sync| stop_area_referential_sync_status(sync) }, \
+                ), \
+                TableBuilderHelper::Column.new( \
+                  name: t('.message'), \
+                  attribute: Proc.new { |sync| stop_area_referential_sync_message(sync) }, \
+                ), \
+              ],
+              sortable: false,
+              cls: 'table'
+
+      - unless @stop_area_referential.stop_area_referential_syncs.any?
+        .row.mt-xs
+          .col-lg-12
+            = replacement_msg t('stop_area_referential_syncs.search_no_results')

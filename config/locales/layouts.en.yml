@@ -19,6 +19,7 @@ en:
       referential_datas: "Datas"
       line_referential: "Line referential"
       stop_area_referential: "Stop area referential"
+      settings: "Settings"
       current_offer:
         one: Current offer
         other: Current offers

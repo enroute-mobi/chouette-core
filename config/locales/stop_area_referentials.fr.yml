@@ -11,5 +11,11 @@ fr:
   activerecord:
     models:
       stop_area_referential:
-        one: "référentiel d'arrêt"
-        other: "référentiel d'arrêts"
+        one: "référentiel d'arrêts"
+        other: "référentiels d'arrêts"
+    attributes:
+      stop_area_referential:
+        locales: Langues disponibles
+        locale_code: Code
+        locale_default: Par défaut
+        locale_name: Langue

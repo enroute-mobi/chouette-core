@@ -1,0 +1,68 @@
+= simple_form_for [@stop_area_referential], html: {class: 'form-horizontal', id: 'stop_area_referential_form'}, wrapper: :horizontal_form do |f|
+  legend= StopAreaReferential.tmf(:locales)
+  .row.header
+    .col-md-1
+    .col-md-3= StopAreaReferential.tmf(:locale_name)
+    .col-md-3= StopAreaReferential.tmf(:locale_code)
+    .col-md-2= StopAreaReferential.tmf(:locale_default)
+    .col-md-3= 'actions.delete'.t
+  .locales
+    - f.object.sorted_locales.each_with_index do |locale, i|
+      .row
+        .col-md-1= label_for_country @stop_area_referential.translate_code_to_official(locale['code'])
+        .col-md-3= @stop_area_referential.locale_name(locale)
+        .col-md-3
+          = locale['code']
+          = hidden_field "locales[#{i}]", :code, value: locale['code']
+        .col-md-2= check_box "locales[#{i}]", :default, checked: locale['default']
+        .col-md-3
+          = hidden_field "locales[#{i}]", :delete, value: 0
+          = link_to '#', class: 'delete-locale', title: 'actions.delete'.t do
+            = fa_icon :trash
+
+  .row.add-locales
+    - used_countries = @stop_area_referential.locales.map { |l| StopAreaReferential.translate_code_to_official(l['code']).split('_').last }
+    - countries = ISO3166::Country.all.select { |c| ! used_countries.include?(c.alpha2) }
+    - countries = countries.sort_by { |c| c.translation(I18n.locale)}
+    - options = countries.map { |c| "<option id='#{c.alpha2}' code='#{StopAreaReferential.translate_code_to_internal("#{c.languages.first}_#{c.alpha2}")}'>#{c.translation(I18n.locale)}</option>" }.join('')
+    .col-md-12
+      = select_tag :add_locale, raw(options), 'data-select2ed': 'true'
+      = link_to '#', class: 'btn btn-primary add-locale' do
+        = fa_icon :plus
+        = 'actions.add'.t
+
+  = cancel_button
+  = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'stop_area_referential_form'
+
+coffee:
+  $('.add-locale').click (e)->
+    option = $('#add_locale').find('option:selected')
+    return unless option.length > 0
+
+    i = $('.locales > .row').length
+    row  = $("<div class='row'></div>")
+    flag = $("<div class='col-md-1'><span title='#{option.html()}' class='flag-icon flag-icon-#{option.attr('id').toLowerCase()}'></span></div>")
+    flag.appendTo row
+    name = $("<div class='col-md-3'>#{option.html()}</div>")
+    name.appendTo row
+    code = $("<div class='col-md-3'><input name='locales[#{i}][code]' type='hidden' value='#{option.attr('code')}'>#{option.attr('code')}</div>")
+    code.appendTo row
+    default_locale = $("<div class='col-md-2'><input name='locales[#{i}][default]' type='hidden' value='0'><input type='checkbox' value='1' name='locales[#{i}][default]' id='locales_#{i}_default'></div>")
+    default_locale.appendTo row
+    delete_locale = $("<div class='col-md-3'><input name='locales[#{i}][delete]' type='hidden' value='0'><a class='delete-locale' title='Supprimer' href='#'><i class='fa fa-trash'></i></a></div>")
+    delete_locale.appendTo row
+    row.appendTo $('.locales')
+    option.remove()
+    initDeleteButtons()
+    e.preventDefault()
+    false
+
+  initDeleteButtons = ->
+    $('a.delete-locale').click (e) ->
+      hidden = $(e.currentTarget).parent().find('input[type=hidden]')
+      hidden.val 1
+      $(e.currentTarget).parents('.row').addClass('deleted')
+      e.preventDefault()
+      false
+
+  initDeleteButtons()

@@ -13,7 +13,7 @@ module Chouette
     enumerize :area_type, in: Chouette::AreaType::ALL
     enumerize :kind, in: %i(commercial non_commercial)
 
-    AVAILABLE_LOCALIZATIONS = %i(en_GB nl_NL de_DE fr_FR it_IT es_ES)
+    AVAILABLE_LOCALIZATIONS = %i(en_UK nl_NL de_DE fr_FR it_IT es_ES)
 
     with_options dependent: :destroy do |assoc|
       assoc.has_many :stop_points
@@ -64,10 +64,10 @@ module Chouette
       :nearest_topic_name, :comment, :long_lat_type, :zip_code, :city_name, :url, :time_zone]
     end
 
-    def localized_names
-      val = read_attribute(:localized_names) || {}
-      Hash[*AVAILABLE_LOCALIZATIONS.map{|k| [k, val[k.to_s]]}.flatten]
-    end
+    # def localized_names
+    #   val = read_attribute(:localized_names) || {}
+    #   Hash[*AVAILABLE_LOCALIZATIONS.map{|k| [k, val[k.to_s]]}.flatten]
+    # end
 
     def parent_area_type_must_be_greater
       return unless self.parent && has_valid_area_type?

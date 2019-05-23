@@ -3,21 +3,22 @@
 
 .page_content.stop_area_referential_show
   .container-fluid
-    h2= StopAreaReferential.tmf(:locales)
-    .row
-      .col-lg-8
-        .row.header
-          .col-md-1
-          .col-md-4= StopAreaReferential.tmf(:locale_name)
-          .col-md-4= StopAreaReferential.tmf(:locale_code)
-          .col-md-3= StopAreaReferential.tmf(:locale_default)
-        .locales
-          - @stop_area_referential.sorted_locales.each_with_index do |locale, i|
-            .row
-              .col-md-1= label_for_country @stop_area_referential.translate_code_to_official(locale['code'])
-              .col-md-4= @stop_area_referential.locale_name(locale)
-              .col-md-4= locale['code']
-              .col-md-3= boolean_icon locale['default']
+    - if has_feature?(:stop_area_localized_names)
+      h2= StopAreaReferential.tmf(:locales)
+      .row
+        .col-lg-8
+          .row.header
+            .col-md-1
+            .col-md-4= StopAreaReferential.tmf(:locale_name)
+            .col-md-4= StopAreaReferential.tmf(:locale_code)
+            .col-md-3= StopAreaReferential.tmf(:locale_default)
+          .locales
+            - @stop_area_referential.sorted_locales.each_with_index do |locale, i|
+              .row
+                .col-md-1= label_for_country @stop_area_referential.translate_code_to_official(locale['code'])
+                .col-md-4= @stop_area_referential.locale_name(locale)
+                .col-md-4= locale['code']
+                .col-md-3= boolean_icon locale['default']
 
     - if policy(@stop_area_referential).synchronize?
       h2= StopAreaReferentialSync.t

@@ -40,7 +40,7 @@ fr:
         objectid: "Identifiant Neptune"
         created_at: "Créé le"
         updated_at: "Edité le"
-        lines: "Lignes"
+        lines: "Lignes associées"
   formtastic:
     titles:
       line_notice:

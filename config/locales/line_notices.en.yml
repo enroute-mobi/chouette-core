@@ -39,7 +39,7 @@ en:
         objectid: "Neptune identifier"
         created_at: Created at
         updated_at: Updated at
-        lines: "Lines"
+        lines: "Associated Lines"
   formtastic:
     titles:
       line_notice:

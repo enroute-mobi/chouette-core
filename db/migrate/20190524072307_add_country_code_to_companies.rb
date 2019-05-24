@@ -1,5 +1,7 @@
 class AddCountryCodeToCompanies < ActiveRecord::Migration[5.2]
   def change
-    add_column :companies, :country_code, :string
+    on_public_schema_only do
+      add_column :companies, :country_code, :string
+    end
   end
 end

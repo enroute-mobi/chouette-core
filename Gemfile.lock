@@ -31,21 +31,19 @@ GIT
       nokogiri (>= 1.8.5)
 
 GIT
-  remote: https://github.com/af83/stif-reflex-api.git
-  revision: d470fe8569a9eab00dcc084d456e3393ef1d1868
-  tag: v0.0.2
-  specs:
-    reflex (0.0.2)
-      nokogiri (>= 1.8.5)
-      ruby-filemagic
-      rubyzip (>= 1.2.2)
-
-GIT
   remote: https://github.com/af83/whenever.git
   revision: b7963381a11243affe4f35881c85be0710f434e3
   specs:
     whenever (0.9.4)
       chronic (>= 0.6.3)
+
+PATH
+  remote: ../stif-reflex-api
+  specs:
+    reflex (0.0.3)
+      nokogiri (>= 1.8.5)
+      ruby-filemagic
+      rubyzip (>= 1.2.2)
 
 GEM
   remote: https://rubygems.org/
@@ -556,6 +554,8 @@ GEM
     rgeo-activerecord (6.1.0)
       activerecord (~> 5.0)
       rgeo (>= 1.0.0)
+    rgeo-proj4 (2.0.0)
+      rgeo (~> 2.0)
     rmagick (2.16.0)
     roo (2.7.1)
       nokogiri (~> 1)
@@ -826,6 +826,7 @@ DEPENDENCIES
   reflex!
   responders
   rgeo
+  rgeo-proj4
   rmagick
   roo
   rspec-rails

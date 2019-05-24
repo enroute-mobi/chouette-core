@@ -145,9 +145,9 @@ module Stif
           stop['latitude']  = entry['gml:pos'][:lat]
         end
 
-        if entry['dataSourceRef'].include? 'monomodalStopPlace'
+        if entry['id'].include? 'monomodalStopPlace'
           stop.area_type = 'zdlp'
-        elsif entry['dataSourceRef'].include? 'multimodalStopPlace'
+        elsif entry['id'].include? 'multimodalStopPlace'
           stop.area_type = 'lda'
         else
           stop.area_type = 'zdep'

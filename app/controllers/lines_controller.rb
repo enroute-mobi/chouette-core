@@ -197,13 +197,17 @@ class LinesController < ChouetteController
 
     scope_root = params[:q][:status] == 'activated' ? 'active' : 'not_active'
     full_status_scope = true
-    if params[:q]['status_from(1i)'] && params[:q][:status_from_enabled] == '1'
-      @status_from = Date.new(params[:q]['status_from(1i)'].to_i, params[:q]['status_from(2i)'].to_i, params[:q]['status_from(3i)'].to_i)
-      scope = scope.send("#{scope_root}_after", @status_from)
+    @status_from = params[:q][:status_from_enabled] == '1' && params[:q]['status_from(1i)'] && Date.new(params[:q]['status_from(1i)'].to_i, params[:q]['status_from(2i)'].to_i, params[:q]['status_from(3i)'].to_i)
+    @status_until = params[:q][:status_until_enabled] == '1' && params[:q]['status_until(1i)'] && Date.new(params[:q]['status_until(1i)'].to_i, params[:q]['status_until(2i)'].to_i, params[:q]['status_until(3i)'].to_i)
+
+    if @status_from
+      if @status_until
+        scope = scope.send("#{scope_root}_between", @status_from, @status_until)
+      else
+        scope = scope.send("#{scope_root}_after", @status_from)
+      end
       full_status_scope = false
-    end
-    if params[:q]['status_until(1i)'] && params[:q][:status_until_enabled] == '1'
-      @status_until = Date.new(params[:q]['status_until(1i)'].to_i, params[:q]['status_until(2i)'].to_i, params[:q]['status_until(3i)'].to_i)
+    elsif @status_until
       scope = scope.send("#{scope_root}_before", @status_until)
       full_status_scope = false
     end

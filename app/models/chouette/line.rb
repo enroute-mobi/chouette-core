@@ -81,8 +81,10 @@ module Chouette
 
     scope :active_after, ->(date) { activated.where('active_until IS NULL OR active_until >= ?', date) }
     scope :active_before, ->(date) { activated.where('active_from IS NULL OR active_from <= ?', date) }
+    scope :active_between, ->(from, to) { active_after(from).active_before(to) }
     scope :not_active_after, ->(date) { where('deactivated = ? OR (active_until IS NOT NULL AND active_until < ?)', true, date) }
     scope :not_active_before, ->(date) { where('deactivated = ? OR (active_from IS NOT NULL AND active_from > ?)', true, date) }
+    scope :not_active_between, ->(from, to) { where('deactivated = ? OR (active_from IS NOT NULL AND active_from > ?) OR (active_until IS NOT NULL AND active_until < ?)', true, to, from) }
 
     def self.nullable_attributes
       [:published_name, :number, :comment, :url, :color, :text_color, :stable_id]

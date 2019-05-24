@@ -19,6 +19,8 @@
       = f.input :street
       = f.input :town
       = f.input :postcode
+      = f.input :postcode_extension
+      = f.input :country_code, as: :country, priority: ['FR', 'GB', 'DE', 'ES'], include_blank: true, input_html: { data: { select2ed: true } }
       = custom_fields_for_section(f, "address")
 
   .separator.section_separator
@@ -27,7 +29,7 @@
     .col-lg-12
       h2.mb-lg= t("companies.form.sections.general")
       = f.input :time_zone, as: :full_time_zone, include_blank: true
-      
+
       = custom_fields_for_section(f, "general")
 
       - if resource.custom_fields.without_section.present?
@@ -41,7 +43,7 @@
       h2.mb-lg= Chouette::Company.tmf(:default_contact)
 
       - %w(name email phone fax url organizational_unit operating_department_name more).each do |attr|
-        = f.input "default_contact_#{attr}", as: :string
+        = f.input "default_contact_#{attr}", as: (attr == 'more' ? :text : :string)
       = custom_fields_for_section(f, "contact")
 
 
@@ -52,8 +54,12 @@
       h2.mb-lg= Chouette::Company.tmf(:private_contact)
 
       - %w(name email phone url more).each do |attr|
-        = f.input "private_contact_#{attr}"
+        = f.input "private_contact_#{attr}", as: (attr == 'more' ? :text : :string)
 
+    .col-lg-12
+      = link_to '#', class: 'btn btn-primary clear-contact pull-right' do
+        = fa_icon :trash
+        span= 'actions.delete'.t
 
   .separator.section_separator.customer_service_contact class=(f.object.has_customer_service_contact? ? '' : 'hidden')
 
@@ -62,18 +68,25 @@
       h2.mb-lg= Chouette::Company.tmf(:customer_service_contact)
 
       - %w(name email phone url more).each do |attr|
-        = f.input "customer_service_contact_#{attr}"
+        = f.input "customer_service_contact_#{attr}", as: (attr == 'more' ? :text : :string)
+    .col-lg-12
+      = link_to '#', class: 'btn btn-primary clear-contact pull-right' do
+        = fa_icon :trash
+        span= 'actions.delete'.t
 
+  .separator
   .row.pull-right.form-group
-    .col-lg-12.btn-group
+    .col-lg-12
       - unless f.object.has_private_contact?
-        = link_to '#', class: 'btn btn-primary add-private_contact' do
-          = fa_icon :plus
-          span= 'companies.actions.add_private_contact'.t
+        p
+          = link_to '#', class: 'btn btn-primary add-private_contact' do
+            = fa_icon :plus
+            span= 'companies.actions.add_private_contact'.t
       - unless f.object.has_customer_service_contact?
-        = link_to '#', class: 'btn btn-primary add-customer_service_contact' do
-          = fa_icon :plus
-          span= 'companies.actions.add_customer_service_contact'.t
+        p
+          = link_to '#', class: 'btn btn-primary add-customer_service_contact' do
+            = fa_icon :plus
+            span= 'companies.actions.add_customer_service_contact'.t
 
   - other_custom_fields = resource.custom_fields.except_for_sections(%w(identification contact general))
   - if other_custom_fields.present?
@@ -84,8 +97,6 @@
           h2.mb-lg= t("companies.form.sections.#{section}")
           - resource.custom_fields.for_section(section).each do |code, field|
             = field.input(f).to_s
-
-  .separator
 
   = cancel_button
   = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'company_form'
@@ -99,6 +110,19 @@
       false
     $('.add-customer_service_contact').click (e) ->
       $('.customer_service_contact').show().removeClass('hidden')
+      $(e.currentTarget).hide()
+      e.preventDefault()
+      false
+    $('.clear-contact').click (e) ->
+      row = $($(e.target).parents('.row')[0])
+      row.addClass('hidden')
+      row.find('input').val ''
+      if row.hasClass 'customer_service_contact'
+        $('.separator.customer_service_contact').hide()
+        $('.add-customer_service_contact').show()
+      else
+        $('.separator.private_contact').hide()
+        $('.add-private_contact').show()
       $(e.currentTarget).hide()
       e.preventDefault()
       false

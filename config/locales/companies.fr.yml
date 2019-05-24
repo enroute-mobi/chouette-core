@@ -73,6 +73,7 @@ fr:
         town: Ville
         postcode: Code postal
         postcode_extension: Extension de CP
+        country_code: Pays
   formtastic:
     titles:
       company:

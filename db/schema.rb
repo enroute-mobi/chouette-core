@@ -175,6 +175,7 @@ ActiveRecord::Schema.define(version: 2019_05_21_171957) do
     t.string "town"
     t.string "postcode"
     t.string "postcode_extension"
+    t.string "country_code"
     t.index ["line_referential_id", "registration_number"], name: "index_companies_on_referential_id_and_registration_number"
     t.index ["line_referential_id"], name: "index_companies_on_line_referential_id"
     t.index ["objectid"], name: "companies_objectid_key", unique: true

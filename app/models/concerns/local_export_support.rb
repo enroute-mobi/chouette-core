@@ -30,7 +30,7 @@ module LocalExportSupport
     referential.switch
 
     if self.class.skip_empty_exports && journeys.count == 0
-      self.update status: :successful, ended_at: Time.now
+      self.update status: :failed, ended_at: Time.now
       vals = {}
       vals[:criticity] = :info
       vals[:message_key] = :no_matching_journey

@@ -93,7 +93,7 @@ SimpleForm.setup do |config|
     b.use :label, class: 'col-sm-4 col-xs-5 control-label'
 
     b.wrapper tag: 'div', class: 'col-sm-8 col-xs-7' do |ba|
-      ba.use :input, class: 'form-control'
+      ba.use :input
       ba.use :error, wrap_with: { tag: 'span', class: 'help-block small' }
       ba.use :hint,  wrap_with: { tag: 'p', class: 'help-block small' }
     end

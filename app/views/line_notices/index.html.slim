@@ -20,10 +20,7 @@
               ),
               TableBuilderHelper::Column.new( \
                 key: :content, \
-                attribute: 'content', \
-                link_to: lambda do |line_notice| \
-                  [@line_referential, line_notice] \
-                end \
+                attribute: ->(l){ truncate(l.content, length: 100) }, \
               ),
               TableBuilderHelper::Column.new( \
                 key: :lines, \

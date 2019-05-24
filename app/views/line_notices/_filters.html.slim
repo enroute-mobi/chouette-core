@@ -13,8 +13,9 @@
         = f.label t('activerecord.models.line.one').upcase, required: false, class: 'control-label'
         = f.input :lines_id_eq,
             as: :select,
-            collection: [],
+            collection: @filtered_line ? [[@filtered_line.display_name, @filtered_line.id]]: [],
             include_blank: t(".all"),
+            selected: @filtered_line&.id,
             input_html: { \
               data: { \
                 'select2-ajax': 'true',

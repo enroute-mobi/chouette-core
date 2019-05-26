@@ -15,21 +15,42 @@ class LinesController < ChouetteController
 
   def index
     @hide_group_of_line = line_referential.group_of_lines.empty?
-    index! do |format|
-      @lines = LineDecorator.decorate(
-        @lines,
-        context: {
-          line_referential: @line_referential,
-          current_organisation: current_organisation
-        }
-      )
 
-      format.html {
-        if collection.out_of_bounds?
-          redirect_to params.merge(:page => 1)
+    # Selected2 autocompletion purpose
+    respond_to do |format|
+      format.json do
+        @lines = line_referential.lines
+        @lines = @lines.where("id IN (#{@lines.by_name(params[:q]).select(:id).to_sql}) OR id IN (#{@lines.ransack(number_or_company_name_cont: params[:q]).result.select(:id).to_sql})") if (params[:q].present?)
+      end
+
+      format.html do
+        index! do
+          @lines = LineDecorator.decorate(
+            @lines,
+            context: {
+              line_referential: @line_referential,
+              current_organisation: current_organisation
+            }
+          )
+
+          if collection.out_of_bounds?
+            redirect_to params.merge(:page => 1)
+          end
         end
-      }
+      end
     end
+  end
+
+  def available_line_notices
+    resource
+    autocomplete_collection = @line.line_referential.line_notices
+    if params[:q].present?
+      autocomplete_collection = autocomplete_collection.autocomplete(params[:q]).order(:name)
+    else
+      autocomplete_collection = autocomplete_collection.order('created_at desc')
+    end
+
+    render json: autocomplete_collection.select(:title, :id).limit(10).map{|r| {name: r.title, id: r.id}}
   end
 
   def show
@@ -52,6 +73,16 @@ class LinesController < ChouetteController
   def create
     authorize resource_class
     super
+  end
+
+  def update
+    update! do
+      if line_params[:line_notice_ids]
+        [@line_referential, @line, :line_notices]
+      else
+        [@line_referential, @line]
+      end
+    end
   end
 
   # overwrite inherited resources to use delete instead of destroy
@@ -122,7 +153,8 @@ class LinesController < ChouetteController
   helper_method :current_referential
 
   def line_params
-    out = params.require(:line).permit(
+    out = params.require(:line)
+    out = out.permit(
       :activated,
       :active_from,
       :active_until,
@@ -149,9 +181,11 @@ class LinesController < ChouetteController
       :stable_id,
       :transport_submode,
       :seasonal,
+      :line_notice_ids,
       :secondary_company_ids => [],
       footnotes_attributes: [:code, :label, :_destroy, :id]
     )
+    out[:line_notice_ids] = out[:line_notice_ids].split(',') if out[:line_notice_ids]
     out[:secondary_company_ids] = (out[:secondary_company_ids] || []).select(&:present?)
     out
   end
@@ -163,13 +197,17 @@ class LinesController < ChouetteController
 
     scope_root = params[:q][:status] == 'activated' ? 'active' : 'not_active'
     full_status_scope = true
-    if params[:q]['status_from(1i)'] && params[:q][:status_from_enabled] == '1'
-      @status_from = Date.new(params[:q]['status_from(1i)'].to_i, params[:q]['status_from(2i)'].to_i, params[:q]['status_from(3i)'].to_i)
-      scope = scope.send("#{scope_root}_after", @status_from)
+    @status_from = params[:q][:status_from_enabled] == '1' && params[:q]['status_from(1i)'] && Date.new(params[:q]['status_from(1i)'].to_i, params[:q]['status_from(2i)'].to_i, params[:q]['status_from(3i)'].to_i)
+    @status_until = params[:q][:status_until_enabled] == '1' && params[:q]['status_until(1i)'] && Date.new(params[:q]['status_until(1i)'].to_i, params[:q]['status_until(2i)'].to_i, params[:q]['status_until(3i)'].to_i)
+
+    if @status_from
+      if @status_until
+        scope = scope.send("#{scope_root}_between", @status_from, @status_until)
+      else
+        scope = scope.send("#{scope_root}_after", @status_from)
+      end
       full_status_scope = false
-    end
-    if params[:q]['status_until(1i)'] && params[:q][:status_until_enabled] == '1'
-      @status_until = Date.new(params[:q]['status_until(1i)'].to_i, params[:q]['status_until(2i)'].to_i, params[:q]['status_until(3i)'].to_i)
+    elsif @status_until
       scope = scope.send("#{scope_root}_before", @status_until)
       full_status_scope = false
     end

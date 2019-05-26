@@ -1,0 +1,65 @@
+- breadcrumb :line_notice, @line_notice
+- page_header_content_for @line_notice
+
+.page_content
+  .container-fluid
+    .row
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = definition_list t('metadatas'),
+          { @line_notice.human_attribute_name(:id) => @line_notice.get_objectid.try(:short_id), \
+            @line_notice.human_attribute_name(:title) => @line_notice.title, \
+            @line_notice.human_attribute_name(:lines) => (@line_notice.lines.nil? ? t('line_notices.show.no_lines') : array_to_html_list(@line_notice.lines.collect(&:name))),
+           }
+
+      .col-lg-12.col-md-12.col-sm-12.col-xs-12.definition-list
+        .dl-head= @line_notice.human_attribute_name(:content)
+        .dl-body
+          p= @line_notice.content.presence || '-'
+
+    .row
+      .col-lg-12.definition-list
+        .dl-head= Chouette::LineNotice.tmf(:lines)
+        = table_builder_2 @line_notice.lines.page(params[:page] || 1),
+         [ \
+           TableBuilderHelper::Column.new( \
+             name: t('id_codif'), \
+             attribute: Proc.new { |n| n.get_objectid.short_id }, \
+             sortable: false \
+           ), \
+           TableBuilderHelper::Column.new( \
+             key: :number, \
+             attribute: 'number' \
+           ), \
+           TableBuilderHelper::Column.new( \
+             key: :name, \
+             attribute: 'name', \
+             link_to: lambda do |line| \
+               line_referential_line_path(@line_referential, line) \
+             end \
+           ), \
+           TableBuilderHelper::Column.new( \
+             key: :deactivated, \
+             name: Chouette::Line.tmf(:status), \
+             class: :state, \
+             attribute: Proc.new { |n| line_status(n) } \
+           ), \
+           TableBuilderHelper::Column.new( \
+             key: 'networks.name', \
+             attribute: Proc.new { |n| n.try(:network).try(:name) } \
+           ), \
+           TableBuilderHelper::Column.new( \
+             key: 'companies.name', \
+             attribute: Proc.new { |n| n&.company&.name || "-" } \
+           ), \
+           TableBuilderHelper::Column.new( \
+             key: :transport_mode, \
+             attribute: Proc.new { |n| n.transport_mode.present? ? t("enumerize.transport_mode.#{n.try(:transport_mode)}") : "-" } \
+           ), \
+           TableBuilderHelper::Column.new( \
+             key: :transport_submode, \
+             attribute: Proc.new { |n| n.transport_submode.present? ? t("enumerize.transport_submode.#{n.try(:transport_submode)}") : "-" } \
+           ) \
+         ],
+         cls: 'table has-filter has-search'
+
+        = new_pagination @line_notice.lines.page(params[:page] || 1), 'pull-right'

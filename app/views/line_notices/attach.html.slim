@@ -1,0 +1,53 @@
+- breadcrumb :attach_notice, @line_referential, @line
+
+.page_content
+  .container-fluid
+    .row
+      .col-lg-8.col-lg-offset-2.col-md-8.col-md-offset-2.col-sm-10.col-sm-offset-1
+        = simple_form_for @line, url: [@line_referential, @line], html: {class: 'form-horizontal', id: 'attach_form'}, wrapper: :horizontal_form do |form|
+          .row
+            .col-lg-12
+              = form.hidden_field :line_notice_ids
+
+          .row.merge-referentials-selector
+            .col
+              .head
+                h4= Chouette::LineNotice.t.capitalize
+                .input-group
+                  input.form-control.search type='text' placeholder=I18n.t('actions.search') data={searchUrl: url_for([:available_line_notices, @line_referential, @line])}
+                  .input-group-btn.clear-group
+                    a.btn.clear
+                      span.fa.fa-times
+                  .input-group-btn.search-group
+                    a.btn.search
+                      span.fa.fa-search
+                  .input-group-addon.loader
+                    span.fa.fa-spinner.fa-spin
+              ul.source-referentials.connectedSortable
+                - @line.line_notices.each do |line_notice|
+                  li.disabled data-id=line_notice.id
+                    span= line_notice.title
+                    a href='#' class='pull-right delete'
+                      span class='fa fa-times'
+                    a href='#' class='pull-right add'
+                      span class='fa fa-arrow-right'
+
+            .middle-col.col
+
+            .col
+              .head
+                h4= Chouette::Line.tmf('associated_notices')
+              ul.target.connectedSortable
+                - @line.line_notices.each do |line_notice|
+                  li data-id=line_notice.id
+                    span= line_notice.title
+                    a href='#' class='pull-right delete'
+                      span class='fa fa-times'
+                    a href='#' class='pull-right add'
+                      span class='fa fa-arrow-right'
+                li.remaining-placeholder= "lines.actions.add_notice".t
+
+          = cancel_button
+          = form.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'attach_form'
+
+        = javascript_pack_tag 'line_notices/attach.js'

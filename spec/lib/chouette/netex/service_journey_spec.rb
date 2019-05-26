@@ -33,6 +33,13 @@ RSpec.describe Chouette::Netex::ServiceJourney , type: :netex_resource do
     it_behaves_like 'it has one child with ref', 'dayTypes DayTypeRef', ->{ timetable.objectid }
   end
 
+  context 'with line_notices' do
+    let(:line_notice){ create(:line_notice) }
+    before(:each){ resource.line_notices << line_notice  }
+
+    it_behaves_like 'it has one child with ref', 'noticeAssignments NoticeAssignment NoticeRef', ->{ line_notice.objectid }
+  end
+
   it_behaves_like 'it has one child with ref', 'JourneyPatternRef', ->{ resource.journey_pattern.objectid }
 
   context 'with a company' do

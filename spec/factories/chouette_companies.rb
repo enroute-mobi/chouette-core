@@ -7,9 +7,9 @@ FactoryGirl.define do
     sequence(:objectid) { |n| "STIF:CODIFLIGNE:Company:#{n}" }
     sequence(:registration_number) { |n| "test-#{n}" }
 
-    email { Faker::Internet.email }
-    url   { Faker::Internet.url }
-    phone { Faker::PhoneNumber.phone_number }
+    default_contact_email { Faker::Internet.email }
+    default_contact_url   { Faker::Internet.url }
+    default_contact_phone { Faker::PhoneNumber.phone_number }
 
     association :line_referential, :factory => :line_referential
   end

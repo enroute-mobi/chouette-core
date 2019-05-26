@@ -40,6 +40,8 @@
         span = Chouette::Network.t.capitalize
       = link_to line_referential_companies_path(workbench.line_referential), class: "list-group-item" do
         span = Chouette::Company.t.capitalize
+      = link_to line_referential_line_notices_path(workbench.line_referential), class: "list-group-item" do
+        span = Chouette::LineNotice.t.capitalize
 
     = main_nav_menu_item 'layouts.navbar.stop_area_referential'.t do
       = link_to stop_area_referential_stop_areas_path(workbench.stop_area_referential), class: "list-group-item" do

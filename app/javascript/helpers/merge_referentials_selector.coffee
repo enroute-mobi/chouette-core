@@ -1,5 +1,5 @@
 class MergeReferentialsSelector
-  constructor: (container_selector)->
+  constructor: (container_selector, @formInput)->
     @container = $(container_selector)
     @searchInput = @container.find('.search')
     @loader = @container.find('.loader')
@@ -13,7 +13,7 @@ class MergeReferentialsSelector
     @hideLoader()
     @initSortables()
     @performSearch()
-    @formInput = $('input[name*=referential_ids]')
+    @formInput ||= $('input[name*=referential_ids]')
     @clearBt.click =>
       @clear()
     @searchBt.click =>
@@ -73,6 +73,9 @@ class MergeReferentialsSelector
 
       update: (event, ui)=>
         @updateValue()
+
+    @container.find(".target li").each (i, li)=>
+      @addDeleteAction($(li))
 
   addDeleteAction: (container)->
     container.find('a.delete').click (e)=>

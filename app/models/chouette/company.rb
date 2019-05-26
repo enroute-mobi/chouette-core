@@ -24,7 +24,15 @@ module Chouette
     # validates_format_of :url, :with => %r{\Ahttps?:\/\/([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?\Z}, :allow_nil => true, :allow_blank => true
 
     def self.nullable_attributes
-      [:organizational_unit, :operating_department_name, :code, :phone, :fax, :email, :url, :time_zone]
+      [:default_contact_organizational_unit, :default_contact_operating_department_name, :code, :default_contact_phone, :default_contact_fax, :default_contact_email, :default_contact_url, :time_zone]
+    end
+
+    def has_private_contact?
+      %w(private_contact).product(%w(name email phone url)).any?{ |k| send(k.join('_')).present? }
+    end
+
+    def has_customer_service_contact?
+      %w(customer_service_contact).product(%w(name email phone url)).any?{ |k| send(k.join('_')).present? }
     end
   end
 end

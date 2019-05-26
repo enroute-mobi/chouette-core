@@ -34,7 +34,7 @@
       = f.input :flexible_service, as: :switchable_checkbox
       = f.input :seasonal, as: :switchable_checkbox
       = f.input :comment, as: :text, input_html: { rows: 5, title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.comment") }
-  .separator
+  .separator.section_separator
   - if policy(@line).update_activation_dates?
     .row
       .col-lg-12

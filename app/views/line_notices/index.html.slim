@@ -1,0 +1,38 @@
+- breadcrumb :line_notices, @line_referential, @line
+
+.page_content
+  .container-fluid
+    - if params[:q].present? or @line_notices.any?
+      .row
+        .col-lg-12
+          = render 'filters'
+    - if @line_notices.any?
+      .row
+        .col-lg-12
+          = table_builder_2 @line_notices,
+            [ \
+              TableBuilderHelper::Column.new( \
+                key: :title, \
+                attribute: 'title', \
+                link_to: lambda do |line_notice| \
+                  [@line_referential, line_notice] \
+                end \
+              ),
+              TableBuilderHelper::Column.new( \
+                key: :content, \
+                attribute: ->(l){ truncate(l.content, length: 100) }, \
+              ),
+              TableBuilderHelper::Column.new( \
+                key: :lines, \
+                attribute: ->(p){ lines_to_string(p.lines) }, \
+                sortable: false, \
+              ), \
+            ],
+            cls: 'table has-filter'
+
+          = new_pagination @line_notices, 'pull-right'
+
+    - else
+      .row.mt-xs
+        .col-lg-12
+          = replacement_msg t('line_notices.search_no_results')

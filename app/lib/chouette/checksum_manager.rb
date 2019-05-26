@@ -152,6 +152,7 @@ module Chouette::ChecksumManager
 
       if object.respond_to? has_many
         # XXX: SOME OPTIM POSSIBLE HERE
+
         if reflection && object.association(has_many.intern).loaded?
           log "#{has_many} parents are already loaded"
           parents += object.send(has_many).map{|p| SerializedObject.new(p, need_save: true)}
@@ -167,6 +168,7 @@ module Chouette::ChecksumManager
         end
       end
     end
+
     parents.compact
   end
 

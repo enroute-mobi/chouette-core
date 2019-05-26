@@ -4,28 +4,28 @@
 
 .page_content
   .container-fluid
-    .row
-      .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        - attributes = { t('id_codif') => @company.get_objectid.try(:short_id) }
 
+    .row
+      .col-lg-6.col-md-6.col-sm-6.col-xs-6
+        - attributes = { t('id_codif') => @company.get_objectid.try(:short_id) }
         - %i(name short_name code registration_number).each do |field|
           - attributes[Chouette::Company.human_attribute_name(field)] = @company.send(field)
         - @company.custom_fields(current_referential.workgroup).for_section("identification").each do |code, field|
           - attributes.merge!(field.name => field.display_value)
+        = definition_list t("companies.form.sections.identification"), attributes
 
-        - %i(organizational_unit operating_department_name email phone fax).each do |field|
-          - attributes[Chouette::Company.human_attribute_name(field)] = @company.send(field)
-        - @company.custom_fields(current_referential.workgroup).for_section("contact").each do |code, field|
-          - attributes.merge!(field.name => field.display_value)
+        - attributes = %w(house_number address_line_1 address_line_2 street town postcode postcode_extension).map { |attr| [Chouette::Company.tmf(attr), @company.send(attr)]}.to_h
+        - attributes[Chouette::Company.tmf(:country_code)] = @company.country_code ? label_for_country(@company.country_code) + ISO3166::Country[@company.country_code].translation(I18n.locale) : '-'
+        = definition_list t("companies.form.sections.address"), attributes
 
-        - %i(time_zone url).each do |field|
-          - attributes[Chouette::Company.human_attribute_name(field)] = @company.send(field)
-        - @company.custom_fields(current_referential.workgroup).for_section("general").each do |code, field|
-          - attributes.merge!(field.name => field.display_value)
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        - attributes = %w(name email phone fax url organizational_unit operating_department_name more).map { |attr| [Chouette::Company.tmf("default_contact_#{attr}"), @company.send("default_contact_#{attr}")]}.to_h
+        = definition_list Chouette::Company.tmf(:default_contact), attributes
 
-        - @company.custom_fields(current_referential.workgroup).without_section.each do |code, field|
-          - attributes.merge!(field.name => field.display_value)
-        - @company.custom_fields(current_referential.workgroup).except_for_sections(%w(identification contact general)).each do |code, field|
-          - attributes.merge!(field.name => field.display_value)
+        - if @company.has_private_contact?
+          - attributes =  %w(name email phone url more).map { |attr| [Chouette::Company.tmf("private_contact_#{attr}"), @company.send("private_contact_#{attr}")]}.to_h
+          = definition_list Chouette::Company.tmf(:private_contact), attributes
 
-        = definition_list t('metadatas'), attributes
+        - if @company.has_customer_service_contact?
+          - attributes =  %w(name email phone url more).map { |attr| [Chouette::Company.tmf("customer_service_contact_#{attr}"), @company.send("customer_service_contact_#{attr}")]}.to_h
+          = definition_list Chouette::Company.tmf(:customer_service_contact), attributes

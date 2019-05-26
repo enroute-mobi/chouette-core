@@ -78,7 +78,7 @@ class Import::Gtfs < Import::Base
     create_resource(:agencies).each(source.agencies) do |agency, resource|
       company = line_referential.companies.find_or_initialize_by(registration_number: agency.id)
       company.attributes = { name: agency.name }
-      company.url = agency.url
+      company.default_contact_url = agency.url
       @default_time_zone ||= check_time_zone_or_create_message(agency.timezone, resource)
       company.time_zone = @default_time_zone
 
@@ -484,7 +484,7 @@ SQL
         update_checkum_in_batches referential.vehicle_journey_at_stops.select(:id, :departure_time, :arrival_time, :departure_day_offset, :arrival_day_offset)
         update_checkum_in_batches referential.routes.select(:id, :name, :published_name, :wayback).includes(:stop_points, :routing_constraint_zones)
         update_checkum_in_batches referential.journey_patterns.select(:id, :custom_field_values, :name, :published_name, :registration_number, :costs).includes(:stop_points)
-        update_checkum_in_batches referential.vehicle_journeys.select(:id, :custom_field_values, :published_journey_name, :published_journey_identifier, :ignored_routing_contraint_zone_ids, :ignored_stop_area_routing_constraint_ids, :company_id).includes(:company_light, :footnotes, :vehicle_journey_at_stops, :purchase_windows)
+        update_checkum_in_batches referential.vehicle_journeys.select(:id, :custom_field_values, :published_journey_name, :published_journey_identifier, :ignored_routing_contraint_zone_ids, :ignored_stop_area_routing_constraint_ids, :company_id, :line_notice_ids).includes(:company_light, :footnotes, :vehicle_journey_at_stops, :purchase_windows)
       end
     end
   end

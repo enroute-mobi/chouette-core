@@ -9,17 +9,25 @@ export default class NotesEditVehicleJourney extends Component {
   }
 
   handleSubmit() {
-    this.props.onNotesEditVehicleJourney(this.props.modal.modalProps.vehicleJourney.footnotes)
+    this.props.onNotesEditVehicleJourney(this.props.modal.modalProps.vehicleJourney.footnotes, this.props.modal.modalProps.vehicleJourney.line_notices)
     this.props.onModalClose()
     $('#NotesEditVehicleJourneyModal').modal('hide')
   }
 
   footnotes() {
-    let { footnotes } = this.props.modal.modalProps.vehicleJourney
+    let { footnotes, line_notices } = this.props.modal.modalProps.vehicleJourney
     let fnIds = footnotes.map(fn => fn.id)
+    let lnIds = line_notices.map(fn => fn.id)
     return {
-      associated: footnotes,
-      to_associate: window.line_footnotes.filter(fn => !fnIds.includes(fn.id))
+      associated: footnotes.concat(line_notices),
+      to_associate: window.line_footnotes.filter(fn => {
+        if(fn.line_notice){
+          return !lnIds.includes(fn.id)
+        }
+        else{
+          return !fnIds.includes(fn.id)
+        }
+      })
     }
   }
 
@@ -56,7 +64,11 @@ export default class NotesEditVehicleJourney extends Component {
               <div className='panel-heading'>
                 <h4 className='panel-title clearfix'>
                   <div className='pull-left' style={{ paddingTop: '3px' }}>{lf.code}</div>
-                  <div className='pull-right'>{this.renderFootnoteButton(lf, this.props.modal.modalProps.vehicleJourney.footnotes)}</div>
+                  {
+                    lf.line_notice &&
+                    <div className='pull-left'>{'\u00A0'}<span className='badge badge-info'>{I18n.t('activerecord.models.line_notice.one')}</span></div>
+                  }
+                  <div className='pull-right'>{this.renderFootnoteButton(lf)}</div>
                 </h4>
               </div>
               <div className='panel-body'><p>{lf.label}</p></div>

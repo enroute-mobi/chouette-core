@@ -27,6 +27,8 @@ module Chouette
     has_many :time_tables, -> { distinct }, through: :vehicle_journeys
 
     has_and_belongs_to_many :group_of_lines, :class_name => 'Chouette::GroupOfLine', :order => 'group_of_lines.name'
+    has_and_belongs_to_many :footnotes, :class_name => 'Chouette::Footnote'
+    has_and_belongs_to_many :line_notices, :class_name => 'Chouette::LineNotice', :join_table => "public.line_notices_lines"
 
     has_many :footnotes, inverse_of: :line, validate: true
     accepts_nested_attributes_for :footnotes, reject_if: :all_blank, :allow_destroy => true
@@ -79,8 +81,10 @@ module Chouette
 
     scope :active_after, ->(date) { activated.where('active_until IS NULL OR active_until >= ?', date) }
     scope :active_before, ->(date) { activated.where('active_from IS NULL OR active_from <= ?', date) }
+    scope :active_between, ->(from, to) { active_after(from).active_before(to) }
     scope :not_active_after, ->(date) { where('deactivated = ? OR (active_until IS NOT NULL AND active_until < ?)', true, date) }
     scope :not_active_before, ->(date) { where('deactivated = ? OR (active_from IS NOT NULL AND active_from > ?)', true, date) }
+    scope :not_active_between, ->(from, to) { where('deactivated = ? OR (active_from IS NOT NULL AND active_from > ?) OR (active_until IS NOT NULL AND active_until < ?)', true, to, from) }
 
     def self.nullable_attributes
       [:published_name, :number, :comment, :url, :color, :text_color, :stable_id]

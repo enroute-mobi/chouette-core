@@ -1,0 +1,76 @@
+en:
+  line_notices: &en_line_notices
+    filters:
+      title_or_content: 'Search by title or content'
+    search_no_results: "No line notice matching your query"
+    actions:
+      new: "New line notice"
+      create: "Add a line notice"
+      edit: "Edit this line notice"
+      destroy: "Remove this line notice"
+      destroy_confirm: "Are you sure you want to destroy this line notice ?"
+      attach: 'Append a new line notice'
+      detach: 'Remove'
+    confirm:
+      detach: "Are you sure you want to dissociate this notice from this line ?"
+    new:
+      title: "Add a new line notice"
+    edit:
+      title: "Update line notice %{name}"
+    show:
+      title: "%{name}"
+    index:
+      title: "Line notices"
+      name: "Search by name..."
+      name_or_short_id_cont: "Search by name or by ID..."
+      advanced_search: "Advanced search"
+  activerecord:
+    models:
+      line_notice:
+        zero:  "line notice"
+        one:   "line notice"
+        other: "line notices"
+    attributes:
+      line_notice:
+        registration_number: "Registration number"
+        title: "Title"
+        content: "Text"
+        import_xml: "XML import"
+        objectid: "Neptune identifier"
+        created_at: Created at
+        updated_at: Updated at
+        lines: "Associated Lines"
+  formtastic:
+    titles:
+      line_notice:
+        name: ""
+        registration_number: "only alphanumerical or underscore characters"
+        objectid: "[prefix]:PTNetwork:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
+      neptune:
+        line_notice:
+          name: ""
+          registration_number: "only alphanumerical or underscore characters"
+          objectid: "[prefix]:PTNetwork:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
+      netex:
+        line_notice:
+          name: ""
+          registration_number: "only alphanumerical or underscore characters"
+          objectid: "[prefix]:PTNetwork:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
+      gtfs:
+        line_notice:
+          name: ""
+          registration_number: "only alphanumerical or underscore characters"
+          objectid: "[prefix]:PTNetwork:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
+      hub:
+        line_notice:
+          name: "maximum 75 characters"
+          registration_number: "Positif integer, unique key, of no more than 8 digits."
+          objectid: "[prefix]:PTNetwork:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character. Maximum length of the unique key = 3."
+
+  table:
+    show: Show
+    edit: Edit
+    delete: Delete
+
+  referential_line_notices:
+    <<: *en_line_notices

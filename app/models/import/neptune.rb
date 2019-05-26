@@ -130,7 +130,7 @@ class Import::Neptune < Import::Base
   def import_companies
     each_element_matching_css('ChouettePTNetwork Company') do |source_company, filename, progress|
       company = line_referential.companies.find_or_initialize_by registration_number: source_company.delete(:object_id)
-      company.assign_attributes source_company.slice(:name, :short_name, :code, :phone, :email, :fax, :organizational_unit, :operating_department_name)
+      company.assign_attributes source_company.slice(:name, :short_name, :code, :default_contact_phone, :default_contact_email, :default_contact_fax, :default_contact_organizational_unit, :default_contact_operating_department_name)
 
       save_model company
 

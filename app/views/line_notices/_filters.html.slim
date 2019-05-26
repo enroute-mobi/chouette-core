@@ -1,0 +1,36 @@
+= search_form_for @q, url: [@line_referential, @line, :line_notices].compact, html: {method: :get}, class: 'form form-filter' do |f|
+
+  .ffg-row
+    .input-group.search_bar class=filter_item_class(params[:q], :title_or_content_cont)
+      = f.search_field :title_or_content_cont, class: 'form-control', placeholder: t('line_notices.filters.title_or_content')
+      span.input-group-btn
+        button.btn.btn-default type='submit'
+          span.fa.fa-search
+
+  .ffg-row
+    .form-group class=filter_item_class(params[:q], :lines_id_eq)
+      - unless @line
+        = f.label t('activerecord.models.line.one').upcase, required: false, class: 'control-label'
+        = f.input :lines_id_eq,
+            as: :select,
+            collection: @filtered_line ? [[@filtered_line.display_name, @filtered_line.id]]: [],
+            include_blank: t(".all"),
+            selected: @filtered_line&.id,
+            input_html: { \
+              data: { \
+                'select2-ajax': 'true',
+                'select2ed-placeholder': t('referentials.filters.line'),
+                 url: line_referential_lines_path(@line_referential, format: :json),
+                'select2ed-allow-clear': true, \
+                initvalue: { \
+                  id: @filtered_line&.id,
+                  text: @filtered_line&.display_name \
+                } \
+              } \
+            },
+            label: false,
+            wrapper_html: { class: 'filter_menu-item select2ed' }
+
+  .actions
+    = link_to t('actions.erase'), @workbench, class: 'btn btn-link'
+    = f.submit t('actions.filter'), class: 'btn btn-default', id: "search-btn"

@@ -236,7 +236,8 @@ export default function vehicleJourneys(state = [], action) {
       return state.map((vj, i) => {
         if (vj.selected){
           return _.assign({}, vj, {
-            footnotes: action.footnotes
+            footnotes: action.footnotes,
+            line_notices: action.line_notices
           })
         }else{
           return vj

@@ -50,6 +50,15 @@ class Chouette::Netex::Line < Chouette::Netex::Resource
       node_if_content 'Presentation' do
         attributes_mapping presentation_attributes
       end
+      node_if_content 'notices' do
+        resource.line_notices.each do |line_notice|
+          @builder.Notice(id: line_notice.objectid, version: :any) do
+            @builder.Name line_notice.title
+            @builder.Text line_notice.content
+            ref 'TypeOfNoticeRef', 'LineNotice'
+          end
+        end
+      end
     end
   end
 end

@@ -165,6 +165,36 @@ describe Chouette::VehicleJourney, :type => :model do
     end
 
     it_behaves_like 'it works with both checksums modes',
+                    "changes when a line_notice is added",
+                    -> {
+                      line_notice = create :line_notice
+                      checksum_owner.line_notices = [line_notice]
+                      checksum_owner.save
+                    },
+                    reload: true
+
+    it_behaves_like 'it works with both checksums modes',
+                    "changes when a line_notice is updated",
+                    -> { line_notice.reload.update(objectid: "foo:LineNotice:2:LOC") },
+                    reload: true do
+        let(:line_notice){ create :line_notice }
+        before { checksum_owner.update line_notices: [line_notice] }
+    end
+
+    it_behaves_like 'it works with both checksums modes',
+                    "changes when a line_notice is deleted",
+                    -> {
+                      line_notice.destroy
+                    },
+                    reload: true do
+        let(:line_notice){ create :line_notice }
+        before do
+          checksum_owner.update line_notices: [line_notice]
+          line_notice.reload
+        end
+    end
+
+    it_behaves_like 'it works with both checksums modes',
                     "changes when a RoutingConstraintZone is deleted",
                     -> {
                       rcz.destroy
@@ -603,6 +633,7 @@ describe Chouette::VehicleJourney, :type => :model do
         item['time_tables']              = []
         item['purchase_windows']         = []
         item['footnotes']                = []
+        item['line_notices']             = []
         item['purchase_windows']         = []
         item['custom_fields']            = vj.custom_fields.to_hash
 

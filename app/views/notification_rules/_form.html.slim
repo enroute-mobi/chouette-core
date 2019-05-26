@@ -5,8 +5,7 @@
       = f.input :notification_type,
         as: :select,
         collection: NotificationRule.notification_type.values.map {|k| ["notification_rules.notification_types.#{k}".t, k]},
-        required: true,
-        include_blank: false
+        required: true, prompt: ''
       .form-group
         = simple_fields_for :period do |period_form|
           div

@@ -14,7 +14,6 @@ class VehicleJourneysCollectionsController < ChouetteController
   end
 
   def update
-
     state = JSON.parse request.raw_post
     @resources = Chouette::VehicleJourney.state_update route, state
     errors = state.any? {|item| item['errors']}

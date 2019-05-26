@@ -19,6 +19,7 @@ fr:
       show: 'Consulter'
       show_network: 'Voir le réseau'
       show_company: 'Voir le transporteur principal'
+      add_notice: 'Ajouter une note'
     search_no_results: "Aucun résultat"
     filters:
       name_or_short_id_cont: "Indiquez un nom d'itinéraire ou un ID..."
@@ -40,6 +41,8 @@ fr:
       group_of_lines: "Groupes de lignes"
       search_no_results: "Aucune ligne ne correspond à votre recherche"
       map: "Carte"
+      line_notices:
+        title: "Liste des notes de ligne"
     index:
       deactivated: "Ligne désactivée"
       title: "Lignes"
@@ -47,6 +50,7 @@ fr:
       name_or_number_or_short_id: "Recherche par nom, nom court ou ID..."
       no_networks: "Aucun réseaux"
       no_companies: "Aucun transporteurs"
+      no_line_notices: "Aucune note de ligne"
       no_group_of_lines: "Aucun groupes de ligne"
       no_transport_modes: Aucun mode de transport
       no_transport_submodes: Aucun sous mode de transport
@@ -71,6 +75,7 @@ fr:
         location: "Localisation"
         publication_data: "Données de publication"
         general: "Général"
+        line_notices: "Notes de lignes"
         activation: "Activation"
       group_of_lines: "Groupes de lignes associés"
       no_group_of_line: "Aucun groupe de lignes"
@@ -96,6 +101,7 @@ fr:
         company_id: "Transporteur principal"
         company: "Transporteur principal"
         secondary_companies: "Transporteurs secondaires"
+        line_notices: "Notes de lignes"
         companies:
           name: "Transporteur principal"
         registration_number: "Nom court"
@@ -141,6 +147,7 @@ fr:
         active_until_date: Active jusqu'au %{to}
         active_from: Active à partir du
         active_until: Active jusqu'au
+        associated_notices: Notes de ligne associées
   formtastic:
     titles:
       line:

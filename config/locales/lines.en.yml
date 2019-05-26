@@ -19,6 +19,7 @@ en:
       show: 'Show'
       show_network: 'Show network'
       show_company: 'Show company'
+      add_notice: 'Add a notice'
     search_no_results: "No results found"
     filters:
       name_or_short_id_cont: "Search by name or objectid"
@@ -39,6 +40,8 @@ en:
       group_of_lines: "Groups of lines"
       search_no_results: "No line matching your query"
       map: "Map"
+      line_notices:
+        title: "Line notices list"
     index:
       deactivated: "Disabled line"
       title: "Lines"
@@ -46,6 +49,7 @@ en:
       name_or_number_or_short_id: "Search by name, short name or ID..."
       no_networks: "No networks"
       no_companies: "No companies"
+      no_line_notices: "No line notes"
       no_group_of_lines: "No group of lines"
       no_transport_modes: No transport mode
       no_transport_submodes: No transport sub mode
@@ -70,6 +74,7 @@ en:
         location: "Location"
         publication_data: "Publication Data"
         general: "General"
+        line_notices: "Line notices"
         activation: 'Activation'
       group_of_lines: "Associated groups of lines"
       no_group_of_line: "No group of line"
@@ -95,6 +100,7 @@ en:
         company_id: "Company"
         company: "Company"
         secondary_companies: "Secondary companies"
+        line_notices: "Line notices"
         companies:
           name: "Company"
         registration_number: "Registration number"
@@ -141,6 +147,7 @@ en:
         active_until_date: Active until %{to}
         active_from: Active from
         active_until: Active until
+        associated_notices: Associated notices
   formtastic:
     titles:
       line:

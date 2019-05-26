@@ -87,10 +87,26 @@ SimpleForm.setup do |config|
     b.use :html5
     b.use :placeholder
     b.optional :maxlength
+    b.optional :pattern
+    b.optional :min_max
     b.optional :readonly
     b.use :label, class: 'col-sm-4 col-xs-5 control-label'
 
     b.wrapper tag: 'div', class: 'col-sm-8 col-xs-7' do |ba|
+      ba.use :input
+      ba.use :error, wrap_with: { tag: 'span', class: 'help-block small' }
+      ba.use :hint,  wrap_with: { tag: 'p', class: 'help-block small' }
+    end
+  end
+
+  config.wrappers :horizontal_file_time_select, tag: 'div', class: 'form-group', error_class: 'has-error' do |b|
+    b.use :html5
+    b.use :placeholder
+    b.optional :maxlength
+    b.optional :readonly
+    b.use :label, class: 'col-sm-8 col-xs-7 control-label'
+
+    b.wrapper tag: 'div', class: 'col-sm-4 col-xs-5' do |ba|
       ba.use :input
       ba.use :error, wrap_with: { tag: 'span', class: 'help-block small' }
       ba.use :hint,  wrap_with: { tag: 'p', class: 'help-block small' }

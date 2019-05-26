@@ -43,7 +43,14 @@ if has_feature? :purchase_windows
   end
 end
 
-child :footnotes, :object_root => false do |footnotes|
+child :line_notices, :object_root => false do |line_notice|
+  node(:code) { |line_notice| line_notice.title }
+  node(:label) { |line_notice| line_notice.content }
+  node(:id) { |line_notice| line_notice.id }
+  node(:line_notice) { true }
+end
+
+child :footnotes, :object_root => false do
   attributes :id, :code, :label
 end
 

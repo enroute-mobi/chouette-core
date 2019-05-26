@@ -1,0 +1,77 @@
+fr:
+  line_notices: &fr_line_notices
+    filters:
+      title_or_content: 'Indiquez un titre ou un contenu'
+    search_no_results: "Aucune note de ligne ne correspond à votre recherche"
+    actions:
+      new: "Nouvelle Note de ligne"
+      create: "Ajouter une Note de ligne"
+      edit: "Editer cette Note de ligne"
+      destroy: "Supprimer cette Note de ligne"
+      destroy_confirm: "Etes vous sûr de supprimer cette Note de ligne ?"
+      attach: "Associer une Note de ligne"
+      detach: "Dissocier"
+    confirm:
+      detach: "Êtes-vous sur de vouloir dissocier cette note de cette ligne ?"
+    new:
+      title: "Ajouter une note de ligne"
+    edit:
+      title: "Editer la note de ligne %{name}"
+    show:
+      title: "%{name}"
+      no_lines: "Aucune ligne"
+    index:
+      title: "Notes de lignes"
+      name: "Recherche par nom..."
+      name_or_short_id_cont: "Recherche par nom ou ID..."
+      advanced_search: "Recherche avancée"
+  activerecord:
+    models:
+      line_notice:
+        zero: "note de ligne"
+        one: "note de ligne"
+        other: "notes de lignes"
+    attributes:
+      line_notice:
+        registration_number: "Numéro d'enregistrement"
+        title: "Titre"
+        content: "Texte"
+        import_xml: "Import XML"
+        objectid: "Identifiant Neptune"
+        created_at: "Créé le"
+        updated_at: "Edité le"
+        lines: "Lignes associées"
+  formtastic:
+    titles:
+      line_notice:
+        name: ""
+        registration_number: "caractères autorisés : alphanumériques et 'souligné'"
+        objectid: "[prefixe]:PTNetwork:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
+      neptune:
+        line_notice:
+          name: ""
+          registration_number: "caractères autorisés : alphanumériques et 'souligné'"
+          objectid: "[prefixe]:PTNetwork:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
+      netex:
+        line_notice:
+          name: ""
+          registration_number: "caractères autorisés : alphanumériques et 'souligné'"
+          objectid: "[prefixe]:PTNetwork:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
+      gtfs:
+        line_notice:
+          name: ""
+          registration_number: "caractères autorisés : alphanumériques et 'souligné'"
+          objectid: "[prefixe]:PTNetwork:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
+      hub:
+        line_notice:
+          name: "maximum 75 caractères"
+          registration_number: "Entier positif, clé unique, d'un maximum de 8 chiffres."
+          objectid: "[prefixe]:PTNetwork:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'. Longueur maximale de la clé unique = 3."
+
+  table:
+    show: Voir
+    edit: Editer
+    delete: Supprimer
+
+  referential_line_notices:
+    <<: *fr_line_notices

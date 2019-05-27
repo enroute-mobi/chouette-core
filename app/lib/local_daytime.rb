@@ -3,6 +3,7 @@ class LocalDaytime
     if val
       @time = val.to_time.utc
       if val.is_a?(String)
+        @time =  val.to_time.utc
         @hours, @minutes, @seconds = val.gsub(/"/, '').split(':').map(&:to_i)
       end
     else
@@ -26,6 +27,6 @@ class LocalDaytime
   end
 
   def strftime(*args)
-    @time.strftime *args
+    @time.localtime.strftime *args
   end
 end

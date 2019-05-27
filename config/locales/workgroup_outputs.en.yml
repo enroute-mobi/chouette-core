@@ -1,7 +1,7 @@
 en:
   workgroup_outputs:
     show:
-      title: Aggregate Workgroup offer
+      title: Aggregated Workgroup offer
       see_current_output: See the current offer
       table_headers:
         ended_at: "Ended at"

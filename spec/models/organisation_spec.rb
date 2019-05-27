@@ -48,7 +48,7 @@ describe Organisation, :type => :model do
         workbench = create :workbench, organisation: organisation
         api_keys << workbench.api_keys.create
       end
-      organisation.api_keys.to_a.should eq(api_keys)
+      expect(organisation.api_keys.to_a).to eq(api_keys)
     end
 
   end
@@ -57,7 +57,7 @@ describe Organisation, :type => :model do
     let(:organisation) { create :organisation }
     let(:workbench) { create :workbench, organisation: organisation }
     let(:workgroup) { workbench.workgroup }
-    
+
     context "when referential belongs to organisation" do
       let(:organisation_ref) { create(:referential, organisation: organisation, workbench: workbench) }
 

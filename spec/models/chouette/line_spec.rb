@@ -39,20 +39,21 @@ describe Chouette::Line, :type => :model do
   describe 'active scopes' do
     let!(:line1) { create :line, deactivated: false }
     let!(:line2) { create :line, deactivated: true }
-    let!(:line3) { create :line, deactivated: false, active_from: '01/01/2000', active_until: '01/02/2000' }
+    let!(:line3) { create :line, deactivated: false, active_from: '01/01/2000', active_until: '02/01/2000' }
     let!(:line4) { create :line, deactivated: false, active_until: '01/02/2000' }
-    let!(:line5) { create :line, deactivated: false, active_from: '05/02/2000', active_until: '10/02/2000' }
-    let!(:line6) { create :line, deactivated: false, active_from: '05/02/2000' }
+    let!(:line5) { create :line, deactivated: false, active_from: '02/04/2000', active_until: '02/10/2000' }
+    let!(:line6) { create :line, deactivated: false, active_from: '02/04/2000' }
+    let!(:line7) { create :line, deactivated: false, active_from: '02/02/2000', active_until: '02/03/2000' }
 
     it 'should filter lines' do
-      expect(Chouette::Line.activated).to match_array [line1, line3, line4, line5, line6]
+      expect(Chouette::Line.activated).to match_array [line1, line3, line4, line5, line6, line7]
       expect(Chouette::Line.deactivated).to match_array [line2]
-      expect(Chouette::Line.active_after('02/02/2000'.to_date)).to match_array [line1, line5, line6]
+      expect(Chouette::Line.active_after('02/02/2000'.to_date)).to match_array [line1, line5, line6, line7]
       expect(Chouette::Line.active_before('02/02/2000'.to_date)).to match_array [line1, line3, line4]
       expect(Chouette::Line.not_active_after('02/02/2000'.to_date)).to match_array [line2, line3, line4]
-      expect(Chouette::Line.not_active_before('02/02/2000'.to_date)).to match_array [line2, line5, line6]
-      expect(Chouette::Line.active_between('02/02/2000', '03/02/2000')).to match_array [line1]
-      expect(Chouette::Line.not_active_between('02/02/2000'.to_date, '03/02/2000'.to_date)).to match_array [line2, line3, line4, line5, line6]
+      expect(Chouette::Line.not_active_before('02/02/2000'.to_date)).to match_array [line2, line5, line6, line7]
+      expect(Chouette::Line.active_between('02/02/2000', '02/03/2000')).to match_array [line1, line7]
+      expect(Chouette::Line.not_active_between('02/02/2000'.to_date, '02/03/2000'.to_date)).to match_array [line2, line3, line4, line5, line6]
     end
   end
 

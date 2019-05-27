@@ -3,7 +3,7 @@ fr:
     search_no_results: "Aucune désactivation de notification ne correspond à votre recherche"
     actions:
       index: Centre de notifications
-      new: Ajouter une désactivation de notification
+      new: Ajouter une désactivation
       destroy: Supprimer la désactivation de notification
       destroy_confirm: Êtes-vous sûr de vouloir supprimer la désactivation de notification ?
     index:
@@ -15,7 +15,7 @@ fr:
     update:
       <<: *notification_rule_edit
     new: &notification_rule_new
-      edit: Ajouter une désactivation de notification
+      edit: Ajouter une désactivation
     create:
       <<: *notification_rule_new
     notification_types:

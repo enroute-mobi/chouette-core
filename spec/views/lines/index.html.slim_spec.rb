@@ -52,11 +52,11 @@ describe "/lines/index", :type => :view do
     }
 
     common_items.call()
-    it { should have_the_right_number_of_links(lines, 3) }
+    it { should have_the_right_number_of_links(lines, 4) }
 
     with_permission "lines.change_status" do
       common_items.call()
-      it { should have_the_right_number_of_links(lines, 3) }
+      it { should have_the_right_number_of_links(lines, 4) }
     end
 
     with_permission "lines.destroy" do
@@ -67,7 +67,7 @@ describe "/lines/index", :type => :view do
           method: :delete
         })
       }
-      it { should have_the_right_number_of_links(lines, 4) }
+      it { should have_the_right_number_of_links(lines, 5) }
     end
   end
 end

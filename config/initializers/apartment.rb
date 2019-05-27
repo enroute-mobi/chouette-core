@@ -22,6 +22,7 @@ Apartment.configure do |config|
     'ApiKey',
     'Calendar',
     'Chouette::Company',
+    'Chouette::ConnectionLink',
     'Chouette::GroupOfLine',
     'Chouette::Line',
     'Chouette::LineNotice',

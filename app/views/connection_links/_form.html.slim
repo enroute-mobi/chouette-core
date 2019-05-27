@@ -15,15 +15,17 @@
 
       .form-group#travel_time_calculator
         .row
-          .col-md-6= f.input :link_distance, wrapper: :horizontal_shrinked_select, input_html: { id: "distance" }
-          .col-md-6.text-center
-            .btn.btn-action#calculate_travel_times= t("connection_links.form.calculate_costs")
+          .col-md-6= f.input :link_distance, wrapper: :horizontal_shrinked_input, input_html: { id: "distance" }
+          .col-md-6.
+            .btn.btn-action#calculate_travel_times
+              = fa_icon :refresh
+              span.ml-xs= t("connection_links.form.calculate_costs")
         .row
-          = connection_link_duration_select f, :default_duration
-          = connection_link_duration_select f, :frequent_traveller_duration
+          = connection_link_duration_select f, :default_duration_in_min
+          = connection_link_duration_select f, :frequent_traveller_duration_in_min
         .row
-          = connection_link_duration_select f, :occasional_traveller_duration
-          = connection_link_duration_select f, :mobility_restricted_traveller_duration
+          = connection_link_duration_select f, :occasional_traveller_duration_in_min
+          = connection_link_duration_select f, :mobility_restricted_traveller_duration_in_min
 
   .separator.section_separator
 

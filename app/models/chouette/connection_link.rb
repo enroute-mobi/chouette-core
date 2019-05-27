@@ -11,7 +11,8 @@ module Chouette
     belongs_to :departure, :class_name => 'Chouette::StopArea'
     belongs_to :arrival, :class_name => 'Chouette::StopArea'
 
-    validates_presence_of :link_distance, :default_duration, :departure_id, :arrival_id
+    # validates_presence_of :link_distance, :default_duration, :departure_id, :arrival_id
+    validates_presence_of :default_duration, :departure_id, :arrival_id
     validate :different_departure_and_arrival
 
     def self.nullable_attributes
@@ -22,6 +23,16 @@ module Chouette
     def self.duration_kinds
       [:default_duration, :frequent_traveller_duration, :occasional_traveller_duration,
         :mobility_restricted_traveller_duration]
+    end
+
+    duration_kinds.each do |k|
+      define_method "#{k}_in_min" do
+        (self[k] || 0)/60
+      end
+
+      define_method "#{k}_in_min=" do |val|
+        self[k] = val.to_i * 60
+      end
     end
 
     def connection_link_type
@@ -64,11 +75,11 @@ module Chouette
 
     private
 
-      def different_departure_and_arrival
-        if arrival_id == departure_id
-          errors.add(:departure_id, I18n.t('connection_links.errors.same_arrival_and_departure'))
-          errors.add(:arrival_id, I18n.t('connection_links.errors.same_arrival_and_departure'))
-        end
+    def different_departure_and_arrival
+      if arrival_id == departure_id
+        errors.add(:departure_id, I18n.t('connection_links.errors.same_arrival_and_departure'))
+        errors.add(:arrival_id, I18n.t('connection_links.errors.same_arrival_and_departure'))
       end
+    end
   end
 end

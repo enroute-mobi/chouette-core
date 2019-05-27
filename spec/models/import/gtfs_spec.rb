@@ -19,10 +19,6 @@ RSpec.describe Import::Gtfs do
     Import::Gtfs.new workbench: workbench, local_file: open_fixture(file), creator: "test", name: "test"
   end
 
-  before(:each) do
-    allow(import).to receive(:save_model).and_wrap_original { |m, *args| m.call(*args); args.first.run_callbacks(:commit) }
-  end
-
   context "when the file is not directly accessible" do
     let(:import) {
       Import::Gtfs.create workbench: workbench, name: "test", creator: "Albator", file: open_fixture('google-sample-feed.zip')
@@ -282,6 +278,34 @@ RSpec.describe Import::Gtfs do
       end
     end
   end
+
+  describe '#import_transfers' do
+    let(:import) { build_import 'google-sample-feed.zip' }
+    it 'should create a ConnectionLink for each type 2 transfer' do
+      import.prepare_referential
+      expect { import.import_transfers }.to change { Chouette::ConnectionLink.count }.by 1
+      link = Chouette::ConnectionLink.last
+      expect(link.departure.registration_number).to eq 'BEATTY_AIRPORT'
+      expect(link.arrival.registration_number).to eq 'FUR_CREEK_RES'
+      expect(link.both_ways).to be_truthy
+      expect(link.default_duration).to eq 6000
+    end
+
+    context 'with an existing connection' do
+      before do
+        import.prepare_referential
+        from = import.referential.stop_area_referential.stop_areas.find_by registration_number: 'BEATTY_AIRPORT'
+        to = import.referential.stop_area_referential.stop_areas.find_by registration_number: 'FUR_CREEK_RES'
+        import.referential.stop_area_referential.connection_links.create(departure: from, arrival: to, both_ways: true, default_duration: 12)
+      end
+
+      it 'should not create a duplicate ConnectionLink' do
+        import.prepare_referential
+        expect { import.import_transfers }.to_not change { Chouette::ConnectionLink.count }
+      end
+    end
+  end
+
 
   describe '#import_routes' do
     let(:import) { build_import 'google-sample-feed-with-color.zip' }

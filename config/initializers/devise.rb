@@ -15,6 +15,8 @@ Devise.setup do |config|
   # Configure the class responsible to send e-mails.
   config.mailer = "DeviseMailer"
 
+  config.email_regexp = /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i
+
    # ==> ORM configuration
   # Load and configure the ORM. Supports :active_record (default) and
   # :mongoid (bson_ext recommended) by default. Other ORMs may be

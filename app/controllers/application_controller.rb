@@ -22,10 +22,6 @@ class ApplicationController < ActionController::Base
     logger.info "Locale set to #{I18n.locale.inspect}"
   end
 
-  def default_url_options(options={})
-    Rails.env.production? ? { protocol: :https } : {}
-  end
-
   def pundit_user
     UserContext.new(current_user, referential: @referential)
   end

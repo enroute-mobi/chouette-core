@@ -4,6 +4,8 @@ fr:
     help: "Aide"
     home: "Accueil"
     operations: Opérations
+    language: Langue
+    go_to_to_support_center: Accéder au Centre de Support
     user:
       profile: "Mon Profil"
       sign_out: "Déconnexion"

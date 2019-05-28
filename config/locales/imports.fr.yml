@@ -36,6 +36,8 @@ fr:
       results: "%{count} jeu(x) de données validé(s) sur %{total}"
       summary: Bilan des jeux de contrôles d'import
       parent: Parent
+      status: État
+      referential: Jeu de données
       netex:
         table_title: "Etat des fichiers analysés"
         table_explanation: "Dans le cas ou le(s) fichiers calendriers.xml et/ou commun.xml sont dans un état non importé, alors tous les fichiers lignes sont automatiquement dans un état non traité."
@@ -119,4 +121,3 @@ fr:
   errors:
     messages:
       extension_whitelist_error: "Vous n'êtes pas autorisé à uploader des fichiers %{extension}, types autorisés: %{allowed_types}"
-  

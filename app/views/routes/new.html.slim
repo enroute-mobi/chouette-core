@@ -5,6 +5,6 @@
       .col-lg-8.col-lg-offset-2.col-md-8.col-md-offset-2.col-sm-10.col-sm-offset-1
         == render 'form',
           form_action: 'create',
-          redirect_url: url_for(action: 'index', controller: 'routes', only_path: false),
+          redirect_url: url_for(action: 'index', controller: 'routes'),
           route_fetch_url: nil,
-          route_submit_url: url_for(action: 'create', controller: 'routes', only_path: false)
+          route_submit_url: url_for(action: 'create', controller: 'routes')

@@ -5,7 +5,7 @@
   | window.redirectUrl = "#{redirect_url}";
   | window.routeSubmitUrl = "#{route_submit_url}";
   | window.fetchRouteUrl = "#{route_fetch_url}.json?v=#{Time.now.to_i}";
-  | window.fetchUserPermissionsUrl = "#{url_for(action: 'fetch_user_permissions', controller: 'routes', only_path: false)}?v=#{Time.now.to_i}";
-  | window.fetchOppositeRoutesUrl = "#{url_for(action: 'fetch_opposite_routes', controller: 'routes', only_path: false)}?v=#{Time.now.to_i}";
+  | window.fetchUserPermissionsUrl = "#{url_for(action: 'fetch_user_permissions', controller: 'routes')}?v=#{Time.now.to_i}";
+  | window.fetchOppositeRoutesUrl = "#{url_for(action: 'fetch_opposite_routes', controller: 'routes')}?v=#{Time.now.to_i}";
 
 = javascript_pack_tag 'routes/form.js'

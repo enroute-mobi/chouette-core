@@ -5,7 +5,7 @@
       = render 'layouts/navigation/breadcrumb'
 
     .menu-item-group.pull-right
-      = link_to 'https://support.enroute.mobi', target: :blank, title: t('layouts.go_to_to_support_center') do
+      = link_to 'https://support.enroute.mobi', target: :blank, title: t('layouts.go_to_to_support_center'), class: 'menu-item' do
         = image_tag("icons/chaticon.svg", height: 25)
 
       - if user_signed_in?

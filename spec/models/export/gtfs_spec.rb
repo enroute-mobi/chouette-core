@@ -131,7 +131,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       tmp_dir = Dir.mktmpdir
 
       ################################
-      # Test (1) agencies.txt export
+      # Test agencies.txt export
       ################################
 
       agencies_zip_path = File.join(tmp_dir, '/test_agencies.zip')
@@ -150,7 +150,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       end
 
       ################################
-      # Test (2) stops.txt export
+      # Test stops.txt export
       ################################
 
       stops_zip_path = File.join(tmp_dir, '/test_stops.zip')
@@ -189,7 +189,49 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       end
 
       ################################
-      # Test (3) lines.txt export
+      # Test transfers.txt export
+      ################################
+
+      create :connection_link, stop_area_referential: referential.stop_area_referential
+
+      referential.switch do
+        transfers_zip_path = File.join(tmp_dir, '/test_transfers.zip')
+
+        stop_area_ids = selected_vehicle_journeys.flat_map(&:stop_points).map(&:stop_area).select(&:commercial?).uniq.map(&:id)
+        selected_connections = stop_area_referential.connection_links.where(departure_id: stop_area_ids, arrival_id: stop_area_ids)
+        connections = selected_connections.map do |connection|
+            [
+              connection.departure.registration_number,
+              connection.arrival.registration_number
+            ].sort
+        end.uniq.map do |from, to|
+          { from: from, to: to, transfer_type: '2' }
+        end
+
+        create :connection_link,
+          stop_area_referential: stop_area_referential,
+          departure: selected_connections.last.arrival,
+          arrival: selected_connections.last.departure
+
+        GTFS::Target.open(transfers_zip_path) do |target|
+          gtfs_export.export_transfers_to target
+        end
+
+        # The processed export files are re-imported through the GTFS gem
+        source = GTFS::Source.build transfers_zip_path, strict: false
+
+        expect(source.transfers.length).to eq connections.count
+        expect(source.transfers.map do |transfer|
+          {
+            from: transfer.from_stop_id,
+            to: transfer.to_stop_id,
+            transfer_type: transfer.type
+          }
+        end).to match_array connections
+      end
+
+      ################################
+      # Test lines.txt export
       ################################
 
       lines_zip_path = File.join(tmp_dir, '/test_lines.zip')
@@ -219,7 +261,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       end
 
       ####################################################
-      # Test (4) calendars.txt and calendar_dates.txt export #
+      # Test calendars.txt and calendar_dates.txt export #
       ####################################################
 
       calendars_zip_path = File.join(tmp_dir, '/test_calendars.zip')
@@ -283,7 +325,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
         # end
 
         ################################
-        # Test (5) trips.txt export
+        # Test trips.txt export
         ################################
 
         targets_zip_path = File.join(tmp_dir, '/test_trips.zip')
@@ -314,7 +356,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
         expect(random_gtfs_trip).not_to be_nil
 
         ################################
-        # Test (6) stop_times.txt export
+        # Test stop_times.txt export
         ################################
 
         stop_times_zip_path = File.join(tmp_dir, '/stop_times.zip')

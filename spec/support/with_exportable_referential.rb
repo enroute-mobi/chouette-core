@@ -63,7 +63,9 @@ RSpec.shared_context 'with exportable journeys' do
 
         # 4*2 journey_pattern with 3 stop_points each
         factor.times do
-          FactoryGirl.create :journey_pattern, route: route, stop_points: route.stop_points.sample(3)
+          stops = route.stop_points.sample(3)
+          FactoryGirl.create :journey_pattern, route: route, stop_points: stops
+          create :connection_link, departure: stops.first.stop_area, arrival: stops.last.stop_area, both_ways: true, stop_area_referential: stop_area_referential
         end
       end
 

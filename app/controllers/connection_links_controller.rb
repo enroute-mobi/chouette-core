@@ -1,6 +1,7 @@
 class ConnectionLinksController < ChouetteController
   include ApplicationHelper
   include Activatable
+  include PolicyChecker
 
   defaults :resource_class => Chouette::ConnectionLink
 
@@ -16,12 +17,10 @@ class ConnectionLinksController < ChouetteController
 
   def new
     @connection_link = Chouette::ConnectionLink.new(departure_id: params[:departure_id])
-    authorize @connection_link
     new!
   end
 
   def create
-    authorize resource_class
     @connection_link = Chouette::ConnectionLink.new
     @connection_link.stop_area_referential = stop_area_referential
     @connection_link.assign_attributes connection_link_params
@@ -32,21 +31,6 @@ class ConnectionLinksController < ChouetteController
     show! do
       @connection_link = @connection_link.decorate
     end
-  end
-
-  def edit
-    authorize connection_link
-    super
-  end
-
-  def destroy
-    authorize connection_link
-    destroy! { request.referer }
-  end
-
-  def update
-    authorize connection_link
-    update!
   end
 
   protected

@@ -4,12 +4,11 @@ RSpec.describe ReferentialIndexSupport do
   after(:each) do
     ReferentialIndexSupport.reset!
   end
-  
+
   let(:test_class) do
      child
      class TestClass < ActiveRecord::Base
-       def self.table_name; 'test_classes' end
-       def self.reflections; {} end
+       def self.table_name; 'referentials' end
 
        include ReferentialIndexSupport
        has_many_scattered :children
@@ -23,7 +22,8 @@ RSpec.describe ReferentialIndexSupport do
   end
 
   it 'should raise an error when no reciproque relation is defined' do
-    expect{ test_class }.to raise_error ReferentialIndexSupport::MissingReciproqueRelation
+    test_class
+    expect{ TestClass.new.children }.to raise_error ReferentialIndexSupport::MissingReciproqueRelation
   end
 
   context 'with the reciproque relation' do

@@ -64,10 +64,9 @@ module Chouette
       :nearest_topic_name, :comment, :long_lat_type, :zip_code, :city_name, :url, :time_zone]
     end
 
-    # def localized_names
-    #   val = read_attribute(:localized_names) || {}
-    #   Hash[*AVAILABLE_LOCALIZATIONS.map{|k| [k, val[k.to_s]]}.flatten]
-    # end
+    def localized_names
+      read_attribute(:localized_names) || {}
+    end
 
     def parent_area_type_must_be_greater
       return unless self.parent && has_valid_area_type?

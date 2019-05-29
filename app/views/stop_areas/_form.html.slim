@@ -97,7 +97,7 @@ coffee:
     option = $('#add_locale').find('option:selected')
     return unless option.length > 0
 
-    row  = $("<div class='col-md-6'><div class='form-group'><label class='col-sm-4 col-xs-5 control-label string optional' for='stop_area_localized_names[#{option.attr('id')}]'><span title='#{option.attr('country_name')}' class='flag-icon flag-icon-#{option.attr('id').split('_')[1].toLowerCase()}'></span></label><div class='col-sm-8 col-xs-7'><input class='form-control string optional' value='' type='text' name='stop_area[localized_names[#{option.attr('id')}]' id='stop_area_localized_names[#{option.attr('id')}]'></div></div></div>")
+    row  = $("<div class='col-md-6'><div class='form-group'><label class='col-sm-4 col-xs-5 control-label string optional' for='stop_area_localized_names[#{option.attr('id')}]'><span title='#{option.attr('country_name')}' class='mr-xs flag-icon flag-icon-#{option.attr('id').split('_')[1].toLowerCase()}'></span></label><div class='col-sm-8 col-xs-7'><input class='form-control string optional' value='' type='text' name='stop_area[localized_names[#{option.attr('id')}]' id='stop_area_localized_names[#{option.attr('id')}]'></div></div></div>")
     row.appendTo $('.locales')
     option.remove()
     unless $('#add_locale').find('option:selected').length > 0

@@ -62,6 +62,7 @@ module ChouetteIhm
     SmartEnv.add :DELAYED_JOB_REAPER_HEARTBEAT_TIMEOUT_SECONDS, default: 60
     SmartEnv.add_boolean :DELAYED_JOB_REAPER_WORKER_TERMINATION_ENABLED, default: true
     SmartEnv.add_integer :REFERENTIALS_CLEANING_COOLDOWN
+    SmartEnv.add_boolean :ENABLE_LINK_TO_SUPPORT, default: false
 
     config.i18n.default_locale = SmartEnv[:RAILS_LOCALE].to_sym
 

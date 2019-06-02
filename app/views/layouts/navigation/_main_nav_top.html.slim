@@ -5,8 +5,9 @@
       = render 'layouts/navigation/breadcrumb'
 
     .menu-item-group.pull-right
-      = link_to 'https://support.enroute.mobi', target: :blank, title: t('layouts.go_to_to_support_center'), class: 'menu-item' do
-        = image_tag("icons/chaticon.svg", height: 25)
+      - if Rails.application.config.link_to_support_enabled
+        = link_to 'https://support.enroute.mobi', target: :blank, title: t('layouts.go_to_to_support_center'), class: 'menu-item' do
+          = image_tag("icons/chaticon.svg", height: 25)
 
       - if user_signed_in?
         = link_to 'javascript:void(0)', class: 'menu-item', data: { panel: 'toggle', target: '#profile_panel' }, title: 'Profil' do

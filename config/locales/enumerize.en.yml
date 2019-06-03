@@ -112,9 +112,16 @@ en:
         lda: LDA
     clean_up:
       date_type:
+        outside: Outside defined periodes in the data set
         between: Between two dates
         before: Before date
         after: After date
+      data_cleanups:
+        clean_vehicle_journeys_without_time_table: Vehicle journey with empty timetable
+        clean_journey_patterns_without_vehicle_journey: Journey pattern without any vehicle journey
+        clean_routes_without_journey_pattern: Route without any Journey pattern
+        clean_unassociated_timetables: Purchase window without any vehicle journey
+        clean_unassociated_purchase_windows: Timetables attached to no one vehicle journey
     transport_mode:
       interchange: Interchange
       unknown: "unknown"

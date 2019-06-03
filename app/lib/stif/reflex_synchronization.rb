@@ -116,14 +116,20 @@ module Stif
       end
 
       def stop_area_set_parent entry
-        return false unless entry['parent']
+        return false unless entry['parent'] || entry['derivedFromObjectRef']
+
         stop = self.find_by_object_id entry['id']
         return false unless stop
 
         if entry['parent']
           stop.parent = self.find_by_object_id entry['parent']
-          save_if_valid(stop) if stop.changed?
         end
+
+        if entry['derivedFromObjectRef']
+          stop.referent = self.find_by_object_id entry['derivedFromObjectRef']
+        end
+
+        save_if_valid(stop) if stop.changed?
       end
 
       def get_stop_area_provider objectid

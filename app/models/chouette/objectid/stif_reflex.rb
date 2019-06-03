@@ -5,7 +5,7 @@ module Chouette
       attr_accessor :country_code
       validates :creation_id, presence: false
 
-      @@format = /^(\w+)(:)?:([A-Za-z]+):(\d+):(?(2)(\w+))$/
+      @format = /^(\w+)(:)?:([A-Za-z]+):(\d+):(?(2)(\w+))$/
 
       def initialize(**attributes)
         super

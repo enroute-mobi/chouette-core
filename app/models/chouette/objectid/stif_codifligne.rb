@@ -6,7 +6,7 @@ module Chouette
       attr_accessor :local_marker
       validates :creation_id, presence: false
 
-      @@format = /^([A-Za-z_]+):([A-Za-z]+):([A-Za-z]+):([0-9A-Za-z_-]+)$/
+      @format = /^([0-9A-Za-z_-]+):([A-Za-z]+):([0-9A-Za-z_-]+):([0-9A-Za-z_-]*)$/
 
       def initialize(**attributes)
         @provider_id = attributes[:provider_id]

@@ -1,5 +1,7 @@
 class VehicleJourneysController < ChouetteController
   include ReferentialSupport
+  include ActionView::Helpers::TextHelper
+
   defaults :resource_class => Chouette::VehicleJourney
   before_action :user_permissions, only: :index
 
@@ -84,7 +86,7 @@ class VehicleJourneysController < ChouetteController
       route.line.line_notices.each do |line_notice|
         @footnotes << {
           code: line_notice.title,
-          label: line_notice.content,
+          label: truncate(line_notice.content, length: 120),
           id: line_notice.id,
           line_notice: true
         }

@@ -153,7 +153,7 @@ describe Chouette::Line, :type => :model do
       end
 
       context 'with active_from set' do
-        let(:active_from){ Time.now }
+        let(:active_from){ Time.now.to_date }
 
         it 'should be false' do
           expect(line.active?).to be_falsy
@@ -164,7 +164,7 @@ describe Chouette::Line, :type => :model do
       end
 
       context 'with active_until set' do
-        let(:active_until){ 1.year.from_now }
+        let(:active_until){ 1.year.from_now.to_date }
 
         it 'should be false' do
           expect(line.active?).to be_falsy
@@ -174,7 +174,7 @@ describe Chouette::Line, :type => :model do
         end
 
         context 'with active_from set' do
-          let(:active_from){ Time.now }
+          let(:active_from){ Time.now.to_date }
 
           it 'should be false' do
             expect(line.active?).to be_falsy
@@ -187,7 +187,7 @@ describe Chouette::Line, :type => :model do
     end
 
     context 'with active_from set' do
-      let(:active_from){ 1.day.from_now }
+      let(:active_from){ 1.day.from_now.to_date }
 
       it 'should depend on the date' do
         expect(line.active?).to be_falsy
@@ -197,7 +197,7 @@ describe Chouette::Line, :type => :model do
       end
 
       context 'with active_until set' do
-        let(:active_until){ 10.days.from_now }
+        let(:active_until){ 10.days.from_now.to_date }
 
         it 'should depend on the date' do
           expect(line.active?).to be_falsy
@@ -211,7 +211,7 @@ describe Chouette::Line, :type => :model do
     end
 
     context 'with active_until set' do
-      let(:active_until){ 1.day.ago }
+      let(:active_until){ 1.day.ago.to_date }
 
       it 'should depend on the date' do
         expect(line.active?).to be_falsy

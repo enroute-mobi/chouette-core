@@ -24,4 +24,7 @@ const fetchRoute = mapGenerator => {
   .catch(e => console.error(e))
 }
 
-$(document).on('mapSourceLoaded', () => fetchRoute(generateMap))
+document.addEventListener(
+  'mapSourceLoaded',
+  fetchRoute(generateMap)
+)

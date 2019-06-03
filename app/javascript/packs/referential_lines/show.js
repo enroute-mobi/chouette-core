@@ -10,8 +10,10 @@ const updateeMap = routes => handler => {
 }
 
 const generateMap = routes => {
-  new RoutesMap('routes_map').prepare()
+  if (routes.length > 0) {
+    new RoutesMap('routes_map').prepare()
     .then(updateeMap(routes))
+  }
 }
 
 const fetchRoutes = mapGenerator => {
@@ -25,4 +27,7 @@ const fetchRoutes = mapGenerator => {
   .catch(e => console.error(e))
 }
 
-$(document).on('mapSourceLoaded', () => fetchRoutes(generateMap))
+document.addEventListener(
+  'mapSourceLoaded',
+  fetchRoutes(generateMap)
+)

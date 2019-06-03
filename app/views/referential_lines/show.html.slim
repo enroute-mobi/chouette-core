@@ -17,9 +17,11 @@
              Chouette::Line.tmf('transport_submode') => (@line.transport_submode.present? ? t("enumerize.transport_submode.#{@line.transport_submode}") : '-'),
              Chouette::Line.tmf('url') => (@line.url ? @line.url : '-'),
              Chouette::Line.tmf('seasonal') => (@line.seasonal? ? t('true') : t('false')),}
-      .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        h4.underline= t('lines.show.map')
-        #routes_map.map.mb-lg
+
+      - if @referential.routes.any?
+        .col-lg-6.col-md-6.col-sm-12.col-xs-12
+          h4.underline= t('lines.show.map')
+          #routes_map.map.mb-lg
     .row
       .col-lg-12
         .h3 = t('lines.show.routes.title')

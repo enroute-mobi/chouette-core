@@ -26,4 +26,7 @@ const fecthStopArea = mapGenerator => {
   .catch(e => console.error(e))
 }
 
-$(document).on('mapSourceLoaded', () => fecthStopArea(generateMap))
+document.addEventListener(
+  'mapSourceLoaded',
+  fecthStopArea(generateMap)
+)

@@ -32,6 +32,13 @@ class LineNoticesController < ChouetteController
     end
   end
 
+  def do_attach
+    ids = params[:line][:line_notice_ids].split(',')
+
+    @line.update line_notice_ids: ids
+    redirect_to [@line_referential, @line, :line_notices]
+  end
+
   def detach
     @line.update line_notice_ids: (@line.line_notice_ids - [params[:id].to_i])
     redirect_to [@line_referential, @line, :line_notices]

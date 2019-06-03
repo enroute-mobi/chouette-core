@@ -4,7 +4,7 @@
   .container-fluid
     .row
       .col-lg-8.col-lg-offset-2.col-md-8.col-md-offset-2.col-sm-10.col-sm-offset-1
-        = simple_form_for @line, url: [@line_referential, @line], html: {class: 'form-horizontal', id: 'attach_form'}, wrapper: :horizontal_form do |form|
+        = simple_form_for @line, url: [:do_attach, @line_referential, @line, :line_notices], html: {class: 'form-horizontal', id: 'attach_form'}, wrapper: :horizontal_form do |form|
           .row
             .col-lg-12
               = form.hidden_field :line_notice_ids

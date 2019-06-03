@@ -75,16 +75,6 @@ class LinesController < ChouetteController
     super
   end
 
-  def update
-    update! do
-      if line_params[:line_notice_ids]
-        [@line_referential, @line, :line_notices]
-      else
-        [@line_referential, @line]
-      end
-    end
-  end
-
   # overwrite inherited resources to use delete instead of destroy
   # foreign keys will propagate deletion)
   def destroy_resource(object)
@@ -181,7 +171,6 @@ class LinesController < ChouetteController
       :stable_id,
       :transport_submode,
       :seasonal,
-      :line_notice_ids,
       :secondary_company_ids => [],
       footnotes_attributes: [:code, :label, :_destroy, :id]
     )

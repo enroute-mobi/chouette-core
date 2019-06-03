@@ -277,6 +277,7 @@ ChouetteIhm::Application.routes.draw do
       resources :line_notices do
         collection do
           get :attach
+          patch :do_attach
         end
 
         member do

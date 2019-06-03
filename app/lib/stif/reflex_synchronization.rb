@@ -175,7 +175,9 @@ module Stif
           if stop_area_provider
             stop_area_provider.stop_areas << stop unless stop_area_provider.stop_areas.include?(stop)
           else
-            Rails.logger.error "Reflex:sync - can't find OrganisationalUnit #{entry['dataSourceRef']} for stop #{entry['id']}"
+            unless entry['dataSourceRef'] == "FR1-ARRET_AUTO"
+              Rails.logger.error "Reflex:sync - can't find OrganisationalUnit #{entry['dataSourceRef']} for stop #{entry['id']}"
+            end
           end
         end
 

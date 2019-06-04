@@ -114,8 +114,9 @@ module StopAreasHelper
     }
 
     if has_feature?(:stop_area_localized_names)
-      stop_area.localized_names.each do |k, v|
-        attributes.merge!(label_for_country(k, Chouette::StopArea.tmf('name')) => v ) if v.present?
+      stop_area.stop_area_referential.sorted_locales.each do |locale|
+        val = stop_area.localized_names[locale[:code]]
+        attributes.merge!(label_for_country(locale[:code], Chouette::StopArea.tmf('name')) => val ) if val.present?
       end
     end
 

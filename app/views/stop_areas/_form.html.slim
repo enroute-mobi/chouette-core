@@ -9,7 +9,7 @@
           .form-group
             .col-sm-3.col-xs-5
             .col-sm-9.col-xs-7.locales
-              - default = f.object.stop_area_referential.sorted_locales.select{|l| l[:default] ||f.object.localized_names[l[:code]].present? }.map{|l| l[:code]}
+              - default = f.object.stop_area_referential.sorted_locales.select{|l| l[:default] || f.object.localized_names[l[:code]].present? }.map{|l| l[:code]}
               - default.each do |k|
                 .col-md-6= f.input "localized_names[#{k}]", input_html: { value: f.object.localized_names[k.to_s] }, label: label_for_country(k)
 

@@ -27,7 +27,7 @@
       - countries = countries.sort_by { |c| c.translation(I18n.locale)}
       - options = countries.map { |c| "<option id='#{c.alpha2}' code='#{StopAreaReferential.translate_code_to_internal("#{c.languages.first}_#{c.alpha2}")}'>#{c.translation(I18n.locale)}</option>" }.join('')
       .col-md-12
-        = select_tag :add_locale, raw(options), 'data-select2ed': 'true'
+        = select_tag :add_locale, raw(options.html_safe), 'data-select2ed': 'true', class: 'country-select'
         = link_to '#', class: 'btn btn-primary add-locale' do
           = fa_icon :plus
           = 'actions.add'.t

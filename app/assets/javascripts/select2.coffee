@@ -1,5 +1,8 @@
 bind_select2 = (el, cfg = {}) ->
   target = $(el)
+  decorate_option_with_flag = (item, text)->
+    $("<span><span class='flag-icon flag-icon-#{$(item.element).attr('id').toLowerCase()} mr-xs'></span>#{text}</span>")
+
   default_cfg =
     theme: 'bootstrap'
     language: I18n.locale
@@ -8,9 +11,17 @@ bind_select2 = (el, cfg = {}) ->
     searchingText: I18n.t('actions.searching_term')
     noResultsText: I18n.t('actions.no_result_text')
     templateResult: (item) ->
-      if item.text.length > 50 then item.text.substring(0, 47) + '...' else item.text
+      text = if item.text.length > 50 then item.text.substring(0, 47) + '...' else item.text
+      if item.element && target.hasClass('country-select')
+        decorate_option_with_flag(item, text)
+      else
+        text
     templateSelection: (item) ->
-      if item.text.length > 50 then item.text.substring(0, 47) + '...' else item.text
+      text = if item.text.length > 50 then item.text.substring(0, 47) + '...' else item.text
+      if item.element && target.hasClass('country-select')
+        decorate_option_with_flag(item, text)
+      else
+        text
 
   target.select2 $.extend({}, default_cfg, cfg)
 

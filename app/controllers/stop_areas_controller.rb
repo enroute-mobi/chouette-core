@@ -128,7 +128,8 @@ class StopAreasController < ChouetteController
 
   def collection
     scope = parent.present? ? parent.stop_areas : referential.stop_areas
-    @q = scope.ransack(params[:q])
+    scope = is_referent_scope(scope)
+    @q = scope.ransack(params[:q]&.except(:is_referent_true, :is_referent_false))
 
     @stop_areas ||=
       begin
@@ -147,6 +148,16 @@ class StopAreasController < ChouetteController
         stop_areas = stop_areas.paginate(:page => params[:page], :per_page => @per_page) if @per_page.present?
         stop_areas
       end
+  end
+
+  def is_referent_scope scope
+    return scope unless params[:q]
+
+    if params[:q][:is_referent_true] != params[:q][:is_referent_false]
+      scope = scope.where(is_referent: (params[:q][:is_referent_true] == '1'))
+    end
+
+    scope
   end
 
   private

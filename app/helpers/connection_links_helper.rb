@@ -52,7 +52,7 @@ module ConnectionLinksHelper
     }
 
     attributes.merge!(Chouette::StopArea.tmf('parent') => connection_link.departure.parent ? link_to(connection_link.departure.parent.name, stop_area_referential_stop_area_path(stop_area_referential, connection_link.departure.parent)) : "-") if connection_link.departure.commercial?
-    attributes.merge!(Chouette::StopArea.tmf('kind') => connection_link.departure.kind)
+    attributes.merge!(Chouette::StopArea.tmf('stop_area_type') => Chouette::AreaType.find(connection_link.departure.area_type).try(:label))
   end
 
   def connection_link_arrival_metadatas(connection_link, stop_area_referential)
@@ -62,7 +62,7 @@ module ConnectionLinksHelper
     }
 
     attributes.merge!(Chouette::StopArea.tmf('parent') => connection_link.arrival.parent ? link_to(connection_link.arrival.parent.name, stop_area_referential_stop_area_path(stop_area_referential, connection_link.arrival.parent)) : "-") if connection_link.arrival.commercial?
-    attributes.merge!(Chouette::StopArea.tmf('kind') => connection_link.arrival.kind)
+    attributes.merge!(Chouette::StopArea.tmf('stop_area_type') => Chouette::AreaType.find(connection_link.arrival.area_type).try(:label))
   end
 
   def connection_link_general_metadatas(connection_link)

@@ -7,6 +7,7 @@ class Feature
       core_control_blocks
       costs_in_journey_patterns
       create_opposite_routes
+      create_referential_from_merge
       detailed_calendars
       detailed_purchase_windows
       journey_length_in_vehicle_journeys

@@ -255,7 +255,7 @@ ChouetteIhm::Application.routes.draw do
     put :activate, on: :member
   end
 
-  resources :stop_area_referentials, :only => [:show] do
+  resources :stop_area_referentials, :only => [:show, :edit, :update] do
     post :sync, on: :member
     resources :stop_area_providers do
       get :autocomplete, on: :collection

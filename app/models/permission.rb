@@ -76,6 +76,7 @@ class Permission
       permissions << "api_keys.index"
       permissions << "workgroups.update"
       permissions << "referentials.flag_urgent"
+      permissions << "stop_area_referentials.update"
     end
 
     def referentials

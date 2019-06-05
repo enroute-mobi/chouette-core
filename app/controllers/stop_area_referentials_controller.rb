@@ -18,4 +18,17 @@ class StopAreaReferentialsController < ChouetteController
     end
     redirect_to resource
   end
+
+  def stop_area_referential_params
+    locales = []
+    params[:locales].each do |_, locale|
+      next if locale[:delete] == '1'
+
+      locales << {
+        code: StopAreaReferential.translate_code_to_internal(locale[:code]),
+        default: locale[:default] == '1'
+      }
+    end
+    { locales: locales }
+  end
 end

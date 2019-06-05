@@ -12,6 +12,10 @@ module StopAreasHelper
   end
 
   def label_for_country country, txt=nil
+    if country.to_s =~ /_/ # en_GB => gb
+      country = StopAreaReferential.translate_code_to_official country
+      country = country.to_s.split('_').last.downcase
+    end
     "#{txt} <span title='#{ISO3166::Country[country]&.translation(I18n.locale)}' class='flag-icon flag-icon-#{country.downcase} mr-xs'></span>".html_safe
   end
 
@@ -110,8 +114,9 @@ module StopAreasHelper
     }
 
     if has_feature?(:stop_area_localized_names)
-      stop_area.localized_names.each do |k, v|
-        attributes.merge!(label_for_country(k, Chouette::StopArea.tmf('name')) => v ) if v.present?
+      stop_area.stop_area_referential.sorted_locales.each do |locale|
+        val = stop_area.localized_names[locale[:code]]
+        attributes.merge!(label_for_country(locale[:code], Chouette::StopArea.tmf('name')) => val ) if val.present?
       end
     end
 

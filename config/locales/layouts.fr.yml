@@ -19,6 +19,7 @@ fr:
       referential_datas: "Données"
       line_referential: "Référentiel de lignes"
       stop_area_referential: "Référentiel d'arrêts"
+      settings: "Paramètres"
       current_offer:
         one: Offres courante
         other: Offres courantes

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_21_171957) do
+ActiveRecord::Schema.define(version: 2019_05_22_065254) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -105,9 +105,9 @@ ActiveRecord::Schema.define(version: 2019_05_21_171957) do
     t.bigint "organisation_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.bigint "workgroup_id"
     t.integer "int_day_types"
     t.date "excluded_dates", array: true
+    t.bigint "workgroup_id"
     t.jsonb "metadata", default: {}
     t.index ["organisation_id"], name: "index_calendars_on_organisation_id"
     t.index ["workgroup_id"], name: "index_calendars_on_workgroup_id"
@@ -603,24 +603,6 @@ ActiveRecord::Schema.define(version: 2019_05_21_171957) do
     t.index ["journey_pattern_id"], name: "index_journey_pattern_id_on_journey_patterns_stop_points"
   end
 
-  create_table "line_notices", force: :cascade do |t|
-    t.bigint "line_referential_id"
-    t.string "title"
-    t.text "content"
-    t.string "objectid", null: false
-    t.text "import_xml"
-    t.jsonb "metadata", default: {}
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "object_version"
-  end
-
-  create_table "line_notices_lines", id: false, force: :cascade do |t|
-    t.bigint "line_notice_id", null: false
-    t.bigint "line_id", null: false
-    t.index ["line_notice_id", "line_id"], name: "index_line_notices_lines_on_line_notice_id_and_line_id"
-  end
-
   create_table "line_referential_memberships", force: :cascade do |t|
     t.bigint "organisation_id"
     t.bigint "line_referential_id"
@@ -1017,6 +999,7 @@ ActiveRecord::Schema.define(version: 2019_05_21_171957) do
     t.datetime "updated_at"
     t.string "objectid_format"
     t.string "registration_number_format"
+    t.jsonb "locales", default: [{"code"=>"fr_FR", "default"=>true}, {"code"=>"en_UK", "default"=>true}, {"code"=>"nl_NL", "default"=>true}, {"code"=>"es_ES", "default"=>true}, {"code"=>"it_IT", "default"=>true}, {"code"=>"de_DE", "default"=>true}]
   end
 
   create_table "stop_area_routing_constraints", force: :cascade do |t|

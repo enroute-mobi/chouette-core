@@ -1,5 +1,7 @@
 class ReferentialAudit
   class Base
+    include Rails.application.routes.url_helpers
+
     attr_reader :status
 
     def self.inherited klass
@@ -16,7 +18,7 @@ class ReferentialAudit
 
     def perform logger
       faulty.each do |record|
-        logger.add_error full_message(record)
+        logger.add_error full_message(record, output: logger.output)
       end
       if faulty.size == 0 || faulty == [nil]
         @status = :success
@@ -25,8 +27,8 @@ class ReferentialAudit
       end
     end
 
-    def full_message record
-      message(record)
+    def full_message record, output: :console
+      message(record, output: output)
     end
 
     def self.pretty_name
@@ -35,6 +37,14 @@ class ReferentialAudit
 
     def pretty_name
       self.class.pretty_name
+    end
+
+    def base_host
+      SmartEnv['RAILS_HOST']
+    end
+
+    def link_to label, url
+      "<a href='#{url}'>#{label}</a>"
     end
   end
 end

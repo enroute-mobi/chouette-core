@@ -173,7 +173,10 @@ module PrettyOutput
         line << "L#{j[:line]}\t" if j[:line]
         line << "#{j[:error]}\t\t" if j[:error]
         line << "#{j[:message]}" if j[:message]
-        encode_string(line).truncate(full_width)
+        html_tags_size = 0
+        html_tags_size += j[:error].scan(/<.*?>/).map(&:size).sum if j[:error]
+        html_tags_size += j[:message].scan(/<.*?>/).map(&:size).sum if j[:message]
+        encode_string(line).truncate(full_width + html_tags_size)
       end.join(new_line)
     end
     msg += new_line(2)

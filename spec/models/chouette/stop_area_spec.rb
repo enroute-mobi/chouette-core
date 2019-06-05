@@ -138,7 +138,7 @@ describe Chouette::StopArea, :type => :model do
         commercial.name = "new name"
         commercial.save
         expect(commercial.reload).to be_valid
-      end 
+      end
     end
 
     context "non commercial kind" do
@@ -146,7 +146,7 @@ describe Chouette::StopArea, :type => :model do
         non_commercial.name = "new name"
         non_commercial.save
         expect(non_commercial.reload).to be_valid
-      end 
+      end
     end
   end
 
@@ -167,7 +167,7 @@ describe Chouette::StopArea, :type => :model do
       stop_area.parent.area_type = 'zdlp' # Ensure right parent_area_type
       stop_area.kind = 'commercial'
       stop_area.parent.kind = 'commercial'
-      
+
       stop_area.valid?
       expect(stop_area.errors).to_not have_key(:parent_id)
     end

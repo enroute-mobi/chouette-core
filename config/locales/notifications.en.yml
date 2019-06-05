@@ -7,8 +7,10 @@ en:
         successful: "%{status_html} Import %{name} succeeded"
         progress: "%{status_html} Import %{name}: %{progress}%"
     export:
-      gtfs:
+      gtfs: &export_messages
         failed: "%{status_html} Export %{name} has failed"
         running: "%{status_html} Export %{name} has started"
         successful: "%{status_html} Export %{name} succeeded"
         progress: "%{status_html} Export %{name}: %{progress}%"
+      netex: *export_messages
+      netex_full: *export_messages

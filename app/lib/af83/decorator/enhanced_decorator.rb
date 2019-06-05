@@ -18,13 +18,21 @@ module AF83::Decorator::EnhancedDecorator
     end
 
     ### Here we define some shortcuts that match dthe default behaviours
+
+    def crud
+      show_action_link
+      edit_action_link
+      destroy_action_link
+    end
+
     def create_action_link args={}, &block
       opts = {
         on: :index,
         primary: :index,
         policy: :create,
         before_block: -> (l){
-          l.content { h.t('actions.add') }
+          l.content { h.t("#{object.klass.model_name.plural}.actions.new", raise: true) rescue 'actions.add'.t }
+          l.icon :plus
           l.href    { [:new, scope, object.klass.model_name.singular] }
         }
       }
@@ -36,8 +44,9 @@ module AF83::Decorator::EnhancedDecorator
         on: :index,
         primary: :index,
         before_block: -> (l){
-          l.content { h.t('actions.show') }
+          l.content { object.class.t_action(:show) }
           l.href { [scope, object] }
+          l.icon :eye
         }
       }
       action_link opts.update(args), &block
@@ -48,8 +57,9 @@ module AF83::Decorator::EnhancedDecorator
         primary: %i(show index),
         policy: :edit,
         before_block: -> (l){
-          l.content { h.t('actions.edit') }
+          l.content { object.class.t_action(:edit) }
           l.href { [:edit, scope, object] }
+          l.icon :pencil
         }
       }
       action_link opts.update(args), &block
@@ -61,10 +71,12 @@ module AF83::Decorator::EnhancedDecorator
         footer: true,
         secondary: :show,
         before_block: -> (l){
-          l.content { h.destroy_link_content }
+          l.content { object.class.t_action(:destroy) }
           l.href { [scope, object] }
           l.method :delete
           l.data {{ confirm: object.class.t_action(:destroy_confirm) }}
+          l.icon :trash
+          l.icon_class :danger
         }
       }
       action_link opts.update(args), &block

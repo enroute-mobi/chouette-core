@@ -14,9 +14,7 @@ class LineNoticeDecorator < AF83::Decorator
   end
 
   with_instance_decorator do |instance_decorator|
-    instance_decorator.show_action_link
-    instance_decorator.edit_action_link
-    instance_decorator.destroy_action_link
+    instance_decorator.crud
     instance_decorator.action_link if: Proc.new { context[:line].present? }, secondary: true, policy: :detach do |l|
       l.content t('line_notices.actions.detach')
       l.href { [:detach, *scope, object] }

@@ -14,6 +14,5 @@ class StopAreaReferentialDecorator < AF83::Decorator
       l.href { h.sync_stop_area_referential_path(object.id) }
       l.method :post
     end
-
   end
 end

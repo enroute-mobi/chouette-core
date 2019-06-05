@@ -12,10 +12,8 @@ class UserDecorator < AF83::Decorator
   end
 
   with_instance_decorator do |instance_decorator|
-    instance_decorator.show_action_link
-    instance_decorator.edit_action_link
-    instance_decorator.destroy_action_link
-
+    instance_decorator.crud
+    
     instance_decorator.action_link policy: :block, secondary: true, on: %i[show index] do |l|
       l.content t('users.actions.block')
       l.confirm t('users.actions.block_confirm')

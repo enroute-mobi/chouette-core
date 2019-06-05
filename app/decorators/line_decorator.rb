@@ -13,9 +13,7 @@ class LineDecorator < AF83::Decorator
     ### - an array of actions
     ### - a boolean
 
-    instance_decorator.show_action_link do |l|
-      l.content t('lines.actions.show')
-    end
+    instance_decorator.show_action_link
 
     instance_decorator.action_link secondary: :show do |l|
       l.content t('lines.actions.show_network')
@@ -42,10 +40,6 @@ class LineDecorator < AF83::Decorator
       end
     end
 
-    instance_decorator.destroy_action_link do |l|
-      l.content  { h.destroy_link_content('lines.actions.destroy') }
-      l.data     {{ confirm: h.t('lines.actions.destroy_confirm') }}
-      l.add_class "delete-action"
-    end
+    instance_decorator.destroy_action_link
   end
 end

@@ -14,9 +14,6 @@ class CompanyDecorator < AF83::Decorator
       l.content {|l| l.action == "show" ? h.t('actions.edit') : h.t('companies.actions.edit') }
     end
 
-    instance_decorator.destroy_action_link do |l|
-      l.content { h.destroy_link_content('companies.actions.destroy') }
-      l.data {{ confirm: h.t('companies.actions.destroy_confirm') }}
-    end
+    instance_decorator.destroy_action_link
   end
 end

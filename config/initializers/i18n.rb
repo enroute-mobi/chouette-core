@@ -157,12 +157,16 @@ module EnhancedModelI18n
     end
 
     begin
-      I18n.translate_without_fallback "#{i18n_key.pluralize}.#{key}.title", ({raise: true}.update(params))
+      I18n.translate_without_fallback "#{i18n_key.pluralize}.actions.#{key}", ({raise: true}.update(params))
     rescue
-      begin
-        I18n.translate_without_fallback "#{key}.title", ({raise: true}.update(params))
-      rescue
-        I18n.translate_without_fallback "#{i18n_key.pluralize}.actions.#{key}", params
+      if :index == action.to_sym
+        begin
+          I18n.translate_without_fallback "#{i18n_key.pluralize}.#{key}.title", ({raise: true}.update(params))
+        rescue
+          I18n.translate_without_fallback "#{key}.title", params
+        end
+      else
+        I18n.translate_without_fallback "actions.#{key}", params
       end
     end
   end

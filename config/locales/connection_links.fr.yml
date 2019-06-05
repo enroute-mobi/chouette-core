@@ -2,6 +2,7 @@ fr:
   connection_links:
     search_no_results: "Aucune correspondance ne correspond à votre recherche"
     actions:
+      show: "Afficher cette correspondance"
       new: "Ajouter une correspondance"
       edit: "Editer cette correspondance"
       destroy: "Supprimer cette correspondance"

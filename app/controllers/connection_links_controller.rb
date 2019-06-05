@@ -11,7 +11,7 @@ class ConnectionLinksController < ChouetteController
 
   def index
     index! do
-      @connection_links = ConnectionLinkDecorator.decorate(@connection_links)
+      @connection_links = ConnectionLinkDecorator.decorate(@connection_links, context: { stop_area_referential: @stop_area_referential })
     end
   end
 

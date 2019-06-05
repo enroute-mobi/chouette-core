@@ -2,6 +2,7 @@ en:
   connection_links:
     search_no_results: "No connection matching your query"
     actions:
+      show: "Show this connection link"
       new: "Add a new connection link"
       edit: "Edit this connection link"
       destroy: "Remove this connection link"
@@ -55,6 +56,10 @@ en:
         frequent_traveller_duration: "Frequent traveller duration"
         occasional_traveller_duration: "Occasional traveller duration"
         mobility_restricted_traveller_duration: "Mobility restricted duration"
+        default_duration_in_min: "Standard duration (minutes)"
+        frequent_traveller_duration_in_min: "Frequent traveller duration"
+        occasional_traveller_duration_in_min: "Occasional traveller duration"
+        mobility_restricted_traveller_duration_in_min: "Mobility restricted duration"
         mobility_restricted_suitability: "Mobility reduced passenger suitable"
         stairs_availability: "Escalator"
         lift_availability: "Lift"

@@ -15,7 +15,7 @@ en:
         end_date: "End date : "
   titles: &titles
     clean_up:
-      date_type: Clean up or cut timatables by date
+      date_type: Clean up or cut timetables by date
       begin_date: "Begin date of clean up"
       end_date: "End date of clean up"
       method_type: Delete the useless datas

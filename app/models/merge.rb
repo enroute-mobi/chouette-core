@@ -330,10 +330,10 @@ class Merge < ApplicationModel
     # JourneyPatterns
 
     referential_journey_patterns, referential_journey_patterns_stop_areas_objectids = referential.switch do
-      journey_patterns = referential.journey_patterns.includes(stop_points: :stop_area)
+      journey_patterns = referential.journey_patterns
 
       journey_patterns_stop_areas_objectids = {}
-      journey_patterns.find_each do |journey_pattern|
+      journey_patterns.includes(stop_points: :stop_area).find_each do |journey_pattern|
         journey_patterns_stop_areas_objectids[journey_pattern.id] = journey_pattern.stop_points.map { |sp| [sp.position, sp.stop_area.raw_objectid]}
       end
 

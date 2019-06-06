@@ -11,6 +11,8 @@ class StopAreaReferential < ApplicationModel
   has_one  :workgroup, dependent: :nullify
   has_many :stop_area_providers
 
+  serialize :locales
+
   def stop_area_routing_constraints
     StopAreaRoutingConstraint.joins(:to, :from).where('stop_areas.stop_area_referential_id = ?', self.id)
   end
@@ -52,5 +54,33 @@ class StopAreaReferential < ApplicationModel
     return false unless value.size == registration_number_format.size
     return false unless value =~ /^[A-Z]*$/
     true
+  end
+
+  def self.translate_code_to_official(code)
+    return 'en_GB' if code.to_s == 'en_UK'
+
+    code
+  end
+
+  def self.translate_code_to_internal(code)
+    return 'en_UK' if code.to_s == 'en_GB'
+
+    code
+  end
+
+  def translate_code_to_official(code)
+    self.class.translate_code_to_official(code)
+  end
+
+  def locale_name(locale)
+     ISO3166::Country[translate_code_to_official(locale[:code]).split('_').last].translation(I18n.locale)
+  end
+
+  def locales
+    self[:locales].map &:with_indifferent_access
+  end
+
+  def sorted_locales
+    locales.sort_by{|l| locale_name(l)}
   end
 end

@@ -3,7 +3,7 @@ en:
     search_no_results: "No notification suspension matching your query"
     actions:
       index: Notifications center
-      new: Add a notification suspensions
+      new: Add deactivation
       destroy: Delete the notification suspension
       destroy_confirm: Are you sure you want to delete the notification suspension ?
     index:
@@ -15,7 +15,7 @@ en:
     update:
       <<: *notification_rule_edit
     new: &notification_rule_new
-      edit: Add a notification suspension
+      edit: Add deactivation
     create:
       <<: *notification_rule_new
     notification_types:

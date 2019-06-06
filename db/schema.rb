@@ -105,9 +105,9 @@ ActiveRecord::Schema.define(version: 2019_06_05_124308) do
     t.bigint "organisation_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.bigint "workgroup_id"
     t.integer "int_day_types"
     t.date "excluded_dates", array: true
+    t.bigint "workgroup_id"
     t.jsonb "metadata", default: {}
     t.index ["organisation_id"], name: "index_calendars_on_organisation_id"
     t.index ["workgroup_id"], name: "index_calendars_on_workgroup_id"
@@ -1017,6 +1017,7 @@ ActiveRecord::Schema.define(version: 2019_06_05_124308) do
     t.datetime "updated_at"
     t.string "objectid_format"
     t.string "registration_number_format"
+    t.jsonb "locales", default: [{"code"=>"fr_FR", "default"=>true}, {"code"=>"en_UK", "default"=>true}, {"code"=>"nl_NL", "default"=>true}, {"code"=>"es_ES", "default"=>true}, {"code"=>"it_IT", "default"=>true}, {"code"=>"de_DE", "default"=>true}]
   end
 
   create_table "stop_area_routing_constraints", id: :serial, force: :cascade do |t|

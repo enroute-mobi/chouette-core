@@ -2,6 +2,10 @@ fr:
   stop_area_referential_syncs:
     search_no_results: "Aucun synchronisation de référentiel d'arrêts ne correspond à votre recherche"
   activerecord:
+    models:
+      stop_area_referential_sync:
+        one: Synchronisation
+        other: Synchronisations
     errors:
       models:
         stop_area_referential_sync:

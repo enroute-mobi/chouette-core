@@ -330,18 +330,18 @@ class Merge < ApplicationModel
     # JourneyPatterns
 
     referential_journey_patterns, referential_journey_patterns_stop_areas_objectids = referential.switch do
-      journey_patterns = referential.journey_patterns.includes(stop_points: :stop_area)
+      journey_patterns = referential.journey_patterns
 
-      journey_patterns_stop_areas_objectids = Hash[
-        journey_patterns.map do |journey_pattern|
-          [ journey_pattern.id, journey_pattern.stop_points.map{|sp| [sp.position, sp.stop_area.raw_objectid]} ]
-        end
-      ]
+      journey_patterns_stop_areas_objectids = {}
+      journey_patterns.includes(stop_points: :stop_area).find_each do |journey_pattern|
+        journey_patterns_stop_areas_objectids[journey_pattern.id] = journey_pattern.stop_points.map { |sp| [sp.position, sp.stop_area.raw_objectid]}
+      end
 
-      [journey_patterns, journey_patterns_stop_areas_objectids]
+      [journey_patterns.to_a, journey_patterns_stop_areas_objectids]
     end
 
-    referential_journey_patterns_checksums = Hash[referential_journey_patterns.map { |j| [ j.id, j.checksum ] }]
+    referential_journey_patterns_checksums = {}
+    referential_journey_patterns.each { |j| referential_journey_patterns_checksums[j.id] = j.checksum }
 
     new.switch do
       referential_journey_patterns.each_slice(20) do |journey_patterns|
@@ -430,7 +430,10 @@ class Merge < ApplicationModel
     # Time Tables
 
     referential_time_tables_by_id, referential_time_tables_with_lines = referential.switch do
-      time_tables_by_id = Hash[referential.time_tables.includes(:dates, :periods).all.to_a.map { |t| [t.id, t] }]
+      time_tables_by_id = {}
+      referential.time_tables.includes(:dates, :periods).find_each do |t|
+        time_tables_by_id[t.id] = t
+      end
 
       time_tables_with_associated_lines =
         referential.time_tables.joins(vehicle_journeys: {route: :line}).pluck("lines.id", :id, "vehicle_journeys.id")

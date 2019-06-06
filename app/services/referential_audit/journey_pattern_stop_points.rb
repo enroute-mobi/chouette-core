@@ -1,8 +1,9 @@
 class ReferentialAudit
   class JourneyPatternStopPoints < Base
-
-    def message record
-      "JourneyPattern ##{record.id} has only #{record.stop_points.count} stop_point(s)"
+    include ReferentialAudit::Concerns::JourneyPatternBase
+    
+    def message(record, output: :console)
+      "#{record_name(record, output)} has only #{record.stop_points.count} stop_point(s)"
     end
 
     def find_faulty

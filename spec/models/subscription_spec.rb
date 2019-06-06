@@ -4,6 +4,18 @@ describe Subscription, type: :model do
     expect(subscription.organisation.features).to match_array(Feature.all)
   end
 
+  it "should validate the email format" do
+    subscription = Subscription.new({
+      user_name: "John Doe",
+      email: "john.doe@+example.com",
+      password: "password",
+      password_confirmation: "password",
+      organisation_name: "The Daily Planet"
+    })
+
+    expect(subscription.valid?).to be_falsy
+  end
+
   it "should create an organisation" do
     subscription = Subscription.new({
       user_name: "John Doe",

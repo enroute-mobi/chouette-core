@@ -113,6 +113,7 @@ class Workgroup < ApplicationModel
   end
 
   def nightly_aggregate!
+    Rails.logger.info "Workgroup #{id}: nightly_aggregate!"
     return unless nightly_aggregate_timeframe?
 
     target_referentials = aggregatable_referentials.select do |r|
@@ -131,8 +132,16 @@ class Workgroup < ApplicationModel
   def nightly_aggregate_timeframe?
     return false unless nightly_aggregate_enabled?
 
+    Rails.logger.info "Workgroup #{id}: nightly_aggregate_timeframe!"
+    Rails.logger.info "Time.now: #{Time.now.inspect}"
+    Rails.logger.info "LocalDaytime.new: #{LocalDaytime.new.inspect}"
+    Rails.logger.info "nightly_aggregate_time: #{nightly_aggregate_time.inspect}"
+    Rails.logger.info "diff: #{(LocalDaytime.new - nightly_aggregate_time)}"
+
     cron_delay = NIGHTLY_AGGREGATE_CRON_TIME * 2
+    Rails.logger.info "cron_delay: #{cron_delay}"
     within_timeframe = (LocalDaytime.new - nightly_aggregate_time).abs <= cron_delay
+    Rails.logger.info "within_timeframe: #{within_timeframe}"
 
     # "5.minutes * 2" returns a FixNum (in our Rails version)
     within_timeframe && (nightly_aggregated_at.blank? || nightly_aggregated_at < NIGHTLY_AGGREGATE_CRON_TIME.seconds.ago)

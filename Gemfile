@@ -175,6 +175,7 @@ group :development do
   gem 'spring-commands-rspec'
   gem 'dbshell-rails'
   gem 'rack-livereload'
+  gem 'guard-livereload', '~> 2.5', require: false
 
   platforms :ruby_20, :ruby_21, :ruby_22 do
     gem 'better_errors'

@@ -1,8 +1,9 @@
 class ReferentialAudit
   class JourneyPatternDistances < Base
-
-    def message record
-      "JourneyPattern ##{record.id} has negative distances"
+    include ReferentialAudit::Concerns::JourneyPatternBase
+    
+    def message(record, output: :console)
+      "#{record_name(record, output)} has negative distances"
     end
 
     def find_faulty

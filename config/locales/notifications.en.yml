@@ -2,13 +2,15 @@ en:
   notifications:
     import:
       workbench:
-        failed: "%{status_html} Import %{name} has failed"
-        running: "%{status_html} Import %{name} has started"
-        successful: "%{status_html} Import %{name} succeeded"
-        progress: "%{status_html} Import %{name}: %{progress}%"
+        failed: "%{status_html} Import <i>%{name}</i> has failed"
+        running: "%{status_html} Import <i>%{name}</i> has started"
+        successful: "%{status_html} Import <i>%{name}</i> succeeded"
+        progress: "%{status_html} Import <i>%{name}</i>: %{progress}%"
     export:
-      gtfs:
-        failed: "%{status_html} Export %{name} has failed"
-        running: "%{status_html} Export %{name} has started"
-        successful: "%{status_html} Export %{name} succeeded"
-        progress: "%{status_html} Export %{name}: %{progress}%"
+      gtfs: &export_messages
+        failed: "%{status_html} Export <i>%{name}</i> has failed"
+        running: "%{status_html} Export <i>%{name}</i> has started"
+        successful: "%{status_html} Export <i>%{name}</i> succeeded"
+        progress: "%{status_html} Export <i>%{name}</i>: %{progress}%"
+      netex: *export_messages
+      netex_full: *export_messages

@@ -8,9 +8,21 @@
         - if has_feature?(:stop_area_localized_names)
           .form-group
             .col-sm-3.col-xs-5
-            .col-sm-9.col-xs-7
-              - f.object.localized_names.each do |k, v|
-                .col-md-6= f.input "localized_names[#{k}]", input_html: { value: v }, label: label_for_country(k)
+            .col-sm-9.col-xs-7.locales
+              - default = f.object.stop_area_referential.sorted_locales.select{|l| l[:default] || f.object.localized_names[l[:code]].present? }.map{|l| l[:code]}
+              - default.each do |k|
+                .col-md-6= f.input "localized_names[#{k}]", input_html: { value: f.object.localized_names[k.to_s] }, label: label_for_country(k)
+
+          .row.add-locales.mb-md
+            - countries = f.object.stop_area_referential.sorted_locales.map{|l| l[:code]} - default
+            - if countries.present?
+              - options = countries.map { |c| "<option id='#{c}' country_name='#{@stop_area_referential.locale_name(code: c)}'>#{@stop_area_referential.locale_name(code: c)}</option>" }.join('')
+              .col-sm-4.col-xs-5
+              .col-sm-8.col-xs-7
+                = select_tag :add_locale, raw(options), 'data-select2ed': 'true'
+                = link_to '#', class: 'btn btn-primary add-locale' do
+                  = fa_icon :plus
+                  = 'actions.add'.t
         - if has_feature?("route_stop_areas_all_types")
           = f.input :kind,
               as: :radio_buttons,
@@ -83,3 +95,15 @@
   = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'stop_area_form'
 
 = javascript_pack_tag "stop_areas/new"
+coffee:
+  $('.add-locale').click (e)->
+    option = $('#add_locale').find('option:selected')
+    return unless option.length > 0
+
+    row  = $("<div class='col-md-6'><div class='form-group'><label class='col-sm-4 col-xs-5 control-label string optional' for='stop_area_localized_names[#{option.attr('id')}]'><span title='#{option.attr('country_name')}' class='mr-xs flag-icon flag-icon-#{option.attr('id').split('_')[1].toLowerCase()}'></span></label><div class='col-sm-8 col-xs-7'><input class='form-control string optional' value='' type='text' name='stop_area[localized_names[#{option.attr('id')}]' id='stop_area_localized_names[#{option.attr('id')}]'></div></div></div>")
+    row.appendTo $('.locales')
+    option.remove()
+    unless $('#add_locale').find('option:selected').length > 0
+      $('.row.add-locales').remove()
+    e.preventDefault()
+    false

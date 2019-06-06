@@ -153,7 +153,7 @@ describe Chouette::Line, :type => :model do
       end
 
       context 'with active_from set' do
-        let(:active_from){ Time.now }
+        let(:active_from){ Time.now.to_date }
 
         it 'should be false' do
           expect(line.active?).to be_falsy
@@ -164,7 +164,7 @@ describe Chouette::Line, :type => :model do
       end
 
       context 'with active_until set' do
-        let(:active_until){ 1.year.from_now }
+        let(:active_until){ 1.year.from_now.to_date }
 
         it 'should be false' do
           expect(line.active?).to be_falsy
@@ -174,7 +174,7 @@ describe Chouette::Line, :type => :model do
         end
 
         context 'with active_from set' do
-          let(:active_from){ Time.now }
+          let(:active_from){ Time.now.to_date }
 
           it 'should be false' do
             expect(line.active?).to be_falsy
@@ -187,7 +187,7 @@ describe Chouette::Line, :type => :model do
     end
 
     context 'with active_from set' do
-      let(:active_from){ 1.day.from_now }
+      let(:active_from){ Time.now.to_date + 1 }
 
       it 'should depend on the date' do
         expect(line.active?).to be_falsy
@@ -197,21 +197,21 @@ describe Chouette::Line, :type => :model do
       end
 
       context 'with active_until set' do
-        let(:active_until){ 10.days.from_now }
+        let(:active_until){ Time.now.to_date + 10 }
 
         it 'should depend on the date' do
           expect(line.active?).to be_falsy
-          expect(line.active?(10.days.from_now)).to be_truthy
-          expect(line.active?(11.days.from_now)).to be_falsy
+          expect(line.active?(Time.now.to_date + 10)).to be_truthy
+          expect(line.active?(Time.now.to_date + 11)).to be_falsy
           expect(Chouette::Line.active).to_not include line
-          expect(Chouette::Line.active(10.days.from_now)).to include line
-          expect(Chouette::Line.active(11.days.from_now)).to_not include line
+          expect(Chouette::Line.active(Time.now.to_date + 10)).to include line
+          expect(Chouette::Line.active(Time.now.to_date + 11)).to_not include line
         end
       end
     end
 
     context 'with active_until set' do
-      let(:active_until){ 1.day.ago }
+      let(:active_until){ Time.now.to_date - 1 }
 
       it 'should depend on the date' do
         expect(line.active?).to be_falsy

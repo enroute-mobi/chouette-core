@@ -71,13 +71,13 @@ module Chouette
 
     scope :active, lambda { |*args|
       on_date = args.first || Time.now
-      scope = activated.active_from(on_date).active_until(on_date)
+      activated.active_from(on_date).active_until(on_date)
     }
 
     scope :deactivated, -> { where(deactivated: true) }
     scope :activated, -> { where(deactivated: [nil, false]) }
-    scope :active_from, ->(from_date) { where('active_from IS NULL OR active_from <= ?', from_date) }
-    scope :active_until, ->(until_date) { where('active_until IS NULL OR active_until >= ?', until_date) }
+    scope :active_from, ->(from_date) { where('active_from IS NULL OR active_from <= ?', from_date.to_date) }
+    scope :active_until, ->(until_date) { where('active_until IS NULL OR active_until >= ?', until_date.to_date) }
 
     scope :active_after, ->(date) { activated.where('active_until IS NULL OR active_until >= ?', date) }
     scope :active_before, ->(date) { activated.where('active_from IS NULL OR active_from < ?', date) }

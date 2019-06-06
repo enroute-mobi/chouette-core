@@ -5,6 +5,7 @@ class ReferentialAudit
     attr_reader :referential
     attr_accessor :interfaces_group
     attr_accessor :status
+    attr_accessor :output
 
     def self.register klass
       @items ||= []

@@ -189,7 +189,8 @@ module StopAreasHelper
       ].compact,
       sortable: false,
       links: [:show],
-      cls: 'table'
+      cls: 'table',
+      action: :index
   end
 
   def more_connections_link(stop_area, stop_area_referential)
@@ -208,7 +209,7 @@ module StopAreasHelper
     stop = (connection_link.departure_id == stop_id ? connection_link.arrival : connection_link.departure)
     stop.slice(:id, :longitude, :latitude)
   end
-  
+
   def stop_area_specific_stops(specific_stops, stop_area_referential)
     table_builder_2 specific_stops,
       [ \

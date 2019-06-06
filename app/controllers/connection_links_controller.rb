@@ -40,26 +40,23 @@ class ConnectionLinksController < ChouetteController
 
   def collection
     @q = parent.connection_links.search(params[:q])
-    @connection_links ||= connection_links = @q.result(:distinct => true).includes(sort_param).order("#{sort_column} #{sort_direction}").paginate(:page => params[:page])
+    @connection_links ||= if sort_column == 'departure'
+      @q.result.joins('INNER JOIN public.stop_areas departures ON departures.id = connection_links.departure_id').order("departures.name #{sort_direction}").paginate(:page => params[:page])
+    else
+      @q.result.joins('INNER JOIN public.stop_areas arrivals ON arrivals.id = connection_links.arrival_id').order("arrivals.name #{sort_direction}").paginate(:page => params[:page])
+    end
   end
 
   private
 
-  def sort_param
-    %w(departure arrival).include?(params[:sort]) ? params[:sort] : 'departure'
-  end
-
   def sort_column
-    return 'stop_areas.name' if params[:q].blank?
-    sort_param == 'arrival' ? 'arrivals_connection_links_2.name' : 'departures_connection_links.name'
+    params[:sort].presence || 'departure'
   end
 
   def sort_direction
     %w[asc desc].include?(params[:direction]) ?  params[:direction] : 'asc'
   end
 
-  # alias_method :current_referential, :stop_area_referential
-  # helper_method :current_referential
 
   def connection_link_params
     fields = [

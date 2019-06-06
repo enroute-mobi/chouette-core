@@ -1,56 +1,65 @@
 fr:
   connection_links:
+    search_no_results: "Aucune correspondance ne correspond à votre recherche"
     actions:
+      show: "Afficher cette correspondance"
       new: "Ajouter une correspondance"
       edit: "Editer cette correspondance"
       destroy: "Supprimer cette correspondance"
       destroy_confirm: "Etes vous sûr de supprimer cette correspondance ?"
-      select_areas: "Editer les départs/arrivées"
+    errors:
+      same_arrival_and_departure: "Les deux arrêts doivent être distincts"
     new:
-      title: "Ajouter une correspondance"
+      title: "Créer une correspondance entre arrêts"
     edit:
-      title: "Editer la correspondance %{connection_link}"
+      title: "Editer la correspondance %{id}"
     show:
-      title: "Correspondance %{connection_link}"
-      durations: "Durées (hh mm ss) :"
-    connection_link:
-      from: "De"
-      to: "vers"
+      title: "Correspondance %{id}"
+    direction:
+      name: "Sens"
+      both: "Double"
+      one: "Simple"
     index:
-      name: "Recherche par nom"
-      advanced_search: "Recherche avancée"
       title: "Correspondances"
-      departure: "Arrêt de départ"
-      arrival: "Arrêt d'arrivée"
-      selection: "Sélection"
-      selection_all: "Tous"
-    select_departure:
-      title: "Sélection de l'arrêt de départ de %{connection_link}"
-    select_arrival:
-      title: "Sélection de l'arrêt d'arrivée de %{connection_link}"
-    select_areas:
-      title: "Sélection des arrêts de départ et d'arrivée de %{connection_link}"
+      duration: "Durée"
+    form:
+      calculate_costs: "Recalculer les durées"
+      sections:
+        identification: "Identification"
+        path: "Parcours"
+        departure: "Premier arrêt"
+        arrival: "Deuxième arrêt"
+        general: "Général"
+    filters:
+      departure_or_arrival_name: "Recherche par nom d'arrêt"
   activerecord:
     models:
       connection_link:
-        zero:  "correspondance"
+        zero:  "correspondances"
         one:   "correspondance"
         other: "correspondances"
     attributes:
       connection_link:
-        departure: "Arrêt de départ"
-        arrival: "Arrêt d'arrivée"
-        departure_id: "Arrêt de départ"
-        arrival_id: "Arrêt d'arrivée"
-        undefined: "non défini"
+        both_ways: "Correspondance dans les deux sens"
+        departure: "Premier arrêt"
+        arrival: "Deuxième arrêt"
+        departure_id: "Premier arrêt"
+        arrival_id: "Deuxième arrêt"
         name: "Nom"
         comment: "Commentaire"
         link_distance: "Distance (m)"
         connection_link_type: "Type"
-        default_duration: "moyenne"
-        frequent_traveller_duration: "pour un habitué"
-        occasional_traveller_duration: "pour un voyageur occasionnel"
-        mobility_restricted_traveller_duration: "pour un voyageur à mobilité réduite"
+        underground: "Couverte"
+        mixed: "Mixte"
+        overground: "Extérieure"
+        default_duration: "Durée standard (minutes)"
+        frequent_traveller_duration: "Voyageur régulier"
+        occasional_traveller_duration: "Voyageur occasionnel"
+        mobility_restricted_traveller_duration: "Voyageur à mobilité réduite"
+        default_duration_in_min: "Durée standard (minutes)"
+        frequent_traveller_duration_in_min: "Voyageur régulier"
+        occasional_traveller_duration_in_min: "Voyageur occasionnel"
+        mobility_restricted_traveller_duration_in_min: "Voyageur à mobilité réduite"
         mobility_restricted_suitability: "Accès pour voyageur à mobilité réduite"
         stairs_availability: "Escalator"
         lift_availability: "Ascenseur"
@@ -59,24 +68,3 @@ fr:
         created_at: "Créé le"
         updated_at: "Edité le"
         creator_id: "Créé par"
-  formtastic:
-    titles:
-      connection_link:
-        objectid: "[prefixe]:ConnectionLink:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
-        link_distance: ""
-      neptune:
-        connection_link:
-          objectid: "[prefixe]:ConnectionLink:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
-          link_distance: ""
-      netex:
-        connection_link:
-          objectid: "[prefixe]:ConnectionLink:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
-          link_distance: ""
-      gtfs:
-        connection_link:
-          objectid: "[prefixe]:ConnectionLink:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
-          link_distance: ""
-      hub:
-        connection_link:
-          objectid: "[prefixe]:ConnectionLink:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
-          link_distance: "Au plus 10000.0 mètres."

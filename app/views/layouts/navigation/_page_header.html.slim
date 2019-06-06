@@ -6,7 +6,7 @@
     .row
       .col-lg-8.col-md-8.col-sm-12.col-xs-12
         - if defined?(resource_class)
-          .page-icon
+          .page-icon class="page-icon-#{resource_class.model_name.name.underscore}"
             span.sb class="sb-#{resource_class.model_name.name.underscore}"
         .page-title
           - if content_for? :page_header_title

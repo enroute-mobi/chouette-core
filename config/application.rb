@@ -61,6 +61,9 @@ module ChouetteIhm
     SmartEnv.add :DELAYED_JOB_REAPER_HEARTBEAT_INTERVAL_SECONDS, default: 20
     SmartEnv.add :DELAYED_JOB_REAPER_HEARTBEAT_TIMEOUT_SECONDS, default: 60
     SmartEnv.add_boolean :DELAYED_JOB_REAPER_WORKER_TERMINATION_ENABLED, default: true
+    SmartEnv.add :DEFAULT_CONNECTION_SPEED, default: 4.8
+    SmartEnv.add :FREQUENT_TRAVELLER_CONNECTION_SPEED, default: 6
+    SmartEnv.add :OCCASIONAL_TRAVELLER_CONNECTION_SPEED, default: 3.5
     SmartEnv.add_integer :REFERENTIALS_CLEANING_COOLDOWN
     SmartEnv.add_boolean :ENABLE_LINK_TO_SUPPORT, default: false
 
@@ -105,6 +108,12 @@ module ChouetteIhm
     config.additional_destinations.push *SmartEnv["CHOUETTE_ADDITIONAL_PUBLICATION_DESTINATIONS"].split(',')
 
     config.enable_transactional_checksums = SmartEnv.boolean('CHOUETTE_TRANSACTIONAL_CHECKSUMS')
+
+    config.connection_speeds = [
+        SmartEnv[:DEFAULT_CONNECTION_SPEED],
+        SmartEnv[:FREQUENT_TRAVELLER_CONNECTION_SPEED],
+        SmartEnv[:OCCASIONAL_TRAVELLER_CONNECTION_SPEED]
+    ]
 
     unless Rails.env.production?
         # Work around sprockets+teaspoon mismatch:

@@ -7,23 +7,47 @@
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = definition_list t("stop_areas.form.sections.identification"), stop_area_identification_metadatas(@stop_area, @stop_area_referential)
-
-    .row
-      .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        = definition_list t("stop_areas.form.sections.location"), stop_area_location_metadatas(@stop_area, @stop_area_referential)
-
-      .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = definition_list t("stop_areas.form.sections.general"), stop_area_general_metadatas(@stop_area)
 
-    - if @stop_area.is_referent
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = definition_list t("stop_areas.form.sections.location"), stop_area_location_metadatas(@stop_area, @stop_area_referential)
+        - if @stop_area.longitude && @stop_area.latitude
+          #connection_link_map.map.mb-lg
+    .
+    - if @stop_area.is_referent || has_feature?(:stop_area_connection_links)
       .row
-        .col-lg-6.col-md-6.col-sm-12.col-xs-12
-          h4.underline= Chouette::StopArea.tmf('specific_stops')
+        - if @stop_area.is_referent
+          .col-lg-6.col-md-6.col-sm-12.col-xs-12
+            h4.underline= Chouette::StopArea.tmf('specific_stops')
 
-          - if @specific_stops.any?
-            = stop_area_specific_stops(@specific_stops, @stop_area_referential)
-            = new_pagination @specific_stops, 'pull-right'
+            - if @specific_stops.any?
+              = stop_area_specific_stops(@specific_stops, @stop_area_referential)
+              = new_pagination @specific_stops, 'pull-right'
+            - else
+              .mb-xs
+                = replacement_msg t('stop_areas.no_specific_stops')
 
-          - unless @specific_stops.any?
-            .mb-xs
-              = replacement_msg t('stop_areas.no_specific_stops')
+        - if has_feature?(:stop_area_connection_links)
+          .col-lg-6.col-md-6.col-sm-12.col-xs-12
+            h4.underline= t('.connections.title')
+            - if @connection_links.any?
+              = stop_area_connections(@connection_links, @stop_area, @stop_area_referential)
+            - unless @connection_links.any?
+              .mb-xs
+                = replacement_msg t('.connections.no_connection')
+
+            .row
+              .col-md-8
+                = link_to t('connection_links.actions.new'), new_stop_area_referential_connection_link_path(departure_id: @stop_area.id), class: 'btn btn-action large'
+              .col-md-4
+                = more_connections_link(@stop_area, @stop_area_referential) if @stop_area.connection_links.count > 4
+
+
+- if has_feature?(:stop_area_connection_links) && @stop_area.connection_links.any?
+  = javascript_tag do
+    | window.stop_areas = "#{URI.escape(stop_and_connections_json(@stop_area, has_feature?(:stop_area_connection_links)))}";
+    | window.map_pin_orange = "#{URI.escape(asset_path('icons/map_pin_orange.png'))}";
+    | window.map_pin_blue = "#{URI.escape(asset_path('icons/map_pin_blue.png'))}";
+
+  = javascript_include_tag 'OpenLayers/maps_backgrounds.js'
+  = javascript_pack_tag 'stop_areas/show.js'

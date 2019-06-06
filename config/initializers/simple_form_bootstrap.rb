@@ -175,6 +175,34 @@ SimpleForm.setup do |config|
       ba.use :hint, wrap_with: {tag: 'p', class: 'help-block small'}
     end
   end
+
+  config.wrappers :horizontal_shrinked_select, tag: 'div', class: 'form-group', error_class: 'has-error' do |b|
+    b.use :html5
+    b.use :placeholder
+    b.optional :maxlength
+    b.optional :readonly
+    b.use :label, class: 'col-sm-8 col-xs-7 control-label'
+
+    b.wrapper tag: 'div', class: 'col-sm-4 col-xs-5' do |ba|
+      ba.use :input
+      ba.use :error, wrap_with: { tag: 'span', class: 'help-block small' }
+      ba.use :hint,  wrap_with: { tag: 'p', class: 'help-block small' }
+    end
+ end
+
+ config.wrappers :horizontal_shrinked_input, tag: 'div', class: 'form-group', error_class: 'has-error' do |b|
+   b.use :html5
+   b.use :placeholder
+   b.optional :maxlength
+   b.optional :readonly
+   b.use :label, class: 'col-sm-8 col-xs-7 control-label'
+
+   b.wrapper tag: 'div', class: 'col-sm-4 col-xs-5' do |ba|
+     ba.use :input, class: 'form-control'
+     ba.use :error, wrap_with: { tag: 'span', class: 'help-block small' }
+     ba.use :hint,  wrap_with: { tag: 'p', class: 'help-block small' }
+   end
+end
   # Wrappers for forms and inputs using the Bootstrap toolkit.
   # Check the Bootstrap docs (http://getbootstrap.com)
   # to learn about the different styles for forms and inputs,

@@ -167,6 +167,49 @@ module StopAreasHelper
     attributes.merge!(Chouette::StopArea.tmf('comment') => stop_area.try(:comment))
   end
 
+  def associated_stop_link(stop_area, stop_area_referential)
+    link_to(stop_area.name, stop_area_referential_stop_area_path(stop_area_referential, stop_area))
+  end
+
+  def stop_area_connections(connection_links, stop_area, stop_area_referential)
+    table_builder_2 connection_links,
+      [ \
+        TableBuilderHelper::Column.new( \
+          name: t('.connections.stop'), \
+          attribute: Proc.new { |c| link_to c.associated_stop(stop_area.id).name, stop_area_referential_connection_link_path(stop_area_referential, c) } \
+        ), \
+        TableBuilderHelper::Column.new( \
+          name: t('.connections.duration'), \
+          attribute: Proc.new { |c| c.default_duration / 60 } \
+        ), \
+        TableBuilderHelper::Column.new( \
+          name: t('.connections.direction'), \
+          attribute: Proc.new { |c| t(".connections.#{c.direction stop_area.id}") } \
+        ), \
+      ].compact,
+      sortable: false,
+      links: [:show],
+      cls: 'table',
+      action: :index
+  end
+
+  def more_connections_link(stop_area, stop_area_referential)
+    link_name = t('.connections.more', count: (stop_area.connection_links.count - 4))
+    link_path = stop_area_referential_connection_links_path(stop_area_referential, :'q[departure_name_or_arrival_name_cont]' => stop_area.name)
+    link_to link_name, link_path, class: 'btn btn-link'
+  end
+
+  def stop_and_connections_json(stop_area, add_connections)
+    a = [stop_area.slice(:id, :longitude, :latitude)]
+    a += (stop_area.connection_links.map{|c| connected_stop_json_for_show(c, stop_area.id)}) if add_connections
+    a.to_json
+  end
+
+  def connected_stop_json_for_show(connection_link, stop_id)
+    stop = (connection_link.departure_id == stop_id ? connection_link.arrival : connection_link.departure)
+    stop.slice(:id, :longitude, :latitude)
+  end
+
   def stop_area_specific_stops(specific_stops, stop_area_referential)
     table_builder_2 specific_stops,
       [ \

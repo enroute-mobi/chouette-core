@@ -7,7 +7,7 @@ class Import::Gtfs < Import::Base
   after_commit :update_main_resource_status, on:  [:create, :update]
 
   def operation_progress_weight(operation_name)
-    operation_name.to_sym == :stop_times ? 90 : 10.0/9
+    operation_name.to_sym == :stop_times ? 90 : 10.0/10
   end
 
   def operations_progress_total_weight
@@ -71,7 +71,7 @@ class Import::Gtfs < Import::Base
     else
       import_resources :calendars, :calendar_dates, :calendar_checksums
     end
-    import_resources :trips, :stop_times, :missing_checksums
+    import_resources :transfers, :trips, :stop_times, :missing_checksums
   end
 
   def import_agencies
@@ -167,6 +167,73 @@ class Import::Gtfs < Import::Base
 
   def vehicle_journey_by_trip_id
     @vehicle_journey_by_trip_id ||= {}
+  end
+
+  def import_transfers
+    @trips = {}
+    create_resource(:transfers).each(source.transfers, slice: 100, transaction: true) do |transfer, resource|
+      next unless transfer.type == '2'
+      from_id = @stop_areas_id_by_registration_number[transfer.from_stop_id]
+      unless from_id
+        create_message(
+          {
+            criticity: :error,
+            message_key: 'gtfs.transfers.missing_stop_id',
+            message_attributes: { stop_id: transfer.from_stop_id },
+            resource_attributes: {
+              filename: "#{resource.name}.txt",
+              line_number: resource.rows_count,
+              column_number: 0
+            }
+          },
+          resource: resource,
+          commit: true
+        )
+        next
+      end
+      to_id = @stop_areas_id_by_registration_number[transfer.to_stop_id]
+      unless to_id
+        create_message(
+          {
+            criticity: :error,
+            message_key: 'gtfs.transfers.missing_stop_id',
+            message_attributes: { stop_id: transfer.to_stop_id },
+            resource_attributes: {
+              filename: "#{resource.name}.txt",
+              line_number: resource.rows_count,
+              column_number: 0
+            }
+          },
+          resource: resource,
+          commit: true
+        )
+        next
+      end
+
+      connection = referential.stop_area_referential.connection_links.find_by(departure_id: from_id, arrival_id: to_id, both_ways: true)
+      connection ||= referential.stop_area_referential.connection_links.find_or_initialize_by(departure_id: to_id, arrival_id: from_id, both_ways: true)
+      if transfer.min_transfer_time.present?
+        connection.default_duration = transfer.min_transfer_time
+        if [:frequent_traveller_duration, :occasional_traveller_duration,
+          :mobility_restricted_traveller_duration].any? { |k| connection.send(k).present? }
+          create_message(
+            {
+              criticity: :warning,
+              message_key: 'gtfs.transfers.replacing_duration',
+              message_attributes: { from_id: transfer.from_stop_id, to_id: transfer.to_stop_id },
+              resource_attributes: {
+                filename: "#{resource.name}.txt",
+                line_number: resource.rows_count,
+                column_number: 0
+              }
+            },
+            resource: resource,
+            commit: true
+          )
+        end
+      end
+      save_model connection, resource: resource
+    end
   end
 
   def import_trips

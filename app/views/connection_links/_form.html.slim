@@ -1,0 +1,48 @@
+= simple_form_for [@stop_area_referential, @connection_link], html: {class: 'form-horizontal', id: 'connection_link_form'}, wrapper: :horizontal_form do |f|
+  .row
+    .col-lg-12
+      h2.mb-lg= t("connection_links.form.sections.identification")
+
+      = f.input :id, as: :hidden
+      = f.input :departure_id, as: :select, collection: [f.object.departure_id], input_html: { data: { select2ed_placeholder: Chouette::ConnectionLink.tmf('departure'), select2ed_allow_clear: 'true', select2_ajax: 'true', url: autocomplete_stop_area_referential_stop_areas_path(@stop_area_referential), initvalue: {id: f.object.departure_id, text: f.object.departure.try(:full_name)}}}
+      = f.input :arrival_id, as: :select, collection: [f.object.arrival_id], input_html: { data: { select2ed_placeholder: Chouette::ConnectionLink.tmf('arrival'), select2ed_allow_clear: 'true', select2_ajax: 'true', url: autocomplete_stop_area_referential_stop_areas_path(@stop_area_referential), initvalue: {id: f.object.arrival_id, text: f.object.arrival.try(:full_name)}}}
+      = f.input :both_ways, as: :switchable_checkbox
+
+  .separator.section_separator
+  .row
+    .col-lg-12
+      h2.mb-lg= t("connection_links.form.sections.path")
+
+      .form-group#travel_time_calculator
+        .row
+          .col-md-6= f.input :link_distance, wrapper: :horizontal_shrinked_input, input_html: { id: "distance" }
+          .col-md-6.
+            .btn.btn-action#calculate_travel_times
+              = fa_icon :refresh
+              span.ml-xs= t("connection_links.form.calculate_costs")
+        .row
+          = connection_link_duration_select f, :default_duration_in_min
+          = connection_link_duration_select f, :frequent_traveller_duration_in_min
+        .row
+          = connection_link_duration_select f, :occasional_traveller_duration_in_min
+          = connection_link_duration_select f, :mobility_restricted_traveller_duration_in_min
+
+  .separator.section_separator
+
+  .row
+    .col-lg-12
+      h2.mb-lg= t("connection_links.form.sections.general")
+
+      = f.input :connection_link_type, as: :select, collection: connection_link_type_options, include_blank: false
+      = f.input :name
+      = f.input :comment, as: :text, input_html: {rows: 5, title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.connection_links.comment")}
+
+  .separator
+
+  = cancel_button
+  = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'connection_link_form'
+
+= javascript_pack_tag "connection_links/new"
+
+= javascript_tag do
+  | new TravelTimeCalculator(#{Rails.application.config.connection_speeds});

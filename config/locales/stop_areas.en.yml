@@ -79,6 +79,16 @@ en:
       access_managment: "Access Points and Links managment"
       access_points: "Access Points"
       not_editable: "The area type is not editable"
+      connections:
+        title: "Connections"
+        stop: "Stop area"
+        duration: "Suration"
+        direction: "Direction"
+        both_ways: "Both ways"
+        to: "To"
+        from: "From"
+        no_connection: "No connection associated"
+        more: "And %{count} more"
     genealogical:
       genealogical: "Links between stop area"
       genealogical_routing: "Routing constraint's links"

@@ -90,6 +90,7 @@ class StopAreasController < ChouetteController
       end
 
       @stop_area = @stop_area.decorate
+      @connection_links = ConnectionLinkDecorator.decorate(@stop_area.connection_links.limit(4))
       @specific_stops = @stop_area.specific_stops.paginate(:page => params[:page], :per_page => 5)
     end
   end

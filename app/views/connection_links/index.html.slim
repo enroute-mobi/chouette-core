@@ -1,0 +1,53 @@
+- breadcrumb :connection_links, @stop_area_referential
+
+.page_content
+  .container-fluid
+    - if params[:q].present? or @connection_links.any?
+      .row
+        .col-lg-12
+          = render partial: 'filters'
+
+    - if @connection_links.any?
+      .row
+        .col-lg-12
+          = table_builder_2 @connection_links,
+            [ \
+              TableBuilderHelper::Column.new( \
+                key: :departure, \
+                attribute: Proc.new { |c| c.departure.name }, \
+                link_to: lambda do |connection_link| \
+                  stop_area_referential_stop_area_path( \
+                    @stop_area_referential, \
+                    connection_link.departure \
+                  ) \
+                end \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :arrival, \
+                attribute: Proc.new { |c| c.arrival.name }, \
+                link_to: lambda do |connection_link| \
+                  stop_area_referential_stop_area_path( \
+                    @stop_area_referential, \
+                    connection_link.arrival \
+                  ) \
+                end \
+              ), \
+              TableBuilderHelper::Column.new( \
+                name: t('.duration'), \
+                attribute: Proc.new { |c| c.default_duration / 60 }, \
+                sortable: false \
+              ), \
+              TableBuilderHelper::Column.new( \
+                name: t('connection_links.direction.name'), \
+                attribute: Proc.new { |c| localized_both_ways c }, \
+                sortable: false \
+              ), \
+            ].compact,
+            cls: 'table has-filter has-search'
+
+          = new_pagination @connection_links, 'pull-right'
+
+    - unless @connection_links.any?
+      .row.mt-xs
+        .col-lg-12
+          = replacement_msg t('connection_links.search_no_results')

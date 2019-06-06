@@ -4,21 +4,7 @@ class ComplianceControlDecorator < AF83::Decorator
   set_scope { object.compliance_control_set }
 
   with_instance_decorator do |instance_decorator|
-    instance_decorator.show_action_link do |l|
-      l.content t('compliance_control_sets.actions.show')
-      l.href do
-        h.compliance_control_set_compliance_control_path(
-          object.compliance_control_set.id,
-          object.id
-        )
-      end
-    end
-
-    instance_decorator.edit_action_link
-
-    instance_decorator.destroy_action_link do |l|
-      l.data {{ confirm: h.t('compliance_controls.actions.destroy_confirm') }}
-    end
+    instance_decorator.crud
   end
 
   define_instance_class_method :predicate do

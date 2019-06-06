@@ -3,13 +3,10 @@ class AggregateDecorator < AF83::Decorator
   set_scope { context[:workgroup] }
 
   with_instance_decorator do |instance_decorator|
-    instance_decorator.show_action_link do |l|
-      l.content t('aggregates.actions.show')
-      l.href do
-        h.workgroup_aggregate_path(object.workgroup, object)
-      end
-    end
+    instance_decorator.set_scope { [object.workgroup] }
 
+    instance_decorator.show_action_link
+    
     instance_decorator.action_link(
       primary: :show,
       policy: :rollback
@@ -19,6 +16,7 @@ class AggregateDecorator < AF83::Decorator
       l.href do
         h.rollback_workgroup_aggregate_path(object.workgroup, object)
       end
+      l.icon :undo
       l.data {{ confirm: h.t('aggregates.actions.rollback_confirm') }}
     end
   end

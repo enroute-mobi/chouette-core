@@ -91,7 +91,6 @@ class Permission
           actions << "destroy"
         end
 
-
         actions.each do |action|
           permissions << "#{resources}.#{action}"
         end

@@ -61,23 +61,27 @@ class Export::Gtfs < Export::Base
   end
 
   def export_to_dir(directory)
+    operations_count = 7
     GTFS::Target.open(File.join(directory, "#{zip_file_name}.zip")) do |target|
       export_companies_to target
-      notify_progress 1.0/6
+      notify_progress 1.0/operations_count
       export_stop_areas_to target
-      notify_progress 2.0/6
+      notify_progress 2.0/operations_count
       export_lines_to target
-      notify_progress 3.0/6
+      export_transfers_to target
+      notify_progress 3.0/operations_count
+      export_lines_to target
+      notify_progress 4.0/operations_count
       # Export Calendar & Calendar_dates
       export_time_tables_to target
-      notify_progress 4.0/6
+      notify_progress 5.0/operations_count
       # Export Trips
       export_vehicle_journeys_to target
-      notify_progress 5.0/6
+      notify_progress 5.0/operations_count
       # Export stop_times.txt
       export_vehicle_journey_at_stops_to target
-      notify_progress 6.0/6
-      # Export files fare_rules, fare_attributes, shapes, frequencies, transfers
+      notify_progress 7.0/operations_count
+      # Export files fare_rules, fare_attributes, shapes, frequencies
       # and feed_info aren't yet implemented as import nor export features from
       # the chouette model
     end
@@ -145,9 +149,12 @@ class Export::Gtfs < Export::Base
     end
   end
 
+  def exported_stop_areas
+    Chouette::StopArea.where(id: journeys.joins(route: :stop_points).pluck(:"stop_points.stop_area_id").uniq).where(kind: :commercial).order('parent_id ASC NULLS FIRST')
+  end
+
   def export_stop_areas_to(target)
-    stops = Chouette::StopArea.where(id: journeys.joins(route: :stop_points).pluck(:"stop_points.stop_area_id").uniq).where(kind: :commercial).order('parent_id ASC NULLS FIRST')
-    results = export_stop_areas_recursively(stops)
+    results = export_stop_areas_recursively(exported_stop_areas)
     results.each do |stop_area|
       target.stops << {
         id: stop_id(stop_area),
@@ -161,6 +168,26 @@ class Export::Gtfs < Export::Base
         timezone: stop_area.time_zone
         #code: TO DO
         #wheelchair_boarding: TO DO wheelchair_boarding <=> mobility_restricted_suitability ?
+      }
+    end
+  end
+
+  def export_transfers_to(target)
+    stop_ids = exported_stop_areas.select(:id).to_sql
+    connections = referential.stop_area_referential.connection_links.where("departure_id IN (#{stop_ids}) AND arrival_id IN (#{stop_ids})")
+    transfers = {}
+    stops = connections.map do |c|
+      # all transfers are both ways
+      key = [stop_id(c.departure), stop_id(c.arrival)].sort
+      transfers[key] = c.default_duration
+    end.uniq
+
+    transfers.each do |stops, min_transfer_time|
+      target.transfers << {
+        from_stop_id: stops.first,
+        to_stop_id: stops.last,
+        type: '2',
+        min_transfer_time: min_transfer_time
       }
     end
   end

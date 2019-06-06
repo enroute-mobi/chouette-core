@@ -173,7 +173,9 @@ class AF83::Decorator::Link
     elsif args.size == 0
       out = ""
       if @options[:icon].present?
-        out << "<span class='mr-xs fa fa-#{@options[:icon]}'></span>"
+        klass = "mr-xs fa fa-#{@options[:icon]}"
+        klass << " text-#{@options[:icon_class]}" if @options[:icon_class].present?
+        out << "<span class='#{klass}'></span>"
       end
       content = @options[:content]
       content = context.instance_exec(self, &content) if content.is_a?(Proc)

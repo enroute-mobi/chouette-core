@@ -1,24 +1,28 @@
 require 'spec_helper'
 
 describe Chouette::ConnectionLink, :type => :model do
-  let!(:quay) { create :stop_area, :area_type => "zdep" }
-  # let!(:boarding_position) { create :stop_area, :area_type => "BoardingPosition" }
-  let!(:commercial_stop_point) { create :stop_area, :area_type => "lda" }
-  let!(:stop_place) { create :stop_area, :area_type => "zdlp" }
   subject { create(:connection_link) }
 
-  it { is_expected.to validate_uniqueness_of :objectid }
-  
+  let(:stop_area) { create :stop_area }
 
-  describe '#get_objectid' do
-    subject { super().get_objectid }
-    it {is_expected.to be_kind_of(Chouette::Objectid::StifNetex)}
+  it "should have a valid factory" do
+    expect(build(:connection_link)).to be_valid
   end
 
-  it { is_expected.to validate_presence_of :name }
+  describe "validations" do
+    it { should belong_to(:stop_area_referential) }
+    it { should validate_presence_of :link_distance }
+    it { should validate_presence_of :default_duration }
+    it { should validate_presence_of :departure_id }
+    it { should validate_presence_of :arrival_id }
+
+    it "should have different departure and arrival" do
+
+      expect{ create(:connection_link, departure: stop_area, arrival: stop_area) }.to raise_error ActiveRecord::RecordInvalid
+    end
+  end
 
   describe "#connection_link_type" do
-
     def self.legacy_link_types
       %w{Underground Mixed Overground}
     end
@@ -32,6 +36,7 @@ describe Chouette::ConnectionLink, :type => :model do
         end
       end
     end
+
     context "when link_type is nil" do
       it "should be nil" do
         subject.link_type = nil
@@ -42,11 +47,9 @@ describe Chouette::ConnectionLink, :type => :model do
   end
 
   describe "#connection_link_type=" do
-
     it "should change link_type with ConnectionLinkType#name" do
       subject.connection_link_type = "Test"
       expect(subject.link_type).to eq("Test")
     end
-
   end
 end

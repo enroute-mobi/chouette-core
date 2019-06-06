@@ -11,17 +11,14 @@ class ExportDecorator < AF83::Decorator
     cls
   end
 
-  create_action_link do |l|
-    l.content t('exports.actions.new')
-  end
+  create_action_link
 
   with_instance_decorator do |instance_decorator|
     instance_decorator.show_action_link
 
     instance_decorator.action_link primary: :show do |l|
-      l.content do
-        "<span class='fa fa-download'></span><span>#{I18n.t('actions.download')}</span>".html_safe
-      end
+      l.content t('actions.download')
+      l.icon :download
       l.href   { object.file.url }
       l.disabled { !object.file.present? }
       l.download { object.file&.file&.filename }

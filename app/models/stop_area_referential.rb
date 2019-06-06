@@ -7,6 +7,7 @@ class StopAreaReferential < ApplicationModel
 
   has_many :stop_areas, class_name: 'Chouette::StopArea'
   has_many :stop_area_referential_syncs, -> {order created_at: :desc}
+  has_many :connection_links, class_name: 'Chouette::ConnectionLink'
   has_many :workbenches, dependent: :nullify
   has_one  :workgroup, dependent: :nullify
   has_many :stop_area_providers

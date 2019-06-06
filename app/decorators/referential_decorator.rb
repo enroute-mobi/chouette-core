@@ -2,9 +2,6 @@ class ReferentialDecorator < AF83::Decorator
   decorates Referential
 
   with_instance_decorator do |instance_decorator|
-    instance_decorator.show_action_link
-    instance_decorator.edit_action_link
-
     instance_decorator.action_link feature: :referential_vehicle_journeys, secondary: :show, on: :show, policy: :browse do |l|
       l.content t('referential_vehicle_journeys.index.title')
       l.href { h.referential_vehicle_journeys_path(object) }
@@ -47,9 +44,6 @@ class ReferentialDecorator < AF83::Decorator
       l.href { h.new_referential_clean_up_path(object.id) }
     end
 
-    instance_decorator.destroy_action_link  do |l|
-      l.href { h.referential_path(object) }
-      l.data {{ confirm: h.t('referentials.actions.destroy_confirm') }}
-    end
+    instance_decorator.crud
   end
 end

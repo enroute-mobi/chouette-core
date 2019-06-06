@@ -11,15 +11,14 @@ class ImportDecorator < AF83::Decorator
     cls
   end
 
-  create_action_link if: -> { context[:workbench].present? } do |l|
-    l.content t('imports.actions.new')
-  end
+  create_action_link if: -> { context[:workbench].present? }
 
   with_instance_decorator do |instance_decorator|
     instance_decorator.show_action_link
 
     instance_decorator.action_link secondary: :show do |l|
       l.content t('imports.actions.download')
+      l.icon :download
       l.href { object.file.url }
     end
   end

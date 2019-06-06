@@ -1,222 +1,168 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<PublicationDelivery xsi:schemaLocation="http://www.netex.org.uk/netex localPathToXSDFileIfNecessary/NeTEx_publication.xsd" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:acsb="http://www.ifopt.org.uk/acsb" xmlns:ifopt="http://www.ifopt.org.uk/ifopt" xmlns:netex="http://www.netex.org.uk/netex" xmlns:siri="http://www.siri.org.uk/siri" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
- <PublicationTimestamp>2016-08-11T06:00:46.0Z</PublicationTimestamp>
- <ParticipantRef>SYS001</ParticipantRef>
- <dataObjects>
-  <CompositeFrame version="1" created="2016-08-11T06:00:46.0Z" id="STIF-REFLEX:CompositeFrame:NETEX_STIF">
-   <frames>
-    <GeneralFrame version="001" id="STIF-REFLEX:TypeOfFrame:NETEX_COMMUN">
-     <Name>Frame NETEX_COMMUN</Name>
-     <Description>Frame NETEX_COMMUN</Description>
-     <members modificationSet="all">
-      <GeneralGroupOfEntities version="657750" created="2015-04-21T10:04:37.0Z" changed="2015-04-21T10:04:37.0Z" id="FR:91479:GDL:415731:STIF">
-       <Name>Aéroport d'Orly</Name>
-       <PurposeOfGroupingRef version="any" ref="NETEX_ARRET_STIF:PurposeOfGrouping:groupOfStopPlace"/>
-       <members>
-        <StopPlaceRef ref="FR:91479:LDA:63284:STIF">version=63284</StopPlaceRef>
-        <StopPlaceRef ref="FR:91479:LDA:63278:STIF">version=63278</StopPlaceRef>
-       </members>
-      </GeneralGroupOfEntities>
-      <GeneralGroupOfEntities version="657753" created="2015-04-21T10:04:57.0Z" changed="2015-04-21T10:04:57.0Z" id="FR:77282:GDL:415732:STIF">
-       <Name>Aéroport Roissy Charles de Gaulle</Name>
-       <PurposeOfGroupingRef version="any" ref="NETEX_ARRET_STIF:PurposeOfGrouping:groupOfStopPlace"/>
-       <members>
-        <StopPlaceRef ref="FR:77282:LDA:69212:STIF">version=69212</StopPlaceRef>
-        <StopPlaceRef ref="FR:93073:LDA:412554:STIF">version=480224</StopPlaceRef>
-        <StopPlaceRef ref="FR:93073:LDA:412553:STIF">version=480203</StopPlaceRef>
-        <StopPlaceRef ref="FR:77291:LDA:73699:STIF">version=654808</StopPlaceRef>
-        <StopPlaceRef ref="FR:null:LDA:412679:STIF">version=483360</StopPlaceRef>
-        <StopPlaceRef ref="FR:95527:LDA:74162:STIF">version=739348</StopPlaceRef>
-        <StopPlaceRef ref="FR:77291:LDA:411293:STIF">version=411628</StopPlaceRef>
-        <StopPlaceRef ref="FR:93073:LDA:73596:STIF">version=73596</StopPlaceRef>
-        <StopPlaceRef ref="FR:93073:LDA:73846:STIF">version=73846</StopPlaceRef>
-        <StopPlaceRef ref="FR:77291:LDA:73845:STIF">version=73845</StopPlaceRef>
-        <StopPlaceRef ref="FR:77291:LDA:73595:STIF">version=73595</StopPlaceRef>
-       </members>
-      </GeneralGroupOfEntities>
-      <GeneralGroupOfEntities version="657747" created="2015-04-21T10:04:27.0Z" changed="2015-04-21T10:04:27.0Z" id="FR:75115:GDL:415730:STIF">
-       <Name>Gare Montparnasse</Name>
-       <PurposeOfGroupingRef version="any" ref="NETEX_ARRET_STIF:PurposeOfGrouping:groupOfStopPlace"/>
-       <members>
-        <StopPlaceRef ref="FR:75115:LDA:71139:STIF">version=657746</StopPlaceRef>
-       </members>
-      </GeneralGroupOfEntities>
-      <ValueSet version="any" id="NETEX_ARRET_STIF:ValueSet:VS01">
-       <values>
-        <PurposeOfGrouping version="any" id="NETEX_ARRET_STIF:PurposeOfGrouping:groupOfStopPlace">
-         <Name>Group of Stop Place</Name>
-         <classes>
-          <ClassRef nameOfClass="StopPlace"/>
-         </classes>
-        </PurposeOfGrouping>
-       </values>
-      </ValueSet>
-     </members>
-    </GeneralFrame>
-    <GeneralFrame version="001" id="STIF-REFLEX:TypeOfFrame:NETEX_ARRET_STIF">
-     <Name>Frame NETEX_ARRET_STIF</Name>
-     <Description>Frame NETEX_ARRET_STIF</Description>
-     <members modificationSet="all">
-      <StopPlace version="777416" created="2014-12-29T03:12:51.0Z" changed="2016-07-26T12:07:19.0Z" id="FR:77153:LDA:69325:STIF">
-       <Name>First stopPlace</Name>
-       <placeTypes>
-        <TypeOfPlaceRef ref="LDA"/>
-       </placeTypes>
-       <PostalAddress version="any" id="STIF-REFLEX:PostalAddress:69325">
-        <Town>Dammartin-en-Goële</Town>
-        <PostalRegion>77153</PostalRegion>
-       </PostalAddress>
-       <AccessibilityAssessment version="any" id="STIF-REFLEX:AccessibilityAssessment:69325">
-        <MobilityImpairedAccess>false</MobilityImpairedAccess>
-       </AccessibilityAssessment>
-       <StopPlaceType>onstreetBus</StopPlaceType>
-      </StopPlace>
-      <StopPlace version="42564" created="2014-12-29T03:12:51.0Z" changed="2014-12-29T03:12:51.0Z" id="FR:77153:ZDL:42564:STIF">
-       <keyList>
-        <KeyValue typeOfKey="OBJET_QUALIFIER">
-         <Key>OBJECT_STATUS</Key>
-         <Value>REFERENCE_OBJECT</Value>
-        </KeyValue>
-       </keyList>
-       <Name>First stopPlace children</Name>
-       <placeTypes>
-        <TypeOfPlaceRef ref="ZDL"/>
-       </placeTypes>
-       <PostalAddress version="any" id="STIF-REFLEX:PostalAddress:42564">
-        <Town>Dammartin-en-Goële</Town>
-        <PostalRegion>77153</PostalRegion>
-       </PostalAddress>
-       <AccessibilityAssessment version="any" id="STIF-REFLEX:AccessibilityAssessment:42564">
-        <MobilityImpairedAccess>false</MobilityImpairedAccess>
-       </AccessibilityAssessment>
-       <ParentSiteRef ref="FR:77153:LDA:69325:STIF" version="777416"/>
-       <entrances>
-        <StopPlaceEntrance version="174" id="FR:91421:ADL:174:STIF">
-         <Name>Montgeron Crosne - Rue Du Moulin De Senlis</Name>
-         <Centroid>
-          <Location>
-           <gml:pos srsName="EPSG:2154">660491.94 6845481.0</gml:pos>
-          </Location>
-         </Centroid>
-         <PostalAddress version="any" id="STIF-REFLEX:PostalAddress:174">
-          <Town>Montgeron</Town>
-          <PostalRegion>91421</PostalRegion>
-         </PostalAddress>
-         <IsEntry>true</IsEntry>
-         <IsExit>true</IsExit>
-        </StopPlaceEntrance>
-        <StopPlaceEntrance version="173" id="FR:91421:ADL:173:STIF">
-         <Name>Montgeron Crosne - Rue Du Moulin De Senlis</Name>
-         <Centroid>
-          <Location>
-           <gml:pos srsName="EPSG:2154">660324.94 6845590.5</gml:pos>
-          </Location>
-         </Centroid>
-         <PostalAddress version="any" id="STIF-REFLEX:PostalAddress:173">
-          <Town>Montgeron</Town>
-          <PostalRegion>91421</PostalRegion>
-         </PostalAddress>
-         <IsEntry>true</IsEntry>
-         <IsExit>true</IsExit>
-        </StopPlaceEntrance>
-       </entrances>
-       <StopPlaceType>onstreetBus</StopPlaceType>
-       <quays>
-        <QuayRef ref="FR:77153:ZDE:38240:STIF" version="782150"/>
-       </quays>
-      </StopPlace>
-
-      <StopPlace version="779971" created="2014-12-29T12:12:00.0Z" changed="2016-07-28T03:07:39.0Z" id="FR:95277:LDA:65926:STIF">
-       <Name>Second StopPlace</Name>
-       <placeTypes>
-        <TypeOfPlaceRef ref="LDA"/>
-       </placeTypes>
-       <PostalAddress version="any" id="STIF-REFLEX:PostalAddress:65926">
-        <Town>Gonesse</Town>
-        <PostalRegion>95277</PostalRegion>
-       </PostalAddress>
-       <AccessibilityAssessment version="any" id="STIF-REFLEX:AccessibilityAssessment:65926">
-        <MobilityImpairedAccess>false</MobilityImpairedAccess>
-       </AccessibilityAssessment>
-       <StopPlaceType>onstreetBus</StopPlaceType>
-      </StopPlace>
-      <StopPlace version="779966" created="2014-12-29T03:12:51.0Z" changed="2016-07-28T03:07:56.0Z" id="FR:95277:ZDL:46738:STIF">
-       <keyList>
-        <KeyValue typeOfKey="OBJET_QUALIFIER">
-         <Key>OBJECT_STATUS</Key>
-         <Value>REFERENCE_OBJECT</Value>
-        </KeyValue>
-       </keyList>
-       <Name>Second StopPlace children</Name>
-       <placeTypes>
-        <TypeOfPlaceRef ref="ZDL"/>
-       </placeTypes>
-       <PostalAddress version="any" id="STIF-REFLEX:PostalAddress:46738">
-        <Town>Gonesse</Town>
-        <PostalRegion>95277</PostalRegion>
-       </PostalAddress>
-       <AccessibilityAssessment version="any" id="STIF-REFLEX:AccessibilityAssessment:46738">
-        <MobilityImpairedAccess>false</MobilityImpairedAccess>
-       </AccessibilityAssessment>
-       <ParentSiteRef ref="FR:95277:LDA:65926:STIF" version="779971"/>
-       <StopPlaceType>onstreetBus</StopPlaceType>
-       <quays>
-        <QuayRef ref="FR:95277:ZDE:38010:STIF" version="777963"/>
-       </quays>
-      </StopPlace>
-      <Quay version="783636" created="2014-12-29T03:12:51.0Z" changed="2016-08-05T10:08:59.0Z" id="FR:95277:ZDE:38010:STIF">
-       <keyList>
-        <KeyValue typeOfKey="OBJET_QUALIFIER">
-         <Key>OBJECT_STATUS</Key>
-         <Value>REFERENCE_OBJECT</Value>
-        </KeyValue>
-        <KeyValue typeOfKey="OBJET_QUALIFIER">
-         <Key>LINE_ID</Key>
-         <Value>002002003</Value>
-        </KeyValue>
-       </keyList>
-       <Name>Quay of Second StopPlace children</Name>
-       <Centroid>
-        <Location>
-         <gml:pos srsName="EPSG:2154">657252.0 6847664.0</gml:pos>
-        </Location>
-       </Centroid>
-       <PostalAddress version="any" id="STIF-REFLEX:PostalAddress:21634">
-        <Town>Ablon-sur-Seine</Town>
-        <PostalRegion>94001</PostalRegion>
-       </PostalAddress>
-       <AccessibilityAssessment version="any" id="STIF-REFLEX:AccessibilityAssessment:21634">
-        <MobilityImpairedAccess>false</MobilityImpairedAccess>
-       </AccessibilityAssessment>
-      </Quay>
-      <Quay version="783636" created="2014-12-29T03:12:51.0Z" changed="2016-08-05T10:08:59.0Z" id="FR:77153:ZDE:38240:STIF">
-       <keyList>
-        <KeyValue typeOfKey="OBJET_QUALIFIER">
-         <Key>OBJECT_STATUS</Key>
-         <Value>REFERENCE_OBJECT</Value>
-        </KeyValue>
-        <KeyValue typeOfKey="OBJET_QUALIFIER">
-         <Key>LINE_ID</Key>
-         <Value>002002003</Value>
-        </KeyValue>
-       </keyList>
-       <Name>Quay of First stopPlace children</Name>
-       <Centroid>
-        <Location>
-         <gml:pos srsName="EPSG:2154">657252.0 6847664.0</gml:pos>
-        </Location>
-       </Centroid>
-       <PostalAddress version="any" id="STIF-REFLEX:PostalAddress:21634">
-        <Town>Ablon-sur-Seine</Town>
-        <PostalRegion>94001</PostalRegion>
-       </PostalAddress>
-       <AccessibilityAssessment version="any" id="STIF-REFLEX:AccessibilityAssessment:21634">
-        <MobilityImpairedAccess>false</MobilityImpairedAccess>
-       </AccessibilityAssessment>
-      </Quay>
-     </members>
-    </GeneralFrame>
-   </frames>
-  </CompositeFrame>
- </dataObjects>
+<PublicationDelivery xmlns:acsb="http://www.ifopt.org.uk/acsb" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:ifopt="http://www.ifopt.org.uk/ifopt" xmlns:netex="http://www.netex.org.uk/netex" xmlns:siri="http://www.siri.org.uk/siri" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.netex.org.uk/netex localPathToXSDFileIfNecessary/NeTEx_publication.xsd">
+  <PublicationTimestamp>2016-08-11T06:00:46.0Z</PublicationTimestamp>
+  <ParticipantRef>SYS001</ParticipantRef>
+  <dataObjects>
+    <CompositeFrame created="2016-08-11T06:00:46.0Z" id="STIF-REFLEX:CompositeFrame:NETEX_STIF" version="1">
+      <frames>
+        <GeneralFrame id="STIF-REFLEX:TypeOfFrame:NETEX_COMMUN" version="001">
+          <Name>Frame NETEX_COMMUN</Name>
+          <Description>Frame NETEX_COMMUN</Description>
+          <members modificationSet="all">
+            <GeneralGroupOfEntities changed="2015-04-21T10:04:37.0Z" created="2015-04-21T10:04:37.0Z" id="FR:91479:GDL:415731:STIF" version="657750">
+              <Name>Aéroport d'Orly</Name>
+              <PurposeOfGroupingRef ref="NETEX_ARRET_STIF:PurposeOfGrouping:groupOfStopPlace" version="any"/>
+              <members>
+                <StopPlaceRef ref="FR:91479:LDA:63284:STIF">version=63284</StopPlaceRef>
+                <StopPlaceRef ref="FR:91479:LDA:63278:STIF">version=63278</StopPlaceRef>
+              </members>
+            </GeneralGroupOfEntities>
+            <GeneralGroupOfEntities changed="2015-04-21T10:04:57.0Z" created="2015-04-21T10:04:57.0Z" id="FR:77282:GDL:415732:STIF" version="657753">
+              <Name>Aéroport Roissy Charles de Gaulle</Name>
+              <PurposeOfGroupingRef ref="NETEX_ARRET_STIF:PurposeOfGrouping:groupOfStopPlace" version="any"/>
+              <members>
+                <StopPlaceRef ref="FR:77282:LDA:69212:STIF">version=69212</StopPlaceRef>
+                <StopPlaceRef ref="FR:93073:LDA:412554:STIF">version=480224</StopPlaceRef>
+                <StopPlaceRef ref="FR:93073:LDA:412553:STIF">version=480203</StopPlaceRef>
+                <StopPlaceRef ref="FR:77291:LDA:73699:STIF">version=654808</StopPlaceRef>
+                <StopPlaceRef ref="FR:null:LDA:412679:STIF">version=483360</StopPlaceRef>
+                <StopPlaceRef ref="FR:95527:LDA:74162:STIF">version=739348</StopPlaceRef>
+                <StopPlaceRef ref="FR:77291:LDA:411293:STIF">version=411628</StopPlaceRef>
+                <StopPlaceRef ref="FR:93073:LDA:73596:STIF">version=73596</StopPlaceRef>
+                <StopPlaceRef ref="FR:93073:LDA:73846:STIF">version=73846</StopPlaceRef>
+                <StopPlaceRef ref="FR:77291:LDA:73845:STIF">version=73845</StopPlaceRef>
+                <StopPlaceRef ref="FR:77291:LDA:73595:STIF">version=73595</StopPlaceRef>
+              </members>
+            </GeneralGroupOfEntities>
+            <GeneralGroupOfEntities changed="2015-04-21T10:04:27.0Z" created="2015-04-21T10:04:27.0Z" id="FR:75115:GDL:415730:STIF" version="657747">
+              <Name>Gare Montparnasse</Name>
+              <PurposeOfGroupingRef ref="NETEX_ARRET_STIF:PurposeOfGrouping:groupOfStopPlace" version="any"/>
+              <members>
+                <StopPlaceRef ref="FR:75115:LDA:71139:STIF">version=657746</StopPlaceRef>
+              </members>
+            </GeneralGroupOfEntities>
+            <ValueSet id="NETEX_ARRET_STIF:ValueSet:VS01" version="any">
+              <values>
+                <PurposeOfGrouping id="NETEX_ARRET_STIF:PurposeOfGrouping:groupOfStopPlace" version="any">
+                  <Name>Group of Stop Place</Name>
+                  <classes>
+                    <ClassRef nameOfClass="StopPlace"/>
+                  </classes>
+                </PurposeOfGrouping>
+              </values>
+            </ValueSet>
+          </members>
+        </GeneralFrame>
+        <GeneralFrame id="STIF-REFLEX:TypeOfFrame:NETEX_ARRET_STIF" version="001">
+          <Name>Frame NETEX_ARRET_STIF</Name>
+          <Description>Frame NETEX_ARRET_STIF</Description>
+          <members modificationSet="all">
+            <OrganisationalUnit id="FR1:OrganisationalUnit:8:" version="any">
+              <Name>CIF 95 - GOUSSAINVILLE</Name>
+              <TypeOfOrganisationPartRef ref="FR1-ARRET_Organisation"/>
+            </OrganisationalUnit>
+            <StopPlace changed="2019-04-03T19:35:09Z" created="2014-12-28T23:00:00Z" dataSourceRef="FR1-ARRET_AUTO" id="FR::monomodalStopPlace:51735:FR1" version="898172-898173">
+              <Name>Gutenberg - Lycée Boulloche</Name>
+              <Centroid>
+                <Location>
+                  <gml:pos srsName="EPSG:2154">664694.0 6868200.5</gml:pos>
+                </Location>
+              </Centroid>
+              <PostalAddress id="FR1:PostalAddress:51735:" version="any">
+                <Town>Livry-Gargan</Town>
+                <PostalRegion>93046</PostalRegion>
+              </PostalAddress>
+              <ParentSiteRef ref="FR::multimodalStopPlace:73376:FR1"/>
+              <StopPlaceType>onstreetBus</StopPlaceType>
+            </StopPlace>
+            <StopPlace changed="2019-04-03T19:37:32Z" created="2014-12-28T23:00:00Z" dataSourceRef="FR1-ARRET_AUTO" id="FR::multimodalStopPlace:73376:FR1" version="898173">
+              <Name>GUTENBERG - Lycée Boulloche</Name>
+              <Centroid>
+                <Location>
+                  <gml:pos srsName="EPSG:2154">664694.0 6868200.5</gml:pos>
+                </Location>
+              </Centroid>
+              <PostalAddress id="FR1:PostalAddress:73376:" version="any">
+                <Town>Livry-Gargan</Town>
+                <PostalRegion>93046</PostalRegion>
+              </PostalAddress>
+              <StopPlaceType>onstreetBus</StopPlaceType>
+            </StopPlace>
+            <Quay changed="2018-04-11T13:22:30Z" created="2018-04-11T13:22:30Z" dataSourceRef="FR1:OrganisationalUnit:59:" derivedFromObjectRef="FR::Quay:29924:FR1" id="FR::Quay:50123420:FR1" version="944701-898170">
+              <keyList>
+                <KeyValue typeOfKey="LOCATION">
+                  <Key>EPSG_27572</Key>
+                  <Value>613369.0 2435010.0</Value>
+                </KeyValue>
+              </keyList>
+              <Name>GUTENBERG</Name>
+              <PrivateCode>4107</PrivateCode>
+              <Centroid>
+                <Location>
+                  <gml:pos srsName="EPSG:2154">664730.0 6868242.0</gml:pos>
+                </Location>
+              </Centroid>
+              <PostalAddress id="FR1:PostalAddress:50123420:" version="any">
+                <Town>Livry-Gargan</Town>
+                <PostalRegion>93046</PostalRegion>
+              </PostalAddress>
+              <AccessibilityAssessment id="FR1:AccessibilityAssessment:50123420:" version="any">
+                <MobilityImpairedAccess>unknown</MobilityImpairedAccess>
+                <limitations>
+                  <AccessibilityLimitation>
+                    <WheelchairAccess>unknown</WheelchairAccess>
+                    <AudibleSignalsAvailable>unknown</AudibleSignalsAvailable>
+                    <VisualSignsAvailable>unknown</VisualSignsAvailable>
+                  </AccessibilityLimitation>
+                </limitations>
+              </AccessibilityAssessment>
+              <TransportMode>bus</TransportMode>
+              <tariffZones>
+                <TariffZoneRef ref="FR1:TariffZone:4:LOC"/>
+              </tariffZones>
+              <destinations>
+                <DestinationDisplayView>
+                  <Name>234</Name>
+                  <PrivateCode>100100234</PrivateCode>
+                </DestinationDisplayView>
+              </destinations>
+            </Quay>
+            <Quay changed="2018-06-14T13:35:35Z" created="2014-12-28T23:00:00Z" dataSourceRef="FR1-ARRET_AUTO" id="FR::Quay:29924:FR1" version="898170-898172">
+              <Name>Gutenberg</Name>
+              <Centroid>
+                <Location>
+                  <gml:pos srsName="EPSG:2154">664730.0 6868242.0</gml:pos>
+                </Location>
+              </Centroid>
+              <ParentZoneRef ref="FR::monomodalStopPlace:51735:FR1"/>
+              <PostalAddress id="FR1:PostalAddress:29924:" version="any">
+                <Town>Livry-Gargan</Town>
+                <PostalRegion>93046</PostalRegion>
+              </PostalAddress>
+              <AccessibilityAssessment id="FR1:AccessibilityAssessment:29924:" version="any">
+                <MobilityImpairedAccess>unknown</MobilityImpairedAccess>
+                <limitations>
+                  <AccessibilityLimitation>
+                    <WheelchairAccess>partial</WheelchairAccess>
+                    <AudibleSignalsAvailable>unknown</AudibleSignalsAvailable>
+                    <VisualSignsAvailable>unknown</VisualSignsAvailable>
+                  </AccessibilityLimitation>
+                </limitations>
+              </AccessibilityAssessment>
+              <TransportMode>bus</TransportMode>
+              <tariffZones>
+                <TariffZoneRef ref="FR1:TariffZone:4:LOC"/>
+              </tariffZones>
+              <destinations>
+                <DestinationDisplayView>
+                  <Name>234</Name>
+                  <PrivateCode>100100234</PrivateCode>
+                </DestinationDisplayView>
+              </destinations>
+            </Quay>
+          </members>
+        </GeneralFrame>
+      </frames>
+    </CompositeFrame>
+  </dataObjects>
 </PublicationDelivery>

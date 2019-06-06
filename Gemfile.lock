@@ -32,8 +32,7 @@ GIT
 
 GIT
   remote: https://github.com/af83/stif-reflex-api.git
-  revision: d470fe8569a9eab00dcc084d456e3393ef1d1868
-  tag: v0.0.2
+  revision: 52aff199968cdc7292c71d0829324842499c75ff
   specs:
     reflex (0.0.2)
       nokogiri (>= 1.8.5)
@@ -586,6 +585,8 @@ GEM
     rgeo-activerecord (6.1.0)
       activerecord (~> 5.0)
       rgeo (>= 1.0.0)
+    rgeo-proj4 (2.0.0)
+      rgeo (~> 2.0)
     rmagick (2.16.0)
     roo (2.7.1)
       nokogiri (~> 1)
@@ -859,6 +860,7 @@ DEPENDENCIES
   reflex!
   responders
   rgeo
+  rgeo-proj4
   rmagick
   roo
   rspec-rails

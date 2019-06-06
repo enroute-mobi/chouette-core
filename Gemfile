@@ -72,7 +72,7 @@ gem 'bulk_insert'
 # Codifligne API
 gem 'codifligne', af83: 'stif-codifline-api'
 # Reflex API
-gem 'reflex', af83: 'stif-reflex-api', tag: 'v0.0.2'
+gem 'reflex', af83: 'stif-reflex-api'
 
 # Authentication
 gem 'devise'
@@ -86,6 +86,7 @@ gem 'pundit'
 # Map, Geolocalization
 gem 'map_layers', '0.0.4'
 gem 'rgeo'
+gem 'rgeo-proj4'
 # gem 'georuby-ext'
 gem 'geokit'
 gem 'georuby', '2.3.0' # Fix version for georuby-ext because api has changed

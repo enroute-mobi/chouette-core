@@ -2,6 +2,7 @@ fr:
   stop_areas: &fr_stop_areas
     waiting_time_format: "%{value} minutes"
     search_no_results: "Aucun arrêt ne correspond à votre recherche"
+    no_specific_stops: "Cet arrêt n'a aucun arrêt particulier"
     errors:
       empty: Aucun stop_area_id
       parent_area_type: ne peut être de type %{area_type}
@@ -13,6 +14,8 @@ fr:
         invalid: "Valeur invalide (valeur attendue: \"%{mask}\")"
       parent_id:
         must_be_absent: Un parent ne peut être sélectionné pour un arrêt non commercial
+      referent_id:
+        cannot_be_referent_and_specific: Un arrêt ne peut être à la fois référent et arrêt spécifique
     default_geometry_success: "%{count} arrêts édités"
     stop_area:
       no_position: "Pas de position"
@@ -149,9 +152,14 @@ fr:
         routing_stop_ids: "Arrêts concernés par l'ITL"
         routing_line_ids: "Lignes affectées par l'ITL"
         parent: "Parent"
+        is_referent: "Référent"
+        referent: "Référent"
+        referent_id: "Arrêt référent"
+        specific_stops: "Arrêts particuliers"
         coordinates: "Coordonnées (lat,lng) WGS84"
         zip_code: "Code postal"
         city_name: "Commune"
+        postal_region: "Région postale"
         waiting_time: Temps de desserte (minutes)
         status: État
         stop_area_provider_ids: Fournisseurs d'arrêts

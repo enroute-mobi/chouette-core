@@ -107,6 +107,10 @@ module StopAreasHelper
     Chouette::AreaType.options(kind)
   end
 
+  def referent_options
+    [[t(true), true], [t(false), false]]
+  end
+
   def stop_area_identification_metadatas(stop_area, stop_area_referential)
     attributes = { t('id_reflex') => stop_area.get_objectid.short_id,
       Chouette::StopArea.tmf('name') => stop_area.name,
@@ -121,6 +125,7 @@ module StopAreasHelper
     end
 
     attributes.merge!(Chouette::StopArea.tmf('parent') => stop_area.parent ? link_to(stop_area.parent.name, stop_area_referential_stop_area_path(stop_area_referential, stop_area.parent)) : "-") if stop_area.commercial?
+    attributes.merge!(Chouette::StopArea.tmf('referent_id') => stop_area.referent ? link_to(stop_area.referent.name, stop_area_referential_stop_area_path(stop_area_referential, stop_area.referent)) : "-") if !stop_area.is_referent
     attributes.merge!(Chouette::StopArea.tmf('stop_area_type') => Chouette::AreaType.find(stop_area.area_type).try(:label),
       Chouette::StopArea.tmf('registration_number') => stop_area.registration_number,
       Chouette::StopArea.tmf('status') => stop_area_status(stop_area.status),
@@ -138,6 +143,7 @@ module StopAreasHelper
       Chouette::StopArea.tmf('street_name') => stop_area.street_name,
       Chouette::StopArea.tmf('zip_code') => stop_area.zip_code,
       Chouette::StopArea.tmf('city_name') => stop_area.city_name,
+      Chouette::StopArea.tmf('postal_region') => stop_area.postal_region,
       Chouette::StopArea.tmf('country_code') => stop_area.country_code.presence || '-',
       Chouette::StopArea.tmf('time_zone') => stop_area.time_zone.presence || '-',
     }
@@ -161,4 +167,19 @@ module StopAreasHelper
     attributes.merge!(Chouette::StopArea.tmf('comment') => stop_area.try(:comment))
   end
 
+  def stop_area_specific_stops(specific_stops, stop_area_referential)
+    table_builder_2 specific_stops,
+      [ \
+        TableBuilderHelper::Column.new( \
+          key: :name, \
+          attribute: Proc.new { |s| link_to s.name, stop_area_referential_stop_area_path(stop_area_referential, s) } \
+        ), \
+        TableBuilderHelper::Column.new( \
+          name: t('id_reflex'), \
+          attribute: Proc.new { |s| s.get_objectid.try(:short_id) }, \
+        ), \
+      ].compact,
+      sortable: false,
+      cls: 'table'
+  end
 end

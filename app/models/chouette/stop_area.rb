@@ -26,6 +26,9 @@ module Chouette
     has_and_belongs_to_many :routing_stops, :class_name => 'Chouette::StopArea', :foreign_key => "parent_id", :association_foreign_key => "child_id", :join_table => "stop_areas_stop_areas", :order => "stop_areas.name"
     has_and_belongs_to_many :stop_area_providers
 
+    belongs_to :referent, class_name: 'Chouette::StopArea'
+    has_many :specific_stops, class_name: 'Chouette::StopArea', foreign_key: 'referent_id'
+
     acts_as_tree :foreign_key => 'parent_id', :order => "name"
 
     attr_accessor :stop_area_type
@@ -54,6 +57,7 @@ module Chouette
     validate :area_type_of_right_kind
     validate :registration_number_is_set
     validates_absence_of :parent_id, message: I18n.t('stop_areas.errors.parent_id.must_be_absent'), if: Proc.new { |stop_area| stop_area.kind == 'non_commercial' }
+    validate :valid_referent
 
     before_validation do
       self.registration_number = self.stop_area_referential.generate_registration_number unless self.registration_number.present?
@@ -110,6 +114,10 @@ module Chouette
       unless self.stop_area_referential.validates_registration_number(self.registration_number)
         errors.add(:registration_number, I18n.t('stop_areas.errors.registration_number.invalid', mask: self.stop_area_referential.registration_number_format))
       end
+    end
+
+    def valid_referent
+      errors.add(:referent_id, I18n.t('stop_areas.errors.referent_id.cannot_be_referent_and_specific')) if self.referent_id? && (self.is_referent || self.specific_stops.count != 0)
     end
 
     #after_update :clean_invalid_access_links
@@ -197,6 +205,10 @@ module Chouette
 
     def self.physical
       where :area_type => [ "BoardingPosition", "Quay" ]
+    end
+
+    def self.referent_only
+      where is_referent: true
     end
 
 

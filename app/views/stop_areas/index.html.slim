@@ -54,6 +54,11 @@
                 key: :area_type, \
                 attribute: Proc.new { |s| Chouette::AreaType.find(s.area_type).try :label } \
               ), \
+              TableBuilderHelper::Column.new( \
+                key: :is_referent, \
+                attribute: Proc.new { |s| t(s.is_referent) },
+                sortable: false \
+              ), \
             ].compact,
             cls: 'table has-filter has-search'
 

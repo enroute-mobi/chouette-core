@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :stop_area, :class => Chouette::StopArea do
-    sequence(:objectid) { |n| "FR:#{n}:ZDE:#{n}:STIF" }
+    sequence(:objectid) { |n| "FR::ZDE:#{n}:STIF" }
     sequence(:name) { |n| "stop_area_#{n}" }
     sequence(:registration_number) { |n| "test-#{n}" }
     area_type { Chouette::AreaType.commercial.sample }
@@ -9,6 +9,7 @@ FactoryGirl.define do
     kind "commercial"
     confirmed_at { Time.now }
     city_name 'Bordeaux'
+    postal_region '33063'
     zip_code '33800'
     street_name "Parc du couvent, Avenue Steve Biko"
     url   { Faker::Internet.url }

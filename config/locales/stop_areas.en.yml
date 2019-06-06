@@ -2,6 +2,7 @@ en:
   stop_areas: &en_stop_areas
     waiting_time_format: "%{value} minutes"
     search_no_results: "No stop area matching your query"
+    no_specific_stops: "This stop area don't have any specific stop"
     errors:
       empty: Aucun stop_area_id
       parent_area_type: can not be of type %{area_type}
@@ -12,6 +13,8 @@ en:
         invalid: "Incorrect value (expected value: \"%{mask}\")"
       parent_id:
         must_be_absent: A non commercial stop area cannot have a parent
+      referent_id:
+        cannot_be_referent_and_specific: "A stop area can't be both referent and specific"
     default_geometry_success: "%{count} modified stop areas"
     stop_area:
       no_position: "No Position"
@@ -148,9 +151,14 @@ en:
         routing_stop_ids: "Attached stops"
         routing_line_ids: "Attached lines"
         parent: "Parent"
+        is_referent: "Referent"
+        referent: "Referent"
+        referent_id: "Referent stop area"
+        specific_stops: "Specific stops"
         coordinates: "Coordinates (lat,lng) WGS84"
         zip_code: "Zip code"
         city_name: "City"
+        postal_region: "Postal region"
         waiting_time: Waiting time (minutes)
         status: Status
         stop_area_provider_ids: Stops Providers

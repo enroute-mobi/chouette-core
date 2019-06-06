@@ -14,15 +14,18 @@ module Chouette
         @creation_id = attributes[:creation_id] || 'LOC'
       end
 
-      @@format = /^([A-Za-z_-]+):([A-Za-z]+):([0-9A-Za-z_-]+):([A-Za-z]+)$/
-      cattr_reader :format
+      class << self
+        attr_reader :format
+      end
+
+      @format = /^([A-Za-z_-]+):([A-Za-z]+):([0-9A-Za-z_-]+):([A-Za-z]+)$/
 
       def to_s
         "#{self.provider_id}:#{self.object_type}:#{self.local_id}:#{self.creation_id}"
       end
 
       def must_respect_format
-        self.to_s.match(self.class.format)
+        errors.add(:base, :invalid) unless self.to_s.match(self.class.format)
       end
 
       def short_id

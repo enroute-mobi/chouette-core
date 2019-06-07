@@ -11,7 +11,6 @@ describe Chouette::ConnectionLink, :type => :model do
 
   describe "validations" do
     it { should belong_to(:stop_area_referential) }
-    it { should validate_presence_of :link_distance }
     it { should validate_presence_of :default_duration }
     it { should validate_presence_of :departure_id }
     it { should validate_presence_of :arrival_id }

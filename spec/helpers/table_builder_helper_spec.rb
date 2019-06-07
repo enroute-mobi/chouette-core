@@ -349,7 +349,7 @@ describe TableBuilderHelper, type: :helper do
                     <div class="btn dropdown-toggle" data-toggle="dropdown"><span class="fa fa-cog"></span></div>
                     <div class="dropdown-menu">
                         <ul class="primary">
-                            <li class=""><a href="/line_referentials/#{line_referential.id}/companies/#{company.id}">Consulter</a></li>
+                            <li class=""><a href="/line_referentials/#{line_referential.id}/companies/#{company.id}"><span class='mr-xs fa fa-eye'></span>Consulter</a></li>
                         </ul>
                     </div>
                 </div>

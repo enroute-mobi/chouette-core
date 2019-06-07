@@ -1,7 +1,7 @@
 <div class="container-fluid">
 <div class="row">
 <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
-<div class="page-icon"><span class="sb sb-line"></span></div>
+<div class="page-icon page-icon-line"><span class="sb sb-line"></span></div>
 <div class="page-title">
 <h3>Ligne</h3>
 <h1>Name</h1>

@@ -87,8 +87,8 @@ describe TableBuilderHelper, type: :helper do
                     <div class="btn dropdown-toggle" data-toggle="dropdown"><span class="fa fa-cog"></span></div>
                     <div class="dropdown-menu">
                         <ul class="primary">
-                            <li class=""><a href="/referentials/#{referential.id}">Consulter</a></li>
-                            <li class=""><a href="/referentials/#{referential.id}/edit">Editer</a></li>
+                            <li class=""><a href="/referentials/#{referential.id}"><span class='mr-xs fa fa-eye'></span>Consulter</a></li>
+                            <li class=""><a href="/referentials/#{referential.id}/edit"><span class='mr-xs fa fa-pencil'></span>Editer ce jeu de données</a></li>
                         </ul>
                         <ul class="other">
                             <li class=""><a href="/referentials/#{referential.id}/time_tables">Calendriers</a></li>
@@ -97,7 +97,7 @@ describe TableBuilderHelper, type: :helper do
                             <li class=""><a rel="nofollow" data-method="put" href="/referentials/#{referential.id}/archive">Archiver</a></li>
                         </ul>
                         <ul class="footer">
-                            <li class=" delete-action"><a data-confirm="Etes vous sûr de vouloir supprimer ce jeu de données ?" rel="nofollow" data-method="delete" href="/referentials/#{referential.id}"><span class="fa fa-trash mr-xs"></span>Supprimer</a></li>
+                            <li class=" delete-action"><a data-confirm="Etes vous sûr de vouloir supprimer ce jeu de données ?" rel="nofollow" data-method="delete" href="/referentials/#{referential.id}"><span class='mr-xs fa fa-trash text-danger'></span>Supprimer ce jeu de données</a></li>
                         </ul>
                     </div>
                 </div>
@@ -237,7 +237,7 @@ describe TableBuilderHelper, type: :helper do
                     <div class="btn dropdown-toggle" data-toggle="dropdown"><span class="fa fa-cog"></span></div>
                     <div class="dropdown-menu">
                         <ul class="primary">
-                            <li class=""><a href="/line_referentials/#{company.referential.id}/companies/#{company.id}">Consulter</a></li>
+                            <li class=""><a href="/line_referentials/#{company.referential.id}/companies/#{company.id}"><span class='mr-xs fa fa-eye'></span>Consulter</a></li>
                         </ul>
                     </div>
                 </div>
@@ -281,7 +281,7 @@ describe TableBuilderHelper, type: :helper do
 
       beautified_html = HtmlBeautifier.beautify(html_str, indent: '    ')
 
-      expect(beautified_html).to eq(expected.chomp)
+        expect(beautified_html).to eq(expected.chomp)
     end
 
     it "can set all columns as non-sortable" do

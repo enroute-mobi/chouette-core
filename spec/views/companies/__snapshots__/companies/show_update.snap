@@ -1,6 +1,6 @@
 <div class="container-fluid"><div class="row">
 <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
-<div class="page-icon"><span class="sb sb-company"></span></div>
+<div class="page-icon page-icon-company"><span class="sb sb-company"></span></div>
 <div class="page-title">
 <h3>Transporteur</h3>
 <h1>Company name</h1>
@@ -8,6 +8,6 @@
 </div>
 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 text-right"><div class="page-action">
 <div class="small last-update">Dernière mise à jour le 23/01/2018 <br> Par web service</div>
-<a class="btn btn-default" href="/line_referentials/99/companies/909/edit">Editer ce transporteur</a>
+<a icon="pencil" class="btn btn-default" href="/line_referentials/99/companies/909/edit"><span class="mr-xs fa fa-pencil"></span>Editer ce transporteur</a>
 </div></div>
 </div></div>

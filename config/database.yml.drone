@@ -1,0 +1,16 @@
+default: &default
+  adapter: postgis
+  encoding: unicode
+  host: database
+  schema_search_path: 'public,shared_extensions'
+  username: chouette
+  password: chouette
+  postgis_schema: 'shared_extensions'
+
+development:
+  <<: *default
+  database: chouette
+
+test: &test
+  <<: *default
+  database: chouette_test<%= ENV['TEST_ENV_NUMBER'] %>

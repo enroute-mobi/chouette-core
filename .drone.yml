@@ -1,0 +1,31 @@
+kind: pipeline
+name: default
+
+steps:
+- name: test
+  image: ruby:2.6-slim
+  environment:
+    RAILS_ENV: "test"
+    LANG: "en_US.UTF-8"
+    LANGUAGE: "en_US:en"
+    LC_ALL: "en_US.UTF-8"
+    BUNDLER_VERSION: "2.0.1"
+    DEV_PACKAGES: "build-essential ruby2.3-dev libpq-dev libxml2-dev zlib1g-dev libmagic-dev libmagickwand-dev git-core"
+    RUN_PACKAGES: "libpq5 libxml2 zlib1g libmagic1 imagemagick libproj-dev postgresql-client-common postgresql-client-9.6"
+    PARALLEL_TESTS: "true"
+
+  commands:
+    - ./drone_setup.sh
+    - bundle install --jobs=8 --retry=3
+    - bundle exec rake ci
+
+services:
+- name: database
+  image: mdillon/postgis:9.6
+  ports:
+  - 5432
+  environment:
+    POSTGRES_USER: chouette
+    POSTGRES_PASSWORD: chouette
+    POSTGRES_DB: chouette_test
+  command: [ "-c", "fsync=off", "-c", "full_page_writes=off", "-c", "synchronous_commit=off", "-c", "effective_cache_size=4096MB", "-c", "max_wal_size=5GB", "-c", "wal_keep_segments=0", "-c", "max_locks_per_transaction=128" ]

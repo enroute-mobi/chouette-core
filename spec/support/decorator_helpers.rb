@@ -28,9 +28,9 @@ module Support
 
     def expect_action_link_elements(action=:index)
       if subject.action_links.is_a? AF83::Decorator::ActionLinks
-        expect( subject.action_links(action).map(&:content) )
+        expect( subject.action_links(action).map{|l| l.content.gsub(/<span.*\/span>/, '')} )
       else
-        expect( subject.action_links.select(&HTMLElement.method(:===)).map(&:content) )
+        expect( subject.action_links.select(&HTMLElement.method(:===)).map{|l| l.content.gsub(/<span.*\/span>/, '')} )
       end
     end
   end

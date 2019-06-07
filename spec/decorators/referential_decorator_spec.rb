@@ -23,7 +23,7 @@ RSpec.describe ReferentialDecorator, type: [:helper, :decorator] do
     context 'unarchived referential' do
       context 'no rights' do
         it 'has only show and Calendar actions' do
-          expect_action_link_hrefs.to eq([[object], referential_time_tables_path(object)])
+          expect_action_link_hrefs.to match_array([[object], referential_time_tables_path(object)])
         end
       end
 
@@ -32,8 +32,8 @@ RSpec.describe ReferentialDecorator, type: [:helper, :decorator] do
         let( :user ){ build_stubbed :allmighty_user }
 
         it 'has only default actions' do
-          expect_action_link_elements.to eq ["Consulter", "Calendriers", "Dupliquer"]
-          expect_action_link_hrefs.to eq([
+          expect_action_link_elements.to match_array ["Consulter", "Calendriers", "Dupliquer"]
+          expect_action_link_hrefs.to match_array([
             [object],
             referential_time_tables_path(object),
             new_workbench_referential_path(referential.workbench, from: object.id)
@@ -45,15 +45,15 @@ RSpec.describe ReferentialDecorator, type: [:helper, :decorator] do
         let( :action){ :index }
         context "on index" do
           it 'has corresponding actions' do
-            expect_action_link_elements(action).to eq ["Consulter", "Editer", "Calendriers", "Dupliquer", "Contrôler", "Archiver","<span class=\"fa fa-trash mr-xs\"></span>Supprimer"]
-            expect_action_link_hrefs(action).to eq([
+            expect_action_link_elements(action).to match_array ["Consulter", "Editer ce jeu de données", "Calendriers", "Dupliquer", "Contrôler", "Archiver","Supprimer ce jeu de données"]
+            expect_action_link_hrefs(action).to match_array([
               [object],
               [:edit, object],
               referential_time_tables_path(object),
               new_workbench_referential_path(referential.workbench, from: object.id),
               select_compliance_control_set_referential_path(object),
               archive_referential_path(object),
-              referential_path(object)
+              [object]
             ])
           end
         end
@@ -61,15 +61,15 @@ RSpec.describe ReferentialDecorator, type: [:helper, :decorator] do
         context "on show" do
           let( :action){ :show }
           it 'has corresponding actions' do
-            expect_action_link_elements(action).to eq ["Editer", "Calendriers", "Dupliquer", "Contrôler", "Archiver", "Nettoyer", "<span class=\"fa fa-trash mr-xs\"></span>Supprimer"]
-            expect_action_link_hrefs(action).to eq([
+            expect_action_link_elements(action).to match_array ["Editer ce jeu de données", "Calendriers", "Dupliquer", "Contrôler", "Archiver", "Nettoyer", "Supprimer ce jeu de données"]
+            expect_action_link_hrefs(action).to match_array([
               [:edit, object],
               referential_time_tables_path(object),
               new_workbench_referential_path(referential.workbench, from: object.id),
               select_compliance_control_set_referential_path(object),
               archive_referential_path(object),
               new_referential_clean_up_path(object),
-              referential_path(object)
+              [object]
             ])
           end
         end
@@ -81,12 +81,12 @@ RSpec.describe ReferentialDecorator, type: [:helper, :decorator] do
           }
           context "on index" do
             it 'has corresponding actions' do
-              expect_action_link_elements(action).to eq [
-                "Consulter", "<span class=\"fa fa-trash mr-xs\"></span>Supprimer"
+              expect_action_link_elements(action).to match_array [
+                "Consulter", "Supprimer ce jeu de données"
               ]
-              expect_action_link_hrefs(action).to eq([
+              expect_action_link_hrefs(action).to match_array([
                 [object],
-                referential_path(object),
+                [object]
               ])
             end
           end
@@ -95,10 +95,10 @@ RSpec.describe ReferentialDecorator, type: [:helper, :decorator] do
             let( :action){ :show }
             it 'has corresponding actions' do
               expect_action_link_elements(action).to eq [
-                "<span class=\"fa fa-trash mr-xs\"></span>Supprimer"
+                "Supprimer ce jeu de données"
               ]
               expect_action_link_hrefs(action).to eq([
-                referential_path(object)
+                [object]
               ])
             end
           end
@@ -113,15 +113,15 @@ RSpec.describe ReferentialDecorator, type: [:helper, :decorator] do
       }
       context 'no rights' do
         it 'has only show and calendar actions' do
-          expect_action_link_hrefs.to eq([[object], referential_time_tables_path(object)])
+          expect_action_link_hrefs.to match_array([[object], referential_time_tables_path(object)])
         end
       end
 
       context 'all rights and different organisation' do
         let( :user ){ build_stubbed :allmighty_user }
         it 'has only default actions' do
-          expect_action_link_elements.to eq ["Consulter", "Calendriers", "Dupliquer"]
-          expect_action_link_hrefs.to eq([
+          expect_action_link_elements.to match_array ["Consulter", "Calendriers", "Dupliquer"]
+          expect_action_link_hrefs.to match_array([
             [object],
             referential_time_tables_path(object),
             new_workbench_referential_path(referential.workbench, from: object.id)
@@ -132,13 +132,13 @@ RSpec.describe ReferentialDecorator, type: [:helper, :decorator] do
       context 'all rights and same organisation' do
         let( :user ){ build_stubbed :allmighty_user, organisation: referential.organisation }
         it 'has only default actions' do
-          expect_action_link_elements.to eq ["Consulter", "Calendriers", "Dupliquer", "Désarchiver", "<span class=\"fa fa-trash mr-xs\"></span>Supprimer"]
-          expect_action_link_hrefs.to eq([
+          expect_action_link_elements.to match_array ["Consulter", "Calendriers", "Dupliquer", "Désarchiver", "Supprimer ce jeu de données"]
+          expect_action_link_hrefs.to match_array([
             [object],
             referential_time_tables_path(object),
             new_workbench_referential_path(referential.workbench, from: object.id),
             unarchive_referential_path(object),
-            referential_path(object)
+            [object]
           ])
         end
       end
@@ -152,15 +152,15 @@ RSpec.describe ReferentialDecorator, type: [:helper, :decorator] do
       }
       context 'no rights' do
         it 'has only show and calendar actions' do
-          expect_action_link_hrefs.to eq([[object], referential_time_tables_path(object)])
+          expect_action_link_hrefs.to match_array([[object], referential_time_tables_path(object)])
         end
       end
 
       context 'all rights and different organisation' do
         let( :user ){ build_stubbed :allmighty_user }
         it 'has only default actions' do
-          expect_action_link_elements.to eq ["Consulter", "Calendriers"]
-          expect_action_link_hrefs.to eq([
+          expect_action_link_elements.to match_array ["Consulter", "Calendriers"]
+          expect_action_link_hrefs.to match_array([
             [object],
             referential_time_tables_path(object),
           ])
@@ -170,8 +170,8 @@ RSpec.describe ReferentialDecorator, type: [:helper, :decorator] do
       context 'all rights and same organisation' do
         let( :user ){ build_stubbed :allmighty_user, organisation: referential.organisation }
         it 'has only default actions' do
-          expect_action_link_elements.to eq ["Consulter", "Calendriers", "Contrôler"]
-          expect_action_link_hrefs.to eq([
+          expect_action_link_elements.to match_array ["Consulter", "Calendriers", "Contrôler"]
+          expect_action_link_hrefs.to match_array([
             [object],
             referential_time_tables_path(object),
             select_compliance_control_set_referential_path(object)

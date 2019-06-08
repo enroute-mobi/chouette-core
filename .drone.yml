@@ -17,6 +17,7 @@ steps:
 
   commands:
     - ./drone_setup.sh
+    - yarn --frozen-lockfile install
     - bundle install --quiet --jobs=8 --retry=3
     - cp config/database.yml.drone config/database.yml
     - bundle exec rake ci

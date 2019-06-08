@@ -13,16 +13,17 @@ steps:
     DEV_PACKAGES: "build-essential ruby2.3-dev libpq-dev libxml2-dev zlib1g-dev libmagic-dev libmagickwand-dev git-core"
     RUN_PACKAGES: "libpq5 libxml2 zlib1g libmagic1 imagemagick libproj-dev postgresql-client-common postgresql-client-9.6"
     PARALLEL_TESTS: "true"
+    USE_SCHEMA: "true"
 
   commands:
     - ./drone_setup.sh
+    - bundle install --quiet --jobs=8 --retry=3
     - cp config/database.yml.drone config/database.yml
-    - bundle install --jobs=8 --retry=3
     - bundle exec rake ci
 
 services:
 - name: database
-  image: mdillon/postgis:9.6
+  image: enroute/chouette-core-postgres
   ports:
   - 5432
   environment:

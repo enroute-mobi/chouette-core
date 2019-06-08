@@ -20,11 +20,17 @@ namespace :ci do
     ENV["PARALLEL_TESTS"] == "true"
   end
 
+  def use_schema?
+    ENV["USE_SCHEMA"] == "true"
+  end
+
   desc "Prepare CI build"
   task :setup do
     puts "Use #{database_name} database"
+
     if parallel_tests?
-      sh "RAILS_ENV=test rake parallel:drop parallel:create parallel:migrate"
+      command = use_schema? ? "parallel:setup" : "parallel:create parallel:migrate"
+      sh "RAILS_ENV=test rake #{command}"
     else
       sh "RAILS_ENV=test rake db:drop db:create db:migrate"
     end
@@ -96,9 +102,10 @@ namespace :ci do
         sh parallel_specs_command
       ensure
         sh "cat #{runtime_log} | grep '^spec' | sort -t: -k2 -n -r -"
-        Dir["log/*_specs.log"].sort.each do |spec_log_file|
-          sh "cat #{spec_log_file}"
-        end
+        sh "cat log/summary_specs.log"
+        # Dir["log/*_specs.log"].sort.each do |spec_log_file|
+        #   sh "cat #{spec_log_file}"
+        # end
       end
     else
       Rake::Task["spec"].invoke

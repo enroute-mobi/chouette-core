@@ -6,6 +6,7 @@ default: &default
   username: chouette
   password: chouette
   postgis_schema: 'shared_extensions'
+  template: 'template_chouette'
 
 development:
   <<: *default

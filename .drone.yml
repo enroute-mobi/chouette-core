@@ -2,31 +2,70 @@ kind: pipeline
 name: default
 
 steps:
-- name: test
-  image: ruby:2.6-slim
-  environment:
-    RAILS_ENV: "test"
-    LANG: "en_US.UTF-8"
-    LANGUAGE: "en_US:en"
-    LC_ALL: "en_US.UTF-8"
-    BUNDLER_VERSION: "2.0.1"
-    DEV_PACKAGES: "build-essential ruby2.3-dev libpq-dev libxml2-dev zlib1g-dev libmagic-dev libmagickwand-dev git-core"
-    RUN_PACKAGES: "libpq5 libxml2 zlib1g libmagic1 imagemagick libproj-dev postgresql-client-common postgresql-client-9.6"
-    PARALLEL_TESTS: "true"
-
-  commands:
-    - ./drone_setup.sh
-    - cp config/database.yml.drone config/database.yml
-    - bundle install --jobs=8 --retry=3
-    - bundle exec rake ci
+  - name: restore-cache
+    image: meltwater/drone-cache:dev
+    pull: true
+    environment:
+      AWS_ACCESS_KEY_ID:
+        from_secret: aws_access_key_id
+      AWS_SECRET_ACCESS_KEY:
+        from_secret: aws_secret_access_key
+    settings:
+      restore: true
+      bucket: af83-drone-cache
+      region: eu-central-1
+      mount:
+        - 'cache'
+        # See https://github.com/meltwater/drone-cache/issues/39
+        # - 'node_modules'
+        - 'vendor/bundle'
+  - name: test
+    # Enable drone_setup.sh command when using generic ruby image
+    # image: ruby:2.6-slim
+    image: enroute/chouette-core-drone
+    environment:
+      RAILS_ENV: "test"
+      LANG: "en_US.UTF-8"
+      LANGUAGE: "en_US:en"
+      LC_ALL: "en_US.UTF-8"
+      BUNDLER_VERSION: "2.0.1"
+      DEV_PACKAGES: "build-essential ruby2.3-dev libpq-dev libxml2-dev zlib1g-dev libmagic-dev libmagickwand-dev git-core"
+      RUN_PACKAGES: "libpq5 libxml2 zlib1g libmagic1 imagemagick libproj-dev postgresql-client-common postgresql-client-9.6"
+      PARALLEL_TESTS: "true"
+      USE_SCHEMA: "true"
+    commands:
+      # Enable drone_setup.sh command when using generic ruby image
+      # - ./drone_setup.sh
+      - mkdir -p cache
+      - yarn --frozen-lockfile install
+      - bundle install --quiet --jobs=8 --retry=3 --deployment
+      - cp config/database.yml.drone config/database.yml
+      - bundle exec rake ci
+  - name: rebuild-cache
+    image: meltwater/drone-cache:dev
+    pull: true
+    environment:
+      AWS_ACCESS_KEY_ID:
+        from_secret: aws_access_key_id
+      AWS_SECRET_ACCESS_KEY:
+        from_secret: aws_secret_access_key
+    settings:
+      rebuild: true
+      bucket: af83-drone-cache
+      region: eu-central-1
+      mount:
+        - 'cache'
+        # See https://github.com/meltwater/drone-cache/issues/39
+        # - 'node_modules'
+        - 'vendor/bundle'
 
 services:
 - name: database
-  image: mdillon/postgis:9.6
+  image: enroute/chouette-core-postgres
   ports:
   - 5432
   environment:
     POSTGRES_USER: chouette
     POSTGRES_PASSWORD: chouette
     POSTGRES_DB: chouette_test
-  command: [ "-c", "fsync=off", "-c", "full_page_writes=off", "-c", "synchronous_commit=off", "-c", "effective_cache_size=4096MB", "-c", "max_wal_size=5GB", "-c", "wal_keep_segments=0", "-c", "max_locks_per_transaction=128" ]
+  command: [ "-c", "fsync=off", "-c", "full_page_writes=off", "-c", "synchronous_commit=off", "-c", "effective_cache_size=4096MB", "-c", "max_wal_size=5GB", "-c", "wal_keep_segments=0", "-c", "max_locks_per_transaction=1024" ]

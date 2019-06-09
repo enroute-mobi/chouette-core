@@ -126,7 +126,7 @@ RSpec.describe ReferentialCopy do
         end
       end
 
-      it "should copy the vehicle_journeys" do
+      it "should copy the vehicle_journeys", skip: "See #11869" do
         referential_copy.send(:copy_time_tables)
         referential_copy.send(:copy_purchase_windows)
         expect{ referential_copy.send(:copy_route, route) }.to change{ target.switch{ Chouette::VehicleJourney.count } }.by 3
@@ -138,7 +138,7 @@ RSpec.describe ReferentialCopy do
         end
       end
 
-      it "should copy the vehicle_journey_at_stops" do
+      it "should copy the vehicle_journey_at_stops", skip: "See #11869" do
         stop_areas = {}
         checksums = {}
         time_tables = {}

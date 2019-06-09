@@ -35,6 +35,7 @@ steps:
     commands:
       # Enable drone_setup.sh command when using generic ruby image
       # - ./drone_setup.sh
+      - mkdir -p cache
       - yarn --frozen-lockfile install
       - bundle install --quiet --jobs=8 --retry=3 --deployment
       - cp config/database.yml.drone config/database.yml

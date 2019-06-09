@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_06_05_124308) do
+ActiveRecord::Schema.define(version: 2019_06_04_133016) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -105,9 +105,9 @@ ActiveRecord::Schema.define(version: 2019_06_05_124308) do
     t.bigint "organisation_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.bigint "workgroup_id"
     t.integer "int_day_types"
     t.date "excluded_dates", array: true
-    t.bigint "workgroup_id"
     t.jsonb "metadata", default: {}
     t.index ["organisation_id"], name: "index_calendars_on_organisation_id"
     t.index ["workgroup_id"], name: "index_calendars_on_workgroup_id"
@@ -315,7 +315,7 @@ ActiveRecord::Schema.define(version: 2019_06_05_124308) do
     t.datetime "updated_at"
     t.jsonb "metadata", default: {}
     t.boolean "both_ways", default: false
-    t.integer "stop_area_referential_id"
+    t.bigint "stop_area_referential_id"
     t.integer "default_duration"
     t.integer "frequent_traveller_duration"
     t.integer "occasional_traveller_duration"
@@ -1021,7 +1021,7 @@ ActiveRecord::Schema.define(version: 2019_06_05_124308) do
     t.datetime "updated_at"
     t.string "objectid_format"
     t.string "registration_number_format"
-    t.jsonb "locales", default: [{"code"=>"fr_FR", "default"=>true}, {"code"=>"en_UK", "default"=>true}, {"code"=>"nl_NL", "default"=>true}, {"code"=>"es_ES", "default"=>true}, {"code"=>"it_IT", "default"=>true}, {"code"=>"de_DE", "default"=>true}]
+    t.jsonb "locales", default: [{"code"=>"fr_FR", "default"=>true}, {"code"=>"en_UK", "default"=>true}, {"code"=>"nl_NL", "default"=>true}, {"code"=>"es_ES", "default"=>true}, {"code"=>"it_IT", "default"=>true}, {"code"=>"de_DE", "default"=>true}], array: true
   end
 
   create_table "stop_area_routing_constraints", id: :serial, force: :cascade do |t|

@@ -2,7 +2,7 @@
 
 set -eE
 
-LOG_FILE=log/drone_setup.log
+LOG_FILE=drone_setup.log
 trap "cat ${LOG_FILE}" ERR
 
 exec 3>&1 1>>${LOG_FILE} 2>&1
@@ -28,9 +28,6 @@ echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && locale-gen
 
 echo "Install bundler $BUNDLER_VERSION" 1>&3
 gem install bundler:$BUNDLER_VERSION
-
-DEV_PACKAGES="build-essential ruby2.3-dev libpq-dev libxml2-dev zlib1g-dev libmagic-dev libmagickwand-dev git-core"
-RUN_PACKAGES="libpq5 libxml2 zlib1g libmagic1 imagemagick libproj-dev postgresql-client-common postgresql-client-9.6"
 
 mkdir -p /usr/share/man/man1 /usr/share/man/man7
 

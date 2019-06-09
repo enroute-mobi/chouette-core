@@ -16,7 +16,8 @@ steps:
       region: eu-central-1
       mount:
         - 'cache'
-        - 'node_modules'
+        # See https://github.com/meltwater/drone-cache/issues/39
+        # - 'node_modules'
         - 'vendor/bundle'
   - name: test
     # Enable drone_setup.sh command when using generic ruby image
@@ -54,7 +55,8 @@ steps:
       region: eu-central-1
       mount:
         - 'cache'
-        - 'node_modules'
+        # See https://github.com/meltwater/drone-cache/issues/39
+        # - 'node_modules'
         - 'vendor/bundle'
 
 services:

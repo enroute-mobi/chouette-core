@@ -196,7 +196,7 @@ module Chouette
     end
 
     def self.commercial
-      where :area_type => "CommercialStopPoint"
+      where kind: "commercial"
     end
 
     def self.stop_place
@@ -510,6 +510,10 @@ module Chouette
 
     def commercial?
       kind == "commercial"
+    end
+
+    def non_commercial?
+      !commercial?
     end
 
     def connection_links

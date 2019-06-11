@@ -90,6 +90,8 @@ gem 'rgeo-proj4'
 # gem 'georuby-ext'
 gem 'geokit'
 gem 'georuby', '2.3.0' # Fix version for georuby-ext because api has changed
+gem 'ffi-geos'
+
 gem 'ffi', '> 1.9.24'
 gem 'mimemagic'
 

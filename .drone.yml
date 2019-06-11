@@ -29,7 +29,7 @@ steps:
       LANGUAGE: "en_US:en"
       LC_ALL: "en_US.UTF-8"
       BUNDLER_VERSION: "2.0.1"
-      DEV_PACKAGES: "build-essential ruby2.3-dev libpq-dev libxml2-dev zlib1g-dev libmagic-dev libmagickwand-dev git-core"
+      DEV_PACKAGES: "build-essential ruby2.3-dev libpq-dev libxml2-dev zlib1g-dev libmagic-dev libmagickwand-dev libgeos-c1v5 git-core"
       RUN_PACKAGES: "libpq5 libxml2 zlib1g libmagic1 imagemagick libproj-dev postgresql-client-common postgresql-client-9.6"
       PARALLEL_TESTS: "true"
       USE_SCHEMA: "true"

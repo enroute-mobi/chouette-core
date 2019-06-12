@@ -31,7 +31,7 @@ module Chouette
 
     has_array_of :line_notices, class_name: 'Chouette::LineNotice'
     belongs_to_public :line_notices,
-      index_collection: -> { Chouette::VehicleJourney.where.not('line_notice_ids = ARRAY[]::integer[]') }
+      index_collection: -> { Chouette::VehicleJourney.where.not('line_notice_ids = ARRAY[]::bigint[]') }
 
     delegate :line, to: :route
 

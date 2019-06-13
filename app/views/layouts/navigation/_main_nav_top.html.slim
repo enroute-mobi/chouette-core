@@ -5,6 +5,16 @@
       = render 'layouts/navigation/breadcrumb'
 
     .menu-item-group.pull-right
+      - if !user_signed_in? && I18n.available_locales.size > 1
+        .dropdown.languages.menu-item
+          = link_to 'javascript:void(0)', class: 'dropdown-toggle', data: { toggle: 'dropdown' } do
+            = image_tag("language_engine/#{selected_language}_flag.png", { :'data-locale' => "#{selected_language}" } )
+            b.caret
+
+          ul.dropdown-menu
+            - I18n.available_locales.each do |locale|
+              li= link_to_language locale, { class: language_class( locale ) }
+
       - if Rails.application.config.link_to_support_enabled
         = link_to 'https://support.enroute.mobi', target: :blank, title: t('layouts.go_to_to_support_center'), class: 'menu-item' do
           = image_tag("icons/chaticon.svg", height: 25)
@@ -17,6 +27,7 @@
         - if Rails.application.config.development_toolbar
           = link_to 'javascript:void(0)', data: { toggle: 'modal', target: '#development-toolbar' }, class: "toolbar-button menu-item" do
             .fa.fa-cog
+
 
   - if user_signed_in?
     = render 'layouts/navigation/nav_panel_operations'

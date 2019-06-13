@@ -71,7 +71,10 @@ class Import::Gtfs < Import::Base
     else
       import_resources :calendars, :calendar_dates, :calendar_checksums
     end
-    import_resources :transfers, :trips, :stop_times, :missing_checksums
+
+    import_resources :transfers if source.entries.include?('transfers.txt')
+
+    import_resources :trips, :stop_times, :missing_checksums
   end
 
   def import_agencies

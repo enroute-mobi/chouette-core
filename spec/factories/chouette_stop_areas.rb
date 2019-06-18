@@ -30,7 +30,7 @@ FactoryGirl.define do
         organisation = referential.workbench.organisation
         stop_area_provider = StopAreaProvider.where(name: referential.slug).last
         unless stop_area_provider
-          stop_area_provider = StopAreaProvider.new name: referential.slug, objectid: "STIF-REFLEX:Operator:#{referential.slug}:LOC"
+          stop_area_provider = StopAreaProvider.new name: referential.slug, objectid: "FR1:OrganisationalUnit:#{referential.slug}:LOC"
           stop_area_provider.stop_area_referential = referential.stop_area_referential
           organisation.sso_attributes ||= {}
           functional_scope = organisation.sso_attributes['stop_area_providers'] || "[]"

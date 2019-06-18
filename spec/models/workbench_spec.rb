@@ -129,7 +129,7 @@ RSpec.describe Workbench, :type => :model do
     let(:sso_attributes){{stop_area_providers: %w(blublublu)}}
     let!(:organisation) { create :organisation, sso_attributes: sso_attributes }
     let(:workbench) { create :workbench, organisation: organisation, stop_area_referential: stop_area_referential }
-    let(:stop_area_provider){ create :stop_area_provider, objectid: "STIF-REFLEX:Operator:blublublu", stop_area_referential: stop_area_referential }
+    let(:stop_area_provider){ create :stop_area_provider, objectid: "FR1:OrganisationalUnit:blublublu:", stop_area_referential: stop_area_referential }
     let(:stop_area_referential){ create :stop_area_referential }
     let(:stop){ create :stop_area, stop_area_referential: stop_area_referential }
     let(:stop_2){ create :stop_area, stop_area_referential: stop_area_referential }

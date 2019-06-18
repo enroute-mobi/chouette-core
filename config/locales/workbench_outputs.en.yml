@@ -1,7 +1,7 @@
 en:
   workbench_outputs:
     show:
-      title: Merge data sets
+      title: Merged data sets
       see_current_output: See the current offer
       table_headers:
         ended_at: "Ended at"

@@ -1,13 +1,13 @@
 en:
   dashboards:
-    main_nav_left: Dashboard 
+    main_nav_left: Dashboard
     show:
       title: "Dashboard %{organisation}"
     workbench:
       title: Transport offer %{organisation}
     workbench_output:
-      title: Finalized offers %{organisation}
-      none: No finalized offer created
+      title: Merged Data %{organisation}
+      none: No merged data
     calendars:
       title: Calendars
       none: No calendar created

@@ -55,7 +55,7 @@
           .list-group
             - imports.order("updated_at desc").limit(5).each do |import|
               = link_to import.name, workbench_import_path(workbench, import), class: 'list-group-item'
-        
+
     .col-lg-6.col-md-6.col-sm-6.col-xs-12
       .panel.panel-default
         .panel-heading

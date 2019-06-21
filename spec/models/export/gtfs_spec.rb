@@ -1,9 +1,9 @@
 RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
-  let(:gtfs_export) { create :gtfs_export, referential: referential, workbench: workbench, duration: 5}
+  let(:gtfs_export) { create :gtfs_export, referential: exported_referential, workbench: workbench, duration: 5}
 
   it "should create a default company and generate a message if the journey or its line doesn't have a company" do
-    referential.switch do
-      line = referential.lines.first
+    exported_referential.switch do
+      line = exported_referential.lines.first
       line.company = nil
       line.save
 
@@ -42,11 +42,11 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
   end
 
   it "should set a default time zone and generate a message if the journey's company doesn't have one" do
-    referential.switch do
+    exported_referential.switch do
       company.time_zone = nil
       company.save
 
-      line = referential.lines.first
+      line = exported_referential.lines.first
       stop_areas = stop_area_referential.stop_areas.order(Arel.sql('random()')).limit(2)
       route = FactoryGirl.create :route, line: line, stop_areas: stop_areas, stop_points_count: 0
       journey_pattern = FactoryGirl.create :journey_pattern, route: route, stop_points: route.stop_points.sample(3)
@@ -82,11 +82,11 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
   end
 
   it "should correctly handle timezones" do
-    referential.switch do
+    exported_referential.switch do
       company.time_zone = "Europe/Paris"
       company.save
 
-      line = referential.lines.first
+      line = exported_referential.lines.first
       stop_areas = stop_area_referential.stop_areas.order(Arel.sql('random()')).limit(2)
       route = FactoryGirl.create :route, line: line, stop_areas: stop_areas, stop_points_count: 0
       journey_pattern = FactoryGirl.create :journey_pattern, route: route, stop_points: route.stop_points.sample(2)
@@ -122,7 +122,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       selected_stop_areas_hash = {}
       date_range = nil
 
-      referential.switch do
+      exported_referential.switch do
         date_range = gtfs_export.date_range
         selected_vehicle_journeys = Chouette::VehicleJourney.with_matching_timetable date_range
         gtfs_export.instance_variable_set('@journeys', selected_vehicle_journeys)
@@ -136,7 +136,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
       agencies_zip_path = File.join(tmp_dir, '/test_agencies.zip')
 
-      referential.switch do
+      exported_referential.switch do
         GTFS::Target.open(agencies_zip_path) do |target|
           gtfs_export.export_companies_to target
         end
@@ -156,7 +156,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       stops_zip_path = File.join(tmp_dir, '/test_stops.zip')
 
       # Fetch the expected exported stop_areas
-      referential.switch do
+      exported_referential.switch do
         selected_vehicle_journeys.each do |vehicle_journey|
             vehicle_journey.route.stop_points.each do |stop_point|
               (selected_stop_areas_hash[stop_point.stop_area.id] = stop_point.stop_area) if (stop_point.stop_area && stop_point.stop_area.commercial? && !selected_stop_areas_hash[stop_point.stop_area.id])
@@ -192,9 +192,9 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       # Test transfers.txt export
       ################################
 
-      create :connection_link, stop_area_referential: referential.stop_area_referential
+      create :connection_link, stop_area_referential: exported_referential.stop_area_referential
 
-      referential.switch do
+      exported_referential.switch do
         transfers_zip_path = File.join(tmp_dir, '/test_transfers.zip')
 
         stop_area_ids = selected_vehicle_journeys.flat_map(&:stop_points).map(&:stop_area).select(&:commercial?).uniq.map(&:id)
@@ -235,7 +235,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       ################################
 
       lines_zip_path = File.join(tmp_dir, '/test_lines.zip')
-      referential.switch do
+      exported_referential.switch do
         GTFS::Target.open(lines_zip_path) do |target|
           gtfs_export.export_lines_to target
         end
@@ -249,7 +249,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
         expect(source.routes.length).to eq(selected_routes.length)
         route = source.routes.first
-        line = referential.lines.first
+        line = exported_referential.lines.first
 
         expect(route.id).to eq(line.registration_number)
         expect(route.agency_id).to eq(line.company.registration_number)
@@ -266,7 +266,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
       calendars_zip_path = File.join(tmp_dir, '/test_calendars.zip')
 
-      referential.switch do
+      exported_referential.switch do
         GTFS::Target.open(calendars_zip_path) do |target|
           gtfs_export.export_time_tables_to target
         end

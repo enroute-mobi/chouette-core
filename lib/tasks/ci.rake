@@ -24,6 +24,10 @@ namespace :ci do
     ENV["USE_SCHEMA"] == "true"
   end
 
+  def quiet?
+    ENV["QUIET"] == "true"
+  end
+
   desc "Prepare CI build"
   task :setup do
     puts "Use #{database_name} database"
@@ -97,6 +101,10 @@ namespace :ci do
 
       runtime_log = "log/parallel_runtime_specs.log"
       parallel_specs_command += " --runtime-log #{runtime_log}" if File.exists? runtime_log
+
+      unless quiet?
+        parallel_specs_command += " --format progress"
+      end
 
       begin
         sh parallel_specs_command

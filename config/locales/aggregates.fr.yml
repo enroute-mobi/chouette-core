@@ -43,7 +43,7 @@ fr:
         status: "Etat"
         creator: "Opérateur"
         referentials: Offres finalisées
-        new: Offre finalisée
+        new: Offre agrégée
         operator: Utilisateur
         available_referentials: "Jeux de données disponibles"
         selected_referentials: "Jeux de données selectionnés"

@@ -44,7 +44,7 @@ module MetadataSupport
     self.metadata.each do |k, v|
       unless self.metadata.is_timestamp_attr?(k)
         ts = self.metadata.timestamp_attr(k)
-        if source_metadata[ts] && source_metadata[ts] > self.metadata[ts]
+        if source_metadata[ts] && self.metadata[ts] && source_metadata[ts] > self.metadata[ts]
           res[k] = source_metadata[k]
         else
           res[k] = v
@@ -81,6 +81,10 @@ module MetadataSupport
       @table.each do |k,v|
         yield k, v
       end
+    end
+
+    def delete(key)
+      @table.delete(key)
     end
 
     def new_ostruct_member! name

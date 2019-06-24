@@ -77,6 +77,17 @@ RSpec.describe Chouette::Route, :type => :model do
         end
       end
 
+      context "when the target has incomplete metadata" do
+        before do
+          source.metadata.creator_username = "jane"
+          target.metadata.delete(:creator_username_updated_at)
+        end
+
+        it "should do nothing" do
+          expect(metadata.creator_username).to eq "john"
+        end
+      end
+
       context "when the source has older metadata" do
         before do
           source.metadata.creator_username = "jane"

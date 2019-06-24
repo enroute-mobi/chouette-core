@@ -4,7 +4,7 @@ RSpec.shared_context 'with an exportable referential' do
   let(:company){ create :company, line_referential: line_referential }
   let(:workbench){ create :workbench, line_referential: line_referential, stop_area_referential: stop_area_referential }
   let(:referential_metadata){ create(:referential_metadata, lines: line_referential.lines.limit(3)) }
-  let(:referential){
+  let(:exported_referential){
     create :referential,
     workbench: workbench,
     organisation: workbench.organisation,
@@ -28,7 +28,7 @@ RSpec.shared_context 'with exportable journeys' do
 
     # Create two levels parents stop_areas
     6.times do |index|
-      sa = referential.stop_areas.sample
+      sa = exported_referential.stop_areas.sample
       new_parent = FactoryGirl.create :stop_area, stop_area_referential: stop_area_referential
       sa.parent = new_parent
       sa.save
@@ -38,7 +38,7 @@ RSpec.shared_context 'with exportable journeys' do
       end
     end
 
-    referential.switch do
+    exported_referential.switch do
       line_referential.lines.each do |line|
         # 2*2 routes with 5 stop_areas each
         factor.times do
@@ -47,7 +47,7 @@ RSpec.shared_context 'with exportable journeys' do
         end
       end
 
-      referential.routes.each_with_index do |route, index|
+      exported_referential.routes.each_with_index do |route, index|
         route.stop_points.each_with_index do |sp, i|
           sp.set_list_position i
         end
@@ -70,7 +70,7 @@ RSpec.shared_context 'with exportable journeys' do
       end
 
       # 8*2 vehicle_journey
-      referential.journey_patterns.each do |journey_pattern|
+      exported_referential.journey_patterns.each do |journey_pattern|
         factor.times do
           FactoryGirl.create :vehicle_journey, journey_pattern: journey_pattern, company: company
         end
@@ -79,7 +79,7 @@ RSpec.shared_context 'with exportable journeys' do
       # 16+1 different time_tables
       shared_time_table = FactoryGirl.create :time_table
 
-      referential.vehicle_journeys.each do |vehicle_journey|
+      exported_referential.vehicle_journeys.each do |vehicle_journey|
         vehicle_journey.time_tables << shared_time_table
         specific_time_table = FactoryGirl.create :time_table
         vehicle_journey.time_tables << specific_time_table

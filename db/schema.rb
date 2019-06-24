@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_06_24_080019) do
+ActiveRecord::Schema.define(version: 2019_06_24_090357) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -1258,8 +1258,8 @@ ActiveRecord::Schema.define(version: 2019_06_24_080019) do
     t.string "data_source_ref"
     t.jsonb "custom_field_values", default: {}
     t.jsonb "metadata", default: {}
-    t.integer "ignored_routing_contraint_zone_ids", default: [], array: true
-    t.integer "ignored_stop_area_routing_constraint_ids", default: [], array: true
+    t.bigint "ignored_routing_contraint_zone_ids", default: [], array: true
+    t.bigint "ignored_stop_area_routing_constraint_ids", default: [], array: true
     t.bigint "line_notice_ids", array: true
     t.index ["journey_pattern_id"], name: "index_vehicle_journeys_on_journey_pattern_id"
     t.index ["objectid"], name: "vehicle_journeys_objectid_key", unique: true

@@ -3,7 +3,8 @@ module Chouette
     class StifCodifligne < Base
 
       def short_id_sql_expr(model_class)
-        "lower(split_part(#{table_name(model_class)}.objectid, ':', 4))"
+        # we only match V2 format
+        "lower(split_part(#{table_name(model_class)}.objectid, ':', 3))"
       end
 
       def before_validation(model)

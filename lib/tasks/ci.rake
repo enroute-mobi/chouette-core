@@ -103,7 +103,7 @@ namespace :ci do
       parallel_specs_command += " --runtime-log #{runtime_log}" if File.exists? runtime_log
 
       unless quiet?
-        parallel_specs_command += " --format progress"
+        parallel_specs_command += " --test-options '--format progress'"
       end
 
       begin

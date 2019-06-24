@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_06_12_141438) do
+ActiveRecord::Schema.define(version: 2019_06_24_090357) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -18,7 +18,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
   enable_extension "postgis"
   enable_extension "unaccent"
 
-  create_table "access_links", id: :serial, force: :cascade do |t|
+  create_table "access_links", force: :cascade do |t|
     t.bigint "access_point_id"
     t.bigint "stop_area_id"
     t.string "objectid", null: false
@@ -42,7 +42,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["objectid"], name: "access_links_objectid_key", unique: true
   end
 
-  create_table "access_points", id: :serial, force: :cascade do |t|
+  create_table "access_points", force: :cascade do |t|
     t.string "objectid"
     t.bigint "object_version"
     t.string "name"
@@ -69,7 +69,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["objectid"], name: "access_points_objectid_key", unique: true
   end
 
-  create_table "aggregates", id: :serial, force: :cascade do |t|
+  create_table "aggregates", force: :cascade do |t|
     t.bigint "workgroup_id"
     t.string "status"
     t.string "name"
@@ -88,7 +88,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["workgroup_id"], name: "index_aggregates_on_workgroup_id"
   end
 
-  create_table "api_keys", id: :serial, force: :cascade do |t|
+  create_table "api_keys", force: :cascade do |t|
     t.string "token"
     t.string "name"
     t.datetime "created_at"
@@ -97,7 +97,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.bigint "workbench_id"
   end
 
-  create_table "calendars", id: :serial, force: :cascade do |t|
+  create_table "calendars", force: :cascade do |t|
     t.string "name"
     t.daterange "date_ranges", array: true
     t.date "dates", array: true
@@ -113,7 +113,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["workgroup_id"], name: "index_calendars_on_workgroup_id"
   end
 
-  create_table "clean_up_results", id: :serial, force: :cascade do |t|
+  create_table "clean_up_results", force: :cascade do |t|
     t.string "message_key"
     t.hstore "message_attributes"
     t.bigint "clean_up_id"
@@ -122,7 +122,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["clean_up_id"], name: "index_clean_up_results_on_clean_up_id"
   end
 
-  create_table "clean_ups", id: :serial, force: :cascade do |t|
+  create_table "clean_ups", force: :cascade do |t|
     t.string "status"
     t.datetime "started_at"
     t.datetime "ended_at"
@@ -136,7 +136,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["referential_id"], name: "index_clean_ups_on_referential_id"
   end
 
-  create_table "companies", id: :serial, force: :cascade do |t|
+  create_table "companies", force: :cascade do |t|
     t.string "objectid", null: false
     t.bigint "object_version"
     t.string "name"
@@ -182,7 +182,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["registration_number"], name: "companies_registration_number_key"
   end
 
-  create_table "compliance_check_blocks", id: :serial, force: :cascade do |t|
+  create_table "compliance_check_blocks", force: :cascade do |t|
     t.string "name"
     t.hstore "condition_attributes"
     t.bigint "compliance_check_set_id"
@@ -191,7 +191,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["compliance_check_set_id"], name: "index_compliance_check_blocks_on_compliance_check_set_id"
   end
 
-  create_table "compliance_check_messages", id: :serial, force: :cascade do |t|
+  create_table "compliance_check_messages", force: :cascade do |t|
     t.bigint "compliance_check_id"
     t.bigint "compliance_check_resource_id"
     t.string "message_key"
@@ -206,7 +206,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["compliance_check_set_id"], name: "index_compliance_check_messages_on_compliance_check_set_id"
   end
 
-  create_table "compliance_check_resources", id: :serial, force: :cascade do |t|
+  create_table "compliance_check_resources", force: :cascade do |t|
     t.string "status"
     t.string "name"
     t.string "resource_type"
@@ -218,7 +218,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["compliance_check_set_id"], name: "index_compliance_check_resources_on_compliance_check_set_id"
   end
 
-  create_table "compliance_check_sets", id: :serial, force: :cascade do |t|
+  create_table "compliance_check_sets", force: :cascade do |t|
     t.bigint "referential_id"
     t.bigint "compliance_control_set_id"
     t.bigint "workbench_id"
@@ -244,7 +244,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["workbench_id"], name: "index_compliance_check_sets_on_workbench_id"
   end
 
-  create_table "compliance_checks", id: :serial, force: :cascade do |t|
+  create_table "compliance_checks", force: :cascade do |t|
     t.bigint "compliance_check_set_id"
     t.bigint "compliance_check_block_id"
     t.string "type"
@@ -262,7 +262,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["compliance_check_set_id"], name: "index_compliance_checks_on_compliance_check_set_id"
   end
 
-  create_table "compliance_control_blocks", id: :serial, force: :cascade do |t|
+  create_table "compliance_control_blocks", force: :cascade do |t|
     t.string "name"
     t.hstore "condition_attributes"
     t.bigint "compliance_control_set_id"
@@ -271,7 +271,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["compliance_control_set_id"], name: "index_compliance_control_blocks_on_compliance_control_set_id"
   end
 
-  create_table "compliance_control_sets", id: :serial, force: :cascade do |t|
+  create_table "compliance_control_sets", force: :cascade do |t|
     t.string "name"
     t.bigint "organisation_id"
     t.datetime "created_at", null: false
@@ -280,7 +280,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["organisation_id"], name: "index_compliance_control_sets_on_organisation_id"
   end
 
-  create_table "compliance_controls", id: :serial, force: :cascade do |t|
+  create_table "compliance_controls", force: :cascade do |t|
     t.bigint "compliance_control_set_id"
     t.string "type"
     t.json "control_attributes"
@@ -298,7 +298,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["compliance_control_set_id"], name: "index_compliance_controls_on_compliance_control_set_id"
   end
 
-  create_table "connection_links", id: :serial, force: :cascade do |t|
+  create_table "connection_links", force: :cascade do |t|
     t.bigint "departure_id"
     t.bigint "arrival_id"
     t.string "objectid", null: false
@@ -325,7 +325,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["stop_area_referential_id"], name: "index_connection_links_on_stop_area_referential_id"
   end
 
-  create_table "cross_referential_index_entries", id: :serial, force: :cascade do |t|
+  create_table "cross_referential_index_entries", force: :cascade do |t|
     t.string "parent_type"
     t.bigint "parent_id"
     t.string "target_type"
@@ -339,7 +339,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["relation_name"], name: "index_cross_referential_index_entries_on_relation_name"
   end
 
-  create_table "custom_fields", id: :serial, force: :cascade do |t|
+  create_table "custom_fields", force: :cascade do |t|
     t.string "code"
     t.string "resource_type"
     t.string "name"
@@ -351,7 +351,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["resource_type"], name: "index_custom_fields_on_resource_type"
   end
 
-  create_table "delayed_jobs", id: :serial, force: :cascade do |t|
+  create_table "delayed_jobs", force: :cascade do |t|
     t.integer "priority", default: 0, null: false
     t.integer "attempts", default: 0, null: false
     t.text "handler", null: false
@@ -369,7 +369,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["priority", "run_at"], name: "delayed_jobs_priority"
   end
 
-  create_table "delayed_workers", id: :serial, force: :cascade do |t|
+  create_table "delayed_workers", force: :cascade do |t|
     t.string "name"
     t.string "version"
     t.datetime "last_heartbeat_at"
@@ -377,7 +377,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.string "label"
   end
 
-  create_table "destination_reports", id: :serial, force: :cascade do |t|
+  create_table "destination_reports", force: :cascade do |t|
     t.bigint "destination_id"
     t.bigint "publication_id"
     t.string "status"
@@ -391,7 +391,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["publication_id"], name: "index_destination_reports_on_publication_id"
   end
 
-  create_table "destinations", id: :serial, force: :cascade do |t|
+  create_table "destinations", force: :cascade do |t|
     t.bigint "publication_setup_id"
     t.string "name"
     t.string "type"
@@ -429,7 +429,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["export_id"], name: "index_export_resources_on_export_id"
   end
 
-  create_table "exports", id: :serial, force: :cascade do |t|
+  create_table "exports", force: :cascade do |t|
     t.string "status"
     t.string "current_step_id"
     t.float "current_step_progress"
@@ -459,7 +459,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["workbench_id"], name: "index_exports_on_workbench_id"
   end
 
-  create_table "facilities", id: :serial, force: :cascade do |t|
+  create_table "facilities", force: :cascade do |t|
     t.bigint "stop_area_id"
     t.bigint "line_id"
     t.bigint "connection_link_id"
@@ -488,7 +488,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.integer "choice_code"
   end
 
-  create_table "footnotes", id: :serial, force: :cascade do |t|
+  create_table "footnotes", force: :cascade do |t|
     t.bigint "line_id"
     t.string "code"
     t.string "label"
@@ -504,7 +504,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.bigint "footnote_id"
   end
 
-  create_table "group_of_lines", id: :serial, force: :cascade do |t|
+  create_table "group_of_lines", force: :cascade do |t|
     t.string "objectid", null: false
     t.bigint "object_version"
     t.string "name"
@@ -524,7 +524,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.bigint "line_id"
   end
 
-  create_table "import_messages", id: :serial, force: :cascade do |t|
+  create_table "import_messages", force: :cascade do |t|
     t.string "criticity"
     t.string "message_key"
     t.hstore "message_attributes"
@@ -537,7 +537,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["resource_id"], name: "index_import_messages_on_resource_id"
   end
 
-  create_table "import_resources", id: :serial, force: :cascade do |t|
+  create_table "import_resources", force: :cascade do |t|
     t.bigint "import_id"
     t.string "status"
     t.datetime "created_at"
@@ -551,7 +551,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["referential_id"], name: "index_import_resources_on_referential_id"
   end
 
-  create_table "imports", id: :serial, force: :cascade do |t|
+  create_table "imports", force: :cascade do |t|
     t.string "status"
     t.string "current_step_id"
     t.float "current_step_progress"
@@ -579,7 +579,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["workbench_id"], name: "index_imports_on_workbench_id"
   end
 
-  create_table "journey_patterns", id: :serial, force: :cascade do |t|
+  create_table "journey_patterns", force: :cascade do |t|
     t.bigint "route_id"
     t.string "objectid", null: false
     t.bigint "object_version"
@@ -625,13 +625,13 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["line_notice_id", "line_id"], name: "index_line_notices_lines_on_line_notice_id_and_line_id"
   end
 
-  create_table "line_referential_memberships", id: :serial, force: :cascade do |t|
+  create_table "line_referential_memberships", force: :cascade do |t|
     t.bigint "organisation_id"
     t.bigint "line_referential_id"
     t.boolean "owner"
   end
 
-  create_table "line_referential_sync_messages", id: :serial, force: :cascade do |t|
+  create_table "line_referential_sync_messages", force: :cascade do |t|
     t.integer "criticity"
     t.string "message_key"
     t.hstore "message_attributes"
@@ -641,7 +641,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["line_referential_sync_id"], name: "line_referential_sync_id"
   end
 
-  create_table "line_referential_syncs", id: :serial, force: :cascade do |t|
+  create_table "line_referential_syncs", force: :cascade do |t|
     t.bigint "line_referential_id"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -651,7 +651,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["line_referential_id"], name: "index_line_referential_syncs_on_line_referential_id"
   end
 
-  create_table "line_referentials", id: :serial, force: :cascade do |t|
+  create_table "line_referentials", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -659,7 +659,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.string "objectid_format"
   end
 
-  create_table "lines", id: :serial, force: :cascade do |t|
+  create_table "lines", force: :cascade do |t|
     t.bigint "network_id"
     t.bigint "company_id"
     t.string "objectid", null: false
@@ -695,7 +695,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["secondary_company_ids"], name: "index_lines_on_secondary_company_ids", using: :gin
   end
 
-  create_table "merges", id: :serial, force: :cascade do |t|
+  create_table "merges", force: :cascade do |t|
     t.bigint "workbench_id"
     t.bigint "referential_ids", array: true
     t.string "creator"
@@ -711,7 +711,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["workbench_id"], name: "index_merges_on_workbench_id"
   end
 
-  create_table "networks", id: :serial, force: :cascade do |t|
+  create_table "networks", force: :cascade do |t|
     t.string "objectid", null: false
     t.bigint "object_version"
     t.date "version_date"
@@ -732,7 +732,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["registration_number"], name: "networks_registration_number_key"
   end
 
-  create_table "notification_rules", id: :serial, force: :cascade do |t|
+  create_table "notification_rules", force: :cascade do |t|
     t.string "notification_type"
     t.daterange "period"
     t.bigint "line_id"
@@ -741,7 +741,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.datetime "updated_at"
   end
 
-  create_table "notifications", id: :serial, force: :cascade do |t|
+  create_table "notifications", force: :cascade do |t|
     t.json "payload"
     t.string "channel"
     t.datetime "created_at", null: false
@@ -749,7 +749,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["channel"], name: "index_notifications_on_channel"
   end
 
-  create_table "organisations", id: :serial, force: :cascade do |t|
+  create_table "organisations", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -763,7 +763,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["code"], name: "index_organisations_on_code", unique: true
   end
 
-  create_table "pt_links", id: :serial, force: :cascade do |t|
+  create_table "pt_links", force: :cascade do |t|
     t.bigint "start_of_link_id"
     t.bigint "end_of_link_id"
     t.bigint "route_id"
@@ -778,7 +778,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["objectid"], name: "pt_links_objectid_key", unique: true
   end
 
-  create_table "publication_api_keys", id: :serial, force: :cascade do |t|
+  create_table "publication_api_keys", force: :cascade do |t|
     t.string "name"
     t.string "token"
     t.bigint "publication_api_id"
@@ -787,7 +787,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["publication_api_id"], name: "index_publication_api_keys_on_publication_api_id"
   end
 
-  create_table "publication_api_sources", id: :serial, force: :cascade do |t|
+  create_table "publication_api_sources", force: :cascade do |t|
     t.bigint "publication_id"
     t.bigint "publication_api_id"
     t.string "key"
@@ -799,7 +799,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["publication_id"], name: "index_publication_api_sources_on_publication_id"
   end
 
-  create_table "publication_apis", id: :serial, force: :cascade do |t|
+  create_table "publication_apis", force: :cascade do |t|
     t.string "name"
     t.string "slug"
     t.bigint "workgroup_id"
@@ -809,7 +809,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["workgroup_id"], name: "index_publication_apis_on_workgroup_id"
   end
 
-  create_table "publication_setups", id: :serial, force: :cascade do |t|
+  create_table "publication_setups", force: :cascade do |t|
     t.bigint "workgroup_id"
     t.string "export_type"
     t.hstore "export_options"
@@ -820,7 +820,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["workgroup_id"], name: "index_publication_setups_on_workgroup_id"
   end
 
-  create_table "publications", id: :serial, force: :cascade do |t|
+  create_table "publications", force: :cascade do |t|
     t.bigint "publication_setup_id"
     t.string "parent_type"
     t.bigint "parent_id"
@@ -833,7 +833,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["publication_setup_id"], name: "index_publications_on_publication_setup_id"
   end
 
-  create_table "purchase_windows", id: :serial, force: :cascade do |t|
+  create_table "purchase_windows", force: :cascade do |t|
     t.string "name"
     t.string "color"
     t.daterange "date_ranges", array: true
@@ -852,7 +852,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.bigint "vehicle_journey_id"
   end
 
-  create_table "referential_clonings", id: :serial, force: :cascade do |t|
+  create_table "referential_clonings", force: :cascade do |t|
     t.string "status"
     t.datetime "started_at"
     t.datetime "ended_at"
@@ -864,7 +864,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["target_referential_id"], name: "index_referential_clonings_on_target_referential_id"
   end
 
-  create_table "referential_metadata", id: :serial, force: :cascade do |t|
+  create_table "referential_metadata", force: :cascade do |t|
     t.bigint "referential_id"
     t.bigint "line_ids", array: true
     t.bigint "referential_source_id"
@@ -877,7 +877,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["referential_source_id"], name: "index_referential_metadata_on_referential_source_id"
   end
 
-  create_table "referential_suites", id: :serial, force: :cascade do |t|
+  create_table "referential_suites", force: :cascade do |t|
     t.bigint "new_id"
     t.bigint "current_id"
     t.datetime "created_at", null: false
@@ -886,7 +886,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["new_id"], name: "index_referential_suites_on_new_id"
   end
 
-  create_table "referentials", id: :serial, force: :cascade do |t|
+  create_table "referentials", force: :cascade do |t|
     t.string "name"
     t.string "slug"
     t.datetime "created_at"
@@ -915,7 +915,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["slug"], name: "index_referentials_on_slug", unique: true
   end
 
-  create_table "routes", id: :serial, force: :cascade do |t|
+  create_table "routes", force: :cascade do |t|
     t.bigint "line_id"
     t.string "objectid", null: false
     t.bigint "object_version"
@@ -937,7 +937,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["objectid"], name: "routes_objectid_key", unique: true
   end
 
-  create_table "routing_constraint_zones", id: :serial, force: :cascade do |t|
+  create_table "routing_constraint_zones", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -956,7 +956,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.bigint "line_id"
   end
 
-  create_table "simple_interfaces", id: :serial, force: :cascade do |t|
+  create_table "simple_interfaces", force: :cascade do |t|
     t.string "configuration_name"
     t.string "filepath"
     t.string "status"
@@ -964,7 +964,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.string "type"
   end
 
-  create_table "stat_journey_pattern_courses_by_dates", id: :serial, force: :cascade do |t|
+  create_table "stat_journey_pattern_courses_by_dates", force: :cascade do |t|
     t.bigint "journey_pattern_id"
     t.bigint "route_id"
     t.bigint "line_id"
@@ -975,7 +975,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["route_id"], name: "route_id"
   end
 
-  create_table "stop_area_providers", id: :serial, force: :cascade do |t|
+  create_table "stop_area_providers", force: :cascade do |t|
     t.string "objectid"
     t.string "name"
     t.bigint "stop_area_referential_id"
@@ -983,19 +983,19 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "stop_area_providers_areas", id: :serial, force: :cascade do |t|
+  create_table "stop_area_providers_areas", force: :cascade do |t|
     t.bigint "stop_area_provider_id"
     t.bigint "stop_area_id"
     t.index ["stop_area_provider_id", "stop_area_id"], name: "stop_areas_stop_area_providers_compound"
   end
 
-  create_table "stop_area_referential_memberships", id: :serial, force: :cascade do |t|
+  create_table "stop_area_referential_memberships", force: :cascade do |t|
     t.bigint "organisation_id"
     t.bigint "stop_area_referential_id"
     t.boolean "owner"
   end
 
-  create_table "stop_area_referential_sync_messages", id: :serial, force: :cascade do |t|
+  create_table "stop_area_referential_sync_messages", force: :cascade do |t|
     t.integer "criticity"
     t.string "message_key"
     t.hstore "message_attributes"
@@ -1005,7 +1005,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["stop_area_referential_sync_id"], name: "stop_area_referential_sync_id"
   end
 
-  create_table "stop_area_referential_syncs", id: :serial, force: :cascade do |t|
+  create_table "stop_area_referential_syncs", force: :cascade do |t|
     t.bigint "stop_area_referential_id"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -1015,7 +1015,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["stop_area_referential_id"], name: "index_stop_area_referential_syncs_on_stop_area_referential_id"
   end
 
-  create_table "stop_area_referentials", id: :serial, force: :cascade do |t|
+  create_table "stop_area_referentials", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -1024,7 +1024,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.jsonb "locales", default: [{"code"=>"fr_FR", "default"=>true}, {"code"=>"en_UK", "default"=>true}, {"code"=>"nl_NL", "default"=>true}, {"code"=>"es_ES", "default"=>true}, {"code"=>"it_IT", "default"=>true}, {"code"=>"de_DE", "default"=>true}], array: true
   end
 
-  create_table "stop_area_routing_constraints", id: :serial, force: :cascade do |t|
+  create_table "stop_area_routing_constraints", force: :cascade do |t|
     t.bigint "from_id"
     t.bigint "to_id"
     t.boolean "both_way"
@@ -1036,7 +1036,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["to_id"], name: "index_stop_area_routing_constraints_on_to_id"
   end
 
-  create_table "stop_areas", id: :serial, force: :cascade do |t|
+  create_table "stop_areas", force: :cascade do |t|
     t.bigint "parent_id"
     t.string "objectid", null: false
     t.bigint "object_version"
@@ -1087,7 +1087,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.bigint "parent_id"
   end
 
-  create_table "stop_points", id: :serial, force: :cascade do |t|
+  create_table "stop_points", force: :cascade do |t|
     t.bigint "route_id"
     t.bigint "stop_area_id"
     t.string "objectid", null: false
@@ -1102,7 +1102,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["route_id"], name: "index_stop_points_on_route_id"
   end
 
-  create_table "taggings", id: :serial, force: :cascade do |t|
+  create_table "taggings", force: :cascade do |t|
     t.bigint "tag_id"
     t.string "taggable_type"
     t.bigint "taggable_id"
@@ -1121,7 +1121,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["tagger_id"], name: "index_taggings_on_tagger_id"
   end
 
-  create_table "tags", id: :serial, force: :cascade do |t|
+  create_table "tags", force: :cascade do |t|
     t.string "name"
     t.integer "taggings_count", default: 0
     t.index ["name"], name: "index_tags_on_name", unique: true
@@ -1148,7 +1148,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["time_table_id"], name: "index_time_table_periods_on_time_table_id"
   end
 
-  create_table "time_tables", id: :serial, force: :cascade do |t|
+  create_table "time_tables", force: :cascade do |t|
     t.string "objectid", null: false
     t.bigint "object_version", default: 1
     t.string "version"
@@ -1177,7 +1177,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["vehicle_journey_id"], name: "index_time_tables_vehicle_journeys_on_vehicle_journey_id"
   end
 
-  create_table "users", id: :serial, force: :cascade do |t|
+  create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: ""
     t.string "reset_password_token"
@@ -1218,7 +1218,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
-  create_table "vehicle_journey_at_stops", id: :serial, force: :cascade do |t|
+  create_table "vehicle_journey_at_stops", force: :cascade do |t|
     t.bigint "vehicle_journey_id"
     t.bigint "stop_point_id"
     t.string "connecting_service_id"
@@ -1235,7 +1235,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["vehicle_journey_id"], name: "index_vehicle_journey_at_stops_on_vehicle_journey_id"
   end
 
-  create_table "vehicle_journeys", id: :serial, force: :cascade do |t|
+  create_table "vehicle_journeys", force: :cascade do |t|
     t.bigint "route_id"
     t.bigint "journey_pattern_id"
     t.bigint "company_id"
@@ -1258,15 +1258,15 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.string "data_source_ref"
     t.jsonb "custom_field_values", default: {}
     t.jsonb "metadata", default: {}
-    t.integer "ignored_routing_contraint_zone_ids", default: [], array: true
-    t.integer "ignored_stop_area_routing_constraint_ids", default: [], array: true
+    t.bigint "ignored_routing_contraint_zone_ids", default: [], array: true
+    t.bigint "ignored_stop_area_routing_constraint_ids", default: [], array: true
     t.bigint "line_notice_ids", array: true
     t.index ["journey_pattern_id"], name: "index_vehicle_journeys_on_journey_pattern_id"
     t.index ["objectid"], name: "vehicle_journeys_objectid_key", unique: true
     t.index ["route_id"], name: "index_vehicle_journeys_on_route_id"
   end
 
-  create_table "workbenches", id: :serial, force: :cascade do |t|
+  create_table "workbenches", force: :cascade do |t|
     t.string "name"
     t.bigint "organisation_id"
     t.datetime "created_at"
@@ -1286,7 +1286,7 @@ ActiveRecord::Schema.define(version: 2019_06_12_141438) do
     t.index ["workgroup_id"], name: "index_workbenches_on_workgroup_id"
   end
 
-  create_table "workgroups", id: :serial, force: :cascade do |t|
+  create_table "workgroups", force: :cascade do |t|
     t.string "name"
     t.bigint "line_referential_id"
     t.bigint "stop_area_referential_id"

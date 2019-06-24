@@ -1,6 +1,6 @@
 class CreateNotificationRules < ActiveRecord::Migration[4.2]
   def change
-    if Apartment::Tenant.current == "public"
+    on_public_schema_only do
       create_table :notification_rules do |t|
         t.string :notification_type
         t.daterange :period

@@ -27,7 +27,7 @@ module Chouette
 
     belongs_to_public :stop_area_routing_constraints,
       collection_name: :ignored_stop_area_routing_constraints,
-      index_collection: -> { Chouette::VehicleJourney.where.not('ignored_stop_area_routing_constraint_ids = ARRAY[]::integer[]') }
+      index_collection: -> { Chouette::VehicleJourney.where.not('ignored_stop_area_routing_constraint_ids = ARRAY[]::bigint[]') }
 
     has_array_of :line_notices, class_name: 'Chouette::LineNotice'
     belongs_to_public :line_notices,

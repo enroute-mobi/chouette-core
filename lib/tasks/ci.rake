@@ -102,15 +102,22 @@ namespace :ci do
       runtime_log = "log/parallel_runtime_specs.log"
       parallel_specs_command += " --runtime-log #{runtime_log}" if File.exists? runtime_log
 
+      # Add test options
+      test_options = "--format ParallelTests::RSpec::RuntimeLogger --out #{runtime_log}"
+      summary_log = "log/summary_specs.log"
+      test_options += " --format ParallelTests::RSpec::SummaryLogger --out #{summary_log}"
+
       unless quiet?
-        parallel_specs_command += " --test-options '--format progress'"
+        test_options += " --format progress"
       end
+
+      parallel_specs_command += " --test-options '#{test_options}'"
 
       begin
         sh parallel_specs_command
       ensure
-        sh "cat #{runtime_log} | grep '^spec' | sort -t: -k2 -n -r -"
-        sh "cat log/summary_specs.log"
+        sh "cat #{runtime_log} | grep '^spec' | sort -t: -k2 -n -r -" if File.exists?(runtime_log)
+        sh "cat #{summary_log}" if File.exists?(summary_log)
         # Dir["log/*_specs.log"].sort.each do |spec_log_file|
         #   sh "cat #{spec_log_file}"
         # end

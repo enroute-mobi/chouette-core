@@ -82,7 +82,7 @@ describe Chouette::VehicleJourney, :type => :model do
     end
 
     context "with a stif_codifligne referential" do
-      let(:objectid){ "STIF:CODIFLIGNE:Line:CCC-EEE" }
+      let(:objectid){ "STIF:CODIFLIGNE:CCC-EEE:LOC" }
 
       before(:each) do
         referential.update objectid_format: "stif_codifligne"

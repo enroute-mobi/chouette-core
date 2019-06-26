@@ -23,8 +23,7 @@ module Stif
 
       def synchronize
         Codifligne::API.api_version = 2
-        Codifligne::API.base_url = 'https://pprod-ilico.iledefrance-mobilites.fr/rest/v2/lc/getlist'
-
+        
         reset_counts
         start_time = Process.clock_gettime(Process::CLOCK_MONOTONIC, :second)
         # Fetch Codifline data

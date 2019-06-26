@@ -4,7 +4,7 @@ FactoryGirl.define do
     sequence(:name) { |n| "Company #{n}" }
     sequence(:short_name) { |n| "company-#{n}" }
     sequence(:code) { |n| "company_#{n}" }
-    sequence(:objectid) { |n| "STIF:CODIFLIGNE:Company:#{n}" }
+    sequence(:objectid) { |n| "STIF:CODIFLIGNE:#{n}:LOC" }
     sequence(:registration_number) { |n| "test-#{n}" }
 
     default_contact_email { Faker::Internet.email }

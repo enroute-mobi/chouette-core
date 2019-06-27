@@ -123,10 +123,16 @@ module Stif
           number: api_line.short_name,
           deactivated: (api_line.status == "inactive" ? true : false),
           import_xml: api_line.xml,
-          seasonal: api_line.seasonal
+          seasonal: api_line.seasonal,
+          active_from: api_line.valid_from,
+          active_until: api_line.valid_until,
+          color: api_line.color&.upcase,
+          text_color: api_line.text_color&.upcase
         }
         params[:transport_mode] = api_line.transport_mode.to_s
         params[:transport_submode] = api_line.transport_submode.to_s
+        params[:network_id] = Chouette::Network.where(objectid: api_line.network_code).last&.id
+
         api_line.secondary_operator_ref.each do |id|
           params[:secondary_companies] ||= []
           params[:secondary_companies] << Chouette::Company.find_by(objectid: id)

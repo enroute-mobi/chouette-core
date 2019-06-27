@@ -43,6 +43,11 @@ module Stif
         operators.map       { |o| create_or_update_company(o) }
         log_create_or_update "Companies", operators.count, stime
 
+        # Create or update LineNotices
+        stime = Process.clock_gettime(Process::CLOCK_MONOTONIC, :second)
+        line_notices.map     { |n| create_or_update_line_notice(n) }
+        log_create_or_update "LineNotices", networks.count, stime
+
         # Create or update Lines
         stime = Process.clock_gettime(Process::CLOCK_MONOTONIC, :second)
         lines.map           { |l| create_or_update_line(l) }
@@ -53,10 +58,6 @@ module Stif
         networks.map        { |n| create_or_update_network(n) }
         log_create_or_update "Networks", networks.count, stime
 
-        # Create or update LineNotices
-        stime = Process.clock_gettime(Process::CLOCK_MONOTONIC, :second)
-        line_notices.map     { |n| create_or_update_line_notice(n) }
-        log_create_or_update "LineNotices", networks.count, stime
 
         # # Create or update Group of lines
         # stime = Process.clock_gettime(Process::CLOCK_MONOTONIC, :second)
@@ -140,6 +141,9 @@ module Stif
         unless api_line.operator_ref.nil?
           params[:company] = Chouette::Company.find_by(objectid: api_line.operator_ref)
         end
+
+        params[:line_notice_ids] = Chouette::LineNotice.where(objectid: api_line.line_notices).pluck(:id)
+
         save_or_update(params, Chouette::Line)
       end
 

@@ -15,7 +15,7 @@
         = definition_list t("companies.form.sections.identification"), attributes
 
         - attributes = %w(house_number address_line_1 address_line_2 street town postcode postcode_extension).map { |attr| [Chouette::Company.tmf(attr), @company.send(attr)]}.to_h
-        - attributes[Chouette::Company.tmf(:country_code)] = @company.country_code ? label_for_country(@company.country_code) + ISO3166::Country[@company.country_code].translation(I18n.locale) : '-'
+        - attributes[Chouette::Company.tmf(:country_code)] = @company.country_code.present? ? label_for_country(@company.country_code) + ISO3166::Country[@company.country_code].translation(I18n.locale) : '-'
         = definition_list t("companies.form.sections.address"), attributes
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12

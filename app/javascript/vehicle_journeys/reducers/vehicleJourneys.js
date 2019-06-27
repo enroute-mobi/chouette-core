@@ -121,6 +121,7 @@ const vehicleJourney= (state = {}, action, keep) => {
         short_id: '',
         footnotes: [],
         time_tables: [],
+        line_notices: [],
         purchase_windows: [],
         ignored_routing_contraint_zone_ids: [],
         vehicle_journey_at_stops: pristineVjasList,

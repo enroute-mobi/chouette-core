@@ -7,6 +7,9 @@ module JourneyPatternControl
     store_accessor :control_attributes, :min
     store_accessor :control_attributes, :max
 
+    validates :min, numericality: true, allow_blank: true
+    validates :max, numericality: true, allow_blank: true
+
     enumerize :criticity, in: %i(warning error), scope: true, default: :warning
 
     def self.compliance_test(compliance_check, journey_pattern)

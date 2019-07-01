@@ -148,8 +148,8 @@ class ReferentialCopy
               copy_bulk_collection tt.periods do |new_period_attributes|
                 new_period_attributes[:time_table_id] = new_tt.id
               end
+              new_tt.reload.save_shortcuts
             end
-            new_tt.reload.save_shortcuts
           end
         end
       end
@@ -198,7 +198,7 @@ class ReferentialCopy
       update_checkum_in_batches Chouette::Route.where(id: @new_routes).select(:id, :name, :published_name, :wayback).includes(:stop_points, :routing_constraint_zones)
       update_checkum_in_batches target.vehicle_journey_at_stops.joins(vehicle_journey: :route).where(routes: {id: @new_routes}).select(:id, :departure_time, :arrival_time, :departure_day_offset, :arrival_day_offset)
       update_checkum_in_batches target.journey_patterns.where(route_id: @new_routes).select(:id, :custom_field_values, :name, :published_name, :registration_number, :costs).includes(:stop_points)
-      update_checkum_in_batches target.vehicle_journeys.where(route_id: @new_routes).select(:id, :custom_field_values, :published_journey_name, :published_journey_identifier, :ignored_routing_contraint_zone_ids, :ignored_stop_area_routing_constraint_ids, :company_id).includes(:company_light, :footnotes, :vehicle_journey_at_stops, :purchase_windows)
+      update_checkum_in_batches target.vehicle_journeys.where(route_id: @new_routes).select(:id, :custom_field_values, :published_journey_name, :published_journey_identifier, :ignored_routing_contraint_zone_ids, :ignored_stop_area_routing_constraint_ids, :company_id, :line_notice_ids).includes(:company_light, :footnotes, :vehicle_journey_at_stops, :purchase_windows)
     end
   end
 

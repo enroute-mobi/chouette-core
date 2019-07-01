@@ -19,3 +19,10 @@ fr:
         locale_code: Code
         locale_default: Par défaut
         locale_name: Langue
+        stops_selection_displayed_fields: Informations présentées à la sélection d'un arrêt
+        area_type: Le type d'arrêt
+        objectid: L'ID métier
+        zip_code: Le code postal de la commune
+        city_name: Le nom de la commune
+        postal_region: La région postale
+        country_name: Le pays

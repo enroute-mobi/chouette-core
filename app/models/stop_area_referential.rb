@@ -1,4 +1,7 @@
 class StopAreaReferential < ApplicationModel
+  STOPS_SELECTION_DISPLAYABLE_FIELDS = %i(
+    area_type objectid zip_code city_name postal_region country_name
+  )
   validates :registration_number_format, format: { with: /\AX*\z/ }
 
   include ObjectidFormatterSupport

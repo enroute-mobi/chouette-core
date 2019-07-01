@@ -1,5 +1,17 @@
 = simple_form_for [@stop_area_referential], html: {class: 'form-horizontal', id: 'stop_area_referential_form'}, wrapper: :horizontal_form do |f|
+  legend= StopAreaReferential.tmf(:stops_selection_displayed_fields)
+  .row.locales
+    .col-lg-12
+      - StopAreaReferential::STOPS_SELECTION_DISPLAYABLE_FIELDS.each do |f|
+        .row
+          .col-md-4
+            label{for="stops_selection_displayed_fields_#{f}"}= StopAreaReferential.tmf(f)
+          .col-md-8
+            = check_box "stops_selection_displayed_fields", f, checked: @stop_area_referential.stops_selection_displayed_fields[f.to_s]
+
+
   - if has_feature?(:stop_area_localized_names)
+    br
     legend= StopAreaReferential.tmf(:locales)
     .row.header
       .col-md-1

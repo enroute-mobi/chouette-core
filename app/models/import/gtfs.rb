@@ -321,22 +321,27 @@ class Import::Gtfs < Import::Base
 
                   stop_points = profile_tag 'stop_points_mapping' do
                     stop_points_with_times.map do |s|
-                      stop_point = s.last
-                      @objectid_formatter ||= Chouette::ObjectidFormatter.for_objectid_provider(StopAreaReferential, id: referential.stop_area_referential_id)
-                      stop_point[:route_id] = route.id
-                      stop_point[:objectid] = @objectid_formatter.objectid(stop_point)
-                      stop_point
+                      if stop_point = s.last
+                        @objectid_formatter ||= Chouette::ObjectidFormatter.for_objectid_provider(StopAreaReferential, id: referential.stop_area_referential_id)
+                        stop_point[:route_id] = route.id
+                        stop_point[:objectid] = @objectid_formatter.objectid(stop_point)
+                        stop_point
+                      end
                     end
                   end
                 end
 
                 profile_tag 'stop_points_bulk_insert' do
                   worker = nil
-                  Chouette::StopPoint.bulk_insert(:route_id, :objectid, :stop_area_id, :position, return_primary_keys: true) do |w|
-                    stop_points.compact.each { |s| w.add(s.attributes) }
-                    worker = w
+                  if stop_points.compact.present?
+                    Chouette::StopPoint.bulk_insert(:route_id, :objectid, :stop_area_id, :position, return_primary_keys: true) do |w|
+                      stop_points.compact.each { |s| w.add(s.attributes) }
+                      worker = w
+                    end
+                    stop_points = Chouette::StopPoint.find worker.result_sets.last.rows
+                  else
+                    stop_points = []
                   end
-                  stop_points = Chouette::StopPoint.find worker.result_sets.last.rows
                 end
                 profile_tag 'add_stop_points_to_jp' do
                   JourneyPatternsStopPoint.bulk_insert do |worker|
@@ -346,7 +351,7 @@ class Import::Gtfs < Import::Base
                   end
 
                   journey_pattern.stop_points.reload
-                  journey_pattern.shortcuts_update_for_add(stop_points.last)
+                  journey_pattern.shortcuts_update_for_add(stop_points.last) if stop_points.present?
                 end
 
                 profile_tag 'vjas_bulk_insert' do

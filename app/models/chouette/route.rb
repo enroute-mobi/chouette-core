@@ -184,7 +184,8 @@ module Chouette
       end
     end
 
-    validate :check_opposite_route
+    delegate :in_referential_suite?, to: :referential
+    validate :check_opposite_route, unless: :in_referential_suite?
     def check_opposite_route
       return unless opposite_route && opposite_wayback
       unless opposite_route_candidates.include?(opposite_route)

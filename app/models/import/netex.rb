@@ -113,7 +113,7 @@ class Import::Netex < Import::Base
       if frame
         metadata.periodes = frame.periods
 
-        @line_objectids = frame.line_refs.map { |ref| "STIF:CODIFLIGNE:Line:#{ref}" }
+        @line_objectids = frame.line_refs.map { |ref| "FR1:Line:#{ref}:" }
         metadata.line_ids = workbench.lines.where(objectid: @line_objectids).pluck(:id)
       end
     end

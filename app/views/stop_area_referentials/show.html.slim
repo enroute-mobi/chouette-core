@@ -7,6 +7,9 @@
       h2= StopAreaReferential.tmf(:stops_selection_displayed_fields)
       .row.locales
         .col-lg-12
+          .row
+            .col-md-4= Chouette::StopArea.tmf(:name)
+            .col-md-8= boolean_icon true
           - StopAreaReferential::STOPS_SELECTION_DISPLAYABLE_FIELDS.each do |f|
             .row
               .col-md-4= StopAreaReferential.tmf(f)

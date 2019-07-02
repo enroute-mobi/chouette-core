@@ -23,10 +23,11 @@
                     .wrapper
                       div
                         .form-group
-                          label.control-label Arrêt
-                      div
-                        .form-group
-                          label.control-label Commune
+                          label.control-label= Chouette::StopArea.tmf(:name)
+                      - referential.stop_area_referential.enabled_stops_selection_displayed_fields.each do |f|
+                        div
+                          .form-group
+                            label.control-label= StopAreaReferential.tmf(f)
                       div
 
                   .nested-fields

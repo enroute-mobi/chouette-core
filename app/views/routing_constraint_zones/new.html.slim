@@ -22,12 +22,11 @@
                     .wrapper
                       div
                         .form-group
-                          label.control-label 
-                            = t('.stop_area')
-                      div
-                        .form-group
-                          label.control-label 
-                            = t('.city')
+                          label.control-label= Chouette::StopArea.tmf(:name)
+                      - referential.stop_area_referential.enabled_stops_selection_displayed_fields.each do |f|
+                        div
+                          .form-group
+                            label.control-label= StopAreaReferential.tmf(f)
                       div
                   .nested-fields#stop_points
 

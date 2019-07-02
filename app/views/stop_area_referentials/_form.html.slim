@@ -2,6 +2,12 @@
   legend= StopAreaReferential.tmf(:stops_selection_displayed_fields)
   .row.locales
     .col-lg-12
+      .row
+        .col-md-4
+          label{for="stops_selection_displayed_fields_name"}= Chouette::StopArea.tmf(:name)
+        .col-md-8
+          = check_box "stops_selection_displayed_fields", :name, checked: true, disabled: true
+
       - StopAreaReferential::STOPS_SELECTION_DISPLAYABLE_FIELDS.each do |f|
         .row
           .col-md-4

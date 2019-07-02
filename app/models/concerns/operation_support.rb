@@ -3,6 +3,7 @@ module OperationSupport
 
   included do |into|
     into.extend Enumerize
+    into.include ProfilingSupport
 
     enumerize :status, in: %w[new pending successful failed running canceled], default: :new
     scope :successful, ->{ where status: :successful }
@@ -12,7 +13,7 @@ module OperationSupport
     has_many :publications, as: :parent, dependent: :destroy
 
     validate :has_at_least_one_referential, :on => :create
-    validate :check_other_operations, :on => :create
+    validate :check_other_operations, :on => :create, unless: :profile?
 
     into.extend ClassMethods
   end
@@ -78,14 +79,16 @@ module OperationSupport
   end
 
   def save_current
-    output.update current: new, new: nil
-    output.current.update referential_suite: output, ready: true
-    new.rebuild_cross_referential_index!
-    
-    after_save_current
+    profile_tag :save_current do
+      output.update current: new, new: nil
+      output.current.update referential_suite: output, ready: true
+      new.rebuild_cross_referential_index!
+      
+      after_save_current
 
-    clean_previous_operations
-    update status: :successful, ended_at: Time.now
+      clean_previous_operations
+      update status: :successful, ended_at: Time.now
+    end
   end
 
   def create_compliance_check_set(context, control_set, referential)

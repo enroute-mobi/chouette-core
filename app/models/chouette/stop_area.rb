@@ -531,11 +531,9 @@ module Chouette
       out = ""
       out << formatted_area_type if stop_area_referential.stops_selection_displayed_fields['formatted_area_type']
       extra = [name]
-      %i(zip_code city_name postal_region country_name).each do |f|
+      %i(zip_code city_name postal_region country_name local_id).each do |f|
         extra << send(f) if stop_area_referential.stops_selection_displayed_fields[f.to_s]
       end
-      extra << local_id if stop_area_referential.stops_selection_displayed_fields['objectid']
-
       out + extra.select(&:present?).join(' - ')
     end
   end

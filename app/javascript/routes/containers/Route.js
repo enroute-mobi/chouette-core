@@ -7,7 +7,7 @@ import {
 } from '../actions'
 import {
   handleInputChange,
-  getDirection,
+  getWayback,
   directionHandler,
   FETCH_ROUTE_SUCCESS,
   FETCH_ROUTE_ERROR,
@@ -29,8 +29,8 @@ const mapDispatchToProps = (dispatch) => ({
     const newPublishedName = handleInputChange('published_name')(e.target.value)()
     dispatch(updateRouteFormInput(newPublishedName))
   },
-  onUpdateDirection(e) {
-    const newAtributes  = handleInputChange('wayback')(getDirection(e))()
+  onUpdateWayback(e) {
+    const newAtributes  = handleInputChange('wayback')(getWayback(e))()
     dispatch(updateRouteFormInput(newAtributes))
   },
   onUpdateOppositeRoute(e) {

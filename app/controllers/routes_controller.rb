@@ -112,7 +112,7 @@ class RoutesController < ChouetteController
 
   def define_candidate_opposite_routes
     scope = if params[:id]
-      parent.routes.where(opposite_route: [nil, resource]).where('id <> ?', resource.id)
+      parent.routes.where(opposite_route: [nil, resource])
     else
       parent.routes.where(opposite_route: nil)
     end

@@ -9,7 +9,7 @@ class ReferentialAudit
       faulty = []
       models = [
         Chouette::Footnote.select(:id, :checksum_source, :checksum, :code, :label),
-        Chouette::JourneyPattern.select(:id, :checksum_source, :checksum, :custom_field_values, :name, :published_name, :registration_number, :costs).includes(:stop_points),
+        Chouette::JourneyPattern.select(:id, :checksum_source, :checksum, :custom_field_values, :name, :published_name, :registration_number, :costs, :route_id).includes(:stop_points),
         Chouette::PurchaseWindow.select(:id, :checksum_source, :checksum, :name, :color, :date_ranges),
         Chouette::Route.select(:id, :checksum_source, :checksum, :name, :published_name, :wayback).includes(:stop_points, :routing_constraint_zones),
         Chouette::RoutingConstraintZone.select(:id, :checksum_source, :checksum, :stop_point_ids),

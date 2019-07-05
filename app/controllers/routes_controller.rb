@@ -111,9 +111,11 @@ class RoutesController < ChouetteController
   end
 
   def define_candidate_opposite_routes
-    scope = if params[:id]
-      parent.routes.where(opposite_route: [nil, resource])
+    scope = if params[:route_id].present?
+      route = parent.routes.find(params[:route_id])
+      parent.routes.where(opposite_route: [nil, route])
     else
+      parent = @referential.lines.find(params[:line_id])
       parent.routes.where(opposite_route: nil)
     end
     @forward  = scope.where(wayback: :outbound)

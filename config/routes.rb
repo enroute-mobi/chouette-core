@@ -118,9 +118,9 @@ ChouetteIhm::Application.routes.draw do
           put 'save_boarding_alighting'
           get 'costs'
           post 'duplicate', to: 'routes#duplicate'
-          get 'fetch_opposite_routes'
         end
         collection do
+          get 'fetch_opposite_routes'
           get 'fetch_user_permissions'
         end
         resource :journey_patterns_collection, :only => [:show, :update]

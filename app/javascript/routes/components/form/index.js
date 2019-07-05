@@ -50,16 +50,14 @@ export default class RouteForm extends Component {
                 onChange={onUpdateWayback}
                 isChecked={route.wayback === 'outbound'}
               />
-              { isOutbound && (
-                <SelectInput
-                  inputId='route_opposite_route_id'
-                  inputName='route[opposite_route_id]'
-                  labelText={I18n.t('activerecord.attributes.route.opposite_route')}
-                  value={route.opposite_route_id}
-                  onChange={onUpdateOppositeRoute}
-                  options={oppositeRoutesOptions}
-                />
-              ) }
+              <SelectInput
+                inputId='route_opposite_route_id'
+                inputName='route[opposite_route_id]'
+                labelText={I18n.t('activerecord.attributes.route.opposite_route')}
+                value={route.opposite_route_id}
+                onChange={onUpdateOppositeRoute}
+                options={oppositeRoutesOptions}
+              />
             </div>
           </div>
         </form>

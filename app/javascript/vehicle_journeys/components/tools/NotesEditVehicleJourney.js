@@ -49,6 +49,15 @@ export default class NotesEditVehicleJourney extends Component {
     }
   }
 
+  noteUrl(lf) {
+    if(lf.line_notice){
+      return "/line_referentials/" + window.line_referential_id + "/lines/" + window.line_id + "/line_notices/" + lf.id
+    }
+    else {
+      return "/referentials/" + window.referential_id + "/lines/" + window.line_id + "/footnotes"
+    }
+  }
+
   renderAssociatedFN() {
     if (this.footnotes().associated.length == 0) {
       return <h3>{I18n.t('vehicle_journeys.vehicle_journeys_matrix.no_associated_footnotes')}</h3>
@@ -63,11 +72,14 @@ export default class NotesEditVehicleJourney extends Component {
             >
               <div className='panel-heading'>
                 <h4 className='panel-title clearfix'>
-                  <div className='pull-left' style={{ paddingTop: '3px' }}>{lf.code}</div>
-                  {
-                    lf.line_notice &&
-                    <div className='pull-left'>{'\u00A0'}<span className='badge badge-info'>{I18n.t('activerecord.models.line_notice.one')}</span></div>
-                  }
+                  <a href={ this.noteUrl(lf) }>
+                    <div className='pull-left' style={{ paddingTop: '3px' }}>
+                    {lf.code}</div>
+                    {
+                      lf.line_notice &&
+                      <div className='pull-left'>{'\u00A0'}<span className='badge badge-info'>{I18n.t('activerecord.models.line_notice.one')}</span></div>
+                    }
+                  </a>
                   <div className='pull-right'>{this.renderFootnoteButton(lf)}</div>
                 </h4>
               </div>

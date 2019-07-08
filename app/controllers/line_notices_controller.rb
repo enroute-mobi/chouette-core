@@ -60,9 +60,9 @@ class LineNoticesController < ChouetteController
       @filtered_line = Chouette::Line.find(params[:q][:lines_id_eq]) if params[:q] && params[:q][:lines_id_eq].present?
       @q = scope.ransack(params[:q])
       if sort_column && sort_direction
-        line_notices ||= @q.result(:distinct => true).order(sort_column + ' ' + sort_direction).paginate(:page => params[:page])
+        line_notices ||= @q.result(:distinct => true).order(sort_column + ' ' + sort_direction).paginate(:page => params[:page] || 1)
       else
-        line_notices ||= @q.result(:distinct => true).order(:number).paginate(:page => params[:page])
+        line_notices ||= @q.result(:distinct => true).order(:number).paginate(:page => params[:page] || 1)
       end
       line_notices
     end

@@ -42,5 +42,16 @@ RSpec.describe FootnotesController, :type => :controller do
     with_permission "footnotes.update" do
       it_behaves_like 'checks current_organisation', success_code: 302
     end
+
+    context 'when destroying a footnote' do
+      before do
+        line.footnotes.create code: 'foo'
+      end
+      let(:request){ patch :update_all, params: { line_id: line.id, referential_id: referential.id, line: { footnotes_attributes: [{ id: line.footnotes.last.id, _destroy: '1', code: 'foo', label: 'bar' }] }}}
+
+      it 'should destroy marked footnotes' do
+        expect{ request }.to change { line.footnotes.count }.to 0
+      end
+    end
   end
 end

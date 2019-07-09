@@ -6,7 +6,7 @@
 
       - referential.stop_area_referential.enabled_stops_selection_displayed_fields.each do |f|
         div
-          span= stop_point.stop_area.send(f).html_safe
+          span= stop_point.stop_area.send(f)&.html_safe
       div
         span.has_radio
           = check_box_tag( "routing_constraint_zone[stop_point_ids][]", "#{stop_point.id}", routing_constraint_zone.stop_point_ids && routing_constraint_zone.stop_point_ids.include?(stop_point.id)  )

@@ -19,6 +19,9 @@
 
 = javascript_tag do
   | window.route_id = #{params[:route_id]};
+  | window.referential_id = #{@referential.id};
+  | window.line_id = #{@line.id};
+  | window.line_referential_id = #{@referential.line_referential_id};
   | window.stopPoints = #{(@stop_points_list.to_json).html_safe};
   | window.returnStopPoints = #{(@return_stop_points_list.to_json).html_safe};
   | window.jpOrigin = #{(@jp_origin.present? ? @jp_origin.attributes.update({full_schedule: @jp_origin.full_schedule?}).to_json  : "null").html_safe};
@@ -39,7 +42,7 @@
 - if has_feature?(:stop_area_routing_constraints)
   = javascript_tag do
     | window.stop_area_constraints_routes = "#{url_for([@referential.stop_area_referential, :stop_area_routing_constraints]).html_safe}";
-    
+
 - if has_feature?(:vehicle_journeys_return_route)
   = javascript_tag do
     | window.returnRouteUrl = "#{(@route.opposite_route && url_for([@referential, @route.line, @route.opposite_route, :vehicle_journeys]) || "").html_safe}";

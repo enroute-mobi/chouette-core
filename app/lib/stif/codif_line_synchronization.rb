@@ -42,20 +42,20 @@ module Stif
         operators.map       { |o| create_or_update_company(o) }
         log_create_or_update "Companies", operators.count, stime
 
-        # Create or update Lines
+        # Create or update LineNotices
         stime = Process.clock_gettime(Process::CLOCK_MONOTONIC, :second)
-        lines.map           { |l| create_or_update_line(l) }
-        log_create_or_update "Lines", lines.count, stime
+        line_notices.map     { |n| create_or_update_line_notice(n) }
+        log_create_or_update "LineNotices", networks.count, stime
 
         # Create or update Networks
         stime = Process.clock_gettime(Process::CLOCK_MONOTONIC, :second)
         networks.map        { |n| create_or_update_network(n) }
         log_create_or_update "Networks", networks.count, stime
 
-        # Create or update LineNotices
+        # Create or update Lines
         stime = Process.clock_gettime(Process::CLOCK_MONOTONIC, :second)
-        line_notices.map     { |n| create_or_update_line_notice(n) }
-        log_create_or_update "LineNotices", networks.count, stime
+        lines.map           { |l| create_or_update_line(l) }
+        log_create_or_update "Lines", lines.count, stime
 
         # # Create or update Group of lines
         # stime = Process.clock_gettime(Process::CLOCK_MONOTONIC, :second)
@@ -122,10 +122,16 @@ module Stif
           number: api_line.short_name,
           deactivated: (api_line.status == "inactive" ? true : false),
           import_xml: api_line.xml,
-          seasonal: api_line.seasonal
+          seasonal: api_line.seasonal,
+          active_from: api_line.valid_from,
+          active_until: api_line.valid_until,
+          color: api_line.color&.upcase,
+          text_color: api_line.text_color&.upcase
         }
         params[:transport_mode] = api_line.transport_mode.to_s
         params[:transport_submode] = api_line.transport_submode.to_s
+        params[:network_id] = Chouette::Network.where(objectid: api_line.network_code).last&.id
+
         api_line.secondary_operator_ref.each do |id|
           params[:secondary_companies] ||= []
           params[:secondary_companies] << Chouette::Company.find_by(objectid: id)
@@ -133,6 +139,9 @@ module Stif
         unless api_line.operator_ref.nil?
           params[:company] = Chouette::Company.find_by(objectid: api_line.operator_ref)
         end
+
+        params[:line_notice_ids] = Chouette::LineNotice.where(objectid: api_line.line_notices).pluck(:id)
+
         save_or_update(params, Chouette::Line)
       end
 

@@ -126,6 +126,35 @@ RSpec.describe ReferentialCopy do
     end
   end
 
+  context "#copy_route" do
+    let!(:route) do
+      referential.switch do
+        create(:route, :with_opposite)
+      end
+    end
+
+    let(:opposite_route) do
+      referential.switch do
+        route.opposite_route
+      end
+    end
+
+    let(:line) do
+      route.line
+    end
+
+    it "should copy the routes" do
+      referential.switch
+      expect(opposite_route).to be_present
+      expect{ referential_copy.send(:copy_routes, line) }.to change{ target.switch{ Chouette::Route.count } }.by 2
+      new_route = target.switch{ Chouette::Route.find_by(objectid: route.objectid) }
+      expect(referential_copy.send(:clean_attributes_for_copy, new_route)).to eq referential_copy.send(:clean_attributes_for_copy, route)
+      new_opposite_route = target.switch{ route.opposite_route }
+      expect(new_route.checksum).to eq route.checksum
+      expect(new_opposite_route.checksum).to eq opposite_route.checksum
+    end
+  end
+
   context "#copy_time_tables" do
     let!(:time_table){
       referential.switch do

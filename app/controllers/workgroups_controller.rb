@@ -32,6 +32,19 @@ class WorkgroupsController < ChouetteController
     end
   end
 
+  def update
+    unless resource.update workgroup_params
+      if workgroup_params.has_key? :sentinel_min_hole_size
+        render :edit_hole_sentinel
+      else
+        render :edit
+      end
+      return
+    end
+
+    redirect_to resource
+  end
+
   def workgroup_params
     params.require(:workgroup).permit(
       :name,
@@ -48,8 +61,8 @@ class WorkgroupsController < ChouetteController
   end
 
   def resource
-    if params[:id]
-      @workgroup = current_organisation.workgroups.find(params[:id]).decorate
+    @workgroup ||= if params[:id]
+      current_organisation.workgroups.find(params[:id]).decorate
     else
       current_organisation.workgroups.build
     end

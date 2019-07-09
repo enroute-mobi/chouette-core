@@ -1,12 +1,14 @@
 class ReferentialCopy
   extend Enumerize
   include ReferentialCopyHelpers
+  include ProfilingSupport
 
   attr_accessor :source, :target, :status, :last_error
 
   enumerize :status, in: %w[new pending successful failed running], default: :new
 
   def initialize(opts={})
+    @profiler = opts[:profiler]
     @source = opts[:source]
     @target = opts[:target]
     @opts = opts
@@ -22,17 +24,25 @@ class ReferentialCopy
   end
 
   def copy(raise_error: false)
-    ActiveRecord::Base.cache do
-      copy_metadatas unless skip_metadatas?
-      copy_time_tables
-      copy_purchase_windows
-      source.switch do
-        lines.includes(:footnotes, :routes).find_each do |line|
-          copy_footnotes line
-          copy_routes line
+    profile_tag :copy do
+      ActiveRecord::Base.cache do
+        Chouette::JourneyPattern.within_workgroup(workgroup) do
+          Chouette::VehicleJourney.within_workgroup(workgroup) do
+            copy_resource(:metadatas) unless skip_metadatas?
+            copy_resource(:time_tables)
+            copy_resource(:purchase_windows)
+            source.switch do
+              lines.includes(:footnotes, :routes).find_each do |line|
+                @new_routes = nil
+                copy_resource(:footnotes, line)
+                copy_resource(:routes, line)
+                copy_resource(:line_checksums, line)
+              end
+            end
+            @status = :successful
+          end
         end
       end
-      @status = :successful
     end
   rescue SaveError => e
     logger.error e.message
@@ -44,12 +54,65 @@ class ReferentialCopy
     copy raise_error: true
   end
 
+  def self.profile(source_id, target_id, profile_options={})
+    copy = self.new(source: Referential.find(source_id), target: Referential.find(target_id))
+    copy.profile = true
+    copy.profile_options = profile_options
+
+    copy.target.switch do
+      [
+        Chouette::VehicleJourneyAtStop,
+        Chouette::VehicleJourney,
+        Chouette::JourneyPattern,
+        Chouette::TimeTable,
+        Chouette::TimeTableDate,
+        Chouette::TimeTablePeriod,
+        Chouette::PurchaseWindow,
+        Chouette::StopPoint,
+        Chouette::Route,
+        Chouette::Footnote
+      ].each do |klass|
+        klass.delete_all
+      end
+    end
+
+    if profile_options[:operations]
+      copy.profile_tag 'copy' do
+        copy.source.switch do
+          ActiveRecord::Base.cache do
+            profile_options[:operations].each do |op|
+              if op.is_a?(Array)
+                copy.copy_resource op.first, *op[1..-1]
+              else
+                copy.copy_resource op
+              end
+            end
+          end
+        end
+      end
+    else
+      copy.copy
+    end
+
+    copy
+  end
+
+  def copy_resource(resource_name, *params)
+    profile_tag "copy_#{resource_name}" do
+      send "copy_#{resource_name}", *params
+    end
+  end
+
   private
 
   def lines
     @lines ||= begin
       source.lines
     end
+  end
+
+  def workgroup
+    @workgroup ||= target.workgroup
   end
 
   # METADATAS
@@ -68,31 +131,32 @@ class ReferentialCopy
   # TIMETABLES
 
   def copy_time_tables
+    table_ids = []
     Chouette::TimeTable.transaction do
-      source.switch do
-        Chouette::TimeTable.linked_to_lines(lines).distinct.find_each do |tt|
-          attributes = clean_attributes_for_copy tt
-          target.switch do
-            new_tt = Chouette::TimeTable.new attributes
-            controlled_save! new_tt
-            record_match(tt, new_tt)
-            copy_bulk_collection tt.dates do |new_date_attributes|
-              new_date_attributes[:time_table_id] = new_tt.id
+      Chouette::ChecksumManager.no_updates do
+        source.switch do
+          Chouette::TimeTable.linked_to_lines(lines).distinct.find_each do |tt|
+            attributes = clean_attributes_for_copy tt
+            target.switch do
+              new_tt = Chouette::TimeTable.new attributes
+              controlled_save! new_tt
+              table_ids << new_tt.id
+              record_match(tt, new_tt)
+              copy_bulk_collection tt.dates do |new_date_attributes|
+                new_date_attributes[:time_table_id] = new_tt.id
+              end
+              copy_bulk_collection tt.periods do |new_period_attributes|
+                new_period_attributes[:time_table_id] = new_tt.id
+              end
+              new_tt.reload.save_shortcuts
             end
-            copy_bulk_collection tt.periods do |new_period_attributes|
-              new_period_attributes[:time_table_id] = new_tt.id
-            end
-            new_tt.reload.save_shortcuts
-          end
-        end
-        target.switch do
-          Chouette::TimeTable.select(:id, :checksum, :checksum_source, :int_day_types).includes(:dates, :periods).find_each do |new_tt|
-            # We could store the checksum and update the col manually,
-            # but this way we ensure we copied all the relevant data correctly
-            new_tt.update_checksum_without_callbacks!
           end
         end
       end
+    end
+
+    target.switch do
+      update_checkum_in_batches target.time_tables.includes(:dates, :periods).where(id: table_ids)
     end
   end
 
@@ -124,7 +188,24 @@ class ReferentialCopy
   # ROUTES
 
   def copy_routes line
-    line.routes.find_each &method(:copy_route)
+    Chouette::ChecksumManager.no_updates do
+      line.routes.find_each &method(:copy_route)
+    end
+  end
+
+  def copy_line_checksums(line)
+    target.switch do
+      update_checkum_in_batches Chouette::Route.where(id: @new_routes).select(:id, :name, :published_name, :wayback).includes(:stop_points, :routing_constraint_zones)
+      update_checkum_in_batches target.vehicle_journey_at_stops.joins(vehicle_journey: :route).where(routes: {id: @new_routes}).select(:id, :departure_time, :arrival_time, :departure_day_offset, :arrival_day_offset)
+      update_checkum_in_batches target.journey_patterns.where(route_id: @new_routes).select(:id, :custom_field_values, :name, :published_name, :registration_number, :costs).includes(:stop_points)
+      update_checkum_in_batches target.vehicle_journeys.where(route_id: @new_routes).select(:id, :custom_field_values, :published_journey_name, :published_journey_identifier, :ignored_routing_contraint_zone_ids, :ignored_stop_area_routing_constraint_ids, :company_id, :line_notice_ids).includes(:company_light, :footnotes, :vehicle_journey_at_stops, :purchase_windows)
+    end
+  end
+
+  def update_checkum_in_batches(collection)
+    profile_tag 'update_checkum_in_batches' do
+      Chouette::ChecksumManager.update_checkum_in_batches(collection, target)
+    end
   end
 
   def copy_route route
@@ -134,43 +215,81 @@ class ReferentialCopy
 
     target.switch do
       new_route = line.routes.build attributes
-      copy_collection route, new_route, :stop_points
+
+      profile_tag 'stop_points' do
+        copy_collection route, new_route, :stop_points
+      end
 
       new_route.opposite_route_id = matching_id(opposite_route)
 
       controlled_save! new_route
+      @new_routes ||= []
+      @new_routes << new_route.id
+
       record_match(route, new_route)
 
       # we copy the journey_patterns
-      copy_collection route, new_route, :journey_patterns do |journey_pattern, new_journey_pattern|
-        retrieve_collection_with_mapping journey_pattern, new_journey_pattern, new_route.stop_points, :stop_points
+      profile_tag 'journey_patterns' do
+        copy_collection route, new_route, :journey_patterns do |journey_pattern, new_journey_pattern|
+          profile_tag 'stop_points' do
+            new_journey_pattern.arrival_stop_point_id = nil
+            new_journey_pattern.departure_stop_point_id = nil
 
-        copy_bulk_collection journey_pattern.courses_stats do |new_stat_attributes|
-          new_stat_attributes[:journey_pattern_id] = new_journey_pattern.id
-          new_stat_attributes[:route_id] = new_route.id
-        end
+            controlled_save! new_journey_pattern
+            stop_point_ids = source.switch(verbose: false) do
+              journey_pattern.stop_points.select(:id).map{|sp| matching_id(sp)}
+            end
 
-        copy_collection journey_pattern, new_journey_pattern, :vehicle_journeys do |vj, new_vj|
-          new_vj.route = new_route
-          retrieve_collection_with_mapping vj, new_vj, Chouette::TimeTable, :time_tables
-          retrieve_collection_with_mapping vj, new_vj, Chouette::PurchaseWindow, :purchase_windows
-        end
+            if stop_point_ids.present?
+              target.switch do
+                Chouette::JourneyPatternsStopPoint.bulk_insert do |worker|
+                  stop_point_ids.each do |id|
+                    worker.add journey_pattern_id: new_journey_pattern.id, stop_point_id: id
+                  end
+                end
 
-        source.switch do
-          journey_pattern.vehicle_journeys.find_each do |vj|
-            copy_bulk_collection vj.vehicle_journey_at_stops.includes(:stop_point) do |new_vjas_attributes, vjas|
-              new_vjas_attributes[:vehicle_journey_id] = matching_id(vj)
-              new_vjas_attributes[:stop_point_id] = matching_id(vjas.stop_point)
+                new_journey_pattern.stop_points.reload
+                new_journey_pattern.shortcuts_update_for_add(new_journey_pattern.stop_points.last)
+              end
             end
           end
-        end
-        new_journey_pattern.vehicle_journeys.reload.each &:update_checksum!
-      end
 
-      # we copy the routing_constraint_zones
-      copy_collection route, new_route, :routing_constraint_zones do |rcz, new_rcz|
-        new_rcz.stop_point_ids = []
-        retrieve_collection_with_mapping rcz, new_rcz, new_route.stop_points, :stop_points
+          profile_tag 'courses_stats' do
+            sql = "INSERT INTO #{source.slug}.stat_journey_pattern_courses_by_dates (journey_pattern_id,route_id,line_id,date,count) "
+            sql << "(SELECT '#{new_journey_pattern.id}','#{new_route.id}',line_id,date,count FROM #{target.slug}.stat_journey_pattern_courses_by_dates)"
+            ActiveRecord::Base.connection.execute sql
+          end
+
+          profile_tag 'vehicle_journeys' do
+            copy_collection journey_pattern, new_journey_pattern, :vehicle_journeys do |vj, new_vj|
+              new_vj.route = new_route
+              retrieve_collection_with_mapping vj, new_vj, Chouette::TimeTable, :time_tables
+              retrieve_collection_with_mapping vj, new_vj, Chouette::PurchaseWindow, :purchase_windows
+            end
+          end
+
+          profile_tag 'vehicle_journey_at_stops' do
+            source.switch do
+              journey_pattern.vehicle_journeys.find_each do |vj|
+                copy_bulk_collection vj.vehicle_journey_at_stops.includes(:stop_point) do |new_vjas_attributes, vjas|
+                  new_vjas_attributes[:vehicle_journey_id] = matching_id(vj)
+                  new_vjas_attributes[:stop_point_id] = matching_id(vjas.stop_point)
+                end
+              end
+            end
+          end
+          profile_tag 'update_checksum' do
+            new_journey_pattern.vehicle_journeys.reload.each &:update_checksum!
+          end
+        end
+
+        # we copy the routing_constraint_zones
+        profile_tag 'routing_constraint_zones' do
+          copy_collection route, new_route, :routing_constraint_zones do |rcz, new_rcz|
+            new_rcz.stop_point_ids = []
+            retrieve_collection_with_mapping rcz, new_rcz, new_route.stop_points, :stop_points
+          end
+        end
       end
     end
     clean_matches Chouette::StopPoint, Chouette::JourneyPattern, Chouette::VehicleJourney, Chouette::RoutingConstraintZone

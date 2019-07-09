@@ -120,8 +120,8 @@ ChouetteIhm::Application.routes.draw do
           post 'duplicate', to: 'routes#duplicate'
         end
         collection do
-          get 'fetch_user_permissions'
           get 'fetch_opposite_routes'
+          get 'fetch_user_permissions'
         end
         resource :journey_patterns_collection, :only => [:show, :update]
         resources :journey_patterns do

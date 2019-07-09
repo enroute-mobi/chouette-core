@@ -15,6 +15,10 @@ module Chouette::ChecksumManager
     manager
   end
 
+  def self.cleanup
+    Thread.current.thread_variable_set THREAD_VARIABLE_NAME, nil
+  end
+
   def self.logger
     @@logger ||= Rails.logger
   end
@@ -109,6 +113,29 @@ module Chouette::ChecksumManager
       commit
       raise
     end
+  end
+
+  def self.update_checkum_in_batches(collection, referential)
+    collection.find_in_batches do |group|
+      ids = []
+      checksums = []
+      checksum_sources = []
+      group.each do |r|
+        ids << r.id
+        source = r.current_checksum_source(db_lookup: false)
+        checksum_sources << ActiveRecord::Base.sanitize_sql(source).gsub(/'/, "''")
+        checksums << Digest::SHA256.new.hexdigest(source)
+      end
+      sql = <<SQL
+        UPDATE #{referential.slug}.#{collection.klass.table_name} tmp SET checksum_source = data_table.checksum_source, checksum = data_table.checksum
+        FROM
+        (select unnest(array[#{ids.join(",")}]) as id,
+        unnest(array['#{checksums.join("','")}']) as checksum,
+        unnest(array['#{checksum_sources.join("','")}']) as checksum_source) as data_table
+        where tmp.id = data_table.id;
+SQL
+      ActiveRecord::Base.connection.execute sql
+end
   end
 
   def self.watch object, from: nil

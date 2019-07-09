@@ -27,6 +27,8 @@ class Workgroup < ApplicationModel
   validates :output, presence: true
   before_validation :initialize_output
 
+  validates :sentinel_min_hole_size, presence: true, numericality: { greater_than_or_equal_to: 0 }
+
   has_many :custom_fields
 
   accepts_nested_attributes_for :workbenches

@@ -8,7 +8,7 @@ export default class RouteForm extends Component {
   constructor(props) {
     super(props)
   }
-  
+
   render() {
     const {
       route,
@@ -16,7 +16,7 @@ export default class RouteForm extends Component {
       errors,
       onUpdateName,
       onUpdatePublishedName,
-      onUpdateDirection,
+      onUpdateWayback,
       onUpdateOppositeRoute,
       oppositeRoutesOptions
     } = this.props
@@ -47,19 +47,17 @@ export default class RouteForm extends Component {
                 inputId='route_wayback'
                 name='route[wayback]'
                 labelText={I18n.t('activerecord.attributes.route.direction')}
-                onChange={onUpdateDirection}
+                onChange={onUpdateWayback}
                 isChecked={route.wayback === 'outbound'}
               />
-              { isOutbound && (
-                <SelectInput
-                  inputId='route_opposite_route_id'
-                  inputName='route[opposite_route_id]'
-                  labelText={I18n.t('activerecord.attributes.route.opposite_route')}
-                  value={route.opposite_route_id}
-                  onChange={onUpdateOppositeRoute}
-                  options={oppositeRoutesOptions}
-                />
-              ) }
+              <SelectInput
+                inputId='route_opposite_route_id'
+                inputName='route[opposite_route_id]'
+                labelText={I18n.t('activerecord.attributes.route.opposite_route')}
+                value={route.opposite_route_id}
+                onChange={onUpdateOppositeRoute}
+                options={oppositeRoutesOptions}
+              />
             </div>
           </div>
         </form>

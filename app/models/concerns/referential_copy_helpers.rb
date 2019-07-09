@@ -76,24 +76,26 @@ module ReferentialCopyHelpers
   end
 
   def controlled_save! model, worker=nil
-    begin
-      if worker && model.new_record?
-        model.validate!
-        worker.add clean_attributes_for_copy model
-      else
-        model.save!
-      end
-    rescue => e
-      error = []
-      error << e.message
-      error << model.class.name
-      error << model.attributes
-      error << model.errors.messages
-      error = error.join("\n")
+    profile_tag "save_model.#{model.class.name}" do
+      begin
+        if worker && model.new_record?
+          model.validate!
+          worker.add clean_attributes_for_copy model
+        else
+          model.save!
+        end
+      rescue => e
+        error = []
+        error << e.message
+        error << model.class.name
+        error << model.attributes
+        error << model.errors.messages
+        error = error.join("\n")
 
-      raise SaveError.new(error)
+        raise SaveError.new(error)
+      end
+      process_wait_queue
     end
-    process_wait_queue
   end
 
   def clean_matches *models

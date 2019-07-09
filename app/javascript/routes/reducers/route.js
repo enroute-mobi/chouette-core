@@ -32,8 +32,8 @@ const route = (state = initialState, action) => {
 export const handleInputChange = attribute => value => () => ({
   [attribute]: value
 })
-  
-export const getDirection = e => e.target.checked ? 'outbound' : 'inbound'
+
+export const getWayback = e => e.target.checked ? 'outbound' : 'inbound'
 
 export const getStopPointsAttributes = state => {
   const stopPoints = state.stopPoints.map((sp, index) => {

@@ -1,0 +1,12 @@
+en:
+  courses_copy_paste:
+    modal:
+      head: Copy/Paste times
+      to_paste_mode: Confirm copy
+      to_copy_mode: Go back to copy
+      paste_content: Paste selection
+      select_all: Select all
+      paste_from_clipboard: Paste from clipboard
+    errors:
+      size_does_not_match: The size of the content does not match the size of the selection
+      missing_content: Please paste some content

@@ -1,4 +1,4 @@
-fr:
+en:
   publications:
     search_no_results: 'No publication'
     show:
@@ -17,4 +17,4 @@ fr:
         export: "Export"
         name: "%{setup_name} on %{date}"
         started_at: Publication start
-        ended_at: Publication end
+        ended_at: Publication finish

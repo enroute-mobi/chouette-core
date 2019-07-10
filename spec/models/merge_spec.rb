@@ -168,7 +168,7 @@ RSpec.describe Merge do
         expect(output.contains_urgent_offer?).to be_truthy
         merge.update created_at: Time.now
         merge.prepare_new
-        
+
         merge.referentials.each do |referential|
           merge.merge_referential_metadata(referential)
         end
@@ -179,7 +179,7 @@ RSpec.describe Merge do
     end
 
     context "with no current output" do
-      let(:merge){Merge.create(workbench: workbench, referentials: [referential, referential]) }
+      let(:merge){ Merge.create(workbench: workbench, referentials: [referential, referential]) }
 
       before(:each) do
         workbench.output.update current_id: Referential.last.id + 1
@@ -201,6 +201,7 @@ RSpec.describe Merge do
       it "should create a referential with ready: false" do
         merge.update created_at: Time.now
         merge.prepare_new
+
         expect(workbench.output.new.ready).to be false
         merge.referentials.each do |referential|
           merge.merge_referential_metadata(referential)
@@ -235,7 +236,7 @@ RSpec.describe Merge do
           merge.merge_referential_metadata(referential)
         end
 
-        new_referential = workbench.output.new
+        new_referential = workbench.output.new.reload
         expect(new_referential.contains_urgent_offer?).to be_truthy
 
         workbench.output.update current: new_referential

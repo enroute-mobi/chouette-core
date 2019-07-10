@@ -119,14 +119,14 @@ class Merge < ApplicationModel
   def prepare_new
     profile_tag 'prepare_new' do
       clone_metadata = false
-      new = if workbench.output.current && profile? && !profile_options[:new_output]
+      new = if workbench.output.current && !profile_options[:new_output]
         Rails.logger.debug "Merge ##{id}: Clone current output"
         clone_metadata = true
         Referential.new_from(workbench.output.current, workbench, true).tap do |clone|
           clone.inline_clone = true
         end
       else
-        if workbench.merges.successful.count > 0 && profile? && !profile_options[:new_output]
+        if workbench.merges.successful.count > 0 && !(profile? && profile_options[:new_output])
           # there had been previous merges, we should have a current output
           raise "Trying to create a new referential to merge into from Merge##{self.id}, while there had been previous merges in the same workbench"
         end
@@ -138,23 +138,29 @@ class Merge < ApplicationModel
         }
         workbench.output.referentials.new attributes
       end
-    end
+      new.referential_suite = output
+      new.workbench = workbench
+      new.organisation = workbench.organisation
+      new.slug = "output_#{workbench.id}_#{created_at.to_i}"
+      new.name = I18n.t("merges.referential_name", date: I18n.l(created_at, format: :short_with_time))
 
-    new.referential_suite = output
-    new.workbench = workbench
-    new.organisation = workbench.organisation
-    new.slug = "output_#{workbench.id}_#{created_at.to_i}"
-    new.name = I18n.t("merges.referential_name", date: I18n.l(created_at, format: :short_with_time))
+      unless new.valid?
+        Rails.logger.error "Merge ##{id}: New referential isn't valid : #{new.errors.inspect}"
+      end
 
-    unless new.valid?
-      Rails.logger.error "Merge ##{id}: New referential isn't valid : #{new.errors.inspect}"
-    end
+      begin
+        new.save!
+      rescue
+        Rails.logger.debug "Merge ##{id}: Errors on new referential: #{new.errors.messages}"
+        raise
+      end
 
-    begin
-      new.save!
-    rescue
-      Rails.logger.debug "Merge ##{id}: Errors on new referential: #{new.errors.messages}"
-      raise
+      new.metadatas.reload
+      new.flag_not_urgent!
+      new.pending!
+
+      output.update new: new
+      update new: new
     end
   end
 
@@ -387,14 +393,13 @@ class Merge < ApplicationModel
 
     profile_operation 'merge_routes_journey_patterns' do
       referential_journey_patterns, referential_journey_patterns_stop_areas_objectids = referential.switch do
-        journey_patterns = referential.journey_patterns
 
         journey_patterns_stop_areas_objectids = {}
-        journey_patterns.includes(stop_points: :stop_area).find_each do |journey_pattern|
+        scoped_journey_patterns.includes(stop_points: :stop_area).find_each do |journey_pattern|
           journey_patterns_stop_areas_objectids[journey_pattern.id] = journey_pattern.stop_points.map { |sp| [sp.position, sp.stop_area.raw_objectid]}
         end
 
-        [journey_patterns.to_a, journey_patterns_stop_areas_objectids]
+        [scoped_journey_patterns.to_a, journey_patterns_stop_areas_objectids]
       end
 
       referential_journey_patterns_checksums = {}
@@ -411,7 +416,6 @@ class Merge < ApplicationModel
                 associated_line_id = @referential_routes_lines[journey_pattern.route_id]
                 associated_route_checksum = @referential_routes_checksums[journey_pattern.route_id]
                 existing_associated_route = new.routes.find_by checksum: associated_route_checksum, line_id: associated_line_id
-
                 existing_journey_pattern = new.journey_patterns.find_by route_id: existing_associated_route.id, checksum: journey_pattern.checksum
 
                 if existing_journey_pattern
@@ -747,44 +751,44 @@ class Merge < ApplicationModel
         end
       end
     end
+  end
 
-    def after_save_current
-      referentials.each(&:merged!)
-      lines = new.switch { new.lines.where(id: @altered_lines) }
-      new.update_stats!(lines: lines)
+  def after_save_current
+    referentials.each(&:merged!)
+    lines = new.switch { new.lines.where(id: @altered_lines) }
+    new.update_stats!(lines: lines)
 
-      return if profile?
-      aggregate_if_urgent_offer
-      HoleSentinel.new(workbench).watch!
-    end
+    return if profile?
+    aggregate_if_urgent_offer
+    HoleSentinel.new(workbench).watch!
+  end
 
-    def aggregate_if_urgent_offer
-      workbench.workgroup.aggregate_urgent_data! if new&.contains_urgent_offer?
-    end
+  def aggregate_if_urgent_offer
+    workbench.workgroup.aggregate_urgent_data! if new&.contains_urgent_offer?
+  end
 
-    def save_model!(model)
-      profile_tag "save_model_#{model.class.name}" do
-        unless model.save
-          Rails.logger.info "Merge ##{id}: Can't save #{model.class.name} : #{model.errors.inspect}"
-          raise ActiveRecord::RecordNotSaved, "Invalid #{model.class.name} : #{model.errors.inspect}"
-        end
-        Rails.logger.debug { "Merge ##{id}: Created #{model.inspect}" }
+  def save_model!(model)
+    profile_tag "save_model_#{model.class.name}" do
+      unless model.save
+        Rails.logger.info "Merge ##{id}: Can't save #{model.class.name} : #{model.errors.inspect}"
+        raise ActiveRecord::RecordNotSaved, "Invalid #{model.class.name} : #{model.errors.inspect}"
       end
+      Rails.logger.debug { "Merge ##{id}: Created #{model.inspect}" }
+    end
+  end
+
+  def clean_scope
+    scope = parent.merges
+    if parent.locked_referential_to_aggregate_id.present?
+      scope = scope.where("new_id IS NULL OR new_id != #{parent.locked_referential_to_aggregate_id}")
     end
 
-    def clean_scope
-      scope = parent.merges
-      if parent.locked_referential_to_aggregate_id.present?
-        scope = scope.where("new_id IS NULL OR new_id != #{parent.locked_referential_to_aggregate_id}")
-      end
-
-      aggregated_referentials = parent.workgroup.aggregates.flat_map(&:referential_ids).compact.uniq
-      if aggregated_referentials.present?
-        scope = scope.where.not(new_id: aggregated_referentials)
-      end
-
-      scope
+    aggregated_referentials = parent.workgroup.aggregates.flat_map(&:referential_ids).compact.uniq
+    if aggregated_referentials.present?
+      scope = scope.where.not(new_id: aggregated_referentials)
     end
+
+    scope
   end
 end
 

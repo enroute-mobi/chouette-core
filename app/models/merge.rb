@@ -630,6 +630,19 @@ class Merge < ApplicationModel
             save_model! new_vehicle_journey
 
             if new_vehicle_journey.checksum != vehicle_journey.checksum
+              Rails.logger.info "failing vehicle journey:"
+              Rails.logger.info "before:"
+              Rails.logger.info vehicle_journey.inspect
+              vehicle_journey.vehicle_journey_at_stops.each do |vjas|
+                Rails.logger.info vjas.inspect
+              end
+
+              Rails.logger.info "after:"
+              Rails.logger.info new_vehicle_journey.inspect
+              new_vehicle_journey.vehicle_journey_at_stops.each do |vjas|
+                Rails.logger.info vjas.inspect
+              end
+
               raise "Checksum has changed: \"#{vehicle_journey.checksum_source}\" \"#{vehicle_journey.checksum}\" -> \"#{new_vehicle_journey.checksum_source}\" \"#{new_vehicle_journey.checksum}\""
             end
 

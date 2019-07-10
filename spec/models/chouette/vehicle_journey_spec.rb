@@ -627,13 +627,13 @@ describe Chouette::VehicleJourney, :type => :model do
       at_stop
     end
 
-    def vehicle_journey_to_state vj
+    def vehicle_journey_to_state vj, line_notices=false
       vj.slice('objectid', 'published_journey_name', 'journey_pattern_id', 'company_id').tap do |item|
         item['vehicle_journey_at_stops'] = []
         item['time_tables']              = []
         item['purchase_windows']         = []
         item['footnotes']                = []
-        item['line_notices']             = []
+        item['line_notices']             = [] if line_notices
         item['purchase_windows']         = []
         item['custom_fields']            = vj.custom_fields.to_hash
 
@@ -646,7 +646,8 @@ describe Chouette::VehicleJourney, :type => :model do
     let(:route)           { create :route }
     let(:journey_pattern) { create :journey_pattern, route: route }
     let(:vehicle_journey) { create :vehicle_journey, route: route, journey_pattern: journey_pattern }
-    let(:state)           { vehicle_journey_to_state(vehicle_journey) }
+    let(:line_notices)    { false }
+    let(:state)           { vehicle_journey_to_state(vehicle_journey, line_notices) }
     let(:collection)      { [state.dup] }
 
     it 'should create new vj from state' do
@@ -762,6 +763,19 @@ describe Chouette::VehicleJourney, :type => :model do
       expected = state['time_tables'].map{|tt| tt['id']}
       actual   = vehicle_journey.reload.time_tables.map(&:id)
       expect(actual).to match_array(expected)
+    end
+
+    context 'with line_notices' do
+      let(:line_notices){ true }
+
+      it 'should update vj line_notices association from state' do
+        2.times{state['line_notices'] << create(:line_notice).slice('id')}
+        vehicle_journey.update_has_and_belongs_to_many_from_state(state)
+        vehicle_journey.save
+        expected = state['line_notices'].map{|tt| tt['id']}
+        actual   = vehicle_journey.reload.line_notices.map(&:id)
+        expect(actual).to match_array(expected)
+      end
     end
 
     it 'should clear vj time_tableas association when remove from state' do

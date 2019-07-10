@@ -289,6 +289,8 @@ module Chouette
 
     def update_has_and_belongs_to_many_from_state item
       ['time_tables', 'footnotes', 'line_notices', 'purchase_windows'].each do |assos|
+        next unless item[assos]
+
         saved = self.send(assos).map(&:id)
 
         (saved - item[assos].map{|t| t['id']}).each do |id|

@@ -1,3 +1,5 @@
+require 'datadog/statsd'
+
 class User < ApplicationModel
   # Include default devise modules. Others available are:
   # :token_authenticatable, :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable, :database_authenticatable
@@ -58,6 +60,11 @@ class User < ApplicationModel
       write_attribute :profile, matching_profile
       self[:profile] = matching_profile
     end
+  end
+
+  after_commit do
+    statsd = Datadog::Statsd.new('localhost', 8125)
+    statsd.gauge('chouette.users.count', User.count)
   end
 
   after_destroy :check_destroy_organisation
@@ -124,7 +131,7 @@ class User < ApplicationModel
 
   def belongs_to_workgroup_owner?(workgroup)
     return false unless workgroup
-    
+
     workgroup.owner == organisation
   end
 

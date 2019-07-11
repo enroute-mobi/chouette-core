@@ -438,14 +438,14 @@ RSpec.describe Import::Gtfs do
         [v.published_journey_name, v.time_tables.first&.comment]
       }
       expected_attributes = [
-        ["CITY2", "Calendar FULLW"],
-        ["AB1", "Calendar FULLW"],
-        ["AB2", "Calendar FULLW"],
-        ["BFC1", "Calendar FULLW"],
-        ["BFC2", "Calendar FULLW"],
-        ["AAMV1", "Calendar WE"],
-        ["AAMV3", "Calendar WE"],
-        ["AAMV4", "Calendar WE"]
+        ["CITY2", "FULLW"],
+        ["AB1", "FULLW"],
+        ["AB2", "FULLW"],
+        ["BFC1", "FULLW"],
+        ["BFC2", "FULLW"],
+        ["AAMV1", "WE"],
+        ["AAMV3", "WE"],
+        ["AAMV4", "WE"]
       ]
       expect(import.referential.vehicle_journeys.map(&defined_attributes)).to match_array(expected_attributes)
     end
@@ -515,8 +515,8 @@ RSpec.describe Import::Gtfs do
         [t.comment, t.valid_days, t.periods.first.period_start, t.periods.first.period_end]
       }
       expected_attributes = [
-        ['Calendar FULLW', [1, 2, 3, 4, 5, 6, 7], d('Mon, 01 Jan 2007'), d('Fri, 31 Dec 2010')],
-        ['Calendar WE', [6, 7], d('Mon, 01 Jan 2007'), d('Fri, 31 Dec 2010')]
+        ['FULLW', [1, 2, 3, 4, 5, 6, 7], d('Mon, 01 Jan 2007'), d('Fri, 31 Dec 2010')],
+        ['WE', [6, 7], d('Mon, 01 Jan 2007'), d('Fri, 31 Dec 2010')]
       ]
       expect(referential.time_tables.map(&defined_attributes)).to match_array(expected_attributes)
     end
@@ -540,7 +540,7 @@ RSpec.describe Import::Gtfs do
         [t.comment, t.valid_days, t.dates.first.date]
       }
       expected_attributes = [
-        ['Calendar FULLW', [1, 2, 3, 4, 5, 6, 7], d('Mon, 01 Jan 2007')]
+        ['FULLW', [1, 2, 3, 4, 5, 6, 7], d('Mon, 01 Jan 2007')]
       ]
       expect(referential.time_tables.map(&defined_attributes)).to match_array(expected_attributes)
     end
@@ -556,7 +556,7 @@ RSpec.describe Import::Gtfs do
     it 'should create time_tables when they don\'t already exist' do
       expect{import.import_calendar_dates}.to change{Chouette::TimeTable.count}.by 1
       timetable = Chouette::TimeTable.last
-      expect(timetable.comment).to eq 'Calendar FULLW'
+      expect(timetable.comment).to eq 'FULLW'
       expect(timetable.periods.count).to eq 0
       expect(timetable.dates.count).to eq 1
       expect(timetable.dates.last.date).to eq '2007-06-04'.to_date
@@ -582,7 +582,7 @@ RSpec.describe Import::Gtfs do
           [d.time_table.comment, d.date, d.in_out]
         end
         expected_attributes = [
-          ['Calendar FULLW', d('Mon, 04 Jun 2007'), false]
+          ['FULLW', d('Mon, 04 Jun 2007'), false]
         ]
         expect(referential.time_table_dates.map(&defined_attributes)).to match_array(expected_attributes)
       end

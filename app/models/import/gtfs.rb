@@ -481,7 +481,7 @@ class Import::Gtfs < Import::Base
     Chouette::TimeTable.skipping_objectid_uniqueness do
       Chouette::ChecksumManager.no_updates do
         create_resource(:calendars).each(source.calendars, slice: 500, transaction: true) do |calendar, resource|
-          time_table = referential.time_tables.build comment: "Calendar #{calendar.service_id}"
+          time_table = referential.time_tables.build comment: calendar.service_id
           Chouette::TimeTable.all_days.each do |day|
             time_table.send("#{day}=", calendar.send(day))
           end
@@ -507,7 +507,7 @@ class Import::Gtfs < Import::Base
     Chouette::ChecksumManager.no_updates do
       Chouette::TimeTableDate.bulk_insert do |worker|
         create_resource(:calendar_dates).each(source.calendar_dates, slice: 500, transaction: true) do |calendar_date, resource|
-          comment = "Calendar #{calendar_date.service_id}"
+          comment = "#{calendar_date.service_id}"
           unless_parent_model_in_error(Chouette::TimeTable, comment, resource) do
             time_table_id = time_tables_by_service_id[calendar_date.service_id]
             time_table_id ||= begin

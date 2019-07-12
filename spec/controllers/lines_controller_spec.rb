@@ -7,7 +7,8 @@ RSpec.describe LinesController, :type => :controller do
   describe 'POST create' do
     let(:line_attrs){{
       name: "test",
-      transport_mode: "bus"
+      transport_mode: "bus",
+      transport_submode: "undefined"
     }}
     let(:request){ post :create, params: { line_referential_id: line_referential.id, line: line_attrs }}
 
@@ -20,6 +21,7 @@ RSpec.describe LinesController, :type => :controller do
         let(:line_attrs){{
           name: "test",
           transport_mode: "bus",
+          transport_submode: "undefined",
           secondary_company_ids: [""]
         }}
 

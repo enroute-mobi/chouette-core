@@ -52,6 +52,8 @@ module Chouette
     end
 
     def convert_string_time_to_utc_time(val)
+      return unless val.present?
+      
       if val && val.is_a?(String)
         tz = Time.zone
         Time.zone = 'UTC'

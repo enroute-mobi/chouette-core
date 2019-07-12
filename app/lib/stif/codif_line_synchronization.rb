@@ -23,7 +23,7 @@ module Stif
 
       def synchronize
         Codifligne::API.api_version = 2
-        
+
         reset_counts
         start_time = Process.clock_gettime(Process::CLOCK_MONOTONIC, :second)
         # Fetch Codifline data
@@ -129,7 +129,7 @@ module Stif
           text_color: api_line.text_color&.upcase
         }
         params[:transport_mode] = api_line.transport_mode.to_s
-        params[:transport_submode] = api_line.transport_submode.to_s
+        params[:transport_submode] = api_line.transport_submode.present? ? api_line.transport_submode.to_s : "undefined"
         params[:network_id] = Chouette::Network.where(objectid: api_line.network_code).last&.id
 
         api_line.secondary_operator_ref.each do |id|

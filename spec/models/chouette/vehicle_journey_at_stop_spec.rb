@@ -18,6 +18,23 @@ RSpec.describe Chouette::VehicleJourneyAtStop, type: :model do
     end
   end
 
+  context 'time allocation' do
+    it 'should work correctly' do
+      vjas = Chouette::VehicleJourneyAtStop.new
+      vjas.arrival_time = '12:00'
+      expect(vjas.arrival_time.to_s).to eq "2000-01-01 12:00:00 UTC"
+      vjas.arrival_time = "2000-01-01 12:00:00 UTC"
+      expect(vjas.arrival_time.to_s).to eq "2000-01-01 12:00:00 UTC"
+      vjas.arrival_time = "2000-01-01 12:00:00 UTC".to_time
+      expect(vjas.arrival_time.to_s).to eq "2000-01-01 12:00:00 UTC"
+
+      vjas.arrival_time = 'Sun, 01 Jan 2000 00:10:00 CET +01:00'.to_time
+      expect(vjas.arrival_time.to_s).to eq "2000-01-01 23:10:00 UTC"
+      vjas.arrival_time = 'Sun, 02 Jan 2000 00:10:00 CET +01:00'.to_time
+      expect(vjas.arrival_time.to_s).to eq "2000-01-01 23:10:00 UTC"
+    end
+  end
+
   context 'when updated in a ChecksumManager transaction' do
     it 'should compute checksum right' do
       vjas = nil

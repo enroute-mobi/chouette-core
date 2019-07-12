@@ -58,7 +58,8 @@ module Chouette
         val = Time.zone.parse val
         Time.zone = tz
       end
-      val
+      base_date = '2000/01/01 00:00:00 UTC'.to_time.utc
+      base_date.change hour: val.utc.hour, min: val.utc.min, sec: val.sec
     end
 
     def day_offset_must_be_within_range

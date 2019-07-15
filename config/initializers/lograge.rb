@@ -13,7 +13,8 @@ Rails.application.configure do
     payload = {
        params: event.payload[:params].reject { |k| %w(controller action).include? k },
        level: event.payload[:level],
-       env: SmartEnv.fetch(:DATADOG_ENVIRONMENT, default: 'development')
+       env: SmartEnv.fetch(:DATADOG_ENVIRONMENT, default: 'development'),
+       version: Version.current
     }
     if event.payload[:exception_object]
       payload[:error] = event.payload[:exception_object].message

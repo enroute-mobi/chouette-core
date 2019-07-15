@@ -63,7 +63,7 @@ class User < ApplicationModel
   end
 
   after_commit do
-    statsd = Datadog::Statsd.new('datadog-agent', 8126)
+    statsd = Datadog::Statsd.new('datadog-agent', 8125)
     statsd.gauge('chouette.users.count', User.count)
   end
 

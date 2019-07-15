@@ -58,7 +58,6 @@ RSpec.describe Referential do
       stop_area_referential: source.stop_area_referential,
       created_from: source,
       objectid_format: source.objectid_format,
-      metadatas: source.metadatas.map { |m| ReferentialMetadata.new_from(m, functional_scope) },
       ready: false).and_call_original
 
       described_class.new_from( source, source.workbench )

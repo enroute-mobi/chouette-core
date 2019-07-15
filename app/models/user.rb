@@ -64,7 +64,7 @@ class User < ApplicationModel
 
   after_commit do
     statsd = Datadog::Statsd.new('datadog-agent', 8125)
-    statsd.gauge('chouette.users.count', User.count)
+    statsd.gauge('chouette.users.count', User.count, tags: {service: SmartEnv.fetch(:DATADOG_SERVICE_NAME, default: 'chouette-core')})
   end
 
   after_destroy :check_destroy_organisation

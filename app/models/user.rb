@@ -63,8 +63,9 @@ class User < ApplicationModel
   end
 
   after_commit do
-    statsd = Datadog::Statsd.new('datadog-agent', 8125)
-    statsd.gauge('chouette.users.count', User.count, tags: {service: SmartEnv.fetch(:DATADOG_SERVICE_NAME, default: 'chouette-core')})
+    host = Rails.env.production? ? 'datadog-agent' : 'localhost'
+    statsd = Datadog::Statsd.new(host, 8125)
+    statsd.gauge 'chouette.users.count', User.count, tags: ["env:#{SmartEnv.fetch(:DATADOG_ENVIRONMENT, default: 'development')}"]
   end
 
   after_destroy :check_destroy_organisation

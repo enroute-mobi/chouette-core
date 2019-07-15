@@ -148,7 +148,7 @@ class Merge < ApplicationModel
   end
 
   def clean_new
-    CleanUp.new(referential: new, methods: [:clean_irrelevant_data, :clean_unassociated_calendars]).clean
+    CleanUp.new(referential: new, clean_methods: [:clean_irrelevant_data, :clean_unassociated_calendars]).clean
   end
 
   def merge_referential_metadata(referential)

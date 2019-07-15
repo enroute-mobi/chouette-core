@@ -84,7 +84,7 @@ class ApplicationController < ActionController::Base
     when payload[:status] == 200
       payload[:level] = "INFO"
     when payload[:status] == 302
-      payload[:level] = "WARN"
+      payload[:level] = "INFO"
     else
       payload[:level] = "ERROR"
     end

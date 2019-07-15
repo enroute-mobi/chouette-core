@@ -12,7 +12,8 @@ Rails.application.configure do
   config.lograge.custom_options = lambda do |event|
     payload = {
        params: event.payload[:params].reject { |k| %w(controller action).include? k },
-       level: event.payload[:level]
+       level: event.payload[:level],
+       env: SmartEnv.fetch(:DATADOG_ENVIRONMENT, default: 'development')
     }
     if event.payload[:exception_object]
       payload[:error] = event.payload[:exception_object].message

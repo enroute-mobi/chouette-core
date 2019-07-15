@@ -109,6 +109,9 @@ fr:
         zdlp: ZDLp
         zdlr: ZDLr
         lda: LDA
+      kind:
+        commercial: Commercial
+        non_commercial: Non commercial
     clean_up:
       date_type:
         outside: En dehors des périodes définies dans le jeu de données

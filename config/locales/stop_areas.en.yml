@@ -124,7 +124,7 @@ en:
     attributes:
       stop_area:
         name: "Name"
-        kind: "Catégory"
+        kind: "Category"
         registration_number: "Registration number"
         published_name: "Published name"
         in_creation: "In creation"

@@ -2,6 +2,7 @@ fr:
   compliance_controls:
     clone:
       prefix: 'Copie de'
+
     filters:
       criticity: Criticité
       name: "Chercher le nom ou code d'un contrôle"
@@ -31,8 +32,8 @@ fr:
       title: "Ajouter un contrôle"
     edit:
       title: "Editer un contrôle"
+
     select_type:
-      title: "Sélectionner un type de contrôle"
       compliance_control_groups:
         generic: Générique
         line: Ligne
@@ -49,6 +50,8 @@ fr:
       show: Consulter
       destroy: Supprimer
       destroy_confirm: Etes vous sûr de supprimer ce contrôle ?
+      select_type: "Sélectionner un type de contrôle"
+
     route_control/zdl_stop_area:
       messages:
         3_route_1: "L'itinéraire %{source_objectid} dessert successivement les arrêts %{target_0_label} (%{target_0_objectid}) et %{target_1_label} (%{target_1_objectid}) de la même zone de lieu"

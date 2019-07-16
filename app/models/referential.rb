@@ -114,7 +114,7 @@ class Referential < ApplicationModel
     kept = []
     kept << archived.where('archived_at >= ?', TIME_BEFORE_CLEANING.days.ago).select(:id).to_sql
     kept << order('created_at DESC').limit(KEPT_DURING_CLEANING).select(:id).to_sql
-    
+
     scope = inactive_and_not_pending.not_in_referential_suite
     kept.each do |kept_scope|
       scope = scope.where("referentials.id NOT IN (#{kept_scope})")
@@ -540,7 +540,19 @@ class Referential < ApplicationModel
   end
 
   def create_from_current_offer
-    CurrentOfferCloningWorker.fill_from_current_offer self
+    pending!
+
+    enqueue_long_job :fill_from_current_offer
+  end
+
+  def fill_from_current_offer
+    current_offer = workbench.output.current
+
+    lines = metadatas_lines
+    copy = ReferentialCopy.new source: current_offer, target: self, skip_metadatas: true, lines: lines
+    copy.copy!
+
+    active!
   end
 
   attr_accessor :inline_clone

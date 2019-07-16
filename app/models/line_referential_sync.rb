@@ -14,8 +14,25 @@ class LineReferentialSync < ApplicationModel
   private
   def perform_sync
     create_sync_message :info, :new
-    LineReferentialSyncWorker.perform_async_or_fail(self) do 
-      log_failed({})
+    enqueue_long_job :sync, max_attempts: 5
+  end
+
+  def process_time
+    Process.clock_gettime(Process::CLOCK_MONOTONIC, :second)
+  end
+
+  def sync
+    start_time = process_time
+    run if may_run?
+    begin
+      info = Stif::CodifLineSynchronization.synchronize
+      successful info.merge({processing_time: process_time - start_time})
+    rescue Exception => e
+      Rails.logger.error "LineReferentialSyncWorker failed: #{e.message} - #{e.backtrace.join("\n")}"
+      failed({
+        error: e.message,
+        processing_time: process_time - start_time
+      })
     end
   end
 

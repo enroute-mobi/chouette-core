@@ -190,6 +190,14 @@ class Workgroup < ApplicationModel
     workbenches.find_by organisation_id: owner_id
   end
 
+  def setup_deletion!
+    update_attribute :deleted_at, Time.now
+  end
+
+  def remove_deletion!
+    update_attribute :deleted_at, nil
+  end
+
   private
   def self.compliance_control_sets_label(key)
     "workgroups.compliance_control_sets.#{key}".t

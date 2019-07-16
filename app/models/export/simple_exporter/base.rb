@@ -16,7 +16,13 @@ class Export::SimpleExporter::Base < Export::Base
   end
 
   def call_exporter_async
-    SimpleExportWorker.perform_async_or_fail(self)
+    enqueue_long_job :export!
+  end
+
+  def export!
+    update(status: 'running', started_at: Time.now)
+    call_exporter
+    update(ended_at: Time.now)
   end
 
   def simple_exporter_configuration_name

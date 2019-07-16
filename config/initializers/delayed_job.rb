@@ -3,7 +3,8 @@ require 'delayed_job'
 class AutoKillPlugin < Delayed::Plugin
   callbacks do |lifecycle|
     lifecycle.before(:perform) do |worker, job|
-      worker.say "Starting Job #{job.payload_object.explain} with priority #{job.priority}, attempt #{job.attempts}"
+      explained = job.payload_object.try(:explain) || job.payload_object.inspect
+      worker.say "Starting Job #{explained} with priority #{job.priority}, attempt #{job.attempts}"
     end
 
     lifecycle.after(:perform) do |worker, job|

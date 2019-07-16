@@ -44,7 +44,7 @@ class CleanUp < ApplicationModel
     original_state ||= referential.state
     referential.pending!
 
-    Delayed::Job.enqueue LongRunningJob.new(self, :clean!, original_state), queue: :clean_ups
+    enqueue_long_job :clean!, original_state
   end
 
   def clean!(original_state)

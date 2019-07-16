@@ -33,12 +33,17 @@ class ApplicationModel < ::ActiveRecord::Base
     end
   end
 
+  # for now we will only use LongRunningJobs
+  # We may need different jobs later
+
   def enqueue_long_job method, args=[], queue: nil, max_attempts: 1
     queue ||= :default
 
     job = LongRunningJob.new(self, method, args)
     job.max_attempts = max_attempts
-    
+
     Delayed::Job.enqueue job, queue: queue
   end
+
+  alias_method :enqueue_job, :enqueue_long_job
 end

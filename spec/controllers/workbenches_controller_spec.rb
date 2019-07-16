@@ -24,8 +24,7 @@ RSpec.describe WorkbenchesController, :type => :controller do
       before { referential.active! }
 
       it 'should schedule a deletion' do
-        expect(ReferentialDestroyWorker).to receive(:perform_async).with(referential.id).once
-        request
+        expect{ request }.to change{ Delayed::Job.count }.by 1
         expect(referential.reload.ready?).to be_falsy
       end
     end
@@ -34,8 +33,9 @@ RSpec.describe WorkbenchesController, :type => :controller do
       before { referential.merged! }
 
       it 'should do nothing' do
-        expect(ReferentialDestroyWorker).to_not receive(:perform_async)
-        expect { request }.to_not(change { referential.reload.state })
+        count = Delayed::Job.count
+        expect{ request }.to_not(change { referential.reload.state })
+        expect(Delayed::Job.count).to eq count
       end
     end
 
@@ -43,8 +43,7 @@ RSpec.describe WorkbenchesController, :type => :controller do
       before { referential.failed! }
 
       it 'should schedule a deletion' do
-        expect(ReferentialDestroyWorker).to receive(:perform_async).with(referential.id).once
-        request
+        expect{ request }.to change{ Delayed::Job.count }.by 1
         expect(referential.reload.ready?).to be_falsy
       end
     end
@@ -53,8 +52,9 @@ RSpec.describe WorkbenchesController, :type => :controller do
       let(:referential) { create(:referential) }
 
       it 'should do nothing' do
-        expect(ReferentialDestroyWorker).to_not receive(:perform_async)
+        count = Delayed::Job.count
         expect { request }.to_not(change { referential.reload.state })
+        expect(Delayed::Job.count).to eq count
       end
     end
   end

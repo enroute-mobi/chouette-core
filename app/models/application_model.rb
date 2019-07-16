@@ -34,7 +34,7 @@ class ApplicationModel < ::ActiveRecord::Base
   end
 
   def enqueue_long_job method, args=[], queue: nil
-    queue ||= self.class.table_name.split('.').last
+    queue ||= :default
 
     job = LongRunningJob.new(self, method, args)
     Delayed::Job.enqueue job, queue: queue

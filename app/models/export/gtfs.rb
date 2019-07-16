@@ -5,10 +5,6 @@ class Export::Gtfs < Export::Base
 
   @skip_empty_exports = true
 
-  def worker_class
-    GTFSExportWorker
-  end
-
   def zip_file_name
     @zip_file_name ||= "chouette-its-#{Time.now.to_i}"
   end

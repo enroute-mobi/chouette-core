@@ -68,7 +68,7 @@ end
 class Delayed::Backend::ActiveRecord::Job
   class << self
     def reserve(worker, max_run_time = Delayed::Worker.max_run_time)
-      ready_scope = ready_to_run(worker.name, max_run_time).min_priority.max_priority.for_queues.by_priority
+      ready_scope = ready_to_run(worker.name, max_run_time).for_queues(worker.queues).by_priority
       offset = 0
       next_in_line = ready_scope.first
 

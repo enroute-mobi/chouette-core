@@ -55,7 +55,6 @@ RSpec.describe Publication, type: :model do
   describe '#run_export' do
     it 'should create an export' do
       expect{ publication.run_export }.to change{ Export::Gtfs.count }.by 1
-      expect(GTFSExportWorker).to_not receive(:perform_async_or_fail)
       expect_any_instance_of(Export::Gtfs).to receive(:run)
       publication.run_export
       expect(publication.exports).to be_present

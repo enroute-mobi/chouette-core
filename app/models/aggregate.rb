@@ -60,7 +60,7 @@ class Aggregate < ActiveRecord::Base
     update_column :started_at, Time.now
     update_column :status, :running
 
-    AggregateWorker.perform_async_or_fail(self)
+    Delayed::Job.enqueue LongRunningJob.new(self, :aggregate!), queue: :aggregates
   end
 
   def aggregate!

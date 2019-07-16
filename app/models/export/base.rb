@@ -1,6 +1,6 @@
 require 'net/http/post/multipart'
 
-class Export::Base < ActiveRecord::Base
+class Export::Base < ApplicationModel
   include Rails.application.routes.url_helpers
   include OptionsSupport
   include NotifiableSupport
@@ -63,7 +63,7 @@ class Export::Base < ActiveRecord::Base
     update_column :notified_parent_at, Time.now
     true
   end
-  
+
   def run
     update status: 'running', started_at: Time.now
     export

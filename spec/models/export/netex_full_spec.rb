@@ -3,19 +3,17 @@ RSpec.describe Export::NetexFull, type: [:model, :with_exportable_referential] d
   let(:export) { create :netex_export_full, referential: referential, workbench: workbench, synchronous: synchronous}
   let(:synchronous){ false }
   it 'should call a worker' do
-    expect(NetexFullExportWorker).to receive(:perform_async_or_fail)
-    export
+    expect{ export }.to change{ Delayed::Job.count }.by 1
   end
 
   context 'when synchronous' do
     let(:synchronous){ true }
     it 'should not call a worker' do
-      expect(NetexFullExportWorker).to_not receive(:perform_async_or_fail)
       allow_any_instance_of(Export::NetexFull).to receive(:upload_file) do |m|
         expect(m.owner).to eq export
       end
 
-      export
+      expect{ export }.to_not change{ Delayed::Job.count }
     end
 
     context 'with journeys' do

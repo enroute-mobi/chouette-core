@@ -4,7 +4,7 @@ class AutoKillPlugin < Delayed::Plugin
   callbacks do |lifecycle|
     lifecycle.before(:perform) do |worker, job|
       explained = job.payload_object.try(:explain) || job.payload_object.inspect
-      worker.say "Starting Job #{explained} with priority #{job.priority}, attempt #{job.attempts}"
+      worker.say "Starting Job #{explained} with priority #{job.priority}, attempt #{job.attempts + 1}/#{job.max_attempts}"
     end
 
     lifecycle.after(:perform) do |worker, job|

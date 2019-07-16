@@ -35,7 +35,6 @@ en:
     edit:
       title: "Update compliance control"
     select_type:
-      title: "Select a control type"
       compliance_control_groups:
         generic: Generic
         line: Line
@@ -52,6 +51,8 @@ en:
       show: Show
       destroy: Destroy
       destroy_confirm: Are you sure ?
+      select_type: "Select a control type"
+
     route_control/zdl_stop_area:
       messages:
         3_route_1: "The route with %{source_objectid} objectid connect the stop points %{target_0_label} (%{target_0_objectid}) and %{target_1_label} (%{target_1_objectid}) which belong to the same ZDL"

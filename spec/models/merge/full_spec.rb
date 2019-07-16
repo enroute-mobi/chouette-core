@@ -137,8 +137,7 @@ RSpec.describe Merge do
       expect(merge).to receive(:clean_previous_operations)
       vj_count = referential.switch{ Chouette::VehicleJourney.count }
       expect(merge).to receive(:merge_vehicle_journeys).exactly((vj_count * 0.5).ceil).times.and_call_original
-      expect(MergeWorker).to receive(:perform_async)
-      merge.merge
+      expect{ merge.merge }.to change { Delayed::Job.count}.by 1
       merge.merge!
 
       expect(merge.status). to eq :successful

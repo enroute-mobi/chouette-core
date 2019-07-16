@@ -1,4 +1,4 @@
-class Publication < ActiveRecord::Base
+class Publication < ApplicationModel
   extend Enumerize
 
   enumerize :status, in: %w[new pending successful failed running successful_with_warnings], default: :new
@@ -37,7 +37,7 @@ class Publication < ActiveRecord::Base
 
     pending!
     if parent.successful?
-      PublicationWorker.perform_async_or_fail(self)
+      enqueue_long_job :run
     else
       failed!
     end

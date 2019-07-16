@@ -28,8 +28,8 @@ RSpec.describe Publication, type: :model do
   end
 
   describe '#publish' do
-    it 'should create a PublicationWorker' do
-      expect(PublicationWorker).to receive(:perform_async_or_fail)
+    it 'should create a Delayed::Job' do
+      expect{ publication }.to change{ Delayed::Job.count }.by 1
       expect(publication).to be_pending
     end
 

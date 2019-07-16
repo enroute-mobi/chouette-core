@@ -5,7 +5,7 @@ class ReferentialCloning < ApplicationModel
   after_commit :clone, on: :create
 
   def clone
-    ReferentialCloningWorker.perform_async(id)
+    enqueue_long_job :clone_with_status!
   end
 
   def clone_with_status!

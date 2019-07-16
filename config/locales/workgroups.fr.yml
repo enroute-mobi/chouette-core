@@ -5,6 +5,9 @@ fr:
       edit_control_sets: Paramétrer les Contrôles
       edit_aggregate: Paramétrer l'Agrégation
       edit_hole_sentinel: Paramétrer l'Analyse d'Offre
+      destroy_confirm: "Etes vous sûr de vouloir supprimer ce groupe de travail ?"
+      destroy_workgroup: Supprimer
+      restore_workgroup: Restaurer
     edit_controls: &edit_controls
       title: 'Paramétrage de la validation du Groupe de Travail'
     edit:

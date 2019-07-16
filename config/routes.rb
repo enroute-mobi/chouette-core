@@ -45,6 +45,9 @@ ChouetteIhm::Application.routes.draw do
   end
 
   resources :workgroups, concerns: :iev_interfaces do
+    put :setup_deletion, on: :member
+    put :remove_deletion, on: :member
+
     member do
       get :edit_aggregate
       get :edit_controls

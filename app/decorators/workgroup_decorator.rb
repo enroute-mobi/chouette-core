@@ -13,5 +13,19 @@ class WorkgroupDecorator < AF83::Decorator
 
     instance_decorator.show_action_link
     instance_decorator.edit_action_link
+
+
+    instance_decorator.action_link policy: :setup_deletion, secondary: :show, if: ->{ object.deleted_at.nil? } do |l|
+      l.content t('workgroups.actions.destroy_workgroup')
+      l.href { h.setup_deletion_workgroup_path(object.id) }
+      l.method :put
+    end
+
+    instance_decorator.action_link policy: :remove_deletion, secondary: :show, if: ->{ object.deleted_at.present? } do |l|
+      l.content t('workgroups.actions.restore_workgroup')
+      l.href { h.remove_deletion_workgroup_path(object.id) }
+      l.method :put
+    end
+
   end
 end

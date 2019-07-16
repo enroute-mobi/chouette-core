@@ -2,6 +2,10 @@ require 'delayed_job'
 
 class AutoKillPlugin < Delayed::Plugin
   callbacks do |lifecycle|
+    lifecycle.before(:perform) do |worker, job|
+      worker.say "Starting Job #{job.payload_object.explain} with priority #{job.priority}, attempt #{job.attempts}"
+    end
+
     lifecycle.after(:perform) do |worker, job|
       worker.say "Job done, using #{worker.memory_used.to_i}M"
       if worker.memory_used > 1024

@@ -190,7 +190,7 @@ RSpec.describe Chouette::Route, :type => :model do
     end
 
     it "should not calculate costs after commit" do
-      expect{route.run_callbacks(:commit)}.to change {RouteWayCostWorker.jobs.count}.by(0)
+      expect{route.run_callbacks(:commit)}.to change {Delayed::Job.count}.by(0)
     end
 
     context "with route_calculate_costs and costs_in_journey_patterns features in the organisation" do
@@ -199,7 +199,7 @@ RSpec.describe Chouette::Route, :type => :model do
       end
 
       it "should calculate costs after commit" do
-        expect{route.run_callbacks(:commit)}.to change {RouteWayCostWorker.jobs.count}.by(1)
+        expect{route.run_callbacks(:commit)}.to change {Delayed::Job.count}.by(1)
       end
     end
   end

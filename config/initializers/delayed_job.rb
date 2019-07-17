@@ -32,7 +32,17 @@ class Delayed::Heartbeat::Worker
   end
 end
 
+
+module Delayed::VerboseWorker
+  def start *args
+    say "Queues: #{queues.presence&.to_sentence || 'all'}"
+    super
+  end
+end
+
 class Delayed::Worker
+  prepend Delayed::VerboseWorker
+
   def memory_used
     NewRelic::Agent::Samplers::MemorySampler.new.sampler.get_sample
   end

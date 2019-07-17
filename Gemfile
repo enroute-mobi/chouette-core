@@ -143,8 +143,6 @@ gem 'rabl'
 gem 'carrierwave', '~> 1.0'
 gem 'rmagick'
 
-gem 'sidekiq', require: ['sidekiq', 'sidekiq/web']
-gem 'sidekiq-limit_fetch'
 gem 'delayed_job_active_record'
 gem 'delayed_job_web'
 gem 'delayed_job_heartbeat_plugin'

@@ -109,10 +109,10 @@ bundle exec rake db:seed
 
 ### Run
 
-Launch Sidekiq
+Launch Delayed jobs
 
 ```sh
-bundle exec sidekiq
+bundle exec rake jobs:work
 ```
 
 ```sh

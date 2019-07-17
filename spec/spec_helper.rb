@@ -30,8 +30,6 @@ require 'capybara/poltergeist'
 require 'will_paginate/array'
 require 'webmock/rspec'
 require 'simplecov'
-require 'sidekiq/testing'
-Sidekiq::Testing.fake!
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
@@ -53,10 +51,6 @@ Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
 ActiveRecord::Migration.maintain_test_schema!
 
 RSpec.configure do |config|
-  config.before(:each) do
-    Sidekiq::Worker.clear_all
-  end
-
   #Capybara.exact = true
   Capybara.javascript_driver = :poltergeist
   # :meta tests can be run seperately in case of doubt about the tests themselves

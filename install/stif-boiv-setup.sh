@@ -1,13 +1,12 @@
 #!/bin/bash -e
 
 export DATABASE_HOST=${DATABASE_HOST:-"localhost"}
-export SIDEKIQ_REDIS_URL=${SIDEKIQ_REDIS_URL:-"redis://localhost:6379/0"}
 
 if [[ "$#" != "1" ]] ; then
   echo "Argument count mismatch. 1 and only 1 argument expected"
   exit -1
 fi
- 
+
 SVRTYPE="$1"
 
 if test "$SVRTYPE" == "front"; then
@@ -54,13 +53,14 @@ echo "==== Installation de Redis"
 apt-get install -y redis-server
 fi
 
+# DEPRECATED IN FAVOR OF DELAYED JOBS 
 # Sidekiq
-
-if test "$SVRTYPE" == "worker"; then
-echo "==== Installation de Sidekiq comme service"
-cp sidekiq-stif-boiv.service /etc/systemd/system/
-systemctl enable sidekiq-stif-boiv
-fi
+#
+# if test "$SVRTYPE" == "worker"; then
+# echo "==== Installation de Sidekiq comme service"
+# cp sidekiq-stif-boiv.service /etc/systemd/system/
+# systemctl enable sidekiq-stif-boiv
+# fi
 
 echo "==== Installation de PostgreSQL"
 if [ "x$DATABASE_HOST" = "xlocalhost" ]; then

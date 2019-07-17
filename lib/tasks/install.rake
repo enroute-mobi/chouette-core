@@ -15,7 +15,7 @@ task :package do
   sh "tar -rf tmp/package/stif-boiv-release-#{release_name}.tar public/packs"
   sh "tar -rf tmp/package/stif-boiv-release-#{release_name}.tar public/javascripts"
 
-  %w{deploy-helper.sh README sidekiq-stif-boiv.service stif-boiv.conf stif-boiv-setup.sh template-stif-boiv.sql}.each do |f|
+  %w{deploy-helper.sh README stif-boiv.conf stif-boiv-setup.sh template-stif-boiv.sql}.each do |f|
     cp "install/#{f}", "tmp/package/#{f}"
   end
 

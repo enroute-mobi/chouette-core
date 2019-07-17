@@ -88,12 +88,6 @@ namespace :deploy do
   end
   after "deploy:restart", "deploy:group_writable"
 
-  desc "Restart sidekiq"
-  task :sidekiq_restart do
-    run "sudo sidekiq-touch #{fetch(:application)}"
-  end
-  after "deploy:restart", "deploy:sidekiq_restart"
-
   desc "Run i18n:js:export"
   task :i18n_js_export do
     run "cd #{release_path} && RAILS_ENV=#{rails_env} #{rake} i18n:js:export"

@@ -37,7 +37,7 @@
               ), \
               TableBuilderHelper::Column.new( \
                 key: :export_type, \
-                attribute: 'export_type', \
+                attribute: Proc.new {|ps| ps.export_type&.demodulize}, \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :destinations, \

@@ -64,7 +64,7 @@ class ReferentialOverview
     attr_reader :h
     attr_reader :referential_line
 
-    delegate :name, :number, :company, :color, :transport_mode, to: :referential_line
+    delegate :name, :number, :company, :color, :text_color, :transport_mode, to: :referential_line
 
     def initialize line, referential, start, h
       @referential_line = line

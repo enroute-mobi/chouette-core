@@ -1,6 +1,7 @@
 RSpec.describe Export::NetexFull, type: [:model, :with_exportable_referential] do
 
-  let(:export) { create :netex_export_full, referential: referential, workbench: workbench, synchronous: synchronous}
+  let!(:parent) { create :workgroup_export }
+  let(:export) { create :netex_export_full, referential: referential, workbench: workbench, synchronous: synchronous, parent: parent}
   let(:synchronous){ false }
   it 'should call a worker' do
     expect{ export }.to change{ Delayed::Job.count }.by 1

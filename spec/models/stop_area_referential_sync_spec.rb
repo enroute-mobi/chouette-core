@@ -15,8 +15,7 @@ RSpec.describe StopAreaReferentialSync, :type => :model do
   end
 
   it 'should call StopAreaReferentialSyncWorker on create' do
-    expect(StopAreaReferentialSyncWorker).to receive(:perform_async)
-    create(:stop_area_referential_sync)
+    expect { create(:stop_area_referential_sync) }.to change{ Delayed::Job.count }.by 1
   end
 
   describe 'states' do

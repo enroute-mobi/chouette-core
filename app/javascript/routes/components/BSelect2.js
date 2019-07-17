@@ -72,8 +72,8 @@ export default class BSelect3 extends Component {
             className='navlink'
             href={origin + '/stop_areas_referentials/' + value.stop_area_referential_id + '/stop_areas/' + value.stoparea_id}
             title="Voir l'arrêt"
+            dangerouslySetInnerHTML={{__html: value.text }}
           >
-            {this.parsedText(value.text)}
           </a>
         )
   }
@@ -111,17 +111,17 @@ class BSelect2 extends Component{
               return {
                  results: data.map(
                   function(item) {
-                      var text = item.name;
-                      if (item.zip_code || item.short_city_name) {
-                          text += ","
-                      }
-                      if (item.zip_code) {
-                          text += ` ${item.zip_code}`
-                      }
-                      if (item.short_city_name) {
-                          text += ` ${item.short_city_name}`
-                      }
-                      text += ` <small><em>(${item.area_type.toUpperCase()}, ${item.user_objectid})</em></small>`;
+                      var text = item.text;
+                      // if (item.zip_code || item.short_city_name) {
+                      //     text += ","
+                      // }
+                      // if (item.zip_code) {
+                      //     text += ` ${item.zip_code}`
+                      // }
+                      // if (item.short_city_name) {
+                      //     text += ` ${item.short_city_name}`
+                      // }
+                      // text += ` <small><em>(${item.area_type.toUpperCase()}, ${item.user_objectid})</em></small>`;
                       return _.assign({}, item, { text: text });
                   }
                 )

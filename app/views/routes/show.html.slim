@@ -21,32 +21,34 @@
       .col-lg-12
         .h3 = t('routes.show.stop_areas.title')
         - if @route_sp.any?
-          = table_builder_2 @route_sp,
-            [ \
-              TableBuilderHelper::Column.new( \
-                name: t('id_reflex'), \
-                attribute: Proc.new { |s| s.try(:stop_area).try(:local_id) } \
-              ), \
-              TableBuilderHelper::Column.new( \
-                key: :name, \
-                attribute: Proc.new { |s| content_tag :span, s.stop_area&.name, class: s.stop_area&.area_type }, \
-                link_to: lambda do |stop_point| \
-                  stop_area_referential_stop_area_path(stop_point.stop_area.referential, stop_point.stop_area) \
-                end \
-              ), \
-              TableBuilderHelper::Column.new( \
-                key: :status, \
-                name: Chouette::StopArea.tmf('status'), \
-                attribute: Proc.new { |s| stop_area_status(s.try(:stop_area).try(:status) ) } \
-              ), \
-              TableBuilderHelper::Column.new( \
-                key: :zip_code, \
-                attribute: Proc.new { |s| s.try(:stop_area).try(:zip_code) } \
-              ), \
-              TableBuilderHelper::Column.new( \
-                key: :city_name, \
-                attribute: Proc.new { |s| s.try(:stop_area).try(:city_name) } \
-              ), \
+          - rows = [ \
+            TableBuilderHelper::Column.new( \
+              name: t('id_reflex'), \
+              attribute: Proc.new { |s| s.try(:stop_area).try(:local_id) } \
+            ), \
+            TableBuilderHelper::Column.new( \
+              key: :name, \
+              attribute: Proc.new { |s| content_tag :span, s.stop_area&.name, class: s.stop_area&.area_type }, \
+              link_to: lambda do |stop_point| \
+                stop_area_referential_stop_area_path(stop_point.stop_area.referential, stop_point.stop_area) \
+              end \
+            ), \
+            TableBuilderHelper::Column.new( \
+              key: :status, \
+              name: Chouette::StopArea.tmf('status'), \
+              attribute: Proc.new { |s| stop_area_status(s.try(:stop_area).try(:status) ) } \
+            ) \
+          ]
+
+          - referential.stop_area_referential.enabled_stops_selection_displayed_fields.each do |f|
+            - next if f == 'local_id'
+            - rows << TableBuilderHelper::Column.new( \
+                        name: StopAreaReferential.tmf(f), \
+                        key: f, \
+                        attribute: Proc.new { |s| s.try(:stop_area).try(f)&.html_safe } \
+                      )
+
+          - rows += [ \
               TableBuilderHelper::Column.new( \
                 key: :for_boarding, \
                 attribute: Proc.new { |s| t("stop_points.stop_point.for_boarding.#{s.for_boarding}") } \
@@ -55,7 +57,10 @@
                 key: :for_alighting, \
                 attribute: Proc.new { |s| t("stop_points.stop_point.for_alighting.#{s.for_alighting}") } \
               ) \
-            ],
+            ]
+
+          = table_builder_2 @route_sp,
+            rows,
             sortable: false,
             cls: 'table has-stoppoints',
             action: :index

@@ -1,4 +1,7 @@
 class StopAreaReferential < ApplicationModel
+  STOPS_SELECTION_DISPLAYABLE_FIELDS = %i(
+    formatted_area_type local_id zip_code city_name postal_region country_name
+  )
   validates :registration_number_format, format: { with: /\AX*\z/ }
 
   include ObjectidFormatterSupport
@@ -81,5 +84,9 @@ class StopAreaReferential < ApplicationModel
 
   def sorted_locales
     locales.sort_by{|l| locale_name(l)}
+  end
+
+  def enabled_stops_selection_displayed_fields
+    stops_selection_displayed_fields.select {|k, v| v}.keys
   end
 end

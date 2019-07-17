@@ -43,7 +43,7 @@ module LocalImportSupport
   end
 
   def import_async
-    enqueue_long_job :import, queue: :imports
+    enqueue_job :import
   end
 
   def import

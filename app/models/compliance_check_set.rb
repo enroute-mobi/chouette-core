@@ -117,7 +117,7 @@ class ComplianceCheckSet < ApplicationModel
   end
 
   def perform_async(only_internals=false)
-    enqueue_long_job :perform, only_internals
+    enqueue_job :perform, only_internals
   end
 
   def perform only_internals=false

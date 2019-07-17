@@ -14,7 +14,7 @@ module LocalExportSupport
     if synchronous
       run unless status == "running"
     else
-      enqueue_long_job :run
+      enqueue_job :run
     end
   end
 

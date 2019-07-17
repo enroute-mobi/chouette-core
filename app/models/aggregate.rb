@@ -60,7 +60,7 @@ class Aggregate < ApplicationModel
     update_column :started_at, Time.now
     update_column :status, :running
 
-    enqueue_long_job :aggregate!
+    enqueue_job :aggregate!
   end
 
   def aggregate!

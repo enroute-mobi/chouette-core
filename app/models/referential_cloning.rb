@@ -5,7 +5,7 @@ class ReferentialCloning < ApplicationModel
   after_commit :clone, on: :create
 
   def clone
-    enqueue_long_job :clone_with_status!
+    enqueue_job :clone_with_status!
   end
 
   def clone_with_status!

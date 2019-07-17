@@ -33,17 +33,19 @@ class ApplicationModel < ::ActiveRecord::Base
     end
   end
 
-  # for now we will only use LongRunningJobs
-  # We may need different jobs later
+  def jobs_queue
+    return :long_jobs if self.is_a?(Import::Base)
+    return :long_jobs if self.is_a?(Export::Base)
+    return :long_jobs if self.is_a?(Merge)
+    return :long_jobs if self.is_a?(Aggregate)
 
-  def enqueue_long_job method, args=[], queue: nil, max_attempts: 1, run_at: nil
-    queue ||= :default
+    :default 
+  end
 
+  def enqueue_job method, args=[], max_attempts: 1, run_at: nil
     job = LongRunningJob.new(self, method, args)
     job.max_attempts = max_attempts
 
-    Delayed::Job.enqueue job, queue: queue, run_at: run_at
+    Delayed::Job.enqueue job, queue: jobs_queue, run_at: run_at
   end
-
-  alias_method :enqueue_job, :enqueue_long_job
 end

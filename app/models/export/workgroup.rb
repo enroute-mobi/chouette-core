@@ -4,7 +4,7 @@ class Export::Workgroup < Export::Base
   option :duration, required: true, type: :integer, default_value: 90
 
   def launch_worker
-    enqueue_long_job :export!
+    enqueue_job :export!
   end
 
   def export!

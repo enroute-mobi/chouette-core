@@ -542,7 +542,7 @@ class Referential < ApplicationModel
   def create_from_current_offer
     pending!
 
-    enqueue_long_job :fill_from_current_offer
+    enqueue_job :fill_from_current_offer
   end
 
   def fill_from_current_offer

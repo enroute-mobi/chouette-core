@@ -49,7 +49,7 @@ class Merge < ApplicationModel
     if before_merge_compliance_control_sets.present?
       create_before_merge_compliance_check_sets
     else
-      enqueue_long_job :merge!
+      enqueue_job :merge!
     end
   end
 

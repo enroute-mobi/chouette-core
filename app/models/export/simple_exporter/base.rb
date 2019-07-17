@@ -16,7 +16,7 @@ class Export::SimpleExporter::Base < Export::Base
   end
 
   def call_exporter_async
-    enqueue_long_job :export!
+    enqueue_job :export!
   end
 
   def export!

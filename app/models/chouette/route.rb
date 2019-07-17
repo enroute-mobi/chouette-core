@@ -261,9 +261,9 @@ module Chouette
     def calculate_costs! delay: 0, should_retry: true
       return unless TomTom.enabled?
       if delay > 0
-        enqueue_long_job :calculate_costs, should_retry, run_at: delay.from_now
+        enqueue_job :calculate_costs, should_retry, run_at: delay.from_now
       else
-        enqueue_long_job :calculate_costs, should_retry
+        enqueue_job :calculate_costs, should_retry
       end
     end
 

@@ -14,7 +14,7 @@ class LineReferentialSync < ApplicationModel
   private
   def perform_sync
     create_sync_message :info, :new
-    enqueue_long_job :sync, max_attempts: 5
+    enqueue_job :sync, max_attempts: 5
   end
 
   def process_time

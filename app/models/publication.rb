@@ -37,7 +37,7 @@ class Publication < ApplicationModel
 
     pending!
     if parent.successful?
-      enqueue_long_job :run
+      enqueue_job :run
     else
       failed!
     end

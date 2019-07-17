@@ -12,8 +12,6 @@ module SearchHelper
     active = false
     if q.present? && q[key].present?
       val = q[key]
-      pp key
-      pp val
       if val.is_a?(Array)
         active = val.any? &:present?
       elsif val.respond_to?(:values)

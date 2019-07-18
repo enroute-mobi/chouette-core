@@ -15,7 +15,6 @@ RSpec.describe LineReferentialSync, :type => :model do
   end
 
   it 'should call LineReferentialSyncWorker on create' do
-    expect(LineReferentialSyncWorker).to receive(:perform_async)
     expect { create(:line_referential_sync) }.to change { Delayed::Job.count }.by 1
   end
 

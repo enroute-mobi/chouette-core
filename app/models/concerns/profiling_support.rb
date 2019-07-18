@@ -4,8 +4,12 @@ module ProfilingSupport
   included do |into|
     attr_accessor :profiler
     attr_accessor :profile
-    attr_accessor :profile_options
+    attr_writer   :profile_options
     attr_accessor :profile_times
+  end
+
+  def profile_options
+    @profile_options ||= {}
   end
 
   def add_profile_time(tag, time)

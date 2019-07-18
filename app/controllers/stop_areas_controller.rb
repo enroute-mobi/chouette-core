@@ -131,7 +131,6 @@ class StopAreasController < ChouetteController
     scope = parent.present? ? parent.stop_areas : referential.stop_areas
     scope = is_referent_scope(scope)
     @q = scope.ransack(params[:q]&.except(:is_referent_true, :is_referent_false))
-
     @stop_areas ||=
       begin
         if sort_column == "area_type"

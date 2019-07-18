@@ -3,7 +3,8 @@
 = search_form_for @q, url: stop_area_referential_stop_areas_path(@stop_area_referential), html: {method: :get}, class: 'form form-filter' do |f|
   .ffg-row
     .input-group.search_bar class=filter_item_class(params[:q], :name_or_short_id_cont)
-      = f.search_field :name_or_short_id_or_registration_number_cont,
+      = f.search_field :short_id_or_name_cont,
+          value: params[:q][:short_id_or_name_cont],
           placeholder: t('.name_or_objectid'),
           class: 'form-control'
       span.input-group-btn

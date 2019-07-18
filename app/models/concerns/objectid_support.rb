@@ -2,36 +2,6 @@ module ObjectidSupport
   extend ActiveSupport::Concern
 
   module SearchWithObjectID
-    def ransack args={}
-      vanilla_search = super args
-      base = vanilla_search.base
-      
-      if args && args.respond_to?(:keys)
-        args.each do |k, v|
-          if k =~ /short_id/
-            referential = self.last&.referential
-            if referential
-              condition = Ransack::Nodes::Condition.new(base.context).build({
-                'a' => {
-                  '0' => {
-                    'name' => 'actual_short_id',
-                    'ransacker_args' => referential
-                  }
-                },
-                'p' => 'cont',
-                'v' => { '0' => { 'value' => v } }
-              })
-
-              base.conditions << condition
-              base.combinator = "or"
-            end
-          end
-        end
-      end
-
-      vanilla_search.instance_variable_set "@base", base
-      vanilla_search
-    end
   end
 
   included do
@@ -47,10 +17,7 @@ module ObjectidSupport
     }
 
     ransacker :short_id do |parent|
-      nil
-    end
-
-    ransacker :actual_short_id, args: [:parent, :ransacker_args] do |parent, referential|
+      referential = self.last&.referential
       Arel.sql referential.objectid_formatter.short_id_sql_expr(self)
     end
 

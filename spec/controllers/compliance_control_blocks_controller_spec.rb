@@ -5,7 +5,7 @@ RSpec.describe ComplianceControlBlocksController, type: :controller do
 
   let(:compliance_control_block)        { create(:compliance_control_block) }
   let!(:compliance_control_set)         { compliance_control_block.compliance_control_set }
-  let(:compliance_control_block_params) { compliance_control_block.as_json.merge(block_kind: :transport_mode, transport_mode: "bus") }
+  let(:compliance_control_block_params) { compliance_control_block.as_json.merge(block_kind: :transport_mode, transport_mode: "metro", transport_submode: 'undefined') }
 
   before(:each){
     compliance_control_set.update organisation: @user.organisation

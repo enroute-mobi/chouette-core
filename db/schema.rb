@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_06_27_094027) do
+ActiveRecord::Schema.define(version: 2019_07_18_150421) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -101,7 +101,7 @@ ActiveRecord::Schema.define(version: 2019_06_27_094027) do
     t.string "name"
     t.daterange "date_ranges", array: true
     t.date "dates", array: true
-    t.boolean "shared", default: true
+    t.boolean "shared", default: false
     t.bigint "organisation_id"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -223,8 +223,8 @@ ActiveRecord::Schema.define(version: 2019_06_27_094027) do
     t.bigint "compliance_control_set_id"
     t.bigint "workbench_id"
     t.string "status"
-    t.string "parent_type"
     t.bigint "parent_id"
+    t.string "parent_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "current_step_id"
@@ -1021,7 +1021,8 @@ ActiveRecord::Schema.define(version: 2019_06_27_094027) do
     t.datetime "updated_at"
     t.string "objectid_format"
     t.string "registration_number_format"
-    t.jsonb "locales", default: [{"code"=>"fr_FR", "default"=>true}, {"code"=>"en_UK", "default"=>true}, {"code"=>"nl_NL", "default"=>true}, {"code"=>"es_ES", "default"=>true}, {"code"=>"it_IT", "default"=>true}, {"code"=>"de_DE", "default"=>true}]
+    t.jsonb "locales", default: [{"code"=>"fr_FR", "default"=>true}, {"code"=>"en_UK", "default"=>true}, {"code"=>"nl_NL", "default"=>true}, {"code"=>"es_ES", "default"=>true}, {"code"=>"it_IT", "default"=>true}, {"code"=>"de_DE", "default"=>true}], array: true
+    t.jsonb "stops_selection_displayed_fields", default: {"local_id"=>true}
   end
 
   create_table "stop_area_routing_constraints", force: :cascade do |t|
@@ -1104,10 +1105,10 @@ ActiveRecord::Schema.define(version: 2019_06_27_094027) do
 
   create_table "taggings", force: :cascade do |t|
     t.bigint "tag_id"
-    t.string "taggable_type"
     t.bigint "taggable_id"
-    t.string "tagger_type"
+    t.string "taggable_type"
     t.bigint "tagger_id"
+    t.string "tagger_type"
     t.string "context", limit: 128
     t.datetime "created_at"
     t.index ["context"], name: "index_taggings_on_context"

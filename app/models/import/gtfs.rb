@@ -405,239 +405,237 @@ class Import::Gtfs < Import::Base
           transaction: true,
           skip_checksums: true,
           memory_profile: -> { "Import stop times from #{rows_count}" }
-          ) do |stop_time, resource|
-            begin
-              trip_id = stop_time.trip_id
+        ) do |stop_time, resource|
+          trip_id = stop_time.trip_id
 
-              prev_trip_id ||= trip_id
-              if prev_trip_id == trip_id
-                stop_times << stop_time
-              else
-                process_trip(resource, prev_trip_id, stop_times)
+          prev_trip_id ||= trip_id
+          if prev_trip_id == trip_id
+            stop_times << stop_time
+          else
+            process_trip(resource, prev_trip_id, stop_times)
 
-                stop_times = [stop_time]
-                prev_trip_id = trip_id
-              end
-            end
-          end
-          process_trip(resource, prev_trip_id, stop_times)
-        end
-      end
-    end
-
-    def consistent_stop_times(stop_times)
-      times = stop_times.map{|s| [s.arrival_time, s.departure_time]}.flatten.compact
-      times.inject(nil) do |prev, current|
-        current = current.split(':').map &:to_i
-
-        if prev
-          return false if prev.first > current.first
-          return false if prev.first == current.first && prev[1] > current[1]
-          return false if prev.first == current.first && prev[1] == current[1] && prev[2] > current[2]
-        end
-
-        current
-      end
-      true
-    end
-
-    def import_stop_time(stop_time, route, resource, position)
-      profile_tag 'import_stop_time' do
-        unless_parent_model_in_error(Chouette::StopArea, stop_time.stop_id, resource) do
-
-          if position == 0
-            departure_time = GTFS::Time.parse(stop_time.departure_time)
-            raise InvalidTimeError.new(stop_time.departure_time) unless departure_time.present?
-            arrival_time = GTFS::Time.parse(stop_time.arrival_time)
-            raise InvalidTimeError.new(stop_time.arrival_time) unless arrival_time.present?
-            raise InvalidTripNonZeroFirstOffsetError unless departure_time.day_offset.zero? && arrival_time.day_offset.zero?
-          end
-
-          stop_area_id = @stop_areas_id_by_registration_number[stop_time.stop_id]
-          Chouette::StopPoint.new(stop_area_id: stop_area_id, position: position )
-        end
-      end
-    end
-
-    def add_stop_point(stop_time, stop_point, journey_pattern, vehicle_journey, resource, worker)
-      profile_tag 'add_stop_point' do
-        # JourneyPattern#vjas_add creates automaticaly VehicleJourneyAtStop
-
-        vehicle_journey_at_stop = journey_pattern.vehicle_journey_at_stops.build(stop_point_id: stop_point.id)
-        departure_time = nil
-        arrival_time = nil
-
-        profile_tag 'parse_times' do
-          departure_time = GTFS::Time.parse(stop_time.departure_time)
-          raise InvalidTimeError.new(stop_time.departure_time) unless departure_time.present?
-
-          arrival_time = GTFS::Time.parse(stop_time.arrival_time)
-          raise InvalidTimeError.new(stop_time.arrival_time) unless arrival_time.present?
-        end
-        if @previous_stop_sequence.nil? || stop_time.stop_sequence.to_i <= @previous_stop_sequence
-          @vehicle_journey_at_stop_first_offset = departure_time.day_offset
-        end
-
-        vehicle_journey_at_stop.vehicle_journey = vehicle_journey
-        vehicle_journey_at_stop.departure_time = departure_time.time(@default_time_zone)
-        vehicle_journey_at_stop.arrival_time = arrival_time.time(@default_time_zone)
-        vehicle_journey_at_stop.departure_day_offset = departure_time.day_offset - @vehicle_journey_at_stop_first_offset
-        vehicle_journey_at_stop.arrival_day_offset = arrival_time.day_offset - @vehicle_journey_at_stop_first_offset
-
-        # TODO: offset
-
-        @previous_stop_sequence = stop_time.stop_sequence.to_i
-
-        worker.add vehicle_journey_at_stop.attributes
-        # save_model vehicle_journey_at_stop, resource: resource
-      end
-    end
-
-    def time_tables_by_service_id
-      @time_tables_by_service_id ||= {}
-    end
-
-    def import_calendars
-      return unless source.entries.include?('calendar.txt')
-
-      Chouette::TimeTable.skipping_objectid_uniqueness do
-        Chouette::ChecksumManager.no_updates do
-          create_resource(:calendars).each(source.calendars, slice: 500, transaction: true) do |calendar, resource|
-            time_table = referential.time_tables.build comment: calendar.service_id
-            Chouette::TimeTable.all_days.each do |day|
-              time_table.send("#{day}=", calendar.send(day))
-            end
-            if calendar.start_date == calendar.end_date
-              time_table.dates.build date: calendar.start_date, in_out: true
-            else
-              time_table.periods.build period_start: calendar.start_date, period_end: calendar.end_date
-            end
-            time_table.shortcuts_update
-            time_table.skip_save_shortcuts = true
-            save_model time_table, resource: resource
-
-            time_tables_by_service_id[calendar.service_id] = time_table.id
+            stop_times = [stop_time]
+            prev_trip_id = trip_id
           end
         end
-      end
-    end
-
-    def import_calendar_dates
-      return unless source.entries.include?('calendar_dates.txt')
-
-      positions = Hash.new{ |h, k| h[k] = 0 }
-      Chouette::ChecksumManager.no_updates do
-        Chouette::TimeTableDate.bulk_insert do |worker|
-          create_resource(:calendar_dates).each(source.calendar_dates, slice: 500, transaction: true) do |calendar_date, resource|
-            comment = "#{calendar_date.service_id}"
-            unless_parent_model_in_error(Chouette::TimeTable, comment, resource) do
-              time_table_id = time_tables_by_service_id[calendar_date.service_id]
-              time_table_id ||= begin
-                tt = referential.time_tables.build comment: comment
-                save_model tt, resource: resource
-                time_tables_by_service_id[calendar_date.service_id] = tt.id
-              end
-
-              worker.add position: positions[time_table_id], date: Date.parse(calendar_date.date), in_out: calendar_date.exception_type == "1", time_table_id: time_table_id
-              positions[time_table_id] += 1
-            end
-          end
-        end
-      end
-    end
-
-    def import_calendar_checksums
-      referential.time_tables.includes(:dates, :periods).find_each{ |tt| tt.update_checksum_without_callbacks!(db_lookup: false) }
-    end
-
-    def update_checkum_in_batches(collection)
-      Chouette::ChecksumManager.update_checkum_in_batches(collection, referential)
-    end
-
-    def import_missing_checksums
-      Chouette::JourneyPattern.within_workgroup(workgroup) do
-        Chouette::VehicleJourney.within_workgroup(workgroup) do
-          update_checkum_in_batches referential.vehicle_journey_at_stops.select(:id, :departure_time, :arrival_time, :departure_day_offset, :arrival_day_offset)
-          update_checkum_in_batches referential.routes.select(:id, :name, :published_name, :wayback).includes(:stop_points, :routing_constraint_zones)
-          update_checkum_in_batches referential.journey_patterns.select(:id, :custom_field_values, :name, :published_name, :registration_number, :costs).includes(:stop_points)
-          update_checkum_in_batches referential.vehicle_journeys.select(:id, :custom_field_values, :published_journey_name, :published_journey_identifier, :ignored_routing_contraint_zone_ids, :ignored_stop_area_routing_constraint_ids, :company_id, :line_notice_ids).includes(:company_light, :footnotes, :vehicle_journey_at_stops, :purchase_windows)
-        end
-      end
-    end
-
-    def find_stop_parent_or_create_message(stop_area_name, parent_station, resource)
-      parent = stop_area_referential.stop_areas.find_by(registration_number: parent_station)
-      unless parent
-        create_message(
-          {
-            criticity: :error,
-            message_key: :parent_not_found,
-            message_attributes: {
-              parent_name: parent_station,
-              stop_area_name: stop_area_name,
-            },
-            resource_attributes: {
-              filename: "#{resource.name}.txt",
-              line_number: resource.rows_count,
-              column_number: 0
-            }
-          },
-          resource: resource, commit: true
-        )
-      end
-      return parent
-    end
-
-    def check_time_zone_or_create_message(imported_time_zone, resource)
-      return unless imported_time_zone
-      time_zone = TZInfo::Timezone.all_country_zone_identifiers.select{|t| t==imported_time_zone}[0]
-      unless time_zone
-        create_message(
-          {
-            criticity: :error,
-            message_key: :invalid_time_zone,
-            message_attributes: {
-              time_zone: imported_time_zone,
-            },
-            resource_attributes: {
-              filename: "#{resource.name}.txt",
-              line_number: resource.rows_count,
-              column_number: 0
-            }
-          },
-          resource: resource, commit: true
-        )
-      end
-      return time_zone
-    end
-
-    def check_calendar_files_missing_and_create_message
-      if source.entries.include?('calendar.txt') || source.entries.include?('calendar_dates.txt')
-        return false
-      end
-
-      create_message(
-        {
-          criticity: :error,
-          message_key: 'missing_calendar_or_calendar_dates_in_zip_file',
-        },
-        resource: resource, commit: true
-      )
-      @status = 'failed'
-    end
-
-    def parse_color value, options = {}
-      options = {default: 'FFFFFF'}.merge(options)
-      /\A[\dA-F]{6}\Z/.match(value).try(:string) || options[:default]
-    end
-
-    class InvalidTripNonZeroFirstOffsetError < StandardError; end
-    class InvalidTripTimesError < StandardError; end
-    class InvalidTimeError < StandardError
-      attr_reader :time
-
-      def initialize(time)
-        @time = time
+        process_trip(resource, prev_trip_id, stop_times)
       end
     end
   end
+
+  def consistent_stop_times(stop_times)
+    times = stop_times.map{|s| [s.arrival_time, s.departure_time]}.flatten.compact
+    times.inject(nil) do |prev, current|
+      current = current.split(':').map &:to_i
+
+      if prev
+        return false if prev.first > current.first
+        return false if prev.first == current.first && prev[1] > current[1]
+        return false if prev.first == current.first && prev[1] == current[1] && prev[2] > current[2]
+      end
+
+      current
+    end
+    true
+  end
+
+  def import_stop_time(stop_time, route, resource, position)
+    profile_tag 'import_stop_time' do
+      unless_parent_model_in_error(Chouette::StopArea, stop_time.stop_id, resource) do
+
+        if position == 0
+          departure_time = GTFS::Time.parse(stop_time.departure_time)
+          raise InvalidTimeError.new(stop_time.departure_time) unless departure_time.present?
+          arrival_time = GTFS::Time.parse(stop_time.arrival_time)
+          raise InvalidTimeError.new(stop_time.arrival_time) unless arrival_time.present?
+          raise InvalidTripNonZeroFirstOffsetError unless departure_time.day_offset.zero? && arrival_time.day_offset.zero?
+        end
+
+        stop_area_id = @stop_areas_id_by_registration_number[stop_time.stop_id]
+        Chouette::StopPoint.new(stop_area_id: stop_area_id, position: position )
+      end
+    end
+  end
+
+  def add_stop_point(stop_time, stop_point, journey_pattern, vehicle_journey, resource, worker)
+    profile_tag 'add_stop_point' do
+      # JourneyPattern#vjas_add creates automaticaly VehicleJourneyAtStop
+
+      vehicle_journey_at_stop = journey_pattern.vehicle_journey_at_stops.build(stop_point_id: stop_point.id)
+      departure_time = nil
+      arrival_time = nil
+
+      profile_tag 'parse_times' do
+        departure_time = GTFS::Time.parse(stop_time.departure_time)
+        raise InvalidTimeError.new(stop_time.departure_time) unless departure_time.present?
+
+        arrival_time = GTFS::Time.parse(stop_time.arrival_time)
+        raise InvalidTimeError.new(stop_time.arrival_time) unless arrival_time.present?
+      end
+      if @previous_stop_sequence.nil? || stop_time.stop_sequence.to_i <= @previous_stop_sequence
+        @vehicle_journey_at_stop_first_offset = departure_time.day_offset
+      end
+
+      vehicle_journey_at_stop.vehicle_journey = vehicle_journey
+      vehicle_journey_at_stop.departure_time = departure_time.time(@default_time_zone)
+      vehicle_journey_at_stop.arrival_time = arrival_time.time(@default_time_zone)
+      vehicle_journey_at_stop.departure_day_offset = departure_time.day_offset - @vehicle_journey_at_stop_first_offset
+      vehicle_journey_at_stop.arrival_day_offset = arrival_time.day_offset - @vehicle_journey_at_stop_first_offset
+
+      # TODO: offset
+
+      @previous_stop_sequence = stop_time.stop_sequence.to_i
+
+      worker.add vehicle_journey_at_stop.attributes
+      # save_model vehicle_journey_at_stop, resource: resource
+    end
+  end
+
+  def time_tables_by_service_id
+    @time_tables_by_service_id ||= {}
+  end
+
+  def import_calendars
+    return unless source.entries.include?('calendar.txt')
+
+    Chouette::TimeTable.skipping_objectid_uniqueness do
+      Chouette::ChecksumManager.no_updates do
+        create_resource(:calendars).each(source.calendars, slice: 500, transaction: true) do |calendar, resource|
+          time_table = referential.time_tables.build comment: calendar.service_id
+          Chouette::TimeTable.all_days.each do |day|
+            time_table.send("#{day}=", calendar.send(day))
+          end
+          if calendar.start_date == calendar.end_date
+            time_table.dates.build date: calendar.start_date, in_out: true
+          else
+            time_table.periods.build period_start: calendar.start_date, period_end: calendar.end_date
+          end
+          time_table.shortcuts_update
+          time_table.skip_save_shortcuts = true
+          save_model time_table, resource: resource
+
+          time_tables_by_service_id[calendar.service_id] = time_table.id
+        end
+      end
+    end
+  end
+
+  def import_calendar_dates
+    return unless source.entries.include?('calendar_dates.txt')
+
+    positions = Hash.new{ |h, k| h[k] = 0 }
+    Chouette::ChecksumManager.no_updates do
+      Chouette::TimeTableDate.bulk_insert do |worker|
+        create_resource(:calendar_dates).each(source.calendar_dates, slice: 500, transaction: true) do |calendar_date, resource|
+          comment = "#{calendar_date.service_id}"
+          unless_parent_model_in_error(Chouette::TimeTable, comment, resource) do
+            time_table_id = time_tables_by_service_id[calendar_date.service_id]
+            time_table_id ||= begin
+              tt = referential.time_tables.build comment: comment
+              save_model tt, resource: resource
+              time_tables_by_service_id[calendar_date.service_id] = tt.id
+            end
+
+            worker.add position: positions[time_table_id], date: Date.parse(calendar_date.date), in_out: calendar_date.exception_type == "1", time_table_id: time_table_id
+            positions[time_table_id] += 1
+          end
+        end
+      end
+    end
+  end
+
+  def import_calendar_checksums
+    referential.time_tables.includes(:dates, :periods).find_each{ |tt| tt.update_checksum_without_callbacks!(db_lookup: false) }
+  end
+
+  def update_checkum_in_batches(collection)
+    Chouette::ChecksumManager.update_checkum_in_batches(collection, referential)
+  end
+
+  def import_missing_checksums
+    Chouette::JourneyPattern.within_workgroup(workgroup) do
+      Chouette::VehicleJourney.within_workgroup(workgroup) do
+        update_checkum_in_batches referential.vehicle_journey_at_stops.select(:id, :departure_time, :arrival_time, :departure_day_offset, :arrival_day_offset)
+        update_checkum_in_batches referential.routes.select(:id, :name, :published_name, :wayback).includes(:stop_points, :routing_constraint_zones)
+        update_checkum_in_batches referential.journey_patterns.select(:id, :custom_field_values, :name, :published_name, :registration_number, :costs).includes(:stop_points)
+        update_checkum_in_batches referential.vehicle_journeys.select(:id, :custom_field_values, :published_journey_name, :published_journey_identifier, :ignored_routing_contraint_zone_ids, :ignored_stop_area_routing_constraint_ids, :company_id, :line_notice_ids).includes(:company_light, :footnotes, :vehicle_journey_at_stops, :purchase_windows)
+      end
+    end
+  end
+
+  def find_stop_parent_or_create_message(stop_area_name, parent_station, resource)
+    parent = stop_area_referential.stop_areas.find_by(registration_number: parent_station)
+    unless parent
+      create_message(
+        {
+          criticity: :error,
+          message_key: :parent_not_found,
+          message_attributes: {
+            parent_name: parent_station,
+            stop_area_name: stop_area_name,
+          },
+          resource_attributes: {
+            filename: "#{resource.name}.txt",
+            line_number: resource.rows_count,
+            column_number: 0
+          }
+        },
+        resource: resource, commit: true
+      )
+    end
+    return parent
+  end
+
+  def check_time_zone_or_create_message(imported_time_zone, resource)
+    return unless imported_time_zone
+    time_zone = TZInfo::Timezone.all_country_zone_identifiers.select{|t| t==imported_time_zone}[0]
+    unless time_zone
+      create_message(
+        {
+          criticity: :error,
+          message_key: :invalid_time_zone,
+          message_attributes: {
+            time_zone: imported_time_zone,
+          },
+          resource_attributes: {
+            filename: "#{resource.name}.txt",
+            line_number: resource.rows_count,
+            column_number: 0
+          }
+        },
+        resource: resource, commit: true
+      )
+    end
+    return time_zone
+  end
+
+  def check_calendar_files_missing_and_create_message
+    if source.entries.include?('calendar.txt') || source.entries.include?('calendar_dates.txt')
+      return false
+    end
+
+    create_message(
+      {
+        criticity: :error,
+        message_key: 'missing_calendar_or_calendar_dates_in_zip_file',
+      },
+      resource: resource, commit: true
+    )
+    @status = 'failed'
+  end
+
+  def parse_color value, options = {}
+    options = {default: 'FFFFFF'}.merge(options)
+    /\A[\dA-F]{6}\Z/.match(value).try(:string) || options[:default]
+  end
+
+  class InvalidTripNonZeroFirstOffsetError < StandardError; end
+  class InvalidTripTimesError < StandardError; end
+  class InvalidTimeError < StandardError
+    attr_reader :time
+
+    def initialize(time)
+      @time = time
+    end
+  end
+end

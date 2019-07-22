@@ -368,19 +368,6 @@ RSpec.describe Import::Gtfs do
     end
   end
 
-  describe "#import_trips" do
-    let(:import) { build_import 'google-sample-feed.zip' }
-    before do
-      import.prepare_referential
-      import.import_calendars
-    end
-
-    it 'should store the trips in memory' do
-      import.import_trips
-      expect(import.instance_variable_get('@trips').size).to eq 11
-    end
-  end
-
   describe "#import_stop_times" do
     let(:import) { build_import 'google-sample-feed.zip' }
 

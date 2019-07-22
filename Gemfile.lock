@@ -1,8 +1,8 @@
 GIT
   remote: https://github.com/af83/gtfs.git
-  revision: 3d9e501fcf763f923d7c1da4933e292fd23dcc03
+  revision: 9c025d3eb8624bdf6eb0e92298a1509376c4858f
   specs:
-    gtfs (0.3.0)
+    gtfs (0.3.1)
       multi_json
       rake
       rubyzip (~> 1.1)
@@ -625,7 +625,7 @@ GEM
     ruby_dep (1.5.0)
     rubycas-client (2.3.9)
       activesupport
-    rubyzip (1.2.2)
+    rubyzip (1.2.3)
     safe_yaml (1.0.4)
     sass (3.7.3)
       sass-listen (~> 4.0.0)

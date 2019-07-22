@@ -1,8 +1,8 @@
 GIT
   remote: https://github.com/af83/gtfs.git
-  revision: 9c025d3eb8624bdf6eb0e92298a1509376c4858f
+  revision: 676d5c3c94a487c4e1441af4dad8d1cc6aa04882
   specs:
-    gtfs (0.3.1)
+    gtfs (0.3.2)
       multi_json
       rake
       rubyzip (~> 1.1)
@@ -547,7 +547,7 @@ GEM
       thor (>= 0.19.0, < 2.0)
     rainbow (2.2.2)
       rake
-    rake (12.3.2)
+    rake (12.3.3)
     ransack (2.1.1)
       actionpack (>= 5.0)
       activerecord (>= 5.0)

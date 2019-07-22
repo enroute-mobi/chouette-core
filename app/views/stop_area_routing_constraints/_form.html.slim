@@ -1,8 +1,8 @@
 = simple_form_for [@stop_area_referential, @stop_area_routing_constraint], html: {class: 'form-horizontal', id: 'stop_area_provider_form'}, wrapper: :horizontal_form do |f|
   .row
     .col-lg-12
-      = f.input :from_id, as: :select, collection: [f.object.from_id], input_html: { data: { select2ed_placeholder: StopAreaRoutingConstraint.tmf('from'), select2ed_allow_clear: 'true', select2_ajax: 'true', url: autocomplete_stop_area_referential_stop_areas_path(@stop_area_referential), initvalue: {id: f.object.from_id, text: f.object.from_light.try(:full_name)}}}
-      = f.input :to_id, as: :select, collection: [f.object.to_id], input_html: { data: { select2ed_placeholder: StopAreaRoutingConstraint.tmf('to'), select2ed_allow_clear: 'true', select2_ajax: 'true', url: autocomplete_stop_area_referential_stop_areas_path(@stop_area_referential), initvalue: {id: f.object.to_id, text: f.object.to_light.try(:full_name)}}}
+      = f.input :from_id, as: :select, collection: [f.object.from_id], input_html: { data: { select2ed_placeholder: StopAreaRoutingConstraint.tmf('from'), select2ed_allow_clear: 'true', select2_ajax: 'true', url: autocomplete_stop_area_referential_stop_areas_path(@stop_area_referential), initvalue: {id: f.object.from_id, text: f.object.from_light.try(:formatted_selection_details)}}}
+      = f.input :to_id, as: :select, collection: [f.object.to_id], input_html: { data: { select2ed_placeholder: StopAreaRoutingConstraint.tmf('to'), select2ed_allow_clear: 'true', select2_ajax: 'true', url: autocomplete_stop_area_referential_stop_areas_path(@stop_area_referential), initvalue: {id: f.object.to_id, text: f.object.to_light.try(:formatted_selection_details)}}}
       = f.input :both_way, as: :switchable_checkbox
 
   .separator

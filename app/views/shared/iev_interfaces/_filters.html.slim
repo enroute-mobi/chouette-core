@@ -1,7 +1,7 @@
 = search_form_for @q, url: request.path, html: { method: :get, class: 'form form-filter' } do |f|
   .ffg-row
     .input-group.search_bar class=filter_item_class(params[:q], :name_or_creator_cont)
-      = f.search_field :name_or_creator_cont, class: 'form-control', placeholder: t("#{collection_name}.filters.name_or_creator_cont")
+      = f.search_field :name_or_creator_cont, class: 'form-control', placeholder: name_placeholder(collection_name, parent)
       span.input-group-btn
         button.btn.btn-default#search_btn type='submit'
           span.fa.fa-search

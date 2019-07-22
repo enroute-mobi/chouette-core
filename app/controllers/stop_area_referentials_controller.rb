@@ -29,6 +29,11 @@ class StopAreaReferentialsController < ChouetteController
         default: locale[:default] == '1'
       }
     end
-    { locales: locales }
+
+    stops_selection_displayed_fields = {}
+    params[:stops_selection_displayed_fields].each do |k, v|
+      stops_selection_displayed_fields[k] = v == '1'
+    end
+    { locales: locales, stops_selection_displayed_fields: stops_selection_displayed_fields }
   end
 end

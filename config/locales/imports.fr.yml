@@ -4,6 +4,7 @@ fr:
     filters:
       referential: "Sélectionnez un jeu de données..."
       name_or_creator_cont: "Indiquez un nom d'import ou d'opérateur..."
+      name: "Indiquez un nom d'import..."
       error_period_filter: "La date de fin doit être supérieure ou égale à la date de début"
     actions:
       new: "Nouvel import"

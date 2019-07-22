@@ -37,7 +37,7 @@
               ), \
               TableBuilderHelper::Column.new( \
                 key: :export_type, \
-                attribute: 'export_type', \
+                attribute: ->(p){ p.new_export.human_name}, \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :destinations, \

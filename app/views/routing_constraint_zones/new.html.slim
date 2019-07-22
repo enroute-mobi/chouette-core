@@ -22,14 +22,14 @@
                     .wrapper
                       div
                         .form-group
-                          label.control-label 
-                            = t('.stop_area')
-                      div
-                        .form-group
-                          label.control-label 
-                            = t('.city')
+                          label.control-label= Chouette::StopArea.tmf(:name)
+                      - referential.stop_area_referential.enabled_stops_selection_displayed_fields.each do |f|
+                        div
+                          .form-group
+                            label.control-label= StopAreaReferential.tmf(f)
                       div
                   .nested-fields#stop_points
+                    = render( partial: 'routing_constraint_zones/stop_points', locals: { routing_constraint_zone: @routing_constraint_zone, stop_points: @routing_constraint_zone.route&.stop_points || [] } )
 
               = cancel_button
               = form.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'itl_form'

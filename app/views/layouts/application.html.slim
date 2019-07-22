@@ -6,15 +6,12 @@ html lang=I18n.locale
 
     - if @referential.present? && policy(@referential).show?
       meta name="referential_state" content="#{@referential.state}"
-    - if @workbench.present?
-      meta name="current_workbench_notifications_channel" content="#{@workbench.notifications_channel}"
-    - if @workbenches.present?
-      - @workbenches.each do |workbench|
-        meta name="current_workbench_notifications_channel" content="#{workbench.notifications_channel}"
+    - (current_user&.workbenches&.uniq || []).each do |workbench|
+      meta name="current_workbench_notifications_channel" content="#{workbench.notifications_channel}"
 
     = csrf_meta_tag
 
-    title = t('brandname')
+    title = page_title
 
     = favicon_link_tag
 

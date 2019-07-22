@@ -26,7 +26,7 @@ class CleanUp < ApplicationModel
     where(referential_id: referential.id)
   end
 
-  attr_accessor :methods, :original_state
+  attr_accessor :clean_methods, :original_state
 
   def end_date_must_be_greater_that_begin_date
     if self.end_date && needs_both_dates? && self.begin_date >= self.end_date
@@ -39,7 +39,7 @@ class CleanUp < ApplicationModel
   end
 
   def perform_cleanup
-    raise "You cannot specify methods (#{methods.inspect}) if you call the CleanUp asynchronously" unless methods.blank?
+    raise "You cannot specify methods (#{clean_methods.inspect}) if you call the CleanUp asynchronously" unless clean_methods.blank?
 
     original_state ||= referential.state
     referential.pending!
@@ -64,7 +64,7 @@ class CleanUp < ApplicationModel
   end
 
   def run_methods
-    (methods || []).each { |method| send(method) }
+    (clean_methods || []).each { |method| send(method) }
     data_cleanups.each { |method| send(method) }
   end
 

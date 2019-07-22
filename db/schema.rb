@@ -10,7 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_01_141524) do
+
+ActiveRecord::Schema.define(version: 2019_07_18_150421) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -101,7 +102,7 @@ ActiveRecord::Schema.define(version: 2019_07_01_141524) do
     t.string "name"
     t.daterange "date_ranges", array: true
     t.date "dates", array: true
-    t.boolean "shared", default: true
+    t.boolean "shared", default: false
     t.bigint "organisation_id"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -223,8 +224,8 @@ ActiveRecord::Schema.define(version: 2019_07_01_141524) do
     t.bigint "compliance_control_set_id"
     t.bigint "workbench_id"
     t.string "status"
-    t.string "parent_type"
     t.bigint "parent_id"
+    t.string "parent_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "current_step_id"
@@ -1105,10 +1106,10 @@ ActiveRecord::Schema.define(version: 2019_07_01_141524) do
 
   create_table "taggings", force: :cascade do |t|
     t.bigint "tag_id"
-    t.string "taggable_type"
     t.bigint "taggable_id"
-    t.string "tagger_type"
+    t.string "taggable_type"
     t.bigint "tagger_id"
+    t.string "tagger_type"
     t.string "context", limit: 128
     t.datetime "created_at"
     t.index ["context"], name: "index_taggings_on_context"

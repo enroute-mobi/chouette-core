@@ -11,12 +11,9 @@ describe Chouette::Line, :type => :model do
 
   it "validates that transport mode and submode are matching" do
     subject.transport_mode = "bus"
-    subject.transport_submode = nil
+    subject.transport_submode = 'undefined'
 
     # BUS -> no submode = OK
-    expect(subject).to be_valid
-
-    subject.transport_submode = ""
     expect(subject).to be_valid
 
     # BUS -> bus specific submode = OK

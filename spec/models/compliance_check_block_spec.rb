@@ -7,7 +7,7 @@ RSpec.describe ComplianceCheckBlock, type: :model do
 
   it "validates that condition_attributes are consistent" do
     subject.transport_mode = "bus"
-    subject.transport_submode = nil
+    subject.transport_submode = 'undefined'
     subject.block_kind = nil
 
     # No block_kind => KO

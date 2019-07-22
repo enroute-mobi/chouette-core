@@ -11,6 +11,7 @@ FactoryGirl.define do
     association :company, :factory => :company
 
     transport_mode "bus"
+    transport_submode "undefined"
 
     before(:create) do |line|
       line.line_referential ||= LineReferential.find_by! name: "first"

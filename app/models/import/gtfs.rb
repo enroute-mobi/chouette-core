@@ -153,6 +153,8 @@ class Import::Gtfs < Import::Base
                                 'funicular'
                               end
 
+        line.transport_submode = 'undefined'
+
         # White is the default color in the gtfs spec
         line.color = parse_color route.color
         # Black is the default text color in the gtfs spec

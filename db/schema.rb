@@ -10,8 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-
-ActiveRecord::Schema.define(version: 2019_07_18_150421) do
+ActiveRecord::Schema.define(version: 2019_07_23_092252) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -323,6 +322,7 @@ ActiveRecord::Schema.define(version: 2019_07_18_150421) do
     t.integer "mobility_restricted_traveller_duration"
     t.jsonb "custom_field_values", default: {}
     t.index ["objectid"], name: "connection_links_objectid_key", unique: true
+    t.index ["stop_area_referential_id", "departure_id", "arrival_id", "both_ways"], name: "connection_links_compound"
     t.index ["stop_area_referential_id"], name: "index_connection_links_on_stop_area_referential_id"
   end
 

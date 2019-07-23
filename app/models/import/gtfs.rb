@@ -88,36 +88,52 @@ class Import::Gtfs < Import::Base
 
   def import_stops
     sorted_stops = source.stops.sort_by { |s| s.parent_station.present? ? 1 : 0 }
-    @stop_areas_id_by_registration_number = {}
-    Chouette::StopArea.within_workgroup(workgroup) do
-      create_resource(:stops).each(sorted_stops, slice: 100, transaction: true) do |stop, resource|
-        stop_area = stop_area_referential.stop_areas.find_or_initialize_by(registration_number: stop.id)
+    existing_stops = stop_area_referential.stop_areas.pluck(:registration_number)
+    Chouette::StopArea.bulk_insert do |worker|
+      Chouette::StopArea.within_workgroup(workgroup) do
+        Chouette::StopArea.skipping_objectid_uniqueness do
+          create_resource(:stops).each(sorted_stops, slice: 100, transaction: true) do |stop, resource|
+            stop_area = if existing_stops.include?(stop.id)
+              stop_area_referential.stop_areas.find_by(registration_number: stop.id)
+            else
+              stop_area_referential.stop_areas.build(registration_number: stop.id)
+            end
 
-        stop_area.name = stop.name
-        stop_area.area_type = stop.location_type == '1' ? :zdlp : :zdep
-        stop_area.latitude = stop.lat && BigDecimal(stop.lat)
-        stop_area.longitude = stop.lon && BigDecimal(stop.lon)
-        stop_area.kind = :commercial
-        stop_area.deleted_at = nil
-        stop_area.confirmed_at ||= Time.now
-        stop_area.comment = stop.desc
+            stop_area.name = stop.name
+            stop_area.area_type = stop.location_type == '1' ? :zdlp : :zdep
+            stop_area.latitude = stop.lat && BigDecimal(stop.lat)
+            stop_area.longitude = stop.lon && BigDecimal(stop.lon)
+            stop_area.kind = :commercial
+            stop_area.deleted_at = nil
+            stop_area.confirmed_at ||= Time.now
+            stop_area.comment = stop.desc
 
-        if stop.parent_station.present?
-          if check_parent_is_valid_or_create_message(Chouette::StopArea, stop.parent_station, resource)
-            parent = find_stop_parent_or_create_message(stop.name, stop.parent_station, resource)
-            stop_area.parent = parent
-            stop_area.time_zone = parent.try(:time_zone)
+            if stop.parent_station.present?
+              if check_parent_is_valid_or_create_message(Chouette::StopArea, stop.parent_station, resource)
+                parent = find_stop_parent_or_create_message(stop.name, stop.parent_station, resource, existing_stops)
+                stop_area.parent = parent
+                stop_area.time_zone = parent.try(:time_zone)
+              end
+            elsif stop.timezone.present?
+              stop_area.time_zone = check_time_zone_or_create_message(stop.timezone, resource)
+            else
+              stop_area.time_zone = @default_time_zone
+            end
+
+            if stop_area.new_record?
+              @objectid_formatter ||= Chouette::ObjectidFormatter.for_objectid_provider(StopAreaReferential, id: stop_area_referential.id)
+              stop_area.objectid = @objectid_formatter.objectid(stop_area)
+              worker.add stop_area.attributes
+            else
+              save_model stop_area, resource: resource
+            end
+            existing_stops << stop_area.registration_number
           end
-        elsif stop.timezone.present?
-          stop_area.time_zone = check_time_zone_or_create_message(stop.timezone, resource)
-        else
-          stop_area.time_zone = @default_time_zone
         end
-
-        save_model stop_area, resource: resource
-        @stop_areas_id_by_registration_number[stop_area.registration_number] = stop_area.id
       end
     end
+    @stop_areas_id_by_registration_number = stop_area_referential.stop_areas.pluck(:registration_number, :id).to_h
+
   end
 
   def lines_by_registration_number(registration_number)
@@ -173,68 +189,77 @@ class Import::Gtfs < Import::Base
 
   def import_transfers
     @trips = {}
-    create_resource(:transfers).each(source.transfers, slice: 100, transaction: true) do |transfer, resource|
-      next unless transfer.type == '2'
-      from_id = @stop_areas_id_by_registration_number[transfer.from_stop_id]
-      unless from_id
-        create_message(
-          {
-            criticity: :error,
-            message_key: 'gtfs.transfers.missing_stop_id',
-            message_attributes: { stop_id: transfer.from_stop_id },
-            resource_attributes: {
-              filename: "#{resource.name}.txt",
-              line_number: resource.rows_count,
-              column_number: 0
-            }
-          },
-          resource: resource,
-          commit: true
-        )
-        next
-      end
-      to_id = @stop_areas_id_by_registration_number[transfer.to_stop_id]
-      unless to_id
-        create_message(
-          {
-            criticity: :error,
-            message_key: 'gtfs.transfers.missing_stop_id',
-            message_attributes: { stop_id: transfer.to_stop_id },
-            resource_attributes: {
-              filename: "#{resource.name}.txt",
-              line_number: resource.rows_count,
-              column_number: 0
-            }
-          },
-          resource: resource,
-          commit: true
-        )
-        next
-      end
+    Chouette::ConnectionLink.bulk_insert do |worker|
+      Chouette::ConnectionLink.within_workgroup(workgroup) do
+        create_resource(:transfers).each do |transfer, resource|
+          next unless transfer.type == '2'
+          from_id = @stop_areas_id_by_registration_number[transfer.from_stop_id]
+          unless from_id
+            create_message(
+              {
+                criticity: :error,
+                message_key: 'gtfs.transfers.missing_stop_id',
+                message_attributes: { stop_id: transfer.from_stop_id },
+                resource_attributes: {
+                  filename: "#{resource.name}.txt",
+                  line_number: resource.rows_count,
+                  column_number: 0
+                }
+              },
+              resource: resource,
+              commit: true
+            )
+            next
+          end
+          to_id = @stop_areas_id_by_registration_number[transfer.to_stop_id]
+          unless to_id
+            create_message(
+              {
+                criticity: :error,
+                message_key: 'gtfs.transfers.missing_stop_id',
+                message_attributes: { stop_id: transfer.to_stop_id },
+                resource_attributes: {
+                  filename: "#{resource.name}.txt",
+                  line_number: resource.rows_count,
+                  column_number: 0
+                }
+              },
+              resource: resource,
+              commit: true
+            )
+            next
+          end
 
-      connection = referential.stop_area_referential.connection_links.find_by(departure_id: from_id, arrival_id: to_id, both_ways: true)
-      connection ||= referential.stop_area_referential.connection_links.find_or_initialize_by(departure_id: to_id, arrival_id: from_id, both_ways: true)
-      if transfer.min_transfer_time.present?
-        connection.default_duration = transfer.min_transfer_time
-        if [:frequent_traveller_duration, :occasional_traveller_duration,
-          :mobility_restricted_traveller_duration].any? { |k| connection.send(k).present? }
-          create_message(
-            {
-              criticity: :warning,
-              message_key: 'gtfs.transfers.replacing_duration',
-              message_attributes: { from_id: transfer.from_stop_id, to_id: transfer.to_stop_id },
-              resource_attributes: {
-                filename: "#{resource.name}.txt",
-                line_number: resource.rows_count,
-                column_number: 0
-              }
-            },
-            resource: resource,
-            commit: true
-          )
+          connection = referential.stop_area_referential.connection_links.find_or_initialize_by(departure_id: to_id, arrival_id: from_id, both_ways: true)
+          if transfer.min_transfer_time.present?
+            connection.default_duration = transfer.min_transfer_time
+            if [:frequent_traveller_duration, :occasional_traveller_duration,
+              :mobility_restricted_traveller_duration].any? { |k| connection.send(k).present? }
+              create_message(
+                {
+                  criticity: :warning,
+                  message_key: 'gtfs.transfers.replacing_duration',
+                  message_attributes: { from_id: transfer.from_stop_id, to_id: transfer.to_stop_id },
+                  resource_attributes: {
+                    filename: "#{resource.name}.txt",
+                    line_number: resource.rows_count,
+                    column_number: 0
+                  }
+                },
+                resource: resource,
+                commit: true
+              )
+            end
+          end
+          if connection.new_record?
+            @objectid_formatter ||= Chouette::ObjectidFormatter.for_objectid_provider(StopAreaReferential, id: referential.stop_area_referential_id)
+            connection.objectid = @objectid_formatter.objectid(connection)
+            worker.add connection.attributes
+          else
+            save_model connection, resource: resource
+          end
         end
       end
-      save_model connection, resource: resource
     end
   end
 
@@ -525,7 +550,7 @@ class Import::Gtfs < Import::Base
             time_table.send("#{day}=", calendar.send(day))
           end
           if calendar.start_date == calendar.end_date
-            time_table.dates.build date: calendar.start_date, in_out: true, skip_uniqueness_validation: true
+            time_table.dates.build date: calendar.start_date, in_out: true
           else
             time_table.periods.build period_start: calendar.start_date, period_end: calendar.end_date
           end
@@ -582,8 +607,8 @@ class Import::Gtfs < Import::Base
     end
   end
 
-  def find_stop_parent_or_create_message(stop_area_name, parent_station, resource)
-    parent = stop_area_referential.stop_areas.find_by(registration_number: parent_station)
+  def find_stop_parent_or_create_message(stop_area_name, parent_station, resource, existing_stops)
+    parent = stop_area_referential.stop_areas.find_by(registration_number: parent_station) if existing_stops.include?(parent_station)
     unless parent
       create_message(
         {

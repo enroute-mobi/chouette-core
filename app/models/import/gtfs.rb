@@ -89,10 +89,12 @@ class Import::Gtfs < Import::Base
   def import_stops
     sorted_stops = source.stops.sort_by { |s| s.parent_station.present? ? 1 : 0 }
     existing_stops = stop_area_referential.stop_areas.pluck(:registration_number)
+    @parent_stop_areas_id_by_registration_number = nil
+    @stop_areas_tz_by_registration_number = {}
     Chouette::StopArea.bulk_insert do |worker|
       Chouette::StopArea.within_workgroup(workgroup) do
         Chouette::StopArea.skipping_objectid_uniqueness do
-          create_resource(:stops).each(sorted_stops, slice: 100, transaction: true) do |stop, resource|
+          resource = create_resource(:stops).each(sorted_stops, slice: 100, transaction: true) do |stop, resource|
             stop_area = if existing_stops.include?(stop.id)
               stop_area_referential.stop_areas.find_by(registration_number: stop.id)
             else
@@ -109,15 +111,19 @@ class Import::Gtfs < Import::Base
             stop_area.comment = stop.desc
 
             if stop.parent_station.present?
+              @parent_stop_areas_id_by_registration_number ||= stop_area_referential.stop_areas.pluck(:registration_number, :id).to_h
+
               if check_parent_is_valid_or_create_message(Chouette::StopArea, stop.parent_station, resource)
-                parent = find_stop_parent_or_create_message(stop.name, stop.parent_station, resource, existing_stops)
-                stop_area.parent = parent
-                stop_area.time_zone = parent.try(:time_zone)
+                parent_id = find_stop_parent_or_create_message(stop.name, stop.parent_station, resource)
+                stop_area.parent_id = parent_id
+                stop_area.time_zone = @stop_areas_tz_by_registration_number[stop.parent_station]
               end
             elsif stop.timezone.present?
               stop_area.time_zone = check_time_zone_or_create_message(stop.timezone, resource)
+              @stop_areas_tz_by_registration_number[stop_area.registration_number] = stop_area.time_zone
             else
               stop_area.time_zone = @default_time_zone
+              @stop_areas_tz_by_registration_number[stop_area.registration_number] = stop_area.time_zone
             end
 
             if stop_area.new_record?
@@ -129,6 +135,7 @@ class Import::Gtfs < Import::Base
             end
             existing_stops << stop_area.registration_number
           end
+          resource.save!
         end
       end
     end
@@ -189,9 +196,15 @@ class Import::Gtfs < Import::Base
 
   def import_transfers
     @trips = {}
+    existing_connection = nil
+
+    if stop_area_referential.connection_links.count < 10000
+      existing_connection = stop_area_referential.connection_links.pluck(:departure_id, :arrival_id)
+    end
+
     Chouette::ConnectionLink.bulk_insert do |worker|
       Chouette::ConnectionLink.within_workgroup(workgroup) do
-        create_resource(:transfers).each do |transfer, resource|
+        resource = create_resource(:transfers).each do |transfer, resource|
           next unless transfer.type == '2'
           from_id = @stop_areas_id_by_registration_number[transfer.from_stop_id]
           unless from_id
@@ -206,8 +219,7 @@ class Import::Gtfs < Import::Base
                   column_number: 0
                 }
               },
-              resource: resource,
-              commit: true
+              resource: resource
             )
             next
           end
@@ -224,13 +236,17 @@ class Import::Gtfs < Import::Base
                   column_number: 0
                 }
               },
-              resource: resource,
-              commit: true
+              resource: resource
             )
             next
           end
 
-          connection = referential.stop_area_referential.connection_links.find_or_initialize_by(departure_id: to_id, arrival_id: from_id, both_ways: true)
+          # we try to speed up things when we are working in a new environment
+          if existing_connection.nil? || existing_connection.include?([to_id, from_id])
+            connection = referential.stop_area_referential.connection_links.find_or_initialize_by(departure_id: to_id, arrival_id: from_id, both_ways: true)
+          else
+            connection = referential.stop_area_referential.connection_links.build(departure_id: to_id, arrival_id: from_id, both_ways: true)
+          end
           if transfer.min_transfer_time.present?
             connection.default_duration = transfer.min_transfer_time
             if [:frequent_traveller_duration, :occasional_traveller_duration,
@@ -246,8 +262,7 @@ class Import::Gtfs < Import::Base
                     column_number: 0
                   }
                 },
-                resource: resource,
-                commit: true
+                resource: resource
               )
             end
           end
@@ -259,6 +274,7 @@ class Import::Gtfs < Import::Base
             save_model connection, resource: resource
           end
         end
+        resource.save!
       end
     end
   end
@@ -599,7 +615,7 @@ class Import::Gtfs < Import::Base
   def import_missing_checksums
     Chouette::JourneyPattern.within_workgroup(workgroup) do
       Chouette::VehicleJourney.within_workgroup(workgroup) do
-        update_checkum_in_batches referential.vehicle_journey_at_stops.select(:id, :departure_time, :arrival_time, :departure_day_offset, :arrival_day_offset)
+
         update_checkum_in_batches referential.routes.select(:id, :name, :published_name, :wayback).includes(:stop_points, :routing_constraint_zones)
         update_checkum_in_batches referential.journey_patterns.select(:id, :custom_field_values, :name, :published_name, :registration_number, :costs).includes(:stop_points)
         update_checkum_in_batches referential.vehicle_journeys.select(:id, :custom_field_values, :published_journey_name, :published_journey_identifier, :ignored_routing_contraint_zone_ids, :ignored_stop_area_routing_constraint_ids, :company_id, :line_notice_ids).includes(:company_light, :footnotes, :vehicle_journey_at_stops, :purchase_windows)
@@ -607,8 +623,8 @@ class Import::Gtfs < Import::Base
     end
   end
 
-  def find_stop_parent_or_create_message(stop_area_name, parent_station, resource, existing_stops)
-    parent = stop_area_referential.stop_areas.find_by(registration_number: parent_station) if existing_stops.include?(parent_station)
+  def find_stop_parent_or_create_message(stop_area_name, parent_station, resource)
+    parent = @parent_stop_areas_id_by_registration_number[parent_station]
     unless parent
       create_message(
         {
@@ -624,7 +640,7 @@ class Import::Gtfs < Import::Base
             column_number: 0
           }
         },
-        resource: resource, commit: true
+        resource: resource
       )
     end
     return parent
@@ -647,7 +663,7 @@ class Import::Gtfs < Import::Base
             column_number: 0
           }
         },
-        resource: resource, commit: true
+        resource: resource
       )
     end
     return time_zone

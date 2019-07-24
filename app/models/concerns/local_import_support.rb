@@ -10,7 +10,15 @@ module LocalImportSupport
 
   module ClassMethods
     def profile(filepath, profile_options={})
-      import = self.new(creator: 'Profiler', workbench: Workbench.first)
+      if profile_options[:new_workbench]
+        subscription = Subscription.new organisation_name: Faker::Company.name, user_name: Faker::Name.name, email:  Faker::Internet.email, password: 'xxxxxxxx', password_confirmation: 'xxxxxxxx'
+        subscription.save
+        
+        workbench = subscription.workgroup.workbenches.last
+      else
+        workbench = Workbench.first
+      end
+      import = self.new(creator: 'Profiler', workbench: workbench)
       import.file = File.open(filepath)
       import.profile = true
       import.profile_options = profile_options

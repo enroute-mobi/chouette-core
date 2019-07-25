@@ -10,8 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-
-ActiveRecord::Schema.define(version: 2019_07_18_150421) do
+ActiveRecord::Schema.define(version: 2019_07_25_093653) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -1022,8 +1021,8 @@ ActiveRecord::Schema.define(version: 2019_07_18_150421) do
     t.datetime "updated_at"
     t.string "objectid_format"
     t.string "registration_number_format"
-    t.jsonb "stops_selection_displayed_fields", default: {"objectid"=>true}
-    t.jsonb "locales", default: [{"code"=>"en_UK", "default"=>true}, {"code"=>"fr_FR", "default"=>true}]
+    t.jsonb "locales", default: [{"code"=>"fr_FR", "default"=>true}, {"code"=>"en_UK", "default"=>true}, {"code"=>"nl_NL", "default"=>true}, {"code"=>"es_ES", "default"=>true}, {"code"=>"it_IT", "default"=>true}, {"code"=>"de_DE", "default"=>true}], array: true
+    t.jsonb "stops_selection_displayed_fields", default: {"local_id"=>true}
   end
 
   create_table "stop_area_routing_constraints", force: :cascade do |t|
@@ -1306,6 +1305,7 @@ ActiveRecord::Schema.define(version: 2019_07_18_150421) do
     t.datetime "nightly_aggregated_at"
     t.datetime "aggregated_at"
     t.string "nightly_aggregate_notification_target", default: "none"
+    t.datetime "deleted_at"
   end
 
   add_foreign_key "access_links", "access_points", name: "aclk_acpt_fkey"

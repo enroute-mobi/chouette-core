@@ -292,7 +292,7 @@ class Import::Gtfs < Import::Base
       trip = _trip if _trip.id == trip_id
 
       @trips[_trip.id] = _trip if trip
-      return trip if @trips.size >= 100
+      return trip if @trips.size >= 10000
     end
 
     trip

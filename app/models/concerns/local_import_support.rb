@@ -13,7 +13,7 @@ module LocalImportSupport
       if profile_options[:new_workbench]
         subscription = Subscription.new organisation_name: Faker::Company.name, user_name: Faker::Name.name, email:  Faker::Internet.email, password: 'xxxxxxxx', password_confirmation: 'xxxxxxxx'
         subscription.save
-        
+
         workbench = subscription.workgroup.workbenches.last
       else
         workbench = Workbench.first
@@ -246,7 +246,7 @@ module LocalImportSupport
         return
       end
 
-      Rails.logger.debug "Created #{model.inspect}"
+      # Rails.logger.debug "Created #{model.inspect}"
     end
   end
 

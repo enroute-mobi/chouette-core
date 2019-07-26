@@ -149,7 +149,7 @@ class Import::Gtfs < Import::Base
   end
 
   def import_routes
-    Chouette::Company.within_workgroup(workgroup) do
+      Chouette::Company.within_workgroup(workgroup) do
       create_resource(:routes).each(source.routes, transaction: true) do |route, resource|
         if route.agency_id.present?
           next unless check_parent_is_valid_or_create_message(Chouette::Company, route.agency_id, resource)
@@ -195,7 +195,6 @@ class Import::Gtfs < Import::Base
   end
 
   def import_transfers
-    @trips = {}
     existing_connection = nil
 
     if stop_area_referential.connection_links.count < 10000
@@ -286,6 +285,7 @@ class Import::Gtfs < Import::Base
     @trips ||= {}
     return @trips[trip_id] if @trips[trip_id]
 
+    Rails.logger.info "import.stop_times.process_trip.preparation.get_trip LOAD NEW PAGE (trip_id: #{trip_id})"
     @trips = {}
     trip = nil
     source.each_trip do |_trip|
@@ -304,6 +304,7 @@ class Import::Gtfs < Import::Base
         to_be_saved = []
         stop_points_with_times = vehicle_journey = journey_pattern = route = nil
         stop_points = []
+        route = journey_pattern = vehicle_journey = nil
         profile_tag 'preparation' do
 
           trip = profile_tag 'get_trip' do
@@ -313,6 +314,22 @@ class Import::Gtfs < Import::Base
           line, route = nil
           profile_tag 'build_models' do
             line = line_referential.lines.find_by registration_number: trip.route_id
+            unless line
+              create_message(
+                {
+                  criticity: :warning,
+                  message_key: 'gtfs.trips.unknown_route_id',
+                  message_attributes: { route_id: trip.route_id },
+                  resource_attributes: {
+                    filename: "#{resource.name}.txt",
+                    line_number: resource.rows_count,
+                    column_number: 0
+                  }
+                },
+                resource: resource
+              )
+              return
+            end
             route = referential.routes.build line: line
             route.wayback = (trip.direction_id == '0' ? :outbound : :inbound)
             name = route.published_name = trip.headsign.presence || trip.short_name.presence || route.wayback.to_s.capitalize
@@ -341,9 +358,29 @@ class Import::Gtfs < Import::Base
 
           profile_tag 'save_models' do
             ApplicationModel.skipping_objectid_uniqueness do
-              to_be_saved.each do |model|
-                save_model model, resource: resource
+              # to_be_saved.each do |model|
+              @objectid_formatter ||= Chouette::ObjectidFormatter.for_objectid_provider(StopAreaReferential, id: stop_area_referential.id)
+              route.objectid = @objectid_formatter.objectid(route)
+              journey_pattern.objectid = @objectid_formatter.objectid(journey_pattern)
+              vehicle_journey.objectid = @objectid_formatter.objectid(vehicle_journey)
+
+              Chouette::Route.bulk_insert do |worker|
+                worker.add route.attributes
               end
+              route = Chouette::Route.last
+              vehicle_journey.route_id = journey_pattern.route_id = route.id
+
+              Chouette::JourneyPattern.bulk_insert do |worker|
+                worker.add journey_pattern.attributes
+              end
+              journey_pattern = Chouette::JourneyPattern.last
+
+              vehicle_journey.journey_pattern_id = journey_pattern.id
+              Chouette::VehicleJourney.bulk_insert do |worker|
+                worker.add vehicle_journey.attributes
+              end
+              vehicle_journey = Chouette::VehicleJourney.last
+              # save_model model, resource: resource
             end
           end
 
@@ -362,8 +399,7 @@ class Import::Gtfs < Import::Base
                   column_number: 0
                 }
               },
-              resource: resource,
-              commit: true
+              resource: resource
             )
           end
 

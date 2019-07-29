@@ -115,8 +115,10 @@ class Import::Gtfs < Import::Base
               stop_area.comment = stop.desc
 
               if stop.parent_station.present?
-                @parent_stop_areas_id_by_registration_number ||= stop_area_referential.stop_areas.pluck(:registration_number, :id).to_h
-
+                @parent_stop_areas_id_by_registration_number ||= begin
+                  worker.save!
+                  stop_area_referential.stop_areas.pluck(:registration_number, :id).to_h
+                end
                 if check_parent_is_valid_or_create_message(Chouette::StopArea, stop.parent_station, resource)
                   parent_id = find_stop_parent_or_create_message(stop.name, stop.parent_station, resource)
                   stop_area.parent_id = parent_id
@@ -133,7 +135,7 @@ class Import::Gtfs < Import::Base
               if stop_area.new_record?
                 @objectid_formatter ||= Chouette::ObjectidFormatter.for_objectid_provider(StopAreaReferential, id: stop_area_referential.id)
                 stop_area.objectid = @objectid_formatter.objectid(stop_area)
-                worker.add stop_area.attributes
+                worker.add stop_area.attributes if validate_model(stop_area, resource: resource)
               else
                 save_model stop_area, resource: resource
               end
@@ -377,6 +379,12 @@ class Import::Gtfs < Import::Base
                 worker.add route.attributes
               end
               route = Chouette::Route.last
+
+              if @has_tomtom_features.nil?
+                @has_tomtom_features = route.has_tomtom_features?
+              end
+              route.calculate_costs! if @has_tomtom_features
+
               vehicle_journey.route_id = journey_pattern.route_id = route.id
 
               Chouette::JourneyPattern.bulk_insert do |worker|
@@ -506,6 +514,8 @@ class Import::Gtfs < Import::Base
 
     Chouette::VehicleJourney.within_workgroup(workgroup) do
       Chouette::JourneyPattern.within_workgroup(workgroup) do
+        return if profile? && Chouette::VehicleJourneyAtStop.count > 1000000
+
         resource = create_resource(:stop_times)
         resource.each(
           transaction: true,

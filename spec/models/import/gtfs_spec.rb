@@ -218,7 +218,7 @@ RSpec.describe Import::Gtfs do
         Chouette::StopArea.find_by!(registration_number: parent_gtfs_stop.id)
       end
 
-      it 'should create an error message if the parent is inexistant' do
+      it 'should create no error message if the parent is present' do
         expect { import.import_stops }.to change { Import::Message.count }.by(0)
                                             .and(change { Chouette::StopArea.count }.by(2))
         expect(child_stop_area.parent).to eq(parent_stop_area)
@@ -577,7 +577,7 @@ RSpec.describe Import::Gtfs do
 
     context 'when one timetable is in error' do
       before(:each) do
-        allow(import.source).to receive(:calendars) {
+        allow(import.source).to receive(:each_calendar) do |&block|
           [
             GTFS::Calendar.new(
               service_id: 'FULLW-ERR',
@@ -603,10 +603,10 @@ RSpec.describe Import::Gtfs do
               start_date: '20070101',
               end_date: '20101231'
             )
-          ]
-        }
+          ].each &block
+        end
 
-        allow(import.source).to receive(:calendar_dates) {
+        allow(import.source).to receive(:each_calendar_date) do |&block|
           [
             GTFS::CalendarDate.new(
               service_id: 'FULLW',
@@ -618,8 +618,8 @@ RSpec.describe Import::Gtfs do
               date: '20070604',
               exception_type: '2'
             )
-          ]
-        }
+          ].each &block
+        end
       end
 
       it 'should not create a Timetables' do

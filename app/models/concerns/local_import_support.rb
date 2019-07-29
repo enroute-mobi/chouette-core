@@ -198,18 +198,10 @@ module LocalImportSupport
     end
   end
 
-  def save_model(model, filename: nil, line_number:  nil, column_number: nil, resource: nil)
-    profile_tag "save_model.#{model.class.name}" do
-      return unless model.changed?
-
-      if resource
-        filename ||= "#{resource.name}.txt"
-        line_number ||= resource.rows_count
-        column_number ||= 0
-      end
-
-      unless model.save
-        Rails.logger.error "Can't save #{model.class.name} : #{model.errors.inspect}"
+  def validate_model(model, filename: nil, line_number:  nil, column_number: nil, resource: nil)
+    profile_tag "validate_model.#{model.class.name}" do
+      unless model.valid?
+        Rails.logger.error "Invalid model #{model.class.name} : #{model.errors.inspect}"
 
         # if the model cannot be saved, we still ensure we store a consistent checksum
         model.try(:update_checksum_without_callbacks!) if model.persisted?
@@ -240,14 +232,26 @@ module LocalImportSupport
             end
           end
         end
-        @models_in_error ||= Hash.new { |hash, key| hash[key] = [] }
-        @models_in_error[model.class.name] << model_key(model)
+        add_model_in_error model
         @status = "failed"
-        return
+        return false
       end
 
-      # Rails.logger.debug "Created #{model.inspect}"
+      true
     end
+  end
+
+  def save_model(model, filename: nil, line_number:  nil, column_number: nil, resource: nil)
+    profile_tag "save_model.#{model.class.name}" do
+      return unless model.changed?
+
+      validate_model(model, filename: filename, line_number:  line_number, column_number: column_number, resource: resource) && model.save
+    end
+  end
+
+  def add_model_in_error(model)
+    @models_in_error ||= Hash.new { |hash, key| hash[key] = [] }
+    @models_in_error[model.class.name] << model_key(model)
   end
 
   def check_parent_is_valid_or_create_message(klass, key, resource)

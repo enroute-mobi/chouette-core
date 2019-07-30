@@ -381,7 +381,7 @@ class Import::Gtfs < Import::Base
               route = Chouette::Route.last
 
               if @has_tomtom_features.nil?
-                @has_tomtom_features = route.has_tomtom_features?
+                @has_tomtom_features = route.send :has_tomtom_features?
               end
               route.calculate_costs! if @has_tomtom_features
 
@@ -514,7 +514,6 @@ class Import::Gtfs < Import::Base
 
     Chouette::VehicleJourney.within_workgroup(workgroup) do
       Chouette::JourneyPattern.within_workgroup(workgroup) do
-        return if profile? && Chouette::VehicleJourneyAtStop.count > 1000000
 
         resource = create_resource(:stop_times)
         resource.each(
@@ -522,6 +521,8 @@ class Import::Gtfs < Import::Base
           skip_checksums: true,
           memory_profile: -> { "Import stop times from #{rows_count}" }
         ) do |stop_time, resource|
+          raise if profile? && Chouette::VehicleJourneyAtStop.count > 1000000
+
           trip_id = stop_time.trip_id
 
           prev_trip_id ||= trip_id

@@ -89,7 +89,7 @@ end
 
 Delayed::Worker.plugins << AutoKillPlugin
 
-Delayed::Worker.max_run_time = 10.hours
+Delayed::Worker.max_run_time = 14.hours
 
 Delayed::Worker.logger = Logger.new(File.join(Rails.root, 'log', 'delayed_job.log'))
 

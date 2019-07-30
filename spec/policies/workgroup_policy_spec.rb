@@ -44,8 +44,14 @@ RSpec.describe WorkgroupPolicy, type: :policy do
       it "should not allow for destroy" do
         expect_it.not_to permit(user_context, record)
       end
+
+      context "with the permission" do
+        it "should allow for destroy" do
+          add_permissions('workgroups.destroy', to_user: user)
+          expect_it.to permit(user_context, record)
+        end
+      end
     end
   end
-
 
 end

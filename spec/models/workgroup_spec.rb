@@ -133,4 +133,34 @@ RSpec.describe Workgroup, type: :model do
       end
     end
   end
+
+  describe "when a workgroup is purged" do
+    let!(:workgroup) { create(:workgroup) }
+    let!(:workbench) { create(:workbench, workgroup: workgroup) }
+    let!(:new_referential) { create(:referential, organisation: workbench.organisation, workbench: workbench) }
+    let!(:field){ create(:custom_field, workgroup: workgroup) }
+    let!(:publication_api) { create(:publication_api, workgroup: workgroup) }
+    let!(:publication_setup) { create(:publication_setup, workgroup: workgroup)}
+    let!(:calendar) { create(:calendar, workgroup: workgroup)}
+
+
+    let!(:line) { create(:line, line_referential: referential.line_referential) }
+    let!(:route) { create(:route, line: line)}
+    let!(:journey_pattern) { create(:journey_pattern, route: route) }
+
+
+    it "should cascade destroy every related object" do
+      Workgroup.purge workgroup.id
+
+      # The schema that contains our deleted referential data should be destroyed (route, jp, timetables, etc)
+      expect(ActiveRecord::Base.connection.schema_names).not_to include(new_referential.slug)
+
+      expect(Chouette::Line.where(id: line.id).exists?).to be_truthy
+
+      [workgroup, workbench, new_referential, field, publication_api, publication_setup, calendar, new_referential].each do |record|
+        expect{record.reload}.to raise_error ActiveRecord::RecordNotFound
+      end
+    end
+
+  end
 end

@@ -5,6 +5,7 @@ RSpec.describe Workgroup, type: :model do
     let( :workgroup ){ build_stubbed :workgroup, line_referential_id: 53, stop_area_referential_id: 42 }
 
     it{ should have_many(:workbenches) }
+    it{ should validate_presence_of(:owner) }
     it{ should validate_uniqueness_of(:name) }
     it{ should validate_uniqueness_of(:stop_area_referential_id) }
     it{ should validate_uniqueness_of(:line_referential_id) }

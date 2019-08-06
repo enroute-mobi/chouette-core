@@ -279,8 +279,8 @@ describe Referential, :type => :model do
         cleanup
       end
 
-      it "should return nothing" do
-        expect(operation).to be_nil
+      it "should return the cleanup" do
+        expect(operation).to eq cleanup
       end
     end
   end

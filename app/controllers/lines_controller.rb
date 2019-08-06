@@ -67,6 +67,7 @@ class LinesController < ChouetteController
     authorize resource_class
     build_resource
     @line.transport_mode = Chouette::Line.sorted_transport_modes.first
+    @line.color = '#FFFFFF'
     super
   end
 

@@ -4,5 +4,6 @@ FactoryGirl.define do
     association :compliance_check_set
     block_kind :transport_mode
     transport_mode :bus
+    transport_submode 'undefined'
   end
 end

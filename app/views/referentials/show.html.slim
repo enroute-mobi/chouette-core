@@ -20,6 +20,8 @@
         .jumbotron
             = operation_status(operation.status)
             - url = operation.is_a?(Import::Base) ? [operation.workbench, operation.parent || operation] : [@referential, operation]
+            - url = operation.is_a?(Merge) ? [operation.workbench, operation] : url
+            - url = operation.is_a?(Aggregate) ? [operation.workgroup, operation] : url
             = link_to url do
               | &nbsp;
               span

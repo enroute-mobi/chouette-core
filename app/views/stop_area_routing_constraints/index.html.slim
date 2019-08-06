@@ -15,7 +15,7 @@
             TableBuilderHelper::Column.new( \
               key: :from_name, \
               attribute: lambda do |stop_area_routing_constraint| \
-                link_to stop_area_routing_constraint.from.name, [\
+                link_to stop_area_routing_constraint.from.formatted_selection_details.html_safe, [\
                   @stop_area_referential, \
                   stop_area_routing_constraint.from \
                 ] \
@@ -24,7 +24,7 @@
             TableBuilderHelper::Column.new( \
               key: :to_name, \
               attribute: lambda do |stop_area_routing_constraint| \
-                link_to stop_area_routing_constraint.to.name, [ \
+                link_to stop_area_routing_constraint.to.formatted_selection_details.html_safe, [ \
                   @stop_area_referential, \
                   stop_area_routing_constraint.to \
                 ] \

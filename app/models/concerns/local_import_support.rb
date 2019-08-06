@@ -10,11 +10,13 @@ module LocalImportSupport
 
   module ClassMethods
     def profile(filepath, profile_options={})
-      import = self.new(file: open(filepath), creator: 'Profiler', workbench: Workbench.first)
+      import = self.new(creator: 'Profiler', workbench: Workbench.first)
+      import.file = File.open(filepath)
       import.profile = true
       import.profile_options = profile_options
       import.name = "Profile #{File.basename(filepath)}"
       import.save!
+      import.reload
       if profile_options[:operations]
         if profile_options[:reuse_referential]
           r = if profile_options[:reuse_referential].is_a?(Referential)

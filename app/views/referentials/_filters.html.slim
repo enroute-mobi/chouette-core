@@ -22,5 +22,5 @@
         = f.input :company_id_eq_any, collection: company_ids, as: :check_boxes, label: false, label_method: lambda{|l| ("<span>#{Chouette::Company.find(l).name}</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list' }
 
   .actions
-    = link_to t('actions.erase'), @workbench, class: 'btn btn-link'
+    = link_to t('actions.erase'), referential_path(@referential), class: 'btn btn-link'
     = f.submit t('actions.filter'), class: 'btn btn-default'

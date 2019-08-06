@@ -490,17 +490,17 @@ RSpec.describe CleanUp, :type => :model do
   describe "#run_methods" do
     let(:cleaner) { create(:clean_up) }
 
-    it "calls methods in the :methods attribute" do
+    it "calls methods in the :clean_methods attribute" do
       cleaner = build(
         :clean_up,
-        methods: [:clean_routes_outside_referential]
+        clean_methods: [:clean_routes_outside_referential]
       )
 
       expect(cleaner).to receive(:clean_routes_outside_referential)
       cleaner.run_methods
     end
 
-    it "doesn't do anything if :methods is nil" do
+    it "doesn't do anything if :clean_methods is nil" do
       cleaner = create(:clean_up)
 
       expect { cleaner.run_methods }.not_to raise_error

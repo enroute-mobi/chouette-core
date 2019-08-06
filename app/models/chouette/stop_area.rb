@@ -211,7 +211,6 @@ module Chouette
       where is_referent: true
     end
 
-
     def to_lat_lng
       Geokit::LatLng.new(latitude, longitude) if latitude and longitude
     end
@@ -518,6 +517,24 @@ module Chouette
 
     def connection_links
       Chouette::ConnectionLink.where('departure_id = :id or arrival_id = :id', id: self.id)
+    end
+
+    # def full_name
+    #   "#{name} #{zip_code} #{city_name} - #{local_id}"
+    # end
+
+    def formatted_area_type
+      "<span class='small label label-info label-stoparea'>#{I18n.t("area_types.label.#{area_type}")}</span>"
+    end
+
+    def formatted_selection_details
+      out = ""
+      out << formatted_area_type if stop_area_referential.stops_selection_displayed_fields['formatted_area_type']
+      extra = [name]
+      %i(zip_code city_name postal_region country_name local_id).each do |f|
+        extra << send(f) if stop_area_referential.stops_selection_displayed_fields[f.to_s]
+      end
+      out + extra.select(&:present?).join(' - ')
     end
   end
 end

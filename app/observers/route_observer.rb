@@ -2,7 +2,9 @@ class RouteObserver < ActiveRecord::Observer
   observe Chouette::Route
 
   def after_commit(route)
-    route.reload unless route.destroyed?
+    return if route.destroyed?
+
+    route.reload 
     Rails.logger.debug "after_save #{route.inspect}"
     if route.opposite_route_id
       Rails.logger.debug "dereference_opposite_route all routes except #{route.opposite_route_id}"

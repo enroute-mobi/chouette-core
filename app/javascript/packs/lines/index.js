@@ -15,7 +15,7 @@ const updateSubmodeOptions = (event) => {
       return acc.concat(options)
     }, [])
 
-    submodeOptions.forEach( ({value}) => {
+    submodeOptions.forEach( ([_, value]) => {
       value && $(`[data-transport-submode=${value}]`).attr('disabled', false)
     })
   }

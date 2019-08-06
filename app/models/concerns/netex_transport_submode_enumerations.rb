@@ -29,19 +29,28 @@ module NetexTransportSubmodeEnumerations
 
   class << self
     def transport_submodes
-      submodes_for_transports.values.flatten.compact
+      submodes_for_transports.values.flatten.uniq
     end
 
     def sorted_transport_submodes
-      transport_submodes.sort_by do |m|
+      transport_submodes.compact.sort_by do |m|
         I18n.t("enumerize.transport_submode.#{m}").parameterize
       end
     end
 
     def submodes_for_transports
       {
+        tram: [
+          "undefined",
+        ],
+        metro: [
+          "undefined",
+        ],
+        funicular: [
+          "undefined",
+        ],
         bus: [
-          nil,
+          "undefined",
           "demandAndResponseBus",
           "nightBus",
           "airportLinkBus",

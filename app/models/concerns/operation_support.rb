@@ -7,6 +7,7 @@ module OperationSupport
 
     enumerize :status, in: %w[new pending successful failed running canceled], default: :new
     scope :successful, ->{ where status: :successful }
+    scope :for_referential, ->(referential){ where('referential_ids @> ARRAY[?]::bigint[]', referential.id) }
 
     has_array_of :referentials, class_name: 'Referential'
     belongs_to :new, class_name: 'Referential'
@@ -80,8 +81,6 @@ module OperationSupport
 
   def save_current
     profile_tag :save_current do
-      previous_current = output.current
-
       output.update current: new, new: nil
       output.current.update referential_suite: output, ready: true
       new.rebuild_cross_referential_index!

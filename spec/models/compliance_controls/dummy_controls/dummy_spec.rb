@@ -12,7 +12,8 @@ RSpec.describe DummyControl::Dummy, :type => :model do
   let(:condition_attributes){
     {
       block_kind: :transport_mode,
-      transport_mode: :bus
+      transport_mode: :bus,
+      transport_submode: :undefined
     }
   }
   let(:status){ "OK" }
@@ -44,7 +45,8 @@ RSpec.describe DummyControl::Dummy, :type => :model do
       let(:condition_attributes){
         {
           block_kind: :transport_mode,
-          transport_mode: :bus
+          transport_mode: :bus,
+          transport_submode: :undefined
         }
       }
       it 'should use the lines from the compliance_check_block' do

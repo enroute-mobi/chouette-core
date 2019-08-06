@@ -13,19 +13,38 @@ module IevInterfaces::Resource
     end
   end
 
-  def each(collection, opts = {})
-    total_rows = collection.count
-    checksum_manager_method = opts[:skip_checksums] ? :no_updates : :transaction
+  def each(collection_or_opts={}, opts = {})
+    if collection_or_opts.is_a? Hash
+      collection = nil
+      opts = collection_or_opts
+    else
+      collection = collection_or_opts
+    end
 
-    inner_block = proc do |items|
-      items.each do |item|
+    if collection.nil?
+      total_rows = import.source.send "#{name}_count"
+
+      inner_block = proc do |item|
         inc_rows_count
         if self.respond_to?(:import)
           import.notify_sub_operation_progress(name, rows_count.to_f/total_rows)
         end
         yield item, self
       end
+    else
+      total_rows = collection.count
+
+      inner_block = proc do |items|
+        items.each do |item|
+          inc_rows_count
+          if self.respond_to?(:import)
+            import.notify_sub_operation_progress(name, rows_count.to_f/total_rows)
+          end
+          yield item, self
+        end
+      end
     end
+    checksum_manager_method = opts[:skip_checksums] ? :no_updates : :transaction
 
     transaction_block = proc do |items|
       if opts[:transaction]
@@ -51,16 +70,20 @@ module IevInterfaces::Resource
       end
     end
 
-    if opts[:slice]
-      collection.each_slice(opts[:slice]) do |slice|
-        memory_block.call slice
+    if collection
+      if opts[:slice]
+        collection.each_slice(opts[:slice]) do |slice|
+          memory_block.call slice
+        end
+      else
+        method = :each
+        method = :find_each if collection.respond_to? :find_each
+        collection.send(method) do |item|
+          memory_block.call [item]
+        end
       end
     else
-      method = :each
-      method = :find_each if collection.respond_to? :find_each
-      collection.send(method) do |item|
-        memory_block.call [item]
-      end
+      import.source.send("each_#{name.singularize}", &inner_block)
     end
 
     update_status_from_messages

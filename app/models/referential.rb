@@ -114,7 +114,7 @@ class Referential < ApplicationModel
     kept = []
     kept << archived.where('archived_at >= ?', TIME_BEFORE_CLEANING.days.ago).select(:id).to_sql
     kept << order('created_at DESC').limit(KEPT_DURING_CLEANING).select(:id).to_sql
-    
+
     scope = inactive_and_not_pending.not_in_referential_suite
     kept.each do |kept_scope|
       scope = scope.where("referentials.id NOT IN (#{kept_scope})")
@@ -173,7 +173,7 @@ class Referential < ApplicationModel
     @_models_with_checksum || []
   end
 
-  OPERATIONS = [Import::Netex, Import::Gtfs]
+  OPERATIONS = [Import::Netex, Import::Gtfs, CleanUp, Merge, Aggregate]
 
   def last_operation
     operations = []

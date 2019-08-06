@@ -7,6 +7,7 @@ module OperationSupport
 
     enumerize :status, in: %w[new pending successful failed running canceled], default: :new
     scope :successful, ->{ where status: :successful }
+    scope :for_referential, ->(referential){ where('referential_ids @> ARRAY[?]::bigint[]', referential.id) }
 
     has_array_of :referentials, class_name: 'Referential'
     belongs_to :new, class_name: 'Referential'

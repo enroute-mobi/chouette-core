@@ -40,6 +40,8 @@ module RealtimeNotifiableSupport
   end
 
   def notify_child_progress child, progress
+    return progress unless self.children.present?
+
     index = self.children.index child
     notify_progress (index+progress)/self.children.count
   end

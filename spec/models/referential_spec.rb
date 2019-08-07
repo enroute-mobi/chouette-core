@@ -423,14 +423,14 @@ describe Referential, :type => :model do
     end
   end
 
-  context "schema creation" do
-
-    it "should create a schema named as the slug" do
-      referential = FactoryGirl.create :referential
-      expect(referential.migration_count).to be > 300
-    end
-
-  end
+  # context "schema creation" do
+  #
+  #   it "should create a schema named as the slug" do
+  #     referential = FactoryGirl.create :referential
+  #     expect(referential.migration_count).to be > 300
+  #   end
+  #
+  # end
 
   context "Cloning referential" do
     let(:clone) do

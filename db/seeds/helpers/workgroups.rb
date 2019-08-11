@@ -162,10 +162,10 @@ module Seed
       end
 
       workgroup = nil
-      if ::Workgroup.where(owner_id: owner.id).exists?
-        workgroup = ::Workgroup.where(owner_id: owner.id).order(:id).first
+      if ::Workgroup.where(name: workgroup_name).exists?
+        workgroup = ::Workgroup.where(name: workgroup_name).order(:id).first
       else
-        workgroup = ::Workgroup.seed_by(name: workgroup_name, owner_id: owner.id) do |w|
+        workgroup = ::Workgroup.seed_by(name: workgroup_name) do |w|
           w.line_referential      = line_referential
           w.stop_area_referential = stop_area_referential
           w.owner = owner

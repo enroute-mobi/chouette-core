@@ -17,6 +17,7 @@ class ComplianceControlSetsController < ChouetteController
     show! do |format|
       # But now nobody is aware anymore that `format.html` passes a parameter into the block
       format.html { show_for_html }
+      format.json { send_data resource.export.to_json, filename: "#{resource.name.underscore}.json" }
     end
   end
 

@@ -13,5 +13,11 @@ class ComplianceControlSetDecorator < AF83::Decorator
       l.href { h.clone_compliance_control_set_path(object.id) }
       l.icon :clone
     end
+
+    instance_decorator.action_link policy: :show, secondary: :show do |l|
+      l.content t('actions.export')
+      l.href { h.compliance_control_set_path(object.id, format: :json) }
+      l.icon :download
+    end
   end
 end

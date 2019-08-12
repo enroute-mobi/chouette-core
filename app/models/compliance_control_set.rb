@@ -38,4 +38,11 @@ class ComplianceControlSet < ApplicationModel
     end
     out
   end
+
+  def export
+    out = attributes.symbolize_keys.slice(:name)
+    out.update(compliance_control_checks: compliance_controls.where(compliance_control_block_id: nil).map(&:export))
+    out.update(compliance_control_blocks: compliance_control_blocks.map(&:export))
+    out
+  end
 end

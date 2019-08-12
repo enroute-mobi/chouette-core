@@ -8,4 +8,10 @@ class ComplianceControlBlock < ApplicationModel
   validates :compliance_control_set, presence: true
 
   alias_method :name, :block_name
+
+  def export
+    out = attributes.symbolize_keys.slice(:name, :condition_attributes)
+    out.update(compliance_control_checks: compliance_controls.map(&:export))
+    out
+  end
 end

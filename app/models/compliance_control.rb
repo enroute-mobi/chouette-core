@@ -125,6 +125,9 @@ class ComplianceControl < ApplicationModel
   def predicate; self.class.predicate end
   def prerequisite; self.class.prerequisite end
 
+  def export
+    attributes.symbolize_keys.slice(:name, :code, :type, :control_attributes, :criticity, :comment, :origin_code, :iev_enabled_check)
+  end
 end
 
 # Ensure STI subclasses are loaded

@@ -40,3 +40,4 @@ en:
         owner_jdc: Owner of the control set
         control_numbers: Nb of controls
         updated_at: Updated at
+        import_file: File to be imported

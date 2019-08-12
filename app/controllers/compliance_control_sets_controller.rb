@@ -29,7 +29,7 @@ class ComplianceControlSetsController < ChouetteController
   end
 
   def create
-    @compliance_control_set = ComplianceControlSet.new(params[:compliance_control_set].permit(:name))
+    @compliance_control_set = ComplianceControlSet.new(compliance_control_set_params)
     @compliance_control_set.organisation = current_organisation
     create!
   end
@@ -65,7 +65,7 @@ class ComplianceControlSetsController < ChouetteController
   end
 
   def compliance_control_set_params
-    params.require(:compliance_control_set).permit(:name, :id)
+    params.require(:compliance_control_set).permit(:name, :import_file)
   end
 
   def show_for_html

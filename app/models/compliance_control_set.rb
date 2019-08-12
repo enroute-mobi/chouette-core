@@ -8,6 +8,9 @@ class ComplianceControlSet < ApplicationModel
   validates :name, presence: true
   validates :organisation, presence: true
 
+  attr_accessor :import_file
+  before_commit :import_from_file
+
   scope :where_updated_at_between, ->(period_range) do
     where('updated_at BETWEEN :begin AND :end', begin: period_range.begin, end: period_range.end)
   end
@@ -47,6 +50,7 @@ class ComplianceControlSet < ApplicationModel
   end
 
   def import(data)
+    data = HashWithIndifferentAccess.new(data)
     self.class.transaction do
       (data[:compliance_controls] || []).each do |compliance_control_check_data|
         compliance_controls << ComplianceControl.import(compliance_control_check_data, control_set: self)
@@ -55,6 +59,17 @@ class ComplianceControlSet < ApplicationModel
       (data[:compliance_control_blocks] || []).each do |compliance_control_block_data|
         compliance_control_blocks << ComplianceControlBlock.import(compliance_control_block_data, control_set: self)
       end
+    end
+  end
+
+  def import_from_file
+    return unless import_file.present?
+
+    begin
+      data = JSON.parse(import_file.read)
+      import data
+    rescue => e
+      self.errors.add(:import_file, :invalid)
     end
   end
 end

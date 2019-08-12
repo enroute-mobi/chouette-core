@@ -2,6 +2,8 @@
   .row
     .col-lg-12
       = f.input :name
+      - if f.object.new_record? || f.object.import_file.present?
+        = f.input :import_file, as: :file, wrapper: :horizontal_file_input
 
   .separator
 

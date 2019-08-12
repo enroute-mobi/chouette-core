@@ -41,8 +41,20 @@ class ComplianceControlSet < ApplicationModel
 
   def export
     out = attributes.symbolize_keys.slice(:name)
-    out.update(compliance_control_checks: compliance_controls.where(compliance_control_block_id: nil).map(&:export))
+    out.update(compliance_controls: compliance_controls.where(compliance_control_block_id: nil).map(&:export))
     out.update(compliance_control_blocks: compliance_control_blocks.map(&:export))
     out
+  end
+
+  def import(data)
+    self.class.transaction do
+      (data[:compliance_controls] || []).each do |compliance_control_check_data|
+        compliance_controls << ComplianceControl.import(compliance_control_check_data, control_set: self)
+      end
+
+      (data[:compliance_control_blocks] || []).each do |compliance_control_block_data|
+        compliance_control_blocks << ComplianceControlBlock.import(compliance_control_block_data, control_set: self)
+      end
+    end
   end
 end

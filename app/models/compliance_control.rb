@@ -89,6 +89,10 @@ class ComplianceControl < ApplicationModel
 
     def predicate; I18n.t("compliance_controls.#{self.name.underscore}.description") end
     def prerequisite; I18n.t("compliance_controls.#{self.name.underscore}.prerequisite") end
+
+    def import(data, control_set:, control_block: nil)
+      create!({compliance_control_set_id: control_set.id, compliance_control_block_id: control_block&.id}.update(data))
+    end
   end
 
   extend Enumerize

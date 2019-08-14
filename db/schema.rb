@@ -10,8 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-
-ActiveRecord::Schema.define(version: 2019_07_18_150421) do
+ActiveRecord::Schema.define(version: 2019_08_13_095508) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -102,7 +101,7 @@ ActiveRecord::Schema.define(version: 2019_07_18_150421) do
     t.string "name"
     t.daterange "date_ranges", array: true
     t.date "dates", array: true
-    t.boolean "shared", default: false
+    t.boolean "shared", default: true
     t.bigint "organisation_id"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -224,8 +223,8 @@ ActiveRecord::Schema.define(version: 2019_07_18_150421) do
     t.bigint "compliance_control_set_id"
     t.bigint "workbench_id"
     t.string "status"
-    t.bigint "parent_id"
     t.string "parent_type"
+    t.bigint "parent_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "current_step_id"
@@ -323,6 +322,7 @@ ActiveRecord::Schema.define(version: 2019_07_18_150421) do
     t.integer "mobility_restricted_traveller_duration"
     t.jsonb "custom_field_values", default: {}
     t.index ["objectid"], name: "connection_links_objectid_key", unique: true
+    t.index ["stop_area_referential_id", "departure_id", "arrival_id", "both_ways"], name: "connection_links_compound"
     t.index ["stop_area_referential_id"], name: "index_connection_links_on_stop_area_referential_id"
   end
 
@@ -1106,10 +1106,10 @@ ActiveRecord::Schema.define(version: 2019_07_18_150421) do
 
   create_table "taggings", force: :cascade do |t|
     t.bigint "tag_id"
-    t.bigint "taggable_id"
     t.string "taggable_type"
-    t.bigint "tagger_id"
+    t.bigint "taggable_id"
     t.string "tagger_type"
+    t.bigint "tagger_id"
     t.string "context", limit: 128
     t.datetime "created_at"
     t.index ["context"], name: "index_taggings_on_context"
@@ -1306,6 +1306,7 @@ ActiveRecord::Schema.define(version: 2019_07_18_150421) do
     t.datetime "nightly_aggregated_at"
     t.datetime "aggregated_at"
     t.string "nightly_aggregate_notification_target", default: "none"
+    t.jsonb "transport_modes", default: {"air"=>["international_flight", "domestic_flight", "intercontinental_flight", "domestic_scheduled_flight", "shuttle_flight", "intercontinental_charter_flight", "international_charter_flight", "round_trip_charter_flight", "sightseeing_flight", "helicopter_service", "domestic_charter_flight", "schengen_area_flight", "airship_service", "short_haul_international_flight"], "bus"=>["local_bus", "regional_bus", "espress_bus", "nigh_bus", "post_bus", "special_needs_bus", "mobility_bus", "mobility_bus_for_registered_disabled", "sightseeing_bus", "shuttle_bus", "school_bus", "school_and_public_service_bus", "rail_replacement_bus", "demand_and_response_bus", "airport_link_bus"], "rail"=>["local", "high_speed_rail", "suburban_railway", "interregional_rail", "long_distance", "international", "night_train", "sleeper_rail_service", "car_transport_rail_service", "tourist_railway", "rail_shuttle", "replacement_rail_service", "special_train", "cross_country_rail", "rack_and_pinion_railway"], "taxi"=>["communal_taxi", "water_taxi", "rail_taxi", "bike_taxi", "black_cab", "mini_cab", "all_taxi_services"], "tram"=>["city_tram", "local_tram", "regional_tram", "sightseeing_tram", "shuttle_tram", "tram_train"], "coach"=>["international_coach", "national_coach", "shuttle_coach", "regional_coach", "special_coach", "sightseeing_coach", "tourist_coach", "commuter_coach"], "metro"=>["metro", "tube", "urban_railway"], "water"=>["international_car_ferry", "national_car_ferry", "regional_car_ferry", "local_car_ferry", "international_passenger_ferry", "national_passenger_ferry", "regional_passenger_ferry", "local_passenger_ferry", "post_boat", "train_ferry", "road_ferry_link", "airport_boat_link", "high_speed_vehicle_service", "high_speed_passenger_service", "sightseeing_service", "school_boat", "cable_ferry", "river_bus", "scheduled_ferry", "shuttle_ferry_service"], "hire_car"=>["hire_car", "hire_van", "hire_motorbike", "hire_cycle", "all_hire_vehicles"], "funicular"=>["funicular", "all_funicular_services"], "telecabin"=>["telecabin", "cable_car", "lift", "chair_lift", "drag_lift", "telecabin_link"]}
   end
 
   add_foreign_key "access_links", "access_points", name: "aclk_acpt_fkey"

@@ -24,6 +24,8 @@ fr:
         à fournir une offre pertinente. Cette sélection restera en place jusqu'à une nouvelle intervention de votre part.</p>
     edit_hole_sentinel:
       title: "Paramétrages de la détection de trous d'offre"
+    edit_transport_modes:
+      title: "Paramétrages des modes de transport"
 
     compliance_control_sets:
       after_import: Après Import
@@ -53,6 +55,9 @@ fr:
         workbenches: Espaces
         created_at: Créé le
         updated_at: Modifié le
+        transport_mode: Mode de transport
+        transport_submode: Sous-mode de transport
+        transport_submode_code: Code
 
   formtastic:
     hints:

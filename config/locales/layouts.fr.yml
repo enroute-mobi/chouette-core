@@ -49,6 +49,7 @@ fr:
         edit_control_sets: Jeux de Contrôle
         edit_aggregate: Agrégation
         edit_hole_sentinel: Détection de trous d'offre
+        edit_transport_modes: Modes de transport
       publications:
         subtitle: Publications
     history_tag:

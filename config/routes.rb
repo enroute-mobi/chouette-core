@@ -50,6 +50,7 @@ ChouetteIhm::Application.routes.draw do
       get :edit_controls
       put :update_controls
       get :edit_hole_sentinel
+      get :edit_transport_modes
     end
 
     resources :compliance_check_sets, only: [:index, :show] do

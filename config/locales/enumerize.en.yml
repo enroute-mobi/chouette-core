@@ -134,6 +134,7 @@ en:
       coach: Coach
       ferry: Ferry
       funicular: Funicular
+      hireCar: "Hire car"
       interchange: Interchange
       local_train: "Local train"
       long_distance_train: "Long distance train"
@@ -144,6 +145,7 @@ en:
       rapid_transit: "Rapid transit"
       shuttle: "Shuttle"
       taxi: "Taxi"
+      telecabin: "Telecabin"
       train: "Train"
       tram: Tramway
       tramway: "Tramway"
@@ -231,7 +233,7 @@ en:
       roadFerryLink: "Road Ferry Link"
       roundTripCharterFlight: "Roundtrip charter flight"
       scheduledFerry: "Scheduled Ferry"
-      SchengenAreaFlight: "Schengen area flight"
+      schengenAreaFlight: "Schengen area flight"
       schoolAndPublicServiceBus: "School and Public Service Bus"
       schoolBoat: "School Boat"
       schoolBus: "School Bus"

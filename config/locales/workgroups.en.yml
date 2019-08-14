@@ -57,6 +57,10 @@ en:
         workbenches: Workbenches
         created_at: Created at
         updated_at: Updated at
+        transport_mode: Transport mode
+        transport_submode: Transport submode
+        transport_submode_code: Code
+
 
   formtastic:
     hints:

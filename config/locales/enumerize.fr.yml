@@ -133,6 +133,7 @@ fr:
       coach: Autocar
       ferry: Ferry
       funicular: Funiculaire
+      hireCar: "Voiture de location"
       interchange: Interconnection
       local_train: TER
       long_distance_train: Train Grande Ligne
@@ -143,6 +144,7 @@ fr:
       rapid_transit: RER
       shuttle: Navette
       taxi: Taxi
+      telecabin: "Télécabine"
       train: Train
       tram: Tramway
       tramway: Tramway
@@ -177,7 +179,7 @@ fr:
       domesticFlight: 'Vol intérieur'
       domesticScheduledFlight: 'Vol intérieur régulier'
       dragLift: 'Téléski'
-      expressBus: 'Bus express'
+      espressBus: 'Bus express'
       funicular: "Funiculaire"
       helicopterService: "Service d'hélicoptère"
       highFrequencyBus: 'Bus à haute fréquence'
@@ -231,7 +233,7 @@ fr:
       roadFerryLink: "Ferry de liaison"
       roundTripCharterFlight: "Vol Charter aller-retour"
       scheduledFerry: "Ferry régulier"
-      SchengenAreaFlight: "Vol Zone Schengen"
+      schengenAreaFlight: "Vol Zone Schengen"
       schoolAndPublicServiceBus: "Bus scolaire et de service public"
       schoolBoat: "Bateau scolaire"
       schoolBus: "Bus scolaire"

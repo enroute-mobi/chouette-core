@@ -49,6 +49,7 @@ en:
         edit_control_sets: Controls settings
         edit_aggregate: Aggregation settings
         edit_hole_sentinel: Missing offer detection
+        edit_transport_modes: Transport modes
       publications:
         subtitle: Publications
     history_tag:

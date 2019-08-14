@@ -206,6 +206,14 @@ class Workgroup < ApplicationModel
     update_attribute :deleted_at, nil
   end
 
+  def transport_modes_as_json
+    transport_modes.to_json
+  end
+
+  def transport_modes_as_json=(json)
+    self.transport_modes = JSON.parse(json)
+  end
+
   private
   def self.compliance_control_sets_label(key)
     "workgroups.compliance_control_sets.#{key}".t
@@ -257,5 +265,4 @@ class Workgroup < ApplicationModel
       workgroup
     end
   end
-
 end

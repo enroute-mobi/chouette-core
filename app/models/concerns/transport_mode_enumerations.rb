@@ -5,8 +5,12 @@ module TransportModeEnumerations
     extend Enumerize
     enumerize :transport_mode, in: TransportModeEnumerations.transport_modes
 
-    if source.column_names.include?('transport_submode')
-      enumerize :transport_submode, in: TransportModeEnumerations.transport_submodes
+    begin
+      if source.column_names.include?('transport_submode')
+        enumerize :transport_submode, in: TransportModeEnumerations.transport_submodes
+      end
+    rescue ActiveRecord::StatementInvalid
+      # The tables have not been created yet
     end
   end
 
@@ -14,7 +18,7 @@ module TransportModeEnumerations
     return unless transport_mode.present?
 
     return if transport_submode.blank?
-    return if full_transport_modes[transport_mode&.to_sym]&.include?(transport_submode.to_sym)
+    return if TransportModeEnumerations.full_transport_modes[transport_mode&.to_sym]&.include?(transport_submode.to_sym)
 
     errors.add(:transport_mode, :submode_mismatch)
   end

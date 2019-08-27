@@ -51,7 +51,7 @@ RSpec.describe ComplianceControlSetCloner do
         let(:source_blox){
           3.times.map do |n|
             transport_mode = TransportModeEnumerations.transport_modes[n]
-            transport_submode = TransportSubmodeEnumerations.submodes_for_transports[transport_mode.to_sym]&.first
+            transport_submode = TransportModeEnumerations.submodes_for_transports[transport_mode.to_sym]&.first
             create :compliance_control_block, compliance_control_set: source_set, transport_mode: transport_mode, transport_submode: transport_submode
           end
         }

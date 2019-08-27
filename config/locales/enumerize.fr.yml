@@ -179,7 +179,7 @@ fr:
       domesticFlight: 'Vol intérieur'
       domesticScheduledFlight: 'Vol intérieur régulier'
       dragLift: 'Téléski'
-      espressBus: 'Bus express'
+      expressBus: 'Bus express'
       funicular: "Funiculaire"
       helicopterService: "Service d'hélicoptère"
       highFrequencyBus: 'Bus à haute fréquence'

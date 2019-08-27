@@ -17,8 +17,10 @@ module TransportModeEnumerations
   def transport_mode_and_submode_match
     return unless transport_mode.present?
 
-    return if transport_submode.blank?
-    return if TransportModeEnumerations.full_transport_modes[transport_mode&.to_sym]&.include?(transport_submode.to_sym)
+    submodes = TransportModeEnumerations.full_transport_modes[transport_mode.to_sym]
+
+    return if submodes.blank? && transport_submode.blank?
+    return if submodes&.include?(transport_submode.presence&.to_sym)
 
     errors.add(:transport_mode, :submode_mismatch)
   end
@@ -84,6 +86,7 @@ module TransportModeEnumerations
           :nightTrain,
           :rackAndPinionRailway,
           :railShuttle,
+          :regionalRail,
           :replacementRailService,
           :sleeperRailService,
           :specialTrain,
@@ -106,6 +109,7 @@ module TransportModeEnumerations
           :airportLinkBus,
           :demandAndResponseBus,
           :expressBus,
+          :highFrequencyBus,
           :localBus,
           :mobilityBusForRegisteredDisabled,
           :mobilityBus,

@@ -6,7 +6,7 @@ module Chouette
     include CustomFieldsSupport
     include VehicleJourneyRestrictions
     include ObjectidSupport
-    include NetexTransportModeEnumerations
+    include TransportModeEnumerations
 
     enum journey_category: { timed: 0, frequency: 1 }
 

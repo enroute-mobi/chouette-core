@@ -19,7 +19,7 @@
       = f.label Chouette::Line.tmf(:transport_mode), required: false, class: 'control-label'
       .form-group.checkbox_list.js-transport-mode-checkboxes
         = f.simple_fields_for :transport_mode do |p|
-          - NetexTransportModeEnumerations.sorted_transport_modes.each do |mode|
+          - referential.workgroup.sorted_transport_modes.each do |mode, _|
             = p.input mode.to_sym,
               label: ("<span>" + t("enumerize.transport_mode.#{mode}") + "</span>").html_safe,
               as: :boolean,
@@ -29,9 +29,9 @@
               input_html: { checked: @transport_modes&.include?(mode), data: { transport_mode: mode } }
     .form-group.togglable class=filter_item_class(params[:q], :transport_submode)
       = f.label Chouette::Line.tmf(:transport_submode), required: false, class: 'control-label'
-      .form-group.checkbox_list.js-transport-submode-checkboxes data-transport_submodes=Chouette::Line.formatted_submodes_for_transports.to_json
+      .form-group.checkbox_list.js-transport-submode-checkboxes data-transport_submodes=line_referential.workgroup.formatted_submodes_for_transports.to_json
         = f.simple_fields_for :transport_submode do |p|
-          - NetexTransportSubmodeEnumerations.sorted_transport_submodes.each do |submode|
+          - referential.workgroup.sorted_transport_submodes.each do |submode|
             = p.input submode.to_sym,
               label: ("<span>" + t("enumerize.transport_submode.#{submode}") + "</span>").html_safe,
               as: :boolean,

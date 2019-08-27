@@ -56,6 +56,7 @@ fr:
         created_at: Créé le
         updated_at: Modifié le
         transport_mode: Mode de transport
+        transport_modes: Modes de transport
         transport_submode: Sous-mode de transport
         transport_submode_code: Code
 

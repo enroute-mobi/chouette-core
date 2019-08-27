@@ -1,18 +1,39 @@
 module TransportModeEnumerations
   extend ActiveSupport::Concern
 
-  included do
+  included do |source|
     extend Enumerize
     enumerize :transport_mode, in: TransportModeEnumerations.transport_modes
+
+    if source.column_names.include?('transport_submode')
+      enumerize :transport_submode, in: TransportModeEnumerations.transport_submodes
+    end
+  end
+
+  def transport_mode_and_submode_match
+    return unless transport_mode.present?
+
+    return if transport_submode.blank?
+    return if full_transport_modes[transport_mode&.to_sym]&.include?(transport_submode.to_sym)
+
+    errors.add(:transport_mode, :submode_mismatch)
   end
 
   module ClassMethods
     def transport_modes
-      NetexTransportModeEnumerations.transport_modes
+      TransportModeEnumerations.transport_modes
     end
 
     def sorted_transport_modes
-      NetexTransportModeEnumerations.sorted_transport_modes
+      TransportModeEnumerations.sorted_transport_modes
+    end
+
+    def transport_submodes
+      TransportModeEnumerations.transport_submodes
+    end
+
+    def formatted_submodes_for_transports(modes=nil)
+      TransportModeEnumerations.formatted_submodes_for_transports(modes)
     end
   end
 
@@ -21,18 +42,25 @@ module TransportModeEnumerations
       full_transport_modes.keys
     end
 
+    def transport_submodes
+      full_transport_modes.values.flatten.uniq
+    end
+
     def full_transport_modes
       {
         metro: [
+          :undefined,
           :metro,
           :tube,
           :urbanRailway
         ],
         funicular: [
+          :undefined,
           :allFunicularServices,
           :funicular,
         ],
         tram: [
+          :undefined,
           :cityTram,
           :localTram,
           :regionalTram,
@@ -41,6 +69,7 @@ module TransportModeEnumerations
           :tramTrain
         ],
         rail: [
+          :undefined,
           :carTransportRailService,
           :crossCountryRail,
           :highSpeedRail,
@@ -58,6 +87,7 @@ module TransportModeEnumerations
           :touristRailway,
         ],
         coach: [
+          :undefined,
           :commuterCoach,
           :internationalCoach,
           :nationalCoach,
@@ -68,9 +98,10 @@ module TransportModeEnumerations
           :touristCoach,
         ],
         bus: [
+          :undefined,
           :airportLinkBus,
           :demandAndResponseBus,
-          :espressBus,
+          :expressBus,
           :localBus,
           :mobilityBusForRegisteredDisabled,
           :mobilityBus,
@@ -85,6 +116,7 @@ module TransportModeEnumerations
           :specialNeedsBus,
         ],
         water: [
+          :undefined,
           :internationalCarFerry,
           :nationalCarFerry,
           :regionalCarFerry,
@@ -107,6 +139,7 @@ module TransportModeEnumerations
           :shuttleFerryService
         ],
         telecabin: [
+          :undefined,
           :cableCar,
           :chairLift,
           :dragLift,
@@ -115,6 +148,7 @@ module TransportModeEnumerations
           :telecabin,
         ],
         air: [
+          :undefined,
           :airshipService,
           :domesticCharterFlight,
           :domesticFlight,
@@ -131,6 +165,7 @@ module TransportModeEnumerations
           :sightseeingFlight,
         ],
         hireCar: [
+          :undefined,
           :allHireVehicles,
           :hireCar,
           :hireCycle,
@@ -138,6 +173,7 @@ module TransportModeEnumerations
           :hireVan,
         ],
         taxi: [
+          :undefined,
           :allTaxiServices,
           :bikeTaxi,
           :blackCab,
@@ -149,10 +185,22 @@ module TransportModeEnumerations
       }
     end
 
-    def sorted_transport_modes
+    def sorted_transport_modes(modes=nil)
+      modes ||= transport_modes
       transport_modes.sort_by do |m|
         I18n.t("enumerize.transport_mode.#{m}").parameterize
       end
+    end
+
+    def formatted_submodes_for_transports(modes=nil)
+      modes ||= full_transport_modes
+      modes.map do |t,s|
+        {
+          t => s.map do |k|
+            [I18n.t("enumerize.transport_submode.#{ k.presence || 'undefined' }"), k]
+          end.sort_by { |k| k.last ? k.first : "" }
+        }
+      end.reduce({}, :merge)
     end
   end
 end

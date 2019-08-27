@@ -54,9 +54,9 @@ en:
         created_at: Created at
         updated_at: Updated at
         transport_mode: Transport mode
+        transport_modes: Transport modes
         transport_submode: Transport submode
         transport_submode_code: Code
-
 
   formtastic:
     hints:

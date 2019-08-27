@@ -2,9 +2,8 @@ module ComplianceBlockSupport
   extend ActiveSupport::Concern
 
   included do
-    include NetexTransportModeEnumerations
-    include NetexTransportSubmodeEnumerations
-
+    include TransportModeEnumerations
+    
     store_accessor :condition_attributes,
       :block_kind,
       :transport_mode, :transport_submode,

@@ -193,6 +193,8 @@ module TransportModeEnumerations
       }
     end
 
+    alias_method :submodes_for_transports, :full_transport_modes
+
     def sorted_transport_modes(modes=nil)
       modes ||= transport_modes
       transport_modes.sort_by do |m|

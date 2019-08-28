@@ -101,7 +101,7 @@ module Chouette
     end
 
     def registration_number_is_set
-      return unless self.stop_area_referential.registration_number_format.present?
+      return unless self.stop_area_referential&.registration_number_format.present?
       if self.stop_area_referential.stop_areas.where(registration_number: self.registration_number).\
         where.not(id: self.id).exists?
         errors.add(:registration_number, I18n.t('stop_areas.errors.registration_number.already_taken'))

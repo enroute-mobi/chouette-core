@@ -2,7 +2,7 @@
 describe "Lines", type: :feature do
   login_user
 
-  let(:line_referential) { create :line_referential, member: @user.organisation }
+  let(:line_referential) { create :line_referential, member: @user.organisation, workgroup: create(:workgroup) }
   let!(:network) { create(:network) }
   let!(:company) { create(:company) }
   let!(:lines) { Array.new(2) { |i| l = create :line_with_stop_areas, network: network, company: company, line_referential: line_referential } }

@@ -1,4 +1,4 @@
-- @dashboard.current_organisation.workbenches.each do |workbench|
+- @dashboard.current_organisation.workbenches.with_active_workgroup.each do |workbench|
   .row
     - if @dashboard.current_organisation.workbenches.many?
       .col-lg-12

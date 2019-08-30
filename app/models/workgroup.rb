@@ -90,8 +90,8 @@ class Workgroup < ApplicationModel
     compliance_control_sets_labels all_compliance_control_sets.grep(/^after_merge/)
   end
 
-  def self.purge workgroup_id
-    Workgroup.find_by(id: workgroup_id)&.destroy
+  def self.purge_all
+    Workgroup.where.not(deleted_at: nil).destroy_all
   end
 
   def aggregated!

@@ -55,11 +55,6 @@ class WorkgroupsController < ChouetteController
     redirect_to resource
   end
 
-  def destroy
-    Workgroup.purge resource.id
-    redirect_to workgroups_url
-  end
-
   def workgroup_params
     params.require(:workgroup).permit(
       :name,

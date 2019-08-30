@@ -47,6 +47,9 @@ class Workbench < ApplicationModel
 
   before_validation :initialize_output
 
+  scope :with_active_workgroup, -> { joins(:workgroup).where('workgroups.deleted_at': nil) }
+
+
   # def notifiable_lines
   #   lines.where(id: NotificationRule.pluck(:line_id))
   # end

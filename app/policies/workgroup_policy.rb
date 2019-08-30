@@ -29,4 +29,11 @@ class WorkgroupPolicy < ApplicationPolicy
     update? && user.has_permission?('aggregates.create')
   end
 
+  def setup_deletion?
+    destroy?
+  end
+
+  def remove_deletion?
+    destroy?
+  end
 end

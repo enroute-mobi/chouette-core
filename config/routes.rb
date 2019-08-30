@@ -44,7 +44,7 @@ ChouetteIhm::Application.routes.draw do
     resources :notification_rules
   end
 
-  resources :workgroups, concerns: :iev_interfaces do
+  resources :workgroups, except: [:destroy], concerns: :iev_interfaces do
     put :setup_deletion, on: :member
     put :remove_deletion, on: :member
 

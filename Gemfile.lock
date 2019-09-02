@@ -452,7 +452,7 @@ GEM
     net-ssh (5.2.0)
     newrelic_rpm (4.8.0.341)
     nio4r (2.3.1)
-    nokogiri (1.10.3)
+    nokogiri (1.10.4)
       mini_portile2 (~> 2.4.0)
     notiffany (0.1.1)
       nenv (~> 0.1)
@@ -834,7 +834,7 @@ DEPENDENCIES
   mimemagic
   net-sftp (~> 2.1)
   newrelic_rpm
-  nokogiri (>= 1.8.5)
+  nokogiri (>= 1.10.4)
   parallel_tests
   pg
   phantomjs
@@ -900,4 +900,4 @@ DEPENDENCIES
   will_paginate-bootstrap
 
 BUNDLED WITH
-   2.0.1
+   2.0.2

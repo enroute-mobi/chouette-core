@@ -1,6 +1,6 @@
 # Stages
 #
-# debian:stable-slim
+# ruby:2.6-slim
 # -> base
 #   -> assets-builder
 #   -> final with COPY assets-builder/public/assets
@@ -20,7 +20,7 @@ ARG WEEK
 ENV LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8
 ENV BUNDLER_VERSION 2.0.1
 
-RUN apt-get update && apt-get install -y --no-install-recommends locales && \
+RUN apt-get update && apt-get dist-upgrade -y && apt-get install -y --no-install-recommends locales && \
     echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && locale-gen && \
     gem install bundler:$BUNDLER_VERSION
 

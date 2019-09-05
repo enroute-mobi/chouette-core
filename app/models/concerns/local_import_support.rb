@@ -245,10 +245,10 @@ module LocalImportSupport
   def import_missing_checksums
     Chouette::JourneyPattern.within_workgroup(workgroup) do
       Chouette::VehicleJourney.within_workgroup(workgroup) do
-        Chouette::ChecksumManager.update_checkum_in_batches referential.vehicle_journey_at_stops.select(:id, :departure_time, :arrival_time, :departure_day_offset, :arrival_day_offset)
-        Chouette::ChecksumManager.update_checkum_in_batches referential.routes.select(:id, :name, :published_name, :wayback).includes(:stop_points, :routing_constraint_zones)
-        Chouette::ChecksumManager.update_checkum_in_batches referential.journey_patterns.select(:id, :custom_field_values, :name, :published_name, :registration_number, :costs).includes(:stop_points)
-        Chouette::ChecksumManager.update_checkum_in_batches referential.vehicle_journeys.select(:id, :custom_field_values, :published_journey_name, :published_journey_identifier, :ignored_routing_contraint_zone_ids, :ignored_stop_area_routing_constraint_ids, :company_id).includes(:company_light, :footnotes, :vehicle_journey_at_stops, :purchase_windows)
+        Chouette::ChecksumManager.update_checkum_in_batches referential.vehicle_journey_at_stops.select(:id, :departure_time, :arrival_time, :departure_day_offset, :arrival_day_offset), self.referential
+        Chouette::ChecksumManager.update_checkum_in_batches referential.routes.select(:id, :name, :published_name, :wayback).includes(:stop_points, :routing_constraint_zones), self.referential
+        Chouette::ChecksumManager.update_checkum_in_batches referential.journey_patterns.select(:id, :custom_field_values, :name, :published_name, :registration_number, :costs).includes(:stop_points), self.referential
+        Chouette::ChecksumManager.update_checkum_in_batches referential.vehicle_journeys.select(:id, :custom_field_values, :published_journey_name, :published_journey_identifier, :ignored_routing_contraint_zone_ids, :ignored_stop_area_routing_constraint_ids, :company_id, :line_notice_ids).includes(:company_light, :footnotes, :vehicle_journey_at_stops, :purchase_windows), self.referential
       end
     end
   end

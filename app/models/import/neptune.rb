@@ -1,9 +1,3 @@
-class TimeTablesVehicleJourney < ActiveRecord::Base
-end
-
-class JourneyPatternsStopPoint < ActiveRecord::Base
-end
-
 class Import::Neptune < Import::Base
   include LocalImportSupport
 

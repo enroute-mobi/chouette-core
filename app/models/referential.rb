@@ -588,7 +588,7 @@ class Referential < ApplicationModel
   end
 
   def assign_prefix
-    self.prefix ||= workbench.prefix
+    self.prefix ||= workbench.prefix if workbench
   end
 
   def assign_line_and_stop_area_referential

@@ -173,9 +173,8 @@ class Import::Neptune < Import::Base
         make_enum(source_timetable[:vehicle_journey_id]).each do |vehicle_journey_id|
           @time_tables[vehicle_journey_id] << tt.id
         end
+        notify_sub_operation_progress(:time_tables, progress)
       end
-
-      notify_sub_operation_progress(:time_tables, progress)
     end
   end
 
@@ -271,7 +270,7 @@ class Import::Neptune < Import::Base
     existing_stop_areas = stop_area_referential.stop_areas.where(registration_number: stop_area_ids.uniq).map{|s| [s.registration_number, s]}.to_h
 
     Chouette::StopArea.within_workgroup(workgroup) do
-      each_element_matching_css('ChouettePTNetwork ChouetteArea') do |source_parent|
+      each_element_matching_css('ChouettePTNetwork ChouetteArea') do |source_parent, filename, progress|
         coordinates = {}
         each_element_matching_css('AreaCentroid', source_parent) do |centroid|
           coordinates[centroid[:object_id]] = centroid.slice(:latitude, :longitude)
@@ -301,9 +300,9 @@ class Import::Neptune < Import::Base
             @parent_stop_areas[child_registration_number] = stop_area.id
           end
         end
-      end
 
-      notify_sub_operation_progress(:stop_areas, progress)
+        notify_sub_operation_progress(:stop_areas, progress)
+      end
     end
   end
 

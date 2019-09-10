@@ -2,6 +2,11 @@ require 'delayed_job'
 
 class AutoKillPlugin < Delayed::Plugin
   callbacks do |lifecycle|
+    lifecycle.before(:perform) do |worker, job|
+      explained = job.payload_object.try(:explain) || job.payload_object.inspect
+      worker.say "Starting Job #{explained} with priority #{job.priority}, attempt #{job.attempts + 1}/#{job.max_attempts}"
+    end
+
     lifecycle.after(:perform) do |worker, job|
       worker.say "Job done, using #{worker.memory_used.to_i}M"
       if worker.memory_used > 1024
@@ -27,7 +32,17 @@ class Delayed::Heartbeat::Worker
   end
 end
 
+
+module Delayed::VerboseWorker
+  def start *args
+    say "Queues: #{queues.presence&.to_sentence || 'all'}"
+    super
+  end
+end
+
 class Delayed::Worker
+  prepend Delayed::VerboseWorker
+
   def memory_used
     NewRelic::Agent::Samplers::MemorySampler.new.sampler.get_sample
   end
@@ -63,7 +78,7 @@ end
 class Delayed::Backend::ActiveRecord::Job
   class << self
     def reserve(worker, max_run_time = Delayed::Worker.max_run_time)
-      ready_scope = ready_to_run(worker.name, max_run_time).min_priority.max_priority.for_queues.by_priority
+      ready_scope = ready_to_run(worker.name, max_run_time).for_queues(worker.queues).by_priority
       offset = 0
       next_in_line = ready_scope.first
 

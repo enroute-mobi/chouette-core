@@ -33,7 +33,7 @@ class Import::Base < ApplicationModel
 
   include IevInterfaces::Task
   # we skip validation once the import has been persisted,
-  # in order to allow Sidekiq workers (which don't have acces to the file) to
+  # in order to allow async workers (which don't have acces to the file) to
   # save the import
   validates_presence_of :file, unless: Proc.new {|import| @local_file.present? || import.persisted? || import.errors[:file].present? }
 

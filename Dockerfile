@@ -89,7 +89,7 @@ WORKDIR /app
 VOLUME /app/public/uploads
 
 EXPOSE 3000
-ENV RAILS_ENV=production RAILS_SERVE_STATIC_FILES=true RAILS_LOG_TO_STDOUT=true SIDEKIQ_REDIS_URL=redis://redis:6379/12
+ENV RAILS_ENV=production RAILS_SERVE_STATIC_FILES=true RAILS_LOG_TO_STDOUT=true
 
 ENTRYPOINT ["./script/docker-entrypoint.sh"]
 # Use front by default. async and sync 'modes' are available

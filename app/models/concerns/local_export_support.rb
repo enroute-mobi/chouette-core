@@ -14,7 +14,7 @@ module LocalExportSupport
     if synchronous
       run unless status == "running"
     else
-      worker_class.perform_async_or_fail(self)
+      enqueue_job :run
     end
   end
 

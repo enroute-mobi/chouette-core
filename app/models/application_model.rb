@@ -8,7 +8,7 @@ class ApplicationModel < ::ActiveRecord::Base
     def clean!
       destroy_all
     end
-    
+
     def skip_objectid_uniqueness?
       @skip_objectid_uniqueness
     end
@@ -31,5 +31,21 @@ class ApplicationModel < ::ActiveRecord::Base
       end
       alias_method "#{rel_name}_light", "#{rel_name}_light_with_cache"
     end
+  end
+
+  def jobs_queue
+    return :long_jobs if self.is_a?(Import::Base)
+    return :long_jobs if self.is_a?(Export::Base)
+    return :long_jobs if self.is_a?(Merge)
+    return :long_jobs if self.is_a?(Aggregate)
+
+    :default 
+  end
+
+  def enqueue_job method, args=[], max_attempts: 1, run_at: nil
+    job = LongRunningJob.new(self, method, args)
+    job.max_attempts = max_attempts
+
+    Delayed::Job.enqueue job, queue: jobs_queue, run_at: run_at
   end
 end

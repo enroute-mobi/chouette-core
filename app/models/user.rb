@@ -124,7 +124,7 @@ class User < ApplicationModel
 
   def belongs_to_workgroup_owner?(workgroup)
     return false unless workgroup
-    
+
     workgroup.owner == organisation
   end
 

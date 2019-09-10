@@ -7,10 +7,6 @@ export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 echo "Start $command"
 case $command in
   async)
-    rm -rf tmp/pids/ && mkdir -p tmp/pids
-    exec bundle exec sidekiq -e production
-    ;;
-  async2)
     exec bundle exec rake jobs:work
     ;;
   sync)

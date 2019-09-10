@@ -116,10 +116,8 @@ class ComplianceCheckSet < ApplicationModel
     referential&.import_resources.main_resources.last
   end
 
-  def perform_async only_internals=false
-    ComplianceCheckSetWorker.perform_async_or_fail(self, only_internals) do
-      update status: 'failed'
-    end
+  def perform_async(only_internals=false)
+    enqueue_job :perform, only_internals
   end
 
   def perform only_internals=false

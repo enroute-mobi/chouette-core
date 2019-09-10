@@ -121,9 +121,6 @@ describe "Referentials", :type => :feature do
   end
 
   describe "new_from" do
-    # let(:cloning)
-    let(:worker) { ReferentialCloningWorker.new }
-
     let(:line) { create(:line_with_stop_areas) }
     let(:jp) { create(:journey_pattern, route: line.routes.first) }
     let(:tt) { create(:time_table) }

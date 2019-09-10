@@ -45,7 +45,7 @@ module LocalImportSupport
   end
 
   def import_async
-    Delayed::Job.enqueue LongRunningJob.new(self, :import), queue: :imports
+    enqueue_job :import
   end
 
   def import

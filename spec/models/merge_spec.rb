@@ -22,6 +22,21 @@ RSpec.describe Merge do
     expect(merge).to be_valid
   end
 
+  context '#operation_scheduled?' do
+    it 'should look for delayed jobs' do
+      merge = Merge.create(workbench: referential.workbench, referentials: [referential, referential])
+      other_referential = create(:workbench_referential)
+      other_merge = Merge.create(workbench: other_referential.workbench, referentials: [other_referential])
+
+      Delayed::Job.delete_all
+      expect(merge.operation_scheduled?).to be_falsy
+      other_merge.delay.touch
+      expect(merge.operation_scheduled?).to be_falsy
+      merge.delay.touch
+      expect(merge.operation_scheduled?).to be_truthy
+    end
+  end
+
   context "#current?" do
     let(:merge){ build_stubbed :merge }
     context "when the current output is mine" do
@@ -168,7 +183,7 @@ RSpec.describe Merge do
         expect(output.contains_urgent_offer?).to be_truthy
         merge.update created_at: Time.now
         merge.prepare_new
-        
+
         merge.referentials.each do |referential|
           merge.merge_referential_metadata(referential)
         end

@@ -5,10 +5,6 @@ class Export::NetexFull < Export::Base
     %w(xml)
   end
 
-  def worker_class
-    NetexFullExportWorker
-  end
-
   def build_netex_document
     document.build
   end

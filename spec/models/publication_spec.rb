@@ -28,8 +28,8 @@ RSpec.describe Publication, type: :model do
   end
 
   describe '#publish' do
-    it 'should create a PublicationWorker' do
-      expect(PublicationWorker).to receive(:perform_async_or_fail)
+    it 'should create a Delayed::Job' do
+      expect{ publication }.to change{ Delayed::Job.count }.by 1
       expect(publication).to be_pending
     end
 
@@ -55,7 +55,6 @@ RSpec.describe Publication, type: :model do
   describe '#run_export' do
     it 'should create an export' do
       expect{ publication.run_export }.to change{ Export::Gtfs.count }.by 1
-      expect(GTFSExportWorker).to_not receive(:perform_async_or_fail)
       expect_any_instance_of(Export::Gtfs).to receive(:run)
       publication.run_export
       expect(publication.exports).to be_present

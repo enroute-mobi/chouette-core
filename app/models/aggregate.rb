@@ -1,4 +1,4 @@
-class Aggregate < ActiveRecord::Base
+class Aggregate < ApplicationModel
   DEFAULT_KEEP_AGGREGATES = 10
 
   include OperationSupport
@@ -60,7 +60,7 @@ class Aggregate < ActiveRecord::Base
     update_column :started_at, Time.now
     update_column :status, :running
 
-    AggregateWorker.perform_async_or_fail(self)
+    enqueue_job :aggregate!
   end
 
   def aggregate!

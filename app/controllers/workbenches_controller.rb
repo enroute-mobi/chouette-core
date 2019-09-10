@@ -34,7 +34,7 @@ class WorkbenchesController < ChouetteController
     referentials.each do |referential|
       next unless policy(referential).destroy?
 
-      ReferentialDestroyWorker.perform_async(referential.id)
+      referential.enqueue_job :destroy
       referential.update_attribute(:ready, false)
     end
     flash[:notice] = t('notice.referentials.deleted')

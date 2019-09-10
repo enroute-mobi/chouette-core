@@ -41,7 +41,6 @@ module ChouetteIhm
     SmartEnv.add :RAILS_DB_USER, default: 'chouette'
     SmartEnv.add :RAILS_HOST
     SmartEnv.add :RAILS_LOCALE, default: :fr
-    SmartEnv.add :SIDEKIQ_REDIS_URL, default: 'redis://localhost:6379/12'
     SmartEnv.add :TEST_ENV_NUMBER
     SmartEnv.add :WORKBENCH_IMPORT_DIR
     SmartEnv.add :CHOUETTE_ADDITIONAL_COMPLIANCE_CONTROLS, default: ""
@@ -53,7 +52,6 @@ module ChouetteIhm
     SmartEnv.add_boolean :CHOUETTE_ITS_SEND_INVITATION
     SmartEnv.add_boolean :NO_TRANSACTION
     SmartEnv.add_boolean :SUBSCRIPTION_NOTIFIER_ENABLED
-    SmartEnv.add_boolean :CHOUETTE_SIDEKIQ_CANCEL_SYNCS_ON_BOOT
     SmartEnv.add_boolean :CHOUETTE_EMAIL_USER
     SmartEnv.add_boolean :CHOUETTE_TRANSACTIONAL_CHECKSUMS, default: true
     SmartEnv.add_boolean :ENABLE_DELAYED_JOB_REAPER, default: true

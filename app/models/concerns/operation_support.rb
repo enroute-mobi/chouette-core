@@ -110,8 +110,7 @@ module OperationSupport
   end
 
   def operation_scheduled?
-    queue = Sidekiq::Queue[worker_class.sidekiq_options["queue"]]
-    queue.any? { |item| item["class"] == worker_class_name && item.args == [self.id] }
+    Delayed::Job.where("handler ILIKE '%#{self.class.name}%name: id\n    value_before_type_cast: #{self.id}%'").exists?
   end
 
   def child_change

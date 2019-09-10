@@ -29,7 +29,7 @@ RSpec.describe ReferentialCloning, :type => :model do
     let(:referential_cloning) { FactoryGirl.create(:referential_cloning) }
 
     it "should schedule a job in worker" do
-      expect{referential_cloning}.to change { ReferentialCloningWorker.jobs.count }.by(1)
+      expect{referential_cloning}.to change { Delayed::Job.count }.by(1)
     end
   end
 

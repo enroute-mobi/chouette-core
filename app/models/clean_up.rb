@@ -43,7 +43,20 @@ class CleanUp < ApplicationModel
 
     original_state ||= referential.state
     referential.pending!
-    CleanUpWorker.perform_async_or_fail(self, original_state) do
+
+    enqueue_job :clean!, original_state
+  end
+
+  def clean!(original_state)
+    self.original_state = original_state
+    run if may_run?
+    begin
+      referential.switch
+      result = clean
+      # cleaner.successful(result)
+    rescue Exception => e
+      Rails.logger.error "CleanUpWorker : #{e}"
+      # cleaner.failed({error: e.message})
       log_failed({})
     end
   end

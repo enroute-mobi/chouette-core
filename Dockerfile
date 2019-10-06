@@ -1,6 +1,6 @@
 # Stages
 #
-# ruby:2.6-slim
+# debian:stable-slim
 # -> base
 #   -> assets-builder
 #   -> final with COPY assets-builder/public/assets
@@ -11,7 +11,7 @@
 # docker build --build-arg WEEK=`date +%Y%U` -t chouette-core .
 # docker run --add-host "db:172.17.0.1" -e RAILS_DB_PASSWORD=chouette -p 3000:3000 -it chouette-core
 
-FROM ruby:2.6-slim as base
+FROM ruby:2.6.4-slim-stretch as base
 
 # To force rebuild every week
 ARG WEEK
@@ -24,7 +24,7 @@ RUN apt-get update && apt-get dist-upgrade -y && apt-get install -y --no-install
     echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && locale-gen && \
     gem install bundler:$BUNDLER_VERSION
 
-ENV DEV_PACKAGES="build-essential ruby2.3-dev libpq-dev libxml2-dev zlib1g-dev libmagic-dev libmagickwand-dev git-core"
+ENV DEV_PACKAGES="build-essential libpq-dev libxml2-dev zlib1g-dev libmagic-dev libmagickwand-dev git-core"
 ENV RUN_PACKAGES="libpq5 libxml2 zlib1g libmagic1 imagemagick libproj-dev libgeos-c1v5 postgresql-client-common postgresql-client-9.6 cron"
 
 

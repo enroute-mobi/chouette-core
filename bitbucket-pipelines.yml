@@ -38,7 +38,7 @@ pipelines:
           - apt-get -y install --no-install-recommends $DEV_PACKAGES $RUN_PACKAGES
 
           # Install bundler dependencies
-          - bundle install --jobs 4 --deployment
+          - bundle install --quiet --jobs 4 --deployment
 
           # Install yarn dependencies
           - yarn --frozen-lockfile install

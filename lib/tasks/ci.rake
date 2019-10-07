@@ -8,14 +8,6 @@ namespace :ci do
     cache_files << name
   end
 
-  def database_name
-    @database_name ||=
-      begin
-        config = YAML.load(ERB.new(File.read('config/database.yml')).result)
-        config["test"]["database"]
-      end
-  end
-
   def parallel_tests?
     ENV["PARALLEL_TESTS"] == "true"
   end
@@ -30,8 +22,6 @@ namespace :ci do
 
   desc "Prepare CI build"
   task :setup do
-    puts "Use #{database_name} database"
-
     if parallel_tests?
       command = use_schema? ? "parallel:setup" : "parallel:create parallel:migrate"
       sh "RAILS_ENV=test rake #{command}"
@@ -132,7 +122,6 @@ namespace :ci do
 
   namespace :docker do
     task :clean do
-      puts "Drop #{database_name} database"
       if parallel_tests?
         sh "RAILS_ENV=test rake parallel:drop"
       else

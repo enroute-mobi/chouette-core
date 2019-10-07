@@ -96,7 +96,7 @@ definitions:
     docker:
       memory: 2048
     postgres:
-      image: postgres
+      image: enroute/chouette-core-postgres
       environment:
         POSTGRES_DB: chouette
         POSTGRES_USER: chouette

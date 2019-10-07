@@ -10,7 +10,7 @@ pipelines:
           - bundler
           - yarn
         script:
-          - export BUNDLER_VERSION=2.0.1
+          - export BUNDLER_VERSION=2.0.2
           - export RAILS_DB_USER=chouette
           - export RAILS_DB_PASSWORD=chouette
           - export RAILS_DB_NAME=chouette

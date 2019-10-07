@@ -43,8 +43,8 @@ pipelines:
           # Install yarn dependencies
           - yarn --frozen-lockfile install
 
-          - cp config/database.yml.docker app/config/database.yml
-          - cp config/secrets.yml.docker app/config/secrets.yml
+          - cp config/database.yml.docker config/database.yml
+          - cp config/secrets.yml.docker config/secrets.yml
 
           - bundle exec rake ci
         services:

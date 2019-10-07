@@ -5,9 +5,51 @@ pipelines:
   default:
     - step:
         name: Unit tests
-        image: ruby:2.6.0
+        image: ruby:2.6.4-slim-stretch
+        caches:
+          - bundler
+          - yarn
         script:
-          - echo TODO
+          - export BUNDLER_VERSION=2.0.1
+          - export RAILS_DB_USER=chouette
+          - export RAILS_DB_PASSWORD=chouette
+          - export RAILS_DB_NAME=chouette
+          - export PARALLEL_TESTS=true
+          # - export PARALLEL_TEST_PROCESSORS=4
+
+          # Prepare yarn package install
+          - apt-get update && apt-get install -y --no-install-recommends curl gnupg ca-certificates apt-transport-https
+          - curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+          - echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list
+          - curl -sS https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -
+          - echo "deb https://deb.nodesource.com/node_6.x stretch main" > /etc/apt/sources.list.d/nodesource.list
+          - apt-get install -y --no-install-recommends locales yarn nodejs
+
+          # Configure UTF-8 locale
+          - echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && locale-gen
+
+          # Install expected bundler version
+          - gem install bundler:$BUNDLER_VERSION
+
+          # Install dependencies
+          - export DEV_PACKAGES="build-essential libpq-dev libxml2-dev zlib1g-dev libmagic-dev libmagickwand-dev git-core"
+          - export RUN_PACKAGES="libpq5 libxml2 zlib1g libmagic1 imagemagick libproj-dev libgeos-c1v5 postgresql-client-common postgresql-client-9.6"
+          - mkdir -p /usr/share/man/man1 /usr/share/man/man7
+          - apt-get -y install --no-install-recommends $DEV_PACKAGES $RUN_PACKAGES
+
+          # Install bundler dependencies
+          - bundle install --jobs 4 --deployment
+
+          # Install yarn dependencies
+          - yarn --frozen-lockfile install
+
+          - cp config/database.yml.docker app/config/database.yml
+          - cp config/secrets.yml.docker app/config/secrets.yml
+
+          - bundle exec rake ci
+        services:
+          - postgres
+
   branches:
     master:
       - step:
@@ -53,3 +95,12 @@ definitions:
   services:
     docker:
       memory: 2048
+    postgres:
+      image: postgres
+      environment:
+        POSTGRES_DB: chouette
+        POSTGRES_USER: chouette
+        POSTGRES_PASSWORD: chouette
+  caches:
+    bundler: ./vendor/bundle
+    yarn: ./node_modules

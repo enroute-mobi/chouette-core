@@ -82,6 +82,12 @@ namespace :ci do
   end
 
   task :spec do
+    test_options = "--format RspecJunitFormatter --out test-results/rspec.xml"
+
+    unless quiet?
+      test_options += " --format progress"
+    end
+
     if parallel_tests?
       # parallel tasks invokes this task ..
       # but development db isn't available during ci tasks
@@ -93,13 +99,9 @@ namespace :ci do
       parallel_specs_command += " --runtime-log #{runtime_log}" if File.exists? runtime_log
 
       # Add test options
-      test_options = "--format ParallelTests::RSpec::RuntimeLogger --out #{runtime_log}"
+      test_options += " --format ParallelTests::RSpec::RuntimeLogger --out #{runtime_log}"
       summary_log = "log/summary_specs.log"
       test_options += " --format ParallelTests::RSpec::SummaryLogger --out #{summary_log}"
-
-      unless quiet?
-        test_options += " --format progress"
-      end
 
       parallel_specs_command += " --test-options '#{test_options}'"
 
@@ -113,7 +115,7 @@ namespace :ci do
         # end
       end
     else
-      Rake::Task["spec"].invoke
+      sh "bundle exec rspec #{test_options}"
     end
   end
   cache_file "log/parallel_runtime_specs.log"

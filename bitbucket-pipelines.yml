@@ -1,6 +1,3 @@
-options:
-  docker: true
-
 pipelines:
   default:
     - step:
@@ -73,6 +70,8 @@ pipelines:
             - docker build . -t $IMAGE_NAME
             # PUBLISH IMAGE
             - docker push $IMAGE_NAME
+          services:
+            - docker
       - step:
           name: Deploy to test
           image: google/cloud-sdk:latest
@@ -91,6 +90,8 @@ pipelines:
             - docker pull $IMAGE_NAME
             - docker tag $IMAGE_NAME $TAGGED_IMAGE_NAME
             - docker push $TAGGED_IMAGE_NAME
+          services:
+            - docker
 
 definitions:
   services:

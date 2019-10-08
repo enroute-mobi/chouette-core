@@ -6,6 +6,8 @@ pipelines:
         caches:
           - bundler
           - yarn
+          - assets
+          - assets-cache
         script:
           - export BUNDLER_VERSION=2.0.2
           - export RAILS_DB_USER=chouette
@@ -106,3 +108,5 @@ definitions:
   caches:
     bundler: ./vendor/bundle
     yarn: ./node_modules
+    assets: ./public/assets
+    assets-cache: ./tmp/assets/cache

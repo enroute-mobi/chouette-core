@@ -26,6 +26,7 @@ pipelines:
           - apt-get -qq update && apt-get -qq install -y --no-install-recommends locales yarn nodejs
 
           # Configure UTF-8 locale
+          - export LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8
           - echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && locale-gen
 
           # Install expected bundler version
@@ -46,7 +47,7 @@ pipelines:
           - cp config/database.yml.docker config/database.yml
           - cp config/secrets.yml.docker config/secrets.yml
 
-          # - bundle exec rake ci
+          - bundle exec rake ci
         services:
           - postgres
 

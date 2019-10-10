@@ -69,6 +69,15 @@ definitions:
           - postgres
 
 pipelines:
+  custom:
+    merge: # Merge ci-master from chouette-core
+      - step:
+          script:
+            - git remote add upstream git@bitbucket.org:enroute-mobi/chouette-core.git
+            - git fetch upstream --tags
+            - git merge chouette-core/ci-master
+            - git push origin master
+
   default:
     - step: *unit-tests
 

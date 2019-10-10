@@ -95,9 +95,10 @@ pipelines:
       - step:
           name: Tag
           script:
-            - git tag -afm "Build ${BITBUCKET_BUILD_NUMBER}" ci-master
-            - git push origin :refs/tags/ci-master
-            - git push origin ci-master
+            - export TAG_NAME=$BITBUCKET_REPO_SLUG/ci-master
+            - git tag -afm "Build ${BITBUCKET_BUILD_NUMBER}" $TAG_NAME
+            - git push origin :refs/tags/$TAG_NAME
+            - git push origin $TAG_NAME
       - step:
           name: Deploy to test
           image: google/cloud-sdk:latest

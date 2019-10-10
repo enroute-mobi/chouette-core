@@ -18,7 +18,7 @@ RSpec.describe 'Workbenches', type: :feature do
 
   describe 'show' do
     context 'modal action' do
-      it 'expected behavior' do
+      it 'expected behavior', skip: "See CHOUETTE-37" do
         visit workbench_path(workbench)
 
         # Modal Action Box: is present

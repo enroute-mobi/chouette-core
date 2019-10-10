@@ -8,14 +8,6 @@ namespace :ci do
     cache_files << name
   end
 
-  def database_name
-    @database_name ||=
-      begin
-        config = YAML.load(ERB.new(File.read('config/database.yml')).result)
-        config["test"]["database"]
-      end
-  end
-
   def parallel_tests?
     ENV["PARALLEL_TESTS"] == "true"
   end
@@ -30,8 +22,6 @@ namespace :ci do
 
   desc "Prepare CI build"
   task :setup do
-    puts "Use #{database_name} database"
-
     if parallel_tests?
       command = use_schema? ? "parallel:setup" : "parallel:create parallel:migrate"
       sh "RAILS_ENV=test rake #{command}"
@@ -92,6 +82,12 @@ namespace :ci do
   end
 
   task :spec do
+    test_options = "--format RspecJunitFormatter --out test-results/rspec.xml"
+
+    unless quiet?
+      test_options += " --format progress"
+    end
+
     if parallel_tests?
       # parallel tasks invokes this task ..
       # but development db isn't available during ci tasks
@@ -103,13 +99,9 @@ namespace :ci do
       parallel_specs_command += " --runtime-log #{runtime_log}" if File.exists? runtime_log
 
       # Add test options
-      test_options = "--format ParallelTests::RSpec::RuntimeLogger --out #{runtime_log}"
+      test_options += " --format ParallelTests::RSpec::RuntimeLogger --out #{runtime_log}"
       summary_log = "log/summary_specs.log"
       test_options += " --format ParallelTests::RSpec::SummaryLogger --out #{summary_log}"
-
-      unless quiet?
-        test_options += " --format progress"
-      end
 
       parallel_specs_command += " --test-options '#{test_options}'"
 
@@ -123,7 +115,7 @@ namespace :ci do
         # end
       end
     else
-      Rake::Task["spec"].invoke
+      sh "bundle exec rspec #{test_options}"
     end
   end
   cache_file "log/parallel_runtime_specs.log"
@@ -132,7 +124,6 @@ namespace :ci do
 
   namespace :docker do
     task :clean do
-      puts "Drop #{database_name} database"
       if parallel_tests?
         sh "RAILS_ENV=test rake parallel:drop"
       else

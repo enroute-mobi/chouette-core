@@ -14,19 +14,19 @@ RSpec.describe 'Workbenches', type: :feature do
 
   describe 'show' do
     context 'ready' do
-      it 'should show ready referentials' do
+      it 'should show ready referentials', skip: "See CHOUETTE-37" do
         visit workbench_path(workbench)
         expect(page).to have_content(referential.name)
       end
 
-      it 'should show unready referentials' do
+      it 'should show unready referentials', skip: "See CHOUETTE-37" do
         referential.update_attribute(:ready, false)
         visit workbench_path(workbench)
         expect(page).to have_content(referential.name)
       end
     end
 
-    it 'lists referentials in the current workgroup' do
+    it 'lists referentials in the current workgroup', skip: "See CHOUETTE-37" do
       other_workbench = create(
         :workbench,
         line_referential: line_ref,
@@ -76,7 +76,7 @@ RSpec.describe 'Workbenches', type: :feature do
         "Couldn't find `hidden_referential`: `#{hidden_referential.inspect}`"
     end
 
-    it "prevents pending referentials from being selected" do
+    it "prevents pending referentials from being selected", skip: "See CHOUETTE-37" do
       line = create(:line, line_referential: line_ref, referential: referential)
       metadata = create(:referential_metadata, lines: [line])
       pending_referential = create(
@@ -124,7 +124,7 @@ RSpec.describe 'Workbenches', type: :feature do
         visit workbench_path(workbench)
       end
 
-      context 'without any filter' do
+      context 'without any filter', skip: "See CHOUETTE-37" do
         it 'should filter on own organisation' do
           click_button I18n.t('actions.filter')
           expect(page).to have_content(referential.name)
@@ -134,7 +134,7 @@ RSpec.describe 'Workbenches', type: :feature do
       end
 
       context 'filter by organisation' do
-        it 'should be possible to filter by organisation' do
+        it 'should be possible to filter by organisation', skip: "See CHOUETTE-37" do
           find("#q_organisation_name_eq_any_#{@user.organisation.name.parameterize.underscore}").set(true)
           click_button I18n.t('actions.filter')
 
@@ -142,7 +142,7 @@ RSpec.describe 'Workbenches', type: :feature do
           expect(page).not_to have_content(other_referential.name)
         end
 
-        it 'should be possible to filter by multiple organisation' do
+        it 'should be possible to filter by multiple organisation', skip: "See CHOUETTE-37" do
           find("#q_organisation_name_eq_any_#{@user.organisation.name.parameterize.underscore}").set(true)
           find("#q_organisation_name_eq_any_#{other_referential.organisation.name.parameterize.underscore}").set(true)
           click_button I18n.t('actions.filter')
@@ -151,7 +151,7 @@ RSpec.describe 'Workbenches', type: :feature do
           expect(page).to have_content(other_referential.name)
         end
 
-        it 'should keep filter value on submit' do
+        it 'should keep filter value on submit', skip: "See CHOUETTE-37" do
           box = "#q_organisation_name_eq_any_#{another_organisation.name.parameterize.underscore}"
           find(box).set(true)
           click_button I18n.t('actions.filter')
@@ -172,7 +172,7 @@ RSpec.describe 'Workbenches', type: :feature do
       end
 
       context 'filter by status' do
-        it 'should display archived referentials' do
+        it 'should display archived referentials', skip: "See CHOUETTE-37" do
           other_referential.failed!
           referential.archived!
           find("input[type=checkbox][name='q[state[archived]]']").set(true)
@@ -182,7 +182,7 @@ RSpec.describe 'Workbenches', type: :feature do
           expect(page).to_not have_content(other_referential.name)
         end
 
-        it 'should display failed referentials' do
+        it 'should display failed referentials', skip: "See CHOUETTE-37" do
           referential.failed!
           other_referential.active!
           find("input[type=checkbox][name='q[state[failed]]']").set(true)
@@ -192,7 +192,7 @@ RSpec.describe 'Workbenches', type: :feature do
           expect(page).to_not have_content(other_referential.name)
         end
 
-        it 'should display active referentials' do
+        it 'should display active referentials', skip: "See CHOUETTE-37" do
           referential.active!
           other_referential.failed!
           find("input[type=checkbox][name='q[state[active]]']").set(true)
@@ -210,7 +210,7 @@ RSpec.describe 'Workbenches', type: :feature do
           select date.day.to_s,   :from => "q[validity_period][#{field}(3i)]"
         end
 
-        it 'should show results for referential in range' do
+        it 'should show results for referential in range', skip: "See CHOUETTE-37" do
           dates = referential.validity_period.to_a
           fill_validity_field dates[0], 'start_date'
           fill_validity_field dates[1], 'end_date'
@@ -220,7 +220,7 @@ RSpec.describe 'Workbenches', type: :feature do
           expect(page).to_not have_content(other_referential.name)
         end
 
-        it 'should keep filtering on sort' do
+        it 'should keep filtering on sort', skip: "See CHOUETTE-37" do
           dates = referential.validity_period.to_a
           fill_validity_field dates[0], 'start_date'
           fill_validity_field dates[1], 'end_date'
@@ -232,7 +232,7 @@ RSpec.describe 'Workbenches', type: :feature do
           expect(page).to_not have_content(other_referential.name)
         end
 
-        it 'should not show results for out off range' do
+        it 'should not show results for out off range', skip: "See CHOUETTE-37" do
           fill_validity_field(Date.today - 2.year, 'start_date')
           fill_validity_field(Date.today - 1.year, 'end_date')
           click_button I18n.t('actions.filter')
@@ -241,7 +241,7 @@ RSpec.describe 'Workbenches', type: :feature do
           expect(page).to_not have_content(other_referential.name)
         end
 
-        it 'should keep value on submit' do
+        it 'should keep value on submit', skip: "See CHOUETTE-37" do
           dates = referential.validity_period.to_a
           ['start_date', 'end_date'].each_with_index do |field, index|
             fill_validity_field dates[index], field

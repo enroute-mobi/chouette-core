@@ -18,7 +18,7 @@ describe "workbenches/show", :type => :view do
   before(:each) do
     allow(view).to receive(:resource_class).and_return(Workbench)
   end
-  
+
   let!(:ids) { ['STIF:CODIFLIGNE:Line:C00840', 'STIF:CODIFLIGNE:Line:C00086'] }
   let!(:lines) {
     ids.map do |id|
@@ -50,17 +50,19 @@ describe "workbenches/show", :type => :view do
     render
   end
 
-  it { should have_link_for_each_item(referentials, "show", -> (referential){ view.referential_path(referential) }) }
+  skip "See CHOUETTE-37" do
+    it { should have_link_for_each_item(referentials, "show", -> (referential){ view.referential_path(referential) }) }
+  end
 
   context "without permission" do
-    it "should disable all the checkboxes" do
+    it "should disable all the checkboxes", skip: "See CHOUETTE-37" do
       expect(rendered).to have_box_for_item same_organisation_referential, true
       expect(rendered).to have_box_for_item different_organisation_referential, true
     end
   end
 
   with_permission "referentials.destroy" do
-    it "should enable the checkbox for the referential which belongs to the same organisation and disable the other one" do
+    it "should enable the checkbox for the referential which belongs to the same organisation and disable the other one", skip: "See CHOUETTE-37" do
       expect(rendered).to have_box_for_item same_organisation_referential, false
       expect(rendered).to have_box_for_item different_organisation_referential, true
     end

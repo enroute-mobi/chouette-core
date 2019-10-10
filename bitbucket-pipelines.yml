@@ -1,6 +1,21 @@
-pipelines:
-  default:
-    - step:
+definitions:
+  services:
+    docker:
+      memory: 2048
+    postgres:
+      image: enroute/chouette-core-postgres
+      environment:
+        POSTGRES_DB: chouette
+        POSTGRES_USER: chouette
+        POSTGRES_PASSWORD: chouette
+  caches:
+    bundler: ./vendor/bundle
+    yarn: ./node_modules
+    assets: ./public/assets
+    assets-cache: ./tmp/assets/cache
+
+  steps:
+    - step: &unit-tests
         name: Unit tests
         image: ruby:2.6.4-slim-stretch
         caches:
@@ -53,13 +68,13 @@ pipelines:
         services:
           - postgres
 
+pipelines:
+  default:
+    - step: *unit-tests
+
   branches:
     master:
-      - step:
-          name: Unit tests
-          image: ruby:2.6.0
-          script:
-            - echo TODO
+      - step: *unit-tests
       - step:
           name: Build Docker
           image: google/cloud-sdk:latest
@@ -97,19 +112,3 @@ pipelines:
             - docker push $TAGGED_IMAGE_NAME
           services:
             - docker
-
-definitions:
-  services:
-    docker:
-      memory: 2048
-    postgres:
-      image: enroute/chouette-core-postgres
-      environment:
-        POSTGRES_DB: chouette
-        POSTGRES_USER: chouette
-        POSTGRES_PASSWORD: chouette
-  caches:
-    bundler: ./vendor/bundle
-    yarn: ./node_modules
-    assets: ./public/assets
-    assets-cache: ./tmp/assets/cache

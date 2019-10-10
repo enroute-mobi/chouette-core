@@ -93,6 +93,12 @@ pipelines:
           services:
             - docker
       - step:
+          name: Tag
+          script:
+            - git tag -afm "Build ${BITBUCKET_BUILD_NUMBER}" ci-master
+            - git push origin :refs/tags/ci-master
+            - git push origin ci-master
+      - step:
           name: Deploy to test
           image: google/cloud-sdk:latest
           caches:

@@ -113,7 +113,7 @@ gem 'clockpicker-rails'
 
 # Format Output
 gem 'json'
-gem 'rubyzip', '~> 1.2.2'
+gem 'rubyzip', '~> 1.3.0'
 gem 'roo'
 
 # Controller

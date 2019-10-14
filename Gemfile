@@ -122,7 +122,8 @@ gem 'acts_as_list'
 gem 'acts_as_tree'
 
 gem 'rabl'
-gem 'carrierwave', '~> 1.0'
+gem 'carrierwave'
+gem 'carrierwave-google-storage'
 gem 'rmagick'
 
 gem 'delayed_job_active_record'

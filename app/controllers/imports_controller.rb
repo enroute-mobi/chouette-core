@@ -9,6 +9,7 @@ class ImportsController < ChouetteController
 
   def internal_download
     if params[:token] == resource.token_download
+      resource.file.cache_stored_file!
       send_file resource.file.path
     else
       user_not_authorized

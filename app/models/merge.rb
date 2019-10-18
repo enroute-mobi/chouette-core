@@ -292,7 +292,7 @@ class Merge < ApplicationModel
               save_model! new_route
 
               if new_route.checksum != route.checksum
-                raise "Checksum has changed: \"#{route.checksum}\", \"#{route.checksum_source}\" -> \"#{new_route.checksum}\", \"#{new_route.checksum_source}\""
+                raise "Checksum has changed for route #{route.id}:\n \"#{route.checksum}\", \"#{route.checksum_source}\" \n -> \n \"#{new_route.checksum}\", \"#{new_route.checksum_source}\""
               end
 
               if new_route.routing_constraint_zones.map(&:checksum).sort != routing_constraint_zones.keys.sort
@@ -381,7 +381,7 @@ class Merge < ApplicationModel
 
               new_journey_pattern = new.journey_patterns.create! attributes
               if new_journey_pattern.checksum != journey_pattern.checksum
-                raise "Checksum has changed for #{journey_pattern.inspect} (to #{new_journey_pattern.inspect}): \"#{journey_pattern.checksum_source}\" -> \"#{new_journey_pattern.checksum_source}\""
+                raise "Checksum has changed for journey_pattern #{journey_pattern.inspect} (to #{new_journey_pattern.inspect}): \"#{journey_pattern.checksum_source}\" -> \"#{new_journey_pattern.checksum_source}\""
               end
             end
           end
@@ -411,7 +411,7 @@ class Merge < ApplicationModel
           save_model! new_footnote
 
           if new_footnote.checksum != footnote.checksum
-            raise "Checksum has changed: \"#{footnote.checksum}\", \"#{footnote.checksum_source}\" -> \"#{new_footnote.checksum}\", \"#{new_footnote.checksum_source}\""
+            raise "Checksum has changed for footnote #{footnote.id} :\n \"#{footnote.checksum}\", \"#{footnote.checksum_source}\" \n -> \n \"#{new_footnote.checksum}\", \"#{new_footnote.checksum_source}\""
           end
         end
       end
@@ -610,7 +610,7 @@ class Merge < ApplicationModel
                 save_model! new_purchase_window
 
                 if new_purchase_window.checksum != purchase_window.checksum
-                  raise "Checksum has changed: #{purchase_window.checksum_source} #{new_purchase_window.checksum_source}"
+                  raise "Checksum has changed for purchase_window #{purchase_window.id} :\n #{purchase_window.checksum_source} \n => \n #{new_purchase_window.checksum_source}"
                 end
 
                 associated_purchase_window = new_purchase_window
@@ -643,7 +643,7 @@ class Merge < ApplicationModel
                 Rails.logger.info vjas.inspect
               end
 
-              raise "Checksum has changed: \"#{vehicle_journey.checksum_source}\" \"#{vehicle_journey.checksum}\" -> \"#{new_vehicle_journey.checksum_source}\" \"#{new_vehicle_journey.checksum}\""
+              raise "Checksum has changed for vehicle_journey #{vehicle_journey.id} :\n \"#{vehicle_journey.checksum_source}\" \n - \"#{vehicle_journey.checksum}\" \n => \n \"#{new_vehicle_journey.checksum_source}\"  \n - \"#{new_vehicle_journey.checksum}\""
             end
 
             new_vehicle_journey_ids[vehicle_journey.id] = new_vehicle_journey.id

@@ -121,8 +121,8 @@ RSpec.describe 'Checksum', type: :feature do
       expect(vehicle_journey.footnotes).to be_present
       expect(vehicle_journey.vehicle_journey_at_stops).to be_present
       expect(vehicle_journey.purchase_windows).to be_present
-      expect(vehicle_journey.checksum_source).to eq "published_journey_name|published_journey_identifier|1|631761e300cee806ceec55fa27462034da4a83ef35525109387811777b49c5ef|46fa73a1d37afcd53d9bb8d8c1f982a632238892be62e4d93019104d69cd40b8,c4f1d8b7656d15667dd3ecf73d1324113fb00b7eeaf63eca0a41e92e4188c413,dcab6bde7033e92dee3afed3ee52691c45334d39cd691705adaf7c92ec9d24d9|f375721b67407da3bc161c8965adc8200d4bae3574116e3c2fd69b2c3e58f737"
-      expect(vehicle_journey.checksum).to eq "a5d6b5b8766f1eb6a5fdb0c080428dba9ff743c7a9b4a31f39a67801982545a4"
+      expect(vehicle_journey.checksum_source).to eq "published_journey_name|published_journey_identifier|1|631761e300cee806ceec55fa27462034da4a83ef35525109387811777b49c5ef|-|46fa73a1d37afcd53d9bb8d8c1f982a632238892be62e4d93019104d69cd40b8,c4f1d8b7656d15667dd3ecf73d1324113fb00b7eeaf63eca0a41e92e4188c413,dcab6bde7033e92dee3afed3ee52691c45334d39cd691705adaf7c92ec9d24d9|f375721b67407da3bc161c8965adc8200d4bae3574116e3c2fd69b2c3e58f737"
+      expect(vehicle_journey.checksum).to eq "c09d89cf64c37354485256d4592c28950dbacc38c6a9a3b9888bf3a61d6be218"
     end
   end
 

@@ -146,6 +146,13 @@ namespace :referential do
     end
   end
 
+  desc 'Update all relevant checksums for VehicleJourney'
+  task :update_vehicle_journeys_checksums => :environment do
+    each_relevant_referential do |referential|
+      update_checksums_for_referential referential, [Chouette::VehicleJourney]
+    end
+  end
+
   desc 'Update all relevant checksums for RoutingConstraintZone'
   task :update_routing_constraint_zones_checksums => :environment do |t, args|
     each_relevant_referential do |referential|

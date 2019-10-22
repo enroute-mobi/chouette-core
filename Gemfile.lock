@@ -1,40 +1,26 @@
 GIT
-  remote: https://github.com/af83/gtfs.git
-  revision: 9c025d3eb8624bdf6eb0e92298a1509376c4858f
+  remote: https://bitbucket.org/enroute-mobi/gtfs.git
+  revision: 676d5c3c94a487c4e1441af4dad8d1cc6aa04882
   specs:
-    gtfs (0.3.1)
+    gtfs (0.3.2)
       multi_json
       rake
       rubyzip (~> 1.1)
 
 GIT
-  remote: https://github.com/af83/has_array_of.git
-  revision: 4e6769708a15065c73eccb4fd97f794f34461b14
+  remote: https://bitbucket.org/enroute-mobi/has_array_of.git
+  revision: 7e80fbbf30c7f56c285051d54ae73abef6ef6cb2
   specs:
-    has_array_of (0.0.7)
+    has_array_of (0.0.8)
       activerecord (~> 5.0)
       pg (~> 0.20.0)
       railties (>= 5.0)
 
 GIT
-  remote: https://github.com/af83/language_engine.git
-  revision: f0085727b1b5766371af065deaa05a5e5aad81dd
+  remote: https://bitbucket.org/enroute-mobi/icar-api.git
+  revision: 99f5cb6ab363bb91e68f6b9ecbf8e30b2c8fc4bd
   specs:
-    language_engine (0.0.9)
-      rails (~> 5.2)
-
-GIT
-  remote: https://github.com/af83/stif-codifline-api.git
-  revision: 3cc2ad67d646ab5b3897f541383d12d0dc2e1801
-  specs:
-    codifligne (0.1.17)
-      nokogiri (>= 1.8.5)
-
-GIT
-  remote: https://github.com/af83/stif-reflex-api.git
-  revision: bc37ceb82d041d86bdb3f8f9be3253409524c6f0
-  specs:
-    reflex (0.0.3)
+    icar (0.0.3)
       nokogiri (>= 1.8.5)
       rgeo (~> 2.0.1)
       rgeo-proj4
@@ -42,7 +28,21 @@ GIT
       rubyzip (>= 1.2.2)
 
 GIT
-  remote: https://github.com/af83/whenever.git
+  remote: https://bitbucket.org/enroute-mobi/ilico-api.git
+  revision: bfee97f419947e1b207a36e1c7cb86e78d74837c
+  specs:
+    codifligne (0.1.17)
+      nokogiri (>= 1.8.5)
+
+GIT
+  remote: https://bitbucket.org/enroute-mobi/language_engine.git
+  revision: f0085727b1b5766371af065deaa05a5e5aad81dd
+  specs:
+    language_engine (0.0.9)
+      rails (~> 5.2)
+
+GIT
+  remote: https://bitbucket.org/enroute-mobi/whenever.git
   revision: b7963381a11243affe4f35881c85be0710f434e3
   specs:
     whenever (0.9.4)
@@ -814,6 +814,7 @@ DEPENDENCIES
   htmlbeautifier
   i18n-js
   i18n-tasks
+  icar!
   inherited_resources
   jbuilder (~> 2.0)
   jquery-rails
@@ -857,7 +858,6 @@ DEPENDENCIES
   rb-fsevent
   rb-inotify
   redis-rails
-  reflex!
   responders
   rgeo
   rgeo-proj4

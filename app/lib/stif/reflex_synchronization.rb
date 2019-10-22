@@ -53,7 +53,7 @@ module Stif
         reset_defaut_referential
 
         start   = Time.now
-        results = Reflex::API.new(timeout: 120).process('getAll')
+        results = ICar::API.new(timeout: 120).process('getAll')
         log_processing_time("Process getAll", Time.now - start)
         stop_areas = results[:Quay] | results[:StopPlace]
         organisational_units = results[:OrganisationalUnit]

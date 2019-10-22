@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 
 # Use https for github
 git_source(:github) { |name| "https://github.com/#{name}.git" }
-git_source(:af83) { |name| "https://github.com/af83/#{name}.git" }
+git_source(:en_route) { |name| "https://bitbucket.org/enroute-mobi/#{name}.git" }
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '5.2.2.1'
@@ -35,7 +35,7 @@ gem 'select2-rails', '~> 4.0', '>= 4.0.3'
 # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
 gem 'spring', group: :development
 # ActiveRecord associations on top of PostgreSQL arrays
-gem 'has_array_of', af83: 'has_array_of'
+gem 'has_array_of', en_route: 'has_array_of'
 
 gem 'rails-observers'
 
@@ -70,9 +70,9 @@ gem 'polylines'
 gem 'bulk_insert'
 
 # Codifligne API
-gem 'codifligne', af83: 'stif-codifline-api'
-# Reflex API
-gem 'reflex', af83: 'stif-reflex-api'
+gem 'codifligne', en_route: 'ilico-api'
+# ICar API
+gem 'icar', en_route: 'icar-api'
 
 # Authentication
 gem 'devise'
@@ -96,7 +96,7 @@ gem 'ffi', '> 1.9.24'
 gem 'mimemagic'
 
 # User interface
-gem 'language_engine', '0.0.9', af83: 'language_engine'
+gem 'language_engine', '0.0.9', en_route: 'language_engine'
 gem 'calendar_helper', '0.2.5'
 gem 'cocoon'
 gem 'slim-rails'
@@ -147,7 +147,7 @@ gem 'delayed_job_active_record'
 gem 'delayed_job_web'
 gem 'delayed_job_heartbeat_plugin'
 
-gem 'whenever', github: 'af83/whenever', require: false # '~> 0.9'
+gem 'whenever', en_route: 'whenever', require: false # '~> 0.9'
 gem 'rake'
 gem 'apartment', '~> 2.2.0'
 gem 'aasm'
@@ -161,7 +161,7 @@ gem 'newrelic_rpm'
 gem 'letter_opener'
 gem 'letter_opener_web', '~> 1.0'
 
-gem 'gtfs', af83: 'gtfs'
+gem 'gtfs', en_route: 'gtfs'
 
 group :development do
   gem 'capistrano'

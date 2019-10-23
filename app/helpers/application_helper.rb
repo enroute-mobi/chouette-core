@@ -26,9 +26,9 @@ module ApplicationHelper
     arg = object.organisation.name.capitalize if Workbench === object
 
     if object.try(:name)
-      t(local, name: arg || object.name.capitalize || object.id)
+      t(local, name: arg || object.name.capitalize || object.id).html_safe
     else
-      t(local)
+      t(local).html_safe
     end
   end
 

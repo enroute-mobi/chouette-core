@@ -13,7 +13,7 @@ git tag -d $TAG
 echo "* Fetch upstream tags"
 git fetch upstream --tags > /dev/null
 
-TAG_COMMIT=`git rev-parse $TAG`
+TAG_COMMIT=$(git rev-parse $TAG)
 echo "* Tag $TAG is $TAG_COMMIT"
 
 # Ignore some files like bitbucket pipelines config
@@ -21,7 +21,7 @@ NOT_MERGED_FILES='bitbucket-pipelines.yml'
 
 # To avoid problem in the merge, retrieve the chouette-core versions
 for file in $NOT_MERGED_FILES; do
-    git show $TAG_COMMIT:$file > $file
+    git show "$TAG_COMMIT:$file" > $file
 done
 
 # But we need to commit :'(
@@ -38,4 +38,5 @@ echo "* Commit merge"
 git commit --no-edit -a
 
 echo "* Push on master"
+[ "$DRY_RUN" = "true" ] && exit 0
 git push origin master

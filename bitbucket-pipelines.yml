@@ -29,7 +29,7 @@ definitions:
           - export RAILS_DB_PASSWORD=chouette
           - export RAILS_DB_NAME=chouette
           - export RAILS_DB_HOST=localhost
-          # - export PARALLEL_TESTS=true
+          - export PARALLEL_TESTS=true
           # - export PARALLEL_TEST_PROCESSORS=4
 
           # Configure UTF-8 locale

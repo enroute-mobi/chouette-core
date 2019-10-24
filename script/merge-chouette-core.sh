@@ -8,7 +8,7 @@ if ! git remote --verbose | grep "^upstream" > /dev/null; then
 fi
 
 TAG=ci-master
-git tag -d $TAG
+git tag -d $TAG || true
 
 echo "* Fetch upstream tags"
 git fetch upstream --tags > /dev/null

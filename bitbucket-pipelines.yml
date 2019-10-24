@@ -13,7 +13,7 @@ definitions:
     yarn: ./node_modules
     assets: ./public/assets
     assets-cache: ./tmp/assets/cache
-
+    build-cache: ./cache
   steps:
     - step: &unit-tests
         name: Unit tests
@@ -23,6 +23,7 @@ definitions:
           - yarn
           - assets
           - assets-cache
+          - build-cache
         script:
           - export BUNDLER_VERSION=2.0.2
           - export RAILS_DB_USER=chouette

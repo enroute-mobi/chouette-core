@@ -13,6 +13,7 @@ Rails.application.configure do
   SmartEnv.set :RAILS_HOST, default: 'http://front:3000'
   SmartEnv.add :AUTH_SETTINGS, default: { type: 'database' }
   SmartEnv.add :SMTP_SETTINGS, default: {}
+  SmartEnv.add_boolean :RAILS_SERVE_STATIC_FILES, default: true
 
   # Settings specified here will take precedence over those in config/application.rb.
 
@@ -35,7 +36,7 @@ Rails.application.configure do
 
   # Disable Rails's static asset server (Apache or nginx will already do this).
   # config.serve_static_files = false
-  config.serve_static_files = ENV['RAILS_SERVE_STATIC_FILES'].present?
+  config.serve_static_files = SmartEnv.boolean('RAILS_SERVE_STATIC_FILES')
   # config.public_file_server.enabled = ENV['RAILS_SERVE_STATIC_FILES'].present?
 
   # Compress JavaScripts and CSS.
@@ -72,7 +73,7 @@ Rails.application.configure do
 
   # Use a different cache store in production.
   # config.cache_store = :mem_cache_store
-  if SmartEnv['REDIS_URL']
+  if SmartEnv['REDIS_URL'].present?
     config.cache_store = :redis_store, SmartEnv['REDIS_URL'], { expires_in: 90.minutes }
   end
 

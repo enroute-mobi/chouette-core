@@ -11,6 +11,9 @@ RSpec.describe ReferentialCloning, :type => :model do
 
   it 'should have the correct arguments in commands' do
     r = FactoryGirl.create(:referential_cloning)
+    allow(r).to receive(:source_schema) { 'test_1' }
+    allow(r).to receive(:database) { 'chouette_test' }
+
     expect(r.dump_command).to eq "PGPASSWORD='chouette' pg_dump --host localhost --port 5432 --username chouette --schema=test_1 chouette_test"
     expect(r.restore_command).to eq "PGPASSWORD='chouette' psql -q --host localhost --port 5432 --username chouette chouette_test"
 

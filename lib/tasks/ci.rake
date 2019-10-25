@@ -82,7 +82,7 @@ namespace :ci do
   end
 
   task :spec do
-    test_options = "--format RspecJunitFormatter --out test-results/rspec.xml"
+    test_options = "--format RspecJunitFormatter --out test-results/rspec#{ENV['TEST_ENV_NUMBER']}.xml"
 
     unless quiet?
       test_options += " --format progress"

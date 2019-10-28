@@ -115,7 +115,7 @@ pipelines:
           deployment: test
           trigger: manual
           script:
-            # Tag image in registry with test label
-            - ./script/bitbucket-tag-docker.sh test
+            # Tag image in registry with latest label
+            - ./script/bitbucket-tag-docker.sh latest
           services:
             - docker

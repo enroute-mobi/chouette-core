@@ -116,7 +116,7 @@ Rails.application.configure do
   config.action_mailer.default charset: 'utf-8'
 
   # See #8823
-  config.chouette_email_user = SmartEnv['CHOUETTE_EMAIL_USER']
+  config.chouette_email_user = SmartEnv.boolean('CHOUETTE_EMAIL_USER')
 
   config.accept_user_creation = SmartEnv.boolean('ACCEPT_USER_CREATION')
   config.chouette_authentication_settings = SmartEnv.hash('AUTH_SETTINGS')

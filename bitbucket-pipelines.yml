@@ -113,9 +113,10 @@ pipelines:
           caches:
             - docker
           deployment: test
-          trigger: manual
           script:
             # Tag image in registry with latest label
             - ./script/bitbucket-tag-docker.sh latest
+            # Update test instance
+            - ./script/bitbucket-update-image.sh
           services:
             - docker

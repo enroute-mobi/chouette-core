@@ -1,6 +1,5 @@
 module StopAreaControl
   class TimeZone < InternalControl::Base
-    required_features :core_controls
 
     def self.default_code; "3-StopArea-1" end
 

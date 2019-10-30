@@ -2,7 +2,6 @@ require_dependency 'compliance_controls/route_control/internal_base'
 
 module RouteControl
   class StopPointsBoardingAndAlighting < InternalBase
-    required_features :core_controls
 
     def self.default_code; "3-Route-12" end
 

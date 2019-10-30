@@ -189,8 +189,6 @@ end
 group :test do
   gem 'email_spec'
   gem 'cucumber-rails', require: false
-  gem 'simplecov', :require => false
-  gem 'simplecov-rcov', :require => false
   gem 'htmlbeautifier'
   gem 'timecop'
   gem 'rspec-snapshot'
@@ -252,3 +250,4 @@ gem 'google-cloud-storage', '> 1.4.0'
 gem 'net-sftp', '~> 2.1'
 
 gem 'rspec_junit_formatter'
+gem 'codacy-coverage', require: false

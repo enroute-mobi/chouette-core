@@ -1,7 +1,5 @@
 module CompanyControl
   class NameIsPresent < InternalControl::Base
-    required_features :core_controls
-
     only_with_custom_field Chouette::Company, :public_name
 
     def self.default_code; "3-Company-1" end

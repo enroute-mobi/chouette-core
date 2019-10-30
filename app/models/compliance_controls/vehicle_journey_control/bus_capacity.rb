@@ -2,8 +2,6 @@ require_dependency 'compliance_controls/vehicle_journey_control/internal_base'
 
 module VehicleJourneyControl
   class BusCapacity < InternalBase
-    required_features :core_controls
-
     only_with_custom_field Chouette::VehicleJourney, :capacity
 
     def self.default_code; "3-VehicleJourney-9" end

@@ -1,8 +1,6 @@
 if InternalControl::Base.enabled?("dummy")
   module DummyControl
     class Dummy < InternalControl::Base
-      required_features :core_controls
-
       store_accessor :control_attributes, :status
 
       store_accessor :control_attributes, :status
@@ -10,7 +8,7 @@ if InternalControl::Base.enabled?("dummy")
       enumerize :status, in: %i(OK ERROR WARNING IGNORED), default: :OK
 
       def self.default_code; "00-Dummy-00" end
-      
+
       def self.object_path compliance_check, line
         line_referential_line_path(line.line_referential, line)
       end

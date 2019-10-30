@@ -2,8 +2,6 @@ require_dependency 'compliance_controls/vehicle_journey_control/internal_base'
 
 module VehicleJourneyControl
   class PublishedJourneyName < InternalBase
-    required_features :core_controls
-
     store_accessor :control_attributes, :minimum, :maximum, :company_id
     validates_presence_of :company_id
 

@@ -37,9 +37,6 @@
     "whatwg-fetch": "^2.0.4"
   },
   "license": "MIT",
-  "engines": {
-    "node": "^6.12.3"
-  },
   "devDependencies": {
     "babel-plugin-transform-async-to-generator": "^6.24.1",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",

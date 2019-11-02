@@ -91,7 +91,10 @@ class Workgroup < ApplicationModel
   end
 
   def self.purge_all
-    Workgroup.where.not(deleted_at: nil).destroy_all
+    Workgroup.where.not(deleted_at: nil).each do |workgroup|
+      Rails.logger.info "Destroy Workgroup #{workgroup.name} from #{workgroup.owner.name}"
+      workgroup.destroy
+    end
   end
 
   def aggregated!

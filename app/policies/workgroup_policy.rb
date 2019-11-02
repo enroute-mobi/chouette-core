@@ -10,7 +10,7 @@ class WorkgroupPolicy < ApplicationPolicy
   end
 
   def destroy?
-    false
+    (record.owner == user.organisation) && user.has_permission?('workgroups.destroy')
   end
 
   def update?
@@ -27,5 +27,13 @@ class WorkgroupPolicy < ApplicationPolicy
 
   def aggregate?
     update? && user.has_permission?('aggregates.create')
+  end
+
+  def setup_deletion?
+    destroy?
+  end
+
+  def remove_deletion?
+    destroy?
   end
 end

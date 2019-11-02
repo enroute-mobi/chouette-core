@@ -5,6 +5,10 @@ en:
       edit_control_sets: Setup Controls
       edit_aggregate: Setup Aggregation
       edit_hole_sentinel: Setup Offer analysis
+      destroy_confirm: Are you sure you want to delete this workgroup ?
+      setup_deletion_confirm: Are you sure you want to delete this workgroup ?
+      setup_workgroup_deletion: Plan workgroup deletion
+      restore_workgroup: Restore workgroup
     edit_controls: &edit_controls
       title: "Workgroup Validation Settings"
     edit:

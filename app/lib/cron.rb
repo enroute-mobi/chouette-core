@@ -100,5 +100,11 @@ module Cron
         end
       end
     end
+
+    def purge_workgroups
+      protected_action do
+        Workgroup.purge_all
+      end
+    end
   end
 end

@@ -1,17 +1,16 @@
 {
-    "parserOptions": {
-        "ecmaVersion": 6,
-        "sourceType": "module",
-        "ecmaFeatures": {
-            "jsx": true,
-            "modules": true,
-            "experimentalObjectRestSpread": true
-        },
-    },
     "rules": {
         "semi": ["warn", "never"],
         "quotes": ["warn", "single"]
     },
+    "overrides": [
+        {
+            "files": ["**/*.json"],
+            "rules": {
+                "quotes": ["warn", "double"]
+            }
+        }
+    ],
     "globals": {
         "_": "writable",
         "I18n": "readonly"

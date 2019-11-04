@@ -1,6 +1,19 @@
 {
+    "parserOptions": {
+        "ecmaVersion": 6,
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "jsx": true,
+            "modules": true,
+            "experimentalObjectRestSpread": true
+        },
+    },
     "rules": {
-        "semi": ["error", "newer"],
-        "quotes": ["error", "single"]
+        "semi": ["warn", "never"],
+        "quotes": ["warn", "single"]
+    },
+    "globals": {
+        "_": "writable",
+        "I18n": "readonly"
     }
 }

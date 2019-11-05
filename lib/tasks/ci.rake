@@ -78,7 +78,9 @@ namespace :ci do
   end
 
   task :jest do
-    sh "node_modules/.bin/jest" unless ENV["CHOUETTE_JEST_DISABLED"]
+    unless ENV["CHOUETTE_JEST_DISABLED"]
+      sh "PATH=node_modules/.bin:$PATH sh -c 'jest --coverage && cat ./coverage/lcov.info | codacy-coverage'"
+    end
   end
 
   task :spec do

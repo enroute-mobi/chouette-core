@@ -1,20 +1,6 @@
-# This file is copied to spec/ when you run 'rails generate rspec:install'
-unless ENV['NO_RCOV']
-  require 'simplecov'
-
-  if ENV['JOB_NAME']
-    require 'simplecov-rcov'
-    SimpleCov.formatters = [
-      SimpleCov::Formatter::HTMLFormatter,
-      SimpleCov::Formatter::RcovFormatter
-    ]
-  end
-
-  SimpleCov.start 'rails' do
-    add_filter 'vendor'
-    add_filter 'app/exporters/chouette/hub'
-    add_filter 'app/maps'
-  end
+if ENV['CODACY_PROJECT_TOKEN']
+  require 'codacy-coverage'
+  Codacy::Reporter.start
 end
 
 ENV["RAILS_ENV"] = 'test'
@@ -29,7 +15,6 @@ require 'capybara/poltergeist'
 # require 'georuby-ext'
 require 'will_paginate/array'
 require 'webmock/rspec'
-require 'simplecov'
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are

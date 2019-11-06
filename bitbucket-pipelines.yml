@@ -13,7 +13,7 @@ definitions:
     yarn: ./node_modules
     assets: ./public/assets
     assets-cache: ./tmp/assets/cache
-
+    build-cache: ./cache
   steps:
     - step: &unit-tests
         name: Unit tests
@@ -23,13 +23,14 @@ definitions:
           - yarn
           - assets
           - assets-cache
+          - build-cache
         script:
           - export BUNDLER_VERSION=2.0.2
           - export RAILS_DB_USER=chouette
           - export RAILS_DB_PASSWORD=chouette
           - export RAILS_DB_NAME=chouette
           - export RAILS_DB_HOST=localhost
-          # - export PARALLEL_TESTS=true
+          - export PARALLEL_TESTS=true
           # - export PARALLEL_TEST_PROCESSORS=4
 
           # Configure UTF-8 locale
@@ -43,7 +44,7 @@ definitions:
           - curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
           - echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list
           - curl -sS https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -
-          - echo "deb https://deb.nodesource.com/node_6.x stretch main" > /etc/apt/sources.list.d/nodesource.list
+          - echo "deb https://deb.nodesource.com/node_8.x stretch main" > /etc/apt/sources.list.d/nodesource.list
           - apt-get -qq update && apt-get -qq install -y --no-install-recommends yarn nodejs
 
           # Install expected bundler version
@@ -81,15 +82,7 @@ pipelines:
           caches:
             - docker
           script:
-            - export IMAGE_NAME=eu.gcr.io/$GCLOUD_PROJECT/$BITBUCKET_REPO_SLUG:$BITBUCKET_COMMIT
-            - echo $GCLOUD_API_KEYFILE | base64 -d > ~/.gcloud-api-key.json
-            - gcloud auth activate-service-account --key-file ~/.gcloud-api-key.json
-            - gcloud config set project $GCLOUD_PROJECT
-            - gcloud auth configure-docker --quiet
-            # BUILD IMAGE
-            - docker build . -t $IMAGE_NAME
-            # PUBLISH IMAGE
-            - docker push $IMAGE_NAME
+            - ./script/bitbucket-build-docker.sh
           services:
             - docker
       - step:
@@ -100,22 +93,30 @@ pipelines:
             - git push origin :refs/tags/$TAG_NAME
             - git push origin $TAG_NAME
       - step:
+          name: Trigger sub-projects
+          script:
+            - pipe: atlassian/trigger-pipeline:4.1.1
+              variables:
+                BITBUCKET_USERNAME: $TRIGGER_BITBUCKET_USERNAME
+                BITBUCKET_APP_PASSWORD: $TRIGGER_BITBUCKET_ADD_PASSWORD
+                REPOSITORY: $TRIGGER_REPOSITORY_1
+                CUSTOM_PIPELINE_NAME: 'merge'
+            - pipe: atlassian/trigger-pipeline:4.1.1
+              variables:
+                BITBUCKET_USERNAME: $TRIGGER_BITBUCKET_USERNAME
+                BITBUCKET_APP_PASSWORD: $TRIGGER_BITBUCKET_ADD_PASSWORD
+                REPOSITORY: $TRIGGER_REPOSITORY_2
+                CUSTOM_PIPELINE_NAME: 'merge'
+      - step:
           name: Deploy to test
           image: google/cloud-sdk:latest
           caches:
             - docker
           deployment: test
-          trigger: manual
           script:
-            # Tag image in registry with test label
-            - export IMAGE_NAME=eu.gcr.io/$GCLOUD_PROJECT/$BITBUCKET_REPO_SLUG:$BITBUCKET_COMMIT
-            - export TAGGED_IMAGE_NAME=eu.gcr.io/$GCLOUD_PROJECT/$BITBUCKET_REPO_SLUG:test
-            - echo $GCLOUD_API_KEYFILE | base64 -d > ~/.gcloud-api-key.json
-            - gcloud auth activate-service-account --key-file ~/.gcloud-api-key.json
-            - gcloud config set project $GCLOUD_PROJECT
-            - gcloud auth configure-docker --quiet
-            - docker pull $IMAGE_NAME
-            - docker tag $IMAGE_NAME $TAGGED_IMAGE_NAME
-            - docker push $TAGGED_IMAGE_NAME
+            # Tag image in registry with latest label
+            - ./script/bitbucket-tag-docker.sh latest
+            # Update test instance
+            - ./script/bitbucket-update-image.sh
           services:
             - docker

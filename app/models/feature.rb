@@ -3,7 +3,6 @@ class Feature
     %w{
       application_days_on_calendars
       consolidated_offers
-      core_controls
       core_control_blocks
       costs_in_journey_patterns
       create_opposite_routes

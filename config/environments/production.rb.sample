@@ -3,17 +3,17 @@ require Rails.root + 'config/middlewares/cachesettings'
 Rails.application.configure do
 
   SmartEnv.add :MAIL_ASSETS_URL_BASE
-  SmartEnv.add :MAIL_DELIVERY_METHOD, default: "smtp"
+  SmartEnv.add :MAIL_DELIVERY_METHOD, default: 'smtp'
   SmartEnv.add :MAIL_HOST
   SmartEnv.add :SMTP_HOST
-
   SmartEnv.add_boolean :ACCEPT_USER_CREATION, default: false
-  SmartEnv.set :IEV_URL, default: "http://iev:8080"
+
+  SmartEnv.set :IEV_URL, default: 'http://iev:8080'
   SmartEnv.set :RAILS_DB_PASSWORD, required: true
   SmartEnv.set :RAILS_HOST, default: 'http://front:3000'
-
-  SmartEnv.add :MAIL_ASSETS_URL_BASE
   SmartEnv.add :AUTH_SETTINGS, default: { type: 'database' }
+  SmartEnv.add :SMTP_SETTINGS, default: {}
+  SmartEnv.add_boolean :RAILS_SERVE_STATIC_FILES, default: true
 
   # Settings specified here will take precedence over those in config/application.rb.
 
@@ -36,7 +36,7 @@ Rails.application.configure do
 
   # Disable Rails's static asset server (Apache or nginx will already do this).
   # config.serve_static_files = false
-  config.serve_static_files = ENV['RAILS_SERVE_STATIC_FILES'].present?
+  config.serve_static_files = SmartEnv.boolean('RAILS_SERVE_STATIC_FILES')
   # config.public_file_server.enabled = ENV['RAILS_SERVE_STATIC_FILES'].present?
 
   # Compress JavaScripts and CSS.
@@ -73,7 +73,7 @@ Rails.application.configure do
 
   # Use a different cache store in production.
   # config.cache_store = :mem_cache_store
-  if SmartEnv['REDIS_URL']
+  if SmartEnv['REDIS_URL'].present?
     config.cache_store = :redis_store, SmartEnv['REDIS_URL'], { expires_in: 90.minutes }
   end
 
@@ -102,25 +102,25 @@ Rails.application.configure do
 
   config.action_mailer.default_url_options = { :host => SmartEnv['MAIL_HOST'] } if SmartEnv['MAIL_HOST']
 
-  # Configure the e-mail address which will be shown in Devise::Maile
+  # Configure the e-mail address which will be shown in Devise::Mailer
   config.mailer_sender = SmartEnv['MAIL_FROM']
   config.action_mailer.default_options = { from: SmartEnv['MAIL_FROM'] }
-  config.action_mailer.smtp_settings = { address: SmartEnv['SMTP_HOST'] } if SmartEnv['SMTP_HOST']
+  config.action_mailer.smtp_settings =
+    if SmartEnv['SMTP_SETTINGS'].present?
+      SmartEnv.hash('SMTP_SETTINGS')
+    else
+      { address: SmartEnv['SMTP_HOST'] } if SmartEnv['SMTP_HOST']
+    end
   config.action_mailer.asset_host    = SmartEnv['MAIL_ASSETS_URL_BASE']
   config.action_mailer.delivery_method = SmartEnv['MAIL_DELIVERY_METHOD'].to_sym
+  config.action_mailer.default charset: 'utf-8'
 
-# See #8823
-  config.chouette_email_user = SmartEnv['CHOUETTE_EMAIL_USER']
-
-  config.to_prepare do
-    Devise::Mailer.layout "mailer"
-  end
+  # See #8823
+  config.chouette_email_user = SmartEnv.boolean('CHOUETTE_EMAIL_USER')
 
   config.accept_user_creation = SmartEnv.boolean('ACCEPT_USER_CREATION')
-
   config.chouette_authentication_settings = SmartEnv.hash('AUTH_SETTINGS')
 
-  # paths for external resources
   config.to_prepare do
     Devise::Mailer.layout "mailer"
   end

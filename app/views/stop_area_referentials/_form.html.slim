@@ -45,10 +45,9 @@
       - countries = countries.sort_by { |c| c.translation(I18n.locale)}
       - options = countries.map { |c| "<option id='#{c.alpha2}' code='#{StopAreaReferential.translate_code_to_internal("#{c.languages.first}_#{c.alpha2}")}'>#{c.translation(I18n.locale)}</option>" }.join('')
       .col-md-12
-        = select_tag :add_locale, raw(options.html_safe), 'data-select2ed': 'true', class: 'country-select'
+        = select_tag :add_locale, raw(options.html_safe), 'data-select2ed': 'true', class: 'country-select select2-resize'
         = link_to '#', class: 'btn btn-primary add-locale' do
-          = fa_icon :plus
-          = 'actions.add'.t
+          = fa_icon :plus, {text: 'actions.add'.t}
 
   = cancel_button
   = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'stop_area_referential_form'

@@ -9,6 +9,19 @@ RSpec.describe ReferentialCloning, :type => :model do
   it { should belong_to :source_referential }
   it { should belong_to :target_referential }
 
+  it 'should have the correct arguments in commands' do
+    r = FactoryGirl.create(:referential_cloning)
+    allow(r).to receive(:source_schema) { 'test_1' }
+    allow(r).to receive(:database) { 'chouette_test' }
+
+    expect(r.dump_command).to eq "PGPASSWORD='chouette' pg_dump --host localhost --port 5432 --username chouette --schema=test_1 chouette_test"
+    expect(r.restore_command).to eq "PGPASSWORD='chouette' psql -q --host localhost --port 5432 --username chouette chouette_test"
+
+    allow(r).to receive(:port) { 1234 }
+    expect(r.dump_command).to eq "PGPASSWORD='chouette' pg_dump --host localhost --port 1234 --username chouette --schema=test_1 chouette_test"
+    expect(r.restore_command).to eq "PGPASSWORD='chouette' psql -q --host localhost --port 1234 --username chouette chouette_test"
+  end
+
   let(:source_referential) { Referential.new slug: "source", organisation: build(:organisation), prefix: "source"}
   let(:target_referential) { Referential.new slug: "target", organisation: source_referential.organisation, prefix: "target"}
   let(:referential_cloning) do

@@ -11,10 +11,10 @@ class Workgroup < ApplicationModel
   has_many :calendars, dependent: :destroy
   has_many :organisations, through: :workbenches
   has_many :referentials, through: :workbenches
-  has_many :aggregates
+  has_many :aggregates, dependent: :destroy
   has_many :nightly_aggregates
-  has_many :publication_setups
-  has_many :publication_apis
+  has_many :publication_setups, dependent: :destroy
+  has_many :publication_apis, dependent: :destroy
   has_many :compliance_check_sets, through: :workbenches
 
   validates_uniqueness_of :name
@@ -30,7 +30,7 @@ class Workgroup < ApplicationModel
 
   validates :sentinel_min_hole_size, presence: true, numericality: { greater_than_or_equal_to: 0 }
 
-  has_many :custom_fields
+  has_many :custom_fields, dependent: :destroy
 
   accepts_nested_attributes_for :workbenches
 
@@ -88,6 +88,13 @@ class Workgroup < ApplicationModel
 
   def self.after_merge_compliance_control_sets
     compliance_control_sets_labels all_compliance_control_sets.grep(/^after_merge/)
+  end
+
+  def self.purge_all
+    Workgroup.where.not(deleted_at: nil).each do |workgroup|
+      Rails.logger.info "Destroy Workgroup #{workgroup.name} from #{workgroup.owner.name}"
+      workgroup.destroy
+    end
   end
 
   def aggregated!
@@ -189,6 +196,14 @@ class Workgroup < ApplicationModel
 
   def owner_workbench
     workbenches.find_by organisation_id: owner_id
+  end
+
+  def setup_deletion!
+    update_attribute :deleted_at, Time.now
+  end
+
+  def remove_deletion!
+    update_attribute :deleted_at, nil
   end
 
   private

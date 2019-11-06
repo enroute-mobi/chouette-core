@@ -19,10 +19,9 @@
               - options = countries.map { |c| "<option id='#{c}' country_name='#{@stop_area_referential.locale_name(code: c)}'>#{@stop_area_referential.locale_name(code: c)}</option>" }.join('')
               .col-sm-4.col-xs-5
               .col-sm-8.col-xs-7
-                = select_tag :add_locale, raw(options), 'data-select2ed': 'true'
+                = select_tag :add_locale, raw(options), 'data-select2ed': 'true', class: 'select2-resize'
                 = link_to '#', class: 'btn btn-primary add-locale' do
-                  = fa_icon :plus
-                  = 'actions.add'.t
+                  = fa_icon :plus, {text: 'actions.add'.t}
         - if has_feature?("route_stop_areas_all_types")
           = f.input :kind,
               as: :radio_buttons,

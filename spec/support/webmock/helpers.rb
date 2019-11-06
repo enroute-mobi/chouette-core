@@ -1,3 +1,5 @@
+WebMock.disable_net_connect!(allow: 'api.codacy.com')
+
 module Support
   module Webmock
     module Helpers

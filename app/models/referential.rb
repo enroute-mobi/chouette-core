@@ -126,6 +126,10 @@ class Referential < ApplicationModel
   after_destroy :clean_cross_referential_index!
 
   def self.clean!
+    Rails.logger.info "Cleaning Referentials (cooldown: #{TIME_BEFORE_CLEANING} days)"
+    clean_scope.find_each do |referential|
+      Rails.logger.info "Clean Referential #{referential.id} #{referential.slug}"
+    end
     clean_scope.destroy_all
   end
 

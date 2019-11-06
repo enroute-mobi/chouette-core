@@ -14,7 +14,7 @@ describe TableBuilderHelper, type: :helper do
   end
 
   describe "#table_builder_2" do
-    it "builds a table", skip: "See CHOUETTE-37" do
+    it "builds a table" do
       referential = create(:workbench_referential)
       workbench = referential.workbench
       referential.organisation.workbenches << workbench

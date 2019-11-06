@@ -1,4 +1,4 @@
-- current_organisation.workbenches.each do |workbench|
+- current_organisation.workbenches.with_active_workgroup.each do |workbench|
   #menu-items.panel-group
     - if current_organisation.workbenches.many?
       .menu-title

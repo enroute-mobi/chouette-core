@@ -266,7 +266,7 @@ class Import::Gtfs < Import::Base
         route.name = name
         to_be_saved << route
 
-        journey_pattern = route.journey_patterns.build name: name, skip_custom_fields_initialization: true
+        journey_pattern = route.journey_patterns.build name: name, published_name: name, skip_custom_fields_initialization: true
         # to_be_saved << journey_pattern
 
         vehicle_journey = journey_pattern.vehicle_journeys.build route: route, skip_custom_fields_initialization: true

@@ -253,7 +253,9 @@ module Chouette
     end
 
     def full_journey_pattern
-      journey_pattern = journey_patterns.find_or_create_by registration_number: self.number, name: self.name
+      journey_pattern = journey_patterns.find_or_create_by registration_number: self.number, name: self.name do |jp|
+        jp.published_name = self.name
+      end
       journey_pattern.stop_points = self.stop_points
       journey_pattern
     end

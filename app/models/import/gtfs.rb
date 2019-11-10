@@ -253,6 +253,8 @@ class Import::Gtfs < Import::Base
 
   def process_trip(resource, trip_id, stop_times)
     begin
+      raise InvalidTripSingleStopTime unless stop_times.many?
+
       to_be_saved = []
       stop_points_with_times = vehicle_journey = journey_pattern = route = nil
       stop_points = []
@@ -357,8 +359,15 @@ class Import::Gtfs < Import::Base
       journey_pattern.vehicle_journey_at_stops.reload
       save_model journey_pattern, resource: resource
 
-    rescue Import::Gtfs::InvalidTripNonZeroFirstOffsetError, Import::Gtfs::InvalidTripTimesError => e
-      message_key = e.is_a?(Import::Gtfs::InvalidTripNonZeroFirstOffsetError) ? 'trip_starting_with_non_zero_day_offset' : 'trip_with_inconsistent_stop_times'
+    rescue Import::Gtfs::InvalidTripNonZeroFirstOffsetError, Import::Gtfs::InvalidTripTimesError, Import::Gtfs::InvalidTripSingleStopTime => e
+      message_key = case e
+        when Import::Gtfs::InvalidTripNonZeroFirstOffsetError
+          'trip_starting_with_non_zero_day_offset'
+        when Import::Gtfs::InvalidTripTimesError
+          'trip_with_inconsistent_stop_times'
+        when Import::Gtfs::InvalidTripSingleStopTime
+          'trip_with_single_stop_time'
+        end
       create_message(
         {
           criticity: :error,
@@ -633,6 +642,7 @@ class Import::Gtfs < Import::Base
 
   class InvalidTripNonZeroFirstOffsetError < StandardError; end
   class InvalidTripTimesError < StandardError; end
+  class InvalidTripSingleStopTime < StandardError; end
   class InvalidTimeError < StandardError
     attr_reader :time
 

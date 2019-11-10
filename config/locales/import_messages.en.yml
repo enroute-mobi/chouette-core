@@ -14,6 +14,7 @@ en:
     referential_creation: "The referential %{referential_name} has not been created because another referential with the same lines and periods already exists"
     trip_starting_with_non_zero_day_offset: The trip %{trip_id} starts with a non-zero offset
     trip_with_inconsistent_stop_times: The trip %{trip_id} has inconsistent stop times
+    trip_with_single_stop_time: The trip %{trip_id} has only one stop
     invalid_stop_time: 'The trip %{trip_id} has an invalid stop time: "%{time}"'
     invalid_time_zone: 'Time zone %{time_zone} is invalid'
     unknown_file_format: "The supplied file does not match any known format"

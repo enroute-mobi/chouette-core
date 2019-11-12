@@ -118,5 +118,9 @@ pipelines:
             - ./script/bitbucket-tag-docker.sh latest
             # Update test instance
             - ./script/bitbucket-update-image.sh
+            - pipe: atlassian/datadog-send-event:1.0.1
+              variables:
+                API_KEY: $DATADOG_KEY
+                TITLE: "Build ${BITBUCKET_BUILD_NUMBER} deployed on chouette-core test"
           services:
             - docker

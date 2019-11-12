@@ -3,5 +3,5 @@ en:
     success: Success
     no_matching_journey: Export can't produce a file because there is no offer data in the requested period.
     no_company: The vehicle journey %{journey_name} or its line %{line_name} don't have a Company. A 'chouette_default' company will be created for the export.
-    no_timezone: The company %{company_name} doesn't have a defined time zone. Its time zone will be 'UTC/GMT' in the export.
+    no_timezone: The company %{company_name} doesn't have a defined time zone. Its time zone will be 'Etc/GMT' in the export.
     skipping_invalid_object: 'The following resource has been ignored: %{object_class}#%{object_id} because it is invalid: %{errors}'

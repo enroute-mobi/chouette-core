@@ -3,5 +3,5 @@ fr:
     success: Succès
     no_matching_journey: L'export ne peut pas produire de résultat car il n'y a pas de données d'offre de transport pendant la période donnée
     no_company: La course %{journey_name} ou sa ligne %{line_name} ne possèdent pas de transporteur. Une company 'chouette_default' sera créée pour les besoins de l'export.
-    no_timezone: Le transporteur %{company_name} n'a pas de fuseau horaire défini. Il sera considéré comme 'UTC/GMT' lors de l'export.
+    no_timezone: Le transporteur %{company_name} n'a pas de fuseau horaire défini. Il sera considéré comme 'Etc/GMT' lors de l'export.
     skipping_invalid_object: "La ressource suivante a été ignorée: %{object_class}#%{object_id} car elle n'est pas valide: %{errors}"

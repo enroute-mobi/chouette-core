@@ -1,18 +1,12 @@
 RSpec.describe Chouette::Netex::ServiceJourneyPattern, type: :netex_resource do
-  let(:resource){ create :journey_pattern, registration_number: nil, published_name: nil }
-  
+  let(:resource){ create :journey_pattern, registration_number: nil}
+
   it_behaves_like 'it has default netex resource attributes'
   it_behaves_like 'it outputs custom fields'
   it_behaves_like 'it has one child with ref', 'RouteRef', ->{ resource.route.objectid }
-  it_behaves_like 'it has no child', 'DestinationDisplayRef'
 
   context 'with a registration_number' do
     before { resource.update registration_number: 'registration_number' }
-    it_behaves_like 'it has one child with ref', 'DestinationDisplayRef', ->{ resource.objectid.gsub('JourneyPattern', 'DestinationDisplayforJourneyPattern') }
-  end
-
-  context 'with a published_name' do
-    before { resource.update published_name: 'published_name' }
     it_behaves_like 'it has one child with ref', 'DestinationDisplayRef', ->{ resource.objectid.gsub('JourneyPattern', 'DestinationDisplayforJourneyPattern') }
   end
 

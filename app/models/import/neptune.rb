@@ -351,7 +351,7 @@ class Import::Neptune < Import::Base
       source_journey_patterns.each do |source_journey_pattern|
         route = @routes[source_journey_pattern[:route_id]]
         journey_pattern = route.journey_patterns.build do |journey_pattern|
-          journey_pattern.published_name = source_journey_pattern[:published_name]
+          journey_pattern.published_name = source_journey_pattern[:published_name] || source_journey_pattern[:name]
           journey_pattern.registration_number = source_journey_pattern[:registration].try(:[], :registration_number)
           journey_pattern.name = source_journey_pattern[:name]
           journey_pattern.metadata = { creator_username: source_journey_pattern[:creator_id], created_at: source_journey_pattern[:creation_time] }

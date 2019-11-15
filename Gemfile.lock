@@ -752,7 +752,6 @@ DEPENDENCIES
   puma (~> 3.10.0)
   pundit
   rabl
-  rack-protection
   rails (= 5.2.2.1)
   rails-assets-bootstrap-sass-official (~> 3.3.0)!
   rails-assets-footable (~> 2.0.3)!
@@ -781,7 +780,6 @@ DEPENDENCIES
   sequel
   shoulda-matchers
   simple_form
-  sinatra (~> 2.0.0.beta2)
   slim-rails
   spring
   spring-commands-rspec

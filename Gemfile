@@ -7,9 +7,6 @@ git_source(:en_route) { |name| "https://bitbucket.org/enroute-mobi/#{name}.git" 
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '5.2.2.1'
-gem 'rack-protection'
-
-gem 'sinatra', '~> 2.0.0.beta2'
 
 # Use SCSS for stylesheets
 gem 'sassc-rails'

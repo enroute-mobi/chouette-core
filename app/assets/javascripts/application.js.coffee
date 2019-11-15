@@ -14,7 +14,6 @@
 #= require select2-full
 #= require select2_locale_fr
 #= require jquery-tokeninput
-#= require tagmanager
 #= require footable
 #= require footable/footable.filter
 #= require footable/footable.paginate

@@ -65,12 +65,20 @@ module OperationSupport
     end
   end
 
+  def parent_operations
+    if parent
+      parent.send(self.class.name.tableize)
+    else
+      self.class.none
+    end
+  end
+
   def clean_scope
-    parent&.send(self.class.name.tableize)
+    parent_operations
   end
 
   def check_other_operations
-    if clean_scope && clean_scope.where(status: [:new, :pending, :running]).exists?
+    if parent_operations.where(status: [:new, :pending, :running]).exists?
       Rails.logger.warn "#{self.class.name} ##{self.id} - Pending #{self.class.name}(s) on #{parent.class.name} #{parent.name}/#{parent.id}"
       errors.add(:base, :multiple_process)
     end

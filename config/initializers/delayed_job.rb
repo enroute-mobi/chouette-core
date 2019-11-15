@@ -52,7 +52,7 @@ class Delayed::Worker
   prepend Delayed::VerboseWorker
 
   def memory_used
-    NewRelic::Agent::Samplers::MemorySampler.new.sampler.get_sample
+    Chouette::Benchmark.current_usage
   end
 end
 

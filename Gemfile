@@ -136,8 +136,6 @@ gem 'puma', '~> 3.10.0'
 # Cache
 gem 'redis-rails'
 
-gem 'newrelic_rpm'
-
 gem 'gtfs', en_route: 'gtfs'
 
 gem 'ddtrace'

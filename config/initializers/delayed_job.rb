@@ -3,15 +3,23 @@ require 'delayed_job'
 class AutoKillPlugin < Delayed::Plugin
   callbacks do |lifecycle|
     lifecycle.before(:perform) do |worker, job|
-      explained = job.payload_object.try(:explain) || job.payload_object.inspect
-      worker.say "Starting Job #{explained} with priority #{job.priority}, attempt #{job.attempts + 1}/#{job.max_attempts}"
+      begin
+        explained = job.payload_object.try(:explain) || job.payload_object.inspect
+        worker.say "Starting Job #{explained} with priority #{job.priority}, attempt #{job.attempts + 1}/#{job.max_attempts}"
+      rescue => e
+        Rails.logger.error "Error before starting job: #{e}"
+      end
     end
 
-    lifecycle.after(:perform) do |worker, job|
-      worker.say "Job done, using #{worker.memory_used.to_i}M"
-      if worker.memory_used > 1024
-        worker.say "Killing myself"
-        worker.stop
+    lifecycle.after(:perform) do |worker, _|
+      begin
+        worker.say "Job done, using #{worker.memory_used.to_i}M"
+        if worker.memory_used > 1024
+          worker.say "Killing myself"
+          worker.stop
+        end
+      rescue => e
+        Rails.logger.error "Error after job: #{e}"
       end
     end
   end
@@ -28,7 +36,7 @@ class Delayed::Heartbeat::Worker
   end
 
   def self.handle_dead_workers
-    dead_workers(SmartEnv[:DELAYED_JOB_REAPER_HEARTBEAT_TIMEOUT_SECONDS]).each(&:fail_jobs).each &:delete
+    dead_workers(SmartEnv[:DELAYED_JOB_REAPER_HEARTBEAT_TIMEOUT_SECONDS]).each(&:fail_jobs).each(&:delete)
   end
 end
 
@@ -105,8 +113,6 @@ end
 Delayed::Worker.plugins << AutoKillPlugin
 
 Delayed::Worker.max_run_time = 10.hours
-
-Delayed::Worker.logger = Logger.new(File.join(Rails.root, 'log', 'delayed_job.log'))
 
 Delayed::Heartbeat.configure do |configuration|
   configuration.enabled = SmartEnv.boolean :ENABLE_DELAYED_JOB_REAPER

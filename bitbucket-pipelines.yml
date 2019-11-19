@@ -25,51 +25,54 @@ definitions:
           - assets-cache
           - build-cache
         script:
+          - export LANG=en_US.UTF-8 LANGUAGE=en_US:UTF-8 LC_ALL=en_US.UTF-8
           - export BUNDLER_VERSION=2.0.2
           - export RAILS_DB_USER=chouette
           - export RAILS_DB_PASSWORD=chouette
           - export RAILS_DB_NAME=chouette
           - export RAILS_DB_HOST=localhost
           - export PARALLEL_TESTS=true
-          # - export PARALLEL_TEST_PROCESSORS=4
 
-          # Configure UTF-8 locale
-          - apt-get -qq update && apt-get -qq install -y --no-install-recommends locales
-          - export LANG=en_US.UTF-8 LANGUAGE=en_US:UTF-8 LC_ALL=en_US.UTF-8
-          - echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && locale-gen
-          - locale
-
-          # Prepare yarn package install
-          - apt-get -qq install -y --no-install-recommends curl gnupg ca-certificates apt-transport-https
-          - curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-          - echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list
-          - curl -sS https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -
-          - echo "deb https://deb.nodesource.com/node_8.x stretch main" > /etc/apt/sources.list.d/nodesource.list
-          - apt-get -qq update && apt-get -qq install -y --no-install-recommends yarn nodejs
-
-          # Install expected bundler version
-          - gem install bundler:$BUNDLER_VERSION
-
-          # Install dependencies
-          - export DEV_PACKAGES="build-essential libpq-dev libxml2-dev zlib1g-dev libmagic-dev libmagickwand-dev git-core"
-          - export RUN_PACKAGES="libpq5 libxml2 zlib1g libmagic1 imagemagick libproj-dev libgeos-c1v5 postgresql-client-common postgresql-client-9.6"
-          - mkdir -p /usr/share/man/man1 /usr/share/man/man7
-          - apt-get -qq -y install --no-install-recommends $DEV_PACKAGES $RUN_PACKAGES
-
-          # Install bundler dependencies
-          - bundle install --quiet --jobs 4 --deployment
-
-          # Install yarn dependencies
-          - yarn --frozen-lockfile install
-
-          - cp config/database.yml.docker config/database.yml
-          - cp config/secrets.yml.docker config/secrets.yml
+          - ./script/bitbucket-unit-tests-setup.sh
 
           - bundle exec rake ci
         services:
           - postgres
 
 pipelines:
+  custom:
+    gems-update: # Merge ci-master from chouette-core
+      - step:
+          name: Update gems
+          image: ruby:2.6.4-slim-stretch
+          caches:
+            - bundler
+            - yarn
+            - assets
+            - assets-cache
+            - build-cache
+          script:
+            - export LANG=en_US.UTF-8 LANGUAGE=en_US:UTF-8 LC_ALL=en_US.UTF-8
+            - export BUNDLER_VERSION=2.0.2
+            - export RAILS_DB_USER=chouette
+            - export RAILS_DB_PASSWORD=chouette
+            - export RAILS_DB_NAME=chouette
+            - export RAILS_DB_HOST=localhost
+            - export FAIL_FAST=true
+
+            - ./script/bitbucket-unit-tests-setup.sh
+            # remove the Gemfile freeze for bundle outdated
+            - bundle install --no-deployment
+
+            - export BUMMR_TEST="bundle exec rake ci"
+            - export BUMMR_HEADLESS="true"
+
+            - git checkout -b gems-update-$BITBUCKET_BUILD_NUMBER
+            - bundle exec bummr update
+            - git push
+          services:
+            - postgres
+
   default:
     - step: *unit-tests
 

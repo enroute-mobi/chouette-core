@@ -139,6 +139,9 @@ GEM
     builder (3.2.3)
     bulk_insert (1.7.0)
       activerecord (>= 3.2.0)
+    bummr (0.5.0)
+      rainbow
+      thor
     bundler-audit (0.6.1)
       bundler (>= 1.2.0, < 3)
       thor (~> 0.18)
@@ -766,6 +769,7 @@ DEPENDENCIES
   better_errors
   binding_of_caller
   bulk_insert
+  bummr
   bundler-audit
   calendar_helper (= 0.2.5)
   capistrano

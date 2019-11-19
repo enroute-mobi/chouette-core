@@ -186,6 +186,8 @@ group :development do
 
   gem 'derailed_benchmarks'
   gem 'stackprof'
+
+  gem 'bummr'
 end
 
 group :test do

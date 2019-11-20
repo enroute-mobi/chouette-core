@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 
 export IMAGE_NAME="eu.gcr.io/$GCLOUD_PROJECT/$BITBUCKET_REPO_SLUG:$BITBUCKET_COMMIT"
 echo "$GCLOUD_API_KEYFILE" | base64 -d > ~/.gcloud-api-key.json

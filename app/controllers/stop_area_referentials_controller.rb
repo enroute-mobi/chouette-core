@@ -34,6 +34,12 @@ class StopAreaReferentialsController < ChouetteController
     params[:stops_selection_displayed_fields].each do |k, v|
       stops_selection_displayed_fields[k] = v == '1'
     end
-    { locales: locales, stops_selection_displayed_fields: stops_selection_displayed_fields }
+
+    route_edition_available_stops = {}
+    params[:route_edition_available_stops].each do |k, v|
+      route_edition_available_stops[k] = v == '1'
+    end
+
+    { locales: locales, stops_selection_displayed_fields: stops_selection_displayed_fields, route_edition_available_stops: route_edition_available_stops }
   end
 end

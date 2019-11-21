@@ -49,6 +49,16 @@
         = link_to '#', class: 'btn btn-primary add-locale' do
           = fa_icon :plus, {text: 'actions.add'.t}
 
+  br
+  legend= StopAreaReferential.tmf(:route_edition_available_stops)
+  .row.locales
+    - Chouette::AreaType::COMMERCIAL.each do |f|
+        .row
+          .col-md-4
+            label{for="route_edition_available_stops_#{f}"}= t("area_types.label.#{f}")
+          .col-md-8
+            = check_box "route_edition_available_stops", f, checked: @stop_area_referential.route_edition_available_stops[f.to_s]
+
   = cancel_button
   = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'stop_area_referential_form'
 

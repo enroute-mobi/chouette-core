@@ -20,6 +20,7 @@ fr:
         locale_default: Par défaut
         locale_name: Langue
         stops_selection_displayed_fields: Informations présentées à la sélection d'un arrêt
+        route_edition_available_stops: Types d'arrêts disponibles pour l'édition de l'offre
         formatted_area_type: Type d'arrêt
         local_id: ID métier
         zip_code: Code postal de la commune

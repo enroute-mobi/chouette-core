@@ -6,6 +6,7 @@ Rails.application.configure do
   SmartEnv.set :RAILS_DB_NAME, default: 'chouette_test'
   SmartEnv.set :RAILS_DB_USER, default: nil
   SmartEnv.set :RAILS_HOST, default: 'http://www.example.com'
+  SmartEnv.set :CHOUETTE_PUBLIC_HOST, default: 'http://www.example.com'
   SmartEnv.set :IEV_URL, default: 'http://localhost:8080'
 
   # The test environment is used exclusively to run your application's

@@ -42,6 +42,7 @@ module ChouetteIhm
     SmartEnv.add :RAILS_HOST
     SmartEnv.add :RAILS_LOCALE, default: :fr
     SmartEnv.add :TEST_ENV_NUMBER
+    SmartEnv.add :CHOUETTE_PUBLIC_HOST
     SmartEnv.add :WORKBENCH_IMPORT_DIR
     SmartEnv.add :CHOUETTE_ADDITIONAL_COMPLIANCE_CONTROLS, default: ""
     SmartEnv.add :CHOUETTE_ADDITIONAL_PUBLICATION_DESTINATIONS, default: ""

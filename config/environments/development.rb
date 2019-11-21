@@ -4,7 +4,7 @@ Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
   SmartEnv.set :RAILS_HOST, default: 'http://localhost:3000'
-  SmartEnv.set :CHOUETTE_PUBLIC_HOST, default: 'http://localhost:3000'
+  SmartEnv.set :PUBLIC_HOST, default: 'http://localhost:3000'
   SmartEnv.set :IEV_URL, default: "http://localhost:8080"
   SmartEnv.add_boolean :TOOLBAR
   SmartEnv.set :BYPASS_AUTH_FOR_SIDEKIQ, default: true
@@ -47,10 +47,10 @@ Rails.application.configure do
   # config.action_view.raise_on_missing_translations = true
   #config.active_record.auto_explain_threshold_in_seconds = (RUBY_PLATFORM == "java" ? nil : 0.5)
 
-  config.action_mailer.default_url_options = { :host => ENV.fetch('RAILS_HOST', 'http://localhost:3000') }
+  config.action_mailer.default_url_options = { :host => SmartEnv['PUBLIC_HOST'] }
   config.action_mailer.default_options     = { from: SmartEnv['MAIL_FROM'] }
   config.action_mailer.delivery_method     = :letter_opener
-  config.action_mailer.asset_host          = SmartEnv['RAILS_HOST']
+  config.action_mailer.asset_host          = SmartEnv['PUBLIC_HOST']
 
   # See #8823
   config.chouette_email_user = true

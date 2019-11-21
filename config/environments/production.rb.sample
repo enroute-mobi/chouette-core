@@ -2,9 +2,7 @@ require Rails.root + 'config/middlewares/cachesettings'
 
 Rails.application.configure do
 
-  SmartEnv.add :MAIL_ASSETS_URL_BASE
   SmartEnv.add :MAIL_DELIVERY_METHOD, default: 'smtp'
-  SmartEnv.add :MAIL_HOST
   SmartEnv.add :SMTP_HOST
   SmartEnv.add_boolean :ACCEPT_USER_CREATION, default: false
 
@@ -100,7 +98,7 @@ Rails.application.configure do
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
 
-  config.action_mailer.default_url_options = { :host => SmartEnv['MAIL_HOST'] } if SmartEnv['MAIL_HOST']
+  config.action_mailer.default_url_options = { :host => SmartEnv['PUBLIC_HOST'] }
 
   # Configure the e-mail address which will be shown in Devise::Mailer
   config.mailer_sender = SmartEnv['MAIL_FROM']
@@ -111,7 +109,7 @@ Rails.application.configure do
     else
       { address: SmartEnv['SMTP_HOST'] } if SmartEnv['SMTP_HOST']
     end
-  config.action_mailer.asset_host    = SmartEnv['MAIL_ASSETS_URL_BASE']
+  config.action_mailer.asset_host    = SmartEnv['PUBLIC_HOST']
   config.action_mailer.delivery_method = SmartEnv['MAIL_DELIVERY_METHOD'].to_sym
   config.action_mailer.default charset: 'utf-8'
 

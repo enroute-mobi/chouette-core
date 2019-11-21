@@ -13,7 +13,7 @@ class PublicationApi < ActiveRecord::Base
   validates_format_of :slug, with: %r{\A[0-9a-zA-Z_]+\Z}
 
   def public_url
-    "#{SmartEnv['RAILS_HOST']}/api/v1/datas/#{slug}"
+    "#{SmartEnv['PUBLIC_HOST']}/api/v1/datas/#{slug}"
   end
 
   def public?

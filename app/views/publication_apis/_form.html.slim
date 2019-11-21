@@ -16,7 +16,7 @@
         .form-group
           label.col-sm-4.col-xs-5.control-label= PublicationApi.tmf(:public_url)
           .col-sm-8.col-xs-7.public-url-preview
-            span= "#{SmartEnv['RAILS_HOST']}/api/v1/datas/"
+            span= "#{SmartEnv['PUBLIC_HOST']}/api/v1/datas/"
             span.slug-preview= @publication_api.slug
 
   = cancel_button

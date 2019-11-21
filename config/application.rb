@@ -39,6 +39,9 @@ module ChouetteIhm
     SmartEnv.add :RAILS_DB_POOLSIZE, default: '40'
     SmartEnv.add :RAILS_DB_PORT, default: '5432'
     SmartEnv.add :RAILS_DB_USER, default: 'chouette'
+    # Public URL for this Chouette instance
+    SmartEnv.add :PUBLIC_HOST, required: true
+    # Private/internal URL for this Chouette instance (for other containers)
     SmartEnv.add :RAILS_HOST
     SmartEnv.add :RAILS_LOCALE, default: :fr
     SmartEnv.add :TEST_ENV_NUMBER

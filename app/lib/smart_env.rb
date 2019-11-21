@@ -76,7 +76,9 @@ module SmartEnv
 
   def self.check!
     required_keys.each do |k|
-      raise MissingKey.new("Missing mandatory ENV key `#{k}`") unless ENV.has_key?(k)
+      unless default_values.has_key?(k) || ENV.has_key?(k)
+        raise MissingKey.new("Missing mandatory ENV key `#{k}`")
+      end
     end
   end
 

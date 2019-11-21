@@ -40,7 +40,7 @@ class ReferentialAudit
     end
 
     def base_host
-      SmartEnv['RAILS_HOST']
+      SmartEnv['PUBLIC_HOST']
     end
 
     def link_to label, url

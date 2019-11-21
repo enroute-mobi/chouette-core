@@ -6,9 +6,10 @@ Rails.application.configure do
   SmartEnv.add :SMTP_HOST
   SmartEnv.add_boolean :ACCEPT_USER_CREATION, default: false
 
+  SmartEnv.set :PUBLIC_HOST, default: 'http://chouette-core.enroute.mobi'
   SmartEnv.set :IEV_URL, default: 'http://iev:8080'
-  SmartEnv.set :RAILS_DB_PASSWORD, required: true
   SmartEnv.set :RAILS_HOST, default: 'http://front:3000'
+  SmartEnv.set :RAILS_DB_PASSWORD, required: true
   SmartEnv.add :AUTH_SETTINGS, default: { type: 'database' }
   SmartEnv.add :SMTP_SETTINGS, default: {}
   SmartEnv.add_boolean :RAILS_SERVE_STATIC_FILES, default: true

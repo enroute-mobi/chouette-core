@@ -68,7 +68,7 @@ pipelines:
             - export BUMMR_HEADLESS="true"
 
             - git checkout -b gems-update-$BITBUCKET_BUILD_NUMBER
-            - bundle exec bummr update
+            - bummr update
             - git push
           services:
             - postgres

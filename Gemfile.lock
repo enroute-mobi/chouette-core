@@ -888,6 +888,7 @@ DEPENDENCIES
   slim-rails
   spring
   spring-commands-rspec
+  sprockets (~> 3.7.2)
   stackprof
   teaspoon-jasmine
   therubyracer (~> 0.12)

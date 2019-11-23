@@ -18,6 +18,8 @@ gem 'uglifier', '~> 2.7.2'
 # Use CoffeeScript for .js.coffee assets and views
 gem 'coffee-rails'
 
+gem 'sprockets', '~> 3.7.2'
+
 # Webpacker
 gem 'webpacker', '3.2.1'
 

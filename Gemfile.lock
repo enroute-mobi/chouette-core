@@ -879,7 +879,7 @@ DEPENDENCIES
   sassc-rails
   sawyer (~> 0.8.1)
   sdoc
-  seedbank
+  seedbank (= 0.4.0)
   select2-rails (~> 4.0, >= 4.0.3)
   sequel
   shoulda-matchers

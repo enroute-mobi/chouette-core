@@ -40,7 +40,7 @@ gem 'has_array_of', en_route: 'has_array_of'
 gem 'rails-observers'
 
 # Use SeedBank for spliting seeds
-gem 'seedbank'
+gem 'seedbank', '0.4.0'
 
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'

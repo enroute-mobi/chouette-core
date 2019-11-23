@@ -163,6 +163,8 @@ gem 'letter_opener_web', '~> 1.0'
 
 gem 'gtfs', en_route: 'gtfs'
 
+gem 'ddtrace'
+
 group :development do
   gem 'capistrano'
   gem 'capistrano-ext'

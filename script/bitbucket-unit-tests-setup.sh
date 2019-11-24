@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 
 # Configure UTF-8 locale
 apt-get -qq update && apt-get -qq install -y --no-install-recommends locales
@@ -15,12 +15,13 @@ echo "deb https://deb.nodesource.com/node_8.x stretch main" > /etc/apt/sources.l
 apt-get -qq update && apt-get -qq install -y --no-install-recommends yarn nodejs
 
 # Install expected bundler version
-gem install bundler:$BUNDLER_VERSION
+gem install "bundler:$BUNDLER_VERSION"
 
 # Install dependencies
 export DEV_PACKAGES="build-essential libpq-dev libxml2-dev zlib1g-dev libmagic-dev libmagickwand-dev git-core"
 export RUN_PACKAGES="libpq5 libxml2 zlib1g libmagic1 imagemagick libproj-dev libgeos-c1v5 postgresql-client-common postgresql-client-9.6"
 mkdir -p /usr/share/man/man1 /usr/share/man/man7
+# shellcheck disable=SC2086
 apt-get -qq -y install --no-install-recommends $DEV_PACKAGES $RUN_PACKAGES
 
 # Install bundler dependencies

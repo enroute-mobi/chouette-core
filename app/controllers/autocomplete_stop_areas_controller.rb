@@ -24,8 +24,8 @@ class AutocompleteStopAreasController < ChouetteController
       scope = scope.possible_parents if relation_parent?
       scope = scope.possible_parents if relation_children?
     end
-    if search_scope.present?
-      scope = StopAreaPolicy::Scope.new(current_user, scope).search_scope(search_scope)
+    if search_scope&.to_s == "route_editor"
+      scope = scope.where(kind: :non_commercial).or(scope.where(area_type: referential.stop_area_referential.available_stops)) unless current_user.organisation.has_feature?("route_stop_areas_all_types")
     end
     args = [].tap{|arg| 4.times{arg << "%#{params[:q]}%"}}
     @stop_areas = scope.where("unaccent(stop_areas.name) ILIKE unaccent(?) OR unaccent(stop_areas.city_name) ILIKE unaccent(?) OR stop_areas.registration_number ILIKE ? OR stop_areas.objectid ILIKE ?", *args).limit(50)

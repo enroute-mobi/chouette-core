@@ -32,6 +32,10 @@ class StopAreaReferential < ApplicationModel
     stop_areas.select(:country_code).uniq.compact.map &:country
   end
 
+  def available_stops
+    route_edition_available_stops.map{|k,v| k if v}.compact
+  end
+
   def generate_registration_number
     return "" unless registration_number_format.present?
     last = self.stop_areas.order("registration_number DESC NULLS LAST").limit(1).first&.registration_number

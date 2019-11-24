@@ -53,6 +53,14 @@ RSpec.describe AutocompleteStopAreasController, type: :controller do
       expect(assigns(:stop_areas)).to_not include(not_zdep_stop_area)
     end
 
+    it "should filter stop areas based on type if we change the default behaviour" do
+      referential.stop_area_referential.route_edition_available_stops = {lda: true}
+      referential.stop_area_referential.save
+      request
+      expect(assigns(:stop_areas)).to include(not_zdep_stop_area)
+      expect(assigns(:stop_areas)).to_not include(zdep_stop_area)
+    end
+
     with_feature :route_stop_areas_all_types do
       it "should not filter stop areas based on type" do
         request

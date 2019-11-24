@@ -101,18 +101,18 @@ module Chouette
     end
 
     def registration_number_is_set
-      return unless self.stop_area_referential.registration_number_format.present?
-      if self.stop_area_referential.stop_areas.where(registration_number: self.registration_number).\
-        where.not(id: self.id).exists?
+      return unless stop_area_referential&.registration_number_format.present?
+      if stop_area_referential.stop_areas.where(registration_number: registration_number).\
+        where.not(id: id).exists?
         errors.add(:registration_number, I18n.t('stop_areas.errors.registration_number.already_taken'))
       end
 
-      unless self.registration_number.present?
+      unless registration_number.present?
         errors.add(:registration_number, I18n.t('stop_areas.errors.registration_number.cannot_be_empty'))
       end
 
-      unless self.stop_area_referential.validates_registration_number(self.registration_number)
-        errors.add(:registration_number, I18n.t('stop_areas.errors.registration_number.invalid', mask: self.stop_area_referential.registration_number_format))
+      unless stop_area_referential.validates_registration_number(registration_number)
+        errors.add(:registration_number, I18n.t('stop_areas.errors.registration_number.invalid', mask: stop_area_referential.registration_number_format))
       end
     end
 

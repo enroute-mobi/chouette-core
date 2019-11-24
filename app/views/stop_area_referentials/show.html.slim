@@ -33,14 +33,15 @@
                   .col-md-4= locale['code']
                   .col-md-3= boolean_icon locale['default']
 
-    .col-md-6
-      h2= StopAreaReferential.tmf(:route_edition_available_stops)
-      .row.locales
-        .col-lg-12
-          - Chouette::AreaType::COMMERCIAL.each do |f|
-            .row
-              .col-md-4= t("area_types.label.#{f}")
-              .col-md-8= boolean_icon @stop_area_referential.route_edition_available_stops[f.to_s]
+    - unless has_feature?("route_stop_areas_all_types")
+      .col-md-6
+        h2= StopAreaReferential.tmf(:route_edition_available_stops)
+        .row.locales
+          .col-lg-12
+            - Chouette::AreaType::COMMERCIAL.each do |f|
+              .row
+                .col-md-4= t("area_types.label.#{f}")
+                .col-md-8= boolean_icon @stop_area_referential.route_edition_available_stops[f.to_s]
 
     .col-md-12
       - if policy(@stop_area_referential).synchronize?

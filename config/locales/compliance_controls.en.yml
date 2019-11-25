@@ -116,6 +116,11 @@ en:
         3_route_13: "The %{route_name} route (%{source_objectid}) is using stop_areas %{stop_area_ids} not belonging to the organisation %{organisation_name}"
       description: "A route must not use stop areas not belonging to its organisation"
       prerequisite: "None"
+    route_control/stop_area_types:
+      messages:
+        3_route_14: "The Route %{route_name} (%{source_objectid}) uses Stop Areas %{stop_area_names} of type %{stop_area_types} which doesn’t match the authorized list: %{permitted_types}"
+      description: "Stop Areas in the routes must use one the selected Stop Area types"
+      prerequisite: "None"
     journey_pattern_control/duplicates:
       messages:
         3_journeypattern_1: "The journey pattern with objectid %{source_objectid} is identical with another one %{target_0_objectid}"
@@ -291,6 +296,8 @@ en:
         one: "The commercial stop points of a route must have forbidden boarding and alighting"
       route_control/valid_stop_areas:
         one: "A route must not use stop areas not belonging to its organisation"
+      route_control/stop_area_types:
+        one: "Stop Areas in the routes must use one the selected Stop Area types"
       journey_pattern_control/duplicates:
         one: "Journey patterns duplicates in a line"
       journey_pattern_control/vehicle_journey:

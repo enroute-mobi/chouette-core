@@ -115,6 +115,11 @@ fr:
         3_route_13: "L'itinéraire %{route_name} (%{source_objectid}) utilise des points d’arrêt %{stop_area_ids} qui ne font pas partie du périmètre fonctionnel de l'organisation %{organisation_name}"
       description: "Un itinéraire ne doit pas utiliser des arrêts n'appartenant pas à son organisation"
       prerequisite: "Aucun"
+    route_control/stop_area_types:
+      messages:
+        3_route_14: "L’itinéraire %{route_name} (%{source_objectid}) a des arrêts %{stop_area_names} de type %{stop_area_types} qui ne correspond pas à la liste des types autorisés: %{permitted_types}"
+      description: "Les arrêts des itinéraires doivent appartenir aux types d’arrêts sélectionnés"
+      prerequisite: "Aucun"
     journey_pattern_control/duplicates:
       messages:
         3_journeypattern_1: "La mission %{source_objectid} est identique à la mission %{target_0_objectid}"
@@ -290,6 +295,8 @@ fr:
         one: "Les arrêts non-commerciaux ont une montée / descente interdites"
       route_control/valid_stop_areas:
         one: "Un itinéraire ne doit pas utiliser des arrêts n'appartenant pas à son organisation"
+      route_control/stop_area_types:
+        one: "Les arrêts des itinéraires doivent appartenir aux types d’arrêts sélectionnés"
       journey_pattern_control/duplicates:
         one: "Doublon de missions dans une ligne"
       journey_pattern_control/vehicle_journey:

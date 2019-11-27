@@ -18,6 +18,8 @@ gem 'uglifier', '~> 2.7.2'
 # Use CoffeeScript for .js.coffee assets and views
 gem 'coffee-rails'
 
+gem 'sprockets', '~> 3.7.2'
+
 # Webpacker
 gem 'webpacker', '3.2.1'
 
@@ -40,7 +42,7 @@ gem 'has_array_of', en_route: 'has_array_of'
 gem 'rails-observers'
 
 # Use SeedBank for spliting seeds
-gem 'seedbank'
+gem 'seedbank', '0.4.0'
 
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
@@ -186,6 +188,8 @@ group :development do
 
   gem 'derailed_benchmarks'
   gem 'stackprof'
+
+  gem 'bummr'
 end
 
 group :test do

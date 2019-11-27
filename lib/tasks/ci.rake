@@ -20,6 +20,10 @@ namespace :ci do
     ENV["QUIET"] == "true"
   end
 
+  def fail_fast?
+    ENV["FAIL_FAST"] == "true"
+  end
+
   desc "Prepare CI build"
   task :setup do
     if parallel_tests?
@@ -85,6 +89,10 @@ namespace :ci do
 
   task :spec do
     test_options = "--format RspecJunitFormatter --out test-results/rspec#{ENV['TEST_ENV_NUMBER']}.xml"
+
+    if fail_fast?
+      test_options += " --fail-fast"
+    end
 
     unless quiet?
       test_options += " --format progress"

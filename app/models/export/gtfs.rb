@@ -57,7 +57,7 @@ class Export::Gtfs < Export::Base
   end
 
   def export_to_dir(directory)
-    operations_count = 7
+    operations_count = 6
     GTFS::Target.open(File.join(directory, "#{zip_file_name}.zip")) do |target|
       export_companies_to target
       notify_progress 1.0/operations_count
@@ -66,17 +66,15 @@ class Export::Gtfs < Export::Base
       export_lines_to target
       export_transfers_to target
       notify_progress 3.0/operations_count
-      export_lines_to target
-      notify_progress 4.0/operations_count
       # Export Calendar & Calendar_dates
       export_time_tables_to target
-      notify_progress 5.0/operations_count
+      notify_progress 4.0/operations_count
       # Export Trips
       export_vehicle_journeys_to target
       notify_progress 5.0/operations_count
       # Export stop_times.txt
       export_vehicle_journey_at_stops_to target
-      notify_progress 7.0/operations_count
+      notify_progress 6.0/operations_count
       # Export files fare_rules, fare_attributes, shapes, frequencies
       # and feed_info aren't yet implemented as import nor export features from
       # the chouette model

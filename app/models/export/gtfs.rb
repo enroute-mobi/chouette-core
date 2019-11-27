@@ -30,15 +30,15 @@ class Export::Gtfs < Export::Base
   end
 
   def agency_id company
-    (company.registration_number.presence || company.object_id) if company
+    (company.registration_number.presence || company.objectid) if company
   end
 
   def route_id line
-    line.registration_number.presence || line.object_id
+    line.registration_number.presence || line.objectid
   end
 
   def stop_id stop_area
-    stop_area.registration_number.presence || stop_area.object_id
+    stop_area.registration_number.presence || stop_area.objectid
   end
 
   def generate_export_file
@@ -232,7 +232,7 @@ class Export::Gtfs < Export::Base
     count = journeys.count
     journeys.each_with_index do |vehicle_journey, i|
       vehicle_journey.flattened_circulation_periods.select{|period| period.range & date_range}.each do |period|
-        service_id = period.object_id
+        service_id = "#{vehicle_journey.objectid}-#{i}"
         target.calendars << {
           service_id: service_id,
           start_date: period.period_start.strftime('%Y%m%d'),

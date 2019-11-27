@@ -57,7 +57,7 @@ GIT
 
 GEM
   remote: https://rubygems.org/
-  remote: http://insecure.rails-assets.org/
+  remote: https://rails-assets.org/
   specs:
     RedCloth (4.3.2)
     SyslogLogger (2.0)

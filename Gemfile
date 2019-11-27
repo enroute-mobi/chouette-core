@@ -234,7 +234,7 @@ gem 'devise-i18n'
 gem 'i18n-tasks'
 
 # Rails Assets
-source 'https://rails-assets.org' do
+source 'http://insecure.rails-assets.org' do
   gem 'rails-assets-footable', '~> 2.0.3'
 
   # Use twitter bootstrap resources

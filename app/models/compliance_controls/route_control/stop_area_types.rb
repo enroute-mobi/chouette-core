@@ -6,12 +6,11 @@ module RouteControl
 
     def self.default_code; "3-Route-14" end
 
-    def self.compliance_test compliance_check, route
-      valid_types = route.referential.stop_area_referential
+    def self.compliance_test _compliance_check, route
       route.stop_areas.where.not(area_type: route.referential.stop_area_referential.available_stops).length == 0
     end
 
-    def self.custom_message_attributes compliance_check, route
+    def self.custom_message_attributes _compliance_check, route
       invalid_stop_areas = route.stop_areas.where.not(area_type: route.referential.stop_area_referential.available_stops)
       {
         route_name: route.name,

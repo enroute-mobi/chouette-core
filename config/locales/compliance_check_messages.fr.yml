@@ -12,6 +12,7 @@ fr:
     3_route_11: "L'itinéraire %{source_objectid} contient un nombre de frontières incohérent"
     3_route_12: "Tous les arrêts non-commerciaux de l'itinéraire %{source_objectid} n'ont pas une montée / descente interdites"
     3_route_13: "L'itinéraire %{route_name} (%{source_objectid}) utilise des points d’arrêt (%{stop_area_ids}) qui ne font pas partie du périmètre fonctionnel de l'organisation %{organisation_name}"
+    3_route_14: "L’itinéraire %{route_name} (%{source_objectid}) a des arrêts %{stop_area_names} de type %{stop_area_types} qui ne correspond pas à la liste des types autorisés: %{permitted_types}"
     3_journeypattern_1: "La mission %{source_objectid} est identique à la mission %{target_0_objectid}"
     3_journeypattern_2: "La mission %{source_objectid} n'a pas de course"
     3_journeypattern_3: "La mission %{source_objectid} n'a pas suffisament d'arrêts (minimum 2 arrêts requis)"

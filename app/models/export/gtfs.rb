@@ -144,16 +144,19 @@ class Export::Gtfs < Export::Base
   end
 
   def exported_stop_areas
-    Chouette::StopArea.where(id: journeys.joins(route: :stop_points).pluck(:"stop_points.stop_area_id").uniq).where(kind: :commercial).order('parent_id ASC NULLS FIRST')
+    stop_areas_in_routes_ids = journeys.joins(route: :stop_points).distinct.pluck(:"stop_points.stop_area_id")
+    quay_parent_ids = Chouette::StopArea.where(id: stop_areas_in_routes_ids).where(area_type: 'zdep').where.not(parent_id: nil).distinct.pluck(:parent_id)
+    exported_stop_area_ids = stop_areas_in_routes_ids.to_set.merge(quay_parent_ids)
+
+    referential.stop_area_referential.stop_areas.where(id: exported_stop_area_ids).where(kind: :commercial).order('parent_id ASC NULLS FIRST')
   end
 
   def export_stop_areas_to(target)
-    results = export_stop_areas_recursively(exported_stop_areas)
-    results.each do |stop_area|
+    exported_stop_areas.find_each do |stop_area|
       target.stops << {
         id: stop_id(stop_area),
         name: stop_area.name,
-        location_type: stop_area.area_type == 'zdlp' ? 1 : 0,
+        location_type: stop_area.area_type == 'zdep' ? 0 : 1,
         parent_station: (stop_id(stop_area.parent) if stop_area.parent),
         lat: stop_area.latitude,
         lon: stop_area.longitude,
@@ -183,26 +186,6 @@ class Export::Gtfs < Export::Base
         type: '2',
         min_transfer_time: min_transfer_time
       }
-    end
-  end
-
-  def export_stop_areas_recursively(stop_areas)
-    stop_areas_array_result = []
-    stop_areas_array_parents = []
-
-    stop_areas.each do |stop_area|
-      if (!stop_area_stop_hash[stop_area.id])
-        stop_areas_array_result << stop_area
-        stop_area_stop_hash[stop_area.id] = stop_id(stop_area)
-        if (stop_area.parent && !stop_area_stop_hash[stop_area.parent.id])
-          stop_areas_array_parents << stop_area.parent
-        end
-      end
-    end
-    if (stop_areas_array_parents.any?)
-      export_stop_areas_recursively((stop_areas_array_parents)).concat stop_areas_array_result
-    else
-      stop_areas_array_result
     end
   end
 

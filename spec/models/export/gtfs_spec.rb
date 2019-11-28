@@ -162,8 +162,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
               (selected_stop_areas_hash[stop_point.stop_area.id] = stop_point.stop_area) if (stop_point.stop_area && stop_point.stop_area.commercial? && !selected_stop_areas_hash[stop_point.stop_area.id])
             end
         end
-        selected_stop_areas = []
-        selected_stop_areas = gtfs_export.export_stop_areas_recursively(selected_stop_areas_hash.values)
+        selected_stop_areas = selected_stop_areas_hash.values
 
         GTFS::Target.open(stops_zip_path) do |target|
           # reset export sort variable
@@ -183,7 +182,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
         random_gtfs_stop = source.stops.detect {|e| e.id == (random_stop_area.registration_number.presence || random_stop_area.object_id)}
         expect(random_gtfs_stop).not_to be_nil
         expect(random_gtfs_stop.name).to eq(random_stop_area.name)
-        expect(random_gtfs_stop.location_type).to eq(random_stop_area.area_type == 'zdlp' ? '1' : '0')
+        expect(random_gtfs_stop.location_type).to eq(random_stop_area.area_type == 'zdep' ? '0' : '1')
         # Checks if the parents are similar
         expect(random_gtfs_stop.parent_station).to eq(((random_stop_area.parent.registration_number.presence || random_stop_area.parent.object_id) if random_stop_area.parent))
       end

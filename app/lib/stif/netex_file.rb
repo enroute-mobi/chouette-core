@@ -61,8 +61,8 @@ module STIF
 
         def parse_calendars calendars
           # <netex:ValidBetween>
-          #  <netex:FromDate>2017-03-01</netex:FromDate>
-          #  <netex:ToDate>2017-03-31</netex:ToDate>
+          #   <netex:FromDate>2019-09-05T00:00:00</netex:FromDate>
+          #   <netex:ToDate>2019-12-16T00:00:00</netex:ToDate>
           # </netex:ValidBetween>
 
           namespace = detect_namespace(calendars) || 'netex'

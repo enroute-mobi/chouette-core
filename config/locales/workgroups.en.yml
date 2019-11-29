@@ -9,6 +9,7 @@ en:
       setup_deletion_confirm: Are you sure you want to delete this workgroup ?
       setup_workgroup_deletion: Plan workgroup deletion
       restore_workgroup: Restore workgroup
+      edit_transport_modes: Edit transport modes
     edit_controls: &edit_controls
       title: "Workgroup Validation Settings"
     edit:
@@ -28,7 +29,8 @@ en:
         during aggregation. This selection will remain in place upon further action from your part.</p>
     edit_hole_sentinel:
       title: "Missing offer detection settings"
-
+      edit_transport_modes:
+        title: Edit transport modes
     compliance_control_sets:
       after_import: After Import
       after_import_by_workgroup: After Import (Group)

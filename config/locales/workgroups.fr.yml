@@ -9,6 +9,7 @@ fr:
       setup_deletion_confirm: "Etes vous sûr de vouloir supprimer ce groupe de travail ?"
       setup_workgroup_deletion: Planifier la suppression du groupe de travail
       restore_workgroup: Restaurer
+      edit_transport_modes: Paramétrer les modes de transport
     edit_controls: &edit_controls
       title: 'Paramétrage de la validation du Groupe de Travail'
     edit:
@@ -29,8 +30,7 @@ fr:
     edit_hole_sentinel:
       title: "Paramétrages de la détection de trous d'offre"
     edit_transport_modes:
-      title: "Paramétrages des modes de transport"
-
+      title: Paramétrages des modes de transport
     compliance_control_sets:
       after_import: Après Import
       after_import_by_workgroup: Après Import (Groupe)

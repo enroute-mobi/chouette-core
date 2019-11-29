@@ -23,7 +23,7 @@
                 tbody
                   - TransportModeEnumerations.full_transport_modes.sort_by{|k, v| "enumerize.transport_mode.#{k}".t}.each do |mode, submodes|
                     - submodes.sort.each do |submode|
-                      tr class="#{mode}#{submode == :undefined ? ' disabled' : ''}" data-submode=submode
+                      tr class="#{mode} #{submode == :undefined ? ' disabled' : submode}" data-submode=submode
                         td= "enumerize.transport_mode.#{mode}".t
                         td= "enumerize.transport_submode.#{submode}".t
                         td= submode

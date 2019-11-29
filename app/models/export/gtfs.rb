@@ -212,9 +212,9 @@ class Export::Gtfs < Export::Base
     date_range
     start_progress = 3.0/6
     count = journeys.count
-    journeys.each_with_index do |vehicle_journey, i|
-      vehicle_journey.flattened_circulation_periods.select{|period| period.range & date_range}.each do |period|
-        service_id = "#{vehicle_journey.objectid}-#{i}"
+    journeys.each_with_index do |vehicle_journey, vehicle_journey_index|
+      vehicle_journey.flattened_circulation_periods.select{|period| period.range & date_range}.each_with_index do |period, period_index|
+        service_id = "#{vehicle_journey.objectid}-#{period_index}"
         target.calendars << {
           service_id: service_id,
           start_date: period.period_start.strftime('%Y%m%d'),
@@ -248,7 +248,7 @@ class Export::Gtfs < Export::Base
         journey_periods_hash[vehicle_journey.id] ||= []
         journey_periods_hash[vehicle_journey.id] << service_id
       end
-      notify_progress start_progress + i/6.0/count
+      notify_progress start_progress + vehicle_journey_index/6.0/count
     end
   end
 

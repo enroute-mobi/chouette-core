@@ -163,7 +163,7 @@ class Export::Gtfs < Export::Base
         lon: stop_area.longitude,
         desc: stop_area.comment,
         url: stop_area.url,
-        timezone: stop_area.time_zone
+        timezone: (stop_area.time_zone unless stop_area.parent),
         #code: TO DO
         #wheelchair_boarding: TO DO wheelchair_boarding <=> mobility_restricted_suitability ?
       }

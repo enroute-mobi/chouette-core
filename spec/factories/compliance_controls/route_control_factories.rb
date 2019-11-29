@@ -35,4 +35,8 @@ FactoryGirl.define do
   factory :route_control_zdl_stop_area, class: 'RouteControl::ZDLStopArea' do
     association :compliance_control_set
   end
+
+  factory :route_control_stop_area_types, class: 'RouteControl::StopAreaTypes' do
+    association :compliance_control_set
+  end
 end

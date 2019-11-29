@@ -12,6 +12,7 @@ en:
     3_route_11: "The borders count of route (%{source_objectid}) does not match the countries of its stops"
     3_route_12: "All of route's (%{source_objectid}) non-commercial stop points don't have boarding and alighting attributes set to forbidden"
     3_route_13: "The %{route_name} route (%{source_objectid}) is using stop_areas %{stop_area_ids} not belonging to the organisation %{organisation_name}"
+    3_route_14: "The Route %{route_name} (%{source_objectid}) uses Stop Areas %{stop_area_names} of type %{stop_area_types} which doesn’t match the authorized list: %{permitted_types}"
     3_journeypattern_1: "The journey pattern with objectid %{source_objectid} is identical with another one %{target_0_objectid}"
     3_journeypattern_2: "The journey pattern with %{source_objectid} objectid doesn't have any vehicle journey"
     3_journeypattern_3: "The journey pattern with %{source_objectid} objectid has less than 2 stop points"

@@ -153,6 +153,7 @@ class Export::Gtfs < Export::Base
 
   def export_stop_areas_to(target)
     exported_stop_areas.find_each do |stop_area|
+      stop_area_stop_hash[stop_area.id] = stop_id(stop_area)
       target.stops << {
         id: stop_id(stop_area),
         name: stop_area.name,
@@ -292,7 +293,7 @@ class Export::Gtfs < Export::Base
             trip_id: trip_id,
             arrival_time: arrival_time,
             departure_time: departure_time,
-            stop_id: stop_area_stop_hash[vj_at_stop.stop_point.stop_area_id],
+            stop_id: stop_area_stop_hash.fetch(vj_at_stop.stop_point.stop_area_id),
             stop_sequence: vj_at_stop.stop_point.position # NOT SURE TO DO
             # stop_headsign: TO STORE IN IMPORT,
             # pickup_type: TO STORE IN IMPORT,

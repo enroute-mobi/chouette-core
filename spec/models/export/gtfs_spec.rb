@@ -158,9 +158,15 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       # Fetch the expected exported stop_areas
       exported_referential.switch do
         selected_vehicle_journeys.each do |vehicle_journey|
-            vehicle_journey.route.stop_points.each do |stop_point|
-              (selected_stop_areas_hash[stop_point.stop_area.id] = stop_point.stop_area) if (stop_point.stop_area && stop_point.stop_area.commercial? && !selected_stop_areas_hash[stop_point.stop_area.id])
+          vehicle_journey.route.stop_points.each do |stop_point|
+            candidates = [stop_point.stop_area]
+            if stop_point.stop_area.area_type == "zdep" && stop_point.stop_area.parent
+              candidates << stop_point.stop_area.parent
             end
+            candidates.each do |stop_area|
+              selected_stop_areas_hash[stop_area.id] ||= stop_area if stop_area.commercial?
+            end
+          end
         end
         selected_stop_areas = selected_stop_areas_hash.values
 

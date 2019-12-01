@@ -226,6 +226,7 @@ module IevInterfaces::Task
   private
 
   def threaded_call_boiv_iev
+    return if Rails.env.test?
     Thread.new(&method(:call_boiv_iev))
   end
 

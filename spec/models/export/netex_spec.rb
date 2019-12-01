@@ -41,10 +41,8 @@ RSpec.describe Export::Netex, type: [:model] do
     subject{ build( :netex_export, id: random_int ) }
 
     it 'will trigger the Java API' do
-      with_stubbed_request(:get, boiv_iev_uri) do |request|
-        subject.save!
-        expect(request).to have_been_requested
-      end
+      expect(subject).to receive(:threaded_call_boiv_iev)
+      subject.save!
     end
   end
 end

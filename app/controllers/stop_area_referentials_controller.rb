@@ -28,17 +28,17 @@ class StopAreaReferentialsController < ChouetteController
         code: StopAreaReferential.translate_code_to_internal(locale[:code]),
         default: locale[:default] == '1'
       }
-    end
+    end if params[:locales]
 
     stops_selection_displayed_fields = {}
     params[:stops_selection_displayed_fields].each do |k, v|
       stops_selection_displayed_fields[k] = v == '1'
-    end
+    end if params[:stops_selection_displayed_fields]
 
     route_edition_available_stops = {}
     params[:route_edition_available_stops].each do |k, v|
       route_edition_available_stops[k] = v == '1'
-    end
+    end if params[:route_edition_available_stops]
 
     { locales: locales, stops_selection_displayed_fields: stops_selection_displayed_fields, route_edition_available_stops: route_edition_available_stops }
   end

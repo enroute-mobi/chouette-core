@@ -10,7 +10,7 @@ module TransportModeEnumerations
         enumerize :transport_submode, in: TransportModeEnumerations.transport_submodes
       end
     rescue ActiveRecord::StatementInvalid
-      # The tables have not been created yet
+      Rails.logger.warn "Database tables have not been created yet : #{e.message}"
     end
   end
 
@@ -195,8 +195,7 @@ module TransportModeEnumerations
 
     alias_method :submodes_for_transports, :full_transport_modes
 
-    def sorted_transport_modes(modes=nil)
-      modes ||= transport_modes
+    def sorted_transport_modes
       transport_modes.sort_by do |m|
         I18n.t("enumerize.transport_mode.#{m}").parameterize
       end

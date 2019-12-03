@@ -7,7 +7,7 @@ class TransportModesEditor
       @updateValues($(e.currentTarget))
 
     # Click on row to check the embeded checkbox
-    @table.find('tbody td:not(.actions)').click (e)=>
+    @table.find('tbody td:not(.actions)').click (e)->
       $(e.currentTarget).parent().find('input').click()
 
     @filter.change (e)=>

@@ -216,11 +216,11 @@ class Workgroup < ApplicationModel
   end
 
   def sorted_transport_modes
-    transport_modes.keys.sort_by{|k, v| "enumerize.transport_mode.#{k}".t}
+    transport_modes.keys.sort_by{|k| "enumerize.transport_mode.#{k}".t}
   end
 
   def sorted_transport_submodes
-    transport_modes.values.flatten.uniq.sort_by{|k, v| "enumerize.transport_submode.#{k}".t}
+    transport_modes.values.flatten.uniq.sort_by{|k| "enumerize.transport_submode.#{k}".t}
   end
 
   def formatted_submodes_for_transports

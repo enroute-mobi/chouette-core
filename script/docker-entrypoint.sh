@@ -7,7 +7,7 @@ export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 echo "Start $command"
 case $command in
   async)
-    exec bundle exec rake jobs:work
+    exec bundle exec ./script/delayed-job-worker
     ;;
   sync)
     exec bash ./script/launch-cron

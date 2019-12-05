@@ -9,7 +9,7 @@ module TransportModeEnumerations
       if source.column_names.include?('transport_submode')
         enumerize :transport_submode, in: TransportModeEnumerations.transport_submodes
       end
-    rescue ActiveRecord::StatementInvalid
+    rescue ActiveRecord::StatementInvalid => e
       Rails.logger.warn "Database tables have not been created yet : #{e.message}"
     end
   end

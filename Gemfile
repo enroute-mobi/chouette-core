@@ -7,9 +7,6 @@ git_source(:en_route) { |name| "https://bitbucket.org/enroute-mobi/#{name}.git" 
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '5.2.2.1'
-gem 'rack-protection'
-
-gem 'sinatra', '~> 2.0.0.beta2'
 
 # Use SCSS for stylesheets
 gem 'sassc-rails'
@@ -28,8 +25,6 @@ gem 'jquery-rails'
 gem 'jquery-ui-rails'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 2.0'
-# bundle exec rake doc:rails generates the API under doc/api.
-gem 'sdoc', group: :doc
 
 # Select2 for pretty select boxes w. autocomplete
 gem 'select2-rails', '~> 4.0', '>= 4.0.3'
@@ -44,28 +39,11 @@ gem 'rails-observers'
 # Use SeedBank for spliting seeds
 gem 'seedbank', '0.4.0'
 
-# Use ActiveModel has_secure_password
-# gem 'bcrypt', '~> 3.1.7'
-
-# Use unicorn as the app server
-# gem 'unicorn'
-
-# Use Capistrano for deployment
-# gem 'capistrano-rails', group: :development
-
-# Use debugger
-# gem 'debugger', group: [:development, :test]
-
-# API Rest
-gem 'sawyer', '~> 0.8.1'
 gem 'faraday_middleware'
 gem 'faraday', '~> 0.11'
 
-platforms :ruby do
-  gem 'therubyracer', '~> 0.12'
-  gem 'pg'
-  #gem 'sqlite3'
-end
+gem 'therubyracer', '~> 0.12'
+gem 'pg'
 
 gem 'activerecord-postgis-adapter'
 gem 'polylines'
@@ -103,7 +81,6 @@ gem 'calendar_helper', '0.2.5'
 gem 'cocoon'
 gem 'slim-rails'
 gem 'formtastic'
-gem 'RedCloth', '~> 4.3.0'
 gem 'simple_form'
 gem 'font-awesome-sassc'
 gem 'will_paginate-bootstrap'
@@ -121,7 +98,6 @@ gem 'roo'
 # Controller
 gem 'inherited_resources'
 gem 'responders'
-gem 'google-analytics-rails'
 
 # Model
 gem 'will_paginate'
@@ -153,39 +129,22 @@ gem 'whenever', en_route: 'whenever', require: false # '~> 0.9'
 gem 'rake'
 gem 'apartment', '~> 2.2.0'
 gem 'aasm'
-gem 'activerecord-nulldb-adapter' if ENV['RAILS_DB_ADAPTER'] == 'nulldb'
 gem 'puma', '~> 3.10.0'
 
 # Cache
 gem 'redis-rails'
-
-gem 'newrelic_rpm'
-gem 'letter_opener'
-gem 'letter_opener_web', '~> 1.0'
 
 gem 'gtfs', en_route: 'gtfs'
 
 gem 'ddtrace'
 
 group :development do
-  gem 'capistrano'
-  gem 'capistrano-ext'
-  #gem 'capistrano-npm', require: false
   gem 'rails-erd'
-  # MetaRequest is incompatible with rgeo-activerecord
-  # gem 'meta_request'
   gem 'license_finder'
   gem 'bundler-audit'
   gem 'spring-commands-rspec'
-  gem 'dbshell-rails'
-  gem 'rack-livereload'
-  gem 'guard-livereload', '~> 2.5', require: false
-
-  platforms :ruby_20, :ruby_21, :ruby_22 do
-    gem 'better_errors'
-    gem 'binding_of_caller'
-  end
-
+  gem 'better_errors'
+  gem 'binding_of_caller'
   gem 'derailed_benchmarks'
   gem 'stackprof'
 
@@ -194,42 +153,42 @@ end
 
 group :test do
   gem 'email_spec'
-  gem 'cucumber-rails', require: false
   gem 'htmlbeautifier'
   gem 'timecop'
   gem 'rspec-snapshot'
   gem 'rails-controller-testing'
   gem 'fuubar'
+
+  gem 'rspec_junit_formatter'
+  gem 'codacy-coverage', require: false
 end
 
 group :test, :development do
-  gem 'fabrication', '~> 2.14.1'
-  gem 'ffaker', '~> 2.1.0'
-  gem 'faker'
-end
-
-group :test, :development do
-  gem 'awesome_print'
-  gem 'pry-rails'
-  gem 'pry-byebug'
   gem 'rspec-rails'
-  gem 'webmock'
   gem 'capybara', '~> 3.15.0'
   gem 'database_cleaner'
   gem 'poltergeist'
-  gem 'launchy'
-  gem 'factory_girl_rails', '~> 4.0'
-  gem 'rb-inotify', require: RUBY_PLATFORM.include?('linux') && 'rb-inotify'
-  gem 'rb-fsevent', require: RUBY_PLATFORM.include?('darwin') && 'rb-fsevent'
+
+  gem 'webmock'
   gem 'shoulda-matchers'
+
+  gem 'parallel_tests'
+
+  gem 'letter_opener'
+  gem 'letter_opener_web', '~> 1.0'
+
+  gem 'fabrication', '~> 2.14.1'
+  gem 'ffaker', '~> 2.1.0'
+  gem 'faker'
+
+  gem 'factory_girl_rails', '~> 4.0'
+
+  gem 'awesome_print'
+  gem 'pry-rails'
+  gem 'pry-byebug'
+
   gem "teaspoon-jasmine"
   gem "phantomjs"
-  gem 'parallel_tests'
-end
-
-group :production do
-  gem 'SyslogLogger', require: 'syslog/logger'
-  gem 'daemons'
 end
 
 # I18n
@@ -243,7 +202,6 @@ source 'https://rails-assets.org' do
 
   # Use twitter bootstrap resources
   gem 'rails-assets-bootstrap-sass-official', '~> 3.3.0'
-  gem 'rails-assets-tagmanager', '~> 3.0.1.0'
   gem 'rails-assets-respond'
   gem 'rails-assets-jquery-tokeninput', '~> 1.7.0'
 
@@ -254,6 +212,3 @@ gem 'activerecord-nulldb-adapter', require: (ENV['RAILS_DB_ADAPTER'] == 'nulldb'
 
 gem 'google-cloud-storage', '> 1.4.0'
 gem 'net-sftp', '~> 2.1'
-
-gem 'rspec_junit_formatter'
-gem 'codacy-coverage', require: false

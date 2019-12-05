@@ -6,7 +6,7 @@ if ENV['DD_AGENT_HOST']
 
     puts "Enable Datadog Agent for #{app_name}:#{env}"
 
-    c.tracer debug: debug, env:env
+    c.tracer debug: debug, tags: {app: app_name, env: env}
 
     c.use :rails, service_name: "#{app_name}-front", cache_service: "#{app_name}-cache", controller_service: "#{app_name}-front", database_service: "#{app_name}-postgresql"
     c.use :delayed_job, service_name: "#{app_name}-worker"

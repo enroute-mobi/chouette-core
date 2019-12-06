@@ -129,7 +129,7 @@ gem 'whenever', en_route: 'whenever', require: false # '~> 0.9'
 gem 'rake'
 gem 'apartment', '~> 2.2.0'
 gem 'aasm'
-gem 'puma', '~> 3.10.0'
+gem 'puma', '~> 4.3.0'
 
 # Cache
 gem 'redis-rails'

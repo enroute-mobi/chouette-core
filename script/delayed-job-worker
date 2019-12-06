@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
+ENV['DELAYED_JOB_WORKER'] = "true"
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'config', 'environment'))
 
 worker_options = {

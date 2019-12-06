@@ -160,6 +160,14 @@ module Chouette
       activated? ? :activated : :deactivated
     end
 
+    def activate
+      update deactivated: false
+    end
+
+    def deactivate!
+      update deactivated: true
+    end
+
     def code
       get_objectid.try(:local_id)
     end

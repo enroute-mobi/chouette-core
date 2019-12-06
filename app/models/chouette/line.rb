@@ -5,7 +5,8 @@ module Chouette
     include LineReferentialSupport
     include ObjectidSupport
     include TransportModeEnumerations
-    
+    enumerize_transport_submode
+
     include ColorSupport
     open_color_attribute
     open_color_attribute :text_color

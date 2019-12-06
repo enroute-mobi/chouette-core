@@ -5,13 +5,7 @@ module TransportModeEnumerations
     extend Enumerize
     enumerize :transport_mode, in: TransportModeEnumerations.transport_modes
 
-    begin
-      if source.column_names.include?('transport_submode')
-        enumerize :transport_submode, in: TransportModeEnumerations.transport_submodes
-      end
-    rescue ActiveRecord::StatementInvalid => e
-      Rails.logger.warn "Database tables have not been created yet : #{e.message}"
-    end
+    # Tip: Use `enumerize_transport_submode` in models which supports transport_submode
   end
 
   def transport_mode_and_submode_match
@@ -26,6 +20,10 @@ module TransportModeEnumerations
   end
 
   module ClassMethods
+    def enumerize_transport_submode
+      enumerize :transport_submode, in: TransportModeEnumerations.transport_submodes
+    end
+
     def transport_modes
       TransportModeEnumerations.transport_modes
     end

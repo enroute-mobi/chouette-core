@@ -206,7 +206,36 @@ class Workgroup < ApplicationModel
     update_attribute :deleted_at, nil
   end
 
+  def transport_modes_as_json
+    transport_modes.to_json
+  end
+
+  def transport_modes_as_json=(json)
+    self.transport_modes = JSON.parse(json)
+    clean_transport_modes
+  end
+
+  def sorted_transport_modes
+    transport_modes.keys.sort_by{|k| "enumerize.transport_mode.#{k}".t}
+  end
+
+  def sorted_transport_submodes
+    transport_modes.values.flatten.uniq.sort_by{|k| "enumerize.transport_submode.#{k}".t}
+  end
+
+  def formatted_submodes_for_transports
+    TransportModeEnumerations.formatted_submodes_for_transports(transport_modes)
+  end
+
   private
+  def clean_transport_modes
+    clean = {}
+    transport_modes.each do |k, v|
+      clean[k] = v.sort.uniq if v.present?
+    end
+    self.transport_modes = clean
+  end
+
   def self.compliance_control_sets_label(key)
     "workgroups.compliance_control_sets.#{key}".t
   end
@@ -257,5 +286,4 @@ class Workgroup < ApplicationModel
       workgroup
     end
   end
-
 end

@@ -4,9 +4,8 @@ module Chouette
     include LineRestrictions
     include LineReferentialSupport
     include ObjectidSupport
-    include NetexTransportModeEnumerations
-    include NetexTransportSubmodeEnumerations
-
+    include TransportModeEnumerations
+    
     include ColorSupport
     open_color_attribute
     open_color_attribute :text_color

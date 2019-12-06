@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe "/lines/index", :type => :view do
   let(:deactivated_line){ nil }
-  let(:line_referential) { assign :line_referential, create(:line_referential) }
+  let(:line_referential) { assign :line_referential, create(:line_referential, workgroup: current_workbench.workgroup) }
   let(:current_organisation) { current_user.organisation }
   let(:context) {
      {

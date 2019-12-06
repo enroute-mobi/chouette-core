@@ -3,7 +3,7 @@
 describe "Lines", :type => :feature do
   login_user
 
-  let(:line_referential) { create :line_referential }
+  let(:line_referential) { create :line_referential, workgroup: create(:workgroup) }
 
   let(:network) { create(:network) }
   let(:company) { create(:company) }
@@ -21,7 +21,7 @@ describe "Lines", :type => :feature do
     context 'on index view' do
       let( :path ){ line_referential_lines_path(line_referential) }
 
-      context 'if present → ' do 
+      context 'if present → ' do
         let( :permission ){ true }
 
         it 'displays the corresponding button' do
@@ -30,7 +30,7 @@ describe "Lines", :type => :feature do
         end
       end
 
-      context 'if absent → ' do 
+      context 'if absent → ' do
         let( :permission ){ false }
 
         it 'does not display the corresponding button' do
@@ -43,7 +43,7 @@ describe "Lines", :type => :feature do
       skip 'policies always false' do
         let( :path ){ line_referential_line_path(line_referential, line) }
 
-        context 'if present → ' do 
+        context 'if present → ' do
           let( :permission ){ true }
 
           it 'displays the corresponding buttons' do
@@ -52,7 +52,7 @@ describe "Lines", :type => :feature do
           end
         end
 
-        context 'if absent → ' do 
+        context 'if absent → ' do
           let( :permission ){ false }
 
           it 'does not display the corresponding button' do

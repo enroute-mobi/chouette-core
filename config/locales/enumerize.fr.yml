@@ -125,139 +125,150 @@ fr:
         clean_unassociated_timetables: Calendriers de circulation associés à aucune Course
         clean_unassociated_purchase_windows: Calendriers commerciaux associés à aucune Course
     transport_mode:
-      interchange: Interconnection
-      unknown: Inconnu
-      undefined: 'Non défini'
       air: Air
-      train: Train
-      long_distance_train: Train Grande Ligne
-      local_train: TER
-      rapid_transit: RER
-      metro: Métro
-      tramway: Tramway
-      coach: Autocar
-      bus: Bus
-      ferry: Ferry
-      waterborne: Bac
-      private_vehicle: Voiture particulière
-      walk: Marche à pied
-      trolleyBus: Trolleybus
+      all: Tous les modes de transport
       bicycle: Vélo
+      bus: Bus
+      cableway: Téléphérique
+      coach: Autocar
+      ferry: Ferry
+      funicular: Funiculaire
+      hireCar: "Voiture de location"
+      interchange: Interconnection
+      local_train: TER
+      long_distance_train: Train Grande Ligne
+      metro: Métro
+      other: Autre
+      private_vehicle: Voiture particulière
+      rail: Train
+      rapid_transit: RER
       shuttle: Navette
       taxi: Taxi
-      val: VAL
-      other: Autre
-      bus: Bus
-      coach: Autocar
-      ferry: Ferry
-      metro: Métro
-      rail: Train
-      trolleybus: Trolleybus
+      telecabin: "Télécabine"
+      train: Train
       tram: Tramway
-      water: Eau
-      cableway: Téléphérique
-      funicular: Funiculaire
-      other: Autre
-      all: Tous les modes de transport
-    transport_submode:
-      unknown: 'Inconnu'
+      tramway: Tramway
+      trolleyBus: Trolleybus
       undefined: 'Non défini'
-      internationalFlight: 'Vol international'
-      domesticFlight: 'Vol intérieur'
-      intercontinentalFlight: 'Vol intercontinental'
-      domesticScheduledFlight: 'Vol intérieur régulier'
-      shuttleFlight: 'Vol de navette'
-      intercontinentalCharterFlight: "Vol 'charter' intercontinental"
-      internationalCharterFlight: "Vol 'charter' international"
-      roundTripCharterFlight: "Vol 'charter' aller/retour"
-      sightseeingFlight: 'Vol tourisme'
-      helicopterService: "Service d'hélicoptère"
-      domesticCharterFlight: "Vol 'charter' intérieur"
-      SchengenAreaFlight: 'Vol de zone Shengen'
-      airshipService: 'Service de dirigeable'
-      shortHaulInternationalFlight: 'Vol international à courte distance'
-      canalBarge: 'Péniche'
-      localBus: 'Bus local'
-      regionalBus: 'Bus régional'
-      expressBus: 'Bus express'
-      nightBus: 'Bus de nuit'
-      postBus: 'Bus postal'
-      specialNeedsBus: 'Bus de besoins spécial'
-      mobilityBus: 'Bus de mobilité'
-      mobilityBusForRegisteredDisabled: 'Bus de mobilité pour personnes handicapées'
-      sightseeingBus: 'Bus touristique'
-      shuttleBus: 'Bus navette'
-      highFrequencyBus: 'Bus à haute fréquence'
-      dedicatedLaneBus: 'Bus à voie réservée'
-      schoolBus: 'Bus scolaire'
-      schoolAndPublicServiceBus: 'Bus scolaire/service public'
-      railReplacementBus: 'Bus de remplacement de train'
-      demandAndResponseBus: 'Bus à la demande'
-      airportLinkBus: 'Navette interne aéroport'
-      internationalCoach: 'Autocar international'
-      nationalCoach: 'Autocar national'
-      shuttleCoach: 'Autocar navette'
-      regionalCoach: 'Autocar régional'
-      specialCoach: 'Autocar spécial'
-      schoolCoach: 'Autocar scolaire'
-      sightseeingCoach: 'Autocar touristique'
-      touristCoach: 'Autocar touristique (2)'
-      commuterCoach: 'Autocar de banlieue'
-      metro: 'Métro'
-      tube: 'Métro (2)'
-      urbanRailway: 'Train urbain'
-      local: 'Local'
-      highSpeedRail: 'Train à grande vitesse'
-      suburbanRailway: 'Train'
-      regionalRail: 'TER'
-      interregionalRail: 'Intercités'
-      longDistance: 'Longue distance'
-      intermational: Internationale
-      sleeperRailService: 'Train à couchettes'
-      nightRail: 'Train de nuit'
-      carTransportRailService: 'Service ferroviaire de transport de voitures'
-      touristRailway: 'Train touristique'
-      railShuttle: 'Val'
-      replacementRailService: 'Service de train de remplacement'
-      specialTrain: 'Train spécial'
-      crossCountryRail: 'Train de campagne'
-      rackAndPinionRailway: 'Train à crémaillère'
-      cityTram: 'Tramway de ville'
-      localTram: 'Tramway local'
-      regionalTram: 'Tramway régional'
-      sightseeingTram: 'Tramway touristique'
-      shuttleTram: 'Tramway navette'
-      trainTram: 'Train/tramway'
-      internationalCarFerry: 'Ferry international'
-      nationalCarFerry: 'Ferry national'
-      regionalCarFerry: 'Ferry régional'
-      localCarFerry: 'Ferry local'
-      internationalPassengerFerry: 'Traversier international à passagers'
-      nationalPassengerFerry: 'Traversier national à passagers'
-      regionalPassengerFerry: 'Traversier régional à passagers'
-      localPassengerFerry: 'Traversier local à passagers'
-      postBoat: 'Bateau de poste'
-      trainFerry: 'Navire transbordeur'
-      roadFerryLink: 'Liaison par navire transbordeur'
-      airportBoatLink: "Liaison maritime d'aéroport"
-      highSpeedVehicleService: 'Service de véhicule à grande vitesse'
-      highSpeedPassengerService: 'Service passager à grande vitesse'
-      sightseeingService: 'Service touristique'
-      schoolBoat: 'Bateau scolaire'
-      cableFerry: 'Traversier à câble'
-      riverBus: 'Bateau-bus'
-      scheduledFerry: 'Traversier régulier'
-      shuttleFerryService: 'Service de traversier-navette'
-      telecabin: 'Télécabine'
-      cableCar: 'Téléphérique'
-      lift: 'Ascenseur'
-      chairLift: 'Télésiège'
-      dragLift: 'Téléski'
-      telecabinLink: 'Liaison télécabine'
-      funicular: 'Funiculaire'
-      streetCableCar: 'Tramway (2)'
+      unknown: Inconnu
+      val: VAL
+      walk: Marche à pied
+      water: Eau
+      waterborne: Bac
+    transport_submode:
+      airportBoatLink: "Bateau d'aéroport"
+      airportLinkBus: "Bus d'aéroport"
+      airshipService: "Aérostat"
       allFunicularServices: 'Tous services de funiculaire'
+      allHireVehicles: "Tous vehicules de location"
+      allTaxiServices: "Service Taxi"
+      bikeTaxi: "Taxi triporteur"
+      blackCab: "Taxi noir"
+      cableCar: 'Téléphérique'
+      cableFerry: "Ferry à câble"
+      canalBarge: 'Péniche'
+      carTransportRailService: "Transport de véhicules par le train"
+      chairLift: "Télésiège"
+      cityTram: "Tram urbain"
+      communalTaxi: "Taxi communal"
+      commuterCoach: "Car navette"
+      crossCountryRail: "Train national"
+      dedicatedLaneBus: 'Bus à voie réservée'
+      demandAndResponseBus: "Bus à la demande"
+      domesticCharterFlight: "Vol Charter National"
+      domesticFlight: 'Vol intérieur'
+      domesticScheduledFlight: 'Vol intérieur régulier'
+      dragLift: 'Téléski'
+      expressBus: 'Bus express'
+      funicular: "Funiculaire"
+      helicopterService: "Service d'hélicoptère"
+      highFrequencyBus: 'Bus à haute fréquence'
+      highSpeedPassengerService: "Navire publique à grande vitesse"
+      highSpeedRail: 'Train à grande vitesse'
+      highSpeedVehicleService: "Navire à grande vitesse"
+      hireCar: "Voiture de location"
+      hireCycle: "Vélo de location"
+      hireMotorbike: "Moto de location"
+      hireVan: "Fourgon de location"
+      intercontinentalCharterFlight: "Vol Charter Intercontinental"
+      intercontinentalFlight: "Vol Intercontinental"
+      international: "International"
+      internationalCarFerry: "Ferry international"
+      internationalCharterFlight: "Vol Charter International"
+      internationalCoach: 'Autocar international'
+      internationalFlight: "Vol International"
+      internationalPassengerFerry: "Ferry publique international"
+      interregionalRail: "Train interregional"
+      lift: "Ascenseur"
+      local: "Local"
+      localBus: "Bus local"
+      localCarFerry: "Ferry local"
+      localPassengerFerry: "Ferry publique local"
+      localTram: "Tram local"
+      longDistance: "Longue distance"
+      metro: Métro
+      miniCab: "Véhicule avec chauffeur privé"
+      mobilityBus: "Bus Mobilité"
+      mobilityBusForRegisteredDisabled: "Bus adapté aux personnes à mobilité reduite"
+      nationalCarFerry: "Ferry national"
+      nationalCoach: "Car interregional"
+      nationalPassengerFerry: "Ferry publique national"
+      nightBus: 'Bus de nuit'
+      nightRail: 'Train de nuit'
+      nightTrain: "Train de nuit"
+      postBoat: "Bateau postal"
+      postBus: "Bus postal"
+      rackAndPinionRailway: "Train à crémaillère"
+      railReplacementBus: "Bus de remplacement ferré"
+      railShuttle: "Train navette"
+      railTaxi: "Taxi de gare"
+      regionalBus: "Bus régional"
+      regionalCarFerry: "Ferry régional"
+      regionalCoach: "Car régional"
+      regionalPassengerFerry: "Ferry publique régional"
+      regionalRail: 'TER'
+      regionalTram: "Tram régional"
+      replacementRailService: "Train de remplacement"
+      riverBus: "Bus Navette fluviale"
+      roadFerryLink: "Ferry de liaison"
+      roundTripCharterFlight: "Vol Charter aller-retour"
+      scheduledFerry: "Ferry régulier"
+      schengenAreaFlight: "Vol Zone Schengen"
+      schoolAndPublicServiceBus: "Bus scolaire et de service public"
+      schoolBoat: "Bateau scolaire"
+      schoolBus: "Bus scolaire"
+      schoolCoach: 'Autocar scolaire'
+      shortHaulInternationalFlight: "Vol court-courrier international"
+      shuttleBus: "Bus navette"
+      shuttleCoach: "Car navette"
+      shuttleFerryService: "Ferry navette"
+      shuttleFlight: "Vol Navette"
+      shuttleTram: "Tram navette"
+      sightseeingBus: "Bus touristique"
+      sightseeingCoach: "Car de visite"
+      sightseeingFlight: "Vol touristique"
+      sightseeingService: "Service Touristique"
+      sightseeingTram: "Tram de tourisme"
+      sleeperRailService: "Train couchette"
+      specialCoach: "Car spécial"
+      specialNeedsBus: "Bus pour besoins particuliers"
+      specialTrain: "Train spécial"
+      streetCableCar: 'Tramway (2)'
+      suburbanRailway: "Train périurbain"
+      telecabin: "télécabine"
+      telecabinLink: "Téléphérique"
+      touristCoach: "Car touristique"
+      touristRailway: "Train touristique"
+      trainFerry: "Traversier-rail"
+      trainTram: 'Train/tramway'
+      tramTrain: "Train tram"
+      tube: "Tube"
+      undefined: 'Non défini'
       undefinedFunicular: 'Funiculaire non défini'
+      unknown: 'Inconnu'
+      urbanRailway: "Rail urbain"
+      waterTaxi: "Taxi fluviale"
+
     source_type_name:
       name: "Type de source"
       public_and_private_utilities: "Service public ou privé"

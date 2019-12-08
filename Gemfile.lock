@@ -550,7 +550,7 @@ GEM
       rspec-expectations (~> 3.5.0)
       rspec-mocks (~> 3.5.0)
       rspec-support (~> 3.5.0)
-    rspec-snapshot (0.1.1)
+    rspec-snapshot (0.1.2)
       rspec (> 3.0.0)
     rspec-support (3.5.0)
     rspec_junit_formatter (0.4.1)

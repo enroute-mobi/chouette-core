@@ -137,7 +137,7 @@ GEM
       coderay (>= 1.0.0)
       erubi (>= 1.0.0)
       rack (>= 0.9.0)
-    binding_of_caller (0.7.2)
+    binding_of_caller (0.8.0)
       debug_inspector (>= 0.0.1)
     builder (3.2.3)
     bulk_insert (1.7.0)
@@ -194,7 +194,7 @@ GEM
     database_cleaner (1.7.0)
     ddtrace (0.29.0)
       msgpack
-    debug_inspector (0.0.2)
+    debug_inspector (0.0.3)
     declarative (0.0.10)
     declarative-option (0.1.0)
     deep_cloneable (3.0.0)

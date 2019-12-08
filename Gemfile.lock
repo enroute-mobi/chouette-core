@@ -280,7 +280,7 @@ GEM
       sass (>= 3.2)
     formtastic (3.1.5)
       actionpack (>= 3.2.13)
-    fuubar (2.3.2)
+    fuubar (2.5.0)
       rspec-core (~> 3.0)
       ruby-progressbar (~> 1.4)
     geokit (1.13.1)
@@ -562,7 +562,7 @@ GEM
       rspec-core (>= 2, < 4, != 2.12.0)
     ruby-filemagic (0.7.2)
     ruby-graphviz (1.2.3)
-    ruby-progressbar (1.10.0)
+    ruby-progressbar (1.10.1)
     ruby-statistics (2.1.1)
     rubycas-client (2.3.9)
       activesupport

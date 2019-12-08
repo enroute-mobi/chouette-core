@@ -271,7 +271,7 @@ GEM
     faraday_middleware (0.13.1)
       faraday (>= 0.7.4, < 1.0)
     ffaker (2.1.0)
-    ffi (1.10.0)
+    ffi (1.11.3)
     ffi-geos (2.0.0)
       ffi (>= 1.0.0)
     flag-icons-rails (2.5.0)

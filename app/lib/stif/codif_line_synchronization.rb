@@ -89,7 +89,8 @@ module Stif
         params = {
           name: api_operator.name,
           objectid: api_operator.stif_id,
-          import_xml: api_operator.xml
+          import_xml: api_operator.xml,
+          time_zone: "Europe/Paris"
         }
         params.update api_operator.address
         api_operator.default_contact.each do |k,v|

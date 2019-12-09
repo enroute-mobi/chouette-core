@@ -8,10 +8,12 @@ if ENV['DD_AGENT_HOST']
 
     c.tracer debug: debug, tags: {app: app_name, env: env}
 
-    service_context = (ENV['DELAYED_JOB_WORKER'] == 'true' ? "worker" : "front")
-    if service_context == "worker"
-      # To avoid Delayed::Backend::ActiveRecord::Job instantiation on 'active-record' service
-      c.use :active_record, service_name: "#{app_name}-worker", orm_service_name: "#{app_name}-worker"
+    service_context = ENV.fetch('DD_TRACE_CONTEXT',"front")
+    if service_context != "front"
+      # To avoid Delayed::Backend::ActiveRecord::Job and User/Organisation instantiations
+      # on 'active-record' service
+      active_record_service_name = "#{app_name}-#{service_context}"
+      c.use :active_record, service_name: active_record_service_name, orm_service_name: active_record_service_name
     end
 
     c.use :rails, service_name: "#{app_name}-front", cache_service: "#{app_name}-cache", controller_service: "#{app_name}-front", database_service: "#{app_name}-postgresql"

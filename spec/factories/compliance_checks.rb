@@ -7,6 +7,9 @@ FactoryGirl.define do
     origin_code "code"
     comment "Text"
     association :compliance_check_set
-    association :compliance_check_block
+
+    factory :compliance_check_with_compliance_check_block do
+      association :compliance_check_block
+    end
   end
 end

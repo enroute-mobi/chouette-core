@@ -45,7 +45,7 @@ RSpec.describe ComplianceCheckBlock, type: :model do
 
   describe '#collection' do
     let(:compliance_check_set){ build_stubbed :compliance_check_set, referential: referential }
-    let(:compliance_check){ build_stubbed :compliance_check, compliance_check_set: compliance_check_set, compliance_control_name: "DummyControl::Dummy" }
+    let(:compliance_check){ build_stubbed :compliance_check_with_compliance_check_block, compliance_check_set: compliance_check_set, compliance_control_name: "DummyControl::Dummy" }
 
     let!(:fr_company) { create :company, line_referential: referential.line_referential }
     let!(:be_company) { create :company, line_referential: referential.line_referential }

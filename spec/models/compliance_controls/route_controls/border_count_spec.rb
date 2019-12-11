@@ -11,7 +11,7 @@ RSpec.describe RouteControl::BorderCount, :type => :model do
   let(:criticity){ "warning" }
   let(:compliance_check_set){ create :compliance_check_set, referential: referential}
   let(:compliance_check){
-    create :compliance_check,
+    create :compliance_check_with_compliance_check_block,
       iev_enabled_check: false,
       compliance_control_name: "RouteControl::BorderCount",
       control_attributes: control_attributes,
@@ -23,7 +23,7 @@ RSpec.describe RouteControl::BorderCount, :type => :model do
     create(:referential_metadata, lines: [line], referential: referential)
     referential.reload
   end
-  
+
   context "when route stays in the same country" do
     before do
       route = create :route, line: line

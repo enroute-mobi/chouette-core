@@ -19,7 +19,7 @@ RSpec.describe DummyControl::Dummy, :type => :model do
   let(:status){ "OK" }
   let(:compliance_check_set){ create :compliance_check_set, referential: referential}
   let(:compliance_check_block){ nil }
-  let(:compliance_check){ create :compliance_check, iev_enabled_check: false, compliance_control_name: "DummyControl::Dummy", control_attributes: control_attributes, compliance_check_set: compliance_check_set, compliance_check_block: compliance_check_block}
+  let(:compliance_check){ create :compliance_check_with_compliance_check_block, iev_enabled_check: false, compliance_control_name: "DummyControl::Dummy", control_attributes: control_attributes, compliance_check_set: compliance_check_set, compliance_check_block: compliance_check_block}
 
   it "should set the status according to its params" do
     expect{ compliance_check.process }.to change{ ComplianceCheckResource.count }.by 1

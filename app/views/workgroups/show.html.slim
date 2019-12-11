@@ -18,12 +18,12 @@
             tr
               th= Workgroup.tmfc(:transport_mode)
               th= Workgroup.tmfc(:transport_submode)
-              th= Workgroup.tmfc(:transport_submode_code)
 
           tbody
             - resource.sorted_transport_modes.each do |mode|
               - resource.transport_modes[mode].sort.each do |submode|
                 tr class=mode
-                  td= "enumerize.transport_mode.#{mode}".t
+                  - if submode == resource.transport_modes[mode].first
+                    td rowspan="#{resource.transport_modes[mode].size}"
+                      = "enumerize.transport_mode.#{mode}".t
                   td= "enumerize.transport_submode.#{submode}".t
-                  td= submode

@@ -23,10 +23,6 @@ class TransportModesEditor
     for mode, submodes of @values
       for submode in submodes
         @table.find("input[type=checkbox][name='#{mode}[_#{submode}]']").attr('checked', true)
-        @table.find("tr.#{mode}.#{submode}").css('background-color', 'rgba(72, 177, 0, 0.3)')
-
-      @table.find("input[type=checkbox][name='#{mode}[undefined]']").attr('disabled', submodes.length > 1)
-      @table.find("tr.#{mode}[data-submode=undefined]").toggleClass('disabled', submodes.length > 1)
 
   updateValues: (checkbox)=>
     mode = checkbox.attr('data-mode')

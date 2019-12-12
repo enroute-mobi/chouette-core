@@ -143,6 +143,7 @@ require_dependency 'compliance_controls/journey_pattern_control/min_max_time_cos
 require_dependency 'compliance_controls/line_control/active'
 require_dependency 'compliance_controls/line_control/lines_scope'
 require_dependency 'compliance_controls/line_control/route'
+require_dependency 'compliance_controls/line_control/transport_mode'
 require_dependency 'compliance_controls/route_control/border_count'
 require_dependency 'compliance_controls/route_control/duplicates'
 require_dependency 'compliance_controls/route_control/journey_pattern'

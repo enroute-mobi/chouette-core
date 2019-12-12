@@ -227,6 +227,11 @@ fr:
         3_line_3: "La ligne %{line_name} (%{source_objectid}) n'est pas active durant la période définie"
       description: "Les lignes doivent être actives"
       prerequisite: "Aucun"
+    line_control/transport_mode:
+      messages:
+        3_line_4: "La ligne %{line_name} (%{source_objectid}) a un mode de transport %{line_transport_mode} - %{line_transport_submode} qui ne correspond pas à la liste des modes / sous modes prévus au sein du groupe de travail."
+      description: "Le mode et sous-mode de transport sont conformes à ceux paramétrés"
+      prerequisite: "Aucun"
     generic_attribute_control/pattern:
       messages:
         3_generic_1: "%{source_objectid} : l'attribut %{source_attribute} a une valeur %{error_value} qui ne respecte pas l'expression régulière %{reference_value}"
@@ -341,6 +346,8 @@ fr:
         one: "Les lignes doivent appartenir au périmètre de lignes de l'organisation"
       line_control/active:
         one: "Les lignes doivent êtes actives"
+      line_control/transport_mode:
+        one: "Le mode et sous-mode de transport sont conformes à ceux paramétrés"
       generic_attribute_control/pattern:
         one: "Contrôle du contenu selon une expression régulière"
       generic_attribute_control/min_max:

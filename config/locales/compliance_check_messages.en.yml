@@ -34,6 +34,7 @@ en:
     3_line_1: "On line :%{source_label} (%{source_objectid}), no route has an opposite route"
     3_line_2: "The line %{source_label} (%{source_objectid}) is not in the lines scope of the organization %{reference_value}"
     3_line_3: "The line %{line_name} (%{source_objectid}) is not active during the period"
+    3_line_4: "The line %{line_name} (%{source_objectid}) has a transport mode %{line_transport_mode} - %{line_transport_submode} that does not match the transport modes / submodes expected in its workgroup"
     3_generic_1: "%{source_objectid} : the %{source_attribute} attribute value (%{error_value}) does not respect the following pattern : %{reference_value}"
     3_generic_2_1: "%{source_objectid} : the %{source_attribute} attributes's value (%{error_value}) is greater than the authorized maximum value : %{reference_value}"
     3_generic_2_2: "%{source_objectid} : the %{source_attribute} attributes's value (%{error_value}) is smaller than the authorized minimum value %{reference_value}"

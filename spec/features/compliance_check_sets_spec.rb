@@ -99,7 +99,7 @@ RSpec.describe "ComplianceCheckSets", type: :feature do
   end
 
   def make_one_check ccblock, severity
-    create( :compliance_check,
+    create( :compliance_check_with_compliance_check_block,
            code: random_string,
            compliance_check_block: ccblock,
            compliance_check_set: compliance_check_set,

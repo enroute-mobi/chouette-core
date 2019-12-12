@@ -26,6 +26,9 @@ FactoryGirl.define do
       before :create do | ref |
         ref.workbench.update organisation: ref.organisation
       end
+      after :create do | ref |
+        ref.workbench.workgroup.update line_referential: ref.line_referential
+      end
     end
   end
 end

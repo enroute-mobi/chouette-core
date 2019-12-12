@@ -19,7 +19,7 @@ RSpec.describe VehicleJourneyControl::PurchaseWindowDates, :type => :model do
   }
   let(:compliance_check_set){ create :compliance_check_set, referential: referential}
   let(:compliance_check){
-    create :compliance_check,
+    create :compliance_check_with_compliance_check_block,
       iev_enabled_check: false,
       compliance_control_name: "VehicleJourneyControl::PurchaseWindowDates",
       control_attributes: control_attributes,

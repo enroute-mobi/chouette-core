@@ -17,7 +17,7 @@ RSpec.describe VehicleJourneyControl::EmptyTimeTable, :type => :model do
   let(:criticity){ "error" }
   let(:compliance_check_set){ create :compliance_check_set, referential: referential}
   let(:compliance_check){
-    create :compliance_check,
+    create :compliance_check_with_compliance_check_block,
       iev_enabled_check: false,
       compliance_control_name: "VehicleJourneyControl::EmptyTimeTable",
       compliance_check_set: compliance_check_set,

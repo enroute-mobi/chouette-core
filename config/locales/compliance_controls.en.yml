@@ -228,6 +228,11 @@ en:
         3_line_3: "The line %{line_name} (%{source_objectid}) is not active during the period"
       description: "The line must be active"
       prerequisite: "None"
+    line_control/transport_mode:
+      messages:
+        3_line_4: "The line %{line_name} (%{source_objectid}) has a transport mode %{line_transport_mode} - %{line_transport_submode} that does not match the transport modes / submodes expected in its workgroup"
+      description: "The transport mode and submode match those configured in the workgroup"
+      prerequisite: "None"
     generic_attribute_control/pattern:
       messages:
         3_generic_1: "%{source_objectid} : the %{source_attribute} attribute value (%{error_value}) does not respect the following pattern : %{reference_value}"
@@ -340,6 +345,8 @@ en:
         one: "Lines must be included in the lines scope of the organization"
       line_control/active:
         one: "Lines must be active"
+      line_control/transport_mode:
+        one: "The transport mode and submode match those configured in the workgroup"
       generic_attribute_control/pattern:
         one: "Attribute regular expression of an object in a line"
       generic_attribute_control/min_max:

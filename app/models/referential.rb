@@ -442,7 +442,6 @@ class Referential < ApplicationModel
 
   # Don't use after_commit because of inline_clone (cf created_from)
   after_create :clone_schema, if: :created_from
-  after_create :active!, unless: :created_from
   after_create :create_from_current_offer, if: :from_current_offer
 
   before_destroy :destroy_schema

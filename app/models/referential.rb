@@ -453,6 +453,7 @@ class Referential < ApplicationModel
   before_create :create_schema
 
   # Don't use after_commit because of inline_clone (cf created_from)
+  after_create :active!, unless: Proc.new { |referential| referential.created_from || referential.from_current_offer }
   after_create :clone_schema, if: :created_from
   after_create :create_from_current_offer, if: :from_current_offer
 

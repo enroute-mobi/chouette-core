@@ -153,6 +153,25 @@ class Export::Base < ApplicationModel
     true
   end
 
+  # Returns all attributes of the export file from the user point of view
+  def user_file
+    Chouette::UserFile.new basename: name.parameterize, extension: file_extension, content_type: content_type
+  end
+
+  # Expected and used file content type
+  # Can be overrided by sub classes
+  def content_type
+    'application/zip'
+  end
+
+  protected
+
+  # Expected and used file extension
+  # Can be overrided by sub classes
+  def file_extension
+    "zip"
+  end
+
   private
 
   def initialize_fields

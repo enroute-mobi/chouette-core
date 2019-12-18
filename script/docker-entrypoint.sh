@@ -7,6 +7,7 @@ export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 echo "Start $command"
 case $command in
   async)
+    export RUBY_GC_HEAP_GROWTH_FACTOR=1.1
     exec bundle exec ./script/delayed-job-worker
     ;;
   sync)

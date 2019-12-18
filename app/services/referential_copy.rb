@@ -25,22 +25,20 @@ class ReferentialCopy
 
   def copy(raise_error: false)
     profile_tag :copy do
-      ActiveRecord::Base.cache do
-        Chouette::JourneyPattern.within_workgroup(workgroup) do
-          Chouette::VehicleJourney.within_workgroup(workgroup) do
-            copy_resource(:metadatas) unless skip_metadatas?
-            copy_resource(:time_tables)
-            copy_resource(:purchase_windows)
-            source.switch do
-              lines.includes(:footnotes, :routes).find_each do |line|
-                @new_routes = nil
-                copy_resource(:footnotes, line)
-                copy_resource(:routes, line)
-                copy_resource(:line_checksums, line)
-              end
+      Chouette::JourneyPattern.within_workgroup(workgroup) do
+        Chouette::VehicleJourney.within_workgroup(workgroup) do
+          copy_resource(:metadatas) unless skip_metadatas?
+          copy_resource(:time_tables)
+          copy_resource(:purchase_windows)
+          source.switch do
+            lines.includes(:footnotes, :routes).find_each do |line|
+              @new_routes = nil
+              copy_resource(:footnotes, line)
+              copy_resource(:routes, line)
+              copy_resource(:line_checksums, line)
             end
-            @status = :successful
           end
+          @status = :successful
         end
       end
     end
@@ -189,7 +187,7 @@ class ReferentialCopy
 
   def copy_routes line
     Chouette::ChecksumManager.no_updates do
-      line.routes.find_each &method(:copy_route)
+      line.routes.find_each(&method(:copy_route))
     end
   end
 
@@ -277,9 +275,6 @@ class ReferentialCopy
                 end
               end
             end
-          end
-          profile_tag 'update_checksum' do
-            new_journey_pattern.vehicle_journeys.reload.each &:update_checksum!
           end
         end
 

@@ -1336,6 +1336,25 @@ end
       expect(time_table.dates.last.date).to eq Date.new(2018,2,1)
       expect(time_table.dates.last.in_out).to be_truthy
     end
+
+    it 'should deal with another timetable with 2 separate periods ' do
+
+      time_table.periods.build [ { period_start: Date.parse("01/12/2019"), period_end: Date.parse("10/01/2020") } ]
+      periods = [ Date.parse("30/09/2019")..Date.parse("30/12/2019"),Date.parse("01/01/2020")..Date.parse("10/01/2020") ]
+
+      time_table.intersect_periods!(periods)
+      expect(time_table.periods.map{|p| p.period_start..p.period_end }).to include(Date.parse("01/12/2019")..Date.parse("31/12/2019"), Date.parse("01/01/2020")..Date.parse("10/01/2020"))
+      expect(time_table.periods.count).to eq 2
+    end
+
+    it 'should deal with another timetable with 2 continuous periods ' do
+      time_table.periods.build [ { period_start: Date.parse("01/12/2019"), period_end: Date.parse("10/01/2020") } ]
+      periods = [ Date.parse("30/09/2019")..Date.parse("31/12/2019"),Date.parse("01/01/2020")..Date.parse("10/01/2020") ]
+
+      time_table.intersect_periods!(periods)
+      expect(time_table.periods.map{|p| p.period_start..p.period_end }).to include(Date.parse("01/12/2019")..Date.parse("31/12/2019"), Date.parse("01/01/2020")..Date.parse("10/01/2020"))
+      expect(time_table.periods.count).to eq 2
+    end
   end
 
   describe "#remove_periods!" do

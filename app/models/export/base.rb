@@ -88,6 +88,7 @@ class Export::Base < ApplicationModel
 
   def upload_file file
 
+    # FIXME See CHOUETTE-207
     url = if workbench.present?
       URI.parse upload_workbench_export_url(self.workbench_id, self.id, host: Rails.application.config.rails_host)
     else

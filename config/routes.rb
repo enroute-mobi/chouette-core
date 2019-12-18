@@ -23,6 +23,7 @@ ChouetteIhm::Application.routes.draw do
 
     resources :exports do
       post :upload, on: :member
+      get :download, on: :member
     end
 
     resources :compliance_check_sets, only: [:index, :show] do

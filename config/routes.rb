@@ -10,6 +10,7 @@ ChouetteIhm::Application.routes.draw do
   concern :iev_interfaces do
     resources :imports do
       get :download, on: :member
+      get :internal_download, on: :member
       resources :import_resources, only: [:index, :show] do
         resources :import_messages, only: [:index]
       end

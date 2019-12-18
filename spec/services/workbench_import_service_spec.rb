@@ -23,9 +23,10 @@ RSpec.describe WorkbenchImportService, type: [:request, :zip] do
 
   let( :workbench ){ workbench_import.workbench }
 
-  # http://www.example.com/workbenches/:workbench_id/imports/:id/download
+  # http://www.example.com/workbenches/:workbench_id/imports/:id/internal_download
   let( :host ){ Rails.configuration.rails_host }
-  let( :path ){ download_workbench_import_path(workbench, workbench_import) }
+  # FIXME See CHOUETTE-205
+  let( :path ){ internal_download_workbench_import_path(workbench, workbench_import) }
   let( :upload_path ){ api_v1_internals_netex_imports_path(format: :json) }
 
   let( :downloaded_zip_archive ){ make_zip_from_tree zip_data_dir }

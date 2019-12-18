@@ -114,7 +114,8 @@ class WorkbenchImportService
     Rails.application.config.rails_host
   end
   def import_path
-    @__import_path__ ||= download_workbench_import_path(workbench_import.workbench, workbench_import)
+    # FIXME See CHOUETTE-205
+    @__import_path__ ||= internal_download_workbench_import_path(workbench_import.workbench, workbench_import)
   end
   def import_url
     @__import_url__ ||= File.join(import_host, import_path)

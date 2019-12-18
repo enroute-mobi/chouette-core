@@ -3,6 +3,11 @@ ChouetteIhm::Application.routes.draw do
   resource :subscriptions, only: :create
   resources :notifications, only: :index
 
+  # FIXME See CHOUETTE-207
+  resources :exports, only: :upload do
+    post :upload, on: :member, controller: :export_uploads
+  end
+
   concern :iev_interfaces do
     resources :imports do
       get :download, on: :member

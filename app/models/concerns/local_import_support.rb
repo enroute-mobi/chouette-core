@@ -161,7 +161,8 @@ module LocalImportSupport
   end
 
   def download_path
-    Rails.application.routes.url_helpers.download_workbench_import_path(workbench, id, token: token_download)
+    # FIXME See CHOUETTE-205
+    Rails.application.routes.url_helpers.internal_download_workbench_import_path(workbench, id, token: token_download)
   end
 
   def download_uri

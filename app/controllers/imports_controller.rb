@@ -2,17 +2,21 @@ class ImportsController < ChouetteController
   include PolicyChecker
   include RansackDateFilter
   include IevInterfaces
-  skip_before_action :authenticate_user!, only: [:download]
+  skip_before_action :authenticate_user!, only: [:internal_download]
   defaults resource_class: Import::Base, collection_name: 'imports', instance_name: 'import'
   before_action :notify_parents
   respond_to :json, :html
 
-  def download
+  def internal_download
     if params[:token] == resource.token_download
       send_file resource.file.path
     else
       user_not_authorized
     end
+  end
+
+  def download
+    send_file resource.file.path, filename: resource.user_file.name, type: resource.user_file.content_type
   end
 
   def show

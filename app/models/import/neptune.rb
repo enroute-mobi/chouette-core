@@ -365,29 +365,40 @@ class Import::Neptune < Import::Base
   end
 
   def import_vehicle_journeys_in_line(line, source_vehicle_journeys)
-    profile_tag :import_vehicle_journeys_in_line do
-      source_vehicle_journeys = make_enum source_vehicle_journeys
+    Chouette::ChecksumManager.no_updates do
+      profile_tag :import_vehicle_journeys_in_line do
+        source_vehicle_journeys = make_enum source_vehicle_journeys
 
-      source_vehicle_journeys.each do |source_vehicle_journey|
-        if source_vehicle_journey[:journey_pattern_id]
-          journey_pattern = @journey_patterns[source_vehicle_journey[:journey_pattern_id]]
-        else
-          journey_pattern = @routes[source_vehicle_journey[:route_id]].journey_patterns.last
-        end
-        vehicle_journey = journey_pattern.vehicle_journeys.build do |vehicle_journey|
-          vehicle_journey.number =  source_vehicle_journey[:number]
-          vehicle_journey.published_journey_name = source_vehicle_journey[:published_journey_name]
-          vehicle_journey.route = journey_pattern.route
-          vehicle_journey.metadata = { creator_username: source_vehicle_journey[:creator_id], created_at: source_vehicle_journey[:creation_time] }
-          vehicle_journey.transport_mode, _ = transport_mode_name_mapping(source_vehicle_journey[:transport_mode_name])
-          vehicle_journey.company = line_referential.companies.find_by registration_number: source_vehicle_journey[:operator_id]
-          vehicle_journey.time_table_ids = @time_tables.delete(source_vehicle_journey[:object_id])
-        end
-        add_stop_points_to_vehicle_journey(vehicle_journey, source_vehicle_journey[:vehicle_journey_at_stop], source_vehicle_journey[:route_id])
+        source_vehicle_journeys.each do |source_vehicle_journey|
+          if source_vehicle_journey[:journey_pattern_id]
+            journey_pattern = @journey_patterns[source_vehicle_journey[:journey_pattern_id]]
+          else
+            journey_pattern = @routes[source_vehicle_journey[:route_id]].journey_patterns.last
+          end
+          vehicle_journey = journey_pattern.vehicle_journeys.build do |vehicle_journey|
+            vehicle_journey.number =  source_vehicle_journey[:number]
+            vehicle_journey.published_journey_name = source_vehicle_journey[:published_journey_name]
+            vehicle_journey.route = journey_pattern.route
+            vehicle_journey.metadata = { creator_username: source_vehicle_journey[:creator_id], created_at: source_vehicle_journey[:creation_time] }
+            vehicle_journey.transport_mode, _ = transport_mode_name_mapping(source_vehicle_journey[:transport_mode_name])
+            vehicle_journey.company = line_referential.companies.find_by registration_number: source_vehicle_journey[:operator_id]
+            vehicle_journey.time_table_ids = @time_tables.delete(source_vehicle_journey[:object_id])
+          end
+          add_stop_points_to_vehicle_journey(vehicle_journey, source_vehicle_journey[:vehicle_journey_at_stop], source_vehicle_journey[:route_id])
 
-        save_model vehicle_journey
+          save_model vehicle_journey
+        end
       end
     end
+
+    Chouette::VehicleJourney.within_workgroup(workgroup) do
+      update_checkum_in_batches referential.vehicle_journey_at_stops.select(:id, :departure_time, :arrival_time, :departure_day_offset, :arrival_day_offset)
+      update_checkum_in_batches referential.vehicle_journeys.select(:id, :custom_field_values, :published_journey_name, :published_journey_identifier, :ignored_routing_contraint_zone_ids, :ignored_stop_area_routing_constraint_ids, :company_id, :line_notice_ids).includes(:company_light, :footnotes, :vehicle_journey_at_stops, :purchase_windows)
+    end
+  end
+
+  def update_checkum_in_batches(collection)
+    Chouette::ChecksumManager.update_checkum_in_batches(collection, referential)
   end
 
   def add_stop_points_to_route(route, link_ids, links, route_object_id)

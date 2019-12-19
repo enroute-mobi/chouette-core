@@ -5,7 +5,7 @@ module Chouette
     end
 
     def calculate!(force_reset=false)
-      return if @at_stops.length == 0
+      return if @at_stops.empty?
       offset = @at_stops.first.departure_day_offset
       @at_stops.select{|s| s.arrival_time.present? && s.departure_time.present? }.inject(nil) do |prior_stop, stop|
         if prior_stop.nil?

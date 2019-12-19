@@ -17,4 +17,17 @@ class Export::NetexFull < Export::Base
     build_netex_document
     document.temp_file
   end
+
+  def content_type
+    'text/xml'
+  end
+
+  protected
+
+  # File extension used to send exported file to the user.
+  # Can be overrided by sub classes
+  def user_file_extension
+    "xml"
+  end
+
 end

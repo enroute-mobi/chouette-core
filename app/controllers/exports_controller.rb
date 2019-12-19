@@ -28,6 +28,10 @@ class ExportsController < ChouetteController
     end
   end
 
+  def download
+    send_file resource.file.path, filename: resource.user_file.name, type: resource.user_file.content_type
+  end
+
   private
 
   def index_model

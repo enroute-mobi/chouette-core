@@ -19,9 +19,9 @@ class ExportDecorator < AF83::Decorator
     instance_decorator.action_link primary: :show do |l|
       l.content t('actions.download')
       l.icon :download
-      l.href   { object.file.url }
+      l.href   { h.download_workbench_export_path object.workbench, object }
       l.disabled { !object.file.present? }
-      l.download { object.file&.file&.filename }
+      l.download { h.download_workbench_export_path object.workbench, object }
       l.target :blank
     end
 

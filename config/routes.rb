@@ -3,6 +3,7 @@ ChouetteIhm::Application.routes.draw do
   resource :subscriptions, only: :create
   resources :notifications, only: :index
 
+  # FIXME See CHOUETTE-207
   resources :exports, only: :upload do
     post :upload, on: :member, controller: :export_uploads
   end
@@ -148,12 +149,6 @@ ChouetteIhm::Application.routes.draw do
     end
 
     resources :vehicle_journeys, controller: 'referential_vehicle_journeys', only: [:index]
-
-    resources :exports, :only => [:index, :show, :destroy]  do
-      member do
-        get "exported_file"
-      end
-    end
 
     resources :purchase_windows
 

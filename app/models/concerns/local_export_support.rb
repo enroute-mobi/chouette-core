@@ -48,4 +48,10 @@ module LocalExportSupport
     self.status = :failed
     self.save!
   end
+
+  def worker_died
+    failed!
+
+    Rails.logger.error "#{self.class.name} #{self.inspect} failed due to worker being dead"
+  end
 end

@@ -29,6 +29,16 @@ RSpec.describe CleanUp, :type => :model do
     end
   end
 
+  describe '#worker_died' do
+    subject(:cleaner) { create(:clean_up, date_type: :outside) }
+
+    it 'should set merge status to failed' do
+      expect(cleaner.status).to eq("new")
+      cleaner.worker_died
+      expect(cleaner.status).to eq("failed")
+    end
+  end
+
   context '#clean' do
     let(:referential) { Referential.new prefix: "prefix"}
     let(:cleaner) { create(:clean_up, date_type: :before, referential: referential) }

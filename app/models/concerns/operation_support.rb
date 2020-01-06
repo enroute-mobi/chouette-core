@@ -156,6 +156,12 @@ module OperationSupport
     referentials.each &:active!
   end
 
+  def worker_died
+    failed!
+
+    Rails.logger.error "#{self.class.name} #{self.inspect} failed due to worker being dead"
+  end
+
   def successful?
     status.to_s == "successful"
   end

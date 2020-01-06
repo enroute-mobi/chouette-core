@@ -1,6 +1,15 @@
 RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
   let(:gtfs_export) { create :gtfs_export, referential: exported_referential, workbench: workbench, duration: 5}
 
+  describe '#worker_died' do
+
+    it 'should set gtfs_export status to failed' do
+      expect(gtfs_export.status).to eq("new")
+      gtfs_export.worker_died
+      expect(gtfs_export.status).to eq("failed")
+    end
+  end
+
   it "should create a default company and generate a message if the journey or its line doesn't have a company" do
     exported_referential.switch do
       line = exported_referential.lines.first

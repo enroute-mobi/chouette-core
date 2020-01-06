@@ -1,5 +1,3 @@
-require 'rails_helper'
-
 RSpec.describe Aggregate, type: :model do
   context "with another concurent aggregate" do
     before do
@@ -35,6 +33,16 @@ RSpec.describe Aggregate, type: :model do
 
       aggregate.publish
       expect(ids).to eq [enabled_publication_setup.id]
+    end
+  end
+
+  describe '#worker_died' do
+    let(:aggregate) { Aggregate.create!(workgroup: referential.workbench.workgroup, referentials: [referential, referential]) }
+
+    it 'should set aggregate status to failed' do
+      expect(aggregate.status).to eq("running")
+      aggregate.worker_died
+      expect(aggregate.status).to eq("failed")
     end
   end
 

@@ -38,6 +38,16 @@ RSpec.describe ReferentialCloning, :type => :model do
     end
   end
 
+  describe '#worker_died' do
+    let(:referential_cloning) { FactoryGirl.create(:referential_cloning) }
+
+    it 'should set merge status to failed' do
+      expect(referential_cloning.status).to eq("new")
+      referential_cloning.worker_died
+      expect(referential_cloning.status).to eq("failed")
+    end
+  end
+
   describe '#clone' do
     let(:referential_cloning) { FactoryGirl.create(:referential_cloning) }
 

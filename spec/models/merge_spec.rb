@@ -1,5 +1,3 @@
-require "rails_helper"
-
 RSpec.describe Merge do
   let(:stop_area_referential){ create :stop_area_referential }
   let(:line_referential){ create :line_referential }
@@ -20,6 +18,16 @@ RSpec.describe Merge do
   it "should be valid" do
     merge = Merge.new(workbench: referential.workbench, referentials: [referential, referential])
     expect(merge).to be_valid
+  end
+
+  describe '#worker_died' do
+    let(:merge) { Merge.create(workbench: referential.workbench, referentials: [referential, referential]) }
+
+    it 'should set merge status to failed' do
+      expect(merge.status).to eq("running")
+      merge.worker_died
+      expect(merge.status).to eq("failed")
+    end
   end
 
   context '#operation_scheduled?' do

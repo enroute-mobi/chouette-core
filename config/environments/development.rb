@@ -49,7 +49,7 @@ Rails.application.configure do
 
   config.action_mailer.default_url_options = { host: SmartEnv['PUBLIC_HOST'] }
   config.action_mailer.default_options     = { from: SmartEnv['MAIL_FROM'] }
-  config.action_mailer.delivery_method     = :letter_opener
+  config.action_mailer.delivery_method     = ENV.fetch('MAIL_DELIVERY_METHOD','letter_opener').to_sym
   config.action_mailer.asset_host          = SmartEnv['PUBLIC_HOST']
 
   # See #8823

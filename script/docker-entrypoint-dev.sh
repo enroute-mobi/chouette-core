@@ -2,7 +2,7 @@
 
 command=${1:-front}
 
-mkdir -p $HOME
+mkdir -p "$HOME"
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 function setup {

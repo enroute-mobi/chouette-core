@@ -43,7 +43,7 @@ module Chouette
         Chouette::Route.vehicle_journeys_timeless(proxy_association.owner.journey_patterns.pluck( :departure_stop_point_id))
       end
     end
-    has_many :stop_points, -> { order("position") }, :dependent => :destroy do
+    has_many :stop_points, -> { order("position") }, inverse_of: :route, dependent: :destroy do
       def find_by_stop_area(stop_area)
         stop_area_ids = Integer === stop_area ? [stop_area] : (stop_area.children_in_depth + [stop_area]).map(&:id)
         where( :stop_area_id => stop_area_ids).first or
@@ -196,7 +196,7 @@ module Chouette
     def checksum_attributes(db_lookup = true)
       values = self.slice(*['name', 'published_name', 'wayback']).values
       values.tap do |attrs|
-        attrs << self.stop_points.sort_by(&:position).map{|sp| [sp.stop_area_id, sp.for_boarding, sp.for_alighting]}
+        attrs << self.stop_points.map{|sp| [sp.stop_area_id, sp.for_boarding, sp.for_alighting]}
         attrs << self.routing_constraint_zones.map(&:checksum).uniq.sort
       end
     end

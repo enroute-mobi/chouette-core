@@ -1,6 +1,7 @@
 module Chouette
   class Factory
     class Model
+      include Log
 
       attr_reader :name
       attr_accessor :required, :count
@@ -15,7 +16,7 @@ module Chouette
       alias_method :required?, :required
 
       def define(&block)
-        dsl.instance_eval &block
+        dsl.instance_exec(&block)
       end
 
       def dsl
@@ -77,8 +78,8 @@ module Chouette
         end
       end
 
-      def build_instance(context, parent = nil)
-        puts "Create #{name} #{klass.inspect} in #{context}"
+      def build_instance(context, parent: nil, save: false)
+        log "#{save ? 'Create' : 'Build'} #{name} #{klass.inspect} in #{context}"
 
         attributes_values = build_attributes(context)
         parent ||= context.parent.instance
@@ -102,26 +103,23 @@ module Chouette
           models.each do |_, model|
             if model.required?
               model.count.times do
-                model.build_instance(Context.new(model, context.with_instance(new_instance)), new_instance)
+                model.build_instance(Context.new(model, context.with_instance(new_instance)), parent: new_instance)
               end
             end
           end
 
           after_callbacks.each do |after_callback|
             after_dsl = AfterDSL.new(self, new_instance, context)
-
-            if after_callback.arity > 0
-              after_callback.call new_instance
-            else
-              after_dsl.instance_eval &after_callback
-            end
+            after_dsl.instance_exec(new_instance, &after_callback)
           end
 
           unless new_instance.valid?
-            puts "Invalid instance: #{new_instance.inspect} #{new_instance.errors.inspect}"
+            log "Invalid instance: #{new_instance.inspect} #{new_instance.errors.inspect}"
           end
 
-          puts "Created #{new_instance.inspect}"
+          new_instance.save! if save
+
+          log "#{save ? 'Created' : 'Built'} #{new_instance.inspect}"
         end
 
         new_instance

@@ -5,7 +5,7 @@ RSpec.describe Chouette::Factory do
   it "should raise error when type isn't known" do
     expect {
       Chouette::Factory.create { dummy }
-    }.to raise_error
+    }.to raise_error(NameError)
   end
 
   it "should create workgroup" do

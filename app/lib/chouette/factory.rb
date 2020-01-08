@@ -11,7 +11,7 @@ module Chouette
         model :user do
           attribute(:name) { |n| "chouette#{n}" }
           attribute(:username) { |n| "chouette#{n}" }
-          attribute(:email) { |n| "chouette+#{n}@af83.com" }
+          attribute(:email) { |n| "chouette+#{n}@enroute.mobi" }
           attribute :password, "secret"
           attribute :password_confirmation, "secret"
         end
@@ -93,7 +93,7 @@ module Chouette
             transient(:lines) do
               # TODO create a Line with Factory::Model ?
               line_referential = parent.workgroup.line_referential
-              line = line_referential.lines.create(name: "Line #{sequence_number}", transport_mode: "bus", number: sequence_number)
+              line = line_referential.lines.create!(name: "Line #{sequence_number}", transport_mode: "bus", transport_submode: "undefined", number: sequence_number)
               [ line ]
             end
             transient :periods, [ Date.today.beginning_of_year..Date.today.end_of_year ]
@@ -113,7 +113,7 @@ module Chouette
             end
 
             around_models do |referential, block|
-              referential.save!
+              referential.save! if referential.new_record?
               referential.switch { block.call }
             end
 
@@ -141,6 +141,7 @@ module Chouette
               end
               model :journey_pattern do
                 attribute(:name) { |n| "JourneyPattern #{n}" }
+                attribute(:published_name) { |n| "Public Name #{n}" }
 
                 after do |journey_pattern|
                   journey_pattern.stop_points = journey_pattern.route.stop_points

@@ -20,7 +20,7 @@ module Chouette
         details = instance_name ? " #{instance_name.inspect}" : ""
         details += " #{attributes.inspect}" unless attributes.empty?
 
-        puts "#{'  ' * indent}#{model.name}#{details}"
+        log "#{'  ' * indent}#{model.name}#{details}"
         children.each do |child|
           child.debug indent+1
         end
@@ -83,19 +83,20 @@ module Chouette
 
         if values.respond_to?(:map)
           values.map do |value|
-            if value.is_a?(Symbol)
-              resolve_instance value
-            else
-              value
-            end
+            resolve_instance value
           end
         else
           resolve_instance values
         end
       end
 
-      def resolve_instance(name)
-        named_instances.fetch name
+      def resolve_instance(name_or_value)
+        if name_or_value.is_a?(Symbol)
+          name = name_or_value
+          named_instances.fetch name
+        else
+          name_or_value
+        end
       end
 
       def children

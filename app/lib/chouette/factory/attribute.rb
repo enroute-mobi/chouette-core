@@ -15,7 +15,7 @@ module Chouette
       def evaluate(context)
         @evaluated_value =
           if context_value = context.attributes[name]
-            context_value
+            context.resolve_instances context_value
           else
             if Proc === value
               if value.arity == 0

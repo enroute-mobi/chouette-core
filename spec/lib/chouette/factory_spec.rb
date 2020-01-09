@@ -24,6 +24,27 @@ RSpec.describe Chouette::Factory do
     }.to change { LineReferential.count }
   end
 
+  describe "Define model Attributes" do
+    describe '{ line name: "RER A", transport_mode: "rail" }' do
+      before do
+        Chouette::Factory.create do
+          line name: "RER A", transport_mode: "rail"
+        end
+      end
+
+      let(:line) { Chouette::Line.first }
+
+      it "should create a Line with name 'RER A'" do
+        expect(line.name).to eq('RER A')
+      end
+
+      it "should create a Line with name 'RER A'" do
+        expect(line.transport_mode).to eq('rail')
+      end
+
+    end
+  end
+
   describe "Context sharing" do
 
     describe %{{
@@ -164,10 +185,6 @@ RSpec.describe Chouette::Factory do
       let(:referential) { Referential.last }
 
       it "should create a Referential with the two lines in metadata" do
-        puts factory.instance(:first).inspect
-        puts factory.instance(:second).inspect
-        puts referential.inspect
-
         expect(referential.lines).to eq([factory.instance(:first), factory.instance(:second)])
       end
     end
@@ -192,6 +209,60 @@ RSpec.describe Chouette::Factory do
       end
     end
   end
+
+  describe "Routes" do
+
+    describe "{ route }" do
+
+      before do
+        Chouette::Factory.create do
+          route
+        end
+      end
+
+      let(:referential) { Referential.last }
+
+      it "should create Route" do
+        Referential.last.switch do
+          expect(Chouette::Route.count).to eq(1)
+        end
+      end
+
+      it "should create Route with 3 stops" do
+        Referential.last.switch do
+          expect(Chouette::Route.last.stop_points.count).to eq(3)
+        end
+      end
+
+    end
+
+    describe %{
+      {
+         line :first
+         route line: :first
+      }
+    } do
+
+      let!(:context) do
+        Chouette::Factory.create do
+          line :first
+          route line: :first
+        end
+      end
+
+      let(:referential) { Referential.last }
+      let(:line) { context.instance(:first) }
+
+      it "should create Route with specified line" do
+        Referential.last.switch do
+          expect(Chouette::Route.last.line).to eq(line)
+        end
+      end
+
+    end
+
+  end
+
 
   describe "TimeTables" do
 

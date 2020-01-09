@@ -6,13 +6,18 @@ module Chouette
         "lower(split_part(split_part(#{table_name(model_class)}.objectid, ':', 3), '-', 1))"
       end
 
+      PENDING_PATTERN = "__pending_id__"
+
       def before_validation(model)
-        model.attributes = {objectid: "__pending_id__#{SecureRandom.uuid}"}
+        model.objectid = "#{PENDING_PATTERN}#{SecureRandom.uuid}"
       end
 
       def after_commit(model)
+        return unless model.persisted?
+        return unless model.objectid&.starts_with?(PENDING_PATTERN)
+
         oid = Chouette::Objectid::StifNetex.new(provider_id: model.referential.prefix, object_type: model.class.name.gsub('Chouette::',''), local_id: model.local_id)
-        model.update(objectid: oid.to_s) if oid.valid?
+        model.update_column(:objectid, oid.to_s) if oid.valid?
       end
 
       def get_objectid(definition)

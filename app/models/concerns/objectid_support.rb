@@ -5,7 +5,7 @@ module ObjectidSupport
     def ransack args={}
       vanilla_search = super args
       base = vanilla_search.base
-      
+
       if args && args.respond_to?(:keys)
         args.each do |k, v|
           if k =~ /short_id/
@@ -36,7 +36,7 @@ module ObjectidSupport
 
   included do
     before_validation :before_validation_objectid, unless: Proc.new {|model| model.read_attribute(:objectid)}
-    after_commit :after_commit_objectid, on: :create, if: Proc.new {|model| model.read_attribute(:objectid).try(:include?, '__pending_id__')}
+    after_commit :after_commit_objectid, on: :create
     validates_presence_of :objectid
     validates_uniqueness_of :objectid, unless: Proc.new {|model| model.read_attribute(:objectid).nil? || model.class.skip_objectid_uniqueness? }
 

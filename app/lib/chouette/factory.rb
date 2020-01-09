@@ -21,7 +21,7 @@ module Chouette
         attribute(:name) { |n| "Workgroup ##{n}" }
         attribute(:owner) { build_model :organisation }
 
-        model :line_referential, required: true do
+        model :line_referential, required: true, singleton: true do
           attribute(:name) { |n| "Line Referential #{n}" }
           attribute :objectid_format, 'netex'
 
@@ -33,6 +33,7 @@ module Chouette
           model :line do
             attribute(:name) { |n| "Line #{n}" }
             attribute :transport_mode, "bus"
+            attribute :transport_submode, "undefined"
             attribute(:number) { |n| n }
           end
 
@@ -49,7 +50,7 @@ module Chouette
           end
         end
 
-        model :stop_area_referential, required: true do
+        model :stop_area_referential, required: true, singleton: true do
           attribute(:name) { |n| "StopArea Referential #{n}" }
           attribute :objectid_format, 'netex'
 
@@ -106,7 +107,7 @@ module Chouette
               new_instance.organisation = parent.organisation
 
               metadata_attributes = {
-                line_ids: transient(:lines).map(&:id),
+                line_ids: transient(:lines, resolve_instances: true).map(&:id),
                 periodes: transient(:periods)
               }
               new_instance.metadatas.build metadata_attributes
@@ -218,9 +219,9 @@ module Chouette
       end
     end
 
-    def self.create(&block)
+    def self.create(options = {}, &block)
       new.tap do |factory|
-        factory.evaluate &block
+        factory.evaluate(&block)
       end
     end
 
@@ -232,8 +233,9 @@ module Chouette
       root_context.named_instances[name]
     end
 
-    def evaluate(&block)
-      root_context.evaluate &block
+    def evaluate(options = {}, &block)
+      root_context.evaluate(&block)
+      root_context.debug if options[:debug]
       root_context.create_instance
     end
 

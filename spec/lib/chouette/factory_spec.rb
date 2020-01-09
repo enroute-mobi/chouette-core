@@ -5,7 +5,7 @@ RSpec.describe Chouette::Factory do
   it "should raise error when type isn't known" do
     expect {
       Chouette::Factory.create { dummy }
-    }.to raise_error(NameError)
+    }.to raise_error
   end
 
   it "should create workgroup" do
@@ -22,6 +22,94 @@ RSpec.describe Chouette::Factory do
         end
       end
     }.to change { LineReferential.count }
+  end
+
+  describe "Context sharing" do
+
+    describe %{{
+      line_referential :referential_1 do
+        line :first
+      end
+      line_referential :referential_2 do
+        line :second
+      end
+    }} do
+      let(:context) do
+        Chouette::Factory.create do
+          line_referential :referential_1 do
+            line :first
+          end
+          line_referential :referential_2 do
+            line :second
+          end
+        end
+      end
+
+      it "should create two lines in the two LineReferentials" do
+        expect(context.instance(:first).line_referential).to_not eq(context.instance(:second).line_referential)
+      end
+      it "should create the two LineReferentials into two Workgroups" do
+        expect(context.instance(:referential_1).workgroup).to_not eq(context.instance(:referential_2).workgroup)
+      end
+    end
+
+    describe %{{
+      line :first
+      line :second
+    }} do
+      let(:context) do
+        Chouette::Factory.create do
+          line :first
+          line :second
+        end
+      end
+
+      it "should create two lines in the same LineReferential" do
+        expect(context.instance(:first).line_referential).to eq(context.instance(:second).line_referential)
+      end
+    end
+
+    describe %{{
+      line_referential :parent do
+        line :first
+        line :second
+      end
+    }} do
+      let(:context) do
+        Chouette::Factory.create do
+          line_referential :parent do
+            line :first
+            line :second
+          end
+        end
+      end
+
+      it "should create two lines in the same LineReferential" do
+        expect(context.instance(:first).line_referential).to eq(context.instance(:parent))
+        expect(context.instance(:first).line_referential).to eq(context.instance(:parent))
+      end
+    end
+
+    describe %{{
+      route :first
+      route :second
+    }} do
+      let!(:context) do
+        Chouette::Factory.create do
+          route :first
+          route :second
+        end
+      end
+
+      let(:referential) { Referential.last }
+
+      it "should create two Routes in the same Referential" do
+        referential.switch do
+          expect(referential.routes.count).to eq(2)
+        end
+      end
+    end
+
   end
 
   describe "Referentials" do
@@ -55,6 +143,32 @@ RSpec.describe Chouette::Factory do
 
       it "should create a Referential :test with name 'Test'" do
         expect(referential.name).to eq('Test')
+      end
+    end
+
+    describe %{
+      {
+         line :first
+         line :second
+         referential lines: [:first, :second]
+      }
+    } do
+      let(:factory) do
+        Chouette::Factory.create do
+          line :first
+          line :second
+          referential lines: [:first, :second]
+        end
+      end
+
+      let(:referential) { Referential.last }
+
+      it "should create a Referential with the two lines in metadata" do
+        puts factory.instance(:first).inspect
+        puts factory.instance(:second).inspect
+        puts referential.inspect
+
+        expect(referential.lines).to eq([factory.instance(:first), factory.instance(:second)])
       end
     end
   end

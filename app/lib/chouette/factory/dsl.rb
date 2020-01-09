@@ -15,7 +15,7 @@ module Chouette
         else
           sub_context.attributes = arguments.first
         end
-        sub_context.evaluate &block if block_given?
+        sub_context.evaluate(&block) if block_given?
       end
 
     end

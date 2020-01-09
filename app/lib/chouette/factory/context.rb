@@ -16,6 +16,16 @@ module Chouette
         clone
       end
 
+      def debug(indent = 0)
+        details = instance_name ? " #{instance_name.inspect}" : ""
+        details += " #{attributes.inspect}" unless attributes.empty?
+
+        puts "#{'  ' * indent}#{model.name}#{details}"
+        children.each do |child|
+          child.debug indent+1
+        end
+      end
+
       def path
         @path ||=
           begin
@@ -29,7 +39,7 @@ module Chouette
       end
 
       def evaluate(&block)
-        dsl.instance_eval &block
+        dsl.instance_eval(&block)
       end
 
       def dsl
@@ -68,16 +78,58 @@ module Chouette
         end
       end
 
+      def resolve_instances(values)
+        return nil if values.nil?
+
+        if values.respond_to?(:map)
+          values.map do |value|
+            if value.is_a?(Symbol)
+              resolve_instance value
+            else
+              value
+            end
+          end
+        else
+          resolve_instance values
+        end
+      end
+
+      def resolve_instance(name)
+        named_instances.fetch name
+      end
+
       def children
         @children ||= []
+      end
+
+      def implicit_contexts
+        @implicit_contexts ||= {}
       end
 
       def create(name)
         path = model.find(name)
         if path
+          log "Create context for '#{name}' (#{path.map(&:name).join(' > ')})"
           new_context = self
-          path.each do |sub_model|
-            new_context = Context.new(sub_model, new_context)
+          path.each_with_index do |sub_model, position|
+            implicit_path = nil
+            next_model = nil
+            if position < (path.length-1)
+              implicit_path = path[0..position].map(&:name).join('>')
+              next_model = path[position+1]
+            end
+
+            if !implicit_contexts.has_key?(implicit_path) or next_model&.singleton?
+              new_context = Context.new(sub_model, new_context)
+            else
+              log "Reuse implicit context #{implicit_path}"
+              new_context = implicit_contexts[implicit_path]
+            end
+
+            if implicit_path && !implicit_contexts.has_key?(implicit_path)
+              log "Save implicit context #{implicit_path}"
+              implicit_contexts[implicit_path] = new_context
+            end
           end
           new_context
         end

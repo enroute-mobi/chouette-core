@@ -4,16 +4,17 @@ module Chouette
       include Log
 
       attr_reader :name
-      attr_accessor :required, :count
+      attr_accessor :required, :singleton, :count
       def initialize(name, options = {})
         @name = name
 
-        {required: false, count: 1}.merge(options).each do |k,v|
+        {required: false, singleton: false, count: 1}.merge(options).each do |k,v|
           send "#{k}=", v
         end
       end
 
       alias_method :required?, :required
+      alias_method :singleton?, :singleton
 
       def define(&block)
         dsl.instance_exec(&block)
@@ -162,8 +163,14 @@ module Chouette
           @model, @new_instance, @context = model, new_instance, context
         end
 
-        def transient(name)
-          model.transients[name.to_sym].evaluate(context)
+        def transient(name, resolve_instances: false)
+          values = model.transients[name.to_sym].evaluate(context)
+
+          if resolve_instances
+            values = context.resolve_instances(values)
+          end
+
+          values
         end
 
         def parent

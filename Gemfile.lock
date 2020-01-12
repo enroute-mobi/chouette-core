@@ -191,7 +191,7 @@ GEM
       safe_yaml (~> 1.0.0)
     crass (1.0.5)
     database_cleaner (1.7.0)
-    ddtrace (0.30.0)
+    ddtrace (0.31.0)
       msgpack
     debug_inspector (0.0.3)
     declarative (0.0.10)

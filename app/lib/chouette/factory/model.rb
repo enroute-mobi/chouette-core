@@ -108,13 +108,11 @@ module Chouette
 
           models.each do |_, model|
             if model.required?
-              model.count.times do
-                # TODO with_instance for sub_context_for ?
-                sub_context = context.sub_context_for(model) ||
-                              Context.new(model, context.with_instance(new_instance))
+              # TODO with_instance for sub_context_for ?
+              sub_context = context.sub_context_for(model) ||
+                            Context.new(model, context.with_instance(new_instance))
 
-                sub_context.build_instance parent: new_instance
-              end
+              sub_context.build_instance parent: new_instance
             end
           end
 

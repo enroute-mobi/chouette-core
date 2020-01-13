@@ -55,19 +55,28 @@ module Chouette
       def create_instance
         unless root?
           build_instance save: true
-          register_instance instance, name: instance_name
+          register_instance name: instance_name
         end
 
         children.each(&:create_instance)
       end
 
-      def register_instance(instance, options = {})
+      def register_instance(options = {})
         options[:model_name] = model.name
-        registry.register instance, options
+        Array(instance).each do |item|
+          registry.register item, options
+        end
       end
 
       def build_instance(options = {})
-        self.instance ||= model.build_instance self, options
+        self.instance ||=
+          if model.count == 1
+            model.build_instance self, options
+          else
+            model.count.times.map do
+              model.build_instance self, options
+            end
+          end
       end
 
       attr_accessor :model

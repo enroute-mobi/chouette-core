@@ -118,7 +118,7 @@ gem 'deep_cloneable'
 gem 'acts-as-taggable-on'
 gem 'nokogiri', '>= 1.10.4'
 
-gem 'acts_as_list', '~> 0.9.11'
+gem 'acts_as_list'
 gem 'acts_as_tree', '~> 2.1.0', require: 'acts_as_tree'
 
 gem 'rabl'

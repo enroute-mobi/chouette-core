@@ -119,7 +119,7 @@ gem 'acts-as-taggable-on'
 gem 'nokogiri', '>= 1.10.4'
 
 gem 'acts_as_list'
-gem 'acts_as_tree', '~> 2.1.0', require: 'acts_as_tree'
+gem 'acts_as_tree'
 
 gem 'rabl'
 gem 'carrierwave', '~> 1.0'

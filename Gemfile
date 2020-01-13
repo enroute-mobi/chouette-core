@@ -44,9 +44,9 @@ gem 'rails-observers'
 gem 'seedbank', '0.4.0'
 
 gem 'faraday_middleware'
-gem 'faraday', '~> 0.11'
+gem 'faraday'
 
-gem 'therubyracer', '~> 0.12'
+gem 'therubyracer'
 gem 'pg'
 
 gem 'activerecord-postgis-adapter'
@@ -76,7 +76,7 @@ gem 'geokit'
 gem 'georuby', '2.3.0' # Fix version for georuby-ext because api has changed
 gem 'ffi-geos'
 
-gem 'ffi', '> 1.9.24'
+gem 'ffi'
 gem 'mimemagic'
 
 # User interface
@@ -215,4 +215,4 @@ end
 gem 'activerecord-nulldb-adapter', require: (ENV['RAILS_DB_ADAPTER'] == 'nulldb')
 
 gem 'google-cloud-storage', '> 1.4.0'
-gem 'net-sftp', '~> 2.1'
+gem 'net-sftp'

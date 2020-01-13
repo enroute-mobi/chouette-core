@@ -713,10 +713,10 @@ DEPENDENCIES
   fabrication (~> 2.14.1)
   factory_girl_rails (~> 4.0)
   faker
-  faraday (~> 0.11)
+  faraday
   faraday_middleware
   ffaker (~> 2.1.0)
-  ffi (> 1.9.24)
+  ffi
   ffi-geos
   flag-icons-rails
   font-awesome-sassc
@@ -743,7 +743,7 @@ DEPENDENCIES
   license_finder
   map_layers (= 0.0.4)
   mimemagic
-  net-sftp (~> 2.1)
+  net-sftp
   nokogiri (>= 1.10.4)
   parallel_tests
   pg
@@ -790,7 +790,7 @@ DEPENDENCIES
   sprockets (~> 3.7.2)
   stackprof
   teaspoon-jasmine
-  therubyracer (~> 0.12)
+  therubyracer
   timecop
   uglifier (~> 2.7.2)
   webmock

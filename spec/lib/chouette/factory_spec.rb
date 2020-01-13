@@ -24,6 +24,70 @@ RSpec.describe Chouette::Factory do
     }.to change { LineReferential.count }
   end
 
+  describe "Retrieve instances" do
+
+    describe "context.instance(:name)" do
+
+      it "should return the instance created with this name" do
+        context = Chouette::Factory.create { line :first }
+        expect(context.instance(:first)).to be_kind_of(Chouette::Line)
+      end
+
+      it "should return nil when the instance matches" do
+        context = Chouette::Factory.create { }
+        expect(context.instance(:dummy)).to be_nil
+      end
+
+      it "should raise an error when several instances" do
+        context = Chouette::Factory.create do
+          line :first
+          stop_area :first
+        end
+
+        expect { context.instance(:first) }.to raise_error(Chouette::Factory::Error)
+      end
+
+    end
+
+    describe "context.line" do
+
+      it "should return the line instance" do
+        context = Chouette::Factory.create { line }
+        expect(context.line).to be_kind_of(Chouette::Line)
+      end
+
+      it "should return NameError when the instance matches" do
+        context = Chouette::Factory.create { }
+        expect { context.line }.to raise_error(NameError)
+      end
+
+      it "should raise an error when several instances" do
+        context = Chouette::Factory.create do
+          line
+          line
+        end
+
+        expect { context.line }.to raise_error(Chouette::Factory::Error)
+      end
+
+    end
+
+    describe "context.lines" do
+
+      it "should return the lines instance" do
+        context = Chouette::Factory.create { line ; line }
+        expect(context.lines).to all(be_kind_of(Chouette::Line))
+      end
+
+      it "should return NameError when no instance match" do
+        context = Chouette::Factory.create { }
+        expect { context.lines }.to raise_error(NameError)
+      end
+
+    end
+
+  end
+
   describe "Define model Attributes" do
     describe '{ line name: "RER A", transport_mode: "rail" }' do
       before do
@@ -88,6 +152,18 @@ RSpec.describe Chouette::Factory do
       it "should create two lines in the same LineReferential" do
         expect(context.instance(:first).line_referential).to eq(context.instance(:second).line_referential)
       end
+
+      it "should create a single LineReferential" do
+        expect {
+          context
+        }.to change { LineReferential.count }.by(1)
+      end
+
+      it "should create a single Workgroup" do
+        expect {
+          context
+        }.to change { Workgroup.count }.by(1)
+      end
     end
 
     describe %{{
@@ -122,7 +198,7 @@ RSpec.describe Chouette::Factory do
         end
       end
 
-      let(:referential) { Referential.last }
+      let(:referential) { context.referential }
 
       it "should create two Routes in the same Referential" do
         referential.switch do
@@ -146,12 +222,10 @@ RSpec.describe Chouette::Factory do
     end
 
     describe "{ referential name: 'Test' }" do
-      before do
-        Chouette::Factory.create { referential name: "Test" }
-      end
+      let(:context) { Chouette::Factory.create { referential name: "Test" } }
 
       it "should create a Referential with name 'Test'" do
-        expect(Referential.last.name).to eq('Test')
+        expect(context.referential.name).to eq('Test')
       end
     end
 
@@ -174,7 +248,7 @@ RSpec.describe Chouette::Factory do
          referential lines: [:first, :second]
       }
     } do
-      let(:factory) do
+      let!(:factory) do
         Chouette::Factory.create do
           line :first
           line :second
@@ -182,28 +256,30 @@ RSpec.describe Chouette::Factory do
         end
       end
 
-      let(:referential) { Referential.last }
+      let(:referential) { factory.referential }
 
       it "should create a Referential with the two lines in metadata" do
-        expect(referential.lines).to eq([factory.instance(:first), factory.instance(:second)])
+        expect(referential.lines).to contain_exactly(factory.instance(:first), factory.instance(:second))
       end
     end
   end
 
   describe "VehicleJourneys" do
     describe "{ vehicle_journey }" do
-      before do
+      let(:context) do
         Chouette::Factory.create { vehicle_journey }
       end
 
+      let(:referential) { context.referential }
+
       it "should create VehicleJourney" do
-        Referential.last.switch do
+        referential.switch do
           expect(Chouette::VehicleJourney.count).to eq(1)
         end
       end
 
       it "should create VehicleJourney with 3 stops" do
-        Referential.last.switch do
+        referential.switch do
           expect(Chouette::VehicleJourney.last.vehicle_journey_at_stops.count).to eq(3)
         end
       end
@@ -214,22 +290,22 @@ RSpec.describe Chouette::Factory do
 
     describe "{ route }" do
 
-      before do
+      let(:context) do
         Chouette::Factory.create do
           route
         end
       end
 
-      let(:referential) { Referential.last }
+      let(:referential) { context.referential }
 
       it "should create Route" do
-        Referential.last.switch do
+        referential.switch do
           expect(Chouette::Route.count).to eq(1)
         end
       end
 
       it "should create Route with 3 stops" do
-        Referential.last.switch do
+        referential.switch do
           expect(Chouette::Route.last.stop_points.count).to eq(3)
         end
       end
@@ -250,12 +326,12 @@ RSpec.describe Chouette::Factory do
         end
       end
 
-      let(:referential) { Referential.last }
+      let(:referential) { context.referential }
       let(:line) { context.instance(:first) }
 
       it "should create Route with specified line" do
-        Referential.last.switch do
-          expect(Chouette::Route.last.line).to eq(line)
+        referential.switch do
+          expect(context.route.line).to eq(line)
         end
       end
 
@@ -267,43 +343,50 @@ RSpec.describe Chouette::Factory do
   describe "TimeTables" do
 
     describe "{ time_table }" do
-      before do
+      let(:context) do
         Chouette::Factory.create do
           time_table
         end
       end
 
-      it "should create TimeTable with default period" do
-        Referential.last.switch do
-          expect(Chouette::TimeTable.count).to eq(1)
-          expect(Chouette::TimeTable.last.periods.count).to eq(1)
+      let(:referential) { context.referential }
+      let(:time_table) { context.time_table }
 
-          period = Chouette::TimeTable.last.periods.first
+      it "should create TimeTable with default period" do
+        referential.switch do
+          expect(Chouette::TimeTable.count).to eq(1)
+
+          expect(time_table.periods.count).to eq(1)
+
+          period = time_table.periods.first
           expect(period.range).to eq(Date.today.beginning_of_year..Date.today.end_of_year)
         end
       end
     end
 
     describe "{ time_table dates_excluded: Date.today }" do
-      before do
+      let(:context) do
         Chouette::Factory.create do
           time_table dates_excluded: Date.today
         end
       end
 
+      let(:referential) { context.referential }
+      let(:time_table) { context.time_table }
+
       it "should create TimeTable with default period" do
-        Referential.last.switch do
+        referential.switch do
           expect(Chouette::TimeTable.count).to eq(1)
 
-          expect(Chouette::TimeTable.last.periods.count).to eq(1)
-          period = Chouette::TimeTable.last.periods.first
+          expect(time_table.periods.count).to eq(1)
+
+          period = time_table.periods.first
           expect(period.range).to eq(Date.today.beginning_of_year..Date.today.end_of_year)
         end
       end
 
       it "should create TimeTable with specified excluded date" do
-        Referential.last.switch do
-          time_table = Chouette::TimeTable.last
+        referential.switch do
           expect(time_table.dates.count).to eq(1)
 
           date = time_table.dates.first
@@ -314,25 +397,27 @@ RSpec.describe Chouette::Factory do
     end
 
     describe "{ time_table dates_included: Date.today }" do
-      before do
+      let(:context) do
         Chouette::Factory.create do
           time_table dates_included: Date.today
         end
       end
 
+      let(:referential) { context.referential }
+      let(:time_table) { context.time_table }
+
       it "should create TimeTable with default period" do
-        Referential.last.switch do
+        referential.switch do
           expect(Chouette::TimeTable.count).to eq(1)
 
-          expect(Chouette::TimeTable.last.periods.count).to eq(1)
-          period = Chouette::TimeTable.last.periods.first
+          expect(time_table.periods.count).to eq(1)
+          period = time_table.periods.first
           expect(period.range).to eq(Date.today.beginning_of_year..Date.today.end_of_year)
         end
       end
 
       it "should create TimeTable with specified included date" do
-        Referential.last.switch do
-          time_table = Chouette::TimeTable.last
+        referential.switch do
           expect(time_table.dates.count).to eq(1)
 
           date = time_table.dates.first

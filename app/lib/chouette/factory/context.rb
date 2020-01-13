@@ -55,13 +55,15 @@ module Chouette
       def create_instance
         unless root?
           self.instance = model.build_instance self, save: true
-
-          if instance_name
-            named_instances[instance_name] = instance
-          end
+          register_instance instance, name: instance_name
         end
 
         children.each(&:create_instance)
+      end
+
+      def register_instance(instance, options = {})
+        options[:model_name] = model.name
+        registry.register instance, options
       end
 
       def build_instance
@@ -70,11 +72,11 @@ module Chouette
 
       attr_accessor :model
 
-      def named_instances
+      def registry
         unless root?
-          parent.named_instances
+          parent.registry
         else
-          @named_instances ||= {}
+          @registry ||= Registry.new
         end
       end
 
@@ -93,7 +95,7 @@ module Chouette
       def resolve_instance(name_or_value)
         if name_or_value.is_a?(Symbol)
           name = name_or_value
-          named_instances.fetch name
+          registry.find name: name
         else
           name_or_value
         end
@@ -121,6 +123,7 @@ module Chouette
             end
 
             if !implicit_contexts.has_key?(implicit_path) or next_model&.singleton?
+              log "Create sub context #{sub_model.name}"
               new_context = Context.new(sub_model, new_context)
             else
               log "Reuse implicit context #{implicit_path}"

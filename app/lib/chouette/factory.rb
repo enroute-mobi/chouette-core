@@ -230,16 +230,27 @@ module Chouette
     end
 
     def instance(name)
-      root_context.named_instances[name]
+      root_context.registry.find name: name
+    end
+
+    def method_missing(method_name, *arguments)
+      instances = root_context.registry.dynamic_model_method(method_name, *arguments)
+      if instances.present?
+        return instances
+      end
+
+      super
     end
 
     def evaluate(options = {}, &block)
       root_context.evaluate(&block)
-      root_context.debug if options[:debug]
+      root_context.debug # if options[:debug]
       root_context.create_instance
     end
 
     attr_reader :root_context
+
+    class Error < StandardError; end
 
   end
 end

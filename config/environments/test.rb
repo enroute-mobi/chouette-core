@@ -72,6 +72,7 @@ Rails.application.configure do
     config.logger.level = Logger::ERROR
     config.active_record.logger = nil
   end
+  config.colorize_logging = false
 
   config.additional_compliance_controls << "dummy"
   config.additional_destinations << "dummy"

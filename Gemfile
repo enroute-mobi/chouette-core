@@ -113,7 +113,7 @@ gem 'sequel'
 
 gem 'draper'
 
-gem 'enumerize', '~> 2.1.2'
+gem 'enumerize'
 gem 'deep_cloneable'
 gem 'acts-as-taggable-on'
 gem 'nokogiri', '>= 1.10.4'

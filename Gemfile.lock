@@ -249,7 +249,7 @@ GEM
       htmlentities (~> 4.3.3)
       launchy (~> 2.1)
       mail (~> 2.7)
-    enumerize (2.1.2)
+    enumerize (2.3.1)
       activesupport (>= 3.2)
     erubi (1.9.0)
     execjs (2.7.0)
@@ -709,7 +709,7 @@ DEPENDENCIES
   devise_invitable
   draper
   email_spec
-  enumerize (~> 2.1.2)
+  enumerize
   fabrication (~> 2.14.1)
   factory_girl_rails (~> 4.0)
   faker

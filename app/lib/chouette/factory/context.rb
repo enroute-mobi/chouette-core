@@ -54,7 +54,7 @@ module Chouette
 
       def create_instance
         unless root?
-          self.instance = model.build_instance self, save: true
+          build_instance save: true
           register_instance instance, name: instance_name
         end
 
@@ -66,8 +66,8 @@ module Chouette
         registry.register instance, options
       end
 
-      def build_instance
-        model.build_instance self
+      def build_instance(options = {})
+        self.instance ||= model.build_instance self, options
       end
 
       attr_accessor :model
@@ -152,6 +152,10 @@ module Chouette
           end
           context = context.parent
         end
+      end
+
+      def sub_context_for(model)
+        children.find { |context| context.model == model }
       end
 
       def around_models(&block)

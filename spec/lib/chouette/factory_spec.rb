@@ -130,9 +130,22 @@ RSpec.describe Chouette::Factory do
         end
       end
 
+      it "should create two Workgroups" do
+        expect {
+          context
+        }.to change { Workgroup.count }.by(2)
+      end
+
+      it "should create two LineReferentials" do
+        expect {
+          context
+        }.to change { LineReferential.count }.by(2)
+      end
+
       it "should create two lines in the two LineReferentials" do
         expect(context.instance(:first).line_referential).to_not eq(context.instance(:second).line_referential)
       end
+
       it "should create the two LineReferentials into two Workgroups" do
         expect(context.instance(:referential_1).workgroup).to_not eq(context.instance(:referential_2).workgroup)
       end

@@ -79,7 +79,12 @@ module Chouette
         end
       end
 
-      def build_instance(context, parent: nil, save: false)
+      def build_instance(context, options = {})
+        options = { parent: nil, save: false }.update(options)
+
+        parent = options[:parent]
+        save = options[:save]
+
         log "#{save ? 'Create' : 'Build'} #{name} #{klass.inspect} in #{context}"
 
         attributes_values = build_attributes(context)
@@ -104,7 +109,11 @@ module Chouette
           models.each do |_, model|
             if model.required?
               model.count.times do
-                model.build_instance(Context.new(model, context.with_instance(new_instance)), parent: new_instance)
+                # TODO with_instance for sub_context_for ?
+                sub_context = context.sub_context_for(model) ||
+                              Context.new(model, context.with_instance(new_instance))
+
+                sub_context.build_instance parent: new_instance
               end
             end
           end

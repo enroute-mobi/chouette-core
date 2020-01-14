@@ -17,7 +17,7 @@ module Chouette
           if context_value = context.attributes[name]
             context.resolve_instances context_value
           else
-            if Proc === value
+            if value.is_a?(Proc)
               if value.arity == 0
                 DSL.new(context).instance_eval(&value)
               else

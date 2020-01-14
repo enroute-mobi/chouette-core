@@ -97,7 +97,7 @@ module Chouette
               line = line_referential.lines.create!(name: "Line #{sequence_number}", transport_mode: "bus", transport_submode: "undefined", number: sequence_number)
               [ line ]
             end
-            transient :periods, [ Date.today.beginning_of_year..Date.today.end_of_year ]
+            transient :periods, [ Time.zone.today..1.month.from_now.to_date ]
 
             after do
               # TODO shouldn't be explicit but managed by Workbench/Referential model
@@ -193,7 +193,7 @@ module Chouette
             model :time_table do
               transient :dates_included, []
               transient :dates_excluded, []
-              transient :periods, [ Date.today.beginning_of_year..Date.today.end_of_year ]
+              transient :periods, [ Time.zone.today..1.month.from_now.to_date ]
 
               attribute(:comment) { |n| "TimeTable #{n}" }
               attribute :int_day_types, TimeTable::EVERYDAY
@@ -212,7 +212,7 @@ module Chouette
             end
             model :purchase_window do
               attribute(:name) { |n| "Purchase Window #{n}" }
-              attribute :date_ranges, [ Date.today.beginning_of_year..Date.today.end_of_year ]
+              attribute :date_ranges, [ Time.zone.today..1.month.from_now.to_date ]
             end
           end
         end
@@ -221,7 +221,7 @@ module Chouette
 
     def self.create(options = {}, &block)
       new.tap do |factory|
-        factory.evaluate(&block)
+        factory.evaluate(options, &block)
       end
     end
 
@@ -244,7 +244,7 @@ module Chouette
 
     def evaluate(options = {}, &block)
       root_context.evaluate(&block)
-      root_context.debug # if options[:debug]
+      root_context.debug
       root_context.create_instance
     end
 

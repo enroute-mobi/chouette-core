@@ -3,7 +3,8 @@ module Chouette
     class Context
       include Log
 
-      attr_accessor :instance, :instance_name, :attributes, :parent
+      attr_writer :attributes
+      attr_accessor :instance, :instance_name, :parent
 
       def initialize(model, parent: nil)
         @model, @parent = model, parent
@@ -123,18 +124,10 @@ module Chouette
       end
 
       def define(name)
-        create name
+        create model.find(name)
       end
 
-      def create(name_or_path)
-        path = nil
-
-        if name_or_path.is_a?(Array)
-          path = name_or_path
-        else
-          path = model.find(name_or_path)
-        end
-
+      def create(path)
         log "Prepare context for '#{path.map(&:name).join('>')}' into #{model.name}"
 
         next_model = path.shift
@@ -142,7 +135,7 @@ module Chouette
 
         sub_context = nil
 
-        if !user_context
+        unless user_context
           log "Reuse existing context for '#{next_model.name}' into #{model.name}"
           sub_context = sub_context_for(next_model)
         end
@@ -160,56 +153,20 @@ module Chouette
             sub_context.create path.dup
           rescue SingletonError => e
             log "Singleton detected in sub context '#{next_model.name}' into #{model.name}: #{e.message}"
-            # raise DuplicationRequiredError
             log "Create second '#{next_model.name}' into #{model.name} and create '#{path.map(&:name).join('>')}'"
             sub_context = Context.new(next_model, parent: self)
             sub_context.create(path.dup)
-          # rescue DuplicationRequiredError => e
-          #   log "Can't reuse '#{next_model.name}' into #{model.name} to avoid duplication"
-          #   sub_context = Context.new(next_model, parent: self)
-          #   sub_context.create(path)
           end
         end
       end
 
       class SingletonError < StandardError; end
-      class DuplicationRequiredError < StandardError; end
-
-      def create_old(name)
-        path = model.find(name)
-        if path
-          log "Create context for '#{name}' (#{path.map(&:name).join(' > ')})"
-          new_context = self
-          path.each_with_index do |sub_model, position|
-            implicit_path = nil
-            next_model = nil
-            if position < (path.length-1)
-              implicit_path = path[0..position].map(&:name).join('>')
-              next_model = path[position+1]
-            end
-
-            if !implicit_contexts.has_key?(implicit_path) or next_model&.singleton?
-              log "Create sub context #{sub_model.name}"
-              new_context = Context.new(sub_model, parent: new_context)
-            else
-              log "Reuse implicit context #{implicit_path}"
-              new_context = implicit_contexts[implicit_path]
-            end
-
-            if implicit_path && !implicit_contexts.has_key?(implicit_path)
-              log "Save implicit context #{implicit_path}"
-              implicit_contexts[implicit_path] = new_context
-            end
-          end
-          new_context
-        end
-      end
 
       def build_model(name)
         context = self
 
         loop do
-          if model_context = context.create(name)
+          if model_context = context.define(name)
             return model_context.build_instance
           end
 

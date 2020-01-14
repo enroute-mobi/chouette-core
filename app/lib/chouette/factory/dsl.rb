@@ -10,7 +10,7 @@ module Chouette
         sub_context = @context.define name
         super unless sub_context
 
-        if Symbol === arguments.first
+        if arguments.first.is_a?(Symbol)
           sub_context.instance_name, sub_context.attributes = arguments
         else
           sub_context.attributes = arguments.first

@@ -355,6 +355,8 @@ RSpec.describe Chouette::Factory do
 
   describe "TimeTables" do
 
+    let(:a_month_from_now) { Time.zone.today..1.month.from_now.to_date }
+
     describe "{ time_table }" do
       let(:context) do
         Chouette::Factory.create do
@@ -372,15 +374,15 @@ RSpec.describe Chouette::Factory do
           expect(time_table.periods.count).to eq(1)
 
           period = time_table.periods.first
-          expect(period.range).to eq(Date.today.beginning_of_year..Date.today.end_of_year)
+          expect(period.range).to eq(a_month_from_now)
         end
       end
     end
 
-    describe "{ time_table dates_excluded: Date.today }" do
+    describe "{ time_table dates_excluded: Time.zone.today }" do
       let(:context) do
         Chouette::Factory.create do
-          time_table dates_excluded: Date.today
+          time_table dates_excluded: Time.zone.today
         end
       end
 
@@ -394,7 +396,7 @@ RSpec.describe Chouette::Factory do
           expect(time_table.periods.count).to eq(1)
 
           period = time_table.periods.first
-          expect(period.range).to eq(Date.today.beginning_of_year..Date.today.end_of_year)
+          expect(period.range).to eq(a_month_from_now)
         end
       end
 
@@ -404,15 +406,15 @@ RSpec.describe Chouette::Factory do
 
           date = time_table.dates.first
           expect(date.in_out).to be_falsy
-          expect(date.date).to eq(Date.today)
+          expect(date.date).to eq(Time.zone.today)
         end
       end
     end
 
-    describe "{ time_table dates_included: Date.today }" do
+    describe "{ time_table dates_included: Time.zone.today }" do
       let(:context) do
         Chouette::Factory.create do
-          time_table dates_included: Date.today
+          time_table dates_included: Time.zone.today
         end
       end
 
@@ -425,7 +427,7 @@ RSpec.describe Chouette::Factory do
 
           expect(time_table.periods.count).to eq(1)
           period = time_table.periods.first
-          expect(period.range).to eq(Date.today.beginning_of_year..Date.today.end_of_year)
+          expect(period.range).to eq(a_month_from_now)
         end
       end
 
@@ -435,7 +437,7 @@ RSpec.describe Chouette::Factory do
 
           date = time_table.dates.first
           expect(date.in_out).to be_truthy
-          expect(date.date).to eq(Date.today)
+          expect(date.date).to eq(Time.zone.today)
         end
       end
     end
@@ -444,7 +446,7 @@ RSpec.describe Chouette::Factory do
 
   describe "Chouette.create shortcut" do
 
-    let(:context) { Chouette::create { line } }
+    let(:context) { Chouette.create { line } }
 
     it "should returns Chouette::Factory" do
       expect(context).to be_kind_of(Chouette::Factory)

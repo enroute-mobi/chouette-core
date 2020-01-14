@@ -2,12 +2,11 @@ module Chouette
   class Factory
     module Definition
       def define(&block)
-        root.define &block
+        root.define(&block)
       end
 
-      @@root = nil
       def root
-        @@root ||= Model.new(:root)
+        @root ||= Model.new(:root)
       end
     end
   end

@@ -7,7 +7,7 @@ module Chouette
         @name = name
       end
 
-      alias_method :to_s, :name
+      alias to_s name
 
       def sub_types
         @sub_types ||= {}
@@ -23,9 +23,9 @@ module Chouette
         if sub_type = sub_types[name]
           return [sub_type]
         else
-          sub_types.each do |sub_type_name, sub_type|
-            path = sub_type.find name
-            return [sub_type, *path] if path
+          sub_types.each do |_, type|
+            path = type.find name
+            return [type, *path] if path
           end
         end
 
@@ -56,7 +56,7 @@ module Chouette
       def self.create_sub_types(hierarchy)
         hierarchy.map do |entries|
           name, children =
-                if Array === entries
+                if entries.is_a?(Array)
                   [entries.first, entries.second]
                 else
                   [entries, []]

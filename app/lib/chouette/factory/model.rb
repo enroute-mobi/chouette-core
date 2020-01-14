@@ -13,8 +13,8 @@ module Chouette
         end
       end
 
-      alias_method :required?, :required
-      alias_method :singleton?, :singleton
+      alias required? required
+      alias singleton? :singleton
 
       def define(&block)
         dsl.instance_exec(&block)
@@ -40,9 +40,6 @@ module Chouette
         @after_callbacks ||= []
       end
 
-      def around_models=(proc)
-        @around_models = proc
-      end
       attr_accessor :around_models
 
       def root?
@@ -64,7 +61,7 @@ module Chouette
         if model = models[name]
           return [model]
         else
-          models.each do |model_name, m|
+          models.each do |_, m|
             path = m.find name
             return [m, *path] if path
           end

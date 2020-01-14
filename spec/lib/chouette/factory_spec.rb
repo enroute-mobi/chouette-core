@@ -442,4 +442,18 @@ RSpec.describe Chouette::Factory do
 
   end
 
+  describe "Chouette.create shortcut" do
+
+    let(:context) { Chouette::create { line } }
+
+    it "should returns Chouette::Factory" do
+      expect(context).to be_kind_of(Chouette::Factory)
+    end
+
+    it "should an initialized factory" do
+      expect(context.line).to_not be_nil
+    end
+
+  end
+
 end

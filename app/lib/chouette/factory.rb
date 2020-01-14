@@ -19,7 +19,7 @@ module Chouette
 
       model :workgroup do
         attribute(:name) { |n| "Workgroup ##{n}" }
-        attribute(:owner) { build_model :organisation }
+        attribute(:owner) { build_root_model :organisation }
 
         model :line_referential, required: true, singleton: true do
           attribute(:name) { |n| "Line Referential #{n}" }
@@ -75,7 +75,7 @@ module Chouette
 
         model :workbench do
           attribute(:name) { |n| "Workbench #{n}" }
-          attribute(:organisation) { build_model :organisation }
+          attribute(:organisation) { build_root_model :organisation }
           attribute :objectid_format, "netex"
           attribute(:prefix) { |n| "prefix-#{n}" }
 

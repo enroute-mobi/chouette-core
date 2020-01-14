@@ -44,6 +44,10 @@ module Chouette
           @context.build_model name
         end
 
+        def build_root_model(name)
+          @context.root.build_model name
+        end
+
         def sequence_number
           @sequence_number += 1
         end

@@ -110,7 +110,7 @@ module Chouette
             if model.required?
               # TODO with_instance for sub_context_for ?
               sub_context = context.sub_context_for(model) ||
-                            Context.new(model, context.with_instance(new_instance))
+                            Context.new(model, parent: context.with_instance(new_instance))
 
               sub_context.build_instance parent: new_instance
             end

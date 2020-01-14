@@ -5,7 +5,7 @@ module Chouette
 
       attr_accessor :instance, :instance_name, :attributes, :parent
 
-      def initialize(model, parent = nil)
+      def initialize(model, parent: nil)
         @model, @parent = model, parent
         parent.children << self if parent
       end
@@ -51,6 +51,10 @@ module Chouette
       end
 
       delegate :root?, to: :model
+
+      def root
+        parent ? parent.root : self
+      end
 
       def create_instance
         unless root?
@@ -118,7 +122,60 @@ module Chouette
         @implicit_contexts ||= {}
       end
 
-      def create(name)
+      def define(name)
+        create name
+      end
+
+      def create(name_or_path)
+        path = nil
+
+        if name_or_path.is_a?(Array)
+          path = name_or_path
+        else
+          path = model.find(name_or_path)
+        end
+
+        log "Prepare context for '#{path.map(&:name).join('>')}' into #{model.name}"
+
+        next_model = path.shift
+        user_context = path.empty?
+
+        sub_context = nil
+
+        if !user_context
+          log "Reuse existing context for '#{next_model.name}' into #{model.name}"
+          sub_context = sub_context_for(next_model)
+        end
+
+        if next_model.singleton? && sub_context.nil? && sub_context_for(next_model).present?
+          raise SingletonError, "Try to create a second #{next_model.name} into #{model.name}"
+        end
+
+        sub_context ||= Context.new(next_model, parent: self)
+
+        if path.empty?
+          sub_context
+        else
+          begin
+            sub_context.create path.dup
+          rescue SingletonError => e
+            log "Singleton detected in sub context '#{next_model.name}' into #{model.name}: #{e.message}"
+            # raise DuplicationRequiredError
+            log "Create second '#{next_model.name}' into #{model.name} and create '#{path.map(&:name).join('>')}'"
+            sub_context = Context.new(next_model, parent: self)
+            sub_context.create(path.dup)
+          # rescue DuplicationRequiredError => e
+          #   log "Can't reuse '#{next_model.name}' into #{model.name} to avoid duplication"
+          #   sub_context = Context.new(next_model, parent: self)
+          #   sub_context.create(path)
+          end
+        end
+      end
+
+      class SingletonError < StandardError; end
+      class DuplicationRequiredError < StandardError; end
+
+      def create_old(name)
         path = model.find(name)
         if path
           log "Create context for '#{name}' (#{path.map(&:name).join(' > ')})"
@@ -133,7 +190,7 @@ module Chouette
 
             if !implicit_contexts.has_key?(implicit_path) or next_model&.singleton?
               log "Create sub context #{sub_model.name}"
-              new_context = Context.new(sub_model, new_context)
+              new_context = Context.new(sub_model, parent: new_context)
             else
               log "Reuse implicit context #{implicit_path}"
               new_context = implicit_contexts[implicit_path]

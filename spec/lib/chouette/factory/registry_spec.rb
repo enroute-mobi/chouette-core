@@ -59,11 +59,11 @@ RSpec.describe Chouette::Factory::Registry do
       expect(registry.find(name: "dummy")).to eq(nil)
     end
 
-    it "raises a DuplicateInstanceError when several entries match" do
+    it "raises a Chouette::Factory::Error when several entries match" do
       registry.register Chouette::Line.new, name: "test"
       registry.register instance, name: "test"
 
-      expect { registry.find(name: "test") }.to raise_error(Chouette::Factory::Registry::DuplicateInstanceError)
+      expect { registry.find(name: "test") }.to raise_error(Chouette::Factory::Error)
     end
 
   end
@@ -77,8 +77,8 @@ RSpec.describe Chouette::Factory::Registry do
       expect(registry.find!(model_name: "route")).to eq(instance)
     end
 
-    it "raises a NoSuchInstanceError when no entry matches" do
-      expect { registry.find!(name: "dummy") }.to raise_error(Chouette::Factory::Registry::NoSuchInstanceError)
+    it "raises a Chouette::Factory::Error when no entry matches" do
+      expect { registry.find!(name: "dummy") }.to raise_error(Chouette::Factory::Error)
     end
 
   end

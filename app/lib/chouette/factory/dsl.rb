@@ -7,7 +7,7 @@ module Chouette
       end
 
       def method_missing(name, *arguments, &block)
-        sub_context = @context.create name
+        sub_context = @context.define name
         super unless sub_context
 
         if Symbol === arguments.first

@@ -53,7 +53,7 @@ module Chouette
 
     def convert_string_time_to_utc_time(val)
       return unless val.present?
-      
+
       if val && val.is_a?(String)
         tz = Time.zone
         Time.zone = 'UTC'
@@ -105,6 +105,7 @@ module Chouette
         end
         attrs << self.departure_day_offset.to_s
         attrs << self.arrival_day_offset.to_s
+        attrs << self.stop_area_id.to_s if self.stop_area_id.present? 
       end
     end
 

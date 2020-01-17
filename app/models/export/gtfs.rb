@@ -252,7 +252,8 @@ class Export::Gtfs < Export::Base
   def export_vehicle_journey_at_stops_to(target)
     referential.vehicle_journey_at_stops.
       includes(:stop_point).
-      where(stop_points: { stop_area: referential.stop_areas.commercial }).find_each do |vj_at_stop|
+      where(stop_points: { stop_area: referential.stop_areas.commercial }).
+      where(vehicle_journey: journeys).find_each do |vj_at_stop|
 
       vehicle_journey_id = vj_at_stop.vehicle_journey_id
       vj_timezone = vehicle_journey_time_zone_hash[vehicle_journey_id]

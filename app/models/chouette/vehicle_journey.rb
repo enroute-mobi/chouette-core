@@ -584,8 +584,7 @@ module Chouette
         dates = periods.map {|p| [p.period_start, p.period_end + 1.day]}
 
         included_dates = Hash[*time_tables.map do |t|
-
-          t.dates.where(in_out: true).map {|d|
+          t.dates.select(&:in?).map {|d|
             int_day_types = t.int_day_types
             int_day_types = int_day_types | 2**(d.date.days_to_week_start + 2)
             [d.date, int_day_types]
@@ -594,7 +593,7 @@ module Chouette
 
         excluded_dates = Hash.new { |hash, key| hash[key] = [] }
         time_tables.each do |t|
-          t.dates.where(in_out: false).each {|d| excluded_dates[d.date] += t.periods.to_a }
+          t.dates.select(&:out?).each {|d| excluded_dates[d.date] += t.periods.to_a }
         end
 
         (included_dates.keys + excluded_dates.keys).uniq.each do |d|

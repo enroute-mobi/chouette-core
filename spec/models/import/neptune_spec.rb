@@ -98,6 +98,13 @@ RSpec.describe Import::Neptune do
       expect(line.company).to be_present
       expect(line.network).to be_present
     end
+
+    it "manages empty line comment" do
+      import = build_import("sample_neptune_empty_comments")
+      import.send(:import_lines)
+      expect(workbench.line_referential.lines).to all(have_attributes(comment: nil))
+    end
+
   end
 
   describe "#import_stop_areas" do

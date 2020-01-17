@@ -19,7 +19,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       stop_areas = stop_area_referential.stop_areas.order(Arel.sql('random()')).limit(2)
       route = FactoryGirl.create :route, line: line, stop_areas: stop_areas, stop_points_count: 0
       journey_pattern = FactoryGirl.create :journey_pattern, route: route, stop_points: route.stop_points.sample(3)
-      vehicle_journey = FactoryGirl.create :vehicle_journey, journey_pattern: journey_pattern, company: nil
+      FactoryGirl.create :vehicle_journey, journey_pattern: journey_pattern, company: nil
 
       gtfs_export.instance_variable_set('@journeys', Chouette::VehicleJourney.all)
 
@@ -27,7 +27,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
       agencies_zip_path = File.join(tmp_dir, '/test_agencies.zip')
       GTFS::Target.open(agencies_zip_path) do |target|
-        expect { gtfs_export.export_companies_to target }.to change { Export::Message.count }.by(1)
+        gtfs_export.export_companies_to target
       end
 
       # The processed export files are re-imported through the GTFS gem
@@ -40,7 +40,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       # Test the line-company link
       lines_zip_path = File.join(tmp_dir, '/test_lines.zip')
       GTFS::Target.open(lines_zip_path) do |target|
-        gtfs_export.export_lines_to target
+        expect { gtfs_export.export_lines_to target }.to change { Export::Message.count }.by(1)
       end
 
       # The processed export files are re-imported through the GTFS gem
@@ -115,7 +115,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       expect(source.stop_times.length).to eq(vehicle_journey_at_stops.length)
 
       vehicle_journey_at_stops.each do |vj|
-        stop_time = source.stop_times.detect{|stop_time| stop_time.arrival_time == GTFS::Time.format_datetime(vj.arrival_time, vj.arrival_day_offset, 'Europe/Paris') }
+        stop_time = source.stop_times.detect{|s| s.arrival_time == GTFS::Time.format_datetime(vj.arrival_time, vj.arrival_day_offset, 'Europe/Paris') }
         expect(stop_time).not_to be_nil, "Did not find stop with time #{GTFS::Time.format_datetime(vj.arrival_time, vj.arrival_day_offset, 'Europe/Paris') } among #{source.stop_times.map(&:arrival_time)}"
         expect(stop_time.departure_time).to eq(GTFS::Time.format_datetime(vj.departure_time, vj.departure_day_offset, 'Europe/Paris'))
       end
@@ -278,15 +278,19 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       # Test calendars.txt and calendar_dates.txt export #
       ####################################################
 
-      calendars_zip_path = File.join(tmp_dir, '/test_calendars.zip')
-
       exported_referential.switch do
-        GTFS::Target.open(calendars_zip_path) do |target|
-          gtfs_export.export_time_tables_to target
+        ################################
+        # Test trips.txt export
+        ################################
+
+        targets_zip_path = File.join(tmp_dir, '/test_trips.zip')
+
+        GTFS::Target.open(targets_zip_path) do |target|
+          gtfs_export.export_vehicle_journeys_to target
         end
 
-        # The processed export files are re-imported through the GTFS gem
-        source = GTFS::Source.build calendars_zip_path, strict: false
+        # The processed export files are re-imported through the GTFS gem, and the computed
+        source = GTFS::Source.build targets_zip_path, strict: false
 
         # Get VJ merged periods
         periods = []
@@ -317,39 +321,6 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
         expect(random_gtfs_calendar).not_to be_nil
         expect((random_period.period_start..random_period.period_end).overlaps?(date_range.begin..date_range.end)).to be_truthy
-
-        # TO MODIFY IF NEEDED : the method vehicle_journeys#flattened_circulation_periods casts any time_table_dates into a single day period/calendar.
-        # Thus, for the moment, no time_table_dates / calendar_dates.txt 'll be exported
-        # Test time_table_dates
-        # vj_dates = selected_vehicle_journeys.map{|vj| vj.time_tables.map {|time_table|time_table.dates}}.flatten.uniq.select {|date| (date_range.begin..date_range.end) === date.date}
-        #
-        # vj_dates.length.should eq(source.calendar_dates.length)
-        # vj_dates.each do |date|
-        #   period = nil
-        #   if date.in_out
-        #     period = date.time_table.periods.first
-        #   else
-        #     period = date.time_table.periods.detect {|period| (period.period_start..period.period_end) === date.date}
-        #   end
-        #   period.should_not be_nil
-        #
-        #   calendar_date = source.calendar_dates.detect {|c| c.service_id == (period.id.to_s) && c.date == date.date.strftime('%Y%m%d')}
-        #   calendar_date.should_not be_nil
-        #   calendar_date.exception_type.should eq(date.in_out ? '1' : '2')
-        # end
-
-        ################################
-        # Test trips.txt export
-        ################################
-
-        targets_zip_path = File.join(tmp_dir, '/test_trips.zip')
-
-        GTFS::Target.open(targets_zip_path) do |target|
-          gtfs_export.export_vehicle_journeys_to target
-        end
-
-        # The processed export files are re-imported through the GTFS gem, and the computed
-        source = GTFS::Source.build targets_zip_path, strict: false
 
         # Get VJ merged periods
         vj_periods = []

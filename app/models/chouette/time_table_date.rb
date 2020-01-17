@@ -14,6 +14,14 @@ module Chouette
       ActiveModel::Name.new Chouette::TimeTableDate, Chouette, "TimeTableDate"
     end
 
+    def in?
+      in_out == true
+    end
+
+    def out?
+      in_out == false
+    end
+
     def checksum_attributes(db_lookup = true)
       attrs = ['date', 'in_out']
       self.slice(*attrs).values

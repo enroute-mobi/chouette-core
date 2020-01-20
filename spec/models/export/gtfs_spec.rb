@@ -59,6 +59,13 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
         end
       end
 
+      %i{url color text_color}.each do |attribute|
+        it "uses line #{attribute} to fill the same route attribute" do
+          allow(line).to receive(attribute).and_return("test")
+          expect(decorator.route_attributes[attribute]).to eq(line.send(attribute))
+        end
+      end
+
     end
 
 

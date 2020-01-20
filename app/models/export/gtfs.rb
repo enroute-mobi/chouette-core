@@ -291,9 +291,9 @@ class Export::Gtfs < Export::Base
           short_name: route_short_name,
           type: route_type,
           desc: comment,
-          url: url
-          #color: TO DO
-          #text_color: TO DO
+          url: url,
+          color: color,
+          text_color: text_color
         }
       end
 

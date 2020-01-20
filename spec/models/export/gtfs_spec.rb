@@ -1,6 +1,76 @@
 RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
   let(:gtfs_export) { create :gtfs_export, referential: exported_referential, workbench: workbench, duration: 5}
 
+  describe "Line Decorator" do
+
+    let(:line) { Chouette::Line.new }
+    let(:decorator) { Export::Gtfs::Lines::Decorator.new line }
+
+    describe "route_id" do
+
+      it "uses line registration_number when available" do
+        line.registration_number = "test"
+        expect(decorator.route_id).to be(line.registration_number)
+      end
+
+      it "uses line objectid when registration_number is not available" do
+        line.registration_number = nil
+        line.objectid = "test"
+        expect(decorator.route_id).to be(line.objectid)
+      end
+
+    end
+
+    describe "route_long_name" do
+
+      it "uses line published_name when available" do
+        line.published_name = "test"
+        expect(decorator.route_long_name).to eq(line.published_name)
+      end
+
+      it "uses line name when published_name is not available" do
+        line.published_name = nil
+        line.name = "test"
+        expect(decorator.route_long_name).to eq(line.name)
+      end
+
+      it "is nil if the candidate value is the route_short_name value" do
+        allow(decorator).to receive(:route_short_name).and_return("test")
+
+        line.published_name = decorator.route_short_name
+        expect(decorator.route_long_name).to eq(nil)
+
+        line.published_name = nil
+        line.name = decorator.route_short_name
+        expect(decorator.route_long_name).to eq(nil)
+      end
+
+    end
+
+    describe "route attributes" do
+
+      %i{route_short_name route_long_name}.each do |attribute|
+        route_attribute = attribute.to_s.gsub(/^route_/,'').to_sym
+
+        it "uses #{attribute} method to fill associated attribute (#{route_attribute})" do
+          allow(decorator).to receive(attribute).and_return("test")
+          route_attribute = attribute.to_s.gsub(/^route_/,'').to_sym
+          expect(decorator.route_attributes[route_attribute]).to eq(decorator.send(attribute))
+        end
+      end
+
+      %i{url color text_color}.each do |attribute|
+        it "uses line #{attribute} to fill the same route attribute" do
+          allow(line).to receive(attribute).and_return("test")
+          expect(decorator.route_attributes[attribute]).to eq(line.send(attribute))
+        end
+      end
+
+    end
+
+
+  end
+
   describe '#worker_died' do
 
     it 'should set gtfs_export status to failed' do
@@ -12,16 +82,15 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
   it "should create a default company and generate a message if the journey or its line doesn't have a company" do
     exported_referential.switch do
+      exported_referential.lines.update_all company_id: nil
       line = exported_referential.lines.first
-      line.company = nil
-      line.save
 
       stop_areas = stop_area_referential.stop_areas.order(Arel.sql('random()')).limit(2)
       route = FactoryGirl.create :route, line: line, stop_areas: stop_areas, stop_points_count: 0
       journey_pattern = FactoryGirl.create :journey_pattern, route: route, stop_points: route.stop_points.sample(3)
       FactoryGirl.create :vehicle_journey, journey_pattern: journey_pattern, company: nil
 
-      gtfs_export.instance_variable_set('@journeys', Chouette::VehicleJourney.all)
+      gtfs_export.export_scope = Export::Scope::All.new(exported_referential)
 
       tmp_dir = Dir.mktmpdir
 
@@ -40,7 +109,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       # Test the line-company link
       lines_zip_path = File.join(tmp_dir, '/test_lines.zip')
       GTFS::Target.open(lines_zip_path) do |target|
-        expect { gtfs_export.export_lines_to target }.to change { Export::Message.count }.by(1)
+        expect { gtfs_export.export_lines_to target }.to change { Export::Message.count }.by(2)
       end
 
       # The processed export files are re-imported through the GTFS gem
@@ -61,7 +130,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       journey_pattern = FactoryGirl.create :journey_pattern, route: route, stop_points: route.stop_points.sample(3)
       vehicle_journey = FactoryGirl.create :vehicle_journey, journey_pattern: journey_pattern, company: company
 
-      gtfs_export.instance_variable_set('@journeys', Chouette::VehicleJourney.all)
+      gtfs_export.export_scope = Export::Scope::All.new(exported_referential)
 
       tmp_dir = Dir.mktmpdir
 
@@ -101,7 +170,8 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       journey_pattern = FactoryGirl.create :journey_pattern, route: route, stop_points: route.stop_points.sample(2)
       vehicle_journey = FactoryGirl.create :vehicle_journey, journey_pattern: journey_pattern, company: company
       vehicle_journey.time_tables << (FactoryGirl.create :time_table)
-      gtfs_export.instance_variable_set('@journeys', Chouette::VehicleJourney.all)
+
+      gtfs_export.export_scope = Export::Scope::All.new(exported_referential)
 
       tmp_dir = Dir.mktmpdir
 
@@ -134,7 +204,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       exported_referential.switch do
         date_range = gtfs_export.date_range
         selected_vehicle_journeys = Chouette::VehicleJourney.with_matching_timetable date_range
-        gtfs_export.instance_variable_set('@journeys', selected_vehicle_journeys)
+        gtfs_export.export_scope = Export::Scope::All.new(exported_referential)
       end
 
       tmp_dir = Dir.mktmpdir
@@ -269,7 +339,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
         expect(route.agency_id).to eq(line.company.registration_number)
         expect(route.long_name).to eq(line.published_name)
         expect(route.short_name).to eq(line.number)
-        expect(route.type).to eq(gtfs_export.gtfs_line_type line)
+        expect(route.type).to eq('3')
         expect(route.desc).to eq(line.comment)
         expect(route.url).to eq(line.url)
       end

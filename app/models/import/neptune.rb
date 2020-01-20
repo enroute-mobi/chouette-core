@@ -112,7 +112,10 @@ class Import::Neptune < Import::Base
         line = line_referential.lines.find_or_initialize_by registration_number: source_line[:object_id]
         line.name = source_line[:name]
         line.number = source_line[:number]
-        line.published_name = source_line[:published_name]
+        # Ignore dummy published_name (filled with line number)
+        unless source_line[:published_name] == line.number
+          line.published_name = source_line[:published_name]
+        end
         line.comment = source_line[:comment]
         line.transport_mode, line.transport_submode = transport_mode_name_mapping(source_line[:transport_mode_name])
         line.company = file_company

@@ -99,6 +99,19 @@ RSpec.describe Import::Neptune do
       expect(line.network).to be_present
     end
 
+    it "ignores dummy line published_name" do
+      # Line "NAVSTEX:Line:VOIRON" has a normal published name
+      # Line "NAVSTEX:Line:GRENOB" has its number as published name
+      import = build_import("sample_neptune_dummy_published_name")
+      import.send(:import_lines)
+
+      line_with_published_name = workbench.line_referential.lines.find_by(registration_number: "NAVSTEX:Line:VOIRON")
+      expect(line_with_published_name).to have_attributes(published_name: "ST EXUPERY - VOIRON")
+
+      line_with_ignored_published_name = workbench.line_referential.lines.find_by(registration_number: "NAVSTEX:Line:GRENOB")
+      expect(line_with_ignored_published_name).to have_attributes(published_name: nil)
+    end
+
     it "manages empty line comment" do
       import = build_import("sample_neptune_empty_comments")
       import.send(:import_lines)

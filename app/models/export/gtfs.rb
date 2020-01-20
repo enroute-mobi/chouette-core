@@ -251,12 +251,19 @@ class Export::Gtfs < Export::Base
         @index = index
       end
 
-      def index
-        @index or raise "Index not provided"
-      end
+      attr_reader :index
 
       def route_id
-        registration_number.presence || line.objectid
+        registration_number.presence || objectid
+      end
+
+      def route_long_name
+        value = (published_name.presence || name)
+        value unless value == route_short_name
+      end
+
+      def route_short_name
+        number
       end
 
       def route_type
@@ -273,15 +280,15 @@ class Export::Gtfs < Export::Base
       end
 
       def route_agency_id
-        index.agency_id(company_id) || DEFAULT_AGENCY_ID
+        index&.agency_id(company_id) || DEFAULT_AGENCY_ID
       end
 
       def route_attributes
         {
           id: route_id,
           agency_id: route_agency_id,
-          long_name: published_name,
-          short_name: number,
+          long_name: route_long_name,
+          short_name: route_short_name,
           type: route_type,
           desc: comment,
           url: url

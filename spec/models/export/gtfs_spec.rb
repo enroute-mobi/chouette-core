@@ -1,6 +1,69 @@
 RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
   let(:gtfs_export) { create :gtfs_export, referential: exported_referential, workbench: workbench, duration: 5}
 
+  describe "Line Decorator" do
+
+    let(:line) { Chouette::Line.new }
+    let(:decorator) { Export::Gtfs::Lines::Decorator.new line }
+
+    describe "route_id" do
+
+      it "uses line registration_number when available" do
+        line.registration_number = "test"
+        expect(decorator.route_id).to be(line.registration_number)
+      end
+
+      it "uses line objectid when registration_number is not available" do
+        line.registration_number = nil
+        line.objectid = "test"
+        expect(decorator.route_id).to be(line.objectid)
+      end
+
+    end
+
+    describe "route_long_name" do
+
+      it "uses line published_name when available" do
+        line.published_name = "test"
+        expect(decorator.route_long_name).to eq(line.published_name)
+      end
+
+      it "uses line name when published_name is not available" do
+        line.published_name = nil
+        line.name = "test"
+        expect(decorator.route_long_name).to eq(line.name)
+      end
+
+      it "is nil if the candidate value is the route_short_name value" do
+        allow(decorator).to receive(:route_short_name).and_return("test")
+
+        line.published_name = decorator.route_short_name
+        expect(decorator.route_long_name).to eq(nil)
+
+        line.published_name = nil
+        line.name = decorator.route_short_name
+        expect(decorator.route_long_name).to eq(nil)
+      end
+
+    end
+
+    describe "route attributes" do
+
+      %i{route_short_name route_long_name}.each do |attribute|
+        route_attribute = attribute.to_s.gsub(/^route_/,'').to_sym
+
+        it "uses #{attribute} method to fill associated attribute (#{route_attribute})" do
+          allow(decorator).to receive(attribute).and_return("test")
+          route_attribute = attribute.to_s.gsub(/^route_/,'').to_sym
+          expect(decorator.route_attributes[route_attribute]).to eq(decorator.send(attribute))
+        end
+      end
+
+    end
+
+
+  end
+
   describe '#worker_died' do
 
     it 'should set gtfs_export status to failed' do

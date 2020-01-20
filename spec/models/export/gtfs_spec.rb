@@ -12,16 +12,15 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
   it "should create a default company and generate a message if the journey or its line doesn't have a company" do
     exported_referential.switch do
+      exported_referential.lines.update_all company_id: nil
       line = exported_referential.lines.first
-      line.company = nil
-      line.save
 
       stop_areas = stop_area_referential.stop_areas.order(Arel.sql('random()')).limit(2)
       route = FactoryGirl.create :route, line: line, stop_areas: stop_areas, stop_points_count: 0
       journey_pattern = FactoryGirl.create :journey_pattern, route: route, stop_points: route.stop_points.sample(3)
       FactoryGirl.create :vehicle_journey, journey_pattern: journey_pattern, company: nil
 
-      gtfs_export.instance_variable_set('@journeys', Chouette::VehicleJourney.all)
+      gtfs_export.export_scope = Export::Scope::All.new(exported_referential)
 
       tmp_dir = Dir.mktmpdir
 
@@ -40,7 +39,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       # Test the line-company link
       lines_zip_path = File.join(tmp_dir, '/test_lines.zip')
       GTFS::Target.open(lines_zip_path) do |target|
-        expect { gtfs_export.export_lines_to target }.to change { Export::Message.count }.by(1)
+        expect { gtfs_export.export_lines_to target }.to change { Export::Message.count }.by(2)
       end
 
       # The processed export files are re-imported through the GTFS gem
@@ -61,7 +60,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       journey_pattern = FactoryGirl.create :journey_pattern, route: route, stop_points: route.stop_points.sample(3)
       vehicle_journey = FactoryGirl.create :vehicle_journey, journey_pattern: journey_pattern, company: company
 
-      gtfs_export.instance_variable_set('@journeys', Chouette::VehicleJourney.all)
+      gtfs_export.export_scope = Export::Scope::All.new(exported_referential)
 
       tmp_dir = Dir.mktmpdir
 
@@ -101,7 +100,8 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       journey_pattern = FactoryGirl.create :journey_pattern, route: route, stop_points: route.stop_points.sample(2)
       vehicle_journey = FactoryGirl.create :vehicle_journey, journey_pattern: journey_pattern, company: company
       vehicle_journey.time_tables << (FactoryGirl.create :time_table)
-      gtfs_export.instance_variable_set('@journeys', Chouette::VehicleJourney.all)
+
+      gtfs_export.export_scope = Export::Scope::All.new(exported_referential)
 
       tmp_dir = Dir.mktmpdir
 
@@ -134,7 +134,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       exported_referential.switch do
         date_range = gtfs_export.date_range
         selected_vehicle_journeys = Chouette::VehicleJourney.with_matching_timetable date_range
-        gtfs_export.instance_variable_set('@journeys', selected_vehicle_journeys)
+        gtfs_export.export_scope = Export::Scope::All.new(exported_referential)
       end
 
       tmp_dir = Dir.mktmpdir
@@ -269,7 +269,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
         expect(route.agency_id).to eq(line.company.registration_number)
         expect(route.long_name).to eq(line.published_name)
         expect(route.short_name).to eq(line.number)
-        expect(route.type).to eq(gtfs_export.gtfs_line_type line)
+        expect(route.type).to eq('3')
         expect(route.desc).to eq(line.comment)
         expect(route.url).to eq(line.url)
       end

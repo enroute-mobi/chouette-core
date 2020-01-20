@@ -3,6 +3,8 @@ class Export::Gtfs < Export::Base
 
   option :duration, required: true, type: :integer, default_value: 200
 
+  DEFAULT_AGENCY_ID = "chouette_default"
+
   @skip_empty_exports = true
 
   def zip_file_name
@@ -17,24 +19,12 @@ class Export::Gtfs < Export::Base
     @vehicule_journey_service_trip_hash ||= {}
   end
 
-  def line_company_hash
-    @line_company_hash ||= {}
-  end
-
-  def route_id_for_line_id_hash
-    @route_id_for_line_id_hash ||= {}
-  end
-
   def vehicle_journey_time_zone_hash
     @vehicle_journey_time_zone_hash ||= {}
   end
 
   def agency_id company
     (company.registration_number.presence || company.objectid) if company
-  end
-
-  def route_id line
-    line.registration_number.presence || line.objectid
   end
 
   def stop_id stop_area
@@ -47,35 +37,49 @@ class Export::Gtfs < Export::Base
     File.open File.join(tmp_dir, "#{zip_file_name}.zip")
   end
 
-  def gtfs_line_type line
-    case line.transport_mode
-    when 'rail'
-      '2'
-    else
-      '3'
-    end
+  attr_reader :target
+
+  def export_scope
+    @export_scope ||= Export::Scope::DateRange.new(referential, date_range)
+  end
+  attr_writer :export_scope
+
+  # FIXME
+  def journeys
+    export_scope.vehicle_journeys
   end
 
   def export_to_dir(directory)
     operations_count = 5
-    GTFS::Target.open(File.join(directory, "#{zip_file_name}.zip")) do |target|
-      export_companies_to target
-      notify_progress 1.0/operations_count
-      export_stop_areas_to target
-      notify_progress 2.0/operations_count
-      export_lines_to target
-      export_transfers_to target
-      notify_progress 3.0/operations_count
-      # Export Trips
-      export_vehicle_journeys_to target
-      notify_progress 4.0/operations_count
-      # Export stop_times.txt
-      export_vehicle_journey_at_stops_to target
-      notify_progress 5.0/operations_count
-      # Export files fare_rules, fare_attributes, shapes, frequencies
-      # and feed_info aren't yet implemented as import nor export features from
-      # the chouette model
-    end
+
+    @target = GTFS::Target.new(File.join(directory, "#{zip_file_name}.zip"))
+
+    export_companies_to target
+    notify_progress 1.0/operations_count
+    export_stop_areas_to target
+    notify_progress 2.0/operations_count
+
+    Lines.new(self).export!
+
+    export_transfers_to target
+    notify_progress 3.0/operations_count
+    # Export Trips
+    export_vehicle_journeys_to target
+    notify_progress 4.0/operations_count
+    # Export stop_times.txt
+    export_vehicle_journey_at_stops_to target
+    notify_progress 5.0/operations_count
+    # Export files fare_rules, fare_attributes, shapes, frequencies
+    # and feed_info aren't yet implemented as import nor export features from
+    # the chouette model
+
+    target.close
+  end
+
+  # For legacy specs
+  def export_lines_to(target)
+    @target = target
+    Lines.new(self).export!
   end
 
   def export_companies_to(target)
@@ -84,13 +88,12 @@ class Export::Gtfs < Export::Base
       pluck("vehicle_journeys.id", "vehicle_journeys.company_id", "lines.id", "companies.id").
       each do |vehicle_journey_id, vehicle_journeys_company_id, line_id, line_company_id|
 
-      company_id = vehicle_journeys_company_id.presence || line_company_id.presence || "chouette_default"
+      company_id = vehicle_journeys_company_id.presence || line_company_id.presence || DEFAULT_AGENCY_ID
       company_ids << company_id
-      line_company_hash[line_id] = company_id
-      vehicle_journey_time_zone_hash[vehicle_journey_id] = (company_id == "chouette_default" ? "Etc/GMT" : company_id)
+      vehicle_journey_time_zone_hash[vehicle_journey_id] = (company_id == DEFAULT_AGENCY_ID ? "Etc/GMT" : company_id)
     end
 
-    Chouette::Company.where(id: company_ids-["chouette_default"]).order('name').find_each do |company|
+    Chouette::Company.where(id: company_ids-[DEFAULT_AGENCY_ID]).order('name').find_each do |company|
       if company.time_zone.present?
         time_zone = company.time_zone
       else
@@ -117,13 +120,13 @@ class Export::Gtfs < Export::Base
         #fare_url: TO DO
       }
 
-      line_company_hash.each {|k,v| line_company_hash[k] = a_id if v == company.id}
+      index.register_agency_id(company, a_id)
       vehicle_journey_time_zone_hash.each {|k,v| vehicle_journey_time_zone_hash[k] = time_zone if v == company.id}
     end
 
-    if company_ids.include? "chouette_default"
+    if company_ids.include? DEFAULT_AGENCY_ID
       target.agencies << {
-        id: "chouette_default",
+        id: DEFAULT_AGENCY_ID,
         name: "Default Agency",
         timezone: "Etc/GMT",
       }
@@ -179,34 +182,116 @@ class Export::Gtfs < Export::Base
     end
   end
 
-  def export_lines_to(target)
-    line_ids = journeys.joins(:route).pluck(:line_id).uniq
-    Chouette::Line.where(id: line_ids).each do |line|
-      if line_company_hash[line.id] == "chouette_default"
-        args = {
+  def index
+    @index ||= Index.new
+  end
+
+  class Index
+
+    def initialize
+      @route_ids = {}
+      @agency_ids = {}
+    end
+
+    def route_id(line_id)
+      @route_ids[line_id]
+    end
+
+    def register_route_id(line, route_id)
+      @route_ids[line.id] = route_id
+    end
+
+    def agency_id(company_id)
+      @agency_ids[company_id]
+    end
+
+    def register_agency_id(company, agency_id)
+      @agency_ids[company.id] = agency_id
+    end
+  end
+
+  class Lines
+
+    attr_reader :export
+    def initialize(export)
+      @export = export
+    end
+
+    delegate :target, :index, :export_scope, :messages, to: :export
+    delegate :lines, to: :export_scope
+
+    def create_messages(decorated_line)
+      if decorated_line.default_agency?
+        messages.create({
           criticity: :info,
           message_key: :no_company,
           message_attributes: {
-            line_name: line.name
+            line_name: decorated_line.name
           }
-        }
-        self.messages.create args
+        })
+      end
+    end
+
+    def export!
+      lines.find_each do |line|
+        decorated_line = Decorator.new(line, index)
+
+        create_messages decorated_line
+        target.routes << decorated_line.route_attributes
+
+        index.register_route_id line, decorated_line.route_id
+      end
+    end
+
+    class Decorator < SimpleDelegator
+
+      # index is optional to make tests easier
+      def initialize(line, index = nil)
+        super line
+        @index = index
       end
 
-      route_id = route_id(line)
-      route_id_for_line_id_hash[line.id] = route_id
-      target.routes << {
-        id: route_id,
-        agency_id: line_company_hash[line.id],
-        long_name: line.published_name,
-        short_name: line.number,
-        type: gtfs_line_type(line),
-        desc: line.comment,
-        url: line.url
-        #color: TO DO
-        #text_color: TO DO
-      }
+      def index
+        @index or raise "Index not provided"
+      end
+
+      def route_id
+        registration_number.presence || line.objectid
+      end
+
+      def route_type
+        case transport_mode
+        when 'rail'
+          '2'
+        else
+          '3'
+        end
+      end
+
+      def default_agency?
+        route_agency_id == DEFAULT_AGENCY_ID
+      end
+
+      def route_agency_id
+        index.agency_id(company_id) || DEFAULT_AGENCY_ID
+      end
+
+      def route_attributes
+        {
+          id: route_id,
+          agency_id: route_agency_id,
+          long_name: published_name,
+          short_name: number,
+          type: route_type,
+          desc: comment,
+          url: url
+          #color: TO DO
+          #text_color: TO DO
+        }
+      end
+
     end
+
   end
 
   def export_vehicle_journeys_to(target)
@@ -231,7 +316,7 @@ class Export::Gtfs < Export::Base
           # each entry in trips.txt corresponds to a kind of composite key made of both service_id and route_id
           trip_id = "trip_#{trip_index += 1}"
           target.trips << {
-            route_id: route_id_for_line_id_hash[vehicle_journey.route.line_id],
+            route_id: index.route_id(vehicle_journey.route.line_id),
             service_id:  service_id,
             id: trip_id,
             #headsign: TO DO

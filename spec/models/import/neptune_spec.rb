@@ -111,6 +111,13 @@ RSpec.describe Import::Neptune do
       line_with_ignored_published_name = workbench.line_referential.lines.find_by(registration_number: "NAVSTEX:Line:GRENOB")
       expect(line_with_ignored_published_name).to have_attributes(published_name: nil)
     end
+
+    it "manages empty line comment" do
+      import = build_import("sample_neptune_empty_comments")
+      import.send(:import_lines)
+      expect(workbench.line_referential.lines).to all(have_attributes(comment: nil))
+    end
+
   end
 
   describe "#import_stop_areas" do

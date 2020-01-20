@@ -11,7 +11,7 @@ module Export::Scope
 
     delegate :workbench, to: :referential
 
-    delegate :vehicle_journeys, :journey_patterns, :routes, :time_tables, to: :referential
+    delegate :vehicle_journeys, :vehicle_journey_at_stops, :journey_patterns, :routes, :time_tables, to: :referential
     delegate :stop_areas, to: :workbench
     delegate :lines, :companies, to: :workbench
 
@@ -41,6 +41,9 @@ module Export::Scope
     end
 
     # TODO
+    def vehicle_journey_at_stops
+      super.where(vehicle_journey: vehicle_journeys)
+    end
 
   end
 

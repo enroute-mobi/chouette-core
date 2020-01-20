@@ -17,13 +17,14 @@ module GTFS
       hours / 24
     end
 
+    @timezone_hours = {}
     def self.timezone_hours(time_zone)
-      (::Time.find_zone(time_zone).try(:utc_offset)||0) / 3600
+      @timezone_hours[time_zone] ||= (::Time.find_zone(time_zone).try(:utc_offset)||0) / 3600
     end
 
     FORMAT = /(\d{1,2}):(\d{1,2}):(\d{1,2})/
 
-    def self.format_datetime (date_time, offset, new_timezone = 'UTC')
+    def self.format_datetime(date_time, offset, new_timezone = 'UTC')
       hours = "%.2d" % (date_time.hour+(24*offset)+timezone_hours(new_timezone))
       minutes = "%.2d" % date_time.min
       seconds = "%.2d" % date_time.sec
@@ -32,7 +33,7 @@ module GTFS
 
     def self.parse(definition)
       if definition.to_s =~ FORMAT
-        new *[$1, $2, $3].map(&:to_i)
+        new(*[$1, $2, $3].map(&:to_i))
       end
     end
   end

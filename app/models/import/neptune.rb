@@ -108,7 +108,7 @@ class Import::Neptune < Import::Base
       file_company = get_associated_company(source_pt_network, filename)
       file_network = get_associated_network(source_pt_network, filename)
 
-      each_element_matching_css('ChouetteLineDescription Line', source_pt_network) do |source_line, progress|
+      each_element_matching_css('ChouetteLineDescription Line', source_pt_network) do |source_line, _|
         line = line_referential.lines.find_or_initialize_by registration_number: source_line[:object_id]
         line.name = source_line[:name]
         line.number = source_line[:number]
@@ -453,17 +453,18 @@ class Import::Neptune < Import::Base
 
   def build_object_from_nokogiri_element(element)
     out = { _node: element }
-    element.children.each do |child|
+    element.elements.each do |child|
       key = child.name.underscore.to_sym
-      next if key == :text
 
-      if child.children.count == 1 && child.children.last.node_type == Nokogiri::XML::Node::TEXT_NODE
-        content = child.children.last.content
-      else
+      if child.elements.present?
         content = build_object_from_nokogiri_element(child)
+      else
+        content = child.content
+        next if content == ""
       end
 
-      if element.children.select{ |c| c.name == child.name }.count > 1
+      # To manage several elements with the same name
+      if element.elements.select{ |c| c.name == child.name }.count > 1
         out[key] ||= []
         out[key] << content
       else

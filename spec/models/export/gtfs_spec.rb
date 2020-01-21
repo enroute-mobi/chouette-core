@@ -142,6 +142,16 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
       let(:stop_point) { double stop_area_id: 42 }
 
+      context "when VehicleJourneyAtStop defines a specific stop" do
+
+        before { vehicle_journey_at_stop.stop_area_id = 42 }
+
+        it "uses the VehicleJourneyAtStop#stop_area_id" do
+          expect(decorator.stop_area_id).to eq(vehicle_journey_at_stop.stop_area_id)
+        end
+
+      end
+
       it "uses the Stop Point stop_area_id" do
         expect(vehicle_journey_at_stop).to receive(:stop_point).and_return(stop_point)
         expect(decorator.stop_area_id).to eq(stop_point.stop_area_id)
@@ -332,7 +342,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       exported_referential.switch do
         date_range = gtfs_export.date_range
         selected_vehicle_journeys = Chouette::VehicleJourney.with_matching_timetable date_range
-        gtfs_export.export_scope = Export::Scope::All.new(exported_referential)
+        gtfs_export.export_scope = Export::Scope::DateRange.new(exported_referential, date_range)
       end
 
       tmp_dir = Dir.mktmpdir

@@ -8,17 +8,20 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
         line :second
         line :third
 
+        stop_area :specific_stop
+
         referential lines: [:first, :second, :third] do
           time_table :default
 
-          route line: :first do
-            vehicle_journey :in_range1, time_tables: [:default]
-            vehicle_journey :in_range2, time_tables: [:default]
+          route :in_scope1, line: :first do
+            vehicle_journey :in_scope1, time_tables: [:default]
+            vehicle_journey :in_scope2, time_tables: [:default]
           end
-          route line: :second do
-            vehicle_journey :in_range3, time_tables: [:default]
+          route :in_scope2, line: :second do
+            vehicle_journey :in_scope3, time_tables: [:default]
             vehicle_journey # no timetable
           end
+          route
         end
       end
     end
@@ -30,14 +33,75 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
     let(:date_range) { context.time_table(:default).date_range }
     let(:scope) { Export::Scope::DateRange.new context.referential, date_range }
 
-    let(:vehicle_journeys_in_range) do
-      [:in_range1, :in_range2, :in_range3].map { |n| context.vehicle_journey(n) }
+    let(:vehicle_journeys_in_scope) do
+      [:in_scope1, :in_scope2, :in_scope3].map { |n| context.vehicle_journey(n) }
+    end
+
+    let(:routes_in_scope) { [:in_scope1, :in_scope2].map { |n| context.route(n) } }
+
+    describe "stop_areas" do
+
+      let(:stop_areas_in_scope) { routes_in_scope.map(&:stop_areas).flatten.uniq }
+
+      it "select stop areas associated with routes" do
+        expect(scope.stop_areas).to match_array(stop_areas_in_scope)
+      end
+
+      it "doesn't provide a Stop Area twice" do
+        expect(scope.stop_areas).to be_uniq
+      end
+
+      context "when a VehicleJourneyAtStop has a specific Stop" do
+
+        let(:vehicle_journey_at_stop) do
+          vehicle_journeys_in_scope.sample.vehicle_journey_at_stops.sample
+        end
+        let(:specific_stop) { context.stop_area(:specific_stop) }
+
+        before do
+          vehicle_journey_at_stop.update stop_area: specific_stop
+        end
+
+        it "select specific stops" do
+          expect(scope.stop_areas).to include(specific_stop)
+        end
+
+      end
+
+    end
+
+    describe "stop_points" do
+
+      let(:stop_points_in_scope) do
+        routes_in_scope.map(&:stop_points).flatten.uniq
+      end
+
+      it "select stop points associated with routes" do
+        expect(scope.stop_points).to match_array(stop_points_in_scope)
+      end
+
+      it "doesn't provide a Stop Point twice" do
+        expect(scope.stop_points).to be_uniq
+      end
+
+    end
+
+    describe "routes" do
+
+      it "select routes associated with vehicle journeys in scope" do
+        expect(scope.routes).to match_array(routes_in_scope)
+      end
+
+      it "doesn't provide a Route twice" do
+        expect(scope.routes).to be_uniq
+      end
+
     end
 
     describe "vehicle_journeys" do
 
       it "select vehicle journeys with a time table in the date range" do
-        expect(scope.vehicle_journeys).to eq(vehicle_journeys_in_range)
+        expect(scope.vehicle_journeys).to eq(vehicle_journeys_in_scope)
       end
 
     end
@@ -58,12 +122,12 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
 
     describe "vehicle_journeys_at_stops" do
 
-      let(:vehicle_journey_at_stops_in_range) do
-        vehicle_journeys_in_range.map(&:vehicle_journey_at_stops).flatten
+      let(:vehicle_journey_at_stops_in_scope) do
+        vehicle_journeys_in_scope.map(&:vehicle_journey_at_stops).flatten
       end
 
       it "select all VehicleJourneyAtStops associated to vehicle journeys in date range" do
-        expect(scope.vehicle_journey_at_stops).to match_array(vehicle_journey_at_stops_in_range)
+        expect(scope.vehicle_journey_at_stops).to match_array(vehicle_journey_at_stops_in_scope)
       end
 
       it "doesn't provide a VehicleJourneyAtStop twice" do

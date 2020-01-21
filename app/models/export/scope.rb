@@ -11,7 +11,7 @@ module Export::Scope
 
     delegate :workbench, to: :referential
 
-    delegate :vehicle_journeys, :vehicle_journey_at_stops, :journey_patterns, :routes, :time_tables, to: :referential
+    delegate :vehicle_journeys, :vehicle_journey_at_stops, :journey_patterns, :routes, :stop_points, :time_tables, to: :referential
     delegate :stop_areas, to: :workbench
     delegate :lines, :companies, to: :workbench
 
@@ -37,14 +37,38 @@ module Export::Scope
     end
 
     def lines
-      super.joins(routes: :vehicle_journeys).distinct.where("vehicle_journeys.id" => vehicle_journeys)
+      super.distinct.joins(routes: :vehicle_journeys)
+        .where("vehicle_journeys.id" => vehicle_journeys)
     end
 
     def vehicle_journey_at_stops
       super.where(vehicle_journey: vehicle_journeys)
     end
 
-    # TODO
+    def routes
+      super.joins(:vehicle_journeys).distinct
+        .where("vehicle_journeys.id" => vehicle_journeys)
+    end
+
+    def stop_points
+      super.distinct.joins(route: :vehicle_journeys)
+        .where("vehicle_journeys.id" => vehicle_journeys)
+    end
+
+    def stop_areas
+      @stop_areas ||=
+        begin
+          stop_areas_in_routes =
+            super.joins(routes: :vehicle_journeys).distinct
+              .where("vehicle_journeys.id" => vehicle_journeys)
+
+          stop_areas_in_specific_vehicle_journey_at_stops =
+            super.joins(:specific_vehicle_journey_at_stops).distinct
+              .where("vehicle_journey_at_stops.vehicle_journey_id" => vehicle_journeys)
+
+          Chouette::StopArea.union(stop_areas_in_routes, stop_areas_in_specific_vehicle_journey_at_stops)
+        end
+    end
 
   end
 

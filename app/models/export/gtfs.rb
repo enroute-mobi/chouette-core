@@ -59,7 +59,8 @@ class Export::Gtfs < Export::Base
     export_vehicle_journeys_to target
     notify_progress 4.0/operations_count
     # Export stop_times.txt
-    export_vehicle_journey_at_stops_to target
+    VehicleJourneyAtStops.new(self).export!
+
     notify_progress 5.0/operations_count
     # Export files fare_rules, fare_attributes, shapes, frequencies
     # and feed_info aren't yet implemented as import nor export features from
@@ -127,11 +128,7 @@ class Export::Gtfs < Export::Base
   end
 
   def exported_stop_areas
-    stop_areas_in_routes_ids = journeys.joins(route: :stop_points).distinct.pluck(:"stop_points.stop_area_id")
-    quay_parent_ids = Chouette::StopArea.where(id: stop_areas_in_routes_ids).where(area_type: 'zdep').where.not(parent_id: nil).distinct.pluck(:parent_id)
-    exported_stop_area_ids = stop_areas_in_routes_ids.to_set.merge(quay_parent_ids)
-
-    referential.stop_area_referential.stop_areas.where(id: exported_stop_area_ids).where(kind: :commercial).order('parent_id ASC NULLS FIRST')
+    Chouette::StopArea.union(export_scope.stop_areas, Chouette::StopArea.parents_of(export_scope.stop_areas.where(area_type: 'zdep'))).where(kind: :commercial)
   end
 
   def export_stop_areas_to(target)
@@ -371,35 +368,6 @@ class Export::Gtfs < Export::Base
     end
   end
 
-  def previous_export_vehicle_journey_at_stops_to(target)
-    referential.vehicle_journey_at_stops.
-      includes(:stop_point).
-      where(stop_points: { stop_area: referential.stop_areas.commercial }).
-      where(vehicle_journey: journeys).find_each do |vj_at_stop|
-
-      vehicle_journey_id = vj_at_stop.vehicle_journey_id
-      vj_timezone = vehicle_journey_time_zone_hash[vehicle_journey_id]
-
-      vehicule_journey_service_trip_hash[vehicle_journey_id].each do |trip_id|
-        arrival_time = GTFS::Time.format_datetime(vj_at_stop.arrival_time, vj_at_stop.arrival_day_offset, vj_timezone) if vj_at_stop.arrival_time
-        departure_time = GTFS::Time.format_datetime(vj_at_stop.departure_time, vj_at_stop.departure_day_offset, vj_timezone) if vj_at_stop.departure_time
-
-        target.stop_times << {
-          trip_id: trip_id,
-          arrival_time: arrival_time,
-          departure_time: departure_time,
-          stop_id: stop_area_stop_hash.fetch(vj_at_stop.stop_point.stop_area_id),
-          stop_sequence: vj_at_stop.stop_point.position
-            # stop_headsign: TO STORE IN IMPORT,
-            # pickup_type: TO STORE IN IMPORT,
-            # pickup_type: TO STORE IN IMPORT,
-            #shape_dist_traveled: TO STORE IN IMPORT,
-            #timepoint: TO STORE IN IMPORT,
-          }
-      end
-    end
-  end
-
   # For legacy specs
   def export_vehicle_journey_at_stops_to(target)
     @target = target
@@ -413,7 +381,8 @@ class Export::Gtfs < Export::Base
     def export!
       vehicle_journey_at_stops.
         includes(:stop_point).
-        where(stop_points: { stop_area: export_scope.stop_areas.commercial }).
+        joins(stop_point: :stop_area).
+        where("stop_areas.kind" => "commercial").
         find_each do |vehicle_journey_at_stop|
 
         decorated_vehicle_journey_at_stop = Decorator.new(vehicle_journey_at_stop, index)
@@ -438,7 +407,7 @@ class Export::Gtfs < Export::Base
 
       attr_reader :index
 
-      delegate :stop_area_id, :position, to: :stop_point
+      delegate :position, to: :stop_point
 
       def time_zone
         index&.vehicle_journey_time_zone(vehicle_journey_id)
@@ -450,6 +419,10 @@ class Export::Gtfs < Export::Base
 
       def stop_time_arrival_time
         GTFS::Time.format_datetime arrival_time, arrival_day_offset, time_zone if arrival_time
+      end
+
+      def stop_area_id
+        __getobj__.stop_area_id.presence || stop_point.stop_area_id
       end
 
       def stop_time_stop_id

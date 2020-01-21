@@ -64,4 +64,4 @@ config/environments/production.rb
 /test-results/
 
 # []CHOUETTE-41] to avoid error
-/storage-key.json
+storage-key.json

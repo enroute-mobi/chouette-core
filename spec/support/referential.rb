@@ -84,10 +84,13 @@ RSpec.configure do |config|
     )
   end
 
-  config.before(:each) do
+  config.before(:each) do |example|
     DatabaseCleaner.strategy = :transaction
-    # Switch into the default tenant
-    first_referential.switch
+
+    unless example.metadata[:use_chouette_factory]
+      # Switch into the default tenant
+      first_referential.switch
+    end
   end
 
   config.before(:each, truncation: true) do

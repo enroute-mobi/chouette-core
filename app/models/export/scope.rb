@@ -37,13 +37,14 @@ module Export::Scope
     end
 
     def lines
-      super.joins(routes: :vehicle_journeys).where("vehicle_journeys.id" => vehicle_journeys)
+      super.joins(routes: :vehicle_journeys).distinct.where("vehicle_journeys.id" => vehicle_journeys)
     end
 
-    # TODO
     def vehicle_journey_at_stops
       super.where(vehicle_journey: vehicle_journeys)
     end
+
+    # TODO
 
   end
 

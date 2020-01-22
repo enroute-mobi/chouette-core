@@ -129,7 +129,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
         end
 
         it "supports a nil time zone" do
-          vehicle_journey_at_stop.send "#{state}_time=", time = Time.find_zone("UTC").parse("23:00")
+          vehicle_journey_at_stop.send "#{state}_time=", Time.find_zone("UTC").parse("23:00")
           vehicle_journey_at_stop.send "#{state}_day_offset=", 0
           allow(decorator).to receive(:time_zone).and_return(nil)
 

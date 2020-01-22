@@ -79,8 +79,8 @@ class Export::Gtfs < Export::Base
     company_ids = Set.new
     # OPTIMIZEME pluck is great bu can consume a lot of memory for very large Vehicle Journey collection
     journeys.left_joins(route: { line: :company }).
-      pluck("vehicle_journeys.id", "vehicle_journeys.company_id", "lines.id", "companies.id", "companies.time_zone").
-      each do |vehicle_journey_id, vehicle_journeys_company_id, line_id, line_company_id, company_time_zone|
+      pluck("vehicle_journeys.id", "vehicle_journeys.company_id", "companies.id", "companies.time_zone").
+      each do |vehicle_journey_id, vehicle_journeys_company_id, line_company_id, company_time_zone|
 
       company_id = vehicle_journeys_company_id.presence || line_company_id.presence || DEFAULT_AGENCY_ID
       company_ids << company_id

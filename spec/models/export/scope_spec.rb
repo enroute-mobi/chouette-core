@@ -26,8 +26,9 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
       end
     end
 
-    around(:each) do |example|
-      context.referential.switch(&example)
+    # around(:each) lets models in database after spec (?!)
+    before do
+      context.referential.switch
     end
 
     let(:date_range) { context.time_table(:default).date_range }

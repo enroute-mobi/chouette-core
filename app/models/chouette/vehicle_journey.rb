@@ -669,15 +669,24 @@ module Chouette
         ([1] * 7).join(',')
       end
     end
-  end
 
-  def line_notices_as_footnotes
-    line_notices.map do |line_notice|
-      OpenStruct.new(
-        code: line_notice.title,
-        label: line_notice.content,
-        id: line_notice.id
-      )
+    def self.clean!
+      current_scope = self.current_scope || all
+
+      Chouette::VehicleJourneyAtStop.where(vehicle_journey: current_scope).delete_all
+
+      reflections.values.select do |r|
+        r.is_a?(::ActiveRecord::Reflection::HasAndBelongsToManyReflection)
+      end.each do |reflection|
+        sql = %[
+          DELETE FROM #{reflection.join_table}
+          WHERE #{reflection.foreign_key} IN (#{current_scope.select(:id).to_sql});
+        ]
+        connection.execute sql
+      end
+
+      delete_all
     end
+
   end
 end

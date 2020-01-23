@@ -266,5 +266,13 @@ module Chouette
       end
       self.costs = _costs
     end
+
+    def self.clean!
+      current_scope = self.current_scope || all
+
+      Chouette::JourneyPatternsStopPoint.where(journey_pattern: current_scope).delete_all
+      delete_all
+    end
+
   end
 end

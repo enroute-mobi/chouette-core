@@ -110,6 +110,8 @@ module Chouette
         Chouette::VehicleJourneyAtStop.joins(vehicle_journey: :route).where(routes: {id: self.id}).delete_all
         clean_join_tables!
         vehicle_journeys.delete_all
+
+        Chouette::JourneyPatternsStopPoint.where(journey_pattern: journey_patterns).delete_all
         journey_patterns.delete_all
         stop_points.delete_all
         routing_constraint_zones.delete_all

@@ -49,8 +49,8 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
     describe "route attributes" do
 
-      %i{route_short_name route_long_name}.each do |attribute|
-        route_attribute = attribute.to_s.gsub(/^route_/,'').to_sym
+      %i{short_name long_name}.each do |route_attribute|
+        attribute = "route_#{route_attribute}".to_sym
 
         it "uses #{attribute} method to fill associated attribute (#{route_attribute})" do
           allow(decorator).to receive(attribute).and_return("test")
@@ -68,6 +68,144 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
     end
 
+
+  end
+
+  describe "VehicleJourneyAtStop Decorator" do
+
+    let(:vehicle_journey_at_stop) { Chouette::VehicleJourneyAtStop.new }
+    let(:index) { double }
+    let(:decorator) do
+      Export::Gtfs::VehicleJourneyAtStops::Decorator.new vehicle_journey_at_stop, index
+    end
+
+    let(:time_zone) { "Europe/Paris" }
+
+    describe "time zone" do
+
+      it "uses time zone associated with the VehicleJourney in the index" do
+        vehicle_journey_at_stop.vehicle_journey_id = 42
+        expect(index).to receive(:vehicle_journey_time_zone).
+                           with(vehicle_journey_at_stop.vehicle_journey_id).
+                           and_return(time_zone)
+
+        expect(decorator.time_zone).to be(time_zone)
+      end
+
+      it "returns nil if the VehicleJourney isn't associated to a time zone" do
+        vehicle_journey_at_stop.vehicle_journey_id = 42
+        expect(index).to receive(:vehicle_journey_time_zone).
+                           with(vehicle_journey_at_stop.vehicle_journey_id).
+                           and_return(nil)
+
+        expect(decorator.time_zone).to be(nil)
+      end
+
+    end
+
+    %w{arrival departure}.each do |state|
+      describe "stop_time_#{state}_time" do
+        it "formats the #{state}_time according to the #{state}_day_offset and the time zone" do
+          vehicle_journey_at_stop.send "#{state}_time=", Time.parse("23:00")
+          time = vehicle_journey_at_stop.send "#{state}_time" # the value is truncated
+
+          vehicle_journey_at_stop.send "#{state}_day_offset=", day_offset = 0
+          allow(decorator).to receive(:time_zone).and_return(time_zone)
+
+          formated_time = "23:00::00"
+
+          expect(GTFS::Time).to receive(:format_datetime).
+                                  with(time, day_offset, time_zone).
+                                  and_return formated_time
+
+          expect(decorator.send("stop_time_#{state}_time")).to eq(formated_time)
+        end
+
+        it "returns nil if #{state}_time is nil" do
+          vehicle_journey_at_stop.send "#{state}_time=", nil
+          allow(decorator).to receive(:time_zone).and_return(nil)
+
+          expect(decorator.send("stop_time_#{state}_time")).to be_nil
+        end
+
+        it "supports a nil time zone" do
+          vehicle_journey_at_stop.send "#{state}_time=", Time.find_zone("UTC").parse("23:00")
+          vehicle_journey_at_stop.send "#{state}_day_offset=", 0
+          allow(decorator).to receive(:time_zone).and_return(nil)
+
+          expect(decorator.send("stop_time_#{state}_time")).to eq("23:00:00")
+        end
+      end
+    end
+
+    describe "stop_area_id" do
+
+      let(:stop_point) { double stop_area_id: 42 }
+
+      context "when VehicleJourneyAtStop defines a specific stop" do
+
+        before { vehicle_journey_at_stop.stop_area_id = 42 }
+
+        it "uses the VehicleJourneyAtStop#stop_area_id" do
+          expect(decorator.stop_area_id).to eq(vehicle_journey_at_stop.stop_area_id)
+        end
+
+      end
+
+      it "uses the Stop Point stop_area_id" do
+        expect(vehicle_journey_at_stop).to receive(:stop_point).and_return(stop_point)
+        expect(decorator.stop_area_id).to eq(stop_point.stop_area_id)
+      end
+
+    end
+
+    describe "position" do
+
+      let(:stop_point) { double position: 42 }
+
+      it "uses the Stop Point position" do
+        expect(vehicle_journey_at_stop).to receive(:stop_point).and_return(stop_point)
+        expect(decorator.position).to eq(stop_point.position)
+      end
+
+    end
+
+    describe "stop_time_stop_id" do
+
+      it "uses stop_id associated to the stop_area_id in the index" do
+        allow(decorator).to receive(:stop_area_id).and_return(42)
+        expect(index).to receive(:stop_id).
+                           with(decorator.stop_area_id).
+                           and_return("test")
+
+        expect(decorator.stop_time_stop_id).to eq("test")
+      end
+
+    end
+
+    describe "stop_time attributes" do
+
+      before do
+        allow(decorator).to receive_messages(time_zone: nil, position: 42, stop_time_stop_id: "test")
+        vehicle_journey_at_stop.departure_time =
+          vehicle_journey_at_stop.arrival_time = Time.parse("23:00")
+      end
+
+      %i{departure_time arrival_time stop_id}.each do |stop_time_attribute|
+        attribute = "stop_time_#{stop_time_attribute}".to_sym
+        it "uses #{attribute} method to fill associated attribute (#{stop_time_attribute})" do
+          allow(decorator).to receive(attribute).and_return("test")
+          stop_time_attribute = attribute.to_s.gsub(/^stop_time_/,'').to_sym
+          expect(decorator.stop_time_attributes[stop_time_attribute]).to eq(decorator.send(attribute))
+        end
+      end
+
+      it "uses position to fill the same stop_sequence attribute" do
+        allow(decorator).to receive(:position).and_return(42)
+        expect(decorator.stop_time_attributes[:stop_sequence]).to eq(decorator.position)
+      end
+
+    end
 
   end
 
@@ -204,7 +342,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       exported_referential.switch do
         date_range = gtfs_export.date_range
         selected_vehicle_journeys = Chouette::VehicleJourney.with_matching_timetable date_range
-        gtfs_export.export_scope = Export::Scope::All.new(exported_referential)
+        gtfs_export.export_scope = Export::Scope::DateRange.new(exported_referential, date_range)
       end
 
       tmp_dir = Dir.mktmpdir

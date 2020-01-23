@@ -223,8 +223,8 @@ ActiveRecord::Schema.define(version: 2020_01_21_091316) do
     t.bigint "compliance_control_set_id"
     t.bigint "workbench_id"
     t.string "status"
-    t.bigint "parent_id"
     t.string "parent_type"
+    t.bigint "parent_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "current_step_id"
@@ -1106,10 +1106,10 @@ ActiveRecord::Schema.define(version: 2020_01_21_091316) do
 
   create_table "taggings", force: :cascade do |t|
     t.bigint "tag_id"
-    t.bigint "taggable_id"
     t.string "taggable_type"
-    t.bigint "tagger_id"
+    t.bigint "taggable_id"
     t.string "tagger_type"
+    t.bigint "tagger_id"
     t.string "context", limit: 128
     t.datetime "created_at"
     t.index ["context"], name: "index_taggings_on_context"

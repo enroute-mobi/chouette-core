@@ -297,6 +297,41 @@ RSpec.describe Chouette::Factory do
         end
       end
     end
+
+    describe %{{
+      time_table :default
+      vehicle_journey time_tables: [:default]
+    }} do
+      let(:context) do
+        Chouette::Factory.create do
+          time_table :default
+          vehicle_journey time_tables: [:default]
+        end
+      end
+
+      let(:referential) { context.referential }
+
+      it "should create a TimeTable" do
+        referential.switch do
+          expect(Chouette::TimeTable.count).to eq(1)
+        end
+      end
+
+      it "should create VehicleJourney" do
+        referential.switch do
+          expect(Chouette::VehicleJourney.count).to eq(1)
+        end
+      end
+
+      let(:vehicle_journey) { context.vehicle_journey }
+      let(:time_table) { context.time_table(:default) }
+
+      it "should create a VehicleJourney with the TimeTable :default" do
+        referential.switch do
+          expect(vehicle_journey.time_tables).to eq([time_table])
+        end
+      end
+    end
   end
 
   describe "Routes" do

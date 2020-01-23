@@ -29,6 +29,7 @@ Rails.application.configure do
   config.active_support.deprecation = :log
 
   config.log_level = :debug
+  #config.colorize_logging = false
 
   # Raise an error on page load if there are pending migrations.
   config.active_record.migration_error = :page_load

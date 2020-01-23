@@ -24,7 +24,7 @@ class Chouette::Netex::DayType < Chouette::Netex::Resource
   def build_xml
     @builder.DayType(resource_metas) do
       node_if_content 'keyList' do
-        key_value 'Tags', resource.tags&.join(',')
+        key_value 'Tags', (resource.tags&.sort_by(&:name) || []).join(',')
         key_value 'Colour', resource.color
       end
       attributes_mapping

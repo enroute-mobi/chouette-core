@@ -36,7 +36,7 @@ module ObjectidSupport
 
   included do
     before_validation :before_validation_objectid, unless: Proc.new {|model| model.read_attribute(:objectid)}
-    after_commit :after_commit_objectid, on: :create
+    after_commit :after_commit_objectid, on: :create, if: Proc.new {|model| model.read_attribute(:objectid).try(:include?, '__pending_id__')}
     validates_presence_of :objectid
     validates_uniqueness_of :objectid, unless: Proc.new {|model| model.read_attribute(:objectid).nil? || model.class.skip_objectid_uniqueness? }
 

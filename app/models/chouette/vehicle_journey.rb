@@ -673,6 +673,14 @@ module Chouette
     def self.clean!
       current_scope = self.current_scope || all
 
+      # There are several "DELETE CASCADE" in the schema like:
+      #
+      # TABLE "vehicle_journey_at_stops" CONSTRAINT "vjas_vj_fkey" FOREIGN KEY (vehicle_journey_id) REFERENCES vehicle_journeys(id) ON DELETE CASCADE
+      # TABLE "time_tables_vehicle_journeys" CONSTRAINT "vjtm_vj_fkey" FOREIGN KEY (vehicle_journey_id) REFERENCES vehicle_journeys(id) ON DELETE CASCADE
+      #
+      # The ruby code makes the expected deletions
+      # and the delete cascade will be the fallback
+
       Chouette::VehicleJourneyAtStop.where(vehicle_journey: current_scope).delete_all
 
       reflections.values.select do |r|

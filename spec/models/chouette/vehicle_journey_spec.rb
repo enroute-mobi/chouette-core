@@ -1803,4 +1803,56 @@ describe Chouette::VehicleJourney, :type => :model do
 
     end
   end
+
+  describe "#clean!" do
+
+    let(:context) do
+      Chouette.create do
+        time_table :time_table
+        purchase_window :purchase_window
+
+        associations = {time_tables: [:time_table], purchase_windows: [:purchase_window]}
+
+        vehicle_journey :target, associations
+        vehicle_journey :kept, associations
+      end
+    end
+
+    let(:referential) { context.referential }
+
+    let(:target) { context.vehicle_journey(:target) }
+    let(:target_scope) { referential.vehicle_journeys.where(id: target) }
+
+    let(:kept) { context.vehicle_journey(:kept) }
+
+    before { referential.switch }
+
+    it "destroys VehiculeJourneyAtStops associated to targeted VehiculeJourneys" do
+      expect { target_scope.clean! }.to change {
+        target.vehicle_journey_at_stops.exists?
+      }
+    end
+
+    it "keeps VehiculeJourneyAtStops not associated to the targeted VehiculeJourneys" do
+      expect { target_scope.clean! }.to_not change {
+        kept.vehicle_journey_at_stops.exists?
+      }
+    end
+
+    it "destroys targeted VehiculeJourneys" do
+      expect { target_scope.clean! }.to change {
+        referential.vehicle_journeys.exists?(target.id)
+      }
+    end
+
+    it "keeps VehiculeJourneyAtStops not associated to the targeted VehiculeJourneys" do
+      expect { target_scope.clean! }.to_not change {
+        referential.vehicle_journeys.exists?(kept.id)
+      }
+    end
+
+
+  end
+
+
 end

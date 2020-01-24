@@ -1,10 +1,10 @@
 class Workgroup < ApplicationModel
   NIGHTLY_AGGREGATE_CRON_TIME = 5.minutes
 
-  belongs_to :line_referential
-  belongs_to :stop_area_referential
+  belongs_to :line_referential, dependent: :destroy
+  belongs_to :stop_area_referential, dependent: :destroy
   belongs_to :owner, class_name: "Organisation"
-  belongs_to :output, class_name: 'ReferentialSuite'
+  belongs_to :output, class_name: 'ReferentialSuite', dependent: :destroy
 
   has_many :workbenches, dependent: :destroy
   has_many :imports, through: :workbenches

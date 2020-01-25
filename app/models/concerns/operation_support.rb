@@ -109,16 +109,13 @@ module OperationSupport
     ComplianceControlSetCopier.new.copy control_set.id, referential.id, nil, self.class.name, id, context
   end
 
-  def worker_class_name
-    "#{self.class.name}Worker"
-  end
-
-  def worker_class
-    worker_class_name.constantize
-  end
-
   def operation_scheduled?
     Delayed::Job.where("handler ILIKE '%#{self.class.name}%name: id\n    value_before_type_cast: #{self.id}%'").exists?
+  end
+
+  def enqueue_operation
+    worker_method = "#{self.class.name.underscore}!".to_sym
+    enqueue_job worker_method
   end
 
   def child_change
@@ -135,7 +132,7 @@ module OperationSupport
         if operation_scheduled?
           Rails.logger.warn "#{self.class.name} ##{self.id} - Trying to schedule a #{self.class.name} while it is already enqueued"
         else
-          worker_class.perform_async(id)
+          enqueue_operation
         end
       end
     else

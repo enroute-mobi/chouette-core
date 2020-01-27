@@ -9,11 +9,19 @@ module Export::Scope
       @referential = referential
     end
 
-    delegate :workbench, to: :referential
+    delegate :workbench, :line_referential, :stop_area_referential, to: :referential
 
     delegate :vehicle_journeys, :vehicle_journey_at_stops, :journey_patterns, :routes, :stop_points, :time_tables, to: :referential
-    delegate :stop_areas, to: :workbench
-    delegate :lines, :companies, to: :workbench
+
+    delegate :companies, to: :line_referential
+
+    def stop_areas
+      (workbench || stop_area_referential).stop_areas
+    end
+
+    def lines
+      (workbench || line_referential).lines
+    end
 
   end
 

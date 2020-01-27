@@ -1,5 +1,51 @@
 RSpec.describe Export::Scope, use_chouette_factory: true do
 
+  describe "Base" do
+
+    describe "stop_areas" do
+
+      it "uses workbench stop areas" do
+        referential = double(workbench: double(stop_areas: double))
+
+        expect(Export::Scope::Base.new(referential).stop_areas).
+          to be(referential.workbench.stop_areas)
+      end
+
+      context "without workbench" do
+        it "uses stop areas from stop area referential" do
+          referential = double(workbench: nil,
+                               stop_area_referential: double(stop_areas: double))
+
+          expect(Export::Scope::Base.new(referential).stop_areas).
+            to be(referential.stop_area_referential.stop_areas)
+        end
+      end
+
+    end
+
+    describe "lines" do
+
+      it "uses workbench lines" do
+        referential = double(workbench: double(lines: double))
+
+        expect(Export::Scope::Base.new(referential).lines).
+          to be(referential.workbench.lines)
+      end
+
+      context "without workbench" do
+        it "uses lines from line referential" do
+          referential = double(workbench: nil,
+                               line_referential: double(lines: double))
+
+          expect(Export::Scope::Base.new(referential).lines).
+            to be(referential.line_referential.lines)
+        end
+      end
+
+    end
+
+  end
+
   describe "DateRange" do
 
     let!(:context) do

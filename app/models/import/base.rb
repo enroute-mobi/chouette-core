@@ -18,7 +18,7 @@ class Import::Base < ApplicationModel
   end
 
   def self.human_name
-    I18n.t("export.#{self.name.demodulize.underscore}")
+    I18n.t("export.#{short_type}")
   end
 
   def self.file_extension_whitelist
@@ -26,7 +26,15 @@ class Import::Base < ApplicationModel
   end
 
   def self.human_name
-    I18n.t("import.#{self.name.demodulize.underscore}")
+    I18n.t("import.#{short_type}")
+  end
+
+  def self.short_type
+    @short_type ||= self.name.demodulize.underscore
+  end
+
+  def short_type
+    self.class.short_type
   end
 
   scope :workbench, -> { where type: "Import::Workbench" }

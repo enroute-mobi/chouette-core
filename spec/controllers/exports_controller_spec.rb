@@ -84,6 +84,26 @@ RSpec.describe ExportsController, :type => :controller do
     end
   end
 
+  describe "GET #show" do
+
+    it 'should be successful' do
+      get :show, params: { workbench_id: workbench.id, id: export.id }
+      expect(response).to be_successful
+    end
+
+    context "in JSON format" do
+
+      let(:export) { create :gtfs_export, workbench: workbench  }
+      it 'should be successful' do
+        get :show, params: { workbench_id: workbench.id, id: export.id, format: :json }
+        expect(response).to be_successful
+      end
+
+    end
+
+  end
+
+
   describe 'POST #upload' do
     context "with the token" do
       it 'should be successful' do

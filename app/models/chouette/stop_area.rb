@@ -10,8 +10,8 @@ module Chouette
     include CustomFieldsSupport
 
     extend Enumerize
-    enumerize :area_type, in: Chouette::AreaType::ALL
-    enumerize :kind, in: %i(commercial non_commercial)
+    enumerize :area_type, in: Chouette::AreaType::ALL, default: Chouette::AreaType::COMMERCIAL.first
+    enumerize :kind, in: %i(commercial non_commercial), default: :commercial
 
     AVAILABLE_LOCALIZATIONS = %i(en_UK nl_NL de_DE fr_FR it_IT es_ES)
 

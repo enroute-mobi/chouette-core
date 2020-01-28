@@ -118,6 +118,35 @@ RSpec.describe Import::Neptune do
       expect(workbench.line_referential.lines).to all(have_attributes(comment: nil))
     end
 
+    it "keeps line attributes when neptune file doesn't provide them" do
+      company = workbench.line_referential.companies.create!(name: "Defined")
+      network = workbench.line_referential.networks.create!(name: "Defined")
+
+      existing_attributes = {
+        number: "Defined",
+        published_name: "Defined",
+        comment: "Defined",
+        transport_mode: "bus",
+        transport_submode: "undefined",
+        company: company,
+        network: network
+      }
+
+      line_attributes = existing_attributes.merge(
+        registration_number: "NAVSTEX:Line:GRENOB",
+        name: "Defined"
+      )
+      line = workbench.line_referential.lines.create!(line_attributes)
+
+      import = build_import("sample_neptune_empty_stop_line")
+      import.send(:import_lines)
+
+      line.reload
+
+      expect(line).to have_attributes(existing_attributes)
+      expect(line.name).to eq(name_in_neptune_file = "ST EXUPERY - GRENOBLE")
+    end
+
   end
 
   describe "#import_stop_areas" do
@@ -147,6 +176,40 @@ RSpec.describe Import::Neptune do
       child = workbench.stop_area_referential.stop_areas.find_by(registration_number: 'NAVSTEX:StopArea:3')
       expect(child.parent).to eq parent
     end
+
+    it "keeps line attributes when neptune file doesn't provide them" do
+      parent = workbench.stop_area_referential.stop_areas.create(name: "Parent", area_type: "zdlp")
+      unless parent.valid?
+        ap parent.errors
+        raise "wrong"
+      end
+
+      existing_attributes = {
+        comment: "Defined",
+        street_name: "Defined",
+        nearest_topic_name: "Defined",
+        fare_code: 42,
+        area_type: "zdep",
+        latitude: 42,
+        longitude: 42,
+        parent: parent
+      }
+
+      stop_area_attributes = existing_attributes.merge(
+        registration_number: "Empty",
+        name: "Defined"
+      )
+      stop_area = workbench.stop_area_referential.stop_areas.create!(stop_area_attributes)
+
+      import = build_import("sample_neptune_empty_stop_line")
+      import.send(:import_stop_areas)
+
+      stop_area.reload
+
+      expect(stop_area).to have_attributes(existing_attributes)
+      expect(stop_area.name).to eq(name_in_neptune_file = "Empty Area")
+    end
+
   end
 
   describe "#import_companies" do

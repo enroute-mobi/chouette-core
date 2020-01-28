@@ -5,6 +5,15 @@
 $modalW: 600px
 
 .modal
+  .scrollable-modal
+    .modal-dialog
+      overflow-y: initial !important
+
+    // TODO find a way to have a modular (%) height
+    .modal-body
+      height: 500px;
+      overflow-y: auto
+
   // Modal centering
   .modal-container
     display: table

@@ -20,7 +20,6 @@ export default class ShiftVehicleJourney extends Component {
 
   handleAdditionalTimeChange() {
     this.setState((state, props) => {
-      console.log(this.refs.additional_time.value)
       if(this.refs.additional_time.value == "-" || this.refs.additional_time.value == ""){
         return {
           additional_time: this.refs.additional_time.value
@@ -45,6 +44,7 @@ export default class ShiftVehicleJourney extends Component {
             disabled={(actions.getSelected(this.props.vehicleJourneys).length != 1 || this.props.disabled)}
             data-toggle='modal'
             data-target='#ShiftVehicleJourneyModal'
+            title={ I18n.t('vehicle_journeys.form.hint_shift_vj') }
             onClick={this.props.onOpenShiftModal}
           >
             <span className='sb sb-update-vj'></span>

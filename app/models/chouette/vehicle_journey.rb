@@ -272,19 +272,12 @@ module Chouette
         end
         params[:arrival_day_offset] = 0
         params[:departure_day_offset] = 0
+        params[:stop_area_id] = vjas['specific_stop_area_id']
         stop = create_or_find_vjas_from_state(vjas)
         stop.update_attributes(params)
         vjas.delete('errors')
         vjas['errors'] = stop.errors if stop.errors.any?
       end
-    end
-
-    def state_update_vjas? vehicle_journey_at_stops
-      departure_times = vehicle_journey_at_stops.map do |vjas|
-        "#{vjas['departure_time']['hour']}:#{vjas['departure_time']['minute']}"
-      end
-      times = departure_times.uniq
-      (times.count == 1 && times[0] == '00:00') ? false : true
     end
 
     def update_has_and_belongs_to_many_from_state item
@@ -315,10 +308,7 @@ module Chouette
           next if item['deletable'] && vj.persisted? && vj.destroy
           objects << vj
 
-          if vj.state_update_vjas?(item['vehicle_journey_at_stops'])
-            vj.update_vjas_from_state(item['vehicle_journey_at_stops'])
-          end
-
+          vj.update_vjas_from_state(item['vehicle_journey_at_stops'])
           vj.update_attributes(state_permited_attributes(item))
           vj.update_has_and_belongs_to_many_from_state(item)
           vj.update_checksum!

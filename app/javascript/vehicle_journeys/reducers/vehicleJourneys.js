@@ -154,6 +154,15 @@ const vehicleJourney= (state = {}, action, keep) => {
 
       let custom_fields = JSON.parse(JSON.stringify(state.custom_fields))
       return _.assign({}, state, {vehicle_journey_at_stops: shiftedArray, custom_fields: custom_fields})
+    case 'SELECT_SPECIFIC_STOP':
+      let specific_stop_area_map = action.specific_stop_area_map
+      vjasArray = state.vehicle_journey_at_stops.map((vjas, i) =>{
+        if (Object.keys(specific_stop_area_map).includes(vjas.stop_point_id.toString())) {
+          vjas.specific_stop_area_id = specific_stop_area_map[vjas.stop_point_id]
+        }
+        return vjas
+      })
+      return _.assign({}, state, {vehicle_journey_at_stops: vjasArray})
     case 'UPDATE_TIME':
       let vj, vjas, vjasArray, newSchedule
       let val = action.val
@@ -292,6 +301,14 @@ export default function vehicleJourneys(state = [], action) {
           }
         })
     case 'SHIFT_VEHICLEJOURNEY':
+      return state.map((vj, i) => {
+        if (vj.selected){
+          return vehicleJourney(vj, action, true)
+        }else{
+          return vj
+        }
+      })
+    case 'SELECT_SPECIFIC_STOP':
       return state.map((vj, i) => {
         if (vj.selected){
           return vehicleJourney(vj, action, true)

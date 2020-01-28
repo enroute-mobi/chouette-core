@@ -11,7 +11,7 @@ export default class StopAreaHeaderManager {
     return this.features[key]
   }
 
-  stopPointHeader(object_id) {
+  stopPointHeader(object_id, show_details=true) {
     let index = this.ids_list.indexOf(object_id)
     let sp = this.stopPointsList[index]
     let showHeadline = this.showHeader(object_id)
@@ -28,7 +28,7 @@ export default class StopAreaHeaderManager {
         <span>
           <span>
             {sp.name}
-            {sp.time_zone_formatted_offset && <span className="small">
+            {sp.time_zone_formatted_offset && show_details && <span className="small">
               &nbsp;({sp.time_zone_formatted_offset})
             </span>}
             {sp.area_kind == 'non_commercial' && <span className="fa fa-question-circle" title={sp.area_type_i18n}>

@@ -266,5 +266,13 @@ module Chouette
       end
       self.costs = _costs
     end
+
+    def available_specific_stop_places
+      stop_areas.map do |stop_area|
+        [stop_area.id ,stop_area.children.to_a]
+        # [stop_area.id ,Chouette::StopArea.last(10).to_a]
+      end
+    end
+
   end
 end

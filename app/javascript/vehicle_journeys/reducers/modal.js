@@ -269,6 +269,14 @@ export default function modal(state = {}, action) {
         modalProps: {},
         confirmModal: {}
       }
+    case 'SELECT_SPECIFIC_STOP_MODAL':
+    return {
+      type: 'select_specific_stop',
+      modalProps: {
+        vehicleJourney: action.vehicleJourney
+      },
+      confirmModal: {}
+    }
     case 'DUPLICATE_VEHICLEJOURNEY_MODAL':
       return {
         type: 'duplicate',

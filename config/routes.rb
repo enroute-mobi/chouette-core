@@ -133,6 +133,7 @@ ChouetteIhm::Application.routes.draw do
         resource :journey_patterns_collection, :only => [:show, :update]
         resources :journey_patterns do
           get 'new_vehicle_journey', on: :member
+          get 'available_specific_stop_places', on: :member
         end
         resource :vehicle_journeys_collection, :only => [:show, :update]
         resources :vehicle_journeys, :vehicle_journey_frequencies do

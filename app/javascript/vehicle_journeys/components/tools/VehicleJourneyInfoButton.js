@@ -15,6 +15,7 @@ export default class VehicleJourneyInfoButton extends Component {
           type='button'
           data-toggle='modal'
           data-target='#EditVehicleJourneyModal'
+          title={ I18n.t('vehicle_journeys.form.hint_info') }
           onClick={() => this.props.onOpenEditModal(this.props.vehicleJourney)}
         >
           <span className='fa fa-info'></span>

@@ -22,7 +22,7 @@ class ExportsController < ChouetteController
     respond_to do |format|
       format.html
       format.json do
-        fragment = render_to_string(partial: "exports/show.html")
+        fragment = render_to_string(partial: "exports/show", formats: :html)
         render json: {fragment: fragment}
       end
     end

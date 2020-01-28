@@ -26,7 +26,7 @@ class ImportsController < ChouetteController
     respond_to do |format|
       format.html
       format.json do
-        fragment = render_to_string(partial: "imports/#{@import.type.tableize.singularize}.html")
+        fragment = render_to_string(partial: "imports/#{@import.short_type}", formats: :html)
         render json: {fragment: fragment}
       end
     end

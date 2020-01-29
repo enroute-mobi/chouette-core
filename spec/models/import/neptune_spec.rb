@@ -144,7 +144,8 @@ RSpec.describe Import::Neptune do
       line.reload
 
       expect(line).to have_attributes(existing_attributes)
-      expect(line.name).to eq(name_in_neptune_file = "ST EXUPERY - GRENOBLE")
+      name_in_neptune_file = "ST EXUPERY - GRENOBLE"
+      expect(line.name).to eq(name_in_neptune_file)
     end
 
   end
@@ -207,7 +208,8 @@ RSpec.describe Import::Neptune do
       stop_area.reload
 
       expect(stop_area).to have_attributes(existing_attributes)
-      expect(stop_area.name).to eq(name_in_neptune_file = "Empty Area")
+      name_in_neptune_file = "Empty Area"
+      expect(stop_area.name).to eq(name_in_neptune_file)
     end
 
   end

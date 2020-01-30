@@ -1,5 +1,6 @@
 module Chouette
   class TridentActiveRecord < Chouette::ActiveRecord
+    acts_as_copy_target
 
     self.abstract_class = true
 

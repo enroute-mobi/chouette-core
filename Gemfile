@@ -50,6 +50,8 @@ gem 'therubyracer'
 gem 'pg'
 
 gem 'activerecord-postgis-adapter'
+gem 'postgres-copy'
+
 gem 'polylines'
 gem 'bulk_insert'
 
@@ -150,7 +152,6 @@ group :development do
   gem 'better_errors'
   gem 'binding_of_caller'
   gem 'derailed_benchmarks'
-  gem 'stackprof'
 
   gem 'bummr'
 end
@@ -172,6 +173,7 @@ group :test, :development do
   gem 'capybara', '~> 3.15.0'
   gem 'database_cleaner'
   gem 'poltergeist'
+  gem 'stackprof'
 
   gem 'webmock'
   gem 'shoulda-matchers'

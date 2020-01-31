@@ -98,28 +98,42 @@ class CopyInserter
     # 1,1,1,,,12:00:00,12:01:00,normal,normal,0,0,b1c0ac4b48e0db6883d4cf8d89bfc0c9968284314445f95569204626db9c22e8,12:01|12:00|0|0,
 
     def csv_values(v)
-      [
-        v.id,
-        v.vehicle_journey_id,
-        v.stop_point_id,
-        nil,
-        nil,
-        type_cast_time(v.arrival_time),
-        type_cast_time(v.departure_time),
-        v.for_boarding,
-        v.for_alighting,
-        v.departure_day_offset,
-        v.arrival_day_offset,
-        v.checksum,
-        v.checksum_source,
-        v.stop_area_id
-      ]
+      "#{v.id},#{v.vehicle_journey_id},#{v.stop_point_id},,,#{type_cast_time(v.arrival_time)},#{type_cast_time(v.departure_time)},#{v.for_boarding},#{v.for_alighting},#{v.departure_day_offset},#{v.arrival_day_offset},#{v.checksum},#{v.checksum_source},#{v.stop_area_id}"
     end
 
     TIME_FORMAT = "%H:%M:%S"
 
     def type_cast_time(time)
       time.strftime(TIME_FORMAT)
+    end
+
+    def csv
+      @csv ||=
+        begin
+          csv = RawCSV.open(csv_file, "wb")
+          csv << headers.join(',')
+        end
+    end
+
+  end
+
+  class RawCSV
+
+    def initialize(target)
+      @target = target
+    end
+
+    def self.open(file_name, options)
+      new File.open(file_name, options)
+    end
+
+    def <<(row)
+      @target.puts row
+      self
+    end
+
+    def close
+      @target.close
     end
 
   end

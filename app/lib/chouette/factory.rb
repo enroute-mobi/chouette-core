@@ -124,7 +124,7 @@ module Chouette
 
               attribute(:line) { parent.metadatas_lines.first }
 
-              model :stop_point, count: 3, required: true do
+              model :stop_point, count: 25, required: true do
                 attribute(:stop_area) do
                   # TODO create a StopArea with Factory::Model ?
                   stop_area_referential = parent.referential.stop_area_referential

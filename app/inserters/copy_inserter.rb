@@ -5,7 +5,13 @@ class CopyInserter
   end
 
   def inserters
-    @inserters ||= Hash.new { |h,k| h[k] = Base.new(k) }
+    @inserters ||= Hash.new { |h,k| h[k] = self.class.insert_class_for(k).new(k) }
+  end
+
+  def self.insert_class_for(model_class)
+    "CopyInserter::#{model_class.name.demodulize}".constantize
+  rescue NameError
+    Base
   end
 
   def for(model_class)
@@ -82,6 +88,38 @@ class CopyInserter
       model_class.copy_from csv_file
 
       csv_file.unlink
+    end
+
+  end
+
+  class VehicleJourneyAtStop < Base
+
+    # id,vehicle_journey_id,stop_point_id,connecting_service_id,boarding_alighting_possibility,arrival_time,departure_time,for_boarding,for_alighting,departure_day_offset,arrival_day_offset,checksum,checksum_source,stop_area_id
+    # 1,1,1,,,12:00:00,12:01:00,normal,normal,0,0,b1c0ac4b48e0db6883d4cf8d89bfc0c9968284314445f95569204626db9c22e8,12:01|12:00|0|0,
+
+    def csv_values(v)
+      [
+        v.id,
+        v.vehicle_journey_id,
+        v.stop_point_id,
+        nil,
+        nil,
+        type_cast_time(v.arrival_time),
+        type_cast_time(v.departure_time),
+        v.for_boarding,
+        v.for_alighting,
+        v.departure_day_offset,
+        v.arrival_day_offset,
+        v.checksum,
+        v.checksum_source,
+        v.stop_area_id
+      ]
+    end
+
+    TIME_FORMAT = "%H:%M:%S"
+
+    def type_cast_time(time)
+      time.strftime(TIME_FORMAT)
     end
 
   end

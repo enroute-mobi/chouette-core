@@ -21,6 +21,38 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
     end
 
+    describe "route_type" do
+
+      expected_route_types = {
+        tram: 0,
+        metro: 1,
+        rail: 2,
+        bus: 3,
+        water: 4,
+        telecabin: 6,
+        funicular: 7,
+        coach: 200,
+        air: 1100,
+        taxi: 1500,
+        hireCar: 1506
+      }
+
+      TransportModeEnumerations.transport_modes.each do |transport_mode|
+        expected_route_type = expected_route_types[transport_mode]
+        if expected_route_type
+          it "uses value #{expected_route_type.inspect} for transport mode #{transport_mode}" do
+            line.transport_mode = transport_mode
+            expect(decorator.route_type).to eq(expected_route_type)
+          end
+        else
+          it "doesn't support unexpected transport mode #{transport_mode}" do
+            fail "No GTFS Route type expected for transport mode #{transport_mode}"
+          end
+        end
+      end
+
+    end
+
     describe "route_long_name" do
 
       it "uses line published_name when available" do

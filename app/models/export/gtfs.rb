@@ -293,13 +293,24 @@ class Export::Gtfs < Export::Base
         number
       end
 
+      def self.route_types
+        @route_types ||= {
+          tram: 0,
+          metro: 1,
+          rail: 2,
+          bus: 3,
+          water: 4,
+          telecabin: 6,
+          funicular: 7,
+          coach: 200,
+          air: 1100,
+          taxi: 1500,
+          hireCar: 1506
+        }.with_indifferent_access
+      end
+
       def route_type
-        case transport_mode
-        when 'rail'
-          '2'
-        else
-          '3'
-        end
+        self.class.route_types[transport_mode]
       end
 
       def default_agency?

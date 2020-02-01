@@ -104,7 +104,7 @@ class CopyInserter
     TIME_FORMAT = "%H:%M:%S"
 
     def type_cast_time(time)
-      time.strftime(TIME_FORMAT)
+      time.strftime(TIME_FORMAT) if time
     end
 
     def csv

@@ -11,7 +11,9 @@ class Import::Workbench < Import::Base
     update_column :status, 'running'
     update_column :started_at, Time.now
     notify_state
-    
+
+    file.cache_stored_file!
+
     case file_type
     when :gtfs
       import_gtfs

@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import actions from '../../actions'
+import _ from 'lodash'
 
 export default class ShiftVehicleJourney extends Component {
   constructor(props) {
@@ -32,7 +33,8 @@ export default class ShiftVehicleJourney extends Component {
   }
 
   render() {
-    let id = this.props.modal.type == 'shift' && actions.getSelected(this.props.vehicleJourneys)[0].short_id
+    let id =  _.get(actions.getSelected(this.props.vehicleJourneys), ['0', 'short_id'])
+
     if(this.props.status.isFetching == true) {
       return false
     }

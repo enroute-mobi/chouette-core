@@ -95,7 +95,11 @@ export default class SelectSpecificStop extends Component {
       let result = {}
       json.forEach((object1, index1)=>{
         result[object1[0]] = object1[1].map((stop_area, index2)=>{
-          _.assign(stop_area, {text: stop_area.name})
+          _.assign(stop_area, {
+            text: stop_area.name,
+            is_referent: (stop_area.is_referent.toString() || '') /** Prevent "Warning: Received `false` for a non-boolean attribute `is_referent`." **/
+          }
+        )
           return stop_area
         })
       })
@@ -108,9 +112,8 @@ export default class SelectSpecificStop extends Component {
     let journey_pattern_id = _.get(this.props.modal.modalProps, 'vehicleJourney.journey_pattern.id')
     this.fetch_available_specific_stop_places(journey_pattern_id)
 
-    let id = this.props.modal.type == 'select_specific_stop' && actions.getSelected(this.props.vehicleJourneys)[0].short_id
-    console.log("Specific stop palce render ")
-    console.log(this.props)
+    let id =  _.get(this.props.modal.modalProps, 'vehicleJourney.short_id')
+
     return (
       <li className='st_action'>
         <button

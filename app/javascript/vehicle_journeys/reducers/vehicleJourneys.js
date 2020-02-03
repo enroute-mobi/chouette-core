@@ -59,7 +59,9 @@ const vehicleJourney= (state = {}, action, keep) => {
             },
             stop_point_objectid: sp.object_id,
             stop_area_cityname: sp.city_name,
-            dummy: true
+            dummy: true,
+            stop_point_id: sp.id,
+            stop_area_id: sp.stop_area_id
           }
 
           if(sp.waiting_time && inJourney){
@@ -90,7 +92,9 @@ const vehicleJourney= (state = {}, action, keep) => {
             },
             stop_point_objectid: sp.object_id,
             stop_area_cityname: sp.city_name,
-            dummy: true
+            dummy: true,
+            stop_point_id: sp.id,
+            stop_area_id: sp.stop_area_id
           }
         }
 

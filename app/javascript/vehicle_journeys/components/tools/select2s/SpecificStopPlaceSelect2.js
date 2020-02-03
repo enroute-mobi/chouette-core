@@ -16,7 +16,6 @@ export default class BSelect4 extends Component {
   }
 
   render() {
-    console.log(this.props)
     return (
       <Select2
         data={this.props.data}

@@ -63,5 +63,5 @@ config/environments/production.rb
 # Directory for RspecJunitFormatter output
 /test-results/
 
-# []CHOUETTE-41] to avoid error
-storage-key.json
+# To avoid error
+config/storage-key.json

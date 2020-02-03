@@ -184,10 +184,11 @@ module Chouette
                   routing_constraint_zone.stop_points = routing_constraint_zone.route.stop_points.last(2)
                 end
               end
-              model :footnote do
-                attribute(:code) { |n| "FootNote #{n}" }
-                attribute(:label) { |n| "FootNote Label #{n}" }
-              end
+            end
+
+            model :footnote do
+              attribute(:code) { |n| "FootNote #{n}" }
+              attribute(:label) { |n| "FootNote Label #{n}" }
             end
 
             model :time_table do

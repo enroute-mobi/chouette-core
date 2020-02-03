@@ -327,6 +327,34 @@ describe('when clicking on validate button inside footnote modal', () => {
   })
 })
 
+ //  ___ ___ ___ ___ ___ ___ ___ ___   ___ _____ ___  ___   ___ _      _   ___ ___
+ // / __| _ \ __/ __|_ _| __|_ _/ __| / __|_   _/ _ \| _ \ | _ \ |    /_\ / __| __|
+ // \__ \  _/ _| (__ | || _| | | (__  \__ \ | || (_) |  _/ |  _/ |__ / _ \ (__| _|
+ // |___/_| |___\___|___|_| |___\___| |___/ |_| \___/|_|   |_| |____/_/ \_\___|___|
+ //
+
+describe('when clicking on the specific stops selection button in toolbox', () => {
+  it('should create an action to open specific stops selection modal', () => {
+    const vehicleJourney = {}
+    const expectedAction = {
+      type: 'SELECT_SPECIFIC_STOP_MODAL',
+      vehicleJourney
+    }
+    expect(actions.openSelectSpecificStopModal(vehicleJourney)).toEqual(expectedAction)
+  })
+})
+
+describe('when clicking on validate button inside the specific stops selection modal', () => {
+ it('should create an action to update the vehicle journey vjas specific stops', () => {
+   const specific_stop_area_map = {1: 7, 3: 9}
+   const expectedAction = {
+     type: 'SELECT_SPECIFIC_STOP',
+     specific_stop_area_map
+   }
+   expect(actions.selectSpecificStop(specific_stop_area_map)).toEqual(expectedAction)
+ })
+})
+
  //  _____ ___ __  __ ___ _____ _   ___ _    ___ ___
  // |_   _|_ _|  \/  | __|_   _/_\ | _ ) |  | __/ __|
  //   | |  | || |\/| | _|  | |/ _ \| _ \ |__| _|\__ \

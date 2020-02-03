@@ -46,16 +46,10 @@ coverage
 
 /bin
 
-# Every machine shall create its binstubs
-/bin/rake
-/bin/rails
-/bin/rspec
-/bin/spring
+/spec/fixtures/target_*
+/.sass-cache
 
-spec/fixtures/target_*
-.sass-cache
-
-config/environments/production.rb
+/config/environments/production.rb
 
 # Cache directory for CI
 /cache
@@ -64,4 +58,4 @@ config/environments/production.rb
 /test-results/
 
 # To avoid error
-config/storage-key.json
+/config/storage-key.json

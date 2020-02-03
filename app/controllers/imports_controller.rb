@@ -17,6 +17,7 @@ class ImportsController < ChouetteController
   end
 
   def download
+    resource.file.cache_stored_file!
     send_file resource.file.path, filename: resource.user_file.name, type: resource.user_file.content_type
   end
 

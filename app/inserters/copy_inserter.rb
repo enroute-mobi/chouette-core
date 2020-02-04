@@ -1,32 +1,10 @@
-class CopyInserter
-
-  def insert(model)
-    self.for(model.class).insert(model)
-  end
-
-  def inserters
-    @inserters ||= Hash.new { |h,k| h[k] = self.class.insert_class_for(k).new(k) }
-  end
-
-  def self.insert_class_for(model_class)
-    "CopyInserter::#{model_class.name.demodulize}".constantize
-  rescue NameError
-    Base
-  end
-
-  def for(model_class)
-    inserters[model_class]
-  end
-
-  def flush
-    inserters.values.each(&:flush)
-  end
+class CopyInserter < ByClassInserter
 
   class Base
 
     attr_reader :model_class
 
-    def initialize(model_class)
+    def initialize(model_class, _)
       @model_class = model_class
     end
 

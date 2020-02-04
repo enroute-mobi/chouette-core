@@ -1,4 +1,5 @@
-RSpec.describe SimpleJsonExporter do
+# To be removed (see CHOUETTE-260)
+RSpec.describe SimpleJsonExporter, skip: true do
   describe "#define" do
     context "with an incomplete configuration" do
       it "should raise an error" do

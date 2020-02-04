@@ -71,9 +71,17 @@ module Chouette
       end
 
       def build_attributes(context)
-        attributes.each_with_object({}) do |(name, attribute), evaluated|
+        attributes_values = attributes.each_with_object({}) do |(name, attribute), evaluated|
           evaluated[name] = attribute.evaluate(context)
         end
+
+        context.attributes.each do |name, value|
+          unless transients[name]
+            attributes_values[name] ||= context.resolve_instances value
+          end
+        end
+
+        attributes_values
       end
 
       def build_instance(context, options = {})

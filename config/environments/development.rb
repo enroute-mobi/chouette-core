@@ -3,7 +3,6 @@ require Rails.root + 'config/middlewares/cachesettings'
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
-  SmartEnv.set :RAILS_HOST, default: 'http://localhost:3000'
   SmartEnv.set :PUBLIC_HOST, default: 'http://localhost:3000'
   SmartEnv.set :IEV_URL, default: "http://localhost:8080"
   SmartEnv.add_boolean :TOOLBAR
@@ -29,6 +28,7 @@ Rails.application.configure do
   config.active_support.deprecation = :log
 
   config.log_level = :debug
+  #config.colorize_logging = false
 
   # Raise an error on page load if there are pending migrations.
   config.active_record.migration_error = :page_load

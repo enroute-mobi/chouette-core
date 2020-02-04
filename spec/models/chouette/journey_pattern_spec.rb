@@ -342,4 +342,51 @@ describe Chouette::JourneyPattern, :type => :model do
       end
     end
   end
+
+  describe "#clean!" do
+
+    let(:context) do
+      Chouette.create do
+        journey_pattern :target do
+          vehicle_journey
+        end
+        journey_pattern :kept do
+          vehicle_journey
+        end
+      end
+    end
+
+    let(:referential) { context.referential }
+
+    let(:target) { context.journey_pattern(:target) }
+    let(:target_scope) { referential.journey_patterns.where(id: target) }
+
+    let(:kept) { context.journey_pattern(:kept) }
+
+    before { referential.switch }
+
+    it "destroys VehicleJourneys associated to targeted JourneyPattern" do
+      expect { target_scope.clean! }.to change {
+        target.vehicle_journeys.exists?
+      }
+    end
+
+    it "keeps VehiculeJourneys not associated to the targeted JourneyPattern" do
+      expect { target_scope.clean! }.to_not change {
+        kept.vehicle_journeys.exists?
+      }
+    end
+
+    it "destroys targeted JourneyPatterns" do
+      expect { target_scope.clean! }.to change {
+        referential.journey_patterns.exists?(target.id)
+      }
+    end
+
+    it "keeps not targeted JourneyPatterns" do
+      expect { target_scope.clean! }.to_not change {
+        referential.journey_patterns.exists?(kept.id)
+      }
+    end
+  end
 end

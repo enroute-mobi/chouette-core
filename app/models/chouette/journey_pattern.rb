@@ -267,6 +267,22 @@ module Chouette
       self.costs = _costs
     end
 
+    def self.clean!
+      current_scope = self.current_scope || all
+
+      # There are several "DELETE CASCADE" in the schema like:
+      #
+      # TABLE "journey_patterns_stop_points" CONSTRAINT "jpsp_jp_fkey" FOREIGN KEY (journey_pattern_id) REFERENCES journey_patterns(id) ON DELETE CASCADE
+      # TABLE "vehicle_journeys" CONSTRAINT "vj_jp_fkey" FOREIGN KEY (journey_pattern_id) REFERENCES journey_patterns(id) ON DELETE CASCADE
+      #
+      # The ruby code makes the expected deletions
+      # and the delete cascade will be the fallback
+
+      Chouette::VehicleJourney.where(journey_pattern: current_scope).clean!
+      Chouette::JourneyPatternsStopPoint.where(journey_pattern: current_scope).delete_all
+      delete_all
+    end
+    
     def available_specific_stop_places
       stop_areas.map do |stop_area|
         [stop_area.id ,stop_area.children.to_a]

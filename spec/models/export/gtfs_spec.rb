@@ -1,6 +1,246 @@
 RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
   let(:gtfs_export) { create :gtfs_export, referential: exported_referential, workbench: workbench, duration: 5}
 
+  describe "Line Decorator" do
+
+    let(:line) { Chouette::Line.new }
+    let(:decorator) { Export::Gtfs::Lines::Decorator.new line }
+
+    describe "route_id" do
+
+      it "uses line registration_number when available" do
+        line.registration_number = "test"
+        expect(decorator.route_id).to be(line.registration_number)
+      end
+
+      it "uses line objectid when registration_number is not available" do
+        line.registration_number = nil
+        line.objectid = "test"
+        expect(decorator.route_id).to be(line.objectid)
+      end
+
+    end
+
+    describe "route_type" do
+
+      expected_route_types = {
+        tram: 0,
+        metro: 1,
+        rail: 2,
+        bus: 3,
+        water: 4,
+        telecabin: 6,
+        funicular: 7,
+        coach: 200,
+        air: 1100,
+        taxi: 1500,
+        hireCar: 1506
+      }
+
+      TransportModeEnumerations.transport_modes.each do |transport_mode|
+        expected_route_type = expected_route_types[transport_mode]
+        if expected_route_type
+          it "uses value #{expected_route_type.inspect} for transport mode #{transport_mode}" do
+            line.transport_mode = transport_mode
+            expect(decorator.route_type).to eq(expected_route_type)
+          end
+        else
+          it "doesn't support unexpected transport mode #{transport_mode}" do
+            fail "No GTFS Route type expected for transport mode #{transport_mode}"
+          end
+        end
+      end
+
+    end
+
+    describe "route_long_name" do
+
+      it "uses line published_name when available" do
+        line.published_name = "test"
+        expect(decorator.route_long_name).to eq(line.published_name)
+      end
+
+      it "uses line name when published_name is not available" do
+        line.published_name = nil
+        line.name = "test"
+        expect(decorator.route_long_name).to eq(line.name)
+      end
+
+      it "is nil if the candidate value is the route_short_name value" do
+        allow(decorator).to receive(:route_short_name).and_return("test")
+
+        line.published_name = decorator.route_short_name
+        expect(decorator.route_long_name).to eq(nil)
+
+        line.published_name = nil
+        line.name = decorator.route_short_name
+        expect(decorator.route_long_name).to eq(nil)
+      end
+
+    end
+
+    describe "route attributes" do
+
+      %i{short_name long_name}.each do |route_attribute|
+        attribute = "route_#{route_attribute}".to_sym
+
+        it "uses #{attribute} method to fill associated attribute (#{route_attribute})" do
+          allow(decorator).to receive(attribute).and_return("test")
+          route_attribute = attribute.to_s.gsub(/^route_/,'').to_sym
+          expect(decorator.route_attributes[route_attribute]).to eq(decorator.send(attribute))
+        end
+      end
+
+      %i{url color text_color}.each do |attribute|
+        it "uses line #{attribute} to fill the same route attribute" do
+          allow(line).to receive(attribute).and_return("test")
+          expect(decorator.route_attributes[attribute]).to eq(line.send(attribute))
+        end
+      end
+
+    end
+
+
+  end
+
+  describe "VehicleJourneyAtStop Decorator" do
+
+    let(:vehicle_journey_at_stop) { Chouette::VehicleJourneyAtStop.new }
+    let(:index) { double }
+    let(:decorator) do
+      Export::Gtfs::VehicleJourneyAtStops::Decorator.new vehicle_journey_at_stop, index
+    end
+
+    let(:time_zone) { "Europe/Paris" }
+
+    describe "time zone" do
+
+      it "uses time zone associated with the VehicleJourney in the index" do
+        vehicle_journey_at_stop.vehicle_journey_id = 42
+        expect(index).to receive(:vehicle_journey_time_zone).
+                           with(vehicle_journey_at_stop.vehicle_journey_id).
+                           and_return(time_zone)
+
+        expect(decorator.time_zone).to be(time_zone)
+      end
+
+      it "returns nil if the VehicleJourney isn't associated to a time zone" do
+        vehicle_journey_at_stop.vehicle_journey_id = 42
+        expect(index).to receive(:vehicle_journey_time_zone).
+                           with(vehicle_journey_at_stop.vehicle_journey_id).
+                           and_return(nil)
+
+        expect(decorator.time_zone).to be(nil)
+      end
+
+    end
+
+    %w{arrival departure}.each do |state|
+      describe "stop_time_#{state}_time" do
+        it "formats the #{state}_time according to the #{state}_day_offset and the time zone" do
+          vehicle_journey_at_stop.send "#{state}_time=", Time.parse("23:00")
+          time = vehicle_journey_at_stop.send "#{state}_time" # the value is truncated
+
+          vehicle_journey_at_stop.send "#{state}_day_offset=", day_offset = 0
+          allow(decorator).to receive(:time_zone).and_return(time_zone)
+
+          formated_time = "23:00::00"
+
+          expect(GTFS::Time).to receive(:format_datetime).
+                                  with(time, day_offset, time_zone).
+                                  and_return formated_time
+
+          expect(decorator.send("stop_time_#{state}_time")).to eq(formated_time)
+        end
+
+        it "returns nil if #{state}_time is nil" do
+          vehicle_journey_at_stop.send "#{state}_time=", nil
+          allow(decorator).to receive(:time_zone).and_return(nil)
+
+          expect(decorator.send("stop_time_#{state}_time")).to be_nil
+        end
+
+        it "supports a nil time zone" do
+          vehicle_journey_at_stop.send "#{state}_time=", Time.find_zone("UTC").parse("23:00")
+          vehicle_journey_at_stop.send "#{state}_day_offset=", 0
+          allow(decorator).to receive(:time_zone).and_return(nil)
+
+          expect(decorator.send("stop_time_#{state}_time")).to eq("23:00:00")
+        end
+      end
+    end
+
+    describe "stop_area_id" do
+
+      let(:stop_point) { double stop_area_id: 42 }
+
+      context "when VehicleJourneyAtStop defines a specific stop" do
+
+        before { vehicle_journey_at_stop.stop_area_id = 42 }
+
+        it "uses the VehicleJourneyAtStop#stop_area_id" do
+          expect(decorator.stop_area_id).to eq(vehicle_journey_at_stop.stop_area_id)
+        end
+
+      end
+
+      it "uses the Stop Point stop_area_id" do
+        expect(vehicle_journey_at_stop).to receive(:stop_point).and_return(stop_point)
+        expect(decorator.stop_area_id).to eq(stop_point.stop_area_id)
+      end
+
+    end
+
+    describe "position" do
+
+      let(:stop_point) { double position: 42 }
+
+      it "uses the Stop Point position" do
+        expect(vehicle_journey_at_stop).to receive(:stop_point).and_return(stop_point)
+        expect(decorator.position).to eq(stop_point.position)
+      end
+
+    end
+
+    describe "stop_time_stop_id" do
+
+      it "uses stop_id associated to the stop_area_id in the index" do
+        allow(decorator).to receive(:stop_area_id).and_return(42)
+        expect(index).to receive(:stop_id).
+                           with(decorator.stop_area_id).
+                           and_return("test")
+
+        expect(decorator.stop_time_stop_id).to eq("test")
+      end
+
+    end
+
+    describe "stop_time attributes" do
+
+      before do
+        allow(decorator).to receive_messages(time_zone: nil, position: 42, stop_time_stop_id: "test")
+        vehicle_journey_at_stop.departure_time =
+          vehicle_journey_at_stop.arrival_time = Time.parse("23:00")
+      end
+
+      %i{departure_time arrival_time stop_id}.each do |stop_time_attribute|
+        attribute = "stop_time_#{stop_time_attribute}".to_sym
+        it "uses #{attribute} method to fill associated attribute (#{stop_time_attribute})" do
+          allow(decorator).to receive(attribute).and_return("test")
+          stop_time_attribute = attribute.to_s.gsub(/^stop_time_/,'').to_sym
+          expect(decorator.stop_time_attributes[stop_time_attribute]).to eq(decorator.send(attribute))
+        end
+      end
+
+      it "uses position to fill the same stop_sequence attribute" do
+        allow(decorator).to receive(:position).and_return(42)
+        expect(decorator.stop_time_attributes[:stop_sequence]).to eq(decorator.position)
+      end
+
+    end
+
+  end
+
   describe '#worker_died' do
 
     it 'should set gtfs_export status to failed' do
@@ -12,16 +252,15 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
   it "should create a default company and generate a message if the journey or its line doesn't have a company" do
     exported_referential.switch do
+      exported_referential.lines.update_all company_id: nil
       line = exported_referential.lines.first
-      line.company = nil
-      line.save
 
       stop_areas = stop_area_referential.stop_areas.order(Arel.sql('random()')).limit(2)
       route = FactoryGirl.create :route, line: line, stop_areas: stop_areas, stop_points_count: 0
       journey_pattern = FactoryGirl.create :journey_pattern, route: route, stop_points: route.stop_points.sample(3)
       FactoryGirl.create :vehicle_journey, journey_pattern: journey_pattern, company: nil
 
-      gtfs_export.instance_variable_set('@journeys', Chouette::VehicleJourney.all)
+      gtfs_export.export_scope = Export::Scope::All.new(exported_referential)
 
       tmp_dir = Dir.mktmpdir
 
@@ -40,7 +279,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       # Test the line-company link
       lines_zip_path = File.join(tmp_dir, '/test_lines.zip')
       GTFS::Target.open(lines_zip_path) do |target|
-        expect { gtfs_export.export_lines_to target }.to change { Export::Message.count }.by(1)
+        expect { gtfs_export.export_lines_to target }.to change { Export::Message.count }.by(2)
       end
 
       # The processed export files are re-imported through the GTFS gem
@@ -61,7 +300,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       journey_pattern = FactoryGirl.create :journey_pattern, route: route, stop_points: route.stop_points.sample(3)
       vehicle_journey = FactoryGirl.create :vehicle_journey, journey_pattern: journey_pattern, company: company
 
-      gtfs_export.instance_variable_set('@journeys', Chouette::VehicleJourney.all)
+      gtfs_export.export_scope = Export::Scope::All.new(exported_referential)
 
       tmp_dir = Dir.mktmpdir
 
@@ -101,7 +340,8 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       journey_pattern = FactoryGirl.create :journey_pattern, route: route, stop_points: route.stop_points.sample(2)
       vehicle_journey = FactoryGirl.create :vehicle_journey, journey_pattern: journey_pattern, company: company
       vehicle_journey.time_tables << (FactoryGirl.create :time_table)
-      gtfs_export.instance_variable_set('@journeys', Chouette::VehicleJourney.all)
+
+      gtfs_export.export_scope = Export::Scope::All.new(exported_referential)
 
       tmp_dir = Dir.mktmpdir
 
@@ -134,7 +374,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       exported_referential.switch do
         date_range = gtfs_export.date_range
         selected_vehicle_journeys = Chouette::VehicleJourney.with_matching_timetable date_range
-        gtfs_export.instance_variable_set('@journeys', selected_vehicle_journeys)
+        gtfs_export.export_scope = Export::Scope::DateRange.new(exported_referential, date_range)
       end
 
       tmp_dir = Dir.mktmpdir
@@ -269,7 +509,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
         expect(route.agency_id).to eq(line.company.registration_number)
         expect(route.long_name).to eq(line.published_name)
         expect(route.short_name).to eq(line.number)
-        expect(route.type).to eq(gtfs_export.gtfs_line_type line)
+        expect(route.type).to eq('3')
         expect(route.desc).to eq(line.comment)
         expect(route.url).to eq(line.url)
       end

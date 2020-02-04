@@ -85,6 +85,7 @@ pipelines:
           caches:
             - docker
           script:
+            - ./script/bitbucket-gcloud-configure-docker.sh
             - ./script/bitbucket-build-docker.sh
           services:
             - docker
@@ -117,6 +118,7 @@ pipelines:
             - docker
           deployment: test
           script:
+            - ./script/bitbucket-gcloud-configure-docker.sh
             # Tag image in registry with latest label
             - ./script/bitbucket-tag-docker.sh latest
             # Update test instance

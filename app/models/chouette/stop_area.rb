@@ -10,16 +10,20 @@ module Chouette
     include CustomFieldsSupport
 
     extend Enumerize
-    enumerize :area_type, in: Chouette::AreaType::ALL
-    enumerize :kind, in: %i(commercial non_commercial)
+    enumerize :area_type, in: Chouette::AreaType::ALL, default: Chouette::AreaType::COMMERCIAL.first
+    enumerize :kind, in: %i(commercial non_commercial), default: :commercial
 
     AVAILABLE_LOCALIZATIONS = %i(en_UK nl_NL de_DE fr_FR it_IT es_ES)
 
     with_options dependent: :destroy do |assoc|
-      assoc.has_many :stop_points
       assoc.has_many :access_points
       assoc.has_many :access_links
     end
+
+    # WARNING Only effective in the current Referential
+    has_many :stop_points
+    has_many :routes, through: :stop_points
+    has_many :specific_vehicle_journey_at_stops, :class_name => 'Chouette::VehicleJourneyAtStop', :foreign_key => "stop_area_id"
 
     scope :light, ->{ select(:id, :name, :city_name, :zip_code, :time_zone, :registration_number, :kind, :area_type, :time_zone, :stop_area_referential_id, :objectid) }
     has_and_belongs_to_many :routing_lines, :class_name => 'Chouette::Line', :foreign_key => "stop_area_id", :association_foreign_key => "line_id", :join_table => "routing_constraints_lines", :order => "lines.number"
@@ -187,10 +191,6 @@ module Chouette
     end
 
     def lines
-      []
-    end
-
-    def routes
       []
     end
 
@@ -516,6 +516,15 @@ module Chouette
 
     def connection_links
       Chouette::ConnectionLink.where('departure_id = :id or arrival_id = :id', id: self.id)
+    end
+
+    def self.union(relation1, relation2)
+      union_query = "select id from ((#{relation1.select(:id).to_sql}) UNION (#{relation2.select(:id).to_sql})) stop_area_ids"
+      where "id IN (#{union_query})"
+    end
+
+    def self.parents_of(relation)
+      joins('JOIN "public"."stop_areas" children on "public"."stop_areas"."id" = children.parent_id').where("children.id" => relation).distinct
     end
 
     # def full_name

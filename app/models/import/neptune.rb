@@ -108,15 +108,22 @@ class Import::Neptune < Import::Base
       file_company = get_associated_company(source_pt_network, filename)
       file_network = get_associated_network(source_pt_network, filename)
 
-      each_element_matching_css('ChouetteLineDescription Line', source_pt_network) do |source_line, progress|
+      each_element_matching_css('ChouetteLineDescription Line', source_pt_network) do |source_line, _|
         line = line_referential.lines.find_or_initialize_by registration_number: source_line[:object_id]
-        line.name = source_line[:name]
-        line.number = source_line[:number]
-        line.published_name = source_line[:published_name]
-        line.comment = source_line[:comment]
-        line.transport_mode, line.transport_submode = transport_mode_name_mapping(source_line[:transport_mode_name])
-        line.company = file_company
-        line.network = file_network
+        line.name = source_line[:name] if source_line[:name]
+        line.number = source_line[:number] if source_line[:number]
+        # Ignore dummy published_name (filled with line number)
+        unless source_line[:published_name].nil? || source_line[:published_name] == line.number
+          line.published_name = source_line[:published_name]
+        end
+        line.comment = source_line[:comment] if source_line[:comment]
+
+        transport_mode, transport_submode = transport_mode_name_mapping(source_line[:transport_mode_name])
+        if transport_mode && transport_submode
+          line.transport_mode, line.transport_submode = transport_mode, transport_submode
+        end
+        line.company = file_company if file_company
+        line.network = file_network if file_network
 
         save_model line
         @imported_line_ids ||= []
@@ -267,18 +274,28 @@ class Import::Neptune < Import::Base
 
       each_element_matching_css('StopArea', source_parent) do |source_stop_area|
         stop_area = stop_area_referential.stop_areas.find_or_initialize_by registration_number: source_stop_area[:object_id]
-        stop_area.name = source_stop_area[:name]
-        stop_area.comment = source_stop_area[:comment]
-        stop_area.street_name = source_stop_area[:address].try(:[], :street_name)
-        stop_area.nearest_topic_name = source_stop_area[:stop_area_extension][:nearest_topic_name]
-        stop_area.fare_code = source_stop_area[:stop_area_extension][:fare_code]
-        stop_area.area_type = stop_area_type_mapping(source_stop_area[:stop_area_extension][:area_type])
+        stop_area.name = source_stop_area[:name] if source_stop_area[:name].present?
+        stop_area.comment = source_stop_area[:comment] if source_stop_area[:comment].present?
+        if (street_name = source_stop_area[:address].try(:[], :street_name)).present?
+          stop_area.street_name = street_name
+        end
+        if extension = source_stop_area[:stop_area_extension]
+          stop_area.nearest_topic_name = extension[:nearest_topic_name] if extension[:nearest_topic_name].present?
+          stop_area.fare_code = extension[:fare_code] if extension[:fare_code].present?
+          stop_area.area_type = stop_area_type_mapping(extension[:area_type]) if extension[:area_type].present?
+        end
         stop_area.kind = :commercial
         if source_stop_area[:centroid_of_area]
-          stop_area.latitude = coordinates[source_stop_area[:centroid_of_area]].try(:[], :latitude)
-          stop_area.longitude = coordinates[source_stop_area[:centroid_of_area]].try(:[], :longitude)
+          latitude = coordinates[source_stop_area[:centroid_of_area]].try(:[], :latitude)
+          longitude = coordinates[source_stop_area[:centroid_of_area]].try(:[], :longitude)
+
+          if latitude && longitude
+            stop_area.latitude, stop_area.longitude = latitude, longitude
+          end
         end
-        stop_area.parent_id = @parent_stop_areas.delete(source_stop_area[:object_id])
+        if parent_id = @parent_stop_areas.delete(source_stop_area[:object_id])
+          stop_area.parent_id = parent_id
+        end
 
         save_model stop_area
 
@@ -325,12 +342,12 @@ class Import::Neptune < Import::Base
 
       source_routes.each do |source_route|
         published_name = source_route[:published_name] || source_route[:name]
-        route = line.routes.build do |route|
-          route.published_name = published_name
-          route.name = source_route[:name]
-          route.wayback = route_wayback_mapping source_route[:route_extension][:way_back]
-          route.metadata = { creator_username: source_route[:creator_id], created_at: source_route[:creation_time] }
-          route.opposite_route_id = @opposite_route_id.delete source_route[:object_id]
+        route = line.routes.build do |r|
+          r.published_name = published_name
+          r.name = source_route[:name]
+          r.wayback = route_wayback_mapping source_route[:route_extension][:way_back]
+          r.metadata = { creator_username: source_route[:creator_id], created_at: source_route[:creation_time] }
+          r.opposite_route_id = @opposite_route_id.delete source_route[:object_id]
         end
 
         add_stop_points_to_route(route, source_route[:pt_link_id], line_desc[:pt_link], source_route[:object_id])
@@ -350,11 +367,11 @@ class Import::Neptune < Import::Base
 
       source_journey_patterns.each do |source_journey_pattern|
         route = @routes[source_journey_pattern[:route_id]]
-        journey_pattern = route.journey_patterns.build do |journey_pattern|
-          journey_pattern.published_name = source_journey_pattern[:published_name] || source_journey_pattern[:name]
-          journey_pattern.registration_number = source_journey_pattern[:registration].try(:[], :registration_number)
-          journey_pattern.name = source_journey_pattern[:name]
-          journey_pattern.metadata = { creator_username: source_journey_pattern[:creator_id], created_at: source_journey_pattern[:creation_time] }
+        journey_pattern = route.journey_patterns.build do |j|
+          j.published_name = source_journey_pattern[:published_name] || source_journey_pattern[:name]
+          j.registration_number = source_journey_pattern[:registration].try(:[], :registration_number)
+          j.name = source_journey_pattern[:name]
+          j.metadata = { creator_username: source_journey_pattern[:creator_id], created_at: source_journey_pattern[:creation_time] }
         end
 
         add_stop_points_to_journey_pattern(journey_pattern, source_journey_pattern[:stop_point_list], source_journey_pattern[:route_id])
@@ -375,14 +392,14 @@ class Import::Neptune < Import::Base
           else
             journey_pattern = @routes[source_vehicle_journey[:route_id]].journey_patterns.last
           end
-          vehicle_journey = journey_pattern.vehicle_journeys.build do |vehicle_journey|
-            vehicle_journey.number =  source_vehicle_journey[:number]
-            vehicle_journey.published_journey_name = source_vehicle_journey[:published_journey_name]
-            vehicle_journey.route = journey_pattern.route
-            vehicle_journey.metadata = { creator_username: source_vehicle_journey[:creator_id], created_at: source_vehicle_journey[:creation_time] }
-            vehicle_journey.transport_mode, _ = transport_mode_name_mapping(source_vehicle_journey[:transport_mode_name])
-            vehicle_journey.company = line_referential.companies.find_by registration_number: source_vehicle_journey[:operator_id]
-            vehicle_journey.time_table_ids = @time_tables.delete(source_vehicle_journey[:object_id])
+          vehicle_journey = journey_pattern.vehicle_journeys.build do |v|
+            v.number =  source_vehicle_journey[:number]
+            v.published_journey_name = source_vehicle_journey[:published_journey_name]
+            v.route = journey_pattern.route
+            v.metadata = { creator_username: source_vehicle_journey[:creator_id], created_at: source_vehicle_journey[:creation_time] }
+            v.transport_mode, _ = transport_mode_name_mapping(source_vehicle_journey[:transport_mode_name])
+            v.company = line_referential.companies.find_by registration_number: source_vehicle_journey[:operator_id]
+            v.time_table_ids = @time_tables.delete(source_vehicle_journey[:object_id])
           end
           add_stop_points_to_vehicle_journey(vehicle_journey, source_vehicle_journey[:vehicle_journey_at_stop], source_vehicle_journey[:route_id])
 
@@ -453,17 +470,18 @@ class Import::Neptune < Import::Base
 
   def build_object_from_nokogiri_element(element)
     out = { _node: element }
-    element.children.each do |child|
+    element.elements.each do |child|
       key = child.name.underscore.to_sym
-      next if key == :text
 
-      if child.children.count == 1 && child.children.last.node_type == Nokogiri::XML::Node::TEXT_NODE
-        content = child.children.last.content
-      else
+      if child.elements.present?
         content = build_object_from_nokogiri_element(child)
+      else
+        content = child.content
+        next if content == ""
       end
 
-      if element.children.select{ |c| c.name == child.name }.count > 1
+      # To manage several elements with the same name
+      if element.elements.select{ |c| c.name == child.name }.count > 1
         out[key] ||= []
         out[key] << content
       else

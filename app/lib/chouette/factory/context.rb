@@ -69,6 +69,7 @@ module Chouette
       def register_instance(options = {})
         options[:model_name] = model.name
         Array(instance).each do |item|
+          log "Register #{options.inspect}"
           registry.register item, options
         end
       end

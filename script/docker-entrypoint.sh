@@ -4,6 +4,11 @@ command=${1:-front}
 
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
+if [ -n "$GCLOUD_KEYFILE_JSON" ]; then
+    echo "$GCLOUD_KEYFILE_JSON" > "config/storage-key.json"
+    unset GCLOUD_KEYFILE_JSON
+fi
+
 echo "Start $command"
 case $command in
   async)

@@ -92,7 +92,8 @@ class IdMapInserter < ByClassInserter
 
   class VehicleJourneyAtStop < Base
 
-    def register_primary_key(old_primary_key, new_primary_key)
+    def update_primary_key(model)
+      model.id = next_primary_key
     end
 
     def update_relations(vehicle_journey_at_stop)

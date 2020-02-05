@@ -49,6 +49,7 @@ export default class EditVehicleJourney extends Component {
             disabled={(actions.getSelected(this.props.vehicleJourneys).length != 1 || this.props.disabled)}
             data-toggle='modal'
             data-target='#EditVehicleJourneyModal'
+            title={ I18n.t('vehicle_journeys.form.hint_info') }
             onClick={() => this.props.onOpenEditModal(actions.getSelected(this.props.vehicleJourneys)[0])}
           >
             <span className='fa fa-info'></span>

@@ -8,6 +8,7 @@ en:
         constraint_zone: Select a routing constraint zone
         purchase_window: Filter by purchase window
         stop_area_constraint: Select a stop area constraint
+        specific_stop_area: Select a specific stop area
       cancel_selection: "Cancel Selection"
       cancel_destroy: "Cancel Destroy"
       fetching_error: "There has been a problem fetching the data. Please reload the page to try again."
@@ -65,6 +66,16 @@ en:
       excluded_constraint_zones: Excluded constraint zones
       excluded_stop_area_constraints: Excluded stopareas constraint
       infos: Informations
+      hint_info: Informations
+      hint_calendars: Calendars
+      hint_purchase_windows: Purchase windows
+      hint_specific_stops: Specific stops
+      hint_add_vj: Add
+      hint_duplicate: Duplicate
+      hint_shift_vj: Shift passing times
+      hint_constraint_exclusions: StopAreas routing constraint exclusions
+      hint_line_notice: Line notices
+      hint_copy_paste: Copy/paste mode
       set: "Set"
       show_arrival_time: "Show and edit arrival times"
       show_journeys_with_calendar: "Show journeys with calendar"
@@ -72,6 +83,7 @@ en:
       slide_arrival: "arrival time at first stop"
       slide_departure: "departure time at first stop"
       slide_title: "Shift all the vehicle journey passing times : %{id}"
+      specific_stops_title: "Specific stop areas for vehicle journey : %{id}"
       slide: "Shift"
       slide_delta: "Shift of"
       starting_stop: "Departure"

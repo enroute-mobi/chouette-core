@@ -43,6 +43,7 @@ export default class CreateModal extends Component {
             disabled={(this.props.disabled) }
             data-toggle='modal'
             data-target='#NewVehicleJourneyModal'
+            title={ I18n.t('vehicle_journeys.form.hint_add_vj') }
             onClick={this.props.onOpenCreateModal}
           >
             <span className='fa fa-plus'></span>

@@ -34,7 +34,7 @@ export default class PurchaseWindowsEditVehicleJourney extends Component {
             data-toggle='modal'
             data-target='#PurchaseWindowsEditVehicleJourneyModal'
             onClick={() => this.props.onOpenCalendarsEditModal(actions.getSelected(this.props.vehicleJourneys))}
-            title='Calendriers commerciaux'
+            title={I18n.t('vehicle_journeys.form.hint_purchase_windows')}
           >
             <span className='sb sb-purchase_window sb-strong'></span>
           </button>

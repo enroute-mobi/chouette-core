@@ -191,6 +191,10 @@ const actions = {
   openShiftModal : () => ({
     type : 'SHIFT_VEHICLEJOURNEY_MODAL'
   }),
+  openSelectSpecificStopModal : (vehicleJourney) => ({
+    type : 'SELECT_SPECIFIC_STOP_MODAL',
+    vehicleJourney
+  }),
   openDuplicateModal : () => ({
     type : 'DUPLICATE_VEHICLEJOURNEY_MODAL'
   }),
@@ -232,6 +236,10 @@ const actions = {
   shiftVehicleJourney : (addtionalTime) => ({
     type: 'SHIFT_VEHICLEJOURNEY',
     addtionalTime
+  }),
+  selectSpecificStop : (specific_stop_area_map) => ({
+    type: 'SELECT_SPECIFIC_STOP',
+    specific_stop_area_map
   }),
   duplicateVehicleJourney : (addtionalTime, duplicateNumber, departureDelta) => ({
     type: 'DUPLICATE_VEHICLEJOURNEY',
@@ -391,6 +399,7 @@ const actions = {
       urlJSON = urlJSON + sep + queryString
     }
     let hasError = false
+
     fetch(urlJSON, {
       credentials: 'same-origin',
     }).then(response => {

@@ -8,6 +8,7 @@ fr:
         purchase_window: Filtrer par calendrier commercial...
         constraint_zone: Choisir une Interdiction de Trafic Local
         stop_area_constraint: Choisir une Interdiction de Trafic entre Arrêts
+        specific_stop_area: Choisir un arrêt spécifique
       cancel_selection: "Annuler la sélection"
       cancel_destroy: "Annuler la suppression"
       fetching_error: "La récupération des missions a rencontré un problème. Rechargez la page pour tenter de corriger le problème."
@@ -65,6 +66,16 @@ fr:
       excluded_constraint_zones: Exclusions d'ITL
       excluded_stop_area_constraints: Exclusions d'ITA
       infos: Informations
+      hint_info: Informations
+      hint_calendars: Calendriers
+      hint_purchase_windows: Calendriers commerciaux
+      hint_specific_stops: Arrêts spécifiques
+      hint_add_vj: Ajouter
+      hint_duplicate: Dupliquer
+      hint_shift_vj: Décaller
+      hint_constraint_exclusions: Exclusions d'interdictions de trafic
+      hint_line_notice: Notes de ligne
+      hint_copy_paste: Mode copier/coller
       set: "Fixer"
       show_arrival_time: "Afficher et éditer les horaires d'arrivée"
       show_journeys_with_calendar: "Afficher les courses avec calendrier"
@@ -72,6 +83,7 @@ fr:
       slide_arrival: "horaire d'arrivée au 1° arrêt à"
       slide_departure: "horaire de départ au 1° arrêt à"
       slide_title: "Décaler l'ensemble des horaires de la course : %{id}"
+      specific_stops_title: "Arrêts spécifiques à la course : %{id}"
       slide: "Décaler"
       slide_delta: "Avec un décalage de"
       starting_stop: "Origine"

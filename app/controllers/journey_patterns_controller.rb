@@ -3,7 +3,7 @@ class JourneyPatternsController < ChouetteController
   defaults :resource_class => Chouette::JourneyPattern
 
   respond_to :html
-  respond_to :json, :only => :index
+  respond_to :json, :only => [:index, :available_specific_stop_places]
   respond_to :js, :only => [:new_vehicle_journey, :show]
   respond_to :kml, :only => :show
 
@@ -38,6 +38,10 @@ class JourneyPatternsController < ChouetteController
     @vehicle_journey.update_journey_pattern(resource)
     vehicle_journey_category = params[:journey_category] ? "vehicle_journey_#{params[:journey_category]}" : 'vehicle_journey'
     render "#{vehicle_journey_category.pluralize}/select_journey_pattern"
+  end
+
+  def available_specific_stop_places
+    render json: journey_pattern.available_specific_stop_places.to_json, status: :ok
   end
 
   # overwrite inherited resources to use delete instead of destroy

@@ -732,22 +732,6 @@ describe Chouette::VehicleJourney, :type => :model do
       }.to change {Chouette::VehicleJourneyAtStop.count}.by(1)
     end
 
-    it 'should not save vehicle_journey_at_stops of newly created vj if all departure time is set to 00:00' do
-      new_vj = build(:vehicle_journey, objectid: nil, published_journey_name: 'dummy', route: route, journey_pattern: journey_pattern)
-      2.times do
-        new_vj.vehicle_journey_at_stops << build(:vehicle_journey_at_stop,
-                   :vehicle_journey => new_vj,
-                   :stop_point      => create(:stop_point),
-                   :arrival_time    => '2000-01-01 00:00:00 UTC',
-                   :departure_time  => '2000-01-01 00:00:00 UTC')
-      end
-      collection << vehicle_journey_to_state(new_vj)
-
-      expect {
-        Chouette::VehicleJourney.state_update(route, collection)
-      }.not_to change { Chouette::VehicleJourneyAtStop.count }
-    end
-
     it 'should update vj journey_pattern association' do
       state['journey_pattern'] = create(:journey_pattern).slice('id', 'name', 'objectid')
       Chouette::VehicleJourney.state_update(route, collection)

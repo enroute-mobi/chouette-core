@@ -25,11 +25,11 @@ RSpec.describe ReferentialCopy do
   before(:each) do
     4.times { create :line, line_referential: line_referential, company: company, network: nil }
     10.times { create :stop_area, stop_area_referential: stop_area_referential }
-    target.switch do
-      route = create :route, line: line_referential.lines.last
-      journey_pattern = route.full_journey_pattern
-      create :vehicle_journey, journey_pattern: journey_pattern
-    end
+    # target.switch do
+    #   route = create :route, line: line_referential.lines.last
+    #   journey_pattern = route.full_journey_pattern
+    #   create :vehicle_journey, journey_pattern: journey_pattern
+    # end
   end
 
   context "#copy_routes" do
@@ -138,7 +138,7 @@ RSpec.describe ReferentialCopy do
         end
       end
 
-      it "should copy the vehicle_journey_at_stops", skip: "See #11869" do
+      it "should copy the vehicle_journey_at_stops" do
         stop_areas = {}
         checksums = {}
         time_tables = {}
@@ -156,9 +156,11 @@ RSpec.describe ReferentialCopy do
         referential_copy.send(:copy_time_tables)
         referential_copy.send(:copy_purchase_windows)
         referential_copy.send(:copy_route, route)
+        referential_copy.send(:copy_with_inserters)
 
         target.switch do
           new_route = Chouette::Route.last
+          expect(new_route.vehicle_journeys.count).to eq(3)
           new_route.vehicle_journeys.each do |vj|
             expect(vj.stop_points.map{|sp| sp.stop_area.objectid}).to eq stop_areas[vj.objectid]
             expect(vj.checksum).to eq checksums[vj.objectid]

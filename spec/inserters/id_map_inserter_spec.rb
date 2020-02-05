@@ -2,6 +2,18 @@ RSpec.describe IdMapInserter do
 
   alias_method :inserter, :subject
 
+  describe "mapped_model_class?" do
+
+    it "is true for Chouette::VehicleJourney" do
+      expect(IdMapInserter.mapped_model_class?(Chouette::VehicleJourney)).to be_truthy
+    end
+
+    it "is false for Chouette::VehicleJourney" do
+      expect(IdMapInserter.mapped_model_class?(Chouette::Company)).to be_falsy
+    end
+
+  end
+
   describe "Vehicle Journey" do
 
     let(:vehicle_journey) { Chouette::VehicleJourney.new id: 42 }
@@ -26,6 +38,12 @@ RSpec.describe IdMapInserter do
       inserter.register_primary_key!(Chouette::JourneyPattern, vehicle_journey.journey_pattern_id, new_journey_pattern_id)
 
       expect { inserter.insert(vehicle_journey) }.to change(vehicle_journey, :journey_pattern_id).to(new_journey_pattern_id)
+    end
+
+    it "keeps company_id value" do
+      vehicle_journey.company_id = 42
+
+      expect { inserter.insert(vehicle_journey) }.to_not change(vehicle_journey, :company_id)
     end
 
     it "can process a large number of models" do
@@ -127,5 +145,31 @@ RSpec.describe IdMapInserter do
     puts "#{(Time.now - initial_start) / count * 1000000 / 60} minutes / million"
   end
 
+
+  describe "TimeTablesVehicleJourney" do
+
+    let(:model) do
+      Chouette::TimeTablesVehicleJourney.new
+    end
+
+    it "change route_id with new value" do
+      model.time_table_id = 42
+
+      new_time_table_id = 4242
+      inserter.register_primary_key!(Chouette::TimeTable, model.time_table_id, new_time_table_id)
+
+      expect { inserter.insert(model) }.to change(model, :time_table_id).to(new_time_table_id)
+    end
+
+    it "change route_id with new value" do
+      model.vehicle_journey_id = 42
+
+      new_vehicle_journey_id = 4242
+      inserter.register_primary_key!(Chouette::VehicleJourney, model.vehicle_journey_id, new_vehicle_journey_id)
+
+      expect { inserter.insert(model) }.to change(model, :vehicle_journey_id).to(new_vehicle_journey_id)
+    end
+
+  end
 
 end

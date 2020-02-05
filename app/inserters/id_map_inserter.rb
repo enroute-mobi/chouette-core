@@ -25,6 +25,11 @@ class IdMapInserter < ByClassInserter
     self.for(model_class).register_primary_key old_primary_key, new_primary_key
   end
 
+  def self.mapped_model_class?(model_class)
+    # TODO Creates a nice method in model class :)
+    ! Apartment.excluded_models.include?(model_class.name)
+  end
+
   class Base
 
     attr_reader :model_class, :parent_inserter
@@ -54,7 +59,12 @@ class IdMapInserter < ByClassInserter
       @new_primary_keys[old_primary_key] = new_primary_key
     end
 
+    def has_primary_key?
+      ! model_class.column_for_attribute(:id).null
+    end
+
     def update_primary_key(model)
+      return unless has_primary_key?
       current_primary_key = model.id
 
       unless current_primary_key
@@ -80,12 +90,18 @@ class IdMapInserter < ByClassInserter
       # We need to use a set to de-duplicate belongs_to relations
       # Some models have "light" relations which duplicate some relations
       model_class.reflect_on_all_associations(:belongs_to).map do |relation|
-        RelationUpdater.new relation.foreign_key, relation.klass, parent_inserter
-      end.to_set
+        if IdMapInserter.mapped_model_class?(relation.klass)
+          RelationUpdater.new relation.foreign_key, relation.klass, parent_inserter
+        end
+      end.compact.to_set
     end
 
     def next_primary_key
       @next_primary_key += 1
+    end
+
+    def flush
+      @new_primary_keys.clear
     end
 
   end

@@ -16,13 +16,13 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onModalClose: () =>{
+    onModalClose: () => {
       dispatch(actions.closeModal())
     },
-    onOpenSelectSpecificStopModal: (data) =>{
+    onOpenSelectSpecificStopModal: (data) => {
       dispatch(actions.openSelectSpecificStopModal(data))
     },
-    onSelectSpecificStop: (data) =>{
+    onSelectSpecificStop: (data) => {
       dispatch(actions.selectSpecificStop(data))
     }
   }

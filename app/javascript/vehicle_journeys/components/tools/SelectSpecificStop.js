@@ -10,7 +10,7 @@ export default class SelectSpecificStop extends Component {
   constructor(props) {
     super(props)
     this.headerManager = new StopAreaHeaderManager(
-      _.map(this.props.stopPointsList, (sp)=>{return sp.object_id}),
+      _.map(this.props.stopPointsList, (sp) => {return sp.object_id}),
       this.props.stopPointsList,
       this.props.filters.features
     )
@@ -30,7 +30,7 @@ export default class SelectSpecificStop extends Component {
   }
 
   addSpecificStopToVJAS(stop_point_id, specific_stop_area_id) {
-    this.selected_specific_stops[stop_point_id] = specific_stop_area_id
+    this.selected_specific_stops[stop_point_id] = specific_stop_area_id
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -40,13 +40,13 @@ export default class SelectSpecificStop extends Component {
         var refCol = []
 
         $(this).find('.t2e-head').children('div').each(function() {
-          var h = this.getBoundingClientRect().height;
+          var h = this.getBoundingClientRect().height
           refH.push(h)
-        });
+        })
 
         var i = 0
         $(this).find('.t2e-item').children('div').each(function() {
-          var h = this.getBoundingClientRect().height;
+          var h = this.getBoundingClientRect().height
           if(refCol.length < refH.length){
             refCol.push(h)
           } else {
@@ -59,7 +59,7 @@ export default class SelectSpecificStop extends Component {
           } else {
             i++
           }
-        });
+        })
 
         for(var n = 0; n < refH.length; n++) {
           if(refCol[n] < refH[n]) {
@@ -67,20 +67,20 @@ export default class SelectSpecificStop extends Component {
           }
         }
 
-        $(this).find('.th').css('height', refCol[0]);
+        $(this).find('.th').css('height', refCol[0])
 
         for(var nth = 1; nth < refH.length; nth++) {
 
           // TODO fix this
-          // $(this).find('.td:nth-child('+ (nth + 1) +')').css('height', refCol[nth]);
-          $(this).find('.td:nth-child('+ (nth + 1) +')').css('height', 40);
+          // $(this).find('.td:nth-child('+ (nth + 1) +')').css('height', refCol[nth])
+          $(this).find('.td:nth-child('+ (nth + 1) +')').css('height', 40)
         }
-      });
+      })
     }
   }
 
   fetch_available_specific_stop_places(journey_pattern_id) {
-    if(!journey_pattern_id || this.fetching_specific_stops){ return }
+    if(!journey_pattern_id || this.fetching_specific_stops){ return }
     this.fetching_specific_stops = true
 
     let path = window.available_specific_stop_places_path + ".json"
@@ -93,8 +93,8 @@ export default class SelectSpecificStop extends Component {
     }).then((json) => {
       /** Adding a text field in each stop area json object is required for displaying it through Select2 **/
       let result = {}
-      json.forEach((object1, index1)=>{
-        result[object1[0]] = object1[1].map((stop_area, index2)=>{
+      json.forEach((object1, index1) => {
+        result[object1[0]] = object1[1].map((stop_area, index2) => {
           _.assign(stop_area, {
             text: stop_area.name,
             is_referent: (stop_area.is_referent.toString() || '') /** Prevent "Warning: Received `false` for a non-boolean attribute `is_referent`." **/
@@ -145,7 +145,7 @@ export default class SelectSpecificStop extends Component {
                               <div className='t2e-head w50'>
                                 <div className='th hidden'>
                                 </div>
-                                { this.props.modal.modalProps.vehicleJourney.journey_pattern.stop_points.map((sp, i) =>{
+                                { this.props.modal.modalProps.vehicleJourney.journey_pattern.stop_points.map((sp, i) => {
                                   return (
                                     <div key={i} className='td'>
                                       {this.headerManager.stopPointHeader(sp.objectid, false)}
@@ -156,7 +156,7 @@ export default class SelectSpecificStop extends Component {
                               <div className="t2e-item w50">
                                 <div className='th hidden'>
                                 </div>
-                                { this.props.modal.modalProps.vehicleJourney.vehicle_journey_at_stops.map((vjas, i) =>{
+                                { this.props.modal.modalProps.vehicleJourney.vehicle_journey_at_stops.map((vjas, i) => {
                                   if (!vjas.dummy) {
                                     return (
                                       <div key={i} className='td'>

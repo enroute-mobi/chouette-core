@@ -31,7 +31,7 @@ export default class BSelect4 extends Component {
           theme: 'bootstrap',
           width: '100%',
           placeholder: this.props.placeholder,
-          escapeMarkup: function (markup) { return markup; },
+          escapeMarkup: function (markup) { return markup },
           templateResult: formatRepo
         }}
       />
@@ -40,5 +40,5 @@ export default class BSelect4 extends Component {
 }
 
 const formatRepo = (props) => {
-  if(props.text) return props.text
+  if(props.text) {return props.text}
 }

@@ -28,7 +28,7 @@ const vehicleJourney= (state = {}, action, keep) => {
         }
       }
 
-      _.each(action.stopPointsList, (sp) =>{
+      _.each(action.stopPointsList, (sp) => {
         let inJourney = false
         let newVjas
 
@@ -40,7 +40,7 @@ const vehicleJourney= (state = {}, action, keep) => {
             inJourney = true
           }
           if(!prevSp){
-            _.each(action.selectedJourneyPattern.stop_areas, (jp) =>{
+            _.each(action.selectedJourneyPattern.stop_areas, (jp) => {
               if (jp.stop_area_short_description.id == sp.id){
                 prevSp = sp
                 return
@@ -160,13 +160,13 @@ const vehicleJourney= (state = {}, action, keep) => {
       return _.assign({}, state, {vehicle_journey_at_stops: shiftedArray, custom_fields: custom_fields})
     case 'SELECT_SPECIFIC_STOP':
       let specific_stop_area_map = action.specific_stop_area_map
-      vjasArray = state.vehicle_journey_at_stops.map((vjas, i) =>{
+      let vjasList = state.vehicle_journey_at_stops.map((vjas, i) => {
         if (Object.keys(specific_stop_area_map).includes(vjas.stop_point_id.toString())) {
           vjas.specific_stop_area_id = specific_stop_area_map[vjas.stop_point_id]
         }
         return vjas
       })
-      return _.assign({}, state, {vehicle_journey_at_stops: vjasArray})
+      return _.assign({}, state, {vehicle_journey_at_stops: vjasList})
     case 'UPDATE_TIME':
       let vj, vjas, vjasArray, newSchedule
       let val = action.val
@@ -180,7 +180,7 @@ const vehicleJourney= (state = {}, action, keep) => {
           val = (val + 24) % 24
         }
       }
-      vjasArray = state.vehicle_journey_at_stops.map((vjas, i) =>{
+      vjasArray = state.vehicle_journey_at_stops.map((vjas, i) => {
         if(i == action.subIndex){
           let schedule = {
             departure_time: _.assign({}, vjas.departure_time),
@@ -259,10 +259,10 @@ export default function vehicleJourneys(state = [], action) {
       })
     case 'EDIT_VEHICLEJOURNEYS_TIMETABLES':
       let newTimetables = JSON.parse(JSON.stringify(action.timetables))
-      return state.map((vj,i) =>{
+      return state.map((vj,i) => {
         if(vj.selected){
           let updatedVJ = _.assign({}, vj)
-          action.vehicleJourneys.map((vjm, j) =>{
+          action.vehicleJourneys.map((vjm, j) => {
             if(vj.objectid == vjm.objectid){
               updatedVJ.time_tables =  newTimetables
             }
@@ -275,10 +275,10 @@ export default function vehicleJourneys(state = [], action) {
     case 'EDIT_VEHICLEJOURNEYS_CONSTRAINT_ZONES':
       let newExclusions = JSON.parse(JSON.stringify(action.zones))
       let newStopAreasExclusions = JSON.parse(JSON.stringify(action.stop_area_constraints))
-      return state.map((vj,i) =>{
+      return state.map((vj,i) => {
         if(vj.selected){
           let updatedVJ = _.assign({}, vj)
-          action.vehicleJourneys.map((vjm, j) =>{
+          action.vehicleJourneys.map((vjm, j) => {
             if(vj.objectid == vjm.objectid){
               updatedVJ.ignored_routing_contraint_zone_ids =  newExclusions
               updatedVJ.ignored_stop_area_routing_constraint_ids =  newStopAreasExclusions
@@ -291,10 +291,10 @@ export default function vehicleJourneys(state = [], action) {
       })
       case 'EDIT_VEHICLEJOURNEYS_PURCHASE_WINDOWS':
         let newWindows = JSON.parse(JSON.stringify(action.purchase_windows))
-        return state.map((vj,i) =>{
+        return state.map((vj,i) => {
           if(vj.selected){
             let updatedVJ = _.assign({}, vj)
-            action.vehicleJourneys.map((vjm, j) =>{
+            action.vehicleJourneys.map((vjm, j) => {
               if(vj.objectid == vjm.objectid){
                 updatedVJ.purchase_windows = newWindows
               }
@@ -350,7 +350,7 @@ export default function vehicleJourneys(state = [], action) {
         return vj
       })
     case 'DELETE_VEHICLEJOURNEYS':
-      return state.map((vj, i) =>{
+      return state.map((vj, i) => {
         if (vj.selected){
           return _.assign({}, vj, {deletable: true, selected: false})
         } else {
@@ -358,7 +358,7 @@ export default function vehicleJourneys(state = [], action) {
         }
       })
     case 'SELECT_VEHICLEJOURNEY':
-      return state.map((vj, i) =>{
+      return state.map((vj, i) => {
         if (i == action.index){
           return vehicleJourney(vj, action)
         } else {
@@ -378,7 +378,7 @@ export default function vehicleJourneys(state = [], action) {
         }
       })
     case 'UPDATE_TIME':
-      return state.map((vj, i) =>{
+      return state.map((vj, i) => {
         if (i == action.index){
           return vehicleJourney(vj, action)
         } else {

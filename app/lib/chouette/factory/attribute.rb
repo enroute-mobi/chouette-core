@@ -14,7 +14,9 @@ module Chouette
 
       def evaluate(context)
         @evaluated_value =
-          if context_value = context.attributes[name]
+          if context.attributes.has_key?(name)
+            # To support nil or false values
+            context_value = context.attributes[name]
             context.resolve_instances context_value
           else
             if value.is_a?(Proc)

@@ -4,11 +4,11 @@ module Chouette
       include Log
 
       attr_reader :name
-      attr_accessor :required, :singleton, :count
+      attr_accessor :required, :singleton
       def initialize(name, options = {})
         @name = name
 
-        {required: false, singleton: false, count: 1}.merge(options).each do |k,v|
+        {required: false, singleton: false}.merge(options).each do |k,v|
           send "#{k}=", v
         end
       end
@@ -116,13 +116,15 @@ module Chouette
               # TODO with_instance for sub_context_for ?
               sub_context = context.sub_context_for(model) ||
                             Context.new(model, parent: context.with_instance(new_instance))
+              # sub_context = context.sub_context_for(model) || Context.new(model)
+              # sub_context = sub_context.with_parent(context.with_instance(new_instance))
 
               sub_context.build_instance parent: new_instance
             end
           end
 
           after_callbacks.each do |after_callback|
-            after_dsl = AfterDSL.new(self, new_instance, context)
+            after_dsl = AfterDSL.new(self, new_instance, context.with_instance(new_instance))
             after_dsl.instance_exec(new_instance, &after_callback)
           end
 
@@ -187,6 +189,10 @@ module Chouette
 
         def parent
           context.parent.instance
+        end
+
+        def build_model(name)
+          context.build_model name
         end
 
       end

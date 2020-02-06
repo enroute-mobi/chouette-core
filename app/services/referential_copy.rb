@@ -28,26 +28,23 @@ class ReferentialCopy
   end
 
   def copy(raise_error: false)
-
     profile_tag :copy do
       Chouette::JourneyPattern.within_workgroup(workgroup) do
-        Chouette::VehicleJourney.within_workgroup(workgroup) do
-          copy_resource(:metadatas) unless skip_metadatas?
-          copy_resource(:time_tables)
-          copy_resource(:purchase_windows)
-          source.switch do
-            lines.includes(:footnotes, :routes).find_each do |line|
-              @new_routes = nil
-              copy_resource(:footnotes, line)
-              copy_resource(:routes, line)
-              copy_resource(:line_checksums, line)
-            end
+        copy_resource(:metadatas) unless skip_metadatas?
+        copy_resource(:time_tables)
+        copy_resource(:purchase_windows)
+        source.switch do
+          lines.includes(:footnotes, :routes).find_each do |line|
+            @new_routes = nil
+            copy_resource(:footnotes, line)
+            copy_resource(:routes, line)
+            copy_resource(:line_checksums, line)
           end
-          @status = :successful
         end
-
-        copy_with_inserters
+        @status = :successful
       end
+
+      copy_with_inserters
     end
   rescue SaveError => e
     logger.error e.message
@@ -67,9 +64,11 @@ class ReferentialCopy
     source.switch do
       vehicle_journeys = source.vehicle_journeys.joins(:route).where("routes.line_id" => lines)
 
-      vehicle_journeys.find_each do |vehicle_journey|
-        id_map_inserter.insert vehicle_journey
-        copy_inserter.insert vehicle_journey
+      Chouette::VehicleJourney.within_workgroup(workgroup) do
+        vehicle_journeys.find_each do |vehicle_journey|
+          id_map_inserter.insert vehicle_journey
+          copy_inserter.insert vehicle_journey
+        end
       end
 
       vehicle_journey_at_stops = source.vehicle_journey_at_stops.where(vehicle_journey: vehicle_journeys)

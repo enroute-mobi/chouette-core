@@ -124,7 +124,10 @@ module Chouette
 
               attribute(:line) { parent.metadatas_lines.first }
 
-              model :stop_point, count: 25, required: true do
+              transient :with_stops, true
+              transient :stop_count, 3
+
+              model :stop_point do
                 attribute(:stop_area) do
                   # TODO create a StopArea with Factory::Model ?
                   stop_area_referential = parent.referential.stop_area_referential
@@ -140,6 +143,13 @@ module Chouette
                   stop_area_referential.stop_areas.create! attributes
                 end
               end
+
+              after do |route|
+                transient(:stop_count).times do
+                  route.stop_points << build_model(:stop_point)
+                end if transient(:with_stops)
+              end
+
               model :journey_pattern do
                 attribute(:name) { |n| "JourneyPattern #{n}" }
                 attribute(:published_name) { |n| "Public Name #{n}" }

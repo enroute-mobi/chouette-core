@@ -17,6 +17,12 @@ module Chouette
         clone
       end
 
+      def with_parent(parent)
+        clone = self.dup
+        clone.parent = parent
+        clone
+      end
+
       def debug(indent = 0)
         details = instance_name ? " #{instance_name.inspect}" : ""
         details += " #{attributes.inspect}" unless attributes.empty?
@@ -75,14 +81,7 @@ module Chouette
       end
 
       def build_instance(options = {})
-        self.instance ||=
-          if model.count == 1
-            model.build_instance self, options
-          else
-            model.count.times.map do
-              model.build_instance self, options
-            end
-          end
+        self.instance ||= model.build_instance self, options
       end
 
       attr_accessor :model

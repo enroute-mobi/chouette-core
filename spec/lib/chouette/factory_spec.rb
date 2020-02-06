@@ -385,6 +385,62 @@ RSpec.describe Chouette::Factory do
 
     end
 
+    describe "StopPoint" do
+
+      describe "route stop_count: 5" do
+
+        let(:context) do
+          Chouette::Factory.create do
+            route stop_count: 5
+          end
+        end
+
+        before { context.referential.switch }
+
+        it "creates a Route with 5 stop points" do
+          expect(context.route.stop_points.length).to eq(5)
+        end
+
+      end
+
+    end
+
+    describe %{
+        route with_stops: false {
+          stop_point
+          stop_point
+        }
+      } do
+
+      let(:context) do
+        Chouette::Factory.create do
+          stop_area :departure
+          stop_area :arrival
+
+          route with_stops: false do
+            stop_point :departure, stop_area: :departure
+            stop_point
+            stop_point :arrival, stop_area: :arrival
+          end
+        end
+      end
+
+      before { context.referential.switch }
+
+      it "creates a Route with 3 stop points" do
+        expect(context.route.stop_points.length).to eq(3)
+      end
+
+      it "creates a StopPoint :departure with StopArea :departure" do
+        expect(context.stop_point(:departure).stop_area).to eq(context.stop_area(:departure))
+      end
+
+      it "creates a StopPoint :arrival with StopArea :arrival" do
+        expect(context.stop_point(:arrival).stop_area).to eq(context.stop_area(:arrival))
+      end
+
+    end
+
   end
 
 

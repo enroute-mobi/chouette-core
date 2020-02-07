@@ -5,16 +5,16 @@
       = form.input :name
 
     .col-lg-12
-      = form.input :notification_target, collection: Export::Base.notification_target_options, selected: :user
-
-    .col-lg-12
-      = form.input :type, as: :select, collection: workgroup_exports(workbench.workgroup), label_method: :human_name, input_html: {"data-select2ed" => true}
       = form.input :referential_id, as: :select, collection: @referentials, label_method: :name, input_html: {"data-select2ed" => true}
+      = form.input :type, as: :select, collection: workgroup_exports(workbench.workgroup), label_method: :human_name, input_html: {"data-select2ed" => true}
 
       - workgroup_exports(workbench.workgroup).each do |child|
         .slave data-master="[name='export[type]']" data-value=child.name
           - child.options.each do |attr, option_def|
             = export_option_input form, export, attr, option_def, child, @referentials
+
+    .col-lg-12
+      = form.input :notification_target, collection: Export::Base.notification_target_options, selected: :user
 
   = cancel_button
   = form.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'wb_export_form'

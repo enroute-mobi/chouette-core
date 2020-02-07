@@ -37,7 +37,11 @@ module OptionsSupport
       condition = ->(record){ record.send(opts[:depends][:option])&.to_s == opts[:depends][:value].to_s } if opts[:depends]
 
       if !!opts[:required]
-        validates attribute_name, presence: true, if: condition
+        if opts[:type].to_s == "boolean"
+          validates_inclusion_of attribute_name, in: [true, false], if: condition
+        else
+          validates attribute_name, presence: true, if: condition
+        end
       end
 
       min = opts[:min].presence

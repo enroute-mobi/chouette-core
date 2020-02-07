@@ -1,5 +1,5 @@
 RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
-  let(:gtfs_export) { create :gtfs_export, referential: exported_referential, workbench: workbench, duration: 5}
+  let(:gtfs_export) { create :gtfs_export, referential: exported_referential, workbench: workbench, duration: 5, prefer_referent_stop_area: true}
 
   describe "Line Decorator" do
 
@@ -420,8 +420,6 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
         selected_stop_areas = selected_stop_areas_hash.values
 
         GTFS::Target.open(stops_zip_path) do |target|
-          # reset export sort variable
-          gtfs_export.instance_variable_set('@stop_area_stop_hash', {})
           gtfs_export.export_stop_areas_to target
         end
 

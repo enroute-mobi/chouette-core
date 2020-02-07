@@ -2,6 +2,7 @@ class Export::Gtfs < Export::Base
   include LocalExportSupport
 
   option :duration, required: true, type: :integer, default_value: 200
+  option :prefer_referent_stop_area, required: true, type: :boolean, default_value: false
 
   DEFAULT_AGENCY_ID = "chouette_default"
 
@@ -9,10 +10,6 @@ class Export::Gtfs < Export::Base
 
   def zip_file_name
     @zip_file_name ||= "chouette-its-#{Time.now.to_i}"
-  end
-
-  def stop_area_stop_hash
-    @stop_area_stop_hash ||= {}
   end
 
   def agency_id company
@@ -133,22 +130,29 @@ class Export::Gtfs < Export::Base
 
   def export_stop_areas_to(target)
     Chouette::StopArea.within_workgroup(referential.workgroup) do
-      exported_stop_areas.find_each do |stop_area|
-        stop_id = stop_id(stop_area)
+      exported_stop_areas.includes(:referent).find_each do |stop_area|
 
-        stop_area_stop_hash[stop_area.id] = stop_id
+        if prefer_referent_stop_area
+          sa = stop_area.referent || stop_area
+        else
+          sa = stop_area
+        end
+
+        stop_id = stop_id(sa)
+
         index.register_stop_id(stop_area, stop_id)
+        index.register_stop_id(stop_area.referent, stop_id) if stop_area.referent && prefer_referent_stop_area
 
         target.stops << {
           id: stop_id,
-          name: stop_area.name,
-          location_type: stop_area.area_type == 'zdep' ? 0 : 1,
-          parent_station: (stop_id(stop_area.parent) if stop_area.parent),
-          lat: stop_area.latitude,
-          lon: stop_area.longitude,
-          desc: stop_area.comment,
-          url: stop_area.url,
-          timezone: (stop_area.time_zone unless stop_area.parent),
+          name: sa.name,
+          location_type: sa.area_type == 'zdep' ? 0 : 1,
+          parent_station: (stop_id(sa.parent) if sa.parent),
+          lat: sa.latitude,
+          lon: sa.longitude,
+          desc: sa.comment,
+          url: sa.url,
+          timezone: (sa.time_zone unless sa.parent),
           #code: TO DO
           #wheelchair_boarding: TO DO wheelchair_boarding <=> mobility_restricted_suitability ?
         }

@@ -1,16 +1,19 @@
 RSpec.describe CopyInserter do
 
-  alias_method :inserter, :subject
-
   let(:context) do
     Chouette.create do
-      vehicle_journey
+      route stop_count: 25 do
+        vehicle_journey
+      end
     end
   end
 
   before do
     context.referential.switch
   end
+
+  subject { CopyInserter.new context.referential }
+  alias_method :inserter, :subject
 
   let(:vehicle_journey) { context.vehicle_journey.reload }
 
@@ -67,7 +70,7 @@ RSpec.describe CopyInserter do
   end
 
   it "can process a large number of models" do
-    inserter = CopyInserter.new
+    inserter = CopyInserter.new(context.referential)
 
     count = 10000
     initial_start = start = Time.now

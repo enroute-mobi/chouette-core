@@ -4,7 +4,8 @@ FactoryGirl.define do
     workgroup { create(:workgroup) }
     enabled false
     export_type "Export::Gtfs"
-    export_options { { duration: 200 } }
+    export_options { { duration: 200, prefer_referent_stop_area: false } }
+    enabled false
   end
 
   factory :publication_setup_gtfs, :parent => :publication_setup do

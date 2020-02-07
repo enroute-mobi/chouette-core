@@ -8,7 +8,7 @@ RSpec.describe Publication, type: :model do
   it { should validate_presence_of :parent }
 
   let(:export_type) { 'Export::Gtfs' }
-  let(:export_options) { { duration: 90 } }
+  let(:export_options) { { duration: 90, prefer_referent_stop_area: false } }
   let(:publication_setup) { create :publication_setup, export_type: export_type, export_options: export_options }
   let(:publication) { create :publication, parent: operation, publication_setup: publication_setup }
   let(:referential) { first_referential }

@@ -182,7 +182,6 @@ group :test, :development do
   gem 'letter_opener'
   gem 'letter_opener_web', '~> 1.0'
 
-  gem 'fabrication', '~> 2.14.1'
   gem 'ffaker', '~> 2.1.0'
   gem 'faker'
 

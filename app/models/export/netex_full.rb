@@ -26,7 +26,7 @@ class Export::NetexFull < Export::Base
 
   # File extension used to send exported file to the user.
   # Can be overrided by sub classes
-  def user_file_extension
+  def file_extension
     "xml"
   end
 

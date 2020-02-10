@@ -125,7 +125,7 @@ gem 'acts_as_tree'
 
 gem 'rabl'
 gem 'carrierwave'
-gem 'carrierwave-google-storage'
+gem 'carrierwave-google-storage', github: 'metaware/carrierwave-google-storage'
 gem 'rmagick'
 
 gem 'delayed_job_active_record'

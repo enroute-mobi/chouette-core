@@ -257,7 +257,6 @@ GEM
       activesupport (>= 3.2)
     erubi (1.9.0)
     execjs (2.7.0)
-    fabrication (2.14.1)
     factory_girl (4.9.0)
       activesupport (>= 3.0.0)
     factory_girl_rails (4.9.0)
@@ -715,7 +714,6 @@ DEPENDENCIES
   draper
   email_spec
   enumerize
-  fabrication (~> 2.14.1)
   factory_girl_rails (~> 4.0)
   faker
   faraday

@@ -20,9 +20,13 @@ class WorkbenchImportService
 
     zip_service = ZipService.new(downloaded, allowed_lines)
     upload zip_service
-    workbench_import.update(ended_at: Time.now)
   rescue Zip::Error
     handle_corrupt_zip_file
+  rescue => e
+    Rails.logger.info "Error in WorkbenchImportService: #{e}: #{e.backtrace.join("\n")}"
+    workbench_import.update_columns status: 'failed'
+  ensure
+    workbench_import.update_columns ended_at: Time.now
   end
 
   def execute_post eg_name, eg_file
@@ -63,21 +67,14 @@ class WorkbenchImportService
   end
 
   def upload_entry_group_stream eg_name, eg_stream
-    FileUtils.mkdir_p(temp_directory)
+    eg_stream.rewind
 
-    eg_file_path = Tempfile.open(
-      ["WorkbenchImport_#{eg_name}_", '.zip'],
-      temp_directory
-    ) do |f|
-      eg_stream.rewind
-      f.write eg_stream.read
-
-      f.path
+    result = nil
+    Tempfile.open do |temp_file|
+      temp_file.write eg_stream.read
+      result = execute_post eg_name, temp_file.path
     end
 
-    eg_file = File.open(eg_file_path)
-
-    result = execute_post eg_name, eg_file
     if result && result.status < 400
       @entries += 1
       workbench_import.update( current_step: @entries )
@@ -85,9 +82,6 @@ class WorkbenchImportService
     else
       raise StopIteration, result.body
     end
-  ensure
-    eg_file.close
-    File.unlink(eg_file.path)
   end
 
   # Queries
@@ -128,11 +122,6 @@ class WorkbenchImportService
         workbench_id: workbench_import.workbench_id,
         name: name,
         file: HTTPService.upload(file, 'application/zip', "#{name}.zip") } }
-  end
-
-  def temp_directory
-    Rails.application.config.try(:import_temporary_directory) ||
-      Rails.root.join('tmp', 'imports')
   end
 
   # Lazy Values

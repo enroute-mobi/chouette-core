@@ -1,5 +1,13 @@
 RSpec.describe IdMapInserter do
 
+  let(:context) do
+    Chouette.create do
+      referential
+    end
+  end
+
+
+  subject { IdMapInserter.new context.referential }
   alias_method :inserter, :subject
 
   describe "mapped_model_class?" do

@@ -1,5 +1,10 @@
 class IdMapInserter < ByClassInserter
 
+  attr_reader :target
+  def initialize(target)
+    @target = target
+  end
+
   def new_primary_key!(model_class, old_primary_key)
     new_primary_key = self.for(model_class).new_primary_key(old_primary_key)
 
@@ -38,7 +43,7 @@ class IdMapInserter < ByClassInserter
       @model_class = model_class
       @parent_inserter = parent_inserter
 
-      @next_primary_key = 0
+      @current_primary_key = load_current_primary_key
       @new_primary_keys ||= Hash.new
     end
 
@@ -97,11 +102,21 @@ class IdMapInserter < ByClassInserter
     end
 
     def next_primary_key
-      @next_primary_key += 1
+      @current_primary_key += 1
+    end
+
+    def load_current_primary_key
+      return 0 unless has_primary_key?
+      @parent_inserter.target.switch do
+        (@model_class.maximum(:id)||0)
+      end
     end
 
     def flush
       @new_primary_keys.clear
+      @parent_inserter.target.switch do
+        ActiveRecord::Base.connection.reset_pk_sequence!(model_class.table_name)
+      end
     end
 
   end
@@ -115,12 +130,12 @@ class IdMapInserter < ByClassInserter
     def update_relations(vehicle_journey_at_stop)
       if vehicle_journey_id = vehicle_journey_at_stop.vehicle_journey_id
         vehicle_journey_at_stop.vehicle_journey_id =
-          parent_inserter.new_vehicle_journey_primary_key!(vehicle_journey_id)
+        parent_inserter.new_vehicle_journey_primary_key!(vehicle_journey_id)
       end
 
       if stop_point_id = vehicle_journey_at_stop.stop_point_id
         vehicle_journey_at_stop.stop_point_id =
-          parent_inserter.new_stop_point_primary_key!(stop_point_id)
+        parent_inserter.new_stop_point_primary_key!(stop_point_id)
       end
     end
 
@@ -150,7 +165,7 @@ class IdMapInserter < ByClassInserter
 
     def eql?(other)
       attribute == other.attribute &&
-        associated_model_class == other.associated_model_class
+      associated_model_class == other.associated_model_class
     end
 
     def hash

@@ -23,8 +23,8 @@ class ReferentialCopy
     @opts[:skip_metadatas]
   end
 
-  def id_map_inserter
-    @id_map_inserter ||= IdMapInserter.new
+  def referential_inserter
+    @referential_inserter ||= ReferentialInserter.new(target)
   end
 
   def copy(raise_error: false)
@@ -53,43 +53,37 @@ class ReferentialCopy
   end
 
   def copy_with_inserters
-    # inserter = ModelInserter.new
-    # inserter <<  @id_map_inserter
-    # inserter <<  CopyInserter.new(target)
-
-    # inserter.insert()
-
-    copy_inserter = CopyInserter.new(target)
+    # copy_inserter = CopyInserter.new(target)
 
     source.switch do
       vehicle_journeys = source.vehicle_journeys.joins(:route).where("routes.line_id" => lines)
 
       Chouette::VehicleJourney.within_workgroup(workgroup) do
         vehicle_journeys.find_each do |vehicle_journey|
-          id_map_inserter.insert vehicle_journey
-          copy_inserter.insert vehicle_journey
+          referential_inserter.vehicle_journeys << vehicle_journey
         end
       end
 
       vehicle_journey_at_stops = source.vehicle_journey_at_stops.where(vehicle_journey: vehicle_journeys)
 
       vehicle_journey_at_stops.find_each do |vehicle_journey_at_stop|
-        id_map_inserter.insert vehicle_journey_at_stop
-        copy_inserter.insert vehicle_journey_at_stop
+        referential_inserter.vehicle_journey_at_stops << vehicle_journey_at_stop
       end
 
       time_tables_vehicle_journeys = Chouette::TimeTablesVehicleJourney.where(vehicle_journey: vehicle_journeys)
 
       time_tables_vehicle_journeys.find_each_without_primary_key do |model|
-        id_map_inserter.insert model
-        copy_inserter.insert model
+        referential_inserter.time_tables_vehicle_journeys << model
+      end
+
+      vehicle_journey_purchase_window_relationship = Chouette::VehicleJourneyPurchaseWindowRelationship.where(vehicle_journey: vehicle_journeys)
+
+      vehicle_journey_purchase_window_relationship.find_each_without_primary_key do |model|
+        referential_inserter.vehicle_journey_purchase_window_relationships << model
       end
     end
 
-    # opposite route
-
-    id_map_inserter.flush
-    copy_inserter.flush
+    referential_inserter.flush
   end
 
   def copy!

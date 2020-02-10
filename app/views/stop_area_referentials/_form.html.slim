@@ -60,8 +60,8 @@
             .col-md-8
               = check_box "route_edition_available_stops", f, checked: @stop_area_referential.route_edition_available_stops[f.to_s]
 
-    = cancel_button
-    = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'stop_area_referential_form'
+  = cancel_button
+  = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'stop_area_referential_form'
 
 coffee:
   $('.add-locale').click (e)->

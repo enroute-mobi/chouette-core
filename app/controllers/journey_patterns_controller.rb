@@ -41,7 +41,7 @@ class JourneyPatternsController < ChouetteController
   end
 
   def available_specific_stop_places
-    render json: journey_pattern.available_specific_stop_places.to_json, status: :ok
+    render json: journey_pattern.available_specific_stop_places.map { |parent_id, children| [ parent_id, children.map { |s| s.as_json.merge("short_id" => s.get_objectid.short_id) } ] }.to_json, status: :ok
   end
 
   # overwrite inherited resources to use delete instead of destroy

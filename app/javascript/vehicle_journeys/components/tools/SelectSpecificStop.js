@@ -96,7 +96,7 @@ export default class SelectSpecificStop extends Component {
       json.forEach((object1, index1) => {
         result[object1[0]] = object1[1].map((stop_area, index2) => {
           _.assign(stop_area, {
-            text: stop_area.name,
+            text: stop_area.name + " - " + stop_area.short_id,
             is_referent: (stop_area.is_referent.toString() || '') /** Prevent "Warning: Received `false` for a non-boolean attribute `is_referent`." **/
           }
         )

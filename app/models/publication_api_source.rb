@@ -30,11 +30,13 @@ class PublicationApiSource < ActiveRecord::Base
   end
 
   def public_url
+    return unless key.present?
+
     base = publication_api.public_url
     setup = publication.publication_setup
     case setup.export_type.to_s
-    when "Export::Gtfs"
-      base += ".#{key}.zip"
+    when "Export::NetexFull"
+      base += ".#{key}.xml"
     when "Export::Netex"
       if setup.export_options['export_type'] == 'full'
         base += ".#{key}.zip"
@@ -42,9 +44,19 @@ class PublicationApiSource < ActiveRecord::Base
         *split_key, line = key.split('-')
         base += "/lines/#{line}.#{split_key.join('-')}.zip"
       end
+    else
+      base += ".#{key}.zip"
     end
-
+    
     base
+  end
+
+  def public_url_filename
+    return unless public_url.present?
+
+    url_object = URI.parse(public_url)
+    url_path = url_object.path
+    url_path.split("/").last
   end
 
   protected

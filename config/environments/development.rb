@@ -4,6 +4,7 @@ Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
   SmartEnv.set :PUBLIC_HOST, default: 'http://localhost:3000'
+  SmartEnv.set :RAILS_HOST, default: 'http://localhost:3000'
   SmartEnv.set :IEV_URL, default: "http://localhost:8080"
   SmartEnv.add_boolean :TOOLBAR
   SmartEnv.set :BYPASS_AUTH_FOR_SIDEKIQ, default: true

@@ -107,15 +107,16 @@ class IdMapInserter < ByClassInserter
 
     def load_current_primary_key
       return 0 unless has_primary_key?
-      @parent_inserter.target.switch do
-        (@model_class.maximum(:id)||0)
+
+      parent_inserter.target.switch do
+        model_class.maximum(:id) || 0
       end
     end
 
     def flush
       @new_primary_keys.clear
-      @parent_inserter.target.switch do
-        ActiveRecord::Base.connection.reset_pk_sequence!(model_class.table_name)
+      parent_inserter.target.switch do
+        model_class.connection.reset_pk_sequence! model_class.table_name
       end
     end
 

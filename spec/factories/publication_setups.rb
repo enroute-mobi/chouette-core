@@ -5,12 +5,11 @@ FactoryGirl.define do
     enabled false
     export_type "Export::Gtfs"
     export_options { { duration: 200, prefer_referent_stop_area: false } }
-    enabled false
   end
 
   factory :publication_setup_gtfs, :parent => :publication_setup do
     export_type "Export::Gtfs"
-    export_options { { duration: 200 } }
+    export_options { { duration: 200, prefer_referent_stop_area: false } }
   end
 
   factory :publication_setup_idfm_netex_full, :parent => :publication_setup do

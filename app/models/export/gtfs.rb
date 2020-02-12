@@ -2,6 +2,7 @@ class Export::Gtfs < Export::Base
   include LocalExportSupport
 
   option :duration, required: true, type: :integer, default_value: 200
+  option :prefer_referent_stop_area, required: true, type: :boolean, default_value: false
 
   DEFAULT_AGENCY_ID = "chouette_default"
 
@@ -9,10 +10,6 @@ class Export::Gtfs < Export::Base
 
   def zip_file_name
     @zip_file_name ||= "chouette-its-#{Time.now.to_i}"
-  end
-
-  def stop_area_stop_hash
-    @stop_area_stop_hash ||= {}
   end
 
   def agency_id company
@@ -133,11 +130,18 @@ class Export::Gtfs < Export::Base
 
   def export_stop_areas_to(target)
     Chouette::StopArea.within_workgroup(referential.workgroup) do
-      exported_stop_areas.find_each do |stop_area|
+      exported_stop_areas.includes(:referent, :parent).find_each do |stop_area|
+
         stop_id = stop_id(stop_area)
 
-        stop_area_stop_hash[stop_area.id] = stop_id
-        index.register_stop_id(stop_area, stop_id)
+        if prefer_referent_stop_area && stop_area.referent
+          stop_id = stop_id(stop_area.referent)
+          index.register_stop_id(stop_area, stop_id)
+
+          stop_area = stop_area.referent
+        end
+
+        index.register_stop_id stop_area, stop_id
 
         target.stops << {
           id: stop_id,

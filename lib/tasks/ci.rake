@@ -140,7 +140,7 @@ namespace :ci do
   cache_file "log/parallel_runtime_specs.log"
 
   task :performance do
-    sh "bundle exec rspec --tag performance #{test_options('performance')}"
+    sh "bundle exec rspec --tag performance #{test_options(xml_output: 'performance')}"
   end
 
   task :build => ["ci:setup", "ci:assets", "ci:spec", "ci:performance", "ci:jest", "ci:check_security"]

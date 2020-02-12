@@ -143,7 +143,7 @@ namespace :ci do
     sh "bundle exec rspec --tag performance #{test_options(xml_output: 'performance')}"
   end
 
-  task :build => ["ci:setup", "ci:assets", "ci:spec", "ci:performance", "ci:jest", "ci:check_security"]
+  task :build => ["ci:setup", "ci:assets", "ci:spec", "ci:jest", "ci:check_security"]
 
   namespace :docker do
     task :clean do

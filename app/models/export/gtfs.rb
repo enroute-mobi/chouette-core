@@ -130,29 +130,29 @@ class Export::Gtfs < Export::Base
 
   def export_stop_areas_to(target)
     Chouette::StopArea.within_workgroup(referential.workgroup) do
-      exported_stop_areas.includes(:referent).find_each do |stop_area|
+      exported_stop_areas.includes(:referent, :parent).find_each do |stop_area|
 
-        if prefer_referent_stop_area
-          sa = stop_area.referent || stop_area
-        else
-          sa = stop_area
+        stop_id = stop_id(stop_area)
+
+        if prefer_referent_stop_area && stop_area.referent
+          stop_id = stop_id(stop_area.referent)
+          index.register_stop_id(stop_area, stop_id)
+
+          stop_area = stop_area.referent
         end
 
-        stop_id = stop_id(sa)
-
-        index.register_stop_id(stop_area, stop_id)
-        index.register_stop_id(stop_area.referent, stop_id) if stop_area.referent && prefer_referent_stop_area
+        index.register_stop_id stop_area, stop_id
 
         target.stops << {
           id: stop_id,
-          name: sa.name,
-          location_type: sa.area_type == 'zdep' ? 0 : 1,
-          parent_station: (stop_id(sa.parent) if sa.parent),
-          lat: sa.latitude,
-          lon: sa.longitude,
-          desc: sa.comment,
-          url: sa.url,
-          timezone: (sa.time_zone unless sa.parent),
+          name: stop_area.name,
+          location_type: stop_area.area_type == 'zdep' ? 0 : 1,
+          parent_station: (stop_id(stop_area.parent) if stop_area.parent),
+          lat: stop_area.latitude,
+          lon: stop_area.longitude,
+          desc: stop_area.comment,
+          url: stop_area.url,
+          timezone: (stop_area.time_zone unless stop_area.parent),
           #code: TO DO
           #wheelchair_boarding: TO DO wheelchair_boarding <=> mobility_restricted_suitability ?
         }

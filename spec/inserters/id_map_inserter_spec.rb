@@ -22,6 +22,13 @@ RSpec.describe IdMapInserter do
 
   end
 
+  def next_id(model_class)
+    @next_identifiers ||= Hash.new do |h, klass|
+      h[klass] = klass.maximum(:id) || 0
+    end
+    @next_identifiers[model_class] += 1
+  end
+
   describe "Vehicle Journey" do
 
     let(:vehicle_journey) { Chouette::VehicleJourney.new id: 42 }
@@ -54,30 +61,22 @@ RSpec.describe IdMapInserter do
       expect { inserter.insert(vehicle_journey) }.to_not change(vehicle_journey, :company_id)
     end
 
-    it "can process a large number of models" do
-      count = 100000
-
-      journey_pattern_count = count / 100
-      journey_pattern_count.times do |n|
-        inserter.register_primary_key!(Chouette::Route, n, journey_pattern_count - n)
-        inserter.register_primary_key!(Chouette::JourneyPattern, n, journey_pattern_count - n)
+    it "inserts 40 000 models / second (1 million in 25s)", :performance do
+      # To use Hash with realistic volume
+      route_count = 10000
+      route_count.times do |n|
+        inserter.register_primary_key!(Chouette::Route, n, route_count - n)
+        inserter.register_primary_key!(Chouette::JourneyPattern, n, route_count - n)
       end
 
-      start = Time.now
+      expect {
+        vehicle_journey.id = next_id(Chouette::VehicleJourney)
 
-      # To obtain the d3 html viewer:
-      # bundle exec stackprof --d3-flamegraph tmp/stackprof-id-map-inserter-spec.dump > flamegraph.html
-      StackProf.run(mode: :cpu, raw: true, out: 'tmp/stackprof-id-map-inserter-spec-vehicle-journeys.dump') do
-        count.times do |n|
-          vehicle_journey.id = n+1
-          vehicle_journey.journey_pattern_id = vehicle_journey.route_id = n % journey_pattern_count
+        vehicle_journey.route_id = rand(0...route_count)
+        vehicle_journey.journey_pattern_id = rand(0...route_count)
 
-          inserter.insert(vehicle_journey)
-        end
-      end
-
-      puts "total: #{Time.now - start} seconds"
-      puts "#{(Time.now - start) / count * 1000000 / 60} minutes / million"
+        inserter.insert vehicle_journey
+      }.to perform_at_least(40000).within(1.second).ips
     end
 
   end
@@ -99,60 +98,29 @@ RSpec.describe IdMapInserter do
       expect { inserter.insert(vehicle_journey_at_stop) }.to change(vehicle_journey_at_stop, :vehicle_journey_id).to(new_vehicle_journey_id)
     end
 
-  end
-
-  it "can process a large number of models" do
-    count = 50000
-
-    journey_pattern_count = count / 100
-    journey_pattern_count.times do |n|
-      inserter.register_primary_key!(Chouette::Route, n, journey_pattern_count - n)
-      inserter.register_primary_key!(Chouette::JourneyPattern, n, journey_pattern_count - n)
-    end
-
-    stop_point_count = 25 * journey_pattern_count
-    stop_point_count.times do |n|
-      inserter.register_primary_key!(Chouette::StopPoint, n, stop_point_count - n)
-    end
-
-    initial_start = Time.now
-
-    start = Time.now
-    vehicle_journey = Chouette::VehicleJourney.new
-
-    # To obtain the d3 html viewer:
-    # bundle exec stackprof --d3-flamegraph tmp/stackprof-id-map-inserter-spec.dump > flamegraph.html
-    StackProf.run(mode: :cpu, raw: true, out: 'tmp/stackprof-id-map-inserter-spec-vehicle-journeys.dump') do
-      count.times do |n|
-        vehicle_journey.id = n+1
-        vehicle_journey.journey_pattern_id = vehicle_journey.route_id = n % journey_pattern_count
-
-        inserter.insert(vehicle_journey)
+    it "inserts 70 000 models / second (25 million in ~360s)", :performance do
+      # To use Hash with realistic volume
+      stop_point_count = 250000
+      stop_point_count.times do |n|
+        inserter.register_primary_key!(Chouette::StopPoint, n, stop_point_count - n)
       end
-    end
 
-    puts "VehicleJourney id mapping: #{Time.now - start} seconds"
-
-    start = Time.now
-    vehicle_journey_at_stop = Chouette::VehicleJourneyAtStop.new
-
-    # To obtain the d3 html viewer:
-    # bundle exec stackprof --d3-flamegraph tmp/stackprof-id-map-inserter-spec.dump > flamegraph.html
-    StackProf.run(mode: :cpu, raw: true, out: 'tmp/stackprof-id-map-inserter-spec-vehicle-journey-at-stops.dump') do
-      (25 * count).times do |n|
-        vehicle_journey_at_stop.id = n+1
-        vehicle_journey_at_stop.vehicle_journey_id = n % count
-        vehicle_journey_at_stop.stop_point_id = n % stop_point_count
-
-        inserter.insert(vehicle_journey_at_stop)
+      vehicle_journey_count = 1000000
+      vehicle_journey_count.times do |n|
+        inserter.register_primary_key!(Chouette::VehicleJourney, n, vehicle_journey_count - n)
       end
+
+      expect {
+        vehicle_journey_at_stop.id = next_id(Chouette::VehicleJourneyAtStop)
+
+        vehicle_journey_at_stop.vehicle_journey_id = rand(0...vehicle_journey_count)
+        vehicle_journey_at_stop.stop_point_id = rand(0...stop_point_count)
+
+        inserter.insert vehicle_journey_at_stop
+      }.to perform_at_least(70000).within(1.second).ips
     end
 
-    puts "VehicleJourneyAtStop id mapping: #{Time.now - start} seconds"
-    puts "#{Chouette::Benchmark.current_usage} MB of memory"
-    puts "#{(Time.now - initial_start) / count * 1000000 / 60} minutes / million"
   end
-
 
   describe "TimeTablesVehicleJourney" do
 

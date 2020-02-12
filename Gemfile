@@ -163,6 +163,7 @@ group :test do
   gem 'rspec-snapshot'
   gem 'rails-controller-testing'
   gem 'fuubar'
+  gem 'rspec-benchmark'
 
   gem 'rspec_junit_formatter'
   gem 'codacy-coverage', require: false

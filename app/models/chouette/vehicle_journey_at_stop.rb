@@ -1,8 +1,10 @@
 module Chouette
-  class VehicleJourneyAtStop < ActiveRecord
+  class VehicleJourneyAtStop < ::ActiveRecord::Base
     include Chouette::ForBoardingEnumerations
     include Chouette::ForAlightingEnumerations
     include ChecksumSupport
+
+    acts_as_copy_target
 
     DAY_OFFSET_MAX = 2
 

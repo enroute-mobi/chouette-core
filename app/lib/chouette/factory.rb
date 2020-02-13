@@ -99,6 +99,8 @@ module Chouette
             end
             transient :periods, [ Time.zone.today..1.month.from_now.to_date ]
 
+            transient :with_metadatas, true
+
             after do
               # TODO shouldn't be explicit but managed by Workbench/Referential model
               new_instance.stop_area_referential = parent.stop_area_referential
@@ -106,11 +108,13 @@ module Chouette
               new_instance.prefix = parent.respond_to?(:prefix) ? parent.prefix : "chouette"
               new_instance.organisation = parent.organisation
 
-              metadata_attributes = {
-                line_ids: transient(:lines, resolve_instances: true).map(&:id),
-                periodes: transient(:periods)
-              }
-              new_instance.metadatas.build metadata_attributes
+              if transient(:with_metadatas)
+                metadata_attributes = {
+                  line_ids: transient(:lines, resolve_instances: true).map(&:id),
+                  periodes: transient(:periods)
+                }
+                new_instance.metadatas.build metadata_attributes
+              end
             end
 
             around_models do |referential, block|

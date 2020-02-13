@@ -1,1 +1,1 @@
--r spec_helper
+-r spec_helper --format RspecJunitFormatter --out test-results/parallel-tests<%= ENV["TEST_ENV_NUMBER"] %>.xml --format progress --format ParallelTests::RSpec::RuntimeLogger --out log/parallel_runtime_specs.log --format ParallelTests::RSpec::SummaryLogger --out log/summary_specs.log --tag ~performance

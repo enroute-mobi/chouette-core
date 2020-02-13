@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_01_21_091316) do
+ActiveRecord::Schema.define(version: 2020_02_13_102449) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -223,8 +223,8 @@ ActiveRecord::Schema.define(version: 2020_01_21_091316) do
     t.bigint "compliance_control_set_id"
     t.bigint "workbench_id"
     t.string "status"
-    t.string "parent_type"
     t.bigint "parent_id"
+    t.string "parent_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "current_step_id"
@@ -481,11 +481,6 @@ ActiveRecord::Schema.define(version: 2020_01_21_091316) do
     t.string "street_name"
     t.string "contained_in"
     t.index ["objectid"], name: "facilities_objectid_key", unique: true
-  end
-
-  create_table "facilities_features", id: false, force: :cascade do |t|
-    t.bigint "facility_id"
-    t.integer "choice_code"
   end
 
   create_table "footnotes", force: :cascade do |t|
@@ -1106,10 +1101,10 @@ ActiveRecord::Schema.define(version: 2020_01_21_091316) do
 
   create_table "taggings", force: :cascade do |t|
     t.bigint "tag_id"
-    t.string "taggable_type"
     t.bigint "taggable_id"
-    t.string "tagger_type"
+    t.string "taggable_type"
     t.bigint "tagger_id"
+    t.string "tagger_type"
     t.string "context", limit: 128
     t.datetime "created_at"
     t.index ["context"], name: "index_taggings_on_context"

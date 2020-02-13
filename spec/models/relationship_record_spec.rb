@@ -15,7 +15,7 @@ describe Chouette::RelationshipRecord, :type => :model do
     before do
       context.referential.switch
       @count = 0
-      Chouette::TimeTablesVehicleJourney.find_each_without_primary_key{|d| @count+=1}
+      Chouette::TimeTablesVehicleJourney.find_each_without_primary_key{ @count+=1 }
     end
 
     it 'should browse every existing record' do

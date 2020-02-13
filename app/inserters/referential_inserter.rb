@@ -1,7 +1,5 @@
 class ReferentialInserter
 
-  attr_accessor :id_map_inserter
-
   def initialize referential
     @referential = referential
   end
@@ -28,10 +26,11 @@ class ReferentialInserter
     @collection ||= CollectionInserter.new self
   end
 
-  [:vehicle_journeys, :vehicle_journey_at_stops, :vehicle_journey_time_table_relationships, :time_tables_vehicle_journeys, :vehicle_journey_purchase_window_relationships].each do |method_name|
+  [:vehicle_journeys, :vehicle_journey_at_stops, :vehicle_journey_time_table_relationships, :vehicle_journey_purchase_window_relationships].each do |method_name|
     alias_method method_name, :collection
   end
 
+  # Only syntax suggar (in order to parse something like this : inserter.vehicle_journeys << new_vj), there is no logic embeded within this class
   class CollectionInserter
 
     def initialize parent

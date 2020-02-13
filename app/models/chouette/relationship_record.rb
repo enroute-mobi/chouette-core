@@ -4,7 +4,7 @@ module Chouette
 
     self.abstract_class = true
     class << self
-      def find_each_without_primary_key(&block)
+      def find_each_without_primary_key
         batch_size = 1000
         offset = 0
 

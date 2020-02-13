@@ -73,7 +73,7 @@ class ReferentialCopy
       time_tables_vehicle_journeys = Chouette::TimeTablesVehicleJourney.where(vehicle_journey: vehicle_journeys)
 
       time_tables_vehicle_journeys.find_each_without_primary_key do |model|
-        referential_inserter.time_tables_vehicle_journeys << model
+        referential_inserter.vehicle_journey_time_table_relationships << model
       end
 
       vehicle_journey_purchase_window_relationship = Chouette::VehicleJourneyPurchaseWindowRelationship.where(vehicle_journey: vehicle_journeys)

@@ -14,22 +14,22 @@ en:
         zero:  "Destination"
         one:   "Destination"
         other: "Destinations"
-        dummy:
-          zero:  "Dummy"
-          one:   "Dummy"
-          other: "Dummy"
-        google_cloud_storage:
-          zero:  "Google Cloud Storage"
-          one:   "Google Cloud Storage"
-          other: "Google Cloud Storage"
-        sftp:
-          zero:  "SFTP"
-          one:   "SFTP"
-          other: "SFTP"
-        publication_api:
-          zero:  "Publication API"
-          one:   "Publication API"
-          other: "Publication APIs"
+      destination/dummy:
+        zero:  "Dummy"
+        one:   "Dummy"
+        other: "Dummy"
+      destination/google_cloud_storage:
+        zero:  "Google Cloud Storage"
+        one:   "Google Cloud Storage"
+        other: "Google Cloud Storage"
+      destination/sftp:
+        zero:  "SFTP"
+        one:   "SFTP"
+        other: "SFTP"
+      destination/publication_api:
+        zero:  "Publication API"
+        one:   "Publication API"
+        other: "Publication APIs"
     attributes:
       destination:
         name: "Name"
@@ -37,17 +37,17 @@ en:
         options: "Options"
         secret_file: "Secret file"
         _destroy: "Remove"
-        dummy:
-          result: Expected outcome
-          result_collection:
-            successful: Success
-            unexpected_failure: Unexpected failure
-            expected_failure: Expected failure
-        google_cloud_storage:
-          project: Projet
-          bucket:  Bucket
-        sftp:
-          host: Host
-          port: Port
-          directory: Directory
-          username: Username
+      destination/dummy:
+        result: Expected outcome
+        result_collection:
+          successful: Success
+          unexpected_failure: Unexpected failure
+          expected_failure: Expected failure
+      destination/google_cloud_storage:
+        project: Projet
+        bucket:  Bucket
+      destination/sftp:
+        host: Host
+        port: Port
+        directory: Directory
+        username: Username

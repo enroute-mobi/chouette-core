@@ -173,7 +173,8 @@ module EnhancedModelI18n
 
   private
   def i18n_key
-    try(:custom_i18n_key) || model_name.to_s.underscore.gsub('/', '_')
+    # Use Rails model_name.i18n_key instead of our custom algorithm
+    try(:custom_i18n_key) || model_name.i18n_key.to_s
   end
 end
 

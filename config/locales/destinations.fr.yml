@@ -17,22 +17,22 @@ fr:
         zero:  "Destination"
         one:   "Destination"
         other: "Destinations"
-        dummy:
-          zero:  "Dummy"
-          one:   "Dummy"
-          other: "Dummy"
-        google_cloud_storage:
-          zero:  "Google Cloud Storage"
-          one:   "Google Cloud Storage"
-          other: "Google Cloud Storage"
-        sftp:
-          zero:  "SFTP"
-          one:   "SFTP"
-          other: "SFTP"
-        publication_api:
-          zero:  "API de publication"
-          one:   "API de publication"
-          other: "APIs de publication"
+      destination/dummy:
+        zero:  "Dummy"
+        one:   "Dummy"
+        other: "Dummy"
+      destination/google_cloud_storage:
+        zero:  "Google Cloud Storage"
+        one:   "Google Cloud Storage"
+        other: "Google Cloud Storage"
+      destination/sftp:
+        zero:  "SFTP"
+        one:   "SFTP"
+        other: "SFTP"
+      destination/publication_api:
+        zero:  "API de publication"
+        one:   "API de publication"
+        other: "APIs de publication"
     attributes:
       destination:
         name: "Nom"
@@ -40,17 +40,17 @@ fr:
         options: "Options"
         secret_file: "Clé secrète"
         _destroy: "Supprimer"
-        dummy:
-          result: Résultat attendu
-          result_collection:
-            successful: Succès
-            unexpected_failure: Erreur non-controlée
-            expected_failure: Erreur controlée
-        google_cloud_storage:
-          project: Project
-          bucket:  Bucket
-        sftp:
-          host: Hôte
-          port: Port
-          directory: Répertoire
-          username: Nom d'utilisateur
+      destination/dummy:
+        result: Résultat attendu
+        result_collection:
+          successful: Succès
+          unexpected_failure: Erreur non-controlée
+          expected_failure: Erreur controlée
+      destination/google_cloud_storage:
+        project: Project
+        bucket:  Bucket
+      destination/sftp:
+        host: Hôte
+        port: Port
+        directory: Répertoire
+        username: Nom d'utilisateur

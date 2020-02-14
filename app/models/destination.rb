@@ -58,9 +58,6 @@ class Destination < ApplicationModel
   end
 
   private
-  def self.custom_i18n_key
-    model_name.to_s.underscore.gsub('/', '.')
-  end
 
   def api_is_not_already_used
     return unless publication_api.present?

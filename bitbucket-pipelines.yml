@@ -8,6 +8,7 @@ definitions:
         POSTGRES_DB: chouette
         POSTGRES_USER: chouette
         POSTGRES_PASSWORD: chouette
+      memory: 2048
   caches:
     bundler: ./vendor/bundle
     yarn: ./node_modules
@@ -18,6 +19,7 @@ definitions:
     - step: &unit-tests
         name: Unit tests
         image: ruby:2.6.4-slim-stretch
+        size: 2x
         caches:
           - bundler
           - yarn

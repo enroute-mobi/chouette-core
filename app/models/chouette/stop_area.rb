@@ -23,6 +23,7 @@ module Chouette
     # WARNING Only effective in the current Referential
     has_many :stop_points
     has_many :routes, through: :stop_points
+    has_many :lines, through: :routes
     has_many :specific_vehicle_journey_at_stops, :class_name => 'Chouette::VehicleJourneyAtStop', :foreign_key => "stop_area_id"
 
     scope :light, ->{ select(:id, :name, :city_name, :zip_code, :time_zone, :registration_number, :kind, :area_type, :time_zone, :stop_area_referential_id, :objectid) }
@@ -190,9 +191,9 @@ module Chouette
       Chouette::Geometry::StopAreaPresenter.new self
     end
 
-    def lines
-      []
-    end
+    # def lines
+    #   []
+    # end
 
     def self.commercial
       where kind: "commercial"

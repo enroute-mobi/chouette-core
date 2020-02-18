@@ -41,7 +41,7 @@ class Api::V1::DatasController < ActionController::Base
 
   def graphql
     target = @publication_api.workgroup.output.current
-    if !target
+    unless target
       render :missing_file_error, layout: 'api', status: 404
       return
       # target = Referential.last # Kept here for test purpose, to remove

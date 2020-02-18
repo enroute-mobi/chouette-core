@@ -10,4 +10,10 @@ class ChouetteSchema < GraphQL::Schema
 
   # Add built-in connections for pagination
   use GraphQL::Pagination::Connections
+
+  # Lazy load
+  lazy_resolve(LazyLoading::Routes, :routes)
+  lazy_resolve(LazyLoading::LineStopAreas, :stop_areas)
+  lazy_resolve(LazyLoading::RouteStopAreas, :stop_areas)
+  lazy_resolve(LazyLoading::Lines, :lines)
 end

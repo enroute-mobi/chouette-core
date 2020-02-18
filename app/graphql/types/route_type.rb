@@ -7,5 +7,8 @@ module Types
 
 		field :stop_areas, Types::StopAreaType.connection_type, null: false,
 			description: "The Route's StopAreas"
+		def stop_areas
+			LazyLoading::RouteStopAreas.new(context, object.id)
+		end
 	end
 end

@@ -36,14 +36,21 @@ class WebhookEvent
 
   def resources_are_identifiers
     resources.each do |resource_name, values|
-      unless values.is_a?(Hash)
+      unless values.is_a?(Array)
         errors.add resource_name, "hash required"
         next
       end
 
-      unless values.has_key? :id
-        errors.add resource_name, "identifier required"
-        next
+      values.each do |value|
+        unless value.is_a?(Hash)
+          errors.add resource_name, "hash required"
+          next
+        end
+
+        unless value.has_key? :id
+          errors.add resource_name, "identifier required"
+          next
+        end
       end
     end
   end
@@ -52,13 +59,16 @@ class WebhookEvent
     @resource_names ||= []
   end
 
-  def self.permitted_attributes
-    @permitted_attributes = (%w{type} + resource_names).map(&:to_sym)
-  end
-
   def self.resource(resource_name)
-    define_method "#{resource_name}=" do |values|
-      resources[resource_name] = values
+    define_method "#{resource_name}=" do |value|
+      if value.is_a?(String)
+        resources[resource_name] = value
+      else
+        # Array(hash) returns [[key, value], ...]
+        values = value.is_a?(Array) ? value : [value]
+        resources[resource_name] ||= []
+        resources[resource_name].concat values
+      end
     end
     alias_method "#{resource_name}s=", "#{resource_name}="
 

@@ -19,6 +19,10 @@ class WebhookEvent
 
   validates :type, inclusion: { in: TYPES }
 
+  def update_or_create?
+    !destroyed?
+  end
+
   def destroyed?
     type == DESTROYED
   end
@@ -108,6 +112,18 @@ class WebhookEvent
       !payload? and attributes.present?
     end
 
+  end
+
+  def netex_source
+    source = Netex::Source.new include_raw_xml: true
+
+    resources.each do |_, resource|
+      if resource.payload?
+        source.parse StringIO.new(resource.payload)
+      end
+    end
+
+    source
   end
 
   class StopAreaReferential < WebhookEvent

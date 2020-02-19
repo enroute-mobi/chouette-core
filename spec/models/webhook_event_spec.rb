@@ -19,7 +19,6 @@ RSpec.describe WebhookEvent do
 
   end
 
-
   describe "created/update event" do
 
     before do
@@ -104,6 +103,21 @@ RSpec.describe WebhookEvent do
         end
       end
 
+    end
+
+  end
+
+  describe "netex source" do
+
+    it "returns a Netex::Source which has parsed the payloads" do
+      stop_place_xml = %{<StopPlace id="42">
+  <Name>Test</Name>
+</StopPlace>}
+      event.test = "<stopPlaces>#{stop_place_xml}</stopPlaces>"
+
+      source = event.netex_source
+      expect(source.stop_places.count).to eq(1)
+      expect(source.stop_places.first).to have_attributes(id: "42", name: "Test", raw_xml: stop_place_xml)
     end
 
   end

@@ -27,21 +27,21 @@ class WebhookEvent
   validate :resources_are_identifiers, if: :destroyed?
 
   def resources_are_payloads
-    resources.each do |resource_name, values|
-      unless values.is_a?(String)
+    resources.each do |resource_name, resource|
+      unless resource.payload?
         errors.add resource_name, "payload required"
       end
     end
   end
 
   def resources_are_identifiers
-    resources.each do |resource_name, values|
-      unless values.is_a?(Array)
-        errors.add resource_name, "hash required"
+    resources.each do |resource_name, resource|
+      unless resource.attributes?
+        errors.add resource_name, "resource  required"
         next
       end
 
-      values.each do |value|
+      resource.attributes.each do |value|
         unless value.is_a?(Hash)
           errors.add resource_name, "hash required"
           next
@@ -61,19 +61,12 @@ class WebhookEvent
 
   def self.resource(resource_name)
     define_method "#{resource_name}=" do |value|
-      if value.is_a?(String)
-        resources[resource_name] = value
-      else
-        # Array(hash) returns [[key, value], ...]
-        values = value.is_a?(Array) ? value : [value]
-        resources[resource_name] ||= []
-        resources[resource_name].concat values
-      end
+      resources[resource_name].value = value
     end
     alias_method "#{resource_name}s=", "#{resource_name}="
 
     define_method "#{resource_name}" do
-      resources[resource_name]
+      resources[resource_name].value
     end
     alias_method "#{resource_name}s", "#{resource_name}"
 
@@ -81,7 +74,40 @@ class WebhookEvent
   end
 
   def resources
-    @resources ||= Hash.new
+    @resources ||= Hash.new { |h,k| h[k] = Resource.new }
+  end
+
+  class Resource
+
+    attr_accessor :payload
+
+    def attributes
+      @attributes ||= []
+    end
+
+    def value=(value)
+      case value
+      when String
+        self.payload = value
+      when Array
+        attributes.concat(value)
+      else
+        attributes << value
+      end
+    end
+
+    def value
+      payload || attributes
+    end
+
+    def payload?
+      payload.present?
+    end
+
+    def attributes?
+      !payload? and attributes.present?
+    end
+
   end
 
   class StopAreaReferential < WebhookEvent

@@ -6,16 +6,6 @@ RSpec.describe Chouette::Sync::Updater do
 
   end
 
-  # class Resource
-
-  #   attr_accessor :id
-
-  #   def initialize(attributes = {})
-  #     attributes.each { |k,v| send "#{k}=", v }
-  #   end
-
-  # end
-
   def resource(id)
     double id: id, name: "Name #{id}"
   end
@@ -116,7 +106,6 @@ RSpec.describe Chouette::Sync::Updater do
 
     end
 
-
     let(:updater) do
       Chouette::Sync::Updater.new source: source, target: target, update_batch_size: 3,
                                   resource_type: :resource, resource_id_attribute: :id,
@@ -197,7 +186,6 @@ RSpec.describe Chouette::Sync::Updater do
       end
 
     end
-
 
   end
 

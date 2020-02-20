@@ -16,6 +16,7 @@ RSpec.describe Api::V1::StopAreaReferentialsController do
 
       before do
         allow(ApiKey).to receive(:find_by).with(token: token).and_return(double(workgroup: double))
+        allow(controller).to receive(:stop_area_referential).and_return(double)
         request.env['HTTP_AUTHORIZATION'] =
           ActionController::HttpAuthentication::Token.encode_credentials(token)
       end
@@ -25,7 +26,6 @@ RSpec.describe Api::V1::StopAreaReferentialsController do
         let(:event_attributes) do
           {
             type: "destroyed",
-            stop_place: { "id" => "42" },
             quays: [{ "id" => "42" },{ "id" => "43" }],
           }
         end

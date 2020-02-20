@@ -1,12 +1,22 @@
 class Api::V1::StopAreaReferentialsController < ActionController::Base
   respond_to :json, :xml
-  wrap_parameters :stop_area_referential, include: WebhookEvent::StopAreaReferential.permitted_attributes
+  wrap_parameters :stop_area_referential, include: [ :type, *WebhookEvent::StopAreaReferential.resource_names ]
 
   layout false
   before_action :authenticate
 
   def webhook
     if event.valid?
+      if event.update_or_create?
+        synchronization.source = event.source
+        synchronization.update_or_create
+      end
+
+      if event.destroyed?
+        deleted_ids = event.stop_place_ids + event.quay_ids
+        synchronization.delete deleted_ids
+      end
+
       render json: {}, status: :ok
     else
       render json: { message: event.errors.full_messages }, status: :unprocessable_entity
@@ -19,8 +29,13 @@ class Api::V1::StopAreaReferentialsController < ActionController::Base
     @event ||= WebhookEvent::StopAreaReferential.new event_params
   end
 
-  def current_stop_area_referential
-    @current_stop_area_referential ||= current_workgroup.stop_area_referential.tap do |stop_area_referential|
+  def synchronization
+    @synchronization ||=
+      Chouette::Sync::StopArea::Netex.new target: stop_area_referential
+  end
+
+  def stop_area_referential
+    @stop_area_referential ||= current_workgroup.stop_area_referential.tap do |stop_area_referential|
       raise ActiveRecord::RecordNotFound unless stop_area_referential.id == params[:id]
     end
   end

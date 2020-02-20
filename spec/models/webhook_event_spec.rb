@@ -63,6 +63,15 @@ RSpec.describe WebhookEvent do
 
   end
 
+  describe "identifier methods" do
+
+    it "returns the identifiers provided in resource attributes" do
+      event.test = [ { id: 41 }, { id: 42 }, {id: 43} ]
+      expect(event.test_ids).to contain_exactly(41,42,43)
+    end
+
+  end
+
   describe "destroyed event" do
 
     before do

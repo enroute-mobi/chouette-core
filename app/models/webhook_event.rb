@@ -74,6 +74,10 @@ class WebhookEvent
     end
     alias_method "#{resource_name}s", "#{resource_name}"
 
+    define_method "#{resource_name}_ids" do
+      resources[resource_name].identifiers
+    end
+
     resource_names << "#{resource_name}" << "#{resource_name}s"
   end
 
@@ -110,6 +114,10 @@ class WebhookEvent
 
     def attributes?
       !payload? and attributes.present?
+    end
+
+    def identifiers
+      attributes.map { |a| a[:id] }
     end
 
   end

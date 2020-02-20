@@ -191,7 +191,7 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.12.2)
-    concurrent-ruby (1.1.5)
+    concurrent-ruby (1.1.6)
     countries (3.0.0)
       i18n_data (~> 0.8.0)
       sixarm_ruby_unaccent (~> 1.1)
@@ -321,6 +321,10 @@ GEM
       multi_json (~> 1.11)
       os (>= 0.9, < 2.0)
       signet (~> 0.7)
+    graphiql-rails (1.7.0)
+      railties
+      sprockets-rails
+    graphql (1.10.2)
     gretel (3.0.9)
       rails (>= 3.1.0)
     has_scope (0.7.2)
@@ -743,6 +747,8 @@ DEPENDENCIES
   geokit
   georuby (= 2.3.0)
   google-cloud-storage (> 1.4.0)
+  graphiql-rails
+  graphql
   gretel
   gtfs!
   has_array_of!

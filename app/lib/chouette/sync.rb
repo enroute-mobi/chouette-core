@@ -3,6 +3,9 @@ module Chouette
     class Base
 
       attr_accessor :source, :target
+      attr_accessor :delete_batch_size, :update_batch_size
+      attr_accessor :resource_type, :resource_id_attribute, :resource_decorator
+      attr_accessor :model_type, :model_id_attribute
 
       def initialize(options = {})
         options.each { |k,v| send "#{k}=", v }
@@ -14,7 +17,7 @@ module Chouette
       end
 
       def update_or_create
-        updater.update
+        updater.update_or_create
       end
 
       def delete(resource_identifiers)
@@ -28,11 +31,13 @@ module Chouette
       end
 
       def updater_class
-        @updater_class ||= "Chouette::Sync::#{model_class_name}::Updater".constantize
+        # @updater_class ||= "Chouette::Sync::#{model_class_name}::Updater".constantize
+        @updater_class ||= Chouette::Sync::Updater
       end
 
       def deleter_class
-        @deleter_class ||= "Chouette::Sync::#{model_class_name}::Deleter".constantize
+        @deleter_class ||= Chouette::Sync::Deleter
+        # @deleter_class ||= "Chouette::Sync::#{model_class_name}::Deleter".constantize
       end
 
       # Chouette::Sync::Test -> Test
@@ -41,12 +46,31 @@ module Chouette
         @model_class_name ||= self.class.name.split("::").third
       end
 
+      # When subclasses needs to create several updaters
+      def new_updater(options = {})
+        default_options = {
+          source: source, target: target,
+          update_batch_size: update_batch_size,
+          resource_type: resource_type, resource_id_attribute: resource_id_attribute,
+          resource_decorator: resource_decorator,
+          model_type: model_type, model_id_attribute: model_id_attribute
+        }.delete_if { |_,v| v.nil? }
+        options = default_options.merge(options)
+        updater_class.new options
+      end
+
       def updater
-        @updater ||= updater_class.new source: source, target: target
+        @updater ||= new_updater
       end
 
       def deleter
-        @deleter ||= deleter_class.new target: target
+        options = {
+          target: target,
+          delete_batch_size: delete_batch_size,
+          model_type: model_type, model_id_attribute: model_id_attribute
+        }.delete_if { |_,v| v.nil? }
+
+        @deleter ||= deleter_class.new options
       end
 
     end

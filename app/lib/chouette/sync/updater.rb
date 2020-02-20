@@ -37,7 +37,7 @@ module Chouette
       end
 
       def processed_identifiers
-        @processed_identifiers = []
+        @processed_identifiers ||= []
       end
 
       def counts
@@ -184,9 +184,17 @@ module Chouette
           end
         end
 
+        def resolve(reference_type, resource_id)
+          # use a cache ? with limited size ?
+          # like https://github.com/SamSaffron/lru_redux/blob/master/lib/lru_redux/cache.rb
+          updater.target.send("#{reference_type}s").find_by(resource_id_attribute => resource_id)
+        end
+
       end
 
       class ResourceDecorator < SimpleDelegator
+
+        attr_reader :batch
 
         # Batch is optionnal .. for tests
         def initialize(resource, batch: nil)
@@ -194,12 +202,7 @@ module Chouette
           @batch = batch
         end
 
-        def resolve(reference_type, resource_id)
-          # TODO
-          # batch.updater.target.send("#{reference_type}s").find_by(resource_id_attribute => resource_id)
-          # use a cache ? with limited size ?
-          # like https://github.com/SamSaffron/lru_redux/blob/master/lib/lru_redux/cache.rb
-        end
+        delegate :resolve, to: :batch
 
       end
 

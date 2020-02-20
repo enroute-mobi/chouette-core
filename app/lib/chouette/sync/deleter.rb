@@ -24,7 +24,7 @@ module Chouette
       def delete_from(*updaters)
         useless_identifiers = Set.new(existing_identifiers)
         updaters.each do |updater|
-          useless_identifiers.substract updater.processed_identifiers
+          useless_identifiers.subtract updater.processed_identifiers
         end
         delete useless_identifiers
       end

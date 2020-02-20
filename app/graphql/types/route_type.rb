@@ -4,6 +4,7 @@ module Types
 
 		field :id, Integer, null: false
 		field :objectid, String, null: false
+		field :name, String, null: true
 
 		field :stop_areas, Types::StopAreaType.connection_type, null: false,
 			description: "The Route's StopAreas"

@@ -4,6 +4,7 @@ module Types
 
 		field :id, Integer, null: false
 		field :objectid, String, null: false
+		field :name, String, null: true
 
 		field :routes, Types::RouteType.connection_type, null: true,
 			description: "The Line's Routes"

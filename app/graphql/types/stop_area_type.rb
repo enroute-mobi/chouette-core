@@ -4,6 +4,7 @@ module Types
 
 		field :id, Integer, null: false
 		field :objectid, String, null: false
+		field :name, String, null: true
 
 		field :lines, Types::LineType.connection_type, null: true,
 			description: "The StopArea's Lines"

@@ -20,7 +20,7 @@ RSpec.describe Chouette::Sync::Base do
 
     it "is delegated to Updater" do
       allow(sync).to receive(:updater).and_return(updater)
-      expect(updater).to receive(:update)
+      expect(updater).to receive(:update_or_create)
 
       sync.update_or_create
     end

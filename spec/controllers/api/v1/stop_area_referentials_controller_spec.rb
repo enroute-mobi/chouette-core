@@ -9,6 +9,24 @@ RSpec.describe Api::V1::StopAreaReferentialsController do
       end
     end
 
+    class MockSynchronisation
+
+      attr_accessor :source
+
+      def update_or_create
+        @update_or_create = true
+      end
+
+      def update_or_create?
+        @update_or_create
+      end
+
+      def delete(deleted_ids)
+        @deleted_ids = deleted_ids
+      end
+
+    end
+
     context "with authentication" do
 
       let(:token) { 'secret' }
@@ -17,6 +35,7 @@ RSpec.describe Api::V1::StopAreaReferentialsController do
       before do
         allow(ApiKey).to receive(:find_by).with(token: token).and_return(double(workgroup: double))
         allow(controller).to receive(:stop_area_referential).and_return(double)
+        allow(controller).to receive(:synchronization).and_return(MockSynchronisation.new)
         request.env['HTTP_AUTHORIZATION'] =
           ActionController::HttpAuthentication::Token.encode_credentials(token)
       end

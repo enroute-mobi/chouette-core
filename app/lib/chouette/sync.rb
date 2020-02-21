@@ -31,13 +31,21 @@ module Chouette
       end
 
       def updater_class
-        # @updater_class ||= "Chouette::Sync::#{model_class_name}::Updater".constantize
-        @updater_class ||= Chouette::Sync::Updater
+        @updater_class ||=
+          begin
+            "Chouette::Sync::#{model_class_name}::Updater".constantize
+          rescue NameError
+            Chouette::Sync::Updater
+          end
       end
 
       def deleter_class
-        @deleter_class ||= Chouette::Sync::Deleter
-        # @deleter_class ||= "Chouette::Sync::#{model_class_name}::Deleter".constantize
+        @deleter_class ||=
+          begin
+            "Chouette::Sync::#{model_class_name}::Deleter".constantize
+          rescue NameError
+            Chouette::Sync::Deleter
+          end
       end
 
       # Chouette::Sync::Test -> Test

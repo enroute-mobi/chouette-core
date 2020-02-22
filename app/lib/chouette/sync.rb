@@ -14,6 +14,8 @@ module Chouette
       def synchronize
         update_or_create
         delete_after_update_or_create
+
+        after_synchronisation
       end
 
       def update_or_create
@@ -28,6 +30,11 @@ module Chouette
 
       def delete_after_update_or_create
         deleter.delete_from(updater)
+      end
+
+      # To be overrided
+      def after_synchronisation
+
       end
 
       def updater_class

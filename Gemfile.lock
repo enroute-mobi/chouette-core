@@ -43,10 +43,11 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: 0369ad5fbf686b1a37278dd085768086400bf803
+  revision: eef7ee72433a468e74d5fc8909a41a9414783b27
   specs:
     netex (0.1.0)
       ox
+      rgeo-proj4
       saxerator
 
 GIT
@@ -285,8 +286,8 @@ GEM
     faraday_middleware (0.13.1)
       faraday (>= 0.7.4, < 1.0)
     ffaker (2.1.0)
-    ffi (1.11.3)
-    ffi-geos (2.0.0)
+    ffi (1.12.2)
+    ffi-geos (2.1.0)
       ffi (>= 1.0.0)
     flag-icons-rails (3.1.0)
       sass (~> 3.2)
@@ -597,7 +598,7 @@ GEM
     sass-listen (4.0.0)
       rb-fsevent (~> 0.9, >= 0.9.4)
       rb-inotify (~> 0.9, >= 0.9.7)
-    sassc (2.1.0)
+    sassc (2.2.1)
       ffi (~> 1.9)
     sassc-rails (2.1.2)
       railties (>= 4.0.0)
@@ -808,7 +809,6 @@ DEPENDENCIES
   rspec-snapshot
   rspec_junit_formatter
   rubyzip (~> 1.3.0)
-  sassc (= 2.1.0)
   sassc-rails
   seedbank (= 0.4.0)
   select2-rails (~> 4.0, >= 4.0.3)

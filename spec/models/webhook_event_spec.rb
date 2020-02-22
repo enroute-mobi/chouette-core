@@ -1,8 +1,8 @@
 RSpec.describe WebhookEvent do
 
-  subject(:event) { Test.new }
+  subject(:event) { TestWebhookEvent.new }
 
-  class Test < WebhookEvent
+  class TestWebhookEvent < WebhookEvent
 
     resource :test
 
@@ -119,7 +119,7 @@ RSpec.describe WebhookEvent do
   describe "netex source" do
 
     it "returns a Netex::Source which has parsed the payloads" do
-      stop_place_xml = %{<StopPlace id="42">
+      stop_place_xml = %{<StopPlace id='42'>
   <Name>Test</Name>
 </StopPlace>}
       event.test = "<stopPlaces>#{stop_place_xml}</stopPlaces>"

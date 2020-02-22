@@ -124,6 +124,7 @@ class WebhookEvent
 
   def netex_source
     source = Netex::Source.new include_raw_xml: true
+    source.transformers << Netex::Transformer::LocationFromCoordinates.new
 
     resources.each do |_, resource|
       if resource.payload?

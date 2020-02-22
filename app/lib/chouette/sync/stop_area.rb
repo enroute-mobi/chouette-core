@@ -27,28 +27,20 @@ module Chouette::Sync
         quay_updater.update_or_create
       end
 
-      # Decorator can report here when they can find the expect parent
-      def pending_parent(resource_id, parent_ref)
-        pending_parents[resource_id] ||= parent_ref
-      end
-
-      def pending_parents
-        @pending_parents ||= {}
-      end
-
       def delete_after_update_or_create
         deleter.delete_from(quay_updater, stop_place_updater)
+      end
 
-        pending_parents.each do |resource_id, parent_ref|
-          # TODO
-          # could be processed in batch
+      def after_synchronisation
+        [stop_place_updater, quay_updater].each do |updater|
+          updater.update_pending_parents
         end
       end
 
       class Decorator < Chouette::Sync::Updater::ResourceDecorator
 
         # Use type_of_place found in the id when no defined
-        CANDIDATE_TYPES = %{quay monomodalStopPlace multimodalStopPlace}
+        CANDIDATE_TYPES = %w{quay monomodalStopPlace multimodalStopPlace}
         def type_of_place_in_id
           CANDIDATE_TYPES.find { |type| id.downcase.include?(type.downcase) }
         end
@@ -81,23 +73,25 @@ module Chouette::Sync
         end
 
         def stop_area_parent_ref
-          parent_site_ref || parent_zone_ref
+          (parent_site_ref || parent_zone_ref)&.ref
         end
 
+        delegate :pending_parent, :pending_referent, to: :updater, allow_nil: true
+
         def stop_area_parent_id
-          @stop_area_parent_id ||=
-            begin
-              resolve(:stop_area, stop_area_parent_ref).tap do |parent_id|
-                if parent_id.present? and batch&.updater
-                  batch.updater.pending_parent id, stop_area_parent_ref
-                end
-              end
-            end
+          return unless stop_area_parent_ref
+
+          @stop_area_parent_id ||= resolve(:stop_area, stop_area_parent_ref).tap do |parent_id|
+            pending_parent id, stop_area_parent_ref if parent_id.nil?
+          end
         end
 
         def stop_area_referent_id
           return unless stop_area_is_referent
-          resolve :stop_area, derived_from_object_ref
+
+          @stop_area_referent_id ||= resolve(:stop_area, derived_from_object_ref).tap do |referent_id|
+            pending_referent id, derived_from_object_ref if referent_id.nil?
+          end
         end
 
         def stop_area_provider_id
@@ -105,26 +99,101 @@ module Chouette::Sync
           resolve :stop_area_provider, data_source_ref
         end
 
-        # TODO How to manage
-        # confirmed_at
-        # created_at
-        # deleted_at
-        #
-        # /!\ nil values can be ignored
         def model_attributes
           {
             name: name,
+            area_type: stop_area_type,
             postal_region: postal_address&.postal_region,
             city_name: stop_area_city_name,
             object_version: stop_area_object_version,
-            is_referent: stop_area_is_referent,
             latitude: latitude,
             longitude: longitude,
-            import_xml: raw_xml,
-            parent_id: stop_area_parent_id
+            is_referent: stop_area_is_referent,
+            parent_id: stop_area_parent_id,
+            status: :confirmed,
+            import_xml: raw_xml
           }
         end
 
+      end
+
+    end
+
+    class Updater < Chouette::Sync::Updater
+      # Very Verbose. To be replaced by retry meachanism on not ready resources
+
+      # Decorator can report here when they can find the expect parent
+      def pending_parent(resource_id, parent_ref)
+        pending_parent_resolver.declare(resource_id, parent_ref)
+      end
+      def update_pending_parents
+        pending_parent_resolver.update
+      end
+
+      # Decorator can report here when they can find the expect referent
+      def pending_referent(resource_id, referent_ref)
+        pending_referent_resolver.declare(resource_id, referent_ref)
+      end
+      def update_pending_referents
+        pending_referent_resolver.update
+      end
+
+      def pending_referent_resolver
+        @pending_referent_resolver ||= PendingResolver.new(self, :referent)
+      end
+      def pending_parent_resolver
+        @pending_parent_resolver ||= PendingResolver.new(self, :parent)
+      end
+
+      class PendingResolver
+
+        def initialize(updater, attribute)
+          @updater, @attribute = updater, attribute
+        end
+        attr_reader :attribute, :updater
+
+        delegate :report_invalid_model, :scope, :model_id_attribute, to: :updater
+
+        def declare(resource_id, reference)
+          pendings[resource_id] ||= reference
+        end
+
+        def pendings
+          @pendings ||= {}
+        end
+
+        def update
+          pendings.each do |resource_id, reference|
+            child = scope.find_by(model_id_attribute => resource_id)
+            referenced = scope.find_by(model_id_attribute => reference)
+
+            unless referenced
+              Rails.logger.warn "Can't find #{attribute} #{reference} for StopArea #{resource_id}"
+              next
+            end
+
+            unless child.update_attribute attribute, referenced
+              report_invalid_model(child)
+            end
+          end
+        end
+
+      end
+
+    end
+
+    class Deleter < Chouette::Sync::Deleter
+
+      def now
+        now ||= Time.now
+      end
+
+      def existing_models(identifiers = nil)
+        super(identifiers).where(deleted_at: nil)
+      end
+
+      def delete_all(deleted_scope)
+        deleted_scope.update_all deleted_at: now
       end
 
     end

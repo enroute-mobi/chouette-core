@@ -22,7 +22,9 @@ module Chouette
       end
 
       def transaction(&block)
-        target.class.transaction(&block)
+        CustomFieldsSupport.within_workgroup(target.workgroup) do
+          target.class.transaction(&block)
+        end
       end
 
       def update_or_create
@@ -52,8 +54,9 @@ module Chouette
         counts[type] += 1
       end
 
-      def report_invalid_model(model, resource)
-        puts [model, resource].inspect
+      def report_invalid_model(model, resource = nil)
+        resource_part = resource ? " from #{resource.inspect}" : ""
+        Rails.logger.warn "Invalid model in synchronization: #{model.inspect} #{model.errors.inspect}#{resource_part}"
       end
 
       # Collection to be modified in the target: lines, stop_areas, etc
@@ -202,7 +205,7 @@ module Chouette
           @batch = batch
         end
 
-        delegate :resolve, to: :batch
+        delegate :resolve, :updater, to: :batch
 
       end
 

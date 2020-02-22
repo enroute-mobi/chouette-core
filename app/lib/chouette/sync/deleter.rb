@@ -39,17 +39,21 @@ module Chouette
         @scope ||= target.send("#{model_type}s")
       end
 
-      def existing_models(identifiers)
-        scope.where(model_id_attribute => identifiers)
+      def existing_models(identifiers = nil)
+        if identifiers
+          scope.where(model_id_attribute => identifiers)
+        else
+          scope.where.not(model_id_attribute => nil)
+        end
       end
 
       def existing_identifiers
-        scope.where.not(model_id_attribute => nil).distinct.pluck(model_id_attribute)
+        existing_models.distinct(model_id_attribute).pluck(model_id_attribute)
       end
 
       # To be customized
-      def delete_all(scope)
-        scope.delete_all
+      def delete_all(deleted_scope)
+        deleted_scope.delete_all
       end
 
     end

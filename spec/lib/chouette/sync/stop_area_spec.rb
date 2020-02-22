@@ -48,6 +48,8 @@ RSpec.describe Chouette::Sync::StopArea do
     let(:source) do
       Netex::Source.new.tap do |source|
         source.include_raw_xml = true
+        source.transformers << Netex::Transformer::LocationFromCoordinates.new
+
         source.parse StringIO.new(xml)
       end
     end
@@ -60,10 +62,28 @@ RSpec.describe Chouette::Sync::StopArea do
       target.stop_areas.create! name: "Old Name", registration_number: "FR::monomodalStopPlace:45624:FR1"
     end
 
+    let(:created_stop_area) do
+      stop_area("FR::multimodalStopPlace:424920:FR1")
+    end
+
+    def stop_area(registration_number)
+      target.stop_areas.find_by(registration_number: registration_number)
+    end
+
     it "should create the StopArea FR::multimodalStopPlace:424920:FR1" do
       sync.synchronize
 
-      expect(target.stop_areas.where(registration_number: "FR::multimodalStopPlace:424920:FR1")).to exist
+      expected_attributes = {
+        name: "Petits Ponts",
+        area_type: "lda",
+        object_version: 811108,
+        city_name: "Pantin",
+        postal_region: "93055",
+        longitude: 2.399185394712145,
+        latitude: 48.8903924223594,
+        status: :confirmed
+      }
+      expect(created_stop_area).to have_attributes(expected_attributes)
     end
 
     it "should update the StopArea FR::monomodalStopPlace:45624:FR1" do
@@ -71,9 +91,14 @@ RSpec.describe Chouette::Sync::StopArea do
 
       expected_attributes = {
         name: "Petits Ponts",
+        area_type: "zdlp",
         object_version: 45624,
         city_name: "Pantin",
         postal_region: "93055",
+        longitude: 2.399185394712145,
+        latitude: 48.8903924223594,
+        parent: stop_area("FR::multimodalStopPlace:424920:FR1"),
+        status: :confirmed
       }
       expect(existing_stop_area.reload).to have_attributes(expected_attributes)
     end
@@ -82,7 +107,7 @@ RSpec.describe Chouette::Sync::StopArea do
       useless_stop_area =
         target.stop_areas.create! name: "Useless", registration_number: "unknown"
       sync.synchronize
-      expect(target.stop_areas.where(id: useless_stop_area)).to_not exist
+      expect(useless_stop_area.reload).to be_deactivated
     end
 
   end

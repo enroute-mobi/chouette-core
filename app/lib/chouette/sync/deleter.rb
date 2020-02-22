@@ -38,7 +38,7 @@ module Chouette
       end
 
       def scope
-        @scope ||= target.send("#{model_type}s")
+        @scope ||= target.send(model_type.to_s.pluralize)
       end
 
       def existing_models(identifiers = nil)

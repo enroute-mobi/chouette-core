@@ -12,7 +12,7 @@ module Chouette
       attr_accessor :model_type, :model_id_attribute
 
       def resources
-        @resources ||= source.send("#{resource_type}s")
+        @resources ||= source.send(resource_type.to_s.pluralize)
       end
 
       def resources_in_batches(&block)
@@ -59,7 +59,7 @@ module Chouette
 
       # Collection to be modified in the target: lines, stop_areas, etc
       def scope
-        @scope ||= target.send("#{model_type}s")
+        @scope ||= target.send(model_type.to_s.pluralize)
       end
 
       def models

@@ -132,7 +132,7 @@ module Chouette
           @updater = updater
         end
 
-        delegate :resource_id_attribute, :models, :resource_decorator, to: :updater
+        delegate :resource_id_attribute, :model_id_attribute, :models, :resource_decorator, to: :updater
 
         def decorate(resource)
           resource_decorator.new resource, batch: self
@@ -185,12 +185,25 @@ module Chouette
           end
         end
 
-        def resolve(reference_type, resource_id)
-          # use a cache ? with limited size ?
-          # like https://github.com/SamSaffron/lru_redux/blob/master/lib/lru_redux/cache.rb
-          updater.target.send("#{reference_type}s").find_by(resource_id_attribute => resource_id)
+        def resolve(reference_type, resource_ids)
+          if resource_ids.is_a? Array
+            resolve_multiple reference_type, resource_ids
+          else
+            resolve_one reference_type, resource_ids
+          end
         end
 
+        def resolve_one(reference_type, resource_id)
+          resolve_multiple(reference_type, [resource_id]).first
+        end
+
+        def resolve_multiple(reference_type, resource_ids)
+          resource_ids.compact!
+          return [] if resource_ids.empty?
+
+          updater.target.send(reference_type.to_s.pluralize).
+            where(model_id_attribute => resource_ids).pluck(:id)
+        end
       end
 
       class ResourceDecorator < SimpleDelegator

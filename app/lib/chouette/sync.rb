@@ -8,6 +8,10 @@ module Chouette
       attr_accessor :model_type, :model_id_attribute
 
       def initialize(options = {})
+        default_options = {
+          model_id_attribute: :registration_number
+        }
+        options.reverse_merge!(default_options)
         options.each { |k,v| send "#{k}=", v }
       end
 

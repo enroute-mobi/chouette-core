@@ -7,7 +7,6 @@ module Chouette::Sync
           resource_id_attribute: :id,
           resource_decorator: Decorator,
           model_type: :stop_area,
-          model_id_attribute: :registration_number
         }
         options.reverse_merge!(default_options)
         super options

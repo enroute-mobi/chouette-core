@@ -40,11 +40,7 @@ class CrossReferentialIndexEntry < ActiveRecord::Base
     def rebuild_index_for_relation_in_referential(rel, referential)
       CrossReferentialIndexEntry.bulk_insert do |worker|
         begin
-          if rel.target_klass.respond_to?(:within_workgroup)
-            rel.target_klass.within_workgroup(referential.workgroup) do
-              do_rebuild_index_for_relation_in_referential rel, referential, worker
-            end
-          else
+          CustomFieldsSupport.within_workgroup(referential.workgroup) do
             do_rebuild_index_for_relation_in_referential rel, referential, worker
           end
         rescue => e

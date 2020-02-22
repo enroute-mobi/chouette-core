@@ -26,6 +26,11 @@ module Chouette
         deleter.delete resource_identifiers
       end
 
+      def counts
+        counters = [updater, deleter].map(&:counters)
+        Counters.sum(counters).to_hash
+      end
+
       protected
 
       def delete_after_update_or_create

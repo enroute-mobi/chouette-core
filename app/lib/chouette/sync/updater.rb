@@ -42,19 +42,17 @@ module Chouette
         @processed_identifiers ||= []
       end
 
-      def counts
-        @counts ||= Hash.new { |h,k| h[k] = 0 }
-      end
-
-      def count(type)
-        counts[type]
+      def counters
+        @counters ||= Counters.new
       end
 
       def increment_count(type)
-        counts[type] += 1
+        counters.increment_count(type)
       end
 
       def report_invalid_model(model, resource = nil)
+        counters.increment_count(:errors)
+
         resource_part = resource ? " from #{resource.inspect}" : ""
         Rails.logger.warn "Invalid model in synchronization: #{model.inspect} #{model.errors.inspect}#{resource_part}"
       end

@@ -25,6 +25,10 @@ RSpec.describe Api::V1::StopAreaReferentialsController do
         @deleted_ids = deleted_ids
       end
 
+      def counts
+        @counts ||= {}
+      end
+
     end
 
     context "with authentication" do

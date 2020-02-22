@@ -37,6 +37,11 @@ module Chouette::Sync
         end
       end
 
+      def counts
+        counters = [stop_place_updater, quay_updater, deleter].map(&:counters)
+        Counters.sum(counters).to_hash
+      end
+
       class Decorator < Chouette::Sync::Updater::ResourceDecorator
 
         # Use type_of_place found in the id when no defined

@@ -38,7 +38,7 @@ RSpec.describe Chouette::Sync::Deleter do
     end
 
     it "increments the delete count" do
-      expect { deleter.delete(resource_identifiers) }.to change(deleter, :delete_count).by(useless_models.size)
+      expect { deleter.delete(resource_identifiers) }.to change { deleter.counters.delete }.by(useless_models.size)
     end
 
   end

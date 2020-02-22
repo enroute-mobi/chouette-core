@@ -5,8 +5,6 @@ module Chouette
       def initialize(options = {})
         options.reverse_merge!(delete_batch_size: 1000)
         options.each { |k,v| send "#{k}=", v }
-
-        @delete_count = 0
       end
 
       attr_accessor :target, :delete_batch_size
@@ -29,10 +27,14 @@ module Chouette
         delete useless_identifiers
       end
 
+      def counters
+        @counters ||= Counters.new
+      end
+
       protected
 
       def increment_count(count)
-        @delete_count += count
+        counters.increment_count(:delete, count: count)
       end
 
       def scope

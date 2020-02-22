@@ -8,7 +8,7 @@ class Api::V1::StopAreaReferentialsController < ActionController::Base
   def webhook
     if event.valid?
       if event.update_or_create?
-        synchronization.source = event.source
+        synchronization.source = event.netex_source
         synchronization.update_or_create
       end
 
@@ -17,7 +17,8 @@ class Api::V1::StopAreaReferentialsController < ActionController::Base
         synchronization.delete deleted_ids
       end
 
-      render json: {}, status: :ok
+      logger.info "Synchronization done: #{synchronization.counts}"
+      render json: synchronization.counts, status: :ok
     else
       render json: { message: event.errors.full_messages }, status: :unprocessable_entity
     end
@@ -36,7 +37,7 @@ class Api::V1::StopAreaReferentialsController < ActionController::Base
 
   def stop_area_referential
     @stop_area_referential ||= current_workgroup.stop_area_referential.tap do |stop_area_referential|
-      raise ActiveRecord::RecordNotFound unless stop_area_referential.id == params[:id]
+      raise ActiveRecord::RecordNotFound unless stop_area_referential.id == params[:id].to_i
     end
   end
 
@@ -68,7 +69,7 @@ class Api::V1::StopAreaReferentialsController < ActionController::Base
   def authenticate
     authenticate_or_request_with_http_token do |token|
       api_key = ApiKey.find_by token: token
-      @current_workgroup = api_key.workgroup
+      @current_workgroup = api_key&.workgroup
 
       @current_workgroup.present?
     end

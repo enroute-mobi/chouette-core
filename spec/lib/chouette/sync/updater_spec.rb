@@ -43,12 +43,22 @@ RSpec.describe Chouette::Sync::Updater do
 
   end
 
+  describe "#report_invalid_model" do
+
+    let(:model) { double errors: [] }
+
+    it "increments the errors counter" do
+      expect { updater.report_invalid_model(model) }.to change { updater.counters.errors }.by(1)
+    end
+
+  end
+
   describe Chouette::Sync::Updater::Batch do
 
     def create_batch(resources = nil, updater: nil)
       resources ||= self.resources(1,2,3)
       updater ||= double resource_id_attribute: :id
-      batch = Chouette::Sync::Updater::Batch.new resources, updater: updater
+      Chouette::Sync::Updater::Batch.new resources, updater: updater
     end
 
     describe "#resource_id_attribute" do
@@ -121,8 +131,8 @@ RSpec.describe Chouette::Sync::Updater do
         expect { updater.update_or_create }.to change { target.stop_areas.count }.by(1)
       end
 
-      it "increments the :create count" do
-        expect { updater.update_or_create }.to change{ updater.count(:create) }.by(1)
+      it "increments the create_count" do
+        expect { updater.update_or_create }.to change{ updater.counters.create }.by(1)
       end
 
     end
@@ -137,7 +147,7 @@ RSpec.describe Chouette::Sync::Updater do
       end
 
       it "increments the :create count" do
-        expect { updater.update_or_create }.to change{ updater.count(:create) }.by(resource_count)
+        expect { updater.update_or_create }.to change{ updater.counters.create }.by(resource_count)
       end
 
     end
@@ -156,7 +166,7 @@ RSpec.describe Chouette::Sync::Updater do
       end
 
       it "increments the :update count" do
-        expect { updater.update_or_create }.to change{ updater.count(:update) }.by(1)
+        expect { updater.update_or_create }.to change{ updater.counters.update }.by(1)
       end
 
     end
@@ -179,9 +189,9 @@ RSpec.describe Chouette::Sync::Updater do
         }.from(resource_count).to(0)
       end
 
-      it "increments the :update count" do
+      it "increments the update count" do
         expect { updater.update_or_create }.to change{
-          updater.count(:update)
+          updater.counters.update
         }.by(resource_count)
       end
 

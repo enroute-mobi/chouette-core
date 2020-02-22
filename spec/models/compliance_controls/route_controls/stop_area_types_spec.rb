@@ -45,7 +45,6 @@ RSpec.describe RouteControl::StopAreaTypes, :type => :model do
 
     it "should create a message" do
       expect{compliance_check.process}.to change{ComplianceCheckMessage.count}.by 1
-      ap ComplianceCheckMessage.all
       message = ComplianceCheckMessage.last
       expect(message.status).to eq "ERROR"
       expect(message.compliance_check_set).to eq compliance_check_set

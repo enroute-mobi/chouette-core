@@ -47,6 +47,7 @@ pipelines:
       - step:
           name: Update gems
           image: ruby:2.6.4-slim-stretch
+          size: 2x
           caches:
             - bundler
             - yarn
@@ -61,6 +62,7 @@ pipelines:
             - export RAILS_DB_NAME=chouette
             - export RAILS_DB_HOST=localhost
             - export FAIL_FAST=true
+            - export PARALLEL_TESTS=true
 
             - ./script/bitbucket-unit-tests-setup.sh
             - ./script/bitbucket-bummr-pull-request.sh

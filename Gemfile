@@ -139,7 +139,7 @@ gem 'puma', '~> 4.3.0'
 gem 'redis-rails'
 
 gem 'gtfs', en_route: 'gtfs'
-gem 'netex', en_route: 'netex'
+gem 'netex', en_route: 'netex', path: '~/Projects/netex'
 
 gem 'ddtrace'
 

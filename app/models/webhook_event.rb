@@ -64,15 +64,17 @@ class WebhookEvent
   end
 
   def self.resource(resource_name)
+    resource_name = resource_name.to_s
+
     define_method "#{resource_name}=" do |value|
       resources[resource_name].value = value
     end
-    alias_method "#{resource_name}s=", "#{resource_name}="
+    alias_method "#{resource_name.pluralize}=", "#{resource_name}="
 
     define_method "#{resource_name}" do
       resources[resource_name].value
     end
-    alias_method "#{resource_name}s", "#{resource_name}"
+    alias_method resource_name.pluralize, "#{resource_name}"
 
     define_method "#{resource_name}_ids" do
       resources[resource_name].identifiers
@@ -147,6 +149,7 @@ class WebhookEvent
     resource :line
     resource :operator
     resource :network
+    resource :notice
 
   end
 end

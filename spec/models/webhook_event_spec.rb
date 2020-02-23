@@ -139,7 +139,7 @@ RSpec.describe WebhookEvent do
 
       let(:payload) { "payload" }
 
-      %w{line lines operator operators network networks}.each do |resource_name|
+      %w{line lines operator operators network networks notice notices}.each do |resource_name|
         it "uses #{resource_name} attribute in json" do
           event.attributes = { resource_name => payload }
           expect(event.send(resource_name)).to eq(payload)

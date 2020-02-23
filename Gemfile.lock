@@ -43,8 +43,12 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: 6106e7cdea5cbdaaddb795e5fa2d95a1b5927b23
+  revision: 4bb5033ce599b253753e239d27ee2fda42b43a2f
   specs:
+    netex (0.1.0)
+      ox
+      rgeo-proj4
+      saxerator
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/rgeo-proj4.git
@@ -68,14 +72,6 @@ GIT
       activemodel (>= 3.2.0)
       carrierwave (~> 1.2)
       google-cloud-storage (~> 1.17.0)
-
-PATH
-  remote: ../netex
-  specs:
-    netex (0.1.0)
-      ox
-      rgeo-proj4
-      saxerator
 
 GEM
   remote: https://rubygems.org/

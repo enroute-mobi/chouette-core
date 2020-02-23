@@ -77,19 +77,19 @@ RSpec.describe Api::V1::LineReferentialsController do
       expect(permitted_attributes).to include("type")
     end
 
-    %w{lines line operators operator networks network}.each do |resource_name|
+    %w{lines line operators operator networks network notice notices}.each do |resource_name|
       it "includes '#{resource_name}' attribute as string" do
         expect(permitted_attributes).to include(resource_name)
       end
     end
 
-    %w{line operator network}.each do |resource_name|
+    %w{line operator network notice}.each do |resource_name|
       it "includes '#{resource_name}' attribute as hash" do
         expect(permitted_attributes.last).to include(resource_name => {})
       end
     end
 
-    %w{lines operators networks}.each do |resource_name|
+    %w{lines operators networks notices}.each do |resource_name|
       it "includes '#{resource_name}' attribute as array" do
         expect(permitted_attributes.last).to include(resource_name => [:id])
       end

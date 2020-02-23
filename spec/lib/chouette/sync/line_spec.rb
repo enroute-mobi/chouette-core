@@ -168,6 +168,8 @@ RSpec.describe Chouette::Sync::Line do
         target.companies.create! name: "Test", registration_number: "FR1:Operator:210:LOC"
       network =
         target.networks.create! name: "Test", registration_number: 'FR1:Network:68:LOC'
+      line_notice =
+        target.line_notices.create! name: "Test", registration_number: 'FR1:Notice:C01931:'
 
       sync.synchronize
 
@@ -180,6 +182,7 @@ RSpec.describe Chouette::Sync::Line do
         text_color: "000000",
         company: company,
         secondary_company_ids: nil,
+        line_notice_ids: [line_notice.id],
         network: network
       }
       expect(created_line).to have_attributes(expected_attributes)

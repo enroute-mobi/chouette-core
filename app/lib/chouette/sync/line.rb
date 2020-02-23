@@ -62,6 +62,17 @@ module Chouette::Sync
           resolve :network, represented_by_group_ref&.ref
         end
 
+        def line_notice_refs
+          return [] unless notice_assignments
+          notice_assignments.map do |notice_assignment|
+            notice_assignment&.notice_ref&.ref
+          end
+        end
+
+        def line_notice_ids
+          resolve :line_notice, line_notice_refs
+        end
+
         def model_attributes
           {
             name: name,
@@ -77,6 +88,7 @@ module Chouette::Sync
             company_id: line_company_id,
             secondary_company_ids: line_secondary_company_ids,
             network_id: line_network_id,
+            line_notice_ids: line_notice_ids,
             import_xml: raw_xml
           }
         end

@@ -11,15 +11,18 @@ RSpec.describe Chouette::Sync::LineNotice do
 
     let(:target) { context.line_referential }
 
+    mattr_reader :created_id, default: 'FR1:Notice:C00188:'
+    mattr_reader :updated_id, default: 'FR1:Notice:C00251:'
+
     let(:xml) do
       %{
         <notices>
-          <Notice version="any" id="FR1:Notice:C00188:">
+          <Notice version="any" id="#{created_id}">
             <Name>First</Name>
             <Text>First text</Text>
             <TypeOfNoticeRef ref="LineNotice" />
           </Notice>
-          <Notice version="any" id="FR1:Notice:C00251:">
+          <Notice version="any" id="#{updated_id}">
             <Name>Second</Name>
             <Text>Second text</Text>
             <TypeOfNoticeRef ref="LineNotice" />
@@ -33,9 +36,6 @@ RSpec.describe Chouette::Sync::LineNotice do
       }
     end
 
-    CREATED_ID = 'FR1:Notice:C00188:'
-    UDPATED_ID = 'FR1:Notice:C00251:'
-
     let(:source) do
       Netex::Source.new.tap do |source|
         source.include_raw_xml = true
@@ -48,18 +48,18 @@ RSpec.describe Chouette::Sync::LineNotice do
     end
 
     let!(:updated_line_notice) do
-      target.line_notices.create! name: 'Old Name', registration_number: UDPATED_ID
+      target.line_notices.create! name: 'Old Name', registration_number: updated_id
     end
 
     let(:created_line_notice) do
-      line_notice(CREATED_ID)
+      line_notice created_id
     end
 
     def line_notice(registration_number)
       target.line_notices.find_by(registration_number: registration_number)
     end
 
-    it "should create the LineNotice #{CREATED_ID}" do
+    it "should create the LineNotice #{created_id}" do
       sync.synchronize
 
       expected_attributes = {
@@ -69,7 +69,7 @@ RSpec.describe Chouette::Sync::LineNotice do
       expect(created_line_notice).to have_attributes(expected_attributes)
     end
 
-    it "should update the #{UDPATED_ID}" do
+    it "should update the #{updated_id}" do
       sync.synchronize
 
       expected_attributes = {

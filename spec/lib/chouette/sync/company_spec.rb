@@ -11,13 +11,16 @@ RSpec.describe Chouette::Sync::Company do
 
     let(:target) { context.line_referential }
 
+    mattr_reader :created_id, default: 'FR1:Operator:025:LOC'
+    mattr_reader :updated_id, default: 'FR1:Operator:251:LOC'
+
     let(:xml) do
       %{
         <operators>
           <Operator version="any"
           dataSourceRef="FR1:OrganisationalUnit::"
           changed="2019-04-23T13:04:39Z"
-          id="FR1:Operator:025:LOC">
+          id="#{created_id}">
             <BrandingRef ref="/uploads/logos/" />
             <Name>CEOBUS</Name>
             <ContactDetails>
@@ -39,7 +42,7 @@ RSpec.describe Chouette::Sync::Company do
           <Operator version="any"
           dataSourceRef="FR1:OrganisationalUnit:IDFM:"
           changed="2019-09-09T09:20:30Z"
-          id="FR1:Operator:251:LOC">
+          id="#{updated_id}">
             <BrandingRef ref="/uploads/logos/" />
             <Name>TIM BUS</Name>
             <ContactDetails>
@@ -62,9 +65,6 @@ RSpec.describe Chouette::Sync::Company do
       }
     end
 
-    CREATED_ID = 'FR1:Operator:025:LOC'
-    UDPATED_ID = 'FR1:Operator:251:LOC'
-
     let(:source) do
       Netex::Source.new.tap do |source|
         source.include_raw_xml = true
@@ -77,18 +77,18 @@ RSpec.describe Chouette::Sync::Company do
     end
 
     let!(:updated_company) do
-      target.companies.create! name: 'Old Name', registration_number: UDPATED_ID
+      target.companies.create! name: 'Old Name', registration_number: updated_id
     end
 
     let(:created_company) do
-      company(CREATED_ID)
+      company(created_id)
     end
 
     def company(registration_number)
       target.companies.find_by(registration_number: registration_number)
     end
 
-    it "should create the Company #{CREATED_ID}" do
+    it "should create the Company #{created_id}" do
       sync.synchronize
 
       expected_attributes = {
@@ -103,7 +103,7 @@ RSpec.describe Chouette::Sync::Company do
       expect(created_company).to have_attributes(expected_attributes)
     end
 
-    it "should update the #{UDPATED_ID}" do
+    it "should update the #{updated_id}" do
       sync.synchronize
 
       expected_attributes = {

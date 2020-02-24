@@ -11,21 +11,21 @@ RSpec.describe Chouette::Sync::Network do
 
     let(:target) { context.line_referential }
 
+    mattr_reader :created_id, default: 'FR1:Network:29:LOC'
+    mattr_reader :updated_id, default: 'FR1:Network:120:LOC'
+
     let(:xml) do
       %{
         <networks>
-          <Network version="any" id="FR1:Network:29:LOC">
+          <Network version="any" id="#{created_id}">
             <Name>Conflans Achères</Name>
           </Network>
-          <Network version="any" id="FR1:Network:120:LOC">
+          <Network version="any" id="#{updated_id}">
             <Name>VEXINBUS</Name>
           </Network>
         </networks>
       }
     end
-
-    CREATED_ID = 'FR1:Network:29:LOC'
-    UDPATED_ID = 'FR1:Network:120:LOC'
 
     let(:source) do
       Netex::Source.new.tap do |source|
@@ -39,18 +39,18 @@ RSpec.describe Chouette::Sync::Network do
     end
 
     let!(:updated_network) do
-      target.networks.create! name: 'Old Name', registration_number: UDPATED_ID
+      target.networks.create! name: 'Old Name', registration_number: updated_id
     end
 
     let(:created_network) do
-      network(CREATED_ID)
+      network(created_id)
     end
 
     def network(registration_number)
       target.networks.find_by(registration_number: registration_number)
     end
 
-    it "should create the Network #{CREATED_ID}" do
+    it "should create the Network #{created_id}" do
       sync.synchronize
 
       expected_attributes = {
@@ -59,7 +59,7 @@ RSpec.describe Chouette::Sync::Network do
       expect(created_network).to have_attributes(expected_attributes)
     end
 
-    it "should update the #{UDPATED_ID}" do
+    it "should update the #{updated_id}" do
       sync.synchronize
 
       expected_attributes = {

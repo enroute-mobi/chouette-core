@@ -19,7 +19,16 @@ class ReferentialVehicleJourneysController < ChouetteController
       @filtered_line = Chouette::Line.find(params[:q][:route_line_id_eq])
     end
 
-    index!
+    index! do |format|
+      format.html {
+        @vehicle_journeys = VehicleJourneyDecorator.decorate(
+          @vehicle_journeys,
+          context: {
+            referential: referential
+          }
+        )
+      }
+    end
   end
 
   private

@@ -77,7 +77,7 @@ module Chouette
 
         delegate :model_id_attribute, :increment_count, :report_invalid_model, to: :updater
 
-        def with_resource_ids(resource_ids, &block)
+        def with_resource_ids(resource_ids)
           scope.where(model_id_attribute => resource_ids).find_each do |model|
             resource_id = model.send model_id_attribute
             yield model, resource_id

@@ -47,14 +47,16 @@ class Api::V1::DatasController < ActionController::Base
       # target = Referential.last # Kept here for test purpose, to remove
     end
     target.switch do
-      variables = ensure_hash(params[:variables])
-      query = params[:query]
-      operation_name = params[:operationName]
-      context = {
-        target_referential: target
-      }
-      result = ChouetteSchema.execute(query, variables: variables, context: context, operation_name: operation_name)
-      render json: result
+      Chouette::StopArea.within_workgroup(@publication_api.workgroup) do
+        variables = ensure_hash(params[:variables])
+        query = params[:query]
+        operation_name = params[:operationName]
+        context = {
+          target_referential: target
+        }
+        result = ChouetteSchema.execute(query, variables: variables, context: context, operation_name: operation_name)
+        render json: result
+      end
     end
   rescue => e
     raise e unless Rails.env.development?

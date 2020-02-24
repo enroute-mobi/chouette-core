@@ -189,7 +189,7 @@ module Chouette::Sync
     class Deleter < Chouette::Sync::Deleter
 
       def now
-        now ||= Time.now
+        @now ||= Time.now
       end
 
       def existing_models(identifiers = nil)

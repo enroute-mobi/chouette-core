@@ -15,7 +15,7 @@ module Chouette
         @resources ||= source.send(resource_type.to_s.pluralize)
       end
 
-      def resources_in_batches(&block)
+      def resources_in_batches
         resources.each_slice(update_batch_size) do |resources_batch|
           yield Batch.new(resources_batch, updater: self)
         end
@@ -97,7 +97,7 @@ module Chouette
           attributes[model_id_attribute] = resource.id
 
           # Could be conditionnal
-          attributes.delete_if do |attribute, value|
+          attributes.delete_if do |_, value|
             IGNORED_ATTRIBUTE_VALUES.include? value
           end
 
@@ -153,7 +153,7 @@ module Chouette
           resources_by_id.fetch resource_id
         end
 
-        def existing_models(&block)
+        def existing_models
           models.with_resource_ids(resource_ids) do |model, resource_id|
             resource = resource_by_id(resource_id)
             yield model, decorate(resource)
@@ -170,7 +170,7 @@ module Chouette
           new_resources_by_id.delete resource_id
         end
 
-        def new_resources(&block)
+        def new_resources
           new_resources_by_id.values.each do |resource|
             yield decorate(resource)
           end

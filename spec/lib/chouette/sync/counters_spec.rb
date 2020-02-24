@@ -4,7 +4,7 @@ RSpec.describe Chouette::Sync::Counters do
     Chouette::Sync::Counters.new values
   end
 
-  def for_each_type(&block)
+  def for_each_type
     Chouette::Sync::Counters.types.each do |type|
       yield type
     end

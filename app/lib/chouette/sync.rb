@@ -31,8 +31,12 @@ module Chouette
       end
 
       def counts
+        counters.to_hash
+      end
+
+      def counters
         counters = [updater, deleter].map(&:counters)
-        Counters.sum(counters).to_hash
+        Counters.sum(counters)
       end
 
       protected

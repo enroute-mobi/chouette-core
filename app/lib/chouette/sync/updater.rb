@@ -84,6 +84,8 @@ module Chouette
           end
         end
 
+        IGNORED_ATTRIBUTE_VALUES = [nil, "", []].freeze
+
         def prepare_attributes(resource)
           attributes = resource.model_attributes
 
@@ -96,7 +98,7 @@ module Chouette
 
           # Could be conditionnal
           attributes.delete_if do |attribute, value|
-            not value.present?
+            IGNORED_ATTRIBUTE_VALUES.include? value
           end
 
           attributes
@@ -114,6 +116,7 @@ module Chouette
 
         def update(model, resource)
           attributes = prepare_attributes(resource)
+          Rails.logger.debug { "Update #{model.inspect} with #{attributes.inspect}" }
           if model.update(attributes)
             increment_count :update
           else

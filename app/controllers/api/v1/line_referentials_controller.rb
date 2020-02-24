@@ -13,9 +13,9 @@ class Api::V1::LineReferentialsController < ActionController::Base
       end
 
       if event.destroyed?
-        # TODO
-        # deleted_ids = event.stop_place_ids + event.quay_ids
-        # synchronization.delete deleted_ids
+        event.resource_ids.each do |name, resource_ids|
+          synchronization.delete name, resource_ids
+        end
       end
 
       logger.info "Synchronization done: #{synchronization.counts}"
@@ -32,8 +32,12 @@ class Api::V1::LineReferentialsController < ActionController::Base
   end
 
   def synchronization
-    @synchronization ||=
-      Chouette::Sync::Line::Netex.new target: line_referential
+    @synchronization ||= Chouette::Sync::Referential.new(line_referential).tap do |sync|
+      sync.synchronize_with Chouette::Sync::Company::Netex
+      sync.synchronize_with Chouette::Sync::Network::Netex
+      sync.synchronize_with Chouette::Sync::LineNotice::Netex
+      sync.synchronize_with Chouette::Sync::Line::Netex
+    end
   end
 
   def line_referential

@@ -183,7 +183,8 @@ RSpec.describe Chouette::Sync::Line do
         company: company,
         secondary_company_ids: nil,
         line_notice_ids: [line_notice.id],
-        network: network
+        network: network,
+        desactivated: true
       }
       expect(created_line).to have_attributes(expected_attributes)
     end
@@ -193,6 +194,7 @@ RSpec.describe Chouette::Sync::Line do
 
       expected_attributes = {
         name: "AB",
+        desactivated: false
       }
       expect(existing_line.reload).to have_attributes(expected_attributes)
     end

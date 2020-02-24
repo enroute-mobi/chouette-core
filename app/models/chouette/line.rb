@@ -150,6 +150,9 @@ module Chouette
     end
     alias_method :activated?, :activated
 
+    def desactivated
+      self.deactivated
+    end
     def desactivated=(value)
       self.deactivated = value
     end

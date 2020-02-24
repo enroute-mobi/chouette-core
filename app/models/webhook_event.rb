@@ -18,6 +18,8 @@ class WebhookEvent
   TYPES = (%w(created updated) + [DESTROYED]).freeze
 
   validates :type, inclusion: { in: TYPES }
+  validate :resources_are_payloads, unless: :destroyed?
+  validate :resources_are_identifiers, if: :destroyed?
 
   def update_or_create?
     !destroyed?
@@ -27,8 +29,69 @@ class WebhookEvent
     type == DESTROYED
   end
 
-  validate :resources_are_payloads, unless: :destroyed?
-  validate :resources_are_identifiers, if: :destroyed?
+  def self.resource_names
+    @resource_names ||= []
+  end
+
+  def resource_ids
+    resources.each_with_object({}) do |(name, resource), resource_ids|
+      resource_ids[name.to_sym] = resource.identifiers
+    end
+  end
+
+  def netex_source
+    source = Netex::Source.new include_raw_xml: true
+    source.transformers << Netex::Transformer::LocationFromCoordinates.new
+
+    resources.each do |_, resource|
+      if resource.payload?
+        source.parse StringIO.new(resource.payload)
+      end
+    end
+
+    source
+  end
+
+  class << self
+    protected
+    def resource(resource_name)
+      resource_name = resource_name.to_s
+
+      define_method "#{resource_name}=" do |value|
+        resources[resource_name].value = value
+      end
+      alias_method "#{resource_name.pluralize}=", "#{resource_name}="
+
+      define_method "#{resource_name}" do
+        resources[resource_name].value
+      end
+      alias_method resource_name.pluralize, "#{resource_name}"
+
+      define_method "#{resource_name}_ids" do
+        resources[resource_name].identifiers
+      end
+
+      resource_names << "#{resource_name}" << "#{resource_name}s"
+    end
+  end
+
+  class StopAreaReferential < WebhookEvent
+
+    resource :stop_place
+    resource :quay
+
+  end
+
+  class LineReferential < WebhookEvent
+
+    resource :line
+    resource :operator
+    resource :network
+    resource :notice
+
+  end
+
+  protected
 
   def resources_are_payloads
     resources.each do |resource_name, resource|
@@ -57,30 +120,6 @@ class WebhookEvent
         end
       end
     end
-  end
-
-  def self.resource_names
-    @resource_names ||= []
-  end
-
-  def self.resource(resource_name)
-    resource_name = resource_name.to_s
-
-    define_method "#{resource_name}=" do |value|
-      resources[resource_name].value = value
-    end
-    alias_method "#{resource_name.pluralize}=", "#{resource_name}="
-
-    define_method "#{resource_name}" do
-      resources[resource_name].value
-    end
-    alias_method resource_name.pluralize, "#{resource_name}"
-
-    define_method "#{resource_name}_ids" do
-      resources[resource_name].identifiers
-    end
-
-    resource_names << "#{resource_name}" << "#{resource_name}s"
   end
 
   def resources
@@ -124,32 +163,4 @@ class WebhookEvent
 
   end
 
-  def netex_source
-    source = Netex::Source.new include_raw_xml: true
-    source.transformers << Netex::Transformer::LocationFromCoordinates.new
-
-    resources.each do |_, resource|
-      if resource.payload?
-        source.parse StringIO.new(resource.payload)
-      end
-    end
-
-    source
-  end
-
-  class StopAreaReferential < WebhookEvent
-
-    resource :stop_place
-    resource :quay
-
-  end
-
-  class LineReferential < WebhookEvent
-
-    resource :line
-    resource :operator
-    resource :network
-    resource :notice
-
-  end
 end

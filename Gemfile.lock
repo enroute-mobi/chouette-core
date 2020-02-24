@@ -203,7 +203,7 @@ GEM
       safe_yaml (~> 1.0.0)
     crass (1.0.5)
     database_cleaner (1.8.3)
-    ddtrace (0.31.0)
+    ddtrace (0.32.0)
       msgpack
     debug_inspector (0.0.3)
     declarative (0.0.10)
@@ -400,7 +400,7 @@ GEM
     mini_mime (1.0.2)
     mini_portile2 (2.4.0)
     minitest (5.14.0)
-    msgpack (1.3.1)
+    msgpack (1.3.3)
     multi_json (1.14.1)
     multipart-post (2.1.1)
     mustermann (1.0.3)

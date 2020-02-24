@@ -53,7 +53,11 @@ class Api::V1::DatasController < ActionController::Base
       context = {
         target_referential: target
       }
-      result = ChouetteSchema.execute(query, variables: variables, context: context, operation_name: operation_name)
+      result = {}
+      workgroup = target.workgroup
+      Chouette::StopArea.within_workgroup(workgroup) do
+        result = ChouetteSchema.execute(query, variables: variables, context: context, operation_name: operation_name)
+      end
       render json: result
     end
   rescue => e

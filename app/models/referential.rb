@@ -469,8 +469,7 @@ class Referential < ApplicationModel
   end
 
   def associated_stop_areas
-    ids = routes.joins(:stop_points).select('stop_area_id').uniq.pluck(:stop_area_id)
-    stop_areas.where(id: ids)
+    stop_area_referential.stop_areas.joins(:routes) 
   end
 
   def metadatas_period

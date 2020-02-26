@@ -3,7 +3,7 @@ if ::Destination.enabled?("sftp")
     require 'net/sftp'
 
     option :host, required: true
-    option :port, default: 22
+    option :port, default_value: 22
     option :directory, required: true
     option :username, required: true
 

@@ -12,8 +12,6 @@ module OptionsSupport
       attribute_name =  opts[:name].presence || name
       store_accessor :options, attribute_name
 
-      opts[:default_value] ||= opts.delete :default
-
       if opts[:serialize]
         define_method attribute_name do
           val = options.stringify_keys[name.to_s]

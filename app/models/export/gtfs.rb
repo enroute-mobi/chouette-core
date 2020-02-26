@@ -129,7 +129,7 @@ class Export::Gtfs < Export::Base
   end
 
   def export_stop_areas_to(target)
-    Chouette::StopArea.within_workgroup(referential.workgroup) do
+    CustomFieldsSupport.within_workgroup(referential.workgroup) do
       exported_stop_areas.includes(:referent, :parent).find_each do |stop_area|
 
         stop_id = stop_id(stop_area)
@@ -345,7 +345,7 @@ class Export::Gtfs < Export::Base
 
   def export_vehicle_journeys_to(target)
     trip_index = 0
-    Chouette::VehicleJourney.within_workgroup(referential.workgroup) do
+    CustomFieldsSupport.within_workgroup(referential.workgroup) do
       journeys.includes([:route, time_tables: [:periods, :dates]]).find_each do |vehicle_journey|
         vehicle_journey.flattened_circulation_periods.select{|period| period.range & date_range}.each_with_index do |period, period_index|
           service_id = "#{vehicle_journey.objectid}-#{period_index}"

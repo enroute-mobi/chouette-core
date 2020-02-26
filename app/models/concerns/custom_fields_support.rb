@@ -1,6 +1,29 @@
 module CustomFieldsSupport
   extend ActiveSupport::Concern
 
+  THREAD_VARIABLE_NAME = "current_workgroup"
+  def self.within_workgroup workgroup
+    if current_workgroup
+      if current_workgroup != workgroup
+        raise "Two different current workgroups: current:#{current_workgroup.id} wanted:#{workgroup.id}"
+      end
+      Rails.logger.info "within_workgroup used twice"
+    end
+
+    value = nil
+    begin
+      Thread.current.thread_variable_set(THREAD_VARIABLE_NAME, workgroup)
+      value = yield
+    ensure
+      Thread.current.thread_variable_set(THREAD_VARIABLE_NAME, nil)
+    end
+    value
+  end
+
+  def self.current_workgroup
+    Thread.current.thread_variable_get(THREAD_VARIABLE_NAME)
+  end
+
   included do
     validate :custom_fields_values_are_valid
     after_initialize :initialize_custom_fields
@@ -30,18 +53,12 @@ module CustomFieldsSupport
     end
 
     def self.within_workgroup workgroup
-      @current_workgroup = workgroup
-      value = nil
-      begin
-        value = yield
-      ensure
-        @current_workgroup = nil
-      end
-      value
+      ActiveSupport::Deprecation.warn('Use CustomFieldsSupport.within_workgroup')
+      CustomFieldsSupport.within_workgroup workgroup
     end
 
     def self.current_workgroup
-      @current_workgroup
+      CustomFieldsSupport.current_workgroup
     end
 
     def method_missing method_name, *args
@@ -89,7 +106,7 @@ module CustomFieldsSupport
       return if custom_fields_initialized?
       return unless self.attributes.has_key?("custom_field_values")
       return unless self.workgroup.present?
-      
+
       self.custom_field_values ||= {}
       custom_fields.values.each &:initialize_custom_field
       custom_fields.each do |k, v|

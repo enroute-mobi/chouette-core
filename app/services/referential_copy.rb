@@ -29,7 +29,7 @@ class ReferentialCopy
 
   def copy(raise_error: false)
     profile_tag :copy do
-      Chouette::JourneyPattern.within_workgroup(workgroup) do
+      CustomFieldsSupport.within_workgroup(workgroup) do
         copy_resource(:metadatas) unless skip_metadatas?
         copy_resource(:time_tables)
         copy_resource(:purchase_windows)
@@ -58,7 +58,7 @@ class ReferentialCopy
     source.switch do
       vehicle_journeys = source.vehicle_journeys.joins(:route).where("routes.line_id" => lines)
 
-      Chouette::VehicleJourney.within_workgroup(workgroup) do
+      CustomFieldsSupport.within_workgroup(workgroup) do
         vehicle_journeys.find_each do |vehicle_journey|
           referential_inserter.vehicle_journeys << vehicle_journey
         end

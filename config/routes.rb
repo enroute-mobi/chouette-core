@@ -212,6 +212,9 @@ ChouetteIhm::Application.routes.draw do
         resources :imports, only: [:index, :show, :create]
       end
 
+      post 'stop_area_referentials/:id/webhook', to: 'stop_area_referentials#webhook'
+      post 'line_referentials/:id/webhook', to: 'line_referentials#webhook'
+
       namespace :internals do
         get 'compliance_check_sets/:id/notify_parent', to: 'compliance_check_sets#notify_parent'
 

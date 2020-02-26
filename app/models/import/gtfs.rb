@@ -89,7 +89,7 @@ class Import::Gtfs < Import::Base
   def import_stops
     sorted_stops = source.stops.sort_by { |s| s.parent_station.present? ? 1 : 0 }
     @stop_areas_id_by_registration_number = {}
-    Chouette::StopArea.within_workgroup(workgroup) do
+    CustomFieldsSupport.within_workgroup(workgroup) do
       create_resource(:stops).each(sorted_stops, slice: 100, transaction: true) do |stop, resource|
         stop_area = stop_area_referential.stop_areas.find_or_initialize_by(registration_number: stop.id)
 
@@ -126,7 +126,7 @@ class Import::Gtfs < Import::Base
   end
 
   def import_routes
-    Chouette::Company.within_workgroup(workgroup) do
+    CustomFieldsSupport.within_workgroup(workgroup) do
       create_resource(:routes).each(source.routes, transaction: true) do |route, resource|
         if route.agency_id.present?
           next unless check_parent_is_valid_or_create_message(Chouette::Company, route.agency_id, resource)
@@ -409,28 +409,26 @@ class Import::Gtfs < Import::Base
     # routes = Set.new
     prev_trip_id = nil
     stop_times = []
-    Chouette::VehicleJourney.within_workgroup(workgroup) do
-      Chouette::JourneyPattern.within_workgroup(workgroup) do
-        resource = create_resource(:stop_times)
-        resource.each(
-          transaction: true,
-          skip_checksums: true,
-          memory_profile: -> { "Import stop times from #{rows_count}" }
-        ) do |stop_time, resource|
-          trip_id = stop_time.trip_id
+    CustomFieldsSupport.within_workgroup(workgroup) do
+      resource = create_resource(:stop_times)
+      resource.each(
+        transaction: true,
+        skip_checksums: true,
+        memory_profile: -> { "Import stop times from #{rows_count}" }
+      ) do |stop_time, resource|
+        trip_id = stop_time.trip_id
 
-          prev_trip_id ||= trip_id
-          if prev_trip_id == trip_id
-            stop_times << stop_time
-          else
-            process_trip(resource, prev_trip_id, stop_times)
+        prev_trip_id ||= trip_id
+        if prev_trip_id == trip_id
+          stop_times << stop_time
+        else
+          process_trip(resource, prev_trip_id, stop_times)
 
-            stop_times = [stop_time]
-            prev_trip_id = trip_id
-          end
+          stop_times = [stop_time]
+          prev_trip_id = trip_id
         end
-        process_trip(resource, prev_trip_id, stop_times)
       end
+      process_trip(resource, prev_trip_id, stop_times)
     end
   end
 
@@ -564,13 +562,11 @@ class Import::Gtfs < Import::Base
   end
 
   def import_missing_checksums
-    Chouette::JourneyPattern.within_workgroup(workgroup) do
-      Chouette::VehicleJourney.within_workgroup(workgroup) do
-        update_checkum_in_batches referential.vehicle_journey_at_stops.select(:id, :departure_time, :arrival_time, :departure_day_offset, :arrival_day_offset, :stop_area_id)
-        update_checkum_in_batches referential.routes.select(:id, :name, :published_name, :wayback).includes(:stop_points, :routing_constraint_zones)
-        update_checkum_in_batches referential.journey_patterns.select(:id, :custom_field_values, :name, :published_name, :registration_number, :costs).includes(:stop_points)
-        update_checkum_in_batches referential.vehicle_journeys.select(:id, :custom_field_values, :published_journey_name, :published_journey_identifier, :ignored_routing_contraint_zone_ids, :ignored_stop_area_routing_constraint_ids, :company_id, :line_notice_ids).includes(:company_light, :footnotes, :vehicle_journey_at_stops, :purchase_windows)
-      end
+    CustomFieldsSupport.within_workgroup(workgroup) do
+      update_checkum_in_batches referential.vehicle_journey_at_stops.select(:id, :departure_time, :arrival_time, :departure_day_offset, :arrival_day_offset, :stop_area_id)
+      update_checkum_in_batches referential.routes.select(:id, :name, :published_name, :wayback).includes(:stop_points, :routing_constraint_zones)
+      update_checkum_in_batches referential.journey_patterns.select(:id, :custom_field_values, :name, :published_name, :registration_number, :costs).includes(:stop_points)
+      update_checkum_in_batches referential.vehicle_journeys.select(:id, :custom_field_values, :published_journey_name, :published_journey_identifier, :ignored_routing_contraint_zone_ids, :ignored_stop_area_routing_constraint_ids, :company_id, :line_notice_ids).includes(:company_light, :footnotes, :vehicle_journey_at_stops, :purchase_windows)
     end
   end
 

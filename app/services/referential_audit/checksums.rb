@@ -27,11 +27,7 @@ class ReferentialAudit
           end
         }
         model.klass.cache do
-          if model.klass.respond_to?(:within_workgroup)
-            model.klass.within_workgroup(@referential.workgroup, &lookup)
-          else
-            lookup.call
-          end
+          CustomFieldsSupport.within_workgroup(@referential.workgroup, &lookup)
         end
       end
       faulty

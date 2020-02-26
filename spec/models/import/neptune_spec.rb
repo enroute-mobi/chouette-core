@@ -179,11 +179,7 @@ RSpec.describe Import::Neptune do
     end
 
     it "keeps line attributes when neptune file doesn't provide them" do
-      parent = workbench.stop_area_referential.stop_areas.create(name: "Parent", area_type: "zdlp")
-      unless parent.valid?
-        ap parent.errors
-        raise "wrong"
-      end
+      parent = workbench.stop_area_referential.stop_areas.create!(name: "Parent", area_type: "zdlp")
 
       existing_attributes = {
         comment: "Defined",

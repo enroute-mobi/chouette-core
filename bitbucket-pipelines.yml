@@ -47,6 +47,7 @@ pipelines:
       - step:
           name: Update gems
           image: ruby:2.6.4-slim-stretch
+          size: 2x
           caches:
             - bundler
             - yarn
@@ -61,17 +62,10 @@ pipelines:
             - export RAILS_DB_NAME=chouette
             - export RAILS_DB_HOST=localhost
             - export FAIL_FAST=true
+            - export PARALLEL_TESTS=true
 
             - ./script/bitbucket-unit-tests-setup.sh
-            # remove the Gemfile freeze for bundle outdated
-            - bundle install --no-deployment
-
-            - export BUMMR_TEST="bundle exec rake ci"
-            - export BUMMR_HEADLESS="true"
-
-            - git checkout -b gems-update-$BITBUCKET_BUILD_NUMBER
-            - bummr update
-            - git push
+            - ./script/bitbucket-bummr-pull-request.sh
           services:
             - postgres
 
@@ -103,14 +97,14 @@ pipelines:
           script:
             - pipe: atlassian/trigger-pipeline:4.1.1
               variables:
-                BITBUCKET_USERNAME: $TRIGGER_BITBUCKET_USERNAME
-                BITBUCKET_APP_PASSWORD: $TRIGGER_BITBUCKET_ADD_PASSWORD
+                BITBUCKET_USERNAME: $BITBUCKET_USERNAME
+                BITBUCKET_APP_PASSWORD: $BITBUCKET_APP_PASSWORD
                 REPOSITORY: $TRIGGER_REPOSITORY_1
                 CUSTOM_PIPELINE_NAME: 'merge'
             - pipe: atlassian/trigger-pipeline:4.1.1
               variables:
-                BITBUCKET_USERNAME: $TRIGGER_BITBUCKET_USERNAME
-                BITBUCKET_APP_PASSWORD: $TRIGGER_BITBUCKET_ADD_PASSWORD
+                BITBUCKET_USERNAME: $BITBUCKET_USERNAME
+                BITBUCKET_APP_PASSWORD: $BITBUCKET_APP_PASSWORD
                 REPOSITORY: $TRIGGER_REPOSITORY_2
                 CUSTOM_PIPELINE_NAME: 'merge'
       - step:

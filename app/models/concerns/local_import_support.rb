@@ -51,8 +51,6 @@ module LocalImportSupport
   def import
     update status: 'running', started_at: Time.now
 
-    file.cache_stored_file!
-
     @progress = 0
     profile_tag 'import' do
       ActiveRecord::Base.cache do

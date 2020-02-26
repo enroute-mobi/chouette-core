@@ -206,6 +206,8 @@ ChouetteIhm::Application.routes.draw do
       get 'datas/:slug.:key.zip', to: 'datas#download_full', as: :download_full
       get 'datas/:slug/lines/:line_id.:key.zip', to: 'datas#download_line', as: :download_line
 
+      post 'datas/:slug/graphql', to: "datas#graphql", as: :graphql
+
       resources :workbenches, except: %i(destroy) do
         resources :imports, only: [:index, :show, :create]
       end
@@ -318,6 +320,10 @@ ChouetteIhm::Application.routes.draw do
 
   if Rails.application.config.development_toolbar
     post "/development_toolbar" => "development_toolbar#update_settings", as: :development_toolbar_update_settings
+  end
+
+  if Rails.env.development?
+    mount GraphiQL::Rails::Engine, at: "/graphiql", graphql_path: "/graphql"
   end
 
   match '/404', to: 'errors#not_found', via: :all, as: 'not_found'

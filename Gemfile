@@ -52,6 +52,8 @@ gem 'postgres-copy'
 gem 'polylines'
 gem 'bulk_insert'
 
+gem "graphql"
+
 # Codifligne API
 gem 'codifligne', en_route: 'ilico-api'
 # ICar API
@@ -153,6 +155,7 @@ group :development do
   gem 'derailed_benchmarks'
 
   gem 'bummr'
+  gem 'graphiql-rails'
 end
 
 group :test do

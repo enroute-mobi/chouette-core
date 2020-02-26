@@ -30,7 +30,7 @@ class WorkbenchImportService
   end
 
   def execute_post eg_name, eg_file
-    logger.info  "HTTP POST #{export_url} (for #{complete_entry_group_name(eg_name)})"
+    logger.info "HTTP POST #{export_url} (for #{complete_entry_group_name(eg_name)}, file #{eg_file} #{File.size(eg_file)})"
     HTTPService.post_resource(
       host: export_host,
       path: export_path,
@@ -72,6 +72,7 @@ class WorkbenchImportService
     result = nil
     Tempfile.open do |temp_file|
       temp_file.write eg_stream.read
+      temp_file.close
       result = execute_post eg_name, temp_file.path
     end
 

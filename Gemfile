@@ -10,6 +10,7 @@ gem 'rails', '5.2.4'
 
 # Use SCSS for stylesheets
 gem 'sassc-rails'
+gem 'sassc', '2.1.0'
 
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier', '~> 2.7.2'

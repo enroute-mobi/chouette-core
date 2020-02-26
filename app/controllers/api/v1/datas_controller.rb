@@ -47,7 +47,7 @@ class Api::V1::DatasController < ActionController::Base
       # target = Referential.last # Kept here for test purpose, to remove
     end
     target.switch do
-      Chouette::StopArea.within_workgroup(@publication_api.workgroup) do
+      CustomFieldsSupport.within_workgroup(@publication_api.workgroup) do
         variables = ensure_hash(params[:variables])
         query = params[:query]
         operation_name = params[:operationName]

@@ -22,6 +22,14 @@ module OptionsSupport
         end
       end
 
+      if opts.key?(:default_value)
+        after_initialize do
+          if self.new_record? && self.send(attribute_name).nil?
+            self.send("#{attribute_name}=", opts[:default_value])
+          end
+        end
+      end
+
       if opts[:type].to_s == "boolean"
         alias_method "#{attribute_name}_without_cast", attribute_name
         define_method "#{attribute_name}_with_cast" do
@@ -30,7 +38,6 @@ module OptionsSupport
         end
         alias_method attribute_name, "#{attribute_name}_with_cast"
       end
-
       condition = ->(record){ true }
       condition = ->(record){ record.send(opts[:depends][:option])&.to_s == opts[:depends][:value].to_s } if opts[:depends]
 

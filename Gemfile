@@ -152,7 +152,7 @@ gem 'rake'
 gem 'apartment', '~> 2.2.0'
 gem 'aasm'
 gem 'activerecord-nulldb-adapter' if ENV['RAILS_DB_ADAPTER'] == 'nulldb'
-gem 'puma', '~> 3.10.0'
+gem 'puma', '~> 3.12.3'
 
 # Cache
 gem 'redis-rails'

@@ -138,7 +138,7 @@ RSpec.describe ReferentialCopy do
         end
       end
 
-      it "should copy the vehicle_journey_at_stops" do
+      it "should copy the vehicle_journey_at_stops", skip: "See #CHOUETTE-334" do
         stop_areas = {}
         checksums = {}
         time_tables = {}

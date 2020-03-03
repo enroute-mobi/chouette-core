@@ -32,16 +32,6 @@ RSpec.describe Publication, type: :model do
       expect{ publication }.to change{ Delayed::Job.count }.by 1
       expect(publication).to be_pending
     end
-
-    context 'with a failed operation' do
-      before do
-        operation.status = 'failed'
-      end
-
-      it 'should fail' do
-        expect(publication).to be_failed
-      end
-    end
   end
 
   describe '#run' do

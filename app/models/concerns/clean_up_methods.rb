@@ -2,31 +2,31 @@ module CleanUpMethods
   # EXTRA CLEANINGS, SELECTED FROM THE UI
 
   def clean_vehicle_journeys_without_time_table
-    Chouette::Benchmark.log 'clean_vehicle_journeys_without_time_table' do
+    Chouette::Benchmark.measure 'clean_vehicle_journeys_without_time_table' do
       Chouette::VehicleJourney.without_any_time_table.clean!
     end
   end
 
   def clean_journey_patterns_without_vehicle_journey
-    Chouette::Benchmark.log 'clean_journey_patterns_without_vehicle_journey' do
+    Chouette::Benchmark.measure 'clean_journey_patterns_without_vehicle_journey' do
       Chouette::JourneyPattern.without_any_vehicle_journey.clean!
     end
   end
 
   def clean_routes_without_journey_pattern
-    Chouette::Benchmark.log 'clean_routes_without_journey_pattern' do
+    Chouette::Benchmark.measure 'clean_routes_without_journey_pattern' do
       Chouette::Route.without_any_journey_pattern.clean!
     end
   end
 
   def clean_unassociated_timetables
-    Chouette::Benchmark.log 'clean_unassociated_timetables' do
+    Chouette::Benchmark.measure 'clean_unassociated_timetables' do
       Chouette::TimeTable.not_associated.clean!
     end
   end
 
   def clean_unassociated_purchase_windows
-    Chouette::Benchmark.log 'clean_unassociated_purchase_windows' do
+    Chouette::Benchmark.measure 'clean_unassociated_purchase_windows' do
       Chouette::PurchaseWindow.not_associated.clean!
     end
   end
@@ -34,15 +34,15 @@ module CleanUpMethods
   # DEFAULT CLEANINGS
 
   def clean_timetables_and_children
-    Chouette::Benchmark.log('clean_timetables_and_children') do
+    Chouette::Benchmark.measure('clean_timetables_and_children') do
       ActiveRecord::Base.cache do
         return unless date_type.present?
 
-        Chouette::Benchmark.log('clean_time_tables'){ clean_time_tables }
-        Chouette::Benchmark.log('clean_time_table_dates'){ clean_time_table_dates }
-        Chouette::Benchmark.log('clean_time_table_periods'){ clean_time_table_periods }
+        Chouette::Benchmark.measure('clean_time_tables'){ clean_time_tables }
+        Chouette::Benchmark.measure('clean_time_table_dates'){ clean_time_table_dates }
+        Chouette::Benchmark.measure('clean_time_table_periods'){ clean_time_table_periods }
 
-        Chouette::Benchmark.log('update_shortcuts') do
+        Chouette::Benchmark.measure('update_shortcuts') do
           Chouette::TimeTable.includes(:dates, :periods).find_each &:save_shortcuts
         end
       end
@@ -148,7 +148,7 @@ module CleanUpMethods
   end
 
   def clean_routes_outside_referential
-    Chouette::Benchmark.log 'clean_routes_outside_referential' do
+    Chouette::Benchmark.measure 'clean_routes_outside_referential' do
       line_ids = referential.metadatas.pluck(:line_ids).flatten.uniq
       Chouette::Route.where(['line_id not in (?)', line_ids]).clean!
     end
@@ -157,15 +157,21 @@ module CleanUpMethods
   # CLEANUPS THAT CAN BE TRIGGERED PROGRAMATICALLY
 
   def clean_unassociated_vehicle_journeys
-    Chouette::VehicleJourney.where("id not in (select distinct vehicle_journey_id from time_tables_vehicle_journeys)").clean!
+    Chouette::Benchmark.measure 'clean_unassociated_vehicle_journeys' do
+      Chouette::VehicleJourney.where("id not in (select distinct vehicle_journey_id from time_tables_vehicle_journeys)").clean!
+    end
   end
 
   def clean_unassociated_journey_patterns
-    Chouette::JourneyPattern.where("id not in (select distinct journey_pattern_id from vehicle_journeys)").clean!
+    Chouette::Benchmark.measure 'clean_unassociated_journey_patterns' do
+      Chouette::JourneyPattern.where("id not in (select distinct journey_pattern_id from vehicle_journeys)").clean!
+    end
   end
 
   def clean_unassociated_routes
-    Chouette::Route.where("id not in (select distinct route_id from journey_patterns)").clean!
+    Chouette::Benchmark.measure 'clean_unassociated_routes' do
+      Chouette::Route.where("id not in (select distinct route_id from journey_patterns)").clean!
+    end
   end
 
   def clean_unassociated_footnotes

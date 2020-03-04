@@ -469,7 +469,7 @@ class Referential < ApplicationModel
   end
 
   def associated_stop_areas
-    stop_area_referential.stop_areas.joins(:routes) 
+    stop_area_referential.stop_areas.joins(:routes)
   end
 
   def metadatas_period
@@ -572,17 +572,9 @@ class Referential < ApplicationModel
   def create_schema
     return if created_from || bare
 
-    report = Benchmark.measure do
+    Chouette::Benchmark.measure("referential.create", referential: id) do
       Apartment::Tenant.create slug
     end
-
-    check_migration_count(report)
-    # raise "Wrong migration count: #{migration_count}" if migration_count < 300
-  end
-
-  def check_migration_count(report)
-    Rails.logger.info("Schema create benchmark: '#{slug}'\t#{report}")
-    Rails.logger.info("Schema migrations count for Referential #{slug}: #{migration_count || '-'}")
   end
 
   def migration_count

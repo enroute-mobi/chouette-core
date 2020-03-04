@@ -9,19 +9,21 @@ module Stat
     scope :for_route, ->(route) { where(route_id: route.id) }
 
     def self.compute_for_referential(referential)
-      Chouette::Benchmark.log "JourneyPatternCoursesByDate computation" do
+      Chouette::Benchmark.measure "journey_pattern_courses_by_date.referential", referential: referential.id do
         referential.switch do
           JourneyPatternCoursesByDate.delete_all
           ActiveRecord::Base.cache do
             ActiveRecord::Base.transaction do
               referential.lines.select(:id).find_each do |line|
-                routes = referential.routes.where(line_id: line.id)
-                if routes.exists?
-                  routes.includes(:journey_patterns).find_each do |route|
-                    compute_for_route(route, referential: referential)
+                Chouette::Benchmark.measure "line", line: line.id do
+                  routes = referential.routes.where(line_id: line.id)
+                  if routes.exists?
+                    routes.includes(:journey_patterns).find_each do |route|
+                      compute_for_route(route, referential: referential)
+                    end
+                  else
+                    fill_blanks_for_empty_line line, referential: referential
                   end
-                else
-                  fill_blanks_for_empty_line line, referential: referential
                 end
               end
             end

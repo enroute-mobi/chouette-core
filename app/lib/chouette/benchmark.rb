@@ -1,17 +1,174 @@
 module Chouette
   module Benchmark
-    def self.log(step, &block)
-      result = nil
-      memory_before = current_usage
 
-      time = ::Benchmark.realtime do
-        result = yield
+    def self.measure(name, attributes = {}, &block)
+      full_name(name) do |full_name|
+        create(full_name, attributes, &block).measure
+      end
+    end
+    # Deprecated
+    def self.log(name, &block)
+      measure name, &block
+    end
+
+    def self.benchmark_classes
+      @benchmark_classes ||= [Log, Datadog, Memory, Realtime].select(&:enabled?)
+    end
+
+    def self.create(name, attributes = {}, &block)
+      benchmark = Call.new(block)
+      attributes = attributes.merge(name: name)
+
+      benchmark_classes.reverse.each do |benchmark_class|
+        benchmark = benchmark_class.new benchmark, attributes
       end
 
-      memory_after = current_usage
-      Rails.logger.info "#{step} operation : #{time} seconds / memory delta #{memory_after - memory_before} (#{memory_before} > #{memory_after})"
+      benchmark
+    end
 
-      result
+    thread_mattr_accessor :current_name
+
+    def self.full_name(name)
+      previous_name = self.current_name
+
+      full_name = previous_name ? "#{previous_name}.#{name}" : name
+      begin
+        self.current_name = full_name
+        yield full_name
+      ensure
+        self.current_name = previous_name
+      end
+    end
+
+    class Call
+
+      def initialize(proc)
+        @proc = proc
+      end
+
+      def measure
+        @proc.call
+      end
+
+    end
+
+    class Base
+
+      def self.enabled?
+        true
+      end
+
+      attr_reader :attributes, :next_benchmark
+
+      def initialize(next_benchmark, attributes = {})
+        @next_benchmark, @attributes = next_benchmark, attributes
+      end
+
+      def name
+        attributes[:name]
+      end
+
+      def measure
+        next!
+      end
+
+      def next!
+        next_benchmark.measure
+      end
+
+      def results
+        if next_benchmark.respond_to?(:results)
+          next_benchmark.results
+        else
+          {}
+        end
+      end
+
+    end
+
+    class Realtime < Base
+
+      attr_accessor :time
+
+      def measure
+        result = nil
+        self.time = ::Benchmark.realtime do
+          result = next!
+        end
+        result
+      end
+
+      def results
+        return super if time < 1
+        super.merge(time: time.to_i)
+      end
+
+    end
+
+    class Memory < Base
+
+      attr_accessor :delta, :before, :after
+
+      def measure
+        self.before = current_usage
+        result = next!
+        self.after = current_usage
+        self.delta = after - before
+        result
+      end
+
+      def results
+        return super if delta < 10
+        super.merge(memory_delta: delta.to_i, memory_after: after.to_i)
+      end
+
+      def current_usage
+        Chouette::Benchmark.current_usage
+      end
+
+    end
+
+    class Log < Base
+
+      def measure
+        result = next!
+        unless results.empty?
+          Rails.logger.info "[Benchmark] #{name}#{attributes_part}: #{results_part}"
+        end
+        result
+      end
+
+      def attributes_part
+        selected_attributes = attributes.reject { |k,_| k == :name }
+        return " " if selected_attributes.empty?
+
+        pretty_attributes = selected_attributes.map { |k,v| "#{k}:#{v}" }.join(', ')
+        "(#{pretty_attributes})"
+      end
+
+      def results_part
+        return "" if results.empty?
+        results.map { |k,v| "#{k}=#{v}" }.join(', ')
+      end
+
+    end
+
+    class Datadog < Base
+
+      def self.enabled?
+        @datadog_enabled ||= ENV['DD_AGENT_HOST']
+      end
+
+      def measure
+        ::Datadog.tracer.trace(name, datadog_options) do |span|
+          next!
+        end
+      end
+
+      def datadog_options
+        {}
+      end
+
     end
 
     KERNEL_PAGE_SIZE = `getconf PAGESIZE`.chomp.to_i rescue 4096

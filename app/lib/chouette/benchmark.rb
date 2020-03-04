@@ -3,7 +3,8 @@ module Chouette
 
     def self.measure(name, attributes = {}, &block)
       full_name(name) do |full_name|
-        create(full_name, attributes, &block).measure
+        attributes[:full_name] = full_name
+        create(name, attributes, &block).measure
       end
     end
     # Deprecated
@@ -66,6 +67,15 @@ module Chouette
 
       def name
         attributes[:name]
+      end
+
+      def full_name
+        attributes[:full_name]
+      end
+
+      mattr_reader :ignored_attributes, default: [:name, :full_name]
+      def user_attributes
+        @user_attributes ||= attributes.reject { |k,_| ignored_attributes.include?(k) }
       end
 
       def measure
@@ -133,16 +143,16 @@ module Chouette
       def measure
         result = next!
         unless results.empty?
-          Rails.logger.info "[Benchmark] #{name}#{attributes_part}: #{results_part}"
+          Rails.logger.info "[Benchmark] #{full_name}#{attributes_part}: #{results_part}"
         end
         result
       end
 
-      def attributes_part
-        selected_attributes = attributes.reject { |k,_| k == :name }
-        return " " if selected_attributes.empty?
 
-        pretty_attributes = selected_attributes.map { |k,v| "#{k}:#{v}" }.join(', ')
+      def attributes_part
+        return "" if user_attributes.empty?
+
+        pretty_attributes = user_attributes.map { |k,v| "#{k}:#{v}" }.join(', ')
         "(#{pretty_attributes})"
       end
 
@@ -160,13 +170,19 @@ module Chouette
       end
 
       def measure
-        ::Datadog.tracer.trace(name, datadog_options) do |span|
+        ::Datadog.tracer.trace(full_name, datadog_options) do |span|
+          if span.context
+            # .. can be nil .. for long spans
+            span.context.sampling_priority = ::Datadog::Ext::Priority::USER_KEEP
+          end
+          span.set_tag ::Datadog::Ext::ManualTracing::TAG_KEEP, true
+
           next!
         end
       end
 
       def datadog_options
-        {}
+        { tags: user_attributes }
       end
 
     end

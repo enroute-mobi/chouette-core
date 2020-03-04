@@ -20,7 +20,7 @@ module Chouette
       benchmark = Call.new(block)
       attributes = attributes.merge(name: name)
 
-      benchmark_classes.reverse.each do |benchmark_class|
+      benchmark_classes.reverse_each do |benchmark_class|
         benchmark = benchmark_class.new benchmark, attributes
       end
 

@@ -7,7 +7,12 @@ if ENV['DD_AGENT_HOST']
 
     puts "Enable Datadog Agent for #{app_name}-#{service_context}:#{env}"
 
-    c.tracer debug: debug, tags: {app: app_name, env: env}
+    partial_flush = ENV['DD_TRACE_PARTIAL_FLUSH'] && ENV['DD_TRACE_PARTIAL_FLUSH'] == 'true'
+    partial_flush = (service_context == "worker") if partial_flush.nil?
+
+    puts "Enable partial flush: #{partial_flush}"
+
+    c.tracer debug: debug, partial_flush: partial_flush, env: env, tags: {app: app_name, env: env}
 
     if service_context != "front"
       # To avoid Delayed::Backend::ActiveRecord::Job and User/Organisation instantiations
@@ -23,6 +28,7 @@ if ENV['DD_AGENT_HOST']
     c.use :faraday, service_name: "#{app_name}-#{service_context}"
     c.use :rake, service_name: "#{app_name}-rake"
 
-    c.runtime_metrics_enabled = true
+    # Private beta according to doc: https://docs.datadoghq.com/tracing/runtime_metrics/ruby
+    # c.runtime_metrics_enabled = true
   end
 end

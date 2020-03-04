@@ -17,7 +17,7 @@ class Workbench < ApplicationModel
   belongs_to :organisation
   belongs_to :line_referential
   belongs_to :stop_area_referential
-  belongs_to :output, class_name: 'ReferentialSuite'
+  belongs_to :output, class_name: 'ReferentialSuite', dependent: :destroy
   belongs_to :workgroup
   belongs_to :locked_referential_to_aggregate, class_name: 'Referential'
 
@@ -32,7 +32,7 @@ class Workbench < ApplicationModel
   has_many :workbench_imports, class_name: 'Import::Workbench', dependent: :destroy
   has_many :compliance_check_sets, dependent: :destroy
   has_many :merges, dependent: :destroy
-  has_many :api_keys
+  has_many :api_keys, dependent: :destroy
 
   validates :name, presence: true
   validates :organisation, presence: true

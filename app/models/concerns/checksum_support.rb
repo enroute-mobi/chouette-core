@@ -77,7 +77,7 @@ module ChecksumSupport
       self.checksum = Digest::SHA256.new.hexdigest(self.checksum_source)
     end
     if (self.checksum_source_changed? || self.checksum_changed?) && !silent
-      Chouette::ChecksumManager.current.log("Changed #{self.class.name}:#{id} checksum: #{self.checksum}, checksum_source: #{self.checksum_source}") 
+      Chouette::ChecksumManager.current.log("Changed #{self.class.name}:#{id} checksum: #{self.checksum}, checksum_source: #{self.checksum_source}")
     end
   end
 
@@ -93,7 +93,7 @@ module ChecksumSupport
     Chouette::ChecksumManager.current.log("Compute checksum for #{self.class.name}:#{id} checksum_source:'#{checksum_source}' checksum: #{_checksum}")
     if _checksum != self.checksum
       self.checksum = _checksum
-      self.class.where(id: self.id).update_all(checksum: _checksum, checksum_source: checksum_source) unless self.new_record?
+      self.update_columns(checksum: _checksum, checksum_source: checksum_source) unless self.new_record?
       Chouette::ChecksumManager.current.log("Updated without callback #{self.class.name}:#{id} checksum: #{self.checksum}, checksum_source: #{self.checksum_source}")
     else
       Chouette::ChecksumManager.current.log("Checksum remained unchanged: #{_checksum}")

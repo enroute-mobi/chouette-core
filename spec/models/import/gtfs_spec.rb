@@ -671,7 +671,7 @@ RSpec.describe Import::Gtfs do
       Import::Gtfs.create! name: 'GTFS test', creator: 'Test', workbench: workbench, file: open_fixture(file), download_host: 'rails_host'
     end
 
-    let(:download_url) { "#{import.download_host}/workbenches/#{import.workbench_id}/imports/#{import.id}/download?token=#{import.token_download}" }
+    let(:download_url) { "#{import.download_host}/workbenches/#{import.workbench_id}/imports/#{import.id}/internal_download?token=#{import.token_download}" }
 
     before do
       stub_request(:get, download_url).to_return(status: 200, body: read_fixture(file))
@@ -739,7 +739,7 @@ RSpec.describe Import::Gtfs do
     end
 
     it 'should return the pathwith the token' do
-      expect(import.download_path).to eq("/workbenches/#{import.workbench_id}/imports/#{import.id}/download?token=#{import.token_download}")
+      expect(import.download_path).to eq("/workbenches/#{import.workbench_id}/imports/#{import.id}/internal_download?token=#{import.token_download}")
     end
   end
 

@@ -10,7 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_11_21_102935) do
+ActiveRecord::Schema.define(version: 2020_02_23_095253) do
+
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
   enable_extension "plpgsql"
@@ -100,7 +101,7 @@ ActiveRecord::Schema.define(version: 2019_11_21_102935) do
     t.string "name"
     t.daterange "date_ranges", array: true
     t.date "dates", array: true
-    t.boolean "shared", default: true
+    t.boolean "shared", default: false
     t.bigint "organisation_id"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -321,7 +322,6 @@ ActiveRecord::Schema.define(version: 2019_11_21_102935) do
     t.integer "mobility_restricted_traveller_duration"
     t.jsonb "custom_field_values", default: {}
     t.index ["objectid"], name: "connection_links_objectid_key", unique: true
-    t.index ["stop_area_referential_id", "departure_id", "arrival_id", "both_ways"], name: "connection_links_compound"
     t.index ["stop_area_referential_id"], name: "index_connection_links_on_stop_area_referential_id"
   end
 
@@ -483,11 +483,6 @@ ActiveRecord::Schema.define(version: 2019_11_21_102935) do
     t.index ["objectid"], name: "facilities_objectid_key", unique: true
   end
 
-  create_table "facilities_features", id: false, force: :cascade do |t|
-    t.bigint "facility_id"
-    t.integer "choice_code"
-  end
-
   create_table "footnotes", force: :cascade do |t|
     t.bigint "line_id"
     t.string "code"
@@ -617,6 +612,7 @@ ActiveRecord::Schema.define(version: 2019_11_21_102935) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "object_version"
+    t.string "registration_number"
   end
 
   create_table "line_notices_lines", id: false, force: :cascade do |t|
@@ -931,7 +927,7 @@ ActiveRecord::Schema.define(version: 2019_11_21_102935) do
     t.string "checksum"
     t.text "checksum_source"
     t.string "data_source_ref"
-    t.json "costs"
+    t.jsonb "costs", default: {}
     t.jsonb "metadata"
     t.index ["line_id"], name: "index_routes_on_line_id"
     t.index ["objectid"], name: "routes_objectid_key", unique: true
@@ -1233,6 +1229,8 @@ ActiveRecord::Schema.define(version: 2019_11_21_102935) do
     t.integer "arrival_day_offset", default: 0
     t.string "checksum"
     t.text "checksum_source"
+    t.bigint "stop_area_id"
+    t.index ["stop_area_id"], name: "index_vehicle_journey_at_stops_on_stop_area_id"
     t.index ["stop_point_id"], name: "index_vehicle_journey_at_stops_on_stop_pointid"
     t.index ["vehicle_journey_id"], name: "index_vehicle_journey_at_stops_on_vehicle_journey_id"
   end
@@ -1307,7 +1305,7 @@ ActiveRecord::Schema.define(version: 2019_11_21_102935) do
     t.datetime "aggregated_at"
     t.string "nightly_aggregate_notification_target", default: "none"
     t.datetime "deleted_at"
-    t.jsonb "transport_modes", default: {"air"=>["undefined", "airshipService", "domesticCharterFlight", "domesticFlight", "domesticScheduledFlight", "helicopterService", "intercontinentalCharterFlight", "intercontinentalFlight", "internationalCharterFlight", "internationalFlight", "roundTripCharterFlight", "schengenAreaFlight", "shortHaulInternationalFlight", "shuttleFlight", "sightseeingFlight"], "bus"=>["undefined", "airportLinkBus", "demandAndResponseBus", "expressBus", "localBus", "mobilityBusForRegisteredDisabled", "mobilityBus", "nightBus", "postBus", "railReplacementBus", "regionalBus", "schoolAndPublicServiceBus", "schoolBus", "shuttleBus", "sightseeingBus", "specialNeedsBus"], "rail"=>["undefined", "carTransportRailService", "crossCountryRail", "highSpeedRail", "international", "interregionalRail", "local", "longDistance", "nightTrain", "rackAndPinionRailway", "railShuttle", "replacementRailService", "sleeperRailService", "specialTrain", "suburbanRailway", "touristRailway"], "taxi"=>["undefined", "allTaxiServices", "bikeTaxi", "blackCab", "communalTaxi", "miniCab", "railTaxi", "waterTaxi"], "tram"=>["undefined", "cityTram", "localTram", "regionalTram", "shuttleTram", "sightseeingTram", "tramTrain"], "coach"=>["undefined", "commuterCoach", "internationalCoach", "nationalCoach", "regionalCoach", "shuttleCoach", "sightseeingCoach", "specialCoach", "touristCoach"], "metro"=>["undefined", "metro", "tube", "urbanRailway"], "water"=>["undefined", "internationalCarFerry", "nationalCarFerry", "regionalCarFerry", "localCarFerry", "internationalPassengerFerry", "nationalPassengerFerry", "regionalPassengerFerry", "localPassengerFerry", "postBoat", "trainFerry", "roadFerryLink", "airportBoatLink", "highSpeedVehicleService", "highSpeedPassengerService", "sightseeingService", "schoolBoat", "cableFerry", "riverBus", "scheduledFerry", "shuttleFerryService"], "hireCar"=>["undefined", "allHireVehicles", "hireCar", "hireCycle", "hireMotorbike", "hireVan"], "funicular"=>["undefined", "allFunicularServices", "funicular"], "telecabin"=>["undefined", "cableCar", "chairLift", "dragLift", "lift", "telecabinLink", "telecabin"]}
+    t.jsonb "transport_modes", default: {"air"=>["undefined", "airshipService", "domesticCharterFlight", "domesticFlight", "domesticScheduledFlight", "helicopterService", "intercontinentalCharterFlight", "intercontinentalFlight", "internationalCharterFlight", "internationalFlight", "roundTripCharterFlight", "schengenAreaFlight", "shortHaulInternationalFlight", "shuttleFlight", "sightseeingFlight"], "bus"=>["undefined", "airportLinkBus", "demandAndResponseBus", "expressBus", "highFrequencyBus", "localBus", "mobilityBusForRegisteredDisabled", "mobilityBus", "nightBus", "postBus", "railReplacementBus", "regionalBus", "schoolAndPublicServiceBus", "schoolBus", "shuttleBus", "sightseeingBus", "specialNeedsBus"], "rail"=>["undefined", "carTransportRailService", "crossCountryRail", "highSpeedRail", "international", "interregionalRail", "local", "longDistance", "nightTrain", "rackAndPinionRailway", "railShuttle", "regionalRail", "replacementRailService", "sleeperRailService", "specialTrain", "suburbanRailway", "touristRailway"], "taxi"=>["undefined", "allTaxiServices", "bikeTaxi", "blackCab", "communalTaxi", "miniCab", "railTaxi", "waterTaxi"], "tram"=>["undefined", "cityTram", "localTram", "regionalTram", "shuttleTram", "sightseeingTram", "tramTrain"], "coach"=>["undefined", "commuterCoach", "internationalCoach", "nationalCoach", "regionalCoach", "shuttleCoach", "sightseeingCoach", "specialCoach", "touristCoach"], "metro"=>["undefined", "metro", "tube", "urbanRailway"], "water"=>["undefined", "internationalCarFerry", "nationalCarFerry", "regionalCarFerry", "localCarFerry", "internationalPassengerFerry", "nationalPassengerFerry", "regionalPassengerFerry", "localPassengerFerry", "postBoat", "trainFerry", "roadFerryLink", "airportBoatLink", "highSpeedVehicleService", "highSpeedPassengerService", "sightseeingService", "schoolBoat", "cableFerry", "riverBus", "scheduledFerry", "shuttleFerryService"], "hireCar"=>["undefined", "allHireVehicles", "hireCar", "hireCycle", "hireMotorbike", "hireVan"], "funicular"=>["undefined", "allFunicularServices", "funicular"], "telecabin"=>["undefined", "cableCar", "chairLift", "dragLift", "lift", "telecabinLink", "telecabin"]}
   end
 
   add_foreign_key "access_links", "access_points", name: "aclk_acpt_fkey"

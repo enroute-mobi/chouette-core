@@ -104,7 +104,7 @@ fr:
         line_notices: "Notes de lignes"
         companies:
           name: "Transporteur principal"
-        registration_number: "Nom court"
+        registration_number: "Numéro d'enregistrement"
         name: "Nom de la ligne"
         published_name: "Nom public"
         number: "Numéro"
@@ -146,7 +146,7 @@ fr:
         active_from_date: Active à partir du %{from}
         active_until_date: Active jusqu'au %{to}
         active_from: Active à partir du
-        active_until: Active jusqu'au
+        active_until: "Active jusqu'au"
         associated_notices: Notes de ligne associées
   formtastic:
     titles:

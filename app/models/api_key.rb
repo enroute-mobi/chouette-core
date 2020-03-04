@@ -13,6 +13,10 @@ class ApiKey < ApplicationModel
     other.token == token
   end
 
+  def workgroup
+    workbench&.workgroup
+  end
+
   private
 
   def generate_access_token

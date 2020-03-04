@@ -109,6 +109,7 @@ module ReferentialCopyHelpers
   end
 
   def record_match(source_item, copied_item)
+    referential_inserter.id_map_inserter.register_primary_key!(source_item.class, source_item.id, copied_item.id)
     matches[source_item.class.name][source_item.id] = copied_item.id
   end
 

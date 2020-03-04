@@ -5,7 +5,7 @@ module ObjectidSupport
     def ransack args={}
       vanilla_search = super args
       base = vanilla_search.base
-      
+
       if args && args.respond_to?(:keys)
         args.each do |k, v|
           if k =~ /short_id/

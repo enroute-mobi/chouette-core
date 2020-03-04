@@ -248,8 +248,8 @@ export default function modal(state = {}, action) {
     case 'CREATE_VEHICLEJOURNEY_MODAL':
       let selectedJP = {}
       if (window.jpOrigin){
-        let stopAreas = _.map(window.jpOriginStopPoints, (sa, i) =>{
-          return _.assign({}, { stop_area_short_description: { id: sa.stop_area_id, name: sa.name, position: sa.position, object_id: sa.area_object_id}})
+        let stopAreas = _.map(window.jpOriginStopPoints, (sp, i) =>{
+          return _.assign({}, { stop_area_short_description: { id: sp.stop_area_id, name: sp.name, position: sp.position, object_id: sp.area_object_id}})
         })
         selectedJP = _.assign({}, window.jpOrigin, {stop_areas: stopAreas})
       }
@@ -269,6 +269,14 @@ export default function modal(state = {}, action) {
         modalProps: {},
         confirmModal: {}
       }
+    case 'SELECT_SPECIFIC_STOP_MODAL':
+    return {
+      type: 'select_specific_stop',
+      modalProps: {
+        vehicleJourney: action.vehicleJourney
+      },
+      confirmModal: {}
+    }
     case 'DUPLICATE_VEHICLEJOURNEY_MODAL':
       return {
         type: 'duplicate',

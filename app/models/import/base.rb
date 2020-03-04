@@ -18,7 +18,7 @@ class Import::Base < ApplicationModel
   end
 
   def self.human_name
-    I18n.t("export.#{self.name.demodulize.underscore}")
+    I18n.t("export.#{short_type}")
   end
 
   def self.file_extension_whitelist
@@ -26,7 +26,15 @@ class Import::Base < ApplicationModel
   end
 
   def self.human_name
-    I18n.t("import.#{self.name.demodulize.underscore}")
+    I18n.t("import.#{short_type}")
+  end
+
+  def self.short_type
+    @short_type ||= self.name.demodulize.underscore
+  end
+
+  def short_type
+    self.class.short_type
   end
 
   scope :workbench, -> { where type: "Import::Workbench" }
@@ -87,6 +95,25 @@ class Import::Base < ApplicationModel
     return :gtfs if Import::Gtfs.accepts_file?(file.path)
     return :netex if Import::Netex.accepts_file?(file.path)
     return :neptune if Import::Neptune.accepts_file?(file.path)
+  end
+
+  # Returns all attributes of the imported file from the user point of view
+  def user_file
+    Chouette::UserFile.new basename: name.parameterize, extension: file_extension, content_type: content_type
+  end
+
+  # Expected and used file content type
+  # Can be overrided by sub classes
+  def content_type
+    'application/zip'
+  end
+
+  protected
+
+  # Expected and used file extension
+  # Can be overrided by sub classes
+  def file_extension
+    "zip"
   end
 
   private

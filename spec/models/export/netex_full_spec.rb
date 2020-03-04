@@ -7,6 +7,15 @@ RSpec.describe Export::NetexFull, type: [:model, :with_exportable_referential] d
     expect{ export }.to change{ Delayed::Job.count }.by 1
   end
 
+  describe '#worker_died' do
+
+    it 'should set netex_full_export status to failed' do
+      expect(export.status).to eq("new")
+      export.worker_died
+      expect(export.status).to eq("failed")
+    end
+  end
+
   context 'when synchronous' do
     let(:synchronous){ true }
     it 'should not call a worker' do

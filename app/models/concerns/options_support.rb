@@ -12,8 +12,6 @@ module OptionsSupport
       attribute_name =  opts[:name].presence || name
       store_accessor :options, attribute_name
 
-      opts[:default_value] ||= opts.delete :default
-
       if opts[:serialize]
         define_method attribute_name do
           val = options.stringify_keys[name.to_s]
@@ -21,6 +19,14 @@ module OptionsSupport
             val = JSON.parse(val) rescue opts[:serialize].new
           end
           val
+        end
+      end
+
+      if opts.key?(:default_value)
+        after_initialize do
+          if self.new_record? && self.send(attribute_name).nil?
+            self.send("#{attribute_name}=", opts[:default_value])
+          end
         end
       end
 
@@ -32,12 +38,15 @@ module OptionsSupport
         end
         alias_method attribute_name, "#{attribute_name}_with_cast"
       end
-
       condition = ->(record){ true }
       condition = ->(record){ record.send(opts[:depends][:option])&.to_s == opts[:depends][:value].to_s } if opts[:depends]
 
       if !!opts[:required]
-        validates attribute_name, presence: true, if: condition
+        if opts[:type].to_s == "boolean"
+          validates_inclusion_of attribute_name, in: [true, false], if: condition
+        else
+          validates attribute_name, presence: true, if: condition
+        end
       end
 
       min = opts[:min].presence

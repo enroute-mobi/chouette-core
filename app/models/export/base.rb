@@ -88,6 +88,7 @@ class Export::Base < ApplicationModel
 
   def upload_file file
 
+    # FIXME See CHOUETTE-207
     url = if workbench.present?
       URI.parse upload_workbench_export_url(self.workbench_id, self.id, host: Rails.application.config.rails_host)
     else
@@ -151,6 +152,25 @@ class Export::Base < ApplicationModel
 
   def self.user_visible?
     true
+  end
+
+  # Returns all attributes of the export file from the user point of view
+  def user_file
+    Chouette::UserFile.new basename: name.parameterize, extension: file_extension, content_type: content_type
+  end
+
+  # Expected and used file content type
+  # Can be overrided by sub classes
+  def content_type
+    'application/zip'
+  end
+
+  protected
+
+  # Expected and used file extension
+  # Can be overrided by sub classes
+  def file_extension
+    "zip"
   end
 
   private

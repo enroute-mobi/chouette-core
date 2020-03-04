@@ -18,6 +18,12 @@ class ReferentialCloning < ApplicationModel
     failed!
   end
 
+  def worker_died
+    failed!
+
+    Rails.logger.error "#{self.class.name} #{self.inspect} failed due to worker being dead"
+  end
+
   def clone!
     report = Benchmark.measure do
       command = "#{dump_command} | #{sed_command} | #{restore_command}"
@@ -94,7 +100,7 @@ class ReferentialCloning < ApplicationModel
     end
 
     event :failed, after: :update_ended_at do
-      transitions :from => :pending, :to => :failed
+      transitions :from => [:new, :pending], :to => :failed
       after do
         target_referential&.failed!
       end

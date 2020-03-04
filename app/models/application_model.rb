@@ -6,6 +6,7 @@ class ApplicationModel < ::ActiveRecord::Base
 
   class << self
     def clean!
+      Rails.logger.warn "Default clean! uses destroy_all on #{name}#clean!"
       destroy_all
     end
 
@@ -39,7 +40,7 @@ class ApplicationModel < ::ActiveRecord::Base
     return :long_jobs if self.is_a?(Merge)
     return :long_jobs if self.is_a?(Aggregate)
 
-    :default 
+    :default
   end
 
   def enqueue_job method, args=[], max_attempts: 1, run_at: nil

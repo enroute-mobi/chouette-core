@@ -20,4 +20,12 @@ module SyncSupport
   def clean_scope
     referential&.send(self.class.name.tableize)
   end
+
+  def worker_died
+    failed({
+      error: "Worker has been killed"
+    })
+
+    Rails.logger.error "#{self.class.name} #{self.inspect} failed due to worker being dead"
+  end
 end

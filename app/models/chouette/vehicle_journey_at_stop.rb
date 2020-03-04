@@ -1,14 +1,17 @@
 module Chouette
-  class VehicleJourneyAtStop < ActiveRecord
+  class VehicleJourneyAtStop < ::ActiveRecord::Base
     include Chouette::ForBoardingEnumerations
     include Chouette::ForAlightingEnumerations
     include ChecksumSupport
+
+    acts_as_copy_target
 
     DAY_OFFSET_MAX = 2
 
     @@day_offset_max = DAY_OFFSET_MAX
     mattr_accessor :day_offset_max
 
+    belongs_to :stop_area, optional: true
     belongs_to :stop_point
     belongs_to :vehicle_journey
 
@@ -53,7 +56,7 @@ module Chouette
 
     def convert_string_time_to_utc_time(val)
       return unless val.present?
-      
+
       if val && val.is_a?(String)
         tz = Time.zone
         Time.zone = 'UTC'
@@ -105,6 +108,7 @@ module Chouette
         end
         attrs << self.departure_day_offset.to_s
         attrs << self.arrival_day_offset.to_s
+        attrs << self.stop_area_id.to_s if self.stop_area_id.present?
       end
     end
 

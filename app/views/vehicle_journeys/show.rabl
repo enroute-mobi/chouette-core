@@ -19,6 +19,10 @@ end
 child(:journey_pattern) do |journey_pattern|
   attributes :id, :objectid, :name, :published_name, :journey_length
   node(:short_id) {journey_pattern.get_objectid.short_id}
+  child(:stop_point_lights, :object_root => false) do |stop_points|
+    attributes :id, :name, :objectid, :stop_area_id
+  end
+  attributes :available_specific_stop_places
 end
 
 child(:time_tables, :object_root => false) do |time_tables|
@@ -55,17 +59,24 @@ child :footnotes, :object_root => false do
 end
 
 child(:vehicle_journey_at_stops_matrix, :object_root => false) do |vehicle_stops|
-  attributes :id, :connecting_service_id, :boarding_alighting_possibility
+  attributes :id, :connecting_service_id, :boarding_alighting_possibility, :stop_point_id
   node do |vehicle_stop|
 
     node(:dummy) { vehicle_stop.dummy }
     node(:area_kind) { vehicle_stop.stop_point.stop_area.kind }
+
+    node(:specific_stop_area_id) do
+      vehicle_stop.stop_area_id
+    end
 
     node(:stop_area_object_id) do
       vehicle_stop.stop_point.stop_area.objectid
     end
     node(:stop_point_objectid) do
       vehicle_stop.stop_point.objectid
+    end
+    node(:stop_area_id) do
+      vehicle_stop.stop_point.stop_area.id
     end
     node(:stop_area_name) do
       vehicle_stop.stop_point.stop_area.name

@@ -1,10 +1,10 @@
 class Workgroup < ApplicationModel
   NIGHTLY_AGGREGATE_CRON_TIME = 5.minutes
 
-  belongs_to :line_referential
-  belongs_to :stop_area_referential
+  belongs_to :line_referential, dependent: :destroy
+  belongs_to :stop_area_referential, dependent: :destroy
   belongs_to :owner, class_name: "Organisation"
-  belongs_to :output, class_name: 'ReferentialSuite'
+  belongs_to :output, class_name: 'ReferentialSuite', dependent: :destroy
 
   has_many :workbenches, dependent: :destroy
   has_many :imports, through: :workbenches
@@ -20,8 +20,8 @@ class Workgroup < ApplicationModel
   validates_uniqueness_of :name
 
   validates_presence_of :owner
-  validates_presence_of :line_referential_id
-  validates_presence_of :stop_area_referential_id
+  validates_presence_of :line_referential
+  validates_presence_of :stop_area_referential
   validates_uniqueness_of :stop_area_referential_id
   validates_uniqueness_of :line_referential_id
 

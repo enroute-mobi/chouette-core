@@ -23,7 +23,8 @@ set :additionnal_path, ''
 unless additionnal_path.empty?
   env :PATH, "#{additionnal_path}:#{ENV['PATH']}"
 end
-set :DD_TRACE_CONTEXT, "cron"
+
+env 'DD_TRACE_CONTEXT', "cron"
 
 set :job_template, "/bin/bash -c ':job'"
 job_type :rake_if, '[ "$:if" == "true" ] && cd :path && :environment_variable=:environment bundle exec rake :task --silent :output'

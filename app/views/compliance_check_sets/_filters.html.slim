@@ -9,10 +9,20 @@
   .ffg-row
     .form-group.togglable class=filter_item_class(params[:q], :context_in)
       = f.label ComplianceCheckSet.tmf(:context), required: false, class: 'control-label'
-      = f.input :context_in, collection: Workgroup.compliance_control_sets_by_workgroup.update(Workgroup.compliance_control_sets_by_workbench).update(manual: Workgroup.compliance_control_sets_label(:manual)).to_a, as: :check_boxes, value_method: :first, label: false, label_method: lambda {|w| ("<span>#{w.last}</span>").html_safe}, required: false, wrapper_html: {class: 'checkbox_list'}, checked: ->(val){params[:q].try(:[], :context_in).try(:include?, val.first.to_s)}
+      = f.input :context_in,
+        collection: Workgroup.compliance_control_sets_by_workgroup \
+        .update(Workgroup.compliance_control_sets_by_workbench) \
+        .update(Workgroup.compliance_control_sets_for_workgroup) \
+        .update(manual: Workgroup.compliance_control_sets_label(:manual)) \
+        .to_a,
+        as: :check_boxes, value_method: :first, label: false, label_method: lambda {|w| ("<span>#{w.last}</span>").html_safe}, required: false,
+        wrapper_html: {class: 'checkbox_list'}, checked: ->(val){params[:q].try(:[], :context_in).try(:include?, val.first.to_s)}
     .form-group.togglable class=filter_item_class(params[:q], :status_in)
       = f.label ComplianceCheckSet.tmf(:status), required: false, class: 'control-label'
-      = f.input :status_in, collection:  ComplianceCheckSet.all.select("distinct(status)").map(&:status).uniq.sort.map{|k| [k, operation_status(k, verbose: true)]}, as: :check_boxes, value_method: :first, label: false, label_method: lambda {|w| ("<span>#{w.last}</span>").html_safe}, required: false, wrapper_html: {class: 'checkbox_list'}, checked: ->(val){params[:q].try(:[], :status_in).try(:include?, val.first.to_s)}
+      = f.input :status_in,
+        collection:  ComplianceCheckSet.all.select("distinct(status)").map(&:status).uniq.sort.map{|k| [k, operation_status(k, verbose: true)]},
+        as: :check_boxes, value_method: :first, label: false, label_method: lambda {|w| ("<span>#{w.last}</span>").html_safe}, required: false, wrapper_html: {class: 'checkbox_list'},
+        checked: ->(val){params[:q].try(:[], :status_in).try(:include?, val.first.to_s)}
     .form-group.togglable class=filter_item_class(params[:q], :created_at)
       = f.label ComplianceCheckSet.human_attribute_name(:created_at), required: false, class: 'control-label'
       .filter_menu

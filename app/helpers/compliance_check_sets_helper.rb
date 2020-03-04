@@ -1,6 +1,10 @@
 module ComplianceCheckSetsHelper
   def compliance_check_set_path(compliance_check_set)
-    workbench_compliance_check_set_path(compliance_check_set.workbench, compliance_check_set)
+    if @parent.is_a?( Workbench )
+      workbench_compliance_check_set_path(compliance_check_set.workbench, compliance_check_set)
+    else
+      workgroup_compliance_check_set_path(compliance_check_set.workgroup, compliance_check_set)
+    end
   end
 
   def executed_compliance_check_set_path(compliance_check_set)
@@ -38,12 +42,8 @@ module ComplianceCheckSetsHelper
 
     metadata = metadata.update({ I18n.t("compliance_check_sets.show.metadatas.referential_type") => 'Jeu de données' })
     metadata = metadata.update({ I18n.t("compliance_check_sets.show.metadatas.status") => operation_status(@compliance_check_set.status, verbose: true) })
-
-    if @parent.is_a?( Workbench )
-      metadata = metadata.update({ I18n.t("compliance_check_sets.show.metadatas.compliance_check_set_executed") => link_to_if_i_can(@compliance_check_set.name, [:executed, @parent, @compliance_check_set]) })
-    else
-      metadata = metadata.update({ Workbench.ts.capitalize => link_to_if_i_can(@compliance_check_set.workbench.organisation.name, @compliance_check_set.workbench) })
-    end
+    metadata = metadata.update({ I18n.t("compliance_check_sets.show.metadatas.compliance_check_set_executed") => link_to_if_i_can(@compliance_check_set.name, [:executed, @parent, @compliance_check_set]) })
+    metadata = metadata.update({ (@parent.is_a?( Workbench ) ? Workbench : Workgroup ).ts.capitalize => link_to_if_i_can(@parent.name, @parent) })
 
     metadata = metadata.update({  I18n.t("compliance_check_sets.show.metadatas.compliance_control_owner") => @compliance_check_set.organisation.name,
                                   I18n.t("compliance_check_sets.show.metadatas.import") => '',

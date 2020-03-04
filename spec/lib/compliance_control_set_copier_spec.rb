@@ -7,7 +7,7 @@ RSpec.describe ComplianceControlSetCopier do
   context 'Copying empty set' do
 
     context 'correct organisation' do
-      let(:ref){ create :referential, organisation_id: cc_set.organisation_id }
+      let(:ref){ create :referential, organisation_id: cc_set.organisation_id, referential_suite: Workgroup.first.output }
 
       context 'Directed Acyclic Graph is copied correctly' do
         let(:cc_blox){

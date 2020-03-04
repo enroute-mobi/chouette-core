@@ -6,6 +6,7 @@ class ComplianceCheckSet < ApplicationModel
   belongs_to :referential
   belongs_to :compliance_control_set
   belongs_to :workbench
+  belongs_to :workgroup
   belongs_to :parent, polymorphic: true
 
   has_many :compliance_check_blocks, dependent: :destroy
@@ -13,6 +14,8 @@ class ComplianceCheckSet < ApplicationModel
 
   has_many :compliance_check_resources, dependent: :destroy
   has_many :compliance_check_messages, dependent: :destroy
+
+  validates_presence_of :workgroup
 
   enumerize :status, in: %w[new pending successful warning failed running aborted canceled]
 
@@ -79,11 +82,7 @@ class ComplianceCheckSet < ApplicationModel
   end
 
   def organisation
-    organisation = workbench&.organisation
-    if parent_type == "Aggregate"
-      organisation ||= parent.workgroup.owner
-    end
-    organisation
+    workbench.present? ? workbench.organisation : workgroup.owner
   end
 
   def human_attribute_name(*args)

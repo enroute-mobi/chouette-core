@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_23_095253) do
+ActiveRecord::Schema.define(version: 2020_02_24_124924) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -238,10 +238,12 @@ ActiveRecord::Schema.define(version: 2020_02_23_095253) do
     t.string "notification_target"
     t.datetime "notified_recipients_at"
     t.bigint "user_id"
+    t.bigint "workgroup_id"
     t.index ["compliance_control_set_id"], name: "index_compliance_check_sets_on_compliance_control_set_id"
     t.index ["parent_type", "parent_id"], name: "index_compliance_check_sets_on_parent_type_and_parent_id"
     t.index ["referential_id"], name: "index_compliance_check_sets_on_referential_id"
     t.index ["workbench_id"], name: "index_compliance_check_sets_on_workbench_id"
+    t.index ["workgroup_id"], name: "index_compliance_check_sets_on_workgroup_id"
   end
 
   create_table "compliance_checks", force: :cascade do |t|
@@ -1315,6 +1317,7 @@ ActiveRecord::Schema.define(version: 2020_02_23_095253) do
   add_foreign_key "compliance_check_messages", "compliance_checks"
   add_foreign_key "compliance_check_resources", "compliance_check_sets"
   add_foreign_key "compliance_check_sets", "workbenches"
+  add_foreign_key "compliance_check_sets", "workgroups"
   add_foreign_key "compliance_checks", "compliance_check_blocks"
   add_foreign_key "compliance_checks", "compliance_check_sets"
   add_foreign_key "compliance_control_blocks", "compliance_control_sets"

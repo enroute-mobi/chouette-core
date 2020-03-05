@@ -15,7 +15,23 @@ RSpec.describe CopyInserter do
   subject { CopyInserter.new context.referential }
   alias_method :inserter, :subject
 
-  let(:vehicle_journey) { context.vehicle_journey.reload }
+  def truncate_timestamps(model)
+    # To avoid situations where we're saving '2020-03-05 10:33:55.56506'
+    # and reading (via copy_to_string) '2020-03-05 10:33:55.565060'
+    #
+    # With 'truncated' timestamps, we're saving/reading '2020-03-05 10:56:35'
+    model.update(created_at: model.created_at.change(:usec => 0),
+                 updated_at: model.updated_at.change(:usec => 0))
+    model
+  end
+
+  before do
+    truncate_timestamps vehicle_journey
+  end
+
+  let(:vehicle_journey) do
+    context.vehicle_journey.reload
+  end
 
   def next_id(model_class)
     @next_identifiers ||= Hash.new do |h, klass|

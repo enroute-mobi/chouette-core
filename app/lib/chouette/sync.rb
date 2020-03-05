@@ -7,9 +7,11 @@ module Chouette
       attr_accessor :resource_type, :resource_id_attribute, :resource_decorator
       attr_accessor :model_type, :model_id_attribute
 
+      mattr_accessor :default_model_id_attribute, default: :registration_number
+
       def initialize(options = {})
         default_options = {
-          model_id_attribute: :registration_number
+          model_id_attribute: default_model_id_attribute
         }
         options.reverse_merge!(default_options)
         options.each { |k,v| send "#{k}=", v }

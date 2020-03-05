@@ -82,25 +82,27 @@ class Merge < ApplicationModel
   end
 
   def merge!
-    Chouette::Benchmark.measure("merge", merge: id) do
-      Chouette::Benchmark.measure("prepare_new") do
-        prepare_new
-      end
-
-      referentials.each do |referential|
-        Chouette::Benchmark.measure("referential", referential: referential.id) do
-          merge_referential referential
+    CustomFieldsSupport.within_workgroup(workgroup) do
+      Chouette::Benchmark.measure("merge", merge: id) do
+        Chouette::Benchmark.measure("prepare_new") do
+          prepare_new
         end
-      end
 
-      Chouette::Benchmark.measure("clean_new") do
-        clean_new
-      end
+        referentials.each do |referential|
+          Chouette::Benchmark.measure("referential", referential: referential.id) do
+            merge_referential referential
+          end
+        end
 
-      if after_merge_compliance_control_sets.present?
-        create_after_merge_compliance_check_sets
-      else
-        save_current
+        Chouette::Benchmark.measure("clean_new") do
+          clean_new
+        end
+
+        if after_merge_compliance_control_sets.present?
+          create_after_merge_compliance_check_sets
+        else
+          save_current
+        end
       end
     end
   rescue => e

@@ -54,12 +54,21 @@ RSpec.describe Chouette::Sync::StopArea do
       end
     end
 
+    before do
+      # In IBOO the stop_area_referential should use stif_reflex objectid_format
+      if Chouette::Sync::Base.default_model_id_attribute == :objectid
+        context.stop_area_referential.update objectid_format: "stif_reflex"
+      end
+    end
+
     subject(:sync) do
       Chouette::Sync::StopArea::Netex.new source: source, target: target
     end
 
+    let(:model_id_attribute) { Chouette::Sync::Base.default_model_id_attribute }
+
     let!(:existing_stop_area) do
-      target.stop_areas.create! name: "Old Name", registration_number: "FR::monomodalStopPlace:45624:FR1"
+      target.stop_areas.create! name: "Old Name", model_id_attribute => "FR::monomodalStopPlace:45624:FR1"
     end
 
     let(:created_stop_area) do
@@ -67,7 +76,7 @@ RSpec.describe Chouette::Sync::StopArea do
     end
 
     def stop_area(registration_number)
-      target.stop_areas.find_by(registration_number: registration_number)
+      target.stop_areas.find_by(model_id_attribute => registration_number)
     end
 
     it "should create the StopArea FR::multimodalStopPlace:424920:FR1" do
@@ -105,7 +114,7 @@ RSpec.describe Chouette::Sync::StopArea do
 
     it "should destroy StopAreas no referenced in the source" do
       useless_stop_area =
-        target.stop_areas.create! name: "Useless", registration_number: "unknown"
+        target.stop_areas.create! name: "Useless", model_id_attribute => "unknown"
       sync.synchronize
       expect(useless_stop_area.reload).to be_deactivated
     end

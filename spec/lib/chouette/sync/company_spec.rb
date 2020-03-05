@@ -72,12 +72,21 @@ RSpec.describe Chouette::Sync::Company do
       end
     end
 
+    before do
+      # In IBOO the line_referential should use stif_codifligne objectid_format
+      if Chouette::Sync::Base.default_model_id_attribute == :objectid
+        context.line_referential.update objectid_format: "stif_codifligne"
+      end
+    end
+
     subject(:sync) do
       Chouette::Sync::Company::Netex.new source: source, target: target
     end
 
+    let(:model_id_attribute) { Chouette::Sync::Base.default_model_id_attribute }
+
     let!(:updated_company) do
-      target.companies.create! name: 'Old Name', registration_number: updated_id
+      target.companies.create! name: 'Old Name', model_id_attribute => updated_id
     end
 
     let(:created_company) do
@@ -85,7 +94,7 @@ RSpec.describe Chouette::Sync::Company do
     end
 
     def company(registration_number)
-      target.companies.find_by(registration_number: registration_number)
+      target.companies.find_by(model_id_attribute => registration_number)
     end
 
     it "should create the Company #{created_id}" do
@@ -126,7 +135,7 @@ RSpec.describe Chouette::Sync::Company do
 
     it 'should destroy Companies no referenced in the source' do
       useless_company =
-        target.companies.create! name: 'Useless', registration_number: 'unknown'
+        target.companies.create! name: 'Useless', model_id_attribute => 'unknown'
       sync.synchronize
       expect(target.companies.where(id:useless_company)).to_not exist
     end

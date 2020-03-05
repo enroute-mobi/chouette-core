@@ -146,12 +146,21 @@ RSpec.describe Chouette::Sync::Line do
       end
     end
 
+    before do
+      # In IBOO the line_referential should use stif_codifligne objectid_format
+      if Chouette::Sync::Base.default_model_id_attribute == :objectid
+        context.line_referential.update objectid_format: "stif_codifligne"
+      end
+    end
+
     subject(:sync) do
       Chouette::Sync::Line::Netex.new source: source, target: target
     end
 
+    let(:model_id_attribute) { Chouette::Sync::Base.default_model_id_attribute }
+
     let!(:existing_line) do
-      target.lines.create! name: "Old Name", registration_number: "FR1:Line:C01659:"
+      target.lines.create! name: "Old Name", model_id_attribute => "FR1:Line:C01659:"
     end
 
     let(:created_line) do
@@ -160,16 +169,16 @@ RSpec.describe Chouette::Sync::Line do
 
 
     def line(registration_number)
-      target.lines.find_by(registration_number: registration_number)
+      target.lines.find_by(model_id_attribute => registration_number)
     end
 
     it "should create the Line FR1:Line:C01931:" do
       company =
-        target.companies.create! name: "Test", registration_number: "FR1:Operator:210:LOC"
+        target.companies.create! name: "Test", model_id_attribute => "FR1:Operator:210:LOC"
       network =
-        target.networks.create! name: "Test", registration_number: 'FR1:Network:68:LOC'
+        target.networks.create! name: "Test", model_id_attribute => 'FR1:Network:68:LOC'
       line_notice =
-        target.line_notices.create! name: "Test", registration_number: 'FR1:Notice:C01931:'
+        target.line_notices.create! name: "Test", model_id_attribute => 'FR1:Notice:C01931:'
 
       sync.synchronize
 
@@ -201,7 +210,7 @@ RSpec.describe Chouette::Sync::Line do
 
     it "should destroy Lines no referenced in the source" do
       useless_line =
-        target.lines.create! name: "Useless", registration_number: "unknown"
+        target.lines.create! name: "Useless", model_id_attribute => "unknown"
       sync.synchronize
       expect(useless_line.reload).to be_deactivated
     end

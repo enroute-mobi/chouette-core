@@ -43,12 +43,21 @@ RSpec.describe Chouette::Sync::LineNotice do
       end
     end
 
+    before do
+      # In IBOO the line_referential should use stif_codifligne objectid_format
+      if Chouette::Sync::Base.default_model_id_attribute == :objectid
+        context.line_referential.update objectid_format: "stif_codifligne"
+      end
+    end
+
     subject(:sync) do
       Chouette::Sync::LineNotice::Netex.new source: source, target: target
     end
 
+    let(:model_id_attribute) { Chouette::Sync::Base.default_model_id_attribute }
+
     let!(:updated_line_notice) do
-      target.line_notices.create! name: 'Old Name', registration_number: updated_id
+      target.line_notices.create! name: 'Old Name', model_id_attribute => updated_id
     end
 
     let(:created_line_notice) do
@@ -56,7 +65,7 @@ RSpec.describe Chouette::Sync::LineNotice do
     end
 
     def line_notice(registration_number)
-      target.line_notices.find_by(registration_number: registration_number)
+      target.line_notices.find_by(model_id_attribute => registration_number)
     end
 
     it "should create the LineNotice #{created_id}" do
@@ -81,14 +90,14 @@ RSpec.describe Chouette::Sync::LineNotice do
 
     it 'should destroy Line Notices no referenced in the source' do
       useless_line_notice =
-        target.line_notices.create! name: 'Useless', registration_number: 'unknown'
+        target.line_notices.create! name: 'Useless', model_id_attribute => 'unknown'
       sync.synchronize
       expect(target.line_notices.where(id:useless_line_notice)).to_not exist
     end
 
     it 'should create empty Line Notice' do
       sync.synchronize
-      expect(target.line_notices.where(registration_number:"empty")).to_not exist
+      expect(target.line_notices.where(model_id_attribute =>"empty")).to_not exist
     end
 
   end

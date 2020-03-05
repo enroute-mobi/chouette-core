@@ -38,8 +38,10 @@ RSpec.describe Chouette::Sync::Network do
       Chouette::Sync::Network::Netex.new source: source, target: target
     end
 
+    let(:model_id_attribute) { Chouette::Sync::Base.default_model_id_attribute }
+
     let!(:updated_network) do
-      target.networks.create! name: 'Old Name', registration_number: updated_id
+      target.networks.create! name: 'Old Name', model_id_attribute => updated_id
     end
 
     let(:created_network) do
@@ -47,7 +49,7 @@ RSpec.describe Chouette::Sync::Network do
     end
 
     def network(registration_number)
-      target.networks.find_by(registration_number: registration_number)
+      target.networks.find_by(model_id_attribute => registration_number)
     end
 
     it "should create the Network #{created_id}" do
@@ -70,7 +72,7 @@ RSpec.describe Chouette::Sync::Network do
 
     it 'should destroy Networks no referenced in the source' do
       useless_network =
-        target.networks.create! name: 'Useless', registration_number: 'unknown'
+        target.networks.create! name: 'Useless', model_id_attribute => 'unknown'
       sync.synchronize
       expect(target.networks.where(id:useless_network)).to_not exist
     end

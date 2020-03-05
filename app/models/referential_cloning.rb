@@ -25,13 +25,12 @@ class ReferentialCloning < ApplicationModel
   end
 
   def clone!
-    report = Benchmark.measure do
+    Chouette::Benchmark.measure("referential.clone", source: source_referential.id, target: target_referential.id) do
       command = "#{dump_command} | #{sed_command} | #{restore_command}"
       unless system command
         raise "Copy of #{source_schema} to #{target_schema} failed"
       end
     end
-    target_referential.check_migration_count(report)
     clean
   end
 

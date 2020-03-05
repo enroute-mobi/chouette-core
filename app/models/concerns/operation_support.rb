@@ -88,11 +88,12 @@ module OperationSupport
   end
 
   def save_current
-    profile_tag :save_current do
+    Chouette::Benchmark.measure("save_current") do
       output.update current: new, new: nil
       output.current.update referential_suite: output, ready: true
       new.rebuild_cross_referential_index!
 
+      previous_current = output.current
       begin
         after_save_current
       rescue

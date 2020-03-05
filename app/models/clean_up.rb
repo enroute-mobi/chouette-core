@@ -72,15 +72,18 @@ class CleanUp < ApplicationModel
 
   def clean
     referential.switch
-    referential.pending_while do
-      clean_timetables_and_children
-      clean_routes_outside_referential
-      run_methods
-    end
 
-    Chouette::Benchmark.log('reset_referential_state') do
-      if original_state.present? && referential.respond_to?("#{original_state}!")
-        referential.send("#{original_state}!")
+    Chouette::Benchmark.measure("referential.clean", referential: referential.id) do
+      referential.pending_while do
+        clean_timetables_and_children
+        clean_routes_outside_referential
+        run_methods
+      end
+
+      Chouette::Benchmark.measure('reset_referential_state') do
+        if original_state.present? && referential.respond_to?("#{original_state}!")
+          referential.send("#{original_state}!")
+        end
       end
     end
   end

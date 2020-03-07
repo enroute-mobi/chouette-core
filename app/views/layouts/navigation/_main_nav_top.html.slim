@@ -20,7 +20,7 @@
           = image_tag("icons/chaticon.svg", height: 25)
 
       - if user_signed_in?
-        = link_to 'javascript:void(0)', class: 'menu-item', data: { panel: 'toggle', target: '#profile_panel' }, title: 'Profil' do
+        = link_to 'javascript:void(0)', id: 'profile_dropdown', class: 'menu-item', data: { panel: 'toggle', target: '#profile_panel' }, title: t('layouts.user.profile') do
           span = current_user.name
           span.fa.fa-lg.fa-user
 

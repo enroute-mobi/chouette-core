@@ -124,7 +124,7 @@ class Import::Netex < Import::Base
   def compute_faulty_checksums!
     return unless referential.present?
     referential.switch do
-      faulty = Chouette::Footnote.where(checksum: nil); nil
+      faulty = Chouette::Footnote.where(checksum: nil)
       vj_ids = faulty.joins(:vehicle_journeys).pluck("vehicle_journeys.id")
       faulty.find_each do |footnote|
         footnote.set_current_checksum_source
@@ -133,8 +133,8 @@ class Import::Netex < Import::Base
       Chouette::VehicleJourney.where(id: vj_ids).find_each do |vj|
         vj.update_checksum!
       end
-      Chouette::RoutingConstraintZone.find_each &:update_checksum!
-      Chouette::JourneyPattern.find_each &:update_checksum!
+      Chouette::RoutingConstraintZone.find_each(&:update_checksum!)
+      Chouette::JourneyPattern.find_each(&:update_checksum!)
     end
   end
 end

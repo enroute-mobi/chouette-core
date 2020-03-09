@@ -4,6 +4,7 @@ class Import::Workbench < Import::Base
   after_commit :launch_worker, :on => :create
 
   option :automatic_merge, type: :boolean, default_value: false
+  option :flag_urgent, type: :boolean, default_value: false
 
   def main_resource; self end
 
@@ -64,9 +65,29 @@ class Import::Workbench < Import::Base
     notify_state
   end
 
+  def referentials
+    self.resources.map(&:referential).compact
+  end
+
   def done!
-    if (successful? || warning?) && automatic_merge
-      Merge.create creator: self.creator, workbench: self.workbench, referentials: self.resources.map(&:referential).compact, notification_target: self.notification_target, user: user
+    return unless (successful? || warning?)
+
+    if flag_urgent
+      flag_refentials_as_urgent
+    end
+
+    if automatic_merge
+      create_automatic_merge
     end
   end
+
+  def flag_refentials_as_urgent
+    referentials.each(&:flag_metadatas_as_urgent!)
+  end
+
+  def create_automatic_merge
+    Merge.create creator: creator, workbench: workbench, referentials: referentials, notification_target: notification_target, user: user
+  end
+
+
 end

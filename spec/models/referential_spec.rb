@@ -573,4 +573,36 @@ describe Referential, :type => :model do
       it{ expect( referential ).to be_referential_read_only }
     end
   end
+
+  context "urgent" do
+
+    let(:context) { Chouette.create { referential } }
+    let(:referential) { context.referential }
+
+    # Time.now.round simplifies Time comparaison in specs
+    around { |example| Timecop.freeze(Time.now.round) { example.run } }
+
+    def metadatas_flagged_urgent_at
+      referential.reload.metadatas.map(&:flagged_urgent_at)
+    end
+
+    describe ".flag_metadatas_as_urgent!" do
+      it "defines flagged_urgent_at in all metadatas" do
+        expect do
+          referential.flag_metadatas_as_urgent!
+        end.to change { metadatas_flagged_urgent_at.uniq }.from([nil]).to([Time.now])
+      end
+    end
+
+    describe ".flag_not_urgent!" do
+      before { referential.flag_metadatas_as_urgent! }
+      it "reset flagged_urgent_at in all metadatas" do
+        expect do
+          referential.flag_not_urgent!
+        end.to change { metadatas_flagged_urgent_at.uniq }.to([nil])
+      end
+    end
+
+  end
+
 end

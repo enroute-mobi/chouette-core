@@ -108,7 +108,7 @@ en:
         workbench:
           <<: *attrs
           automatic_merge: Automatic Merge
+          flag_urgent: Contains urgent data
   errors:
     messages:
       extension_whitelist_error: "You are not allowed to upload %{extension} files, allowed types: %{allowed_types}"
-  

@@ -208,8 +208,12 @@ class Referential < ApplicationModel
     metadatas.pluck(:flagged_urgent_at).compact.max
   end
 
+  def flag_metadatas_as_urgent!
+    metadatas.update_all flagged_urgent_at: Time.now
+  end
+
   def flag_not_urgent!
-    metadatas.update_all(flagged_urgent_at: nil)
+    metadatas.update_all flagged_urgent_at: nil
   end
 
   def lines
@@ -351,9 +355,9 @@ class Referential < ApplicationModel
     return if urgent.nil?
 
     if urgent
-      metadatas.each {|m| m.flagged_urgent_at ||= Time.now }
+      flag_metadatas_as_urgent!
     else
-      metadatas.each {|m| m.flagged_urgent_at = nil }
+      flag_not_urgent!
     end
   end
 

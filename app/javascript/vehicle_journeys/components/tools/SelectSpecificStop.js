@@ -35,7 +35,8 @@ export default class SelectSpecificStop extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if(this.props.status.isFetching == false){
-      $('.table-2entries').each(function() {
+      // Don't forget the .modal pre selector to avoid modifying the DOM outside our modal
+      $('.modal .table-2entries').each(function() {
         var refH = []
         var refCol = []
 

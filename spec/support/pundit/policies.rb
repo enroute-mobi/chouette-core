@@ -18,6 +18,7 @@ module Support
       end
 
       def remove_permissions(*permissions, from_user:, save: false)
+        from_user.permissions ||= []
         from_user.permissions -= permissions.flatten
         from_user.save! if save
       end

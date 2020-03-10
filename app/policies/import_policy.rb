@@ -16,4 +16,19 @@ class ImportPolicy < ApplicationPolicy
   def update?
     user.has_permission?('imports.update')
   end
+
+  def option?(option_name)
+    option_method = "option_#{option_name}?"
+    if respond_to? option_method
+      return option_flag_urgent?
+    end
+
+    # By default, options don't require permission
+    true
+  end
+
+  def option_flag_urgent?
+    user.has_permission?('referentials.flag_urgent')
+  end
+
 end

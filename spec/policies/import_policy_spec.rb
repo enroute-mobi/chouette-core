@@ -246,8 +246,8 @@ RSpec.describe ImportPolicy, type: :policy do
     end
 
     it "uses the associated method if exists" do
-      expect(policy).to receive(:option_dummy?).and_return(false)
-      expect(policy).to forbid_action(:option, :dummy)
+      expect(policy).to receive(:option_flag_urgent?).and_return(false)
+      expect(policy).to forbid_action(:option, :flag_urgent)
     end
 
   end

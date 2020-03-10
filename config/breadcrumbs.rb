@@ -158,10 +158,11 @@ crumb :time_table do |referential, time_table|
 end
 
 crumb :compliance_check_sets do |ccset_parent|
-  link I18n.t('compliance_check_sets.index.title'), workbench_compliance_check_sets_path(ccset_parent)
   if ccset_parent.is_a?(Workbench)
+    link I18n.t('compliance_check_sets.index.title'), workbench_compliance_check_sets_path(ccset_parent)
     parent :workbench, ccset_parent
   else
+    link I18n.t('compliance_check_sets.index.title'), workgroup_compliance_check_sets_path(ccset_parent)
     parent :imports_parent, ccset_parent
   end
 end

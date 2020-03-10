@@ -108,14 +108,13 @@ class Aggregate < ApplicationModel
   def prepare_new
     profile_tag 'prepare_new!' do
       Rails.logger.debug "Create a new output"
-      # 'empty' one
+      # In the unique case, the referential created can't be linked to any workbench
       attributes = {
         organisation: workgroup.owner,
         prefix: "aggregate_#{id}",
         line_referential: workgroup.line_referential,
         stop_area_referential: workgroup.stop_area_referential,
         objectid_format: referentials.first.objectid_format,
-        # TODO Fix this (cf CHOUETTE-283)
         workbench: nil
       }
       new = workgroup.output.referentials.new attributes

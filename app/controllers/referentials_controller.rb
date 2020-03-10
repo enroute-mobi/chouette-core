@@ -82,7 +82,12 @@ class ReferentialsController < ChouetteController
       cck_set.notification_target = params[:notification_target]
     end
     flash[:notice] = t('notice.referentials.validate')
-    redirect_to workbench_compliance_check_set_path(referential.workbench_id, check_set)
+
+    if referential.workbench
+      redirect_to workbench_compliance_check_set_path(referential.workbench_id, check_set)
+    else
+      redirect_to workgroup_compliance_check_set_path(referential.workgroup.id, check_set)
+    end
   end
 
   def destroy

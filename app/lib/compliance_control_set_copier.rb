@@ -87,6 +87,7 @@ class ComplianceControlSetCopier
     @__cck_set__ ||= ComplianceCheckSet.create!(
       compliance_control_set_id: cc_set_id,
       referential_id: referential_id,
+      workgroup: referential.workgroup,
       workbench_id: referential.workbench_id,
       name: name_with_refid(cc_set.name),
       status: 'new',

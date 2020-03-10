@@ -15,7 +15,7 @@ class Workgroup < ApplicationModel
   has_many :nightly_aggregates
   has_many :publication_setups, dependent: :destroy
   has_many :publication_apis, dependent: :destroy
-  has_many :compliance_check_sets, through: :workbenches
+  has_many :compliance_check_sets, dependent: :destroy
 
   validates_uniqueness_of :name
 

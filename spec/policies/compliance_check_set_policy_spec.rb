@@ -47,4 +47,17 @@ RSpec.describe ComplianceCheckSetPolicy, type: :policy do
       end
     end
   end
+
+  context "when the CCS workgroup belongs to the same organisation" do
+    let(:new_workbench) { create :workbench, workgroup: record.workgroup }
+    before do
+      user.organisation.workbenches << new_workbench
+    end
+
+    permissions :show? do
+      it "allows user" do
+        expect_it.to permit(user_context, record)
+      end
+    end
+  end
 end

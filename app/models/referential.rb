@@ -201,15 +201,27 @@ class Referential < ApplicationModel
   end
 
   def contains_urgent_offer?
-    metadatas.any?{|m| m.urgent? }
+    metadatas.any? { |m| m.urgent? }
   end
 
   def flagged_urgent_at
     metadatas.pluck(:flagged_urgent_at).compact.max
   end
 
+  def flag_metadatas_as_urgent!
+    if metadatas.loaded?
+      metadatas.each { |m| m.flagged_urgent_at ||= Time.now }
+    else
+      metadatas.where(flagged_urgent_at: nil).update_all flagged_urgent_at: Time.now
+    end
+  end
+
   def flag_not_urgent!
-    metadatas.update_all(flagged_urgent_at: nil)
+    if metadatas.loaded?
+      metadatas.each { |m| m.flagged_urgent_at = nil }
+    else
+      metadatas.update_all flagged_urgent_at: nil
+    end
   end
 
   def lines
@@ -351,9 +363,9 @@ class Referential < ApplicationModel
     return if urgent.nil?
 
     if urgent
-      metadatas.each {|m| m.flagged_urgent_at ||= Time.now }
+      flag_metadatas_as_urgent!
     else
-      metadatas.each {|m| m.flagged_urgent_at = nil }
+      flag_not_urgent!
     end
   end
 

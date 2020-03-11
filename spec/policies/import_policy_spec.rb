@@ -1,7 +1,8 @@
+# coding: utf-8
 RSpec.describe ImportPolicy, type: :policy do
 
   let(:record) { create :import }
-  before(:each) { user.organisation = create(:organisation) }
+  before { user.organisation = create(:organisation) }
 
   context "when the workbench belongs to another organisation (other workgroup)" do
     permissions :index? do
@@ -235,4 +236,40 @@ RSpec.describe ImportPolicy, type: :policy do
       end
     end
   end
+
+  describe "#option?" do
+
+    subject(:policy) { ImportPolicy.new user_context, record }
+
+    it "allows an option be default" do
+      expect(policy).to permit_action(:option, :dummy)
+    end
+
+    it "uses the associated method if exists" do
+      expect(policy).to receive(:option_flag_urgent?).and_return(false)
+      expect(policy).to forbid_action(:option, :flag_urgent)
+    end
+
+  end
+
+  describe "#option_flag_urgent?" do
+
+    subject(:policy) { ImportPolicy.new user_context, record }
+
+    context "with permission 'referentials.flag_urgent'" do
+      before { add_permissions 'referentials.flag_urgent', to_user: user }
+      it "allows user" do
+        expect_it.to permit_action(:option, :flag_urgent)
+      end
+    end
+
+    context "without permission 'referentials.flag_urgent'" do
+      before { remove_permissions 'referentials.flag_urgent', from_user: user }
+      it "allows user" do
+        expect_it.to forbid_action(:option, :flag_urgent)
+      end
+    end
+
+  end
+
 end

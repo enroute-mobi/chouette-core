@@ -97,7 +97,7 @@ module OptionsSupport
       context.instance_exec(val, &option[:display])
     else
       if option[:type].to_s == "boolean"
-        val == "1" ? 'true'.t : 'false'.t
+        (val == "1" || val == "true") ? 'true'.t : 'false'.t
       else
         val
       end

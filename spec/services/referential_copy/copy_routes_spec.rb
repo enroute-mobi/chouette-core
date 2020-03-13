@@ -1,4 +1,3 @@
-require "rails_helper"
 
 RSpec.describe ReferentialCopy do
   let(:stop_area_referential){ create :stop_area_referential }

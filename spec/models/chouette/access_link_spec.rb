@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 describe Chouette::AccessLink, :type => :model do
   subject { create(:access_link) }

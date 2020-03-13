@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-require 'spec_helper'
 
 # Feature: Sign out
 #   As a user

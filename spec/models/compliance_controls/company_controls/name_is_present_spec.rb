@@ -1,4 +1,3 @@
-require 'rails_helper'
 
 RSpec.describe CompanyControl::NameIsPresent, :type => :model do
   let!(:workgroup) { create :workgroup }

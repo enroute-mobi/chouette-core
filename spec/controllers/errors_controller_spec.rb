@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 RSpec.describe ErrorsController, type: :controller do
   login_user

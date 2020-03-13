@@ -1,5 +1,4 @@
 # coding: utf-8
-require 'spec_helper'
 
 describe Chouette::StopArea, :type => :model do
   subject { create(:stop_area) }

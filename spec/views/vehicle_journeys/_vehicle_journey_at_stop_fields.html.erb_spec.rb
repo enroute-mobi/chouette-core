@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 describe "/vehicle_journeys/_vehicle_journey_at_stop_fields", :type => :view do
   

@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 describe Chouette::LineNotice, :type => :model do
   subject { create(:line_notice) }

@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 describe "/stop_areas/new", :type => :view do
 

@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 RSpec.describe WorkbenchOutputsController, :type => :controller do
   login_user

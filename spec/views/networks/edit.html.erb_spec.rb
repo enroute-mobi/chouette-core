@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 describe "/networks/edit", :type => :view do
 

@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 describe TimeTableCombination, :type => :model do
   let!(:source){ create(:time_table)}

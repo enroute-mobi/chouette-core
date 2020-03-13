@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 describe "/lines/index", :type => :view do
   let(:deactivated_line){ nil }

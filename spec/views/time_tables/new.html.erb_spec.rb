@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 describe "/time_tables/new", :type => :view do
   assign_referential

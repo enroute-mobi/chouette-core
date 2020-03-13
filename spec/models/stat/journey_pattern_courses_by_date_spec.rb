@@ -1,4 +1,3 @@
-require 'rails_helper'
 
 RSpec.describe Stat::JourneyPatternCoursesByDate, type: :model do
   let(:journey_pattern) { create :journey_pattern }

@@ -83,7 +83,7 @@ namespace :ci do
 
   task :jest do
     unless ENV["CHOUETTE_JEST_DISABLED"]
-      sh "PATH=node_modules/.bin:$PATH sh -c 'jest --coverage && cat ./coverage/lcov.info | codacy-coverage'"
+      sh "PATH=node_modules/.bin:$PATH jest --coverage"
     end
   end
 
@@ -139,11 +139,28 @@ namespace :ci do
   end
   cache_file "log/parallel_runtime_specs.log"
 
+  def codacy_coverage_reporter(command)
+    sh "bash -c 'bash <(curl -Ls https://coverage.codacy.com/get.sh) #{command}'"
+  end
+
+  def codacy_coverage(language,file)
+    if File.exists?(file)
+      codacy_coverage_reporter "report -l #{language} -r #{file}"
+    end
+  end
+
+  task :codacy do
+    if ENV['CODACY_PROJECT_TOKEN']
+      codacy_coverage :ruby, "coverage/coverage.xml"
+      codacy_coverage :javascript, "coverage/lcov.info"
+    end
+  end
+
   task :performance do
     sh "bundle exec rspec --tag performance #{test_options(xml_output: 'performance')}"
   end
 
-  task :build => ["ci:setup", "ci:assets", "ci:spec", "ci:jest", "ci:check_security"]
+  task :build => ["ci:setup", "ci:assets", "ci:spec", "ci:jest", "ci:codacy", "ci:check_security"]
 
   namespace :docker do
     task :clean do

@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 # Feature: Sign in
 #   As a user

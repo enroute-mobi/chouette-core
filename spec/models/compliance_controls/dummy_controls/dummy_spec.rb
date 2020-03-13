@@ -1,4 +1,3 @@
-require 'rails_helper'
 
 RSpec.describe DummyControl::Dummy, :type => :model do
   let!(:line_referential){ create :line_referential }

@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 describe Chouette::ActiveRecord, :type => :model do
 

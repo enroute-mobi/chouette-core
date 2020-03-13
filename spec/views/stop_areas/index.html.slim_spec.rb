@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 describe "/stop_areas/index", :type => :view do
   let(:deactivated_stop_area){ nil }

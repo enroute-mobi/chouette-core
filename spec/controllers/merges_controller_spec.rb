@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 RSpec.describe MergesController, :type => :controller do
   login_user

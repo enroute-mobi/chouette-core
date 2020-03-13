@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 RSpec::Matchers.define :have_box_for_item do |item, disabled|
   match do |actual|

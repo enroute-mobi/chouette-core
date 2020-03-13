@@ -170,7 +170,8 @@ group :test do
   gem 'pundit-matchers'
 
   gem 'rspec_junit_formatter'
-  gem 'codacy-coverage', require: false
+  gem 'simplecov', require: false
+  gem 'simplecov-cobertura', require: false
 end
 
 group :test, :development do

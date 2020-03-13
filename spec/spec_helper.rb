@@ -1,7 +1,7 @@
 unless ENV['NO_RCOV']
   require 'simplecov'
 
-  SimpleCov.start do
+  SimpleCov.start 'rails' do
     if ENV['CODACY_PROJECT_TOKEN']
       require 'simplecov-cobertura'
       formatter SimpleCov::Formatter::CoberturaFormatter

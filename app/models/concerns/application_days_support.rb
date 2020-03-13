@@ -117,4 +117,9 @@ module ApplicationDaysSupport
   def sunday=(day)
     set_day(day,256)
   end
+
+  def days_of_week
+    Timetable::DaysOfWeek.new ALL_DAYS.select{ |d| self.send(d) }
+  end
+
 end

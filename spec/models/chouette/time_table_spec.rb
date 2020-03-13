@@ -1337,23 +1337,23 @@ end
       expect(time_table.dates.last.in_out).to be_truthy
     end
 
-    it 'should deal with another timetable with 2 separate periods ' do
-
-      time_table.periods.build [ { period_start: Date.parse("01/12/2019"), period_end: Date.parse("10/01/2020") } ]
-      periods = [ Date.parse("30/09/2019")..Date.parse("30/12/2019"),Date.parse("01/01/2020")..Date.parse("10/01/2020") ]
+    it 'should deal with another timetable with 2 separate periods' do
+      time_table.periods.build period_start: Date.parse("01/12/2019"), period_end: Date.parse("10/01/2020")
+      periods = [
+        Date.parse("30/09/2019")..Date.parse("30/12/2019"),
+        Date.parse("01/01/2020")..Date.parse("10/01/2020")
+      ]
 
       time_table.intersect_periods!(periods)
-      expect(time_table.periods.map{|p| p.period_start..p.period_end }).to include(Date.parse("01/12/2019")..Date.parse("31/12/2019"), Date.parse("01/01/2020")..Date.parse("10/01/2020"))
-      expect(time_table.periods.count).to eq 2
+      expect(time_table.periods.map { |p| p.period_start..p.period_end }).to match_array([Date.parse("01/12/2019")..Date.parse("31/12/2019"), Date.parse("01/01/2020")..Date.parse("10/01/2020")])
     end
 
-    it 'should deal with another timetable with 2 continuous periods ' do
+    it 'should deal with another timetable with 2 continuous periods' do
       time_table.periods.build [ { period_start: Date.parse("01/12/2019"), period_end: Date.parse("10/01/2020") } ]
       periods = [ Date.parse("30/09/2019")..Date.parse("31/12/2019"),Date.parse("01/01/2020")..Date.parse("10/01/2020") ]
 
       time_table.intersect_periods!(periods)
-      expect(time_table.periods.map{|p| p.period_start..p.period_end }).to include(Date.parse("01/12/2019")..Date.parse("31/12/2019"), Date.parse("01/01/2020")..Date.parse("10/01/2020"))
-      expect(time_table.periods.count).to eq 2
+      expect(time_table.periods.map{|p| p.period_start..p.period_end }).to match_array([Date.parse("01/12/2019")..Date.parse("31/12/2019"), Date.parse("01/01/2020")..Date.parse("10/01/2020")])
     end
   end
 
@@ -1447,6 +1447,84 @@ end
 
       expect(time_table.periods).to be_empty
       expect(time_table.dates).to be_empty
+    end
+
+  end
+
+  describe "#to_timetable" do
+
+    let(:time_table) { Chouette::TimeTable.new int_day_types: Chouette::TimeTable::EVERYDAY }
+
+    describe "returned Timetable" do
+
+      let(:date) { Date.new 2030, 1, 1 }
+
+      it "has an included_date for each Date 'in" do
+        time_table.dates.build date: date, in_out: true
+        expect(time_table.to_timetable.included_dates).to match_array([date])
+      end
+
+      it "has an excluded_date for each Date 'in" do
+        time_table.dates.build date: date, in_out: false
+        expect(time_table.to_timetable.excluded_dates).to match_array([date])
+      end
+
+      it "has a period for each Period" do
+        period = time_table.periods.build period_start: Date.new(2030, 1, 1), period_end: Date.new(2030, 2, 1)
+        expected_period = Timetable::Period.new(period.period_start, period.period_end, Timetable::DaysOfWeek.every_day)
+        expect(time_table.to_timetable.periods).to match_array([expected_period])
+      end
+
+    end
+
+  end
+
+  describe "apply" do
+
+    let(:time_table) { Chouette::TimeTable.new }
+
+    let(:date) { Date.new(2030,1,1) }
+    let(:dates) { [ Date.new(2030,1,1), Date.new(2030,2,1) ]}
+    let(:date_range) { Range.new(Date.new(2030,1,1), Date.new(2030,2,1)) }
+
+    it "creates a Date 'in' for each included date" do
+      time_table.apply(Timetable.new included_dates: [dates])
+      expect(time_table.dates.map(&:date)).to eq([dates])
+      expect(time_table.dates.map(&:in_out).uniq).to eq([true])
+    end
+
+    it "creates a Date 'out' for each excluded date" do
+      time_table.apply(Timetable.new excluded_dates: [dates])
+      expect(time_table.dates.map(&:date)).to eq([dates])
+      expect(time_table.dates.map(&:in_out).uniq).to eq([false])
+    end
+
+    it "creates a Period for each period" do
+      expect do
+        time_table.apply(Timetable.new periods: Timetable::Period.from(date_range))
+      end.to change { time_table.periods.size }.to(1)
+      expect(time_table.periods.first).to have_attributes(period_start: date_range.min, period_end: date_range.max)
+    end
+
+    it "removes unexpected Dates 'in'" do
+      time_table.dates.build date: date, in_out: true
+      expect do
+        time_table.apply(Timetable.new)
+      end.to change { time_table.dates.reject(&:destroyed?).size }.to(0)
+    end
+
+    it "removes unexpected Dates 'out'" do
+      time_table.dates.build date: date, in_out: false
+      expect do
+        time_table.apply(Timetable.new)
+      end.to change { time_table.dates.reject(&:destroyed?).size }.to(0)
+    end
+
+    it "removes unexpected Period" do
+      time_table.periods.build period_start: date_range.min, period_end: date_range.max
+      expect do
+        time_table.apply(Timetable.new)
+      end.to change { time_table.periods.reject(&:destroyed?).size }.to(0)
     end
 
   end

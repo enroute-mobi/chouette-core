@@ -1,4 +1,3 @@
-require 'rails_helper'
 
 RSpec.describe Workgroup, type: :model do
   context "associations" do

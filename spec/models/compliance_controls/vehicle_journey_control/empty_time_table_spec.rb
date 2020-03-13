@@ -1,4 +1,3 @@
-require 'rails_helper'
 
 RSpec.describe VehicleJourneyControl::EmptyTimeTable, :type => :model do
   let(:referential){ create :workbench_referential }

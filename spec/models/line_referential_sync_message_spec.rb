@@ -1,4 +1,3 @@
-require 'rails_helper'
 
 RSpec.describe LineReferentialSyncMessage, :type => :model do
   it 'should have a valid factory' do

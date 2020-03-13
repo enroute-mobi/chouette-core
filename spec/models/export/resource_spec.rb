@@ -1,4 +1,3 @@
-require 'rails_helper'
 
 RSpec.describe Export::Resource, :type => :model do
   it { should belong_to(:export) }

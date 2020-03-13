@@ -1,4 +1,3 @@
-require 'rails_helper'
 
 RSpec.describe VehicleJourneyControl::BusCapacity, :type => :model do
   let(:workgroup){ referential.workgroup }

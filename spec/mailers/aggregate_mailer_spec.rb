@@ -1,4 +1,3 @@
-require "rails_helper"
 
 RSpec.describe AggregateMailer, type: :mailer do
   let(:user) {create :user}

@@ -1,4 +1,3 @@
-require 'rails_helper'
 
 RSpec.describe StopAreaRoutingConstraint, type: :model do
   subject { create(:stop_area_routing_constraint, stop_area_referential: referential.stop_area_referential) }

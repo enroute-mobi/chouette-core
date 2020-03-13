@@ -1,4 +1,3 @@
-require 'rails_helper'
 
 RSpec.describe VehicleJourneyControl::PurchaseWindowDates, :type => :model do
   let(:workgroup){ referential.workgroup }

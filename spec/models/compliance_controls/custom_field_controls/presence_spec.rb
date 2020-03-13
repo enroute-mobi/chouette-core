@@ -1,4 +1,3 @@
-require 'rails_helper'
 
 RSpec.describe CustomFieldControl::Presence, :type => :model do
   let!(:workgroup) { create :workgroup }

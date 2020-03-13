@@ -1,4 +1,3 @@
-require 'rails_helper'
 
 RSpec.describe ComplianceControlSetPolicy do
   let( :user )  { create :user, organisation: create(:organisation) }

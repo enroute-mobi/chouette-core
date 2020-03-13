@@ -1,4 +1,3 @@
-require 'rails_helper'
 
 RSpec.describe PublicationApiKey, type: :model do
   it { should belong_to :publication_api }

@@ -1,4 +1,3 @@
-require "rails_helper"
 
 RSpec.describe Chouette::ObjectidFormatter do
   describe 'objectid_formatter' do

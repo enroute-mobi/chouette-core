@@ -1,4 +1,3 @@
-require 'rails_helper'
 
 RSpec.describe NotificationRule, type: :model do
   subject { build(:notification_rule) }

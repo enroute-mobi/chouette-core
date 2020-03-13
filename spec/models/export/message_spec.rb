@@ -1,4 +1,3 @@
-require 'rails_helper'
 
 RSpec.describe Export::Message, :type => :model do
   it { should validate_presence_of(:criticity) }

@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 shared_examples_for TypeIdsModelable do
   context 'class methods' do
     it 'should be a TypeIdsModelable class' do
@@ -11,7 +9,7 @@ shared_examples_for TypeIdsModelable do
       end
     end
   end
-  
+
   context 'with an instance' do
     describe "#references" do
       it "should be empty if references_type is nil" do

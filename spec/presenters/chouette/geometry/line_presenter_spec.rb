@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 describe Chouette::Geometry::LinePresenter do
   let!(:line) { create(:line_with_stop_areas_having_parent) }

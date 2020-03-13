@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 describe NetworksController do
   describe "routing" do

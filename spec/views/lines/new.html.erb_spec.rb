@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 describe "/lines/new", :type => :view do
 

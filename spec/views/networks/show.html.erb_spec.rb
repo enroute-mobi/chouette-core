@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 describe "/networks/show", :type => :view do
 

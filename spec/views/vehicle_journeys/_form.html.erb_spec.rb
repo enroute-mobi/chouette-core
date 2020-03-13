@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 describe "/vehicle_journeys/_form", :type => :view do
 

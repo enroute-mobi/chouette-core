@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 RSpec.describe RouteStopPointsController, type: :controller do
   login_user

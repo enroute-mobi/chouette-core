@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 describe Chouette::Objectid::StifCodifligne, :type => :model do
   subject { Chouette::Objectid::StifCodifligne.new(object_type: 'Line', local_id: 'C02008', sync_id: 'CODIFLIGNE', provider_id: 'STIF') }

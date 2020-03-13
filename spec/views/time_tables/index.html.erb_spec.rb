@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 describe "/time_tables/index", :type => :view do
 

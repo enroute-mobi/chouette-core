@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 describe Chouette::Direction, :type => :model do
 

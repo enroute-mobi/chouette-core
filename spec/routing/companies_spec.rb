@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 describe CompaniesController do
   describe "routing" do

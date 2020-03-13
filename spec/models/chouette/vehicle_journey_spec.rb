@@ -1,5 +1,4 @@
 # coding: utf-8
-require 'spec_helper'
 
 describe Chouette::VehicleJourney, :type => :model do
   subject { create(:vehicle_journey) }

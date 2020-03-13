@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 describe "/lines/show", :type => :view do
 

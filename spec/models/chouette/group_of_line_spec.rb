@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 describe Chouette::GroupOfLine, :type => :model do
 

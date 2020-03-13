@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 describe Chouette::Footnote, type: :model do
   subject { create(:footnote) }

@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 RSpec.describe ReferentialCloning, :type => :model do
 

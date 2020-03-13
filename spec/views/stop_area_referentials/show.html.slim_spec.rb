@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 describe "/stop_area_referentials/show", :type => :view do
 

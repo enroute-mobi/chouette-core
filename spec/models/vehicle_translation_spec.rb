@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 describe VehicleTranslation, :type => :model do
   let!(:company){ create(:company )}

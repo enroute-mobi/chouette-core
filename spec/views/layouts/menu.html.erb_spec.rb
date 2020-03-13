@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 describe "/layouts/application", :type => :view do
 

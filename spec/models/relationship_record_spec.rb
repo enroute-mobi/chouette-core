@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 describe Chouette::RelationshipRecord, :type => :model do
 

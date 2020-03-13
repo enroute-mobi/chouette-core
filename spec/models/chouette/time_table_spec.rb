@@ -1451,6 +1451,32 @@ end
 
   end
 
+  describe "#days_of_week" do
+
+    def for_all_days_combination
+      all_days = Chouette::TimeTable.all_days.map(&:to_sym)
+
+      (0..all_days.size).each do |size|
+        all_days.combination(size).each do |combination|
+          yield combination
+        end
+      end
+    end
+
+    it "returns a DaysOfWeek with the same day selection than the TimeTable" do
+      for_all_days_combination do |combination|
+        time_table = Chouette::TimeTable.new
+
+        combination.each do |day|
+          time_table.send "#{day}=", true
+        end
+
+        expect(time_table.days_of_week.days).to match_array(combination)
+      end
+    end
+
+  end
+
   describe "#to_timetable" do
 
     let(:time_table) { Chouette::TimeTable.new int_day_types: Chouette::TimeTable::EVERYDAY }

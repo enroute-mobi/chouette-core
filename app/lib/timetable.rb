@@ -386,7 +386,7 @@ class Timetable
       if definition.is_a?(String)
         # Allow to use 15/12
         if definition =~ %r{^\d+/\d+$}
-          definition = "#{definition}/#{Date.today.year}"
+          definition = "#{definition}/#{Time.zone.today.year}"
         end
         Date.parse definition
       else

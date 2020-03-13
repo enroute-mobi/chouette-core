@@ -526,28 +526,7 @@ module Chouette
     end
 
     def intersect_periods!(mask_periods)
-      dates.each do |date|
-        unless mask_periods.any? { |p| p.include? date.date }
-          dates.delete date
-        end
-      end
-
-      periods.each do |period|
-        mask_periods_with_common_part = mask_periods.select { |p| p.intersect? period.range }
-
-        if mask_periods_with_common_part.empty?
-          self.periods.delete period
-        else
-          mask_periods_with_common_part.each do |mask_period|
-            intersection = (mask_period & period.range)
-            period.period_start, period.period_end = intersection.min, intersection.max
-            if period.period_start == period.period_end
-              build_date_if_relevant period.period_start
-              periods.delete period
-            end
-          end
-        end
-      end
+      apply to_timetable.limit(mask_periods).normalize!
     end
 
     def remove_periods!(removed_periods)
@@ -589,5 +568,86 @@ module Chouette
     def empty?
       dates.empty? && periods.empty?
     end
+
+    def days_of_week
+      Timetable::DaysOfWeek.from_int_day_types(int_day_types)
+    end
+
+    def to_timetable
+      Timetable.new.tap do |timetable|
+        dates.each do |date|
+          if date.in?
+            timetable.included_dates << date.date
+          else
+            timetable.excluded_dates << date.date
+          end
+        end
+
+        periods.each do |period|
+          timetable.periods << Timetable::Period.new(period.period_start, period.period_end, days_of_week)
+        end
+      end
+    end
+
+    def apply_with_clear(timetable)
+      dates.clear
+      timetable.included_dates.each do |included_date|
+        dates.build date: included_date, in_out: true
+      end
+      timetable.excluded_dates.each do |excluded_date|
+        dates.build date: excluded_date, in_out: false
+      end
+
+      periods.clear
+      timetable.periods.each do |period|
+        periods.build period_start: period.first, period_end: period.last
+      end
+    end
+
+    def apply(timetable)
+      included_dates = timetable.included_dates.to_a
+      dates.select(&:in?).sort_by(&:date).each do |date|
+        expected_date = included_dates.shift
+        if expected_date
+          date.date = expected_date
+        else
+          dates.delete date
+        end
+      end
+
+      included_dates.each do |included_date|
+        dates.build date: included_date, in_out: true
+      end
+
+      excluded_dates = timetable.excluded_dates.to_a
+      dates.select(&:out?).sort_by(&:date).each do |date|
+        expected_date = excluded_dates.shift
+        if expected_date
+          date.date = expected_date
+        else
+          dates.delete date
+        end
+      end
+
+      excluded_dates.each do |excluded_date|
+        dates.build date: excluded_date, in_out: false
+      end
+
+      expected_periods = timetable.periods.to_a
+      periods.sort_by(&:period_start).each do |period|
+        expected_period = expected_periods.shift
+        if expected_period
+          period.period_start = expected_period.first
+          period.period_end = expected_period.last
+        else
+          periods.delete period
+        end
+      end
+
+      expected_periods.each do |period|
+        periods.build period_start: period.first, period_end: period.last
+      end
+    end
+
   end
 end

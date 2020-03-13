@@ -569,10 +569,6 @@ module Chouette
       dates.empty? && periods.empty?
     end
 
-    def days_of_week
-      Timetable::DaysOfWeek.from_int_day_types(int_day_types)
-    end
-
     def to_timetable
       Timetable.new.tap do |timetable|
         dates.each do |date|

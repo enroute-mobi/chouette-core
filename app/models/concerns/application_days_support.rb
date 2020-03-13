@@ -119,7 +119,7 @@ module ApplicationDaysSupport
   end
 
   def days_of_week
-    Timetable::DaysOfWeek.new ALL_DAYS.select{ |d| self.send(d) }
+    Timetable::DaysOfWeek.from_int_day_types(int_day_types)
   end
 
 end

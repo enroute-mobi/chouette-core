@@ -16,23 +16,22 @@
 /log/exporters
 /tmp
 *~
-public/assets/
-public/javascripts/i18n.js
-public/javascripts/translations.js
+/public/assets/
+/public/javascripts/i18n.js
+/public/javascripts/translations.js
 
 # for vim users
 *.swp
 *.swo
 .DS_Store
-chouette2.war
-vendor/bundle
-.ruby-version
-.byebug_history
-start.sh
-coverage
+/vendor/bundle
+/.ruby-version
+/.byebug_history
+/start.sh
+/coverage
 
 # IDE
-.idea
+/.idea
 
 # Ignore uploaded files
 /public/uploads
@@ -56,6 +55,9 @@ coverage
 
 # Directory for RspecJunitFormatter output
 /test-results/
+
+# Directory used by codacy_coverage_reporter (ci:task)
+/.codacy-coverage/
 
 # To avoid error
 /config/storage-key.json

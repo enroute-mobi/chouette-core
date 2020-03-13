@@ -1,6 +1,19 @@
-if ENV['CODACY_PROJECT_TOKEN']
-  require 'codacy-coverage'
-  Codacy::Reporter.start
+unless ENV['NO_RCOV']
+  require 'simplecov'
+
+  SimpleCov.start do
+    if ENV['CODACY_PROJECT_TOKEN']
+      require 'simplecov-cobertura'
+      formatter SimpleCov::Formatter::CoberturaFormatter
+    end
+
+    enable_coverage :branch
+    add_filter 'vendor'
+    add_filter 'app/exporters/chouette/hub'
+
+    #command_name "Job #{ENV["TEST_ENV_NUMBER"]}" if ENV["TEST_ENV_NUMBER"]
+    #formatter SimpleCov::Formatter::SimpleFormatter
+  end
 end
 
 ENV["RAILS_ENV"] = 'test'
@@ -12,7 +25,6 @@ require 'rspec/rails'
 require 'capybara/rspec'
 require 'capybara/rails'
 require 'capybara/poltergeist'
-# require 'georuby-ext'
 require 'will_paginate/array'
 require 'webmock/rspec'
 
@@ -45,6 +57,9 @@ RSpec.configure do |config|
   config.filter_run_excluding wip: true
   config.run_all_when_everything_filtered = true
   config.include TokenInputHelper, type: :feature
+
+  config.include EmailSpec::Helpers
+  config.include EmailSpec::Matchers
 
   # ## Mock Framework
   #

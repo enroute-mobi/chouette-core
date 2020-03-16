@@ -195,14 +195,19 @@ crumb :imports do |imports_parent|
   parent :imports_parent, imports_parent
 end
 
-crumb :exports do |workbench|
-  link I18n.t('exports.index.title'), workbench_exports_path(workbench)
-  parent :workbench, workbench
-end
-
 crumb :import do |imports_parent, import|
   link breadcrumb_name(import), [imports_parent, import]
   parent :imports, imports_parent
+end
+
+crumb :exports do |export_parent|
+  link I18n.t('exports.index.title'),[export_parent, :exports]
+  parent export_parent
+end
+
+crumb :export do |export_parent, export|
+  link breadcrumb_name(export), [export_parent, export]
+  parent :exports, export_parent
 end
 
 crumb :netex_import do |imports_parent, netex_import|
@@ -213,16 +218,6 @@ end
 crumb :gtfs_import do |imports_parent, gtfs_import|
   link breadcrumb_name(gtfs_import), [imports_parent, gtfs_import]
   parent :import, imports_parent, gtfs_import.parent
-end
-
-crumb :export do |export_parent, export|
-  if export_parent.is_a?(Workbench)
-    link breadcrumb_name(export), workbench_export_path(export_parent, export)
-    parent :exports, export_parent
-  else
-    link breadcrumb_name(export), [export_parent.publication_setup.workgroup, export_parent.publication_setup, export_parent, export]
-    parent export_parent
-  end
 end
 
 crumb :import_resources do |import, import_resources|

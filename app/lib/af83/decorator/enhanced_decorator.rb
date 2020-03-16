@@ -10,7 +10,6 @@ module AF83::Decorator::EnhancedDecorator
       instance_exec(link, &options[:before_block]) if options[:before_block]
       yield link if block_given?
       raise AF83::Decorator::IncompleteLinkDefinition.new(link.errors) unless link.complete?
-
       weight = options[:weight] || 1
       @_action_links ||= []
       @_action_links[weight] ||= []

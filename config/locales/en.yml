@@ -51,8 +51,6 @@ en:
     - October
     - November
     - December
-  errors:
-    format: "%{message}"
 
   last_update: 'Last update on %{time}'
   whodunnit: 'By %{author}'

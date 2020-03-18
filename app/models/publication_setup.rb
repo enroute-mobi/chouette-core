@@ -35,7 +35,7 @@ class PublicationSetup < ApplicationModel
   def export_options_are_valid
     dummy = new_export
     dummy.validate
-    dummy.errors.to_h.except(:name, :referential_id).each do |k, v|
+    dummy.errors.to_h.except(:name, :referential_id, :workgroup).each do |k, v|
       errors.add(k, v)
     end
   end

@@ -23,7 +23,7 @@ class Export::Base < ApplicationModel
 
   belongs_to :referential
   belongs_to :publication
-  belongs_to :workgroup
+  belongs_to :workgroup, class_name: '::Workgroup'
 
   has_many :publication_api_sources, foreign_key: :export_id
 

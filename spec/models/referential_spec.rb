@@ -592,7 +592,7 @@ describe Referential, :type => :model do
         it "defines flagged_urgent_at in all metadatas" do
           expect do
             referential.flag_metadatas_as_urgent!
-          end.to change { puts metadatas_flagged_urgent_at.inspect ; metadatas_flagged_urgent_at.uniq }.from([nil]).to([Time.now])
+          end.to change { metadatas_flagged_urgent_at.uniq }.from([nil]).to([Time.now])
         end
       end
 

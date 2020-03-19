@@ -41,7 +41,11 @@ class ExportsController < ChouetteController
 
   def build_resource
     Export::Base.force_load_descendants if Rails.env.development?
-  	@export ||= @parent.exports.new(creator: current_user.name)
+    @export ||= Export::Base.new(*resource_params) do |export|
+      export.workbench = workbench
+      export.workgroup = workgroup || workbench&.workgroup
+      export.creator   = current_user.name
+    end
   end
 
   private

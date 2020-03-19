@@ -15,6 +15,7 @@ definitions:
     assets: ./public/assets
     assets-cache: ./tmp/assets/cache
     build-cache: ./cache
+    codacy-coverage: ./.codacy-coverage
   steps:
     - step: &unit-tests
         name: Unit tests
@@ -26,6 +27,7 @@ definitions:
           - assets
           - assets-cache
           - build-cache
+          - codacy-coverage
         script:
           - export LANG=en_US.UTF-8 LANGUAGE=en_US:UTF-8 LC_ALL=en_US.UTF-8
           - export BUNDLER_VERSION=2.0.2

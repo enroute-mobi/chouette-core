@@ -140,7 +140,7 @@ namespace :ci do
   cache_file "log/parallel_runtime_specs.log"
 
   def codacy_coverage_reporter(command)
-    sh "bash -c 'bash <(curl -Ls https://coverage.codacy.com/get.sh) #{command}'"
+    sh "bash -c 'bash -x <(curl -Ls https://coverage.codacy.com/get.sh) #{command}'"
   end
 
   def codacy_coverage(language,file)

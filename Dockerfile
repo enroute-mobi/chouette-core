@@ -22,11 +22,11 @@ ENV BUNDLER_VERSION 2.0.2
 
 RUN apt-get update && apt-get dist-upgrade -y && apt-get install -y --no-install-recommends locales && \
     echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && locale-gen && \
-    gem install bundler:$BUNDLER_VERSION
+    gem install bundler:$BUNDLER_VERSION && \
+    apt-get clean && apt-get -y autoremove && rm -rf /var/lib/apt/lists/*
 
 ENV DEV_PACKAGES="build-essential libpq-dev libxml2-dev zlib1g-dev libmagic-dev libmagickwand-dev git-core"
 ENV RUN_PACKAGES="libpq5 libxml2 zlib1g libmagic1 imagemagick libproj-dev libgeos-c1v5 postgresql-client-common postgresql-client-9.6 cron"
-
 
 # Install bundler packages
 COPY Gemfile Gemfile.lock /app/
@@ -34,7 +34,8 @@ RUN apt-get update && mkdir -p /usr/share/man/man1 /usr/share/man/man7 && \
     apt-get -y install --no-install-recommends $DEV_PACKAGES $RUN_PACKAGES && \
     cd /app && bundle install --deployment --jobs 4 --without development test && \
     apt-get -y remove $DEV_PACKAGES && \
-    rm -rf /var/lib/gems/2.3.0/cache/ vendor/bundle/ruby/2.3.0/cache /root/.bundle/ && \
+    rm -rf /usr/share/man/ && \
+    rm -rf vendor/bundle/ruby/$RUBY_MAJOR.0/cache vendor/bundle/ruby/$RUBY_MAJOR.0/bundler/gems/*/.git && \
     apt-get clean && apt-get -y autoremove && rm -rf /var/lib/apt/lists/*
 
 FROM base as assets-builder
@@ -46,7 +47,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl gnupg ca-c
     curl -sS https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - && \
     echo "deb https://deb.nodesource.com/node_8.x stretch main" > /etc/apt/sources.list.d/nodesource.list && \
     apt-get update && apt-get install -y --no-install-recommends yarn nodejs
-
 
 # Install yarn packages
 COPY package.json yarn.lock /app/

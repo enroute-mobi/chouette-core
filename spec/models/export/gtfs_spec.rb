@@ -341,6 +341,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       vehicle_journey = FactoryGirl.create :vehicle_journey, journey_pattern: journey_pattern, company: company
       vehicle_journey.time_tables << (FactoryGirl.create :time_table)
 
+      gtfs_export.duration = nil
       gtfs_export.export_scope = Export::Scope::All.new(exported_referential)
 
       tmp_dir = Dir.mktmpdir
@@ -352,7 +353,8 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       source = GTFS::Source.build stop_times_zip_path, strict: false
 
       vehicle_journey_at_stops = vehicle_journey.vehicle_journey_at_stops.select {|vehicle_journey_at_stop| vehicle_journey_at_stop.stop_point.stop_area.commercial? }
-      expect(source.stop_times.length).to eq(vehicle_journey_at_stops.length)
+      periods = vehicle_journey.time_tables.inject(0) { |sum, tt| sum + tt.periods.length }
+      expect(source.stop_times.length).to eq(vehicle_journey_at_stops.length * periods)
 
       vehicle_journey_at_stops.each do |vj|
         stop_time = source.stop_times.detect{|s| s.arrival_time == GTFS::Time.format_datetime(vj.arrival_time, vj.arrival_day_offset, 'Europe/Paris') }
@@ -533,7 +535,11 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
         # Get VJ merged periods
         periods = []
         selected_vehicle_journeys.each do |vehicle_journey|
-          periods << vehicle_journey.flattened_circulation_periods.select{|period| period.range & date_range}
+          vehicle_journey.time_tables.each do |tt|
+            tt.periods.each do |period|
+              periods << period if period.range & date_range
+            end
+          end
         end
 
         periods = periods.flatten.uniq
@@ -548,13 +554,13 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
           e.start_date == (random_period.period_start.strftime('%Y%m%d'))
           e.end_date == (random_period.period_end.strftime('%Y%m%d'))
 
-          e.monday == (random_period.monday ? "1" : "0")
-          e.tuesday == (random_period.tuesday ? "1" : "0")
-          e.wednesday == (random_period.wednesday ? "1" : "0")
-          e.thursday == (random_period.thursday ? "1" : "0")
-          e.friday == (random_period.friday ? "1" : "0")
-          e.saturday == (random_period.saturday ? "1" : "0")
-          e.sunday == (random_period.sunday ? "1" : "0")
+          e.monday == (random_period.time_table.monday ? "1" : "0")
+          e.tuesday == (random_period.time_table.tuesday ? "1" : "0")
+          e.wednesday == (random_period.time_table.wednesday ? "1" : "0")
+          e.thursday == (random_period.time_table.thursday ? "1" : "0")
+          e.friday == (random_period.time_table.friday ? "1" : "0")
+          e.saturday == (random_period.time_table.saturday ? "1" : "0")
+          e.sunday == (random_period.time_table.sunday ? "1" : "0")
         end
 
         expect(random_gtfs_calendar).not_to be_nil
@@ -562,9 +568,17 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
         # Get VJ merged periods
         vj_periods = []
+        # selected_vehicle_journeys.each do |vehicle_journey|
+        #   vehicle_journey.flattened_circulation_periods.select{|period| period.range & date_range}.each do |period|
+        #     vj_periods << [period,vehicle_journey]
+        #   end
+        # end
         selected_vehicle_journeys.each do |vehicle_journey|
-          vehicle_journey.flattened_circulation_periods.select{|period| period.range & date_range}.each do |period|
-            vj_periods << [period,vehicle_journey]
+          vehicle_journey.time_tables.each do |tt|
+            tt.periods.each do |period|
+              periods << period if period.range & date_range
+              vj_periods << [period,vehicle_journey] if period.range & date_range
+            end
           end
         end
 
@@ -575,7 +589,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
         random_vj_period = vj_periods.sample
 
         # Find matching random stop in exported trips.txt file
-        random_gtfs_trip = source.trips.detect {|t| t.service_id =~ /#{random_vj_period.second.objectid}/ && t.route_id == random_vj_period.last.route.line.registration_number.to_s}
+        random_gtfs_trip = source.trips.detect {|t| t.service_id =~ /#{random_vj_period.first.id}/ && t.route_id == random_vj_period.last.route.line.registration_number.to_s}
         expect(random_gtfs_trip).not_to be_nil
 
         ################################

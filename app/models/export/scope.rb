@@ -49,6 +49,10 @@ module Export::Scope
         .where("vehicle_journeys.id" => vehicle_journeys)
     end
 
+    def time_tables
+      super.applied_at_least_once_in(date_range).joins(:vehicle_journeys).where("vehicle_journeys.id" => vehicle_journeys.pluck(:id)).distinct
+    end
+
     def vehicle_journey_at_stops
       super.where(vehicle_journey: vehicle_journeys)
     end

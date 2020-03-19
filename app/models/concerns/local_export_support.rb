@@ -19,6 +19,7 @@ module LocalExportSupport
   end
 
   def date_range
+    return nil if duration.nil?
     @date_range ||= Time.now.to_date..self.duration.to_i.days.from_now.to_date
   end
 

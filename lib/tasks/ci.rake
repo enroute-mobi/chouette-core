@@ -140,7 +140,15 @@ namespace :ci do
   cache_file "log/parallel_runtime_specs.log"
 
   def codacy_coverage_reporter(command)
-    sh "bash -c 'bash <(curl -Ls https://coverage.codacy.com/get.sh) #{command}'"
+    sh "bash -c 'bash <(curl -Ls https://coverage.codacy.com/get.sh) #{command}'" do |ok, _|
+      fail "Coverage failed" if !ok && File.exists?('.codacy-coverage/codacy-coverage-reporter')
+
+      puts "Fallback to our codacy-coverage-reporter mirror"
+      mkdir_p '.codacy-coverage'
+      sh "curl -Ls --output .codacy-coverage/codacy-coverage-reporter https://bitbucket.org/enroute-mobi/codacy-coverage-reporter/downloads/codacy-coverage-reporter"
+      sh "chmod +x .codacy-coverage/codacy-coverage-reporter"
+      sh ".codacy-coverage/codacy-coverage-reporter #{command}"
+    end
   end
 
   def codacy_coverage(language,file)

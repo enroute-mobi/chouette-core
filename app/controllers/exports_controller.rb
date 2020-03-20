@@ -80,7 +80,7 @@ class ExportsController < ChouetteController
 
   def load_referentials
     referentials = parent.referentials.exportable.pluck(:id)
-    referentials += parent.workgroup.output.referentials.pluck(:id)
+    referentials += (workgroup || workbench&.workgroup).output.referentials.pluck(:id)
     @referentials = Referential.where(id: referentials).order("created_at desc")
   end
 end

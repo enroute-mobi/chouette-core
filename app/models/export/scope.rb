@@ -50,7 +50,7 @@ module Export::Scope
     end
 
     def time_tables
-      super.applied_at_least_once_in(date_range).joins(:vehicle_journeys).where("vehicle_journeys.id" => vehicle_journeys.pluck(:id)).distinct
+      super.overlapping(date_range).joins(:vehicle_journeys).where("vehicle_journeys.id" => vehicle_journeys).distinct
     end
 
     def vehicle_journey_at_stops

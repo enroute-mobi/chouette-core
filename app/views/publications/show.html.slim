@@ -33,7 +33,7 @@
                 key: :name, \
                 attribute: :name, \
                 link_to: lambda do |export| \
-                  workgroup_publication_setup_publication_export_path(@workgroup, @publication_setup, @publication, export) \
+                  workgroup_export_path(@workgroup, export) \
                 end \
               ), \
               TableBuilderHelper::Column.new( \

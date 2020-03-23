@@ -22,7 +22,6 @@ RSpec.describe ExportsController, :type => :controller do
 
       describe 'GET #new' do
         it 'should be successful if authorized' do
-          byebug
           get :new, params: parent_params
           expect(response).to be_successful
         end

@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/icar-api.git
-  revision: 99f5cb6ab363bb91e68f6b9ecbf8e30b2c8fc4bd
+  revision: db703f41ccbe4072e930ab3006f4629702dcddd2
   specs:
     icar (0.0.3)
       nokogiri (>= 1.8.5)

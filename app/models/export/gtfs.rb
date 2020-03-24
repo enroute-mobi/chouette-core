@@ -369,13 +369,7 @@ class Export::Gtfs < Export::Base
 
     def export!
       time_tables.find_each do |time_table|
-        if time_table.periods.length > 0
-          decorated_time_table = Decorator.new(time_table, index, date_range)
-        else
-          decorated_time_table = NoPeriodDecorator.new(time_table, index, date_range)
-        end
-
-        decorated_time_table.handle_periods
+        decorated_time_table = TimeTableDecorator.new(time_table, date_range)
 
         decorated_time_table.calendars.each { |c| target.calendars << c }
         decorated_time_table.calendar_dates.each { |cd| target.calendar_dates << cd }
@@ -384,92 +378,139 @@ class Export::Gtfs < Export::Base
       end
     end
 
-    class Decorator < SimpleDelegator
+    class TimeTableDecorator < SimpleDelegator
       # index is optional to make tests easier
-      def initialize(time_table, index = nil, export_date_range = nil)
+      def initialize(time_table, export_date_range = nil)
         super time_table
-        @index = index
         @export_date_range = export_date_range
-        @calendars = []
-        @calendar_dates = []
-        @service_ids = []
       end
 
-      attr_reader :index, :calendars, :calendar_dates, :service_ids
-
-      def handle_periods
-        time_table_dates = dates.to_a
-
-        periods.each do |period|
-          next unless @export_date_range.nil? || (period.range & @export_date_range)
-
-          service_id = period.id
-          @calendars << {
-            service_id: service_id,
-            start_date: period.period_start.strftime('%Y%m%d'),
-            end_date: period.period_end.strftime('%Y%m%d'),
-            monday: monday ? 1:0,
-            tuesday: tuesday ? 1:0,
-            wednesday: wednesday ? 1:0,
-            thursday: thursday ? 1:0,
-            friday: friday ? 1:0,
-            saturday: saturday ? 1:0,
-            sunday: sunday ? 1:0
-          }
-
-          @service_ids << service_id
-
-          time_table_dates.delete_if do |time_table_date|
-            if ((!time_table_date.in_out && (period.range === time_table_date.date)) ||
-              (time_table_date.in_out && (@export_date_range === time_table_date.date)))
-              @calendar_dates << {
-                service_id: service_id,
-                date: time_table_date.date.strftime('%Y%m%d'),
-                exception_type: time_table_date.in_out ? 1 : 2
-              }
-            end
-            true
-          end
-        end
-      end
-    end
-
-    class NoPeriodDecorator < SimpleDelegator
-      # index is optional to make tests easier
-      def initialize(time_table, index = nil, export_date_range)
-        super time_table
-        @index = index
-        @export_date_range = export_date_range
-        @calendar_dates = []
+      def service_ids
+        @service_ids ||= Set.new
       end
 
-      attr_reader :index, :calendar_dates
+      def periods
+        @periods ||= (@export_date_range.nil? ? super : super.select { |p| p.range & @export_date_range })
+      end
 
-      def handle_periods
-        time_table_dates = dates.to_a
-        service_id = self.id
+      def dates
+        @dates ||= (@export_date_range.nil? ? super : super.select {|d| (d.in_out && (@export_date_range === d.date)) ||
+          (!d.in_out && periods.select{|p| p.range === d.date}.any?)})
+      end
 
-        dates.each do |date|
-          if time_table_date.in_out && (@export_date_range === time_table_date.date)
-            @calendar_dates << {
-              service_id: service_id,
-              date: time_table_date.date.strftime('%Y%m%d'),
-              exception_type: 1
-            }
-          end
+      def decorated_periods
+        @decorated_periods ||= periods.map do |period|
+          PeriodDecorator.new(period)
         end
       end
 
       def calendars
-        []
+        decorated_periods.map do |decorated_period|
+          with_service_id decorated_period.calendar_attributes,
+                          period_service_id(decorated_period)
+        end
       end
 
-      def service_ids
-        [service_id]
+      def calendar_dates
+        dates.map do |date|
+          with_service_id DateDecorator.new(date).calendar_date_attributes,
+                          date_service_id(date)
+        end
       end
 
-      def service_id
-        self.id
+      def with_service_id(attributes, service_id)
+        service_ids << service_id
+        attributes.merge service_id: service_id
+      end
+
+      def first_period?(period)
+        period == decorated_periods.first
+      end
+
+      def default_service_id
+        objectid
+      end
+
+      def period_service_id(decorated_period)
+        if first_period? decorated_period
+          default_service_id
+        else
+          decorated_period.calendar_service_id
+        end
+      end
+
+      def associated_period(date)
+        decorated_periods.find do |decorated_period|
+          decorated_period.include?(date)
+        end
+      end
+
+      def date_service_id(date)
+        period = associated_period(date)
+        if period
+          period_service_id period
+        else
+          default_service_id
+        end
+      end
+    end
+
+    class PeriodDecorator < SimpleDelegator
+      def range
+        @range ||= super
+      end
+
+      def calendar_service_id
+        id
+      end
+
+      %w{monday tuesday wednesday thursday friday saturday sunday}.each do |day|
+        define_method "calendar_#{day}" do
+          time_table.send(day) ? 1 : 0
+        end
+      end
+
+      def calendar_start_date
+        period_start.strftime('%Y%m%d')
+      end
+
+      def calendar_end_date
+        period_end.strftime('%Y%m%d')
+      end
+
+      def calendar_attributes
+        {
+          start_date: calendar_start_date,
+          end_date: calendar_end_date,
+          monday: calendar_monday,
+          tuesday: calendar_tuesday,
+          wednesday: calendar_wednesday,
+          thursday: calendar_thursday,
+          friday: calendar_friday,
+          saturday: calendar_saturday,
+          sunday: calendar_sunday
+        }
+      end
+
+      def include?(date)
+        range.include?(date.date)
+      end
+    end
+
+    class DateDecorator < SimpleDelegator
+      def calendar_date_date
+        date.strftime('%Y%m%d')
+      end
+
+      def calendar_date_exception_type
+        in_out ? 1 : 2
+      end
+
+      def calendar_date_attributes
+        {
+          date: calendar_date_date,
+          exception_type: calendar_date_exception_type
+        }
       end
     end
   end

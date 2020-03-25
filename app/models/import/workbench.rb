@@ -70,7 +70,7 @@ class Import::Workbench < Import::Base
   end
 
   def done!
-    return unless (successful? || warning?)
+    return unless (successful? || warning?) && children.all?(&:finished?)
 
     if flag_urgent
       flag_refentials_as_urgent

@@ -94,6 +94,7 @@ en:
     attributes:
       line:
         id: "ID"
+        full_id: "Full ID"
         network_id: "Network"
         networks:
           name: "Network"

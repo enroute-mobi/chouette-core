@@ -123,6 +123,7 @@ en:
         other: "stop areas"
     attributes:
       stop_area:
+        full_id: "Full ID"
         name: "Name"
         kind: "Category"
         registration_number: "Registration number"

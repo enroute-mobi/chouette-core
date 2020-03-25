@@ -113,6 +113,7 @@ module StopAreasHelper
 
   def stop_area_identification_metadatas(stop_area, stop_area_referential)
     attributes = { t('id_reflex') => stop_area.get_objectid.short_id,
+      Chouette::StopArea.tmf('full_id') => stop_area.objectid,
       Chouette::StopArea.tmf('name') => stop_area.name,
       Chouette::StopArea.tmf('kind') => stop_area.kind,
     }

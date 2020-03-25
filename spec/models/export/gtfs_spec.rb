@@ -671,7 +671,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
         random_vj_period = vj_periods.sample
 
         # Find matching random stop in exported trips.txt file
-        random_gtfs_trip = source.trips.detect {|t| t.service_id =~ /#{random_vj_period.first.id}/ && t.route_id == random_vj_period.last.route.line.registration_number.to_s}
+        random_gtfs_trip = source.trips.detect {|t| (t.service_id == random_vj_period.first.id || t.service_id == random_vj_period.first.time_table.objectid) && t.route_id == random_vj_period.last.route.line.registration_number.to_s}
         expect(random_gtfs_trip).not_to be_nil
 
         ################################

@@ -390,12 +390,19 @@ class Export::Gtfs < Export::Base
       end
 
       def periods
-        @periods ||= (@export_date_range.nil? ? super : super.select { |p| p.range & @export_date_range })
+        @periods ||= if @export_date_range.nil?
+          super
+        else
+            super.select { |p| p.range & @export_date_range }
+        end
       end
 
       def dates
-        @dates ||= (@export_date_range.nil? ? super : super.select {|d| (d.in_out && (@export_date_range === d.date)) ||
-          (!d.in_out && periods.select{|p| p.range === d.date}.any?)})
+        @dates ||= if @export_date_range.nil?
+          super
+        else
+          super.select {|d| (d.in_out && @export_date_range.cover?(d.date)) || (!d.in_out && periods.select{|p| p.range.cover? d.date}.any?)}
+        end
       end
 
       def decorated_periods

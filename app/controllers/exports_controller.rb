@@ -18,7 +18,7 @@ class ExportsController < ChouetteController
   end
 
   def show
-    @export = ExportDecorator.decorate(@export)
+    @export = resource.decorate(context: {parent: parent})
     respond_to do |format|
       format.html
       format.json do

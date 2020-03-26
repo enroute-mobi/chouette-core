@@ -50,7 +50,7 @@
               ), \
               TableBuilderHelper::Column.new( \
                 key: :file, \
-                attribute: ->(e){ e.file.present? ? link_to('actions.download'.t, e.file.url, target: :blank) : "-" } \
+                  attribute: ->(export){ export.file.present? ? link_to('actions.download'.t, download_workgroup_export_path(@workgroup, export)) : "-" } \
               ), \
             ],
             sortable: false,

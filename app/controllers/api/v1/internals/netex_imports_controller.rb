@@ -30,6 +30,7 @@ module Api
 
         def download
           find_netex_import
+          @netex_import.file.cache_stored_file!
           send_file @netex_import.file.path
         end
 

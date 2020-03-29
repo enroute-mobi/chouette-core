@@ -249,7 +249,7 @@ GEM
       warden (~> 1.2.3)
     devise-encryptable (0.2.0)
       devise (>= 2.1.0)
-    devise-i18n (1.9.0)
+    devise-i18n (1.9.1)
       devise (>= 4.7.1)
     devise_cas_authenticatable (1.10.4)
       devise (>= 1.2.0)

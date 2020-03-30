@@ -65,10 +65,6 @@ class ExportsController < ChouetteController
     export_params
   end
 
-  def begin_of_association_chain
-    parent
-  end
-
   def decorate_collection(exports)
     ExportDecorator.decorate(
       exports,

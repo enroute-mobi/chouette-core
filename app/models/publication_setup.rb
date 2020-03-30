@@ -35,7 +35,7 @@ class PublicationSetup < ApplicationModel
   def export_options_are_valid
     dummy = new_export
     dummy.validate
-    dummy.errors.to_h.except(:name, :referential_id).each do |k, v|
+    dummy.errors.to_h.except(:name, :referential_id, :workgroup).each do |k, v|
       errors.add(k, v)
     end
   end
@@ -57,6 +57,7 @@ class PublicationSetup < ApplicationModel
         new_export(line_code: line.id) do |export|
          export.name = "#{self.class.ts} #{name} for line #{line.name}"
          export.referential = referential
+         export.workgroup = referential.workgroup
        end
       end
     else
@@ -64,6 +65,7 @@ class PublicationSetup < ApplicationModel
         export.name = "#{self.class.ts} #{name}"
         export.referential = referential
         export.synchronous = true
+        export.workgroup = referential.workgroup
       end
       [export]
     end

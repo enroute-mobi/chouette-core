@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_24_124924) do
+ActiveRecord::Schema.define(version: 2020_03_12_102812) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -221,10 +221,9 @@ ActiveRecord::Schema.define(version: 2020_02_24_124924) do
   create_table "compliance_check_sets", force: :cascade do |t|
     t.bigint "referential_id"
     t.bigint "compliance_control_set_id"
-    t.bigint "workbench_id"
     t.string "status"
-    t.string "parent_type"
     t.bigint "parent_id"
+    t.string "parent_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "current_step_id"
@@ -238,6 +237,7 @@ ActiveRecord::Schema.define(version: 2020_02_24_124924) do
     t.string "notification_target"
     t.datetime "notified_recipients_at"
     t.bigint "user_id"
+    t.bigint "workbench_id"
     t.bigint "workgroup_id"
     t.index ["compliance_control_set_id"], name: "index_compliance_check_sets_on_compliance_control_set_id"
     t.index ["parent_type", "parent_id"], name: "index_compliance_check_sets_on_parent_type_and_parent_id"
@@ -456,9 +456,11 @@ ActiveRecord::Schema.define(version: 2020_02_24_124924) do
     t.datetime "notified_recipients_at"
     t.bigint "user_id"
     t.bigint "publication_id"
+    t.bigint "workgroup_id"
     t.index ["publication_id"], name: "index_exports_on_publication_id"
     t.index ["referential_id"], name: "index_exports_on_referential_id"
     t.index ["workbench_id"], name: "index_exports_on_workbench_id"
+    t.index ["workgroup_id"], name: "index_exports_on_workgroup_id"
   end
 
   create_table "facilities", force: :cascade do |t|
@@ -1104,10 +1106,10 @@ ActiveRecord::Schema.define(version: 2020_02_24_124924) do
 
   create_table "taggings", force: :cascade do |t|
     t.bigint "tag_id"
-    t.string "taggable_type"
     t.bigint "taggable_id"
-    t.string "tagger_type"
+    t.string "taggable_type"
     t.bigint "tagger_id"
+    t.string "tagger_type"
     t.string "context", limit: 128
     t.datetime "created_at"
     t.index ["context"], name: "index_taggings_on_context"
@@ -1324,6 +1326,7 @@ ActiveRecord::Schema.define(version: 2020_02_24_124924) do
   add_foreign_key "compliance_control_sets", "organisations"
   add_foreign_key "compliance_controls", "compliance_control_blocks"
   add_foreign_key "compliance_controls", "compliance_control_sets"
+  add_foreign_key "exports", "workgroups"
   add_foreign_key "group_of_lines_lines", "group_of_lines", name: "groupofline_group_fkey", on_delete: :cascade
   add_foreign_key "journey_patterns", "routes", name: "jp_route_fkey", on_delete: :cascade
   add_foreign_key "journey_patterns", "stop_points", column: "arrival_stop_point_id", name: "arrival_point_fkey", on_delete: :nullify

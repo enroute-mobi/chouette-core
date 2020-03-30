@@ -16,16 +16,16 @@ ChouetteIhm::Application.routes.draw do
         resources :import_messages, only: [:index]
       end
     end
-  end
-
-  resources :workbenches, except: [:destroy], concerns: :iev_interfaces do
-    delete :referentials, on: :member, action: :delete_referentials
-    resources :api_keys
 
     resources :exports do
       post :upload, on: :member
       get :download, on: :member
     end
+  end
+
+  resources :workbenches, except: [:destroy], concerns: :iev_interfaces do
+    delete :referentials, on: :member, action: :delete_referentials
+    resources :api_keys
 
     resources :compliance_check_sets, only: [:index, :show] do
       get :executed, on: :member
@@ -72,9 +72,7 @@ ChouetteIhm::Application.routes.draw do
     end
 
     resources :publication_setups do
-      resources :publications, only: :show do
-        resources :exports, only: :show
-      end
+      resources :publications, only: :show
     end
 
     resources :publication_apis do

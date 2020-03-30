@@ -1,9 +1,10 @@
+require 'spec_helper'
 
 RSpec.describe '/exports/index', :type => :view do
 
   let(:ref) { create :workbench_referential }
   let(:workbench) { assign :workbench, ref.workbench }
-  let(:context) { { workbench: workbench } }
+  let(:context) { { parent: workbench } }
   let(:exports) do
     assign :exports, build_paginated_collection(:export, ExportDecorator, referential: ref, workbench: workbench, type: "Export::Gtfs", context: context)
   end

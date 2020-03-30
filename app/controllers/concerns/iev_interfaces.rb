@@ -12,7 +12,7 @@ module IevInterfaces
   def show
     show! do
       instance_variable_set "@#{collection_name.singularize}", resource.decorate(context: {
-        workbench: @workbench || @workgroup.workbenches.find_by(organisation_id: current_organisation.id)
+        workbench: workbench || workgroup.workbenches.find_by(organisation_id: current_organisation.id)
       })
     end
   end

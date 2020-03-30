@@ -18,7 +18,7 @@ class ExportsController < ChouetteController
   end
 
   def show
-    @export = ExportDecorator.decorate(@export)
+    @export = resource.decorate(context: {parent: parent})
     respond_to do |format|
       format.html
       format.json do
@@ -33,19 +33,25 @@ class ExportsController < ChouetteController
     send_file resource.file.path, filename: resource.user_file.name, type: resource.user_file.content_type
   end
 
-  private
+  protected
 
-  def index_model
-    Export::Base
+  def resource
+    @export ||= parent.exports.find(params[:id])
   end
 
   def build_resource
     Export::Base.force_load_descendants if Rails.env.development?
     @export ||= Export::Base.new(*resource_params) do |export|
-      export.workbench = parent
+      export.workbench = workbench
+      export.workgroup = workgroup || workbench&.workgroup
       export.creator   = current_user.name
     end
-    @export
+  end
+
+  private
+
+  def index_model
+    Export::Base
   end
 
   def export_params
@@ -59,34 +65,18 @@ class ExportsController < ChouetteController
     export_params
   end
 
-  def publication_setup
-    return unless params[:publication_setup_id]
-
-    workgroup.publication_setups.find params[:publication_setup_id]
-  end
-
-  def publication
-    return unless params[:publication_id]
-
-    @publication = publication_setup.publications.find params[:publication_id]
-  end
-
-  def begin_of_association_chain
-    publication || current_organisation
-  end
-
   def decorate_collection(exports)
     ExportDecorator.decorate(
       exports,
       context: {
-        workbench: @workbench
+        parent: parent
       }
     )
   end
 
   def load_referentials
     referentials = parent.referentials.exportable.pluck(:id)
-    referentials += parent.workgroup.output.referentials.pluck(:id)
+    referentials += (workgroup || workbench&.workgroup).output.referentials.pluck(:id)
     @referentials = Referential.where(id: referentials).order("created_at desc")
   end
 end

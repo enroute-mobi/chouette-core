@@ -89,7 +89,7 @@ class Import::Gtfs < Import::Base
   def import_stops
     sorted_stops = source.stops.sort_by { |s| s.parent_station.present? ? 1 : 0 }
     @stop_areas_id_by_registration_number = {}
-    CustomFieldsSupport.within_workgroup(workgroup) do
+    CustomFieldsSupport.within_workgroup(workbench.workgroup) do
       create_resource(:stops).each(sorted_stops, slice: 100, transaction: true) do |stop, resource|
         stop_area = stop_area_referential.stop_areas.find_or_initialize_by(registration_number: stop.id)
 
@@ -126,7 +126,7 @@ class Import::Gtfs < Import::Base
   end
 
   def import_routes
-    CustomFieldsSupport.within_workgroup(workgroup) do
+    CustomFieldsSupport.within_workgroup(workbench.workgroup) do
       create_resource(:routes).each(source.routes, transaction: true) do |route, resource|
         if route.agency_id.present?
           next unless check_parent_is_valid_or_create_message(Chouette::Company, route.agency_id, resource)
@@ -409,7 +409,7 @@ class Import::Gtfs < Import::Base
     # routes = Set.new
     prev_trip_id = nil
     stop_times = []
-    CustomFieldsSupport.within_workgroup(workgroup) do
+    CustomFieldsSupport.within_workgroup(workbench.workgroup) do
       resource = create_resource(:stop_times)
       resource.each(
         transaction: true,
@@ -562,7 +562,7 @@ class Import::Gtfs < Import::Base
   end
 
   def import_missing_checksums
-    CustomFieldsSupport.within_workgroup(workgroup) do
+    CustomFieldsSupport.within_workgroup(workbench.workgroup) do
       update_checkum_in_batches referential.vehicle_journey_at_stops.select(:id, :departure_time, :arrival_time, :departure_day_offset, :arrival_day_offset, :stop_area_id)
       update_checkum_in_batches referential.routes.select(:id, :name, :published_name, :wayback).includes(:stop_points, :routing_constraint_zones)
       update_checkum_in_batches referential.journey_patterns.select(:id, :custom_field_values, :name, :published_name, :registration_number, :costs).includes(:stop_points)

@@ -22,16 +22,17 @@ class Export::Workgroup < Export::Base
     # XXX TO DO
     workbench.workgroup.referentials.each do |ref|
       ref.lines.each do |line|
-        netex_export = Export::Netex.new
-        netex_export.name = "Export line #{line.name} of Referential #{ref.name}"
-        netex_export.workbench = workbench
-        netex_export.creator = creator
-        netex_export.export_type = :line
-        netex_export.referential = referential
-        netex_export.duration = duration
-        netex_export.line_code = line.objectid
-        netex_export.parent = self
-        netex_export.save!
+        Export::Netex.create!(
+          name: "Export line #{line.name} of Referential #{ref.name}",
+          workbench: workbench,
+          workgroup: workgroup,
+          creator: creator,
+          export_type: :line,
+          referential: referential,
+          duration: duration,
+          line_code: line.objectid,
+          parent: self
+        )
       end
     end
   end

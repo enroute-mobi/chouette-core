@@ -8,6 +8,7 @@ class Workgroup < ApplicationModel
 
   has_many :workbenches, dependent: :destroy
   has_many :imports, through: :workbenches
+  has_many :exports, class_name: 'Export::Base', dependent: :destroy
   has_many :calendars, dependent: :destroy
   has_many :organisations, through: :workbenches
   has_many :referentials, through: :workbenches

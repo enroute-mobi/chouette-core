@@ -95,6 +95,7 @@ fr:
     attributes:
       line:
         id: "ID"
+        full_id: "ID complet"
         network_id: "Réseau"
         networks:
           name: "Réseau"

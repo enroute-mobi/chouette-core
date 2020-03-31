@@ -1,0 +1,501 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PublicationDelivery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns="http://www.netex.org.uk/netex" xmlns:ifopt="http://www.ifopt.org.uk/ifopt" xmlns:acbs="http://www.ifopt.org.uk/acsb" xmlns:siri="http://www.siri.org.uk/siri" version="1.04:FR1-NETEX-2.0">
+  <PublicationTimestamp>2019-12-12T15:49:25Z</PublicationTimestamp>
+  <ParticipantRef>32</ParticipantRef>
+  <dataObjects>
+    <GeneralFrame id="STRAV:GeneralFrame:NETEX_CALENDRIER-20191212T154925Z:LOC" version="any">
+      <ValidBetween>
+        <FromDate>2020-01-02T00:00:00</FromDate>
+        <ToDate>2020-04-11T00:00:00</ToDate>
+      </ValidBetween>
+      <ValidBetween>
+        <FromDate>2020-04-14T00:00:00</FromDate>
+        <ToDate>2020-04-30T00:00:00</ToDate>
+      </ValidBetween>
+      <ValidBetween>
+        <FromDate>2020-05-02T00:00:00</FromDate>
+        <ToDate>2020-05-07T00:00:00</ToDate>
+      </ValidBetween>
+      <ValidBetween>
+        <FromDate>2020-05-09T00:00:00</FromDate>
+        <ToDate>2020-05-20T00:00:00</ToDate>
+      </ValidBetween>
+      <ValidBetween>
+        <FromDate>2020-05-22T00:00:00</FromDate>
+        <ToDate>2020-05-30T00:00:00</ToDate>
+      </ValidBetween>
+      <ValidBetween>
+        <FromDate>2020-06-02T00:00:00</FromDate>
+        <ToDate>2020-07-13T00:00:00</ToDate>
+      </ValidBetween>
+      <ValidBetween>
+        <FromDate>2020-07-15T00:00:00</FromDate>
+        <ToDate>2020-08-14T00:00:00</ToDate>
+      </ValidBetween>
+      <ValidBetween>
+        <FromDate>2020-08-16T00:00:00</FromDate>
+        <ToDate>2020-08-30T00:00:00</ToDate>
+      </ValidBetween>
+      <TypeOfFrameRef ref="FR1:TypeOfFrame:NETEX_CALENDRIER:">version="1.04:FR1-NETEX_CALENDRIER-2.1"</TypeOfFrameRef>
+      <members>
+        <DayType id="STRAV:DayType:1:LOC" version="any">
+          <Name>S ______D</Name>
+          <properties>
+            <PropertyOfDay>
+              <DaysOfWeek>Sunday</DaysOfWeek>
+            </PropertyOfDay>
+          </properties>
+        </DayType>
+        <DayType id="STRAV:DayType:2:LOC" version="any">
+          <Name>S _____S_</Name>
+          <properties>
+            <PropertyOfDay>
+              <DaysOfWeek>Saturday</DaysOfWeek>
+            </PropertyOfDay>
+          </properties>
+        </DayType>
+        <DayType id="STRAV:DayType:3:LOC" version="any">
+          <Name>S __m____</Name>
+          <properties>
+            <PropertyOfDay>
+              <DaysOfWeek>Wednesday</DaysOfWeek>
+            </PropertyOfDay>
+          </properties>
+        </DayType>
+        <DayType id="STRAV:DayType:4:LOC" version="any">
+          <Name>S LM_JV__</Name>
+          <properties>
+            <PropertyOfDay>
+              <DaysOfWeek>Monday</DaysOfWeek>
+            </PropertyOfDay>
+            <PropertyOfDay>
+              <DaysOfWeek>Tuesday</DaysOfWeek>
+            </PropertyOfDay>
+            <PropertyOfDay>
+              <DaysOfWeek>Thursday</DaysOfWeek>
+            </PropertyOfDay>
+            <PropertyOfDay>
+              <DaysOfWeek>Friday</DaysOfWeek>
+            </PropertyOfDay>
+          </properties>
+        </DayType>
+        <DayType id="STRAV:DayType:5:LOC" version="any">
+          <Name>S LMmJV__</Name>
+          <properties>
+            <PropertyOfDay>
+              <DaysOfWeek>Monday</DaysOfWeek>
+            </PropertyOfDay>
+            <PropertyOfDay>
+              <DaysOfWeek>Tuesday</DaysOfWeek>
+            </PropertyOfDay>
+            <PropertyOfDay>
+              <DaysOfWeek>Wednesday</DaysOfWeek>
+            </PropertyOfDay>
+            <PropertyOfDay>
+              <DaysOfWeek>Thursday</DaysOfWeek>
+            </PropertyOfDay>
+            <PropertyOfDay>
+              <DaysOfWeek>Friday</DaysOfWeek>
+            </PropertyOfDay>
+          </properties>
+        </DayType>
+        <DayType id="STRAV:DayType:6:LOC" version="any">
+          <Name>V ______D</Name>
+          <properties>
+            <PropertyOfDay>
+              <DaysOfWeek>Sunday</DaysOfWeek>
+            </PropertyOfDay>
+          </properties>
+        </DayType>
+        <DayType id="STRAV:DayType:7:LOC" version="any">
+          <Name>V _____S_</Name>
+          <properties>
+            <PropertyOfDay>
+              <DaysOfWeek>Saturday</DaysOfWeek>
+            </PropertyOfDay>
+          </properties>
+        </DayType>
+        <DayType id="STRAV:DayType:8:LOC" version="any">
+          <Name>V __m____</Name>
+          <properties>
+            <PropertyOfDay>
+              <DaysOfWeek>Wednesday</DaysOfWeek>
+            </PropertyOfDay>
+          </properties>
+        </DayType>
+        <DayType id="STRAV:DayType:9:LOC" version="any">
+          <Name>V LMmJV__</Name>
+          <properties>
+            <PropertyOfDay>
+              <DaysOfWeek>Monday</DaysOfWeek>
+            </PropertyOfDay>
+            <PropertyOfDay>
+              <DaysOfWeek>Tuesday</DaysOfWeek>
+            </PropertyOfDay>
+            <PropertyOfDay>
+              <DaysOfWeek>Wednesday</DaysOfWeek>
+            </PropertyOfDay>
+            <PropertyOfDay>
+              <DaysOfWeek>Thursday</DaysOfWeek>
+            </PropertyOfDay>
+            <PropertyOfDay>
+              <DaysOfWeek>Friday</DaysOfWeek>
+            </PropertyOfDay>
+          </properties>
+        </DayType>
+        <DayType id="STRAV:DayType:10:LOC" version="any">
+          <Name>E ______D</Name>
+          <properties>
+            <PropertyOfDay>
+              <DaysOfWeek>Sunday</DaysOfWeek>
+            </PropertyOfDay>
+          </properties>
+        </DayType>
+        <DayType id="STRAV:DayType:11:LOC" version="any">
+          <Name>E _____S_</Name>
+          <properties>
+            <PropertyOfDay>
+              <DaysOfWeek>Saturday</DaysOfWeek>
+            </PropertyOfDay>
+          </properties>
+        </DayType>
+        <DayType id="STRAV:DayType:12:LOC" version="any">
+          <Name>E __m____</Name>
+          <properties>
+            <PropertyOfDay>
+              <DaysOfWeek>Wednesday</DaysOfWeek>
+            </PropertyOfDay>
+          </properties>
+        </DayType>
+        <DayType id="STRAV:DayType:13:LOC" version="any">
+          <Name>E LMmJV__</Name>
+          <properties>
+            <PropertyOfDay>
+              <DaysOfWeek>Monday</DaysOfWeek>
+            </PropertyOfDay>
+            <PropertyOfDay>
+              <DaysOfWeek>Tuesday</DaysOfWeek>
+            </PropertyOfDay>
+            <PropertyOfDay>
+              <DaysOfWeek>Wednesday</DaysOfWeek>
+            </PropertyOfDay>
+            <PropertyOfDay>
+              <DaysOfWeek>Thursday</DaysOfWeek>
+            </PropertyOfDay>
+            <PropertyOfDay>
+              <DaysOfWeek>Friday</DaysOfWeek>
+            </PropertyOfDay>
+          </properties>
+        </DayType>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:1:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227306:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:1:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:2:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227306:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:2:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:3:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227306:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:3:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:4:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227306:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:4:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:5:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227306:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:5:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:6:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227307:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:1:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:7:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227307:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:2:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:8:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227307:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:3:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:9:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227307:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:4:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:10:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227307:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:5:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:11:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227308:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:1:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:12:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227308:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:2:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:13:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227308:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:3:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:14:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227308:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:4:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:15:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227308:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:5:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:16:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227309:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:1:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:17:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227309:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:2:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:18:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227309:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:3:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:19:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227309:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:4:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:20:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227309:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:5:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:21:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227310:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:1:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:22:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227310:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:2:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:23:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227310:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:3:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:24:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227310:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:4:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:25:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227310:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:5:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:26:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227311:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:1:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:27:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227311:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:2:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:28:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227311:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:3:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:29:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227311:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:4:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:30:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227311:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:5:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:31:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227312:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:1:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:32:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227312:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:2:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:33:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227312:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:3:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:34:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227312:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:4:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:35:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227312:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:5:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:36:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227318:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:6:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:37:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227318:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:7:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:38:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227318:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:8:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:39:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227318:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:9:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:40:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227319:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:6:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:41:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227319:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:7:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:42:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227319:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:8:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:43:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227319:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:9:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:44:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227320:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:6:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:45:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227320:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:7:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:46:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227320:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:8:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:47:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227320:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:9:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:48:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227321:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:6:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:49:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227321:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:7:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:50:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227321:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:8:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:51:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227321:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:9:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:52:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227322:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:10:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:53:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227322:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:11:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:54:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227322:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:12:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:55:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227322:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:13:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:56:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227323:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:10:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:57:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227323:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:11:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:58:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227323:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:12:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:59:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227323:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:13:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:60:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227324:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:10:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:61:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227324:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:11:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:62:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227324:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:12:LOC" version="any" />
+        </DayTypeAssignment>
+        <DayTypeAssignment id="STRAV:DayTypeAssignment:63:LOC" version="any" order="0">
+          <OperatingPeriodRef ref="STRAV:OperatingPeriod:227324:LOC" version="any" />
+          <DayTypeRef ref="STRAV:DayType:13:LOC" version="any" />
+        </DayTypeAssignment>
+        <OperatingPeriod id="STRAV:OperatingPeriod:227306:LOC" version="any">
+          <FromDate>2020-01-06T00:00:00</FromDate>
+          <ToDate>2020-02-09T00:00:00</ToDate>
+        </OperatingPeriod>
+        <OperatingPeriod id="STRAV:OperatingPeriod:227307:LOC" version="any">
+          <FromDate>2020-02-24T00:00:00</FromDate>
+          <ToDate>2020-04-05T00:00:00</ToDate>
+        </OperatingPeriod>
+        <OperatingPeriod id="STRAV:OperatingPeriod:227308:LOC" version="any">
+          <FromDate>2020-04-20T00:00:00</FromDate>
+          <ToDate>2020-04-30T00:00:00</ToDate>
+        </OperatingPeriod>
+        <OperatingPeriod id="STRAV:OperatingPeriod:227309:LOC" version="any">
+          <FromDate>2020-05-02T00:00:00</FromDate>
+          <ToDate>2020-05-07T00:00:00</ToDate>
+        </OperatingPeriod>
+        <OperatingPeriod id="STRAV:OperatingPeriod:227310:LOC" version="any">
+          <FromDate>2020-05-09T00:00:00</FromDate>
+          <ToDate>2020-05-20T00:00:00</ToDate>
+        </OperatingPeriod>
+        <OperatingPeriod id="STRAV:OperatingPeriod:227311:LOC" version="any">
+          <FromDate>2020-05-22T00:00:00</FromDate>
+          <ToDate>2020-05-30T00:00:00</ToDate>
+        </OperatingPeriod>
+        <OperatingPeriod id="STRAV:OperatingPeriod:227312:LOC" version="any">
+          <FromDate>2020-06-02T00:00:00</FromDate>
+          <ToDate>2020-07-05T00:00:00</ToDate>
+        </OperatingPeriod>
+        <OperatingPeriod id="STRAV:OperatingPeriod:227318:LOC" version="any">
+          <FromDate>2020-01-02T00:00:00</FromDate>
+          <ToDate>2020-01-05T00:00:00</ToDate>
+        </OperatingPeriod>
+        <OperatingPeriod id="STRAV:OperatingPeriod:227319:LOC" version="any">
+          <FromDate>2020-02-10T00:00:00</FromDate>
+          <ToDate>2020-02-23T00:00:00</ToDate>
+        </OperatingPeriod>
+        <OperatingPeriod id="STRAV:OperatingPeriod:227320:LOC" version="any">
+          <FromDate>2020-04-06T00:00:00</FromDate>
+          <ToDate>2020-04-11T00:00:00</ToDate>
+        </OperatingPeriod>
+        <OperatingPeriod id="STRAV:OperatingPeriod:227321:LOC" version="any">
+          <FromDate>2020-04-14T00:00:00</FromDate>
+          <ToDate>2020-04-19T00:00:00</ToDate>
+        </OperatingPeriod>
+        <OperatingPeriod id="STRAV:OperatingPeriod:227322:LOC" version="any">
+          <FromDate>2020-07-06T00:00:00</FromDate>
+          <ToDate>2020-07-13T00:00:00</ToDate>
+        </OperatingPeriod>
+        <OperatingPeriod id="STRAV:OperatingPeriod:227323:LOC" version="any">
+          <FromDate>2020-07-15T00:00:00</FromDate>
+          <ToDate>2020-08-14T00:00:00</ToDate>
+        </OperatingPeriod>
+        <OperatingPeriod id="STRAV:OperatingPeriod:227324:LOC" version="any">
+          <FromDate>2020-08-16T00:00:00</FromDate>
+          <ToDate>2020-08-30T00:00:00</ToDate>
+        </OperatingPeriod>
+      </members>
+    </GeneralFrame>
+  </dataObjects>
+</PublicationDelivery>

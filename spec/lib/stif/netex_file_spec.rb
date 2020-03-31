@@ -19,6 +19,7 @@ RSpec.describe STIF::NetexFile do
     end
     it "should return periods defined in frame calendars" do
       expect(frames.map(&:periods)).to match_array([[period("2017-04-01", "2017-12-31")], [period("2017-03-01","2017-03-31")]])
+      byebug
     end
   end
 
@@ -44,6 +45,40 @@ RSpec.describe STIF::NetexFile do
       end
       it "should return periods defined in frame calendars" do
         expect(frames.map(&:periods)).to match_array([[period("2017-04-01", "2017-12-31")], [period("2017-03-01","2017-03-31")]])
+      end
+    end
+  end
+
+  context "calendar parsing" do
+    let( :calendar_file_1 ){ fixtures_path "netex-calendar-files/single_period_calendar.xml" }
+    let( :calendar_file_2 ){ fixtures_path "netex-calendar-files/multiple_periods_calendar.xml" }
+
+    context "with single period calendar file" do
+      let (:periods) do
+        STIF::NetexFile::Frame.parse_calendars(File.read(calendar_file_1))
+      end
+
+      it "should parse correctly the valid between periods collection" do
+        expect(periods).to match_array([period("2017-06-25", "2017-12-31")])
+      end
+    end
+
+    context "with multiple periods calendar file" do
+      let (:periods) do
+        STIF::NetexFile::Frame.parse_calendars(File.read(calendar_file_2))
+      end
+
+      it "should parse correctly the valid between periods collection" do
+        expect(periods).to match_array([
+          period("2020-01-02", "2020-04-11"),
+          period("2020-04-14","2020-04-30"),
+          period("2020-05-02","2020-05-07"),
+          period("2020-05-09","2020-05-20"),
+          period("2020-05-22","2020-05-30"),
+          period("2020-06-02","2020-07-13"),
+          period("2020-07-15","2020-08-14"),
+          period("2020-08-16","2020-08-30")
+        ])
       end
     end
   end

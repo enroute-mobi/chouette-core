@@ -20,3 +20,6 @@ en:
     stop_area_referentials:
       title: Stop area referential
       none: No stop area referential created
+    aggregates:
+      title: Workgroup offers
+      none: No aggregation

@@ -2,10 +2,12 @@
   .col-lg-6.col-md-6.col-sm-6.col-xs-12
     .panel.panel-default
       .panel-heading
-        h3.panel-title
-          = t('.organisation')
-
-      - if @dashboard.workbench.output.referentials.present?
+        h3.panel-title.with_actions
+          = link_to t('.organisation'), workbench_output_path(@dashboard.workbench)
+          span.badge.ml-xs = @dashboard.workbench.output.referentials.count if @dashboard.workbench.output.referentials.present?
+          div
+            = link_to '', workbench_output_path(@dashboard.workbench), class: ' fa fa-chevron-right pull-right'
+      - if @dashboard.workbench.output && @dashboard.workbench.output.referentials.present?
         - @dashboard.workbench.output.referentials.first(5).each do |referential|
           .list-group
             = link_to referential.name, referential_path(referential), class: 'list-group-item'
@@ -15,18 +17,26 @@
 
     .panel.panel-default
       .panel-heading
-        h3.panel-title
-          = t('.idf')
+        h3.panel-title.with_actions
+          = link_to t('.idf'), workgroup_output_path(@dashboard.workgroup)
+          span.badge.ml-xs = @dashboard.workgroup.aggregates.count if @dashboard.workgroup.aggregates.present?
+          div
+            = link_to '', workgroup_output_path(@dashboard.workgroup), class: ' fa fa-chevron-right pull-right'
 
-      .panel-body
-        em.small.text-muted = t('.no_content')
+      - if @dashboard.workgroup.aggregates.present?
+        .list-group
+          - @dashboard.workgroup.aggregates.order("created_at desc").limit(5).each do |aggregate|
+            = link_to t("aggregates.show.title", name: aggregate.name.capitalize).html_safe, workgroup_aggregate_path(aggregate.workgroup, aggregate), class: 'list-group-item'
+      - else
+        .panel-body
+          em.small.text-muted = t('dashboards.aggregates.none')
 
   .col-lg-6.col-md-6.col-sm-6.col-xs-12
     .panel.panel-default
       .panel-heading
         h3.panel-title.with_actions
           div
-            = t('.referentials')
+            = link_to t('.referentials'), workbench_path(@dashboard.workbench)
             span.badge.ml-xs = @dashboard.referentials.count if @dashboard.referentials.present?
 
           div

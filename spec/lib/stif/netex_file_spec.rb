@@ -19,7 +19,6 @@ RSpec.describe STIF::NetexFile do
     end
     it "should return periods defined in frame calendars" do
       expect(frames.map(&:periods)).to match_array([[period("2017-04-01", "2017-12-31")], [period("2017-03-01","2017-03-31")]])
-      byebug
     end
   end
 

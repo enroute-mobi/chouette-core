@@ -238,20 +238,7 @@ class Import::Gtfs < Import::Base
     end
   end
 
-  def import_trips
-    #   @trips = {}
-    #   create_resource(:trips).each do |trip, resource|
-    #     @trips[trip.id] = trip
-    #   end
-  end
-
-  def get_trip(trip_id)
-    source.each_trip do |trip|
-      return trip if trip.id == trip_id
-    end
-  end
-
-  def process_trip(resource, trip_id, stop_times)
+  def process_trip(resource, trip, stop_times)
     begin
       raise InvalidTripSingleStopTime unless stop_times.many?
 
@@ -260,7 +247,6 @@ class Import::Gtfs < Import::Base
       stop_points = []
       profile_tag 'preparation' do
 
-        trip = get_trip(trip_id)
         line = line_referential.lines.find_by registration_number: trip.route_id
         route = referential.routes.build line: line
         route.wayback = (trip.direction_id == '0' ? :outbound : :inbound)
@@ -275,6 +261,7 @@ class Import::Gtfs < Import::Base
         vehicle_journey.published_journey_name = trip.short_name.presence || trip.id
 
         to_be_saved << vehicle_journey
+
 
         time_table = referential.time_tables.find_by(id: time_tables_by_service_id[trip.service_id]) if time_tables_by_service_id[trip.service_id]
         if time_table
@@ -373,7 +360,7 @@ class Import::Gtfs < Import::Base
           criticity: :error,
           message_key: message_key,
           message_attributes: {
-            trip_id: trip_id
+            trip_id: trip.id
           },
           resource_attributes: {
             filename: "#{resource.name}.txt",
@@ -406,29 +393,13 @@ class Import::Gtfs < Import::Base
   end
 
   def import_stop_times
-    # routes = Set.new
     prev_trip_id = nil
     stop_times = []
     CustomFieldsSupport.within_workgroup(workbench.workgroup) do
       resource = create_resource(:stop_times)
-      resource.each(
-        transaction: true,
-        skip_checksums: true,
-        memory_profile: -> { "Import stop times from #{rows_count}" }
-      ) do |stop_time, resource|
-        trip_id = stop_time.trip_id
-
-        prev_trip_id ||= trip_id
-        if prev_trip_id == trip_id
-          stop_times << stop_time
-        else
-          process_trip(resource, prev_trip_id, stop_times)
-
-          stop_times = [stop_time]
-          prev_trip_id = trip_id
-        end
+      source.each_trip_with_stop_times do |trip, stop_times|
+        process_trip(resource, trip, stop_times)
       end
-      process_trip(resource, prev_trip_id, stop_times)
     end
   end
 
@@ -453,9 +424,9 @@ class Import::Gtfs < Import::Base
       unless_parent_model_in_error(Chouette::StopArea, stop_time.stop_id, resource) do
 
         if position == 0
-          departure_time = GTFS::Time.parse(stop_time.departure_time)
+          departure_time = GTFS::GTFSTime.parse(stop_time.departure_time)
           raise InvalidTimeError.new(stop_time.departure_time) unless departure_time.present?
-          arrival_time = GTFS::Time.parse(stop_time.arrival_time)
+          arrival_time = GTFS::GTFSTime.parse(stop_time.arrival_time)
           raise InvalidTimeError.new(stop_time.arrival_time) unless arrival_time.present?
           raise InvalidTripNonZeroFirstOffsetError unless departure_time.day_offset.zero? && arrival_time.day_offset.zero?
         end
@@ -475,10 +446,10 @@ class Import::Gtfs < Import::Base
       arrival_time = nil
 
       profile_tag 'parse_times' do
-        departure_time = GTFS::Time.parse(stop_time.departure_time)
+        departure_time = GTFS::GTFSTime.parse(stop_time.departure_time)
         raise InvalidTimeError.new(stop_time.departure_time) unless departure_time.present?
 
-        arrival_time = GTFS::Time.parse(stop_time.arrival_time)
+        arrival_time = GTFS::GTFSTime.parse(stop_time.arrival_time)
         raise InvalidTimeError.new(stop_time.arrival_time) unless arrival_time.present?
       end
       if @previous_stop_sequence.nil? || stop_time.stop_sequence.to_i <= @previous_stop_sequence

@@ -29,8 +29,6 @@ class Import::Resource < ApplicationModel
         end
         controls_present = true
       end
-
-      root_import.done! unless controls_present
     end
   end
 

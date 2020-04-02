@@ -75,12 +75,9 @@ class Import::Base < ApplicationModel
   end
 
   def child_change
+    super
     Rails.logger.info "child_change for #{inspect}"
-    if self.class.finished_statuses.include?(status)
-      done! if self.compliance_check_sets.all? &:successful?
-    else
-      super
-    end
+    done! if self.compliance_check_sets.all? &:successful? if self.class.finished_statuses.include?(status)
   end
 
   def purge_imports

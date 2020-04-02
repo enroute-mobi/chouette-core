@@ -65,6 +65,14 @@ class Import::Workbench < Import::Base
     notify_state
   end
 
+
+  def child_change
+    super
+    if self.class.finished_statuses.include?(status)
+      done! if self.compliance_check_sets.all?(&:successful?)
+    end
+  end
+
   def referentials
     self.resources.map(&:referential).compact
   end

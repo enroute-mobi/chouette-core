@@ -4,7 +4,6 @@ class ImportsController < ChouetteController
   include IevInterfaces
   skip_before_action :authenticate_user!, only: [:internal_download]
   defaults resource_class: Import::Base, collection_name: 'imports', instance_name: 'import'
-  before_action :notify_parents
   respond_to :json, :html
 
   def internal_download
@@ -62,12 +61,6 @@ class ImportsController < ChouetteController
         workbench: @workbench
       }
     )
-  end
-
-  def notify_parents
-    if Rails.env.development?
-      ParentNotifier.new(Import::Base).notify_when_finished
-    end
   end
 
   protected

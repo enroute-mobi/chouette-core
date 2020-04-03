@@ -65,17 +65,24 @@ class Import::Workbench < Import::Base
     notify_state
   end
 
+
+  def child_change
+    super
+    if self.class.finished_statuses.include?(status)
+      done! if self.compliance_check_sets.all?(&:successful?)
+    end
+  end
+
   def referentials
     self.resources.map(&:referential).compact
   end
 
   def done!
-    return unless (successful? || warning?)
+    return unless (successful? || warning?) && children.reload.all?(&:finished?)
 
     if flag_urgent
       flag_refentials_as_urgent
     end
-
     if automatic_merge
       create_automatic_merge
     end

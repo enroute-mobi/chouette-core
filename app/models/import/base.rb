@@ -74,15 +74,6 @@ class Import::Base < ApplicationModel
     notify_parent
   end
 
-  def child_change
-    Rails.logger.info "child_change for #{inspect}"
-    if self.class.finished_statuses.include?(status)
-      done! if self.compliance_check_sets.all? &:successful?
-    else
-      super
-    end
-  end
-
   def purge_imports
     workbench.imports.file_purgeable.where.not(file: nil).each do |import|
       import.update(remove_file: true)

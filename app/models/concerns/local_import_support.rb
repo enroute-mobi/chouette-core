@@ -130,7 +130,6 @@ module LocalImportSupport
 
   def notify_parent
     return unless super
-
     main_resource.update_status_from_importer self.status
     next_step
   end

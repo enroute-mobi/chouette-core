@@ -61,7 +61,10 @@ RSpec.describe Import::Workbench do
 
   describe "#done!" do
     context "when import is not successful or warning" do
-      before { import.status = :failed }
+      before do
+        import.status = :failed
+        import.children.each{|child| child.update(status: "failed")}
+      end
 
       it "doesn't flag referentials as urgent" do
         expect(import).to_not receive(:flag_refentials_as_urgent)
@@ -81,7 +84,10 @@ RSpec.describe Import::Workbench do
 
     %i{successful warning}.each do |status|
       context "when import is #{status}" do
-        before { import.status = status }
+        before do
+          import.status = status
+          import.children.reload.each{|child| child.update(status: status)}
+        end
 
         context "when flag_urgent option is selected" do
           before { import.flag_urgent = true }
@@ -105,11 +111,19 @@ RSpec.describe Import::Workbench do
             expect(import).to receive(:create_automatic_merge)
             import.done!
           end
+
+          context "with children still running" do
+            before { import.children.reload.first.update(status: "running") }
+            it "doesn't create automatic merge" do
+              expect(import).to_not receive(:create_automatic_merge)
+              import.done!
+            end
+          end
         end
 
         context "when automatic_merge option isn't selected" do
           before { import.automatic_merge = false }
-          it "create automatic merge" do
+          it "doesn't create automatic merge" do
             expect(import).to_not receive(:create_automatic_merge)
             import.done!
           end

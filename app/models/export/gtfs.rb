@@ -635,11 +635,11 @@ class Export::Gtfs < Export::Base
       end
 
       def stop_time_departure_time
-        GTFS::Time.format_datetime departure_time, departure_day_offset, time_zone if departure_time
+        GTFS::GTFSTime.format_datetime departure_time, departure_day_offset, time_zone if departure_time
       end
 
       def stop_time_arrival_time
-        GTFS::Time.format_datetime arrival_time, arrival_day_offset, time_zone if arrival_time
+        GTFS::GTFSTime.format_datetime arrival_time, arrival_day_offset, time_zone if arrival_time
       end
 
       def stop_area_id

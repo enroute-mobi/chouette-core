@@ -7,7 +7,7 @@ class Api::V1::WorkbenchController < ActionController::Base
   private
 
   def authenticate
-    auth_method = ActionController::HttpAuthentication::Basic.auth_scheme(request).downcase.to_sym
+    auth_method = ActionController::HttpAuthentication::Basic.auth_scheme(request)&.downcase&.to_sym
     if (auth_method == :basic)
       authenticate_or_request_with_http_basic do |username, password|
         api_key = ApiKey.find_by token: password

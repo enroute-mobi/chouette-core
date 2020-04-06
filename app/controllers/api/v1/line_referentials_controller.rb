@@ -1,9 +1,8 @@
-class Api::V1::LineReferentialsController < ActionController::Base
+class Api::V1::LineReferentialsController < Api::V1::WorkbenchController
   respond_to :json, :xml
   wrap_parameters :line_referential, include: [ :type, *WebhookEvent::LineReferential.resource_names ]
 
   layout false
-  before_action :authenticate
 
   def webhook
     if event.valid?
@@ -69,14 +68,5 @@ class Api::V1::LineReferentialsController < ActionController::Base
       *WebhookEvent::LineReferential.resource_names,
       Hash[WebhookEvent::LineReferential.resource_names.map { |name| [name, name.end_with?('s') ? [:id] : {} ] }]
     ]
-  end
-
-  def authenticate
-    authenticate_or_request_with_http_token do |token|
-      api_key = ApiKey.find_by token: token
-      @current_workgroup = api_key&.workgroup
-
-      @current_workgroup.present?
-    end
   end
 end

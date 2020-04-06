@@ -1,4 +1,5 @@
 class Api::V1::WorkbenchesController < Api::V1::WorkbenchController
+  inherit_resources
   defaults resource_class: Workbench
 
   protected

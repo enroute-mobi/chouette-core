@@ -11,7 +11,7 @@ class ExportDecorator < AF83::Decorator
     cls
   end
 
-  create_action_link
+  create_action_link if: -> { context[:parent].is_a?(Workbench) }
 
   with_instance_decorator do |instance_decorator|
     instance_decorator.show_action_link

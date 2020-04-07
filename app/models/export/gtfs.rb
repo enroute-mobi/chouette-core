@@ -53,7 +53,9 @@ class Export::Gtfs < Export::Base
     export_transfers_to target
     notify_progress 3.0/operations_count
     # Export Trips
-    export_vehicle_journeys_to target
+    TimeTables.new(self).export!
+    VehicleJourneys.new(self).export!
+
     notify_progress 4.0/operations_count
     # Export stop_times.txt
     VehicleJourneyAtStops.new(self).export!
@@ -191,7 +193,9 @@ class Export::Gtfs < Export::Base
       @route_ids = {}
       @agency_ids = {}
       @trip_ids = Hash.new { |h,k| h[k] = [] }
+      @service_ids = Hash.new { |h,k| h[k] = [] }
       @vehicle_journey_time_zones = {}
+      @trip_index = 0
     end
 
     def stop_id(stop_area_id)
@@ -216,6 +220,22 @@ class Export::Gtfs < Export::Base
 
     def register_agency_id(company, agency_id)
       @agency_ids[company.id] = agency_id
+    end
+
+    def register_service_ids(time_table, service_ids)
+      @service_ids[time_table.id] = service_ids
+    end
+
+    def service_ids(time_table_id)
+      @service_ids[time_table_id]
+    end
+
+    def trip_index
+      @trip_index
+    end
+
+    def increment_trip_index
+      @trip_index += 1
     end
 
     def register_trip_id(vehicle_journey, trip_id)
@@ -243,7 +263,7 @@ class Export::Gtfs < Export::Base
       @export = export
     end
 
-    delegate :target, :index, :export_scope, :messages, to: :export
+    delegate :target, :index, :export_scope, :messages, :date_range, to: :export
 
   end
 
@@ -343,42 +363,228 @@ class Export::Gtfs < Export::Base
 
   end
 
-  def export_vehicle_journeys_to(target)
-    trip_index = 0
-    CustomFieldsSupport.within_workgroup(referential.workgroup) do
-      journeys.includes([:route, time_tables: [:periods, :dates]]).find_each do |vehicle_journey|
-        vehicle_journey.flattened_circulation_periods.select{|period| period.range & date_range}.each_with_index do |period, period_index|
-          service_id = "#{vehicle_journey.objectid}-#{period_index}"
-          target.calendars << {
-            service_id: service_id,
-            start_date: period.period_start.strftime('%Y%m%d'),
-            end_date: period.period_end.strftime('%Y%m%d'),
-            monday: period.monday ? 1 : 0,
-            tuesday: period.tuesday ? 1 : 0,
-            wednesday: period.wednesday ? 1 : 0,
-            thursday: period.thursday ? 1 : 0,
-            friday: period.friday ? 1 : 0,
-            saturday: period.saturday ? 1 : 0,
-            sunday: period.sunday ? 1 : 0
-          }
+  class TimeTables < Part
 
-          # each entry in trips.txt corresponds to a kind of composite key made of both service_id and route_id
-          trip_id = "trip_#{trip_index += 1}"
-          target.trips << {
-            route_id: index.route_id(vehicle_journey.route.line_id),
-            service_id:  service_id,
-            id: trip_id,
-            #headsign: TO DO
-            short_name: vehicle_journey.published_journey_name,
-            direction_id: ((vehicle_journey.route.wayback == 'outbound' ? 0 : 1) if vehicle_journey.route.wayback.present?),
-            #block_id: TO DO
-            #shape_id: TO DO
-            #wheelchair_accessible: TO DO
-            #bikes_allowed: TO DO
-          }
+    delegate :time_tables, to: :export_scope
 
-          index.register_trip_id vehicle_journey, trip_id
+    def export!
+      time_tables.find_each do |time_table|
+        decorated_time_table = TimeTableDecorator.new(time_table, date_range)
+
+        decorated_time_table.calendars.each { |c| target.calendars << c }
+        decorated_time_table.calendar_dates.each { |cd| target.calendar_dates << cd }
+
+        index.register_service_ids time_table, decorated_time_table.service_ids
+      end
+    end
+
+    class TimeTableDecorator < SimpleDelegator
+      # index is optional to make tests easier
+      def initialize(time_table, export_date_range = nil)
+        super time_table
+        @export_date_range = export_date_range
+      end
+
+      def service_ids
+        @service_ids ||= Set.new
+      end
+
+      def periods
+        @periods ||= if @export_date_range.nil?
+          super
+        else
+            super.select { |p| p.range & @export_date_range }
         end
+      end
+
+      def dates
+        @dates ||= if @export_date_range.nil?
+          super
+        else
+          super.select {|d| (d.in_out && @export_date_range.cover?(d.date)) || (!d.in_out && periods.select{|p| p.range.cover? d.date}.any?)}
+        end
+      end
+
+      def decorated_periods
+        @decorated_periods ||= periods.map do |period|
+          PeriodDecorator.new(period)
+        end
+      end
+
+      def calendars
+        decorated_periods.map do |decorated_period|
+          with_service_id decorated_period.calendar_attributes,
+                          period_service_id(decorated_period)
+        end
+      end
+
+      def calendar_dates
+        dates.map do |date|
+          with_service_id DateDecorator.new(date).calendar_date_attributes,
+                          date_service_id(date)
+        end
+      end
+
+      def with_service_id(attributes, service_id)
+        service_ids << service_id
+        attributes.merge service_id: service_id
+      end
+
+      def first_period?(period)
+        period == decorated_periods.first
+      end
+
+      def default_service_id
+        objectid
+      end
+
+      def period_service_id(decorated_period)
+        if first_period? decorated_period
+          default_service_id
+        else
+          decorated_period.calendar_service_id
+        end
+      end
+
+      def associated_period(date)
+        decorated_periods.find do |decorated_period|
+          decorated_period.include?(date)
+        end
+      end
+
+      def date_service_id(date)
+        period = associated_period(date)
+        if period
+          period_service_id period
+        else
+          default_service_id
+        end
+      end
+    end
+
+    class PeriodDecorator < SimpleDelegator
+      def range
+        @range ||= super
+      end
+
+      def calendar_service_id
+        id
+      end
+
+      %w{monday tuesday wednesday thursday friday saturday sunday}.each do |day|
+        define_method "calendar_#{day}" do
+          time_table.send(day) ? 1 : 0
+        end
+      end
+
+      def calendar_start_date
+        period_start.strftime('%Y%m%d')
+      end
+
+      def calendar_end_date
+        period_end.strftime('%Y%m%d')
+      end
+
+      def calendar_attributes
+        {
+          start_date: calendar_start_date,
+          end_date: calendar_end_date,
+          monday: calendar_monday,
+          tuesday: calendar_tuesday,
+          wednesday: calendar_wednesday,
+          thursday: calendar_thursday,
+          friday: calendar_friday,
+          saturday: calendar_saturday,
+          sunday: calendar_sunday
+        }
+      end
+
+      def include?(date)
+        range.include?(date.date)
+      end
+    end
+
+    class DateDecorator < SimpleDelegator
+      def calendar_date_date
+        date.strftime('%Y%m%d')
+      end
+
+      def calendar_date_exception_type
+        in_out ? 1 : 2
+      end
+
+      def calendar_date_attributes
+        {
+          date: calendar_date_date,
+          exception_type: calendar_date_exception_type
+        }
+      end
+    end
+  end
+
+  # For legacy specs
+  def export_vehicle_journeys_to(target)
+    @target = target
+    TimeTables.new(self).export!
+    VehicleJourneys.new(self).export!
+  end
+
+  class VehicleJourneys < Part
+
+    delegate :vehicle_journeys, to: :export_scope
+
+    def export!
+      vehicle_journeys.find_each do |vehicle_journey|
+
+        decorated_vehicle_journey = Decorator.new(vehicle_journey, index)
+
+        vehicle_journey.time_tables.each do |time_table|
+          index.service_ids(time_table.id).each do |service_id|
+            index.increment_trip_index
+
+            target.trips << decorated_vehicle_journey.trip_attributes(service_id)
+
+            index.register_trip_id vehicle_journey, decorated_vehicle_journey.trip_id
+          end
+        end
+      end
+    end
+
+    class Decorator < SimpleDelegator
+
+      # index is optional to make tests easier
+      def initialize(vehicle_journey, index = nil)
+        super vehicle_journey
+        @index = index
+      end
+
+      attr_reader :index
+
+      def route_id
+        index.route_id(route.line_id)
+      end
+
+      def trip_id
+        "trip_#{index.trip_index}"
+      end
+
+      def direction_id
+        route.wayback == 'outbound' ? 0 : 1
+      end
+
+      def trip_attributes service_id
+        {
+          route_id: route_id,
+          service_id:  service_id,
+          id: trip_id,
+          #headsign: TO DO
+          short_name: published_journey_name,
+          direction_id: (direction_id if route.wayback.present?),
+          #block_id: TO DO
+          #shape_id: TO DO
+          #wheelchair_accessible: TO DO
+          #bikes_allowed: TO DO
+        }
       end
     end
   end

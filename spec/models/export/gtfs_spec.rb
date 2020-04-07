@@ -99,8 +99,90 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       end
 
     end
+  end
 
+  describe "TimeTable Decorator" do
+    context "with a nil date_range" do
+      context 'with one period' do
+        let(:context) do
+          Chouette::Factory.create do
+            time_table dates_excluded: Time.zone.today, dates_included: Time.zone.tomorrow
+          end
+        end
 
+        let(:time_table) { context.time_table }
+        let(:decorator) { Export::Gtfs::TimeTables::TimeTableDecorator.new time_table }
+
+          it "should return one period" do
+            expect(decorator.periods.length).to eq 1
+          end
+
+          it "should return two dates" do
+            expect(decorator.dates.length).to eq 2
+          end
+
+          it "should return a calendar with default service_id" do
+            c = decorator.calendars
+            expect(c.count).to eq 1
+            expect(c.first[:service_id]).to eq decorator.default_service_id
+          end
+
+          it "should return calendar_dates with correct service_id" do
+            cd = decorator.calendar_dates
+            expect(cd.count).to eq 2
+            cd.each do |date|
+              expect(date[:service_id]).to eq decorator.default_service_id
+            end
+            # included_cd = cd.find(exception_type: 1)
+            # excluded_cd = cd.find(exception_type: 2)
+            # # excluded_cd = cd.select{ |d| d.exception_type == 2 }
+            # expect(included_cd.service_id).to eq
+          end
+      end
+
+      context 'with multiple periods' do
+        let(:context) do
+          Chouette::Factory.create do
+            time_table periods: [ Time.zone.today..Time.zone.today+1, Time.zone.today+3..Time.zone.today+4 ]
+          end
+        end
+
+        let(:time_table) { context.time_table }
+        let(:decorator) { Export::Gtfs::TimeTables::TimeTableDecorator.new time_table }
+
+        it "should return two periods" do
+          expect(decorator.periods.length).to eq 2
+        end
+
+        it "should return calendars with correct service_id" do
+          c = decorator.calendars
+          expect(c.count).to eq 2
+          expect(c.first[:service_id]).to eq decorator.default_service_id
+          expect(c.last[:service_id]).to eq time_table.periods.last.id
+        end
+      end
+    end
+
+    context "with a non nil date_range" do
+      let(:context) do
+        Chouette::Factory.create do
+          time_table dates_excluded: Time.zone.today+1,
+                     dates_included: 1.month.from_now.to_date,
+                     periods: [ Time.zone.today..Time.zone.today+2, Time.zone.today+5..Time.zone.today+6 ]
+        end
+      end
+
+      let(:time_table) { context.time_table }
+      let(:decorator) { Export::Gtfs::TimeTables::TimeTableDecorator.new time_table, Time.zone.tomorrow..Time.zone.tomorrow+1 }
+
+      it "should return one period" do
+        expect(decorator.periods.length).to eq 1
+      end
+
+      it "should return one date" do
+        expect(decorator.dates.length).to eq 1
+      end
+    end
   end
 
   describe "VehicleJourneyAtStop Decorator" do
@@ -341,6 +423,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       vehicle_journey = FactoryGirl.create :vehicle_journey, journey_pattern: journey_pattern, company: company
       vehicle_journey.time_tables << (FactoryGirl.create :time_table)
 
+      gtfs_export.duration = nil
       gtfs_export.export_scope = Export::Scope::All.new(exported_referential)
 
       tmp_dir = Dir.mktmpdir
@@ -352,7 +435,8 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       source = GTFS::Source.build stop_times_zip_path, strict: false
 
       vehicle_journey_at_stops = vehicle_journey.vehicle_journey_at_stops.select {|vehicle_journey_at_stop| vehicle_journey_at_stop.stop_point.stop_area.commercial? }
-      expect(source.stop_times.length).to eq(vehicle_journey_at_stops.length)
+      periods = vehicle_journey.time_tables.inject(0) { |sum, tt| sum + tt.periods.length }
+      expect(source.stop_times.length).to eq(vehicle_journey_at_stops.length * periods)
 
       vehicle_journey_at_stops.each do |vj|
         stop_time = source.stop_times.detect{|s| s.arrival_time == GTFS::Time.format_datetime(vj.arrival_time, vj.arrival_day_offset, 'Europe/Paris') }
@@ -533,7 +617,11 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
         # Get VJ merged periods
         periods = []
         selected_vehicle_journeys.each do |vehicle_journey|
-          periods << vehicle_journey.flattened_circulation_periods.select{|period| period.range & date_range}
+          vehicle_journey.time_tables.each do |tt|
+            tt.periods.each do |period|
+              periods << period if period.range & date_range
+            end
+          end
         end
 
         periods = periods.flatten.uniq
@@ -548,13 +636,13 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
           e.start_date == (random_period.period_start.strftime('%Y%m%d'))
           e.end_date == (random_period.period_end.strftime('%Y%m%d'))
 
-          e.monday == (random_period.monday ? "1" : "0")
-          e.tuesday == (random_period.tuesday ? "1" : "0")
-          e.wednesday == (random_period.wednesday ? "1" : "0")
-          e.thursday == (random_period.thursday ? "1" : "0")
-          e.friday == (random_period.friday ? "1" : "0")
-          e.saturday == (random_period.saturday ? "1" : "0")
-          e.sunday == (random_period.sunday ? "1" : "0")
+          e.monday == (random_period.time_table.monday ? "1" : "0")
+          e.tuesday == (random_period.time_table.tuesday ? "1" : "0")
+          e.wednesday == (random_period.time_table.wednesday ? "1" : "0")
+          e.thursday == (random_period.time_table.thursday ? "1" : "0")
+          e.friday == (random_period.time_table.friday ? "1" : "0")
+          e.saturday == (random_period.time_table.saturday ? "1" : "0")
+          e.sunday == (random_period.time_table.sunday ? "1" : "0")
         end
 
         expect(random_gtfs_calendar).not_to be_nil
@@ -562,9 +650,17 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
         # Get VJ merged periods
         vj_periods = []
+        # selected_vehicle_journeys.each do |vehicle_journey|
+        #   vehicle_journey.flattened_circulation_periods.select{|period| period.range & date_range}.each do |period|
+        #     vj_periods << [period,vehicle_journey]
+        #   end
+        # end
         selected_vehicle_journeys.each do |vehicle_journey|
-          vehicle_journey.flattened_circulation_periods.select{|period| period.range & date_range}.each do |period|
-            vj_periods << [period,vehicle_journey]
+          vehicle_journey.time_tables.each do |tt|
+            tt.periods.each do |period|
+              periods << period if period.range & date_range
+              vj_periods << [period,vehicle_journey] if period.range & date_range
+            end
           end
         end
 
@@ -575,7 +671,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
         random_vj_period = vj_periods.sample
 
         # Find matching random stop in exported trips.txt file
-        random_gtfs_trip = source.trips.detect {|t| t.service_id =~ /#{random_vj_period.second.objectid}/ && t.route_id == random_vj_period.last.route.line.registration_number.to_s}
+        random_gtfs_trip = source.trips.detect {|t| (t.service_id == random_vj_period.first.id || t.service_id == random_vj_period.first.time_table.objectid) && t.route_id == random_vj_period.last.route.line.registration_number.to_s}
         expect(random_gtfs_trip).not_to be_nil
 
         ################################

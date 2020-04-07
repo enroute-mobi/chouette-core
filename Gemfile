@@ -141,7 +141,7 @@ gem 'puma', '~> 4.3.0'
 # Cache
 gem 'redis-rails'
 
-gem 'gtfs', en_route: 'gtfs'
+gem 'gtfs', en_route: 'gtfs', branch: 'fix-gtfs-6'
 gem 'netex', en_route: 'netex'
 
 gem 'ddtrace'

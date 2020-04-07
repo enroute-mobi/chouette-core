@@ -1,6 +1,7 @@
 GIT
   remote: https://bitbucket.org/enroute-mobi/gtfs.git
-  revision: cd965951095bb466ddb9e53816b03f6c078b4fb9
+  revision: 1706838a9bef5a649dba028c7d1ad60f6de5e882
+  branch: fix-gtfs-6
   specs:
     gtfs (0.3.2)
       multi_json

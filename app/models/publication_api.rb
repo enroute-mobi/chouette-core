@@ -20,6 +20,10 @@ class PublicationApi < ActiveRecord::Base
     !!public
   end
 
+  def last_publication_at
+    publication_api_sources.order(updated_at: :desc).first&.updated_at
+  end
+
   class InvalidAuthenticationError < RuntimeError; end
   class MissingAuthenticationError < RuntimeError; end
 end

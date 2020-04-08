@@ -15,7 +15,7 @@ IMAGE_NAME="eu.gcr.io/$GCLOUD_PROJECT/$BITBUCKET_REPO_SLUG:$BITBUCKET_COMMIT"
 
 # Run migrations
 
-MIGRATE_JOB_FILE=tmp/k8s-migrate.yaml
+MIGRATE_JOB_FILE=$(mktemp --suffix=.yaml)
 cat > $MIGRATE_JOB_FILE <<EOF
 apiVersion: batch/v1
 kind: Job

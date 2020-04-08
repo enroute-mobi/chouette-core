@@ -16,7 +16,8 @@
     ul
       - @publication_api.publication_api_sources.each do |source|
         li= link_to source.public_url, source.public_url
-    = "La dernière publication de données a eu lieu le #{@publication_api.last_publication_at.strftime("%d/%m/%Y à %Hh%M")}"
+    - if @publication_api.last_publication_at
+      = "La dernière publication de données a eu lieu le #{l @publication_api.last_publication_at, format: :short_with_time}"
   - else
     h4 Aucune Ressource disponible
 
@@ -67,7 +68,8 @@
     ul
       - @publication_api.publication_api_sources.each do |source|
         li= link_to source.public_url
-    = "The last data publication has been performed on #{@publication_api.last_publication_at.strftime("%m/%d/%Y at %I:%M%P")}"
+    - if @publication_api.last_publication_at
+      = "The last data publication has been performed on #{l @publication_api.last_publication_at, format: :short_with_time}"
   - else
     h4 No available resource
 

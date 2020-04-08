@@ -21,6 +21,7 @@ class PublicationApi < ActiveRecord::Base
   end
 
   def last_publication_at
+    # It appears that publication_api_sources.maximum(:updated_at) returns a different class, that lost the UTC +x information, so we opted for another method
     publication_api_sources.order(updated_at: :desc).first&.updated_at
   end
 

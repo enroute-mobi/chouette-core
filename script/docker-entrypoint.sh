@@ -40,6 +40,9 @@ case $command in
   seed)
     exec bundle exec rake db:seed
     ;;
+  migrate-and-seed)
+    bundle exec rake db:migrate && bundle exec rake db:seed
+    ;;
   *)
     exec $@
 esac

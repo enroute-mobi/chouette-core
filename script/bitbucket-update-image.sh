@@ -28,7 +28,7 @@ spec:
       containers:
       - name: migrate
         image: $IMAGE_NAME
-        args: ['migrate']
+        args: ['migrate-and-seed']
         envFrom:
           - configMapRef:
               name: chouette-config
@@ -38,6 +38,7 @@ EOF
 
 kubectl --namespace="$GCLOUD_NAMESPACE" create -f $MIGRATE_JOB_FILE
 kubectl --namespace="$GCLOUD_NAMESPACE" wait --for=condition=complete --timeout=600s job/migrate
+kubectl --namespace="$GCLOUD_NAMESPACE" logs job/migrate
 kubectl --namespace="$GCLOUD_NAMESPACE" delete job migrate
 
 # Update containers image

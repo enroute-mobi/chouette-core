@@ -7,7 +7,9 @@ class ExportsController < ChouetteController
   defaults resource_class: Export::Base, collection_name: 'exports', instance_name: 'export'
   before_action :load_referentials, only: %i[new create]
 
+  # FIXME See CHOUETTE-207
   def upload
+    resource = Export::Base.find params[:id]
     if params[:token] == resource.token_upload
       resource.file = params[:file]
       resource.save!

@@ -55,6 +55,7 @@ Rails.application.configure do
 
   # See #8823
   config.chouette_email_user = true
+  config.chouette_email_blacklist = []
 
   # change to true to allow email to be sent during development
   config.action_mailer.perform_deliveries = true

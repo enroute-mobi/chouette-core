@@ -4,7 +4,6 @@ module IevInterfaces
   included do
     before_action(only: [:index]) { set_date_time_params("started_at", DateTime) }
     before_action :ransack_status_params, only: [:index]
-    before_action :parent
     respond_to :html
     helper_method :collection_name, :index_model, :parent
   end
@@ -47,10 +46,6 @@ module IevInterfaces
 
   protected
 
-  def begin_of_association_chain
-    current_organisation
-  end
-
   def parent
     @parent ||= workgroup || workbench
   end
@@ -68,7 +63,7 @@ module IevInterfaces
   end
 
   def collection
-    scope = parent.send(collection_name).where(parent_id: nil)
+    scope = parent.send(collection_name)
     if index_model.name.demodulize != "Base"
       scope = scope.where(type: index_model.name)
     end

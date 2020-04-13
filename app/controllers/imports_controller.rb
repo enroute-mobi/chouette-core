@@ -7,6 +7,7 @@ class ImportsController < ChouetteController
   respond_to :json, :html
 
   def internal_download
+    resource = Import::Base.find params[:id]
     if params[:token] == resource.token_download
       resource.file.cache_stored_file!
       send_file resource.file.path

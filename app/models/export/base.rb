@@ -75,7 +75,7 @@ class Export::Base < ApplicationModel
   def run
     update status: 'running', started_at: Time.now
     export
-    notify_state
+    notify_state unless publication.present?
   rescue Exception => e
     Rails.logger.error e.message
 

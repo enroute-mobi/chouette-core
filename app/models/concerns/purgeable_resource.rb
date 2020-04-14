@@ -1,7 +1,7 @@
 module PurgeableResource
   extend ActiveSupport::Concern
 
-  DEFAULT_CLEAN_FILES_AFTER = 7
+  DEFAULT_CLEAN_FILES_AFTER = 60
   DEFAULT_CLEAN_AFTER = 90
 
   included do

@@ -1,5 +1,6 @@
 class UserDeliverInterceptor
   class << self
+
     def delivering_email(message)
       cancel(message) unless accept?(message)
     end
@@ -22,7 +23,7 @@ class UserDeliverInterceptor
     end
 
     def blacklist
-      @@blacklist ||= Rails.application.config.chouette_email_blacklist
+      Rails.application.config.chouette_email_blacklist
     end
 
     def cancel(message)

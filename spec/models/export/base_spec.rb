@@ -9,7 +9,7 @@ RSpec.describe Export::Base, type: :model do
   it { should validate_presence_of(:creator) }
 
   include ActionDispatch::TestProcess
-  it { should allow_value(fixture_file_upload('OFFRE_TRANSDEV_2017030112251.zip')).for(:file) }
+  it { should allow_value(fixture_file_upload('OFFRE_TRANSDEV_20160030112251.zip')).for(:file) }
   it { should_not allow_value(fixture_file_upload('reflex_updated.xml')).for(:file).with_message(I18n.t('errors.messages.extension_whitelist_error', extension: '"xml"', allowed_types: "zip, csv, json")) }
 
   let(:workgroup_export) { netex_export.parent }
@@ -27,8 +27,8 @@ RSpec.describe Export::Base, type: :model do
     let(:workbench) { create(:workbench) }
     let(:other_workbench) { create(:workbench) }
 
-    it "removes files from exports older than 7 days" do
-      file_purgeable = Timecop.freeze(7.days.ago) do
+    it "removes files from exports older than 60 days" do
+      file_purgeable = Timecop.freeze(60.days.ago) do
         export = create(
           :workgroup_export,
           workbench: workbench,
@@ -36,7 +36,7 @@ RSpec.describe Export::Base, type: :model do
         )
       end
 
-      other_file_purgeable = Timecop.freeze(7.days.ago) do
+      other_file_purgeable = Timecop.freeze(60.days.ago) do
         export = create(
           :workgroup_export,
           workbench: other_workbench,

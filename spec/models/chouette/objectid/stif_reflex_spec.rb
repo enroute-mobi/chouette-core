@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 describe Chouette::Objectid::StifReflex, :type => :model do
   subject { Chouette::Objectid::StifReflex.new(country_code: 'FR', object_type: 'ZDL', local_id: '50015386', provider_id: 'STIF') }

@@ -83,12 +83,16 @@ namespace :ci do
 
   task :jest do
     unless ENV["CHOUETTE_JEST_DISABLED"]
-      sh "PATH=node_modules/.bin:$PATH sh -c 'jest --coverage && cat ./coverage/lcov.info | codacy-coverage'"
+      sh "PATH=node_modules/.bin:$PATH jest --coverage"
     end
   end
 
-  task :spec do
-    test_options = "--format RspecJunitFormatter --out test-results/rspec#{ENV['TEST_ENV_NUMBER']}.xml"
+  def test_options(xml_output: "rspec")
+    test_options = ""
+
+    unless xml_output == :none
+      test_options += "--format RspecJunitFormatter --out test-results/#{xml_output}.xml"
+    end
 
     if fail_fast?
       test_options += " --fail-fast"
@@ -98,6 +102,10 @@ namespace :ci do
       test_options += " --format progress"
     end
 
+    test_options
+  end
+
+  task :spec do
     if parallel_tests?
       # parallel tasks invokes this task ..
       # but development db isn't available during ci tasks
@@ -108,29 +116,59 @@ namespace :ci do
       runtime_log = "log/parallel_runtime_specs.log"
       parallel_specs_command += " --runtime-log #{runtime_log}" if File.exists? runtime_log
 
-      # Add test options
-      test_options += " --format ParallelTests::RSpec::RuntimeLogger --out #{runtime_log}"
-      summary_log = "log/summary_specs.log"
-      test_options += " --format ParallelTests::RSpec::SummaryLogger --out #{summary_log}"
+      parallel_test_options = '-r spec_helper '
+      parallel_test_options += test_options(xml_output: 'parallel-tests<%= ENV["TEST_ENV_NUMBER"] %>')
 
-      parallel_specs_command += " --test-options '#{test_options}'"
+      parallel_test_options += " --format ParallelTests::RSpec::RuntimeLogger --out #{runtime_log}"
+
+      summary_log = "log/summary_specs.log"
+      parallel_test_options += " --format ParallelTests::RSpec::SummaryLogger --out #{summary_log}"
+
+      # We're using .rspec_parallel to provide an unique file to each parallel test process
+      File.write ".rspec_parallel", parallel_test_options
 
       begin
         sh parallel_specs_command
       ensure
         sh "cat #{runtime_log} | grep '^spec' | sort -t: -k2 -n -r -" if File.exists?(runtime_log)
         sh "cat #{summary_log}" if File.exists?(summary_log)
-        # Dir["log/*_specs.log"].sort.each do |spec_log_file|
-        #   sh "cat #{spec_log_file}"
-        # end
       end
     else
-      sh "bundle exec rspec #{test_options}"
+      sh "bundle exec rspec #{test_options()}"
     end
   end
   cache_file "log/parallel_runtime_specs.log"
 
-  task :build => ["ci:setup", "ci:assets", "ci:spec", "ci:jest", "ci:check_security"]
+  def codacy_coverage_reporter(command)
+    sh "bash -c 'bash <(curl -Ls https://coverage.codacy.com/get.sh) #{command}'" do |ok, _|
+      fail "Coverage failed" if !ok && File.exists?('.codacy-coverage/codacy-coverage-reporter')
+
+      puts "Fallback to our codacy-coverage-reporter mirror"
+      mkdir_p '.codacy-coverage'
+      sh "curl -Ls --output .codacy-coverage/codacy-coverage-reporter https://bitbucket.org/enroute-mobi/codacy-coverage-reporter/downloads/codacy-coverage-reporter"
+      sh "chmod +x .codacy-coverage/codacy-coverage-reporter"
+      sh ".codacy-coverage/codacy-coverage-reporter #{command}"
+    end
+  end
+
+  def codacy_coverage(language,file)
+    if File.exists?(file)
+      codacy_coverage_reporter "report -l #{language} -r #{file}"
+    end
+  end
+
+  task :codacy do
+    if ENV['CODACY_PROJECT_TOKEN']
+      codacy_coverage :ruby, "coverage/coverage.xml"
+      codacy_coverage :javascript, "coverage/lcov.info"
+    end
+  end
+
+  task :performance do
+    sh "bundle exec rspec --tag performance #{test_options(xml_output: 'performance')}"
+  end
+
+  task :build => ["ci:setup", "ci:assets", "ci:spec", "ci:jest", "ci:codacy", "ci:check_security"]
 
   namespace :docker do
     task :clean do

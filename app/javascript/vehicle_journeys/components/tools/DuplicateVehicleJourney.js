@@ -61,9 +61,9 @@ export default class DuplicateVehicleJourney extends Component {
   }
 
   disableValidateButton() {
-    /* We disable the button in two cases : 
+    /* We disable the button in two cases :
     - if the additional_time_hh or additional_time_mm are above their input max value
-    - if if their is no change in the other inputs to avoid making a coping of the selected VJ 
+    - if if their is no change in the other inputs to avoid making a coping of the selected VJ
     */
     let incorrectDT = isNaN(this.state.duplicate_time_hh) || isNaN(this.state.duplicate_time_mm) || this.state.duplicate_time_hh > 23 || this.state.duplicate_time_mm > 59
     let noInputChanges = this.state.additional_time == 0 && this.state.originalDT.hour == this.state.duplicate_time_hh && this.state.originalDT.minute == this.state.duplicate_time_mm
@@ -82,6 +82,7 @@ export default class DuplicateVehicleJourney extends Component {
             disabled={(actions.getSelected(this.props.vehicleJourneys).length == 0 || this.props.disabled)}
             data-toggle='modal'
             data-target='#DuplicateVehicleJourneyModal'
+            title={ I18n.t('vehicle_journeys.form.hint_duplicate') }
             onClick={this.props.onOpenDuplicateModal}
           >
             <span className='fa fa-files-o'></span>

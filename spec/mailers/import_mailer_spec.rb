@@ -1,4 +1,3 @@
-require "rails_helper"
 
 RSpec.describe ImportMailer, type: :mailer do
 

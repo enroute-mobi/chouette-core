@@ -1,4 +1,3 @@
-require 'rails_helper'
 
 RSpec.describe VehicleJourneyControl::PublishedJourneyName, :type => :model do
   let(:workgroup){ referential.workgroup }

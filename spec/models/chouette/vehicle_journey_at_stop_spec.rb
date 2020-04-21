@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 RSpec.describe Chouette::VehicleJourneyAtStop, type: :model do
   subject { build_stubbed(:vehicle_journey_at_stop) }

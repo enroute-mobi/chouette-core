@@ -1,4 +1,3 @@
-require 'rails_helper'
 
 RSpec.describe CalendarObserver, type: :observer do
   let(:calendar) { create(:calendar, shared: true, organisation: user_1.organisation) }

@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 describe TableBuilderHelper::Column do
   describe "#header_label" do

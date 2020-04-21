@@ -119,6 +119,7 @@ fr:
         workbench:
           <<: *attrs
           automatic_merge: Finalisation automatique des jeux de données importés
+          flag_urgent: Contient de l'offre urgente
   errors:
     messages:
       extension_whitelist_error: "Vous n'êtes pas autorisé à uploader des fichiers %{extension}, types autorisés: %{allowed_types}"

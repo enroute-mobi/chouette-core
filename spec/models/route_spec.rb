@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 RSpec.describe Chouette::Route, :type => :model do
   it { should have_many(:routing_constraint_zones).dependent(:destroy) }

@@ -34,13 +34,8 @@ class Publication < ApplicationModel
 
   def publish
     return unless new?
-
     pending!
-    if parent.successful?
-      enqueue_job :run
-    else
-      failed!
-    end
+    enqueue_job :run
   end
 
   def pretty_date

@@ -1,4 +1,3 @@
-require 'rails_helper'
 
 RSpec.describe AggregateObserver, type: :observer do
   let(:user) { create :user, confirmed_at: Time.now }

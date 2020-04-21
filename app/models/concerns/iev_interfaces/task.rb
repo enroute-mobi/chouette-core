@@ -11,8 +11,6 @@ module IevInterfaces::Task
     has_one :organisation, through: :workbench
     belongs_to :referential
 
-    delegate :workgroup, to: :workbench
-
     mount_uploader :file, ImportUploader
     validates_integrity_of :file
 

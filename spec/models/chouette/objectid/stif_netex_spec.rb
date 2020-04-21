@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 describe Chouette::Objectid::StifNetex, :type => :model do
   subject { Chouette::Objectid::StifNetex.new(object_type: 'Route', local_id: '13') }

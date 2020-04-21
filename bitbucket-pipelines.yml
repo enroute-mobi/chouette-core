@@ -8,22 +8,26 @@ definitions:
         POSTGRES_DB: chouette
         POSTGRES_USER: chouette
         POSTGRES_PASSWORD: chouette
+      memory: 2048
   caches:
     bundler: ./vendor/bundle
     yarn: ./node_modules
     assets: ./public/assets
     assets-cache: ./tmp/assets/cache
     build-cache: ./cache
+    codacy-coverage: ./.codacy-coverage
   steps:
     - step: &unit-tests
         name: Unit tests
         image: ruby:2.6.4-slim-stretch
+        size: 2x
         caches:
           - bundler
           - yarn
           - assets
           - assets-cache
           - build-cache
+          - codacy-coverage
         script:
           - export LANG=en_US.UTF-8 LANGUAGE=en_US:UTF-8 LC_ALL=en_US.UTF-8
           - export BUNDLER_VERSION=2.0.2
@@ -45,6 +49,7 @@ pipelines:
       - step:
           name: Update gems
           image: ruby:2.6.4-slim-stretch
+          size: 2x
           caches:
             - bundler
             - yarn
@@ -59,17 +64,10 @@ pipelines:
             - export RAILS_DB_NAME=chouette
             - export RAILS_DB_HOST=localhost
             - export FAIL_FAST=true
+            - export PARALLEL_TESTS=true
 
             - ./script/bitbucket-unit-tests-setup.sh
-            # remove the Gemfile freeze for bundle outdated
-            - bundle install --no-deployment
-
-            - export BUMMR_TEST="bundle exec rake ci"
-            - export BUMMR_HEADLESS="true"
-
-            - git checkout -b gems-update-$BITBUCKET_BUILD_NUMBER
-            - bummr update
-            - git push
+            - ./script/bitbucket-bummr-pull-request.sh
           services:
             - postgres
 
@@ -85,6 +83,7 @@ pipelines:
           caches:
             - docker
           script:
+            - ./script/bitbucket-gcloud-configure-docker.sh
             - ./script/bitbucket-build-docker.sh
           services:
             - docker
@@ -100,14 +99,14 @@ pipelines:
           script:
             - pipe: atlassian/trigger-pipeline:4.1.1
               variables:
-                BITBUCKET_USERNAME: $TRIGGER_BITBUCKET_USERNAME
-                BITBUCKET_APP_PASSWORD: $TRIGGER_BITBUCKET_ADD_PASSWORD
+                BITBUCKET_USERNAME: $BITBUCKET_USERNAME
+                BITBUCKET_APP_PASSWORD: $BITBUCKET_APP_PASSWORD
                 REPOSITORY: $TRIGGER_REPOSITORY_1
                 CUSTOM_PIPELINE_NAME: 'merge'
             - pipe: atlassian/trigger-pipeline:4.1.1
               variables:
-                BITBUCKET_USERNAME: $TRIGGER_BITBUCKET_USERNAME
-                BITBUCKET_APP_PASSWORD: $TRIGGER_BITBUCKET_ADD_PASSWORD
+                BITBUCKET_USERNAME: $BITBUCKET_USERNAME
+                BITBUCKET_APP_PASSWORD: $BITBUCKET_APP_PASSWORD
                 REPOSITORY: $TRIGGER_REPOSITORY_2
                 CUSTOM_PIPELINE_NAME: 'merge'
       - step:
@@ -117,6 +116,7 @@ pipelines:
             - docker
           deployment: test
           script:
+            - ./script/bitbucket-gcloud-configure-docker.sh
             # Tag image in registry with latest label
             - ./script/bitbucket-tag-docker.sh latest
             # Update test instance

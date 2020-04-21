@@ -124,6 +124,7 @@ fr:
         other: "arrêts"
     attributes:
       stop_area:
+        full_id: "ID complet"
         name: "Nom"
         kind: "Catégorie"
         registration_number: "Numéro d'enregistrement"

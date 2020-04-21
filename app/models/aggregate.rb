@@ -77,10 +77,6 @@ class Aggregate < ApplicationModel
     else
       save_current
     end
-
-    clean_previous_operations
-    publish
-    workgroup.aggregated!
   rescue => e
     Rails.logger.error "Aggregate failed: #{e} #{e.backtrace.join("\n")}"
     failed!
@@ -101,18 +97,25 @@ class Aggregate < ApplicationModel
     end
   end
 
+  def after_save_current
+    clean_previous_operations
+    publish
+    workgroup.aggregated!
+  end
+
   private
 
   def prepare_new
     profile_tag 'prepare_new!' do
       Rails.logger.debug "Create a new output"
-      # 'empty' one
+      # In the unique case, the referential created can't be linked to any workbench
       attributes = {
         organisation: workgroup.owner,
         prefix: "aggregate_#{id}",
         line_referential: workgroup.line_referential,
         stop_area_referential: workgroup.stop_area_referential,
-        objectid_format: referentials.first.objectid_format
+        objectid_format: referentials.first.objectid_format,
+        workbench: nil
       }
       new = workgroup.output.referentials.new attributes
       new.referential_suite = output

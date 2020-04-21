@@ -114,11 +114,14 @@ class ZipService
 
   def wrong_calendar_data? entry
     content = entry.get_input_stream.read
-    period = STIF::NetexFile::Frame.parse_calendars content.to_s
-    return true unless period
-    return true unless period.first
-    return true unless period.end
-    return true unless period.first <= period.end
+    periods = STIF::NetexFile::Frame.parse_calendars content.to_s
+    periods.each do |period|
+
+      return true unless period
+      return true unless period.first
+      return true unless period.end
+      return true unless period.first <= period.end
+    end
     false
   rescue
     true

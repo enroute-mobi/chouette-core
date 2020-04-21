@@ -23,7 +23,7 @@
             - resource.sorted_transport_modes.each do |mode|
               - resource.transport_modes[mode].sort.each do |submode|
                 tr class=mode
-                  - if submode == resource.transport_modes[mode].first
+                  - if submode == resource.transport_modes[mode].sort.first
                     td rowspan="#{resource.transport_modes[mode].size}"
                       = "enumerize.transport_mode.#{mode}".t
                   td= "enumerize.transport_submode.#{submode}".t

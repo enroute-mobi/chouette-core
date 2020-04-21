@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-require 'spec_helper'
 
 describe "Group of lines", :type => :feature do
   login_user

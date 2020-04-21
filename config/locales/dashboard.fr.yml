@@ -23,3 +23,6 @@ fr:
     stop_area_referentials:
       title: Référentiels d'arrêts
       none: Aucun référentiels d'arrêts défini
+    aggregates:
+      title: Offre du groupe de travail
+      none: Aucune agrégation

@@ -1,4 +1,3 @@
-require 'rails_helper'
 
 RSpec.describe CleanUp, :type => :model do
 
@@ -26,6 +25,16 @@ RSpec.describe CleanUp, :type => :model do
 
       cleaner.end_date = cleaner.begin_date
       expect(cleaner).not_to be_valid
+    end
+  end
+
+  describe '#worker_died' do
+    subject(:cleaner) { create(:clean_up, date_type: :outside) }
+
+    it 'should set merge status to failed' do
+      expect(cleaner.status).to eq("new")
+      cleaner.worker_died
+      expect(cleaner.status).to eq("failed")
     end
   end
 

@@ -3,8 +3,8 @@ require Rails.root + 'config/middlewares/cachesettings'
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
-  SmartEnv.set :RAILS_HOST, default: 'http://localhost:3000'
   SmartEnv.set :PUBLIC_HOST, default: 'http://localhost:3000'
+  SmartEnv.set :RAILS_HOST, default: 'http://localhost:3000'
   SmartEnv.set :IEV_URL, default: "http://localhost:8080"
   SmartEnv.add_boolean :TOOLBAR
   SmartEnv.set :BYPASS_AUTH_FOR_SIDEKIQ, default: true
@@ -29,6 +29,7 @@ Rails.application.configure do
   config.active_support.deprecation = :log
 
   config.log_level = :debug
+  #config.colorize_logging = false
 
   # Raise an error on page load if there are pending migrations.
   config.active_record.migration_error = :page_load
@@ -49,7 +50,7 @@ Rails.application.configure do
 
   config.action_mailer.default_url_options = { host: SmartEnv['PUBLIC_HOST'] }
   config.action_mailer.default_options     = { from: SmartEnv['MAIL_FROM'] }
-  config.action_mailer.delivery_method     = :letter_opener
+  config.action_mailer.delivery_method     = ENV.fetch('MAIL_DELIVERY_METHOD','letter_opener').to_sym
   config.action_mailer.asset_host          = SmartEnv['PUBLIC_HOST']
 
   # See #8823

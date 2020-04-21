@@ -1,4 +1,3 @@
-require 'rails_helper'
 
 RSpec.describe Api::V1::DatasController, type: :controller do
   let(:file){ File.open(File.join(Rails.root, 'spec', 'fixtures', 'google-sample-feed.zip')) }
@@ -174,6 +173,90 @@ RSpec.describe Api::V1::DatasController, type: :controller do
           end
         end
       end
+    end
+  end
+
+  context 'graphql' do
+    let(:context) do
+      Chouette.create do
+        line :first
+        line :second
+
+        referential lines: [:first, :second] do
+          route line: :first
+          route line: :second
+        end
+      end
+    end
+    let(:publication_api) { create(:publication_api, public: true, workgroup: context.workgroup) }
+
+    before do
+      context.referential.switch
+      allow_any_instance_of(ReferentialSuite).to receive(:current).and_return context.referential
+    end
+
+    it 'should return lines when asked' do
+      query = <<~GQL
+      {
+        lines {
+          nodes {
+            id
+            objectid
+            routes {
+              nodes {
+                id
+                objectid
+                stopAreas {
+                  nodes {
+                    id
+                    objectid
+                  }
+                }
+              }
+            }
+            stopAreas {
+              nodes {
+                id
+                objectid
+              }
+            }
+          }
+        }
+      }
+      GQL
+      post :graphql, params: {slug: publication_api.slug, query: query}
+      json = JSON.parse response.body
+      data = json['data']['lines']
+      expect(data['nodes'].count).to eq 2
+      data['nodes'].each do |node|
+        line = Chouette::Line.find(node['id'])
+        expect(node['objectid']).to eq line.objectid
+        expect(node['routes']['nodes'].count).to eq line.routes.count
+        expect(node['stopAreas']['nodes'].count). to eq line.stop_areas.count
+      end
+    end
+
+    it 'should return stop_areas when asked' do
+      query = <<~GQL
+      {
+        stopAreas {
+          nodes {
+            id
+            objectid
+            lines {
+              nodes {
+                id
+                objectid
+              }
+            }
+          }
+        }
+      }
+      GQL
+      post :graphql, params: {slug: publication_api.slug, query: query}
+      json = JSON.parse response.body
+      data = json['data']['stopAreas']
+      expect(data['nodes'].count).to eq(context.line(:first).stop_areas.count + context.line(:second).stop_areas.count)
     end
   end
 end

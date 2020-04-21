@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-require 'spec_helper'
 
 describe "JourneyPatterns", :type => :feature do
   login_user

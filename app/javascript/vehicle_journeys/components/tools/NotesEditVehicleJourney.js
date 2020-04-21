@@ -125,6 +125,7 @@ export default class NotesEditVehicleJourney extends Component {
             disabled={(actions.getSelected(this.props.vehicleJourneys).length != 1 || this.props.disabled)}
             data-toggle='modal'
             data-target='#NotesEditVehicleJourneyModal'
+            title={ I18n.t('vehicle_journeys.form.hint_line_notice') }
             onClick={() => this.props.onOpenNotesEditModal(actions.getSelected(this.props.vehicleJourneys)[0])}
           >
             <span className='fa fa-sticky-note'></span>

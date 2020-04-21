@@ -1,4 +1,3 @@
-require 'rails_helper'
 
 RSpec.describe PublicationSetup, type: :model do
   it { should belong_to :workgroup }

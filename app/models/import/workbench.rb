@@ -4,6 +4,7 @@ class Import::Workbench < Import::Base
   after_commit :launch_worker, :on => :create
 
   option :automatic_merge, type: :boolean, default_value: false
+  option :flag_urgent, type: :boolean, default_value: false
 
   def main_resource; self end
 
@@ -11,7 +12,9 @@ class Import::Workbench < Import::Base
     update_column :status, 'running'
     update_column :started_at, Time.now
     notify_state
-    
+
+    file.cache_stored_file!
+
     case file_type
     when :gtfs
       import_gtfs
@@ -62,9 +65,36 @@ class Import::Workbench < Import::Base
     notify_state
   end
 
-  def done!
-    if (successful? || warning?) && automatic_merge
-      Merge.create creator: self.creator, workbench: self.workbench, referentials: self.resources.map(&:referential).compact, notification_target: self.notification_target, user: user
+
+  def child_change
+    super
+    if self.class.finished_statuses.include?(status)
+      done! if self.compliance_check_sets.all?(&:successful?)
     end
   end
+
+  def referentials
+    self.resources.map(&:referential).compact
+  end
+
+  def done!
+    return unless (successful? || warning?) && children.reload.all?(&:finished?)
+
+    if flag_urgent
+      flag_refentials_as_urgent
+    end
+    if automatic_merge
+      create_automatic_merge
+    end
+  end
+
+  def flag_refentials_as_urgent
+    referentials.each(&:flag_metadatas_as_urgent!)
+  end
+
+  def create_automatic_merge
+    Merge.create creator: creator, workbench: workbench, referentials: referentials, notification_target: notification_target, user: user
+  end
+
+
 end

@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netex:PublicationDelivery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.netex.org.uk/netex ../../xsd/NeTEx_publication.xsd" xmlns:netex="http://www.netex.org.uk/netex"
+ xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ifopt="http://www.ifopt.org.uk/ifopt"
+ xmlns:core="http://www.govtalk.gov.uk/core" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:siri="http://www.siri.org.uk/siri"
+ version="1.0">
+    <netex:PublicationTimestamp>2017-02-14T09:13:51.0</netex:PublicationTimestamp>
+    <netex:ParticipantRef>CITYWAY</netex:ParticipantRef>
+    <netex:dataObjects>
+        <netex:GeneralFrame id="CITYWAY:GeneralFrame:NETEX_CALENDRIER-1_20170214090012:LOC"
+            version="any">
+            <netex:ValidBetween>
+                <netex:FromDate>2017-06-25T00:00:00</netex:FromDate>
+                <netex:ToDate>2017-12-31T00:00:00</netex:ToDate>
+            </netex:ValidBetween>
+            <netex:TypeOfFrameRef ref="FR1:TypeOfFrame:NETEX_CALENDRIER:"/>
+            <netex:members> 
+                    <netex:DayType id="CITYWAY:DayType:1:LOC"  version="any" >
+                        <netex:Name>Semaine</netex:Name>
+                        <netex:properties>
+                            <netex:PropertyOfDay>
+                                <netex:DaysOfWeek>Monday</netex:DaysOfWeek>
+                            </netex:PropertyOfDay>
+                            <netex:PropertyOfDay>
+                                <netex:DaysOfWeek>Tuesday</netex:DaysOfWeek>
+                            </netex:PropertyOfDay>
+                            <netex:PropertyOfDay>
+                                <netex:DaysOfWeek>Wednesday</netex:DaysOfWeek>
+                            </netex:PropertyOfDay>
+                            <netex:PropertyOfDay>
+                                <netex:DaysOfWeek>Thursday</netex:DaysOfWeek>
+                            </netex:PropertyOfDay>
+                            <netex:PropertyOfDay>
+                                <netex:DaysOfWeek>Friday</netex:DaysOfWeek>
+                            </netex:PropertyOfDay>
+                        </netex:properties>
+                    </netex:DayType>                    
+                    <netex:DayType id="CITYWAY:DayType:2:LOC"  version="any" >
+                        <netex:Name>Fin de semaine</netex:Name>
+                        <netex:properties>
+                            <netex:PropertyOfDay>
+                                <netex:DaysOfWeek>Saturday</netex:DaysOfWeek>
+                            </netex:PropertyOfDay>
+                            <netex:PropertyOfDay>
+                                <netex:DaysOfWeek>Sunday</netex:DaysOfWeek>
+                            </netex:PropertyOfDay>
+                        </netex:properties>
+                    </netex:DayType>    
+                    <netex:DayType id="CITYWAY:DayType:3:LOC"  version="any" >
+                        <netex:Name>Semaine vacances</netex:Name>
+                        <netex:properties>
+                            <netex:PropertyOfDay>
+                                <netex:DaysOfWeek>Monday</netex:DaysOfWeek>
+                            </netex:PropertyOfDay>
+                            <netex:PropertyOfDay>
+                                <netex:DaysOfWeek>Tuesday</netex:DaysOfWeek>
+                            </netex:PropertyOfDay>
+                            <netex:PropertyOfDay>
+                                <netex:DaysOfWeek>Wednesday</netex:DaysOfWeek>
+                            </netex:PropertyOfDay>
+                            <netex:PropertyOfDay>
+                                <netex:DaysOfWeek>Thursday</netex:DaysOfWeek>
+                            </netex:PropertyOfDay>
+                            <netex:PropertyOfDay>
+                                <netex:DaysOfWeek>Friday</netex:DaysOfWeek>
+                            </netex:PropertyOfDay>
+                        </netex:properties>
+                    </netex:DayType>                    
+                    <netex:DayType id="CITYWAY:DayType:4:LOC"  version="any" >
+                        <netex:Name>WE vacances</netex:Name>
+                        <netex:properties>
+                            <netex:PropertyOfDay>
+                                <netex:DaysOfWeek>Saturday</netex:DaysOfWeek>
+                            </netex:PropertyOfDay>
+                            <netex:PropertyOfDay>
+                                <netex:DaysOfWeek>Sunday</netex:DaysOfWeek>
+                            </netex:PropertyOfDay>
+                        </netex:properties>
+                    </netex:DayType>              					
+                    <netex:DayType id="CITYWAY:DayType:5:LOC"  version="any" >
+                        <netex:Name>Service spécial</netex:Name>
+                    </netex:DayType>                    
+                    <netex:DayType id="CITYWAY:DayType:6:LOC"  version="any" >
+                        <netex:Name>Restriction</netex:Name>
+                    </netex:DayType>                    
+                    <netex:DayTypeAssignment id="CITYWAY:DayTypeAssignment:1:LOC" version="any" order="0" >
+                        <netex:OperatingPeriodRef ref="CITYWAY:OperatingPeriod:1:LOC" version="any"/>
+                        <netex:DayTypeRef ref="CITYWAY:DayType:1:LOC" version="any"/>
+                    </netex:DayTypeAssignment>
+                    <netex:DayTypeAssignment id="CITYWAY:DayTypeAssignment:2:LOC" version="any" order="0" >
+                        <netex:OperatingPeriodRef ref="CITYWAY:OperatingPeriod:1:LOC" version="any"/>
+                        <netex:DayTypeRef ref="CITYWAY:DayType:2:LOC" version="any"/>
+                    </netex:DayTypeAssignment>
+					<netex:DayTypeAssignment id="CITYWAY:DayTypeAssignment:3:LOC" version="any" order="0" >
+                        <netex:OperatingPeriodRef ref="CITYWAY:OperatingPeriod:3:LOC" version="any"/>
+                        <netex:DayTypeRef ref="CITYWAY:DayType:1:LOC" version="any"/>
+                    </netex:DayTypeAssignment>
+                    <netex:DayTypeAssignment id="CITYWAY:DayTypeAssignment:4:LOC" version="any" order="0" >
+                        <netex:OperatingPeriodRef ref="CITYWAY:OperatingPeriod:3:LOC" version="any"/>
+                        <netex:DayTypeRef ref="CITYWAY:DayType:2:LOC" version="any"/>
+                    </netex:DayTypeAssignment>
+					<netex:DayTypeAssignment id="CITYWAY:DayTypeAssignment:5:LOC" version="any" order="0" >
+                        <netex:OperatingPeriodRef ref="CITYWAY:OperatingPeriod:2:LOC" version="any"/>
+                        <netex:DayTypeRef ref="CITYWAY:DayType:3:LOC" version="any"/>
+                    </netex:DayTypeAssignment>
+                    <netex:DayTypeAssignment id="CITYWAY:DayTypeAssignment:6:LOC" version="any" order="0" >
+                        <netex:OperatingPeriodRef ref="CITYWAY:OperatingPeriod:2:LOC" version="any"/>
+                        <netex:DayTypeRef ref="CITYWAY:DayType:4:LOC" version="any"/>
+                    </netex:DayTypeAssignment>
+					<netex:DayTypeAssignment id="CITYWAY:DayTypeAssignment:7:LOC" version="any" order="0" >
+                        <netex:Date>2017-07-05</netex:Date>
+                        <netex:DayTypeRef ref="CITYWAY:DayType:5:LOC" version="any"/>
+                        <netex:isAvailable>true</netex:isAvailable> 
+                    </netex:DayTypeAssignment>
+                    <netex:DayTypeAssignment id="CITYWAY:DayTypeAssignment:8:LOC" version="any" order="0" >
+                        <netex:Date>2017-08-14</netex:Date>
+                        <netex:DayTypeRef ref="CITYWAY:DayType:6:LOC" version="any"/>
+                        <netex:isAvailable>false</netex:isAvailable> 
+                    </netex:DayTypeAssignment>
+					 <netex:DayTypeAssignment id="CITYWAY:DayTypeAssignment:9:LOC" version="any" order="0" >
+						<netex:Date>2017-08-15</netex:Date>
+                        <netex:DayTypeRef ref="CITYWAY:DayType:6:LOC" version="any"/>
+                        <netex:isAvailable>false</netex:isAvailable> 
+                    </netex:DayTypeAssignment>
+					 <netex:DayTypeAssignment id="CITYWAY:DayTypeAssignment:10:LOC" version="any" order="0" >
+						<netex:Date>2017-08-16</netex:Date>
+                        <netex:DayTypeRef ref="CITYWAY:DayType:6:LOC" version="any"/>
+                        <netex:isAvailable>false</netex:isAvailable> 
+                    </netex:DayTypeAssignment>
+                    <netex:OperatingPeriod id="CITYWAY:OperatingPeriod:1:LOC" version="any" >
+                        <netex:FromDate>2017-06-25T00:00:00</netex:FromDate>
+                        <netex:ToDate>2017-07-01T00:00:00</netex:ToDate>
+                    </netex:OperatingPeriod>
+					<netex:OperatingPeriod id="CITYWAY:OperatingPeriod:2:LOC" version="any" >
+                        <netex:FromDate>2017-07-10T00:00:00</netex:FromDate>
+                        <netex:ToDate>2017-08-31T00:00:00</netex:ToDate>
+				    </netex:OperatingPeriod>
+					<netex:OperatingPeriod id="CITYWAY:OperatingPeriod:3:LOC" version="any" >
+                        <netex:FromDate>2017-09-01T00:00:00</netex:FromDate>
+                        <netex:ToDate>2017-12-31T00:00:00</netex:ToDate>
+				    </netex:OperatingPeriod>
+            </netex:members>
+        </netex:GeneralFrame>
+    </netex:dataObjects>
+</netex:PublicationDelivery>

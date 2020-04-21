@@ -50,9 +50,7 @@ fr:
     - octobre
     - novembre
     - décembre
-  errors:
-    format: "%{message}"
-
+    
   last_update: 'Dernière mise à jour le %{time}'
   whodunnit: 'Par %{author}'
   default_whodunnit: 'web service'

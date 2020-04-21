@@ -3,6 +3,7 @@ ChouetteIhm::Application.routes.draw do
   resource :subscriptions, only: :create
   resources :notifications, only: :index
 
+  # FIXME See CHOUETTE-207
   resources :exports, only: :upload do
     post :upload, on: :member, controller: :export_uploads
   end
@@ -10,19 +11,21 @@ ChouetteIhm::Application.routes.draw do
   concern :iev_interfaces do
     resources :imports do
       get :download, on: :member
+      get :internal_download, on: :member
       resources :import_resources, only: [:index, :show] do
         resources :import_messages, only: [:index]
       end
+    end
+
+    resources :exports do
+      post :upload, on: :member
+      get :download, on: :member
     end
   end
 
   resources :workbenches, except: [:destroy], concerns: :iev_interfaces do
     delete :referentials, on: :member, action: :delete_referentials
     resources :api_keys
-
-    resources :exports do
-      post :upload, on: :member
-    end
 
     resources :compliance_check_sets, only: [:index, :show] do
       get :executed, on: :member
@@ -69,9 +72,7 @@ ChouetteIhm::Application.routes.draw do
     end
 
     resources :publication_setups do
-      resources :publications, only: :show do
-        resources :exports, only: :show
-      end
+      resources :publications, only: :show
     end
 
     resources :publication_apis do
@@ -130,6 +131,7 @@ ChouetteIhm::Application.routes.draw do
         resource :journey_patterns_collection, :only => [:show, :update]
         resources :journey_patterns do
           get 'new_vehicle_journey', on: :member
+          get 'available_specific_stop_places', on: :member
         end
         resource :vehicle_journeys_collection, :only => [:show, :update]
         resources :vehicle_journeys, :vehicle_journey_frequencies do
@@ -146,12 +148,6 @@ ChouetteIhm::Application.routes.draw do
     end
 
     resources :vehicle_journeys, controller: 'referential_vehicle_journeys', only: [:index]
-
-    resources :exports, :only => [:index, :show, :destroy]  do
-      member do
-        get "exported_file"
-      end
-    end
 
     resources :purchase_windows
 
@@ -208,9 +204,14 @@ ChouetteIhm::Application.routes.draw do
       get 'datas/:slug.:key.zip', to: 'datas#download_full', as: :download_full
       get 'datas/:slug/lines/:line_id.:key.zip', to: 'datas#download_line', as: :download_line
 
+      post 'datas/:slug/graphql', to: "datas#graphql", as: :graphql
+
       resources :workbenches, except: %i(destroy) do
         resources :imports, only: [:index, :show, :create]
       end
+
+      post 'stop_area_referentials/:id/webhook', to: 'stop_area_referentials#webhook'
+      post 'line_referentials/:id/webhook', to: 'line_referentials#webhook'
 
       namespace :internals do
         get 'compliance_check_sets/:id/notify_parent', to: 'compliance_check_sets#notify_parent'
@@ -317,6 +318,10 @@ ChouetteIhm::Application.routes.draw do
 
   if Rails.application.config.development_toolbar
     post "/development_toolbar" => "development_toolbar#update_settings", as: :development_toolbar_update_settings
+  end
+
+  if Rails.env.development?
+    mount GraphiQL::Rails::Engine, at: "/graphiql", graphql_path: "/graphql"
   end
 
   match '/404', to: 'errors#not_found', via: :all, as: 'not_found'

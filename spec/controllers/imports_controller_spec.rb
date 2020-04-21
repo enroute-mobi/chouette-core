@@ -41,13 +41,42 @@ RSpec.describe ImportsController, :type => :controller do
           }}
       end
     end
+
+    describe "GET #show" do
+
+      it 'should be successful' do
+        get :show, params: { workbench_id: workbench.id, id: import.id }
+        expect(response).to be_successful
+      end
+
+      context "in JSON format" do
+
+        let(:import) { create :gtfs_import, workbench: workbench  }
+        it 'should be successful' do
+          get :show, params: { workbench_id: workbench.id, id: import.id, format: :json }
+          expect(response).to be_successful
+        end
+
+      end
+
+    end
   end
 
   describe 'GET #download' do
+    login_user
+
+    it 'should be successful' do
+      get :download, params: { workbench_id: workbench.id, id: import.id }
+      expect(response).to be_successful
+      expect( response.body ).to eq(import.file.read)
+    end
+  end
+
+  describe 'GET #internal_download' do
     let(:organisation){ create(:organisation) }
 
     it 'should be successful' do
-      get :download, params: { workbench_id: workbench.id, id: import.id, token: import.token_download }
+      get :internal_download, params: { workbench_id: workbench.id, id: import.id, token: import.token_download }
       expect(response).to be_successful
       expect( response.body ).to eq(import.file.read)
     end

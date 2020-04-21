@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 describe Chouette::Network, :type => :model do
   subject { create(:network) }

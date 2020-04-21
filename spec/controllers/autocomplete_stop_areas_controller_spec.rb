@@ -1,5 +1,4 @@
 # coding: utf-8
-require 'rails_helper'
 
 RSpec.describe AutocompleteStopAreasController, type: :controller do
   login_user

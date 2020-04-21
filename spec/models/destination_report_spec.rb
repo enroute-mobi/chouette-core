@@ -1,4 +1,3 @@
-require 'rails_helper'
 
 RSpec.describe DestinationReport, type: :model do
   it { should belong_to :publication }

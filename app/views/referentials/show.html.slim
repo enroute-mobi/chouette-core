@@ -17,17 +17,10 @@
 
     - unless @referential.ready?
       - if (operation = @referential.last_operation) && policy(operation).show?
-        .jumbotron
+        .jumbotron.operation
             = operation_status(operation.status)
-            - url = operation.is_a?(Import::Base) ? [operation.workbench, operation.parent || operation] : [@referential, operation]
-            - url = operation.is_a?(Merge) ? [operation.workbench, operation] : url
-            - url = operation.is_a?(Aggregate) ? [operation.workgroup, operation] : url
-            = link_to url do
-              | &nbsp;
-              span
-                strong= operation.try(:name) || operation.created_at.l(format: :short)
-              | &nbsp;
-              span= "(#{operation.class.ts})"
+            span= "#{operation.class.ts}"
+            span= (operation.try(:name) || operation.created_at.l(format: :short))
 
     - else
       - if params[:q].present? or @reflines.any?

@@ -1,4 +1,3 @@
-require 'rails_helper'
 
 RSpec.describe Destination::PublicationApi, type: :model do
   let(:publication_api) { create :publication_api }

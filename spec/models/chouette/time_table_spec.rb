@@ -1,4 +1,3 @@
-require 'spec_helper'
 include Support::TimeTableHelper
 
 describe Chouette::TimeTable, :type => :model do

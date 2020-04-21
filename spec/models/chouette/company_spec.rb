@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 describe Chouette::Company, :type => :model do
   subject { create(:company) }

@@ -4,6 +4,7 @@ fr:
     filters:
       referential: "Sélectionnez un jeu de données..."
       name_or_creator_cont: "Indiquez un nom d'export ou d'opérateur..."
+      name: "Indiquez un nom d'export..."
       error_period_filter: "La date de fin doit être supérieure ou égale à la date de début"
     actions:
       new: "Nouvel export"
@@ -115,6 +116,7 @@ fr:
         gtfs:
           <<: *attrs
           duration: Durée (en jours)
+          prefer_referent_stop_area: Préférer les arrêts Référents
           line_code: Ligne
           export_type: Sous-type d'export
           export_type_collection:

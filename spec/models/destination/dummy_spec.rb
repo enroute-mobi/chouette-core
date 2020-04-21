@@ -1,4 +1,3 @@
-require 'rails_helper'
 
 RSpec.describe Destination::Dummy, type: :model do
   let(:result){ :successful }

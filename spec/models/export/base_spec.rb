@@ -27,8 +27,8 @@ RSpec.describe Export::Base, type: :model do
     let(:workbench) { create(:workbench) }
     let(:other_workbench) { create(:workbench) }
 
-    it "removes files from exports older than 7 days" do
-      file_purgeable = Timecop.freeze(7.days.ago) do
+    it "removes files from exports older than 60 days" do
+      file_purgeable = Timecop.freeze(60.days.ago) do
         export = create(
           :workgroup_export,
           workbench: workbench,
@@ -36,7 +36,7 @@ RSpec.describe Export::Base, type: :model do
         )
       end
 
-      other_file_purgeable = Timecop.freeze(7.days.ago) do
+      other_file_purgeable = Timecop.freeze(60.days.ago) do
         export = create(
           :workgroup_export,
           workbench: other_workbench,
@@ -317,4 +317,25 @@ RSpec.describe Export::Base, type: :model do
       end
     end
   end
+
+  context "#user_file" do
+
+    before do
+      subject.name = "Dummy Export Example"
+    end
+
+    it 'uses a parameterized version of the Export name as base name' do
+      expect(subject.user_file.basename).to eq("dummy-export-example")
+    end
+
+    it 'uses the Export content_type' do
+      expect(subject.user_file.content_type).to eq(subject.content_type)
+    end
+
+    it 'uses the Export file_extension' do
+      expect(subject.user_file.extension).to eq(subject.send(:file_extension))
+    end
+
+  end
+
 end

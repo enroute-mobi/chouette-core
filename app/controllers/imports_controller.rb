@@ -2,17 +2,22 @@ class ImportsController < ChouetteController
   include PolicyChecker
   include RansackDateFilter
   include IevInterfaces
-  skip_before_action :authenticate_user!, only: [:download]
+  skip_before_action :authenticate_user!, only: [:internal_download]
   defaults resource_class: Import::Base, collection_name: 'imports', instance_name: 'import'
-  before_action :notify_parents
   respond_to :json, :html
 
-  def download
+  def internal_download
     if params[:token] == resource.token_download
+      resource.file.cache_stored_file!
       send_file resource.file.path
     else
       user_not_authorized
     end
+  end
+
+  def download
+    resource.file.cache_stored_file!
+    send_file resource.file.path, filename: resource.user_file.name, type: resource.user_file.content_type
   end
 
   def show
@@ -22,7 +27,7 @@ class ImportsController < ChouetteController
     respond_to do |format|
       format.html
       format.json do
-        fragment = render_to_string(partial: "imports/#{@import.type.tableize.singularize}.html")
+        fragment = render_to_string(partial: "imports/#{@import.short_type}", formats: :html)
         render json: {fragment: fragment}
       end
     end
@@ -58,17 +63,9 @@ class ImportsController < ChouetteController
     )
   end
 
-  def notify_parents
-    if Rails.env.development?
-      ParentNotifier.new(Import::Base).notify_when_finished
-    end
-  end
-
   protected
 
   def begin_of_association_chain
-    return Workgroup.find(params[:workgroup_id]) if params[:workgroup_id]
-
-    super
+    Workgroup.find(params[:workgroup_id]) if params[:workgroup_id]
   end
 end

@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 describe "/companies/new", :type => :view do
 

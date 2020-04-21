@@ -1,4 +1,3 @@
-require 'rails_helper'
 
 RSpec.describe PublicationApi, type: :model do
   subject { create(:publication_api) }

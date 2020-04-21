@@ -97,8 +97,5 @@ module Chouette
       route.name
     end
 
-    def pretty_print(_=nil)
-      stop_points.map(&:registration_number).join(' > ')
-    end
   end
 end

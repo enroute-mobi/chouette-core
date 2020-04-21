@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 describe Chouette::JourneyPattern, :type => :model do
 
@@ -340,6 +339,53 @@ describe Chouette::JourneyPattern, :type => :model do
           expect(subject.departure_stop_point_id).to eq(ordered.first.id)
         end
       end
+    end
+  end
+
+  describe "#clean!" do
+
+    let(:context) do
+      Chouette.create do
+        journey_pattern :target do
+          vehicle_journey
+        end
+        journey_pattern :kept do
+          vehicle_journey
+        end
+      end
+    end
+
+    let(:referential) { context.referential }
+
+    let(:target) { context.journey_pattern(:target) }
+    let(:target_scope) { referential.journey_patterns.where(id: target) }
+
+    let(:kept) { context.journey_pattern(:kept) }
+
+    before { referential.switch }
+
+    it "destroys VehicleJourneys associated to targeted JourneyPattern" do
+      expect { target_scope.clean! }.to change {
+        target.vehicle_journeys.exists?
+      }
+    end
+
+    it "keeps VehiculeJourneys not associated to the targeted JourneyPattern" do
+      expect { target_scope.clean! }.to_not change {
+        kept.vehicle_journeys.exists?
+      }
+    end
+
+    it "destroys targeted JourneyPatterns" do
+      expect { target_scope.clean! }.to change {
+        referential.journey_patterns.exists?(target.id)
+      }
+    end
+
+    it "keeps not targeted JourneyPatterns" do
+      expect { target_scope.clean! }.to_not change {
+        referential.journey_patterns.exists?(kept.id)
+      }
     end
   end
 end

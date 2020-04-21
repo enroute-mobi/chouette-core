@@ -23,31 +23,67 @@ class ReferentialCopy
     @opts[:skip_metadatas]
   end
 
+  def referential_inserter
+    @referential_inserter ||= ReferentialInserter.new(target)
+  end
+
   def copy(raise_error: false)
     profile_tag :copy do
-      ActiveRecord::Base.cache do
-        Chouette::JourneyPattern.within_workgroup(workgroup) do
-          Chouette::VehicleJourney.within_workgroup(workgroup) do
-            copy_resource(:metadatas) unless skip_metadatas?
-            copy_resource(:time_tables)
-            copy_resource(:purchase_windows)
-            source.switch do
-              lines.includes(:footnotes, :routes).find_each do |line|
-                @new_routes = nil
-                copy_resource(:footnotes, line)
-                copy_resource(:routes, line)
-                copy_resource(:line_checksums, line)
-              end
-            end
-            @status = :successful
+      CustomFieldsSupport.within_workgroup(workgroup) do
+        copy_resource(:metadatas) unless skip_metadatas?
+        copy_resource(:time_tables)
+        copy_resource(:purchase_windows)
+        source.switch do
+          lines.includes(:footnotes, :routes).find_each do |line|
+            @new_routes = nil
+            copy_resource(:footnotes, line)
+            copy_resource(:routes, line)
+            copy_resource(:line_checksums, line)
           end
         end
+        @status = :successful
       end
+
+      copy_with_inserters
     end
   rescue SaveError => e
     logger.error e.message
     failed! e.message
     raise if raise_error
+  end
+
+  def copy_with_inserters
+    # copy_inserter = CopyInserter.new(target)
+
+    source.switch do
+      vehicle_journeys = source.vehicle_journeys.joins(:route).where("routes.line_id" => lines)
+
+      CustomFieldsSupport.within_workgroup(workgroup) do
+        vehicle_journeys.find_each do |vehicle_journey|
+          referential_inserter.vehicle_journeys << vehicle_journey
+        end
+      end
+
+      vehicle_journey_at_stops = source.vehicle_journey_at_stops.where(vehicle_journey: vehicle_journeys)
+
+      vehicle_journey_at_stops.find_each do |vehicle_journey_at_stop|
+        referential_inserter.vehicle_journey_at_stops << vehicle_journey_at_stop
+      end
+
+      time_tables_vehicle_journeys = Chouette::TimeTablesVehicleJourney.where(vehicle_journey: vehicle_journeys)
+
+      time_tables_vehicle_journeys.find_each_without_primary_key do |model|
+        referential_inserter.vehicle_journey_time_table_relationships << model
+      end
+
+      vehicle_journey_purchase_window_relationship = Chouette::VehicleJourneyPurchaseWindowRelationship.where(vehicle_journey: vehicle_journeys)
+
+      vehicle_journey_purchase_window_relationship.find_each_without_primary_key do |model|
+        referential_inserter.vehicle_journey_purchase_window_relationships << model
+      end
+    end
+
+    referential_inserter.flush
   end
 
   def copy!
@@ -189,14 +225,14 @@ class ReferentialCopy
 
   def copy_routes line
     Chouette::ChecksumManager.no_updates do
-      line.routes.find_each &method(:copy_route)
+      line.routes.find_each(&method(:copy_route))
     end
   end
 
   def copy_line_checksums(line)
     target.switch do
       update_checkum_in_batches Chouette::Route.where(id: @new_routes).select(:id, :name, :published_name, :wayback).includes(:stop_points, :routing_constraint_zones)
-      update_checkum_in_batches target.vehicle_journey_at_stops.joins(vehicle_journey: :route).where(routes: {id: @new_routes}).select(:id, :departure_time, :arrival_time, :departure_day_offset, :arrival_day_offset)
+      update_checkum_in_batches target.vehicle_journey_at_stops.joins(vehicle_journey: :route).where(routes: {id: @new_routes}).select(:id, :departure_time, :arrival_time, :departure_day_offset, :arrival_day_offset, :stop_area_id)
       update_checkum_in_batches target.journey_patterns.where(route_id: @new_routes).select(:id, :custom_field_values, :name, :published_name, :registration_number, :costs).includes(:stop_points)
       update_checkum_in_batches target.vehicle_journeys.where(route_id: @new_routes).select(:id, :custom_field_values, :published_journey_name, :published_journey_identifier, :ignored_routing_contraint_zone_ids, :ignored_stop_area_routing_constraint_ids, :company_id, :line_notice_ids).includes(:company_light, :footnotes, :vehicle_journey_at_stops, :purchase_windows)
     end
@@ -260,27 +296,24 @@ class ReferentialCopy
             ActiveRecord::Base.connection.execute sql
           end
 
-          profile_tag 'vehicle_journeys' do
-            copy_collection journey_pattern, new_journey_pattern, :vehicle_journeys do |vj, new_vj|
-              new_vj.route = new_route
-              retrieve_collection_with_mapping vj, new_vj, Chouette::TimeTable, :time_tables
-              retrieve_collection_with_mapping vj, new_vj, Chouette::PurchaseWindow, :purchase_windows
-            end
-          end
-
-          profile_tag 'vehicle_journey_at_stops' do
-            source.switch do
-              journey_pattern.vehicle_journeys.find_each do |vj|
-                copy_bulk_collection vj.vehicle_journey_at_stops.includes(:stop_point) do |new_vjas_attributes, vjas|
-                  new_vjas_attributes[:vehicle_journey_id] = matching_id(vj)
-                  new_vjas_attributes[:stop_point_id] = matching_id(vjas.stop_point)
-                end
-              end
-            end
-          end
-          profile_tag 'update_checksum' do
-            new_journey_pattern.vehicle_journeys.reload.each &:update_checksum!
-          end
+          # profile_tag 'vehicle_journeys' do
+          #   copy_collection journey_pattern, new_journey_pattern, :vehicle_journeys do |vj, new_vj|
+          #     new_vj.route = new_route
+          #     retrieve_collection_with_mapping vj, new_vj, Chouette::TimeTable, :time_tables
+          #     retrieve_collection_with_mapping vj, new_vj, Chouette::PurchaseWindow, :purchase_windows
+          #   end
+          # end
+          #
+          # profile_tag 'vehicle_journey_at_stops' do
+          #   source.switch do
+          #     journey_pattern.vehicle_journeys.find_each do |vj|
+          #       copy_bulk_collection vj.vehicle_journey_at_stops.includes(:stop_point) do |new_vjas_attributes, vjas|
+          #         new_vjas_attributes[:vehicle_journey_id] = matching_id(vj)
+          #         new_vjas_attributes[:stop_point_id] = matching_id(vjas.stop_point)
+          #       end
+          #     end
+          #   end
+          # end
         end
 
         # we copy the routing_constraint_zones

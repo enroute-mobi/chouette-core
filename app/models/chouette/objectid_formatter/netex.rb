@@ -8,7 +8,7 @@ module Chouette
 
       def before_validation(model)
         oid = objectid(model)
-        model.update(objectid: oid.to_s) if oid.valid?
+        model.objectid = oid.to_s if oid.valid?
       end
 
       def after_commit(model)

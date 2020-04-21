@@ -12,6 +12,7 @@ FactoryGirl.define do
 
     after(:build) do |export|
       export.class.skip_callback(:create, :before, :initialize_fields, raise: false)
+      export.workgroup = export.workbench.workgroup
     end
   end
 
@@ -29,6 +30,7 @@ FactoryGirl.define do
 
     after(:build) do |export|
       export.class.skip_callback(:create, :before, :initialize_fields, raise: false)
+      export.workgroup = export.workbench.workgroup
     end
   end
 end

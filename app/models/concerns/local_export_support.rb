@@ -19,6 +19,7 @@ module LocalExportSupport
   end
 
   def date_range
+    return nil if duration.nil?
     @date_range ||= Time.now.to_date..self.duration.to_i.days.from_now.to_date
   end
 
@@ -47,5 +48,11 @@ module LocalExportSupport
     Rails.logger.info e.backtrace.join("\n")
     self.status = :failed
     self.save!
+  end
+
+  def worker_died
+    failed!
+
+    Rails.logger.error "#{self.class.name} #{self.inspect} failed due to worker being dead"
   end
 end

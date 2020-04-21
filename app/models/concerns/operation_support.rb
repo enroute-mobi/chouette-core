@@ -88,11 +88,12 @@ module OperationSupport
   end
 
   def save_current
-    profile_tag :save_current do
+    Chouette::Benchmark.measure("save_current") do
       output.update current: new, new: nil
       output.current.update referential_suite: output, ready: true
       new.rebuild_cross_referential_index!
 
+      previous_current = output.current
       begin
         after_save_current
       rescue
@@ -109,16 +110,13 @@ module OperationSupport
     ComplianceControlSetCopier.new.copy control_set.id, referential.id, nil, self.class.name, id, context
   end
 
-  def worker_class_name
-    "#{self.class.name}Worker"
-  end
-
-  def worker_class
-    worker_class_name.constantize
-  end
-
   def operation_scheduled?
     Delayed::Job.where("handler ILIKE '%#{self.class.name}%name: id\n    value_before_type_cast: #{self.id}%'").exists?
+  end
+
+  def enqueue_operation
+    worker_method = "#{self.class.name.underscore}!".to_sym
+    enqueue_job worker_method
   end
 
   def child_change
@@ -135,7 +133,7 @@ module OperationSupport
         if operation_scheduled?
           Rails.logger.warn "#{self.class.name} ##{self.id} - Trying to schedule a #{self.class.name} while it is already enqueued"
         else
-          worker_class.perform_async(id)
+          enqueue_operation
         end
       end
     else
@@ -154,6 +152,12 @@ module OperationSupport
     update_columns status: :failed, ended_at: Time.now
     new&.failed!
     referentials.each &:active!
+  end
+
+  def worker_died
+    failed!
+
+    Rails.logger.error "#{self.class.name} #{self.inspect} failed due to worker being dead"
   end
 
   def successful?

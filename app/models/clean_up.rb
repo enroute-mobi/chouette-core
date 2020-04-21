@@ -61,17 +61,29 @@ class CleanUp < ApplicationModel
     end
   end
 
+  def worker_died
+    failed({
+      error: "Worker has been killed"
+    })
+
+    Rails.logger.error "#{self.class.name} #{self.inspect} failed due to worker being dead"
+  end
+
+
   def clean
     referential.switch
-    referential.pending_while do
-      clean_timetables_and_children
-      clean_routes_outside_referential
-      run_methods
-    end
 
-    Chouette::Benchmark.log('reset_referential_state') do
-      if original_state.present? && referential.respond_to?("#{original_state}!")
-        referential.send("#{original_state}!")
+    Chouette::Benchmark.measure("referential.clean", referential: referential.id) do
+      referential.pending_while do
+        clean_timetables_and_children
+        clean_routes_outside_referential
+        run_methods
+      end
+
+      Chouette::Benchmark.measure('reset_referential_state') do
+        if original_state.present? && referential.respond_to?("#{original_state}!")
+          referential.send("#{original_state}!")
+        end
       end
     end
   end
@@ -85,38 +97,6 @@ class CleanUp < ApplicationModel
     self.end_date = self.begin_date if self.date_type != 'between'
     Chouette::TimeTablePeriod.where('(period_start, period_end) OVERLAPS (?, ?)', self.begin_date, self.end_date)
   end
-
-  # def exclude_dates_in_overlapping_period(period)
-  #   days_in_period  = period.period_start..period.period_end
-  #   day_out         = period.time_table.dates.where(in_out: false).map(&:date)
-  #   # check if day is greater or less then cleanup date
-  #   if date_type != 'between'
-  #     operator = date_type == 'after' ? '>' : '<'
-  #     to_exclude_days = days_in_period.map do |day|
-  #       day if day.public_send(operator, self.begin_date)
-  #     end
-  #   else
-  #     days_in_cleanup_periode = (self.begin_date..self.end_date)
-  #     to_exclude_days = days_in_period & days_in_cleanup_periode
-  #   end
-  #
-  #   to_exclude_days.to_a.compact.each do |day|
-  #     # we ensure day is not already an exclude date
-  #     # and that day is not equal to the boundary date of the clean up
-  #     if !day_out.include?(day) && day != self.begin_date && day != self.end_date
-  #       self.add_exclude_date(period.time_table, day)
-  #     end
-  #   end
-  # end
-
-  # def add_exclude_date(time_table, day)
-  #   day_in = time_table.dates.where(in_out: true).map(&:date)
-  #   unless day_in.include?(day)
-  #     time_table.add_exclude_date(false, day)
-  #   else
-  #     time_table.dates.where(date: day).take.update_attribute(:in_out, false)
-  #   end
-  # end
 
   aasm column: :status do
     state :new, :initial => true
@@ -133,7 +113,7 @@ class CleanUp < ApplicationModel
     end
 
     event :failed, after: :log_failed do
-      transitions :from => :pending, :to => :failed
+      transitions :from => [:new, :pending], :to => :failed
     end
   end
 

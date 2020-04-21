@@ -131,7 +131,6 @@ module LocalImportSupport
 
   def notify_parent
     return unless super
-
     main_resource.update_status_from_importer self.status
     next_step
   end
@@ -162,7 +161,8 @@ module LocalImportSupport
   end
 
   def download_path
-    Rails.application.routes.url_helpers.download_workbench_import_path(workbench, id, token: token_download)
+    # FIXME See CHOUETTE-205
+    Rails.application.routes.url_helpers.internal_download_workbench_import_path(workbench, id, token: token_download)
   end
 
   def download_uri

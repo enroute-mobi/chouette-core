@@ -1,5 +1,3 @@
-require 'rails_helper'
-
 RSpec.describe LineReferentialSync, :type => :model do
   it 'should have a valid factory' do
     expect(FactoryGirl.build(:line_referential_sync)).to be_valid
@@ -16,6 +14,15 @@ RSpec.describe LineReferentialSync, :type => :model do
 
   it 'should call LineReferentialSyncWorker on create' do
     expect { create(:line_referential_sync) }.to change { Delayed::Job.count }.by 1
+  end
+
+  describe '#worker_died' do
+    let(:line_referential_sync) { create(:line_referential_sync) }
+
+    it 'should set line_referential_sync status to failed' do
+      line_referential_sync.worker_died
+      expect(line_referential_sync.status).to eq("failed")
+    end
   end
 
   describe 'states' do

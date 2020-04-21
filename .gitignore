@@ -16,23 +16,22 @@
 /log/exporters
 /tmp
 *~
-public/assets/
-public/javascripts/i18n.js
-public/javascripts/translations.js
+/public/assets/
+/public/javascripts/i18n.js
+/public/javascripts/translations.js
 
 # for vim users
 *.swp
 *.swo
 .DS_Store
-chouette2.war
-vendor/bundle
-.ruby-version
-.byebug_history
-start.sh
-coverage
+/vendor/bundle
+/.ruby-version
+/.byebug_history
+/start.sh
+/coverage
 
 # IDE
-.idea
+/.idea
 
 # Ignore uploaded files
 /public/uploads
@@ -46,19 +45,19 @@ coverage
 
 /bin
 
-# Every machine shall create its binstubs
-/bin/rake
-/bin/rails
-/bin/rspec
-/bin/spring
+/spec/fixtures/target_*
+/.sass-cache
 
-spec/fixtures/target_*
-.sass-cache
-
-config/environments/production.rb
+/config/environments/production.rb
 
 # Cache directory for CI
 /cache
 
 # Directory for RspecJunitFormatter output
 /test-results/
+
+# Directory used by codacy_coverage_reporter (ci:task)
+/.codacy-coverage/
+
+# To avoid error
+/config/storage-key.json

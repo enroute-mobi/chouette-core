@@ -229,6 +229,14 @@ class VehicleJourneysController < ChouetteController
                 object_id: stop.stop_area.objectid
               }
             }
+          end,
+          stop_points: item.stop_points.map do |sp|
+            {
+              id: sp.id,
+              name: sp.name,
+              objectid: sp.objectid,
+              stop_area_id: sp.stop_area_id
+            }
           end
         }.to_json,
         text: "<strong>#{item.published_name} - #{item.get_objectid.short_id}</strong><br/><small>#{item.registration_number}</small>"

@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 describe 'VehicleJourneys', type: :feature do
   login_user

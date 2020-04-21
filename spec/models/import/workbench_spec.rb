@@ -1,4 +1,3 @@
-require "rails_helper"
 
 RSpec.describe Import::Workbench do
 
@@ -60,43 +59,133 @@ RSpec.describe Import::Workbench do
   end
 
 
-  context "#done!" do
-    it "should do nothing" do
-      expect{import.done!}.to change{Merge.count}.by 0
-    end
-
-    context "when 'automatic_merge' is set'" do
-      let(:options){
-        {
-          automatic_merge: "true"
-        }
-      }
-      it "should do nothing" do
-        expect{import.done!}.to change{Merge.count}.by 0
-      end
-    end
-
-    context "when successful" do
-      before(:each){ import.update status: :successful }
-
-      it "should do nothing" do
-        expect{import.done!}.to change{Merge.count}.by 0
+  describe "#done!" do
+    context "when import is not successful or warning" do
+      before do
+        import.status = :failed
+        import.children.each{|child| child.update(status: "failed")}
       end
 
-      context "when 'automatic_merge' is set'" do
-        let(:options){
-          { automatic_merge: "true" }
-        }
-        it "should create a Merge" do
-          import.resources.create referential: new_referential
-          expect{ import.done! }.to change{ Merge.count }.by 1
-          merge = Merge.last
-          expect(merge.creator).to eq import.creator
-          expect(merge.workbench).to eq import.workbench
-          expect(merge.referentials).to eq import.resources.map(&:referential).compact
+      it "doesn't flag referentials as urgent" do
+        expect(import).to_not receive(:flag_refentials_as_urgent)
+
+        import.flag_urgent = true
+        import.done!
+      end
+
+      it "doesn't create automatic merge" do
+        import.automatic_merge = true
+
+        expect(import).to_not receive(:create_automatic_merge)
+        import.done!
+      end
+
+    end
+
+    %i{successful warning}.each do |status|
+      context "when import is #{status}" do
+        before do
+          import.status = status
+          import.children.reload.each{|child| child.update(status: status)}
+        end
+
+        context "when flag_urgent option is selected" do
+          before { import.flag_urgent = true }
+          it "flag referentials as urgent" do
+            expect(import).to receive(:flag_refentials_as_urgent)
+            import.done!
+          end
+        end
+
+        context "when flag_urgent option isn't selected" do
+          before { import.flag_urgent = false }
+          it "doesn't flag referentials as urgent" do
+            expect(import).to_not receive(:flag_refentials_as_urgent)
+            import.done!
+          end
+        end
+
+        context "when automatic_merge option is selected" do
+          before { import.automatic_merge = true }
+          it "create automatic merge" do
+            expect(import).to receive(:create_automatic_merge)
+            import.done!
+          end
+
+          context "with children still running" do
+            before { import.children.reload.first.update(status: "running") }
+            it "doesn't create automatic merge" do
+              expect(import).to_not receive(:create_automatic_merge)
+              import.done!
+            end
+          end
+        end
+
+        context "when automatic_merge option isn't selected" do
+          before { import.automatic_merge = false }
+          it "doesn't create automatic merge" do
+            expect(import).to_not receive(:create_automatic_merge)
+            import.done!
+          end
         end
       end
     end
+
+  end
+
+  describe "#flag_refentials_as_urgent" do
+
+    # Time.now.round simplifies Time comparaison in specs
+    around { |example| Timecop.freeze(Time.now.round) { example.run } }
+
+    let(:referential) do
+      # FIXME Use Chouette.create to create consistent models
+      create(:referential).tap do |referential|
+        create(:referential_metadata, referential: referential)
+      end
+    end
+
+    before { import.resources.create referential: referential }
+
+    it "flag referential metadatas as urgent" do
+      expect do
+        import.flag_refentials_as_urgent
+      end.to change { referential.reload.flagged_urgent_at }.from(nil).to(Time.now)
+    end
+
+  end
+
+  describe "#create_automatic_merge" do
+
+    before { import.resources.create referential: new_referential }
+
+    it "create a new Merge" do
+      expect{ import.create_automatic_merge }.to change{ Merge.count }.by(1)
+    end
+
+    describe "new Merge" do
+
+      subject(:merge) { import.create_automatic_merge }
+
+      it "has the same creator than the Import" do
+        expect(merge.creator).to eq(import.creator)
+      end
+      it "has the same user than the Import" do
+        import.user = User.new
+        expect(merge.user).to eq(import.user)
+      end
+      it "has the same workbench than the Import" do
+        expect(merge.workbench).to eq(import.workbench)
+      end
+      it "has the same referentials than the Import" do
+        expect(merge.referentials).to eq(import.referentials)
+      end
+      it "has the same notification_target than the Import" do
+        expect(merge.notification_target).to eq(import.notification_target)
+      end
+
+    end
+
   end
 
 end

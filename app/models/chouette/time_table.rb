@@ -344,6 +344,13 @@ module Chouette
       [bounding_min, bounding_max].compact
     end
 
+    def date_range
+      bounding_min, bounding_max = bounding_dates
+      if bounding_min && bounding_max
+        Range.new(bounding_min, bounding_max)
+      end
+    end
+
     def effective_days_of_period(period,valid_days=self.valid_days)
       days = []
         period.period_start.upto(period.period_end) do |date|

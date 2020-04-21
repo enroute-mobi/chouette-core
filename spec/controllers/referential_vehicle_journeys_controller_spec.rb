@@ -1,4 +1,3 @@
-require "rails_helper"
 
 RSpec.describe ReferentialVehicleJourneysController, type: :controller do
   login_user

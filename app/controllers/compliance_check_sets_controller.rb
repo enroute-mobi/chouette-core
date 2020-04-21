@@ -56,6 +56,7 @@ class ComplianceCheckSetsController < ChouetteController
 
   private
 
+  # Fetch the objects, depending on the parent, either a workbench or a workgroup
   def end_of_association_chain
     parent.compliance_check_sets
   end

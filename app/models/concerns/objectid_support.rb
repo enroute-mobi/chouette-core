@@ -1,39 +1,6 @@
 module ObjectidSupport
   extend ActiveSupport::Concern
 
-  module SearchWithObjectID
-    def ransack args={}
-      vanilla_search = super args
-      base = vanilla_search.base
-      
-      if args && args.respond_to?(:keys)
-        args.each do |k, v|
-          if k =~ /short_id/
-            referential = self.last&.referential
-            if referential
-              condition = Ransack::Nodes::Condition.new(base.context).build({
-                'a' => {
-                  '0' => {
-                    'name' => 'actual_short_id',
-                    'ransacker_args' => referential
-                  }
-                },
-                'p' => 'cont',
-                'v' => { '0' => { 'value' => v } }
-              })
-
-              base.conditions << condition
-              base.combinator = "or"
-            end
-          end
-        end
-      end
-
-      vanilla_search.instance_variable_set "@base", base
-      vanilla_search
-    end
-  end
-
   included do
     before_validation :before_validation_objectid, unless: Proc.new {|model| model.read_attribute(:objectid)}
     after_commit :after_commit_objectid, on: :create, if: Proc.new {|model| model.read_attribute(:objectid).try(:include?, '__pending_id__')}
@@ -42,20 +9,16 @@ module ObjectidSupport
 
     scope :with_short_id, ->(q){
       return self.none unless self.exists?
-      referential = self.last.referential
+      referential = self&.last&.referential
       self.all.merge referential.objectid_formatter.with_short_id(self, q)
     }
 
     ransacker :short_id do |parent|
-      nil
-    end
-
-    ransacker :actual_short_id, args: [:parent, :ransacker_args] do |parent, referential|
-      Arel.sql referential.objectid_formatter.short_id_sql_expr(self)
+      referential = self&.last&.referential
+      referential.present? ? Arel.sql(referential.objectid_formatter.short_id_sql_expr(self)) : Arel.sql('objectid')
     end
 
     class << self
-      prepend ::ObjectidSupport::SearchWithObjectID
 
       def skip_objectid_uniqueness?
         ApplicationModel.skip_objectid_uniqueness? || @skip_objectid_uniqueness

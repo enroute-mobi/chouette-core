@@ -1,4 +1,3 @@
-require 'rails_helper'
 
 RSpec.describe AutocompletePurchaseWindowsController, type: :controller do
   login_user

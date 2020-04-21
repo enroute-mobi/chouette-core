@@ -1,4 +1,3 @@
-require 'rails_helper'
 
 RSpec.describe Publication, type: :model do
   it { should belong_to :publication_setup }
@@ -8,7 +7,7 @@ RSpec.describe Publication, type: :model do
   it { should validate_presence_of :parent }
 
   let(:export_type) { 'Export::Gtfs' }
-  let(:export_options) { { duration: 90 } }
+  let(:export_options) { { duration: 90, prefer_referent_stop_area: false } }
   let(:publication_setup) { create :publication_setup, export_type: export_type, export_options: export_options }
   let(:publication) { create :publication, parent: operation, publication_setup: publication_setup }
   let(:referential) { first_referential }
@@ -31,16 +30,6 @@ RSpec.describe Publication, type: :model do
     it 'should create a Delayed::Job' do
       expect{ publication }.to change{ Delayed::Job.count }.by 1
       expect(publication).to be_pending
-    end
-
-    context 'with a failed operation' do
-      before do
-        operation.status = 'failed'
-      end
-
-      it 'should fail' do
-        expect(publication).to be_failed
-      end
     end
   end
 

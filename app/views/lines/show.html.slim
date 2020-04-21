@@ -7,6 +7,7 @@
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = definition_list t("lines.form.sections.identification"),
           {  t('objectid') => @line.get_objectid.short_id,
+             Chouette::Line.tmf(:full_id) => @line.objectid,
              Chouette::Line.tmf(:status) => line_status(@line),
              Chouette::Line.tmf(:name) => @line.name,
              Chouette::Line.tmf(:published_name) => @line.published_name,

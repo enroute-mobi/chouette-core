@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-require 'spec_helper'
 require 'csv'
 
 describe VehicleJourneyImport, :type => :model do

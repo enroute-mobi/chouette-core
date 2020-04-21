@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 describe "referentials/new", :type => :view do
 

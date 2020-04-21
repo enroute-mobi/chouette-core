@@ -60,37 +60,33 @@ module STIF
         end
 
         def parse_calendars calendars
-          # <netex:ValidBetween>
-          #   <netex:FromDate>2019-09-05T00:00:00</netex:FromDate>
-          #   <netex:ToDate>2019-12-16T00:00:00</netex:ToDate>
-          # </netex:ValidBetween>
-
           namespace = detect_namespace(calendars) || 'netex'
 
           xml = Nokogiri::XML(calendars)
-          from_date = nil
-          to_date = nil
 
           opts = { namespace => NetexFile::XML_NAME_SPACE }
 
-          xml.xpath("//#{namespaced(namespace, 'ValidBetween')}", opts).each do |valid_between|
-            from_date = valid_between.xpath(namespaced(namespace, 'FromDate'), opts).try :text
-            to_date = valid_between.xpath(namespaced(namespace, 'ToDate'), opts).try :text
-          end
+          [].tap do |out|
+            xml.xpath("//#{namespaced(namespace, 'ValidBetween')}", opts).each do |valid_between|
+              from_date = valid_between.xpath(namespaced(namespace, 'FromDate'), opts).try :text
+              to_date = valid_between.xpath(namespaced(namespace, 'ToDate'), opts).try :text
 
-          begin
-            from_date = from_date && Date.parse(from_date)
-          rescue
-            Rails.logger.warn "Invalid date: #{from_date}"
-            raise
+              begin
+                from_date = from_date && Date.parse(from_date)
+              rescue
+                Rails.logger.warn "Invalid date: #{from_date}"
+                raise
+              end
+
+              begin
+                to_date = to_date && Date.parse(to_date)
+              rescue
+                Rails.logger.warn "Invalid date: #{to_date}"
+                raise
+              end
+              out << Range.new(from_date, to_date)
+            end
           end
-          begin
-            to_date = to_date && Date.parse(to_date)
-          rescue
-            Rails.logger.warn "Invalid date: #{to_date}"
-            raise
-          end
-          Range.new from_date, to_date
         end
       end
 
@@ -101,7 +97,7 @@ module STIF
       end
 
       def parse_calendars(calendars)
-        periods << self.class.parse_calendars(calendars)
+        periods.concat(self.class.parse_calendars(calendars))
       end
 
       def add_offer_file(line_object_id)

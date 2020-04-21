@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import actions from '../../actions'
+import _ from 'lodash'
 
 export default class ShiftVehicleJourney extends Component {
   constructor(props) {
@@ -20,7 +21,6 @@ export default class ShiftVehicleJourney extends Component {
 
   handleAdditionalTimeChange() {
     this.setState((state, props) => {
-      console.log(this.refs.additional_time.value)
       if(this.refs.additional_time.value == "-" || this.refs.additional_time.value == ""){
         return {
           additional_time: this.refs.additional_time.value
@@ -33,7 +33,8 @@ export default class ShiftVehicleJourney extends Component {
   }
 
   render() {
-    let id = this.props.modal.type == 'shift' && actions.getSelected(this.props.vehicleJourneys)[0].short_id
+    let id =  _.get(actions.getSelected(this.props.vehicleJourneys), ['0', 'short_id'])
+
     if(this.props.status.isFetching == true) {
       return false
     }
@@ -45,6 +46,7 @@ export default class ShiftVehicleJourney extends Component {
             disabled={(actions.getSelected(this.props.vehicleJourneys).length != 1 || this.props.disabled)}
             data-toggle='modal'
             data-target='#ShiftVehicleJourneyModal'
+            title={ I18n.t('vehicle_journeys.form.hint_shift_vj') }
             onClick={this.props.onOpenShiftModal}
           >
             <span className='sb sb-update-vj'></span>

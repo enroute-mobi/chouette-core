@@ -272,19 +272,12 @@ module Chouette
         end
         params[:arrival_day_offset] = 0
         params[:departure_day_offset] = 0
+        params[:stop_area_id] = vjas['specific_stop_area_id']
         stop = create_or_find_vjas_from_state(vjas)
         stop.update_attributes(params)
         vjas.delete('errors')
         vjas['errors'] = stop.errors if stop.errors.any?
       end
-    end
-
-    def state_update_vjas? vehicle_journey_at_stops
-      departure_times = vehicle_journey_at_stops.map do |vjas|
-        "#{vjas['departure_time']['hour']}:#{vjas['departure_time']['minute']}"
-      end
-      times = departure_times.uniq
-      (times.count == 1 && times[0] == '00:00') ? false : true
     end
 
     def update_has_and_belongs_to_many_from_state item
@@ -315,10 +308,7 @@ module Chouette
           next if item['deletable'] && vj.persisted? && vj.destroy
           objects << vj
 
-          if vj.state_update_vjas?(item['vehicle_journey_at_stops'])
-            vj.update_vjas_from_state(item['vehicle_journey_at_stops'])
-          end
-
+          vj.update_vjas_from_state(item['vehicle_journey_at_stops'])
           vj.update_attributes(state_permited_attributes(item))
           vj.update_has_and_belongs_to_many_from_state(item)
           vj.update_checksum!
@@ -584,8 +574,7 @@ module Chouette
         dates = periods.map {|p| [p.period_start, p.period_end + 1.day]}
 
         included_dates = Hash[*time_tables.map do |t|
-
-          t.dates.where(in_out: true).map {|d|
+          t.dates.select(&:in?).map {|d|
             int_day_types = t.int_day_types
             int_day_types = int_day_types | 2**(d.date.days_to_week_start + 2)
             [d.date, int_day_types]
@@ -594,7 +583,7 @@ module Chouette
 
         excluded_dates = Hash.new { |hash, key| hash[key] = [] }
         time_tables.each do |t|
-          t.dates.where(in_out: false).each {|d| excluded_dates[d.date] += t.periods.to_a }
+          t.dates.select(&:out?).each {|d| excluded_dates[d.date] += t.periods.to_a }
         end
 
         (included_dates.keys + excluded_dates.keys).uniq.each do |d|
@@ -670,15 +659,32 @@ module Chouette
         ([1] * 7).join(',')
       end
     end
-  end
 
-  def line_notices_as_footnotes
-    line_notices.map do |line_notice|
-      OpenStruct.new(
-        code: line_notice.title,
-        label: line_notice.content,
-        id: line_notice.id
-      )
+    def self.clean!
+      current_scope = self.current_scope || all
+
+      # There are several "DELETE CASCADE" in the schema like:
+      #
+      # TABLE "vehicle_journey_at_stops" CONSTRAINT "vjas_vj_fkey" FOREIGN KEY (vehicle_journey_id) REFERENCES vehicle_journeys(id) ON DELETE CASCADE
+      # TABLE "time_tables_vehicle_journeys" CONSTRAINT "vjtm_vj_fkey" FOREIGN KEY (vehicle_journey_id) REFERENCES vehicle_journeys(id) ON DELETE CASCADE
+      #
+      # The ruby code makes the expected deletions
+      # and the delete cascade will be the fallback
+
+      Chouette::VehicleJourneyAtStop.where(vehicle_journey: current_scope).delete_all
+
+      reflections.values.select do |r|
+        r.is_a?(::ActiveRecord::Reflection::HasAndBelongsToManyReflection)
+      end.each do |reflection|
+        sql = %[
+          DELETE FROM #{reflection.join_table}
+          WHERE #{reflection.foreign_key} IN (#{current_scope.select(:id).to_sql});
+        ]
+        connection.execute sql
+      end
+
+      delete_all
     end
+
   end
 end

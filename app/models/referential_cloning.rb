@@ -18,14 +18,19 @@ class ReferentialCloning < ApplicationModel
     failed!
   end
 
+  def worker_died
+    failed!
+
+    Rails.logger.error "#{self.class.name} #{self.inspect} failed due to worker being dead"
+  end
+
   def clone!
-    report = Benchmark.measure do
+    Chouette::Benchmark.measure("referential.clone", source: source_referential.id, target: target_referential.id) do
       command = "#{dump_command} | #{sed_command} | #{restore_command}"
       unless system command
         raise "Copy of #{source_schema} to #{target_schema} failed"
       end
     end
-    target_referential.check_migration_count(report)
     clean
   end
 
@@ -94,7 +99,7 @@ class ReferentialCloning < ApplicationModel
     end
 
     event :failed, after: :update_ended_at do
-      transitions :from => :pending, :to => :failed
+      transitions :from => [:new, :pending], :to => :failed
       after do
         target_referential&.failed!
       end

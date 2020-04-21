@@ -1,4 +1,3 @@
-require 'rails_helper'
 
 RSpec.describe Api::V1::WorkbenchController, type: :controller do
   context '#authenticate' do

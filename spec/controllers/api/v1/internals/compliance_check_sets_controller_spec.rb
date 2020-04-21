@@ -1,4 +1,3 @@
-require 'rails_helper'
 
 RSpec.describe Api::V1::Internals::ComplianceCheckSetsController, type: :controller do
   let(:check_set_1) { create :compliance_check_set }

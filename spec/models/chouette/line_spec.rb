@@ -1,5 +1,3 @@
-require 'spec_helper'
-require 'spec_helper'
 
 describe Chouette::Line, :type => :model do
   subject { create(:line) }

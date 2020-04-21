@@ -1,4 +1,3 @@
-require 'rails_helper'
 
 RSpec.describe Api::V1::ImportsController, type: :controller do
   context 'unauthenticated' do
@@ -34,14 +33,18 @@ RSpec.describe Api::V1::ImportsController, type: :controller do
               file: file,
               creator: 'test',
               options: {
-                "automatic_merge": true
+                "automatic_merge": true,
+                "flag_urgent": true
               }
             },
             format: :json
           }
         }.to change{Import::Workbench.count}.by(1)
         expect(response).to be_successful
-        expect(Import::Workbench.last.automatic_merge).to be_truthy
+
+        import = Import::Workbench.last
+        expect(import.automatic_merge).to be_truthy
+        expect(import.flag_urgent).to be_truthy
       end
     end
   end

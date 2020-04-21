@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 describe Chouette::ConnectionLink, :type => :model do
   subject { create(:connection_link) }

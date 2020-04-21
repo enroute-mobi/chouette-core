@@ -2,6 +2,9 @@ class Export::Gtfs < Export::Base
   include LocalExportSupport
 
   option :duration, required: true, type: :integer, default_value: 200
+  option :prefer_referent_stop_area, required: true, type: :boolean, default_value: false
+
+  DEFAULT_AGENCY_ID = "chouette_default"
 
   @skip_empty_exports = true
 
@@ -9,32 +12,8 @@ class Export::Gtfs < Export::Base
     @zip_file_name ||= "chouette-its-#{Time.now.to_i}"
   end
 
-  def stop_area_stop_hash
-    @stop_area_stop_hash ||= {}
-  end
-
-  def journey_periods_hash
-    @journey_periods_hash ||= {}
-  end
-
-  def vehicule_journey_service_trip_hash
-    @vehicule_journey_service_trip_hash ||= {}
-  end
-
-  def line_company_hash
-    @line_company_hash ||= {}
-  end
-
-  def vehicle_journey_time_zone_hash
-    @vehicle_journey_time_zone_hash ||= {}
-  end
-
   def agency_id company
     (company.registration_number.presence || company.objectid) if company
-  end
-
-  def route_id line
-    line.registration_number.presence || line.objectid
   end
 
   def stop_id stop_area
@@ -47,63 +26,68 @@ class Export::Gtfs < Export::Base
     File.open File.join(tmp_dir, "#{zip_file_name}.zip")
   end
 
-  def gtfs_line_type line
-    case line.transport_mode
-    when 'rail'
-      '2'
-    else
-      '3'
-    end
+  attr_reader :target
+
+  def export_scope
+    @export_scope ||= Export::Scope::DateRange.new(referential, date_range)
+  end
+  attr_writer :export_scope
+
+  # FIXME
+  def journeys
+    export_scope.vehicle_journeys
   end
 
   def export_to_dir(directory)
-    operations_count = 6
-    GTFS::Target.open(File.join(directory, "#{zip_file_name}.zip")) do |target|
-      export_companies_to target
-      notify_progress 1.0/operations_count
-      export_stop_areas_to target
-      notify_progress 2.0/operations_count
-      export_lines_to target
-      export_transfers_to target
-      notify_progress 3.0/operations_count
-      # Export Calendar & Calendar_dates
-      export_time_tables_to target
-      notify_progress 4.0/operations_count
-      # Export Trips
-      export_vehicle_journeys_to target
-      notify_progress 5.0/operations_count
-      # Export stop_times.txt
-      export_vehicle_journey_at_stops_to target
-      notify_progress 6.0/operations_count
-      # Export files fare_rules, fare_attributes, shapes, frequencies
-      # and feed_info aren't yet implemented as import nor export features from
-      # the chouette model
-    end
+    operations_count = 5
+
+    @target = GTFS::Target.new(File.join(directory, "#{zip_file_name}.zip"))
+
+    export_companies_to target
+    notify_progress 1.0/operations_count
+    export_stop_areas_to target
+    notify_progress 2.0/operations_count
+
+    Lines.new(self).export!
+
+    export_transfers_to target
+    notify_progress 3.0/operations_count
+    # Export Trips
+    TimeTables.new(self).export!
+    VehicleJourneys.new(self).export!
+
+    notify_progress 4.0/operations_count
+    # Export stop_times.txt
+    VehicleJourneyAtStops.new(self).export!
+
+    notify_progress 5.0/operations_count
+    # Export files fare_rules, fare_attributes, shapes, frequencies
+    # and feed_info aren't yet implemented as import nor export features from
+    # the chouette model
+
+    target.close
+  end
+
+  # For legacy specs
+  def export_lines_to(target)
+    @target = target
+    Lines.new(self).export!
   end
 
   def export_companies_to(target)
-    company_ids = []
-    journeys.each do |journey|
-      company_id = journey.company_id.presence || journey.route.line.company_id.presence || "chouette_default"
-      if company_id == "chouette_default"
-        args = {
-          criticity: :info,
-          message_key: :no_company,
-          message_attributes: {
-            journey_name: journey.published_journey_name,
-            line_name: journey.route.line.published_name
-          }
-        }
-        self.messages.create args
-      end
+    company_ids = Set.new
+    # OPTIMIZEME pluck is great bu can consume a lot of memory for very large Vehicle Journey collection
+    journeys.left_joins(route: { line: :company }).
+      pluck("vehicle_journeys.id", "vehicle_journeys.company_id", "companies.id", "companies.time_zone").
+      each do |vehicle_journey_id, vehicle_journeys_company_id, line_company_id, company_time_zone|
 
+      company_id = vehicle_journeys_company_id.presence || line_company_id.presence || DEFAULT_AGENCY_ID
       company_ids << company_id
-      line_company_hash[journey.route.line_id] = company_id
-      vehicle_journey_time_zone_hash[journey.id] = company_id == "chouette_default" ? "Etc/GMT" : company_id
-    end
-    company_ids.uniq!
 
-    Chouette::Company.where(id: company_ids-["chouette_default"]).order('name').each do |company|
+      index.register_vehicle_journey_time_zone vehicle_journey_id, company_time_zone if company_time_zone
+    end
+
+    Chouette::Company.where(id: company_ids-[DEFAULT_AGENCY_ID]).order('name').find_each do |company|
       if company.time_zone.present?
         time_zone = company.time_zone
       else
@@ -130,13 +114,12 @@ class Export::Gtfs < Export::Base
         #fare_url: TO DO
       }
 
-      line_company_hash.each {|k,v| line_company_hash[k] = a_id if v == company.id}
-      vehicle_journey_time_zone_hash.each {|k,v| vehicle_journey_time_zone_hash[k] = time_zone if v == company.id}
+      index.register_agency_id(company, a_id)
     end
 
-    if company_ids.include? "chouette_default"
+    if company_ids.include? DEFAULT_AGENCY_ID
       target.agencies << {
-        id: "chouette_default",
+        id: DEFAULT_AGENCY_ID,
         name: "Default Agency",
         timezone: "Etc/GMT",
       }
@@ -144,29 +127,38 @@ class Export::Gtfs < Export::Base
   end
 
   def exported_stop_areas
-    stop_areas_in_routes_ids = journeys.joins(route: :stop_points).distinct.pluck(:"stop_points.stop_area_id")
-    quay_parent_ids = Chouette::StopArea.where(id: stop_areas_in_routes_ids).where(area_type: 'zdep').where.not(parent_id: nil).distinct.pluck(:parent_id)
-    exported_stop_area_ids = stop_areas_in_routes_ids.to_set.merge(quay_parent_ids)
-
-    referential.stop_area_referential.stop_areas.where(id: exported_stop_area_ids).where(kind: :commercial).order('parent_id ASC NULLS FIRST')
+    Chouette::StopArea.union(export_scope.stop_areas, Chouette::StopArea.parents_of(export_scope.stop_areas.where(area_type: 'zdep'))).where(kind: :commercial)
   end
 
   def export_stop_areas_to(target)
-    exported_stop_areas.find_each do |stop_area|
-      stop_area_stop_hash[stop_area.id] = stop_id(stop_area)
-      target.stops << {
-        id: stop_id(stop_area),
-        name: stop_area.name,
-        location_type: stop_area.area_type == 'zdep' ? 0 : 1,
-        parent_station: (stop_id(stop_area.parent) if stop_area.parent),
-        lat: stop_area.latitude,
-        lon: stop_area.longitude,
-        desc: stop_area.comment,
-        url: stop_area.url,
-        timezone: stop_area.time_zone
-        #code: TO DO
-        #wheelchair_boarding: TO DO wheelchair_boarding <=> mobility_restricted_suitability ?
-      }
+    CustomFieldsSupport.within_workgroup(referential.workgroup) do
+      exported_stop_areas.includes(:referent, :parent).find_each do |stop_area|
+
+        stop_id = stop_id(stop_area)
+
+        if prefer_referent_stop_area && stop_area.referent
+          stop_id = stop_id(stop_area.referent)
+          index.register_stop_id(stop_area, stop_id)
+
+          stop_area = stop_area.referent
+        end
+
+        index.register_stop_id stop_area, stop_id
+
+        target.stops << {
+          id: stop_id,
+          name: stop_area.name,
+          location_type: stop_area.area_type == 'zdep' ? 0 : 1,
+          parent_station: (stop_id(stop_area.parent) if stop_area.parent),
+          lat: stop_area.latitude,
+          lon: stop_area.longitude,
+          desc: stop_area.comment,
+          url: stop_area.url,
+          timezone: (stop_area.time_zone unless stop_area.parent),
+          #code: TO DO
+          #wheelchair_boarding: TO DO wheelchair_boarding <=> mobility_restricted_suitability ?
+        }
+      end
     end
   end
 
@@ -190,119 +182,482 @@ class Export::Gtfs < Export::Base
     end
   end
 
-  def export_lines_to(target)
-    line_ids = journeys.joins(:route).pluck(:line_id).uniq
-    Chouette::Line.where(id: line_ids).each do |line|
-      target.routes << {
-        id: route_id(line),
-        agency_id: line_company_hash[line.id],
-        long_name: line.published_name,
-        short_name: line.number,
-        type: gtfs_line_type(line),
-        desc: line.comment,
-        url: line.url
-        #color: TO DO
-        #text_color: TO DO
-      }
-    end
+  def index
+    @index ||= Index.new
   end
 
-  # Export Calendar & Calendar_dates
-  def export_time_tables_to(target)
-    date_range
-    start_progress = 3.0/6
-    count = journeys.count
-    journeys.each_with_index do |vehicle_journey, vehicle_journey_index|
-      vehicle_journey.flattened_circulation_periods.select{|period| period.range & date_range}.each_with_index do |period, period_index|
-        service_id = "#{vehicle_journey.objectid}-#{period_index}"
-        target.calendars << {
-          service_id: service_id,
-          start_date: period.period_start.strftime('%Y%m%d'),
-          end_date: period.period_end.strftime('%Y%m%d'),
-          monday: period.monday ? 1:0,
-          tuesday: period.tuesday ? 1:0,
-          wednesday: period.wednesday ? 1:0,
-          thursday: period.thursday ? 1:0,
-          friday: period.friday ? 1:0,
-          saturday: period.saturday ? 1:0,
-          sunday: period.sunday ? 1:0
-        }
+  class Index
 
-        # TO MODIFY IF NEEDED : the method vehicle_journeys#flattened_circulation_periods casts any time_table_dates into a single day period/calendar.
-        # Thus, for the moment, no time_table_dates / calendar_dates.txt 'll be exported.
+    def initialize
+      @stop_ids = {}
+      @route_ids = {}
+      @agency_ids = {}
+      @trip_ids = Hash.new { |h,k| h[k] = [] }
+      @service_ids = Hash.new { |h,k| h[k] = [] }
+      @vehicle_journey_time_zones = {}
+      @trip_index = 0
+    end
 
-        # time_table_dates.delete_if do |time_table_date|
-        #   if ((!time_table_date.in_out && time_table_date.date >= period.period_start && time_table_date.date <= period.period_end) ||
-        #     (time_table_date.in_out && time_table_date.date >= date_range.begin && time_table_date.date <= date_range.end))
-        #     target.calendar_dates << {
-        #       service_id: service_id,
-        #       date: time_table_date.date.strftime('%Y%m%d'),
-        #       exception_type: time_table_date.in_out ? 1 : 2
-        #     }
-        #     true
-        #   end
-        # end
+    def stop_id(stop_area_id)
+      @stop_ids[stop_area_id]
+    end
 
-        # Store the GTFS service_id corresponding to each time_table
-        # initialize value
-        journey_periods_hash[vehicle_journey.id] ||= []
-        journey_periods_hash[vehicle_journey.id] << service_id
+    def register_stop_id(stop_area, stop_id)
+      @stop_ids[stop_area.id] = stop_id
+    end
+
+    def route_id(line_id)
+      @route_ids[line_id]
+    end
+
+    def register_route_id(line, route_id)
+      @route_ids[line.id] = route_id
+    end
+
+    def agency_id(company_id)
+      @agency_ids[company_id]
+    end
+
+    def register_agency_id(company, agency_id)
+      @agency_ids[company.id] = agency_id
+    end
+
+    def register_service_ids(time_table, service_ids)
+      @service_ids[time_table.id] = service_ids
+    end
+
+    def service_ids(time_table_id)
+      @service_ids[time_table_id]
+    end
+
+    def trip_index
+      @trip_index
+    end
+
+    def increment_trip_index
+      @trip_index += 1
+    end
+
+    def register_trip_id(vehicle_journey, trip_id)
+      @trip_ids[vehicle_journey.id] << trip_id
+    end
+
+    def trip_ids(vehicle_journey_id)
+      @trip_ids[vehicle_journey_id]
+    end
+
+    def vehicle_journey_time_zone(vehicle_journey_id)
+      @vehicle_journey_time_zones[vehicle_journey_id]
+    end
+
+    def register_vehicle_journey_time_zone(vehicle_journey_id, time_zone)
+      @vehicle_journey_time_zones[vehicle_journey_id] = time_zone
+    end
+
+  end
+
+  class Part
+
+    attr_reader :export
+    def initialize(export)
+      @export = export
+    end
+
+    delegate :target, :index, :export_scope, :messages, :date_range, to: :export
+
+  end
+
+  class Lines < Part
+
+    delegate :lines, to: :export_scope
+
+    def create_messages(decorated_line)
+      if decorated_line.default_agency?
+        messages.create({
+          criticity: :info,
+          message_key: :no_company,
+          message_attributes: {
+            line_name: decorated_line.name
+          }
+        })
       end
-      notify_progress start_progress + vehicle_journey_index/6.0/count
+    end
+
+    def export!
+      lines.find_each do |line|
+        decorated_line = Decorator.new(line, index)
+
+        create_messages decorated_line
+        target.routes << decorated_line.route_attributes
+
+        index.register_route_id line, decorated_line.route_id
+      end
+    end
+
+    class Decorator < SimpleDelegator
+
+      # index is optional to make tests easier
+      def initialize(line, index = nil)
+        super line
+        @index = index
+      end
+
+      attr_reader :index
+
+      def route_id
+        registration_number.presence || objectid
+      end
+
+      def route_long_name
+        value = (published_name.presence || name)
+        value unless value == route_short_name
+      end
+
+      def route_short_name
+        number
+      end
+
+      def self.route_types
+        @route_types ||= {
+          tram: 0,
+          metro: 1,
+          rail: 2,
+          bus: 3,
+          water: 4,
+          telecabin: 6,
+          funicular: 7,
+          coach: 200,
+          air: 1100,
+          taxi: 1500,
+          hireCar: 1506
+        }.with_indifferent_access
+      end
+
+      def route_type
+        self.class.route_types[transport_mode]
+      end
+
+      def default_agency?
+        route_agency_id == DEFAULT_AGENCY_ID
+      end
+
+      def route_agency_id
+        index&.agency_id(company_id) || DEFAULT_AGENCY_ID
+      end
+
+      def route_attributes
+        {
+          id: route_id,
+          agency_id: route_agency_id,
+          long_name: route_long_name,
+          short_name: route_short_name,
+          type: route_type,
+          desc: comment,
+          url: url,
+          color: color,
+          text_color: text_color
+        }
+      end
+
+    end
+
+  end
+
+  class TimeTables < Part
+
+    delegate :time_tables, to: :export_scope
+
+    def export!
+      time_tables.find_each do |time_table|
+        decorated_time_table = TimeTableDecorator.new(time_table, date_range)
+
+        decorated_time_table.calendars.each { |c| target.calendars << c }
+        decorated_time_table.calendar_dates.each { |cd| target.calendar_dates << cd }
+
+        index.register_service_ids time_table, decorated_time_table.service_ids
+      end
+    end
+
+    class TimeTableDecorator < SimpleDelegator
+      # index is optional to make tests easier
+      def initialize(time_table, export_date_range = nil)
+        super time_table
+        @export_date_range = export_date_range
+      end
+
+      def service_ids
+        @service_ids ||= Set.new
+      end
+
+      def periods
+        @periods ||= if @export_date_range.nil?
+          super
+        else
+            super.select { |p| p.range & @export_date_range }
+        end
+      end
+
+      def dates
+        @dates ||= if @export_date_range.nil?
+          super
+        else
+          super.select {|d| (d.in_out && @export_date_range.cover?(d.date)) || (!d.in_out && periods.select{|p| p.range.cover? d.date}.any?)}
+        end
+      end
+
+      def decorated_periods
+        @decorated_periods ||= periods.map do |period|
+          PeriodDecorator.new(period)
+        end
+      end
+
+      def calendars
+        decorated_periods.map do |decorated_period|
+          with_service_id decorated_period.calendar_attributes,
+                          period_service_id(decorated_period)
+        end
+      end
+
+      def calendar_dates
+        dates.map do |date|
+          with_service_id DateDecorator.new(date).calendar_date_attributes,
+                          date_service_id(date)
+        end
+      end
+
+      def with_service_id(attributes, service_id)
+        service_ids << service_id
+        attributes.merge service_id: service_id
+      end
+
+      def first_period?(period)
+        period == decorated_periods.first
+      end
+
+      def default_service_id
+        objectid
+      end
+
+      def period_service_id(decorated_period)
+        if first_period? decorated_period
+          default_service_id
+        else
+          decorated_period.calendar_service_id
+        end
+      end
+
+      def associated_period(date)
+        decorated_periods.find do |decorated_period|
+          decorated_period.include?(date)
+        end
+      end
+
+      def date_service_id(date)
+        period = associated_period(date)
+        if period
+          period_service_id period
+        else
+          default_service_id
+        end
+      end
+    end
+
+    class PeriodDecorator < SimpleDelegator
+      def range
+        @range ||= super
+      end
+
+      def calendar_service_id
+        id
+      end
+
+      %w{monday tuesday wednesday thursday friday saturday sunday}.each do |day|
+        define_method "calendar_#{day}" do
+          time_table.send(day) ? 1 : 0
+        end
+      end
+
+      def calendar_start_date
+        period_start.strftime('%Y%m%d')
+      end
+
+      def calendar_end_date
+        period_end.strftime('%Y%m%d')
+      end
+
+      def calendar_attributes
+        {
+          start_date: calendar_start_date,
+          end_date: calendar_end_date,
+          monday: calendar_monday,
+          tuesday: calendar_tuesday,
+          wednesday: calendar_wednesday,
+          thursday: calendar_thursday,
+          friday: calendar_friday,
+          saturday: calendar_saturday,
+          sunday: calendar_sunday
+        }
+      end
+
+      def include?(date)
+        range.include?(date.date)
+      end
+    end
+
+    class DateDecorator < SimpleDelegator
+      def calendar_date_date
+        date.strftime('%Y%m%d')
+      end
+
+      def calendar_date_exception_type
+        in_out ? 1 : 2
+      end
+
+      def calendar_date_attributes
+        {
+          date: calendar_date_date,
+          exception_type: calendar_date_exception_type
+        }
+      end
     end
   end
 
+  # For legacy specs
   def export_vehicle_journeys_to(target)
-    c = 0
-    journeys.each do |vehicle_journey|
-      # each entry in trips.txt corresponds to a kind of composite key made of both service_id and route_id
-      journey_periods_hash[vehicle_journey.id].each do |service_id|
-        c += 1
-        trip_id = "trip_#{c}"
-        target.trips << {
-          route_id: route_id(vehicle_journey.route.line),
+    @target = target
+    TimeTables.new(self).export!
+    VehicleJourneys.new(self).export!
+  end
+
+  class VehicleJourneys < Part
+
+    delegate :vehicle_journeys, to: :export_scope
+
+    def export!
+      vehicle_journeys.find_each do |vehicle_journey|
+
+        decorated_vehicle_journey = Decorator.new(vehicle_journey, index)
+
+        vehicle_journey.time_tables.each do |time_table|
+          index.service_ids(time_table.id).each do |service_id|
+            index.increment_trip_index
+
+            target.trips << decorated_vehicle_journey.trip_attributes(service_id)
+
+            index.register_trip_id vehicle_journey, decorated_vehicle_journey.trip_id
+          end
+        end
+      end
+    end
+
+    class Decorator < SimpleDelegator
+
+      # index is optional to make tests easier
+      def initialize(vehicle_journey, index = nil)
+        super vehicle_journey
+        @index = index
+      end
+
+      attr_reader :index
+
+      def route_id
+        index.route_id(route.line_id)
+      end
+
+      def trip_id
+        "trip_#{index.trip_index}"
+      end
+
+      def direction_id
+        route.wayback == 'outbound' ? 0 : 1
+      end
+
+      def trip_attributes service_id
+        {
+          route_id: route_id,
           service_id:  service_id,
           id: trip_id,
-          #headsign: TO DO + store that field at import
-          short_name: vehicle_journey.published_journey_name,
-          direction_id: ((vehicle_journey.route.wayback == 'outbound' ? 0 : 1) if vehicle_journey.route.wayback.present?),
+          #headsign: TO DO
+          short_name: published_journey_name,
+          direction_id: (direction_id if route.wayback.present?),
           #block_id: TO DO
           #shape_id: TO DO
           #wheelchair_accessible: TO DO
           #bikes_allowed: TO DO
         }
-        vehicule_journey_service_trip_hash[vehicle_journey.id] ||= []
-        vehicule_journey_service_trip_hash[vehicle_journey.id] << trip_id
       end
     end
   end
 
+  # For legacy specs
   def export_vehicle_journey_at_stops_to(target)
-    journeys.each do |vehicle_journey|
-      vj_timezone = vehicle_journey_time_zone_hash[vehicle_journey.id]
+    @target = target
+    VehicleJourneyAtStops.new(self).export!
+  end
 
-      vehicle_journey.vehicle_journey_at_stops.each do |vj_at_stop|
-        next if !vj_at_stop.stop_point.stop_area.commercial?
+  class VehicleJourneyAtStops < Part
 
-        vehicule_journey_service_trip_hash[vehicle_journey.id].each do |trip_id|
+    delegate :vehicle_journey_at_stops, to: :export_scope
 
-          arrival_time = GTFS::Time.format_datetime(vj_at_stop.arrival_time, vj_at_stop.arrival_day_offset, vj_timezone) if vj_at_stop.arrival_time
-          departure_time = GTFS::Time.format_datetime(vj_at_stop.departure_time, vj_at_stop.departure_day_offset, vj_timezone) if vj_at_stop.departure_time
+    def export!
+      vehicle_journey_at_stops.
+        includes(:stop_point).
+        joins(stop_point: :stop_area).
+        where("stop_areas.kind" => "commercial").
+        find_each do |vehicle_journey_at_stop|
 
-          target.stop_times << {
-            trip_id: trip_id,
-            arrival_time: arrival_time,
-            departure_time: departure_time,
-            stop_id: stop_area_stop_hash.fetch(vj_at_stop.stop_point.stop_area_id),
-            stop_sequence: vj_at_stop.stop_point.position # NOT SURE TO DO
-            # stop_headsign: TO STORE IN IMPORT,
-            # pickup_type: TO STORE IN IMPORT,
-            # pickup_type: TO STORE IN IMPORT,
-            #shape_dist_traveled: TO STORE IN IMPORT,
-            #timepoint: TO STORE IN IMPORT,
-          }
+        decorated_vehicle_journey_at_stop = Decorator.new(vehicle_journey_at_stop, index)
+
+        # Duplicate the stop time for each exported trip
+        index.trip_ids(vehicle_journey_at_stop.vehicle_journey_id).each do |trip_id|
+          route_attributes = decorated_vehicle_journey_at_stop.stop_time_attributes
+          route_attributes.merge!(trip_id: trip_id)
+
+          target.stop_times << route_attributes
         end
       end
     end
+
+    class Decorator < SimpleDelegator
+
+      # index is optional to make tests easier
+      def initialize(vehicle_journey_at_stop, index = nil)
+        super vehicle_journey_at_stop
+        @index = index
+      end
+
+      attr_reader :index
+
+      delegate :position, to: :stop_point
+
+      def time_zone
+        index&.vehicle_journey_time_zone(vehicle_journey_id)
+      end
+
+      def stop_time_departure_time
+        GTFS::Time.format_datetime departure_time, departure_day_offset, time_zone if departure_time
+      end
+
+      def stop_time_arrival_time
+        GTFS::Time.format_datetime arrival_time, arrival_day_offset, time_zone if arrival_time
+      end
+
+      def stop_area_id
+        __getobj__.stop_area_id.presence || stop_point.stop_area_id
+      end
+
+      def stop_time_stop_id
+        index&.stop_id(stop_area_id)
+      end
+
+      def stop_time_attributes
+        { departure_time: stop_time_departure_time,
+          arrival_time: stop_time_arrival_time,
+          stop_id: stop_time_stop_id,
+          stop_sequence: position }
+      end
+
+    end
+
   end
 end

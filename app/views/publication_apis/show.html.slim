@@ -79,7 +79,7 @@
               ), \
               TableBuilderHelper::Column.new( \
                 key: :file, \
-                attribute: ->(e){ e.file.present? ? link_to('actions.download'.t, e.file.url, target: :blank) : "-" } \
+                attribute: ->(p){ p.export.file.present? ? link_to('actions.download'.t, download_workgroup_export_path(@workgroup, p.export)) : "-" } \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :public_url, \

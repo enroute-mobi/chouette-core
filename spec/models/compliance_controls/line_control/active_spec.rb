@@ -1,4 +1,3 @@
-require 'rails_helper'
 
 RSpec.describe LineControl::Active, :type => :model do
   let(:referential){ create :workbench_referential }

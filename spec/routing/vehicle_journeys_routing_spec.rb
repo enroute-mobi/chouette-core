@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 describe VehicleJourneysController, :type => :routing do
   describe "routing" do

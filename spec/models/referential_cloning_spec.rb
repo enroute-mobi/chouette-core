@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 RSpec.describe ReferentialCloning, :type => :model do
 
@@ -35,6 +34,16 @@ RSpec.describe ReferentialCloning, :type => :model do
     it 'invokes clone method' do
       expect(referential_cloning).to receive(:clone)
       referential_cloning.run_callbacks(:commit)
+    end
+  end
+
+  describe '#worker_died' do
+    let(:referential_cloning) { FactoryGirl.create(:referential_cloning) }
+
+    it 'should set merge status to failed' do
+      expect(referential_cloning.status).to eq("new")
+      referential_cloning.worker_died
+      expect(referential_cloning.status).to eq("failed")
     end
   end
 

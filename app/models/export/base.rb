@@ -1,19 +1,34 @@
 require 'net/http/post/multipart'
 
 class Export::Base < ApplicationModel
+  class << self
+    # Those two methods are defined here because they are required to include IevInterfaces::Task
+    def messages_class_name
+      "Export::Message"
+    end
+
+    def resources_class_name
+      "Export::Resource"
+    end
+  end
+
   include Rails.application.routes.url_helpers
   include OptionsSupport
   include NotifiableSupport
   include PurgeableResource
+  include IevInterfaces::Task
+
 
   self.table_name = "exports"
 
   belongs_to :referential
   belongs_to :publication
+  belongs_to :workgroup, class_name: '::Workgroup'
 
   has_many :publication_api_sources, foreign_key: :export_id
 
   validates :type, :referential_id, presence: true
+  validates_presence_of :workgroup
 
   after_create :purge_exports
   # after_commit :notify_state
@@ -28,14 +43,6 @@ class Export::Base < ApplicationModel
   }
 
   class << self
-    def messages_class_name
-      "Export::Message"
-    end
-
-    def resources_class_name
-      "Export::Resource"
-    end
-
     def human_name(options={})
       I18n.t("export.#{self.name.demodulize.underscore}")
     end
@@ -46,6 +53,7 @@ class Export::Base < ApplicationModel
       %w(zip csv json)
     end
   end
+
 
   def human_name
     self.class.human_name(options)
@@ -88,6 +96,7 @@ class Export::Base < ApplicationModel
 
   def upload_file file
 
+    # FIXME See CHOUETTE-207
     url = if workbench.present?
       URI.parse upload_workbench_export_url(self.workbench_id, self.id, host: Rails.application.config.rails_host)
     else
@@ -98,8 +107,8 @@ class Export::Base < ApplicationModel
     content_type = MIME::Types.type_for(filename).first&.content_type
     File.open(file.path) do |file_content|
       req = Net::HTTP::Post::Multipart.new url.path,
-        file: UploadIO.new(file_content, content_type, filename),
-        token: self.token_upload
+      file: UploadIO.new(file_content, content_type, filename),
+      token: self.token_upload
       res = Net::HTTP.start(url.host, url.port) do |http|
         http.request(req)
       end
@@ -139,8 +148,6 @@ class Export::Base < ApplicationModel
     end
   end
 
-  include IevInterfaces::Task
-
   def self.model_name
     ActiveModel::Name.new Export::Base, Export::Base, "Export"
   end
@@ -151,6 +158,25 @@ class Export::Base < ApplicationModel
 
   def self.user_visible?
     true
+  end
+
+  # Returns all attributes of the export file from the user point of view
+  def user_file
+    Chouette::UserFile.new basename: name.parameterize, extension: file_extension, content_type: content_type
+  end
+
+  # Expected and used file content type
+  # Can be overrided by sub classes
+  def content_type
+    'application/zip'
+  end
+
+  protected
+
+  # Expected and used file extension
+  # Can be overrided by sub classes
+  def file_extension
+    "zip"
   end
 
   private

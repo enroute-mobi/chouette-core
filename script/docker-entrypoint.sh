@@ -1,12 +1,18 @@
-#!/bin/sh
+#!/bin/bash
 
 command=${1:-front}
 
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
+if [ -n "$GCLOUD_KEYFILE_JSON" ]; then
+    echo -En "$GCLOUD_KEYFILE_JSON" > "config/storage-key.json"
+    unset GCLOUD_KEYFILE_JSON
+fi
+
 echo "Start $command"
 case $command in
   async)
+    export RUBY_GC_HEAP_GROWTH_FACTOR=1.1
     exec bundle exec ./script/delayed-job-worker
     ;;
   sync)
@@ -33,6 +39,9 @@ case $command in
     ;;
   seed)
     exec bundle exec rake db:seed
+    ;;
+  migrate-and-seed)
+    bundle exec rake db:migrate && bundle exec rake db:seed
     ;;
   *)
     exec $@

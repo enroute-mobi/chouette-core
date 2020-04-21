@@ -10,7 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_11_21_102935) do
+ActiveRecord::Schema.define(version: 2020_03_12_102812) do
+
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
   enable_extension "plpgsql"
@@ -100,7 +101,7 @@ ActiveRecord::Schema.define(version: 2019_11_21_102935) do
     t.string "name"
     t.daterange "date_ranges", array: true
     t.date "dates", array: true
-    t.boolean "shared", default: true
+    t.boolean "shared", default: false
     t.bigint "organisation_id"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -220,10 +221,9 @@ ActiveRecord::Schema.define(version: 2019_11_21_102935) do
   create_table "compliance_check_sets", force: :cascade do |t|
     t.bigint "referential_id"
     t.bigint "compliance_control_set_id"
-    t.bigint "workbench_id"
     t.string "status"
-    t.string "parent_type"
     t.bigint "parent_id"
+    t.string "parent_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "current_step_id"
@@ -237,10 +237,13 @@ ActiveRecord::Schema.define(version: 2019_11_21_102935) do
     t.string "notification_target"
     t.datetime "notified_recipients_at"
     t.bigint "user_id"
+    t.bigint "workbench_id"
+    t.bigint "workgroup_id"
     t.index ["compliance_control_set_id"], name: "index_compliance_check_sets_on_compliance_control_set_id"
     t.index ["parent_type", "parent_id"], name: "index_compliance_check_sets_on_parent_type_and_parent_id"
     t.index ["referential_id"], name: "index_compliance_check_sets_on_referential_id"
     t.index ["workbench_id"], name: "index_compliance_check_sets_on_workbench_id"
+    t.index ["workgroup_id"], name: "index_compliance_check_sets_on_workgroup_id"
   end
 
   create_table "compliance_checks", force: :cascade do |t|
@@ -321,7 +324,6 @@ ActiveRecord::Schema.define(version: 2019_11_21_102935) do
     t.integer "mobility_restricted_traveller_duration"
     t.jsonb "custom_field_values", default: {}
     t.index ["objectid"], name: "connection_links_objectid_key", unique: true
-    t.index ["stop_area_referential_id", "departure_id", "arrival_id", "both_ways"], name: "connection_links_compound"
     t.index ["stop_area_referential_id"], name: "index_connection_links_on_stop_area_referential_id"
   end
 
@@ -454,9 +456,11 @@ ActiveRecord::Schema.define(version: 2019_11_21_102935) do
     t.datetime "notified_recipients_at"
     t.bigint "user_id"
     t.bigint "publication_id"
+    t.bigint "workgroup_id"
     t.index ["publication_id"], name: "index_exports_on_publication_id"
     t.index ["referential_id"], name: "index_exports_on_referential_id"
     t.index ["workbench_id"], name: "index_exports_on_workbench_id"
+    t.index ["workgroup_id"], name: "index_exports_on_workgroup_id"
   end
 
   create_table "facilities", force: :cascade do |t|
@@ -481,11 +485,6 @@ ActiveRecord::Schema.define(version: 2019_11_21_102935) do
     t.string "street_name"
     t.string "contained_in"
     t.index ["objectid"], name: "facilities_objectid_key", unique: true
-  end
-
-  create_table "facilities_features", id: false, force: :cascade do |t|
-    t.bigint "facility_id"
-    t.integer "choice_code"
   end
 
   create_table "footnotes", force: :cascade do |t|
@@ -617,6 +616,7 @@ ActiveRecord::Schema.define(version: 2019_11_21_102935) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "object_version"
+    t.string "registration_number"
   end
 
   create_table "line_notices_lines", id: false, force: :cascade do |t|
@@ -931,7 +931,7 @@ ActiveRecord::Schema.define(version: 2019_11_21_102935) do
     t.string "checksum"
     t.text "checksum_source"
     t.string "data_source_ref"
-    t.json "costs"
+    t.jsonb "costs", default: {}
     t.jsonb "metadata"
     t.index ["line_id"], name: "index_routes_on_line_id"
     t.index ["objectid"], name: "routes_objectid_key", unique: true
@@ -1106,10 +1106,10 @@ ActiveRecord::Schema.define(version: 2019_11_21_102935) do
 
   create_table "taggings", force: :cascade do |t|
     t.bigint "tag_id"
-    t.string "taggable_type"
     t.bigint "taggable_id"
-    t.string "tagger_type"
+    t.string "taggable_type"
     t.bigint "tagger_id"
+    t.string "tagger_type"
     t.string "context", limit: 128
     t.datetime "created_at"
     t.index ["context"], name: "index_taggings_on_context"
@@ -1233,6 +1233,8 @@ ActiveRecord::Schema.define(version: 2019_11_21_102935) do
     t.integer "arrival_day_offset", default: 0
     t.string "checksum"
     t.text "checksum_source"
+    t.bigint "stop_area_id"
+    t.index ["stop_area_id"], name: "index_vehicle_journey_at_stops_on_stop_area_id"
     t.index ["stop_point_id"], name: "index_vehicle_journey_at_stops_on_stop_pointid"
     t.index ["vehicle_journey_id"], name: "index_vehicle_journey_at_stops_on_vehicle_journey_id"
   end
@@ -1307,7 +1309,7 @@ ActiveRecord::Schema.define(version: 2019_11_21_102935) do
     t.datetime "aggregated_at"
     t.string "nightly_aggregate_notification_target", default: "none"
     t.datetime "deleted_at"
-    t.jsonb "transport_modes", default: {"air"=>["undefined", "airshipService", "domesticCharterFlight", "domesticFlight", "domesticScheduledFlight", "helicopterService", "intercontinentalCharterFlight", "intercontinentalFlight", "internationalCharterFlight", "internationalFlight", "roundTripCharterFlight", "schengenAreaFlight", "shortHaulInternationalFlight", "shuttleFlight", "sightseeingFlight"], "bus"=>["undefined", "airportLinkBus", "demandAndResponseBus", "expressBus", "localBus", "mobilityBusForRegisteredDisabled", "mobilityBus", "nightBus", "postBus", "railReplacementBus", "regionalBus", "schoolAndPublicServiceBus", "schoolBus", "shuttleBus", "sightseeingBus", "specialNeedsBus"], "rail"=>["undefined", "carTransportRailService", "crossCountryRail", "highSpeedRail", "international", "interregionalRail", "local", "longDistance", "nightTrain", "rackAndPinionRailway", "railShuttle", "replacementRailService", "sleeperRailService", "specialTrain", "suburbanRailway", "touristRailway"], "taxi"=>["undefined", "allTaxiServices", "bikeTaxi", "blackCab", "communalTaxi", "miniCab", "railTaxi", "waterTaxi"], "tram"=>["undefined", "cityTram", "localTram", "regionalTram", "shuttleTram", "sightseeingTram", "tramTrain"], "coach"=>["undefined", "commuterCoach", "internationalCoach", "nationalCoach", "regionalCoach", "shuttleCoach", "sightseeingCoach", "specialCoach", "touristCoach"], "metro"=>["undefined", "metro", "tube", "urbanRailway"], "water"=>["undefined", "internationalCarFerry", "nationalCarFerry", "regionalCarFerry", "localCarFerry", "internationalPassengerFerry", "nationalPassengerFerry", "regionalPassengerFerry", "localPassengerFerry", "postBoat", "trainFerry", "roadFerryLink", "airportBoatLink", "highSpeedVehicleService", "highSpeedPassengerService", "sightseeingService", "schoolBoat", "cableFerry", "riverBus", "scheduledFerry", "shuttleFerryService"], "hireCar"=>["undefined", "allHireVehicles", "hireCar", "hireCycle", "hireMotorbike", "hireVan"], "funicular"=>["undefined", "allFunicularServices", "funicular"], "telecabin"=>["undefined", "cableCar", "chairLift", "dragLift", "lift", "telecabinLink", "telecabin"]}
+    t.jsonb "transport_modes", default: {"air"=>["undefined", "airshipService", "domesticCharterFlight", "domesticFlight", "domesticScheduledFlight", "helicopterService", "intercontinentalCharterFlight", "intercontinentalFlight", "internationalCharterFlight", "internationalFlight", "roundTripCharterFlight", "schengenAreaFlight", "shortHaulInternationalFlight", "shuttleFlight", "sightseeingFlight"], "bus"=>["undefined", "airportLinkBus", "demandAndResponseBus", "expressBus", "highFrequencyBus", "localBus", "mobilityBusForRegisteredDisabled", "mobilityBus", "nightBus", "postBus", "railReplacementBus", "regionalBus", "schoolAndPublicServiceBus", "schoolBus", "shuttleBus", "sightseeingBus", "specialNeedsBus"], "rail"=>["undefined", "carTransportRailService", "crossCountryRail", "highSpeedRail", "international", "interregionalRail", "local", "longDistance", "nightTrain", "rackAndPinionRailway", "railShuttle", "regionalRail", "replacementRailService", "sleeperRailService", "specialTrain", "suburbanRailway", "touristRailway"], "taxi"=>["undefined", "allTaxiServices", "bikeTaxi", "blackCab", "communalTaxi", "miniCab", "railTaxi", "waterTaxi"], "tram"=>["undefined", "cityTram", "localTram", "regionalTram", "shuttleTram", "sightseeingTram", "tramTrain"], "coach"=>["undefined", "commuterCoach", "internationalCoach", "nationalCoach", "regionalCoach", "shuttleCoach", "sightseeingCoach", "specialCoach", "touristCoach"], "metro"=>["undefined", "metro", "tube", "urbanRailway"], "water"=>["undefined", "internationalCarFerry", "nationalCarFerry", "regionalCarFerry", "localCarFerry", "internationalPassengerFerry", "nationalPassengerFerry", "regionalPassengerFerry", "localPassengerFerry", "postBoat", "trainFerry", "roadFerryLink", "airportBoatLink", "highSpeedVehicleService", "highSpeedPassengerService", "sightseeingService", "schoolBoat", "cableFerry", "riverBus", "scheduledFerry", "shuttleFerryService"], "hireCar"=>["undefined", "allHireVehicles", "hireCar", "hireCycle", "hireMotorbike", "hireVan"], "funicular"=>["undefined", "allFunicularServices", "funicular"], "telecabin"=>["undefined", "cableCar", "chairLift", "dragLift", "lift", "telecabinLink", "telecabin"]}
   end
 
   add_foreign_key "access_links", "access_points", name: "aclk_acpt_fkey"
@@ -1317,12 +1319,14 @@ ActiveRecord::Schema.define(version: 2019_11_21_102935) do
   add_foreign_key "compliance_check_messages", "compliance_checks"
   add_foreign_key "compliance_check_resources", "compliance_check_sets"
   add_foreign_key "compliance_check_sets", "workbenches"
+  add_foreign_key "compliance_check_sets", "workgroups"
   add_foreign_key "compliance_checks", "compliance_check_blocks"
   add_foreign_key "compliance_checks", "compliance_check_sets"
   add_foreign_key "compliance_control_blocks", "compliance_control_sets"
   add_foreign_key "compliance_control_sets", "organisations"
   add_foreign_key "compliance_controls", "compliance_control_blocks"
   add_foreign_key "compliance_controls", "compliance_control_sets"
+  add_foreign_key "exports", "workgroups"
   add_foreign_key "group_of_lines_lines", "group_of_lines", name: "groupofline_group_fkey", on_delete: :cascade
   add_foreign_key "journey_patterns", "routes", name: "jp_route_fkey", on_delete: :cascade
   add_foreign_key "journey_patterns", "stop_points", column: "arrival_stop_point_id", name: "arrival_point_fkey", on_delete: :nullify

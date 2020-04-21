@@ -1,5 +1,3 @@
-require 'rails_helper'
-
 RSpec.describe StopAreaReferentialSync, :type => :model do
   it 'should have a valid factory' do
     expect(FactoryGirl.build(:stop_area_referential_sync)).to be_valid
@@ -16,6 +14,15 @@ RSpec.describe StopAreaReferentialSync, :type => :model do
 
   it 'should call StopAreaReferentialSyncWorker on create' do
     expect { create(:stop_area_referential_sync) }.to change{ Delayed::Job.count }.by 1
+  end
+
+  describe '#worker_died' do
+    let(:stop_area_referential_sync) { create(:stop_area_referential_sync) }
+
+    it 'should set stop_area_referential_sync status to failed' do
+      stop_area_referential_sync.worker_died
+      expect(stop_area_referential_sync.status).to eq("failed")
+    end
   end
 
   describe 'states' do

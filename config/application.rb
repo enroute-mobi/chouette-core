@@ -20,6 +20,7 @@ module ChouetteIhm
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
     config.autoload_paths << config.root.join('app', 'jobs')
+    config.autoload_paths << config.root.join('app', 'inserters')
 
     # custom exception pages
     config.exceptions_app = self.routes
@@ -67,6 +68,14 @@ module ChouetteIhm
     SmartEnv.add :OCCASIONAL_TRAVELLER_CONNECTION_SPEED, default: 3.5
     SmartEnv.add_integer :REFERENTIALS_CLEANING_COOLDOWN
     SmartEnv.add_boolean :ENABLE_LINK_TO_SUPPORT, default: false
+
+    # Manage Storage configuration
+    SmartEnv.add :STORAGE, default: 'file'
+    SmartEnv.add :GCLOUD_PROJECT
+    SmartEnv.add :GCLOUD_BUCKET
+    SmartEnv.add_boolean :GCLOUD_BUCKET_IS_PUBLIC, default: false
+    SmartEnv.add :GCLOUD_AUTHENTICATED_URL_EXPIRATION, default: 600
+    SmartEnv.add :GCLOUD_KEYFILE, default: 'config/storage-key.json'
 
     config.i18n.default_locale = SmartEnv[:RAILS_LOCALE].to_sym
 

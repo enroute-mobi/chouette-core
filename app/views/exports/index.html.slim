@@ -1,4 +1,4 @@
-- breadcrumb :exports, @workbench
+- breadcrumb :exports, @parent
 
 .page_content
   .container-fluid
@@ -20,7 +20,7 @@
                 key: :name, \
                 attribute: 'name', \
                 link_to: lambda do |export| \
-                  workbench_export_path(@workbench, export) \
+                  [parent, export] \
                 end, \
                 sortable: false,\
                 ), \

@@ -1,4 +1,3 @@
-require 'spec_helper'
 
 RSpec.describe "/companies/index", :type => :view do
 

@@ -573,4 +573,73 @@ describe Referential, :type => :model do
       it{ expect( referential ).to be_referential_read_only }
     end
   end
+
+  context "urgent" do
+
+    # Time.now.round simplifies Time comparaison in specs
+    around { |example| Timecop.freeze(Time.now.round) { example.run } }
+
+    context "with a persisted Referential" do
+
+      let(:context) { Chouette.create { referential } }
+      let(:referential) { context.referential.reload }
+
+      def metadatas_flagged_urgent_at
+        referential.metadatas.map(&:flagged_urgent_at)
+      end
+
+      describe "#flag_metadatas_as_urgent!" do
+        it "defines flagged_urgent_at in all metadatas" do
+          expect do
+            referential.flag_metadatas_as_urgent!
+          end.to change { metadatas_flagged_urgent_at.uniq }.from([nil]).to([Time.now])
+        end
+      end
+
+      describe "#flag_not_urgent!" do
+        before { referential.flag_metadatas_as_urgent! }
+        it "reset flagged_urgent_at in all metadatas" do
+          expect do
+            referential.flag_not_urgent!
+          end.to change { metadatas_flagged_urgent_at.uniq }.to([nil])
+        end
+      end
+
+    end
+
+    context "with a new Referential" do
+
+      let(:referential) do
+        Referential.new.tap do |referential|
+          2.times { referential.metadatas.build }
+          referential.metadatas.load
+        end
+      end
+
+      def metadatas_flagged_urgent_at
+        referential.metadatas.map(&:flagged_urgent_at)
+      end
+
+       describe "#flag_metadatas_as_urgent!" do
+        it "defines flagged_urgent_at in all metadatas" do
+          expect do
+            referential.flag_metadatas_as_urgent!
+          end.to change { metadatas_flagged_urgent_at.uniq }.from([nil]).to([Time.now])
+        end
+      end
+
+      describe "#flag_not_urgent!" do
+        before { referential.flag_metadatas_as_urgent! }
+        it "reset flagged_urgent_at in all metadatas" do
+          expect do
+            referential.flag_not_urgent!
+          end.to change { metadatas_flagged_urgent_at.uniq }.to([nil])
+        end
+      end
+
+
+    end
+
+  end
+
 end

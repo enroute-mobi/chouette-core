@@ -50,7 +50,7 @@ class Merge < ApplicationModel
       enqueue_job :merge!
     end
   end
-  alias_method :run, :merge
+  alias run merge
 
   def before_merge_compliance_control_sets
     workbench.workgroup.before_merge_compliance_control_sets.map do |key, _|

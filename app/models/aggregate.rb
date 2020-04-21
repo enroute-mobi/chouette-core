@@ -60,7 +60,7 @@ class Aggregate < ApplicationModel
 
     enqueue_job :aggregate!
   end
-  alias_method :run, :aggregate
+  alias run aggregate
 
   def aggregate!
     prepare_new
@@ -104,7 +104,7 @@ class Aggregate < ApplicationModel
 
   def handle_queue
     @test = true
-    concurent_operations.pending.where('id < ?', self.id).each &:cancel!
+    concurent_operations.pending.where('id < ?', self.id).each(&:cancel!)
     super
   end
 

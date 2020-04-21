@@ -9,8 +9,6 @@ class Aggregate < ApplicationModel
 
   validates :workgroup, presence: true
 
-  after_commit :aggregate, on: :create, unless: :profile?
-
   delegate :output, to: :workgroup
 
   def parent
@@ -48,7 +46,7 @@ class Aggregate < ApplicationModel
 
   def cancel!
     update status: :canceled
-    new.rollbacked!
+    new&.rollbacked!
   end
 
   def following_aggregates
@@ -62,6 +60,7 @@ class Aggregate < ApplicationModel
 
     enqueue_job :aggregate!
   end
+  alias_method :run, :aggregate
 
   def aggregate!
     prepare_new
@@ -101,6 +100,12 @@ class Aggregate < ApplicationModel
     clean_previous_operations
     publish
     workgroup.aggregated!
+  end
+
+  def handle_queue
+    @test = true
+    concurent_operations.pending.where('id < ?', self.id).each &:cancel!
+    super
   end
 
   private

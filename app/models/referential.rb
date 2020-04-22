@@ -574,8 +574,6 @@ class Referential < ApplicationModel
   def clone_schema
     cloning = ReferentialCloning.new source_referential: created_from, target_referential: self
 
-    # TODO #192 ready false
-
     if inline_clone
       cloning.clone!
     else

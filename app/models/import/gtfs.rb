@@ -424,9 +424,9 @@ class Import::Gtfs < Import::Base
       unless_parent_model_in_error(Chouette::StopArea, stop_time.stop_id, resource) do
 
         if position == 0
-          departure_time = GTFS::GTFSTime.parse(stop_time.departure_time)
+          departure_time = GTFSTime.parse(stop_time.departure_time)
           raise InvalidTimeError.new(stop_time.departure_time) unless departure_time.present?
-          arrival_time = GTFS::GTFSTime.parse(stop_time.arrival_time)
+          arrival_time = GTFSTime.parse(stop_time.arrival_time)
           raise InvalidTimeError.new(stop_time.arrival_time) unless arrival_time.present?
           raise InvalidTripNonZeroFirstOffsetError unless departure_time.day_offset.zero? && arrival_time.day_offset.zero?
         end
@@ -446,10 +446,10 @@ class Import::Gtfs < Import::Base
       arrival_time = nil
 
       profile_tag 'parse_times' do
-        departure_time = GTFS::GTFSTime.parse(stop_time.departure_time)
+        departure_time = GTFSTime.parse(stop_time.departure_time)
         raise InvalidTimeError.new(stop_time.departure_time) unless departure_time.present?
 
-        arrival_time = GTFS::GTFSTime.parse(stop_time.arrival_time)
+        arrival_time = GTFSTime.parse(stop_time.arrival_time)
         raise InvalidTimeError.new(stop_time.arrival_time) unless arrival_time.present?
       end
       if @previous_stop_sequence.nil? || stop_time.stop_sequence.to_i <= @previous_stop_sequence

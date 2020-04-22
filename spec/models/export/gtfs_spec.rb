@@ -228,7 +228,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
           formated_time = "23:00::00"
 
-          expect(GTFS::GTFSTime).to receive(:format_datetime).
+          expect(GTFSTime).to receive(:format_datetime).
                                   with(time, day_offset, time_zone).
                                   and_return formated_time
 
@@ -439,9 +439,9 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       expect(source.stop_times.count).to eq(vehicle_journey_at_stops.length * periods)
 
       vehicle_journey_at_stops.each do |vj|
-        stop_time = source.stop_times.detect{|s| s.arrival_time == GTFS::GTFSTime.format_datetime(vj.arrival_time, vj.arrival_day_offset, 'Europe/Paris') }
-        expect(stop_time).not_to be_nil, "Did not find stop with time #{GTFS::GTFSTime.format_datetime(vj.arrival_time, vj.arrival_day_offset, 'Europe/Paris') } among #{source.stop_times.map(&:arrival_time)}"
-        expect(stop_time.departure_time).to eq(GTFS::GTFSTime.format_datetime(vj.departure_time, vj.departure_day_offset, 'Europe/Paris'))
+        stop_time = source.stop_times.detect{|s| s.arrival_time == GTFSTime.format_datetime(vj.arrival_time, vj.arrival_day_offset, 'Europe/Paris') }
+        expect(stop_time).not_to be_nil, "Did not find stop with time #{GTFSTime.format_datetime(vj.arrival_time, vj.arrival_day_offset, 'Europe/Paris') } among #{source.stop_times.map(&:arrival_time)}"
+        expect(stop_time.departure_time).to eq(GTFSTime.format_datetime(vj.departure_time, vj.departure_day_offset, 'Europe/Paris'))
       end
     end
   end
@@ -702,9 +702,9 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
         # A random stop_time is picked
         random_vehicle_journey_at_stop = vehicle_journey_at_stops.sample
-        stop_time = stop_times.detect{|stop_time| stop_time.arrival_time == GTFS::GTFSTime.format_datetime(random_vehicle_journey_at_stop.arrival_time, random_vehicle_journey_at_stop.arrival_day_offset) }
+        stop_time = stop_times.detect{|stop_time| stop_time.arrival_time == GTFSTime.format_datetime(random_vehicle_journey_at_stop.arrival_time, random_vehicle_journey_at_stop.arrival_day_offset) }
         expect(stop_time).not_to be_nil
-        expect(stop_time.departure_time).to eq(GTFS::GTFSTime.format_datetime(random_vehicle_journey_at_stop.departure_time, random_vehicle_journey_at_stop.departure_day_offset))
+        expect(stop_time.departure_time).to eq(GTFSTime.format_datetime(random_vehicle_journey_at_stop.departure_time, random_vehicle_journey_at_stop.departure_day_offset))
       end
     end
   end

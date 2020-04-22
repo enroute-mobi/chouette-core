@@ -3,7 +3,7 @@ class Api::V1::ImportsController < Api::V1::WorkbenchController
 
   def create
     args = workbench_import_params.merge(creator: 'Webservice')
-    @import = @current_workbench.workbench_imports.new(args)
+    @import = current_workbench.workbench_imports.new(args)
     if @import.save
       render json: @import, status: :created
     else
@@ -16,14 +16,14 @@ class Api::V1::ImportsController < Api::V1::WorkbenchController
   end
 
   def show
-    @import = @current_workbench.workbench_imports.find(params[:id])
+    @import = current_workbench.workbench_imports.find(params[:id])
     render json: @import
   end
 
   private
 
   def imports_map
-    @current_workbench.imports.collect do |import|
+    current_workbench.imports.collect do |import|
       {id: import.id, name: import.name, status: import.status, referential_ids: import.children.collect(&:referential_id).compact}
     end
   end

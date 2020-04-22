@@ -71,7 +71,7 @@ class Import::Gtfs < Import::Base
 
     import_resources :transfers if source.entries.include?('transfers.txt')
 
-    import_resources :trips, :stop_times, :missing_checksums
+    import_resources :stop_times, :missing_checksums
   end
 
   def import_agencies
@@ -393,8 +393,6 @@ class Import::Gtfs < Import::Base
   end
 
   def import_stop_times
-    prev_trip_id = nil
-    stop_times = []
     CustomFieldsSupport.within_workgroup(workbench.workgroup) do
       resource = create_resource(:stop_times)
       source.each_trip_with_stop_times do |trip, stop_times|

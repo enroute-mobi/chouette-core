@@ -453,7 +453,6 @@ class Referential < ApplicationModel
   before_create :create_schema
 
   # Don't use after_commit because of inline_clone (cf created_from)
-  after_create :active!, unless: Proc.new { |referential| referential.created_from || referential.from_current_offer }
   after_create :clone_schema, if: :created_from
   after_create :create_from_current_offer, if: :from_current_offer
 
@@ -560,6 +559,7 @@ class Referential < ApplicationModel
     enqueue_job :fill_from_current_offer
   end
 
+  # Create referential from current workbench output
   def fill_from_current_offer
     current_offer = workbench.output.current
 
@@ -573,6 +573,8 @@ class Referential < ApplicationModel
   attr_accessor :inline_clone
   def clone_schema
     cloning = ReferentialCloning.new source_referential: created_from, target_referential: self
+
+    # TODO #192 ready false
 
     if inline_clone
       cloning.clone!

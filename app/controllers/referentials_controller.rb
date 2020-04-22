@@ -155,6 +155,7 @@ class ReferentialsController < ChouetteController
 
   def create_resource(referential)
     referential.organisation = current_organisation
+    referential.ready = true unless ( referential.created_from || referential.from_current_offer)
     super
   end
 

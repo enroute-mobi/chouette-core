@@ -373,7 +373,6 @@ RSpec.describe Import::Gtfs do
     before do
       import.prepare_referential
       import.import_calendars
-      import.import_trips
       allow_any_instance_of(Chouette::Route).to receive(:has_tomtom_features?){ true }
     end
 

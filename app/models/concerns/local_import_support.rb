@@ -108,7 +108,8 @@ module LocalImportSupport
         name: referential_name,
         organisation_id: workbench.organisation_id,
         workbench_id: workbench.id,
-        metadatas: [referential_metadata]
+        metadatas: [referential_metadata],
+        ready: false
       )
 
       if profile?

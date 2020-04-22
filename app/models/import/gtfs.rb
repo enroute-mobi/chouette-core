@@ -59,7 +59,6 @@ class Import::Gtfs < Import::Base
 
   def import_without_status
     prepare_referential
-    referential.pending!
 
     if check_calendar_files_missing_and_create_message
       notify_operation_progress :calendars

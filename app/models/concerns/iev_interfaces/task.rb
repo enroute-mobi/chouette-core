@@ -128,6 +128,8 @@ module IevInterfaces::Task
   end
 
   def notify_progress progress
+    # Prevent export notification originating from a publication
+    return if (self.class < Export::Base && self.publication.present?)
     @previous_progress ||= 0
     return unless progress - @previous_progress >= 0.01
     @previous_progress = progress

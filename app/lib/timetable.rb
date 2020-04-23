@@ -75,6 +75,9 @@ class Timetable
     self
   end
 
+  # This normalize operation is specific to Chouette.
+  # TODO Create a Timetable::Optimizer::Chouette instead a normalize! method.
+  # We'll need a Timetable::Optimizer::GTFS, Timetable::Optimizer::Netex, etc
   def normalize!
     # TODO move these different logics into a dedicated objects ?
 

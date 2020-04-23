@@ -193,6 +193,7 @@ RSpec.describe Timetable do
       end.to change(timetable,:periods).to([]) and change(timetable,:empty?).to(true)
     end
 
+    # Merge has been disabled in normalize!
     it "merge continuous periods", skip: true do
       timetable = create do
         period "1/06","10/06"
@@ -205,6 +206,29 @@ RSpec.describe Timetable do
       expect do
         timetable.normalize!
       end.to change(timetable,:periods).to([period("1/06","30/06")])
+    end
+
+    # Merge has been disabled in normalize!
+    it "merge two distinct continuous periods", skip: true do
+      timetable = create do
+        # First
+        period "1/06","10/06"
+        period "11/06","19/06"
+        period "20/06","30/06"
+        period "10/06","20/06"
+        period "2/06","29/06"
+
+        # Second
+        period "1/08","10/08"
+        period "11/08","19/08"
+        period "20/08","31/08"
+        period "10/08","20/08"
+        period "2/08","29/08"
+      end
+
+      expect do
+        timetable.normalize!
+      end.to change(timetable,:periods).to([period("1/06","30/06"), period("1/08","30/08")])
     end
 
   end
@@ -318,7 +342,7 @@ RSpec.describe Timetable::Period do
     end
 
     it "returns nil if the two periods aren't continuous"do
-      expect(period("1/6","10/6","L......").merge!(period("10/6","20/6"))).to be_nil
+      expect(period("1/6","10/6").merge!(period("20/6","30/6"))).to be_nil
     end
 
     it "returns nil when the two periods have not common dates" do

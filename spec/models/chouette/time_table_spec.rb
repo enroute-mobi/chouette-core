@@ -1345,7 +1345,7 @@ end
       ]
 
       time_table.intersect_periods!(periods)
-      expect(time_table.periods.map { |p| p.period_start..p.period_end }).to match_array([Date.parse("01/12/2019")..Date.parse("31/12/2019"), Date.parse("01/01/2020")..Date.parse("10/01/2020")])
+      expect(time_table.periods.map { |p| p.period_start..p.period_end }).to eq([Date.parse("01/12/2019")..Date.parse("30/12/2019"), Date.parse("01/01/2020")..Date.parse("10/01/2020")])
     end
 
     it 'should deal with another timetable with 2 continuous periods' do
@@ -1353,7 +1353,7 @@ end
       periods = [ Date.parse("30/09/2019")..Date.parse("31/12/2019"),Date.parse("01/01/2020")..Date.parse("10/01/2020") ]
 
       time_table.intersect_periods!(periods)
-      expect(time_table.periods.map{|p| p.period_start..p.period_end }).to match_array([Date.parse("01/12/2019")..Date.parse("31/12/2019"), Date.parse("01/01/2020")..Date.parse("10/01/2020")])
+      expect(time_table.periods.map{|p| p.period_start..p.period_end }).to eq([Date.parse("01/12/2019")..Date.parse("31/12/2019"), Date.parse("01/01/2020")..Date.parse("10/01/2020")])
     end
   end
 

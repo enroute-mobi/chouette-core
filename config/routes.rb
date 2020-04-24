@@ -206,7 +206,7 @@ ChouetteIhm::Application.routes.draw do
 
       post 'datas/:slug/graphql', to: "datas#graphql", as: :graphql
 
-      resources :workbenches, except: %i(destroy) do
+      resources :workbenches, only: [] do
         resources :imports, only: [:index, :show, :create]
       end
 

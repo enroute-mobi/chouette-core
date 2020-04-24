@@ -55,7 +55,7 @@ Rails.application.configure do
 
   # See #8823
   config.chouette_email_user = true
-  config.chouette_email_blacklist = []
+  config.chouette_email_whitelist = '@enroute.mobi'
 
   # change to true to allow email to be sent during development
   config.action_mailer.perform_deliveries = true
@@ -63,7 +63,7 @@ Rails.application.configure do
   config.action_mailer.default :charset => "utf-8"
 
   # Configure the e-mail address which will be shown in Devise::Mailer
-  config.mailer_sender = "chouette@af83.com"
+  config.mailer_sender = "noreply@enroute.mobi"
   config.to_prepare do
     Devise::Mailer.layout "mailer"
   end

@@ -53,9 +53,6 @@ Rails.application.configure do
     cas_server: 'http://cas-portal.example.com/sessions'
   }
 
-
-  config.chouette_email_blacklist = []
-  
   # file to data for demo
   config.demo_data = 'tmp/demo.zip'
 

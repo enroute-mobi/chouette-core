@@ -103,8 +103,7 @@ class Aggregate < ApplicationModel
   end
 
   def handle_queue
-    @test = true
-    concurent_operations.pending.where('id < ?', self.id).each(&:cancel!)
+    concurent_operations.pending.where('created_at < ?', created_at).each(&:cancel!)
     super
   end
 

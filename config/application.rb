@@ -49,7 +49,7 @@ module ChouetteIhm
     SmartEnv.add :WORKBENCH_IMPORT_DIR
     SmartEnv.add :CHOUETTE_ADDITIONAL_COMPLIANCE_CONTROLS, default: ""
     SmartEnv.add :CHOUETTE_ADDITIONAL_PUBLICATION_DESTINATIONS, default: ""
-    SmartEnv.add :MAIL_FROM, default: 'Chouette <chouette@af83.com>'
+    SmartEnv.add :MAIL_FROM, default: 'Chouette <noreply@enroute.mobi>'
     SmartEnv.add_boolean :AUTOMATED_AUDITS_ENABLED
     SmartEnv.add_boolean :BYPASS_AUTH_FOR_SIDEKIQ
     SmartEnv.add_boolean :CHOUETTE_ROUTE_POSITION_CHECK
@@ -57,6 +57,8 @@ module ChouetteIhm
     SmartEnv.add_boolean :NO_TRANSACTION
     SmartEnv.add_boolean :SUBSCRIPTION_NOTIFIER_ENABLED
     SmartEnv.add_boolean :CHOUETTE_EMAIL_USER
+    SmartEnv.add_array :CHOUETTE_EMAIL_WHITELIST
+    SmartEnv.add_array :CHOUETTE_EMAIL_BLACKLIST
     SmartEnv.add_boolean :CHOUETTE_TRANSACTIONAL_CHECKSUMS, default: true
     SmartEnv.add_boolean :ENABLE_DELAYED_JOB_REAPER, default: true
     SmartEnv.add_boolean :ENABLE_DEVELOPMENT_TOOLBAR, default: false

@@ -29,7 +29,8 @@ Rails.application.configure do
   config.active_support.deprecation = :log
 
   config.log_level = :debug
-  #config.colorize_logging = false
+  config.colorize_logging = false
+  config.logger = Logger.new("log/development.log", 3, 250.megabytes)
 
   # Raise an error on page load if there are pending migrations.
   config.active_record.migration_error = :page_load

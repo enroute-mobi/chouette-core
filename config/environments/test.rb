@@ -67,7 +67,7 @@ Rails.application.configure do
 
   config.i18n.available_locales = %i[fr en]
 
-  config.logger = Logger.new("log/test.log", 3, 250.megabytes)
+  config.logger = ActiveSupport::Logger.new("log/test.log", 3, 250.megabytes)
   config.colorize_logging = false
 
   config.additional_compliance_controls << "dummy"

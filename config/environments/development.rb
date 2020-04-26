@@ -30,7 +30,7 @@ Rails.application.configure do
 
   config.log_level = :debug
   config.colorize_logging = false
-  config.logger = Logger.new("log/development.log", 3, 250.megabytes)
+  config.logger = ActiveSupport::Logger.new("log/development.log", 3, 250.megabytes)
 
   # Raise an error on page load if there are pending migrations.
   config.active_record.migration_error = :page_load

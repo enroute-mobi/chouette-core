@@ -20,9 +20,13 @@ class UserDeliverInterceptor
   def accept?(message)
     return false unless enabled?
 
-    message.to.all? do |email_address|
+    message_recipients(message).all? do |email_address|
       accept_email_address?(email_address)
     end
+  end
+
+  def message_recipients(message)
+    (Array(message.to) + Array(message.bcc)).uniq
   end
 
   def accept_email_address?(email_address)

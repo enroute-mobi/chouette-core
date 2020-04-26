@@ -73,6 +73,51 @@ RSpec.describe UserDeliverInterceptor do
 
     end
 
+    context "when message uses only bcc recipients" do
+
+      let(:message) { Mail::Message.new bcc: ["first@example.com", "second@example.com"] }
+
+      before do
+        allow(interceptor).to receive(:accept_email_address?).with(message.bcc.second).and_return true
+      end
+
+      it "checks bcc email addresses" do
+        expect(interceptor).to receive(:accept_email_address?).with(message.bcc.first).and_return true
+        expect(interceptor).to receive(:accept_email_address?).with(message.bcc.second).and_return true
+
+        is_expected.to be(true)
+      end
+
+    end
+
+    it "checks email adresses returned by #message_recipients" do
+      expect(interceptor).to receive(:message_recipients).with(message).and_return [email_address]
+      expect(interceptor).to receive(:accept_email_address?).with(email_address).and_return true
+
+      is_expected.to be(true)
+    end
+
+  end
+
+  describe '#message_recipients' do
+
+    [ # to, bcc, expected
+      [ nil, nil, [] ],
+      [ [], [], [] ],
+      [ "test@example.com", nil, [ "test@example.com" ] ],
+      [ "test@example.com", "test@example.com", [ "test@example.com" ] ],
+      [ nil, "test@example.com", [ "test@example.com" ] ],
+      [ nil, ["test@example.com"], [ "test@example.com" ] ]
+    ].each do |to, bcc, expected|
+      it "returns #{expected.inspect} when to: #{to.inspect} and bcc: #{bcc.inspect}" do
+        expect(subject.message_recipients(double "Message", to: to, bcc: bcc)).to eq(expected)
+      end
+
+    end
+
+
+
+
   end
 
   describe "#accept_email_address?" do

@@ -1,8 +1,8 @@
 class ImportMessagesController < ChouetteController
-  defaults resource_class: Import::Message, collection_name: 'import_messages', instance_name: 'import_message'
+  defaults resource_class: Import::Message, collection_name: 'messages'
   respond_to :csv
   belongs_to :import, :parent_class => Import::Base do
-    belongs_to :import_resource, :parent_class => Import::Resource
+    belongs_to :import_resource, :parent_class => Import::Resource, :collection_name => :resources
   end
 
   def index
@@ -14,24 +14,9 @@ class ImportMessagesController < ChouetteController
   end
 
   protected
+
   def collection
     @import_messages ||= parent.messages
   end
 
-  def parent
-    scope = begin
-      if params[:workgroup_id]
-        Workgroup.find(params[:workgroup_id]).imports
-      else
-        current_organisation.imports
-      end
-    end
-    @import_resource ||= Import::Resource.joins(:import).merge(scope).find(params[:import_resource_id])
-  end
-
-  def begin_of_association_chain
-    return Workgroup.find(params[:workgroup_id]) if params[:workgroup_id]
-
-    super
-  end
 end

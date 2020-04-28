@@ -49,8 +49,7 @@ class Import::Workbench < Import::Base
   def create_child_import(klass)
     klass.create! parent_type: self.class.name, parent_id: self.id, workbench: workbench, file: File.new(file.path), name: self.name, creator: "Web service"
   rescue Exception => e
-    Rails.logger.error "Error while processing #{file_type} file: #{e}"
-    Rails.logger.error e.backtrace.join("\n")
+    Chouette::Safe.capture "Import::Workbench ##{id} Child import #{file_type} creation failed", e
 
     failed!
   end

@@ -22,8 +22,7 @@ module NotifiableSupport
     begin
       mailer.constantize.public_send(action, *mailer_params).deliver_later
     rescue => e
-      # TODO #8018
-      Rails.logger.error "Can't notify users: #{e.message} #{e.backtrace.join("\n")}"
+      Chouette::Safe.capture "Can't notify users", e
     end
 
     notify_recipients!

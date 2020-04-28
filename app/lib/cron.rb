@@ -59,7 +59,7 @@ module Cron
       begin
         yield
       rescue => e
-        Rails.logger.warn(e.message)
+        Chouette::Safe.capture "Cron action failed", e
       end
     end
 

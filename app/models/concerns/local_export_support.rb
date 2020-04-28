@@ -44,8 +44,7 @@ module LocalExportSupport
     self.ended_at = Time.now
     self.save!
   rescue => e
-    Rails.logger.info "Failed: #{e.message}"
-    Rails.logger.info e.backtrace.join("\n")
+    Chouette::Safe.capture "#{self.class.name} ##{id} failed", e
     self.status = :failed
     self.save!
   end

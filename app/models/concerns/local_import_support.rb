@@ -63,7 +63,8 @@ module LocalImportSupport
     update status: @status, ended_at: Time.now
   rescue => e
     update status: 'failed', ended_at: Time.now
-    Rails.logger.error "Error in #{file_type} import: #{e} #{e.backtrace.join('\n')}"
+    Chouette::Safe.capture "#{self.class.name} ##{id} failed", e
+
     if (referential && overlapped_referential_ids = referential.overlapped_referential_ids).present?
       overlapped = Referential.find overlapped_referential_ids.last
       create_message(
@@ -118,6 +119,7 @@ module LocalImportSupport
       begin
         self.referential.save!
       rescue => e
+        Chouette::Safe.capture "Unable to create referential #{self.referential.inspect}", e
         Rails.logger.error "Unable to create referential: #{self.referential.errors.messages}"
         raise
       end

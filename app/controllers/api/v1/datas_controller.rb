@@ -58,9 +58,6 @@ class Api::V1::DatasController < ActionController::Base
         render json: result
       end
     end
-  rescue => e
-    raise e unless Rails.env.development?
-    handle_error_in_development e
   end
 
   protected
@@ -98,10 +95,4 @@ class Api::V1::DatasController < ActionController::Base
     end
   end
 
-  def handle_error_in_development(e)
-    logger.error e.message
-    logger.error e.backtrace.join("\n")
-
-    render json: { error: { message: e.message, backtrace: e.backtrace }, data: {} }, status: 500
-  end
 end

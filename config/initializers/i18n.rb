@@ -4,6 +4,8 @@ module I18nTranslateWithFallback
     begin
       super(key, {raise: true}.update(options))
     rescue => e
+      Chouette::Safe.capture "Error in I18n#translate #{key}", e
+
       split = key.to_s.split('.')
       if split.size <= 2
         super original || key, options

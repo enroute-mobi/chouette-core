@@ -20,7 +20,7 @@ module Version
     ]
     res.all?(&:present?) && res.map(&:strip).join(' ') || nil
   rescue => e
-    Rails.logger.warn "Error parsing version from git: #{e.message}"
+    Chouette::Safe.capture "Error parsing version from git", e
     nil
   end
 
@@ -37,7 +37,7 @@ module Version
     parsed_content = content && JSON.parse(content)
     parsed_content.try :[], "build_name"
   rescue => e
-    Rails.logger.warn "Error parsing version file: #{e.message}"
+    Chouette::Safe.capture "Error parsing version file", e
     nil
   end
 

@@ -69,9 +69,8 @@ module Cron
 
     def check_ccset_operations
       protected_action do
-        # Disable by waiting fix. See CHOUETTE-442
-        # ParentNotifier.new(ComplianceCheckSet).notify_when_finished
-        # ComplianceCheckSet.abort_old
+        ParentNotifier.new(ComplianceCheckSet).notify_when_finished
+        ComplianceCheckSet.abort_old
       end
     end
 

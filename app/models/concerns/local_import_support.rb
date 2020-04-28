@@ -118,8 +118,8 @@ module LocalImportSupport
       end
       begin
         self.referential.save!
-      rescue => e
-        Chouette::Safe.capture "Unable to create referential #{self.referential.inspect}", e
+      rescue ActiveRecord::RecordInvalid
+        # No double capture for Chouette::Safe
         Rails.logger.error "Unable to create referential: #{self.referential.errors.messages}"
         raise
       end

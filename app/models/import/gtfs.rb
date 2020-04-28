@@ -242,21 +242,12 @@ class Import::Gtfs < Import::Base
       raise InvalidTripSingleStopTime unless stop_times.many?
 
       to_be_saved = []
-      stop_points_with_times = vehicle_journey = journey_pattern = route = nil
+      stop_points_with_times = vehicle_journey = journey_pattern = nil
       stop_points = []
       profile_tag 'preparation' do
+        journey_pattern = find_or_create_journey_pattern(resource, trip, stop_times)
 
-        line = line_referential.lines.find_by registration_number: trip.route_id
-        route = referential.routes.build line: line
-        route.wayback = (trip.direction_id == '0' ? :outbound : :inbound)
-        name = route.published_name = trip.headsign.presence || trip.short_name.presence || route.wayback.to_s.capitalize
-        route.name = name
-        to_be_saved << route
-
-        journey_pattern = route.journey_patterns.build name: name, published_name: name, skip_custom_fields_initialization: true
-        # to_be_saved << journey_pattern
-
-        vehicle_journey = journey_pattern.vehicle_journeys.build route: route, skip_custom_fields_initialization: true
+        vehicle_journey = journey_pattern.vehicle_journeys.build route: journey_pattern.route, skip_custom_fields_initialization: true
         vehicle_journey.published_journey_name = trip.short_name.presence || trip.id
 
         to_be_saved << vehicle_journey
@@ -287,7 +278,7 @@ class Import::Gtfs < Import::Base
         raise InvalidTripTimesError unless consistent_stop_times(stop_times)
 
         stop_points_with_times = stop_times.each_with_index.map do |stop_time, i|
-          [stop_time, import_stop_time(stop_time, route, resource, i)]
+          [stop_time, import_stop_time(stop_time, journey_pattern.route, resource, i)]
         end
 
         profile_tag 'save_models' do
@@ -302,7 +293,7 @@ class Import::Gtfs < Import::Base
           stop_points_with_times.map do |s|
             if stop_point = s.last
               @objectid_formatter ||= Chouette::ObjectidFormatter.for_objectid_provider(StopAreaReferential, id: referential.stop_area_referential_id)
-              stop_point[:route_id] = route.id
+              stop_point[:route_id] = journey_pattern.route.id
               stop_point[:objectid] = @objectid_formatter.objectid(stop_point)
               stop_point
             end
@@ -389,6 +380,39 @@ class Import::Gtfs < Import::Base
       )
       @status = 'failed'
     end
+  end
+
+  def journey_pattern_ids
+    @journey_pattern_ids ||= {}
+  end
+
+  def trip_signature(trip, stop_times)
+    [
+      trip.route_id,
+      trip.direction_id,
+      trip.headsign.presence || trip.short_name,
+    ] + stop_times.map(&:stop_id)
+  end
+
+  def find_or_create_journey_pattern(resource, trip, stop_times)
+    journey_pattern_id = journey_pattern_ids[trip_signature(trip, stop_times)]
+    return Chouette::JourneyPattern.find(journey_pattern_id) if journey_pattern_id
+
+    line = line_referential.lines.find_by registration_number: trip.route_id
+    route = referential.routes.build line: line
+    route.wayback = (trip.direction_id == '0' ? :outbound : :inbound)
+    name = route.published_name = trip.headsign.presence || trip.short_name.presence || route.wayback.to_s.capitalize
+    route.name = name
+
+    journey_pattern = route.journey_patterns.build name: name, published_name: name, skip_custom_fields_initialization: true
+
+    ApplicationModel.skipping_objectid_uniqueness do
+        save_model route, resource: resource
+        save_model journey_pattern, resource: resource
+    end
+
+    journey_pattern_ids[trip_signature(trip, stop_times)] = journey_pattern.id
+    journey_pattern
   end
 
   def import_stop_times

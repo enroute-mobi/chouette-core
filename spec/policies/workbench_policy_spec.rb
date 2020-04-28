@@ -2,38 +2,38 @@ RSpec.describe WorkbenchPolicy, type: :policy do
 
   let( :record ){ build_stubbed :workbench }
 
-    permissions :create? do
-      it "should not allow for creation" do
+    permissions :show? do
+      it "should not allow show" do
         expect_it.not_to permit(user_context, record)
+      end
+
+      context "when user belongs to workbench organisation" do
+        before do
+          user.organisation = record.organisation
+        end
+
+        it "should allow show" do
+          expect_it.to permit(user_context, record)
+        end
+
       end
     end
 
     permissions :update? do
-      it "should not allow for update" do
-        expect_it.not_to permit(user_context, record)
-      end
-
-      context "for the workgroup owner" do
-        before do
-          record.workgroup.owner = user.organisation
-        end
-
-        it "should not allow for update" do
+      context "without permission" do
+        it "should not allow update" do
+          remove_permissions('workbenches.update', from_user: user)
           expect_it.not_to permit(user_context, record)
         end
+      end
 
-        context "with the permission" do
-          it "should allow for update" do
-            add_permissions('workbenches.update', to_user: user)
-            expect_it.to permit(user_context, record)
-          end
+      context "with permission" do
+        it "should allow update" do
+          add_permissions('workbenches.update', to_user: user)
+          expect_it.to permit(user_context, record)
         end
       end
+
     end
 
-    permissions :destroy? do
-      it "should not allow for destroy" do
-        expect_it.not_to permit(user_context, record)
-      end
-    end
 end

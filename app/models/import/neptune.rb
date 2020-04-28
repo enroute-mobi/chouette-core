@@ -19,7 +19,6 @@ class Import::Neptune < Import::Base
 
   def import_without_status
     prepare_referential
-    referential.pending!
 
     import_resources :time_tables
     fix_metadatas_periodes

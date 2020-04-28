@@ -117,4 +117,9 @@ module ApplicationDaysSupport
   def sunday=(day)
     set_day(day,256)
   end
+
+  def days_of_week
+    Timetable::DaysOfWeek.from_int_day_types(int_day_types)
+  end
+
 end

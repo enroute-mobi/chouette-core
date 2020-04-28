@@ -67,12 +67,8 @@ Rails.application.configure do
 
   config.i18n.available_locales = %i[fr en]
 
-  if ENV['VERBOSE_SPECS'].present?
-    config.logger = Logger.new(STDOUT)
-    config.logger.level = Logger::ERROR
-    config.active_record.logger = nil
-  end
-  # config.colorize_logging = false
+  config.logger = ActiveSupport::Logger.new("log/test.log", 3, 250.megabytes)
+  config.colorize_logging = false
 
   config.additional_compliance_controls << "dummy"
   config.additional_destinations << "dummy"

@@ -25,12 +25,17 @@ module SmartEnv
     @hash_keys ||= []
   end
 
+  def self.array_keys
+    @array_keys ||= []
+  end
+
   def self.reset!
     @keys = nil
     @required_keys = nil
     @boolean_keys = nil
     @integer_keys = nil
     @hash_keys = nil
+    @array_keys = nil
     @default_values = nil
   end
 
@@ -57,6 +62,10 @@ module SmartEnv
       hash_keys.delete key
       hash_keys << key if opts[:hash] || opts[:default].is_a?(Hash)
     end
+    if opts.has_key?(:array) || opts[:default].is_a?(Array)
+      array_keys.delete key
+      array_keys << key if opts[:array] || opts[:default].is_a?(Array)
+    end
     if opts.has_key?(:default)
       default_values[key] = opts[:default]
     end
@@ -72,6 +81,10 @@ module SmartEnv
 
   def self.add_integer key, opts={}
     self.add key, opts.update({integer: true})
+  end
+
+  def self.add_array key, opts={}
+    self.add key, opts.update({array: true})
   end
 
   def self.check!
@@ -94,6 +107,10 @@ module SmartEnv
     self.fetch key, opts.update({hash: true})
   end
 
+  def self.array key, opts={}
+    self.fetch key, opts.update({array: true})
+  end
+
   def self.fetch key, opts={}
     key = key.to_s
     unless keys.include?(key)
@@ -101,6 +118,7 @@ module SmartEnv
       keys << key
     end
 
+    is_array = opts[:array] || array_keys.include?(key)
     is_hash = opts[:hash] || hash_keys.include?(key)
     is_boolean = opts[:boolean] || boolean_keys.include?(key)
 
@@ -110,6 +128,7 @@ module SmartEnv
 
     default ||= default_values[key]
     default ||= {} if is_hash
+    default ||= [] if is_array
     default ||= false if is_boolean
 
     val = ENV.fetch(key, nil)
@@ -117,6 +136,7 @@ module SmartEnv
       val = cast_boolean(val) if is_boolean
       val = cast_integer(val) if opts[:integer] || integer_keys.include?(key)
       val = cast_hash(val) if is_hash
+      val = cast_array(val) if is_array
     end
     val || default
   end
@@ -143,6 +163,10 @@ module SmartEnv
 
   def self.cast_hash value
     JSON.parse(value, symbolize_names: true) rescue nil
+  end
+
+  def self.cast_array value
+    JSON.parse(value) rescue nil
   end
 
   class MissingKey < Exception

@@ -1,5 +1,6 @@
 attributes id: :stoppoint_id
 attributes stop_area_id: :stoparea_id
+node(:stop_area_referential_id) { |sp| sp.stop_area.stop_area_referential_id }
 node(:stoparea_kind) { |sp| sp.stop_area.kind }
 node(:user_objectid) { |sp| sp.stop_area.local_id }
 node(:short_name) { |sp| sp.stop_area&.name&.truncate(30)&.gsub("&#39;", "'") || '' }

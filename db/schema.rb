@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_12_102812) do
+ActiveRecord::Schema.define(version: 2020_04_15_142311) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -221,9 +221,10 @@ ActiveRecord::Schema.define(version: 2020_03_12_102812) do
   create_table "compliance_check_sets", force: :cascade do |t|
     t.bigint "referential_id"
     t.bigint "compliance_control_set_id"
+    t.bigint "workbench_id"
     t.string "status"
-    t.bigint "parent_id"
     t.string "parent_type"
+    t.bigint "parent_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "current_step_id"
@@ -237,7 +238,6 @@ ActiveRecord::Schema.define(version: 2020_03_12_102812) do
     t.string "notification_target"
     t.datetime "notified_recipients_at"
     t.bigint "user_id"
-    t.bigint "workbench_id"
     t.bigint "workgroup_id"
     t.index ["compliance_control_set_id"], name: "index_compliance_check_sets_on_compliance_control_set_id"
     t.index ["parent_type", "parent_id"], name: "index_compliance_check_sets_on_parent_type_and_parent_id"
@@ -1106,10 +1106,10 @@ ActiveRecord::Schema.define(version: 2020_03_12_102812) do
 
   create_table "taggings", force: :cascade do |t|
     t.bigint "tag_id"
-    t.bigint "taggable_id"
     t.string "taggable_type"
-    t.bigint "tagger_id"
+    t.bigint "taggable_id"
     t.string "tagger_type"
+    t.bigint "tagger_id"
     t.string "context", limit: 128
     t.datetime "created_at"
     t.index ["context"], name: "index_taggings_on_context"
@@ -1283,6 +1283,7 @@ ActiveRecord::Schema.define(version: 2020_03_12_102812) do
     t.hstore "owner_compliance_control_set_ids"
     t.string "prefix"
     t.bigint "locked_referential_to_aggregate_id"
+    t.string "restrictions", default: [], array: true
     t.index ["line_referential_id"], name: "index_workbenches_on_line_referential_id"
     t.index ["locked_referential_to_aggregate_id"], name: "index_workbenches_on_locked_referential_to_aggregate_id"
     t.index ["organisation_id"], name: "index_workbenches_on_organisation_id"

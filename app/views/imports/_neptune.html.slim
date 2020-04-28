@@ -32,7 +32,7 @@
           attribute: Proc.new { |n| '<i class="fa fa-download" aria-hidden="true"></i>'.html_safe }, \
           sortable: false, \
           link_to: lambda do |import_resource| \
-            workbench_import_import_resource_import_messages_path(import_resource.import.workbench, import_resource.import, import_resource, format: 'csv' ) \
+            url_for([parent, import_resource.import, import_resource, :import_messages, format: 'csv']) \
           end \
         ), \
       ],

@@ -39,13 +39,20 @@ RSpec.describe Api::V1::StopAreaReferentialsController do
 
       let(:token) { 'secret' }
       let(:event_attributes) { { type: "destroyed", stop_place: { "id" => "42" } } }
+      let(:context) do
+        Chouette.create do
+          # line_referential is created along the workbench in Chouette::Factory hierarchy
+          workbench
+        end
+      end
+      let(:api_key) { create :api_key, workbench: context.workbench, token: token }
 
       before do
-        allow(ApiKey).to receive(:find_by).with(token: token).and_return(double(workgroup: double))
         allow(controller).to receive(:stop_area_referential).and_return(double)
         allow(controller).to receive(:synchronization).and_return(mock_synchronisation)
         request.env['HTTP_AUTHORIZATION'] =
           ActionController::HttpAuthentication::Token.encode_credentials(token)
+        api_key
       end
 
       describe "destroyed event" do

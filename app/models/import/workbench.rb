@@ -93,7 +93,7 @@ class Import::Workbench < Import::Base
   end
 
   def create_automatic_merge
-    Merge.create creator: creator, workbench: workbench, referentials: referentials, notification_target: notification_target, user: user
+    Merge.create creator: creator, workbench: workbench, referentials: referentials, notification_target: notification_target, user: user, automatic_operation: true
   end
 
 

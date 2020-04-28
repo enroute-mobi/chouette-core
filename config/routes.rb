@@ -64,6 +64,9 @@ ChouetteIhm::Application.routes.draw do
       resources :compliance_checks, only: [:show]
       resources :compliance_check_messages, only: [:index]
     end
+
+    resources :workbenches, controller: :workgroup_workbenches, only: [:show, :edit, :update]
+
     resource :output, controller: :workgroup_outputs
     resources :aggregates do
       member do

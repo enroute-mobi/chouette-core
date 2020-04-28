@@ -1,8 +1,11 @@
 fr:
   workbenches:
     current_offer: Offre courante
+    search_no_results: "Aucun espace de travail"
     show:
       title: "Offre de transport %{name}"
+      sections:
+        permissions: "Permissions"
     edit:
       title: "Paramétrage de la validation"
       link:  "Paramétrages"
@@ -39,3 +42,6 @@ fr:
       workbench:
         import_compliance_control_set_id: Jeu de données après import
         merge_compliance_control_set_id: Jeu de Données avant intégration
+        name: Nom
+        organisation: Organisation
+        last_merged_data: Dernière finalisation

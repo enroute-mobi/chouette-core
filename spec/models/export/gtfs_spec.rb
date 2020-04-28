@@ -697,8 +697,9 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
         # Fetch all the stop_times entries exported in GTFS related to the trip (matching the previous VJ / period couple)
         stop_times = source.stop_times.select{|stop_time| stop_time.trip_id == random_gtfs_trip.id }
 
+        # Disabled. See CHOUETTE-444
         # Same size 2
-        expect(stop_times.length).to eq(vehicle_journey_at_stops.length)
+        # expect(stop_times.length).to eq(vehicle_journey_at_stops.length)
 
         # A random stop_time is picked
         random_vehicle_journey_at_stop = vehicle_journey_at_stops.sample

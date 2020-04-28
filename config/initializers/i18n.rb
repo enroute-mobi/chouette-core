@@ -3,9 +3,8 @@ module I18nTranslateWithFallback
     options[:locale] ||= I18n.locale
     begin
       super(key, {raise: true}.update(options))
-    rescue => e
-      Chouette::Safe.capture "Error in I18n#translate #{key}", e
-
+    rescue I18n::MissingTranslationData, I18n::InvalidPluralizationData
+      # No capture
       split = key.to_s.split('.')
       if split.size <= 2
         super original || key, options

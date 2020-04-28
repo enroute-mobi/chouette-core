@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-ENV['DD_TRACE_CONTEXT'] = "worker"
+ENV['DD_TRACE_CONTEXT'] = ENV['SENTRY_CONTEXT'] = "worker"
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'config', 'environment'))
 
 worker_options = {

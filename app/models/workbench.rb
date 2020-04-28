@@ -1,3 +1,4 @@
+
 module LockedReferentialToAggregateWithLog
   def locked_referential_to_aggregate
     super.tap do |ref|
@@ -49,11 +50,6 @@ class Workbench < ApplicationModel
 
   scope :with_active_workgroup, -> { joins(:workgroup).where('workgroups.deleted_at': nil) }
 
-
-  # def notifiable_lines
-  #   lines.where(id: NotificationRule.pluck(:line_id))
-  # end
-
   def locked_referential_to_aggregate_belongs_to_output
     return unless locked_referential_to_aggregate.present?
     return if locked_referential_to_aggregate.referential_suite == output
@@ -103,11 +99,6 @@ class Workbench < ApplicationModel
     workgroup.calendars.where('(organisation_id = ? OR shared = ?)', organisation.id, true)
   end
 
-  # XXX
-  # def import_compliance_control_set
-  #   import_compliance_control_set_id && ComplianceControlSet.find(import_compliance_control_set_id)
-  # end
-
   def compliance_control_set key
     id = (owner_compliance_control_set_ids || {})[key.to_s]
     ComplianceControlSet.where(id: id).last if id.present?
@@ -119,6 +110,18 @@ class Workbench < ApplicationModel
 
   def sentinel_notifications_recipients
     users.map(&:email_recipient)
+  end
+
+  def has_restriction?(restriction)
+    restrictions && restrictions.include?(restriction.to_s)
+  end
+
+  def self.available_restriction
+    ["referentials.flag_urgent"]
+  end
+
+  def last_merged_data
+    merges.select(&:successful?).map(&:updated_at).max
   end
 
   private

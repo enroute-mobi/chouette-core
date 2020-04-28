@@ -20,6 +20,19 @@ class WorkgroupsController < ChouetteController
     render :new
   end
 
+  def show
+    show! do |format|
+      format.html {
+        @workbenches = WorkbenchDecorator.decorate(
+          @workgroup.workbenches.order('created_at DESC').paginate(page: params[:page]),
+          context: {
+            workgroup: @workgroup
+          }
+        )
+      }
+    end
+  end
+
   def index
     index! do |format|
       @workgroups = WorkgroupDecorator.decorate(@workgroups)

@@ -94,8 +94,8 @@ class Import::Gtfs < Import::Base
 
         stop_area.name = stop.name
         stop_area.area_type = stop.location_type == '1' ? :zdlp : :zdep
-        stop_area.latitude = stop.lat && BigDecimal(stop.lat)
-        stop_area.longitude = stop.lon && BigDecimal(stop.lon)
+        stop_area.latitude = stop.lat.presence && stop.lat.to_f
+        stop_area.longitude = stop.lon.presence && stop.lon.to_f
         stop_area.kind = :commercial
         stop_area.deleted_at = nil
         stop_area.confirmed_at ||= Time.now

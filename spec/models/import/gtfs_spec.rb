@@ -396,9 +396,7 @@ RSpec.describe Import::Gtfs do
       expected_attributes = [
         ["AB", "outbound", "to Bullfrog", "to Bullfrog"],
         ["AB", "inbound", "to Airport", "to Airport"],
-        ["STBA", "inbound", "Shuttle", "Shuttle"],
         ["CITY", "inbound", "Inbound", "Inbound"],
-        ["CITY", "outbound", "Outbound", "Outbound"],
         ["BFC", "outbound", "to Furnace Creek Resort", "to Furnace Creek Resort"],
         ["BFC", "inbound", "to Bullfrog", "to Bullfrog"],
         ["AAMV", "outbound", "to Amargosa Valley", "to Amargosa Valley"],
@@ -415,9 +413,7 @@ RSpec.describe Import::Gtfs do
       expected_attributes = [
         "to Bullfrog",
         "to Airport",
-        "Shuttle",
         "Inbound",
-        "Outbound",
         "to Furnace Creek Resort",
         "to Bullfrog",
         "to Amargosa Valley",

@@ -23,7 +23,7 @@ class ApplicationController < ActionController::Base
   end
 
   def pundit_user
-    UserContext.new(current_user, referential: @referential)
+    UserContext.new(current_user, referential: @referential, workbench: current_workbench)
   end
 
   protected
@@ -39,6 +39,11 @@ class ApplicationController < ActionController::Base
   def current_organisation
     current_user.organisation if current_user
   end
+
+  def current_workbench
+    workbench if (self.respond_to? :workbench)
+  end
+  
   helper_method :current_organisation
 
   def collection_name

@@ -253,20 +253,62 @@ RSpec.describe ImportPolicy, type: :policy do
   end
 
   describe "#option_flag_urgent?" do
+    
+    context "user_context contains no workbench" do
+      subject(:policy) { ImportPolicy.new user_context, record }
 
-    subject(:policy) { ImportPolicy.new user_context, record }
+      context "with permission 'referentials.flag_urgent'" do
+        before { add_permissions 'referentials.flag_urgent', to_user: user }
+        it "allows user" do
+          expect_it.to permit_action(:option, :flag_urgent)
+        end
+      end
 
-    context "with permission 'referentials.flag_urgent'" do
-      before { add_permissions 'referentials.flag_urgent', to_user: user }
-      it "allows user" do
-        expect_it.to permit_action(:option, :flag_urgent)
+      context "without permission 'referentials.flag_urgent'" do
+        before { remove_permissions 'referentials.flag_urgent', from_user: user }
+        it "allows user" do
+          expect_it.to forbid_action(:option, :flag_urgent)
+        end
       end
     end
 
-    context "without permission 'referentials.flag_urgent'" do
-      before { remove_permissions 'referentials.flag_urgent', from_user: user }
-      it "allows user" do
-        expect_it.to forbid_action(:option, :flag_urgent)
+    context "user_context contains a permissive workbench" do
+      let(:permissive_workbench) { create :workbench, restrictions: [] }
+      let( :user_context_with_permissive_workbench ) { create_user_context(user, referential, permissive_workbench)  }
+      subject(:policy) { ImportPolicy.new user_context_with_permissive_workbench, record }
+
+      context "with permission 'referentials.flag_urgent'" do
+        before { add_permissions 'referentials.flag_urgent', to_user: user }
+        it "allows user" do
+          expect_it.to permit_action(:option, :flag_urgent)
+        end
+      end
+
+      context "without permission 'referentials.flag_urgent'" do
+        before { remove_permissions 'referentials.flag_urgent', from_user: user }
+        it "allows user" do
+          expect_it.to forbid_action(:option, :flag_urgent)
+        end
+      end
+    end
+
+    context "user_context contains a restrictive workbench" do
+      let(:restrictive_workbench) { create :workbench, restrictions: ['referentials.flag_urgent'] }
+      let( :user_context_with_restrictive_workbench ) { create_user_context(user, referential, restrictive_workbench)  }
+      subject(:policy) { ImportPolicy.new user_context_with_restrictive_workbench, record }
+
+      context "with permission 'referentials.flag_urgent'" do
+        before { add_permissions 'referentials.flag_urgent', to_user: user }
+        it "allows user" do
+          expect_it.to forbid_action(:option, :flag_urgent)
+        end
+      end
+
+      context "without permission 'referentials.flag_urgent'" do
+        before { remove_permissions 'referentials.flag_urgent', from_user: user }
+        it "allows user" do
+          expect_it.to forbid_action(:option, :flag_urgent)
+        end
       end
     end
 

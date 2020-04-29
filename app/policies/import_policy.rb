@@ -27,8 +27,24 @@ class ImportPolicy < ApplicationPolicy
     true
   end
 
+  def has_permission?(permission)
+    return false unless user || workbench
+
+    return false if user && !user.has_permission?(permission)
+
+    return false if workbench && workbench.has_restriction?(permission)
+
+    # Example for the future - Ignore me
+    # Include here ApiKey permissions in the future
+    # if api_key && !api_key.has_permission?(permission)
+    #   return false
+    # end
+
+    true
+  end
+
   def option_flag_urgent?
-    user.has_permission?('referentials.flag_urgent')
+    has_permission? 'referentials.flag_urgent'
   end
 
 end

@@ -9,8 +9,8 @@ module Support
         # to_user.save if to_user.persisted?
       end
 
-      def create_user_context(user:, referential:)
-        UserContext.new(user, referential: referential)
+      def create_user_context(user, referential, workbench = nil)
+        UserContext.new(user, referential: referential, workbench: workbench)
       end
 
       def finalise_referential
@@ -28,7 +28,7 @@ module Support
       def self.extended into
         into.module_eval do
           subject { described_class }
-          let( :user_context ) { create_user_context(user: user, referential: referential)  }
+          let( :user_context ) { create_user_context(user, referential)  }
           let( :referential )  { build_stubbed :referential }
           let( :user )         { build_stubbed :user }
         end

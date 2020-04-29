@@ -58,12 +58,12 @@ RSpec.describe WorkgroupWorkbenchesController, :type => :controller do
           workbench.workgroup.save!
         end
         it 'returns HTTP success' do
-          expect(request).to redirect_to [workbench.workgroup]
+          expect(request).to redirect_to [workbench.workgroup, workbench]
           expect(workbench.reload.name).to eq "new workbench name"
           expect(workbench.restrictions).to eq ["referentials.flag_urgent"]
         end
       end
     end
   end
-  
+
 end

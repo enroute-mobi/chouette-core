@@ -295,7 +295,7 @@ class Import::Neptune < Import::Base
         if parent_id = @parent_stop_areas.delete(source_stop_area[:object_id])
           stop_area.parent_id = parent_id
         end
-
+        stop_area.activate
         save_model stop_area
 
         contains = source_stop_area[:contains]

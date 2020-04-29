@@ -8,6 +8,9 @@ class WorkgroupWorkbenchesController < ChouetteController
   belongs_to :workgroup
   helper_method :has_restriction?
 
+  def update
+    update! { workgroup_workbench_path(@workbench.workgroup, @workbench) }
+  end
 
   protected
 

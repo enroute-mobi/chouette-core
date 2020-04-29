@@ -3,15 +3,15 @@ en:
     current_offer: Current offer
     search_no_results: 'No workbench'
     show:
-      title: "Data set %{name}"
+      title: "%{name}"
       sections:
         permissions: "Permissions"
     edit:
-      title: "Configure the validation"
+      title: "Update workbench %{name}"
       link:  "Settings"
       none: "None"
     update:
-      title: "Configure the validation"
+      title: "Update workbench %{name}"
     referential_count:
       zero: "There are no referentials in your workbench"
       one: "There is one referential in your workbench"

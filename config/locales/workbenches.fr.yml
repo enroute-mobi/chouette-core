@@ -3,15 +3,15 @@ fr:
     current_offer: Offre courante
     search_no_results: "Aucun espace de travail"
     show:
-      title: "Offre de transport %{name}"
+      title: "%{name}"
       sections:
         permissions: "Permissions"
     edit:
-      title: "Paramétrage de la validation"
+      title: "Editer l'espace de travail %{name}"
       link:  "Paramétrages"
       none: "Aucun contrôle"
     update:
-      title: "Paramétrage de la validation"
+      title: "Editer l'espace de travail %{name}"
     referential_count:
       zero: "Aucun jeu de données dans cet espace de travail"
       one: "1 jeu de données dans cet espace de travail"

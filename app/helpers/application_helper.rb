@@ -23,10 +23,8 @@ module ApplicationHelper
 
     local = "#{object.model_name.name.underscore.pluralize}.#{params[:action]}.title"
 
-    arg = object.organisation.name.capitalize if Workbench === object
-
     if object.try(:name)
-      t(local, name: arg || object.name.capitalize || object.id).html_safe
+      t(local, name: object.name.capitalize || object.id).html_safe
     else
       t(local).html_safe
     end

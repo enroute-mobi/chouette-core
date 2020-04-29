@@ -65,7 +65,7 @@ class ComplianceCheckSet < ApplicationModel
       4.hours.ago,
       finished_statuses
     ).each do |ccs|
-      Rails.logger.warn "Compliance Check Set #{ccs.id} #{css.name} is running for more than 4 hours"
+      Rails.logger.warn "Compliance Check Set #{ccs.id} #{ccs.name} is running for more than 4 hours"
     end
   end
 

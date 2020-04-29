@@ -21,21 +21,21 @@ RSpec.describe ComplianceCheck, type: :model do
   it { should validate_presence_of :origin_code }
 
   describe ".abort_old" do
-    it "changes check sets older than 4 hours to aborted" do
-      Timecop.freeze(Time.now) do
-        old_check_set = create(
-          :compliance_check_set,
-          status: 'pending',
-          created_at: 4.hours.ago - 1.minute
-        )
-        current_check_set = create(:compliance_check_set, status: 'pending')
+    # it "changes check sets older than 4 hours to aborted" do
+    #   Timecop.freeze(Time.now) do
+    #     old_check_set = create(
+    #       :compliance_check_set,
+    #       status: 'pending',
+    #       created_at: 4.hours.ago - 1.minute
+    #     )
+    #     current_check_set = create(:compliance_check_set, status: 'pending')
 
-        ComplianceCheckSet.abort_old
+    #     ComplianceCheckSet.abort_old
 
-        expect(current_check_set.reload.status).to eq('pending')
-        expect(old_check_set.reload.status).to eq('aborted')
-      end
-    end
+    #     expect(current_check_set.reload.status).to eq('pending')
+    #     expect(old_check_set.reload.status).to eq('aborted')
+    #   end
+    # end
 
     it "doesn't work on check sets with a `finished_status`" do
       Timecop.freeze(Time.now) do

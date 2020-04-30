@@ -65,11 +65,26 @@ class Import::Workbench < Import::Base
     notify_state
   end
 
+  # Compute new_status from children (super) and compliance_check_sets
+  # Used by IevInterfaces::Task#update_status
+  def compute_new_status
+    new_status_from_children = super
 
-  def child_change
-    super
-    if self.class.finished_statuses.include?(status)
-      done! if self.compliance_check_sets.all?(&:successful?)
+    if new_status_from_children == 'successful'
+      Rails.logger.info "#{self.class.name} ##{id}: compliance_check_sets statuses #{compliance_check_sets.reload.map(&:status).inspect}"
+      if compliance_check_sets.unfinished.count > 0
+        'running'
+      else
+        if compliance_check_sets.where(status: ComplianceCheckSet.failed_statuses).count > 0
+          'failed'
+        elsif children.where(status: "warning").count > 0
+          'warning'
+        elsif children.where(status: "successful").count == children.count
+          'successful'
+        end
+      end
+    else
+      new_status_from_children
     end
   end
 
@@ -77,9 +92,9 @@ class Import::Workbench < Import::Base
     self.resources.map(&:referential).compact
   end
 
+  # Invokes by IevInterfaces::Task#update_status
+  # *only* when status is changed to successful
   def done!
-    return unless (successful? || warning?) && children.reload.all?(&:finished?)
-
     if flag_urgent
       flag_refentials_as_urgent
     end

@@ -11,7 +11,7 @@ module ImportResourcesSupport
   end
 
   def next_step
-    main_resource.next_step
+    main_resource&.next_step
   end
 
   def create_message args, opts={}

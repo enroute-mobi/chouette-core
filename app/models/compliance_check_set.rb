@@ -38,6 +38,9 @@ class ComplianceCheckSet < ApplicationModel
   def self.finished_statuses
     %w(successful failed warning aborted canceled)
   end
+  def self.failed_statuses
+    %w(failed aborted canceled)
+  end
 
   def self.objects_pending_notification
     scope = self.where(notified_parent_at: nil).where.not(status: :aborted)
@@ -113,11 +116,6 @@ class ComplianceCheckSet < ApplicationModel
     end
 
     update attributes
-    import_resource&.next_step
-  end
-
-  def import_resource
-    referential&.import_resources.main_resources.last
   end
 
   def perform_async(only_internals=false)

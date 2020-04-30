@@ -89,7 +89,7 @@ module LocalImportSupport
   def worker_died
     force_failure!
 
-    Rails.logger.error "Import #{self.inspect} failed due to worker being dead"
+    Rails.logger.error "#{self.class.name} #{self.inspect} failed due to worker being dead"
   end
 
   def import_resources(*resources)
@@ -130,9 +130,14 @@ module LocalImportSupport
   end
 
   def notify_parent
-    return unless super
-    main_resource.update_status_from_importer self.status
+    Rails.logger.info "#{self.class.name} ##{id}: notify_parent #{caller[0..2].inspect}"
+
+    Rails.logger.info "#{self.class.name} ##{id}: invoke next_step"
     next_step
+
+    main_resource&.update_status_from_importer self.status
+
+    super
   end
 
   attr_accessor :local_file

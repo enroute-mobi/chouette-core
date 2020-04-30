@@ -48,19 +48,24 @@ module LocalImportSupport
     enqueue_job :import
   end
 
-  def import
-    update status: 'running', started_at: Time.now
+  def import_type
+    self.class.name.demodulize.underscore
+  end
 
-    @progress = 0
-    profile_tag 'import' do
+  def import
+    Chouette::Benchmark.measure "import_#{import_type}", id: id do
+      update status: 'running', started_at: Time.now
+      @progress = 0
+
       ActiveRecord::Base.cache do
         import_without_status
       end
+
+      @progress = nil
+      @status ||= 'successful'
+      referential&.active!
+      update status: @status, ended_at: Time.now
     end
-    @progress = nil
-    @status ||= 'successful'
-    referential&.active!
-    update status: @status, ended_at: Time.now
   rescue => e
     update status: 'failed', ended_at: Time.now
     Rails.logger.error "Error in #{file_type} import: #{e} #{e.backtrace.join('\n')}"
@@ -94,7 +99,7 @@ module LocalImportSupport
 
   def import_resources(*resources)
     resources.each do |resource|
-      profile_operation resource do
+       Chouette::Benchmark.measure resource do
         send "import_#{resource}"
 
         notify_operation_progress(resource)
@@ -103,7 +108,7 @@ module LocalImportSupport
   end
 
   def create_referential
-    profile_operation 'create_referential' do
+    Chouette::Benchmark.measure 'create_referential' do
       self.referential ||=  Referential.new(
         name: referential_name,
         organisation_id: workbench.organisation_id,

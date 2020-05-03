@@ -460,7 +460,7 @@ GEM
       activesupport (>= 3.0.0)
     pundit-matchers (1.6.0)
       rspec-rails (>= 3.0.0)
-    rabl (0.14.2)
+    rabl (0.14.3)
       activesupport (>= 2.3.14)
     rack (2.2.2)
     rack-protection (2.0.5)

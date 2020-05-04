@@ -1,0 +1,31 @@
+- breadcrumb :workbench, @workbench
+- page_header_content_for @workbench
+
+.page_content
+  .container-fluid
+    .row
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = definition_list t("metadatas"),
+          { \
+            Workbench.tmf(:name) => @workbench.name, \
+            Workbench.tmf(:organisation) => @workbench.organisation&.name \
+          }
+
+    .row
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        .definition-list
+          .dl-head
+            = t("workgroup_workbenches.show.restrictions")
+          .dl-checkboxes
+            - if @workbench.restrictions.empty?
+              = replacement_msg t("permissions.show.no_restrictions")
+            - permissions_array_to_hash(@workbench.restrictions.sort).each do |feature, feature_restriction|
+              .dl-checkboxes-groups
+                .dl-cb-group-content
+                  .feature-title
+                    = t("permissions.features.#{feature}")
+                  ul
+                  - feature_restriction.each do |restriction|
+                    li
+                      = t("permissions.actions.#{restriction.split('.').last}")
+              end

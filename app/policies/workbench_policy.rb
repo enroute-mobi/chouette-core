@@ -6,14 +6,10 @@ class WorkbenchPolicy < ApplicationPolicy
   end
 
   def show?
-    user.organisation.workbench_ids.include?(record.id)
+    user.organisation_id == record.organisation_id
   end
 
   def update?
     user.has_permission?('workbenches.update')
-  end
-
-  def show?
-    user.organisation_id == record.organisation_id
   end
 end

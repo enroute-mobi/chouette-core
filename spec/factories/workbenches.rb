@@ -3,6 +3,7 @@ FactoryGirl.define do
     name "Gestion de l'offre"
     objectid_format 'stif_netex'
     prefix 'local'
+    restrictions []
 
     association :organisation
     association :line_referential

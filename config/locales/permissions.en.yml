@@ -9,3 +9,46 @@ en:
         name: Visitor
       custom:
         name: Custom
+    form:
+      selector:
+        all: All
+        none: None
+    features:
+      access_points: Access points
+      aggregates: Aggregated offers
+      api_keys: Api keys
+      calendars: Calendars
+      companies: Companies
+      compliance_check_sets: Compliance check sets
+      compliance_control_blocks: Control blocks
+      compliance_control_sets: Control sets
+      compliance_controls: Control
+      connection_links: Connections
+      exports: Exports
+      footnotes: Notes
+      imports: Imports
+      journey_patterns: Journey patterns
+      merges: Merged offers
+      publication_api_keys: Publication API Keys
+      publication_apis: Publication APIs
+      publication_setups: Publications
+      referentials: Datasets
+      routes: Routes
+      routing_constraint_zones: Routing constraint zones
+      stop_area_routing_constraints: StopAreas Routing Constraints
+      time_tables: Timetables
+      vehicle_journeys: Vehicle journeys
+      workbenches: Workbenches
+      notification_rules: Notification suspensions
+    actions:
+      create: Create
+      destroy: Destroy
+      update: Update
+      edit: Edit
+      share: Share
+      update_activation_dates: Update activation dates
+      synchronize: Synchronize
+      rollback: Rollback
+      flag_urgent: Flag as urgent
+      monitor: Monitor
+      change_status: Change status

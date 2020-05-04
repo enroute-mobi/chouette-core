@@ -52,11 +52,9 @@ class CleanUp < ApplicationModel
     run if may_run?
     begin
       referential.switch
-      result = clean
-      # cleaner.successful(result)
+      clean
     rescue Exception => e
-      Rails.logger.error "CleanUpWorker : #{e}"
-      # cleaner.failed({error: e.message})
+      Chouette::Safe.capture "CleanUp ##{id} failed", e
       log_failed({})
     end
   end

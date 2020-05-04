@@ -12,7 +12,7 @@ class Export::Workgroup < Export::Base
     update(status: 'running', started_at: Time.now)
     create_sub_jobs
   rescue Exception => e
-    logger.error e.message
+    Chouette::Safe.capture "Export::Workgroup ##{id} failed", e
     update( status: 'failed' )
     raise
   end

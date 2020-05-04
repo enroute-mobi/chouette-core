@@ -19,7 +19,7 @@ module Chouette
     end
 
     def out?
-      in_out == false
+      in_out == false || in_out.nil?
     end
 
     def checksum_attributes(db_lookup = true)

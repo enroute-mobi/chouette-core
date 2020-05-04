@@ -164,10 +164,10 @@ RSpec.describe Import::Neptune do
     it 'should update existing stop_areas' do
       import.send(:import_stop_areas)
       stop_area = workbench.stop_area_referential.stop_areas.last
-      attrs = stop_area.attributes.except('updated_at')
+      attrs = stop_area.attributes.except('updated_at', 'confirmed_at')
       stop_area.update name: "foo"
       expect{ import.send(:import_stop_areas) }.to_not change{ workbench.stop_area_referential.stop_areas.count }
-      expect(stop_area.reload.attributes.except('updated_at')).to eq attrs
+      expect(stop_area.reload.attributes.except('updated_at', 'confirmed_at')).to eq attrs
     end
 
     it 'should link stop_areas' do

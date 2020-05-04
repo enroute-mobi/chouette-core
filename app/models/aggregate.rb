@@ -9,8 +9,6 @@ class Aggregate < ApplicationModel
 
   validates :workgroup, presence: true
 
-  after_commit :aggregate, on: :create, unless: :profile?
-
   delegate :output, to: :workgroup
 
   def parent
@@ -48,7 +46,7 @@ class Aggregate < ApplicationModel
 
   def cancel!
     update status: :canceled
-    new.rollbacked!
+    new&.rollbacked!
   end
 
   def following_aggregates
@@ -62,6 +60,7 @@ class Aggregate < ApplicationModel
 
     enqueue_job :aggregate!
   end
+  alias run aggregate
 
   def aggregate!
     prepare_new
@@ -78,7 +77,7 @@ class Aggregate < ApplicationModel
       save_current
     end
   rescue => e
-    Rails.logger.error "Aggregate failed: #{e} #{e.backtrace.join("\n")}"
+    Chouette::Safe.capture "Aggregate ##{id} failed", e
     failed!
     raise e if Rails.env.test?
   end
@@ -101,6 +100,11 @@ class Aggregate < ApplicationModel
     clean_previous_operations
     publish
     workgroup.aggregated!
+  end
+
+  def handle_queue
+    concurent_operations.pending.where('created_at < ?', created_at).each(&:cancel!)
+    super
   end
 
   private

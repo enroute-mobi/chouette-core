@@ -12,12 +12,12 @@ RSpec.describe Import::Base, type: :model do
     let(:workbench) { create(:workbench) }
     let(:other_workbench) { create(:workbench) }
 
-    it "removes files from imports older than 7 days" do
-      file_purgeable = Timecop.freeze(7.days.ago) do
+    it "removes files from imports older than 60 days" do
+      file_purgeable = Timecop.freeze(60.days.ago) do
         create(:workbench_import, workbench: workbench)
       end
 
-      other_file_purgeable = Timecop.freeze(7.days.ago) do
+      other_file_purgeable = Timecop.freeze(60.days.ago) do
         create( :workbench_import, workbench: other_workbench )
       end
 

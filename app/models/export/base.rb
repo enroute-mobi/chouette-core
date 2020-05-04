@@ -75,9 +75,9 @@ class Export::Base < ApplicationModel
   def run
     update status: 'running', started_at: Time.now
     export
-    notify_state
+    notify_state unless publication.present?
   rescue Exception => e
-    Rails.logger.error e.message
+    Chouette::Safe.capture "Export ##{id} failed", e
 
     messages.create(criticity: :error, message_attributes: { text: e.message }, message_key: :full_text)
     update status: 'failed'
@@ -127,7 +127,7 @@ class Export::Base < ApplicationModel
           begin
             klass_name.constantize
           rescue => e
-            Rails.logger.info "Failed: #{e.message}".red
+            Chouette::Safe.capture "Export descendant class loading #{klass_name} failed", e
             nil
           end
         end

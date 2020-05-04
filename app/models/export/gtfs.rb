@@ -43,23 +43,30 @@ class Export::Gtfs < Export::Base
 
     @target = GTFS::Target.new(File.join(directory, "#{zip_file_name}.zip"))
 
-    export_companies_to target
-    notify_progress 1.0/operations_count
-    export_stop_areas_to target
-    notify_progress 2.0/operations_count
+    Chouette::Benchmark.measure "companies" do
+      export_companies_to target
+      notify_progress 1.0/operations_count
+    end
 
-    Lines.new(self).export!
+    Chouette::Benchmark.measure "stop_areas" do
+      export_stop_areas_to target
+      notify_progress 2.0/operations_count
+    end
 
-    export_transfers_to target
-    notify_progress 3.0/operations_count
+    Lines.new(self).export_part
+
+    Chouette::Benchmark.measure "transfers" do
+      export_transfers_to target
+      notify_progress 3.0/operations_count
+    end
+
     # Export Trips
-    TimeTables.new(self).export!
-    VehicleJourneys.new(self).export!
+    TimeTables.new(self).export_part
+    VehicleJourneys.new(self).export_part
 
     notify_progress 4.0/operations_count
     # Export stop_times.txt
-    VehicleJourneyAtStops.new(self).export!
-
+    VehicleJourneyAtStops.new(self).export_part
     notify_progress 5.0/operations_count
     # Export files fare_rules, fare_attributes, shapes, frequencies
     # and feed_info aren't yet implemented as import nor export features from
@@ -71,7 +78,7 @@ class Export::Gtfs < Export::Base
   # For legacy specs
   def export_lines_to(target)
     @target = target
-    Lines.new(self).export!
+    Lines.new(self).export_part
   end
 
   def export_companies_to(target)
@@ -264,6 +271,16 @@ class Export::Gtfs < Export::Base
     end
 
     delegate :target, :index, :export_scope, :messages, :date_range, to: :export
+
+    def part_name
+      @part_name ||= self.class.name.demodulize.underscore
+    end
+
+    def export_part
+      Chouette::Benchmark.measure part_name do
+        export!
+      end
+    end
 
   end
 
@@ -635,11 +652,11 @@ class Export::Gtfs < Export::Base
       end
 
       def stop_time_departure_time
-        GTFS::Time.format_datetime departure_time, departure_day_offset, time_zone if departure_time
+        GTFSTime.format_datetime departure_time, departure_day_offset, time_zone if departure_time
       end
 
       def stop_time_arrival_time
-        GTFS::Time.format_datetime arrival_time, arrival_day_offset, time_zone if arrival_time
+        GTFSTime.format_datetime arrival_time, arrival_day_offset, time_zone if arrival_time
       end
 
       def stop_area_id

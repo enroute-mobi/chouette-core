@@ -56,6 +56,8 @@ class SimpleInterface < ApplicationModel
     begin
       yield
     rescue => e
+      Chouette::Safe.capture "#{self.class.name} ##{id} failed", e
+
       msg = msg.call if msg.is_a?(Proc)
       custom_print "\nFAILED: \n errors: #{msg}\n exception: #{e.message}\n#{e.backtrace.join("\n")}", color: :red unless self.configuration.ignore_failures
       push_in_journal({message: msg, error: e.message, event: :error, kind: :error})

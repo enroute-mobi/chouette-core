@@ -54,7 +54,7 @@ module Chouette
               jp.save!
             end
           rescue => e
-            Rails.logger.error e
+            Chouette::Safe.capture "JourneyPattern.state_update on Route #{route.id} failed", e
           end
           item['errors']   = jp.errors if jp.errors.any?
           item['checksum'] = jp.checksum

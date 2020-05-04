@@ -17,7 +17,7 @@ class Import::Netex < Import::Base
       zip_file.glob('**/calendriers.xml').size >= 1
     end
   rescue => e
-    Rails.logger.debug "Error in testing Netex file: #{e}"
+    Chouette::Safe.capture "Error in testing NeTEx file: #{file}", e
     return false
   end
 
@@ -42,7 +42,8 @@ class Import::Netex < Import::Base
         name: self.name,
         organisation_id: workbench.organisation_id,
         workbench_id: workbench.id,
-        metadatas: [referential_metadata]
+        metadatas: [referential_metadata],
+        ready: false
       )
     self.referential.save
 

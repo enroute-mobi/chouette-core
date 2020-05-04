@@ -7,7 +7,7 @@ class AutoKillPlugin < Delayed::Plugin
         explained = job.payload_object.try(:explain) || job.payload_object.inspect
         worker.say "Starting Job #{explained} with priority #{job.priority}, attempt #{job.attempts + 1}/#{job.max_attempts}"
       rescue => e
-        Rails.logger.error "Error before starting job: #{e}"
+        Chouette::Safe.capture 'Error before starting job', e
       end
     end
 
@@ -19,7 +19,7 @@ class AutoKillPlugin < Delayed::Plugin
           worker.stop
         end
       rescue => e
-        Rails.logger.error "Error after job: #{e}"
+        Chouette::Safe.capture 'Error after job', e
       end
     end
   end

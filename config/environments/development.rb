@@ -29,7 +29,8 @@ Rails.application.configure do
   config.active_support.deprecation = :log
 
   config.log_level = :debug
-  #config.colorize_logging = false
+  config.colorize_logging = false
+  config.logger = ActiveSupport::Logger.new("log/development.log", 3, 250.megabytes)
 
   # Raise an error on page load if there are pending migrations.
   config.active_record.migration_error = :page_load
@@ -55,6 +56,7 @@ Rails.application.configure do
 
   # See #8823
   config.chouette_email_user = true
+  config.chouette_email_whitelist = '@enroute.mobi'
 
   # change to true to allow email to be sent during development
   config.action_mailer.perform_deliveries = true
@@ -62,7 +64,7 @@ Rails.application.configure do
   config.action_mailer.default :charset => "utf-8"
 
   # Configure the e-mail address which will be shown in Devise::Mailer
-  config.mailer_sender = "chouette@af83.com"
+  config.mailer_sender = "noreply@enroute.mobi"
   config.to_prepare do
     Devise::Mailer.layout "mailer"
   end

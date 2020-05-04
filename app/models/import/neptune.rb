@@ -8,7 +8,7 @@ class Import::Neptune < Import::Base
       zip_file.glob('*.xml').size == files_count
     end
   rescue => e
-    Rails.logger.debug "Error in testing Neptune file: #{e}"
+    Chouette::Safe.capture "Error in testing Neptune file: #{file}", e
     return false
   end
 
@@ -19,7 +19,6 @@ class Import::Neptune < Import::Base
 
   def import_without_status
     prepare_referential
-    referential.pending!
 
     import_resources :time_tables
     fix_metadatas_periodes
@@ -296,7 +295,7 @@ class Import::Neptune < Import::Base
         if parent_id = @parent_stop_areas.delete(source_stop_area[:object_id])
           stop_area.parent_id = parent_id
         end
-
+        stop_area.activate
         save_model stop_area
 
         contains = source_stop_area[:contains]

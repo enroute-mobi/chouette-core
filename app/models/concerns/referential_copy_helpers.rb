@@ -85,6 +85,8 @@ module ReferentialCopyHelpers
           model.save!
         end
       rescue => e
+        Chouette::Safe.capture "ReferentialCopy Model save #{model.inspect} failed", e
+
         error = []
         error << e.message
         error << model.class.name

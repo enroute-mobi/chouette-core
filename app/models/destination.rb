@@ -35,6 +35,7 @@ class Destination < ApplicationModel
       do_transmit publication, report
       report.success! unless report.failed?
     rescue => e
+      Chouette::Safe.capture "Destination ##{id} transmission failed for Publication #{publication.id}", e
       report.failed! message: e.message, backtrace: e.backtrace
     end
   end

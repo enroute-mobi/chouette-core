@@ -56,12 +56,17 @@ class ComplianceCheckSet < ApplicationModel
     compliance_checks.internals.exists? && should_call_iev?
   end
 
+  # CHOUETTE-442
+  # In a first time, updates are disabled and only log a message
+  # when a ComplianceCheckSet seems to be in a bad status
   def self.abort_old
     where(
       'created_at < ? AND status NOT IN (?)',
       4.hours.ago,
       finished_statuses
-    ).update_all(status: 'aborted')
+    ).each do |ccs|
+      Rails.logger.warn "Compliance Check Set #{ccs.id} #{ccs.name} is running for more than 4 hours"
+    end
   end
 
   def notify_parent

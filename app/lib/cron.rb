@@ -59,7 +59,7 @@ module Cron
       begin
         yield
       rescue => e
-        Rails.logger.warn(e.message)
+        Chouette::Safe.capture "Cron action failed", e
       end
     end
 
@@ -69,7 +69,7 @@ module Cron
 
     def check_ccset_operations
       protected_action do
-        ParentNotifier.new(ComplianceCheckSet).notify_when_finished
+        # ParentNotifier.new(ComplianceCheckSet).notify_when_finished
         ComplianceCheckSet.abort_old
       end
     end

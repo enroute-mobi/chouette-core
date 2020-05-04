@@ -1,0 +1,35 @@
+= simple_form_for [@workgroup, @workbench], html: {class: 'form-horizontal', id: 'workbench_form'}, wrapper: :horizontal_form do |f|
+  .row
+    .col-lg-12
+      h2.mb-lg= t("metadatas")
+      = f.input :name
+      = f.input :organisation_id, as: :select, :collection => Organisation.order(Arel.sql('lower(name) asc')), include_blank: true, required: true, disabled: true
+
+  .separator.section_separator
+  .row
+    #restrictions
+      .col-lg-12.permissions
+        h2.mb-lg= t("workgroup_workbenches.show.restrictions")
+        - permissions_array_to_hash(Workbench.available_restriction.sort).each do |feature, feature_restriction|
+          .feature-header
+            .feature-title
+              = t("permissions.features.#{feature}")
+            .toggles
+              = link_to t("permissions.form.selector.all"), '#', data: {mask: feature, val: true}
+              = link_to t("permissions.form.selector.none"), '#', data: {mask: feature, val: false}
+          ul
+            - feature_restriction.each do |restriction|
+              li
+                = check_box_tag "workbench[restrictions][]", restriction, @workbench.has_restriction?(restriction), id: restriction
+                = label :permissions, restriction, t("permissions.actions.#{restriction.split('.').last}")
+    .separator
+
+  = cancel_button
+  = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'workbench_form'
+
+  - content_for :javascript do
+    coffee:
+      $('#restrictions .toggles a').click (e)->
+        $('#restrictions').find("[id^=\"#{e.currentTarget.dataset.mask}\"]").prop('checked', e.currentTarget.dataset.val == 'true')
+        e.preventDefault()
+        false

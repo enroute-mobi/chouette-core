@@ -4,6 +4,8 @@ module ReferentialSaveWithLock
   def save(options = {})
     super(options)
   rescue ActiveRecord::StatementInvalid => e
+    Chouette::Safe.capture "Referential ##{id} save failed", e
+
     if e.message.include?('PG::LockNotAvailable')
       raise TableLockTimeoutError.new(e)
     else
@@ -160,7 +162,7 @@ class Referential < ApplicationModel
           begin
             src[0..-4].classify.safe_constantize
           rescue => e
-            Rails.logger.info "Failed: #{e.message}"
+            Chouette::Safe.capture "Referential#force_register_models_with_checksum failed on #{src}", e
             nil
           end
         end
@@ -454,7 +456,6 @@ class Referential < ApplicationModel
 
   # Don't use after_commit because of inline_clone (cf created_from)
   after_create :clone_schema, if: :created_from
-  after_create :active!, unless: :created_from
   after_create :create_from_current_offer, if: :from_current_offer
 
   before_destroy :destroy_schema
@@ -560,6 +561,7 @@ class Referential < ApplicationModel
     enqueue_job :fill_from_current_offer
   end
 
+  # Create referential from current workbench output
   def fill_from_current_offer
     current_offer = workbench.output.current
 

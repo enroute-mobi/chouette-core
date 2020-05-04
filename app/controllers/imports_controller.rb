@@ -7,6 +7,7 @@ class ImportsController < ChouetteController
   respond_to :json, :html
 
   def internal_download
+    resource = Import::Base.find params[:id]
     if params[:token] == resource.token_download
       resource.file.cache_stored_file!
       send_file resource.file.path
@@ -21,9 +22,7 @@ class ImportsController < ChouetteController
   end
 
   def show
-    instance_variable_set "@#{collection_name.singularize}", resource.decorate(context: {
-      workbench: @workbench
-    })
+    @import = resource.decorate(context: {parent: parent})
     respond_to do |format|
       format.html
       format.json do
@@ -37,6 +36,10 @@ class ImportsController < ChouetteController
 
   def index_model
     Import::Workbench
+  end
+
+  def resource
+    @import ||= parent.imports.find(params[:id])
   end
 
   def build_resource
@@ -58,14 +61,9 @@ class ImportsController < ChouetteController
     ImportDecorator.decorate(
       imports,
       context: {
-        workbench: @workbench
+        parent: parent
       }
     )
   end
 
-  protected
-
-  def begin_of_association_chain
-    Workgroup.find(params[:workgroup_id]) if params[:workgroup_id]
-  end
 end

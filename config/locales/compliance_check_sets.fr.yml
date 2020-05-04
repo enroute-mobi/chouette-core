@@ -54,7 +54,7 @@ fr:
       compliance_check_set:
         zero:  "Rapport de contrôles"
         one:   "Rapport de contrôles"
-        other: "Rapport de contrôles"
+        other: "Rapports de contrôles"
       compliance_check:
         zero:  "Contrôle"
         one:   "Contrôle"

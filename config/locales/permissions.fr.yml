@@ -9,3 +9,49 @@ fr:
         name: Visiteur
       custom:
         name: Sur-mesure
+    form:
+      selector:
+        all: Toutes
+        none: Aucune
+    show:
+      no_permissions: Aucune permission
+      no_restrictions: Aucune restriction
+    features:
+      access_points: Accès
+      aggregates: Agrégations d'offre
+      api_keys: Clés d'accès API
+      calendars: Calendriers
+      companies: Transporteurs
+      compliance_check_sets: Rapports de contrôles
+      compliance_control_blocks: Groupes de contrôles
+      compliance_control_sets: Jeux de contrôles
+      compliance_controls: Contrôles
+      connection_links: Correspondances
+      exports: Exports
+      footnotes: Notes de bas de page
+      imports: Imports
+      journey_patterns: Missions
+      merges: Finalisations d'offre
+      publication_api_keys: Clés d'API de Publication
+      publication_apis: APIs de Publication
+      publication_setups: Publications automatiques
+      referentials: Jeux de données
+      routes: Itinéraires
+      routing_constraint_zones: ITLs
+      stop_area_routing_constraints: Interdictions de Trafic entre Arrêts
+      time_tables: Calendriers
+      vehicle_journeys: Courses
+      workbenches: Espaces de travail
+      notification_rules: Désactivations de notification
+    actions:
+      create: Création
+      destroy: Suppression
+      update: Mise à jour
+      edit: Édition
+      share: Partage
+      update_activation_dates: Mise à jour des dates d'activation
+      synchronize: Synchronisation
+      rollback: Annulation
+      flag_urgent: Signaler une offre urgente
+      monitor: Suivi
+      change_status: Changement de status

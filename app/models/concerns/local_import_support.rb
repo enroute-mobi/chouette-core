@@ -48,22 +48,28 @@ module LocalImportSupport
     enqueue_job :import
   end
 
-  def import
-    update status: 'running', started_at: Time.now
+  def import_type
+    self.class.name.demodulize.underscore
+  end
 
-    @progress = 0
-    profile_tag 'import' do
+  def import
+    Chouette::Benchmark.measure "import_#{import_type}", id: id do
+      update status: 'running', started_at: Time.now
+      @progress = 0
+
       ActiveRecord::Base.cache do
         import_without_status
       end
+
+      @progress = nil
+      @status ||= 'successful'
+      referential&.active!
+      update status: @status, ended_at: Time.now
     end
-    @progress = nil
-    @status ||= 'successful'
-    referential&.active!
-    update status: @status, ended_at: Time.now
   rescue => e
     update status: 'failed', ended_at: Time.now
-    Rails.logger.error "Error in #{file_type} import: #{e} #{e.backtrace.join('\n')}"
+    Chouette::Safe.capture "#{self.class.name} ##{id} failed", e
+
     if (referential && overlapped_referential_ids = referential.overlapped_referential_ids).present?
       overlapped = Referential.find overlapped_referential_ids.last
       create_message(
@@ -94,7 +100,7 @@ module LocalImportSupport
 
   def import_resources(*resources)
     resources.each do |resource|
-      profile_operation resource do
+       Chouette::Benchmark.measure resource do
         send "import_#{resource}"
 
         notify_operation_progress(resource)
@@ -103,12 +109,13 @@ module LocalImportSupport
   end
 
   def create_referential
-    profile_operation 'create_referential' do
+    Chouette::Benchmark.measure 'create_referential' do
       self.referential ||=  Referential.new(
         name: referential_name,
         organisation_id: workbench.organisation_id,
         workbench_id: workbench.id,
-        metadatas: [referential_metadata]
+        metadatas: [referential_metadata],
+        ready: false
       )
 
       if profile?
@@ -116,7 +123,8 @@ module LocalImportSupport
       end
       begin
         self.referential.save!
-      rescue => e
+      rescue ActiveRecord::RecordInvalid
+        # No double capture for Chouette::Safe
         Rails.logger.error "Unable to create referential: #{self.referential.errors.messages}"
         raise
       end

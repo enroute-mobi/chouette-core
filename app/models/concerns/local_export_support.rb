@@ -27,25 +27,30 @@ module LocalExportSupport
     @journeys ||= Chouette::VehicleJourney.with_matching_timetable (date_range)
   end
 
+  def export_type
+    self.class.name.demodulize.underscore
+  end
+
   def export
-    referential.switch
+    Chouette::Benchmark.measure "export_#{export_type}", export: id do
+      referential.switch
 
-    if self.class.skip_empty_exports && journeys.count == 0
-      self.update status: :failed, ended_at: Time.now
-      vals = {}
-      vals[:criticity] = :info
-      vals[:message_key] = :no_matching_journey
-      self.messages.create vals
-      return
+      if self.class.skip_empty_exports && journeys.count == 0
+        self.update status: :failed, ended_at: Time.now
+        vals = {}
+        vals[:criticity] = :info
+        vals[:message_key] = :no_matching_journey
+        self.messages.create vals
+        return
+      end
+
+      upload_file generate_export_file
+      self.status = :successful
+      self.ended_at = Time.now
+      self.save!
     end
-
-    upload_file generate_export_file
-    self.status = :successful
-    self.ended_at = Time.now
-    self.save!
   rescue => e
-    Rails.logger.info "Failed: #{e.message}"
-    Rails.logger.info e.backtrace.join("\n")
+    Chouette::Safe.capture "#{self.class.name} ##{id} failed", e
     self.status = :failed
     self.save!
   end

@@ -12,8 +12,6 @@ class Merge < ApplicationModel
 
   delegate :workgroup, to: :workbench
 
-  after_commit :merge, :on => :create
-
   def parent
     workbench
   end
@@ -29,7 +27,7 @@ class Merge < ApplicationModel
   end
 
   def cancel!
-    update status: :canceled
+    super
     referentials.each(&:unmerged!)
     new&.rollbacked!
   end
@@ -37,6 +35,11 @@ class Merge < ApplicationModel
   def following_merges
     following_referentials = self.workbench.output.referentials.where('created_at > ?', self.new.created_at)
     workbench.merges.where(new_id: following_referentials.pluck(:id))
+  end
+
+  def pending!
+    super
+    referentials.each(&:pending!)
   end
 
   def merge
@@ -52,6 +55,7 @@ class Merge < ApplicationModel
       enqueue_job :merge!
     end
   end
+  alias run merge
 
   def before_merge_compliance_control_sets
     workbench.workgroup.before_merge_compliance_control_sets.map do |key, _|
@@ -106,9 +110,8 @@ class Merge < ApplicationModel
       end
     end
   rescue => e
-    Rails.logger.error "Merge ##{id} failed: #{e} #{e.backtrace.join("\n")}"
+    Chouette::Safe.capture "Merge ##{id} failed", e
     failed!
-    raise e# if Rails.env.test?
   end
 
   def prepare_new
@@ -710,6 +713,10 @@ class Merge < ApplicationModel
     end
 
     scope
+  end
+
+  def concurent_operations
+    parent.merges.where.not(id: self.id)
   end
 
   class MetadatasMerger

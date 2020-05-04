@@ -1,8 +1,13 @@
 class Api::V1::WorkbenchController < ActionController::Base
+  include Pundit
   respond_to :json
 
   layout false
   before_action :authenticate
+
+  def pundit_user
+    UserContext.new(nil, workbench: current_workbench)
+  end
 
   protected
 

@@ -38,8 +38,6 @@ module IevInterfaces::Task
     scope :new_or_pending, -> { where(status: [:new, :pending]) }
 
     before_save :initialize_fields, on: :create
-    after_save :notify_parent
-    # after_commit :notify_state, if: :status_changed?
 
     status.values.each do |s|
       define_method "#{s}!" do
@@ -175,30 +173,49 @@ module IevInterfaces::Task
     notify_progress(@progress + operation_relative_progress_weight(operation_name)*progress) if @progress
   end
 
+  # Compute new_status from children status
+  # Can be overided (by Import::Workbench for example)
+  def compute_new_status
+    Rails.logger.info "#{self.class.name} ##{id}: children statuses #{children.reload.map(&:status).inspect}"
+
+    if children.where(status: self.class.failed_statuses).count > 0
+      'failed'
+    elsif children.where(status: "warning").count > 0
+      'warning'
+    elsif children.where(status: "successful").count == children.count
+      'successful'
+    else
+      'running'
+    end
+  end
+
+  # Compute and update status (only when it changes)
+  # Invokes done! method is defined and status is changed to finished
   def update_status
-    Rails.logger.info "update_status for #{inspect}"
-    status =
-      if children.where(status: self.class.failed_statuses).count > 0
-        'failed'
-      elsif children.where(status: "warning").count > 0
-        'warning'
-      elsif children.where(status: "successful").count == children.count
-        'successful'
-      else
-        'running'
-      end
+    Rails.logger.info "#{self.class.name} ##{id}: update_status #{children.reload.map(&:status).inspect}"
+    new_status = compute_new_status
+
+    Rails.logger.info "#{self.class.name} ##{id}: status #{self.status} -> #{new_status}"
+    return if self.status == new_status
+
+    Rails.logger.info "#{self.class.name} ##{id}: status -> #{new_status}"
 
     attributes = {
-      current_step: children.count,
-      status: status
+      current_step: children.count, # !?
+      status: new_status
     }
 
-    if self.class.finished_statuses.include?(status)
+    if self.class.finished_statuses.include?(new_status)
       attributes[:ended_at] = Time.now
     end
 
     update attributes
     notify_state
+
+    if successful? && respond_to?(:done!)
+      Rails.logger.info "#{self.class.name} ##{id}: done!"
+      done!
+    end
   end
 
   def finished?
@@ -214,6 +231,7 @@ module IevInterfaces::Task
   end
 
   def child_change
+    Rails.logger.info "Operation ##{id}: child_change"
     return if self.class.finished_statuses.include?(status)
     update_status
   end

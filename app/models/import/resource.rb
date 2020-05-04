@@ -16,18 +16,19 @@ class Import::Resource < ApplicationModel
   end
 
   def next_step
+    Rails.logger.info "#{self.class.name} ##{child_import.id}: next_step"
+
     if root_import.class == Import::Workbench
 
       return unless child_import&.successful? || child_import&.warning?
 
-      controls_present = false
+      Rails.logger.info "Import ##{child_import.id}: Create import_compliance_control_sets"
       workbench.workgroup.import_compliance_control_sets.map do |key, label|
         next unless (control_set = workbench.compliance_control_set(key)).present?
         compliance_check_set = workbench_import_check_set key
         if compliance_check_set.nil?
           ComplianceControlSetCopier.new.copy control_set.id, referential_id, nil, root_import.class.name, root_import.id, key
         end
-        controls_present = true
       end
     end
   end

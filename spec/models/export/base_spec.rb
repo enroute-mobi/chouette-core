@@ -304,15 +304,9 @@ RSpec.describe Export::Base, type: :model do
 
     it "updates :ended_at to now when status is finished" do
       workgroup_export = create(:workgroup_export)
-      create(
-        :netex_export,
-        parent: workgroup_export,
-        status: 'failed'
-      )
-
+      allow(workgroup_export).to receive(:compute_new_status).and_return('failed')
       Timecop.freeze(Time.now) do
         workgroup_export.update_status
-
         expect(workgroup_export.ended_at).to eq(Time.now)
       end
     end

@@ -26,12 +26,17 @@ class Import::Netex < Import::Base
   end
 
   def notify_parent
+    Rails.logger.info "#{self.class.name} ##{id}: notify_parent"
+
     compute_faulty_checksums! # See #7728
-    if super
-      main_resource.update_status_from_importer self.status
-      update_referential
-      next_step
-    end
+
+    main_resource.update_status_from_importer self.status
+    update_referential
+
+    Rails.logger.info "#{self.class.name} ##{id}: invoke next_step"
+    next_step
+
+    super
   end
 
   def create_with_referential!

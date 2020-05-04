@@ -34,8 +34,7 @@ class VehicleTranslationsController < ChouetteController
         flash[:alert] = @vehicle_translation.errors[ :vehicle_journey_id] unless @vehicle_translation.errors[ :vehicle_journey_id].empty?
       end
     rescue => e
-      Rails.logger.error( "VehicleTranslation error, @vehicle_translation=#{@vehicle_translation.inspect}")
-      Rails.logger.error( e.inspect)
+      Chouette::Safe.capture "VehicleTranslation #{@vehicle_translation.inspect} failed", e
       flash[:alert] = t('vehicle_translations.failure')
     end
     render :action => :new

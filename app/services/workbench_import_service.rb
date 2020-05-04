@@ -23,7 +23,7 @@ class WorkbenchImportService
   rescue Zip::Error
     handle_corrupt_zip_file
   rescue => e
-    Rails.logger.info "Error in WorkbenchImportService: #{e}: #{e.backtrace.join("\n")}"
+    Chouette::Safe.capture "WorkbenchImportService ##{import_id} failed", e
     workbench_import.update_columns status: 'failed'
   ensure
     workbench_import.update_columns ended_at: Time.now
@@ -49,7 +49,7 @@ class WorkbenchImportService
     workbench_import.update total_steps: @entries
     handle_corrupt_zip_file unless @subdir_uploaded
   rescue Exception => e
-    logger.error e.message
+    Chouette::Safe.capture "Upload failed", e
     workbench_import.update( current_step: @entries, status: 'failed' )
     raise
   end

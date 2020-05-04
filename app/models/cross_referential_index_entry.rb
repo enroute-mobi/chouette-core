@@ -44,7 +44,7 @@ class CrossReferentialIndexEntry < ActiveRecord::Base
             do_rebuild_index_for_relation_in_referential rel, referential, worker
           end
         rescue => e
-          Rails.logger.warn "Unable to rebuild index for relation #{rel.klass.name}##{rel.name} in referential #{referential.slug}: #{e.message}"
+          Chouette::Safe.capture "Unable to rebuild index for relation #{rel.klass.name}##{rel.name} in referential #{referential.slug}", e
         end
       end
     end

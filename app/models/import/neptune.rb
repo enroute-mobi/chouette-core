@@ -8,7 +8,7 @@ class Import::Neptune < Import::Base
       zip_file.glob('*.xml').size == files_count
     end
   rescue => e
-    Rails.logger.debug "Error in testing Neptune file: #{e}"
+    Chouette::Safe.capture "Error in testing Neptune file: #{file}", e
     return false
   end
 

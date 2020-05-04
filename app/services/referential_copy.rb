@@ -47,7 +47,7 @@ class ReferentialCopy
       copy_with_inserters
     end
   rescue SaveError => e
-    logger.error e.message
+    Chouette::Safe.capture "ReferentialCopy failed", e
     failed! e.message
     raise if raise_error
   end

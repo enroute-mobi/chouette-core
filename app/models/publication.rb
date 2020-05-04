@@ -62,8 +62,7 @@ class Publication < ApplicationModel
         Rails.logger.info "Launching export #{export.name}"
         export.save!
       rescue => e
-        Rails.logger.error "Error during Publication export: #{e.message}"
-        Rails.logger.error e.backtrace.join("\n")
+        Chouette::Safe.capture "Publication Export ##{export.id} failed", e
         failed!
         return
       end

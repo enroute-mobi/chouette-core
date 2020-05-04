@@ -49,7 +49,7 @@ module Chouette::ChecksumManager
       begin
         object.first.constantize.find(object.last)
       rescue => e
-        Rails.logger.error "Unable to resiolve object #{object.inspect}: #{e.message}"
+        Chouette::Safe.capture "SerializedObject unable to resolve object #{object.inspect}", e
         raise
       end
     end

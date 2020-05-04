@@ -110,9 +110,8 @@ class Merge < ApplicationModel
       end
     end
   rescue => e
-    Rails.logger.error "Merge ##{id} failed: #{e} #{e.backtrace.join("\n")}"
+    Chouette::Safe.capture "Merge ##{id} failed", e
     failed!
-    raise e# if Rails.env.test?
   end
 
   def prepare_new

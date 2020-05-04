@@ -13,8 +13,7 @@ class ReferentialCloning < ApplicationModel
     clone!
     successful!
   rescue Exception => e
-    Rails.logger.error "Clone failed : #{e}"
-    Rails.logger.error e.backtrace.join('\n')
+    Chouette::Safe.capture "Clone ##{id} failed", e
     failed!
   end
 

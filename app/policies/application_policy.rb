@@ -1,9 +1,10 @@
 class ApplicationPolicy
 
-  attr_reader :current_referential, :record, :user
+  attr_reader :current_referential, :current_workbench, :record, :user
   def initialize(user_context, record)
     @user                = user_context.user
     @current_referential = user_context.context[:referential]
+    @current_workbench   = user_context.context[:workbench]
     @record              = record
     @user_context        = user_context
   end
@@ -107,6 +108,15 @@ class ApplicationPolicy
   def record_referential
     record.referential if record.respond_to?(:referential)
   end
+
+  def workbench
+    @workbench ||= current_workbench || record_workbench
+  end
+
+  def record_workbench
+    record.workbench if record.respond_to?(:workbench)
+  end
+
   class Scope
     attr_reader :user, :scope
 

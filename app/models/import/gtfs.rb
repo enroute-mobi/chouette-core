@@ -384,9 +384,9 @@ class Import::Gtfs < Import::Base
       stop_points = []
     end
 
-    Chouette::JourneyPatternsStopPoint.bulk_insert do |worker|
+    Chouette::JourneyPatternsStopPoint.bulk_insert do |w|
       stop_points.each do |stop_point|
-        worker.add journey_pattern_id: journey_pattern.id, stop_point_id: stop_point.id
+        w.add journey_pattern_id: journey_pattern.id, stop_point_id: stop_point.id
       end
     end
 
@@ -454,8 +454,6 @@ class Import::Gtfs < Import::Base
     # JourneyPattern#vjas_add creates automaticaly VehicleJourneyAtStop
 
     vehicle_journey_at_stop = journey_pattern.vehicle_journey_at_stops.build(stop_point_id: stop_point.id)
-    departure_time = nil
-    arrival_time = nil
 
     departure_time = GTFSTime.parse(stop_time.departure_time)
     raise InvalidTimeError.new(stop_time.departure_time) unless departure_time.present?

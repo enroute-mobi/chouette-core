@@ -16,7 +16,7 @@ class Import::Gtfs < Import::Base
       zip_file.glob('agency.txt').size == 1
     end
   rescue => e
-    Rails.logger.debug "Error in testing GTFS file: #{e}"
+    Chouette::Safe.capture "Error in testing GTFS file: #{file}", e
     return false
   end
 

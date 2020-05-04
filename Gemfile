@@ -146,6 +146,9 @@ gem 'netex', en_route: 'netex'
 
 gem 'ddtrace'
 
+# Monitoring
+gem "sentry-raven"
+
 group :development do
   gem 'rails-erd'
   gem 'license_finder'

@@ -28,7 +28,7 @@ class StopAreaReferentialSync < ApplicationModel
       info = Stif::ReflexSynchronization.synchronize
       successful info.merge({processing_time: process_time - start_time})
     rescue Exception => e
-      Rails.logger.error "StopAreaReferentialSyncWorker failed: #{e.message} - #{e.backtrace.join("\n")}"
+      Chouette::Safe.capture "StopAreaReferentialSyncWorker ##{id} failed", e
       failed({
         error: e.message,
         processing_time: process_time - start_time

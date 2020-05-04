@@ -25,6 +25,8 @@ class TimeTableCombinationsController < ChouetteController
       flash[:notice] = t('time_table_combinations.success')
       redirect_to referential_time_table_path(referential, @time_table)
     rescue => e
+      Chouette::Safe.capture "TimeTableCombination failed", e
+
       flash[:notice] = e.message
       flash[:error]  = t('time_table_combinations.failure')
       render :new

@@ -4,6 +4,8 @@ module ReferentialSaveWithLock
   def save(options = {})
     super(options)
   rescue ActiveRecord::StatementInvalid => e
+    Chouette::Safe.capture "Referential ##{id} save failed", e
+
     if e.message.include?('PG::LockNotAvailable')
       raise TableLockTimeoutError.new(e)
     else
@@ -160,7 +162,7 @@ class Referential < ApplicationModel
           begin
             src[0..-4].classify.safe_constantize
           rescue => e
-            Rails.logger.info "Failed: #{e.message}"
+            Chouette::Safe.capture "Referential#force_register_models_with_checksum failed on #{src}", e
             nil
           end
         end

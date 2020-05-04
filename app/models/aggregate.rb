@@ -77,7 +77,7 @@ class Aggregate < ApplicationModel
       save_current
     end
   rescue => e
-    Rails.logger.error "Aggregate failed: #{e} #{e.backtrace.join("\n")}"
+    Chouette::Safe.capture "Aggregate ##{id} failed", e
     failed!
     raise e if Rails.env.test?
   end

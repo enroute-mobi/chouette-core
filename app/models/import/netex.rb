@@ -17,7 +17,7 @@ class Import::Netex < Import::Base
       zip_file.glob('**/calendriers.xml').size >= 1
     end
   rescue => e
-    Rails.logger.debug "Error in testing Netex file: #{e}"
+    Chouette::Safe.capture "Error in testing NeTEx file: #{file}", e
     return false
   end
 

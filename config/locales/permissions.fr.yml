@@ -52,6 +52,6 @@ fr:
       update_activation_dates: Mise à jour des dates d'activation
       synchronize: Synchronisation
       rollback: Annulation
-      flag_urgent: Indication offre urgente
+      flag_urgent: Signaler une offre urgente
       monitor: Suivi
       change_status: Changement de status

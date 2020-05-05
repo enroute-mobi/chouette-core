@@ -400,8 +400,7 @@ RSpec.describe Import::Gtfs do
         ["BFC", "outbound", "to Furnace Creek Resort", "to Furnace Creek Resort"],
         ["BFC", "inbound", "to Bullfrog", "to Bullfrog"],
         ["AAMV", "outbound", "to Amargosa Valley", "to Amargosa Valley"],
-        ["AAMV", "outbound", "to Amargosa Valley", "to Amargosa Valley"],
-        ["AAMV", "inbound", "to Airport", "to Airport"]
+        ["AAMV", "inbound", "to Airport", "to Airport"],
       ]
       expect(import.referential.routes.includes(:line).pluck(*defined_attributes)).to match_array(expected_attributes)
     end
@@ -412,7 +411,13 @@ RSpec.describe Import::Gtfs do
         :name
       ]
       expected_attributes = [
-        "to Bullfrog", "Inbound", "to Furnace Creek Resort", "to Bullfrog", "to Amargosa Valley", "to Airport", "to Amargosa Valley", "to Airport"
+        "to Bullfrog",
+        "to Airport",
+        "Inbound",
+        "to Furnace Creek Resort",
+        "to Bullfrog",
+        "to Amargosa Valley",
+        "to Airport",
       ]
       expect(import.referential.journey_patterns.pluck(*defined_attributes)).to match_array(expected_attributes)
     end

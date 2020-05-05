@@ -10,20 +10,30 @@
             Workgroup.tmf(:workbenches) => @workgroup.workbenches.count,
             Workgroup.tmf(:created_at) => l(@workgroup.created_at, format: :short_with_time),
             Workgroup.tmf(:updated_at) => l(@workgroup.updated_at, format: :short_with_time)}
-
-
-      .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        table.table.transport-modes
-          thead
-            tr
-              th= Workgroup.tmfc(:transport_mode)
-              th= Workgroup.tmfc(:transport_submode)
-
-          tbody
-            - resource.sorted_transport_modes.each do |mode|
-              - resource.transport_modes[mode].sort.each do |submode|
-                tr class=mode
-                  - if submode == resource.transport_modes[mode].sort.first
-                    td rowspan="#{resource.transport_modes[mode].size}"
-                      = "enumerize.transport_mode.#{mode}".t
-                  td= "enumerize.transport_submode.#{submode}".t
+    .row
+      .col-lg-12
+        - if @workbenches.empty?
+          = replacement_msg t('workbenches.search_no_results')
+        - else
+          .definition-list
+            .dl-head
+              = Workbench.t.capitalize
+          = table_builder_2 @workbenches,
+            [ \
+              TableBuilderHelper::Column.new( \
+                key: :name, \
+                attribute: 'name', \
+                link_to: ->(workbench){ [@workgroup, workbench] } \
+                ), \
+              TableBuilderHelper::Column.new( \
+                key: :organisation, \
+                attribute: Proc.new { |workbench| workbench.organisation.name }, \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :last_merged_data, \
+                attribute: Proc.new { |workbench| workbench.last_merged_data.strftime("%d/%m/%Y") }, \
+              ), \
+            ],
+            cls: 'table',
+            action: :index
+          = new_pagination @workbenches, 'pull-right'

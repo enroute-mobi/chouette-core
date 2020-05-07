@@ -10,6 +10,7 @@ FactoryGirl.define do
     default_contact_email { Faker::Internet.email }
     default_contact_url   { Faker::Internet.url }
     default_contact_phone { Faker::PhoneNumber.phone_number }
+    default_language      { Faker::Address.country_code }
 
     association :line_referential, :factory => :line_referential
   end

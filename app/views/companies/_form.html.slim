@@ -6,6 +6,7 @@
       = f.input :short_name
       = f.input :code
       = f.input :registration_number, input_html: { title: t("formtastic.titles#{format_restriction_for_locales(@line_referential)}.company.registration_number") }
+      = f.input :default_language
       = custom_fields_for_section(f, "identification")
 
   .separator.section_separator

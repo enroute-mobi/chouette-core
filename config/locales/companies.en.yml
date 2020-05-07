@@ -39,6 +39,7 @@ en:
         short_name: "Short name"
         code: "Code"
         time_zone: "Time zone"
+        default_language: "Default language"
         objectid: "Neptune identifier"
         object_version: "Version"
         created_at: Created at

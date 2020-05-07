@@ -39,6 +39,7 @@ fr:
         short_name: "Nom court"
         code: "Code"
         time_zone: "Fuseau horaire"
+        default_language: "Langue par défaut"
         objectid: "Identifiant Neptune"
         object_version: "Version"
         created_at: "Créé le"

@@ -1,8 +1,7 @@
 en:
   mailers:
-    info_contact: 'If you have any question, please send an email to '
+    info_contact: 'If you have any question, our support team is reachable at '
     footer: 'is designed and developped by'
-
     hello: 'Hello,'
     audit_mailer:
       audit:

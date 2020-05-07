@@ -21,8 +21,7 @@ html
             tr
               td style=mailer_style(:info)
                 = "mailers.info_contact".t
-                - email = Rails.application.config.action_mailer.default_options[:from]
-                = mailer_link_to email, "mailto:#{email}"
+                = mailer_link_to Rails.application.config.support_link, Rails.application.config.support_link
 
     p style=mailer_style(:footer)
       = mail_footer

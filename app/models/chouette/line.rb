@@ -27,7 +27,6 @@ module Chouette
     has_many :time_tables, -> { distinct }, through: :vehicle_journeys
 
     has_and_belongs_to_many :group_of_lines, :class_name => 'Chouette::GroupOfLine', :order => 'group_of_lines.name'
-    # has_and_belongs_to_many :footnotes, :class_name => 'Chouette::Footnote'
     has_and_belongs_to_many :line_notices, :class_name => 'Chouette::LineNotice', :join_table => "public.line_notices_lines"
 
     has_many :footnotes, inverse_of: :line, validate: true
@@ -35,18 +34,9 @@ module Chouette
 
     attr_reader :group_of_line_tokens
 
-    # validates_presence_of :network
-    # validates_presence_of :company
-
-    # validates_format_of :registration_number, :with => %r{\A[\d\w_\-]+\Z}, :allow_nil => true, :allow_blank => true
-    validates_format_of :stable_id, :with => %r{\A[\d\w_\-]+\Z}, :allow_nil => true, :allow_blank => true
-
-    # See #9510
-    # validates_format_of :url, :with => %r{\A(https?:\/\/|www)([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?\Z}, :allow_nil => true, :allow_blank => true
-
     validates_presence_of :name
-
     validate :transport_mode_and_submode_match
+    validates :registration_number, uniqueness: { scope: :line_referential_id }, allow_blank: true
 
     scope :by_text, ->(text) { where('lower(name) LIKE :t or lower(published_name) LIKE :t or lower(objectid) LIKE :t or lower(comment) LIKE :t or lower(number) LIKE :t',
       t: "%#{text.downcase}%") }

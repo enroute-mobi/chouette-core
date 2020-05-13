@@ -15,7 +15,7 @@ fr:
     trip_starting_with_non_zero_day_offset: La course %{trip_id} commence avec un offset non-nul
     trip_with_inconsistent_stop_times: La course %{trip_id} a des horaires incohérents
     trip_with_single_stop_time: La course %{trip_id} n'a qu'un seul arrêt
-    no_specified_stop: Pas d'arrêt spécifié
+    no_specified_stop: "Impossible d'associer un arrêt"
     invalid_stop_time: 'La course %{trip_id} comporte un temps de passage invalide: "%{time}"'
     invalid_time_zone: 'Le fuseau horaire %{time_zone} est invalide'
     unknown_file_format: "Le fichier ne correspond à aucun format reconnu"

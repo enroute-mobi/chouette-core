@@ -70,6 +70,7 @@ module ChouetteIhm
     SmartEnv.add :OCCASIONAL_TRAVELLER_CONNECTION_SPEED, default: 3.5
     SmartEnv.add_integer :REFERENTIALS_CLEANING_COOLDOWN
     SmartEnv.add_boolean :ENABLE_LINK_TO_SUPPORT, default: false
+    SmartEnv.add :SUPPORT_LINK, default: 'https://support.enroute.mobi'
 
     # Manage Storage configuration
     SmartEnv.add :STORAGE, default: 'file'

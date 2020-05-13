@@ -16,7 +16,7 @@
               li= link_to_language locale, { class: language_class( locale ) }
 
       - if Rails.application.config.link_to_support_enabled
-        = link_to 'https://support.enroute.mobi', target: :blank, title: t('layouts.go_to_to_support_center'), class: 'menu-item' do
+        = link_to Rails.application.config.support_link, target: :blank, title: t('layouts.go_to_to_support_center'), class: 'menu-item' do
           = image_tag("icons/chaticon.svg", height: 25)
 
       - if user_signed_in?

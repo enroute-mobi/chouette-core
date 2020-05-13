@@ -1,4 +1,3 @@
-
 RSpec.describe Import::Gtfs do
 
   let(:workbench) do

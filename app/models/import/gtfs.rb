@@ -281,7 +281,7 @@ class Import::Gtfs < Import::Base
       journey_pattern.vehicle_journey_at_stops.reload
       save_model journey_pattern, resource: resource
 
-    rescue Import::Gtfs::InvalidTripNonZeroFirstOffsetError, Import::Gtfs::InvalidTripTimesError, Import::Gtfs::InvalidTripSingleStopTime => e
+    rescue Import::Gtfs::InvalidTripNonZeroFirstOffsetError, Import::Gtfs::InvalidTripTimesError, Import::Gtfs::InvalidTripSingleStopTime, Import::Gtfs::InvalidStopAreaError => e
       message_key = case e
         when Import::Gtfs::InvalidTripNonZeroFirstOffsetError
           'trip_starting_with_non_zero_day_offset'
@@ -289,6 +289,8 @@ class Import::Gtfs < Import::Base
           'trip_with_inconsistent_stop_times'
         when Import::Gtfs::InvalidTripSingleStopTime
           'trip_with_single_stop_time'
+        when Import::Gtfs::InvalidStopAreaError
+          'no_specified_stop'
         end
       create_message(
         {
@@ -446,6 +448,8 @@ class Import::Gtfs < Import::Base
       end
 
       stop_area_id = @stop_areas_id_by_registration_number[stop_time.stop_id]
+      raise InvalidStopAreaError unless stop_area_id.present?
+
       Chouette::StopPoint.new(stop_area_id: stop_area_id, position: position )
     end
   end
@@ -618,6 +622,7 @@ class Import::Gtfs < Import::Base
   class InvalidTripNonZeroFirstOffsetError < StandardError; end
   class InvalidTripTimesError < StandardError; end
   class InvalidTripSingleStopTime < StandardError; end
+  class InvalidStopAreaError < StandardError; end
   class InvalidTimeError < StandardError
     attr_reader :time
 

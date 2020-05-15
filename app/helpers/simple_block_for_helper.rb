@@ -39,7 +39,7 @@ module SimpleBlockForHelper
       attribute_type = options[:as]
       attribute_value = options[:value]
 
-      attribute_value_unformatted = attribute_value || object.send(attribute_name)
+      attribute_value_unformatted = attribute_value || object.send(attribute_name) if object.has_attribute?(attribute_name)
 
       attribute_value_formatted = "-"
       if attribute_value_unformatted.present?

@@ -15,7 +15,7 @@ module PublicationsHelper
       content = b.attribute :created_at, as: :datetime
       content += b.attribute :started_at, as: :datetime
       content += b.attribute :ended_at, as: :datetime
-      content += b.attribute :duration, value: (object.ended_at - object.started_at), as: :duration
+      content += b.attribute :duration, value: (object.ended_at.present? && object.started_at.present?) ? (object.ended_at - object.started_at) : nil, as: :duration
     end
   end
 

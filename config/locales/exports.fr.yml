@@ -77,13 +77,15 @@ fr:
                 wrong_file_extension: "Le fichier exporté doit être au format zip"
     attributes:
       attrs: &attrs
-        resources: "Fichier à exporter"
-        created_at: "Créé le"
-        started_at: Démarrage
+        created_at: Créé le
+        started_at: Début
         ended_at: Fin
+        duration: Durée
+        creator: Créé par
+        notification_target: Destinataire(s) des notifications
+        resources: "Fichier à exporter"
         name: "Nom de l'export"
         status: "Etat"
-        creator: "Opérateur"
         no_save: "Pas de sauvegarde"
         references_type: "Données à exporter"
         object_id_prefix: "Préfixe d'identifiants"
@@ -96,7 +98,6 @@ fr:
         parent: Parent
         referential_id: Jeu de données
         referential: Jeu de données
-        notification_target: Destinataire(s) des notifications
         options: Options
       export:
         <<: *attrs
@@ -104,26 +105,30 @@ fr:
           <<: *attrs
         netex:
           <<: *attrs
-          duration: Durée (en jours)
-          line_code: Ligne
-          export_type: Sous-type d'export
-          export_type_collection:
-            line: Par ligne
-            full: Complet
+          parameters:
+            duration: Durée (en jours)
+            line_code: Ligne
+            export_type: Sous-type d'export
+            export_type_collection:
+              line: Par ligne
+              full: Complet
         netex_full:
           <<: *attrs
-          duration: Durée (en jours)
+          parameters:
+            duration: Durée (en jours)
         gtfs:
           <<: *attrs
-          duration: Durée (en jours)
-          prefer_referent_stop_area: Préférer les arrêts Référents
-          line_code: Ligne
-          export_type: Sous-type d'export
-          export_type_collection:
-            line: Par ligne
-            full: Complet
+          parameters:
+            duration: Durée (en jours)
+            prefer_referent_stop_area: Préférer les arrêts Référents
+            line_code: Ligne
+            export_type: Sous-type d'export
+            export_type_collection:
+              line: Par ligne
+              full: Complet
         workgroup:
-          duration: Durée
+          parameters:
+            duration: Durée
         referential_companies:
           referential_id: Jeu de données
   flash:

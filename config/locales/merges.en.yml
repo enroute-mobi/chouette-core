@@ -31,18 +31,19 @@ en:
         other: "Merged offers"
     attributes:
       merge:
-        created_at: "Created at"
+        created_at: Created at
         started_at: Started at
-        name: Name
         ended_at: Ended at
+        creator: Created by
+        duration: Duration
+        notification_target: Notifications recipients
+        name: Name
         status: "Status"
-        creator: "Creator"
         referentials: "Data sets"
         new: Finalized dataset
         operator: User
         available_referentials: "Available data sets"
         selected_referentials: "Selected data sets"
-        notification_target: Notifications recipients
         contains_urgent_offer: Handles urgent offer
     errors:
       models:

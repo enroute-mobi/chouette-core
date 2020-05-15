@@ -9,9 +9,8 @@
         - metadatas = { Publication.tmf(:status) => operation_status(@publication, verbose: true) }
         - metadatas.update( PublicationSetup.ts => link_to(@publication_setup.name, [@workgroup, @publication_setup]) )
         - metadatas.update( Publication.tmf(:parent) => link_to("#{@publication.parent.class.ts} #{@publication.parent.name}", [@publication.parent.new]))
-        - metadatas.update( Publication.tmf(:started_at) => @publication.started_at ? l(@publication.started_at, format: :short_with_time) : '-')
-        - metadatas.update( Publication.tmf(:ended_at) => @publication.ended_at ? l(@publication.ended_at, format: :short_with_time) : '-')
         = definition_list t('metadatas'), metadatas
+      = publication_processing_helper(@publication)
 
     .row
       .col-lg-12

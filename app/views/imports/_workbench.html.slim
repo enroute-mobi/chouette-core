@@ -3,6 +3,7 @@
 .row
   .col-lg-6.col-md-6.col-sm-12.col-xs-12
     = definition_list t('metadatas'), import_metadatas(@import)
+  = processing_helper(@import)
 
 .col-lg-12
   .error_messages

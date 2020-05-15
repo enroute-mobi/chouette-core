@@ -61,7 +61,7 @@ module ExportsHelper
   def translate_option_key(parent_class, key)
     root = parent_class
     root = Destination if root < Destination
-    root.tmf("#{parent_class.name.demodulize.underscore}.#{key}")
+    root.tmf("#{parent_class.name.demodulize.underscore}.parameters.#{key}")
   end
 
   def translate_option_value(parent_class, attr, key)
@@ -83,8 +83,7 @@ module ExportsHelper
     metadatas = metadatas.update({I18n.t("activerecord.attributes.export.status") => operation_status(export.status, verbose: true)})
     metadatas = metadatas.update({I18n.t("activerecord.attributes.export.referential") => export.referential.present? ? link_to(export.referential.name, [export.referential]) : "-" })
     metadatas = metadatas.update({I18n.t("activerecord.attributes.export.parent") => link_to(export.parent.name, [export.parent.workbench, export.parent])}) if export.parent.present?
-    metadatas = metadatas.update Hash[*export.visible_options.map{|k, v| [t("activerecord.attributes.export.#{export.object.class.name.demodulize.underscore}.#{k}"), export.display_option_value(k, self)]}.flatten]
-    metadatas = metadatas.update({Export::Base.tmf(:notification_target) => I18n.t("operation_support.notification_targets.#{export.notification_target || 'none'}") })
+    metadatas = metadatas.update Hash[*export.visible_options.map{|k, v| [t("activerecord.attributes.export.#{export.object.class.name.demodulize.underscore}.parameters.#{k}"), export.display_option_value(k, self)]}.flatten]
 
     if export.children.any?
       files = export.children.map(&:file).select(&:present?)

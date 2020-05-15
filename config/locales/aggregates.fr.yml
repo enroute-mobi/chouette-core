@@ -36,18 +36,19 @@ fr:
         other: "Agrégations d'offre automatiques"
     attributes:
       aggregate:
-        created_at: "Créé le"
-        started_at: Démarrage
+        created_at: Créé le
+        started_at: Début
+        ended_at: Fin
+        duration: Durée
+        creator: Créé par
+        notification_target: Destinataire(s) des notifications
         name: Nom
-        ended_at: Achevé à
         status: "Etat"
-        creator: "Opérateur"
         referentials: Offres finalisées
         new: Offre agrégée
         operator: Utilisateur
         available_referentials: "Jeux de données disponibles"
         selected_referentials: "Jeux de données selectionnés"
-        notification_target: Destinataire(s) des notifications
         contains_urgent_offer: Prise en compte d'une offre urgente
     errors:
       models:

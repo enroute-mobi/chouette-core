@@ -11,10 +11,11 @@ en:
         other: "Publications"
     attributes:
       publication:
+        created_at: Created at
+        started_at: Started at
+        ended_at: Ended at
+        duration: Duration
         status: "Status"
-        created_at: "Creation date"
         parent: "Source"
         export: "Export"
         name: "%{setup_name} on %{date}"
-        started_at: Publication start
-        ended_at: Publication finish

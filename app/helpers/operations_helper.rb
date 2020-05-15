@@ -27,4 +27,15 @@ module OperationsHelper
     end
     out
   end
+
+  def processing_helper(object)
+    simple_block_for object, title: I18n.t("simple_block_for.title.processing"), class: "col-lg-6 col-md-6 col-sm-12 col-xs-12" do |b|
+      content = b.attribute :created_at, as: :datetime
+      content += b.attribute :creator
+      content += b.attribute :started_at, as: :datetime
+      content += b.attribute :ended_at, as: :datetime
+      content += b.attribute :duration, value: (object.ended_at - object.started_at), as: :duration
+      content += b.attribute :notification_target, as: :enumerize
+    end
+  end
 end

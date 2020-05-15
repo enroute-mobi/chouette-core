@@ -98,12 +98,15 @@ fr:
         other: "imports"
     attributes:
       attrs: &attrs
+        created_at: Créé le
+        started_at: Début
+        ended_at: Fin
+        duration: Durée
+        creator: Créé par
+        notification_target: Destinataire(s) des notifications
         resources: "Fichier à importer"
-        created_at: "Créé le"
-        started_at: Démarrage
         name: "Nom de l'import"
         status: "Etat"
-        creator: "Opérateur"
         no_save: "Pas de sauvegarde"
         references_type: "Données à importer"
         object_id_prefix: "Préfixe d'identifiants"
@@ -111,7 +114,6 @@ fr:
         ignore_last_word: "ignorer le dernier mot"
         ignore_end_chars: "ignorer les n derniers caractères"
         referential: Jeu de données
-        notification_target: Destinataire(s) des notifications
       import:
         <<: *attrs
         base:

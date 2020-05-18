@@ -10,7 +10,7 @@
         - metadatas.update( PublicationSetup.ts => link_to(@publication_setup.name, [@workgroup, @publication_setup]) )
         - metadatas.update( Publication.tmf(:parent) => link_to("#{@publication.parent.class.ts} #{@publication.parent.name}", [@publication.parent.new]))
         = definition_list t('metadatas'), metadatas
-      = publication_processing_helper(@publication)
+      = processing_helper(@publication)
 
     .row
       .col-lg-12

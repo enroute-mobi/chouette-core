@@ -24,7 +24,7 @@ module SimpleBlockForHelper
   end
 
   class BlockBuilder < ActionView::Base
-    include  ActionView::Helpers::TagHelper
+    include ActionView::Helpers::TagHelper
     attr_reader :view, :object, :options
 
     def initialize(view, object, options = {})
@@ -34,28 +34,26 @@ module SimpleBlockForHelper
     end
 
     def attribute(attribute_name, options = {})
-      output = content_tag(:div, object.class.human_attribute_name(attribute_name), class: "dl-term")
+      raw_value = options.key?(:value) ? options[:value] : object.send(attribute_name)
 
-      attribute_type = options[:as]
-      attribute_value = options[:value]
-
-      attribute_value_unformatted = attribute_value || object.send(attribute_name) if object.has_attribute?(attribute_name)
-
-      attribute_value_formatted = "-"
-      if attribute_value_unformatted.present?
-        case attribute_type
+      displayed_value =
+        if raw_value.present?
+          case options[:as]
           when :datetime
-            attribute_value_formatted = I18n.l(attribute_value_unformatted, format: :short_with_time)
+            I18n.l(raw_value, format: :short_with_time)
           when :duration
-            attribute_value_formatted = attribute_value_unformatted > 60 ? "#{(attribute_value_unformatted /  1.minute).round} min" : "#{attribute_value_unformatted.round} sec"
+            raw_value > 60 ? "#{(raw_value /  1.minute).round} min" : "#{raw_value.round} sec"
           when :enumerize
-            attribute_value_formatted = attribute_value_unformatted.text
+            raw_value.text
           else
-            attribute_value_formatted = attribute_value_unformatted
+            raw_value
+          end
+        else
+          '-'
         end
-      end
 
-      output << content_tag(:div, attribute_value_formatted, class: "dl-def")
+      content_tag(:div, object.class.human_attribute_name(attribute_name), class: "dl-term") +
+        content_tag(:div, displayed_value, class: "dl-def")
     end
 
 

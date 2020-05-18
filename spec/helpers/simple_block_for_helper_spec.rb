@@ -26,7 +26,7 @@ describe SimpleBlockForHelper, type: :helper do
 
     it "builds a block with a datetime attribute" do
       block = simple_block_for gtfs_import, title: I18n.t("simple_block_for.title.processing"), class: "col-lg-6 col-md-6 col-sm-12 col-xs-12" do |b|
-        b.attribute :created_at, value: DateTime.new(2001,2,3,4,5,6) ,as: :datetime
+        b.attribute :created_at, value: DateTime.new(2001,2,3,4,5,6), as: :datetime
       end
       expect(block).to match_snapshot "simple_block_for/datetime_attribute"
     end

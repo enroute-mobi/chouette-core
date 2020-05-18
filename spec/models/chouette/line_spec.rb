@@ -216,4 +216,52 @@ describe Chouette::Line, :type => :model do
       end
     end
   end
+
+
+  describe "#registration_number" do
+
+    let(:first_line) { context.line(:first) }
+    let(:second_line) { context.line(:second) }
+
+    context "for two lines into two line referentials" do
+      let(:context) do
+        Chouette.create do
+          line_referential do
+            line :first, registration_number: 'dummy'
+          end
+          line_referential do
+            line :second
+          end
+        end
+      end
+
+      it "can have the same value" do
+        expect(second_line).to allow_value(first_line.registration_number).for(:registration_number)
+      end
+      it "can be blank" do
+        expect(second_line).to allow_value('').for(:registration_number)
+      end
+    end
+
+    context "for two lines into the same referential" do
+      let(:context) do
+        Chouette.create do
+          line_referential do
+            line :first, registration_number: 'dummy'
+            line :second
+          end
+        end
+      end
+
+      it "can't have the same value" do
+         expect(second_line).to_not allow_value(first_line.registration_number).for(:registration_number)
+      end
+
+      it "can be blank" do
+        expect(second_line).to allow_value('').for(:registration_number)
+      end
+    end
+
+  end
+
 end

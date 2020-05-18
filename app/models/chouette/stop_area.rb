@@ -43,7 +43,6 @@ module Chouette
     after_update :journey_patterns_control_route_sections,
                 if: Proc.new { |stop_area| ['boarding_position', 'quay'].include? stop_area.stop_area_type }
 
-    # validates_format_of :registration_number, :with => %r{\A[\d\w_:\-]+\Z}, :allow_blank => true
     validates_presence_of :name
     validates_presence_of :kind
     validates_presence_of :latitude, :if => :longitude
@@ -52,8 +51,6 @@ module Chouette
     validates_numericality_of :longitude, :less_than_or_equal_to => 180, :greater_than_or_equal_to => -180, :allow_nil => true
 
     validates_format_of :coordinates, :with => %r{\A *-?(0?[0-9](\.[0-9]*)?|[0-8][0-9](\.[0-9]*)?|90(\.[0]*)?) *\, *-?(0?[0-9]?[0-9](\.[0-9]*)?|1[0-7][0-9](\.[0-9]*)?|180(\.[0]*)?) *\Z}, allow_nil: true, allow_blank: true
-    # See #9510
-    # validates_format_of :url, :with => %r{\Ahttps?:\/\/([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?\Z}, :allow_nil => true, :allow_blank => true
 
     validates_numericality_of :waiting_time, greater_than_or_equal_to: 0, only_integer: true, if: :waiting_time
     validates :time_zone, inclusion: { in: TZInfo::Timezone.all_country_zone_identifiers }, allow_nil: true, allow_blank: true
@@ -63,6 +60,8 @@ module Chouette
     validate :registration_number_is_set
     validates_absence_of :parent_id, message: I18n.t('stop_areas.errors.parent_id.must_be_absent'), if: Proc.new { |stop_area| stop_area.kind == 'non_commercial' }
     validate :valid_referent
+
+    validates :registration_number, uniqueness: { scope: :stop_area_referential_id }, allow_blank: true
 
     before_validation do
       self.registration_number = self.stop_area_referential.generate_registration_number unless self.registration_number.present?
@@ -107,9 +106,6 @@ module Chouette
 
     def registration_number_is_set
       return unless stop_area_referential&.registration_number_format.present?
-      if stop_area_referential.stop_areas.where(registration_number: registration_number).where.not(id: id).exists?
-        errors.add(:registration_number, I18n.t('stop_areas.errors.registration_number.already_taken'))
-      end
 
       unless registration_number.present?
         errors.add(:registration_number, I18n.t('stop_areas.errors.registration_number.cannot_be_empty'))

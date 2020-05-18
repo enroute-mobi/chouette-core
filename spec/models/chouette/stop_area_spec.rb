@@ -54,10 +54,10 @@ describe Chouette::StopArea, :type => :model do
         expect(stop_area).to be_valid
       end
 
-      it "should not validate the registration_number uniqueness" do
+      it "should validate the registration_number uniqueness" do
         stop_area.registration_number = "1234455"
         create :stop_area, stop_area_referential: stop_area_referential, registration_number: stop_area.registration_number
-        expect(stop_area).to be_valid
+        expect(stop_area).to_not be_valid
       end
     end
 

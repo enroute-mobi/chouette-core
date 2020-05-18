@@ -82,7 +82,7 @@ en:
       connections:
         title: "Connections"
         stop: "Stop area"
-        duration: "Suration"
+        duration: "Duration"
         direction: "Direction"
         both_ways: "Both ways"
         to: "To"

@@ -86,12 +86,15 @@ en:
         other: "imports"
     attributes:
       attrs: &attrs
+        created_at: Created at
+        started_at: Started at
+        ended_at: Ended at
+        creator: Created by
+        duration: Duration
+        notification_target: Notifications recipients
         resources: "File to import"
-        created_at: "Created on"
-        started_at: "Started at"
         name: "Name"
         status: "Status"
-        creator: "Creator"
         references_type: "Data to be imported"
         no_save: "No save"
         object_id_prefix: "Neptune Id prefix"
@@ -99,7 +102,6 @@ en:
         ignore_last_word: "ignore last word"
         ignore_end_chars: "ignore last chars"
         referential: Referential
-        notification_target: Notifications recipients
         workbench: Workbench
       import:
         <<: *attrs

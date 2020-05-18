@@ -9,4 +9,5 @@ module PublicationsHelper
     end
     metadatas
   end
+
 end

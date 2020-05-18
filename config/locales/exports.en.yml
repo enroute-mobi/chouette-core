@@ -76,13 +76,15 @@ en:
                 wrong_file_extension: "The exported file must be a zip file"
     attributes:
       attrs: &attrs
+        created_at: Created at
+        started_at: Started at
+        ended_at: Ended at
+        creator: Created by
+        duration: Duration
+        notification_target: Notifications recipients
         resources: "File to export"
-        created_at: "Created on"
-        started_at: "Started at"
-        ended_at: "Ended at"
         name: "Name"
         status: "Status"
-        creator: "Creator"
         references_type: "Data to be exported"
         no_save: "No save"
         object_id_prefix: "Neptune Id prefix"
@@ -95,30 +97,36 @@ en:
         parent: Parent
         referential_id: Referential
         referential: Referential
-        notification_target: Notifications recipients
       export:
         <<: *attrs
         base:
           <<: *attrs
         netex:
           <<: *attrs
-          duration: Duration (in days)
-          line_code: Line
-          export_type: Export subtype
-          export_type_collection:
-            line: By line
-            full: Full
+          parameters:
+            duration: Duration (in days)
+            line_code: Line
+            export_type: Export subtype
+            export_type_collection:
+              line: By line
+              full: Full
+        netex_full:
+          <<: *attrs
+          parameters:
+            duration: Duration (in days)
         gtfs:
           <<: *attrs
-          duration: Duration (in days)
-          prefer_referent_stop_area: Prefer Referent Stop Areas
-          line_code: Line
-          export_type: Export subtype
-          export_type_collection:
-            line: By line
-            full: Full
+          parameters:
+            duration: Duration (in days)
+            prefer_referent_stop_area: Prefer Referent Stop Areas
+            line_code: Line
+            export_type: Export subtype
+            export_type_collection:
+              line: By line
+              full: Full
         workgroup:
-          duration: Duration
+          parameters:
+            duration: Duration
         referential_companies:
           referential_id: Referential
   flash:

@@ -34,6 +34,12 @@ fr:
   activerecord:
     attributes:
       compliance_check_set:
+        created_at: Créé le
+        started_at: Début
+        ended_at: Fin
+        duration: Durée
+        creator: Créé par
+        notification_target: Destinataire(s) des notifications
         ref: Ref
         id: Ref
         creation_date: Date et heure de création
@@ -44,7 +50,6 @@ fr:
         context: Contexte
         context_i18n: Contexte
         status: Statut
-        notification_target: Destinataire(s) des notifications
       compliance_check_resource:
         name: Nom de la ligne
         status: État

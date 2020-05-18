@@ -39,6 +39,12 @@ en:
   activerecord:
     attributes:
       compliance_check_set:
+        created_at: Created at
+        started_at: Started at
+        ended_at: Ended at
+        creator: Created by
+        duration: Duration
+        notification_target: Notifications recipients
         ref: ref
         id: ref
         creation_date: Created at
@@ -49,7 +55,6 @@ en:
         context: Context
         context_i18n: Context
         status: Status
-        notification_target: Notifications recipients
       compliance_check_resources:
         name: Name of the line
         status: Status

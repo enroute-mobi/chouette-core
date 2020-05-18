@@ -123,6 +123,7 @@ class ComplianceCheckSet < ApplicationModel
   end
 
   def perform only_internals=false
+    update(started_at: DateTime.now)
     if referential.nil?
       update status: 'aborted'
       return

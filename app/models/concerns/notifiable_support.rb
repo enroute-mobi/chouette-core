@@ -9,7 +9,7 @@ module NotifiableSupport
 
   module ClassMethods
     def notification_target_options
-      notification_target.values.map { |k| [k && "operation_support.notification_targets.#{k}".t, k] }
+      notification_target.values.map { |k| [k && "enumerize.notification_target.#{k}".t, k] }
     end
   end
 

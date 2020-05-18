@@ -48,7 +48,6 @@ module ComplianceCheckSetsHelper
     metadata = metadata.update({  I18n.t("compliance_check_sets.show.metadatas.compliance_control_owner") => @compliance_check_set.organisation.name,
                                   I18n.t("compliance_check_sets.show.metadatas.import") => '',
                                   ComplianceCheckSet.tmf(:context) => @compliance_check_set.context_i18n })
-    metadata = metadata.update({ ComplianceCheckSet.tmf(:notification_target) => I18n.t("operation_support.notification_targets.#{@compliance_check_set.notification_target || 'none'}") })
     metadata
   end
 end

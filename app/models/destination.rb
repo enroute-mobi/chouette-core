@@ -78,4 +78,5 @@ end
 require_dependency './destination/dummy' if ::Destination.enabled?("dummy")
 require_dependency './destination/google_cloud_storage' if ::Destination.enabled?("google_cloud_storage")
 require_dependency './destination/sftp' if ::Destination.enabled?("sftp")
+require_dependency './destination/mail' if ::Destination.enabled?("mail")
 require_dependency './destination/publication_api'

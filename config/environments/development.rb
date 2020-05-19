@@ -94,7 +94,7 @@ Rails.application.configure do
   config.automated_audits_recipients = %w{foo@example.com bar@example.com}
 
   config.additional_compliance_controls << "dummy"
-  config.additional_destinations << "dummy"
+  config.additional_destinations << "dummy" << "mail"
 
   config.to_prepare do
     Chouette::ChecksumManager.cleanup

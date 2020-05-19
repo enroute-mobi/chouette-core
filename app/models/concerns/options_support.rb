@@ -49,12 +49,26 @@ module OptionsSupport
         end
       end
 
+      if opts.key?(:validates)
+        validates attribute_name, format: opts[:validates]
+      end
+
+      if opts.key?(:before_save)
+        before_save opts[:before_save]
+      end
+
       min = opts[:min].presence
       max = opts[:max].presence
 
       if min || max
         validates attribute_name, numericality: { less_than_or_equal_to: max, greater_than_or_equal_to: min }, if: condition
       end
+
+      min_length = opts[:min_length].presence
+      max_length = opts[:max_length].presence
+
+      validates attribute_name, length: {minimum: min_length}, if: condition if min_length
+      validates attribute_name, length: {maximum: max_length}, if: condition if max_length
 
       @options ||= {}
       @options[name] = opts

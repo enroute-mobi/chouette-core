@@ -31,7 +31,7 @@
               ), \
               TableBuilderHelper::Column.new( \
                 key: :last_merged_data, \
-                attribute: Proc.new { |workbench| workbench.last_merged_data.strftime("%d/%m/%Y") }, \
+                attribute: Proc.new { |workbench| workbench.last_merged_data.presence ? l(workbench.last_merged_data, format: :short_with_time) : '-' }, \
               ), \
             ],
             cls: 'table',

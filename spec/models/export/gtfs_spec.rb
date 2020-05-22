@@ -480,6 +480,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
         agency = source.agencies.first
         expect(agency.id).to eq(company.registration_number)
         expect(agency.name).to eq(company.name)
+        expect(agency.lang).to eq(company.default_language)
       end
 
       ################################

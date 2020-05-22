@@ -139,34 +139,56 @@ class Export::Gtfs < Export::Base
 
   def export_stop_areas_to(target)
     CustomFieldsSupport.within_workgroup(referential.workgroup) do
-      exported_stop_areas.includes(:referent, :parent).find_each do |stop_area|
+      base_scope = exported_stop_areas.includes(:referent,:parent)
 
-        stop_id = stop_id(stop_area)
-
-        if prefer_referent_stop_area && stop_area.referent
-          stop_id = stop_id(stop_area.referent)
-          index.register_stop_id(stop_area, stop_id)
-
-          stop_area = stop_area.referent
-        end
-
-        index.register_stop_id stop_area, stop_id
-
-        target.stops << {
-          id: stop_id,
-          name: stop_area.name,
-          location_type: stop_area.area_type == 'zdep' ? 0 : 1,
-          parent_station: (stop_id(stop_area.parent) if stop_area.parent),
-          lat: stop_area.latitude,
-          lon: stop_area.longitude,
-          desc: stop_area.comment,
-          url: stop_area.url,
-          timezone: (stop_area.time_zone unless stop_area.parent),
-          #code: TO DO
-          #wheelchair_boarding: TO DO wheelchair_boarding <=> mobility_restricted_suitability ?
-        }
+      # To export first Stop Areas without parent (and register the expected stop_id)
+      base_scope.where(parent: nil).find_each do |stop_area|
+        export_stop_area_to stop_area, target
+      end
+      base_scope.where.not(parent: nil).find_each do |stop_area|
+        export_stop_area_to stop_area, target
       end
     end
+  end
+
+  def export_stop_area_to(stop_area, target)
+    stop_id = stop_id(stop_area)
+
+    # Substitute the referent to the actual Stop Area
+    if prefer_referent_stop_area && stop_area.referent
+      stop_id = stop_id(stop_area.referent)
+      # Register the Referent to be used (in stop_times or as parent_station) instead of the actuel Stop Area
+      index.register_stop_id(stop_area, stop_id)
+
+      stop_area = stop_area.referent
+    end
+
+    index.register_stop_id stop_area, stop_id
+
+    parent_stop_id = nil
+    if stop_area.parent
+      # Parent should have been exported before and present into the index
+      parent_stop_id = index.stop_id(stop_area.parent.id)
+
+      unless parent_stop_id
+        parent_stop_id = stop_id(stop_area.parent)
+        Rails.logger.warn "Can't find parent stop_id in index for StopArea #{stop_area.id}"
+      end
+    end
+
+    target.stops << {
+      id: stop_id,
+      name: stop_area.name,
+      location_type: stop_area.area_type == 'zdep' ? 0 : 1,
+      parent_station: parent_stop_id,
+      lat: stop_area.latitude,
+      lon: stop_area.longitude,
+      desc: stop_area.comment,
+      url: stop_area.url,
+      timezone: (stop_area.time_zone unless stop_area.parent),
+      #code: TO DO
+      #wheelchair_boarding: TO DO wheelchair_boarding <=> mobility_restricted_suitability ?
+    }
   end
 
   def export_transfers_to(target)

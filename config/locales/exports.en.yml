@@ -103,30 +103,26 @@ en:
           <<: *attrs
         netex:
           <<: *attrs
-          parameters:
-            duration: Duration (in days)
-            line_code: Line
-            export_type: Export subtype
-            export_type_collection:
-              line: By line
-              full: Full
+          duration: Duration (in days)
+          line_code: Line
+          export_type: Export subtype
+          export_type_collection:
+            line: By line
+            full: Full
         netex_full:
           <<: *attrs
-          parameters:
-            duration: Duration (in days)
+          duration: Duration (in days)
         gtfs:
           <<: *attrs
-          parameters:
-            duration: Duration (in days)
-            prefer_referent_stop_area: Prefer Referent Stop Areas
-            line_code: Line
-            export_type: Export subtype
-            export_type_collection:
-              line: By line
-              full: Full
+          duration: Duration (in days)
+          prefer_referent_stop_area: Prefer Referent Stop Areas
+          line_code: Line
+          export_type: Export subtype
+          export_type_collection:
+            line: By line
+            full: Full
         workgroup:
-          parameters:
-            duration: Duration
+          duration: Duration
         referential_companies:
           referential_id: Referential
   flash:

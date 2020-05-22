@@ -105,30 +105,26 @@ fr:
           <<: *attrs
         netex:
           <<: *attrs
-          parameters:
-            duration: Durée (en jours)
-            line_code: Ligne
-            export_type: Sous-type d'export
-            export_type_collection:
-              line: Par ligne
-              full: Complet
+          duration: Durée (en jours)
+          line_code: Ligne
+          export_type: Sous-type d'export
+          export_type_collection:
+            line: Par ligne
+            full: Complet
         netex_full:
           <<: *attrs
-          parameters:
-            duration: Durée (en jours)
+          duration: Durée (en jours)
         gtfs:
           <<: *attrs
-          parameters:
-            duration: Durée (en jours)
-            prefer_referent_stop_area: Préférer les arrêts Référents
-            line_code: Ligne
-            export_type: Sous-type d'export
-            export_type_collection:
-              line: Par ligne
-              full: Complet
+          duration: Durée (en jours)
+          prefer_referent_stop_area: Préférer les arrêts Référents
+          line_code: Ligne
+          export_type: Sous-type d'export
+          export_type_collection:
+            line: Par ligne
+            full: Complet
         workgroup:
-          parameters:
-            duration: Durée
+          duration: Durée
         referential_companies:
           referential_id: Jeu de données
   flash:

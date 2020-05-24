@@ -39,38 +39,42 @@ class Export::Gtfs < Export::Base
   end
 
   def export_to_dir(directory)
-    operations_count = 5
+    CustomFieldsSupport.within_workgroup(referential.workgroup) do
+      operations_count = 5
 
-    @target = GTFS::Target.new(File.join(directory, "#{zip_file_name}.zip"))
+      @target = GTFS::Target.new(File.join(directory, "#{zip_file_name}.zip"))
 
-    Chouette::Benchmark.measure "companies" do
-      export_companies_to target
-      notify_progress 1.0/operations_count
+      Chouette::Benchmark.measure "companies" do
+        export_companies_to target
+        notify_progress 1.0/operations_count
+      end
+
+      Chouette::Benchmark.measure "stop_areas" do
+        export_stop_areas_to target
+        notify_progress 2.0/operations_count
+      end
+
+      Lines.new(self).export_part
+
+      Chouette::Benchmark.measure "transfers" do
+        export_transfers_to target
+        notify_progress 3.0/operations_count
+      end
+
+      # Export Trips
+      TimeTables.new(self).export_part
+      VehicleJourneys.new(self).export_part
+
+      notify_progress 4.0/operations_count
+      # Export stop_times.txt
+
+      filter_non_commercial = referential.stop_areas.non_commercial.exists?
+      VehicleJourneyAtStops.new(self, filter_non_commercial: filter_non_commercial).export_part
+      notify_progress 5.0/operations_count
+      # Export files fare_rules, fare_attributes, shapes, frequencies
+      # and feed_info aren't yet implemented as import nor export features from
+      # the chouette model
     end
-
-    Chouette::Benchmark.measure "stop_areas" do
-      export_stop_areas_to target
-      notify_progress 2.0/operations_count
-    end
-
-    Lines.new(self).export_part
-
-    Chouette::Benchmark.measure "transfers" do
-      export_transfers_to target
-      notify_progress 3.0/operations_count
-    end
-
-    # Export Trips
-    TimeTables.new(self).export_part
-    VehicleJourneys.new(self).export_part
-
-    notify_progress 4.0/operations_count
-    # Export stop_times.txt
-    VehicleJourneyAtStops.new(self).export_part
-    notify_progress 5.0/operations_count
-    # Export files fare_rules, fare_attributes, shapes, frequencies
-    # and feed_info aren't yet implemented as import nor export features from
-    # the chouette model
 
     target.close
   end
@@ -138,16 +142,14 @@ class Export::Gtfs < Export::Base
   end
 
   def export_stop_areas_to(target)
-    CustomFieldsSupport.within_workgroup(referential.workgroup) do
-      base_scope = exported_stop_areas.includes(:referent,:parent)
+    base_scope = exported_stop_areas.includes(:referent,:parent)
 
-      # To export first Stop Areas without parent (and register the expected stop_id)
-      base_scope.where(parent: nil).find_each do |stop_area|
-        export_stop_area_to stop_area, target
-      end
-      base_scope.where.not(parent: nil).find_each do |stop_area|
-        export_stop_area_to stop_area, target
-      end
+    # To export first Stop Areas without parent (and register the expected stop_id)
+    base_scope.where(parent: nil).find_each do |stop_area|
+      export_stop_area_to stop_area, target
+    end
+    base_scope.where.not(parent: nil).find_each do |stop_area|
+      export_stop_area_to stop_area, target
     end
   end
 
@@ -288,8 +290,9 @@ class Export::Gtfs < Export::Base
   class Part
 
     attr_reader :export
-    def initialize(export)
+    def initialize(export, options = {})
       @export = export
+      options.each { |k,v| send "#{k}=", v }
     end
 
     delegate :target, :index, :export_scope, :messages, :date_range, to: :export
@@ -407,7 +410,7 @@ class Export::Gtfs < Export::Base
     delegate :time_tables, to: :export_scope
 
     def export!
-      time_tables.find_each do |time_table|
+      time_tables.includes(:periods, :dates).find_each do |time_table|
         decorated_time_table = TimeTableDecorator.new(time_table, date_range)
 
         decorated_time_table.calendars.each { |c| target.calendars << c }
@@ -573,7 +576,7 @@ class Export::Gtfs < Export::Base
     delegate :vehicle_journeys, to: :export_scope
 
     def export!
-      vehicle_journeys.find_each do |vehicle_journey|
+      vehicle_journeys.includes(:time_tables, :route).find_each do |vehicle_journey|
 
         decorated_vehicle_journey = Decorator.new(vehicle_journey, index)
 
@@ -636,15 +639,32 @@ class Export::Gtfs < Export::Base
 
   class VehicleJourneyAtStops < Part
 
-    delegate :vehicle_journey_at_stops, to: :export_scope
+    attr_writer :filter_non_commercial
+
+    def filter_non_commercial?
+      # false ||= true -> true :-/
+      @filter_non_commercial = true if @filter_non_commercial.nil?
+
+      @filter_non_commercial
+    end
+
+    def vehicle_journey_at_stops
+      @vehicle_journey_at_stops ||=
+        begin
+          base_scope = export_scope.vehicle_journey_at_stops
+
+          if filter_non_commercial?
+            Rails.logger.warn "Export GTFS #{export.id} uses non optimized non_commercial filter"
+            base_scope = base_scope.joins(stop_point: :stop_area).
+                           where("stop_areas.kind" => "commercial")
+          end
+
+          base_scope
+        end
+    end
 
     def export!
-      vehicle_journey_at_stops.
-        includes(:stop_point).
-        joins(stop_point: :stop_area).
-        where("stop_areas.kind" => "commercial").
-        find_each do |vehicle_journey_at_stop|
-
+      vehicle_journey_at_stops.includes(:stop_point).find_each do |vehicle_journey_at_stop|
         decorated_vehicle_journey_at_stop = Decorator.new(vehicle_journey_at_stop, index)
 
         # Duplicate the stop time for each exported trip

@@ -195,6 +195,10 @@ module Chouette
       where kind: "commercial"
     end
 
+    def self.non_commercial
+      where kind: "non_commercial"
+    end
+
     def self.stop_place
       where :area_type => "StopPlace"
     end

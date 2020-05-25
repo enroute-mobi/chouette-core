@@ -392,7 +392,7 @@ class Merge < ApplicationModel
 
                 stop_points = stop_areas_objectids.map do |position, object_id|
                   existing_associated_route.stop_points.joins(:stop_area).where("stop_areas.objectid": object_id, position: position).last
-                end
+                end.compact
                 if stop_points.count != stop_areas_objectids.count
                   raise "Can't find StopPoints for #{stop_areas_objectids} : #{stop_points.inspect} #{existing_associated_route.stop_points.inspect}"
                 end

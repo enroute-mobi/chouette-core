@@ -3,7 +3,7 @@ class PublicationApi < ActiveRecord::Base
   has_many :api_keys, class_name: 'PublicationApiKey'
   has_many :destinations
   has_many :publication_setups, through: :destinations
-  has_many :publication_api_sources
+  has_many :publication_api_sources, dependent: :destroy
 
   validates :name, presence: true
   validates :slug, presence: true, uniqueness: true

@@ -165,6 +165,11 @@ class Export::Gtfs < Export::Base
       stop_area = stop_area.referent
     end
 
+    if index.has_stop_id? stop_area
+      # This StopArea has already been exported (a Referent used several times)
+      return
+    end
+
     index.register_stop_id stop_area, stop_id
 
     parent_stop_id = nil
@@ -231,6 +236,10 @@ class Export::Gtfs < Export::Base
 
     def stop_id(stop_area_id)
       @stop_ids[stop_area_id]
+    end
+
+    def has_stop_id?(stop_area_id)
+      @stop_ids.has_key? stop_area_id
     end
 
     def register_stop_id(stop_area, stop_id)

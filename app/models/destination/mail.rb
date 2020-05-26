@@ -24,7 +24,7 @@ if ::Destination.enabled?("mail")
     validates :attached_export_filename, format: { with: /\A[a-z0-9-]+\z/i, message: :filename, allow_blank: true }
 
     def do_transmit(publication, _report)
-      puts "Send mail to recipents !"
+      PublicationMailer.publish(publication, self).deliver_later
     end
 
     def check_mail_array

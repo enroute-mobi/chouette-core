@@ -1,0 +1,10 @@
+p== @destination_mail.email_text
+p== t('mailers.publication_mailer.publish.publication_date', formated_date: l(@publication.ended_at, format: :short_with_time))
+
+
+- if @destination_mail.link_to_api.present?
+  p
+    = t('mailers.publication_mailer.publish.api_link')
+    = mailer_link_to @publication_api.public_url, @publication_api.public_url
+
+  p= mailer_button(t('mailers.publication_mailer.publish.button'), @publication_api.public_url)

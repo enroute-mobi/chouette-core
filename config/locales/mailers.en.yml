@@ -116,3 +116,8 @@ en:
           Hello, the aggregation is over
           The automatic aggregation %{agg_name} is now over.
           The operation status is %{status}<br/><br/>
+    publication_mailer:
+      publish:
+        publication_date: This new data has been published on %{formated_date}.
+        api_link: "You can retrieve online this data on "
+        button: Retrieve data

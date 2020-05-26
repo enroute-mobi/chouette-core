@@ -58,7 +58,7 @@ fr:
       updated:
         subject: Réinitialiser votre mot de passe
         body: |
-          Vous pouvez choisir une nouveau mot de passe pour accéder à votre compte sur %{app_name} :
+          Vous pouvez choisir un nouveau mot de passe pour accéder à votre compte sur %{app_name} :
         button: Réinitialiser mon mot de passe
     user_mailer:
       created:
@@ -107,3 +107,8 @@ fr:
           Bonjour, l'agrégation automatique est terminée
           L'agrégation automatique <strong>"%{agg_name}"</strong> a été effectuée . Elle est maintenant terminée.
           Pour y accéder :
+    publication_mailer:
+      publish:
+        publication_date: Ces nouvelles données ont été publiées le %{formated_date}.
+        api_link: "Vous pouvez récupérer ces données publiées à l'adresse "
+        button: Récupérer les données

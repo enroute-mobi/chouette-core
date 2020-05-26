@@ -238,8 +238,8 @@ class Export::Gtfs < Export::Base
       @stop_ids[stop_area_id]
     end
 
-    def has_stop_id?(stop_area_id)
-      @stop_ids.has_key? stop_area_id
+    def has_stop_id?(stop_area)
+      @stop_ids.has_key? stop_area.id
     end
 
     def register_stop_id(stop_area, stop_id)

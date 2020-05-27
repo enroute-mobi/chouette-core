@@ -71,6 +71,8 @@ class WorkgroupsController < ChouetteController
   def workgroup_params
     params.require(:workgroup).permit(
       :name,
+      :enable_purge_merged_data,
+      :maximum_data_age,
       :sentinel_min_hole_size,
       :sentinel_delay,
       :nightly_aggregate_enabled, :nightly_aggregate_time, :nightly_aggregate_notification_target,

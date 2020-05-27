@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_27_145707) do
+ActiveRecord::Schema.define(version: 2020_05_27_150036) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -1312,6 +1312,8 @@ ActiveRecord::Schema.define(version: 2020_05_27_145707) do
     t.string "nightly_aggregate_notification_target", default: "none"
     t.datetime "deleted_at"
     t.jsonb "transport_modes", default: {"air"=>["undefined", "airshipService", "domesticCharterFlight", "domesticFlight", "domesticScheduledFlight", "helicopterService", "intercontinentalCharterFlight", "intercontinentalFlight", "internationalCharterFlight", "internationalFlight", "roundTripCharterFlight", "schengenAreaFlight", "shortHaulInternationalFlight", "shuttleFlight", "sightseeingFlight"], "bus"=>["undefined", "airportLinkBus", "demandAndResponseBus", "expressBus", "highFrequencyBus", "localBus", "mobilityBusForRegisteredDisabled", "mobilityBus", "nightBus", "postBus", "railReplacementBus", "regionalBus", "schoolAndPublicServiceBus", "schoolBus", "shuttleBus", "sightseeingBus", "specialNeedsBus"], "rail"=>["undefined", "carTransportRailService", "crossCountryRail", "highSpeedRail", "international", "interregionalRail", "local", "longDistance", "nightTrain", "rackAndPinionRailway", "railShuttle", "regionalRail", "replacementRailService", "sleeperRailService", "specialTrain", "suburbanRailway", "touristRailway"], "taxi"=>["undefined", "allTaxiServices", "bikeTaxi", "blackCab", "communalTaxi", "miniCab", "railTaxi", "waterTaxi"], "tram"=>["undefined", "cityTram", "localTram", "regionalTram", "shuttleTram", "sightseeingTram", "tramTrain"], "coach"=>["undefined", "commuterCoach", "internationalCoach", "nationalCoach", "regionalCoach", "shuttleCoach", "sightseeingCoach", "specialCoach", "touristCoach"], "metro"=>["undefined", "metro", "tube", "urbanRailway"], "water"=>["undefined", "internationalCarFerry", "nationalCarFerry", "regionalCarFerry", "localCarFerry", "internationalPassengerFerry", "nationalPassengerFerry", "regionalPassengerFerry", "localPassengerFerry", "postBoat", "trainFerry", "roadFerryLink", "airportBoatLink", "highSpeedVehicleService", "highSpeedPassengerService", "sightseeingService", "schoolBoat", "cableFerry", "riverBus", "scheduledFerry", "shuttleFerryService"], "hireCar"=>["undefined", "allHireVehicles", "hireCar", "hireCycle", "hireMotorbike", "hireVan"], "funicular"=>["undefined", "allFunicularServices", "funicular"], "telecabin"=>["undefined", "cableCar", "chairLift", "dragLift", "lift", "telecabinLink", "telecabin"]}
+    t.integer "maximum_data_age"
+    t.boolean "enable_purge_merged_data"
   end
 
   add_foreign_key "access_links", "access_points", name: "aclk_acpt_fkey"

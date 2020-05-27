@@ -55,7 +55,7 @@ ChouetteIhm::Application.routes.draw do
       get :edit_aggregate
       get :edit_controls
       put :update_controls
-      get :edit_hole_sentinel
+      get :edit_merge
       get :edit_transport_modes
     end
 

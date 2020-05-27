@@ -48,7 +48,7 @@ class WorkgroupsController < ChouetteController
   def update
     unless resource.update workgroup_params
       if workgroup_params.has_key? :sentinel_min_hole_size
-        render :edit_hole_sentinel
+        render :edit_merge
       else
         render :edit
       end

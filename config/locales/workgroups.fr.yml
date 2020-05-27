@@ -4,7 +4,7 @@ fr:
       new: "Ajouter un Groupe de travail"
       edit_control_sets: Paramétrer les Contrôles
       edit_aggregate: Paramétrer l'Agrégation
-      edit_hole_sentinel: Paramétrer l'Analyse d'Offre
+      edit_merge: Finalistion
       destroy_confirm: "Etes vous sûr de vouloir supprimer ce groupe de travail ?"
       setup_deletion_confirm: "Etes vous sûr de vouloir supprimer ce groupe de travail ?"
       setup_workgroup_deletion: Planifier la suppression du groupe de travail
@@ -27,8 +27,10 @@ fr:
         <p>Par défaut l'agrégation du groupe de travail utilise les dernières offres finalisées dans chaque espace de travail.</p>
         <p>Vous pouvez ici sélectionner une offre finalisée particulière si l'un des espaces de travail rencontre des difficultés
         à fournir une offre pertinente. Cette sélection restera en place jusqu'à une nouvelle intervention de votre part.</p>
-    edit_hole_sentinel:
-      title: "Paramétrages de la détection de trous d'offre"
+    edit_merge:
+      title: "Finalisation"
+      edit_hole_sentinel: "Paramétrage de la détection de trous d'offre"
+      disclaimer: Ces paramètres sont utilisés par tous les Espaces de travail de ce Groupe de travail.
     edit_transport_modes:
       title: Paramétrages des modes de transport
     compliance_control_sets:

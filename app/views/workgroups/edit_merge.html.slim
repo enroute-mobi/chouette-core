@@ -1,0 +1,29 @@
+- breadcrumb :workgroup_edit_merge, resource
+- page_header_content_for resource
+
+.page_content
+  .container-fluid
+    .row
+      .col-lg-4
+      .col-lg-6
+        = I18n.t('workgroups.edit_merge.disclaimer')
+
+    .row
+      .col-lg-5
+      .col-lg-6
+        h3= I18n.t('workgroups.edit_merge.edit_hole_sentinel')
+
+    .row
+      .col-lg-12
+        = simple_form_for resource, html: { class: 'form-horizontal', id: 'workgroup_form' }, wrapper: :horizontal_form do |f|
+          .row
+            .col-lg-3
+            .col-lg-6
+              = f.input :sentinel_min_hole_size, label: "workgroup.sentinel_min_hole_size".tmf, hint: "formtastic.hints.workgroup.sentinel_min_hole_size".t
+          .row
+            .col-lg-3
+            .col-lg-6
+              = f.input :sentinel_delay, label: "workgroup.sentinel_delay".tmf, hint: "formtastic.hints.workgroup.sentinel_delay".t
+
+            = cancel_button
+            = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'workgroup_form'

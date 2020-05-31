@@ -622,7 +622,7 @@ GEM
       thor (~> 0.14)
     sentry-raven (2.13.0)
       faraday (>= 0.7.6, < 1.0)
-    sequel (5.31.0)
+    sequel (5.32.0)
     shoulda-matchers (4.3.0)
       activesupport (>= 4.2.0)
     signet (0.12.0)

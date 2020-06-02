@@ -336,8 +336,8 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
   describe 'VehicleJourneys Part' do
 
     let(:export_scope) { Export::Scope::All.new context.referential }
-    let(:index) { Export::Gtfs::Index.new }
-    let(:export) { double export_scope: export_scope, index: index }
+    let(:index) { export.index }
+    let(:export) { Export::Gtfs.new export_scope: export_scope, workbench: context.workbench, workgroup: context.workgroup }
 
     let(:part) do
       Export::Gtfs::VehicleJourneys.new export
@@ -360,13 +360,13 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
       let!(:vehicle_journey_codes) do
         context.vehicle_journeys.map do |vehicle_journey|
-          vehicle_journey.codes.create! value: rand(100).to_s
+          vehicle_journey.codes.create! code_space: export.code_space, value: rand(100).to_s
         end
       end
 
       let!(:unexpected_code) do
         other_resource = vehicle_journeys.first.journey_pattern
-        referential.codes.create! resource: other_resource, value: rand(100).to_s
+        referential.codes.create! resource: other_resource, code_space: export.code_space, value: rand(100).to_s
       end
 
       it "selects codes associated with Vehicle Journeys" do
@@ -389,12 +389,12 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       let(:duplicated_code_value) { 'duplicated' }
 
       let!(:unique_code) do
-        vehicle_journeys.first.codes.create! value: unique_code_value
+        vehicle_journeys.first.codes.create! code_space: export.code_space, value: unique_code_value
       end
 
       let!(:duplicated_codes) do
         context.vehicle_journeys.map do |vehicle_journey|
-          vehicle_journey.codes.create! value: duplicated_code_value
+          vehicle_journey.codes.create! code_space: export.code_space, value: duplicated_code_value
         end
       end
 

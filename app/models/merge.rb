@@ -580,7 +580,7 @@ class Merge < ApplicationModel
           referential_vehicle_journey_purchase_window_checksums[vehicle_journey.id] << purchase_window.checksum
         end
         referential_vehicle_journey_footnote_checksums[vehicle_journey.id] = vehicle_journey.footnotes.pluck(:checksum)
-        referential_vehicle_journey_codes[vehicle_journey.id] = vehicle_journey.codes.map(&:value)
+        referential_vehicle_journey_codes[vehicle_journey.id] = vehicle_journey.codes.pluck(:code_space_id, :value)
       end
     end
 
@@ -686,9 +686,9 @@ class Merge < ApplicationModel
             merged_vehicle_journey = new_vehicle_journey
           end
 
-          referential_vehicle_journey_codes[vehicle_journey.id].each do |code_value|
+          referential_vehicle_journey_codes[vehicle_journey.id].each do |code_space_id, code_value|
             begin
-              merged_vehicle_journey.codes.create value: code_value
+              merged_vehicle_journey.codes.create code_space_id: code_space_id, value: code_value
             rescue ActiveRecord::RecordNotUnique
               # Ignore existing code
             end

@@ -70,7 +70,8 @@ RSpec.describe CopyInserter do
 
   describe 'Referential Code' do
 
-    let!(:code) { vehicle_journey.codes.create! value: 'dummy' }
+    let(:code_space) { context.workgroup.code_spaces.default }
+    let!(:code) { truncate_timestamps(vehicle_journey.codes.create!(code_space: code_space, value: 'dummy')) }
 
     it "creates the same CSV content than PostgreSQL gives by COPY TO" do
       expected_csv = ReferentialCode.copy_to_string

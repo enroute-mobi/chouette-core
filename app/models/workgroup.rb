@@ -32,6 +32,11 @@ class Workgroup < ApplicationModel
   validates :sentinel_min_hole_size, presence: true, numericality: { greater_than_or_equal_to: 0 }
 
   has_many :custom_fields, dependent: :destroy
+  has_many :code_spaces, dependent: :destroy do
+    def default
+      find_or_create_by(short_name: CodeSpace::DEFAULT_SHORT_NAME)
+    end
+  end
 
   accepts_nested_attributes_for :workbenches
 

@@ -316,7 +316,7 @@ class Export::Gtfs < Export::Base
       options.each { |k,v| send "#{k}=", v }
     end
 
-    delegate :target, :index, :export_scope, :messages, :date_range, to: :export
+    delegate :target, :index, :export_scope, :messages, :date_range, :code_space, to: :export
 
     def part_name
       @part_name ||= self.class.name.demodulize.underscore
@@ -610,7 +610,7 @@ class Export::Gtfs < Export::Base
     end
 
     def codes
-      export_scope.codes.where(resource: vehicle_journeys)
+      export_scope.codes.where(code_space: code_space, resource: vehicle_journeys)
     end
 
     def duplicated_code_values

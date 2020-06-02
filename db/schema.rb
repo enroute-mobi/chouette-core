@@ -865,6 +865,14 @@ ActiveRecord::Schema.define(version: 2020_06_05_132708) do
     t.index ["target_referential_id"], name: "index_referential_clonings_on_target_referential_id"
   end
 
+  create_table "referential_codes", force: :cascade do |t|
+    t.string "resource_type"
+    t.bigint "resource_id"
+    t.string "value", null: false
+    t.index ["resource_type", "resource_id", "value"], name: "index_referential_codes_on_resource_and_value", unique: true
+    t.index ["resource_type", "resource_id"], name: "index_referential_codes_on_resource_type_and_resource_id"
+  end
+
   create_table "referential_metadata", force: :cascade do |t|
     t.bigint "referential_id"
     t.bigint "line_ids", array: true

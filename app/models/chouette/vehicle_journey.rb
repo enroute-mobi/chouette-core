@@ -674,6 +674,7 @@ module Chouette
       # and the delete cascade will be the fallback
 
       Chouette::VehicleJourneyAtStop.where(vehicle_journey: current_scope).delete_all
+      ReferentialCode.where(resource: current_scope).delete_all
 
       reflections.values.select do |r|
         r.is_a?(::ActiveRecord::Reflection::HasAndBelongsToManyReflection)

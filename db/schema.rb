@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_07_124309) do
+ActiveRecord::Schema.define(version: 2020_05_27_145707) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -222,10 +222,9 @@ ActiveRecord::Schema.define(version: 2020_05_07_124309) do
   create_table "compliance_check_sets", force: :cascade do |t|
     t.bigint "referential_id"
     t.bigint "compliance_control_set_id"
-    t.bigint "workbench_id"
     t.string "status"
-    t.string "parent_type"
     t.bigint "parent_id"
+    t.string "parent_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "current_step_id"
@@ -239,6 +238,7 @@ ActiveRecord::Schema.define(version: 2020_05_07_124309) do
     t.string "notification_target"
     t.datetime "notified_recipients_at"
     t.bigint "user_id"
+    t.bigint "workbench_id"
     t.bigint "workgroup_id"
     t.index ["compliance_control_set_id"], name: "index_compliance_check_sets_on_compliance_control_set_id"
     t.index ["parent_type", "parent_id"], name: "index_compliance_check_sets_on_parent_type_and_parent_id"
@@ -398,7 +398,7 @@ ActiveRecord::Schema.define(version: 2020_05_07_124309) do
     t.bigint "publication_setup_id"
     t.string "name"
     t.string "type"
-    t.hstore "options"
+    t.jsonb "options", default: {}
     t.string "secret_file"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -452,7 +452,7 @@ ActiveRecord::Schema.define(version: 2020_05_07_124309) do
     t.integer "current_step", default: 0
     t.integer "total_steps", default: 0
     t.string "creator"
-    t.hstore "options"
+    t.jsonb "options", default: {}
     t.string "notification_target"
     t.datetime "notified_recipients_at"
     t.bigint "user_id"
@@ -571,7 +571,7 @@ ActiveRecord::Schema.define(version: 2020_05_07_124309) do
     t.integer "current_step", default: 0
     t.integer "total_steps", default: 0
     t.string "creator"
-    t.hstore "options"
+    t.jsonb "options", default: {}
     t.string "notification_target"
     t.datetime "notified_recipients_at"
     t.bigint "user_id"
@@ -1107,10 +1107,10 @@ ActiveRecord::Schema.define(version: 2020_05_07_124309) do
 
   create_table "taggings", force: :cascade do |t|
     t.bigint "tag_id"
-    t.string "taggable_type"
     t.bigint "taggable_id"
-    t.string "tagger_type"
+    t.string "taggable_type"
     t.bigint "tagger_id"
+    t.string "tagger_type"
     t.string "context", limit: 128
     t.datetime "created_at"
     t.index ["context"], name: "index_taggings_on_context"

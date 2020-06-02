@@ -11,7 +11,7 @@ module Export::Scope
 
     delegate :workbench, :line_referential, :stop_area_referential, to: :referential
 
-    delegate :vehicle_journeys, :vehicle_journey_at_stops, :journey_patterns, :routes, :stop_points, :time_tables, to: :referential
+    delegate :vehicle_journeys, :vehicle_journey_at_stops, :journey_patterns, :routes, :stop_points, :time_tables, :codes, to: :referential
 
     delegate :companies, to: :line_referential
 

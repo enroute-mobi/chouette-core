@@ -19,8 +19,18 @@ module Chouette
       end
     end
 
+    OUTBOUND = :outbound
+    def self.outbound
+      OUTBOUND
+    end
+
+    INBOUND = :inbound
+    def self.inbound
+      INBOUND
+    end
+
     enumerize :direction, in: %i(straight_forward backward clockwise counter_clockwise north north_west west south_west south south_east east north_east)
-    enumerize :wayback, in: %i(outbound inbound), default: :outbound
+    enumerize :wayback, in: [OUTBOUND, INBOUND], default: OUTBOUND
 
     def self.nullable_attributes
       [:published_name, :comment, :number, :name, :direction, :wayback]

@@ -234,6 +234,7 @@ class Export::Gtfs < Export::Base
       @service_ids = Hash.new { |h,k| h[k] = [] }
       @vehicle_journey_time_zones = {}
       @trip_index = 0
+      @duplicated_vehicle_journey_codes = Set.new
     end
 
     def stop_id(stop_area_id)
@@ -295,6 +296,15 @@ class Export::Gtfs < Export::Base
     def register_vehicle_journey_time_zone(vehicle_journey_id, time_zone)
       @vehicle_journey_time_zones[vehicle_journey_id] = time_zone
     end
+
+    def register_duplicated_vehicle_journey_code(code)
+      @duplicated_vehicle_journey_codes << code
+    end
+
+    def duplicated_vehicle_journey_code?(code)
+      @duplicated_vehicle_journey_codes.include? code
+    end
+
 
   end
 
@@ -587,19 +597,29 @@ class Export::Gtfs < Export::Base
     delegate :vehicle_journeys, to: :export_scope
 
     def export!
-      vehicle_journeys.includes(:time_tables, :route).find_each do |vehicle_journey|
-
+      vehicle_journeys.includes(:time_tables, :route, :codes).find_each do |vehicle_journey|
         decorated_vehicle_journey = Decorator.new(vehicle_journey, index)
 
-        vehicle_journey.time_tables.each do |time_table|
-          index.service_ids(time_table.id).each do |service_id|
-            index.increment_trip_index
+        decorated_vehicle_journey.service_ids.each do |service_id|
+          trip_attributes = decorated_vehicle_journey.trip_attributes(service_id)
 
-            target.trips << decorated_vehicle_journey.trip_attributes(service_id)
-
-            index.register_trip_id vehicle_journey, decorated_vehicle_journey.trip_id
-          end
+          target.trips << trip_attributes
+          index.register_trip_id vehicle_journey, trip_attributes[:id]
         end
+      end
+    end
+
+    def codes
+      export_scope.codes.where(resource: vehicle_journeys)
+    end
+
+    def duplicated_code_values
+      codes.select(:value, :resource_id).group(:value).having("count(resource_id) > 1").pluck(:value)
+    end
+
+    def load_duplicated_codes
+      duplicated_code_values.each do |code|
+        index.register_duplicated_vehicle_journey_code(code)
       end
     end
 
@@ -614,25 +634,58 @@ class Export::Gtfs < Export::Base
       attr_reader :index
 
       def route_id
-        index.route_id(route.line_id)
+        index.route_id(route.line_id) if route
       end
 
-      def trip_id
-        "trip_#{index.trip_index}"
+      def trip_id(suffix = nil)
+        if unique_gtfs_code? && single_service_id?
+          base_trip_id
+        else
+          "#{base_trip_id}-#{suffix}"
+        end
+      end
+
+      def gtfs_code
+        if codes.one?
+          # FIXME With CodeSpace
+          codes.first.value
+        end
+      end
+
+      def unique_gtfs_code?
+        !index.duplicated_vehicle_journey_code? gtfs_code
+      end
+
+      def base_trip_id
+        gtfs_code || objectid
+      end
+
+      def service_ids
+        return [] unless index
+
+        @service_ids ||= time_table_ids.each_with_object(Set.new) do |time_table_id, all|
+          all.merge index.service_ids(time_table_id)
+        end
+      end
+
+      def single_service_id?
+        @single_service_id ||= service_ids.one?
       end
 
       def direction_id
-        route.wayback == 'outbound' ? 0 : 1
+        if route && route.wayback.present?
+          route.wayback == 'outbound' ? 0 : 1
+        end
       end
 
-      def trip_attributes service_id
+      def trip_attributes(service_id)
         {
           route_id: route_id,
           service_id:  service_id,
-          id: trip_id,
-          #headsign: TO DO
+          id: trip_id(service_id),
           short_name: published_journey_name,
-          direction_id: (direction_id if route.wayback.present?),
+          direction_id: direction_id,
+          #headsign: TO DO
           #block_id: TO DO
           #shape_id: TO DO
           #wheelchair_accessible: TO DO

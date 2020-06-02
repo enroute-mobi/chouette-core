@@ -30,18 +30,26 @@ class PublicationSetupsController < ChouetteController
     end
   end
 
+  private
+
   def publication_setup_params
-    publication_setup_params = params.require(:publication_setup)
-    permitted_keys = [:name, :export_type, :export_options, :enabled, :workgroup_id]
-    publication_setup_params[:workgroup_id] = parent.id
-    export_class = publication_setup_params[:export_type] && publication_setup_params[:export_type].safe_constantize
+    export_options = []
+    export_class = params[:publication_setup][:export_type] && params[:publication_setup][:export_type].safe_constantize
     if export_class
-      permitted_keys << { export_options: export_class.options.map {|k, v| v[:name].presence || k } }
+      export_options = export_class.options.keys
     end
-    permitted_destinations_attributes = [:id, :name, :type, :_destroy, :secret_file, :publication_setup_id, :publication_api_id]
-    permitted_destinations_attributes += Destination.descendants.map{ |t| t.options.keys }.uniq
-    permitted_keys << { destinations_attributes: permitted_destinations_attributes }
-    publication_setup_params.permit(permitted_keys)
+
+    destination_options = [:id, :name, :type, :_destroy, :secret_file, :publication_setup_id, :publication_api_id]
+    destination_options += Destination.descendants.map{ |t| t.options.keys }.flatten
+
+    params.require(:publication_setup).permit(
+      :name,
+      :export_type,
+      :enabled,
+      :workgroup_id,
+      export_options: export_options,
+      destinations_attributes: destination_options
+    )
   end
 
   def resource

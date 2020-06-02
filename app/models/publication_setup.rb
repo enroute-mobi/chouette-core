@@ -1,4 +1,4 @@
-  module PublicationSetupWithDefaultExportOptions
+module PublicationSetupWithDefaultExportOptions
   def export_options
     super || {}
   end
@@ -15,6 +15,8 @@ class PublicationSetup < ApplicationModel
   validates :workgroup, presence: true
   validates :export_type, presence: true
   validate :export_options_are_valid
+
+  store_accessor :export_options
 
   accepts_nested_attributes_for :destinations, allow_destroy: true, reject_if: :all_blank
 

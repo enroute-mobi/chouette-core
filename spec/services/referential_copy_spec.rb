@@ -60,8 +60,8 @@ RSpec.describe ReferentialCopy do
         it "should fail" do
           referential_copy.copy
           expect(referential_copy.status).to eq :failed
-          expect(referential_copy.last_error).to match /boom/
-          expect(referential_copy.last_error).to match /Chouette::Route/
+          expect(referential_copy.last_error).to match(/boom/)
+          expect(referential_copy.last_error).to match(/Chouette::Route/)
         end
       end
     end

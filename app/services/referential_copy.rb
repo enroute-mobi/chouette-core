@@ -81,6 +81,12 @@ class ReferentialCopy
       vehicle_journey_purchase_window_relationship.find_each_without_primary_key do |model|
         referential_inserter.vehicle_journey_purchase_window_relationships << model
       end
+
+      referential_codes = source.codes.where(resource: vehicle_journeys)
+
+      referential_codes.find_each do |code|
+        referential_inserter.codes << code
+      end
     end
 
     referential_inserter.flush

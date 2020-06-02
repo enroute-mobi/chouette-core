@@ -26,7 +26,7 @@ class ReferentialInserter
     @collection ||= CollectionInserter.new self
   end
 
-  [:vehicle_journeys, :vehicle_journey_at_stops, :vehicle_journey_time_table_relationships, :vehicle_journey_purchase_window_relationships].each do |method_name|
+  [:vehicle_journeys, :vehicle_journey_at_stops, :vehicle_journey_time_table_relationships, :vehicle_journey_purchase_window_relationships, :codes].each do |method_name|
     alias_method method_name, :collection
   end
 

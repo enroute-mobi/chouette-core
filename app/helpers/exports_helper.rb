@@ -19,6 +19,9 @@ module ExportsHelper
       elsif option_def[:type].to_s == "boolean"
         opts[:as] = :switchable_checkbox
         opts[:input_html][:checked] = export.try(attr) || option_def[:default_value]
+      elsif option_def[:type].to_s == "array"
+        opts[:as] = :custom_array
+        opts[:input_html][:value]= (export.try(attr) || option_def[:default_value]).join(',')
       end
       if option_def.has_key?(:collection)
         if option_def[:collection].is_a?(Array) && !option_def[:collection].first.is_a?(Array)

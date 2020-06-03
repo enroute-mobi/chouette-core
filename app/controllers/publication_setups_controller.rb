@@ -32,6 +32,17 @@ class PublicationSetupsController < ChouetteController
 
   private
 
+  def resource_params
+    super
+    @resource_params[0][:destinations_attributes].each do |key, value|
+      if value.key?("recipients")
+        email_array_value = value[:recipients].split(',').collect(&:strip)
+        @resource_params[0][:destinations_attributes][key][:recipients] = email_array_value
+      end
+    end
+    @resource_params
+  end
+
   def publication_setup_params
     export_options = []
     export_class = params[:publication_setup][:export_type] && params[:publication_setup][:export_type].safe_constantize

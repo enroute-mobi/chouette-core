@@ -12,8 +12,9 @@ if ::Destination.enabled?("mail")
     option :email_text
     validates :email_text, presence: true, length: { maximum: 1024 }
 
-    option :recipients
-    validates :recipients, presence: true, email: true
+    option :recipients, type: :array, default_value: []
+    validates :recipients, presence: true
+    validate :check_mail_array
 
     option :link_to_api, collection: ->(){publication_setup.workgroup.publication_apis.map{|pbl| [pbl.name, pbl.id]}}
 
@@ -22,8 +23,14 @@ if ::Destination.enabled?("mail")
     option :attached_export_filename
     validates :attached_export_filename, format: { with: /\A[a-z0-9-]+\z/i, message: :filename, allow_blank: true }
 
-    def do_transmit(publication, report)
+    def do_transmit(publication, _report)
       puts "Send mail to recipents !"
     end
+
+    def check_mail_array
+      wrong_ones = recipients.select{|r| !r.match(Devise::email_regexp)}
+      errors.add(:recipients,  I18n.t('destinations.errors.mail.recipients_mail_syntax', emails: wrong_ones.join(", "))) if wrong_ones.any?
+    end
+
   end
 end

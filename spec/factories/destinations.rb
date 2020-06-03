@@ -11,7 +11,7 @@ FactoryGirl.define do
 
   factory :destination_mail, parent: :destination, class: Destination::Mail do
     type "Destination::Mail"
-    recipients "test@mail.com"
+    recipients ["test@mail.com"]
     email_title "Mail title"
     email_text "Mail text"
   end

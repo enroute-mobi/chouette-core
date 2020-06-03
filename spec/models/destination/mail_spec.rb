@@ -5,8 +5,8 @@ RSpec.describe Destination::Mail, type: :model do
 
   context "create / update  mail destination" do
     describe '#email' do
-      it { is_expected.not_to allow_value("wrongformatedmail.net").for(:recipients) }
-      it { is_expected.to allow_value("a@b.com").for(:recipients) }
+      it { is_expected.not_to allow_value(["wellformated@mail.net","wrongformatedmail.net"]).for(:recipients) }
+      it { is_expected.to allow_value(["wellformated@mail.net"]).for(:recipients) }
     end
 
     describe '#attached_export_filename' do
@@ -17,7 +17,7 @@ RSpec.describe Destination::Mail, type: :model do
     describe '#email_text' do
       it 'should strip HTML tags before saving record ' do
         destination.email_text = "<ol> <li>Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</li> <li>Aliquam tincidunt mauris eu risus.</li> <li>Vestibulum auctor dapibus neque.</li> </ol>"
-        #Triggers the before_save callback 
+        #Triggers the before_save callback
         destination.save
         expect(destination.reload.email_text).to eq " Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aliquam tincidunt mauris eu risus. Vestibulum auctor dapibus neque. "
       end

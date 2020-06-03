@@ -26,7 +26,7 @@ gem 'webpacker', '3.2.1'
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
-gem 'jbuilder', '~> 2.0'
+gem 'jbuilder'
 
 # Select2 for pretty select boxes w. autocomplete
 gem 'select2-rails', '~> 4.0', '>= 4.0.3'
@@ -98,7 +98,7 @@ gem 'clockpicker-rails'
 
 # Format Output
 gem 'json'
-gem 'rubyzip', '~> 1.3.0'
+gem 'rubyzip'
 gem 'roo'
 
 # Controller
@@ -108,17 +108,14 @@ gem 'responders'
 # Model
 gem 'will_paginate'
 gem 'ransack'
-#gem "squeel", github: 'activerecord-hackery/squeel'
 gem 'active_attr'
-
-gem 'sequel'
 
 gem 'draper'
 
 gem 'enumerize'
 gem 'deep_cloneable'
 gem 'acts-as-taggable-on'
-gem 'nokogiri', '>= 1.10.4'
+gem 'nokogiri'
 
 gem 'acts_as_list'
 gem 'acts_as_tree'
@@ -132,11 +129,11 @@ gem 'delayed_job_active_record'
 gem 'delayed_job_web'
 gem 'delayed_job_heartbeat_plugin'
 
-gem 'whenever', en_route: 'whenever', require: false # '~> 0.9'
+gem 'whenever', en_route: 'whenever', require: false
 gem 'rake'
-gem 'apartment', '~> 2.2.0'
+gem 'apartment'
 gem 'aasm'
-gem 'puma', '~> 4.3.0'
+gem 'puma'
 
 # Cache
 gem 'redis-rails'

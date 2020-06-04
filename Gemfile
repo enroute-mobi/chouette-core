@@ -134,6 +134,8 @@ gem 'rake'
 gem 'apartment'
 gem 'aasm'
 gem 'puma'
+gem 'postgresql_cursor'
+
 
 # Cache
 gem 'redis-rails'

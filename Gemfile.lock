@@ -445,8 +445,6 @@ GEM
       activerecord (>= 5.1)
       pg (>= 0.17)
       responders
-    postgresql_cursor (0.6.4)
-      activerecord (>= 3.1.0)
     pry (0.13.0)
       coderay (~> 1.1)
       method_source (~> 1.0)
@@ -798,7 +796,6 @@ DEPENDENCIES
   poltergeist
   polylines
   postgres-copy
-  postgresql_cursor
   pry-byebug
   pry-rails
   puma

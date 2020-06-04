@@ -673,58 +673,45 @@ class Export::Gtfs < Export::Base
     end
 
     def export!
-      byebug
-      vehicle_journey_at_stops.includes(:stop_point).select(:departure_time, :arrival_time, :departure_day_offset, :arrival_day_offset, :vehicle_journey_id, "vehicle_journey_at_stops.stop_area_id as stop_area_id", "stop_points.stop_area_id as parent_stop_area_id", "stop_points.position").each_row do |vjas_raw_hash|
-        decorated_vehicle_journey_at_stop = Decorator.new(vjas_raw_hash, index)
+      vehicle_journey_at_stops.includes(:stop_point).find_each do |vehicle_journey_at_stop|
+        decorated_vehicle_journey_at_stop = Decorator.new(vehicle_journey_at_stop, index)
 
         # Duplicate the stop time for each exported trip
-        index.trip_ids(vjas_raw_hash.vehicle_journey_id["vehicle_journey_id"].to_i).each do |trip_id|
+        index.trip_ids(vehicle_journey_at_stop.vehicle_journey_id).each do |trip_id|
           route_attributes = decorated_vehicle_journey_at_stop.stop_time_attributes
           route_attributes.merge!(trip_id: trip_id)
-          byebug
+
           target.stop_times << route_attributes
         end
       end
-
-      # vehicle_journey_at_stops.includes(:stop_point).find_each do |vehicle_journey_at_stop|
-      #   decorated_vehicle_journey_at_stop = Decorator.new(vehicle_journey_at_stop, index)
-      #
-      #   # Duplicate the stop time for each exported trip
-      #   index.trip_ids(vehicle_journey_at_stop.vehicle_journey_id).each do |trip_id|
-      #     route_attributes = decorated_vehicle_journey_at_stop.stop_time_attributes
-      #     route_attributes.merge!(trip_id: trip_id)
-      #
-      #     target.stop_times << route_attributes
-      #   end
-      # end
     end
 
     class Decorator < SimpleDelegator
 
       # index is optional to make tests easier
-      def initialize(vjas_raw_hash, index = nil)
-        super vjas_raw_hash
+      def initialize(vehicle_journey_at_stop, index = nil)
+        super vehicle_journey_at_stop
         @index = index
       end
 
       attr_reader :index
 
-      # delegate :position, to: :stop_point
+      delegate :position, to: :stop_point
 
       def time_zone
-        index&.vehicle_journey_time_zone(__getobj__["vehicle_journey_id"])
+        index&.vehicle_journey_time_zone(vehicle_journey_id)
       end
 
       def stop_time_departure_time
-        GTFSTime.format_datetime TimeOfDay.parse(__getobj__["departure_time"]), __getobj__["departure_day_offset"], time_zone if __getobj__["departure_day_offset"]
+        GTFSTime.format_datetime departure_time, departure_day_offset, time_zone if departure_time
       end
 
       def stop_time_arrival_time
-        GTFSTime.format_datetime TimeOfDay.parse(__getobj__["arrival_time"]), __getobj__["arrival_day_offset"], time_zone if __getobj__["arrival_time"]
+        GTFSTime.format_datetime arrival_time, arrival_day_offset, time_zone if arrival_time
       end
 
       def stop_area_id
-        __getobj__["stop_area_id"].presence || __getobj__["parent_stop_area_id"]
+        __getobj__.stop_area_id.presence || stop_point.stop_area_id
       end
 
       def stop_time_stop_id
@@ -735,7 +722,7 @@ class Export::Gtfs < Export::Base
         { departure_time: stop_time_departure_time,
           arrival_time: stop_time_arrival_time,
           stop_id: stop_time_stop_id,
-          stop_sequence: __getobj__["position"] }
+          stop_sequence: position }
       end
 
     end

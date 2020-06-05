@@ -6,9 +6,9 @@ class TimeOfDay
   alias_method :sec, :second
 
   def initialize(hour, minute = nil, second = nil)
-    @hour = Integer(hour)
-    @minute = Integer(minute || 0)
-    @second = Integer(second || 0)
+    @hour = (hour.is_a? String)? Integer(hour, 10) : Integer(hour)
+    @minute = (minute.is_a? String)? Integer(minute || 0, 10) : Integer(minute || 0)
+    @second = (second.is_a? String)? Integer(second || 0, 10) : Integer(second || 0)
 
     @second_offset = (@hour * 60 + @minute) * 60 + @second
 

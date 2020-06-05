@@ -7,6 +7,7 @@ RSpec.describe TimeOfDay do
       ["17:41", TimeOfDay.new(17, 41)],
       ["17:41:12", TimeOfDay.new(17, 41, 12)],
       ["17:41:00", TimeOfDay.new(17, 41)],
+      ["08:05:02", TimeOfDay.new(8, 5,2)],
       ["17:00:00", TimeOfDay.new(17)],
       ["00:00:00", TimeOfDay.new(0)],
       ["23:59:59", TimeOfDay.new(23,59,59)],

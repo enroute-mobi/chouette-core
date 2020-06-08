@@ -473,8 +473,22 @@ class Import::Gtfs < Import::Base
     vehicle_journey_at_stop.vehicle_journey = vehicle_journey
     vehicle_journey_at_stop.departure_time = departure_time.time(@default_time_zone)
     vehicle_journey_at_stop.arrival_time = arrival_time.time(@default_time_zone)
-    vehicle_journey_at_stop.departure_day_offset = departure_time.day_offset - @vehicle_journey_at_stop_first_offset
-    vehicle_journey_at_stop.arrival_day_offset = arrival_time.day_offset - @vehicle_journey_at_stop_first_offset
+
+    # FIXME See CHOUETTE-537
+    departure_time_zone_day_offset = 0
+    if vehicle_journey_at_stop.departure_time.hour < (departure_time.hours % 24)
+      Rails.logger.warn "GTFS Import #{id} required time_zone_day_offset"
+      departure_time_zone_day_offset = 1
+    end
+
+    arrival_time_zone_day_offset = 0
+    if vehicle_journey_at_stop.arrival_time.hour < (arrival_time.hours % 24)
+      Rails.logger.warn "GTFS Import #{id} required time_zone_day_offset"
+      arrival_time_zone_day_offset = 1
+    end
+
+    vehicle_journey_at_stop.departure_day_offset = departure_time.day_offset + departure_time_zone_day_offset - @vehicle_journey_at_stop_first_offset
+    vehicle_journey_at_stop.arrival_day_offset = arrival_time.day_offset + arrival_time_zone_day_offset - @vehicle_journey_at_stop_first_offset
 
     # TODO: offset
 

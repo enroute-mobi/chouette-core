@@ -24,6 +24,7 @@ class GTFSTime # Temp class name
   FORMAT = /(\d{1,2}):(\d{1,2}):(\d{1,2})/
 
   def self.format_datetime(date_time, offset, new_timezone = 'UTC')
+    return nil unless date_time
     hours = "%.2d" % (date_time.hour+(24*offset)+timezone_hours(new_timezone))
     minutes = "%.2d" % date_time.min
     seconds = "%.2d" % date_time.sec

@@ -721,6 +721,10 @@ class Export::Gtfs < Export::Base
         __getobj__["stop_area_id"].presence || __getobj__["parent_stop_area_id"]
       end
 
+      def position
+        __getobj__["position"]
+      end
+
       def stop_time_stop_id
         index&.stop_id(stop_area_id)
       end
@@ -729,7 +733,7 @@ class Export::Gtfs < Export::Base
         { departure_time: stop_time_departure_time,
           arrival_time: stop_time_arrival_time,
           stop_id: stop_time_stop_id,
-          stop_sequence: __getobj__["position"] }
+          stop_sequence: position }
       end
 
     end

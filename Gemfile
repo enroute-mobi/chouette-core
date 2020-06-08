@@ -6,7 +6,7 @@ git_source(:github) { |name| "https://github.com/#{name}.git" }
 git_source(:en_route) { |name| "https://bitbucket.org/enroute-mobi/#{name}.git" }
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 5.2.4'
+gem 'rails', '~> 5.2.4', '>= 5.2.4.3'
 
 # Use SCSS for stylesheets
 gem 'sassc-rails'
@@ -90,7 +90,7 @@ gem 'formtastic'
 gem 'simple_form'
 gem 'font-awesome-sassc'
 gem 'will_paginate-bootstrap'
-gem 'gretel'
+gem 'gretel', '>= 3.0.9'
 gem 'country_select'
 gem 'flag-icons-rails'
 gem 'i18n-js'
@@ -178,7 +178,7 @@ group :test, :development do
   gem 'rspec-rails'
   gem 'capybara', '~> 3.15.0'
   gem 'database_cleaner'
-  gem 'poltergeist'
+  gem 'poltergeist', '>= 1.18.1'
   gem 'stackprof'
 
   gem 'webmock'

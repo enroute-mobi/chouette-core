@@ -287,6 +287,8 @@ RSpec.describe Import::Neptune do
         vehicle_journey = Chouette::VehicleJourney.find_by number: '1026'
         expect(vehicle_journey.vehicle_journey_at_stops.count).to eq 12
         expect(vehicle_journey.time_tables.count).to eq 2
+        expect(vehicle_journey.published_journey_identifier).to eq('1026')
+        expect(vehicle_journey.number).to eq(1026)
       end
     end
   end

@@ -76,7 +76,7 @@ fr:
       hint_constraint_exclusions: Exclusions d'interdictions de trafic
       hint_line_notice: Notes de ligne
       hint_copy_paste: Mode copier/coller
-      set: "Fixer"
+      set: Fixer
       show_arrival_time: "Afficher et éditer les horaires d'arrivée"
       show_journeys_with_calendar: "Afficher les courses avec calendrier"
       show_journeys_without_schedule: "Afficher les courses sans horaires"
@@ -165,7 +165,7 @@ fr:
         object_version: "Version"
         objectid: "Identifiant Neptune"
         on_demand_fs: "Service à la demande"
-        published_journey_identifier: "Numéro de train"
+        published_journey_identifier: Numéro public
         published_journey_name: "Nom public"
         purchase_window: "Disponibilité commerciale"
         regular_fs: "Service régulier"

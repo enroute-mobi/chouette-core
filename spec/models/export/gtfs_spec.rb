@@ -190,7 +190,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
     let(:vehicle_journey_at_stop) { Chouette::VehicleJourneyAtStop.new }
     let(:index) { double }
     let(:decorator) do
-      Export::Gtfs::VehicleJourneyAtStops::Decorator.new vehicle_journey_at_stop, index
+      Export::Gtfs::VehicleJourneyAtStops::Decorator.new vehicle_journey_at_stop, index: index
     end
 
     let(:time_zone) { "Europe/Paris" }
@@ -418,6 +418,8 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
       line = exported_referential.lines.first
       stop_areas = stop_area_referential.stop_areas.order(Arel.sql('random()')).limit(2)
+      stop_areas.update_all time_zone: "Europe/Paris"
+
       route = FactoryGirl.create :route, line: line, stop_areas: stop_areas, stop_points_count: 0
       journey_pattern = FactoryGirl.create :journey_pattern, route: route, stop_points: route.stop_points.sample(2)
       vehicle_journey = FactoryGirl.create :vehicle_journey, journey_pattern: journey_pattern, company: company

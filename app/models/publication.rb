@@ -7,6 +7,7 @@ class Publication < ApplicationModel
   has_many :exports, class_name: 'Export::Base', dependent: :destroy
   belongs_to :parent, polymorphic: true
   has_many :reports, class_name: 'DestinationReport', dependent: :destroy
+  has_many :publication_api_sources, class_name: 'PublicationApiSource', dependent: :destroy
 
   validates :publication_setup, :parent, presence: true
 

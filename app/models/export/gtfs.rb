@@ -690,13 +690,21 @@ class Export::Gtfs < Export::Base
       end
     end
 
-    class Decorator < SimpleDelegator
+    class Decorator
 
       # index is optional to make tests easier
       def initialize(vjas_raw_hash, index: nil, ignore_time_zone: false)
-        super vjas_raw_hash
+        @attributes = vjas_raw_hash
         @index = index
         @ignore_time_zone = ignore_time_zone
+      end
+
+      %w{
+        vehicle_journey_id departure_time departure_day_offset arrival_time arrival_day_offset position
+      }.each do |attribute|
+        define_method(attribute) do
+          @attributes[attribute]
+        end
       end
 
       attr_reader :index
@@ -706,23 +714,19 @@ class Export::Gtfs < Export::Base
       end
 
       def time_zone
-        index&.vehicle_journey_time_zone(__getobj__["vehicle_journey_id"]) unless ignore_time_zone?
+        index&.vehicle_journey_time_zone(vehicle_journey_id) unless ignore_time_zone?
       end
 
       def stop_time_departure_time
-        GTFSTime.format_datetime TimeOfDay.parse(__getobj__["departure_time"]), __getobj__["departure_day_offset"], time_zone if __getobj__["departure_day_offset"]
+        GTFSTime.format_datetime TimeOfDay.parse(departure_time), departure_day_offset, time_zone if departure_time
       end
 
       def stop_time_arrival_time
-        GTFSTime.format_datetime TimeOfDay.parse(__getobj__["arrival_time"]), __getobj__["arrival_day_offset"], time_zone if __getobj__["arrival_time"]
+        GTFSTime.format_datetime TimeOfDay.parse(arrival_time), arrival_day_offset, time_zone if arrival_time
       end
 
       def stop_area_id
-        __getobj__["stop_area_id"].presence || __getobj__["parent_stop_area_id"]
-      end
-
-      def position
-        __getobj__["position"]
+        @attributes["stop_area_id"] || @attributes["parent_stop_area_id"]
       end
 
       def stop_time_stop_id

@@ -428,7 +428,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
     let(:vehicle_journey) { Chouette::VehicleJourney.new }
     let(:index) { Export::Gtfs::Index.new }
     let(:decorator) do
-      Export::Gtfs::VehicleJourneys::Decorator.new vehicle_journey, index
+      Export::Gtfs::VehicleJourneys::Decorator.new vehicle_journey, index: index
     end
 
     describe '#route_id' do
@@ -526,6 +526,32 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
     end
 
+    describe '#candidate_codes' do
+
+      subject { decorator.candidate_codes }
+
+      context "when the Decorator has no selected code space" do
+        before { decorator.code_space_id = nil }
+
+        it { is_expected.to be_empty }
+      end
+
+      context "when the Decorator has a selected code space" do
+        let(:code_space_id) { 42 }
+        before { decorator.code_space_id = code_space_id }
+
+        let(:expected_code) { double 'Code in selected Code Space', code_space_id: code_space_id }
+        let(:unexpected_code) { double code_space_id: 'dummy' }
+
+        before { allow(decorator).to receive(:codes).and_return([expected_code, unexpected_code]) }
+
+        it "ignores Vehicle Journey codes outside this code space" do
+          is_expected.to eq([expected_code])
+        end
+      end
+
+    end
+
     describe '#gtfs_code' do
 
       subject { decorator.gtfs_code }
@@ -536,14 +562,14 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
       describe 'when the VehicleJourney has several codes' do
         let(:codes) { %w{1 2}.map { |v| double value: v } }
-        before { allow(decorator).to receive(:codes).and_return(codes) }
+        before { allow(decorator).to receive(:candidate_codes).and_return(codes) }
 
         it { is_expected.to be_nil }
       end
 
       describe 'when the VehicleJourney has a single code' do
         let(:code) { double value: 'Single Code value' }
-        before { allow(decorator).to receive(:codes).and_return([code]) }
+        before { allow(decorator).to receive(:candidate_codes).and_return([code]) }
 
         it { is_expected.to eq(code.value) }
       end

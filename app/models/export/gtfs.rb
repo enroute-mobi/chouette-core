@@ -598,7 +598,7 @@ class Export::Gtfs < Export::Base
 
     def export!
       vehicle_journeys.includes(:time_tables, :route, :codes).find_each do |vehicle_journey|
-        decorated_vehicle_journey = Decorator.new(vehicle_journey, index)
+        decorated_vehicle_journey = Decorator.new(vehicle_journey, index: index, code_space_id: code_space&.id)
 
         decorated_vehicle_journey.service_ids.each do |service_id|
           trip_attributes = decorated_vehicle_journey.trip_attributes(service_id)
@@ -626,12 +626,14 @@ class Export::Gtfs < Export::Base
     class Decorator < SimpleDelegator
 
       # index is optional to make tests easier
-      def initialize(vehicle_journey, index = nil)
+      def initialize(vehicle_journey, index: nil, code_space_id: nil)
         super vehicle_journey
         @index = index
+        @code_space_id = code_space_id
       end
 
       attr_reader :index
+      attr_accessor :code_space_id
 
       def route_id
         index.route_id(route.line_id) if route
@@ -645,11 +647,17 @@ class Export::Gtfs < Export::Base
         end
       end
 
+      def candidate_codes
+        @gtfs_codes ||=
+          if code_space_id
+            codes.select { |code| code.code_space_id == code_space_id }
+          else
+            []
+          end
+      end
+
       def gtfs_code
-        if codes.one?
-          # FIXME With CodeSpace
-          codes.first.value
-        end
+        candidate_codes.first.value if candidate_codes.one?
       end
 
       def unique_gtfs_code?

@@ -4,7 +4,7 @@ fr:
       new: "Ajouter un Groupe de travail"
       edit_control_sets: Paramétrer les Contrôles
       edit_aggregate: Paramétrer l'Agrégation
-      edit_merge: Finalistion
+      edit_merge: Finalisation
       destroy_confirm: "Etes vous sûr de vouloir supprimer ce groupe de travail ?"
       setup_deletion_confirm: "Etes vous sûr de vouloir supprimer ce groupe de travail ?"
       setup_workgroup_deletion: Planifier la suppression du groupe de travail

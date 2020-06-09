@@ -4,7 +4,7 @@ fr:
       new: "Ajouter un Groupe de travail"
       edit_control_sets: Paramétrer les Contrôles
       edit_aggregate: Paramétrer l'Agrégation
-      edit_hole_sentinel: Paramétrer l'Analyse d'Offre
+      edit_merge: Finalisation
       destroy_confirm: "Etes vous sûr de vouloir supprimer ce groupe de travail ?"
       setup_deletion_confirm: "Etes vous sûr de vouloir supprimer ce groupe de travail ?"
       setup_workgroup_deletion: Planifier la suppression du groupe de travail
@@ -27,8 +27,11 @@ fr:
         <p>Par défaut l'agrégation du groupe de travail utilise les dernières offres finalisées dans chaque espace de travail.</p>
         <p>Vous pouvez ici sélectionner une offre finalisée particulière si l'un des espaces de travail rencontre des difficultés
         à fournir une offre pertinente. Cette sélection restera en place jusqu'à une nouvelle intervention de votre part.</p>
-    edit_hole_sentinel:
-      title: "Paramétrages de la détection de trous d'offre"
+    edit_merge:
+      title: "Finalisation"
+      edit_purge_settings: "Paramétrage de la purge des données après finalisation"
+      edit_hole_sentinel: "Paramétrage de la détection de trous d'offre"
+      disclaimer: Ces paramètres sont utilisés par tous les Espaces de travail de ce Groupe de travail.
     edit_transport_modes:
       title: Paramétrages des modes de transport
     compliance_control_sets:
@@ -48,6 +51,8 @@ fr:
         other: Groupes de travail
     attributes:
       workgroup:
+        enable_purge_merged_data: Activer la purge des données après finalisation
+        maximum_data_age: Age maximum des données finalisées
         sentinel_min_hole_size: Taille minimum d'un trou d'offre
         sentinel_delay: Distance de détection
         nightly_aggregate_enabled: Lancement quotidien activé
@@ -67,5 +72,6 @@ fr:
   formtastic:
     hints:
       workgroup:
+        maximum_data_age: (en jours) Nombre de jours maximum d'un Calendrier passé
         sentinel_min_hole_size: (en jours) Durée minimum d'un trou d'offre pour qu'il soit signalé.
         sentinel_delay: (en jours) Une valeur de 0 désactive la détection de trous

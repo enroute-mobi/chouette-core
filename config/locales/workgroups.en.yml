@@ -4,7 +4,7 @@ en:
       new: "Create a new Workgroup"
       edit_control_sets: Setup Controls
       edit_aggregate: Setup Aggregation
-      edit_hole_sentinel: Setup Offer analysis
+      edit_merge: Merge settings
       destroy_confirm: Are you sure you want to delete this workgroup ?
       setup_deletion_confirm: Are you sure you want to delete this workgroup ?
       setup_workgroup_deletion: Plan workgroup deletion
@@ -27,8 +27,11 @@ en:
         <p>By default, the workspace offer aggregation uses the latest merged offer from each workspace</p>
         <p>If a workspace has troubles providing a coherent offer, you can here select a specific offer to be used
         during aggregation. This selection will remain in place upon further action from your part.</p>
-    edit_hole_sentinel:
-      title: "Missing offer detection settings"
+    edit_merge:
+      title: "Merge settings"
+      edit_purge_settings: "Purge merged data settings"
+      edit_hole_sentinel: "Missing offer detection settings"
+      disclaimer: These settings are used by all Workbenches of this Workgroup.
       edit_transport_modes:
         title: Edit transport modes
     compliance_control_sets:
@@ -48,6 +51,8 @@ en:
         other: Workgroups
     attributes:
       workgroup:
+        enable_purge_merged_data: Enable purge of past merged data
+        maximum_data_age: Maximum age of merged data
         sentinel_min_hole_size: Minimum length of a missing offer
         sentinel_delay: Distance of detection
         nightly_aggregate_enabled: Daily aggregation enabled
@@ -67,5 +72,6 @@ en:
   formtastic:
     hints:
       workgroup:
+        maximum_data_age: (in days) Maximum days of a past TimeTable
         sentinel_min_hole_size: (in days) Minimum length of a missing offer to be signaled.
         sentinel_delay: (in days) A value of 0 disables the missing offer detection

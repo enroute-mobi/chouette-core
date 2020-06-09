@@ -161,7 +161,9 @@ class Merge < ApplicationModel
   end
 
   def clean_new
-    CleanUp.new(referential: new, clean_methods: [:clean_irrelevant_data, :clean_unassociated_calendars]).clean
+    args = { referential: new, clean_methods: [:clean_irrelevant_data, :clean_unassociated_calendars] }
+    args.merge!({ date_type: :before, begin_date: Time.zone.today - workgroup.maximum_data_age }) if workgroup.enable_purge_merged_data
+    CleanUp.new(args).clean
   end
 
   def merge_referential_metadata(referential)

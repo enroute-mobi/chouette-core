@@ -423,8 +423,8 @@ crumb :workgroup_edit_controls do |workgroup|
   parent workgroup
 end
 
-crumb :workgroup_hole_sentinel_settings do |workgroup|
-  link I18n.t('workgroups.edit_hole_sentinel.title')
+crumb :workgroup_edit_merge do |workgroup|
+  link I18n.t('workgroups.edit_merge.title')
   parent workgroup
 end
 

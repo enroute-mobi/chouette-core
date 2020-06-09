@@ -188,9 +188,22 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
   describe "VehicleJourneyAtStop Decorator" do
 
     let(:vehicle_journey_at_stop) { Chouette::VehicleJourneyAtStop.new }
+    let(:vjas_raw_hash) {
+      {
+        departure_time: vehicle_journey_at_stop.departure_time,
+        arrival_time: vehicle_journey_at_stop.arrival_time,
+        departure_day_offset: vehicle_journey_at_stop.departure_day_offset,
+        arrival_day_offset: vehicle_journey_at_stop.arrival_day_offset,
+        vehicle_journey_id: vehicle_journey_at_stop.vehicle_journey_id,
+        stop_area_id: vehicle_journey_at_stop.stop_area_id,
+        parent_stop_area_id: vehicle_journey_at_stop.stop_point&.stop_area_id,
+        position: vehicle_journey_at_stop.stop_point&.position
+      }.stringify_keys
+    }
+
     let(:index) { double }
     let(:decorator) do
-      Export::Gtfs::VehicleJourneyAtStops::Decorator.new vehicle_journey_at_stop, index: index
+      Export::Gtfs::VehicleJourneyAtStops::Decorator.new vjas_raw_hash, index: index
     end
 
     let(:time_zone) { "Europe/Paris" }
@@ -199,10 +212,10 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
       it "uses time zone associated with the VehicleJourney in the index" do
         vehicle_journey_at_stop.vehicle_journey_id = 42
+        # byebug
         expect(index).to receive(:vehicle_journey_time_zone).
                            with(vehicle_journey_at_stop.vehicle_journey_id).
                            and_return(time_zone)
-
         expect(decorator.time_zone).to be(time_zone)
       end
 
@@ -211,7 +224,6 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
         expect(index).to receive(:vehicle_journey_time_zone).
                            with(vehicle_journey_at_stop.vehicle_journey_id).
                            and_return(nil)
-
         expect(decorator.time_zone).to be(nil)
       end
 
@@ -220,12 +232,13 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
     %w{arrival departure}.each do |state|
       describe "stop_time_#{state}_time" do
         it "formats the #{state}_time according to the #{state}_day_offset and the time zone" do
-          vehicle_journey_at_stop.send "#{state}_time=", Time.parse("23:00")
-          time = vehicle_journey_at_stop.send "#{state}_time" # the value is truncated
+          # Can't allocate test values directly to vehicle_journey_at_stop object since the method to get attribute raw value in db (attributes_before_type_cast) doesn't seem to work with rspec...
+          vjas_raw_hash["#{state}_time"]="23:00"
+          time = TimeOfDay.parse(vjas_raw_hash["#{state}_time"])
+          day_offset = 0
+          vjas_raw_hash["#{state}_day_offset"]=day_offset
 
-          vehicle_journey_at_stop.send "#{state}_day_offset=", day_offset = 0
           allow(decorator).to receive(:time_zone).and_return(time_zone)
-
           formated_time = "23:00::00"
 
           expect(GTFSTime).to receive(:format_datetime).
@@ -236,15 +249,16 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
         end
 
         it "returns nil if #{state}_time is nil" do
-          vehicle_journey_at_stop.send "#{state}_time=", nil
+          vjas_raw_hash["#{state}_time"]=nil
           allow(decorator).to receive(:time_zone).and_return(nil)
 
           expect(decorator.send("stop_time_#{state}_time")).to be_nil
         end
 
         it "supports a nil time zone" do
-          vehicle_journey_at_stop.send "#{state}_time=", Time.find_zone("UTC").parse("23:00")
-          vehicle_journey_at_stop.send "#{state}_day_offset=", 0
+          vjas_raw_hash["#{state}_time"]="23:00"
+          vjas_raw_hash["#{state}_day_offset"]=0
+
           allow(decorator).to receive(:time_zone).and_return(nil)
 
           expect(decorator.send("stop_time_#{state}_time")).to eq("23:00:00")
@@ -254,7 +268,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
     describe "stop_area_id" do
 
-      let(:stop_point) { double stop_area_id: 42 }
+      let(:stop_point) { double stop_area_id: 42, position: 21 }
 
       context "when VehicleJourneyAtStop defines a specific stop" do
 
@@ -267,7 +281,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       end
 
       it "uses the Stop Point stop_area_id" do
-        expect(vehicle_journey_at_stop).to receive(:stop_point).and_return(stop_point)
+        expect(vehicle_journey_at_stop).to receive(:stop_point).twice.and_return(stop_point)
         expect(decorator.stop_area_id).to eq(stop_point.stop_area_id)
       end
 
@@ -275,10 +289,10 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
     describe "position" do
 
-      let(:stop_point) { double position: 42 }
+      let(:stop_point) { double stop_area_id: 21, position: 42 }
 
       it "uses the Stop Point position" do
-        expect(vehicle_journey_at_stop).to receive(:stop_point).and_return(stop_point)
+        expect(vehicle_journey_at_stop).to receive(:stop_point).twice.and_return(stop_point)
         expect(decorator.position).to eq(stop_point.position)
       end
 

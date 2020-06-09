@@ -69,7 +69,9 @@ class Export::Gtfs < Export::Base
       # Export stop_times.txt
 
       filter_non_commercial = referential.stop_areas.non_commercial.exists?
-      VehicleJourneyAtStops.new(self, filter_non_commercial: filter_non_commercial).export_part
+      ignore_time_zone = !referential.stop_areas.with_time_zone.exists?
+
+      VehicleJourneyAtStops.new(self, filter_non_commercial: filter_non_commercial, ignore_time_zone: ignore_time_zone).export_part
       notify_progress 5.0/operations_count
       # Export files fare_rules, fare_attributes, shapes, frequencies
       # and feed_info aren't yet implemented as import nor export features from
@@ -648,13 +650,17 @@ class Export::Gtfs < Export::Base
 
   class VehicleJourneyAtStops < Part
 
-    attr_writer :filter_non_commercial
+    attr_writer :filter_non_commercial, :ignore_time_zone
 
     def filter_non_commercial?
       # false ||= true -> true :-/
       @filter_non_commercial = true if @filter_non_commercial.nil?
 
       @filter_non_commercial
+    end
+
+    def ignore_time_zone?
+      @ignore_time_zone
     end
 
     def vehicle_journey_at_stops
@@ -674,7 +680,7 @@ class Export::Gtfs < Export::Base
 
     def export!
       vehicle_journey_at_stops.includes(:stop_point).find_each do |vehicle_journey_at_stop|
-        decorated_vehicle_journey_at_stop = Decorator.new(vehicle_journey_at_stop, index)
+        decorated_vehicle_journey_at_stop = Decorator.new(vehicle_journey_at_stop, index: index, ignore_time_zone: ignore_time_zone?)
 
         # Duplicate the stop time for each exported trip
         index.trip_ids(vehicle_journey_at_stop.vehicle_journey_id).each do |trip_id|
@@ -689,17 +695,22 @@ class Export::Gtfs < Export::Base
     class Decorator < SimpleDelegator
 
       # index is optional to make tests easier
-      def initialize(vehicle_journey_at_stop, index = nil)
+      def initialize(vehicle_journey_at_stop, index: nil, ignore_time_zone: false)
         super vehicle_journey_at_stop
         @index = index
+        @ignore_time_zone = ignore_time_zone
       end
 
       attr_reader :index
 
       delegate :position, to: :stop_point
 
+      def ignore_time_zone?
+        @ignore_time_zone
+      end
+
       def time_zone
-        index&.vehicle_journey_time_zone(vehicle_journey_id)
+        index&.vehicle_journey_time_zone(vehicle_journey_id) unless ignore_time_zone?
       end
 
       def stop_time_departure_time

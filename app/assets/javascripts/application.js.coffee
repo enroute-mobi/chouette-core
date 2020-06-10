@@ -21,7 +21,6 @@
 #= require_directory ./plugins
 #= require_directory .
 # require('whatwg-fetch')
-# require('bootstrap-tagsinput')
 # require('babel-polyfill')
 #= require "i18n"
 #= require "i18n/extended"

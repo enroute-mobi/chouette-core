@@ -2,7 +2,8 @@ class TagsInput < SimpleForm::Inputs::CollectionInput
   enable :placeholder
 
   def input(wrapper_options = {})
-    @collection ||= @builder.object.send(attribute_name)
+    @collection ||= @builder.object.try(attribute_name)
+    # @collection ||= []
     label_method, value_method = detect_collection_methods
 
     merged_input_options = merge_wrapper_options(input_html_options, wrapper_options)

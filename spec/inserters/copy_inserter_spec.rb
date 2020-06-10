@@ -68,6 +68,28 @@ RSpec.describe CopyInserter do
 
   end
 
+  describe 'Referential Code' do
+
+    let(:code_space) { context.workgroup.code_spaces.default }
+    let!(:code) { truncate_timestamps(vehicle_journey.codes.create!(code_space: code_space, value: 'dummy')) }
+
+    it "creates the same CSV content than PostgreSQL gives by COPY TO" do
+      expected_csv = ReferentialCode.copy_to_string
+      inserter.insert code
+      expect(inserter.for(ReferentialCode).csv_content).to eq(expected_csv)
+    end
+
+    it "inserts model in database" do
+      code.id = next_id(Referential)
+      code.value = 'other'
+
+      inserter.insert code
+
+      expect { inserter.flush }.to change(ReferentialCode, :count).by(1)
+    end
+
+  end
+
   describe "Vehicle Journey At Stops" do
 
     let!(:vehicle_journey_at_stop) do

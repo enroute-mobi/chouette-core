@@ -402,6 +402,8 @@ class Import::Neptune < Import::Base
             v.transport_mode, _ = transport_mode_name_mapping(source_vehicle_journey[:transport_mode_name])
             v.company = line_referential.companies.find_by registration_number: source_vehicle_journey[:operator_id]
             v.time_table_ids = @time_tables.delete(source_vehicle_journey[:object_id])
+
+            v.codes.build code_space: code_space, value: source_vehicle_journey[:object_id]
           end
           add_stop_points_to_vehicle_journey(vehicle_journey, source_vehicle_journey[:vehicle_journey_at_stop], source_vehicle_journey[:route_id])
 

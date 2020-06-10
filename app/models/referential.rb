@@ -335,6 +335,10 @@ class Referential < ApplicationModel
     Chouette::Footnote.all
   end
 
+  def codes
+    ReferentialCode.all
+  end
+
   def workgroup
     @workgroup = begin
       workgroup = workbench&.workgroup

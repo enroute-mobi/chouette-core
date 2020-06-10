@@ -95,6 +95,7 @@ class IdMapInserter < ByClassInserter
       # We need to use a set to de-duplicate belongs_to relations
       # Some models have "light" relations which duplicate some relations
       model_class.reflect_on_all_associations(:belongs_to).map do |relation|
+        # Doesn't support polymorphic relations
         if IdMapInserter.mapped_model_class?(relation.klass)
           RelationUpdater.new relation.foreign_key, relation.klass, parent_inserter
         end
@@ -137,6 +138,19 @@ class IdMapInserter < ByClassInserter
       if stop_point_id = vehicle_journey_at_stop.stop_point_id
         vehicle_journey_at_stop.stop_point_id =
         parent_inserter.new_stop_point_primary_key!(stop_point_id)
+      end
+    end
+
+  end
+
+  class ReferentialCode < Base
+
+    def update_relations(code)
+      if resource_id = code.resource_id
+        unless code.resource_type == 'Chouette::VehicleJourney'
+          raise "Doesn't support other resource than VehicleJourney (for the moment)"
+        end
+        code.resource_id = parent_inserter.new_vehicle_journey_primary_key!(resource_id)
       end
     end
 

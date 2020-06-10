@@ -6,7 +6,6 @@ RSpec.describe IdMapInserter do
     end
   end
 
-
   subject { IdMapInserter.new context.referential }
   alias_method :inserter, :subject
 
@@ -77,6 +76,25 @@ RSpec.describe IdMapInserter do
 
         inserter.insert vehicle_journey
       }.to perform_at_least(40000).within(1.second).ips
+    end
+
+  end
+
+  describe "ReferentialCode" do
+
+    let(:code) { ReferentialCode.new id: 42 }
+
+    it "define a new primary key" do
+      expect { inserter.insert(code) }.to change(code, :id).to(1)
+    end
+
+    it "change resource_id with new value" do
+      code.resource_type, code.resource_id = 'Chouette::VehicleJourney', 42
+
+      new_resource_id = 4242
+      inserter.register_primary_key!(Chouette::VehicleJourney, code.resource_id, new_resource_id)
+
+      expect { inserter.insert(code) }.to change(code, :resource_id).to(new_resource_id)
     end
 
   end

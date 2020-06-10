@@ -25,6 +25,8 @@ module Chouette
     belongs_to :journey_pattern_only_objectid, -> {select("journey_patterns.id, journey_patterns.objectid")}, class_name: "Chouette::JourneyPattern", foreign_key: :journey_pattern_id
     has_many :stop_areas, through: :journey_pattern
 
+    has_many :codes, class_name: 'ReferentialCode', as: :resource, dependent: :destroy
+
     belongs_to_public :stop_area_routing_constraints,
       collection_name: :ignored_stop_area_routing_constraints,
       index_collection: -> { Chouette::VehicleJourney.where.not('ignored_stop_area_routing_constraint_ids = ARRAY[]::bigint[]') }
@@ -672,6 +674,7 @@ module Chouette
       # and the delete cascade will be the fallback
 
       Chouette::VehicleJourneyAtStop.where(vehicle_journey: current_scope).delete_all
+      ReferentialCode.where(resource: current_scope).delete_all
 
       reflections.values.select do |r|
         r.is_a?(::ActiveRecord::Reflection::HasAndBelongsToManyReflection)

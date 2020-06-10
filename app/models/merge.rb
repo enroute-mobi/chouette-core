@@ -446,7 +446,7 @@ class Merge < ApplicationModel
     referential.switch do
       batch = 0
       Chouette::Benchmark.measure("vehicle_journeys") do
-        referential.vehicle_journeys.includes(:vehicle_journey_at_stops, :purchase_windows, :footnotes).find_in_batches(batch_size: vehicle_journeys_batch_size) do |referential_vehicle_journeys|
+        referential.vehicle_journeys.includes(:vehicle_journey_at_stops, :purchase_windows, :footnotes, :codes).find_in_batches(batch_size: vehicle_journeys_batch_size) do |referential_vehicle_journeys|
           batch += 1
           Chouette::Benchmark.measure("batch", batch: batch) do
             merge_vehicle_journeys referential, referential_vehicle_journeys, new_vehicle_journey_ids, referential_routes_lines, referential_routes_checksums, referential_journey_patterns_checksums, referential_routing_constraint_zones_new_ids
@@ -571,6 +571,7 @@ class Merge < ApplicationModel
     referential_purchase_windows_by_checksum = {}
     referential_vehicle_journey_purchase_window_checksums = Hash.new { |h,k| h[k] = [] }
     referential_vehicle_journey_footnote_checksums = {}
+    referential_vehicle_journey_codes = Hash.new { |h,k| h[k] = [] }
 
     referential.switch do
       referential_vehicle_journeys.each do |vehicle_journey|
@@ -579,6 +580,7 @@ class Merge < ApplicationModel
           referential_vehicle_journey_purchase_window_checksums[vehicle_journey.id] << purchase_window.checksum
         end
         referential_vehicle_journey_footnote_checksums[vehicle_journey.id] = vehicle_journey.footnotes.pluck(:checksum)
+        referential_vehicle_journey_codes[vehicle_journey.id] = vehicle_journey.codes.pluck(:code_space_id, :value)
       end
     end
 
@@ -595,9 +597,12 @@ class Merge < ApplicationModel
 
           existing_vehicle_journey = new.vehicle_journeys.find_by journey_pattern_id: existing_associated_journey_pattern.id, checksum: vehicle_journey.checksum
 
+          merged_vehicle_journey = nil
+
           if existing_vehicle_journey
             existing_vehicle_journey.merge_metadata_from vehicle_journey
             new_vehicle_journey_ids[vehicle_journey.id] = existing_vehicle_journey.id
+            merged_vehicle_journey = existing_vehicle_journey
           else
             objectid = Chouette::VehicleJourney.where(objectid: vehicle_journey.objectid).exists? ? nil : vehicle_journey.objectid
             attributes = vehicle_journey.attributes.merge(
@@ -678,6 +683,15 @@ class Merge < ApplicationModel
             end
 
             new_vehicle_journey_ids[vehicle_journey.id] = new_vehicle_journey.id
+            merged_vehicle_journey = new_vehicle_journey
+          end
+
+          referential_vehicle_journey_codes[vehicle_journey.id].each do |code_space_id, code_value|
+            begin
+              merged_vehicle_journey.codes.create code_space_id: code_space_id, value: code_value
+            rescue ActiveRecord::RecordNotUnique
+              # Ignore existing code
+            end
           end
         end
       end

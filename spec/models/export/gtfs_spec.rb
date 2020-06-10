@@ -113,31 +113,27 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
         let(:time_table) { context.time_table }
         let(:decorator) { Export::Gtfs::TimeTables::TimeTableDecorator.new time_table }
 
-          it "should return one period" do
-            expect(decorator.periods.length).to eq 1
-          end
+        it "should return one period" do
+          expect(decorator.periods.length).to eq 1
+        end
 
-          it "should return two dates" do
-            expect(decorator.dates.length).to eq 2
-          end
+        it "should return two dates" do
+          expect(decorator.dates.length).to eq 2
+        end
 
-          it "should return a calendar with default service_id" do
-            c = decorator.calendars
-            expect(c.count).to eq 1
-            expect(c.first[:service_id]).to eq decorator.default_service_id
-          end
+        it "should return a calendar with default service_id" do
+          c = decorator.calendars
+          expect(c.count).to eq 1
+          expect(c.first[:service_id]).to eq decorator.default_service_id
+        end
 
-          it "should return calendar_dates with correct service_id" do
-            cd = decorator.calendar_dates
-            expect(cd.count).to eq 2
-            cd.each do |date|
-              expect(date[:service_id]).to eq decorator.default_service_id
-            end
-            # included_cd = cd.find(exception_type: 1)
-            # excluded_cd = cd.find(exception_type: 2)
-            # # excluded_cd = cd.select{ |d| d.exception_type == 2 }
-            # expect(included_cd.service_id).to eq
+        it "should return calendar_dates with correct service_id" do
+          cd = decorator.calendar_dates
+          expect(cd.count).to eq 2
+          cd.each do |date|
+            expect(date[:service_id]).to eq decorator.default_service_id
           end
+        end
       end
 
       context 'with multiple periods' do
@@ -331,6 +327,352 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       it "uses position to fill the same stop_sequence attribute" do
         allow(decorator).to receive(:position).and_return(42)
         expect(decorator.stop_time_attributes[:stop_sequence]).to eq(decorator.position)
+      end
+
+    end
+
+  end
+
+  describe 'VehicleJourneys Part' do
+
+    let(:export_scope) { Export::Scope::All.new context.referential }
+    let(:index) { export.index }
+    let(:export) { Export::Gtfs.new export_scope: export_scope, workbench: context.workbench, workgroup: context.workgroup }
+
+    let(:part) do
+      Export::Gtfs::VehicleJourneys.new export
+    end
+
+    let(:context) do
+      Chouette.create do
+        vehicle_journey
+        vehicle_journey
+      end
+    end
+
+    before { context.referential.switch }
+
+    let(:vehicle_journeys) { context.vehicle_journeys }
+
+    describe '#codes' do
+
+      subject { part.codes }
+
+      let!(:vehicle_journey_codes) do
+        context.vehicle_journeys.map do |vehicle_journey|
+          vehicle_journey.codes.create! code_space: export.code_space, value: rand(100).to_s
+        end
+      end
+
+      let!(:unexpected_code) do
+        other_resource = vehicle_journeys.first.journey_pattern
+        referential.codes.create! resource: other_resource, code_space: export.code_space, value: rand(100).to_s
+      end
+
+      it "selects codes associated with Vehicle Journeys" do
+        is_expected.to eq(vehicle_journey_codes)
+        is_expected.to_not include(unexpected_code)
+      end
+
+      it "ignores codes associated with other resources" do
+        is_expected.to eq(vehicle_journey_codes)
+        is_expected.to_not include(unexpected_code)
+      end
+
+    end
+
+    describe '#duplicated_codes' do
+
+      subject { part.duplicated_code_values }
+
+      let(:unique_code_value) { 'unique' }
+      let(:duplicated_code_value) { 'duplicated' }
+
+      let!(:unique_code) do
+        vehicle_journeys.first.codes.create! code_space: export.code_space, value: unique_code_value
+      end
+
+      let!(:duplicated_codes) do
+        context.vehicle_journeys.map do |vehicle_journey|
+          vehicle_journey.codes.create! code_space: export.code_space, value: duplicated_code_value
+        end
+      end
+
+      it 'returns the code values used by several Vehicle Journeys' do
+        is_expected.to eq([duplicated_code_value])
+      end
+
+      it 'ignores an unique code' do
+        is_expected.to_not include(unique_code_value)
+      end
+
+    end
+
+    describe '#load_duplicated_codes' do
+
+      let(:duplicated_code_value) { 'duplicated' }
+
+      it "registers all duplicated code values" do
+        allow(part).to receive(:duplicated_code_values).and_return([duplicated_code_value])
+
+        expect { part.load_duplicated_codes }.to change {
+          index.duplicated_vehicle_journey_code?(duplicated_code_value)
+        }.from(false).to(true)
+      end
+    end
+
+  end
+
+  describe 'VehicleJourney Decorator' do
+
+    let(:vehicle_journey) { Chouette::VehicleJourney.new }
+    let(:index) { Export::Gtfs::Index.new }
+    let(:decorator) do
+      Export::Gtfs::VehicleJourneys::Decorator.new vehicle_journey, index: index
+    end
+
+    describe '#route_id' do
+
+      subject { decorator.route_id }
+
+      let(:indexed_route_id) { double 'GTFS route_id associated to the VehicleJourney line' }
+
+      before do
+        line = Chouette::Line.new(id: rand(100))
+        vehicle_journey.route = Chouette::Route.new(line_id: line.id)
+        index.register_route_id line, indexed_route_id
+      end
+
+      it { is_expected.to be(indexed_route_id) }
+
+    end
+
+    describe '#trip_id' do
+
+      subject { decorator.trip_id(suffix) }
+
+      let(:suffix) { 'suffix' }
+      let(:base_trip_id) { 'base_trip_id' }
+      let(:suffixed_base_trip_id) { "#{base_trip_id}-#{suffix}" }
+
+      before do
+        allow(decorator).to receive(:base_trip_id).and_return(base_trip_id)
+      end
+
+      context "when gtfs_code isn't unique" do
+
+        before { allow(decorator).to receive(:unique_gtfs_code?).and_return(false) }
+
+        it { is_expected.to eq(suffixed_base_trip_id) }
+
+      end
+
+      context "when several service identifiers are associated" do
+
+        before { allow(decorator).to receive(:single_service_id?).and_return(false) }
+
+        it "uses the base trip id with the given suffix" do
+          is_expected.to eq(suffixed_base_trip_id)
+        end
+
+      end
+
+      context "when gtfs_code is unique and a single service identifier is associated" do
+
+        before do
+          allow(decorator).to receive(:unique_gtfs_code?).and_return(true)
+          allow(decorator).to receive(:single_service_id?).and_return(true)
+        end
+
+        it "uses the raw base trip id" do
+          is_expected.to eq(base_trip_id)
+        end
+
+      end
+
+      describe '#trip_attributes' do
+
+        subject { decorator.trip_attributes(service_id) }
+        let(:service_id) { 'service_id' }
+
+        let(:service_id) { 'service_id' }
+
+        it 'uses route_id as attribute' do
+          allow(decorator).to receive(:route_id).and_return(rand(100))
+          is_expected.to include(route_id: decorator.route_id)
+        end
+
+        it 'uses the given service_id as attribute' do
+          is_expected.to include(service_id: service_id)
+        end
+
+        it 'uses trip_id (with given service_id) as id attribute' do
+          trip_id = rand(100)
+          allow(decorator).to receive(:trip_id).with(service_id).and_return(trip_id)
+          is_expected.to include(id: trip_id)
+        end
+
+        it 'uses published_journey_name as short_name attribute' do
+          vehicle_journey.published_journey_name = 'published_journey_name'
+          is_expected.to include(short_name: vehicle_journey.published_journey_name)
+        end
+
+        it 'uses direction_id as attribute' do
+          allow(decorator).to receive(:direction_id).and_return(0)
+          is_expected.to include(direction_id: decorator.direction_id)
+        end
+
+      end
+
+    end
+
+    describe '#candidate_codes' do
+
+      subject { decorator.candidate_codes }
+
+      context "when the Decorator has no selected code space" do
+        before { decorator.code_space_id = nil }
+
+        it { is_expected.to be_empty }
+      end
+
+      context "when the Decorator has a selected code space" do
+        let(:code_space_id) { 42 }
+        before { decorator.code_space_id = code_space_id }
+
+        let(:expected_code) { double 'Code in selected Code Space', code_space_id: code_space_id }
+        let(:unexpected_code) { double code_space_id: 'dummy' }
+
+        before { allow(decorator).to receive(:codes).and_return([expected_code, unexpected_code]) }
+
+        it "ignores Vehicle Journey codes outside this code space" do
+          is_expected.to eq([expected_code])
+        end
+      end
+
+    end
+
+    describe '#gtfs_code' do
+
+      subject { decorator.gtfs_code }
+
+      describe 'when the VehicleJourney has no code' do
+        it { is_expected.to be_nil }
+      end
+
+      describe 'when the VehicleJourney has several codes' do
+        let(:codes) { %w{1 2}.map { |v| double value: v } }
+        before { allow(decorator).to receive(:candidate_codes).and_return(codes) }
+
+        it { is_expected.to be_nil }
+      end
+
+      describe 'when the VehicleJourney has a single code' do
+        let(:code) { double value: 'Single Code value' }
+        before { allow(decorator).to receive(:candidate_codes).and_return([code]) }
+
+        it { is_expected.to eq(code.value) }
+      end
+
+    end
+
+    describe '#unique_gtfs_code?' do
+
+      subject { decorator.unique_gtfs_code? }
+
+      let(:gtfs_code) { 'gtfs_code' }
+      before { allow(decorator).to receive(:gtfs_code).and_return(gtfs_code) }
+
+      context "when the gtfs_code is registered as duplicated" do
+        before { index.register_duplicated_vehicle_journey_code(gtfs_code) }
+        it { is_expected.to be_falsy }
+      end
+
+      context "when the gtfs_code isn't registered as duplicated" do
+        it { is_expected.to be_truthy }
+      end
+
+    end
+
+    describe '#base_trip_id' do
+
+      subject { decorator.base_trip_id }
+
+      before { vehicle_journey.objectid = 'test' }
+
+      context 'when gtfs_code is nil' do
+
+        it "returns VehicleJourney objectid" do
+          is_expected.to eq(vehicle_journey.objectid)
+        end
+
+      end
+
+      context 'when gtfs_code has a value' do
+
+        before { allow(decorator).to receive(:gtfs_code).and_return('test') }
+
+        it "returns this gtfs_code" do
+          is_expected.to eq(decorator.gtfs_code)
+        end
+
+      end
+
+    end
+
+    describe '#service_ids' do
+
+      subject { decorator.service_ids }
+
+      before do
+        decorator.index.register_service_ids double(id: 1), %w{a b c}.to_set
+        decorator.index.register_service_ids double(id: 2), %w{d e f}.to_set
+
+        allow(decorator).to receive(:time_table_ids).and_return([1, 2])
+      end
+
+      it "returns all the GTFS service identifiers associated to Vehicle Journey TimeTable identifiers" do
+        is_expected.to match_array(%w{a b c d e f}.to_set)
+      end
+
+    end
+
+    describe '#single_service_id?' do
+
+      subject { decorator.single_service_id? }
+
+      before { allow(decorator).to receive(:service_ids).and_return(service_ids.to_set) }
+
+      context 'when there is a single value returned by service_ids' do
+        let(:service_ids) { %w{a} }
+
+        it { is_expected.to be_truthy }
+      end
+
+      context 'when there are several values returned by service_ids' do
+        let(:service_ids) { %w{a b} }
+
+        it { is_expected.to be_falsy }
+      end
+
+    end
+
+    describe '#direction_id' do
+
+      subject { decorator.direction_id }
+
+      before do
+        vehicle_journey.route = Chouette::Route.new wayback: wayback
+      end
+
+      context "when route wayback is outbound" do
+        let(:wayback) { Chouette::Route.outbound }
+        it { is_expected.to eq(0) }
+      end
+
+      context "when route wayback is inbound" do
+        let(:wayback) { Chouette::Route.inbound }
+        it { is_expected.to eq(1) }
       end
 
     end

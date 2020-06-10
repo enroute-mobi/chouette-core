@@ -18,6 +18,10 @@ class Export::Base < ApplicationModel
   include PurgeableResource
   include IevInterfaces::Task
 
+  def code_space
+    # User option in the future
+    @code_space ||= workgroup.code_spaces.default if workgroup
+  end
 
   self.table_name = "exports"
 

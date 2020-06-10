@@ -5,6 +5,15 @@ class Import::Base < ApplicationModel
   include PurgeableResource
   include ProfilingSupport
 
+  def workgroup
+    workbench&.workgroup
+  end
+
+  def code_space
+    # User option in the future
+    @code_space ||= workgroup.code_spaces.default if workgroup
+  end
+
   PERIOD_EXTREME_VALUE = 15.years
 
   after_create :purge_imports

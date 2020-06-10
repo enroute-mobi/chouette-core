@@ -267,6 +267,8 @@ class Import::Gtfs < Import::Base
         )
       end
 
+      vehicle_journey.codes.build code_space: code_space, value: trip.id
+
       ApplicationModel.skipping_objectid_uniqueness do
           save_model vehicle_journey, resource: resource
       end

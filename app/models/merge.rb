@@ -396,7 +396,20 @@ class Merge < ApplicationModel
                   existing_associated_route.stop_points.joins(:stop_area).where("stop_areas.objectid": object_id, position: position).last
                 end.compact
                 if stop_points.count != stop_areas_objectids.count
-                  raise "Can't find StopPoints for #{stop_areas_objectids} : #{stop_points.inspect} #{existing_associated_route.stop_points.inspect}"
+                  Rails.logger.info "Merge #{id}: resolve stop points for JourneyPattern #{journey_pattern.checksum} by relative positions"
+                  # If the absolute position values are not the same, we're looking for the StopPoints by relative position values
+                  stop_areas_objectids.sort_by! { |position, _| position }
+
+                  previous_position = -1
+                  stop_points = stop_areas_objectids.map do |_, object_id|
+                    stop_point = existing_associated_route.stop_points.joins(:stop_area).where("stop_areas.objectid": object_id).where('position > ?', previous_position).order(:position).first
+                    unless stop_point
+                      raise "Can't find StopPoint associated to #{object_id} with position > #{previous_position} in #{stop_areas_objectids} #{existing_associated_route.stop_points.inspect}"
+                    end
+
+                    previous_position = stop_point.position
+                    stop_point
+                  end.compact
                 end
 
                 attributes.merge!(stop_points: stop_points)

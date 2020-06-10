@@ -8,6 +8,11 @@ en:
       edit: Edit a Destination
     show:
       title: "Destination %{name}"
+    errors:
+      publication_api:
+        already_used: This publication API is already used by another similar publication
+      mail:
+        recipients_mail_syntax: "Invalid adress(es) : %{emails}"
   activerecord:
     models:
       destination:
@@ -30,6 +35,10 @@ en:
         zero:  "Publication API"
         one:   "Publication API"
         other: "Publication APIs"
+      destination/mail:
+        zero:  "Email notification"
+        one:   "Email notification"
+        other: "Email notifications"
     attributes:
       destination:
         name: "Name"
@@ -37,17 +46,32 @@ en:
         options: "Options"
         secret_file: "Secret file"
         _destroy: "Remove"
-      destination/dummy:
-        result: Expected outcome
-        result_collection:
-          successful: Success
-          unexpected_failure: Unexpected failure
-          expected_failure: Expected failure
-      destination/google_cloud_storage:
-        project: Projet
-        bucket:  Bucket
-      destination/sftp:
-        host: Host
-        port: Port
-        directory: Directory
-        username: Username
+        dummy:
+          result: Expected outcome
+          result_collection:
+            successful: Success
+            unexpected_failure: Unexpected failure
+            expected_failure: Expected failure
+        google_cloud_storage:
+          project: Projet
+          bucket:  Bucket
+        mail:
+          email_title: Email title
+          email_text: Email text
+          recipients: Recipients
+          link_to_api: Include link to API
+          attached_export_file: Attached export file
+          attached_export_filename: Attachment name
+        sftp:
+          host: Host
+          port: Port
+          directory: Directory
+          username: Username
+    errors:
+      models:
+        destination/mail:
+          attributes:
+            recipients:
+              mail_format: Invalid email address
+            attached_export_filename:
+              filename: "Invalid format, only letters, numbers and the '-' symbol are allowed"

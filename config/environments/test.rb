@@ -71,7 +71,7 @@ Rails.application.configure do
   config.colorize_logging = false
 
   config.additional_compliance_controls << "dummy"
-  config.additional_destinations << "dummy"
+  config.additional_destinations << "dummy" << "mail"
 
   config.enable_transactional_checksums = true
 end

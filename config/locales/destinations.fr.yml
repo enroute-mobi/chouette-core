@@ -11,6 +11,8 @@ fr:
     errors:
       publication_api:
         already_used: Cette API de publication est déjà utilisée par une Publication similaire
+      mail:
+        recipients_mail_syntax: "Adresse(s) invalide(s) : %{emails}"
   activerecord:
     models:
       destination:
@@ -33,6 +35,10 @@ fr:
         zero:  "API de publication"
         one:   "API de publication"
         other: "APIs de publication"
+      destination/mail:
+        zero:  "Notification email"
+        one:   "Notification email"
+        other: "Notifications email"
     attributes:
       destination:
         name: "Nom"
@@ -40,17 +46,32 @@ fr:
         options: "Options"
         secret_file: "Clé secrète"
         _destroy: "Supprimer"
-      destination/dummy:
-        result: Résultat attendu
-        result_collection:
-          successful: Succès
-          unexpected_failure: Erreur non-controlée
-          expected_failure: Erreur controlée
-      destination/google_cloud_storage:
-        project: Project
-        bucket:  Bucket
-      destination/sftp:
-        host: Hôte
-        port: Port
-        directory: Répertoire
-        username: Nom d'utilisateur
+        dummy:
+          result: Résultat attendu
+          result_collection:
+            successful: Succès
+            unexpected_failure: Erreur non-controlée
+            expected_failure: Erreur controlée
+        google_cloud_storage:
+          project: Project
+          bucket:  Bucket
+        mail:
+          email_title: Titre du mail
+          email_text: Texte du mail
+          recipients: Destinataires
+          link_to_api: Inclus un lien vers l'API
+          attached_export_file: Fichier exporté en pièce jointe
+          attached_export_filename: Nom de la pièce jointe
+        sftp:
+          host: Hôte
+          port: Port
+          directory: Répertoire
+          username: Nom d'utilisateur
+    errors:
+      models:
+        destination/mail:
+          attributes:
+            recipients:
+              mail_format: Adresse mail invalide
+            attached_export_filename:
+              filename: "Format invalide, seuls les lettres, les chiffres et le caractère '-' sont autorisés"

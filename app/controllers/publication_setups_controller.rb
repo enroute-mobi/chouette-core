@@ -30,18 +30,40 @@ class PublicationSetupsController < ChouetteController
     end
   end
 
-  def publication_setup_params
-    publication_setup_params = params.require(:publication_setup)
-    permitted_keys = [:name, :export_type, :export_options, :enabled, :workgroup_id]
-    publication_setup_params[:workgroup_id] = parent.id
-    export_class = publication_setup_params[:export_type] && publication_setup_params[:export_type].safe_constantize
-    if export_class
-      permitted_keys << { export_options: export_class.options.map {|k, v| v[:name].presence || k } }
+  private
+
+  def resource_params
+    super
+    # Remove select2 blank values in the returned array
+    @resource_params[0][:destinations_attributes].each do |key, value|
+      @resource_params[0][:destinations_attributes][key][:recipients].reject!{ |c| c.empty? } if value.key?("recipients")
     end
-    permitted_destinations_attributes = [:id, :name, :type, :_destroy, :secret_file, :publication_setup_id, :publication_api_id]
-    permitted_destinations_attributes += Destination.descendants.map{ |t| t.options.keys }.uniq
-    permitted_keys << { destinations_attributes: permitted_destinations_attributes }
-    publication_setup_params.permit(permitted_keys)
+    @resource_params
+  end
+
+  def publication_setup_params
+    export_options = []
+    export_class = params[:publication_setup][:export_type] && params[:publication_setup][:export_type].safe_constantize
+    if export_class
+      export_options = export_class.options.keys
+    end
+
+    destination_options = [:id, :name, :type, :_destroy, :secret_file, :publication_setup_id, :publication_api_id]
+    destination_options += Destination.descendants.map do |t|
+      t.options.map do |key, value|
+        # To accept an array value directlytt in params, a permit({key: []}) is required instead of just permit(:key)
+        value.try(:[], :type)&.equal?(:array) ? Hash[key => []] : key
+      end
+    end.flatten
+
+    params.require(:publication_setup).permit(
+      :name,
+      :export_type,
+      :enabled,
+      :workgroup_id,
+      export_options: export_options,
+      destinations_attributes: destination_options
+    )
   end
 
   def resource

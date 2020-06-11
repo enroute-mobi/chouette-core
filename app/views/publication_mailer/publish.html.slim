@@ -1,4 +1,4 @@
-p== @destination_mail.email_text
+p== simple_format(@destination_mail.email_text)
 p== t('mailers.publication_mailer.publish.publication_date', formated_date: l(@publication.ended_at, format: :short_with_time))
 
 

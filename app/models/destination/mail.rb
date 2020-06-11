@@ -9,7 +9,7 @@ if ::Destination.enabled?("mail")
     option :email_title
     validates :email_title, presence: true, length: { maximum: 100 }
 
-    option :email_text
+    option :email_text, type: :text
     validates :email_text, presence: true, length: { maximum: 1024 }
 
     option :recipients, type: :array, default_value: []

@@ -105,11 +105,11 @@ module MetadataSupport
         end
 
         define_singleton_method("#{name}=") do |x|
-          modifiable[timestamp_attr_name] = Time.now if timestamp_attr_name
-          modifiable[name] = x
+          modifiable?[timestamp_attr_name] = Time.now if timestamp_attr_name
+          modifiable?[name] = x
           owner.send :write_attribute, attribute_name, @table
         end
-        modifiable[timestamp_attr_name] = Time.now if timestamp_attr_name
+        modifiable?[timestamp_attr_name] = Time.now if timestamp_attr_name
       end
       name
     end

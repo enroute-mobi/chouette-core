@@ -9,7 +9,7 @@ if ::Destination.enabled?("mail")
     option :email_title
     validates :email_title, presence: true, length: { maximum: 100 }
 
-    option :email_text
+    option :email_text, type: :text
     validates :email_text, presence: true, length: { maximum: 1024 }
 
     option :recipients, type: :array, default_value: []
@@ -24,7 +24,7 @@ if ::Destination.enabled?("mail")
     validates :attached_export_filename, format: { with: /\A[a-z0-9-]+\z/i, message: :filename, allow_blank: true }
 
     def do_transmit(publication, _report)
-      puts "Send mail to recipents !"
+      PublicationMailer.publish(publication, self).deliver_later
     end
 
     def check_mail_array

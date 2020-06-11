@@ -14,5 +14,6 @@ FactoryGirl.define do
     recipients ["test@mail.com"]
     email_title "Mail title"
     email_text "Mail text"
+    attached_export_file false
   end
 end

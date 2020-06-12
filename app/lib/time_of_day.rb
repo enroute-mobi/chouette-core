@@ -1,18 +1,71 @@
 class TimeOfDay
   include Comparable
 
-  attr_reader :hour, :minute, :second, :second_offset
-  alias_method :min, :minute
-  alias_method :sec, :second
+  attr_reader :hour, :minute, :second, :day_offset, :utc_offset, :second_offset
+  alias min minute
+  alias sec second
 
-  def initialize(hour, minute = nil, second = nil)
-    @hour = (hour.is_a? String)? Integer(hour, 10) : Integer(hour)
-    @minute = (minute.is_a? String)? Integer(minute || 0, 10) : Integer(minute || 0)
-    @second = (second.is_a? String)? Integer(second || 0, 10) : Integer(second || 0)
+  def initialize(hour, minute = nil, second = nil, day_offset: nil, utc_offset: nil)
+    @hour = hour.to_i
+    @minute = minute.to_i
+    @second = second.to_i
+    @day_offset = day_offset.to_i
+    @utc_offset = utc_offset.to_i
 
-    @second_offset = (@hour * 60 + @minute) * 60 + @second
+    @second_offset = ((@day_offset * 24 + @hour) * 60 + @minute) * 60 + @second - @utc_offset
 
     freeze
+  end
+
+  def self.create(time = nil, attributes = nil)
+    attributes ||= {}
+
+    %i{hour minute min second sec day_offset time_zone}.each do |attribute|
+      attributes[attribute] = time.send(attribute) if time.respond_to?(attribute)
+    end
+
+    if minute = attributes.delete(:min)
+      attributes[:minute] = minute
+    end
+    if second = attributes.delete(:sec)
+      attributes[:second] = second
+    end
+
+    if zone = attributes.delete(:time_zone)
+      attributes[:utc_offset] = zone.utc_offset
+    end
+
+    new attributes.fetch(:hour), attributes[:minute], attributes[:second], attributes.except(:hour, :minute, :second)
+  end
+
+  def self.from_second_offset(offset)
+    day_offset = offset / 1.day
+    offset = offset % 1.day
+
+    hour = offset / 1.hour
+    offset = offset % 1.hour
+
+    minute = offset / 1.minute
+    second = offset % 1.minute
+
+    TimeOfDay.new hour, minute, second, day_offset: day_offset
+  end
+
+  def without_utc_offset
+    self.class.from_second_offset second_offset
+  end
+
+  SIMPLE_FORMAT = "%.2d:%.2d:%.2d"
+  def to_s
+    [].tap do |parts|
+      parts << SIMPLE_FORMAT % [hour, minute, second]
+      parts << "day:#{day_offset}" if day_offset != 0
+      parts << "utc_offset:#{utc_offset}" if utc_offset != 0
+    end.join(' ')
+  end
+
+  def to_vehicle_journey_at_stop_time
+    ::Time.new(2000, 1, 1, hour, minute, second, "+00:00")
   end
 
   def <=>(other)

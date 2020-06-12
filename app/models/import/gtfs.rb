@@ -86,6 +86,10 @@ class Import::Gtfs < Import::Base
     end
   end
 
+  def default_time_zone
+    @default_time_zone_instance ||= ActiveSupport::TimeZone[@default_time_zone]
+  end
+
   def import_stops
     sorted_stops = source.stops.sort_by { |s| s.parent_station.present? ? 1 : 0 }
     @stop_areas_id_by_registration_number = {}
@@ -459,45 +463,24 @@ class Import::Gtfs < Import::Base
 
   def add_stop_point(stop_time, stop_point, journey_pattern, vehicle_journey, resource, worker)
     # JourneyPattern#vjas_add creates automaticaly VehicleJourneyAtStop
-
     vehicle_journey_at_stop = journey_pattern.vehicle_journey_at_stops.build(stop_point_id: stop_point.id)
 
-    departure_time = GTFSTime.parse(stop_time.departure_time)
+    departure_time = GTFS::Time.parse(stop_time.departure_time)
     raise InvalidTimeError.new(stop_time.departure_time) unless departure_time.present?
 
-    arrival_time = GTFSTime.parse(stop_time.arrival_time)
+    arrival_time = GTFS::Time.parse(stop_time.arrival_time)
     raise InvalidTimeError.new(stop_time.arrival_time) unless arrival_time.present?
 
-    if @previous_stop_sequence.nil? || stop_time.stop_sequence.to_i <= @previous_stop_sequence
-      @vehicle_journey_at_stop_first_offset = departure_time.day_offset
-    end
+    departure_time_of_day = TimeOfDay.create(departure_time, time_zone: default_time_zone).without_utc_offset
+    arrival_time_of_day = TimeOfDay.create(arrival_time, time_zone: default_time_zone).without_utc_offset
 
     vehicle_journey_at_stop.vehicle_journey = vehicle_journey
-    vehicle_journey_at_stop.departure_time = departure_time.time(@default_time_zone)
-    vehicle_journey_at_stop.arrival_time = arrival_time.time(@default_time_zone)
-
-    # FIXME See CHOUETTE-537
-    departure_time_zone_day_offset = 0
-    if vehicle_journey_at_stop.departure_time.hour < (departure_time.hours % 24)
-      Rails.logger.warn "GTFS Import #{id} required time_zone_day_offset"
-      departure_time_zone_day_offset = 1
-    end
-
-    arrival_time_zone_day_offset = 0
-    if vehicle_journey_at_stop.arrival_time.hour < (arrival_time.hours % 24)
-      Rails.logger.warn "GTFS Import #{id} required time_zone_day_offset"
-      arrival_time_zone_day_offset = 1
-    end
-
-    vehicle_journey_at_stop.departure_day_offset = departure_time.day_offset + departure_time_zone_day_offset - @vehicle_journey_at_stop_first_offset
-    vehicle_journey_at_stop.arrival_day_offset = arrival_time.day_offset + arrival_time_zone_day_offset - @vehicle_journey_at_stop_first_offset
-
-    # TODO: offset
-
-    @previous_stop_sequence = stop_time.stop_sequence.to_i
+    vehicle_journey_at_stop.departure_time = departure_time_of_day.to_vehicle_journey_at_stop_time
+    vehicle_journey_at_stop.arrival_time = arrival_time_of_day.to_vehicle_journey_at_stop_time
+    vehicle_journey_at_stop.departure_day_offset = departure_time_of_day.day_offset
+    vehicle_journey_at_stop.arrival_day_offset = arrival_time_of_day.day_offset
 
     worker.add vehicle_journey_at_stop.attributes
-    # save_model vehicle_journey_at_stop, resource: resource
   end
 
   def time_tables_by_service_id

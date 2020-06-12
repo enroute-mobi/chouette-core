@@ -4,6 +4,7 @@ if ::Destination.enabled?("mail")
     before_validation do
       self.email_title = ActionController::Base.helpers.strip_tags(self.email_title)
       self.email_text = ActionController::Base.helpers.strip_tags(self.email_text)
+      self.recipients = self.recipients.delete_if {|r| r.empty? }
     end
 
     option :email_title

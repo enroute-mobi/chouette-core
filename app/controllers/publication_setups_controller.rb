@@ -32,18 +32,9 @@ class PublicationSetupsController < ChouetteController
 
   private
 
-  def resource_params
-    super
-    # Remove select2 blank values in the returned array
-    @resource_params[0][:destinations_attributes].each do |key, value|
-      @resource_params[0][:destinations_attributes][key][:recipients].reject!{ |c| c.empty? } if value.key?("recipients")
-    end
-    @resource_params
-  end
-
   def publication_setup_params
     export_options = []
-    export_class = params[:publication_setup][:export_type] && params[:publication_setup][:export_type].safe_constantize
+    export_class = params[:publication_setup] && params[:publication_setup][:export_type] && params[:publication_setup][:export_type].safe_constantize
     if export_class
       export_options = export_class.options.keys
     end
@@ -51,7 +42,7 @@ class PublicationSetupsController < ChouetteController
     destination_options = [:id, :name, :type, :_destroy, :secret_file, :publication_setup_id, :publication_api_id]
     destination_options += Destination.descendants.map do |t|
       t.options.map do |key, value|
-        # To accept an array value directlytt in params, a permit({key: []}) is required instead of just permit(:key)
+        # To accept an array value directly in params, a permit({key: []}) is required instead of just permit(:key)
         value.try(:[], :type)&.equal?(:array) ? Hash[key => []] : key
       end
     end.flatten

@@ -23,8 +23,8 @@ module ExportsHelper
         opts[:input_html][:checked] = export.try(attr) || option_def[:default_value]
       elsif option_def[:type].to_s == "array"
         opts[:as] = :tags
-        opts[:input_html].merge!({'data-select2ed': 'true', 'data-select2ed-placeholder': t('simple_form.custom_inputs.tags.placeholder')})
-        opts[:wrapper_html]  = { class: 'select2ed'}
+        opts[:input_html].merge!({'data-select2ed-placeholder': t('simple_form.custom_inputs.tags.placeholder')})
+        opts[:wrapper_html]  = { class: '.tags'}
       end
       if option_def.has_key?(:collection)
         if option_def[:collection].is_a?(Array) && !option_def[:collection].first.is_a?(Array)

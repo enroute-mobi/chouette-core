@@ -58,9 +58,6 @@ bind_select2_ajax = (el, cfg = {}) ->
   $("[data-select2-ajax='true']").each ->
     bind_select2_ajax(this)
 
-  $('select.form-control.tags').each ->
-    bind_select2(this, {tags: true})
-
 $ ->
   select_2()
   $('select.autocomplete-async-input').each (i, e)->

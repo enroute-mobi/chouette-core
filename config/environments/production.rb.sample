@@ -135,6 +135,8 @@ Rails.application.configure do
     }
   }
 
+  config.additional_destinations << "dummy" << "mail
+
   # Set node env for browserify-rails
   # config.browserify_rails.node_env = "production"
 end

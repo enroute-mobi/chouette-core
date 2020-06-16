@@ -9,6 +9,7 @@ en:
         progress: "%{status_html} Import <i>%{name}</i>: %{progress}%"
     export:
       gtfs: &export_messages
+        aborted: "%{status_html} Export <i>%{name}</i> has been cancelled"
         failed: "%{status_html} Export <i>%{name}</i> has failed"
         running: "%{status_html} Export <i>%{name}</i> has started"
         successful: "%{status_html} Export <i>%{name}</i> succeeded"

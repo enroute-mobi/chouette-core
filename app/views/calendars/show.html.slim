@@ -11,13 +11,12 @@
             Calendar.tmf('dates') =>  resource.dates.collect{|d| l(d)}.join(', ').html_safe,
             Calendar.tmf('date_ranges') => resource.periods.map{|d| t('validity_range', debut: l(d.begin), end: l(d.end))}.join('<br>').html_safe }
 
-    - if has_feature?('application_days_on_calendars')
-      .row
-        .col-lg-12.mb-sm
-          .pagination.pull-right
-            = @year
-            .page_links
-              = link_to '', workgroup_calendar_path(@workgroup, @calendar, year: (@year - 1)), class: 'previous_page'
-              = link_to '', workgroup_calendar_path(@workgroup, @calendar, year: (@year + 1)), class: 'next_page'
+    .row
+      .col-lg-12.mb-sm
+        .pagination.pull-right
+          = @year
+          .page_links
+            = link_to '', workgroup_calendar_path(@workgroup, @calendar, year: (@year - 1)), class: 'previous_page'
+            = link_to '', workgroup_calendar_path(@workgroup, @calendar, year: (@year + 1)), class: 'next_page'
 
-      = render 'time_tables/show_time_table', time_table: @calendar, edit_url: [:edit, @workgroup, @calendar], disabled: !policy(@calendar).update?
+    = render 'time_tables/show_time_table', time_table: @calendar, edit_url: [:edit, @workgroup, @calendar], disabled: !policy(@calendar).update?

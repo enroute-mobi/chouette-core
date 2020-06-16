@@ -230,9 +230,10 @@ ActiveRecord::Schema.define(version: 2020_06_16_135740) do
   create_table "compliance_check_sets", force: :cascade do |t|
     t.bigint "referential_id"
     t.bigint "compliance_control_set_id"
+    t.bigint "workbench_id"
     t.string "status"
-    t.bigint "parent_id"
     t.string "parent_type"
+    t.bigint "parent_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "current_step_id"
@@ -246,7 +247,6 @@ ActiveRecord::Schema.define(version: 2020_06_16_135740) do
     t.string "notification_target"
     t.datetime "notified_recipients_at"
     t.bigint "user_id"
-    t.bigint "workbench_id"
     t.bigint "workgroup_id"
     t.index ["compliance_control_set_id"], name: "index_compliance_check_sets_on_compliance_control_set_id"
     t.index ["parent_type", "parent_id"], name: "index_compliance_check_sets_on_parent_type_and_parent_id"
@@ -288,7 +288,9 @@ ActiveRecord::Schema.define(version: 2020_06_16_135740) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.jsonb "metadata", default: {}
+    t.bigint "workgroup_id"
     t.index ["organisation_id"], name: "index_compliance_control_sets_on_organisation_id"
+    t.index ["workgroup_id"], name: "index_compliance_control_sets_on_workgroup_id"
   end
 
   create_table "compliance_controls", force: :cascade do |t|
@@ -1128,10 +1130,10 @@ ActiveRecord::Schema.define(version: 2020_06_16_135740) do
 
   create_table "taggings", force: :cascade do |t|
     t.bigint "tag_id"
-    t.bigint "taggable_id"
     t.string "taggable_type"
-    t.bigint "tagger_id"
+    t.bigint "taggable_id"
     t.string "tagger_type"
+    t.bigint "tagger_id"
     t.string "context", limit: 128
     t.datetime "created_at"
     t.index ["context"], name: "index_taggings_on_context"
@@ -1323,7 +1325,7 @@ ActiveRecord::Schema.define(version: 2020_06_16_135740) do
     t.string "export_types", default: [], array: true
     t.bigint "owner_id"
     t.bigint "output_id"
-    t.hstore "compliance_control_set_ids"
+    t.hstore "compliance_control_set_hash"
     t.integer "sentinel_min_hole_size", default: 3
     t.integer "sentinel_delay", default: 7
     t.time "nightly_aggregate_time", default: "2000-01-01 00:00:00"
@@ -1349,6 +1351,7 @@ ActiveRecord::Schema.define(version: 2020_06_16_135740) do
   add_foreign_key "compliance_checks", "compliance_check_sets"
   add_foreign_key "compliance_control_blocks", "compliance_control_sets"
   add_foreign_key "compliance_control_sets", "organisations"
+  add_foreign_key "compliance_control_sets", "workgroups"
   add_foreign_key "compliance_controls", "compliance_control_blocks"
   add_foreign_key "compliance_controls", "compliance_control_sets"
   add_foreign_key "exports", "workgroups"

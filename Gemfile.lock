@@ -464,7 +464,7 @@ GEM
       rspec-rails (>= 3.0.0)
     rabl (0.14.3)
       activesupport (>= 2.3.14)
-    rack (2.2.2)
+    rack (2.2.3)
     rack-protection (2.0.5)
       rack
     rack-proxy (0.6.3)

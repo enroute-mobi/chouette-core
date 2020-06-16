@@ -14,3 +14,5 @@ bind_select2 = (el, cfg = {}) ->
 $ ->
   $('select.form-control.tags').each ->
     bind_select2(this)
+
+module?.exports = bind_select2

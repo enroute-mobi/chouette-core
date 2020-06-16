@@ -16,8 +16,6 @@ module ExportsHelper
       opts = { required: option_def[:required], input_html: {value: export.try(attr) || option_def[:default_value]}, as: option_def[:type], selected: export.try(attr) || option_def[:default_value]}
       if option_def[:hidden]
         opts[:as] = :hidden
-      elsif option_def[:type].to_s == "text"
-        opts[:as] = :text
       elsif option_def[:type].to_s == "boolean"
         opts[:as] = :switchable_checkbox
         opts[:input_html][:checked] = export.try(attr) || option_def[:default_value]

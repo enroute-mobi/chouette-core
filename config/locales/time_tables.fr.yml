@@ -65,6 +65,9 @@ fr:
       period_form:
         begin: Début de période
         end: Fin de période
+        all_periods: Liste des périodes
+        display: Afficher
+        display_period: Afficher la période
     show:
       title: "%{name}"
       dates: "Dates d'application"

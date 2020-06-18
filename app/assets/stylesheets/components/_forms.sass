@@ -1059,3 +1059,32 @@ $grp-cbx-size: 34px
   display: none
   .page-action .formSubmitr
     display: block
+
+.dark-action-button
+  position: relative
+  cursor: pointer
+  font-weight: bold
+  display: inline-block
+  vertical-align: top
+  text-align: center
+  margin: 0
+  border: 1px solid rgba($grey, 0.5)
+  border-radius: 3px
+  background-color: $brand-color-secondary
+  border-color: $brand-color-secondary
+  color: #fff
+  margin-right: 10px
+
+.vertical-align
+  display: flex
+  align-items: center
+  justify-content: center
+  flex-direction: row
+
+.foldable-content
+  transition: height 500ms 250ms, opacity 500ms 250ms;
+
+  .fade
+    transition: height 500ms 250ms, opacity 500ms 250ms;
+    opacity: 0.0;
+    height: 0px;

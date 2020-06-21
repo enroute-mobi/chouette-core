@@ -69,7 +69,7 @@ class Export::Gtfs < Export::Base
       # Export stop_times.txt
 
       filter_non_commercial = referential.stop_areas.non_commercial.exists?
-      ignore_time_zone = !referential.stop_areas.with_time_zone.exists?
+      ignore_time_zone = !export_scope.stop_areas.with_time_zone.exists?
 
       VehicleJourneyAtStops.new(self, filter_non_commercial: filter_non_commercial, ignore_time_zone: ignore_time_zone).export_part
       notify_progress 5.0/operations_count

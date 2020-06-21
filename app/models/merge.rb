@@ -699,12 +699,13 @@ class Merge < ApplicationModel
             merged_vehicle_journey = new_vehicle_journey
           end
 
+
+
           referential_vehicle_journey_codes[vehicle_journey.id].each do |code_space_id, code_value|
-            begin
-              merged_vehicle_journey.codes.create code_space_id: code_space_id, value: code_value
-            rescue ActiveRecord::RecordNotUnique
-              # Ignore existing code
-            end
+            # rescue ActiveRecord::RecordNotUnique doesn't work.
+            # PostgreSQL rollbacks the whole transaction on duplicate record.
+            # See CHOUETTE-573
+            merged_vehicle_journey.codes.find_or_create_by code_space_id: code_space_id, value: code_value
           end
         end
       end

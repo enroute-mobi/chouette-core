@@ -530,12 +530,15 @@ module Chouette
     end
 
     def remove_periods!(removed_periods)
+      deleted_dates = []
       dates.each do |date|
         if removed_periods.any? { |p| p.include? date.date }
-          dates.delete date
+           deleted_dates << date
         end
       end
+      dates.delete deleted_dates
 
+      deleted_periods = []
       periods.each do |period|
         modified_ranges = removed_periods.inject([period.range]) do |period_ranges, removed_period|
           period_ranges.map { |p| p.remove removed_period }.flatten
@@ -550,13 +553,14 @@ module Chouette
                                        modified_range.min, modified_range.max
             else
               build_date_if_relevant modified_range.min
-              periods.delete period if index == 0
+              deleted_periods << period if index == 0
             end
           end
         else
-          periods.delete period
+          deleted_periods << period
         end
       end
+      periods.delete deleted_periods
     end
 
     def build_date_if_relevant date

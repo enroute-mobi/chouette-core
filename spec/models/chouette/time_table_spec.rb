@@ -1371,6 +1371,14 @@ end
       expect(time_table.dates).to be_empty
     end
 
+    it "remove all dates included in given periods" do
+      (5..25).each do |n|
+        time_table.dates.build date: Date.new(2018,1,n)
+      end
+      time_table.remove_periods! periods
+      expect(time_table.dates).to be_empty
+    end
+
     it "keep a date not included in given periods" do
       time_table.dates.build date: Date.new(2017,12,31)
       expect{time_table.remove_periods! periods}.to_not change(time_table, :dates)
@@ -1390,6 +1398,14 @@ end
 
     it "remove a period included in given periods" do
       time_table.periods.build period_start: Date.new(2018,1,10), period_end: Date.new(2018,1,20)
+      time_table.remove_periods! periods
+      expect(time_table.periods).to be_empty
+    end
+
+    it "remove all periods included in given periods" do
+      (5..25).each do |n|
+        time_table.periods.build period_start: Date.new(2018,1,n), period_end: Date.new(2018,1,n+3)
+      end
       time_table.remove_periods! periods
       expect(time_table.periods).to be_empty
     end

@@ -67,6 +67,12 @@ en:
           port: Port
           directory: Directory
           username: Username
+      destination/mail:
+        recipients: Recipients
+        link_to_api: Include link to API
+        attached_export_file: Attached export file
+      destination/dummy:
+        result: Expected outcome
     errors:
       models:
         destination/mail:

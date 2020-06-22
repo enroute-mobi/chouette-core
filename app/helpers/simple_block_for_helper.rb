@@ -8,18 +8,28 @@ module SimpleBlockForHelper
   def simple_block_for(object, options = {}, &block)
     block_builder = BlockBuilder.new(self, object, options)
     output = capture(block_builder, &block)
-    options[:class] = "col-lg-12 col-md-12 col-sm-12 col-xs-12" unless options[:class]
     block_tag_with_body(output, options)
   end
 
+  def simple_block_with_col_for(object, options = {}, &block)
+    block_builder = BlockBuilder.new(self, object, options)
+    output = capture(block_builder, &block)
+    options[:class] = "col-lg-12 col-md-12 col-sm-12 col-xs-12" unless options[:class]
+    block_tag_with_col(output, options)
+  end
+
   def block_tag_with_body(content, options)
+    content_tag :div, class: "definition-list" do
+      concat(content_tag(:div, options[:title], class: "dl-head")) if options[:title]
+      concat(content_tag(:div, class: "dl-body") do
+        content
+      end)
+    end
+  end
+
+  def block_tag_with_col(content, options)
     content_tag :div, class: options[:class] do
-      content_tag :div, class: "definition-list" do
-        concat(content_tag(:div, options[:title], class: "dl-head")) if options[:title]
-        concat(content_tag(:div, class: "dl-body") do
-          content
-        end)
-      end
+      block_tag_with_body(content, options)
     end
   end
 
@@ -37,7 +47,7 @@ module SimpleBlockForHelper
       raw_value = options.key?(:value) ? options[:value] : object.send(attribute_name)
 
       displayed_value =
-        if raw_value.present?
+        if raw_value.present? || raw_value.in?([true, false])
           case options[:as]
           when :datetime
             I18n.l(raw_value, format: :short_with_time)
@@ -45,6 +55,8 @@ module SimpleBlockForHelper
             raw_value > 60 ? "#{(raw_value /  1.minute).round} min" : "#{raw_value.round} sec"
           when :enumerize
             raw_value.text
+          when :boolean
+            (raw_value == '1').to_s
           else
             raw_value
           end

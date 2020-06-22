@@ -1,0 +1,4 @@
+= simple_block_for destination, title: Destination.ts do |d|
+	= d.attribute :type, value: destination.human_type
+	= d.attribute :name
+	= d.attribute :result, value: Destination.tmf("dummy.result_collection.#{destination.result}")

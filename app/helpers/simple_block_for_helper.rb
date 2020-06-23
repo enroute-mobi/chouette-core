@@ -42,6 +42,8 @@ module SimpleBlockForHelper
             raw_value > 60 ? "#{(raw_value /  1.minute).round} min" : "#{raw_value.round} sec"
           when :enumerize
             raw_value.text
+          when :boolean
+            t(raw_value == '1')
           else
             raw_value
           end

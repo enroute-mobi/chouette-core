@@ -26,3 +26,5 @@ en:
         export_options: "Export Settings"
         enabled: "Enabled"
         destinations: "Output"
+        duration: Duration (in days)
+        prefer_referent_stop_area: Prefer Referent Stop Areas

@@ -10,10 +10,7 @@
         - metadatas.update( PublicationSetup.tmf(:enabled) => boolean_icon(@publication_setup.enabled) )
         = definition_list t('metadatas'), metadatas
 
-        - metadatas = { PublicationSetup.tmf(:export_type) =>  @publication_setup.new_export.human_type }
-        - @publication_setup.export_options.each do |k, v|
-          - metadatas.update( translate_option_key(@publication_setup.export_class, k) => v )
-        = definition_list PublicationSetup.tmf(:export_options), metadatas
+        = render @publication_setup.export_type.demodulize.downcase, publication_setup: @publication_setup
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         - @publication_setup.destinations.each do |destination|

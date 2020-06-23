@@ -112,7 +112,7 @@ end
 
 Delayed::Worker.plugins << AutoKillPlugin
 
-Delayed::Worker.max_run_time = 10.hours
+Delayed::Worker.max_run_time = SmartEnv[:DELAYED_JOB_MAX_RUN_TIME].hours
 
 Delayed::Heartbeat.configure do |configuration|
   configuration.enabled = SmartEnv.boolean :ENABLE_DELAYED_JOB_REAPER

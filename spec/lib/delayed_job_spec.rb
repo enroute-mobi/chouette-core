@@ -11,14 +11,6 @@ RSpec.describe Delayed::Job do
     end
   end
 
-  describe '#max_run_time' do
-    let(:job){ create(:gtfs_import, workbench: workbench).import_async }
-
-    it 'should be 10.hours for imports' do
-      expect(job.max_run_time).to eq 10.hours
-    end
-  end
-
   describe '#for_organisation' do
     let!(:job){ create(:gtfs_import, workbench: workbench); Delayed::Job.last }
     let!(:other_job){ create(:gtfs_import); Delayed::Job.last }

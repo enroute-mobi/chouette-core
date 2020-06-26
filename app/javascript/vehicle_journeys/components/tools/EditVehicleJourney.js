@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import actions from '../../actions'
 import CompanySelect2 from './select2s/CompanySelect2'
 import CustomFieldsInputs from '../../../helpers/CustomFieldsInputs'
+import CodesInputs from '../../../helpers/CodesInputs'
 
 export default class EditVehicleJourney extends Component {
   constructor(props) {
@@ -162,6 +163,15 @@ export default class EditVehicleJourney extends Component {
                             onUpdate={(code, value) => this.custom_fields[code]["value"] = value}
                             disabled={!this.editMode()}
                           />
+                        </div>
+                        <div className='row'>
+                          <div>Codes</div>
+                          <hr></hr>
+                          <CodesInputs
+                            values={this.props.modal.modalProps.vehicleJourney.referential_codes}
+                            onUpdate={(code, value) => this.codes[id]["value"] = value}
+                            disabled={!this.editMode()}
+                           />
                         </div>
                       </div>
 

@@ -166,9 +166,9 @@ GEM
     bummr (0.5.0)
       rainbow
       thor
-    bundler-audit (0.6.1)
+    bundler-audit (0.7.0.1)
       bundler (>= 1.2.0, < 3)
-      thor (~> 0.18)
+      thor (>= 0.18, < 2)
     byebug (11.1.1)
     calendar_helper (0.2.5)
       open4

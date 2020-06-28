@@ -334,7 +334,7 @@ GEM
     graphiql-rails (1.7.0)
       railties
       sprockets-rails
-    graphql (1.10.10)
+    graphql (1.11.1)
     gretel (3.0.9)
       rails (>= 3.1.0)
     has_scope (0.7.2)

@@ -305,7 +305,7 @@ RSpec.describe Merge do
         merge.prepare_new
         expect(workbench.output.new.ready).to be false
         merge.referentials.each do |referential|
-          merge.merge_referential_metadata(referential)
+          Merge::Referential.new(merge, referential).merge_metadata
         end
 
         new_referential = workbench.output.new
@@ -334,7 +334,7 @@ RSpec.describe Merge do
         merge = Merge.create(workbench: workbench, referentials: [referential, referential_urgent])
         expect{ merge.prepare_new }.to_not raise_error
         merge.referentials.each do |referential|
-          merge.merge_referential_metadata(referential)
+          Merge::Referential.new(merge, referential).merge_metadata
         end
 
         new_referential = workbench.output.new

@@ -5,15 +5,11 @@ class FullTimeZoneInput < SimpleForm::Inputs::CollectionSelectInput
         coll = {}
 
         TZInfo::Timezone.all_country_zones.map do |tzinfo|
-          # v = ActiveSupport::TimeZone.zones_map[k]
-        # coll.sort_by do |v|
-        #   "(#{v.formatted_offset}) #{v.name}"
-        # end
           next if tzinfo.friendly_identifier =~ /^etc/i
           tz = ActiveSupport::TimeZone.new tzinfo.name#, nil, tzinfo
           coll[[tz.utc_offset, tzinfo.friendly_identifier(true)]] = ["(#{tz.formatted_offset}) #{tzinfo.friendly_identifier(true)}", tz.name]
         end
-        coll.sort.map(&:last)
+        coll.sort.map(&:last).unshift([t('none'), nil])
       end
       collection.respond_to?(:call) ? collection.call : collection.to_a
     end

@@ -63,7 +63,7 @@
         = f.input :postal_region
         = f.input :country_code, as: :country, priority: ['FR', 'GB', 'DE', 'ES'], include_blank: true, input_html: { data: { select2ed: true } }
         = f.input :nearest_topic_name, input_html: { title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.nearest_topic_name") }
-        = f.input :time_zone, as: :full_time_zone, include_blank: true
+        = f.input :time_zone, as: :full_time_zone, include_blank: false
 
     .separator.section_separator
 

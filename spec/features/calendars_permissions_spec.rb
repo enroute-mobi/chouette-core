@@ -39,14 +39,14 @@ RSpec.describe 'Calendars', type: :feature do
       context 'if present → ' do
         let( :permission ){ true }
         it 'view shows the corresponding checkbox' do
-          expect( page ).to have_css('div.has_switch label.boolean[for=calendar_shared]')
+          expect( page ).to have_css('input#calendarshared')
         end
       end
 
       context 'if absent → ' do
         let( :permission ){ false }
         it 'view does not show the corresponding checkbox' do
-          expect( page ).not_to have_css('div.has_switch label.boolean[for=calendar_shared]')
+          expect( page ).not_to have_css('input#calendarshared')
         end
       end
     end

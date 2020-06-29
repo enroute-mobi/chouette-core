@@ -6,6 +6,7 @@ import Metas from './Metas'
 import Timetable from './Timetable'
 import Navigate from './Navigate'
 import PeriodForm from './PeriodForm'
+import PeriodList from './PeriodList'
 import CancelTimetable from './CancelTimetable'
 import SaveTimetable from './SaveTimetable'
 import ConfirmModal from './ConfirmModal'
@@ -29,6 +30,7 @@ class App extends Component {
           <Navigate />
           <Timetable />
           <PeriodForm />
+          <PeriodList />
           <CancelTimetable />
           <SaveTimetable />
           <ConfirmModal />

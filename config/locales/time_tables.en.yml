@@ -65,6 +65,9 @@ en:
       period_form:
         begin: Period start
         end: Period end
+        all_periods: All periods
+        display: Display
+        display_period: Display period
     show:
       title: "%{name}"
       dates: "Application dates"

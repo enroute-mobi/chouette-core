@@ -1,0 +1,4 @@
+= simple_block_for destination, title: Destination.ts do |d|
+	= d.attribute :type, value: destination.human_type
+	= d.attribute :name
+	= d.attribute :publication_api, as: PublicationApi.ts, value: link_to(destination.publication_api.name, [destination.publication_api.workgroup, destination.publication_api])

@@ -7,10 +7,10 @@ export default class PeriodList extends Component {
     this.state = {
       display: false
     }
-    this.tooggleDisplay = this.tooggleDisplay.bind(this);
+    this.toggleDisplay = this.toggleDisplay.bind(this)
   }
 
-  tooggleDisplay() {
+  toggleDisplay() {
     this.setState({
       display: !this.state.display
     })
@@ -27,7 +27,7 @@ export default class PeriodList extends Component {
                   data-toggle='modal'
                   data-target='#NewVehicleJourneyModal'
                   title={ I18n.t('time_tables.edit.period_form.display') }
-                  onClick={() => this.tooggleDisplay()}
+                  onClick={() => this.toggleDisplay()}
                 >
                   <span style={{ "verticalAlign": "middle"}} className={"fa " + (this.state.display ? 'fa-minus':'fa-plus')}></span>
                 </div>

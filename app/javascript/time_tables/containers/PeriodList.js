@@ -13,7 +13,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onDeletePeriod: (index, dayTypes) =>{
+    onDeletePeriod: (index, dayTypes) => {
       dispatch(actions.deletePeriod(index, dayTypes))
     },
     onOpenEditPeriodForm: (period, index) => {

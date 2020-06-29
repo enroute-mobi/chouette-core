@@ -20,21 +20,19 @@ export default class PeriodList extends Component {
     return (
       <div className="container-fluid">
         <div className="row">
-          <div className="col lg-6 col-lg-offset-3">
+          <div className="col xs-9 col-xs-offset-3">
             <div className="definition-list">
               <div className="dl-head" style={{display: "flex"}}>
-                <button
-                  type='button'
+                <div className='btn'
                   data-toggle='modal'
                   data-target='#NewVehicleJourneyModal'
-                  className='dark-action-button'
                   title={ I18n.t('time_tables.edit.period_form.display') }
                   onClick={() => this.tooggleDisplay()}
                 >
-                  <span className={"fa " + (this.state.display ? 'fa-minus':'fa-plus')}></span>
-                </button>
-                <div style={{alignSelf: "flex-end"}}>
-                  { I18n.t('time_tables.edit.period_form.all_periods') }
+                  <span style={{ "verticalAlign": "middle"}} className={"fa " + (this.state.display ? 'fa-minus':'fa-plus')}></span>
+                </div>
+                <div>
+                  <span style={{ "verticalAlign": "middle"}}>{ I18n.t('time_tables.edit.period_form.all_periods') }</span>
                 </div>
               </div>
               <div className={"dl-checkboxes foldable-content " + (this.state.display ? '':'fade')}>
@@ -43,37 +41,31 @@ export default class PeriodList extends Component {
                     <div key={i} className="dl-checkboxes-groups">
                       <div className="dl-cb-group-content">
                         <div className="row vertical-align">
-                          <div className="col-xs-2 col-xs-offset-2" style={{fontWeight: "bold"}}>
-                            {p.period_start.replace(/-/g, '/')}
+                          <div className="col-xs-4" style={{fontWeight: "bold"}}>
+                            {(new Date(p.period_start)).toLocaleDateString(I18n.locale)}
                           </div>
-                          <div className="col-xs-2 col-xs-offset-2" style={{fontWeight: "bold"}}>
-                            {p.period_end.replace(/-/g, '/')}
+                          <div className="col-xs-4" style={{fontWeight: "bold"}}>
+                            {(new Date(p.period_end)).toLocaleDateString(I18n.locale)}
                           </div>
-                          <div className="col-xs-2">
-                            <button
-                              type='button'
-                              className='dark-action-button'
+                          <div className="col-xs-4 btn-group">
+                            <div className="btn btn-link"
                               title={ I18n.t('time_tables.edit.period_form.display_period') }
                               onClick={(e) => this.props.onZoomOnPeriod(e, p, this.props.pagination, this.props.metas, this.props.timetable )}
                             >
                               <span className='fa fa-search'></span>
-                            </button>
-                            <button
-                              type='button'
-                              className='dark-action-button'
+                            </div>
+                            <div className="btn btn-link"
                               title={ I18n.t('actions.edit') }
                               onClick={() => this.props.onOpenEditPeriodForm(p, i)}
                             >
                               <span className='fa fa-pencil'></span>
-                            </button>
-                            <button
-                              type='button'
-                              className='dark-action-button'
+                            </div>
+                            <div className="btn btn-link"
                               title={ I18n.t('actions.delete') }
                               onClick={() => this.props.onDeletePeriod(i, this.props.metas.day_types)}
                             >
-                              <span className='fa fa-trash'></span>
-                            </button>
+                              <span className='fa fa-trash text-danger'></span>
+                            </div>
                           </div>
                         </div>
                       </div>

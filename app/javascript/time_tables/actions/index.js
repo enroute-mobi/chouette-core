@@ -161,7 +161,7 @@ const actions = {
   },
   getLocaleDate(strDate) {
     let date = new Date(strDate)
-    return date.toLocaleDateString(undefined, { timeZone: 'UTC' })
+    return date.toLocaleDateString(I18n.locale)
   },
   updateSynthesis: ({current_month, time_table_dates: dates, time_table_periods: periods}) => {
     let newPeriods = reject(periods, 'deleted')

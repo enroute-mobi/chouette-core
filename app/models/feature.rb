@@ -1,7 +1,6 @@
 class Feature
   def self.all
     %w{
-      application_days_on_calendars
       consolidated_offers
       core_control_blocks
       costs_in_journey_patterns

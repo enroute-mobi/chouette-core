@@ -33,24 +33,6 @@ RSpec.describe 'Calendars', type: :feature do
       end
     end
 
-    context 'on edit view' do
-      let( :path ){ edit_workgroup_calendar_path(workgroup, calendar) }
-
-      context 'if present → ' do
-        let( :permission ){ true }
-        it 'view shows the corresponding checkbox' do
-          expect( page ).to have_css('input#calendarshared')
-        end
-      end
-
-      context 'if absent → ' do
-        let( :permission ){ false }
-        it 'view does not show the corresponding checkbox' do
-          expect( page ).not_to have_css('input#calendarshared')
-        end
-      end
-    end
-
     context 'on index view' do
       let( :path ){ workgroup_calendars_path(workgroup) }
 

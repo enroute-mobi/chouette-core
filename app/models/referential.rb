@@ -335,6 +335,14 @@ class Referential < ApplicationModel
     Chouette::Footnote.all
   end
 
+  def vehicle_journey_purchase_window_relationships
+    Chouette::VehicleJourneyPurchaseWindowRelationship.all
+  end
+
+  def vehicle_journey_footnote_relationships
+    Chouette::VehicleJourneyFootnoteRelationship.all
+  end
+
   def codes
     ReferentialCode.all
   end
@@ -550,7 +558,7 @@ class Referential < ApplicationModel
     overlapped_referential_ids.present?
   end
 
-  validate :detect_overlapped_referentials, unless: :in_referential_suite?
+  validate :detect_overlapped_referentials, unless: -> { in_referential_suite? || archived? }
 
   def detect_overlapped_referentials
     self.class.where(id: overlapped_referential_ids).each do |referential|

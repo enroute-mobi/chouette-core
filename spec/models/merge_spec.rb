@@ -388,17 +388,313 @@ RSpec.describe Merge do
 
   context "when it fails" do
     let(:merge) { Merge.create!(workbench: referential.workbench, referentials: [referential, referential]) }
-    before(:each){
-      allow(merge).to receive(:prepare_new).and_raise
-    }
 
     it "should reset source refererentials state to active" do
-      merge.merge
-      begin
-        merge.merge!
-      rescue
-      end
+      merge.failed!
       expect(referential.reload.state).to eq :active
     end
   end
+
+  class MergeContext
+
+    attr_accessor :merge_method
+
+    def initialize(attributes = {}, &block)
+      attributes.reverse_merge!(merge_method: 'legacy')
+      attributes.each { |k,v| send "#{k}=", v }
+
+      @context_block = block
+    end
+
+    def create_context
+      Chouette.create(&@context_block).tap do |context_block|
+        # FIXME
+        context_block.referential(:source).tap do |source|
+          source.switch do
+            source.routes.find(&:update_checksum!)
+          end
+        end
+      end
+    end
+
+    def context
+      @context ||= create_context
+    end
+
+    def create_merge
+      attributes = {
+        created_at: Time.now,
+        workbench: context.workbench,
+        referentials: [source],
+        new: new,
+        merge_method: merge_method.to_s
+      }
+      Merge.new attributes
+    end
+
+    def merge
+      @merge ||= create_merge
+    end
+
+    def method_missing(name, *arguments)
+      if name =~ /^(.*)_(route|journey_pattern)$/
+        context.instance name
+      else
+        super
+      end
+    end
+
+    def source
+      @source ||= context.instance(:source)
+    end
+
+    def new
+      @new ||= context.instance(:new)
+    end
+
+  end
+
+  %i{legacy experimental}.each do |merge_method|
+    context "with #{merge_method} method" do
+
+      describe "Route merge" do
+
+        context "when no Route with the same checksum already exists in the merged data set" do
+
+          let(:merge_context) do
+            MergeContext.new(merge_method: merge_method) do
+              line :line
+              referential :source, lines: [:line] do
+                time_table :default
+                route line: :line do
+                  vehicle_journey time_tables: [:default]
+                end
+              end
+            end
+          end
+
+          let(:merge) { merge_context.merge }
+
+          it "creates a Route in the merged data set" do
+            merge.merge!
+
+            merge.new.switch do
+              expect(Chouette::Route.count).to be(1)
+            end
+          end
+
+        end
+
+        context "when a Route with the same checksum already exists in the merged data set" do
+
+          let(:merge_context) do
+            MergeContext.new(merge_method: merge_method) do
+              stop_area :first
+              stop_area :second
+              stop_area :third
+
+              line :line
+
+              referential :source, lines: [:line] do
+                time_table :default
+
+                route :source_route, line: :line, with_stops: false do
+                  stop_point stop_area: :first
+                  stop_point stop_area: :second
+                  stop_point stop_area: :third
+
+                  vehicle_journey time_tables: [:default]
+                end
+              end
+
+              referential :new, lines: [:line], archived_at: Time.now do
+                route :existing_route, line: :line, with_stops: false do
+                  stop_point stop_area: :first
+                  stop_point stop_area: :second
+                  stop_point stop_area: :third
+                end
+              end
+            end
+          end
+
+          let(:new) { merge_context.new }
+          let(:merge) { merge_context.merge }
+
+          let(:existing_route) { merge_context.existing_route }
+          let(:source_route) { merge_context.source_route }
+
+          before do
+            new.switch do
+              existing_route.reload.update_column :checksum, source_route.checksum
+            end
+          end
+
+          it "doesn't create a new Route" do
+            merge.merge!
+
+            merge.new.switch do
+              expect(Chouette::Route.find(existing_route.id)).to be_present
+              expect(Chouette::Route.count).to be(1)
+            end
+          end
+
+        end
+
+      end
+
+      describe "JourneyPattern merge" do
+
+        context "when no JourneyPattern with the same checksum already exists in the merged data set" do
+
+          let(:merge_context) do
+            MergeContext.new(merge_method: merge_method) do
+              line :line
+              referential :source, lines: [:line] do
+                time_table :default
+                route line: :line do
+                  vehicle_journey time_tables: [:default]
+                end
+              end
+            end
+          end
+          let(:merge) { merge_context.merge }
+
+          it "creates a JourneyPattern in the merged data set" do
+            merge.merge!
+
+            merge.new.switch do
+              expect(Chouette::JourneyPattern.count).to be(1)
+            end
+          end
+
+        end
+
+        context "when a JourneyPattern with the same checksum already exists in the merged data set" do
+
+          let(:merge_context) do
+            MergeContext.new(merge_method: merge_method) do
+              stop_area :first
+              stop_area :second
+              stop_area :third
+
+              line :line
+
+              referential :source, lines: [:line] do
+                time_table :default
+
+                route :source_route, line: :line, with_stops: false do
+                  stop_point stop_area: :first
+                  stop_point stop_area: :second
+                  stop_point stop_area: :third
+
+                  journey_pattern :source_journey_pattern do
+                    vehicle_journey time_tables: [:default]
+                  end
+                end
+              end
+
+              referential :new, lines: [:line], archived_at: Time.now do
+                route :existing_route, line: :line, with_stops: false do
+                  stop_point stop_area: :first
+                  stop_point stop_area: :second
+                  stop_point stop_area: :third
+
+                  journey_pattern :existing_journey_pattern
+                end
+              end
+            end
+          end
+
+          let(:source) { merge_context.source }
+          let(:new) { merge_context.new }
+
+          let(:merge) { merge_context.merge }
+
+          let(:source_route) { merge_context.source_route }
+          let(:existing_route) { merge_context.existing_route }
+
+          let(:source_journey_pattern) { merge_context.source_journey_pattern  }
+          let(:existing_journey_pattern) { merge_context.existing_journey_pattern }
+
+          before do
+            new.switch do
+              existing_route.reload.update_column :checksum, source_route.checksum
+              existing_journey_pattern.reload.update_column :checksum, source_journey_pattern.checksum
+            end
+          end
+
+          it "doesn't create a new JourneyPattern" do
+            merge.merge!
+
+            merge.new.switch do
+              expect(Chouette::JourneyPattern.find(existing_journey_pattern.id)).to be_present
+              expect(Chouette::JourneyPattern.count).to be(1)
+            end
+          end
+
+        end
+
+        context "when the existing Route hasn't the same position absolute values" do
+
+          let(:merge_context) do
+            MergeContext.new(merge_method: merge_method) do
+              stop_area :first
+              stop_area :second
+              stop_area :third
+
+              line :line
+
+              referential :source, lines: [:line] do
+                time_table :default
+
+                route :source_route, line: :line, with_stops: false do
+                  stop_point stop_area: :first
+                  stop_point stop_area: :second
+                  stop_point stop_area: :third
+
+                  journey_pattern :merged do
+                    vehicle_journey time_tables: [:default]
+                  end
+                end
+              end
+
+              referential :new, lines: [:line], archived_at: Time.now do
+                route :existing_route, line: :line, with_stops: false do
+                  stop_point stop_area: :first, position: 20
+                  stop_point stop_area: :second, position: 30
+                  stop_point stop_area: :third, position: 40
+                end
+              end
+            end
+          end
+
+          let(:source) { merge_context.source }
+          let(:new) { merge_context.new }
+
+          let(:source_route) { merge_context.source_route }
+          let(:existing_route) { merge_context.existing_route }
+
+          let(:merge) { merge_context.merge }
+
+          before do
+            new.switch do
+              existing_route.reload.update_column :checksum, source_route.checksum
+            end
+          end
+
+          it "create a new JourneyPattern" do
+            merge.merge!
+
+            merge.new.switch do
+              expect(Chouette::JourneyPattern.count).to be(1)
+            end
+          end
+
+        end
+
+      end
+
+    end
+  end
+
 end

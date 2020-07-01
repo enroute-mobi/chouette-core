@@ -620,6 +620,7 @@ ActiveRecord::Schema.define(version: 2020_07_12_093315) do
     t.json "costs"
     t.jsonb "metadata", default: {}
     t.jsonb "custom_field_values"
+    t.index ["checksum"], name: "index_journey_patterns_on_checksum"
     t.index ["objectid"], name: "journey_patterns_objectid_key", unique: true
     t.index ["route_id"], name: "index_journey_patterns_on_route_id"
   end
@@ -732,6 +733,7 @@ ActiveRecord::Schema.define(version: 2020_07_12_093315) do
     t.string "notification_target"
     t.datetime "notified_recipients_at"
     t.bigint "user_id"
+    t.string "merge_method", default: "legacy"
     t.index ["workbench_id"], name: "index_merges_on_workbench_id"
   end
 
@@ -970,6 +972,7 @@ ActiveRecord::Schema.define(version: 2020_07_12_093315) do
     t.string "data_source_ref"
     t.jsonb "costs", default: {}
     t.jsonb "metadata"
+    t.index ["checksum"], name: "index_routes_on_checksum"
     t.index ["line_id"], name: "index_routes_on_line_id"
     t.index ["objectid"], name: "routes_objectid_key", unique: true
   end
@@ -1302,6 +1305,7 @@ ActiveRecord::Schema.define(version: 2020_07_12_093315) do
     t.bigint "ignored_routing_contraint_zone_ids", default: [], array: true
     t.bigint "ignored_stop_area_routing_constraint_ids", default: [], array: true
     t.bigint "line_notice_ids", default: [], array: true
+    t.index ["checksum"], name: "index_vehicle_journeys_on_checksum"
     t.index ["journey_pattern_id"], name: "index_vehicle_journeys_on_journey_pattern_id"
     t.index ["objectid"], name: "vehicle_journeys_objectid_key", unique: true
     t.index ["route_id"], name: "index_vehicle_journeys_on_route_id"

@@ -94,7 +94,7 @@ class Merge < ApplicationModel
 
         referentials.each do |referential|
           Chouette::Benchmark.measure("referential", referential: referential.id) do
-            Merge::Referential::Legacy.new(self, referential).merge!
+            merge_referential_method_class.new(self, referential).merge!
           end
         end
 
@@ -111,10 +111,26 @@ class Merge < ApplicationModel
     end
   rescue => e
     Chouette::Safe.capture "Merge ##{id} failed", e
+    raise e if Rails.env.test?
+
     failed!
   end
 
+  EXPERIMENTAL_METHOD = 'experimental'
+  def merge_referential_method_class
+    if merge_method == EXPERIMENTAL_METHOD
+      Merge::Referential::Experimental
+    else
+      Merge::Referential::Legacy
+    end
+  end
+
   def prepare_new
+    if Rails.env.test? && new.present?
+      Rails.logger.debug "Use existing new for test"
+      return
+    end
+
     new =
       if workbench.output.current
         Rails.logger.debug "Merge ##{id}: Clone current output"

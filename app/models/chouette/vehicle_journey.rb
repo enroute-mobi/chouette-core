@@ -10,7 +10,7 @@ module Chouette
 
     enum journey_category: { timed: 0, frequency: 1 }
 
-    default_scope { where(journey_category: journey_categories[:timed]) }
+    # default_scope { where(journey_category: journey_categories[:timed]) }
 
     attr_reader :time_table_tokens
 

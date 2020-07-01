@@ -1,14 +1,18 @@
 class IdMapInserter < ByClassInserter
 
   attr_reader :target
-  def initialize(target)
+  def initialize(target, options = {})
     @target = target
+    options.each { |k,v| send "#{k}=", v }
   end
+
+  attr_accessor :strict
+  alias strict? strict
 
   def new_primary_key!(model_class, old_primary_key)
     new_primary_key = self.for(model_class).new_primary_key(old_primary_key)
 
-    unless new_primary_key
+    if new_primary_key.nil? && strict?
       raise "No new primary key for #{model_class.name}:#{old_primary_key}"
     end
 
@@ -136,8 +140,9 @@ class IdMapInserter < ByClassInserter
       end
 
       if stop_point_id = vehicle_journey_at_stop.stop_point_id
-        vehicle_journey_at_stop.stop_point_id =
-        parent_inserter.new_stop_point_primary_key!(stop_point_id)
+        if new_stop_point_id = parent_inserter.new_stop_point_primary_key!(stop_point_id)
+          vehicle_journey_at_stop.stop_point_id = new_stop_point_id
+        end
       end
     end
 
@@ -171,7 +176,7 @@ class IdMapInserter < ByClassInserter
       return if old_primary_key.nil?
 
       new_primary_key = retrieve_associated_model_id!(old_primary_key)
-      model.send "#{attribute}=", new_primary_key
+      model.send "#{attribute}=", new_primary_key if new_primary_key
     end
 
     def retrieve_associated_model_id!(old_primary_key)

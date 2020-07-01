@@ -5,7 +5,7 @@ class ByClassInserter
   end
 
   # Hash of singleton inserters
-  def inserters 
+  def inserters
     @inserters ||= Hash.new { |h,k| h[k] = new_inserter_for(k) }
   end
 

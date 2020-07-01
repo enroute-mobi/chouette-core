@@ -275,12 +275,6 @@ class Merge::Referential::Legacy < Merge::Referential::Base
       # Vehicle Journeys
       merge_vehicle_journeys
 
-      unless existing_vehicle_journey_ids == new_vehicle_journey_ids
-        logger.error("existing_vehicle_journey_ids: #{existing_vehicle_journey_ids.inspect}")
-        logger.error("new_vehicle_journey_ids: #{new_vehicle_journey_ids.inspect}")
-        raise "Invalid new_vehicle_journey_ids"
-      end
-
       # Time Tables
 
       referential_time_tables_by_id, referential_time_tables_with_lines = referential.switch do
@@ -393,8 +387,10 @@ class Merge::Referential::Legacy < Merge::Referential::Base
   def existing_vehicle_journey_ids
     @existing_vehicle_journey_ids ||= Hash[
       referential.switch do
-        referential.vehicle_journeys.where(id: vehicle_journey_ids).
+        referential.vehicle_journeys.joins(:journey_pattern, :route).
           joins("INNER JOIN #{new.slug}.vehicle_journeys as existing_vehicle_journeys ON vehicle_journeys.checksum = existing_vehicle_journeys.checksum").
+          joins("INNER JOIN #{new.slug}.journey_patterns as existing_journey_patterns ON journey_patterns.checksum = existing_journey_patterns.checksum AND existing_journey_patterns.id = existing_vehicle_journeys.journey_pattern_id").
+          joins("INNER JOIN #{new.slug}.routes as existing_routes ON routes.checksum = existing_routes.checksum AND existing_routes.id = existing_journey_patterns.route_id").
           pluck(:id, 'existing_vehicle_journeys.id')
       end
     ]
@@ -589,6 +585,12 @@ class Merge::Referential::Legacy < Merge::Referential::Base
           end
         end
       end
+    end
+
+    unless existing_vehicle_journey_ids == new_vehicle_journey_ids
+      logger.error("existing_vehicle_journey_ids: #{existing_vehicle_journey_ids.inspect}")
+      logger.error("new_vehicle_journey_ids: #{new_vehicle_journey_ids.inspect}")
+      raise "Invalid new_vehicle_journey_ids"
     end
   end
 

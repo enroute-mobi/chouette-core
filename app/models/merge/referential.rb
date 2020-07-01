@@ -6,8 +6,9 @@ module Merge::Referential
       @referential, @merge = referential, merge
     end
     attr_reader :referential, :merge
+    alias source referential
 
-    delegate :new, to: :merge
+    delegate :new, :workbench, to: :merge
 
     def logger
       # FIXME
@@ -19,7 +20,7 @@ module Merge::Referential
   class Batch
 
     def initialize(merge_context, models)
-      @merge_context, @models = merge_context, @models
+      @merge_context, @models = merge_context, models
     end
     attr_reader :merge_context, :models
 
@@ -29,8 +30,8 @@ module Merge::Referential
 
   class BatchAssociation
 
-    def initialize(batch, models_name)
-      @batch, @models_name = batch, models_name
+    def initialize(batch)
+      @batch = batch
     end
     attr_reader :batch
     delegate :source, :new, to: :batch

@@ -39,7 +39,7 @@ class MergesController < ChouetteController
   end
 
   def merge_params
-    merge_params = params.require(:merge).permit(:referential_ids, :notification_target)
+    merge_params = params.require(:merge).permit(:referential_ids, :notification_target, :merge_method)
     merge_params[:referential_ids] = merge_params[:referential_ids].split(",")
     merge_params[:user_id] ||= current_user.id
     merge_params

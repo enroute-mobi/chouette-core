@@ -12,6 +12,9 @@ class Merge < ApplicationModel
 
   delegate :workgroup, to: :workbench
 
+  EXPERIMENTAL_METHOD = 'experimental'
+  enumerize :merge_method, in: ['legacy', EXPERIMENTAL_METHOD], default: 'legacy'
+
   def parent
     workbench
   end
@@ -116,7 +119,6 @@ class Merge < ApplicationModel
     failed!
   end
 
-  EXPERIMENTAL_METHOD = 'experimental'
   def merge_referential_method_class
     if merge_method == EXPERIMENTAL_METHOD
       Merge::Referential::Experimental

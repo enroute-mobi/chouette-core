@@ -1,4 +1,9 @@
 fr:
+  enumerize:
+    merge:
+      merge_method:
+        legacy: "Classique"
+        experimental: "Expérimentale"
   merges:
     referential_name: "Offre finalisée %{date}"
     index:
@@ -45,6 +50,7 @@ fr:
         available_referentials: "Jeux de données disponibles"
         selected_referentials: "Jeux de données selectionnés"
         contains_urgent_offer: Prise en compte d'une offre urgente
+        merge_method: Méthode de finalisation
     errors:
       models:
         merge:

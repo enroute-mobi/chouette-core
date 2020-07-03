@@ -197,6 +197,11 @@ class Merge < ApplicationModel
       end
     end
 
+    referential.switch do
+      # TODO Update all checksums in the future
+      Chouette::ChecksumUpdater.new(referential).routes
+    end
+
     # let's merge data :)
 
     # Routes

@@ -48,7 +48,7 @@ en:
         name: Name
         calendar: Associated calendar
         no_calendar: None
-        day_types: Periods day tpes
+        day_types: Periods day types
         days:
           1: Su
           2: Mo

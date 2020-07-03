@@ -212,7 +212,7 @@ module IevInterfaces::Task
     update attributes
     notify_state
 
-    if successful? && respond_to?(:done!)
+    if (successful? || warning?) && respond_to?(:done!)
       Rails.logger.info "#{self.class.name} ##{id}: done!"
       done!
     end

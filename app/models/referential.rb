@@ -295,6 +295,10 @@ class Referential < ApplicationModel
     Chouette::TimeTableDate.all
   end
 
+  def time_table_periods
+    Chouette::TimeTablePeriod.all
+  end
+
   def connection_links
     Chouette::ConnectionLink.all
   end

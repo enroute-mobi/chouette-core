@@ -278,11 +278,11 @@ class ReferentialCopy
     end
 
     def vehicle_journeys
-      target.vehicle_journey_at_stops.joins(vehicle_journey: :route).where(routes: {id: @new_routes})
+      target.vehicle_journeys.where(route_id: @new_routes)
     end
 
     def vehicle_journey_at_stops
-      target.vehicle_journeys.where(route_id: @new_routes)
+      target.vehicle_journey_at_stops.joins(vehicle_journey: :route).where(routes: {id: @new_routes})
     end
 
   end

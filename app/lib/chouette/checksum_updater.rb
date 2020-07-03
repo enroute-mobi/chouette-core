@@ -39,9 +39,9 @@ module Chouette
 
     def time_tables
       measure "time_tables" do
-        update_in_batches scope.time_table_dates.select(:date, :in_out)
-        update_in_batches scope.time_table_periods.select(:period_start, :period_end)
-        update_in_batches scope.time_tables.select(:int_day_types).includes(:dates, :periods)
+        update_in_batches scope.time_table_dates.select(:id, :date, :in_out)
+        update_in_batches scope.time_table_periods.select(:id, :period_start, :period_end)
+        update_in_batches scope.time_tables.select(:id, :int_day_types).includes(:dates, :periods)
       end
     end
 

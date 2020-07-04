@@ -712,7 +712,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       expect(source.agencies.length).to eq(1)
       agency = source.agencies.first
       expect(agency.id).to eq("chouette_default")
-      expect(agency.timezone).to eq("Etc/GMT")
+      expect(agency.timezone).to eq("Etc/UTC")
 
       # Test the line-company link
       lines_zip_path = File.join(tmp_dir, '/test_lines.zip')
@@ -752,7 +752,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       expect(source.agencies.length).to eq(1)
       agency = source.agencies.first
       expect(agency.id).to eq(company.registration_number)
-      expect(agency.timezone).to eq("Etc/GMT")
+      expect(agency.timezone).to eq("Etc/UTC")
 
       # Test the line-company link
       lines_zip_path = File.join(tmp_dir, '/test_lines.zip')

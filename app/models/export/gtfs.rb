@@ -5,6 +5,7 @@ class Export::Gtfs < Export::Base
   option :prefer_referent_stop_area, required: true, type: :boolean, default_value: false
 
   DEFAULT_AGENCY_ID = "chouette_default"
+  DEFAULT_TIMEZONE = "Etc/UTC"
 
   @skip_empty_exports = true
 
@@ -104,7 +105,7 @@ class Export::Gtfs < Export::Base
       if company.time_zone.present?
         time_zone = company.time_zone
       else
-        time_zone = "Etc/GMT"
+        time_zone = DEFAULT_TIMEZONE
         args = {
           criticity: :info,
           message_key: :no_timezone,
@@ -134,7 +135,7 @@ class Export::Gtfs < Export::Base
       target.agencies << {
         id: DEFAULT_AGENCY_ID,
         name: "Default Agency",
-        timezone: "Etc/GMT",
+        timezone: DEFAULT_TIMEZONE,
       }
     end
   end

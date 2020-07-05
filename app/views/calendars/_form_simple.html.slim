@@ -4,52 +4,9 @@
       .row
         .col-lg-12
           = f.input :name
-          
           - if policy(@calendar).share?
             .col-lg-12
               = f.input :shared, as: :switchable_checkbox, checked_value: true, unchecked_value: false
-
-      .separator
-
-      - unless has_feature?('application_days_on_calendars')
-        .row
-          .col-lg-12
-            .subform
-              .nested-head
-                .wrapper
-                  div
-                    .form-group
-                      label.control-label
-                        = Calendar.human_attribute_name(:date)
-                  div
-
-              = f.simple_fields_for :date_values do |date_value|
-                = render 'date_value_fields', f: date_value
-
-              .links.nested-linker
-                = link_to_add_association t('simple_form.labels.calendar.add_a_date'), f, :date_values, class: 'btn btn-outline-primary'
-
-        .separator
-
-        .row
-          .col-lg-12
-            .subform
-              .nested-head
-                .wrapper
-                  div
-                    .form-group
-                      label.control-label
-                        = t('simple_form.labels.calendar.ranges.begin')
-                  div
-                    .form-group
-                      label.control-label
-                        = t('simple_form.labels.calendar.ranges.end')
-                  div
-
-              = f.simple_fields_for :periods do |period|
-                = render 'period_fields', f: period
-              .links.nested-linker
-                = link_to_add_association t('simple_form.labels.calendar.add_a_date_range'), f, :periods, class: 'btn btn-outline-primary'
 
       = cancel_button
       = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'calendar_form'

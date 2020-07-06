@@ -16,8 +16,12 @@ module Chouette
         return unless model.persisted?
         return unless model.objectid&.starts_with?(PENDING_PATTERN)
 
-        oid = Chouette::Objectid::StifNetex.new(provider_id: model.referential.prefix, object_type: model.class.name.gsub('Chouette::',''), local_id: model.local_id)
+        oid = objectid(model)
         model.update_column(:objectid, oid.to_s) if oid.valid?
+      end
+
+      def objectid(model)
+        Chouette::Objectid::StifNetex.new(provider_id: model.referential.prefix, object_type: model.class.name.gsub('Chouette::',''), local_id: model.local_id)
       end
 
       def get_objectid(definition)

@@ -365,6 +365,56 @@ RSpec.describe Import::Gtfs do
     end
   end
 
+  describe "time_of_day" do
+    context "with a UTC+1 Agency"do
+      let(:import) { build_import 'time_of_day_feed_1.zip' }
+
+      it "should have correct time of day values" do
+        import.prepare_referential
+        import.import_calendars
+        import.import_stop_times
+
+        expected_attributes = [
+          ['S1','23:00:00 day:-1'],
+          ['S2','23:00:05 day:-1']
+        ]
+
+        a = []
+        referential.vehicle_journey_at_stops.each do |vjas|
+          a << [
+            vjas.stop_point.registration_number,
+            vjas.departure_time_of_day.to_s
+          ]
+        end
+        expect(a).to match_array(expected_attributes)
+      end
+    end
+
+    context "with a UTC-8 Agency"do
+      let(:import) { build_import 'time_of_day_feed_8.zip' }
+
+      it "should have correct time of day values" do
+        import.prepare_referential
+        import.import_calendars
+        import.import_stop_times
+
+        expected_attributes = [
+          ['S1','00:00:00 day:1'],
+          ['S2','00:00:05 day:1']
+        ]
+
+        a = []
+        referential.vehicle_journey_at_stops.each do |vjas|
+          a << [
+            vjas.stop_point.registration_number,
+            vjas.departure_time_of_day.to_s
+          ]
+        end
+        expect(a).to match_array(expected_attributes)
+      end
+    end
+  end
+
   describe "#import_stop_times" do
     let(:import) { build_import 'google-sample-feed.zip' }
 

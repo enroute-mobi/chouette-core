@@ -462,8 +462,12 @@ class Import::Neptune < Import::Base
     vehicle_journey_at_stops.sort_by{|i| i[:order]}.each do |source_vehicle_journey_at_stop|
       vehicle_journey.vehicle_journey_at_stops.build do |vehicle_journey_at_stop|
         vehicle_journey_at_stop.stop_point = @stop_points[route_object_id][source_vehicle_journey_at_stop[:stop_point_id]]
-        vehicle_journey_at_stop.arrival_local_time = source_vehicle_journey_at_stop[:arrival_time]
-        vehicle_journey_at_stop.departure_local_time = source_vehicle_journey_at_stop[:departure_time]
+
+        departure_time_of_day = TimeOfDay.parse(source_vehicle_journey_at_stop[:departure_time], utc_offset: 3600)
+        vehicle_journey_at_stop.departure_time_of_day = departure_time_of_day
+
+        arrival_time_of_day = TimeOfDay.parse(source_vehicle_journey_at_stop[:arrival_time], utc_offset: 3600)
+        vehicle_journey_at_stop.arrival_time_of_day = arrival_time_of_day
       end
     end
   end

@@ -475,10 +475,8 @@ class Import::Gtfs < Import::Base
     arrival_time_of_day = TimeOfDay.create(arrival_time, time_zone: default_time_zone).without_utc_offset
 
     vehicle_journey_at_stop.vehicle_journey = vehicle_journey
-    vehicle_journey_at_stop.departure_time = departure_time_of_day.to_vehicle_journey_at_stop_time
-    vehicle_journey_at_stop.arrival_time = arrival_time_of_day.to_vehicle_journey_at_stop_time
-    vehicle_journey_at_stop.departure_day_offset = departure_time_of_day.day_offset
-    vehicle_journey_at_stop.arrival_day_offset = arrival_time_of_day.day_offset
+    vehicle_journey_at_stop.departure_time_of_day = departure_time_of_day
+    vehicle_journey_at_stop.arrival_time_of_day = arrival_time_of_day
 
     worker.add vehicle_journey_at_stop.attributes
   end

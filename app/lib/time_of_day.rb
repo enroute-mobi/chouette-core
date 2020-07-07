@@ -83,10 +83,10 @@ class TimeOfDay
       \z
     /x
 
-  def self.parse(definition)
+  def self.parse(definition, attributes = nil)
     if PARSE_REGEX =~ definition
       hour, minute, second = $1, $2, $3
-      new hour, minute, second
+      new hour, minute, second, attributes
     end
   end
 

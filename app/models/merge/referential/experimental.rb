@@ -1,4 +1,13 @@
 module Merge::Referential
+
+  module Sanitizer
+    def sanitize_joins(query)
+      # in fact, new.slug is already sanitized but .. it is better to be safe than sorry.
+      # sanitize_sql_array uses quotes and creates an invalid query (like LEFT OUTER JOIN 'referential_xyz'.vehicle_journeys)
+      query.gsub(':new_slug', new.slug)
+    end
+  end
+
   class Experimental < Merge::Referential::Legacy
 
     def referential_inserter
@@ -9,12 +18,13 @@ module Merge::Referential
       end
     end
 
+    include Sanitizer
     def vehicle_journeys
       @vehicle_journeys ||=
         source.vehicle_journeys.joins(:journey_pattern, :route).
-          joins("LEFT OUTER JOIN #{new.slug}.vehicle_journeys as existing_vehicle_journeys ON vehicle_journeys.checksum = existing_vehicle_journeys.checksum").
-          joins("LEFT OUTER JOIN #{new.slug}.journey_patterns as existing_journey_patterns ON journey_patterns.checksum = existing_journey_patterns.checksum AND existing_journey_patterns.id = existing_vehicle_journeys.journey_pattern_id").
-          joins("LEFT OUTER JOIN #{new.slug}.routes as existing_routes ON routes.checksum = existing_routes.checksum AND existing_routes.id = existing_journey_patterns.route_id").
+          joins(sanitize_joins("LEFT OUTER JOIN :new_slug.vehicle_journeys as existing_vehicle_journeys ON vehicle_journeys.checksum = existing_vehicle_journeys.checksum")).
+          joins(sanitize_joins("LEFT OUTER JOIN :new_slug.journey_patterns as existing_journey_patterns ON journey_patterns.checksum = existing_journey_patterns.checksum AND existing_journey_patterns.id = existing_vehicle_journeys.journey_pattern_id")).
+          joins(sanitize_joins("LEFT OUTER JOIN :new_slug.routes as existing_routes ON routes.checksum = existing_routes.checksum AND existing_routes.id = existing_journey_patterns.route_id")).
           where("existing_vehicle_journeys.id" => nil)
     end
 
@@ -173,13 +183,15 @@ module Merge::Referential
 
       class IgnoredRoutingContraintZones < BatchAssociation
 
+        include Sanitizer
+
         def ignored_routing_contraint_zone_ids
           @ignored_routing_contraint_zone_ids ||= vehicle_journeys.map(&:ignored_routing_contraint_zone_ids).flatten.uniq
         end
 
         def rows
           source.routing_constraint_zones.
-            joins("LEFT OUTER JOIN #{new.slug}.routing_constraint_zones as existing_routing_constraint_zones ON routing_constraint_zones.checksum = existing_routing_constraint_zones.checksum").
+            joins(sanitize_joins("LEFT OUTER JOIN :new_slug.routing_constraint_zones as existing_routing_constraint_zones ON routing_constraint_zones.checksum = existing_routing_constraint_zones.checksum")).
             where(id: ignored_routing_contraint_zone_ids).pluck("routing_constraint_zones.id", "existing_routing_constraint_zones.id")
         end
 
@@ -195,9 +207,11 @@ module Merge::Referential
 
       class ExistingObjectIDs < BatchAssociation
 
+        include Sanitizer
+
         def rows
           source.vehicle_journeys.
-            joins("INNER JOIN #{new.slug}.vehicle_journeys as existing_vehicle_journeys ON vehicle_journeys.objectid = existing_vehicle_journeys.objectid").
+            joins(sanitize_joins("INNER JOIN :new_slug.vehicle_journeys as existing_vehicle_journeys ON vehicle_journeys.objectid = existing_vehicle_journeys.objectid")).
             where(id: vehicle_journeys).pluck(:id)
         end
 

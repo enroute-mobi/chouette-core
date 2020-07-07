@@ -1,7 +1,7 @@
 class CopyInserter < ByClassInserter
 
   attr_reader :target
-  def initialize(target, options = {})
+  def initialize(target, _options = {})
     @target = target
   end
 

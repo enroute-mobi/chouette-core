@@ -55,12 +55,24 @@ class TimeOfDay
     self.class.from_second_offset second_offset
   end
 
+  def day_offset?
+    day_offset != 0
+  end
+
+  def utc_offset?
+    utc_offset != 0
+  end
+
   SIMPLE_FORMAT = "%.2d:%.2d:%.2d"
+  def to_hms
+    SIMPLE_FORMAT % [hour, minute, second]
+  end
+
   def to_s
     [].tap do |parts|
-      parts << SIMPLE_FORMAT % [hour, minute, second]
-      parts << "day:#{day_offset}" if day_offset != 0
-      parts << "utc_offset:#{utc_offset}" if utc_offset != 0
+      parts << to_hms
+      parts << "day:#{day_offset}" if day_offset?
+      parts << "utc_offset:#{utc_offset}" if utc_offset?
     end.join(' ')
   end
 

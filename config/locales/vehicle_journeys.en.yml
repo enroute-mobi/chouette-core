@@ -120,7 +120,7 @@ en:
       title: "Vehicle journeys on route %{route}"
       vehicle_journeys: "Departure's times"
       vjas:
-        arrival_time: "%{time} (D+%{offset})"
+        time_of_day: "%{time} (D+%{offset})"
     time_filter:
       time_range_filter: "Filter"
     sidebar:

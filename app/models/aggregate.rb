@@ -123,7 +123,7 @@ class Aggregate < ApplicationModel
       }
       new = workgroup.output.referentials.new attributes
       new.referential_suite = output
-      new.slug = "output_#{workgroup.id}_#{created_at.to_i}"
+      new.slug = "aggregate_#{id}"
       new.name = I18n.t("aggregates.referential_name", date: I18n.l(created_at, format: :short_with_time))
 
       unless new.valid?

@@ -36,7 +36,6 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(actions.deleteReferentialCode(index))
     },
     onUpdateReferentialCode: (index, attributes) => {
-      console.log("onUpdateReferentialCode")
       dispatch(actions.updateReferentialCode(index, attributes))
     },
   }

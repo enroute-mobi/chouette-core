@@ -39,7 +39,7 @@
   | window.constraint_zones_routes = "#{url_for([@referential, @route.line, :routing_constraint_zones]).html_safe}";
   | window.companies_path = "#{url_for([@referential.line_referential, :companies]).html_safe}";
   | window.available_specific_stop_places_path = "#{(url_for([@referential, @line, @route, :journey_patterns])+"/:journey_pattern_id:/available_specific_stop_places").html_safe}";
-  | window.available_code_spaces = #{(@referential.workgroup.code_spaces.to_json).html_safe};
+  | window.available_code_spaces = #{(@referential.workgroup&.code_spaces.to_json)&.html_safe};
 
 - if has_feature?(:stop_area_routing_constraints)
   = javascript_tag do

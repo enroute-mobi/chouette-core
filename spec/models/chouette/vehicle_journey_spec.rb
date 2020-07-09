@@ -634,6 +634,7 @@ describe Chouette::VehicleJourney, :type => :model do
         item['footnotes']                = []
         item['line_notices']             = [] if line_notices
         item['purchase_windows']         = []
+        item['referential_codes']        = []
         item['custom_fields']            = vj.custom_fields.to_hash
 
         vj.vehicle_journey_at_stops.each do |vjas|
@@ -758,6 +759,29 @@ describe Chouette::VehicleJourney, :type => :model do
         expected = state['line_notices'].map{|tt| tt['id']}
         actual   = vehicle_journey.reload.line_notices.map(&:id)
         expect(actual).to match_array(expected)
+      end
+    end
+
+    context 'with referential_codes' do
+      let(:code_space) { create(:code_space, workgroup: Workgroup.first) }
+      let(:referential_code) { create(:referential_code, code_space: code_space, resource: vehicle_journey, resource_type: "Chouette::VehicleJourney") }
+
+      it 'should clear vj referential_codes when deleted from state' do
+        vehicle_journey.codes << create(:referential_code, code_space: code_space, resource: vehicle_journey, resource_type: "Chouette::VehicleJourney")
+        referential_codes_count = ReferentialCode.count
+        state['referential_codes'] = []
+        vehicle_journey.manage_referential_codes_from_state(state)
+
+        expect(ReferentialCode.count).to eq referential_codes_count - 1
+        expect(vehicle_journey.reload.codes).to be_empty
+      end
+
+      it 'should update vj referential_codes association from state' do
+        2.times{state['referential_codes'] << build(:referential_code, code_space: code_space, resource: vehicle_journey, resource_type: "Chouette::VehicleJourney").slice(:value, :code_space_id)}
+        referential_codes_count = ReferentialCode.count
+        vehicle_journey.manage_referential_codes_from_state(state)
+        expect(ReferentialCode.count).to eq referential_codes_count +2
+        expect(vehicle_journey.reload.codes.count).to eq (state['referential_codes'].count)
       end
     end
 

@@ -85,7 +85,7 @@ module VehicleJourneysHelper
     return '-' unless time_of_day
 
     if time_of_day.day_offset?
-      I18n.t('vehicle_journeys.index.vjas.time_of_day', time: time_of_day.to_hms, day_offset: time_of_day.day_offset)
+      I18n.t('vehicle_journeys.index.vjas.time_of_day', time: time_of_day.to_hms, offset: time_of_day.day_offset)
     else
       time_of_day.to_hms
     end

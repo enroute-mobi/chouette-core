@@ -226,10 +226,10 @@ module Chouette
       purchase_windows.map{|p| p.date_ranges.map &:max}.flatten.max
     end
 
-    def calculate_vehicle_journey_at_stop_day_offset(force_reset=false)
+    def calculate_vehicle_journey_at_stop_day_offset
       Chouette::VehicleJourneyAtStopsDayOffset.new(
         vehicle_journey_at_stops.sort_by{ |vjas| vjas.stop_point.position }
-      ).update(force_reset)
+      ).update
     end
 
     accepts_nested_attributes_for :vehicle_journey_at_stops, :allow_destroy => true
@@ -266,14 +266,15 @@ module Chouette
         stop_area = stop_point&.stop_area
         tz = stop_area&.time_zone
         tz = tz && ActiveSupport::TimeZone[tz]
-        params = {}.tap do |el|
-          ['arrival_time', 'departure_time'].each do |field|
-            time = "#{vjas[field]['hour']}:#{vjas[field]['minute']}"
-            el[field.to_sym] = Time.parse("2000-01-01 #{time}:00 #{tz&.formatted_offset || "UTC"}")
-          end
+        utc_offset = tz ? tz.utc_offset : 0
+
+        params = {}
+
+        %w{departure arrival}.each do |part|
+          field = "#{part}_time"
+          time_of_day = TimeOfDay.new vjas[field]['hour'], vjas[field]['minute'], utc_offset: utc_offset
+          params["#{part}_time_of_day".to_sym] = time_of_day
         end
-        params[:arrival_day_offset] = 0
-        params[:departure_day_offset] = 0
         params[:stop_area_id] = vjas['specific_stop_area_id']
         stop = create_or_find_vjas_from_state(vjas)
         stop.update_attributes(params)

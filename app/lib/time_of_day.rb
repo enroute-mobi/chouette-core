@@ -55,6 +55,14 @@ class TimeOfDay
     self.class.from_second_offset second_offset
   end
 
+  def with_day_offset offset
+    TimeOfDay.new hour, minute, second, day_offset: offset, utc_offset: utc_offset
+  end
+
+  def with_utc_offset offset
+    TimeOfDay.new hour, minute, second, day_offset: day_offset, utc_offset: offset
+  end
+
   def day_offset?
     day_offset != 0
   end

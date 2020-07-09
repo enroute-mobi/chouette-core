@@ -13,7 +13,8 @@ export default function modal(state = {}, action) {
         }
       })
     case 'EDIT_NOTES_VEHICLEJOURNEY_MODAL':
-      let vehicleJourneyModal = _.assign({}, action.vehicleJourney)
+    // Prevent unwanted modification triggered by shallow copy
+      let vehicleJourneyModal = _.cloneDeep(action.vehicleJourney)
       return {
         type: 'notes_edit',
         modalProps: {
@@ -42,7 +43,8 @@ export default function modal(state = {}, action) {
       return {
         type: 'edit',
         modalProps: {
-          vehicleJourney: action.vehicleJourney
+          // Prevent unwanted modification triggered by shallow copy
+          vehicleJourney: _.cloneDeep(action.vehicleJourney)
         },
         confirmModal: {}
       }
@@ -273,7 +275,8 @@ export default function modal(state = {}, action) {
     return {
       type: 'select_specific_stop',
       modalProps: {
-        vehicleJourney: action.vehicleJourney
+        // Prevent unwanted modification triggered by shallow copy
+        vehicleJourney: _.cloneDeep(action.vehicleJourney)
       },
       confirmModal: {}
     }

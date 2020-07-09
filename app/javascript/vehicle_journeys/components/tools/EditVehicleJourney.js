@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import actions from '../../actions'
 import CompanySelect2 from './select2s/CompanySelect2'
 import CustomFieldsInputs from '../../../helpers/CustomFieldsInputs'
-import CodesInputs from '../../../helpers/CodesInputs'
+import CodesInputs from './CodesInputs'
 
 export default class EditVehicleJourney extends Component {
   constructor(props) {
@@ -19,7 +19,8 @@ export default class EditVehicleJourney extends Component {
       } else if (typeof this.props.modal.modalProps.vehicleJourney.company === "object") {
         company = this.props.modal.modalProps.vehicleJourney.company
       }
-      this.props.onEditVehicleJourney(_.assign({}, this.refs, {custom_fields: this.custom_fields}), company)
+
+      this.props.onEditVehicleJourney(_.assign({}, this.refs, {custom_fields: this.props.modal.modalProps.vehicleJourney.custom_fields, referential_codes: this.props.modal.modalProps.vehicleJourney.referential_codes}), company)
       this.props.onModalClose()
       $('#EditVehicleJourneyModal').modal('hide')
     }
@@ -40,9 +41,6 @@ export default class EditVehicleJourney extends Component {
       return false
     }
     if(this.props.status.fetchSuccess == true) {
-      if(this.props.modal.modalProps.vehicleJourney){
-        this.custom_fields = _.assign({}, this.props.modal.modalProps.vehicleJourney.custom_fields)
-      }
       return (
         <li className='st_action'>
           <button
@@ -57,7 +55,7 @@ export default class EditVehicleJourney extends Component {
           </button>
 
           <div className={ 'modal fade ' + ((this.props.modal.type == 'duplicate') ? 'in' : '') } id='EditVehicleJourneyModal'>
-            <div className='modal-container'>
+            <div className='modal-container scrollable-modal'>
               <div className='modal-dialog'>
                 <div className='modal-content'>
                   <div className='modal-header'>
@@ -165,14 +163,18 @@ export default class EditVehicleJourney extends Component {
                           />
                         </div>
                         <div className='row'>
-                          <div>Codes</div>
-                          <hr></hr>
-                          <CodesInputs
-                            values={this.props.modal.modalProps.vehicleJourney.referential_codes}
-                            onUpdate={(code, value) => this.codes[id]["value"] = value}
-                            disabled={!this.editMode()}
-                           />
+                          <div className='col-xs-12'>
+                            <label className='control-label'>{ I18n.t('vehicle_journeys.form.referential_codes') }</label>
+                            <hr className='title-separator'/>
+                          </div>
                         </div>
+                        <CodesInputs
+                          values={this.props.modal.modalProps.vehicleJourney.referential_codes}
+                          onAddReferentialCode={this.props.onAddReferentialCode}
+                          onDeleteReferentialCode={this.props.onDeleteReferentialCode}
+                          onUpdateReferentialCode={this.props.onUpdateReferentialCode}
+                          disabled={!this.editMode()}
+                         />
                       </div>
 
                       {

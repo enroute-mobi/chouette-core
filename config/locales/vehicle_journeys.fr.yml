@@ -95,6 +95,8 @@ fr:
       time_tables: "Calendriers associés à la course"
       purchase_windows: "Calendriers commerciaux associés à la course"
       footnotes: "Notes associées à la course"
+      add_referential_code: Ajouter un code
+      referential_codes: Codes
       to_arrivals: "Copie départs vers arrivées"
       to_arrivals: "Copie départs vers arrivées"
       to_departures: "Copie arrivées vers départs"

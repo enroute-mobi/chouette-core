@@ -8,9 +8,6 @@ node { |vj| {short_id: vj.get_objectid.short_id} }
 
 child(:codes, :object_root => false ) do |codes|
   attributes :id, :code_space_id, :resource_id, :value
-  child(:code_space) do |code_space|
-    attributes :short_name
-  end
 end
 
 child(:company) do |company|

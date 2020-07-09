@@ -1,6 +1,6 @@
 import _ from 'lodash'
 
-let vehicleJourneysModal, newModalProps, vehicleJourney, alreadyPresent, notAlreadyPresent
+let vehicleJourneysModal, newModalProps, vehicleJourney, alreadyPresent, notAlreadyPresent, newReferentialCodesArray
 
 export default function modal(state = {}, action) {
   switch (action.type) {
@@ -142,6 +142,45 @@ export default function modal(state = {}, action) {
       vehicleJourney =  _.assign({}, state.modalProps.vehicleJourney, {company: undefined})
       newModalProps = _.assign({}, state.modalProps, {vehicleJourney})
       return _.assign({}, state, {modalProps: newModalProps})
+    case 'ADD_REFERENTIAL_CODE_EDIT_MODAL':
+      newReferentialCodesArray = state.modalProps.vehicleJourney.referential_codes
+      newReferentialCodesArray.push(action.newCode)
+      return {
+        ...state,
+        modalProps: {
+          ...state.modalProps,
+          vehicleJourney: {
+            ...state.modalProps.vehicleJourney,
+            referential_codes: newReferentialCodesArray
+          }
+        }
+      }
+    case 'DELETE_REFERENTIAL_CODE_EDIT_MODAL':
+      newReferentialCodesArray = state.modalProps.vehicleJourney.referential_codes
+      newReferentialCodesArray.splice(action.index, 1)
+      return {
+        ...state,
+        modalProps: {
+          ...state.modalProps,
+          vehicleJourney: {
+            ...state.modalProps.vehicleJourney,
+            referential_codes: newReferentialCodesArray
+          }
+        }
+      }
+    case 'UPDATE_REFERENTIAL_CODE_EDIT_MODAL':
+      return {
+        ...state,
+        modalProps: {
+          ...state.modalProps,
+          vehicleJourney: {
+            ...state.modalProps.vehicleJourney,
+            referential_codes: state.modalProps.vehicleJourney.referential_codes.map((code, index) =>
+              index === action.index ? _.assign({}, code, action.attributes) : code
+            )
+          }
+        }
+      }
     case 'SELECT_TT_CALENDAR_MODAL':
       newModalProps = _.assign({}, state.modalProps, {selectedTimetable : action.selectedItem})
       return _.assign({}, state, {modalProps: newModalProps})

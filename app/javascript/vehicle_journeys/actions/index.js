@@ -223,6 +223,19 @@ const actions = {
   unselect2Company: () => ({
     type: 'UNSELECT_CP_EDIT_MODAL',
   }),
+  addReferentialCode: (newCode) => ({
+    type: 'ADD_REFERENTIAL_CODE_EDIT_MODAL',
+    newCode
+  }),
+  deleteReferentialCode: (index) => ({
+    type: 'DELETE_REFERENTIAL_CODE_EDIT_MODAL',
+    index
+  }),
+  updateReferentialCode: (index, attributes) => ({
+    type: 'UPDATE_REFERENTIAL_CODE_EDIT_MODAL',
+    index,
+    attributes
+  }),
   editVehicleJourney : (data, selectedCompany) => ({
     type: 'EDIT_VEHICLEJOURNEY',
     data,

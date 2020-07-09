@@ -32,6 +32,7 @@
     "redux-logger": "3.0.6",
     "redux-promise": "0.5.3",
     "redux-thunk": "2.2.0",
+    "shortid": "^2.2.15",
     "ssri": "~> 5.2.2",
     "uglify-js": "3.3.2",
     "whatwg-fetch": "^2.0.4"

@@ -95,6 +95,8 @@ en:
       time_tables: "Associated timetables"
       purchase_windows: Associated purchase windows
       footnotes: Associated footnotes
+      add_referential_code: Add a code
+      referential_codes: Codes
       to_arrivals: "Copy departures to arrivals"
       to_departures: "Copy arrivals to departures"
       to: "at"

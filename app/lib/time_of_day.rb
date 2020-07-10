@@ -65,6 +65,11 @@ class TimeOfDay
     self.class.from_second_offset second_offset, utc_offset: utc_offset
   end
 
+  def with_zone(time_zone)
+    time_zone = ActiveSupport::TimeZone[time_zone] if time_zone.is_a?(String)
+    with_utc_offset(time_zone&.utc_offset || 0)
+  end
+
   def day_offset?
     day_offset != 0
   end

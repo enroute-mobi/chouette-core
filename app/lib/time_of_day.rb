@@ -38,7 +38,9 @@ class TimeOfDay
     new attributes.fetch(:hour), attributes[:minute], attributes[:second], attributes.except(:hour, :minute, :second)
   end
 
-  def self.from_second_offset(offset)
+  def self.from_second_offset(offset, utc_offset: 0)
+    offset += utc_offset
+
     day_offset = offset / 1.day
     offset = offset % 1.day
 
@@ -48,19 +50,19 @@ class TimeOfDay
     minute = offset / 1.minute
     second = offset % 1.minute
 
-    TimeOfDay.new hour, minute, second, day_offset: day_offset
+    TimeOfDay.new hour, minute, second, day_offset: day_offset, utc_offset: utc_offset
   end
 
   def without_utc_offset
     self.class.from_second_offset second_offset
   end
 
-  def with_day_offset offset
-    TimeOfDay.new hour, minute, second, day_offset: offset, utc_offset: utc_offset
+  def add(day_offset: 0)
+    self.class.from_second_offset second_offset + day_offset.days, utc_offset: utc_offset
   end
 
-  def with_utc_offset offset
-    TimeOfDay.new hour, minute, second, day_offset: day_offset, utc_offset: offset
+  def with_utc_offset(utc_offset)
+    self.class.from_second_offset second_offset, utc_offset: utc_offset
   end
 
   def day_offset?
@@ -106,7 +108,7 @@ class TimeOfDay
   def self.parse(definition, attributes = nil)
     if PARSE_REGEX =~ definition
       hour, minute, second = $1, $2, $3
-      new hour, minute, second, attributes
+      new hour, minute, second, attributes || {}
     end
   end
 

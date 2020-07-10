@@ -70,6 +70,7 @@ RSpec.describe TimeOfDay do
       [ 1.hour, TimeOfDay.new(1,0,0) ],
       [ 23.hour + 59.minute + 59.second, TimeOfDay.new(23,59,59) ],
       [ 25.hour, TimeOfDay.new(1, day_offset: 1) ],
+      [ -1.hour, TimeOfDay.new(23, day_offset: -1) ],
     ].each do |second_offset, expected|
       it "returns #{expected} for #{second_offset}" do
         expect(TimeOfDay.from_second_offset(second_offset)).to eq(expected)
@@ -97,6 +98,33 @@ RSpec.describe TimeOfDay do
     ].each do |with, without|
       it "creates #{without.inspect} from #{with.inspect}" do
         expect(with.without_utc_offset).to eq(without)
+      end
+    end
+
+  end
+
+  describe '#with_utc_offset' do
+
+    [
+      [ TimeOfDay.new(14), -8.hours, TimeOfDay.new(6, utc_offset: -8.hours) ],
+      [ TimeOfDay.new(0, day_offset: 1), -8.hours, TimeOfDay.new(16, utc_offset: -8.hours) ],
+      [ TimeOfDay.new(23, day_offset: -1), 1.hour, TimeOfDay.new(0, utc_offset: 1.hour) ],
+    ].each do |without, utc_offset, with|
+      it "creates #{with.inspect} from #{without.inspect} and utc_offset #{utc_offset}" do
+        expect(without.with_utc_offset(utc_offset)).to eq(with)
+      end
+    end
+
+  end
+
+  describe '#add' do
+
+    [
+      [ TimeOfDay.new(0), {day_offset: 1}, TimeOfDay.new(0, day_offset: 1) ],
+      [ TimeOfDay.new(16, utc_offset: -8.hours), {day_offset: -1}, TimeOfDay.new(0) ],
+    ].each do |time_of_day, arguments, expected|
+      it "add #{arguments.inspect} to #{time_of_day.inspect} gives #{expected.inspect}" do
+        expect(time_of_day.add(arguments)).to eq(expected)
       end
     end
 

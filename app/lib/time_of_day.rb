@@ -112,4 +112,12 @@ class TimeOfDay
     end
   end
 
+  def self.unserialize(value, attributes = nil)
+    if value.is_a?(String)
+      parse value, attributes
+    else
+      create value, attributes
+    end
+  end
+
 end

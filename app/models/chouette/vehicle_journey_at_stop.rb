@@ -39,7 +39,7 @@ module Chouette
     end
 
     def departure_time_of_day
-      @departure_time_of_day ||= TimeOfDay.parse(attributes_before_type_cast["departure_time"], day_offset: departure_day_offset)
+      @departure_time_of_day ||= TimeOfDay.unserialize(attributes_before_type_cast["departure_time"], day_offset: departure_day_offset)
     end
 
     def departure_local_time_of_day
@@ -56,7 +56,7 @@ module Chouette
     end
 
     def arrival_time_of_day
-      @arrival_time_of_day ||= TimeOfDay.parse(attributes_before_type_cast["arrival_time"], day_offset: arrival_day_offset)
+      @arrival_time_of_day ||= TimeOfDay.unserialize(attributes_before_type_cast["arrival_time"], day_offset: arrival_day_offset)
     end
 
     def arrival_local_time_of_day

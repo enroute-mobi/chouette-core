@@ -152,4 +152,23 @@ RSpec.describe TimeOfDay do
 
   end
 
+  describe '#to_iso_8601' do
+
+    [
+      [ TimeOfDay.new(12), "12:00:00Z" ],
+      [ TimeOfDay.new(12,13), "12:13:00Z" ],
+      [ TimeOfDay.new(12,13,14), "12:13:14Z" ],
+      [ TimeOfDay.new(12,1,1), "12:01:01Z" ],
+      [ TimeOfDay.new(12, utc_offset: 1.hour), "12:00:00+01:00" ],
+      [ TimeOfDay.new(12, utc_offset: -1.hour), "12:00:00-01:00" ],
+      [ TimeOfDay.new(12, utc_offset: 1.hour+1.minute), "12:00:00+01:01" ],
+      [ TimeOfDay.new(12, utc_offset: -(1.hour+1.minute)), "12:00:00-01:01" ],
+    ].each do |time_of_day, expected|
+      it "returns #{expected.inspect} from #{time_of_day.inspect}" do
+        expect(time_of_day.to_iso_8601).to eq(expected)
+      end
+    end
+
+  end
+
 end

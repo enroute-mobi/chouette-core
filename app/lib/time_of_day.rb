@@ -13,8 +13,6 @@ class TimeOfDay
     @utc_offset = utc_offset.to_i
 
     @second_offset = ((@day_offset * 24 + @hour) * 60 + @minute) * 60 + @second - @utc_offset
-
-    freeze
   end
 
   def self.create(time = nil, attributes = nil)
@@ -93,6 +91,37 @@ class TimeOfDay
 
   def to_vehicle_journey_at_stop_time
     ::Time.new(2000, 1, 1, hour, minute, second, "+00:00")
+  end
+
+  def to_iso_8601
+    @iso_8601 ||= ISO8601.new(self).to_s
+  end
+
+  class ISO8601 < SimpleDelegator
+
+    UTC_FORMAT = "%.2d:%.2d:%.2dZ"
+    NON_UTC_FORMAT = "%.2d:%.2d:%.2d%s%.2d:%.2d"
+
+    def to_s
+      unless utc_offset?
+        UTC_FORMAT % [hour, minute, second]
+      else
+        NON_UTC_FORMAT % [hour, minute, second, sign_utc_offset, hour_utc_offset, minute_utc_offset]
+      end
+    end
+
+    def sign_utc_offset
+      utc_offset >= 0 ? '+' : '-'
+    end
+
+    def hour_utc_offset
+      utc_offset.abs / 1.hour
+    end
+
+    def minute_utc_offset
+      utc_offset.abs % 1.hour / 1.minute
+    end
+
   end
 
   def <=>(other)

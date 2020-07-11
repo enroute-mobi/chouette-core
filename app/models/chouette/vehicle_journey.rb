@@ -421,7 +421,6 @@ module Chouette
     def fill_passing_times!
       encountered_empty_vjas = []
       previous_stop = nil
-      tz_offset = vehicle_journey_at_stops.first.time_zone_offset || 0
       vehicle_journey_at_stops.each do |vjas|
         sp = vjas.stop_point
         if vjas.arrival_time.nil? && vjas.departure_time.nil?
@@ -449,19 +448,17 @@ module Chouette
               raise "MISSING cost between #{previous.stop_point.stop_area.registration_number} AND #{empty_vjas.stop_point.stop_area.registration_number}" unless cost.present?
               distance_from_last_known += cost[:distance]
 
-              arrival_time = vjas.arrival_time + (vjas.arrival_day_offset - previous_stop.departure_day_offset)*24.hours
-              time = previous_stop.departure_time + distance_from_last_known.to_f / distance_between_known.to_f * (arrival_time - previous_stop.departure_time)
-              day_offset = time.day - 1
-              time -= day_offset*24.hours
+              arrival_time_of_day = vjas.arrival_time_of_day
+              previous_time_of_day = previous_stop.departure_time_of_day
 
-              if(time + tz_offset).day > 1
-                day_offset += 1
-              end
+              ratio = distance_from_last_known.to_f / distance_between_known.to_f
+              delta = arrival_time_of_day-previous_time_of_day
 
-              empty_vjas.update_attribute :arrival_time, time
-              empty_vjas.update_attribute :arrival_day_offset, previous_stop.departure_day_offset + day_offset
-              empty_vjas.update_attribute :departure_time, time
-              empty_vjas.update_attribute :departure_day_offset, previous_stop.departure_day_offset + day_offset
+              time_of_day = previous_time_of_day.add(seconds: ratio * delta)
+
+              empty_vjas.update_attribute :arrival_time_of_day, time_of_day
+              empty_vjas.update_attribute :departure_time_of_day, time_of_day
+
               previous = empty_vjas
             end
             encountered_empty_vjas = []

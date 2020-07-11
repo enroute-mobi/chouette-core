@@ -9,6 +9,7 @@ module Chouette
       @at_stops.each do |vehicle_journey_at_stop|
         %w{arrival departure}.each do |part|
           time_of_day = vehicle_journey_at_stop.send "#{part}_time_of_day"
+          next if time_of_day.nil?
 
           if previous_time_of_day.present?
             if previous_time_of_day.day_offset? && !time_of_day.day_offset?

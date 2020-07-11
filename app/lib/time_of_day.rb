@@ -55,8 +55,8 @@ class TimeOfDay
     self.class.from_second_offset second_offset
   end
 
-  def add(day_offset: 0)
-    self.class.from_second_offset second_offset + day_offset.days, utc_offset: utc_offset
+  def add(seconds: 0, day_offset: 0)
+    self.class.from_second_offset second_offset + seconds + day_offset.days, utc_offset: utc_offset
   end
 
   def with_utc_offset(utc_offset)
@@ -95,6 +95,10 @@ class TimeOfDay
 
   def to_iso_8601
     @iso_8601 ||= ISO8601.new(self).to_s
+  end
+
+  def -(other)
+    second_offset - other.second_offset
   end
 
   class ISO8601 < SimpleDelegator
@@ -147,6 +151,8 @@ class TimeOfDay
   end
 
   def self.unserialize(value, attributes = nil)
+    return nil if value.nil?
+
     if value.is_a?(String)
       parse value, attributes
     else

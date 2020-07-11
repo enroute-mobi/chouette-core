@@ -122,6 +122,8 @@ RSpec.describe TimeOfDay do
     [
       [ TimeOfDay.new(0), {day_offset: 1}, TimeOfDay.new(0, day_offset: 1) ],
       [ TimeOfDay.new(16, utc_offset: -8.hours), {day_offset: -1}, TimeOfDay.new(0) ],
+      [ TimeOfDay.new(0), {seconds: 1}, TimeOfDay.new(0,0,1) ],
+      [ TimeOfDay.new(0), {seconds: 1.hour}, TimeOfDay.new(1) ],
     ].each do |time_of_day, arguments, expected|
       it "add #{arguments.inspect} to #{time_of_day.inspect} gives #{expected.inspect}" do
         expect(time_of_day.add(arguments)).to eq(expected)
@@ -167,6 +169,14 @@ RSpec.describe TimeOfDay do
       it "returns #{expected.inspect} from #{time_of_day.inspect}" do
         expect(time_of_day.to_iso_8601).to eq(expected)
       end
+    end
+
+  end
+
+  describe '#-' do
+
+    it "returns the seconds between the other TimeOfDay" do
+      expect(TimeOfDay.new(12) - TimeOfDay.new(11)).to eq(1.hour)
     end
 
   end

@@ -241,6 +241,7 @@ export default function vehicleJourneys(state = [], action) {
             published_journey_name: action.data.published_journey_name.value,
             published_journey_identifier: action.data.published_journey_identifier.value,
             custom_fields: action.data.custom_fields,
+            referential_codes: action.data.referential_codes
           })
         }else{
           return vj

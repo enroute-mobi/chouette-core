@@ -29,6 +29,15 @@ const mapDispatchToProps = (dispatch) => {
     onUnselect2Company: () => {
       dispatch(actions.unselect2Company())
     },
+    onAddReferentialCode: (code) => {
+      dispatch(actions.addReferentialCode(code))
+    },
+    onDeleteReferentialCode: (index) => {
+      dispatch(actions.deleteReferentialCode(index))
+    },
+    onUpdateReferentialCode: (index, attributes) => {
+      dispatch(actions.updateReferentialCode(index, attributes))
+    },
   }
 }
 

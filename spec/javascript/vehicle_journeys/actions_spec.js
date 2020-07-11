@@ -656,6 +656,44 @@ describe('when using select2 to unselect a company', () => {
   })
 })
 
+describe('when clicking on add code button to add a referential code', () => {
+  it('should create an action to add a referential code to the vj', () => {
+    let newCode = {
+      id: null,
+      code_space_id: 1,
+      value: "",
+      fallback_id: "random id"
+    }
+    const expectedAction = {
+      type: 'ADD_REFERENTIAL_CODE_EDIT_MODAL',
+      newCode
+    }
+    expect(actions.addReferentialCode(newCode)).toEqual(expectedAction)
+  })
+})
+describe('when clicking on trash icon to delete a referential code', () => {
+  it('should create an action to delete a referential code from the vj codes', () => {
+    let index = 1
+    const expectedAction = {
+      type: 'DELETE_REFERENTIAL_CODE_EDIT_MODAL',
+      index
+    }
+    expect(actions.deleteReferentialCode(index)).toEqual(expectedAction)
+  })
+})
+describe('when changing the value or the code space of a referential code', () => {
+  it('should create an action to update this referential code value or code space', () => {
+    let index = 1
+    let attributes = {value: 'test'}
+    const expectedAction = {
+      type: 'UPDATE_REFERENTIAL_CODE_EDIT_MODAL',
+      index,
+      attributes
+    }
+    expect(actions.updateReferentialCode(index, attributes)).toEqual(expectedAction)
+  })
+})
+
 describe('actions.adjustSchedule', () => {
   set('time', () => {
     return {

@@ -282,6 +282,20 @@ module Chouette
       end
     end
 
+    def manage_referential_codes_from_state state
+      # Delete removed referential_codes
+      ReferentialCode.destroy(codes.map(&:id) - state["referential_codes"]&.map{|c| c["id"]})
+
+      # Update or create other codes
+      state["referential_codes"].each do |code_item|
+        ref_code = code_item["id"].present? ? codes.find(code_item["id"]) : codes.build
+        ref_code.update_attributes({
+          code_space_id: code_item["code_space_id"],
+          value: code_item["value"]
+        })
+      end
+    end
+
     def update_has_and_belongs_to_many_from_state item
       ['time_tables', 'footnotes', 'line_notices', 'purchase_windows'].each do |assos|
         next unless item[assos]
@@ -313,6 +327,7 @@ module Chouette
           vj.update_vjas_from_state(item['vehicle_journey_at_stops'])
           vj.update_attributes(state_permited_attributes(item))
           vj.update_has_and_belongs_to_many_from_state(item)
+          vj.manage_referential_codes_from_state(item)
           vj.update_checksum!
           item['errors']   = vj.errors.full_messages.uniq if vj.errors.any?
           item['checksum'] = vj.checksum

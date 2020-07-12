@@ -37,6 +37,7 @@ class Workgroup < ApplicationModel
       find_or_create_by(short_name: CodeSpace::DEFAULT_SHORT_NAME)
     end
   end
+  has_many :codes, dependent: :delete_all
 
   accepts_nested_attributes_for :workbenches
 

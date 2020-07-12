@@ -30,6 +30,7 @@ Apartment.configure do |config|
     'Chouette::StopArea',
     'CleanUp',
     'CleanUpResult',
+    'Code',
     'CodeSpace',
     'ComplianceCheck',
     'ComplianceCheckBlock',

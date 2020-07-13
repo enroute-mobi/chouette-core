@@ -258,8 +258,7 @@ module IevInterfaces::Task
     Rails.logger.error("End IEV call for import")
   rescue Exception => e
     aborted!
-    logger.error "IEV server error : #{e.message}"
-    logger.error e.backtrace.inspect
+    Chouette::Safe.capture "IEV server error", e
   end
 
   private

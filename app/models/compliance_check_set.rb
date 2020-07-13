@@ -133,8 +133,7 @@ class ComplianceCheckSet < ApplicationModel
         logger.info "ComplianceCheckSet ##{id}: calling IEV"
         Net::HTTP.get(URI("#{Rails.configuration.iev_url}/boiv_iev/referentials/validator/new?id=#{id}"))
       rescue Exception => e
-        logger.error "IEV server error : #{e.message}"
-        logger.error e.backtrace.inspect
+        Chouette::Safe.capture "IEV server error", e
         update status: 'failed'
         notify_parent
       end

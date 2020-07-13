@@ -145,7 +145,6 @@ ActiveRecord::Schema.define(version: 2020_07_12_093315) do
   end
 
   create_table "codes", force: :cascade do |t|
-    t.bigint "workgroup_id", null: false
     t.bigint "code_space_id", null: false
     t.string "resource_type", null: false
     t.bigint "resource_id", null: false
@@ -156,7 +155,6 @@ ActiveRecord::Schema.define(version: 2020_07_12_093315) do
     t.index ["code_space_id", "resource_type", "resource_id"], name: "index_codes_on_space_and_resource"
     t.index ["code_space_id"], name: "index_codes_on_code_space_id"
     t.index ["resource_type", "resource_id"], name: "index_codes_on_resource_type_and_resource_id"
-    t.index ["workgroup_id"], name: "index_codes_on_workgroup_id"
   end
 
   create_table "companies", force: :cascade do |t|

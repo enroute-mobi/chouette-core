@@ -1,9 +1,10 @@
-RSpec.describe GenericAttributeControl::MinMax do
+# See CHOUETTE-513
+# RSpec.describe GenericAttributeControl::MinMax do
 
-  let( :factory ){ :generic_attribute_control_min_max }
-  subject{ build factory }
+#   let( :factory ){ :generic_attribute_control_min_max }
+#   subject{ build factory }
 
-  it_behaves_like 'has min_max_values'
-  it_behaves_like 'has target attribute'
+#   it_behaves_like 'has min_max_values'
+#   it_behaves_like 'has target attribute'
 
-end
+# end

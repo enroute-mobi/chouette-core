@@ -56,7 +56,7 @@ RSpec.describe ComplianceControlSetCloner do
           end
         }
         let(:direct_ccs){
-          out = 3.times.map{ |n| create :generic_attribute_control_min_max, compliance_control_set: source_set, name: "direct #{n.succ}", code: "direct-#{n.succ}" }
+          out = 3.times.map{ |n| create :control, compliance_control_set: source_set, name: "direct #{n.succ}", code: "direct-#{n.succ}" }
           out.last.update iev_enabled_check: false
           out
         }
@@ -68,7 +68,7 @@ RSpec.describe ComplianceControlSetCloner do
             cc.update compliance_control_block_id: source_block.id
           end
           source_blox.each_with_index.map{ | source_block, n |
-            create(:generic_attribute_control_min_max, compliance_control_set: source_set, compliance_control_block: source_block, name: "indirect #{n.succ}", code: "indirect-#{n.succ}")
+            create(:control, compliance_control_set: source_set, compliance_control_block: source_block, name: "indirect #{n.succ}", code: "indirect-#{n.succ}")
           }
         }
         let( :sources ){ source_set.compliance_controls.order(:id) }

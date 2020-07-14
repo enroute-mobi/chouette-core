@@ -10,10 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_07_12_093315) do
+ActiveRecord::Schema.define(version: 2020_07_13_095247) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
+  enable_extension "pgcrypto"
   enable_extension "plpgsql"
   enable_extension "postgis"
   enable_extension "unaccent"
@@ -301,9 +302,7 @@ ActiveRecord::Schema.define(version: 2020_07_12_093315) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.jsonb "metadata", default: {}
-    t.bigint "workgroup_id"
     t.index ["organisation_id"], name: "index_compliance_control_sets_on_organisation_id"
-    t.index ["workgroup_id"], name: "index_compliance_control_sets_on_workgroup_id"
   end
 
   create_table "compliance_controls", force: :cascade do |t|
@@ -996,6 +995,32 @@ ActiveRecord::Schema.define(version: 2020_07_12_093315) do
     t.bigint "line_id"
   end
 
+  create_table "shape_providers", force: :cascade do |t|
+    t.string "short_name", null: false
+    t.bigint "workbench_id", null: false
+    t.bigint "shape_referential_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["shape_referential_id"], name: "index_shape_providers_on_shape_referential_id"
+    t.index ["workbench_id"], name: "index_shape_providers_on_workbench_id"
+  end
+
+  create_table "shape_referentials", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "shapes", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name"
+    t.geometry "geometry", limit: {:srid=>4326, :type=>"line_string"}
+    t.bigint "shape_referential_id", null: false
+    t.bigint "shape_provider_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["shape_provider_id"], name: "index_shapes_on_shape_provider_id"
+    t.index ["shape_referential_id"], name: "index_shapes_on_shape_referential_id"
+  end
+
   create_table "simple_interfaces", force: :cascade do |t|
     t.string "configuration_name"
     t.string "filepath"
@@ -1342,7 +1367,7 @@ ActiveRecord::Schema.define(version: 2020_07_12_093315) do
     t.string "export_types", default: [], array: true
     t.bigint "owner_id"
     t.bigint "output_id"
-    t.hstore "compliance_control_set_hash"
+    t.hstore "compliance_control_set_ids"
     t.integer "sentinel_min_hole_size", default: 3
     t.integer "sentinel_delay", default: 7
     t.time "nightly_aggregate_time", default: "2000-01-01 00:00:00"
@@ -1354,6 +1379,8 @@ ActiveRecord::Schema.define(version: 2020_07_12_093315) do
     t.jsonb "transport_modes", default: {"air"=>["undefined", "airshipService", "domesticCharterFlight", "domesticFlight", "domesticScheduledFlight", "helicopterService", "intercontinentalCharterFlight", "intercontinentalFlight", "internationalCharterFlight", "internationalFlight", "roundTripCharterFlight", "schengenAreaFlight", "shortHaulInternationalFlight", "shuttleFlight", "sightseeingFlight"], "bus"=>["undefined", "airportLinkBus", "demandAndResponseBus", "expressBus", "highFrequencyBus", "localBus", "mobilityBusForRegisteredDisabled", "mobilityBus", "nightBus", "postBus", "railReplacementBus", "regionalBus", "schoolAndPublicServiceBus", "schoolBus", "shuttleBus", "sightseeingBus", "specialNeedsBus"], "rail"=>["undefined", "carTransportRailService", "crossCountryRail", "highSpeedRail", "international", "interregionalRail", "local", "longDistance", "nightTrain", "rackAndPinionRailway", "railShuttle", "regionalRail", "replacementRailService", "sleeperRailService", "specialTrain", "suburbanRailway", "touristRailway"], "taxi"=>["undefined", "allTaxiServices", "bikeTaxi", "blackCab", "communalTaxi", "miniCab", "railTaxi", "waterTaxi"], "tram"=>["undefined", "cityTram", "localTram", "regionalTram", "shuttleTram", "sightseeingTram", "tramTrain"], "coach"=>["undefined", "commuterCoach", "internationalCoach", "nationalCoach", "regionalCoach", "shuttleCoach", "sightseeingCoach", "specialCoach", "touristCoach"], "metro"=>["undefined", "metro", "tube", "urbanRailway"], "water"=>["undefined", "internationalCarFerry", "nationalCarFerry", "regionalCarFerry", "localCarFerry", "internationalPassengerFerry", "nationalPassengerFerry", "regionalPassengerFerry", "localPassengerFerry", "postBoat", "trainFerry", "roadFerryLink", "airportBoatLink", "highSpeedVehicleService", "highSpeedPassengerService", "sightseeingService", "schoolBoat", "cableFerry", "riverBus", "scheduledFerry", "shuttleFerryService"], "hireCar"=>["undefined", "allHireVehicles", "hireCar", "hireCycle", "hireMotorbike", "hireVan"], "funicular"=>["undefined", "allFunicularServices", "funicular"], "telecabin"=>["undefined", "cableCar", "chairLift", "dragLift", "lift", "telecabinLink", "telecabin"]}
     t.integer "maximum_data_age", default: 0
     t.boolean "enable_purge_merged_data", default: false
+    t.bigint "shape_referential_id", null: false
+    t.index ["shape_referential_id"], name: "index_workgroups_on_shape_referential_id"
   end
 
   add_foreign_key "access_links", "access_points", name: "aclk_acpt_fkey"
@@ -1368,7 +1395,6 @@ ActiveRecord::Schema.define(version: 2020_07_12_093315) do
   add_foreign_key "compliance_checks", "compliance_check_sets"
   add_foreign_key "compliance_control_blocks", "compliance_control_sets"
   add_foreign_key "compliance_control_sets", "organisations"
-  add_foreign_key "compliance_control_sets", "workgroups"
   add_foreign_key "compliance_controls", "compliance_control_blocks"
   add_foreign_key "compliance_controls", "compliance_control_sets"
   add_foreign_key "exports", "workgroups"

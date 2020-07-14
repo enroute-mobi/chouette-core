@@ -3,6 +3,8 @@ class Workgroup < ApplicationModel
 
   belongs_to :line_referential, dependent: :destroy
   belongs_to :stop_area_referential, dependent: :destroy
+  belongs_to :shape_referential, dependent: :destroy
+
   belongs_to :owner, class_name: "Organisation"
   belongs_to :output, class_name: 'ReferentialSuite', dependent: :destroy
 
@@ -27,7 +29,7 @@ class Workgroup < ApplicationModel
   validates_uniqueness_of :line_referential_id
 
   validates :output, presence: true
-  before_validation :initialize_output
+  before_validation :create_dependencies, on: :create
 
   validates :sentinel_min_hole_size, presence: true, numericality: { greater_than_or_equal_to: 0 }
 
@@ -233,15 +235,6 @@ class Workgroup < ApplicationModel
     TransportModeEnumerations.formatted_submodes_for_transports(transport_modes)
   end
 
-  private
-  def clean_transport_modes
-    clean = {}
-    transport_modes.each do |k, v|
-      clean[k] = v.sort.uniq if v.present?
-    end
-    self.transport_modes = clean
-  end
-
   def self.compliance_control_sets_label(key)
     "workgroups.compliance_control_sets.#{key}".t
   end
@@ -251,10 +244,6 @@ class Workgroup < ApplicationModel
       h[k] = compliance_control_sets_label(k)
       h
     end
-  end
-
-  def initialize_output
-    self.output ||= ReferentialSuite.create
   end
 
   def self.default_export_types
@@ -292,4 +281,19 @@ class Workgroup < ApplicationModel
       workgroup
     end
   end
+
+  private
+  def clean_transport_modes
+    clean = {}
+    transport_modes.each do |k, v|
+      clean[k] = v.sort.uniq if v.present?
+    end
+    self.transport_modes = clean
+  end
+
+  def create_dependencies
+    self.output ||= ReferentialSuite.create
+    self.shape_referential ||= ShapeReferential.create
+  end
+
 end

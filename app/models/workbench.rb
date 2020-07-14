@@ -16,10 +16,11 @@ class Workbench < ApplicationModel
 
   include ObjectidFormatterSupport
   belongs_to :organisation
+  belongs_to :workgroup
   belongs_to :line_referential
   belongs_to :stop_area_referential
+  has_one :shape_referential, through: :workgroup
   belongs_to :output, class_name: 'ReferentialSuite', dependent: :destroy
-  belongs_to :workgroup
   belongs_to :locked_referential_to_aggregate, class_name: 'Referential'
 
   has_many :users, through: :organisation
@@ -45,6 +46,8 @@ class Workbench < ApplicationModel
   has_many :referentials, dependent: :destroy
   has_many :referential_metadatas, through: :referentials, source: :metadatas
   has_many :notification_rules, dependent: :destroy
+
+  has_many :shape_providers
 
   before_validation :initialize_output
 
@@ -122,6 +125,18 @@ class Workbench < ApplicationModel
 
   def last_merged_data
     merges.select(&:successful?).map(&:updated_at).max
+  end
+
+  DEFAULT_SHAPE_PROVIDER_SHORT_NAME = 'default'
+
+  def default_shape_provider
+    @default_shape_provider ||= shape_providers.find_or_initialize_by(short_name: DEFAULT_SHAPE_PROVIDER_SHORT_NAME) do |p|
+      p.shape_referential_id = workgroup.shape_referential_id
+    end
+  end
+
+  def create_default_shape_provider
+    default_shape_provider.save
   end
 
   private

@@ -4,6 +4,7 @@ import actions from '../../actions'
 import CompanySelect2 from './select2s/CompanySelect2'
 import CustomFieldsInputs from '../../../helpers/CustomFieldsInputs'
 import CodesInputs from './CodesInputs'
+import _ from 'lodash'
 
 export default class EditVehicleJourney extends Component {
   constructor(props) {
@@ -148,11 +149,11 @@ export default class EditVehicleJourney extends Component {
                         <div className='form-group'>
                           <label className='control-label'>{I18n.attribute_name('vehicle_journey', 'checksum')}</label>
                             <input
-                            type='text'
-                            ref='checksum'
-                            className='form-control'
-                            readOnly={true}
-                            value={this.props.modal.modalProps.vehicleJourney.checksum}
+                              type='text'
+                              ref='checksum'
+                              className='form-control'
+                              readOnly={true}
+                              value={this.props.modal.modalProps.vehicleJourney.checksum}
                             />
                         </div>
                         <div className='row'>
@@ -162,19 +163,23 @@ export default class EditVehicleJourney extends Component {
                             disabled={!this.editMode()}
                           />
                         </div>
-                        <div className='row'>
-                          <div className='col-xs-12'>
-                            <label className='control-label'>{ I18n.t('vehicle_journeys.form.referential_codes') }</label>
-                            <hr className='title-separator'/>
-                          </div>
-                        </div>
-                        <CodesInputs
-                          values={this.props.modal.modalProps.vehicleJourney.referential_codes}
-                          onAddReferentialCode={this.props.onAddReferentialCode}
-                          onDeleteReferentialCode={this.props.onDeleteReferentialCode}
-                          onUpdateReferentialCode={this.props.onUpdateReferentialCode}
-                          disabled={!this.editMode()}
-                         />
+                        { !(_.isEmpty(window.available_code_spaces)) &&
+                          <React.Fragment>
+                            <div className='row'>
+                              <div className='col-xs-12'>
+                                <label className='control-label'>{ I18n.t('vehicle_journeys.form.referential_codes') }</label>
+                                <hr className='title-separator'/>
+                              </div>
+                            </div>
+                            <CodesInputs
+                              values={this.props.modal.modalProps.vehicleJourney.referential_codes}
+                              onAddReferentialCode={this.props.onAddReferentialCode}
+                              onDeleteReferentialCode={this.props.onDeleteReferentialCode}
+                              onUpdateReferentialCode={this.props.onUpdateReferentialCode}
+                              disabled={!this.editMode()}
+                            />
+                          </React.Fragment>
+                        }
                       </div>
 
                       {
@@ -187,14 +192,14 @@ export default class EditVehicleJourney extends Component {
                             onClick={this.props.onModalClose}
                           >
                             {I18n.t('cancel')}
-                        </button>
+                          </button>
                           <button
                             className='btn btn-primary'
                             type='button'
                             onClick={this.handleSubmit.bind(this)}
                           >
                             {I18n.t('actions.submit')}
-                        </button>
+                          </button>
                         </div>
                       }
                     </form>

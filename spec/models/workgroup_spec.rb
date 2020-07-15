@@ -1,60 +1,74 @@
-
 RSpec.describe Workgroup, type: :model do
+
+  let(:context) { Chouette.create { workgroup } }
+  let(:workgroup) { context.workgroup }
+
   context "associations" do
-    let(:stop_area_referential) { build_stubbed :stop_area_referential }
-    let(:line_referential) { build_stubbed :line_referential }
-
-    let(:workgroup){ build_stubbed :workgroup, line_referential: line_referential, stop_area_referential: stop_area_referential }
-
     it{ should have_many(:workbenches) }
-    it{ should validate_presence_of(:owner) }
+
+    it { is_expected.to belong_to(:owner).required }
+    it { is_expected.to belong_to(:stop_area_referential).required }
+    it { is_expected.to belong_to(:line_referential).required }
+
     it{ should validate_uniqueness_of(:name) }
     it{ should validate_uniqueness_of(:stop_area_referential_id) }
     it{ should validate_uniqueness_of(:line_referential_id) }
+    it{ should validate_uniqueness_of(:shape_referential_id) }
 
-    it 'is not valid without a stop_area_referential' do
-      workgroup.stop_area_referential = nil
-      expect( workgroup ).not_to be_valid
-    end
-    it 'is not valid without a line_referential' do
-      workgroup.line_referential = nil
-      expect( workgroup ).not_to be_valid
-    end
     it 'is valid with both associations' do
       expect(workgroup).to be_valid
     end
   end
 
-  context "find organisations" do
-    let( :workgroup ){ create :workgroup }
-    let!( :workbench1 ){ create :workbench, workgroup: workgroup }
-    let!( :workbench2 ){ create :workbench, workgroup: workgroup }
+  describe "#organisations" do
+    let(:context) do
+      Chouette.create do
+        workgroup do
+          workbench :first
+          workbench :second
+        end
+      end
+    end
 
-    it{ expect( Set.new(workgroup.organisations) ).to eq(Set.new([ workbench1.organisation, workbench2.organisation ])) }
+    let(:workbench1) { context.workbench(:first) }
+    let(:workbench2) { context.workbench(:second) }
+
+    subject { workgroup.organisations }
+
+    it "includes organisations of all workbenches in the workgroup" do
+      is_expected.to match_array([workbench1.organisation, workbench2.organisation])
+    end
   end
 
   describe "#nightly_aggregate_timeframe?" do
-    let(:workgroup) { create(:workgroup, nightly_aggregate_time: aggregation_time, nightly_aggregate_enabled: nightly_aggregate_enabled) }
-    let(:aggregation_time) { "15:15:00" }
-    let(:nightly_aggregate_enabled){ false }
+    let(:nightly_aggregation_time) { "15:15:00" }
+    let(:nightly_aggregate_enabled) { false }
+
+    before do
+      workgroup.update nightly_aggregate_time: nightly_aggregation_time,
+                       nightly_aggregate_enabled: nightly_aggregate_enabled
+    end
+
+    let(:time_at_1515) { Time.now.beginning_of_day + 15.hours + 15.minutes }
+
     context "when nightly_aggregate_enabled is true" do
-      let(:nightly_aggregate_enabled){ true }
+      let(:nightly_aggregate_enabled) { true }
 
       it "returns true when inside timeframe" do
-        Timecop.freeze(Time.now.beginning_of_day + 6.months + 15.hours + 15.minutes) do
-          expect(workgroup.reload.nightly_aggregate_timeframe?).to be_truthy
+        Timecop.freeze(time_at_1515) do
+          expect(workgroup.nightly_aggregate_timeframe?).to be_truthy
         end
       end
 
       it "returns false when outside timeframe" do
-        Timecop.freeze(Time.now.beginning_of_day + 2.hours) do
+        Timecop.freeze(time_at_1515 - 20.minutes) do
           expect(workgroup.nightly_aggregate_timeframe?).to be_falsy
         end
       end
 
       it "returns false when inside timeframe but already done" do
-        workgroup.nightly_aggregated_at = Time.now.beginning_of_day + 6.months + 15.hours + 15.minutes
-        Timecop.freeze(Time.now.beginning_of_day + 6.months + 15.hours + 15.minutes) do
+        workgroup.nightly_aggregated_at = time_at_1515
+        Timecop.freeze(time_at_1515) do
           expect(workgroup.nightly_aggregate_timeframe?).to be_falsy
         end
       end
@@ -62,7 +76,7 @@ RSpec.describe Workgroup, type: :model do
 
     context "when nightly_aggregate_enabled is false" do
       it "is false even within timeframe" do
-        Timecop.freeze(Time.now.beginning_of_day + 6.months + 15.hours + 15.minutes) do
+        Timecop.freeze(time_at_1515) do
           expect(workgroup.nightly_aggregate_timeframe?).to be_falsy
         end
       end
@@ -70,13 +84,16 @@ RSpec.describe Workgroup, type: :model do
   end
 
   describe "#nightly_aggregate!" do
-    let(:workgroup) { create(:workgroup, nightly_aggregate_enabled: true, nightly_aggregate_time: '15:15:00') }
+    before do
+      workgroup.update nightly_aggregate_enabled: true,
+                       nightly_aggregate_time: '15:15:00'
+    end
+
+    let(:time_at_1515) { Time.now.beginning_of_day + 15.hours + 15.minutes }
 
     context "when no aggregatable referential is found" do
       it "returns with a log message" do
-        Timecop.freeze(Time.now.beginning_of_day + 15.hours + 15.minutes) do
-          # expect(Rails.logger).to receive(:info).with(/\ANo aggregatable referential found/)
-
+        Timecop.freeze(time_at_1515) do
           expect { workgroup.nightly_aggregate! }.not_to change {
             workgroup.aggregates.count
           }

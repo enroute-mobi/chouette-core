@@ -537,32 +537,14 @@ RSpec.describe Chouette::Factory do
   describe "Shapes" do
 
     describe "{ shape_referential }" do
-      let(:context) do
-        Chouette::Factory.create do
-          shape_referential
-        end
-      end
-
-      let!(:shape_referential) { context.shape_referential }
-
       it "should create a ShapeReferential" do
-        expect(ShapeReferential.count).to eq(1)
-        expect(shape_referential).to eq(ShapeReferential.first)
+        expect { Chouette.create { shape_referential } }.to change { ShapeReferential.count }.by(1)
       end
     end
 
     describe "{ shape }" do
-      let(:context) do
-        Chouette::Factory.create do
-          shape
-        end
-      end
-
-      let!(:shape) { context.shape }
-
       it "should create a Shape" do
-        expect(Shape.count).to eq(1)
-        expect(shape).to eq(Shape.first)
+        expect { Chouette.create { shape } }.to change { Shape.count }.by(1)
       end
     end
 

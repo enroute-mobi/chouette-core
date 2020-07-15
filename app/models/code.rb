@@ -1,0 +1,3 @@
+class Code < AbstractCode
+
+end

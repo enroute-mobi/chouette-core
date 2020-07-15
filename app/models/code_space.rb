@@ -5,4 +5,9 @@ class CodeSpace < ActiveRecord::Base
 
   DEFAULT_SHORT_NAME = 'external'
 
+  has_many :codes, dependent: :delete_all
+
+  # WARNING: required a Referential#switch
+  has_many :referential_codes
+
 end

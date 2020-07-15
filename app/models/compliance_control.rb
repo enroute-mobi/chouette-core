@@ -132,7 +132,8 @@ end
 require_dependency 'compliance_controls/company_control/name_is_present'
 require_dependency 'compliance_controls/dummy_control/dummy' if InternalControl::Base.enabled?("dummy")
 require_dependency 'compliance_controls/stop_area_control/time_zone'
-require_dependency 'compliance_controls/generic_attribute_control/min_max'
+# See CHOUETTE-513
+# require_dependency 'compliance_controls/generic_attribute_control/min_max'
 require_dependency 'compliance_controls/generic_attribute_control/pattern'
 require_dependency 'compliance_controls/generic_attribute_control/uniqueness'
 require_dependency 'compliance_controls/journey_pattern_control/duplicates'

@@ -448,28 +448,12 @@ crumb :notification_rule do |notification_rule|
   parent :notification_rules, notification_rule.workbench
 end
 
-# crumb :compliance_controls do|compliance_control_sets|
-#   link
-#   parent :compliance_control_sets, compliance_control_sets
-# end
+crumb :shape_referential do |shape_referential, workbench|
+  link shape_referential.name, workbench_shape_referential_path(workbench)
+  parent :workbench, workbench
+end
 
-# crumb :project do |project|
-#   link project.name, project_path(project)
-#   parent :projects
-# end
-
-# crumb :project_issues do |project|
-#   link "Issues", project_issues_path(project)
-#   parent :project, project
-# end
-
-# crumb :issue do |issue|
-#   link issue.title, issue_path(issue)
-#   parent :project_issues, issue.project
-# end
-
-# If you want to split your breadcrumbs configuration over multiple files, you
-# can create a folder named `config/breadcrumbs` and put your configuration
-# files there. All *.rb files (e.g. `frontend.rb` or `products.rb`) in that
-# folder are loaded and reloaded automatically when you change them, just like
-# this file (`config/breadcrumbs.rb`).
+crumb :shapes do |shape_referential, workbench|
+  link Shape.t, workbench_shape_referential_shapes_path(workbench)
+  parent :shape_referential, shape_referential, workbench
+end

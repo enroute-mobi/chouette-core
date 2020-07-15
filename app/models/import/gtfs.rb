@@ -50,7 +50,7 @@ class Import::Gtfs < Import::Base
   end
 
   def prepare_referential
-    import_resources :agencies, :stops, :routes
+    import_resources :agencies, :stops, :routes, :shapes
 
     create_referential
     notify_operation_progress(:create_referential)
@@ -615,4 +615,78 @@ class Import::Gtfs < Import::Base
       @time = time
     end
   end
+
+  def import_shapes
+    Shapes.new(self).import!
+  end
+
+  class Shapes
+
+    def initialize(import)
+      @import = import
+    end
+
+    attr_reader :import
+    delegate :source, :workbench, to: :import
+    delegate :workgroup, to: :workbench
+
+    def shape_referential
+      workgroup.shape_referential
+    end
+
+    def shape_provider
+      workbench.default_shape_provider
+    end
+
+    def import!
+      source.shapes.each_slice(1000).each do |gtfs_shapes|
+        gtfs_shapes.each do |gtfs_shape|
+          Shape.transaction do
+            Decorator.new(gtfs_shape, shape_referential: shape_referential, shape_provider: shape_provider).shape.save!
+          end
+        end
+      end
+    end
+
+    class Decorator < SimpleDelegator
+
+      def initialize(shape, shape_referential: nil, shape_provider: nil)
+        super shape
+
+        @shape_referential = shape_referential
+        @shape_provider = shape_provider
+      end
+
+      attr_reader :shape_referential, :shape_provider
+
+      def factory
+        @factory ||= RGeo::Cartesian.simple_factory(srid: 4326)
+      end
+
+      def rgeos_points
+        points.map do |point|
+          factory.point point.longitude, point.latitude
+        end
+      end
+
+      def rgeos_geometry
+        factory.line_string rgeos_points
+      end
+
+      def shape_attributes
+        {
+          geometry: rgeos_geometry,
+          shape_provider: shape_provider
+        }
+      end
+
+      def shape
+        shape_referential.shapes.build shape_attributes
+      end
+
+    end
+
+  end
+
+
 end

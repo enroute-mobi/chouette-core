@@ -4,7 +4,7 @@
     "jest": "jest"
   },
   "dependencies": {
-    "@rails/webpacker": "3.2.0",
+    "@rails/webpacker": "3.2.2",
     "babel-jest": "23.2.0",
     "babel-loader": "^7.1.5",
     "babel-polyfill": "^6.26.0",

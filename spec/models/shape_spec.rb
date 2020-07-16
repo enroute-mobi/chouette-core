@@ -2,16 +2,16 @@ RSpec.describe Shape do
 
   it { is_expected.to validate_presence_of(:geometry) }
 
-  describe "#id" do
+  describe "#uuid" do
 
     let(:context) do
       Chouette.create { shape }
     end
-    subject { context.shape.id }
+    subject { context.shape.reload.uuid }
 
     UUID_REGEXP = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 
-    it "is an UUID" do
+    it "is an UUID (...)" do
       is_expected.to match(UUID_REGEXP)
     end
 

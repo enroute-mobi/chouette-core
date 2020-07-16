@@ -112,7 +112,7 @@ module ReferentialIndexSupport
       if multiple?
         source.send(method)
       else
-        [source.send(method)]
+        [source.send(method)].compact
       end
     end
   end

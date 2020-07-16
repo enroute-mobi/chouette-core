@@ -665,15 +665,15 @@ class Import::Gtfs < Import::Base
 
     class Decorator < SimpleDelegator
 
-      def initialize(shape, shape_provider: nil)
-        super shape
+      def initialize(gtfs_shape, shape_provider: nil)
+        super gtfs_shape
         @shape_provider = shape_provider
       end
 
       attr_reader :shape_provider
 
       def factory
-        @factory ||= RGeo::Cartesian.simple_factory(srid: 4326)
+        @factory ||= RGeo::Geos::FFIFactory.new srid: 4326
       end
 
       def code_value

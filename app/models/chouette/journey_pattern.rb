@@ -15,6 +15,7 @@ module Chouette
     has_many :courses_stats, class_name: "Stat::JourneyPatternCoursesByDate"
 
     belongs_to :shape, optional: true
+    belongs_to_public :shape
 
     scope :light, ->{ select(:id, :name, :route_id, :objectid) }
 

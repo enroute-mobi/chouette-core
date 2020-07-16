@@ -345,6 +345,7 @@ class Import::Gtfs < Import::Base
       trip.route_id,
       trip.direction_id,
       trip.headsign.presence || trip.short_name,
+      trip.shape_id,
     ] + stop_times.map(&:stop_id)
   end
 

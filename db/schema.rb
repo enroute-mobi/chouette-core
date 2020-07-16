@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_07_13_095247) do
+ActiveRecord::Schema.define(version: 2020_07_15_152422) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -619,9 +619,11 @@ ActiveRecord::Schema.define(version: 2020_07_13_095247) do
     t.json "costs"
     t.jsonb "metadata", default: {}
     t.jsonb "custom_field_values"
+    t.bigint "shape_id"
     t.index ["checksum"], name: "index_journey_patterns_on_checksum"
     t.index ["objectid"], name: "journey_patterns_objectid_key", unique: true
     t.index ["route_id"], name: "index_journey_patterns_on_route_id"
+    t.index ["shape_id"], name: "index_journey_patterns_on_shape_id"
   end
 
   create_table "journey_patterns_stop_points", id: false, force: :cascade do |t|
@@ -1010,9 +1012,10 @@ ActiveRecord::Schema.define(version: 2020_07_13_095247) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "shapes", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+  create_table "shapes", force: :cascade do |t|
     t.string "name"
     t.geometry "geometry", limit: {:srid=>4326, :type=>"line_string"}
+    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
     t.bigint "shape_referential_id", null: false
     t.bigint "shape_provider_id", null: false
     t.datetime "created_at", null: false

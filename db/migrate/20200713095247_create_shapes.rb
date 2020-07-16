@@ -11,6 +11,7 @@ class CreateShapes < ActiveRecord::Migration[5.2]
 
       Workgroup.find_each do |workgroup|
         workgroup.create_shape_referential
+        workgroup.save
       end
 
       change_column_null :workgroups, :shape_referential_id, false
@@ -29,10 +30,10 @@ class CreateShapes < ActiveRecord::Migration[5.2]
 
       execute 'CREATE EXTENSION IF NOT EXISTS pgcrypto SCHEMA shared_extensions;'
 
-      create_table :shapes, id: :uuid do |t|
+      create_table :shapes do |t|
         t.string :name
         t.line_string :geometry, srid: 4326
-
+        t.uuid :uuid, default: "gen_random_uuid()", null: false
         t.belongs_to :shape_referential, null: false
         t.belongs_to :shape_provider, null: false
 
@@ -47,7 +48,8 @@ class CreateShapes < ActiveRecord::Migration[5.2]
     drop_table :shape_providers if table_exists? :shape_providers
     drop_table :shape_referentials if table_exists? :shape_referentials
 
-    execute 'DROP EXTENSION IF EXISTS pgcrypto;'
+    # Drop the extension is difficult because the migrations are executed several times by Apartment
+    # execute 'DROP EXTENSION IF EXISTS pgcrypto;'
   end
 
 end

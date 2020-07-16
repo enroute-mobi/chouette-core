@@ -38,6 +38,7 @@ module Chouette
       values = self.slice(*['name', 'published_name', 'registration_number']).values
       values << self.stop_points.sort_by(&:position).map(&:stop_area_id)
       values << self.cleaned_costs
+      values << self.shape_id if self.shape_id
       values.flatten
     end
 

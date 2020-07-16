@@ -26,7 +26,7 @@ module Chouette
 
     def journey_patterns
       measure "journey_patterns" do
-        update_in_batches scope.journey_patterns.select(:id, :custom_field_values, :name, :published_name, :registration_number, :costs).includes(:stop_points)
+        update_in_batches scope.journey_patterns.select(:id, :custom_field_values, :name, :published_name, :registration_number, :costs, :shape_id).includes(:stop_points)
       end
     end
 

@@ -38,7 +38,7 @@ module Chouette
     validate :transport_mode_and_submode_match
     validates :registration_number, uniqueness: { scope: :line_referential_id }, allow_blank: true
 
-    scope :by_text, ->(text) { where('lower(name) LIKE :t or lower(published_name) LIKE :t or lower(objectid) LIKE :t or lower(comment) LIKE :t or lower(number) LIKE :t',
+    scope :by_text, ->(text) { where('lower(lines.name) LIKE :t or lower(lines.published_name) LIKE :t or lower(lines.objectid) LIKE :t or lower(lines.comment) LIKE :t or lower(lines.number) LIKE :t',
       t: "%#{text.downcase}%") }
 
     scope :by_name, ->(name) {

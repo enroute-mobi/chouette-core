@@ -9,7 +9,7 @@ class AutocompleteController < ChouetteController
   respond_to :json, only: [:lines]
 
   def lines
-    return [] if !params[:q]
+    return [] unless params[:q]
 
     @lines = if workbench
       workbench.line_referential.lines.by_text("%#{params[:q]}%")

@@ -1,34 +1,23 @@
 class AutocompleteController < ChouetteController
-
-  belongs_to :workbench, :optional => true do
-    belongs_to :referential do
-      belongs_to :line, :parent_class => Chouette::Line, :optional => true
-    end
-  end
-
   respond_to :json, only: [:lines]
 
   def lines
-    return [] unless params[:q]
-
-    @lines = if workbench
-      workbench.line_referential.lines.by_text("%#{params[:q]}%")
-    elsif referential
-      Apartment::Tenant.switch!(referential.slug)
-      referential.lines.by_text("%#{params[:q]}%")
-    else
-      []
-    end
-  end
+     return [] unless params[:q] && scope
+     @lines = scope.lines.by_text("%#{params[:q]}%")
+   end
 
   protected
 
-  def workbench
-    @workbench ||= params[:workbench_id] ? Workbench.find(params[:workbench_id]) : nil
-  end
+  def scope
+     workbench || referential
+   end
 
-  def referential
-    @referential ||= params[:referential_id] ? Referential.find(params[:referential_id]) : nil
-  end
+   def workbench
+     @workbench ||= current_organisation.workbenches.find(params[:workbench_id]) if params[:workbench_id]
+   end
+
+   def referential
+     @referential ||= current_organisation.referentials.find(params[:referential_id]) if params[:referential_id]
+   end
 
 end

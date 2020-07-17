@@ -24,7 +24,10 @@ class ReferentialCopy
   end
 
   def referential_inserter
-    @referential_inserter ||= ReferentialInserter.new(target)
+    @referential_inserter ||= ReferentialInserter.new(target) do |config|
+      config.add IdMapInserter, strict: true
+      config.add CopyInserter
+    end
   end
 
   def copy(raise_error: false)

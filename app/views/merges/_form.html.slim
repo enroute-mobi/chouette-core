@@ -15,6 +15,11 @@
     .col-lg-12
       = form.input :notification_target, collection: Merge.notification_target_options, selected: :user
 
+  - if has_feature?("merge_method")
+    .row
+      .col-lg-12
+        = form.input :merge_method, include_blank: false
+
   .row.merge-referentials-selector
     .col
       .head

@@ -1,12 +1,12 @@
 class CopyInserter < ByClassInserter
 
   attr_reader :target
-  def initialize(target)
+  def initialize(target, _options = {})
     @target = target
   end
 
   def flush
-    target.switch  do
+    target.switch do
       super
     end
   end
@@ -73,7 +73,7 @@ class CopyInserter < ByClassInserter
       csv.close
 
       csv_file.rewind
-      Rails.logger.info "copy #{csv_file.size} bytes to PG"
+      Rails.logger.info "Copy #{@model_class} #{csv_file.size} bytes"
       model_class.copy_from csv_file
 
       csv_file.unlink

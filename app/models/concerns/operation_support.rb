@@ -11,8 +11,8 @@ module OperationSupport
     scope :pending, ->{ where status: :pending }
     scope :running, ->{ where status: :running }
 
-    has_array_of :referentials, class_name: 'Referential'
-    belongs_to :new, class_name: 'Referential'
+    has_array_of :referentials, class_name: '::Referential'
+    belongs_to :new, class_name: '::Referential'
     has_many :publications, as: :parent, dependent: :destroy
 
     validate :has_at_least_one_referential, :on => :create

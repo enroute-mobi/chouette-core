@@ -132,10 +132,7 @@ RSpec.describe Merge do
 
     it "should work" do
       merge = Merge.create!(workbench: referential.workbench, referentials: [referential])
-      expect(merge).to receive(:vehicle_journeys_batch_size){ 2 }
       expect(merge).to receive(:clean_previous_operations)
-      vj_count = referential.switch{ Chouette::VehicleJourney.count }
-      expect(merge).to receive(:merge_vehicle_journeys).exactly((vj_count * 0.5).ceil).times.and_call_original
       expect{ merge.merge }.to change { Delayed::Job.count}.by 1
       merge.merge!
 

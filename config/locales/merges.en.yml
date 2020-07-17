@@ -45,6 +45,7 @@ en:
         available_referentials: "Available data sets"
         selected_referentials: "Selected data sets"
         contains_urgent_offer: Handles urgent offer
+        merge_method: Merge Method
     errors:
       models:
         merge:

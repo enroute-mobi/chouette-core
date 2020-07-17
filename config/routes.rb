@@ -27,6 +27,10 @@ ChouetteIhm::Application.routes.draw do
     delete :referentials, on: :member, action: :delete_referentials
     resources :api_keys
 
+    resources :autocomplete, only: [:lines] do
+      get :lines, on: :collection
+    end
+
     resources :compliance_check_sets, only: [:index, :show] do
       get :executed, on: :member
       resources :compliance_checks, only: [:show]
@@ -105,6 +109,11 @@ ChouetteIhm::Application.routes.draw do
     end
     resources :autocomplete_purchase_windows, only: [:index]
     resources :autocomplete_time_tables, only: [:index]
+
+    resources :autocomplete, only: [:lines] do
+      get :lines, on: :collection
+    end
+
 
     match 'lines' => 'lines#destroy_all', :via => :delete
     resources :lines, controller: "referential_lines", except: :index do

@@ -25,52 +25,9 @@ class ReferentialCloning < ApplicationModel
 
   def clone!
     Chouette::Benchmark.measure("referential.clone", source: source_referential.id, target: target_referential.id) do
-      command = "#{dump_command} | #{sed_command} | #{restore_command}"
-      unless system command
-        raise "Copy of #{source_schema} to #{target_schema} failed"
-      end
+      source_referential.schema.clone_to(target_referential.schema)
     end
     clean
-  end
-
-  def source_schema
-    source_referential.slug
-  end
-
-  def target_schema
-    target_referential.slug
-  end
-
-  def host
-    ActiveRecord::Base.connection_config[:host]
-  end
-
-  def port
-    ActiveRecord::Base.connection_config[:port] || 5432
-  end
-
-  def username
-    ActiveRecord::Base.connection_config[:username]
-  end
-
-  def password
-    ActiveRecord::Base.connection_config[:password]
-  end
-
-  def database
-    ActiveRecord::Base.connection_config[:database]
-  end
-
-  def dump_command
-    "PGPASSWORD='#{password}' pg_dump --host #{host} --port #{port} --username #{username} --schema=#{source_schema} #{database}"
-  end
-
-  def sed_command
-    "sed -e 's@#{source_schema}@#{target_schema}@g'"
-  end
-
-  def restore_command
-    "PGPASSWORD='#{password}' psql -q --host #{host} --port #{port} --username #{username} #{database}"
   end
 
   def clean

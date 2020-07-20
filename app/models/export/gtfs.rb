@@ -306,7 +306,6 @@ class Export::Gtfs < Export::Base
       @duplicated_vehicle_journey_codes.include? code
     end
 
-
   end
 
   class Part
@@ -741,7 +740,10 @@ class Export::Gtfs < Export::Base
     end
 
     def export!
-      vehicle_journey_at_stops.joins(:stop_point).select(:departure_time, :arrival_time, :departure_day_offset, :arrival_day_offset, :vehicle_journey_id, "vehicle_journey_at_stops.stop_area_id as stop_area_id", "stop_points.stop_area_id as parent_stop_area_id", "stop_points.position").each_row do |vjas_raw_hash|
+      attributes = [ :departure_time, :arrival_time, :departure_day_offset, :arrival_day_offset,
+                     :vehicle_journey_id, "vehicle_journey_at_stops.stop_area_id as stop_area_id",
+                     "stop_points.stop_area_id as parent_stop_area_id", "stop_points.position" ]
+      vehicle_journey_at_stops.joins(:stop_point).select(*attributes).each_row do |vjas_raw_hash|
         decorated_vehicle_journey_at_stop = Decorator.new(vjas_raw_hash, index: index, ignore_time_zone: ignore_time_zone?)
         # Duplicate the stop time for each exported trip
         index.trip_ids(vjas_raw_hash["vehicle_journey_id"].to_i).each do |trip_id|
@@ -779,12 +781,28 @@ class Export::Gtfs < Export::Base
         index&.vehicle_journey_time_zone(vehicle_journey_id) unless ignore_time_zone?
       end
 
+      def departure_time_of_day
+        @departure_time_of_day ||= TimeOfDay.parse(departure_time, day_offset: departure_day_offset) if departure_time
+      end
+
+      def departure_local_time_of_day
+       @departure_local_time_of_day ||= departure_time_of_day&.with_zone(time_zone)
+      end
+
+      def arrival_time_of_day
+        @arrival_time_of_day ||= TimeOfDay.parse(arrival_time, day_offset: arrival_day_offset) if arrival_time
+      end
+
+      def arrival_local_time_of_day
+        @arrival_local_time_of_day ||= arrival_time_of_day&.with_zone(time_zone)
+      end
+
       def stop_time_departure_time
-        GTFSTime.format_datetime TimeOfDay.parse(departure_time), departure_day_offset, time_zone if departure_time
+        GTFS::Time.create(departure_local_time_of_day).to_s if departure_local_time_of_day
       end
 
       def stop_time_arrival_time
-        GTFSTime.format_datetime TimeOfDay.parse(arrival_time), arrival_day_offset, time_zone if arrival_time
+        GTFS::Time.create(arrival_local_time_of_day).to_s if arrival_local_time_of_day
       end
 
       def stop_area_id

@@ -124,7 +124,7 @@ fr:
       title: "Horaires de '%{route}'"
       vehicle_journeys: "Horaires de départ aux arrêts"
       vjas:
-        arrival_time: "%{time} (J+%{offset})"
+        time_of_day: "%{time} (J+%{offset})"
     time_filter:
       time_range_filter: "Filtrer"
     sidebar:

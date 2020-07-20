@@ -226,10 +226,10 @@ module Chouette
       purchase_windows.map{|p| p.date_ranges.map &:max}.flatten.max
     end
 
-    def calculate_vehicle_journey_at_stop_day_offset(force_reset=false)
+    def calculate_vehicle_journey_at_stop_day_offset
       Chouette::VehicleJourneyAtStopsDayOffset.new(
         vehicle_journey_at_stops.sort_by{ |vjas| vjas.stop_point.position }
-      ).update(force_reset)
+      ).update
     end
 
     accepts_nested_attributes_for :vehicle_journey_at_stops, :allow_destroy => true
@@ -266,14 +266,15 @@ module Chouette
         stop_area = stop_point&.stop_area
         tz = stop_area&.time_zone
         tz = tz && ActiveSupport::TimeZone[tz]
-        params = {}.tap do |el|
-          ['arrival_time', 'departure_time'].each do |field|
-            time = "#{vjas[field]['hour']}:#{vjas[field]['minute']}"
-            el[field.to_sym] = Time.parse("2000-01-01 #{time}:00 #{tz&.formatted_offset || "UTC"}")
-          end
+        utc_offset = tz ? tz.utc_offset : 0
+
+        params = {}
+
+        %w{departure arrival}.each do |part|
+          field = "#{part}_time"
+          time_of_day = TimeOfDay.new vjas[field]['hour'], vjas[field]['minute'], utc_offset: utc_offset
+          params["#{part}_time_of_day".to_sym] = time_of_day
         end
-        params[:arrival_day_offset] = 0
-        params[:departure_day_offset] = 0
         params[:stop_area_id] = vjas['specific_stop_area_id']
         stop = create_or_find_vjas_from_state(vjas)
         stop.update_attributes(params)
@@ -435,7 +436,6 @@ module Chouette
     def fill_passing_times!
       encountered_empty_vjas = []
       previous_stop = nil
-      tz_offset = vehicle_journey_at_stops.first.time_zone_offset || 0
       vehicle_journey_at_stops.each do |vjas|
         sp = vjas.stop_point
         if vjas.arrival_time.nil? && vjas.departure_time.nil?
@@ -463,19 +463,17 @@ module Chouette
               raise "MISSING cost between #{previous.stop_point.stop_area.registration_number} AND #{empty_vjas.stop_point.stop_area.registration_number}" unless cost.present?
               distance_from_last_known += cost[:distance]
 
-              arrival_time = vjas.arrival_time + (vjas.arrival_day_offset - previous_stop.departure_day_offset)*24.hours
-              time = previous_stop.departure_time + distance_from_last_known.to_f / distance_between_known.to_f * (arrival_time - previous_stop.departure_time)
-              day_offset = time.day - 1
-              time -= day_offset*24.hours
+              arrival_time_of_day = vjas.arrival_time_of_day
+              previous_time_of_day = previous_stop.departure_time_of_day
 
-              if(time + tz_offset).day > 1
-                day_offset += 1
-              end
+              ratio = distance_from_last_known.to_f / distance_between_known.to_f
+              delta = arrival_time_of_day-previous_time_of_day
 
-              empty_vjas.update_attribute :arrival_time, time
-              empty_vjas.update_attribute :arrival_day_offset, previous_stop.departure_day_offset + day_offset
-              empty_vjas.update_attribute :departure_time, time
-              empty_vjas.update_attribute :departure_day_offset, previous_stop.departure_day_offset + day_offset
+              time_of_day = previous_time_of_day.add(seconds: ratio * delta)
+
+              empty_vjas.update_attribute :arrival_time_of_day, time_of_day
+              empty_vjas.update_attribute :departure_time_of_day, time_of_day
+
               previous = empty_vjas
             end
             encountered_empty_vjas = []

@@ -365,6 +365,56 @@ RSpec.describe Import::Gtfs do
     end
   end
 
+  describe "time_of_day" do
+    context "with a UTC+1 Agency"do
+      let(:import) { build_import 'time_of_day_feed_1.zip' }
+
+      it "should have correct time of day values" do
+        import.prepare_referential
+        import.import_calendars
+        import.import_stop_times
+
+        expected_attributes = [
+          ['S1','23:00:00 day:-1'],
+          ['S2','23:00:05 day:-1']
+        ]
+
+        a = []
+        referential.vehicle_journey_at_stops.each do |vjas|
+          a << [
+            vjas.stop_point.registration_number,
+            vjas.departure_time_of_day.to_s
+          ]
+        end
+        expect(a).to match_array(expected_attributes)
+      end
+    end
+
+    context "with a UTC-8 Agency"do
+      let(:import) { build_import 'time_of_day_feed_8.zip' }
+
+      it "should have correct time of day values" do
+        import.prepare_referential
+        import.import_calendars
+        import.import_stop_times
+
+        expected_attributes = [
+          ['S1','00:00:00 day:1'],
+          ['S2','00:00:05 day:1']
+        ]
+
+        a = []
+        referential.vehicle_journey_at_stops.each do |vjas|
+          a << [
+            vjas.stop_point.registration_number,
+            vjas.departure_time_of_day.to_s
+          ]
+        end
+        expect(a).to match_array(expected_attributes)
+      end
+    end
+  end
+
   describe "#import_stop_times" do
     let(:import) { build_import 'google-sample-feed.zip' }
 
@@ -446,9 +496,6 @@ RSpec.describe Import::Gtfs do
         Time.parse(value)
       end
 
-      defined_attributes = [
-        "stop_areas.registration_number", :position, :departure_time, :arrival_time, :departure_day_offset, :arrival_day_offset,
-      ]
       expected_attributes = [
         ['EMSI', 0, t('2000-01-01 14:30:00 UTC'), t('2000-01-01 14:28:00 UTC'), 0, 0],
         ['DADAN', 1, t('2000-01-01 14:37:00 UTC'), t('2000-01-01 14:35:00 UTC'), 0, 0],
@@ -471,7 +518,19 @@ RSpec.describe Import::Gtfs do
         ['BEATTY_AIRPORT', 1, t('2000-01-01 09:00:00 UTC'), t('2000-01-01 09:00:00 UTC'), 1, 1]
       ]
 
-      expect(referential.vehicle_journey_at_stops.includes(stop_point: :stop_area).pluck(*defined_attributes)).to match_array(expected_attributes)
+      a = []
+      referential.vehicle_journey_at_stops.each do |vjas|
+        a << [
+          vjas.stop_point.registration_number,
+          vjas.stop_point.position,
+          vjas.departure_time_of_day.to_vehicle_journey_at_stop_time,
+          vjas.arrival_time_of_day.to_vehicle_journey_at_stop_time,
+          vjas.departure_time_of_day.day_offset,
+          vjas.arrival_time_of_day.day_offset
+        ]
+      end
+      expect(a).to match_array(expected_attributes)
+
       referential.vehicle_journeys.each do |vj|
         expect{ vj.calculate_vehicle_journey_at_stop_day_offset; vj.update_checksum! }.to_not change { vj.checksum }
       end

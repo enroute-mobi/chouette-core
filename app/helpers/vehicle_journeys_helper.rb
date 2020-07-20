@@ -81,10 +81,14 @@ module VehicleJourneysHelper
     end
   end
 
-  def display_time_with_day_offset(time, offset)
-    return time if offset.nil? || offset.zero?
+  def display_time_of_day(time_of_day)
+    return '-' unless time_of_day
 
-    I18n.t('vehicle_journeys.index.vjas.arrival_time', time: time, offset: offset)
+    if time_of_day.day_offset?
+      I18n.t('vehicle_journeys.index.vjas.time_of_day', time: time_of_day.to_hms, offset: time_of_day.day_offset)
+    else
+      time_of_day.to_hms
+    end
   end
 
 end

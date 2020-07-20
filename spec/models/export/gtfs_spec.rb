@@ -226,40 +226,95 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
     end
 
     %w{arrival departure}.each do |state|
-      describe "stop_time_#{state}_time" do
-        it "formats the #{state}_time according to the #{state}_day_offset and the time zone" do
-          # Can't allocate test values directly to vehicle_journey_at_stop object since the method to get attribute raw value in db (attributes_before_type_cast) doesn't seem to work with rspec...
-          vjas_raw_hash["#{state}_time"]="23:00"
-          time = TimeOfDay.parse(vjas_raw_hash["#{state}_time"])
-          day_offset = 0
-          vjas_raw_hash["#{state}_day_offset"]=day_offset
+      describe "#{state}_time_of_day" do
 
-          allow(decorator).to receive(:time_zone).and_return(time_zone)
-          formated_time = "23:00::00"
+        subject { decorator.send "#{state}_time_of_day" }
 
-          expect(GTFSTime).to receive(:format_datetime).
-                                  with(time, day_offset, time_zone).
-                                  and_return formated_time
+        context "when #{state}_time is nil" do
+          before { allow(decorator).to receive("#{state}_time").and_return(nil) }
 
-          expect(decorator.send("stop_time_#{state}_time")).to eq(formated_time)
+          it { is_expected.to be_nil }
         end
 
-        it "returns nil if #{state}_time is nil" do
-          vjas_raw_hash["#{state}_time"]=nil
-          allow(decorator).to receive(:time_zone).and_return(nil)
+        context "when #{state}_time is defined" do
+          it "uses #{state}_time to create a TimeOfDay" do
+            allow(decorator).to receive("#{state}_time").and_return("14:00")
+            is_expected.to eq(TimeOfDay.new(14))
+          end
 
-          expect(decorator.send("stop_time_#{state}_time")).to be_nil
+          it "uses #{state}_day_offset to create TimeOfDay" do
+            allow(decorator).to receive("#{state}_time").and_return("14:00")
+            allow(decorator).to receive("#{state}_day_offset").and_return(1)
+
+            is_expected.to eq(TimeOfDay.new(14, day_offset: 1))
+          end
         end
 
-        it "supports a nil time zone" do
-          vjas_raw_hash["#{state}_time"]="23:00"
-          vjas_raw_hash["#{state}_day_offset"]=0
-
-          allow(decorator).to receive(:time_zone).and_return(nil)
-
-          expect(decorator.send("stop_time_#{state}_time")).to eq("23:00:00")
-        end
       end
+
+      describe "#{state}_local_time_of_day" do
+
+        subject { decorator.send "#{state}_local_time_of_day" }
+
+        context "when #{state}_time is nil" do
+          before { allow(decorator).to receive("#{state}_time").and_return(nil) }
+          it { is_expected.to be_nil }
+        end
+
+        context "when #{state}_time_of_day is nil" do
+          before { allow(decorator).to receive("#{state}_time_of_day").and_return(nil) }
+          it { is_expected.to be_nil }
+        end
+
+        context "when #{state}_time_of_day is defined" do
+
+          let(:time_of_day) { TimeOfDay.new(14) }
+          before { allow(decorator).to receive("#{state}_time_of_day").and_return(time_of_day) }
+
+          context "when time_zone is defined" do
+
+            let(:time_zone) { "Europe/Paris" }
+            before { allow(decorator).to receive(:time_zone).and_return(time_zone) }
+
+            it "returns #{state}_time_of_day with time_zone offset" do
+              is_expected.to eq(time_of_day.with_utc_offset(1.hour))
+            end
+          end
+
+          context "when time_zone is not defined" do
+            before { allow(decorator).to receive(:time_zone).and_return(nil) }
+
+            it "returns #{state}_time_of_day unchanged" do
+              is_expected.to eq(time_of_day)
+            end
+          end
+
+        end
+
+      end
+
+      describe "stop_time_#{state}_time" do
+
+        subject { decorator.send "stop_time_#{state}_time" }
+
+        context "when #{state}_local_time_of_day is nil" do
+          before { allow(decorator).to receive("#{state}_time_of_day").and_return(nil) }
+          it { is_expected.to be_nil }
+        end
+
+        context "when #{state}_local_time_of_day is defined" do
+
+          let(:time_of_day) { TimeOfDay.new(14) }
+          before { allow(decorator).to receive("#{state}_local_time_of_day").and_return(time_of_day) }
+
+          it "returns a GTFS::Time string representation based on #{state}_local_time_of_day value" do
+            is_expected.to eq("14:00:00")
+          end
+
+        end
+
+      end
+
     end
 
     describe "stop_area_id" do

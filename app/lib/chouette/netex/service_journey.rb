@@ -38,12 +38,16 @@ class Chouette::Netex::ServiceJourney < Chouette::Netex::Resource
         @builder.TimetabledPassingTime do
           ref 'StopPointInJourneyPatternRef', id_with_entity('StopPointInJourneyPattern', resource.journey_pattern_only_objectid, vjas.stop_point)
           if i > 0
-            @builder.ArrivalTime format_time_only(vjas.arrival_local_time)
-            @builder.ArrivalDayOffset(vjas.arrival_day_offset) if vjas.arrival_day_offset > 0
+            arrival_time_of_day = vjas.arrival_local_time_of_day
+            @builder.ArrivalTime arrival_time_of_day.to_iso_8601
+            @builder.ArrivalDayOffset(arrival_time_of_day.day_offset) if arrival_time_of_day.day_offset?
           end
           if vjas != last
-            @builder.DepartureTime format_time_only(vjas.departure_local_time)
-            @builder.DepartureDayOffset(vjas.departure_day_offset) if vjas.arrival_day_offset > 0
+            departure_time_of_day = vjas.arrival_local_time_of_day
+            if arrival_time_of_day != departure_time_of_day
+              @builder.DepartureTime departure_time_of_day.to_iso_8601
+              @builder.DepartureDayOffset(departure_time_of_day.day_offset) if departure_time_of_day.day_offset?
+            end
           end
         end
       end

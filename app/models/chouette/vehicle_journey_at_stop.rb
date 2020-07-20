@@ -38,6 +38,41 @@ module Chouette
       @dummy = false
     end
 
+    def departure_time_of_day
+      @departure_time_of_day ||= TimeOfDay.unserialize(attributes_before_type_cast["departure_time"], day_offset: departure_day_offset)
+    end
+
+    def departure_local_time_of_day
+      @departure_local_time_of_day ||= departure_time_of_day&.with_utc_offset(time_zone_offset)
+    end
+
+    def departure_time_of_day=(time_of_day)
+      time_of_day = time_of_day.without_utc_offset
+      @departure_time_of_day = time_of_day
+      @departure_local_time_of_day = nil
+
+      self.departure_time = time_of_day.to_hms
+      self.departure_day_offset = time_of_day.day_offset
+    end
+
+    def arrival_time_of_day
+      @arrival_time_of_day ||= TimeOfDay.unserialize(attributes_before_type_cast["arrival_time"], day_offset: arrival_day_offset)
+    end
+
+    def arrival_local_time_of_day
+      @arrival_local_time_of_day ||= arrival_time_of_day&.with_utc_offset(time_zone_offset)
+    end
+
+    def arrival_time_of_day=(time_of_day)
+      time_of_day = time_of_day.without_utc_offset
+      @arrival_time_of_day = time_of_day
+      @arrival_local_time_of_day = nil
+
+      self.arrival_time = time_of_day.to_hms
+      self.arrival_day_offset = time_of_day.day_offset
+    end
+
+
     %i[departure_time arrival_time].each do |attr|
       define_method "#{attr}=" do |val|
         self[attr] = convert_string_time_to_utc_time(val)
@@ -112,6 +147,16 @@ module Chouette
       end
     end
 
+    def time_zone
+      ActiveSupport::TimeZone[stop_point&.stop_area_light&.time_zone || "UTC"]
+    end
+
+    def time_zone_offset
+      return 0 unless stop_point&.stop_area_light&.time_zone.present?
+      time_zone&.utc_offset || 0
+    end
+
+    ########## DEPRECATED ##########
     def departure
       format_time departure_time.utc
     end
@@ -143,15 +188,6 @@ module Chouette
       arrival_time.in_time_zone(time_zone).change(day: 1)
     end
 
-    def time_zone
-      ActiveSupport::TimeZone[stop_point&.stop_area_light&.time_zone || "UTC"]
-    end
-
-    def time_zone_offset
-      return 0 unless stop_point&.stop_area_light&.time_zone.present?
-      time_zone&.utc_offset || 0
-    end
-
     private
     def local_time time, offset=nil
       return nil unless time
@@ -161,6 +197,6 @@ module Chouette
     def format_time time
       time.strftime "%H:%M" if time
     end
-
+    ################################
   end
 end

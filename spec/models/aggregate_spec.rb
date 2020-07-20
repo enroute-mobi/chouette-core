@@ -1,7 +1,7 @@
 RSpec.describe Aggregate, type: :model do
   context 'an automatic aggregate' do
     context "without concurent aggregate" do
-      let(:aggregate){ Aggregate.new(workgroup: referential.workbench.workgroup, referentials: [referential, referential], automatic_operation: true) }
+      let(:aggregate){ Aggregate.new(workgroup: referential.workgroup, referentials: [referential, referential], automatic_operation: true) }
       it 'should launch the aggregate' do
         expect(aggregate).to receive(:run).and_call_original
         aggregate.save
@@ -11,8 +11,8 @@ RSpec.describe Aggregate, type: :model do
 
     context "with another concurent aggregate" do
       let(:existing_aggregate_status){ :running }
-      let(:existing_aggregate){ Aggregate.create(workgroup: referential.workbench.workgroup, referentials: [referential, referential], status: existing_aggregate_status) }
-      let(:aggregate){ Aggregate.new(workgroup: referential.workbench.workgroup, referentials: [referential, referential], automatic_operation: true) }
+      let(:existing_aggregate){ Aggregate.create(workgroup: referential.workgroup, referentials: [referential, referential], status: existing_aggregate_status) }
+      let(:aggregate){ Aggregate.new(workgroup: referential.workgroup, referentials: [referential, referential], automatic_operation: true) }
 
       it "should be valid" do
         existing_aggregate
@@ -27,7 +27,7 @@ RSpec.describe Aggregate, type: :model do
       end
 
       context "with an already pending aggregate" do
-        let(:pending_aggregate){ Aggregate.create(workgroup: referential.workbench.workgroup, referentials: [referential, referential], status: :pending, automatic_operation: true) }
+        let(:pending_aggregate){ Aggregate.create(workgroup: referential.workgroup, referentials: [referential, referential], status: :pending, automatic_operation: true) }
 
         it 'should cancel it' do
           existing_aggregate
@@ -40,8 +40,8 @@ RSpec.describe Aggregate, type: :model do
     end
 
     it "should run next pending aggregate once it's done" do
-      pending_aggregate = Aggregate.create(workgroup: referential.workbench.workgroup, referentials: [referential, referential], status: :pending)
-      aggregate = Aggregate.create(workgroup: referential.workbench.workgroup, referentials: [referential, referential], automatic_operation: true)
+      pending_aggregate = Aggregate.create(workgroup: referential.workgroup, referentials: [referential, referential], status: :pending)
+      aggregate = Aggregate.create(workgroup: referential.workgroup, referentials: [referential, referential], automatic_operation: true)
 
       allow_any_instance_of(Aggregate).to receive(:run) do |m|
         expect(m).to eq pending_aggregate
@@ -51,8 +51,8 @@ RSpec.describe Aggregate, type: :model do
     end
 
     it "should run next pending aggregate if it fails" do
-      pending_aggregate = Aggregate.create(workgroup: referential.workbench.workgroup, referentials: [referential, referential], status: :pending)
-      aggregate = Aggregate.create(workgroup: referential.workbench.workgroup, referentials: [referential, referential], automatic_operation: true)
+      pending_aggregate = Aggregate.create(workgroup: referential.workgroup, referentials: [referential, referential], status: :pending)
+      aggregate = Aggregate.create(workgroup: referential.workgroup, referentials: [referential, referential], automatic_operation: true)
       expect(aggregate).to receive(:prepare_new){ raise "oops" }
       allow_any_instance_of(Aggregate).to receive(:run) do |m|
         expect(m).to eq pending_aggregate
@@ -65,9 +65,9 @@ RSpec.describe Aggregate, type: :model do
     end
 
     it "should clean previous aggregates" do
-      referential.workbench.workgroup.update(owner: referential.organisation)
+      referential.workgroup.update(owner: referential.organisation)
       15.times do
-        a = Aggregate.create!(workgroup: referential.workbench.workgroup, referentials: [referential, referential], automatic_operation: true)
+        a = Aggregate.create!(workgroup: referential.workgroup, referentials: [referential, referential], automatic_operation: true)
         a.update status: :successful
       end
       Aggregate.last.aggregate!
@@ -77,7 +77,7 @@ RSpec.describe Aggregate, type: :model do
 
   context 'a manual aggregate' do
     context "without concurent aggregate" do
-      let(:aggregate){ Aggregate.new(workgroup: referential.workbench.workgroup, referentials: [referential, referential]) }
+      let(:aggregate){ Aggregate.new(workgroup: referential.workgroup, referentials: [referential, referential]) }
       it 'should launch the aggregate' do
         expect(aggregate).to receive(:run).and_call_original
         aggregate.save
@@ -87,8 +87,8 @@ RSpec.describe Aggregate, type: :model do
 
     context "with another concurent aggregate" do
       let(:existing_aggregate_status){ :running }
-      let(:existing_aggregate){ Aggregate.create(workgroup: referential.workbench.workgroup, referentials: [referential, referential], status: existing_aggregate_status) }
-      let(:aggregate){ Aggregate.new(workgroup: referential.workbench.workgroup, referentials: [referential, referential]) }
+      let(:existing_aggregate){ Aggregate.create(workgroup: referential.workgroup, referentials: [referential, referential], status: existing_aggregate_status) }
+      let(:aggregate){ Aggregate.new(workgroup: referential.workgroup, referentials: [referential, referential]) }
 
       it "should not be valid" do
         existing_aggregate
@@ -114,7 +114,7 @@ RSpec.describe Aggregate, type: :model do
   end
 
   describe '#worker_died' do
-    let(:aggregate) { Aggregate.create!(workgroup: referential.workbench.workgroup, referentials: [referential, referential]) }
+    let(:aggregate) { Aggregate.create!(workgroup: referential.workgroup, referentials: [referential, referential]) }
 
     it 'should set aggregate status to failed' do
       expect(aggregate.status).to eq("running")

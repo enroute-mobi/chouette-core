@@ -200,10 +200,36 @@ class ReferentialCopy
       end
     end
 
-    target.switch do
-      update_checkum_in_batches target.time_tables.includes(:dates, :periods).where(id: table_ids)
-    end
+    Chouette::ChecksumUpdater.new(target, scope: TimeTableScope.new(target, table_ids)).time_tables
   end
+
+  class TimeTableScope
+
+    def initialize(target, table_ids)
+      @target, @table_ids = target, table_ids
+    end
+
+    attr_reader :target, :table_ids
+
+    def target_time_tables
+      @target_time_tables ||= target.time_tables.where(id: table_ids)
+    end
+
+    def time_tables
+      target_time_tables.includes(:dates, :periods)
+    end
+
+    def time_table_dates
+      target.time_table_dates.where(time_table_id: target_time_tables)
+    end
+
+    def time_table_periods
+      target.time_table_periods.where(time_table_id: target_time_tables)
+    end
+
+  end
+
+
 
   # PURCHASE WINDOWS
 
@@ -238,19 +264,34 @@ class ReferentialCopy
     end
   end
 
-  def copy_line_checksums(line)
-    target.switch do
-      update_checkum_in_batches Chouette::Route.where(id: @new_routes).select(:id, :name, :published_name, :wayback).includes(:stop_points, :routing_constraint_zones)
-      update_checkum_in_batches target.vehicle_journey_at_stops.joins(vehicle_journey: :route).where(routes: {id: @new_routes}).select(:id, :departure_time, :arrival_time, :departure_day_offset, :arrival_day_offset, :stop_area_id)
-      update_checkum_in_batches target.journey_patterns.where(route_id: @new_routes).select(:id, :custom_field_values, :name, :published_name, :registration_number, :costs).includes(:stop_points)
-      update_checkum_in_batches target.vehicle_journeys.where(route_id: @new_routes).select(:id, :custom_field_values, :published_journey_name, :published_journey_identifier, :ignored_routing_contraint_zone_ids, :ignored_stop_area_routing_constraint_ids, :company_id, :line_notice_ids).includes(:company_light, :footnotes, :vehicle_journey_at_stops, :purchase_windows)
+  class ChecksumScope
+
+    def initialize(target, new_routes)
+      @target, @new_routes = target, new_routes
     end
+
+    attr_reader :target
+
+    def routes
+      target.routes.where(id: @new_routes)
+    end
+
+    def journey_patterns
+      target.journey_patterns.where(route_id: @new_routes)
+    end
+
+    def vehicle_journeys
+      target.vehicle_journeys.where(route_id: @new_routes)
+    end
+
+    def vehicle_journey_at_stops
+      target.vehicle_journey_at_stops.joins(vehicle_journey: :route).where(routes: {id: @new_routes})
+    end
+
   end
 
-  def update_checkum_in_batches(collection)
-    profile_tag 'update_checkum_in_batches' do
-      Chouette::ChecksumManager.update_checkum_in_batches(collection, target)
-    end
+  def copy_line_checksums(line)
+    Chouette::ChecksumUpdater.new(target, scope: ChecksumScope.new(target, @new_routes)).update
   end
 
   def copy_route route

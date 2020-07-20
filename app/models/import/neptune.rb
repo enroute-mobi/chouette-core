@@ -412,14 +412,7 @@ class Import::Neptune < Import::Base
       end
     end
 
-    CustomFieldsSupport.within_workgroup(workbench.workgroup) do
-      update_checkum_in_batches referential.vehicle_journey_at_stops.select(:id, :departure_time, :arrival_time, :departure_day_offset, :arrival_day_offset, :stop_area_id)
-      update_checkum_in_batches referential.vehicle_journeys.select(:id, :custom_field_values, :published_journey_name, :published_journey_identifier, :ignored_routing_contraint_zone_ids, :ignored_stop_area_routing_constraint_ids, :company_id, :line_notice_ids).includes(:company_light, :footnotes, :vehicle_journey_at_stops, :purchase_windows)
-    end
-  end
-
-  def update_checkum_in_batches(collection)
-    Chouette::ChecksumManager.update_checkum_in_batches(collection, referential)
+    Chouette::ChecksumUpdater.new(referential).vehicle_journeys
   end
 
   def add_stop_points_to_route(route, link_ids, links, route_object_id)

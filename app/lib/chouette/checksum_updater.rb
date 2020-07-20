@@ -51,9 +51,7 @@ module Chouette
       Chouette::Benchmark.measure "checksum_updater/#{name}", id: referential.id, &block
     end
 
-    def workgroup
-      @workgroup ||= referential.workbench.workgroup
-    end
+    delegate :workgroup, to: :referential
 
     def update_in_batches(collection)
       CustomFieldsSupport.within_workgroup(workgroup) do

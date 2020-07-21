@@ -51,6 +51,10 @@ class ReferentialSchema
     @table_ordered_by_constraints ||= Table.create(self, table_names_ordered_by_constraints)
   end
 
+  def ==(other)
+    other && name == other.name
+  end
+
   class Table
 
     def initialize(schema, name)
@@ -67,6 +71,10 @@ class ReferentialSchema
           Table.new schema, name
         end
       end.compact
+    end
+
+    def ==(other)
+      other && schema == other.schema && name == other.name
     end
 
     def full_name

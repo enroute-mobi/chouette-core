@@ -48,7 +48,7 @@ module ExportsHelper
   end
 
   def import_option_input form, export, attr, option_def, type
-    export_option_input form, export, attr, option_def, type, nil
+    export_option_input form, export, attr, option_def, type
   end
 
   def export_message_content message

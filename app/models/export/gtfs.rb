@@ -4,6 +4,8 @@ class Export::Gtfs < Export::Base
   option :duration, required: true, type: :integer, default_value: 200
   option :prefer_referent_stop_area, required: true, type: :boolean, default_value: false
 
+  validates_inclusion_of :prefer_referent_stop_area, in: [true, false]
+
   DEFAULT_AGENCY_ID = "chouette_default"
   DEFAULT_TIMEZONE = "Etc/UTC"
 

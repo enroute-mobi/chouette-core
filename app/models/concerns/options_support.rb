@@ -8,7 +8,6 @@ module OptionsSupport
     end
 
     def self.option name, opts={}
-      # name = opts[:name] if opts[:name].present?
       attribute_name =  opts[:name].presence || name
       store_accessor :options, attribute_name
 
@@ -38,30 +37,12 @@ module OptionsSupport
         end
         alias_method attribute_name, "#{attribute_name}_with_cast"
       end
-      condition = ->(record){ true }
+
+      # Add specific validation for dependent attributes on the parent attribute and value
       condition = ->(record){ record.send(opts[:depends][:option])&.to_s == opts[:depends][:value].to_s } if opts[:depends]
-
-      if !!opts[:required]
-        if opts[:type].to_s == "boolean"
-          validates_inclusion_of attribute_name, in: [true, false], if: condition
-        else
-          validates attribute_name, presence: true, if: condition
-        end
-      end
-
-      min = opts[:min].presence
-      max = opts[:max].presence
-
-      if min || max
-        validates attribute_name, numericality: { less_than_or_equal_to: max, greater_than_or_equal_to: min }, if: condition
-      end
 
       @options ||= {}
       @options[name] = opts
-
-      if block_given?
-        yield Export::OptionProxy.new(self, opts.update(name: name))
-      end
     end
 
     def self.options

@@ -1,8 +1,6 @@
 class PublicationApisController < ChouetteController
   include PolicyChecker
 
-  requires_feature :manage_publications
-
   defaults :resource_class => PublicationApi
   belongs_to :workgroup
 

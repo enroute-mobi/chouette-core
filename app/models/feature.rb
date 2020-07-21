@@ -10,7 +10,6 @@ class Feature
       detailed_purchase_windows
       journey_length_in_vehicle_journeys
       long_distance_routes
-      manage_publications
       purchase_windows
       referential_vehicle_journeys
       route_stop_areas_all_types

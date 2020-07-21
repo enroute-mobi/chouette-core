@@ -1,8 +1,6 @@
 class PublicationSetupsController < ChouetteController
   include PolicyChecker
 
-  requires_feature :manage_publications
-
   defaults :resource_class => PublicationSetup
   belongs_to :workgroup
 

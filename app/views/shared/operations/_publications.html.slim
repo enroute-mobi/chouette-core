@@ -1,4 +1,4 @@
-- if operation.successful? && has_feature?(:manage_publications)
+- if operation.successful?
   .col-lg-12
     - if operation.publications.empty?
       = replacement_msg t('publications.search_no_results')

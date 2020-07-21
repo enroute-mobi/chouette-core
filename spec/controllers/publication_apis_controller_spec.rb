@@ -12,27 +12,25 @@ RSpec.describe PublicationApisController, type: :controller do
     workgroup.update owner: organisation
   }
 
-  with_feature "manage_publications" do
-    describe "GET index" do
-      let(:request){ get :index, params: { workgroup_id: workgroup.id }}
+  describe "GET index" do
+    let(:request){ get :index, params: { workgroup_id: workgroup.id }}
+    it "should be ok" do
+      request
+      expect(response).to be_successful
+    end
+  end
+
+  describe "GET new" do
+    let(:request){ get :new, params: { workgroup_id: workgroup.id }}
+    it "should not be ok" do
+      request
+      expect(response).not_to be_successful
+    end
+
+    with_permission "publication_apis.create" do
       it "should be ok" do
         request
         expect(response).to be_successful
-      end
-    end
-
-    describe "GET new" do
-      let(:request){ get :new, params: { workgroup_id: workgroup.id }}
-      it "should not be ok" do
-        request
-        expect(response).not_to be_successful
-      end
-
-      with_permission "publication_apis.create" do
-        it "should be ok" do
-          request
-          expect(response).to be_successful
-        end
       end
     end
 

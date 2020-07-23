@@ -285,10 +285,12 @@ module Chouette
 
     def manage_referential_codes_from_state state
       # Delete removed referential_codes
-      ReferentialCode.destroy(codes.map(&:id) - state["referential_codes"]&.map{|c| c["id"]})
+      referential_codes = state["referential_codes"] || []
+      defined_codes = referential_codes.map{ |c| c["id"] }
+      codes.where.not(id: defined_codes).delete_all
 
       # Update or create other codes
-      state["referential_codes"].each do |code_item|
+      referential_codes.each do |code_item|
         ref_code = code_item["id"].present? ? codes.find(code_item["id"]) : codes.build
         ref_code.update_attributes({
           code_space_id: code_item["code_space_id"],

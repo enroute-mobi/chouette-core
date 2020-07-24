@@ -13,10 +13,11 @@ class CopyInserter < ByClassInserter
 
   class Base
 
-    attr_reader :model_class
+    attr_reader :model_class, :parent_inserter
 
-    def initialize(model_class, _)
+    def initialize(model_class, parent_inserter)
       @model_class = model_class
+      @parent_inserter = parent_inserter
     end
 
     def csv
@@ -31,13 +32,8 @@ class CopyInserter < ByClassInserter
       @csv_file ||= Tempfile.new(['copy','.csv'])
     end
 
-    def columns
-      model_class.columns
-    end
-
-    def connection
-      @connection ||= model_class.connection
-    end
+    delegate :connection, :columns, to: :model_class
+    delegate :target, to: :parent_inserter
 
     def headers
       @headers ||= columns.map(&:name)
@@ -70,6 +66,11 @@ class CopyInserter < ByClassInserter
     end
 
     def flush
+      save_csv
+      reset_pk_sequence
+    end
+
+    def save_csv
       csv.close
 
       csv_file.rewind
@@ -77,6 +78,12 @@ class CopyInserter < ByClassInserter
       model_class.copy_from csv_file
 
       csv_file.unlink
+    end
+
+    def reset_pk_sequence
+      target.switch do
+        connection.reset_pk_sequence! model_class.table_name
+      end
     end
 
   end

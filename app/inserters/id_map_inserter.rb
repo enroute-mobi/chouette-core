@@ -120,9 +120,6 @@ class IdMapInserter < ByClassInserter
 
     def flush
       @new_primary_keys.clear
-      parent_inserter.target.switch do
-        model_class.connection.reset_pk_sequence! model_class.table_name
-      end
     end
 
   end

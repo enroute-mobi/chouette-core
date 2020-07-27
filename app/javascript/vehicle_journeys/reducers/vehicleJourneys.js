@@ -338,6 +338,7 @@ export default function vehicleJourneys(state = [], action) {
             dupeVj = vehicleJourney(vj, action, false)
             dupeVj.published_journey_name = dupeVj.published_journey_name + '-' + i
             dupeVj.selected = false
+            dupeVj.referential_codes = []
             delete dupeVj['objectid']
             delete dupeVj['short_id']
             dupes.push(dupeVj)

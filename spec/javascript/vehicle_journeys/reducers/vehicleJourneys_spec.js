@@ -1070,6 +1070,7 @@ describe('vehicleJourneys reducer', () => {
     let newVJ = Object.assign({}, state[0], {vehicle_journey_at_stops: newVJAS, selected: false})
     newVJ.published_journey_name = state[0].published_journey_name + '-0'
     newVJ.index = 1
+    newVJ.referential_codes = []
     delete newVJ['objectid']
     delete newVJ['short_id']
     let newState

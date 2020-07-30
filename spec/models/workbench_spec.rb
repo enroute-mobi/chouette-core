@@ -1,4 +1,3 @@
-
 RSpec.describe Workbench, :type => :model do
   it 'should have a valid factory' do
     expect(FactoryGirl.build(:workbench)).to be_valid
@@ -22,13 +21,12 @@ RSpec.describe Workbench, :type => :model do
   it { should have_many(:stop_areas).through(:stop_area_referential) }
   it { should have_many(:notification_rules).dependent(:destroy) }
 
-  it do
-    # This callback interferes with the validation test
-    Workbench.skip_callback(:validation, :before, :initialize_output, raise: false)
+  context "dependencies" do
 
-    should validate_presence_of(:output)
+    before { allow(subject).to receive(:create_dependencies) }
 
-    Workbench.set_callback(:validation, :before, :initialize_output)
+    it { is_expected.to validate_presence_of(:output) }
+
   end
 
   context 'aggregation setup' do
@@ -153,18 +151,21 @@ RSpec.describe Workbench, :type => :model do
     end
   end
 
+  describe "on creation" do
 
-  describe ".create" do
-    it "must automatically create a ReferentialSuite when being created" do
-      workbench = Workbench.create
+    let(:context) { Chouette.create { workbench } }
+    let(:workbench) { context.workbench }
+
+    it "must have a ReferentialSuite" do
       expect(workbench.output).to be_an_instance_of(ReferentialSuite)
     end
 
-    it "must not overwrite a given ReferentialSuite" do
-      referential_suite = create(:referential_suite)
-      workbench = create(:workbench, output: referential_suite)
+    it "must have a default ShapeProvider" do
+      expect(workbench.shape_providers.count).to eq(1)
 
-      expect(workbench.output).to eq(referential_suite)
+      shape_provider = workbench.shape_providers.first
+      expect(shape_provider.short_name).to eq('default')
     end
   end
+
 end

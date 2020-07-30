@@ -49,7 +49,7 @@ class Workbench < ApplicationModel
 
   has_many :shape_providers
 
-  before_validation :initialize_output
+  before_validation :create_dependencies, on: :create
 
   scope :with_active_workgroup, -> { joins(:workgroup).where('workgroups.deleted_at': nil) }
 
@@ -141,7 +141,8 @@ class Workbench < ApplicationModel
 
   private
 
-  def initialize_output
+  def create_dependencies
     self.output ||= ReferentialSuite.create
+    default_shape_provider if workgroup
   end
 end

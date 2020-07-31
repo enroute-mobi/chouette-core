@@ -411,7 +411,7 @@ RSpec.describe Merge do
         # FIXME
         context_block.referential(:source).tap do |source|
           source.switch do
-            source.routes.find(&:update_checksum!)
+            Chouette::ChecksumUpdater.new(source).update
           end
         end
       end
@@ -437,8 +437,10 @@ RSpec.describe Merge do
     end
 
     def method_missing(name, *arguments)
-      if name =~ /^(.*)_(route|journey_pattern)$/
-        context.instance name
+      if name =~ /^(.*)_(route|journey_pattern|vehicle_journey)$/
+        referential_name = $1
+        referential = referential_name == 'source' ? source : new
+        referential.switch { context.instance(name).reload }
       else
         super
       end
@@ -450,6 +452,22 @@ RSpec.describe Merge do
 
     def new
       @new ||= context.instance(:new)
+    end
+
+    def print_status
+      puts "In Source referential"
+      source.switch do
+        ap Chouette::Route.all
+        ap Chouette::JourneyPattern.all
+        ap Chouette::VehicleJourney.all
+      end
+
+      puts "In New referential"
+      new.switch do
+        ap Chouette::Route.all
+        ap Chouette::JourneyPattern.all
+        ap Chouette::VehicleJourney.all
+      end
     end
 
   end
@@ -694,7 +712,163 @@ RSpec.describe Merge do
 
       end
 
+      describe "VehicleJourney merge" do
+
+        context "when no VehicleJourney with the same checksum already exists in the merged data set" do
+
+          let(:merge_context) do
+            MergeContext.new(merge_method: merge_method) do
+              line :line
+              referential :source, lines: [:line] do
+                time_table :default
+                route line: :line do
+                  vehicle_journey time_tables: [:default]
+                end
+              end
+            end
+          end
+
+          let(:merge) { merge_context.merge }
+
+          it "creates a VehicleJourney in the merged data set" do
+            merge.merge!
+
+            merge.new.switch do
+              expect(Chouette::VehicleJourney.count).to be(1)
+            end
+          end
+
+        end
+
+        context "when a VehicleJourney with the same checksum already exists in the merged data set" do
+
+          let(:merge_context) do
+            MergeContext.new(merge_method: merge_method) do
+              stop_area :first
+              stop_area :second
+              stop_area :third
+
+              line :line
+              line :alternative_line
+
+              referential :source, lines: [:line] do
+                time_table :source_time_table
+
+                route :source_route, line: :line, with_stops: false do
+                  stop_point stop_area: :first
+                  stop_point stop_area: :second
+                  stop_point stop_area: :third
+
+                  journey_pattern :source_journey_pattern do
+                    vehicle_journey :source_vehicle_journey, time_tables: [:source_time_table]
+                  end
+                end
+              end
+
+              referential :new, lines: [:line, :alternative_line], archived_at: Time.now do
+                time_table :existing_time_table
+
+                route :existing_route, line: :line, with_stops: false do
+                  stop_point stop_area: :first
+                  stop_point stop_area: :second
+                  stop_point stop_area: :third
+
+                  journey_pattern :existing_journey_pattern do
+                    vehicle_journey :existing_vehicle_journey, time_tables: [:existing_time_table]
+                  end
+                end
+              end
+            end
+          end
+
+          let(:source) { merge_context.source }
+          let(:new) { merge_context.new }
+
+          let(:merge) { merge_context.merge }
+
+          let(:existing_route_checksum) { merge_context.source_route.checksum }
+          let(:existing_journey_pattern_checksum) { merge_context.source_journey_pattern.checksum }
+          let(:existing_vehicle_journey_checksum) { merge_context.source_vehicle_journey.checksum }
+
+          before do
+            new.switch do
+              merge_context.existing_route.update_column :checksum, existing_route_checksum
+              merge_context.existing_journey_pattern.update_column :checksum, existing_journey_pattern_checksum
+              merge_context.existing_vehicle_journey.update_column :checksum, existing_vehicle_journey_checksum
+            end
+          end
+
+          context "when the JourneyPattern doesn't have the same checksum" do
+
+            let(:existing_journey_pattern_checksum) { 'other' }
+
+            it "creates a VehicleJourney in the merged data set" do
+              existing_vehicle_journey =  merge_context.existing_vehicle_journey
+              merge.merge!
+
+              merge.new.switch do
+                expect(existing_vehicle_journey).to_not exist_in_database
+                expect(Chouette::VehicleJourney.find_by(checksum: merge_context.source_vehicle_journey.checksum)).to be_present
+              end
+            end
+
+          end
+
+          context "when the Route doesn't have the same checksum" do
+
+            let(:existing_route_checksum) { 'other' }
+
+            it "creates a VehicleJourney in the merged data set" do
+              existing_vehicle_journey =  merge_context.existing_vehicle_journey
+              merge.merge!
+
+              merge.new.switch do
+                expect(existing_vehicle_journey).to_not exist_in_database
+                expect(Chouette::VehicleJourney.find_by(checksum: merge_context.source_vehicle_journey.checksum)).to be_present
+              end
+            end
+
+          end
+
+          context "when the Route doesn't have the same line" do
+
+            let(:alternative_line) { merge_context.context.line :alternative_line }
+
+            before do
+              new.switch do
+                merge_context.existing_route.update_column :line_id, alternative_line.id
+              end
+            end
+
+            it "creates a VehicleJourney in the merged data set" do
+              existing_vehicle_journey = merge_context.existing_vehicle_journey
+              merge.merge!
+
+              merge.new.switch do
+                expect(existing_vehicle_journey).to_not exist_in_database
+                expect(Chouette::VehicleJourney.find_by(checksum: merge_context.source_vehicle_journey.checksum)).to be_present
+              end
+            end
+
+          end
+
+          it "doesn't create a new VehicleJourney" do
+            existing_vehicle_journey = merge_context.existing_vehicle_journey
+
+            merge.merge!
+
+            merge.new.switch do
+              expect(existing_vehicle_journey).to exist_in_database
+              expect(Chouette::VehicleJourney.count).to eq(1)
+            end
+          end
+
+        end
+
+      end
+
     end
+
   end
 
 end

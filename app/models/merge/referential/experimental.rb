@@ -22,9 +22,9 @@ module Merge::Referential
     def vehicle_journeys
       @vehicle_journeys ||=
         source.vehicle_journeys.joins(:journey_pattern, :route).
-          joins(sanitize_joins("LEFT OUTER JOIN :new_slug.vehicle_journeys as existing_vehicle_journeys ON vehicle_journeys.checksum = existing_vehicle_journeys.checksum")).
-          joins(sanitize_joins("LEFT OUTER JOIN :new_slug.journey_patterns as existing_journey_patterns ON journey_patterns.checksum = existing_journey_patterns.checksum AND existing_journey_patterns.id = existing_vehicle_journeys.journey_pattern_id")).
-          joins(sanitize_joins("LEFT OUTER JOIN :new_slug.routes as existing_routes ON routes.checksum = existing_routes.checksum AND existing_routes.id = existing_journey_patterns.route_id")).
+          joins(sanitize_joins("LEFT OUTER JOIN :new_slug.routes as existing_routes ON routes.checksum = existing_routes.checksum AND routes.line_id = existing_routes.line_id")).
+          joins(sanitize_joins("LEFT OUTER JOIN :new_slug.journey_patterns as existing_journey_patterns ON journey_patterns.checksum = existing_journey_patterns.checksum AND existing_routes.id = existing_journey_patterns.route_id")).
+          joins(sanitize_joins("LEFT OUTER JOIN :new_slug.vehicle_journeys as existing_vehicle_journeys ON vehicle_journeys.checksum = existing_vehicle_journeys.checksum AND existing_journey_patterns.id = existing_vehicle_journeys.journey_pattern_id")).
           where("existing_vehicle_journeys.id" => nil)
     end
 

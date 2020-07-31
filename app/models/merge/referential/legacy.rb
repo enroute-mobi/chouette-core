@@ -390,7 +390,7 @@ class Merge::Referential::Legacy < Merge::Referential::Base
         referential.vehicle_journeys.joins(:journey_pattern, :route).
           joins("INNER JOIN #{new.slug}.vehicle_journeys as existing_vehicle_journeys ON vehicle_journeys.checksum = existing_vehicle_journeys.checksum").
           joins("INNER JOIN #{new.slug}.journey_patterns as existing_journey_patterns ON journey_patterns.checksum = existing_journey_patterns.checksum AND existing_journey_patterns.id = existing_vehicle_journeys.journey_pattern_id").
-          joins("INNER JOIN #{new.slug}.routes as existing_routes ON routes.checksum = existing_routes.checksum AND existing_routes.id = existing_journey_patterns.route_id").
+          joins("INNER JOIN #{new.slug}.routes as existing_routes ON routes.checksum = existing_routes.checksum and routes.line_id = existing_routes.line_id AND existing_routes.id = existing_journey_patterns.route_id").
           pluck(:id, 'existing_vehicle_journeys.id')
       end
     ]

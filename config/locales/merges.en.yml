@@ -1,4 +1,9 @@
 en:
+  enumerize:
+    merge:
+      merge_method:
+        legacy: "Classic"
+        experimental: "Experimental"
   merges:
     referential_name: "Merged offer %{date}"
     index:

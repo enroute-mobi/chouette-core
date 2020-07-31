@@ -17,6 +17,7 @@ en:
           title: Worbench current output
           urgent: Handles urgent offer
     actions:
+      new: Merge data sets
       create: Merge data sets
       rollback: Rollback
       rollback_confirm: Are you sure to rollback to this finalized offer ?

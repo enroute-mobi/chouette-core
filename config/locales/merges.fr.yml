@@ -17,6 +17,7 @@ fr:
           title: Dernière offre finalisée
           urgent: Prise en compte d'une offre urgente
     actions:
+      new: Finaliser des Jeux de Données
       create: Finaliser des Jeux de Données
       rollback: 'Revenir à cette offre'
       rollback_confirm: Etes vous sûr de vouloir revenir à cette offre finalisée ?

@@ -15,6 +15,9 @@ module Export::Scope
 
     delegate :companies, to: :line_referential
 
+    delegate :shape_referential, to: :workbench
+    delegate :shapes, to: :shape_referential
+
     def stop_areas
       (workbench || stop_area_referential).stop_areas
     end
@@ -60,6 +63,15 @@ module Export::Scope
     def routes
       super.joins(:vehicle_journeys).distinct
         .where("vehicle_journeys.id" => vehicle_journeys)
+    end
+
+    def journey_patterns
+      super.joins(:vehicle_journeys).distinct
+        .where("vehicle_journeys.id" => vehicle_journeys)
+    end
+
+    def shapes
+      super.where(id: journey_patterns.select(:shape_id))
     end
 
     def stop_points

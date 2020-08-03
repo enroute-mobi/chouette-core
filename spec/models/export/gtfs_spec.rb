@@ -550,8 +550,6 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
         subject { decorator.trip_attributes(service_id) }
         let(:service_id) { 'service_id' }
 
-        let(:service_id) { 'service_id' }
-
         it 'uses route_id as attribute' do
           allow(decorator).to receive(:route_id).and_return(rand(100))
           is_expected.to include(route_id: decorator.route_id)
@@ -575,6 +573,11 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
         it 'uses direction_id as attribute' do
           allow(decorator).to receive(:direction_id).and_return(0)
           is_expected.to include(direction_id: decorator.direction_id)
+        end
+
+        it 'uses shape_id as attribute' do
+          allow(decorator).to receive(:shape_id).and_return(42)
+          is_expected.to include(shape_id: decorator.gtfs_shape_id)
         end
 
       end
@@ -732,6 +735,102 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
     end
 
+    describe '#shape_id' do
+
+      subject { decorator.gtfs_shape_id }
+
+      context "when a Shape is associated to the Journey Pattern" do
+        let(:indexed_shape_id) { double 'GTFS shape_id associated to the JourneyPattern Shape' }
+
+        before do
+          shape = Shape.new id: 42
+          vehicle_journey.journey_pattern = Chouette::JourneyPattern.new(shape_id: shape.id)
+          index.register_shape_id shape, indexed_shape_id
+        end
+
+        it { is_expected.to be(indexed_shape_id) }
+      end
+
+      context "when no Shape is associated to the Journey Pattern" do
+        before do
+          vehicle_journey.journey_pattern = Chouette::JourneyPattern.new
+        end
+
+        it { is_expected.to be_nil }
+      end
+
+    end
+
+  end
+
+  describe 'Shapes Part' do
+    let(:export_scope) { Export::Scope::All.new context.referential }
+    let(:export) { Export::Gtfs.new export_scope: export_scope, workbench: context.workbench, workgroup: context.workgroup }
+
+    let(:part) do
+      Export::Gtfs::Shapes.new export
+    end
+
+    let(:context) do
+      Chouette.create do
+        shape
+        shape
+
+        referential
+      end
+    end
+
+    let(:shapes) { context.shapes }
+
+    it 'creates a GTFS Shape for each Shape' do
+      part.export!
+
+      shape_ids = export.target.shape_points.map(&:shape_id).uniq
+      expect(shape_ids.count).to eq(shapes.count)
+    end
+
+    it 'creates a GTFS ShapePoint for each Shape geometry point' do
+      part.export!
+
+      gtfs_shape_points = export.target.shape_points
+      shape_points = shapes.map { |shape| shape.geometry.points }.flatten
+
+      expect(gtfs_shape_points.count).to eq(shape_points.count)
+    end
+
+    it 'registers the used GTFS Shape id for each Shape' do
+      part.export!
+
+      shapes.each do |shape|
+        expect(export.index.shape_id(shape.id)).to be_present
+      end
+    end
+
+    describe 'Shape Decorator' do
+      let(:shape) { Shape.new }
+      let(:decorator) { Export::Gtfs::Shapes::Decorator.new shape }
+
+      describe '#gtfs_id' do
+        subject { decorator.gtfs_id }
+
+        it 'is the Shape uuid' do
+          is_expected.to eq(shape.uuid)
+        end
+      end
+
+      describe '#gtfs_shape_points' do
+        before { shape.geometry = 'LINESTRING(2.2945 48.8584,2.295 48.859)' }
+
+        subject { decorator.gtfs_shape_points }
+
+        it 'includes a GTFS::ShapePoint for each geometry point' do
+          is_expected.to match_array([
+            have_attributes(pt_lat: 48.8584, pt_lon: 2.2945),
+            have_attributes(pt_lat: 48.859, pt_lon: 2.295)
+          ])
+        end
+      end
+    end
   end
 
   describe '#worker_died' do

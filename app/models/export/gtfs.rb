@@ -24,12 +24,17 @@ class Export::Gtfs < Export::Base
   end
 
   def generate_export_file
+    # FIXME
     tmp_dir = Dir.mktmpdir
     export_to_dir tmp_dir
     File.open File.join(tmp_dir, "#{zip_file_name}.zip")
   end
 
   attr_reader :target
+
+  def target
+    @target ||= GTFS::Target.new(Tempfile.new(["export#{id}",'.zip']))
+  end
 
   def export_scope
     @export_scope ||= Export::Scope::DateRange.new(referential, date_range)
@@ -43,8 +48,9 @@ class Export::Gtfs < Export::Base
 
   def export_to_dir(directory)
     CustomFieldsSupport.within_workgroup(referential.workgroup) do
-      operations_count = 5
+      operations_count = 6
 
+      # FIXME
       @target = GTFS::Target.new(File.join(directory, "#{zip_file_name}.zip"))
 
       Chouette::Benchmark.measure "companies" do
@@ -64,21 +70,21 @@ class Export::Gtfs < Export::Base
         notify_progress 3.0/operations_count
       end
 
+      Shapes.new(self).export_part
+      notify_progress 4.0/operations_count
+
       # Export Trips
       TimeTables.new(self).export_part
       VehicleJourneys.new(self).export_part
 
-      notify_progress 4.0/operations_count
-      # Export stop_times.txt
+      notify_progress 5.0/operations_count
 
+      # Export stop_times.txt
       filter_non_commercial = referential.stop_areas.non_commercial.exists?
       ignore_time_zone = !export_scope.stop_areas.with_time_zone.exists?
 
       VehicleJourneyAtStops.new(self, filter_non_commercial: filter_non_commercial, ignore_time_zone: ignore_time_zone).export_part
-      notify_progress 5.0/operations_count
-      # Export files fare_rules, fare_attributes, shapes, frequencies
-      # and feed_info aren't yet implemented as import nor export features from
-      # the chouette model
+      notify_progress 6.0/operations_count
     end
 
     target.close
@@ -238,6 +244,7 @@ class Export::Gtfs < Export::Base
       @vehicle_journey_time_zones = {}
       @trip_index = 0
       @duplicated_vehicle_journey_codes = Set.new
+      @shape_ids = {}
     end
 
     def stop_id(stop_area_id)
@@ -306,6 +313,14 @@ class Export::Gtfs < Export::Base
 
     def duplicated_vehicle_journey_code?(code)
       @duplicated_vehicle_journey_codes.include? code
+    end
+
+    def register_shape_id(shape, shape_id)
+      @shape_ids[shape.id] = shape_id
+    end
+
+    def shape_id(shape_id)
+      @shape_ids[shape_id]
     end
 
   end
@@ -599,7 +614,7 @@ class Export::Gtfs < Export::Base
     delegate :vehicle_journeys, to: :export_scope
 
     def export!
-      vehicle_journeys.includes(:time_tables, :route, :codes).find_each do |vehicle_journey|
+      vehicle_journeys.includes(:time_tables, :route, :journey_pattern, :codes).find_each do |vehicle_journey|
         decorated_vehicle_journey = Decorator.new(vehicle_journey, index: index, code_space_id: code_space&.id)
 
         decorated_vehicle_journey.service_ids.each do |service_id|
@@ -688,6 +703,10 @@ class Export::Gtfs < Export::Base
         end
       end
 
+      def gtfs_shape_id
+        index.shape_id(journey_pattern&.shape_id)
+      end
+
       def trip_attributes(service_id)
         {
           route_id: route_id,
@@ -695,9 +714,9 @@ class Export::Gtfs < Export::Base
           id: trip_id(service_id),
           short_name: published_journey_name,
           direction_id: direction_id,
+          shape_id: gtfs_shape_id
           #headsign: TO DO
           #block_id: TO DO
-          #shape_id: TO DO
           #wheelchair_accessible: TO DO
           #bikes_allowed: TO DO
         }
@@ -820,6 +839,45 @@ class Export::Gtfs < Export::Base
           arrival_time: stop_time_arrival_time,
           stop_id: stop_time_stop_id,
           stop_sequence: position }
+      end
+
+    end
+
+  end
+
+  class Shapes < Part
+
+    delegate :shapes, to: :export_scope
+
+    def export!
+      shapes.find_each do |shape|
+        decorated_shape = Decorator.new(shape)
+        target.shapes << decorated_shape.gtfs_shape
+
+        index.register_shape_id shape, decorated_shape.gtfs_id
+      end
+    end
+
+    class Decorator < SimpleDelegator
+
+      def initialize(shape)
+        super shape
+      end
+
+      def gtfs_id
+        uuid
+      end
+
+      def gtfs_shape_points
+        geometry.points.map do |point|
+          GTFS::ShapePoint.new(latitude: point.y,longitude: point.x)
+        end
+      end
+
+      def gtfs_shape
+        GTFS::Shape.new(id: gtfs_id).tap do |shape|
+          gtfs_shape_points.each { |point| shape.points << point }
+        end
       end
 
     end

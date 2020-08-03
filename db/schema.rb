@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_07_15_152422) do
+ActiveRecord::Schema.define(version: 2020_08_03_071042) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -616,7 +616,7 @@ ActiveRecord::Schema.define(version: 2020_07_15_152422) do
     t.string "checksum"
     t.text "checksum_source"
     t.string "data_source_ref"
-    t.json "costs"
+    t.jsonb "costs", default: {}
     t.jsonb "metadata", default: {}
     t.jsonb "custom_field_values"
     t.bigint "shape_id"

@@ -1,6 +1,6 @@
 GIT
   remote: https://bitbucket.org/enroute-mobi/gtfs.git
-  revision: 0de1dc90a52e3f8bdb869bae1f19b3a3f0e7a41d
+  revision: 4fcf2d10542081a34e51374cee9de5dc21a73e7a
   branch: GTFS-20-improve-gtfs-shape
   specs:
     gtfs (0.3.4)

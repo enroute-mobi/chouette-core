@@ -388,4 +388,16 @@ describe Chouette::JourneyPattern, :type => :model do
       }
     end
   end
+
+  describe '#cleaned_costs' do
+
+    it "sorts distance/time keys (required to compute checksum)" do
+      journey_pattern = Chouette::JourneyPattern.new
+      journey_pattern.costs = {"1-2"=>{"time"=>10, "distance"=>10}}
+
+      expect(journey_pattern.cleaned_costs.to_s).to eq('{"1-2"=>{"distance"=>10, "time"=>10}}')
+    end
+
+  end
+
 end

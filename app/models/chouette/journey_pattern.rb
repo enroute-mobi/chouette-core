@@ -195,9 +195,9 @@ module Chouette
     def cleaned_costs
       out = {}
       costs.each do |k, v|
-        out[k] = v.select do |kk, vv|
+        out[k] = v.sort.select do |kk, vv|
           vv.present? && vv.to_i > 0
-        end
+        end.to_h
       end
       out.select{|k, v| v.present?}
     end

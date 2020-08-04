@@ -233,6 +233,96 @@ class Export::Gtfs < Export::Base
     @index ||= Index.new
   end
 
+  def code_spaces
+    @code_spaces ||= CodeSpaces.new code_space, scope: export_scope
+  end
+
+  # Use dedicated "Resource" Find an unique code for a given Resource
+  #
+  # @example
+  #   code_sapces.shapes.unique_code(shape)
+  class CodeSpaces
+
+    # Manage only a single CodeSpace for the moment
+    def initialize(code_space, scope: nil)
+      @code_space = code_space
+      @scope = scope
+    end
+
+    attr_reader :scope
+
+    def create_resource(resource_class)
+      Resource.new code_space(resource_class), resource_class, scope: scope
+    end
+
+    def vehicle_journeys
+      @vehicle_journeys ||= create_resource Chouette::VehicleJourney
+    end
+
+    def shapes
+      @shapes ||= create_resource Shape
+    end
+
+    def code_space(resource_class)
+      # Manage only a single CodeSpace for the moment
+      @code_space
+    end
+
+    class Resource
+
+      def initialize(code_space, resource_class, scope: nil)
+        @code_space = code_space
+        @resource_class = resource_class
+        @scope = scope
+      end
+
+      attr_reader :code_space, :resource_class, :scope
+
+      def unique_code(resource)
+        candidates = candidate_codes(resource)
+        return nil unless candidates.one?
+
+        candidate_value = candidates.first.value
+        return nil if duplicated?(candidate_value)
+
+        candidate_value
+      end
+
+      def resource_collection
+        resource_class.model_name.plural
+      end
+
+      def resources
+        scope.send resource_collection
+      end
+
+      def resource_codes
+        codes.where(code_space: code_space, resource: resources)
+      end
+
+      def codes
+        # FIXME
+        resource_class == Chouette::VehicleJourney ?
+          scope.referential_codes : scope.codes
+      end
+
+      def duplicated_code_values
+        @duplicated_code_values ||=
+          SortedSet.new(resource_codes.select(:value, :resource_id).group(:value).having("count(resource_id) > 1").pluck(:value))
+      end
+
+      def duplicated?(code_value)
+        duplicated_code_values.include? code_value
+      end
+
+      def candidate_codes(resource)
+        resource.codes.select { |code| code.code_space_id == code_space.id }
+      end
+
+    end
+
+  end
+
   class Index
 
     def initialize
@@ -333,7 +423,7 @@ class Export::Gtfs < Export::Base
       options.each { |k,v| send "#{k}=", v }
     end
 
-    delegate :target, :index, :export_scope, :messages, :date_range, :code_space, to: :export
+    delegate :target, :index, :export_scope, :messages, :date_range, :code_spaces, to: :export
 
     def part_name
       @part_name ||= self.class.name.demodulize.underscore
@@ -615,7 +705,7 @@ class Export::Gtfs < Export::Base
 
     def export!
       vehicle_journeys.includes(:time_tables, :route, :journey_pattern, :codes).find_each do |vehicle_journey|
-        decorated_vehicle_journey = Decorator.new(vehicle_journey, index: index, code_space_id: code_space&.id)
+        decorated_vehicle_journey = Decorator.new(vehicle_journey, index: index, code_provider: code_spaces.vehicle_journeys)
 
         decorated_vehicle_journey.service_ids.each do |service_id|
           trip_attributes = decorated_vehicle_journey.trip_attributes(service_id)
@@ -626,63 +716,36 @@ class Export::Gtfs < Export::Base
       end
     end
 
-    def codes
-      export_scope.codes.where(code_space: code_space, resource: vehicle_journeys)
-    end
-
-    def duplicated_code_values
-      codes.select(:value, :resource_id).group(:value).having("count(resource_id) > 1").pluck(:value)
-    end
-
-    def load_duplicated_codes
-      duplicated_code_values.each do |code|
-        index.register_duplicated_vehicle_journey_code(code)
-      end
-    end
-
     class Decorator < SimpleDelegator
 
       # index is optional to make tests easier
-      def initialize(vehicle_journey, index: nil, code_space_id: nil)
+      def initialize(vehicle_journey, index: nil, code_provider: nil)
         super vehicle_journey
         @index = index
-        @code_space_id = code_space_id
+        @code_provider = code_provider
       end
 
       attr_reader :index
-      attr_accessor :code_space_id
+      attr_accessor :code_provider
 
       def route_id
         index.route_id(route.line_id) if route
       end
 
       def trip_id(suffix = nil)
-        if unique_gtfs_code? && single_service_id?
+        if single_service_id?
           base_trip_id
         else
           "#{base_trip_id}-#{suffix}"
         end
       end
 
-      def candidate_codes
-        @gtfs_codes ||=
-          if code_space_id
-            codes.select { |code| code.code_space_id == code_space_id }
-          else
-            []
-          end
+      def base_trip_id
+        gtfs_code || objectid
       end
 
       def gtfs_code
-        candidate_codes.first.value if candidate_codes.one?
-      end
-
-      def unique_gtfs_code?
-        !index.duplicated_vehicle_journey_code? gtfs_code
-      end
-
-      def base_trip_id
-        gtfs_code || objectid
+        code_provider.unique_code(self) if code_provider
       end
 
       def service_ids
@@ -851,7 +914,7 @@ class Export::Gtfs < Export::Base
 
     def export!
       shapes.find_each do |shape|
-        decorated_shape = Decorator.new(shape)
+        decorated_shape = Decorator.new(shape, code_provider: code_spaces.shapes)
         target.shapes << decorated_shape.gtfs_shape
 
         index.register_shape_id shape, decorated_shape.gtfs_id
@@ -860,12 +923,19 @@ class Export::Gtfs < Export::Base
 
     class Decorator < SimpleDelegator
 
-      def initialize(shape)
+      def initialize(shape, code_provider: nil)
         super shape
+        @code_provider = code_provider
       end
 
+      attr_reader :code_provider
+
       def gtfs_id
-        uuid
+        gtfs_code || uuid
+      end
+
+      def gtfs_code
+        code_provider.unique_code(self) if code_provider
       end
 
       def gtfs_shape_points

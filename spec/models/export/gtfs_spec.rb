@@ -400,79 +400,24 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
     let(:context) do
       Chouette.create do
-        vehicle_journey
-        vehicle_journey
+        time_table :default
+        vehicle_journey time_tables: [:default]
+        vehicle_journey time_tables: [:default]
       end
     end
 
-    before { context.referential.switch }
-
+    let(:time_table) { context.time_table(:default) }
     let(:vehicle_journeys) { context.vehicle_journeys }
 
-    describe '#codes' do
-
-      subject { part.codes }
-
-      let!(:vehicle_journey_codes) do
-        context.vehicle_journeys.map do |vehicle_journey|
-          vehicle_journey.codes.create! code_space: export.code_space, value: rand(100).to_s
-        end
-      end
-
-      let!(:unexpected_code) do
-        other_resource = vehicle_journeys.first.journey_pattern
-        referential.codes.create! resource: other_resource, code_space: export.code_space, value: rand(100).to_s
-      end
-
-      it "selects codes associated with Vehicle Journeys" do
-        is_expected.to eq(vehicle_journey_codes)
-        is_expected.to_not include(unexpected_code)
-      end
-
-      it "ignores codes associated with other resources" do
-        is_expected.to eq(vehicle_journey_codes)
-        is_expected.to_not include(unexpected_code)
-      end
-
+    before do
+      context.referential.switch
+      index.register_service_ids time_table, [time_table.objectid]
     end
 
-    describe '#duplicated_codes' do
-
-      subject { part.duplicated_code_values }
-
-      let(:unique_code_value) { 'unique' }
-      let(:duplicated_code_value) { 'duplicated' }
-
-      let!(:unique_code) do
-        vehicle_journeys.first.codes.create! code_space: export.code_space, value: unique_code_value
-      end
-
-      let!(:duplicated_codes) do
-        context.vehicle_journeys.map do |vehicle_journey|
-          vehicle_journey.codes.create! code_space: export.code_space, value: duplicated_code_value
-        end
-      end
-
-      it 'returns the code values used by several Vehicle Journeys' do
-        is_expected.to eq([duplicated_code_value])
-      end
-
-      it 'ignores an unique code' do
-        is_expected.to_not include(unique_code_value)
-      end
-
-    end
-
-    describe '#load_duplicated_codes' do
-
-      let(:duplicated_code_value) { 'duplicated' }
-
-      it "registers all duplicated code values" do
-        allow(part).to receive(:duplicated_code_values).and_return([duplicated_code_value])
-
-        expect { part.load_duplicated_codes }.to change {
-          index.duplicated_vehicle_journey_code?(duplicated_code_value)
-        }.from(false).to(true)
+    it "register the GTFS Trip identifiers used for each VehicleJourney" do
+      part.export!
+      vehicle_journeys.each do |vehicle_journey|
+        expect(index.trip_ids(vehicle_journey.id)).to eq([vehicle_journey.objectid])
       end
     end
 
@@ -482,8 +427,9 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
     let(:vehicle_journey) { Chouette::VehicleJourney.new }
     let(:index) { Export::Gtfs::Index.new }
+    let(:resource_code_space) { double }
     let(:decorator) do
-      Export::Gtfs::VehicleJourneys::Decorator.new vehicle_journey, index: index
+      Export::Gtfs::VehicleJourneys::Decorator.new vehicle_journey, index: index, code_provider: resource_code_space
     end
 
     describe '#route_id' do
@@ -514,14 +460,6 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
         allow(decorator).to receive(:base_trip_id).and_return(base_trip_id)
       end
 
-      context "when gtfs_code isn't unique" do
-
-        before { allow(decorator).to receive(:unique_gtfs_code?).and_return(false) }
-
-        it { is_expected.to eq(suffixed_base_trip_id) }
-
-      end
-
       context "when several service identifiers are associated" do
 
         before { allow(decorator).to receive(:single_service_id?).and_return(false) }
@@ -532,10 +470,9 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
       end
 
-      context "when gtfs_code is unique and a single service identifier is associated" do
+      context "when a single service identifier is associated" do
 
         before do
-          allow(decorator).to receive(:unique_gtfs_code?).and_return(true)
           allow(decorator).to receive(:single_service_id?).and_return(true)
         end
 
@@ -584,70 +521,19 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
     end
 
-    describe '#candidate_codes' do
-
-      subject { decorator.candidate_codes }
-
-      context "when the Decorator has no selected code space" do
-        before { decorator.code_space_id = nil }
-
-        it { is_expected.to be_empty }
-      end
-
-      context "when the Decorator has a selected code space" do
-        let(:code_space_id) { 42 }
-        before { decorator.code_space_id = code_space_id }
-
-        let(:expected_code) { double 'Code in selected Code Space', code_space_id: code_space_id }
-        let(:unexpected_code) { double code_space_id: 'dummy' }
-
-        before { allow(decorator).to receive(:codes).and_return([expected_code, unexpected_code]) }
-
-        it "ignores Vehicle Journey codes outside this code space" do
-          is_expected.to eq([expected_code])
-        end
-      end
-
-    end
-
     describe '#gtfs_code' do
 
       subject { decorator.gtfs_code }
+      before { allow(resource_code_space).to receive(:unique_code).and_return(code) }
 
       describe 'when the VehicleJourney has no code' do
+        let(:code) { nil }
         it { is_expected.to be_nil }
       end
 
-      describe 'when the VehicleJourney has several codes' do
-        let(:codes) { %w{1 2}.map { |v| double value: v } }
-        before { allow(decorator).to receive(:candidate_codes).and_return(codes) }
-
-        it { is_expected.to be_nil }
-      end
-
-      describe 'when the VehicleJourney has a single code' do
-        let(:code) { double value: 'Single Code value' }
-        before { allow(decorator).to receive(:candidate_codes).and_return([code]) }
-
-        it { is_expected.to eq(code.value) }
-      end
-
-    end
-
-    describe '#unique_gtfs_code?' do
-
-      subject { decorator.unique_gtfs_code? }
-
-      let(:gtfs_code) { 'gtfs_code' }
-      before { allow(decorator).to receive(:gtfs_code).and_return(gtfs_code) }
-
-      context "when the gtfs_code is registered as duplicated" do
-        before { index.register_duplicated_vehicle_journey_code(gtfs_code) }
-        it { is_expected.to be_falsy }
-      end
-
-      context "when the gtfs_code isn't registered as duplicated" do
-        it { is_expected.to be_truthy }
+      describe 'when the VehicleJourney has an unique code' do
+        let(:code) { 'unique_code' }
+        it { is_expected.to eq(code) }
       end
 
     end
@@ -659,6 +545,8 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       before { vehicle_journey.objectid = 'test' }
 
       context 'when gtfs_code is nil' do
+
+        before { allow(decorator).to receive(:gtfs_code).and_return(nil) }
 
         it "returns VehicleJourney objectid" do
           is_expected.to eq(vehicle_journey.objectid)
@@ -806,15 +694,35 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       end
     end
 
-    describe 'Shape Decorator' do
+    describe 'Decorator' do
       let(:shape) { Shape.new }
-      let(:decorator) { Export::Gtfs::Shapes::Decorator.new shape }
+      let(:decorator) { Export::Gtfs::Shapes::Decorator.new shape, code_provider: code_provider }
+      let(:code_provider) { double }
+
+      describe '#gtfs_code' do
+        subject { decorator.gtfs_code }
+
+        it 'uses unique code from code provider' do
+          expect(code_provider).to receive(:unique_code).with(decorator).and_return(unique_code = 'unique_code')
+          is_expected.to eq(unique_code)
+        end
+      end
 
       describe '#gtfs_id' do
         subject { decorator.gtfs_id }
 
-        it 'is the Shape uuid' do
-          is_expected.to eq(shape.uuid)
+        context 'when the GTFS code is nil' do
+          before { allow(decorator).to receive(:gtfs_code).and_return(nil) }
+          it 'is the Shape uuid' do
+            is_expected.to eq(shape.uuid)
+          end
+        end
+
+        context 'when the GTFS code is defined' do
+          before { allow(decorator).to receive(:gtfs_code).and_return('gtfs_code') }
+          it 'is the GTFS code' do
+            is_expected.to eq(decorator.gtfs_code)
+          end
         end
       end
 
@@ -830,6 +738,127 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
           ])
         end
       end
+    end
+  end
+
+  describe 'CodeSpaces' do
+
+    let(:export_scope) { Export::Scope::All.new context.referential }
+    let(:code_space) { context.workgroup.code_spaces.default }
+    let(:code_spaces) { Export::Gtfs::CodeSpaces.new code_space, scope: export_scope }
+
+    before { context.referential.switch }
+
+    describe "for Shapes" do
+
+      let(:context) do
+        Chouette.create do
+          shape :first
+          shape :second
+
+          referential
+        end
+      end
+
+      let(:resource) { code_spaces.shapes }
+
+      let(:shape) { context.shape :first }
+      let(:other_shape) { context.shape :second }
+
+      describe '#unique_code' do
+        subject { resource.unique_code shape }
+
+        context 'when the Shape is several codes' do
+          before do
+            shape.codes.create! code_space: code_space, value: '1'
+            shape.codes.create! code_space: code_space, value: '2'
+          end
+
+          it { is_expected.to be_nil }
+        end
+
+        context 'when the Shape is no code' do
+          before { shape.codes.delete_all }
+
+          it { is_expected.to be_nil }
+        end
+
+        context 'when the Shape has a code already used by another Vehicle Journey' do
+          before do
+            shape.codes.create! code_space: code_space, value: '1'
+            other_shape.codes.create! code_space: code_space, value: '1'
+          end
+
+          it { is_expected.to be_nil }
+        end
+
+        context 'when the Shape has a unique code' do
+          let(:unique_code_value) { 'unique' }
+          before do
+            shape.codes.create! code_space: code_space, value: unique_code_value
+          end
+
+          it { is_expected.to eq(unique_code_value) }
+        end
+
+      end
+
+    end
+
+    describe "for Shapes" do
+
+      let(:context) do
+        Chouette.create do
+          shape :first
+          shape :second
+
+          referential
+        end
+      end
+
+      let(:resource) { code_spaces.shapes }
+
+      let(:shape) { context.shape :first }
+      let(:other_shape) { context.shape :second }
+
+      describe '#unique_code' do
+        subject { resource.unique_code shape }
+
+        context 'when the Shape is several codes' do
+          before do
+            shape.codes.create! code_space: code_space, value: '1'
+            shape.codes.create! code_space: code_space, value: '2'
+          end
+
+          it { is_expected.to be_nil }
+        end
+
+        context 'when the Shape is no code' do
+          before { shape.codes.delete_all }
+
+          it { is_expected.to be_nil }
+        end
+
+        context 'when the Shape has a code already used by another Shape' do
+          before do
+            shape.codes.create! code_space: code_space, value: '1'
+            other_shape.codes.create! code_space: code_space, value: '1'
+          end
+
+          it { is_expected.to be_nil }
+        end
+
+        context 'when the Shape has a unique code' do
+          let(:unique_code_value) { 'unique' }
+          before do
+            shape.codes.create! code_space: code_space, value: unique_code_value
+          end
+
+          it { is_expected.to eq(unique_code_value) }
+        end
+
+      end
+
     end
   end
 

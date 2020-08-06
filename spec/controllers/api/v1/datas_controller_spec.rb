@@ -1,4 +1,3 @@
-
 RSpec.describe Api::V1::DatasController, type: :controller do
   let(:file){ File.open(File.join(Rails.root, 'spec', 'fixtures', 'google-sample-feed.zip')) }
   let(:export){ create :gtfs_export, status: :successful, file: file}
@@ -187,6 +186,9 @@ RSpec.describe Api::V1::DatasController, type: :controller do
 
       let(:referential) { context.referential }
 
+      let(:first_line) { context.line(:first) }
+      let(:second_line) { context.line(:second) }
+
       before do
         allow_any_instance_of(ReferentialSuite).to receive(:current).and_return(referential)
       end
@@ -211,22 +213,16 @@ RSpec.describe Api::V1::DatasController, type: :controller do
             expect(response).to be_successful
           end
 
-          # it 'should render 2 lines with metadatas' do
-          #   get( :lines, params: { slug: publication_api.slug, key:  publication_api_key.token, :format => :json })
-          #   # puts response.inspect
-          #   # pry.debug
-          #   puts context.referential.metadatas.inspect
-          #   json = JSON.parse response.body
-          #   puts json.inspect
-          #   # data = json['data']['lines']
-          #   # expect(data['nodes'].count).to eq 2
-          #   # data['nodes'].each do |node|
-          #   #   line = Chouette::Line.find(node['id'])
-          #   #   expect(node['objectid']).to eq line.objectid
-          #   #   expect(node['routes']['nodes'].count).to eq line.routes.count
-          #   #   expect(node['stopAreas']['nodes'].count). to eq line.stop_areas.count
-          #   # end
-          # end
+          it 'should render 2 lines with metadatas' do
+            get( :lines, params: { slug: publication_api.slug, key:  publication_api_key.token, :format => :json })
+
+            json = JSON.parse(response.body).map(&:with_indifferent_access)
+
+            expect(json).to match_array([
+              include(name: first_line.name, objectid: first_line.objectid, updated_at: a_value),
+              include(name: second_line.name, objectid: second_line.objectid, updated_at: a_value)
+            ])
+          end
 
         end
       end

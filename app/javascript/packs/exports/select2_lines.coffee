@@ -1,5 +1,6 @@
 $ ->
   $('#export_referential_id').change ->
+    $('#export_line_code').empty()
     domain_name = $('#export_line_code').attr("data-domain-name")
     $('#export_line_code').attr("data-ajax--url", domain_name + "/referentials/" + this.value + "/autocomplete/lines")
 

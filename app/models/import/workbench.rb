@@ -21,7 +21,7 @@ class Import::Workbench < Import::Base
       message = create_message(
         {
           criticity: :error,
-          message_key: "unknown_file_format"
+          message_key: "unsupported_file_format"
         }
       )
       message.save

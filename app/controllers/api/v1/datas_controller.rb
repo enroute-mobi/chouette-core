@@ -9,12 +9,22 @@ class Api::V1::DatasController < ActionController::Base
     render layout: 'api'
   end
 
-  def invalid_authentication_error
-    render :invalid_authentication_error, layout: 'api', status: 401
-  end
-
-  def missing_authentication_error
-    render :missing_authentication_error, layout: 'api', status: 401
+  def lines
+    target = @publication_api&.workgroup&.output&.current
+    unless target
+      render :missing_file_error, layout: 'api', status: 404
+      return
+    end
+    target.switch do
+      CustomFieldsSupport.within_workgroup(@publication_api.workgroup) do
+        @lines = target.lines
+        puts @lines.inspect
+        last_created_at_for_lines = ActiveRecord::Base.connection.select_rows "select line_id, max(created_at) from (#{Referential.last.metadatas.select('unnest(line_ids) as line_id', :created_at).to_sql}) as s group by line_id"
+        @last_created_at_for_lines_hash = last_created_at_for_lines.to_h
+        puts @last_created_at_for_lines_hash.inspect
+        render :lines
+      end
+    end
   end
 
   def download_full
@@ -40,7 +50,7 @@ class Api::V1::DatasController < ActionController::Base
   end
 
   def graphql
-    target = @publication_api.workgroup.output.current
+    target = @publication_api&.workgroup&.output&.current
     unless target
       render :missing_file_error, layout: 'api', status: 404
       return
@@ -94,5 +104,18 @@ class Api::V1::DatasController < ActionController::Base
       raise ArgumentError, "Unexpected parameter: #{ambiguous_param}"
     end
   end
+
+  def invalid_authentication_error
+    render :invalid_authentication_error, layout: 'api', status: 401
+  end
+
+  def missing_authentication_error
+    render :missing_authentication_error, layout: 'api', status: 401
+  end
+
+  def missing_file_error
+    render :missing_file_error, layout: 'api', status: 404
+  end
+
 
 end

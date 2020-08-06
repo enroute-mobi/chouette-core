@@ -174,6 +174,64 @@ RSpec.describe Api::V1::DatasController, type: :controller do
         end
       end
     end
+
+    describe 'get #lines' do
+      let(:context) do
+        Chouette.create do
+          line :first
+          line :second
+
+          referential lines: [:first, :second]
+        end
+      end
+
+      let(:referential) { context.referential }
+
+      before do
+        allow_any_instance_of(ReferentialSuite).to receive(:current).and_return(referential)
+      end
+
+      context 'with a publication_api' do
+
+        let(:publication_api) { create(:publication_api, public: false, workgroup: context.workgroup) }
+
+        context 'unauthenticated' do
+          it 'should not be successful' do
+            get( :lines, params: { slug: publication_api.slug, key:  "foo", :format => :json  })
+            expect(response).to_not be_successful
+          end
+        end
+
+        context 'authenticated' do
+          let(:publication_api_key) { create :publication_api_key, publication_api: publication_api  }
+          let(:auth_token) { publication_api_key.token }
+
+          it 'should be successful' do
+            get( :lines, params: { slug: publication_api.slug, key:  publication_api_key.token, :format => :json  })
+            expect(response).to be_successful
+          end
+
+          # it 'should render 2 lines with metadatas' do
+          #   get( :lines, params: { slug: publication_api.slug, key:  publication_api_key.token, :format => :json })
+          #   # puts response.inspect
+          #   # pry.debug
+          #   puts context.referential.metadatas.inspect
+          #   json = JSON.parse response.body
+          #   puts json.inspect
+          #   # data = json['data']['lines']
+          #   # expect(data['nodes'].count).to eq 2
+          #   # data['nodes'].each do |node|
+          #   #   line = Chouette::Line.find(node['id'])
+          #   #   expect(node['objectid']).to eq line.objectid
+          #   #   expect(node['routes']['nodes'].count).to eq line.routes.count
+          #   #   expect(node['stopAreas']['nodes'].count). to eq line.stop_areas.count
+          #   # end
+          # end
+
+        end
+      end
+    end
+
   end
 
   context 'graphql' do

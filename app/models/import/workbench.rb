@@ -15,23 +15,22 @@ class Import::Workbench < Import::Base
 
     file.cache_stored_file!
 
-    case file_type
-    when :gtfs
-      import_gtfs
-    when :netex
-      delay(queue: :imports).netex_import
-    when :neptune
-      import_neptune
+    if file_type
+      send "import_#{file_type}"
     else
       message = create_message(
         {
           criticity: :error,
-          message_key: "unknown_file_format"
+          message_key: "unsupported_file_format"
         }
       )
       message.save
       failed!
     end
+  end
+
+  def import_netex
+    delay(queue: :imports).netex_import
   end
 
   def netex_import

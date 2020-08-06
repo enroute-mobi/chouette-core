@@ -92,9 +92,11 @@ class Import::Base < ApplicationModel
 
   def file_type
     return unless file
-    return :gtfs if Import::Gtfs.accepts_file?(file.path)
-    return :netex if Import::Netex.accepts_file?(file.path)
-    return :neptune if Import::Neptune.accepts_file?(file.path)
+    import_types = workgroup.import_types.presence || %w(Import::Gtfs Import::Netex Import::Neptune)
+    import_types.each do |import_type|
+      return import_type.demodulize.underscore.to_sym if import_type.constantize.accepts_file?(file.path)
+    end
+    return nil
   end
 
   # Returns all attributes of the imported file from the user point of view

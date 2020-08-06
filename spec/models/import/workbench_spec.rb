@@ -56,6 +56,23 @@ RSpec.describe Import::Workbench do
         expect(import.file_type).to be_nil
       end
     end
+
+    context 'with import_type restriction' do
+      before { import.workgroup.import_types = ["Import::Gtfs"] }
+
+      context 'with a GTFS file' do
+        it 'should return :gtfs' do
+          expect(import.file_type).to eq :gtfs
+        end
+      end
+
+      context 'with a NETEX file' do
+        let(:filename) { 'OFFRE_TRANSDEV_2017030112251.zip' }
+        it 'should return nil' do
+          expect(import.file_type).to be_nil
+        end
+      end
+    end
   end
 
 

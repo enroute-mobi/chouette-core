@@ -18,7 +18,7 @@ fr:
     no_specified_stop: "Impossible d'associer un arrêt"
     invalid_stop_time: 'La course %{trip_id} comporte un temps de passage invalide: "%{time}"'
     invalid_time_zone: 'Le fuseau horaire %{time_zone} est invalide'
-    unknown_file_format: "Le fichier ne correspond à aucun format reconnu"
+    unsupported_file_format: "Le fichier ne correspond à aucun format autorisé"
     wrong_calendar_in_zip_file: "Le calendrier contenu dans %{source_filename} contient des données incorrectes ou incohérentes"
     missing_calendar_or_calendar_dates_in_zip_file: "Le dossier ne contient ni fichier calendar.txt ni fichier calendar_dates.txt"
     gtfs:

@@ -6,7 +6,7 @@ class Export::Netex < Export::Base
   option :line_code, ajax_collection: true, depends: {option: :export_type, value: "line"}
 
   validates :export_type, presence: true
-  # validates :line_code, presence: true
+  validates :line_code, presence: true, if: Proc.new { |e| e.export_type == "line" }
   validates :duration, presence: true, numericality: { greater_than_or_equal_to: 1, less_than_or_equal_to: 60 }, if: Proc.new { |e| e.export_type == "full" }
   validates :duration, presence: true, numericality: { greater_than_or_equal_to: 1, less_than_or_equal_to: 365 }, if: Proc.new { |e| e.export_type == "line" }
 

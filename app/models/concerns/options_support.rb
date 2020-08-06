@@ -38,9 +38,6 @@ module OptionsSupport
         alias_method attribute_name, "#{attribute_name}_with_cast"
       end
 
-      # Add specific validation for dependent attributes on the parent attribute and value
-      condition = ->(record){ record.send(opts[:depends][:option])&.to_s == opts[:depends][:value].to_s } if opts[:depends]
-
       @options ||= {}
       @options[name] = opts
     end

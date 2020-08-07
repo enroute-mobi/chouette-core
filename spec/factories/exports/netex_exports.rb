@@ -16,7 +16,7 @@ FactoryGirl.define do
   factory :idfm_netex_export_line, class: Export::Netex, parent: :export do
     association :referential, factory: :workbench_referential
     association :parent, factory: :workgroup_export
-    options({export_type: :line, duration: 60})
+    options({export_type: :line, duration: 60, line_code: 1})
     type 'Export::Netex'
   end
 

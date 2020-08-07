@@ -9,7 +9,6 @@ RSpec.describe Export::Netex, type: [:model] do
   context 'options' do
     it 'should validate the options' do
       e = build(:netex_export)
-
       expect(e).to be_valid, e.errors.inspect
 
       e.export_type = nil
@@ -26,6 +25,8 @@ RSpec.describe Export::Netex, type: [:model] do
       expect(e).to_not be_valid
 
       e.export_type = "line"
+      e.line_code = 42
+
       e.duration = nil
       expect(e).to_not be_valid
       e.duration = 365

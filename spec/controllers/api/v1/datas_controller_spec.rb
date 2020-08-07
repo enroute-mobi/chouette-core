@@ -1,4 +1,3 @@
-
 RSpec.describe Api::V1::DatasController, type: :controller do
   let(:file){ File.open(File.join(Rails.root, 'spec', 'fixtures', 'google-sample-feed.zip')) }
   let(:export){ create :gtfs_export, status: :successful, file: file}

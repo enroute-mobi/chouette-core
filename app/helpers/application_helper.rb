@@ -26,7 +26,7 @@ module ApplicationHelper
     if object.try(:name)
       t(local, name: object.name.capitalize || object.id).html_safe
     else
-      t(local).html_safe
+      t(local, name:"").html_safe
     end
   end
 

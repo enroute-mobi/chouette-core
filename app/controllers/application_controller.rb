@@ -41,9 +41,9 @@ class ApplicationController < ActionController::Base
   end
 
   def current_workbench
-    workbench if (self.respond_to? :workbench)
+    (self.respond_to? :workbench)? workbench : @workbench
   end
-  
+
   helper_method :current_organisation
 
   def collection_name

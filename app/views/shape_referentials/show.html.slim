@@ -1,6 +1,47 @@
-- breadcrumb @shape_referential, @workbench
+- breadcrumb @workbench, @shape_referential
 
 - page_header_content_for @shape_referential
 
 .page_content
   .container-fluid
+    .row
+      .col-md-6.col-sm-12
+        .row
+          h4.underline= t('activerecord.models.shape.other').capitalize
+        .row
+          = render 'filters'
+        - if @shapes.any?
+          .row
+            = table_builder_2 @shapes,
+              [ \
+                TableBuilderHelper::Column.new( \
+                  name: 'ID', \
+                  attribute: 'uuid', \
+                  sortable: false \
+                ), \
+                TableBuilderHelper::Column.new( \
+                  key: :name, \
+                  attribute: Proc.new {|item| item.name.presence || I18n.t('none') }, \
+                  link_to: lambda do |shape| \
+                    workbench_shape_referential_shape_path(@workbench, shape) \
+                  end \
+                ) \
+              ],
+              cls: 'table has-search',
+              action: :index
+
+            = new_pagination @shapes, 'pull-right'
+
+        - else
+          .row.mt-xs
+            = replacement_msg t('shape_referentials.filters.no_results')
+
+      .col-md-6.col-sm-12
+        h4.underline= t('lines.show.map')
+        #route_map.large_map.mb-lg
+
+= javascript_tag do
+  | window.kml_url = "#{workbench_shape_referential_shapes_path(@workbench, format: :kml, q: params[:q], page: params[:page]).html_safe}";
+
+= javascript_include_tag 'OpenLayers/maps_backgrounds.js'
+= javascript_pack_tag 'shapes/show.js'

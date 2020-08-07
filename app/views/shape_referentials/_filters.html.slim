@@ -1,0 +1,20 @@
+= search_form_for @q, url: workbench_shape_referential_path(@workbench), html: {method: :get}, class: 'form form-filter' do |f|
+  .ffg-row
+    .input-group.search_bar class=filter_item_class(params[:q], :name_or_uuid_cont)
+      = f.search_field :name_or_uuid_cont, placeholder: t('shape_referentials.filters.name_or_uuid_cont'), class: 'form-control'
+      span.input-group-btn
+        button.btn.btn-default#search-btn type='submit'
+          span.fa.fa-search
+
+  / .ffg-row
+  /   .form-group.togglable class=filter_item_class(params[:q], :with_profiles)
+  /     = f.label User.tmf(:profile), required: false, class: 'control-label'
+  /     = f.input :with_profiles, collection: Permission::Profile.all_i18n, as: :check_boxes, label: false, value_method: :last, label_method: lambda{|l| ("<span>" + l.first + "</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list'}
+  /
+  /   .form-group.togglable class=filter_item_class(params[:q], :with_states)
+  /     = f.label User.tmf(:state), required: false, class: 'control-label'
+  /     = f.input :with_states, collection: User.all_states_i18n, as: :check_boxes, label: false, value_method: :last, label_method: lambda{|l| ("<span>" + l.first + "</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list'}
+
+  .actions
+    = link_to t('actions.erase'), workbench_shape_referential_path(@workbench), class: 'btn btn-link'
+    = f.submit t('actions.filter'), class: 'btn btn-default'

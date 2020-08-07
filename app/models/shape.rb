@@ -15,7 +15,27 @@ class Shape < ApplicationModel
     joins(:codes).where(codes: { code_space: code_space, value: value })
   }
 
+  def human_attribute_name(*args)
+    self.class.human_attribute_name(*args)
+  end
+
+  def length
+    @length ||= calculate_length
+  end
+
+  def calculate_length
+    # TODO fix this sql query => needs postgis knowledge
+    # query =  "select st_length(geom::geography)/1000 from st_geomfromtext('LINESTRING(12 50, 13 51)', 4326) as geom"
+    # ActiveRecord::Base.connection.execute(query).first
+    1
+  end
+
   private
+
+  # Allow ransack to query using "LIKE" on uuids
+  ransacker :uuid do
+    Arel.sql("#{table_name}.uuid::varchar")
+  end
 
   def define_shape_referential
     # TODO Improve performance ?

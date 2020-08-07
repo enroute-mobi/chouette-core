@@ -1,0 +1,20 @@
+en:
+  shapes:
+    actions:
+      edit: "Edit this shape"
+      destroy: "Remove this shape"
+      destroy_confirm: Are you sure you want destroy this shape ?"
+    edit:
+      title: "Update shape %{name}"
+    show:
+      title: "Shape %{name}"
+  activerecord:
+    models:
+      shape:
+        zero: shape
+        one: shape
+        other: shapes
+    attributes:
+      shape:
+        name: name
+        uuid: uuid

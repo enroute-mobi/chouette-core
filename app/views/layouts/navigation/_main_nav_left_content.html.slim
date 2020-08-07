@@ -35,6 +35,10 @@
       = link_to compliance_control_sets_path, class: 'list-group-item' do
         span = 'activerecord.models.compliance_control_set.other'.t.capitalize
 
+    = main_nav_menu_item 'layouts.navbar.shape_referential'.t do
+      = link_to workbench_shape_referential_path(workbench), class: 'list-group-item' do
+        span = Shape.t.capitalize
+
     = main_nav_menu_item 'layouts.navbar.line_referential'.t do
       = link_to line_referential_lines_path(workbench.line_referential), class: "list-group-item" do
         span = Chouette::Line.t.capitalize

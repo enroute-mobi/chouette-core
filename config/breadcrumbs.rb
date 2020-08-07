@@ -453,7 +453,7 @@ crumb :shape_referential do |shape_referential, workbench|
   parent :workbench, workbench
 end
 
-crumb :shapes do |shape_referential, workbench|
-  link Shape.t, workbench_shape_referential_shapes_path(workbench)
+crumb :shape do |workbench, shape_referential, shape|
+  link breadcrumb_name(shape), workbench_shape_referential_shape_path(workbench, shape)
   parent :shape_referential, shape_referential, workbench
 end

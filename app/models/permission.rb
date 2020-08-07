@@ -32,6 +32,7 @@ class Permission
         referentials
         routes
         routing_constraint_zones
+        shapes
         stop_area_routing_constraints
         time_tables
         vehicle_journeys

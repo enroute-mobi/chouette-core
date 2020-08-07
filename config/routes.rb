@@ -215,6 +215,7 @@ ChouetteIhm::Application.routes.draw do
       get 'datas/:slug', to: 'datas#infos', as: :infos
       get 'datas/:slug.:key.zip', to: 'datas#download_full', as: :download_full
       get 'datas/:slug/lines/:line_id.:key.zip', to: 'datas#download_line', as: :download_line
+      get 'datas/:slug/lines', to: 'datas#lines', as: :lines
 
       post 'datas/:slug/graphql', to: "datas#graphql", as: :graphql
 

@@ -9,13 +9,7 @@ class Api::V1::DatasController < ActionController::Base
     render layout: 'api'
   end
 
-  def invalid_authentication_error
-    render :invalid_authentication_error, layout: 'api', status: 401
-  end
 
-  def missing_authentication_error
-    render :missing_authentication_error, layout: 'api', status: 401
-  end
 
   def download_full
     source = @publication_api.publication_api_sources.find_by! key: params[:key]
@@ -39,28 +33,77 @@ class Api::V1::DatasController < ActionController::Base
     end
   end
 
+  around_action :use_published_referential, only: [:lines, :graphql]
+
+  def lines
+    render json: LinesStatus.new(published_referential)
+  end
+
+  class LinesStatus
+
+    def initialize(referential)
+      @referential = referential
+    end
+
+    attr_accessor :referential
+    delegate :lines, :metadatas, to: :referential
+
+    def updated_at_by_lines
+      @updated_at_by_lines ||=
+        begin
+          query = "select line_id, max(created_at) from (#{metadatas.select('unnest(line_ids) as line_id', :created_at).to_sql}) as s group by line_id"
+          ActiveRecord::Base.connection.select_rows(query).to_h
+        end
+    end
+
+    def line_updated_at(line)
+      updated_at_by_lines[line.id]
+    end
+
+    def as_json(_options = nil)
+      lines.map do |line|
+        {
+          objectid: line.objectid,
+          name: line.name,
+          updated_at: line_updated_at(line)
+        }
+      end
+    end
+
+  end
+
   def graphql
-    target = @publication_api.workgroup.output.current
-    unless target
+    variables = ensure_hash(params[:variables])
+    query = params[:query]
+    operation_name = params[:operationName]
+    context = {
+      target_referential: published_referential
+    }
+    result = ChouetteSchema.execute(query, variables: variables, context: context, operation_name: operation_name)
+    render json: result
+  end
+
+  protected
+
+  def use_published_referential
+    unless published_referential
       render :missing_file_error, layout: 'api', status: 404
       return
-      # target = Referential.last # Kept here for test purpose, to remove
     end
-    target.switch do
-      CustomFieldsSupport.within_workgroup(@publication_api.workgroup) do
-        variables = ensure_hash(params[:variables])
-        query = params[:query]
-        operation_name = params[:operationName]
-        context = {
-          target_referential: target
-        }
-        result = ChouetteSchema.execute(query, variables: variables, context: context, operation_name: operation_name)
-        render json: result
+    published_referential.switch do
+      CustomFieldsSupport.within_workgroup(workgroup) do
+        yield
       end
     end
   end
 
-  protected
+  def workgroup
+    @workgroup ||= @publication_api&.workgroup
+  end
+
+  def published_referential
+    @published_referential ||= workgroup&.output&.current
+  end
 
   def load_publication_api
     @publication_api = PublicationApi.find_by! slug: params[:slug]
@@ -94,5 +137,18 @@ class Api::V1::DatasController < ActionController::Base
       raise ArgumentError, "Unexpected parameter: #{ambiguous_param}"
     end
   end
+
+  def invalid_authentication_error
+    render :invalid_authentication_error, layout: 'api', status: 401
+  end
+
+  def missing_authentication_error
+    render :missing_authentication_error, layout: 'api', status: 401
+  end
+
+  def missing_file_error
+    render :missing_file_error, layout: 'api', status: 404
+  end
+
 
 end

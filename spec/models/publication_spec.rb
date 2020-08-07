@@ -1,4 +1,3 @@
-
 RSpec.describe Publication, type: :model do
   it { should belong_to :publication_setup }
   it { should belong_to :parent }
@@ -102,7 +101,7 @@ RSpec.describe Publication, type: :model do
 
     context 'With a NETEX export by line' do
       let(:export_type) { 'Export::Netex' }
-      let(:export_options) { { export_type: :line, duration: 365 } }
+      let(:export_options) { { export_type: :line, duration: 365, line_code: 1 } }
 
       context 'when the export succeeds' do
         before(:each) do

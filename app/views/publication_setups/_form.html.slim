@@ -13,9 +13,7 @@
 
         - form.object_name = 'publication_setup[export_options]'
         - workgroup_exports(@workgroup).each do |child|
-          .slave data-master="[name='publication_setup[export_type]']" data-value=child.name
-            - child.options.each do |attr, option_def|
-              = export_option_input form, @publication_setup.new_export, attr, option_def, child, []
+          = render "edit_#{child.name.demodulize.downcase}", form: form, publication_setup: @publication_setup, child: child 
         - form.object_name = :publication_setup
     .separator.section_separator
 

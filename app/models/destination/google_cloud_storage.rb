@@ -2,8 +2,11 @@ if ::Destination.enabled?("google_cloud_storage")
   class Destination::GoogleCloudStorage < ::Destination
     require "google/cloud/storage"
 
-    option :project, required: true
-    option :bucket, required: true
+    option :project
+    option :bucket
+
+    validates :project, presence: true
+    validates :bucket, presence: true
 
     @secret_file_required = true
 

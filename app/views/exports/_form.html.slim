@@ -11,7 +11,7 @@
       - workgroup_exports(workbench.workgroup).each do |child|
         .slave data-master="[name='export[type]']" data-value=child.name
           - child.options.each do |attr, option_def|
-            = export_option_input form, export, attr, option_def, child, @referentials
+            = export_option_input form, export, attr, option_def, child
 
     .col-lg-12
       = form.input :notification_target, collection: Export::Base.notification_target_options, selected: :user
@@ -20,3 +20,4 @@
   = form.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'wb_export_form'
 
 = javascript_pack_tag "exports/new"
+= javascript_pack_tag "exports/select2_lines"

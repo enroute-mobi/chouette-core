@@ -1,4 +1,3 @@
-
 RSpec.describe PublicationApiSource, type: :model do
   it { should belong_to :publication_api }
   it { should belong_to :publication }

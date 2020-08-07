@@ -13,6 +13,7 @@
 #= require bootstrap/clockpicker
 #= require select2-full
 #= require select2_locale_fr
+#= require select2_locale_en
 #= require jquery-tokeninput
 #= require footable
 #= require footable/footable.filter

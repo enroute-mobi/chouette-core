@@ -8,7 +8,7 @@
     - Destination.descendants.each do |child|
       .slave data-master="[name='#{f.object_name}[type]']" data-value=child.name
         - child.options.each do |attr, option_def|
-          = export_option_input f, f.object, attr, option_def, child, []
+          = export_option_input f, f.object, attr, option_def, child
         = f.input :secret_file, wrapper: :inline_file_input, required: true if child.secret_file_required?
 
   = f.input :_destroy, as: :switchable_checkbox

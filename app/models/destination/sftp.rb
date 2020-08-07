@@ -2,10 +2,14 @@ if ::Destination.enabled?("sftp")
   class Destination::SFTP < ::Destination
     require 'net/sftp'
 
-    option :host, required: true
+    option :host
     option :port, default_value: 22
-    option :directory, required: true
-    option :username, required: true
+    option :directory
+    option :username
+
+    validates :host, presence: true
+    validates :directory, presence: true
+    validates :username, presence: true
 
     @secret_file_required = true
 

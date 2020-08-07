@@ -19,7 +19,7 @@ FactoryGirl.define do
 
   factory :publication_setup_idfm_netex_line, :parent => :publication_setup do
     export_type "Export::Netex"
-    export_options { {export_type: :line, duration: 60} }
+    export_options { {export_type: :line, duration: 60, line_code: 1 } }
   end
 
   factory :publication_setup_netex_full, :parent => :publication_setup do

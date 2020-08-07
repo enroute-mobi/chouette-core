@@ -1,14 +1,14 @@
 class Export::Netex < Export::Base
   after_commit :call_iev_callback, on: :create
-  option :export_type, collection: %w(line full), required: true do |val|
-    val.full do
-      option :duration, type: :integer, default_value: 60, required: true, min: 1, max: 60
-    end
-    val.line do
-      option :duration, type: :integer, default_value: 365, hidden: true, required: true, min: 1, max: 365
-      option :line_code, collection: ->(referential){referential.lines.active.map{|l| [l.display_name, l.id]}}, depends_on_referential: true
-    end
-  end
+
+  option :export_type, collection: %w(line full)
+  option :duration, type: :integer, default_value: 60
+  option :line_code, ajax_collection: true, depends: {option: :export_type, value: "line"}
+
+  validates :export_type, presence: true
+  validates :line_code, presence: true, if: Proc.new { |e| e.export_type == "line" }
+  validates :duration, presence: true, numericality: { greater_than_or_equal_to: 1, less_than_or_equal_to: 60 }, if: Proc.new { |e| e.export_type == "full" }
+  validates :duration, presence: true, numericality: { greater_than_or_equal_to: 1, less_than_or_equal_to: 365 }, if: Proc.new { |e| e.export_type == "line" }
 
   def synchronous
     false

@@ -1,7 +1,8 @@
 class Export::Workgroup < Export::Base
   after_commit :launch_worker, :on => :create
 
-  option :duration, required: true, type: :integer, default_value: 90
+  option :duration, type: :integer, default_value: 90
+  validates :duration, presence: true
 
   def launch_worker
     enqueue_job :export!

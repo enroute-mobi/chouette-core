@@ -2,7 +2,7 @@ crumb :root do
 end
 
 crumb :workbench do |workbench|
-  link workbench.name, workbench_path(workbench)
+  link workbench.name.capitalize, workbench_path(workbench)
   parent :workgroup, workbench.workgroup
 end
 
@@ -448,12 +448,12 @@ crumb :notification_rule do |notification_rule|
   parent :notification_rules, notification_rule.workbench
 end
 
-crumb :shape_referential do |shape_referential, workbench|
-  link shape_referential.name, workbench_shape_referential_path(workbench)
+crumb :shapes do |workbench|
+  link I18n.t('shapes.index.title'), workbench_shape_referential_shapes_path(workbench)
   parent :workbench, workbench
 end
 
-crumb :shape do |workbench, shape_referential, shape|
-  link breadcrumb_name(shape), workbench_shape_referential_shape_path(workbench, shape)
-  parent :shape_referential, shape_referential, workbench
+crumb :shape do |workbench, shape|
+  link breadcrumb_name(shape, (shape.name.present? ? :name : :uuid )), workbench_shape_referential_shape_path(workbench, shape)
+  parent :shapes, workbench
 end

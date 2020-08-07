@@ -1,5 +1,8 @@
 en:
   shapes:
+    filters:
+      name_or_uuid_cont: Search by name or ID
+      no_results: No shape matching your query
     actions:
       edit: "Edit this shape"
       destroy: "Remove this shape"
@@ -8,6 +11,8 @@ en:
       title: "Update shape %{name}"
     show:
       title: "Shape %{name}"
+    index:
+      title: Shapes
   activerecord:
     models:
       shape:

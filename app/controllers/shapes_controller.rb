@@ -1,4 +1,5 @@
 class ShapesController < ChouetteController
+  include PolicyChecker
   # FIXME required by page_tile helper (?!)
   defaults :resource_class => Shape
 
@@ -8,16 +9,26 @@ class ShapesController < ChouetteController
   respond_to :html
   respond_to :kml, :only => [:index, :show]
 
+  def index
+    index! do |format|
+      format.html {
+        @shapes = ShapeDecorator.decorate(
+          @shapes,
+          context: {
+            workbench: @workbench
+          }
+        )
+      }
+    end
+  end
+
   protected
 
   alias_method :shape_referential, :parent
 
   def collection
-    @shapes ||= begin
-      scope = shape_referential.shapes
-      shapes = scope.ransack(params[:q]).result
-      shapes = shapes.paginate(page: params[:page], per_page: 12)
-    end
+    @q = shape_referential.shapes.ransack(params[:q])
+    @shapes ||= @q.result.paginate(page: params[:page], per_page: 12)
   end
 
   private

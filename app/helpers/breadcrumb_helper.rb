@@ -7,6 +7,6 @@ module BreadcrumbHelper
         "#{object.class.model_name.human} #{object.public_send(prop)}"
       end
 
-    name.truncate(40)
+    name.truncate(40).capitalize
   end
 end

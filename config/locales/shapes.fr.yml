@@ -1,5 +1,8 @@
 fr:
   shapes:
+    filters:
+      name_or_uuid_cont: Indiquez un nom de tracé ou un ID...
+      no_results: Aucun tracé ne correspond à votre recherche
     actions:
       edit: "Editer ce tracé"
       destroy: "Supprimer ce tracé"
@@ -8,6 +11,8 @@ fr:
       title: "Editer le tracé %{name}"
     show:
       title: "Tracé %{name}"
+    index:
+      title: Tracés
   activerecord:
     models:
       shape:

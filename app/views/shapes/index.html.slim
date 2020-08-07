@@ -1,6 +1,6 @@
-- breadcrumb @workbench, @shape_referential
+- breadcrumb :shapes, @workbench
 
-- page_header_content_for @shape_referential
+- content_for(:page_header_title) { 'shapes.index.title'.t }
 
 .page_content
   .container-fluid
@@ -34,7 +34,7 @@
 
         - else
           .row.mt-xs
-            = replacement_msg t('shape_referentials.filters.no_results')
+            = replacement_msg t('shapes.filters.no_results')
 
       .col-md-6.col-sm-12
         h4.underline= t('lines.show.map')

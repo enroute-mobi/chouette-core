@@ -35,7 +35,7 @@ class ShapesKml
       controls: [ new ol.control.ScaleLine(), new ol.control.Zoom(), new ol.control.ZoomSlider() ],
       interactions: ol.interaction.defaults(zoom: true),
       view: new ol.View({
-          center: [876970.8463461736, 5859807.853963373],
+          center: [ 876970.8463461736, 5859807.853963373 ],
           zoom: 10
         })
 

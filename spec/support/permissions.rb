@@ -33,6 +33,7 @@ module Support
         compliance_check_sets
         workbenches
         workgroups
+        shapes
       ]
     end
   end

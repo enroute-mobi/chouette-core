@@ -3,6 +3,8 @@ class Shape < ApplicationModel
   belongs_to :shape_referential, required: true
   belongs_to :shape_provider, required: true
 
+  delegate :workbench, :to => :shape_provider, :allow_nil => true
+
   has_many :codes, as: :resource, dependent: :delete_all
 
   validates :geometry, presence: true

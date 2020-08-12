@@ -389,10 +389,10 @@ GEM
     license_finder (6.8.1)
       bundler
       rubyzip (>= 1, < 3)
-      thor
-      toml (= 0.2.0)
+      thor (~> 1.0.1)
+      tomlrb (~> 1.3.0)
       with_env (= 1.1.0)
-      xml-simple
+      xml-simple (~> 1.1.5)
     loofah (2.6.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
@@ -432,7 +432,6 @@ GEM
       parallel
     parser (2.7.0.4)
       ast (~> 2.4.0)
-    parslet (1.8.2)
     pg (0.20.0)
     phantomjs (2.1.1.0)
     poltergeist (1.18.1)
@@ -680,8 +679,7 @@ GEM
     thread_safe (0.3.6)
     tilt (2.0.10)
     timecop (0.9.1)
-    toml (0.2.0)
-      parslet (~> 1.8.0)
+    tomlrb (1.3.0)
     tzinfo (1.2.7)
       thread_safe (~> 0.1)
     uber (0.1.0)

@@ -2,5 +2,5 @@
 	= d.attribute :type, value: destination.human_type
 	= d.attribute :name
 	= d.attribute :recipients, value: destination.recipients.join(', ')
-	= d.attribute :link_to_api, value: link_to(PublicationApi.find(destination.link_to_api).name, workgroup_publication_api_path(destination.publication_setup.workgroup, destination.link_to_api))
+	= d.attribute :link_to_api, value: (link_to(PublicationApi.find(destination.link_to_api).name, workgroup_publication_api_path(destination.publication_setup.workgroup, destination.link_to_api)) if destination.link_to_api.present?)
 	= d.attribute :attached_export_file, value: t(destination.attached_export_file)

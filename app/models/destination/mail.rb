@@ -17,7 +17,7 @@ if ::Destination.enabled?("mail")
     validates :recipients, presence: true
     validate :check_mail_array
 
-    option :link_to_api, collection: ->(){publication_setup.workgroup.publication_apis.map{|pbl| [pbl.name, pbl.id]}}
+    option :link_to_api, collection: ->(){publication_setup.workgroup.publication_apis.map{|pbl| [pbl.name, pbl.id]}}, allow_blank: true
 
     option :attached_export_file, type: :boolean, default_value: false
 

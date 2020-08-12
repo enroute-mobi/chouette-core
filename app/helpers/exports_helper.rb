@@ -31,10 +31,11 @@ module ExportsHelper
         opts[:collection] = option_def[:collection]
       end
       opts[:collection] = export.instance_exec(&option_def[:collection]) if option_def[:collection].is_a?(Proc)
+
+      opts[:collection] = opts[:collection].push([t('none'), nil]) if option_def[:allow_blank]
       opts[:input_html]['data-select2ed'] = true
     end
     opts[:label] =  translate_option_key(type, attr)
-
     out = form.input attr, opts
 
     if option_def[:depends]

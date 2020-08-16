@@ -7,7 +7,7 @@ module Types
       end
 
       def self.coerce_result(value, _context)
-        value.delete_if { |k, v| v.empty? }
+        value.delete_if { |_, v| v.empty? }
       end
   end
 end

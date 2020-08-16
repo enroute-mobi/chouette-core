@@ -1,8 +1,8 @@
 module Types
-	class NetworkType < Types::BaseObject
-		description "A Chouette Network"
+  class NetworkType < Types::BaseObject
+    description "A Chouette Network"
 
-		field :objectid, String, null: false
-		field :name, String, null: true
-	end
+    field :objectid, String, null: false
+    field :name, String, null: true
+  end
 end

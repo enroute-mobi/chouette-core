@@ -254,15 +254,12 @@ RSpec.describe Api::V1::DatasController, type: :controller do
       {
         lines {
           nodes {
-            id
             objectid
             routes {
               nodes {
-                id
                 objectid
                 stopAreas {
                   nodes {
-                    id
                     objectid
                   }
                 }
@@ -270,7 +267,6 @@ RSpec.describe Api::V1::DatasController, type: :controller do
             }
             stopAreas {
               nodes {
-                id
                 objectid
               }
             }
@@ -283,7 +279,7 @@ RSpec.describe Api::V1::DatasController, type: :controller do
       data = json['data']['lines']
       expect(data['nodes'].count).to eq 2
       data['nodes'].each do |node|
-        line = Chouette::Line.find(node['id'])
+        line = Chouette::Line.find_by(objectid: node['objectid'])
         expect(node['objectid']).to eq line.objectid
         expect(node['routes']['nodes'].count).to eq line.routes.count
         expect(node['stopAreas']['nodes'].count). to eq line.stop_areas.count
@@ -295,11 +291,9 @@ RSpec.describe Api::V1::DatasController, type: :controller do
       {
         stopAreas {
           nodes {
-            id
             objectid
             lines {
               nodes {
-                id
                 objectid
               }
             }

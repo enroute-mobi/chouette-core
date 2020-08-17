@@ -1,6 +1,7 @@
 GIT
   remote: https://bitbucket.org/enroute-mobi/gtfs.git
-  revision: 40aea9900f7f9b303c5b12284fc9bafcb666d7dd
+  revision: 4fcf2d10542081a34e51374cee9de5dc21a73e7a
+  branch: GTFS-20-improve-gtfs-shape
   specs:
     gtfs (0.3.4)
       msgpack
@@ -199,8 +200,8 @@ GEM
       execjs
     coffee-script-source (1.12.2)
     concurrent-ruby (1.1.7)
-    countries (3.0.0)
-      i18n_data (~> 0.8.0)
+    countries (3.0.1)
+      i18n_data (~> 0.10.0)
       sixarm_ruby_unaccent (~> 1.1)
       unicode_utils (~> 1.4)
     country_select (4.0.0)

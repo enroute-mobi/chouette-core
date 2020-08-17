@@ -136,11 +136,10 @@ gem 'aasm'
 gem 'puma'
 gem 'postgresql_cursor'
 
-
 # Cache
 gem 'redis-rails'
 
-gem 'gtfs', en_route: 'gtfs'
+gem 'gtfs', en_route: 'gtfs', branch: 'GTFS-20-improve-gtfs-shape'
 gem 'netex', en_route: 'netex'
 
 gem 'ddtrace'

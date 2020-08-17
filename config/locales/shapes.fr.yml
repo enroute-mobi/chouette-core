@@ -1,0 +1,26 @@
+fr:
+  shapes:
+    filters:
+      name_or_uuid_cont: Indiquez un nom de tracé ou un ID...
+      no_results: Aucun tracé ne correspond à votre recherche
+    actions:
+      edit: "Editer ce tracé"
+      destroy: "Supprimer ce tracé"
+      destroy_confirm: "Etes vous sûr de supprimer ce tracé ?"
+    edit:
+      title: "Editer le tracé %{name}"
+    show:
+      title: "Tracé %{name}"
+    index:
+      title: Tracés
+  activerecord:
+    models:
+      shape:
+        zero: tracé
+        one: tracé
+        other: tracés
+    attributes:
+      shape:
+        name: Nom
+        uuid: Uuid
+        length: Distance

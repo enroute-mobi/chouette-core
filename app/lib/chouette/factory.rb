@@ -73,6 +73,10 @@ module Chouette
           end
         end
 
+        model :shape_referential, required: true, singleton: true do
+
+        end
+
         model :workbench do
           attribute(:name) { |n| "Workbench #{n}" }
           attribute(:organisation) { build_root_model :organisation }
@@ -86,6 +90,16 @@ module Chouette
 
             new_instance.stop_area_referential.add_member new_instance.organisation
             new_instance.line_referential.add_member new_instance.organisation
+          end
+
+          model :shape_provider do
+            attribute(:short_name) { |n| "shape_provider_#{n}" }
+
+            model :shape do
+              attribute(:name) { |n| "Shape #{n}" }
+              attribute(:geometry) { |n| "LINESTRING(48.8584 2.2945,48.859 2.295)" }
+            end
+
           end
 
           model :referential do

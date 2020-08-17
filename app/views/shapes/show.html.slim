@@ -1,0 +1,29 @@
+- breadcrumb :shape, @workbench, @shape
+
+- page_header_content_for @shape
+.page_content
+  .container-fluid
+    .row
+      .col-md-6.col-sm-12
+        = definition_list t('metadatas'),
+          { @shape.human_attribute_name(:id) => @shape.uuid, \
+            @shape.human_attribute_name(:name) => @shape.name.presence || I18n.t('none'),
+            @shape.human_attribute_name(:length) => @shape.length,
+            @shape.human_attribute_name(:points) => @shape.geometry.points.count,
+            @shape.human_attribute_name(:created_at) => @shape.created_at ? l(@shape.created_at, format: :short_with_time) : '-',
+            @shape.human_attribute_name(:updated_at) => @shape.updated_at ? l(@shape.updated_at, format: :short_with_time) : '-',
+          }
+
+      .col-md-6.col-sm-12
+        = definition_list t('codes'),
+          {}.tap{|hash| @shape.codes.each{|code| hash[code.code_space.short_name] = code.value } }
+
+      .col-md-6.col-sm-12
+        h4.underline= t('lines.show.map')
+        #route_map.large_map.mb-lg
+
+= javascript_tag do
+  | window.kml_url = "#{workbench_shape_referential_shape_path(@workbench, @shape, format: :kml).html_safe}";
+
+= javascript_include_tag 'OpenLayers/maps_backgrounds.js'
+= javascript_pack_tag 'shapes/show.js'

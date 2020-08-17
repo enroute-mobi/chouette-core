@@ -35,16 +35,6 @@
       = link_to compliance_control_sets_path, class: 'list-group-item' do
         span = 'activerecord.models.compliance_control_set.other'.t.capitalize
 
-    = main_nav_menu_item 'layouts.navbar.line_referential'.t do
-      = link_to line_referential_lines_path(workbench.line_referential), class: "list-group-item" do
-        span = Chouette::Line.t.capitalize
-      = link_to line_referential_networks_path(workbench.line_referential), class: "list-group-item" do
-        span = Chouette::Network.t.capitalize
-      = link_to line_referential_companies_path(workbench.line_referential), class: "list-group-item" do
-        span = Chouette::Company.t.capitalize
-      = link_to line_referential_line_notices_path(workbench.line_referential), class: "list-group-item" do
-        span = Chouette::LineNotice.t.capitalize
-
     = main_nav_menu_item 'layouts.navbar.stop_area_referential'.t do
       - if policy(workbench.stop_area_referential).edit?
         = link_to stop_area_referential_path(workbench.stop_area_referential), class: "list-group-item" do
@@ -60,6 +50,20 @@
       - if has_feature?(:stop_area_connection_links)
         = link_to [workbench.stop_area_referential, :connection_links], class: 'list-group-item' do
           span = Chouette::ConnectionLink.t.capitalize
+
+    = main_nav_menu_item 'layouts.navbar.line_referential'.t do
+      = link_to line_referential_lines_path(workbench.line_referential), class: "list-group-item" do
+        span = Chouette::Line.t.capitalize
+      = link_to line_referential_networks_path(workbench.line_referential), class: "list-group-item" do
+        span = Chouette::Network.t.capitalize
+      = link_to line_referential_companies_path(workbench.line_referential), class: "list-group-item" do
+        span = Chouette::Company.t.capitalize
+      = link_to line_referential_line_notices_path(workbench.line_referential), class: "list-group-item" do
+        span = Chouette::LineNotice.t.capitalize
+
+    = main_nav_menu_item 'layouts.navbar.shape_referential'.t do
+      = link_to workbench_shape_referential_shapes_path(workbench), class: 'list-group-item' do
+        span = Shape.t.capitalize
 
     = main_nav_menu_item 'layouts.navbar.configuration'.t do
       - if policy(workbench).edit?

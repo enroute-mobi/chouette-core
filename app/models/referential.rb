@@ -350,6 +350,7 @@ class Referential < ApplicationModel
   def codes
     ReferentialCode.all
   end
+  alias referential_codes codes
 
   def workgroup
     @workgroup = begin

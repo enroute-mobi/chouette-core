@@ -10,10 +10,16 @@ module Export::Scope
     end
 
     delegate :workbench, :line_referential, :stop_area_referential, to: :referential
+    delegate :workgroup, to: :workbench
 
-    delegate :vehicle_journeys, :vehicle_journey_at_stops, :journey_patterns, :routes, :stop_points, :time_tables, :codes, to: :referential
+    delegate :vehicle_journeys, :vehicle_journey_at_stops, :journey_patterns, :routes, :stop_points, :time_tables, :referential_codes, to: :referential
 
     delegate :companies, to: :line_referential
+
+    delegate :shape_referential, to: :workbench
+    delegate :shapes, to: :shape_referential
+
+    delegate :codes, to: :workgroup
 
     def stop_areas
       (workbench || stop_area_referential).stop_areas
@@ -60,6 +66,15 @@ module Export::Scope
     def routes
       super.joins(:vehicle_journeys).distinct
         .where("vehicle_journeys.id" => vehicle_journeys)
+    end
+
+    def journey_patterns
+      super.joins(:vehicle_journeys).distinct
+        .where("vehicle_journeys.id" => vehicle_journeys)
+    end
+
+    def shapes
+      super.where(id: journey_patterns.select(:shape_id))
     end
 
     def stop_points

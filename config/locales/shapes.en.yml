@@ -1,0 +1,25 @@
+en:
+  shapes:
+    filters:
+      name_or_uuid_cont: Search by name or ID
+      no_results: No shape matching your query
+    actions:
+      edit: "Edit this shape"
+      destroy: "Remove this shape"
+      destroy_confirm: Are you sure you want destroy this shape ?"
+    edit:
+      title: "Update shape %{name}"
+    show:
+      title: "Shape %{name}"
+    index:
+      title: Shapes
+  activerecord:
+    models:
+      shape:
+        zero: shape
+        one: shape
+        other: shapes
+    attributes:
+      shape:
+        name: name
+        uuid: uuid

@@ -50,7 +50,7 @@ class Import::Gtfs < Import::Base
   end
 
   def prepare_referential
-    import_resources :agencies, :stops, :routes
+    import_resources :agencies, :stops, :routes, :shapes
 
     create_referential
     notify_operation_progress(:create_referential)
@@ -345,6 +345,7 @@ class Import::Gtfs < Import::Base
       trip.route_id,
       trip.direction_id,
       trip.headsign.presence || trip.short_name,
+      trip.shape_id,
     ] + stop_times.map(&:stop_id)
   end
 
@@ -360,6 +361,11 @@ class Import::Gtfs < Import::Base
     route.name = name
 
     journey_pattern = route.journey_patterns.build name: name, published_name: name, skip_custom_fields_initialization: true
+
+    if trip.shape_id
+      shape = shape_provider.shapes.by_code(code_space, trip.shape_id).first
+      journey_pattern.shape = shape
+    end
 
     stop_times.sort_by! { |s| s.stop_sequence.to_i }
 
@@ -615,4 +621,85 @@ class Import::Gtfs < Import::Base
       @time = time
     end
   end
+
+  def shape_referential
+    workgroup.shape_referential
+  end
+
+  def shape_provider
+    workbench.default_shape_provider
+  end
+
+  def import_shapes
+    Shapes.new(self).import!
+  end
+
+  class Shapes
+
+    def initialize(import)
+      @import = import
+    end
+
+    attr_reader :import
+    delegate :source, :shape_provider, :shape_referential, :code_space, to: :import
+
+    def import!
+      source.shapes.each_slice(1000).each do |gtfs_shapes|
+        Shape.transaction do
+          gtfs_shapes.each do |gtfs_shape|
+            decorator = Decorator.new(gtfs_shape, shape_provider: shape_provider)
+
+            shape = shape_provider.shapes.by_code(code_space, decorator.code_value).first
+            if shape
+              shape.update decorator.shape_attributes
+            else
+              shape = shape_provider.shapes.build decorator.shape_attributes
+              shape.codes.build code_space: code_space, value: decorator.code_value
+            end
+
+            shape.save
+          end
+        end
+      end
+    end
+
+    class Decorator < SimpleDelegator
+
+      def initialize(gtfs_shape, shape_provider: nil)
+        super gtfs_shape
+        @shape_provider = shape_provider
+      end
+
+      attr_reader :shape_provider
+
+      def factory
+        @factory ||= RGeo::Geos::FFIFactory.new srid: 4326
+      end
+
+      def code_value
+        id
+      end
+
+      def rgeos_points
+        points.map do |point|
+          factory.point point.longitude, point.latitude
+        end
+      end
+
+      def rgeos_geometry
+        factory.line_string rgeos_points
+      end
+
+      def shape_attributes
+        {
+          geometry: rgeos_geometry,
+          shape_provider: shape_provider
+        }
+      end
+
+    end
+
+  end
+
+
 end

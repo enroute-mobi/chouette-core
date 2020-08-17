@@ -1,0 +1,18 @@
+en:
+  shape_referentials:
+    filters:
+      name_or_uuid_cont: Search by name or ID
+      no_results: No shape matching your query
+    actions:
+      edit: "Edit this referential"
+    edit:
+      title: "Edit %{name} referential"
+    show:
+      title: Shape referential
+      state: Status
+      message: Message
+  activerecord:
+    models:
+      shape_referentials:
+        one:   "shape referential"
+        other: "shape referentials"

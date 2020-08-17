@@ -49,6 +49,10 @@ ChouetteIhm::Application.routes.draw do
 
     resources :referentials, only: %w(new create index)
     resources :notification_rules
+
+    resource :shape_referential do
+      resources :shapes, except: [:create]
+    end
   end
 
   resources :workgroups, except: [:destroy], concerns: :iev_interfaces do

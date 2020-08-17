@@ -1,0 +1,18 @@
+fr:
+  shape_referentials:
+    filters:
+      name_or_uuid_cont: Indiquez un nom de tracé ou un ID...
+      no_results: Aucun tracé ne correspond à votre recherche
+    actions:
+      edit: "Editer ce référentiel"
+    edit:
+      title: "Editer le référentiel %{name}"
+    show:
+      title: 'Référentiel de tracés'
+      status: Statut
+      message: Message
+  activerecord:
+    models:
+      shape_referential:
+        one: "référentiel de tracés"
+        other: "référentiels de tracés"

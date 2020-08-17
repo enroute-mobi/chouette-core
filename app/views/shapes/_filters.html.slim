@@ -1,0 +1,11 @@
+= search_form_for @q, url: workbench_shape_referential_shapes_path(@workbench), html: {method: :get}, class: 'form form-filter' do |f|
+  .ffg-row
+    .input-group.search_bar class=filter_item_class(params[:q], :name_or_uuid_cont)
+      = f.search_field :name_or_uuid_cont, placeholder: t('shapes.filters.name_or_uuid_cont'), class: 'form-control'
+      span.input-group-btn
+        button.btn.btn-default#search-btn type='submit'
+          span.fa.fa-search
+
+  .actions
+    = link_to t('actions.erase'), workbench_shape_referential_shapes_path(@workbench), class: 'btn btn-link'
+    = f.submit t('actions.filter'), class: 'btn btn-default'

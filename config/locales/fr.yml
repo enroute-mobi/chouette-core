@@ -50,7 +50,7 @@ fr:
     - octobre
     - novembre
     - décembre
-    
+
   last_update: 'Dernière mise à jour le %{time}'
   whodunnit: 'Par %{author}'
   default_whodunnit: 'web service'
@@ -65,6 +65,7 @@ fr:
   brandname: Chouette
   error: "Erreur"
   undefined: 'non renseigné'
+  none: Aucun
 
   activerecord:
     default:

@@ -23,8 +23,9 @@ module ApplicationHelper
 
     local = "#{object.model_name.name.underscore.pluralize}.#{params[:action]}.title"
 
-    if object.try(:name)
-      t(local, name: object.name.capitalize || object.id).html_safe
+    if object.respond_to?(:name)
+      user_identifier = %i{objectid uuid id}.map { |m| object.try(m) }.find(&:itself)
+      t(local, name: object.name || user_identifier).html_safe
     else
       t(local).html_safe
     end

@@ -1,10 +1,12 @@
 class Workgroup < ApplicationModel
   NIGHTLY_AGGREGATE_CRON_TIME = 5.minutes
 
-  belongs_to :line_referential, dependent: :destroy
-  belongs_to :stop_area_referential, dependent: :destroy
-  belongs_to :owner, class_name: "Organisation"
-  belongs_to :output, class_name: 'ReferentialSuite', dependent: :destroy
+  belongs_to :line_referential, dependent: :destroy, required: true
+  belongs_to :stop_area_referential, dependent: :destroy, required: true
+  belongs_to :shape_referential, dependent: :destroy, required: true
+
+  belongs_to :owner, class_name: "Organisation", required: true
+  belongs_to :output, class_name: 'ReferentialSuite', dependent: :destroy, required: true
 
   has_many :workbenches, dependent: :destroy
   has_many :imports, through: :workbenches
@@ -19,15 +21,12 @@ class Workgroup < ApplicationModel
   has_many :compliance_check_sets, dependent: :destroy
 
   validates_uniqueness_of :name
-
-  validates_presence_of :owner
-  validates_presence_of :line_referential
-  validates_presence_of :stop_area_referential
   validates_uniqueness_of :stop_area_referential_id
   validates_uniqueness_of :line_referential_id
+  validates_uniqueness_of :shape_referential_id
 
   validates :output, presence: true
-  before_validation :initialize_output
+  before_validation :create_dependencies, on: :create
 
   validates :sentinel_min_hole_size, presence: true, numericality: { greater_than_or_equal_to: 0 }
 
@@ -37,6 +36,7 @@ class Workgroup < ApplicationModel
       find_or_create_by(short_name: CodeSpace::DEFAULT_SHORT_NAME)
     end
   end
+  has_many :codes, through: :code_spaces
 
   accepts_nested_attributes_for :workbenches
 
@@ -148,16 +148,16 @@ class Workgroup < ApplicationModel
   def nightly_aggregate_timeframe?
     return false unless nightly_aggregate_enabled?
 
-    Rails.logger.info "Workgroup #{id}: nightly_aggregate_timeframe!"
-    Rails.logger.info "Time.now: #{Time.now.inspect}"
-    Rails.logger.info "LocalDaytime.new: #{LocalDaytime.new.inspect}"
-    Rails.logger.info "nightly_aggregate_time: #{nightly_aggregate_time.inspect}"
-    Rails.logger.info "diff: #{(LocalDaytime.new - nightly_aggregate_time)}"
+    Rails.logger.debug "Workgroup #{id}: nightly_aggregate_timeframe!"
+    Rails.logger.debug "Time.now: #{Time.now.inspect}"
+    Rails.logger.debug "LocalDaytime.new: #{LocalDaytime.new.inspect}"
+    Rails.logger.debug "nightly_aggregate_time: #{nightly_aggregate_time.inspect}"
+    Rails.logger.debug "diff: #{(LocalDaytime.new - nightly_aggregate_time)}"
 
     cron_delay = NIGHTLY_AGGREGATE_CRON_TIME * 2
-    Rails.logger.info "cron_delay: #{cron_delay}"
+    Rails.logger.debug "cron_delay: #{cron_delay}"
     within_timeframe = (LocalDaytime.new - nightly_aggregate_time).abs <= cron_delay
-    Rails.logger.info "within_timeframe: #{within_timeframe}"
+    Rails.logger.debug "within_timeframe: #{within_timeframe}"
 
     # "5.minutes * 2" returns a FixNum (in our Rails version)
     within_timeframe && (nightly_aggregated_at.blank? || nightly_aggregated_at < NIGHTLY_AGGREGATE_CRON_TIME.seconds.ago)
@@ -233,15 +233,6 @@ class Workgroup < ApplicationModel
     TransportModeEnumerations.formatted_submodes_for_transports(transport_modes)
   end
 
-  private
-  def clean_transport_modes
-    clean = {}
-    transport_modes.each do |k, v|
-      clean[k] = v.sort.uniq if v.present?
-    end
-    self.transport_modes = clean
-  end
-
   def self.compliance_control_sets_label(key)
     "workgroups.compliance_control_sets.#{key}".t
   end
@@ -251,10 +242,6 @@ class Workgroup < ApplicationModel
       h[k] = compliance_control_sets_label(k)
       h
     end
-  end
-
-  def initialize_output
-    self.output ||= ReferentialSuite.create
   end
 
   def self.default_export_types
@@ -292,4 +279,19 @@ class Workgroup < ApplicationModel
       workgroup
     end
   end
+
+  private
+  def clean_transport_modes
+    clean = {}
+    transport_modes.each do |k, v|
+      clean[k] = v.sort.uniq if v.present?
+    end
+    self.transport_modes = clean
+  end
+
+  def create_dependencies
+    self.output ||= ReferentialSuite.create
+    self.shape_referential ||= ShapeReferential.create unless self.shape_referential_id
+  end
+
 end

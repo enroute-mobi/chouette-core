@@ -534,6 +534,22 @@ RSpec.describe Chouette::Factory do
 
   end
 
+  describe "Shapes" do
+
+    describe "{ shape_referential }" do
+      it "should create a ShapeReferential" do
+        expect { Chouette.create { shape_referential } }.to change { ShapeReferential.count }.by(1)
+      end
+    end
+
+    describe "{ shape }" do
+      it "should create a Shape" do
+        expect { Chouette.create { shape } }.to change { Shape.count }.by(1)
+      end
+    end
+
+  end
+
   describe "Chouette.create shortcut" do
 
     let(:context) { Chouette.create { line } }

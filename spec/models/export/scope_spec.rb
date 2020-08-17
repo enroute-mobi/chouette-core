@@ -56,18 +56,30 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
 
         stop_area :specific_stop
 
-        referential lines: [:first, :second, :third] do
-          time_table :default
+        workbench do
+          shape :shape_in_scope1
+          shape :shape_in_scope2
+          shape
 
-          route :in_scope1, line: :first do
-            vehicle_journey :in_scope1, time_tables: [:default]
-            vehicle_journey :in_scope2, time_tables: [:default]
+          referential lines: [:first, :second, :third] do
+            time_table :default
+
+            route :in_scope1, line: :first do
+              journey_pattern :in_scope1, shape: :shape_in_scope1 do
+                vehicle_journey :in_scope1, time_tables: [:default]
+              end
+              journey_pattern :in_scope2, shape: :shape_in_scope1 do
+                vehicle_journey :in_scope2, time_tables: [:default]
+              end
+            end
+            route :in_scope2, line: :second do
+              journey_pattern :in_scope3, shape: :shape_in_scope2 do
+                vehicle_journey :in_scope3, time_tables: [:default]
+              end
+              vehicle_journey # no timetable
+            end
+            route
           end
-          route :in_scope2, line: :second do
-            vehicle_journey :in_scope3, time_tables: [:default]
-            vehicle_journey # no timetable
-          end
-          route
         end
       end
     end
@@ -85,6 +97,7 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
     end
 
     let(:routes_in_scope) { [:in_scope1, :in_scope2].map { |n| context.route(n) } }
+    let(:journey_patterns_in_scope) { [:in_scope1, :in_scope2, :in_scope3].map { |n| context.journey_pattern(n) } }
 
     describe "stop_areas" do
 
@@ -145,6 +158,18 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
 
     end
 
+    describe "journey_patterns" do
+
+      it "select journey patterns associated with vehicle journeys in scope" do
+        expect(scope.journey_patterns).to match_array(journey_patterns_in_scope)
+      end
+
+      it "doesn't provide a Journey Pattern twice" do
+        expect(scope.journey_patterns).to be_uniq
+      end
+
+    end
+
     describe "vehicle_journeys" do
 
       it "select vehicle journeys with a time table in the date range" do
@@ -179,6 +204,19 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
 
       it "doesn't provide a VehicleJourneyAtStop twice" do
         expect(scope.vehicle_journey_at_stops).to be_uniq
+      end
+
+    end
+
+    describe "journey_patterns" do
+
+      it "select shapes associated with journey patterns in scope" do
+        shapes_in_scope = journey_patterns_in_scope.map(&:shape).uniq
+        expect(scope.shapes).to match_array(shapes_in_scope)
+      end
+
+      it "doesn't provide a Shape twice" do
+        expect(scope.shapes).to be_uniq
       end
 
     end

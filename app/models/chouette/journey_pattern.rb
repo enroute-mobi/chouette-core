@@ -14,6 +14,9 @@ module Chouette
     has_many :stop_areas, through: :stop_points
     has_many :courses_stats, class_name: "Stat::JourneyPatternCoursesByDate"
 
+    belongs_to :shape, optional: true
+    belongs_to_public :shape
+
     scope :light, ->{ select(:id, :name, :route_id, :objectid) }
 
     scope :without_any_vehicle_journey, -> { joins('LEFT JOIN vehicle_journeys ON vehicle_journeys.journey_pattern_id = journey_patterns.id').where(vehicle_journeys: { id: nil } ) }
@@ -35,6 +38,7 @@ module Chouette
       values = self.slice(*['name', 'published_name', 'registration_number']).values
       values << self.stop_points.sort_by(&:position).map(&:stop_area_id)
       values << self.cleaned_costs
+      values << self.shape_id if self.shape_id
       values.flatten
     end
 
@@ -191,9 +195,9 @@ module Chouette
     def cleaned_costs
       out = {}
       costs.each do |k, v|
-        out[k] = v.select do |kk, vv|
+        out[k] = v.sort.select do |kk, vv|
           vv.present? && vv.to_i > 0
-        end
+        end.to_h
       end
       out.select{|k, v| v.present?}
     end

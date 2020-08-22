@@ -11,7 +11,6 @@ class AddMetadataToOtherModels < ActiveRecord::Migration[4.2]
       Chouette::JourneyPattern,
       Chouette::Line,
       Chouette::Network,
-      Chouette::PtLink,
       Chouette::PurchaseWindow,
       Chouette::RoutingConstraintZone,
       Chouette::StopArea,

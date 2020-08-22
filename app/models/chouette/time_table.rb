@@ -604,6 +604,11 @@ module Chouette
       end
     end
 
+    def apply_with_days(timetable)
+      self.int_day_types = timetable.periods&.first&.days_of_week&.hash
+      apply(timetable)
+    end
+
     def apply(timetable)
       included_dates = timetable.included_dates.to_a
       dates.select(&:in?).sort_by(&:date).each do |date|
@@ -632,8 +637,6 @@ module Chouette
       excluded_dates.each do |excluded_date|
         dates.build date: excluded_date, in_out: false
       end
-
-      self.int_day_types = timetable.periods.first.days_of_week.hash
 
       expected_periods = timetable.periods.to_a
       periods.sort_by(&:period_start).each do |period|

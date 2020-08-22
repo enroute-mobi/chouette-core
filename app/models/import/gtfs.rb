@@ -348,7 +348,7 @@ class Import::Gtfs < Import::Base
     tmp_tt.shift offset
 
     shifted_tt = referential.time_tables.build comment: trip.service_id
-    shifted_tt.apply(tmp_tt)
+    shifted_tt.apply_with_days(tmp_tt)
     shifted_tt.shortcuts_update
     shifted_tt.skip_save_shortcuts = true
     save_model shifted_tt, resource: resource

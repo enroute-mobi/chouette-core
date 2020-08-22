@@ -1,6 +1,6 @@
 class SetUpdatedAt < ActiveRecord::Migration[4.2]
   def up
-    models = %w(VehicleJourney TimeTable StopPoint StopArea RoutingConstraintZone Route PtLink Network Line
+    models = %w(VehicleJourney TimeTable StopPoint StopArea RoutingConstraintZone Route Network Line
      JourneyPattern GroupOfLine ConnectionLink Company AccessPoint AccessLink)
 
     models.each do |table|

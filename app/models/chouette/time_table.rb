@@ -633,6 +633,8 @@ module Chouette
         dates.build date: excluded_date, in_out: false
       end
 
+      self.int_day_types = timetable.periods.first.days_of_week.hash
+
       expected_periods = timetable.periods.to_a
       periods.sort_by(&:period_start).each do |period|
         expected_period = expected_periods.shift

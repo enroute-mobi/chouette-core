@@ -246,12 +246,15 @@ class Import::Gtfs < Import::Base
     begin
       raise InvalidTripSingleStopTime unless stop_times.many?
 
+      stop_times.sort_by! { |s| s.stop_sequence.to_i }
+
       journey_pattern = find_or_create_journey_pattern(resource, trip, stop_times)
 
       vehicle_journey = journey_pattern.vehicle_journeys.build route: journey_pattern.route, skip_custom_fields_initialization: true
       vehicle_journey.published_journey_name = trip.short_name.presence || trip.id
 
-      time_table = referential.time_tables.find_by(id: time_tables_by_service_id[trip.service_id]) if time_tables_by_service_id[trip.service_id]
+      starting_day_offset = GTFSTime.parse(stop_times.first.arrival_time).day_offset
+      time_table = referential.time_tables.find(handle_timetable_with_offset(resource, trip, starting_day_offset))
       if time_table
         vehicle_journey.time_tables << time_table
       else
@@ -281,17 +284,17 @@ class Import::Gtfs < Import::Base
 
       Chouette::VehicleJourneyAtStop.bulk_insert do |worker|
         journey_pattern.stop_points.each_with_index do |stop_point, i|
-          add_stop_point stop_times[i], stop_point, journey_pattern, vehicle_journey, resource, worker
+          add_stop_point stop_times[i], starting_day_offset, stop_point, journey_pattern, vehicle_journey, resource, worker
         end
       end
 
       journey_pattern.vehicle_journey_at_stops.reload
       save_model journey_pattern, resource: resource
 
-    rescue Import::Gtfs::InvalidTripNonZeroFirstOffsetError, Import::Gtfs::InvalidTripTimesError, Import::Gtfs::InvalidTripSingleStopTime, Import::Gtfs::InvalidStopAreaError => e
+    rescue Import::Gtfs::InvalidTripInconsistentFirstOffsetError, Import::Gtfs::InvalidTripTimesError, Import::Gtfs::InvalidTripSingleStopTime, Import::Gtfs::InvalidStopAreaError => e
       message_key = case e
-        when Import::Gtfs::InvalidTripNonZeroFirstOffsetError
-          'trip_starting_with_non_zero_day_offset'
+        when Import::Gtfs::InvalidTripInconsistentFirstOffsetError
+          'trip_starting_with_inconsistent_day_offset'
         when Import::Gtfs::InvalidTripTimesError
           'trip_with_inconsistent_stop_times'
         when Import::Gtfs::InvalidTripSingleStopTime
@@ -336,6 +339,23 @@ class Import::Gtfs < Import::Base
     end
   end
 
+  def handle_timetable_with_offset(resource, trip, offset)
+    return nil if time_tables_by_service_id[trip.service_id].nil?
+    return time_tables_by_service_id[trip.service_id][offset] if time_tables_by_service_id[trip.service_id][offset]
+
+    original_tt = referential.time_tables.find(time_tables_by_service_id[trip.service_id].first)
+    tmp_tt = original_tt.to_timetable
+    tmp_tt.shift offset
+
+    shifted_tt = referential.time_tables.build comment: trip.service_id
+    shifted_tt.apply(tmp_tt)
+    shifted_tt.shortcuts_update
+    shifted_tt.skip_save_shortcuts = true
+    save_model shifted_tt, resource: resource
+
+    time_tables_by_service_id[trip.service_id][offset] = shifted_tt.id
+  end
+
   def journey_pattern_ids
     @journey_pattern_ids ||= {}
   end
@@ -367,14 +387,10 @@ class Import::Gtfs < Import::Base
       journey_pattern.shape = shape
     end
 
-    stop_times.sort_by! { |s| s.stop_sequence.to_i }
-
     raise InvalidTripTimesError unless consistent_stop_times(stop_times)
-
     stop_points_with_times = stop_times.each_with_index.map do |stop_time, i|
       [stop_time, import_stop_time(stop_time, journey_pattern.route, resource, i)]
     end
-
     ApplicationModel.skipping_objectid_uniqueness do
         save_model route, resource: resource
     end
@@ -457,7 +473,7 @@ class Import::Gtfs < Import::Base
         raise InvalidTimeError.new(stop_time.departure_time) unless departure_time.present?
         arrival_time = GTFSTime.parse(stop_time.arrival_time)
         raise InvalidTimeError.new(stop_time.arrival_time) unless arrival_time.present?
-        raise InvalidTripNonZeroFirstOffsetError unless departure_time.day_offset.zero? && arrival_time.day_offset.zero?
+        raise InvalidTripInconsistentFirstOffsetError if departure_time.day_offset != arrival_time.day_offset
       end
 
       stop_area_id = @stop_areas_id_by_registration_number[stop_time.stop_id]
@@ -467,14 +483,14 @@ class Import::Gtfs < Import::Base
     end
   end
 
-  def add_stop_point(stop_time, stop_point, journey_pattern, vehicle_journey, resource, worker)
+  def add_stop_point(stop_time, starting_day_offset, stop_point, journey_pattern, vehicle_journey, resource, worker)
     # JourneyPattern#vjas_add creates automaticaly VehicleJourneyAtStop
     vehicle_journey_at_stop = journey_pattern.vehicle_journey_at_stops.build(stop_point_id: stop_point.id)
 
-    departure_time = GTFS::Time.parse(stop_time.departure_time)
+    departure_time = GTFS::Time.parse(stop_time.departure_time).from_day_offset(starting_day_offset)
     raise InvalidTimeError.new(stop_time.departure_time) unless departure_time.present?
 
-    arrival_time = GTFS::Time.parse(stop_time.arrival_time)
+    arrival_time = GTFS::Time.parse(stop_time.arrival_time).from_day_offset(starting_day_offset)
     raise InvalidTimeError.new(stop_time.arrival_time) unless arrival_time.present?
 
     departure_time_of_day = TimeOfDay.create(departure_time, time_zone: default_time_zone).without_utc_offset
@@ -487,6 +503,7 @@ class Import::Gtfs < Import::Base
     worker.add vehicle_journey_at_stop.attributes
   end
 
+# for each service_id we store an array of TimeTables for each needed starting day offset
   def time_tables_by_service_id
     @time_tables_by_service_id ||= {}
   end
@@ -510,7 +527,7 @@ class Import::Gtfs < Import::Base
           time_table.skip_save_shortcuts = true
           save_model time_table, resource: resource
 
-          time_tables_by_service_id[calendar.service_id] = time_table.id
+          time_tables_by_service_id[calendar.service_id] = [time_table.id]
         end
       end
     end
@@ -525,13 +542,13 @@ class Import::Gtfs < Import::Base
         create_resource(:calendar_dates).each(source.calendar_dates, slice: 500, transaction: true) do |calendar_date, resource|
           comment = "#{calendar_date.service_id}"
           unless_parent_model_in_error(Chouette::TimeTable, comment, resource) do
-            time_table_id = time_tables_by_service_id[calendar_date.service_id]
+            time_table_id = time_tables_by_service_id[calendar_date.service_id]&.first
             time_table_id ||= begin
               tt = referential.time_tables.build comment: comment
               save_model tt, resource: resource
-              time_tables_by_service_id[calendar_date.service_id] = tt.id
+              time_tables_by_service_id[calendar_date.service_id] = [tt.id]
+              tt.id
             end
-
             worker.add position: positions[time_table_id], date: Date.parse(calendar_date.date), in_out: calendar_date.exception_type == "1", time_table_id: time_table_id
             positions[time_table_id] += 1
           end
@@ -610,7 +627,7 @@ class Import::Gtfs < Import::Base
     /\A[\dA-F]{6}\Z/.match(value).try(:string) || options[:default]
   end
 
-  class InvalidTripNonZeroFirstOffsetError < StandardError; end
+  class InvalidTripInconsistentFirstOffsetError < StandardError; end
   class InvalidTripTimesError < StandardError; end
   class InvalidTripSingleStopTime < StandardError; end
   class InvalidStopAreaError < StandardError; end

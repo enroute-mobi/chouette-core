@@ -116,6 +116,20 @@ class Timetable
     clone.periods = SortedSet.new(periods.map(&:dup))
   end
 
+  def shift(days)
+    return if days < 0 # Prevent destroying the days mask
+
+    included_dates.map! { |date| date+days }
+    excluded_dates.map! { |date| date+days }
+
+    periods.map! do |period|
+        period.first += days
+        period.last += days
+        period.days_of_week.shift days
+        period
+    end
+  end
+
   attr_writer :periods
   protected :periods=
 
@@ -326,6 +340,11 @@ class Timetable
 
     def hash
       self.days_mask
+    end
+
+    def shift days
+      t = days_mask >> 2
+      self.days_mask = (((t << days) | (t >>(7-days))) & 127)<<2
     end
 
     protected

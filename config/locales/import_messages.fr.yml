@@ -12,7 +12,7 @@ fr:
     referential_creation_missing_lines: "Le référentiel %{referential_name} n'a pas pu être créé car aucune ligne n'appartient à l'organisation"
     referential_creation_overlapping_existing_referential: "Le référentiel %{referential_name} n'a pas pu être créé car un référentiel existe déjà sur les mêmes périodes et lignes: <a href='%{overlapped_url}'>%{overlapped_name}</a>"
     referential_creation: "Le référentiel %{referential_name} n'a pas pu être créé."
-    trip_starting_with_non_zero_day_offset: La course %{trip_id} commence avec un offset non-nul
+    trip_starting_with_inconsistent_day_offset: La course %{trip_id} commence avec un offset différent pour son heure de départ et d'arrivée
     trip_with_inconsistent_stop_times: La course %{trip_id} a des horaires incohérents
     trip_with_single_stop_time: La course %{trip_id} n'a qu'un seul arrêt
     no_specified_stop: "Impossible d'associer un arrêt"

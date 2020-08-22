@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_08_03_071042) do
+ActiveRecord::Schema.define(version: 2020_08_22_095559) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -486,30 +486,6 @@ ActiveRecord::Schema.define(version: 2020_08_03_071042) do
     t.index ["workgroup_id"], name: "index_exports_on_workgroup_id"
   end
 
-  create_table "facilities", force: :cascade do |t|
-    t.bigint "stop_area_id"
-    t.bigint "line_id"
-    t.bigint "connection_link_id"
-    t.bigint "stop_point_id"
-    t.string "objectid", null: false
-    t.bigint "object_version"
-    t.datetime "creation_time"
-    t.string "name"
-    t.string "comment"
-    t.string "description"
-    t.boolean "free_access"
-    t.decimal "longitude", precision: 19, scale: 16
-    t.decimal "latitude", precision: 19, scale: 16
-    t.string "long_lat_type"
-    t.decimal "x", precision: 19, scale: 2
-    t.decimal "y", precision: 19, scale: 2
-    t.string "projection_type"
-    t.string "country_code"
-    t.string "street_name"
-    t.string "contained_in"
-    t.index ["objectid"], name: "facilities_objectid_key", unique: true
-  end
-
   create_table "footnotes", force: :cascade do |t|
     t.bigint "line_id"
     t.string "code"
@@ -790,21 +766,6 @@ ActiveRecord::Schema.define(version: 2020_08_03_071042) do
     t.index ["code"], name: "index_organisations_on_code", unique: true
   end
 
-  create_table "pt_links", force: :cascade do |t|
-    t.bigint "start_of_link_id"
-    t.bigint "end_of_link_id"
-    t.bigint "route_id"
-    t.string "objectid", null: false
-    t.bigint "object_version"
-    t.string "name"
-    t.string "comment"
-    t.decimal "link_distance", precision: 19, scale: 2
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.jsonb "metadata", default: {}
-    t.index ["objectid"], name: "pt_links_objectid_key", unique: true
-  end
-
   create_table "publication_api_keys", force: :cascade do |t|
     t.string "name"
     t.string "token"
@@ -992,11 +953,6 @@ ActiveRecord::Schema.define(version: 2020_08_03_071042) do
     t.jsonb "metadata", default: {}
   end
 
-  create_table "routing_constraints_lines", id: false, force: :cascade do |t|
-    t.bigint "stop_area_id"
-    t.bigint "line_id"
-  end
-
   create_table "shape_providers", force: :cascade do |t|
     t.string "short_name", null: false
     t.bigint "workbench_id", null: false
@@ -1150,11 +1106,6 @@ ActiveRecord::Schema.define(version: 2020_08_03_071042) do
     t.index ["parent_id"], name: "index_stop_areas_on_parent_id"
     t.index ["stop_area_referential_id", "registration_number"], name: "index_stop_areas_on_referential_id_and_registration_number"
     t.index ["stop_area_referential_id"], name: "index_stop_areas_on_stop_area_referential_id"
-  end
-
-  create_table "stop_areas_stop_areas", id: false, force: :cascade do |t|
-    t.bigint "child_id"
-    t.bigint "parent_id"
   end
 
   create_table "stop_points", force: :cascade do |t|
@@ -1381,7 +1332,7 @@ ActiveRecord::Schema.define(version: 2020_08_03_071042) do
     t.datetime "deleted_at"
     t.jsonb "transport_modes", default: {"air"=>["undefined", "airshipService", "domesticCharterFlight", "domesticFlight", "domesticScheduledFlight", "helicopterService", "intercontinentalCharterFlight", "intercontinentalFlight", "internationalCharterFlight", "internationalFlight", "roundTripCharterFlight", "schengenAreaFlight", "shortHaulInternationalFlight", "shuttleFlight", "sightseeingFlight"], "bus"=>["undefined", "airportLinkBus", "demandAndResponseBus", "expressBus", "highFrequencyBus", "localBus", "mobilityBusForRegisteredDisabled", "mobilityBus", "nightBus", "postBus", "railReplacementBus", "regionalBus", "schoolAndPublicServiceBus", "schoolBus", "shuttleBus", "sightseeingBus", "specialNeedsBus"], "rail"=>["undefined", "carTransportRailService", "crossCountryRail", "highSpeedRail", "international", "interregionalRail", "local", "longDistance", "nightTrain", "rackAndPinionRailway", "railShuttle", "regionalRail", "replacementRailService", "sleeperRailService", "specialTrain", "suburbanRailway", "touristRailway"], "taxi"=>["undefined", "allTaxiServices", "bikeTaxi", "blackCab", "communalTaxi", "miniCab", "railTaxi", "waterTaxi"], "tram"=>["undefined", "cityTram", "localTram", "regionalTram", "shuttleTram", "sightseeingTram", "tramTrain"], "coach"=>["undefined", "commuterCoach", "internationalCoach", "nationalCoach", "regionalCoach", "shuttleCoach", "sightseeingCoach", "specialCoach", "touristCoach"], "metro"=>["undefined", "metro", "tube", "urbanRailway"], "water"=>["undefined", "internationalCarFerry", "nationalCarFerry", "regionalCarFerry", "localCarFerry", "internationalPassengerFerry", "nationalPassengerFerry", "regionalPassengerFerry", "localPassengerFerry", "postBoat", "trainFerry", "roadFerryLink", "airportBoatLink", "highSpeedVehicleService", "highSpeedPassengerService", "sightseeingService", "schoolBoat", "cableFerry", "riverBus", "scheduledFerry", "shuttleFerryService"], "hireCar"=>["undefined", "allHireVehicles", "hireCar", "hireCycle", "hireMotorbike", "hireVan"], "funicular"=>["undefined", "allFunicularServices", "funicular"], "telecabin"=>["undefined", "cableCar", "chairLift", "dragLift", "lift", "telecabinLink", "telecabin"]}
     t.integer "maximum_data_age", default: 0
-    t.boolean "enable_purge_merged_data", default: false
+    t.boolean "enable_purge_merged_data"
     t.bigint "shape_referential_id", null: false
     t.index ["shape_referential_id"], name: "index_workgroups_on_shape_referential_id"
   end
@@ -1410,8 +1361,6 @@ ActiveRecord::Schema.define(version: 2020_08_03_071042) do
   add_foreign_key "referentials", "referential_suites"
   add_foreign_key "routes", "routes", column: "opposite_route_id", name: "route_opposite_route_fkey"
   add_foreign_key "stop_areas", "stop_areas", column: "parent_id", name: "area_parent_fkey", on_delete: :nullify
-  add_foreign_key "stop_areas_stop_areas", "stop_areas", column: "child_id", name: "stoparea_child_fkey", on_delete: :cascade
-  add_foreign_key "stop_areas_stop_areas", "stop_areas", column: "parent_id", name: "stoparea_parent_fkey", on_delete: :cascade
   add_foreign_key "time_table_dates", "time_tables", name: "tm_date_fkey", on_delete: :cascade
   add_foreign_key "time_table_periods", "time_tables", name: "tm_period_fkey", on_delete: :cascade
   add_foreign_key "time_tables_vehicle_journeys", "time_tables", name: "vjtm_tm_fkey", on_delete: :cascade

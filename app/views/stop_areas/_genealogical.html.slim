@@ -8,15 +8,6 @@ h3 = genealogical_title
 
   .link = image_tag "icons/link.png"
 
-- elsif @stop_area.routing_lines.present?
-  .lines
-    - @stop_area.routing_lines.each do |line|
-      .line
-        = link_to([@stop_area_referential, line]) do
-          span = line.name
-
-  .link = image_tag "icons/link.png"
-
 - else
   .no_parent
 
@@ -32,15 +23,6 @@ h3 = genealogical_title
         = link_to([@stop_area_referential, child], :title => t("area_types.label.#{ child.stop_area_type}") + " #{ child.name}") do
           = image_tag "map/" + child.stop_area_type + ".png"
           span = child.name
-
-- elsif @stop_area.routing_stops.present?
-  .link = image_tag "icons/link.png"
-  .children
-    - @stop_area.routing_stops.each do |stop|
-      .child
-        = link_to([@stop_area_referential, stop], :title => t("area_types.label.#{ stop.stop_area_type}") + " #{ stop.name}") do
-          = image_tag "map/" + stop.stop_area_type + ".png"
-          span = "#{stop.name} #{' [' + stop.registration_number + ']' if stop.registration_number.present? }"
 
 - elsif @stop_area.routes.present?
   .link = image_tag "icons/link.png"

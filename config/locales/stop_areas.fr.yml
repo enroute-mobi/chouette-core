@@ -40,8 +40,6 @@ fr:
       add_children: "Créer ou éditer la relation parent -> enfants"
       clone_as_parent: "Cloner pour créer un père"
       clone_as_child: "Cloner pour créer un enfant"
-      add_routing_lines: "Gérer les lignes de l'ITL"
-      add_routing_stops: "Gérer les arrêts de l'ITL"
       manage_access_points: "Gérer les accès"
       manage_access_links: "Gérer les liens arrêt-accès"
       default_geometry: "Calculer les géométries manquantes"
@@ -112,10 +110,6 @@ fr:
       title: "Gérer le parent de l'arrêt %{stop_area}"
     add_children:
       title: "Gérer les fils de l'arrêt %{stop_area}"
-    add_routing_lines:
-      title: "Gérer les lignes de l'ITL %{stop_area} "
-    add_routing_stops:
-      title: "Gérer les arrêts de l'ITL %{stop_area} "
   activerecord:
     models:
       stop_area:
@@ -160,8 +154,6 @@ fr:
         updated_at: "Edité le"
         creator_id: "Créé par"
         children_ids: "Fils"
-        routing_stop_ids: "Arrêts concernés par l'ITL"
-        routing_line_ids: "Lignes affectées par l'ITL"
         parent: "Parent"
         is_referent: "Référent"
         referent: "Référent"

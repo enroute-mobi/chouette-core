@@ -29,8 +29,6 @@ module Chouette
     scope :light, ->{ select(:id, :name, :city_name, :zip_code, :time_zone, :registration_number, :kind, :area_type, :time_zone, :stop_area_referential_id, :objectid) }
     scope :with_time_zone, -> { where.not time_zone: nil }
 
-    has_and_belongs_to_many :routing_lines, :class_name => 'Chouette::Line', :foreign_key => "stop_area_id", :association_foreign_key => "line_id", :join_table => "routing_constraints_lines", :order => "lines.number"
-    has_and_belongs_to_many :routing_stops, :class_name => 'Chouette::StopArea', :foreign_key => "parent_id", :association_foreign_key => "child_id", :join_table => "stop_areas_stop_areas", :order => "stop_areas.name"
     has_and_belongs_to_many :stop_area_providers
 
     belongs_to :referent, class_name: 'Chouette::StopArea'
@@ -298,22 +296,6 @@ module Chouette
       # add new children
       Chouette::StopArea.find(children).each do |child|
         child.update_attribute :parent_id, self.id
-      end
-    end
-
-    def routing_stop_ids=(routing_stop_ids)
-      stops = routing_stop_ids.split(',').uniq
-      self.routing_stops.clear
-      Chouette::StopArea.find(stops).each do |stop|
-        self.routing_stops << stop
-      end
-    end
-
-    def routing_line_ids=(routing_line_ids)
-      lines = routing_line_ids.split(',').uniq
-      self.routing_lines.clear
-      Chouette::Line.find(lines).each do |line|
-        self.routing_lines << line
       end
     end
 

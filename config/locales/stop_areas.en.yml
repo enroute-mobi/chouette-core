@@ -41,8 +41,6 @@ en:
       clone_as_child: "Clone as child"
       manage_access_points: "Manage Access Points"
       manage_access_links: "Manage Access Links"
-      add_routing_lines: "Manage constraint's lines"
-      add_routing_stops: "Manage constraint's stops"
       default_geometry: "Compute missing geometries"
       export_kml_place: "Export KML places"
       export_kml_commercial: "Export KML commercial stop points"
@@ -111,10 +109,6 @@ en:
       title: "Manage parent of stop area %{stop_area}"
     add_children:
       title: "Manage children of stop area %{stop_area}"
-    add_routing_lines:
-      title: "Manage lines of routing constraint %{stop_area}"
-    add_routing_stops:
-      title: "Manage stop areas of routing constraint %{stop_area}"
   activerecord:
     models:
       stop_area:
@@ -159,8 +153,6 @@ en:
         updated_at: Updated at
         creator_id: "Created by"
         children_ids: "Children"
-        routing_stop_ids: "Attached stops"
-        routing_line_ids: "Attached lines"
         parent: "Parent"
         is_referent: "Referent"
         referent: "Referent"

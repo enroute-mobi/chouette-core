@@ -284,7 +284,7 @@ class Import::Gtfs < Import::Base
 
       Chouette::VehicleJourneyAtStop.bulk_insert do |worker|
         journey_pattern.stop_points.each_with_index do |stop_point, i|
-          add_stop_point stop_times[i], starting_day_offset, stop_point, journey_pattern, vehicle_journey, resource, worker
+          add_stop_point stop_times[i], starting_day_offset, stop_point, journey_pattern, vehicle_journey, worker
         end
       end
 
@@ -483,7 +483,7 @@ class Import::Gtfs < Import::Base
     end
   end
 
-  def add_stop_point(stop_time, starting_day_offset, stop_point, journey_pattern, vehicle_journey, resource, worker)
+  def add_stop_point(stop_time, starting_day_offset, stop_point, journey_pattern, vehicle_journey, worker)
     # JourneyPattern#vjas_add creates automaticaly VehicleJourneyAtStop
     vehicle_journey_at_stop = journey_pattern.vehicle_journey_at_stops.build(stop_point_id: stop_point.id)
 

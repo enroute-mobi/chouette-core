@@ -152,8 +152,10 @@ RSpec.describe Import::Neptune do
   describe "#import_stop_areas" do
     let(:import) { build_import }
 
+    let(:imported_stop_areas) { workbench.stop_area_referential.stop_areas }
+
     it 'should create new stop_areas' do
-      expect{ import.send(:import_stop_areas) }.to change{ workbench.stop_area_referential.stop_areas.count }.by 18
+      expect{ import.send(:import_stop_areas) }.to change{ imported_stop_areas.count }.by 18
       stop_area = Chouette::StopArea.find_by registration_number: 'NAVSTEX:StopArea:gen6'
       expect(stop_area.latitude).to be_present
       expect(stop_area.longitude).to be_present
@@ -161,24 +163,41 @@ RSpec.describe Import::Neptune do
       expect(stop_area.nearest_topic_name).to be_present
     end
 
+    it 'creates Stop_Areas with time zone Europe/Paris' do
+      import.send(:import_stop_areas)
+      expect(imported_stop_areas).to all(have_attributes(time_zone: "Europe/Paris"))
+    end
+
+    it 'updates Stop_Areas with time zone Europe/Paris' do
+      import.send(:import_stop_areas)
+
+      stop_area = imported_stop_areas.last
+      stop_area.update time_zone: nil
+
+      expect { import.send(:import_stop_areas) }.to change { stop_area.reload.time_zone }.from(nil).to("Europe/Paris")
+    end
+
     it 'should update existing stop_areas' do
       import.send(:import_stop_areas)
-      stop_area = workbench.stop_area_referential.stop_areas.last
-      attrs = stop_area.attributes.except('updated_at', 'confirmed_at')
-      stop_area.update name: "foo"
-      expect{ import.send(:import_stop_areas) }.to_not change{ workbench.stop_area_referential.stop_areas.count }
-      expect(stop_area.reload.attributes.except('updated_at', 'confirmed_at')).to eq attrs
+      expect { import.send(:import_stop_areas) }.to_not(change { imported_stop_areas.count })
+
+      stop_area = imported_stop_areas.last
+      imported_name = stop_area.name
+
+      stop_area.update name: "Dummy"
+
+      expect { import.send(:import_stop_areas) }.to change { stop_area.reload.name }.from("Dummy").to(imported_name)
     end
 
     it 'should link stop_areas' do
       import.send(:import_stop_areas)
-      parent = workbench.stop_area_referential.stop_areas.find_by(registration_number: 'NAVSTEX:StopArea:gen3')
-      child = workbench.stop_area_referential.stop_areas.find_by(registration_number: 'NAVSTEX:StopArea:3')
+      parent = imported_stop_areas.find_by(registration_number: 'NAVSTEX:StopArea:gen3')
+      child = imported_stop_areas.find_by(registration_number: 'NAVSTEX:StopArea:3')
       expect(child.parent).to eq parent
     end
 
     it "keeps line attributes when neptune file doesn't provide them" do
-      parent = workbench.stop_area_referential.stop_areas.create!(name: "Parent", area_type: "zdlp")
+      parent = imported_stop_areas.create!(name: "Parent", area_type: "zdlp")
 
       existing_attributes = {
         comment: "Defined",
@@ -195,7 +214,7 @@ RSpec.describe Import::Neptune do
         registration_number: "Empty",
         name: "Defined"
       )
-      stop_area = workbench.stop_area_referential.stop_areas.create!(stop_area_attributes)
+      stop_area = imported_stop_areas.create!(stop_area_attributes)
 
       import = build_import("sample_neptune_empty_stop_line")
       import.send(:import_stop_areas)
@@ -212,17 +231,37 @@ RSpec.describe Import::Neptune do
   describe "#import_companies" do
     let(:import) { build_import }
 
+    let(:imported_companies) { workbench.line_referential.companies }
+
     it 'should create new companies' do
-      expect{ import.send(:import_companies) }.to change{ workbench.line_referential.companies.count }.by 1
+      expect{ import.send(:import_companies) }.to change{ imported_companies.count }.by 1
+    end
+
+    it 'creates Companies with time zone Europe/Paris' do
+      import.send(:import_companies)
+      expect(imported_companies).to all(have_attributes(time_zone: "Europe/Paris"))
+    end
+
+    it 'updates Companies with time zone Europe/Paris' do
+      import.send(:import_companies)
+
+      company = imported_companies.last
+      company.update time_zone: nil
+
+      expect { import.send(:import_companies) }.to change { company.reload.time_zone }.from(nil).to("Europe/Paris")
     end
 
     it 'should update existing companies' do
       import.send(:import_companies)
-      company = workbench.line_referential.companies.last
-      attrs = company.attributes.except('updated_at')
-      company.update name: "foo"
-      expect{ import.send(:import_companies) }.to_not change{ workbench.line_referential.companies.count }
-      expect(company.reload.attributes.except('updated_at')).to eq attrs
+
+      expect { import.send(:import_companies) }.to_not(change { imported_companies.count })
+
+      company = imported_companies.last
+      imported_name = company.name
+
+      company.update name: "Dummy"
+
+      expect { import.send(:import_companies) }.to change { company.reload.name }.from("Dummy").to(imported_name)
     end
   end
 

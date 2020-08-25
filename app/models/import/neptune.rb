@@ -134,10 +134,10 @@ class Import::Neptune < Import::Base
   end
 
   def import_companies
-    each_element_matching_css('ChouettePTNetwork Company') do |source_company, filename, progress|
+    each_element_matching_css('ChouettePTNetwork Company') do |source_company, _, progress|
       company = line_referential.companies.find_or_initialize_by registration_number: source_company.delete(:object_id)
       company.assign_attributes source_company.slice(:name, :short_name, :code, :default_contact_phone, :default_contact_email, :default_contact_fax, :default_contact_organizational_unit, :default_contact_operating_department_name)
-
+      company.time_zone = DEFAULT_TIME_ZONE
       save_model company
 
       notify_sub_operation_progress(:companies, progress)
@@ -275,6 +275,9 @@ class Import::Neptune < Import::Base
         stop_area = stop_area_referential.stop_areas.find_or_initialize_by registration_number: source_stop_area[:object_id]
         stop_area.name = source_stop_area[:name] if source_stop_area[:name].present?
         stop_area.comment = source_stop_area[:comment] if source_stop_area[:comment].present?
+
+        stop_area.time_zone = DEFAULT_TIME_ZONE
+
         if (street_name = source_stop_area[:address].try(:[], :street_name)).present?
           stop_area.street_name = street_name
         end
@@ -447,6 +450,9 @@ class Import::Neptune < Import::Base
     end
   end
 
+  DEFAULT_UTC_OFFSET = 3600
+  DEFAULT_TIME_ZONE = "Europe/Paris"
+
   def add_stop_points_to_vehicle_journey(vehicle_journey, vehicle_journey_at_stops, route_object_id)
     vehicle_journey_at_stops = make_enum vehicle_journey_at_stops
 
@@ -456,10 +462,10 @@ class Import::Neptune < Import::Base
       vehicle_journey.vehicle_journey_at_stops.build do |vehicle_journey_at_stop|
         vehicle_journey_at_stop.stop_point = @stop_points[route_object_id][source_vehicle_journey_at_stop[:stop_point_id]]
 
-        departure_time_of_day = TimeOfDay.parse(source_vehicle_journey_at_stop[:departure_time], utc_offset: 3600)
+        departure_time_of_day = TimeOfDay.parse(source_vehicle_journey_at_stop[:departure_time], utc_offset: DEFAULT_UTC_OFFSET)
         vehicle_journey_at_stop.departure_time_of_day = departure_time_of_day
 
-        arrival_time_of_day = TimeOfDay.parse(source_vehicle_journey_at_stop[:arrival_time], utc_offset: 3600)
+        arrival_time_of_day = TimeOfDay.parse(source_vehicle_journey_at_stop[:arrival_time], utc_offset: DEFAULT_UTC_OFFSET)
         vehicle_journey_at_stop.arrival_time_of_day = arrival_time_of_day
       end
     end

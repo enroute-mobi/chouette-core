@@ -132,6 +132,21 @@ RSpec.describe TimeOfDay do
 
   end
 
+  describe '#with_day_offset' do
+
+    [
+      [ TimeOfDay.new(0), 1, TimeOfDay.new(0, day_offset: 1) ],
+      [ TimeOfDay.new(0, day_offset: -1), 1, TimeOfDay.new(0, day_offset: 1) ],
+      [ TimeOfDay.new(0, day_offset: 1), 1, TimeOfDay.new(0, day_offset: 1) ],
+      [ TimeOfDay.new(0, day_offset: 2), 0, TimeOfDay.new(0, day_offset: 0) ],
+    ].each do |time_of_day, day_offset, expected|
+      it "change day offset to #{day_offset} to #{time_of_day.inspect} gives #{expected.inspect}" do
+        expect(time_of_day.with_day_offset(day_offset)).to eq(expected)
+      end
+    end
+
+  end
+
   describe "real examples" do
 
     it "allows to tranform 16:00:00 at Los Angeles into 00:00 day+1" do

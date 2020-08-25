@@ -183,4 +183,30 @@ describe Chouette::VehicleJourneyAtStop do
       end
     end
   end
+
+  context 'when the day offset changes from 0 to -1' do
+
+    it "restore correct offsets" do
+      at_stops = []
+      [
+        ['22:30', '22:35', 0],
+        ['08:00', '08:05', 0],
+        ['23:30', '23:35', -1],
+      ].each do |arrival_time, departure_time, offset|
+        at_stops << build_stubbed(
+          :vehicle_journey_at_stop,
+          arrival_time: arrival_time,
+          departure_time: departure_time,
+          arrival_day_offset: offset,
+          departure_day_offset: offset
+        )
+      end
+
+      Chouette::VehicleJourneyAtStopsDayOffset.new(at_stops).calculate!
+
+      expect(at_stops.map(&:arrival_day_offset)).to eq([0,1,1])
+    end
+
+  end
+
 end

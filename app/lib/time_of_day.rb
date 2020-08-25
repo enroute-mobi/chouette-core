@@ -68,6 +68,10 @@ class TimeOfDay
     with_utc_offset(time_zone&.utc_offset || 0)
   end
 
+  def with_day_offset(offset)
+    self.class.from_second_offset second_offset + (offset-day_offset).days, utc_offset: utc_offset
+  end
+
   def day_offset?
     day_offset != 0
   end

@@ -1391,7 +1391,7 @@ describe Chouette::VehicleJourney, :type => :model do
       it "should compute passing time" do
         @journey.reload.calculate_vehicle_journey_at_stop_day_offset
         @journey.fill_passing_times!
-        @journey.reload
+
         expect{
           Chouette::VehicleJourneyAtStopsDayOffset.new(@journey.vehicle_journey_at_stops).calculate!
         }.to_not change{

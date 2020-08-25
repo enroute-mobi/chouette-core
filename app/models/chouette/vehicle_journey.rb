@@ -229,7 +229,7 @@ module Chouette
     def calculate_vehicle_journey_at_stop_day_offset
       Chouette::VehicleJourneyAtStopsDayOffset.new(
         vehicle_journey_at_stops.sort_by{ |vjas| vjas.stop_point.position }
-      ).update
+      ).calculate!
     end
 
     accepts_nested_attributes_for :vehicle_journey_at_stops, :allow_destroy => true

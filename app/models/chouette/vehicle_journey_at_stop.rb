@@ -109,7 +109,7 @@ module Chouette
           I18n.t(
             'vehicle_journey_at_stops.errors.day_offset_must_not_exceed_max',
             short_id: vehicle_journey&.get_objectid&.short_id,
-            max: Chouette::VehicleJourneyAtStop.day_offset_max + 1
+            max: day_offset_max
           )
         )
       end
@@ -120,21 +120,21 @@ module Chouette
           I18n.t(
             'vehicle_journey_at_stops.errors.day_offset_must_not_exceed_max',
             short_id: vehicle_journey&.get_objectid&.short_id,
-            max: Chouette::VehicleJourneyAtStop.day_offset_max + 1
+            max: day_offset_max
           )
         )
       end
     end
 
+    # Compare absolute day offset value with day_offset_max (if defined)
     def day_offset_outside_range?(offset)
-      # At-stops that were created before the database-default of 0 will have
-      # nil offsets. Handle these gracefully by forcing them to a 0 offset.
-      offset ||= 0
+      return false if day_offset_max.blank?
 
-      offset < 0 || offset > Chouette::VehicleJourneyAtStop.day_offset_max
+      offset ||= 0
+      offset < -1 || offset > day_offset_max
     end
 
-    def checksum_attributes(db_lookup = true)
+    def checksum_attributes(_db_lookup = true)
       [].tap do |attrs|
         [self.departure_time, self.arrival_time].each do |time|
           time = time&.utc

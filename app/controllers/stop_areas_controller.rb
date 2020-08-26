@@ -33,15 +33,6 @@ class StopAreasController < ChouetteController
     @children = stop_area.children
   end
 
-  def add_routing_lines
-    @stop_area = stop_area
-    @lines = stop_area.routing_lines
-  end
-
-  def add_routing_stops
-    @stop_area = stop_area
-  end
-
   def access_links
     @stop_area = stop_area
     @generic_access_links = stop_area.generic_access_link_matrix
@@ -211,8 +202,6 @@ class StopAreasController < ChouetteController
       :postal_region,
       :referent_id,
       :registration_number,
-      :routing_line_ids,
-      :routing_stop_ids,
       :stairs_availability,
       :street_name,
       :time_zone,

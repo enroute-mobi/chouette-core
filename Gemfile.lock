@@ -1,7 +1,6 @@
 GIT
   remote: https://bitbucket.org/enroute-mobi/gtfs.git
-  revision: 4fcf2d10542081a34e51374cee9de5dc21a73e7a
-  branch: GTFS-20-improve-gtfs-shape
+  revision: 22bdb21a1013228d6cc95297a9040aa6dc3bf880
   specs:
     gtfs (0.3.4)
       msgpack
@@ -361,7 +360,7 @@ GEM
       rails-i18n
       rainbow (>= 2.2.2, < 4.0)
       terminal-table (>= 1.5.1)
-    i18n_data (0.8.0)
+    i18n_data (0.10.0)
     inherited_resources (1.11.0)
       actionpack (>= 5.0, < 6.1)
       has_scope (~> 0.6)

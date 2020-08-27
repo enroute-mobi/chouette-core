@@ -4,6 +4,7 @@ module Types
 
     field :objectid, String, null: false
     field :name, String, null: true
+    field :registration_number, String, null: true
     field :number, String, null: true
     field :published_name, String, null: true
     field :transport_mode, String, null: true

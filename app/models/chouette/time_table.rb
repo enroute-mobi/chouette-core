@@ -589,13 +589,8 @@ module Chouette
       end
     end
 
-    def apply_with_days(timetable)
-      self.int_day_types = timetable.periods&.first&.days_of_week&.hash
-      apply(timetable)
-    end
-
     def apply(timetable)
-      if days_of_week = timetable.uniq_days_of_week
+      if (days_of_week = timetable.uniq_days_of_week)
         self.int_day_types = days_of_week.hash
       else
         raise ArgumentError

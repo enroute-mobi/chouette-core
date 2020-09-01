@@ -601,7 +601,7 @@ class Referential < ApplicationModel
   end
 
   def create_schema
-    return if created_from || bare
+    return if bare
 
     Chouette::Benchmark.measure("referential.create", referential: id) do
       Apartment::Tenant.create slug
@@ -637,6 +637,10 @@ class Referential < ApplicationModel
   def destroy_schema
     return unless ActiveRecord::Base.connection.schema_names.include?(slug)
     Apartment::Tenant.drop slug
+  end
+
+  def schema
+    @schema ||= ReferentialSchema.new slug
   end
 
   def destroy_jobs

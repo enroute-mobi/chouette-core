@@ -414,6 +414,10 @@ class Timetable
     end
     attr_reader :timetable
 
+    def self.create(&block)
+      Timetable::Builder.new.dsl(&block)
+    end
+
     def dsl(&block)
       instance_eval(&block)
       timetable

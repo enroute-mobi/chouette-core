@@ -1,6 +1,8 @@
 module ApplicationDaysSupport
   extend ActiveSupport::Concern
 
+  NONE = 0
+
   MONDAY    = 4
   TUESDAY   = 8
   WEDNESDAY = 16

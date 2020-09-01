@@ -1,6 +1,7 @@
 GIT
   remote: https://bitbucket.org/enroute-mobi/gtfs.git
-  revision: 25e43fe503032818d46b33e303814c890829a4a2
+  revision: d727b12b088d524fe824c2bd0c49cfdcc7ca5d32
+  branch: CHOUETTE-625-support-non-zero-first-day-offset-in-gtfs-import
   specs:
     gtfs (0.3.4)
       msgpack

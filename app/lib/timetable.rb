@@ -149,13 +149,24 @@ class Timetable
     [max_period, max_included_date].compact.max
   end
 
+  # Returns the DaysOfWeeks shared by all Periods .. or nil
+  # Returns DaysOfWeek.none if no period is defined
+  def uniq_days_of_week
+    return DaysOfWeek.none if periods.empty?
+
+    first_days_of_week = periods&.first&.days_of_week
+    if periods.all? { |p| p.days_of_week == first_days_of_week }
+      first_days_of_week
+    end
+  end
+
   class Period
     include Comparable
 
     attr_reader :first, :last
     attr_accessor :days_of_week
 
-    def initialize(first, last, days_of_week = nil)
+    def initialize(first, last, days_of_week = DaysOfWeek.all)
       check_first_last!(first, last)
 
       @first, @last, @days_of_week = first, last, days_of_week
@@ -171,7 +182,7 @@ class Timetable
       @last = last
     end
 
-    def self.from(date_range, days_of_week = nil)
+    def self.from(date_range, days_of_week = DaysOfWeek.all)
       new date_range.min, date_range.max, days_of_week
     end
 
@@ -316,7 +327,11 @@ class Timetable
       count
     end
 
-    def self.every_day
+    def self.none
+      new
+    end
+
+    def self.all
       new.enable SYMBOLIC_DAYS
     end
 
@@ -344,7 +359,7 @@ class Timetable
 
     def shift days
       t = days_mask >> 2
-      self.days_mask = (((t << days) | (t >>(7-days))) & 127)<<2
+      self.days_mask = (((t << days) | (t >>(7-days))) & 127) << 2
     end
 
     protected
@@ -433,8 +448,8 @@ class Timetable
       end
     end
 
-    def self.period(first, last, days_of_weeks = nil)
-      days_of_weeks = days_of_week(days_of_weeks) if days_of_weeks
+    def self.period(first, last, days_of_weeks = DaysOfWeek.all)
+      days_of_weeks = days_of_week(days_of_weeks) if days_of_weeks.is_a?(String)
       Period.from date_range(first, last), days_of_weeks
     end
 

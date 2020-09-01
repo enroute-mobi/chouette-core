@@ -17,6 +17,10 @@ RSpec.describe Timetable do
     Timetable::Builder.period(*definition)
   end
 
+  def days_of_week(definition)
+    Timetable::Builder.days_of_week(definition)
+  end
+
   describe "#limit!" do
 
     it "remove an included date not in the given range" do
@@ -233,6 +237,70 @@ RSpec.describe Timetable do
 
   end
 
+  describe '#uniq_days_of_week' do
+
+    subject { timetable.uniq_days_of_week }
+
+    context 'when no period is defined' do
+
+      let(:timetable) { Timetable.new }
+
+      it 'should be DaysOfWeek.none' do
+        is_expected.to eq(Timetable::DaysOfWeek.none)
+      end
+
+    end
+
+    context 'when a single period is defined' do
+
+      let(:period_days_of_week) { days_of_week "L......" }
+      let(:timetable) { create { period("1/06","30/06", "L......") } }
+
+      it 'should be the DaysOfWeek of the period' do
+        is_expected.to eq(period_days_of_week)
+      end
+
+    end
+
+    context 'when several period are defined' do
+
+      context 'with the same DaysOfWeek' do
+
+        let(:shared_days_of_week) { days_of_week "L......" }
+
+        let(:timetable) do
+          create do
+            period("1/06","15/06", "L......")
+            period("1/07","15/07", "L......")
+            period("1/08","15/08", "L......")
+          end
+        end
+
+        it 'should be the DaysOfWeek shared by all periods' do
+          is_expected.to eq(shared_days_of_week)
+        end
+
+      end
+
+      context 'with different DaysOfWeeks' do
+
+        let(:timetable) do
+          create do
+            period("1/06","15/06", 'L......')
+            period("1/07","15/07", '.....S.')
+            period("1/08","15/08", '......D')
+          end
+        end
+
+        it { is_expected.to be_nil }
+
+      end
+
+    end
+
+  end
+
+
 end
 
 RSpec.describe Timetable::Period do
@@ -437,7 +505,7 @@ RSpec.describe Timetable::DaysOfWeek do
   describe "#days" do
 
     it "returns a symbolic day list" do
-      expect(Timetable::DaysOfWeek.every_day.days).to eq(%i(monday tuesday wednesday thursday friday saturday sunday))
+      expect(Timetable::DaysOfWeek.all.days).to eq(%i(monday tuesday wednesday thursday friday saturday sunday))
     end
 
   end

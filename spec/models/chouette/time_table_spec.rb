@@ -1513,7 +1513,7 @@ end
 
       it "has a period for each Period" do
         period = time_table.periods.build period_start: Date.new(2030, 1, 1), period_end: Date.new(2030, 2, 1)
-        expected_period = Timetable::Period.new(period.period_start, period.period_end, Timetable::DaysOfWeek.every_day)
+        expected_period = Timetable::Period.from(period.range)
         expect(time_table.to_timetable.periods).to match_array([expected_period])
       end
 

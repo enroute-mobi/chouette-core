@@ -589,27 +589,18 @@ module Chouette
       end
     end
 
-    def apply_with_clear(timetable)
-      dates.clear
-      timetable.included_dates.each do |included_date|
-        dates.build date: included_date, in_out: true
-      end
-      timetable.excluded_dates.each do |excluded_date|
-        dates.build date: excluded_date, in_out: false
-      end
-
-      periods.clear
-      timetable.periods.each do |period|
-        periods.build period_start: period.first, period_end: period.last
-      end
-    end
-
     def apply_with_days(timetable)
       self.int_day_types = timetable.periods&.first&.days_of_week&.hash
       apply(timetable)
     end
 
     def apply(timetable)
+      if days_of_week = timetable.uniq_days_of_week
+        self.int_day_types = days_of_week.hash
+      else
+        raise ArgumentError
+      end
+
       included_dates = timetable.included_dates.to_a
       dates.select(&:in?).sort_by(&:date).each do |date|
         expected_date = included_dates.shift

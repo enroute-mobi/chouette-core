@@ -1,10 +1,15 @@
 module Chouette
   class Network < Chouette::ActiveRecord
+    before_validation :define_line_referential
+
     has_metadata
     include NetworkRestrictions
     include LineReferentialSupport
     include ObjectidSupport
     extend Enumerize
+
+    belongs_to :line_provider, required: true
+
     has_many :lines, dependent: :nullify
 
     attr_accessor :source_type_name
@@ -53,6 +58,11 @@ module Chouette
       end
     end
 
+    private
 
+    def define_line_referential
+      # TODO Improve performance ?
+      self.line_referential ||= line_provider&.line_referential
+    end
   end
 end

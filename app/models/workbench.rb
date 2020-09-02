@@ -1,4 +1,3 @@
-
 module LockedReferentialToAggregateWithLog
   def locked_referential_to_aggregate
     super.tap do |ref|
@@ -48,6 +47,7 @@ class Workbench < ApplicationModel
   has_many :notification_rules, dependent: :destroy
 
   has_many :shape_providers
+  has_many :line_providers
 
   before_validation :create_dependencies, on: :create
 
@@ -127,11 +127,17 @@ class Workbench < ApplicationModel
     merges.select(&:successful?).map(&:updated_at).max
   end
 
-  DEFAULT_SHAPE_PROVIDER_SHORT_NAME = 'default'
+  DEFAULT_PROVIDER_SHORT_NAME = 'default'
 
   def default_shape_provider
-    @default_shape_provider ||= shape_providers.find_or_initialize_by(short_name: DEFAULT_SHAPE_PROVIDER_SHORT_NAME) do |p|
+    @default_shape_provider ||= shape_providers.find_or_initialize_by(short_name: DEFAULT_PROVIDER_SHORT_NAME) do |p|
       p.shape_referential_id = workgroup.shape_referential_id
+    end
+  end
+
+  def default_line_provider
+    @default_line_provider ||= line_providers.find_or_initialize_by(short_name: DEFAULT_PROVIDER_SHORT_NAME) do |p|
+      p.line_referential_id = workgroup.line_referential_id
     end
   end
 
@@ -139,10 +145,15 @@ class Workbench < ApplicationModel
     default_shape_provider.save
   end
 
+  def create_default_line_provider
+    default_line_provider.save
+  end
+
   private
 
   def create_dependencies
     self.output ||= ReferentialSuite.create
     default_shape_provider if workgroup
+    default_line_provider if workgroup
   end
 end

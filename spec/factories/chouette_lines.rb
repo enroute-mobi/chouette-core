@@ -7,6 +7,7 @@ FactoryBot.define do
 
     association :network, :factory => :network
     association :company, :factory => :company
+    association :line_provider, :factory => :line_provider
 
     transport_mode { "bus" }
     transport_submode { "undefined" }

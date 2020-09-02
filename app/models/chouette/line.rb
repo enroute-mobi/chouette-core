@@ -1,5 +1,7 @@
 module Chouette
   class Line < Chouette::ActiveRecord
+    before_validation :define_line_referential, on: :create
+
     has_metadata
     include LineRestrictions
     include LineReferentialSupport
@@ -11,9 +13,10 @@ module Chouette
     open_color_attribute
     open_color_attribute :text_color
 
+    belongs_to :line_provider, required: true
+
     belongs_to :company
     belongs_to :network
-    belongs_to :line_referential
 
     # this 'light' relation prevents the custom fields loading
     belongs_to :company_light, -> { select(:id, :name, :line_referential_id, :objectid) }, class_name: "Chouette::Company", foreign_key: :company_id
@@ -171,6 +174,13 @@ module Chouette
 
     def code
       get_objectid.try(:local_id)
+    end
+
+    private
+
+    def define_line_referential
+      # TODO Improve performance ?
+      self.line_referential ||= line_provider&.line_referential
     end
   end
 end

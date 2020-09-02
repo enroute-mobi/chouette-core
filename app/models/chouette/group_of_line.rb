@@ -1,10 +1,13 @@
 module Chouette
   class GroupOfLine < Chouette::ActiveRecord
+    before_validation :define_line_referential
+
     has_metadata
     include ObjectidSupport
     include GroupOfLineRestrictions
     include LineReferentialSupport
 
+    belongs_to :line_provider, required: true
 
     has_and_belongs_to_many :lines, :class_name => 'Chouette::Line', :order => 'lines.name'
 
@@ -28,5 +31,11 @@ module Chouette
       self.line_ids = ids.split(",")
     end
 
+    private
+
+    def define_line_referential
+      # TODO Improve performance ?
+      self.line_referential ||= line_provider&.line_referential
+    end
   end
 end

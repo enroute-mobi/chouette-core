@@ -6,6 +6,8 @@ module Chouette
   end
 
   class Company < Chouette::ActiveRecord
+    before_validation :define_line_referential, on: :create
+
     has_metadata
 
     prepend WorkgroupFromClass
@@ -14,6 +16,8 @@ module Chouette
     include LineReferentialSupport
     include ObjectidSupport
     include CustomFieldsSupport
+
+    belongs_to :line_provider, required: true
 
     has_many :lines, dependent: :nullify
 
@@ -33,6 +37,13 @@ module Chouette
 
     def has_customer_service_contact?
       %w(customer_service_contact).product(%w(name email phone url)).any?{ |k| send(k.join('_')).present? }
+    end
+
+    private
+
+    def define_line_referential
+      # TODO Improve performance ?
+      self.line_referential ||= line_provider&.line_referential
     end
   end
 end

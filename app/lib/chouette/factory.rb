@@ -29,25 +29,6 @@ module Chouette
             owner = line_referential.workgroup.owner
             line_referential.add_member owner, owner: true
           end
-
-          model :line do
-            attribute(:name) { |n| "Line #{n}" }
-            attribute :transport_mode, "bus"
-            attribute :transport_submode, "undefined"
-            attribute(:number) { |n| n }
-          end
-
-          model :company do
-            attribute(:name) { |n| "Company #{n}" }
-          end
-
-          model :network do
-            attribute(:name) { |n| "Network #{n}" }
-          end
-
-          model :group_of_line do
-            attribute(:name) { |n| "Group of Line #{n}" }
-          end
         end
 
         model :stop_area_referential, required: true, singleton: true do
@@ -92,6 +73,29 @@ module Chouette
             new_instance.line_referential.add_member new_instance.organisation
           end
 
+          model :line_provider do
+            attribute(:short_name) { |n| "line_provider_#{n}" }
+
+            model :line do
+              attribute(:name) { |n| "Line #{n}" }
+              attribute :transport_mode, "bus"
+              attribute :transport_submode, "undefined"
+              attribute(:number) { |n| n }
+            end
+
+            model :company do
+              attribute(:name) { |n| "Company #{n}" }
+            end
+
+            model :network do
+              attribute(:name) { |n| "Network #{n}" }
+            end
+
+            model :group_of_line do
+              attribute(:name) { |n| "Group of Line #{n}" }
+            end
+          end
+
           model :shape_provider do
             attribute(:short_name) { |n| "shape_provider_#{n}" }
 
@@ -107,8 +111,7 @@ module Chouette
 
             transient(:lines) do
               # TODO create a Line with Factory::Model ?
-              line_referential = parent.workgroup.line_referential
-              line = line_referential.lines.create!(name: "Line #{sequence_number}", transport_mode: "bus", transport_submode: "undefined", number: sequence_number)
+              line = parent.default_line_provider.lines.create!(name: "Line #{sequence_number}", transport_mode: "bus", transport_submode: "undefined", number: sequence_number)
               [ line ]
             end
             transient :periods, [ Time.zone.today..1.month.from_now.to_date ]

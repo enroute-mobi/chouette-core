@@ -13,6 +13,8 @@ FactoryBot.define do
     default_language      { Faker::Address.country_code }
 
     association :line_referential, :factory => :line_referential
+    line_provider { association :line_provider, line_referential: line_referential }
+    # association :line_provider, :factory => :line_provider, line_referential: line_referential
   end
 
 end

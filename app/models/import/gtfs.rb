@@ -280,7 +280,7 @@ class Import::Gtfs < Import::Base
 
       Chouette::VehicleJourneyAtStop.bulk_insert do |worker|
         journey_pattern.stop_points.each_with_index do |stop_point, i|
-          add_stop_point stop_times[i], starting_day_offset, stop_point, journey_pattern, vehicle_journey, worker
+          add_stop_point stop_times[i], i, starting_day_offset, stop_point, journey_pattern, vehicle_journey, worker
         end
       end
 
@@ -483,7 +483,7 @@ class Import::Gtfs < Import::Base
     vehicle_journey_at_stop.departure_time_of_day = departure_time_of_day
 
     if position == 0
-      vehicle_journey_at_stop.arrival_time_of_day = arrival_time_of_day
+      vehicle_journey_at_stop.arrival_time_of_day = departure_time_of_day
     else
       vehicle_journey_at_stop.arrival_time_of_day = time_of_day stop_time.arrival_time, starting_day_offset
     end

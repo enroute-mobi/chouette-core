@@ -143,8 +143,8 @@ module Merge::Referential
 
         def rows
           source.journey_patterns.joins(:route).
-            joins("LEFT OUTER JOIN #{new.slug}.journey_patterns as existing_journey_patterns ON journey_patterns.checksum = existing_journey_patterns.checksum").
-            joins("LEFT OUTER JOIN #{new.slug}.routes as existing_routes ON routes.checksum = existing_routes.checksum AND existing_routes.id = existing_journey_patterns.route_id").
+            joins("LEFT OUTER JOIN #{new.slug}.routes as existing_routes ON routes.checksum = existing_routes.checksum AND routes.line_id = existing_routes.line_id").
+            joins("LEFT OUTER JOIN #{new.slug}.journey_patterns as existing_journey_patterns ON journey_patterns.checksum = existing_journey_patterns.checksum AND existing_routes.id = existing_journey_patterns.route_id").
             where(id: journey_pattern_ids).pluck(:id, "routes.id", "existing_journey_patterns.id", "existing_routes.id")
         end
 
@@ -167,7 +167,7 @@ module Merge::Referential
         end
 
         def existing_route_id(vehicle_journey_id)
-          existing_route_ids[vehicle_journey_id]
+          existing_route_ids.fetch vehicle_journey_id
         end
 
         def existing_journey_pattern_ids
@@ -176,7 +176,7 @@ module Merge::Referential
         end
 
         def existing_journey_pattern_id(vehicle_journey_id)
-          existing_journey_pattern_ids[vehicle_journey_id]
+          existing_journey_pattern_ids.fetch vehicle_journey_id
         end
 
       end

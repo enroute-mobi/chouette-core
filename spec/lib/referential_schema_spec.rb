@@ -14,9 +14,37 @@ RSpec.describe ReferentialSchema do
          ar_internal_metadata schema_migrations}
     end
 
-    it "returns the names of all tables present in the Referential schema" do
+    it "returns names of all tables" do
       is_expected.to include(*table_samples)
       is_expected.to have_attributes(size: (be >= 90))
+    end
+
+  end
+
+  describe "#referential_table_names" do
+
+    subject { referential_schema.referential_table_names }
+
+    it "returns names of tables present only in the Referential schema" do
+      is_expected.not_to include(referential_schema.unused_table_names)
+      is_expected.to have_attributes(size: (be < 100))
+    end
+
+  end
+
+  describe "#unused_table_names" do
+
+    subject { referential_schema.unused_table_names }
+
+    let(:unused_table_samples) do
+      %w{aggregates api_keys calendars companies connection_links
+        group_of_lines lines line_notices networks stop_areas
+        clean_ups clean_up_results codes }
+    end
+
+    it "returns names of all tables used in public schema and not in the Referential schema" do
+      is_expected.to include(*unused_table_samples)
+      is_expected.to have_attributes(size: (be < 100))
     end
 
   end

@@ -13,8 +13,17 @@ class ReferentialSchema
     @table_names ||= connection.select_values tables_query
   end
 
+  def referential_table_names
+    @referential_table_names ||= table_names - unused_table_names
+  end
+
   def tables
     @tables ||= Table.create self, table_names
+  end
+
+  def unused_table_names
+    # Tables unused for others schemas than public
+    @unused_table_names ||= Apartment.excluded_models.map(&:constantize).map(&:table_name).map {|s| s.gsub(/public\./, '')}.uniq
   end
 
   def connection
@@ -44,7 +53,7 @@ class ReferentialSchema
 
   def table_names_ordered_by_constraints
     @table_names_ordered_by_constraints ||=
-      TABLES_WITH_CONSTRAINTS + (table_names - TABLES_WITH_CONSTRAINTS)
+      TABLES_WITH_CONSTRAINTS + (referential_table_names - TABLES_WITH_CONSTRAINTS)
   end
 
   def tables_ordered_by_constraints

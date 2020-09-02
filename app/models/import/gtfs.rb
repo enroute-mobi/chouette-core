@@ -246,8 +246,6 @@ class Import::Gtfs < Import::Base
     begin
       raise InvalidTripSingleStopTime unless stop_times.many?
 
-      stop_times.sort_by! { |s| s.stop_sequence.to_i }
-
       journey_pattern = find_or_create_journey_pattern(resource, trip, stop_times)
 
       vehicle_journey = journey_pattern.vehicle_journeys.build route: journey_pattern.route, skip_custom_fields_initialization: true
@@ -280,8 +278,6 @@ class Import::Gtfs < Import::Base
           save_model vehicle_journey, resource: resource
       end
 
-      stop_times.sort_by! { |s| s.stop_sequence.to_i }
-
       Chouette::VehicleJourneyAtStop.bulk_insert do |worker|
         journey_pattern.stop_points.each_with_index do |stop_point, i|
           add_stop_point stop_times[i], starting_day_offset, stop_point, journey_pattern, vehicle_journey, worker
@@ -291,10 +287,8 @@ class Import::Gtfs < Import::Base
       journey_pattern.vehicle_journey_at_stops.reload
       save_model journey_pattern, resource: resource
 
-    rescue Import::Gtfs::InvalidTripInconsistentFirstOffsetError, Import::Gtfs::InvalidTripTimesError, Import::Gtfs::InvalidTripSingleStopTime, Import::Gtfs::InvalidStopAreaError => e
+    rescue Import::Gtfs::InvalidTripTimesError, Import::Gtfs::InvalidTripSingleStopTime, Import::Gtfs::InvalidStopAreaError => e
       message_key = case e
-        when Import::Gtfs::InvalidTripInconsistentFirstOffsetError
-          'trip_starting_with_inconsistent_day_offset'
         when Import::Gtfs::InvalidTripTimesError
           'trip_with_inconsistent_stop_times'
         when Import::Gtfs::InvalidTripSingleStopTime
@@ -471,9 +465,6 @@ class Import::Gtfs < Import::Base
       if position == 0
         departure_time = GTFSTime.parse(stop_time.departure_time)
         raise InvalidTimeError.new(stop_time.departure_time) unless departure_time.present?
-        arrival_time = GTFSTime.parse(stop_time.arrival_time)
-        raise InvalidTimeError.new(stop_time.arrival_time) unless arrival_time.present?
-        raise InvalidTripInconsistentFirstOffsetError if departure_time.day_offset != arrival_time.day_offset
       end
 
       stop_area_id = @stop_areas_id_by_registration_number[stop_time.stop_id]
@@ -483,24 +474,28 @@ class Import::Gtfs < Import::Base
     end
   end
 
-  def add_stop_point(stop_time, starting_day_offset, stop_point, journey_pattern, vehicle_journey, worker)
+  def add_stop_point(stop_time, position, starting_day_offset, stop_point, journey_pattern, vehicle_journey, worker)
     # JourneyPattern#vjas_add creates automaticaly VehicleJourneyAtStop
     vehicle_journey_at_stop = journey_pattern.vehicle_journey_at_stops.build(stop_point_id: stop_point.id)
-
-    departure_time = GTFS::Time.parse(stop_time.departure_time).from_day_offset(starting_day_offset)
-    raise InvalidTimeError.new(stop_time.departure_time) unless departure_time.present?
-
-    arrival_time = GTFS::Time.parse(stop_time.arrival_time).from_day_offset(starting_day_offset)
-    raise InvalidTimeError.new(stop_time.arrival_time) unless arrival_time.present?
-
-    departure_time_of_day = TimeOfDay.create(departure_time, time_zone: default_time_zone).without_utc_offset
-    arrival_time_of_day = TimeOfDay.create(arrival_time, time_zone: default_time_zone).without_utc_offset
-
     vehicle_journey_at_stop.vehicle_journey = vehicle_journey
+
+    departure_time_of_day = time_of_day stop_time.departure_time, starting_day_offset
     vehicle_journey_at_stop.departure_time_of_day = departure_time_of_day
-    vehicle_journey_at_stop.arrival_time_of_day = arrival_time_of_day
+
+    if position == 0
+      vehicle_journey_at_stop.arrival_time_of_day = arrival_time_of_day
+    else
+      vehicle_journey_at_stop.arrival_time_of_day = time_of_day stop_time.arrival_time, starting_day_offset
+    end
 
     worker.add vehicle_journey_at_stop.attributes
+  end
+
+  def time_of_day gtfs_time, offset
+    t = GTFS::Time.parse(gtfs_time).from_day_offset(offset)
+    raise InvalidTimeError.new(gtfs_time) unless t.present?
+
+    TimeOfDay.create(t, time_zone: default_time_zone).without_utc_offset
   end
 
 # for each service_id we store an array of TimeTables for each needed starting day offset
@@ -627,7 +622,6 @@ class Import::Gtfs < Import::Base
     /\A[\dA-F]{6}\Z/.match(value).try(:string) || options[:default]
   end
 
-  class InvalidTripInconsistentFirstOffsetError < StandardError; end
   class InvalidTripTimesError < StandardError; end
   class InvalidTripSingleStopTime < StandardError; end
   class InvalidStopAreaError < StandardError; end

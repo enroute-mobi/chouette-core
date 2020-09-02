@@ -117,17 +117,12 @@ class Timetable
   end
 
   def shift(days)
-    return if days < 0 # Prevent destroying the days mask
+    raise ArgumentError.new("Timetable shift can't be negative") if days < 0
 
     included_dates.map! { |date| date+days }
     excluded_dates.map! { |date| date+days }
 
-    periods.map! do |period|
-        period.first += days
-        period.last += days
-        period.days_of_week.shift days
-        period
-    end
+    Period.shift periods, days
   end
 
   attr_writer :periods
@@ -184,6 +179,15 @@ class Timetable
 
     def self.from(date_range, days_of_week = DaysOfWeek.all)
       new date_range.min, date_range.max, days_of_week
+    end
+
+    def self.shift periods, days
+      periods.map! do |period|
+          period.first += days
+          period.last += days
+          period.days_of_week.shift days
+          period
+      end
     end
 
     # Returns the date range between first and last dates
@@ -357,9 +361,15 @@ class Timetable
       self.days_mask
     end
 
+    # days mask is coded with 7 bytes from 4 to 256
+    # in order to work with 7 bytes we shift 2 to the right, make the logic, then shift 2 to the left
+    # ex 3 shift for 0010001:
+    # t << 3      : 0001000
+    # t >> 4      : 0000001
+    # combination : 0001001
     def shift days
       t = days_mask >> 2
-      self.days_mask = (((t << days) | (t >>(7-days))) & 127) << 2
+      self.days_mask = (((t << (days%7)) | (t >>(7-(days%7)))) & 127) << 2
     end
 
     protected

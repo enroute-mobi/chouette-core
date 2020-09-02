@@ -545,4 +545,22 @@ RSpec.describe Timetable::DaysOfWeek do
 
   end
 
+  describe "#shift" do
+    it "should shift by the correct amount" do
+      expected = [[1, 0b010010000],
+      [2, 0b100100000],
+      [4, 0b010001000],
+      [7, 0b001001000],
+      [9, 0b100100000],
+      [14, 0b001001000],
+      ]
+
+      expected.each do |e|
+        days_of_week = Timetable::DaysOfWeek.new.enable(:tuesday, :friday)
+        days_of_week.shift e.first
+        expect(days_of_week.hash).to eq(e.last)
+      end
+    end
+  end
+
 end

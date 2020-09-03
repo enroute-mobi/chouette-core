@@ -65,10 +65,12 @@ RSpec.describe ReferentialSchema do
 
   describe "#clone_to" do
 
+    let(:model_count) { 10 }
+
     let(:context) do
       Chouette.create do
         referential :source do
-          vehicle_journey
+          10.times { vehicle_journey }
         end
         referential :target
       end
@@ -86,14 +88,20 @@ RSpec.describe ReferentialSchema do
 
     it "copy all JourneyPatterns from source referential to target one" do
       expect { referential.schema.clone_to(target.schema) }.to change {
-        target.switch { Chouette::Route.count }
+        target.switch { Chouette::JourneyPattern.count }
       }.from(0).to(1)
     end
 
     it "copy all VehicleJourneys from source referential to target one" do
       expect { referential.schema.clone_to(target.schema) }.to change {
         target.switch { Chouette::VehicleJourney.count }
-      }.from(0).to(1)
+      }.from(0).to(model_count)
+    end
+
+    it "update primary key sequences" do
+      expect { referential.schema.clone_to(target.schema) }.to change {
+        target.schema.current_value("vehicle_journeys_id_seq")
+      }.from(1).to(model_count)
     end
 
 

@@ -55,6 +55,11 @@ class ReferentialSchema
     other && name == other.name
   end
 
+  def current_value(sequence)
+    full_name = "#{name}.#{sequence}"
+    connection.select_value "SELECT last_value from #{full_name}"
+  end
+
   class Table
 
     def initialize(schema, name)
@@ -100,6 +105,12 @@ class ReferentialSchema
         rescue EOFError
         end
       end
+
+      reset_pk_sequence
+    end
+
+    def reset_pk_sequence
+      connection.reset_pk_sequence! full_name
     end
 
     def count

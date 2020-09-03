@@ -16,7 +16,7 @@ RSpec.describe ReferentialSchema do
 
     it "returns the names of all tables present in the Referential schema" do
       is_expected.to include(*table_samples)
-      is_expected.to have_attributes(size: (be > 90))
+      is_expected.to have_attributes(size: (be >= 90))
     end
 
   end

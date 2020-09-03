@@ -1,7 +1,11 @@
-require 'rspec/expectations'
+#
+# Usage:
+#   expect(model).to exist_in_database
+#
+RSpec::Matchers.define :exist_in_database do
 
-RSpec::Matchers.define :include_all do |expected|
   match do |actual|
-    ( expected - actual ).empty?
+    actual.class.exists?(actual.id)
   end
+
 end

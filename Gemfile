@@ -139,7 +139,7 @@ gem 'postgresql_cursor'
 # Cache
 gem 'redis-rails'
 
-gem 'gtfs', en_route: 'gtfs', branch: 'CHOUETTE-625-support-non-zero-first-day-offset-in-gtfs-import'
+gem 'gtfs', en_route: 'gtfs'
 gem 'netex', en_route: 'netex'
 
 gem 'ddtrace'

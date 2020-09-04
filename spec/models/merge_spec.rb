@@ -440,7 +440,7 @@ RSpec.describe Merge do
       if name =~ /^(.*)_(route|journey_pattern|vehicle_journey)$/
         referential_name = $1
         referential = referential_name == 'source' ? source : new
-        referential.switch { context.instance(name).reload }
+        referential.switch { context.instance(name)&.reload }
       else
         super
       end
@@ -553,6 +553,42 @@ RSpec.describe Merge do
             merge.new.switch do
               expect(Chouette::Route.find(existing_route.id)).to be_present
               expect(Chouette::Route.count).to be(1)
+            end
+          end
+
+        end
+
+        context "when the Route has an invalid checksum" do
+
+          let(:merge_context) do
+            MergeContext.new(merge_method: merge_method) do
+              line :line
+              referential :source, lines: [:line] do
+                time_table :default
+                route :source_route, line: :line do
+                  vehicle_journey time_tables: [:default]
+                end
+              end
+            end
+          end
+
+          let(:merge) { merge_context.merge }
+
+          before do
+            merge_context.source.switch do
+              merge_context.source.routes.update_all checksum: "invalid"
+            end
+          end
+
+          it "creates a Route in the merged data set with a valid checksum" do
+            merge.merge!
+
+            merge.new.switch do
+              expect(Chouette::Route.count).to be(1)
+
+              expect { Chouette::ChecksumUpdater.new(merge.new).update }.to_not change {
+                Chouette::Route.pluck :checksum
+              }
             end
           end
 

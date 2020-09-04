@@ -17,6 +17,11 @@ class Merge::Referential::Legacy < Merge::Referential::Base
     logger.tagged("Merge ##{merge.id}") do
       logger.debug "Merge #{referential.slug}"
 
+      referential.switch do
+        # TODO Update all checksums in the future
+        Chouette::ChecksumUpdater.new(referential).routes
+      end
+
       merge_metadata
 
       new.switch do

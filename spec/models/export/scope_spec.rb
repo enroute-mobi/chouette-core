@@ -2,6 +2,17 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
 
   describe "Base" do
 
+    describe "shape_referential" do
+
+      it "uses Workgroup shape referential" do
+        referential = double(workgroup: double(shape_referential: double))
+
+        expect(Export::Scope::Base.new(referential).shape_referential).
+          to be(referential.workgroup.shape_referential)
+      end
+
+    end
+
     describe "stop_areas" do
 
       it "uses workbench stop areas" do

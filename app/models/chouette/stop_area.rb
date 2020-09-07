@@ -508,8 +508,14 @@ module Chouette
       where "id IN (#{union_query})"
     end
 
-    def self.parents_of(relation)
-      joins('JOIN "public"."stop_areas" children on "public"."stop_areas"."id" = children.parent_id').where("children.id" => relation).distinct
+    def self.parents_of(relation, ignore_mono_parent: false)
+      parents = joins('JOIN "public"."stop_areas" children on "public"."stop_areas"."id" = children.parent_id').where("children.id" => relation)
+
+      if ignore_mono_parent
+        parents = parents.group(:id).having('count(children.id) > 1')
+      end
+
+      parents.distinct
     end
 
     # def full_name

@@ -149,7 +149,8 @@ class Export::Gtfs < Export::Base
   end
 
   def exported_stop_areas
-    Chouette::StopArea.union(export_scope.stop_areas, Chouette::StopArea.parents_of(export_scope.stop_areas.where(area_type: 'zdep'))).where(kind: :commercial)
+    parents = Chouette::StopArea.parents_of(export_scope.stop_areas.where(area_type: 'zdep'), ignore_mono_parent: true)
+    Chouette::StopArea.union(export_scope.stop_areas, parents).where(kind: :commercial)
   end
 
   def export_stop_areas_to(target)
@@ -189,7 +190,7 @@ class Export::Gtfs < Export::Base
       parent_stop_id = index.stop_id(stop_area.parent.id)
 
       unless parent_stop_id
-        parent_stop_id = stop_id(stop_area.parent)
+        # Ignore parent not exported before
         Rails.logger.warn "Can't find parent stop_id in index for StopArea #{stop_area.id}"
       end
     end

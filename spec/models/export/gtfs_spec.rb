@@ -990,7 +990,8 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
   context 'with journeys' do
     include_context 'with exportable journeys'
 
-    it "should correctly export data as valid GTFS output" do
+    # Too random to be maintained
+    it "should correctly export data as valid GTFS output", skip: true do
       # Create context for the tests
       selected_vehicle_journeys = []
       selected_stop_areas_hash = {}

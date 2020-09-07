@@ -16,34 +16,17 @@ RSpec.describe ReferentialSchema do
 
     it "returns names of all tables" do
       is_expected.to include(*table_samples)
-      is_expected.to have_attributes(size: (be >= 90))
+      is_expected.to have_attributes(size: (be >= 25))
     end
 
   end
 
-  describe "#referential_table_names" do
+  describe "#usefull_table_names" do
 
-    subject { referential_schema.referential_table_names }
+    subject { referential_schema.usefull_table_names }
 
     it "returns names of tables present only in the Referential schema" do
-      is_expected.not_to include(referential_schema.unused_table_names)
-      is_expected.to have_attributes(size: (be < 100))
-    end
-
-  end
-
-  describe "#unused_table_names" do
-
-    subject { referential_schema.unused_table_names }
-
-    let(:unused_table_samples) do
-      %w{aggregates api_keys calendars companies connection_links
-        group_of_lines lines line_notices networks stop_areas
-        clean_ups clean_up_results codes }
-    end
-
-    it "returns names of all tables used in public schema and not in the Referential schema" do
-      is_expected.to include(*unused_table_samples)
+      is_expected.not_to include(referential_schema.excluded_table_names)
       is_expected.to have_attributes(size: (be < 100))
     end
 
@@ -69,6 +52,42 @@ RSpec.describe ReferentialSchema do
 
   end
 
+  describe "#excluded_table_names" do
+
+    subject { referential_schema.excluded_table_names }
+
+    let(:unused_table_samples) do
+      %w{aggregates api_keys calendars companies connection_links
+        group_of_lines lines line_notices networks stop_areas
+        clean_ups clean_up_results codes }
+    end
+
+    it "returns names of all tables used in public schema and not in the Referential schema" do
+      is_expected.to include(*unused_table_samples)
+      is_expected.to have_attributes(size: (be < 100))
+    end
+
+  end
+
+  describe "#excluded_tables" do
+
+    it "returns a Table for each excluded model table" do
+      expect(referential_schema.excluded_tables.count).to eq(referential_schema.excluded_table_names.count)
+      expect(referential_schema.excluded_tables.collect(&:name)).to eq(referential_schema.excluded_table_names)
+    end
+
+  end
+
+  describe "#reduce_tables" do
+
+    subject { referential_schema.reduce_tables }
+
+    it "must drop excluded tables" do
+      expect(referential_schema.table_names).not_to include(referential_schema.excluded_table_names)
+    end
+
+  end
+
   describe "#table" do
 
     it "returns the Table instance with the given name" do
@@ -90,6 +109,7 @@ RSpec.describe ReferentialSchema do
     end
 
   end
+
 
   describe "#clone_to" do
 

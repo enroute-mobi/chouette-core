@@ -5,7 +5,7 @@ class ActiveRecord::Migration
     yield if Apartment::Tenant.current == "public"
   end
 
-  def not_in_public_schema
+  def on_referential_schemas_only
     yield if Apartment::Tenant.current != "public"
   end
 end

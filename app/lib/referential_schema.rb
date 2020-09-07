@@ -1,9 +1,21 @@
 class ReferentialSchema
 
+  PUBLIC_SCHEMA = "public"
+
+  def self.current
+    current_name = Apartment::Tenant.current
+    new(current_name) unless current_name == PUBLIC_SCHEMA
+  end
+
   def initialize(name)
     @name = name
   end
   attr_reader :name
+
+  def create
+    Apartment::Tenant.create name
+    reduce_tables
+  end
 
   def tables_query
     "SELECT table_name FROM information_schema.tables WHERE table_schema = '#{name}' ORDER BY table_name"
@@ -13,17 +25,21 @@ class ReferentialSchema
     @table_names ||= connection.select_values tables_query
   end
 
-  def referential_table_names
-    @referential_table_names ||= table_names - unused_table_names
+  def usefull_table_names
+    @usefull_table_names ||= table_names - excluded_table_names
   end
 
   def tables
     @tables ||= Table.create self, table_names
   end
 
-  def unused_table_names
+  def excluded_table_names
     # Tables unused for others schemas than public
-    @unused_table_names ||= Apartment.excluded_models.map(&:constantize).map(&:table_name).map {|s| s.gsub(/public\./, '')}.uniq
+    @excluded_table_names ||= Apartment.excluded_models.map(&:constantize).map(&:table_name).map {|s| s.gsub(/public\./, '')}.uniq
+  end
+
+  def excluded_tables
+    @excluded_tables ||= Table.create self, excluded_table_names
   end
 
   def connection
@@ -53,11 +69,17 @@ class ReferentialSchema
 
   def table_names_ordered_by_constraints
     @table_names_ordered_by_constraints ||=
-      TABLES_WITH_CONSTRAINTS + (referential_table_names - TABLES_WITH_CONSTRAINTS)
+      TABLES_WITH_CONSTRAINTS + (usefull_table_names - TABLES_WITH_CONSTRAINTS)
   end
 
   def tables_ordered_by_constraints
     @table_ordered_by_constraints ||= Table.create(self, table_names_ordered_by_constraints)
+  end
+
+  def reduce_tables
+    excluded_tables.each do |excluded_table|
+     excluded_table.drop
+    end
   end
 
   def ==(other)
@@ -96,6 +118,10 @@ class ReferentialSchema
     end
 
     IGNORED = %w{ar_internal_metadata schema_migrations}.freeze
+
+    def drop
+      connection.drop_table(full_name, if_exists: true)
+    end
 
     def copy_to(io)
       raw_connection.copy_data "COPY #{full_name} TO STDOUT WITH BINARY" do

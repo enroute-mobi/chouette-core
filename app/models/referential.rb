@@ -4,7 +4,7 @@ module ReferentialSaveWithLock
   def save(options = {})
     super(options)
   rescue ActiveRecord::StatementInvalid => e
-    Chouette::Safe.capture "Referential ##{id} save failed", e
+    Chouette::Safe.capture "Referential #{name} with slug #{slug} save failed", e
 
     if e.message.include?('PG::LockNotAvailable')
       raise TableLockTimeoutError.new(e)
@@ -602,9 +602,9 @@ class Referential < ApplicationModel
 
   def create_schema
     return if bare
-
+    
     Chouette::Benchmark.measure("referential.create", referential: id) do
-      Apartment::Tenant.create slug
+      schema.create
     end
   end
 

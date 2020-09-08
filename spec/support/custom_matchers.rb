@@ -9,3 +9,6 @@ RSpec::Matchers.define :exist_in_database do
   end
 
 end
+
+RSpec::Matchers.alias_matcher :an_array_including, :include
+RSpec::Matchers.define_negated_matcher :an_array_excluding, :include

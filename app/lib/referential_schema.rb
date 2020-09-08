@@ -12,9 +12,9 @@ class ReferentialSchema
   end
   attr_reader :name
 
-  def create
+  def create(skip_reduce_tables: false)
     Apartment::Tenant.create name
-    reduce_tables
+    reduce_tables unless skip_reduce_tables
   end
 
   def tables_query
@@ -22,7 +22,7 @@ class ReferentialSchema
   end
 
   def table_names
-    @table_names ||= connection.select_values tables_query
+    connection.select_values tables_query
   end
 
   def usefull_table_names

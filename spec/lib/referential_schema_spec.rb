@@ -71,19 +71,27 @@ RSpec.describe ReferentialSchema do
 
   describe "#excluded_tables" do
 
+    subject { referential_schema.excluded_tables }
+
     it "returns a Table for each excluded model table" do
-      expect(referential_schema.excluded_tables.count).to eq(referential_schema.excluded_table_names.count)
-      expect(referential_schema.excluded_tables.collect(&:name)).to eq(referential_schema.excluded_table_names)
+      expect(subject.map(&:name)).to eq(referential_schema.excluded_table_names)
     end
 
   end
 
   describe "#reduce_tables" do
 
-    subject { referential_schema.reduce_tables }
+    let(:referential_schema) { ReferentialSchema.new 'test_reduce_tables' }
+    before { referential_schema.create skip_reduce_tables: true }
+
+    let(:reduced_tables) { referential_schema.excluded_table_names }
 
     it "must drop excluded tables" do
-      expect(referential_schema.table_names).not_to include(referential_schema.excluded_table_names)
+      expect {
+        referential_schema.reduce_tables
+      }.to change { referential_schema.table_names }.
+             from(an_array_including(*reduced_tables)).
+             to(an_array_excluding(*reduced_tables))
     end
 
   end

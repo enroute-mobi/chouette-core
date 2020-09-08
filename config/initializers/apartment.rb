@@ -18,9 +18,13 @@ Apartment.configure do |config|
   # config.excluded_models = %w{Tenant}
   #
   config.excluded_models = [
+    'ActiveRecordInternalMetadata',
     'Aggregate',
     'ApiKey',
     'Calendar',
+    'Chouette::AccessLink',
+    'Chouette::AccessPoint',
+    'Chouette::LineNoticeMembership',
     'Chouette::Company',
     'Chouette::Network',
     'Chouette::ConnectionLink',
@@ -28,6 +32,7 @@ Apartment.configure do |config|
     'Chouette::GroupOfLine',
     'Chouette::Line',
     'Chouette::LineNotice',
+    'StopAreaProviderMembership',
     'Chouette::StopArea',
     'CleanUp',
     'CleanUpResult',
@@ -35,7 +40,7 @@ Apartment.configure do |config|
     'CodeSpace',
     'ComplianceCheckMessage',
     'ComplianceCheck',
-    'ComplianceCheckBlock',    
+    'ComplianceCheckBlock',
     'ComplianceCheckResource',
     'ComplianceCheckSet',
     'ComplianceControl',

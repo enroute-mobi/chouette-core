@@ -545,7 +545,7 @@ class Referential < ApplicationModel
 
     return [] unless line_ids.present? && periodes.present?
 
-    not_myself = "and referential_id != #{id}" if persisted?
+    not_myself = "and referentials.id != #{id}" if persisted?
 
     periods_query = periodes.map do |periode|
       "period && '[#{periode.min},#{periode.max + 1.day})'"

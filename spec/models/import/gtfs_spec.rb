@@ -482,6 +482,7 @@ RSpec.describe Import::Gtfs do
         ["BFC1", "FULLW"],
         ["BFC2", "FULLW"],
         ["AAMV1", "WE"],
+        ["AAMV2", "WE"],
         ["AAMV3", "WE"],
         ["AAMV4", "WE"]
       ]
@@ -497,7 +498,7 @@ RSpec.describe Import::Gtfs do
       end
 
       expected_attributes = [
-        ['EMSI', 0, t('2000-01-01 14:30:00 UTC'), t('2000-01-01 14:28:00 UTC'), 0, 0],
+        ['EMSI', 0, t('2000-01-01 14:30:00 UTC'), t('2000-01-01 14:30:00 UTC'), 0, 0],
         ['DADAN', 1, t('2000-01-01 14:37:00 UTC'), t('2000-01-01 14:35:00 UTC'), 0, 0],
         ['NADAV', 2, t('2000-01-01 14:44:00 UTC'), t('2000-01-01 14:42:00 UTC'), 0, 0],
         ['NANAA', 3, t('2000-01-01 14:51:00 UTC'), t('2000-01-01 14:49:00 UTC'), 0, 0],
@@ -515,7 +516,9 @@ RSpec.describe Import::Gtfs do
         ['BEATTY_AIRPORT', 0, t('2000-01-01 21:00:00 UTC'), t('2000-01-01 21:00:00 UTC'), 0, 0],
         ['AMV', 1, t('2000-01-01 22:00:00 UTC'), t('2000-01-01 22:00:00 UTC'), 1, 1],
         ['AMV', 0, t('2000-01-01 07:30:00 UTC'), t('2000-01-01 07:30:00 UTC'), 1, 1],
-        ['BEATTY_AIRPORT', 1, t('2000-01-01 09:00:00 UTC'), t('2000-01-01 09:00:00 UTC'), 1, 1]
+        ['BEATTY_AIRPORT', 1, t('2000-01-01 09:00:00 UTC'), t('2000-01-01 09:00:00 UTC'), 1, 1],
+        ['AMV', 0, t('2000-01-01 18:00:00 UTC'), t('2000-01-01 18:00:00 UTC'), 0, 0],
+        ['BEATTY_AIRPORT', 1, t('2000-01-01 19:00:00 UTC'), t('2000-01-01 19:00:00 UTC'), 0, 0]
       ]
 
       a = []
@@ -533,6 +536,16 @@ RSpec.describe Import::Gtfs do
 
       referential.vehicle_journeys.each do |vj|
         expect{ vj.calculate_vehicle_journey_at_stop_day_offset; vj.update_checksum! }.to_not change { vj.checksum }
+      end
+    end
+
+    context 'with multiple trips with non zero first day offet' do
+      let(:import) { build_import 'day-offset-sample-feed.zip' }
+
+      it 'should reuse the calendars' do
+        import.import_stop_times
+
+        expect(referential.time_tables.count).to eq 2
       end
     end
 

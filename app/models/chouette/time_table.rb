@@ -589,64 +589,84 @@ module Chouette
       end
     end
 
-    def apply_with_clear(timetable)
-      dates.clear
-      timetable.included_dates.each do |included_date|
-        dates.build date: included_date, in_out: true
-      end
-      timetable.excluded_dates.each do |excluded_date|
-        dates.build date: excluded_date, in_out: false
-      end
-
-      periods.clear
-      timetable.periods.each do |period|
-        periods.build period_start: period.first, period_end: period.last
-      end
+    def apply(timetable)
+      Applier.new(self, timetable).apply
     end
 
-    def apply(timetable)
-      included_dates = timetable.included_dates.to_a
-      dates.select(&:in?).sort_by(&:date).each do |date|
-        expected_date = included_dates.shift
-        if expected_date
-          date.date = expected_date
+    class Applier
+
+      attr_reader :time_table, :timetable
+
+      def initialize(time_table, timetable)
+        @time_table, @timetable = time_table, timetable
+      end
+
+      def apply
+        apply_day_types
+        apply_included_dates
+        apply_excluded_dates
+        apply_periods
+      end
+
+      delegate :int_day_types=, :dates, :periods, to: :time_table
+
+      def apply_day_types
+        if (days_of_week = timetable.uniq_days_of_week)
+          self.int_day_types = days_of_week.hash
         else
-          dates.delete date
+          raise ArgumentError
         end
       end
 
-      included_dates.each do |included_date|
-        dates.build date: included_date, in_out: true
-      end
+      def apply_included_dates
+        included_dates = timetable.included_dates.to_a
+        dates.select(&:in?).sort_by(&:date).each do |date|
+          expected_date = included_dates.shift
+          if expected_date
+            date.date = expected_date
+          else
+            dates.delete date
+          end
+        end
 
-      excluded_dates = timetable.excluded_dates.to_a
-      dates.select(&:out?).sort_by(&:date).each do |date|
-        expected_date = excluded_dates.shift
-        if expected_date
-          date.date = expected_date
-        else
-          dates.delete date
+        included_dates.each do |included_date|
+          dates.build date: included_date, in_out: true
         end
       end
 
-      excluded_dates.each do |excluded_date|
-        dates.build date: excluded_date, in_out: false
-      end
+      def apply_excluded_dates
+        excluded_dates = timetable.excluded_dates.to_a
+        dates.select(&:out?).sort_by(&:date).each do |date|
+          expected_date = excluded_dates.shift
+          if expected_date
+            date.date = expected_date
+          else
+            dates.delete date
+          end
+        end
 
-      expected_periods = timetable.periods.to_a
-      periods.sort_by(&:period_start).each do |period|
-        expected_period = expected_periods.shift
-        if expected_period
-          period.period_start = expected_period.first
-          period.period_end = expected_period.last
-        else
-          periods.delete period
+        excluded_dates.each do |excluded_date|
+          dates.build date: excluded_date, in_out: false
         end
       end
 
-      expected_periods.each do |period|
-        periods.build period_start: period.first, period_end: period.last
+      def apply_periods
+        expected_periods = timetable.periods.to_a
+        periods.sort_by(&:period_start).each do |period|
+          expected_period = expected_periods.shift
+          if expected_period
+            period.period_start = expected_period.first
+            period.period_end = expected_period.last
+          else
+            periods.delete period
+          end
+        end
+
+        expected_periods.each do |period|
+          periods.build period_start: period.first, period_end: period.last
+        end
       end
+
     end
 
   end

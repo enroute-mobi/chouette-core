@@ -1513,7 +1513,7 @@ end
 
       it "has a period for each Period" do
         period = time_table.periods.build period_start: Date.new(2030, 1, 1), period_end: Date.new(2030, 2, 1)
-        expected_period = Timetable::Period.new(period.period_start, period.period_end, Timetable::DaysOfWeek.every_day)
+        expected_period = Timetable::Period.from(period.range)
         expect(time_table.to_timetable.periods).to match_array([expected_period])
       end
 
@@ -1521,7 +1521,7 @@ end
 
   end
 
-  describe "apply" do
+  describe "#apply" do
 
     let(:time_table) { Chouette::TimeTable.new }
 
@@ -1567,6 +1567,28 @@ end
       expect do
         time_table.apply(Timetable.new)
       end.to change { time_table.periods.reject(&:destroyed?).size }.to(0)
+    end
+
+    it "uses an uniq DaysOfWeek" do
+      timetable = Timetable::Builder.create do
+        period("1/06","15/06", 'L......')
+        period("1/07","15/07", 'L......')
+      end
+
+      expect do
+        time_table.apply(timetable)
+      end.to change(time_table, :int_day_types).from(ApplicationDaysSupport::NONE).to(ApplicationDaysSupport::MONDAY)
+    end
+
+    it "raise an ArgumentError when several DaysOfWeeks are defined" do
+      timetable = Timetable::Builder.create do
+        period("1/06","15/06", 'L......')
+        period("1/07","15/07", '.....SD')
+      end
+
+      expect do
+        time_table.apply(timetable)
+      end.to raise_error(ArgumentError)
     end
 
   end

@@ -116,6 +116,15 @@ class Timetable
     clone.periods = SortedSet.new(periods.map(&:dup))
   end
 
+  def shift(days)
+    raise ArgumentError.new("Timetable shift can't be negative") if days < 0
+
+    included_dates.map! { |date| date+days }
+    excluded_dates.map! { |date| date+days }
+
+    Period.shift periods, days
+  end
+
   attr_writer :periods
   protected :periods=
 
@@ -135,13 +144,24 @@ class Timetable
     [max_period, max_included_date].compact.max
   end
 
+  # Returns the DaysOfWeeks shared by all Periods .. or nil
+  # Returns DaysOfWeek.none if no period is defined
+  def uniq_days_of_week
+    return DaysOfWeek.none if periods.empty?
+
+    first_days_of_week = periods&.first&.days_of_week
+    if periods.all? { |p| p.days_of_week == first_days_of_week }
+      first_days_of_week
+    end
+  end
+
   class Period
     include Comparable
 
     attr_reader :first, :last
     attr_accessor :days_of_week
 
-    def initialize(first, last, days_of_week = nil)
+    def initialize(first, last, days_of_week = DaysOfWeek.all)
       check_first_last!(first, last)
 
       @first, @last, @days_of_week = first, last, days_of_week
@@ -157,8 +177,17 @@ class Timetable
       @last = last
     end
 
-    def self.from(date_range, days_of_week = nil)
+    def self.from(date_range, days_of_week = DaysOfWeek.all)
       new date_range.min, date_range.max, days_of_week
+    end
+
+    def self.shift periods, days
+      periods.map! do |period|
+          period.first += days
+          period.last += days
+          period.days_of_week.shift days
+          period
+      end
     end
 
     # Returns the date range between first and last dates
@@ -302,7 +331,11 @@ class Timetable
       count
     end
 
-    def self.every_day
+    def self.none
+      new
+    end
+
+    def self.all
       new.enable SYMBOLIC_DAYS
     end
 
@@ -326,6 +359,17 @@ class Timetable
 
     def hash
       self.days_mask
+    end
+
+    # days mask is coded with 7 bytes from 4 to 256
+    # in order to work with 7 bytes we shift 2 to the right, make the logic, then shift 2 to the left
+    # ex 3 shift for 0010001:
+    # t << 3      : 0001000
+    # t >> 4      : 0000001
+    # combination : 0001001
+    def shift days
+      t = days_mask >> 2
+      self.days_mask = (((t << (days%7)) | (t >>(7-(days%7)))) & 127) << 2
     end
 
     protected
@@ -380,6 +424,10 @@ class Timetable
     end
     attr_reader :timetable
 
+    def self.create(&block)
+      Timetable::Builder.new.dsl(&block)
+    end
+
     def dsl(&block)
       instance_eval(&block)
       timetable
@@ -414,8 +462,8 @@ class Timetable
       end
     end
 
-    def self.period(first, last, days_of_weeks = nil)
-      days_of_weeks = days_of_week(days_of_weeks) if days_of_weeks
+    def self.period(first, last, days_of_weeks = DaysOfWeek.all)
+      days_of_weeks = days_of_week(days_of_weeks) if days_of_weeks.is_a?(String)
       Period.from date_range(first, last), days_of_weeks
     end
 

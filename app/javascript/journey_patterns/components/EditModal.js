@@ -2,6 +2,15 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import actions from '../actions'
 import CustomFieldsInputs from '../../helpers/CustomFieldsInputs'
+import ShapeSelector from './tools/ShapeSelector'
+
+import 'ol';
+import ShapesKml from '../../helpers/shapes_kml'
+import OpenLayerMap from './tools/OpenLayerMap'
+
+// import "OpenLayers/maps_backgrounds"
+// import '../../../assets/javascripts/OpenLayers/ol_backgrounds'
+// app/assets/javascripts/OpenLayers/ol.js
 
 export default class EditModal extends Component {
   constructor(props) {
@@ -11,7 +20,12 @@ export default class EditModal extends Component {
 
   handleSubmit() {
     if(actions.validateFields(this.refs) == true) {
-      this.props.saveModal(this.props.modal.modalProps.index, _.assign({}, this.refs, {custom_fields: this.custom_fields}))
+      this.props.saveModal(this.props.modal.modalProps.index,
+        _.assign({}, this.refs, {
+          custom_fields: this.custom_fields,
+          shape: this.props.modal.modalProps.journeyPattern.shape ? {id: this.props.modal.modalProps.journeyPattern.shape.id, name: this.props.modal.modalProps.journeyPattern.shape.name, uuid: this.props.modal.modalProps.journeyPattern.shape.uuid } : undefined
+        })
+      )
       $('#JourneyPatternModal').modal('hide')
     }
   }
@@ -34,6 +48,11 @@ export default class EditModal extends Component {
       return <h4 className='modal-title'> {I18n.t('journey_patterns.show.informations')} </h4>
     }
   }
+
+  // componentDidMount() {
+  //   console.log("test componentDidMount")
+  //   new ShapesKml('route_map',  window.location.origin + window.kml_url).prepare()
+  // }
 
   render() {
     if(this.props.modal.modalProps.journeyPattern){
@@ -102,6 +121,25 @@ export default class EditModal extends Component {
                         onUpdate={(code, value) => this.custom_fields[code]["value"] = value}
                         disabled={!this.props.editMode}
                       />
+                    </div>
+                    <div className='row'>
+                      <div className='col-sm-6 col-xs-12'>
+                        <div className='form-group'>
+                          <label className='control-label'>{I18n.attribute_name('journey_pattern', 'shape')}</label>
+                          <ShapeSelector
+                            shape = {this.props.modal.modalProps.journeyPattern.shape}
+                            onSelectShape = {(e) => this.props.onSelectShape(e)}
+                            onUnselectShape = {() => this.props.onUnselectShape()}
+                            disabled={!this.props.editMode}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className='row'>
+                      <div className='col-sm-6 col-xs-12'>
+                        {/* <div id='route_map' className='large_map mb-lg'/> */}
+                        <OpenLayerMap url={window.location.origin + window.kml_url}/>
+                      </div>
                     </div>
                     <div>
                       <label className='control-label'>{I18n.attribute_name('journey_pattern', 'checksum')}</label>

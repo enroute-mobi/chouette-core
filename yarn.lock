@@ -5549,6 +5549,11 @@ ieee754@^1.1.4:
   version "1.1.8"
   resolved "https://registry.yarnpkg.com/ieee754/-/ieee754-1.1.8.tgz#be33d40ac10ef1926701f6f08a2d86fbfd1ad3e4"
 
+ieee754@^1.1.6:
+  version "1.1.13"
+  resolved "https://registry.yarnpkg.com/ieee754/-/ieee754-1.1.13.tgz#ec168558e95aa181fd87d37f55c32bbcb6708b84"
+  integrity sha512-4vf7I2LYV/HaWerSo3XmlMkp5eZ83i+/CDluXi/IGTs/O1sejBNhTtnxzmRZfvOUqj7lZjqHkeTvpgSFDlWZTg==
+
 iferr@^0.1.5:
   version "0.1.5"
   resolved "https://registry.yarnpkg.com/iferr/-/iferr-0.1.5.tgz#c60eed69e6d8fdb6b3104a1fcbca1c192dc5b501"
@@ -7956,6 +7961,16 @@ obuf@^1.1.2:
   resolved "https://registry.yarnpkg.com/obuf/-/obuf-1.1.2.tgz#09bea3343d41859ebd446292d11c9d4db619084e"
   integrity sha512-PX1wu0AmAdPqOL1mWhqmlOd8kOIZQwGZw6rh7uby9fTc5lhaOWFLX3I6R1hrF9k3zUY40e6igsLGkDXK92LJNg==
 
+ol@^3.21.0-beta.1:
+  version "3.21.0-beta.17"
+  resolved "https://registry.yarnpkg.com/ol/-/ol-3.21.0-beta.17.tgz#839cc9838310536af44d1ca6acab5e92602585f1"
+  integrity sha1-g5zJg4MQU2r0TRymrKtekmAlhfE=
+  dependencies:
+    pbf "3.0.5"
+    pixelworks "1.1.0"
+    rbush "2.0.1"
+    vector-tile "1.3.0"
+
 on-finished@~2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/on-finished/-/on-finished-2.3.0.tgz#20f1336481b083cd75337992a16971aa2d906947"
@@ -8345,6 +8360,14 @@ path-type@^4.0.0:
   resolved "https://registry.yarnpkg.com/path-type/-/path-type-4.0.0.tgz#84ed01c0a7ba380afe09d90a8c180dcd9d03043b"
   integrity sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==
 
+pbf@3.0.5:
+  version "3.0.5"
+  resolved "https://registry.yarnpkg.com/pbf/-/pbf-3.0.5.tgz#24f0fa2cbeb16e5c56a5901bb7e9c2ac0c8059be"
+  integrity sha1-JPD6LL6xblxWpZAbt+nCrAyAWb4=
+  dependencies:
+    ieee754 "^1.1.6"
+    resolve-protobuf-schema "^2.0.0"
+
 pbkdf2@^3.0.3:
   version "3.0.14"
   resolved "https://registry.yarnpkg.com/pbkdf2/-/pbkdf2-3.0.14.tgz#a35e13c64799b06ce15320f459c230e68e73bade"
@@ -8423,6 +8446,11 @@ pnp-webpack-plugin@^1.6.4:
   integrity sha512-7Wjy+9E3WwLOEL30D+m8TSTF7qJJUJLONBnwQp0518siuMxUQUbgZwssaFX+QKlZkjHZcw/IpZCt/H0srrntSg==
   dependencies:
     ts-pnp "^1.1.6"
+
+point-geometry@0.0.0:
+  version "0.0.0"
+  resolved "https://registry.yarnpkg.com/point-geometry/-/point-geometry-0.0.0.tgz#6fcbcad7a803b6418247dd6e49c2853c584daff7"
+  integrity sha1-b8vK16gDtkGCR91uScKFPFhNr/c=
 
 polyfill-array-includes@^1.0.0:
   version "1.0.0"
@@ -11839,6 +11867,13 @@ validate-npm-package-license@^3.0.1:
 vary@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/vary/-/vary-1.1.2.tgz#2299f02c6ded30d4a5961b0b9f74524a18f634fc"
+
+vector-tile@1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/vector-tile/-/vector-tile-1.3.0.tgz#06d516a83b063f04c82ef539cf1bb1aebeb696b4"
+  integrity sha1-BtUWqDsGPwTILvU5zxuxrr62lrQ=
+  dependencies:
+    point-geometry "0.0.0"
 
 vendors@^1.0.0:
   version "1.0.1"

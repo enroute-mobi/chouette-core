@@ -21,6 +21,7 @@
     "hoek": "~> 4.2.1",
     "jquery": "3.5.0",
     "lodash": "~4.17.20",
+    "ol": "^3.21.0-beta.1",
     "polyfill-array-includes": "^1.0.0",
     "promise-polyfill": "7.0.0",
     "prop-types": "^15.6.2",

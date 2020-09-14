@@ -8,11 +8,22 @@ import journeyPatternsApp from '../../journey_patterns/reducers'
 import App from '../../journey_patterns/components/App'
 import clone from '../../helpers/clone'
 
+import RoutesMap from '../../helpers/routes_map'
+
+
+let route = clone(window, "route", true)
+route = JSON.parse(decodeURIComponent(route))
+
+new RoutesMap('route_map').prepare().then(function(map){
+  map.addRoute(route)
+  map.fitZoom()
+})
+
 // logger, DO NOT REMOVE
-// var applyMiddleware = require('redux').applyMiddleware
-// var createLogger = require('redux-logger')
-// var thunkMiddleware = require('redux-thunk').default
-// var promise = require('redux-promise')
+var applyMiddleware = require('redux').applyMiddleware
+import { createLogger } from 'redux-logger';
+var thunkMiddleware = require('redux-thunk').default
+var promise = require('redux-promise')
 
 var initialState = {
   editMode: false,
@@ -37,12 +48,12 @@ var initialState = {
   },
   custom_fields: window.custom_fields
 }
-// const loggerMiddleware = createLogger()
+const loggerMiddleware = createLogger()
 
 let store = createStore(
   journeyPatternsApp,
   initialState,
-  // applyMiddleware(thunkMiddleware, promise, loggerMiddleware)
+  applyMiddleware(thunkMiddleware, promise, loggerMiddleware)
 )
 
 render(

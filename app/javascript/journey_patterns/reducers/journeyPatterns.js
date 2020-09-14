@@ -106,6 +106,8 @@ export default function journeyPatterns (state = [], action)  {
             published_name: action.data.published_name.value,
             registration_number: action.data.registration_number.value,
             custom_fields: action.data.custom_fields,
+            shape: action.data.shape,
+            shape_id: action.data.shape_id,
           })
         } else {
           return j

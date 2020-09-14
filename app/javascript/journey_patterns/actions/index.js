@@ -91,6 +91,13 @@ const actions = {
   fetchingApi: () =>({
       type: 'FETCH_API'
   }),
+  selectShape: (selectedShape) => ({
+    type: 'SELECT_SHAPE_EDIT_MODAL',
+    selectedItem: selectedShape
+  }),
+  unselectShape: () => ({
+    type: 'UNSELECT_SHAPE_EDIT_MODAL',
+  }),
   resetValidation: (target) => {
     $(target).parent().removeClass('has-error').children('.help-block').remove()
   },

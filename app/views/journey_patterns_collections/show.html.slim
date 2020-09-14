@@ -11,8 +11,12 @@
 .page_content
   .container-fluid
     .row
-      .col-lg-12
+      .col-xs-12
         #journey_patterns
+    .row
+      .col-xs-12
+        h4.underline= t('lines.show.map')
+        #route_map.medium_map.mb-lg
 
 = javascript_tag do
   | window.stopPoints = #{(@stop_points_list.to_json).html_safe};
@@ -22,5 +26,9 @@
   | window.features = #{raw @features};
   | window.routeCostsUrl = "#{costs_referential_line_route_url(@referential, @route.line, @route, format: :json).html_safe}";
   | window.custom_fields = #{(@custom_fields.to_json).html_safe};
-  
+  | window.route = "#{URI.escape(route_json_for_edit(@route))}";
+  | window.shapes_path = "#{workbench_shape_referential_shapes_path(@referential.workbench, format: :json).html_safe}";
+  | window.kml_url = "#{workbench_shape_referential_shape_path(@route.referential.workbench, Shape.first, format: :kml).html_safe}";
+
+= javascript_include_tag 'OpenLayers/maps_backgrounds.js'
 = javascript_pack_tag 'journey_patterns/index.js'

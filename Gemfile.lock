@@ -43,7 +43,8 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: c53931b62e5b432ffe1eb8d0bfc76e10b7c4fc4e
+  revision: 2491bd6b6b06899983d9d7078ebaab07243bcd85
+  branch: CHOUETTE-641-generic-netex-export
   specs:
     netex (0.1.0)
       ox
@@ -425,7 +426,7 @@ GEM
     open4 (1.3.4)
     orm_adapter (0.5.0)
     os (1.0.1)
-    ox (2.13.2)
+    ox (2.13.4)
     parallel (1.19.2)
     parallel_tests (3.2.0)
       parallel
@@ -617,7 +618,7 @@ GEM
       sprockets (> 3.0)
       sprockets-rails
       tilt
-    saxerator (0.9.8)
+    saxerator (0.9.9)
     seedbank (0.4.0)
     select2-rails (4.0.13)
     sentry-raven (2.13.0)

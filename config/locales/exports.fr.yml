@@ -42,6 +42,7 @@ fr:
       line: Netex par ligne
       full: Netex complet
     netex_full: Netex Full
+    netex_generic: Netex Générique
     referential_companies: Transporteurs
     gtfs: GTFS
     base:
@@ -114,6 +115,10 @@ fr:
         netex_full:
           <<: *attrs
           duration: Durée (en jours)
+        netex_generic:
+          <<: *attrs
+          duration: Durée (en jours)
+          profile: Profil
         gtfs:
           <<: *attrs
           duration: Durée (en jours)

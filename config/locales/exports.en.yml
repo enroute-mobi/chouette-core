@@ -41,6 +41,7 @@ en:
       line: Netex by line
       full: Netex all lines
     netex_full: Netex Full
+    netex_generic: Netex Generic
     referential_companies: Companies
     gtfs: GTFS
     base:
@@ -112,6 +113,10 @@ en:
         netex_full:
           <<: *attrs
           duration: Duration (in days)
+        netex_generic:
+          <<: *attrs
+          duration: Duration (in days)
+          profile: Profile
         gtfs:
           <<: *attrs
           duration: Duration (in days)

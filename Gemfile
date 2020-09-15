@@ -140,7 +140,7 @@ gem 'postgresql_cursor'
 gem 'redis-rails'
 
 gem 'gtfs', en_route: 'gtfs'
-gem 'netex', en_route: 'netex'
+gem 'netex', en_route: 'netex', branch: 'CHOUETTE-641-generic-netex-export'
 
 gem 'ddtrace'
 

@@ -18,7 +18,6 @@ Apartment.configure do |config|
   # config.excluded_models = %w{Tenant}
   #
   config.excluded_models = [
-    'ActiveRecordInternalMetadata',
     'Aggregate',
     'ApiKey',
     'Calendar',

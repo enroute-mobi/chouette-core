@@ -57,7 +57,7 @@ class ReferentialSchema
   end
 
   def clone_to(target)
-    tables_ordered_by_constraints.each { |table| table.clone_to target }
+    cloned_tables.each { |table| table.clone_to target }
   end
 
   TABLES_WITH_CONSTRAINTS = %w{
@@ -67,13 +67,19 @@ class ReferentialSchema
     time_tables time_tables_vehicle_journeys
   }
 
+  IGNORED_IN_CLONE = %w{ar_internal_metadata schema_migrations}.freeze
+
   def table_names_ordered_by_constraints
     @table_names_ordered_by_constraints ||=
       TABLES_WITH_CONSTRAINTS + (usefull_table_names - TABLES_WITH_CONSTRAINTS)
   end
 
-  def tables_ordered_by_constraints
-    @table_ordered_by_constraints ||= Table.create(self, table_names_ordered_by_constraints)
+  def cloned_tables_names
+    @cloned_tables_names ||= table_names_ordered_by_constraints - IGNORED_IN_CLONE
+  end
+
+  def cloned_tables
+    @cloned_tables ||= Table.create(self, cloned_tables_names)
   end
 
   def reduce_tables
@@ -103,9 +109,7 @@ class ReferentialSchema
 
     def self.create(schema, *names)
       names.flatten.map do |name|
-        unless IGNORED.include?(name)
-          Table.new schema, name
-        end
+        Table.new schema, name
       end.compact
     end
 
@@ -116,8 +120,6 @@ class ReferentialSchema
     def full_name
       @full_name ||= "#{schema.name}.#{name}"
     end
-
-    IGNORED = %w{ar_internal_metadata schema_migrations}.freeze
 
     def drop
       connection.drop_table(full_name, if_exists: true)

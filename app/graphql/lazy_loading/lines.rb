@@ -23,7 +23,7 @@ module LazyLoading
         pending_ids = @lazy_state[:pending_ids].to_a
         lines = Chouette::Line.joins(:routes => [:stop_points => :stop_area])
           .where(:stop_areas => {:id => pending_ids})
-          .select('lines.id', 'line_referential_id', 'lines.name', 'lines.objectid', 'stop_areas.id as stop_area_id')
+          .select('*', 'stop_areas.id as stop_area_id')
 
         # Fill and clean the map
         lines.each do |stop|

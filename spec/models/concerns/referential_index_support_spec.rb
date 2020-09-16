@@ -7,7 +7,8 @@ RSpec.describe ReferentialIndexSupport do
   let(:test_class) do
      child
      class TestClass < ActiveRecord::Base
-       def self.table_name; 'referentials' end
+       def self.table_name; 'vehicle_journeys' end
+       def name; 'VehicleJourney' end
 
        include ReferentialIndexSupport
        has_many_scattered :children

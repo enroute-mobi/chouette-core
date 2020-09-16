@@ -1,20 +1,51 @@
+# frozen_string_literal: true
 class ReferentialSchema
+
+  PUBLIC_SCHEMA = "public"
+
+  def self.current
+    current_name = Apartment::Tenant.current
+    new(current_name) unless current_name == PUBLIC_SCHEMA
+  end
 
   def initialize(name)
     @name = name
   end
   attr_reader :name
 
+  def create(skip_reduce_tables: false)
+    Apartment::Tenant.create name
+    reduce_tables unless skip_reduce_tables
+  end
+
   def tables_query
     "SELECT table_name FROM information_schema.tables WHERE table_schema = '#{name}' ORDER BY table_name"
   end
 
   def table_names
-    @table_names ||= connection.select_values tables_query
+    connection.select_values tables_query
   end
 
   def tables
     @tables ||= Table.create self, table_names
+  end
+
+  # Tables used by Apartment excluded models
+  def self.apartment_excluded_table_names
+    Apartment.excluded_models.map(&:constantize).map(&:table_name).map {|s| s.gsub(/public\./, '')}.uniq
+  end
+
+  # Table names unused for others schemas than public
+  def self.excluded_table_names
+    @excluded_table_names ||= apartment_excluded_table_names
+  end
+  def excluded_table_names
+    self.class.excluded_table_names
+  end
+
+  # Tables unused for others schemas than public
+  def excluded_tables
+    @excluded_tables ||= Table.create self, excluded_table_names
   end
 
   def connection
@@ -31,24 +62,34 @@ class ReferentialSchema
     table(other.name)
   end
 
-  def clone_to(target)
-    tables_ordered_by_constraints.each { |table| table.clone_to target }
-  end
-
   TABLES_WITH_CONSTRAINTS = %w{
     routes stop_points
     journey_patterns journey_patterns_stop_points
     vehicle_journeys vehicle_journey_at_stops
     time_tables time_tables_vehicle_journeys
-  }
+  }.freeze
+
+  IGNORED_IN_CLONE = %w{ar_internal_metadata schema_migrations}.freeze
 
   def table_names_ordered_by_constraints
     @table_names_ordered_by_constraints ||=
       TABLES_WITH_CONSTRAINTS + (table_names - TABLES_WITH_CONSTRAINTS)
   end
 
-  def tables_ordered_by_constraints
-    @table_ordered_by_constraints ||= Table.create(self, table_names_ordered_by_constraints)
+  def cloned_tables_names
+    @cloned_tables_names ||= table_names_ordered_by_constraints - IGNORED_IN_CLONE
+  end
+
+  def cloned_tables
+    @cloned_tables ||= Table.create(self, cloned_tables_names)
+  end
+
+  def clone_to(target)
+    cloned_tables.each { |table| table.clone_to target }
+  end
+
+  def reduce_tables
+    excluded_tables.each(&:drop)
   end
 
   def ==(other)
@@ -72,9 +113,7 @@ class ReferentialSchema
 
     def self.create(schema, *names)
       names.flatten.map do |name|
-        unless IGNORED.include?(name)
-          Table.new schema, name
-        end
+        Table.new schema, name
       end.compact
     end
 
@@ -86,7 +125,9 @@ class ReferentialSchema
       @full_name ||= "#{schema.name}.#{name}"
     end
 
-    IGNORED = %w{ar_internal_metadata schema_migrations}.freeze
+    def drop
+      connection.drop_table(full_name, if_exists: true)
+    end
 
     def copy_to(io)
       raw_connection.copy_data "COPY #{full_name} TO STDOUT WITH BINARY" do

@@ -14,9 +14,9 @@ RSpec.describe ReferentialSchema do
          ar_internal_metadata schema_migrations}
     end
 
-    it "returns the names of all tables present in the Referential schema" do
+    it "returns names of all tables" do
       is_expected.to include(*table_samples)
-      is_expected.to have_attributes(size: (be >= 90))
+      is_expected.to have_attributes(size: (be >= 20))
     end
 
   end
@@ -32,11 +32,61 @@ RSpec.describe ReferentialSchema do
       is_expected.to eq([ReferentialSchema::Table.new(referential_schema, table_name)])
     end
 
-    it "ignores Rails tables (as ar_internal_metadata schema_migrations)" do
-      rails_tables = %w{ar_internal_metadata schema_migrations}
-      allow(referential_schema).to receive(:table_names).and_return(rails_tables)
+  end
 
-      is_expected.to be_empty
+  describe ".apartment_excluded_table_names" do
+
+    subject { ReferentialSchema.apartment_excluded_table_names }
+
+    it "returns names of all tables used by Apartment excluded models" do
+      allow(Apartment).to receive(:excluded_models).and_return(%w{Chouette::StopArea Chouette::Line})
+      is_expected.to eq(%w{stop_areas lines})
+    end
+
+    APARTMENT_EXCLUDED_TABLE_SAMPLES =
+      %w{aggregates api_keys calendars companies connection_links
+        group_of_lines lines line_notices networks stop_areas
+        clean_ups clean_up_results codes}
+
+    it "returns table names like #{APARTMENT_EXCLUDED_TABLE_SAMPLES.to_sentence.truncate(80)}" do
+      is_expected.to include(*APARTMENT_EXCLUDED_TABLE_SAMPLES)
+    end
+
+  end
+
+  describe ".excluded_table_names" do
+
+    subject { ReferentialSchema.excluded_table_names }
+
+    it "returns all tables used by Apartment excluded models (apartment_excluded_table_names)" do
+      is_expected.to include(*ReferentialSchema.apartment_excluded_table_names)
+    end
+
+  end
+
+  describe "#excluded_tables" do
+
+    subject { referential_schema.excluded_tables }
+
+    it "returns a Table for each excluded model table" do
+      expect(subject.map(&:name)).to eq(referential_schema.excluded_table_names)
+    end
+
+  end
+
+  describe "#reduce_tables" do
+
+    let(:referential_schema) { ReferentialSchema.new 'test_reduce_tables' }
+    before { referential_schema.create skip_reduce_tables: true }
+
+    let(:reduced_tables) { referential_schema.excluded_table_names }
+
+    it "must drop excluded tables" do
+      expect {
+        referential_schema.reduce_tables
+      }.to change { referential_schema.table_names }.
+             from(an_array_including(*reduced_tables)).
+             to(an_array_excluding(*reduced_tables))
     end
 
   end
@@ -62,6 +112,7 @@ RSpec.describe ReferentialSchema do
     end
 
   end
+
 
   describe "#clone_to" do
 

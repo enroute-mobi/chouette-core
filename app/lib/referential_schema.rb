@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class ReferentialSchema
 
   PUBLIC_SCHEMA = "public"
@@ -25,19 +26,24 @@ class ReferentialSchema
     connection.select_values tables_query
   end
 
-  def usefull_table_names
-    @usefull_table_names ||= table_names - excluded_table_names
-  end
-
   def tables
     @tables ||= Table.create self, table_names
   end
 
-  def excluded_table_names
-    # Tables unused for others schemas than public
-    @excluded_table_names ||= Apartment.excluded_models.map(&:constantize).map(&:table_name).map {|s| s.gsub(/public\./, '')}.uniq
+  # Tables used by Apartment excluded models
+  def self.apartment_excluded_table_names
+    Apartment.excluded_models.map(&:constantize).map(&:table_name).map {|s| s.gsub(/public\./, '')}.uniq
   end
 
+  # Table names unused for others schemas than public
+  def self.excluded_table_names
+    @excluded_table_names ||= apartment_excluded_table_names
+  end
+  def excluded_table_names
+    self.class.excluded_table_names
+  end
+
+  # Tables unused for others schemas than public
   def excluded_tables
     @excluded_tables ||= Table.create self, excluded_table_names
   end
@@ -56,22 +62,18 @@ class ReferentialSchema
     table(other.name)
   end
 
-  def clone_to(target)
-    cloned_tables.each { |table| table.clone_to target }
-  end
-
   TABLES_WITH_CONSTRAINTS = %w{
     routes stop_points
     journey_patterns journey_patterns_stop_points
     vehicle_journeys vehicle_journey_at_stops
     time_tables time_tables_vehicle_journeys
-  }
+  }.freeze
 
   IGNORED_IN_CLONE = %w{ar_internal_metadata schema_migrations}.freeze
 
   def table_names_ordered_by_constraints
     @table_names_ordered_by_constraints ||=
-      TABLES_WITH_CONSTRAINTS + (usefull_table_names - TABLES_WITH_CONSTRAINTS)
+      TABLES_WITH_CONSTRAINTS + (table_names - TABLES_WITH_CONSTRAINTS)
   end
 
   def cloned_tables_names
@@ -82,10 +84,12 @@ class ReferentialSchema
     @cloned_tables ||= Table.create(self, cloned_tables_names)
   end
 
+  def clone_to(target)
+    cloned_tables.each { |table| table.clone_to target }
+  end
+
   def reduce_tables
-    excluded_tables.each do |excluded_table|
-     excluded_table.drop
-    end
+    excluded_tables.each(&:drop)
   end
 
   def ==(other)

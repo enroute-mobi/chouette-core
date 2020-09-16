@@ -16,18 +16,7 @@ RSpec.describe ReferentialSchema do
 
     it "returns names of all tables" do
       is_expected.to include(*table_samples)
-      is_expected.to have_attributes(size: (be >= 21))
-    end
-
-  end
-
-  describe "#usefull_table_names" do
-
-    subject { referential_schema.usefull_table_names }
-
-    it "returns names of tables present only in the Referential schema" do
-      is_expected.not_to include(referential_schema.excluded_table_names)
-      is_expected.to have_attributes(size: (be < 100))
+      is_expected.to have_attributes(size: (be >= 20))
     end
 
   end
@@ -43,28 +32,34 @@ RSpec.describe ReferentialSchema do
       is_expected.to eq([ReferentialSchema::Table.new(referential_schema, table_name)])
     end
 
-    # it "ignores Rails tables (as ar_internal_metadata schema_migrations)" do
-    #   rails_tables = %w{ar_internal_metadata schema_migrations}
-    #   allow(referential_schema).to receive(:table_names).and_return(rails_tables)
-    #
-    #   is_expected.to be_empty
-    # end
+  end
+
+  describe ".apartment_excluded_table_names" do
+
+    subject { ReferentialSchema.apartment_excluded_table_names }
+
+    it "returns names of all tables used by Apartment excluded models" do
+      allow(Apartment).to receive(:excluded_models).and_return(%w{Chouette::StopArea Chouette::Line})
+      is_expected.to eq(%w{stop_areas lines})
+    end
+
+    APARTMENT_EXCLUDED_TABLE_SAMPLES =
+      %w{aggregates api_keys calendars companies connection_links
+        group_of_lines lines line_notices networks stop_areas
+        clean_ups clean_up_results codes}
+
+    it "returns table names like #{APARTMENT_EXCLUDED_TABLE_SAMPLES.to_sentence.truncate(80)}" do
+      is_expected.to include(*APARTMENT_EXCLUDED_TABLE_SAMPLES)
+    end
 
   end
 
-  describe "#excluded_table_names" do
+  describe ".excluded_table_names" do
 
-    subject { referential_schema.excluded_table_names }
+    subject { ReferentialSchema.excluded_table_names }
 
-    let(:unused_table_samples) do
-      %w{aggregates api_keys calendars companies connection_links
-        group_of_lines lines line_notices networks stop_areas
-        clean_ups clean_up_results codes }
-    end
-
-    it "returns names of all tables used in public schema and not in the Referential schema" do
-      is_expected.to include(*unused_table_samples)
-      is_expected.to have_attributes(size: (be < 100))
+    it "returns all tables used by Apartment excluded models (apartment_excluded_table_names)" do
+      is_expected.to include(*ReferentialSchema.apartment_excluded_table_names)
     end
 
   end

@@ -42,5 +42,11 @@ module Types
     def stop_areas
       LazyLoading::LineStopAreas.new(context, object.id)
     end
+
+    field :service_counts, Types::ServiceCountType.connection_type, null: true,
+      description: "Service Count for Line"
+    def service_counts
+     LazyLoading::ServiceCounts.new(context, object.id)
+    end
   end
 end

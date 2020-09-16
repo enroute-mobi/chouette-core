@@ -6,6 +6,7 @@ module Stat
 
     scope :for_journey_pattern, ->(journey_pattern) { where(journey_pattern_id: journey_pattern.id) }
     scope :for_line, ->(line) { where(line_id: line.id) }
+    scope :for_lines, ->(line_ids) { where(line_id: line_ids) }
     scope :for_route, ->(route) { where(route_id: route.id) }
 
     def self.compute_for_referential(referential)

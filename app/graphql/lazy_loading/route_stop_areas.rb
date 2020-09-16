@@ -22,7 +22,7 @@ module LazyLoading
         # The record hasn't been loaded yet, so hit the database with all pending IDs
         pending_ids = @lazy_state[:pending_ids].to_a
         stop_areas = Chouette::StopArea.joins(:stop_points).where(stop_points: {route_id: pending_ids})
-          .select('stop_areas.id', 'stop_area_referential_id', 'stop_areas.name', 'stop_areas.objectid', 'stop_points.route_id as route_id')
+          .select('stop_areas.*', 'stop_points.route_id as route_id')
 
         # Fill and clean the map
         stop_areas.each do |stop|

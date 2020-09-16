@@ -23,12 +23,12 @@ module LazyLoading
         pending_ids = @lazy_state[:pending_ids].to_a
         lines = Chouette::Line.joins(:routes => [:stop_points => :stop_area])
           .where(:stop_areas => {:id => pending_ids})
-          .select('*', 'stop_areas.id as stop_area_id')
+          .select('lines.*', 'stop_areas.id as stop_area_id')
 
         # Fill and clean the map
-        lines.each do |stop|
-          @lazy_state[:loaded_ids][stop.stop_area_id] ||= []
-          @lazy_state[:loaded_ids][stop.stop_area_id] << stop
+        lines.each do |line|
+          @lazy_state[:loaded_ids][line.stop_area_id] ||= []
+          @lazy_state[:loaded_ids][line.stop_area_id] << line
         end
         @lazy_state[:pending_ids].clear
         @lazy_state[:loaded_ids].transform_values! { |v| v.uniq } # The request returns the same stop multiple times

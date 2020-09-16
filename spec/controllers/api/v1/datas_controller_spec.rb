@@ -1,4 +1,4 @@
-RSpec.describe Api::V1::DatasController, type: :controller do
+  RSpec.describe Api::V1::DatasController, type: :controller do
   let(:file){ File.open(File.join(Rails.root, 'spec', 'fixtures', 'google-sample-feed.zip')) }
   let(:export){ create :gtfs_export, status: :successful, file: file}
   describe 'GET #info' do
@@ -249,7 +249,7 @@ RSpec.describe Api::V1::DatasController, type: :controller do
       allow_any_instance_of(ReferentialSuite).to receive(:current).and_return context.referential
     end
 
-    it 'should return lines when asked' do
+    it 'should return lines->routes->stop_areas when asked' do
       query = <<~GQL
       {
         lines {
@@ -286,7 +286,7 @@ RSpec.describe Api::V1::DatasController, type: :controller do
       end
     end
 
-    it 'should return stop_areas when asked' do
+    it 'should return stop_areas->lines when asked' do
       query = <<~GQL
       {
         stopAreas {

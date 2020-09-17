@@ -1,7 +1,9 @@
 module LazyLoading
-  class ServiceCount
-    def initialize(query_ctx, line_id)
+  class ServiceCountTotal
+    def initialize(query_ctx, line_id, from, to)
       @line_id = line_id
+      @from = from
+      @to = to
       # Initialize the loading state for this query or get the previously-initiated state
       @lazy_state = query_ctx[:lazy_find_line_service_counts] ||= {
         pending_ids: Set.new,
@@ -13,6 +15,11 @@ module LazyLoading
 
     # Return the loaded record, hitting the database if needed
     def service_count
+      # If filtering params have been provided, then the cache isn't used
+      if (@from || @to)
+        return Stat::JourneyPatternCoursesByDate.for_lines(@line_id).between(@from, @to).count
+      end
+      
       # Check if the record was already loaded:
       loaded_records = @lazy_state[:loaded_ids][@line_id]
       if loaded_records

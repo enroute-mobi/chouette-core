@@ -144,7 +144,6 @@ RSpec.describe ReferentialCopy do
 
     it "should copy the routes" do
       referential.switch
-      expect(opposite_route).to be_present
       expect{ referential_copy.send(:copy_routes, line) }.to change{ target.switch{ Chouette::Route.count } }.by 2
       new_route = target.switch{ Chouette::Route.find_by(objectid: route.objectid) }
       expect(referential_copy.send(:clean_attributes_for_copy, new_route)).to eq referential_copy.send(:clean_attributes_for_copy, route)
@@ -152,6 +151,27 @@ RSpec.describe ReferentialCopy do
       expect(new_route.checksum).to eq route.checksum
       expect(new_opposite_route.checksum).to eq opposite_route.checksum
     end
+
+    it "should copy service statistics" do
+      journey_pattern = nil
+      referential.switch do
+        journey_pattern = create(:journey_pattern, route: route)
+        create(:stat_journey_pattern_courses_by_date, line:route.line, route: route, journey_pattern: journey_pattern)
+        referential_copy.send(:copy_route, route)
+      end
+
+      target.switch do
+        expect( Stat::JourneyPatternCoursesByDate.count ).to eq(1)
+        new_route = Chouette::Route.find_by(objectid: route.objectid)
+        new_journey_pattern = Chouette::JourneyPattern.find_by(objectid: journey_pattern.objectid)
+        new_service_statistic = Stat::JourneyPatternCoursesByDate.last
+        expect(new_service_statistic.journey_pattern_id).to eq(new_journey_pattern.id)
+        expect(new_service_statistic.route_id).to eq(new_route.id)
+      end
+
+
+    end
+
   end
 
   context "#copy_time_tables" do

@@ -352,6 +352,11 @@ class Referential < ApplicationModel
   end
   alias referential_codes codes
 
+  def service_counts
+    Stat::JourneyPatternCoursesByDate.all
+  end
+  alias journey_pattern_courses_by_date service_counts
+
   def workgroup
     @workgroup = begin
       workgroup = workbench&.workgroup
@@ -602,7 +607,7 @@ class Referential < ApplicationModel
 
   def create_schema
     return if bare
-    
+
     Chouette::Benchmark.measure("referential.create", referential: id) do
       schema.create
     end

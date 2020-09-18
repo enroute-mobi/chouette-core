@@ -1,4 +1,3 @@
-
 RSpec.describe ReferentialCopy do
   let(:stop_area_referential){ create :stop_area_referential }
   let(:line_referential){ create :line_referential }
@@ -144,32 +143,13 @@ RSpec.describe ReferentialCopy do
 
     it "should copy the routes" do
       referential.switch
+      expect(opposite_route).to be_present
       expect{ referential_copy.send(:copy_routes, line) }.to change{ target.switch{ Chouette::Route.count } }.by 2
       new_route = target.switch{ Chouette::Route.find_by(objectid: route.objectid) }
       expect(referential_copy.send(:clean_attributes_for_copy, new_route)).to eq referential_copy.send(:clean_attributes_for_copy, route)
       new_opposite_route = target.switch{ route.opposite_route }
       expect(new_route.checksum).to eq route.checksum
       expect(new_opposite_route.checksum).to eq opposite_route.checksum
-    end
-
-    it "should copy service statistics" do
-      journey_pattern = nil
-      referential.switch do
-        journey_pattern = create(:journey_pattern, route: route)
-        create(:stat_journey_pattern_courses_by_date, line:route.line, route: route, journey_pattern: journey_pattern)
-        referential_copy.send(:copy_route, route)
-      end
-
-      target.switch do
-        expect( Stat::JourneyPatternCoursesByDate.count ).to eq(1)
-        new_route = Chouette::Route.find_by(objectid: route.objectid)
-        new_journey_pattern = Chouette::JourneyPattern.find_by(objectid: journey_pattern.objectid)
-        new_service_statistic = Stat::JourneyPatternCoursesByDate.last
-        expect(new_service_statistic.journey_pattern_id).to eq(new_journey_pattern.id)
-        expect(new_service_statistic.route_id).to eq(new_route.id)
-      end
-
-
     end
 
   end
@@ -209,4 +189,74 @@ RSpec.describe ReferentialCopy do
       expect(new_purchase_window.checksum).to eq purchase_window.checksum
     end
   end
+
+end
+
+RSpec.describe ReferentialCopy do
+
+  describe "JourneyPatternCoursesByDate copy" do
+
+    let(:context) do
+      Chouette.create do
+        referential :source do
+          journey_pattern
+        end
+        referential :target, with_metadatas: false, archived_at: Time.now
+      end
+    end
+
+    let(:source) { context.referential(:source) }
+
+    let!(:source_journey_pattern_courses_by_day) do
+      source.switch do
+        journey_pattern = source.journey_patterns.first
+        route = journey_pattern.route
+
+        journey_pattern.courses_stats.create! line: route.line, route: route, count: 42, date: Time.zone.today
+      end
+    end
+
+    let(:target) { context.referential(:target) }
+
+    let(:referential_copy) { ReferentialCopy.new source: source, target: target }
+
+    it "contains the same JourneyPatternCoursesByDate count" do
+      expect {
+        referential_copy.copy
+      }.to change { target.switch { target.service_counts.count } }
+             .from(0).to( source.switch { target.service_counts.count } )
+    end
+
+    describe "the JourneyPatternCoursesByDate in target referential" do
+
+      subject { target.switch { target.service_counts.first } }
+
+      before { referential_copy.copy }
+      around { |example| target.switch { example.run } }
+
+      let(:source_journey_pattern) { source.switch { source.journey_patterns.first } }
+      let(:target_journey_pattern) { target.switch { target.journey_patterns.first } }
+
+      it { is_expected.to_not be_nil }
+
+      it "is associated to the target JourneyPattern" do
+        is_expected.to have_attributes(journey_pattern_id: target_journey_pattern.id)
+      end
+
+      it "is associated to the target Route" do
+        is_expected.to have_attributes(route_id: target_journey_pattern.route_id)
+      end
+
+      it "has the same date and count than the source JourneyPatternCoursesByDate" do
+        source_attributes = {
+          count: source_journey_pattern_courses_by_day.count,
+          date: source_journey_pattern_courses_by_day.date
+        }
+        is_expected.to have_attributes(source_attributes)
+      end
+
+    end
+
+  end
+
 end

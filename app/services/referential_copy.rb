@@ -163,13 +163,11 @@ class ReferentialCopy
   # METADATAS
 
   def copy_metadatas
-    ReferentialMetadata.bulk_insert do |worker|
-      source.metadatas.find_each do |metadata|
-        candidate = target.metadatas.with_lines(metadata.line_ids).find { |m| m.periodes == metadata.periodes }
-        candidate ||= target.metadatas.build(line_ids: metadata.line_ids, periodes: metadata.periodes)
-        candidate.flagged_urgent_at = metadata.flagged_urgent_at if metadata.urgent?
-        controlled_save! candidate, worker
-      end
+    source.metadatas.find_each do |metadata|
+      candidate = target.metadatas.with_lines(metadata.line_ids).find { |m| m.periodes == metadata.periodes }
+      candidate ||= target.metadatas.build(line_ids: metadata.line_ids, periodes: metadata.periodes, referential_source: source, created_at: metadata.created_at, updated_at: metadata.created_at)
+      candidate.flagged_urgent_at = metadata.flagged_urgent_at if metadata.urgent?
+      controlled_save! candidate
     end
   end
 

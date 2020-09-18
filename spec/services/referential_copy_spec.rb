@@ -194,6 +194,47 @@ end
 
 RSpec.describe ReferentialCopy do
 
+  let(:source) { context.referential(:source) }
+  let(:target) { context.referential(:target) }
+
+  let(:referential_copy) { ReferentialCopy.new source: source, target: target }
+
+  describe "metadatas copy" do
+
+    let(:context) do
+      Chouette.create do
+        referential :source
+        referential :target, with_metadatas: false, archived_at: Time.now
+      end
+    end
+
+    it "contains the same metadata count" do
+      expect {
+        referential_copy.copy
+
+        # Save the target referential to ensure unsaved metadatas (after copy) are persisted (see CHOUETTE-691)
+        target.save!
+      }.to change { target.metadatas.count }
+             .from(0).to(source.metadatas.count)
+    end
+
+    it "keep unchanged metadatas created_at timestamp" do
+      original_timestamp = Time.now.beginning_of_day
+      source.metadatas.update_all created_at: original_timestamp
+
+      referential_copy.copy
+
+      expect(target.metadatas).to all(have_attributes(created_at: original_timestamp))
+    end
+
+    it "use the source Referential as referential_source" do
+      referential_copy.copy
+
+      expect(target.metadatas).to all(have_attributes(referential_source_id: source.id))
+    end
+
+  end
+
   describe "JourneyPatternCoursesByDate copy" do
 
     let(:context) do
@@ -205,8 +246,6 @@ RSpec.describe ReferentialCopy do
       end
     end
 
-    let(:source) { context.referential(:source) }
-
     let!(:source_journey_pattern_courses_by_day) do
       source.switch do
         journey_pattern = source.journey_patterns.first
@@ -215,10 +254,6 @@ RSpec.describe ReferentialCopy do
         journey_pattern.courses_stats.create! line: route.line, route: route, count: 42, date: Time.zone.today
       end
     end
-
-    let(:target) { context.referential(:target) }
-
-    let(:referential_copy) { ReferentialCopy.new source: source, target: target }
 
     it "contains the same JourneyPatternCoursesByDate count" do
       expect {

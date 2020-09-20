@@ -341,29 +341,10 @@ class ReferentialCopy
           end
 
           profile_tag 'courses_stats' do
-            sql = "INSERT INTO #{source.slug}.stat_journey_pattern_courses_by_dates (journey_pattern_id,route_id,line_id,date,count) "
-            sql << "(SELECT '#{new_journey_pattern.id}','#{new_route.id}',line_id,date,count FROM #{target.slug}.stat_journey_pattern_courses_by_dates)"
+            sql = "INSERT INTO #{target.slug}.stat_journey_pattern_courses_by_dates (journey_pattern_id,route_id,line_id,date,count) "
+            sql << "(SELECT '#{new_journey_pattern.id}','#{new_route.id}',line_id,date,count FROM #{source.slug}.stat_journey_pattern_courses_by_dates WHERE stat_journey_pattern_courses_by_dates.journey_pattern_id = '#{journey_pattern.id}' )"
             ActiveRecord::Base.connection.execute sql
           end
-
-          # profile_tag 'vehicle_journeys' do
-          #   copy_collection journey_pattern, new_journey_pattern, :vehicle_journeys do |vj, new_vj|
-          #     new_vj.route = new_route
-          #     retrieve_collection_with_mapping vj, new_vj, Chouette::TimeTable, :time_tables
-          #     retrieve_collection_with_mapping vj, new_vj, Chouette::PurchaseWindow, :purchase_windows
-          #   end
-          # end
-          #
-          # profile_tag 'vehicle_journey_at_stops' do
-          #   source.switch do
-          #     journey_pattern.vehicle_journeys.find_each do |vj|
-          #       copy_bulk_collection vj.vehicle_journey_at_stops.includes(:stop_point) do |new_vjas_attributes, vjas|
-          #         new_vjas_attributes[:vehicle_journey_id] = matching_id(vj)
-          #         new_vjas_attributes[:stop_point_id] = matching_id(vjas.stop_point)
-          #       end
-          #     end
-          #   end
-          # end
         end
 
         # we copy the routing_constraint_zones

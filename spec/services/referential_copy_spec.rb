@@ -1,4 +1,3 @@
-
 RSpec.describe ReferentialCopy do
   let(:stop_area_referential){ create :stop_area_referential }
   let(:line_referential){ create :line_referential }
@@ -152,6 +151,7 @@ RSpec.describe ReferentialCopy do
       expect(new_route.checksum).to eq route.checksum
       expect(new_opposite_route.checksum).to eq opposite_route.checksum
     end
+
   end
 
   context "#copy_time_tables" do
@@ -189,4 +189,74 @@ RSpec.describe ReferentialCopy do
       expect(new_purchase_window.checksum).to eq purchase_window.checksum
     end
   end
+
+end
+
+RSpec.describe ReferentialCopy do
+
+  describe "JourneyPatternCoursesByDate copy" do
+
+    let(:context) do
+      Chouette.create do
+        referential :source do
+          journey_pattern
+        end
+        referential :target, with_metadatas: false, archived_at: Time.now
+      end
+    end
+
+    let(:source) { context.referential(:source) }
+
+    let!(:source_journey_pattern_courses_by_day) do
+      source.switch do
+        journey_pattern = source.journey_patterns.first
+        route = journey_pattern.route
+
+        journey_pattern.courses_stats.create! line: route.line, route: route, count: 42, date: Time.zone.today
+      end
+    end
+
+    let(:target) { context.referential(:target) }
+
+    let(:referential_copy) { ReferentialCopy.new source: source, target: target }
+
+    it "contains the same JourneyPatternCoursesByDate count" do
+      expect {
+        referential_copy.copy
+      }.to change { target.switch { target.service_counts.count } }
+             .from(0).to( source.switch { target.service_counts.count } )
+    end
+
+    describe "the JourneyPatternCoursesByDate in target referential" do
+
+      subject { target.switch { target.service_counts.first } }
+
+      before { referential_copy.copy }
+      around { |example| target.switch { example.run } }
+
+      let(:source_journey_pattern) { source.switch { source.journey_patterns.first } }
+      let(:target_journey_pattern) { target.switch { target.journey_patterns.first } }
+
+      it { is_expected.to_not be_nil }
+
+      it "is associated to the target JourneyPattern" do
+        is_expected.to have_attributes(journey_pattern_id: target_journey_pattern.id)
+      end
+
+      it "is associated to the target Route" do
+        is_expected.to have_attributes(route_id: target_journey_pattern.route_id)
+      end
+
+      it "has the same date and count than the source JourneyPatternCoursesByDate" do
+        source_attributes = {
+          count: source_journey_pattern_courses_by_day.count,
+          date: source_journey_pattern_courses_by_day.date
+        }
+        is_expected.to have_attributes(source_attributes)
+      end
+
+    end
+
+  end
+
 end

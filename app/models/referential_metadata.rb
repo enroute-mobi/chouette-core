@@ -173,11 +173,18 @@ class ReferentialMetadata < ApplicationModel
   end
   private :clear_periods
 
+  def self.line_periods
+    current_scope = self.current_scope || all
+    LinePeriods.from_metadatas current_scope
+  end
+
   def self.new_from(from, workbench)
     from.dup.tap do |metadata|
-      metadata.referential_source_id = from.referential_id
       metadata.line_ids = workbench.lines.where(id: metadata.line_ids).pluck(:id)
       metadata.referential_id = nil
+
+      metadata.created_at = from.created_at
+      metadata.updated_at = from.updated_at
     end
   end
 end

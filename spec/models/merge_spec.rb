@@ -397,10 +397,10 @@ RSpec.describe Merge do
 
   class MergeContext
 
-    attr_accessor :merge_method
+    attr_accessor :merge_method, :skip_cloning
 
     def initialize(attributes = {}, &block)
-      attributes.reverse_merge!(merge_method: 'legacy')
+      attributes.reverse_merge!(merge_method: 'legacy', skip_cloning: true)
       attributes.each { |k,v| send "#{k}=", v }
 
       @context_block = block
@@ -429,6 +429,12 @@ RSpec.describe Merge do
         new: new,
         merge_method: merge_method.to_s
       }
+
+      if skip_cloning
+        attributes.delete :new
+        context.workbench.output.update current: new
+      end
+
       Merge.new attributes
     end
 
@@ -474,6 +480,101 @@ RSpec.describe Merge do
 
   %i{legacy experimental}.each do |merge_method|
     context "with #{merge_method} method" do
+
+      describe "Metadatas merge" do
+
+        context "when the merged Referential doesn't already exist" do
+          let(:merge_context) do
+            MergeContext.new(merge_method: merge_method, skip_cloning: false) do
+              line :line1
+              line :line2
+              referential :source, lines: [:line1, :line2]
+            end
+          end
+          let(:merge) { merge_context.merge }
+          let(:source) { merge_context.source }
+
+          let(:original_timestamp)  { Time.now.beginning_of_day }
+          before do
+            source.metadatas.update_all created_at: original_timestamp, updated_at: original_timestamp
+            merge.merge!
+          end
+
+          describe "the merged Referential metadatas" do
+
+            subject { merge.new.metadatas }
+
+            it "describes the same lines x periods than the source Referential" do
+              expect(subject.line_periods).to eq(source.metadatas.line_periods)
+            end
+
+            it "should use the source Referential id as referential_source_id" do
+              is_expected.to all(have_attributes(referential_source_id: source.id))
+            end
+
+            it "should keep the created_at timestamp of source Referential metadatas" do
+              is_expected.to all(have_attributes(created_at: original_timestamp))
+            end
+
+          end
+
+        end
+
+        context "when the merged Referential already exists" do
+          let(:merge_context) do
+            MergeContext.new(merge_method: merge_method) do
+              line :line1
+              line :line2
+              referential :source, lines: [:line1]
+
+              referential :new, lines: [:line2], archived_at: Time.now
+            end
+          end
+          let(:merge) { merge_context.merge }
+          let(:source) { merge_context.source }
+          let(:new) { merge_context.new }
+
+          describe "the merged Referential metadatas" do
+
+            it "describe the lines x periods provided by source and existing metadatas (simple case)" do
+              original_line_periods = new.metadatas.line_periods
+
+              merge.merge!
+
+              expect(merge.new.metadatas.line_periods).to eq(original_line_periods.merge(source.metadatas.line_periods))
+            end
+
+            it "keep unchanged referential_source_id for existing metadatas" do
+              new.metadatas.update_all referential_source_id: 42
+
+              merge.merge!
+
+              existing_metadatas = merge.new.metadatas.where(line_ids: new.metadatas.first.line_ids)
+              expect(existing_metadatas).to all(have_attributes(referential_source_id: 42))
+            end
+
+            it "use the source referential as referential_source_id for new metadatas" do
+              merge.merge!
+
+              new_metadatas = merge.new.metadatas.where.not(line_ids: new.metadatas.first.line_ids)
+              expect(new_metadatas).to all(have_attributes(referential_source_id: source.id))
+            end
+
+            it "should keep the created_at timestamp of source Referential metadatas" do
+              original_timestamp = Time.now.beginning_of_day
+              new.metadatas.update_all created_at: original_timestamp
+
+              merge.merge!
+
+              existing_metadatas = merge.new.metadatas.where(line_ids: new.metadatas.first.line_ids)
+              expect(existing_metadatas).to all(have_attributes(created_at: original_timestamp))
+            end
+
+          end
+
+        end
+
+      end
 
       describe "Route merge" do
 

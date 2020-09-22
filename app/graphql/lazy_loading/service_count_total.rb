@@ -17,9 +17,17 @@ module LazyLoading
     def service_count
       # If filtering params have been provided, then the cache isn't used
       if (@from || @to)
-        return Stat::JourneyPatternCoursesByDate.for_lines(@line_id).between(@from, @to).count
+        args = [@from&.to_date, @to&.to_date].select(&:present?)
+        if (@from && @to)
+          method = :between
+        elsif @from
+          method = :after
+        elsif @to
+          method = :before
+        end
+        return Stat::JourneyPatternCoursesByDate.for_lines(@line_id).send(method, *args).pluck(:count).reduce(:+)
       end
-      
+
       # Check if the record was already loaded:
       loaded_records = @lazy_state[:loaded_ids][@line_id]
       if loaded_records

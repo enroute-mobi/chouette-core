@@ -34,6 +34,7 @@ class PublicationSetup < ApplicationModel
     "#{self.class.ts} #{name}"
   end
 
+  # TODO : CHOUETTE-701 find another way to do use export validation
   def export_options_are_valid
     dummy = new_export
     dummy.validate

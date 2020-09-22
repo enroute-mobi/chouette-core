@@ -345,15 +345,15 @@ RSpec.describe Api::V1::DatasController, type: :controller do
 
           it 'returns the right number of serviceCounts' do
             data = @json['data']['lines']
-            expect(data['nodes'].first["serviceCounts"]["edges"].count).to eq 0
-            expect(data['nodes'].last["serviceCounts"]["edges"].count).to eq 4
+            expect(data['nodes'].first["serviceCounts"]["edges"].count).to eq 4
+            expect(data['nodes'].last["serviceCounts"]["edges"].count).to eq 0
           end
 
           it 'serviceCount returns the sum of JourneyPatternCoursesByDate objects having the same date and line_id' do
             data = @json['data']['lines']
             service_counts = data['nodes'].first["serviceCounts"]["edges"]
             expect(service_counts.first["node"]["count"]).to eq 10
-            expect(service_counts.last["node"]["count"]).to eq 10
+            expect(service_counts.last["node"]["count"]).to eq 5
           end
         end
 
@@ -395,8 +395,8 @@ RSpec.describe Api::V1::DatasController, type: :controller do
 
           it 'returns the right total for serviceCount attribute' do
             data = @json['data']['lines']
-            expect(data['nodes'].first["serviceCount"]).to eq 60
-            expect(data['nodes'].last["serviceCount"]).to eq 65
+            expect(data['nodes'].first["serviceCount"]).to eq 65
+            expect(data['nodes'].last["serviceCount"]).to eq 60
           end
 
         end
@@ -433,7 +433,6 @@ RSpec.describe Api::V1::DatasController, type: :controller do
       context 'stop areas' do
 
         it 'should return lines->routes->stop_areas when asked' do
-          byebug
           query = <<~GQL
           {
             lines {

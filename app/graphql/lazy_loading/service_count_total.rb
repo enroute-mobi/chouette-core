@@ -16,17 +16,7 @@ module LazyLoading
     # Return the loaded record, hitting the database if needed
     def service_count
       # If filtering params have been provided, then the cache isn't used
-      if (@from || @to)
-        args = [@from&.to_date, @to&.to_date].select(&:present?)
-        if (@from && @to)
-          method = :between
-        elsif @from
-          method = :after
-        elsif @to
-          method = :before
-        end
-        return Stat::JourneyPatternCoursesByDate.for_lines(@line_id).send(method, *args).pluck(:count).reduce(:+)
-      end
+      return filtered_service_count if (@from || @to)
 
       # Check if the record was already loaded:
       loaded_records = @lazy_state[:loaded_ids][@line_id]
@@ -36,19 +26,26 @@ module LazyLoading
       else
         # The record hasn't been loaded yet, so hit the database with all pending IDs
         pending_ids = @lazy_state[:pending_ids].to_a
-        service_counts = Stat::JourneyPatternCoursesByDate.for_lines(pending_ids).select('*')
-
-        # Fill and clean the map
-        service_counts.each do |service_count|
-          # puts service_count.inspect
-          @lazy_state[:loaded_ids][service_count.line_id] ||= 0
-          @lazy_state[:loaded_ids][service_count.line_id] += service_count.count
-        end
+        @lazy_state[:loaded_ids] = Stat::JourneyPatternCoursesByDate.for_lines(pending_ids).group(:line_id).sum(:count)
         @lazy_state[:pending_ids].clear
-
         # Now, get the matching lines from the loaded result:
         @lazy_state[:loaded_ids][@line_id]
       end
     end
+
+    private
+
+    def filtered_service_count
+      args = [@from&.to_date, @to&.to_date].select(&:present?)
+      if (@from && @to)
+        method = :between
+      elsif @from
+        method = :after
+      elsif @to
+        method = :before
+      end
+      Stat::JourneyPatternCoursesByDate.for_lines(@line_id).send(method, *args).pluck(:count).reduce(:+)
+    end
+
   end
 end

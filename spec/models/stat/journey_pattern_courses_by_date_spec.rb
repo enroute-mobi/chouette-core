@@ -50,7 +50,7 @@ RSpec.describe Stat::JourneyPatternCoursesByDate, type: :model do
   describe '#populate_for_journey_pattern' do
     it 'should create nothing' do
       expect { Stat::JourneyPatternCoursesByDate.populate_for_journey_pattern(journey_pattern) }.to_not(
-        change { Stat::JourneyPatternCousesByDate.count }
+        change { Stat::JourneyPatternCoursesByDate.count }
       )
     end
 

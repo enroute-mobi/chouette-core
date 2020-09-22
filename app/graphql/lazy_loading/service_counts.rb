@@ -16,21 +16,7 @@ module LazyLoading
     # Return the loaded record, hitting the database if needed
     def service_counts
       # If filtering params have been provided, then the cache isn't used
-      if (@from || @to)
-        if (@from && @to)
-          result = Stat::JourneyPatternCoursesByDate.for_lines(@line_id).between(@from.to_date, @to.to_date).select('*')
-        elsif @from
-          result = Stat::JourneyPatternCoursesByDate.for_lines(@line_id).after(@from.to_date).select('*')
-        elsif @to
-          result = Stat::JourneyPatternCoursesByDate.for_lines(@line_id).before(@to.to_date).select('*')
-        end
-        # Group result by date (in case of multiple routes), return the sum of every serviceCount occuring the same date
-        return result.group_by(&:date).values.map do |el|
-          el.first.assign_attributes(count:el.pluck(:count).reduce(:+))
-          el.first
-        end
-
-      end
+      return filtered_service_counts if (@from || @to)
 
       loaded_records = @lazy_state[:loaded_ids][@line_id]&.values
       if loaded_records
@@ -56,5 +42,24 @@ module LazyLoading
         @lazy_state[:loaded_ids][@line_id].values
       end
     end
+
+    private
+
+    def filtered_service_counts
+      args = [@from&.to_date, @to&.to_date].select(&:present?)
+      if (@from && @to)
+        method = :between
+      elsif @from
+        method = :after
+      elsif @to
+        method = :before
+      end
+      # Group result by date (in case of multiple routes), return the sum of every serviceCount occuring the same date
+      Stat::JourneyPatternCoursesByDate.for_lines(@line_id).send(method, *args).group_by(&:date).values.map do |el|
+        el.first.assign_attributes(count:el.pluck(:count).reduce(:+))
+        el.first
+      end
+    end
+
   end
 end

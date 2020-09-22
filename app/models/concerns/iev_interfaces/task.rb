@@ -69,7 +69,10 @@ module IevInterfaces::Task
         'created_at < ? AND status NOT IN (?)',
         4.hours.ago,
         finished_statuses
-      ).update_all(status: 'aborted')
+      ).each do |task|
+        Rails.logger.error("#{task.class.name} #{task.name} takes too much time and is aborted")
+        task.update_attribute(:status, "aborted")
+      end
     end
   end
 

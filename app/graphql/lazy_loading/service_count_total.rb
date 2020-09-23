@@ -1,50 +1,73 @@
 module LazyLoading
   class ServiceCountTotal
-    def initialize(query_ctx, line_id, from, to)
-      @line_id = line_id
-      @from = from
-      @to = to
-      # Initialize the loading state for this query or get the previously-initiated state
-      @lazy_state = query_ctx[:lazy_find_line_service_counts] ||= {
-        pending_ids: Set.new,
-        loaded_ids: {},
-      }
-      # Register this ID to be loaded later:
-      @lazy_state[:pending_ids] << line_id
+
+    attr_reader :loader, :line_scope
+
+    def initialize(query_context, line_id, from, to)
+      @line_scope = LineScope.new line_id, from, to
+      @loader = self.class.find_loader query_context
+
+      loader.add line_scope
     end
 
-    # Return the loaded record, hitting the database if needed
     def service_count
-      # If filtering params have been provided, then the cache isn't used
-      return filtered_service_count if (@from || @to)
+      loader.load
+      line_scope.value
+    end
 
-      # Check if the record was already loaded:
-      loaded_records = @lazy_state[:loaded_ids][@line_id]
-      if loaded_records
-        # The pending IDs were already loaded so return the result of that previous load
-        loaded_records
-      else
-        # The record hasn't been loaded yet, so hit the database with all pending IDs
-        pending_ids = @lazy_state[:pending_ids].to_a
-        @lazy_state[:loaded_ids] = Stat::JourneyPatternCoursesByDate.for_lines(pending_ids).group(:line_id).sum(:count)
-        @lazy_state[:pending_ids].clear
-        # Now, get the matching lines from the loaded result:
-        @lazy_state[:loaded_ids][@line_id]
+    def self.find_loader(query_context)
+      query_context[:lazy_find_line_service_counts_loader] ||=
+      begin
+        referential = query_context[:target_referential]
+        Loader.new referential
       end
     end
 
-    private
+    class LineScope
 
-    def filtered_service_count
-      args = [@from&.to_date, @to&.to_date].select(&:present?)
-      if (@from && @to)
-        method = :between
-      elsif @from
-        method = :after
-      elsif @to
-        method = :before
+      def initialize(line_id, from, to)
+        @line_id, @from, @to = line_id, from&.to_date, to&.to_date
       end
-      Stat::JourneyPatternCoursesByDate.for_lines(@line_id).send(method, *args).pluck(:count).reduce(:+)
+
+      attr_reader :line_id, :from, :to
+      attr_accessor :value
+
+    end
+
+    class Loader
+
+      def initialize(referential)
+        @referential = referential
+      end
+
+      def add(scope)
+        scopes << scope
+      end
+
+      def scopes
+        @scopes ||= []
+      end
+
+      def load
+        return if @loaded
+
+        scopes.group_by { |scope| [ scope.from, scope.to ] }.each do |period, scopes|
+          from, to = period
+          line_ids = scopes.map(&:line_id)
+
+          # For serviceCount
+          line_values = @referential.service_counts.for_lines(line_ids).between(from, to).group(:line_id).sum(:count)
+
+          line_values.each do |line_id, count|
+            scope = scopes.find { |s| s.line_id == line_id }
+            scope.value = count
+          end
+
+        end
+
+        @loaded = true
+      end
+
     end
 
   end

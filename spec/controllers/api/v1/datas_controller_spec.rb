@@ -352,8 +352,8 @@ RSpec.describe Api::V1::DatasController, type: :controller do
           it 'serviceCount returns the sum of JourneyPatternCoursesByDate objects having the same date and line_id' do
             data = @json['data']['lines']
             service_counts = data['nodes'].first["serviceCounts"]["edges"]
-            expect(service_counts.first["node"]["count"]).to eq 10
-            expect(service_counts.last["node"]["count"]).to eq 5
+            expect(service_counts.find{|e| e["node"]["date"]=="2022-06-01"}["node"]["count"]).to eq 10
+            expect(service_counts.find{|e| e["node"]["date"]=="2022-05-01"}["node"]["count"]).to eq 5
           end
         end
 

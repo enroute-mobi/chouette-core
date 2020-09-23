@@ -9,9 +9,18 @@ module Stat
     scope :for_lines, ->(line_ids) { where(line_id: line_ids) }
     scope :for_route, ->(route) { where(route_id: route.id) }
 
-    scope :between, ->(start_date, end_date) { where("date BETWEEN ? AND ?", start_date, end_date) }
     scope :after, ->(start_date) { where('date >= ?', start_date) }
     scope :before, ->(end_date) { where('date <= ?', end_date) }
+
+    scope :between, ->(start_date, end_date) do
+      if start_date && end_date
+        where "date BETWEEN ? AND ?", start_date, end_date
+      elsif start_date
+        after start_date
+      elsif end_date
+        before end_date
+      end
+    end
 
     def self.compute_for_referential(referential)
       Chouette::Benchmark.measure "journey_pattern_courses_by_date.referential", referential: referential.id do

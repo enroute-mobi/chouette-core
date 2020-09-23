@@ -1,64 +1,71 @@
 module LazyLoading
   class ServiceCounts
-    def initialize(query_ctx, line_id, from, to)
-      @line_id = line_id
-      @from = from
-      @to = to
-      # Initialize the loading state for this query or get the previously-initiated state
-      @lazy_state = query_ctx[:lazy_find_line_service_counts] ||= {
-        pending_ids: Set.new,
-        loaded_ids: {},
-      }
-      # Register this ID to be loaded later:
-      @lazy_state[:pending_ids] << line_id
+
+    attr_reader :loader, :line_scope
+
+    def initialize(query_context, line_id, from, to)
+      @line_scope = LineScope.new line_id, from, to
+      @loader = self.class.find_loader query_context
+
+      loader.add line_scope
     end
 
-    # Return the loaded record, hitting the database if needed
     def service_counts
-      # If filtering params have been provided, then the cache isn't used
-      return filtered_service_counts if (@from || @to)
+      loader.load
+      line_scope.value
+    end
 
-      loaded_records = @lazy_state[:loaded_ids][@line_id]&.values
-      if loaded_records
-        # The pending IDs were already loaded so return the result of that previous load
-        loaded_records
-      else
-        # The record hasn't been loaded yet, so hit the database with all pending IDs
-        pending_ids = @lazy_state[:pending_ids].to_a
-        service_counts = Stat::JourneyPatternCoursesByDate.for_lines(pending_ids).select('*')
+    def self.find_loader(query_context)
+      query_context[:lazy_find_line_service_counts_loader] ||=
+      begin
+        referential = query_context[:target_referential]
+        Loader.new referential
+      end
+    end
 
-        # Fill and clean the map
-        service_counts.each do |service_count|
-          @lazy_state[:loaded_ids][service_count.line_id] ||= {}
+    class LineScope
 
-          if @lazy_state[:loaded_ids][service_count.line_id][service_count.date]
-            @lazy_state[:loaded_ids][service_count.line_id][service_count.date].count = @lazy_state[:loaded_ids][service_count.line_id][service_count.date].count + service_count.count
-          else
-            @lazy_state[:loaded_ids][service_count.line_id][service_count.date] = service_count
+      def initialize(line_id, from, to)
+        @line_id, @from, @to = line_id, from&.to_date, to&.to_date
+      end
+
+      attr_reader :line_id, :from, :to
+      attr_accessor :value
+
+    end
+
+    class Loader
+
+      def initialize(referential)
+        @referential = referential
+      end
+
+      def add(scope)
+        scopes << scope
+      end
+
+      def scopes
+        @scopes ||= []
+      end
+
+      def load
+        return if @loaded
+        scopes.each{|s| s.value = []}
+        scopes.group_by { |scope| [ scope.from, scope.to ] }.each do |period, period_scopes|
+          from, to = period
+          line_ids = scopes.map(&:line_id)
+
+          line_values = @referential.service_counts.for_lines(line_ids).between(from, to).group(:line_id, :date).sum(:count)
+
+          line_values.each do |(line_id, date), count|
+            scope = scopes.find { |s| s.line_id == line_id }
+            scope.value << {date: date, count: count}
           end
         end
-        @lazy_state[:pending_ids].clear
-        # Now, get the matching lines from the loaded result:
-        @lazy_state[:loaded_ids][@line_id].values
-      end
-    end
 
-    private
+        @loaded = true
+      end
 
-    def filtered_service_counts
-      args = [@from&.to_date, @to&.to_date].select(&:present?)
-      if (@from && @to)
-        method = :between
-      elsif @from
-        method = :after
-      elsif @to
-        method = :before
-      end
-      # Group result by date (in case of multiple routes), return the sum of every serviceCount occuring the same date
-      Stat::JourneyPatternCoursesByDate.for_lines(@line_id).send(method, *args).group_by(&:date).values.map do |el|
-        el.first.assign_attributes(count:el.pluck(:count).reduce(:+))
-        el.first
-      end
     end
 
   end

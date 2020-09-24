@@ -251,6 +251,15 @@ RSpec.describe Api::V1::DatasController, type: :controller do
         allow_any_instance_of(ReferentialSuite).to receive(:current).and_return context.referential
       end
 
+      let(:graphql_response) do
+        post :graphql, params: {slug: publication_api.slug, query: query}
+        JSON.parse response.body
+      end
+
+      let(:line_nodes) { graphql_response['data']['lines']['nodes'] }
+      let(:first_line_node) { line_nodes.find { |n| n["objectid"] == context.line(:first).objectid } }
+      let(:second_line_node) { line_nodes.find { |n| n["objectid"] == context.line(:second).objectid } }
+
       context 'serviceCounts' do
         before do
           [:r_first, :r_second].each do |route_s|
@@ -263,7 +272,7 @@ RSpec.describe Api::V1::DatasController, type: :controller do
         end
 
         describe 'Lines -> ServiceCounts (Basic)' do
-          let (:query) { <<~GQL
+          let(:query) { <<~GQL
             {
               lines {
                 nodes {
@@ -281,32 +290,19 @@ RSpec.describe Api::V1::DatasController, type: :controller do
             GQL
           }
 
-          before do
-            post :graphql, params: {slug: publication_api.slug, query: query}
-            @json = JSON.parse response.body
-          end
-
           it 'returns the right number of lines' do
-            data = @json['data']['lines']
-            expect(data['nodes'].count).to eq 2
-          end
-
-          it 'returns the right number of serviceCounts' do
-            data = @json['data']['lines']
-            expect(data['nodes'].first["serviceCounts"]["nodes"].count).to eq 6
+            expect(line_nodes.count).to eq 2
           end
 
           it 'serviceCount returns the sum of JourneyPatternCoursesByDate objects having the same date and line_id' do
-            data = @json['data']['lines']
-            service_counts = data['nodes'].first["serviceCounts"]["nodes"]
-            expect(service_counts.first["count"]).to eq 10
+            expect(second_line_node["serviceCounts"]["nodes"].map{ |n| n["count"]}).to eq [10, 10, 10, 10, 10, 10]
           end
 
         end
 
         describe 'Lines -> ServiceCounts (Filters)' do
 
-          let (:query) { <<~GQL
+          let(:query) { <<~GQL
             {
               lines {
                 nodes {
@@ -334,32 +330,25 @@ RSpec.describe Api::V1::DatasController, type: :controller do
 
           before do
             create :stat_journey_pattern_courses_by_date, date: "2022-05-01".to_date, line: context.line(:second), route: context.route(:r_third), count: 5
-            post :graphql, params: {slug: publication_api.slug, query: query}
-            @json = JSON.parse response.body
           end
 
           it 'returns the right number of lines' do
-            data = @json['data']['lines']
-            expect(data['nodes'].count).to eq 2
+            expect(line_nodes.count).to eq 2
           end
 
           it 'returns the right number of serviceCounts' do
-            data = @json['data']['lines']
-            expect(data['nodes'].first["serviceCounts"]["edges"].count).to eq 4
-            expect(data['nodes'].last["serviceCounts"]["edges"].count).to eq 0
+            expect(second_line_node["serviceCounts"]["edges"].count).to eq 4
+            expect(first_line_node["serviceCounts"]).to be_nil
           end
 
           it 'serviceCount returns the sum of JourneyPatternCoursesByDate objects having the same date and line_id' do
-            data = @json['data']['lines']
-            service_counts = data['nodes'].first["serviceCounts"]["edges"]
+            service_counts = second_line_node["serviceCounts"]["edges"]
             expect(service_counts.find{|e| e["node"]["date"]=="2022-06-01"}["node"]["count"]).to eq 10
             expect(service_counts.find{|e| e["node"]["date"]=="2022-05-01"}["node"]["count"]).to eq 5
           end
         end
 
       end
-
-
 
       context 'serviceCountTotal' do
 
@@ -374,7 +363,7 @@ RSpec.describe Api::V1::DatasController, type: :controller do
         end
 
         describe 'Lines -> ServiceCountTotal (Basic)' do
-          let (:query) { <<~GQL
+          let(:query) { <<~GQL
             {
               lines {
                 nodes {
@@ -389,20 +378,17 @@ RSpec.describe Api::V1::DatasController, type: :controller do
 
           before do
             create :stat_journey_pattern_courses_by_date, date: "2022-05-01".to_date, line: context.line(:second), route: context.route(:r_third), count: 5
-            post :graphql, params: {slug: publication_api.slug, query: query}
-            @json = JSON.parse response.body
           end
 
           it 'returns the right total for serviceCount attribute' do
-            data = @json['data']['lines']
-            expect(data['nodes'].first["serviceCount"]).to eq 65
-            expect(data['nodes'].last["serviceCount"]).to eq 60
+            expect(first_line_node["serviceCount"]).to eq 60
+            expect(second_line_node["serviceCount"]).to eq 65
           end
 
         end
 
         describe 'Lines -> ServiceCountTotal (Filters)' do
-          let (:query) { <<~GQL
+          let(:query) { <<~GQL
             {
               lines {
                 nodes {
@@ -415,15 +401,9 @@ RSpec.describe Api::V1::DatasController, type: :controller do
             GQL
           }
 
-          before do
-            post :graphql, params: {slug: publication_api.slug, query: query}
-            @json = JSON.parse response.body
-          end
-
           it 'returns the right total for serviceCount attribute' do
-            data = @json['data']['lines']
-            expect(data['nodes'].first["serviceCount"]).to eq 40
-            expect(data['nodes'].last["serviceCount"]).to eq 10
+            expect(first_line_node["serviceCount"]).to eq 10
+            expect(second_line_node["serviceCount"]).to eq 40
           end
 
         end

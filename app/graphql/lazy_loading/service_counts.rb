@@ -59,6 +59,7 @@ module LazyLoading
 
           line_values.each do |(line_id, date), count|
             scope = period_scopes.find { |s| s.line_id == line_id }
+            scope.value ||= []
             scope.value << { date: date, count: count }
           end
         end

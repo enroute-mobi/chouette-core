@@ -55,7 +55,7 @@ module LazyLoading
           from, to = period
           line_ids = scopes.map(&:line_id)
 
-          line_values = @referential.service_counts.for_lines(line_ids).between(from, to).group(:line_id, :date).sum(:count)
+          line_values = @referential.service_counts.for_lines(line_ids).between(from, to).where.not(count: 0).group(:line_id, :date).having("sum(count) > 0").order(:date).sum(:count)
 
           line_values.each do |(line_id, date), count|
             scope = scopes.find { |s| s.line_id == line_id }

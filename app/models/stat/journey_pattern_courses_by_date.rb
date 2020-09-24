@@ -12,7 +12,7 @@ module Stat
     scope :after, ->(start_date) { where('date >= ?', start_date) }
     scope :before, ->(end_date) { where('date <= ?', end_date) }
 
-    scope :between, ->(start_date, end_date) do
+    scope :between, lambda { |start_date, end_date|
       if start_date && end_date
         where "date BETWEEN ? AND ?", start_date, end_date
       elsif start_date
@@ -20,7 +20,7 @@ module Stat
       elsif end_date
         before end_date
       end
-    end
+    }
 
     def self.compute_for_referential(referential)
       Chouette::Benchmark.measure "journey_pattern_courses_by_date.referential", referential: referential.id do

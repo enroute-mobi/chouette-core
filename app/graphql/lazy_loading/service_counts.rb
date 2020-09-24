@@ -17,10 +17,10 @@ module LazyLoading
 
     def self.find_loader(query_context)
       query_context[:lazy_find_line_service_counts_loader] ||=
-      begin
-        referential = query_context[:target_referential]
-        Loader.new referential
-      end
+        begin
+          referential = query_context[:target_referential]
+          Loader.new referential
+        end
     end
 
     class LineScope
@@ -50,16 +50,16 @@ module LazyLoading
 
       def load
         return if @loaded
-        scopes.each{|s| s.value = []}
         scopes.group_by { |scope| [ scope.from, scope.to ] }.each do |period, period_scopes|
           from, to = period
-          line_ids = scopes.map(&:line_id)
+          line_ids = period_scopes.map(&:line_id)
 
-          line_values = @referential.service_counts.for_lines(line_ids).between(from, to).where.not(count: 0).group(:line_id, :date).having("sum(count) > 0").order(:date).sum(:count)
+          line_values = @referential.service_counts.for_lines(line_ids).between(from, to).where.not(count: 0).
+                          group(:line_id, :date).having("sum(count) > 0").order(:date).sum(:count)
 
           line_values.each do |(line_id, date), count|
-            scope = scopes.find { |s| s.line_id == line_id }
-            scope.value << {date: date, count: count}
+            scope = period_scopes.find { |s| s.line_id == line_id }
+            scope.value << { date: date, count: count }
           end
         end
 

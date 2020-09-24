@@ -116,6 +116,7 @@ en:
           <<: *attrs
           duration: Duration (in days)
           prefer_referent_stop_area: Prefer Referent Stop Areas
+          ignore_single_stop_station: Ignore stations with a single stop
           line_code: Line
           export_type: Export subtype
           export_type_collection:

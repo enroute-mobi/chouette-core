@@ -16,4 +16,6 @@ class ChouetteSchema < GraphQL::Schema
   lazy_resolve(LazyLoading::LineStopAreas, :stop_areas)
   lazy_resolve(LazyLoading::RouteStopAreas, :stop_areas)
   lazy_resolve(LazyLoading::Lines, :lines)
+  lazy_resolve(LazyLoading::ServiceCounts, :service_counts)
+  lazy_resolve(LazyLoading::ServiceCountTotal, :service_count)
 end

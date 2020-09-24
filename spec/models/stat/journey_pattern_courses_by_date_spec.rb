@@ -19,6 +19,34 @@ RSpec.describe Stat::JourneyPatternCoursesByDate, type: :model do
     journey_pattern.route.update line: line
   end
 
+  describe 'using scopes' do
+    before do
+      ["2020-01-01", "2020-06-01", "2020-12-01", "2021-01-01"].each{ |d| create :stat_journey_pattern_courses_by_date, date: d.to_date }
+    end
+    context '#between' do
+      let(:filtered_jpcbd_list) { Stat::JourneyPatternCoursesByDate.between("2020-05-01".to_date, "2020-12-01".to_date) }
+
+      it 'should return JourneyPatternCoursesByDate items between the selected dates' do
+        expect( filtered_jpcbd_list.count ).to eq 2
+      end
+    end
+
+    context '#before' do
+      let(:filtered_jpcbd_list) { Stat::JourneyPatternCoursesByDate.after("2020-05-01".to_date) }
+      it 'should return JourneyPatternCoursesByDate items after the selected date' do
+        expect( filtered_jpcbd_list.count ).to eq 3
+      end
+    end
+
+    context '#after' do
+      let(:filtered_jpcbd_list) { Stat::JourneyPatternCoursesByDate.before("2020-05-01".to_date) }
+
+      it 'should return JourneyPatternCoursesByDate items before the selected date' do
+        expect( filtered_jpcbd_list.count ).to eq 1
+      end
+    end
+  end
+
   describe '#populate_for_journey_pattern' do
     it 'should create nothing' do
       expect { Stat::JourneyPatternCoursesByDate.populate_for_journey_pattern(journey_pattern) }.to_not(

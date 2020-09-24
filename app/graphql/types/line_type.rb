@@ -32,15 +32,33 @@ module Types
     end
 
     field :routes, Types::RouteType.connection_type, null: true,
-      description: "The Line's Routes"
+    description: "The Line's Routes"
     def routes
       LazyLoading::Routes.new(context, object.id)
     end
 
     field :stop_areas, Types::StopAreaType.connection_type, null: true,
-      description: "The Line's StopAreas"
+    description: "The Line's StopAreas"
     def stop_areas
       LazyLoading::LineStopAreas.new(context, object.id)
     end
+
+    field :service_counts, Types::ServiceCountType.connection_type, null: true, max_page_size: 20 do
+      argument :from, String, required: false
+      argument :to, String, required: false
+    end
+    # description: "Service Count for Line"
+    def service_counts(from: nil, to: nil)
+      LazyLoading::ServiceCounts.new(context, object.id, from, to)
+    end
+
+    field :service_count, Integer, null: true do
+      argument :from, String, required: false
+      argument :to, String, required: false
+    end
+    def service_count(from: nil, to: nil)
+      LazyLoading::ServiceCountTotal.new(context, object.id, from, to)
+    end
+
   end
 end

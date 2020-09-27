@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 class ReferentialSchema
+  include Measurable
 
   PUBLIC_SCHEMA = "public"
 
@@ -85,8 +86,13 @@ class ReferentialSchema
   end
 
   def clone_to(target)
-    cloned_tables.each { |table| table.clone_to target }
+    cloned_tables.each do |table|
+      measure table.name do
+        table.clone_to target
+      end
+    end
   end
+  measure :clone_to
 
   def reduce_tables
     excluded_tables.each(&:drop)
@@ -102,6 +108,7 @@ class ReferentialSchema
   end
 
   class Table
+    include Measurable
 
     def initialize(schema, name)
       @schema = schema
@@ -149,6 +156,7 @@ class ReferentialSchema
 
       reset_pk_sequence
     end
+    measure :copy_to, :copy_from
 
     def reset_pk_sequence
       connection.reset_pk_sequence! full_name
@@ -159,7 +167,7 @@ class ReferentialSchema
     end
 
     def empty?
-      count == 0
+      connection.select_value("SELECT count(*) FROM (SELECT 1 FROM #{full_name} LIMIT 1) AS t") == 0
     end
 
     def clone_to(target)

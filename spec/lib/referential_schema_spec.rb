@@ -113,7 +113,6 @@ RSpec.describe ReferentialSchema do
 
   end
 
-
   describe "#clone_to" do
 
     let(:model_count) { 10 }
@@ -155,6 +154,41 @@ RSpec.describe ReferentialSchema do
       }.from(1).to(model_count)
     end
 
+
+  end
+
+  describe ReferentialSchema::Table do
+
+    let(:context) do
+      Chouette.create do
+        referential do
+          10.times { vehicle_journey }
+        end
+      end
+    end
+
+    let(:referential) { context.referential }
+    let(:table) { referential.schema.table("vehicle_journeys") }
+
+    def truncate_table
+      referential.switch { referential.vehicle_journeys.delete_all }
+    end
+
+    describe "#empty?" do
+
+      it "returns false when the table has records, true if the table is empty" do
+        expect { truncate_table }.to change(table, :empty?).from(false).to(true)
+      end
+
+    end
+
+    describe "#count" do
+
+      it "returns the number of records in the table" do
+        expect { truncate_table }.to change(table, :count).from(10).to(0)
+      end
+
+    end
 
   end
 

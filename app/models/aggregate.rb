@@ -4,6 +4,8 @@ class Aggregate < ApplicationModel
   include OperationSupport
   include NotifiableSupport
 
+  include Measurable
+
   belongs_to :workgroup
   has_many :compliance_check_sets, -> { where(parent_type: "Aggregate") }, foreign_key: :parent_id, dependent: :destroy
 
@@ -13,27 +15,6 @@ class Aggregate < ApplicationModel
 
   def parent
     workgroup
-  end
-
-  def self.profile(referentials=nil, profile_options={})
-    referentials ||= [Workgroup.first.output.current]
-    referentials.compact!
-
-    raise 'Missing referential' unless referentials.present?
-
-    aggregate = self.new(referentials: referentials, workgroup: Workgroup.first)
-    aggregate.profile = true
-    aggregate.profile_options = profile_options
-    aggregate.name = "Aggregate profile #{Time.now}"
-
-    aggregate.save!
-
-    aggregate.profile_tag 'aggregate!' do
-      aggregate.aggregate!
-    end
-
-    pp aggregate.profile_stats
-    aggregate
   end
 
   def rollback!
@@ -63,18 +44,20 @@ class Aggregate < ApplicationModel
   alias run aggregate
 
   def aggregate!
-    prepare_new
+    measure "aggregate", aggregate: id do
+      prepare_new
 
-    profile_tag 'copy_data' do
-      referentials.each do |source|
-        ReferentialCopy.new(source: source, target: new, profiler: self).copy!
+      measure 'referential_copies' do
+        referentials.each do |source|
+          ReferentialCopy.new(source: source, target: new).copy!
+        end
       end
-    end
 
-    if after_aggregate_compliance_control_set.present?
-      create_after_aggregate_compliance_check_set
-    else
-      save_current
+      if after_aggregate_compliance_control_set.present?
+        create_after_aggregate_compliance_check_set
+      else
+        save_current
+      end
     end
   rescue => e
     Chouette::Safe.capture "Aggregate ##{id} failed", e
@@ -110,39 +93,38 @@ class Aggregate < ApplicationModel
   private
 
   def prepare_new
-    profile_tag 'prepare_new!' do
-      Rails.logger.debug "Create a new output"
-      # In the unique case, the referential created can't be linked to any workbench
-      attributes = {
-        organisation: workgroup.owner,
-        prefix: "aggregate_#{id}",
-        line_referential: workgroup.line_referential,
-        stop_area_referential: workgroup.stop_area_referential,
-        objectid_format: referentials.first.objectid_format,
-        workbench: nil
-      }
-      new = workgroup.output.referentials.new attributes
-      new.referential_suite = output
-      new.slug = "aggregate_#{id}"
-      new.name = I18n.t("aggregates.referential_name", date: I18n.l(created_at, format: :short_with_time))
+    Rails.logger.debug "Create a new output"
+    # In the unique case, the referential created can't be linked to any workbench
+    attributes = {
+      organisation: workgroup.owner,
+      prefix: "aggregate_#{id}",
+      line_referential: workgroup.line_referential,
+      stop_area_referential: workgroup.stop_area_referential,
+      objectid_format: referentials.first.objectid_format,
+      workbench: nil
+    }
+    new = workgroup.output.referentials.new attributes
+    new.referential_suite = output
+    new.slug = "aggregate_#{id}"
+    new.name = I18n.t("aggregates.referential_name", date: I18n.l(created_at, format: :short_with_time))
 
-      unless new.valid?
-        Rails.logger.error "New referential isn't valid : #{new.errors.inspect}"
-      end
-
-      begin
-        new.save!
-      rescue
-        Rails.logger.debug "Errors on new referential: #{new.errors.messages}"
-        raise
-      end
-
-      new.pending!
-
-      output.update new: new
-      update new: new
+    unless new.valid?
+      Rails.logger.error "New referential isn't valid : #{new.errors.inspect}"
     end
+
+    begin
+      new.save!
+    rescue
+      Rails.logger.debug "Errors on new referential: #{new.errors.messages}"
+      raise
+    end
+
+    new.pending!
+
+    output.update new: new
+    update new: new
   end
+  measure :prepare_new
 
   def after_aggregate_compliance_control_set
     @after_aggregate_compliance_control_set ||= workgroup.compliance_control_set(:after_aggregate)

@@ -179,17 +179,25 @@ RSpec.describe ReferentialCopy do
         end
       end
       it "should copy the routing_constraint_zones" do
-        rcz_count = referential.switch { route.reload; route.routing_constraint_zones.count }
+        rcz_count = referential.switch { referential.routing_constraint_zones.count }
         stop_areas = {}
         referential.switch do
+          route.reload
           route.routing_constraint_zones.each do |rcz|
             stop_areas[rcz.objectid] = rcz.stop_points.map{|sp| sp.stop_area.objectid}
           end
         end
-        expect{ referential_copy.send(:copy_route, route) }.to change{ target.switch{ Chouette::RoutingConstraintZone.count } }.by rcz_count
+
+        expect {
+          referential_copy.send(:copy_route, route)
+        }.to change {
+          target.switch { referential.routing_constraint_zones.count }
+        }.by(rcz_count)
+
         target.switch do
-          new_route = Chouette::Route.last
+          new_route = target.routes.last
           expect(new_route.routing_constraint_zones.count).to eq rcz_count
+
           new_route.routing_constraint_zones.each do |rcz|
             expect(rcz.stop_points.map{|sp| sp.stop_area.objectid}).to eq stop_areas[rcz.objectid]
           end

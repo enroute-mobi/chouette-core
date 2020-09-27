@@ -1,22 +1,17 @@
 class ReferentialCopy
   extend Enumerize
   include ReferentialCopyHelpers
-  include ProfilingSupport
+  include Measurable
 
   attr_accessor :source, :target, :status, :last_error
 
   enumerize :status, in: %w[new pending successful failed running], default: :new
 
   def initialize(opts={})
-    @profiler = opts[:profiler]
     @source = opts[:source]
     @target = opts[:target]
     @opts = opts
     @lines = opts[:lines]
-  end
-
-  def logger
-    @logger ||= Rails.logger
   end
 
   def skip_metadatas?
@@ -31,7 +26,7 @@ class ReferentialCopy
   end
 
   def copy(raise_error: false)
-    profile_tag :copy do
+    measure "copy", source: source.id, target: target.id do
       CustomFieldsSupport.within_workgroup(workgroup) do
         copy_resource(:metadatas) unless skip_metadatas?
         copy_resource(:time_tables)
@@ -56,39 +51,47 @@ class ReferentialCopy
   end
 
   def copy_with_inserters
-    # copy_inserter = CopyInserter.new(target)
-
     source.switch do
       vehicle_journeys = source.vehicle_journeys.joins(:route).where("routes.line_id" => lines)
 
-      CustomFieldsSupport.within_workgroup(workgroup) do
-        vehicle_journeys.find_each do |vehicle_journey|
-          referential_inserter.vehicle_journeys << vehicle_journey
+      measure "vehicle_journeys" do
+        CustomFieldsSupport.within_workgroup(workgroup) do
+          vehicle_journeys.find_each do |vehicle_journey|
+            referential_inserter.vehicle_journeys << vehicle_journey
+          end
         end
       end
 
-      vehicle_journey_at_stops = source.vehicle_journey_at_stops.where(vehicle_journey: vehicle_journeys)
+      measure "vehicle_journey_at_stops" do
+        vehicle_journey_at_stops = source.vehicle_journey_at_stops.where(vehicle_journey: vehicle_journeys)
 
-      vehicle_journey_at_stops.find_each do |vehicle_journey_at_stop|
-        referential_inserter.vehicle_journey_at_stops << vehicle_journey_at_stop
+        vehicle_journey_at_stops.find_each do |vehicle_journey_at_stop|
+          referential_inserter.vehicle_journey_at_stops << vehicle_journey_at_stop
+        end
       end
 
-      time_tables_vehicle_journeys = Chouette::TimeTablesVehicleJourney.where(vehicle_journey: vehicle_journeys)
+      measure "time_tables_vehicle_journeys" do
+        time_tables_vehicle_journeys = Chouette::TimeTablesVehicleJourney.where(vehicle_journey: vehicle_journeys)
 
-      time_tables_vehicle_journeys.find_each_without_primary_key do |model|
-        referential_inserter.vehicle_journey_time_table_relationships << model
+        time_tables_vehicle_journeys.find_each_without_primary_key do |model|
+          referential_inserter.vehicle_journey_time_table_relationships << model
+        end
       end
 
-      vehicle_journey_purchase_window_relationship = Chouette::VehicleJourneyPurchaseWindowRelationship.where(vehicle_journey: vehicle_journeys)
+      measure "vehicle_journey_purchase_window_relationships" do
+        vehicle_journey_purchase_window_relationships = Chouette::VehicleJourneyPurchaseWindowRelationship.where(vehicle_journey: vehicle_journeys)
 
-      vehicle_journey_purchase_window_relationship.find_each_without_primary_key do |model|
-        referential_inserter.vehicle_journey_purchase_window_relationships << model
+        vehicle_journey_purchase_window_relationships.find_each_without_primary_key do |model|
+          referential_inserter.vehicle_journey_purchase_window_relationships << model
+        end
       end
 
-      referential_codes = source.codes.where(resource: vehicle_journeys)
+      measure "referential_codes" do
+        referential_codes = source.codes.where(resource: vehicle_journeys)
 
-      referential_codes.find_each do |code|
-        referential_inserter.codes << code
+        referential_codes.find_each do |code|
+          referential_inserter.codes << code
+        end
       end
     end
 
@@ -99,51 +102,14 @@ class ReferentialCopy
     copy raise_error: true
   end
 
-  def self.profile(source_id, target_id, profile_options={})
-    copy = self.new(source: Referential.find(source_id), target: Referential.find(target_id))
-    copy.profile = true
-    copy.profile_options = profile_options
-
-    copy.target.switch do
-      [
-        Chouette::VehicleJourneyAtStop,
-        Chouette::VehicleJourney,
-        Chouette::JourneyPattern,
-        Chouette::TimeTable,
-        Chouette::TimeTableDate,
-        Chouette::TimeTablePeriod,
-        Chouette::PurchaseWindow,
-        Chouette::StopPoint,
-        Chouette::Route,
-        Chouette::Footnote
-      ].each do |klass|
-        klass.delete_all
-      end
-    end
-
-    if profile_options[:operations]
-      copy.profile_tag 'copy' do
-        copy.source.switch do
-          ActiveRecord::Base.cache do
-            profile_options[:operations].each do |op|
-              if op.is_a?(Array)
-                copy.copy_resource op.first, *op[1..-1]
-              else
-                copy.copy_resource op
-              end
-            end
-          end
-        end
-      end
-    else
-      copy.copy
-    end
-
-    copy
-  end
-
   def copy_resource(resource_name, *params)
-    profile_tag "copy_#{resource_name}" do
+    measure_attributes = {}
+    unless params.blank?
+      line = params.first
+      measure_attributes[:line] = line&.id
+    end
+
+    measure "copy_#{resource_name}", measure_attributes do
       send "copy_#{resource_name}", *params
     end
   end
@@ -300,9 +266,7 @@ class ReferentialCopy
     target.switch do
       new_route = line.routes.build attributes
 
-      profile_tag 'stop_points' do
-        copy_collection route, new_route, :stop_points
-      end
+      copy_collection route, new_route, :stop_points
 
       new_route.opposite_route_id = matching_id(opposite_route)
 
@@ -313,45 +277,37 @@ class ReferentialCopy
       record_match(route, new_route)
 
       # we copy the journey_patterns
-      profile_tag 'journey_patterns' do
-        copy_collection route, new_route, :journey_patterns do |journey_pattern, new_journey_pattern|
-          profile_tag 'stop_points' do
-            new_journey_pattern.arrival_stop_point_id = nil
-            new_journey_pattern.departure_stop_point_id = nil
+      copy_collection route, new_route, :journey_patterns do |journey_pattern, new_journey_pattern|
+        new_journey_pattern.arrival_stop_point_id = nil
+        new_journey_pattern.departure_stop_point_id = nil
 
-            controlled_save! new_journey_pattern
-            stop_point_ids = source.switch(verbose: false) do
-              journey_pattern.stop_points.select(:id).map{|sp| matching_id(sp)}
-            end
+        controlled_save! new_journey_pattern
+        stop_point_ids = source.switch(verbose: false) do
+          journey_pattern.stop_points.select(:id).map{|sp| matching_id(sp)}
+        end
 
-            if stop_point_ids.present?
-              target.switch do
-                Chouette::JourneyPatternsStopPoint.bulk_insert do |worker|
-                  stop_point_ids.each do |id|
-                    worker.add journey_pattern_id: new_journey_pattern.id, stop_point_id: id
-                  end
-                end
-
-                new_journey_pattern.stop_points.reload
-                new_journey_pattern.shortcuts_update_for_add(new_journey_pattern.stop_points.last)
+        if stop_point_ids.present?
+          target.switch do
+            Chouette::JourneyPatternsStopPoint.bulk_insert do |worker|
+              stop_point_ids.each do |id|
+                worker.add journey_pattern_id: new_journey_pattern.id, stop_point_id: id
               end
             end
-          end
 
-          profile_tag 'courses_stats' do
-            sql = "INSERT INTO #{target.slug}.stat_journey_pattern_courses_by_dates (journey_pattern_id,route_id,line_id,date,count) "
-            sql << "(SELECT '#{new_journey_pattern.id}','#{new_route.id}',line_id,date,count FROM #{source.slug}.stat_journey_pattern_courses_by_dates WHERE stat_journey_pattern_courses_by_dates.journey_pattern_id = '#{journey_pattern.id}' )"
-            ActiveRecord::Base.connection.execute sql
+            new_journey_pattern.stop_points.reload
+            new_journey_pattern.shortcuts_update_for_add(new_journey_pattern.stop_points.last)
           end
         end
 
-        # we copy the routing_constraint_zones
-        profile_tag 'routing_constraint_zones' do
-          copy_collection route, new_route, :routing_constraint_zones do |rcz, new_rcz|
-            new_rcz.stop_point_ids = []
-            retrieve_collection_with_mapping rcz, new_rcz, new_route.stop_points, :stop_points
-          end
-        end
+        sql = "INSERT INTO #{target.slug}.stat_journey_pattern_courses_by_dates (journey_pattern_id,route_id,line_id,date,count) "
+        sql << "(SELECT '#{new_journey_pattern.id}','#{new_route.id}',line_id,date,count FROM #{source.slug}.stat_journey_pattern_courses_by_dates WHERE stat_journey_pattern_courses_by_dates.journey_pattern_id = '#{journey_pattern.id}' )"
+        ActiveRecord::Base.connection.execute sql
+      end
+
+      # we copy the routing_constraint_zones
+      copy_collection route, new_route, :routing_constraint_zones do |rcz, new_rcz|
+        new_rcz.stop_point_ids = []
+        retrieve_collection_with_mapping rcz, new_rcz, new_route.stop_points, :stop_points
       end
     end
     clean_matches Chouette::StopPoint, Chouette::JourneyPattern, Chouette::VehicleJourney, Chouette::RoutingConstraintZone

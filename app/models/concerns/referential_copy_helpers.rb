@@ -76,28 +76,26 @@ module ReferentialCopyHelpers
   end
 
   def controlled_save! model, worker=nil
-    profile_tag "save_model.#{model.class.name}" do
-      begin
-        if worker && model.new_record?
-          model.validate!
-          worker.add clean_attributes_for_copy model
-        else
-          model.save!
-        end
-      rescue => e
-        Chouette::Safe.capture "ReferentialCopy Model save #{model.inspect} failed", e
-
-        error = []
-        error << e.message
-        error << model.class.name
-        error << model.attributes
-        error << model.errors.messages
-        error = error.join("\n")
-
-        raise SaveError.new(error)
+    begin
+      if worker && model.new_record?
+        model.validate!
+        worker.add clean_attributes_for_copy model
+      else
+        model.save!
       end
-      process_wait_queue
+    rescue => e
+      Chouette::Safe.capture "ReferentialCopy Model save #{model.inspect} failed", e
+
+      error = []
+      error << e.message
+      error << model.class.name
+      error << model.attributes
+      error << model.errors.messages
+      error = error.join("\n")
+
+      raise SaveError.new(error)
     end
+    process_wait_queue
   end
 
   def clean_matches *models

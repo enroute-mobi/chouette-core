@@ -14,7 +14,8 @@ class Calendar < ApplicationModel
 
   has_many :time_tables, class_name: "Chouette::TimeTable" , dependent: :nullify
 
-  scope :contains_date, ->(date) { where('date ? = any (dates) OR date ? <@ any (date_ranges)', date, date) }
+  scope :contains_date, ->(date) { where('(date ? = any (dates) OR date ? <@ any (date_ranges)) AND NOT date ? = any (excluded_dates)', date, date, date) }
+
   scope :order_by_organisation_name, ->(dir) { joins(:organisation).order("lower(organisations.name) #{dir}") }
 
   after_initialize :set_defaults
@@ -83,22 +84,26 @@ class Calendar < ApplicationModel
     excluded_dates
   end
 
+  def every_dates
+    dates + excluded_dates
+  end
+
   def saved_dates
-    Hash[*self.dates.each_with_index.to_a.map(&:reverse).flatten]
+    Hash[*every_dates.each_with_index.to_a.map(&:reverse).flatten]
   end
 
   def all_dates
-    (dates + excluded_dates).sort.each_with_index.map do |d, i|
+    every_dates.sort.each_with_index.map do |d, i|
       OpenStruct.new(id: i, date: d, in_out: include_in_dates?(d))
     end
   end
 
   def find_date_by_id id
-    self.dates[id]
+    every_dates[id]
   end
 
   def destroy_date date
-    self.dates -= [date]
+    self.dates.delete(date)||self.excluded_dates.delete(date)
   end
 
   def create_date in_out:, date:

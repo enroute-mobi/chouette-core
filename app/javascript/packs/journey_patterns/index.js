@@ -1,6 +1,17 @@
 import '../../helpers/polyfills'
 
-import React from 'react'
+// react
+import React, { useState, useEffect } from 'react';
+
+// openlayers
+import GeoJSON from 'ol/format/GeoJSON'
+import KML from 'ol/format/KML';
+import Feature from 'ol/Feature';
+import VectorSource from 'ol/source/Vector'
+
+// components
+import MapWrapper from '../../journey_patterns/components/tools/MapWrapper'
+
 import { render } from 'react-dom'
 import { Provider } from 'react-redux'
 import { createStore } from 'redux'
@@ -10,14 +21,56 @@ import clone from '../../helpers/clone'
 
 import RoutesMap from '../../helpers/routes_map'
 
-
+let route_kml_url = clone(window, "route_kml_url", true)
 let route = clone(window, "route", true)
 route = JSON.parse(decodeURIComponent(route))
 
-new RoutesMap('route_map').prepare().then(function(map){
-  map.addRoute(route)
-  map.fitZoom()
-})
+function RouteMap() {
+
+  // set intial state
+  const [ features, setFeatures ] = useState([])
+
+  // initialization - retrieve GeoJSON features from Mock JSON API get features from mock
+  //  GeoJson API (read from flat .json file in public directory)
+  useEffect( () => {
+
+    fetch(route_kml_url)
+      .then(response => response.text())
+      .then( (fetchedFeatures) => {
+
+        // parse fetched geojson into OpenLayers features
+        //  use options to convert feature from EPSG:4326 to EPSG:3857
+        // const wktOptions = {
+        //   dataProjection: 'EPSG:4326',
+        //   featureProjection: 'EPSG:4326'
+        // }
+
+        // console.log(fetchedFeatures)
+        // var source = new VectorSource({
+        //   features: fetchedFeatures,
+        //   format: new KML(),
+        // })
+        // console.log(source.getFeatures())
+
+        var kml = new KML()
+        console.log(kml.readFeatures(fetchedFeatures))
+        const parsedFeatures = kml.readFeatures(fetchedFeatures)
+        console.log(parsedFeatures)
+
+        // set features into state (which will be passed into OpenLayers
+        //  map component as props)
+        setFeatures(parsedFeatures)
+
+      })
+
+  },[])
+
+  return (
+    <div className="openlayers_map">
+      <MapWrapper features={features} />
+    </div>
+  )
+}
 
 // logger, DO NOT REMOVE
 var applyMiddleware = require('redux').applyMiddleware
@@ -61,4 +114,11 @@ render(
     <App />
   </Provider>,
   document.getElementById('journey_patterns')
-)
+);
+
+render(
+  <React.StrictMode>
+    <RouteMap />
+  </React.StrictMode>,
+  document.getElementById('route_map')
+);

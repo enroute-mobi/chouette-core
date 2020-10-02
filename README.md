@@ -36,3 +36,8 @@ License
 -------
 
 This project is licensed under the CeCILL-B license, a copy of which can be found in the [LICENSE](./LICENSE.md) file.
+
+Support
+-------
+
+Contact [enRoute Chouette team](mailto:dev@enroute.mobi) to know how to contribute to the Chouette project.

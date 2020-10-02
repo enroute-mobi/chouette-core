@@ -6,7 +6,7 @@ Step-by-step guide to setup a local dev environment. This is meant for Linux use
 
 * Install RVM
 
-The setup for RVM on Ubuntu is described [here](https://github.com/rvm/ubuntu_rvm#install)
+The setup for RVM on Ubuntu/Pop_OS is described [here](https://github.com/rvm/ubuntu_rvm#install)
 
 * Install Ruby
 
@@ -88,8 +88,8 @@ sudo apt install libproj-dev postgis libmagickwand-dev libmagic-dev libpq-dev
 
 * Bundle
 
-Clone chouette code repo, go into the new repository.
-The RVM gemset is created at that point, and the output should look like this :
+Clone chouette-core repo, go into the new folder.
+The RVM gemset is created at that point, and the shell output should look like this :
 
 ```
 ruby-2.6.4 - #gemset created /home/user/.rvm/gems/ruby-2.6.4@chouette
@@ -142,7 +142,7 @@ Launch rails server
 bundle exec rails server
 ```
 
-You will then have access to your local server on `http://localhost:3000`.
+You will then have access to your local server on `http://localhost:3000`, where you can create an account.
 
 The next step could be to import a set of sample data to populate the local database.
 

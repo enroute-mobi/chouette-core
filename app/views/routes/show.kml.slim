@@ -1,20 +1,16 @@
-doctype XML
-
 kml xmlns="http://www.opengis.net/kml/2.2"
-  document
-    placemark id="route_#{@route.id}"
+  Document
+    Placemark id="route_#{@route.id}"
       name = @route.name
       inactive true
       = @route.geometry.kml_representation.html_safe
 
     - @route.stop_areas.where("latitude is not null and longitude is not null").each_with_index do |stop_area, index|
-      placemark id="#{stop_area.id}"
+      Placemark id="#{stop_area.id}"
         name = "#{stop_area.name} (#{index+1})"
         stop_area_type_label = t("area_types.label.#{stop_area.stop_area_type}")
-        
         - if stop_area.id==@route.stop_areas.first.id
           departure true
         - elsif stop_area.id==@route.stop_areas.last.id
           arrival true
-        
         = stop_area.geometry.kml_representation.html_safe

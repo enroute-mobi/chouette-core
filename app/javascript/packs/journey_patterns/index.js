@@ -40,23 +40,12 @@ function RouteMap() {
 
         // parse fetched geojson into OpenLayers features
         //  use options to convert feature from EPSG:4326 to EPSG:3857
-        // const wktOptions = {
-        //   dataProjection: 'EPSG:4326',
-        //   featureProjection: 'EPSG:4326'
-        // }
-
-        // console.log(fetchedFeatures)
-        // var source = new VectorSource({
-        //   features: fetchedFeatures,
-        //   format: new KML(),
-        // })
-        // console.log(source.getFeatures())
-
-        var kml = new KML()
-        console.log(kml.readFeatures(fetchedFeatures))
-        const parsedFeatures = kml.readFeatures(fetchedFeatures)
+        const wktOptions = {
+          dataProjection: 'EPSG:4326',
+          featureProjection: 'EPSG:3857'
+        }
+        const parsedFeatures = new KML().readFeatures(fetchedFeatures, wktOptions)
         console.log(parsedFeatures)
-
         // set features into state (which will be passed into OpenLayers
         //  map component as props)
         setFeatures(parsedFeatures)

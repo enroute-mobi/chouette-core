@@ -13,6 +13,7 @@ import VectorSource from 'ol/source/Vector'
 import XYZ from 'ol/source/XYZ'
 import {transform} from 'ol/proj'
 import {toStringXY} from 'ol/coordinate';
+import {Fill, Stroke, Circle, Style} from 'ol/style';
 
 function MapWrapper(props) {
 
@@ -33,8 +34,8 @@ function MapWrapper(props) {
   useEffect( () => {
 
     // create and add vector source layer
-    const initalFeaturesLayer = new VectorLayer({
-      source: new VectorSource()
+    const initialFeaturesLayer = new VectorLayer({
+      source: new VectorSource(),
     })
 
     // create map
@@ -61,7 +62,7 @@ function MapWrapper(props) {
         //   }),
         // }),
 
-        initalFeaturesLayer
+        initialFeaturesLayer
 
       ],
       view: new View({
@@ -77,7 +78,7 @@ function MapWrapper(props) {
 
     // save map and vector layer references to state
     setMap(initialMap)
-    setFeaturesLayer(initalFeaturesLayer)
+    setFeaturesLayer(initialFeaturesLayer)
 
   },[])
 

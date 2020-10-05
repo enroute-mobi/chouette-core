@@ -1,16 +1,10 @@
+import _ from 'lodash'
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import actions from '../actions'
 import CustomFieldsInputs from '../../helpers/CustomFieldsInputs'
 import ShapeSelector from './tools/ShapeSelector'
-
-import 'ol';
-import ShapesKml from '../../helpers/shapes_kml'
-import OpenLayerMap from './tools/OpenLayerMap'
-
-// import "OpenLayers/maps_backgrounds"
-// import '../../../assets/javascripts/OpenLayers/ol_backgrounds'
-// app/assets/javascripts/OpenLayers/ol.js
+import ShapeMapper from './tools/ShapeMapper'
 
 export default class EditModal extends Component {
   constructor(props) {
@@ -48,11 +42,6 @@ export default class EditModal extends Component {
       return <h4 className='modal-title'> {I18n.t('journey_patterns.show.informations')} </h4>
     }
   }
-
-  // componentDidMount() {
-  //   console.log("test componentDidMount")
-  //   new ShapesKml('route_map',  window.location.origin + window.kml_url).prepare()
-  // }
 
   render() {
     if(this.props.modal.modalProps.journeyPattern){
@@ -136,9 +125,8 @@ export default class EditModal extends Component {
                       </div>
                     </div>
                     <div className='row'>
-                      <div className='col-sm-6 col-xs-12'>
-                        {/* <div id='route_map' className='large_map mb-lg'/> */}
-                        <OpenLayerMap url={window.location.origin + window.kml_url}/>
+                      <div className='col-xs-12 shape-map'>
+                        <ShapeMapper shapeId={_.get(this.props.modal.modalProps, 'journeyPattern.shape.id')}/>
                       </div>
                     </div>
                     <div>

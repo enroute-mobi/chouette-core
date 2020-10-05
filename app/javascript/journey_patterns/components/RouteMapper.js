@@ -1,14 +1,11 @@
-// react
 import React, { useState, useEffect } from 'react';
 
-// openlayers
 import GeoJSON from 'ol/format/GeoJSON'
 import KML from 'ol/format/KML';
 import Feature from 'ol/Feature';
 import VectorSource from 'ol/source/Vector'
 import clone from '../../helpers/clone'
 
-// components
 import MapWrapper from '../../journey_patterns/components/tools/MapWrapper'
 
 function RouteMapper() {
@@ -31,8 +28,29 @@ function RouteMapper() {
           dataProjection: 'EPSG:4326',
           featureProjection: 'EPSG:3857'
         }
-        const parsedFeatures = new KML().readFeatures(fetchedFeatures, wktOptions)
-        console.log(parsedFeatures)
+
+        var style = new Style({
+          image: new Circle({
+            radius: 10,
+            fill: new Fill({
+              color: 'rgba(255, 153, 0)',
+            }),
+            stroke: new Stroke({
+              color: 'rgba(255, 204, 0)',
+              width: 4,
+            }),
+          }),
+          stroke: new Stroke({
+            color: 'rgba(255, 204, 0)',
+            width: 4,
+          }),
+          fill: new Fill({
+            color: 'rgba(255, 153, 0)',
+          }),
+        })
+
+        const parsedFeatures = new KML({extractStyles: false, defaultStyle: style} ).readFeatures(fetchedFeatures, wktOptions)
+
         // set features into state (which will be passed into OpenLayers
         //  map component as props)
         setFeatures(parsedFeatures)

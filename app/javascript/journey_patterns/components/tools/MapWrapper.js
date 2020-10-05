@@ -1,7 +1,5 @@
-// react
 import React, { useState, useEffect, useRef } from 'react';
 
-// openlayers
 import Map from 'ol/Map'
 import View from 'ol/View'
 import OSM from 'ol/source/OSM'
@@ -17,7 +15,6 @@ import {Fill, Stroke, Circle, Style} from 'ol/style';
 
 function MapWrapper(props) {
 
-  // set intial state
   const [ map, setMap ] = useState()
   const [ featuresLayer, setFeaturesLayer ] = useState()
   const [ selectedCoord , setSelectedCoord ] = useState()
@@ -42,28 +39,11 @@ function MapWrapper(props) {
     const initialMap = new Map({
       target: mapElement.current,
       layers: [
-
         // OSM Topo
         new TileLayer({
           source: new OSM({attributions: '&copy; OpenStreetMap contributors'})
         }),
-
-        // Google Maps Terrain
-        /* new TileLayer({
-          source: new XYZ({
-            url: 'http://mt0.google.com/vt/lyrs=p&hl=en&x={x}&y={y}&z={z}',
-          })
-        }), */
-
-        // new VectorLayer({
-        //   source: new VectorSource({
-        //     url: 'https://openlayers.org/en/latest/examples/data/kml/2012-02-10.kml',
-        //     format: new KML(),
-        //   }),
-        // }),
-
         initialFeaturesLayer
-
       ],
       view: new View({
         projection: 'EPSG:3857',
@@ -74,7 +54,7 @@ function MapWrapper(props) {
     })
 
     // set map onclick handler
-    initialMap.on('click', handleMapClick)
+    // initialMap.on('click', handleMapClick)
 
     // save map and vector layer references to state
     setMap(initialMap)
@@ -94,43 +74,38 @@ function MapWrapper(props) {
         })
       )
 
-      // fit map to feature extent (with 100px of padding)
+      // Workaround to prevent openlayer rendering bugs within modal
+      map.updateSize();
+
+      // Fit map to feature extent (with 100px of padding)
       map.getView().fit(featuresLayer.getSource().getExtent(), {
         padding: [100,100,100,100]
       })
-
     }
-
   },[props.features])
 
-  // map click handler
-  const handleMapClick = (event) => {
-
-    // get clicked coordinate using mapRef to access current React state inside OpenLayers callback
-    //  https://stackoverflow.com/a/60643670
-    const clickedCoord = mapRef.current.getCoordinateFromPixel(event.pixel);
-
-    // transform coord to EPSG 4326 standard Lat Long
-    const transormedCoord = transform(clickedCoord, 'EPSG:3857', 'EPSG:4326')
-
-    // set React state
-    setSelectedCoord( transormedCoord )
-
-  }
+  // // map click handler
+  // const handleMapClick = (event) => {
+  //   // get clicked coordinate using mapRef to access current React state inside OpenLayers callback
+  //   //  https://stackoverflow.com/a/60643670
+  //   const clickedCoord = mapRef.current.getCoordinateFromPixel(event.pixel);
+  //
+  //   // transform coord to EPSG 4326 standard Lat Long
+  //   const transormedCoord = transform(clickedCoord, 'EPSG:3857', 'EPSG:4326')
+  //
+  //   // set React state
+  //   setSelectedCoord( transormedCoord )
+  // }
 
   // render component
   return (
     <div>
-
       <div ref={mapElement} className="map-container"></div>
-
       <div className="clicked-coord-label">
         <p>{ (selectedCoord) ? toStringXY(selectedCoord, 5) : '' }</p>
       </div>
-
     </div>
   )
-
 }
 
 export default MapWrapper

@@ -20,7 +20,6 @@ class ShapesKml
       #   resolve(this)
 
   initMap: ->
-    console.log(@url)
     # layer = window.mapBackgroundSource
     layer = new ol.layer.Tile({source: new ol.source.OSM()})
     # It appeared that the only way to style kml vector in OL3 is to add a new style directly instead of just referencing it : https://gis.stackexchange.com/questions/177804/unable-to-style-kml-layer-in-openlayers-3

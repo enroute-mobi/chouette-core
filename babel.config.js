@@ -73,6 +73,12 @@ module.exports = function(api) {
         {
           async: false
         }
+      ],
+      [
+        "transform-es2015-modules-commonjs",
+        {
+          "allowTopLevelThis": true
+        }
       ]
     ].filter(Boolean)
   }

@@ -1,14 +1,15 @@
 const environment = require('./environment')
 const webpack = require('webpack')
-const UglifyJsPlugin = require('uglify-js')
+const UglifyJSPlugin = require('uglify-js')
 
-environment.plugins.append(
-  'UglifyJs',
-  new webpack.optimize.UglifyJsPlugin({
-    compress: {
-      warnings: false
-    }
-  })
-)
+optimization: {
+  minimizer: [
+    new UglifyJSPlugin({
+			compress: {
+	      warnings: false
+	    }
+    })
+  ]
+}
 
 module.exports = environment.toWebpackConfig()

@@ -92,15 +92,6 @@ production:
   # Cache manifest.json for performance
   cache_manifest: true
 
-dev:
-  <<: *default
-
-  # Production depends on precompilation of packs prior to booting for performance.
-  compile: false
-
-  # Cache manifest.json for performance
-  cache_manifest: true
-
 staging:
   <<: *default
 

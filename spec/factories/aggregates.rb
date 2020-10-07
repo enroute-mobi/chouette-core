@@ -4,7 +4,7 @@ FactoryBot.define do
     status { :successful }
     name { "MyString" }
     referentials { [ create(:referential) ] }
-    new nil
+    new {nil}
 
     trait :successful do
       after(:create) do |a|

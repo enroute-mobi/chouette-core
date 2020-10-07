@@ -1,8 +1,8 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :aggregate do
     association :workgroup
     status { :successful }
-    name "MyString"
+    name { "MyString" }
     referentials { [ create(:referential) ] }
     new nil
 

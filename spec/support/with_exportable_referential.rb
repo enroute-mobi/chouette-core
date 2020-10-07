@@ -29,11 +29,11 @@ RSpec.shared_context 'with exportable journeys' do
     # Create two levels parents stop_areas
     6.times do |index|
       sa = exported_referential.stop_areas.sample
-      new_parent = FactoryGirl.create :stop_area, stop_area_referential: stop_area_referential
+      new_parent = FactoryBot.create :stop_area, stop_area_referential: stop_area_referential
       sa.parent = new_parent
       sa.save
       if index.even?
-        new_parent.parent = FactoryGirl.create :stop_area, stop_area_referential: stop_area_referential
+        new_parent.parent = FactoryBot.create :stop_area, stop_area_referential: stop_area_referential
         new_parent.save
       end
     end
@@ -43,7 +43,7 @@ RSpec.shared_context 'with exportable journeys' do
         # 2*2 routes with 5 stop_areas each
         factor.times do
           stop_areas = stop_area_referential.stop_areas.order(Arel.sql('random()')).limit(5)
-          FactoryGirl.create :route, line: line, stop_areas: stop_areas, stop_points_count: 0
+          FactoryBot.create :route, line: line, stop_areas: stop_areas, stop_points_count: 0
         end
       end
 
@@ -64,7 +64,7 @@ RSpec.shared_context 'with exportable journeys' do
         # 4*2 journey_pattern with 3 stop_points each
         factor.times do
           stops = route.stop_points.sample(3)
-          FactoryGirl.create :journey_pattern, route: route, stop_points: stops
+          FactoryBot.create :journey_pattern, route: route, stop_points: stops
           create :connection_link, departure: stops.first.stop_area, arrival: stops.last.stop_area, both_ways: true, stop_area_referential: stop_area_referential
         end
       end
@@ -72,16 +72,16 @@ RSpec.shared_context 'with exportable journeys' do
       # 8*2 vehicle_journey
       exported_referential.journey_patterns.each do |journey_pattern|
         factor.times do
-          FactoryGirl.create :vehicle_journey, journey_pattern: journey_pattern, company: company
+          FactoryBot.create :vehicle_journey, journey_pattern: journey_pattern, company: company
         end
       end
 
       # 16+1 different time_tables
-      shared_time_table = FactoryGirl.create :time_table
+      shared_time_table = FactoryBot.create :time_table
 
       exported_referential.vehicle_journeys.each do |vehicle_journey|
         vehicle_journey.time_tables << shared_time_table
-        specific_time_table = FactoryGirl.create :time_table
+        specific_time_table = FactoryBot.create :time_table
         vehicle_journey.time_tables << specific_time_table
       end
     end

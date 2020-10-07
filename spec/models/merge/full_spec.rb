@@ -28,18 +28,18 @@ RSpec.describe Merge do
         line_referential.lines.each do |line|
           factor.times do
             stop_areas = stop_area_referential.stop_areas.order(Arel.sql('random()')).limit(5)
-            FactoryGirl.create :route, line: line, stop_areas: stop_areas, stop_points_count: 0
+            FactoryBot.create :route, line: line, stop_areas: stop_areas, stop_points_count: 0
           end
           # Loop
           stop_areas = stop_area_referential.stop_areas.order(Arel.sql('random()')).limit(5)
-          route = FactoryGirl.create :route, line: line, stop_areas: stop_areas, stop_points_count: 0
+          route = FactoryBot.create :route, line: line, stop_areas: stop_areas, stop_points_count: 0
           route.stop_points.create stop_area: stop_areas.first, position: route.stop_points.size
           jp = route.full_journey_pattern
           expect(route.stop_points.uniq.count).to eq route.stop_areas.uniq.count + 1
           expect(jp.stop_points.uniq.count).to eq jp.stop_areas.uniq.count + 1
 
           factor.times do
-            footnotes[line.id] << FactoryGirl.create(:footnote, line: line)
+            footnotes[line.id] << FactoryBot.create(:footnote, line: line)
           end
         end
 
@@ -71,23 +71,23 @@ RSpec.describe Merge do
           expect(route.reload.checksum).to_not eq checksum
 
           factor.times do
-            FactoryGirl.create :journey_pattern, route: route, stop_points: route.stop_points.sample(3)
+            FactoryBot.create :journey_pattern, route: route, stop_points: route.stop_points.sample(3)
           end
         end
 
         referential.journey_patterns.each do |journey_pattern|
           @stop_points_positions[journey_pattern.name] = Hash[*journey_pattern.stop_points.map{|sp| [sp.position, sp.stop_area_id]}.flatten]
           factor.times do
-            FactoryGirl.create :vehicle_journey, journey_pattern: journey_pattern, company: company
+            FactoryBot.create :vehicle_journey, journey_pattern: journey_pattern, company: company
           end
         end
 
-        shared_time_table = FactoryGirl.create :time_table
+        shared_time_table = FactoryBot.create :time_table
 
-        distant_future_table = FactoryGirl.create :time_table, dates_count: 0, periods_count: 0, comment: "distant_future_table"
+        distant_future_table = FactoryBot.create :time_table, dates_count: 0, periods_count: 0, comment: "distant_future_table"
         distant_future_table.periods << create(:time_table_period, time_table: distant_future_table, period_start: 10.years.from_now, period_end: 11.years.from_now)
         @distant_future_table_name = distant_future_table.comment
-        one_day_remanining_table = FactoryGirl.create :time_table, dates_count: 0, periods_count: 0, comment: "one_day_remanining"
+        one_day_remanining_table = FactoryBot.create :time_table, dates_count: 0, periods_count: 0, comment: "one_day_remanining"
         period_start = referential_metadata.periodes.last.max
         one_day_remanining_table.periods << create(:time_table_period, time_table: one_day_remanining_table, period_start: period_start, period_end: period_start+1.week)
         @one_day_remanining_table_name = one_day_remanining_table.comment
@@ -95,7 +95,7 @@ RSpec.describe Merge do
         referential.vehicle_journeys.each do |vehicle_journey|
           vehicle_journey.time_tables << shared_time_table
 
-          specific_time_table = FactoryGirl.create :time_table
+          specific_time_table = FactoryBot.create :time_table
           vehicle_journey.time_tables << specific_time_table
           vehicle_journey.time_tables << distant_future_table
           vehicle_journey.time_tables << one_day_remanining_table

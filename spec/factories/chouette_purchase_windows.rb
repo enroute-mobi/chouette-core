@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :purchase_window, class: Chouette::PurchaseWindow do
     sequence(:name) { |n| "Purchase Window #{n}" }
     sequence(:objectid) { |n| "organisation:PurchaseWindow:#{n}:LOC" }

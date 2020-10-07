@@ -1,7 +1,7 @@
 RSpec.describe ReferentialCloning, :type => :model do
 
   it 'should have a valid factory' do
-    expect(FactoryGirl.build(:referential_cloning)).to be_valid
+    expect(FactoryBot.build(:referential_cloning)).to be_valid
   end
 
   it { should belong_to :source_referential }
@@ -15,7 +15,7 @@ RSpec.describe ReferentialCloning, :type => :model do
   end
 
   describe 'after commit' do
-    let(:referential_cloning) { FactoryGirl.create(:referential_cloning) }
+    let(:referential_cloning) { FactoryBot.create(:referential_cloning) }
 
     it 'invokes clone method' do
       expect(referential_cloning).to receive(:clone)
@@ -24,7 +24,7 @@ RSpec.describe ReferentialCloning, :type => :model do
   end
 
   describe '#worker_died' do
-    let(:referential_cloning) { FactoryGirl.create(:referential_cloning) }
+    let(:referential_cloning) { FactoryBot.create(:referential_cloning) }
 
     it 'should set merge status to failed' do
       expect(referential_cloning.status).to eq("new")
@@ -34,7 +34,7 @@ RSpec.describe ReferentialCloning, :type => :model do
   end
 
   describe '#clone' do
-    let(:referential_cloning) { FactoryGirl.create(:referential_cloning) }
+    let(:referential_cloning) { FactoryBot.create(:referential_cloning) }
 
     it "should schedule a job in worker" do
       expect{referential_cloning}.to change { Delayed::Job.count }.by(1)

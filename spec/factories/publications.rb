@@ -1,9 +1,9 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :publication do
     association :publication_setup
     association :parent, factory: :aggregate
 
-    ended_at Time.now
+    ended_at {Time.now}
 
     trait :with_gtfs do
       association :publication_setup, factory: :publication_setup_gtfs

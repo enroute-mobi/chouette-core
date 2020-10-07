@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :referential_metadata, :class => 'ReferentialMetadata' do
     referential
     periodes { [ Date.today.beginning_of_year..Date.today.end_of_year ] }

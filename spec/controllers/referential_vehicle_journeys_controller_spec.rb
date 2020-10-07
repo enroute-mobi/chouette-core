@@ -26,13 +26,13 @@ RSpec.describe ReferentialVehicleJourneysController, type: :controller do
     end
 
     it 'define @vehicle_journeys collection' do
-      vehicle_journey = FactoryGirl.create :vehicle_journey
+      vehicle_journey = FactoryBot.create :vehicle_journey
       get :index, params: { referential_id: referential }
       expect(assigns[:vehicle_journeys]).to include(vehicle_journey)
     end
 
     it 'paginage @vehicle_journeys collection' do
-      FactoryGirl.create :vehicle_journey
+      FactoryBot.create :vehicle_journey
 
       get :index, params: { referential_id: referential }
       expect(assigns[:vehicle_journeys].total_entries).to be(1)

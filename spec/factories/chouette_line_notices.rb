@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
 
   factory :line_notice, :class => Chouette::LineNotice do
     sequence(:title) { |n| "Line Notice title #{n}" }

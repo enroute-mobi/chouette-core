@@ -193,7 +193,7 @@ group :test, :development do
   gem 'ffaker', '~> 2.1.0'
   gem 'faker'
 
-  gem 'factory_girl_rails', '~> 4.0'
+  gem 'factory_bot_rails'
 
   gem 'awesome_print'
   gem 'pry-rails'

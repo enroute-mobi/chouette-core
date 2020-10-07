@@ -151,7 +151,7 @@ describe Chouette::StopArea, :type => :model do
 
   describe "#parent" do
 
-    let(:stop_area) { FactoryGirl.build :stop_area, parent: FactoryGirl.build(:stop_area) }
+    let(:stop_area) { FactoryBot.build :stop_area, parent: FactoryBot.build(:stop_area) }
 
     it "is valid when parent has an 'higher' type" do
       stop_area.area_type = 'zdep'
@@ -232,7 +232,7 @@ describe Chouette::StopArea, :type => :model do
 
   describe '#waiting_time' do
 
-    let(:stop_area) { FactoryGirl.build :stop_area }
+    let(:stop_area) { FactoryBot.build :stop_area }
 
     it 'can be nil' do
       stop_area.waiting_time = nil

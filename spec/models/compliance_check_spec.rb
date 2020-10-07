@@ -1,11 +1,11 @@
 RSpec.describe ComplianceCheck, type: :model do
 
   it 'should have a valid factory' do
-    expect(FactoryGirl.build(:compliance_check)).to be_valid
+    expect(FactoryBot.build(:compliance_check)).to be_valid
   end
 
   it 'should rely on IEV by default' do
-    expect(FactoryGirl.build(:compliance_check).iev_enabled_check).to be_truthy
+    expect(FactoryBot.build(:compliance_check).iev_enabled_check).to be_truthy
   end
 
   it 'has STI disabled' do

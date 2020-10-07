@@ -57,14 +57,14 @@ RSpec.configure do |config|
       referential.add_member organisation, owner: true
     end
 
-    workgroup = FactoryGirl.create(
+    workgroup = FactoryBot.create(
       :workgroup,
       name: "IDFM",
       line_referential: line_referential,
       stop_area_referential: stop_area_referential
     )
 
-    workbench = FactoryGirl.create(
+    workbench = FactoryBot.create(
       :workbench,
       name: "Gestion de l'offre",
       organisation: organisation,
@@ -73,7 +73,7 @@ RSpec.configure do |config|
       stop_area_referential: stop_area_referential,
       prefix: organisation.code
     )
-    referential = FactoryGirl.create(
+    referential = FactoryBot.create(
       :referential,
       prefix: workbench.prefix,
       name: "first",

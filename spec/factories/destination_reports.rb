@@ -1,10 +1,10 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :destination_report do
     association :destination
     association :publication
-    status nil
-    started_at nil
-    ended_at nil
+    status {nil}
+    started_at {nil}
+    ended_at {nil}
 
     before :create do | report |
       publication_setup = report.publication&.publication_setup

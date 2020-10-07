@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :time_table, :class => Chouette::TimeTable do
     sequence(:comment) { |n| "Timetable #{n}" }
     sequence(:objectid) { |n| "organisation:Timetable:#{n}:LOC" }
@@ -6,14 +6,14 @@ FactoryGirl.define do
     calendar nil
 
     trait :empty do
-      dates_count 0
-      periods_count 0
+      dates_count { 0 }
+      periods_count { 0 }
     end
 
     transient do
-      dates_count 4
-      periods_count 4
-      start_date Date.today
+      dates_count { 4 }
+      periods_count { 4 }
+      start_date { Date.today }
     end
 
     after(:create) do |time_table, evaluator|

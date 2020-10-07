@@ -1,10 +1,10 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :stop_area_referential, :class => StopAreaReferential do
     sequence(:name) { |n| "StopArea Referential #{n}" }
-    objectid_format 'stif_reflex'
+    objectid_format {'stif_reflex'}
 
     transient do
-      member nil
+      member {nil}
     end
 
     after(:create) do |stop_area_referential, evaluator|

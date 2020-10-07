@@ -7,7 +7,7 @@
     "@babel/core": "^7.0.0",
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
-    "@rails/webpacker": "^4.0.0",
+    "@rails/webpacker": "^5.0.0",
     "babel-jest": "23.2.0",
     "babel-loader": "^8.0.0",
     "babelify": "8.0.0",

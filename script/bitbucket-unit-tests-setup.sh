@@ -11,7 +11,7 @@ apt-get -qq install -y --no-install-recommends curl gnupg ca-certificates apt-tr
 curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list
 curl -sS https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -
-echo "deb https://deb.nodesource.com/node_8.x stretch main" > /etc/apt/sources.list.d/nodesource.list
+echo "deb https://deb.nodesource.com/node_12.x stretch main" > /etc/apt/sources.list.d/nodesource.list
 apt-get -qq update && apt-get -qq install -y --no-install-recommends yarn nodejs
 
 # Install expected bundler version

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import actions from '../actions'
 import CustomFieldsInputs from '../../helpers/CustomFieldsInputs'
 import ShapeSelector from './tools/ShapeSelector'
-import ShapeMapper from './tools/ShapeMapper'
+import ShapeMap from './tools/ShapeMap'
 
 export default class EditModal extends Component {
   constructor(props) {
@@ -126,7 +126,7 @@ export default class EditModal extends Component {
                     </div>
                     <div className='row'>
                       <div className='col-xs-12 shape-map'>
-                        <ShapeMapper shapeId={_.get(this.props.modal.modalProps, 'journeyPattern.shape.id')}/>
+                        <ShapeMap shapeId={_.get(this.props.modal.modalProps, 'journeyPattern.shape.id')}/>
                       </div>
                     </div>
                     <div>

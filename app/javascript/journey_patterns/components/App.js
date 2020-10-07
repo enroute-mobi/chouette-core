@@ -6,8 +6,7 @@ import ConfirmModal from '../containers/ConfirmModal'
 import CancelJourneyPattern from '../containers/CancelJourneyPattern'
 import SaveJourneyPattern from '../containers/SaveJourneyPattern'
 import JourneyPatternList from '../containers/JourneyPatternList'
-import RouteMapper from './RouteMapper'
-import ShapeMapper from './tools/ShapeMapper'
+import RouteMap from './RouteMap'
 
 
 const App = () => (
@@ -20,7 +19,7 @@ const App = () => (
     <SaveJourneyPattern />
     <ConfirmModal />
     <Modal/>
-    <RouteMapper/>
+    <RouteMap/>
   </div>
 )
 

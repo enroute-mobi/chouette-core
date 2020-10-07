@@ -11,7 +11,7 @@ import {Fill, Stroke, Circle, Style} from 'ol/style';
 import MapWrapper from './MapWrapper'
 
 
-function ShapeMapper(props) {
+function ShapeMap(props) {
 
   const [ features, setFeatures ] = useState([])
   const [ style, setStyle ] = useState()
@@ -67,4 +67,4 @@ function ShapeMapper(props) {
   )
 }
 
-export default ShapeMapper
+export default ShapeMap

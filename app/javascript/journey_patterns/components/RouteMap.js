@@ -8,7 +8,7 @@ import clone from '../../helpers/clone'
 
 import MapWrapper from '../../journey_patterns/components/tools/MapWrapper'
 
-function RouteMapper() {
+function RouteMap() {
 
   // set intial state
   const [ features, setFeatures ] = useState([])
@@ -64,4 +64,4 @@ function RouteMapper() {
   )
 }
 
-export default RouteMapper
+export default RouteMap

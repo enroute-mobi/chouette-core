@@ -51,7 +51,9 @@ ChouetteIhm::Application.routes.draw do
     resources :notification_rules
 
     resource :shape_referential do
-      resources :shapes, except: [:create]
+      resources :shapes, except: [:create] do
+        get :associations, on: :member
+      end
     end
   end
 

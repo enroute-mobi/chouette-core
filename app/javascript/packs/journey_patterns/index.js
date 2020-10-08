@@ -1,8 +1,6 @@
 import '../../helpers/polyfills'
 
-// react
-import React from 'react';
-
+import React from 'react'
 import { render } from 'react-dom'
 import { Provider } from 'react-redux'
 import { createStore } from 'redux'
@@ -75,10 +73,10 @@ function RouteMap() {
 }
 
 // logger, DO NOT REMOVE
-var applyMiddleware = require('redux').applyMiddleware
-import { createLogger } from 'redux-logger';
-var thunkMiddleware = require('redux-thunk').default
-var promise = require('redux-promise')
+// var applyMiddleware = require('redux').applyMiddleware
+// import { createLogger } from 'redux-logger'
+// var thunkMiddleware = require('redux-thunk').default
+// var promise = require('redux-promise')
 
 var initialState = {
   editMode: false,
@@ -103,12 +101,12 @@ var initialState = {
   },
   custom_fields: window.custom_fields
 }
-const loggerMiddleware = createLogger()
+// const loggerMiddleware = createLogger()
 
 let store = createStore(
   journeyPatternsApp,
   initialState,
-  applyMiddleware(thunkMiddleware, promise, loggerMiddleware)
+  // applyMiddleware(thunkMiddleware, promise, loggerMiddleware)
 )
 
 render(
@@ -116,4 +114,4 @@ render(
     <App />
   </Provider>,
   document.getElementById('journey_patterns')
-);
+)

@@ -7,7 +7,6 @@ class ShapesKml
       @area = []
       @seenStopIds = []
       @routes = {}
-      console.log("ShapesKml prepare solved !!")
       resolve(this)
 
 

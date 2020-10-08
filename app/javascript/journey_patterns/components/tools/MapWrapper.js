@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react'
 
 import Map from 'ol/Map'
 import View from 'ol/View'
@@ -6,12 +6,12 @@ import OSM from 'ol/source/OSM'
 import TileLayer from 'ol/layer/Tile'
 import VectorLayer from 'ol/layer/Vector'
 import KML from 'ol/format/KML'
-import {Control, defaults as defaultControls} from 'ol/control';
+import {Control, defaults as defaultControls} from 'ol/control'
 import VectorSource from 'ol/source/Vector'
 import XYZ from 'ol/source/XYZ'
 import {transform} from 'ol/proj'
-import {toStringXY} from 'ol/coordinate';
-import {Fill, Stroke, Circle, Style} from 'ol/style';
+import {toStringXY} from 'ol/coordinate'
+import {Fill, Stroke, Circle, Style} from 'ol/style'
 
 function MapWrapper(props) {
 
@@ -75,7 +75,7 @@ function MapWrapper(props) {
       )
 
       // Workaround to prevent openlayer rendering bugs within modal
-      map.updateSize();
+      map.updateSize()
 
       // Fit map to feature extent (with 100px of padding)
       map.getView().fit(featuresLayer.getSource().getExtent(), {
@@ -88,7 +88,7 @@ function MapWrapper(props) {
   // const handleMapClick = (event) => {
   //   // get clicked coordinate using mapRef to access current React state inside OpenLayers callback
   //   //  https://stackoverflow.com/a/60643670
-  //   const clickedCoord = mapRef.current.getCoordinateFromPixel(event.pixel);
+  //   const clickedCoord = mapRef.current.getCoordinateFromPixel(event.pixel)
   //
   //   // transform coord to EPSG 4326 standard Lat Long
   //   const transormedCoord = transform(clickedCoord, 'EPSG:3857', 'EPSG:4326')

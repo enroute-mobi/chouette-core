@@ -10,7 +10,7 @@ export default class BSelect4 extends Component {
   }
 
   displayData() {
-    return this.props.shape ? (this.props.shape.name || this.props.shape.uuid) : undefined
+    return this.props.shape ? (this.props.shape.name || this.props.shape.uuid) : undefined
   }
 
   render() {
@@ -36,8 +36,8 @@ export default class BSelect4 extends Component {
             delay: '500',
             data: function(params) {
               return {
-                q: { name_or_uuid_cont: params.term},
-              };
+                q: { name_or_uuid_cont: params.term}
+              }
             },
             processResults: function(data, params) {
               return {
@@ -50,7 +50,7 @@ export default class BSelect4 extends Component {
                     }
                   )
                 )
-              };
+              }
             },
             cache: true
           },
@@ -63,5 +63,5 @@ export default class BSelect4 extends Component {
 }
 
 const formatRepo = (props) => {
-  if(props.text) return props.text
+  if(props.text) { return props.text }
 }

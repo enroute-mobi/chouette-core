@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'
 
 import GeoJSON from 'ol/format/GeoJSON'
-import KML from 'ol/format/KML';
-import Feature from 'ol/Feature';
+import KML from 'ol/format/KML'
+import Feature from 'ol/Feature'
 import VectorSource from 'ol/source/Vector'
 import clone from '../../helpers/clone'
+import {Fill, Stroke, Circle, Style} from 'ol/style'
+import GeometryType from 'ol/geom/GeometryType'
 
 import MapWrapper from '../../journey_patterns/components/tools/MapWrapper'
 

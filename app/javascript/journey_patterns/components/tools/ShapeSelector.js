@@ -34,12 +34,8 @@ export default class BSelect4 extends Component {
             url: window.shapes_path,
             dataType: 'json',
             delay: '500',
-            data: function(params) {
-              return {
-                q: { name_or_uuid_cont: params.term}
-              }
-            },
-            processResults: function(data, params) {
+            data: (params) => { q: { name_or_uuid_cont: params.term} },
+            processResults: (data, params) => {
               return {
                 results: data.map(
                   item => _.assign(

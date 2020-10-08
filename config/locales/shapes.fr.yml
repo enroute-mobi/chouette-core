@@ -7,7 +7,7 @@ fr:
       edit: "Editer ce tracé"
       destroy: "Supprimer ce tracé"
       destroy_confirm: "Etes vous sûr de supprimer ce tracé ?"
-      associated_resources: Ressources associées
+      associated_resources: "Tracé %{shape_uuid} - Ressources associées"
     edit:
       title: "Editer le tracé %{name}"
     show:

@@ -1,4 +1,4 @@
-)default: &default
+default: &default
   adapter: postgis
   encoding: unicode
   port: 5432

@@ -25,7 +25,6 @@
 *.swo
 .DS_Store
 /vendor/bundle
-/.ruby-version
 /.byebug_history
 /start.sh
 /coverage
@@ -61,3 +60,5 @@
 
 # To avoid error
 /config/storage-key.json
+
+notes

@@ -4,12 +4,12 @@ FactoryGirl.define do
     workgroup { create(:workgroup) }
     enabled false
     export_type "Export::Gtfs"
-    export_options { { duration: 200, prefer_referent_stop_area: false } }
+    export_options { { duration: 200, prefer_referent_stop_area: false, ignore_single_stop_station: false } }
   end
 
   factory :publication_setup_gtfs, :parent => :publication_setup do
     export_type "Export::Gtfs"
-    export_options { { duration: 200, prefer_referent_stop_area: false } }
+    export_options { { duration: 200, prefer_referent_stop_area: false, ignore_single_stop_station: false } }
   end
 
   factory :publication_setup_idfm_netex_full, :parent => :publication_setup do

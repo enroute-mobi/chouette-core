@@ -3,8 +3,10 @@ class Export::Gtfs < Export::Base
 
   option :duration, required: true, type: :integer, default_value: 200
   option :prefer_referent_stop_area, required: true, type: :boolean, default_value: false
+  option :ignore_single_stop_station, required: true, type: :boolean, default_value: false
 
   validates :prefer_referent_stop_area, inclusion: [true, false]
+  validates :ignore_single_stop_station, inclusion: [true, false]
 
   DEFAULT_AGENCY_ID = "chouette_default"
   DEFAULT_TIMEZONE = "Etc/UTC"
@@ -149,7 +151,7 @@ class Export::Gtfs < Export::Base
   end
 
   def exported_stop_areas
-    parents = Chouette::StopArea.parents_of(export_scope.stop_areas.where(area_type: 'zdep'), ignore_mono_parent: true)
+    parents = Chouette::StopArea.parents_of(export_scope.stop_areas.where(area_type: 'zdep'), ignore_mono_parent: ignore_single_stop_station)
     Chouette::StopArea.union(export_scope.stop_areas, parents).where(kind: :commercial)
   end
 

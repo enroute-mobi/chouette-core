@@ -1,8 +1,4 @@
-RSpec.describe Workbench, :type => :model do
-  it 'should have a valid factory' do
-    expect(FactoryBot.build(:workbench)).to be_valid
-  end
-
+describe Workbench, type: :model do
   it { should validate_presence_of(:name) }
   it { should validate_presence_of(:organisation) }
   it { should validate_presence_of(:objectid_format) }
@@ -22,11 +18,9 @@ RSpec.describe Workbench, :type => :model do
   it { should have_many(:notification_rules).dependent(:destroy) }
 
   context "dependencies" do
-
     before { allow(subject).to receive(:create_dependencies) }
 
     it { is_expected.to validate_presence_of(:output) }
-
   end
 
   context 'aggregation setup' do
@@ -105,11 +99,13 @@ RSpec.describe Workbench, :type => :model do
     let!(:organisation) { create :organisation, sso_attributes: { functional_scope: ids.to_json } }
     let(:workbench) { create :workbench, organisation: organisation }
     let(:lines){ workbench.lines }
+
     before do
       (ids + ['STIF:CODIFLIGNE:Line:0000']).each do |id|
         create :line, objectid: id, line_referential: workbench.line_referential
       end
     end
+
     context "with the default scope policy" do
       before do
         allow(Workgroup).to receive(:workbench_scopes_class).and_return(WorkbenchScopes::All)
@@ -119,7 +115,6 @@ RSpec.describe Workbench, :type => :model do
         expect(lines.count).to eq 3
       end
     end
-
   end
 
   context '.stop_areas' do
@@ -152,7 +147,6 @@ RSpec.describe Workbench, :type => :model do
   end
 
   describe "on creation" do
-
     let(:context) { Chouette.create { workbench } }
     let(:workbench) { context.workbench }
 
@@ -167,5 +161,4 @@ RSpec.describe Workbench, :type => :model do
       expect(shape_provider.short_name).to eq('default')
     end
   end
-
 end

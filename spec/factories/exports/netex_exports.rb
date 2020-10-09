@@ -19,5 +19,4 @@ FactoryBot.define do
     options {{export_type: :line, duration: 60, line_code: 1}}
     type {'Export::Netex'}
   end
-
 end

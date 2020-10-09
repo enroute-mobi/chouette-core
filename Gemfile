@@ -31,8 +31,6 @@ gem 'jbuilder'
 # Select2 for pretty select boxes w. autocomplete
 gem 'select2-rails', '~> 4.0', '>= 4.0.3'
 
-# Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
-gem 'spring', group: :development
 # ActiveRecord associations on top of PostgreSQL arrays
 gem 'has_array_of', en_route: 'has_array_of'
 
@@ -151,6 +149,7 @@ group :development do
   gem 'rails-erd'
   gem 'license_finder'
   gem 'bundler-audit'
+  gem 'spring'
   gem 'spring-commands-rspec'
   gem 'better_errors'
   gem 'binding_of_caller'
@@ -158,6 +157,9 @@ group :development do
 
   gem 'bummr'
   gem 'graphiql-rails'
+
+  gem 'guard-rspec'
+  gem 'guard-rubocop'
 end
 
 group :test do

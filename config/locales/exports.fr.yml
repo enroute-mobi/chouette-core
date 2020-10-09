@@ -118,7 +118,7 @@ fr:
           <<: *attrs
           duration: Durée (en jours)
           prefer_referent_stop_area: Préférer les arrêts Référents
-          ignore_single_stop_station: Ignorer les stations avec un arrêt unique
+          ignore_single_stop_station: Ignorer les Zones de Lieux avec une Zone d’Embarquement unique
           line_code: Ligne
           export_type: Sous-type d'export
           export_type_collection:

@@ -2,3 +2,4 @@
 	= d.attribute :export_type, value: publication_setup.new_export.human_type
 	= d.attribute :duration, value: publication_setup.export_options['duration']
 	= d.attribute :prefer_referent_stop_area, as: :boolean, value: publication_setup.export_options['prefer_referent_stop_area']
+	= d.attribute :ignore_single_stop_station, as: :boolean, value: publication_setup.export_options['ignore_single_stop_station']

@@ -47,9 +47,9 @@
     "grunt-contrib-watch": "^1.0.0",
     "grunt-watch-change": "^0.1.1",
     "jest": "^26.5.3",
-    "jest-context": "^2.1.0",
-    "jest-environment-jsdom-global": "^1.0.2",
-    "jest-set": "^2.0.0",
+    "jest-plugin-context": "^2.9.0",
+    "jest-plugin-set": "^2.9.0",
+    "jest-environment-jsdom-global": "^2.0.4",
     "react-addons-test-utils": "15.6.2",
     "react-test-renderer": "^16.2.0",
     "sinon": "4.1.3",
@@ -67,8 +67,8 @@
     "testEnvironment": "jest-environment-jsdom-global",
     "setupFiles": [
       "<rootDir>/spec/javascript/spec_helper.js",
-      "jest-context/setup",
-      "jest-set/setup"
+      "jest-plugin-context/setup",
+      "jest-plugin-set/setup"
     ]
   }
 }

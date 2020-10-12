@@ -39,7 +39,7 @@ describe('pagination reducer', () => {
   })
 
   it('should handle GO_TO_PREVIOUS_PAGE', () => {
-    let nextPage = nextPage ? 1 : -1
+    let nextPage = -1
     let newPage = pagination.periode_range[pagination.periode_range.indexOf(pagination.currentPage) + nextPage]
 
     expect(
@@ -52,7 +52,7 @@ describe('pagination reducer', () => {
     ).toEqual(Object.assign({}, state,  {currentPage : newPage, stateChanged: false}))
   })
   it('should handle GO_TO_NEXT_PAGE', () => {
-    let nextPage = nextPage ? 1 : -1
+    let nextPage = -1
     let newPage = pagination.periode_range[pagination.periode_range.indexOf(pagination.currentPage) + nextPage]
 
     expect(

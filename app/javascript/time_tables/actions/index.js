@@ -168,7 +168,6 @@ const actions = {
     let improvedCM = current_month.map((d, i) => {
       let isInPeriod = actions.isInPeriod(newPeriods, d.date)
       let isIncluded = some(dates, {'date': d.date, 'in_out': true})
-
       return assign({}, current_month[i], {
         in_periods: isInPeriod,
         include_date: isIncluded,

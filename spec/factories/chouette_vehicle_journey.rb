@@ -1,5 +1,4 @@
-FactoryGirl.define do
-
+FactoryBot.define do
   factory :vehicle_journey_common, :class => Chouette::VehicleJourney do
     sequence(:objectid) { |n| "organisation:VehicleJourney:lineid-#{n}:LOC" }
     sequence(:published_journey_name) { |n| "VehicleJourney #{n}" }
@@ -15,8 +14,8 @@ FactoryGirl.define do
       factory :vehicle_journey do
         association :company, factory: :company
         transient do
-          stop_arrival_time '01:00:00'
-          stop_departure_time '03:00:00'
+          stop_arrival_time { '01:00:00' }
+          stop_departure_time { '03:00:00' }
         end
 
         after(:create) do |vehicle_journey, evaluator|
@@ -38,7 +37,6 @@ FactoryGirl.define do
         factory :vehicle_journey_odd do
           association :journey_pattern, :factory => :journey_pattern_odd
         end
-
       end
     end
   end

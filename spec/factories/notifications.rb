@@ -1,6 +1,6 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :notification do
-    payload nil
-    channel "channel"
+    payload {nil}
+    channel {"channel"}
   end
 end

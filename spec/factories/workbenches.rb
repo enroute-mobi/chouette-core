@@ -1,9 +1,9 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :workbench do
-    name "Gestion de l'offre"
-    objectid_format 'stif_netex'
-    prefix 'local'
-    restrictions []
+    name {"Gestion de l'offre"}
+    objectid_format {'stif_netex'}
+    prefix {'local'}
+    restrictions {[]}
 
     association :organisation
     association :line_referential

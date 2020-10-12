@@ -1,6 +1,6 @@
 RSpec.describe LineReferential, type: :model do
   it 'should have a valid factory' do
-    expect(FactoryGirl.build(:line_referential)).to be_valid
+    expect(FactoryBot.build(:line_referential)).to be_valid
   end
 
   it { should validate_presence_of(:name) }

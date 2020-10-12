@@ -1,7 +1,5 @@
-
-describe "/networks/new", :type => :view do
-
-  let!(:network) {  assign(:network, build(:network)) }
+describe "/networks/new", type: :view do
+  let!(:network) {  assign(:network, create(:network)) }
   let!(:line_referential) { assign :line_referential, network.line_referential }
 
   describe "form" do
@@ -12,6 +10,5 @@ describe "/networks/new", :type => :view do
         with_selector "input[type=text][name=?]", network.name
       end
     end
-
   end
 end

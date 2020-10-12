@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :time_table_period, class: Chouette::TimeTablePeriod do
     association :time_table
     period_start       { Date.today }

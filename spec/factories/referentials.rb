@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :referential do
     sequence(:name) { |n| "Test #{n}" }
     sequence(:slug) { |n| "test_#{n}" }
@@ -6,15 +6,15 @@ FactoryGirl.define do
     association :line_referential
     association :stop_area_referential
     association :organisation
-    time_zone "Europe/Paris"
+    time_zone {"Europe/Paris"}
     ready { true }
-    objectid_format "stif_netex"
+    objectid_format {"stif_netex"}
     transient do
-      status :active
+      status {:active}
     end
 
     trait :bare do
-      bare true
+      bare {true}
     end
 
     after(:create) do |referential, evaluator|

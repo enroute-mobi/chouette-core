@@ -1,10 +1,10 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :line_referential do
     sequence(:name) { |n| "Line Referential #{n}" }
-    objectid_format 'stif_codifligne'
+    objectid_format {'stif_codifligne'}
 
     transient do
-      member nil
+      member {nil}
     end
 
     after(:create) do |line_referential, evaluator|

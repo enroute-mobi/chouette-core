@@ -1,6 +1,6 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :compliance_check_set do
-    status :new
+    status {:new}
     association :referential
     association :compliance_control_set
     association :workbench

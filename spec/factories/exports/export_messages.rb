@@ -1,7 +1,7 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :export_message, class: Export::Message do
     association :export
     association :resource, factory: :export_resource
-    criticity :info 
+    criticity {:info}
   end
 end

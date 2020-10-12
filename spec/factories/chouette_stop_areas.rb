@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :stop_area, :class => Chouette::StopArea do
     sequence(:objectid) { |n| "FR::ZDE:#{n}:STIF" }
     sequence(:name) { |n| "stop_area_#{n}" }
@@ -6,18 +6,18 @@ FactoryGirl.define do
     area_type { Chouette::AreaType.commercial.sample }
     latitude {10.0 * rand}
     longitude {10.0 * rand}
-    kind "commercial"
+    kind {"commercial"}
     confirmed_at { Time.now }
-    city_name 'Bordeaux'
-    postal_region '33063'
-    zip_code '33800'
-    street_name "Parc du couvent, Avenue Steve Biko"
+    city_name {'Bordeaux'}
+    postal_region {'33063'}
+    zip_code {'33800'}
+    street_name {"Parc du couvent, Avenue Steve Biko"}
     url   { Faker::Internet.url }
 
     association :stop_area_referential
 
     transient do
-      referential nil
+      referential {nil}
     end
 
     before(:create) do |stop_area, evaluator|
@@ -49,48 +49,48 @@ FactoryGirl.define do
     end
 
     trait :zdep do
-      kind "commercial"
-      area_type 'zdep'
+      kind {"commercial"}
+      area_type {'zdep'}
     end
 
     trait :zdlp do
-      kind "commercial"
-      area_type 'zdlp'
+      kind {"commercial"}
+      area_type {'zdlp'}
     end
 
     trait :lda do
-      kind "commercial"
-      area_type 'lda'
+      kind {"commercial"}
+      area_type {'lda'}
     end
 
     trait :gdl do
-      kind "commercial"
-      area_type 'gdl'
+      kind {"commercial"}
+      area_type {'gdl'}
     end
 
     trait :deposit do
-      kind "non_commercial"
-      area_type 'deposit'
+      kind {"non_commercial"}
+      area_type {'deposit'}
     end
 
     trait :border do
-      kind "non_commercial"
-      area_type 'border'
+      kind {"non_commercial"}
+      area_type {'border'}
     end
 
     trait :service_area do
-      kind "non_commercial"
-      area_type 'service_area'
+      kind {"non_commercial"}
+      area_type {'service_area'}
     end
 
     trait :relief do
-      kind "non_commercial"
-      area_type 'relief'
+      kind {"non_commercial"}
+      area_type {'relief'}
     end
 
     trait :other do
-      kind "non_commercial"
-      area_type 'other'
+      kind {"non_commercial"}
+      area_type {'other'}
     end
   end
 end

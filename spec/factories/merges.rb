@@ -1,9 +1,9 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :merge do
     workbench
 
     transient do
-      new nil
+      new {nil}
     end
 
     after(:create) do |merge, evaluator|

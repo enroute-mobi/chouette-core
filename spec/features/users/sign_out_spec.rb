@@ -13,7 +13,7 @@ feature 'Sign out', :devise do
 
   # FIXME #816
   # scenario 'user signs out successfully' do
-  #   user = FactoryGirl.create(:user)
+  #   user = FactoryBot.create(:user)
   #   user.confirm!
   #   login_as(user, :scope => "user")
   #   expect(page).to have_content I18n.t 'devise.sessions.signed_in'

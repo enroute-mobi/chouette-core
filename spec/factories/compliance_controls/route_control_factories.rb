@@ -1,5 +1,4 @@
-FactoryGirl.define do
-
+FactoryBot.define do
   factory :route_control_duplicates, class: 'RouteControl::Duplicates' do
     association :compliance_control_set
   end

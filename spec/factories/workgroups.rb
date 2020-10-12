@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :workgroup do
     sequence(:name) { |n| "Workgroup ##{n}" }
     association :line_referential

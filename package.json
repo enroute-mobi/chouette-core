@@ -1,5 +1,5 @@
 {
-  "name": "stif-boiv",
+  "name": "Chouette",
   "scripts": {
     "jest": "jest"
   },
@@ -8,7 +8,7 @@
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
     "@rails/webpacker": "^5.0.0",
-    "babel-jest": "23.2.0",
+    "babel-jest": "26.5.2",
     "babel-loader": "^8.0.0",
     "babelify": "8.0.0",
     "bootstrap": "3",
@@ -46,7 +46,7 @@
     "grunt": "^1.0.1",
     "grunt-contrib-watch": "^1.0.0",
     "grunt-watch-change": "^0.1.1",
-    "jest": "^23.3.0",
+    "jest": "^26.5.3",
     "jest-context": "^2.1.0",
     "jest-environment-jsdom-global": "^1.0.2",
     "jest-set": "^2.0.0",

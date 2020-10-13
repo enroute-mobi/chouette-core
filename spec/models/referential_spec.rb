@@ -422,7 +422,7 @@ describe Referential, :type => :model do
   context "schema creation" do
 
     it "should create a schema named as the slug" do
-      referential = FactoryGirl.create :referential
+      referential = FactoryBot.create :referential
       expect(referential.migration_count).to be > 300
     end
 

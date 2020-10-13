@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :clean_up do
     referential
     begin_date { Date.today}

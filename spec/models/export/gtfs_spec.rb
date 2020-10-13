@@ -877,9 +877,9 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       line = exported_referential.lines.first
 
       stop_areas = stop_area_referential.stop_areas.order(Arel.sql('random()')).limit(2)
-      route = FactoryGirl.create :route, line: line, stop_areas: stop_areas, stop_points_count: 0
-      journey_pattern = FactoryGirl.create :journey_pattern, route: route, stop_points: route.stop_points.sample(3)
-      FactoryGirl.create :vehicle_journey, journey_pattern: journey_pattern, company: nil
+      route = FactoryBot.create :route, line: line, stop_areas: stop_areas, stop_points_count: 0
+      journey_pattern = FactoryBot.create :journey_pattern, route: route, stop_points: route.stop_points.sample(3)
+      FactoryBot.create :vehicle_journey, journey_pattern: journey_pattern, company: nil
 
       gtfs_export.export_scope = Export::Scope::All.new(exported_referential)
 
@@ -917,9 +917,9 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
       line = exported_referential.lines.first
       stop_areas = stop_area_referential.stop_areas.order(Arel.sql('random()')).limit(2)
-      route = FactoryGirl.create :route, line: line, stop_areas: stop_areas, stop_points_count: 0
-      journey_pattern = FactoryGirl.create :journey_pattern, route: route, stop_points: route.stop_points.sample(3)
-      vehicle_journey = FactoryGirl.create :vehicle_journey, journey_pattern: journey_pattern, company: company
+      route = FactoryBot.create :route, line: line, stop_areas: stop_areas, stop_points_count: 0
+      journey_pattern = FactoryBot.create :journey_pattern, route: route, stop_points: route.stop_points.sample(3)
+      vehicle_journey = FactoryBot.create :vehicle_journey, journey_pattern: journey_pattern, company: company
 
       gtfs_export.export_scope = Export::Scope::All.new(exported_referential)
 
@@ -959,10 +959,10 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       stop_areas = stop_area_referential.stop_areas.order(Arel.sql('random()')).limit(2)
       stop_areas.update_all time_zone: "Europe/Paris"
 
-      route = FactoryGirl.create :route, line: line, stop_areas: stop_areas, stop_points_count: 0
-      journey_pattern = FactoryGirl.create :journey_pattern, route: route, stop_points: route.stop_points.sample(2)
-      vehicle_journey = FactoryGirl.create :vehicle_journey, journey_pattern: journey_pattern, company: company
-      vehicle_journey.time_tables << (FactoryGirl.create :time_table)
+      route = FactoryBot.create :route, line: line, stop_areas: stop_areas, stop_points_count: 0
+      journey_pattern = FactoryBot.create :journey_pattern, route: route, stop_points: route.stop_points.sample(2)
+      vehicle_journey = FactoryBot.create :vehicle_journey, journey_pattern: journey_pattern, company: company
+      vehicle_journey.time_tables << (FactoryBot.create :time_table)
 
       gtfs_export.duration = nil
       gtfs_export.export_scope = Export::Scope::All.new(exported_referential)

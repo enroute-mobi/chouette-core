@@ -1,11 +1,11 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :stop_area_routing_constraint do
-    both_way true
+    both_way {true}
 
     transient do
-      stop_area_referential nil
-      from_stop_area nil
-      to_stop_area nil
+      stop_area_referential {nil}
+      from_stop_area {nil}
+      to_stop_area {nil}
     end
 
     before(:create) do |stop_area_routing_constraint, evaluator|

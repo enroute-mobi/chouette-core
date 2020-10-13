@@ -1,5 +1,4 @@
-FactoryGirl.define do
-
+FactoryBot.define do
   factory :route_common, :class => Chouette::Route do
     sequence(:name) { |n| "Route #{n}" }
     sequence(:published_name) { |n| "Long route #{n}" }
@@ -9,10 +8,9 @@ FactoryGirl.define do
     sequence(:objectid) { |n| "organisation:Route:lineId-routeId#{n}:LOC" }
 
     factory :route do
-
       transient do
-        stop_points_count 5
-        referential nil
+        stop_points_count { 5 }
+        referential { nil }
       end
 
       after(:build) do |route, evaluator|
@@ -27,7 +25,7 @@ FactoryGirl.define do
 
       factory :route_with_journey_patterns do
         transient do
-          journey_patterns_count 2
+          journey_patterns_count {2}
         end
 
         after(:create) do |route, evaluator|
@@ -50,7 +48,5 @@ FactoryGirl.define do
         route.run_callbacks(:commit)
       end
     end
-
   end
-
 end

@@ -1,6 +1,6 @@
 # coding: utf-8
 
-describe Chouette::VehicleJourney, :type => :model do
+describe Chouette::VehicleJourney, type: :model do
   subject { create(:vehicle_journey) }
   before(:each){
     Chouette::VehicleJourney.reset_custom_fields
@@ -25,7 +25,8 @@ describe Chouette::VehicleJourney, :type => :model do
   end
 
   it 'must validate before being persisted' do
-    vehicle_journey = build(:vehicle_journey)
+    vehicle_journey = create(:vehicle_journey)
+
     vehicle_journey.vehicle_journey_at_stops.build(
       arrival_time: '01:30:00',
       departure_time: '01:30:00',
@@ -34,6 +35,7 @@ describe Chouette::VehicleJourney, :type => :model do
       stop_point: vehicle_journey.route.stop_points.first,
       vehicle_journey: nil # this is silly, but we use it to test a bug on the ChecksumManager
     )
+
     vehicle_journey.vehicle_journey_at_stops.build(
       arrival_time: '00:30:00',
       departure_time: '00:30:00',
@@ -42,6 +44,7 @@ describe Chouette::VehicleJourney, :type => :model do
       stop_point: vehicle_journey.route.stop_points.last,
       vehicle_journey: nil # this is silly, but we use it to test a bug on the ChecksumManager
     )
+
     expect{ vehicle_journey.validate }.to_not raise_error
   end
 

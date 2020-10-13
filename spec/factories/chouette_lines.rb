@@ -1,17 +1,15 @@
-FactoryGirl.define do
-
+FactoryBot.define do
   factory :line, :class => Chouette::Line do
     sequence(:name) { |n| "Line #{n}" }
     sequence(:published_name) { |n| "Line-#{n}" }
     sequence(:objectid) { |n| "STIF:LIGNE:#{n}:LOC" }
     sequence(:number, 1)
 
-
     association :network, :factory => :network
     association :company, :factory => :company
 
-    transport_mode "bus"
-    transport_submode "undefined"
+    transport_mode { "bus" }
+    transport_submode { "undefined" }
 
     before(:create) do |line|
       line.line_referential ||= LineReferential.find_by! name: "first"
@@ -22,7 +20,7 @@ FactoryGirl.define do
     url { Faker::Internet.url }
 
     transient do
-      referential nil
+      referential {nil}
     end
 
     after(:create) do |line, evaluator|
@@ -38,10 +36,9 @@ FactoryGirl.define do
     end
 
     factory :line_with_stop_areas do
-
       transient do
-        routes_count 2
-        stop_areas_count 5
+        routes_count { 2 }
+        stop_areas_count { 5 }
       end
 
       after(:create) do |line, evaluator|
@@ -53,7 +50,6 @@ FactoryGirl.define do
       end
 
       factory :line_with_stop_areas_having_parent do
-
         after(:create) do |line|
           line.routes.each do |route|
             route.stop_points.each do |stop_point|
@@ -63,14 +59,10 @@ FactoryGirl.define do
           end
         end
       end
-
     end
 
     factory :line_with_after_commit do |line|
-      line.run_callbacks(:commit)
-
+      line.run_callbacks {:commit}
     end
-
   end
-
 end

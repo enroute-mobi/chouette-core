@@ -158,7 +158,7 @@ group :development do
   gem 'bummr'
   gem 'graphiql-rails'
 
-  gem 'guard-rspec'
+  gem 'guard-rspec', require: false
   gem 'guard-rubocop', require: false
 end
 

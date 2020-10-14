@@ -159,7 +159,7 @@ group :development do
   gem 'graphiql-rails'
 
   gem 'guard-rspec'
-  gem 'guard-rubocop'
+  gem 'guard-rubocop', require: false
 end
 
 group :test do

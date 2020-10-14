@@ -1151,7 +1151,10 @@ ActiveRecord::Schema.define(version: 2020_10_15_132346) do
   create_table "time_table_dates", force: :cascade do |t|
     t.bigint "time_table_id", null: false
     t.date "date"
+<<<<<<< HEAD
     t.integer "position"
+=======
+>>>>>>> CHOUETTE-711 Remove useless position column from periods and dates
     t.boolean "in_out"
     t.string "checksum"
     t.text "checksum_source"
@@ -1162,7 +1165,10 @@ ActiveRecord::Schema.define(version: 2020_10_15_132346) do
     t.bigint "time_table_id", null: false
     t.date "period_start"
     t.date "period_end"
+<<<<<<< HEAD
     t.integer "position"
+=======
+>>>>>>> CHOUETTE-711 Remove useless position column from periods and dates
     t.string "checksum"
     t.text "checksum_source"
     t.index ["period_start", "period_end"], name: "index_time_table_periods_on_period_start_and_period_end"

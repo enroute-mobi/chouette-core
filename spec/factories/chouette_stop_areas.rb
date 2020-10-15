@@ -48,6 +48,11 @@ FactoryBot.define do
       deleted_at { 1.hour.ago }
     end
 
+    trait :with_parent do
+      area_type  { :zdep }
+      parent     { create  :stop_area, area_type: :gdl}
+    end
+
     trait :zdep do
       kind {"commercial"}
       area_type {'zdep'}

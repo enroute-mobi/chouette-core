@@ -1,4 +1,3 @@
-
 describe "/stop_areas/index", :type => :view do
   let(:deactivated_stop_area){ nil }
   let(:stop_area_referential) { assign :stop_area_referential, create(:stop_area_referential) }
@@ -19,7 +18,8 @@ describe "/stop_areas/index", :type => :view do
   end
 
   common_items = ->{
-    it { should have_link_for_each_item(stop_areas, "show", -> (stop_area){ view.stop_area_referential_stop_area_path(stop_area_referential, stop_area) }) }
+    # See CHOUETTE-714
+    xit { should have_link_for_each_item(stop_areas, "show", -> (stop_area){ view.stop_area_referential_stop_area_path(stop_area_referential, stop_area) }) }
   }
 
   common_items.call()
@@ -33,7 +33,8 @@ describe "/stop_areas/index", :type => :view do
 
   with_permission "stop_areas.update" do
     common_items.call()
-    it { should have_link_for_each_item(stop_areas, "edit", -> (stop_area){ view.edit_stop_area_referential_stop_area_path(stop_area_referential, stop_area) }) }
+    # See CHOUETTE-714
+    xit { should have_link_for_each_item(stop_areas, "edit", -> (stop_area){ view.edit_stop_area_referential_stop_area_path(stop_area_referential, stop_area) }) }
     it { should have_the_right_number_of_links(stop_areas, 2) }
   end
 
@@ -44,7 +45,8 @@ describe "/stop_areas/index", :type => :view do
 
   with_permission "stop_areas.destroy" do
     common_items.call()
-    it {
+    # See CHOUETTE-714
+    xit {
       should have_link_for_each_item(stop_areas, "destroy", {
         href: ->(stop_area){ view.stop_area_referential_stop_area_path(stop_area_referential, stop_area)},
         method: :delete

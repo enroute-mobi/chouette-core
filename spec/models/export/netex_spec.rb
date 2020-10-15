@@ -1,6 +1,5 @@
-RSpec.describe Export::Netex, type: [:model] do
-
-  let( :boiv_iev_uri ){  URI("#{Rails.configuration.iev_url}/boiv_iev/referentials/exporter/new?id=#{subject.id}")}
+describe Export::Netex, type: :model do
+  let( :boiv_iev_uri ){ URI("#{Rails.configuration.iev_url}/boiv_iev/referentials/exporter/new?id=#{subject.id}") }
 
   before do
     allow(Thread).to receive(:new).and_yield
@@ -8,8 +7,8 @@ RSpec.describe Export::Netex, type: [:model] do
 
   context 'options' do
     it 'should validate the options' do
-      e = build(:netex_export)
-      expect(e).to be_valid, e.errors.inspect
+      e = create(:netex_export)
+      expect(e).to be_valid
 
       e.export_type = nil
       expect(e).to_not be_valid
@@ -39,11 +38,9 @@ RSpec.describe Export::Netex, type: [:model] do
   end
 
   context 'with referential' do
-    subject{ build( :netex_export, id: random_int ) }
-
     it 'will trigger the Java API' do
-      expect(subject).to receive(:threaded_call_boiv_iev)
-      subject.save!
+      expect_any_instance_of(Export::Netex).to receive(:threaded_call_boiv_iev)
+      create( :netex_export, id: random_int )
     end
   end
 end

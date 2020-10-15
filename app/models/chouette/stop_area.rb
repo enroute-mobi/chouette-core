@@ -171,7 +171,6 @@ module Chouette
         when "CommercialStopPoint" then Chouette::StopArea.where(:area_type => ['Quay', 'BoardingPosition']) - [self]
         when "StopPlace" then Chouette::StopArea.where(:area_type => ['StopPlace', 'CommercialStopPoint']) - [self]
       end
-
     end
 
     def possible_parents
@@ -186,10 +185,6 @@ module Chouette
     def geometry_presenter
       Chouette::Geometry::StopAreaPresenter.new self
     end
-
-    # def lines
-    #   []
-    # end
 
     def self.commercial
       where kind: "commercial"
@@ -517,10 +512,6 @@ module Chouette
 
       parents.distinct
     end
-
-    # def full_name
-    #   "#{name} #{zip_code} #{city_name} - #{local_id}"
-    # end
 
     def formatted_area_type
       "<span class='small label label-info label-stoparea'>#{I18n.t("area_types.label.#{area_type}")}</span>"

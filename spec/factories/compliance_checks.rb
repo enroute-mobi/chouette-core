@@ -1,11 +1,11 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :compliance_check do
     sequence(:name) { |n| "Compliance check #{n}" }
-    type "Type"
-    criticity "warning"
-    code "code"
-    origin_code "code"
-    comment "Text"
+    type { "Type" }
+    criticity { "warning" }
+    code { "code" }
+    origin_code { "code" }
+    comment { "Text" }
     association :compliance_check_set
 
     factory :compliance_check_with_compliance_check_block do

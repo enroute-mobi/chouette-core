@@ -15,18 +15,32 @@ describe Chouette::StopArea, :type => :model do
 
   describe "#time_zone" do
     it "should validate the value is a correct canonical timezone" do
-      expect(build(:stop_area, time_zone: nil)).to be_valid
-      expect(build(:stop_area, time_zone: "Europe/Lisbon")).to be_valid
-      expect(build(:stop_area, time_zone: "Portugal")).to_not be_valid
+      subject.time_zone = nil
+      expect(subject).to be_valid
+
+      subject.time_zone = "Europe/Lisbon"
+      expect(subject).to be_valid
+
+      subject.time_zone = "Portugal"
+      expect(subject).not_to be_valid
     end
   end
 
   describe "#area_type" do
     it "should validate the value is correct regarding to the kind" do
-      expect(build(:stop_area, kind: :commercial, area_type: :gdl)).to be_valid
-      expect(build(:stop_area, kind: :non_commercial, area_type: :relief)).to be_valid
-      expect(build(:stop_area, kind: :commercial, area_type: :relief)).to_not be_valid
-      expect(build(:stop_area, kind: :non_commercial, area_type: :gdl)).to_not be_valid
+      subject.kind = :commercial
+      subject.area_type = :gdl
+      expect(subject).to be_valid
+
+      subject.area_type = :relief
+      expect(subject).not_to be_valid
+
+      subject.kind = :non_commercial
+      subject.area_type = :relief
+      expect(subject).to be_valid
+
+      subject.area_type = :gdl
+      expect(subject).not_to be_valid
     end
   end
 
@@ -114,20 +128,6 @@ describe Chouette::StopArea, :type => :model do
     end
   end
 
-  context "create all types of stop areas" do
-    it "should validate kind of stop areas" do
-      expect(build(:stop_area, :zdep)).to be_valid
-      expect(build(:stop_area, :zdlp)).to be_valid
-      expect(build(:stop_area, :lda)).to be_valid
-      expect(build(:stop_area, :gdl)).to be_valid
-      expect(build(:stop_area, :deposit)).to be_valid
-      expect(build(:stop_area, :border)).to be_valid
-      expect(build(:stop_area, :service_area)).to be_valid
-      expect(build(:stop_area, :relief)).to be_valid
-      expect(build(:stop_area, :other)).to be_valid
-    end
-  end
-
   context "update" do
     let(:commercial) {create :stop_area, :zdep}
     let(:non_commercial) {create :stop_area, :deposit}
@@ -150,8 +150,7 @@ describe Chouette::StopArea, :type => :model do
   end
 
   describe "#parent" do
-
-    let(:stop_area) { FactoryGirl.build :stop_area, parent: FactoryGirl.build(:stop_area) }
+    let(:stop_area) { FactoryBot.build :stop_area, parent: FactoryBot.build(:stop_area) }
 
     it "is valid when parent has an 'higher' type" do
       stop_area.area_type = 'zdep'
@@ -227,33 +226,27 @@ describe Chouette::StopArea, :type => :model do
         expect(stop_area.errors).to_not have_key(:parent_id)
       end
     end
-
   end
 
   describe '#waiting_time' do
-
-    let(:stop_area) { FactoryGirl.build :stop_area }
-
     it 'can be nil' do
-      stop_area.waiting_time = nil
-      expect(stop_area).to be_valid
+      subject.waiting_time = nil
+      expect(subject).to be_valid
     end
 
     it 'can be zero' do
-      stop_area.waiting_time = 0
-      expect(stop_area).to be_valid
+      subject.waiting_time = 0
+      expect(subject).to be_valid
     end
 
     it 'can be positive' do
-      stop_area.waiting_time = 120
-      expect(stop_area).to be_valid
+      subject.waiting_time = 120
+      expect(subject).to be_valid
     end
 
     it "can't be negative" do
-      stop_area.waiting_time = -1
-      expect(stop_area).to_not be_valid
+      subject.waiting_time = -1
+      expect(subject).to_not be_valid
     end
-
   end
-
 end

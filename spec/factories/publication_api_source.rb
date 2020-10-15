@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :publication_api_source do
     association :publication_api
     association :publication

@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :notification_rule do
     notification_type { 'hole_sentinel' }
     association :workbench

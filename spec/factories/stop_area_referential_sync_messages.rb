@@ -1,5 +1,5 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :stop_area_referential_sync_message do
-    criticity :info
+    criticity {:info}
   end
 end

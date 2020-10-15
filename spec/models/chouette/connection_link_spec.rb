@@ -1,11 +1,10 @@
-
-describe Chouette::ConnectionLink, :type => :model do
+describe Chouette::ConnectionLink, type: :model do
   subject { create(:connection_link) }
 
   let(:stop_area) { create :stop_area }
 
   it "should have a valid factory" do
-    expect(build(:connection_link)).to be_valid
+    expect(subject).to be_valid
   end
 
   describe "validations" do
@@ -15,7 +14,6 @@ describe Chouette::ConnectionLink, :type => :model do
     it { should validate_presence_of :arrival_id }
 
     it "should have different departure and arrival" do
-
       expect{ create(:connection_link, departure: stop_area, arrival: stop_area) }.to raise_error ActiveRecord::RecordInvalid
     end
   end
@@ -41,7 +39,6 @@ describe Chouette::ConnectionLink, :type => :model do
         expect(subject.connection_link_type).to be_nil
       end
     end
-
   end
 
   describe "#connection_link_type=" do

@@ -28,3 +28,4 @@ en:
         destinations: "Output"
         duration: Duration (in days)
         prefer_referent_stop_area: Prefer Referent Stop Areas
+        ignore_single_stop_station: Ignore stations with a single stop

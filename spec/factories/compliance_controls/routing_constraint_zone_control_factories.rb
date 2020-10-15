@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :routing_constraint_zone_control_unactivated_stop_point,
     class: 'routingConstraintZoneControl::UnactivatedStopPoint' do
       association :compliance_control_set

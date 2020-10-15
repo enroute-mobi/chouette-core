@@ -1,44 +1,48 @@
 # Installation Guide
 
+Step-by-step guide to setup a local dev environment. This is meant for Linux users, and has been tested with Pop_OS 20.04.
+
 ## Ruby
 
-Example with [rvm](https://rvm.io/) (other solutions : rbenv, packages..):
+* Install RVM
+
+The setup for RVM on Ubuntu/Pop_OS is described [here](https://github.com/rvm/ubuntu_rvm#install)
+
+* Install Ruby
 
 ```sh
-rvm install 2.3.5
+rvm install 2.6.4
 ```
-
-Nokogiri on macOS
-
-http://www.nokogiri.org/tutorials/installing_nokogiri.html tells us that `xz` can cause troubles, here is what to do
-
-```
-brew unlink xz
-gem install nokogiri # or bundle install
-brew link xz
-```
-
 
 ## Node and Yarn
 
-Yarn needs node. If you use Node Version Manager [NVM](https://github.com/creationix/nvm)  you can rely on the content of `.nvmrc`. Otherwise please make sure to use a compatible version, still best to use the same as indicated by `.nvrmc`.
-
-* Install node
+* Install [NVM](https://github.com/nvm-sh/nvm)
 
 ```sh
-nvm install 6.13.0
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.36.0/install.sh | bash
 ```
 
-* Install [yarn](https://yarnpkg.com/lang/en/docs/install/)
+This script is supposed to add a few lines to your shell profile. If it's not working, you can add this at the end of your `.zshrc` or `.bashrc`.
+
+```
+export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
+```
+
+More infos [here](https://github.com/nvm-sh/nvm#installing-and-updating).
+
+* Install Node
 
 ```sh
-// On macOS
-brew install yarn
+nvm install 8.17.0
+```
 
-// On Debian/ubuntu
+* Install [Yarn](https://yarnpkg.com/lang/en/docs/install/)
+
+```sh
 curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
 echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-sudo apt-get update && sudo apt-get install yarn
+sudo apt update && sudo apt install yarn
 ```
 
 * Install nodes packages
@@ -49,35 +53,48 @@ yarn install
 
 ## Postgres
 
-### Create user
+* Install
 
-      createuser -s -U $USER -P chouette
-                  ^    ^      ^
-                  |    |      +---- prompt for passwd
-                  |    +----- as your default postgres user (remove in case of different config)
-                  +---------- superuser
+```sh
+sudo apt install postgresql postgresql-contrib
+```
 
-When promted for the password enter the highly secure string `chouette`.
+You can then connect as postgres (the default user).
+
+```sh
+sudo -i -u postgres
+```
+
+More infos [here](https://www.digitalocean.com/community/tutorials/how-to-install-postgresql-on-ubuntu-20-04-quickstart)
+
+* Create user
+
+```sh
+postgres@server:~$ createuser -s -P chouette
+
+```
+
+When prompted for the password enter the highly secure string `chouette`.
+
+To reconnect your regular user just type `exit`.
 
 ## Rails
 
-### Dependencies
-
-As documented [here](https://github.com/dryade/georuby-ext/issues/2) we need some more libs before we can start the `rake` setup tasks.
-
-On mac/OS :
+* Dependencies
 
 ```sh
-brew install postgis
+sudo apt install libproj-dev postgis libmagickwand-dev libmagic-dev libpq-dev
 ```
 
-On debian/ubuntu system :
+* Bundle
 
-```sh
-sudo apt-get install libproj-dev postgis libmagickwand-dev libmagic-dev
+Clone chouette-core repo, go into the new folder.
+The RVM gemset is created at that point, and the shell output should look like this :
+
 ```
-
-### Install gems
+ruby-2.6.4 - #gemset created /home/user/.rvm/gems/ruby-2.6.4@chouette
+ruby-2.6.4 - #generating chouette wrappers - please wait
+```
 
 Add the bundler gem
 
@@ -85,7 +102,7 @@ Add the bundler gem
 gem install bundler
 ```
 
-Go into your local repository and install the gems
+Install gems
 
 ```sh
 bundle install
@@ -93,15 +110,13 @@ bundle install
 
 ### Database
 
-#### Create database
+* Create database
 
 ```sh
 bundle exec rake db:create db:migrate
 ```
 
-#### Use seed
-
-Run :
+* Seed
 
 ```sh
 bundle exec rake db:seed
@@ -115,7 +130,20 @@ Launch Delayed jobs
 bundle exec rake jobs:work
 ```
 
+Launch webpack server to compile assets on the fly
+
 ```sh
-bin/webpack-dev-server // Launch webpack server to compile assets on the fly
-bundle exec rails server // Launch rails server
+bin/webpack-dev-server
 ```
+
+Launch rails server
+
+```sh
+bundle exec rails server
+```
+
+You will then have access to your local server on `http://localhost:3000`, where you can create an account.
+
+The next step could be to import a set of sample data to populate the local database.
+
+Well done :)

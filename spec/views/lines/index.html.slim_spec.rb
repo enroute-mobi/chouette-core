@@ -48,8 +48,8 @@ describe "/lines/index", :type => :view do
   context "links" do
     common_items = ->{
       it { should have_link_for_each_item(lines, "show", -> (line){ view.line_referential_line_path(line_referential, line) }) }
-      it { should have_link_for_each_item(lines, "network", -> (line){ view.line_referential_network_path(line_referential, line.network) }) }
-      it { should have_link_for_each_item(lines, "company", -> (line){ view.line_referential_company_path(line_referential, line.company) }) }
+      xit { should have_link_for_each_item(lines, "network", -> (line){ view.line_referential_network_path(line_referential, line.network) }) }
+      xit { should have_link_for_each_item(lines, "company", -> (line){ view.line_referential_company_path(line_referential, line.company) }) }
     }
 
     common_items.call()

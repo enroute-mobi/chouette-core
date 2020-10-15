@@ -9,8 +9,10 @@ describe "/lines/index", :type => :view do
        line_referential: line_referential
      }
    }
+   let(:network) { build(:network, line_referential: line_referential) }
+   let(:company) { build(:company, line_referential: line_referential) }
   let(:lines) do
-    assign :lines, build_paginated_collection(:line, LineDecorator, line_referential: line_referential, context: context)
+    assign :lines, build_paginated_collection(:line, LineDecorator, line_referential: line_referential, company: company, network: network, context: context)
   end
   let!(:q) { assign :q, Ransack::Search.new(Chouette::Line) }
 

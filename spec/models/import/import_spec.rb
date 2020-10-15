@@ -29,6 +29,19 @@ RSpec.describe Import::Base, type: :model do
     )
   end
 
+  describe ".maximum_runtime" do
+    it "should use CHOUETTE_IMPORT_MAX_RUN_TIME if exists" do
+      SmartEnv.set :CHOUETTE_IMPORT_MAX_RUN_TIME, default: 4
+      expect(Import::Base.maximum_runtime).to eq(4.hours)
+      SmartEnv.reset!
+    end
+
+    it "should use DELAYED_JOB_MAX_RUN_TIME by default" do
+      expect(Import::Base.maximum_runtime).to eq(24.hours)
+    end
+
+  end
+
   describe ".abort_old" do
     it "changes imports older than 4 hours to aborted" do
       Timecop.freeze(Time.now) do

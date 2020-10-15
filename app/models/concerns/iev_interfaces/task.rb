@@ -64,16 +64,6 @@ module IevInterfaces::Task
       %w(successful failed warning aborted canceled)
     end
 
-    def abort_old
-      where(
-        'created_at < ? AND status NOT IN (?)',
-        4.hours.ago,
-        finished_statuses
-      ).each do |task|
-        Rails.logger.error("#{task.class.name} #{task.name} takes too much time and is aborted")
-        task.update_attribute(:status, "aborted")
-      end
-    end
   end
 
   def workbench_for_notifications

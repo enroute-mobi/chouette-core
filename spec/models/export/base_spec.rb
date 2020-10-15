@@ -84,58 +84,6 @@ RSpec.describe Export::Base, type: :model do
     end
   end
 
-  describe ".abort_old" do
-    it "changes exports older than 4 hours to aborted" do
-      Timecop.freeze(Time.now) do
-        old_export = create(
-          :workgroup_export,
-          status: 'pending',
-          created_at: 4.hours.ago - 1.minute
-        )
-        current_export = create(:workgroup_export, status: 'pending')
-
-        Export::Base.abort_old
-
-        expect(current_export.reload.status).to eq('pending')
-        expect(old_export.reload.status).to eq('aborted')
-      end
-    end
-
-    it "doesn't work on exports with a `finished_status`" do
-      Timecop.freeze(Time.now) do
-        export = create(
-          :workgroup_export,
-          status: 'successful',
-          created_at: 4.hours.ago - 1.minute
-        )
-
-        Export::Base.abort_old
-
-        expect(export.reload.status).to eq('successful')
-      end
-    end
-
-    it "only works on the caller type" do
-      Timecop.freeze(Time.now) do
-        workgroup_export = create(
-          :workgroup_export,
-          status: 'pending',
-          created_at: 4.hours.ago - 1.minute
-        )
-        netex_export = create(
-          :netex_export,
-          status: 'pending',
-          created_at: 4.hours.ago - 1.minute
-        )
-
-        Export::Netex.abort_old
-
-        expect(workgroup_export.reload.status).to eq('pending')
-        expect(netex_export.reload.status).to eq('aborted')
-      end
-    end
-  end
-
   describe "#destroy" do
     it "must destroy all child exports" do
       netex_export = create(:netex_export)

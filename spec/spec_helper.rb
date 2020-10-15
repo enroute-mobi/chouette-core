@@ -61,6 +61,9 @@ RSpec.configure do |config|
   config.include EmailSpec::Helpers
   config.include EmailSpec::Matchers
 
+  config.filter_run focus: true
+  config.run_all_when_everything_filtered = true
+
   # ## Mock Framework
   #
   # If you prefer to use mocha, flexmock or RR, uncomment the appropriate line:

@@ -42,54 +42,65 @@ RSpec.describe Import::Base, type: :model do
 
   end
 
-  describe ".abort_old" do
-    it "changes imports older than 4 hours to aborted" do
-      Timecop.freeze(Time.now) do
-        old_import = create(
-          :workbench_import,
-          status: 'pending',
-          created_at: 4.hours.ago - 1.minute
-        )
-        current_import = create(:workbench_import, status: 'pending')
+  context "when CHOUETTE_IMPORT_MAX_RUN_TIME is set" do
 
-        Import::Base.abort_old
-
-        expect(current_import.reload.status).to eq('running')
-        expect(old_import.reload.status).to eq('aborted')
-      end
+    before do
+      SmartEnv.set :CHOUETTE_IMPORT_MAX_RUN_TIME, default: 4
     end
 
-    it "doesn't work on imports with a `finished_status`" do
-      Timecop.freeze(Time.now) do
-        import = create(
-          :workbench_import,
-          created_at: 4.hours.ago - 1.minute
-        )
-        import.update status: 'successful'
-
-        Import::Base.abort_old
-
-        expect(import.reload.status).to eq('successful')
-      end
+    after do
+      SmartEnv.reset!
     end
 
-    it "only works on the caller type" do
-      Timecop.freeze(Time.now) do
-        workbench_import = create(
-          :workbench_import,
-          status: 'pending',
-          created_at: 4.hours.ago - 1.minute
-        )
-        netex_import = create(
-          :netex_import,
-          status: 'pending',
-          created_at: 4.hours.ago - 1.minute
-        )
+    describe ".abort_old" do
+      it "changes imports older than 4 hours to aborted" do
+        Timecop.freeze(Time.now) do
+          old_import = create(
+            :workbench_import,
+            status: 'pending',
+            created_at: 4.hours.ago - 1.minute
+          )
+          current_import = create(:workbench_import, status: 'pending')
 
-        Import::Netex.abort_old
+          Import::Base.abort_old
 
-        expect(workbench_import.reload.status).to eq('running')
-        expect(netex_import.reload.status).to eq('aborted')
+          expect(current_import.reload.status).to eq('running')
+          expect(old_import.reload.status).to eq('aborted')
+        end
+      end
+
+      it "doesn't work on imports with a `finished_status`" do
+        Timecop.freeze(Time.now) do
+          import = create(
+            :workbench_import,
+            created_at: 4.hours.ago - 1.minute
+          )
+          import.update status: 'successful'
+
+          Import::Base.abort_old
+
+          expect(import.reload.status).to eq('successful')
+        end
+      end
+
+      it "only works on the caller type" do
+        Timecop.freeze(Time.now) do
+          workbench_import = create(
+            :workbench_import,
+            status: 'pending',
+            created_at: 4.hours.ago - 1.minute
+          )
+          netex_import = create(
+            :netex_import,
+            status: 'pending',
+            created_at: 4.hours.ago - 1.minute
+          )
+
+          Import::Netex.abort_old
+
+          expect(workbench_import.reload.status).to eq('running')
+          expect(netex_import.reload.status).to eq('aborted')
+        end
       end
     end
   end

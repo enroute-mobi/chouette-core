@@ -1151,10 +1151,10 @@ ActiveRecord::Schema.define(version: 2020_10_15_132346) do
   create_table "time_table_dates", force: :cascade do |t|
     t.bigint "time_table_id", null: false
     t.date "date"
+    t.integer "position"
     t.boolean "in_out"
     t.string "checksum"
     t.text "checksum_source"
-    t.integer "position"
     t.index ["time_table_id"], name: "index_time_table_dates_on_time_table_id"
   end
 
@@ -1162,9 +1162,9 @@ ActiveRecord::Schema.define(version: 2020_10_15_132346) do
     t.bigint "time_table_id", null: false
     t.date "period_start"
     t.date "period_end"
+    t.integer "position"
     t.string "checksum"
     t.text "checksum_source"
-    t.integer "position"
     t.index ["period_start", "period_end"], name: "index_time_table_periods_on_period_start_and_period_end"
     t.index ["time_table_id"], name: "index_time_table_periods_on_time_table_id"
   end

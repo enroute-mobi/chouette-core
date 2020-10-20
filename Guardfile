@@ -1,7 +1,7 @@
 notification :off
 
 # group 'tdd', halt_on_fail: true do
-  guard :rspec, all_on_start: true, cmd: 'bundle exec spring rspec -f p' do
+  guard :rspec, all_on_start: true, cmd: 'bundle exec spring rspec -f p --fail-fast' do
     require 'guard/rspec/dsl'
     dsl = Guard::RSpec::Dsl.new(self)
 

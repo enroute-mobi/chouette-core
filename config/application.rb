@@ -82,6 +82,8 @@ module ChouetteIhm
     SmartEnv.add :GCLOUD_AUTHENTICATED_URL_EXPIRATION, default: 600
     SmartEnv.add :GCLOUD_KEYFILE, default: 'config/storage-key.json'
 
+    SmartEnv.add_boolean :FORCE_MERGE_METHOD
+
     config.i18n.default_locale = SmartEnv[:RAILS_LOCALE].to_sym
 
     # Configure Browserify to use babelify to compile ES6

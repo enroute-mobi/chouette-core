@@ -120,7 +120,7 @@ class Merge < ApplicationModel
   end
 
   def merge_referential_method_class
-    if merge_method == EXPERIMENTAL_METHOD || ENV['FORCE_EXPERIMENTAL']
+    if merge_method == EXPERIMENTAL_METHOD || ENV['FORCE_MERGE_METHOD']
       Merge::Referential::Experimental
     else
       Merge::Referential::Legacy

@@ -1,5 +1,53 @@
 RSpec.describe Export::NetexGeneric do
 
+  describe "#content_type" do
+
+    subject { export.content_type }
+
+    context "when a profile is selected" do
+      let(:export) { Export::NetexGeneric.new profile: 'european' }
+      it { is_expected.to eq('application/zip') }
+    end
+
+    context "when no profile is selected" do
+      let(:export) { Export::NetexGeneric.new profile: 'none' }
+      it { is_expected.to eq('text/xml') }
+    end
+
+  end
+
+  describe "#file_extension" do
+
+    subject { export.file_extension }
+
+    context "when a profile is selected" do
+      let(:export) { Export::NetexGeneric.new profile: 'european' }
+      it { is_expected.to eq('zip') }
+    end
+
+    context "when no profile is selected" do
+      let(:export) { Export::NetexGeneric.new profile: 'none' }
+      it { is_expected.to eq('xml') }
+    end
+
+  end
+
+  describe "#netex_profile" do
+
+    subject { export.netex_profile }
+
+    context "when a profile is selected" do
+      let(:export) { Export::NetexGeneric.new profile: 'european' }
+      it { is_expected.to be_instance_of(Netex::Profile::European) }
+    end
+
+    context "when no profile is selected" do
+      let(:export) { Export::NetexGeneric.new profile: 'none' }
+      it { is_expected.to be_nil }
+    end
+
+  end
+
   describe "Routes export" do
 
     let(:target) { MockNetexTarget.new }

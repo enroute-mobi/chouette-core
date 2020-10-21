@@ -139,10 +139,6 @@ class Export::Base < ApplicationModel
     end
   end
 
-  def self.user_visible?
-    false
-  end
-
   def self.inherited child
     super child
     child.instance_eval do

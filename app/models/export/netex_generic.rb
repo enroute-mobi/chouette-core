@@ -1,7 +1,7 @@
 class Export::NetexGeneric < Export::Base
   include LocalExportSupport
 
-  option :profile, collection: %w(european)
+  option :profile, collection: %w(none european)
   option :duration, type: :integer
 
   def target
@@ -14,9 +14,20 @@ class Export::NetexGeneric < Export::Base
   end
   attr_writer :export_scope
 
+  def profile?
+    ! [nil, 'none'].include? profile
+  end
 
   def netex_profile
-    @netex_profile ||= Netex::Profile.create(profile) if profile
+    @netex_profile ||= Netex::Profile.create(profile) if profile?
+  end
+
+  def content_type
+    profile? ? 'application/zip' : 'text/xml'
+  end
+
+  def file_extension
+    profile? ? "zip" : 'xml'
   end
 
   def quay_registry

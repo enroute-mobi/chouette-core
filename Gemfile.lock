@@ -43,12 +43,13 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: 2491bd6b6b06899983d9d7078ebaab07243bcd85
+  revision: 1901fb158e3ab7093b1fbe5e63267f8059fe2cd0
   branch: CHOUETTE-641-generic-netex-export
   specs:
     netex (0.1.0)
       ox
       rgeo-proj4
+      rubyzip
       saxerator
 
 GIT

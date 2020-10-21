@@ -4,11 +4,10 @@ class Export::NetexGeneric < Export::Base
   option :profile, collection: %w(european)
   option :duration, type: :integer
 
-  attr_reader :target
-
   def target
     @target ||= Netex::Target.build export_file, profile: netex_profile
   end
+  attr_writer :target
 
   def export_scope
     @export_scope ||= duration ? Export::Scope::DateRange.new(referential, date_range) : Export::Scope::All.new

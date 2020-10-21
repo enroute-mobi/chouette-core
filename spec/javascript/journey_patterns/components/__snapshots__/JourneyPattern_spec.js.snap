@@ -44,7 +44,7 @@ exports[`the edit button in edit mode should display the edit link 1`] = `
           className="disabled"
         >
           <a
-            href="blank/vehicle_journeys?jp=undefined"
+            href="//vehicle_journeys?jp=undefined"
           >
             Horaires des courses
           </a>
@@ -114,7 +114,7 @@ exports[`the edit button should display the show link 1`] = `
           className="disabled"
         >
           <a
-            href="blank/vehicle_journeys?jp=undefined"
+            href="//vehicle_journeys?jp=undefined"
           >
             Horaires des courses
           </a>

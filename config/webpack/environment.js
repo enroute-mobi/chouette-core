@@ -6,24 +6,16 @@ let pathsToClean = [
   'public/packs'
 ];
 
-// the clean options to use
 let cleanOptions = {
   root: __dirname + '/../../',
   verbose: true,
   dry: false
 };
 
-
 environment.plugins.append(
   'CleanWebpack',
   new CleanWebpackPlugin(pathsToClean, cleanOptions)
 )
-
-// const config = environment.toWebpackConfig()
-
-// config.resolve.alias = {
-//   jquery: "jquery/src/jquery",
-// }
 
 environment.loaders.append('coffee', coffee)
 module.exports = environment

@@ -40,12 +40,12 @@ RUN apt-get update && mkdir -p /usr/share/man/man1 /usr/share/man/man7 && \
 
 FROM base as assets-builder
 
-# Prepare nodejs 6.x and yarn package installation
+# Prepare nodejs 12.x and yarn package installation
 RUN apt-get update && apt-get install -y --no-install-recommends curl gnupg ca-certificates apt-transport-https && \
     curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
     echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list && \
     curl -sS https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - && \
-    echo "deb https://deb.nodesource.com/node_8.x stretch main" > /etc/apt/sources.list.d/nodesource.list && \
+    echo "deb https://deb.nodesource.com/node_12.x stretch main" > /etc/apt/sources.list.d/nodesource.list && \
     apt-get update && apt-get install -y --no-install-recommends yarn nodejs
 
 # Install yarn packages

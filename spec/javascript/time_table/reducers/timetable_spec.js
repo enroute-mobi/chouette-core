@@ -79,7 +79,6 @@ describe('timetable reducer with filled state', () => {
     ).toEqual(state)
   })
 
-
   it('should handle GO_TO_PREVIOUS_PAGE', () => {
     let pagination = {
       periode_range: periode_range,
@@ -200,7 +199,7 @@ describe('timetable reducer with filled state', () => {
       if (i == 0){
         d.include_date = false
         d.excluded_date = true
-      } 
+      }
       return d
     })
 
@@ -255,8 +254,17 @@ describe('timetable reducer with filled state', () => {
   })
 
   it('should handle VALIDATE_PERIOD_FORM and add period if modalProps index = false', () => {
+    let activeDay = newCurrentMonth.find(o => o.date === '2017-05-05');
+    activeDay.include_date = true;
+    newCurrentMonth.splice(4,1).concat(activeDay)
+
     let newPeriods = state.time_table_periods.concat({"period_start": "2018-05-15", "period_end": "2018-05-24"})
-    let newState = Object.assign({}, state, {time_table_periods: newPeriods, time_table_dates: []})
+    let newState = Object.assign({}, state, {
+      current_month: newCurrentMonth,
+      time_table_periods: newPeriods,
+      time_table_dates: state.time_table_dates
+    })
+
     let modalProps = {
       active: false,
       begin: {
@@ -272,6 +280,7 @@ describe('timetable reducer with filled state', () => {
       error: '',
       index: false
     }
+
     expect(
       timetableReducer(state, {
         type: 'VALIDATE_PERIOD_FORM',

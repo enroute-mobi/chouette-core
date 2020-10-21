@@ -50,7 +50,6 @@ describe('the edit button', () => {
     return list
   })
 
-
   it('should display the show link', () => {
     expect(component.toJSON()).toMatchSnapshot()
     expect(component.root.findByProps({"data-target": "#JourneyPatternModal"})._fiber.stateNode.children[0].text).toEqual("Consulter")

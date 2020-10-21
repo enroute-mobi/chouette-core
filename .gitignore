@@ -42,8 +42,6 @@
 /public/packs
 /public/packs-test
 
-/bin
-
 /spec/fixtures/target_*
 /.sass-cache
 

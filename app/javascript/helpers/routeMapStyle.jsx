@@ -4,9 +4,9 @@ import GeometryType from 'ol/geom/GeometryType'
 // Return style for Route Map
 function routeMapStyle(props) {
 
-  var white = [255, 255, 255, 1];
-  var black = [0, 0, 0, 1];
-  var width = 2;
+  var white = [255, 255, 255, 1]
+  var black = [0, 0, 0, 1]
+  var width = 2
 
   var strokeColor = props.strokeColor || black
   var fillColor = props.fillColor || white

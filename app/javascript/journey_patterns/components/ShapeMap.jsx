@@ -6,8 +6,8 @@ import VectorSource from 'ol/source/Vector'
 import clone from '../../helpers/clone'
 import {Fill, Stroke, Circle, Style} from 'ol/style'
 
-import MapWrapper from '../../components/MapWrapper'
-import shapeMapStyle from '../../components/shapeMapStyle'
+import MapWrapper from 'components/MapWrapper'
+import shapeMapStyle from 'helpers/shapeMapStyle'
 
 
 function ShapeMap(props) {

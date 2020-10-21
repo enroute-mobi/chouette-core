@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import actions from '../actions'
 import CustomFieldsInputs from '../../helpers/CustomFieldsInputs'
+import ShapeSelector from './ShapeSelector'
+import ShapeMap from './ShapeMap'
 
 export default class CreateModal extends Component {
   constructor(props) {
@@ -83,11 +85,31 @@ export default class CreateModal extends Component {
                                 />
                             </div>
                           </div>
-                          <CustomFieldsInputs
-                            values={this.props.custom_fields}
-                            onUpdate={(code, value) => this.custom_fields[code]["value"] = value}
-                            disabled={false}
-                          />
+                          <div className='row'>
+                            <CustomFieldsInputs
+                              values={this.props.custom_fields}
+                              onUpdate={(code, value) => this.custom_fields[code]["value"] = value}
+                              disabled={false}
+                            />
+                          </div>
+                          <div className='row'>
+                            <div className='col-sm-12 col-xs-12'>
+                              <div className='form-group'>
+                                <label className='control-label'>{I18n.attribute_name('journey_pattern', 'shape')}</label>
+                                <ShapeSelector
+                                  shape = {this.props.modal.modalProps.journeyPattern.shape}
+                                  onSelectShape = {(e) => this.props.onSelectShape(e)}
+                                  onUnselectShape = {() => this.props.onUnselectShape()}
+                                  disabled={!this.props.editMode}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                          <div className='row'>
+                            <div className='col-xs-12 shape-map'>
+                              <ShapeMap shapeId={_.get(this.props.modal.modalProps, 'journeyPattern.shape.id')}/>
+                            </div>
+                          </div>
                         </div>
                       </div>
 

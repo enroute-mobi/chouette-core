@@ -12,7 +12,6 @@ import XYZ from 'ol/source/XYZ'
 import {transform} from 'ol/proj'
 import {toStringXY} from 'ol/coordinate'
 import {Fill, Stroke, Circle, Style} from 'ol/style'
-import routeMapStyle from './routeMapStyle'
 
 function MapWrapper(props) {
 
@@ -74,7 +73,7 @@ function MapWrapper(props) {
           features: props.features // make sure features is an array
         })
       )
-      console.log(props)
+
       featuresLayer.setStyle(props.style)
 
       // Workaround to prevent openlayer rendering bugs within modal

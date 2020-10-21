@@ -3,8 +3,8 @@ import React, { useState, useEffect } from 'react'
 import KML from 'ol/format/KML'
 import clone from '../../helpers/clone'
 
-import MapWrapper from '../../components/MapWrapper'
-import routeMapStyle from '../../components/routeMapStyle'
+import MapWrapper from 'components/MapWrapper'
+import routeMapStyle from 'helpers/routeMapStyle'
 
 function RouteMap() {
 
@@ -29,7 +29,7 @@ function RouteMap() {
         }
 
         var style = routeMapStyle({strokeColor: lineColor})
-        const parsedFeatures = new KML({extractStyles: false, defaultStyle: style}).readFeatures(fetchedFeatures, wktOptions)
+        const parsedFeatures = new KML({extractStyles: false, defaultStyle: style, showPointNames: true}).readFeatures(fetchedFeatures, wktOptions)
 
         // set features into state (which will be passed into OpenLayers
         //  map component as props)

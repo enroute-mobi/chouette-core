@@ -1,0 +1,24 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.19.0
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  SNYK-JS-LODASH-567746:
+    - codacy-coverage > lodash:
+        patched: '2020-10-21T13:51:38.356Z'
+    - react-redux > lodash:
+        patched: '2020-10-21T13:51:38.356Z'
+    - redux > lodash:
+        patched: '2020-10-21T13:51:38.356Z'
+    - '@rails/webpacker > node-sass > sass-graph > lodash':
+        patched: '2020-10-21T13:51:38.356Z'
+    - '@rails/webpacker > node-sass > gaze > globule > lodash':
+        patched: '2020-10-21T13:51:38.356Z'
+    - react-select > emotion > babel-plugin-emotion > @babel/helper-module-imports > lodash:
+        patched: '2020-10-21T13:51:38.356Z'
+    - react-select > emotion > babel-plugin-emotion > @babel/helper-module-imports > @babel/types > lodash:
+        patched: '2020-10-21T13:51:38.356Z'
+    - '@rails/webpacker > optimize-css-assets-webpack-plugin > last-call-webpack-plugin > lodash':
+        patched: '2020-10-21T13:51:38.356Z'
+    - codacy-coverage > request-promise > request-promise-core > lodash:
+        patched: '2020-10-21T13:51:38.356Z'

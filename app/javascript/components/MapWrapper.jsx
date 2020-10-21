@@ -74,8 +74,6 @@ function MapWrapper(props) {
         })
       )
 
-      featuresLayer.setStyle(props.style)
-
       // Workaround to prevent openlayer rendering bugs within modal
       map.updateSize()
 
@@ -84,7 +82,7 @@ function MapWrapper(props) {
         padding: [100,100,100,100]
       })
     }
-  },[props.features, props.style])
+  },[props.features])
 
   // // map click handler
   // const handleMapClick = (event) => {

@@ -32,9 +32,9 @@ function ShapeMap(props) {
             featureProjection: 'EPSG:3857'
           }
 
-          const parsedFeatures = new KML({extractStyles: false, defaultStyle: shapeMapStyle({})}).readFeatures(fetchedFeatures, wktOptions)
+          var style = shapeMapStyle({})
+          const parsedFeatures = new KML({defaultStyle: style}).readFeatures(fetchedFeatures, wktOptions)
           setFeatures(parsedFeatures)
-          setStyle(shapeMapStyle({}))
         })
     }
   },[props.shapeId])

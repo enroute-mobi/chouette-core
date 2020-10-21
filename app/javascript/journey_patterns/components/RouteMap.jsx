@@ -29,7 +29,7 @@ function RouteMap() {
         }
 
         var style = routeMapStyle({strokeColor: lineColor})
-        const parsedFeatures = new KML({extractStyles: false, defaultStyle: style, showPointNames: true}).readFeatures(fetchedFeatures, wktOptions)
+        const parsedFeatures = new KML({defaultStyle: style}).readFeatures(fetchedFeatures, wktOptions)
 
         // set features into state (which will be passed into OpenLayers
         //  map component as props)

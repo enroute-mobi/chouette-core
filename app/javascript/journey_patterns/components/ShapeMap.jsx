@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react'
 
-import GeoJSON from 'ol/format/GeoJSON'
 import KML from 'ol/format/KML'
 import Feature from 'ol/Feature'
 import VectorSource from 'ol/source/Vector'
-import clone from '../../../helpers/clone'
+import clone from '../../helpers/clone'
 import {Fill, Stroke, Circle, Style} from 'ol/style'
 
-
-import MapWrapper from './MapWrapper'
+import MapWrapper from '../../components/MapWrapper'
+import shapeMapStyle from '../../components/shapeMapStyle'
 
 
 function ShapeMap(props) {
@@ -33,29 +32,9 @@ function ShapeMap(props) {
             featureProjection: 'EPSG:3857'
           }
 
-          var style = new Style({
-            image: new Circle({
-              radius: 10,
-              fill: new Fill({
-                color: 'rgba(255, 153, 0)',
-              }),
-              stroke: new Stroke({
-                color: 'rgba(255, 204, 0)',
-                width: 4,
-              }),
-            }),
-            stroke: new Stroke({
-              color: 'rgba(255, 204, 0)',
-              width: 4,
-            }),
-            fill: new Fill({
-              color: 'rgba(255, 153, 0)',
-            }),
-          })
-
-          const parsedFeatures = new KML({extractStyles: false, defaultStyle: style}).readFeatures(fetchedFeatures, wktOptions)
+          const parsedFeatures = new KML({extractStyles: false, defaultStyle: shapeMapStyle({})}).readFeatures(fetchedFeatures, wktOptions)
           setFeatures(parsedFeatures)
-          setStyle(style)
+          setStyle(shapeMapStyle({}))
         })
     }
   },[props.shapeId])

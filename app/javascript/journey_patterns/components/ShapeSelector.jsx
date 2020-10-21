@@ -2,7 +2,7 @@ import _ from 'lodash'
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import Select2 from 'react-select2-wrapper'
-import language from '../../../helpers/select2/language.js'
+import language from '../../helpers/select2/language.js'
 
 export default class BSelect4 extends Component {
   constructor(props) {

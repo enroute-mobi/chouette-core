@@ -3,8 +3,8 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import actions from '../actions'
 import CustomFieldsInputs from '../../helpers/CustomFieldsInputs'
-import ShapeSelector from './tools/ShapeSelector'
-import ShapeMap from './tools/ShapeMap'
+import ShapeSelector from './ShapeSelector'
+import ShapeMap from './ShapeMap'
 
 export default class EditModal extends Component {
   constructor(props) {
@@ -112,7 +112,7 @@ export default class EditModal extends Component {
                       />
                     </div>
                     <div className='row'>
-                      <div className='col-sm-6 col-xs-12'>
+                      <div className='col-sm-12 col-xs-12'>
                         <div className='form-group'>
                           <label className='control-label'>{I18n.attribute_name('journey_pattern', 'shape')}</label>
                           <ShapeSelector

@@ -19,6 +19,7 @@ const App = () => (
     <SaveJourneyPattern />
     <ConfirmModal />
     <Modal/>
+    <h4 className="underline">{I18n.t('lines.show.map')}</h4>
     <RouteMap/>
   </div>
 )

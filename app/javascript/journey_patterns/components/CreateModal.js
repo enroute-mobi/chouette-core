@@ -4,6 +4,7 @@ import actions from '../actions'
 import CustomFieldsInputs from '../../helpers/CustomFieldsInputs'
 import ShapeSelector from './ShapeSelector'
 import ShapeMap from './ShapeMap'
+import _ from 'lodash'
 
 export default class CreateModal extends Component {
   constructor(props) {
@@ -13,7 +14,11 @@ export default class CreateModal extends Component {
 
   handleSubmit() {
     if(actions.validateFields(this.refs) == true) {
-      this.props.onAddJourneyPattern(_.assign({}, this.refs, {custom_fields: this.custom_fields}))
+      this.props.onAddJourneyPattern(_.assign({}, this.refs, {
+        custom_fields: this.custom_fields,
+        shape: this.props.modal.modalProps.journeyPattern.shape ? {id: this.props.modal.modalProps.journeyPattern.shape.id, name: this.props.modal.modalProps.journeyPattern.shape.name, uuid: this.props.modal.modalProps.journeyPattern.shape.uuid } : undefined
+       }
+     ))
       this.props.onModalClose()
       $('#NewJourneyPatternModal').modal('hide')
     }
@@ -97,7 +102,7 @@ export default class CreateModal extends Component {
                               <div className='form-group'>
                                 <label className='control-label'>{I18n.attribute_name('journey_pattern', 'shape')}</label>
                                 <ShapeSelector
-                                  shape = {this.props.modal.modalProps.journeyPattern.shape}
+                                  shape = {_.get(this.props.modal.modalProps, 'journeyPattern.shape')}
                                   onSelectShape = {(e) => this.props.onSelectShape(e)}
                                   onUnselectShape = {() => this.props.onUnselectShape()}
                                   disabled={!this.props.editMode}

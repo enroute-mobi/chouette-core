@@ -59,7 +59,8 @@ describe('journeyPatterns reducer', () => {
     let fakeData = {
       name: {value : 'm3'},
       published_name: {value: 'M3'},
-      registration_number: {value: ''}
+      registration_number: {value: ''},
+      shape: {id: 1, name: "test", uuid: "test-uuid"}
     }
 
     expect(
@@ -72,8 +73,9 @@ describe('journeyPatterns reducer', () => {
       published_name: 'M3',
       registration_number: '',
       deletable: false,
-      stop_points: undefined,
-      costs: {}
+      stop_points: stopPoints,
+      costs: {},
+      shape: {id: 1, name: "test", uuid: "test-uuid"}
     }, ...state])
   })
 

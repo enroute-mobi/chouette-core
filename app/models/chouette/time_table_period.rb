@@ -3,7 +3,6 @@ module Chouette
     include ChecksumSupport
 
     belongs_to :time_table, inverse_of: :periods
-    acts_as_list :scope => 'time_table_id = #{time_table_id}',:top_of_list => 0
 
     validates_presence_of :period_start, :period_end
 

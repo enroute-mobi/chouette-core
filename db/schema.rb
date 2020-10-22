@@ -782,7 +782,6 @@ ActiveRecord::Schema.define(version: 2020_12_09_090844) do
     t.hstore "sso_attributes"
     t.string "custom_view"
     t.string "features", default: [], array: true
-    t.bigint "stop_area_provider_id"
     t.index ["code"], name: "index_organisations_on_code", unique: true
   end
 
@@ -1017,6 +1016,8 @@ ActiveRecord::Schema.define(version: 2020_12_09_090844) do
     t.bigint "stop_area_referential_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "workbench_id"
+    t.index ["workbench_id"], name: "index_stop_area_providers_on_workbench_id"
   end
 
   create_table "stop_area_providers_areas", force: :cascade do |t|

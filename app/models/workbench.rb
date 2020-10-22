@@ -48,6 +48,7 @@ class Workbench < ApplicationModel
 
   has_many :shape_providers
   has_many :line_providers
+  has_many :stop_area_providers
 
   before_validation :create_dependencies, on: :create
 

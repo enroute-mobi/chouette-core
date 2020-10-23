@@ -3,7 +3,8 @@ require 'stif/reflex_synchronization'
 RSpec.describe Stif::ReflexSynchronization do
   let(:api_url) { "https://pprod.reflex.stif.info/ws/rest/V2/getData?method=getAll" }
   let!(:stop_area_referential) { create :stop_area_referential, name: 'Reflex' }
-
+  let!(:stop_area_provider) { create :stop_area_provider, objectid: "FR1:OrganisationalUnit:8:", stop_area_referential_id: stop_area_referential.id}
+  
   before(:each) do
     stub_request(:get, api_url).to_return(body: File.open("#{fixture_path}/reflex.xml"), status: 200)
     Stif::ReflexSynchronization.synchronize

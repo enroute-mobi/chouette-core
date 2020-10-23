@@ -133,7 +133,7 @@ module Stif
       end
 
       def get_stop_area_provider objectid
-        @_stop_area_provider_cache[objectid] ||= StopAreaProvider.find_or_create_by(objectid: objectid, stop_area_referential_id: defaut_referential.id)
+        @_stop_area_provider_cache[objectid] ||= StopAreaProvider.find_by(objectid: objectid, stop_area_referential_id: defaut_referential.id)
         @_stop_area_provider_cache[objectid]
       end
 

@@ -1,5 +1,4 @@
-
-RSpec.describe Api::V1::ImportsController, type: :controller do
+describe Api::V1::ImportsController, type: :controller do
   context 'unauthenticated' do
     include_context 'iboo wrong authorisation api user'
 
@@ -35,12 +34,13 @@ RSpec.describe Api::V1::ImportsController, type: :controller do
             post :create, params: {
               workbench_id: workbench.id,
               workbench_import: {
-                name: "test",
+                name: 'test',
                 file: file,
                 creator: 'test',
                 options: {
-                  "automatic_merge": true,
-                  "flag_urgent": true
+                  'automatic_merge': true,
+                  'flag_urgent': true,
+                  'notification_target': 'workbench'
                 }
               },
               format: :json
@@ -51,6 +51,7 @@ RSpec.describe Api::V1::ImportsController, type: :controller do
           import = Import::Workbench.last
           expect(import.automatic_merge).to be_truthy
           expect(import.flag_urgent).to be_truthy
+          expect(import.notification_target).to eq('workbench')
         end
       end
 
@@ -78,7 +79,6 @@ RSpec.describe Api::V1::ImportsController, type: :controller do
           }.to raise_error(Pundit::NotAuthorizedError)
         end
       end
-
     end
   end
 end

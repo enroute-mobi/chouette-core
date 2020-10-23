@@ -37,10 +37,10 @@ describe Api::V1::ImportsController, type: :controller do
                 name: 'test',
                 file: file,
                 creator: 'test',
+                notification_target: 'workbench',
                 options: {
                   'automatic_merge': true,
                   'flag_urgent': true,
-                  'notification_target': 'workbench'
                 }
               },
               format: :json

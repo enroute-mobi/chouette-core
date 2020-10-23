@@ -5,9 +5,6 @@ class Import::Workbench < Import::Base
 
   option :automatic_merge, type: :boolean, default_value: false
   option :flag_urgent, type: :boolean, default_value: false
-  option :notification_target, type: :string,
-                               collection: %w(none workbench),
-                               default_value: 'none'
 
   def main_resource; self end
 

@@ -50,7 +50,7 @@ class ImportsController < ChouetteController
   end
 
   def import_params
-    permitted_keys = %i(name file type referential_id)
+    permitted_keys = %i(name file type referential_id notification_target)
     permitted_keys += Import::Workbench.options.keys
     import_params = params.require(:import).permit(permitted_keys)
     import_params[:user_id] ||= current_user.id

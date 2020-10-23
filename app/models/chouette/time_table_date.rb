@@ -1,6 +1,7 @@
 module Chouette
   class TimeTableDate < Chouette::ActiveRecord
     include ChecksumSupport
+    acts_as_copy_target
 
     belongs_to :time_table, inverse_of: :dates
 

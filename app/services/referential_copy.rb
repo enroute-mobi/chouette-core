@@ -29,7 +29,6 @@ class ReferentialCopy
     measure "copy", source: source.id, target: target.id do
       CustomFieldsSupport.within_workgroup(workgroup) do
         copy_resource(:metadatas) unless skip_metadatas?
-        copy_resource(:time_tables)
         copy_resource(:purchase_windows)
         source.switch do
           lines.includes(:footnotes, :routes).find_each do |line|
@@ -53,6 +52,26 @@ class ReferentialCopy
   def copy_with_inserters
     source.switch do
       vehicle_journeys = source.vehicle_journeys.joins(:route).where("routes.line_id" => lines)
+
+      time_tables = source.time_tables.joins(:vehicle_journeys).where('vehicle_journeys.id' => vehicle_journeys)
+
+      measure "time_tables" do
+        time_tables.find_each do |time_table|
+          referential_inserter.time_tables << time_table
+        end
+
+        measure "dates" do
+          source.time_table_dates.where(time_table: time_tables).find_each do |time_table_date|
+            referential_inserter.time_table_dates << time_table_date
+          end
+        end
+
+        measure "periods" do
+          source.time_table_periods.where(time_table: time_tables).find_each do |time_table_period|
+            referential_inserter.time_table_periods << time_table_period
+          end
+        end
+      end
 
       measure "vehicle_journeys" do
         CustomFieldsSupport.within_workgroup(workgroup) do
@@ -138,34 +157,6 @@ class ReferentialCopy
   end
 
   # TIMETABLES
-
-  def copy_time_tables
-    table_ids = []
-    Chouette::TimeTable.transaction do
-      Chouette::ChecksumManager.no_updates do
-        source.switch do
-          Chouette::TimeTable.linked_to_lines(lines).distinct.find_each do |tt|
-            attributes = clean_attributes_for_copy tt
-            target.switch do
-              new_tt = Chouette::TimeTable.new attributes
-              controlled_save! new_tt
-              table_ids << new_tt.id
-              record_match(tt, new_tt)
-              copy_bulk_collection tt.dates do |new_date_attributes|
-                new_date_attributes[:time_table_id] = new_tt.id
-              end
-              copy_bulk_collection tt.periods do |new_period_attributes|
-                new_period_attributes[:time_table_id] = new_tt.id
-              end
-              new_tt.reload.save_shortcuts
-            end
-          end
-        end
-      end
-    end
-
-    Chouette::ChecksumUpdater.new(target, scope: TimeTableScope.new(target, table_ids)).time_tables
-  end
 
   class TimeTableScope
 

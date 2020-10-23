@@ -29,6 +29,11 @@ class IdMapInserter < ByClassInserter
     @stop_point_inserter.new_primary_key(old_primary_key)
   end
 
+  def new_time_table_primary_key!(old_primary_key)
+    @time_table_inserter ||= self.for(Chouette::TimeTable)
+    @time_table_inserter.new_primary_key(old_primary_key)
+  end
+
   # Reserved to test
   def register_primary_key!(model_class, old_primary_key, new_primary_key)
     self.for(model_class).register_primary_key old_primary_key, new_primary_key
@@ -131,15 +136,30 @@ class IdMapInserter < ByClassInserter
     end
 
     def update_relations(vehicle_journey_at_stop)
-      if vehicle_journey_id = vehicle_journey_at_stop.vehicle_journey_id
+      if (vehicle_journey_id = vehicle_journey_at_stop.vehicle_journey_id)
         vehicle_journey_at_stop.vehicle_journey_id =
         parent_inserter.new_vehicle_journey_primary_key!(vehicle_journey_id)
       end
 
-      if stop_point_id = vehicle_journey_at_stop.stop_point_id
-        if new_stop_point_id = parent_inserter.new_stop_point_primary_key!(stop_point_id)
+      if (stop_point_id = vehicle_journey_at_stop.stop_point_id)
+        if (new_stop_point_id = parent_inserter.new_stop_point_primary_key!(stop_point_id))
           vehicle_journey_at_stop.stop_point_id = new_stop_point_id
         end
+      end
+    end
+
+  end
+
+  class TimeTableDate < Base
+
+    def update_primary_key(model)
+      model.id = next_primary_key
+    end
+
+    def update_relations(date)
+      if (time_table_id = date.time_table_id)
+        date.time_table_id =
+          parent_inserter.new_time_table_primary_key!(time_table_id)
       end
     end
 
@@ -148,7 +168,7 @@ class IdMapInserter < ByClassInserter
   class ReferentialCode < Base
 
     def update_relations(code)
-      if resource_id = code.resource_id
+      if (resource_id = code.resource_id)
         unless code.resource_type == 'Chouette::VehicleJourney'
           raise "Doesn't support other resource than VehicleJourney (for the moment)"
         end

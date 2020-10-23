@@ -62,6 +62,9 @@ class ReferentialInserter
     vehicle_journey_at_stops
     vehicle_journey_time_table_relationships
     vehicle_journey_purchase_window_relationships
+    time_tables
+    time_table_dates
+    time_table_periods
     codes
   }.freeze
 

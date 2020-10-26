@@ -72,7 +72,9 @@ class Export::NetexGeneric < Export::Base
     end
 
     target.close
-    File.open export_file
+    export_file.close
+
+    export_file
   end
 
   class Part

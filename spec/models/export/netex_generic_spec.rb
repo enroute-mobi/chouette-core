@@ -108,6 +108,23 @@ RSpec.describe Export::NetexGeneric do
       expect(target.resources).to all(have_tag(:line_id))
     end
 
+    describe Export::NetexGeneric::StopPointDecorator do
+
+      let(:stop_point) { Chouette::StopPoint.new position: 0 }
+      let(:decorator) { Export::NetexGeneric::StopPointDecorator.new stop_point }
+
+      describe "#netex_order" do
+
+        subject { decorator.netex_order }
+
+        it "returns the StopPoint position plus one (to avoid zero value)" do
+          is_expected.to be(stop_point.position+1)
+        end
+
+      end
+
+    end
+
   end
 
   describe "TimeTables export" do

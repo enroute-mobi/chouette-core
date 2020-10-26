@@ -292,9 +292,13 @@ class Export::NetexGeneric < Export::Base
     def point_on_route_attributes
       {
         id: point_on_route_id,
-        order: position,
+        order: netex_order,
         route_point_ref: route_point_ref
       }
+    end
+
+    def netex_order
+      position+1
     end
 
     def point_on_route_id

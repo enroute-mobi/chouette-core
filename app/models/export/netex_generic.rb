@@ -40,35 +40,21 @@ class Export::NetexGeneric < Export::Base
 
   def generate_export_file
     CustomFieldsSupport.within_workgroup(referential.workgroup) do
-      operations_count = 9
+      part_classes = [
+        Stops,
+        Stations,
+        Lines,
+        Companies,
+        Routes,
+        JourneyPatterns,
+        VehicleJourneys,
+        TimeTables
+      ]
 
-      Stops.new(self).export_part
-      notify_progress 1.0/operations_count
-
-      Stations.new(self).export_part
-      notify_progress 2.0/operations_count
-
-      Lines.new(self).export_part
-      notify_progress 3.0/operations_count
-
-      Companies.new(self).export_part
-      notify_progress 4.0/operations_count
-
-      Routes.new(self).export_part
-      notify_progress 5.0/operations_count
-
-      StopPoints.new(self).export_part
-      notify_progress 6.0/operations_count
-
-      JourneyPatterns.new(self).export_part
-      notify_progress 7.0/operations_count
-
-      VehicleJourneys.new(self).export_part
-      notify_progress 8.0/operations_count
-
-      TimeTables.new(self).export_part
-      notify_progress 9.0/operations_count
-
+      part_classes.each_with_index do |part_class, index|
+        part_class.new(self).export_part
+        notify_progress (index+1)/part_classes.count
+      end
     end
 
     target.close

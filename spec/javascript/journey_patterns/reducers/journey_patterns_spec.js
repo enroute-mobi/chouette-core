@@ -16,27 +16,7 @@ let fakeStopPoints = [{
   object_id : "FR:92050:LDA:70915:STIF",
   position : 1,
 }]
-let stopPoints = [{
-  area_type : 'zdep',
-  city_name : 'Plaisir',
-  for_alighting : 'normal',
-  for_boarding : 'normal',
-  id : 14892,
-  name : 'test1',
-  object_id : 'test:StopPoint:1',
-  position : 0,
-  zip_code : '78490'
-},{
-  area_type : 'zdep',
-  city_name : 'Plaisir',
-  for_alighting : 'normal',
-  for_boarding : 'normal',
-  id : 14893,
-  name : 'test2',
-  object_id : 'test:StopPoint:2',
-  position : 1,
-  zip_code : '78490'
-}]
+
 
 describe('journeyPatterns reducer', () => {
   beforeEach(()=>{
@@ -81,7 +61,7 @@ describe('journeyPatterns reducer', () => {
       published_name: {value: 'M3'},
       registration_number: {value: ''}
     }
-    let stopPoints = stopPoints
+
     expect(
       jpReducer(state, {
         type: 'ADD_JOURNEYPATTERN',
@@ -92,7 +72,7 @@ describe('journeyPatterns reducer', () => {
       published_name: 'M3',
       registration_number: '',
       deletable: false,
-      stop_points: stopPoints,
+      stop_points: undefined,
       costs: {}
     }, ...state])
   })

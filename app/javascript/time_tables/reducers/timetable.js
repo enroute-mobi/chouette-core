@@ -3,9 +3,9 @@ import reject from 'lodash/reject'
 import sortBy from 'lodash/sortBy'
 import reduce from 'lodash/reduce'
 import actions from '../actions'
-let newState, newPeriods, newDates, newCM
 
 export default function timetable(state = {}, action) {
+  let newState, newPeriods, newDates, newCM
   switch (action.type) {
     case 'RECEIVE_TIME_TABLES':
       let fetchedState = assign({}, state, {
@@ -96,7 +96,7 @@ export default function timetable(state = {}, action) {
       let period_start = actions.formatDate(action.modalProps.begin)
       let period_end = actions.formatDate(action.modalProps.end)
 
-      let newPeriods = JSON.parse(JSON.stringify(action.timeTablePeriods))
+      newPeriods = JSON.parse(JSON.stringify(action.timeTablePeriods))
 
       if (action.modalProps.index !== false){
         let updatedPeriod = newPeriods[action.modalProps.index]
@@ -110,7 +110,7 @@ export default function timetable(state = {}, action) {
         }
         newPeriods.push(newPeriod)
       }
-      
+
       newDates = newDates || state.time_table_dates
       newState =assign({}, state, {time_table_periods: newPeriods, time_table_dates: newDates})
       return assign({}, newState, {current_month: actions.updateSynthesis(newState)})

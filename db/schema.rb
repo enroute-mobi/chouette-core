@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_15_132346) do
+ActiveRecord::Schema.define(version: 2020_10_20_145538) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -1151,7 +1151,6 @@ ActiveRecord::Schema.define(version: 2020_10_15_132346) do
   create_table "time_table_dates", force: :cascade do |t|
     t.bigint "time_table_id", null: false
     t.date "date"
-    t.integer "position"
     t.boolean "in_out"
     t.string "checksum"
     t.text "checksum_source"
@@ -1162,7 +1161,6 @@ ActiveRecord::Schema.define(version: 2020_10_15_132346) do
     t.bigint "time_table_id", null: false
     t.date "period_start"
     t.date "period_end"
-    t.integer "position"
     t.string "checksum"
     t.text "checksum_source"
     t.index ["period_start", "period_end"], name: "index_time_table_periods_on_period_start_and_period_end"

@@ -48,6 +48,37 @@ RSpec.describe Export::NetexGeneric do
 
   end
 
+  describe "Lines export" do
+
+    describe Export::NetexGeneric::Lines::Decorator do
+
+      let(:line) { Chouette::Line.new }
+      let(:decorator) { Export::NetexGeneric::Lines::Decorator.new line }
+
+      describe "#netex_transport_submode" do
+        subject { decorator.netex_transport_submode }
+
+        context "when transport submode is 'undefined'" do
+          before { line.transport_submode = :undefined }
+
+          it { is_expected.to be_nil }
+        end
+
+        context "when transport submode is a standard value" do
+          before { line.transport_submode = :schoolBus }
+
+          it "is the same value than the line submode" do
+            is_expected.to eq(line.transport_submode)
+          end
+
+        end
+
+      end
+
+    end
+
+  end
+
   describe "Routes export" do
 
     let(:target) { MockNetexTarget.new }

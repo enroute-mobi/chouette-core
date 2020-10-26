@@ -121,7 +121,7 @@ class Export::NetexGeneric < Export::Base
   class StopDecorator < SimpleDelegator
 
     def netex_attributes
-        attrs = {
+        {
           id: objectid,
           name: name
           # longitude: longitude,
@@ -226,9 +226,13 @@ class Export::NetexGeneric < Export::Base
           id: objectid,
           name: name,
           transport_mode: transport_mode,
-          transport_submode: transport_submode,
+          transport_submode: netex_transport_submode,
           operator_ref: operator_ref
         }
+      end
+
+      def netex_transport_submode
+        transport_submode unless transport_submode == :undefined
       end
 
       def netex_resource

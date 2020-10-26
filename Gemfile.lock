@@ -209,7 +209,7 @@ GEM
     crack (0.4.4)
     crass (1.0.6)
     database_cleaner (1.8.5)
-    ddtrace (0.41.0)
+    ddtrace (0.42.0)
       msgpack
     debug_inspector (0.0.3)
     declarative (0.0.10)
@@ -686,7 +686,7 @@ GEM
       actionpack (>= 4.0)
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
-    stackprof (0.2.15)
+    stackprof (0.2.16)
     teaspoon (1.1.5)
       railties (>= 3.2.5, < 6)
     teaspoon-jasmine (2.3.4)

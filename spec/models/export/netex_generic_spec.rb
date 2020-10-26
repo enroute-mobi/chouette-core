@@ -79,6 +79,36 @@ RSpec.describe Export::NetexGeneric do
 
   end
 
+  describe "TimeTables export" do
+
+    describe Export::NetexGeneric::PeriodDecorator do
+
+      let(:period) do
+        Chouette::TimeTablePeriod.new period_start: Date.parse('2021-01-01'),
+                                      period_end: Date.parse('2021-12-31')
+      end
+      let(:decorator) { Export::NetexGeneric::PeriodDecorator.new period, nil }
+
+      describe "#netex_from_date" do
+        subject { decorator.netex_from_date }
+
+        it "is a Time at the beginning of the first day of the period" do
+          is_expected.to eq(Time.parse('2021-01-01 00:00:00+0100'))
+        end
+      end
+
+      describe "#netex_to_date" do
+        subject { decorator.netex_to_date }
+
+        it "is a Time at the end of the last day of the period" do
+          is_expected.to eq(Time.parse('2022-01-01 00:00:00+0100'))
+        end
+      end
+
+    end
+
+  end
+
   class MockNetexTarget
 
     def add(resource)

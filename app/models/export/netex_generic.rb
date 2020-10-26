@@ -664,9 +664,17 @@ class Export::NetexGeneric < Export::Base
     def operating_period_attributes
       {
         id: id,
-        from_date: period_start.to_datetime,
-        to_date:period_end.to_datetime
+        from_date: netex_from_date,
+        to_date: netex_to_date
       }
+    end
+
+    def netex_from_date
+      period_start.to_time
+    end
+
+    def netex_to_date
+      (period_end+1).to_time
     end
 
     def day_type_assignment

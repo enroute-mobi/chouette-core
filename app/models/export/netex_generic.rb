@@ -394,8 +394,8 @@ class Export::NetexGeneric < Export::Base
     end
 
     def stop_point_in_journey_pattern_id
-      jp_match = journey_pattern_id.match /^chouette:JourneyPattern:(.+):LOC$/
-      sp_match = objectid.match /^chouette:JourneyPattern:(.+):LOC$/
+      jp_match = journey_pattern_id.match(/^chouette:JourneyPattern:(.+):LOC$/)
+      sp_match = objectid.match(/^chouette:JourneyPattern:(.+):LOC$/)
       if jp_match.nil? || sp_match.nil?
         return journey_pattern_id+objectid
       end
@@ -704,10 +704,6 @@ class Export::NetexGeneric < Export::Base
         day_type_ref: day_type_ref,
         oerder: 0
       }
-    end
-
-    def operatiing_period_ref
-      Netex::Reference.new(objectid, type: 'OperatinPeriodRef')
     end
 
   end

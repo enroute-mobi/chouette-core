@@ -6,13 +6,16 @@
   .container-fluid
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        - attributes = { t('id_reflex') => @stop_area_provider.get_objectid.short_id }
-        - attributes.merge!({ StopAreaProvider.tmf('name') => @stop_area_provider.name})
         - if @stop_area_provider.stop_areas.count > 10
           - stops = "#{@stop_area_provider.stop_areas.count} #{Chouette::StopArea.t}"
         - else
           - stops = @stop_area_provider.stop_areas.map do |stop|
             - link_to stop.name, [stop.stop_area_referential, stop]
           - stops = stops.to_sentence.html_safe
-        - attributes.merge!({ Chouette::StopArea.t.capitalize => stops })
-        = definition_list t('metadatas'), attributes
+        = definition_list t("metadatas"),
+          {  \
+            t('id_reflex') => @stop_area_provider.get_objectid.short_id,
+            StopAreaProvider.tmf('name') => @stop_area_provider.name,
+            Chouette::StopArea.t.capitalize => stops,
+            Workbench.ts.capitalize => link_to(@stop_area_provider.workbench.name, [@stop_area_provider.workbench]).html_safe \
+          }

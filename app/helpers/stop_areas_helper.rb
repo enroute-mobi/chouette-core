@@ -131,11 +131,8 @@ module StopAreasHelper
       Chouette::StopArea.tmf('registration_number') => stop_area.registration_number,
       Chouette::StopArea.tmf('status') => stop_area_status(stop_area.status),
     )
-    providers = stop_area.stop_area_providers.map do |provider|
-      link_to provider.name, [provider.stop_area_referential, provider]
-    end
 
-    attributes.merge!(StopAreaProvider.t.capitalize => providers.to_sentence.html_safe)
+    attributes.merge!(Chouette::StopArea.tmf('stop_area_provider') => link_to(stop_area.stop_area_provider.name, [stop_area.stop_area_provider.stop_area_referential, stop_area.stop_area_provider]).html_safe)
   end
 
   def stop_area_location_metadatas(stop_area, stop_area_referential)

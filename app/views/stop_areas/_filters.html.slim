@@ -1,5 +1,3 @@
-- hide_stop_area_providers ||= false
-
 = search_form_for @q, url: stop_area_referential_stop_areas_path(@stop_area_referential), html: {method: :get}, class: 'form form-filter' do |f|
   .ffg-row
     .input-group.search_bar class=filter_item_class(params[:q], :name_or_short_id_or_registration_number_cont)
@@ -14,10 +12,9 @@
   .ffg-row
     = f.input :zip_code_cont, placeholder: t('.zip_code'), label: Chouette::StopArea.tmf('zip_code'), required: false, wrapper_html: {class: filter_item_class(params[:q], :zip_code_cont)}
     = f.input :city_name_cont, placeholder: t('.city_name'), label: Chouette::StopArea.tmf('city_name'), required: false, wrapper_html: {class: filter_item_class(params[:q], :city_name_cont)}
-    - unless hide_stop_area_providers
-      .form-group.togglable class=filter_item_class(params[:q], :stop_area_providers_id_eq)
-        = f.label StopAreaProvider.ts, required: false, class: 'control-label'
-        = f.input :stop_area_providers_id_eq, placeholder: StopAreaProvider.ts, label: false, as: :autocomplete_stop_area_provider, autocomplete_url: autocomplete_stop_area_referential_stop_area_providers_path(@stop_area_referential, format: :json), load_url: stop_area_referential_stop_area_providers_path(@stop_area_referential), required: false, wrapper_html: {class: "checkbox_list"}
+    .form-group.togglable class=filter_item_class(params[:q], :stop_area_provider_id_eq)
+      = f.label StopAreaProvider.ts, required: false, class: 'control-label'
+      = f.input :stop_area_provider_id_eq, placeholder: StopAreaProvider.ts, label: false, as: :autocomplete_stop_area_provider, autocomplete_url: autocomplete_stop_area_referential_stop_area_providers_path(@stop_area_referential, format: :json), load_url: stop_area_referential_stop_area_providers_path(@stop_area_referential), required: false, wrapper_html: {class: "checkbox_list"}
 
     .form-group.togglable class=filter_item_class(params[:q], :area_type_eq_any)
       = f.label Chouette::StopArea.tmf('area_type'), required: false, class: 'control-label'

@@ -165,7 +165,7 @@ en:
         waiting_time: Waiting time (minutes)
         status: Status
         stop_area_provider_ids: Stops Providers
-        stop_area_providers: Stops Providers
+        stop_area_provider: Stops Provider
   formtastic:
     titles:
       stop_area:

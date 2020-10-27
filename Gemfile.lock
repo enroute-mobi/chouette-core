@@ -43,11 +43,12 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: c53931b62e5b432ffe1eb8d0bfc76e10b7c4fc4e
+  revision: a784b5043030b3335d474f8fd685f8683a628697
   specs:
     netex (0.1.0)
       ox
       rgeo-proj4
+      rubyzip
       saxerator
 
 GIT
@@ -447,7 +448,7 @@ GEM
     open4 (1.3.4)
     orm_adapter (0.5.0)
     os (1.0.1)
-    ox (2.13.2)
+    ox (2.13.4)
     parallel (1.19.2)
     parallel_tests (3.3.0)
       parallel
@@ -638,7 +639,7 @@ GEM
       sprockets (> 3.0)
       sprockets-rails
       tilt
-    saxerator (0.9.8)
+    saxerator (0.9.9)
     seedbank (0.4.0)
     select2-rails (4.0.13)
     semantic_range (2.3.0)

@@ -137,19 +137,15 @@ RSpec.describe Export::NetexGeneric do
       end
       let(:decorator) { Export::NetexGeneric::PeriodDecorator.new period, nil }
 
-      describe "#netex_from_date" do
-        subject { decorator.netex_from_date }
+      describe "#operating_period_attributes" do
+        subject { decorator.operating_period_attributes }
 
-        it "is a Time at the beginning of the first day of the period" do
-          is_expected.to eq(Time.parse('2021-01-01 00:00:00+0100'))
+        it "uses the Period start date as NeTEx from date (the datetime is created by the Netex resource)" do
+          is_expected.to include(from_date: period.period_start)
         end
-      end
 
-      describe "#netex_to_date" do
-        subject { decorator.netex_to_date }
-
-        it "is a Time at the end of the last day of the period" do
-          is_expected.to eq(Time.parse('2022-01-01 00:00:00+0100'))
+        it "uses the Period end date as NeTEx to date (the datetime is created by the Netex resource)" do
+          is_expected.to include(to_date: period.period_end)
         end
       end
 

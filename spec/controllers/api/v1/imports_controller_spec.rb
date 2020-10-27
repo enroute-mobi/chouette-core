@@ -1,4 +1,4 @@
-describe Api::V1::ImportsController, type: :controller do
+Rspec.describe Api::V1::ImportsController, type: :controller do
   context 'unauthenticated' do
     include_context 'iboo wrong authorisation api user'
 

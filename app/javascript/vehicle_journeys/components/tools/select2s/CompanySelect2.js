@@ -38,7 +38,7 @@ export default class BSelect4 extends Component {
             delay: '500',
             data: function(params) {
               return {
-                q: { name_cont: params.term, line_id_cont: line },
+                q: { name_cont: params.term, line_id_eq: line },
               };
             },
             processResults: function(data, params) {

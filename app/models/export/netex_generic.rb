@@ -46,6 +46,7 @@ class Export::NetexGeneric < Export::Base
         Lines,
         Companies,
         Routes,
+        StopPoints,
         JourneyPatterns,
         VehicleJourneys,
         TimeTables
@@ -388,7 +389,7 @@ class Export::NetexGeneric < Export::Base
     def stop_point_in_journey_pattern_attributes
       {
         id: stop_point_in_journey_pattern_id,
-        order: position,
+        order: position+1,
         scheduled_stop_point_ref: scheduled_stop_point_ref
       }
     end
@@ -489,7 +490,7 @@ class Export::NetexGeneric < Export::Base
       end
 
       def netex_resource
-        Netex::JourneyPattern.new netex_attributes
+        Netex::ServiceJourneyPattern.new netex_attributes
       end
 
       def route_ref

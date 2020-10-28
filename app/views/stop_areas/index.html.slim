@@ -37,8 +37,10 @@
               ), \
               TableBuilderHelper::Column.new( \
                 key: :stop_area_provider, \
-                attribute: Proc.new { |s| link_to(s.stop_area_provider.name, [s.stop_area_provider.stop_area_referential, s.stop_area_provider]).html_safe }, \
-                sortable: false\
+                attribute: Proc.new { |s| s.stop_area_provider&.name }, \
+                link_to: lambda do |s| \
+                  stop_area_referential_stop_area_provider_path(s.stop_area_provider.stop_area_referential, s.stop_area_provider) \
+                end \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :zip_code, \

@@ -15,6 +15,7 @@ FactoryBot.define do
     url   { Faker::Internet.url }
 
     association :stop_area_referential
+    stop_area_provider { association :stop_area_provider, stop_area_referential: stop_area_referential }
 
     transient do
       referential {nil}

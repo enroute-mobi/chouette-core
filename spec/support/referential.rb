@@ -16,6 +16,14 @@ module ReferentialHelper
     Workbench.find_by(prefix: 'first')
   end
 
+  def default_stop_area_referential
+    StopAreaReferential.find_by_name("first")
+  end
+
+  def default_line_referential
+    LineReferential.find_by_name("first")
+  end
+
   def self.included(base)
     base.class_eval do
       extend ClassMethods

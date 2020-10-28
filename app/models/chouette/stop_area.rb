@@ -29,7 +29,7 @@ module Chouette
     scope :light, ->{ select(:id, :name, :city_name, :zip_code, :time_zone, :registration_number, :kind, :area_type, :time_zone, :stop_area_referential_id, :objectid) }
     scope :with_time_zone, -> { where.not time_zone: nil }
 
-    belongs_to :stop_area_provider
+    belongs_to :stop_area_provider, required: true
 
     belongs_to :referent, class_name: 'Chouette::StopArea'
     has_many :specific_stops, class_name: 'Chouette::StopArea', foreign_key: 'referent_id'

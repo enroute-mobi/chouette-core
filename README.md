@@ -34,10 +34,16 @@ License
 This project is licensed under the CeCILL-B license, a copy of which can be found in the [LICENSE](./LICENSE.md) file.
 
 
+Roadmap and Features
+--------------------
+
+Our Roadmap and Features are available on [enRoute products wiki](https://enroute.atlassian.net/wiki/spaces/PUBLIC/overview)
+
+
 User Manual
 -----------
 
-User Manual is available on [https://docs.enroute.mobi/fr/chouette/user-manual/](https://docs.enroute.mobi/fr/chouette/user-manual/)
+Our User Manual is available on [https://docs.enroute.mobi/fr/chouette/user-manual/](https://docs.enroute.mobi/fr/chouette/user-manual/)
 
 
 Support

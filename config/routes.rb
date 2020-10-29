@@ -331,8 +331,6 @@ ChouetteIhm::Application.routes.draw do
     get "/snap" => "snapshots#show"
   end
 
-  get '/help/(*slug)' => 'help#show'
-
   if Rails.application.config.development_toolbar
     post "/development_toolbar" => "development_toolbar#update_settings", as: :development_toolbar_update_settings
   end

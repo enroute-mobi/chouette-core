@@ -34,7 +34,6 @@ class Referential < ApplicationModel
 
   validates_uniqueness_of :slug
 
-  validates_format_of :slug, with: %r{\A[a-z][0-9a-z_]+\Z}
   validates_format_of :prefix, with: %r{\A[0-9a-zA-Z_]+\Z}
   # validates_format_of :upper_corner, with: %r{\A-?[0-9]+\.?[0-9]*\,-?[0-9]+\.?[0-9]*\Z}
   # validates_format_of :lower_corner, with: %r{\A-?[0-9]+\.?[0-9]*\,-?[0-9]+\.?[0-9]*\Z}
@@ -623,11 +622,7 @@ class Referential < ApplicationModel
   end
 
   def assign_slug(time_reference = Time)
-    self.slug ||= begin
-      prefix = name.parameterize.split('-').map { |p| p.gsub(/[^a-z]/, '').presence }
-      prefix = prefix.compact.join('_')[0..12].presence || "referential"
-      "#{prefix}_#{time_reference.now.to_i}"
-    end if name
+    self.slug ||= SecureRandom.uuid
   end
 
   def assign_prefix

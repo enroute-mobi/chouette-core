@@ -1,41 +1,44 @@
 # Chouette
-[![Maintainability](https://api.codeclimate.com/v1/badges/f9680a36dcfd25d4f2cf/maintainability)](https://codeclimate.com/github/af83/chouette-core/maintainability)
 
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/815b2721c0334346a5ee4f252d23a68e)](https://www.codacy.com?utm_source=bitbucket.org&amp;utm_medium=referral&amp;utm_content=enroute-mobi/chouette-core&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Coverage/815b2721c0334346a5ee4f252d23a68e)](https://www.codacy.com?utm_source=bitbucket.org&utm_medium=referral&utm_content=enroute-mobi/chouette-core&utm_campaign=Badge_Coverage)
 
-Chouette is a Ruby/Rails & Java project to manage transport offer data. It is designed as an [SaaS](http://en.wikipedia.org/wiki/Software_as_a_service) platform and can :
-* Exchange transport data
- * [GTFS](https://developers.google.com/transit/gtfs/reference?hl=fr),
- * [NeTEx](http://www.normes-donnees-tc.org/format-dechange/donnees-theoriques/netex/)
-* Create and edit transport data with a collaborative team workflow
-* Be requested via a read-only [Restful API](https://en.wikipedia.org/wiki/Representational_state_transfer)
-* [Import, Export and Validate transport data asynchronously](https://bitbucket.org/enroute-mobi/chouette-core-iev))
-* Use a [multi-tenancy database](http://en.wikipedia.org/wiki/Multitenancy)
+Chouette is a [SaaS platform](https://chouette.enroute.mobi/) dedicated to schedule public transit data : NeTEx, GTFS, Neptune..   
 
-Chouette Core
-------------
+Chouette covers many use cases for your transit data :
+* Produce a schedule public transit dataset for your territory, your network
+* Aggregate several public transit datasets in a single area
+* Incorporate public transit « open data » in your mobile application
+* Manage collaborative production of schedule public transit data
+* Check the quality of my mobility datasets and carry out data cleaning
+* Add value to my data : dashboards, statistics, visualization, simulations
+* Comply with regulations (EU directives, national laws)
+* Ensure consistency of data flows for MaaS platforms
 
-Chouette Core is the open source version of Chouette project. Use this project to fork and maintain your own Chouette project.
-
+This repository is the open source version of Chouette project. Use this project to fork and maintain your own Chouette project.
 
 Requirements
 ------------
 
-* [Import, Export and Validation Operations](https://bitbucket.org/enroute-mobi/chouette-core-iev) are in the Java part of the project
+[Import, Export and Validation Operations](https://bitbucket.org/enroute-mobi/chouette-core-iev) are in the Java part of the project
 
 Install
 ----------------
 
 Install steps are available [here](https://bitbucket.org/enroute-mobi/chouette-core/src/master/INSTALL.md)
 
-More Information
-----------------
-
-Some technical articles are available [on the wiki](../../wiki) too.
 
 License
 -------
 
 This project is licensed under the CeCILL-B license, a copy of which can be found in the [LICENSE](./LICENSE.md) file.
+
+
+User Manual
+-----------
+
+User Manual is available on [https://docs.enroute.mobi/fr/chouette/user-manual/](https://docs.enroute.mobi/fr/chouette/user-manual/)
+
 
 Support
 -------

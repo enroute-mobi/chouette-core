@@ -224,7 +224,7 @@ describe ReferentialCopy do
         referential :source do
           time_table :first, dates_excluded: Time.zone.today + 10
 
-          vehicle_journey time_tables: [:first]
+          3.times { vehicle_journey time_tables: [:first] }
         end
         referential :target, with_metadatas: false, archived_at: Time.now
       end

@@ -52,8 +52,7 @@ class ReferentialCopy
   def copy_with_inserters
     source.switch do
       vehicle_journeys = source.vehicle_journeys.joins(:route).where("routes.line_id" => lines)
-
-      time_tables = source.time_tables.joins(:vehicle_journeys).where('vehicle_journeys.id' => vehicle_journeys)
+      time_tables = source.time_tables.joins(:vehicle_journeys).where('vehicle_journeys.id' => vehicle_journeys).distinct
 
       measure "time_tables" do
         time_tables.find_each do |time_table|

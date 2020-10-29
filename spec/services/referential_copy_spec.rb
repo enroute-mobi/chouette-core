@@ -1,4 +1,4 @@
-xdescribe ReferentialCopy do
+describe ReferentialCopy do
   let(:stop_area_referential){ create :stop_area_referential }
   let(:line_referential){ create :line_referential }
   let(:company){ create :company, line_referential: line_referential }
@@ -154,24 +154,6 @@ xdescribe ReferentialCopy do
 
   end
 
-  context "#copy_time_tables" do
-    let!(:time_table){
-      referential.switch do
-        create(:time_table)
-      end
-    }
-
-    it "should copy the time_tables" do
-      referential.switch
-      route = create :route, line: referential.lines.last
-      create :vehicle_journey, journey_pattern: route.full_journey_pattern, time_tables: [time_table]
-      expect{ referential_copy.send(:copy_time_tables) }.to change{ target.switch{ Chouette::TimeTable.count } }.by 1
-      new_timetable = target.switch{ Chouette::TimeTable.last }
-      expect(referential_copy.send(:clean_attributes_for_copy, new_timetable)).to eq referential_copy.send(:clean_attributes_for_copy, time_table)
-      expect(new_timetable.checksum).to eq time_table.checksum
-    end
-  end
-
   context "#copy_purchase_windows" do
     let!(:purchase_window){
       referential.switch do
@@ -192,7 +174,7 @@ xdescribe ReferentialCopy do
 
 end
 
-xdescribe ReferentialCopy do
+describe ReferentialCopy do
 
   let(:source) { context.referential(:source) }
   let(:target) { context.referential(:target) }
@@ -231,6 +213,61 @@ xdescribe ReferentialCopy do
       referential_copy.copy
 
       expect(target.metadatas).to all(have_attributes(referential_source_id: source.id))
+    end
+
+  end
+
+  describe "TimeTable copy" do
+
+    let(:context) do
+      Chouette.create do
+        referential :source do
+          time_table :first, dates_excluded: Time.zone.today + 10
+
+          3.times { vehicle_journey time_tables: [:first] }
+        end
+        referential :target, with_metadatas: false, archived_at: Time.now
+      end
+    end
+
+    it "contains the same TimeTable count" do
+      expect {
+        referential_copy.copy
+      }.to change { target.switch { target.time_tables.count } }
+             .from(0).to( source.switch { target.time_tables.count } )
+    end
+
+    it "contains the same TimeTableDate count" do
+      expect {
+        referential_copy.copy
+      }.to change { target.switch { target.time_table_dates.count } }
+             .from(0).to( source.switch { target.time_table_dates.count } )
+    end
+
+    it "contains the same TimeTablePeriod count" do
+      expect {
+        referential_copy.copy
+      }.to change { target.switch { target.time_table_periods.count } }
+             .from(0).to( source.switch { target.time_table_periods.count } )
+    end
+
+    describe "the TimeTable in target referential" do
+
+      subject { target.switch { target.time_tables.first } }
+
+      let(:source_time_table) { source.switch { source.time_tables.first } }
+
+      before { referential_copy.copy }
+      around { |example| target.switch { example.run } }
+
+      it "has the same period(s)" do
+        expect(subject.periods.map(&:range)).to eq(source_time_table.periods.map(&:range))
+      end
+
+      it "has the same date(s)" do
+        expect(subject.dates.map(&:date)).to eq(source_time_table.dates.map(&:date))
+      end
+
     end
 
   end

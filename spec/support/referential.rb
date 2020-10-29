@@ -61,7 +61,8 @@ RSpec.configure do |config|
       :workgroup,
       name: "IDFM",
       line_referential: line_referential,
-      stop_area_referential: stop_area_referential
+      stop_area_referential: stop_area_referential,
+      owner: organisation
     )
 
     workbench = FactoryBot.create(
@@ -73,7 +74,7 @@ RSpec.configure do |config|
       stop_area_referential: stop_area_referential,
       prefix: organisation.code
     )
-    referential = FactoryBot.create(
+    FactoryBot.create(
       :referential,
       prefix: workbench.prefix,
       name: "first",
@@ -105,9 +106,7 @@ RSpec.configure do |config|
     # Reset tenant back to `public`
     Apartment::Tenant.reset
     # Rollback transaction
-
-    # we need the rescue, see https://github.com/rails/webpacker/issues/422
-    DatabaseCleaner.clean rescue nil
+    DatabaseCleaner.clean
   end
 
 end

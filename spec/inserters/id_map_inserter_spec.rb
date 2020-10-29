@@ -166,4 +166,39 @@ RSpec.describe IdMapInserter do
 
   end
 
+  describe "TimeTableDate" do
+
+    let(:time_table_date) { Chouette::TimeTableDate.new id: 42 }
+
+    it "define a new primary key" do
+      expect { inserter.insert(time_table_date) }.to change(time_table_date, :id).to(1)
+    end
+
+    it "change time_table_id with new value" do
+      time_table_date.time_table_id = 42
+
+      new_time_table_id = 4242
+      inserter.register_primary_key!(Chouette::TimeTable, time_table_date.time_table_id, new_time_table_id)
+
+      expect { inserter.insert(time_table_date) }.to change(time_table_date, :time_table_id).to(new_time_table_id)
+    end
+
+    it "inserts 70 000 models / second (1 million in ~15s)", :performance do
+      # To use Hash with realistic volume
+      time_table_count = 200000
+      time_table_count.times do |n|
+        inserter.register_primary_key!(Chouette::TimeTable, n, time_table_count - n)
+      end
+
+      expect {
+        time_table_date.id = next_id(Chouette::TimeTableDate)
+
+        time_table_date.time_table_id = rand(0...time_table_count)
+
+        inserter.insert time_table_date
+      }.to perform_at_least(70000).within(1.second).ips
+    end
+
+  end
+
 end

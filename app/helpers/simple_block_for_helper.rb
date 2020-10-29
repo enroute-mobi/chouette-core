@@ -54,8 +54,5 @@ module SimpleBlockForHelper
       content_tag(:div, object.class.human_attribute_name(attribute_name), class: "dl-term") +
         content_tag(:div, displayed_value, class: "dl-def")
     end
-
-
   end
-
 end

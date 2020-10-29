@@ -33,12 +33,12 @@ export default class BSelect4 extends Component {
           width: '100%',
           placeholder: I18n.t('vehicle_journeys.vehicle_journeys_matrix.affect_company'),
           ajax: {
-            url: path + '.json?line_id=' + line,
+            url: path + '.json',
             dataType: 'json',
             delay: '500',
             data: function(params) {
               return {
-                q: { name_cont: params.term},
+                q: { name_cont: params.term, line_id_eq: line },
               };
             },
             processResults: function(data, params) {

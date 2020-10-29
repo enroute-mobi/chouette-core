@@ -1,7 +1,7 @@
 definitions:
   services:
     docker:
-      memory: 2048
+      memory: 3072
     postgres:
       image: enroute/chouette-core-postgres
       environment:

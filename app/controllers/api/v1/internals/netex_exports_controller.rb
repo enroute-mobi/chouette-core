@@ -9,6 +9,7 @@ module Api
         def upload
           if authenticate_token
             @netex_export.file = params[:exportFile]
+            @netex_export.ended_at = Time.now 
             @netex_export.save!
             @netex_export.successful!
             @netex_export.notify_parent

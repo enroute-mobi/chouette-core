@@ -65,5 +65,4 @@ class ImportsController < ChouetteController
       }
     )
   end
-
 end

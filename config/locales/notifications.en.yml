@@ -17,3 +17,4 @@ en:
         progress: "%{status_html} Export <i>%{name}</i>: %{progress}%"
       netex: *export_messages
       netex_full: *export_messages
+      netex_generic: *export_messages

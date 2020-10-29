@@ -113,6 +113,35 @@ class CopyInserter < ByClassInserter
 
   end
 
+  class TimeTableDate < Base
+
+    # id,time_table_id,date,in_out,checksum,checksum_source
+    # 2,1,2020-11-02,f,83045a5bde1d9dacf6718eed4e13fc18bb288a50eaca34d2ad28aa36bb477444,2020-11-02|-
+
+    def csv_values(d)
+      "#{d.id},#{d.time_table_id},#{type_cast_date(d.date)},#{type_boolean(d.in_out)},#{d.checksum},#{d.checksum_source}"
+    end
+
+    DATE_FORMAT = "%Y-%m-%d"
+
+    def type_boolean(boolean)
+      boolean ? 't' : 'f'
+    end
+
+    def type_cast_date(date)
+      date.strftime(DATE_FORMAT) if date
+    end
+
+    def csv
+      @csv ||=
+        begin
+          csv = RawCSV.open(csv_file, "wb")
+          csv << headers.join(',')
+        end
+    end
+
+  end
+
   class RawCSV
 
     def initialize(target)

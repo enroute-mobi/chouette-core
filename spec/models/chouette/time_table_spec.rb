@@ -497,7 +497,7 @@ describe "update_attributes on periods and dates" do
         let!( :new_end_date ){ subject.end_date + 20.days }
         let!( :new_period_attributes ) {
             pa = periods_attributes
-            pa[ "11111111111" ] = { "period_end" => new_end_date, "period_start" => new_start_date, "_destroy" => "", "position" => pa.size.to_s, "id" => "", "time_table_id" => subject.id.to_s}
+            pa[ "11111111111" ] = { "period_end" => new_end_date, "period_start" => new_start_date, "_destroy" => "", "id" => "", "time_table_id" => subject.id.to_s}
             pa
         }
         it "should update start_date and end_end" do
@@ -547,7 +547,7 @@ describe "update_attributes on periods and dates" do
         let!( :new_period_attributes ) {
             pa = periods_attributes
             pa.each { |k,v| v.merge! "_destroy" => true}
-            pa[ "11111111111" ] = { "period_end" => new_end_date, "period_start" => new_start_date, "_destroy" => "", "position" => pa.size.to_s, "id" => "", "time_table_id" => subject.id.to_s}
+            pa[ "11111111111" ] = { "period_end" => new_end_date, "period_start" => new_start_date, "_destroy" => "", "id" => "", "time_table_id" => subject.id.to_s}
             pa
         }
         it "should update start_date and end_date with new period added" do
@@ -962,20 +962,6 @@ end
     end
   end
 
-  describe "#dates" do
-    it "should have with position 0" do
-      expect(subject.dates.first.position).to eq(0)
-    end
-    context "when first date has been removed" do
-      before do
-        subject.dates.first.destroy
-      end
-      it "should begin with position 0" do
-        expect(subject.dates.first.position).to eq(0)
-      end
-    end
-  end
-
   describe "#validity_out_between?" do
     let(:empty_tm) {build(:time_table)}
     it "should be false if empty calendar" do
@@ -1063,17 +1049,6 @@ end
     end
   end
   describe "#periods" do
-    it "should begin with position 0" do
-      expect(subject.periods.first.position).to eq(0)
-    end
-    context "when first period has been removed" do
-      before do
-        subject.periods.first.destroy
-      end
-      it "should begin with position 0" do
-        expect(subject.periods.first.position).to eq(0)
-      end
-    end
     it "should have period_start before period_end" do
       period = Chouette::TimeTablePeriod.new
       period.period_start = Date.today
@@ -1093,9 +1068,6 @@ end
       expect(period.valid?).to be_falsey
     end
   end
-
-  # it { is_expected.to validate_presence_of :comment }
-  # it { is_expected.to validate_uniqueness_of :objectid }
 
   describe 'checksum' do
     let(:checksum_owner) { create(:time_table) }

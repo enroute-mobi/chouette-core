@@ -136,28 +136,6 @@ class ReferentialSchema
       connection.drop_table(full_name, if_exists: true)
     end
 
-    def copy_to(io)
-      raw_connection.copy_data "COPY #{full_name} TO STDOUT WITH BINARY" do
-        while line = raw_connection.get_copy_data do
-          io.write line
-        end
-      end
-    end
-
-    def copy_from(io)
-      raw_connection.copy_data "COPY #{full_name} FROM STDIN WITH BINARY" do
-        begin
-          while line = io.readpartial(10.kilobytes)
-            raw_connection.put_copy_data line
-          end
-        rescue EOFError
-        end
-      end
-
-      reset_pk_sequence
-    end
-    measure :copy_to, :copy_from
-
     def reset_pk_sequence
       connection.reset_pk_sequence! full_name
     end
@@ -172,21 +150,10 @@ class ReferentialSchema
 
     def clone_to(target)
       return if empty?
+      target_table = target.associated_table(self)
 
-      Tempfile.open(binmode: true) do |temp_file|
-        copy_to temp_file
-
-        temp_file.flush
-        temp_file.rewind
-
-        associated_table = target.associated_table(self)
-        associated_table.copy_from temp_file
-
-        temp_file.unlink
-      end
+      connection.execute "INSERT INTO #{target_table.full_name} (SELECT * FROM #{full_name})"
+      target_table.reset_pk_sequence
     end
-
   end
-
-
 end

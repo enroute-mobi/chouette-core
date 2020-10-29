@@ -114,7 +114,6 @@ RSpec.describe ReferentialSchema do
   end
 
   describe "#clone_to" do
-
     let(:model_count) { 10 }
 
     let(:context) do
@@ -130,19 +129,19 @@ RSpec.describe ReferentialSchema do
     let(:vehicle_journey) { context.vehicle_journey }
     let(:target) { context.referential :target }
 
-    it "copy all Routes from source referential to target one" do
+    it "copy all Routes from source referential to target" do
       expect { referential.schema.clone_to(target.schema) }.to change {
         target.switch { Chouette::Route.count }
       }.from(0).to(1)
     end
 
-    it "copy all JourneyPatterns from source referential to target one" do
+    it "copy all JourneyPatterns from source referential to target" do
       expect { referential.schema.clone_to(target.schema) }.to change {
         target.switch { Chouette::JourneyPattern.count }
       }.from(0).to(1)
     end
 
-    it "copy all VehicleJourneys from source referential to target one" do
+    it "copy all VehicleJourneys from source referential to target" do
       expect { referential.schema.clone_to(target.schema) }.to change {
         target.switch { Chouette::VehicleJourney.count }
       }.from(0).to(model_count)
@@ -154,7 +153,10 @@ RSpec.describe ReferentialSchema do
       }.from(1).to(model_count)
     end
 
-
+    it "allows target table to create new records after the copy" do
+      referential.schema.clone_to(target.schema)
+      target.switch { Chouette::VehicleJourney.create!(journey_pattern: context.journey_pattern, route: context.route) }
+    end
   end
 
   describe ReferentialSchema::Table do

@@ -133,7 +133,8 @@ const vehicleJourney= (state = {}, action, keep) => {
         deletable: false,
         transport_mode: window.transportMode ? window.transportMode : 'undefined',
         transport_submode: window.transportSubmode ? window.transportSubmode : 'undefined',
-        custom_fields: action.data.custom_fields
+        custom_fields: action.data.custom_fields,
+        referential_codes: []
       }
     case 'DUPLICATE_VEHICLEJOURNEY':
     case 'SHIFT_VEHICLEJOURNEY':

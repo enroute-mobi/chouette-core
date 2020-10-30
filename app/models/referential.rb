@@ -615,7 +615,7 @@ class Referential < ApplicationModel
   def migration_count
     raw_value =
       if self.class.connection.table_exists?("#{slug}.schema_migrations")
-        self.class.connection.select_value("select count(*) from #{slug}.schema_migrations;")
+        self.class.connection.select_value("select count(*) from \"#{slug}\".schema_migrations;")
       end
 
     raw_value.to_i

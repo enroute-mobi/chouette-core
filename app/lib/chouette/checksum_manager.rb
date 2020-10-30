@@ -127,7 +127,7 @@ module Chouette::ChecksumManager
         checksums << Digest::SHA256.new.hexdigest(source)
       end
       sql = <<SQL
-        UPDATE #{referential.slug}.#{collection.klass.table_name} tmp SET checksum_source = data_table.checksum_source, checksum = data_table.checksum
+        UPDATE \"#{referential.slug}\".#{collection.klass.table_name} tmp SET checksum_source = data_table.checksum_source, checksum = data_table.checksum
         FROM
         (select unnest(array[#{ids.join(",")}]) as id,
         unnest(array['#{checksums.join("','")}']) as checksum,

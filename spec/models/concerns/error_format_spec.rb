@@ -19,7 +19,8 @@ RSpec.describe ErrorFormat do
         invalid = build_stubbed(:referential, name: nil)
         expect( invalid ).not_to be_valid
         expect( described_class.details(invalid) ).to eq({
-          name: { error: 'doit être rempli(e)', value: nil }
+          name: { error: 'doit être rempli(e)', value: nil },
+          slug: {:error=>"doit être rempli(e)", :value=>nil}
         })
       end
 
@@ -32,8 +33,7 @@ RSpec.describe ErrorFormat do
         )
         expect( invalid ).not_to be_valid
         expect( described_class.details(invalid) ).to eq({
-          name: { error: "doit être rempli(e)", value: '' },
-          slug: { error: "n'est pas valide", value: 'hello world' }
+          name: { error: "doit être rempli(e)", value: '' }
         })
       end
     end

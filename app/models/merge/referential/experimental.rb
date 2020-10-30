@@ -143,8 +143,8 @@ module Merge::Referential
 
         def rows
           source.journey_patterns.joins(:route).
-            joins("LEFT OUTER JOIN #{new.slug}.routes as existing_routes ON routes.checksum = existing_routes.checksum AND routes.line_id = existing_routes.line_id").
-            joins("LEFT OUTER JOIN #{new.slug}.journey_patterns as existing_journey_patterns ON journey_patterns.checksum = existing_journey_patterns.checksum AND existing_routes.id = existing_journey_patterns.route_id").
+            joins("LEFT OUTER JOIN \"#{new.slug}\".routes as existing_routes ON routes.checksum = existing_routes.checksum AND routes.line_id = existing_routes.line_id").
+            joins("LEFT OUTER JOIN \"#{new.slug}\".journey_patterns as existing_journey_patterns ON journey_patterns.checksum = existing_journey_patterns.checksum AND existing_routes.id = existing_journey_patterns.route_id").
             where(id: journey_pattern_ids).pluck(:id, "routes.id", "existing_journey_patterns.id", "existing_routes.id")
         end
 
@@ -305,8 +305,8 @@ module Merge::Referential
           		PARTITION BY existing_stop_points.route_id
           		ORDER BY existing_stop_points.position
           	) normalized_position
-          from #{new.slug}.stop_points as existing_stop_points
-          LEFT OUTER JOIN #{new.slug}.routes as existing_routes ON existing_routes.id = existing_stop_points.route_id
+          from \"#{new.slug}\".stop_points as existing_stop_points
+          LEFT OUTER JOIN \"#{new.slug}\".routes as existing_routes ON existing_routes.id = existing_stop_points.route_id
           LEFT OUTER JOIN routes ON routes.checksum = existing_routes.checksum
           INNER JOIN (SELECT distinct route_id from stop_points WHERE id IN (#{stop_point_ids_bind_params})) source_stop_points ON source_stop_points.route_id = routes.id
         ) existing_stop_points

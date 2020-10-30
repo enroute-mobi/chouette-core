@@ -9,7 +9,7 @@ class Chouette::Netex::RoutingConstraintZone < Chouette::Netex::Resource
     sql = "select array_agg(c) AS ids
     from (
       select DISTINCT(unnest(stop_point_ids))
-      from #{@document.referential.slug}.routing_constraint_zones
+      from \"#{@document.referential.slug}\".routing_constraint_zones
     ) as dt(c);"
     res = resource.class.connection.execute(sql).first
     ids = res['ids'][1..-2].split(',')

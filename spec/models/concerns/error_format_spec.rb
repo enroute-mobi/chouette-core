@@ -20,7 +20,7 @@ RSpec.describe ErrorFormat do
         expect( invalid ).not_to be_valid
         expect( described_class.details(invalid) ).to eq({
           name: { error: 'doit être rempli(e)', value: nil },
-          slug: {:error=>"doit être rempli(e)", :value=>nil}
+          slug: { error: "doit être rempli(e)", value: nil }
         })
       end
 

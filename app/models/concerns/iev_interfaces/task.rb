@@ -64,13 +64,6 @@ module IevInterfaces::Task
       %w(successful failed warning aborted canceled)
     end
 
-    def abort_old
-      where(
-        'created_at < ? AND status NOT IN (?)',
-        4.hours.ago,
-        finished_statuses
-      ).update_all(status: 'aborted')
-    end
   end
 
   def workbench_for_notifications

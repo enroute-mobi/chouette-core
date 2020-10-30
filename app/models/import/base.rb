@@ -56,6 +56,24 @@ class Import::Base < ApplicationModel
 
   validates_presence_of :workbench
 
+  def self.maximum_runtime
+    SmartEnv['CHOUETTE_IMPORT_MAX_RUN_TIME'] ? SmartEnv['CHOUETTE_IMPORT_MAX_RUN_TIME'].hours : Delayed::Worker.max_run_time
+  end
+
+  scope :outdated, -> { where(
+        'created_at < ? AND status NOT IN (?)',
+        maximum_runtime.ago,
+        finished_statuses
+      )
+  }
+
+  def self.abort_old
+    outdated.each do |import|
+      Rails.logger.error("#{import.class.name} #{import.id} #{import.name} takes too much time and is aborted")
+      import.update_attribute(:status, "aborted")
+    end
+  end
+
   def self.model_name
     ActiveModel::Name.new Import::Base, Import::Base, "Import"
   end

@@ -29,9 +29,26 @@ RSpec.describe Import::Base, type: :model do
     )
   end
 
-  describe ".abort_old" do
-    it "changes imports older than 4 hours to aborted" do
-      Timecop.freeze(Time.now) do
+  describe ".maximum_runtime" do
+    it "should use CHOUETTE_IMPORT_MAX_RUN_TIME if exists" do
+      allow(SmartEnv).to receive(:fetch).with("CHOUETTE_IMPORT_MAX_RUN_TIME").and_return(4)
+      expect(Import::Base.maximum_runtime).to eq(4.hours)
+    end
+
+    it "should use DELAYED_JOB_MAX_RUN_TIME by default" do
+      expect(Import::Base.maximum_runtime).to eq(24.hours)
+    end
+
+  end
+
+  context "when CHOUETTE_IMPORT_MAX_RUN_TIME is set" do
+
+    before do
+      allow(SmartEnv).to receive(:fetch).with("CHOUETTE_IMPORT_MAX_RUN_TIME").and_return(4)
+    end
+
+    describe ".abort_old" do
+      it "changes imports older than 4 hours to aborted" do
         old_import = create(
           :workbench_import,
           status: 'pending',
@@ -44,10 +61,8 @@ RSpec.describe Import::Base, type: :model do
         expect(current_import.reload.status).to eq('running')
         expect(old_import.reload.status).to eq('aborted')
       end
-    end
 
-    it "doesn't work on imports with a `finished_status`" do
-      Timecop.freeze(Time.now) do
+      it "doesn't work on imports with a `finished_status`" do
         import = create(
           :workbench_import,
           created_at: 4.hours.ago - 1.minute
@@ -55,13 +70,10 @@ RSpec.describe Import::Base, type: :model do
         import.update status: 'successful'
 
         Import::Base.abort_old
-
         expect(import.reload.status).to eq('successful')
       end
-    end
 
-    it "only works on the caller type" do
-      Timecop.freeze(Time.now) do
+      it "only works on the caller type" do
         workbench_import = create(
           :workbench_import,
           status: 'pending',
@@ -127,11 +139,9 @@ RSpec.describe Import::Base, type: :model do
 
       it "must update the :notified_parent_at field of the child import" do
         allow(workbench_import).to receive(:child_change)
-        Timecop.freeze(Time.now) do
-          netex_import.notify_parent
-          expect(netex_import.notified_parent_at.utc.strftime('%Y-%m-%d %H:%M:%S.%3N')).to eq Time.now.utc.strftime('%Y-%m-%d %H:%M:%S.%3N')
-          expect(netex_import.reload.notified_parent_at.utc.strftime('%Y-%m-%d %H:%M:%S.%3N')).to eq Time.now.utc.strftime('%Y-%m-%d %H:%M:%S.%3N')
-        end
+        netex_import.notify_parent
+        expect(netex_import.notified_parent_at.utc.strftime('%Y-%m-%d %H:%M')).to eq Time.now.utc.strftime('%Y-%m-%d %H:%M')
+        expect(netex_import.reload.notified_parent_at.utc.strftime('%Y-%m-%d %H:%M')).to eq Time.now.utc.strftime('%Y-%m-%d %H:%M')
       end
     end
 
@@ -254,11 +264,8 @@ RSpec.describe Import::Base, type: :model do
         status: 'failed'
       )
 
-      Timecop.freeze(Time.now) do
-        workbench_import.update_status
-
-        expect(workbench_import.ended_at).to eq(Time.now)
-      end
+      workbench_import.update_status
+      expect(workbench_import.ended_at.utc.strftime('%Y-%m-%d %H:%M')).to eq Time.now.utc.strftime('%Y-%m-%d %H:%M')
     end
   end
 end

@@ -131,7 +131,7 @@ describe Referential, :type => :model do
   end
 
   context "validation" do
-    subject { build_stubbed(:referential) }
+    subject { build(:referential) }
 
     it { should validate_presence_of(:objectid_format) }
 
@@ -516,7 +516,7 @@ describe Referential, :type => :model do
   end
 
   context "to be referential_read_only or not to be referential_read_only" do
-    let( :referential ){ build_stubbed( :referential ) }
+    let( :referential ){ build( :referential ) }
 
     context "in the beginning" do
       it{ expect( referential ).not_to be_referential_read_only }

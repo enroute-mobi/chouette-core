@@ -112,10 +112,10 @@ module Chouette
       <<-SQL
       SELECT dates.date, time_tables.id AS time_table_id
       FROM dates
-        LEFT JOIN  #{Apartment::Tenant.current}.time_tables ON 1=1
-        LEFT JOIN  #{Apartment::Tenant.current}."time_table_dates" AS excluded_dates ON excluded_dates."time_table_id" = "time_tables"."id" AND excluded_dates.date = dates.date AND excluded_dates.in_out = false
-        LEFT JOIN  #{Apartment::Tenant.current}."time_table_dates" AS included_dates ON included_dates."time_table_id" = "time_tables"."id" AND included_dates.date = dates.date AND included_dates.in_out = true
-        LEFT JOIN  #{Apartment::Tenant.current}."time_table_periods" AS periods ON periods."time_table_id" = "time_tables"."id" AND periods.period_start <= dates.date AND periods.period_end >= dates.date
+        LEFT JOIN  \"#{Apartment::Tenant.current}\".time_tables ON 1=1
+        LEFT JOIN  \"#{Apartment::Tenant.current}\"."time_table_dates" AS excluded_dates ON excluded_dates."time_table_id" = "time_tables"."id" AND excluded_dates.date = dates.date AND excluded_dates.in_out = false
+        LEFT JOIN  \"#{Apartment::Tenant.current}\"."time_table_dates" AS included_dates ON included_dates."time_table_id" = "time_tables"."id" AND included_dates.date = dates.date AND included_dates.in_out = true
+        LEFT JOIN  \"#{Apartment::Tenant.current}\"."time_table_periods" AS periods ON periods."time_table_id" = "time_tables"."id" AND periods.period_start <= dates.date AND periods.period_end >= dates.date
       WHERE
         (included_dates.id IS NOT NULL OR (periods.id IS NOT NULL AND (time_tables.int_day_types & POW(2, ((DATE_PART('dow', dates.date)::int+6)%7)+2)::int) > 0) AND excluded_dates.id IS NULL)
       GROUP BY dates.date, time_tables.id

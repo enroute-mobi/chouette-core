@@ -34,11 +34,9 @@ class Referential < ApplicationModel
 
   validates_uniqueness_of :slug
 
-  validates_format_of :slug, with: %r{\A[a-z][0-9a-z_]+\Z}
   validates_format_of :prefix, with: %r{\A[0-9a-zA-Z_]+\Z}
   # validates_format_of :upper_corner, with: %r{\A-?[0-9]+\.?[0-9]*\,-?[0-9]+\.?[0-9]*\Z}
   # validates_format_of :lower_corner, with: %r{\A-?[0-9]+\.?[0-9]*\,-?[0-9]+\.?[0-9]*\Z}
-  validate :slug_excluded_values
 
   attr_accessor :upper_corner
   attr_accessor :lower_corner
@@ -246,20 +244,6 @@ class Referential < ApplicationModel
     if self.switch { routes.where.not(line_id: line_ids).exists? }
       CleanUp.create!(referential: self, original_state: self.state)
       pending! && save!
-    end
-  end
-
-  def slug_excluded_values
-    if ! slug.nil?
-      if slug.start_with? "pg_"
-        errors.add(:slug,I18n.t("referentials.errors.pg_excluded"))
-      end
-      if slug == 'public'
-        errors.add(:slug,I18n.t("referentials.errors.public_excluded"))
-      end
-      if slug == self.class.connection_config[:username]
-        errors.add(:slug,I18n.t("referentials.errors.user_excluded", user: slug))
-      end
     end
   end
 
@@ -616,18 +600,14 @@ class Referential < ApplicationModel
   def migration_count
     raw_value =
       if self.class.connection.table_exists?("#{slug}.schema_migrations")
-        self.class.connection.select_value("select count(*) from #{slug}.schema_migrations;")
+        self.class.connection.select_value("select count(*) from \"#{slug}\".schema_migrations;")
       end
 
     raw_value.to_i
   end
 
   def assign_slug(time_reference = Time)
-    self.slug ||= begin
-      prefix = name.parameterize.split('-').map { |p| p.gsub(/[^a-z]/, '').presence }
-      prefix = prefix.compact.join('_')[0..12].presence || "referential"
-      "#{prefix}_#{time_reference.now.to_i}"
-    end if name
+    self.slug ||= SecureRandom.uuid
   end
 
   def assign_prefix

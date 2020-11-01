@@ -156,7 +156,6 @@ class Merge < ApplicationModel
     new.referential_suite = output
     new.workbench = workbench
     new.organisation = workbench.organisation
-    new.slug = "merge_#{id}"
     new.name = I18n.t("merges.referential_name", date: I18n.l(created_at, format: :short_with_time))
 
     unless new.valid?

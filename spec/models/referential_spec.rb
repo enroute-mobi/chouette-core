@@ -131,28 +131,9 @@ describe Referential, :type => :model do
   end
 
   context "validation" do
-    subject { build_stubbed(:referential) }
+    subject { build(:referential) }
 
     it { should validate_presence_of(:objectid_format) }
-
-    it "assign slug with a good format" do
-      time_reference = double(now: 1234567890)
-
-      conditions = {
-        "2018-Hiver-Jezequel-MM-Lyon-Nice": "hiver_jezeque_1234567890",
-        "2018-Hiver-Jezequel-23293MM-Lyon-Nice": "hiver_jezeque_1234567890",
-        "-Hiver-Jezequel-MM-Lyon-Nice": "hiver_jezeque_1234567890",
-        "Hiver-Jezequel-MM-Lyon-Nice": "hiver_jezeque_1234567890",
-        "20179282": "referential_1234567890",
-        "2018 2019 Hiver-Jezequel-MM-Lyon-Nice": "hiver_jezeque_1234567890"
-      }
-
-      conditions.each do |name, expected_slug|
-        ref = Referential.new name: name
-        ref.assign_slug time_reference
-        expect(ref.slug).to eq(expected_slug)
-      end
-    end
 
     context "without concurent referential on same lines and dates" do
       it { should be_valid }
@@ -535,7 +516,7 @@ describe Referential, :type => :model do
   end
 
   context "to be referential_read_only or not to be referential_read_only" do
-    let( :referential ){ build_stubbed( :referential ) }
+    let( :referential ){ build( :referential ) }
 
     context "in the beginning" do
       it{ expect( referential ).not_to be_referential_read_only }

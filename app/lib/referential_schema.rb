@@ -103,7 +103,7 @@ class ReferentialSchema
   end
 
   def current_value(sequence)
-    full_name = "#{name}.#{sequence}"
+    full_name = "\"#{name}\".#{sequence}"
     connection.select_value "SELECT last_value from #{full_name}"
   end
 
@@ -129,7 +129,7 @@ class ReferentialSchema
     end
 
     def full_name
-      @full_name ||= "#{schema.name}.#{name}"
+      @full_name ||= "\"#{schema.name}\".#{name}"
     end
 
     def drop

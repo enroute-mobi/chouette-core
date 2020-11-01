@@ -94,6 +94,12 @@ module Chouette
             model :group_of_line do
               attribute(:name) { |n| "Group of Line #{n}" }
             end
+
+            model :line_notice do
+              attribute(:title) { |n| "Line Notice title #{n}" }
+              attribute(:content) { |n| "Line Notice content #{n}" }
+              attribute(:objectid) { |n| "organisation:LineNotice:#{n}:LOC" }
+            end
           end
 
           model :shape_provider do

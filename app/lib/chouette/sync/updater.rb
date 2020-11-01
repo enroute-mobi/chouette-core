@@ -22,7 +22,7 @@ module Chouette
       end
 
       def transaction(&block)
-        CustomFieldsSupport.within_workgroup(target.line_referential.workgroup) do
+        CustomFieldsSupport.within_workgroup(target.workgroup) do
           target.class.transaction(&block)
         end
       end

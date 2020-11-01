@@ -12,9 +12,13 @@ class LineProvider < ApplicationModel
 
   before_validation :define_line_referential, on: :create
 
+  def workgroup
+    workbench&.workgroup
+  end
+
   private
 
   def define_line_referential
-    self.line_referential ||= workbench&.workgroup&.line_referential
+    self.line_referential ||= workgroup&.line_referential
   end
 end

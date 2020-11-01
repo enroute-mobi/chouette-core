@@ -223,13 +223,13 @@ describe Chouette::Line, :type => :model do
     let(:first_line) { context.line(:first) }
     let(:second_line) { context.line(:second) }
 
-    context "for two lines into two line referentials" do
+    context "for two lines into two line providers" do
       let(:context) do
         Chouette.create do
-          line_referential do
+          line_provider do
             line :first, registration_number: 'dummy'
           end
-          line_referential do
+          line_provider do
             line :second
           end
         end
@@ -243,10 +243,10 @@ describe Chouette::Line, :type => :model do
       end
     end
 
-    context "for two lines into the same referential" do
+    context "for two lines into the same provider" do
       let(:context) do
         Chouette.create do
-          line_referential do
+          line_provider do
             line :first, registration_number: 'dummy'
             line :second
           end

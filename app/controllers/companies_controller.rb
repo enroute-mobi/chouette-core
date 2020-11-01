@@ -32,6 +32,8 @@ class CompaniesController < ChouetteController
 
   def create
     authorize resource_class
+    build_resource
+    @company.line_provider = line_referential.workbenches.first&.default_line_provider
     super
   end
 

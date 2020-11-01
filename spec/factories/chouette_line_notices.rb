@@ -6,5 +6,6 @@ FactoryBot.define do
     sequence(:objectid) { |n| "organisation:LineNotice:#{n}:LOC" }
 
     association :line_referential, :factory => :line_referential
+    association :line_provider, :factory => :line_provider
   end
 end

@@ -3,9 +3,10 @@ class LineProvider < ApplicationModel
   belongs_to :line_referential, required: true
   belongs_to :workbench, required: true
   has_many :lines, class_name: "Chouette::Line"
- 	has_many :companies, class_name: "Chouette::Company"
- 	has_many :networks, class_name: "Chouette::Network"
- 	has_many :group_of_lines, class_name: "Chouette::GroupOfLine"
+  has_many :companies, class_name: "Chouette::Company"
+  has_many :networks, class_name: "Chouette::Network"
+  has_many :group_of_lines, class_name: "Chouette::GroupOfLine"
+  has_many :line_notices, class_name: "Chouette::LineNotice"
 
   validates :short_name, presence: true
 

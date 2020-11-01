@@ -623,6 +623,8 @@ ActiveRecord::Schema.define(version: 2020_10_20_145538) do
     t.datetime "updated_at", null: false
     t.integer "object_version"
     t.string "registration_number"
+    t.bigint "line_provider_id"
+    t.index ["line_provider_id"], name: "index_line_notices_on_line_provider_id"
   end
 
   create_table "line_notices_lines", id: false, force: :cascade do |t|

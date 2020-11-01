@@ -25,7 +25,9 @@ class NetworksController < ChouetteController
 
   def create
     authorize resource_class
-    create!
+    build_resource
+    @network.line_provider = line_referential.workbenches.first&.default_line_provider
+    super
   end
 
   def index

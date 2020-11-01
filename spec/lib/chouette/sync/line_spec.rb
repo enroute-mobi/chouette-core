@@ -4,11 +4,11 @@ RSpec.describe Chouette::Sync::Line do
 
     let(:context) do
       Chouette.create do
-        line_referential
+        line_provider
       end
     end
 
-    let(:target) { context.line_referential }
+    let(:target) { context.line_provider }
 
     let(:xml) do
       %{

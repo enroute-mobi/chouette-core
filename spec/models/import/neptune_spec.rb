@@ -118,8 +118,8 @@ RSpec.describe Import::Neptune do
     end
 
     it "keeps line attributes when neptune file doesn't provide them" do
-      company = workbench.line_referential.companies.create!(name: "Defined")
-      network = workbench.line_referential.networks.create!(name: "Defined")
+      company = workbench.line_referential.companies.create!(name: "Defined", line_provider: workbench.default_line_provider)
+      network = workbench.line_referential.networks.create!(name: "Defined", line_provider: workbench.default_line_provider)
 
       existing_attributes = {
         number: "Defined",
@@ -133,7 +133,8 @@ RSpec.describe Import::Neptune do
 
       line_attributes = existing_attributes.merge(
         registration_number: "NAVSTEX:Line:GRENOB",
-        name: "Defined"
+        name: "Defined",
+        line_provider: workbench.default_line_provider
       )
       line = workbench.line_referential.lines.create!(line_attributes)
 

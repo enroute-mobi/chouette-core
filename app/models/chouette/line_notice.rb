@@ -1,8 +1,12 @@
 module Chouette
   class LineNotice < Chouette::ActiveRecord
+    before_validation :define_line_referential, on: :create
+
     has_metadata
     include LineReferentialSupport
     include ObjectidSupport
+
+    belongs_to :line_provider, required: true
 
     # We will protect the notices that are used by vehicle_journeys
     scope :unprotected, -> {
@@ -16,6 +20,10 @@ module Chouette
       else
         all
       end
+    }
+
+    scope :by_provider, ->(line_provider) {
+      where(line_provider_id: line_provider.id)
     }
 
     belongs_to :line_referential, inverse_of: :line_notices
@@ -32,6 +40,13 @@ module Chouette
 
     def protected?
       vehicle_journeys.exists?
+    end
+
+    private
+
+    def define_line_referential
+      # TODO Improve performance ?
+      self.line_referential ||= line_provider&.line_referential
     end
   end
 end

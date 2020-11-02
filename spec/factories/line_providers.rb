@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :line_provider do
     sequence(:short_name) { |n| "Line Provider #{n}" }
 

@@ -8,8 +8,8 @@ import journeyPatternsApp from '../../journey_patterns/reducers'
 import App from '../../journey_patterns/components/App'
 import clone from '../../helpers/clone'
 
-import {Fill, Stroke, Circle, Style} from 'ol/style';
-import GeometryType from 'ol/geom/GeometryType';
+import {Fill, Stroke, Circle, Style} from 'ol/style'
+import GeometryType from 'ol/geom/GeometryType'
 
 let route = clone(window, "route", true)
 route = JSON.parse(decodeURIComponent(route))

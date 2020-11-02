@@ -73,7 +73,6 @@ describe('journeyPatterns reducer', () => {
       published_name: 'M3',
       registration_number: '',
       deletable: false,
-      stop_points: stopPoints,
       costs: {},
       shape: {id: 1, name: "test", uuid: "test-uuid"}
     }, ...state])

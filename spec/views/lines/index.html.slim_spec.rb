@@ -2,6 +2,7 @@
 describe "/lines/index", :type => :view do
   let(:deactivated_line){ nil }
   let(:line_referential) { assign :line_referential, create(:line_referential, workgroup: current_workbench.workgroup) }
+  let(:line_provider) { build :line_provider, line_referential: line_referential, workbench: current_workbench }
   let(:current_organisation) { current_user.organisation }
   let(:context) {
      {
@@ -9,10 +10,10 @@ describe "/lines/index", :type => :view do
        line_referential: line_referential
      }
    }
-   let(:network) { build(:network, line_referential: line_referential) }
-   let(:company) { build(:company, line_referential: line_referential) }
+   let(:network) { build(:network, line_referential: line_referential, line_provider: line_provider) }
+   let(:company) { build(:company, line_referential: line_referential, line_provider: line_provider) }
   let(:lines) do
-    assign :lines, build_paginated_collection(:line, LineDecorator, line_referential: line_referential, company: company, network: network, context: context)
+    assign :lines, build_paginated_collection(:line, LineDecorator, line_referential: line_referential, line_provider: line_provider, company: company, network: network, context: context)
   end
   let!(:q) { assign :q, Ransack::Search.new(Chouette::Line) }
 

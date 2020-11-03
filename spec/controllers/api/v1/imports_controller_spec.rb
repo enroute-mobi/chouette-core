@@ -41,6 +41,7 @@ RSpec.describe Api::V1::ImportsController, type: :controller do
                 options: {
                   'automatic_merge': true,
                   'flag_urgent': true,
+                  'merge_method': 'experimental'
                 }
               },
               format: :json
@@ -66,12 +67,13 @@ RSpec.describe Api::V1::ImportsController, type: :controller do
             post :create, params: {
               workbench_id: workbench.id,
               workbench_import: {
-                name: "test",
+                name: 'test',
                 file: file,
                 creator: 'test',
                 options: {
-                  "automatic_merge": true,
-                  "flag_urgent": true
+                  'automatic_merge': true,
+                  'flag_urgent': true,
+                  'merge_method': 'legacy'
                 }
               },
               format: :json

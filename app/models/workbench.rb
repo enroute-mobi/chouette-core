@@ -82,11 +82,11 @@ class Workbench < ApplicationModel
       Referential.none
     else
       Referential.where(id: workgroup
-                            .referentials
-                            .joins(:metadatas)
-                            .where(['referential_metadata.line_ids && ARRAY[?]::bigint[]', line_ids])
-                            .not_in_referential_suite.pluck(:id).uniq
-                       )
+        .referentials
+        .joins(:metadatas)
+        .where(['referential_metadata.line_ids && ARRAY[?]::bigint[]', line_ids])
+        .not_in_referential_suite.pluck(:id).uniq
+      )
 
     end
   end
@@ -140,6 +140,16 @@ class Workbench < ApplicationModel
     @default_line_provider ||= line_providers.find_or_initialize_by(short_name: DEFAULT_PROVIDER_SHORT_NAME) do |p|
       p.line_referential_id = workgroup.line_referential_id
     end
+  end
+
+  def default_stop_area_provider
+    @default_stop_area_provider ||= stop_area_providers.find_or_initialize_by(name: DEFAULT_PROVIDER_SHORT_NAME) do |p|
+      p.stop_area_referential_id = stop_area_referential_id
+    end
+  end
+
+  def create_default_stop_area_provider
+    default_stop_area_provider.save
   end
 
   def create_default_shape_provider

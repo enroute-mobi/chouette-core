@@ -39,19 +39,6 @@ module Chouette
             owner = stop_area_referential.workgroup.owner
             stop_area_referential.add_member owner, owner: true
           end
-
-          model :stop_area do
-            attribute(:name) { |n| "Stop Area #{n}" }
-            attribute :kind, "commercial"
-            attribute :area_type, "zdep"
-
-            attribute(:latitude) { 48.8584 - 5 + 10 * rand }
-            attribute(:longitude) { 2.2945 - 2 + 4 * rand }
-          end
-
-          model :stop_area_provider do
-            attribute(:name) { |n| "Stop Area Provider #{n}" }
-          end
         end
 
         model :shape_referential, required: true, singleton: true do
@@ -106,6 +93,19 @@ module Chouette
                 lines = Array(transient(:lines))
                 lines.each { |line| line.line_notices << new_instance }
               end
+            end
+          end
+
+          model :stop_area_provider do
+            attribute(:name) { |n| "Stop Area Provider #{n}" }
+
+            model :stop_area do
+              attribute(:name) { |n| "Stop Area #{n}" }
+              attribute :kind, "commercial"
+              attribute :area_type, "zdep"
+
+              attribute(:latitude) { 48.8584 - 5 + 10 * rand }
+              attribute(:longitude) { 2.2945 - 2 + 4 * rand }
             end
           end
 
@@ -172,10 +172,12 @@ module Chouette
                     kind: "commercial",
                     area_type: "zdep",
                     latitude: 48.8584 - 5 + 10 * rand,
-                    longitude: 2.2945 - 2 + 4 * rand
+                    longitude: 2.2945 - 2 + 4 * rand,
+                    stop_area_referential: stop_area_referential
                   }
-
-                  stop_area_referential.stop_areas.create! attributes
+                  default_stop_area_provider = parent.referential.workbench.default_stop_area_provider
+                  default_stop_area_provider.save! if default_stop_area_provider.new_record?
+                  default_stop_area_provider.stop_areas.create! attributes
                 end
               end
 

@@ -1,4 +1,4 @@
-RSpec.describe VehicleJourneyControl::Company, type: :model, focus: true do
+RSpec.describe VehicleJourneyControl::Company, type: :model do
   let(:workgroup) { referential.workgroup }
   let(:line) { create :line, line_referential: workgroup.line_referential }
   let(:route) { create :route, line: line }

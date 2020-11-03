@@ -1,10 +1,11 @@
-RSpec.describe VehicleJourneyControl::Company, type: :model do
+RSpec.describe VehicleJourneyControl::Company, type: :model, focus: true do
   let(:workgroup) { referential.workgroup }
   let(:line) { create :line, line_referential: workgroup.line_referential }
   let(:route) { create :route, line: line }
   let(:journey_pattern) { create :journey_pattern, route: route }
 
   let(:company) { create :company, line_referential: workgroup.line_referential }
+  let(:secondary_company) { create :company }
 
   let(:journey) { create :vehicle_journey_empty, journey_pattern: journey_pattern,
                                                  route: route,
@@ -16,7 +17,8 @@ RSpec.describe VehicleJourneyControl::Company, type: :model do
     {
       minimum: '1',
       maximum: '10',
-      company_id: company.id.to_s
+      company_id: company.id.to_s,
+      secondary_company_ids: [secondary_company.id.to_s]
     }
   }
 
@@ -39,6 +41,17 @@ RSpec.describe VehicleJourneyControl::Company, type: :model do
   end
 
   it 'should pass if the company is the right one' do
+    expect{compliance_check.process}.to change{ComplianceCheckResource.count}.by 1
+    resource = ComplianceCheckResource.last
+    expect(resource.status).to eq 'OK'
+  end
+
+  it 'should pass if the company is a secondary company' do
+    referential.switch do
+      journey.company = secondary_company
+      journey.save
+    end
+
     expect{compliance_check.process}.to change{ComplianceCheckResource.count}.by 1
     resource = ComplianceCheckResource.last
     expect(resource.status).to eq 'OK'

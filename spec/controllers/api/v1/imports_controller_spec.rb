@@ -53,6 +53,7 @@ RSpec.describe Api::V1::ImportsController, type: :controller do
           expect(import.automatic_merge).to be_truthy
           expect(import.flag_urgent).to be_truthy
           expect(import.notification_target).to eq('workbench')
+          expect(import.merge_method).to eq('experimental')
         end
       end
 

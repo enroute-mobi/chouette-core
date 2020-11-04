@@ -98,6 +98,9 @@ module Chouette
 
           model :stop_area_provider do
             attribute(:name) { |n| "Stop Area Provider #{n}" }
+            after do
+              new_instance.stop_area_referential = parent.stop_area_referential
+            end
 
             model :stop_area do
               attribute(:name) { |n| "Stop Area #{n}" }
@@ -106,6 +109,9 @@ module Chouette
 
               attribute(:latitude) { 48.8584 - 5 + 10 * rand }
               attribute(:longitude) { 2.2945 - 2 + 4 * rand }
+              after do
+                new_instance.stop_area_referential = parent.stop_area_referential
+              end
             end
           end
 

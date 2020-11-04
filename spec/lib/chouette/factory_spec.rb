@@ -396,6 +396,33 @@ RSpec.describe Chouette::Factory do
 
     end
 
+    describe "StopArea" do
+        let(:context) do
+          Chouette::Factory.create do
+            stop_area :first
+            stop_area :second
+            stop_area :third
+          end
+        end
+
+        it "creates 3 stop areas" do
+          expect{context}.to change { Chouette::StopArea.count }.by(3)
+        end
+
+        it "creates a stop_area_provider" do
+          expect{context}.to change { StopAreaProvider.count }.by(1)
+        end
+
+        it "each newly created object is related to the same stop area referential" do
+          expect(context.stop_area(:first).stop_area_referential).to eq(context.stop_area_provider.stop_area_referential)
+        end
+
+        it "creates a stop_area_referential" do
+          expect{context}.to change { StopAreaReferential.count }.by(1)
+        end
+
+    end
+
     describe %{
         route with_stops: false {
           stop_point

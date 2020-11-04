@@ -127,7 +127,6 @@ module Chouette
             after_dsl = AfterDSL.new(self, new_instance, context.with_instance(new_instance))
             after_dsl.instance_exec(new_instance, &after_callback)
           end
-
           unless new_instance.valid?
             log "Invalid instance: #{new_instance.inspect} #{new_instance.errors.inspect}"
           end

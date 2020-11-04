@@ -114,6 +114,7 @@ module Chouette::Sync
             longitude: longitude,
             is_referent: stop_area_is_referent,
             parent_id: stop_area_parent_id,
+            stop_area_provider_id: stop_area_provider_id,
             status: :confirmed,
             import_xml: raw_xml
           }

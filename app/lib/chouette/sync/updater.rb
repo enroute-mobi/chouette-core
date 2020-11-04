@@ -156,6 +156,7 @@ module Chouette
         def existing_models
           models.with_resource_ids(resource_ids) do |model, resource_id|
             resource = resource_by_id(resource_id)
+
             yield model, decorate(resource)
 
             resource_exists! resource_id

@@ -6,7 +6,8 @@ class StopAreaProvider < ActiveRecord::Base
 
   has_many :stop_areas, class_name: "Chouette::StopArea"
 
-  alias_method :referential, :stop_area_referential
+  alias referential stop_area_referential
+  alias_attribute :registration_number, :name
 
   before_validation :define_line_referential, on: :create
 

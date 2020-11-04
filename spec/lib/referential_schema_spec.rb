@@ -160,11 +160,10 @@ RSpec.describe ReferentialSchema do
   end
 
   describe ReferentialSchema::Table do
-
     let(:context) do
       Chouette.create do
         referential do
-          10.times { vehicle_journey }
+          3.times { vehicle_journey }
         end
       end
     end
@@ -177,21 +176,32 @@ RSpec.describe ReferentialSchema do
     end
 
     describe "#empty?" do
-
       it "returns false when the table has records, true if the table is empty" do
         expect { truncate_table }.to change(table, :empty?).from(false).to(true)
       end
-
     end
 
     describe "#count" do
-
       it "returns the number of records in the table" do
-        expect { truncate_table }.to change(table, :count).from(10).to(0)
+        expect { truncate_table }.to change(table, :count).from(3).to(0)
       end
-
     end
 
-  end
+    describe "columns" do
+      it "returns an array with ordered column names for the table" do
+        expected = [
+          "id", "route_id", "journey_pattern_id", "company_id", "objectid",
+          "object_version", "comment", "transport_mode", "published_journey_name",
+          "published_journey_identifier", "facility", "vehicle_type_identifier",
+          "number", "mobility_restricted_suitability", "flexible_service",
+          "journey_category", "created_at", "updated_at", "checksum", "checksum_source",
+          "data_source_ref", "custom_field_values", "metadata",
+          "ignored_routing_contraint_zone_ids", "ignored_stop_area_routing_constraint_ids",
+          "line_notice_ids"
+        ]
 
+        expect(table.columns).to eq(expected)
+      end
+    end
+  end
 end

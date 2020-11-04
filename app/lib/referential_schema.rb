@@ -149,11 +149,11 @@ class ReferentialSchema
     end
 
     def columns
-      connection.execute("SELECT column_name
-                          FROM information_schema.columns
-                          WHERE table_schema = '#{schema.name}'
-                          AND table_name = '#{name}'").values
-                                                      .flatten
+      @columns ||= connection.execute("SELECT column_name
+                                       FROM information_schema.columns
+                                       WHERE table_schema = '#{schema.name}'
+                                       AND table_name = '#{name}'").values
+                                                                   .flatten
     end
 
     def clone_to(target)

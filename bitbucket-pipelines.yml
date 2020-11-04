@@ -97,19 +97,19 @@ pipelines:
       - step:
           name: Trigger sub-projects
           script:
-            - pipe: atlassian/trigger-pipeline:4.1.1
+            - pipe: atlassian/trigger-pipeline:4.2.1
               variables:
                 BITBUCKET_USERNAME: $BITBUCKET_USERNAME
                 BITBUCKET_APP_PASSWORD: $BITBUCKET_APP_PASSWORD
                 REPOSITORY: $TRIGGER_REPOSITORY_1
                 CUSTOM_PIPELINE_NAME: 'merge'
-            - pipe: atlassian/trigger-pipeline:4.1.1
+            - pipe: atlassian/trigger-pipeline:4.2.1
               variables:
                 BITBUCKET_USERNAME: $BITBUCKET_USERNAME
                 BITBUCKET_APP_PASSWORD: $BITBUCKET_APP_PASSWORD
                 REPOSITORY: $TRIGGER_REPOSITORY_2
                 CUSTOM_PIPELINE_NAME: 'merge'
-            - pipe: atlassian/trigger-pipeline:4.1.1
+            - pipe: atlassian/trigger-pipeline:4.2.1
               variables:
                 BITBUCKET_USERNAME: $BITBUCKET_USERNAME
                 BITBUCKET_APP_PASSWORD: $BITBUCKET_APP_PASSWORD

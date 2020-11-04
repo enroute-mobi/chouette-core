@@ -1,12 +1,6 @@
 class RouteDecorator < AF83::Decorator
   decorates Chouette::Route
 
-  # Action links require:
-  #   context: {
-  #     referential: ,
-  #     line:
-  #   }
-
   set_scope { [context[:referential], context[:line]] }
 
   with_instance_decorator do |instance_decorator|

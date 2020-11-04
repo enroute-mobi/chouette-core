@@ -8,7 +8,8 @@ let fakeJourneyPattern = {
   published_name: 'jp_test publishedname 1',
   registration_number: 'jp_test registrationnumber 1',
   stop_points: [],
-  deletable: false
+  deletable: false,
+  shape: undefined
 }
 
 const cb = function(){}
@@ -94,5 +95,40 @@ describe('modal reducer', () => {
         type: 'CLOSE_MODAL'
       })
     ).toEqual(state)
+  })
+
+  it('should handle SELECT_SHAPE_EDIT_MODAL', () => {
+    let fakeShape = {id: 1, uuid: "00000", name: null}
+    let initialState = Object.assign({}, state, {modalProps : { ...state.modalProps, journeyPattern: fakeJourneyPattern }})
+
+    let newState = Object.assign({}, initialState, {
+      modalProps: {
+        journeyPattern: Object.assign({}, fakeJourneyPattern, {shape: fakeShape})
+      }
+    })
+
+    expect(
+      modalReducer(initialState, {
+        type: 'SELECT_SHAPE_EDIT_MODAL',
+        selectedItem: fakeShape
+      })
+    ).toEqual(newState)
+  })
+
+  it('should handle UNSELECT_SHAPE_EDIT_MODAL', () => {
+    let fakeShape = {id: 1, uuid: "00000", name: null}
+    let initialState = Object.assign({}, state, {modalProps : { ...state.modalProps, journeyPattern: {...fakeJourneyPattern, shape: fakeShape} }})
+
+    let newState = Object.assign({}, initialState, {
+      modalProps: {
+        journeyPattern: Object.assign({}, fakeJourneyPattern, {shape: undefined})
+      }
+    })
+
+    expect(
+      modalReducer(initialState, {
+        type: 'UNSELECT_SHAPE_EDIT_MODAL'
+      })
+    ).toEqual(newState)
   })
 })

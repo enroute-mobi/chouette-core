@@ -3,16 +3,15 @@ class ShapesKml
 
   prepare: ()->
     new Promise (resolve)=>
-      $(document).on 'mapSourceLoaded', =>
-        @initMap()
-        @area = []
-        @seenStopIds = []
-        @routes = {}
-        resolve(this)
+      @initMap()
+      @area = []
+      @seenStopIds = []
+      @routes = {}
+      resolve(this)
+
 
   initMap: ->
-    layer = window.mapBackgroundSource
-
+    layer = new ol.layer.Tile({source: new ol.source.OSM()})
     # It appeared that the only way to style kml vector in OL3 is to add a new style directly instead of just referencing it : https://gis.stackexchange.com/questions/177804/unable-to-style-kml-layer-in-openlayers-3
     vector = new ol.layer.Vector({
       source: new ol.source.Vector({
@@ -40,11 +39,9 @@ class ShapesKml
         })
 
     vectorSource = vector.getSource()
-    start = performance.now()
 
     vectorSource.once 'change', =>
       if (vectorSource.getState() == 'ready')
-        end = performance.now()
         extent = vectorSource.getExtent()
         @map.getView().fit extent, @map.getSize()
 

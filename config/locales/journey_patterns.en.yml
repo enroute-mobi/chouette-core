@@ -20,7 +20,7 @@ en:
     show:
       title: "%{journey_pattern}"
       stop_points: "Stop point on journey pattern list"
-      stop_points_count: 
+      stop_points_count:
         none: '%{count} stop areas'
         one: '%{count} stop area'
         other: '%{count} stop areas'
@@ -31,6 +31,7 @@ en:
       title: "%{route}"
     form:
       warning: "Be careful, selection is also applied to the %{count} vehicle journeys associated to this journey pattern"
+      shape_placeholder: Filter by name or ID
   activerecord:
     errors:
       models:
@@ -63,6 +64,7 @@ en:
         commercial_journey_time: Commercial journey
         stop_points: Nb stop areas
         checksum: Checksum
+        shape: Shape
   formtastic:
     titles:
       journey_pattern:

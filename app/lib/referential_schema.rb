@@ -114,7 +114,9 @@ class ReferentialSchema
       @schema = schema
       @name = name
     end
+
     attr_accessor :name, :schema
+    mattr_accessor :columns_cache, default: {}
 
     delegate :connection, :raw_connection, to: :schema
 
@@ -149,10 +151,10 @@ class ReferentialSchema
     end
 
     def columns
-      @columns ||= connection.select_values("SELECT column_name
-                                             FROM information_schema.columns
-                                             WHERE table_schema = '#{schema.name}'
-                                             AND table_name = '#{name}'")
+      columns_cache[name] ||= connection.select_values("SELECT column_name
+                                                        FROM information_schema.columns
+                                                        WHERE table_schema = '#{schema.name}'
+                                                        AND table_name = '#{name}'")
     end
 
     def clone_to(target)

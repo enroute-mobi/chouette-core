@@ -161,7 +161,7 @@ class ReferentialSchema
       columns_arg = columns.map { |col| "#{col}" }.join(',')
 
       connection.execute("INSERT INTO #{target_table.full_name} (#{columns_arg})
-                         (SELECT * FROM #{full_name})")
+                         (SELECT #{columns_arg} FROM #{full_name})")
 
       target_table.reset_pk_sequence
     end

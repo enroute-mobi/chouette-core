@@ -2,8 +2,14 @@ class ComplianceControl < ApplicationModel
   include ComplianceItemSupport
 
   class << self
-    def criticities; %i(warning error) end
-    def default_code; "" end
+
+    def criticities
+      %i(warning error)
+    end
+
+    def default_code
+      ""
+    end
 
     def policy_class
       ComplianceControlPolicy
@@ -87,8 +93,13 @@ class ComplianceControl < ApplicationModel
       super
     end
 
-    def predicate; I18n.t("compliance_controls.#{self.name.underscore}.description") end
-    def prerequisite; I18n.t("compliance_controls.#{self.name.underscore}.prerequisite") end
+    def predicate
+      I18n.t("compliance_controls.#{self.name.underscore}.description")
+    end
+
+    def prerequisite
+      I18n.t("compliance_controls.#{self.name.underscore}.prerequisite")
+    end
   end
 
   extend Enumerize
@@ -122,8 +133,13 @@ class ComplianceControl < ApplicationModel
     self.origin_code ||= self.class.default_code
   end
 
-  def predicate; self.class.predicate end
-  def prerequisite; self.class.prerequisite end
+  def predicate
+    self.class.predicate
+  end
+
+  def prerequisite
+    self.class.prerequisite
+  end
 
 end
 

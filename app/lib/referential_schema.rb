@@ -114,7 +114,9 @@ class ReferentialSchema
       @schema = schema
       @name = name
     end
+
     attr_accessor :name, :schema
+    mattr_accessor :columns_cache, default: {}
 
     delegate :connection, :raw_connection, to: :schema
 
@@ -148,11 +150,21 @@ class ReferentialSchema
       connection.select_value("SELECT count(*) FROM (SELECT 1 FROM #{full_name} LIMIT 1) AS t") == 0
     end
 
+    def columns
+      columns_cache[name] ||= connection.select_values("SELECT column_name
+                                                        FROM information_schema.columns
+                                                        WHERE table_schema = '#{schema.name}'
+                                                        AND table_name = '#{name}'")
+    end
+
     def clone_to(target)
       return if empty?
       target_table = target.associated_table(self)
+      columns_arg = columns.map { |col| "#{col}" }.join(',')
 
-      connection.execute "INSERT INTO #{target_table.full_name} (SELECT * FROM #{full_name})"
+      connection.execute("INSERT INTO #{target_table.full_name} (#{columns_arg})
+                         (SELECT #{columns_arg} FROM #{full_name})")
+
       target_table.reset_pk_sequence
     end
   end

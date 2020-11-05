@@ -32,7 +32,6 @@ Apartment.configure do |config|
     'Chouette::Line',
     'Chouette::LineNotice',
     'LineProvider',
-    'StopAreaProviderMembership',
     'Chouette::StopArea',
     'CleanUp',
     'CleanUpResult',

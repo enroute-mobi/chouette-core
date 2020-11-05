@@ -13,7 +13,7 @@
       = form.input :file, label: t('activerecord.attributes.import.resources'), wrapper: :horizontal_file_input
 
       - import.class.options.each do |attr, option_def|
-        - next if (attr == :merge_method) & !has_feature?('merge_method')
+        - next if (attr == :merge_method) && !has_feature?('merge_method')
         - if policy(import).option?(attr)
           = import_option_input form, import, attr, option_def, import.class
 

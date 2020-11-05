@@ -5,12 +5,11 @@ RSpec.describe Chouette::Sync::StopArea do
 
     let(:context) do
       Chouette.create do
-        stop_area_referential :default_sar
-        stop_area_provider stop_area_referential: :default_sar, name: "FR1-ARRET_AUTO"
+        stop_area_provider name: "FR1-ARRET_AUTO"
       end
     end
 
-    let(:target) { context.stop_area_referential(:default_sar) }
+    let(:target) { context.stop_area_referential }
     let(:stop_area_provider) { context.stop_area_provider }
 
     let(:xml) do

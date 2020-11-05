@@ -6,9 +6,20 @@ RSpec.describe Chouette::Sync::Updater do
 
   end
 
-  def resource(id)
-    double id: id, name: "Name #{id}"
+  let(:context) do
+    Chouette.create do
+      stop_area_provider
+    end
   end
+  
+  let(:target) { context.stop_area_referential }
+  let(:stop_area_provider) { context.stop_area_provider }
+
+
+  def resource(id)
+    double id: id, name: "Name #{id}", stop_area_provider_id: stop_area_provider.id
+  end
+
   def resources(*identifiers)
     identifiers.map { |id| resource id }
   end
@@ -98,20 +109,16 @@ RSpec.describe Chouette::Sync::Updater do
 
   describe "with real target" do
 
-    let(:context) do
-      Chouette.create do
-        stop_area_referential
-      end
-    end
-
-    let(:target) { context.stop_area_referential }
 
     let(:source) { double resources: [] }
 
     class TestDecorator < Chouette::Sync::Updater::ResourceDecorator
 
       def model_attributes
-        { name: name }
+        {
+          name: name,
+          stop_area_provider_id: stop_area_provider_id
+        }
       end
 
     end
@@ -155,7 +162,7 @@ RSpec.describe Chouette::Sync::Updater do
     context "when the source provides an existing Model" do
 
       let!(:existing_model) do
-        target.stop_areas.create! name: "Old name", registration_number: "test"
+        target.stop_areas.create! name: "Old name", registration_number: "test", stop_area_provider: stop_area_provider
       end
 
       let(:source_resource) { resource("test") }
@@ -179,7 +186,7 @@ RSpec.describe Chouette::Sync::Updater do
       before do
         resource_count.times do |n|
           source.resources << resource(n)
-          target.stop_areas.create! name: old_name, registration_number: n
+          target.stop_areas.create! name: old_name, registration_number: n, stop_area_provider: stop_area_provider
         end
       end
 

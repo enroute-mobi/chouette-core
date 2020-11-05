@@ -33,7 +33,10 @@ en:
       title: "Edit the control block : %{name}"
     update:
       title: "Edit the control block : %{name}"
+    all_lines: Every line
     stop_areas_in_countries: At least %{min_count} stops in %{country_name}
+    with_transport_submode: "Transport mode: %{transport_mode} > %{transport_submode}"
+    with_transport_mode: "Transport mode: %{transport_mode}"
     block_kinds:
       stop_areas_in_countries: At least N stops in a given country
       transport_mode: Transport mode

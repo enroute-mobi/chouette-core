@@ -26,9 +26,7 @@ RSpec.describe Stat::JourneyPatternCoursesByDate, type: :model do
 
   describe '#compute_for_referential' do
     it 'creates stat objects for a referential' do
-      dates_metadatas1 = referential_metadatas_1.periodes.first.to_a
-      dates_metadatas2 = referential_metadatas_2.periodes.first.to_a
-      expected_count = (dates_metadatas1 | dates_metadatas2).count
+      expected_count = referential.metadatas_period.count
 
       expect {
         Stat::JourneyPatternCoursesByDate.compute_for_referential(referential)

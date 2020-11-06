@@ -453,11 +453,6 @@ class Referential < ApplicationModel
   before_validation :assign_slug, on: :create
   before_validation :assign_prefix, on: :create
 
-  # Lock the `referentials` table to prevent duplicate referentials from being
-  # created simultaneously in separate transactions. This must be the last hook
-  # to minimise the duration of the lock.
-  before_save :lock_table, on: [:create, :update]
-
   before_create :create_schema
 
   # Don't use after_commit because of inline_clone (cf created_from)
@@ -555,6 +550,13 @@ class Referential < ApplicationModel
   validate :detect_overlapped_referentials, unless: -> { in_referential_suite? || archived? }
 
   def detect_overlapped_referentials
+    begin
+      lock_table
+    rescue ActiveRecord::StatementInvalid
+      # Can occur when no transaction is started
+      Rails.logger.warn "Can't retrieve lock before validating Referential #{slug}"
+    end
+
     self.class.where(id: overlapped_referential_ids).each do |referential|
       Rails.logger.info "Referential #{referential.id} #{referential.metadatas.inspect} overlaps #{metadatas.inspect}"
       errors.add :metadatas, I18n.t("referentials.errors.overlapped_referential", :referential => referential.name)
@@ -749,7 +751,7 @@ class Referential < ApplicationModel
     # No explicit unlock is needed as it will be released at the end of the
     # transaction.
     ActiveRecord::Base.connection.execute(
-      'LOCK public.referentials IN EXCLUSIVE MODE'
+      'LOCK public.referential_metadata IN SHARE ROW EXCLUSIVE MODE'
     )
   end
 end

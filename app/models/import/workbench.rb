@@ -5,6 +5,8 @@ class Import::Workbench < Import::Base
 
   option :automatic_merge, type: :boolean, default_value: false
   option :flag_urgent, type: :boolean, default_value: false
+  option :merge_method, type: :string, collection: %w(legacy experimental),
+                        default_value: 'legacy'
 
   def main_resource; self end
 
@@ -106,8 +108,12 @@ class Import::Workbench < Import::Base
   end
 
   def create_automatic_merge
-    Merge.create creator: creator, workbench: workbench, referentials: referentials, notification_target: notification_target, user: user, automatic_operation: true
+    Merge.create creator: creator,
+                 workbench: workbench,
+                 referentials: referentials,
+                 notification_target: notification_target,
+                 user: user,
+                 automatic_operation: true,
+                 merge_method: merge_method
   end
-
-
 end

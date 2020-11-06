@@ -19,7 +19,8 @@ const journeyPattern = (state = {}, action) =>{
         stop_points: stopPoints,
         costs: {},
         custom_fields: action.data.custom_fields,
-        deletable: false
+        deletable: false,
+        shape: action.data.shape
       }
     case 'UPDATE_CHECKBOX_VALUE':
       var updatedStopPoints = state.stop_points.map((s) => {
@@ -106,6 +107,7 @@ export default function journeyPatterns (state = [], action)  {
             published_name: action.data.published_name.value,
             registration_number: action.data.registration_number.value,
             custom_fields: action.data.custom_fields,
+            shape: action.data.shape
           })
         } else {
           return j

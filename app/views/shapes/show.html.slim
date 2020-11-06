@@ -25,5 +25,4 @@
 = javascript_tag do
   | window.kml_url = "#{workbench_shape_referential_shape_path(@workbench, @shape, format: :kml).html_safe}";
 
-= javascript_include_tag 'OpenLayers/maps_backgrounds.js'
 = javascript_pack_tag 'shapes/show.js'

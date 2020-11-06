@@ -17,6 +17,10 @@ class Shape < ApplicationModel
     joins(:codes).where(codes: { code_space: code_space, value: value })
   }
 
+  def associations
+    CrossReferentialIndexEntry.where(relation_name: :shape, parent_id: id)
+  end
+
   def human_attribute_name(*args)
     self.class.human_attribute_name(*args)
   end

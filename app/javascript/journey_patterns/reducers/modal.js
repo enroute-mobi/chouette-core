@@ -1,5 +1,7 @@
 import _ from 'lodash'
 
+let journeyPattern, newModalProps
+
 export default function modal(state = {}, action) {
   switch (action.type) {
     case 'OPEN_CONFIRM_MODAL':
@@ -19,6 +21,14 @@ export default function modal(state = {}, action) {
         },
         confirmModal: {}
       }
+    case 'SELECT_SHAPE_EDIT_MODAL':
+      journeyPattern =  _.assign({}, state.modalProps.journeyPattern, {shape: action.selectedItem})
+      newModalProps = _.assign({}, state.modalProps, {journeyPattern})
+      return _.assign({}, state, {modalProps: newModalProps})
+    case 'UNSELECT_SHAPE_EDIT_MODAL':
+      journeyPattern =  _.assign({}, state.modalProps.journeyPattern, {shape: undefined})
+      newModalProps = _.assign({}, state.modalProps, {journeyPattern})
+      return _.assign({}, state, {modalProps: newModalProps})
     case 'CREATE_JOURNEYPATTERN_MODAL':
       return {
         type: 'create',

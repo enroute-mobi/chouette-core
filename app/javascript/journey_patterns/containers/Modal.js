@@ -19,6 +19,12 @@ const mapDispatchToProps = (dispatch) => {
     },
     saveModal: (index, data) =>{
       dispatch(actions.saveModal(index, data))
+    },
+    onSelectShape: (e) => {
+      dispatch(actions.selectShape(e.params.data))
+    },
+    onUnselectShape: () => {
+      dispatch(actions.unselectShape())
     }
   }
 }

@@ -177,7 +177,7 @@ en:
       messages:
         3_vehiclejourney_6: "The vehicle journey %{source_objectid} lacks a purchase window"
       description: "All vehicle journeys must have a purchase window"
-      prerequisite: "Aucun"
+      prerequisite: "None"
     vehicle_journey_control/purchase_window_dates:
       messages:
         3_vehiclejourney_7: The end date of journey's %{source_objectid} purchase windows must be before or equal of the end date of circulation

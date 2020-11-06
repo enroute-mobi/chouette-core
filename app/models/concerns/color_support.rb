@@ -31,6 +31,12 @@ module ColorSupport
         _color = read_attribute(name.to_sym)
         _color.present? ? _color : nil
       end
+
+      define_method "#{name}_hex" do
+        _color = read_attribute(name.to_sym)
+        _color.present? ? "##{_color}" : nil
+      end
+
     end
   end
 

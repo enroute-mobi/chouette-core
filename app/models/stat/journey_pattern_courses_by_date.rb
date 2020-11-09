@@ -25,7 +25,7 @@ module Stat
     def self.compute_for_referential(referential, line_ids: [])
       Chouette::Benchmark.measure 'journey_pattern_courses_by_date.referential', referential: referential.id do
         referential.switch do
-          JourneyPatternCoursesByDate.delete_all
+          clean_previous_stats(line_ids)
           ActiveRecord::Base.cache do
             ActiveRecord::Base.transaction do
               selected_lines(referential, line_ids).each do |line|
@@ -47,10 +47,18 @@ module Stat
     end
 
     def self.selected_lines(referential, ids)
-      if ids.count != 0
-        ids.map {|id| Chouette::Line.find(id)}
-      else
+      if ids.empty?
         referential.lines.select(:id).to_a
+      else
+        ids.map {|id| Chouette::Line.find(id)}
+      end
+    end
+
+    def self.clean_previous_stats(line_ids)
+      if line_ids.empty?
+        JourneyPatternCoursesByDate.delete_all
+      else
+        JourneyPatternCoursesByDate.where(line_id: line_ids).delete_all
       end
     end
 

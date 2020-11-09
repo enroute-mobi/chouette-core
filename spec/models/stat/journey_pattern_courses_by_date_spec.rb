@@ -1,9 +1,9 @@
-
 RSpec.describe Stat::JourneyPatternCoursesByDate, type: :model do
   let(:journey_pattern) { create :journey_pattern }
   let(:line_referential) { create :line_referential }
   let(:workbench) { create :workbench, line_referential: line_referential }
   let!(:line) { create :line, line_referential: line_referential }
+  let!(:line2) { create :line, line_referential: line_referential }
   let(:route) { journey_pattern.route }
   let(:service) { JourneyPatternOfferService.new(journey_pattern) }
 
@@ -29,7 +29,7 @@ RSpec.describe Stat::JourneyPatternCoursesByDate, type: :model do
 
   describe '#compute_for_referential' do
     it 'creates stat objects for a referential' do
-      expected_count = referential.metadatas_period.count
+      expected_count = referential.metadatas_period.count * referential.associated_lines.count
 
       expect {
         Stat::JourneyPatternCoursesByDate.compute_for_referential(referential)
@@ -37,9 +37,6 @@ RSpec.describe Stat::JourneyPatternCoursesByDate, type: :model do
     end
 
     it 'can take an option to select lines to compute' do
-      line2 = create :line, line_referential: line_referential
-      referential.metadatas.push(create :referential_metadata, line_ids:[line2.id])
-
       Stat::JourneyPatternCoursesByDate.compute_for_referential(referential, line_ids: [line.id])
 
       expect(
@@ -49,6 +46,22 @@ RSpec.describe Stat::JourneyPatternCoursesByDate, type: :model do
       expect(
         Stat::JourneyPatternCoursesByDate.where(line_id: line2.id).exists?
       ).to be_falsy
+    end
+  end
+
+  describe '#clean_previous_stats' do
+    it 'delete records associated to specific lines' do
+      Stat::JourneyPatternCoursesByDate.compute_for_referential(referential, line_ids: [line.id])
+      Stat::JourneyPatternCoursesByDate.compute_for_referential(referential, line_ids: [line2.id])
+      Stat::JourneyPatternCoursesByDate.clean_previous_stats([line2.id])
+
+      expect(
+        Stat::JourneyPatternCoursesByDate.where(line_id: line2.id).exists?
+      ).to be_falsy
+
+      expect(
+        Stat::JourneyPatternCoursesByDate.where(line_id: line.id).exists?
+      ).to be_truthy
     end
   end
 

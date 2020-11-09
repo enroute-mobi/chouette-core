@@ -56,18 +56,22 @@ export default class CreateModal extends Component {
                   {(this.props.modal.type == 'create') && (
                     <form>
                       <div className='modal-body'>
-                        <div className='form-group'>
-                          <label className='control-label is-required'>{I18n.attribute_name('journey_pattern', 'name')}</label>
-                          <input
-                            type='text'
-                            ref='name'
-                            className='form-control'
-                            onKeyDown={(e) => actions.resetValidation(e.currentTarget)}
-                            required
-                            />
+                        <div className='row'>
+                          <div className='col-xs-12'>
+                            <div className='form-group'>
+                              <label className='control-label is-required'>{I18n.attribute_name('journey_pattern', 'name')}</label>
+                              <input
+                                type='text'
+                                ref='name'
+                                className='form-control'
+                                onKeyDown={(e) => actions.resetValidation(e.currentTarget)}
+                                required
+                                />
+                            </div>
+                          </div>
                         </div>
                         <div className='row'>
-                          <div className='col-lg-6 col-md-6 col-sm-6 col-xs-6'>
+                          <div className='col-xs-6'>
                             <div className='form-group'>
                               <label className='control-label is-required'>{I18n.attribute_name('journey_pattern', 'published_name')}</label>
                               <input
@@ -79,7 +83,7 @@ export default class CreateModal extends Component {
                                 />
                             </div>
                           </div>
-                          <div className='col-lg-6 col-md-6 col-sm-6 col-xs-6'>
+                          <div className='col-xs-6'>
                             <div className='form-group'>
                               <label className='control-label'>{I18n.attribute_name('journey_pattern', 'registration_number')}</label>
                               <input
@@ -90,30 +94,31 @@ export default class CreateModal extends Component {
                                 />
                             </div>
                           </div>
-                          <div className='row'>
-                            <CustomFieldsInputs
-                              values={this.props.custom_fields}
-                              onUpdate={(code, value) => this.custom_fields[code]["value"] = value}
-                              disabled={false}
-                            />
-                          </div>
-                          <div className='row'>
-                            <div className='col-sm-12 col-xs-12'>
-                              <div className='form-group'>
-                                <label className='control-label'>{I18n.attribute_name('journey_pattern', 'shape')}</label>
-                                <ShapeSelector
-                                  shape = {_.get(this.props.modal.modalProps, 'journeyPattern.shape')}
-                                  onSelectShape = {(e) => this.props.onSelectShape(e)}
-                                  onUnselectShape = {() => this.props.onUnselectShape()}
-                                  disabled={!this.props.editMode}
-                                />
-                              </div>
+                        </div>
+
+                        <div className='row'>
+                          <CustomFieldsInputs
+                            values={this.props.custom_fields}
+                            onUpdate={(code, value) => this.custom_fields[code]["value"] = value}
+                            disabled={false}
+                          />
+                        </div>
+                        <div className='row'>
+                          <div className='col-xs-12'>
+                            <div className='form-group'>
+                              <label className='control-label'>{I18n.attribute_name('journey_pattern', 'shape')}</label>
+                              <ShapeSelector
+                                shape = {_.get(this.props.modal.modalProps, 'journeyPattern.shape')}
+                                onSelectShape = {(e) => this.props.onSelectShape(e)}
+                                onUnselectShape = {() => this.props.onUnselectShape()}
+                                disabled={!this.props.editMode}
+                              />
                             </div>
                           </div>
-                          <div className='row'>
-                            <div className='col-xs-12 shape-map'>
-                              <ShapeMap shapeId={_.get(this.props.modal.modalProps, 'journeyPattern.shape.id')}/>
-                            </div>
+                        </div>
+                        <div className='row'>
+                          <div className='col-xs-12 shape-map'>
+                            <ShapeMap shapeId={_.get(this.props.modal.modalProps, 'journeyPattern.shape.id')}/>
                           </div>
                         </div>
                       </div>

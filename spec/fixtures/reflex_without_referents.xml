@@ -61,7 +61,7 @@
               <Name>CIF 95 - GOUSSAINVILLE</Name>
               <TypeOfOrganisationPartRef ref="FR1-ARRET_Organisation"/>
             </OrganisationalUnit>
-            <StopPlace changed="2019-04-03T19:35:09Z" created="2014-12-28T23:00:00Z" dataSourceRef="FR1-ARRET_AUTO" id="FR::monomodalStopPlace:51735:FR1" version="898172-898173">
+            <StopPlace changed="2019-04-03T19:35:09Z" created="2014-12-28T23:00:00Z" dataSourceRef="FR1:OrganisationalUnit:8:" id="FR::monomodalStopPlace:51735:FR1" version="898172-898173">
               <Name>Gutenberg - Lycée Boulloche</Name>
               <Centroid>
                 <Location>
@@ -75,7 +75,7 @@
               <ParentSiteRef ref="FR::multimodalStopPlace:73376:FR1"/>
               <StopPlaceType>onstreetBus</StopPlaceType>
             </StopPlace>
-            <StopPlace changed="2019-04-03T19:37:32Z" created="2014-12-28T23:00:00Z" dataSourceRef="FR1-ARRET_AUTO" id="FR::multimodalStopPlace:73376:FR1" version="898173">
+            <StopPlace changed="2019-04-03T19:37:32Z" created="2014-12-28T23:00:00Z" dataSourceRef="FR1:OrganisationalUnit:8:" id="FR::multimodalStopPlace:73376:FR1" version="898173">
               <Name>GUTENBERG - Lycée Boulloche</Name>
               <Centroid>
                 <Location>
@@ -127,7 +127,7 @@
                 </DestinationDisplayView>
               </destinations>
             </Quay>
-            <Quay changed="2018-06-14T13:35:35Z" created="2014-12-28T23:00:00Z" dataSourceRef="FR1-ARRET_AUTO" id="FR::Quay:29924:FR1" version="898170-898172">
+            <Quay changed="2018-06-14T13:35:35Z" created="2014-12-28T23:00:00Z" dataSourceRef="FR1:OrganisationalUnit:8:" id="FR::Quay:29924:FR1" version="898170-898172">
               <Name>Gutenberg</Name>
               <Centroid>
                 <Location>

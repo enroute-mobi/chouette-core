@@ -5,7 +5,7 @@ RSpec.describe Chouette::Sync::StopArea do
 
     let(:context) do
       Chouette.create do
-        stop_area_provider name: "FR1-ARRET_AUTO"
+        stop_area_provider objectid: "FR1-ARRET_AUTO"
       end
     end
 

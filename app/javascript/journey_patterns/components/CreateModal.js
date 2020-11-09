@@ -16,7 +16,7 @@ export default class CreateModal extends Component {
     if(actions.validateFields(this.refs) == true) {
       this.props.onAddJourneyPattern(_.assign({}, this.refs, {
         custom_fields: this.custom_fields,
-        shape: this.props.modal.modalProps.journeyPattern.shape ? {id: this.props.modal.modalProps.journeyPattern.shape.id, name: this.props.modal.modalProps.journeyPattern.shape.name, uuid: this.props.modal.modalProps.journeyPattern.shape.uuid } : undefined
+        shape: _.get(this.props.modal.modalProps, 'journeyPattern.shape') ? {id: this.props.modal.modalProps.journeyPattern.shape.id, name: this.props.modal.modalProps.journeyPattern.shape.name, uuid: this.props.modal.modalProps.journeyPattern.shape.uuid } : undefined
        }
      ))
       this.props.onModalClose()

@@ -22,14 +22,14 @@ module Stat
       end
     }
 
-    def self.compute_for_referential(referential)
-      Chouette::Benchmark.measure "journey_pattern_courses_by_date.referential", referential: referential.id do
+    def self.compute_for_referential(referential, line_ids: [])
+      Chouette::Benchmark.measure 'journey_pattern_courses_by_date.referential', referential: referential.id do
         referential.switch do
           JourneyPatternCoursesByDate.delete_all
           ActiveRecord::Base.cache do
             ActiveRecord::Base.transaction do
-              referential.lines.select(:id).find_each do |line|
-                Chouette::Benchmark.measure "line", line: line.id do
+              selected_lines(referential, line_ids).each do |line|
+                Chouette::Benchmark.measure 'line', line: line.id do
                   routes = referential.routes.where(line_id: line.id)
                   if routes.exists?
                     routes.includes(:journey_patterns).find_each do |route|
@@ -43,6 +43,14 @@ module Stat
             end
           end
         end
+      end
+    end
+
+    def self.selected_lines(referential, ids)
+      if ids.count != 0
+        ids.map {|id| Chouette::Line.find(id)}
+      else
+        referential.lines.select(:id).to_a
       end
     end
 

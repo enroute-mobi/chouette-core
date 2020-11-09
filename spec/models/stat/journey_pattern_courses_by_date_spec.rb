@@ -1,25 +1,28 @@
 
 RSpec.describe Stat::JourneyPatternCoursesByDate, type: :model do
   let(:journey_pattern) { create :journey_pattern }
-  let(:line_referential){ create :line_referential }
+  let(:line_referential) { create :line_referential }
   let(:workbench) { create :workbench, line_referential: line_referential }
   let!(:line) { create :line, line_referential: line_referential }
   let(:route) { journey_pattern.route }
   let(:service) { JourneyPatternOfferService.new(journey_pattern) }
-  let(:referential_metadatas_1) do
+
+  let(:metadatas_1) do
     create :referential_metadata, lines: line_referential.lines,
                                   periodes: [(period_start..period_end.prev_day)]
   end
-  let(:referential_metadatas_2) do
+
+  let(:metadatas_2) do
     create :referential_metadata, lines: line_referential.lines,
                                   periodes: [(period_start.next..period_end)]
   end
+
   let(:referential)  { create :workbench_referential, workbench: workbench,
-                                                      metadatas: [referential_metadatas_1, referential_metadatas_2] }
+                                                      metadatas: [metadatas_1, metadatas_2] }
   let(:period_start) { 1.month.ago.to_date }
   let(:period_end)   { 1.month.since.to_date }
 
-  before(:each) do
+  before do
     referential.switch
     journey_pattern.route.update line: line
   end
@@ -31,6 +34,21 @@ RSpec.describe Stat::JourneyPatternCoursesByDate, type: :model do
       expect {
         Stat::JourneyPatternCoursesByDate.compute_for_referential(referential)
       }.to change { Stat::JourneyPatternCoursesByDate.count }.by(expected_count)
+    end
+
+    it 'can take an option to select lines to compute' do
+      line2 = create :line, line_referential: line_referential
+      referential.metadatas.push(create :referential_metadata, line_ids:[line2.id])
+
+      Stat::JourneyPatternCoursesByDate.compute_for_referential(referential, line_ids: [line.id])
+
+      expect(
+        Stat::JourneyPatternCoursesByDate.where(line_id: line.id).exists?
+      ).to be_truthy
+
+      expect(
+        Stat::JourneyPatternCoursesByDate.where(line_id: line2.id).exists?
+      ).to be_falsy
     end
   end
 
@@ -55,7 +73,6 @@ RSpec.describe Stat::JourneyPatternCoursesByDate, type: :model do
         end
 
         it 'should create instances' do
-
           period_start.upto(period_end).each do |date|
             expect(
               Stat::JourneyPatternCoursesByDate.where(journey_pattern_id: journey_pattern.id, date: date).exists?
@@ -131,6 +148,7 @@ RSpec.describe Stat::JourneyPatternCoursesByDate, type: :model do
       let(:time_tables) { [time_table] }
       let(:time_table) { create :time_table, periods_count: 0, dates_count: 0 }
       let(:circulation_day) { period_start + 10 }
+
       context 'with no hole' do
         before do
           time_table.periods.create!(period_start: period_start, period_end: circulation_day)
@@ -226,7 +244,8 @@ RSpec.describe Stat::JourneyPatternCoursesByDate, type: :model do
     before do
       ["2020-01-01", "2020-06-01", "2020-12-01", "2021-01-01"].each{ |d| create :stat_journey_pattern_courses_by_date, date: d.to_date }
     end
-    context '#between' do
+
+    describe '#between' do
       let(:filtered_jpcbd_list) { Stat::JourneyPatternCoursesByDate.between("2020-05-01".to_date, "2020-12-01".to_date) }
 
       it 'should return JourneyPatternCoursesByDate items between the selected dates' do
@@ -234,14 +253,15 @@ RSpec.describe Stat::JourneyPatternCoursesByDate, type: :model do
       end
     end
 
-    context '#before' do
+    describe '#before' do
       let(:filtered_jpcbd_list) { Stat::JourneyPatternCoursesByDate.after("2020-05-01".to_date) }
+
       it 'should return JourneyPatternCoursesByDate items after the selected date' do
         expect( filtered_jpcbd_list.count ).to eq 3
       end
     end
 
-    context '#after' do
+    describe '#after' do
       let(:filtered_jpcbd_list) { Stat::JourneyPatternCoursesByDate.before("2020-05-01".to_date) }
 
       it 'should return JourneyPatternCoursesByDate items before the selected date' do

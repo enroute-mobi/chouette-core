@@ -168,3 +168,23 @@ describe('when fetching api', () => {
     expect(actions.fetchingApi()).toEqual(expectedAction)
   })
 })
+
+describe('when selecting a shape', () => {
+  it('should create an action to update the journey pattern under edition', () => {
+    const selectedShape = {}
+    const expectedAction = {
+      type: 'SELECT_SHAPE_EDIT_MODAL',
+      selectedItem: selectedShape
+    }
+    expect(actions.selectShape(selectedShape)).toEqual(expectedAction)
+  })
+})
+
+describe('when unselecting a shape', () => {
+  it('should create an action to update the journey pattern under edition', () => {
+    const expectedAction = {
+      type: 'UNSELECT_SHAPE_EDIT_MODAL'
+    }
+    expect(actions.unselectShape()).toEqual(expectedAction)
+  })
+})

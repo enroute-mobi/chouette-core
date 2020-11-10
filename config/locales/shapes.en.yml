@@ -7,12 +7,20 @@ en:
       edit: "Edit this shape"
       destroy: "Remove this shape"
       destroy_confirm: Are you sure you want destroy this shape ?"
+      associated_resources: "Shape %{shape_uuid} - Associated resources"
     edit:
       title: "Update shape %{name}"
     show:
       title: "Shape %{name}"
     index:
       title: Shapes
+    associations:
+      table_headers:
+        status: Status
+        dataset: Dataset
+        type: Type
+        id: ID
+        line: Line
   activerecord:
     models:
       shape:

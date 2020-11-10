@@ -79,7 +79,8 @@ module Chouette
         name: item['name'],
         published_name: item['published_name'],
         registration_number: item['registration_number'],
-        costs: item['costs']
+        costs: item['costs'],
+        shape_id: item['shape'].try(:[], 'id')
       }
       attrs["custom_field_values"] = Hash[
         *(item["custom_fields"] || {})

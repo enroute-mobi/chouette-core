@@ -20,7 +20,7 @@ fr:
     show:
       title: "%{journey_pattern}"
       stop_points: "Liste des arrêts de la mission"
-      stop_points_count: 
+      stop_points_count:
         none: '%{count} arrêt'
         one: '%{count} arrêt'
         other: '%{count} arrêts'
@@ -31,6 +31,7 @@ fr:
       title: "%{route}"
     form:
       warning: "Attention, la sélection s'applique aussi aux %{count} courses de la mission"
+      shape_placeholder: Filtrer par nom ou ID
   activerecord:
     errors:
       models:
@@ -63,6 +64,7 @@ fr:
         commercial_journey_time: Parcours commercial
         stop_points: Nb arrêts
         checksum: Signature métier
+        shape: Tracé
   formtastic:
     titles:
       journey_pattern:

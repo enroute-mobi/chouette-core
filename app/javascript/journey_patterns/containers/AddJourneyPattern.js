@@ -22,6 +22,12 @@ const mapDispatchToProps = (dispatch) => {
     },
     onOpenCreateModal: () =>{
       dispatch(actions.openCreateModal())
+    },
+    onSelectShape: (e) => {
+      dispatch(actions.selectShape(e.params.data))
+    },
+    onUnselectShape: () => {
+      dispatch(actions.unselectShape())
     }
   }
 }

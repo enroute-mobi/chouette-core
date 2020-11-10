@@ -8,6 +8,7 @@ class ShapesController < ChouetteController
 
   respond_to :html
   respond_to :kml, :only => [:index, :show]
+  respond_to :json, :only => [:index]
 
   def index
     index! do |format|
@@ -20,6 +21,10 @@ class ShapesController < ChouetteController
         )
       }
     end
+  end
+
+  def associations
+    @shape = resource
   end
 
   protected

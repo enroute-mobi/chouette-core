@@ -28,7 +28,7 @@ module Stat
           clean_previous_stats(line_ids)
           ActiveRecord::Base.cache do
             ActiveRecord::Base.transaction do
-              selected_lines(referential, line_ids).each do |line|
+              selected_lines(referential, line_ids).find_each do |line|
                 Chouette::Benchmark.measure 'line', line: line.id do
                   routes = referential.routes.where(line_id: line.id)
                   if routes.exists?
@@ -48,9 +48,9 @@ module Stat
 
     def self.selected_lines(referential, ids)
       if ids.empty?
-        referential.lines.select(:id).to_a
+        referential.lines.select(:id)
       else
-        ids.map {|id| Chouette::Line.find(id)}
+        referential.lines.where(id: ids)
       end
     end
 

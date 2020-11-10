@@ -197,7 +197,6 @@ fr:
         3_vehiclejourney_10: La course %{vj_name} (%{source_objectid}) possède au moins un calendrier d'application vide (%{tt_names})
       description: "Une course ne doit pas être lié à un calendrier d'application vide"
       prerequisite: "Une course doit exister"
-      prerequisite: "Aucun"
     vehicle_journey_control/company:
       messages:
         3_vehiclejourney_11: La course %{source_objectid} ne peut être associée au transporteur %{company_name}

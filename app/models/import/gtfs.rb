@@ -111,6 +111,7 @@ class Import::Gtfs < Import::Base
         stop_area = stop_area_referential.stop_areas.find_or_initialize_by(registration_number: stop.id)
 
         stop_area.name = stop.name
+        stop_area.stop_area_provider = stop_area_provider
         stop_area.area_type = stop.location_type == '1' ? :zdlp : :zdep
         stop_area.latitude = stop.lat.presence && stop.lat.to_f
         stop_area.longitude = stop.lon.presence && stop.lon.to_f
@@ -654,6 +655,10 @@ class Import::Gtfs < Import::Base
 
   def shape_provider
     workbench.default_shape_provider
+  end
+
+  def stop_area_provider
+    workbench.default_stop_area_provider
   end
 
   def import_shapes

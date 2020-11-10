@@ -131,6 +131,7 @@ class Workbench < ApplicationModel
   DEFAULT_PROVIDER_SHORT_NAME = 'default'
 
   def default_shape_provider
+    # The find_or_initialize_by results in self.shape_providers.build, that new related object instance is saved when self is saved
     @default_shape_provider ||= shape_providers.find_or_initialize_by(short_name: DEFAULT_PROVIDER_SHORT_NAME) do |p|
       p.shape_referential_id = workgroup.shape_referential_id
     end
@@ -143,7 +144,7 @@ class Workbench < ApplicationModel
   end
 
   def default_stop_area_provider
-    @default_stop_area_provider ||= stop_area_providers.find_or_initialize_by(name: DEFAULT_PROVIDER_SHORT_NAME) do |p|
+    @default_stop_area_provider ||= stop_area_providers.find_or_initialize_by(name: DEFAULT_PROVIDER_SHORT_NAME, objectid: DEFAULT_PROVIDER_SHORT_NAME) do |p|
       p.stop_area_referential_id = stop_area_referential_id
     end
   end
@@ -164,7 +165,10 @@ class Workbench < ApplicationModel
 
   def create_dependencies
     self.output ||= ReferentialSuite.create
-    default_shape_provider if workgroup
-    default_line_provider if workgroup
+    if workgroup
+      default_shape_provider
+      default_line_provider
+      default_stop_area_provider
+    end
   end
 end

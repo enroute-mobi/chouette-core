@@ -276,6 +276,7 @@ class Import::Neptune < Import::Base
 
       each_element_matching_css('StopArea', source_parent) do |source_stop_area|
         stop_area = stop_area_referential.stop_areas.find_or_initialize_by registration_number: source_stop_area[:object_id]
+        stop_area.stop_area_provider = workbench.default_stop_area_provider
         stop_area.name = source_stop_area[:name] if source_stop_area[:name].present?
         stop_area.comment = source_stop_area[:comment] if source_stop_area[:comment].present?
 

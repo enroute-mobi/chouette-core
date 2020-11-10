@@ -63,7 +63,7 @@ module ChouetteIhm
     SmartEnv.add_boolean :CHOUETTE_TRANSACTIONAL_CHECKSUMS, default: true
     SmartEnv.add_boolean :ENABLE_DELAYED_JOB_REAPER, default: true
     SmartEnv.add_boolean :ENABLE_DEVELOPMENT_TOOLBAR, default: false
-    SmartEnv.add :DELAYED_JOB_MAX_RUN_TIME, default: 24
+    SmartEnv.add_integer :DELAYED_JOB_MAX_RUN_TIME, default: 24
     SmartEnv.add :DELAYED_JOB_REAPER_HEARTBEAT_INTERVAL_SECONDS, default: 20
     SmartEnv.add :DELAYED_JOB_REAPER_HEARTBEAT_TIMEOUT_SECONDS, default: 60
     SmartEnv.add_boolean :DELAYED_JOB_REAPER_WORKER_TERMINATION_ENABLED, default: true
@@ -73,6 +73,7 @@ module ChouetteIhm
     SmartEnv.add_integer :REFERENTIALS_CLEANING_COOLDOWN
     SmartEnv.add_boolean :ENABLE_LINK_TO_SUPPORT, default: false
     SmartEnv.add :SUPPORT_LINK, default: 'https://support.enroute.mobi'
+    SmartEnv.add_integer :CHOUETTE_IMPORT_MAX_RUNTIME, default: 4
 
     # Manage Storage configuration
     SmartEnv.add :STORAGE, default: 'file'

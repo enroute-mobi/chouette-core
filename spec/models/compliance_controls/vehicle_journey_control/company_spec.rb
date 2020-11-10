@@ -12,7 +12,7 @@ RSpec.describe VehicleJourneyControl::Company, type: :model do
                                                  company: company,
                                                  published_journey_name: '4' }
 
-  let(:criticity){ 'warning' }
+  let(:criticity) { 'warning' }
   let(:control_attributes) {
     {
       minimum: '1',
@@ -41,6 +41,17 @@ RSpec.describe VehicleJourneyControl::Company, type: :model do
   end
 
   it 'should pass if the company is the right one' do
+    expect{compliance_check.process}.to change{ComplianceCheckResource.count}.by 1
+    resource = ComplianceCheckResource.last
+    expect(resource.status).to eq 'OK'
+  end
+
+  it 'should pass if no company is defined' do
+    referential.switch do
+      journey.company = nil
+      journey.save
+    end
+
     expect{compliance_check.process}.to change{ComplianceCheckResource.count}.by 1
     resource = ComplianceCheckResource.last
     expect(resource.status).to eq 'OK'

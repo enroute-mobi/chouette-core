@@ -339,7 +339,7 @@ fr:
       vehicle_journey_control/empty_time_table:
         one: Une course ne doit pas être liée à un calendrier d'application vide
       vehicle_journey_control/company:
-        one: Une course ne peut être associée qu'à un des transporteurs de la ligne
+        one: La course ne peut être associée qu'à un des transporteurs de la ligne
       routing_constraint_zone_control/vehicle_journey_at_stops:
         one: "Chronologie croissante des horaires"
       routing_constraint_zone_control/maximum_length:

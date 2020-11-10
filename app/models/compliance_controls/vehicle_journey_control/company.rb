@@ -3,6 +3,8 @@ module VehicleJourneyControl
     def self.default_code; "3-VehicleJourney-11" end
 
     def self.compliance_test compliance_check, journey
+      return true if journey.company_id.nil?
+
       valid_ids = [compliance_check.control_attributes['company_id']]
       valid_ids +=  compliance_check.control_attributes['secondary_company_ids']
       valid_ids.map!(&:to_i)

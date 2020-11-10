@@ -198,6 +198,11 @@ en:
         3_vehiclejourney_10: The vehicle journey with %{vj_name} name (%{source_objectid}) has at least one empty timetable (%{tt_names})
       description: "A vehicle journey cannot have an empty timetable"
       prerequisite: "A vehicle journey must exist"
+    vehicle_journey_control/company:
+      messages:
+        3_vehiclejourney_11: "The vehicle journey %{source_objectid} can’t be associated to the company %{company_name}"
+      description: "A vehicle journey can only be associated with one of the line companies"
+      prerequisite: "The vehicle journey and its line are associated to a company"
     routing_constraint_zone_control/unactivated_stop_point:
       messages:
         3_routingconstraint_1: "The Routing Constraint Zone %{source_objectid} references an unactivated stop point (ZDEp) %{target_0_label} (%{target_0_objectid})"
@@ -333,6 +338,8 @@ en:
         one: The end of sales must be before end of circulation
       vehicle_journey_control/empty_time_table:
         one: A vehicle journey cannot have an empty timetable
+      vehicle_journey_control/company:
+        one: A vehicle journey can only be associated with one of the line companies
       routing_constraint_zone_control/maximum_length:
         one: "Maximum length of a routing contraint zone"
       routing_constraint_zone_control/minimum_length:

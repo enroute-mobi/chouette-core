@@ -122,31 +122,36 @@ describe Merge do
 
           let(:merge_context) do
             MergeContext.new(merge_method: merge_method) do
-              stop_area :first
-              stop_area :second
-              stop_area :third
 
               line :line
 
-              referential :source, lines: [:line] do
-                time_table :default
+              workbench do
+                stop_area :first
+                stop_area :second
+                stop_area :third
 
-                route :source_route, line: :line, with_stops: false do
-                  stop_point stop_area: :first
-                  stop_point stop_area: :second
-                  stop_point stop_area: :third
+                referential :source, lines: [:line] do
+                  time_table :default
 
-                  vehicle_journey time_tables: [:default]
+                  route :source_route, line: :line, with_stops: false do
+                    stop_point stop_area: :first
+                    stop_point stop_area: :second
+                    stop_point stop_area: :third
+
+                    vehicle_journey time_tables: [:default]
+                  end
                 end
+
+                referential :new, lines: [:line], archived_at: Time.now do
+                  route :existing_route, line: :line, with_stops: false do
+                    stop_point stop_area: :first
+                    stop_point stop_area: :second
+                    stop_point stop_area: :third
+                  end
+                end
+
               end
 
-              referential :new, lines: [:line], archived_at: Time.now do
-                route :existing_route, line: :line, with_stops: false do
-                  stop_point stop_area: :first
-                  stop_point stop_area: :second
-                  stop_point stop_area: :third
-                end
-              end
             end
           end
 
@@ -237,35 +242,38 @@ describe Merge do
 
           let(:merge_context) do
             MergeContext.new(merge_method: merge_method) do
-              stop_area :first
-              stop_area :second
-              stop_area :third
-
               line :line
 
-              referential :source, lines: [:line] do
-                time_table :default
+              workbench do
+                stop_area :first
+                stop_area :second
+                stop_area :third
 
-                route :source_route, line: :line, with_stops: false do
-                  stop_point stop_area: :first
-                  stop_point stop_area: :second
-                  stop_point stop_area: :third
+                referential :source, lines: [:line] do
+                  time_table :default
 
-                  journey_pattern :source_journey_pattern do
-                    vehicle_journey time_tables: [:default]
+                  route :source_route, line: :line, with_stops: false do
+                    stop_point stop_area: :first
+                    stop_point stop_area: :second
+                    stop_point stop_area: :third
+
+                    journey_pattern :source_journey_pattern do
+                      vehicle_journey time_tables: [:default]
+                    end
+                  end
+                end
+
+                referential :new, lines: [:line], archived_at: Time.now do
+                  route :existing_route, line: :line, with_stops: false do
+                    stop_point stop_area: :first
+                    stop_point stop_area: :second
+                    stop_point stop_area: :third
+
+                    journey_pattern :existing_journey_pattern
                   end
                 end
               end
 
-              referential :new, lines: [:line], archived_at: Time.now do
-                route :existing_route, line: :line, with_stops: false do
-                  stop_point stop_area: :first
-                  stop_point stop_area: :second
-                  stop_point stop_area: :third
-
-                  journey_pattern :existing_journey_pattern
-                end
-              end
             end
           end
 
@@ -300,33 +308,36 @@ describe Merge do
         context "when the existing Route hasn't the same position absolute values" do
           let(:merge_context) do
             MergeContext.new(merge_method: merge_method) do
-              stop_area :first
-              stop_area :second
-              stop_area :third
-
               line :line
 
-              referential :source, lines: [:line] do
-                time_table :default
+              workbench do
+                stop_area :first
+                stop_area :second
+                stop_area :third
 
-                route :source_route, line: :line, with_stops: false do
-                  stop_point stop_area: :first
-                  stop_point stop_area: :second
-                  stop_point stop_area: :third
+                referential :source, lines: [:line] do
+                  time_table :default
 
-                  journey_pattern :merged do
-                    vehicle_journey time_tables: [:default]
+                  route :source_route, line: :line, with_stops: false do
+                    stop_point stop_area: :first
+                    stop_point stop_area: :second
+                    stop_point stop_area: :third
+
+                    journey_pattern :merged do
+                      vehicle_journey time_tables: [:default]
+                    end
+                  end
+                end
+
+                referential :new, lines: [:line], archived_at: Time.now do
+                  route :existing_route, line: :line, with_stops: false do
+                    stop_point stop_area: :first, position: 20
+                    stop_point stop_area: :second, position: 30
+                    stop_point stop_area: :third, position: 40
                   end
                 end
               end
 
-              referential :new, lines: [:line], archived_at: Time.now do
-                route :existing_route, line: :line, with_stops: false do
-                  stop_point stop_area: :first, position: 20
-                  stop_point stop_area: :second, position: 30
-                  stop_point stop_area: :third, position: 40
-                end
-              end
             end
           end
 
@@ -384,41 +395,42 @@ describe Merge do
         context "when a VehicleJourney with the same checksum already exists in the merged data set" do
           let(:merge_context) do
             MergeContext.new(merge_method: merge_method) do
-              stop_area :first
-              stop_area :second
-              stop_area :third
-
               line :line
               line :alternative_line
 
-              referential :source, lines: [:line] do
-                time_table :source_time_table
+              workbench do
+                stop_area :first
+                stop_area :second
+                stop_area :third
 
-                route :source_route, line: :line, with_stops: false do
-                  stop_point stop_area: :first
-                  stop_point stop_area: :second
-                  stop_point stop_area: :third
-
-                  journey_pattern :source_journey_pattern do
-                    vehicle_journey :source_vehicle_journey, time_tables: [:source_time_table]
+                referential :source, lines: [:line] do
+                  time_table :source_time_table
+                  route :source_route, line: :line, with_stops: false do
+                    stop_point stop_area: :first
+                    stop_point stop_area: :second
+                    stop_point stop_area: :third
+                    journey_pattern :source_journey_pattern do
+                      vehicle_journey :source_vehicle_journey, time_tables: [:source_time_table]
+                    end
                   end
                 end
-              end
 
-              referential :new, lines: [:line, :alternative_line], archived_at: Time.now do
-                time_table :existing_time_table
-
-                route :existing_route, line: :line, with_stops: false do
-                  stop_point stop_area: :first
-                  stop_point stop_area: :second
-                  stop_point stop_area: :third
-
-                  journey_pattern :existing_journey_pattern do
-                    vehicle_journey :existing_vehicle_journey, time_tables: [:existing_time_table]
+                referential :new, lines: [:line, :alternative_line], archived_at: Time.now do
+                  time_table :existing_time_table
+                  route :existing_route, line: :line, with_stops: false do
+                    stop_point stop_area: :first
+                    stop_point stop_area: :second
+                    stop_point stop_area: :third
+                    journey_pattern :existing_journey_pattern do
+                      vehicle_journey :existing_vehicle_journey, time_tables: [:existing_time_table]
+                    end
                   end
                 end
+
               end
+
             end
+
           end
 
           let(:source) { merge_context.source }

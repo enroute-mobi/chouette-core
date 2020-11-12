@@ -1,6 +1,10 @@
-RSpec.describe VehicleJourneyControl::Company, type: :model do
+RSpec.describe VehicleJourneyControl::Company, type: :model  do
   let(:workgroup) { referential.workgroup }
-  let(:line) { create :line, line_referential: workgroup.line_referential }
+  let(:line) {
+    create :line, line_referential: workgroup.line_referential,
+                  company: company,
+                  secondary_company_ids: [secondary_company.id]
+  }
   let(:route) { create :route, line: line }
   let(:journey_pattern) { create :journey_pattern, route: route }
 
@@ -13,21 +17,12 @@ RSpec.describe VehicleJourneyControl::Company, type: :model do
                                                  published_journey_name: '4' }
 
   let(:criticity) { 'warning' }
-  let(:control_attributes) {
-    {
-      minimum: '1',
-      maximum: '10',
-      company_id: company.id.to_s,
-      secondary_company_ids: [secondary_company.id.to_s]
-    }
-  }
 
   let(:compliance_check_set) { create :compliance_check_set, referential: referential }
   let(:compliance_check) {
     create :compliance_check_with_compliance_check_block,
       iev_enabled_check: false,
       compliance_control_name: 'VehicleJourneyControl::Company',
-      control_attributes: control_attributes,
       compliance_check_set: compliance_check_set,
       criticity: criticity
   }
@@ -50,6 +45,17 @@ RSpec.describe VehicleJourneyControl::Company, type: :model do
     referential.switch do
       journey.company = nil
       journey.save
+    end
+
+    expect{compliance_check.process}.to change{ComplianceCheckResource.count}.by 1
+    resource = ComplianceCheckResource.last
+    expect(resource.status).to eq 'OK'
+  end
+
+  it 'should pass if the line has no company' do
+    referential.switch do
+      line.company = nil
+      line.save
     end
 
     expect{compliance_check.process}.to change{ComplianceCheckResource.count}.by 1

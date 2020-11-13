@@ -410,7 +410,7 @@ RSpec.describe Chouette::Factory do
         end
 
         it "creates a stop_area_provider" do
-          expect{context}.to change { StopAreaProvider.count }.by(1)
+          expect{context}.to change { StopAreaProvider.count }.by(2)
         end
 
         it "each newly created object is related to the same stop area referential" do

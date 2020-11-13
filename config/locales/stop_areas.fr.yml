@@ -165,7 +165,7 @@ fr:
         postal_region: "Région postale"
         waiting_time: Temps de desserte (minutes)
         status: État
-        stop_area_provider_ids: Fournisseurs d'arrêts
+        stop_area_provider_id: Fournisseur d'arrêts
         stop_area_provider: Fournisseur d'arrêts
   formtastic:
     titles:

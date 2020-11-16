@@ -15,9 +15,7 @@ module Chouette
 
     attr_reader :line_tokens
 
-    scope :by_provider, ->(line_provider) {
-      where(line_provider_id: line_provider.id)
-    }
+    scope :by_provider, ->(line_provider) { where(line_provider_id: line_provider.id) }
 
     def self.nullable_attributes
       [:comment]

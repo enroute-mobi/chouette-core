@@ -26,9 +26,7 @@ module Chouette
 
     validates_presence_of :name
 
-    scope :by_provider, ->(line_provider) {
-      where(line_provider_id: line_provider.id)
-    }
+    scope :by_provider, ->(line_provider) { where(line_provider_id: line_provider.id) }
 
     def self.object_id_key
       "PTNetwork"

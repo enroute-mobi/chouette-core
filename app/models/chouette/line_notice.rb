@@ -22,9 +22,7 @@ module Chouette
       end
     }
 
-    scope :by_provider, ->(line_provider) {
-      where(line_provider_id: line_provider.id)
-    }
+    scope :by_provider, ->(line_provider) { where(line_provider_id: line_provider.id) }
 
     belongs_to :line_referential, inverse_of: :line_notices
     has_and_belongs_to_many :lines, :class_name => 'Chouette::Line', :join_table => "public.line_notices_lines"

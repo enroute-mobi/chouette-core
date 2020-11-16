@@ -27,9 +27,7 @@ module Chouette
     # Cf. #8132
     # validates_format_of :url, :with => %r{\Ahttps?:\/\/([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?\Z}, :allow_nil => true, :allow_blank => true
 
-    scope :by_provider, ->(line_provider) {
-      where(line_provider_id: line_provider.id)
-    }
+    scope :by_provider, ->(line_provider) { where(line_provider_id: line_provider.id) }
 
     def self.nullable_attributes
       [:default_contact_organizational_unit, :default_contact_operating_department_name, :code, :default_contact_phone, :default_contact_fax, :default_contact_email, :default_contact_url, :time_zone]

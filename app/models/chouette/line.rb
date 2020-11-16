@@ -67,9 +67,7 @@ module Chouette
       activated.active_from(on_date).active_until(on_date)
     }
 
-    scope :by_provider, ->(line_provider) {
-      where(line_provider_id: line_provider.id)
-    }
+    scope :by_provider, ->(line_provider) { where(line_provider_id: line_provider.id) }
 
     scope :deactivated, -> { where(deactivated: true) }
     scope :activated, -> { where(deactivated: [nil, false]) }

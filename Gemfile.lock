@@ -29,9 +29,10 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/ilico-api.git
-  revision: bfee97f419947e1b207a36e1c7cb86e78d74837c
+  revision: 8008fcbef517ddcfefd69ba502bffdaacd65dbee
+  branch: CHOUETTE-801-ilico-V3-only-upgrade
   specs:
-    codifligne (0.1.17)
+    codifligne (0.2.00)
       nokogiri (>= 1.8.5)
 
 GIT
@@ -757,7 +758,7 @@ DEPENDENCIES
   carrierwave-google-storage!
   clockpicker-rails
   cocoon
-  codifligne!
+  codifligne (= 0.2.0)!
   coffee-rails
   country_select
   database_cleaner

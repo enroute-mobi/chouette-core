@@ -54,7 +54,7 @@ gem 'bulk_insert'
 gem "graphql"
 
 # Codifligne API
-gem 'codifligne', en_route: 'ilico-api'
+gem 'codifligne','0.2.0', en_route: 'ilico-api'
 # ICar API
 gem 'icar', en_route: 'icar-api'
 

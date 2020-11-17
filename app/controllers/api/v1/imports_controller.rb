@@ -3,10 +3,11 @@ class Api::V1::ImportsController < Api::V1::WorkbenchController
 
   def create
     args = workbench_import_params.merge(creator: 'Webservice')
+
     @import = current_workbench.workbench_imports.new(args)
 
-    if @import.options.key?("flag_urgent")
-     authorize @import, :option_flag_urgent?
+    if @import.flag_urgent && !policy(@import).option_flag_urgent?
+      @import.flag_urgent = false
     end
 
     if @import.save

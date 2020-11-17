@@ -81,7 +81,7 @@ class Import::Neptune < Import::Base
         )
         return
       end
-      network = line_referential.networks.find_by registration_number: source_network[:object_id]
+      network = networks.find_by registration_number: source_network[:object_id]
     end
     network
   end
@@ -97,7 +97,7 @@ class Import::Neptune < Import::Base
         )
         return
       end
-      company = line_referential.companies.find_by registration_number: source_company[:object_id]
+      company = companies.find_by registration_number: source_company[:object_id]
     end
     company
   end
@@ -108,7 +108,8 @@ class Import::Neptune < Import::Base
       file_network = get_associated_network(source_pt_network, filename)
 
       each_element_matching_css('ChouetteLineDescription Line', source_pt_network) do |source_line, _|
-        line = line_referential.lines.find_or_initialize_by registration_number: source_line[:object_id]
+        line = lines.find_or_initialize_by registration_number: source_line[:object_id]
+        line.line_provider = line_provider
         line.name = source_line[:name] if source_line[:name]
         line.number = source_line[:number] if source_line[:number]
         # Ignore dummy published_name (filled with line number)
@@ -135,7 +136,8 @@ class Import::Neptune < Import::Base
 
   def import_companies
     each_element_matching_css('ChouettePTNetwork Company') do |source_company, _, progress|
-      company = line_referential.companies.find_or_initialize_by registration_number: source_company.delete(:object_id)
+      company = companies.find_or_initialize_by registration_number: source_company.delete(:object_id)
+      company.line_provider = line_provider
       company.assign_attributes source_company.slice(:name, :short_name, :code, :default_contact_phone, :default_contact_email, :default_contact_fax, :default_contact_organizational_unit, :default_contact_operating_department_name)
       company.time_zone = DEFAULT_TIME_ZONE
       save_model company
@@ -146,7 +148,8 @@ class Import::Neptune < Import::Base
 
   def import_networks
     each_element_matching_css('ChouettePTNetwork PTNetwork') do |source_network, filename, progress|
-      network = line_referential.networks.find_or_initialize_by registration_number: source_network.delete(:object_id)
+      network = networks.find_or_initialize_by registration_number: source_network.delete(:object_id)
+      network.line_provider = line_provider
       network.assign_attributes source_network.slice(:name, :comment)
 
       save_model network
@@ -324,7 +327,7 @@ class Import::Neptune < Import::Base
   def import_lines_content
     @opposite_route_id = {}
     each_element_matching_css('ChouettePTNetwork ChouetteLineDescription') do |line_desc, filename, progress|
-      line = line_referential.lines.find_by registration_number: line_desc[:line][:object_id]
+      line = lines.find_by registration_number: line_desc[:line][:object_id]
       @routes = {}
       @stop_points = Hash.new{|h, k| h[k] = {}}
 
@@ -403,7 +406,7 @@ class Import::Neptune < Import::Base
             v.route = journey_pattern.route
             v.metadata = { creator_username: source_vehicle_journey[:creator_id], created_at: source_vehicle_journey[:creation_time] }
             v.transport_mode, _ = transport_mode_name_mapping(source_vehicle_journey[:transport_mode_name])
-            v.company = line_referential.companies.find_by registration_number: source_vehicle_journey[:operator_id]
+            v.company = companies.find_by registration_number: source_vehicle_journey[:operator_id]
             v.time_table_ids = @time_tables.delete(source_vehicle_journey[:object_id])
 
             v.codes.build code_space: code_space, value: source_vehicle_journey[:object_id]
@@ -500,5 +503,21 @@ class Import::Neptune < Import::Base
 
   def make_enum(obj)
     (obj.is_a?(Array) ? obj : [obj]).compact
+  end
+
+  def line_provider
+    workbench.default_line_provider
+  end
+
+  def lines
+    line_referential.lines.by_provider(line_provider)
+  end
+
+  def companies
+    line_referential.companies.by_provider(line_provider)
+  end
+
+  def networks
+    line_referential.networks.by_provider(line_provider)
   end
 end

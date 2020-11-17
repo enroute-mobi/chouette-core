@@ -32,6 +32,8 @@ class GroupOfLinesController < ChouetteController
 
   def create
     authorize resource_class
+    build_resource
+    @group_of_line.line_provider = line_referential.workbenches.first&.default_line_provider
     super
   end
 

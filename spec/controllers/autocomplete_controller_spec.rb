@@ -5,10 +5,10 @@ RSpec.describe AutocompleteController, type: :controller do
 
     let(:context) do
       Chouette.create do
-        line :first, name: "Line one", published_name: "First Line", number: "z1"
-        line :second, name: "Line two", published_name: "Second Line", number: "z2"
-        line :third, name: "Line three", published_name: "Third Line", number: "z3"
         workbench organisation: Organisation.find_by_code('first') do
+          line :first, name: "Line one", published_name: "First Line", number: "z1"
+          line :second, name: "Line two", published_name: "Second Line", number: "z2"
+          line :third, name: "Line three", published_name: "Third Line", number: "z3"
           referential lines: [:first, :second], organisation: Organisation.find_by_code('first')
         end
       end

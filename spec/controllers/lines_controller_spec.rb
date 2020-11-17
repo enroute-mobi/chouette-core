@@ -1,8 +1,13 @@
 RSpec.describe LinesController, :type => :controller do
   login_user
 
-  let(:line_referential) { create :line_referential, member: @user.organisation, objectid_format: :netex }
-  let(:line) { create :line, line_referential: line_referential }
+  let!(:context) do
+    Chouette.create do
+      workgroup owner: Organisation.find_by_code('first') do
+        workbench
+      end
+    end
+  end
 
   describe 'POST create' do
     let(:line_attrs){{
@@ -10,11 +15,11 @@ RSpec.describe LinesController, :type => :controller do
       transport_mode: "bus",
       transport_submode: "undefined"
     }}
-    let(:request){ post :create, params: { line_referential_id: line_referential.id, line: line_attrs }}
+    let(:request){ post :create, params: { line_referential_id: context.line_referential.id, line: line_attrs }}
 
     with_permission "lines.create" do
       it "should create a new line" do
-        expect{request}.to change{ line_referential.lines.count }.by 1
+        expect{request}.to change{ context.line_referential.lines.count }.by 1
       end
 
       context "with an empty value in secondary_company_ids" do
@@ -26,8 +31,8 @@ RSpec.describe LinesController, :type => :controller do
         }}
 
         it "should cleanup secondary_company_ids" do
-          expect{request}.to change{ line_referential.lines.count }.by 1
-          expect(line_referential.lines.last.secondary_company_ids).to eq []
+          expect{request}.to change{ context.line_referential.lines.count }.by 1
+          expect(context.line_referential.lines.last.secondary_company_ids).to eq []
         end
       end
     end

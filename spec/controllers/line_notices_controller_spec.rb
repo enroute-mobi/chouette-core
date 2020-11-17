@@ -1,17 +1,37 @@
 RSpec.describe LineNoticesController, :type => :controller do
   login_user
 
-  let(:line_referential) { create :line_referential, member: @user.organisation, objectid_format: :netex }
-  let!(:line) { create :line, line_referential: line_referential}
-  let!(:line_notices) {
-    [
-      create(:line_notice, line_referential: line_referential),
-      create(:line_notice, line_referential: line_referential, lines: [line])
-    ]
-  }
+  let!(:context) do
+    Chouette.create do
+      workgroup owner: Organisation.find_by_code('first') do
+        line_referential :first
+        line_provider :first do
+          line
+          line_notice :first
+          line_notice :second
+        end
+      end
+      workgroup owner: Organisation.find_by_code('first') do
+        line_referential :other
+        line_provider :other
+        line_notice :other
+      end
+    end
+  end
 
-  let(:other_line_referential) { create :line_referential, member: @user.organisation, objectid_format: :netex }
-  let(:other_line_notice) { create :line_notice, line_referential: other_line_referential, lines: [line] }
+  let(:line_referential) { context.line_referential(:first) }
+  let(:line_provider) { context.line_provider(:first) }
+  let!(:line) { context.line }
+  let!(:line_notices) { line_provider.line_notices }
+
+  let(:other_line_referential) { context.line_referential(:other) }
+  let(:other_line_provider) { context.line_provider(:other) }
+  let(:other_line_notice) { context.line_notice(:other) }
+
+  before do
+    line_notices.second.lines << line
+    other_line_notice.lines << line
+  end
 
   describe 'POST create' do
     let(:line_notice_attrs){{

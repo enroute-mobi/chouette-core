@@ -20,9 +20,21 @@ class Import::Gtfs < Import::Base
     return false
   end
 
+  def line_provider
+    workbench.default_line_provider
+  end
+
+  def lines
+    line_referential.lines.by_provider(line_provider)
+  end
+
+  def companies
+    line_referential.companies.by_provider(line_provider)
+  end
+
   def referential_metadata
     registration_numbers = source.routes.map(&:id)
-    line_ids = line_referential.lines.where(registration_number: registration_numbers).pluck(:id)
+    line_ids = lines.where(registration_number: registration_numbers).pluck(:id)
 
     start_dates = []
     end_dates = []
@@ -75,7 +87,8 @@ class Import::Gtfs < Import::Base
 
   def import_agencies
     create_resource(:agencies).each(source.agencies) do |agency, resource|
-      company = line_referential.companies.find_or_initialize_by(registration_number: agency.id)
+      company = companies.find_or_initialize_by(registration_number: agency.id)
+      company.line_provider = line_provider
       company.attributes = { name: agency.name }
       company.default_language = agency.lang
       company.default_contact_url = agency.url
@@ -126,7 +139,9 @@ class Import::Gtfs < Import::Base
 
   def lines_by_registration_number(registration_number)
     @lines_by_registration_number ||= {}
-    @lines_by_registration_number[registration_number] ||= line_referential.lines.includes(:company).find_or_initialize_by(registration_number: registration_number)
+    line = lines.includes(:company).find_or_initialize_by(registration_number: registration_number)
+    line.line_provider = line_provider
+    @lines_by_registration_number[registration_number] ||= line
   end
 
   def import_routes
@@ -140,7 +155,7 @@ class Import::Gtfs < Import::Base
         line.number = route.short_name
         line.published_name = route.long_name
         unless route.agency_id == line.company&.registration_number
-          line.company = line_referential.companies.find_by(registration_number: route.agency_id) if route.agency_id.present?
+          line.company = companies.find_by(registration_number: route.agency_id) if route.agency_id.present?
         end
         line.comment = route.desc
 
@@ -368,7 +383,7 @@ class Import::Gtfs < Import::Base
     return Chouette::JourneyPattern.find(journey_pattern_id) if journey_pattern_id
     stop_points = []
 
-    line = line_referential.lines.find_by registration_number: trip.route_id
+    line = lines.find_by registration_number: trip.route_id
     route = referential.routes.build line: line
     route.wayback = (trip.direction_id == '0' ? :outbound : :inbound)
     name = route.published_name = trip.headsign.presence || trip.short_name.presence || route.wayback.to_s.capitalize

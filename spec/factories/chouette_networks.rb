@@ -6,5 +6,7 @@ FactoryBot.define do
     sequence(:registration_number) { |n| "test-#{n}" }
 
     association :line_referential
+    line_provider { association :line_provider, line_referential: line_referential }
+    # association :line_provider, :factory => :line_provider, line_referential: line_referential
   end
 end

@@ -48,6 +48,10 @@ class Import::Workbench < Import::Base
     create_child_import Import::Neptune
   end
 
+  def import_shapefile
+    create_child_import Import::Shapefile
+  end
+
   def create_child_import(klass)
     klass.create! parent_type: self.class.name, parent_id: self.id, workbench: workbench, file: File.new(file.path), name: self.name, creator: "Web service"
   rescue Exception => e

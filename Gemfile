@@ -139,6 +139,7 @@ gem 'redis-rails', '>= 5.0.2'
 
 gem 'gtfs', en_route: 'gtfs'
 gem 'netex', en_route: 'netex'
+gem 'rgeo-shapefile'
 
 gem 'ddtrace'
 

@@ -1,16 +1,31 @@
 module VehicleJourneyControl
   class Company < InternalBase
-    def self.default_code; "3-VehicleJourney-11" end
+    def self.default_code; '3-VehicleJourney-11' end
 
-    def self.compliance_test _, journey
-      tested_line = journey.line
-      return true if journey.company_id.nil? || tested_line.company_id.nil?
+    def self.collection(compliance_check)
+      super.joins(:route).select('*','routes.line_id as line_id')
+    end
 
-      valid_ids = [tested_line.company_id]
-      valid_ids += tested_line.secondary_company_ids
-      valid_ids.map!(&:to_i)
+    class Control
+      def initialize(compliance_check)
+        @compliance_check = compliance_check
+      end
 
-      valid_ids.include? journey.company_id
+      attr_reader :compliance_check
+
+      def tested_line(line_id)
+        @tested_line ||= Chouette::Line.find(line_id)
+      end
+
+      def tested_line_companies(line_id)
+        @tested_line_companies ||= [tested_line(line_id).company_id] + tested_line(line_id).secondary_company_ids
+      end
+
+      def compliance_test(_, journey)
+        return true if journey.company_id.nil? || tested_line(journey.line_id).company_id.nil?
+
+        tested_line_companies(journey.line_id).include? journey.company_id
+      end
     end
   end
 end

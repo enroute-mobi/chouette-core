@@ -36,20 +36,9 @@ RSpec.describe VehicleJourneyControl::Company, type: :model do
   end
 
   it 'should pass if the company is the right one' do
-    expect{compliance_check.process}.to change{ComplianceCheckResource.count}.by 1
-    resource = ComplianceCheckResource.last
-    expect(resource.status).to eq 'OK'
-  end
+    expect { compliance_check.process }.to change { ComplianceCheckResource.count }.by 1
 
-  it 'should pass if no company is defined' do
-    referential.switch do
-      journey.company = nil
-      journey.save
-    end
-
-    expect{compliance_check.process}.to change{ComplianceCheckResource.count}.by 1
-    resource = ComplianceCheckResource.last
-    expect(resource.status).to eq 'OK'
+    expect(ComplianceCheckResource.last.status).to eq 'OK'
   end
 
   it 'should pass if the line has no company' do
@@ -58,9 +47,20 @@ RSpec.describe VehicleJourneyControl::Company, type: :model do
       line.save
     end
 
-    expect{compliance_check.process}.to change{ComplianceCheckResource.count}.by 1
-    resource = ComplianceCheckResource.last
-    expect(resource.status).to eq 'OK'
+    expect { compliance_check.process }.to change { ComplianceCheckResource.count }.by 1
+
+    expect(ComplianceCheckResource.last.status).to eq 'OK'
+  end
+
+  it 'should pass if no company is defined' do
+    referential.switch do
+      journey.company = nil
+      journey.save
+    end
+
+    expect { compliance_check.process }.to change { ComplianceCheckResource.count }.by 1
+
+    expect(ComplianceCheckResource.last.status).to eq 'OK'
   end
 
   it 'should pass if the company is a secondary company' do
@@ -69,9 +69,9 @@ RSpec.describe VehicleJourneyControl::Company, type: :model do
       journey.save
     end
 
-    expect{compliance_check.process}.to change{ComplianceCheckResource.count}.by 1
-    resource = ComplianceCheckResource.last
-    expect(resource.status).to eq 'OK'
+    expect { compliance_check.process }.to change { ComplianceCheckResource.count }.by 1
+
+    expect(ComplianceCheckResource.last.status).to eq 'OK'
   end
 
   context 'with a wrong company' do
@@ -84,13 +84,14 @@ RSpec.describe VehicleJourneyControl::Company, type: :model do
 
      context 'when the criticity is warning' do
       it 'should set the status according to its params' do
-        expect{compliance_check.process}.to change{ComplianceCheckResource.count}.by 1
-        resource = ComplianceCheckResource.last
-        expect(resource.status).to eq 'WARNING'
+        expect { compliance_check.process }.to change { ComplianceCheckResource.count }.by 1
+
+        expect(ComplianceCheckResource.last.status).to eq 'WARNING'
       end
 
       it 'should create a message' do
-        expect{compliance_check.process}.to change{ComplianceCheckMessage.count}.by 1
+        expect { compliance_check.process }.to change { ComplianceCheckMessage.count }.by 1
+
         message = ComplianceCheckMessage.last
         expect(message.status).to eq 'WARNING'
         expect(message.compliance_check_set).to eq compliance_check_set
@@ -103,13 +104,14 @@ RSpec.describe VehicleJourneyControl::Company, type: :model do
       let(:criticity) { 'error' }
 
       it 'should set the status according to its params' do
-        expect{compliance_check.process}.to change{ComplianceCheckResource.count}.by 1
-        resource = ComplianceCheckResource.last
-        expect(resource.status).to eq 'ERROR'
+        expect { compliance_check.process }.to change { ComplianceCheckResource.count }.by 1
+
+        expect(ComplianceCheckResource.last.status).to eq 'ERROR'
       end
 
       it 'should create a message' do
-        expect{compliance_check.process}.to change{ComplianceCheckMessage.count}.by 1
+        expect { compliance_check.process }.to change{ ComplianceCheckMessage.count }.by 1
+
         message = ComplianceCheckMessage.last
         expect(message.status).to eq 'ERROR'
         expect(message.compliance_check_set).to eq compliance_check_set

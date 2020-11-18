@@ -62,10 +62,11 @@ module InternalControl
     end
 
     class DefaultControl
-      def initialize(klass, compliance_check)
+      def initialize(compliance_check)
       end
+
       def compliance_test(compliance_check, model)
-        klass.compliance_test compliance_check, model
+        self.class.compliance_test compliance_check, model
       end
     end
 

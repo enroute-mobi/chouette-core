@@ -38,7 +38,11 @@ module InternalControl
         coll = collection(compliance_check)
         method = coll.respond_to?(:find_each) ? :find_each : :each
 
-        control_instance_class = "#{name}::Control".constantize || DefaultControl
+        control_instance_class = begin
+                                  "#{name}::Control".constantize
+                                 rescue NameError
+                                   DefaultControl
+                                 end
         control_instance = control_instance_class.new(compliance_check)
 
         coll.send(method) do |obj|

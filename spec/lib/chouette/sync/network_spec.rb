@@ -5,11 +5,11 @@ RSpec.describe Chouette::Sync::Network do
 
     let(:context) do
       Chouette.create do
-        line_referential
+        line_provider
       end
     end
 
-    let(:target) { context.line_referential }
+    let(:target) { context.line_provider }
 
     mattr_reader :created_id, default: 'FR1:Network:29:LOC'
     mattr_reader :updated_id, default: 'FR1:Network:120:LOC'

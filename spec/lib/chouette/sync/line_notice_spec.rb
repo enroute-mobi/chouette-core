@@ -5,11 +5,11 @@ RSpec.describe Chouette::Sync::LineNotice do
 
     let(:context) do
       Chouette.create do
-        line_referential
+        line_provider
       end
     end
 
-    let(:target) { context.line_referential }
+    let(:target) { context.line_provider }
 
     mattr_reader :created_id, default: 'FR1:Notice:C00188:'
     mattr_reader :updated_id, default: 'FR1:Notice:C00251:'

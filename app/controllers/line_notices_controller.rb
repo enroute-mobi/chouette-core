@@ -21,6 +21,8 @@ class LineNoticesController < ChouetteController
   end
 
   def create
+    build_resource
+    @line_notice.line_provider = line_referential.workbenches.first&.default_line_provider
     create! do
       if @line
         @line.line_notices << @line_notice

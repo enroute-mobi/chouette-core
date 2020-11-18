@@ -199,6 +199,8 @@ ActiveRecord::Schema.define(version: 2020_10_20_145538) do
     t.string "postcode_extension"
     t.string "country_code"
     t.string "default_language"
+    t.bigint "line_provider_id"
+    t.index ["line_provider_id"], name: "index_companies_on_line_provider_id"
     t.index ["line_referential_id", "registration_number"], name: "index_companies_on_referential_id_and_registration_number"
     t.index ["line_referential_id"], name: "index_companies_on_line_referential_id"
     t.index ["objectid"], name: "companies_objectid_key", unique: true
@@ -513,6 +515,8 @@ ActiveRecord::Schema.define(version: 2020_10_20_145538) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.jsonb "metadata", default: {}
+    t.bigint "line_provider_id"
+    t.index ["line_provider_id"], name: "index_group_of_lines_on_line_provider_id"
     t.index ["line_referential_id"], name: "index_group_of_lines_on_line_referential_id"
     t.index ["objectid"], name: "group_of_lines_objectid_key", unique: true
   end
@@ -619,12 +623,24 @@ ActiveRecord::Schema.define(version: 2020_10_20_145538) do
     t.datetime "updated_at", null: false
     t.integer "object_version"
     t.string "registration_number"
+    t.bigint "line_provider_id"
+    t.index ["line_provider_id"], name: "index_line_notices_on_line_provider_id"
   end
 
   create_table "line_notices_lines", id: false, force: :cascade do |t|
     t.bigint "line_notice_id", null: false
     t.bigint "line_id", null: false
     t.index ["line_notice_id", "line_id"], name: "index_line_notices_lines_on_line_notice_id_and_line_id"
+  end
+
+  create_table "line_providers", force: :cascade do |t|
+    t.string "short_name", null: false
+    t.bigint "workbench_id", null: false
+    t.bigint "line_referential_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["line_referential_id"], name: "index_line_providers_on_line_referential_id"
+    t.index ["workbench_id"], name: "index_line_providers_on_workbench_id"
   end
 
   create_table "line_referential_memberships", force: :cascade do |t|
@@ -690,6 +706,8 @@ ActiveRecord::Schema.define(version: 2020_10_20_145538) do
     t.jsonb "metadata", default: {}
     t.date "active_from"
     t.date "active_until"
+    t.bigint "line_provider_id"
+    t.index ["line_provider_id"], name: "index_lines_on_line_provider_id"
     t.index ["line_referential_id", "registration_number"], name: "index_lines_on_referential_id_and_registration_number"
     t.index ["line_referential_id"], name: "index_lines_on_line_referential_id"
     t.index ["objectid"], name: "lines_objectid_key", unique: true
@@ -730,6 +748,8 @@ ActiveRecord::Schema.define(version: 2020_10_20_145538) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.jsonb "metadata", default: {}
+    t.bigint "line_provider_id"
+    t.index ["line_provider_id"], name: "index_networks_on_line_provider_id"
     t.index ["line_referential_id"], name: "index_networks_on_line_referential_id"
     t.index ["objectid"], name: "networks_objectid_key", unique: true
     t.index ["registration_number"], name: "networks_registration_number_key"
@@ -1330,7 +1350,7 @@ ActiveRecord::Schema.define(version: 2020_10_20_145538) do
     t.datetime "deleted_at"
     t.jsonb "transport_modes", default: {"air"=>["undefined", "airshipService", "domesticCharterFlight", "domesticFlight", "domesticScheduledFlight", "helicopterService", "intercontinentalCharterFlight", "intercontinentalFlight", "internationalCharterFlight", "internationalFlight", "roundTripCharterFlight", "schengenAreaFlight", "shortHaulInternationalFlight", "shuttleFlight", "sightseeingFlight"], "bus"=>["undefined", "airportLinkBus", "demandAndResponseBus", "expressBus", "highFrequencyBus", "localBus", "mobilityBusForRegisteredDisabled", "mobilityBus", "nightBus", "postBus", "railReplacementBus", "regionalBus", "schoolAndPublicServiceBus", "schoolBus", "shuttleBus", "sightseeingBus", "specialNeedsBus"], "rail"=>["undefined", "carTransportRailService", "crossCountryRail", "highSpeedRail", "international", "interregionalRail", "local", "longDistance", "nightTrain", "rackAndPinionRailway", "railShuttle", "regionalRail", "replacementRailService", "sleeperRailService", "specialTrain", "suburbanRailway", "touristRailway"], "taxi"=>["undefined", "allTaxiServices", "bikeTaxi", "blackCab", "communalTaxi", "miniCab", "railTaxi", "waterTaxi"], "tram"=>["undefined", "cityTram", "localTram", "regionalTram", "shuttleTram", "sightseeingTram", "tramTrain"], "coach"=>["undefined", "commuterCoach", "internationalCoach", "nationalCoach", "regionalCoach", "shuttleCoach", "sightseeingCoach", "specialCoach", "touristCoach"], "metro"=>["undefined", "metro", "tube", "urbanRailway"], "water"=>["undefined", "internationalCarFerry", "nationalCarFerry", "regionalCarFerry", "localCarFerry", "internationalPassengerFerry", "nationalPassengerFerry", "regionalPassengerFerry", "localPassengerFerry", "postBoat", "trainFerry", "roadFerryLink", "airportBoatLink", "highSpeedVehicleService", "highSpeedPassengerService", "sightseeingService", "schoolBoat", "cableFerry", "riverBus", "scheduledFerry", "shuttleFerryService"], "hireCar"=>["undefined", "allHireVehicles", "hireCar", "hireCycle", "hireMotorbike", "hireVan"], "funicular"=>["undefined", "allFunicularServices", "funicular"], "telecabin"=>["undefined", "cableCar", "chairLift", "dragLift", "lift", "telecabinLink", "telecabin"]}
     t.integer "maximum_data_age", default: 0
-    t.boolean "enable_purge_merged_data", default: false
+    t.boolean "enable_purge_merged_data"
     t.bigint "shape_referential_id", null: false
     t.index ["shape_referential_id"], name: "index_workgroups_on_shape_referential_id"
   end

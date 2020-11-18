@@ -120,12 +120,8 @@ RSpec.describe Chouette::Factory do
     }} do
       let(:context) do
         Chouette::Factory.create do
-          line_referential :referential_1 do
-            line :first
-          end
-          line_referential :referential_2 do
-            line :second
-          end
+          line_referential :referential_1
+          line_referential :referential_2
         end
       end
 
@@ -139,10 +135,6 @@ RSpec.describe Chouette::Factory do
         expect {
           context
         }.to change { LineReferential.count }.by(2)
-      end
-
-      it "should create two lines in the two LineReferentials" do
-        expect(context.instance(:first).line_referential).to_not eq(context.instance(:second).line_referential)
       end
 
       it "should create the two LineReferentials into two Workgroups" do
@@ -179,23 +171,23 @@ RSpec.describe Chouette::Factory do
     end
 
     describe %{{
-      line_referential :parent do
+      line_provider :parent do
         line :first
         line :second
       end
     }} do
       let(:context) do
         Chouette::Factory.create do
-          line_referential :parent do
+          line_provider :parent do
             line :first
             line :second
           end
         end
       end
 
-      it "should create two lines in the same LineReferential" do
-        expect(context.instance(:first).line_referential).to eq(context.instance(:parent))
-        expect(context.instance(:first).line_referential).to eq(context.instance(:parent))
+      it "should create two lines in the same LineProvider" do
+        expect(context.instance(:first).line_provider).to eq(context.instance(:parent))
+        expect(context.instance(:first).line_provider).to eq(context.instance(:parent))
       end
     end
 

@@ -1,10 +1,15 @@
 module Chouette
   class Network < Chouette::ActiveRecord
+    before_validation :define_line_referential
+
     has_metadata
     include NetworkRestrictions
     include LineReferentialSupport
     include ObjectidSupport
     extend Enumerize
+
+    belongs_to :line_provider, required: true
+
     has_many :lines, dependent: :nullify
 
     attr_accessor :source_type_name
@@ -20,6 +25,8 @@ module Chouette
                                         other_information)
 
     validates_presence_of :name
+
+    scope :by_provider, ->(line_provider) { where(line_provider_id: line_provider.id) }
 
     def self.object_id_key
       "PTNetwork"
@@ -53,6 +60,11 @@ module Chouette
       end
     end
 
+    private
 
+    def define_line_referential
+      # TODO Improve performance ?
+      self.line_referential ||= line_provider&.line_referential
+    end
   end
 end

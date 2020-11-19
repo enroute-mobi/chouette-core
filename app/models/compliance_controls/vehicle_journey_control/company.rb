@@ -7,7 +7,7 @@ module VehicleJourneyControl
     end
 
     class Control
-      def initialize(compliance_check)
+      def initialize(_, compliance_check)
         @compliance_check = compliance_check
       end
 

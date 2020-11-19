@@ -43,7 +43,7 @@ module InternalControl
                                  rescue NameError
                                    DefaultControl
                                  end
-        control_instance = control_instance_class.new(compliance_check)
+        control_instance = control_instance_class.new(name, compliance_check)
 
         coll.send(method) do |obj|
           begin
@@ -62,11 +62,12 @@ module InternalControl
     end
 
     class DefaultControl
-      def initialize(compliance_check)
+      def initialize(klass, compliance_check)
+        @klass = klass
       end
 
       def compliance_test(compliance_check, model)
-        self.class.compliance_test compliance_check, model
+        @klass.constantize.compliance_test compliance_check, model
       end
     end
 

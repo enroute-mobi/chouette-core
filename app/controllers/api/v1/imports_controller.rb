@@ -3,10 +3,12 @@ class Api::V1::ImportsController < Api::V1::WorkbenchController
 
   def create
     args = workbench_import_params.merge(creator: 'Webservice')
+
     @import = current_workbench.workbench_imports.new(args)
 
-    if @import.options.key?("flag_urgent")
-     authorize @import, :option_flag_urgent?
+    if @import.flag_urgent && !policy(@import).option_flag_urgent?
+      logger.error("Import #{@import.name} uses flag_urgent but workbench #{current_workbench.name} inside organisation #{current_workbench.organisation.name} doesn't have permission referentials.flag_urgent")
+      @import.flag_urgent = false
     end
 
     if @import.save

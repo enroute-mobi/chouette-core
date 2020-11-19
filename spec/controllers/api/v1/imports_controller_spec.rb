@@ -63,7 +63,7 @@ RSpec.describe Api::V1::ImportsController, type: :controller do
           workbench.save
         end
 
-        it "shouldn't be successful" do
+        it "should remove urgent option and allow import" do
           expect {
             post :create, params: {
               workbench_id: workbench.id,
@@ -79,8 +79,13 @@ RSpec.describe Api::V1::ImportsController, type: :controller do
               },
               format: :json
             }
-          }.to raise_error(Pundit::NotAuthorizedError)
+          }.to change{Import::Workbench.count}.by(1)
+          expect(response).to be_successful
+
+          import = Import::Workbench.last
+          expect(import.flag_urgent).to be_falsy
         end
+
       end
     end
   end

@@ -57,7 +57,7 @@ class Import::Base < ApplicationModel
   validates_presence_of :workbench
 
   def self.maximum_runtime
-    SmartEnv['CHOUETTE_IMPORT_MAX_RUN_TIME'] ? SmartEnv['CHOUETTE_IMPORT_MAX_RUN_TIME'].hours : SmartEnv[:DELAYED_JOB_MAX_RUN_TIME].hours
+    SmartEnv['CHOUETTE_IMPORT_MAX_RUN_TIME'] ? SmartEnv['CHOUETTE_IMPORT_MAX_RUN_TIME'].hours : Delayed::Worker.max_run_time
   end
 
   scope :outdated, -> { where(

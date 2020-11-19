@@ -73,7 +73,7 @@ module ChouetteIhm
     SmartEnv.add_integer :REFERENTIALS_CLEANING_COOLDOWN
     SmartEnv.add_boolean :ENABLE_LINK_TO_SUPPORT, default: false
     SmartEnv.add :SUPPORT_LINK, default: 'https://support.enroute.mobi'
-    SmartEnv.add_integer :CHOUETTE_IMPORT_MAX_RUNTIME, default: 4
+    SmartEnv.add_integer :CHOUETTE_IMPORT_MAX_RUNTIME
 
     # Manage Storage configuration
     SmartEnv.add :STORAGE, default: 'file'

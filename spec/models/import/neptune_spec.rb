@@ -197,6 +197,32 @@ RSpec.describe Import::Neptune do
       expect(child.parent).to eq parent
     end
 
+    it 'should update stop_areas parent' do
+      import.send(:import_stop_areas)
+
+      first = imported_stop_areas.find_by(registration_number: "NAVSTEX:StopArea:gen3")
+      second = imported_stop_areas.find_by(registration_number: "NAVSTEX:StopArea:gen1")
+
+      # Remove parent
+      first_parent = first.parent
+      first.update!(parent_id: nil)
+
+      # Change parent
+      second_parent = second.parent
+      second.update!(parent_id: first_parent.id)
+
+      expect(first_parent.id).not_to eq(second_parent.id)
+
+      # Update
+      import.send(:import_stop_areas)
+      first = imported_stop_areas.find_by(registration_number: "NAVSTEX:StopArea:gen3")
+      second = imported_stop_areas.find_by(registration_number: "NAVSTEX:StopArea:gen1")
+      
+      expect(first.parent).not_to be_nil
+      expect(first.parent_id).to eq(first_parent.id)
+      expect(second.parent_id).to eq(second_parent.id)
+    end
+
     it "keeps line attributes when neptune file doesn't provide them" do
       parent = imported_stop_areas.create!(name: "Parent", area_type: "zdlp")
 

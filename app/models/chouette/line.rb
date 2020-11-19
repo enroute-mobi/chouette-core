@@ -117,8 +117,12 @@ module Chouette
       full_display_name.truncate(50)
     end
 
+    def company_ids
+      ([company_id] + Array(secondary_company_ids)).compact
+    end
+
     def companies
-      line_referential.companies.where(id: ([company_id] + Array(secondary_company_ids)).compact)
+      line_referential.companies.where(id: company_ids)
     end
 
     def active?(on_date=Time.now)

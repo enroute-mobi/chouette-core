@@ -18,7 +18,7 @@ module VehicleJourneyControl
       end
 
       def tested_line_companies(line_id)
-        @tested_line_companies ||= [tested_line(line_id).company_id] + tested_line(line_id).secondary_company_ids
+        @tested_line_companies ||= @compliance_check.referential.lines.find(line_id).company_ids
       end
 
       def compliance_test(_, journey)

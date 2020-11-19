@@ -14,7 +14,7 @@ module VehicleJourneyControl
       attr_reader :compliance_check
 
       def tested_line(line_id)
-        @tested_line ||= Chouette::Line.find(line_id)
+        @tested_line ||= @compliance_check.referential.lines.find(line_id)
       end
 
       def tested_line_companies(line_id)

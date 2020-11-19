@@ -38,12 +38,7 @@ module InternalControl
         coll = collection(compliance_check)
         method = coll.respond_to?(:find_each) ? :find_each : :each
 
-        control_instance_class = begin
-                                  "#{name}::Control".constantize
-                                 rescue NameError
-                                   DefaultControl
-                                 end
-        control_instance = control_instance_class.new(name, compliance_check)
+        control_instance = create_control_instance(compliance_check)
 
         coll.send(method) do |obj|
           begin
@@ -69,6 +64,16 @@ module InternalControl
       def compliance_test(compliance_check, model)
         @klass.constantize.compliance_test compliance_check, model
       end
+    end
+
+    def self.create_control_instance(compliance_check)
+      control_class = begin
+                        "#{name}::Control".constantize
+                      rescue NameError
+                        DefaultControl
+                      end
+
+      control_class.new name, compliance_check
     end
 
     def self.resolve_compound_status status1, status2

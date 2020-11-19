@@ -13,8 +13,7 @@ RSpec.describe VehicleJourneyControl::Company, type: :model do
 
   let(:journey) { create :vehicle_journey_empty, journey_pattern: journey_pattern,
                                                  route: route,
-                                                 company: company,
-                                                 published_journey_name: '4' }
+                                                 company: company }
 
   let(:criticity) { 'warning' }
 

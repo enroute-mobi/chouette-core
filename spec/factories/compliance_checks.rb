@@ -6,7 +6,7 @@ FactoryBot.define do
     code { "code" }
     origin_code { "code" }
     comment { "Text" }
-    iev_enabled_check { false }
+    iev_enabled_check { true }
     association :compliance_check_set
 
     factory :compliance_check_with_compliance_check_block do

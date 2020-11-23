@@ -1,4 +1,6 @@
 class StopAreaProvider < ActiveRecord::Base
+  # This before_validation callback needs to be declared before the one in ObjectidSupport, to prevent a crash if referential_identifier doesn't find the related stop area referential
+  before_validation :define_stop_area_referential, on: :create
   include ObjectidSupport
 
   belongs_to :stop_area_referential
@@ -10,7 +12,6 @@ class StopAreaProvider < ActiveRecord::Base
   # Used as a workaround to prevent spec/lib/chouette/sync/updater_spec.rb to crash
   alias_attribute :registration_number, :objectid
 
-  before_validation :define_stop_area_referential, on: :create
 
   private
 

@@ -144,13 +144,9 @@ class Workbench < ApplicationModel
   end
 
   def default_stop_area_provider
-    @default_stop_area_provider ||= stop_area_providers.find_or_initialize_by(name: DEFAULT_PROVIDER_SHORT_NAME, objectid: DEFAULT_PROVIDER_SHORT_NAME) do |p|
+    @default_stop_area_provider ||= stop_area_providers.find_or_initialize_by(name: DEFAULT_PROVIDER_SHORT_NAME) do |p|
       p.stop_area_referential_id = stop_area_referential_id
     end
-  end
-
-  def create_default_stop_area_provider
-    default_stop_area_provider.save
   end
 
   def create_default_shape_provider

@@ -1,6 +1,6 @@
 class LineReferentialsController < ChouetteController
-
-  defaults :resource_class => LineReferential
+  belongs_to :workbench
+  defaults :resource_class => LineReferential, singleton: true
 
   def show
     show! do

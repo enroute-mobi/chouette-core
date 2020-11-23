@@ -1,17 +1,18 @@
-
 describe "/lines/index", :type => :view do
   let(:deactivated_line){ nil }
-  let(:line_referential) { assign :line_referential, create(:line_referential, workgroup: current_workbench.workgroup) }
-  let(:line_provider) { build :line_provider, line_referential: line_referential, workbench: current_workbench }
+  let(:workbench) { assign :workbench, current_workbench }
+  let(:line_referential) { assign :line_referential, create(:line_referential, workgroup: workbench.workgroup) }
+  let(:line_provider) { build :line_provider, line_referential: line_referential, workbench: workbench }
   let(:current_organisation) { current_user.organisation }
   let(:context) {
-     {
-       current_organisation: current_organisation,
-       line_referential: line_referential
-     }
-   }
-   let(:network) { build(:network, line_referential: line_referential, line_provider: line_provider) }
-   let(:company) { build(:company, line_referential: line_referential, line_provider: line_provider) }
+    {
+      current_organisation: current_organisation,
+      line_referential: line_referential,
+      workbench: workbench
+    }
+  }
+  let(:network) { build(:network, line_referential: line_referential, line_provider: line_provider) }
+  let(:company) { build(:company, line_referential: line_referential, line_provider: line_provider) }
   let(:lines) do
     assign :lines, build_paginated_collection(:line, LineDecorator, line_referential: line_referential, line_provider: line_provider, company: company, network: network, context: context)
   end
@@ -24,14 +25,14 @@ describe "/lines/index", :type => :view do
     allow(view).to receive(:current_referential).and_return(line_referential)
     allow(view).to receive(:params).and_return(ActionController::Parameters.new(action: :index))
     allow(view).to receive(:resource_class).and_return(Chouette::Line)
-    controller.request.path_parameters[:line_referential_id] = line_referential.id
+    controller.request.path_parameters[:workbench_id] = workbench.id
     controller.request.path_parameters[:action] = "index"
     render
   end
 
   describe "action links" do
-    set_invariant "line_referential.id", "99"
-    set_invariant "line_referential.name", "Name"
+    set_invariant "workbench.id", "99"
+    set_invariant "line_referential.name", "Line Referential"
 
     before(:each){
       render template: "lines/index", layout: "layouts/application"
@@ -48,9 +49,9 @@ describe "/lines/index", :type => :view do
 
   context "links" do
     common_items = ->{
-      it { should have_link_for_each_item(lines, "show", -> (line){ view.line_referential_line_path(line_referential, line) }) }
-      xit { should have_link_for_each_item(lines, "network", -> (line){ view.line_referential_network_path(line_referential, line.network) }) }
-      xit { should have_link_for_each_item(lines, "company", -> (line){ view.line_referential_company_path(line_referential, line.company) }) }
+      it { should have_link_for_each_item(lines, "show", -> (line){ view.workbench_line_referential_line_path(workbench, line) }) }
+      xit { should have_link_for_each_item(lines, "network", -> (line){ view.workbench_line_referential_network_path(line_referential, line.network) }) }
+      xit { should have_link_for_each_item(lines, "company", -> (line){ view.workbench_line_referential_company_path(line_referential, line.company) }) }
     }
 
     common_items.call()
@@ -65,9 +66,9 @@ describe "/lines/index", :type => :view do
       common_items.call()
       it {
         should have_link_for_each_item(lines, "destroy", {
-          href: ->(line){ view.line_referential_line_path(line_referential, line)},
-          method: :delete
-        })
+                                         href: ->(line){ view.workbench_line_referential_line_path(workbench, line)},
+                                         method: :delete
+                                       })
       }
       it { should have_the_right_number_of_links(lines, 5) }
     end

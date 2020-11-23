@@ -1,4 +1,4 @@
-= search_form_for @q, url: line_referential_lines_path(@line_referential), html: {method: :get}, class: 'form form-filter' do |f|
+= search_form_for @q, url: workbench_line_referential_lines_path(@workbench), html: {method: :get}, class: 'form form-filter' do |f|
   .ffg-row
     .input-group.search_bar class=filter_item_class(params[:q], :name_or_number_or_short_id_cont)
       = f.search_field :name_or_number_or_short_id_cont,
@@ -56,7 +56,7 @@
         .col-md-9
           = f.input :status_until, as: :date, selected: @status_until || Time.now, label: 'lines.filters.status_to'.t, wrapper_html: { class: 'inline-form' }, required: false
   .actions
-    = link_to t('actions.erase'), @workbench, class: 'btn btn-link'
+    = link_to t('actions.erase'), workbench_line_referential_lines_path(@workbench), class: 'btn btn-link'
     = f.submit t('actions.filter'), class: 'btn btn-default'
 
   - content_for :javascript do

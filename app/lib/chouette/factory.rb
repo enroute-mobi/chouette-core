@@ -18,7 +18,7 @@ module Chouette
       end
 
       model :workgroup do
-        attribute(:name) { |n| "Workgroup ##{n}" }
+        attribute(:name) { |n| "Workgroup #{n}" }
         attribute(:owner) { build_root_model :organisation }
 
         model :line_referential, required: true, singleton: true do

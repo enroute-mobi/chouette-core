@@ -304,8 +304,9 @@ crumb :connection_link do |stop_area_referential, connection_link|
   parent :connection_links, stop_area_referential
 end
 
-crumb :line_referential do |line_referential|
-  link I18n.t('line_referentials.show.title'), line_referential_path(line_referential)
+crumb :line_referential do |workbench|
+  link I18n.t('line_referentials.show.title'), workbench_line_referential_path(workbench)
+  parent :workbench, workbench
 end
 
 crumb :companies do |line_referential|
@@ -350,13 +351,14 @@ crumb :attach_notice do |line_referential, line|
   parent line, line_referential
 end
 
-crumb :lines do |line_referential|
-  link I18n.t('lines.index.title'), line_referential_lines_path
+crumb :lines do |workbench|
+  link I18n.t('lines.index.title'), workbench_line_referential_lines_path(workbench)
+  parent :line_referential, workbench
 end
 
-crumb :line do |line|
-  link breadcrumb_name(line), line_referential_line_path(line.line_referential, line)
-  parent :lines, line.line_referential
+crumb :line do |workbench, line|
+  link breadcrumb_name(line), workbench_line_referential_line_path(workbench, line)
+  parent :lines, workbench
 end
 
 crumb :purchase_windows do |referential|

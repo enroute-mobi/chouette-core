@@ -1,4 +1,4 @@
-- breadcrumb :line, @line
+- breadcrumb :line, @workbench, @line
 - page_header_content_for @line
 
 .page_content
@@ -25,9 +25,9 @@
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = definition_list t("lines.form.sections.location"),
-          {  Chouette::Line.tmf(:network_id) => (@line.network.nil? ? t('lines.index.unset') : link_to(@line.network.name, [@line.line_referential, @line.network])),
-             Chouette::Line.tmf(:company_id) => (@line.company.nil? ? t('lines.index.unset') : link_to(@line.company.name, @line.company)),
-             Chouette::Line.tmf(:secondary_companies) => (@line.secondary_companies.nil? ? t('lines.index.unset') : array_to_html_list(@line.secondary_companies.map{|c| link_to(c.name, c)})) }
+          {  Chouette::Line.tmf(:network_id) => (@line.network.nil? ? t('lines.index.unset') : workbench_line_referential_network_path(@line.network.name, [@workbench, @line.network])),
+             Chouette::Line.tmf(:company_id) => (@line.company.nil? ? t('lines.index.unset') : workbench_line_referential_company_path(@line.company.name, [@workbench, @line.company])),
+             Chouette::Line.tmf(:secondary_companies) => (@line.secondary_companies.nil? ? t('lines.index.unset') : array_to_html_list(@line.secondary_companies.map{|c| workbench_line_referential_company_path(c.name, c)})) }
 
         = definition_list t("lines.form.sections.publication_data"),
           {  Chouette::Line.tmf(:color) => color_icon(@line.color),

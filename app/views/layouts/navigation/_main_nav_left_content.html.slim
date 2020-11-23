@@ -52,13 +52,13 @@
           span = Chouette::ConnectionLink.t.capitalize
 
     = main_nav_menu_item 'layouts.navbar.line_referential'.t do
-      = link_to line_referential_lines_path(workbench.line_referential), class: "list-group-item" do
+      = link_to workbench_line_referential_lines_path(workbench), class: "list-group-item" do
         span = Chouette::Line.t.capitalize
-      = link_to line_referential_networks_path(workbench.line_referential), class: "list-group-item" do
+      = link_to workbench_line_referential_networks_path(workbench), class: "list-group-item" do
         span = Chouette::Network.t.capitalize
-      = link_to line_referential_companies_path(workbench.line_referential), class: "list-group-item" do
+      = link_to workbench_line_referential_companies_path(workbench), class: "list-group-item" do
         span = Chouette::Company.t.capitalize
-      = link_to line_referential_line_notices_path(workbench.line_referential), class: "list-group-item" do
+      = link_to workbench_line_referential_line_notices_path(workbench), class: "list-group-item" do
         span = Chouette::LineNotice.t.capitalize
 
     = main_nav_menu_item 'layouts.navbar.shape_referential'.t do

@@ -50,6 +50,28 @@ ChouetteIhm::Application.routes.draw do
     resources :referentials, only: %w(new create index)
     resources :notification_rules
 
+    resource :line_referential, :only => [:show, :edit, :update] do
+      post :sync
+      resources :lines do
+        member do
+          get :available_line_notices
+        end
+        resources :line_notices do
+          collection do
+            get :attach
+          end
+
+          member do
+            post :detach
+          end
+        end
+      end
+      resources :group_of_lines
+      resources :companies
+      resources :networks
+      resources :line_notices
+    end
+
     resource :shape_referential do
       resources :shapes, except: [:create] do
         get :associations, on: :member
@@ -290,28 +312,6 @@ ChouetteIhm::Application.routes.draw do
       get :autocomplete, on: :collection
     end
     resources :connection_links
-  end
-
-  resources :line_referentials, :only => [:show, :edit, :update] do
-    post :sync, on: :member
-    resources :lines do
-      member do
-        get :available_line_notices
-      end
-      resources :line_notices do
-        collection do
-          get :attach
-        end
-
-        member do
-          post :detach
-        end
-      end
-    end
-    resources :group_of_lines
-    resources :companies
-    resources :networks
-    resources :line_notices
   end
 
   resources :companies do

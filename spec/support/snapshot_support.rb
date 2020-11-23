@@ -48,7 +48,7 @@ RSpec::Matchers.define :match_actions_links_snapshot do |name|
   end
 
   def snapshot_url snap:, layout:
-    "http://localhost:3000/snap/?snap=#{URI.encode(snap.to_s)}&layout=#{URI.encode(layout.to_s)}"
+    "http://localhost:3000/snap/?snap=#{CGI.escape(snap.to_s)}&layout=#{CGI.escape(layout.to_s)}"
   end
 
   def differ

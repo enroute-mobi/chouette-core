@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :workbench do
     name {"Gestion de l'offre"}
-    objectid_format {'stif_netex'}
+    objectid_format {'netex'}
     prefix {'local'}
     restrictions {[]}
 

@@ -1,6 +1,7 @@
 class StopAreaProvider < ActiveRecord::Base
   # This before_validation callback needs to be declared before the one in ObjectidSupport, to prevent a crash if referential_identifier doesn't find the related stop area referential
-  before_validation :define_stop_area_referential, on: :create
+  # I removed the on_create argument, since that callback needs to be fired even on initialize in workbench#create_dependencies
+  before_validation :define_stop_area_referential
   include ObjectidSupport
 
   belongs_to :stop_area_referential

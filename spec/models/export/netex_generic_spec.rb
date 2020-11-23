@@ -85,6 +85,9 @@ RSpec.describe Export::NetexGeneric do
     let(:export_scope) { Export::Scope::All.new context.referential }
     let(:export) { Export::NetexGeneric.new export_scope: export_scope, target: target }
 
+    let(:line_part) do
+      Export::NetexGeneric::Lines.new export
+    end
     let(:part) do
       Export::NetexGeneric::Routes.new export
     end
@@ -103,7 +106,8 @@ RSpec.describe Export::NetexGeneric do
       expect(target.resources).to have_attributes(count: routes.count)
     end
 
-    xit "create Netex::Routes with line_id tag" do
+    it "create Netex::Routes with line_id tag" do
+      line_part.export!
       part.export!
       expect(target.resources).to all(have_tag(:line_id))
     end
@@ -123,6 +127,93 @@ RSpec.describe Export::NetexGeneric do
 
       end
 
+    end
+
+  end
+
+  describe "StopPoints export" do
+
+    let(:target) { MockNetexTarget.new }
+    let(:export_scope) { Export::Scope::All.new context.referential }
+    let(:export) { Export::NetexGeneric.new export_scope: export_scope, target: target }
+
+    let(:line_part) do
+      Export::NetexGeneric::Lines.new export
+    end
+    let(:part) do
+      Export::NetexGeneric::StopPoints.new export
+    end
+
+    let(:context) do
+      Chouette.create do
+        3.times { stop_point }
+      end
+    end
+
+    before { context.referential.switch }
+
+    it "create Netex resources with line_id tag" do
+      line_part.export!
+      part.export!
+      expect(target.resources).to all(have_tag(:line_id))
+    end
+
+  end
+
+  describe "JourneyPatterns export" do
+
+    let(:target) { MockNetexTarget.new }
+    let(:export_scope) { Export::Scope::All.new context.referential }
+    let(:export) { Export::NetexGeneric.new export_scope: export_scope, target: target }
+
+    let(:line_part) do
+      Export::NetexGeneric::Lines.new export
+    end
+    let(:part) do
+      Export::NetexGeneric::JourneyPatterns.new export
+    end
+
+    let(:context) do
+      Chouette.create do
+        3.times { journey_pattern }
+      end
+    end
+
+    before { context.referential.switch }
+
+    it "create Netex resources with line_id tag" do
+      line_part.export!
+      part.export!
+      expect(target.resources).to all(have_tag(:line_id))
+    end
+
+  end
+
+  describe "VehicleJourneys export" do
+
+    let(:target) { MockNetexTarget.new }
+    let(:export_scope) { Export::Scope::All.new context.referential }
+    let(:export) { Export::NetexGeneric.new export_scope: export_scope, target: target }
+
+    let(:line_part) do
+      Export::NetexGeneric::Lines.new export
+    end
+    let(:part) do
+      Export::NetexGeneric::VehicleJourneys.new export
+    end
+
+    let(:context) do
+      Chouette.create do
+        3.times { vehicle_journey }
+      end
+    end
+
+    before { context.referential.switch }
+
+    it "create Netex resources with line_id tag" do
+      line_part.export!
+      part.export!
+      expect(target.resources).to all(have_tag(:line_id))
     end
 
   end

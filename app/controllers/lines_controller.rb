@@ -79,7 +79,7 @@ class LinesController < ChouetteController
   def create
     authorize resource_class
     build_resource
-    @line.line_provider = line_referential.workbenches.first&.default_line_provider
+    @line.line_provider = @workbench.default_line_provider
     super
   end
 

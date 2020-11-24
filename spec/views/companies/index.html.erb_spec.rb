@@ -1,10 +1,11 @@
-
 RSpec.describe "/companies/index", :type => :view do
 
+  let!(:workbench) { assign :workbench, current_workbench }
   let!(:line_referential) { assign :line_referential, create(:line_referential) }
-  let(:context){{referential: line_referential}}
+  let(:line_provider) { build :line_provider, line_referential: line_referential, workbench: workbench }
+  let(:context) { { workbench: workbench, referential: line_referential } }
   let!(:companies) do
-    assign :companies, build_paginated_collection(:company, CompanyDecorator, line_referential: line_referential, context: context)
+    assign :companies, build_paginated_collection(:company, CompanyDecorator, line_provider: line_provider, context: context)
   end
   let!(:search) { assign :q, Ransack::Search.new(Chouette::Company) }
 
@@ -28,13 +29,13 @@ RSpec.describe "/companies/index", :type => :view do
     allow(view).to receive(:collection).and_return(companies)
     allow(view).to receive(:decorated_collection).and_return(companies)
     allow(view).to receive(:current_referential).and_return(line_referential)
-    controller.request.path_parameters[:line_referential_id] = line_referential.id
+    controller.request.path_parameters[:workbench_id] = workbench.id
     allow(view).to receive(:params).and_return(ActionController::Parameters.new(action: :index))
     allow(view).to receive(:resource_class){ Chouette::Company }
   end
 
   describe "action links" do
-    set_invariant "line_referential.id", "99"
+    set_invariant "workbench.id", "99"
 
     before(:each){
       render template: "companies/index", layout: "layouts/application"

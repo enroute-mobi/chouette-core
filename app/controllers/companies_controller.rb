@@ -1,13 +1,16 @@
 class CompaniesController < ChouetteController
   include ApplicationHelper
   include PolicyChecker
+
   defaults :resource_class => Chouette::Company
+
+  belongs_to :workbench
+  belongs_to :line_referential, singleton: true
+
   respond_to :html
   respond_to :xml
   respond_to :json
   respond_to :js, :only => :index
-
-  belongs_to :line_referential
 
   def index
     index! do |format|
@@ -58,15 +61,15 @@ class CompaniesController < ChouetteController
   end
 
   def resource
-    super.decorate(context: { referential: line_referential })
+    super.decorate(context: { workbench: @workbench, referential: line_referential })
   end
 
   def resource_url(company = nil)
-    line_referential_company_path(line_referential, company || resource)
+    workbench_line_referential_company_path(@workbench, company || resource)
   end
 
   def collection_url
-    line_referential_companies_path(line_referential)
+    workbench_line_referential_companies_path(@workbench)
   end
 
   alias_method :line_referential, :parent
@@ -95,6 +98,7 @@ class CompaniesController < ChouetteController
     CompanyDecorator.decorate(
       companies,
       context: {
+        workbench: @workbench,
         referential: line_referential
       }
     )

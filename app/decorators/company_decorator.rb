@@ -1,7 +1,7 @@
 class CompanyDecorator < AF83::Decorator
   decorates Chouette::Company
 
-  set_scope { context[:referential] }
+  set_scope { [ context[:workbench], :line_referential ] }
 
   create_action_link do |l|
     l.content { h.t('companies.actions.new') }

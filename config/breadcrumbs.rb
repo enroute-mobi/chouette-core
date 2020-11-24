@@ -319,13 +319,14 @@ crumb :company do |workbench, company|
   parent :companies, workbench
 end
 
-crumb :networks do |line_referential|
-  link I18n.t('networks.index.title'), line_referential_networks_path(line_referential)
+crumb :networks do |workbench|
+  link I18n.t('networks.index.title'), workbench_line_referential_networks_path(workbench)
+  parent :line_referential, workbench
 end
 
-crumb :network do |network|
-  link breadcrumb_name(network), line_referential_network_path(network.line_referential, network)
-  parent :networks, network.line_referential
+crumb :network do |workbench, network|
+  link breadcrumb_name(network), workbench_line_referential_network_path(workbench, network)
+  parent :networks, workbench
 end
 
 crumb :group_of_lines do |line_referential|

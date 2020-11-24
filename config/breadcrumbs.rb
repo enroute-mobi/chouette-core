@@ -132,16 +132,6 @@ crumb :referential_network do |referential, network|
   parent :referential_networks, referential
 end
 
-crumb :referential_group_of_lines do |referential|
-  link I18n.t('group_of_lines.index.title'), referential_networks_path(referential)
-  parent :referential, referential
-end
-
-crumb :referential_group_of_line do |referential, group_of_line|
-  link  breadcrumb_name(group_of_line), referential_group_of_line_path(referential, group_of_line)
-  parent :referential_group_of_lines, referential
-end
-
 crumb :referential_vehicle_journeys do |referential|
   link I18n.t('referential_vehicle_journeys.index.title'), referential_vehicle_journeys_path(referential)
   parent :referential, referential
@@ -327,15 +317,6 @@ end
 crumb :network do |workbench, network|
   link breadcrumb_name(network), workbench_line_referential_network_path(workbench, network)
   parent :networks, workbench
-end
-
-crumb :group_of_lines do |line_referential|
-  link I18n.t('group_of_lines.index.title'), line_referential_group_of_lines_path(line_referential)
-end
-
-crumb :group_of_line do |group_of_line|
-  link breadcrumb_name(group_of_line), line_referential_group_of_line_path(group_of_line.line_referential, group_of_line)
-  parent :group_of_lines, group_of_line.line_referential
 end
 
 crumb :line_notices do |workbench, line|

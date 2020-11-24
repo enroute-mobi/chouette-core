@@ -66,7 +66,6 @@ ChouetteIhm::Application.routes.draw do
           end
         end
       end
-      resources :group_of_lines
       resources :companies
       resources :networks
       resources :line_notices

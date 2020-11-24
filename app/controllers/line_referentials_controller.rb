@@ -4,7 +4,7 @@ class LineReferentialsController < ChouetteController
 
   def show
     show! do
-      @line_referential = LineReferentialDecorator.decorate(@line_referential)
+      @line_referential = LineReferentialDecorator.decorate(@line_referential, context: { workbench: @workbench })
     end
   end
 

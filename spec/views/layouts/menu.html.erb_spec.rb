@@ -1,4 +1,3 @@
-
 describe "/layouts/application", :type => :view do
 
   let(:organisation){ create :organisation }
@@ -28,9 +27,9 @@ describe "/layouts/application", :type => :view do
     expect(rendered).to have_menu_link_to compliance_control_sets_path
 
     expect(rendered).to have_menu_title('layouts.navbar.line_referential'.t)
-    expect(rendered).to have_menu_link_to line_referential_lines_path(workbench.line_referential)
-    expect(rendered).to have_menu_link_to line_referential_networks_path(workbench.line_referential)
-    expect(rendered).to have_menu_link_to line_referential_companies_path(workbench.line_referential)
+    expect(rendered).to have_menu_link_to workbench_line_referential_lines_path(workbench)
+    expect(rendered).to have_menu_link_to workbench_line_referential_networks_path(workbench)
+    expect(rendered).to have_menu_link_to workbench_line_referential_companies_path(workbench)
 
     expect(rendered).to have_menu_title 'layouts.navbar.stop_area_referential'.t
     expect(rendered).to have_menu_link_to stop_area_referential_stop_areas_path(workbench.stop_area_referential)

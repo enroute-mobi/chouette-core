@@ -1,4 +1,4 @@
-- breadcrumb :line_notices, @line_referential, @line
+- breadcrumb :line_notices, @workbench, @line
 
 .page_content
   .container-fluid
@@ -15,7 +15,7 @@
                 key: :title, \
                 attribute: 'title', \
                 link_to: lambda do |line_notice| \
-                  [@line_referential, line_notice] \
+                  [@workbench, :line_referential, line_notice] \
                 end \
               ),
               TableBuilderHelper::Column.new( \

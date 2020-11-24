@@ -1,22 +1,25 @@
 RSpec.describe LineReferentialsController, :type => :controller do
   login_user
 
-  let(:line_referential) { create :line_referential }
-
-  before(:each){
-    line_referential.organisations << @user.organisation
-  }
+  let(:context) do
+    Chouette.create do
+      workgroup do
+        workbench organisation: Organisation.find_by_code('first')
+      end
+    end
+  end
+  let(:workbench) { context.workbench }
 
   describe 'PUT sync' do
-    let(:request){ put :sync, params: { id: line_referential.id }}
+    let(:request){ put :sync, params: { workbench_id: workbench.id }}
 
     it 'should respond with 403' do
-       expect(request).to have_http_status 403
+      expect(request).to have_http_status 403
     end
 
     with_permission "line_referentials.synchronize" do
       it 'returns HTTP success' do
-        expect(request).to redirect_to [line_referential]
+        expect(request).to redirect_to [ workbench, :line_referential ]
       end
     end
   end

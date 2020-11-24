@@ -16,7 +16,7 @@ class LineReferentialsController < ChouetteController
     else
       flash[:error] = @sync.errors.full_messages.to_sentence
     end
-    redirect_to resource
+    redirect_to [ @workbench, :line_referential ]
   end
 
   protected

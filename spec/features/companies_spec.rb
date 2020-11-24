@@ -1,14 +1,20 @@
-# -*- coding: utf-8 -*-
-
 describe "Companies", :type => :feature do
   login_user
 
-  let(:line_referential) { create :line_referential, member: @user.organisation }
-  let!(:companies) { Array.new(2) { create :company, line_referential: line_referential } }
+  let(:context) do
+    Chouette.create do
+      workbench organisation: Organisation.find_by_code('first') do
+        3.times { company }
+      end
+    end
+  end
+
+  let(:workbench) { context.workbench }
+  let(:companies) { context.line_referential.companies }
   subject { companies.first }
 
   describe "index" do
-    before(:each) { visit line_referential_companies_path(line_referential) }
+    before(:each) { visit workbench_line_referential_companies_path(workbench) }
 
     it "displays companies" do
       expect(page).to have_content(companies.first.name)
@@ -34,7 +40,7 @@ describe "Companies", :type => :feature do
 
   describe "show" do
     it "displays line" do
-      visit line_referential_company_path(line_referential, companies.first)
+      visit workbench_line_referential_company_path(workbench, companies.first)
       expect(page).to have_content(companies.first.name)
     end
   end

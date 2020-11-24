@@ -96,9 +96,16 @@ module Chouette
             end
 
             model :line_notice do
+              transient :lines
+
               attribute(:title) { |n| "Line Notice title #{n}" }
               attribute(:content) { |n| "Line Notice content #{n}" }
               attribute(:objectid) { |n| "organisation:LineNotice:#{n}:LOC" }
+
+              after do
+                lines = Array(transient(:lines))
+                lines.each { |line| line.line_notices << new_instance }
+              end
             end
           end
 

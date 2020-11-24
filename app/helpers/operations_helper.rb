@@ -41,4 +41,8 @@ module OperationsHelper
       end
     end
   end
+
+  def duration_in_words(seconds)
+    seconds > 60 ? "#{(seconds /  1.minute).round} min" : "#{seconds.round} sec"
+  end
 end

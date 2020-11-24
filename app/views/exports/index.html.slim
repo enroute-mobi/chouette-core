@@ -43,6 +43,11 @@
                 attribute: Proc.new { |n| l(n.started_at, format: :short_with_time) if n.started_at }, \
               ), \
               TableBuilderHelper::Column.new( \
+                key: :duration, \
+                attribute: Proc.new { |object| object.ended_at.presence && object.started_at.presence && duration_in_words(object.ended_at - object.started_at)}, \
+                sortable: false, \
+              ), \
+              TableBuilderHelper::Column.new( \
                 key: :creator, \
                 attribute: 'creator' \
               ) \

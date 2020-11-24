@@ -20,15 +20,20 @@
                 attribute: Proc.new { |n| operation_status(n.status) }, \
               ), \
               TableBuilderHelper::Column.new( \
-                key: :started_at, \
-                attribute: Proc.new { |n| l(n.started_at, format: :short_with_time) if n.started_at }, \
-              ), \
-              TableBuilderHelper::Column.new( \
                 key: :name, \
                 attribute: 'name', \
                 link_to: lambda do |import| \
                   policy(import).show? ? [parent, import] : nil \
                 end \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :started_at, \
+                attribute: Proc.new { |n| l(n.started_at, format: :short_with_time) if n.started_at }, \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :duration, \
+                attribute: Proc.new { |object| object.ended_at.presence && object.started_at.presence && duration_in_words(object.ended_at - object.started_at)}, \
+                sortable: false, \
               ), \
               *@contextual_cols \
             ],

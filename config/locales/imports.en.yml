@@ -109,7 +109,9 @@ en:
           <<: *attrs
         workbench:
           <<: *attrs
+          merge_method: Merge Method
           automatic_merge: Automatic Merge
+          automatic_archive: Automatic Archive on failure
           flag_urgent: Contains urgent data
   errors:
     messages:

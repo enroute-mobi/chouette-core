@@ -18,10 +18,11 @@ html
           table
             tr
               td= yield
-            tr
-              td style=mailer_style(:info)
-                = "mailers.info_contact".t
-                = mailer_link_to Rails.application.config.support_link, Rails.application.config.support_link
+            - if Rails.application.config.link_to_support_enabled
+              tr
+                td style=mailer_style(:info)
+                  = "mailers.info_contact".t
+                  = mailer_link_to Rails.application.config.support_link, Rails.application.config.support_link
 
     p style=mailer_style(:footer)
       = mail_footer

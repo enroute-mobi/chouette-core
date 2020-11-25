@@ -34,6 +34,10 @@ class Export::NetexGeneric < Export::Base
     @quay_registry ||= QuayRegistry.new
   end
 
+  def resource_tagger
+    @resource_tagger ||= ResourceTagger.new
+  end
+
   def export_file
     @export_file ||= Tempfile.new(["export#{id}",'.zip'])
   end
@@ -64,6 +68,19 @@ class Export::NetexGeneric < Export::Base
     export_file
   end
 
+  class TaggedTarget
+    def initialize(target, tags = {})
+      @target = target
+      @tags = tags
+    end
+
+    def add(resource)
+      resource.tags = @tags
+      @target << resource
+    end
+    alias << add
+  end
+
   class Part
     attr_reader :export
 
@@ -73,7 +90,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     # delegate :target, :index, :export_scope, :messages, :date_range, :code_spaces, to: :export
-    delegate :target, :quay_registry, :export_scope, to: :export
+    delegate :target, :quay_registry, :resource_tagger, :export_scope, to: :export
 
     def part_name
       @part_name ||= self.class.name.demodulize.underscore
@@ -105,6 +122,22 @@ class Export::NetexGeneric < Export::Base
       @quays_index ||= Hash.new { |h,k| h[k] = [] }
     end
 
+  end
+
+  class ResourceTagger
+    def tags_for line_id
+      tag_index[line_id]
+    end
+
+    def register_tag_for(line)
+      tag_index[line.id] = { line_id: line.objectid, company_id: line.company&.id }
+    end
+
+    protected
+
+    def tag_index
+      @tag_index ||= Hash.new { |h,k| h[k] = {} }
+    end
   end
 
   class StopDecorator < SimpleDelegator
@@ -203,8 +236,12 @@ class Export::NetexGeneric < Export::Base
 
     def export!
       lines.find_each do |line|
+        resource_tagger.register_tag_for line
+        tags = resource_tagger.tags_for(line.id)
+        tagged_target = TaggedTarget.new(target, tags)
+
         decorated_line = Decorator.new(line)
-        target << decorated_line.netex_resource
+        tagged_target << decorated_line.netex_resource
       end
     end
 
@@ -229,7 +266,7 @@ class Export::NetexGeneric < Export::Base
       end
 
       def operator_ref
-        Netex::Reference.new(company.objectid, type: 'OperatorRef')
+        Netex::Reference.new(company&.objectid, type: 'OperatorRef')
       end
 
     end
@@ -410,8 +447,11 @@ class Export::NetexGeneric < Export::Base
 
     def export!
       routes.find_each do |route|
+        tags = resource_tagger.tags_for(route.line_id)
+        tagged_target = TaggedTarget.new(target, tags)
+
         decorated_route = Decorator.new(route)
-        target << decorated_route.netex_resource
+        tagged_target << decorated_route.netex_resource
       end
     end
 
@@ -457,11 +497,14 @@ class Export::NetexGeneric < Export::Base
     delegate :stop_points, to: :export_scope
 
     def export!
-      stop_points.find_each do |stop_point|
+      stop_points.joins(:route).select('stop_points.*', 'routes.line_id as line_id').find_each do |stop_point|
+        tags = resource_tagger.tags_for(stop_point.line_id)
+        tagged_target = TaggedTarget.new(target, tags)
+
         decorated_stop_point = StopPointDecorator.new(stop_point)
-        target << decorated_stop_point.scheduled_stop_point
-        target << decorated_stop_point.passenger_stop_assignment
-        target << decorated_stop_point.route_point
+        tagged_target << decorated_stop_point.scheduled_stop_point
+        tagged_target << decorated_stop_point.passenger_stop_assignment
+        tagged_target << decorated_stop_point.route_point
       end
     end
 
@@ -472,9 +515,12 @@ class Export::NetexGeneric < Export::Base
     delegate :journey_patterns, to: :export_scope
 
     def export!
-      journey_patterns.find_each do |journey_pattern|
+      journey_patterns.joins(:route).select('journey_patterns.*', 'routes.line_id as line_id').find_each do |journey_pattern|
+        tags = resource_tagger.tags_for(journey_pattern.line_id)
+        tagged_target = TaggedTarget.new(target, tags)
+
         decorated_journey_pattern = Decorator.new(journey_pattern)
-        target << decorated_journey_pattern.netex_resource
+        tagged_target << decorated_journey_pattern.netex_resource
       end
     end
 
@@ -515,9 +561,12 @@ class Export::NetexGeneric < Export::Base
     delegate :vehicle_journeys, to: :export_scope
 
     def export!
-      vehicle_journeys.find_each do |vehicle_journey|
+      vehicle_journeys.joins(:route).select('vehicle_journeys.*', 'routes.line_id as line_id').find_each do |vehicle_journey|
+        tags = resource_tagger.tags_for(vehicle_journey.line_id)
+        tagged_target = TaggedTarget.new(target, tags)
+
         decorated_vehicle_journey = Decorator.new(vehicle_journey)
-        target << decorated_vehicle_journey.netex_resource
+        tagged_target << decorated_vehicle_journey.netex_resource
       end
     end
 

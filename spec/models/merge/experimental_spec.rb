@@ -125,7 +125,7 @@ describe Merge do
 
               line :line
 
-              workbench do
+              workbench :workbench do
                 stop_area :first
                 stop_area :second
                 stop_area :third
@@ -244,7 +244,7 @@ describe Merge do
             MergeContext.new(merge_method: merge_method) do
               line :line
 
-              workbench do
+              workbench :workbench do
                 stop_area :first
                 stop_area :second
                 stop_area :third
@@ -310,7 +310,7 @@ describe Merge do
             MergeContext.new(merge_method: merge_method) do
               line :line
 
-              workbench do
+              workbench :workbench do
                 stop_area :first
                 stop_area :second
                 stop_area :third
@@ -398,7 +398,7 @@ describe Merge do
               line :line
               line :alternative_line
 
-              workbench do
+              workbench :workbench do
                 stop_area :first
                 stop_area :second
                 stop_area :third

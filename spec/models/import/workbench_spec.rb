@@ -81,7 +81,7 @@ RSpec.describe Import::Workbench do
       before { import.flag_urgent = true }
       it "flag referentials as urgent" do
         expect(import).to receive(:flag_refentials_as_urgent)
-        import.done!
+        import.done! true
       end
     end
 
@@ -89,7 +89,7 @@ RSpec.describe Import::Workbench do
       before { import.flag_urgent = false }
       it "doesn't flag referentials as urgent" do
         expect(import).to_not receive(:flag_refentials_as_urgent)
-        import.done!
+        import.done! true
       end
     end
 
@@ -97,7 +97,7 @@ RSpec.describe Import::Workbench do
       before { import.automatic_merge = true }
       it "create automatic merge" do
         expect(import).to receive(:create_automatic_merge)
-        import.done!
+        import.done! true
       end
     end
 
@@ -105,7 +105,23 @@ RSpec.describe Import::Workbench do
       before { import.automatic_merge = false }
       it "doesn't create automatic merge" do
         expect(import).to_not receive(:create_automatic_merge)
-        import.done!
+        import.done! true
+      end
+    end
+
+    context "when automatic_archive option is selected" do
+      before { import.automatic_archive = true }
+      it "automaticaly archive referentials" do
+        expect(import).to receive(:archive_referentials)
+        import.done! false
+      end
+    end
+
+    context "when automatic_archive option isn't selected" do
+      before { import.automatic_archive = false }
+      it "doesn't automaticaly archive referentials" do
+        expect(import).to_not receive(:archive_referentials)
+        import.done! false
       end
     end
   end

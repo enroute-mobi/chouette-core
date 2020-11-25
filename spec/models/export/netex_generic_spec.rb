@@ -85,9 +85,6 @@ RSpec.describe Export::NetexGeneric do
     let(:export_scope) { Export::Scope::All.new context.referential }
     let(:export) { Export::NetexGeneric.new export_scope: export_scope, target: target }
 
-    let(:line_part) do
-      Export::NetexGeneric::Lines.new export
-    end
     let(:part) do
       Export::NetexGeneric::Routes.new export
     end
@@ -107,7 +104,7 @@ RSpec.describe Export::NetexGeneric do
     end
 
     it "create Netex::Routes with line_id tag" do
-      line_part.export!
+      routes.each { |route| export.resource_tagger.register_tag_for(route.line) }
       part.export!
       expect(target.resources).to all(have_tag(:line_id))
     end
@@ -137,9 +134,6 @@ RSpec.describe Export::NetexGeneric do
     let(:export_scope) { Export::Scope::All.new context.referential }
     let(:export) { Export::NetexGeneric.new export_scope: export_scope, target: target }
 
-    let(:line_part) do
-      Export::NetexGeneric::Lines.new export
-    end
     let(:part) do
       Export::NetexGeneric::StopPoints.new export
     end
@@ -153,7 +147,7 @@ RSpec.describe Export::NetexGeneric do
     before { context.referential.switch }
 
     it "create Netex resources with line_id tag" do
-      line_part.export!
+      context.routes.each { |route| export.resource_tagger.register_tag_for(route.line) }
       part.export!
       expect(target.resources).to all(have_tag(:line_id))
     end
@@ -166,9 +160,6 @@ RSpec.describe Export::NetexGeneric do
     let(:export_scope) { Export::Scope::All.new context.referential }
     let(:export) { Export::NetexGeneric.new export_scope: export_scope, target: target }
 
-    let(:line_part) do
-      Export::NetexGeneric::Lines.new export
-    end
     let(:part) do
       Export::NetexGeneric::JourneyPatterns.new export
     end
@@ -182,7 +173,7 @@ RSpec.describe Export::NetexGeneric do
     before { context.referential.switch }
 
     it "create Netex resources with line_id tag" do
-      line_part.export!
+      context.routes.each { |route| export.resource_tagger.register_tag_for(route.line) }
       part.export!
       expect(target.resources).to all(have_tag(:line_id))
     end
@@ -195,9 +186,6 @@ RSpec.describe Export::NetexGeneric do
     let(:export_scope) { Export::Scope::All.new context.referential }
     let(:export) { Export::NetexGeneric.new export_scope: export_scope, target: target }
 
-    let(:line_part) do
-      Export::NetexGeneric::Lines.new export
-    end
     let(:part) do
       Export::NetexGeneric::VehicleJourneys.new export
     end
@@ -211,7 +199,7 @@ RSpec.describe Export::NetexGeneric do
     before { context.referential.switch }
 
     it "create Netex resources with line_id tag" do
-      line_part.export!
+      context.routes.each { |route| export.resource_tagger.register_tag_for(route.line) }
       part.export!
       expect(target.resources).to all(have_tag(:line_id))
     end

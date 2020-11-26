@@ -67,13 +67,17 @@ module InternalControl
     end
 
     def self.create_control_instance(compliance_check)
-      control_class = begin
-                        "#{name}::Control".constantize
-                      rescue NameError
-                        DefaultControl
-                      end
-
-      control_class.new name, compliance_check
+      custom_class =
+        begin
+          "#{name}::Control".constantize
+        rescue NameError
+          nil
+        end
+      if custom_class
+        custom_class.new compliance_check
+      else
+        DefaultControl.new name, compliance_check
+      end
     end
 
     def self.resolve_compound_status status1, status2

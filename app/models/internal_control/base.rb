@@ -62,7 +62,7 @@ module InternalControl
       end
 
       def compliance_test(compliance_check, model)
-        @klass.constantize.compliance_test compliance_check, model
+        @klass.compliance_test compliance_check, model
       end
     end
 
@@ -76,7 +76,7 @@ module InternalControl
       if custom_class
         custom_class.new compliance_check
       else
-        DefaultControl.new name, compliance_check
+        DefaultControl.new self, compliance_check
       end
     end
 

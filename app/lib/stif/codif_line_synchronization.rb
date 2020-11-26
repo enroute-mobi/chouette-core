@@ -142,7 +142,6 @@ module Stif
         end
 
         params[:line_notice_ids] = Chouette::LineNotice.where(objectid: api_line.line_notices).pluck(:id)
-
         save_or_update(params, Chouette::Line)
       end
 
@@ -197,22 +196,43 @@ module Stif
       end
 
       def save_or_update(params, klass)
-        params[:line_referential] = LineReferential.first
+        params[:line_referential_id] = default_line_referential_id
+        params[:line_provider_id] = default_line_provider_id
         object = klass.where(objectid: params[:objectid]).first
         if object
           object.assign_attributes(params)
           if object.changed?
-            object.save
-            increment_counts :updated_count, 1
+            if object.save
+              increment_counts :updated_count, 1
+            else
+              log_error(params, object)
+            end
           end
         else
           object = klass.new(params)
           if object.valid?
             object.save
             increment_counts :imported_count, 1
+          else
+            log_error(params, object)
           end
         end
         object
+      end
+
+      def default_line_provider_id
+        @default_line_provider_id ||= LineProvider.first.id
+      end
+
+      def default_line_referential_id
+        @default_line_referential_id ||= LineReferential.first.id
+      end
+
+      def log_error(params, object)
+        Rails.logger.warn "Invalid object during Codifline Sync:"
+        Rails.logger.warn params.inspect
+        Rails.logger.warn object.inspect
+        Rails.logger.warn object.errors.messages.inspect
       end
 
       def elapsed_time_since start_time = 0

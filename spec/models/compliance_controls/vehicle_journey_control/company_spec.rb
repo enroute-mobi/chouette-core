@@ -43,6 +43,7 @@ RSpec.describe VehicleJourneyControl::Company, type: :model do
   it 'should pass if the line has no company' do
     referential.switch do
       line.company = nil
+      line.secondary_company_ids = []
       line.save
     end
 

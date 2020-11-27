@@ -12,3 +12,6 @@ fr:
       successful: Succès
       warning:    Avertissement
       successful_with_warnings: Succès (avec avertissements)
+    notification_targets:
+      none: Aucun
+      workgroup: Groupe de travail

@@ -37,9 +37,12 @@ module InternalControl
       compliance_check.referential.switch do
         coll = collection(compliance_check)
         method = coll.respond_to?(:find_each) ? :find_each : :each
+
+        control_instance = create_control_instance(compliance_check)
+
         coll.send(method) do |obj|
           begin
-            compliant = compliance_test(compliance_check, obj)
+            compliant = control_instance.compliance_test(compliance_check, obj)
             status = status_ok_if(compliant, compliance_check)
             update_model_with_status compliance_check, obj, status
             unless compliant
@@ -53,8 +56,31 @@ module InternalControl
       end
     end
 
+    class DefaultControl
+      def initialize(klass, compliance_check)
+        @klass = klass
+      end
+
+      def compliance_test(compliance_check, model)
+        @klass.compliance_test compliance_check, model
+      end
+    end
+
+    def self.create_control_instance(compliance_check)
+      custom_class =
+        begin
+          "#{name}::Control".constantize
+        rescue NameError
+          nil
+        end
+      if custom_class
+        custom_class.new compliance_check
+      else
+        DefaultControl.new self, compliance_check
+      end
+    end
+
     def self.resolve_compound_status status1, status2
-      # Available statuses: (OK ERROR WARNING IGNORED)
       return [status1, status2].compact.last if status1.nil? || status2.nil?
       sorted_statuses = %w(IGNORED OK WARNING ERROR)
       sorted_statuses[[status1, status2].map{|k| sorted_statuses.index(k)}.max]

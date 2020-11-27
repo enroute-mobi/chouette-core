@@ -197,6 +197,11 @@ fr:
         3_vehiclejourney_10: La course %{vj_name} (%{source_objectid}) possède au moins un calendrier d'application vide (%{tt_names})
       description: "Une course ne doit pas être lié à un calendrier d'application vide"
       prerequisite: "Une course doit exister"
+    vehicle_journey_control/company:
+      messages:
+        3_vehiclejourney_11: La course %{source_objectid} ne peut être associée au transporteur %{company_name}
+      description: "La course ne peut être associée qu'à un des transporteurs de la ligne"
+      prerequisite: "La course et sa ligne sont associés à un transporteur"
     routing_constraint_zone_control/unactivated_stop_point:
       messages:
         3_routingconstraint_1: "L'ITL %{source_objectid} référence un arrêt (ZDEp) désactivé %{target_0_label} (%{target_0_objectid})"
@@ -332,6 +337,8 @@ fr:
         one: Cohérence date de fin de vente - date de fin de circulation
       vehicle_journey_control/empty_time_table:
         one: Une course ne doit pas être liée à un calendrier d'application vide
+      vehicle_journey_control/company:
+        one: La course ne peut être associée qu'à un des transporteurs de la ligne
       routing_constraint_zone_control/vehicle_journey_at_stops:
         one: "Chronologie croissante des horaires"
       routing_constraint_zone_control/maximum_length:

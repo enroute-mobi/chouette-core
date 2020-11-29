@@ -141,6 +141,10 @@ RSpec.describe CopyInserter do
 
     let(:time_table) { context.time_table }
 
+    before do
+      truncate_timestamps time_table
+    end
+
     it "creates the same CSV content than PostgreSQL gives by COPY TO" do
       expected_csv = Chouette::TimeTable.copy_to_string
       inserter.insert time_table

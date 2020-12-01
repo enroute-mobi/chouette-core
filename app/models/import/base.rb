@@ -1,5 +1,6 @@
 class Import::Base < ApplicationModel
   self.table_name = "imports"
+  extend Enumerize
   include OptionsSupport
   include NotifiableSupport
   include PurgeableResource
@@ -45,6 +46,7 @@ class Import::Base < ApplicationModel
   def short_type
     self.class.short_type
   end
+
 
   scope :workbench, -> { where type: "Import::Workbench" }
 

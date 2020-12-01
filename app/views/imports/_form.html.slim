@@ -6,16 +6,27 @@
 
   .row
     .col-lg-12
-      = form.input :notification_target, collection: Import::Base.notification_target_options, selected: :user
+      = form.input :file, label: t('activerecord.attributes.import.resources'), wrapper: :horizontal_file_input
+
+  .row.options-separator
+    .col-xs-offset-1.col-xs-11
+      .definition-list
+        .dl-head
+          .row
+            label.col-sm-2.col-xs-2
+              = "Options"
 
   .row
     .col-lg-12
-      = form.input :file, label: t('activerecord.attributes.import.resources'), wrapper: :horizontal_file_input
-
+      = form.input :notification_target, collection: Import::Base.notification_target_options, selected: :user
       - import.class.options.each do |attr, option_def|
         - next if (attr == :merge_method)
         - if policy(import).option?(attr)
           = import_option_input form, import, attr, option_def, import.class
 
+
+
   = cancel_button
   = form.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'wb_import_form'
+
+  = javascript_pack_tag "exports/new"

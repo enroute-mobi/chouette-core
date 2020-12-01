@@ -3,11 +3,11 @@ class Import::Workbench < Import::Base
 
   after_commit :launch_worker, :on => :create
 
-  option :automatic_merge, type: :boolean, default_value: false
-  option :archive_on_fail, type: :boolean, default_value: false
-  option :flag_urgent, type: :boolean, default_value: false
-  option :merge_method, type: :string, collection: %w(legacy experimental),
-                        default_value: 'legacy'
+  option :import_category, collection: %w(automatic shape_file), default_value: 'automatic'
+  option :automatic_merge, type: :boolean, default_value: false, depends: {option: :import_category, value: "automatic"}
+  option :flag_urgent, type: :boolean, default_value: false, depends: {option: :import_category, value: "automatic"}
+  option :merge_method, collection: %w(legacy experimental), default_value: 'legacy', depends: {option: :import_category, value: "automatic"}
+  option :shapes_code, type: :string, depends: {option: :import_category, value: "shape_file"}
 
   def main_resource; self end
 
@@ -30,6 +30,13 @@ class Import::Workbench < Import::Base
       message.save
       failed!
     end
+  end
+
+  def used_options child_class
+    if child_class == :fileshape
+      return self.options.slice(:shapes_code)
+    end
+    Import::Workbench.options.select{|k,v| k!=:shapes_code}
   end
 
   def import_netex

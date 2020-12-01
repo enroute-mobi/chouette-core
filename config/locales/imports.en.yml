@@ -113,6 +113,11 @@ en:
           automatic_merge: Automatic Merge
           archive_on_fail: Automatic Archive on failure
           flag_urgent: Contains urgent data
+          shapes_code: Shape Attribute for code
+          import_category: Import type
+          import_category_collection:
+            shape_file: Shape file
+            automatic: Automatic
   errors:
     messages:
       extension_whitelist_error: "You are not allowed to upload %{extension} files, allowed types: %{allowed_types}"

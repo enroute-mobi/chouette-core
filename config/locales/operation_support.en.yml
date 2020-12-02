@@ -12,3 +12,6 @@ en:
       successful: Successful
       warning:    Warning
       successful_with_warnings: Successful (with warnings)
+    notification_targets:
+      none: None
+      workgroup: Workgroup

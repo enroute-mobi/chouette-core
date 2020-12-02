@@ -22,7 +22,7 @@
       - import.class.options.each do |attr, option_def|
         - next if (attr == :merge_method)
         - if policy(import).option?(attr)
-          = import_option_input form, import, attr, option_def, import.class
+          = option_input form, import, attr, option_def, import.class
 
 
 

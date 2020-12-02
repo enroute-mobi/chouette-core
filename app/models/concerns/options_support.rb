@@ -68,18 +68,4 @@ module OptionsSupport
     (options || {}).select{|k, v| ! k.match(/^_/) && !option_def(k)[:hidden]}
   end
 
-  def display_option_value option_name, context
-    option = option_def(option_name)
-    val = self.options[option_name.to_s]
-    if option[:display]
-      context.instance_exec(val, &option[:display])
-    else
-      if option[:type].to_s == "boolean"
-        (val == "1" || val == "true") ? 'true'.t : 'false'.t
-      else
-        val
-      end
-    end
-  end
-
 end

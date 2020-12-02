@@ -32,11 +32,12 @@ class Import::Workbench < Import::Base
     end
   end
 
-  def used_options child_class
-    if child_class == :fileshape
-      return self.options.slice(:shapes_code)
+  def visible_options
+    if import_category == "shape_file"
+      super.slice("import_category","shapes_code")
+    else
+      super.select{|k,v| k!="shapes_code"}
     end
-    Import::Workbench.options.select{|k,v| k!=:shapes_code}
   end
 
   def import_netex

@@ -1,6 +1,5 @@
 class Import::Base < ApplicationModel
   self.table_name = "imports"
-  extend Enumerize
   include OptionsSupport
   include NotifiableSupport
   include PurgeableResource

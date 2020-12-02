@@ -210,6 +210,11 @@ crumb :gtfs_import do |imports_parent, gtfs_import|
   parent :import, imports_parent, gtfs_import.parent
 end
 
+crumb :shapefile_import do |imports_parent, shapefile_import|
+  link breadcrumb_name(shapefile_import), [imports_parent, shapefile_import]
+  parent :import, imports_parent, shapefile_import.parent
+end
+
 crumb :import_resources do |import, import_resources|
   link I18n.t('import.resources.index.title'), workbench_import_import_resources_path(import.workbench, import.parent)
   parent :import, import.workbench, import.parent

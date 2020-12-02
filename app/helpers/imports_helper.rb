@@ -56,7 +56,7 @@ module ImportsHelper
       metadata = metadata.update({ t('imports.show..referential') => link_to_if_i_can(@import.referential.name, @import.referential) })
     end
     metadata = metadata.update({ Workbench.ts.capitalize => link_to_if_i_can(@import.workbench.organisation.name, @import.workbench) }) unless @workbench
-    metadata = metadata.update Hash[*@import.visible_options.map{|k, v| [t("activerecord.attributes.import.#{@import.object.class.name.demodulize.underscore}.#{k}"), @import.display_option_value(k, self)]}.flatten]
+    metadata = metadata.update Hash[*@import.visible_options.map{|k, v| [t("activerecord.attributes.import.#{@import.object.class.name.demodulize.underscore}.#{k}"), display_option_value(@import, k)]}.flatten]
     metadata
   end
 end

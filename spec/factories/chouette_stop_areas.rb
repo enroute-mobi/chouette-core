@@ -13,8 +13,7 @@ FactoryBot.define do
     street_name {"Parc du couvent, Avenue Steve Biko"}
     url   { Faker::Internet.url }
 
-    association :stop_area_referential
-    stop_area_provider { association :stop_area_provider, stop_area_referential: stop_area_referential }
+    association :stop_area_provider
 
     transient do
       referential {nil}

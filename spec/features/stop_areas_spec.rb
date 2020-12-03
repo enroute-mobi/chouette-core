@@ -3,8 +3,9 @@
 describe "StopAreas", :type => :feature do
   login_user
 
-  let(:stop_area_referential) { create :stop_area_referential, member: @user.organisation }
-  let!(:stop_areas) { Array.new(2) { create :stop_area, stop_area_referential: stop_area_referential, stop_area_provider: first_workbench.stop_area_providers.first  } }
+  let(:stop_area_referential) { create :stop_area_referential, member: first_organisation }
+  let(:stop_area_provider) { create :stop_area_provider, stop_area_referential: stop_area_referential }
+  let!(:stop_areas) { Array.new(2) { create :stop_area, stop_area_provider: stop_area_provider } }
   subject { stop_areas.first }
 
   describe "index" do

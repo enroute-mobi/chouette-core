@@ -9,10 +9,9 @@ class StopAreaProvider < ActiveRecord::Base
 
   has_many :stop_areas, class_name: "Chouette::StopArea"
 
-  alias referential stop_area_referential
-  # Used as a workaround to prevent spec/lib/chouette/sync/updater_spec.rb to crash
+  # TODO Required by Chouette::Sync::Updater::Batch#resolver limitation
   alias_attribute :registration_number, :objectid
-
+  delegate :workgroup, to: :stop_area_referential
 
   private
 

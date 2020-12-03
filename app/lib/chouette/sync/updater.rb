@@ -189,6 +189,8 @@ module Chouette
           end
         end
 
+        # Basic resolver implementation
+
         def resolve(reference_type, resource_ids)
           if resource_ids.is_a? Array
             resolve_multiple reference_type, resource_ids
@@ -205,6 +207,8 @@ module Chouette
           resource_ids.compact!
           return [] if resource_ids.empty?
 
+          # TODO this method should use the model_id_attribute
+          # nothing says that the resolved model has the same attribute
           updater.target.send(reference_type.to_s.pluralize).
             where(model_id_attribute => resource_ids).pluck(:id)
         end

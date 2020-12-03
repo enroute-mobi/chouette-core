@@ -11,13 +11,11 @@ RSpec.describe Chouette::Sync::Updater do
       stop_area_provider
     end
   end
-  
-  let(:target) { context.stop_area_referential }
-  let(:stop_area_provider) { context.stop_area_provider }
 
+  let(:target) { context.stop_area_provider }
 
   def resource(id)
-    double id: id, name: "Name #{id}", stop_area_provider_id: stop_area_provider.id
+    double id: id, name: "Name #{id}"
   end
 
   def resources(*identifiers)
@@ -116,8 +114,7 @@ RSpec.describe Chouette::Sync::Updater do
 
       def model_attributes
         {
-          name: name,
-          stop_area_provider_id: stop_area_provider_id
+          name: name
         }
       end
 
@@ -162,7 +159,7 @@ RSpec.describe Chouette::Sync::Updater do
     context "when the source provides an existing Model" do
 
       let!(:existing_model) do
-        target.stop_areas.create! name: "Old name", registration_number: "test", stop_area_provider: stop_area_provider
+        target.stop_areas.create! name: "Old name", registration_number: "test"
       end
 
       let(:source_resource) { resource("test") }
@@ -186,7 +183,7 @@ RSpec.describe Chouette::Sync::Updater do
       before do
         resource_count.times do |n|
           source.resources << resource(n)
-          target.stop_areas.create! name: old_name, registration_number: n, stop_area_provider: stop_area_provider
+          target.stop_areas.create! name: old_name, registration_number: n
         end
       end
 

@@ -8,8 +8,7 @@ RSpec.describe Chouette::Sync::Deleter do
       end
     end
 
-    let(:target) { context.stop_area_referential }
-    let(:stop_area_provider) { context.stop_area_provider }
+    let(:target) { context.stop_area_provider }
 
     subject(:deleter) do
       Chouette::Sync::Deleter.new target: target, delete_batch_size: 3,
@@ -19,7 +18,7 @@ RSpec.describe Chouette::Sync::Deleter do
     let(:useless_models) do
       [].tap do |useless_models|
         10.times do |n|
-          useless_models << target.stop_areas.create!(name: "Name #{n}", registration_number: n, stop_area_provider: stop_area_provider)
+          useless_models << target.stop_areas.create!(name: "Name #{n}", registration_number: n)
         end
       end
     end
@@ -32,10 +31,10 @@ RSpec.describe Chouette::Sync::Deleter do
 
     it "keeps usefull models" do
       10.times do |n|
-        target.stop_areas.create name: "Usefull #{n}", registration_number: "skip #{n}", stop_area_provider: stop_area_provider
+        target.stop_areas.create name: "Usefull #{n}", registration_number: "skip #{n}"
       end
 
-      expect { deleter.delete(resource_identifiers) }.to_not change { target.stop_areas.where("name like 'Usefull%'").count }
+      expect { deleter.delete(resource_identifiers) }.to_not(change { target.stop_areas.where("name like 'Usefull%'").count })
     end
 
     it "increments the delete count" do

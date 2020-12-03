@@ -275,8 +275,7 @@ class Import::Neptune < Import::Base
       end
 
       each_element_matching_css('StopArea', source_parent) do |source_stop_area|
-        stop_area = stop_area_referential.stop_areas.find_or_initialize_by registration_number: source_stop_area[:object_id]
-        stop_area.stop_area_provider = workbench.default_stop_area_provider
+        stop_area = stop_areas.find_or_initialize_by registration_number: source_stop_area[:object_id]
         stop_area.name = source_stop_area[:name] if source_stop_area[:name].present?
         stop_area.comment = source_stop_area[:comment] if source_stop_area[:comment].present?
 
@@ -503,6 +502,14 @@ class Import::Neptune < Import::Base
 
   def make_enum(obj)
     (obj.is_a?(Array) ? obj : [obj]).compact
+  end
+
+  def stop_area_provider
+    workbench.default_stop_area_provider
+  end
+
+  def stop_areas
+    stop_area_provider.stop_areas
   end
 
   def line_provider

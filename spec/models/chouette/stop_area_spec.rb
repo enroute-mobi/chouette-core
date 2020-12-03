@@ -56,8 +56,8 @@ describe Chouette::StopArea, :type => :model do
     let(:registration_number){ nil }
     let(:registration_number_format){ nil }
     let(:stop_area_referential){ create :stop_area_referential, registration_number_format: registration_number_format}
-    let(:stop_area_provider){ create :stop_area_provider, stop_area_referential: stop_area_referential}
-    let(:stop_area){ build :stop_area, stop_area_referential: stop_area_referential, stop_area_provider: stop_area_provider, registration_number: registration_number}
+    let(:stop_area_provider){ create :stop_area_provider, stop_area_referential: stop_area_referential }
+    let(:stop_area){ build :stop_area, stop_area_provider: stop_area_provider, registration_number: registration_number}
     context "without registration_number_format on the StopAreaReferential" do
       it "should not generate a registration_number" do
         stop_area.save!
@@ -153,7 +153,7 @@ describe Chouette::StopArea, :type => :model do
   describe "#parent" do
     let(:stop_area_referential){ create :stop_area_referential}
     let(:stop_area_provider){ create :stop_area_provider, stop_area_referential: stop_area_referential}
-    let(:stop_area) { FactoryBot.build :stop_area, parent: FactoryBot.build(:stop_area), stop_area_referential: stop_area_referential, stop_area_provider: stop_area_provider }
+    let(:stop_area) { FactoryBot.build :stop_area, parent: FactoryBot.build(:stop_area), stop_area_provider: stop_area_provider }
 
     it "is valid when parent has an 'higher' type" do
       stop_area.area_type = 'zdep'

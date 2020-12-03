@@ -1,3 +1,4 @@
+# coding: utf-8
 require 'stif/reflex_synchronization'
 
 RSpec.describe Stif::ReflexSynchronization do
@@ -23,7 +24,7 @@ RSpec.describe Stif::ReflexSynchronization do
     describe "with every stop area referencing an already existing provider" do
 
       it 'should not create any stop area referential' do
-        expect{Stif::ReflexSynchronization.synchronize}.not_to change { stop_area_referential.stop_area_providers.count }
+        expect{Stif::ReflexSynchronization.synchronize}.not_to(change { stop_area_referential.stop_area_providers.count })
       end
 
       it 'should create the correct number of stop areas' do
@@ -41,8 +42,8 @@ RSpec.describe Stif::ReflexSynchronization do
         expect{Stif::ReflexSynchronization.synchronize}.not_to change { stop_area_referential.stop_area_providers.count }
       end
 
-      it 'should create the correct number of stop areas' do
-        expect{Stif::ReflexSynchronization.synchronize}.to change {stop_area_referential.stop_areas.count }.by(0)
+      it 'should not create the associated stop areas' do
+        expect{Stif::ReflexSynchronization.synchronize}.not_to change {stop_area_referential.stop_areas.count }
         expect(stop_area_referential.stop_areas.count).to eq 0
         expect(stop_area_provider.stop_areas.count).to eq 0
       end

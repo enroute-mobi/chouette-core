@@ -10,7 +10,7 @@ RSpec.describe Chouette::Factory do
   it "should create workgroup" do
     expect {
       Chouette::Factory.create { workgroup }
-    }.to change { Workgroup.count }
+    }.to(change { Workgroup.count })
   end
 
   it "should create line_referential" do
@@ -20,7 +20,7 @@ RSpec.describe Chouette::Factory do
           line_referential
         end
       end
-    }.to change { LineReferential.count }
+    }.to(change { LineReferential.count })
   end
 
   describe "Retrieve instances" do
@@ -409,8 +409,10 @@ RSpec.describe Chouette::Factory do
           expect{context}.to change { Chouette::StopArea.count }.by(3)
         end
 
-        it "creates a stop_area_provider" do
-          expect{context}.to change { StopAreaProvider.count }.by(2)
+        it "creates a Stop Area Provider" do
+          # The Workbench creates a default StopAreaProvider and the Factory creates its StopAreaProvider
+          stop_area_providers = StopAreaProvider.where.not(name: Workbench::DEFAULT_PROVIDER_SHORT_NAME.capitalize)
+          expect{ context }.to(change { stop_area_providers.count }.by(1))
         end
 
         it "each newly created object is related to the same stop area referential" do

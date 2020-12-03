@@ -37,7 +37,12 @@ class UpdateStopAreaProviders < ActiveRecord::Migration[5.2]
           next
         end
 
-        stop_area_provider = workgroup.workbenches.first.default_stop_area_provider
+        default_workbench = workgroup.workbenches.first
+
+        existing_stop_area_providers = workgroup.stop_area_referential.stop_area_providers.where(workbench_id: nil)
+        existing_stop_area_providers.update_all workbench_id: default_workbench.id
+
+        stop_area_provider = default_workbench.default_stop_area_provider
         stop_areas = workgroup.stop_area_referential.stop_areas.where(stop_area_provider_id: nil)
 
         stop_areas.update_all stop_area_provider_id: stop_area_provider.id

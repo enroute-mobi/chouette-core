@@ -2,10 +2,14 @@ require 'geokit'
 require 'geo_ruby'
 module Chouette
   class StopArea < Chouette::ActiveRecord
+    include StopAreaReferentialSupport
+    # TODO Use StopAreaReferentialSupport for that. See #CHOUETTE-847
+    # Must be defined before ObjectidSupport
+    before_validation :define_stop_area_referential, on: :create
+
     has_metadata
     include ProjectionFields
     include StopAreaRestrictions
-    include StopAreaReferentialSupport
     include ObjectidSupport
     include CustomFieldsSupport
 
@@ -132,19 +136,16 @@ module Chouette
     end
 
     def coordinates
-        @coordinates || combine_lat_lng
+      @coordinates || combine_lat_lng
     end
 
     def coordinates_to_lat_lng
-      if ! @coordinates.nil?
-        if @coordinates.empty?
-          self.latitude = nil
-          self.longitude = nil
-        else
-          self.latitude = BigDecimal.new(@coordinates.split(",").first)
-          self.longitude = BigDecimal.new(@coordinates.split(",").last)
-        end
-        @coordinates = nil
+      return unless @coordinates
+
+      if @coordinates.empty?
+        self.latitude = self.longitude = nil
+      else
+        self.latitude, self.longitude = @coordinates.split(",").map(&:to_f)
       end
     end
 
@@ -514,7 +515,8 @@ module Chouette
     end
 
     def formatted_area_type
-      "<span class='small label label-info label-stoparea'>#{I18n.t("area_types.label.#{area_type}")}</span>"
+      area_type_label = I18n.t("area_types.label.#{area_type}")
+      "<span class='small label label-info label-stoparea'>#{area_type_label}</span>"
     end
 
     def formatted_selection_details

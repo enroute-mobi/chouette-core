@@ -18,7 +18,6 @@ module ImportResourcesSupport
     resource = opts[:resource] || main_resource || self
     message = resource.messages.build args
     return message unless opts[:commit]
-
     begin
       resource.save!
     rescue

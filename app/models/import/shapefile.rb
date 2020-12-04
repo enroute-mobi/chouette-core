@@ -31,32 +31,82 @@ class Import::Shapefile < Import::Base
   end
 
   def import_without_status
-    # TODO manage automatic id attribute detection if shape_attribute_as_id blank
-    shape_attribute_as_id = parent.shape_attribute_as_id
-    
-    Shape.transaction do
-      source.each do |record|
-        Rails.logger.info "Shapefile import : record ##{record.index} : more than one LineString in the imported geometry" unless record.geometry.num_geometries == 1
+    begin
+      index = 0
+      # TODO manage automatic id attribute detection if shape_attribute_as_id blank
+      shape_attribute_as_id = parent.shape_attribute_as_id
+      raise UnprovidedIdAttributeError unless shape_attribute_as_id
 
-        code_value = record.attributes[shape_attribute_as_id]
-        shape_attributes = {
-          geometry: record.geometry.geometry_n(0),
-          shape_provider: shape_provider
-        }
+      Shape.transaction do
+        source.each do |record|
+          raise WrongIdAttributeError unless record.attributes.has_key? shape_attribute_as_id
+          raise EmptyLineStringError if record.geometry.num_geometries == 0
+          raise MultiLineStringError if record.geometry.num_geometries > 1
 
-        shape = shape_provider.shapes.by_code(code_space, code_value).first
-        if shape
-          shape.update shape_attributes
-        else
-          shape = shape_provider.shapes.build shape_attributes
-          shape.codes.build code_space: code_space, value: code_value
-          shape.save
+          code_value = record.attributes[shape_attribute_as_id]
+
+          shape_attributes = {
+            geometry: record.geometry.geometry_n(0),
+            shape_provider: shape_provider
+          }
+
+          shape = shape_provider.shapes.by_code(code_space, code_value).first
+          if shape
+            shape.update shape_attributes
+          else
+            shape = shape_provider.shapes.build shape_attributes
+            shape.codes.build code_space: code_space, value: code_value
+            shape.save
+          end
+          index+=1
         end
       end
+    rescue Import::Shapefile::UnprovidedIdAttributeError, Import::Shapefile::EmptyLineStringError, Import::Shapefile::MultiLineStringError, RGeo::Error::InvalidGeometry => e
+      message_key = case e
+      when Import::Shapefile::UnprovidedIdAttributeError
+        'shapefile_unprovided_id_attribute'
+      when Import::Shapefile::EmptyLineStringError
+        'shapefile_empty_linestring'
+      when Import::Shapefile::MultiLineStringError
+        'shapefile_more_than_one_linestring'
+      when RGeo::Error::InvalidGeometry
+        index+=1
+        'shapefile_geometry_parsing_error'
+      end
+
+      create_message(
+        {
+          criticity: :error,
+          message_key: message_key,
+          message_attributes: {
+            shape_index: index
+          }
+        },
+        commit: true
+      )
+      @status = 'failed'
+    rescue Import::Shapefile::WrongIdAttributeError => e
+      create_message(
+        {
+          criticity: :error,
+          message_key: 'shapefile_wrong_id_attribute',
+          message_attributes: {
+            shape_attribute: shape_attribute_as_id
+          }
+        },
+        commit: true
+      )
+      @status = 'failed'
     end
   ensure
     source.close
   end
+
+  class UnprovidedIdAttributeError < StandardError; end
+  class WrongIdAttributeError < StandardError; end
+  class EmptyLineStringError < StandardError; end
+  class MultiLineStringError < StandardError; end
+
 
   def shape_provider
     # Will be defined by the user in the future

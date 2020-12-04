@@ -7,7 +7,7 @@ class Import::Workbench < Import::Base
   option :automatic_merge, type: :boolean, default_value: false, depends: {option: :import_category, value: "automatic"}
   option :flag_urgent, type: :boolean, default_value: false, depends: {option: :import_category, value: "automatic"}
   option :merge_method, collection: %w(legacy experimental), default_value: 'legacy', depends: {option: :import_category, value: "automatic"}
-  option :shapes_code, type: :string, depends: {option: :import_category, value: "shape_file"}
+  option :shape_attribute_as_id, type: :string, depends: {option: :import_category, value: "shape_file"}
 
   def main_resource; self end
 
@@ -34,9 +34,9 @@ class Import::Workbench < Import::Base
 
   def visible_options
     if import_category == "shape_file"
-      super.slice("import_category","shapes_code")
+      super.slice("import_category","shape_attribute_as_id")
     else
-      super.select{|k,v| k!="shapes_code"}
+      super.select{|k,v| k!="shape_attribute_as_id"}
     end
   end
 

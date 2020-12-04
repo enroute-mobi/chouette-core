@@ -41,7 +41,7 @@ module OptionsHelper
     if option_def[:depends]
       klass = 'slave'
       klass << ' hidden' if option_def[:hidden]
-      out = content_tag :div, class: klass, data: { master: "[name='#{parent_form.record_name}[#{option_def[:depends][:option]}]']", value: option_def[:depends][:value] } do
+      out = content_tag :div, class: klass, data: { master: "[name='#{parent_form.object_name}[#{option_def[:depends][:option]}]']", value: option_def[:depends][:value] } do
         out
       end.html_safe
     end

@@ -30,13 +30,29 @@ class Import::Shapefile < Import::Base
     notify_state
   end
 
-  # TODO Makes a real import. See Import::Gtfs::Shapes (especially Decorator)
   def import_without_status
-    Rails.logger.info "Import #{source.num_records} records from the shapefile"
-    source.each do |record|
-      Rails.logger.info "Record number #{record.index}:"
-      Rails.logger.info "  Geometry: #{record.geometry.as_text}"
-      Rails.logger.info "  Attributes: #{record.attributes.inspect}"
+    # TODO manage automatic id attribute detection if shape_attribute_as_id blank
+    shape_attribute_as_id = parent.shape_attribute_as_id
+    
+    Shape.transaction do
+      source.each do |record|
+        Rails.logger.info "Shapefile import : record ##{record.index} : more than one LineString in the imported geometry" unless record.geometry.num_geometries == 1
+
+        code_value = record.attributes[shape_attribute_as_id]
+        shape_attributes = {
+          geometry: record.geometry.geometry_n(0),
+          shape_provider: shape_provider
+        }
+
+        shape = shape_provider.shapes.by_code(code_space, code_value).first
+        if shape
+          shape.update shape_attributes
+        else
+          shape = shape_provider.shapes.build shape_attributes
+          shape.codes.build code_space: code_space, value: code_value
+          shape.save
+        end
+      end
     end
   ensure
     source.close
@@ -112,7 +128,7 @@ class Import::Shapefile < Import::Base
     end
 
     def reader
-      @reader ||= RGeo::Shapefile::Reader.open(shp_file)
+      @reader ||= RGeo::Shapefile::Reader.open(shp_file,{srid: 4326})
     end
 
     delegate :each, :num_records, to: :reader

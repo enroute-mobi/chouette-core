@@ -137,6 +137,7 @@ module Chouette
               new_instance.line_referential = parent.line_referential
               new_instance.prefix = parent.respond_to?(:prefix) ? parent.prefix : "chouette"
               new_instance.organisation = parent.organisation
+              new_instance.ready = true
 
               if transient(:with_metadatas)
                 metadata_attributes = {

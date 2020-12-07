@@ -4,9 +4,11 @@
 module DefaultPathHelper
 
   def default_company_path(company)
-    with_default_workbench do
-      workbench_line_referential_company_path default_workbench(resource: company), company
-    end
+    with_default_workbench { default_company_path!(company) }
+  end
+
+  def default_company_path!(company)
+    workbench_line_referential_company_path default_workbench(resource: company), company
   end
 
   def default_network_path(network)
@@ -16,9 +18,11 @@ module DefaultPathHelper
   end
 
   def default_line_path(line)
-    with_default_workbench do
-      workbench_line_referential_line_path default_workbench(resource: line), line
-    end
+    with_default_workbench { default_line_path!(line) }
+  end
+
+  def default_line_path!(line)
+    workbench_line_referential_line_path default_workbench(resource: line), line
   end
 
   def default_companies_path(line_referential)
@@ -27,23 +31,27 @@ module DefaultPathHelper
     end
   end
 
+  private
+
   def default_workbench(attributes = {})
     attributes.reverse_merge!(current_organisation: current_organisation)
     WorkbenchLookup.new(attributes).workbench!
   end
 
-  private
-
   # Returns '#' if the default workbench can't be found and report error
   def with_default_workbench
     yield
   rescue NoDefaultWorkbenchError => e
-    if Rails.env.test? || Rails.env.development?
+    if raise_error_without_default_workbench?
       raise e
     else
       Chouette::Safe.capture "Can't create default path", e
       '#'
     end
+  end
+
+  def raise_error_without_default_workbench?
+    Rails.env.test? || Rails.env.development?
   end
 
   # Find the best Workbench from: current_organisation, given resource and/or given line_referential

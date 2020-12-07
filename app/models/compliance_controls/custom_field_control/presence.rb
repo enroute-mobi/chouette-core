@@ -7,17 +7,17 @@ module CustomFieldControl
     def self.default_code; "3-Generic-4" end
 
     def self.object_path compliance_check, object
-      polymorphic_path case custom_field(compliance_check).resource_type
+      case custom_field(compliance_check).resource_type
       when "Company"
-        [object.line_referential, object]
+        redirect_company_path object
       when "VehicleJourney"
-        [object.referential, object.route.line, object.route, :vehicle_journeys]
+        polymorphic_path [object.referential, object.route.line, object.route, :vehicle_journeys]
       when "JourneyPattern"
-        [object.referential, object.route.line, object.route, :journey_patterns_collection]
+        polymorphic_path [object.referential, object.route.line, object.route, :journey_patterns_collection]
       when "StopArea"
-        [object.stop_area_referential, object]
+        polymorphic_path [object.stop_area_referential, object]
       else
-        [compliance_check.referential]
+        polymorphic_path [compliance_check.referential]
       end
     end
 

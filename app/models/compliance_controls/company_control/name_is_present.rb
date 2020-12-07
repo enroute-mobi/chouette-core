@@ -4,11 +4,11 @@ module CompanyControl
 
     def self.default_code; "3-Company-1" end
 
-    def self.object_path compliance_check, company
-      line_referential_company_path(company.line_referential, company)
+    def self.object_path(_, company)
+      redirect_company_path(company)
     end
 
-    def self.collection_type(compliance_check)
+    def self.collection_type(_)
       :companies
     end
 
@@ -16,7 +16,7 @@ module CompanyControl
       compliance_check.referential.lines.where(company_id: model.id)
     end
 
-    def self.compliance_test compliance_check, company
+    def self.compliance_test(_, company)
       company.custom_fields[:public_name]&.display_value.present?
     end
   end

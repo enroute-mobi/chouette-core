@@ -8,6 +8,13 @@ ChouetteIhm::Application.routes.draw do
     post :upload, on: :member, controller: :export_uploads
   end
 
+  # Used to the redirect user to the current workbench
+  # See CHOUETTE-797
+  namespace :redirect do
+    resources :lines, only: :show
+    resources :companies, only: :show
+  end
+
   concern :iev_interfaces do
     resources :imports do
       get :download, on: :member

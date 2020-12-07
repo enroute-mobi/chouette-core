@@ -26,7 +26,6 @@ class Import::Shapefile < Import::Base
 
     # Invoke the freaky logic /o\
     notify_parent
-
     notify_state
   end
 

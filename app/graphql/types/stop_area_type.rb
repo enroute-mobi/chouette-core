@@ -32,8 +32,19 @@ module Types
     field :deleted_at, GraphQL::Types::ISO8601DateTime, null:true
 
     field :referent, Types::StopAreaType, null: true
+    def referent
+      LazyLoading::StopRelation.new(context, object.referent_id)
+    end
+
     field :parent, Types::StopAreaType, null: true
+    def parent
+      LazyLoading::StopRelation.new(context, object.parent_id)
+    end
+
     field :children, Types::StopAreaType.connection_type, null: true
+    def children
+      LazyLoading::Children.new(context, object.id)
+    end
 
     field :lines, Types::LineType.connection_type, null: true,
       description: "The StopArea's Lines"

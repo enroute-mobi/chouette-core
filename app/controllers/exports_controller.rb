@@ -31,7 +31,7 @@ class ExportsController < ChouetteController
   end
 
   def download
-    resource.file.cache_stored_file!
+    store_file_and_clean_cache(resource)
     send_file resource.file.path, filename: resource.user_file.name, type: resource.user_file.content_type
   end
 

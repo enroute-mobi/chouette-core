@@ -13,7 +13,7 @@ class Api::V1::DatasController < ActionController::Base
 
   def download_full
     source = @publication_api.publication_api_sources.find_by! key: params[:key]
-    source.file.cache_stored_file!
+    store_file_and_clean_cache(source)
 
     # fresh_men is invoked before send_file to obtain a valid Cache-Control header
     fresh_when(source, public: @publication_api.public?)
@@ -23,8 +23,7 @@ class Api::V1::DatasController < ActionController::Base
   def download_line
     source = @publication_api.publication_api_sources.find_by! key: "#{params[:key]}-#{params[:line_id]}"
     if source.file.present?
-      source.file.cache_stored_file!
-
+      store_file_and_clean_cache(source)
       # fresh_men is invoked before send_file to obtain a valid Cache-Control header
       fresh_when(source, public: @publication_api.public?)
       send_file source.file.path, filename: source.public_url_filename

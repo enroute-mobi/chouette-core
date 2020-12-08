@@ -36,7 +36,7 @@ class Import::Workbench < Import::Base
     if import_category == "shape_file"
       super.slice("import_category","shape_attribute_as_id")
     else
-      super.select{|k,v| k!="shape_attribute_as_id"}
+      super.select{|k,_v| k!="shape_attribute_as_id"}
     end
   end
 

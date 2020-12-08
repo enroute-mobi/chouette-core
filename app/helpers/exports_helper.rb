@@ -18,7 +18,7 @@ module ExportsHelper
     metadatas = metadatas.update({I18n.t("activerecord.attributes.export.status") => operation_status(export.status, verbose: true)})
     metadatas = metadatas.update({I18n.t("activerecord.attributes.export.referential") => export.referential.present? ? link_to(export.referential.name, [export.referential]) : "-" })
     metadatas = metadatas.update({I18n.t("activerecord.attributes.export.parent") => link_to(export.parent.name, [export.parent.workbench, export.parent])}) if export.parent.present?
-    metadatas = metadatas.update Hash[*export.visible_options.map{|k, v| [t("activerecord.attributes.export.#{export.object.class.name.demodulize.underscore}.#{k}"), display_option_value(export, k)]}.flatten]
+    metadatas = metadatas.update Hash[*export.visible_options.map{|k, _v| [t("activerecord.attributes.export.#{export.object.class.name.demodulize.underscore}.#{k}"), display_option_value(export, k)]}.flatten]
 
     if export.children.any?
       files = export.children.map(&:file).select(&:present?)

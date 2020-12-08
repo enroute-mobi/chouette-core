@@ -84,7 +84,7 @@ class Import::Shapefile < Import::Base
         commit: true
       )
       @status = 'failed'
-    rescue Import::Shapefile::WrongIdAttributeError => e
+    rescue Import::Shapefile::WrongIdAttributeError
       create_message(
         {
           criticity: :error,

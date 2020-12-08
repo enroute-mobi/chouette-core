@@ -9,8 +9,6 @@ class Api::V1::DatasController < ActionController::Base
     render layout: 'api'
   end
 
-
-
   def download_full
     source = @publication_api.publication_api_sources.find_by! key: params[:key]
     store_file_and_clean_cache(source)
@@ -149,5 +147,8 @@ class Api::V1::DatasController < ActionController::Base
     render :missing_file_error, layout: 'api', status: 404
   end
 
-
+  def store_file_and_clean_cache(source)
+    source.file.cache_stored_file!
+    CarrierWave.clean_cached_files!
+  end
 end

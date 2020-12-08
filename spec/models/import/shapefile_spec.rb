@@ -54,6 +54,10 @@ RSpec.describe Import::Shapefile do
     let(:another_code_space) { create :code_space, workgroup: context.workgroup}
     let(:file_shapes_number) { import.source.num_records}
 
+    before(:each) do
+      # Since it's impossible to set context.shape_provider to match import.workbench.default_provider, we setup this as a workaround
+      allow(import).to receive(:shape_provider).and_return(context.shape_provider)
+    end
 
     it 'should import successfully' do
       import.import

@@ -5,13 +5,15 @@ class LinesController < ChouetteController
   include TransportModeFilter
 
   defaults :resource_class => Chouette::Line
+
+  belongs_to :workbench
+  belongs_to :line_referential, singleton: true
+
   respond_to :html
   respond_to :xml
   respond_to :json
   respond_to :kml, :only => :show
   respond_to :js, :only => :index
-
-  belongs_to :line_referential
 
   def index
     @hide_group_of_line = line_referential.group_of_lines.empty?
@@ -28,7 +30,9 @@ class LinesController < ChouetteController
           @lines = LineDecorator.decorate(
             @lines,
             context: {
+              workbench: @workbench,
               line_referential: @line_referential,
+              # TODO Remove me ?
               current_organisation: current_organisation
             }
           )
@@ -57,6 +61,7 @@ class LinesController < ChouetteController
     @group_of_lines = resource.group_of_lines
     show! do
       @line = @line.decorate(context: {
+        workbench: @workbench,
         line_referential: @line_referential,
         current_organisation: current_organisation
       })
@@ -74,16 +79,16 @@ class LinesController < ChouetteController
   def create
     authorize resource_class
     build_resource
-    @line.line_provider = line_referential.workbenches.first&.default_line_provider
+    @line.line_provider = @workbench.default_line_provider
     super
   end
 
   def update
     update! do
       if line_params[:line_notice_ids]
-        [@line_referential, @line, :line_notices]
+        workbench_line_referential_line_line_notices_path @workbench, @line
       else
-        [@line_referential, @line]
+        workbench_line_referential_line_path @workbench, @line
       end
     end
   end

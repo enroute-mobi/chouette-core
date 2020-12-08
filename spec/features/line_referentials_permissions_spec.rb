@@ -1,3 +1,4 @@
+# coding: utf-8
 RSpec.describe 'LineReferentials', type: :feature do
   login_user
 
@@ -10,17 +11,17 @@ RSpec.describe 'LineReferentials', type: :feature do
     end
 
     context 'on show view' do
-      let( :path ){ line_referential_path(line_referential.id) }
+      let(:path) { workbench_line_referential_path(first_workbench) }
 
-      context 'if present → ' do
-        let( :permission ){ true }
+      context 'if present' do
+        let(:permission) { true }
         it 'shows an edit button' do
           expect(page).to have_css('a.btn.btn-default', text: I18n.t('actions.sync'))
         end
       end
 
-      context 'if absent → ' do
-        let( :permission ){ false }
+      context 'if absent' do
+        let(:permission) { false }
         it 'does not show any edit button' do
           expect(page).not_to have_css('a.btn.btn-default', text: I18n.t('actions.sync'))
         end

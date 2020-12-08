@@ -69,9 +69,9 @@
           h3.panel-title
             = t('dashboards.line_referentials.title')
         .list-group
-            = link_to Chouette::Line.model_name.human.pluralize.capitalize, line_referential_lines_path(workbench.line_referential), class: 'list-group-item'
-            = link_to Chouette::Company.model_name.human.pluralize.capitalize, line_referential_companies_path(workbench.line_referential), class: 'list-group-item'
-            = link_to Chouette::Network.model_name.human.pluralize(I18n.locale).capitalize, line_referential_networks_path(workbench.line_referential), class: 'list-group-item'
+            = link_to Chouette::Line.model_name.human.pluralize.capitalize, workbench_line_referential_lines_path(workbench), class: 'list-group-item'
+            = link_to Chouette::Company.model_name.human.pluralize.capitalize, workbench_line_referential_companies_path(workbench), class: 'list-group-item'
+            = link_to Chouette::Network.model_name.human.pluralize(I18n.locale).capitalize, workbench_line_referential_networks_path(workbench), class: 'list-group-item'
 
       .panel.panel-default
         .panel-heading

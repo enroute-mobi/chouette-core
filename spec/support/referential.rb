@@ -12,6 +12,10 @@ module ReferentialHelper
     Workgroup.find_by_name('IDFM')
   end
 
+  def first_workbench
+    Workbench.find_by(prefix: 'first')
+  end
+
   def self.included(base)
     base.class_eval do
       extend ClassMethods

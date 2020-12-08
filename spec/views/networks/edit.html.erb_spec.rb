@@ -1,8 +1,11 @@
-
 describe "/networks/edit", :type => :view do
 
-  let!(:network) { assign(:network, create(:network) ) }
-  let!(:line_referential) { assign :line_referential, network.line_referential }
+  let(:context) do
+    Chouette.create { network }
+  end
+
+  let!(:workbench) { assign :workbench, context.workbench }
+  let!(:network) { assign :network, context.network }
 
   before :each do
     allow(view).to receive(:resource_class).and_return(Chouette::Network)

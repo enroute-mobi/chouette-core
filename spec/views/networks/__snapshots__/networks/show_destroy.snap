@@ -9,5 +9,5 @@
 </div>
 <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 text-right"><div class="page-action"><div class="small last-update">Dernière mise à jour le 23/01/2018 <br> Par web service</div></div></div>
 </div>
-<div class="row mb-sm"><div class="col-lg-12 text-right"><a data-confirm="Etes vous sûr de supprimer ce réseau ?" icon="trash" icon_class="danger" class="btn btn-primary" rel="nofollow" data-method="delete" href="/line_referentials/99/networks/909"><span class="mr-xs fa fa-trash text-danger"></span>Supprimer ce réseau</a></div></div>
+<div class="row mb-sm"><div class="col-lg-12 text-right"><a data-confirm="Etes vous sûr de supprimer ce réseau ?" icon="trash" icon_class="danger" class="btn btn-primary" rel="nofollow" data-method="delete" href="/workbenches/99/line_referential/networks/909"><span class="mr-xs fa fa-trash text-danger"></span>Supprimer ce réseau</a></div></div>
 </div>

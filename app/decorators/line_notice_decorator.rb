@@ -1,7 +1,7 @@
 class LineNoticeDecorator < AF83::Decorator
   decorates Chouette::LineNotice
 
-  set_scope { [context[:line_referential], context[:line]].compact }
+  set_scope { [context[:workbench], :line_referential, context[:line]].compact }
 
   create_action_link do |l|
     l.content t('line_notices.actions.new')

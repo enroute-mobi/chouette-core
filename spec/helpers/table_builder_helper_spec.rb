@@ -175,6 +175,7 @@ describe TableBuilderHelper, type: :helper do
     it "can set a column as non-sortable" do
       company = create(:company)
       line_referential = company.line_referential
+      workbench = company.line_provider.workbench
       referential = build_stubbed(
         :referential,
         line_referential: line_referential
@@ -204,12 +205,12 @@ describe TableBuilderHelper, type: :helper do
       allow(helper).to receive(:params).and_return(ActionController::Parameters.new(
         controller: 'companies',
         action: 'index',
-        line_referential_id: line_referential.id
+        workbench_id: workbench.id
       ))
 
       companies = CompanyDecorator.decorate(
         companies,
-        context: { referential: line_referential }
+        context: { workbench: workbench }
       )
       stub_policy_scope(company)
 
@@ -218,17 +219,17 @@ describe TableBuilderHelper, type: :helper do
     <thead>
         <tr>
             <th>ID Codif</th>
-            <th><a href="/line_referentials/#{company.referential.id}/companies?direction=desc&amp;sort=name">Nom<span class="orderers"><span class="fa fa-sort-asc "></span><span class="fa fa-sort-desc "></span></span></a></th>
-            <th><a href="/line_referentials/#{company.referential.id}/companies?direction=desc&amp;sort=default_contact_phone">Numéro de téléphone<span class="orderers"><span class="fa fa-sort-asc "></span><span class="fa fa-sort-desc "></span></span></a></th>
-            <th><a href="/line_referentials/#{company.referential.id}/companies?direction=desc&amp;sort=default_contact_email">Email<span class="orderers"><span class="fa fa-sort-asc "></span><span class="fa fa-sort-desc "></span></span></a></th>
-            <th><a href="/line_referentials/#{company.referential.id}/companies?direction=desc&amp;sort=default_contact_url">Page web associée<span class="orderers"><span class="fa fa-sort-asc "></span><span class="fa fa-sort-desc "></span></span></a></th>
+            <th><a href="/workbenches/#{workbench.id}/line_referential/companies?direction=desc&amp;sort=name">Nom<span class="orderers"><span class="fa fa-sort-asc "></span><span class="fa fa-sort-desc "></span></span></a></th>
+            <th><a href="/workbenches/#{workbench.id}/line_referential/companies?direction=desc&amp;sort=default_contact_phone">Numéro de téléphone<span class="orderers"><span class="fa fa-sort-asc "></span><span class="fa fa-sort-desc "></span></span></a></th>
+            <th><a href="/workbenches/#{workbench.id}/line_referential/companies?direction=desc&amp;sort=default_contact_email">Email<span class="orderers"><span class="fa fa-sort-asc "></span><span class="fa fa-sort-desc "></span></span></a></th>
+            <th><a href="/workbenches/#{workbench.id}/line_referential/companies?direction=desc&amp;sort=default_contact_url">Page web associée<span class="orderers"><span class="fa fa-sort-asc "></span><span class="fa fa-sort-desc "></span></span></a></th>
             <th></th>
         </tr>
     </thead>
     <tbody>
         <tr class="company company-#{company.id}">
             <td>#{company.get_objectid.local_id}</td>
-            <td title="Voir" class="name"><a href="/line_referentials/#{company.referential.id}/companies/#{company.id}">#{company.name}</a></td>
+            <td title="Voir" class="name"><a href="/workbenches/#{workbench.id}/line_referential/companies/#{company.id}">#{company.name}</a></td>
             <td class="default_contact_phone">#{company.default_contact_phone}</td>
             <td class="default_contact_email">#{company.default_contact_email}</td>
             <td class="default_contact_url">#{company.default_contact_url}</td>
@@ -237,7 +238,7 @@ describe TableBuilderHelper, type: :helper do
                     <div class="btn dropdown-toggle" data-toggle="dropdown"><span class="fa fa-cog"></span></div>
                     <div class="dropdown-menu">
                         <ul class="primary">
-                            <li class=""><a href="/line_referentials/#{company.referential.id}/companies/#{company.id}"><span class='mr-xs fa fa-eye'></span>Consulter</a></li>
+                            <li class=""><a href="/workbenches/#{workbench.id}/line_referential/companies/#{company.id}"><span class='mr-xs fa fa-eye'></span>Consulter</a></li>
                         </ul>
                     </div>
                 </div>
@@ -258,8 +259,8 @@ describe TableBuilderHelper, type: :helper do
           TableBuilderHelper::Column.new(
             key: :name,
             attribute: 'name',
-            link_to: lambda do |company|
-              line_referential_company_path(company.line_referential, company)
+            link_to: lambda do |c|
+              workbench_line_referential_company_path(workbench, c)
             end
           ),
           TableBuilderHelper::Column.new(
@@ -280,13 +281,13 @@ describe TableBuilderHelper, type: :helper do
       )
 
       beautified_html = HtmlBeautifier.beautify(html_str, indent: '    ')
-
-        expect(beautified_html).to eq(expected.chomp)
+      expect(beautified_html).to eq(expected.chomp)
     end
 
     it "can set all columns as non-sortable" do
       company = create(:company)
       line_referential = company.line_referential
+      workbench = company.line_provider.workbench
       referential = build_stubbed(
         :referential,
         line_referential: line_referential
@@ -316,12 +317,12 @@ describe TableBuilderHelper, type: :helper do
       allow(helper).to receive(:params).and_return(ActionController::Parameters.new(
         controller: 'companies',
         action: 'index',
-        line_referential_id: line_referential.id
+        workbench_id: workbench.id
       ))
 
       companies = CompanyDecorator.decorate(
         companies,
-        context: { referential: line_referential }
+        context: { workbench: workbench }
       )
       stub_policy_scope(company)
 
@@ -340,7 +341,7 @@ describe TableBuilderHelper, type: :helper do
     <tbody>
         <tr class="company company-#{company.id}">
             <td>#{company.get_objectid.local_id}</td>
-            <td title="Voir" class="name"><a href="/line_referentials/#{company.line_referential.id}/companies/#{company.id}">#{company.name}</a></td>
+            <td title="Voir" class="name"><a href="/workbenches/#{workbench.id}/line_referential/companies/#{company.id}">#{company.name}</a></td>
             <td class="default_contact_phone">#{company.default_contact_phone}</td>
             <td class="default_contact_email">#{company.default_contact_email}</td>
             <td class="default_contact_url">#{company.default_contact_url}</td>
@@ -349,7 +350,7 @@ describe TableBuilderHelper, type: :helper do
                     <div class="btn dropdown-toggle" data-toggle="dropdown"><span class="fa fa-cog"></span></div>
                     <div class="dropdown-menu">
                         <ul class="primary">
-                            <li class=""><a href="/line_referentials/#{line_referential.id}/companies/#{company.id}"><span class='mr-xs fa fa-eye'></span>Consulter</a></li>
+                            <li class=""><a href="/workbenches/#{workbench.id}/line_referential/companies/#{company.id}"><span class='mr-xs fa fa-eye'></span>Consulter</a></li>
                         </ul>
                     </div>
                 </div>
@@ -369,8 +370,8 @@ describe TableBuilderHelper, type: :helper do
           TableBuilderHelper::Column.new(
             key: :name,
             attribute: 'name',
-            link_to: lambda do |company|
-              line_referential_company_path(line_referential, company)
+            link_to: lambda do |c|
+              workbench_line_referential_company_path(workbench, c)
             end
           ),
           TableBuilderHelper::Column.new(
@@ -451,7 +452,6 @@ describe TableBuilderHelper, type: :helper do
           it "should show the value" do
             items.each do |i|
               tr = helper.send(:tr, i, columns, selectable, links, overhead, model_name, :index)
-              klass = "#{TableBuilderHelper.item_row_class_name([referential])}-#{i.id}"
               expect(tr).to include(i.name)
             end
           end
@@ -461,10 +461,8 @@ describe TableBuilderHelper, type: :helper do
           let(:condition){ ->(obj){ obj == referential } }
           it "should show the value accordingly" do
             tr = helper.send(:tr, item, columns, selectable, links, overhead, model_name, :index)
-            klass = "#{TableBuilderHelper.item_row_class_name([referential])}-#{referential.id}"
             expect(tr).to include(referential.name)
             tr = helper.send(:tr, other_item, columns, selectable, links, overhead, model_name, :index)
-            klass = "#{TableBuilderHelper.item_row_class_name([referential])}-#{other_referential.id}"
             expect(tr).to_not include(other_referential.name)
           end
         end
@@ -474,7 +472,6 @@ describe TableBuilderHelper, type: :helper do
           it "should not show the value" do
             items.each do |i|
               tr = helper.send(:tr, i, columns, selectable, links, overhead, model_name, :index)
-              klass = "#{TableBuilderHelper.item_row_class_name([referential])}-#{i.id}"
               expect(tr).to_not include(i.name)
             end
           end

@@ -1,34 +1,35 @@
-# -*- coding: utf-8 -*-
-
 describe "LineNotices", type: :feature do
   login_user
 
-  let(:line_referential) { create :line_referential, member: @user.organisation }
-  let!(:line) { create :line, line_referential: line_referential}
-  let!(:line_notices) {
-    [
-      create(:line_notice, line_referential: line_referential),
-      create(:line_notice, line_referential: line_referential, lines: [line])
-    ]
-  }
+  let(:context) do
+    Chouette.create do
+      workbench organisation: Organisation.find_by_code('first') do
+        line :first
+        line_notice :first, lines: [:first]
+        line_notice :other
+      end
+    end
+  end
 
-  subject { line_notices.first }
+  let(:workbench) { context.workbench }
+  let(:other_line_notice) { context.line_notice(:other) }
+  subject { context.line_notice(:first) }
 
   describe "index" do
-    before(:each) { visit line_referential_line_notices_path(line_referential) }
+    before(:each) { visit workbench_line_referential_line_notices_path(workbench) }
 
     it "displays line notices" do
-      expect(page).to have_content(line_notices.first.title)
-      expect(page).to have_content(line_notices.last.title)
+      expect(page).to have_content(subject.title)
+      expect(page).to have_content(other_line_notice.title)
     end
 
     context 'filtering' do
       it 'supports filtering by title' do
-        fill_in 'q[title_or_content_cont]', with: line_notices.last.title
+        fill_in 'q[title_or_content_cont]', with: subject.title
         click_button 'search-btn'
-        expect(page).to have_content(line_notices.last.name)
-        expect(page).to have_content(line.name)
-        expect(page).not_to have_content(line_notices.first.name)
+        expect(page).to have_content(subject.name)
+        expect(page).to have_content(subject.lines.first.name)
+        expect(page).not_to have_content(other_line_notice.name)
       end
     end
 
@@ -36,9 +37,9 @@ describe "LineNotices", type: :feature do
 
   describe "show" do
     it "displays line notice" do
-      visit line_referential_line_notice_path(line_referential, line_notices.first)
-      expect(page).to have_content(line_notices.first.title)
-      expect(page).to have_content(line_notices.first.content)
+      visit workbench_line_referential_line_notice_path(workbench, subject)
+      expect(page).to have_content(subject.title)
+      expect(page).to have_content(subject.content)
     end
   end
 

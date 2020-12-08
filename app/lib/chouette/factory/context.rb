@@ -189,7 +189,6 @@ module Chouette
           parent.around_models do
             local_models_proc = model.around_models
             if local_models_proc
-              log "local_models_proc: #{local_models_proc.inspect} with #{instance.inspect}"
               local_models_proc.call instance, block
             else
               block.call

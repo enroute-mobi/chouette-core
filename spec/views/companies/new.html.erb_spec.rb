@@ -1,11 +1,15 @@
 describe "/companies/new", type: :view do
-  let!(:company) { assign(:company, create(:company)) }
-  let!(:line_referential) { assign :line_referential, company.line_referential }
+
+  let(:context) { Chouette.create { line_provider } }
+
+  let!(:workbench) { assign :workbench, context.workbench }
+  let!(:line_referential) { assign :line_referential, context.line_referential }
+
+  let!(:company) { assign :company, context.line_provider.companies.build(name: 'Test') }
 
   before do
-    allow(view).to receive(:resource){ company }
-    allow(view).to receive(:resource_class){ company.class }
-    allow(view).to receive(:current_referential){ first_referential }
+    allow(view).to receive(:resource) { company }
+    allow(view).to receive(:resource_class) { Chouette::Company }
   end
 
   describe "form" do

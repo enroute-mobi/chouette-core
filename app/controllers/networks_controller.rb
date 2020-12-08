@@ -1,18 +1,22 @@
 class NetworksController < ChouetteController
   include ApplicationHelper
   include PolicyChecker
+
   defaults :resource_class => Chouette::Network
+
+  belongs_to :workbench
+  belongs_to :line_referential, singleton: true
+
   respond_to :html
   respond_to :xml
   respond_to :json
   respond_to :kml, :only => :show
   respond_to :js, :only => :index
 
-  belongs_to :line_referential
-
   def show
     show! do
       @network = @network.decorate(context: {
+        workbench: @workbench,
         line_referential: line_referential
       })
     end
@@ -26,7 +30,7 @@ class NetworksController < ChouetteController
   def create
     authorize resource_class
     build_resource
-    @network.line_provider = line_referential.workbenches.first&.default_line_provider
+    @network.line_provider = @workbench.default_line_provider
     super
   end
 
@@ -58,14 +62,6 @@ class NetworksController < ChouetteController
     end
   end
 
-  def resource_url(network = nil)
-    line_referential_network_path(line_referential, network || resource)
-  end
-
-  def collection_url
-    line_referential_networks_path(line_referential)
-  end
-
   alias_method :line_referential, :parent
 
   alias_method :current_referential, :line_referential
@@ -88,6 +84,7 @@ class NetworksController < ChouetteController
     NetworkDecorator.decorate(
       networks,
       context: {
+        workbench: @workbench,
         line_referential: line_referential
       }
     )

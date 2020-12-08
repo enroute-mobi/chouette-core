@@ -1,16 +1,23 @@
-
 describe "/vehicle_journeys/index", :type => :view do
 
-  let!(:referential) { assign :referential, create(:referential) }
-  let!(:line) { assign :line, create(:line) }
-  let!(:route) { assign :route, create(:route, line: line) }
-  let!(:vehicle_journeys) do
-    assign :vehicle_journeys, build_paginated_collection(:vehicle_journey, nil, route: route)
+  let(:context) do
+    Chouette.create do
+      line :first
+      referential lines: [ :first ] do
+        route { 10.times { vehicle_journey } }
+      end
+    end
   end
+
+  let!(:referential) { assign :referential, context.referential }
+  let!(:line) { assign :line, context.line(:first) }
+  let!(:route) { assign :route, context.route }
+  let!(:vehicle_journeys) { assign :vehicle_journeys, route.vehicle_journeys.page(1) }
 
   before :each do
     allow(view).to receive(:link_with_search).and_return("#")
     allow(view).to receive(:collection).and_return(vehicle_journeys)
+    allow(view).to receive(:current_organisation).and_return(referential.organisation)
     allow(view).to receive(:current_referential).and_return(referential)
     allow(view).to receive(:has_feature?).and_return(true)
     controller.request.path_parameters[:referential_id] = referential.id

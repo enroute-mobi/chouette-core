@@ -3,5 +3,5 @@
 <div class="page-icon page-icon-line"><span class="sb sb-line"></span></div>
 <div class="page-title"><h1>Lignes</h1></div>
 </div>
-<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 text-right"><div class="page-action"><a icon="plus" class="btn btn-default" href="/line_referentials/99/lines/new"><span class="mr-xs fa fa-plus"></span>Ajouter une ligne</a></div></div>
+<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 text-right"><div class="page-action"><a icon="plus" class="btn btn-default" href="/workbenches/99/line_referential/lines/new"><span class="mr-xs fa fa-plus"></span>Ajouter une ligne</a></div></div>
 </div></div>

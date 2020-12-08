@@ -18,7 +18,7 @@ module Chouette
       end
 
       model :workgroup do
-        attribute(:name) { |n| "Workgroup ##{n}" }
+        attribute(:name) { |n| "Workgroup #{n}" }
         attribute(:owner) { build_root_model :organisation }
 
         model :line_referential, required: true, singleton: true do
@@ -96,9 +96,16 @@ module Chouette
             end
 
             model :line_notice do
+              transient :lines
+
               attribute(:title) { |n| "Line Notice title #{n}" }
               attribute(:content) { |n| "Line Notice content #{n}" }
               attribute(:objectid) { |n| "organisation:LineNotice:#{n}:LOC" }
+
+              after do
+                lines = Array(transient(:lines))
+                lines.each { |line| line.line_notices << new_instance }
+              end
             end
           end
 
@@ -130,6 +137,7 @@ module Chouette
               new_instance.line_referential = parent.line_referential
               new_instance.prefix = parent.respond_to?(:prefix) ? parent.prefix : "chouette"
               new_instance.organisation = parent.organisation
+              new_instance.ready = true
 
               if transient(:with_metadatas)
                 metadata_attributes = {

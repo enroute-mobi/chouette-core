@@ -1,4 +1,3 @@
-
 RSpec.describe CustomFieldControl::Presence, :type => :model do
   let!(:workgroup) { create :workgroup }
   let!(:line_referential){ workgroup.line_referential }

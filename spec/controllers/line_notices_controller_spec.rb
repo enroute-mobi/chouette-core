@@ -1,17 +1,19 @@
 RSpec.describe LineNoticesController, :type => :controller do
   login_user
 
-  let!(:context) do
+  let(:context) do
     Chouette.create do
-      workgroup owner: Organisation.find_by_code('first') do
+      workgroup do
         line_referential :first
-        line_provider :first do
-          line
-          line_notice :first
-          line_notice :second
+        workbench :first, organisation: Organisation.find_by_code('first') do
+          line_provider :first do
+            line
+            line_notice :first
+            line_notice :second
+          end
         end
       end
-      workgroup owner: Organisation.find_by_code('first') do
+      workgroup do
         line_referential :other
         line_provider :other
         line_notice :other
@@ -19,6 +21,7 @@ RSpec.describe LineNoticesController, :type => :controller do
     end
   end
 
+  let(:workbench) { context.workbench(:first) }
   let(:line_referential) { context.line_referential(:first) }
   let(:line_provider) { context.line_provider(:first) }
   let!(:line) { context.line }
@@ -38,7 +41,7 @@ RSpec.describe LineNoticesController, :type => :controller do
       title: "test title",
       content: "test content"
     }}
-    let(:request){ post :create, params: { line_referential_id: line_referential.id, line_notice: line_notice_attrs }}
+    let(:request){ post :create, params: { workbench_id: workbench.id, line_notice: line_notice_attrs }}
 
     with_permission "line_notices.create" do
       it "should create a new line notice" do
@@ -50,7 +53,7 @@ RSpec.describe LineNoticesController, :type => :controller do
 
   describe "GET index" do
     it 'should be successful' do
-      get :index, params: { line_referential_id: line_referential.id }
+      get :index, params: { workbench_id: workbench.id }
       expect(response).to be_successful
       expect(assigns(:line_notices)).to include(line_notices.first)
       expect(assigns(:line_notices)).to include(line_notices.last)
@@ -62,7 +65,7 @@ RSpec.describe LineNoticesController, :type => :controller do
       let(:lines_id_eq){ line_notices.last.lines.first.id }
 
       it "should filter on title or content" do
-        get :index, params: { line_referential_id: line_referential.id, q: {title_or_content_cont: title_or_content_cont} }
+        get :index, params: { workbench_id: workbench.id, q: {title_or_content_cont: title_or_content_cont} }
         expect(response).to be_successful
         expect(assigns(:line_notices)).to include(line_notices.first)
         expect(assigns(:line_notices)).to_not include(line_notices.last)
@@ -70,7 +73,7 @@ RSpec.describe LineNoticesController, :type => :controller do
       end
 
       it "should filter by associated line id" do
-        get :index, params: { line_referential_id: line_referential.id, q: {lines_id_eq: lines_id_eq} }
+        get :index, params: { workbench_id: workbench.id, q: {lines_id_eq: lines_id_eq} }
         expect(response).to be_successful
         expect(assigns(:line_notices)).to_not include(line_notices.first)
         expect(assigns(:line_notices)).to include(line_notices.last)

@@ -1,4 +1,3 @@
-
 RSpec.describe DummyControl::Dummy, :type => :model do
   let!(:line_referential){ create :line_referential }
   let!(:referential){ create :referential, line_referential: line_referential }

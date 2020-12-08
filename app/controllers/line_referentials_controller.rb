@@ -1,10 +1,10 @@
 class LineReferentialsController < ChouetteController
-
-  defaults :resource_class => LineReferential
+  belongs_to :workbench
+  defaults :resource_class => LineReferential, singleton: true
 
   def show
     show! do
-      @line_referential = LineReferentialDecorator.decorate(@line_referential)
+      @line_referential = LineReferentialDecorator.decorate(@line_referential, context: { workbench: @workbench })
     end
   end
 
@@ -16,7 +16,7 @@ class LineReferentialsController < ChouetteController
     else
       flash[:error] = @sync.errors.full_messages.to_sentence
     end
-    redirect_to resource
+    redirect_to [ @workbench, :line_referential ]
   end
 
   protected

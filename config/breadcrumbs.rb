@@ -132,16 +132,6 @@ crumb :referential_network do |referential, network|
   parent :referential_networks, referential
 end
 
-crumb :referential_group_of_lines do |referential|
-  link I18n.t('group_of_lines.index.title'), referential_networks_path(referential)
-  parent :referential, referential
-end
-
-crumb :referential_group_of_line do |referential, group_of_line|
-  link  breadcrumb_name(group_of_line), referential_group_of_line_path(referential, group_of_line)
-  parent :referential_group_of_lines, referential
-end
-
 crumb :referential_vehicle_journeys do |referential|
   link I18n.t('referential_vehicle_journeys.index.title'), referential_vehicle_journeys_path(referential)
   parent :referential, referential
@@ -304,45 +294,43 @@ crumb :connection_link do |stop_area_referential, connection_link|
   parent :connection_links, stop_area_referential
 end
 
-crumb :line_referential do |line_referential|
-  link I18n.t('line_referentials.show.title'), line_referential_path(line_referential)
+crumb :line_referential do |workbench|
+  link I18n.t('line_referentials.show.title'), workbench_line_referential_path(workbench)
+  parent :workbench, workbench
 end
 
-crumb :companies do |line_referential|
-  link I18n.t('companies.index.title'), line_referential_companies_path(line_referential)
+crumb :companies do |workbench|
+  link I18n.t('companies.index.title'), workbench_line_referential_companies_path(workbench)
+  parent :line_referential, workbench
 end
 
-crumb :company do |company|
-  link breadcrumb_name(company), line_referential_company_path(company.line_referential, company)
-  parent :companies, company.line_referential
+crumb :company do |workbench, company|
+  link breadcrumb_name(company), workbench_line_referential_company_path(workbench, company)
+  parent :companies, workbench
 end
 
-crumb :networks do |line_referential|
-  link I18n.t('networks.index.title'), line_referential_networks_path(line_referential)
+crumb :networks do |workbench|
+  link I18n.t('networks.index.title'), workbench_line_referential_networks_path(workbench)
+  parent :line_referential, workbench
 end
 
-crumb :network do |network|
-  link breadcrumb_name(network), line_referential_network_path(network.line_referential, network)
-  parent :networks, network.line_referential
+crumb :network do |workbench, network|
+  link breadcrumb_name(network), workbench_line_referential_network_path(workbench, network)
+  parent :networks, workbench
 end
 
-crumb :group_of_lines do |line_referential|
-  link I18n.t('group_of_lines.index.title'), line_referential_group_of_lines_path(line_referential)
+crumb :line_notices do |workbench, line|
+  link I18n.t('line_notices.index.title'), workbench_line_referential_line_notices_path(workbench)
+  if line
+    parent :line, workbench, line
+  else
+    parent :line_referential, workbench
+  end
 end
 
-crumb :group_of_line do |group_of_line|
-  link breadcrumb_name(group_of_line), line_referential_group_of_line_path(group_of_line.line_referential, group_of_line)
-  parent :group_of_lines, group_of_line.line_referential
-end
-
-crumb :line_notices do |line_referential, line|
-  link I18n.t('line_notices.index.title'), line_referential_line_notices_path(line_referential)
-  parent line if line
-end
-
-crumb :line_notice do |line_notice|
-  link breadcrumb_name(line_notice), line_referential_line_notice_path(line_notice.line_referential, line_notice)
-  parent :line_notices, line_notice.line_referential
+crumb :line_notice do |workbench, line_notice|
+  link breadcrumb_name(line_notice), workbench_line_referential_line_notice_path(workbench, line_notice)
+  parent :line_notices, workbench
 end
 
 crumb :attach_notice do |line_referential, line|
@@ -350,13 +338,14 @@ crumb :attach_notice do |line_referential, line|
   parent line, line_referential
 end
 
-crumb :lines do |line_referential|
-  link I18n.t('lines.index.title'), line_referential_lines_path
+crumb :lines do |workbench|
+  link I18n.t('lines.index.title'), workbench_line_referential_lines_path(workbench)
+  parent :line_referential, workbench
 end
 
-crumb :line do |line|
-  link breadcrumb_name(line), line_referential_line_path(line.line_referential, line)
-  parent :lines, line.line_referential
+crumb :line do |workbench, line|
+  link breadcrumb_name(line), workbench_line_referential_line_path(workbench, line)
+  parent :lines, workbench
 end
 
 crumb :purchase_windows do |referential|

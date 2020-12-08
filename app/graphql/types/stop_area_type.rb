@@ -33,12 +33,12 @@ module Types
 
     field :referent, Types::StopAreaType, null: true
     def referent
-      LazyLoading::StopRelation.new(context, object.referent_id)
+      LazyLoading::StopRelation.new(context, object.referent_id) if object.referent_id
     end
 
     field :parent, Types::StopAreaType, null: true
     def parent
-      LazyLoading::StopRelation.new(context, object.parent_id)
+      LazyLoading::StopRelation.new(context, object.parent_id) if object.parent_id
     end
 
     field :children, Types::StopAreaType.connection_type, null: true

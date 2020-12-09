@@ -122,13 +122,12 @@ describe Merge do
 
           let(:merge_context) do
             MergeContext.new(merge_method: merge_method) do
-
-              line :line
-
-              workbench :workbench do
+              workbench do
                 stop_area :first
                 stop_area :second
                 stop_area :third
+
+                line :line
 
                 referential :source, lines: [:line] do
                   time_table :default
@@ -242,12 +241,12 @@ describe Merge do
 
           let(:merge_context) do
             MergeContext.new(merge_method: merge_method) do
-              line :line
-
-              workbench :workbench do
+              workbench do
                 stop_area :first
                 stop_area :second
                 stop_area :third
+
+                line :line
 
                 referential :source, lines: [:line] do
                   time_table :default
@@ -308,9 +307,9 @@ describe Merge do
         context "when the existing Route hasn't the same position absolute values" do
           let(:merge_context) do
             MergeContext.new(merge_method: merge_method) do
-              line :line
+              workbench do
+                line :line
 
-              workbench :workbench do
                 stop_area :first
                 stop_area :second
                 stop_area :third
@@ -395,10 +394,10 @@ describe Merge do
         context "when a VehicleJourney with the same checksum already exists in the merged data set" do
           let(:merge_context) do
             MergeContext.new(merge_method: merge_method) do
-              line :line
-              line :alternative_line
+              workbench do
+                line :line
+                line :alternative_line
 
-              workbench :workbench do
                 stop_area :first
                 stop_area :second
                 stop_area :third

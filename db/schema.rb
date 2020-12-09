@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_20_145538) do
+ActiveRecord::Schema.define(version: 2020_12_09_090844) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -998,14 +998,6 @@ ActiveRecord::Schema.define(version: 2020_10_20_145538) do
     t.datetime "updated_at", null: false
     t.index ["shape_provider_id"], name: "index_shapes_on_shape_provider_id"
     t.index ["shape_referential_id"], name: "index_shapes_on_shape_referential_id"
-  end
-
-  create_table "simple_interfaces", force: :cascade do |t|
-    t.string "configuration_name"
-    t.string "filepath"
-    t.string "status"
-    t.json "journal"
-    t.string "type"
   end
 
   create_table "stat_journey_pattern_courses_by_dates", force: :cascade do |t|

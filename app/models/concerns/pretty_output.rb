@@ -57,6 +57,10 @@ module PrettyOutput
     print_state true unless opts[:silent]
   end
 
+  def colorize txt, color
+    self.class.colorize txt, color, @output
+  end
+
   def term_width
     @_term_width ||= %x(tput cols).to_i rescue 100
   end

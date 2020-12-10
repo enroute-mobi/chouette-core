@@ -21,7 +21,7 @@ class UpdateStopAreaProviders < ActiveRecord::Migration[5.2]
       # Before removing stop_area_providers_areas table, the StopAreas are associated to the 'first' StopAreaProvider
       Chouette::StopArea.joins('INNER JOIN stop_area_providers_areas on stop_area_providers_areas.stop_area_id = stop_areas.id').
         select('id', 'stop_area_providers_areas.stop_area_provider_id as stop_area_provider_id').find_each do |stop_area|
-        stop_area.update_column stop_area_provider_id: stop_area.stop_area_provider_id
+        stop_area.update_column :stop_area_provider_id, stop_area.stop_area_provider_id
       end
 
       drop_table :stop_area_providers_areas do |t|

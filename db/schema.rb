@@ -782,7 +782,6 @@ ActiveRecord::Schema.define(version: 2020_12_09_090844) do
     t.hstore "sso_attributes"
     t.string "custom_view"
     t.string "features", default: [], array: true
-    t.bigint "stop_area_provider_id"
     t.index ["code"], name: "index_organisations_on_code", unique: true
   end
 
@@ -1017,12 +1016,8 @@ ActiveRecord::Schema.define(version: 2020_12_09_090844) do
     t.bigint "stop_area_referential_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-  end
-
-  create_table "stop_area_providers_areas", force: :cascade do |t|
-    t.bigint "stop_area_provider_id"
-    t.bigint "stop_area_id"
-    t.index ["stop_area_provider_id", "stop_area_id"], name: "stop_areas_stop_area_providers_compound"
+    t.bigint "workbench_id"
+    t.index ["workbench_id"], name: "index_stop_area_providers_on_workbench_id"
   end
 
   create_table "stop_area_referential_memberships", force: :cascade do |t|
@@ -1113,9 +1108,11 @@ ActiveRecord::Schema.define(version: 2020_12_09_090844) do
     t.bigint "referent_id"
     t.boolean "is_referent", default: false
     t.string "postal_region"
+    t.bigint "stop_area_provider_id"
     t.index ["name"], name: "index_stop_areas_on_name"
     t.index ["objectid", "stop_area_referential_id"], name: "stop_areas_objectid_key", unique: true
     t.index ["parent_id"], name: "index_stop_areas_on_parent_id"
+    t.index ["stop_area_provider_id"], name: "index_stop_areas_on_stop_area_provider_id"
     t.index ["stop_area_referential_id", "registration_number"], name: "index_stop_areas_on_referential_id_and_registration_number"
     t.index ["stop_area_referential_id"], name: "index_stop_areas_on_stop_area_referential_id"
   end

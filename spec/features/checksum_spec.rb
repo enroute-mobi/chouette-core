@@ -21,14 +21,19 @@ RSpec.describe 'Checksum', type: :feature do
 
   let(:company){ create :company, id: 1, objectid: "FR:1:ZDE:1:STIF" }
 
+  let(:stop_area_referential) { create :stop_area_referential, objectid_format: 'stif_reflex' }
+  let(:stop_area_provider){ create :stop_area_provider, stop_area_referential: stop_area_referential, objectid: "FR:1:ZDE:1:STIF" }
+
   let(:stop_area_1){
-    create :stop_area, id: 1, objectid: "FR:1:ZDE:1:STIF"
+    create :stop_area, id: 1, objectid: "FR:1:ZDE:1:STIF", stop_area_provider: stop_area_provider
   }
+
   let(:stop_area_2){
-    create :stop_area, id: 2, objectid: "FR:1:ZDE:2:STIF"
+    create :stop_area, id: 2, objectid: "FR:1:ZDE:2:STIF", stop_area_provider: stop_area_provider
   }
+
   let(:stop_area_3){
-    create :stop_area, id: 3, objectid: "FR:1:ZDE:3:STIF"
+    create :stop_area, id: 3, objectid: "FR:1:ZDE:3:STIF", stop_area_provider: stop_area_provider
   }
 
   let(:routing_constraint_zone){

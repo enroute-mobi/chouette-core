@@ -4,11 +4,11 @@ RSpec.describe Chouette::Sync::Deleter do
 
     let(:context) do
       Chouette.create do
-        stop_area_referential
+        stop_area_provider
       end
     end
 
-    let(:target) { context.stop_area_referential }
+    let(:target) { context.stop_area_provider }
 
     subject(:deleter) do
       Chouette::Sync::Deleter.new target: target, delete_batch_size: 3,
@@ -34,7 +34,7 @@ RSpec.describe Chouette::Sync::Deleter do
         target.stop_areas.create name: "Usefull #{n}", registration_number: "skip #{n}"
       end
 
-      expect { deleter.delete(resource_identifiers) }.to_not change { target.stop_areas.where("name like 'Usefull%'").count }
+      expect { deleter.delete(resource_identifiers) }.to_not(change { target.stop_areas.where("name like 'Usefull%'").count })
     end
 
     it "increments the delete count" do

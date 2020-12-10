@@ -59,12 +59,6 @@ module Stif
         organisational_units = results[:OrganisationalUnit]
 
         time = Benchmark.measure do
-          StopAreaProvider.transaction do
-            organisational_units.each do |entry|
-              self.create_or_update_organisational_unit entry
-            end
-          end
-
           stop_areas.each_slice(1000) do |entries|
             Chouette::StopArea.transaction do
               Chouette::StopArea.cache do
@@ -92,9 +86,6 @@ module Stif
         # Set deleted_at for item not returned by api since last sync
         time = Benchmark.measure { self.set_deleted_stop_area }
         log_processing_time("StopArea #{self.deleted_count} deleted", time.real)
-        # Delete StopAreaProvider not returned by api
-        time = Benchmark.measure { self.delete_stop_area_provider }
-        log_processing_time("StopAreaProvider #{self.providers_deleted_count} deleted", time.real)
 
         self.processed_counts
       end
@@ -107,17 +98,8 @@ module Stif
         increment_counts :deleted_count, deleted.size
       end
 
-      def delete_stop_area_provider
-        deleted = StopAreaProvider.where(stop_area_referential_id: defaut_referential.id).pluck(:objectid).uniq - @_stop_area_provider_cache.keys
-        deleted.each_slice(50) do |object_ids|
-          StopAreaProvider.where(stop_area_referential_id: defaut_referential.id) .where(objectid: object_ids).destroy_all
-        end
-        increment_counts :providers_deleted_count, deleted.size
-      end
-
       def stop_area_set_parent entry
         return false unless entry['parent'] || entry['derivedFromObjectRef']
-
         stop = self.find_by_object_id entry['id']
         return false unless stop
 
@@ -128,17 +110,15 @@ module Stif
         if entry['derivedFromObjectRef']
           stop.referent = self.find_by_object_id entry['derivedFromObjectRef']
         end
-
         save_if_valid(stop) if stop.changed?
       end
 
       def get_stop_area_provider objectid
-        @_stop_area_provider_cache[objectid] ||= StopAreaProvider.find_or_create_by(objectid: objectid, stop_area_referential_id: defaut_referential.id)
-        @_stop_area_provider_cache[objectid]
+        @_stop_area_provider_cache[objectid] ||= StopAreaProvider.find_by(objectid: objectid, stop_area_referential_id: defaut_referential.id)
       end
 
       def create_or_update_stop_area entry
-        stop = Chouette::StopArea.find_or_create_by(objectid: entry['id'], stop_area_referential: self.defaut_referential )
+        stop = Chouette::StopArea.find_or_create_by(objectid: entry['id'], stop_area_referential: self.defaut_referential, stop_area_provider: get_stop_area_provider(entry['dataSourceRef']) )
         {
           name:          'Name',
           object_version: 'version',
@@ -159,10 +139,11 @@ module Stif
           stop.area_type = 'zdep'
         end
 
+        # It seems that referent stop areas are related to the STIF 'FR1-ARRET_AUTO' stop area provider
         stop.is_referent = true if entry['dataSourceRef'] == 'FR1-ARRET_AUTO'
 
         stop.kind = :commercial
-        stop.deleted_at            = nil
+        stop.deleted_at = nil
 
         if stop.new_record?
           stop.confirmed_at = Time.now
@@ -190,12 +171,6 @@ module Stif
         stop
       end
 
-      def create_or_update_organisational_unit entry
-        stop_area_provider = get_stop_area_provider entry['id']
-        stop_area_provider.name = entry["name"]
-        stop_area_provider.save
-        stop_area_provider
-      end
     end
   end
 end

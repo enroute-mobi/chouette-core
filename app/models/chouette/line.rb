@@ -1,5 +1,6 @@
 module Chouette
   class Line < Chouette::ActiveRecord
+    # Must be defined before ObjectidSupport
     before_validation :define_line_referential, on: :create
 
     has_metadata

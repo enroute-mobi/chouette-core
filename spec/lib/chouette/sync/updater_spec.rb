@@ -6,9 +6,18 @@ RSpec.describe Chouette::Sync::Updater do
 
   end
 
+  let(:context) do
+    Chouette.create do
+      stop_area_provider
+    end
+  end
+
+  let(:target) { context.stop_area_provider }
+
   def resource(id)
     double id: id, name: "Name #{id}"
   end
+
   def resources(*identifiers)
     identifiers.map { |id| resource id }
   end
@@ -98,20 +107,15 @@ RSpec.describe Chouette::Sync::Updater do
 
   describe "with real target" do
 
-    let(:context) do
-      Chouette.create do
-        stop_area_referential
-      end
-    end
-
-    let(:target) { context.stop_area_referential }
 
     let(:source) { double resources: [] }
 
     class TestDecorator < Chouette::Sync::Updater::ResourceDecorator
 
       def model_attributes
-        { name: name }
+        {
+          name: name
+        }
       end
 
     end

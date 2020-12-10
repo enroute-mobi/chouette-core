@@ -48,6 +48,7 @@ class Workbench < ApplicationModel
 
   has_many :shape_providers
   has_many :line_providers
+  has_many :stop_area_providers
 
   before_validation :create_dependencies, on: :create
 
@@ -81,11 +82,11 @@ class Workbench < ApplicationModel
       Referential.none
     else
       Referential.where(id: workgroup
-                            .referentials
-                            .joins(:metadatas)
-                            .where(['referential_metadata.line_ids && ARRAY[?]::bigint[]', line_ids])
-                            .not_in_referential_suite.pluck(:id).uniq
-                       )
+        .referentials
+        .joins(:metadatas)
+        .where(['referential_metadata.line_ids && ARRAY[?]::bigint[]', line_ids])
+        .not_in_referential_suite.pluck(:id).uniq
+      )
 
     end
   end
@@ -130,6 +131,7 @@ class Workbench < ApplicationModel
   DEFAULT_PROVIDER_SHORT_NAME = 'default'
 
   def default_shape_provider
+    # The find_or_initialize_by results in self.shape_providers.build, that new related object instance is saved when self is saved
     @default_shape_provider ||= shape_providers.find_or_initialize_by(short_name: DEFAULT_PROVIDER_SHORT_NAME) do |p|
       p.shape_referential_id = workgroup.shape_referential_id
     end
@@ -138,6 +140,12 @@ class Workbench < ApplicationModel
   def default_line_provider
     @default_line_provider ||= line_providers.find_or_initialize_by(short_name: DEFAULT_PROVIDER_SHORT_NAME) do |p|
       p.line_referential_id = workgroup.line_referential_id
+    end
+  end
+
+  def default_stop_area_provider
+    @default_stop_area_provider ||= stop_area_providers.first || stop_area_providers.find_or_initialize_by(name: DEFAULT_PROVIDER_SHORT_NAME.capitalize) do |p|
+      p.stop_area_referential_id = stop_area_referential_id
     end
   end
 
@@ -153,7 +161,10 @@ class Workbench < ApplicationModel
 
   def create_dependencies
     self.output ||= ReferentialSuite.create
-    default_shape_provider if workgroup
-    default_line_provider if workgroup
+    if workgroup
+      default_shape_provider
+      default_line_provider
+      default_stop_area_provider
+    end
   end
 end

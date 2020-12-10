@@ -164,8 +164,8 @@ en:
         postal_region: "Postal region"
         waiting_time: Waiting time (minutes)
         status: Status
-        stop_area_provider_ids: Stops Providers
-        stop_area_providers: Stops Providers
+        stop_area_provider_id: Stop area provider
+        stop_area_provider: Stop area provider
   formtastic:
     titles:
       stop_area:

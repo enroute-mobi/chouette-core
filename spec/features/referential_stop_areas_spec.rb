@@ -3,9 +3,9 @@
 describe 'ReferentialStopAreas', type: :feature do
   login_user
 
-  let(:referential) { Referential.first }
+  let(:referential) { first_referential }
   let(:stop_area_referential) { referential.stop_area_referential }
-  let!(:stop_areas) { Array.new(2) { create :stop_area, stop_area_referential: stop_area_referential } }
+  let!(:stop_areas) { Array.new(2) { create :stop_area, stop_area_provider: first_workbench.default_stop_area_provider } }
 
   describe 'index' do
     before(:each) { visit stop_area_referential_stop_areas_path(referential.workbench.stop_area_referential) }

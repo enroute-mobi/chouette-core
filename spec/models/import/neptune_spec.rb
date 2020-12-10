@@ -222,7 +222,7 @@ RSpec.describe Import::Neptune do
     end
 
     it "keeps line attributes when neptune file doesn't provide them" do
-      parent = imported_stop_areas.create!(name: "Parent", area_type: "zdlp")
+      parent = imported_stop_areas.create!(name: "Parent", area_type: "zdlp", stop_area_provider: workbench.default_stop_area_provider)
 
       existing_attributes = {
         comment: "Defined",
@@ -237,7 +237,8 @@ RSpec.describe Import::Neptune do
 
       stop_area_attributes = existing_attributes.merge(
         registration_number: "Empty",
-        name: "Defined"
+        name: "Defined",
+        stop_area_provider: workbench.default_stop_area_provider
       )
       stop_area = imported_stop_areas.create!(stop_area_attributes)
 

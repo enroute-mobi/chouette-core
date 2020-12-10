@@ -45,7 +45,10 @@
         = f.input :referent_id, as: :select, collection: [f.object.referent_id], input_html: { style: 'width: 100%', data: { select2ed_placeholder: Chouette::StopArea.tmf('referent'), select2ed_allow_clear: 'true', select2_ajax: 'true', url: (autocomplete_stop_area_referential_stop_areas_path(@stop_area_referential)+"?referent_only=true"), initvalue: {id: f.object.referent_id, text: f.object.referent.try(:formatted_selection_details)}}}, wrapper_html: { id: 'referent_input' }
         = f.input :registration_number, required: stop_area_registration_number_is_required(f.object), input_html: {title: stop_area_registration_number_title(f.object), value: stop_area_registration_number_value(f.object)}, hint: stop_area_registration_number_hint
         = f.input :status, as: :select, collection: stop_area_status_options, include_blank: false
-        = f.input :stop_area_provider_ids, as: :autocomplete_stop_area_provider, autocomplete_url: autocomplete_stop_area_referential_stop_area_providers_path(@stop_area_referential, format: :json), load_url: stop_area_referential_stop_area_providers_path(@stop_area_referential), input_html: {multiple: true}
+
+        = f.association  :stop_area_provider, as: :select, collection: [f.object.stop_area_provider_id], input_html: { data: { select2ed_placeholder: Chouette::StopArea.tmf('stop_area_provider'), select2ed_allow_clear: 'true', select2_ajax: 'true', url: autocomplete_stop_area_referential_stop_area_providers_path(@stop_area_referential, format: :json), initvalue: {id: f.object.stop_area_provider_id, text: f.object.stop_area_provider.try(:name)}}}
+
+
 
     .separator.section_separator
 

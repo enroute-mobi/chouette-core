@@ -108,9 +108,10 @@ class Import::Gtfs < Import::Base
     @stop_areas_id_by_registration_number = {}
     CustomFieldsSupport.within_workgroup(workbench.workgroup) do
       create_resource(:stops).each(sorted_stops, slice: 100, transaction: true) do |stop, resource|
-        stop_area = stop_area_referential.stop_areas.find_or_initialize_by(registration_number: stop.id)
+        stop_area = stop_areas.find_or_initialize_by(registration_number: stop.id)
 
         stop_area.name = stop.name
+        stop_area.stop_area_provider = stop_area_provider
         stop_area.area_type = stop.location_type == '1' ? :zdlp : :zdep
         stop_area.latitude = stop.lat.presence && stop.lat.to_f
         stop_area.longitude = stop.lon.presence && stop.lon.to_f
@@ -231,8 +232,8 @@ class Import::Gtfs < Import::Base
         next
       end
 
-      connection = referential.stop_area_referential.connection_links.find_by(departure_id: from_id, arrival_id: to_id, both_ways: true)
-      connection ||= referential.stop_area_referential.connection_links.find_or_initialize_by(departure_id: to_id, arrival_id: from_id, both_ways: true)
+      connection = connection_links.find_by(departure_id: from_id, arrival_id: to_id, both_ways: true)
+      connection ||= connection_links.find_or_initialize_by(departure_id: to_id, arrival_id: from_id, both_ways: true)
       if transfer.min_transfer_time.present?
         connection.default_duration = transfer.min_transfer_time
         if [:frequent_traveller_duration, :occasional_traveller_duration,
@@ -655,6 +656,14 @@ class Import::Gtfs < Import::Base
   def shape_provider
     workbench.default_shape_provider
   end
+
+  def stop_area_provider
+    workbench.default_stop_area_provider
+  end
+
+  delegate :stop_areas, to: :stop_area_provider
+  # TODO See CHOUETTE-847
+  delegate :connection_links, to: :stop_area_referential
 
   def import_shapes
     Shapes.new(self).import!

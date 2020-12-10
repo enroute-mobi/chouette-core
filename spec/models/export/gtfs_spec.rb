@@ -208,7 +208,6 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
       it "uses time zone associated with the VehicleJourney in the index" do
         vehicle_journey_at_stop.vehicle_journey_id = 42
-        # byebug
         expect(index).to receive(:vehicle_journey_time_zone).
                            with(vehicle_journey_at_stop.vehicle_journey_id).
                            and_return(time_zone)

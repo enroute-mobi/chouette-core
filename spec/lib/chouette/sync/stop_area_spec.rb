@@ -5,11 +5,12 @@ RSpec.describe Chouette::Sync::StopArea do
 
     let(:context) do
       Chouette.create do
-        stop_area_referential
+        stop_area_provider objectid: "FR1-ARRET_AUTO"
       end
     end
 
     let(:target) { context.stop_area_referential }
+    let(:stop_area_provider) { context.stop_area_provider }
 
     let(:xml) do
       %{
@@ -68,7 +69,7 @@ RSpec.describe Chouette::Sync::StopArea do
     let(:model_id_attribute) { Chouette::Sync::Base.default_model_id_attribute }
 
     let!(:existing_stop_area) do
-      target.stop_areas.create! name: "Old Name", model_id_attribute => "FR::monomodalStopPlace:45624:FR1"
+      target.stop_areas.create! name: "Old Name", model_id_attribute => "FR::monomodalStopPlace:45624:FR1", stop_area_provider: stop_area_provider
     end
 
     let(:created_stop_area) do
@@ -114,7 +115,7 @@ RSpec.describe Chouette::Sync::StopArea do
 
     it "should destroy StopAreas no referenced in the source" do
       useless_stop_area =
-        target.stop_areas.create! name: "Useless", model_id_attribute => "unknown"
+        target.stop_areas.create! name: "Useless", model_id_attribute => "unknown", stop_area_provider: stop_area_provider
       sync.synchronize
       expect(useless_stop_area.reload).to be_deactivated
     end

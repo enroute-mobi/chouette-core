@@ -9,7 +9,7 @@ class ImportsController < ChouetteController
   def internal_download
     resource = Import::Base.find params[:id]
     if params[:token] == resource.token_download
-      resource.file.cache_stored_file!
+      store_file_and_clean_cache(resource)
       send_file resource.file.path
     else
       user_not_authorized
@@ -17,7 +17,7 @@ class ImportsController < ChouetteController
   end
 
   def download
-    resource.file.cache_stored_file!
+    store_file_and_clean_cache(resource)
     send_file resource.file.path, filename: resource.user_file.name, type: resource.user_file.content_type
   end
 

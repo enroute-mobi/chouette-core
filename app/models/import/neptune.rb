@@ -268,7 +268,9 @@ class Import::Neptune < Import::Base
 
   def import_stop_areas
     @parent_stop_areas = {}
-    each_element_matching_css('ChouettePTNetwork ChouetteArea') do |source_parent, filename, progress|
+    stop_area_registration_numbers = Set.new
+
+    each_element_matching_css('ChouettePTNetwork ChouetteArea') do |source_parent, _, progress|
       coordinates = {}
       each_element_matching_css('AreaCentroid', source_parent) do |centroid|
         coordinates[centroid[:object_id]] = centroid.slice(:latitude, :longitude)
@@ -284,7 +286,7 @@ class Import::Neptune < Import::Base
         if (street_name = source_stop_area[:address].try(:[], :street_name)).present?
           stop_area.street_name = street_name
         end
-        if extension = source_stop_area[:stop_area_extension]
+        if (extension = source_stop_area[:stop_area_extension])
           stop_area.nearest_topic_name = extension[:nearest_topic_name] if extension[:nearest_topic_name].present?
           stop_area.fare_code = extension[:fare_code] if extension[:fare_code].present?
           stop_area.area_type = stop_area_type_mapping(extension[:area_type]) if extension[:area_type].present?
@@ -299,18 +301,29 @@ class Import::Neptune < Import::Base
           end
         end
 
-        stop_area.parent_id = @parent_stop_areas.delete(source_stop_area[:object_id])
         stop_area.activate
         save_model stop_area
 
-        contains = source_stop_area[:contains]
-        contains = make_enum contains
-        contains.each do |child_registration_number|
-          @parent_stop_areas[child_registration_number] = stop_area.id
+        if stop_area.persisted?
+          contains = make_enum(source_stop_area[:contains])
+          contains.each do |child_registration_number|
+            @parent_stop_areas[child_registration_number] = stop_area.id
+          end
+
+          stop_area_registration_numbers << source_stop_area[:object_id]
         end
       end
 
       notify_sub_operation_progress(:stop_areas, progress)
+    end
+
+    # Update all StopAreas with their parent
+    stop_area_registration_numbers.each do |child_registration_number|
+      child = stop_areas.find_by registration_number: child_registration_number
+      next unless child
+
+      parent_id = @parent_stop_areas.delete(child_registration_number)
+      child.update parent_id: parent_id
     end
   end
 
@@ -338,6 +351,8 @@ class Import::Neptune < Import::Base
 
       notify_sub_operation_progress(:lines_content, progress)
     end
+
+    Chouette::ChecksumUpdater.new(referential).vehicle_journeys
   end
 
   def import_routes_in_line(line, source_routes, line_desc)
@@ -416,8 +431,6 @@ class Import::Neptune < Import::Base
         end
       end
     end
-
-    Chouette::ChecksumUpdater.new(referential).vehicle_journeys
   end
 
   def add_stop_points_to_route(route, link_ids, links, route_object_id)

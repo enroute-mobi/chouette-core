@@ -3,9 +3,6 @@ require 'geo_ruby'
 module Chouette
   class StopArea < Chouette::ActiveRecord
     include StopAreaReferentialSupport
-    # TODO Use StopAreaReferentialSupport for that. See #CHOUETTE-847
-    # Must be defined before ObjectidSupport
-    before_validation :define_stop_area_referential, on: :create
 
     has_metadata
     include ProjectionFields

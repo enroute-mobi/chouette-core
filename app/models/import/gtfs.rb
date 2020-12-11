@@ -662,8 +662,7 @@ class Import::Gtfs < Import::Base
   end
 
   delegate :stop_areas, to: :stop_area_provider
-  # TODO See CHOUETTE-847
-  delegate :connection_links, to: :stop_area_referential
+  delegate :connection_links, to: :stop_area_provider
 
   def import_shapes
     Shapes.new(self).import!

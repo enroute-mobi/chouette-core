@@ -1,7 +1,7 @@
 class LineDecorator < AF83::Decorator
   decorates Chouette::Line
 
-  set_scope { [context[:workbench], [:line_referential]] }
+  set_scope { [ context[:workbench], :line_referential ] }
 
   create_action_link do |l|
     l.content t('lines.actions.new')

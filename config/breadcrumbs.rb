@@ -253,12 +253,14 @@ crumb :compliance_control do |compliance_control|
   parent :compliance_control_set, compliance_control.compliance_control_set
 end
 
-crumb :stop_area_referential do |stop_area_referential|
-  link I18n.t('stop_area_referentials.show.title'), stop_area_referential_path(stop_area_referential)
+crumb :stop_area_referential do |workbench|
+  link I18n.t('stop_area_referentials.show.title'), workbench_stop_area_referential_path(workbench)
+  parent :workbench, workbench
 end
 
-crumb :stop_areas do |stop_area_referential|
-  link I18n.t('stop_areas.index.title'), stop_area_referential_stop_areas_path(stop_area_referential)
+crumb :stop_areas do |workbench|
+  link I18n.t('stop_areas.index.title'), workbench_stop_area_referential_stop_areas_path(workbench)
+  parent :stop_area_referential, workbench
 end
 
 crumb :connection_links do |stop_area_referential|
@@ -284,9 +286,9 @@ crumb :stop_area_routing_constraint do |stop_area_routing_constraint|
   parent :stop_area_routing_constraints, stop_area_routing_constraint.stop_area_referential
 end
 
-crumb :stop_area do |stop_area_referential, stop_area|
-  link breadcrumb_name(stop_area), stop_area_referential_stop_area_path(stop_area_referential, stop_area)
-  parent :stop_areas, stop_area_referential
+crumb :stop_area do |workbench, stop_area|
+  link breadcrumb_name(stop_area), workbench_stop_area_referential_stop_area_path(workbench, stop_area)
+  parent :stop_areas, workbench
 end
 
 crumb :connection_link do |stop_area_referential, connection_link|

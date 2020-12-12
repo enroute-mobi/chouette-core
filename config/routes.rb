@@ -57,6 +57,18 @@ ChouetteIhm::Application.routes.draw do
     resources :referentials, only: %w(new create index)
     resources :notification_rules
 
+    resource :stop_area_referential, :only => [:show, :edit, :update] do
+      post :sync, on: :member
+      resources :stop_area_providers do
+        get :autocomplete, on: :collection
+      end
+      resources :stop_area_routing_constraints
+      resources :stop_areas do
+        get :autocomplete, on: :collection
+      end
+      resources :connection_links
+    end
+
     resource :line_referential, :only => [:show, :edit, :update] do
       post :sync
       resources :lines do
@@ -299,25 +311,6 @@ ChouetteIhm::Application.routes.draw do
       get :select_type, on: :collection
     end
     resources :compliance_control_blocks, :except => [:show, :index]
-  end
-
-  deactivable = Proc.new do
-    put :deactivate, on: :member
-    put :activate, on: :member
-  end
-
-  resources :stop_area_referentials, :only => [:show, :edit, :update] do
-    post :sync, on: :member
-    resources :stop_area_providers do
-      get :autocomplete, on: :collection
-    end
-    resources :stop_area_routing_constraints
-    resources :stop_areas do
-      put :deactivate, on: :member
-      put :activate, on: :member
-      get :autocomplete, on: :collection
-    end
-    resources :connection_links
   end
 
   resources :companies do

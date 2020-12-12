@@ -5,13 +5,14 @@ class ConnectionLinksController < ChouetteController
 
   defaults :resource_class => Chouette::ConnectionLink
 
-  belongs_to :stop_area_referential
+  belongs_to :workbench
+  belongs_to :stop_area_referential, singleton: true
 
   respond_to :html
 
   def index
     index! do
-      @connection_links = ConnectionLinkDecorator.decorate(@connection_links, context: { stop_area_referential: @stop_area_referential })
+      @connection_links = ConnectionLinkDecorator.decorate(@connection_links, context: { workbench: @workbench, stop_area_referential: @stop_area_referential })
     end
   end
 

@@ -62,7 +62,7 @@
           h3.panel-title
             = t('dashboards.stop_area_referentials.title')
         .list-group
-          = link_to Chouette::StopArea.model_name.human.pluralize.capitalize, stop_area_referential_stop_areas_path(workbench.stop_area_referential), class: 'list-group-item'
+          = link_to Chouette::StopArea.model_name.human.pluralize.capitalize, workbench_stop_area_referential_stop_areas_path(workbench), class: 'list-group-item'
 
       .panel.panel-default
         .panel-heading

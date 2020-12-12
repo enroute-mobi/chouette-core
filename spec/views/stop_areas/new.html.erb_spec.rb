@@ -1,6 +1,9 @@
 describe "/stop_areas/new", type: :view do
-  let!(:stop_area_referential) { assign :stop_area_referential, stop_area.stop_area_referential }
-  let!(:stop_area) { assign(:stop_area, create(:stop_area)) }
+
+  let(:context) { Chouette.create { stop_area_provider } }
+
+  let!(:workbench) { assign :workbench, context.workbench }
+  let!(:stop_area) { assign :stop_area, context.stop_area_provider.stop_areas.build(name: 'Test') }
 
   before do
     allow(view).to receive(:has_feature?)

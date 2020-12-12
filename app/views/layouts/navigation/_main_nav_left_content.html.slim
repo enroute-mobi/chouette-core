@@ -37,18 +37,18 @@
 
     = main_nav_menu_item 'layouts.navbar.stop_area_referential'.t do
       - if policy(workbench.stop_area_referential).edit?
-        = link_to stop_area_referential_path(workbench.stop_area_referential), class: "list-group-item" do
+        = link_to workbench_stop_area_referential_path(workbench), class: "list-group-item" do
           span = 'layouts.navbar.settings'.t
-      = link_to stop_area_referential_stop_areas_path(workbench.stop_area_referential), class: "list-group-item" do
+      = link_to workbench_stop_area_referential_stop_areas_path(workbench), class: "list-group-item" do
         span = Chouette::StopArea.t.capitalize
       - if policy(StopAreaProvider).create?
-        = link_to [workbench.stop_area_referential, :stop_area_providers], class: 'list-group-item' do
+        = link_to workbench_stop_area_referential_stop_area_providers_path(workbench), class: 'list-group-item' do
           span = StopAreaProvider.t.capitalize
       - if has_feature?(:stop_area_routing_constraints)
-        = link_to [workbench.stop_area_referential, :stop_area_routing_constraints], class: 'list-group-item' do
+        = link_to workbench_stop_area_referential_stop_area_routing_constraints_path(workbench), class: 'list-group-item' do
           span = StopAreaRoutingConstraint.t.capitalize
       - if has_feature?(:stop_area_connection_links)
-        = link_to [workbench.stop_area_referential, :connection_links], class: 'list-group-item' do
+        = link_to workbench_stop_area_referential_connection_links_path(workbench), class: 'list-group-item' do
           span = Chouette::ConnectionLink.t.capitalize
 
     = main_nav_menu_item 'layouts.navbar.line_referential'.t do

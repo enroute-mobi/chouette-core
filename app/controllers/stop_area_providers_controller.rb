@@ -1,9 +1,9 @@
   class StopAreaProvidersController < ChouetteController
   include ApplicationHelper
 
-  belongs_to :stop_area_referential
-
   defaults :resource_class => StopAreaProvider
+  belongs_to :workbench
+  belongs_to :stop_area_referential, singleton: true
 
   respond_to :html, :json
 

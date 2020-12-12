@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_12_11_203510) do
+ActiveRecord::Schema.define(version: 2020_12_12_164714) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -1067,7 +1067,11 @@ ActiveRecord::Schema.define(version: 2020_12_11_203510) do
     t.datetime "updated_at", null: false
     t.string "checksum"
     t.text "checksum_source"
+    t.bigint "stop_area_referential_id"
+    t.bigint "stop_area_provider_id"
     t.index ["from_id"], name: "index_stop_area_routing_constraints_on_from_id"
+    t.index ["stop_area_provider_id"], name: "index_stop_area_routing_constraints_on_stop_area_provider_id"
+    t.index ["stop_area_referential_id"], name: "index_stop_area_routing_constraints_on_stop_area_referential_id"
     t.index ["to_id"], name: "index_stop_area_routing_constraints_on_to_id"
   end
 

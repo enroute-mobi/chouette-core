@@ -10,8 +10,6 @@ module Chouette
     belongs_to :departure, :class_name => 'Chouette::StopArea'
     belongs_to :arrival, :class_name => 'Chouette::StopArea'
 
-    belongs_to :stop_area_provider, required: true
-
     # validates_presence_of :link_distance, :default_duration, :departure_id, :arrival_id
     validates_presence_of :default_duration, :departure_id, :arrival_id
     validate :different_departure_and_arrival

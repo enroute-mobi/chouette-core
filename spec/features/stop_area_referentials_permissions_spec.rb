@@ -1,7 +1,6 @@
+# coding: utf-8
 RSpec.describe 'StopAreaReferentials', type: :feature do
   login_user
-
-  let(:stop_area_referential) { first_workgroup.stop_area_referential }
 
   describe 'permissions' do
     before do
@@ -10,7 +9,7 @@ RSpec.describe 'StopAreaReferentials', type: :feature do
     end
 
     context 'on show view' do
-      let( :path ){ stop_area_referential_path(stop_area_referential.id) }
+      let(:path) { workbench_stop_area_referential_path(first_workbench) }
 
       context 'if present → ' do
         let( :permission ){ true }

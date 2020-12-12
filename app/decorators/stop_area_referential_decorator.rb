@@ -1,17 +1,22 @@
 class StopAreaReferentialDecorator < AF83::Decorator
   decorates StopAreaReferential
 
+  set_scope { [context[:workbench]] }
+
   with_instance_decorator do |instance_decorator|
     instance_decorator.action_link secondary: :show do |l|
       l.content { Chouette::StopArea.t.capitalize }
-      l.href { [object, :stop_areas] }
+      l.href { h.workbench_stop_area_referential_stop_areas_path context[:workbench] }
     end
 
-    instance_decorator.edit_action_link
+    instance_decorator.action_link primary: :show do |l|
+      l.content t('actions.edit')
+      l.href { h.edit_workbench_stop_area_referential_path context[:workbench] }
+    end
 
     instance_decorator.action_link policy: :synchronize, primary: :show do |l|
       l.content t('actions.sync')
-      l.href { h.sync_stop_area_referential_path(object.id) }
+      l.href { h.sync_workbench_stop_area_referential_path(context[:workbench]) }
       l.method :post
     end
   end

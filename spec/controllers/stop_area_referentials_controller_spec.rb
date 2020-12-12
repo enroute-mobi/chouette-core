@@ -1,12 +1,17 @@
 RSpec.describe StopAreaReferentialsController, :type => :controller do
   login_user
 
-  let(:stop_area_referential) do
-    create :stop_area_referential, organisations: [@user.organisation]
+  let(:context) do
+    Chouette.create do
+      workgroup do
+        workbench organisation: Organisation.find_by_code('first')
+      end
+    end
   end
+  let(:workbench) { context.workbench }
 
   describe 'PUT sync' do
-    let(:request){ put :sync, params: { id: stop_area_referential.id }}
+    let(:request){ put :sync, params: { workbench_id: workbench.id }}
 
     it 'should respond with 403' do
       expect(request).to have_http_status 403
@@ -14,7 +19,7 @@ RSpec.describe StopAreaReferentialsController, :type => :controller do
 
     with_permission "stop_area_referentials.synchronize" do
       it 'returns HTTP success' do
-        expect(request).to redirect_to [stop_area_referential]
+        expect(request).to redirect_to [ workbench, :stop_area_referential ]
       end
     end
   end

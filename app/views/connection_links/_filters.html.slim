@@ -1,4 +1,4 @@
-= search_form_for @q, url: stop_area_referential_connection_links_path(@stop_area_referential), html: {method: :get}, class: 'form form-filter' do |f|
+= search_form_for @q, url: workbench_stop_area_referential_connection_links_path(@workbench), html: {method: :get}, class: 'form form-filter' do |f|
   .ffg-row
     .input-group.search_bar class=filter_item_class(params[:q], :departure_name_or_arrival_name_cont)
       = f.search_field :departure_name_or_arrival_name_cont,
@@ -9,5 +9,5 @@
           span.fa.fa-search
 
   .actions
-    = link_to t('actions.erase'), @workbench, class: 'btn btn-link'
+    = link_to t('actions.erase'), workbench_stop_area_referential_connection_links_path(@workbench), class: 'btn btn-link'
     = f.submit t('actions.filter'), class: 'btn btn-default'

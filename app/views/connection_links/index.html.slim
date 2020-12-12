@@ -1,4 +1,4 @@
-- breadcrumb :connection_links, @stop_area_referential
+- breadcrumb :connection_links, @workbench
 
 .page_content
   .container-fluid
@@ -16,8 +16,8 @@
                 key: :departure, \
                 attribute: Proc.new { |c| c.departure.name }, \
                 link_to: lambda do |connection_link| \
-                  stop_area_referential_stop_area_path( \
-                    @stop_area_referential, \
+                  workbench_stop_area_referential_stop_area_path( \
+                    @workbench, \
                     connection_link.departure \
                   ) \
                 end \
@@ -26,8 +26,8 @@
                 key: :arrival, \
                 attribute: Proc.new { |c| c.arrival.name }, \
                 link_to: lambda do |connection_link| \
-                  stop_area_referential_stop_area_path( \
-                    @stop_area_referential, \
+                  workbench_stop_area_referential_stop_area_path( \
+                    @workbench, \
                     connection_link.arrival \
                   ) \
                 end \

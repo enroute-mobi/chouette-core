@@ -45,23 +45,23 @@ module ConnectionLinksHelper
     }
   end
 
-  def connection_link_departure_metadatas(connection_link, stop_area_referential)
+  def connection_link_departure_metadatas(connection_link, workbench)
     attributes = {
       t('id_reflex') => connection_link_id_with_icon_color('orange', connection_link.departure.get_objectid.short_id),
-      Chouette::StopArea.tmf('name') => link_to(connection_link.departure.name, stop_area_referential_stop_area_path(stop_area_referential, connection_link.departure)),
+      Chouette::StopArea.tmf('name') => link_to(connection_link.departure.name, workbench_stop_area_referential_stop_area_path(workbench, connection_link.departure)),
     }
 
-    attributes.merge!(Chouette::StopArea.tmf('parent') => connection_link.departure.parent ? link_to(connection_link.departure.parent.name, stop_area_referential_stop_area_path(stop_area_referential, connection_link.departure.parent)) : "-") if connection_link.departure.commercial?
+    attributes.merge!(Chouette::StopArea.tmf('parent') => connection_link.departure.parent ? link_to(connection_link.departure.parent.name, workbench_stop_area_referential_stop_area_path(workbench, connection_link.departure.parent)) : "-") if connection_link.departure.commercial?
     attributes.merge!(Chouette::StopArea.tmf('stop_area_type') => Chouette::AreaType.find(connection_link.departure.area_type).try(:label))
   end
 
-  def connection_link_arrival_metadatas(connection_link, stop_area_referential)
+  def connection_link_arrival_metadatas(connection_link, workbench)
     attributes = {
       t('id_reflex') => connection_link_id_with_icon_color('blue', connection_link.arrival.get_objectid.short_id),
-      Chouette::StopArea.tmf('name') => link_to(connection_link.arrival.name, stop_area_referential_stop_area_path(stop_area_referential, connection_link.arrival)),
+      Chouette::StopArea.tmf('name') => link_to(connection_link.arrival.name, workbench_stop_area_referential_stop_area_path(workbench, connection_link.arrival)),
     }
 
-    attributes.merge!(Chouette::StopArea.tmf('parent') => connection_link.arrival.parent ? link_to(connection_link.arrival.parent.name, stop_area_referential_stop_area_path(stop_area_referential, connection_link.arrival.parent)) : "-") if connection_link.arrival.commercial?
+    attributes.merge!(Chouette::StopArea.tmf('parent') => connection_link.arrival.parent ? link_to(connection_link.arrival.parent.name, workbench_stop_area_referential_stop_area_path(workbench, connection_link.arrival.parent)) : "-") if connection_link.arrival.commercial?
     attributes.merge!(Chouette::StopArea.tmf('stop_area_type') => Chouette::AreaType.find(connection_link.arrival.area_type).try(:label))
   end
 

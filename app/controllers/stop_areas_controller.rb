@@ -115,7 +115,6 @@ class StopAreasController < ChouetteController
   def build_resource
     get_resource_ivar || super.tap do |stop_area|
       stop_area.stop_area_provider ||= @workbench.default_stop_area_provider
-      Rails.logger.info "build_resource: #{stop_area.inspect}"
     end
   end
 

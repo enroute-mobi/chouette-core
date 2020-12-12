@@ -263,8 +263,9 @@ crumb :stop_areas do |workbench|
   parent :stop_area_referential, workbench
 end
 
-crumb :connection_links do |stop_area_referential|
-  link I18n.t('connection_links.index.title'), stop_area_referential_connection_links_path(stop_area_referential)
+crumb :connection_links do |workbench|
+  link I18n.t('connection_links.index.title'), workbench_stop_area_referential_connection_links_path(workbench)
+  parent :stop_area_referential, workbench
 end
 
 crumb :stop_area_providers do |stop_area_referential|
@@ -291,9 +292,9 @@ crumb :stop_area do |workbench, stop_area|
   parent :stop_areas, workbench
 end
 
-crumb :connection_link do |stop_area_referential, connection_link|
-  link breadcrumb_name(connection_link), stop_area_referential_connection_link_path(stop_area_referential, connection_link)
-  parent :connection_links, stop_area_referential
+crumb :connection_link do |workbench, connection_link|
+  link breadcrumb_name(connection_link), workbench_stop_area_referential_connection_link_path(workbench, connection_link)
+  parent :connection_links, workbench
 end
 
 crumb :line_referential do |workbench|

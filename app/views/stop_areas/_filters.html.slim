@@ -31,5 +31,5 @@
       = f.input :by_status, checked: params[:q] && params[:q][:by_status], collection: [:in_creation, :confirmed, :deactivated], as: :check_boxes, label: false, label_method: lambda{|w| ("<span>" + stop_area_status(w) + "</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list' }
 
   .actions
-    = link_to t('actions.erase'), @workbench, class: 'btn btn-link'
+    = link_to t('actions.erase'), workbench_stop_area_referential_stop_areas_path(@workbench), class: 'btn btn-link'
     = f.submit t('actions.filter'), class: 'btn btn-default'

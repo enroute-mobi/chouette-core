@@ -1,8 +1,7 @@
-= simple_form_for [@stop_area_referential, @stop_area_provider], html: {class: 'form-horizontal', id: 'stop_area_provider_form'}, wrapper: :horizontal_form do |f|
+= simple_form_for [@workbench, :stop_area_referential, @stop_area_provider], html: {class: 'form-horizontal', id: 'stop_area_provider_form'}, wrapper: :horizontal_form do |f|
   .row
     .col-lg-12
       = f.input :name
-      = f.input :stop_area_ids, as: :autocomplete_stop_area, autocomplete_url: autocomplete_stop_area_referential_stop_areas_path(@stop_area_referential, format: :json)+"?filter=physical", load_url: stop_area_referential_stop_areas_path(@stop_area_referential), input_html: {multiple: true}
 
   .separator
 

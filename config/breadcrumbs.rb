@@ -268,13 +268,14 @@ crumb :connection_links do |workbench|
   parent :stop_area_referential, workbench
 end
 
-crumb :stop_area_providers do |stop_area_referential|
-  link StopAreaProvider.t, stop_area_referential_stop_area_providers_path(stop_area_referential)
+crumb :stop_area_providers do |workbench|
+  link StopAreaProvider.t, workbench_stop_area_referential_stop_area_providers_path(workbench)
+  parent :stop_area_referential, workbench
 end
 
-crumb :stop_area_provider do |stop_area_referential, stop_area_provider|
-  link stop_area_provider.name, stop_area_referential_stop_area_provider_path(stop_area_referential, stop_area_provider)
-  parent :stop_area_providers, stop_area_referential
+crumb :stop_area_provider do |workbench, stop_area_provider|
+  link stop_area_provider.name, workbench_stop_area_referential_stop_area_provider_path(workbench, stop_area_provider)
+  parent :stop_area_providers, workbench
 end
 
 crumb :stop_area_routing_constraints do |workbench|

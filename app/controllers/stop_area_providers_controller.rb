@@ -1,7 +1,8 @@
-  class StopAreaProvidersController < ChouetteController
+class StopAreaProvidersController < ChouetteController
   include ApplicationHelper
 
   defaults :resource_class => StopAreaProvider
+
   belongs_to :workbench
   belongs_to :stop_area_referential, singleton: true
 
@@ -14,7 +15,7 @@
           redirect_to params.merge(:page => 1)
         end
 
-        @stop_area_providers = StopAreaProviderDecorator.decorate(@stop_area_providers, context: {referential: parent})
+        @stop_area_providers = StopAreaProviderDecorator.decorate(@stop_area_providers, context: {workbench: @workbench})
       }
     end
   end
@@ -24,7 +25,7 @@
       format.json do
         render json: resource.attributes.update(text: resource.name)
       end
-      @stop_area_provider = resource.decorate(context: {referential: parent})
+      @stop_area_provider = resource.decorate(context: {workbench: @workbench})
       format.html
     end
   end
@@ -34,6 +35,14 @@
     args  = [].tap{|arg| 2.times{arg << "%#{params[:q]}%"}}
     @stop_area_providers = scope.where("unaccent(name) ILIKE unaccent(?) OR objectid ILIKE ?", *args).limit(50)
     @stop_area_providers
+  end
+
+  protected
+
+  def build_resource
+    get_resource_ivar || super.tap do |stop_area_provider|
+      stop_area_provider.workbench = @workbench
+    end
   end
 
   def collection

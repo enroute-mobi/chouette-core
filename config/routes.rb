@@ -13,6 +13,7 @@ ChouetteIhm::Application.routes.draw do
   namespace :redirect do
     resources :lines, only: :show
     resources :companies, only: :show
+    resources :stop_areas, only: :show
   end
 
   concern :iev_interfaces do

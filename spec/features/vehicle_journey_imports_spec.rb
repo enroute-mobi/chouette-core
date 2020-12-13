@@ -1,10 +1,13 @@
-# -*- coding: utf-8 -*-
-require 'csv'
-
 describe "VehicleJourneyImports", :type => :feature do
-  login_user
+  let(:context) do
+    Chouette.create do
+      route stop_count: 5
+    end
+  end
 
-  let!(:route) { create :route, referential: referential }
+  let(:referential) { context.referential }
+  let(:route) { context.route }
+  before { login_user organisation: referential.organisation }
 
   let(:valid_file_path) {
     csv_file = update_csv_file_with_factory_data("vehicle_journey_imports_valid.csv")
@@ -17,7 +20,7 @@ describe "VehicleJourneyImports", :type => :feature do
   }
 
   def update_csv_file_with_factory_data(filename)
-    csv_file = CSV.open("/tmp/#{filename}", "wb",{ :col_sep => ";"}) do |csv|
+    CSV.open("/tmp/#{filename}", "wb",{ :col_sep => ";"}) do |csv|
       counter = 0
       CSV.foreach( Rails.root.join("spec", "fixtures", "#{filename}").to_s , {:col_sep => ";"}) do |row|
         if counter == 0

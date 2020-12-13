@@ -30,7 +30,7 @@
               key: :name, \
               attribute: Proc.new { |s| content_tag :span, s.stop_area&.name, class: s.stop_area&.area_type }, \
               link_to: lambda do |stop_point| \
-                stop_area_referential_stop_area_path(stop_point.stop_area.referential, stop_point.stop_area) \
+                default_stop_area_path(stop_point.stop_area) \
               end \
             ), \
             TableBuilderHelper::Column.new( \
@@ -69,7 +69,7 @@
           = replacement_msg t('stop_areas.filters.search_no_results')
 
 = javascript_tag do
-  | window.route = "#{URI.escape(route_json_for_edit(@route))}"
+  | window.route = "#{CGI.escape(route_json_for_edit(@route))}"
 
 = javascript_include_tag 'OpenLayers/maps_backgrounds.js'
 = javascript_pack_tag 'routes/show.js'

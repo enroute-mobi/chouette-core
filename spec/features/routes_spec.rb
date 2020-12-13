@@ -40,14 +40,22 @@ describe "Routes", :type => :feature do
     describe 'show' do
       before(:each) { visit referential_line_route_path(referential, line, route) }
 
+      it "display route's stop points" do
+        route.stop_areas.each do |sa|
+          expect(page).to have_content(sa.name)
+        end
+      end
+
+      # FIXME
       context 'user has permission to edit journey patterns' do
         skip "not sure the spec is correct or the code" do
           it 'shows edit links for journey patterns' do
-            expect(page).to have_link(I18n.t('actions.edit'), href: edit_referential_line_route_journey_pattern_path(referential, line, route, journey_pattern))
+            expect(page).to have_link(I18n.t('actions.edit'), href: edit_referential_line_route_journey_pattern_path(referenbtial, line, route, journey_pattern))
           end
         end
       end
 
+      # FIXME
       context 'user does not have permission to edit journey patterns' do
         it 'does not show edit links for journey patterns' do
           user.update_attribute(:permissions, [])
@@ -56,12 +64,14 @@ describe "Routes", :type => :feature do
         end
       end
 
+      # FIXME
       context 'user has permission to destroy journey patterns' do
         it 'shows destroy links for journey patterns' do
           expect(page).to have_content(I18n.t('actions.destroy'))
         end
       end
 
+      # FIXME
       context 'user does not have permission to destroy journey patterns' do
         it 'does not show destroy links for journey patterns' do
           user.update_attribute(:permissions, [])

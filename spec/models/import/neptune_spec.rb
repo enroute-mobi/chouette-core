@@ -203,6 +203,8 @@ RSpec.describe Import::Neptune do
       first = imported_stop_areas.find_by(registration_number: "NAVSTEX:StopArea:gen3")
       second = imported_stop_areas.find_by(registration_number: "NAVSTEX:StopArea:gen1")
 
+      expect(first.parent&.registration_number).to eq('ITINISERE:StopArea:log58508')
+
       # Remove parent
       first_parent = first.parent
       first.update!(parent_id: nil)
@@ -210,8 +212,6 @@ RSpec.describe Import::Neptune do
       # Change parent
       second_parent = second.parent
       second.update!(parent_id: first_parent.id)
-
-      expect(first_parent.id).not_to eq(second_parent.id)
 
       # Update
       import.send(:import_stop_areas)

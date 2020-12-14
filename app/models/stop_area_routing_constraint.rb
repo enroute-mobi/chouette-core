@@ -1,4 +1,5 @@
 class StopAreaRoutingConstraint < ApplicationModel
+  include StopAreaReferentialSupport
   include ChecksumSupport
 
   belongs_to :from, class_name: 'Chouette::StopArea'
@@ -40,11 +41,13 @@ class StopAreaRoutingConstraint < ApplicationModel
   end
 
   def both_stops_in_the_same_referential
-    return unless from && to
-    return if from.stop_area_referential == to.stop_area_referential
+    if from and stop_area_referential_id != from.stop_area_referential_id
+      errors.add(:from_id, :must_be_in_same_referential)
+    end
 
-    errors.add(:from_id, :must_be_in_same_referential)
-    errors.add(:to_id, :must_be_in_same_referential)
+    if to and stop_area_referential_id != to.stop_area_referential_id
+      errors.add(:to_id, :must_be_in_same_referential)
+    end
   end
 
   def different_stops
@@ -52,10 +55,6 @@ class StopAreaRoutingConstraint < ApplicationModel
     return if from != to
 
     errors.add(:to_id, :must_be_a_different_stop)
-  end
-
-  def stop_area_referential
-    from.stop_area_referential
   end
 
   def name

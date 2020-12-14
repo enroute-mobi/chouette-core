@@ -1,9 +1,18 @@
+# coding: utf-8
 describe "Routes", :type => :feature do
   login_user
 
-  let(:line)  { create :line, referential: referential }
-  let(:route) { create(:route, line: line) }
+  let(:context) do
+    Chouette.create do
+      workbench organisation: Organisation.find_by_code('first') do
+        route
+      end
+    end
+  end
 
+  let(:referential) { context.referential }
+  let(:line) { route.line }
+  let(:route) { context.route }
 
   describe 'permissions' do
     before do

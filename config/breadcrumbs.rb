@@ -253,45 +253,49 @@ crumb :compliance_control do |compliance_control|
   parent :compliance_control_set, compliance_control.compliance_control_set
 end
 
-crumb :stop_area_referential do |stop_area_referential|
-  link I18n.t('stop_area_referentials.show.title'), stop_area_referential_path(stop_area_referential)
+crumb :stop_area_referential do |workbench|
+  link I18n.t('stop_area_referentials.show.title'), workbench_stop_area_referential_path(workbench)
+  parent :workbench, workbench
 end
 
-crumb :stop_areas do |stop_area_referential|
-  link I18n.t('stop_areas.index.title'), stop_area_referential_stop_areas_path(stop_area_referential)
+crumb :stop_areas do |workbench|
+  link I18n.t('stop_areas.index.title'), workbench_stop_area_referential_stop_areas_path(workbench)
+  parent :stop_area_referential, workbench
 end
 
-crumb :connection_links do |stop_area_referential|
-  link I18n.t('connection_links.index.title'), stop_area_referential_connection_links_path(stop_area_referential)
+crumb :connection_links do |workbench|
+  link I18n.t('connection_links.index.title'), workbench_stop_area_referential_connection_links_path(workbench)
+  parent :stop_area_referential, workbench
 end
 
-crumb :stop_area_providers do |stop_area_referential|
-  link StopAreaProvider.t, stop_area_referential_stop_area_providers_path(stop_area_referential)
+crumb :stop_area_providers do |workbench|
+  link StopAreaProvider.t, workbench_stop_area_referential_stop_area_providers_path(workbench)
+  parent :stop_area_referential, workbench
 end
 
-crumb :stop_area_provider do |stop_area_referential, stop_area_provider|
-  link stop_area_provider.name, stop_area_referential_stop_area_provider_path(stop_area_referential, stop_area_provider)
-  parent :stop_area_providers, stop_area_referential
+crumb :stop_area_provider do |workbench, stop_area_provider|
+  link stop_area_provider.name, workbench_stop_area_referential_stop_area_provider_path(workbench, stop_area_provider)
+  parent :stop_area_providers, workbench
 end
 
-crumb :stop_area_routing_constraints do |stop_area_referential|
-  link StopAreaRoutingConstraint.t, [stop_area_referential, :stop_area_routing_constraints]
-  parent stop_area_referential
+crumb :stop_area_routing_constraints do |workbench|
+  link StopAreaRoutingConstraint.t, workbench_stop_area_referential_stop_area_routing_constraints_path(workbench)
+  parent workbench
 end
 
-crumb :stop_area_routing_constraint do |stop_area_routing_constraint|
-  link stop_area_routing_constraint.name, [stop_area_routing_constraint.stop_area_referential, stop_area_routing_constraint]
-  parent :stop_area_routing_constraints, stop_area_routing_constraint.stop_area_referential
+crumb :stop_area_routing_constraint do |workbench, stop_area_routing_constraint|
+  link stop_area_routing_constraint.name, workbench_stop_area_referential_stop_area_routing_constraint_path(workbench, stop_area_routing_constraint)
+  parent :stop_area_routing_constraints, workbench
 end
 
-crumb :stop_area do |stop_area_referential, stop_area|
-  link breadcrumb_name(stop_area), stop_area_referential_stop_area_path(stop_area_referential, stop_area)
-  parent :stop_areas, stop_area_referential
+crumb :stop_area do |workbench, stop_area|
+  link breadcrumb_name(stop_area), workbench_stop_area_referential_stop_area_path(workbench, stop_area)
+  parent :stop_areas, workbench
 end
 
-crumb :connection_link do |stop_area_referential, connection_link|
-  link breadcrumb_name(connection_link), stop_area_referential_connection_link_path(stop_area_referential, connection_link)
-  parent :connection_links, stop_area_referential
+crumb :connection_link do |workbench, connection_link|
+  link breadcrumb_name(connection_link), workbench_stop_area_referential_connection_link_path(workbench, connection_link)
+  parent :connection_links, workbench
 end
 
 crumb :line_referential do |workbench|

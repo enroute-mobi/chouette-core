@@ -293,7 +293,7 @@ RSpec.describe Import::Gtfs do
         import.prepare_referential
         from = import.referential.stop_area_referential.stop_areas.find_by registration_number: 'BEATTY_AIRPORT'
         to = import.referential.stop_area_referential.stop_areas.find_by registration_number: 'FUR_CREEK_RES'
-        import.referential.stop_area_referential.connection_links.create(departure: from, arrival: to, both_ways: true, default_duration: 12)
+        import.stop_area_provider.connection_links.create!(departure: from, arrival: to, both_ways: true, default_duration: 12)
       end
 
       it 'should not create a duplicate ConnectionLink' do

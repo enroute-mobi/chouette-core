@@ -8,6 +8,8 @@ class StopAreaProvider < ActiveRecord::Base
   belongs_to :workbench, required: true
 
   has_many :stop_areas, class_name: "Chouette::StopArea"
+  has_many :connection_links, class_name: "Chouette::ConnectionLink"
+  has_many :stop_area_routing_constraints
 
   # TODO Required by Chouette::Sync::Updater::Batch#resolver limitation
   alias_attribute :registration_number, :objectid

@@ -12,6 +12,6 @@
           td class="hour #{vjas.arrival_time.nil? ? 'missing' : '' }"
             = vjas.arrival_time ? l( vjas.arrival_time, :format => :hour) : ""
 
-          td = link_to vjas.stop_point.stop_area.name, [vjas.stop_point.stop_area.stop_area_referential, vjas.stop_point.stop_area]
+          td = link_to vjas.stop_point.stop_area.name, default_stop_area_path(vjas.stop_point.stop_area)
           td class="hour #{vjas.departure_time.nil? ? 'missing' : '' }"
             = vjas.departure_time ? l( vjas.departure_time, :format => :hour) : ""

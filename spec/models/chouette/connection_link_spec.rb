@@ -1,4 +1,5 @@
 describe Chouette::ConnectionLink, type: :model do
+
   subject { create(:connection_link) }
 
   let(:stop_area) { create :stop_area }

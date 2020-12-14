@@ -32,7 +32,7 @@ describe "/layouts/application", :type => :view do
     expect(rendered).to have_menu_link_to workbench_line_referential_companies_path(workbench)
 
     expect(rendered).to have_menu_title 'layouts.navbar.stop_area_referential'.t
-    expect(rendered).to have_menu_link_to stop_area_referential_stop_areas_path(workbench.stop_area_referential)
+    expect(rendered).to have_menu_link_to workbench_stop_area_referential_stop_areas_path(workbench)
 
     expect(rendered).to have_menu_title 'layouts.navbar.configuration'.t
     expect(rendered).to_not have_menu_link_to edit_workbench_path(workbench)

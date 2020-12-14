@@ -1,3 +1,4 @@
+# coding: utf-8
 module StopAreasHelper
   def explicit_name(stop_area)
     name = localization = ""
@@ -111,7 +112,7 @@ module StopAreasHelper
     [[t(true), true], [t(false), false]]
   end
 
-  def stop_area_identification_metadatas(stop_area, stop_area_referential)
+  def stop_area_identification_metadatas(stop_area, workbench)
     attributes = { t('id_reflex') => stop_area.get_objectid.short_id,
       Chouette::StopArea.tmf('full_id') => stop_area.objectid,
       Chouette::StopArea.tmf('name') => stop_area.name,
@@ -125,14 +126,14 @@ module StopAreasHelper
       end
     end
 
-    attributes.merge!(Chouette::StopArea.tmf('parent') => stop_area.parent ? link_to(stop_area.parent.name, stop_area_referential_stop_area_path(stop_area_referential, stop_area.parent)) : "-") if stop_area.commercial?
-    attributes.merge!(Chouette::StopArea.tmf('referent_id') => stop_area.referent ? link_to(stop_area.referent.name, stop_area_referential_stop_area_path(stop_area_referential, stop_area.referent)) : "-") if !stop_area.is_referent
+    attributes.merge!(Chouette::StopArea.tmf('parent') => stop_area.parent ? link_to(stop_area.parent.name, workbench_stop_area_referential_stop_area_path(workbench, stop_area.parent)) : "-") if stop_area.commercial?
+    attributes.merge!(Chouette::StopArea.tmf('referent_id') => stop_area.referent ? link_to(stop_area.referent.name, workbench_stop_area_referential_stop_area_path(workbench, stop_area.referent)) : "-") if !stop_area.is_referent
     attributes.merge!(Chouette::StopArea.tmf('stop_area_type') => Chouette::AreaType.find(stop_area.area_type).try(:label),
       Chouette::StopArea.tmf('registration_number') => stop_area.registration_number,
       Chouette::StopArea.tmf('status') => stop_area_status(stop_area.status),
     )
 
-    attributes.merge!(Chouette::StopArea.tmf('stop_area_provider') => link_to(stop_area.stop_area_provider.name, [stop_area.stop_area_provider.stop_area_referential, stop_area.stop_area_provider]).html_safe)
+    attributes.merge!(Chouette::StopArea.tmf('stop_area_provider') => link_to(stop_area.stop_area_provider.name, workbench_stop_area_referential_stop_area_provider_path(workbench, stop_area.stop_area_provider)).html_safe)
   end
 
   def stop_area_location_metadatas(stop_area, stop_area_referential)

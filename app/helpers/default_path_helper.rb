@@ -3,6 +3,20 @@
 # Provides legacy path helpers to link a Line, a Company without the required Workbench
 module DefaultPathHelper
 
+  def default_stop_area_path(stop_area)
+    with_default_workbench { default_stop_area_path!(stop_area) }
+  end
+
+  def default_stop_area_path!(stop_area)
+    workbench_stop_area_referential_stop_area_path default_workbench(resource: stop_area), stop_area
+  end
+
+  def default_stop_area_routing_constraints_path(stop_area_referential)
+    with_default_workbench do
+      workbench_stop_area_referential_stop_area_routing_constraints_path default_workbench(stop_area_referential: stop_area_referential)
+    end
+  end
+
   def default_company_path(company)
     with_default_workbench { default_company_path!(company) }
   end
@@ -71,12 +85,15 @@ module DefaultPathHelper
     def resource_workbench
       return unless resource
 
-      candidate_workbench_id = resource.line_provider.workbench_id
+      provider = resource.try(:line_provider) || resource.try(:stop_area_provider)
+      return unless provider
+
+      candidate_workbench_id = provider.workbench_id
       candidate_workbenches.find_by id: candidate_workbench_id
     end
 
     def line_referential_id
-      @line_referential_id ||= (resource.line_referential_id if resource)
+      @line_referential_id ||= resource.try(:line_referential_id)
     end
 
     def line_referential=(line_referential)
@@ -89,8 +106,22 @@ module DefaultPathHelper
       candidate_workbenches.find_by line_referential_id: line_referential_id
     end
 
+    def stop_area_referential_id
+      @stop_area_referential_id ||= resource.try(:stop_area_referential_id)
+    end
+
+    def stop_area_referential=(stop_area_referential)
+      @stop_area_referential_id = stop_area_referential.id
+    end
+
+    # Find the workbench associated to the stop_area referential
+    def stop_area_referential_workbench
+      return unless stop_area_referential_id
+      candidate_workbenches.find_by stop_area_referential_id: stop_area_referential_id
+    end
+
     def workbench
-      @workbench ||= (resource_workbench || line_referential_workbench)
+      @workbench ||= (resource_workbench || line_referential_workbench || stop_area_referential_workbench)
     end
 
     def workbench!

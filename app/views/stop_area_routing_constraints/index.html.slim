@@ -16,7 +16,8 @@
               key: :from_name, \
               attribute: lambda do |stop_area_routing_constraint| \
                 link_to stop_area_routing_constraint.from.formatted_selection_details.html_safe, [\
-                  @stop_area_referential, \
+                  @workbench,
+                  :stop_area_referential, \
                   stop_area_routing_constraint.from \
                 ] \
               end \
@@ -25,7 +26,8 @@
               key: :to_name, \
               attribute: lambda do |stop_area_routing_constraint| \
                 link_to stop_area_routing_constraint.to.formatted_selection_details.html_safe, [ \
-                  @stop_area_referential, \
+                  @workbench,
+                  :stop_area_referential, \
                   stop_area_routing_constraint.to \
                 ] \
               end \

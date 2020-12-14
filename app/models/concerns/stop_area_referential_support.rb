@@ -3,12 +3,13 @@ module StopAreaReferentialSupport
 
   included do
     belongs_to :stop_area_referential
+    belongs_to :stop_area_provider, required: true
+
     validates_presence_of :stop_area_referential
     alias_method :referential, :stop_area_referential
 
-    # TODO See CHOUETTE-847
     # Must be defined before ObjectidSupport
-    # before_validation :define_stop_area_referential, on: :create
+    before_validation :define_stop_area_referential, on: :create
   end
 
   def workgroup

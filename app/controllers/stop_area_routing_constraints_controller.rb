@@ -5,9 +5,11 @@ class StopAreaRoutingConstraintsController < ChouetteController
   requires_feature :stop_area_routing_constraints
 
   defaults :resource_class => StopAreaRoutingConstraint
-  respond_to :html, :json
 
-  belongs_to :stop_area_referential
+  belongs_to :workbench
+  belongs_to :stop_area_referential, singleton: true
+
+  respond_to :html, :json
 
   def index
     index! do |format|
@@ -17,7 +19,7 @@ class StopAreaRoutingConstraintsController < ChouetteController
         end
 
         @stop_area_routing_constraints = StopAreaRoutingConstraintDecorator.decorate(@stop_area_routing_constraints,
-        context: { referential: parent })
+        context: { workbench: @workbench })
       }
       format.json
     end
@@ -25,7 +27,7 @@ class StopAreaRoutingConstraintsController < ChouetteController
 
   def show
     show! do |format|
-      @stop_area_routing_constraint = @stop_area_routing_constraint.decorate(context: { referential: parent })
+      @stop_area_routing_constraint = @stop_area_routing_constraint.decorate(context: { workbench: @workbench })
     end
   end
 
@@ -33,6 +35,12 @@ class StopAreaRoutingConstraintsController < ChouetteController
 
   alias_method :stop_area, :resource
   alias_method :stop_area_referential, :parent
+
+  def build_resource
+    get_resource_ivar || super.tap do |routing_constraint|
+      routing_constraint.stop_area_provider ||= @workbench.default_stop_area_provider
+    end
+  end
 
   def collection
     scope = parent.stop_area_routing_constraints

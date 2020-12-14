@@ -1,5 +1,4 @@
 describe "/vehicle_journeys/index", :type => :view do
-
   let(:context) do
     Chouette.create do
       line :first

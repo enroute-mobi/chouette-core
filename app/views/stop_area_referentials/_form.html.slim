@@ -1,4 +1,4 @@
-= simple_form_for [@stop_area_referential], html: {class: 'form-horizontal', id: 'stop_area_referential_form'}, wrapper: :horizontal_form do |f|
+= simple_form_for @stop_area_referential, url: workbench_stop_area_referential_path(@workbench), html: {class: 'form-horizontal', id: 'stop_area_referential_form'}, wrapper: :horizontal_form do |f|
   legend= StopAreaReferential.tmf(:stops_selection_displayed_fields)
   .row.locales
     .col-lg-12

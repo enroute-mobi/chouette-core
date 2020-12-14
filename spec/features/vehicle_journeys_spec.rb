@@ -1,12 +1,19 @@
-
 describe 'VehicleJourneys', type: :feature do
   login_user
 
-  let(:referential) { Referential.first }
-  let!(:line) { create(:line, referential: referential) }
-  let!(:route) { create(:route, line: line) }
-  let!(:journey_pattern) { create(:journey_pattern, route: route) }
-  let!(:vehicle_journey) { create(:vehicle_journey, journey_pattern: journey_pattern) }
+  let(:context) do
+    Chouette.create do
+      workbench organisation: Organisation.find_by_code('first') do
+        vehicle_journey
+      end
+    end
+  end
+
+  let(:referential) { context.referential }
+  let(:line) { route.line }
+  let(:route) { journey_pattern.route }
+  let(:journey_pattern) { vehicle_journey.journey_pattern }
+  let(:vehicle_journey) { context.vehicle_journey }
 
   describe 'show' do
     context 'user has permissions' do

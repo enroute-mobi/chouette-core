@@ -232,7 +232,7 @@ describe Chouette::VehicleJourney, type: :model do
                       checksum_owner.save
                     },
                     reload: true do
-        let(:constraint_zone){ create :stop_area_routing_constraint, stop_area_referential: checksum_owner.referential.stop_area_referential }
+        let(:constraint_zone){ create :stop_area_routing_constraint, stop_area_provider: checksum_owner.referential.workbench.default_stop_area_provider }
     end
 
     it_behaves_like 'it works with both checksums modes',
@@ -242,7 +242,7 @@ describe Chouette::VehicleJourney, type: :model do
                       constraint_zone.run_callbacks(:commit)
                     },
                     reload: true do
-        let(:constraint_zone){ create :stop_area_routing_constraint, stop_area_referential: checksum_owner.referential.stop_area_referential }
+        let(:constraint_zone){ create :stop_area_routing_constraint, stop_area_provider: checksum_owner.referential.workbench.default_stop_area_provider }
         before(:each) do
           checksum_owner.ignored_stop_area_routing_constraints = [constraint_zone.id]
           checksum_owner.save!
@@ -257,7 +257,7 @@ describe Chouette::VehicleJourney, type: :model do
                       constraint_zone.save!
                     },
                     reload: true do
-        let(:constraint_zone){ create :stop_area_routing_constraint, stop_area_referential: checksum_owner.referential.stop_area_referential }
+        let(:constraint_zone){ create :stop_area_routing_constraint, stop_area_provider: checksum_owner.referential.workbench.default_stop_area_provider }
         before(:each) do
           checksum_owner.ignored_stop_area_routing_constraints = [constraint_zone.id]
           checksum_owner.save!

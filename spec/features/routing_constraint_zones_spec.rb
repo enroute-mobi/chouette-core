@@ -1,12 +1,18 @@
-# -*- coding: utf-8 -*-
-
 describe 'RoutingConstraintZones', type: :feature do
   login_user
 
-  let(:referential) { Referential.first }
-  let!(:line) { create :line, referential: referential }
-  let!(:route) { create :route, line: line }
-  let!(:routing_constraint_zones) { Array.new(2) { create :routing_constraint_zone, route: route } }
+  let(:context) do
+    Chouette.create do
+      workbench organisation: Organisation.find_by_code('first') do
+        3.times { routing_constraint_zone }
+      end
+    end
+  end
+
+  let(:referential) { context.referential }
+  let(:line) { route.line }
+  let(:route) { routing_constraint_zone.route }
+  let(:routing_constraint_zones) { context.routing_constraint_zones }
   let(:routing_constraint_zone) { routing_constraint_zones.first }
 
   describe 'index' do

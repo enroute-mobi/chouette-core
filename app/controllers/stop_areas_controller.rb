@@ -4,12 +4,8 @@ class StopAreasController < ChouetteController
 
   defaults :resource_class => Chouette::StopArea
 
-  belongs_to :stop_area_referential
-  # do
-  #   belongs_to :line, :parent_class => Chouette::Line, :optional => true, :polymorphic => true
-  #   belongs_to :network, :parent_class => Chouette::Network, :optional => true, :polymorphic => true
-  #   belongs_to :connection_link, :parent_class => Chouette::ConnectionLink, :optional => true, :polymorphic => true
-  # end
+  belongs_to :workbench
+  belongs_to :stop_area_referential, singleton: true
 
   respond_to :html, :kml, :xml, :json
   respond_to :js, :only => :index
@@ -49,7 +45,7 @@ class StopAreasController < ChouetteController
           redirect_to params.merge(:page => 1)
         end
 
-        @stop_areas = StopAreaDecorator.decorate(@stop_areas)
+        @stop_areas = StopAreaDecorator.decorate(@stop_areas, context: { workbench: @workbench })
       }
     end
   end
@@ -61,9 +57,6 @@ class StopAreasController < ChouetteController
 
   def create
     authorize resource_class
-    @stop_area = Chouette::StopArea.new
-    @stop_area.stop_area_referential = stop_area_referential
-    @stop_area.assign_attributes stop_area_params
     create!
   end
 
@@ -75,12 +68,13 @@ class StopAreasController < ChouetteController
         }
       end
       format.json do
-        attributes = stop_area.attributes.slice(*%w(id name objectid comment area_type registration_number longitude latitude long_lat_type country_code time_zone street_name kind custom_field_values metadata))
-        attributes[:text] = "<span class='small label label-info'>#{I18n.t("area_types.label.#{stop_area.area_type}")}</span>#{stop_area.full_name}"
+        attributes = stop_area.attributes.slice(:id, :name, :objectid, :comment, :area_type, :registration_number, :longitude, :latitude, :long_lat_type, :country_code, :time_zone, :street_name, :kind, :custom_field_values, :metadata)
+        area_type_label = I18n.t("area_types.label.#{stop_area.area_type}")
+        attributes[:text] = "<span class='small label label-info'>#{area_type_label}</span>#{stop_area.full_name}"
         render json: attributes
       end
 
-      @stop_area = @stop_area.decorate
+      @stop_area = @stop_area.decorate(context: { workbench: @workbench })
       @connection_links = ConnectionLinkDecorator.decorate(@stop_area.connection_links.limit(4))
       @specific_stops = @stop_area.specific_stops.paginate(:page => params[:page], :per_page => 5)
     end
@@ -117,6 +111,12 @@ class StopAreasController < ChouetteController
 
   alias_method :stop_area, :resource
   alias_method :stop_area_referential, :parent
+
+  def build_resource
+    get_resource_ivar || super.tap do |stop_area|
+      stop_area.stop_area_provider ||= @workbench.default_stop_area_provider
+    end
+  end
 
   def collection
     scope = parent.present? ? parent.stop_areas : referential.stop_areas

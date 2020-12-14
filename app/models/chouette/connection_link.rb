@@ -1,12 +1,11 @@
 module Chouette
   class ConnectionLink < Chouette::TridentActiveRecord
+    include StopAreaReferentialSupport
+
     has_metadata
     include ObjectidSupport
     include ConnectionLinkRestrictions
-    include StopAreaReferentialSupport
     include CustomFieldsSupport
-
-    attr_accessor :connection_link_type
 
     belongs_to :departure, :class_name => 'Chouette::StopArea'
     belongs_to :arrival, :class_name => 'Chouette::StopArea'

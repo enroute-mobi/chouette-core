@@ -5,31 +5,20 @@ class ConnectionLinksController < ChouetteController
 
   defaults :resource_class => Chouette::ConnectionLink
 
-  belongs_to :stop_area_referential
+  belongs_to :workbench
+  belongs_to :stop_area_referential, singleton: true
 
   respond_to :html
 
   def index
     index! do
-      @connection_links = ConnectionLinkDecorator.decorate(@connection_links, context: { stop_area_referential: @stop_area_referential })
+      @connection_links = ConnectionLinkDecorator.decorate(@connection_links, context: { workbench: @workbench })
     end
-  end
-
-  def new
-    @connection_link = Chouette::ConnectionLink.new(departure_id: params[:departure_id])
-    new!
-  end
-
-  def create
-    @connection_link = Chouette::ConnectionLink.new
-    @connection_link.stop_area_referential = stop_area_referential
-    @connection_link.assign_attributes connection_link_params
-    create!
   end
 
   def show
     show! do
-      @connection_link = @connection_link.decorate
+      @connection_link = @connection_link.decorate context: { workbench: @workbench }
     end
   end
 
@@ -37,6 +26,13 @@ class ConnectionLinksController < ChouetteController
 
   alias_method :connection_link, :resource
   alias_method :stop_area_referential, :parent
+
+  def build_resource
+    get_resource_ivar || super.tap do |connection_link|
+      connection_link.departure_id ||= params[:departure_id]
+      connection_link.stop_area_provider ||= @workbench.default_stop_area_provider
+    end
+  end
 
   def collection
     @q = parent.connection_links.search(params[:q])

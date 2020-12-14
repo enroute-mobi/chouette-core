@@ -1,4 +1,4 @@
-- breadcrumb :connection_link, @stop_area_referential, @connection_link
+- breadcrumb :connection_link, @workbench, @connection_link
 = content_for :page_header_title, t('.title', id: @connection_link.get_objectid.short_id)
 
 / PageContent
@@ -15,10 +15,10 @@
 
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        = definition_list t("connection_links.form.sections.departure"), connection_link_departure_metadatas(@connection_link, @stop_area_referential)
+        = definition_list t("connection_links.form.sections.departure"), connection_link_departure_metadatas(@connection_link, @workbench)
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        = definition_list t("connection_links.form.sections.arrival"), connection_link_arrival_metadatas(@connection_link, @stop_area_referential)
+        = definition_list t("connection_links.form.sections.arrival"), connection_link_arrival_metadatas(@connection_link, @workbench)
 
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12

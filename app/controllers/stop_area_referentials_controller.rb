@@ -1,10 +1,10 @@
 class StopAreaReferentialsController < ChouetteController
-
-  defaults :resource_class => StopAreaReferential
+  belongs_to :workbench
+  defaults resource_class: StopAreaReferential, singleton: true
 
   def show
     show! do
-      @stop_area_referential = StopAreaReferentialDecorator.decorate(@stop_area_referential)
+      @stop_area_referential = StopAreaReferentialDecorator.decorate(@stop_area_referential, context: { workbench: @workbench })
     end
   end
 
@@ -16,8 +16,10 @@ class StopAreaReferentialsController < ChouetteController
     else
       flash[:error] = @sync.errors.full_messages.to_sentence
     end
-    redirect_to resource
+    redirect_to [ @workbench, :stop_area_referential ]
   end
+
+  protected
 
   def stop_area_referential_params
     locales = []

@@ -1,4 +1,4 @@
-- breadcrumb :stop_areas, @stop_area_referential
+- breadcrumb :stop_areas, @workbench
 
 .page_content
   .container-fluid
@@ -21,8 +21,8 @@
                 key: :name, \
                 attribute: 'name', \
                 link_to: lambda do |stop_area| \
-                  stop_area_referential_stop_area_path( \
-                    @stop_area_referential, \
+                  workbench_stop_area_referential_stop_area_path( \
+                    @workbench, \
                     stop_area \
                   ) \
                 end \
@@ -39,7 +39,7 @@
                 key: :stop_area_provider, \
                 attribute: Proc.new { |s| s.stop_area_provider&.name }, \
                 link_to: lambda do |s| \
-                  stop_area_referential_stop_area_provider_path(s.stop_area_provider.stop_area_referential, s.stop_area_provider) \
+                  workbench_stop_area_referential_stop_area_provider_path(@workbench, s.stop_area_provider) \
                 end \
               ), \
               TableBuilderHelper::Column.new( \

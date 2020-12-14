@@ -1,4 +1,4 @@
-- breadcrumb :stop_area, @stop_area_referential, @stop_area
+- breadcrumb :stop_area, @workbench, @stop_area
 - page_header_content_for @stop_area
 
 / PageContent
@@ -6,7 +6,7 @@
   .container-fluid
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        = definition_list t("stop_areas.form.sections.identification"), stop_area_identification_metadatas(@stop_area, @stop_area_referential)
+        = definition_list t("stop_areas.form.sections.identification"), stop_area_identification_metadatas(@stop_area, @workbench)
         = definition_list t("stop_areas.form.sections.general"), stop_area_general_metadatas(@stop_area)
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
@@ -38,7 +38,7 @@
 
             .row
               .col-md-8
-                = link_to t('connection_links.actions.new'), new_stop_area_referential_connection_link_path(departure_id: @stop_area.id), class: 'btn btn-action large'
+                = link_to t('connection_links.actions.new'), new_workbench_stop_area_referential_connection_link_path(@workbench, departure_id: @stop_area.id), class: 'btn btn-action large'
               .col-md-4
                 = more_connections_link(@stop_area, @stop_area_referential) if @stop_area.connection_links.count > 4
 

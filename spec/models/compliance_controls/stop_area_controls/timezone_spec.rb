@@ -1,4 +1,3 @@
-
 RSpec.describe StopAreaControl::TimeZone, :type => :model do
   let(:line_referential){ referential.line_referential }
   let(:stop_area_referential){ referential.stop_area_referential }

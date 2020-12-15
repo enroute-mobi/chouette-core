@@ -10,11 +10,11 @@ class StopAreaPolicy < ApplicationPolicy
   end
 
   def destroy?
-    user.has_permission?('stop_areas.destroy') && has_right_over_the_stop_area_provider?
+    user.has_permission?('stop_areas.destroy') && stop_area_provider_matches?
   end
 
   def update?
-    user.has_permission?('stop_areas.update') && has_right_over_the_stop_area_provider?
+    user.has_permission?('stop_areas.update') && stop_area_provider_matches?
   end
 
   def deactivate?

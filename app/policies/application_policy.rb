@@ -118,7 +118,7 @@ class ApplicationPolicy
   end
 
   def has_right_over_the_stop_area_provider?
-    @current_workbench && @current_workbench.stop_area_provider_ids.include?(record.stop_area_provider_id)
+    @current_workbench && @current_workbench.id == record.stop_area_provider.workbench_id
   end
 
   class Scope

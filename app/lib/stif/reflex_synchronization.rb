@@ -118,7 +118,8 @@ module Stif
       end
 
       def create_or_update_stop_area entry
-        stop = Chouette::StopArea.find_or_create_by(objectid: entry['id'], stop_area_referential: self.defaut_referential, stop_area_provider: get_stop_area_provider(entry['dataSourceRef']) )
+        stop_area_provider = get_stop_area_provider entry['dataSourceRef']
+        stop = stop_area_provider.stop_areas.find_or_create_by objectid: entry['id']
         {
           name:          'Name',
           object_version: 'version',

@@ -10,10 +10,10 @@ class ConnectionLinkPolicy < ApplicationPolicy
   end
 
   def destroy?
-    user.has_permission?('connection_links.destroy') && has_right_over_the_stop_area_provider?
+    user.has_permission?('connection_links.destroy') && stop_area_provider_matches?
   end
 
   def update?
-    user.has_permission?('connection_links.update') && has_right_over_the_stop_area_provider?
+    user.has_permission?('connection_links.update') && stop_area_provider_matches?
   end
 end

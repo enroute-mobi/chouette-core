@@ -53,7 +53,7 @@ RSpec.describe StopAreaPolicy, type: :policy do
       end
     end
 
-    context 'record belongs to a stop area provider on which the user no rights →' do
+    context 'record belongs to a stop area provider on which the user has no rights →' do
       before do
         user_context.context[:workbench] =  context.workbench(:second)
       end

@@ -1,11 +1,17 @@
 # coding: utf-8
 RSpec.describe StopAreaPolicy, type: :policy do
 
-  let( :record ){ build_stubbed :stop_area }
-  before { stub_policy_scope(record) }
+  let(:context) do
+    Chouette.create do
+      workbench :second
+      workbench :first do
+        stop_area
+      end
+    end
+  end
+  let(:record) { context.stop_area }
 
-
-  #
+  #  ---------------
   #  Non Destructive
   #  ---------------
 
@@ -19,25 +25,55 @@ RSpec.describe StopAreaPolicy, type: :policy do
   end
 
 
-  #
+  #  -----------
   #  Destructive
   #  -----------
 
   context 'Destructive actions →' do
-    permissions :create? do
-      it_behaves_like 'permitted policy', 'stop_areas.create'
+
+    context 'record belongs to a stop area provider on which the user has rights →' do
+      before do
+        user_context.context[:workbench] =  context.workbench(:first)
+      end
+
+      permissions :new? do
+        it_behaves_like 'permitted policy', 'stop_areas.create'
+      end
+      permissions :create? do
+        it_behaves_like 'permitted policy', 'stop_areas.create'
+      end
+      permissions :edit? do
+        it_behaves_like 'permitted policy', 'stop_areas.update'
+      end
+      permissions :update? do
+        it_behaves_like 'permitted policy', 'stop_areas.update'
+      end
+      permissions :destroy? do
+        it_behaves_like 'permitted policy', 'stop_areas.destroy'
+      end
     end
-    permissions :destroy? do
-      it_behaves_like 'permitted policy', 'stop_areas.destroy'
+
+    context 'record belongs to a stop area provider on which the user no rights →' do
+      before do
+        user_context.context[:workbench] =  context.workbench(:second)
+      end
+
+      permissions :new? do
+        it_behaves_like 'permitted policy', 'stop_areas.create'
+      end
+      permissions :create? do
+        it_behaves_like 'permitted policy', 'stop_areas.create'
+      end
+      permissions :edit? do
+        it_behaves_like 'permitted policy but wrong provider', 'stop_areas.update'
+      end
+      permissions :update? do
+        it_behaves_like 'permitted policy but wrong provider', 'stop_areas.update'
+      end
+      permissions :destroy? do
+        it_behaves_like 'permitted policy but wrong provider', 'stop_areas.destroy'
+      end
     end
-    permissions :edit? do
-      it_behaves_like 'permitted policy', 'stop_areas.update'
-    end
-    permissions :new? do
-      it_behaves_like 'permitted policy', 'stop_areas.create'
-    end
-    permissions :update? do
-      it_behaves_like 'permitted policy', 'stop_areas.update'
-    end
+
   end
 end

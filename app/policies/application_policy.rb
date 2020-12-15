@@ -74,7 +74,7 @@ class ApplicationPolicy
   end
 
 
-  #
+  #  ------------------
   #  Custom Permissions
   #  ------------------
 
@@ -115,6 +115,10 @@ class ApplicationPolicy
 
   def record_workbench
     record.workbench if record.respond_to?(:workbench)
+  end
+
+  def has_right_over_the_stop_area_provider?
+    @current_workbench && @current_workbench.stop_area_provider_ids.include?(record.stop_area_provider_id)
   end
 
   class Scope

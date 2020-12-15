@@ -158,6 +158,26 @@ RSpec.shared_examples 'permitted policy' do
   end
 end
 
+RSpec.shared_examples 'permitted policy but wrong provider' do
+  | permission|
+
+  context 'permission absent → ' do
+    it "denies user" do
+      expect_it.not_to permit(user_context, record)
+    end
+  end
+
+  context 'permission present → '  do
+    before do
+      add_permissions(permission, to_user: user)
+    end
+
+    it 'denies user' do
+      expect_it.not_to permit(user_context, record)
+    end
+  end
+end
+
 RSpec.shared_examples 'permitted policy outside referential' do
   | permission |
 

@@ -118,8 +118,12 @@ module Stif
       end
 
       def create_or_update_stop_area entry
-        stop_area_provider = get_stop_area_provider entry['dataSourceRef']
-        stop = stop_area_provider.stop_areas.find_or_create_by objectid: entry['id']
+        stop_area_provider = get_stop_area_provider(entry['dataSourceRef'])
+        unless stop_area_provider
+          Rails.logger.error("Reflex synchronization : stop area provider #{entry['dataSourceRef']} not found")
+          return
+        end
+        stop = stop_area_provider&.stop_areas&.find_or_create_by objectid: entry['id']
         {
           name:          'Name',
           object_version: 'version',

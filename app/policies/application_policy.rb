@@ -117,7 +117,7 @@ class ApplicationPolicy
     record.workbench if record.respond_to?(:workbench)
   end
 
-  def has_right_over_the_stop_area_provider?
+  def stop_area_provider_matches?
     @current_workbench && @current_workbench.id == record.stop_area_provider.workbench_id
   end
 

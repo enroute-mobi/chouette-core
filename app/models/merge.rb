@@ -185,9 +185,13 @@ class Merge < ApplicationModel
 
   def after_save_current
     referentials.each(&:merged!)
-    new.update_stats!
+    Stat::JourneyPatternCoursesByDate.compute_for_referential(new, line_ids: merged_line_ids)
     aggregate_if_urgent_offer
     HoleSentinel.new(workbench).watch!
+  end
+
+  def merged_line_ids
+    referentials.map { |r| r.metadatas_lines.map(&:id) }.flatten.uniq
   end
 
   def aggregate_if_urgent_offer

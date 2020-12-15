@@ -1,54 +1,72 @@
-
 RSpec.describe Stat::JourneyPatternCoursesByDate, type: :model do
   let(:journey_pattern) { create :journey_pattern }
-  let(:line) { create :line }
+  let(:line_referential) { create :line_referential }
+  let(:workbench) { create :workbench, line_referential: line_referential }
+  let!(:line) { create :line, line_referential: line_referential }
+  let!(:line2) { create :line, line_referential: line_referential }
   let(:route) { journey_pattern.route }
   let(:service) { JourneyPatternOfferService.new(journey_pattern) }
-  let(:referential_metadatas_1) do
-    create :referential_metadata, line_ids: [line.id], periodes: [(period_start..period_end.prev_day)]
+
+  let(:metadatas_1) do
+    create :referential_metadata, lines: line_referential.lines,
+                                  periodes: [(period_start..period_end.prev_day)]
   end
-  let(:referential_metadatas_2) do
-    create :referential_metadata, line_ids: [line.id], periodes: [(period_start.next..period_end)]
+
+  let(:metadatas_2) do
+    create :referential_metadata, lines: line_referential.lines,
+                                  periodes: [(period_start.next..period_end)]
   end
-  let(:referential)  { create :workbench_referential, metadatas: [referential_metadatas_1, referential_metadatas_2] }
+
+  let(:referential)  { create :workbench_referential, workbench: workbench,
+                                                      metadatas: [metadatas_1, metadatas_2] }
   let(:period_start) { 1.month.ago.to_date }
   let(:period_end)   { 1.month.since.to_date }
 
-  before(:each) do
+  before do
     referential.switch
     journey_pattern.route.update line: line
   end
 
-  describe 'using scopes' do
-    before do
-      ["2020-01-01", "2020-06-01", "2020-12-01", "2021-01-01"].each{ |d| create :stat_journey_pattern_courses_by_date, date: d.to_date }
-    end
-    context '#between' do
-      let(:filtered_jpcbd_list) { Stat::JourneyPatternCoursesByDate.between("2020-05-01".to_date, "2020-12-01".to_date) }
+  describe '#compute_for_referential' do
+    it 'creates stat objects for a referential' do
+      expected_count = referential.metadatas_period.count * referential.associated_lines.count
 
-      it 'should return JourneyPatternCoursesByDate items between the selected dates' do
-        expect( filtered_jpcbd_list.count ).to eq 2
-      end
+      expect {
+        Stat::JourneyPatternCoursesByDate.compute_for_referential(referential)
+      }.to change { Stat::JourneyPatternCoursesByDate.count }.by(expected_count)
     end
 
-    context '#before' do
-      let(:filtered_jpcbd_list) { Stat::JourneyPatternCoursesByDate.after("2020-05-01".to_date) }
-      it 'should return JourneyPatternCoursesByDate items after the selected date' do
-        expect( filtered_jpcbd_list.count ).to eq 3
-      end
+    it 'can take an option to select lines to compute' do
+      Stat::JourneyPatternCoursesByDate.compute_for_referential(referential, line_ids: [line.id])
+
+      expect(
+        Stat::JourneyPatternCoursesByDate.where(line_id: line.id).exists?
+      ).to be_truthy
+
+      expect(
+        Stat::JourneyPatternCoursesByDate.where(line_id: line2.id).exists?
+      ).to be_falsy
     end
+  end
 
-    context '#after' do
-      let(:filtered_jpcbd_list) { Stat::JourneyPatternCoursesByDate.before("2020-05-01".to_date) }
+  describe '#clean_previous_stats' do
+    it 'delete records associated to specific lines' do
+      Stat::JourneyPatternCoursesByDate.compute_for_referential(referential, line_ids: [line.id])
+      Stat::JourneyPatternCoursesByDate.compute_for_referential(referential, line_ids: [line2.id])
+      Stat::JourneyPatternCoursesByDate.clean_previous_stats([line2.id])
 
-      it 'should return JourneyPatternCoursesByDate items before the selected date' do
-        expect( filtered_jpcbd_list.count ).to eq 1
-      end
+      expect(
+        Stat::JourneyPatternCoursesByDate.where(line_id: line2.id).exists?
+      ).to be_falsy
+
+      expect(
+        Stat::JourneyPatternCoursesByDate.where(line_id: line.id).exists?
+      ).to be_truthy
     end
   end
 
   describe '#populate_for_journey_pattern' do
-    it 'should create nothing' do
+    it 'should create nothing without a vehicle_journey' do
       expect { Stat::JourneyPatternCoursesByDate.populate_for_journey_pattern(journey_pattern) }.to_not(
         change { Stat::JourneyPatternCoursesByDate.count }
       )
@@ -59,6 +77,7 @@ RSpec.describe Stat::JourneyPatternCoursesByDate, type: :model do
       let(:time_tables) { [time_table] }
       let(:time_table) { create :time_table, periods_count: 0, dates_count: 0 }
       let(:circulation_day) { period_start + 10 }
+
       context 'with no hole' do
         before do
           time_table.periods.create!(period_start: period_start, period_end: circulation_day)
@@ -142,6 +161,7 @@ RSpec.describe Stat::JourneyPatternCoursesByDate, type: :model do
       let(:time_tables) { [time_table] }
       let(:time_table) { create :time_table, periods_count: 0, dates_count: 0 }
       let(:circulation_day) { period_start + 10 }
+
       context 'with no hole' do
         before do
           time_table.periods.create!(period_start: period_start, period_end: circulation_day)
@@ -229,6 +249,36 @@ RSpec.describe Stat::JourneyPatternCoursesByDate, type: :model do
             ).to be_zero
           end
         end
+      end
+    end
+  end
+
+  describe 'scopes' do
+    before do
+      ["2020-01-01", "2020-06-01", "2020-12-01", "2021-01-01"].each{ |d| create :stat_journey_pattern_courses_by_date, date: d.to_date }
+    end
+
+    describe '#between' do
+      let(:filtered_jpcbd_list) { Stat::JourneyPatternCoursesByDate.between("2020-05-01".to_date, "2020-12-01".to_date) }
+
+      it 'should return JourneyPatternCoursesByDate items between the selected dates' do
+        expect( filtered_jpcbd_list.count ).to eq 2
+      end
+    end
+
+    describe '#before' do
+      let(:filtered_jpcbd_list) { Stat::JourneyPatternCoursesByDate.after("2020-05-01".to_date) }
+
+      it 'should return JourneyPatternCoursesByDate items after the selected date' do
+        expect( filtered_jpcbd_list.count ).to eq 3
+      end
+    end
+
+    describe '#after' do
+      let(:filtered_jpcbd_list) { Stat::JourneyPatternCoursesByDate.before("2020-05-01".to_date) }
+
+      it 'should return JourneyPatternCoursesByDate items before the selected date' do
+        expect( filtered_jpcbd_list.count ).to eq 1
       end
     end
   end

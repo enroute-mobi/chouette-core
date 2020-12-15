@@ -737,10 +737,6 @@ class Referential < ApplicationModel
     end
   end
 
-  def update_stats!
-    Stat::JourneyPatternCoursesByDate.compute_for_referential(self)
-  end
-
   def rebuild_cross_referential_index!
     CrossReferentialIndexEntry.rebuild_index_for_referential!(self)
   end

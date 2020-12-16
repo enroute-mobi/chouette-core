@@ -24,7 +24,14 @@ module Types
     field :updated_at, GraphQL::Types::ISO8601DateTime, null: true
 
     field :company, Types::CompanyType, null: true
+    def company
+      LazyLoading::Company.new(context, object.company_id) if object.company_id
+    end
+
     field :network, Types::NetworkType, null: true
+    def network
+      LazyLoading::Network.new(context, object.network_id) if object.network_id
+    end
 
     field :secondary_companies, Types::CompanyType.connection_type, null: true
     def secondary_companies

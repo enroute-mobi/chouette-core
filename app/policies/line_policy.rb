@@ -10,11 +10,11 @@ class LinePolicy < ApplicationPolicy
   end
 
   def destroy?
-    user.has_permission?('lines.destroy')
+    user.has_permission?('lines.destroy') && line_provider_matches?
   end
 
   def update?
-    user.has_permission?('lines.update')
+    user.has_permission?('lines.update') && line_provider_matches?
   end
 
   def update_activation_dates?

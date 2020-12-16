@@ -121,6 +121,10 @@ class ApplicationPolicy
     @current_workbench && @current_workbench.id == record.stop_area_provider.workbench_id
   end
 
+  def line_provider_matches?
+    @current_workbench && @current_workbench.id == record.line_provider.workbench_id
+  end
+
   class Scope
     attr_reader :user, :scope
 

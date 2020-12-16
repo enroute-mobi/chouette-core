@@ -158,7 +158,7 @@ RSpec.shared_examples 'permitted policy' do
   end
 end
 
-RSpec.shared_examples 'permitted policy but wrong provider' do
+RSpec.shared_examples 'permitted policy but unmet condition' do
   | permission|
 
   context 'permission absent → ' do

@@ -30,7 +30,7 @@ RSpec.describe ConnectionLinkPolicy, type: :policy do
   #  -----------
 
   context 'Destructive actions →' do
-    
+
     context 'record belongs to a stop area provider on which the user has rights →' do
       before do
         user_context.context[:workbench] =  context.workbench(:first)
@@ -65,13 +65,13 @@ RSpec.describe ConnectionLinkPolicy, type: :policy do
         it_behaves_like 'permitted policy', 'connection_links.create'
       end
       permissions :edit? do
-        it_behaves_like 'permitted policy but wrong provider', 'connection_links.update'
+        it_behaves_like 'permitted policy but unmet condition', 'connection_links.update'
       end
       permissions :update? do
-        it_behaves_like 'permitted policy but wrong provider', 'connection_links.update'
+        it_behaves_like 'permitted policy but unmet condition', 'connection_links.update'
       end
       permissions :destroy? do
-        it_behaves_like 'permitted policy but wrong provider', 'connection_links.destroy'
+        it_behaves_like 'permitted policy but unmet condition', 'connection_links.destroy'
       end
     end
   end

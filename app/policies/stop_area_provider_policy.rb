@@ -5,7 +5,7 @@ class StopAreaProviderPolicy < ApplicationPolicy
   end
 
   def destroy?
-    user.has_permission?('stop_area_providers.destroy')
+    user.has_permission?('stop_area_providers.destroy') && record.stop_areas.empty?
   end
 
   def update?

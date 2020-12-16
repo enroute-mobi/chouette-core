@@ -15,10 +15,19 @@ class StopAreaProvider < ActiveRecord::Base
   alias_attribute :registration_number, :objectid
   delegate :workgroup, to: :stop_area_referential
 
+  before_destroy :can_destroy?, prepend: true
+
   private
 
   def define_stop_area_referential
     self.stop_area_referential ||= workbench&.stop_area_referential
+  end
+
+  def can_destroy?
+    if stop_areas.any?
+      self.errors.add(:base, "Can't be destroy because it has at least one stop area")
+      throw :abort
+    end
   end
 
 end

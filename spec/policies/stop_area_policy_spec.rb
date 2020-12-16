@@ -65,13 +65,13 @@ RSpec.describe StopAreaPolicy, type: :policy do
         it_behaves_like 'permitted policy', 'stop_areas.create'
       end
       permissions :edit? do
-        it_behaves_like 'permitted policy but wrong provider', 'stop_areas.update'
+        it_behaves_like 'permitted policy but unmet condition', 'stop_areas.update'
       end
       permissions :update? do
-        it_behaves_like 'permitted policy but wrong provider', 'stop_areas.update'
+        it_behaves_like 'permitted policy but unmet condition', 'stop_areas.update'
       end
       permissions :destroy? do
-        it_behaves_like 'permitted policy but wrong provider', 'stop_areas.destroy'
+        it_behaves_like 'permitted policy but unmet condition', 'stop_areas.destroy'
       end
     end
 

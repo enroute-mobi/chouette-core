@@ -8,7 +8,7 @@ module Queries
     type Types::LineType, null: true
 
     def resolve(objectid: nil, registration_number: nil)
-      l = context[:target_referential].lines.find_by({
+      context[:target_referential].lines.find_by({
         objectid: objectid,
         registration_number: registration_number
       }.compact)

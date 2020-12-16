@@ -99,8 +99,7 @@ class Api::V1::DatasController < ActionController::Base
   end
 
   def published_referential
-    # @published_referential ||= workgroup&.output&.current
-    @published_referential ||= Referential.first
+    @published_referential ||= workgroup&.output&.current
   end
 
   def load_publication_api

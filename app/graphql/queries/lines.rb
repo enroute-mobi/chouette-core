@@ -8,11 +8,10 @@ module Queries
     type Types::LineType.connection_type, null: false
 
     def resolve(transport_mode: nil, company: nil)
-      if company
-        context[:target_referential].lines.joins(:company).where({transport_mode: transport_mode&.downcase}.compact).where("companies.name ilike '%#{company}%'")
-      else
-        context[:target_referential].lines.where({transport_mode: transport_mode&.downcase}.compact)
-      end
+      scope = context[:target_referential].lines
+      scope = scope.joins(:company).where("companies.name ilike '%#{company}%'") if company
+      scope = scope.where({transport_mode: transport_mode.downcase}) if transport_mode
+      scope
     end
   end
 end

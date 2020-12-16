@@ -59,6 +59,10 @@ module Stif
         organisational_units = results[:OrganisationalUnit]
 
         time = Benchmark.measure do
+          organisational_units.each do |entry|
+            update_organisational_unit entry
+          end
+
           stop_areas.each_slice(1000) do |entries|
             Chouette::StopArea.transaction do
               Chouette::StopArea.cache do
@@ -113,17 +117,26 @@ module Stif
         save_if_valid(stop) if stop.changed?
       end
 
+      def update_organisational_unit(entry)
+        stop_area_provider = get_stop_area_provider entry['id']
+        unless stop_area_provider
+          Rails.logger.info "Unknown StopAreaProvider '#{entry['id']}' in Sesame referenced by ICar"
+          return
+        end
+
+        stop_area_provider.name = entry["name"]
+        stop_area_provider.save
+      end
+
       def get_stop_area_provider objectid
         @_stop_area_provider_cache[objectid] ||= StopAreaProvider.find_by(objectid: objectid, stop_area_referential_id: defaut_referential.id)
       end
 
       def create_or_update_stop_area entry
         stop_area_provider = get_stop_area_provider(entry['dataSourceRef'])
-        unless stop_area_provider
-          Rails.logger.error("Reflex synchronization : stop area provider #{entry['dataSourceRef']} not found")
-          return
-        end
-        stop = stop_area_provider&.stop_areas&.find_or_create_by objectid: entry['id']
+        return unless stop_area_provider
+
+        stop = stop_area_provider.stop_areas.find_or_create_by objectid: entry['id']
         {
           name:          'Name',
           object_version: 'version',

@@ -20,4 +20,6 @@ class ChouetteSchema < GraphQL::Schema
   lazy_resolve(LazyLoading::ServiceCountTotal, :service_count)
   lazy_resolve(LazyLoading::StopRelation, :stop_relation)
   lazy_resolve(LazyLoading::Children, :children)
+  lazy_resolve(LazyLoading::Company, :company)
+  lazy_resolve(LazyLoading::Network, :network)
 end

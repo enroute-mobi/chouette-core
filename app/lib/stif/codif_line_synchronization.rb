@@ -22,8 +22,6 @@ module Stif
       end
 
       def synchronize
-        Codifligne::API.api_version = 2
-
         reset_counts
         start_time = Process.clock_gettime(Process::CLOCK_MONOTONIC, :second)
         # Fetch Codifline data

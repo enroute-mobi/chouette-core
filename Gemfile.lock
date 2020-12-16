@@ -29,7 +29,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/ilico-api.git
-  revision: ed9608712cdc91d1bd611551a6f886562d7da23c
+  revision: 74c015eac59d3b6303b730c72dada19b56c7e9cc
   specs:
     codifligne (0.2.00)
       nokogiri (>= 1.8.5)

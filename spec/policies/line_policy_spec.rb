@@ -30,7 +30,7 @@ RSpec.describe LinePolicy, type: :policy do
   #  -----------
 
   context 'Destructive actions →' do
-    context 'record belongs to a stop area provider on which the user has rights →' do
+    context 'record belongs to a line provider on which the user has rights →' do
       before do
         user_context.context[:workbench] =  context.workbench(:first)
       end
@@ -52,7 +52,7 @@ RSpec.describe LinePolicy, type: :policy do
       end
     end
 
-    context 'record belongs to a stop area provider on which the user has no rights →' do
+    context 'record belongs to a line provider on which the user has no rights →' do
       before do
         user_context.context[:workbench] =  context.workbench(:second)
       end

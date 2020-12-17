@@ -10,11 +10,11 @@ class LineNoticePolicy < ApplicationPolicy
   end
 
   def destroy?
-    !record.protected? && user.has_permission?('line_notices.destroy')
+    !record.protected? && user.has_permission?('line_notices.destroy') && line_provider_matches?
   end
 
   def update?
-    user.has_permission?('line_notices.update')
+    user.has_permission?('line_notices.update') && line_provider_matches?
   end
 
   def attach?

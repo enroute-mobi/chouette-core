@@ -10,10 +10,10 @@ class CompanyPolicy < ApplicationPolicy
   end
 
   def destroy?
-    user.has_permission?('companies.destroy')
+    user.has_permission?('companies.destroy') && line_provider_matches?
   end
 
   def update?
-    user.has_permission?('companies.update')
+    user.has_permission?('companies.update') && line_provider_matches?
   end
 end

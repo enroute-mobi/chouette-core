@@ -1,10 +1,17 @@
 RSpec.describe Chouette::LineNoticePolicy, type: :policy do
 
-  let( :record ){ build_stubbed :line_notice }
-  before { stub_policy_scope(record) }
+  let(:context) do
+    Chouette.create do
+      workbench :second
+      workbench :first do
+        line_notice
+      end
+    end
+  end
 
+  let(:record) { context.line_notice }
 
-  #
+  #  ---------------
   #  Non Destructive
   #  ---------------
 
@@ -17,40 +24,55 @@ RSpec.describe Chouette::LineNoticePolicy, type: :policy do
     end
   end
 
-
-  #
+  #  -----------
   #  Destructive
   #  -----------
 
   context 'Destructive actions →' do
-    permissions :create? do
-      it_behaves_like 'permitted policy', 'line_notices.create'
-    end
-    permissions :destroy? do
-      it_behaves_like 'permitted policy', 'line_notices.destroy'
-    end
-    permissions :edit? do
-      it_behaves_like 'permitted policy', 'line_notices.update'
-    end
-    permissions :new? do
-      it_behaves_like 'permitted policy', 'line_notices.create'
-    end
-    permissions :update? do
-      it_behaves_like 'permitted policy', 'line_notices.update'
-    end
+    context 'record belongs to a line provider on which the user has rights →' do
+      before do
+        user_context.context[:workbench] =  context.workbench(:first)
+      end
 
-    context 'with a protected notice' do
-      before(:each) do
-        referential.switch do
-          vj = create(:vehicle_journey)
-          vj.line_notices = [record]
-          vj.save
-        end
-
-        permissions :destroy? do
-          it_behaves_like 'always forbidden'
-        end
+      permissions :new? do
+        it_behaves_like 'permitted policy', 'line_notices.create'
+      end
+      permissions :create? do
+        it_behaves_like 'permitted policy', 'line_notices.create'
+      end
+      permissions :edit? do
+        it_behaves_like 'permitted policy', 'line_notices.update'
+      end
+      permissions :update? do
+        it_behaves_like 'permitted policy', 'line_notices.update'
+      end
+      permissions :destroy? do
+        it_behaves_like 'permitted policy', 'line_notices.destroy'
       end
     end
+
+    context 'record belongs to a line provider on which the user has no rights →' do
+      before do
+        user_context.context[:workbench] =  context.workbench(:second)
+      end
+
+      permissions :new? do
+        it_behaves_like 'permitted policy', 'line_notices.create'
+      end
+      permissions :create? do
+        it_behaves_like 'permitted policy', 'line_notices.create'
+      end
+      permissions :edit? do
+        it_behaves_like 'permitted policy but unmet condition', 'line_notices.update'
+      end
+      permissions :update? do
+        it_behaves_like 'permitted policy but unmet condition', 'line_notices.update'
+      end
+      permissions :destroy? do
+        it_behaves_like 'permitted policy but unmet condition', 'line_notices.destroy'
+      end
+    end
+
   end
+
 end

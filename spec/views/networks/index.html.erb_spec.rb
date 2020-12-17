@@ -25,6 +25,8 @@ describe "/networks/index", :type => :view do
     assign :networks, paginate_collection(Chouette::Network, NetworkDecorator, 1, decorator_context)
   end
 
+  let!(:search) { assign :q, Ransack::Search.new(Chouette::Network) }
+
   before(:each) do
     allow(view).to receive(:collection).and_return(networks)
     allow(view).to receive(:decorated_collection).and_return(networks)

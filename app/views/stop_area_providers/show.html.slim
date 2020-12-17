@@ -1,4 +1,4 @@
-- breadcrumb :stop_area_provider, @stop_area_referential, @stop_area_provider
+- breadcrumb :stop_area_provider, @workbench, @stop_area_provider
 - page_header_content_for @stop_area_provider
 
 / PageContent
@@ -10,5 +10,6 @@
           {  \
             t('id_reflex') => @stop_area_provider.get_objectid.short_id,
             StopAreaProvider.tmf('name') => @stop_area_provider.name,
+            StopAreaProvider.tmf('workbench') => @stop_area_provider.workbench.name,
             Chouette::StopArea.t.capitalize => "#{@stop_area_provider.stop_areas.count} #{Chouette::StopArea.t}" \
           }

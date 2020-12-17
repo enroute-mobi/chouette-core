@@ -17,6 +17,10 @@ class StopAreaProvider < ActiveRecord::Base
 
   before_destroy :can_destroy?, prepend: true
 
+  def used?
+    [ stop_areas, connection_links, stop_area_routing_constraints ].any?(&:exists?)
+  end
+
   private
 
   def define_stop_area_referential
@@ -24,7 +28,7 @@ class StopAreaProvider < ActiveRecord::Base
   end
 
   def can_destroy?
-    if stop_areas.any?
+    if used?
       self.errors.add(:base, "Can't be destroy because it has at least one stop area")
       throw :abort
     end

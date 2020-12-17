@@ -46,7 +46,7 @@ class StopAreaProvidersController < ChouetteController
   end
 
   def collection
-    scope = policy_scope(parent.stop_area_providers)
+    scope = policy_scope(end_of_association_chain)
 
     @stop_area_providers ||= begin
       stop_area_providers = scope.order(:name)

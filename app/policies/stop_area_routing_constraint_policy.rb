@@ -10,15 +10,11 @@ class StopAreaRoutingConstraintPolicy < ApplicationPolicy
   end
 
   def destroy?
-    stop_area_referential_match? && instance_permission(:destroy)
+    instance_permission(:destroy) && stop_area_provider_matches?
   end
 
   def update?
-    stop_area_referential_match? && instance_permission(:update)
-  end
-
-  def stop_area_referential_match?
-    user.workbenches.pluck(:stop_area_referential_id).include?(record.stop_area_referential.id)
+    instance_permission(:update) && stop_area_provider_matches?
   end
 
   def instance_permission permission

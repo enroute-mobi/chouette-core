@@ -166,16 +166,12 @@ module StopAreasHelper
     attributes.merge!(Chouette::StopArea.tmf('comment') => stop_area.try(:comment))
   end
 
-  def associated_stop_link(stop_area, stop_area_referential)
-    link_to(stop_area.name, stop_area_referential_stop_area_path(stop_area_referential, stop_area))
-  end
-
-  def stop_area_connections(connection_links, stop_area, stop_area_referential)
+  def stop_area_connections(connection_links, stop_area, workbench)
     table_builder_2 connection_links,
       [ \
         TableBuilderHelper::Column.new( \
           name: t('.connections.stop'), \
-          attribute: Proc.new { |c| link_to c.associated_stop(stop_area.id).name, stop_area_referential_connection_link_path(stop_area_referential, c) } \
+          attribute: Proc.new { |c| link_to c.associated_stop(stop_area.id).name, workbench_stop_area_referential_connection_link_path(workbench, c) } \
         ), \
         TableBuilderHelper::Column.new( \
           name: t('.connections.duration'), \
@@ -192,9 +188,9 @@ module StopAreasHelper
       action: :index
   end
 
-  def more_connections_link(stop_area, stop_area_referential)
+  def more_connections_link(stop_area, workbench)
     link_name = t('.connections.more', count: (stop_area.connection_links.count - 4))
-    link_path = stop_area_referential_connection_links_path(stop_area_referential, :'q[departure_name_or_arrival_name_cont]' => stop_area.name)
+    link_path = workbench_stop_area_referential_connection_links_path(workbench, :'q[departure_name_or_arrival_name_cont]' => stop_area.name)
     link_to link_name, link_path, class: 'btn btn-link'
   end
 
@@ -209,12 +205,12 @@ module StopAreasHelper
     stop.slice(:id, :longitude, :latitude)
   end
 
-  def stop_area_specific_stops(specific_stops, stop_area_referential)
+  def stop_area_specific_stops(specific_stops, workbench)
     table_builder_2 specific_stops,
       [ \
         TableBuilderHelper::Column.new( \
           key: :name, \
-          attribute: Proc.new { |s| link_to s.name, stop_area_referential_stop_area_path(stop_area_referential, s) } \
+          attribute: Proc.new { |s| link_to s.name, workbench_stop_area_referential_stop_area_path(workbench, s) } \
         ), \
         TableBuilderHelper::Column.new( \
           name: t('id_reflex'), \

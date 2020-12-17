@@ -30,7 +30,7 @@ class Api::V1::ImportsController < Api::V1::WorkbenchController
   private
 
   def imports_map
-    current_workbench.imports.collect do |import|
+    current_workbench.workbench_imports.includes(:children).collect do |import|
       {id: import.id, name: import.name, status: import.status, referential_ids: import.children.collect(&:referential_id).compact}
     end
   end

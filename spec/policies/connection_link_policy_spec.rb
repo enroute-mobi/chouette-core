@@ -1,9 +1,18 @@
 RSpec.describe ConnectionLinkPolicy, type: :policy do
 
-  let( :record ){ build_stubbed :connection_link }
-  before { stub_policy_scope(record) }
+  let(:context) do
+    Chouette.create do
+      workbench :first do
+        stop_area :first
+        stop_area :second
+      end
+      workbench :second
+    end
+  end
 
-  #
+  let(:record) { create :connection_link, stop_area_provider: context.stop_area(:first).stop_area_provider, departure: context.stop_area(:first), arrival: context.stop_area(:second) }
+
+  #  ---------------
   #  Non Destructive
   #  ---------------
 
@@ -16,26 +25,54 @@ RSpec.describe ConnectionLinkPolicy, type: :policy do
     end
   end
 
-
-  #
+  #  -----------
   #  Destructive
   #  -----------
 
   context 'Destructive actions →' do
-    permissions :create? do
-      it_behaves_like 'permitted policy', 'connection_links.create'
+
+    context 'record belongs to a stop area provider on which the user has rights →' do
+      before do
+        user_context.context[:workbench] =  context.workbench(:first)
+      end
+
+      permissions :new? do
+        it_behaves_like 'permitted policy', 'connection_links.create'
+      end
+      permissions :create? do
+        it_behaves_like 'permitted policy', 'connection_links.create'
+      end
+      permissions :edit? do
+        it_behaves_like 'permitted policy', 'connection_links.update'
+      end
+      permissions :update? do
+        it_behaves_like 'permitted policy', 'connection_links.update'
+      end
+      permissions :destroy? do
+        it_behaves_like 'permitted policy', 'connection_links.destroy'
+      end
     end
-    permissions :destroy? do
-      it_behaves_like 'permitted policy', 'connection_links.destroy'
-    end
-    permissions :edit? do
-      it_behaves_like 'permitted policy', 'connection_links.update'
-    end
-    permissions :new? do
-      it_behaves_like 'permitted policy', 'connection_links.create'
-    end
-    permissions :update? do
-      it_behaves_like 'permitted policy', 'connection_links.update'
+
+    context 'record belongs to a stop area provider on which the user no rights →' do
+      before do
+        user_context.context[:workbench] =  context.workbench(:second)
+      end
+
+      permissions :new? do
+        it_behaves_like 'permitted policy', 'connection_links.create'
+      end
+      permissions :create? do
+        it_behaves_like 'permitted policy', 'connection_links.create'
+      end
+      permissions :edit? do
+        it_behaves_like 'permitted policy but unmet condition', 'connection_links.update'
+      end
+      permissions :update? do
+        it_behaves_like 'permitted policy but unmet condition', 'connection_links.update'
+      end
+      permissions :destroy? do
+        it_behaves_like 'permitted policy but unmet condition', 'connection_links.destroy'
+      end
     end
   end
 end

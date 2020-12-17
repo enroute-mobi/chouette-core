@@ -143,8 +143,15 @@ class Workbench < ApplicationModel
     end
   end
 
+  mattr_accessor :disable_default_stop_area_provider
+
   def default_stop_area_provider
-    @default_stop_area_provider ||= stop_area_providers.first || stop_area_providers.find_or_initialize_by(name: DEFAULT_PROVIDER_SHORT_NAME.capitalize) do |p|
+    @default_stop_area_provider ||= stop_area_providers.first || create_default_stop_area_provider
+  end
+
+  def create_default_stop_area_provider
+    return if disable_default_stop_area_provider
+    stop_area_providers.find_or_initialize_by(name: DEFAULT_PROVIDER_SHORT_NAME.capitalize) do |p|
       p.stop_area_referential_id = stop_area_referential_id
     end
   end

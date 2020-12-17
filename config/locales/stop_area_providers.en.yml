@@ -21,4 +21,5 @@ en:
     attributes:
       stop_area_provider:
         name: Name
-        stop_area_ids: Stop areas
+        stop_area_ids: Stop Areas
+        workbench: Workbench

@@ -74,7 +74,7 @@ class ApplicationPolicy
   end
 
 
-  #
+  #  ------------------
   #  Custom Permissions
   #  ------------------
 
@@ -115,6 +115,10 @@ class ApplicationPolicy
 
   def record_workbench
     record.workbench if record.respond_to?(:workbench)
+  end
+
+  def stop_area_provider_matches?
+    @current_workbench && @current_workbench.id == record.stop_area_provider.workbench_id
   end
 
   class Scope

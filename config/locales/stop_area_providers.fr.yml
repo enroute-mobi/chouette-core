@@ -22,3 +22,4 @@ fr:
       stop_area_provider:
         name: Nom
         stop_area_ids: Arrêts
+        workbench: Espace de travail

@@ -1,4 +1,4 @@
-- breadcrumb :stop_area_providers, @stop_area_referential
+- breadcrumb :stop_area_providers, @workbench
 
 .page_content
   .container-fluid
@@ -21,6 +21,10 @@
                     stop_area_provider \
                   ) \
                 end \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :workbench, \
+                attribute: Proc.new { |provider| provider.workbench.name }, \
               ), \
             ],\
             cls: 'table has-filter has-search'

@@ -59,6 +59,10 @@ module Stif
         organisational_units = results[:OrganisationalUnit]
 
         time = Benchmark.measure do
+          organisational_units.each do |entry|
+            update_organisational_unit entry
+          end
+
           stop_areas.each_slice(1000) do |entries|
             Chouette::StopArea.transaction do
               Chouette::StopArea.cache do
@@ -113,12 +117,26 @@ module Stif
         save_if_valid(stop) if stop.changed?
       end
 
+      def update_organisational_unit(entry)
+        stop_area_provider = get_stop_area_provider entry['id']
+        unless stop_area_provider
+          Rails.logger.info "Unknown StopAreaProvider '#{entry['id']}' in Sesame referenced by ICar"
+          return
+        end
+
+        stop_area_provider.name = entry["name"]
+        stop_area_provider.save
+      end
+
       def get_stop_area_provider objectid
         @_stop_area_provider_cache[objectid] ||= StopAreaProvider.find_by(objectid: objectid, stop_area_referential_id: defaut_referential.id)
       end
 
       def create_or_update_stop_area entry
-        stop = Chouette::StopArea.find_or_create_by(objectid: entry['id'], stop_area_referential: self.defaut_referential, stop_area_provider: get_stop_area_provider(entry['dataSourceRef']) )
+        stop_area_provider = get_stop_area_provider(entry['dataSourceRef'])
+        return unless stop_area_provider
+
+        stop = stop_area_provider.stop_areas.find_or_create_by objectid: entry['id']
         {
           name:          'Name',
           object_version: 'version',
@@ -155,17 +173,6 @@ module Stif
           prop = stop.new_record? ? :imported_count : :updated_count
           increment_counts prop, 1
           save_if_valid(stop)
-        end
-
-        if entry["dataSourceRef"]
-          stop_area_provider = @_stop_area_provider_cache[entry["dataSourceRef"]]
-          if stop_area_provider
-            stop_area_provider.stop_areas << stop unless stop_area_provider.stop_areas.include?(stop)
-          else
-            unless entry['dataSourceRef'] == "FR1-ARRET_AUTO"
-              Rails.logger.error "Reflex:sync - can't find OrganisationalUnit #{entry['dataSourceRef']} for stop #{entry['id']}"
-            end
-          end
         end
 
         stop

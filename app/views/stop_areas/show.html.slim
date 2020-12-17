@@ -21,7 +21,7 @@
             h4.underline= Chouette::StopArea.tmf('specific_stops')
 
             - if @specific_stops.any?
-              = stop_area_specific_stops(@specific_stops, @stop_area_referential)
+              = stop_area_specific_stops(@specific_stops, @workbench)
               = new_pagination @specific_stops, 'pull-right'
             - else
               .mb-xs
@@ -31,7 +31,7 @@
           .col-lg-6.col-md-6.col-sm-12.col-xs-12
             h4.underline= t('.connections.title')
             - if @connection_links.any?
-              = stop_area_connections(@connection_links, @stop_area, @stop_area_referential)
+              = stop_area_connections(@connection_links, @stop_area, @workbench)
             - unless @connection_links.any?
               .mb-xs
                 = replacement_msg t('.connections.no_connection')
@@ -40,7 +40,7 @@
               .col-md-8
                 = link_to t('connection_links.actions.new'), new_workbench_stop_area_referential_connection_link_path(@workbench, departure_id: @stop_area.id), class: 'btn btn-action large'
               .col-md-4
-                = more_connections_link(@stop_area, @stop_area_referential) if @stop_area.connection_links.count > 4
+                = more_connections_link(@stop_area, @workbench) if @stop_area.connection_links.count > 4
 
 
 - if has_feature?(:stop_area_connection_links) && @stop_area.connection_links.any?

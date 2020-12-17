@@ -10,18 +10,10 @@ class StopAreaPolicy < ApplicationPolicy
   end
 
   def destroy?
-    user.has_permission?('stop_areas.destroy')
+    user.has_permission?('stop_areas.destroy') && stop_area_provider_matches?
   end
 
   def update?
-    user.has_permission?('stop_areas.update')
-  end
-
-  def deactivate?
-    !record.deactivated? && user.has_permission?('stop_areas.change_status')
-  end
-
-  def activate?
-    record.deactivated? && user.has_permission?('stop_areas.change_status')
+    user.has_permission?('stop_areas.update') && stop_area_provider_matches?
   end
 end

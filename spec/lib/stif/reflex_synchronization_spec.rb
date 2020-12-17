@@ -7,16 +7,7 @@ RSpec.describe Stif::ReflexSynchronization do
   let!(:stop_area_provider) { create :stop_area_provider, objectid: "FR1:OrganisationalUnit:8:", stop_area_referential_id: stop_area_referential.id}
   let!(:default_referent_stop_area_provider) { create :stop_area_provider, objectid: "FR1-ARRET_AUTO", stop_area_referential_id: stop_area_referential.id}
 
-  # let(:context) do
-  #   Chouette.create do
-  #     stop_area_provider
-  #   end
-  # end
-  #
-  # let(:target) { context.stop_area_referential }
-  # let(:stop_area_provider) { context.stop_area_provider }
-
-  describe "with reflex file not referencing referent stop areas" do
+  describe "reflex file without referent stop areas" do
     before(:each) do
       stub_request(:get, api_url).to_return(body: File.open("#{fixture_path}/reflex_without_referents.xml"), status: 200)
     end

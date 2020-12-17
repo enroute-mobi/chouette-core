@@ -75,7 +75,7 @@ class StopAreasController < ChouetteController
       end
 
       @stop_area = @stop_area.decorate(context: { workbench: @workbench })
-      @connection_links = ConnectionLinkDecorator.decorate(@stop_area.connection_links.limit(4))
+      @connection_links = ConnectionLinkDecorator.decorate(@stop_area.connection_links.limit(4), context: {workbench: @workbench})
       @specific_stops = @stop_area.specific_stops.paginate(:page => params[:page], :per_page => 5)
     end
   end
@@ -93,12 +93,6 @@ class StopAreasController < ChouetteController
   def update
     authorize stop_area
     update!
-  end
-
-  def default_geometry
-    count = stop_area_referential.stop_areas.without_geometry.default_geometry!
-    flash[:notice] = I18n.translate("stop_areas.default_geometry_success", :count => count)
-    redirect_to stop_area_referential_stop_areas_path(@stop_area_referential)
   end
 
   def zip_codes

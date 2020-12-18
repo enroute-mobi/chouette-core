@@ -36,11 +36,16 @@ class CompaniesController < ChouetteController
   def create
     authorize resource_class
     build_resource
-    @company.line_provider = line_referential.workbenches.first&.default_line_provider
     super
   end
 
   protected
+
+  def build_resource
+    get_resource_ivar || super.tap do |company|
+      company.line_provider ||= @workbench.default_line_provider
+    end
+  end
 
   def collection
     scope = if(params.include?('line_id'))

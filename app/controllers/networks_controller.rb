@@ -30,7 +30,6 @@ class NetworksController < ChouetteController
   def create
     authorize resource_class
     build_resource
-    @network.line_provider = @workbench.default_line_provider
     super
   end
 
@@ -72,6 +71,12 @@ class NetworksController < ChouetteController
   end
 
   private
+
+  def build_resource
+    get_resource_ivar || super.tap do |network|
+      network.line_provider ||= @workbench.default_line_provider
+    end
+  end
 
   def sort_column
     line_referential.networks.column_names.include?(params[:sort]) ? params[:sort] : 'name'

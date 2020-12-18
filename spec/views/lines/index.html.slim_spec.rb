@@ -1,25 +1,35 @@
 describe "/lines/index", :type => :view do
-  let(:deactivated_line){ nil }
-  let(:workbench) { assign :workbench, current_workbench }
-  let(:line_referential) { assign :line_referential, create(:line_referential, workgroup: workbench.workgroup) }
-  let(:line_provider) { build :line_provider, line_referential: line_referential, workbench: workbench }
-  let(:current_organisation) { current_user.organisation }
-  let(:context) {
+
+  let(:context) do
+    Chouette.create do
+      workbench :second
+      workbench :first do
+        network :first_network
+        company :first_company
+        line :first, network: :first_network, company: :first_company
+        line :second, network: :first_network, company: :first_company
+      end
+    end
+  end
+
+  let(:workbench) { assign :workbench, context.workbench(:first) }
+  let(:line_provider) { context.line(:first).line_provider }
+  let(:line_referential) { assign :line_referential, line_provider.line_referential }
+  let(:network) { context.network(:first_network) }
+  let(:company) { context.company(:first_company) }
+  let(:decorator_context) {
     {
-      current_organisation: current_organisation,
+      current_organisation: current_user.organisation,
       line_referential: line_referential,
       workbench: workbench
     }
   }
-  let(:network) { build(:network, line_referential: line_referential, line_provider: line_provider) }
-  let(:company) { build(:company, line_referential: line_referential, line_provider: line_provider) }
   let(:lines) do
-    assign :lines, build_paginated_collection(:line, LineDecorator, line_referential: line_referential, line_provider: line_provider, company: company, network: network, context: context)
+    assign :lines, paginate_collection(Chouette::Line, LineDecorator, 1, decorator_context)
   end
   let!(:q) { assign :q, Ransack::Search.new(Chouette::Line) }
 
   before :each do
-    deactivated_line
     allow(view).to receive(:collection).and_return(lines)
     allow(view).to receive(:decorated_collection).and_return(lines)
     allow(view).to receive(:current_referential).and_return(line_referential)
@@ -62,15 +72,35 @@ describe "/lines/index", :type => :view do
       it { should have_the_right_number_of_links(lines, 4) }
     end
 
-    with_permission "lines.destroy" do
-      common_items.call()
-      it {
-        should have_link_for_each_item(lines, "destroy", {
-                                         href: ->(line){ view.workbench_line_referential_line_path(workbench, line)},
-                                         method: :delete
-                                       })
-      }
-      it { should have_the_right_number_of_links(lines, 5) }
+    context 'record belongs to a stop area provider on which the user has rights →' do
+      let(:pundit_user){ UserContext.new(current_user, referential: current_referential, workbench: workbench)}
+
+      with_permission "lines.destroy" do
+        common_items.call()
+        it {
+          should have_link_for_each_item(lines, "destroy", {
+            href: ->(line){ view.workbench_line_referential_line_path(workbench, line)},
+            method: :delete
+            })
+        }
+        it { should have_the_right_number_of_links(lines, 5) }
+      end
+    end
+
+    context 'record belongs to a stop area provider on which the user has no rights →' do
+      let(:pundit_user){ UserContext.new(current_user, referential: current_referential, workbench: context.workbench(:second))}
+
+      with_permission "lines.destroy" do
+        common_items.call()
+        it {
+          should_not have_link_for_each_item(lines, "destroy", {
+            href: ->(line){ view.workbench_line_referential_line_path(workbench, line)},
+            method: :delete
+            })
+        }
+        it { should have_the_right_number_of_links(lines, 4) }
+      end
     end
   end
+
 end

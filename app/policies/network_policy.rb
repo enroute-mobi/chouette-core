@@ -9,10 +9,10 @@ class NetworkPolicy < ApplicationPolicy
   end
 
   def destroy?
-    user.has_permission?('networks.destroy')
+    user.has_permission?('networks.destroy') && line_provider_matches?
   end
 
   def update?
-    user.has_permission?('networks.update')
+    user.has_permission?('networks.update') && line_provider_matches?
   end
 end

@@ -1,10 +1,17 @@
 RSpec.describe LinePolicy, type: :policy do
 
-  let( :record ){ build_stubbed :line }
-  before { stub_policy_scope(record) }
+  let(:context) do
+    Chouette.create do
+      workbench :second
+      workbench :first do
+        line
+      end
+    end
+  end
 
+  let(:record) { context.line }
 
-  #
+  #  ---------------
   #  Non Destructive
   #  ---------------
 
@@ -18,26 +25,55 @@ RSpec.describe LinePolicy, type: :policy do
   end
 
 
-  #
+  #  -----------
   #  Destructive
   #  -----------
 
   context 'Destructive actions →' do
-    permissions :create? do
-      it_behaves_like 'permitted policy', 'lines.create'
+    context 'record belongs to a line provider on which the user has rights →' do
+      before do
+        user_context.context[:workbench] =  context.workbench(:first)
+      end
+
+      permissions :new? do
+        it_behaves_like 'permitted policy', 'lines.create'
+      end
+      permissions :create? do
+        it_behaves_like 'permitted policy', 'lines.create'
+      end
+      permissions :edit? do
+        it_behaves_like 'permitted policy', 'lines.update'
+      end
+      permissions :update? do
+        it_behaves_like 'permitted policy', 'lines.update'
+      end
+      permissions :destroy? do
+        it_behaves_like 'permitted policy', 'lines.destroy'
+      end
     end
-    permissions :destroy? do
-      it_behaves_like 'permitted policy', 'lines.destroy'
+
+    context 'record belongs to a line provider on which the user has no rights →' do
+      before do
+        user_context.context[:workbench] =  context.workbench(:second)
+      end
+
+      permissions :new? do
+        it_behaves_like 'permitted policy', 'lines.create'
+      end
+      permissions :create? do
+        it_behaves_like 'permitted policy', 'lines.create'
+      end
+      permissions :edit? do
+        it_behaves_like 'permitted policy but unmet condition', 'lines.update'
+      end
+      permissions :update? do
+        it_behaves_like 'permitted policy but unmet condition', 'lines.update'
+      end
+      permissions :destroy? do
+        it_behaves_like 'permitted policy but unmet condition', 'lines.destroy'
+      end
     end
-    permissions :edit? do
-      it_behaves_like 'permitted policy', 'lines.update'
-    end
-    permissions :new? do
-      it_behaves_like 'permitted policy', 'lines.create'
-    end
-    permissions :update? do
-      it_behaves_like 'permitted policy', 'lines.update'
-    end
+
   end
 
 end

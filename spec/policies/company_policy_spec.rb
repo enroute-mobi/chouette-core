@@ -1,10 +1,17 @@
 RSpec.describe CompanyPolicy, type: :policy do
 
-  let( :record ){ build_stubbed :company }
-  before { stub_policy_scope(record) }
+  let(:context) do
+    Chouette.create do
+      workbench :second
+      workbench :first do
+        company
+      end
+    end
+  end
 
+  let(:record) { context.company }
 
-  #
+  #  ---------------
   #  Non Destructive
   #  ---------------
 
@@ -18,25 +25,54 @@ RSpec.describe CompanyPolicy, type: :policy do
   end
 
 
-  #
+  #  -----------
   #  Destructive
   #  -----------
 
   context 'Destructive actions →' do
-    permissions :create? do
-      it_behaves_like 'permitted policy', 'companies.create'
+    context 'record belongs to a line provider on which the user has rights →' do
+      before do
+        user_context.context[:workbench] =  context.workbench(:first)
+      end
+
+      permissions :new? do
+        it_behaves_like 'permitted policy', 'companies.create'
+      end
+      permissions :create? do
+        it_behaves_like 'permitted policy', 'companies.create'
+      end
+      permissions :edit? do
+        it_behaves_like 'permitted policy', 'companies.update'
+      end
+      permissions :update? do
+        it_behaves_like 'permitted policy', 'companies.update'
+      end
+      permissions :destroy? do
+        it_behaves_like 'permitted policy', 'companies.destroy'
+      end
     end
-    permissions :destroy? do
-      it_behaves_like 'permitted policy', 'companies.destroy'
+
+    context 'record belongs to a line provider on which the user has no rights →' do
+      before do
+        user_context.context[:workbench] =  context.workbench(:second)
+      end
+
+      permissions :new? do
+        it_behaves_like 'permitted policy', 'companies.create'
+      end
+      permissions :create? do
+        it_behaves_like 'permitted policy', 'companies.create'
+      end
+      permissions :edit? do
+        it_behaves_like 'permitted policy but unmet condition', 'companies.update'
+      end
+      permissions :update? do
+        it_behaves_like 'permitted policy but unmet condition', 'companies.update'
+      end
+      permissions :destroy? do
+        it_behaves_like 'permitted policy but unmet condition', 'companies.destroy'
+      end
     end
-    permissions :edit? do
-      it_behaves_like 'permitted policy', 'companies.update'
-    end
-    permissions :new? do
-      it_behaves_like 'permitted policy', 'companies.create'
-    end
-    permissions :update? do
-      it_behaves_like 'permitted policy', 'companies.update'
-    end
+
   end
 end

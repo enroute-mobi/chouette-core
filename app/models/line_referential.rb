@@ -13,6 +13,8 @@ class LineReferential < ApplicationModel
   has_many :line_notices, class_name: 'Chouette::LineNotice', inverse_of: :line_referential, dependent: :destroy
   has_one  :workgroup, dependent: :nullify
 
+  has_many :line_providers
+
   def add_member(organisation, options = {})
     attributes = options.merge organisation: organisation
     line_referential_memberships.build attributes unless organisations.include?(organisation)

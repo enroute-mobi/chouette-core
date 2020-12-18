@@ -1,12 +1,30 @@
 describe "/networks/index", :type => :view do
 
-  let!(:workbench) { assign :workbench, current_workbench }
-  let!(:line_referential) { assign :line_referential, create(:line_referential) }
-  let(:line_provider) { build :line_provider, line_referential: line_referential, workbench: workbench }
-  let(:context) { { workbench: workbench, line_referential: line_referential } }
-  let!(:networks) do
-    assign :networks, build_paginated_collection(:network, NetworkDecorator, line_provider: line_provider, context: context)
+  let(:context) do
+    Chouette.create do
+      workbench :second
+      workbench :first do
+        network :first
+        network :second
+      end
+    end
   end
+
+  let(:workbench) { assign :workbench, context.workbench(:first) }
+  let(:line_provider) { context.network(:first).line_provider }
+  let(:line_referential) { assign :line_referential, line_provider.line_referential }
+  let(:decorator_context) {
+    {
+      current_organisation: current_user.organisation,
+      line_referential: line_referential,
+      workbench: workbench
+    }
+  }
+
+  let(:networks) do
+    assign :networks, paginate_collection(Chouette::Network, NetworkDecorator, 1, decorator_context)
+  end
+
   let!(:search) { assign :q, Ransack::Search.new(Chouette::Network) }
 
   before(:each) do

@@ -26,7 +26,6 @@ class LineNoticesController < ChouetteController
 
   def create
     build_resource
-    @line_notice.line_provider = @workbench.default_line_provider
     create! do
       if @line
         @line.line_notices << @line_notice
@@ -46,6 +45,12 @@ class LineNoticesController < ChouetteController
   alias_method :line_referential, :parent
 
   private
+
+  def build_resource
+    get_resource_ivar || super.tap do |line_notice|
+      line_notice.line_provider ||= @workbench.default_line_provider
+    end
+  end
 
   def resource
     super.decorate(context: { workbench: @workbench, line_referential: line_referential })

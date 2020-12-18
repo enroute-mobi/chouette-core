@@ -79,7 +79,6 @@ class LinesController < ChouetteController
   def create
     authorize resource_class
     build_resource
-    @line.line_provider = @workbench.default_line_provider
     super
   end
 
@@ -113,6 +112,12 @@ class LinesController < ChouetteController
   end
 
   protected
+
+  def build_resource
+    get_resource_ivar || super.tap do |line|
+      line.line_provider ||= @workbench.default_line_provider
+    end
+  end
 
   def filtered_lines_maps
     filtered_lines.collect do |line|

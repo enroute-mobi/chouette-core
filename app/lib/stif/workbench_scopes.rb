@@ -9,7 +9,7 @@ module Stif
     def stop_areas_scope(initial_scope)
       stop_areas_provider_objectids = parse_stop_areas_providers
       if stop_areas_provider_objectids
-        ids = initial_scope.joins(:stop_area_providers).where("stop_area_providers.objectid" => stop_areas_provider_objectids).select('stop_areas.id').to_sql
+        ids = initial_scope.joins(:stop_area_provider).where("stop_area_providers.objectid" => stop_areas_provider_objectids).select('stop_areas.id').to_sql
         initial_scope.where("stop_areas.id IN (#{ids})")
       else
         initial_scope.none

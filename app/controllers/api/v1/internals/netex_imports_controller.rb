@@ -36,6 +36,11 @@ module Api
 
         private
 
+        def store_file_and_clean_cache(source)
+          source.file.cache_stored_file!
+          CarrierWave.clean_cached_files!
+        end
+
         def find_netex_import
           @netex_import = Import::Netex.find(params[:id])
         rescue ActiveRecord::RecordNotFound

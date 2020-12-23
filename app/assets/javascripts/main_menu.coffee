@@ -1,3 +1,4 @@
+console.log('ça marche !')
 stickyActions = []
 ptitleCont = ""
 mainNav = $('#main_nav')

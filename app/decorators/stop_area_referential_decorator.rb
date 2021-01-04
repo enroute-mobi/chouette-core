@@ -10,7 +10,7 @@ class StopAreaReferentialDecorator < AF83::Decorator
     end
 
     instance_decorator.action_link primary: :show do |l|
-      l.content t('actions.edit')
+      l.content t('stop_area_referentials.actions.edit_params')
       l.href { h.edit_workbench_stop_area_referential_path context[:workbench] }
     end
 

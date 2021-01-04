@@ -51,6 +51,8 @@ en:
     - October
     - November
     - December
+    ago: "%{distance_in_time} ago"
+    updated: "updated %{distance_in_time} ago"
 
   last_update: 'Last update on %{time}'
   whodunnit: 'By %{author}'

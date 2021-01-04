@@ -46,9 +46,9 @@ class Workbench < ApplicationModel
   has_many :referential_metadatas, through: :referentials, source: :metadatas
   has_many :notification_rules, dependent: :destroy
 
-  has_many :shape_providers
-  has_many :line_providers
-  has_many :stop_area_providers
+  has_many :shape_providers, dependent: :destroy
+  has_many :line_providers, dependent: :destroy
+  has_many :stop_area_providers, dependent: :destroy
 
   before_validation :create_dependencies, on: :create
 

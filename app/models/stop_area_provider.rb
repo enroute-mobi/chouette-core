@@ -17,6 +17,8 @@ class StopAreaProvider < ActiveRecord::Base
 
   before_destroy :can_destroy?, prepend: true
 
+  validates :name, presence: true
+
   def used?
     [ stop_areas, connection_links, stop_area_routing_constraints ].any?(&:exists?)
   end

@@ -9,22 +9,22 @@ git_source(:en_route) { |name| "https://bitbucket.org/enroute-mobi/#{name}.git" 
 gem 'rails', '~> 5.2.4', '>= 5.2.4.4'
 
 # Use SCSS for stylesheets
-gem 'sassc-rails'
+gem 'sassc-rails', '>= 2.1.2'
 gem 'sassc', '2.1.0'
 
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier', '~> 2.7.2'
 # Use CoffeeScript for .js.coffee assets and views
-gem 'coffee-rails'
+gem 'coffee-rails', '>= 5.0.0'
 
 gem 'sprockets', '~> 3.7.2'
 
 # Webpacker
-gem 'webpacker', '~> 5.x'
+gem 'webpacker', '~> 5.2', '>= 5.2.1'
 
 # Use jquery as the JavaScript library
-gem 'jquery-rails'
-gem 'jquery-ui-rails'
+gem 'jquery-rails', '>= 4.4.0'
+gem 'jquery-ui-rails', '>= 6.0.1'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder'
 
@@ -46,7 +46,7 @@ gem 'therubyracer'
 gem 'pg'
 
 gem 'activerecord-postgis-adapter'
-gem 'postgres-copy'
+gem 'postgres-copy', '>= 1.5.0'
 
 gem 'polylines'
 gem 'bulk_insert'
@@ -59,10 +59,10 @@ gem 'codifligne', en_route: 'ilico-api'
 gem 'icar', en_route: 'icar-api'
 
 # Authentication
-gem 'devise'
-gem 'devise_cas_authenticatable'
-gem 'devise-encryptable'
-gem 'devise_invitable'
+gem 'devise', '>= 4.7.3'
+gem 'devise_cas_authenticatable', '>= 1.10.4'
+gem 'devise-encryptable', '>= 0.2.0'
+gem 'devise_invitable', '>= 2.0.3'
 
 # Authorization
 gem 'pundit'
@@ -83,37 +83,37 @@ gem 'mimemagic'
 gem 'language_engine', '0.0.9', en_route: 'language_engine'
 gem 'calendar_helper', '0.2.5'
 gem 'cocoon'
-gem 'slim-rails'
-gem 'formtastic'
-gem 'simple_form'
+gem 'slim-rails', '>= 3.2.0'
+gem 'formtastic', '>= 3.1.5'
+gem 'simple_form', '>= 5.0.3'
 gem 'font-awesome-sassc'
 gem 'will_paginate-bootstrap'
-gem 'gretel', '>= 3.0.9'
+gem 'gretel', '>= 4.2.0'
 gem 'country_select'
-gem 'flag-icons-rails'
+gem 'flag-icons-rails', '>= 3.4.6.1'
 gem 'i18n-js'
-gem 'clockpicker-rails'
+gem 'clockpicker-rails', '>= 0.0.2'
 
 # Format Output
 gem 'json'
 gem 'rubyzip'
-gem 'roo'
+gem 'roo', '>= 2.8.3'
 
 # Controller
-gem 'inherited_resources'
-gem 'responders'
+gem 'inherited_resources', '>= 1.11.0'
+gem 'responders', '>= 3.0.1'
 
 # Model
 gem 'will_paginate'
 gem 'ransack'
-gem 'active_attr'
+gem 'active_attr', '>= 0.15.0'
 
-gem 'draper'
+gem 'draper', '>= 4.0.1'
 
 gem 'enumerize'
 gem 'deep_cloneable'
 gem 'acts-as-taggable-on'
-gem 'nokogiri'
+gem 'nokogiri', '>= 1.11.0'
 
 gem 'acts_as_list'
 gem 'acts_as_tree'
@@ -135,7 +135,7 @@ gem 'puma'
 gem 'postgresql_cursor'
 
 # Cache
-gem 'redis-rails'
+gem 'redis-rails', '>= 5.0.2'
 
 gem 'gtfs', en_route: 'gtfs'
 gem 'netex', en_route: 'netex'
@@ -156,7 +156,7 @@ group :development do
   gem 'derailed_benchmarks'
 
   gem 'bummr'
-  gem 'graphiql-rails'
+  gem 'graphiql-rails', '>= 1.7.0'
 
   gem 'guard-rspec', require: false
 end
@@ -166,10 +166,10 @@ group :test do
   gem 'htmlbeautifier'
   gem 'timecop'
   gem 'rspec-snapshot'
-  gem 'rails-controller-testing'
+  gem 'rails-controller-testing', '>= 1.0.5'
   gem 'fuubar'
   gem 'rspec-benchmark'
-  gem 'pundit-matchers'
+  gem 'pundit-matchers', '>= 1.6.0'
 
   gem 'rspec_junit_formatter'
   gem 'simplecov', require: false
@@ -177,8 +177,8 @@ group :test do
 end
 
 group :test, :development do
-  gem 'rspec-rails'
-  gem 'capybara', '~> 3.15.0'
+  gem 'rspec-rails', '>= 3.5.2'
+  gem 'capybara', '~> 3.15.1'
   gem 'database_cleaner'
   gem 'poltergeist', '>= 1.18.1'
   gem 'stackprof'
@@ -189,25 +189,25 @@ group :test, :development do
   gem 'parallel_tests'
 
   gem 'letter_opener'
-  gem 'letter_opener_web', '~> 1.0'
+  gem 'letter_opener_web', '~> 1.4', '>= 1.4.0'
 
   gem 'ffaker', '~> 2.1.0'
   gem 'faker'
 
-  gem 'factory_bot_rails'
+  gem 'factory_bot_rails', '>= 6.1.0'
 
   gem 'awesome_print'
   gem 'pry-rails'
   gem 'pry-byebug'
 
-  gem "teaspoon-jasmine"
+  gem "teaspoon-jasmine", ">= 2.3.4"
   gem "phantomjs"
 end
 
 # I18n
-gem 'rails-i18n'
-gem 'devise-i18n'
-gem 'i18n-tasks'
+gem 'rails-i18n', '>= 5.1.3'
+gem 'devise-i18n', '>= 1.9.2'
+gem 'i18n-tasks', '>= 0.9.31'
 
 # Rails Assets
 source 'https://rails-assets.org' do

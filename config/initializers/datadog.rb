@@ -28,7 +28,7 @@ if ENV['DD_AGENT_HOST']
     c.use :faraday, service_name: "#{app_name}-#{service_context}"
     c.use :rake, service_name: "#{app_name}-rake"
 
-    c.use :graphql, schemas: [ChouetteSchema], service_name: "#{app_name}-graphql"
+    c.use :graphql, schemas: [ChouetteSchema], service_name: "#{app_name}-front"
 
     # Private beta according to doc: https://docs.datadoghq.com/tracing/runtime_metrics/ruby
     # c.runtime_metrics_enabled = true

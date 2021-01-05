@@ -4,7 +4,7 @@ class Import::Workbench < Import::Base
   after_commit :launch_worker, :on => :create
 
   option :automatic_merge, type: :boolean, default_value: false
-  option :automatic_archive, type: :boolean, default_value: false
+  option :archive_on_fail, type: :boolean, default_value: false
   option :flag_urgent, type: :boolean, default_value: false
   option :merge_method, type: :string, collection: %w(legacy experimental),
                         default_value: 'legacy'
@@ -63,7 +63,7 @@ class Import::Workbench < Import::Base
   def failed!
     update_column :status, 'failed'
     update_column :ended_at, Time.now
-    archive_referentials if automatic_archive
+    archive_referentials if archive_on_fail
     notify_state
   end
 
@@ -105,7 +105,7 @@ class Import::Workbench < Import::Base
       flag_refentials_as_urgent if flag_urgent
       create_automatic_merge if automatic_merge
     else
-      archive_referentials if automatic_archive
+      archive_referentials if archive_on_fail
     end
   end
 

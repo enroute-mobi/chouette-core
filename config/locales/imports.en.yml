@@ -111,7 +111,7 @@ en:
           <<: *attrs
           merge_method: Merge Method
           automatic_merge: Automatic Merge
-          automatic_archive: Automatic Archive on failure
+          archive_on_fail: Automatic Archive on failure
           flag_urgent: Contains urgent data
   errors:
     messages:

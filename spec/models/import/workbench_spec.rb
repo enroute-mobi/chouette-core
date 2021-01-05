@@ -109,16 +109,16 @@ RSpec.describe Import::Workbench do
       end
     end
 
-    context "when automatic_archive option is selected" do
-      before { import.automatic_archive = true }
+    context "when archive_on_fail option is selected" do
+      before { import.archive_on_fail = true }
       it "automaticaly archive referentials" do
         expect(import).to receive(:archive_referentials)
         import.done! false
       end
     end
 
-    context "when automatic_archive option isn't selected" do
-      before { import.automatic_archive = false }
+    context "when archive_on_fail option isn't selected" do
+      before { import.archive_on_fail = false }
       it "doesn't automaticaly archive referentials" do
         expect(import).to_not receive(:archive_referentials)
         import.done! false

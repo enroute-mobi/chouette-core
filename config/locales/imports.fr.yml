@@ -122,7 +122,7 @@ fr:
           <<: *attrs
           merge_method: Méthode de Finalisation
           automatic_merge: Finalisation automatique des jeux de données importés
-          automatic_archive: Archivage automatique en cas d'erreur
+          archive_on_fail: Archivage automatique en cas d'erreur
           flag_urgent: Contient de l'offre urgente
   errors:
     messages:

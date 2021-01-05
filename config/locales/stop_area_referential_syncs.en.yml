@@ -2,6 +2,10 @@ en:
   stop_area_referential_syncs:
     search_no_results: "No stop area referential synchronisation matching your query"
   activerecord:
+    models:
+      stop_area_referential_sync:
+        one: Synchronisation
+        other: Synchronisations
     errors:
       models:
         stop_area_referential_sync:

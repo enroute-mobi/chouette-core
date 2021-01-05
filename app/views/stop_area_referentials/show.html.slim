@@ -26,6 +26,24 @@
           .panel-heading
             h3.panel-title.with_actions
               div
+                = link_to StopAreaProvider.t, workbench_stop_area_referential_stop_area_providers_path(@workbench)
+                span.badge.ml-xs =  @stop_area_referential.stop_area_providers.count
+              div
+                = link_to '', workbench_stop_area_referential_stop_area_providers_path(@workbench), class: ' fa fa-chevron-right pull-right', title: t('workbenches.index.offers.see')
+          .list-group
+            - @stop_area_referential.stop_area_providers.order("updated_at desc").limit(5).each do |stop_area_provider|
+              .list-group-item
+                = link_to stop_area_provider.name, workbench_stop_area_referential_stop_area_provider_path(@workbench, stop_area_provider)
+                =< t('date.updated', distance_in_time: time_ago_in_words(stop_area_provider.updated_at))
+            - unless @stop_area_referential.stop_area_providers.any?
+              = replacement_msg t('no_result_text')
+
+    .row
+      .col-sm-4.col-xs-12
+        .panel.panel-default
+          .panel-heading
+            h3.panel-title.with_actions
+              div
                 = link_to Chouette::ConnectionLink.t, workbench_stop_area_referential_connection_links_path(@workbench)
                 span.badge.ml-xs =  @stop_area_referential.connection_links.count
               div
@@ -37,8 +55,8 @@
                 =< t('date.updated', distance_in_time: time_ago_in_words(connection_link.updated_at))
             - unless @stop_area_referential.connection_links.any?
               = replacement_msg t('no_result_text')
-    .row
-      .col-sm-4.col-xs-12
+
+      .col-sm-offset-1.col-sm-4.col-xs-12
         .panel.panel-default
           .panel-heading
             h3.panel-title.with_actions
@@ -54,27 +72,26 @@
                 =< t('date.updated', distance_in_time: time_ago_in_words(constraint.updated_at))
             - unless @stop_area_referential.stop_area_routing_constraints.any?
               = replacement_msg t('no_result_text')
-    / stop areas providers
-
-    .col-md-12
-      - if @stop_area_referential.stop_area_referential_syncs.any?
-        h2= StopAreaReferentialSync.t
-        .row
-          .col-lg-12
-              = table_builder_2 @stop_area_referential.stop_area_referential_syncs,
-                [ \
-                  TableBuilderHelper::Column.new( \
-                    name: t('.synchronized'), \
-                    attribute: Proc.new { |sync| stop_area_referential_sync_created_at(sync) }, \
-                  ), \
-                  TableBuilderHelper::Column.new( \
-                    name: t('.status'), \
-                    attribute: Proc.new { |sync| stop_area_referential_sync_status(sync) }, \
-                  ), \
-                  TableBuilderHelper::Column.new( \
-                    name: t('.message'), \
-                    attribute: Proc.new { |sync| stop_area_referential_sync_message(sync) }, \
-                  ), \
-                ],
-                sortable: false,
-                cls: 'table'
+    .row
+      .col-md-12
+        - if @stop_area_referential.stop_area_referential_syncs.any?
+          h2= StopAreaReferentialSync.t
+          .row
+            .col-lg-12
+                = table_builder_2 @stop_area_referential.stop_area_referential_syncs,
+                  [ \
+                    TableBuilderHelper::Column.new( \
+                      name: t('.synchronized'), \
+                      attribute: Proc.new { |sync| stop_area_referential_sync_created_at(sync) }, \
+                    ), \
+                    TableBuilderHelper::Column.new( \
+                      name: t('.status'), \
+                      attribute: Proc.new { |sync| stop_area_referential_sync_status(sync) }, \
+                    ), \
+                    TableBuilderHelper::Column.new( \
+                      name: t('.message'), \
+                      attribute: Proc.new { |sync| stop_area_referential_sync_message(sync) }, \
+                    ), \
+                  ],
+                  sortable: false,
+                  cls: 'table'

@@ -1,6 +1,7 @@
 FactoryBot.define do
   factory :stop_area, :class => Chouette::StopArea do
     sequence(:name) { |n| "stop_area_#{n}" }
+    sequence(:public_code) { |n| "sa_#{n}" }
     sequence(:registration_number) { |n| "test-#{n}" }
     area_type { Chouette::AreaType.commercial.sample }
     latitude {10.0 * rand}

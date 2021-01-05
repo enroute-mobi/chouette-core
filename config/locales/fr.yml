@@ -50,6 +50,8 @@ fr:
     - octobre
     - novembre
     - décembre
+    ago: "il y a %{distance_in_time}"
+    updated: "mis(e) à jour il y a %{distance_in_time}"
 
   last_update: 'Dernière mise à jour le %{time}'
   whodunnit: 'Par %{author}'

@@ -1,6 +1,7 @@
 en:
   stop_area_referentials:
     actions:
+      edit_params: Edit parameters
       sync: "Launch a new synchronization"
       cancel_sync: "Cancel synchronization"
     show:

@@ -41,7 +41,7 @@ en:
   cancel_confirm: You're about to cancel your current work. Are you sure ?
   cancel: "Cancel"
   discard: Discard
-  no_result_text: "No Results"
+  no_result_text: "No results"
   ok: Ok
   or: "or"
   search_hint: "Type in a search term"

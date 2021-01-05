@@ -1,8 +1,9 @@
 fr:
   stop_area_referentials:
     actions:
-      sync: "Lancer une synchronisation"
-      cancel_sync: "Annuler la synchronisation"
+      edit_params: Editer les paramètres
+      sync: Lancer une synchronisation
+      cancel_sync: Annuler la synchronisation
     show:
       title: "Référentiel d'Arrêts"
       synchronized: Synchronisé

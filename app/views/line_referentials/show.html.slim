@@ -4,26 +4,92 @@
 .page_content
   .container-fluid
     .row
-      .col-lg-12
-          = table_builder_2 @line_referential.line_referential_syncs,
-            [ \
-              TableBuilderHelper::Column.new( \
-                name: t('.synchronized'), \
-                attribute: Proc.new { |sync| line_referential_sync_created_at(sync) }, \
-              ), \
-              TableBuilderHelper::Column.new( \
-                name: t('.status'), \
-                attribute: Proc.new { |sync| line_referential_sync_status(sync) }, \
-              ), \
-              TableBuilderHelper::Column.new( \
-                name: t('.message'), \
-                attribute: Proc.new { |sync| line_referential_sync_message(sync) }, \
-              ), \
-            ],
-            sortable: false,
-            cls: 'table'
+      .col-sm-4.col-xs-12
+        .panel.panel-default
+          .panel-heading
+            h3.panel-title.with_actions
+              div
+                = link_to Chouette::Line.t, workbench_line_referential_lines_path(@workbench)
+                span.badge.ml-xs =  @line_referential.lines.count
+              div
+                = link_to '', workbench_line_referential_lines_path(@workbench), class: ' fa fa-chevron-right pull-right', title: t('workbenches.index.offers.see')
+          .list-group
+            - @line_referential.lines.order("updated_at desc").limit(5).each do |line|
+              .list-group-item
+                = link_to "#{Chouette::Line.ts.capitalize} #{line.name}", workbench_line_referential_line_path(@workbench, line)
+                =< t('date.updated', distance_in_time: time_ago_in_words(line.updated_at))
+            - unless @line_referential.lines.any?
+              = replacement_msg t('no_result_text')
 
-    - unless @line_referential.line_referential_syncs.any?
-      .row.mt-xs
+      .col-sm-offset-1.col-sm-4.col-xs-12
+        .panel.panel-default
+          .panel-heading
+            h3.panel-title.with_actions
+              div
+                = link_to Chouette::Company.t, workbench_line_referential_companies_path(@workbench)
+                span.badge.ml-xs =  @line_referential.companies.count
+              div
+                = link_to '', workbench_line_referential_companies_path(@workbench), class: ' fa fa-chevron-right pull-right', title: t('workbenches.index.offers.see')
+          .list-group
+            - @line_referential.companies.order("updated_at desc").limit(5).each do |company|
+              .list-group-item
+                = link_to company.name, workbench_line_referential_company_path(@workbench, company)
+                =< t('date.updated', distance_in_time: time_ago_in_words(company.updated_at))
+            - unless @line_referential.companies.any?
+              = replacement_msg t('no_result_text')
+    .row
+      .col-sm-4.col-xs-12
+        .panel.panel-default
+          .panel-heading
+            h3.panel-title.with_actions
+              div
+                = link_to Chouette::Network.t, workbench_line_referential_networks_path(@workbench)
+                span.badge.ml-xs =  @line_referential.networks.count
+              div
+                = link_to '', workbench_line_referential_networks_path(@workbench), class: ' fa fa-chevron-right pull-right', title: t('workbenches.index.offers.see')
+          .list-group
+            .list-group-item
+              - @line_referential.networks.order("updated_at desc").limit(5).each do |network|
+                .list-group-item
+                  = link_to network.name, workbench_line_referential_network_path(@workbench, network)
+                  =< t('date.updated', distance_in_time: time_ago_in_words(network.updated_at))
+              - unless @line_referential.networks.any?
+                = replacement_msg t('no_result_text')
+
+      .col-sm-offset-1.col-sm-4.col-xs-12
+        .panel.panel-default
+          .panel-heading
+            h3.panel-title.with_actions
+              div
+                = link_to Chouette::LineNotice.t, workbench_line_referential_line_notices_path(@workbench)
+                span.badge.ml-xs =  @line_referential.line_notices.count
+              div
+                = link_to '', workbench_line_referential_line_notices_path(@workbench), class: ' fa fa-chevron-right pull-right', title: t('workbenches.index.offers.see')
+          .list-group
+            - @line_referential.line_notices.order("updated_at desc").limit(5).each do |line_notice|
+              .list-group-item
+                = link_to line_notice.name, workbench_line_referential_line_notice_path(@workbench, line_notice)
+                =< t('date.updated', distance_in_time: time_ago_in_words(line_notice.updated_at))
+            - unless @line_referential.line_notices.any?
+              = replacement_msg t('no_result_text')
+
+    -if @line_referential.line_referential_syncs.any?
+      .row
         .col-lg-12
-          = replacement_msg t('line_referential_syncs.search_no_results')
+            = table_builder_2 @line_referential.line_referential_syncs,
+              [ \
+                TableBuilderHelper::Column.new( \
+                  name: t('.synchronized'), \
+                  attribute: Proc.new { |sync| line_referential_sync_created_at(sync) }, \
+                ), \
+                TableBuilderHelper::Column.new( \
+                  name: t('.status'), \
+                  attribute: Proc.new { |sync| line_referential_sync_status(sync) }, \
+                ), \
+                TableBuilderHelper::Column.new( \
+                  name: t('.message'), \
+                  attribute: Proc.new { |sync| line_referential_sync_message(sync) }, \
+                ), \
+              ],
+              sortable: false,
+              cls: 'table'

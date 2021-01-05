@@ -3,70 +3,95 @@
 
 .page_content.stop_area_referential_show
   .container-fluid
-    .col-md-6
-      h2= StopAreaReferential.tmf(:stops_selection_displayed_fields)
-      .row.locales
-        .col-lg-12
+    .row
+      .col-sm-4.col-xs-12
+        .panel.panel-default
+          .panel-heading
+            h3.panel-title.with_actions
+              div
+                = link_to Chouette::StopArea.t, workbench_stop_area_referential_stop_areas_path(@workbench)
+                span.badge.ml-xs =  @stop_area_referential.stop_areas.count
+              div
+                = link_to '', workbench_stop_area_referential_stop_areas_path(@workbench), class: ' fa fa-chevron-right pull-right', title: t('workbenches.index.offers.see')
+          .list-group
+            - @stop_area_referential.stop_areas.order("updated_at desc").limit(5).each do |stop_area|
+              .list-group-item
+                = link_to stop_area.name, workbench_stop_area_referential_stop_area_path(@workbench, stop_area)
+                =< t('date.updated', distance_in_time: time_ago_in_words(stop_area.updated_at))
+            - unless @stop_area_referential.stop_areas.any?
+              = replacement_msg t('no_result_text')
+
+      .col-sm-offset-1.col-sm-4.col-xs-12
+        .panel.panel-default
+          .panel-heading
+            h3.panel-title.with_actions
+              div
+                = link_to StopAreaProvider.t, workbench_stop_area_referential_stop_area_providers_path(@workbench)
+                span.badge.ml-xs =  @stop_area_referential.stop_area_providers.count
+              div
+                = link_to '', workbench_stop_area_referential_stop_area_providers_path(@workbench), class: ' fa fa-chevron-right pull-right', title: t('workbenches.index.offers.see')
+          .list-group
+            - @stop_area_referential.stop_area_providers.order("updated_at desc").limit(5).each do |stop_area_provider|
+              .list-group-item
+                = link_to stop_area_provider.name, workbench_stop_area_referential_stop_area_provider_path(@workbench, stop_area_provider)
+                =< t('date.updated', distance_in_time: time_ago_in_words(stop_area_provider.updated_at))
+            - unless @stop_area_referential.stop_area_providers.any?
+              = replacement_msg t('no_result_text')
+
+    .row
+      .col-sm-4.col-xs-12
+        .panel.panel-default
+          .panel-heading
+            h3.panel-title.with_actions
+              div
+                = link_to Chouette::ConnectionLink.t, workbench_stop_area_referential_connection_links_path(@workbench)
+                span.badge.ml-xs =  @stop_area_referential.connection_links.count
+              div
+                = link_to '', workbench_stop_area_referential_connection_links_path(@workbench), class: ' fa fa-chevron-right pull-right', title: t('workbenches.index.offers.see')
+          .list-group
+            - @stop_area_referential.connection_links.order("updated_at desc").limit(5).each do |connection_link|
+              .list-group-item
+                = link_to connection_link.name, workbench_stop_area_referential_connection_link_path(@workbench, connection_link)
+                =< t('date.updated', distance_in_time: time_ago_in_words(connection_link.updated_at))
+            - unless @stop_area_referential.connection_links.any?
+              = replacement_msg t('no_result_text')
+
+      .col-sm-offset-1.col-sm-4.col-xs-12
+        .panel.panel-default
+          .panel-heading
+            h3.panel-title.with_actions
+              div
+                = link_to StopAreaRoutingConstraint.t, workbench_stop_area_referential_stop_area_routing_constraints_path(@workbench)
+                span.badge.ml-xs =  @stop_area_referential.stop_area_routing_constraints.count
+              div
+                = link_to '', workbench_stop_area_referential_stop_area_routing_constraints_path(@workbench), class: ' fa fa-chevron-right pull-right', title: t('workbenches.index.offers.see')
+          .list-group
+            - @stop_area_referential.stop_area_routing_constraints.order("updated_at desc").limit(5).each do |constraint|
+              .list-group-item
+                = link_to constraint.name, workbench_stop_area_referential_stop_area_routing_constraint_path(@workbench, constraint)
+                =< t('date.updated', distance_in_time: time_ago_in_words(constraint.updated_at))
+            - unless @stop_area_referential.stop_area_routing_constraints.any?
+              = replacement_msg t('no_result_text')
+    .row
+      .col-md-12
+        - if @stop_area_referential.stop_area_referential_syncs.any?
+          h2= StopAreaReferentialSync.t
           .row
-            .col-md-4= Chouette::StopArea.tmf(:name)
-            .col-md-8= boolean_icon true
-          - StopAreaReferential::STOPS_SELECTION_DISPLAYABLE_FIELDS.each do |f|
-            .row
-              .col-md-4= StopAreaReferential.tmf(f)
-              .col-md-8= boolean_icon @stop_area_referential.stops_selection_displayed_fields[f.to_s]
-
-    .col-md-6
-      - if has_feature?(:stop_area_localized_names)
-        h2= StopAreaReferential.tmf(:locales)
-        .row
-          .col-lg-12
-            .row.header
-              .col-md-1
-              .col-md-4= StopAreaReferential.tmf(:locale_name)
-              .col-md-4= StopAreaReferential.tmf(:locale_code)
-              .col-md-3= StopAreaReferential.tmf(:locale_default)
-            .locales
-              - @stop_area_referential.sorted_locales.each_with_index do |locale, i|
-                .row
-                  .col-md-1= label_for_country @stop_area_referential.translate_code_to_official(locale['code'])
-                  .col-md-4= @stop_area_referential.locale_name(locale)
-                  .col-md-4= locale['code']
-                  .col-md-3= boolean_icon locale['default']
-
-    - unless has_feature?("route_stop_areas_all_types")
-      .col-md-6
-        h2= StopAreaReferential.tmf(:route_edition_available_stops)
-        .row.locales
-          .col-lg-12
-            - Chouette::AreaType::COMMERCIAL.each do |f|
-              .row
-                .col-md-4= t("area_types.label.#{f}")
-                .col-md-8= boolean_icon @stop_area_referential.route_edition_available_stops[f.to_s]
-
-    .col-md-12
-      - if policy(@stop_area_referential).synchronize?
-        h2= StopAreaReferentialSync.t
-        .row
-          .col-lg-12
-              = table_builder_2 @stop_area_referential.stop_area_referential_syncs,
-                [ \
-                  TableBuilderHelper::Column.new( \
-                    name: t('.synchronized'), \
-                    attribute: Proc.new { |sync| stop_area_referential_sync_created_at(sync) }, \
-                  ), \
-                  TableBuilderHelper::Column.new( \
-                    name: t('.status'), \
-                    attribute: Proc.new { |sync| stop_area_referential_sync_status(sync) }, \
-                  ), \
-                  TableBuilderHelper::Column.new( \
-                    name: t('.message'), \
-                    attribute: Proc.new { |sync| stop_area_referential_sync_message(sync) }, \
-                  ), \
-                ],
-                sortable: false,
-                cls: 'table'
-
-        - unless @stop_area_referential.stop_area_referential_syncs.any?
-          .row.mt-xs
             .col-lg-12
-              = replacement_msg t('stop_area_referential_syncs.search_no_results')
+                = table_builder_2 @stop_area_referential.stop_area_referential_syncs,
+                  [ \
+                    TableBuilderHelper::Column.new( \
+                      name: t('.synchronized'), \
+                      attribute: Proc.new { |sync| stop_area_referential_sync_created_at(sync) }, \
+                    ), \
+                    TableBuilderHelper::Column.new( \
+                      name: t('.status'), \
+                      attribute: Proc.new { |sync| stop_area_referential_sync_status(sync) }, \
+                    ), \
+                    TableBuilderHelper::Column.new( \
+                      name: t('.message'), \
+                      attribute: Proc.new { |sync| stop_area_referential_sync_message(sync) }, \
+                    ), \
+                  ],
+                  sortable: false,
+                  cls: 'table'

@@ -116,6 +116,7 @@ module StopAreasHelper
     attributes = { t('id_reflex') => stop_area.get_objectid.short_id,
       Chouette::StopArea.tmf('full_id') => stop_area.objectid,
       Chouette::StopArea.tmf('name') => stop_area.name,
+      Chouette::StopArea.tmf('public_code') => stop_area.public_code,
       Chouette::StopArea.tmf('kind') => stop_area.kind,
     }
 

@@ -119,6 +119,7 @@ en:
       stop_area:
         full_id: "Full ID"
         name: "Name"
+        public_code: "Public Code"
         kind: "Category"
         registration_number: "Registration number"
         published_name: "Published name"
@@ -170,6 +171,7 @@ en:
     titles:
       stop_area:
         name: ""
+        public_code: ""
         registration_number: "only alphanumerical or underscore characters"
         registration_number_format: "authorized format : %{registration_number_format}"
         objectid: "[prefix]:StopArea:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"

@@ -4,7 +4,7 @@
 .page_content
   .container-fluid
     .row
-      .col-sm-3.col-xs-12
+      .col-sm-4.col-xs-12
         .panel.panel-default
           .panel-heading
             h3.panel-title.with_actions
@@ -21,7 +21,7 @@
             - unless @line_referential.lines.any?
               = replacement_msg t('no_result_text')
 
-      .col-sm-3.col-xs-12
+      .col-sm-offset-1.col-sm-4.col-xs-12
         .panel.panel-default
           .panel-heading
             h3.panel-title.with_actions
@@ -37,8 +37,8 @@
                 =< t('date.updated', distance_in_time: time_ago_in_words(company.updated_at))
             - unless @line_referential.companies.any?
               = replacement_msg t('no_result_text')
-
-      .col-sm-3.col-xs-12
+    .row
+      .col-sm-4.col-xs-12
         .panel.panel-default
           .panel-heading
             h3.panel-title.with_actions
@@ -56,7 +56,7 @@
               - unless @line_referential.networks.any?
                 = replacement_msg t('no_result_text')
 
-      .col-sm-3.col-xs-12
+      .col-sm-offset-1.col-sm-4.col-xs-12
         .panel.panel-default
           .panel-heading
             h3.panel-title.with_actions

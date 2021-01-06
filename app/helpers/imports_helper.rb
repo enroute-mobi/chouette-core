@@ -52,11 +52,18 @@ module ImportsHelper
     metadata = {}
     metadata.update({ t('imports.show.filename') => @import.try(:file_identifier) }) if @import.is_a?(Import::Workbench)
     metadata.update({ t('imports.show.status') => operation_status(@import.status, verbose: true) })
-    if @import.referential.present?
-      metadata = metadata.update({ t('imports.show..referential') => link_to_if_i_can(@import.referential.name, @import.referential) })
-    end
+    value = referential_link(import)
+    metadata.update({ t('imports.show.referential') => value }) if value
     metadata = metadata.update({ Workbench.ts.capitalize => link_to_if_i_can(@import.workbench.organisation.name, @import.workbench) }) unless @workbench
     metadata = metadata.update Hash[*@import.visible_options.map{|k, v| [t("activerecord.attributes.import.#{@import.object.class.name.demodulize.underscore}.#{k}"), display_option_value(@import, k)]}.flatten]
     metadata
+  end
+
+  def referential_link(import)
+    if import.referential.present?
+      link_to_if_i_can(import.referential.name, import.referential)
+    elsif import.is_a?(Import::Shapefile) || (import.is_a?(Import::Resource) && import.root_import.try(:import_category)=="shape_file") ||(import.is_a?(Import::Workbench) && import.try(:import_category)=="shape_file")
+      link_to(ShapeReferential.t.capitalize, workbench_shape_referential_shapes_path(import.workbench))
+    end
   end
 end

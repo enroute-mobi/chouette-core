@@ -5,6 +5,7 @@ class Import::Workbench < Import::Base
 
   option :import_category, collection: %w(automatic shape_file), default_value: 'automatic'
   option :automatic_merge, type: :boolean, default_value: false, depends: {option: :import_category, value: "automatic"}
+  option :archive_on_fail, type: :boolean, default_value: false, depends: {option: :import_category, value: "automatic"}
   option :flag_urgent, type: :boolean, default_value: false, depends: {option: :import_category, value: "automatic"}
   option :merge_method, collection: %w(legacy experimental), default_value: 'legacy', depends: {option: :import_category, value: "automatic"}
   option :shape_attribute_as_id, type: :string, depends: {option: :import_category, value: "shape_file"}

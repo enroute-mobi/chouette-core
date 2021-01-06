@@ -1,10 +1,11 @@
+
 = simple_form_for [@workbench, :stop_area_referential, @stop_area], html: {class: 'form-horizontal', id: 'stop_area_form'}, wrapper: :horizontal_form do |f|
   - if !manage_itl
     .row
       .col-lg-12
         h2.mb-lg= t("stop_areas.form.sections.identification")
         = f.input :id, as: :hidden
-        = f.input :name, input_html: {title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.name")}
+        = f.input :name
         - if has_feature?(:stop_area_localized_names)
           .form-group
             .col-sm-3.col-xs-5
@@ -22,7 +23,7 @@
                 = select_tag :add_locale, raw(options), 'data-select2ed': 'true', class: 'select2-resize'
                 = link_to '#', class: 'btn btn-primary add-locale' do
                   = fa_icon :plus, {text: 'actions.add'.t}
-        = f.input :public_code, input_html: {title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.public_code")}
+        = f.input :public_code
         - if has_feature?("route_stop_areas_all_types")
           = f.input :kind,
               as: :radio_buttons,

@@ -209,6 +209,7 @@ class Export::Gtfs < Export::Base
       timezone: (stop_area.time_zone unless stop_area.parent),
       #code: TO DO
       #wheelchair_boarding: TO DO wheelchair_boarding <=> mobility_restricted_suitability ?
+      platform_code: stop_area.public_code
     }
   end
 

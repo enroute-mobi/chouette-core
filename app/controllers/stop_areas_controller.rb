@@ -189,6 +189,7 @@ class StopAreasController < ChouetteController
       :longitude,
       :mobility_restricted_suitability,
       :name,
+      :public_code,
       :nearest_topic_name,
       :object_version,
       :objectid,

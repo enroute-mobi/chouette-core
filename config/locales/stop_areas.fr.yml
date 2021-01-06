@@ -120,6 +120,7 @@ fr:
       stop_area:
         full_id: "ID complet"
         name: "Nom"
+        public_code: "Code publique"
         kind: "Catégorie"
         registration_number: "Numéro d'enregistrement"
         published_name: "Nom public"
@@ -171,6 +172,7 @@ fr:
     titles:
       stop_area:
         name: ""
+        public_code: ""
         registration_number: "caractères autorisés : alphanumériques et 'souligné'"
         registration_number_format: "format autorisé: %{registration_number_format}"
         objectid: "[prefixe]:StopArea:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"

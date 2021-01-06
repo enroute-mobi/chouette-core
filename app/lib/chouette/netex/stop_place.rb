@@ -38,6 +38,7 @@ class Chouette::Netex::StopPlace < Chouette::Netex::Resource
       'Name' => :name,
       'Description' => :comment,
       'Url' => :url,
+      'PublicCode' => :public_code,
       'PrivateCode' => :registration_number
     }
   end
@@ -148,6 +149,7 @@ class Chouette::Netex::StopPlace < Chouette::Netex::Resource
       quays
       stop_metas
       # attribute 'PrivateCode'
+      attribute 'PublicCode'
     end
   end
 end

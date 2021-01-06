@@ -145,7 +145,8 @@ class Export::NetexGeneric < Export::Base
     def netex_attributes
         {
           id: objectid,
-          name: name
+          name: name,
+          public_code: public_code
           # longitude: longitude,
           # latitude: latitude
         }

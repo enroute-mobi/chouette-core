@@ -18,7 +18,7 @@
         TableBuilderHelper::Column.new( \
           name: t('imports.show.referential_name'), \
           attribute: lambda do |item| \
-            link_to_if_i_can(item.referential.name, item.referential) if item.referential.present? \
+            referential_link(item) \
           end, \
           sortable: false \
         ), \

@@ -46,6 +46,7 @@ class Import::Base < ApplicationModel
     self.class.short_type
   end
 
+
   scope :workbench, -> { where type: "Import::Workbench" }
 
   include IevInterfaces::Task
@@ -110,7 +111,7 @@ class Import::Base < ApplicationModel
 
   def file_type
     return unless file
-    import_types = workgroup.import_types.presence || %w(Import::Gtfs Import::Netex Import::Neptune)
+    import_types = workgroup.import_types.presence || %w(Import::Gtfs Import::Netex Import::Neptune Import::Shapefile)
     import_types.each do |import_type|
       return import_type.demodulize.underscore.to_sym if import_type.constantize.accepts_file?(file.path)
     end

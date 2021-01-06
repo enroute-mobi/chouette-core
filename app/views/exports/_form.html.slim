@@ -11,7 +11,7 @@
       - workgroup_exports(workbench.workgroup).each do |child|
         .slave data-master="[name='export[type]']" data-value=child.name
           - child.options.each do |attr, option_def|
-            = export_option_input form, export, attr, option_def, child
+            = option_input form, export, attr, option_def, child
 
     .col-lg-12
       = form.input :notification_target, collection: Export::Base.notification_target_options, selected: :user

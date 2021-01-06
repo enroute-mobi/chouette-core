@@ -3,11 +3,12 @@ class Import::Workbench < Import::Base
 
   after_commit :launch_worker, :on => :create
 
-  option :automatic_merge, type: :boolean, default_value: false
-  option :archive_on_fail, type: :boolean, default_value: false
-  option :flag_urgent, type: :boolean, default_value: false
-  option :merge_method, type: :string, collection: %w(legacy experimental),
-                        default_value: 'legacy'
+  option :import_category, collection: %w(automatic shape_file), default_value: 'automatic'
+  option :automatic_merge, type: :boolean, default_value: false, depends: {option: :import_category, value: "automatic"}
+  option :archive_on_fail, type: :boolean, default_value: false, depends: {option: :import_category, value: "automatic"}
+  option :flag_urgent, type: :boolean, default_value: false, depends: {option: :import_category, value: "automatic"}
+  option :merge_method, collection: %w(legacy experimental), default_value: 'legacy', depends: {option: :import_category, value: "automatic"}
+  option :shape_attribute_as_id, type: :string, depends: {option: :import_category, value: "shape_file"}
 
   def main_resource; self end
 
@@ -32,6 +33,14 @@ class Import::Workbench < Import::Base
     end
   end
 
+  def visible_options
+    if import_category == "shape_file"
+      super.slice("import_category","shape_attribute_as_id")
+    else
+      super.select{|k,_v| k!="shape_attribute_as_id"}
+    end
+  end
+
   def import_netex
     delay(queue: :imports).netex_import
   end
@@ -46,6 +55,10 @@ class Import::Workbench < Import::Base
 
   def import_neptune
     create_child_import Import::Neptune
+  end
+
+  def import_shapefile
+    create_child_import Import::Shapefile
   end
 
   def create_child_import(klass)

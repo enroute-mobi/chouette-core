@@ -35,7 +35,7 @@ class Organisation < ApplicationModel
     end
 
     workgroups.find_each do |workgroup|
-      output_referential = workgroup.output.current if referential_id.to_i == workgroup.output.current_id
+      output_referential = workgroup.output.referentials.find(referential_id.to_i)
       return output_referential if output_referential
     end
 

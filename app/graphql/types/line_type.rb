@@ -50,7 +50,7 @@ module Types
       LazyLoading::LineStopAreas.new(context, object.id)
     end
 
-    field :service_counts, Types::ServiceCountType.connection_type, null: true, max_page_size: 20 do
+    field :service_counts, Types::ServiceCountType.connection_type, null: true do
       argument :from, String, required: false
       argument :to, String, required: false
     end

@@ -54,37 +54,61 @@ describe Organisation, :type => :model do
   end
 
   describe "#find_referential" do
-    let(:organisation) { create :organisation }
-    let(:workbench) { create :workbench, organisation: organisation }
-    let(:workgroup) { workbench.workgroup }
 
     context "when referential belongs to organisation" do
-      let(:organisation_ref) { create(:referential, organisation: organisation, workbench: workbench) }
+      let(:context) do
+        Chouette.create do
+          referential
+        end
+      end
+
+      let(:referential) {context.referential}
 
       it "should return referential" do
-        expect(organisation.find_referential(organisation_ref.id)).to eq(organisation_ref)
+        expect(referential.organisation.find_referential(referential.id)).to eq(referential)
       end
     end
 
-    context "when referential belongs to other workbench that belongs to the organisation" do
-      let(:other_workbench) { create :workbench, organisation: organisation }
-      let(:other_ref) { create :referential, workbench: other_workbench, organisation: organisation }
+    context "when referential is workbenche's referentials" do
+      let(:context) do
+        Chouette.create do
+          workgroup do
+            workbench :first
+            workbench do
+              referential
+            end
+          end
+        end
+      end
 
       it "should return referential" do
-        expect(organisation.reload.find_referential(other_ref.id)).to eq(other_ref)
+        organisation = context.workbench(:first).organisation
+        referential = context.referential
+        expect(organisation.find_referential(referential.id)).to eq(referential)
       end
+
     end
 
-    context "when referential is workgroup's current output" do
+    context "when referential is in workgroup's output referentials" do
 
-      before do
-        workgroup.output.current = create(:referential, organisation: organisation, workbench: nil)
-        workgroup.output.save
+      let(:context) do
+        Chouette.create do
+          workgroup do
+            referential
+            workbench :first
+          end
+        end
       end
 
       it "should return referential" do
-        expect(organisation.find_referential(workgroup.output.current.id)).to eq(workgroup.output.current)
+        organisation = context.workbench(:first).organisation
+        referential = context.referential
+        workgroup = context.workgroup
+        workgroup.output.referentials << referential
+
+        expect(organisation.find_referential(referential.id)).to eq(referential)
       end
+
     end
 
     context "when none of the above" do

@@ -39,56 +39,6 @@ class Import::Netex < Import::Base
     super
   end
 
-  def create_with_referential!
-    save unless persisted?
-
-    self.referential =
-      Referential.new(
-        name: self.name,
-        organisation_id: workbench.organisation_id,
-        workbench_id: workbench.id,
-        metadatas: [referential_metadata],
-        ready: false
-      )
-    self.referential.save
-
-    if self.referential.valid?
-      main_resource.update referential: referential
-      save!
-      call_iev_callback
-    else
-      Rails.logger.info "Can't create referential for import #{self.id}: #{referential.inspect} #{referential.metadatas.inspect} #{referential.errors.messages}"
-      metadata = referential.metadatas.first
-
-      if !@line_objectids.present?
-        create_message criticity: :error, message_key: "referential_creation_missing_lines_in_files", message_attributes: {referential_name: referential.name}
-      elsif metadata.line_ids.empty?
-        create_message criticity: :error, message_key: "referential_creation_missing_lines", message_attributes: {referential_name: referential.name}
-      elsif (overlapped_referential_ids = referential.overlapped_referential_ids).any?
-        overlapped = Referential.find overlapped_referential_ids.last
-        create_message(
-          criticity: :error,
-          message_key: "referential_creation_overlapping_existing_referential",
-          message_attributes: {
-            referential_name: referential.name,
-            overlapped_name: overlapped.name,
-            overlapped_url:  Rails.application.routes.url_helpers.referential_path(overlapped)
-          }
-        )
-      else
-        create_message(
-          criticity: :error,
-          message_key: "referential_creation",
-          message_attributes: {referential_name: referential.name},
-          resource_attributes: referential.errors.messages
-        )
-      end
-      main_resource&.save
-      self.referential = nil
-      aborted!
-    end
-  end
-
   private
 
   def update_referential

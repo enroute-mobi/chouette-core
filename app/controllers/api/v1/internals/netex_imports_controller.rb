@@ -57,21 +57,6 @@ module Api
           finish_action!
         end
 
-        def create_models
-          find_workbench
-          create_netex_import
-        end
-
-        def create_netex_import
-          attributes = netex_import_params.merge creator: "Webservice"
-          @netex_import = Import::Netex.new attributes
-          @netex_import.create_with_referential!
-          @netex_import
-        rescue ActiveRecord::RecordInvalid
-          render json: {errors: @netex_import.errors}, status: 406
-          finish_action!
-        end
-
         def netex_import_params
           params
             .require('netex_import')

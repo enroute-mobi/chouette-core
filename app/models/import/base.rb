@@ -26,10 +26,6 @@ class Import::Base < ApplicationModel
     "Import::Resource"
   end
 
-  def self.human_name
-    I18n.t("export.#{short_type}")
-  end
-
   def self.file_extension_whitelist
     %w(zip)
   end

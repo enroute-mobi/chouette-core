@@ -251,6 +251,7 @@ module IevInterfaces::Task
     Rails.logger.error("End IEV call for import")
   rescue Exception => e
     aborted!
+    referential&.failed!
     Chouette::Safe.capture "IEV server error", e
   end
 

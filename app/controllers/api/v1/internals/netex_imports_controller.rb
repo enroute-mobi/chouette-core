@@ -4,14 +4,13 @@ module Api
       class NetexImportsController < Api::V1::Internals::ApplicationController
         include ControlFlow
 
+        before_action :find_workbench, only: :create
+
         def create
           respond_to do | format |
             format.json do
-              import = create_models
-              render json: {
-                status: "ok",
-                message:"Import ##{import.id} created as child of #{import.parent_type} (id: #{import.parent_id})"
-              }
+              creator = NetexImportCreator.new(@workbench, netex_import_params).create
+              render json: creator
             end
           end
         end
@@ -71,36 +70,6 @@ module Api
         rescue ActiveRecord::RecordInvalid
           render json: {errors: @netex_import.errors}, status: 406
           finish_action!
-        end
-
-        def create_referential
-          new_referential =
-            Referential.new(
-              name: netex_import_params['name'],
-              organisation_id: @workbench.organisation_id,
-              workbench_id: @workbench.id,
-              metadatas: [metadata]
-            )
-          new_referential.save
-          new_referential
-        end
-
-        def metadata
-          metadata = ReferentialMetadata.new
-
-          if netex_import_params['file']
-            netex_file = STIF::NetexFile.new(netex_import_params['file'].to_io)
-            frame = netex_file.frames.first
-
-            if frame
-              metadata.periodes = frame.periods
-
-              line_objectids = frame.line_refs.map { |ref| "FR1:Line:#{ref}:" }
-              metadata.line_ids = @workbench.lines.where(objectid: line_objectids).pluck(:id)
-            end
-          end
-
-          metadata
         end
 
         def netex_import_params

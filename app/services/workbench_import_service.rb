@@ -129,7 +129,8 @@ class WorkbenchImportService
   # ===========
 
   def allowed_lines
-    @__allowed_lines__ ||= workbench_import.workbench.organisation.lines_set
+    # We need local ids ('C02141' for 'FR1:Line:C02141:')
+    @__allowed_lines__ ||= workbench_import.workbench.lines.map { |l| l.get_objectid.local_id }
   end
   def downloaded
     @__downloaded__ ||= download_response.body

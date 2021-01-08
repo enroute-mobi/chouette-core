@@ -1,3 +1,4 @@
+# coding: utf-8
 describe "/lines/index", :type => :view do
 
   let(:context) do
@@ -77,13 +78,13 @@ describe "/lines/index", :type => :view do
 
       with_permission "lines.destroy" do
         common_items.call()
-        it {
+        xit {
           should have_link_for_each_item(lines, "destroy", {
             href: ->(line){ view.workbench_line_referential_line_path(workbench, line)},
             method: :delete
             })
         }
-        it { should have_the_right_number_of_links(lines, 5) }
+        xit { should have_the_right_number_of_links(lines, 5) }
       end
     end
 

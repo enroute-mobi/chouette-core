@@ -60,9 +60,6 @@ RSpec.describe NetexImportCreator do
       # workgroup import_types: %w{Import::Netex} do
         workbench do
           line objectid: "FR1:Line:A:"
-          # line objectid: "FR1:Line:B:"
-          # line objectid: "FR1:Line:C:"
-
           referential :existing
         end
       # end

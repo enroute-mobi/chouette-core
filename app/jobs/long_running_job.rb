@@ -1,6 +1,6 @@
 LongRunningJob = Struct.new(:object, :method, :args) do
   attr_accessor :max_attempts
-  
+
   def max_attempts
     @max_attempts || 1
   end
@@ -14,6 +14,6 @@ LongRunningJob = Struct.new(:object, :method, :args) do
   end
 
   def explain
-    "#{object.class}(id=#{object.id}).#{method}(#{[args].flatten.map(&:inspect).join(', ')})"
+    "#{object.class}(id=#{object.try(:id)}).#{method}(#{[args].flatten.map(&:inspect).join(', ')})"
   end
 end

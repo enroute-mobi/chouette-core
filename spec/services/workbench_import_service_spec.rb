@@ -15,23 +15,34 @@ RSpec.describe WorkbenchImportService, type: [:request, :zip] do
     end
   end
 
-  let( :lines ){ %w{*:C00109 *:C00108}.to_json }
-  let!( :organisation ){ workbench.organisation.update sso_attributes: {'functional_scope' => lines}}
+  let(:context) do
+    Chouette.create do
+      workbench do
+        line objectid: "FR1:Line:C00108:"
+        line objectid: "FR1:Line:C00109:"
+      end
+    end
+  end
 
-  let( :worker ) { described_class.new }
-  let( :workbench_import ){ create :workbench_import, token_download: download_token }
+  let(:workbench) { context.workbench }
 
-  let( :workbench ){ workbench_import.workbench }
+  let(:line_objectids) { context.lines.pluck(:objectid).to_json }
+
+  # Required for IBOO Stif::WorbenchScopes (?)
+  let!( :organisation) { workbench.organisation.update sso_attributes: {'functional_scope' => line_objectids }}
+
+  let(:worker ) { described_class.new }
+  let(:workbench_import) { create :workbench_import, token_download: download_token, workbench: workbench }
 
   # http://www.example.com/workbenches/:workbench_id/imports/:id/internal_download
-  let( :host ){ Rails.configuration.rails_host }
+  let(:host) { Rails.configuration.rails_host }
   # FIXME See CHOUETTE-205
-  let( :path ){ internal_download_workbench_import_path(workbench, workbench_import) }
-  let( :upload_path ){ api_v1_internals_netex_imports_path(format: :json) }
+  let(:path) { internal_download_workbench_import_path(workbench, workbench_import) }
+  let(:upload_path) { api_v1_internals_netex_imports_path(format: :json) }
 
-  let( :downloaded_zip_archive ){ make_zip_from_tree zip_data_dir }
-  let( :downloaded_zip_data ){ downloaded_zip_archive.data }
-  let( :download_token ){ random_string }
+  let(:downloaded_zip_archive) { make_zip_from_tree zip_data_dir }
+  let(:downloaded_zip_data) { downloaded_zip_archive.data }
+  let(:download_token) { random_string }
 
   before do
     stub_request(:get, "#{ host }#{ path }?token=#{ workbench_import.token_download }").
@@ -39,7 +50,7 @@ RSpec.describe WorkbenchImportService, type: [:request, :zip] do
   end
 
   context 'correct workbench_import' do
-    let( :zip_data_dir ){ fixtures_path 'two_referentials_ok' }
+    let(:zip_data_dir) { fixtures_path 'two_referentials_ok' }
 
     expect_upload_with %w{ OFFRE_TRANSDEV_20170301122517 OFFRE_TRANSDEV_20170301122519 } do
       expect{ worker.perform( workbench_import.id ) }.not_to change{ workbench_import.messages.count }
@@ -53,7 +64,7 @@ RSpec.describe WorkbenchImportService, type: [:request, :zip] do
   # FIXME Messages structure has changed. The test process must be refactored
 
   # context 'correct but spurious directories' do
-  #   let( :zip_data_dir ){ fixtures_path 'extra_file_nok' }
+  #   let(:zip_data_dir) { fixtures_path 'extra_file_nok' }
 
   #   expect_upload_with [] do
   #     expect{ worker.perform( workbench_import.id ) }.to change{ workbench_import.messages.count }.by(1)
@@ -65,7 +76,7 @@ RSpec.describe WorkbenchImportService, type: [:request, :zip] do
   # end
 
   # context 'foreign lines' do
-  #   let( :zip_data_dir ){ fixtures_path 'some_foreign_mixed' }
+  #   let(:zip_data_dir) { fixtures_path 'some_foreign_mixed' }
 
   #   expect_upload_with %w{ OFFRE_TRANSDEV_20170301122517 OFFRE_TRANSDEV_20170301122519 } do
   #     expect{ worker.perform( workbench_import.id ) }.to change{ workbench_import.messages.count }.by(1)
@@ -78,7 +89,7 @@ RSpec.describe WorkbenchImportService, type: [:request, :zip] do
   # end
 
   # context 'foreign and spurious' do
-  #   let( :zip_data_dir ){ fixtures_path 'foreign_and_spurious' }
+  #   let(:zip_data_dir) { fixtures_path 'foreign_and_spurious' }
 
   #   expect_upload_with %w{ OFFRE_TRANSDEV_20170301122517 OFFRE_TRANSDEV_20170301122519 } do
   #     expect{ worker.perform( workbench_import.id ) }.to change{ workbench_import.messages.count }.by(2)
@@ -91,7 +102,7 @@ RSpec.describe WorkbenchImportService, type: [:request, :zip] do
   # end
 
   # context 'corrupt zip file' do
-  #   let( :downloaded_zip_archive ){ OpenStruct.new(data: '') }
+  #   let(:downloaded_zip_archive) { OpenStruct.new(data: '') }
 
   #   it 'will not upload anything' do
   #     expect(HTTPService).not_to receive(:post_resource)

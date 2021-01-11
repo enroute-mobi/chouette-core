@@ -202,15 +202,17 @@ class NetexImportCreator
     coder['netex_line_objectids'] = netex_line_objectids
   end
 
-  def to_json(_)
-    if started?
-      {
-        status: "ok",
-        message:"Import ##{import.id} created as child of #{import.parent_type} (id: #{import.parent_id})"
-      }
-    else
-      { status: "failed", message:"Import can't be created" }
-    end
+  def to_json(*_)
+    status =
+      if started?
+        {
+          status: "ok",
+          message:"Import ##{import.id} created as child of #{import.parent_type} (id: #{import.parent_id})"
+        }
+      else
+        { status: "failed", message:"Import can't be created" }
+      end
+    status.to_json
   end
 
 end

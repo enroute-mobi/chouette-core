@@ -188,7 +188,7 @@ fr:
       funicular: "Funiculaire"
       helicopterService: "Service d'hélicoptère"
       highFrequencyBus: 'Bus à haute fréquence'
-      highSpeedPassengerService: "Navire publique à grande vitesse"
+      highSpeedPassengerService: "Navire public à grande vitesse"
       highSpeedRail: 'Train à grande vitesse'
       highSpeedVehicleService: "Navire à grande vitesse"
       hireCar: "Voiture de location"
@@ -202,13 +202,13 @@ fr:
       internationalCharterFlight: "Vol Charter International"
       internationalCoach: 'Autocar international'
       internationalFlight: "Vol International"
-      internationalPassengerFerry: "Ferry publique international"
+      internationalPassengerFerry: "Ferry public international"
       interregionalRail: "Train interregional"
       lift: "Ascenseur"
       local: "Local"
       localBus: "Bus local"
       localCarFerry: "Ferry local"
-      localPassengerFerry: "Ferry publique local"
+      localPassengerFerry: "Ferry public local"
       localTram: "Tram local"
       longDistance: "Longue distance"
       metro: Métro
@@ -217,7 +217,7 @@ fr:
       mobilityBusForRegisteredDisabled: "Bus adapté aux personnes à mobilité reduite"
       nationalCarFerry: "Ferry national"
       nationalCoach: "Car interregional"
-      nationalPassengerFerry: "Ferry publique national"
+      nationalPassengerFerry: "Ferry public national"
       nightBus: 'Bus de nuit'
       nightRail: 'Train de nuit'
       nightTrain: "Train de nuit"
@@ -230,7 +230,7 @@ fr:
       regionalBus: "Bus régional"
       regionalCarFerry: "Ferry régional"
       regionalCoach: "Car régional"
-      regionalPassengerFerry: "Ferry publique régional"
+      regionalPassengerFerry: "Ferry public régional"
       regionalRail: 'TER'
       regionalTram: "Tram régional"
       replacementRailService: "Train de remplacement"

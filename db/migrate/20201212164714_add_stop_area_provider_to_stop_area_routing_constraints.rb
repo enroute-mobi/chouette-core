@@ -8,7 +8,7 @@ class AddStopAreaProviderToStopAreaRoutingConstraints < ActiveRecord::Migration[
       StopAreaRoutingConstraint.reset_column_information
 
       StopAreaRoutingConstraint.includes(:from).find_each do |routing_constraint|
-        routing_constraint.update stop_area_referential_id: from.stop_area_referential_id
+        routing_constraint.update stop_area_referential_id: routing_constraint.from.stop_area_referential_id
       end
 
       # Should ignore production Workgroups with several Workbenches

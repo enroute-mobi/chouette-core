@@ -120,7 +120,7 @@ fr:
       stop_area:
         full_id: "ID complet"
         name: "Nom"
-        public_code: "Code publique"
+        public_code: "Code public"
         kind: "Catégorie"
         registration_number: "Numéro d'enregistrement"
         published_name: "Nom public"

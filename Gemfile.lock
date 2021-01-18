@@ -291,8 +291,6 @@ GEM
       ffi (>= 1.0.0)
     flag-icons-rails (3.4.6.1)
       sass-rails
-    font-awesome-sassc (4.7.1)
-      sass (>= 3.2)
     formatador (0.2.5)
     formtastic (3.1.5)
       actionpack (>= 3.2.13)
@@ -626,11 +624,6 @@ GEM
     rubycas-client (2.3.9)
       activesupport
     rubyzip (2.3.0)
-    sass (3.7.4)
-      sass-listen (~> 4.0.0)
-    sass-listen (4.0.0)
-      rb-fsevent (~> 0.9, >= 0.9.4)
-      rb-inotify (~> 0.9, >= 0.9.7)
     sass-rails (6.0.0)
       sassc-rails (~> 2.1, >= 2.1.1)
     sassc (2.1.0)

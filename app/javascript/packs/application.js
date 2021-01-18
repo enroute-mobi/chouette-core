@@ -9,4 +9,4 @@
 
 // import jQuery from 'jquery'
 // import {} from 'jquery-ujs'
-require("@fortawesome/fontawesome-free");
+import "@fortawesome/fontawesome-free/css/all"

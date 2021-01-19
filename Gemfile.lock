@@ -780,7 +780,6 @@ DEPENDENCIES
   ffi
   ffi-geos
   flag-icons-rails (>= 3.4.6.1)
-  font-awesome-sassc
   formtastic (>= 3.1.5)
   fuubar
   geokit

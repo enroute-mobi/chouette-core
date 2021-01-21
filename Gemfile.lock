@@ -624,6 +624,11 @@ GEM
     rubycas-client (2.3.9)
       activesupport
     rubyzip (2.3.0)
+    sass (3.7.4)
+      sass-listen (~> 4.0.0)
+    sass-listen (4.0.0)
+      rb-fsevent (~> 0.9, >= 0.9.4)
+      rb-inotify (~> 0.9, >= 0.9.7)
     sass-rails (6.0.0)
       sassc-rails (~> 2.1, >= 2.1.1)
     sassc (2.1.0)
@@ -845,6 +850,7 @@ DEPENDENCIES
   rspec-snapshot
   rspec_junit_formatter
   rubyzip
+  sass
   sassc (= 2.1.0)
   sassc-rails (>= 2.1.2)
   seedbank (= 0.4.0)

@@ -11,6 +11,7 @@ gem "rails", "~> 5.2.4", ">= 5.2.4.4"
 # Use SCSS for stylesheets
 gem "sassc-rails", ">= 2.1.2"
 gem "sassc", "2.1.0"
+gem 'sass'
 
 # Use Uglifier as compressor for JavaScript assets
 gem "uglifier", "~> 2.7.2"

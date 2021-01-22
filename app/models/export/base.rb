@@ -23,6 +23,10 @@ class Export::Base < ApplicationModel
     @code_space ||= workgroup.code_spaces.default if workgroup
   end
 
+  def public_code_space
+    @code_space ||= workgroup.code_spaces.public if workgroup
+  end
+
   self.table_name = "exports"
 
   belongs_to :referential

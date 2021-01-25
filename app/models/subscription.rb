@@ -9,6 +9,8 @@ class Subscription
   end
 
   attr_accessor :organisation_name, :user_name, :email, :password, :password_confirmation
+  
+  validates_presence_of :organisation_name, :user_name, :email, :password, :password_confirmation
 
   def initialize(attributes = {})
     attributes.each do |name, value|
@@ -29,27 +31,7 @@ class Subscription
   end
 
   def valid?
-    @valid = !@valid.nil? ? @valid : begin
-      valid = true
-      unless organisation.valid?
-        organisation.errors[:code].each do |e|
-          errors.add(:organisation_name, e)
-        end
-        valid = false
-      end
-      unless user.valid?
-        %i{password password_confirmation email}.each do |attribute|
-          user.errors[attribute].each do |e|
-            errors.add attribute, e
-          end
-        end
-        user.errors[:name].each do |e|
-          errors.add :user_name, e
-        end
-        valid = false
-      end
-      valid
-    end
+    super && organisation.valid? && user.valid?
   end
 
   def workgroup

@@ -1,4 +1,11 @@
 describe Subscription, type: :model do
+  # Validations
+  it { should validate_presence_of(:organisation_name) }
+  it { should validate_presence_of(:user_name) }
+  it { should validate_presence_of(:email) }
+  it { should validate_presence_of(:password) }
+  it { should validate_presence_of(:password_confirmation) }
+  
   it "creates an Organisation with all features" do
     subscription = Subscription.new organisation_name: "organisation_test"
     expect(subscription.organisation.features).to match_array(Feature.all)

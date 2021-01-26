@@ -8,8 +8,10 @@ class SubscriptionValidator < ActiveModel::Validator
 
   def validate_organisation(record)
     unless record.organisation.valid?
-      record.organisation.errors[:name].each do |e|
-        record.errors.add(:organisation_name, e)
+      %i[name code].each do |attribute|
+        record.organisation.errors[attribute].each do |e|
+          record.errors.add(:organisation_name, e)
+        end
       end
     end
   end

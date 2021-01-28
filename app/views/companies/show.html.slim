@@ -12,6 +12,7 @@
           - attributes[Chouette::Company.human_attribute_name(field)] = @company.send(field)
         - @company.custom_fields(current_referential.workgroup).for_section("identification").each do |code, field|
           - attributes.merge!(field.name => field.display_value)
+        - attributes[Chouette::Company.tmf(:objectid)] = @company.objectid
         = definition_list t("companies.form.sections.identification"), attributes
 
         - attributes = %w(house_number address_line_1 address_line_2 street town postcode postcode_extension).map { |attr| [Chouette::Company.tmf(attr), @company.send(attr)]}.to_h

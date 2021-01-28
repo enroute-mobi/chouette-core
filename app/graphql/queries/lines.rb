@@ -17,22 +17,18 @@ module Queries
     def resolve(transport_mode: nil,
       transport_modes: [],
       company: nil,
-      companies: nil,
+      companies: [],
       not_transport_mode: nil,
       not_transport_modes: [],
       not_company: nil,
-      not_companies: nil)
+      not_companies: [])
       scope = context[:target_referential].lines
 
-      if company
-        scope = scope.joins(:company).where("companies.name ~~* '%#{company}%'")
-      elsif companies
-        scope = scope.joins(:company).where("companies.name ~* '.*(#{companies.compact.join('|')}).*'")
+      if company || companies.length > 0
+        scope = scope.joins(:company).where(companies: {objectid: (companies << company).compact})
       end
-      if not_company
-        scope = scope.joins(:company).where("companies.name !~~* '%#{not_company}%'")
-      elsif companies
-        scope = scope.joins(:company).where("companies.name !~* '.*(#{not_companies.compact.join('|')}).*'")
+      if not_company || not_companies.length > 0
+        scope = scope.joins(:company).where.not(companies: {objectid: (not_companies << not_company).compact})
       end
 
       if transport_mode || transport_modes.length > 0

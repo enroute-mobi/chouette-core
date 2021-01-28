@@ -40,7 +40,7 @@ en:
         code: "Code"
         time_zone: "Time zone"
         default_language: "Default language"
-        objectid: "Neptune identifier"
+        objectid: "External identifier"
         object_version: "Version"
         created_at: Created at
         updated_at: Updated at

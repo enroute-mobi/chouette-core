@@ -40,7 +40,7 @@ fr:
         code: "Code"
         time_zone: "Fuseau horaire"
         default_language: "Langue par défaut"
-        objectid: "Identifiant Neptune"
+        objectid: "Identifiant externe"
         object_version: "Version"
         created_at: "Créé le"
         updated_at: "Edité le"

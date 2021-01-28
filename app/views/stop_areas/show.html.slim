@@ -8,11 +8,14 @@
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = definition_list t("stop_areas.form.sections.identification"), stop_area_identification_metadatas(@stop_area, @workbench)
         = definition_list t("stop_areas.form.sections.general"), stop_area_general_metadatas(@stop_area)
+        = definition_list t('codes'),
+          {}.tap{|hash| @stop_area.codes.each{|code| hash[code.code_space.short_name] = code.value } }
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = definition_list t("stop_areas.form.sections.location"), stop_area_location_metadatas(@stop_area, @stop_area_referential)
         - if @stop_area.longitude && @stop_area.latitude
           #connection_link_map.map.mb-lg
+
     .
     - if @stop_area.is_referent || has_feature?(:stop_area_connection_links)
       .row

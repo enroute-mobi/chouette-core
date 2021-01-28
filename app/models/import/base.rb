@@ -14,6 +14,10 @@ class Import::Base < ApplicationModel
     @code_space ||= workgroup.code_spaces.default if workgroup
   end
 
+  def public_code_space
+    @public_code_space ||= workgroup.code_spaces.public if workgroup
+  end
+
   PERIOD_EXTREME_VALUE = 15.years
 
   after_create :purge_imports

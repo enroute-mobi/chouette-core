@@ -199,6 +199,7 @@ class Export::Gtfs < Export::Base
 
     target.stops << {
       id: stop_id,
+      code: stop_area.codes.find_by(code_space: public_code_space)&.value,
       name: stop_area.name,
       location_type: stop_area.area_type == 'zdep' ? 0 : 1,
       parent_station: parent_stop_id,

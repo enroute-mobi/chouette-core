@@ -31,6 +31,11 @@ module Types
     field :confirmed_at, GraphQL::Types::ISO8601DateTime, null:true
     field :deleted_at, GraphQL::Types::ISO8601DateTime, null:true
 
+    field :codes, GraphQL::Types::JSON, null: true
+    def codes
+      object.codes.map {|c| [c.code_space.short_name, c.value]}.to_h
+    end
+
     field :referent, Types::StopAreaType, null: true
     def referent
       LazyLoading::StopRelation.new(context, object.referent_id) if object.referent_id

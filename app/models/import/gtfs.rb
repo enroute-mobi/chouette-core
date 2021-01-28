@@ -120,6 +120,10 @@ class Import::Gtfs < Import::Base
         stop_area.deleted_at = nil
         stop_area.confirmed_at ||= Time.now
         stop_area.comment = stop.desc
+        stop_area.codes.find_or_initialize_by(code_space: public_code_space).tap do |code|
+          code.value = stop.code
+          code.save unless stop_area.new_record?
+        end if stop.code
 
         if stop.parent_station.present?
           if check_parent_is_valid_or_create_message(Chouette::StopArea, stop.parent_station, resource)

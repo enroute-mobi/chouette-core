@@ -43,6 +43,8 @@ class Subscription
         user.save!
 
         create_workgroup!
+
+        SubscriptionMailer.created(resource.user.id).deliver_later
       end
     end
     valid?

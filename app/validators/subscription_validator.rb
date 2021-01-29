@@ -1,32 +1,47 @@
 class SubscriptionValidator < ActiveModel::Validator
   def validate(record)
-    validate_organisation(record)
-    validate_user(record)
+    ValidationService.call(record)
   end
 
-  private
+  class ValidationService
+    attr_reader :record
 
-  def validate_organisation(record)
-    unless record.organisation.valid?
+    delegate :user, :organisation, :errors, to: :record
+
+    def initialize record
+      @record = record
+    end
+
+    def self.call record
+      new(record).call
+    end
+
+     def call
+      validate_organisation
+      validate_user
+    end
+
+    private
+
+     def validate_organisation
+      return if organisation.valid?
       %i[name code].each do |attribute|
-        record.organisation.errors[attribute].each do |e|
-          record.errors.add(:organisation_name, e)
-        end
+        add_errors on: :organisation_name, from: organisation.errors[attribute]
       end
     end
-  end
 
-  def validate_user(record)
-    unless record.user.valid?
+    def validate_user
+      return if user.valid?
+
       %i[password password_confirmation email].each do |attribute|
-        record.user.errors[attribute].each do |e|
-          record.errors.add(attribute, e)
-        end
+        add_errors on: attribute, from: user.errors[attribute]
       end
 
-      record.user.errors[:name].each do |e|
-        record.errors.add :user_name, e
-      end
+      add_errors on: :user_name, from: user.errors[:name]
+    end
+
+    def add_errors(on:, from:)
+      from.each { |e|  record.errors.add(on, e) }
     end
   end
 end

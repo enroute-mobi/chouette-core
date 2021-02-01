@@ -44,7 +44,7 @@ class Subscription
 
         create_workgroup!
 
-        SubscriptionMailer.created(resource.user.id).deliver_later
+        SubscriptionMailer.created(user.id).deliver_later
       end
     end
     valid?

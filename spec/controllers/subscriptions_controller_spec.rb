@@ -55,10 +55,10 @@ RSpec.describe SubscriptionsController, type: :controller do
       context "when notifications are enabled" do
         before(:each) do
           allow(Rails.configuration)
-            .to receive(:enable_subscriptions_notifications)
+            .to receive(:accept_user_creation)
             .and_return( true )
 
-          expect(Rails.configuration.enable_subscriptions_notifications).to be_truthy
+          expect(Rails.configuration.accept_user_creation).to be_truthy
         end
         context 'after_create' do
           it 'should schedule mailer' do
@@ -71,10 +71,10 @@ RSpec.describe SubscriptionsController, type: :controller do
       context "when notifications are disabled" do
         before(:each) do
           allow(Rails.configuration)
-            .to receive(:enable_subscriptions_notifications)
+            .to receive(:accept_user_creation)
             .and_return( false )
 
-          expect(Rails.configuration.enable_subscriptions_notifications).to be_falsy
+          expect(Rails.configuration.accept_user_creation).to be_falsy
         end
         context 'after_create' do
           it 'should not schedule mailer' do

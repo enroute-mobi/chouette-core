@@ -8,7 +8,7 @@ RSpec.describe SubscriptionsController, type: :controller do
 
   describe "POST create" do
     before(:each) do
-      allow(Rails.application.config).to receive(:accept_user_creation){ false }
+      allow(Subscription).to receive(:enabled?) { false }
     end
 
     it "should be not found" do
@@ -18,7 +18,7 @@ RSpec.describe SubscriptionsController, type: :controller do
 
     context "with the feature enabled" do
       before(:each) do
-        allow(Rails.application.config).to receive(:accept_user_creation){ true }
+        allow(Subscription).to receive(:enabled?) { true }
       end
 
       it "should be add errors" do
@@ -38,7 +38,7 @@ RSpec.describe SubscriptionsController, type: :controller do
       }}
 
       before(:each) do
-        allow(Rails.application.config).to receive(:accept_user_creation){ true }
+        allow(Subscription).to receive(:enabled?) { true }
       end
 
       it "should create models and redirect to home" do
@@ -54,11 +54,9 @@ RSpec.describe SubscriptionsController, type: :controller do
 
       context "when notifications are enabled" do
         before(:each) do
-          allow(Rails.configuration)
-            .to receive(:accept_user_creation)
-            .and_return( true )
+          allow(Subscription).to receive(:enabled?) { true }
 
-          expect(Rails.configuration.accept_user_creation).to be_truthy
+          expect(Subscription.enabled?).to be_truthy
         end
         context 'after_create' do
           it 'should schedule mailer' do
@@ -70,11 +68,9 @@ RSpec.describe SubscriptionsController, type: :controller do
 
       context "when notifications are disabled" do
         before(:each) do
-          allow(Rails.configuration)
-            .to receive(:accept_user_creation)
-            .and_return( false )
+          allow(Subscription).to receive(:enabled?) { false }
 
-          expect(Rails.configuration.accept_user_creation).to be_falsy
+          expect(Subscription.enabled?).to be_falsy
         end
         context 'after_create' do
           it 'should not schedule mailer' do

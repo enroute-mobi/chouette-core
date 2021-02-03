@@ -87,15 +87,31 @@ class Import::Gtfs < Import::Base
 
   def import_agencies
     create_resource(:agencies).each(source.agencies) do |agency, resource|
-      company = companies.find_or_initialize_by(registration_number: agency.id)
-      company.line_provider = line_provider
-      company.attributes = { name: agency.name }
-      company.default_language = agency.lang
-      company.default_contact_url = agency.url
-      @default_time_zone ||= check_time_zone_or_create_message(agency.timezone, resource)
-      company.time_zone = @default_time_zone
+      if agency.id.present?
+        company = companies.find_or_initialize_by(registration_number: agency.id)
+        company.line_provider = line_provider
+        company.attributes = { name: agency.name }
+        company.default_language = agency.lang
+        company.default_contact_url = agency.url
+        @default_time_zone ||= check_time_zone_or_create_message(agency.timezone, resource)
+        company.time_zone = @default_time_zone
 
-      save_model company, resource: resource
+        save_model company, resource: resource
+      else
+        create_message(
+          {
+            criticity: :error,
+            message_key: 'gtfs.agencies.missing_agency_id',
+            resource_attributes: {
+              filename: "#{resource.name}.txt",
+              line_number: resource.rows_count
+            }
+          },
+          resource: resource,
+          commit: true
+        )
+        next
+      end
     end
   end
 

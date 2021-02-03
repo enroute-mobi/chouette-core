@@ -112,6 +112,43 @@ RSpec.describe Import::Gtfs do
         expect(resource.metrics['error_count'].to_i).to eq 1
       end
     end
+
+    context 'when a record does not have an id' do
+      before(:each) do
+        allow(import.source).to receive(:agencies) {
+          [
+            GTFS::Agency.new(
+              id: 'DTA',
+              name: 'name',
+              url: 'http://google.com',
+              timezone: 'America/Los_Angeles'
+            ),
+            GTFS::Agency.new(
+              id: '',
+              name: 'name',
+              url: 'http://google.com',
+              timezone: 'America/Los_Angeles'
+            )
+          ]
+        }
+      end
+      it 'should not create a company' do
+        expect do
+          import.import_agencies
+        end.to change { Chouette::Company.count }.by 1
+      end
+
+      it 'should create an error message' do
+        expect do
+          import.import_agencies
+        end.to change { Import::Message.count }.by 1
+
+        resource = import.resources.last
+        expect(resource.metrics['ok_count'].to_i).to eq 1
+        expect(resource.metrics['warning_count'].to_i).to eq 0
+        expect(resource.metrics['error_count'].to_i).to eq 1
+      end
+    end
   end
 
   describe '#import_stops' do

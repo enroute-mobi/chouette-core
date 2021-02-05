@@ -170,7 +170,26 @@ RSpec.describe Export::NetexGeneric do
       end
     end
 
+    let(:journey_patterns) { context.journey_patterns }
+
     before { context.referential.switch }
+
+      it "create a Netex::JourneyPattern for each Chouette JourneyPattern" do
+        part.export!
+        expect(target.resources).to have_attributes(count: journey_patterns.count)
+
+        target.resources.each do |resource|
+          jp = Chouette::JourneyPattern.find_by_objectid resource.id
+
+          expect(jp).to be
+
+          if jp.published_name
+            expect(resource.destination_display_ref).to be
+            expect(resource.destination_display_ref.ref).to eq(jp.objectid)
+            expect(resource.destination_display_ref.type).to eq('DestinationDisplayRef')
+          end
+        end
+      end
 
     it "create Netex resources with line_id tag" do
       context.routes.each { |route| export.resource_tagger.register_tag_for(route.line) }
@@ -178,6 +197,45 @@ RSpec.describe Export::NetexGeneric do
       expect(target.resources).to all(have_tag(:line_id))
     end
 
+  end
+
+  describe "DestinationDisplays export" do
+
+    let(:target) { MockNetexTarget.new }
+    let(:export_scope) { Export::Scope::All.new context.referential }
+    let(:export) { Export::NetexGeneric.new export_scope: export_scope, target: target }
+
+    let(:part) do
+      Export::NetexGeneric::DestinationDisplays.new export
+    end
+
+     let(:context) do
+      Chouette.create do
+        3.times { journey_pattern }
+      end
+    end
+
+    let(:journey_patterns) { context.journey_patterns }
+
+    before { context.referential.switch }
+
+    it "create a Netex::DestinationDisplays for each Chouette Route" do
+      part.export!
+      expect(target.resources).to have_attributes(count: journey_patterns.count)
+
+      target.resources.each do |resource|
+        jp = Chouette::JourneyPattern.find_by_objectid resource.id
+
+        expect(jp).to be
+        expect(resource.front_text).to eq(jp.published_name)
+      end
+    end
+
+    it "create Netex resources with line_id tag" do
+      context.routes.each { |route| export.resource_tagger.register_tag_for(route.line) }
+      part.export!
+      expect(target.resources).to all(have_tag(:line_id))
+    end
   end
 
   describe "VehicleJourneys export" do

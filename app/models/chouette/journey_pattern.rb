@@ -21,6 +21,8 @@ module Chouette
 
     scope :without_any_vehicle_journey, -> { joins('LEFT JOIN vehicle_journeys ON vehicle_journeys.journey_pattern_id = journey_patterns.id').where(vehicle_journeys: { id: nil } ) }
 
+    scope :with_published_name, -> { where.not(published_name: [nil, '']) }
+
     validates_presence_of :route
     validates_presence_of :name
     validates_presence_of :published_name

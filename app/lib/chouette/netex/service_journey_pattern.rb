@@ -7,10 +7,6 @@ class Chouette::Netex::ServiceJourneyPattern < Chouette::Netex::Resource
     { 'Name' => :name }
   end
 
-  def destination_display_ref
-    (resource.published_name || resource.registration_number) && id_with_entity('DestinationDisplayforJourneyPattern', resource)
-  end
-
   def stop_point_in_journey_pattern_id(stop_point)
     id_with_entity 'StopPointInJourneyPattern', resource, stop_point
   end
@@ -53,7 +49,7 @@ class Chouette::Netex::ServiceJourneyPattern < Chouette::Netex::Resource
       end
       attribute 'Name'
       ref 'RouteRef', resource.route.objectid
-      ref 'DestinationDisplayRef', destination_display_ref
+      ref 'DestinationDisplayRef', objectid if resource.published_name
 
       node_if_content 'pointsInSequence' do
         points_in_sequence

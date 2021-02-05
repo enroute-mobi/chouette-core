@@ -52,6 +52,7 @@ class Export::NetexGeneric < Export::Base
         Routes,
         StopPoints,
         JourneyPatterns,
+        DestinationDisplays,
         VehicleJourneys,
         TimeTables
       ]
@@ -463,6 +464,7 @@ class Export::NetexGeneric < Export::Base
           id: id,
           name: netex_name,
           line_ref: line_ref,
+          direction_ref: direction_ref,
           points_in_sequence: points_in_sequence
         }
       end
@@ -473,6 +475,10 @@ class Export::NetexGeneric < Export::Base
 
       def netex_name
         published_name.presence || name
+      end
+
+      def direction_ref
+        Netex::Reference.new(objectid, type: 'DirectionRef')
       end
 
       def line_ref
@@ -532,6 +538,7 @@ class Export::NetexGeneric < Export::Base
           id: objectid,
           name: name,
           route_ref: route_ref,
+          destination_display_ref: destination_display_ref,
           points_in_sequence: points_in_sequence
         }
       end
@@ -542,6 +549,10 @@ class Export::NetexGeneric < Export::Base
 
       def route_ref
         Netex::Reference.new(route.objectid, type: 'RouteRef')
+      end
+
+      def destination_display_ref
+        Netex::Reference.new(objectid, type: 'DestinationDisplayRef')
       end
 
       def points_in_sequence
@@ -555,6 +566,34 @@ class Export::NetexGeneric < Export::Base
       end
     end
 
+  end
+
+  class DestinationDisplays < Part
+    delegate :journey_patterns, to: :export_scope
+
+    def export!
+      journey_patterns.with_published_name.joins(:route).select('journey_patterns.*', 'routes.line_id as line_id').find_each do |journey_pattern|
+        tags = resource_tagger.tags_for(journey_pattern.line_id)
+        tagged_target = TaggedTarget.new(target, tags)
+
+        decorated_journey_pattern = Decorator.new(journey_pattern)
+        tagged_target << decorated_journey_pattern.netex_resource
+      end
+    end
+
+    class Decorator < SimpleDelegator
+
+      def netex_attributes
+        {
+          id: objectid,
+          front_text: published_name
+        }
+      end
+
+      def netex_resource
+        Netex::DestinationDisplay.new netex_attributes
+      end
+    end
   end
 
   class VehicleJourneys < Part

@@ -59,6 +59,14 @@ module Chouette::Netex::Concerns::EntityCollections
     end
   end
 
+  def netex_service_destination_displays
+    CustomFieldsSupport.within_workgroup(workgroup) do
+      journey_patterns.with_published_name.find_each do |journey_pattern|
+        Chouette::Netex::ServiceJourneyPattern.new(self, journey_pattern).to_xml(@builder)
+      end
+    end
+  end
+
   def netex_service_links
     CustomFieldsSupport.within_workgroup(workgroup) do
       journey_patterns.includes(:stop_point_lights).find_each do |journey_pattern|

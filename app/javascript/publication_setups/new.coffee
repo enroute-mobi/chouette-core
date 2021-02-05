@@ -19,7 +19,7 @@ initPublicationSetupButtons = (container)->
       $btRestore.show()
       false
 
-    $btRestore = $("<a href='#' class='pull-right btn btn-info'><i class='fa fa-refresh'></i><span>#{I18n.t('actions.restore')}</span></a>")
+    $btRestore = $("<a href='#' class='pull-right btn btn-info'><i class='fa fa-sync'></i><span>#{I18n.t('actions.restore')}</span></a>")
     $btRestore.appendTo $wrapper
     $btRestore.hide()
 

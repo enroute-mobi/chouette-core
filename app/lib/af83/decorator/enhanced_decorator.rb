@@ -58,7 +58,7 @@ module AF83::Decorator::EnhancedDecorator
         before_block: -> (l){
           l.content { object.class.t_action(:edit) }
           l.href { [:edit, scope, object] }
-          l.icon :pencil
+          l.icon :"pencil-alt"
         }
       }
       action_link opts.update(args), &block

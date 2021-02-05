@@ -172,8 +172,8 @@ module NewapplicationHelper
     direction = (key.to_s == params[:sort] && params[:direction] == 'desc') ? 'asc' : 'desc'
 
     link_to(params.merge({direction: direction, sort: key})) do
-      pic1 = content_tag :span, '', class: "fa fa-sort-asc #{(direction == 'desc') ? 'active' : ''}"
-      pic2 = content_tag :span, '', class: "fa fa-sort-desc #{(direction == 'asc') ? 'active' : ''}"
+      pic1 = content_tag :span, '', class: "fa fa-sort-up #{(direction == 'desc') ? 'active' : ''}"
+      pic2 = content_tag :span, '', class: "fa fa-sort-down #{(direction == 'asc') ? 'active' : ''}"
 
       pics = content_tag :span, pic1 + pic2, class: 'orderers'
       obj = collection.model.to_s.gsub('Chouette::', '').scan(/[A-Z][a-z]+/).join('_').downcase
@@ -191,7 +191,7 @@ module NewapplicationHelper
       actions.collect do |action|
         if action == :edit
           actitem = link_to('#', title: t("actions.#{action}")) do
-            content_tag :span, '', class: 'fa fa-pencil'
+            content_tag :span, '', class: 'fa fa-pencil-alt'
           end
         elsif action == :delete
           actitem = link_to('#', method: :delete, data: { path: dPath, confirm: I18n.t('are_you_sure') }, title: t("actions.#{action}")) do

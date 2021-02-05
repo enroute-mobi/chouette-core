@@ -9,7 +9,7 @@ module JobStatusIconHelper
     if %w{ aborted canceled }.include?(status)
       title += '<span class="name aborted"><i class="fa fa-times"></i>'
     elsif %w{ started scheduled }.include?(status)
-      title += "<span class=\"name processed progress\" title=\"#{I18n.t('job_status.title.processed')}\"><i class=\"fa fa-clock-o\"></i>"
+      title += "<span class=\"name processed progress\" title=\"#{I18n.t('job_status.title.processed')}\"><i class=\"fa fa-clock\"></i>"
     elsif %w{ terminated }.include?(status)
       title += '<span class="name terminated"><i class="fa fa-check"></i>'
     end

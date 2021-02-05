@@ -89,7 +89,7 @@ module StopAreasHelper
         content_tag(:span, nil, class: 'fa fa-exclamation-circle fa-lg text-danger') +
         t('activerecord.attributes.stop_area.deactivated')
       else
-        content_tag(:span, nil, class: 'fa fa-pencil fa-lg text-info') +
+        content_tag(:span, nil, class: 'fa fa-pencil-alt fa-lg text-info') +
         t('activerecord.attributes.stop_area.in_creation')
     end
   end

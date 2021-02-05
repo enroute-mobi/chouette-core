@@ -57,7 +57,7 @@ export default function StopPoint(props) {
             className='btn btn-link'
             onClick={props.onToggleEdit}
             >
-            <span className={'fa' + (props.value.edit ? ' fa-check' : ' fa-pencil')}></span>
+            <span className={'fa' + (props.value.edit ? ' fa-check' : ' fa-pencil-alt')}></span>
           </div>
           <div
             className='btn btn-link'

@@ -24,7 +24,7 @@ module ReferentialsHelper
   def icon_for_referential_state state
     klass = case state.to_s
     when "pending"
-      'fa fa-clock-o'
+      'fa fa-clock'
     when "failed"
       'fa fa-times'
     when "archived"

@@ -12,7 +12,7 @@ class ClockpickerInput < SimpleForm::Inputs::Base
 
   def span_remove
     template.content_tag(:span, class: 'input-group-addon') do
-      template.concat "<i class='fa fa-clock-o'></i>".html_safe
+      template.concat "<i class='fa fa-clock'></i>".html_safe
     end
   end
 end

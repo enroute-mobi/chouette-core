@@ -10,7 +10,7 @@ module OperationsHelper
     title = verbose ? nil : txt
 
     out = if %w[new running pending].include? status
-      render_icon "fa fa-clock-o #{status}", title
+      render_icon "fa fa-clock #{status}", title
     else
       cls = ''
       cls = 'success' if status == 'successful'

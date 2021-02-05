@@ -56,14 +56,14 @@ describe TableBuilderHelper, type: :helper do
             <th>
                 <div class="checkbox"><input type="checkbox" name="0" id="0" value="all" /><label for="0"></label></div>
             </th>
-            <th><a href="/workbenches/#{workbench.id}?direction=desc&amp;sort=name">Nom<span class="orderers"><span class="fa fa-sort-asc "></span><span class="fa fa-sort-desc "></span></span></a></th>
-            <th><a href="/workbenches/#{workbench.id}?direction=desc&amp;sort=status">Etat<span class="orderers"><span class="fa fa-sort-asc "></span><span class="fa fa-sort-desc "></span></span></a></th>
-            <th><a href="/workbenches/#{workbench.id}?direction=desc&amp;sort=organisation">Organisation<span class="orderers"><span class="fa fa-sort-asc "></span><span class="fa fa-sort-desc "></span></span></a></th>
-            <th><a href="/workbenches/#{workbench.id}?direction=desc&amp;sort=validity_period">Période de validité englobante<span class="orderers"><span class="fa fa-sort-asc "></span><span class="fa fa-sort-desc "></span></span></a></th>
-            <th><a href="/workbenches/#{workbench.id}?direction=desc&amp;sort=lines">Lignes<span class="orderers"><span class="fa fa-sort-asc "></span><span class="fa fa-sort-desc "></span></span></a></th>
-            <th><a href="/workbenches/#{workbench.id}?direction=desc&amp;sort=created_at">Créé le<span class="orderers"><span class="fa fa-sort-asc "></span><span class="fa fa-sort-desc "></span></span></a></th>
-            <th><a href="/workbenches/#{workbench.id}?direction=desc&amp;sort=updated_at">Edité le<span class="orderers"><span class="fa fa-sort-asc "></span><span class="fa fa-sort-desc "></span></span></a></th>
-            <th><a href="/workbenches/#{workbench.id}?direction=desc&amp;sort=merged_at">Finalisé le<span class="orderers"><span class="fa fa-sort-asc "></span><span class="fa fa-sort-desc "></span></span></a></th>
+            <th><a href="/workbenches/#{workbench.id}?direction=desc&amp;sort=name">Nom<span class="orderers"><span class="fa fa-sort-up "></span><span class="fa fa-sort-down "></span></span></a></th>
+            <th><a href="/workbenches/#{workbench.id}?direction=desc&amp;sort=status">Etat<span class="orderers"><span class="fa fa-sort-up "></span><span class="fa fa-sort-down "></span></span></a></th>
+            <th><a href="/workbenches/#{workbench.id}?direction=desc&amp;sort=organisation">Organisation<span class="orderers"><span class="fa fa-sort-up "></span><span class="fa fa-sort-down "></span></span></a></th>
+            <th><a href="/workbenches/#{workbench.id}?direction=desc&amp;sort=validity_period">Période de validité englobante<span class="orderers"><span class="fa fa-sort-up "></span><span class="fa fa-sort-down "></span></span></a></th>
+            <th><a href="/workbenches/#{workbench.id}?direction=desc&amp;sort=lines">Lignes<span class="orderers"><span class="fa fa-sort-up "></span><span class="fa fa-sort-down "></span></span></a></th>
+            <th><a href="/workbenches/#{workbench.id}?direction=desc&amp;sort=created_at">Créé le<span class="orderers"><span class="fa fa-sort-up "></span><span class="fa fa-sort-down "></span></span></a></th>
+            <th><a href="/workbenches/#{workbench.id}?direction=desc&amp;sort=updated_at">Edité le<span class="orderers"><span class="fa fa-sort-up "></span><span class="fa fa-sort-down "></span></span></a></th>
+            <th><a href="/workbenches/#{workbench.id}?direction=desc&amp;sort=merged_at">Finalisé le<span class="orderers"><span class="fa fa-sort-up "></span><span class="fa fa-sort-down "></span></span></a></th>
             <th></th>
         </tr>
     </thead>
@@ -88,7 +88,7 @@ describe TableBuilderHelper, type: :helper do
                     <div class="dropdown-menu">
                         <ul class="primary">
                             <li class=""><a href="/referentials/#{referential.id}"><span class='mr-xs fa fa-eye'></span>Consulter</a></li>
-                            <li class=""><a href="/referentials/#{referential.id}/edit"><span class='mr-xs fa fa-pencil'></span>Editer ce jeu de données</a></li>
+                            <li class=""><a href="/referentials/#{referential.id}/edit"><span class='mr-xs fa fa-pencil-alt'></span>Editer ce jeu de données</a></li>
                         </ul>
                         <ul class="other">
                             <li class=""><a href="/referentials/#{referential.id}/time_tables">Calendriers</a></li>
@@ -219,10 +219,10 @@ describe TableBuilderHelper, type: :helper do
     <thead>
         <tr>
             <th>ID Codif</th>
-            <th><a href="/workbenches/#{workbench.id}/line_referential/companies?direction=desc&amp;sort=name">Nom<span class="orderers"><span class="fa fa-sort-asc "></span><span class="fa fa-sort-desc "></span></span></a></th>
-            <th><a href="/workbenches/#{workbench.id}/line_referential/companies?direction=desc&amp;sort=default_contact_phone">Numéro de téléphone<span class="orderers"><span class="fa fa-sort-asc "></span><span class="fa fa-sort-desc "></span></span></a></th>
-            <th><a href="/workbenches/#{workbench.id}/line_referential/companies?direction=desc&amp;sort=default_contact_email">Email<span class="orderers"><span class="fa fa-sort-asc "></span><span class="fa fa-sort-desc "></span></span></a></th>
-            <th><a href="/workbenches/#{workbench.id}/line_referential/companies?direction=desc&amp;sort=default_contact_url">Page web associée<span class="orderers"><span class="fa fa-sort-asc "></span><span class="fa fa-sort-desc "></span></span></a></th>
+            <th><a href="/workbenches/#{workbench.id}/line_referential/companies?direction=desc&amp;sort=name">Nom<span class="orderers"><span class="fa fa-sort-up "></span><span class="fa fa-sort-down "></span></span></a></th>
+            <th><a href="/workbenches/#{workbench.id}/line_referential/companies?direction=desc&amp;sort=default_contact_phone">Numéro de téléphone<span class="orderers"><span class="fa fa-sort-up "></span><span class="fa fa-sort-down "></span></span></a></th>
+            <th><a href="/workbenches/#{workbench.id}/line_referential/companies?direction=desc&amp;sort=default_contact_email">Email<span class="orderers"><span class="fa fa-sort-up "></span><span class="fa fa-sort-down "></span></span></a></th>
+            <th><a href="/workbenches/#{workbench.id}/line_referential/companies?direction=desc&amp;sort=default_contact_url">Page web associée<span class="orderers"><span class="fa fa-sort-up "></span><span class="fa fa-sort-down "></span></span></a></th>
             <th></th>
         </tr>
     </thead>

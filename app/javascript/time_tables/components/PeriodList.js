@@ -58,7 +58,7 @@ export default class PeriodList extends Component {
                               title={ I18n.t('actions.edit') }
                               onClick={() => this.props.onOpenEditPeriodForm(p, i)}
                             >
-                              <span className='fa fa-pencil'></span>
+                              <span className='fa fa-pencil-alt'></span>
                             </div>
                             <div className="btn btn-link"
                               title={ I18n.t('actions.delete') }

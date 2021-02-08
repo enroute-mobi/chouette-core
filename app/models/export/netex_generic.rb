@@ -460,9 +460,10 @@ class Export::NetexGeneric < Export::Base
 
       def netex_attributes
         {
-          id: id,
+          id: objectid,
           name: netex_name,
           line_ref: line_ref,
+          direction_ref: direction_ref,
           points_in_sequence: points_in_sequence
         }
       end
@@ -473,6 +474,17 @@ class Export::NetexGeneric < Export::Base
 
       def netex_name
         published_name.presence || name
+      end
+
+      def direction
+        @direction ||= Netex::Direction.new(
+          id: objectid,
+          name: published_name
+        )
+      end
+
+      def direction_ref
+        Netex::Reference.new(direction.id, type: 'DirectionRef') if published_name
       end
 
       def line_ref

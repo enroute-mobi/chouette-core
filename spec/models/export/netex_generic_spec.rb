@@ -101,6 +101,22 @@ RSpec.describe Export::NetexGeneric do
     it "create a Netex::Route for each Chouette Route" do
       part.export!
       expect(target.resources).to have_attributes(count: routes.count)
+
+      target.resources.each do |resource|
+        route = Chouette::Route.find_by_objectid! resource.id
+
+        expect(route).to be
+
+        expect(resource.line_ref).to be
+        expect(resource.line_ref.ref).to eq(route.line.objectid)
+        expect(resource.line_ref.type).to eq('LineRef')
+
+        if route.published_name
+          expect(resource.direction_ref).to be
+          expect(resource.direction_ref.ref).to eq(route.objectid)
+          expect(resource.direction_ref.type).to eq('DirectionRef')
+        end
+      end
     end
 
     it "create Netex::Routes with line_id tag" do

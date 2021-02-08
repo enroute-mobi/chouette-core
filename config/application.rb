@@ -110,7 +110,6 @@ module ChouetteIhm
     end
 
     config.enable_calendar_observer = true
-    config.enable_subscriptions_notifications = SmartEnv.boolean('SUBSCRIPTION_NOTIFIER_ENABLED')
     config.subscriptions_notifications_recipients = []
     config.enable_automated_audits = SmartEnv.boolean('AUTOMATED_AUDITS_ENABLED')
     config.automated_audits_recipients = []

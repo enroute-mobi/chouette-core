@@ -2,7 +2,7 @@ class SubscriptionMailer < ApplicationMailer
   add_template_helper MailerHelper
 
   def self.enabled?
-    !!Rails.configuration.enable_subscriptions_notifications
+    Rails.configuration.subscriptions_notifications_recipients.present?
   end
 
   def created user_id

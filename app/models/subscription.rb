@@ -44,7 +44,7 @@ class Subscription
 
         create_workgroup!
 
-        SubscriptionMailer.created(user.id).deliver_later if Rails.configuration.subscriptions_notifications_recipients.present?
+        SubscriptionMailer.created(user.id).deliver_later if SubscriptionMailer.enabled?
       end
     end
     valid?

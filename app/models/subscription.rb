@@ -37,17 +37,18 @@ class Subscription
   alias_method :create_workgroup!, :workgroup
 
   def save
-    if valid?
-      ActiveRecord::Base.transaction do
-        organisation.save!
-        user.save!
+    return false unless valid?
 
-        create_workgroup!
+    ActiveRecord::Base.transaction do
+      organisation.save!
+      user.save!
 
-        SubscriptionMailer.created(user.id).deliver_later
-      end
+      create_workgroup!
+
+      SubscriptionMailer.new_subscription(user)
     end
-    valid?
+
+    true
   end
 
 end

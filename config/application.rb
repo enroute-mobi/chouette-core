@@ -56,7 +56,6 @@ module ChouetteIhm
     SmartEnv.add_boolean :CHOUETTE_ROUTE_POSITION_CHECK
     SmartEnv.add_boolean :CHOUETTE_ITS_SEND_INVITATION
     SmartEnv.add_boolean :NO_TRANSACTION
-    SmartEnv.add_boolean :SUBSCRIPTION_NOTIFIER_ENABLED
     SmartEnv.add_boolean :CHOUETTE_EMAIL_USER
     SmartEnv.add_array :CHOUETTE_EMAIL_WHITELIST
     SmartEnv.add_array :CHOUETTE_EMAIL_BLACKLIST

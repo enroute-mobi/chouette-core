@@ -1,7 +1,7 @@
 fr:
   import_messages:
     corrupt_zip_file: "Le fichier zip est corrompu, et ne peut être lu"
-    foreign_lines_in_referential: Le référentiel contient des lignes hors périmètre
+    foreign_lines_in_referential: "Le référentiel contient des lignes hors périmètre %{foreign_lines}"
     inconsistent_zip_file: "Le fichier zip contient des repertoires non prévus : %{spurious_dirs} qui seront ignorés"
     missing_calendar_in_zip_file: "Le dossier %{source_filename} ne contient pas de calendrier"
     invalid_parent: Parent invalide

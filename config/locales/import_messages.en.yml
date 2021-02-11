@@ -28,6 +28,7 @@ en:
     gtfs:
       agencies:
         imported: "%{count} agency(ies) imported"
+        missing_agency_id: Missing agency id
       stops:
         imported: "%{count} stop(s) imported"
       routes:

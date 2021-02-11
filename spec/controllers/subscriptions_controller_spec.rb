@@ -55,9 +55,7 @@ RSpec.describe SubscriptionsController, type: :controller do
       context "when notifications are enabled" do
         before(:each) do
           allow(Subscription).to receive(:enabled?) { true }
-          allow(Rails.configuration).to receive(:subscriptions_notifications_recipients) { ['test@enroute.mobi'] }
-
-          expect(Subscription.enabled?).to be_truthy
+          allow(SubscriptionMailer).to receive(:recipients) { ['test@enroute.mobi'] }
         end
         context 'after_create' do
           it 'should schedule mailer' do

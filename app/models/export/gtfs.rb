@@ -800,6 +800,7 @@ class Export::Gtfs < Export::Base
 
   class VehicleJourneyAtStops < Part
 
+    delegate :prefer_referent_stop_area, to: :export
     attr_writer :filter_non_commercial, :ignore_time_zone
 
     def filter_non_commercial?
@@ -820,8 +821,12 @@ class Export::Gtfs < Export::Base
 
           if filter_non_commercial?
             Rails.logger.warn "Export GTFS #{export.id} uses non optimized non_commercial filter"
-            base_scope = base_scope.left_joins(stop_point: {stop_area: :referent})
-            base_scope = base_scope.where("stop_areas.kind" => "commercial").or(base_scope.where("referents_public_stop_areas.kind" => "commercial"))
+            if prefer_referent_stop_area
+              base_scope = base_scope.left_joins(stop_point: {stop_area: :referent})
+              base_scope = base_scope.where("stop_areas.kind" => "commercial").or(base_scope.where("referents_public_stop_areas.kind" => "commercial"))
+            else
+              base_scope = base_scope.joins(stop_point: :stop_area).where("stop_areas.kind" => "commercial")
+            end
           end
 
           base_scope

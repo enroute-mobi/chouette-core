@@ -208,8 +208,20 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       context.referential.switch
     end
 
-    it "should " do
-      expect(part.vehicle_journey_at_stops.length).to eq(2)
+    context "when prefer_referent_stop_area is true" do
+      before { export.options["prefer_referent_stop_area"] = true }
+
+      it "should export 2 vehicle journey at stops" do
+        expect(part.vehicle_journey_at_stops.length).to eq(2)
+      end
+    end
+
+    context "when prefer_referent_stop_area is false" do
+      before { export.options["prefer_referent_stop_area"] = false }
+
+      it "should export 1 vehicle journey at stop" do
+        expect(part.vehicle_journey_at_stops.length).to eq(1)
+      end
     end
 
   end

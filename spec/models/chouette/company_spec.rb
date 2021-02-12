@@ -40,4 +40,50 @@ describe Chouette::Company, :type => :model do
     end
   end
 
+  describe "#registration_number" do
+
+    let(:first_company) { context.company(:first) }
+    let(:second_company) { context.company(:second) }
+
+    context "for two companies into two company providers" do
+      let(:context) do
+        Chouette.create do
+          line_provider do
+            company :first, registration_number: 'dummy'
+          end
+          line_provider do
+            company :second
+          end
+        end
+      end
+
+      it "can have the same value" do
+        expect(second_company).to allow_value(first_company.registration_number).for(:registration_number)
+      end
+      it "can be blank" do
+        expect(second_company).to allow_value('').for(:registration_number)
+      end
+    end
+
+    context "for two companies into the same provider" do
+      let(:context) do
+        Chouette.create do
+          line_provider do
+            company :first, registration_number: 'dummy'
+            company :second
+          end
+        end
+      end
+
+      it "can't have the same value" do
+         expect(second_company).to_not allow_value(first_company.registration_number).for(:registration_number)
+      end
+
+      it "can be blank" do
+        expect(second_company).to allow_value('').for(:registration_number)
+      end
+    end
+
+  end
+
 end

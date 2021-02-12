@@ -71,7 +71,7 @@ describe Chouette::StopArea, :type => :model do
 
       it "should validate the registration_number uniqueness" do
         stop_area.registration_number = "1234455"
-        create :stop_area, stop_area_referential: stop_area_referential, registration_number: stop_area.registration_number
+        create :stop_area, stop_area_provider: stop_area_provider, registration_number: stop_area.registration_number
         expect(stop_area).to_not be_valid
       end
     end
@@ -87,22 +87,22 @@ describe Chouette::StopArea, :type => :model do
 
       context "with a previous stop_area" do
         it "should generate a registration_number" do
-          create :stop_area, stop_area_referential: stop_area_referential, registration_number: "AAA"
+          create :stop_area, stop_area_provider: stop_area_provider, registration_number: "AAA"
           stop_area.save!
           expect(stop_area.registration_number).to be_present
           expect(stop_area.registration_number).to eq "AAB"
         end
 
         it "should generate a registration_number" do
-          create :stop_area, stop_area_referential: stop_area_referential, registration_number: "ZZZ"
+          create :stop_area, stop_area_provider: stop_area_provider, registration_number: "ZZZ"
           stop_area.save!
           expect(stop_area.registration_number).to be_present
           expect(stop_area.registration_number).to eq "AAA"
         end
 
         it "should generate a registration_number" do
-          create :stop_area, stop_area_referential: stop_area_referential, registration_number: "AAA"
-          create :stop_area, stop_area_referential: stop_area_referential, registration_number: "ZZZ"
+          create :stop_area, stop_area_provider: stop_area_provider, registration_number: "AAA"
+          create :stop_area, stop_area_provider: stop_area_provider, registration_number: "ZZZ"
           stop_area.save!
           expect(stop_area.registration_number).to be_present
           expect(stop_area.registration_number).to eq "AAB"
@@ -119,7 +119,7 @@ describe Chouette::StopArea, :type => :model do
 
       it "should validate the registration_number uniqueness" do
         stop_area.registration_number = "ABC"
-        create :stop_area, stop_area_referential: stop_area_referential, registration_number: stop_area.registration_number
+        create :stop_area, stop_area_provider: stop_area_provider, registration_number: stop_area.registration_number
         expect(stop_area).to_not be_valid
 
         stop_area.registration_number = "ABD"

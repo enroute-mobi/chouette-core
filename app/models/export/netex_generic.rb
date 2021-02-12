@@ -52,7 +52,6 @@ class Export::NetexGeneric < Export::Base
         Routes,
         StopPoints,
         JourneyPatterns,
-        DestinationDisplays,
         VehicleJourneys,
         TimeTables
       ]
@@ -464,7 +463,6 @@ class Export::NetexGeneric < Export::Base
           id: id,
           name: netex_name,
           line_ref: line_ref,
-          direction_ref: direction_ref,
           points_in_sequence: points_in_sequence
         }
       end
@@ -475,10 +473,6 @@ class Export::NetexGeneric < Export::Base
 
       def netex_name
         published_name.presence || name
-      end
-
-      def direction_ref
-        Netex::Reference.new(objectid, type: 'DirectionRef')
       end
 
       def line_ref

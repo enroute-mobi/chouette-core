@@ -36,7 +36,7 @@ export default class TimetablesEditVehicleJourney extends Component {
             onClick={() => this.props.onOpenCalendarsEditModal(actions.getSelected(this.props.vehicleJourneys))}
             title={ I18n.t('vehicle_journeys.form.hint_calendars') }
           >
-            <span className='fa fa-calendar'></span>
+            <span className='fa fa-calendar-alt'></span>
           </button>
 
           <div className={ 'modal fade ' + ((this.props.modal.type == 'duplicate') ? 'in' : '') } id='CalendarsEditVehicleJourneyModal'>

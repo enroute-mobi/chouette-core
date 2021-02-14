@@ -12,7 +12,7 @@ module StopAreaReferentialSyncsHelper
     status =  stop_area_ref_sync.status
 
     if %w[new pending].include? status
-      content_tag :span, '', class: "fa fa-clock-o"
+      content_tag :span, '', class: "fa fa-clock"
     else
       cls =''
       cls = 'success' if status == 'successful'

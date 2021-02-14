@@ -145,13 +145,13 @@ export default class JourneyPattern extends Component{
           {this.hasFeature('costs_in_journey_patterns') &&
             <div className="small row totals">
               <span className="col-md-6"><i className="fa fa-arrows-h"></i>{totalDistance}</span>
-              <span className="col-md-6"><i className="fa fa-clock-o"></i>{totalTime}</span>
+              <span className="col-md-6"><i className="fa fa-clock"></i>{totalTime}</span>
             </div>
           }
           {this.hasFeature('costs_in_journey_patterns') &&
             <div className="small row totals commercial">
               <span className="col-md-6"><i className="fa fa-arrows-h"></i>{commercialTotalDistance}</span>
-              <span className="col-md-6"><i className="fa fa-clock-o"></i>{commercialTotalTime}</span>
+              <span className="col-md-6"><i className="fa fa-clock"></i>{commercialTotalTime}</span>
             </div>
           }
           <div className={this.props.value.deletable ? 'btn-group disabled' : 'btn-group'}>
@@ -224,7 +224,7 @@ export default class JourneyPattern extends Component{
                   </div>}
                   {!this.props.editMode && <div>
                     <p><i className="fa fa-arrows-h"></i>{this.formatDistance(costs['distance'] || 0)}</p>
-                    <p><i className="fa fa-clock-o"></i>{time_in_words}</p>
+                    <p><i className="fa fa-clock"></i>{time_in_words}</p>
                   </div>}
                 </div>}
               </div>

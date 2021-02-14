@@ -36,7 +36,7 @@
                   div
                     p
                       = link_to [@referential, tt] do
-                        span.fa.fa-calendar style="color:##{tt.color || '4B4B4B' }"
+                        span.fa.fa-calendar-alt style="color:##{tt.color || '4B4B4B' }"
                         | &nbsp;
                         = tt.name
 
@@ -51,7 +51,7 @@
                   div
                     p
                       = link_to [@referential, tt] do
-                        span.fa.fa-calendar style={color: (tt.color ? tt.color : '#4B4B4B')}
+                        span.fa.fa-calendar-alt style={color: (tt.color ? tt.color : '#4B4B4B')}
                         | &nbsp;
                         = tt.display_day_types
 
@@ -83,7 +83,7 @@
                       - journey.purchase_windows[0..3].each do |tt|
                         span.vj_tt
                           = link_to [@referential, tt], target: :blank do
-                            span.fa.fa-calendar style="color:##{tt.color || '4B4B4B' }"
+                            span.fa.fa-calendar-alt style="color:##{tt.color || '4B4B4B' }"
                       - if journey.purchase_windows.size > 3
                         span.vj_tt = "+ #{journey.purchase_windows.size - 3}"
                     .detailed-purchase-windows.hidden.togglable
@@ -93,7 +93,7 @@
                       - journey.time_tables[0..3].each do |tt|
                         span.vj_tt
                           = link_to [@referential, tt], target: :blank do
-                            span.fa.fa-calendar style="color: #{tt.color ? tt.color : '#4B4B4B'}"
+                            span.fa.fa-calendar-alt style="color: #{tt.color ? tt.color : '#4B4B4B'}"
                       - if journey.time_tables.size > 3
                         span.vj_tt = "+ #{journey.time_tables.size - 3}"
                     .detailed-timetables.hidden.togglable

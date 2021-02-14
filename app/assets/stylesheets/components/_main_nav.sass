@@ -38,7 +38,8 @@ $menuW: 300px
       width: $menuH
       height: $menuH
       line-height: $menuH
-      font: normal normal normal 14px/1 FontAwesome
+      font-family: "Font Awesome 5 Free"
+      font-weight: 600
       text-rendering: auto
       -webkit-font-smoothing: antialiased
       font-size: 1.3333em
@@ -52,6 +53,8 @@ $menuW: 300px
       &:before
         content: '\f0c9'
         line-height: $menuH
+        font-family: "Font Awesome 5 Free"
+        font-weight: 900
 
     .openMenu
       transition: 0.1s
@@ -59,6 +62,8 @@ $menuW: 300px
     .closeMenu
       &:before
         content: '\f00d'
+        font-family: "Font Awesome 5 Free"
+        font-weight: 900
 
       + .brandname
         display: inline-block
@@ -139,11 +144,12 @@ $menuW: 300px
                   transition: 0.2s
 
                 &:after
-                  content: '\f078'
+                  font-family: "Font Awesome 5 Free"
+                  font-weight: 900
+                  content: "\f078"
                   display: inline-block
                   transform: rotate(180deg)
                   transition: 0.2s
-                  font: normal normal normal 14px/1 FontAwesome
                   text-rendering: auto
                   -webkit-font-smoothing: antialiased
                   font-size: 0.725em

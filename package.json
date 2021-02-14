@@ -8,6 +8,7 @@
     "@babel/core": "^7.0.0",
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
+    "@fortawesome/fontawesome-free": "^5.15.1",
     "@rails/webpacker": "^5.0.0",
     "babel-jest": "26.5.2",
     "babel-loader": "^8.0.0",

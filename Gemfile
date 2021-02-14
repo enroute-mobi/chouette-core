@@ -11,6 +11,7 @@ gem 'rails', '~> 5.2.4', '>= 5.2.4.5'
 # Use SCSS for stylesheets
 gem 'sassc-rails', '>= 2.1.2'
 gem 'sassc', '2.1.0'
+gem 'sass'
 
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier', '~> 2.7.2'
@@ -51,7 +52,7 @@ gem 'postgres-copy', '>= 1.5.0'
 gem 'polylines'
 gem 'bulk_insert'
 
-gem "graphql"
+gem 'graphql'
 
 # Codifligne API
 gem 'codifligne', en_route: 'ilico-api'
@@ -86,7 +87,6 @@ gem 'cocoon'
 gem 'slim-rails', '>= 3.2.0'
 gem 'formtastic', '>= 3.1.5'
 gem 'simple_form', '>= 5.0.3'
-gem 'font-awesome-sassc'
 gem 'will_paginate-bootstrap'
 gem 'gretel', '>= 4.2.0'
 gem 'country_select'
@@ -144,7 +144,7 @@ gem 'rgeo-shapefile'
 gem 'ddtrace'
 
 # Monitoring
-gem "sentry-raven"
+gem 'sentry-raven'
 
 group :development do
   gem 'rails-erd'
@@ -201,8 +201,8 @@ group :test, :development do
   gem 'pry-rails'
   gem 'pry-byebug'
 
-  gem "teaspoon-jasmine", ">= 2.3.4"
-  gem "phantomjs"
+  gem 'teaspoon-jasmine', '>= 2.3.4'
+  gem 'phantomjs'
 end
 
 # I18n
@@ -218,8 +218,6 @@ source 'https://rails-assets.org' do
   gem 'rails-assets-bootstrap-sass-official', '~> 3.3.0'
   gem 'rails-assets-respond'
   gem 'rails-assets-jquery-tokeninput', '~> 1.7.0'
-
-  gem 'rails-assets-modernizr', '~> 2.0.6'
 end
 
 gem 'activerecord-nulldb-adapter', require: (ENV['RAILS_DB_ADAPTER'] == 'nulldb')

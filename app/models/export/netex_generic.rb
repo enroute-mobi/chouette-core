@@ -481,7 +481,7 @@ class Export::NetexGeneric < Export::Base
 
       def direction
         @direction ||= Netex::Direction.new(
-          id: objectid,
+          id: objectid.gsub(/r|Route/) { 'Direction' },
           name: published_name
         )
       end

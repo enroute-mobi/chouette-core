@@ -56,7 +56,6 @@ module ChouetteIhm
     SmartEnv.add_boolean :CHOUETTE_ROUTE_POSITION_CHECK
     SmartEnv.add_boolean :CHOUETTE_ITS_SEND_INVITATION
     SmartEnv.add_boolean :NO_TRANSACTION
-    SmartEnv.add_boolean :SUBSCRIPTION_NOTIFIER_ENABLED
     SmartEnv.add_boolean :CHOUETTE_EMAIL_USER
     SmartEnv.add_array :CHOUETTE_EMAIL_WHITELIST
     SmartEnv.add_array :CHOUETTE_EMAIL_BLACKLIST
@@ -110,7 +109,6 @@ module ChouetteIhm
     end
 
     config.enable_calendar_observer = true
-    config.enable_subscriptions_notifications = SmartEnv.boolean('SUBSCRIPTION_NOTIFIER_ENABLED')
     config.subscriptions_notifications_recipients = []
     config.enable_automated_audits = SmartEnv.boolean('AUTOMATED_AUDITS_ENABLED')
     config.automated_audits_recipients = []

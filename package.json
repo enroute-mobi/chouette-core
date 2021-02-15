@@ -8,6 +8,7 @@
     "@babel/core": "^7.0.0",
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
+    "@fortawesome/fontawesome-free": "^5.15.1",
     "@rails/webpacker": "^5.0.0",
     "babel-jest": "26.5.2",
     "babel-loader": "^8.0.0",
@@ -35,7 +36,7 @@
     "redux-promise": "0.5.3",
     "redux-thunk": "2.2.0",
     "shortid": "^2.2.15",
-    "snyk": "^1.419.1",
+    "snyk": "^1.425.4",
     "ssri": "~> 5.2.2",
     "uglify-js": "3.3.2",
     "whatwg-fetch": "^2.0.4"

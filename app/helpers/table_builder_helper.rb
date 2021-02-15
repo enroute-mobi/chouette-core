@@ -390,12 +390,12 @@ module TableBuilderHelper
       arrow_up = content_tag(
         :span,
         '',
-        class: "fa fa-sort-asc #{active && direction == 'desc' ? 'active' : ''}"
+        class: "fa fa-sort-up #{active && direction == 'desc' ? 'active' : ''}"
       )
       arrow_down = content_tag(
         :span,
         '',
-        class: "fa fa-sort-desc #{active && direction == 'asc' ? 'active' : ''}"
+        class: "fa fa-sort-down #{active && direction == 'asc' ? 'active' : ''}"
       )
 
       arrow_icons = content_tag :span, arrow_up + arrow_down, class: 'orderers'

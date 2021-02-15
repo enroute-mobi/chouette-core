@@ -18,7 +18,7 @@
           .col-md-6= f.input :link_distance, wrapper: :horizontal_shrinked_input, input_html: { id: "distance" }
           .col-md-6.
             .btn.btn-action#calculate_travel_times
-              = fa_icon :refresh
+              = fa_icon :sync
               span.ml-xs= t("connection_links.form.calculate_costs")
         .row
           = connection_link_duration_select f, :default_duration_in_min

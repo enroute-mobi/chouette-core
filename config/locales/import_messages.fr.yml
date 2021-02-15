@@ -28,6 +28,7 @@ fr:
     gtfs:
       agencies:
         imported: "%{count} agence(s) importée(s)"
+        missing_agency_id: Identifiant d'agence non renseigné
       stops:
         imported: "%{count} arrêt(s) importé(s)"
       routes:

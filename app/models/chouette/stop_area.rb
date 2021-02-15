@@ -64,7 +64,7 @@ module Chouette
     validates_absence_of :parent_id, message: I18n.t('stop_areas.errors.parent_id.must_be_absent'), if: Proc.new { |stop_area| stop_area.kind == 'non_commercial' }
     validate :valid_referent
 
-    validates :registration_number, uniqueness: { scope: :stop_area_referential_id }, allow_blank: true
+    validates :registration_number, uniqueness: { scope: :stop_area_provider_id }, allow_blank: true
 
     before_validation do
       self.registration_number = self.stop_area_referential.generate_registration_number unless self.registration_number.present?

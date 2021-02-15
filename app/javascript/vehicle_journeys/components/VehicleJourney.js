@@ -103,7 +103,7 @@ export default class VehicleJourney extends Component {
     let ttURL = refURL + '/time_tables/' + tt.id
 
     return (
-      <a href={ttURL} title={I18n.t('vehicle_journeys.vehicle_journeys_matrix.show_timetable')}><span className='fa fa-calendar' style={{ color: (tt.color ? tt.color : '#4B4B4B')}}></span></a>
+      <a href={ttURL} title={I18n.t('vehicle_journeys.vehicle_journeys_matrix.show_timetable')}><span className='fa fa-calendar-alt' style={{ color: (tt.color ? tt.color : '#4B4B4B')}}></span></a>
     )
   }
 
@@ -112,7 +112,7 @@ export default class VehicleJourney extends Component {
     let ttURL = refURL + '/purchase_windows/' + tt.id
 
     return (
-      <a href={ttURL} title={I18n.t('vehicle_journeys.vehicle_journeys_matrix.show_purchase_window')}><span className='fa fa-calendar' style={{ color: (tt.color ? `#${tt.color}` : '#4B4B4B')}}></span></a>
+      <a href={ttURL} title={I18n.t('vehicle_journeys.vehicle_journeys_matrix.show_purchase_window')}><span className='fa fa-calendar-alt' style={{ color: (tt.color ? `#${tt.color}` : '#4B4B4B')}}></span></a>
     )
   }
 

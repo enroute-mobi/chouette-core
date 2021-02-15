@@ -21,7 +21,7 @@ module ComplianceCheckSetsHelper
     # Import statuses helper
   def compliance_check_set_status(status)
     if %w[new running pending].include? status
-      content_tag :span, '', class: "fa fa-clock-o"
+      content_tag :span, '', class: "fa fa-clock"
     else
       cls =''
       cls = 'success' if status == 'successful'

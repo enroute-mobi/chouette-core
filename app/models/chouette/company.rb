@@ -23,6 +23,7 @@ module Chouette
 
     # validates_format_of :registration_number, :with => %r{\A[0-9A-Za-z_-]+\Z}, :allow_nil => true, :allow_blank => true
     validates_presence_of :name
+    validates :registration_number, uniqueness: { scope: :line_provider_id }, allow_blank: true
 
     # Cf. #8132
     # validates_format_of :url, :with => %r{\Ahttps?:\/\/([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?\Z}, :allow_nil => true, :allow_blank => true

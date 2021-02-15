@@ -6,7 +6,6 @@
 #
 #= require jquery
 #= require jquery_ujs
-#= require modernizr
 #= require cocoon
 #= require ./OpenLayers/ol.js
 #= require bootstrap-sass-official

@@ -549,7 +549,7 @@ class Export::NetexGeneric < Export::Base
 
       def destination_display
         @destination_display ||= Netex::DestinationDisplay.new(
-          id: objectid,
+          id: objectid.gsub(/j|JourneyPattern/) { 'DestinationDisplay' },
           front_text: published_name
         )
       end

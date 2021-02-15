@@ -174,22 +174,35 @@ RSpec.describe Export::NetexGeneric do
 
     before { context.referential.switch }
 
-      it "create a Netex::JourneyPattern for each Chouette JourneyPattern" do
-        part.export!
-        expect(target.resources).to have_attributes(count: journey_patterns.count)
+    it "create a Netex::JourneyPattern for each Chouette JourneyPattern" do
+      part.export!
+      count = journey_patterns.count + journey_patterns.select { |j| j.published_name.present? }.count
+      expect(target.resources).to have_attributes(count: count)
 
-        target.resources.each do |resource|
-          jp = Chouette::JourneyPattern.find_by_objectid resource.id
+      jp_resources = target.resources.select { |r| r.is_a? Netex::ServiceJourneyPattern }
 
-          expect(jp).to be
+      jp_resources.each do |resource|
+        jp = Chouette::JourneyPattern.find_by_objectid! resource.id
 
-          if jp.published_name
-            expect(resource.destination_display_ref).to be
-            expect(resource.destination_display_ref.ref).to eq(jp.objectid)
-            expect(resource.destination_display_ref.type).to eq('DestinationDisplayRef')
-          end
+        expect(jp).to be
+
+        if jp.published_name
+          expect(resource.destination_display_ref).to be
+          expect(resource.destination_display_ref.ref).to eq(jp.objectid.gsub(/j|JourneyPattern/) { 'DestinationDisplay' })
+          expect(resource.destination_display_ref.type).to eq('DestinationDisplayRef')
         end
       end
+    end
+
+    it 'creates a Netex::DestinationDisplay for each Chouette Route having a published_name' do
+      part.export!
+
+      destination_displays = target.resources.select { |r| r.is_a? Netex::DestinationDisplay }
+
+      jp_with_published_name_count = journey_patterns.select { |jp| jp.published_name.present? }.count
+
+      expect(destination_displays.count).to eq(jp_with_published_name_count)
+    end
 
     it "create Netex resources with line_id tag" do
       context.routes.each { |route| export.resource_tagger.register_tag_for(route.line) }

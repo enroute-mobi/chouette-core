@@ -188,6 +188,46 @@ module Chouette
       arrival_time.in_time_zone(time_zone).change(day: 1)
     end
 
+    # Reads light VehicleJourneyAtStops for the current scope
+    #
+    # Uses a database cursor and returns Light::VehicleJourneyAtStop
+    def self.find_each_light(&block)
+      vehicle_journey_at_stop = Light::VehicleJourneyAtStop.new
+      each_row do |row|
+        vehicle_journey_at_stop.attributes = row
+        block.call vehicle_journey_at_stop
+      end
+    end
+
+    module Light
+      class VehicleJourneyAtStop
+
+        attr_accessor :id, :vehicle_journey_id, :stop_point_id, :stop_area_id
+        attr_accessor :arrival_time, :departure_time, :departure_day_offset, :arrival_day_offset
+        attr_accessor :for_boarding, :for_alighting, :checksum, :checksum_source
+
+        def initialize(attributes = {})
+          self.attributes = attributes
+        end
+
+        def attributes=(attributes)
+          @id = attributes["id"]
+          @vehicle_journey_id = attributes["vehicle_journey_id"]
+          @stop_point_id = attributes["stop_point_id"]
+          @arrival_time = attributes["arrival_time"]
+          @departure_time = attributes["departure_time"]
+          @for_boarding = attributes["for_boarding"]
+          @for_alighting = attributes["for_alighting"]
+          @departure_day_offset = attributes["departure_day_offset"]
+          @arrival_day_offset = attributes["arrival_day_offset"]
+          @stop_area_id = attributes["stop_area_id"]
+          @checksum = attributes["checksum"]
+          @checksum_source = attributes["checksum_source"]
+        end
+
+      end
+    end
+
     private
     def local_time time, offset=nil
       return nil unless time

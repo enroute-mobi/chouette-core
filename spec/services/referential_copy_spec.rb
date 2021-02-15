@@ -320,11 +320,7 @@ describe ReferentialCopy do
       end
 
       it "has the same date and count than the source JourneyPatternCoursesByDate" do
-        source_attributes = {
-          count: source_journey_pattern_courses_by_day.count,
-          date: source_journey_pattern_courses_by_day.date
-        }
-        is_expected.to have_attributes(source_attributes)
+        is_expected.to have_same_attributes(:count, :date, than: source_journey_pattern_courses_by_day)
       end
 
     end

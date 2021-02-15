@@ -1,4 +1,3 @@
-
 RSpec.describe Chouette::VehicleJourneyAtStop, type: :model do
   subject { build_stubbed(:vehicle_journey_at_stop) }
 
@@ -136,4 +135,45 @@ RSpec.describe Chouette::VehicleJourneyAtStop, type: :model do
       expect(at_stop.errors[:departure_day_offset]).to include(error_message)
     end
   end
+
+  describe "#find_each_light" do
+
+    let(:context) do
+      Chouette.create { vehicle_journey }
+    end
+
+    before { context.referential.switch }
+
+    let(:vehicle_journey_at_stops) { referential.vehicle_journey_at_stops }
+    let(:light_vehicle_journey_at_stops) { referential.vehicle_journey_at_stops.enum_for(:find_each_light) }
+
+    it "should return the same identifiers" do
+      expect(light_vehicle_journey_at_stops.map(&:id)).to match_array(vehicle_journey_at_stops.pluck(:id))
+    end
+
+    it "have the same attributes than the same 'classic' VehicleJourneyAtStop" do
+      attributes = [ :vehicle_journey_id, :stop_point_id, :stop_area_id, :for_boarding, :for_alighting,
+                     :checksum, :checksum_source, :departure_day_offset, :arrival_day_offset ]
+      same_vehicle_journey_at_stop = ->(light) { vehicle_journey_at_stops.find(light.id) }
+      expect(light_vehicle_journey_at_stops).to all(have_same_attributes(attributes, than: same_vehicle_journey_at_stop))
+    end
+
+    it "have the same departure time than the same 'classic' VehicleJourneyAtStop" do
+      have_same_departure_time = satisfy("have the same departure time") do |light|
+        vehicle_journey_at_stops.find(light.id).departure_time.strftime("%H:%M:%S") == light.departure_time
+      end
+
+      expect(light_vehicle_journey_at_stops).to all(have_same_departure_time)
+    end
+
+    it "have the same arrival time than the same 'classic' VehicleJourneyAtStop" do
+      have_same_arrival_time = satisfy("have the same arrival time") do |light|
+        vehicle_journey_at_stops.find(light.id).arrival_time.strftime("%H:%M:%S") == light.arrival_time
+      end
+
+      expect(light_vehicle_journey_at_stops).to all(have_same_arrival_time)
+    end
+
+  end
+
 end

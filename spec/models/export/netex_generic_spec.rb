@@ -100,7 +100,7 @@ RSpec.describe Export::NetexGeneric do
 
     it "create a Netex::Route for each Chouette Route and a Netex::Direction for routes having a published_name" do
       part.export!
-      count = routes.count + routes.select { |route| route.published_name.present? }.count
+      count = routes.count + routes.count { |route| route.published_name.present? }
       expect(target.resources).to have_attributes(count: count)
 
       routes_resources = target.resources.select { |r| r.is_a? Netex::Route }
@@ -127,7 +127,7 @@ RSpec.describe Export::NetexGeneric do
 
       directions = target.resources.select { |r| r.is_a? Netex::Direction }
 
-      routes_with_published_name_count = routes.select { |r| r.published_name.present? }.count
+      routes_with_published_name_count = routes.count { |r| r.published_name.present? }
 
       expect(directions.count).to eq(routes_with_published_name_count)
     end

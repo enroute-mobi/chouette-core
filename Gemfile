@@ -93,6 +93,7 @@ gem 'country_select'
 gem 'flag-icons-rails', '>= 3.4.6.1'
 gem 'i18n-js'
 gem 'clockpicker-rails', '>= 0.0.2'
+gem 'font_awesome5_rails'
 
 # Format Output
 gem 'json'

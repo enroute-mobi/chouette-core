@@ -11,7 +11,7 @@
 # docker build --build-arg WEEK=`date +%Y%U` -t chouette-core .
 # docker run --add-host "db:172.17.0.1" -e RAILS_DB_PASSWORD=chouette -p 3000:3000 -it chouette-core
 
-FROM ruby:2.6.4-slim-stretch as base
+FROM amd64/ruby:2.6.4-slim-stretch as base
 
 # To force rebuild every week
 ARG WEEK

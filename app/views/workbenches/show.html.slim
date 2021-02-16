@@ -3,7 +3,7 @@
 - content_for :page_header_content do
   .row.mb-sm
     .col-lg-12.text-right
-      - if policy(Workbench).edit?
+      - if policy(@workbench).edit?
         = link_to t('workbenches.actions.affect_ccset'), edit_workbench_path(@workbench), class: 'btn btn-primary'
       - if policy(Referential).create?
         = link_to t('actions.import'), workbench_imports_path(@workbench), class: 'btn btn-primary' unless @workbench.workgroup.import_types.empty?

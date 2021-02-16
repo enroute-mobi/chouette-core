@@ -1,6 +1,40 @@
 RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
   let(:gtfs_export) { create :gtfs_export, referential: exported_referential, workbench: workbench, duration: 5, prefer_referent_stop_area: true}
 
+  # describe 'Line Part' do
+  #   let(:export_scope) { Export::Scope::All.new context.referential }
+  #   let(:index) { export.index }
+  #   let(:export) { Export::Gtfs.new export_scope: export_scope, workbench: context.workbench, workgroup: context.workgroup }
+
+  #   let(:part) do
+  #     Export::Gtfs::Lines.new export
+  #   end
+
+  #   let(:context) do
+  #     Chouette.create do
+  #       line_provider :first do
+  #         line :one, registration_number: "1"
+  #       end
+  #       line_provider :other do
+  #         line :two, registration_number: "1"
+  #       end
+
+  #       referential
+  #     end
+  #   end
+
+  #   let(:lines) {context.lines}
+
+  #   before do
+  #     context.referential.switch
+  #   end
+
+  #   it "should use lines objectid when their registration_number is not unique" do
+  #     part.export!
+  #     expect(export.target.routes.map(&:id)).to match_array(lines.map(&:objectid))
+  #   end
+  # end
+
   describe "Line Decorator" do
 
     let(:line) { Chouette::Line.new }

@@ -34,9 +34,9 @@ class Chouette::AreaType
     @@options = {}
   end
 
-  def self.options(kind=:all, locale=nil)
+  def self.options(kind=:all)
     @@options ||= {}
-    @@options[kind] ||= self.send(kind).map { |c| find(c) }.map { |t| [ t.label(locale), t.code ] }
+    @@options[kind] ||= self.send(kind).map { |c| find(c) }.map { |t| [ t.label, t.code ] }
   end
 
   attr_reader :code
@@ -48,8 +48,8 @@ class Chouette::AreaType
     all.index(code) <=> all.index(other.code)
   end
 
-  def label locale=nil
-    I18n.translate code, scope: 'area_types.label', locale: locale
+  def label
+    I18n.translate code, scope: 'area_types.label', locale: I18n.locale
   end
 
 end

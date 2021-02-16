@@ -120,7 +120,7 @@ class StopAreasController < ChouetteController
     @stop_areas ||=
       begin
         if sort_column == "area_type"
-          sorted_area_type_labels = Chouette::AreaType.options(:all, I18n.locale).sort.transpose.last
+          sorted_area_type_labels = Chouette::AreaType.options.sort.transpose.last
           sorted_area_type_labels = sorted_area_type_labels.reverse if sort_direction != 'asc'
           order_by = ["CASE"]
           sorted_area_type_labels.each_with_index do |area_type, index|

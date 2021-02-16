@@ -191,13 +191,16 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
     let(:context) do
       Chouette.create do
-        stop_area :departure, kind: 'commercial'
-        stop_area :referent, kind: 'commercial'
-        stop_area :arrival, kind: 'non_commercial', area_type: 'deposit', referent: :referent
+        stop_area :non_commercial, kind: 'non_commercial', area_type: 'deposit'
+
+        stop_area :referent, kind: 'non_commercial', area_type: 'deposit'
+        stop_area :with_referent_non_commercial, referent: :referent
 
         route with_stops: false do
-          stop_point :departure, stop_area: :departure
-          stop_point :arrival, stop_area: :arrival
+          stop_point :departure
+          stop_point :stop_non_commercial, stop_area: :non_commercial
+          stop_point :stop_with_referent_non_commercial, stop_area: :with_referent_non_commercial
+          stop_point :arrival
 
           vehicle_journey
         end
@@ -211,7 +214,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
     context "when prefer_referent_stop_area is true" do
       before { export.options["prefer_referent_stop_area"] = true }
 
-      it "should export 2 vehicle journey at stops" do
+      it "ignore Vehicle Journey At Stops associated to a non commercial Referent Stop Area" do
         expect(part.vehicle_journey_at_stops.length).to eq(2)
       end
     end
@@ -219,8 +222,8 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
     context "when prefer_referent_stop_area is false" do
       before { export.options["prefer_referent_stop_area"] = false }
 
-      it "should export 1 vehicle journey at stop" do
-        expect(part.vehicle_journey_at_stops.length).to eq(1)
+      it "ignore Vehicle Journey At Stops associated to a non commercial Stop Area" do
+        expect(part.vehicle_journey_at_stops.length).to eq(3)
       end
     end
 

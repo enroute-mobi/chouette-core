@@ -823,7 +823,7 @@ class Export::Gtfs < Export::Base
             Rails.logger.warn "Export GTFS #{export.id} uses non optimized non_commercial filter"
             if prefer_referent_stop_area
               base_scope = base_scope.left_joins(stop_point: {stop_area: :referent})
-              base_scope = base_scope.where("stop_areas.kind" => "commercial").or(base_scope.where("referents_public_stop_areas.kind" => "commercial"))
+              base_scope = base_scope.where.not("stop_areas.kind" => "non_commercial").where("referents_public_stop_areas.kind != 'non_commercial' OR referents_public_stop_areas.kind is NULL")
             else
               base_scope = base_scope.joins(stop_point: :stop_area).where("stop_areas.kind" => "commercial")
             end

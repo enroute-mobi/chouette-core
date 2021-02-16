@@ -522,6 +522,7 @@ class Export::NetexGeneric < Export::Base
 
         decorated_journey_pattern = Decorator.new(journey_pattern)
         tagged_target << decorated_journey_pattern.netex_resource
+        tagged_target << decorated_journey_pattern.destination_display if journey_pattern.published_name.present?
       end
     end
 
@@ -533,7 +534,9 @@ class Export::NetexGeneric < Export::Base
           name: name,
           route_ref: route_ref,
           points_in_sequence: points_in_sequence
-        }
+        }.tap do |attributes|
+          attributes[:destination_display_ref] = destination_display_ref if published_name.present?
+        end
       end
 
       def netex_resource
@@ -544,13 +547,24 @@ class Export::NetexGeneric < Export::Base
         Netex::Reference.new(route.objectid, type: 'RouteRef')
       end
 
+      def destination_display
+        @destination_display ||= Netex::DestinationDisplay.new(
+          id: objectid.gsub(/j|JourneyPattern/) { 'DestinationDisplay' },
+          front_text: published_name
+        )
+      end
+
+      def destination_display_ref
+        Netex::Reference.new(destination_display.id, type: 'DestinationDisplayRef')
+      end
+
       def points_in_sequence
         decorated_stop_points.map(&:stop_point_in_journey_pattern)
       end
 
       def decorated_stop_points
         @decorated_stop_points ||= stop_points.map do |stop_point|
-            StopPointDecorator.new(stop_point, objectid)
+          StopPointDecorator.new(stop_point, objectid)
         end
       end
     end

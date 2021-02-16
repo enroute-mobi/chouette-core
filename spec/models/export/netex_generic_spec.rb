@@ -170,7 +170,39 @@ RSpec.describe Export::NetexGeneric do
       end
     end
 
+    let(:journey_patterns) { context.journey_patterns }
+
     before { context.referential.switch }
+
+    it "create a Netex::JourneyPattern for each Chouette JourneyPattern" do
+      part.export!
+      count = journey_patterns.count + journey_patterns.count { |j| j.published_name.present? }
+      expect(target.resources).to have_attributes(count: count)
+
+      jp_resources = target.resources.select { |r| r.is_a? Netex::ServiceJourneyPattern }
+
+      jp_resources.each do |resource|
+        jp = Chouette::JourneyPattern.find_by_objectid! resource.id
+
+        expect(jp).to be
+
+        if jp.published_name
+          expect(resource.destination_display_ref).to be
+          expect(resource.destination_display_ref.ref).to eq(jp.objectid.gsub(/j|JourneyPattern/) { 'DestinationDisplay' })
+          expect(resource.destination_display_ref.type).to eq('DestinationDisplayRef')
+        end
+      end
+    end
+
+    it 'creates a Netex::DestinationDisplay for each Chouette Route having a published_name' do
+      part.export!
+
+      destination_displays = target.resources.select { |r| r.is_a? Netex::DestinationDisplay }
+
+      jp_with_published_name_count = journey_patterns.count { |jp| jp.published_name.present? }
+
+      expect(destination_displays.count).to eq(jp_with_published_name_count)
+    end
 
     it "create Netex resources with line_id tag" do
       context.routes.each { |route| export.resource_tagger.register_tag_for(route.line) }

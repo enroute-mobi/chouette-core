@@ -132,6 +132,7 @@ RSpec.describe Import::Gtfs do
           ]
         }
       end
+    
       it 'should not create a company' do
         expect do
           import.import_agencies
@@ -147,6 +148,12 @@ RSpec.describe Import::Gtfs do
         expect(resource.metrics['ok_count'].to_i).to eq 1
         expect(resource.metrics['warning_count'].to_i).to eq 0
         expect(resource.metrics['error_count'].to_i).to eq 1
+      end
+
+      it 'should create a default timezone' do
+        expect(import).to receive(:check_time_zone_or_create_message).twice
+
+        import.import_agencies
       end
     end
   end

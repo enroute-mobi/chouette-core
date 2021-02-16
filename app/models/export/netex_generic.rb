@@ -453,6 +453,7 @@ class Export::NetexGeneric < Export::Base
 
         decorated_route = Decorator.new(route)
         tagged_target << decorated_route.netex_resource
+        tagged_target << decorated_route.direction if route.published_name.present?
       end
     end
 
@@ -460,11 +461,14 @@ class Export::NetexGeneric < Export::Base
 
       def netex_attributes
         {
-          id: id,
+          id: objectid,
           name: netex_name,
           line_ref: line_ref,
+          direction_ref: direction_ref,
           points_in_sequence: points_in_sequence
-        }
+        }.tap do |attributes|
+          attributes[:direction_ref] = direction_ref if published_name.present?
+        end
       end
 
       def netex_resource
@@ -473,6 +477,17 @@ class Export::NetexGeneric < Export::Base
 
       def netex_name
         published_name.presence || name
+      end
+
+      def direction
+        @direction ||= Netex::Direction.new(
+          id: objectid.gsub(/r|Route/) { 'Direction' },
+          name: published_name
+        )
+      end
+
+      def direction_ref
+        Netex::Reference.new(direction.id, type: 'DirectionRef')
       end
 
       def line_ref
@@ -485,7 +500,7 @@ class Export::NetexGeneric < Export::Base
 
       def decorated_stop_points
         @decorated_stop_points ||= stop_points.map do |stop_point|
-            StopPointDecorator.new stop_point
+          StopPointDecorator.new stop_point
         end
       end
 

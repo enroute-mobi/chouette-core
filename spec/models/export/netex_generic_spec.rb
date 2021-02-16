@@ -98,9 +98,38 @@ RSpec.describe Export::NetexGeneric do
     let(:routes) { context.routes }
     before { context.referential.switch }
 
-    it "create a Netex::Route for each Chouette Route" do
+    it "create a Netex::Route for each Chouette Route and a Netex::Direction for routes having a published_name" do
       part.export!
-      expect(target.resources).to have_attributes(count: routes.count)
+      count = routes.count + routes.count { |route| route.published_name.present? }
+      expect(target.resources).to have_attributes(count: count)
+
+      routes_resources = target.resources.select { |r| r.is_a? Netex::Route }
+
+      routes_resources.each do |resource|
+        route = Chouette::Route.find_by_objectid! resource.id
+
+        expect(route).to be
+
+        expect(resource.line_ref).to be
+        expect(resource.line_ref.ref).to eq(route.line.objectid)
+        expect(resource.line_ref.type).to eq('LineRef')
+
+        if route.published_name
+          expect(resource.direction_ref).to be
+          expect(resource.direction_ref.ref).to eq(route.objectid.gsub(/r|Route/, 'Direction'))
+          expect(resource.direction_ref.type).to eq('DirectionRef')
+        end
+      end
+    end
+
+    it 'create a Netex::Direction for each Chouette Route that have a published_name' do
+      part.export!
+
+      directions = target.resources.select { |r| r.is_a? Netex::Direction }
+
+      routes_with_published_name_count = routes.count { |r| r.published_name.present? }
+
+      expect(directions.count).to eq(routes_with_published_name_count)
     end
 
     it "create Netex::Routes with line_id tag" do

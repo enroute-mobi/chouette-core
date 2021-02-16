@@ -17,14 +17,6 @@ class Export::Gtfs < Export::Base
     @zip_file_name ||= "chouette-its-#{Time.now.to_i}"
   end
 
-  def agency_id company
-    (company.registration_number.presence || company.objectid) if company
-  end
-
-  def stop_id stop_area
-    stop_area.registration_number.presence || stop_area.objectid
-  end
-
   def generate_export_file
     # FIXME
     tmp_dir = Dir.mktmpdir
@@ -42,11 +34,6 @@ class Export::Gtfs < Export::Base
     @export_scope ||= Export::Scope::DateRange.new(referential, date_range)
   end
   attr_writer :export_scope
-
-  # FIXME
-  def journeys
-    export_scope.vehicle_journeys
-  end
 
   def export_to_dir(directory)
     CustomFieldsSupport.within_workgroup(referential.workgroup) do
@@ -99,55 +86,8 @@ class Export::Gtfs < Export::Base
   end
 
   def export_companies_to(target)
-    company_ids = Set.new
-    # OPTIMIZEME pluck is great bu can consume a lot of memory for very large Vehicle Journey collection
-    journeys.left_joins(route: { line: :company }).
-      pluck("vehicle_journeys.id", "vehicle_journeys.company_id", "companies.id", "companies.time_zone").
-      each do |vehicle_journey_id, vehicle_journeys_company_id, line_company_id, company_time_zone|
-
-      company_id = vehicle_journeys_company_id.presence || line_company_id.presence || DEFAULT_AGENCY_ID
-      company_ids << company_id
-
-      index.register_vehicle_journey_time_zone vehicle_journey_id, company_time_zone if company_time_zone
-    end
-
-    Chouette::Company.where(id: company_ids-[DEFAULT_AGENCY_ID]).order('name').find_each do |company|
-      if company.time_zone.present?
-        time_zone = company.time_zone
-      else
-        time_zone = DEFAULT_TIMEZONE
-        args = {
-          criticity: :info,
-          message_key: :no_timezone,
-          message_attributes: {
-            company_name: company.name
-          }
-        }
-        self.messages.create args
-      end
-      a_id = agency_id(company)
-
-      target.agencies << {
-        id: a_id,
-        name: company.name,
-        url: company.default_contact_url,
-        timezone: time_zone,
-        phone: company.default_contact_phone,
-        email: company.default_contact_email,
-        lang: company.default_language
-        #fare_url: TO DO
-      }
-
-      index.register_agency_id(company, a_id)
-    end
-
-    if company_ids.include? DEFAULT_AGENCY_ID
-      target.agencies << {
-        id: DEFAULT_AGENCY_ID,
-        name: "Default Agency",
-        timezone: DEFAULT_TIMEZONE,
-      }
-    end
+    @target = target
+    Companies.new(self).export_part
   end
 
   def exported_stop_areas
@@ -156,62 +96,8 @@ class Export::Gtfs < Export::Base
   end
 
   def export_stop_areas_to(target)
-    base_scope = exported_stop_areas.includes(:referent,:parent)
-
-    # To export first Stop Areas without parent (and register the expected stop_id)
-    base_scope.where(parent: nil).find_each do |stop_area|
-      export_stop_area_to stop_area, target
-    end
-    base_scope.where.not(parent: nil).find_each do |stop_area|
-      export_stop_area_to stop_area, target
-    end
-  end
-
-  def export_stop_area_to(stop_area, target)
-    stop_id = stop_id(stop_area)
-
-    # Substitute the referent to the actual Stop Area
-    if prefer_referent_stop_area && stop_area.referent
-      stop_id = stop_id(stop_area.referent)
-      # Register the Referent to be used (in stop_times or as parent_station) instead of the actuel Stop Area
-      index.register_stop_id(stop_area, stop_id)
-
-      stop_area = stop_area.referent
-    end
-
-    if index.has_stop_id? stop_area
-      # This StopArea has already been exported (a Referent used several times)
-      return
-    end
-
-    index.register_stop_id stop_area, stop_id
-
-    parent_stop_id = nil
-    if stop_area.parent
-      # Parent should have been exported before and present into the index
-      parent_stop_id = index.stop_id(stop_area.parent.id)
-
-      unless parent_stop_id
-        # Ignore parent not exported before
-        Rails.logger.warn "Can't find parent stop_id in index for StopArea #{stop_area.id}"
-      end
-    end
-
-    target.stops << {
-      id: stop_id,
-      code: stop_area.codes.find_by(code_space: public_code_space)&.value,
-      name: stop_area.name,
-      location_type: stop_area.area_type == 'zdep' ? 0 : 1,
-      parent_station: parent_stop_id,
-      lat: stop_area.latitude,
-      lon: stop_area.longitude,
-      desc: stop_area.comment,
-      url: stop_area.url,
-      timezone: (stop_area.time_zone unless stop_area.parent),
-      #code: TO DO
-      wheelchair_boarding: stop_area.mobility_restricted_suitability ? 1 : 0,
-      platform_code: stop_area.public_code
-    }
+    @target = target
+    StopAreas.new(self).export_part
   end
 
   def export_transfers_to(target)
@@ -220,7 +106,7 @@ class Export::Gtfs < Export::Base
     transfers = {}
     stops = connections.map do |c|
       # all transfers are both ways
-      key = [stop_id(c.departure), stop_id(c.arrival)].sort
+      key = [index.stop_id(c.departure), index.stop_id(c.arrival)].sort
       transfers[key] = c.default_duration
     end.uniq
 
@@ -338,7 +224,6 @@ class Export::Gtfs < Export::Base
       @service_ids = Hash.new { |h,k| h[k] = [] }
       @vehicle_journey_time_zones = {}
       @trip_index = 0
-      @duplicated_vehicle_journey_codes = Set.new
       @shape_ids = {}
     end
 
@@ -366,8 +251,8 @@ class Export::Gtfs < Export::Base
       @agency_ids[company_id]
     end
 
-    def register_agency_id(company, agency_id)
-      @agency_ids[company.id] = agency_id
+    def register_agency_id(decorated_company)
+      @agency_ids[decorated_company.id] = decorated_company.agency_id
     end
 
     def register_service_ids(time_table, service_ids)
@@ -402,14 +287,6 @@ class Export::Gtfs < Export::Base
       @vehicle_journey_time_zones[vehicle_journey_id] = time_zone
     end
 
-    def register_duplicated_vehicle_journey_code(code)
-      @duplicated_vehicle_journey_codes << code
-    end
-
-    def duplicated_vehicle_journey_code?(code)
-      @duplicated_vehicle_journey_codes.include? code
-    end
-
     def register_shape_id(shape, shape_id)
       @shape_ids[shape.id] = shape_id
     end
@@ -428,7 +305,7 @@ class Export::Gtfs < Export::Base
       options.each { |k,v| send "#{k}=", v }
     end
 
-    delegate :target, :index, :export_scope, :messages, :date_range, :code_spaces, to: :export
+    delegate :target, :index, :export_scope, :messages, :date_range, :code_spaces, :public_code_space, :prefer_referent_stop_area, to: :export
 
     def part_name
       @part_name ||= self.class.name.demodulize.underscore
@@ -437,6 +314,163 @@ class Export::Gtfs < Export::Base
     def export_part
       Chouette::Benchmark.measure part_name do
         export!
+      end
+    end
+
+    # CHOUETTE-960
+    def duplicated_registration_numbers
+      @duplicated_registration_numbers ||=
+        SortedSet.new(export_scope.send(part_name).select(:registration_number, :id).group(:registration_number).having("count(#{part_name}.id) > 1").pluck(:registration_number))
+    end
+
+  end
+
+  class StopAreas < Part
+
+    delegate :exported_stop_areas, to: :export
+
+    def export!
+      exported_stop_areas.includes(:referent, :parent).order(parent_id: :desc).find_each do |stop_area|
+        decorated_stop_area = handle_referent(stop_area)
+        next if index.has_stop_id? decorated_stop_area
+
+        target.stops << decorated_stop_area.stop_attributes
+        index.register_stop_id decorated_stop_area, decorated_stop_area.stop_id
+      end
+    end
+
+    def handle_referent stop_area
+      return Decorator.new(stop_area, index, duplicated_registration_numbers) if !prefer_referent_stop_area || !stop_area.referent
+
+      decorated_referent = Decorator.new(stop_area.referent, index, duplicated_registration_numbers)
+      index.register_stop_id(stop_area, decorated_referent.stop_id)
+      return decorated_referent
+    end
+
+    class Decorator < SimpleDelegator
+
+      # index is optional to make tests easier
+      def initialize(stop_area, index = nil, public_code_space = "", duplicated_registration_numbers = [])
+        super stop_area
+        @index = index
+        @public_code_space = public_code_space
+        @duplicated_registration_numbers = duplicated_registration_numbers
+      end
+
+      attr_reader :index, :public_code_space, :duplicated_registration_numbers
+
+      def stop_id
+        registration_number && duplicated_registration_numbers.exclude?(registration_number) ? registration_number : objectid
+      end
+
+      def parent_station
+        parent_stop_id = index&.stop_id(parent_id)
+        Rails.logger.warn "Can't find parent stop_id in index for StopArea #{id}" unless parent_stop_id
+        parent_stop_id
+      end
+
+      def stop_attributes
+        {
+          id: stop_id,
+          code: codes.find_by(code_space: public_code_space)&.value,
+          name: name,
+          location_type: area_type == 'zdep' ? 0 : 1,
+          parent_station: parent_station,
+          lat: latitude,
+          lon: longitude,
+          desc: comment,
+          url: url,
+          timezone: (time_zone unless parent),
+          #code: TO DO
+          wheelchair_boarding: mobility_restricted_suitability ? 1 : 0,
+          platform_code: public_code
+        }
+      end
+
+    end
+
+  end
+
+
+  class Companies < Part
+
+    delegate :companies, :vehicle_journeys, to: :export_scope
+
+    def company_ids
+      ids = Set.new
+      # OPTIMIZEME pluck is great bu can consume a lot of memory for very large Vehicle Journey collection
+      vehicle_journeys.left_joins(route: { line: :company }).
+        pluck("vehicle_journeys.id", "vehicle_journeys.company_id", "companies.id", "companies.time_zone").
+        each do |vehicle_journey_id, vehicle_journeys_company_id, line_company_id, company_time_zone|
+
+        company_id = vehicle_journeys_company_id.presence || line_company_id.presence || DEFAULT_AGENCY_ID
+        ids << company_id
+
+        index.register_vehicle_journey_time_zone vehicle_journey_id, company_time_zone if company_time_zone
+      end
+      ids
+    end
+
+    def create_message(decorated_company)
+      if decorated_company.time_zone.blank?
+        messages.create({
+          criticity: :info,
+          message_key: :no_timezone,
+          message_attributes: {
+            line_name: decorated_company.name
+          }
+        })
+      end
+    end
+
+    def export!
+      Chouette::Company.where(id: company_ids-[DEFAULT_AGENCY_ID]).order('name').find_each do |company|
+        decorated_company = Decorator.new(company, duplicated_registration_numbers)
+
+        create_message decorated_company
+        target.agencies << decorated_company.agency_attributes
+
+        index.register_agency_id(decorated_company)
+      end
+
+      if company_ids.include? DEFAULT_AGENCY_ID
+        target.agencies << {
+          id: DEFAULT_AGENCY_ID,
+          name: "Default Agency",
+          timezone: DEFAULT_TIMEZONE,
+        }
+      end
+    end
+
+    class Decorator < SimpleDelegator
+
+      # index is optional to make tests easier
+      def initialize(company, duplicated_registration_numbers = [])
+        super company
+        @duplicated_registration_numbers = duplicated_registration_numbers
+      end
+
+      attr_reader :index, :duplicated_registration_numbers
+
+      def agency_id
+        @agency_id ||= registration_number && duplicated_registration_numbers.exclude?(registration_number) ? registration_number : objectid
+      end
+
+      def timezone
+        time_zone.presence || DEFAULT_TIMEZONE
+      end
+
+      def agency_attributes
+        {
+          id: agency_id,
+          name: name,
+          url: default_contact_url,
+          timezone: timezone,
+          phone: default_contact_phone,
+          email: default_contact_email,
+          lang: default_language
+          #fare_url: TO DO
+        }
       end
     end
 
@@ -460,7 +494,7 @@ class Export::Gtfs < Export::Base
 
     def export!
       lines.find_each do |line|
-        decorated_line = Decorator.new(line, index)
+        decorated_line = Decorator.new(line, index, duplicated_registration_numbers)
 
         create_messages decorated_line
         target.routes << decorated_line.route_attributes
@@ -472,15 +506,16 @@ class Export::Gtfs < Export::Base
     class Decorator < SimpleDelegator
 
       # index is optional to make tests easier
-      def initialize(line, index = nil)
+      def initialize(line, index = nil, duplicated_registration_numbers = [])
         super line
         @index = index
+        @duplicated_registration_numbers = duplicated_registration_numbers
       end
 
-      attr_reader :index
+      attr_reader :index, :duplicated_registration_numbers
 
       def route_id
-        registration_number.presence || objectid
+        registration_number && duplicated_registration_numbers.exclude?(registration_number) ? registration_number : objectid
       end
 
       def route_long_name

@@ -36,7 +36,7 @@ class Chouette::AreaType
 
   def self.options(kind=:all)
     @@options ||= {}
-    @@options[kind] ||= self.send(kind).map { |c| find(c) }.map { |t| [ t.label, t.code ] }
+    @@options[kind] ||= self.send(kind).map { |c| find(c) }.map(&:to_option)
   end
 
   attr_reader :code
@@ -52,4 +52,7 @@ class Chouette::AreaType
     I18n.translate code, scope: 'area_types.label', locale: I18n.locale
   end
 
+  def to_option
+    [label, code]
+  end
 end

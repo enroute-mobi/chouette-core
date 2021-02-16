@@ -16,10 +16,7 @@ class ApplicationController < ActionController::Base
 
   def set_locale
     wanted_locale = (params['lang'] || session[:language] || I18n.default_locale).to_sym
-    effective_locale = I18n.available_locales.include?(wanted_locale) ? wanted_locale : I18n.default_locale
-
-    I18n.locale = effective_locale
-    logger.info "Locale set to #{I18n.locale.inspect}"
+   SetLocaleService.call(wanted_locale)
   end
 
   def pundit_user

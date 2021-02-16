@@ -27,6 +27,7 @@ require 'capybara/rails'
 require 'capybara/poltergeist'
 require 'will_paginate/array'
 require 'webmock/rspec'
+require 'wisper/rspec/matchers'
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
@@ -94,6 +95,8 @@ RSpec.configure do |config|
   # The different available types are documented in the features, such as in
   # https://relishapp.com/rspec/rspec-rails/docs
   config.infer_spec_type_from_file_location!
+
+  config.include(Wisper::RSpec::BroadcastMatcher)
 end
 
 Shoulda::Matchers.configure do |config|

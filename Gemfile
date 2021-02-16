@@ -36,6 +36,7 @@ gem 'select2-rails', '~> 4.0', '>= 4.0.3'
 gem 'has_array_of', en_route: 'has_array_of'
 
 gem 'rails-observers'
+gem 'wisper', '2.0.0'
 
 # Use SeedBank for spliting seeds
 gem 'seedbank', '0.4.0'
@@ -171,6 +172,7 @@ group :test do
   gem 'fuubar'
   gem 'rspec-benchmark'
   gem 'pundit-matchers', '>= 1.6.0'
+  gem 'wisper-rspec', require: false
 
   gem 'rspec_junit_formatter'
   gem 'simplecov', require: false

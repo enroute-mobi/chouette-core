@@ -176,7 +176,7 @@ RSpec.describe Export::NetexGeneric do
 
     it "create a Netex::JourneyPattern for each Chouette JourneyPattern" do
       part.export!
-      count = journey_patterns.count + journey_patterns.select { |j| j.published_name.present? }.count
+      count = journey_patterns.count + journey_patterns.count { |j| j.published_name.present? }
       expect(target.resources).to have_attributes(count: count)
 
       jp_resources = target.resources.select { |r| r.is_a? Netex::ServiceJourneyPattern }
@@ -199,7 +199,7 @@ RSpec.describe Export::NetexGeneric do
 
       destination_displays = target.resources.select { |r| r.is_a? Netex::DestinationDisplay }
 
-      jp_with_published_name_count = journey_patterns.select { |jp| jp.published_name.present? }.count
+      jp_with_published_name_count = journey_patterns.count { |jp| jp.published_name.present? }
 
       expect(destination_displays.count).to eq(jp_with_published_name_count)
     end

@@ -1,15 +1,15 @@
 RSpec.describe WorkbenchPolicy, type: :policy do
 
-  let( :record ){ build_stubbed :workbench }
-
     permissions :show? do
+      let( :record ){ build_stubbed :workbench }
+
       it "should not allow show" do
         expect_it.not_to permit(user_context, record)
       end
 
-      context "when user belongs to workbench organisation" do
+      context "when user belongs to workbench's workgroup organisations" do
         before do
-          user.organisation = record.organisation
+          allow(record.workgroup.organisations).to receive(:exists?).with(id: user.organisation_id) { true }
         end
 
         it "should allow show" do
@@ -20,6 +20,8 @@ RSpec.describe WorkbenchPolicy, type: :policy do
     end
 
     permissions :update? do
+      let(:record) { build_stubbed :workbench, organisation: user.organisation }
+
       context "without permission" do
         it "should not allow update" do
           remove_permissions('workbenches.update', from_user: user)

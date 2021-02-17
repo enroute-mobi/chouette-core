@@ -3,8 +3,9 @@
 describe 'Workbenches', type: :feature do
   login_user
 
-  let(:line_referential) { create :line_referential }
-  let(:workbench) { create :workbench, line_referential: line_referential, organisation: @user.organisation }
+  let(:workgroup) { create :workgroup, owner: @user.organisation }
+  let(:line_referential) { workgroup.line_referential }
+  let(:workbench) { create :workbench, line_referential: line_referential, organisation: @user.organisation, workgroup: workgroup }
   # let!(:line) { create :line, line_referential: line_referential }
 
   # let(:referential_metadatas) { Array.new(2) { |i| create :referential_metadata, lines: [line] } }

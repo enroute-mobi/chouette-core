@@ -1,11 +1,12 @@
 RSpec.describe 'Workbenches', type: :feature do
   login_user
 
-  let(:line_ref) { create :line_referential }
+  let(:workgroup) { create :workgroup, owner: @user.organisation }
+  let(:line_ref) { workgroup.line_referential }
   let(:line) { create :line, line_referential: line_ref, referential: referential }
   let(:ref_metadata) { create(:referential_metadata) }
 
-  let(:workbench) { create :workbench, line_referential: line_ref, organisation: @user.organisation }
+  let(:workbench) { create :workbench, line_referential: line_ref, organisation: @user.organisation, workgroup: workgroup }
   let!(:referential) { create :workbench_referential,
                               workbench: workbench,
                               metadatas: [ref_metadata],

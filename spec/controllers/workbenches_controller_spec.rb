@@ -2,7 +2,8 @@
 RSpec.describe WorkbenchesController, :type => :controller do
   login_user
 
-  let(:workbench) { create :workbench, organisation: @user.organisation }
+  let(:workgroup) { create :workgroup, owner: @user.organisation }
+  let(:workbench) { create :workbench, organisation: @user.organisation, workgroup: workgroup }
   let(:compliance_control_set) { create :compliance_control_set, organisation: @user.organisation }
   let(:merge_id) { 2**64/2 - 1 } # Let's check we support Bigint
 

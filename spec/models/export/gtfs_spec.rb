@@ -181,6 +181,54 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
     end
   end
 
+  describe "VehicleJourneyAtStop Part" do
+    let(:export_scope) { Export::Scope::All.new context.referential }
+    let(:export) { Export::Gtfs.new export_scope: export_scope, workbench: context.workbench, workgroup: context.workgroup }
+
+    let(:part) do
+      Export::Gtfs::VehicleJourneyAtStops.new export
+    end
+
+    let(:context) do
+      Chouette.create do
+        stop_area :non_commercial, kind: 'non_commercial', area_type: 'deposit'
+
+        stop_area :referent, kind: 'non_commercial', area_type: 'deposit'
+        stop_area :with_referent_non_commercial, referent: :referent
+
+        route with_stops: false do
+          stop_point :departure
+          stop_point :stop_non_commercial, stop_area: :non_commercial
+          stop_point :stop_with_referent_non_commercial, stop_area: :with_referent_non_commercial
+          stop_point :arrival
+
+          vehicle_journey
+        end
+      end
+    end
+
+    before do
+      context.referential.switch
+    end
+
+    context "when prefer_referent_stop_area is true" do
+      before { export.options["prefer_referent_stop_area"] = true }
+
+      it "ignore Vehicle Journey At Stops associated to a non commercial Referent Stop Area" do
+        expect(part.vehicle_journey_at_stops.length).to eq(2)
+      end
+    end
+
+    context "when prefer_referent_stop_area is false" do
+      before { export.options["prefer_referent_stop_area"] = false }
+
+      it "ignore Vehicle Journey At Stops associated to a non commercial Stop Area" do
+        expect(part.vehicle_journey_at_stops.length).to eq(3)
+      end
+    end
+
+  end
+
   describe "VehicleJourneyAtStop Decorator" do
 
     let(:vehicle_journey_at_stop) { Chouette::VehicleJourneyAtStop.new }

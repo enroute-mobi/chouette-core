@@ -132,20 +132,24 @@ class Workgroup < ApplicationModel
   end
 
   def nightly_aggregate!
-    Rails.logger.info "Workgroup #{id}: nightly_aggregate!"
-    return unless nightly_aggregate_timeframe?
+    error_msg = "Nightly Aggregated failed for Workgroup #{id}"
 
-    target_referentials = aggregatable_referentials.select do |r|
-      aggregated_at.blank? || (r.created_at > aggregated_at)
+    Chouette::Safe.execute(error_msg) do
+      Rails.logger.info "Workgroup #{id}: nightly_aggregate!"
+      return unless nightly_aggregate_timeframe?
+
+      target_referentials = aggregatable_referentials.select do |r|
+        aggregated_at.blank? || (r.created_at > aggregated_at)
+      end
+
+      if target_referentials.empty?
+        Rails.logger.info "No aggregatable referential found for nighlty aggregate on Workgroup #{name} (Id: #{id})"
+        return
+      end
+
+      nightly_aggregates.create!(referentials: aggregatable_referentials, creator: 'CRON', notification_target: nightly_aggregate_notification_target)
+      update(nightly_aggregated_at: Time.current)
     end
-
-    if target_referentials.empty?
-      Rails.logger.info "No aggregatable referential found for nighlty aggregate on Workgroup #{name} (Id: #{id})"
-      return
-    end
-
-    nightly_aggregates.create!(referentials: aggregatable_referentials, creator: 'CRON', notification_target: nightly_aggregate_notification_target)
-    update(nightly_aggregated_at: Time.current)
   end
 
   def nightly_aggregate_timeframe?

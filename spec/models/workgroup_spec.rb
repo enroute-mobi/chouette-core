@@ -91,6 +91,10 @@ RSpec.describe Workgroup, type: :model do
 
     let(:time_at_1515) { Time.now.beginning_of_day + 15.hours + 15.minutes }
 
+    it_should_behave_like "Chouette::Safe method", :nightly_aggregate! do
+      let(:resource) { workgroup }
+    end
+
     context "when no aggregatable referential is found" do
       it "returns with a log message" do
         Timecop.freeze(time_at_1515) do

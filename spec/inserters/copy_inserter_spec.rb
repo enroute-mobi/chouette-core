@@ -97,6 +97,34 @@ RSpec.describe CopyInserter do
       end
 
     end
+
+    describe "light VehicleJourneyAtStops" do
+
+      let!(:vehicle_journey_at_stop) do
+        vehicle_journey.vehicle_journey_at_stops.first
+      end
+
+      let(:light_vehicle_journey_at_stop) do
+        referential.vehicle_journey_at_stops.where(id: vehicle_journey_at_stop.id).enum_for(:find_each_light).first
+      end
+
+      it "creates the same CSV content than PostgreSQL gives by COPY TO" do
+        expected_csv =
+          Chouette::VehicleJourneyAtStop.where(id: vehicle_journey_at_stop).copy_to_string
+        inserter.insert light_vehicle_journey_at_stop
+        expect(inserter.for(Chouette::VehicleJourneyAtStop::Light::VehicleJourneyAtStop).csv_content).to eq(expected_csv)
+      end
+
+      it "inserts model in database" do
+        light_vehicle_journey_at_stop.id = next_id(Chouette::VehicleJourneyAtStop)
+        light_vehicle_journey_at_stop.vehicle_journey_id = vehicle_journey.id
+
+        inserter.insert light_vehicle_journey_at_stop
+
+        expect { inserter.flush }.to change(Chouette::VehicleJourneyAtStop, :count).by(1)
+      end
+
+    end
   end
 
   describe 'Referential Code' do

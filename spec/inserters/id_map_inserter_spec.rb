@@ -140,6 +140,25 @@ RSpec.describe IdMapInserter do
 
   end
 
+  describe "Light VehicleJourneyAtStop" do
+
+    let(:light_vehicle_journey_at_stop) { Chouette::VehicleJourneyAtStop::Light::VehicleJourneyAtStop.new id: 42 }
+
+    it "define a new primary key" do
+      expect { inserter.insert(light_vehicle_journey_at_stop) }.to change(light_vehicle_journey_at_stop, :id).to(1)
+    end
+
+    it "change vehicle_journey_id with new value" do
+      light_vehicle_journey_at_stop.vehicle_journey_id = 42
+
+      new_vehicle_journey_id = 4242
+      inserter.register_primary_key!(Chouette::VehicleJourney, light_vehicle_journey_at_stop.vehicle_journey_id, new_vehicle_journey_id)
+
+      expect { inserter.insert(light_vehicle_journey_at_stop) }.to change(light_vehicle_journey_at_stop, :vehicle_journey_id).to(new_vehicle_journey_id)
+    end
+
+  end
+
   describe "TimeTablesVehicleJourney" do
 
     let(:model) do

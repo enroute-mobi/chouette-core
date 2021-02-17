@@ -131,6 +131,12 @@ class IdMapInserter < ByClassInserter
 
   class VehicleJourneyAtStop < Base
 
+    def load_current_primary_key
+      parent_inserter.target.switch do
+        Chouette::VehicleJourneyAtStop.maximum(:id) || 0
+      end
+    end
+
     def update_primary_key(model)
       model.id = next_primary_key
     end
@@ -138,7 +144,7 @@ class IdMapInserter < ByClassInserter
     def update_relations(vehicle_journey_at_stop)
       if (vehicle_journey_id = vehicle_journey_at_stop.vehicle_journey_id)
         vehicle_journey_at_stop.vehicle_journey_id =
-        parent_inserter.new_vehicle_journey_primary_key!(vehicle_journey_id)
+          parent_inserter.new_vehicle_journey_primary_key!(vehicle_journey_id)
       end
 
       if (stop_point_id = vehicle_journey_at_stop.stop_point_id)

@@ -388,7 +388,7 @@ class Referential < ApplicationModel
       result = nil
       Apartment::Tenant.switch slug do
         Rails.logger.debug "Referential switch to #{slug}" if verbose
-        result = yield
+        result = yield self
       end
       Rails.logger.debug "Referential back" if verbose
       result

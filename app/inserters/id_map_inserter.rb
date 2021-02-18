@@ -119,7 +119,8 @@ class IdMapInserter < ByClassInserter
       return 0 unless has_primary_key?
 
       parent_inserter.target.switch do
-        model_class.maximum(:id) || 0
+        # When using a cursor, the cursor scope is present
+        model_class.unscope(:where).maximum(:id) || 0
       end
     end
 
@@ -132,8 +133,9 @@ class IdMapInserter < ByClassInserter
   class VehicleJourneyAtStop < Base
 
     def load_current_primary_key
-      parent_inserter.target.switch do
-        Chouette::VehicleJourneyAtStop.maximum(:id) || 0
+      parent_inserter.target.switch do |target|
+        # When using a cursor, the cursor scope is present
+        target.vehicle_journey_at_stops.unscope(:where).maximum(:id) || 0
       end
     end
 

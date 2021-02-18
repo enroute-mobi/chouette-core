@@ -217,6 +217,64 @@ describe ReferentialCopy do
 
   end
 
+  describe "Vehicle Journey copy" do
+
+    let(:context) do
+      Chouette.create do
+        referential :source do
+          3.times { vehicle_journey }
+        end
+        referential :target, with_metadatas: false, archived_at: Time.now
+      end
+    end
+
+    it "contains the same VehicleJourney count" do
+      expect {
+        referential_copy.copy
+      }.to change { target.switch { target.vehicle_journeys.count } }
+             .from(0).to( source.switch { source.vehicle_journeys.count } )
+    end
+
+    it "contains the same VehicleJourneyAtStops count" do
+      expect {
+        referential_copy.copy
+      }.to change { target.switch { target.vehicle_journey_at_stops.count } }
+             .from(0).to( source.switch { source.vehicle_journey_at_stops.count } )
+    end
+
+  end
+
+  describe "several copies" do
+
+    let(:context) do
+      Chouette.create do
+        referential :source do
+          3.times { vehicle_journey }
+        end
+        referential :second_source do
+          3.times { vehicle_journey }
+        end
+        referential :target, with_metadatas: false, archived_at: Time.now
+      end
+    end
+
+    let(:second_source) { context.referential(:second_source) }
+    let(:second_referential_copy) { ReferentialCopy.new source: second_source, target: target }
+
+    it "contains the same VehicleJourney count" do
+      expected_vehicle_journey_count =
+        source.switch { source.vehicle_journeys.count } +
+        second_source.switch { second_source.vehicle_journeys.count }
+
+      expect {
+        referential_copy.copy
+        second_referential_copy.copy
+      }.to change { target.switch { target.vehicle_journeys.count } }
+             .from(0).to(expected_vehicle_journey_count)
+    end
+
+  end
+
   describe "TimeTable copy" do
 
     let(:context) do

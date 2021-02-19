@@ -85,7 +85,7 @@ export default class DuplicateVehicleJourney extends Component {
             title={ I18n.t('vehicle_journeys.form.hint_duplicate') }
             onClick={this.props.onOpenDuplicateModal}
           >
-            <span className='fa fa-files-o'></span>
+            <span className='fa fa-copy'></span>
           </button>
 
           <div className={ 'modal fade ' + ((this.props.modal.type == 'duplicate') ? 'in' : '') } id='DuplicateVehicleJourneyModal'>

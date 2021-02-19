@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import ClipboardHelper from '../helpers/ClipboardHelper'
 
 export default class CopyModal extends Component {
   constructor(props) {
@@ -8,6 +9,12 @@ export default class CopyModal extends Component {
     this.selectAll = this.selectAll.bind(this)
     this.pasteFromClipboard = this.pasteFromClipboard.bind(this)
     this.onKeyDown = this.onKeyDown.bind(this)
+  }
+
+  renderCopyContent() {
+    const { items, width, toggleArrivals } = this.props
+
+    return ClipboardHelper.copy(items, width, toggleArrivals)
   }
 
   updateContent() {
@@ -50,6 +57,7 @@ export default class CopyModal extends Component {
     }).catch(function(err){ console.log(err) })
   }
 
+
   componentDidUpdate(prevProps, prevState) {
     if(this.props.visible){
       if(this.props.mode == 'copy'){
@@ -63,6 +71,10 @@ export default class CopyModal extends Component {
   }
 
   render() {
+    const { visible } = this.props
+
+    if (!visible) return false
+    
     return (
       <div>
         <div className={'modal fade ' + (this.props.visible ? 'in' : '')} style={{ display: (this.props.visible ? 'block' : 'none') }} id='CopyModal'>
@@ -79,7 +91,7 @@ export default class CopyModal extends Component {
                     { I18n.t('courses_copy_paste.errors.' + this.props.error) }
                   </div>}
                   {this.props.mode == 'copy' && <div>
-                    <pre ref='copyContent'>{this.props.content}</pre>
+                    <pre ref='copyContent'>{this.renderCopyContent()}</pre>
                   </div>}
                   {this.props.mode == 'paste' && <div>
                     <textarea

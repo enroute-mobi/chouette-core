@@ -1,14 +1,24 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import autoBind from 'react-autobind'
+import { isEqual, last, some } from 'lodash'
 import actions from '../actions'
 import EditVehicleJourney from '../containers/tools/EditVehicleJourney'
 import VehicleJourneyInfoButton from '../containers/tools/VehicleJourneyInfoButton'
-
+import VehicleJourneyAtStop from './VehicleJourneyAtStop'
 export default class VehicleJourney extends Component {
   constructor(props) {
     super(props)
     this.previousCity = undefined
+
+    autoBind(this)
   }
+
+  // Getters
+  get isEditable() {
+    return this.props.editMode && !this.props.selection.active
+  }
+
 
   journey_length() {
     return this.props.value.journey_pattern.journey_length + "km"
@@ -20,82 +30,6 @@ export default class VehicleJourney extends Component {
 
   hasFeature(key) {
     return this.props.filters.features[key]
-  }
-
-  isEditable() {
-    return this.props.editMode && !this.props.selectionMode
-  }
-
-  selectionClasses(x, y) {
-    let out = []
-
-    if (this.isSelected(x, y)){
-      out.push('selected')
-
-      if (this.isSelectionStart(x, y)){
-        out.push('selection-start')
-      }
-      if (x == this.props.selection.topLeft.x){
-        out.push('selection-border')
-        out.push('selection-border-left')
-      }
-      if (y == this.props.selection.topLeft.y){
-        out.push('selection-border')
-        out.push('selection-border-top')
-      }
-      if (x == this.props.selection.bottomRight.x){
-        out.push('selection-border')
-        out.push('selection-border-right')
-      }
-      if (y == this.props.selection.bottomRight.y){
-        out.push('selection-border')
-        out.push('selection-border-bottom')
-      }
-    }
-
-    return ' ' + (new Array(... new Set(out))).join(' ')
-  }
-
-  isSelected(x, y){
-    if(!this.props.selectionMode){
-      return false
-    }
-    if(!this.props.selection.started){
-      return false
-    }
-    if(this.props.selection.end == null){
-      return false
-    }
-    return this.props.selection.topLeft.x <= x
-    && this.props.selection.bottomRight.x >= x
-    && this.props.selection.topLeft.y <= y
-    && this.props.selection.bottomRight.y >= y
-  }
-
-  isSelectionStart(x, y){
-    if(!this.props.selectionMode){
-      return false
-    }
-
-    return this.props.selection.started
-    && !this.props.selection.ended
-    && this.props.selection.start.x == x
-    && this.props.selection.start.y == y
-  }
-
-  isSelectionBottomRight(x, y){
-    if(!this.props.selectionMode){
-      return false
-    }
-
-    return this.props.selection.started
-    && this.props.selection.bottomRight
-    && this.props.selection.bottomRight.x == x
-    && this.props.selection.bottomRight.y == y
-  }
-
-  selectionSizeHelperContent(){
-    return this.props.selection.width + 'x' + this.props.selection.height
   }
 
   timeTableURL(tt) {
@@ -116,25 +50,6 @@ export default class VehicleJourney extends Component {
     )
   }
 
-  columnHasDelta() {
-    let a = []
-    this.props.value.vehicle_journey_at_stops.map((vj, i) => {
-      a.push(vj.delta)
-    })
-    let b = a.reduce((p, c) => p+c, 0)
-
-    if(b > 0) {
-      return true
-    }
-  }
-
-  displayDelta(delta) {
-    if(delta > 99){
-      return "+"
-    }
-    return delta
-  }
-
   hasTimeTable(time_tables, tt) {
     let found = false
     time_tables.map((t, index) => {
@@ -148,10 +63,6 @@ export default class VehicleJourney extends Component {
 
   hasPurchaseWindow(purchase_windows, window) {
     return this.hasTimeTable(purchase_windows, window)
-  }
-
-  isDisabled(bool1, bool2) {
-    return (bool1 || bool2)
   }
 
   extraHeaderValue(header) {
@@ -176,6 +87,12 @@ export default class VehicleJourney extends Component {
     let detailed_purchase_windows = this.hasFeature('detailed_purchase_windows') && !this.disabled
     let detailed_purchase_windows_shown = $('.detailed-purchase-windows-bt').hasClass('active')
     let {time_tables, purchase_windows} = this.props.value
+    const {
+      selection: {
+        items: selectedItems,
+        dimensionContent: selectionDimensionContent
+      }
+    } = this.props
 
     return (
       <div className={'t2e-item' + (this.props.value.deletable ? ' disabled' : '') + (this.props.value.errors ? ' has-error': '')}>
@@ -257,77 +174,30 @@ export default class VehicleJourney extends Component {
           }
 
         </div>
-        {this.props.value.vehicle_journey_at_stops.map((vj, i) =>
-          <div
-            key={i}
-            className={'td text-center' + this.selectionClasses(this.props.index, i) }
-            onMouseDown={(e) => this.props.onSelectCell(this.props.index, i, 'down', e)}
-            onMouseUp={(e) => this.props.onSelectCell(this.props.index, i, 'up', e)}
-            onMouseEnter={(e) => this.props.onHoverCell(this.props.index, i, e)}
-            >
-            { this.isSelectionBottomRight(this.props.index, i) && <div className='selection-size-helper'>
-              { this.selectionSizeHelperContent() }
-            </div>}
-            <div className={'cellwrap' + (this.cityNameChecker(vj) ? ' headlined' : '')}>
-              {this.props.filters.toggleArrivals &&
-                <div data-headline={I18n.t("vehicle_journeys.form.arrival_at")}>
-                  <span className={((this.isDisabled(this.props.value.deletable, vj.dummy) || this.props.filters.policy['vehicle_journeys.update'] == false) ? 'disabled ' : '') + 'input-group time'}>
-                    <input
-                      type='number'
-                      className='form-control'
-                      disabled={!this.isEditable() || this.isDisabled(this.props.value.deletable, vj.dummy) || this.props.filters.policy['vehicle_journeys.update'] == false}
-                      readOnly={!this.isEditable() && !vj.dummy}
-                      onChange={(e) => {this.isEditable() && this.props.onUpdateTime(e, i, this.props.index, 'hour', false, false)}}
-                      onMouseOut={(e) => {this.isEditable() && this.props.onUpdateTime(e, i, this.props.index, 'hour', false, false, true)}}
-                      onBlur={(e) => {this.isEditable() && this.props.onUpdateTime(e, i, this.props.index, 'hour', false, false, true)}}
-                      value={vj.arrival_time['hour']}
-                      />
-                    <span>:</span>
-                    <input
-                      type='number'
-                      className='form-control'
-                      disabled={!this.isEditable() || this.isDisabled(this.props.value.deletable, vj.dummy) || this.props.filters.policy['vehicle_journeys.update'] == false}
-                      readOnly={!this.isEditable() && !vj.dummy}
-                      onChange={(e) => {this.isEditable() && this.props.onUpdateTime(e, i, this.props.index, 'minute', false, false)}}
-                      onMouseOut={(e) => {this.isEditable() && this.props.onUpdateTime(e, i, this.props.index, 'minute', false, false, true)}}
-                      onBlur={(e) => {this.isEditable() && this.props.onUpdateTime(e, i, this.props.index, 'minute', false, false, true)}}
-                      value={vj.arrival_time['minute']}
-                      />
-                  </span>
-                </div>
-                }
-                <div className={(this.columnHasDelta() ? '' : 'hidden')}>
-                  {(vj.delta != 0) &&
-                    <span className='sb sb-chrono sb-lg text-warning' data-textinside={this.displayDelta(vj.delta)}></span>
-                  }
-                </div>
-                <div data-headline={I18n.t("vehicle_journeys.form.departure_at")}>
-                  <span className={((this.isDisabled(this.props.value.deletable, vj.dummy) || this.props.filters.policy['vehicle_journeys.update'] == false) ? 'disabled ' : '') + 'input-group time'}>
-                    <input
-                      type='number'
-                      className='form-control'
-                      disabled={!this.isEditable() || this.isDisabled(this.props.value.deletable, vj.dummy) || this.props.filters.policy['vehicle_journeys.update'] == false}
-                      readOnly={!this.isEditable() && !vj.dummy}
-                      onChange={(e) => {this.isEditable() && this.props.onUpdateTime(e, i, this.props.index, 'hour', true, this.props.filters.toggleArrivals)}}
-                      onMouseOut={(e) => {this.isEditable() && this.props.onUpdateTime(e, i, this.props.index, 'hour', true, this.props.filters.toggleArrivals, true)}}
-                      onBlur={(e) => {this.isEditable() && this.props.onUpdateTime(e, i, this.props.index, 'hour', true, this.props.filters.toggleArrivals, true)}}
-                      value={vj.departure_time['hour']}
-                      />
-                    <span>:</span>
-                    <input
-                      type='number'
-                      className='form-control'
-                      disabled={!this.isEditable() || this.isDisabled(this.props.value.deletable, vj.dummy) || this.props.filters.policy['vehicle_journeys.update'] == false}
-                      readOnly={!this.isEditable() && !vj.dummy}
-                      onChange={(e) => {this.isEditable() && this.props.onUpdateTime(e, i, this.props.index, "minute", true,  this.props.filters.toggleArrivals)}}
-                      onMouseOut={(e) => {this.isEditable() && this.props.onUpdateTime(e, i, this.props.index, "minute", true,  this.props.filters.toggleArrivals, true)}}
-                      onBlur={(e) => {this.isEditable() && this.props.onUpdateTime(e, i, this.props.index, "minute", true,  this.props.filters.toggleArrivals, true)}}
-                      value={vj.departure_time['minute']}
-                      />
-                </span>
-              </div>
-            </div>
-          </div>
+        {this.props.value.vehicle_journey_at_stops.map((vjas, i) => {
+          const isInSelection = some(selectedItems, ['id', vjas.id])
+          const isSelectionBottomRight = isInSelection ? last(selectedItems).id == vjas.id : false
+
+          return (
+             <VehicleJourneyAtStop
+              key={i}
+              vjIndex={this.props.index}
+              index={i}
+              vjas={vjas}
+              // onHoverCell={this.props.onHoverCell}
+              isSelectionBottomRight={isSelectionBottomRight}
+              selectionContentText={selectionDimensionContent}
+              isInSelection={isInSelection}
+              isEditable={this.isEditable}
+              isDisabled={this.props.value.deletable || vjas.dummy}
+              hasUpdatePermission={this.props.filters.policy['vehicle_journeys.update']}
+              onUpdateTime={this.props.onUpdateTime}
+              cityNameChecker={this.cityNameChecker}
+              toggleArrivals={this.props.filters.toggleArrivals}
+            />
+          )
+        }
+         
         )}
       </div>
     )
@@ -344,4 +214,11 @@ VehicleJourney.propTypes = {
   allTimeTables: PropTypes.array.isRequired,
   allPurchaseWindows: PropTypes.array.isRequired,
   extraHeaders: PropTypes.array.isRequired,
+  selection: PropTypes.object.isRequired,
+  selectedItems: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    arrival_time: PropTypes.string.isRequired,
+    departure_time: PropTypes.string.isRequired
+  })).isRequired,
+  // selectionDimensionContent: PropTypes.string.isRequired
 }

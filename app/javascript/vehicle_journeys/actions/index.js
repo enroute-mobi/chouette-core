@@ -19,15 +19,22 @@ const actions = {
   toggleTimesSelection: () => ({
     type: "TOGGLE_SELECTION_MODE"
   }),
-  toggleSelection: (x, y, clickDirection, shiftKey) => ({
-    type: "TOGGLE_SELECTION", x, y, clickDirection, shiftKey
+  updateSelectedItems: items => ({
+    type: 'UPDATE_SELECTED_ITEMS', items
   }),
-  onHoverCell: (x, y, shiftKey) => ({
-    type: "HOVER_CELL", x, y, shiftKey
+  updateSelectionDimensions: (width, height) => ({
+    type: 'UPDATE_SELECTION_DIMENSIONS', width, height
   }),
-  copyClipboard: ()=>({
-    type: "COPY_CLIPBOARD"
+  updateSelectionLocked: locked => ({
+    type: 'UPDATE_SELECTION_LOCKED', locked
   }),
+  // toggleSelection: (x, y, clickDirection, shiftKey) => ({
+  //   type: "TOGGLE_SELECTION", x, y, clickDirection, shiftKey
+  // }),
+  // onHoverCell: (x, y, shiftKey) => ({
+  //   type: "HOVER_CELL", x, y, shiftKey
+  // }),
+  copyClipboard: () => ({ type: 'COPY_CLIPBOARD' }),
   pasteFromClipboard: ()=>({
     type: "PASTE_CLIPBOARD"
   }),

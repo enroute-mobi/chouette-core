@@ -6,12 +6,11 @@ import modal from './modal'
 import status from './status'
 import filters from './filters'
 import editMode from './editMode'
-import selectionMode from './selectionMode'
 import selection from './selection'
 import stopPointsList from './stopPointsList'
 import missions from './missions'
 import custom_fields from './custom_fields'
-import selectionAndVehicleJourneys from './selectionAndVehicleJourneys'
+// import selectionAndVehicleJourneys from './selectionAndVehicleJourneys'
 
 const vehicleJourneysCombined = combineReducers({
   vehicleJourneys,
@@ -25,13 +24,9 @@ const vehicleJourneysCombined = combineReducers({
   returnStopPointsList: stopPointsList,
   missions,
   custom_fields,
-  selectionMode,
   selection
 })
 
-const vehicleJourneysApp = (state = {}, action) => {
-  let new_state = vehicleJourneysCombined(state, action)
-  return selectionAndVehicleJourneys(new_state, action)
-}
+const vehicleJourneysApp = (state = {}, action) => vehicleJourneysCombined(state, action)
 
 export default vehicleJourneysApp

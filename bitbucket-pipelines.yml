@@ -117,18 +117,11 @@ pipelines:
       - step:
           name: Deploy to test
           image: google/cloud-sdk:latest
-          caches:
-            - docker
           deployment: test
           script:
-            - ./script/bitbucket-gcloud-configure-docker.sh
-            # Tag image in registry with latest label
-            - ./script/bitbucket-tag-docker.sh latest
-            # Update test instance
-            - ./script/bitbucket-update-image.sh
+            - git clone git@bitbucket.org:enroute-mobi/chouette-env.git env
+            - env/deploy.sh
             - pipe: atlassian/datadog-send-event:1.0.1
               variables:
                 API_KEY: $DATADOG_KEY
-                TITLE: "Build ${BITBUCKET_BUILD_NUMBER} deployed on chouette-core test"
-          services:
-            - docker
+                TITLE: "Build ${BITBUCKET_BUILD_NUMBER} deployed on ${BITBUCKET_REPO_SLUG} ${BITBUCKET_DEPLOYMENT_ENVIRONMENT}"

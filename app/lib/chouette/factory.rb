@@ -14,6 +14,9 @@ module Chouette
           attribute(:email) { |n| "chouette+#{n}@enroute.mobi" }
           attribute :password, "secret"
           attribute :password_confirmation, "secret"
+
+          # FIXED User#permissions should be [] by default
+          attribute(:permissions) { [] }
         end
       end
 

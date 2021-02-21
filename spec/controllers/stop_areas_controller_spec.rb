@@ -27,7 +27,7 @@ RSpec.describe StopAreasController, :type => :controller do
         }
       }
 
-      expect(assigns(:stop_areas)).to eq([matched])
+      expect(assigns(:stop_areas)).to contain_exactly(matched)
     end
 
     it "doesn't filter when the name filter is empty" do

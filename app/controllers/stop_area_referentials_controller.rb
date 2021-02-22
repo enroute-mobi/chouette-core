@@ -8,6 +8,16 @@ class StopAreaReferentialsController < ChouetteController
     end
   end
 
+  def edit
+    authorize resource
+    create!
+  end
+
+  def update
+    authorize resource
+    create!
+  end
+
   def sync
     authorize resource, :synchronize?
     @sync = resource.stop_area_referential_syncs.build

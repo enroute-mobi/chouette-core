@@ -3,7 +3,7 @@ RSpec.describe StopAreaReferentialsController, :type => :controller do
 
   let(:context) do
     Chouette.create do
-      workgroup do
+      workgroup owner: Organisation.find_by_code('first') do
         workbench organisation: Organisation.find_by_code('first')
       end
     end

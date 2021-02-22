@@ -36,20 +36,19 @@
         span = 'activerecord.models.compliance_control_set.other'.t.capitalize
 
     = main_nav_menu_item 'layouts.navbar.stop_area_referential'.t do
-      - if policy(workbench.stop_area_referential).edit?
-        = link_to edit_workbench_stop_area_referential_path(workbench), class: "list-group-item" do
-          span = 'layouts.navbar.settings'.t
       = link_to workbench_stop_area_referential_stop_areas_path(workbench), class: "list-group-item" do
         span = Chouette::StopArea.t.capitalize
-      - if policy(StopAreaProvider).create?
-        = link_to workbench_stop_area_referential_stop_area_providers_path(workbench), class: 'list-group-item' do
-          span = StopAreaProvider.t.capitalize
-      - if has_feature?(:stop_area_routing_constraints)
-        = link_to workbench_stop_area_referential_stop_area_routing_constraints_path(workbench), class: 'list-group-item' do
-          span = StopAreaRoutingConstraint.t.capitalize
       - if has_feature?(:stop_area_connection_links)
         = link_to workbench_stop_area_referential_connection_links_path(workbench), class: 'list-group-item' do
           span = Chouette::ConnectionLink.t.capitalize
+      - if has_feature?(:stop_area_routing_constraints)
+        = link_to workbench_stop_area_referential_stop_area_routing_constraints_path(workbench), class: 'list-group-item' do
+          span = StopAreaRoutingConstraint.t.capitalize
+      - if policy(StopAreaProvider).create?
+        = link_to workbench_stop_area_referential_stop_area_providers_path(workbench), class: 'list-group-item' do
+          span = StopAreaProvider.t.capitalize
+      = link_to workbench_stop_area_referential_path(workbench), class: "list-group-item" do
+        span = 'stop_area_referentials.show.title'.t
 
     = main_nav_menu_item 'layouts.navbar.line_referential'.t do
       = link_to workbench_line_referential_lines_path(workbench), class: "list-group-item" do

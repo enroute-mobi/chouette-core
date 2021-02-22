@@ -1,8 +1,9 @@
 describe "/line_referentials/show", :type => :view do
   let(:context) do
     Chouette.create do
-      line_referential
-      workbench
+      workgroup owner: Organisation.find_by!(code: 'first') do
+        workbench
+      end
     end
   end
 

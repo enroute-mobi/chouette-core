@@ -1,13 +1,14 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import { partial } from 'lodash'
 import { createSelectable } from 'react-selectable-fast'
+import autoBind from 'react-autobind'
 
 class VehicleJourneyAtStop extends Component {
 	constructor(props) {
 		super(props)
-		this.state = {
-			hovered: false
-		}
+		
+		autoBind(this)
 	}
 
 	// Getters
@@ -18,10 +19,10 @@ class VehicleJourneyAtStop extends Component {
 	}
 
 	get selectionClasses() {
-		const { isSelected, isInSelection } = this.props
+		const { isInSelection, selectionMode } = this.props
 		const out = []
 
-		if (isSelected || isInSelection) {
+		if (selectionMode && isInSelection) {
 			out.push('selected')	
 		}
 
@@ -34,8 +35,17 @@ class VehicleJourneyAtStop extends Component {
 		return delta > 99 ? '+' : delta
 	}
 
+	onUpdateTime(subIndex, index, e, timeUnit, isDeparture, isArrivalsToggled, enforceConsistency = false) {
+		const { value } = e.target
+		this.props.onUpdateTime(value, subIndex, index, timeUnit, isDeparture, isArrivalsToggled, enforceConsistency)
+	}
+
 	renderSelectionSize() {
-		const { isSelectionBottomRight, selectionContentText } = this.props
+
+		const { isSelectionBottomRight, selectionContentText, selectionMode } = this.props
+
+		if (!selectionMode) return false
+
 		return isSelectionBottomRight && (
 			<div className='selection-size-helper'>
 				{selectionContentText}
@@ -64,10 +74,9 @@ class VehicleJourneyAtStop extends Component {
 			toggleArrivals,
 			hasUpdatePermission,
 			selectableRef,
-			isSelected,
-			isSelecting,
-			isInSelection
 		} = this.props
+
+		const onUpdateTime = partial(this.onUpdateTime, index, vjIndex)
 
 		return (
 			<div
@@ -75,9 +84,6 @@ class VehicleJourneyAtStop extends Component {
 				key={index}
 				ref={selectableRef}
 				className={`td text-center vjas-selectable ${this.selectionClasses}` }
-				// onMouseDown={(e) => this.props.onSelectCell(vjIndex, index, 'down', e)}
-				// onMouseUp={(e) => this.props.onSelectCell(vjIndex, index, 'up', e)}
-				// onMouseEnter={(e) => this.props.onHoverCell(vjIndex, index, e)}
 			>
 				{this.renderSelectionSize()}
 				<div className={'cellwrap' + (cityNameChecker(vjas) ? ' headlined' : '')}>
@@ -89,9 +95,9 @@ class VehicleJourneyAtStop extends Component {
 									className='form-control'
 									disabled={!isEditable || isDisabled || !hasUpdatePermission}
 									readOnly={!isEditable && !vjas.dummy}
-									onChange={(e) => { isEditable && this.props.onUpdateTime(e, index, vjIndex, 'hour', false, false) }}
-									onMouseOut={(e) => { isEditable && this.props.onUpdateTime(e, index, vjIndex, 'hour', false, false, true) }}
-									onBlur={(e) => { isEditable && this.props.onUpdateTime(e, index, vjIndex, 'hour', false, false, true) }}
+									onChange={e => { isEditable && onUpdateTime(e, 'hour', false, false) }}
+									// onMouseOut={e => { isEditable && onUpdateTime(e, 'hour', false, false, true) }}
+									// onBlur={e => { isEditable && onUpdateTime(e, 'hour', false, false, true) }}
 									value={vjas.arrival_time['hour']}
 								/>
 								<span>:</span>
@@ -100,9 +106,9 @@ class VehicleJourneyAtStop extends Component {
 									className='form-control'
 									disabled={!isEditable || isDisabled || !hasUpdatePermission}
 									readOnly={!isEditable && !vjas.dummy}
-									onChange={(e) => { isEditable && this.props.onUpdateTime(e, index, vjIndex, 'minute', false, false) }}
-									onMouseOut={(e) => { isEditable && this.props.onUpdateTime(e, index, vjIndex, 'minute', false, false, true) }}
-									onBlur={(e) => { isEditable && this.props.onUpdateTime(e, index, vjIndex, 'minute', false, false, true) }}
+									onChange={e => { isEditable && onUpdateTime(e, 'minute', false, false) }}
+									// onMouseOut={e => { isEditable && onUpdateTime(e, 'minute', false, false, true) }}
+									// onBlur={e => { isEditable && onUpdateTime(e, 'minute', false, false, true) }}
 									value={vjas.arrival_time['minute']}
 								/>
 							</span>
@@ -116,9 +122,9 @@ class VehicleJourneyAtStop extends Component {
 								className='form-control'
 								disabled={!isEditable || isDisabled || !hasUpdatePermission}
 								readOnly={!isEditable && !vjas.dummy}
-								onChange={(e) => { isEditable && this.props.onUpdateTime(e, index, vjIndex, 'hour', true, toggleArrivals) }}
-								onMouseOut={(e) => { isEditable && this.props.onUpdateTime(e, index, vjIndex, 'hour', true, toggleArrivals, true) }}
-								onBlur={(e) => { isEditable && this.props.onUpdateTime(e, index, vjIndex, 'hour', true, toggleArrivals, true) }}
+								onChange={e => { isEditable && onUpdateTime(e, 'hour', true, toggleArrivals) }}
+								// onMouseOut={e => { isEditable && onUpdateTime(e, 'hour', true, toggleArrivals, true) }}
+								// onBlur={e => { isEditable && onUpdateTime(e, 'hour', true, toggleArrivals, true) }}
 								value={vjas.departure_time['hour']}
 							/>
 							<span>:</span>
@@ -127,9 +133,9 @@ class VehicleJourneyAtStop extends Component {
 								className='form-control'
 								disabled={!isEditable || isDisabled || !hasUpdatePermission}
 								readOnly={!isEditable && !vjas.dummy}
-								onChange={(e) => { isEditable && this.props.onUpdateTime(e, index, vjIndex, "minute", true, toggleArrivals) }}
-								onMouseOut={(e) => { isEditable && this.props.onUpdateTime(e, index, vjIndex, "minute", true, toggleArrivals, true) }}
-								onBlur={(e) => { isEditable && this.props.onUpdateTime(e, index, vjIndex, "minute", true, toggleArrivals, true) }}
+								onChange={e => { isEditable && onUpdateTime(e, 'minute', true, toggleArrivals) }}
+								// onMouseOut={e => { isEditable && onUpdateTime(e, 'minute', true, toggleArrivals, true) }}
+								// onBlur={e => { isEditable && onUpdateTime(e, 'minute', true, toggleArrivals, true) }}
 								value={vjas.departure_time['minute']}
 							/>
 						</span>
@@ -147,7 +153,6 @@ VehicleJourneyAtStop.propTypes = {
 	index: PropTypes.number.isRequired,
 	vjas: PropTypes.object.isRequired,
 	onSelectCell: PropTypes.func.isRequired,
-	// onHoverCell: PropTypes.func.isRequired,
 	isSelectionBottomRight: PropTypes.bool.isRequired,
 	selectionContentText: PropTypes.string.isRequired,
 	isEditable: PropTypes.bool.isRequired,
@@ -156,5 +161,6 @@ VehicleJourneyAtStop.propTypes = {
 	hasUpdatePermission: PropTypes.bool.isRequired,
 	onUpdateTime: PropTypes.func.isRequired,
 	cityNameChecker: PropTypes.func.isRequired,
-	toggleArrivals: PropTypes.bool.isRequired
+	toggleArrivals: PropTypes.bool.isRequired,
+	selectionMode: PropTypes.bool.isRequired
 }

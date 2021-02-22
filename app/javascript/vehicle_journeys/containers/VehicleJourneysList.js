@@ -30,8 +30,8 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(actions.fetchingApi())
       actions.fetchVehicleJourneys(dispatch, undefined, undefined, filters.queryString, routeUrl)
     },
-    onUpdateTime: (e, subIndex, index, timeUnit, isDeparture, isArrivalsToggled, enforceConsistency=false) => {
-      dispatch(actions.updateTime(e.target.value, subIndex, index, timeUnit, isDeparture, isArrivalsToggled, enforceConsistency))
+    onUpdateTime: (value, subIndex, index, timeUnit, isDeparture, isArrivalsToggled, enforceConsistency=false) => {
+      dispatch(actions.updateTime(value, subIndex, index, timeUnit, isDeparture, isArrivalsToggled, enforceConsistency))
     },
     onSelectVehicleJourney: (index) => {
       dispatch(actions.selectVehicleJourney(index))
@@ -39,17 +39,27 @@ const mapDispatchToProps = (dispatch) => {
     onOpenInfoModal: (vj) =>{
       dispatch(actions.openInfoModal(vj))
     },
-    // onSelectCell: (x, y, clickDirection, shiftKey)=>{
-    //   dispatch(actions.toggleSelection(x, y, clickDirection, shiftKey))
-    // },
-    // onHoverCell: (x, y, shiftKey)=>{
-    //   dispatch(actions.onHoverCell(x, y, shiftKey))
-    // },
-    onKeyUp: (e)=>{
-      dispatch(actions.onKeyUp(e))
-    },
-    onKeyDown: (e)=>{
-      dispatch(actions.onKeyDown(e))
+    onKeyDown: (e, selection, toggleArrivals) => {
+      const { key, metaKey, ctrlKey } = e
+      const { 
+        locked,
+        copyModal: {
+          mode,
+          visible
+        }
+      } = selection
+      
+      if (visible) {
+        if(mode == 'paste' && key == 'Enter') {
+          dispatch(actions.pasteContent())
+        }
+      } else {
+        if (!locked) return
+        if (!metaKey && !ctrlKey) return
+
+        key == 'c' && dispatch(actions.copyClipboard(toggleArrivals))
+        key == 'v' && dispatch(actions.pasteFromClipboard())
+      }
     },
     onVisibilityChange: (e)=>{
       dispatch(actions.onVisibilityChange(e))

@@ -7,12 +7,6 @@ const actions = {
   exitEditMode: () => ({
     type: "EXIT_EDIT_MODE"
   }),
-  onKeyUp: (event) => ({
-    type: "KEY_UP", event
-  }),
-  onKeyDown: (event) => ({
-    type: "KEY_DOWN", event
-  }),
   onVisibilityChange: (event) => ({
     type: "VISIBILITY_CHANGE", event
   }),
@@ -28,13 +22,9 @@ const actions = {
   updateSelectionLocked: locked => ({
     type: 'UPDATE_SELECTION_LOCKED', locked
   }),
-  // toggleSelection: (x, y, clickDirection, shiftKey) => ({
-  //   type: "TOGGLE_SELECTION", x, y, clickDirection, shiftKey
-  // }),
-  // onHoverCell: (x, y, shiftKey) => ({
-  //   type: "HOVER_CELL", x, y, shiftKey
-  // }),
-  copyClipboard: () => ({ type: 'COPY_CLIPBOARD' }),
+  copyClipboard: () => ({
+    type: 'COPY_CLIPBOARD'
+  }),
   pasteFromClipboard: ()=>({
     type: "PASTE_CLIPBOARD"
   }),
@@ -44,10 +34,10 @@ const actions = {
   copyModalToPasteMode: ()=>({
     type: "COPY_MODAL_TO_PASTE_MODE"
   }),
-  copyModalToCopyMode: ()=>({
+  copyModalToCopyMode: () => ({
     type: "COPY_MODAL_TO_COPY_MODE"
   }),
-  updateContentToPaste: (content)=>({
+  updateContentToPaste:  content =>({
     type: "UPDATE_CONTENT_TO_PASTE", content
   }),
   pasteContent: ()=>({

@@ -10,22 +10,21 @@ export default class SelectableContainer extends Component {
 		autoBind(this)
 	}
 
-	// need to sort items (1st by vjIndex then by index)
 	handleSelecting(items) {
 		const initialState = { width: new Set(), height: new Set(), selectedItems: [] } // Use of Set to eliminate duplicate values
 
 		const { width, height, selectedItems } = items.reduce((result, item) => {
 			const {
 				props: {
-					vjas: { id, arrival_time, departure_time, dummy },
+					vjas: { id, arrival_time, departure_time, dummy, delta },
 					index,
 					vjIndex
 				}
 			} = item
-			const selectedItem = { index, vjIndex, id, arrival_time, departure_time, dummy }
+			const selectedItem = { id, index, vjIndex, arrival_time, departure_time, dummy, delta }
 			return {
-				width: result.width.add(index),
-				height: result.height.add(vjIndex),
+				width: result.width.add(vjIndex),
+				height: result.height.add(index),
 				selectedItems: sortBy([...result.selectedItems, selectedItem], ['index', 'vjIndex'])
 			}
 		}, initialState)
@@ -39,10 +38,6 @@ export default class SelectableContainer extends Component {
 		const hasItems = !isEmpty(items)
 
 		updateSelectionLocked(hasItems)
-
-		if (hasItems) {
-			// need to update the modal content
-		}
 	}
 
 	render() {

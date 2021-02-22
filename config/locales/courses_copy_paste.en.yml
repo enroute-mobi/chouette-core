@@ -8,5 +8,6 @@ en:
       select_all: Select all
       paste_from_clipboard: Paste from clipboard
     errors:
+      wrong_time_format: Wrong time format
       size_does_not_match: Size does not match
       missing_content: Thanks to paste contents

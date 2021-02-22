@@ -1,13 +1,16 @@
 import actions from '../actions'
-import { omit } from 'lodash'
 import { connect } from 'react-redux'
 import CopyModal from '../components/CopyModal'
 
-const mapStateToProps = state => ({
-  ...state.selection.copyModal,
-  ...omit(state.selection, ['copyModal']),
-  toggleArrivals: state.filters.toggleArrivals
-})
+const mapStateToProps = state => {
+  const {
+    selection: { copyModal }
+  } = state
+
+  return {
+    ...copyModal
+  }
+}
 
 const mapDispatchToProps = (dispatch) => {
   return {
@@ -17,10 +20,10 @@ const mapDispatchToProps = (dispatch) => {
     toPasteMode: ()=>{
       dispatch(actions.copyModalToPasteMode())
     },
-    toCopyMode: ()=>{
+    toCopyMode: () => {
       dispatch(actions.copyModalToCopyMode())
     },
-    updateContent: (content)=>{
+    updatePasteContent: content => {
       dispatch(actions.updateContentToPaste(content))
     },
     pasteContent: ()=>{

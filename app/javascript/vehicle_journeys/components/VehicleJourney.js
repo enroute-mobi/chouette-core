@@ -184,7 +184,7 @@ export default class VehicleJourney extends Component {
               vjIndex={this.props.index}
               index={i}
               vjas={vjas}
-              // onHoverCell={this.props.onHoverCell}
+              selectionMode={this.props.selection.active}
               isSelectionBottomRight={isSelectionBottomRight}
               selectionContentText={selectionDimensionContent}
               isInSelection={isInSelection}
@@ -220,5 +220,4 @@ VehicleJourney.propTypes = {
     arrival_time: PropTypes.string.isRequired,
     departure_time: PropTypes.string.isRequired
   })).isRequired,
-  // selectionDimensionContent: PropTypes.string.isRequired
 }

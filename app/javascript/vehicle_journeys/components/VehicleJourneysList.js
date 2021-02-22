@@ -76,34 +76,14 @@ export default class VehicleJourneysList extends Component {
   }
 
   // Handlers
-  // onSelectCell(x, y, clickDirection, event) {
-  //   if (this.isReturn) return
-  //   if (!this.props.selection.active) return
-
-  //   this.props.onSelectCell(x, y, clickDirection, event.shiftKey)
-  // }
-
-  // onHoverCell(x, y, event) {
-  //   if (this.isReturn) return
-  //   if (!this.props.selection.active) return
-
-  //   this.props.onHoverCell(x, y, event.shiftKey)
-  // }
-
-  onKeyUp(event) {
-    if (this.isReturn) return
-    if (!this.props.selection.active) return
-    if (!this.bubbleKeyEvent(event)) return
-
-    this.props.onKeyUp(event)
-  }
-
   onKeyDown(event) {
+    const { selection, onKeyDown, filters } = this.props
+
     if (this.isReturn) return
-    if (!this.props.selection.active) return
+    if (!selection.active) return
     if (!this.bubbleKeyEvent(event)) return
 
-    this.props.onKeyDown(event)
+    onKeyDown(event, selection, filters.toggleArrivals)
   }
 
   // Helpers
@@ -213,7 +193,6 @@ export default class VehicleJourneysList extends Component {
           $(this).find('.td:nth-child('+ (nth + 1) +')').css('height', refCol[nth]);
         }
       })
-      document.addEventListener("keyup", this.onKeyUp)
       document.addEventListener("keydown", this.onKeyDown)
       document.addEventListener("visibilitychange", this.props.onVisibilityChange)
       document.addEventListener("webkitvisibilitychange", this.props.onVisibilityChange)
@@ -362,7 +341,6 @@ export default class VehicleJourneysList extends Component {
                       allPurchaseWindows={this.allPurchaseWindows}
                       extraHeaders={this.props.extraHeaders}
                       onSelectCell={this.onSelectCell}
-                      // onHoverCell={this.onHoverCell}
                       />
                   )}
                 </div>

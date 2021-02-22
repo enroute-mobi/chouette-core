@@ -10,9 +10,101 @@ import selection from './selection'
 import stopPointsList from './stopPointsList'
 import missions from './missions'
 import custom_fields from './custom_fields'
-// import selectionAndVehicleJourneys from './selectionAndVehicleJourneys'
 
-const vehicleJourneysCombined = combineReducers({
+var selectedJP = []
+
+if (window.journeyPatternId)
+  selectedJP.push(window.journeyPatternId)
+
+const initialState = {
+  editMode: false,
+  filters: {
+    selectedJourneyPatterns: selectedJP,
+    policy: window.perms,
+    features: window.features,
+    toggleArrivals: false,
+    queryString: '',
+    query: {
+      interval: {
+        start: {
+          hour: '00',
+          minute: '00'
+        },
+        end: {
+          hour: '23',
+          minute: '59'
+        }
+      },
+      journeyPattern: {
+        published_name: ''
+      },
+      vehicleJourney: {
+        objectid: ''
+      },
+      company: {
+        name: ''
+      },
+      timetable: {
+        comment: ''
+      },
+      withoutSchedule: true,
+      withoutTimeTable: true
+    }
+
+  },
+  status: {
+    fetchSuccess: false,
+    isFetching: false
+  },
+  vehicleJourneys: [],
+  stopPointsList: window.stopPoints,
+  returnStopPointsList: window.returnStopPoints,
+  pagination: {
+    page: 1,
+    totalCount: 0,
+    perPage: window.vehicleJourneysPerPage,
+    stateChanged: false
+  },
+  modal: {
+    type: '',
+    modalProps: {},
+    confirmModal: {}
+  },
+  missions: window.all_missions,
+  custom_fields: window.custom_fields,
+  selection: {
+    active: false,
+    width: '',
+    height: '',
+    copyModal: {
+      visible: false,
+      mode: 'copy',
+      content: {
+        copy: '',
+        paste: ''
+      }
+    },
+    items: []
+  }
+}
+
+if (window.jpOrigin) {
+  initialState.filters.query.journeyPattern = {
+    id: window.jpOrigin.id,
+    name: window.jpOrigin.name,
+    published_name: window.jpOrigin.published_name,
+    objectid: window.jpOrigin.objectid
+  }
+  let params = {
+    'q[journey_pattern_id_eq]': initialState.filters.query.journeyPattern.id,
+    'q[objectid_cont]': initialState.filters.query.vehicleJourney.objectid
+  }
+  initialState.filters.queryString = actions.encodeParams(params)
+}
+
+export { initialState }
+
+const combinedReducers = combineReducers({
   vehicleJourneys,
   returnVehicleJourneys,
   pagination,
@@ -24,9 +116,11 @@ const vehicleJourneysCombined = combineReducers({
   returnStopPointsList: stopPointsList,
   missions,
   custom_fields,
-  selection
+  selection: (state = {}, action) => state
 })
 
-const vehicleJourneysApp = (state = {}, action) => vehicleJourneysCombined(state, action)
+export default function(state = {}, action) {
+  const newState = combinedReducers(state, action)
 
-export default vehicleJourneysApp
+  return selection(newState, action)
+}

@@ -1,39 +1,123 @@
 RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
   let(:gtfs_export) { create :gtfs_export, referential: exported_referential, workbench: workbench, duration: 5, prefer_referent_stop_area: true}
 
-  # describe 'Line Part' do
-  #   let(:export_scope) { Export::Scope::All.new context.referential }
-  #   let(:index) { export.index }
-  #   let(:export) { Export::Gtfs.new export_scope: export_scope, workbench: context.workbench, workgroup: context.workgroup }
+  describe 'Company Part' do
+    let(:export_scope) { Export::Scope::All.new context.referential }
+    let(:index) { export.index }
+    let(:export) { Export::Gtfs.new export_scope: export_scope, workbench: context.workbench, workgroup: context.workgroup }
 
-  #   let(:part) do
-  #     Export::Gtfs::Lines.new export
-  #   end
+    let(:part) do
+      Export::Gtfs::Companies.new export
+    end
 
-  #   let(:context) do
-  #     Chouette.create do
-  #       line_provider :first do
-  #         line :one, registration_number: "1"
-  #       end
-  #       line_provider :other do
-  #         line :two, registration_number: "1"
-  #       end
+    let(:context) do
+      Chouette.create do
+        line_provider :first do
+          company :c1, registration_number: "1", time_zone: "Europe/Paris"
+          line :l1, company: :c1
+        end
+        line_provider :other do
+          company :c2, registration_number: "1", time_zone: "Europe/Paris"
+          line :l2, company: :c2
+        end
 
-  #       referential
-  #     end
-  #   end
+        route line: :l1 do
+          vehicle_journey
+        end
+        route line: :l2 do
+          vehicle_journey
+        end
+      end
+    end
 
-  #   let(:lines) {context.lines}
+    let(:first_company) {context.company(:c1)}
+    let(:second_company) {context.company(:c2)}
 
-  #   before do
-  #     context.referential.switch
-  #   end
+    before do
+      context.referential.switch
+    end
 
-  #   it "should use lines objectid when their registration_number is not unique" do
-  #     part.export!
-  #     expect(export.target.routes.map(&:id)).to match_array(lines.map(&:objectid))
-  #   end
-  # end
+    it "should use companies objectid when their registration_number is not unique" do
+      part.export!
+      expect(export.target.agencies.map(&:id)).to match_array([first_company.objectid, second_company.objectid])
+    end
+  end
+
+  describe 'StopArea Part' do
+    let(:export_scope) { Export::Scope::All.new context.referential }
+    let(:index) { export.index }
+    let(:export) { Export::Gtfs.new export_scope: export_scope, workbench: context.workbench, workgroup: context.workgroup }
+
+    let(:part) do
+      Export::Gtfs::StopAreas.new export
+    end
+
+    let(:context) do
+      Chouette.create do
+        stop_area_provider :first do
+          stop_area :sa1, registration_number: "1"
+        end
+        stop_area_provider :other do
+          stop_area :sa2, registration_number: "1"
+        end
+
+        referential
+      end
+    end
+
+    let(:first_stop_area) {context.stop_area(:sa1)}
+    let(:second_stop_area) {context.stop_area(:sa2)}
+
+    before do
+      context.referential.switch
+    end
+
+    it "should use stop_areas objectid when their registration_number is not unique" do
+      part.export!
+      expect(export.target.stops.map(&:id)).to match_array([first_stop_area.objectid, second_stop_area.objectid])
+    end
+  end
+
+  describe 'Line Part' do
+    let(:export_scope) { Export::Scope::All.new context.referential }
+    let(:index) { export.index }
+    let(:export) { Export::Gtfs.new export_scope: export_scope, workbench: context.workbench, workgroup: context.workgroup }
+
+    let(:part) do
+      Export::Gtfs::Lines.new export
+    end
+
+    let(:context) do
+      Chouette.create do
+        line_provider :first do
+          company :c1, registration_number: "r1"
+          line :l1, company: :c1, registration_number: "1"
+        end
+        line_provider :other do
+          company :c2, registration_number: "r2"
+          line :l2, company: :c2, registration_number: "1"
+        end
+
+        referential lines: [:l1, :l2]
+      end
+    end
+
+    let(:first_line) {context.line(:l1)}
+    let(:first_company) {first_line.company}
+    let(:second_line) {context.line(:l2)}
+    let(:second_company) {second_line.company}
+
+    before do
+      context.referential.switch
+      index.register_agency_id(first_company, first_company.registration_number)
+      index.register_agency_id(second_company, second_company.registration_number)
+    end
+
+    it "should use lines objectid when their registration_number is not unique" do
+      part.export!
+      expect(export.target.routes.map(&:id)).to match_array([first_line.objectid, second_line.objectid])
+    end
+  end
 
   describe "Line Decorator" do
 

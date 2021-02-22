@@ -37,43 +37,39 @@ class Export::Gtfs < Export::Base
 
   def export_to_dir(directory)
     CustomFieldsSupport.within_workgroup(referential.workgroup) do
-      operations_count = 6
+      operations_count = 7
 
       # FIXME
       @target = GTFS::Target.new(File.join(directory, "#{zip_file_name}.zip"))
 
-      Chouette::Benchmark.measure "companies" do
-        export_companies_to target
-        notify_progress 1.0/operations_count
-      end
+      Companies.new(self).export_part
+      notify_progress 1.0/operations_count
 
-      Chouette::Benchmark.measure "stop_areas" do
-        export_stop_areas_to target
-        notify_progress 2.0/operations_count
-      end
+      StopAreas.new(self).export_part
+      notify_progress 2.0/operations_count
 
       Lines.new(self).export_part
+      notify_progress 3.0/operations_count
 
       Chouette::Benchmark.measure "transfers" do
         export_transfers_to target
-        notify_progress 3.0/operations_count
+        notify_progress 4.0/operations_count
       end
 
       Shapes.new(self).export_part
-      notify_progress 4.0/operations_count
+      notify_progress 5.0/operations_count
 
       # Export Trips
       TimeTables.new(self).export_part
       VehicleJourneys.new(self).export_part
-
-      notify_progress 5.0/operations_count
+      notify_progress 6.0/operations_count
 
       # Export stop_times.txt
       filter_non_commercial = referential.stop_areas.non_commercial.exists?
       ignore_time_zone = !export_scope.stop_areas.with_time_zone.exists?
 
       VehicleJourneyAtStops.new(self, filter_non_commercial: filter_non_commercial, ignore_time_zone: ignore_time_zone).export_part
-      notify_progress 6.0/operations_count
+      notify_progress 7.0/operations_count
     end
 
     target.close
@@ -251,8 +247,8 @@ class Export::Gtfs < Export::Base
       @agency_ids[company_id]
     end
 
-    def register_agency_id(decorated_company)
-      @agency_ids[decorated_company.id] = decorated_company.agency_id
+    def register_agency_id(company, agency_id)
+      @agency_ids[company.id] = agency_id
     end
 
     def register_service_ids(time_table, service_ids)
@@ -340,9 +336,9 @@ class Export::Gtfs < Export::Base
     end
 
     def handle_referent stop_area
-      return Decorator.new(stop_area, index, duplicated_registration_numbers) if !prefer_referent_stop_area || !stop_area.referent
+      return Decorator.new(stop_area, index, public_code_space, duplicated_registration_numbers) unless prefer_referent_stop_area && stop_area.referent
 
-      decorated_referent = Decorator.new(stop_area.referent, index, duplicated_registration_numbers)
+      decorated_referent = Decorator.new(stop_area.referent, index, public_code_space, duplicated_registration_numbers)
       index.register_stop_id(stop_area, decorated_referent.stop_id)
       return decorated_referent
     end
@@ -430,7 +426,7 @@ class Export::Gtfs < Export::Base
         create_message decorated_company
         target.agencies << decorated_company.agency_attributes
 
-        index.register_agency_id(decorated_company)
+        index.register_agency_id(decorated_company, decorated_company.agency_id)
       end
 
       if company_ids.include? DEFAULT_AGENCY_ID

@@ -96,8 +96,8 @@ class VehicleJourneyAtStop extends Component {
 									disabled={!isEditable || isDisabled || !hasUpdatePermission}
 									readOnly={!isEditable && !vjas.dummy}
 									onChange={e => { isEditable && onUpdateTime(e, 'hour', false, false) }}
-									// onMouseOut={e => { isEditable && onUpdateTime(e, 'hour', false, false, true) }}
-									// onBlur={e => { isEditable && onUpdateTime(e, 'hour', false, false, true) }}
+									onMouseOut={e => { isEditable && onUpdateTime(e, 'hour', false, false, true) }}
+									onBlur={e => { isEditable && onUpdateTime(e, 'hour', false, false, true) }}
 									value={vjas.arrival_time['hour']}
 								/>
 								<span>:</span>
@@ -107,8 +107,8 @@ class VehicleJourneyAtStop extends Component {
 									disabled={!isEditable || isDisabled || !hasUpdatePermission}
 									readOnly={!isEditable && !vjas.dummy}
 									onChange={e => { isEditable && onUpdateTime(e, 'minute', false, false) }}
-									// onMouseOut={e => { isEditable && onUpdateTime(e, 'minute', false, false, true) }}
-									// onBlur={e => { isEditable && onUpdateTime(e, 'minute', false, false, true) }}
+									onMouseOut={e => { isEditable && onUpdateTime(e, 'minute', false, false, true) }}
+									onBlur={e => { isEditable && onUpdateTime(e, 'minute', false, false, true) }}
 									value={vjas.arrival_time['minute']}
 								/>
 							</span>
@@ -123,8 +123,8 @@ class VehicleJourneyAtStop extends Component {
 								disabled={!isEditable || isDisabled || !hasUpdatePermission}
 								readOnly={!isEditable && !vjas.dummy}
 								onChange={e => { isEditable && onUpdateTime(e, 'hour', true, toggleArrivals) }}
-								// onMouseOut={e => { isEditable && onUpdateTime(e, 'hour', true, toggleArrivals, true) }}
-								// onBlur={e => { isEditable && onUpdateTime(e, 'hour', true, toggleArrivals, true) }}
+								onMouseOut={e => { isEditable && onUpdateTime(e, 'hour', true, toggleArrivals, true) }}
+								onBlur={e => { isEditable && onUpdateTime(e, 'hour', true, toggleArrivals, true) }}
 								value={vjas.departure_time['hour']}
 							/>
 							<span>:</span>
@@ -134,8 +134,8 @@ class VehicleJourneyAtStop extends Component {
 								disabled={!isEditable || isDisabled || !hasUpdatePermission}
 								readOnly={!isEditable && !vjas.dummy}
 								onChange={e => { isEditable && onUpdateTime(e, 'minute', true, toggleArrivals) }}
-								// onMouseOut={e => { isEditable && onUpdateTime(e, 'minute', true, toggleArrivals, true) }}
-								// onBlur={e => { isEditable && onUpdateTime(e, 'minute', true, toggleArrivals, true) }}
+								onMouseOut={e => { isEditable && onUpdateTime(e, 'minute', true, toggleArrivals, true) }}
+								onBlur={e => { isEditable && onUpdateTime(e, 'minute', true, toggleArrivals, true) }}
 								value={vjas.departure_time['minute']}
 							/>
 						</span>

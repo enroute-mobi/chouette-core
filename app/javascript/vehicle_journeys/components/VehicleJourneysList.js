@@ -223,7 +223,7 @@ export default class VehicleJourneysList extends Component {
       return (
         <div
           ref='vehicleJourneys'
-          className={`row  ${this.selectionClasses}`}
+          className={`row  ${this.selectionClasses}`.trim()}
           >
           <div className='col-lg-12'>
             {(this.props.status.fetchSuccess == false) && (

@@ -35,8 +35,10 @@ class Chouette::AreaType
   end
 
   def self.options(kind=:all)
-    @@options ||= {}
-    @@options[kind] ||= self.send(kind).map { |c| find(c) }.map(&:to_option)
+    @@options ||= Hash.new { |h,locale| h[locale] = {} }
+    @@options[I18n.locale][kind] ||= self.send(kind).map { |c| find(c) }.map(&:to_option)
+
+    binding.pry
   end
 
   attr_reader :code

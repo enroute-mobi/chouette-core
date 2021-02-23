@@ -316,7 +316,11 @@ class Export::Gtfs < Export::Base
     # CHOUETTE-960
     def duplicated_registration_numbers
       @duplicated_registration_numbers ||=
-        SortedSet.new(export_scope.send(part_name).select(:registration_number, :id).group(:registration_number).having("count(#{part_name}.id) > 1").pluck(:registration_number))
+        SortedSet.new(export_scope.send(part_name)
+          .select(:registration_number, :id)
+          .group(:registration_number)
+          .having("count(?) > 1", ActiveRecord::Base.connection.quote_column_name("#{part_name}.id"))
+          .pluck(:registration_number))
     end
 
   end

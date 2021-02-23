@@ -64,7 +64,9 @@ module Cron
     end
 
     def check_nightly_aggregates
-      Workgroup.where(nightly_aggregate_enabled: true).each(&:nightly_aggregate!)
+      protected_action do
+        Workgroup.where(nightly_aggregate_enabled: true).each(&:nightly_aggregate!)
+      end
     end
 
     def check_ccset_operations

@@ -1,4 +1,4 @@
-import { chunk, isEmpty } from 'lodash'
+import { chunk, isEmpty, isEqual, isNaN, map } from 'lodash'
 import addMinutes from 'date-fns/addMinutes'
 import { formatTime, parseTime } from './index'
 
@@ -50,14 +50,14 @@ export class CopyContent {
 				const out = []
 
 				out.push(
-					dummy ? '-' : formatTime(departure_time, dummy)
+					dummy ? '00:00' : formatTime(departure_time, dummy)
 				)
 
 				toggleArrivals && out.push(
-					dummy ? '-' : formatTime(arrival_time)
+					dummy ? '00:00' : formatTime(arrival_time)
 				)
 			
-				return out.join('\t')
+				return out
 			}).join('\t')
 		}
 		).join('\n')
@@ -81,18 +81,16 @@ export class PasteContent {
 	}
 
 	serialize() {
-		return this.content
+		return this.content.replaceAll('↵', '\n')
 	}
 
 	deserialize(toggleArrivals) {
 		const chunkSize = toggleArrivals ? 2 : 1
 
-		return this.content.split('\n').map((r, i) => {
+		return this.serialize().split('\n').map((r, i) => {
 			const deserializedCopyContent = this.copyContent.deserialize()
 			const copyRow = deserializedCopyContent[i]
 			const patseRow = r.split('\t')
-
-			let prevVJAS
 
 			return chunk(patseRow, chunkSize).map((cells, j) => {
 				/*
@@ -116,24 +114,41 @@ export class PasteContent {
 		})
 	}
 
-	validate(toggleArrivals) {
+	validate() {
 		this.clipboard.error = null
-		const serializedContent = this.serialize(toggleArrivals)
-		const formatRegex = new RegExp(/(\d{2}:\d{2}(\t|\n))+(\d{2}:\d{2})/)
+		const deserializedContent = this.serialize().split('\n').map(row => row.split('\t'))
+		const deserializedCopyContent = this.copyContent.deserialize()
 
 		try {
-			if (isEmpty(serializedContent)) {
+			if (isEmpty(deserializedContent)) {
 				throw ('missing_content')
 			}
 
-			if (serializedContent.length != this.copyContent.serialize(toggleArrivals).length) {
+			// compare sizes
+			const sizeMatch = isEqual(
+				map(deserializedContent, 'length'),
+				map(deserializedCopyContent, 'length')
+			)
+
+			if (!sizeMatch) {
 				throw ('size_does_not_match')
 			}
 
-			// Add validation to check date formats
-			// if (!formatRegex.test(serializedContent)) {
-			// 	throw('wrong_time_format')
-			// }
+			deserializedContent.forEach(row => {
+				row.forEach(cell => {
+					const [hour, minute] = cell.split(':')
+
+					if (!isEqual(hour.length, 2) || !isEqual(minute.length, 2)) {
+						throw ('wrong_time_format')
+					}
+					
+					const date = parseTime({ hour, minute })
+
+					if(isNaN(date.getTime())) {
+						throw('wrong_time_format')
+					}
+				})
+			})
 
 			return true
 		} catch (error) {

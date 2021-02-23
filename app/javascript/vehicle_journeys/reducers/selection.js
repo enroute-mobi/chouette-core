@@ -33,27 +33,31 @@ export default function selection(state = initialState, action) {
 				}
 			}
 		case 'UPDATE_SELECTION_LOCKED':
-			return {
-				...state,
-				selection: {
-					...selection,
-					locked: action.locked
-				}
-			}
-		case 'COPY_CLIPBOARD':
-		case 'COPY_MODAL_TO_COPY_MODE':
 			ClipboardHelper.updateCopyContent(selection.items, selection.width)
 
 			return {
 				...state,
 				selection: {
 					...selection,
+					locked: action.locked,
 					copyModal: {
-						visible: true,
-						mode: 'copy',
+						...copyModal,
 						content: {
 							copy: ClipboardHelper.content.copy.serialize(toggleArrivals)
 						}
+					}
+				}
+			}
+		case 'COPY_CLIPBOARD':
+		case 'COPY_MODAL_TO_COPY_MODE':
+			return {
+				...state,
+				selection: {
+					...selection,
+					copyModal: {
+						...copyModal,
+						visible: true,
+						mode: 'copy'
 					}
 				}
 			}
@@ -88,7 +92,7 @@ export default function selection(state = initialState, action) {
 			}
 		case 'UPDATE_CONTENT_TO_PASTE':
 			ClipboardHelper.updatePasteContent(action.content)
-			ClipboardHelper.validatePasteContent(toggleArrivals)
+			ClipboardHelper.validatePasteContent()
 
 			return {
 				...state,

@@ -49,15 +49,15 @@ export class CopyContent {
 				const { arrival_time, departure_time, dummy } = item
 				const out = []
 
-				out.push(
-					dummy ? '00:00' : formatTime(departure_time, dummy)
-				)
-
 				toggleArrivals && out.push(
 					dummy ? '00:00' : formatTime(arrival_time)
 				)
+
+				out.push(
+					dummy ? '00:00' : formatTime(departure_time, dummy)
+				)
 			
-				return out
+				return out.join('\t')
 			}).join('\t')
 		}
 		).join('\n')

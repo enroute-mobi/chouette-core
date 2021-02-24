@@ -8,6 +8,21 @@ export default function selection(state = initialState, action) {
 	const { copyModal } = selection
 
 	switch(action.type) {
+		case 'TOGGLE_ARRIVALS':
+			ClipboardHelper.updateCopyContent(selection.items || [], selection.width || 0)
+
+			return {
+				...state,
+				selection: {
+					...selection,
+					copyModal: {
+						...copyModal,
+						content: {
+							copy: ClipboardHelper.content.copy.serialize(toggleArrivals)
+						}
+					}
+				}
+			}
 		case 'TOGGLE_SELECTION_MODE':	
 			return {
 				...state,

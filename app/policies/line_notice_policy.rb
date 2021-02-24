@@ -18,7 +18,7 @@ class LineNoticePolicy < ApplicationPolicy
   end
 
   def attach?
-    update?
+    user.has_permission?('line_notices.update')
   end
 
   def detach?

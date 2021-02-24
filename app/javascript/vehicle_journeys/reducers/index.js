@@ -74,8 +74,8 @@ const initialState = {
   custom_fields: window.custom_fields,
   selection: {
     active: false,
-    width: '',
-    height: '',
+    width: 0,
+    height: 0,
     copyModal: {
       visible: false,
       mode: 'copy',

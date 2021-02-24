@@ -40,11 +40,11 @@ export class CopyContent {
 	}
 
 	setContent(items, width) {
-		this.content = chunk(items, width)
+		this.contentTable = chunk(items, width)
 	}
 		
 	serialize(toggleArrivals) {
-		return this.content.map(row => {
+		return this.contentTable.map(row => {
 			return row.map(item => {
 				const { arrival_time, departure_time, dummy } = item
 				const out = []
@@ -63,8 +63,19 @@ export class CopyContent {
 		).join('\n')
 	}
 
-	deserialize() {
-		return this.content
+	deserialize(toggleArrivals) {
+		return this.contentTable.map(row => {
+			return row.reduce((result, item) => {
+				const { arrival_time, departure_time } = item
+		
+				return [
+					...result,
+					...toggleArrivals ? [arrival_time] : [],
+					departure_time
+				]
+
+			}, [])
+		})
 	}
 }
 export class PasteContent {
@@ -92,7 +103,7 @@ export class PasteContent {
 		const chunkSize = toggleArrivals ? 2 : 1
 
 		return this.contentTable.map((row, i) => {
-			const deserializedCopyContent = this.copyContent.deserialize()
+			const deserializedCopyContent = this.copyContent.contentTable
 			const copyRow = deserializedCopyContent[i]
 
 			return chunk(row, chunkSize).map((cells, j) => {
@@ -102,9 +113,9 @@ export class PasteContent {
 						- two values if toggleArrivals is true => ['06:55', '06:56']
 				*/
 				const copyItem = copyRow[j]
-				const departure = cells[0]
+				const departure = cells[toggleArrivals ? 0 : 1]
 				const [dHour, dMinute] = departure.split(':')
-				const arrival = cells[1] || computeArrivalTime(dHour, dMinute, copyItem)				
+				const arrival = toggleArrivals ? cells[0] : computeArrivalTime(dHour, dMinute, copyItem)
 				const [aHour, aMinute] = arrival.split(':')
 
 				return {
@@ -117,10 +128,10 @@ export class PasteContent {
 		})
 	}
 
-	validate() {
+	validate(toggleArrivals) {
 		this.clipboard.error = null
 		const deserializedContent = this.contentTable
-		const deserializedCopyContent = this.copyContent.deserialize()
+		const deserializedCopyContent = this.copyContent.deserialize(toggleArrivals)
 
 		try {
 			if (isEmpty(deserializedContent)) {

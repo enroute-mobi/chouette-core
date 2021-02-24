@@ -1,7 +1,7 @@
 import { flatten } from 'lodash'
 import ClipboardHelper from '../helpers/ClipboardHelper'
 import { initialState } from '../reducers'
-import { computeDayOffSet } from '../helpers'
+// import { computeDayOffSet } from '../helpers'
 
 export default function selection(state = initialState, action) {
 	const { selection, filters: { toggleArrivals } } = state
@@ -9,18 +9,14 @@ export default function selection(state = initialState, action) {
 
 	switch(action.type) {
 		case 'TOGGLE_ARRIVALS':
-			ClipboardHelper.updateCopyContent(selection.items || [], selection.width || 0)
-
 			return {
 				...state,
 				selection: {
-					...selection,
-					copyModal: {
-						...copyModal,
-						content: {
-							copy: ClipboardHelper.content.copy.serialize(toggleArrivals)
-						}
-					}
+					active: selection.active,
+					items: [],
+					width: 0,
+					height: 0,
+					
 				}
 			}
 		case 'TOGGLE_SELECTION_MODE':	
@@ -107,7 +103,7 @@ export default function selection(state = initialState, action) {
 			}
 		case 'UPDATE_CONTENT_TO_PASTE':
 			ClipboardHelper.updatePasteContent(action.content)
-			ClipboardHelper.validatePasteContent()
+			ClipboardHelper.validatePasteContent(toggleArrivals)
 
 			return {
 				...state,
@@ -129,18 +125,18 @@ export default function selection(state = initialState, action) {
 			const pasteContent = ClipboardHelper.content.paste.deserialize(toggleArrivals)
 			const stops = flatten(pasteContent)
 
-			let prevStop
+			// let prevStop
 
 			const vehicleJourneys = state.vehicleJourneys.map((vj, i) => {
 				const newStops = vj.vehicle_journey_at_stops.map((vjas, j) => {
 					const stopParams = stops.find(stop => stop.vjIndex == i && stop.index == j) || vjas
-					const dayOffSets = computeDayOffSet(prevStop, stopParams)
+					// const dayOffSets = computeDayOffSet(prevStop, stopParams)
 
-					prevStop = vjas
+					// prevStop = vjas
 
 					return {
 						...vjas,
-						...dayOffSets,
+						// ...dayOffSets,
 						departure_time: stopParams.departure_time,
 						arrival_time: stopParams.arrival_time,
 					}

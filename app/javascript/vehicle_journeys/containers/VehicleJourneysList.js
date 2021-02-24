@@ -5,7 +5,9 @@ import VehicleJourneysList from '../components/VehicleJourneysList'
 
 const mapStateToProps = (state) => {
   const { width, height } = state.selection
-  const dimensionContent = `${toString(width)}x${toString(height)}`
+  const { toggleArrivals, } = state.filters
+  const widthMultiplier = toggleArrivals ? 2 : 1
+  const dimensionContent = `${toString(width * widthMultiplier)}x${toString(height)}`
 
   return {
     editMode: state.editMode,

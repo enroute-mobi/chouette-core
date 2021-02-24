@@ -1,4 +1,4 @@
-import { chunk, isEmpty, isEqual, isNaN, map } from 'lodash'
+import { chunk, compact, isEmpty, isEqual, isNaN, map } from 'lodash'
 import addMinutes from 'date-fns/addMinutes'
 import { formatTime, parseTime } from './index'
 
@@ -81,18 +81,21 @@ export class PasteContent {
 	}
 
 	serialize() {
-		return this.content.replaceAll('↵', '\n')
+		return this.content.replaceAll('↵', '\n').trim()
+	}
+
+	get contentTable() {
+		return this.serialize().split('\n').map(r => r.split('\t'))
 	}
 
 	deserialize(toggleArrivals) {
 		const chunkSize = toggleArrivals ? 2 : 1
 
-		return this.serialize().split('\n').map((r, i) => {
+		return this.contentTable.map((row, i) => {
 			const deserializedCopyContent = this.copyContent.deserialize()
 			const copyRow = deserializedCopyContent[i]
-			const patseRow = r.split('\t')
 
-			return chunk(patseRow, chunkSize).map((cells, j) => {
+			return chunk(row, chunkSize).map((cells, j) => {
 				/*
 					cells can be an array with:
 						- one value if toggleArrivals is false => ['06:55']
@@ -116,7 +119,7 @@ export class PasteContent {
 
 	validate() {
 		this.clipboard.error = null
-		const deserializedContent = this.serialize().split('\n').map(row => row.split('\t'))
+		const deserializedContent = this.contentTable
 		const deserializedCopyContent = this.copyContent.deserialize()
 
 		try {

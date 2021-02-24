@@ -141,12 +141,7 @@ export default function selection(state = initialState, action) {
 			return {
 				...state,
 				vehicleJourneys,
-				selection: {
-					...selection,
-					copyModal: {
-						visible: false
-					}
-				}
+				selection: initialState.selection
 			}
 		default:
 			return state

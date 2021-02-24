@@ -330,7 +330,7 @@ class Export::Gtfs < Export::Base
     delegate :exported_stop_areas, to: :export
 
     def export!
-      exported_stop_areas.includes(:referent, :parent).order(parent_id: :desc).find_each do |stop_area|
+      exported_stop_areas.includes(:referent, :parent, :codes).order("parent_id NULLS first").each_instance do |stop_area|
         decorated_stop_area = handle_referent(stop_area)
         next if index.has_stop_id? decorated_stop_area
 
@@ -364,8 +364,10 @@ class Export::Gtfs < Export::Base
       end
 
       def parent_station
+        return unless parent_id
+
         parent_stop_id = index&.stop_id(parent_id)
-        Rails.logger.warn "Can't find parent stop_id in index for StopArea #{id}" unless parent_stop_id
+        Rails.logger.warn "Can't find parent stop_id in index for StopArea #{stop_id}" unless parent_stop_id
         parent_stop_id
       end
 

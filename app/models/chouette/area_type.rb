@@ -31,7 +31,7 @@ class Chouette::AreaType
   def self.reset_caches!
     @@all = @@commercial + @@non_commercial
     @@instances = {}
-    @@options = {}
+    @@options = nil
   end
 
   def self.options(kind=:all)

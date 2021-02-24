@@ -732,7 +732,6 @@ GEM
     will_paginate (3.3.0)
     will_paginate-bootstrap (1.0.2)
       will_paginate (>= 3.0.3)
-    wisper-rspec (1.1.0)
     with_env (1.1.0)
     xml-simple (1.1.5)
     xpath (3.2.0)
@@ -877,7 +876,6 @@ DEPENDENCIES
   whenever!
   will_paginate
   will_paginate-bootstrap
-  wisper-rspec
 
 BUNDLED WITH
    2.2.4

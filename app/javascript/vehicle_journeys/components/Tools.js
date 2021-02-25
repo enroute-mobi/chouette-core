@@ -39,7 +39,7 @@ export default class Tools extends Component {
   }
 
   render() {
-    let { hasPolicy, hasFeature, hasDeletedVJ, props: { vehicleJourneys, onCancelSelection, onCancelDeletion, editMode, selectionMode, selection } } = this
+    let { hasPolicy, hasFeature, hasDeletedVJ, props: { vehicleJourneys, onCancelSelection, onCancelDeletion, editMode, selectionMode, selection, toggleArrivals } } = this
     return (
       <div className='select_toolbox'>
         <ul>
@@ -58,8 +58,8 @@ export default class Tools extends Component {
           }
           { !selectionMode && <NotesEditVehicleJourney disabled={hasDeletedVJ()}/> }
           { !selectionMode && <DeleteVehicleJourneys disabled={!hasPolicy("destroy") || !editMode || hasDeletedVJ()}/> }
-          { selectionMode && <CopyButton disabled={ !selection.ended } />  }
-          { selectionMode && <PasteButton disabled={ !selection.ended } />  }
+          { selectionMode && <CopyButton disabled={!selection.locked} toggleArrivals={toggleArrivals} /> }
+          { selectionMode && <PasteButton disabled={ !selection.locked } />  }
           <SelectVehicleJourneys disabled={!editMode}/>
         </ul>
         { !selectionMode && <div>

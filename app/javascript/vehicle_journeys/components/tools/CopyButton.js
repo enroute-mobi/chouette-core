@@ -1,9 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import actions from '../../actions'
-
-export default function CopyButton({onClick, disabled, selectionMode}) {
+export default function CopyButton({ onClick, disabled }) {
   return (
     <li className='st_action'>
       <button

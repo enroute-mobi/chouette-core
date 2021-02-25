@@ -2,20 +2,15 @@ import actions from '../../actions'
 import { connect } from 'react-redux'
 import CopyButtonComponent from '../../components/tools/CopyButton'
 
-const mapStateToProps = (state, ownProps) => {
-  return {
-    disabled: ownProps.disabled,
-    selectionMode: state.selectionMode
-  }
-}
+const mapStateToProps = (_, ownProps) => ({
+  disabled: ownProps.disabled
+})
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    onClick: () =>{
-      dispatch(actions.copyClipboard())
-    },
+const mapDispatchToProps = dispatch => ({
+  onClick: () => {
+    dispatch(actions.copyClipboard())
   }
-}
+})
 
 const CopyButton = connect(mapStateToProps, mapDispatchToProps)(CopyButtonComponent)
 

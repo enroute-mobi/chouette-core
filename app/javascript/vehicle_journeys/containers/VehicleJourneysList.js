@@ -1,12 +1,20 @@
-import actions from '../actions'
+import { toString } from 'lodash'
 import { connect } from 'react-redux'
-import VehicleJourneys from '../components/VehicleJourneys'
+import actions from '../actions'
+import VehicleJourneysList from '../components/VehicleJourneysList'
 
 const mapStateToProps = (state) => {
+  const { width, height } = state.selection
+  const { toggleArrivals, } = state.filters
+  const widthMultiplier = toggleArrivals ? 2 : 1
+  const dimensionContent = `${toString(width * widthMultiplier)}x${toString(height)}`
+
   return {
     editMode: state.editMode,
-    selectionMode: state.selectionMode,
-    selection: state.selection,
+    selection: {
+      ...state.selection,
+      dimensionContent
+    },
     vehicleJourneys: state.vehicleJourneys,
     returnVehicleJourneys: state.returnVehicleJourneys,
     status: state.status,
@@ -24,8 +32,8 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(actions.fetchingApi())
       actions.fetchVehicleJourneys(dispatch, undefined, undefined, filters.queryString, routeUrl)
     },
-    onUpdateTime: (e, subIndex, index, timeUnit, isDeparture, isArrivalsToggled, enforceConsistency=false) => {
-      dispatch(actions.updateTime(e.target.value, subIndex, index, timeUnit, isDeparture, isArrivalsToggled, enforceConsistency))
+    onUpdateTime: (value, subIndex, index, timeUnit, isDeparture, isArrivalsToggled, enforceConsistency=false) => {
+      dispatch(actions.updateTime(value, subIndex, index, timeUnit, isDeparture, isArrivalsToggled, enforceConsistency))
     },
     onSelectVehicleJourney: (index) => {
       dispatch(actions.selectVehicleJourney(index))
@@ -33,17 +41,27 @@ const mapDispatchToProps = (dispatch) => {
     onOpenInfoModal: (vj) =>{
       dispatch(actions.openInfoModal(vj))
     },
-    onSelectCell: (x, y, clickDirection, shiftKey)=>{
-      dispatch(actions.toggleSelection(x, y, clickDirection, shiftKey))
-    },
-    onHoverCell: (x, y, shiftKey)=>{
-      dispatch(actions.onHoverCell(x, y, shiftKey))
-    },
-    onKeyUp: (e)=>{
-      dispatch(actions.onKeyUp(e))
-    },
-    onKeyDown: (e)=>{
-      dispatch(actions.onKeyDown(e))
+    onKeyDown: (e, selection, toggleArrivals) => {
+      const { key, metaKey, ctrlKey } = e
+      const { 
+        locked,
+        copyModal: {
+          mode,
+          visible
+        }
+      } = selection
+      
+      if (visible) {
+        if(mode == 'paste' && key == 'Enter') {
+          dispatch(actions.pasteContent())
+        }
+      } else {
+        if (!locked) return
+        if (!metaKey && !ctrlKey) return
+
+        key == 'c' && dispatch(actions.copyClipboard(toggleArrivals))
+        key == 'v' && dispatch(actions.pasteFromClipboard())
+      }
     },
     onVisibilityChange: (e)=>{
       dispatch(actions.onVisibilityChange(e))
@@ -51,6 +69,4 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-const VehicleJourneysList = connect(mapStateToProps, mapDispatchToProps)(VehicleJourneys)
-
-export default VehicleJourneysList
+export default connect(mapStateToProps, mapDispatchToProps)(VehicleJourneysList)

@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import VehicleJourneys from '../../../../app/javascript/vehicle_journeys/components/VehicleJourneys'
+import VehicleJourneys from '../../../../app/javascript/vehicle_journeys/components/VehicleJourneysList'
 import renderer from 'react-test-renderer'
 
 import I18n from '../../support/jest-i18n'

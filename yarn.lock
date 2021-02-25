@@ -1269,6 +1269,11 @@
     webpack-cli "^3.3.12"
     webpack-sources "^1.4.3"
 
+"@simonwep/selection-js@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@simonwep/selection-js/-/selection-js-2.0.0.tgz#bb307c984791987f3ce82c43ff57bad38005ce1f"
+  integrity sha512-83KCZ33UJbrZb/jDiRTAYtx7hX5lj6ISdKvDZVX5atdzGkCgZSkSTRRpQd85dYFEUoy+pNlglA6B/KlUb/qDQQ==
+
 "@sindresorhus/is@^0.14.0":
   version "0.14.0"
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.14.0.tgz#9fb3a3cf3132328151f353de4632e01e52102bea"
@@ -3696,6 +3701,11 @@ data-urls@^2.0.0:
     abab "^2.0.3"
     whatwg-mimetype "^2.3.0"
     whatwg-url "^8.0.0"
+
+date-fns@^2.17.0:
+  version "2.17.0"
+  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.17.0.tgz#afa55daea539239db0a64e236ce716ef3d681ba1"
+  integrity sha512-ZEhqxUtEZeGgg9eHNSOAJ8O9xqSgiJdrL0lzSSfMF54x6KXWJiOH/xntSJ9YomJPrYH/p08t6gWjGWq1SDJlSA==
 
 date-now@^0.1.4:
   version "0.1.4"
@@ -9478,6 +9488,11 @@ react-addons-test-utils@15.6.2:
   version "15.6.2"
   resolved "https://registry.yarnpkg.com/react-addons-test-utils/-/react-addons-test-utils-15.6.2.tgz#c12b6efdc2247c10da7b8770d185080a7b047156"
 
+react-autobind@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/react-autobind/-/react-autobind-1.0.6.tgz#936bb58edf6b89b619c50f82f0e617159fdfd4f1"
+  integrity sha1-k2u1jt9ribYZxQ+C8OYXFZ/f1PE=
+
 react-dom@16.13.1:
   version "16.13.1"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-16.13.1.tgz#c1bd37331a0486c078ee54c4740720993b2e0e7f"
@@ -9530,6 +9545,11 @@ react-select@^2.0.0:
     raf "^3.4.0"
     react-input-autosize "^2.2.1"
     react-transition-group "^2.2.1"
+
+react-selectable-fast@^3.4.0:
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/react-selectable-fast/-/react-selectable-fast-3.4.0.tgz#fb3e6490ebd3f91309b5a58ca17f629baab6e625"
+  integrity sha512-4DVrX6eTCLqt+GVtSNAEcL3S9ODUvtcPrzUL1ObjSL507D+i+HE4tCokSxUn4PqLtEsrWxXJU+CVC43XmwIVyw==
 
 react-test-renderer@^16.2.0:
   version "16.2.0"

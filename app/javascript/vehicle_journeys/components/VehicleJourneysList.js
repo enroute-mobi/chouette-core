@@ -1,145 +1,98 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import _ from 'lodash'
+import { isEmpty, isNull, map, some } from 'lodash'
+import autoBind from 'react-autobind'
 import VehicleJourney from './VehicleJourney'
 import StopAreaHeaderManager from '../../helpers/stop_area_header_manager'
 
-export default class VehicleJourneys extends Component {
+export default class VehicleJourneysList extends Component {
   constructor(props){
     super(props)
     this.headerManager = new StopAreaHeaderManager(
-      _.map(this.stopPoints(), (sp)=>{return sp.object_id}),
-      this.stopPoints(),
+      map(this.stopPoints, sp =>  sp.object_id),
+      this.stopPoints,
       this.props.filters.features
     )
-    this.togglePurchaseWindows = this.togglePurchaseWindows.bind(this)
-    this.toggleTimetables = this.toggleTimetables.bind(this)
-    this.onSelectCell = this.onSelectCell.bind(this)
-    this.onHoverCell = this.onHoverCell.bind(this)
-    this.onKeyUp = this.onKeyUp.bind(this)
-    this.onKeyDown = this.onKeyDown.bind(this)
+    autoBind(this)
   }
 
-  onSelectCell(x, y, clickDirection, event) {
-    if(this.isReturn()){ return }
-    if(!this.props.selectionMode){ return }
-
-    this.props.onSelectCell(x, y, clickDirection, event.shiftKey)
-  }
-
-  onHoverCell(x, y, event) {
-    if(this.isReturn()){ return }
-    if(!this.props.selectionMode){ return }
-
-    this.props.onHoverCell(x, y, event.shiftKey)
-  }
-
-  bubbleKeyEvent(event) {
-    if(event.key == 'Shift'){ return true }
-    if(event.key == "Enter" && (event.metaKey || event.ctrlKey)){ return true }
-    if(event.key == "c" && (event.metaKey || event.ctrlKey)){ return true }
-    if(event.key == "v" && (event.metaKey || event.ctrlKey)){ return true }
-
-    return false
-  }
-
-  onKeyUp(event) {
-    if(this.isReturn()){ return }
-    if(!this.props.selectionMode){ return }
-    if(!this.bubbleKeyEvent(event)){ return }
-
-    this.props.onKeyUp(event)
-  }
-
-  onKeyDown(event) {
-    if(this.isReturn()){ return }
-    if(!this.props.selectionMode){ return }
-    if(!this.bubbleKeyEvent(event)){ return }
-
-    this.props.onKeyDown(event)
-  }
-
-  isReturn() {
+  // Getters
+  get isReturn() {
     return this.props.routeUrl != undefined
   }
 
-  vehicleJourneysList() {
-    if(this.isReturn()){
-      return this.props.returnVehicleJourneys
-    }
-    else{
-      return this.props.vehicleJourneys
-    }
+  get vehicleJourneysList() {
+    const { returnVehicleJourneys, vehicleJourneys } = this.props
+
+    return this.isReturn ? returnVehicleJourneys : vehicleJourneys
   }
 
-  stopPoints() {
-    if(this.isReturn()){
-      return this.props.returnStopPointsList
-    }
-    else{
-      return this.props.stopPointsList
-    }
+  get stopPoints() {
+    const { returnStopPointsList, stopPointsList } = this.props
+
+    return this.isReturn ? returnStopPointsList : stopPointsList
   }
 
-  selectionClasses() {
-    if(this.isReturn()){ return ''}
+  get selectionClasses() {
+    if (this.isReturn) return ''
 
-    let classes = ''
-    if(this.props.selectionMode ){
-      classes += ' selection-mode'
-    }
-    if(this.props.selection.ended ){
-      classes += ' selection-locked'
-    }
-    return classes
+    const out = []
+
+    const { active, locked } = this.props.selection
+
+    active && out.push('selection-mode')
+    locked && out.push('selection-locked')
+
+    return out.join(' ')
   }
 
-  componentDidMount() {
-    this.props.onLoadFirstPage(this.props.filters, this.props.routeUrl)
+  get allTimeTables() {
+    return isNull(this._allTimeTables) ? this.purchaseWindowsAndTimeTables : this._allTimeTables
   }
 
+  get allPurchaseWindows() {
+    return isNull(this._allPurchaseWindows) ? this.purchaseWindowsAndTimeTables : this._allPurchaseWindows
+  }
+
+  get purchaseWindowsAndTimeTables() {
+    let timetables_keys = []
+    let windows_keys = []
+    this._allTimeTables = []
+    this._allPurchaseWindows = []
+    this.vehicleJourneysList.map((vj, index) => {
+      vj.time_tables.map((tt, _) => {
+        if (timetables_keys.indexOf(tt.id) < 0) {
+          timetables_keys.push(tt.id)
+          this._allTimeTables.push(tt)
+        }
+      })
+      vj.purchase_windows.map((tt, _) => {
+        if (windows_keys.indexOf(tt.id) < 0) {
+          windows_keys.push(tt.id)
+          this._allPurchaseWindows.push(tt)
+        }
+      })
+    })
+  }
+
+  // Handlers
+  onKeyDown(event) {
+    const { selection, onKeyDown, filters } = this.props
+
+    if (this.isReturn) return
+    if (!selection.active) return
+    if (!this.bubbleKeyEvent(event)) return
+
+    onKeyDown(event, selection, filters.toggleArrivals)
+  }
+
+  // Helpers
   hasFeature(key) {
     return this.props.filters.features[key]
   }
 
   showHeader(object_id) {
     return this.headerManager.showHeader(object_id)
-  }
-
-  getPurchaseWindowsAndTimeTables(){
-    let timetables_keys = []
-    let windows_keys = []
-    this._allTimeTables = []
-    this._allPurchaseWindows = []
-    this.vehicleJourneysList().map((vj, index) => {
-      vj.time_tables.map((tt, _) => {
-        if(timetables_keys.indexOf(tt.id) < 0){
-            timetables_keys.push(tt.id)
-            this._allTimeTables.push(tt)
-        }
-      })
-      vj.purchase_windows.map((tt, _) => {
-        if(windows_keys.indexOf(tt.id) < 0){
-            windows_keys.push(tt.id)
-            this._allPurchaseWindows.push(tt)
-        }
-      })
-    })
-  }
-
-  allTimeTables() {
-    if(! this._allTimeTables){
-      this.getPurchaseWindowsAndTimeTables()
-    }
-    return this._allTimeTables
-  }
-
-  allPurchaseWindows() {
-    if(!this._allPurchaseWindows){
-      this.getPurchaseWindowsAndTimeTables()
-    }
-
-    return this._allPurchaseWindows
   }
 
   toggleTimetables(e) {
@@ -158,6 +111,45 @@ export default class VehicleJourneys extends Component {
     this.componentDidUpdate()
     e.preventDefault()
     false
+  }
+
+  timeTableURL(tt) {
+    let refURL = window.location.pathname.split('/', 3).join('/')
+    let ttURL = refURL + '/time_tables/' + tt.id
+
+    return (
+      <a href={ttURL} title='Voir le calendrier'><span className='fa fa-calendar-alt' style={{ color: (tt.color ? tt.color : '#4B4B4B') }}></span>{tt.days || tt.comment}</a>
+    )
+  }
+
+  purchaseWindowURL(tt) {
+    let refURL = window.location.pathname.split('/', 3).join('/')
+    let ttURL = refURL + '/purchase_windows/' + tt.id
+    return (
+      <a href={ttURL} title='Voir le calendrier commercial'><span className='fa fa-calendar-alt' style={{ color: (tt.color ? `#${tt.color}` : '#4B4B4B') }}></span>{tt.name}</a>
+    )
+  }
+
+  extraHeaderLabel(header) {
+    if (header["type"] == "custom_field") {
+      return this.props.customFields[header["name"]]["name"]
+    }
+    else {
+      return I18n.attribute_name("vehicle_journey", header)
+    }
+  }
+
+  bubbleKeyEvent(event) {
+    const { key, metaKey, ctrlKey } = event
+    return (
+      key == 'Shift' ||
+      (metaKey || ctrlKey) && ['Enter', 'c', 'v'].includes(key)
+      )
+  }
+
+  // Lifecycle
+  componentDidMount() {
+    this.props.onLoadFirstPage(this.props.filters, this.props.routeUrl)
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -201,7 +193,6 @@ export default class VehicleJourneys extends Component {
           $(this).find('.td:nth-child('+ (nth + 1) +')').css('height', refCol[nth]);
         }
       })
-      document.addEventListener("keyup", this.onKeyUp)
       document.addEventListener("keydown", this.onKeyDown)
       document.addEventListener("visibilitychange", this.props.onVisibilityChange)
       document.addEventListener("webkitvisibilitychange", this.props.onVisibilityChange)
@@ -213,38 +204,12 @@ export default class VehicleJourneys extends Component {
     }
   }
 
-  timeTableURL(tt) {
-    let refURL = window.location.pathname.split('/', 3).join('/')
-    let ttURL = refURL + '/time_tables/' + tt.id
-
-    return (
-      <a href={ttURL} title='Voir le calendrier'><span className='fa fa-calendar-alt' style={{color: (tt.color ? tt.color : '#4B4B4B')}}></span>{tt.days || tt.comment}</a>
-    )
-  }
-
-  purchaseWindowURL(tt) {
-    let refURL = window.location.pathname.split('/', 3).join('/')
-    let ttURL = refURL + '/purchase_windows/' + tt.id
-    return (
-      <a href={ttURL} title='Voir le calendrier commercial'><span className='fa fa-calendar-alt' style={{color: (tt.color ? `#${tt.color}` : '#4B4B4B')}}></span>{tt.name}</a>
-    )
-  }
-
-	extraHeaderLabel(header) {
-    if(header["type"] == "custom_field"){
-      return this.props.customFields[header["name"]]["name"]
-    }
-    else{
-      return I18n.attribute_name("vehicle_journey", header)
-    }
-  }
-
   render() {
     this.previousBreakpoint = undefined
     this._allTimeTables = null
+    let detailed_calendars = this.hasFeature('detailed_calendars') && !this.isReturn && !isEmpty(this.allTimeTables)
     this._allPurchaseWindows = null
-    let detailed_calendars = this.hasFeature('detailed_calendars') && !this.isReturn() && (this.allTimeTables().length > 0)
-    let detailed_purchase_windows = this.hasFeature('detailed_purchase_windows') && !this.isReturn() && (this.allPurchaseWindows().length > 0)
+    let detailed_purchase_windows = this.hasFeature('detailed_purchase_windows') && !this.isReturn && !isEmpty(this.allPurchaseWindows)
     requestAnimationFrame(function(){
       $(document).trigger("table:updated")
     })
@@ -258,7 +223,7 @@ export default class VehicleJourneys extends Component {
       return (
         <div
           ref='vehicleJourneys'
-          className={'row' + this.selectionClasses()}
+          className={`row  ${this.selectionClasses}`.trim()}
           >
           <div className='col-lg-12'>
             {(this.props.status.fetchSuccess == false) && (
@@ -268,10 +233,10 @@ export default class VehicleJourneys extends Component {
               </div>
             )}
 
-            { _.some(this.vehicleJourneysList(), 'errors') && (
+            {some(this.vehicleJourneysList, 'errors') && (
               <div className="alert alert-danger mt-sm">
                 <strong>{I18n.tc("error")}</strong>
-                {this.vehicleJourneysList().map((vj, index) =>
+                {this.vehicleJourneysList.map((vj, index) =>
                   vj.errors && vj.errors.map((err, i) => {
                     return (
                       <ul key={i}>
@@ -283,7 +248,7 @@ export default class VehicleJourneys extends Component {
               </div>
             )}
 
-            <div className={'table table-2entries mt-sm mb-sm' + ((this.vehicleJourneysList().length > 0) ? '' : ' no_result')}>
+            <div className={`table table-2entries mt-sm mb-sm ${isEmpty(this.vehicleJourneysList) ? 'no_result' : ''}`}>
               <div className='t2e-head w20'>
                 <div className='th'>
                   <div className='strong mb-xs'>{I18n.attribute_name("vehicle_journey", "id")}</div>
@@ -313,7 +278,7 @@ export default class VehicleJourneys extends Component {
                   }
                   { detailed_purchase_windows &&
                     <div className="detailed-purchase-windows hidden">
-                      {this.allPurchaseWindows().map((tt, i)=>
+                      {this.allPurchaseWindowsS.map((tt, i)=>
                         <div key={i}>
                           <p>
                             {this.purchaseWindowURL(tt)}
@@ -334,7 +299,7 @@ export default class VehicleJourneys extends Component {
                   </div>
                   { detailed_calendars &&
                     <div className="detailed-timetables hidden">
-                      {this.allTimeTables().map((tt, i)=>
+                      {this.allTimeTables.map((tt, i)=>
                         <div key={i}>
                           <p>
                             {this.timeTableURL(tt)}
@@ -345,7 +310,7 @@ export default class VehicleJourneys extends Component {
                     </div>
                   }
                 </div>
-                {this.stopPoints().map((sp, i) =>{
+                {this.stopPoints.map((sp, i) =>{
                   return (
                     <div key={i} className='td'>
                       {this.headerManager.stopPointHeader(sp.object_id)}
@@ -356,26 +321,26 @@ export default class VehicleJourneys extends Component {
 
               <div className='t2e-item-list w80'>
                 <div>
-                  {this.vehicleJourneysList().map((vj, index) =>
+                  {this.vehicleJourneysList.map((vj, index) =>
                     <VehicleJourney
                       value={vj}
                       key={index}
                       index={index}
-                      editMode={this.isReturn() ? false : this.props.editMode}
+                      editMode={this.isReturn ? false : this.props.editMode}
                       selection={this.props.selection}
-                      selectionMode={!this.isReturn() && this.props.selectionMode}
+                      selectedItems={this.props.selectedItems}
+                      // selectionMode={!this.isReturn() && this.props.selectionMode}
                       filters={this.props.filters}
                       features={this.props.features}
                       onUpdateTime={this.props.onUpdateTime}
                       onSelectVehicleJourney={this.props.onSelectVehicleJourney}
                       onOpenInfoModal={this.props.onOpenInfoModal}
                       vehicleJourneys={this}
-                      disabled={this.isReturn()}
-                      allTimeTables={this.allTimeTables()}
-                      allPurchaseWindows={this.allPurchaseWindows()}
+                      disabled={this.isReturn}
+                      allTimeTables={this.allTimeTables}
+                      allPurchaseWindows={this.allPurchaseWindows}
                       extraHeaders={this.props.extraHeaders}
                       onSelectCell={this.onSelectCell}
-                      onHoverCell={this.onHoverCell}
                       />
                   )}
                 </div>
@@ -388,7 +353,7 @@ export default class VehicleJourneys extends Component {
   }
 }
 
-VehicleJourneys.propTypes = {
+VehicleJourneysList.propTypes = {
   status: PropTypes.object.isRequired,
   filters: PropTypes.object.isRequired,
   extraHeaders: PropTypes.array.isRequired,

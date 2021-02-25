@@ -5,7 +5,7 @@ import PasteButtonComponent from '../../components/tools/PasteButton'
 const mapStateToProps = (state, ownProps) => {
   return {
     disabled: ownProps.disabled,
-    selectionMode: state.selectionMode
+    selectionMode: state.selection.active
   }
 }
 

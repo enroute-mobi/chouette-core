@@ -1,17 +1,17 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import autoBind from 'react-autobind'
+import { CopyContent, PasteContent } from '../helpers/ClipboardHelper'
 
 export default class CopyModal extends Component {
   constructor(props) {
     super(props)
-    this.updateContent = this.updateContent.bind(this)
-    this.selectAll = this.selectAll.bind(this)
-    this.pasteFromClipboard = this.pasteFromClipboard.bind(this)
-    this.onKeyDown = this.onKeyDown.bind(this)
+
+    autoBind(this)
   }
 
-  updateContent() {
-    this.props.updateContent(this.refs.pasteContent.value)
+  updatePasteContent() {
+    this.props.updatePasteContent(this.refs.pasteContent.value)
   }
 
   selectAll() {
@@ -46,7 +46,7 @@ export default class CopyModal extends Component {
   pasteFromClipboard() {
     let self = this
     navigator.clipboard.readText().then(function(clipText){
-      self.props.updateContent(clipText)
+      self.props.updatePasteContent(clipText)
     }).catch(function(err){ console.log(err) })
   }
 
@@ -63,29 +63,43 @@ export default class CopyModal extends Component {
   }
 
   render() {
+    const {
+      closeModal,
+      content,
+      error,
+      mode,
+      pasteContent,
+      pasteOnly,
+      toCopyMode,
+      toPasteMode,
+      visible
+    } = this.props
+
+    if (!visible) return false
+
     return (
       <div>
-        <div className={'modal fade ' + (this.props.visible ? 'in' : '')} style={{ display: (this.props.visible ? 'block' : 'none') }} id='CopyModal'>
+        <div className={'modal fade ' + (visible ? 'in' : '')} style={{ display: (visible ? 'block' : 'none') }} id='CopyModal'>
           <div className='modal-container'>
             <div className='modal-dialog'>
               <div className='modal-content'>
                 <div className='modal-header'>
                   <i className='fa fa-paste'></i>
                   <span>{ I18n.t('courses_copy_paste.modal.head') }</span>
-                  <span type="button" className="close modal-close" onClick={this.props.closeModal}>&times;</span>
+                  <span type="button" className="close modal-close" onClick={closeModal}>&times;</span>
                 </div>
                 <div className='modal-body'>
-                  {this.props.error && <div className='alert alert-danger'>
-                    { I18n.t('courses_copy_paste.errors.' + this.props.error) }
+                  {error && <div className='alert alert-danger'>
+                    { I18n.t('courses_copy_paste.errors.' + error) }
                   </div>}
-                  {this.props.mode == 'copy' && <div>
-                    <pre ref='copyContent'>{this.props.content}</pre>
+                  {mode == 'copy' && <div>
+                    <pre ref='copyContent'>{content.copy}</pre>
                   </div>}
-                  {this.props.mode == 'paste' && <div>
+                  {mode == 'paste' && <div>
                     <textarea
                       ref='pasteContent'
-                      onChange={this.updateContent}
-                      value={this.props.content}
+                      onChange={this.updatePasteContent}
+                      value={content.paste}
                     />
                     {this.pasteFromClipboardAvailable() && <button
                       className="btn btn-default pull-right"
@@ -98,25 +112,25 @@ export default class CopyModal extends Component {
                 <div className='modal-footer'>
                 <button
                   className="btn btn-link"
-                  onClick={this.props.closeModal}>
+                  onClick={closeModal}>
                     {I18n.t('cancel')}
                 </button>
-                {this.props.mode == 'copy' && <button
+                {mode == 'copy' && <button
                   className='btn btn-primary'
-                  onClick={this.props.toPasteMode}>
+                  onClick={toPasteMode}>
                     <i className='fa fa-paste'></i>
                     <span>{ I18n.t('courses_copy_paste.modal.to_paste_mode') }</span>
                 </button>}
-                {this.props.mode == 'paste' && !this.props.paste_only && <button
+                {mode == 'paste' && !pasteOnly && <button
                   className='btn btn-default'
-                  onClick={this.props.toCopyMode}>
+                    onClick={toCopyMode}>
                     <i className='fa fa-caret-left'></i>
                     <span>{ I18n.t('courses_copy_paste.modal.to_copy_mode') }</span>
                 </button>}
-                {this.props.mode == 'paste' && <button
+                {mode == 'paste' && <button
                   className='btn btn-primary'
-                  disabled={!!this.props.error}
-                  onClick={this.props.pasteContent}>
+                  disabled={!!error}
+                  onClick={pasteContent}>
                     <i className='fa fa-paste'></i>
                     <span>{ I18n.t('courses_copy_paste.modal.paste_content') }</span>
                 </button>}
@@ -125,12 +139,18 @@ export default class CopyModal extends Component {
             </div>
           </div>
         </div>
-        <div className={'modal-backdrop fade ' + (this.props.visible ? 'in' : '')} style={{ display: (this.props.visible ? 'block' : 'none') }}/>
+        <div className={'modal-backdrop fade ' + (visible ? 'in' : '')} style={{ display: (visible ? 'block' : 'none') }}/>
       </div>
     )
   }
 }
 
 CopyModal.propTypes = {
-  visible: PropTypes.bool.isRequired
+  visible: PropTypes.bool.isRequired,
+  mode: PropTypes.oneOf(['copy', 'paste']),
+  error: PropTypes.string,
+  content: {
+    copy: PropTypes.instanceOf(CopyContent),
+    paste: PropTypes.instanceOf(PasteContent),
+  }
 }

@@ -36,10 +36,6 @@
         .cellwrap.headlined
           &:before
             transition-delay: 0s
-        &.selection-border-top
-          .cellwrap.headlined
-            &:before
-              background-color: white
       .td:hover
         cursor: pointer
         background-color: transparentize($selection-background-color, 0.5)
@@ -49,14 +45,6 @@
               background-color: white
               transition-delay: 0s
               transition-property: background-color
-
-      // .td.selection-start
-      //   outline: 3px solid $selection-background-color
-      //   outline-offset: -3px
-      //   .cellwrap.headlined
-      //     &:before
-      //       background-color: white
-      //       border-bottom: 3px solid $selection-background-color
 
   .selection-locked .t2e-item-list
     .td.selected

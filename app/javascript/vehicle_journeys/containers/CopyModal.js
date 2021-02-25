@@ -2,8 +2,14 @@ import actions from '../actions'
 import { connect } from 'react-redux'
 import CopyModal from '../components/CopyModal'
 
-const mapStateToProps = (state) => {
-  return state.selection.copyModal
+const mapStateToProps = state => {
+  const {
+    selection: { copyModal }
+  } = state
+
+  return {
+    ...copyModal
+  }
 }
 
 const mapDispatchToProps = (dispatch) => {
@@ -14,10 +20,10 @@ const mapDispatchToProps = (dispatch) => {
     toPasteMode: ()=>{
       dispatch(actions.copyModalToPasteMode())
     },
-    toCopyMode: ()=>{
+    toCopyMode: () => {
       dispatch(actions.copyModalToCopyMode())
     },
-    updateContent: (content)=>{
+    updatePasteContent: content => {
       dispatch(actions.updateContentToPaste(content))
     },
     pasteContent: ()=>{

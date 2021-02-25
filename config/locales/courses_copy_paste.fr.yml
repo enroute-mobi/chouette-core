@@ -8,5 +8,6 @@ fr:
       select_all: Tout sélectionner
       paste_from_clipboard: Coller depuis le presse-papiers
     errors:
+      wrong_time_format: Le contenu n'est pas au bon format
       size_does_not_match: La taille du contenu collé ne correspond pas à la taille de la sélection
       missing_content: Merci de coller du contenu

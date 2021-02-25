@@ -1,17 +1,14 @@
-import { chunk, compact, isEmpty, isEqual, isNaN, map } from 'lodash'
-import addMinutes from 'date-fns/addMinutes'
+import { chunk, isEmpty, isEqual, isNaN, last, map } from 'lodash'
+import subMinutes from 'date-fns/subMinutes'
+import getMinutes from 'date-fns/getMinutes'
+import getHours from 'date-fns/getHours'
+import differenceInMinutes from 'date-fns/differenceInMinutes'
 import { formatTime, parseTime } from './index'
 
-const computeArrivalTime = (hour, minute, copyItem) => {
-	// First we create a date from the values
-	// then we update the date by adding the delta
-	// finally return an string => `HH:mm`
-	if (copyItem.isDummy) return '-'
+const computeArrivalTime = (departure, copyItem) => {
+	if (copyItem.isDummy) return parseTime('00:00')
 
-	let date = parseTime({hour, minute})
-	date = addMinutes(date, copyItem.delta)
-
-	return formatTime(date)
+	return subMinutes(departure, copyItem.delta)
 }
 class ClipboardHelper {
 	constructor() {
@@ -96,7 +93,7 @@ export class PasteContent {
 	}
 
 	get contentTable() {
-		return this.serialize().split('\n').map(r => r.split('\t'))
+		return this.serialize().split('\n').map(r => r.split(/\s+|\t/))
 	}
 
 	deserialize(toggleArrivals) {
@@ -113,16 +110,21 @@ export class PasteContent {
 						- two values if toggleArrivals is true => ['06:55', '06:56']
 				*/
 				const copyItem = copyRow[j]
-				const departure = cells[toggleArrivals ? 0 : 1]
-				const [dHour, dMinute] = departure.split(':')
-				const arrival = toggleArrivals ? cells[0] : computeArrivalTime(dHour, dMinute, copyItem)
-				const [aHour, aMinute] = arrival.split(':')
+				const departure = parseTime(last(cells))
+				const arrival = toggleArrivals ? parseTime(cells[0]) : computeArrivalTime(departure, copyItem)
 
 				return {
 					index: copyItem.index,
 					vjIndex: copyItem.vjIndex,
-					departure_time: { hour: dHour, minute: dMinute },
-					arrival_time: { hour: aHour, minute: aMinute }
+					departure_time: {
+						hour: getHours(departure),
+						minute: getMinutes(departure)
+					},
+					arrival_time: {
+						hour: getHours(arrival),
+						minute: getMinutes(arrival)
+					},
+					delta: differenceInMinutes(departure, arrival)
 				}
 			})
 		})
@@ -152,7 +154,7 @@ export class PasteContent {
 				row.forEach(cell => {
 					const [hour, minute] = cell.split(':')
 
-					if (!isEqual(hour.length, 2) || !isEqual(minute.length, 2)) {
+					if (!isEqual(hour.length, 2) || !isEqual((minute || '').length, 2)) {
 						throw ('wrong_time_format')
 					}
 					

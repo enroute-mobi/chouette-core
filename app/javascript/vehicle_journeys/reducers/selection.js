@@ -139,6 +139,7 @@ export default function selection(state = initialState, action) {
 						// ...dayOffSets,
 						departure_time: stopParams.departure_time,
 						arrival_time: stopParams.arrival_time,
+						delta: stopParams.delta
 					}
 				})
 

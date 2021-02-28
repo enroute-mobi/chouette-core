@@ -31,12 +31,12 @@ class Chouette::AreaType
   def self.reset_caches!
     @@all = @@commercial + @@non_commercial
     @@instances = {}
-    @@options = {}
+    @@options = nil
   end
 
-  def self.options(kind=:all, locale=nil)
-    @@options ||= {}
-    @@options[kind] ||= self.send(kind).map { |c| find(c) }.map { |t| [ t.label(locale), t.code ] }
+  def self.options(kind=:all)
+    @@options ||= Hash.new { |h,locale| h[locale] = {} }
+    @@options[I18n.locale][kind] ||= self.send(kind).map { |c| find(c) }.map(&:to_option)
   end
 
   attr_reader :code
@@ -48,8 +48,11 @@ class Chouette::AreaType
     all.index(code) <=> all.index(other.code)
   end
 
-  def label locale=nil
-    I18n.translate code, scope: 'area_types.label', locale: locale
+  def label
+    I18n.translate code, scope: 'area_types.label', locale: I18n.locale
   end
 
+  def to_option
+    [label, code]
+  end
 end

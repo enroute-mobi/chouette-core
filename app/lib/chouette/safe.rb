@@ -8,6 +8,5 @@ module Chouette
         Raven.capture_exception e
       end
     end
-
   end
 end

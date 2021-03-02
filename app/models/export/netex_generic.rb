@@ -304,10 +304,11 @@ class Export::NetexGeneric < Export::Base
 
   class StopPointDecorator < SimpleDelegator
 
-    attr_accessor :journey_pattern_id
-    def initialize(stop_point, journey_pattern_id = nil)
+    attr_accessor :journey_pattern_id, :route
+    def initialize(stop_point, journey_pattern_id: nil, route: nil)
       super stop_point
       @journey_pattern_id = journey_pattern_id
+      @route = route
     end
 
     def point_on_route
@@ -344,7 +345,8 @@ class Export::NetexGeneric < Export::Base
 
     def scheduled_stop_point_attributes
       {
-        id: scheduled_stop_point_id
+        id: scheduled_stop_point_id,
+        data_source_ref: route&.data_source_ref,
       }
     end
 
@@ -365,6 +367,7 @@ class Export::NetexGeneric < Export::Base
     def passenger_stop_assignment_attributes
       {
         id: passenger_stop_assignment_id,
+        data_source_ref: route&.data_source_ref,
         order: 0,
         scheduled_stop_point_ref: scheduled_stop_point_ref
       }
@@ -462,6 +465,7 @@ class Export::NetexGeneric < Export::Base
       def netex_attributes
         {
           id: objectid,
+          data_source_ref: data_source_ref,
           name: netex_name,
           line_ref: line_ref,
           direction_ref: direction_ref,
@@ -482,6 +486,7 @@ class Export::NetexGeneric < Export::Base
       def direction
         @direction ||= Netex::Direction.new(
           id: objectid.gsub(/r|Route/) { 'Direction' },
+          data_source_ref: data_source_ref,
           name: published_name
         )
       end
@@ -500,7 +505,7 @@ class Export::NetexGeneric < Export::Base
 
       def decorated_stop_points
         @decorated_stop_points ||= stop_points.map do |stop_point|
-          StopPointDecorator.new stop_point
+          StopPointDecorator.new stop_point, route: self
         end
       end
 
@@ -546,6 +551,7 @@ class Export::NetexGeneric < Export::Base
       def netex_attributes
         {
           id: objectid,
+          data_source_ref: data_source_ref,
           name: name,
           route_ref: route_ref,
           points_in_sequence: points_in_sequence
@@ -565,6 +571,7 @@ class Export::NetexGeneric < Export::Base
       def destination_display
         @destination_display ||= Netex::DestinationDisplay.new(
           id: objectid.gsub(/j|JourneyPattern/) { 'DestinationDisplay' },
+          data_source_ref: data_source_ref,
           front_text: published_name
         )
       end
@@ -579,7 +586,7 @@ class Export::NetexGeneric < Export::Base
 
       def decorated_stop_points
         @decorated_stop_points ||= stop_points.map do |stop_point|
-          StopPointDecorator.new(stop_point, objectid)
+          StopPointDecorator.new(stop_point, journey_pattern_id: objectid)
         end
       end
     end
@@ -605,6 +612,7 @@ class Export::NetexGeneric < Export::Base
       def netex_attributes
         {
           id: objectid,
+          data_source_ref: data_source_ref,
           name: published_journey_name,
           journey_pattern_ref: journey_pattern_ref,
           passing_times: passing_times,
@@ -661,7 +669,7 @@ class Export::NetexGeneric < Export::Base
       end
 
       def stop_point_in_journey_pattern_ref
-        decorated_stop_point = StopPointDecorator.new(stop_point, journey_pattern_id)
+        decorated_stop_point = StopPointDecorator.new(stop_point, journey_pattern_id: journey_pattern_id)
         Netex::Reference.new(decorated_stop_point.stop_point_in_journey_pattern_id, type: 'StopPointInJourneyPatternRef')
       end
 
@@ -685,6 +693,7 @@ class Export::NetexGeneric < Export::Base
     def day_type_attributes
       {
         id: objectid,
+        data_source_ref: data_source_ref,
         name: comment,
         properties: properties
       }
@@ -709,7 +718,7 @@ class Export::NetexGeneric < Export::Base
 
     def decorated_periods
       @decorated_periods ||= periods.map do |period|
-        PeriodDecorator.new(period, day_type_ref)
+        PeriodDecorator.new(period, day_type_ref, data_source_ref)
       end
     end
 
@@ -719,7 +728,7 @@ class Export::NetexGeneric < Export::Base
 
     def decorated_dates
       @decorated_dates ||= dates.map do |date|
-        PeriodDecorator.new(date, day_type_ref)
+        DateDecorator.new(date, day_type_ref, data_source_ref)
       end
     end
 
@@ -727,10 +736,11 @@ class Export::NetexGeneric < Export::Base
 
   class PeriodDecorator < SimpleDelegator
 
-    attr_accessor :day_type_ref
-    def initialize(period, day_type_ref)
+    attr_accessor :day_type_ref, :data_source_ref
+    def initialize(period, day_type_ref, data_source_ref)
       super period
       @day_type_ref = day_type_ref
+      @data_source_ref = data_source_ref
     end
 
     def operating_period
@@ -740,6 +750,7 @@ class Export::NetexGeneric < Export::Base
     def operating_period_attributes
       {
         id: id,
+        data_source_ref: data_source_ref,
         from_date: period_start,
         to_date: period_end
       }
@@ -752,6 +763,7 @@ class Export::NetexGeneric < Export::Base
     def day_type_assignment_attributes
       {
         id: id,
+        data_source_ref: data_source_ref,
         operating_period_ref: operating_period_ref,
         day_type_ref: day_type_ref,
         order: 0
@@ -766,10 +778,11 @@ class Export::NetexGeneric < Export::Base
 
   class DateDecorator < SimpleDelegator
 
-    attr_accessor :day_type_ref
-    def initialize(date, day_type_ref)
+    attr_accessor :day_type_ref, :data_source_ref
+    def initialize(date, day_type_ref, data_source_ref)
       super date
       @day_type_ref = day_type_ref
+      @data_source_ref = data_source_ref
     end
 
     def day_type_assignment
@@ -779,10 +792,11 @@ class Export::NetexGeneric < Export::Base
     def day_type_assignment_attributes
       {
         id: id,
+        data_source_ref: data_source_ref,
         date: date,
         is_available: in_out,
         day_type_ref: day_type_ref,
-        oerder: 0
+        order: 0
       }
     end
 

@@ -275,7 +275,7 @@ RSpec.describe Export::NetexGeneric do
         Chouette::TimeTablePeriod.new period_start: Date.parse('2021-01-01'),
                                       period_end: Date.parse('2021-12-31')
       end
-      let(:decorator) { Export::NetexGeneric::PeriodDecorator.new period, nil }
+      let(:decorator) { Export::NetexGeneric::PeriodDecorator.new period, nil, '' }
 
       describe "#operating_period_attributes" do
         subject { decorator.operating_period_attributes }

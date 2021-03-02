@@ -608,6 +608,10 @@ class Export::NetexGeneric < Export::Base
 
         decorated_vehicle_journey = Decorator.new(vehicle_journey)
         tagged_target << decorated_vehicle_journey.netex_resource
+
+        decorated_vehicle_journey.vjas_assignments.each do |vjas_assignment|
+          tagged_target << vjas_assignment.netex_resource
+        end
       end
     end
 
@@ -636,6 +640,12 @@ class Export::NetexGeneric < Export::Base
         decorated_vehicle_journey_at_stops.map(&:timetabled_passing_time)
       end
 
+      def vjas_assignments
+        vehicle_journey_at_stops.joins(:stop_area).map do |vjas|
+          VehicleJourneyStopAssignmentDecorator.new(vjas, self)
+        end
+      end
+
       def decorated_vehicle_journey_at_stops
         @decorated_vehicle_journey_at_stops ||= vehicle_journey_at_stops.map do |vehicle_journey_at_stop|
           VehicleJourneyAtStopDecorator.new(vehicle_journey_at_stop, journey_pattern.objectid)
@@ -651,7 +661,6 @@ class Export::NetexGeneric < Export::Base
           TimeTableDecorator.new(time_table)
         end
       end
-
     end
 
     class VehicleJourneyAtStopDecorator < SimpleDelegator
@@ -679,6 +688,48 @@ class Export::NetexGeneric < Export::Base
 
       def netex_time time_of_day
         Netex::Time.new time_of_day.hour, time_of_day.minute, time_of_day.second
+      end
+    end
+
+    class VehicleJourneyStopAssignmentDecorator < SimpleDelegator
+      attr_reader :vehicle_journey
+
+      def initialize(vehicle_journey_at_stop, vehicle_journey)
+        super vehicle_journey_at_stop
+        @vehicle_journey = vehicle_journey
+      end
+
+      def netex_attributes
+        {
+          id: objectid,
+          scheduled_stop_point_ref: scheduled_stop_point_ref,
+          quay_ref: quay_ref,
+          vehicle_journey_refs: vehicle_journey_refs
+        }
+      end
+
+      def netex_resource
+        Netex::VehicleJourneyStopAssignment.new netex_attributes
+      end
+
+      def objectid
+        name, type, uuid, loc = vehicle_journey.objectid.split(':')
+
+        "#{name}:VehicleJourneyStopAssignment:#{uuid}:#{loc}-#{stop_point.position}"
+      end
+
+      def scheduled_stop_point_ref
+        Netex::Reference.new(stop_point.objectid, type: 'ScheduledStopPointRef')
+      end
+
+      def quay_ref
+        Netex::Reference.new(stop_area.objectid, type: 'QuayRef')
+      end
+
+      def vehicle_journey_refs
+        stop_area.specific_vehicle_journeys.map do |vj|
+          Netex::Reference.new(vj.objectid, type: 'VehicleJourneyRef')
+        end
       end
     end
 

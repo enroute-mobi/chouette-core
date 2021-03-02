@@ -275,6 +275,9 @@ RSpec.describe Export::NetexGeneric do
       end
     end
 
+    let(:vehicle_journeys) { context.vehicle_journeys }
+    let(:vehicle_journey_at_stops) { vehicle_journeys.flat_map { |vj| vj.vehicle_journey_at_stops } }
+
     before { context.referential.switch }
 
     it "create Netex resources with line_id tag" do
@@ -283,6 +286,48 @@ RSpec.describe Export::NetexGeneric do
       expect(target.resources).to all(have_tag(:line_id))
     end
 
+    describe 'VehicleJourneyAtStop export' do
+      context 'when stop_area is present' do
+        before do
+          vehicle_journey_at_stops.each do |vjas|
+            vjas.update(stop_area: vjas.stop_point.stop_area)
+          end
+        end
+
+        after do
+          vehicle_journey_at_stops.each do |vjas|
+            vjas.update(stop_area: nil)
+          end
+        end
+
+        it 'should create a Netex::VehicleJourneyStopAssignment' do
+          context.routes.each { |route| export.resource_tagger.register_tag_for(route.line) }
+          part.export!
+
+          vjas_assignments = target.resources.select { |r| r.is_a? Netex::VehicleJourneyStopAssignment }
+
+          expect(vjas_assignments.count).to eq(vehicle_journey_at_stops.count)
+
+          vjas_assignments.each do |vjas_assignment|
+            expect(vjas_assignment.id).to include('VehicleJourneyStopAssignment')
+            expect(vjas_assignment.scheduled_stop_point_ref).to be_kind_of(Netex::Reference)
+            expect(vjas_assignment.quay_ref).to be_kind_of(Netex::Reference)
+            expect(vjas_assignment.vehicle_journey_refs).to be_kind_of(Array)
+          end
+        end
+      end
+
+      context 'when stop_area is absent' do
+        it 'should not create a Netex::VehicleJourneyStopAssignment' do
+          context.routes.each { |route| export.resource_tagger.register_tag_for(route.line) }
+          part.export!
+
+          vjas_assignments_count = target.resources.count { |r| r.is_a? Netex::VehicleJourneyStopAssignment }
+
+          expect(vjas_assignments_count).to eq(0)
+        end
+      end
+    end
   end
 
   describe "TimeTables export" do

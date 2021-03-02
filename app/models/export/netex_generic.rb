@@ -702,6 +702,7 @@ class Export::NetexGeneric < Export::Base
       def netex_attributes
         {
           id: objectid,
+          data_source_ref: vehicle_journey.data_source_ref,
           scheduled_stop_point_ref: scheduled_stop_point_ref,
           quay_ref: quay_ref,
           vehicle_journey_refs: vehicle_journey_refs

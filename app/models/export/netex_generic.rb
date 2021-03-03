@@ -485,7 +485,7 @@ class Export::NetexGeneric < Export::Base
 
       def direction
         @direction ||= Netex::Direction.new(
-          id: objectid.gsub(/r|Route/) { 'Direction' },
+          id: objectid&.gsub(/r|Route/) { 'Direction' },
           data_source_ref: data_source_ref,
           name: published_name
         )
@@ -496,7 +496,7 @@ class Export::NetexGeneric < Export::Base
       end
 
       def line_ref
-        Netex::Reference.new(line.objectid, type: 'LineRef')
+        Netex::Reference.new(line.objectid, type: 'LineRef') if line
       end
 
       def points_in_sequence

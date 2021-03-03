@@ -138,6 +138,24 @@ RSpec.describe Export::NetexGeneric do
       expect(target.resources).to all(have_tag(:line_id))
     end
 
+    describe Export::NetexGeneric::Routes::Decorator do
+
+      let(:route) { Chouette::Route.new }
+      let(:decorator) { Export::NetexGeneric::Routes::Decorator.new route }
+
+      describe "#netex_attributes" do
+
+        subject { decorator.netex_attributes }
+
+        it "includes the same data_source_ref than the Route" do
+          route.data_source_ref = "dummy"
+          is_expected.to include(data_source_ref: route.data_source_ref)
+        end
+
+      end
+
+    end
+
     describe Export::NetexGeneric::StopPointDecorator do
 
       let(:stop_point) { Chouette::StopPoint.new position: 0 }
@@ -275,7 +293,7 @@ RSpec.describe Export::NetexGeneric do
         Chouette::TimeTablePeriod.new period_start: Date.parse('2021-01-01'),
                                       period_end: Date.parse('2021-12-31')
       end
-      let(:decorator) { Export::NetexGeneric::PeriodDecorator.new period, nil }
+      let(:decorator) { Export::NetexGeneric::PeriodDecorator.new period, nil, '' }
 
       describe "#operating_period_attributes" do
         subject { decorator.operating_period_attributes }

@@ -714,7 +714,7 @@ class Export::NetexGeneric < Export::Base
       end
 
       def objectid
-        name, type, uuid, loc = vehicle_journey.objectid.split(':')
+        name, _type, uuid, loc = vehicle_journey.objectid.split(':')
 
         "#{name}:VehicleJourneyStopAssignment:#{uuid}:#{loc}-#{stop_point.position}"
       end

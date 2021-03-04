@@ -146,7 +146,8 @@ class Export::NetexGeneric < Export::Base
         {
           id: objectid,
           name: name,
-          public_code: public_code
+          public_code: public_code,
+          raw_xml: import_xml
           # longitude: longitude,
           # latitude: latitude
         }
@@ -254,7 +255,8 @@ class Export::NetexGeneric < Export::Base
           name: name,
           transport_mode: transport_mode,
           transport_submode: netex_transport_submode,
-          operator_ref: operator_ref
+          operator_ref: operator_ref,
+          raw_xml: import_xml
         }
       end
 
@@ -290,7 +292,8 @@ class Export::NetexGeneric < Export::Base
       def netex_attributes
         {
           id: id,
-          name: name
+          name: name,
+          raw_xml: import_xml
         }
       end
 

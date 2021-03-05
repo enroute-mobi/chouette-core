@@ -728,9 +728,7 @@ class Export::NetexGeneric < Export::Base
       end
 
       def vehicle_journey_refs
-        stop_area.specific_vehicle_journeys.map do |vj|
-          Netex::Reference.new(vj.objectid, type: 'VehicleJourneyRef')
-        end
+        [Netex::Reference.new(vehicle_journey.objectid, type: 'VehicleJourneyRef')]
       end
     end
 

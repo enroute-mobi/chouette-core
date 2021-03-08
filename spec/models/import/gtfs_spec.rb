@@ -132,7 +132,7 @@ RSpec.describe Import::Gtfs do
           ]
         }
       end
-    
+
       it 'should not create a company' do
         expect do
           import.import_agencies
@@ -164,18 +164,18 @@ RSpec.describe Import::Gtfs do
       import.import_stops
 
       defined_attributes = [
-        :registration_number, :name, :parent_id, :latitude, :longitude, :comment, :public_code
+        :registration_number, :name, :parent_id, :latitude, :longitude, :comment, :public_code, :mobility_restricted_suitability
       ]
       expected_attributes = [
-        ["AMV", "Amargosa Valley (Demo)", nil, 36.641496, -116.40094,'amv', nil],
-        ["EMSI", "E Main St / S Irving St (Demo)", nil, 36.905697, -116.76218,'emsi', nil],
-        ["DADAN", "Doing Ave / D Ave N (Demo)", nil, 36.909489, -116.768242,'dadan', nil],
-        ["NANAA", "North Ave / N A Ave (Demo)", nil, 36.914944, -116.761472,'nanaa', nil],
-        ["NADAV", "North Ave / D Ave N (Demo)", nil, 36.914893, -116.76821,'nadav', nil],
-        ["STAGECOACH", "Stagecoach Hotel & Casino (Demo)", nil, 36.915682, -116.751677,'stagecoach', nil],
-        ["BULLFROG", "Bullfrog (Demo)", nil, 36.88108, -116.81797,'bullfrog', nil],
-        ["BEATTY_AIRPORT", "Nye County Airport (Demo)", nil, 36.868446, -116.784582,'beatty_airport', 'Test'],
-        ["FUR_CREEK_RES", "Furnace Creek Resort (Demo)", nil, 36.425288, -117.133162,'fur_creek_res', '1']
+        ["AMV", "Amargosa Valley (Demo)", nil, 36.641496, -116.40094,'amv', nil,false],
+        ["EMSI", "E Main St / S Irving St (Demo)", nil, 36.905697, -116.76218,'emsi', nil,false],
+        ["DADAN", "Doing Ave / D Ave N (Demo)", nil, 36.909489, -116.768242,'dadan', nil,false],
+        ["NANAA", "North Ave / N A Ave (Demo)", nil, 36.914944, -116.761472,'nanaa', nil,false],
+        ["NADAV", "North Ave / D Ave N (Demo)", nil, 36.914893, -116.76821,'nadav', nil,false],
+        ["STAGECOACH", "Stagecoach Hotel & Casino (Demo)", nil, 36.915682, -116.751677,'stagecoach', nil,false],
+        ["BULLFROG", "Bullfrog (Demo)", nil, 36.88108, -116.81797,'bullfrog', nil, true],
+        ["BEATTY_AIRPORT", "Nye County Airport (Demo)", nil, 36.868446, -116.784582,'beatty_airport', 'Test',false],
+        ["FUR_CREEK_RES", "Furnace Creek Resort (Demo)", nil, 36.425288, -117.133162,'fur_creek_res', '1',false]
       ]
 
       expect(workbench.stop_area_referential.stop_areas.pluck(*defined_attributes)).to match_array(expected_attributes)

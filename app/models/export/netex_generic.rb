@@ -704,6 +704,7 @@ class Export::NetexGeneric < Export::Base
           id: objectid,
           data_source_ref: vehicle_journey.data_source_ref,
           scheduled_stop_point_ref: scheduled_stop_point_ref,
+          stop_place_ref: stop_place_ref,
           quay_ref: quay_ref,
           vehicle_journey_refs: vehicle_journey_refs
         }
@@ -721,6 +722,10 @@ class Export::NetexGeneric < Export::Base
 
       def scheduled_stop_point_ref
         Netex::Reference.new(stop_point.objectid, type: 'ScheduledStopPointRef')
+      end
+
+      def stop_place_ref
+        Netex::Reference.new(stop_area.objectid, type: 'StopPlaceRef')
       end
 
       def quay_ref

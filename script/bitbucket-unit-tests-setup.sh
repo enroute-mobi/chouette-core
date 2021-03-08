@@ -1,5 +1,7 @@
 #!/bin/sh -e
 
+BUNDLER_VERSION=2.2.9
+
 # Configure UTF-8 locale
 apt-get -qq update && apt-get -qq install -y --no-install-recommends locales
 export LANG=en_US.UTF-8 LANGUAGE=en_US:UTF-8 LC_ALL=en_US.UTF-8

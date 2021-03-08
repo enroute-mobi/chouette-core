@@ -6,7 +6,6 @@ import { Provider } from 'react-redux'
 import { createStore } from 'redux'
 import vehicleJourneysApp from '../../vehicle_journeys/reducers'
 import App from '../../vehicle_journeys/components/App'
-import actions from "../../vehicle_journeys/actions"
 import { enableBatching } from '../../vehicle_journeys/batch'
 
 import { initialState } from '../../vehicle_journeys/reducers'

@@ -49,6 +49,7 @@ export default class SelectableContainer extends Component {
 				disabled={!selectionMode}
 				duringSelection={this.handleSelecting}
 				onSelectionFinish={this.handleSelectFinish}
+				ignoreList={['.not-selectable']}
 			>
 				{this.props.children}
 			</SelectableGroup>

@@ -18,11 +18,17 @@ class VehicleJourneyAtStop extends Component {
 		return delta > 0
 	}
 
-	get selectionClasses() {
-		const { isInSelection, selectionMode } = this.props
-		const out = []
+	get tdClasses() {
+		const {
+			vjas: { dummy },
+			isSelecting,
+			isSelected,
+		} = this.props
+		const out = ['td', 'text-center']
 
-		if (selectionMode && isInSelection) {
+		out.push(dummy ? 'not-selectable' : 'selectable')
+
+		if (isSelecting || isSelected) {
 			out.push('selected')	
 		}
 
@@ -83,7 +89,7 @@ class VehicleJourneyAtStop extends Component {
 				id={vjas.id}
 				key={index}
 				ref={selectableRef}
-				className={`td text-center vjas-selectable ${this.selectionClasses}` }
+				className={this.tdClasses}
 			>
 				{this.renderSelectionSize()}
 				<div className={'cellwrap' + (cityNameChecker(vjas) ? ' headlined' : '')}>

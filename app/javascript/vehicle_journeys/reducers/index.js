@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux'
+import actions from '../actions'
 import vehicleJourneys from './vehicleJourneys'
 import returnVehicleJourneys from './returnVehicleJourneys'
 import pagination from './pagination'

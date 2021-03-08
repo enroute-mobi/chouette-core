@@ -94,6 +94,8 @@ export default class VehicleJourney extends Component {
       }
     } = this.props
 
+    const lastSelectedItem = last(selectedItems) || {}
+
     return (
       <div className={'t2e-item' + (this.props.value.deletable ? ' disabled' : '') + (this.props.value.errors ? ' has-error': '')}>
         <div
@@ -175,8 +177,7 @@ export default class VehicleJourney extends Component {
 
         </div>
         {this.props.value.vehicle_journey_at_stops.map((vjas, i) => {
-          const isInSelection = some(selectedItems, ['id', vjas.id])
-          const isSelectionBottomRight = isInSelection ? last(selectedItems).id == vjas.id : false
+          const isSelectionBottomRight = lastSelectedItem.index == i && lastSelectedItem.vjIndex == this.props.index
 
           return (
              <VehicleJourneyAtStop
@@ -187,7 +188,6 @@ export default class VehicleJourney extends Component {
               selectionMode={this.props.selection.active}
               isSelectionBottomRight={isSelectionBottomRight}
               selectionContentText={selectionDimensionContent}
-              isInSelection={isInSelection}
               isEditable={this.isEditable}
               isDisabled={this.props.value.deletable || vjas.dummy}
               hasUpdatePermission={this.props.filters.policy['vehicle_journeys.update']}

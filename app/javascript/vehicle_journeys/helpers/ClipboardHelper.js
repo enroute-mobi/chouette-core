@@ -4,6 +4,7 @@ import getMinutes from 'date-fns/getMinutes'
 import getHours from 'date-fns/getHours'
 import differenceInMinutes from 'date-fns/differenceInMinutes'
 import { formatTime, parseTime } from './index'
+import { is } from 'date-fns/locale'
 
 const computeArrivalTime = (departure, copyItem) => {
 	if (copyItem.isDummy) return parseTime('00:00')
@@ -96,6 +97,10 @@ export class PasteContent {
 		return this.serialize().split('\n').map(r => r.split(/\s+|\t/))
 	}
 
+	isDummy(content) {
+		return content.trim() == '-'
+	}
+
 	deserialize(toggleArrivals) {
 		const chunkSize = toggleArrivals ? 2 : 1
 
@@ -110,7 +115,8 @@ export class PasteContent {
 						- two values if toggleArrivals is true => ['06:55', '06:56']
 				*/
 				const copyItem = copyRow[j]
-				const departure = parseTime(last(cells))
+				const cellContent = this.isDummy(last(cells)) ? '00:00' : last(cells)
+				const departure = parseTime(cellContent)
 				const arrival = toggleArrivals ? parseTime(cells[0]) : computeArrivalTime(departure, copyItem)
 
 				return {
@@ -152,6 +158,8 @@ export class PasteContent {
 
 			deserializedContent.forEach(row => {
 				row.forEach(cell => {
+					if (this.isDummy(cell)) return
+
 					const [hour, minute] = cell.split(':')
 
 					if (!isEqual(hour.length, 2) || !isEqual((minute || '').length, 2)) {

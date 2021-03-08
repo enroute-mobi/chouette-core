@@ -88,7 +88,7 @@ class Import::Gtfs < Import::Base
   def import_agencies
     create_resource(:agencies).each(source.agencies) do |agency, resource|
       @default_time_zone ||= check_time_zone_or_create_message(agency.timezone, resource)
-  
+
       if agency.id.present?
         company = companies.find_or_initialize_by(registration_number: agency.id)
         company.line_provider = line_provider
@@ -137,6 +137,7 @@ class Import::Gtfs < Import::Base
         stop_area.deleted_at = nil
         stop_area.confirmed_at ||= Time.now
         stop_area.comment = stop.desc
+        stop_area.mobility_restricted_suitability = stop.wheelchair_boarding == '1'
         stop_area.codes.find_or_initialize_by(code_space: public_code_space).tap do |code|
           code.value = stop.code
           code.save unless stop_area.new_record?

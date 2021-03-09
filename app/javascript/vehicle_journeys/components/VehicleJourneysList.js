@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { isEmpty, isNull, map, some } from 'lodash'
+import { flatMap, isEmpty, map, some } from 'lodash'
 import autoBind from 'react-autobind'
 import VehicleJourney from './VehicleJourney'
 import StopAreaHeaderManager from '../../helpers/stop_area_header_manager'
@@ -46,33 +46,12 @@ export default class VehicleJourneysList extends Component {
     return out.join(' ')
   }
 
-  get allTimeTables() {
-    return isNull(this._allTimeTables) ? this.purchaseWindowsAndTimeTables : this._allTimeTables
+  get allTimeTables() { 
+    return flatMap(this.vehicleJourneysList, 'time_tables')
   }
 
   get allPurchaseWindows() {
-    return isNull(this._allPurchaseWindows) ? this.purchaseWindowsAndTimeTables : this._allPurchaseWindows
-  }
-
-  get purchaseWindowsAndTimeTables() {
-    let timetables_keys = []
-    let windows_keys = []
-    this._allTimeTables = []
-    this._allPurchaseWindows = []
-    this.vehicleJourneysList.map((vj, index) => {
-      vj.time_tables.map((tt, _) => {
-        if (timetables_keys.indexOf(tt.id) < 0) {
-          timetables_keys.push(tt.id)
-          this._allTimeTables.push(tt)
-        }
-      })
-      vj.purchase_windows.map((tt, _) => {
-        if (windows_keys.indexOf(tt.id) < 0) {
-          windows_keys.push(tt.id)
-          this._allPurchaseWindows.push(tt)
-        }
-      })
-    })
+    return flatMap(this.vehicleJourneysList, 'purchase_windows')
   }
 
   // Handlers
@@ -206,9 +185,7 @@ export default class VehicleJourneysList extends Component {
 
   render() {
     this.previousBreakpoint = undefined
-    this._allTimeTables = null
     let detailed_calendars = this.hasFeature('detailed_calendars') && !this.isReturn && !isEmpty(this.allTimeTables)
-    this._allPurchaseWindows = null
     let detailed_purchase_windows = this.hasFeature('detailed_purchase_windows') && !this.isReturn && !isEmpty(this.allPurchaseWindows)
     requestAnimationFrame(function(){
       $(document).trigger("table:updated")
@@ -329,7 +306,6 @@ export default class VehicleJourneysList extends Component {
                       editMode={this.isReturn ? false : this.props.editMode}
                       selection={this.props.selection}
                       selectedItems={this.props.selectedItems}
-                      // selectionMode={!this.isReturn() && this.props.selectionMode}
                       filters={this.props.filters}
                       features={this.props.features}
                       onUpdateTime={this.props.onUpdateTime}
@@ -362,4 +338,11 @@ VehicleJourneysList.propTypes = {
   onLoadFirstPage: PropTypes.func.isRequired,
   onUpdateTime: PropTypes.func.isRequired,
   onSelectVehicleJourney: PropTypes.func.isRequired
+}
+
+VehicleJourneysList.defaultProps = {
+  vehicleJourneys: [],
+  returnVehicleJourneys: [],
+  stopPointsList: [],
+  returnStopPointsList: []
 }

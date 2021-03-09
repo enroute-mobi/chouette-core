@@ -287,13 +287,74 @@ RSpec.describe Export::NetexGeneric do
 
   describe "TimeTables export" do
 
+    describe Export::NetexGeneric::TimeTableDecorator do
+      let(:time_table) { FactoryBot.create(:time_table) }
+      let(:decorated_tt) { Export::NetexGeneric::TimeTableDecorator.new time_table }
+      let(:netex_resources) { decorated_tt.netex_resources }
+      let(:operating_periods) { netex_resources.select { |r| r.is_a? Netex::OperatingPeriod }}
+      let(:day_type_assignments) { netex_resources.select { |r| r.is_a? Netex::DayTypeAssignment }}
+
+      context '#netex_resources' do
+        context 'DayType' do
+          it 'should be valid' do
+            day_type = netex_resources.find { |r| r.is_a? Netex::DayType }
+            expect(day_type).to be
+            expect(day_type.id).to eq(time_table.objectid)
+          end
+        end
+        
+        context 'DayTypeAssignments' do
+          it 'should have one for each period + one for each date' do
+            count = time_table.periods.count + time_table.dates.count
+
+            expect(day_type_assignments.count).to eq(count)
+          end
+
+          context 'when related to periods' do
+            it 'should have a specific id' do
+              decorated_tt.decorated_periods.each do |period|
+                day_type_assignment = period.day_type_assignment
+
+                name, type, uuid, loc = day_type_assignment.id.split(':')
+
+                expect(type).to eq('DayTypeAssignment')
+                expect(uuid).to match(/-p#{period.id}/)
+              end
+            end
+          end
+
+          context 'when related to dates' do
+            it 'should have a specific id' do
+              decorated_tt.decorated_dates.each do |date|
+                day_type_assignment = date.day_type_assignment
+                name, type, uuid, loc = day_type_assignment.id.split(':')
+
+                expect(type).to eq('DayTypeAssignment')
+                expect(uuid).to match(/-d#{date.id}/)
+              end
+            end
+          end
+        end
+
+        context 'OperatingPeriods' do
+          it 'should have one for each period ' do
+            count = time_table.periods.count
+
+            expect(operating_periods.count).to eq(count)
+          end
+        end
+      end
+    end
+
     describe Export::NetexGeneric::PeriodDecorator do
+      let(:time_table) { FactoryBot.create(:time_table) }
 
       let(:period) do
         Chouette::TimeTablePeriod.new period_start: Date.parse('2021-01-01'),
-                                      period_end: Date.parse('2021-12-31')
+                                      period_end: Date.parse('2021-12-31'),
+                                      time_table: time_table
       end
-      let(:decorator) { Export::NetexGeneric::PeriodDecorator.new period, nil, '' }
+      let(:decorator) { Export::NetexGeneric::PeriodDecorator.new period, nil }
 
       describe "#operating_period_attributes" do
         subject { decorator.operating_period_attributes }

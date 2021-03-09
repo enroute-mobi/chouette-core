@@ -4,9 +4,6 @@ describe Chouette::Footnote, type: :model do
   it { should validate_presence_of :line }
 
   describe 'data_source_ref' do
-    it 'should set default if omitted' do
-      expect(subject.data_source_ref).to eq "DATASOURCEREF_EDITION_BOIV"
-    end
 
     it 'should not set default if not omitted' do
       source = "RANDOM_DATASOURCE"

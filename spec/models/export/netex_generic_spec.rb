@@ -152,6 +152,17 @@ RSpec.describe Export::NetexGeneric do
           is_expected.to include(data_source_ref: route.data_source_ref)
         end
 
+        it "includes a direction_ref if a published_name is defined" do
+          route.objectid = "chouette:Route:1:"
+          route.published_name = "dummy"
+          is_expected.to have_key(:direction_ref)
+        end
+
+        it "doesn't include a direction_ref if a published_name isn't defined" do
+          route.published_name = nil
+          is_expected.to include(direction_ref: nil)
+        end
+
       end
 
     end

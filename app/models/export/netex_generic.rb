@@ -465,7 +465,7 @@ class Export::NetexGeneric < Export::Base
 
         decorated_route = Decorator.new(route)
         tagged_target << decorated_route.netex_resource
-        tagged_target << decorated_route.direction if route.published_name.present?
+        tagged_target << decorated_route.direction if decorated_route.direction
       end
     end
 
@@ -505,11 +505,11 @@ class Export::NetexGeneric < Export::Base
           id: direction_id,
           data_source_ref: data_source_ref,
           name: published_name
-        )
+        ) if published_name
       end
 
       def direction_ref
-        Netex::Reference.new(direction_id, type: 'DirectionRef')
+        Netex::Reference.new(direction_id, type: 'DirectionRef') if direction
       end
 
       def line_ref

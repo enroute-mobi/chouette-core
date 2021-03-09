@@ -331,8 +331,12 @@ class Export::NetexGeneric < Export::Base
       position+1
     end
 
+    def netex_identifier
+      @netex_identifier ||= Netex::ObjectId.parse(objectid)
+    end
+
     def point_on_route_id
-      objectid.sub('StopPoint', 'PointOnRoute')
+      netex_identifier.change(type: 'PointOnRoute').to_s
     end
 
     def route_point_ref
@@ -340,7 +344,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def route_point_ref_id
-      objectid.sub('StopPoint', 'RoutePoint')
+      netex_identifier.change(type: 'RoutePoint').to_s
     end
 
     def scheduled_stop_point
@@ -355,7 +359,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def scheduled_stop_point_id
-      @scheduled_stop_point_id ||= objectid.sub('StopPoint', 'ScheduledStopPoint')
+      @scheduled_stop_point_id ||= netex_identifier.change(type: 'ScheduledStopPoint').to_s
     end
 
     def passenger_stop_assignment
@@ -378,7 +382,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def passenger_stop_assignment_id
-      objectid.sub('StopPoint', 'PassengerStopAssignment')
+      netex_identifier.change(type: 'PassengerStopAssignment').to_s
     end
 
     def scheduled_stop_point_ref
@@ -405,7 +409,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def route_point_id
-      objectid.sub('StopPoint', 'RoutePoint')
+      netex_identifier.change(type: 'RoutePoint').to_s
     end
 
     def point_projection
@@ -420,7 +424,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def point_projection_id
-      objectid.sub('StopPoint', 'PointProjection')
+      netex_identifier.change(type: 'PointProjection').to_s
     end
 
     def project_to_point_ref
@@ -440,12 +444,13 @@ class Export::NetexGeneric < Export::Base
     end
 
     def stop_point_in_journey_pattern_id
-      jp_match = journey_pattern_id.match(/^chouette:JourneyPattern:(.+):LOC$/)
-      sp_match = objectid.match(/^chouette:JourneyPattern:(.+):LOC$/)
-      if jp_match.nil? || sp_match.nil?
-        return journey_pattern_id+objectid
+      merged_object_id = Netex::ObjectId.merge(journey_pattern_id, netex_identifier, type: "StopPointInJourneyPattern")
+
+      if merged_object_id
+        merged_object_id.to_s
+      else
+        "#{journey_pattern_id}-#{objectid}"
       end
-      "chouette:StopPointInJourneyPattern:#{jp_match[1]}-#{sp_match[1]}:LOC"
     end
   end
 
@@ -487,16 +492,24 @@ class Export::NetexGeneric < Export::Base
         published_name.presence || name
       end
 
+      def netex_identifier
+        @netex_identifier ||= Netex::ObjectId.parse(objectid)
+      end
+
+      def direction_id
+        netex_identifier.change(type: 'Direction').to_s
+      end
+
       def direction
         @direction ||= Netex::Direction.new(
-          id: objectid&.gsub(/r|Route/) { 'Direction' },
+          id: direction_id,
           data_source_ref: data_source_ref,
           name: published_name
         )
       end
 
       def direction_ref
-        Netex::Reference.new(direction.id, type: 'DirectionRef')
+        Netex::Reference.new(direction_id, type: 'DirectionRef')
       end
 
       def line_ref
@@ -572,16 +585,24 @@ class Export::NetexGeneric < Export::Base
         Netex::Reference.new(route.objectid, type: 'RouteRef')
       end
 
+      def netex_identifier
+        @netex_identifier ||= Netex::ObjectId.parse(objectid)
+      end
+
+      def destination_display_id
+        netex_identifier.change(type: 'DestinationDisplay').to_s
+      end
+
       def destination_display
         @destination_display ||= Netex::DestinationDisplay.new(
-          id: objectid.gsub(/j|JourneyPattern/) { 'DestinationDisplay' },
+          id: destination_display_id,
           data_source_ref: data_source_ref,
           front_text: published_name
         )
       end
 
       def destination_display_ref
-        Netex::Reference.new(destination_display.id, type: 'DestinationDisplayRef')
+        Netex::Reference.new(destination_display_id, type: 'DestinationDisplayRef')
       end
 
       def points_in_sequence

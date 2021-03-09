@@ -171,6 +171,20 @@ RSpec.describe Export::NetexGeneric do
 
       end
 
+      describe "#stop_point_in_journey_pattern_id" do
+
+        subject { decorator.stop_point_in_journey_pattern_id }
+
+        context "when journey_pattern_id is 'chouette:JourneyPattern:1:LOC' and object_id is 'chouette:StopPointInJourneyPattern:2:LOC' and " do
+          before do
+            decorator.journey_pattern_id = 'chouette:JourneyPattern:1:LOC'
+            stop_point.objectid = 'chouette:StopPointInJourneyPattern:2:LOC'
+          end
+
+          it { is_expected.to eq('chouette:StopPointInJourneyPattern:1-2:LOC') }
+        end
+      end
+
     end
 
   end

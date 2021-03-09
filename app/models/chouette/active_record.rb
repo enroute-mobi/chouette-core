@@ -1,5 +1,6 @@
 module Chouette
   class ActiveRecord < ::ApplicationModel
+    mattr_accessor :default_data_source_ref
 
     self.abstract_class = true
     before_save :nil_if_blank, :set_data_source_ref
@@ -18,8 +19,8 @@ module Chouette
     end
 
     def set_data_source_ref
-      if self.respond_to?(:data_source_ref)
-        self.data_source_ref ||= 'DATASOURCEREF_EDITION_BOIV'
+      if default_data_source_ref && self.respond_to?(:data_source_ref)
+        self.data_source_ref ||= default_data_source_ref
       end
     end
 

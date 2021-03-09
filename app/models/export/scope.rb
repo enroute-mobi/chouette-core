@@ -20,6 +20,11 @@ module Export::Scope
 
     delegate :codes, to: :workgroup
 
+    def organisations
+      organisation_ids = referential.metadatas.joins(referential_source: :organisation).distinct.pluck('organisations.id')
+      Organisation.where(id: organisation_ids)
+    end
+
     def stop_areas
       (workbench || stop_area_referential).stop_areas
     end
@@ -94,6 +99,10 @@ module Export::Scope
 
           Chouette::StopArea.union(stop_areas_in_routes, stop_areas_in_specific_vehicle_journey_at_stops)
         end
+    end
+
+    def organisations
+      super.include_dateranges(date_range)
     end
 
   end

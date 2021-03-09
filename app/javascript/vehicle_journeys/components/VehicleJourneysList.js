@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { flatMap, isEmpty, map, some } from 'lodash'
+import { flatMap, isEmpty, map, some, uniqBy } from 'lodash'
 import autoBind from 'react-autobind'
 import VehicleJourney from './VehicleJourney'
 import StopAreaHeaderManager from '../../helpers/stop_area_header_manager'
@@ -47,11 +47,13 @@ export default class VehicleJourneysList extends Component {
   }
 
   get allTimeTables() { 
-    return flatMap(this.vehicleJourneysList, 'time_tables')
+    const tt = flatMap(this.vehicleJourneysList, 'time_tables')
+    return uniqBy(tt, 'id')
   }
 
   get allPurchaseWindows() {
-    return flatMap(this.vehicleJourneysList, 'purchase_windows')
+    const pw = flatMap(this.vehicleJourneysList, 'purchase_windows')
+    return uniqBy(pw, 'id')
   }
 
   // Handlers

@@ -30,7 +30,6 @@ definitions:
           - codacy-coverage
         script:
           - export LANG=en_US.UTF-8 LANGUAGE=en_US:UTF-8 LC_ALL=en_US.UTF-8
-          - export BUNDLER_VERSION=2.0.2
           - export RAILS_DB_USER=chouette
           - export RAILS_DB_PASSWORD=chouette
           - export RAILS_DB_NAME=chouette
@@ -58,7 +57,6 @@ pipelines:
             - build-cache
           script:
             - export LANG=en_US.UTF-8 LANGUAGE=en_US:UTF-8 LC_ALL=en_US.UTF-8
-            - export BUNDLER_VERSION=2.0.2
             - export RAILS_DB_USER=chouette
             - export RAILS_DB_PASSWORD=chouette
             - export RAILS_DB_NAME=chouette

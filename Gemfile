@@ -1,4 +1,3 @@
-# coding: utf-8
 source 'https://rubygems.org'
 
 # Use https for github
@@ -29,7 +28,7 @@ gem 'jquery-ui-rails', '>= 6.0.1'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder'
 
-# Select2 for pretty select boxes w. autocomplete
+# Select2 for pretty select boxes w. autocomplete
 gem 'select2-rails', '~> 4.0', '>= 4.0.3'
 
 # ActiveRecord associations on top of PostgreSQL arrays

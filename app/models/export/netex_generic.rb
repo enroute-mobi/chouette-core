@@ -89,7 +89,6 @@ class Export::NetexGeneric < Export::Base
       options.each { |k,v| send "#{k}=", v }
     end
 
-    # delegate :target, :index, :export_scope, :messages, :date_range, :code_spaces, to: :export
     delegate :target, :quay_registry, :resource_tagger, :export_scope, to: :export
 
     def part_name
@@ -97,7 +96,9 @@ class Export::NetexGeneric < Export::Base
     end
 
     def export_part
+      Chouette::Benchmark.measure part_name do
         export!
+      end
     end
 
   end

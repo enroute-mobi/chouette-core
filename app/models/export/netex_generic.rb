@@ -238,7 +238,7 @@ class Export::NetexGeneric < Export::Base
     delegate :lines, to: :export_scope
 
     def export!
-      lines.find_each do |line|
+      lines.includes(:company).find_each do |line|
         resource_tagger.register_tag_for line
         tags = resource_tagger.tags_for(line.id)
         tagged_target = TaggedTarget.new(target, tags)
@@ -454,7 +454,7 @@ class Export::NetexGeneric < Export::Base
     delegate :routes, to: :export_scope
 
     def export!
-      routes.find_each do |route|
+      routes.includes(:line, :stop_points).find_each do |route|
         tags = resource_tagger.tags_for(route.line_id)
         tagged_target = TaggedTarget.new(target, tags)
 
@@ -522,7 +522,7 @@ class Export::NetexGeneric < Export::Base
     delegate :stop_points, to: :export_scope
 
     def export!
-      stop_points.joins(:route).select('stop_points.*', 'routes.line_id as line_id').find_each do |stop_point|
+      stop_points.includes(:stop_area).joins(:route).select('stop_points.*', 'routes.line_id as line_id').find_each do |stop_point|
         tags = resource_tagger.tags_for(stop_point.line_id)
         tagged_target = TaggedTarget.new(target, tags)
 
@@ -540,8 +540,8 @@ class Export::NetexGeneric < Export::Base
     delegate :journey_patterns, to: :export_scope
 
     def export!
-      journey_patterns.joins(:route).select('journey_patterns.*', 'routes.line_id as line_id').find_each do |journey_pattern|
-        tags = resource_tagger.tags_for(journey_pattern.line_id)
+      journey_patterns.includes(:route, stop_points: :stop_area).find_each do |journey_pattern|
+        tags = resource_tagger.tags_for(journey_pattern.route.line_id)
         tagged_target = TaggedTarget.new(target, tags)
 
         decorated_journey_pattern = Decorator.new(journey_pattern)
@@ -602,8 +602,8 @@ class Export::NetexGeneric < Export::Base
     delegate :vehicle_journeys, to: :export_scope
 
     def export!
-      vehicle_journeys.joins(:route).select('vehicle_journeys.*', 'routes.line_id as line_id').find_each do |vehicle_journey|
-        tags = resource_tagger.tags_for(vehicle_journey.line_id)
+      vehicle_journeys.includes(:time_tables, {journey_pattern: :route}, vehicle_journey_at_stops: { stop_point: :stop_area }).find_each(batch_size: 200) do |vehicle_journey|
+        tags = resource_tagger.tags_for(vehicle_journey.journey_pattern.route.line_id)
         tagged_target = TaggedTarget.new(target, tags)
 
         decorated_vehicle_journey = Decorator.new(vehicle_journey)
@@ -810,7 +810,7 @@ class Export::NetexGeneric < Export::Base
     delegate :time_tables, to: :export_scope
 
     def export!
-      time_tables.find_each do |time_table|
+      time_tables.includes(:periods, :dates).find_each do |time_table|
         decorated_time_table = TimeTableDecorator.new(time_table)
         decorated_time_table.netex_resources.each do |resource|
           target << resource

@@ -609,8 +609,8 @@ class Export::NetexGeneric < Export::Base
         decorated_vehicle_journey = Decorator.new(vehicle_journey)
         tagged_target << decorated_vehicle_journey.netex_resource
 
-        decorated_vehicle_journey.vjas_assignments.each do |vjas_assignment|
-          tagged_target << vjas_assignment.netex_resource
+        decorated_vehicle_journey.vehicle_journey_stop_assignments.each do |assignment|
+          tagged_target << assignment.netex_resource
         end
       end
     end
@@ -640,7 +640,7 @@ class Export::NetexGeneric < Export::Base
         decorated_vehicle_journey_at_stops.map(&:timetabled_passing_time)
       end
 
-      def vjas_assignments
+      def vehicle_journey_stop_assignments
         vehicle_journey_at_stops.joins(:stop_area).map do |vjas|
           VehicleJourneyStopAssignmentDecorator.new(vjas, self)
         end

@@ -139,7 +139,7 @@ gem 'postgresql_cursor'
 gem 'redis-rails', '>= 5.0.2'
 
 gem 'gtfs', en_route: 'gtfs'
-gem 'netex', en_route: 'netex', branch: 'NETEX-19-objectid'
+gem 'netex', en_route: 'netex'
 gem 'rgeo-shapefile'
 
 gem 'ddtrace'

@@ -43,8 +43,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: 382314ed455702e42255668d42c5d47f614b8f4a
-  branch: NETEX-19-objectid
+  revision: 138b1243e5ea292427743d7957ebe861d29de349
   specs:
     netex (0.1.0)
       ox
@@ -882,4 +881,4 @@ DEPENDENCIES
   will_paginate-bootstrap
 
 BUNDLED WITH
-   2.2.9
+   2.2.13

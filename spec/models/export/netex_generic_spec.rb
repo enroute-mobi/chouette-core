@@ -294,12 +294,6 @@ RSpec.describe Export::NetexGeneric do
           end
         end
 
-        after do
-          vehicle_journey_at_stops.each do |vjas|
-            vjas.update(stop_area: nil)
-          end
-        end
-
         it 'should create a Netex::VehicleJourneyStopAssignment' do
           context.routes.each { |route| export.resource_tagger.register_tag_for(route.line) }
           part.export!
@@ -313,6 +307,7 @@ RSpec.describe Export::NetexGeneric do
             expect(vjas_assignment.scheduled_stop_point_ref).to be_kind_of(Netex::Reference)
             expect(vjas_assignment.quay_ref).to be_kind_of(Netex::Reference)
             expect(vjas_assignment.vehicle_journey_refs).to be_kind_of(Array)
+            expect(vjas_assignment.vehicle_journey_refs.size).to eq(1)
           end
         end
       end

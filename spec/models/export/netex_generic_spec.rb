@@ -466,6 +466,66 @@ RSpec.describe Export::NetexGeneric do
 
   end
 
+  describe 'Organisation export' do
+    let(:target) { MockNetexTarget.new }
+    let(:export_scope) { Export::Scope::All.new context.referential }
+    let(:export) { Export::NetexGeneric.new export_scope: export_scope, target: target }
+
+    let(:part) do
+      Export::NetexGeneric::Organisations.new export
+    end
+
+    let(:context) do
+      Chouette.create do
+        referential
+        2.times { organisation }
+      end
+    end
+
+    let(:metadatas) { context.referential.metadatas.first }
+
+    before { context.referential.switch }
+
+    context 'no metadatas are related to organisations through referential_source' do
+      it 'should return an empty collection' do
+        part.export!
+        expect(target.resources).to be_empty
+      end
+    end
+
+    context 'some metadatas are related to organisations through referential_source' do
+      let(:orga1) { context.organisations.first }
+      let(:orga1) { context.organisations.last }
+      before do
+        new_ref = FactoryBot.create(:referential, organisation: orga1)
+        metadatas.update_attribute(:referential_source, new_ref)
+      end
+
+      it 'should return the organisations related to the metadatas' do
+        part.export!
+        expect(target.resources.size).to eq(1)
+      end
+    end
+
+    describe Export::NetexGeneric::Organisations::Decorator do
+      let(:organisation) { FactoryBot.create(:organisation) }
+      let(:decorator) { described_class}
+      let(:resource) { decorator.new(organisation).netex_resource }
+
+      describe '#id' do
+        it 'uses Organisation\'s code' do
+          expect(resource.id).to eq(organisation.code)
+        end
+      end
+
+      describe '#name' do
+        it 'uses Organisation\'s name' do
+          expect(resource.name).to eq(organisation.name)
+        end
+      end
+    end
+  end
+
   class MockNetexTarget
 
     def add(resource)

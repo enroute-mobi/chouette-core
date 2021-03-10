@@ -20,9 +20,12 @@ module Export::Scope
 
     delegate :codes, to: :workgroup
 
+    def metadatas
+      referential.metadatas.joins(referential_source: :organisation).distinct
+    end
+
     def organisations
-      organisation_ids = referential.metadatas.joins(referential_source: :organisation).distinct.pluck('organisations.id')
-      Organisation.where(id: organisation_ids)
+      Organisation.where(id: metadatas.pluck('organisations.id'))
     end
 
     def stop_areas
@@ -101,8 +104,8 @@ module Export::Scope
         end
     end
 
-    def organisations
-      super.include_dateranges(date_range)
+    def metadatas
+      super.metadatas..include_dateranges(date_range)
     end
 
   end

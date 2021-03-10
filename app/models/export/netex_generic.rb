@@ -926,7 +926,14 @@ class Export::NetexGeneric < Export::Base
 
     def export!
       organisations.find_each do |o|
-        target << Netex::Organisation id: o.id, name: o.name
+        target << Decorator.new(o).netex_resource
+      end
+    end
+
+    class Decorator < SimpleDelegator
+
+      def netex_resource
+        Netex::GeneralOrganisation.new(id: code, name: name)
       end
     end
   end

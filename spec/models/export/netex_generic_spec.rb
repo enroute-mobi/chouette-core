@@ -152,6 +152,17 @@ RSpec.describe Export::NetexGeneric do
           is_expected.to include(data_source_ref: route.data_source_ref)
         end
 
+        it "includes a direction_ref if a published_name is defined" do
+          route.objectid = "chouette:Route:1:"
+          route.published_name = "dummy"
+          is_expected.to have_key(:direction_ref)
+        end
+
+        it "doesn't include a direction_ref if a published_name isn't defined" do
+          route.published_name = nil
+          is_expected.to include(direction_ref: nil)
+        end
+
       end
 
     end
@@ -169,6 +180,20 @@ RSpec.describe Export::NetexGeneric do
           is_expected.to be(stop_point.position+1)
         end
 
+      end
+
+      describe "#stop_point_in_journey_pattern_id" do
+
+        subject { decorator.stop_point_in_journey_pattern_id }
+
+        context "when journey_pattern_id is 'chouette:JourneyPattern:1:LOC' and object_id is 'chouette:StopPointInJourneyPattern:2:LOC' and " do
+          before do
+            decorator.journey_pattern_id = 'chouette:JourneyPattern:1:LOC'
+            stop_point.objectid = 'chouette:StopPointInJourneyPattern:2:LOC'
+          end
+
+          it { is_expected.to eq('chouette:StopPointInJourneyPattern:1-2:LOC') }
+        end
       end
 
     end

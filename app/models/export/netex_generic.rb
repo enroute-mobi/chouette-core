@@ -824,14 +824,16 @@ class Export::NetexGeneric < Export::Base
       @time_table = period.time_table
     end
 
+    def netex_identifier
+      @netex_identifier ||= Netex::ObjectId.parse(time_table.objectid)
+    end
+
     def operating_period
       Netex::OperatingPeriod.new operating_period_attributes
     end
 
     def operating_period_id
-      name, _type, uuid, loc = time_table.objectid.split(':')
-
-      [name, 'OperatingPeriod', "#{uuid}-#{id}", loc].join(':')
+      netex_identifier.merge(id, type: 'OperatingPeriod').to_s
     end
 
     def operating_period_attributes
@@ -844,9 +846,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def day_type_assignment_id
-      name, _type, uuid, loc = time_table.objectid.split(':')
-
-      [name, 'DayTypeAssignment', "#{uuid}-p#{id}", loc].join(':')
+      netex_identifier.merge("p#{id}", type: 'DayTypeAssignment').to_s
     end
 
     def day_type_assignment
@@ -878,13 +878,16 @@ class Export::NetexGeneric < Export::Base
       @time_table = date.time_table
     end
 
+    def netex_identifier
+      @netex_identifier ||= Netex::ObjectId.parse(time_table.objectid)
+    end
+
     def day_type_assignment
       Netex::DayTypeAssignment.new day_type_assignment_attributes
     end
 
     def date_type_assignment_id
-      name, _type, uuid, loc = time_table.objectid.split(':')
-      [name, 'DayTypeAssignment', "#{uuid}-d#{id}", loc].join(':')
+      netex_identifier.merge("d#{id}", type: 'DayTypeAssignment').to_s
     end
 
     def day_type_assignment_attributes

@@ -43,8 +43,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: e90f05f1a130f37dfaa86f904b267c2d75829b5e
-  branch: NETEX-10-idfm-line-profile
+  revision: 14d627de435d5c5f483582df19cb95396bd167b3
   specs:
     netex (0.1.0)
       ox

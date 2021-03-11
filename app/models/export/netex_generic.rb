@@ -798,7 +798,7 @@ class Export::NetexGeneric < Export::Base
 
     def decorated_periods
       @decorated_periods ||= periods.map do |period|
-        PeriodDecorator.new(period, day_type_ref, data_source_ref)
+        PeriodDecorator.new(period, day_type_ref)
       end
     end
 
@@ -808,7 +808,7 @@ class Export::NetexGeneric < Export::Base
 
     def decorated_dates
       @decorated_dates ||= dates.map do |date|
-        DateDecorator.new(date, day_type_ref, data_source_ref)
+        DateDecorator.new(date, day_type_ref)
       end
     end
 
@@ -816,24 +816,37 @@ class Export::NetexGeneric < Export::Base
 
   class PeriodDecorator < SimpleDelegator
 
-    attr_accessor :day_type_ref, :data_source_ref
-    def initialize(period, day_type_ref, data_source_ref)
+    attr_accessor :day_type_ref, :time_table
+    def initialize(period, day_type_ref)
       super period
       @day_type_ref = day_type_ref
-      @data_source_ref = data_source_ref
+
+      @time_table = period.time_table
+    end
+
+    def netex_identifier
+      @netex_identifier ||= Netex::ObjectId.parse(time_table.objectid)
     end
 
     def operating_period
       Netex::OperatingPeriod.new operating_period_attributes
     end
 
+    def operating_period_id
+      netex_identifier.merge(id, type: 'OperatingPeriod').to_s
+    end
+
     def operating_period_attributes
       {
-        id: id,
-        data_source_ref: data_source_ref,
+        id: operating_period_id,
+        data_source_ref: time_table.data_source_ref,
         from_date: period_start,
         to_date: period_end
       }
+    end
+
+    def day_type_assignment_id
+      netex_identifier.merge("p#{id}", type: 'DayTypeAssignment').to_s
     end
 
     def day_type_assignment
@@ -842,8 +855,8 @@ class Export::NetexGeneric < Export::Base
 
     def day_type_assignment_attributes
       {
-        id: id,
-        data_source_ref: data_source_ref,
+        id: day_type_assignment_id,
+        data_source_ref: time_table.data_source_ref,
         operating_period_ref: operating_period_ref,
         day_type_ref: day_type_ref,
         order: 0
@@ -858,21 +871,29 @@ class Export::NetexGeneric < Export::Base
 
   class DateDecorator < SimpleDelegator
 
-    attr_accessor :day_type_ref, :data_source_ref
-    def initialize(date, day_type_ref, data_source_ref)
+    attr_accessor :day_type_ref
+    def initialize(date, day_type_ref)
       super date
       @day_type_ref = day_type_ref
-      @data_source_ref = data_source_ref
+      @time_table = date.time_table
+    end
+
+    def netex_identifier
+      @netex_identifier ||= Netex::ObjectId.parse(time_table.objectid)
     end
 
     def day_type_assignment
       Netex::DayTypeAssignment.new day_type_assignment_attributes
     end
 
+    def date_type_assignment_id
+      netex_identifier.merge("d#{id}", type: 'DayTypeAssignment').to_s
+    end
+
     def day_type_assignment_attributes
       {
-        id: id,
-        data_source_ref: data_source_ref,
+        id: date_type_assignment_id,
+        data_source_ref: time_table.data_source_ref,
         date: date,
         is_available: in_out,
         day_type_ref: day_type_ref,

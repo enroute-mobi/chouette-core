@@ -350,18 +350,83 @@ RSpec.describe Export::NetexGeneric do
     end
   end
 
-  describe "TimeTables export" do
+  describe 'TimeTables export' do
+
+    describe Export::NetexGeneric::TimeTableDecorator do
+      let(:time_table) { FactoryBot.create(:time_table) }
+      let(:decorated_tt) { Export::NetexGeneric::TimeTableDecorator.new time_table }
+      let(:netex_resources) { decorated_tt.netex_resources }
+      let(:operating_periods) { netex_resources.select { |r| r.is_a? Netex::OperatingPeriod }}
+      let(:day_type_assignments) { netex_resources.select { |r| r.is_a? Netex::DayTypeAssignment }}
+
+      describe '#day_type_attributes' do
+        let(:day_type_attributes) { decorated_tt.day_type_attributes }
+
+        it 'uses TimeTable objectid as Netex id' do
+          expect(day_type_attributes[:id]).to eq(time_table.objectid)
+        end
+
+        it 'uses TimeTable data_source_ref as Netex data_source_ref' do
+          expect(day_type_attributes[:data_source_ref]).to eq(time_table.data_source_ref)
+        end
+    
+        it 'uses TimeTable comment as Netex name' do
+          expect(day_type_attributes[:name]).to eq(time_table.comment)
+        end
+  
+        it 'uses #properties as Netex DayType properties' do
+          expect(day_type_attributes[:properties]).to be_kind_of(Array)
+          expect(day_type_attributes[:properties]).not_to be_empty
+        end
+      end
+
+      describe '#days_of_week' do
+        before { allow(time_table).to receive(:periods) { Chouette::TimeTablePeriod.none } }
+
+        %w{monday tuesday wednesday thursday friday saturday sunday}.each do |day|
+          context "when the TimeTable includes #{day}" do
+            before { allow(time_table).to receive(day.to_sym) { true } }
+
+            it "inlucdes #{day.capitalize}" do
+              expect(decorated_tt.days_of_week).to include(day.capitalize)
+            end
+          end
+        end
+      end
+    
+      describe '#exported_periods' do
+        it 'should have one DayTypeAssignment & one OperatingPeriod for each period' do
+          dats_count = decorated_tt.exported_periods.count {|r| r.is_a? Netex::DayTypeAssignment }
+          ops_count = decorated_tt.exported_periods.count {|r| r.is_a? Netex::OperatingPeriod }
+
+          expect(dats_count).to eq(time_table.periods.count)
+          expect(ops_count).to eq(time_table.periods.count)
+        end
+      end
+
+      describe '#exported_dates' do
+        it 'should have have the same number of dates' do
+          expect(time_table.dates.count).to eq(decorated_tt.exported_dates.count)
+        end
+      end
+    end
 
     describe Export::NetexGeneric::PeriodDecorator do
+      let(:time_table) { FactoryBot.create(:time_table) }
 
       let(:period) do
         Chouette::TimeTablePeriod.new period_start: Date.parse('2021-01-01'),
-                                      period_end: Date.parse('2021-12-31')
+                                      period_end: Date.parse('2021-12-31'),
+                                      time_table: time_table
       end
-      let(:decorator) { Export::NetexGeneric::PeriodDecorator.new period, nil, '' }
+      let(:decorator) { Export::NetexGeneric::PeriodDecorator.new period, nil }
 
       describe "#operating_period_attributes" do
         subject { decorator.operating_period_attributes }
+
+        it 'has a id with the OperatingPeriod type' do
+          expect(subject[:id]).to include('OperatingPeriod')
+        end
 
         it "uses the Period start date as NeTEx from date (the datetime is created by the Netex resource)" do
           is_expected.to include(from_date: period.period_start)
@@ -372,6 +437,31 @@ RSpec.describe Export::NetexGeneric do
         end
       end
 
+      describe "#day_type_assignment_attributes" do
+        subject { decorator.day_type_assignment_attributes }
+
+        it 'has a id with the DayTypeAssignment type' do
+          expect(subject[:id]).to include('DayTypeAssignment')
+          expect(subject[:id]).to match(/p#{period.id}/)
+        end
+      end
+
+    end
+
+    describe Export::NetexGeneric::DateDecorator do
+      let(:time_table) { FactoryBot.create(:time_table) }
+
+      let(:date) do
+        Chouette::TimeTableDate.new date: Date.parse('2021-01-01'), time_table: time_table
+      end
+      let(:decorator) { Export::NetexGeneric::DateDecorator.new date, nil }
+
+      subject { decorator.day_type_assignment_attributes }
+
+      it 'has a id with the DayTypeAssignment type' do
+        expect(subject[:id]).to include('DayTypeAssignment')
+        expect(subject[:id]).to match(/d#{date.id}/)
+      end
     end
 
   end

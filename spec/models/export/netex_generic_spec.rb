@@ -511,7 +511,7 @@ RSpec.describe Export::NetexGeneric do
     end
 
     context 'for a DateRange scope' do
-      let(:export_scope) { Export::Scope::DateRange.new context.referential, Time.zone.now...1.month.from_now }
+      let(:export_scope) { Export::Scope::DateRange.new context.referential, Time.zone.now.to_date...1.month.from_now }
 
       context 'some metadatas are related to organisations through referential_source' do
         before do
@@ -532,7 +532,7 @@ RSpec.describe Export::NetexGeneric do
 
         context 'and cover daterange' do
           before do
-            metadatas.update_attribute(:periodes, [Time.zone.now..1.month.from_now])
+            metadatas.update_attribute(:periodes, [Time.zone.now.to_date..1.month.from_now])
           end
 
           it 'should return the organisations related to the metadatas' do

@@ -105,7 +105,7 @@ module Export::Scope
     end
 
     def metadatas
-      super.metadatas..include_dateranges(date_range)
+      super.include_daterange(date_range)
     end
 
   end

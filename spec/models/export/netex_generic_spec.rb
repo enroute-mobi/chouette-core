@@ -468,42 +468,78 @@ RSpec.describe Export::NetexGeneric do
 
   describe 'Organisation export' do
     let(:target) { MockNetexTarget.new }
-    let(:export_scope) { Export::Scope::All.new context.referential }
     let(:export) { Export::NetexGeneric.new export_scope: export_scope, target: target }
 
-    let(:part) do
-      Export::NetexGeneric::Organisations.new export
-    end
-
-    let(:context) do
-      Chouette.create do
-        referential
-        2.times { organisation }
+      let(:part) do
+        Export::NetexGeneric::Organisations.new export
       end
-    end
 
-    let(:metadatas) { context.referential.metadatas.first }
-
-    before { context.referential.switch }
-
-    context 'no metadatas are related to organisations through referential_source' do
-      it 'should return an empty collection' do
-        part.export!
-        expect(target.resources).to be_empty
+      let(:context) do
+        Chouette.create do
+          referential
+          2.times { organisation }
+        end
       end
-    end
 
-    context 'some metadatas are related to organisations through referential_source' do
+      let(:metadatas) { context.referential.metadatas.first }
       let(:orga1) { context.organisations.first }
       let(:orga1) { context.organisations.last }
-      before do
-        new_ref = FactoryBot.create(:referential, organisation: orga1)
-        metadatas.update_attribute(:referential_source, new_ref)
+      before { context.referential.switch }
+
+    context 'for a Export::All::Scope' do
+      let(:export_scope) { Export::Scope::All.new context.referential }
+      
+      context 'no metadatas are related to organisations through referential_source' do
+        it 'should return an empty collection' do
+          part.export!
+          expect(target.resources).to be_empty
+        end
       end
 
-      it 'should return the organisations related to the metadatas' do
-        part.export!
-        expect(target.resources.size).to eq(1)
+      context 'some metadatas are related to organisations through referential_source' do
+        
+        before do
+          new_ref = FactoryBot.create(:referential, organisation: orga1)
+          metadatas.update_attribute(:referential_source, new_ref)
+        end
+
+        it 'should return the organisations related to the metadatas' do
+          part.export!
+          expect(target.resources.size).to eq(1)
+        end
+      end
+    end
+
+    context 'for a DateRange scope' do
+      let(:export_scope) { Export::Scope::DateRange.new context.referential, Time.zone.now...1.month.from_now }
+
+      context 'some metadatas are related to organisations through referential_source' do
+        before do
+          new_ref = FactoryBot.create(:referential, organisation: orga1)
+          metadatas.update_attribute(:referential_source, new_ref)
+        end
+
+        context 'but dont cover daterange' do
+          before do
+            metadatas.update_attribute(:periodes, [2.month.from_now..3.month.from_now])
+          end
+
+          it 'should return an empty collection' do
+            part.export!
+            expect(target.resources).to be_empty
+          end
+        end
+
+        context 'and cover daterange' do
+          before do
+            metadatas.update_attribute(:periodes, [Time.zone.now..1.month.from_now])
+          end
+
+          it 'should return the organisations related to the metadatas' do
+            part.export!
+            expect(target.resources.size).to eq(1)
+          end
+        end
       end
     end
 

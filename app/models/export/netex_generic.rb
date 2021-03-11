@@ -1,13 +1,17 @@
 class Export::NetexGeneric < Export::Base
   include LocalExportSupport
 
-  option :profile, collection: %w(none european)
+  option :profile, collection: %w(none european idfm/line)
   option :duration, type: :integer
 
   def target
-    @target ||= Netex::Target.build export_file, profile: netex_profile
+    @target ||= Netex::Target.build export_file, profile: netex_profile, validity_periods: validity_periods
   end
   attr_writer :target
+
+  def validity_periods
+    [ referential.validity_period ]
+  end
 
   def export_scope
     @export_scope ||= duration ? Export::Scope::DateRange.new(referential, date_range) : Export::Scope::All.new
@@ -131,7 +135,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def register_tag_for(line)
-      tag_index[line.id] = { line_id: line.objectid, company_id: line.company&.id }
+      tag_index[line.id] = { line_id: line.objectid, line_name: line.name, company_id: line.company&.id }
     end
 
     protected
@@ -623,7 +627,7 @@ class Export::NetexGeneric < Export::Base
     delegate :vehicle_journeys, to: :export_scope
 
     def export!
-      vehicle_journeys.includes(:time_tables, {journey_pattern: :route}, vehicle_journey_at_stops: { stop_point: :stop_area }).find_each(batch_size: 200) do |vehicle_journey|
+      vehicle_journeys.includes(:time_tables, {journey_pattern: :route}, vehicle_journey_at_stops: [:stop_area, { stop_point: :stop_area }]).find_each(batch_size: 200) do |vehicle_journey|
         tags = resource_tagger.tags_for(vehicle_journey.journey_pattern.route.line_id)
         tagged_target = TaggedTarget.new(target, tags)
 
@@ -662,8 +666,8 @@ class Export::NetexGeneric < Export::Base
       end
 
       def vehicle_journey_stop_assignments
-        vehicle_journey_at_stops.joins(:stop_area).map do |vjas|
-          VehicleJourneyStopAssignmentDecorator.new(vjas, self)
+        vehicle_journey_at_stops.select(&:stop_area_id).map do |stop|
+          VehicleJourneyStopAssignmentDecorator.new(stop, self)
         end
       end
 

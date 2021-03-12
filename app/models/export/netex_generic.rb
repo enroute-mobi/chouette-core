@@ -57,7 +57,8 @@ class Export::NetexGeneric < Export::Base
         StopPoints,
         JourneyPatterns,
         VehicleJourneys,
-        TimeTables
+        TimeTables,
+        Organisations
       ]
 
       part_classes.each_with_index do |part_class, index|
@@ -918,7 +919,24 @@ class Export::NetexGeneric < Export::Base
         end
       end
     end
-
   end
+
+  class Organisations < Part
+    delegate :organisations, to: :export_scope
+
+    def export!
+      organisations.find_each do |o|
+        target << Decorator.new(o).netex_resource
+      end
+    end
+
+    class Decorator < SimpleDelegator
+
+      def netex_resource
+        Netex::GeneralOrganisation.new(id: code, name: name)
+      end
+    end
+  end
+
 
 end

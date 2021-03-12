@@ -55,6 +55,48 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
 
     end
 
+    describe "metadatas" do
+
+      let(:referential) { double metadatas: double("referential metadatas") }
+      let(:scope) { Export::Scope::Base.new(referential) }
+
+      subject { scope.metadatas }
+
+      it { is_expected.to eq(referential.metadatas) }
+
+    end
+
+    describe "organisations" do
+
+      let(:context) do
+        Chouette.create do
+          referential
+        end
+      end
+
+      let(:referential) { context.referential }
+      let(:scope) { Export::Scope::Base.new(referential) }
+
+      subject { scope.organisations }
+
+      context 'no metadatas are related to organisations through referential_source' do
+        it { is_expected.to be_empty }
+      end
+
+      context 'some metadatas are related to organisations through referential_source' do
+        before do
+          # Use the referential .. as its own source for the test
+          referential.metadatas.update_all referential_source_id: referential.id
+        end
+        let(:organisation) { referential.organisation }
+
+        it "returns related organisations" do
+          is_expected.to contain_exactly(organisation)
+        end
+      end
+
+    end
+
   end
 
   describe "DateRange" do
@@ -228,6 +270,25 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
 
       it "doesn't provide a Shape twice" do
         expect(scope.shapes).to be_uniq
+      end
+
+    end
+
+    describe "#metadatas" do
+
+      let(:lines) { [ context.line(:first) ] }
+
+      let(:period_before_daterange) { (date_range.begin - 100)..(date_range.begin - 10) }
+      let(:period_after_daterange) { (date_range.end + 10)..(date_range.end + 100) }
+
+      let(:metadata_out_of_scope) do
+        referential.metadatas.create! lines: lines, periodes: [period_before_daterange, period_after_daterange]
+      end
+
+      subject { scope.metadatas }
+
+      it "returns only referential metadatas in scope date range" do
+        is_expected.to_not include(metadata_out_of_scope)
       end
 
     end

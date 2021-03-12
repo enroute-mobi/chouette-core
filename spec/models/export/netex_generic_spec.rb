@@ -369,11 +369,11 @@ RSpec.describe Export::NetexGeneric do
         it 'uses TimeTable data_source_ref as Netex data_source_ref' do
           expect(day_type_attributes[:data_source_ref]).to eq(time_table.data_source_ref)
         end
-    
+
         it 'uses TimeTable comment as Netex name' do
           expect(day_type_attributes[:name]).to eq(time_table.comment)
         end
-  
+
         it 'uses #properties as Netex DayType properties' do
           expect(day_type_attributes[:properties]).to be_kind_of(Array)
           expect(day_type_attributes[:properties]).not_to be_empty
@@ -393,7 +393,7 @@ RSpec.describe Export::NetexGeneric do
           end
         end
       end
-    
+
       describe '#exported_periods' do
         it 'should have one DayTypeAssignment & one OperatingPeriod for each period' do
           dats_count = decorated_tt.exported_periods.count {|r| r.is_a? Netex::DayTypeAssignment }
@@ -467,97 +467,26 @@ RSpec.describe Export::NetexGeneric do
   end
 
   describe 'Organisation export' do
-    let(:target) { MockNetexTarget.new }
-    let(:export) { Export::NetexGeneric.new export_scope: export_scope, target: target }
-
-      let(:part) do
-        Export::NetexGeneric::Organisations.new export
-      end
-
-      let(:context) do
-        Chouette.create do
-          referential
-          2.times { organisation }
-        end
-      end
-
-      let(:metadatas) { context.referential.metadatas.first }
-      let(:orga1) { context.organisations.first }
-      let(:orga1) { context.organisations.last }
-      before { context.referential.switch }
-
-    context 'for a Export::All::Scope' do
-      let(:export_scope) { Export::Scope::All.new context.referential }
-      
-      context 'no metadatas are related to organisations through referential_source' do
-        it 'should return an empty collection' do
-          part.export!
-          expect(target.resources).to be_empty
-        end
-      end
-
-      context 'some metadatas are related to organisations through referential_source' do
-        
-        before do
-          new_ref = FactoryBot.create(:referential, organisation: orga1)
-          metadatas.update_attribute(:referential_source, new_ref)
-        end
-
-        it 'should return the organisations related to the metadatas' do
-          part.export!
-          expect(target.resources.size).to eq(1)
-        end
-      end
-    end
-
-    context 'for a DateRange scope' do
-      let(:export_scope) { Export::Scope::DateRange.new context.referential, Time.zone.now.to_date...1.month.from_now }
-
-      context 'some metadatas are related to organisations through referential_source' do
-        before do
-          new_ref = FactoryBot.create(:referential, organisation: orga1)
-          metadatas.update_attribute(:referential_source, new_ref)
-        end
-
-        context 'but dont cover daterange' do
-          before do
-            metadatas.update_attribute(:periodes, [2.month.from_now..3.month.from_now])
-          end
-
-          it 'should return an empty collection' do
-            part.export!
-            expect(target.resources).to be_empty
-          end
-        end
-
-        context 'and cover daterange' do
-          before do
-            metadatas.update_attribute(:periodes, [Time.zone.now.to_date..1.month.from_now])
-          end
-
-          it 'should return the organisations related to the metadatas' do
-            part.export!
-            expect(target.resources.size).to eq(1)
-          end
-        end
-      end
-    end
 
     describe Export::NetexGeneric::Organisations::Decorator do
-      let(:organisation) { FactoryBot.create(:organisation) }
-      let(:decorator) { described_class}
-      let(:resource) { decorator.new(organisation).netex_resource }
+      let(:organisation) { Organisation.new }
 
-      describe '#id' do
-        it 'uses Organisation\'s code' do
-          expect(resource.id).to eq(organisation.code)
-        end
-      end
+      describe "netex_resource" do
 
-      describe '#name' do
-        it 'uses Organisation\'s name' do
-          expect(resource.name).to eq(organisation.name)
+        subject(:resource) { described_class.new(organisation).netex_resource }
+
+        describe '#id' do
+          it 'uses Organisation\'s code' do
+            is_expected.to have_attributes(id: organisation.code)
+          end
         end
+
+        describe '#name' do
+          it 'uses Organisation\'s name' do
+            is_expected.to have_attributes(name: organisation.name)
+          end
+        end
+
       end
     end
   end

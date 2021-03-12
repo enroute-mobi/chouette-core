@@ -21,11 +21,11 @@ module Export::Scope
     delegate :codes, to: :workgroup
 
     def metadatas
-      referential.metadatas.joins(referential_source: :organisation).distinct
+      referential.metadatas
     end
 
     def organisations
-      Organisation.where(id: metadatas.pluck('organisations.id'))
+      workgroup.organisations.where(id: metadatas.joins(referential_source: :organisation).distinct.pluck('organisations.id'))
     end
 
     def stop_areas

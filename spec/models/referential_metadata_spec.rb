@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 RSpec.describe ReferentialMetadata, :type => :model do
 
@@ -166,12 +167,64 @@ RSpec.describe ReferentialMetadata, :type => :model do
     end
   end
 
-  describe "#includes_lines" do
+  describe ".includes_lines" do
 
     let(:referential_metadata) { create :referential_metadata }
 
     it "should find ReferentialMetadata associated with given Line" do
       expect(ReferentialMetadata.include_lines(referential_metadata.lines)).to eq([referential_metadata])
+    end
+
+  end
+
+  describe ".include_daterange" do
+
+    let(:context) do
+      Chouette.create do
+        referential periods: [ Date.parse("2030-06-01")..Date.parse("2030-06-30") ]
+      end
+    end
+
+    let(:referential) { context.referential }
+    let(:metadata) { referential.metadatas.first }
+
+    let(:metadata_begin) { metadata.periods.first.begin }
+    let(:metadata_end) { metadata.periods.first.end }
+
+    subject { referential.metadatas.include_daterange(date_range) }
+
+    context "when date range is before any metadata" do
+      let(:date_range) { metadata_begin-100..metadata_begin-10 }
+      it { is_expected.to be_empty }
+    end
+
+    context "when date range is after any metadata" do
+      let(:date_range) { metadata_end+1..metadata_end+100 }
+      it { is_expected.to be_empty }
+    end
+
+    matcher :find_the_metadata do
+      match { |actual| actual.include? metadata }
+    end
+
+    context "when the date range ends into one the metadata periods" do
+      let(:date_range) { metadata_begin-10..metadata_begin }
+      it { is_expected.to find_the_metadata }
+    end
+
+    context "when the date range begins into the metadata period" do
+      let(:date_range) { metadata_end..metadata_end+10 }
+      it { is_expected.to find_the_metadata }
+    end
+
+    context "when the date range is the same range than the metadata period" do
+      let(:date_range) { metadata_begin..metadata_end }
+      it { is_expected.to find_the_metadata }
+    end
+
+    context "when the date range is into the metadata period" do
+      let(:date_range) { metadata_begin+1..metadata_end-1 }
+      it { is_expected.to find_the_metadata }
     end
 
   end

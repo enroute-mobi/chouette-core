@@ -353,7 +353,7 @@ RSpec.describe Export::NetexGeneric do
   describe 'TimeTables export' do
 
     describe Export::NetexGeneric::TimeTableDecorator do
-      let(:time_table) { FactoryBot.create(:time_table) }
+      let(:time_table) { Chouette::TimeTable.new }
       let(:decorated_tt) { Export::NetexGeneric::TimeTableDecorator.new time_table }
       let(:netex_resources) { decorated_tt.netex_resources }
       let(:operating_periods) { netex_resources.select { |r| r.is_a? Netex::OperatingPeriod }}
@@ -412,7 +412,7 @@ RSpec.describe Export::NetexGeneric do
     end
 
     describe Export::NetexGeneric::PeriodDecorator do
-      let(:time_table) { FactoryBot.create(:time_table) }
+      let(:time_table) { Chouette::TimeTable.new objectid: 'chouette:TimeTable:test:LOC' }
 
       let(:period) do
         Chouette::TimeTablePeriod.new period_start: Date.parse('2021-01-01'),
@@ -449,7 +449,7 @@ RSpec.describe Export::NetexGeneric do
     end
 
     describe Export::NetexGeneric::DateDecorator do
-      let(:time_table) { FactoryBot.create(:time_table) }
+      let(:time_table) { Chouette::TimeTable.new objectid: 'chouette:TimeTable:test:LOC' }
 
       let(:date) do
         Chouette::TimeTableDate.new date: Date.parse('2021-01-01'), time_table: time_table

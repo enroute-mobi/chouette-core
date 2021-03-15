@@ -1,58 +1,111 @@
 RSpec.describe Export::Scope, use_chouette_factory: true do
 
-  describe "Base" do
+  describe '#build' do
+    context 'with lines' do
+      it 'should apply the Lines & Scheduled scopes' do
+        scope = Export::Scope.build(referential, line_ids: [1])
 
-    describe "shape_referential" do
-
-      it "uses Workgroup shape referential" do
-        referential = double(workgroup: double(shape_referential: double))
-
-        expect(Export::Scope::Base.new(referential).shape_referential).
-          to be(referential.workgroup.shape_referential)
+        expect(scope).to be_a_kind_of(Export::Scope::Lines)
+        expect(scope.current_scope).to be_a_kind_of(Export::Scope::Scheduled)
       end
-
     end
 
-    describe "stop_areas" do
-
-      it "uses workbench stop areas" do
-        referential = double(workbench: double(stop_areas: double))
-
-        expect(Export::Scope::Base.new(referential).stop_areas).
-          to be(referential.workbench.stop_areas)
+    context 'with date_range & lines' do
+      it 'should apply the Lines & DateRange scopes' do
+        scope = Export::Scope.build(referential, duration: 30, line_ids: [1])
+        
+        expect(scope).to be_a_kind_of(Export::Scope::Lines)
+        expect(scope.current_scope).to be_a_kind_of(Export::Scope::DateRange)
       end
+    end
+  end
 
-      context "without workbench" do
-        it "uses stop areas from stop area referential" do
-          referential = double(workbench: nil,
-                               stop_area_referential: double(stop_areas: double))
+  let!(:context) do
+    Chouette.create do
+      line :first
+      line :second
+      line :third
 
-          expect(Export::Scope::Base.new(referential).stop_areas).
-            to be(referential.stop_area_referential.stop_areas)
+      stop_area :specific_stop
+
+      workbench do
+        shape :shape_in_scope1
+        shape :shape_in_scope2
+        shape
+
+        referential lines: [:first, :second, :third] do
+          time_table :default
+
+          route :in_scope1, line: :first do
+            journey_pattern :in_scope1, shape: :shape_in_scope1 do
+              vehicle_journey :in_scope1, time_tables: [:default]
+            end
+            journey_pattern :in_scope2, shape: :shape_in_scope1 do
+              vehicle_journey :in_scope2, time_tables: [:default]
+            end
+          end
+          route :in_scope2, line: :second do
+            journey_pattern :in_scope3, shape: :shape_in_scope2 do
+              vehicle_journey :in_scope3, time_tables: [:default]
+            end
+            vehicle_journey # no timetable
+          end
+          route
         end
       end
+    end
+  end
 
+  let(:default_scope) { Export::Scope::All.new(context.referential) }
+  let(:routes_in_scope) { [:in_scope1, :in_scope2].map { |n| context.route(n) } }
+
+  describe Export::Scope::Lines do
+    it_behaves_like 'Export::Scope::Filterable'
+
+    let(:lines) { context.referential.lines(:first) }
+    let(:scope) { Export::Scope::Lines.new(lines).apply_current_scope(default_scope) }
+
+    describe '#vehicle_journeys' do
+      it 'should filter them by lines' do
+        in_scope_vj = context.vehicle_journey(:in_scope1)
+        out_scope_vj = context.vehicle_journey(:in_scope2)
+        
+        expect(scope.vehicle_journeys).to include in_scope_vj
+        expect(scope.vehicle_journeys).not_to include out_scope_vj
+      end
     end
 
-    describe "lines" do
-
-      it "uses workbench lines" do
-        referential = double(workbench: double(lines: double))
-
-        expect(Export::Scope::Base.new(referential).lines).
-          to be(referential.workbench.lines)
+    describe '#vehicle_journeys' do
+      it 'should filter them by lines' do
+        # create proper metadata with referential source related to one organisation
+        # the other wont be related
       end
+    end
+  end
 
-      context "without workbench" do
-        it "uses lines from line referential" do
-          referential = double(workbench: nil,
-                               line_referential: double(lines: double))
-
-          expect(Export::Scope::Base.new(referential).lines).
-            to be(referential.line_referential.lines)
-        end
+  describe Export::Scope::Scheduled do
+    it_behaves_like 'Export::Scope::Filterable'
+  
+    describe '#vehicle_journeys' do
+      it 'should filter in the ones with not empty timetables' do
+        # create 2 vjs one associated to an empty tt, the other with a non empty
       end
+    end
+  end
 
+  describe Export::Scope::DateRange do
+    it_behaves_like 'Export::Scope::Filterable'
+
+    describe '#vehicle_journeys' do
+      it 'should filter in the ones with matching timetables' do
+        # create 2 vjs one associated to an empty tt, the other with a non empty
+      end
+    end
+
+    describe '#time_tables' do
+      it 'should filter in the ones overlap the daterange' do
+        # create 2 vjs one associated to an empty tt, the other with a non empty
+      end
     end
 
     describe "metadatas" do
@@ -99,200 +152,258 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
 
   end
 
-  describe "DateRange" do
+  # describe "Base" do
 
-    let!(:context) do
-      Chouette.create do
-        line :first
-        line :second
-        line :third
+  #   describe "shape_referential" do
 
-        stop_area :specific_stop
+  #     it "uses Workgroup shape referential" do
+  #       referential = double(workgroup: double(shape_referential: double))
 
-        workbench do
-          shape :shape_in_scope1
-          shape :shape_in_scope2
-          shape
+  #       expect(Export::Scope::Base.new(referential).shape_referential).
+  #         to be(referential.workgroup.shape_referential)
+  #     end
 
-          referential lines: [:first, :second, :third] do
-            time_table :default
+  #   end
 
-            route :in_scope1, line: :first do
-              journey_pattern :in_scope1, shape: :shape_in_scope1 do
-                vehicle_journey :in_scope1, time_tables: [:default]
-              end
-              journey_pattern :in_scope2, shape: :shape_in_scope1 do
-                vehicle_journey :in_scope2, time_tables: [:default]
-              end
-            end
-            route :in_scope2, line: :second do
-              journey_pattern :in_scope3, shape: :shape_in_scope2 do
-                vehicle_journey :in_scope3, time_tables: [:default]
-              end
-              vehicle_journey # no timetable
-            end
-            route
-          end
-        end
-      end
-    end
+  #   describe "stop_areas" do
 
-    # around(:each) lets models in database after spec (?!)
-    before do
-      context.referential.switch
-    end
+  #     it "uses workbench stop areas" do
+  #       referential = double(workbench: double(stop_areas: double))
 
-    let(:date_range) { context.time_table(:default).date_range }
-    let(:scope) { Export::Scope::DateRange.new context.referential, date_range }
+  #       expect(Export::Scope::Base.new(referential).stop_areas).
+  #         to be(referential.workbench.stop_areas)
+  #     end
 
-    let(:vehicle_journeys_in_scope) do
-      [:in_scope1, :in_scope2, :in_scope3].map { |n| context.vehicle_journey(n) }
-    end
+  #     context "without workbench" do
+  #       it "uses stop areas from stop area referential" do
+  #         referential = double(workbench: nil,
+  #                              stop_area_referential: double(stop_areas: double))
 
-    let(:routes_in_scope) { [:in_scope1, :in_scope2].map { |n| context.route(n) } }
-    let(:journey_patterns_in_scope) { [:in_scope1, :in_scope2, :in_scope3].map { |n| context.journey_pattern(n) } }
+  #         expect(Export::Scope::Base.new(referential).stop_areas).
+  #           to be(referential.stop_area_referential.stop_areas)
+  #       end
+  #     end
 
-    describe "stop_areas" do
+  #   end
 
-      let(:stop_areas_in_scope) { routes_in_scope.map(&:stop_areas).flatten.uniq }
+  #   describe "lines" do
 
-      it "select stop areas associated with routes" do
-        expect(scope.stop_areas).to match_array(stop_areas_in_scope)
-      end
+  #     it "uses workbench lines" do
+  #       referential = double(workbench: double(lines: double))
 
-      it "doesn't provide a Stop Area twice" do
-        expect(scope.stop_areas).to be_uniq
-      end
+  #       expect(Export::Scope::Base.new(referential).lines).
+  #         to be(referential.workbench.lines)
+  #     end
 
-      context "when a VehicleJourneyAtStop has a specific Stop" do
+  #     context "without workbench" do
+  #       it "uses lines from line referential" do
+  #         referential = double(workbench: nil,
+  #                              line_referential: double(lines: double))
 
-        let(:vehicle_journey_at_stop) do
-          vehicle_journeys_in_scope.sample.vehicle_journey_at_stops.sample
-        end
-        let(:specific_stop) { context.stop_area(:specific_stop) }
+  #         expect(Export::Scope::Base.new(referential).lines).
+  #           to be(referential.line_referential.lines)
+  #       end
+  #     end
 
-        before do
-          vehicle_journey_at_stop.update stop_area: specific_stop
-        end
+  #   end
 
-        it "select specific stops" do
-          expect(scope.stop_areas).to include(specific_stop)
-        end
+  # end
 
-      end
+  # describe "DateRange" do
 
-    end
+  #   let!(:context) do
+  #     Chouette.create do
+  #       line :first
+  #       line :second
+  #       line :third
 
-    describe "stop_points" do
+  #       stop_area :specific_stop
 
-      let(:stop_points_in_scope) do
-        routes_in_scope.map(&:stop_points).flatten.uniq
-      end
+  #       workbench do
+  #         shape :shape_in_scope1
+  #         shape :shape_in_scope2
+  #         shape
 
-      it "select stop points associated with routes" do
-        expect(scope.stop_points).to match_array(stop_points_in_scope)
-      end
+  #         referential lines: [:first, :second, :third] do
+  #           time_table :default
 
-      it "doesn't provide a Stop Point twice" do
-        expect(scope.stop_points).to be_uniq
-      end
+  #           route :in_scope1, line: :first do
+  #             journey_pattern :in_scope1, shape: :shape_in_scope1 do
+  #               vehicle_journey :in_scope1, time_tables: [:default]
+  #             end
+  #             journey_pattern :in_scope2, shape: :shape_in_scope1 do
+  #               vehicle_journey :in_scope2, time_tables: [:default]
+  #             end
+  #           end
+  #           route :in_scope2, line: :second do
+  #             journey_pattern :in_scope3, shape: :shape_in_scope2 do
+  #               vehicle_journey :in_scope3, time_tables: [:default]
+  #             end
+  #             vehicle_journey # no timetable
+  #           end
+  #           route
+  #         end
+  #       end
+  #     end
+  #   end
 
-    end
+  #   # around(:each) lets models in database after spec (?!)
+  #   before do
+  #     context.referential.switch
+  #   end
 
-    describe "routes" do
+  #   let(:date_range) { context.time_table(:default).date_range }
+  #   let(:scope) { Export::Scope::DateRange.new context.referential, date_range }
 
-      it "select routes associated with vehicle journeys in scope" do
-        expect(scope.routes).to match_array(routes_in_scope)
-      end
+  #   let(:vehicle_journeys_in_scope) do
+  #     [:in_scope1, :in_scope2, :in_scope3].map { |n| context.vehicle_journey(n) }
+  #   end
 
-      it "doesn't provide a Route twice" do
-        expect(scope.routes).to be_uniq
-      end
+  #   let(:routes_in_scope) { [:in_scope1, :in_scope2].map { |n| context.route(n) } }
+  #   let(:journey_patterns_in_scope) { [:in_scope1, :in_scope2, :in_scope3].map { |n| context.journey_pattern(n) } }
 
-    end
+  #   describe "stop_areas" do
 
-    describe "journey_patterns" do
+  #     let(:stop_areas_in_scope) { routes_in_scope.map(&:stop_areas).flatten.uniq }
 
-      it "select journey patterns associated with vehicle journeys in scope" do
-        expect(scope.journey_patterns).to match_array(journey_patterns_in_scope)
-      end
+  #     it "select stop areas associated with routes" do
+  #       expect(scope.stop_areas).to match_array(stop_areas_in_scope)
+  #     end
 
-      it "doesn't provide a Journey Pattern twice" do
-        expect(scope.journey_patterns).to be_uniq
-      end
+  #     it "doesn't provide a Stop Area twice" do
+  #       expect(scope.stop_areas).to be_uniq
+  #     end
 
-    end
+  #     context "when a VehicleJourneyAtStop has a specific Stop" do
 
-    describe "vehicle_journeys" do
+  #       let(:vehicle_journey_at_stop) do
+  #         vehicle_journeys_in_scope.sample.vehicle_journey_at_stops.sample
+  #       end
+  #       let(:specific_stop) { context.stop_area(:specific_stop) }
 
-      it "select vehicle journeys with a time table in the date range" do
-        expect(scope.vehicle_journeys).to eq(vehicle_journeys_in_scope)
-      end
+  #       before do
+  #         vehicle_journey_at_stop.update stop_area: specific_stop
+  #       end
 
-    end
+  #       it "select specific stops" do
+  #         expect(scope.stop_areas).to include(specific_stop)
+  #       end
 
-    describe "lines" do
+  #     end
 
-      let(:lines_with_vehicle_journeys) { [context.line(:first), context.line(:second)] }
+  #   end
 
-      it "select lines associated to vehicle journeys in date range" do
-        expect(scope.lines).to eq(lines_with_vehicle_journeys)
-      end
+  #   describe "stop_points" do
 
-      it "doesn't provide a line twice" do
-        expect(scope.lines).to be_uniq
-      end
+  #     let(:stop_points_in_scope) do
+  #       routes_in_scope.map(&:stop_points).flatten.uniq
+  #     end
 
-    end
+  #     it "select stop points associated with routes" do
+  #       expect(scope.stop_points).to match_array(stop_points_in_scope)
+  #     end
 
-    describe "vehicle_journeys_at_stops" do
+  #     it "doesn't provide a Stop Point twice" do
+  #       expect(scope.stop_points).to be_uniq
+  #     end
 
-      let(:vehicle_journey_at_stops_in_scope) do
-        vehicle_journeys_in_scope.map(&:vehicle_journey_at_stops).flatten
-      end
+  #   end
 
-      it "select all VehicleJourneyAtStops associated to vehicle journeys in date range" do
-        expect(scope.vehicle_journey_at_stops).to match_array(vehicle_journey_at_stops_in_scope)
-      end
+  #   describe "routes" do
 
-      it "doesn't provide a VehicleJourneyAtStop twice" do
-        expect(scope.vehicle_journey_at_stops).to be_uniq
-      end
+  #     it "select routes associated with vehicle journeys in scope" do
+  #       expect(scope.routes).to match_array(routes_in_scope)
+  #     end
 
-    end
+  #     it "doesn't provide a Route twice" do
+  #       expect(scope.routes).to be_uniq
+  #     end
 
-    describe "journey_patterns" do
+  #   end
 
-      it "select shapes associated with journey patterns in scope" do
-        shapes_in_scope = journey_patterns_in_scope.map(&:shape).uniq
-        expect(scope.shapes).to match_array(shapes_in_scope)
-      end
+  #   describe "journey_patterns" do
 
-      it "doesn't provide a Shape twice" do
-        expect(scope.shapes).to be_uniq
-      end
+  #     it "select journey patterns associated with vehicle journeys in scope" do
+  #       expect(scope.journey_patterns).to match_array(journey_patterns_in_scope)
+  #     end
 
-    end
+  #     it "doesn't provide a Journey Pattern twice" do
+  #       expect(scope.journey_patterns).to be_uniq
+  #     end
 
-    describe "#metadatas" do
+  #   describe "#metadatas" do
 
-      let(:lines) { [ context.line(:first) ] }
+  #     let(:lines) { [ context.line(:first) ] }
 
-      let(:period_before_daterange) { (date_range.begin - 100)..(date_range.begin - 10) }
-      let(:period_after_daterange) { (date_range.end + 10)..(date_range.end + 100) }
+  #     let(:period_before_daterange) { (date_range.begin - 100)..(date_range.begin - 10) }
+  #     let(:period_after_daterange) { (date_range.end + 10)..(date_range.end + 100) }
 
-      let(:metadata_out_of_scope) do
-        referential.metadatas.create! lines: lines, periodes: [period_before_daterange, period_after_daterange]
-      end
+  #     let(:metadata_out_of_scope) do
+  #       referential.metadatas.create! lines: lines, periodes: [period_before_daterange, period_after_daterange]
+  #     end
 
-      subject { scope.metadatas }
+  #     subject { scope.metadatas }
 
-      it "returns only referential metadatas in scope date range" do
-        is_expected.to_not include(metadata_out_of_scope)
-      end
+  #     it "returns only referential metadatas in scope date range" do
+  #       is_expected.to_not include(metadata_out_of_scope)
+  #     end
 
-    end
+  #   end
 
-  end
+  # end
+  #   end
+
+  #   describe "vehicle_journeys" do
+
+  #     it "select vehicle journeys with a time table in the date range" do
+  #       expect(scope.vehicle_journeys).to eq(vehicle_journeys_in_scope)
+  #     end
+
+  #   end
+
+  #   describe "lines" do
+
+  #     let(:lines_with_vehicle_journeys) { [context.line(:first), context.line(:second)] }
+
+  #     it "select lines associated to vehicle journeys in date range" do
+  #       expect(scope.lines).to eq(lines_with_vehicle_journeys)
+  #     end
+
+  #     it "doesn't provide a line twice" do
+  #       expect(scope.lines).to be_uniq
+  #     end
+
+  #   end
+
+  #   describe "vehicle_journeys_at_stops" do
+
+  #     let(:vehicle_journey_at_stops_in_scope) do
+  #       vehicle_journeys_in_scope.map(&:vehicle_journey_at_stops).flatten
+  #     end
+
+  #     it "select all VehicleJourneyAtStops associated to vehicle journeys in date range" do
+  #       expect(scope.vehicle_journey_at_stops).to match_array(vehicle_journey_at_stops_in_scope)
+  #     end
+
+  #     it "doesn't provide a VehicleJourneyAtStop twice" do
+  #       expect(scope.vehicle_journey_at_stops).to be_uniq
+  #     end
+
+  #   end
+
+  #   describe "journey_patterns" do
+
+  #     it "select shapes associated with journey patterns in scope" do
+  #       shapes_in_scope = journey_patterns_in_scope.map(&:shape).uniq
+  #       expect(scope.shapes).to match_array(shapes_in_scope)
+  #     end
+
+  #     it "doesn't provide a Shape twice" do
+  #       expect(scope.shapes).to be_uniq
+  #     end
+
+  #   end
+
+  # end
 
 end

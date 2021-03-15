@@ -46,6 +46,8 @@ module Chouette
       includes(:periods, :dates).where(time_table_periods: {id: nil}, time_table_dates: {id: nil})
     }
 
+    scope :non_empty, -> { where.not(id: empty) }
+
     scope :linked_to_lines, ->(lines) { joins(vehicle_journeys: :route).where('routes.line_id' => lines.map(&:id)) }
 
     after_save :save_shortcuts

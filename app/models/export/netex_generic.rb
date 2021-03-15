@@ -3,6 +3,10 @@ class Export::NetexGeneric < Export::Base
 
   option :profile, collection: %w(none european idfm/line)
   option :duration, type: :integer
+  option :period, collection: %(scheduled date_range)
+  option :lines, collection: -> (export) { export.workbench.lines }
+  option :companies, collection: -> (export) { export.workbench.companies }
+  option :line_providers, collection: -> (export) { export.workbench.companies }
 
   def target
     @target ||= Netex::Target.build export_file, profile: netex_profile, validity_periods: validity_periods

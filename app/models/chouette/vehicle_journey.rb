@@ -131,6 +131,8 @@ module Chouette
     scope :without_any_purchase_window, -> { joins('LEFT JOIN purchase_windows_vehicle_journeys ON purchase_windows_vehicle_journeys.vehicle_journey_id = vehicle_journeys.id LEFT JOIN purchase_windows ON purchase_windows.id = purchase_windows_vehicle_journeys.purchase_window_id').where(purchase_windows: { id: nil }) }
     scope :without_any_time_table, -> { joins('LEFT JOIN time_tables_vehicle_journeys ON time_tables_vehicle_journeys.vehicle_journey_id = vehicle_journeys.id LEFT JOIN time_tables ON time_tables.id = time_tables_vehicle_journeys.time_table_id').where(:time_tables => { :id => nil}) }
     scope :without_any_passing_time, -> { joins('LEFT JOIN vehicle_journey_at_stops ON vehicle_journey_at_stops.vehicle_journey_id = vehicle_journeys.id').where(vehicle_journey_at_stops: { id: nil }) }
+    scope :scheduled, -> { joins(:time_tables).merge(Chouette::TimeTable.non_empty) }
+    scope :with_lines, -> (lines) { joins(route: :line).where(routes: { line_id: lines }) }
 
     # We need this for the ransack object in the filters
     ransacker :purchase_window_date_gt

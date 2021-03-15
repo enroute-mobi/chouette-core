@@ -1,0 +1,12 @@
+= simple_fields_for :export_scope do |p|
+	.form-group
+		= label_tag 'Exported Lines', nil, class: 'string required col-sm-4 col-xs-5 control-label'
+		.col-sm-8.col-xs-7
+			= select_tag :lines, options_for_select(@facade.exported_lines_types_options), id: 'export_scope_lines', name: 'export_scope[lines]', class: 'select optional form-control', required: true, include_blank: false
+	.form-group
+		.slave.selected-lines data-master="#export_scope_lines" data-value="line"
+			= p.input :line_ids, label: false, collection: @facade.lines_options, selected: [], multiple: true, input_html: { multiple: true, data: { select2ed: true, 'select2ed-placeholder': t('exports.form.line_name'), },  style: 'width: 100%' }, include_blank: false, include_hidden: false
+		.slave.selected-lines data-master="#export_scope_lines" data-value="company"
+			= p.input :line_ids, label: false, collection: @facade.companies_options, input_html: { 'data-select2ed': 'true', 'data-select2ed-placeholder': t('exports.form.company_name'), 'multiple': 'multiple', style: 'width: 100%' }, include_blank: false, include_hidden: false
+		.slave.selected-lines data-master="#export_scope_lines" data-value="line_provider"
+			= p.input :line_ids, label: false, collection: @facade.line_providers_options, input_html: { 'data-select2ed': 'true', 'data-select2ed-placeholder': t('exports.form.line_provider_name'), 'multiple': 'multiple', style: 'width: 100%' }, include_blank: false, include_hidden: false

@@ -10,7 +10,16 @@ class Export::Base < ApplicationModel
     def resources_class_name
       "Export::Resource"
     end
+
+    def subclasses
+      [Export::Gtfs, Export::NetexFull, Export::NetexGeneric, Export::Workgroup]
+    end
+
+    def all_options
+      subclasses.flat_map {|s| s.options.keys }.uniq
+    end
   end
+
 
   include Rails.application.routes.url_helpers
   include OptionsSupport
@@ -41,6 +50,18 @@ class Export::Base < ApplicationModel
   after_create :purge_exports
   # after_commit :notify_state
   attr_accessor :synchronous
+
+  # Setting the attr_accessors based on subclasses options
+  all_options.each { |option| attr_accessor option }
+
+  def export_scope=(attributes)
+    @export_scope = Export::Scope.build(
+      referential,
+      duration: attributes[:duration],
+      line_ids: attributes[:line_ids],
+    )
+  end
+
 
   scope :not_used_by_publication_apis, -> {
     joins('LEFT JOIN public.publication_api_sources ON publication_api_sources.export_id = exports.id')

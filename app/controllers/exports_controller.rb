@@ -6,6 +6,7 @@ class ExportsController < ChouetteController
   skip_before_action :verify_authenticity_token, only: [:upload]
   defaults resource_class: Export::Base, collection_name: 'exports', instance_name: 'export'
   before_action :load_referentials, only: %i[new create]
+  before_action :build_form_facade, only: %i[new create]
 
   # FIXME See CHOUETTE-207
   def upload
@@ -37,6 +38,10 @@ class ExportsController < ChouetteController
 
   protected
 
+  def build_form_facade
+    @facade = Exports::FormFacade.new(workbench)
+  end
+
   def resource
     @export ||= parent.exports.find(params[:id])
   end
@@ -64,7 +69,17 @@ class ExportsController < ChouetteController
     end
     export_params = params.require(:export).permit(permitted_keys)
     export_params[:user_id] ||= current_user.id
+    export_params[:export_scope] = export_scope_params
     export_params
+  end
+
+  def export_scope_params
+      _params = params.require(:export_scope).permit(:duration, :period, line_ids: [])
+
+      line_ids = _params[:line_ids].flat_map { |str| JSON.parse(str) }
+      duration = _params[:period] == 'date_range' ?  _params[:duration].to_i : nil
+
+      { line_ids: line_ids, duration: duration }
   end
 
   def decorate_collection(exports)

@@ -44,7 +44,9 @@ RSpec.shared_examples_for 'Export::Scope::Filterable' do
 			_scope = case described_class.to_s
 			when 'Export::Scope::Lines' then described_class.new(lines_in_scope)
 			when 'Export::Scope::DateRange' then described_class.new(Time.zone.today..1.month.from_now.to_date)
-			when 'Export::Scope::Scheduled 'then described_class.new
+			when 'Export::Scope::Scheduled' then described_class.new
+      else
+        raise 'Filterable sub class not supported'
 			end
 
 			_scope.apply_current_scope(default_scope)

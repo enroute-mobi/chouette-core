@@ -48,6 +48,10 @@ module Export::Scope
     delegate :shapes, to: :shape_referential
 
     delegate :codes, to: :workgroup
+
+    def organisations
+      workgroup.organisations.where(id: metadatas.joins(referential_source: :organisation).distinct.pluck('organisations.id'))
+    end
   end
 
   class All
@@ -60,10 +64,6 @@ module Export::Scope
     end
 
     delegate :vehicle_journeys, :vehicle_journey_at_stops, :journey_patterns, :routes, :stop_points, :time_tables, :referential_codes, to: :referential
-
-    def organisations
-      workgroup.organisations.where(id: metadatas.joins(referential_source: :organisation).distinct.pluck('organisations.id'))
-    end
 
     def stop_areas
       (workbench || stop_area_referential).stop_areas
@@ -155,11 +155,7 @@ module Export::Scope
     end
 
     def metadatas
-      super.include_daterange(date_range)
-    end
-
-    def organisations
-      current_scope.organisations.include_daterange(date_range)
+      current_scope.metadatas.include_daterange(date_range)
     end
   end
 
@@ -177,7 +173,7 @@ module Export::Scope
     attr_reader 
 
     def initialize(selected_line_ids)
-      @line_ids_proc = ->(current_scope) { current_scope.lines.where(id: selected_line_ids) }
+      @line_ids_proc = ->(current_scope) { current_scope.lines.where(id: selected_line_ids).pluck(:id) }
     end
 
     def selected_line_ids
@@ -188,8 +184,8 @@ module Export::Scope
       current_scope.vehicle_journeys.with_lines(selected_line_ids)
     end
 
-    def organisations
-      current_scope.organisations.merge(ReferentialMetadata.with_lines(selected_line_ids))
+    def metadatas
+      current_scope.metadatas.include_lines(selected_line_ids)
     end
   end
 end

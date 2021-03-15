@@ -5,7 +5,7 @@ class Export::Gtfs < Export::Base
   option :period, collection: %w(scheduled date_range)
   option :lines, collection: -> (export) { export.workbench.lines }
   option :companies, collection: -> (export) { export.workbench.companies }
-  option :line_providers, collection: -> (export) { export.workbench.companies }
+  option :line_providers, collection: -> (export) { export.workbench.line_providers }
   option :prefer_referent_stop_area, required: true, type: :boolean, default_value: false
   option :ignore_single_stop_station, required: true, type: :boolean, default_value: false
 

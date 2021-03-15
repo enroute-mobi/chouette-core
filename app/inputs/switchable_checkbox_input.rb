@@ -17,7 +17,7 @@ class SwitchableCheckboxInput < SimpleForm::Inputs::BooleanInput
   end
 
   def span_inner
-    template.content_tag(:span, '', class: 'onoffswitch-inner', on: 'all available periods', off: 'date range')
+    template.content_tag(:span, '', class: 'onoffswitch-inner', on: I18n.t("simple_form.yes"), off: I18n.t("simple_form.no"))
   end
 
   def span_switch

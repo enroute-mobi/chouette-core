@@ -254,6 +254,22 @@ class Import::Gtfs < Import::Base
         )
         next
       end
+      if from_id == to_id
+        create_message(
+          {
+            criticity: :warning,
+            message_key: 'gtfs.transfers.same_arrival_and_departure',
+            resource_attributes: {
+              filename: "#{resource.name}.txt",
+              line_number: resource.rows_count,
+              column_number: 0
+            }
+          },
+          resource: resource,
+          commit: true
+        )
+        next
+      end
 
       connection = connection_links.find_by(departure_id: from_id, arrival_id: to_id, both_ways: true)
       connection ||= connection_links.find_or_initialize_by(departure_id: to_id, arrival_id: from_id, both_ways: true)

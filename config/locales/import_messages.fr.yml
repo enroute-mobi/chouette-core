@@ -41,6 +41,7 @@ fr:
       transfers:
         missing_stop_id: "L'arrêt %{stop_id} est introuvable"
         replacing_duration: "Une nouvelle valeur a été définie pour la durée de transit pour la correspondance %{from_id} => %{to_id}"
+        same_arrival_and_departure: "Les deux arrêts doivent être distincts"
     1_netexstif_2: "Le fichier %{source_filename} ne respecte pas la syntaxe XML ou la XSD NeTEx : erreur '%{error_value}' rencontré"
     1_netexstif_5: "%{source_filename}-Ligne %{source_line_number}-Colonne %{source_column_number} : l'objet %{source_label} d'identifiant %{source_objectid} a une date de mise à jour dans le futur"
     2_netexstif_1_1: "Le fichier commun.xml ne contient pas de frame nommée NETEX_COMMUN"

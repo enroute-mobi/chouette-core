@@ -1,31 +1,29 @@
 # Selects which models need to be included into an Export
 module Export::Scope
-  def self.build referential, duration: nil, line_ids: []
+  def self.build referential_id, date_range: nil, line_ids: []
     raise "lines ids cannot be empty" if line_ids.empty?
 
-    builder = Builder.new(referential, duration, line_ids)
-    
-    builder.scope
+    Builder.new(
+      Referential.find(referential_id),
+      date_range,
+      line_ids
+    ).scope
   end
 
   class Builder
-    def initialize(referential, duration, line_ids)
+    attr_reader :default_scope, :date_range
+    def initialize(referential, date_range, line_ids)
       @default_scope = All.new(referential)
-      @duration = duration
+      @date_range = date_range
       @lines_ids = line_ids
     end
-
-    def date_range
-      return nil if @duration.nil?
-      Time.now.to_date..@duration.to_i.days.from_now.to_date
-  end
 
     def period_scope
       date_range ? DateRange.new(date_range) : Scheduled.new
     end
 
     def line_scope
-      @line_scope = Lines.new(@line_ids)
+      Lines.new(@line_ids)
     end
 
     def inner_scopes
@@ -33,7 +31,7 @@ module Export::Scope
     end
 
     def scope
-      inner_scopes.reduce(@efault_scope) do |scope, inner_scope|
+      inner_scopes.reduce(default_scope) do |scope, inner_scope|
         inner_scope.apply_current_scope(scope)
       end
     end

@@ -3,7 +3,7 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
   describe '#build' do
     context 'with lines' do
       it 'should apply the Lines & Scheduled scopes' do
-        scope = Export::Scope.build(referential, line_ids: [1])
+        scope = Export::Scope.build(referential.id, line_ids: [1])
 
         expect(scope).to be_a_kind_of(Export::Scope::Lines)
         expect(scope.current_scope).to be_a_kind_of(Export::Scope::Scheduled)
@@ -12,7 +12,7 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
 
     context 'with date_range & lines' do
       it 'should apply the Lines & DateRange scopes' do
-        scope = Export::Scope.build(referential, duration: 30, line_ids: [1])
+        scope = Export::Scope.build(referential.id, duration: Time.zone.today..1.month.from_now, line_ids: [1])
         
         expect(scope).to be_a_kind_of(Export::Scope::Lines)
         expect(scope.current_scope).to be_a_kind_of(Export::Scope::DateRange)

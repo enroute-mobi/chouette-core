@@ -64,22 +64,16 @@ class ExportsController < ChouetteController
   def export_params
     permitted_keys = %i(name type referential_id notification_target)
     export_class = params[:export] && params[:export][:type] && params[:export][:type].safe_constantize
+
     if export_class
-      permitted_keys += export_class.options.map {|k, v| v[:name].presence || k }
+      permitted_keys += export_class.options.map { |k, v| v[:name].presence || k }
     end
-    export_params = params.require(:export).permit(permitted_keys)
-    export_params[:user_id] ||= current_user.id
-    export_params[:export_scope] = export_scope_params
-    export_params
-  end
 
-  def export_scope_params
-      _params = params.require(:export_scope).permit(:duration, :period, line_ids: [])
-
-      line_ids = _params[:line_ids].flat_map { |str| JSON.parse(str) }
-      duration = _params[:period] == 'date_range' ?  _params[:duration].to_i : nil
-
-      { line_ids: line_ids, duration: duration }
+    params.require(:export).permit(*permitted_keys, line_ids: []).tap do |_params|
+      _params[:user_id] ||= current_user.id
+      _params[:line_ids] = _params[:line_ids]&.flat_map { |str| JSON.parse(str) } || []
+      _params.delete(:period) == 'date_range' ?  _params[:duration].to_i : nil
+    end
   end
 
   def decorate_collection(exports)

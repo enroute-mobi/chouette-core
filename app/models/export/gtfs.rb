@@ -2,10 +2,7 @@ class Export::Gtfs < Export::Base
   include LocalExportSupport
 
   option :duration, type: :integer
-  option :period, collection: %w(scheduled date_range)
-  option :lines, collection: -> (export) { export.workbench.lines }
-  option :companies, collection: -> (export) { export.workbench.companies }
-  option :line_providers, collection: -> (export) { export.workbench.line_providers }
+  option :line_ids
   option :prefer_referent_stop_area, required: true, type: :boolean, default_value: false
   option :ignore_single_stop_station, required: true, type: :boolean, default_value: false
 
@@ -33,11 +30,6 @@ class Export::Gtfs < Export::Base
   def target
     @target ||= GTFS::Target.new(Tempfile.new(["export#{id}",'.zip']))
   end
-
-  # def export_scope
-  #   @export_scope ||= Export::Scope.build(referential, date_range: date_range)
-  # end
-  # attr_writer :export_scope
 
   def export_to_dir(directory)
     CustomFieldsSupport.within_workgroup(referential.workgroup) do

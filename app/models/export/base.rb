@@ -50,18 +50,15 @@ class Export::Base < ApplicationModel
   after_create :purge_exports
   # after_commit :notify_state
   attr_accessor :synchronous
+  attr_accessor :export_scope
 
   # Setting the attr_accessors based on subclasses options
   all_options.each { |option| attr_accessor option }
 
-  def export_scope=(attributes)
-    @export_scope = Export::Scope.build(
-      referential,
-      duration: attributes[:duration],
-      line_ids: attributes[:line_ids],
-    )
+  def export_scope
+    @export_scope ||= Export::Scope.build(referential, date_range: date_range, line_ids: line_ids)
   end
-
+  attr_writer :export_scope
 
   scope :not_used_by_publication_apis, -> {
     joins('LEFT JOIN public.publication_api_sources ON publication_api_sources.export_id = exports.id')

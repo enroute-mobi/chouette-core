@@ -3,7 +3,7 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
   describe '#build' do
     context 'with lines' do
       it 'should apply the Lines & Scheduled scopes' do
-        scope = Export::Scope.build(referential.id, line_ids: [1])
+        scope = Export::Scope.build(referential, line_ids: [1])
 
         expect(scope).to be_a_kind_of(Export::Scope::Lines)
         expect(scope.current_scope).to be_a_kind_of(Export::Scope::Scheduled)
@@ -12,7 +12,7 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
 
     context 'with date_range & lines' do
       it 'should apply the Lines & DateRange scopes' do
-        scope = Export::Scope.build(referential.id, duration: Time.zone.today..1.month.from_now, line_ids: [1])
+        scope = Export::Scope.build(referential, date_range: Time.zone.today..1.month.from_now, line_ids: [1])
         
         expect(scope).to be_a_kind_of(Export::Scope::Lines)
         expect(scope.current_scope).to be_a_kind_of(Export::Scope::DateRange)
@@ -57,7 +57,8 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
   end
 
   let(:referential) { context.referential }
-  let(:default_scope) { Export::Scope::All.new(context.referential) }
+  let(:all_scope) { Export::Scope::All.new(context.referential) }
+  let(:default_scope) { Export::Scope::Base.new(all_scope) }
   let(:routes_in_scope) { [:in_scope1, :in_scope2].map { |n| context.route(n) } }
 
   before do
@@ -65,10 +66,10 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
   end
 
   describe Export::Scope::Lines do
-    it_behaves_like 'Export::Scope::Filterable'
+    it_behaves_like 'Export::Scope::Base'
 
     let(:selected_line) { context.line(:first) }
-    let(:scope) { Export::Scope::Lines.new([selected_line.id]).apply_current_scope(default_scope) }
+    let(:scope) { Export::Scope::Lines.new(default_scope, [selected_line.id]) }
 
     describe '#vehicle_journeys' do
       it 'should filter them by lines' do
@@ -123,9 +124,9 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
   end
 
   describe Export::Scope::Scheduled do
-    it_behaves_like 'Export::Scope::Filterable'
+    it_behaves_like 'Export::Scope::Base'
 
-    let(:scope) { Export::Scope::Scheduled.new.apply_current_scope(default_scope) }
+    let(:scope) { Export::Scope::Scheduled.new(default_scope) }
   
     describe '#vehicle_journeys' do
       it 'should filter in the ones with not empty timetables' do
@@ -139,11 +140,11 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
   end
 
   describe Export::Scope::DateRange do
-    it_behaves_like 'Export::Scope::Filterable'
+    it_behaves_like 'Export::Scope::Base'
 
     let(:date_range) { context.time_table(:default).date_range }
     let(:period_before_daterange) { (date_range.begin - 100)..(date_range.begin - 10) }
-    let(:scope) { Export::Scope::DateRange.new(date_range).apply_current_scope(default_scope) }
+    let(:scope) { Export::Scope::DateRange.new(default_scope, date_range) }
 
     describe '#vehicle_journeys' do
       it 'should filter in the ones with matching timetables' do

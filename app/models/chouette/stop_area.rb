@@ -500,8 +500,8 @@ module Chouette
     end
 
     def self.union(relation1, relation2)
-      union_query = "select id from ((#{relation1.select(:id).to_sql}) UNION (#{relation2.select(:id).to_sql})) stop_area_ids"
-      where "id IN (#{union_query})"
+      union_query = "select stop_areas.id from ((#{relation1.select(:id).to_sql}) UNION (#{relation2.select(:id).to_sql})) stop_area_ids"
+      where "stop_areas.id IN (#{union_query})"
     end
 
     def self.parents_of(relation, ignore_mono_parent: false)

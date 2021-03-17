@@ -1,4 +1,4 @@
-RSpec.shared_examples_for 'Export::Scope::Filterable' do
+RSpec.shared_examples_for 'Export::Scope::Base' do
 
 	let!(:context) do
       Chouette.create do
@@ -41,15 +41,13 @@ RSpec.shared_examples_for 'Export::Scope::Filterable' do
 		let(:lines_in_scope) { vehicle_journeys_in_scope.map(&:line).uniq }
 
 		let(:scope) do
-			_scope = case described_class.to_s
-			when 'Export::Scope::Lines' then described_class.new(lines_in_scope)
-			when 'Export::Scope::DateRange' then described_class.new(Time.zone.today..1.month.from_now.to_date)
-			when 'Export::Scope::Scheduled' then described_class.new
+			case described_class.to_s
+			when 'Export::Scope::Lines' then Export::Scope::Lines.new(default_scope, lines_in_scope)
+			when 'Export::Scope::DateRange' then Export::Scope::DateRange.new(default_scope, Time.zone.today..1.month.from_now.to_date)
+			when 'Export::Scope::Scheduled' then Export::Scope::Scheduled.new(default_scope)
       else
-        raise 'Filterable sub class not supported'
+        raise 'Base sub class not supported'
 			end
-
-			_scope.apply_current_scope(default_scope)
 		end
 
 		before do
@@ -63,6 +61,7 @@ RSpec.shared_examples_for 'Export::Scope::Filterable' do
       let(:stop_areas_in_scope) { routes_in_scope.flat_map(&:stop_areas).uniq }
 
       it "select stop areas associated with routes through vehicle journeys" do
+        byebug
         expect(scope.stop_areas).to match_array(stop_areas_in_scope)
 
 				allow(scope).to receive(:vehicle_journeys) { [selected_vj] }

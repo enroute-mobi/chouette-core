@@ -50,7 +50,6 @@ class Export::Base < ApplicationModel
   after_create :purge_exports
   # after_commit :notify_state
   attr_accessor :synchronous
-  attr_accessor :export_scope
 
   # Setting the attr_accessors based on subclasses options
   all_options.each { |option| attr_accessor option }

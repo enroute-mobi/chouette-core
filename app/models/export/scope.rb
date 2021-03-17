@@ -1,43 +1,74 @@
 # Selects which models need to be included into an Export
 module Export::Scope
-  def self.build referential_id, date_range: nil, line_ids: []
-    raise "lines ids cannot be empty" if line_ids.empty?
-
-    Builder.new(
-      Referential.find(referential_id),
-      date_range,
-      line_ids
-    ).scope
+  def self.build referential, **options
+    Options.new(referential, options).scope
   end
 
   class Builder
-    attr_reader :default_scope, :date_range
-    def initialize(referential, date_range, line_ids)
-      @default_scope = All.new(referential)
-      @date_range = date_range
-      @lines_ids = line_ids
+    attr_reader :scope
+
+    def initialize(referential)
+      @scope = All.new(referential)
     end
 
-    def period_scope
-      date_range ? DateRange.new(date_range) : Scheduled.new
+    def scheduled
+      @scope = Scheduled.new(@scope)
+      self
     end
 
-    def line_scope
-      Lines.new(@line_ids)
+    def lines(line_ids)
+      @scope = Lines.new(@scope, line_ids)
+      self
     end
 
-    def inner_scopes
-      [period_scope, line_scope]
+    def period(date_range)
+      @scope = DateRange.new(@scope, date_range)
+      self
     end
 
-    def scope
-      inner_scopes.reduce(default_scope) do |scope, inner_scope|
-        inner_scope.apply_current_scope(scope)
-      end
+    def cache
+      @scope = Cache.new(@scope)
+      self
     end
   end
 
-  module Base
+  class Options
+    attr_reader :referential
+    attr_accessor :duration, :date_range, :line_ids
+
+    def initialize(referential, attributes = {})
+      @referential = referential
+      attributes.each { |k, v| send "#{k}=", v }
+
+      raise "lines ids cannot be empty" unless line_ids&.any?
+    end
+
+    def builder
+      @builder ||= Builder.new(referential)
+    end
+
+    # Use options to prepare the given builder
+    def prepare(builder)
+      date_range ? builder.period(date_range) : builder.scheduled
+      builder.lines(line_ids) if line_ids
+      
+      builder.cache
+    end
+
+    def prepared_builder
+      @prepared_builder ||= prepare(builder)
+    end
+
+    delegate :scope, to: :prepared_builder
+  end
+
+  class All
+    attr_reader :referential
+
+    def initialize(referential)
+      @referential = referential
+    end
+
     delegate :workgroup, :workbench, :line_referential, :stop_area_referential, :metadatas, to: :referential
     delegate :shape_referential, to: :workgroup
 
@@ -47,21 +78,11 @@ module Export::Scope
 
     delegate :codes, to: :workgroup
 
+    delegate :vehicle_journeys, :vehicle_journey_at_stops, :journey_patterns, :routes, :stop_points, :time_tables, :referential_codes, to: :referential
+
     def organisations
       workgroup.organisations.where(id: metadatas.joins(referential_source: :organisation).distinct.pluck('organisations.id'))
     end
-  end
-
-  class All
-    include Base
-
-    attr_reader :referential
-
-    def initialize(referential)
-      @referential = referential
-    end
-
-    delegate :vehicle_journeys, :vehicle_journey_at_stops, :journey_patterns, :routes, :stop_points, :time_tables, :referential_codes, to: :referential
 
     def stop_areas
       (workbench || stop_area_referential).stop_areas
@@ -72,21 +93,14 @@ module Export::Scope
     end
   end
 
-  module Filterable
-    include Base
+  # By default a Scope uses the current_scope collection.
+  class Base < SimpleDelegator
+    def initialize(current_scope)
+      super current_scope
+      @current_scope = current_scope
+    end
 
     attr_reader :current_scope
-
-    delegate :referential, to: :current_scope
-
-    def apply_current_scope(current_scope)
-      @current_scope = current_scope
-      self
-    end
-
-    def vehicle_journeys
-      raise 'not yet implemented'
-    end
 
     def lines
       current_scope.lines.distinct.joins(routes: :vehicle_journeys)
@@ -133,14 +147,19 @@ module Export::Scope
     end
   end
 
+  class Scheduled < Base
+    def vehicle_journeys
+      current_scope.vehicle_journeys.scheduled
+    end
+  end
+
   # Selects VehicleJourneys in a Date range, and all other models if they are required
   # to describe these VehicleJourneys
-  class DateRange
-    include Filterable
-
+  class DateRange < Base
     attr_reader :date_range
 
-    def initialize(date_range)
+    def initialize(current_scope, date_range)
+      super current_scope 
       @date_range = date_range
     end
 
@@ -148,42 +167,47 @@ module Export::Scope
       current_scope.vehicle_journeys.with_matching_timetable(date_range)
     end
 
-    def time_tables
-      current_scope.time_tables.overlapping(date_range)
-    end
-
     def metadatas
       current_scope.metadatas.include_daterange(date_range)
     end
   end
 
-  class Scheduled
-    include Filterable
+  class Lines < Base
+    attr_reader :selected_line_ids
 
-    def vehicle_journeys
-      current_scope.vehicle_journeys.scheduled
+    def initialize(current_scope, selected_line_ids)
+      super current_scope
+      @selected_line_ids = selected_line_ids
     end
-  end
-
-  class Lines
-    include Filterable
-
-    attr_reader 
-
-    def initialize(selected_line_ids)
-      @line_ids_proc = ->(current_scope) { current_scope.lines.where(id: selected_line_ids).pluck(:id) }
-    end
-
-    def selected_line_ids
-      @line_ids_proc.call(current_scope)
-    end
-
+    
     def vehicle_journeys
       current_scope.vehicle_journeys.with_lines(selected_line_ids)
     end
 
     def metadatas
-      current_scope.metadatas.include_lines(selected_line_ids)
+      current_scope.metadatas.with_lines(selected_line_ids)
+    end
+  end
+
+  class Cache < Base
+    RESOURCES = %w(
+      vehicle_journeys
+      vehicle_journey_at_stops
+      journey_patterns
+      routes
+      stop_points
+      time_tables
+      organisations
+      lines
+      stop_areas
+    ).freeze
+
+    RESOURCES.each do |name|
+      define_method(name) do
+        value = instance_variable_get("@#{name}")
+        
+        value || instance_variable_set("@#{name}", current_scope.send(name))
+      end
     end
   end
 end

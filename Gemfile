@@ -57,7 +57,7 @@ gem 'graphql'
 # Codifligne API
 gem 'codifligne', en_route: 'ilico-api'
 # ICar API
-gem 'icar', en_route: 'icar-api'
+gem 'icar', en_route: 'icar-api', branch: 'CHOUETTE-811-change-default-url'
 
 # Authentication
 gem 'devise', '>= 4.7.3'

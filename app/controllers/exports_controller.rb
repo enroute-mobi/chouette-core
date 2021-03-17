@@ -6,7 +6,7 @@ class ExportsController < ChouetteController
   skip_before_action :verify_authenticity_token, only: [:upload]
   defaults resource_class: Export::Base, collection_name: 'exports', instance_name: 'export'
   before_action :load_referentials, only: %i[new create]
-  before_action :build_form_facade, only: %i[new create]
+  before_action :decorate_resource, only: %i[new create]
 
   # FIXME See CHOUETTE-207
   def upload
@@ -38,8 +38,8 @@ class ExportsController < ChouetteController
 
   protected
 
-  def build_form_facade
-    @facade = Exports::FormFacade.new(workbench)
+  def decorate_resource
+    @export = Export::Base.new(workbench: workbench).decorate
   end
 
   def resource

@@ -3,6 +3,11 @@ class ExportDecorator < AF83::Decorator
 
   set_scope { context[:parent] }
 
+  # add instance methods related to options to avoid NoMethodError from SimpleForm 
+  Export::Base.subclasses.flat_map {|s| s.options.keys }.uniq.each do |o|
+    define_instance_method(o) {}
+  end
+
   define_instance_method :export_status_css_class do
     cls = ''
     cls = 'overheaded-success' if object.status == 'successful'
@@ -19,7 +24,7 @@ class ExportDecorator < AF83::Decorator
     ]
   end
 
-  define_instance_method :line_options do
+  define_instance_method :lines_options do
     object.workbench.lines
   end
 

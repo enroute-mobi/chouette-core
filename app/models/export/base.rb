@@ -10,14 +10,6 @@ class Export::Base < ApplicationModel
     def resources_class_name
       "Export::Resource"
     end
-
-    def subclasses
-      [Export::Gtfs, Export::NetexFull, Export::NetexGeneric, Export::Workgroup]
-    end
-
-    def all_options
-      subclasses.flat_map {|s| s.options.keys }.uniq
-    end
   end
 
 
@@ -50,9 +42,6 @@ class Export::Base < ApplicationModel
   after_create :purge_exports
   # after_commit :notify_state
   attr_accessor :synchronous
-
-  # Setting the attr_accessors based on subclasses options
-  all_options.each { |option| attr_accessor option }
 
   def export_scope
     @export_scope ||= Export::Scope.build(referential, date_range: date_range, line_ids: line_ids)

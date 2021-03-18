@@ -1,5 +1,10 @@
 $ ->
+  # Disable #export_line_code select if empty
+  $('#export_line_code').prop('disabled', $('#export_referential_id').val() == "") 
+
   $('#export_referential_id').change ->
+    $('#export_line_code').prop('disabled', this.value == "")
+
     $('#export_line_code').empty()
     domain_name = $('#export_line_code').attr("data-domain-name")
     $('#export_line_code').attr("data-ajax--url", domain_name + "/referentials/" + this.value + "/autocomplete/lines")

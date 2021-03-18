@@ -1,7 +1,7 @@
 .form-group
 	= label_tag 'Exported Lines', nil, class: 'string required col-sm-4 col-xs-5 control-label'
 	.col-sm-8.col-xs-7
-		= select_tag :lines, options_for_select(export_exported_lines_options), id: 'exported_lines', class: 'master select optional form-control', required: true, include_blank: false
+	  = select_tag :lines, options_for_select(export_exported_lines_options), id: 'exported_lines', class: 'master select optional form-control', required: true, include_blank: false
 #exported_lines_slave
   // Needed for failed validation
   - if local_assigns.has_key?(:export)

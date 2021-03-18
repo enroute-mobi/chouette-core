@@ -1,0 +1,6 @@
+.form-group
+  = label_tag 'Line code', nil , class: 'control-label string required col-sm-4 col-xs-5'
+  .col-sm-8.col-xs-7
+	  = select_tag 'export[line_code]', [], id: 'export_line_code', class: 'form-control select', required: true, data: { 'domain-name': request.base_url }
+
+= javascript_pack_tag "exports/line_code"

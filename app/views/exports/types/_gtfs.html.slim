@@ -1,4 +1,12 @@
-= render 'exports/options/period'
-= render 'exports/options/exported_lines'
-= switchable_checkbox_tag 'export', 'prefer_referent_stop_area', I18n.t('activerecord.attributes.export.gtfs.prefer_referent_stop_area')
-= switchable_checkbox_tag 'export', 'ignore_single_stop_station', I18n.t('activerecord.attributes.export.gtfs.ignore_single_stop_station')
+.row
+  .col-lg-12
+  = render 'exports/options/period'
+.row
+  .col-lg-12
+    = render 'exports/options/exported_lines'
+.row
+  .col-lg-12
+    = switchable_checkbox_tag 'export', 'prefer_referent_stop_area', I18n.t('activerecord.attributes.export.gtfs.prefer_referent_stop_area')
+.row
+  .col-lg-12
+    = switchable_checkbox_tag 'export', 'ignore_single_stop_station', I18n.t('activerecord.attributes.export.gtfs.ignore_single_stop_station')

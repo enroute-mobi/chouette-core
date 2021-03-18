@@ -1,0 +1,4 @@
+.form-group
+  = label_tag 'Profile', nil , class: 'control-label string required col-sm-4 col-xs-5'
+  .col-sm-8.col-xs-7
+	  = select_tag 'export[profile]', options_for_select(option[:collection]), id: 'export_profile', class: 'form-control select', required: true

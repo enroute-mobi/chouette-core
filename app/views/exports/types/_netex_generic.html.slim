@@ -3,7 +3,7 @@
     = render 'exports/options/period'
 .row
   .col-lg-12
-    = render 'exports/options/profile', collection: Export::NetexGeneric.options.dig(:profile, :collection)
+    = render 'exports/options/profile', option: Export::NetexGeneric.options.dig(:profile)
 .row
   .col-lg-12
     = render 'exports/options/exported_lines'

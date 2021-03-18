@@ -5,8 +5,9 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
       it 'should apply the Lines & Scheduled scopes' do
         scope = Export::Scope.build(referential, line_ids: [1])
 
-        expect(scope).to be_a_kind_of(Export::Scope::Lines)
-        expect(scope.current_scope).to be_a_kind_of(Export::Scope::Scheduled)
+        expect(scope).to be_a_kind_of(Export::Scope::Cache)
+        expect(scope.current_scope).to be_a_kind_of(Export::Scope::Lines)
+        expect(scope.current_scope.current_scope).to be_a_kind_of(Export::Scope::Scheduled)
       end
     end
 
@@ -14,8 +15,9 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
       it 'should apply the Lines & DateRange scopes' do
         scope = Export::Scope.build(referential, date_range: Time.zone.today..1.month.from_now, line_ids: [1])
         
-        expect(scope).to be_a_kind_of(Export::Scope::Lines)
-        expect(scope.current_scope).to be_a_kind_of(Export::Scope::DateRange)
+        expect(scope).to be_a_kind_of(Export::Scope::Cache)
+        expect(scope.current_scope).to be_a_kind_of(Export::Scope::Lines)
+        expect(scope.current_scope.current_scope).to be_a_kind_of(Export::Scope::DateRange)
       end
     end
   end

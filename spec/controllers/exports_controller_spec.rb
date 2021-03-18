@@ -49,7 +49,7 @@ RSpec.describe ExportsController, :type => :controller do
       end
 
       describe "POST #create" do
-        let(:params){ { name: "foo", line_ids: ['1'] } }
+        let(:params){ { name: "foo" } }
         let(:request){ post :create, params: parent_params.merge({ export: params })}
         it 'should create no objects' do
           expect{request}.to_not change{Export::Netex.count}
@@ -61,8 +61,7 @@ RSpec.describe ExportsController, :type => :controller do
             type: "Export::Netex",
             duration: 12,
             export_type: :full,
-            referential_id: first_referential.id,
-            line_ids: ['1']
+            referential_id: first_referential.id
           }}
 
           it 'should be successful' do
@@ -73,8 +72,7 @@ RSpec.describe ExportsController, :type => :controller do
         context "with missing options" do
           let(:params){{
             referential_id: first_referential.id,
-            type: "Export::Workgroup",
-            line_ids: ['1']
+            type: "Export::Workgroup"
           }}
 
           it 'should be unsuccessful' do
@@ -87,8 +85,7 @@ RSpec.describe ExportsController, :type => :controller do
             name: "foo",
             type: "Export::Workgroup",
             duration: 90,
-            referential_id: first_referential.id,
-            line_ids: ['1']
+            referential_id: first_referential.id
           }}
 
           it 'should be successful' do
@@ -99,8 +96,7 @@ RSpec.describe ExportsController, :type => :controller do
         context "with wrong type" do
           let(:params){{
             name: "foo",
-            type: "Export::Foo",
-            line_ids: ['1']
+            type: "Export::Foo"
           }}
 
           it 'should be unsuccessful' do

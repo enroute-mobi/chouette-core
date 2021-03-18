@@ -1,5 +1,4 @@
 bind_select2 = (el, cfg = {}) ->
-  console.log('bind', el)
   target = $(el)
   decorate_option_with_flag = (item, text)->
     $("<span><span class='flag-icon flag-icon-#{$(item.element).attr('id').toLowerCase()} mr-xs'></span>#{text}</span>")

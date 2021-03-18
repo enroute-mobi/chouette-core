@@ -61,7 +61,6 @@ RSpec.shared_examples_for 'Export::Scope::Base' do
       let(:stop_areas_in_scope) { routes_in_scope.flat_map(&:stop_areas).uniq }
 
       it "select stop areas associated with routes through vehicle journeys" do
-        byebug
         expect(scope.stop_areas).to match_array(stop_areas_in_scope)
 
 				allow(scope).to receive(:vehicle_journeys) { [selected_vj] }

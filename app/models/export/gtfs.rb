@@ -3,6 +3,8 @@ class Export::Gtfs < Export::Base
 
   option :duration, type: :integer
   option :line_ids
+  option :company_ids
+  option :line_provider_ids
   option :prefer_referent_stop_area, required: true, type: :boolean, default_value: false
   option :ignore_single_stop_station, required: true, type: :boolean, default_value: false
 

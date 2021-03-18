@@ -44,7 +44,7 @@ class ExportsController < ChouetteController
     end
 
     if params[:exported_lines]
-       return render partial: "exports/options/#{params[:exported_lines]}"
+      return render partial: "exports/options/#{params[:exported_lines]}"
     end
   end
 
@@ -77,11 +77,8 @@ class ExportsController < ChouetteController
       permitted_keys += export_class.options.map { |k, v| v[:name].presence || k }
     end
 
-    params.require(:export).permit(*permitted_keys, line_ids: []).tap do |_params|
+    params.require(:export).permit(*permitted_keys, line_ids: [], line_provider_ids: [], company_ids: []).tap do |_params|
       _params[:user_id] ||= current_user.id
-      if export_class&.method_defined?(:line_ids)
-        _params[:line_ids] = _params[:line_ids]&.flat_map { |str| JSON.parse(str) } || []
-      end
 
       if export_class&.method_defined?(:duration)
         _params.delete(:period) == 'date_range' ?  _params[:duration].to_i : nil

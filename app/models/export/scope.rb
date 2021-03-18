@@ -9,6 +9,7 @@ module Export::Scope
 
     def initialize(referential)
       @scope = All.new(referential)
+      yield self if block_given?
     end
 
     def scheduled
@@ -43,23 +44,28 @@ module Export::Scope
       raise "lines ids cannot be empty" unless line_ids&.any?
     end
 
+    def line_ids
+      @line_ids || companies_line_ids || line_provider_ids
+    end
+
+    def line_provider_ids
+      workgroup.lines.where(line_provider: line_provider_ids) if @line_provider_ids
+    end
+  
+    def companies_line_ids
+      workgroup.lines.where(company: company_ids) if @company_ids
+    end
+
     def builder
-      @builder ||= Builder.new(referential)
+      @builder ||= Builder.new(referential) do |builder|
+        date_range ? builder.period(date_range) : builder.scheduled
+        builder.lines(line_ids) if line_ids
+        
+        builder.cache
+      end
     end
 
-    # Use options to prepare the given builder
-    def prepare(builder)
-      date_range ? builder.period(date_range) : builder.scheduled
-      builder.lines(line_ids) if line_ids
-      
-      builder.cache
-    end
-
-    def prepared_builder
-      @prepared_builder ||= prepare(builder)
-    end
-
-    delegate :scope, to: :prepared_builder
+    delegate :scope, to: :builder
   end
 
   class All

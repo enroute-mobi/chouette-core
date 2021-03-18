@@ -1,2 +1,9 @@
-= render 'exports/options/period'
-= render 'exports/options/exported_lines'
+.row
+  .col-lg-12
+    = render 'exports/options/period'
+.row
+  .col-lg-12
+    = render 'exports/options/profile', collection: Export::NetexGeneric.options.dig(:profile, :collection)
+.row
+  .col-lg-12
+    = render 'exports/options/exported_lines'

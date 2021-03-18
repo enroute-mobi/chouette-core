@@ -1,0 +1,4 @@
+.form-group
+	.col-sm-4
+	.col-sm-8.col-xs-7
+		= select_tag 'export[line_providers_ids]', options_from_collection_for_select(export_line_providers_options, :id, :short_name), id: 'export_line_ids', class: 'form-control select', style: 'width: 100%', required: true, multiple: true, data: { select2ed: true, 'select2ed-placeholder': t('exports.form.line_provider_name'), 'select2ed-allow-clear': true }

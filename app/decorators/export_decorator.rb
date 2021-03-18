@@ -16,26 +16,6 @@ class ExportDecorator < AF83::Decorator
     cls
   end
 
-  define_instance_method :exported_lines_types_options do
-    [
-      ['Specific Lines', 'line'],
-      ['Company Set', 'company'],
-      ['Line Provider Set', 'line_provider'],
-    ]
-  end
-
-  define_instance_method :lines_options do
-    object.workbench.lines
-  end
-
-  define_instance_method :companies_options do
-    object.workbench.companies.map { |c| [c.name, c.line_ids] }
-  end
-
-  define_instance_method :line_providers_options do
-    object.workbench.line_providers.map { |lp| [lp.short_name, lp.line_ids] }
-  end
-
   create_action_link if: -> { context[:parent].is_a?(Workbench) }
 
   with_instance_decorator do |instance_decorator|

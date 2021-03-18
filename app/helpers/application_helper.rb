@@ -161,4 +161,26 @@ module ApplicationHelper
       label
     end
   end
+
+  def switchable_checkbox_tag object_name, attribute, label, options = {}
+    name = "#{object_name}[#{attribute}]"
+    id = "#{object_name}_#{attribute}"
+
+    onoffswitch_label = content_tag :label, nil, for: id, class: 'onoffswitch-label' do
+      concat content_tag :span, nil, class: 'onoffswitch-inner', on: I18n.t('simple_form.yes'), off: I18n.t('simple_form.no')
+      concat content_tag :span, nil, class: 'onoffswitch-switch'
+    end
+
+    onoffswitch_div = content_tag :div, nil, class: 'onoffswitch' do
+        concat content_tag :input, nil, type: 'hidden', value: 0, name: name
+        concat content_tag :input, nil, value: 1, type: 'checkbox', class: 'onoffswitch-checkbox', id: id, name: name
+        concat onoffswitch_label
+      end
+
+
+    content_tag :div, nil, class: 'form-group' do
+      concat content_tag :label, label, class: 'col-sm-4 col-xs-5 control-label switchable_checkbox optional', for: id
+      concat content_tag :div, onoffswitch_div, class: 'col-sm-8 col-xs-7'
+    end
+  end
 end

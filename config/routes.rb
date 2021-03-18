@@ -26,6 +26,7 @@ ChouetteIhm::Application.routes.draw do
     end
 
     resources :exports do
+      get :refresh_form
       post :upload, on: :member
       get :download, on: :member
     end

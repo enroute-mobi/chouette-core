@@ -4,7 +4,8 @@
 		span.radio style="margin-bottom: 5px;"
 			= label_tag 'export[period]', nil, style: 'display: flex; flex-direction: row; align-items: center;'
 				= radio_button_tag 'export[period]', 'date_range', true
-				= form.input :duration, label: false, wrapper: false, input_html: { value: 200 }
+				.col-sm-8.col-xs-7
+					= text_field_tag 'export[duration]', 200, id: 'export_duration', class: 'form-control string optional'
 		span.radio
 			= label_tag 'scheduled'
 				= radio_button_tag 'export[period]', 'scheduled', false

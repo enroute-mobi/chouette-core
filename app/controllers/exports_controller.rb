@@ -6,7 +6,8 @@ class ExportsController < ChouetteController
   skip_before_action :verify_authenticity_token, only: [:upload]
   defaults resource_class: Export::Base, collection_name: 'exports', instance_name: 'export'
   before_action :load_referentials, only: %i[new create]
-  before_action :decorate_resource, only: %i[new create]
+  
+  helper_method :workbench
 
   # FIXME See CHOUETTE-207
   def upload
@@ -36,11 +37,18 @@ class ExportsController < ChouetteController
     send_file resource.file.path, filename: resource.user_file.name, type: resource.user_file.content_type
   end
 
-  protected
+  def refresh_form
+    if params[:type]
+      type = params[:type].demodulize.underscore
+      return render partial: "exports/types/#{type}"
+    end
 
-  def decorate_resource
-    @export = Export::Base.new(workbench: workbench).decorate
+    if params[:exported_lines]
+       return render partial: "exports/options/#{params[:exported_lines]}"
+    end
   end
+
+  protected
 
   def resource
     @export ||= parent.exports.find(params[:id])
@@ -71,8 +79,13 @@ class ExportsController < ChouetteController
 
     params.require(:export).permit(*permitted_keys, line_ids: []).tap do |_params|
       _params[:user_id] ||= current_user.id
-      _params[:line_ids] = _params[:line_ids]&.flat_map { |str| JSON.parse(str) } || []
-      _params.delete(:period) == 'date_range' ?  _params[:duration].to_i : nil
+      if export_class&.method_defined?(:line_ids)
+        _params[:line_ids] = _params[:line_ids]&.flat_map { |str| JSON.parse(str) } || []
+      end
+
+      if export_class&.method_defined?(:duration)
+        _params.delete(:period) == 'date_range' ?  _params[:duration].to_i : nil
+      end
     end
   end
 

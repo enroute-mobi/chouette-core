@@ -2,9 +2,9 @@ class Export::Gtfs < Export::Base
   include LocalExportSupport
 
   option :duration, type: :integer
-  option :line_ids
-  option :company_ids
-  option :line_provider_ids
+  option :line_ids, type: :array
+  option :company_ids, type: :array
+  option :line_provider_ids, type: :array
   option :prefer_referent_stop_area, required: true, type: :boolean, default_value: false
   option :ignore_single_stop_station, required: true, type: :boolean, default_value: false
 

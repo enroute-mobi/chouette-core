@@ -36,6 +36,13 @@ module OptionsSupport
           val.is_a?(String) ? ["1", "true"].include?(val) : val
         end
         alias_method attribute_name, "#{attribute_name}_with_cast"
+      elsif opts[:type].to_s == "array"
+        alias_method "#{attribute_name}_without_cast", attribute_name
+        define_method "#{attribute_name}_with_cast" do
+          val = send "#{attribute_name}_without_cast"
+          val.nil? ? [] : JSON.parse(val)
+        end
+        alias_method attribute_name, "#{attribute_name}_with_cast"
       end
 
       @options ||= {}

@@ -1,3 +1,4 @@
+
 # coding: utf-8
 module ApplicationHelper
 
@@ -172,8 +173,8 @@ module ApplicationHelper
     end
 
     onoffswitch_div = content_tag :div, nil, class: 'onoffswitch' do
-        concat content_tag :input, nil, type: 'hidden', value: 0, name: name
-        concat content_tag :input, nil, value: 1, type: 'checkbox', class: 'onoffswitch-checkbox', id: id, name: name
+        concat content_tag :input, nil, type: 'hidden', value: false, name: name
+        concat content_tag :input, nil, value: true, type: 'checkbox', class: 'onoffswitch-checkbox', id: id, name: name
         concat onoffswitch_label
       end
 

@@ -3,9 +3,9 @@ class Export::NetexGeneric < Export::Base
 
   option :profile, collection: %w(none european idfm/line)
   option :duration, type: :integer
-  option :line_ids, type: :array
-  option :company_ids, type: :array
-  option :line_provider_ids, type: :array
+  option :line_ids
+  option :company_ids
+  option :line_provider_ids
 
   def target
     @target ||= Netex::Target.build export_file, profile: netex_profile, validity_periods: validity_periods

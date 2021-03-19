@@ -1,9 +1,4 @@
-.row
-  .col-lg-12
-    = render 'exports/options/period'
-.row
-  .col-lg-12
-    = render 'exports/options/export_type', option: Export::Netex.options.dig(:export_type)
-.row
-  .col-lg-12
-    = render 'exports/options/line_code'
+= simple_fields_for @export, as: :export, wrapper: :horizontal_form do |f|
+  = render 'exports/options/period', form: f
+  = render 'exports/options/export_type', form: f, option: Export::Netex.options.dig(:export_type)
+  = render 'exports/options/line_code', form: f

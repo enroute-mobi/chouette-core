@@ -3,10 +3,13 @@
 	.col-sm-8.col-xs-7
 		span.radio style="margin-bottom: 5px;"
 			= label_tag 'export[period]', nil, style: 'display: flex; flex-direction: row; align-items: center;'
-				= radio_button_tag 'export[period]', 'date_range', true
+				= form.input :period, as: :radio_buttons, label: false, wrapper: false, collection: [['', 'date_range']], input_html: { checked: true}
+				/ = radio_button_tag 'export[period]', 'date_range', true
 				.col-sm-8.col-xs-7
-					= text_field_tag 'export[duration]', 200, id: 'export_duration', class: 'form-control string optional'
+					= form.input :duration, wrapper: false, label: false, input_html: { value: 200 }
 		span.radio
-			= label_tag 'scheduled'
-				= radio_button_tag 'export[period]', 'scheduled', false
-				=  'All available periods'
+			= label_tag '', nil, style: 'display: flex; align-items: center;'
+				= form.input :period, as: :radio_buttons, label:false, wrapper: false, collection: [['', 'scheduled']], input_html: { checked: false }
+				= label_tag 'All available periods'
+				
+				

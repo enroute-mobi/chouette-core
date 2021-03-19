@@ -38,13 +38,16 @@ class ExportsController < ChouetteController
   end
 
   def refresh_form
-    if params[:type]
-      type = params[:type].demodulize.underscore
-      return render partial: "exports/types/#{type}"
-    end
+    action = params.require(:_action)
+    type = params.require(:type)
+    @export = Export::Base.new(type: type, workbench_id: params[:workbench_id])
 
-    if params[:exported_lines]
-      return render partial: "exports/options/#{params[:exported_lines]}"
+    case action
+    when 'set_type'
+      return render partial: "exports/types/#{type.demodulize.underscore}"
+    when 'set_exported_lines'
+      exported_lines = params.require(:exported_lines)
+      return render partial: "exports/options/#{exported_lines}"
     end
   end
 

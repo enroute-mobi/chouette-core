@@ -1,6 +1,4 @@
-.form-group
-	.col-sm-4
-	.col-sm-8.col-xs-7
-		= select_tag 'export[line_provider_ids]', [], multiple: true, id: 'export_line_provider_ids', class: 'form-control select', style: 'width: 100%'
+= simple_fields_for @export, as: :export, wrapper: :horizontal_form do |f|
+	= f.input :line_provider_ids, collection: [], input_html: { multiple: true, style: 'width: 100%' }
 
 = javascript_pack_tag 'exports/line_provider_ids'

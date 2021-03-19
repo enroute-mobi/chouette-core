@@ -1,4 +1,4 @@
-= simple_form_for export, as: :export, url: workbench_exports_path(workbench), html: {class: 'form-horizontal', id: 'wb_export_form'}, wrapper: :horizontal_form do |form|
+= simple_form_for @export, as: :export, url: workbench_exports_path(workbench), html: {class: 'form-horizontal', id: 'wb_export_form'}, wrapper: :horizontal_form do |form|
 
   .row
     .col-lg-12
@@ -10,8 +10,8 @@
       #type_slave
         // Needed for failed validation
         - workgroup_exports(workbench.workgroup).each do |child|
-          - if export.is_a?(child)
-            = render "exports/types/#{child.name.demodulize.underscore}", export: export
+          - if @export.is_a?(child)
+            = render "exports/types/#{child.name.demodulize.underscore}"
 
     .col-lg-12
       = form.input :notification_target, collection: Export::Base.notification_target_options, selected: :user

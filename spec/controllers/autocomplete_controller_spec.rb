@@ -21,11 +21,11 @@ RSpec.describe AutocompleteController, type: :controller do
     let(:third_line) { context.line(:third) }
 
     context "for a workbench" do
-      it "returns an empty list when search parameter is not found" do
+      it "returns the complete list when the search parameter is not found" do
         get :lines, params: {
           workbench_id: workbench.id
         }
-        expect(assigns(:lines).to_a).to be_empty
+        expect(assigns(:lines)).to match_array workbench.lines
         expect(response).to be_successful
       end
 
@@ -60,11 +60,11 @@ RSpec.describe AutocompleteController, type: :controller do
 
     context "for a referential" do
 
-      it "returns an empty list when search parameter is not found" do
+      it "returns the complete list when the search parameter is not found" do
         get :lines, params: {
           referential_id: referential.id
         }
-        expect(assigns(:lines).to_a).to be_empty
+        expect(assigns(:lines)).to match_array referential.lines
         expect(response).to be_successful
       end
 

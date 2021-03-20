@@ -1,8 +1,8 @@
-= form.input :exported_lines, collection: export_exported_lines_options, required: true, input_html: { id: 'exported_lines' }
+= form.input :exported_lines, required: true, input_html: { id: 'exported_lines' }
 #exported_lines_slave
   // Needed for failed validation
   - if local_assigns.has_key?(:export)
     - @export.is_a?(Export::Gtfs) || @export.is_a?(Export::NetexGeneric)
-      - %i[line_ids company_ids line_provider_ids].each do |o|
+      - Export::Base.exported_lines.values.each do |o|
         - if @export.respond_to?(n)
           = render "exports/options/#{o}"

@@ -12,7 +12,6 @@ class Export::Base < ApplicationModel
     end
   end
 
-
   include Rails.application.routes.url_helpers
   include OptionsSupport
   include NotifiableSupport
@@ -38,6 +37,9 @@ class Export::Base < ApplicationModel
 
   validates :type, :referential_id, presence: true
   validates_presence_of :workgroup
+
+  enumerize :periods, in: [:all , :duration]
+  enumerize :exported_lines, in: [:line_ids , :company_ids, :line_provider_ids]
 
   after_create :purge_exports
   # after_commit :notify_state

@@ -300,3 +300,14 @@ fr:
       "000000": Noir
       9B9B9B: "Gris"
       FFFFFF: Blanc
+    exported_lines:
+      line_ids: "Lignes"
+      company_ids: "Transporteurs"
+      line_provider_ids: "Fournisseur de lignes"
+    period:
+      all: Toutes les périodes
+      duration: Seulement les jours suivants
+    profile:
+      none: Aucun
+      european: Européen
+      'idfm/line': IdFM lignes

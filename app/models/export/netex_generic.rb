@@ -1,13 +1,15 @@
 class Export::NetexGeneric < Export::Base
   include LocalExportSupport
 
-  option :profile, collection: %w(none european idfm/line)
+  option :profile
   option :period, collection: %w(date_range scheduled)
   option :duration, type: :integer
   option :exported_lines, type: :array
   option :line_ids, type: :array
   option :company_ids, type: :array
   option :line_provider_ids, type: :array
+
+  enumerize :profile, in: [:none , :european, :'idfm/line']
 
   def target
     @target ||= Netex::Target.build export_file, profile: netex_profile, validity_periods: validity_periods

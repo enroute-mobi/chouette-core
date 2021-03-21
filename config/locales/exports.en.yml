@@ -105,6 +105,8 @@ en:
         period: Exported periods
       export:
         <<: *attrs
+        base:
+          <<: *attrs
   flash:
     exports:
       create:

@@ -111,6 +111,8 @@ fr:
         period: Période exportée
       export:
         <<: *attrs
+        base:
+          <<: *attrs
 
 
   flash:

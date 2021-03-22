@@ -22,4 +22,4 @@ fr:
       import:
         resource:
           name: "Fichier"
-          status: "Etat"
+          status: "État"

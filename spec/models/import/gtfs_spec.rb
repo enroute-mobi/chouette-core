@@ -345,6 +345,15 @@ RSpec.describe Import::Gtfs do
         expect { import.import_transfers }.to_not change { Chouette::ConnectionLink.count }
       end
     end
+
+    context 'whith from_stop_id same as to_stop_id' do
+      let(:import) { build_import 'google-sample-feed-with-incorrect-transfer.zip' }
+
+      it 'should create a warning if a tranfer have the same from stop and to stop' do
+        import.prepare_referential
+        expect { import.import_transfers }.to change { Import::Message.count }.by(1)
+      end
+    end
   end
 
 

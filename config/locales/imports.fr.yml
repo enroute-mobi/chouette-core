@@ -40,7 +40,7 @@ fr:
       status: État
       referential: Jeu de données
       netex:
-        table_title: "Etat des fichiers analysés"
+        table_title: "État des fichiers analysés"
         table_explanation: "Dans le cas ou le(s) fichiers calendriers.xml et/ou commun.xml sont dans un état non importé, alors tous les fichiers lignes sont automatiquement dans un état non traité."
       table:
         test_results: Résultats des tests
@@ -106,7 +106,7 @@ fr:
         notification_target: Destinataire(s) des notifications
         resources: "Fichier à importer"
         name: "Nom de l'import"
-        status: "Etat"
+        status: "État"
         no_save: "Pas de sauvegarde"
         references_type: "Données à importer"
         object_id_prefix: "Préfixe d'identifiants"

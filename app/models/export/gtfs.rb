@@ -2,16 +2,13 @@ class Export::Gtfs < Export::Base
   include LocalExportSupport
 
   option :duration, type: :integer
-  option :period, collection: %w(date_range scheduled)
-  option :exported_lines, type: :array
-  option :line_ids, type: :array
-  option :company_ids, type: :array
-  option :line_provider_ids, type: :array
-  option :prefer_referent_stop_area, required: true, type: :boolean, default_value: false
-  option :ignore_single_stop_station, required: true, type: :boolean, default_value: false
-
-  validates :prefer_referent_stop_area, inclusion: [true, false]
-  validates :ignore_single_stop_station, inclusion: [true, false]
+  option :period, collection: %w(date_range scheduled), enumerize: :collection
+  option :exported_lines, collection: %w(line_ids company_ids line_provider_ids), enumerize: :collection
+  option :line_ids, serialize: -> (ids) { ids.map(&:to_i) }
+  option :company_ids
+  option :line_provider_ids
+  option :prefer_referent_stop_area, required: true, type: :boolean, default_value: false, enumerize: [true, false]
+  option :ignore_single_stop_station, required: true, type: :boolean, default_value: false, enumerize: [true, false]
 
   DEFAULT_AGENCY_ID = "chouette_default"
   DEFAULT_TIMEZONE = "Etc/UTC"

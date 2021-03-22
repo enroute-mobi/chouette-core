@@ -6,8 +6,6 @@ class ExportsController < ChouetteController
   skip_before_action :verify_authenticity_token, only: [:upload]
   defaults resource_class: Export::Base, collection_name: 'exports', instance_name: 'export'
   before_action :load_referentials, only: %i[new create]
-  
-  helper_method :workbench
 
   # FIXME See CHOUETTE-207
   def upload

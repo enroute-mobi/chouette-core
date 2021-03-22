@@ -1,53 +1,75 @@
 module OptionsSupport
   extend ActiveSupport::Concern
   included do |into|
+    extend Enumerize
+
     after_initialize do
       if self.attribute_names.include?('options') && options.nil?
         self.options = {}
       end
     end
 
-    def self.option name, opts={}
-      attribute_name =  opts[:name].presence || name
-      store_accessor :options, attribute_name
+    class << self
 
-      if opts[:serialize]
+      def option name, opts={}
+        attribute_name =  opts[:name].presence || name
+        store_accessor :options, attribute_name
+
+        handle_serialize_option(attribute_name, opts)
+        handle_enumerize_option(attribute_name, opts)
+        handle_default_value_option(attribute_name, opts)
+
+        @options ||= {}
+        @options[name] = opts
+      end
+
+      def options
+        @options ||= {}
+      end
+
+      def options= options
+        @options = options
+      end
+
+      private
+
+      def handle_serialize_option attribute_name, opts
+        serializer = opts[:serialize]
+   
         define_method attribute_name do
-          val = options.stringify_keys[name.to_s]
-          unless val.is_a? opts[:serialize]
-            val = JSON.parse(val) rescue opts[:serialize].new
+          raw_value = options.stringify_keys[attribute_name.to_s]
+          value = JSON.parse(raw_value) rescue raw_value
+
+          if serializer&.respond_to?(:call)
+            return serializer.call(value)
+          elsif serializer&.respond_to?(:new)
+            return serializer.new(value)
           end
-          val
+
+          value
+        rescue => e
+          Rails.logger.warn("Could not serialize #{attribute_name}. value: #{value}, \n Error: #{e}")
+          value
         end
       end
 
-      if opts.key?(:default_value)
-        after_initialize do
-          if self.new_record? && self.send(attribute_name).nil?
-            self.send("#{attribute_name}=", opts[:default_value])
+      def handle_enumerize_option attribute_name, opts
+        if opts.key?(:enumerize)
+          collection = opts[:enumerize] == :collection ? opts[:collection] : opts[:enumerize]
+          enumerize attribute_name, in: collection
+        end
+      end
+
+      def handle_default_value_option attribute_name, opts
+        if opts.key?(:default_value)
+          after_initialize do
+            if self.new_record? && self.send(attribute_name).nil?
+              self.send("#{attribute_name}=", opts[:default_value])
+            end
           end
         end
       end
 
-      if opts[:type].to_s == "boolean"
-        alias_method "#{attribute_name}_without_cast", attribute_name
-        define_method "#{attribute_name}_with_cast" do
-          val = send "#{attribute_name}_without_cast"
-          val.is_a?(String) ? ["1", "true"].include?(val) : val
-        end
-        alias_method attribute_name, "#{attribute_name}_with_cast"
-      end
-
-      @options ||= {}
-      @options[name] = opts
-    end
-
-    def self.options
-      @options ||= {}
-    end
-
-    def self.options= options
-      @options = options
     end
   end
 

@@ -1,4 +1,4 @@
 = simple_fields_for @export, as: :export, wrapper: :horizontal_form do |f|
-	= f.input :company_ids, collection: [], input_html: { multiple: true, style: 'width: 100%' }
+	= f.input :company_ids, collection: [], input_html: { multiple: true, style: 'width: 100%' }, include_hidden: false
 
 = javascript_pack_tag 'exports/company_ids'

@@ -43,16 +43,4 @@ module ExportsHelper
       ['Line Provider Set', 'line_provider_ids']
     ]
   end
-
-  def export_lines_options
-    workbench.lines
-  end
-
-  def export_companies_options
-    workbench.companies
-  end
-
-  def export_line_providers_options
-    workbench.line_providers
-  end
 end

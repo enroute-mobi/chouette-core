@@ -3,8 +3,7 @@
 	.col-sm-8.col-xs-7
 		span.radio style="margin-bottom: 5px;"
 			= label_tag 'export[period]', nil, style: 'display: flex; flex-direction: row; align-items: center;'
-				= form.input :period, as: :radio_buttons, label: false, wrapper: false, collection: [['', 'date_range']], input_html: { checked: true}
-				/ = radio_button_tag 'export[period]', 'date_range', true
+				= form.input :period, as: :radio_buttons, label: false, wrapper: false, collection: [['', 'date_range']], input_html: { checked: true }
 				.col-sm-8.col-xs-7
 					= form.input :duration, wrapper: false, label: false, input_html: { value: 200 }
 		span.radio

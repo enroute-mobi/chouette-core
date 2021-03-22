@@ -38,8 +38,6 @@ class Export::Base < ApplicationModel
   validates :type, :referential_id, presence: true
   validates_presence_of :workgroup
 
-  enumerize :periods, in: [:all , :duration]
-  enumerize :exported_lines, in: [:line_ids , :company_ids, :line_provider_ids]
 
   after_create :purge_exports
   # after_commit :notify_state
@@ -196,5 +194,9 @@ class Export::Base < ApplicationModel
   def initialize_fields
     super
     self.token_upload = SecureRandom.urlsafe_base64
+  end
+
+  def map_ids ids
+    ids.map(&:to_i)
   end
 end

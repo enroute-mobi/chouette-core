@@ -40,13 +40,14 @@ module OptionsSupport
           raw_value = options.stringify_keys[attribute_name.to_s]
           value = JSON.parse(raw_value) rescue raw_value
 
-          if serializer&.respond_to?(:call)
-            return serializer.call(value)
-          elsif serializer&.respond_to?(:new)
-            return serializer.new(value)
-          end
+          return value unless serializer
 
-          value
+          case serializer.class.name
+          when 'Proc' then serializer.call(value)
+          when 'Symbol' then send(serializer, value)
+          else
+            serializer.new(value)
+          end
         rescue => e
           Rails.logger.warn("Could not serialize #{attribute_name}. value: #{value}, \n Error: #{e}")
           value

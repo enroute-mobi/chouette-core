@@ -34,13 +34,4 @@ module ExportsHelper
 
     metadatas
   end
-
-  def export_exported_lines_options
-    [
-      ['', ''],
-      ['Specific Lines', 'line_ids'],
-      ['Company Set', 'company_ids'],
-      ['Line Provider Set', 'line_provider_ids']
-    ]
-  end
 end

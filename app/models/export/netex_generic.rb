@@ -1,13 +1,13 @@
 class Export::NetexGeneric < Export::Base
   include LocalExportSupport
 
-  option :profile, collection: %w(none european idfm/line), enumerize: :collection
-  option :period, collection: %w(date_range scheduled), enumerize: :collection
+  option :profile, enumerize: %w(none european idfm/line)
+  option :period, enumerize: %w(date_range scheduled)
   option :duration
-  option :exported_lines
-  option :line_ids, serialize: -> (ids) { ids.map(&:to_i) }
-  option :company_ids
-  option :line_provider_ids
+  option :exported_lines, enumerize: %w(line_ids company_ids line_provider_ids)
+  option :line_ids, serialize: :map_ids
+  option :company_ids, serialize: :map_ids
+  option :line_provider_ids, serialize: :map_ids
 
   def target
     @target ||= Netex::Target.build export_file, profile: netex_profile, validity_periods: validity_periods

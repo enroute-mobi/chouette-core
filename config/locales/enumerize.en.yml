@@ -304,7 +304,7 @@ en:
       line_ids: "Lines"
       company_ids: "Companies"
       line_provider_ids: "Line Providers"
-      line_referential_id: All available lines
+      all_line_ids: All available lines
     period:
       date_range: All available periods
       scheduled: Only next days

@@ -4,7 +4,7 @@ class Export::NetexGeneric < Export::Base
   option :profile, enumerize: %w(none european idfm/line)
   option :period, enumerize: %w(date_range scheduled)
   option :duration
-  option :exported_lines, enumerize: %w(line_ids company_ids line_provider_ids line_referential_id)
+  option :exported_lines, enumerize: %w(line_ids company_ids line_provider_ids all_line_ids)
   option :line_ids, serialize: :map_ids
   option :company_ids, serialize: :map_ids
   option :line_provider_ids, serialize: :map_ids

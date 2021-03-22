@@ -97,7 +97,7 @@ en:
         parent: Parent
         referential_id: Referential
         referential: Referential
-        duration: Duration (days)
+        duration: Duration
         exported_lines: Exported lines
         profile: Profile
         prefer_referent_stop_area: Prefer Referent Stop Areas

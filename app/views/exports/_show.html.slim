@@ -1,6 +1,15 @@
 .row
   .col-lg-6.col-md-6.col-sm-12.col-xs-12
-    = definition_list t('metadatas'), exports_metadatas(@export)
+    = simple_block_for @export, title: @export.model_name.human do |d|
+      = d.attribute :type, value: @export.human_type
+      = d.attribute :status, value: operation_status(@export.status, verbose: true)
+      = d.attribute :referential, value: (@export.referential.present? ? link_to(@export.referential.name, [@export.referential]) : "-")
+      = d.attribute :exported_lines, value: @export.export_scope.lines.pluck(:name).join(",")
+      = d.attribute :period, value: @export.duration.present? ? "#{I18n.t('enumerize.period.scheduled')} :  #{@export.duration}" : I18n.t('enumerize.period.date_range')   
+      - if @export.type == "Export::Gtfs"
+        = d.attribute :prefer_referent_stop_area, as: :boolean
+        = d.attribute :ignore_single_stop_station, as: :boolean
+
   = processing_helper(@export)
 
 .row

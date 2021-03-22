@@ -103,7 +103,7 @@ fr:
         referential_id: Jeu de données
         referential: Jeu de données
         options: Options
-        duration: Durée (en jours)
+        duration: Durée
         exported_lines: Lignes exportées
         profile: Profil
         prefer_referent_stop_area: Préférer les arrêts Référents

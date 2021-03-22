@@ -1,0 +1,2 @@
+= simple_fields_for @export, as: :export, wrapper: :horizontal_form do |f|
+	= f.input :line_referential_id, as: :hidden, input_html: { value:  @export.workbench.line_referential_id }

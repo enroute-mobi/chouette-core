@@ -304,6 +304,7 @@ fr:
       line_ids: "Lignes"
       company_ids: "Transporteurs"
       line_provider_ids: "Fournisseur de lignes"
+      line_referential_id: Toutes les lignes
     period:
       all: Toutes les périodes
       duration: Seulement les jours suivants

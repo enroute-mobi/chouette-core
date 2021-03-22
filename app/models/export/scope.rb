@@ -45,7 +45,7 @@ module Export::Scope
     end
 
     def line_ids
-      @line_ids || companies_line_ids || line_provider_ids
+      @line_ids || companies_line_ids || line_provider_ids || line_referential_id
     end
 
     def line_provider_ids
@@ -54,6 +54,10 @@ module Export::Scope
   
     def companies_line_ids
       workgroup.lines.where(company: company_ids) if @company_ids
+    end
+
+    def line_referential_id
+      workgroup.lines.where(line_referential_id: line_referential_id) if @line_referential_id
     end
 
     def builder

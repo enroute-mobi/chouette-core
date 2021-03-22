@@ -306,8 +306,8 @@ en:
       line_provider_ids: "Line Providers"
       line_referential_id: All available lines
     period:
-      all: All available periods
-      duration: Only next days
+      date_range: All available periods
+      scheduled: Only next days
     profile:
       none: None
       european: European

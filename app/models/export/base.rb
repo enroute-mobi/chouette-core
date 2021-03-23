@@ -52,7 +52,7 @@ class Export::Base < ApplicationModel
 
   before_save :resolve_line_ids
   def resolve_line_ids
-    unless line_ids
+    if @export.respond_to?(:line_ids)
       export_scope = Export::Scope::Options.new(referential, date_range: date_range, line_ids: line_ids, line_provider_ids: line_provider_ids, company_ids: company_ids )
       self.line_ids = export_scope.line_ids unless export_scope.line_ids.nil?
     end

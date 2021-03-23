@@ -44,7 +44,7 @@ class Export::Base < ApplicationModel
   attr_accessor :synchronous
 
   def export_scope
-    @export_scope ||= Export::Scope.build(referential, date_range: date_range, line_ids: line_ids)
+    @export_scope ||= Export::Scope.build(referential, date_range: date_range, line_ids: line_ids, line_provider_ids: line_provider_ids, company_ids: company_ids )
   end
   attr_writer :export_scope
 

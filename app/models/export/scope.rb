@@ -35,7 +35,7 @@ module Export::Scope
 
   class Options
     attr_reader :referential
-    attr_accessor :duration, :date_range, :line_ids
+    attr_accessor :duration, :date_range, :line_ids, :line_provider_ids, :company_ids
 
     def initialize(referential, attributes = {})
       @referential = referential
@@ -45,19 +45,15 @@ module Export::Scope
     end
 
     def line_ids
-      @line_ids || companies_line_ids || line_provider_ids || all_line_ids
+      @line_ids || companies_line_ids || line_provider_line_ids
     end
 
-    def line_provider_ids
-      workgroup.lines.where(line_provider: line_provider_ids) if @line_provider_ids
+    def line_provider_line_ids
+      referential.line_referential.lines.where(line_provider: line_provider_ids) if line_provider_ids
     end
 
     def companies_line_ids
-      workgroup.lines.where(company: company_ids) if @company_ids
-    end
-
-    def all_line_ids
-      referential.lines
+      referential.line_referential.lines.where(company: company_ids) if company_ids
     end
 
     def builder

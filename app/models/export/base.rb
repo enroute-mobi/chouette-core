@@ -1,6 +1,13 @@
 require 'net/http/post/multipart'
 
 class Export::Base < ApplicationModel
+  self.table_name = "exports"
+
+  include Rails.application.routes.url_helpers
+  include OptionsSupport
+  include NotifiableSupport
+  include PurgeableResource
+
   class << self
     # Those two methods are defined here because they are required to include IevInterfaces::Task
     def messages_class_name
@@ -10,53 +17,7 @@ class Export::Base < ApplicationModel
     def resources_class_name
       "Export::Resource"
     end
-  end
 
-  include Rails.application.routes.url_helpers
-  include OptionsSupport
-  include NotifiableSupport
-  include PurgeableResource
-  include IevInterfaces::Task
-
-  def code_space
-    # User option in the future
-    @code_space ||= workgroup.code_spaces.default if workgroup
-  end
-
-  def public_code_space
-    @code_space ||= workgroup.code_spaces.public if workgroup
-  end
-
-  self.table_name = "exports"
-
-  belongs_to :referential
-  belongs_to :publication
-  belongs_to :workgroup, class_name: '::Workgroup'
-
-  has_many :publication_api_sources, foreign_key: :export_id
-
-  validates :type, :referential_id, presence: true
-  validates_presence_of :workgroup
-
-
-  after_create :purge_exports
-  # after_commit :notify_state
-  attr_accessor :synchronous
-
-  def export_scope
-    @export_scope ||= Export::Scope.build(referential, date_range: date_range, line_ids: line_ids, line_provider_ids: line_provider_ids, company_ids: company_ids )
-  end
-  attr_writer :export_scope
-
-  scope :not_used_by_publication_apis, -> {
-    joins('LEFT JOIN public.publication_api_sources ON publication_api_sources.export_id = exports.id')
-    .where("publication_api_sources.id IS NULL")
-  }
-  scope :purgeable, -> {
-    not_used_by_publication_apis.where("exports.created_at <= ?", clean_after.days.ago)
-  }
-
-  class << self
     def human_name(options={})
       I18n.t("export.#{self.name.demodulize.underscore}")
     end
@@ -68,6 +29,58 @@ class Export::Base < ApplicationModel
     end
   end
 
+  include IevInterfaces::Task
+
+  belongs_to :referential
+  belongs_to :publication
+  belongs_to :workgroup, class_name: '::Workgroup'
+
+  has_many :publication_api_sources, foreign_key: :export_id
+
+  validates :type, :referential_id, presence: true
+  validates_presence_of :workgroup
+
+  after_create :purge_exports
+  def purge_exports
+    return unless workbench.present?
+
+    workbench.exports.file_purgeable.each do |exp|
+      exp.update(remove_file: true)
+    end
+    workbench.exports.purgeable.destroy_all
+  end
+
+  before_save :resolve_line_ids
+  def resolve_line_ids
+    unless line_ids
+      export_scope = Export::Scope::Options.new(referential, date_range: date_range, line_ids: line_ids, line_provider_ids: line_provider_ids, company_ids: company_ids )
+      self.line_ids = export_scope.line_ids unless export_scope.line_ids.nil?
+    end
+  end
+
+  attr_accessor :synchronous
+
+  scope :not_used_by_publication_apis, -> {
+    joins('LEFT JOIN public.publication_api_sources ON publication_api_sources.export_id = exports.id')
+    .where("publication_api_sources.id IS NULL")
+  }
+  scope :purgeable, -> {
+    not_used_by_publication_apis.where("exports.created_at <= ?", clean_after.days.ago)
+  }
+
+  def code_space
+    # User option in the future
+    @code_space ||= workgroup.code_spaces.default if workgroup
+  end
+
+  def public_code_space
+    @code_space ||= workgroup.code_spaces.public if workgroup
+  end
+
+  def export_scope
+    @export_scope ||= Export::Scope.build(referential, date_range: date_range, line_ids: line_ids)
+  end
+  attr_writer :export_scope
 
   def human_name
     self.class.human_name(options)
@@ -97,15 +110,6 @@ class Export::Base < ApplicationModel
     update status: 'failed'
     notify_state
     raise
-  end
-
-  def purge_exports
-    return unless workbench.present?
-
-    workbench.exports.file_purgeable.each do |exp|
-      exp.update(remove_file: true)
-    end
-    workbench.exports.purgeable.destroy_all
   end
 
   def upload_file file

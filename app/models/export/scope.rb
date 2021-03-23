@@ -40,8 +40,6 @@ module Export::Scope
     def initialize(referential, attributes = {})
       @referential = referential
       attributes.each { |k, v| send "#{k}=", v }
-
-      raise "lines ids cannot be empty" unless line_ids&.any?
     end
 
     def line_ids
@@ -49,11 +47,11 @@ module Export::Scope
     end
 
     def line_provider_line_ids
-      referential.line_referential.lines.where(line_provider: line_provider_ids) if line_provider_ids
+      referential.line_referential.lines.where(line_provider: line_provider_ids).pluck(:id) if line_provider_ids
     end
 
     def companies_line_ids
-      referential.line_referential.lines.where(company: company_ids) if company_ids
+      referential.line_referential.lines.where(company: company_ids).pluck(:id) if company_ids
     end
 
     def builder

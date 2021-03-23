@@ -82,7 +82,7 @@ class ExportsController < ChouetteController
       _params[:user_id] ||= current_user.id
 
       if export_class&.method_defined?(:duration)
-        _params.delete(:period) == 'date_range' ?  _params[:duration].to_i : nil
+        _params[:duration] = _params.delete(:period) == 'only_next_days' ?  _params[:duration].to_i : nil
       end
     end
   end

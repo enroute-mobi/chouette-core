@@ -5,7 +5,7 @@
       = d.attribute :status, value: operation_status(@export.status, verbose: true)
       = d.attribute :referential, value: (@export.referential.present? ? link_to(@export.referential.name, [@export.referential]) : "-")
       = d.attribute :exported_lines, value: @export.export_scope.lines.pluck(:name).join(",")
-      = d.attribute :period, value: @export.duration.present? ? "#{I18n.t('enumerize.period.scheduled')} :  #{@export.duration}" : I18n.t('enumerize.period.date_range')   
+      = d.attribute :period, value: @export.duration.present? ? "#{I18n.t('enumerize.period.only_next_days')} :  #{@export.duration}" : I18n.t('enumerize.period.all_periods')   
       - if @export.type == "Export::Gtfs"
         = d.attribute :prefer_referent_stop_area, as: :boolean
         = d.attribute :ignore_single_stop_station, as: :boolean

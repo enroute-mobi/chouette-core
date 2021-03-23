@@ -43,7 +43,7 @@ module SimpleBlockForHelper
           when :enumerize
             raw_value.text
           when :boolean
-            t(raw_value == '1')
+            t(raw_value)
           else
             raw_value
           end

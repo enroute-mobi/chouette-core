@@ -29,7 +29,7 @@ module Chouette
     # validates_format_of :url, :with => %r{\Ahttps?:\/\/([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?\Z}, :allow_nil => true, :allow_blank => true
 
     scope :by_provider, ->(line_provider) { where(line_provider_id: line_provider.id) }
-    scope :by_text, ->(text) { where('lower(companies.name) LIKE :t or lower(companies.short_name) LIKE :t or lower(companies.objectid)', t: "%#{text.downcase}%") }
+    scope :by_text, ->(text) { where('lower(companies.name) LIKE :t or lower(companies.short_name) LIKE :t or lower(companies.objectid) LIKE :t', t: "%#{text.downcase}%") }
 
     def self.nullable_attributes
       [:default_contact_organizational_unit, :default_contact_operating_department_name, :code, :default_contact_phone, :default_contact_fax, :default_contact_email, :default_contact_url, :time_zone]

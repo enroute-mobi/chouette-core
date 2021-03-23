@@ -197,6 +197,6 @@ class Export::Base < ApplicationModel
   end
 
   def map_ids ids
-    ids.map(&:to_i)
+    ids&.map(&:to_i)
   end
 end

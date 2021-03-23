@@ -1,4 +1,6 @@
 = simple_fields_for @export, as: :export, wrapper: :horizontal_form do |f|
-  = render 'exports/options/period', form: f
-  = render 'exports/options/export_type', form: f, option: Export::Netex.options.dig(:export_type)
-  = render 'exports/options/line_code', form: f
+  = f.input :duration, required: true, input_html: { value: Export::Netex.options.dig(:duration, :default_value) }
+  = render 'exports/options/export_type', form: f
+  #export_export_type_slave
+
+= javascript_pack_tag 'exports/netex'

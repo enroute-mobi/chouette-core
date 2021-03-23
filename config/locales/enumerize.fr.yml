@@ -312,3 +312,6 @@ fr:
       none: Aucun
       european: Européen
       'idfm/line': IdFM lignes
+    export_type:
+      line: line
+      full: full

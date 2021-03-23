@@ -46,6 +46,8 @@ class ExportsController < ChouetteController
     when 'set_exported_lines'
       exported_lines = params.require(:exported_lines)
       return render partial: "exports/options/#{exported_lines}"
+    when 'set_export_type'
+      return render partial: 'exports/options/line_code'
     end
   end
 

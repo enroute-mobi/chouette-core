@@ -172,7 +172,7 @@ class Export::Base < ApplicationModel
   end
 
   def self.user_visible_descendants
-    descendants.select &:user_visible?
+    [Export::Gtfs, Export::NetexGeneric, Export::Netex].select &:user_visible?
   end
 
   def self.user_visible?

@@ -35,22 +35,6 @@ class ExportsController < ChouetteController
     send_file resource.file.path, filename: resource.user_file.name, type: resource.user_file.content_type
   end
 
-  def refresh_form
-    action = params.require(:_action)
-    type = params.require(:type)
-    @export = Export::Base.new(type: type, workbench_id: params[:workbench_id])
-
-    case action
-    when 'set_type'
-      return render partial: "exports/types/#{type.demodulize.underscore}"
-    when 'set_exported_lines'
-      exported_lines = params.require(:exported_lines)
-      return render partial: "exports/options/#{exported_lines}"
-    when 'set_export_type'
-      return render partial: 'exports/options/line_code'
-    end
-  end
-
   protected
 
   def resource

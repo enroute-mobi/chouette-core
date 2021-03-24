@@ -199,9 +199,9 @@ class Import::Gtfs < Import::Base
         line.transport_submode = 'undefined'
 
         # White is the default color in the gtfs spec
-        line.color = parse_color route.color
+        line.color = parse_color(route.color) if route.color
         # Black is the default text color in the gtfs spec
-        line.text_color = parse_color route.text_color, default: '000000'
+        line.text_color = parse_color(route.text_color) if route.text_color
 
         line.url = route.url
 
@@ -672,9 +672,8 @@ class Import::Gtfs < Import::Base
     @status = 'failed'
   end
 
-  def parse_color value, options = {}
-    options = {default: 'FFFFFF'}.merge(options)
-    /\A[\dA-F]{6}\Z/.match(value).try(:string) || options[:default]
+  def parse_color(value)
+    /\A[\dA-F]{6}\Z/.match(value.upcase).try(:string)
   end
 
   class InvalidTripTimesError < StandardError; end
@@ -684,6 +683,8 @@ class Import::Gtfs < Import::Base
     attr_reader :time
 
     def initialize(time)
+      super()
+
       @time = time
     end
   end

@@ -18,8 +18,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/icar-api.git
-  revision: e2aa7de97002a46350534878f9d757de412c8a47
-  branch: CHOUETTE-811-change-default-url
+  revision: 19085a3a77cc1558fba22d48efd63bea650940a4
   specs:
     icar (0.0.3)
       nokogiri (>= 1.8.5)

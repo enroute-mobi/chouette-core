@@ -1,4 +1,4 @@
-= form.input :exported_lines, required: true, input_html: { id: 'exported_lines' }
+= form.input :exported_lines, include_blank: false, input_html: { id: 'exported_lines' }
 #exported_lines_slave
   // Needed for failed validation
   - if local_assigns.has_key?(:export)

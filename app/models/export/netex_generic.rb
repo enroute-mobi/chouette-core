@@ -1,10 +1,10 @@
 class Export::NetexGeneric < Export::Base
   include LocalExportSupport
 
-  option :profile, enumerize: %w(none european idfm/line)
-  option :period,  enumerize: %w(all_periods only_next_days)
+  option :period,  enumerize: %w(all_periods only_next_days), default_value: :all_periods
+  option :exported_lines, enumerize: %w(line_ids company_ids line_provider_ids all_line_ids), default_value: :line_ids
   option :duration
-  option :exported_lines, enumerize: %w(line_ids company_ids line_provider_ids all_line_ids)
+  option :profile, enumerize: %w(none european idfm/line), default: :none
   option :line_ids, serialize: :map_ids
   option :company_ids, serialize: :map_ids
   option :line_provider_ids, serialize: :map_ids

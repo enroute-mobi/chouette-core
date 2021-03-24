@@ -311,7 +311,7 @@ en:
     profile:
       none: None
       european: European
-      'idfm/line': IdFM lines
+      'idfm/line': IdFM Publication Line
     export_type:
       line: line
       full: full

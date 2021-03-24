@@ -3,6 +3,11 @@ require 'net/http/post/multipart'
 class Export::Base < ApplicationModel
   self.table_name = "exports"
 
+  # Normally with this code i18n translation is possible with Export::Base.last.profile_text or Export::Base.last.profile.text
+  # But actually it fails with undefined method `text' for "european":String
+  # extend Enumerize
+  # extend ActiveModel::Naming
+
   include Rails.application.routes.url_helpers
   include OptionsSupport
   include NotifiableSupport

@@ -2,7 +2,7 @@
 require 'stif/reflex_synchronization'
 
 RSpec.describe Stif::ReflexSynchronization do
-  let(:api_url) { "https://pprod.reflex.stif.info/ws/rest/V2/getData?method=getAll" }
+  let(:api_url) { "https://pprod-icar.iledefrance-mobilites.fr/ws/rest/v2/getData?method=getAll" }
   let!(:stop_area_referential) { create :stop_area_referential, name: 'Reflex' }
   let!(:stop_area_provider) { create :stop_area_provider, objectid: "FR1:OrganisationalUnit:8:", stop_area_referential_id: stop_area_referential.id}
   let!(:default_referent_stop_area_provider) { create :stop_area_provider, objectid: "FR1-ARRET_AUTO", stop_area_referential_id: stop_area_referential.id}

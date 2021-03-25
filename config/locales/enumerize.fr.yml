@@ -306,7 +306,7 @@ fr:
       line_provider_ids: "Associées aux fournisseurs de lignes"
       all_line_ids: Toutes les lignes
     period:
-      all_periods: Toutes les périodes
+      all_periods: Toute la période disponible
       only_next_days: Seulement les jours suivants
     profile:
       none: Aucun

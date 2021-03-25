@@ -306,7 +306,7 @@ en:
       line_provider_ids: "Associated line providers"
       all_line_ids: All available lines
     period:
-      all_periods: All available periods
+      all_periods: All available period
       only_next_days: Only next days
     profile:
       none: None

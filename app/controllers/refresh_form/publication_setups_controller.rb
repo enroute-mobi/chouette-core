@@ -7,7 +7,7 @@ module RefreshForm
     private
 
     def resource_name
-      'publication_setup[export_options]'
+      'publication_setups'
     end
   end
 end

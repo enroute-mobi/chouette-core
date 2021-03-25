@@ -45,7 +45,7 @@ class PublicationSetup < ApplicationModel
 
   def new_export(extra_options={})
     options = export_options.dup.update(extra_options)
-    export = export_class.new(options: options) do |export|
+    export = export_class.new(**options) do |export|
       export.creator = export_creator_name
     end
     if block_given?
@@ -55,23 +55,13 @@ class PublicationSetup < ApplicationModel
   end
 
   def new_exports(referential)
-    if export_type == "Export::Netex" && export_options["export_type"] == "line"
-      referential.metadatas_lines.map do |line|
-        new_export(line_code: line.id) do |export|
-         export.name = "#{self.class.ts} #{name} for line #{line.name}"
-         export.referential = referential
-         export.workgroup = referential.workgroup
-       end
-      end
-    else
-      export = new_export do |export|
-        export.name = "#{self.class.ts} #{name}"
-        export.referential = referential
-        export.synchronous = true
-        export.workgroup = referential.workgroup
-      end
-      [export]
+    export = new_export do |export|
+      export.name = "#{self.class.ts} #{name}"
+      export.referential = referential
+      export.synchronous = true
+      export.workgroup = referential.workgroup
     end
+      [export]
   end
 
   def publish(operation)

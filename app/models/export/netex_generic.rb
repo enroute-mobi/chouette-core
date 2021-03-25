@@ -1,13 +1,15 @@
 class Export::NetexGeneric < Export::Base
   include LocalExportSupport
 
-  option :period,  enumerize: %w(all_periods only_next_days), default_value: :all_periods
-  option :exported_lines, enumerize: %w(all_line_ids line_ids company_ids line_provider_ids), default_value: :all_line_ids
-  option :duration
   option :profile, enumerize: %w(none european idfm/line), default: :none
+  option :duration
   option :line_ids, serialize: :map_ids
   option :company_ids, serialize: :map_ids
   option :line_provider_ids, serialize: :map_ids
+
+  attr_accessor :period, :exported_lines
+  enumerize :period, in: %w[all_periods only_next_days], default: 'all_periods'
+  enumerize :exported_lines, in: %w[line_ids company_ids line_provider_ids all_line_ids], default: 'all_line_ids'
 
   def target
     @target ||= Netex::Target.build export_file, profile: netex_profile, validity_periods: validity_periods

@@ -17,7 +17,7 @@ module RefreshForm
     private
 
     def resource_name
-      'export'
+      'exports'
     end
 
     def parsed_type

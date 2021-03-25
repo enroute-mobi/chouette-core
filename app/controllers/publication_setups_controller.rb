@@ -14,6 +14,13 @@ class PublicationSetupsController < ChouetteController
     end
   end
 
+  def create
+    attributes = publication_setup_params.merge(export_options: export_options_params || {})
+    @publication_setup = PublicationSetup.create(attributes)
+    @export = @publication_setup.new_export
+    create!
+  end
+
   def show
     show! do |format|
       format.html {
@@ -31,12 +38,6 @@ class PublicationSetupsController < ChouetteController
   private
 
   def publication_setup_params
-    export_options = []
-    export_class = params[:publication_setup] && params[:publication_setup][:export_type] && params[:publication_setup][:export_type].safe_constantize
-    if export_class
-      export_options = export_class.options.keys
-    end
-
     destination_options = [:id, :name, :type, :_destroy, :secret_file, :publication_setup_id, :publication_api_id]
     destination_options += Destination.descendants.map do |t|
       t.options.map do |key, value|
@@ -50,9 +51,21 @@ class PublicationSetupsController < ChouetteController
       :export_type,
       :enabled,
       :workgroup_id,
-      export_options: export_options,
       destinations_attributes: destination_options
     )
+  end
+
+  def export_options_params
+    export_class = params.dig(:publication_setup, :export_type)&.safe_constantize
+    permitted_keys = export_class ? export_class.options.keys : []
+    
+    return {} unless params[:export]
+
+    params.require(:export).permit(*permitted_keys, line_ids: [], line_provider_ids: [], company_ids: []).tap do |_params|
+      if export_class&.method_defined?(:duration)
+        _params[:duration] = _params[:period] == 'only_next_days' ?  _params[:duration].to_i : nil
+      end
+    end
   end
 
   def resource

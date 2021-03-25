@@ -10,6 +10,10 @@ class Export::Gtfs < Export::Base
   option :prefer_referent_stop_area, required: true, default_value: false, enumerize: [true, false]
   option :ignore_single_stop_station, required: true, default_value: false, enumerize: [true, false]
 
+  attr_accessor :period, :exported_lines
+  enumerize :period, in: %w[all_periods only_next_days], default: 'all_periods'
+  enumerize :exported_lines, in: %w[line_ids company_ids line_provider_ids all_line_ids], default: 'all_line_ids'
+
   DEFAULT_AGENCY_ID = "chouette_default"
   DEFAULT_TIMEZONE = "Etc/UTC"
 

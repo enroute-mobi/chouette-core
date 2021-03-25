@@ -1,7 +1,7 @@
 class Export::Gtfs < Export::Base
   include LocalExportSupport
 
-  option :period,  enumerize: %w(all_periods only_next_days), default_value: :all_periods
+  option :period,  enumerize: %w(all_periods only_next_days), default_value: :only_next_days
   option :exported_lines, enumerize: %w(all_line_ids line_ids company_ids line_provider_ids), default_value: :all_line_ids
   option :duration
   option :line_ids, serialize: :map_ids

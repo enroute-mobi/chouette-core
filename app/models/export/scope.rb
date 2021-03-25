@@ -104,6 +104,10 @@ module Export::Scope
       @current_scope = current_scope
     end
 
+    def empty?
+      vehicle_journeys.empty?
+    end
+
     attr_reader :current_scope
 
     def lines

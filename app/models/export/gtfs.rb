@@ -416,7 +416,7 @@ class Export::Gtfs < Export::Base
           criticity: :info,
           message_key: :no_timezone,
           message_attributes: {
-            line_name: decorated_company.name
+            company_name: decorated_company.name
           }
         })
       end

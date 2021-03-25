@@ -2,24 +2,21 @@ class AutocompleteController < ChouetteController
   respond_to :json, only: [:lines, :companies, :line_providers]
 
   def lines
-    @lines = find_resources_by_text(:lines)
+    @lines = scope.lines.order(:name).by_text(text)
   end
 
   def companies
-    @companies = find_resources_by_text(:companies)
+    @companies = scope.companies.order(:name).by_text(text)
   end
 
   def line_providers
-    @line_providers = find_resources_by_text(:line_providers)
+    @line_providers = scope.line_providers.order(:short_name).by_text(text)
   end
 
   protected
 
-  def find_resources_by_text collection_name
-    collection = scope.send(collection_name)
-    return [] unless scope
-    return collection unless params[:q]
-    collection.by_text("%#{params[:q]}%")
+  def text
+    @text = params[:q]
   end
 
   def scope

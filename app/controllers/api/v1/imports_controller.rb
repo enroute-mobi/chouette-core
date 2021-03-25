@@ -24,7 +24,6 @@ class Api::V1::ImportsController < Api::V1::WorkbenchController
 
   def show
     @import = current_workbench.workbench_imports.find(params[:id])
-    render json: @import
   end
 
   private

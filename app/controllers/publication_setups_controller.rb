@@ -18,7 +18,9 @@ class PublicationSetupsController < ChouetteController
     attributes = publication_setup_params.merge(export_options: export_options_params || {})
     @publication_setup = PublicationSetup.create(attributes)
     @export = @publication_setup.new_export
-    create! { workgroup_publication_setup_path(parent, @publication_setup) }
+    create! do |success, failure|
+      success.html { redirect_to workgroup_publication_setup_path(parent, @publication_setup)}
+    end 
   end
 
   def edit

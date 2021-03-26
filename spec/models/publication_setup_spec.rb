@@ -7,14 +7,6 @@ RSpec.describe PublicationSetup, type: :model, use_chouette_factory: true do
   it { should validate_presence_of :workgroup }
   it { should validate_presence_of :export_type }
 
-  it 'should have at least one destination' do
-    valid = FactoryBot.build(:publication_setup, destinations_count: 1)
-    invalid = FactoryBot.build(:publication_setup, destinations_count: 0)
-
-    expect(valid.valid?).to be_truthy
-    expect(invalid.valid?).to be_falsey
-  end
-
   describe '#new_exports' do
     let!(:context) do
       Chouette.create do

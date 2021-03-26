@@ -14,7 +14,6 @@ class PublicationSetup < ApplicationModel
   validates :name, presence: true
   validates :workgroup, presence: true
   validates :export_type, presence: true
-  validates_length_of :destinations, minimum: 1, message: I18n.t('activerecord.errors.models.publication_setups.attributes.destinations.too_short')
   validate :export_options_are_valid
 
   store_accessor :export_options

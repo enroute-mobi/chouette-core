@@ -21,6 +21,11 @@ class PublicationSetupsController < ChouetteController
     create! { workgroup_publication_setup_path(parent, @publication_setup) }
   end
 
+  def edit
+    @export = resource.new_export
+    edit!
+  end
+
   def show
     show! do |format|
       format.html {
@@ -31,6 +36,8 @@ class PublicationSetupsController < ChouetteController
             publication_setup: @publication_setup
           }
         )
+
+        @export = @publication_setup.new_export(workgroup: @workgroup).decorate
       }
     end
   end
@@ -73,9 +80,7 @@ class PublicationSetupsController < ChouetteController
   end
 
   def resource
-    super.decorate(context: { workgroup: parent }).tap do |ps|
-      @export = ps.new_export(workgroup: parent).decorate
-    end
+    super.decorate(context: { workgroup: parent })
   end
 
   def collection

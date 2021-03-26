@@ -22,6 +22,14 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
     end
   end
 
+  describe '#options' do
+    it 'should return a Export::Scope::Options instance' do
+      scope = Export::Scope.build(referential)
+
+      expect(scope.options).to be_a_kind_of(Export::Scope::Options)
+    end
+  end
+
   let!(:context) do
     Chouette.create do
       line :first

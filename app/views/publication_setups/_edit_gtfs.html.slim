@@ -1,5 +1,7 @@
 = simple_fields_for(@export, as: :export, wrapper: :horizontal_form) do |f|
+  = f.input :type, as: :hidden, input_html: { value: Export::Gtfs.name }
   = render 'exports/options/period', form: f
   = render 'exports/options/exported_lines', form: f
   = f.input :prefer_referent_stop_area, as: :switchable_checkbox
   = f.input :ignore_single_stop_station, as: :switchable_checkbox
+  = render 'publication_setups/publish_per_line_input'

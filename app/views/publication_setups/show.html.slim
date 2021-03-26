@@ -10,7 +10,7 @@
         - metadatas.update( PublicationSetup.tmf(:enabled) => boolean_icon(@publication_setup.enabled) )
         = definition_list t('metadatas'), metadatas
 
-        = render @publication_setup.export_type.demodulize.downcase, publication_setup: @publication_setup
+        = render @publication_setup.export_type.demodulize.underscore
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         - @publication_setup.destinations.each do |destination|

@@ -18,7 +18,7 @@ class PublicationSetupsController < ChouetteController
     attributes = publication_setup_params.merge(export_options: export_options_params || {})
     @publication_setup = PublicationSetup.create(attributes)
     @export = @publication_setup.new_export
-    create!
+    create! { workgroup_publication_setup_path(parent, @publication_setup) }
   end
 
   def show
@@ -56,8 +56,12 @@ class PublicationSetupsController < ChouetteController
   end
 
   def export_options_params
+    permitted_keys = %i[type]
     export_class = params.dig(:publication_setup, :export_type)&.safe_constantize
-    permitted_keys = export_class ? export_class.options.keys : []
+
+    if export_class
+      permitted_keys += export_class.options.keys
+    end
     
     return {} unless params[:export]
 
@@ -69,7 +73,9 @@ class PublicationSetupsController < ChouetteController
   end
 
   def resource
-    super.decorate(context: { workgroup: parent })
+    super.decorate(context: { workgroup: parent }).tap do |ps|
+      @export = ps.new_export(workgroup: parent).decorate
+    end
   end
 
   def collection

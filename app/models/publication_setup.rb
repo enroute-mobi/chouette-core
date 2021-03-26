@@ -14,6 +14,7 @@ class PublicationSetup < ApplicationModel
   validates :name, presence: true
   validates :workgroup, presence: true
   validates :export_type, presence: true
+  validates_length_of :destinations, minimum: 1, message: I18n.t('activerecord.errors.models.publication_setups.attributes.destinations.too_short')
   validate :export_options_are_valid
 
   store_accessor :export_options
@@ -38,9 +39,17 @@ class PublicationSetup < ApplicationModel
   def export_options_are_valid
     dummy = new_export
     dummy.validate
-    dummy.errors.to_h.except(:name, :referential_id, :workgroup, :line_code).each do |k, v|
+    errors_keys = new_export.class.options.keys
+    dummy.errors.to_h.slice(*errors_keys).each do |k, v|
       errors.add(k, v)
     end
+  end
+
+  def published_line_ids(refefential)
+    new_export(referential: refefential, **export_options)
+      .export_scope
+      .lines
+      .pluck(:id)
   end
 
   def new_export(extra_options={})
@@ -55,13 +64,22 @@ class PublicationSetup < ApplicationModel
   end
 
   def new_exports(referential)
-    export = new_export do |export|
-      export.name = "#{self.class.ts} #{name}"
-      export.referential = referential
-      export.synchronous = true
-      export.workgroup = referential.workgroup
+    common_attributes = {
+      referential: referential,
+      name: "#{self.class.ts} #{name}",
+      synchronous: true,
+      workgroup: referential.workgroup
+    }
+
+    if publish_per_lines
+      line_ids = published_line_ids(referential)
+
+      line_ids.map do |line_id|
+        new_export(line_ids: [line_ids], **common_attributes)
+      end
+    else
+      [new_export(common_attributes)]
     end
-      [export]
   end
 
   def publish(operation)

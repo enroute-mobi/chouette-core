@@ -26,6 +26,7 @@ ChouetteIhm::Application.routes.draw do
     end
 
     resources :exports do
+      get :refresh_form, on: :collection
       post :upload, on: :member
       get :download, on: :member
     end
@@ -35,8 +36,10 @@ ChouetteIhm::Application.routes.draw do
     delete :referentials, on: :member, action: :delete_referentials
     resources :api_keys
 
-    resources :autocomplete, only: [:lines] do
-      get :lines, on: :collection
+    resources :autocomplete, only: %i[lines companies line_providers] do
+      get :lines, on: :collection, defaults: { format: 'jpg' }
+      get :companies, on: :collection, defaults: { format: 'jpg' }
+      get :line_providers, on: :collection, defaults: { format: 'jpg' }
     end
 
     resources :compliance_check_sets, only: [:index, :show] do
@@ -157,8 +160,10 @@ ChouetteIhm::Application.routes.draw do
     resources :autocomplete_purchase_windows, only: [:index]
     resources :autocomplete_time_tables, only: [:index]
 
-    resources :autocomplete, only: [:lines] do
-      get :lines, on: :collection
+    resources :autocomplete, only: %i[lines companies line_providers] do
+      get :lines, on: :collection, defaults: { format: 'json' }
+      get :companies, on: :collection, defaults: { format: 'json' }
+      get :line_providers, on: :collection, defaults: { format: 'json' }
     end
 
 

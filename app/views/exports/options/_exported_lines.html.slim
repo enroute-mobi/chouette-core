@@ -1,0 +1,8 @@
+= form.input :exported_lines, include_blank: false, input_html: { id: 'exported_lines' }
+#exported_lines_slave
+  // Needed for failed validation
+  - if local_assigns.has_key?(:export)
+    - @export.is_a?(Export::Gtfs) || @export.is_a?(Export::NetexGeneric)
+      - Export::Base.exported_lines.values.each do |o|
+        - if @export.respond_to?(n)
+          = render "exports/options/#{o}"

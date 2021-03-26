@@ -42,8 +42,7 @@ module Chouette
     validate :transport_mode_and_submode_match
     validates :registration_number, uniqueness: { scope: :line_provider_id }, allow_blank: true
 
-    scope :by_text, ->(text) { where('lower(lines.name) LIKE :t or lower(lines.published_name) LIKE :t or lower(lines.objectid) LIKE :t or lower(lines.comment) LIKE :t or lower(lines.number) LIKE :t',
-      t: "%#{text.downcase}%") }
+    scope :by_text, ->(text) { text.blank? ? all : where('lower(lines.name) LIKE :t or lower(lines.published_name) LIKE :t or lower(lines.objectid) LIKE :t or lower(lines.comment) LIKE :t or lower(lines.number) LIKE :t', t: "%#{text.downcase}%") }
 
     scope :by_name, ->(name) {
       joins('LEFT OUTER JOIN public.companies by_name_companies ON by_name_companies.id = lines.company_id')

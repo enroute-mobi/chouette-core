@@ -1,4 +1,4 @@
-= simple_form_for export, as: :export, url: workbench_exports_path(workbench), html: {class: 'form-horizontal', id: 'wb_export_form'}, wrapper: :horizontal_form do |form|
+= simple_form_for @export, as: :export, url: workbench_exports_path(workbench), html: {class: 'form-horizontal', id: 'wb_export_form'}, wrapper: :horizontal_form do |form|
 
   .row
     .col-lg-12
@@ -6,11 +6,12 @@
 
     .col-lg-12
       = form.input :referential_id, as: :select, collection: @referentials, label_method: :name, input_html: {"data-select2ed" => true}
-      = form.input :type, as: :select, collection: workgroup_exports(workbench.workgroup), label_method: :human_name
-      - workgroup_exports(workbench.workgroup).each do |child|
-        .slave data-master="[name='export[type]']" data-value=child.name
-          - child.options.each do |attr, option_def|
-            = option_input form, export, attr, option_def, child
+      = form.input :type, as: :select, collection: workgroup_exports(workbench.workgroup), include_blank: false, label_method: :human_name, input_html: { class: 'master' }
+      #type_slave
+        // Needed for failed validation
+        - workgroup_exports(workbench.workgroup).each do |child|
+          - if @export.is_a?(child)
+            = render "exports/types/#{child.name.demodulize.underscore}"
 
     .col-lg-12
       = form.input :notification_target, collection: Export::Base.notification_target_options, selected: :user
@@ -19,4 +20,3 @@
   = form.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'wb_export_form'
 
 = javascript_pack_tag "exports/new"
-= javascript_pack_tag "exports/select2_lines"

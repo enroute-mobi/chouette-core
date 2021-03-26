@@ -35,6 +35,22 @@ class ExportsController < ChouetteController
     send_file resource.file.path, filename: resource.user_file.name, type: resource.user_file.content_type
   end
 
+  def refresh_form
+    action = params.require(:_action)
+    type = params.require(:type)
+    @export = Export::Base.new(type: type, workbench_id: params[:workbench_id])
+
+    case action
+    when 'set_type'
+      return render partial: "exports/types/#{type.demodulize.underscore}"
+    when 'set_exported_lines'
+      exported_lines = params.require(:exported_lines)
+      return render partial: "exports/options/#{exported_lines}"
+    when 'set_export_type'
+      return render partial: 'exports/options/line_code'
+    end
+  end
+
   protected
 
   def resource
@@ -59,12 +75,18 @@ class ExportsController < ChouetteController
   def export_params
     permitted_keys = %i(name type referential_id notification_target)
     export_class = params[:export] && params[:export][:type] && params[:export][:type].safe_constantize
+
     if export_class
-      permitted_keys += export_class.options.map {|k, v| v[:name].presence || k }
+      permitted_keys += export_class.options.map { |k, v| v[:name].presence || k }
     end
-    export_params = params.require(:export).permit(permitted_keys)
-    export_params[:user_id] ||= current_user.id
-    export_params
+
+    params.require(:export).permit(*permitted_keys, line_ids: [], line_provider_ids: [], company_ids: []).tap do |_params|
+      _params[:user_id] ||= current_user.id
+
+      if export_class&.method_defined?(:duration)
+        _params[:duration] = _params.delete(:period) == 'only_next_days' ?  _params[:duration].to_i : nil
+      end
+    end
   end
 
   def decorate_collection(exports)

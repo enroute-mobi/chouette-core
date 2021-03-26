@@ -49,7 +49,7 @@ RSpec.describe ExportsController, :type => :controller do
       end
 
       describe "POST #create" do
-        let(:params){ {name: "foo"} }
+        let(:params){ { name: "foo" } }
         let(:request){ post :create, params: parent_params.merge({ export: params })}
         it 'should create no objects' do
           expect{request}.to_not change{Export::Netex.count}
@@ -71,7 +71,7 @@ RSpec.describe ExportsController, :type => :controller do
 
         context "with missing options" do
           let(:params){{
-            name: "foo",
+            referential_id: first_referential.id,
             type: "Export::Workgroup"
           }}
 

@@ -1,0 +1,5 @@
+= simple_fields_for @export, as: :export, wrapper: :horizontal_form do |f|
+  = render 'exports/options/period', form: f
+  = render 'exports/options/exported_lines', form: f
+  = f.input :prefer_referent_stop_area, as: :switchable_checkbox, wrapper: :horizontal_form, checked_value: true, unchecked_value: false
+  = f.input :ignore_single_stop_station, as: :switchable_checkbox, wrapper: :horizontal_form, checked_value: true, unchecked_value: false

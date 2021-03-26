@@ -23,10 +23,6 @@ module LocalExportSupport
     @date_range ||= Time.now.to_date..self.duration.to_i.days.from_now.to_date
   end
 
-  def journeys
-    @journeys ||= Chouette::VehicleJourney.with_matching_timetable (date_range)
-  end
-
   def export_type
     self.class.name.demodulize.underscore
   end
@@ -35,7 +31,7 @@ module LocalExportSupport
     Chouette::Benchmark.measure "export_#{export_type}", export: id do
       referential.switch
 
-      if self.class.skip_empty_exports && journeys.count == 0
+      if self.class.skip_empty_exports && export_scope.empty?
         self.update status: :failed, ended_at: Time.now
         vals = {}
         vals[:criticity] = :info

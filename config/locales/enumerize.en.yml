@@ -300,3 +300,18 @@ en:
       "000000": Black
       9B9B9B: "Grey"
       FFFFFF: White
+    exported_lines:
+      line_ids: "Specific lines"
+      company_ids: "Associated companies"
+      line_provider_ids: "Associated line providers"
+      all_line_ids: All available lines
+    period:
+      all_periods: All available period
+      only_next_days: Only next days
+    profile:
+      none: None
+      european: European
+      'idfm/line': IdFM Publication Line
+    export_type:
+      line: line
+      full: full

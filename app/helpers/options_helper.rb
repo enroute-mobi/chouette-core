@@ -54,8 +54,8 @@ module OptionsHelper
       self.instance_exec(val, &option[:display])
     elsif option.has_key?(:collection)
       translate_option_value(record.object.class, option_name, val)
-    elsif option[:type].to_s == "boolean"
-      (val == "1" || val == "true") ? 'true'.t : 'false'.t
+    elsif val.is_a?(TrueClass) || val.is_a?(FalseClass)
+      val ? 'true'.t : 'false'.t
     else
       val
     end

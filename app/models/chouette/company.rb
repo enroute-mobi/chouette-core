@@ -29,6 +29,7 @@ module Chouette
     # validates_format_of :url, :with => %r{\Ahttps?:\/\/([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?\Z}, :allow_nil => true, :allow_blank => true
 
     scope :by_provider, ->(line_provider) { where(line_provider_id: line_provider.id) }
+    scope :by_text, ->(text) { text.blank? ? all : where('lower(companies.name) LIKE :t or lower(companies.short_name) LIKE :t or lower(companies.objectid) LIKE :t', t: "%#{text.downcase}%") }
 
     def self.nullable_attributes
       [:default_contact_organizational_unit, :default_contact_operating_department_name, :code, :default_contact_phone, :default_contact_fax, :default_contact_email, :default_contact_url, :time_zone]
@@ -40,6 +41,14 @@ module Chouette
 
     def has_customer_service_contact?
       %w(customer_service_contact).product(%w(name email phone url)).any?{ |k| send(k.join('_')).present? }
+    end
+
+    def full_display_name
+      [self.get_objectid.short_id, name].join(' - ')
+    end
+
+    def display_name
+      full_display_name.truncate(50)
     end
 
     private

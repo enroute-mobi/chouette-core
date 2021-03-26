@@ -1,12 +1,14 @@
 class Export::Gtfs < Export::Base
   include LocalExportSupport
 
-  option :duration, required: true, type: :integer, default_value: 200
-  option :prefer_referent_stop_area, required: true, type: :boolean, default_value: false
-  option :ignore_single_stop_station, required: true, type: :boolean, default_value: false
-
-  validates :prefer_referent_stop_area, inclusion: [true, false]
-  validates :ignore_single_stop_station, inclusion: [true, false]
+  option :period,  enumerize: %w(all_periods only_next_days), default_value: :only_next_days
+  option :exported_lines, enumerize: %w(all_line_ids line_ids company_ids line_provider_ids), default_value: :all_line_ids
+  option :duration
+  option :line_ids, serialize: :map_ids
+  option :company_ids, serialize: :map_ids
+  option :line_provider_ids, serialize: :map_ids
+  option :prefer_referent_stop_area, required: true, default_value: false, enumerize: [true, false]
+  option :ignore_single_stop_station, required: true, default_value: false, enumerize: [true, false]
 
   DEFAULT_AGENCY_ID = "chouette_default"
   DEFAULT_TIMEZONE = "Etc/UTC"
@@ -29,11 +31,6 @@ class Export::Gtfs < Export::Base
   def target
     @target ||= GTFS::Target.new(Tempfile.new(["export#{id}",'.zip']))
   end
-
-  def export_scope
-    @export_scope ||= Export::Scope::DateRange.new(referential, date_range)
-  end
-  attr_writer :export_scope
 
   def export_to_dir(directory)
     CustomFieldsSupport.within_workgroup(referential.workgroup) do
@@ -419,7 +416,7 @@ class Export::Gtfs < Export::Base
           criticity: :info,
           message_key: :no_timezone,
           message_attributes: {
-            line_name: decorated_company.name
+            company_name: decorated_company.name
           }
         })
       end

@@ -25,4 +25,9 @@ class ExportDecorator < AF83::Decorator
       l.target :blank
     end
   end
+
+  define_instance_method :selected_lines_to_export do
+    object.workgroup.line_referential.lines.where(id: object.line_ids).limit(15).pluck(:name).join(", ")
+  end
+
 end

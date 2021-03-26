@@ -1,8 +1,13 @@
 class Export::NetexGeneric < Export::Base
   include LocalExportSupport
 
-  option :profile, collection: %w(none european idfm/line)
-  option :duration, type: :integer
+  option :period,  enumerize: %w(all_periods only_next_days), default_value: :all_periods
+  option :exported_lines, enumerize: %w(all_line_ids line_ids company_ids line_provider_ids), default_value: :all_line_ids
+  option :duration
+  option :profile, enumerize: %w(none european idfm/line), default: :none
+  option :line_ids, serialize: :map_ids
+  option :company_ids, serialize: :map_ids
+  option :line_provider_ids, serialize: :map_ids
 
   def target
     @target ||= Netex::Target.build export_file, profile: netex_profile, validity_periods: validity_periods
@@ -12,11 +17,6 @@ class Export::NetexGeneric < Export::Base
   def validity_periods
     [ referential.validity_period ]
   end
-
-  def export_scope
-    @export_scope ||= duration ? Export::Scope::DateRange.new(referential, date_range) : Export::Scope::All.new
-  end
-  attr_writer :export_scope
 
   def profile?
     ! [nil, 'none'].include? profile

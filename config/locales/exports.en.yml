@@ -81,7 +81,6 @@ en:
         started_at: Started at
         ended_at: Ended at
         creator: Created by
-        duration: Duration
         notification_target: Notifications recipients
         resources: "File to export"
         name: "Name"
@@ -98,39 +97,16 @@ en:
         parent: Parent
         referential_id: Referential
         referential: Referential
+        duration: Duration
+        exported_lines: Exported lines
+        profile: Profile
+        prefer_referent_stop_area: Prefer Referent Stop Areas
+        ignore_single_stop_station: Ignore Monomodal Stop Places with a single Quay
+        period: Exported periods
       export:
         <<: *attrs
         base:
           <<: *attrs
-        netex:
-          <<: *attrs
-          duration: Duration (in days)
-          line_code: Line
-          export_type: Export subtype
-          export_type_collection:
-            line: By line
-            full: Full
-        netex_full:
-          <<: *attrs
-          duration: Duration (in days)
-        netex_generic:
-          <<: *attrs
-          duration: Duration (in days)
-          profile: Profile
-        gtfs:
-          <<: *attrs
-          duration: Duration (in days)
-          prefer_referent_stop_area: Prefer Referent Stop Areas
-          ignore_single_stop_station: Ignore Monomodal Stop Places with a single Quay
-          line_code: Line
-          export_type: Export subtype
-          export_type_collection:
-            line: By line
-            full: Full
-        workgroup:
-          duration: Duration
-        referential_companies:
-          referential_id: Referential
   flash:
     exports:
       create:

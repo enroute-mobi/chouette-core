@@ -1,6 +1,18 @@
 .row
   .col-lg-6.col-md-6.col-sm-12.col-xs-12
-    = definition_list t('metadatas'), exports_metadatas(@export)
+    = simple_block_for @export, title: @export.model_name.human do |d|
+      = d.attribute :type, value: @export.human_type
+      = d.attribute :status, value: operation_status(@export.status, verbose: true)
+      = d.attribute :referential, value: (@export.referential.present? ? link_to(@export.referential.name, [@export.referential]) : "-")
+      - if @export.type != "Export::Netex"
+        = d.attribute :exported_lines, value: @export.selected_lines_to_export
+      = d.attribute :period, value: @export.duration.present? ? "#{I18n.t('enumerize.period.only_next_days')} :  #{@export.duration}" : I18n.t('enumerize.period.all_periods')
+      - if @export.type == "Export::NetexGeneric"
+        = d.attribute :profile, value: I18n.t("enumerize.profile.#{@export.profile}")
+      - if @export.type == "Export::Gtfs"
+        = d.attribute :prefer_referent_stop_area, as: :boolean
+        = d.attribute :ignore_single_stop_station, as: :boolean
+
   = processing_helper(@export)
 
 .row

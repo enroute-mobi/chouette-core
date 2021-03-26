@@ -1,9 +1,9 @@
 class Export::Netex < Export::Base
   after_commit :call_iev_callback, on: :create
 
-  option :export_type, collection: %w(line full)
-  option :duration, type: :integer, default_value: 60
-  option :line_code, ajax_collection: true, depends: {option: :export_type, value: "line"}
+  option :duration, default_value: 60
+  option :export_type, enumerize: %w(line full)
+  option :line_code
 
   validates :export_type, presence: true
   validates :line_code, presence: true, if: Proc.new { |e| e.export_type == "line" }

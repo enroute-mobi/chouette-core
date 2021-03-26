@@ -12,6 +12,8 @@ class LineProvider < ApplicationModel
 
   before_validation :define_line_referential, on: :create
 
+  scope :by_text, ->(text) { text.blank? ? all : where('lower(line_providers.short_name) LIKE :t', t: "%#{text.downcase}%") }
+
   def workgroup
     workbench&.workgroup
   end

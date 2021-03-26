@@ -427,7 +427,9 @@ GEM
     mime-types (3.3.1)
       mime-types-data (~> 3.2015)
     mime-types-data (3.2020.1104)
-    mimemagic (0.3.6)
+    mimemagic (0.3.9)
+      nokogiri (~> 1)
+      rake
     mini_histogram (0.3.1)
     mini_mime (1.0.2)
     mini_portile2 (2.5.0)
@@ -881,4 +883,4 @@ DEPENDENCIES
   will_paginate-bootstrap
 
 BUNDLED WITH
-   2.2.13
+   2.2.15

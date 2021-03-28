@@ -65,10 +65,10 @@ RSpec.describe Import::Gtfs do
   end
 
   describe "#import_agencies" do
-    let(:import) { create_import 'google-sample-feed.zip' }
+    let(:import) { create_import 'google-sample-feed-agency-phone.zip' }
     it "should create a company for each agency" do
       import.import_agencies
-      expect(workbench.line_referential.companies.pluck(:registration_number, :name, :default_contact_url, :default_language, :time_zone)).to eq([["DTA","Demo Transit Authority","http://google.com","en","America/Los_Angeles"]])
+      expect(workbench.line_referential.companies.pluck(:registration_number, :name, :default_contact_url, :default_contact_phone, :default_language, :time_zone)).to eq([["DTA","Demo Transit Authority","http://google.com","+33 1 23 45 67 89","en","America/Los_Angeles"]])
     end
 
     it "should create a resource" do

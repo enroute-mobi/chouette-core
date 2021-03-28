@@ -217,6 +217,7 @@ class Export::Gtfs < Export::Base
       @service_ids = Hash.new { |h,k| h[k] = [] }
       @vehicle_journey_time_zones = {}
       @trip_index = 0
+      @pickup_type = {}
       @shape_ids = {}
     end
 
@@ -270,6 +271,14 @@ class Export::Gtfs < Export::Base
 
     def trip_ids(vehicle_journey_id)
       @trip_ids[vehicle_journey_id]
+    end
+
+    def register_pickup_type(vehicle_journey)
+      @pickup_type[vehicle_journey.id] = vehicle_journey.flexible_service
+    end
+
+    def pickup_type(vehicle_journey_id)
+      @pickup_type[vehicle_journey_id]
     end
 
     def vehicle_journey_time_zone(vehicle_journey_id)
@@ -751,6 +760,7 @@ class Export::Gtfs < Export::Base
 
           target.trips << trip_attributes
           index.register_trip_id vehicle_journey, trip_attributes[:id]
+          index.register_pickup_type vehicle_journey
         end
       end
     end
@@ -941,11 +951,17 @@ class Export::Gtfs < Export::Base
         index&.stop_id(stop_area_id)
       end
 
+      def pickup_type
+        index&.pickup_type(vehicle_journey_id) ? 2 : 0
+      end
+
       def stop_time_attributes
         { departure_time: stop_time_departure_time,
           arrival_time: stop_time_arrival_time,
           stop_id: stop_time_stop_id,
-          stop_sequence: position }
+          stop_sequence: position,
+          pickup_type: pickup_type
+        }
       end
 
     end

@@ -95,6 +95,7 @@ class Import::Gtfs < Import::Base
         company.attributes = { name: agency.name }
         company.default_language = agency.lang
         company.default_contact_url = agency.url
+        company.default_contact_phone = agency.phone
         company.time_zone = @default_time_zone
 
         save_model company, resource: resource

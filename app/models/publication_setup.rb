@@ -44,11 +44,9 @@ class PublicationSetup < ApplicationModel
     end
   end
 
-  def published_line_ids(refefential)
-    new_export(referential: refefential, **export_options)
-      .export_scope
-      .lines
-      .pluck(:id)
+  def published_line_ids(referential)
+    new_export(referential: referential).export_scope.options.line_ids ||
+    workgroup.line_referential.lines.pluck(:id)
   end
 
   def new_export(extra_options={})
@@ -56,9 +54,9 @@ class PublicationSetup < ApplicationModel
     export = export_class.new(**options) do |export|
       export.creator = export_creator_name
     end
-    if block_given?
-      yield export
-    end
+
+    yield export if block_given?
+
     export
   end
 
@@ -71,10 +69,8 @@ class PublicationSetup < ApplicationModel
     }
 
     if publish_per_lines
-      line_ids = published_line_ids(referential)
-
-      line_ids.map do |line_id|
-        new_export(line_ids: [line_ids], **common_attributes)
+      published_line_ids(referential).map do |line_id|
+        new_export(line_ids: [line_id], **common_attributes)
       end
     else
       [new_export(common_attributes)]

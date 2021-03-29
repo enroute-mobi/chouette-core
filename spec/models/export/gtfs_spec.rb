@@ -530,6 +530,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
     describe "stop_time attributes" do
 
       before do
+        allow(index).to receive_messages(pickup_type: 0)
         allow(decorator).to receive_messages(time_zone: nil, position: 42, stop_time_stop_id: "test")
         vehicle_journey_at_stop.departure_time =
           vehicle_journey_at_stop.arrival_time = Time.parse("23:00")
@@ -566,8 +567,8 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
     let(:context) do
       Chouette.create do
         time_table :default
-        vehicle_journey time_tables: [:default]
-        vehicle_journey time_tables: [:default]
+        vehicle_journey time_tables: [:default], flexible_service: true
+        vehicle_journey time_tables: [:default], flexible_service: false
       end
     end
 
@@ -583,6 +584,13 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       part.export!
       vehicle_journeys.each do |vehicle_journey|
         expect(index.trip_ids(vehicle_journey.id)).to eq([vehicle_journey.objectid])
+      end
+    end
+
+    it "register the GTFS pickup_type for each VehicleJourney" do
+      part.export!
+      vehicle_journeys.each do |vehicle_journey|
+        expect(index.pickup_type(vehicle_journey.id)).to eq(vehicle_journey.flexible_service)
       end
     end
 

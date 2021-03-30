@@ -236,6 +236,28 @@ class Workgroup < ApplicationModel
     TransportModeEnumerations.formatted_submodes_for_transports(transport_modes)
   end
 
+  DEFAULT_TRANSPORT_MODE = "bus"
+
+  # Returns [ "bus", "undefined" ] when the Workgroup accepts this transport mode.
+  # else returns first transport mode with its first submode
+  def default_transport_mode
+    transport_mode =
+      if transport_modes.keys.include?(DEFAULT_TRANSPORT_MODE)
+        DEFAULT_TRANSPORT_MODE
+      else
+        sorted_transport_modes.first
+      end
+
+    transport_submode =
+      if transport_modes[transport_mode].include?("undefined")
+        "undefined"
+      else
+        transport_modes[transport_mode].first
+      end
+
+    [ transport_mode, transport_submode ]
+  end
+
   def self.compliance_control_sets_label(key)
     "workgroups.compliance_control_sets.#{key}".t
   end

@@ -71,8 +71,7 @@ class LinesController < ChouetteController
   def new
     authorize resource_class
     build_resource
-    @line.transport_mode = Chouette::Line.sorted_transport_modes.first
-    @line.color = '#FFFFFF'
+    @line.transport_mode, @line.transport_submode = workgroup.default_transport_mode
     super
   end
 
@@ -151,7 +150,12 @@ class LinesController < ChouetteController
     end
   end
 
+  def workbench
+    @workbench
+  end
+
   alias_method :line_referential, :parent
+  delegate :workgroup, to: :workbench
 
   private
 
@@ -227,4 +231,5 @@ class LinesController < ChouetteController
     scope = scope.send(params[:q][:status]) if full_status_scope
     scope
   end
+
 end

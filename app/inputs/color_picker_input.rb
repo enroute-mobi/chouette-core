@@ -9,6 +9,6 @@ class ColorPickerInput < SimpleForm::Inputs::Base
 
   def input_html_options
     selected_color = object.send(attribute_name)
-    super.merge({class: 'hexInput form-control', type: 'text', value: "#{selected_color.presence||'#000000'}"})
+    super.merge({class: 'hexInput form-control', type: 'text', value: selected_color})
   end
 end

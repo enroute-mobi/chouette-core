@@ -24,13 +24,8 @@ export default function App() {
       </div>
 
       <Filters />
-      <SelectableContainer>
-        <VehicleJourneysList />
-      </SelectableContainer>
-
-      <SelectableContainer>
-        {window.returnRouteUrl && <VehicleJourneysList routeUrl={window.returnRouteUrl} />}
-      </SelectableContainer>
+      <VehicleJourneysList />
+      {window.returnRouteUrl && <VehicleJourneysList routeUrl={window.returnRouteUrl} />}
 
       <div className='row'>
         <div className='col-lg-12 text-right'>

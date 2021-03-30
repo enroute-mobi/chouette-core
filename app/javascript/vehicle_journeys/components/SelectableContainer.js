@@ -1,16 +1,20 @@
-import React, { Component } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import { SelectableGroup } from 'react-selectable-fast'
 import { isEmpty, sortBy } from 'lodash'
-import autoBind from 'react-autobind'
 
-export default class SelectableContainer extends Component {
-	constructor(props) {
-		super(props)
-		autoBind(this)
-	}
 
-	handleSelecting(items) {
+const SelectableContainer = props => {
+	const {
+		children,
+		clearSelectedItems,
+		selectionMode,
+		updateSelectedItems,
+		updateSelectionDimensions,
+		updateSelectionLocked
+	} = props
+
+	const handleSelecting = items => {
 		const initialState = { width: new Set(), height: new Set(), selectedItems: [] } // Use of Set to eliminate duplicate values
 
 		const { width, height, selectedItems } = items.reduce((result, item) => {
@@ -29,33 +33,37 @@ export default class SelectableContainer extends Component {
 			}
 		}, initialState)
 
-		this.props.updateSelectedItems(selectedItems)
-		this.props.updateSelectionDimensions(width.size, height.size)
+		updateSelectedItems(selectedItems)
+		updateSelectionDimensions(width.size, height.size)
 	}
 
-	handleSelectFinish(items) {
-		const { updateSelectionLocked, toggleArrivals } = this.props
+	const handleSelectFinish = items => {
 		const hasItems = !isEmpty(items)
 
 		updateSelectionLocked(hasItems)
 	}
 
-	render() {
-		const { selectionMode } = this.props
-		return (
-			<SelectableGroup
-				className="selectable-container"
-				resetOnStart
-				disabled={!selectionMode}
-				duringSelection={this.handleSelecting}
-				onSelectionFinish={this.handleSelectFinish}
-				ignoreList={['.not-selectable']}
-			>
-				{this.props.children}
-			</SelectableGroup>
-		)
-	}
+	if (!selectionMode)
+		return <div>{children}</div>
+
+	return (
+		<SelectableGroup
+			className="selectable-container"
+			resetOnStart
+			disabled={!selectionMode}
+			duringSelection={handleSelecting}
+			onSelectionFinish={handleSelectFinish}
+			onSelectionClear={clearSelectedItems}
+			ignoreList={['.not-selectable']}
+			scrollContainer='.scrollable-container'
+			selectOnClick={false}
+		>
+			{children}
+		</SelectableGroup>
+	)
 }
+
+export default SelectableContainer
 
 SelectableContainer.propTypes = {
 	selectionMode: PropTypes.bool.isRequired,

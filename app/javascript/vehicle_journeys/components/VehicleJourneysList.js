@@ -4,6 +4,7 @@ import { flatMap, isEmpty, map, some, uniqBy } from 'lodash'
 import autoBind from 'react-autobind'
 import VehicleJourney from './VehicleJourney'
 import StopAreaHeaderManager from '../../helpers/stop_area_header_manager'
+import SelectableContainer from '../containers/SelectableContainer'
 
 export default class VehicleJourneysList extends Component {
   constructor(props){
@@ -298,31 +299,33 @@ export default class VehicleJourneysList extends Component {
                 })}
               </div>
 
-              <div className='t2e-item-list w80'>
-                <div>
-                  {this.vehicleJourneysList.map((vj, index) =>
-                    <VehicleJourney
-                      value={vj}
-                      key={index}
-                      index={index}
-                      editMode={this.isReturn ? false : this.props.editMode}
-                      selection={this.props.selection}
-                      selectedItems={this.props.selectedItems}
-                      filters={this.props.filters}
-                      features={this.props.features}
-                      onUpdateTime={this.props.onUpdateTime}
-                      onSelectVehicleJourney={this.props.onSelectVehicleJourney}
-                      onOpenInfoModal={this.props.onOpenInfoModal}
-                      vehicleJourneys={this}
-                      disabled={this.isReturn}
-                      allTimeTables={this.allTimeTables}
-                      allPurchaseWindows={this.allPurchaseWindows}
-                      extraHeaders={this.props.extraHeaders}
-                      onSelectCell={this.onSelectCell}
+              <SelectableContainer>
+                <div className='t2e-item-list w80'>
+                  <div className='scrollable-container'>
+                    {this.vehicleJourneysList.map((vj, index) =>
+                      <VehicleJourney
+                        value={vj}
+                        key={index}
+                        index={index}
+                        editMode={this.isReturn ? false : this.props.editMode}
+                        selection={this.props.selection}
+                        selectedItems={this.props.selectedItems}
+                        filters={this.props.filters}
+                        features={this.props.features}
+                        onUpdateTime={this.props.onUpdateTime}
+                        onSelectVehicleJourney={this.props.onSelectVehicleJourney}
+                        onOpenInfoModal={this.props.onOpenInfoModal}
+                        vehicleJourneys={this}
+                        disabled={this.isReturn}
+                        allTimeTables={this.allTimeTables}
+                        allPurchaseWindows={this.allPurchaseWindows}
+                        extraHeaders={this.props.extraHeaders}
+                        onSelectCell={this.onSelectCell}
                       />
-                  )}
+                    )}
+                  </div>
                 </div>
-              </div>
+              </SelectableContainer>
             </div>
           </div>
         </div>

@@ -11,6 +11,7 @@ const mapDispatchToProps = (dispatch) => ({
 	updateSelectedItems: items => {
 		dispatch(actions.updateSelectedItems(items))
 	},
+	clearSelectedItems: () => dispatch(actions.clearSelectedItems()),
 	updateSelectionDimensions: (width, height) => {
 		dispatch(actions.updateSelectionDimensions(width, height))
 	},

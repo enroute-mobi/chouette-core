@@ -34,6 +34,16 @@ export default function selection(state = initialState, action) {
 					items: action.items
 				},
 			}
+		case 'CLEAR_SELECTED_ITEMS':
+			return {
+				...state,
+				selection: {
+					...selection,
+					items: [],
+					width: null,
+					height: null
+				}
+			}
 		case 'UPDATE_SELECTION_DIMENSIONS':
 			return {
 				...state,

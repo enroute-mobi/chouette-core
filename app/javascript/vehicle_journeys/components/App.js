@@ -11,6 +11,11 @@ import Tools from '../containers/Tools'
 import SelectableContainer from '../containers/SelectableContainer'
 
 export default function App() {
+  const renderVehicleJourneysList = (props = {}) => (
+    <SelectableContainer>
+      <VehicleJourneysList {...props} />
+    </SelectableContainer>
+  )
   return (
     <div>
 
@@ -24,8 +29,9 @@ export default function App() {
       </div>
 
       <Filters />
-      <VehicleJourneysList />
-      {window.returnRouteUrl && <VehicleJourneysList routeUrl={window.returnRouteUrl} />}
+      {renderVehicleJourneysList()}      
+      {window.returnRouteUrl && renderVehicleJourneysList({ routeUrl: window.returnRouteUrl }) }
+    
 
       <div className='row'>
         <div className='col-lg-12 text-right'>

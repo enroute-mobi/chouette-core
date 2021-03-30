@@ -158,7 +158,6 @@ VehicleJourneyAtStop.propTypes = {
 	vjIndex: PropTypes.number.isRequired,
 	index: PropTypes.number.isRequired,
 	vjas: PropTypes.object.isRequired,
-	onSelectCell: PropTypes.func.isRequired,
 	isSelectionBottomRight: PropTypes.bool.isRequired,
 	selectionContentText: PropTypes.string.isRequired,
 	isEditable: PropTypes.bool.isRequired,

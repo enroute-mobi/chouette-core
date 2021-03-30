@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import VehicleJourneys from '../../../../app/javascript/vehicle_journeys/components/VehicleJourneysList'
 import renderer from 'react-test-renderer'
 

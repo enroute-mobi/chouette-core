@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import autoBind from 'react-autobind'
-import { isEqual, last, some } from 'lodash'
+import { last } from 'lodash'
 import actions from '../actions'
 import EditVehicleJourney from '../containers/tools/EditVehicleJourney'
 import VehicleJourneyInfoButton from '../containers/tools/VehicleJourneyInfoButton'
@@ -215,9 +215,4 @@ VehicleJourney.propTypes = {
   allPurchaseWindows: PropTypes.array.isRequired,
   extraHeaders: PropTypes.array.isRequired,
   selection: PropTypes.object.isRequired,
-  selectedItems: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    arrival_time: PropTypes.string.isRequired,
-    departure_time: PropTypes.string.isRequired
-  })).isRequired,
 }

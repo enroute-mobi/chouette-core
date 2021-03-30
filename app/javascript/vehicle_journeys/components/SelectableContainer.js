@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import { SelectableGroup } from 'react-selectable-fast'
 import { isEmpty, sortBy } from 'lodash'
@@ -13,6 +13,8 @@ const SelectableContainer = props => {
 		updateSelectionDimensions,
 		updateSelectionLocked
 	} = props
+
+	const [selectableContext, setSelectableContext] = useState(null)
 
 	const handleSelecting = items => {
 		const initialState = { width: new Set(), height: new Set(), selectedItems: [] } // Use of Set to eliminate duplicate values
@@ -40,11 +42,16 @@ const SelectableContainer = props => {
 	const handleSelectFinish = items => {
 		const hasItems = !isEmpty(items)
 
+		if (hasItems) {
+			setSelectableContext(items[0].context.selectable)
+		}
+
 		updateSelectionLocked(hasItems)
 	}
 
-	if (!selectionMode)
-		return <div>{children}</div>
+	useEffect(() => {
+		!selectionMode && selectableContext && selectableContext.clearSelection()
+	}, [selectionMode])
 
 	return (
 		<SelectableGroup

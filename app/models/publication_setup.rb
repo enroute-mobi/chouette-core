@@ -47,7 +47,7 @@ class PublicationSetup < ApplicationModel
   def published_line_ids(referential)
     options = Export::Scope::Options.new(referential, date_range: date_range, line_ids: line_ids, line_provider_ids: line_provider_ids, company_ids: company_ids)
     
-    options.line_ids || workgroup.line_referential.lines.pluck(:id)
+    options.scope.lines.pluck(:id)
   end
 
   def new_export(extra_options={})

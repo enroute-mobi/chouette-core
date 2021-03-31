@@ -31,9 +31,15 @@ module SimpleBlockForHelper
     end
 
     def attribute(attribute_name, options = {})
-      raw_value = options[:value] if options.key?(:value)
-      raw_value ||= object.send(options[:value_method]) if options.key?(:value_method)
-      raw_value = object.send(attribute_name) if raw_value.nil?
+      resource = options[:object] || object
+
+      if options.key?(:value)
+        raw_value = options[:value]
+      elsif options.key?(:value_method)
+        raw_value = resource.send(options[:value_method])
+      else
+        raw_value = resource.send(attribute_name)
+      end
 
       displayed_value =
         if raw_value.present? || raw_value.in?([true, false])
@@ -53,7 +59,7 @@ module SimpleBlockForHelper
           '-'
         end
 
-      content_tag(:div, object.class.human_attribute_name(attribute_name), class: "dl-term") +
+      content_tag(:div, resource.class.human_attribute_name(attribute_name), class: "dl-term") +
         content_tag(:div, displayed_value, class: "dl-def")
     end
   end

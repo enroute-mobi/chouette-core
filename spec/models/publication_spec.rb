@@ -111,7 +111,7 @@ RSpec.describe Publication, type: :model do
         it 'should create one export per lines' do
           expect(publication).to_not receive(:send_to_destinations)
           expect(publication).to_not receive(:infer_status)
-          expect{ publication.run_export }.to change{ Export::Netex.count }.by 2
+          expect{ publication.run_export }.to change{ Export::Netex.count }.by 1
           publication.run
           expect(publication.exports).to be_present
           expect(publication.status).to eq 'running'
@@ -135,7 +135,7 @@ RSpec.describe Publication, type: :model do
         it 'should still create one export per lines' do
           expect(publication).to_not receive(:send_to_destinations)
           expect(publication).to_not receive(:infer_status)
-          expect{ publication.run_export }.to change{ Export::Netex.count }.by 2
+          expect{ publication.run_export }.to change{ Export::Netex.count }.by 1
           publication.run
           expect(publication.exports).to be_present
           expect(publication.status).to eq 'running'

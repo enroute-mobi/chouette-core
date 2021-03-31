@@ -46,7 +46,7 @@ RSpec.describe PublicationSetup, type: :model, use_chouette_factory: true do
     context 'when export_options.line_ids is defined' do
       it 'should return the selected line ids' do
         allow(publication_setup).to receive(:export_options) {{ line_ids: line_ids }}
-        expect(publication_setup.published_line_ids(referential)).to eq(line_ids)
+        expect(publication_setup.published_line_ids(referential)).to match_array(line_ids)
       end
     end
 
@@ -55,7 +55,7 @@ RSpec.describe PublicationSetup, type: :model, use_chouette_factory: true do
         line.update(company: company)
         publication_setup.export_options = { company_ids: [company.id] }
 
-        expect(publication_setup.published_line_ids(referential)).to eq([line.id])
+        expect(publication_setup.published_line_ids(referential)).to match_array([line.id])
       end
     end
 
@@ -64,14 +64,14 @@ RSpec.describe PublicationSetup, type: :model, use_chouette_factory: true do
         line.update(line_provider: line_provider)
         publication_setup.export_options = { line_provider_ids: [line_provider.id] }
 
-        expect(publication_setup.published_line_ids(referential)).to eq([line.id])
+        expect(publication_setup.published_line_ids(referential)).to match_array([line.id])
       end
     end
 
     context 'when no line options is defined' do
       it 'should return all the lines associated to publication setup\'s workgroup' do
         publication_setup.export_options = {}
-        expect(publication_setup.published_line_ids(referential)).to eq(publication_setup.workgroup.line_referential.lines.pluck(:id))
+        expect(publication_setup.published_line_ids(referential)).to match_array(publication_setup.workgroup.line_referential.lines.pluck(:id))
       end
     end
   end

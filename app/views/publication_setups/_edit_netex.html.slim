@@ -1,4 +1,4 @@
 = simple_fields_for(@export, as: :export, wrapper: :horizontal_form) do |f|
  = f.input :duration, required: true, input_html: { value: Export::Netex.options.dig(:duration, :default_value) }
  = f.input :export_type, as: :string, required: true, disabled: true, input_html: { value: 'full' }
- = render 'publish_per_line_input'
+ = render 'publication_setups/publish_per_line_input'

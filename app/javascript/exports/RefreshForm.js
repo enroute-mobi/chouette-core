@@ -15,7 +15,7 @@ export default class RefreshForm {
     return `${window.location.origin}/refresh_form/${this.resourceName}`
   }
 
-  onTypeChange(callback) {
+  onTypeChange(callback = () => {}) {
     $(this.typeSelector).on('change', e => {
       const { value: type } = e.target
 

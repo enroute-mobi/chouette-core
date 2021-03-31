@@ -35,7 +35,7 @@ class PublicationSetupsController < ChouetteController
   private
 
   def build_export
-    @export = @publication_setup.new_export(workgroup: @workgroup)
+    @export = build_resource.new_export(workgroup: @workgroup)
   end
 
   def publication_setup_params

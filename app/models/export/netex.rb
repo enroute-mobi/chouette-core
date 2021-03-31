@@ -20,11 +20,6 @@ class Export::Netex < Export::Base
 
   private
 
-  def line_ids
-    return nil unless export_type == 'full'
-    [line_code]
-  end
-
   def iev_callback_url
     URI("#{Rails.configuration.iev_url}/boiv_iev/referentials/exporter/new?id=#{id}")
   end

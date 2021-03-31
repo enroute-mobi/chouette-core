@@ -98,60 +98,6 @@ RSpec.describe Publication, type: :model do
         expect(publication.exports).to be_present
       end
     end
-
-    context 'With a NETEX export by line' do
-      let(:export_type) { 'Export::Netex' }
-      let(:export_options) { { export_type: :line, duration: 365, line_code: 1 } }
-
-      context 'when the export succeeds' do
-        before(:each) do
-          allow_any_instance_of(Export::Netex).to receive(:call_iev_callback)
-        end
-
-        it 'should create one export per lines' do
-          expect(publication).to_not receive(:send_to_destinations)
-          expect(publication).to_not receive(:infer_status)
-          expect{ publication.run_export }.to change{ Export::Netex.count }.by 1
-          publication.run
-          expect(publication.exports).to be_present
-          expect(publication.status).to eq 'running'
-        end
-
-        it 'should call send_to_destinations and infer_status' do
-          expect(publication).to receive(:send_to_destinations).once.and_call_original
-          expect(publication).to receive(:infer_status).once.and_call_original
-          publication.run
-          publication.exports.update_all status: :successful
-          publication.exports.reload.each &:notify_parent
-          expect(publication.status).to eq 'successful_with_warnings'
-        end
-      end
-
-      context 'when one export fails' do
-        before(:each) do
-          allow_any_instance_of(Export::Netex).to receive(:call_iev_callback)
-        end
-
-        it 'should still create one export per lines' do
-          expect(publication).to_not receive(:send_to_destinations)
-          expect(publication).to_not receive(:infer_status)
-          expect{ publication.run_export }.to change{ Export::Netex.count }.by 1
-          publication.run
-          expect(publication.exports).to be_present
-          expect(publication.status).to eq 'running'
-        end
-
-        it 'should call send_to_destinations and infer_status' do
-          expect(publication).to receive(:send_to_destinations).once.and_call_original
-          expect(publication).to receive(:infer_status).once.and_call_original
-          publication.run
-          publication.exports.update_all status: :successful
-          publication.exports.last.update status: :failed
-          publication.exports.reload.each &:notify_parent
-          expect(publication.status).to eq 'failed'
-        end
-      end
-    end
   end
 
   describe '#send_to_destinations' do

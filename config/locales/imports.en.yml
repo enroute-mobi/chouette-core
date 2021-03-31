@@ -36,6 +36,7 @@ en:
       results: "%{count} validated referential(s) out of %{total} in the file"
       summary: Summay of import compliance check sets
       parent: Parent
+      status: State
       netex:
         table_title: "Satus of anlyzed files"
         table_explanation: "When calendriers.xml and/or commun.xml are not imported, then all lines file are not processed."

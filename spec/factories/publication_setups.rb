@@ -24,7 +24,7 @@ FactoryBot.define do
 
   factory :publication_setup_netex_full, :parent => :publication_setup do
     export_type {"Export::NetexFull"}
-    export_options { { duration: 200 } }
+    export_options { {} }
   end
 
 end

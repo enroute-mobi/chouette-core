@@ -1,6 +1,7 @@
 import React from 'react'
 import VehicleJourneys from '../../../../app/javascript/vehicle_journeys/components/VehicleJourneysList'
 import renderer from 'react-test-renderer'
+import { Provider } from 'react-redux'
 
 import I18n from '../../support/jest-i18n'
 
@@ -26,7 +27,8 @@ describe('stopPointHeader', () => {
       selectionMode: false
     }
     let list = renderer.create(
-      <VehicleJourneys
+      <Provider store={store}>
+        <VehicleJourneys
         status={props.status}
         filters={props.filters}
         onLoadFirstPage={props.onLoadFirstPage}
@@ -39,10 +41,19 @@ describe('stopPointHeader', () => {
         selection={props.selection}
         selectionMode={props.selectionMode}
       />
+      </Provider>
     ).toJSON()
 
     return list
   })
+  set('store', () => ({
+    getState: () =>({
+      selection: { active: false },
+      filters: { toggleArrivals: false }
+    }),
+    dispatch: () => {},
+    subscribe: () => {}
+  }))
 
   set('stop_point', () => {
     return {

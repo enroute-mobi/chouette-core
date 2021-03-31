@@ -33,7 +33,7 @@ module SimpleBlockForHelper
     def attribute(attribute_name, options = {})
       raw_value = options[:value] if options.key?(:value)
       raw_value ||= object.send(options[:value_method]) if options.key?(:value_method)
-      raw_value ||= object.send(attribute_name)
+      raw_value = object.send(attribute_name) if raw_value.nil?
 
       displayed_value =
         if raw_value.present? || raw_value.in?([true, false])

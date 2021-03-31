@@ -1,2 +1,2 @@
-= simple_fields_for(:publication_setup, wrapper: :horizontal_form) do |f|
-  = f.input :publish_per_lines, as: :switchable_checkbox
+= simple_fields_for(@publication_setup, as: :publication_setup, wrapper: :horizontal_form) do |f|
+  = f.input :publish_per_line, as: :switchable_checkbox, input_html: { name: 'publication_setup[publish_per_line]' }

@@ -10,10 +10,10 @@
     h2.mb-lg= t('publication_setups.form.sections.export')
     .form-group
       .col-lg-12
-        = form.input :export_type, as: :select, collection: workgroup_exports(@workgroup), label_method: :human_name, input_html: {"data-select2ed" => true}
+        = form.input :export_type, as: :select, collection: workgroup_exports(@workgroup), label_method: :human_name, input_html: {"data-select2ed" => true}, include_blank: false
         #type_slave
-        - if @publication_setup.export_type.present?
-          = render "edit_#{@publication_setup.export_type.demodulize.underscore}"
+          - if @publication_setup.export_type.present?
+            = render "edit_#{@publication_setup.export_type.demodulize.underscore}"
     .separator.section_separator
 
     h2.mb-lg= t('publication_setups.form.sections.destinations')

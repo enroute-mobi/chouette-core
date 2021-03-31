@@ -4,6 +4,8 @@ class PublicationSetupsController < ChouetteController
   defaults :resource_class => PublicationSetup
   belongs_to :workgroup
 
+  before_action :build_export, only: %i[show create edit update]
+
   respond_to :html
 
   def index
@@ -12,20 +14,6 @@ class PublicationSetupsController < ChouetteController
         @publication_setups = decorate_publication_setups(@publication_setups)
       }
     end
-  end
-
-  def create
-    attributes = publication_setup_params.merge(export_options: export_options_params || {})
-    @publication_setup = PublicationSetup.create(attributes)
-    @export = @publication_setup.new_export
-    create! do |success, failure|
-      success.html { redirect_to workgroup_publication_setup_path(parent, @publication_setup)}
-    end 
-  end
-
-  def edit
-    @export = resource.new_export
-    edit!
   end
 
   def show
@@ -39,12 +27,16 @@ class PublicationSetupsController < ChouetteController
           }
         )
 
-        @export = @publication_setup.new_export(workgroup: @workgroup).decorate
+        @export = @export.decorate
       }
     end
   end
 
   private
+
+  def build_export
+    @export = @publication_setup.new_export(workgroup: @workgroup)
+  end
 
   def publication_setup_params
     destination_options = [:id, :name, :type, :_destroy, :secret_file, :publication_setup_id, :publication_api_id]
@@ -60,12 +52,15 @@ class PublicationSetupsController < ChouetteController
       :export_type,
       :enabled,
       :workgroup_id,
+      :publish_per_line,
       destinations_attributes: destination_options
-    )
+    ).tap do |_params|
+      _params[:export_options] = export_options_params
+    end
   end
 
   def export_options_params
-    permitted_keys = %i[type]
+    permitted_keys = %i[type period]
     export_class = params.dig(:publication_setup, :export_type)&.safe_constantize
 
     if export_class

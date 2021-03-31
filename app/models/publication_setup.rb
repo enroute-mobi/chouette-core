@@ -45,12 +45,13 @@ class PublicationSetup < ApplicationModel
   end
 
   def published_line_ids(referential)
-    new_export(referential: referential).export_scope.options.line_ids ||
-    workgroup.line_referential.lines.pluck(:id)
+    options = Export::Scope::Options.new(referential, date_range: date_range, line_ids: line_ids, line_provider_ids: line_provider_ids, company_ids: company_ids)
+    
+    options.line_ids || workgroup.line_referential.lines.pluck(:id)
   end
 
   def new_export(extra_options={})
-    options = export_options.dup.update(extra_options)
+    options = export_options.dup.update(extra_options).symbolize_keys
     export = export_class.new(**options) do |export|
       export.creator = export_creator_name
     end
@@ -68,7 +69,7 @@ class PublicationSetup < ApplicationModel
       workgroup: referential.workgroup
     }
 
-    if publish_per_lines
+    if publish_per_line
       published_line_ids(referential).map do |line_id|
         new_export(line_ids: [line_id], **common_attributes)
       end
@@ -79,5 +80,18 @@ class PublicationSetup < ApplicationModel
 
   def publish(operation)
     publications.create!(parent: operation)
+  end
+
+  %w(line_ids company_ids line_provider_ids duration).each do |name|
+    define_method(name) do
+      JSON.parse(export_options[name])
+    rescue
+      nil
+    end
+  end
+
+  def date_range
+    return nil if duration.nil?
+    @date_range ||= Time.now.to_date..self.duration.to_i.days.from_now.to_date
   end
 end

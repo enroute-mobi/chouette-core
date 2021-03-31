@@ -4,3 +4,4 @@
 	= d.attribute :exported_lines, value_method: :selected_lines_to_export
 	= d.attribute :prefer_referent_stop_area, as: :boolean
 	= d.attribute :ignore_single_stop_station, as: :boolean
+	= d.attribute :publish_per_line, as: :boolean, value: @publication_setup.publish_per_line

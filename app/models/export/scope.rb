@@ -1,19 +1,15 @@
 # Selects which models need to be included into an Export
 module Export::Scope
   def self.build referential, **options
-    Builder.new(referential, options).scope
+    Options.new(referential, options).scope
   end
 
   class Builder
     attr_reader :scope
-    
-    delegate :options, to: :scope
 
-    def initialize(referential, params)
-      @scope = All.new(referential, params)
+    def initialize(referential)
+      @scope = All.new(referential)
       yield self if block_given?
-
-      options.prepare_builder(self)
     end
 
     def scheduled
@@ -58,20 +54,23 @@ module Export::Scope
       referential.line_referential.lines.where(company: company_ids).pluck(:id) if company_ids
     end
 
-    def prepare_builder(builder)
-      date_range ? builder.period(date_range) : builder.scheduled
-      builder.lines(line_ids) if line_ids
+    def builder
+      @builder ||= Builder.new(referential) do |builder|
+        date_range ? builder.period(date_range) : builder.scheduled
+        builder.lines(line_ids) if line_ids
 
-      builder.cache
+        builder.cache
+      end
     end
+
+    delegate :scope, to: :builder
   end
 
   class All
-    attr_reader :referential, :options
+    attr_reader :referential
 
-    def initialize(referential, options = {})
+    def initialize(referential)
       @referential = referential
-      @options = Options.new(referential, options)
     end
 
     delegate :workgroup, :workbench, :line_referential, :stop_area_referential, :metadatas, to: :referential

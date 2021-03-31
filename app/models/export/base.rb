@@ -59,7 +59,8 @@ class Export::Base < ApplicationModel
   def resolve_line_ids
     return unless self.respond_to?(:line_ids) # To delete when java export is disabled
     return unless self.line_ids.nil? # Useless to update line_ids if line_ids exists
-    self.line_ids = export_scope.options.line_ids
+    options = Export::Scope::Options.new(referential, date_range: date_range, line_ids: line_ids, line_provider_ids: line_provider_ids, company_ids: company_ids)
+    self.line_ids = options.line_ids
   end
 
   attr_accessor :synchronous
@@ -82,7 +83,7 @@ class Export::Base < ApplicationModel
   end
 
   def export_scope
-    @export_scope ||= Export::Scope.build(referential, date_range: date_range, line_ids: line_ids, line_provider_ids: line_provider_ids, company_ids: company_ids)
+    @export_scope ||= Export::Scope.build(referential, date_range: date_range, line_ids: line_ids)
   end
   attr_writer :export_scope
 

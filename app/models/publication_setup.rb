@@ -82,7 +82,7 @@ class PublicationSetup < ApplicationModel
     publications.create!(parent: operation)
   end
 
-  %w(line_ids company_ids line_provider_ids duration).each do |name|
+  Export::Base.all_options.each do |o|
     define_method(name) do
       JSON.parse(export_options[name])
     rescue

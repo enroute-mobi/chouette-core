@@ -1,7 +1,7 @@
 class SwitchableCheckboxInput < SimpleForm::Inputs::BooleanInput
   def input(wrapper_options = {})
     template.content_tag(:div, class: 'onoffswitch') do
-      template.concat @builder.check_box(attribute_name, input_html_options, true, false)
+      template.concat @builder.check_box(attribute_name, input_html_options, checked_value, unchecked_value)
       template.concat false_input
     end
   end
@@ -33,5 +33,13 @@ class SwitchableCheckboxInput < SimpleForm::Inputs::BooleanInput
 
   def checked?
     object.send(attribute_name).present?
+  end
+
+  def checked_value
+    options.fetch(:checked_value, 'true')
+  end
+
+  def unchecked_value
+    options.fetch(:unchecked_value, 'false')
   end
 end

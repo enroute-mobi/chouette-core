@@ -179,6 +179,10 @@ class Export::Base < ApplicationModel
     true
   end
 
+  def self.all_options
+    user_visible_descendants.flat_map { |e| e.options.keys }.uniq
+  end
+
   # Returns all attributes of the export file from the user point of view
   def user_file
     Chouette::UserFile.new basename: name.parameterize, extension: file_extension, content_type: content_type

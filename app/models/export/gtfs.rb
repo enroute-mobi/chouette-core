@@ -307,7 +307,7 @@ class Export::Gtfs < Export::Base
       options.each { |k,v| send "#{k}=", v }
     end
 
-    delegate :target, :index, :export_scope, :messages, :date_range, :code_spaces, :public_code_space, :prefer_referent_stop_area, to: :export
+    delegate :target, :index, :export_scope, :messages, :date_range, :code_spaces, :public_code_space, :prefer_referent_stop_area, :referential, to: :export
 
     def part_name
       @part_name ||= self.class.name.demodulize.underscore
@@ -322,10 +322,11 @@ class Export::Gtfs < Export::Base
     # CHOUETTE-960
     def duplicated_registration_numbers
       @duplicated_registration_numbers ||=
-        SortedSet.new(export_scope.send(part_name)
+        SortedSet.new(referential.send(part_name)
           .select(:registration_number, :id)
           .group(:registration_number)
           .having("count(?) > 1", ActiveRecord::Base.connection.quote_column_name("#{part_name}.id"))
+          .where(id: export_scope.send(part_name))
           .pluck(:registration_number))
     end
 

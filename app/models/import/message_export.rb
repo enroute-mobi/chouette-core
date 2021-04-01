@@ -29,12 +29,13 @@ class Import::MessageExport
     csv_string = CSV.generate(options) do |csv|
       csv << column_names
       import_messages.each do |import_message|
+        message_attributes = import_message.message_attributes || {}
         csv << [
           import_message.criticity,
-          import_message.message_attributes['test_id'],
+          message_attributes['test_id'],
           I18n.t(
             "import_messages.#{import_message.message_key}",
-            import_message.message_attributes.deep_symbolize_keys.update(
+            message_attributes.deep_symbolize_keys.update(
               default: import_message.message_key
             )
           ),

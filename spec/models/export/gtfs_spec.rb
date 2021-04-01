@@ -4,7 +4,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
   describe 'Company Part' do
     let(:export_scope) { Export::Scope::All.new context.referential }
     let(:index) { export.index }
-    let(:export) { Export::Gtfs.new export_scope: export_scope, workbench: context.workbench, workgroup: context.workgroup }
+    let(:export) { Export::Gtfs.new export_scope: export_scope, workbench: context.workbench, workgroup: context.workgroup, referential: context.referential }
 
     let(:part) do
       Export::Gtfs::Companies.new export
@@ -46,7 +46,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
   describe 'StopArea Part' do
     let(:export_scope) { Export::Scope::All.new context.referential }
     let(:index) { export.index }
-    let(:export) { Export::Gtfs.new export_scope: export_scope, workbench: context.workbench, workgroup: context.workgroup }
+    let(:export) { Export::Gtfs.new export_scope: export_scope, workbench: context.workbench, workgroup: context.workgroup, referential: context.referential }
 
     let(:part) do
       Export::Gtfs::StopAreas.new export
@@ -81,7 +81,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
   describe 'Line Part' do
     let(:export_scope) { Export::Scope::All.new context.referential }
     let(:index) { export.index }
-    let(:export) { Export::Gtfs.new export_scope: export_scope, workbench: context.workbench, workgroup: context.workgroup }
+    let(:export) { Export::Gtfs.new export_scope: export_scope, workbench: context.workbench, workgroup: context.workgroup, referential: context.referential }
 
     let(:part) do
       Export::Gtfs::Lines.new export

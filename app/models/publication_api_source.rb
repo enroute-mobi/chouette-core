@@ -61,7 +61,11 @@ class PublicationApiSource < ActiveRecord::Base
         key_source << line.registration_number
       end
 
-      key_source << export.class.name.demodulize.downcase
+      if export.is_a?(Export::NetexGeneric)
+        key_source << "netex"
+      else
+        key_source << export.class.name.demodulize.downcase
+      end
 
       if export.is_a?(Export::Netex)
         key_source << "full"

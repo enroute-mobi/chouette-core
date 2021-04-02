@@ -2,53 +2,50 @@
 RSpec.describe Destination::PublicationApi, type: :model do
   let(:publication_api) { create :publication_api }
   let(:publication_setup) { create :publication_setup }
+  let(:publication_setup_with_line) { create :publication_setup, publish_per_line: true }
   let(:file){ File.open(File.join(Rails.root, 'spec', 'fixtures', 'terminated_job.json')) }
 
   let(:line_1) { create :line }
   let(:line_2) { create :line }
 
-  let(:export_1) { create :netex_export, status: :successful, options: { duration: 90, line_code: line_1.id, export_type: :line }, file: file }
-  let(:export_2) { create :netex_export, status: :successful, options: { duration: 90, line_code: line_2.id, export_type: :line }, file: file }
-  let(:other_export_1) { create :netex_export, status: :successful, options: { duration: 90, line_code: line_1.id, export_type: :line }, file: file }
-  let(:other_export_2) { create :netex_export, status: :successful, options: { duration: 90, line_code: line_2.id, export_type: :line }, file: file }
-  let(:other_publication_setup) { create :publication_setup, export_type: publication_setup.export_type, export_options: publication_setup.export_options }
-  let(:destination) { build :publication_api_destination, publication_setup: publication_setup, publication_api: publication_api }
+  let(:export_1) { create :gtfs_export, status: :successful, options: { duration: 90 }, file: file }
+  let(:export_2) { create :gtfs_export, status: :successful, options: { duration: 90}, file: file }
+
+  let(:export_with_line1) { create :gtfs_export, status: :successful, options: { duration: 90, line_ids: [line_1.id] }, file: file }
+  let(:export_with_line2) { create :gtfs_export, status: :successful, options: { duration: 90, line_ids: [line_2.id] }, file: file }
 
   it 'should be valid' do
+    destination = build :publication_api_destination, publication_setup: publication_setup, publication_api: publication_api
     expect(destination).to be_valid
   end
 
   context 'when another PublicationSetup of same kind already publishes to that API' do
-    before do
-      create :destination, type: Destination::PublicationApi, publication_setup: other_publication_setup, publication_api: publication_api
-    end
+    let(:other_publication_setup) { create :publication_setup, export_type: publication_setup.export_type, export_options: publication_setup.export_options }
+    let!(:destination) { create :publication_api_destination, publication_setup: publication_setup, publication_api: publication_api }
+    let(:new_destination) { build :publication_api_destination, publication_setup: other_publication_setup, publication_api: publication_api }
 
     it 'should not be valid' do
-      expect(destination).to_not be_valid
-      expect(destination.errors[:publication_api_id]).to be_present
+      expect(new_destination).to_not be_valid
     end
   end
 
-  context 'when publishing' do
-    let(:publication) { create :publication, publication_setup: publication_setup, exports: [export_1, export_2] }
+  context 'when publish for the first time' do
+    let(:publication) { create :publication, publication_setup: publication_setup, exports: [export_1] }
     let(:destination) { create :publication_api_destination, publication_setup: publication_setup, publication_api: publication_api }
 
     it 'should add publications to the API' do
-      expect{ destination.transmit(publication) }.to change{ publication_api.publication_api_sources.count }.by 2
-      expect(PublicationApiSource.all.map(&:key)).to match_array ["netex-line-#{line_1.code}", "netex-line-#{line_2.code}"]
+      expect{ destination.transmit(publication) }.to change{ publication_api.publication_api_sources.count }.by 1
     end
+  end
 
-    context 'when a publication already exists' do
-      before do
-        other_publication = create :publication, publication_setup: publication_setup, exports: [other_export_1, other_export_2]
-        destination.transmit(other_publication)
-        unrelated_publication = create :publication, exports: [create(:gtfs_export, status: :successful, file: file)]
-        destination.transmit(unrelated_publication)
-      end
+  context 'when publish twice' do
+    let(:publication) { create :publication, publication_setup: publication_setup, exports: [export_1] }
+    let!(:publication_api_source) { create :publication_api_source, publication: publication, publication_api: publication_api, export: export_1 }
+    let(:destination) { create :publication_api_destination, publication_setup: publication_setup, publication_api: publication_api }
+    let(:other_publication) { create :publication, publication_setup: publication_setup, exports: [export_2] }
 
-      it 'should keep only one publication for a given export type' do
-        expect{ destination.transmit(publication) }.to_not change{ publication_api.publication_api_sources.count }
-      end
+    it 'should keep only the last publication for a given export type' do
+      expect{ destination.transmit(other_publication) }.to_not change{ publication_api.publication_api_sources.count }
     end
   end
 end

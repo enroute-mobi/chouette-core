@@ -109,6 +109,19 @@ fr:
         prefer_referent_stop_area: Préférer les arrêts Référents
         ignore_single_stop_station: "Ignorer les Zones de Lieux avec une Zone d’Embarquement unique"
         period: Période exportée
+        line_ids: "Lignes suivantes"
+        company_ids: "Associées aux transporteurs"
+        line_provider_ids: "Associées aux fournisseurs de lignes"
+        all_line_ids: Toutes les lignes
+        all_periods: Toute la période disponible
+        only_next_days: Seulement les jours suivants
+        none: Aucun
+        european: Européen
+        'idfm/line': IdFM Publication Ligne
+    profile:
+      none: Aucun
+      european: Européen
+      'idfm/line': IdFM Publication Ligne
       export:
         <<: *attrs
         base:

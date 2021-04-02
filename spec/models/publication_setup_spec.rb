@@ -5,10 +5,7 @@ RSpec.describe PublicationSetup, type: :model, use_chouette_factory: true do
   it { should have_many :publications }
   it { should validate_presence_of :name }
   it { should validate_presence_of :workgroup }
-  it { should respond_to :line_ids }
-  it { should respond_to :company_ids }
-  it { should respond_to :line_provider_ids }
-  it { should respond_to :duration }
+
   let!(:context) do
     Chouette.create do
       company :first_company

@@ -36,6 +36,8 @@ class PublicationSetup < ApplicationModel
 
   # TODO : CHOUETTE-701 find another way to do use export validation
   def export_options_are_valid
+    return false if export_class == Export::Base
+
     dummy = new_export
     dummy.validate
     errors_keys = new_export.class.options.keys
@@ -45,6 +47,10 @@ class PublicationSetup < ApplicationModel
   end
 
   def published_line_ids(referential)
+    line_ids = parse_option :line_ids
+    company_ids = parse_option :company_ids
+    line_provider_ids = parse_option :line_provider_ids
+
     options = Export::Scope::Options.new(referential, date_range: date_range, line_ids: line_ids, line_provider_ids: line_provider_ids, company_ids: company_ids)
     
     options.scope.lines.pluck(:id)
@@ -82,16 +88,17 @@ class PublicationSetup < ApplicationModel
     publications.create!(parent: operation)
   end
 
-  Export::Base.all_options.each do |o|
-    define_method(name) do
-      JSON.parse(export_options[name])
-    rescue
-      nil
-    end
-  end
+  private
 
   def date_range
+    duration = parse_option :duration
     return nil if duration.nil?
-    @date_range ||= Time.now.to_date..self.duration.to_i.days.from_now.to_date
+    Time.now.to_date..duration.to_i.days.from_now.to_date
+  end
+
+  def parse_option name
+    JSON.parse(export_options[name.to_s])
+  rescue
+    nil
   end
 end

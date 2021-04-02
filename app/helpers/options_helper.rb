@@ -76,8 +76,11 @@ module OptionsHelper
   def pretty_print_options(record)
     record.options.map do |k, v|
       collection = record.option_def(k).has_key?(:collection)
-      val = collection ? translate_option_value(record.class, k, v) : v
-      "#{translate_option_key(record.class, k)}: #{val}"
+      klass = record.class
+      val = collection ? translate_option_value(klass, k, v) : v
+      key = klass.tmf("#{klass.model_name.i18n_key}.#{k}")
+    
+      "#{key}: #{val}"
     end.join('<br/>').html_safe
   end
 

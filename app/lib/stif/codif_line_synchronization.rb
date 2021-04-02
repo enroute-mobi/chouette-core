@@ -125,7 +125,8 @@ module Stif
           active_from: api_line.valid_from,
           active_until: api_line.valid_until,
           color: api_line.color&.upcase,
-          text_color: api_line.text_color&.upcase
+          text_color: api_line.text_color&.upcase,
+          registration_number: Chouette::ObjectidFormatter::StifCodifligne.new.get_objectid(api_line.stif_id).local_id
         }
         params[:transport_mode] = api_line.transport_mode.to_s
         params[:transport_submode] = api_line.transport_submode.present? ? api_line.transport_submode.to_s : "undefined"

@@ -9,6 +9,8 @@ class Export::Gtfs < Export::Base
   option :line_provider_ids, serialize: :map_ids
   option :prefer_referent_stop_area, required: true, default_value: false, enumerize: [true, false]
   option :ignore_single_stop_station, required: true, default_value: false, enumerize: [true, false]
+  option :period, default_value: 'all_periods', enumerize: %w[all_periods only_next_days]
+  option :exported_lines, default_value: 'all_line_ids', enumerize: %w[line_ids company_ids line_provider_ids all_line_ids]
 
   DEFAULT_AGENCY_ID = "chouette_default"
   DEFAULT_TIMEZONE = "Etc/UTC"

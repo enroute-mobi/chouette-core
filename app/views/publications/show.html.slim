@@ -14,11 +14,11 @@
 
     .row
       .col-lg-12
-        - if @publication.exports.empty?
+        - if @exports.empty?
           = replacement_msg t('exports.search_no_results')
         - else
           .h3 = Export::Base.t.capitalize
-          = table_builder_2 @publication.exports,
+          = table_builder_2 @exports,
             [ \
               TableBuilderHelper::Column.new( \
                 key: :status, \
@@ -37,7 +37,7 @@
               ), \
               TableBuilderHelper::Column.new( \
                 key: :options, \
-                attribute: ->(e){ pretty_print_options(e) } \
+                attribute: ->(e){ e.pretty_print_options } \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :started_at, \

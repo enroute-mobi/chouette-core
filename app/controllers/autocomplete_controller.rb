@@ -1,6 +1,4 @@
 class AutocompleteController < ChouetteController
-  respond_to :json, only: [:lines, :companies, :line_providers]
-
   def lines
     @lines = scope.lines.order(:name).by_text(text)
   end
@@ -20,7 +18,11 @@ class AutocompleteController < ChouetteController
   end
 
   def scope
-    workbench || referential
+    line_referential || workbench || referential
+  end
+
+  def line_referential
+    @line_referential ||= current_organisation.workgroups.find(params[:workgroup_id]).line_referential if params[:workgroup_id]
   end
 
   def workbench

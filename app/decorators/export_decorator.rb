@@ -26,8 +26,36 @@ class ExportDecorator < AF83::Decorator
     end
   end
 
-  define_instance_method :selected_lines_to_export do
+  define_instance_method :display_selected_lines_to_export do
     object.workgroup.line_referential.lines.where(id: object.line_ids).limit(15).pluck(:name).join(", ")
+  end
+
+  define_instance_method :display_period do
+    duration.present? ? "#{I18n.t('enumerize.period.only_next_days')} :  #{duration}" : I18n.t('enumerize.period.all_periods')
+  end
+
+  define_instance_method :display_profile do
+    I18n.t("enumerize.profile.#{profile}")
+  end
+
+  define_instance_method :pretty_print_options do
+    options = {}
+
+    add_option = -> (attribute_name, value) do
+      key = object.class.human_attribute_name(attribute_name)
+      options[key] = value.presence || '-'
+    end
+
+    add_option.call(:duration, display_period)
+    add_option.call(:exported_lines, display_selected_lines_to_export) unless object.is_a?(Export::Netex)
+    add_option.call(:profile, display_profile) if object.is_a?(Export::NetexGeneric)
+
+    if object.is_a?(Export::Gtfs)
+      add_option.call(:prefer_referent_stop_area, t(prefer_referent_stop_area))
+      add_option.call(:ignore_single_stop_station, t(ignore_single_stop_station))
+    end
+
+    options.map { |k, v| "#{k} : #{v}"}.join('<br/>').html_safe
   end
 
 end

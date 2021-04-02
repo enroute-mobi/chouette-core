@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_23_085144) do
+ActiveRecord::Schema.define(version: 2021_04_02_130945) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -826,6 +826,7 @@ ActiveRecord::Schema.define(version: 2021_03_23_085144) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "name"
+    t.boolean "publish_per_line", default: false
     t.index ["workgroup_id"], name: "index_publication_setups_on_workgroup_id"
   end
 

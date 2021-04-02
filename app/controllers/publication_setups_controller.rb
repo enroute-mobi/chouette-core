@@ -4,6 +4,8 @@ class PublicationSetupsController < ChouetteController
   defaults :resource_class => PublicationSetup
   belongs_to :workgroup
 
+  before_action :build_export, only: %i[show create edit update]
+
   respond_to :html
 
   def index
@@ -24,19 +26,19 @@ class PublicationSetupsController < ChouetteController
             publication_setup: @publication_setup
           }
         )
+
+        @export = @export.decorate
       }
     end
   end
 
   private
 
-  def publication_setup_params
-    export_options = []
-    export_class = params[:publication_setup] && params[:publication_setup][:export_type] && params[:publication_setup][:export_type].safe_constantize
-    if export_class
-      export_options = export_class.options.keys
-    end
+  def build_export
+    @export = build_resource.new_export(workgroup: @workgroup)
+  end
 
+  def publication_setup_params
     destination_options = [:id, :name, :type, :_destroy, :secret_file, :publication_setup_id, :publication_api_id]
     destination_options += Destination.descendants.map do |t|
       t.options.map do |key, value|
@@ -50,9 +52,28 @@ class PublicationSetupsController < ChouetteController
       :export_type,
       :enabled,
       :workgroup_id,
-      export_options: export_options,
+      :publish_per_line,
       destinations_attributes: destination_options
-    )
+    ).tap do |_params|
+      _params[:export_options] = export_options_params
+    end
+  end
+
+  def export_options_params
+    permitted_keys = %i[period exported_lines]
+    export_class = params.dig(:publication_setup, :export_type)&.safe_constantize
+
+    if export_class
+      permitted_keys += export_class.options.keys
+    end
+    
+    return {} unless params[:export]
+
+    params.require(:export).permit(*permitted_keys, line_ids: [], line_provider_ids: [], company_ids: []).tap do |_params|
+      if export_class&.method_defined?(:duration)
+        _params[:duration] = _params[:period] == 'only_next_days' ?  _params[:duration].to_i : nil
+      end
+    end
   end
 
   def resource

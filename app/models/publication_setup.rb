@@ -36,45 +36,69 @@ class PublicationSetup < ApplicationModel
 
   # TODO : CHOUETTE-701 find another way to do use export validation
   def export_options_are_valid
+    return false if export_class == Export::Base
+
     dummy = new_export
     dummy.validate
-    dummy.errors.to_h.except(:name, :referential_id, :workgroup, :line_code).each do |k, v|
+    errors_keys = new_export.class.options.keys
+    dummy.errors.to_h.slice(*errors_keys).each do |k, v|
       errors.add(k, v)
     end
   end
 
+  def published_line_ids(referential)
+    line_ids = parse_option :line_ids
+    company_ids = parse_option :company_ids
+    line_provider_ids = parse_option :line_provider_ids
+
+    options = Export::Scope::Options.new(referential, date_range: date_range, line_ids: line_ids, line_provider_ids: line_provider_ids, company_ids: company_ids)
+    
+    options.scope.lines.pluck(:id)
+  end
+
   def new_export(extra_options={})
-    options = export_options.dup.update(extra_options)
-    export = export_class.new(options: options) do |export|
+    options = export_options.dup.update(extra_options).symbolize_keys
+    export = export_class.new(**options) do |export|
       export.creator = export_creator_name
     end
-    if block_given?
-      yield export
-    end
+
+    yield export if block_given?
+
     export
   end
 
   def new_exports(referential)
-    if export_type == "Export::Netex" && export_options["export_type"] == "line"
-      referential.metadatas_lines.map do |line|
-        new_export(line_code: line.id) do |export|
-         export.name = "#{self.class.ts} #{name} for line #{line.name}"
-         export.referential = referential
-         export.workgroup = referential.workgroup
-       end
+    common_attributes = {
+      referential: referential,
+      name: "#{self.class.ts} #{name}",
+      synchronous: true,
+      workgroup: referential.workgroup
+    }
+
+    if publish_per_line
+      published_line_ids(referential).map do |line_id|
+        new_export(line_ids: [line_id], **common_attributes)
       end
     else
-      export = new_export do |export|
-        export.name = "#{self.class.ts} #{name}"
-        export.referential = referential
-        export.synchronous = true
-        export.workgroup = referential.workgroup
-      end
-      [export]
+      [new_export(common_attributes)]
     end
   end
 
   def publish(operation)
     publications.create!(parent: operation)
+  end
+
+  private
+
+  def date_range
+    duration = parse_option :duration
+    return nil if duration.nil?
+    Time.now.to_date..duration.to_i.days.from_now.to_date
+  end
+
+  def parse_option name
+    JSON.parse(export_options[name.to_s])
+  rescue
+    nil
   end
 end

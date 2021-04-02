@@ -1,4 +1,6 @@
-.slave data-master="[name='publication_setup[export_type]']" data-value=child.name
-	= option_input form, @publication_setup.new_export, :duration, child.options[:duration], child
-	= option_input form, @publication_setup.new_export, :prefer_referent_stop_area, child.options[:prefer_referent_stop_area], child
-	= option_input form, @publication_setup.new_export, :ignore_single_stop_station, child.options[:ignore_single_stop_station], child
+= simple_fields_for(@export, as: :export, wrapper: :horizontal_form) do |f|
+  = render 'exports/options/period', form: f
+  = render 'exports/options/exported_lines', form: f
+  = f.input :prefer_referent_stop_area, as: :switchable_checkbox
+  = f.input :ignore_single_stop_station, as: :switchable_checkbox
+  = render 'publication_setups/publish_per_line_input'

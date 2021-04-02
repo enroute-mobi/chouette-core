@@ -12,43 +12,15 @@ class PublicationApiSource < ActiveRecord::Base
 
   delegate :file, to: :export
 
-  def self.generate_key(export)
-    return unless export.present?
-
-    out = []
-    out << export.class.name.demodulize.downcase
-
-    if export.is_a?(Export::Netex)
-      out << export.export_type
-      if export.export_type == "line"
-        line = Chouette::Line.find export.line_code
-        out << line.code
-      end
-    end
-
-    out.join('-')
-  end
-
   def public_url
     return unless key.present?
 
-    base = publication_api.public_url
-    setup = publication.publication_setup
-    case setup.export_type.to_s
-    when "Export::NetexFull"
-      base += ".#{key}.xml"
-    when "Export::Netex"
-      if setup.export_options['export_type'] == 'full'
-        base += ".#{key}.zip"
-      else
-        *split_key, line = key.split('-')
-        base += "/lines/#{line}.#{split_key.join('-')}.zip"
-      end
+    @public_url ||= if publication_setup.publish_per_line
+      line = key_source.shift
+      "#{publication_api_url}/lines/#{line}.#{key_source.join('-')}.zip"
     else
-      base += ".#{key}.zip"
+      "#{publication_api_url}.#{generate_key}.zip"
     end
-    
-    base
   end
 
   def public_url_filename
@@ -61,6 +33,14 @@ class PublicationApiSource < ActiveRecord::Base
 
   protected
 
+  def publication_setup
+    @publication_setup ||= publication.publication_setup
+  end
+
+  def publication_api_url
+    @publication_api_url ||= publication_api.public_url
+  end
+
   def cleanup_previous
     return unless export
 
@@ -69,6 +49,27 @@ class PublicationApiSource < ActiveRecord::Base
   end
 
   def generate_key
-    self.class.generate_key export
+    return unless export.present?
+
+    key_source.join('-')
+  end
+
+  def key_source
+    @key_source ||= [].tap do |key_source|
+      if publication_setup.publish_per_line
+        line = Chouette::Line.find  export.line_ids.first
+        key_source << line.registration_number
+      end
+
+      if export.is_a?(Export::NetexGeneric)
+        key_source << "netex"
+      else
+        key_source << export.class.name.demodulize.downcase
+      end
+
+      if export.is_a?(Export::Netex)
+        key_source << "full"
+      end
+    end
   end
 end

@@ -16,6 +16,18 @@ ChouetteIhm::Application.routes.draw do
     resources :stop_areas, only: :show
   end
 
+  namespace :refresh_form do
+    resource :export, only: [] do
+      get :edit_type, on: :collection
+      get :edit_exported_lines, on: :collection
+    end
+
+    resource :publication_setup, only: [] do
+      get :edit_type, on: :collection
+      get :edit_exported_lines, on: :collection
+    end
+  end
+
   concern :iev_interfaces do
     resources :imports do
       get :download, on: :member
@@ -37,9 +49,9 @@ ChouetteIhm::Application.routes.draw do
     resources :api_keys
 
     resources :autocomplete, only: %i[lines companies line_providers] do
-      get :lines, on: :collection, defaults: { format: 'jpg' }
-      get :companies, on: :collection, defaults: { format: 'jpg' }
-      get :line_providers, on: :collection, defaults: { format: 'jpg' }
+      get :lines, on: :collection, defaults: { format: 'json' }
+      get :companies, on: :collection, defaults: { format: 'json' }
+      get :line_providers, on: :collection, defaults: { format: 'json' }
     end
 
     resources :compliance_check_sets, only: [:index, :show] do
@@ -141,6 +153,12 @@ ChouetteIhm::Application.routes.draw do
       member do
         get 'month', defaults: { format: :json }
       end
+    end
+
+    resources :autocomplete, only: %i[lines companies line_providers] do
+      get :lines, on: :collection, defaults: { format: 'json' }
+      get :companies, on: :collection, defaults: { format: 'json' }
+      get :line_providers, on: :collection, defaults: { format: 'json' }
     end
   end
 

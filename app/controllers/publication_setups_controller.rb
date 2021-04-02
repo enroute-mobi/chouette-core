@@ -60,7 +60,7 @@ class PublicationSetupsController < ChouetteController
   end
 
   def export_options_params
-    permitted_keys = %i[type period]
+    permitted_keys = %i[period exported_lines]
     export_class = params.dig(:publication_setup, :export_type)&.safe_constantize
 
     if export_class

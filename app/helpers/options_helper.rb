@@ -73,15 +73,4 @@ module OptionsHelper
     root.tmf("#{parent_class.name.demodulize.underscore}.#{attr}_collection.#{key}", default: key)
   end
 
-  def pretty_print_options(record)
-    record.options.map do |k, v|
-      collection = record.option_def(k).has_key?(:collection)
-      klass = record.class
-      val = collection ? translate_option_value(klass, k, v) : v
-      key = klass.tmf("#{klass.model_name.i18n_key}.#{k}")
-    
-      "#{key}: #{val}"
-    end.join('<br/>').html_safe
-  end
-
 end

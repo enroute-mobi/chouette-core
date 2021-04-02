@@ -103,15 +103,6 @@ en:
         prefer_referent_stop_area: Prefer Referent Stop Areas
         ignore_single_stop_station: Ignore Monomodal Stop Places with a single Quay
         period: Exported periods
-        line_ids: "Specific lines"
-        company_ids: "Associated companies"
-        line_provider_ids: "Associated line providers"
-        all_line_ids: All available lines
-        all_periods: All available period
-        only_next_days: Only next days
-        none: None
-        european: European
-        'idfm/line': IdFM Publication Line
       export:
         <<: *attrs
         base:

@@ -79,7 +79,7 @@ class Export::Base < ApplicationModel
   end
 
   def public_code_space
-    @code_space ||= workgroup.code_spaces.public if workgroup
+    @public_code_space ||= workgroup.code_spaces.public if workgroup
   end
 
   def export_scope

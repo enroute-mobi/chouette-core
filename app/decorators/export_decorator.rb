@@ -51,8 +51,8 @@ class ExportDecorator < AF83::Decorator
     add_option.call(:profile, display_profile) if object.is_a?(Export::NetexGeneric)
 
     if object.is_a?(Export::Gtfs)
-      add_option.call(:prefer_referent_stop_area, t(prefer_referent_stop_area))
-      add_option.call(:ignore_single_stop_station, t(ignore_single_stop_station))
+      add_option.call(:prefer_referent_stop_area, I18n.t(prefer_referent_stop_area))
+      add_option.call(:ignore_single_stop_station, I18n.t(ignore_single_stop_station))
     end
 
     options.map { |k, v| "#{k} : #{v}"}.join('<br/>').html_safe

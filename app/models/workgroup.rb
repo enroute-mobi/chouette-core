@@ -270,7 +270,7 @@ class Workgroup < ApplicationModel
   end
 
   def self.default_export_types
-    %w[Export::Gtfs Export::NetexFull Export::NetexGeneric]
+    %w[Export::Gtfs Export::NetexGeneric]
   end
 
   def self.create_with_organisation organisation, params={}

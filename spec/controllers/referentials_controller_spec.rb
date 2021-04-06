@@ -124,7 +124,7 @@ describe ReferentialsController, :type => :controller do
       end
 
       context "urgent" do
-        let(:urgent) { '1' }
+        let(:urgent) { 'true' }
 
         it "does not mark the referential as urgent" do
           request
@@ -134,7 +134,7 @@ describe ReferentialsController, :type => :controller do
 
       with_permission 'referentials.flag_urgent' do
         context "urgent" do
-          let(:urgent) { '1' }
+          let(:urgent) { 'true' }
 
           it "marks the referential as urgent" do
             request
@@ -183,7 +183,7 @@ describe ReferentialsController, :type => :controller do
       end
 
       context "from_current_offer" do
-        let(:from_current_offer) { '1' }
+        let(:from_current_offer) { 'true' }
 
         it "should clone the current offer" do
           @create_from_current_offer = false
@@ -194,7 +194,7 @@ describe ReferentialsController, :type => :controller do
       end
 
       context "urgent" do
-        let(:urgent) { '1' }
+        let(:urgent) { 'true' }
 
         it "does not mark the referential as urgent" do
           request
@@ -204,7 +204,7 @@ describe ReferentialsController, :type => :controller do
 
       with_permission 'referentials.flag_urgent' do
         context "urgent" do
-          let(:urgent) { '1' }
+          let(:urgent) { 'true' }
 
           it "marks the referential as urgent" do
             request

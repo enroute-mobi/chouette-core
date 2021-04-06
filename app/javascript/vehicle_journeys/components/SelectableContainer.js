@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { SelectableGroup } from 'react-selectable-fast'
 import { isEmpty, sortBy } from 'lodash'
+import { useDebounce } from '../../helpers/hooks'
 
 
 const SelectableContainer = props => {
@@ -14,7 +15,9 @@ const SelectableContainer = props => {
 		updateSelectionLocked
 	} = props
 
-	const handleSelecting = items => {
+	const timeValue = 500
+
+	const handleSelecting = useDebounce(items => {
 		const initialState = { width: new Set(), height: new Set(), selectedItems: [] } // Use of Set to eliminate duplicate values
 
 		const { width, height, selectedItems } = items.reduce((result, item) => {
@@ -35,11 +38,13 @@ const SelectableContainer = props => {
 
 		updateSelectedItems(selectedItems)
 		updateSelectionDimensions(width.size, height.size)
-	}
+	}, timeValue)
 
 	const handleSelectFinish = items => {
 		const hasItems = !isEmpty(items)
-		updateSelectionLocked(hasItems)
+		setTimeout(() => {
+			updateSelectionLocked(hasItems)
+		}, timeValue)
 	}
 
 	if (!selectionMode)

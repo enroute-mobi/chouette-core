@@ -4,7 +4,7 @@ import { isDev } from './env'
 
 export default function applyMiddlewareWrapper(...middlewares) {
 	const list = [
-		...isDev() ? [logger] : [],
+		...isDev ? [logger] : [],
 		...middlewares
 	]
 

@@ -1,51 +1,74 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import { SelectableGroup } from 'react-selectable-fast'
-import { isEmpty, sortBy } from 'lodash'
+import { inRange, isEmpty, map, max, min, reduce } from 'lodash'
 import { useDebounce } from '../../helpers/hooks'
-
 
 const SelectableContainer = props => {
 	const {
 		children,
 		clearSelectedItems,
 		selectionMode,
+		selectedItems,
 		updateSelectedItems,
 		updateSelectionDimensions,
-		updateSelectionLocked
+		updateSelectionLocked,
+		vehicleJourneysAtStops
 	} = props
 
-	const timeValue = 500
+	const [bounds, setBounds] = useState(null)
+	const [locked, setLocked] = useState(false)
 
-	const handleSelecting = useDebounce(items => {
-		const initialState = { width: new Set(), height: new Set(), selectedItems: [] } // Use of Set to eliminate duplicate values
+	const resetBounds = () => setBounds(null)
 
-		const { width, height, selectedItems } = items.reduce((result, item) => {
-			const {
-				props: {
-					vjas: { id, arrival_time, departure_time, dummy, delta },
-					index,
-					vjIndex
+	const handleNewSelection = items => {
+		const itemCollection = [...selectedItems, ...map(items, 'props')]
+
+		setBounds(() =>
+			reduce(itemCollection, (result, item) => {
+				const { minX, maxX, minY, maxY } = result
+				const { y, x } = item
+
+				return {
+					minX: min([minX, x]),
+					maxX: max([maxX, x]),
+					minY: min([minY, y]),
+					maxY: max([maxY, y])
 				}
-			} = item
-			const selectedItem = { id, index, vjIndex, arrival_time, departure_time, dummy, delta }
-			return {
-				width: result.width.add(vjIndex),
-				height: result.height.add(index),
-				selectedItems: sortBy([...result.selectedItems, selectedItem], ['index', 'vjIndex'])
-			}
-		}, initialState)
+			}, {})
+		)
+	}
 
-		updateSelectedItems(selectedItems)
-		updateSelectionDimensions(width.size, height.size)
-	}, timeValue)
+	const handleSelecting = useDebounce(handleNewSelection, 300)
 
 	const handleSelectFinish = items => {
 		const hasItems = !isEmpty(items)
 		setTimeout(() => {
-			updateSelectionLocked(hasItems)
-		}, timeValue)
+			hasItems && handleNewSelection(items)
+			setLocked(hasItems)
+		}, 301)
 	}
+
+	useEffect(() => {
+		if (bounds) {
+			const width = (bounds.maxX - bounds.minX) + 1
+			const height = (bounds.maxY - bounds.minY) + 1
+
+			const newSelectedItems = vehicleJourneysAtStops.filter(vjas =>
+				inRange(vjas.x, bounds.minX, bounds.maxX + 1) &&
+				inRange(vjas.y, bounds.minY, bounds.maxY + 1)
+			)
+
+			updateSelectedItems(newSelectedItems)
+			updateSelectionDimensions(width, height)
+		} else {
+			clearSelectedItems()
+		}
+	}, [bounds])
+
+	useEffect(() => {
+		updateSelectionLocked(true)
+	}, [locked])
 
 	if (!selectionMode)
 		return children
@@ -53,14 +76,12 @@ const SelectableContainer = props => {
 	return (
 		<SelectableGroup
 			className="selectable-container"
-			resetOnStart
 			disabled={!selectionMode}
 			duringSelection={handleSelecting}
 			onSelectionFinish={handleSelectFinish}
-			onSelectionClear={clearSelectedItems}
+			onSelectionClear={resetBounds}
 			ignoreList={['.not-selectable']}
 			scrollContainer='.scrollable-container'
-			selectOnClick={false}
 		>
 			{children}
 		</SelectableGroup>
@@ -75,4 +96,5 @@ SelectableContainer.propTypes = {
 	updateSelectedItems: PropTypes.func.isRequired,
 	updateSelectionDimensions: PropTypes.func.isRequired,
 	updateSelectionLocked: PropTypes.func.isRequired,
+	vehicleJourneysAtStops: PropTypes.array.isRequired
 }

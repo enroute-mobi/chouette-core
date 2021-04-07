@@ -177,13 +177,15 @@ export default class VehicleJourney extends Component {
 
         </div>
         {this.props.value.vehicle_journey_at_stops.map((vjas, i) => {
-          const isSelectionBottomRight = lastSelectedItem.index == i && lastSelectedItem.vjIndex == this.props.index
+          const isInSelection = !!(selectedItems || []).find(({ x, y }) => x == this.props.index && y == i)
+          const isSelectionBottomRight = lastSelectedItem.y == i && lastSelectedItem.x == this.props.index
 
           return (
              <VehicleJourneyAtStop
               key={i}
-              vjIndex={this.props.index}
-              index={i}
+              x={this.props.index}
+              y={i}
+              isInSelection={isInSelection}
               vjas={vjas}
               selectionMode={this.props.selection.active}
               isSelectionBottomRight={isSelectionBottomRight}

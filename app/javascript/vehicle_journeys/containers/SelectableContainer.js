@@ -1,10 +1,17 @@
 import actions from '../actions'
 import { connect } from 'react-redux'
+import { flatten } from 'lodash'
 import SelectableContainer from '../components/SelectableContainer'
 
-const mapStateToProps = (state) => ({
-	selectionMode: state.selection.active,
-	toggleArrivals: state.filters.toggleArrivals
+const mapStateToProps = ({ selection, filters, vehicleJourneys }) => ({
+	selectionMode: selection.active,
+	selectedItems: selection.items || [],
+	toggleArrivals: filters.toggleArrivals,
+	vehicleJourneysAtStops: flatten(vehicleJourneys.map((vj, x) =>
+		vj.vehicle_journey_at_stops.map((vjas, y) => ({
+			...vjas, x, y
+		}))
+	))
 })
 
 const mapDispatchToProps = (dispatch) => ({

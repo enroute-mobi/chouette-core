@@ -23,12 +23,13 @@ class VehicleJourneyAtStop extends Component {
 			vjas: { dummy },
 			isSelecting,
 			isSelected,
+			isInSelection
 		} = this.props
 		const out = ['td', 'text-center']
 
 		out.push(dummy ? 'not-selectable' : 'selectable')
 
-		if (isSelecting || isSelected) {
+		if (isSelecting || isSelected || isInSelection) {
 			out.push('selected')	
 		}
 
@@ -72,8 +73,8 @@ class VehicleJourneyAtStop extends Component {
 	render() {
 		const {
 			vjas,
-			index,
-			vjIndex,
+			x,
+			y,
 			isDisabled,
 			isEditable,
 			cityNameChecker,
@@ -82,12 +83,12 @@ class VehicleJourneyAtStop extends Component {
 			selectableRef,
 		} = this.props
 
-		const onUpdateTime = partial(this.onUpdateTime, index, vjIndex)
+		const onUpdateTime = partial(this.onUpdateTime, y, x)
 
 		return (
 			<div
 				id={vjas.id}
-				key={index}
+				key={y}
 				ref={selectableRef}
 				className={this.tdClasses}
 			>
@@ -155,8 +156,8 @@ class VehicleJourneyAtStop extends Component {
 export default createSelectable(VehicleJourneyAtStop)
 
 VehicleJourneyAtStop.propTypes = {
-	vjIndex: PropTypes.number.isRequired,
-	index: PropTypes.number.isRequired,
+	x: PropTypes.number.isRequired,
+	y: PropTypes.number.isRequired,
 	vjas: PropTypes.object.isRequired,
 	isSelectionBottomRight: PropTypes.bool.isRequired,
 	selectionContentText: PropTypes.string.isRequired,
@@ -167,5 +168,6 @@ VehicleJourneyAtStop.propTypes = {
 	onUpdateTime: PropTypes.func.isRequired,
 	cityNameChecker: PropTypes.func.isRequired,
 	toggleArrivals: PropTypes.bool.isRequired,
-	selectionMode: PropTypes.bool.isRequired
+	selectionMode: PropTypes.bool.isRequired,
+	isInSelection: PropTypes.bool.isRequired,
 }

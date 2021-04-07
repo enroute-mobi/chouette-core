@@ -29,7 +29,6 @@ describe Subscription, type: :model do
     expect{subscription.save}.to change{ Workgroup.count }.by 1
     expect(subscription.workgroup.owner).to eq subscription.organisation
     expect(subscription.workgroup.export_types).to include "Export::Gtfs"
-    expect(subscription.workgroup.export_types).to include "Export::NetexFull"
     expect(subscription.user.profile).to eq 'admin'
   end
 end

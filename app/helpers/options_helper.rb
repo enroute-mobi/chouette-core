@@ -52,8 +52,8 @@ module OptionsHelper
     val = record.options[option_name.to_s]
     if option[:display]
       self.instance_exec(val, &option[:display])
-    elsif option[:type] == :boolean
-      val.t
+    elsif val.is_a?(TrueClass) || val.is_a?(FalseClass)
+      val ? 'true'.t : 'false'.t
     elsif option.has_key?(:collection)
       translate_option_value(record.object.class, option_name, val)
     else

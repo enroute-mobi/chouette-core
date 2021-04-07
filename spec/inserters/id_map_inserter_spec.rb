@@ -6,7 +6,7 @@ RSpec.describe IdMapInserter do
     end
   end
 
-  subject { IdMapInserter.new context.referential }
+  subject { IdMapInserter.new context.referential, strict: true }
   alias_method :inserter, :subject
 
   describe "mapped_model_class?" do
@@ -181,6 +181,22 @@ RSpec.describe IdMapInserter do
       inserter.register_primary_key!(Chouette::VehicleJourney, model.vehicle_journey_id, new_vehicle_journey_id)
 
       expect { inserter.insert(model) }.to change(model, :vehicle_journey_id).to(new_vehicle_journey_id)
+    end
+
+  end
+
+  describe "TimeTable" do
+
+    let(:time_table) { Chouette::TimeTable.new id: 42 }
+
+    it "nullify the created_from_id attribute" do
+      time_table.created_from_id = 666
+      expect { inserter.insert(time_table) }.to change(time_table, :created_from_id).to(nil)
+    end
+
+    it "leaves unchanged calendar_id attribute" do
+      time_table.calendar_id = 666
+      expect { inserter.insert(time_table) }.to_not change(time_table, :calendar_id)
     end
 
   end

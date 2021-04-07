@@ -130,6 +130,16 @@ class IdMapInserter < ByClassInserter
 
   end
 
+  class TimeTable < Base
+
+    def update_relations(timetable)
+      # We want to ignore the TimeTable created_from
+      timetable.created_from_id = nil
+      super
+    end
+
+  end
+
   class VehicleJourneyAtStop < Base
 
     def load_current_primary_key

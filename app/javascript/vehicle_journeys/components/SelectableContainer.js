@@ -19,10 +19,15 @@ const SelectableContainer = props => {
 	const [bounds, setBounds] = useState(null)
 	const [locked, setLocked] = useState(false)
 
-	const resetBounds = () => setBounds(null)
+	const handleClear = () => {
+		setLocked(false)
+		setBounds(null)
+	}
 
-	const handleNewSelection = items => {
+	const handleNewSelection = done => items => {
 		const itemCollection = [...selectedItems, ...map(items, 'props')]
+
+		setLocked(done)
 
 		setBounds(() =>
 			reduce(itemCollection, (result, item) => {
@@ -39,13 +44,12 @@ const SelectableContainer = props => {
 		)
 	}
 
-	const handleSelecting = useDebounce(handleNewSelection, 300)
+	const handleSelecting = useDebounce(handleNewSelection(false), 300)
 
 	const handleSelectFinish = items => {
 		const hasItems = !isEmpty(items)
 		setTimeout(() => {
-			hasItems && handleNewSelection(items)
-			setLocked(hasItems)
+			hasItems && handleNewSelection(true)(items)
 		}, 301)
 	}
 
@@ -61,14 +65,11 @@ const SelectableContainer = props => {
 
 			updateSelectedItems(newSelectedItems)
 			updateSelectionDimensions(width, height)
+			locked && updateSelectionLocked(true)
 		} else {
 			clearSelectedItems()
 		}
 	}, [bounds])
-
-	useEffect(() => {
-		updateSelectionLocked(true)
-	}, [locked])
 
 	if (!selectionMode)
 		return children
@@ -79,7 +80,7 @@ const SelectableContainer = props => {
 			disabled={!selectionMode}
 			duringSelection={handleSelecting}
 			onSelectionFinish={handleSelectFinish}
-			onSelectionClear={resetBounds}
+			onSelectionClear={handleClear}
 			ignoreList={['.not-selectable']}
 			scrollContainer='.scrollable-container'
 		>

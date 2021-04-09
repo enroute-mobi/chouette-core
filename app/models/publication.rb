@@ -55,30 +55,32 @@ class Publication < ApplicationModel
   end
 
   def run_export
-    all_synchronous = true
-    publication_setup.new_exports(parent.new).each do |export|
-      all_synchronous = all_synchronous && export.synchronous
-      begin
-        export.publication = self
-        Rails.logger.info "Launching export #{export.name}"
-        export.save!
-      rescue => e
-        Chouette::Safe.capture "Publication Export ##{export.id} failed", e
-        failed!
-        return
+    parent.new.switch do |referential|
+      all_synchronous = true
+      publication_setup.new_exports(referential).each do |export|
+        all_synchronous = all_synchronous && export.synchronous
+        begin
+          export.publication = self
+          Rails.logger.info "Launching export #{export.name}"
+          export.save!
+        rescue => e
+          Chouette::Safe.capture "Publication Export ##{export.id} failed", e
+          failed!
+          return
+        end
+
+        if export.synchronous && !export.successful?
+          Rails.logger.error "Publication Export '#{export.name}' failed"
+          failed!
+          return
+        end
       end
 
-      if export.synchronous && !export.successful?
-        Rails.logger.error "Publication Export '#{export.name}' failed"
-        failed!
-        return
-      end
+      return unless all_synchronous
+
+      send_to_destinations
+      infer_status
     end
-
-    return unless all_synchronous
-
-    send_to_destinations
-    infer_status
   end
 
   def send_to_destinations

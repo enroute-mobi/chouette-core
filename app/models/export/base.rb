@@ -139,34 +139,6 @@ class Export::Base < ApplicationModel
     res
   end
 
-  if Rails.env.development?
-    def self.force_load_descendants
-      path = Rails.root.join 'app/models/export'
-      Dir.chdir path do
-        Dir['**/*.rb'].each do |src|
-          next if src =~ /^base/
-          klass_name = "Export::#{src[0..-4].camelize}"
-          Rails.logger.info "Loading #{klass_name}"
-          begin
-            klass_name.constantize
-          rescue => e
-            Chouette::Safe.capture "Export descendant class loading #{klass_name} failed", e
-            nil
-          end
-        end
-      end
-    end
-  end
-
-  def self.inherited child
-    super child
-    child.instance_eval do
-      def self.user_visible?
-        true
-      end
-    end
-  end
-
   def self.model_name
     ActiveModel::Name.new Export::Base, Export::Base, "Export"
   end

@@ -10,7 +10,7 @@ module ExportsHelper
   end
 
   def workgroup_exports workgroup
-    Export::Base.user_visible_descendants.select{|e| workgroup.has_export? e.name}
+    workgroup.export_types.map(&:constantize)
   end
 
 end

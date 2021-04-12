@@ -6,11 +6,11 @@ class WorkgroupWorkbenchPolicy < ApplicationPolicy
   end
 
   def show?
-    update?
+    record.workgroup.orgnisation_ids.include?(user.organisation_id)
   end
 
   def update?
-    record.workgroup.owner == user.organisation && user.has_permission?('workbenches.update')
+    record.workgroup.owner_id == user.organisation_id && user.has_permission?('workbenches.update')
   end
 
   # TODO Enable workbench deletion / creation from workgroup admin section

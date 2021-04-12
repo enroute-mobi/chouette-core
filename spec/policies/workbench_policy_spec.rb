@@ -7,9 +7,10 @@ RSpec.describe WorkbenchPolicy, type: :policy do
         expect_it.not_to permit(user_context, record)
       end
 
-      context "when user belongs to workbench's workgroup organisations" do
+      context "when user belongs to workbench organisation" do
         before do
-          allow(record.workgroup.organisations).to receive(:exists?).with(id: user.organisation_id) { true }
+          allow(record).to receive(:organisation_id) { user.organisation_id }
+          # allow(record.workgroup.organisations).to receive(:exists?).with(id: user.organisation_id) { true }
         end
 
         it "should allow show" do

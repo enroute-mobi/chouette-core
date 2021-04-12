@@ -3,6 +3,10 @@ module DecoratorWithScope
     super value, &block
     instance_decorator.set_scope value, &block
   end
+
+  def policy klass
+    instance_decorator.set_policy_class(klass)
+  end
 end
 
 class AF83::Decorator < ModelDecorator
@@ -129,5 +133,7 @@ class AF83::Decorator < ModelDecorator
   class InstanceDecorator < Draper::Decorator
     include AF83::Decorator::EnhancedDecorator
     extend AF83::Decorator::EnhancedDecorator::ClassMethods
+
+    attr_accessor :policy_class
   end
 end

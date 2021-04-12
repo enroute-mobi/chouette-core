@@ -89,6 +89,14 @@ module AF83::Decorator::EnhancedDecorator
       @scope
     end
 
+    def set_policy_class klass
+      @policy_class = klass
+    end
+
+    def policy_class
+      @policy_class
+    end
+
     def t key
       eval  "-> (l){ h.t('#{key}') }"
     end
@@ -153,10 +161,12 @@ module AF83::Decorator::EnhancedDecorator
     action_links(action, group: :secondary)
   end
 
-  def check_policy policy
-    _object = policy.to_s == "create" ? object.klass : object
-    method = "#{policy}?"
-    h.policy(_object).send(method)
+  def check_policy name
+     _object = name.to_s == "create" ? object.klass : object
+    method = "#{name}?"
+
+    policy = @policy_class&.new(h.current_user, _object) || h.policy(_object)
+    policy.send("#{name}?")
   end
 
   def check_feature feature

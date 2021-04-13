@@ -24,7 +24,7 @@ class CopyInserter < ByClassInserter
       @csv ||=
         begin
           csv = CSV.open(csv_file, "wb")
-          csv << headers
+          csv << csv_headers
         end
     end
 
@@ -35,7 +35,7 @@ class CopyInserter < ByClassInserter
     delegate :connection, :columns, to: :model_class
     delegate :target, to: :parent_inserter
 
-    def headers
+    def csv_headers
       @headers ||= columns.map(&:name)
     end
 
@@ -93,6 +93,10 @@ class CopyInserter < ByClassInserter
     # id,vehicle_journey_id,stop_point_id,connecting_service_id,boarding_alighting_possibility,arrival_time,departure_time,for_boarding,for_alighting,departure_day_offset,arrival_day_offset,checksum,checksum_source,stop_area_id
     # 1,1,1,,,12:00:00,12:01:00,normal,normal,0,0,b1c0ac4b48e0db6883d4cf8d89bfc0c9968284314445f95569204626db9c22e8,12:01|12:00|0|0,
 
+    def csv_headers
+      %w{id vehicle_journey_id stop_point_id connecting_service_id boarding_alighting_possibility arrival_time departure_time for_boarding for_alighting departure_day_offset arrival_day_offset checksum checksum_source stop_area_id}
+    end
+
     def model_class
       Chouette::VehicleJourneyAtStop
     end
@@ -115,7 +119,7 @@ class CopyInserter < ByClassInserter
       @csv ||=
         begin
           csv = RawCSV.open(csv_file, "wb")
-          csv << headers.join(',')
+          csv << csv_headers.join(',')
         end
     end
 
@@ -125,6 +129,10 @@ class CopyInserter < ByClassInserter
 
     # id,time_table_id,date,in_out,checksum,checksum_source
     # 2,1,2020-11-02,f,83045a5bde1d9dacf6718eed4e13fc18bb288a50eaca34d2ad28aa36bb477444,2020-11-02|-
+
+    def csv_headers
+      %w{id time_table_id date in_out checksum checksum_source}
+    end
 
     def csv_values(d)
       "#{d.id},#{d.time_table_id},#{type_cast_date(d.date)},#{type_boolean(d.in_out)},#{d.checksum},#{d.checksum_source}"
@@ -144,7 +152,7 @@ class CopyInserter < ByClassInserter
       @csv ||=
         begin
           csv = RawCSV.open(csv_file, "wb")
-          csv << headers.join(',')
+          csv << csv_headers.join(',')
         end
     end
 

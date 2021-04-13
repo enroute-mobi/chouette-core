@@ -79,6 +79,21 @@ RSpec.describe CopyInserter do
         expect(inserter.for(Chouette::VehicleJourneyAtStop).csv_content).to eq(expected_csv)
       end
 
+      describe "csv_headers" do
+
+        subject { inserter.for(Chouette::VehicleJourneyAtStop).csv_headers }
+
+        it "contains all Chouette::VehicleJourneyAtStop columns" do
+          is_expected.to match_array(Chouette::VehicleJourneyAtStop.columns.map(&:name))
+        end
+
+        it "uses a static header definition" do
+          allow(Chouette::VehicleJourneyAtStop).to receive(:columns).and_return(Chouette::VehicleJourneyAtStop.columns.reverse)
+          is_expected.to eq(%w{id vehicle_journey_id stop_point_id connecting_service_id boarding_alighting_possibility arrival_time departure_time for_boarding for_alighting departure_day_offset arrival_day_offset checksum checksum_source stop_area_id})
+        end
+
+      end
+
       it "inserts model in database" do
         vehicle_journey_at_stop.id = next_id(Chouette::VehicleJourneyAtStop)
         vehicle_journey_at_stop.vehicle_journey_id = vehicle_journey.id
@@ -199,6 +214,21 @@ RSpec.describe CopyInserter do
         dates.each { |date| inserter.insert date }
 
         expect(inserter.for(Chouette::TimeTableDate).csv_content).to eq(expected_csv)
+      end
+
+      describe "csv_headers" do
+
+        subject { inserter.for(Chouette::TimeTableDate).csv_headers }
+
+        it "contains all Chouette::TimeTableDate columns" do
+          is_expected.to match_array(Chouette::TimeTableDate.columns.map(&:name))
+        end
+
+        it "uses a static header definition" do
+          allow(Chouette::TimeTableDate).to receive(:columns).and_return(Chouette::TimeTableDate.columns.reverse)
+          is_expected.to eq(%w{id time_table_id date in_out checksum checksum_source})
+        end
+
       end
 
       it "inserts model in database" do

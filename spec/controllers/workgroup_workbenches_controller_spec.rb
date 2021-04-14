@@ -3,31 +3,23 @@ RSpec.describe WorkgroupWorkbenchesController, :type => :controller do
 
   # TODO change this with ChouetteFactory
   let(:workbench) { create :workbench, organisation: @user.organisation }
+  let(:other_orga) { create :organisation }
 
   describe "GET show" do
-
-    without_permission "workbenches.update" do
-      it "should respond with 403" do
+    context "when user's organisation is in the workgroup organisations list" do
+      it "should respond with a 200" do
         get :show, params: { workgroup_id: workbench.workgroup_id , id: workbench.id }
-        expect(response).to have_http_status(403)
+        expect(response).to have_http_status(200)
       end
     end
 
-    with_permission "workbenches.update" do
-      it "should respond with 403" do
-        get :show, params: { workgroup_id: workbench.workgroup_id , id: workbench.id }
-        expect(response).to have_http_status(403)
+    context "when user is not in the workgroup organisations list" do
+      before do
+        allow(@user).to receive(:organisation_id) { other_orga.id }
       end
-
-      context "when user is the workgroup's owner" do
-        before do
-          workbench.workgroup.owner = @user.organisation
-          workbench.workgroup.save!
-        end
-        it "should respond with a 200" do
-          get :show, params: { workgroup_id: workbench.workgroup_id , id: workbench.id }
-          expect(response).to have_http_status(200)
-        end
+      it "should respond with a 200" do
+        get :show, params: { workgroup_id: workbench.workgroup_id , id: workbench.id }
+        expect(response).to have_http_status(200)
       end
     end
   end

@@ -93,10 +93,6 @@ module AF83::Decorator::EnhancedDecorator
       @policy_class = klass
     end
 
-    def policy_class
-      @policy_class
-    end
-
     def t key
       eval  "-> (l){ h.t('#{key}') }"
     end
@@ -165,8 +161,11 @@ module AF83::Decorator::EnhancedDecorator
      _object = name.to_s == "create" ? object.klass : object
     method = "#{name}?"
 
-    policy = @policy_class&.new(h.current_user, _object) || h.policy(_object)
-    policy.send("#{name}?")
+    policy = policy_class.new(
+      UserContext.new(h.current_user),
+      _object
+    )
+    policy.send(method)
   end
 
   def check_feature feature
@@ -177,5 +176,10 @@ module AF83::Decorator::EnhancedDecorator
     scope = self.class.scope
     scope = instance_exec &scope if scope.is_a? Proc
     scope
+  end
+
+  def policy_class
+    self.class.instance_variable_get("@policy_class") ||
+    Pundit::PolicyFinder.new(object).policy
   end
 end

@@ -6,7 +6,7 @@ class WorkgroupWorkbenchPolicy < ApplicationPolicy
   end
 
   def show?
-    record.workgroup.orgnisation_ids.include?(user.organisation_id)
+    record.workgroup.organisations.exists?(id: user.organisation_id)
   end
 
   def update?

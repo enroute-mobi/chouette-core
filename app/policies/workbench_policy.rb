@@ -6,7 +6,7 @@ class WorkbenchPolicy < ApplicationPolicy
   end
 
   def show?
-  user.organisation_id == record.organisation_id
+    user.organisation_id == record.organisation_id
   end
 
   def update?

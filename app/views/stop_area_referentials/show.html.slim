@@ -51,7 +51,7 @@
           .list-group
             - @stop_area_referential.connection_links.order("updated_at desc").limit(5).each do |connection_link|
               .list-group-item
-                = link_to connection_link.name, workbench_stop_area_referential_connection_link_path(@workbench, connection_link)
+                = link_to connection_link.default_name, workbench_stop_area_referential_connection_link_path(@workbench, connection_link)
                 =< t('date.updated', distance_in_time: time_ago_in_words(connection_link.updated_at))
             - unless @stop_area_referential.connection_links.any?
               = replacement_msg t('no_result_text')

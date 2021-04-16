@@ -1,4 +1,8 @@
 class ConnectionLinkDecorator < AF83::Decorator
+  define_instance_method :name do
+    object.name.presence || object.default_name
+  end
+
   decorates Chouette::ConnectionLink
 
   set_scope { [ context[:workbench], :stop_area_referential ] }

@@ -1,6 +1,6 @@
 describe Chouette::ConnectionLink, type: :model do
 
-  subject { create(:connection_link) }
+  subject (:connection_link){ create(:connection_link) }
 
   let(:stop_area) { create :stop_area }
 
@@ -46,6 +46,30 @@ describe Chouette::ConnectionLink, type: :model do
     it "should change link_type with ConnectionLinkType#name" do
       subject.connection_link_type = "Test"
       expect(subject.link_type).to eq("Test")
+    end
+  end
+
+  describe "#default_name" do
+
+    subject { connection_link.default_name }
+
+    before do
+      connection_link.departure.name = "Departure"
+      connection_link.arrival.name = "Arrival"
+    end
+
+    context "when the connection link is one way" do
+      before { connection_link.both_ways = false }
+      it "returns 'Departure > Arrival'" do
+        is_expected.to eq('Departure > Arrival')
+      end
+    end
+
+    context "when the connection link is both ways" do
+      before { connection_link.both_ways = true }
+      it "returns 'Departure <> Arrival'" do
+        is_expected.to eq('Departure <> Arrival')
+      end
     end
   end
 end

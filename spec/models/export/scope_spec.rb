@@ -5,19 +5,18 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
       it 'should apply the Lines & Scheduled scopes' do
         scope = Export::Scope.build(referential, line_ids: [1])
 
-        expect(scope).to be_a_kind_of(Export::Scope::Cache)
+        expect(scope).to be_a_kind_of(Export::Scope::Scheduled)
         expect(scope.current_scope).to be_a_kind_of(Export::Scope::Lines)
-        expect(scope.current_scope.current_scope).to be_a_kind_of(Export::Scope::Scheduled)
       end
     end
 
     context 'with date_range & lines' do
       it 'should apply the Lines & DateRange scopes' do
         scope = Export::Scope.build(referential, date_range: Time.zone.today..1.month.from_now, line_ids: [1])
-        
-        expect(scope).to be_a_kind_of(Export::Scope::Cache)
-        expect(scope.current_scope).to be_a_kind_of(Export::Scope::Lines)
-        expect(scope.current_scope.current_scope).to be_a_kind_of(Export::Scope::DateRange)
+
+        expect(scope).to be_a_kind_of(Export::Scope::Scheduled)
+        expect(scope.current_scope).to be_a_kind_of(Export::Scope::DateRange)
+        expect(scope.current_scope.current_scope).to be_a_kind_of(Export::Scope::Lines)
       end
     end
   end
@@ -71,13 +70,13 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
     it_behaves_like 'Export::Scope::Base'
 
     let(:selected_line) { context.line(:first) }
-    let(:scope) { Export::Scope::Lines.new(default_scope, [selected_line.id]) }
+    let(:scope) { Export::Scope::Scheduled.new(Export::Scope::Lines.new(default_scope, [selected_line.id])) }
 
     describe '#vehicle_journeys' do
       it 'should filter them by lines' do
         in_scope_vjs = selected_line.routes.flat_map(&:vehicle_journeys)
         out_scope_vj = context.vehicle_journey(:in_scope3)
-        
+
         expect(scope.vehicle_journeys).to match_array in_scope_vjs
         expect(scope.vehicle_journeys).not_to include out_scope_vj
       end
@@ -88,7 +87,7 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
 
       context 'no metadatas are related to lines' do
         before do
-          allow(scope).to receive(:selected_line_ids) { [] }
+          allow(scope.current_scope).to receive(:selected_line_ids) { [] }
         end
 
         it { is_expected.to be_empty }
@@ -96,7 +95,7 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
 
       context 'some metadatas are related to to selected_lines' do
         before do
-          allow(scope).to receive(:selected_line_ids) { default_scope.metadatas.first.line_ids }
+          allow(scope.current_scope).to receive(:selected_line_ids) { default_scope.metadatas.first.line_ids }
         end
 
         it { is_expected.not_to be_empty }
@@ -129,7 +128,7 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
     it_behaves_like 'Export::Scope::Base'
 
     let(:scope) { Export::Scope::Scheduled.new(default_scope) }
-  
+
     describe '#vehicle_journeys' do
       it 'should filter in the ones with not empty timetables' do
         in_scope_vjs = %i[in_scope1 in_scope2 in_scope3].map { |n| context.vehicle_journey(n) }
@@ -146,7 +145,7 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
 
     let(:date_range) { context.time_table(:default).date_range }
     let(:period_before_daterange) { (date_range.begin - 100)..(date_range.begin - 10) }
-    let(:scope) { Export::Scope::DateRange.new(default_scope, date_range) }
+    let(:scope) { Export::Scope::Scheduled.new(Export::Scope::DateRange.new(default_scope, date_range)) }
 
     describe '#vehicle_journeys' do
       it 'should filter in the ones with matching timetables' do
@@ -155,7 +154,7 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
         expect(scope.vehicle_journeys).to match_array(in_scope_vjs)
         expect(scope.vehicle_journeys).not_to include(out_scope_vj)
 
-        allow(scope).to receive(:date_range) { period_before_daterange }
+        allow(scope.current_scope).to receive(:date_range) { period_before_daterange }
 
         expect(scope.vehicle_journeys).to be_empty
       end
@@ -167,7 +166,7 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
 
         expect(scope.time_tables).to include(tt)
 
-        allow(scope).to receive(:date_range) { period_before_daterange }
+        allow(scope.current_scope).to receive(:date_range) { period_before_daterange }
 
         expect(scope.time_tables).to be_empty
       end
@@ -179,7 +178,7 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
 
         expect(scope.metadatas).to include(metadata)
 
-        allow(scope).to receive(:date_range) { period_before_daterange }
+        allow(scope.current_scope).to receive(:date_range) { period_before_daterange }
 
         expect(scope.metadatas).to be_empty
       end
@@ -196,7 +195,7 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
 
         expect(scope.organisations).to include(organisation)
 
-        allow(scope).to receive(:date_range) { period_before_daterange }
+        allow(scope.current_scope).to receive(:date_range) { period_before_daterange }
 
         expect(scope.metadatas).to be_empty
       end

@@ -34,6 +34,10 @@ en:
       warning: "Warning"
       error: "Error"
       fatal: "Fatal"
+    form:
+      line_name: Search by line name
+      company_name: Search by company name
+      line_provider_name: Search by line provider name
   export:
     workgroup: Workgroup
     netex:

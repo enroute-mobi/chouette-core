@@ -36,9 +36,9 @@ fr:
       error: "Erreur"
       fatal: "Fatal"
     form:
-      line_name: Search by line name
-      company_name: Search by company name
-      line_provider_name: Search by line provider name
+      line_name: Recherche par nom de ligne
+      company_name: Recherche par nom du transporteur
+      line_provider_name: Recherche par nom de fournisseur de ligne
   export:
     workgroup: Groupe de travail
     netex:

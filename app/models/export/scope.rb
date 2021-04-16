@@ -60,6 +60,7 @@ module Export::Scope
         builder.period(date_range) if date_range
         builder.scheduled
 
+        # CHOUETTE-1077
         # builder.cache
       end
     end

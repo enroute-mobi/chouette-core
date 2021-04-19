@@ -89,10 +89,6 @@ module AF83::Decorator::EnhancedDecorator
       @scope
     end
 
-    def set_policy_class klass
-      @policy_class = klass
-    end
-
     def t key
       eval  "-> (l){ h.t('#{key}') }"
     end
@@ -157,15 +153,18 @@ module AF83::Decorator::EnhancedDecorator
     action_links(action, group: :secondary)
   end
 
-  def check_policy name
-     _object = name.to_s == "create" ? object.klass : object
-    method = "#{name}?"
+  def check_policy policy
+    policy_object = policy.to_s == "create" ? object.klass : object
 
-    policy = policy_class.new(
-      UserContext.new(h.current_user),
-      _object
-    )
-    policy.send(method)
+    if self.class.respond_to?(:policy_class)
+      policy_object = self
+    end
+
+    policy_instance = h.policy(policy_object)
+    Rails.logger.debug "check_policy with #{policy_instance.class} for #{policy_object.class}"
+
+    method = "#{policy}?"
+    policy_instance.send(method)
   end
 
   def check_feature feature
@@ -176,10 +175,5 @@ module AF83::Decorator::EnhancedDecorator
     scope = self.class.scope
     scope = instance_exec &scope if scope.is_a? Proc
     scope
-  end
-
-  def policy_class
-    self.class.instance_variable_get("@policy_class") ||
-    Pundit::PolicyFinder.new(object).policy
   end
 end

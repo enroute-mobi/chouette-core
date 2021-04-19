@@ -35,7 +35,7 @@ class WorkgroupWorkbenchesController < ChouetteController
   private
 
   def resource
-    super.decorate(context: { workgroup: parent })
+    WorkgroupWorkbenchDecorator.decorate(super, context: { workgroup: parent })
   end
 
   def workbench_params

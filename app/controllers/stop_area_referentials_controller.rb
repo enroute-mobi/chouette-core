@@ -5,6 +5,7 @@ class StopAreaReferentialsController < ChouetteController
   def show
     show! do
       @stop_area_referential = StopAreaReferentialDecorator.decorate(@stop_area_referential, context: { workbench: @workbench })
+      @connection_links = ConnectionLinkDecorator.decorate(@stop_area_referential.connection_links.order("updated_at desc").limit(5))
     end
   end
 

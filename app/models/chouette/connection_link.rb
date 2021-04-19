@@ -34,6 +34,11 @@ module Chouette
       end
     end
 
+    def default_name
+      separator = both_ways? ? '<>' : '>'
+      "#{departure.name} #{separator} #{arrival.name}"
+    end
+
     def connection_link_type
       link_type && Chouette::ConnectionLinkType.new(link_type.underscore)
     end

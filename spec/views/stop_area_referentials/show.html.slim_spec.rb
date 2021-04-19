@@ -9,6 +9,7 @@ describe "/stop_area_referentials/show", :type => :view do
 
   let(:workbench) { assign :workbench, context.workbench }
   let(:stop_area_referential) { assign :stop_area_referential, context.stop_area_referential.decorate(context: { workbench: workbench }) }
+  let!(:connection_links) { assign :connection_links, [] }
 
   before :each do
     controller.request.path_parameters[:workbench_id] = workbench.id

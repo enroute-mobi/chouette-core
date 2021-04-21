@@ -23,7 +23,7 @@ class WorkgroupsController < ChouetteController
   def show
     show! do |format|
       format.html {
-        @workbenches = WorkbenchDecorator.decorate(
+        @workbenches = WorkgroupWorkbenchDecorator.decorate(
           @workgroup.workbenches.order('created_at DESC').paginate(page: params[:page]),
           context: {
             workgroup: @workgroup

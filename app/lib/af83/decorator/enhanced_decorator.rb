@@ -154,9 +154,17 @@ module AF83::Decorator::EnhancedDecorator
   end
 
   def check_policy policy
-    _object = policy.to_s == "create" ? object.klass : object
+    policy_object = policy.to_s == "create" ? object.klass : object
+
+    if self.class.respond_to?(:policy_class)
+      policy_object = self
+    end
+
+    policy_instance = h.policy(policy_object)
+    Rails.logger.debug "check_policy with #{policy_instance.class} for #{policy_object.class}"
+
     method = "#{policy}?"
-    h.policy(_object).send(method)
+    policy_instance.send(method)
   end
 
   def check_feature feature

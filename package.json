@@ -41,7 +41,7 @@
     "redux-thunk": "2.2.0",
     "shortid": "^2.2.15",
     "snyk": "^1.518.0",
-    "ssri": "~> 5.2.2",
+    "ssri": "~8.0.1",
     "uglify-js": "3.3.2",
     "whatwg-fetch": "^2.0.4"
   },

@@ -42,8 +42,8 @@ RSpec.shared_examples_for 'Export::Scope::Base' do
 
 		let(:scope) do
 			case described_class.to_s
-			when 'Export::Scope::Lines' then Export::Scope::Lines.new(default_scope, lines_in_scope)
-			when 'Export::Scope::DateRange' then Export::Scope::DateRange.new(default_scope, Time.zone.today..1.month.from_now.to_date)
+			when 'Export::Scope::Lines' then Export::Scope::Scheduled.new(Export::Scope::Lines.new(default_scope, lines_in_scope))
+			when 'Export::Scope::DateRange' then Export::Scope::Scheduled.new(Export::Scope::DateRange.new(default_scope, Time.zone.today..1.month.from_now.to_date))
 			when 'Export::Scope::Scheduled' then Export::Scope::Scheduled.new(default_scope)
       else
         raise 'Base sub class not supported'
@@ -55,7 +55,7 @@ RSpec.shared_examples_for 'Export::Scope::Base' do
     end
 
 		let(:selected_vj) { context.vehicle_journey(:in_scope1) }
-		
+
     describe "stop_areas" do
 
       let(:stop_areas_in_scope) { routes_in_scope.flat_map(&:stop_areas).uniq }
@@ -102,7 +102,7 @@ RSpec.shared_examples_for 'Export::Scope::Base' do
         expect(scope.stop_points).to match_array(stop_points_in_scope)
 
 				allow(scope).to receive(:vehicle_journeys) { [selected_vj] }
-		
+
 				expect(scope.stop_points).not_to match_array(stop_points_in_scope)
 				expect(scope.stop_points).to match_array(selected_vj.route.stop_points)
       end
@@ -119,7 +119,7 @@ RSpec.shared_examples_for 'Export::Scope::Base' do
         expect(scope.routes).to match_array(routes_in_scope)
 
 				allow(scope).to receive(:vehicle_journeys) { [selected_vj] }
-		
+
 				expect(scope.routes).not_to match_array(routes_in_scope)
 				expect(scope.routes).to match_array([selected_vj.route])
       end
@@ -135,7 +135,7 @@ RSpec.shared_examples_for 'Export::Scope::Base' do
         expect(scope.journey_patterns).to match_array(journey_patterns_in_scope)
 
 				allow(scope).to receive(:vehicle_journeys) { [selected_vj] }
-		
+
 				expect(scope.journey_patterns).not_to match_array(journey_patterns_in_scope)
 				expect(scope.journey_patterns).to match_array([selected_vj.journey_pattern])
       end
@@ -163,7 +163,7 @@ RSpec.shared_examples_for 'Export::Scope::Base' do
         expect(scope.lines).to eq(lines_in_scope)
 
 				allow(scope).to receive(:vehicle_journeys) { [selected_vj] }
-		
+
 				expect(scope.lines).not_to match_array(lines_in_scope)
 				expect(scope.lines).to match_array([selected_vj.line])
       end
@@ -188,7 +188,7 @@ RSpec.shared_examples_for 'Export::Scope::Base' do
         expect(scope.vehicle_journey_at_stops).to match_array(vehicle_journey_at_stops_in_scope)
 
 				allow(scope).to receive(:vehicle_journeys) { [selected_vj] }
-		
+
 				expect(scope.vehicle_journey_at_stops).not_to match_array(vehicle_journey_at_stops_in_scope)
 				expect(scope.vehicle_journey_at_stops).to match_array(selected_vj.vehicle_journey_at_stops)
       end
@@ -207,7 +207,7 @@ RSpec.shared_examples_for 'Export::Scope::Base' do
 				expect(scope.shapes).to match_array(shapes_in_scope)
 
 				allow(scope).to receive(:vehicle_journeys) { [selected_vj] }
-		
+
 				expect(scope.shapes).not_to match_array(shapes_in_scope)
 				expect(scope.shapes).to match_array([selected_vj.journey_pattern.shape])
       end

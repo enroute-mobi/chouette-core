@@ -56,10 +56,12 @@ module Export::Scope
 
     def builder
       @builder ||= Builder.new(referential) do |builder|
-        date_range ? builder.period(date_range) : builder.scheduled
         builder.lines(line_ids) if line_ids
+        builder.period(date_range) if date_range
+        builder.scheduled
 
-        builder.cache
+        # CHOUETTE-1077
+        # builder.cache
       end
     end
 
@@ -110,6 +112,16 @@ module Export::Scope
 
     attr_reader :current_scope
 
+    def vehicle_journeys
+      @vehicle_journeys ||= current_scope.vehicle_journeys
+    end
+  end
+
+  class Scheduled < Base
+    def vehicle_journeys
+      current_scope.vehicle_journeys.scheduled
+    end
+
     def lines
       current_scope.lines.distinct.joins(routes: :vehicle_journeys)
         .where("vehicle_journeys.id" => vehicle_journeys)
@@ -152,12 +164,6 @@ module Export::Scope
           .where("vehicle_journey_at_stops.vehicle_journey_id" => vehicle_journeys)
 
       Chouette::StopArea.union(stop_areas_in_routes, stop_areas_in_specific_vehicle_journey_at_stops)
-    end
-  end
-
-  class Scheduled < Base
-    def vehicle_journeys
-      current_scope.vehicle_journeys.scheduled
     end
   end
 

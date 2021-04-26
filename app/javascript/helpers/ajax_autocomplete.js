@@ -1,6 +1,6 @@
 export default class AutoComplete {
-  constructor($select, options = {}) {
-    this.$select = $($select)
+  constructor(selector, options = {}) {
+    this.$select = $(selector)
     this.domainName = window.location.origin
     const { ajax, ...restOptions } = options
     this.options = restOptions
@@ -11,12 +11,12 @@ export default class AutoComplete {
     this.$select.select2({
       ajax: {
         cache: false,
-        url: () => this.domainName + this.$select.data('ajaxPath'),
         dataType: 'json',
         delay: 250,
         data: params => ({ q: params.term }),
         processResults: data => ({ results: data }),
-        ...this.ajaxOptions
+        ...this.ajaxOptions,
+        url: () => this.domainName + this.ajaxOptions.url,
       },
       theme: 'bootstrap',
       width: '100%',

@@ -1,3 +1,5 @@
+- @export = Export::NetexGeneric.new(**@export.attributes.except('type'))
+
 = simple_fields_for @export, as: :export, wrapper: :horizontal_form do |f|
   = render 'exports/options/period', form: f
   = render 'exports/options/profile', form: f, option: Export::NetexGeneric.options.dig(:profile)

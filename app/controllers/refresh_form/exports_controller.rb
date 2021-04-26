@@ -14,6 +14,10 @@ module RefreshForm
       )
     end
 
+    def set_export_type
+      render partial: "exports/options/line_code"
+    end
+
     private
 
     def resource_name

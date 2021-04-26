@@ -20,6 +20,7 @@ ChouetteIhm::Application.routes.draw do
     resource :export, only: [] do
       get :edit_type, on: :collection
       get :edit_exported_lines, on: :collection
+      get :set_export_type, on: :collection
     end
 
     resource :publication_setup, only: [] do

@@ -30,6 +30,6 @@ class AutocompleteController < ChouetteController
   end
 
   def referential
-    @referential ||= current_organisation.referentials.find(params[:referential_id]) if params[:referential_id]
+    @referential ||= current_organisation.find_referential(params[:referential_id]) if params[:referential_id]
   end
 end

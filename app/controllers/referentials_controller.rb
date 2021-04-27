@@ -195,8 +195,8 @@ class ReferentialsController < ChouetteController
       :urgent,
       metadatas_attributes: [:id, :first_period_begin, :first_period_end, periods_attributes: [:begin, :end, :id, :_destroy], :lines => []]
     )
-    referential_params[:from_current_offer] = referential_params[:from_current_offer] == '1'
-    referential_params[:urgent] = policy(Referential.new(organisation: current_organisation)).flag_urgent? && referential_params[:urgent] == '1'
+    referential_params[:from_current_offer] = referential_params[:from_current_offer] == 'true'
+    referential_params[:urgent] = policy(Referential.new(organisation: current_organisation)).flag_urgent? && referential_params[:urgent] == 'true'
     referential_params
   end
 

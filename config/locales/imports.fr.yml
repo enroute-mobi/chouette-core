@@ -114,6 +114,7 @@ fr:
         ignore_last_word: "ignorer le dernier mot"
         ignore_end_chars: "ignorer les n derniers caractères"
         referential: Jeu de données
+        filename: Nom de l'archive
       import:
         <<: *attrs
         base:

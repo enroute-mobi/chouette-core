@@ -104,6 +104,7 @@ en:
         ignore_end_chars: "ignore last chars"
         referential: Referential
         workbench: Workbench
+        filename: Filename
       import:
         <<: *attrs
         base:

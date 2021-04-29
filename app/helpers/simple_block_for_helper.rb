@@ -59,7 +59,9 @@ module SimpleBlockForHelper
           '-'
         end
 
-      content_tag(:div, resource.class.human_attribute_name(attribute_name), class: "dl-term") +
+      label = options[:label] || resource.class.human_attribute_name(attribute_name)
+
+      content_tag(:div, label, class: "dl-term") +
         content_tag(:div, displayed_value, class: "dl-def")
     end
   end

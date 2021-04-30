@@ -69,7 +69,10 @@ pipelines:
       - step: *unit-tests
       - step:
           name: Build Docker
-          image: google/cloud-sdk:latest
+          image:
+            name: eu.gcr.io/enroute-interne/enroute-cloud-sdk:latest
+            username: _json_key
+            password: '$GCLOUD_API_KEYFILE'
           caches:
             - docker
           script:

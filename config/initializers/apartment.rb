@@ -57,6 +57,7 @@ Apartment.configure do |config|
     # 'GenericAttributeControl::MinMax',
     'GenericAttributeControl::Pattern',
     'GenericAttributeControl::Uniqueness',
+    'GenericAttributeControl::Presence',
     'Import::Base',
     'Import::Gtfs',
     'Import::Message',

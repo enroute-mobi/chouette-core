@@ -253,6 +253,11 @@ fr:
         3_generic_3: "%{source_objectid} : l'attribut %{source_attribute} a une valeur %{error_value} partagée avec %{target_0_objectid}"
       description: "La valeur de l'attribut doit être unique au sein des objets de la ligne"
       prerequisite: "Aucun"
+    generic_attribute_control/presence:
+      messages:
+        3_generic_4: "%{source_objectid} : l'attribut %{source_attribute} n'a pas de valeur"
+      description: "S’assure que l’attribut désigné est bien défini dans les données testées"
+      prerequisite: "Aucun"
     shape_control:
       3_shape_1: "Tracé %{source_objectid} : le tracé passe trop loin de l'arrêt %{target_0_label} (%{target_0_objectid}) : %{error_value} > %{reference_value}"
       3_shape_2: "Tracé %{source_objectid} : le tracé n'est pas défini entre les arrêts %{target_0_label} (%{target_0_objectid}) et %{target_1_label} (%{target_1_objectid})"
@@ -361,6 +366,8 @@ fr:
         one: "Valeur min, max de champs numériques"
       generic_attribute_control/uniqueness:
         one: "Unicité d'un attribut d'un objet dans une ligne"
+      generic_attribute_control/presence:
+        one: "Présence d'un attribut d'un objet dans une ligne"
       dummy_control/dummy:
         one: "Dummy"
       company_control/name_is_present:

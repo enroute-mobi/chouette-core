@@ -34,4 +34,10 @@ module ComplianceControlsHelper
       end
     end
   end
+
+  def compliance_control_target_options(cc)
+    list = ModelAttribute.all.reject(&:mandatory) if cc.is_a? GenericAttributeControl::Presence
+
+    ModelAttribute.grouped_options(list: list, type: cc.class.attribute_type)
+  end
 end

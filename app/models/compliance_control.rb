@@ -151,6 +151,7 @@ require_dependency 'compliance_controls/stop_area_control/time_zone'
 # See CHOUETTE-513
 # require_dependency 'compliance_controls/generic_attribute_control/min_max'
 require_dependency 'compliance_controls/generic_attribute_control/pattern'
+require_dependency 'compliance_controls/generic_attribute_control/presence'
 require_dependency 'compliance_controls/generic_attribute_control/uniqueness'
 require_dependency 'compliance_controls/journey_pattern_control/duplicates'
 require_dependency 'compliance_controls/journey_pattern_control/minimum_length'

@@ -254,6 +254,11 @@ en:
         3_generic_3: "%{source_objectid}  : the %{source_attribute} attribute (%{error_value}) has a value shared with : %{target_0_objectid}"
       description: "The attribute's value must be unique compared to the other objects ofthe same type (related to the same line)"
       prerequisite: "None"
+    generic_attribute_control/uniqueness:
+      messages:
+        3_generic_4: "%{source_objectid}  : the %{source_attribute} value is nil"
+      description: "Ensure that the targeted attribute has a defined value in the tested dataset."
+      prerequisite: "None"
     shape_control:
       3_shape_1: "Tracé %{source_objectid} : le tracé passe trop loin de l'arrêt %{target_0_label} (%{target_0_objectid}) : %{error_value} > %{reference_value}"
       3_shape_2: "Tracé %{source_objectid} : le tracé n'est pas défini entre les arrêts %{target_0_label} (%{target_0_objectid}) et %{target_1_label} (%{target_1_objectid})"
@@ -360,6 +365,8 @@ en:
         one: "Min, max values of numeric fields"
       generic_attribute_control/uniqueness:
         one: "Attribute uniqueness of an object in a line"
+      generic_attribute_control/presence:
+        one: "Attribute presence of an object in a line"
       dummy_control/dummy:
         one: "Dummy"
       company_control/name_is_present:

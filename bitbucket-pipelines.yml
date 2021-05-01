@@ -19,7 +19,10 @@ definitions:
   steps:
     - step: &unit-tests
         name: Unit tests
-        image: ruby:2.6.4-slim-stretch
+        image:
+          name: eu.gcr.io/enroute-interne/enroute-ruby:2.7-dev
+          username: _json_key
+          password: '$GCLOUD_API_KEYFILE'
         size: 2x
         caches:
           - bundler
@@ -29,15 +32,8 @@ definitions:
           - build-cache
           - codacy-coverage
         script:
-          - export LANG=en_US.UTF-8 LANGUAGE=en_US:UTF-8 LC_ALL=en_US.UTF-8
-          - export RAILS_DB_USER=chouette
-          - export RAILS_DB_PASSWORD=chouette
-          - export RAILS_DB_NAME=chouette
-          - export RAILS_DB_HOST=localhost
-          - export PARALLEL_TESTS=true
-
-          - ./script/bitbucket-unit-tests-setup.sh
-
+          - eval "$(build.sh bitbucket::env)"
+          - build.sh ci::setup
           - bundle exec rake ci
         services:
           - postgres
@@ -47,7 +43,10 @@ pipelines:
     gems-update: # Merge ci-master from chouette-core
       - step:
           name: Update gems
-          image: ruby:2.6.4-slim-stretch
+          image:
+            name: eu.gcr.io/enroute-interne/enroute-ruby:2.7-dev
+            username: _json_key
+            password: '$GCLOUD_API_KEYFILE'
           size: 2x
           caches:
             - bundler
@@ -56,16 +55,9 @@ pipelines:
             - assets-cache
             - build-cache
           script:
-            - export LANG=en_US.UTF-8 LANGUAGE=en_US:UTF-8 LC_ALL=en_US.UTF-8
-            - export RAILS_DB_USER=chouette
-            - export RAILS_DB_PASSWORD=chouette
-            - export RAILS_DB_NAME=chouette
-            - export RAILS_DB_HOST=localhost
-            - export FAIL_FAST=true
-            - export PARALLEL_TESTS=true
-
-            - ./script/bitbucket-unit-tests-setup.sh
-            - ./script/bitbucket-bummr-pull-request.sh
+            - eval "$(build.sh bitbucket::env)"
+            - build.sh ci::setup
+            - build.sh bummr::pull-request
           services:
             - postgres
 
@@ -77,12 +69,15 @@ pipelines:
       - step: *unit-tests
       - step:
           name: Build Docker
-          image: google/cloud-sdk:latest
+          image:
+            name: eu.gcr.io/enroute-interne/enroute-cloud-sdk:latest
+            username: _json_key
+            password: '$GCLOUD_API_KEYFILE'
           caches:
             - docker
           script:
-            - ./script/bitbucket-gcloud-configure-docker.sh
-            - ./script/bitbucket-build-docker.sh
+            - build.sh gcloud::setup
+            - build.sh bitbucket::docker::build
           services:
             - docker
       - step:
@@ -119,7 +114,7 @@ pipelines:
           script:
             - git clone git@bitbucket.org:enroute-mobi/chouette-env.git env
             - env/deploy.sh
-            - pipe: atlassian/datadog-send-event:1.0.1
+            - pipe: atlassian/datadog-send-event:1.1.3
               variables:
                 API_KEY: $DATADOG_KEY
                 TITLE: "Build ${BITBUCKET_BUILD_NUMBER} deployed on ${BITBUCKET_REPO_SLUG} ${BITBUCKET_DEPLOYMENT_ENVIRONMENT}"

@@ -8,7 +8,7 @@ class ComplianceCheckSetsController < ChouetteController
 
   def index
     index! do |format|
-      scope = self.ransack_period_range(scope: @compliance_check_sets.joins(:compliance_control_set), error_message: t('compliance_check_sets.filters.error_period_filter'), query: :where_created_at_between)
+      scope = self.ransack_period_range(scope: @compliance_check_sets, error_message: t('compliance_check_sets.filters.error_period_filter'), query: :where_created_at_between)
       scope = joins_with_associated_objects(scope).order(sort_column + ' ' + sort_direction) if sort_column && sort_direction
       @q_for_form = scope.ransack(params[:q])
       format.html {

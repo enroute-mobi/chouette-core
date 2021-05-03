@@ -1,4 +1,3 @@
-
 describe Chouette::TimeTablePeriod, :type => :model do
 
   let!(:time_table) { create(:time_table)}

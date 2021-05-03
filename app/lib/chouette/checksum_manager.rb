@@ -7,7 +7,7 @@ module Chouette::ChecksumManager
 
   def self.current
     current_manager = Thread.current.thread_variable_get THREAD_VARIABLE_NAME
-    current_manager || self.current = Chouette::ChecksumManager::Inline.new
+    current_manager || self.current = Chouette::ChecksumManager::NoUpdates.new
   end
 
   def self.current= manager
@@ -115,6 +115,15 @@ module Chouette::ChecksumManager
     end
   end
 
+  def self.inline
+    begin
+      self.current = Chouette::ChecksumManager::Inline.new
+      yield
+    ensure
+      self.current = nil
+    end
+  end
+
   def self.update_checkum_in_batches(collection, referential)
     collection.find_in_batches do |group|
       ids = []
@@ -135,7 +144,7 @@ module Chouette::ChecksumManager
         where tmp.id = data_table.id;
 SQL
       ActiveRecord::Base.connection.execute sql
-end
+    end
   end
 
   def self.watch object, from: nil

@@ -35,7 +35,6 @@ class ReferentialCopy
             @new_routes = nil
             copy_resource(:footnotes, line)
             copy_resource(:routes, line)
-            copy_resource(:line_checksums, line)
           end
         end
         @status = :successful
@@ -213,39 +212,7 @@ class ReferentialCopy
   # ROUTES
 
   def copy_routes line
-    Chouette::ChecksumManager.no_updates do
-      line.routes.find_each(&method(:copy_route))
-    end
-  end
-
-  class ChecksumScope
-
-    def initialize(target, new_routes)
-      @target, @new_routes = target, new_routes
-    end
-
-    attr_reader :target
-
-    def routes
-      target.routes.where(id: @new_routes)
-    end
-
-    def journey_patterns
-      target.journey_patterns.where(route_id: @new_routes)
-    end
-
-    def vehicle_journeys
-      target.vehicle_journeys.where(route_id: @new_routes)
-    end
-
-    def vehicle_journey_at_stops
-      target.vehicle_journey_at_stops.joins(vehicle_journey: :route).where(routes: {id: @new_routes})
-    end
-
-  end
-
-  def copy_line_checksums(line)
-    Chouette::ChecksumUpdater.new(target, scope: ChecksumScope.new(target, @new_routes)).update
+    line.routes.find_each(&method(:copy_route))
   end
 
   def copy_route route

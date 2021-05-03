@@ -12,6 +12,7 @@ module Chouette
 
     ALL = %i{routes journey_patterns vehicle_journeys time_tables}
     def update(only: [], except: [])
+      Rails.logger.debug "Compute checksums in referential #{referential.id}"
       targets = (only.presence || ALL) - except
       targets.delete_if { |target| !scope.respond_to? target  }
 

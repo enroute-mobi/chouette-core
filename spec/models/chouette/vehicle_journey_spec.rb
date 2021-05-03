@@ -1,7 +1,5 @@
-# coding: utf-8
-
 describe Chouette::VehicleJourney, type: :model do
-  subject { create(:vehicle_journey) }
+  subject { create(:vehicle_journey) }
   before(:each){
     Chouette::VehicleJourney.reset_custom_fields
   }
@@ -783,7 +781,7 @@ describe Chouette::VehicleJourney, type: :model do
         2.times{state['referential_codes'] << build(:referential_code, code_space: code_space, resource: vehicle_journey, resource_type: "Chouette::VehicleJourney").slice(:value, :code_space_id)}
         referential_codes_count = ReferentialCode.count
         vehicle_journey.manage_referential_codes_from_state(state)
-        expect(ReferentialCode.count).to eq referential_codes_count +2
+        expect(ReferentialCode.count).to eq(referential_codes_count+2)
         expect(vehicle_journey.reload.codes.count).to eq (state['referential_codes'].count)
       end
     end

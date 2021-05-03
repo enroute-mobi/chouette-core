@@ -1,4 +1,3 @@
-
 describe Chouette::JourneyPattern, :type => :model do
 
   subject { create(:journey_pattern) }
@@ -6,19 +5,23 @@ describe Chouette::JourneyPattern, :type => :model do
   describe 'checksum' do
     it_behaves_like 'checksum support'
 
-    context "when a stop_point is updated" do
-      it "should update checksum" do
-        expect do
-          subject.stop_points.first.update position: subject.stop_points.size
-        end.to(change{subject.reload.checksum})
-      end
-    end
+    context "when the ChecksumManager is inline" do
+      around { |example| Chouette::ChecksumManager.inline{ example.run }}
 
-    context "when the costs are updated" do
-      it "should update checksum" do
-        expect do
-          subject.update costs:  {"1-2" => {distance: 12}}
-        end.to(change{subject.reload.checksum})
+      context "when a stop_point is updated" do
+        it "should update checksum" do
+          expect do
+            subject.stop_points.first.update position: subject.stop_points.size
+          end.to(change{subject.reload.checksum})
+        end
+      end
+
+      context "when the costs are updated" do
+        it "should update checksum" do
+          expect do
+            subject.update costs:  {"1-2" => {distance: 12}}
+          end.to(change{subject.reload.checksum})
+        end
       end
     end
 

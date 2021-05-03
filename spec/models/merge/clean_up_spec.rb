@@ -17,9 +17,6 @@ RSpec.describe Merge do
     Merge.new created_at: Time.now, workbench: workbench, referentials: [context.referential]
   end
 
-  # FIXME Avoid Route checksum problem (see CHOUETTE-532)
-  before { context.referential.switch { context.route.update_checksum! } }
-
   it "should not cleanup timetables if workgroup doesn't have enable_purge_merged_data" do
     merge.merge!
 

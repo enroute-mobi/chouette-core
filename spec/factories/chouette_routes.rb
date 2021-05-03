@@ -20,7 +20,6 @@ FactoryBot.define do
       after(:create) do |route, evaluator|
         create_list(:stop_point, evaluator.stop_points_count, route: route)
         route.reload
-        route.update_checksum!
       end
 
       factory :route_with_journey_patterns do

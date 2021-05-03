@@ -88,6 +88,8 @@ RSpec.describe 'Checksum', type: :feature do
     route.save
   }
 
+  around { |example| Chouette::ChecksumManager.inline{ example.run }}
+
   context "a PurchaseWindow" do
     it "should keep the same checksum" do
       expect(purchase_window.name).to be_present

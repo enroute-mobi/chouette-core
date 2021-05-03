@@ -13,7 +13,7 @@ namespace :ci do
   end
 
   def use_schema?
-    ENV["USE_SCHEMA"] == "true"
+    ENV["USE_SCHEMA"] != "false"
   end
 
   def quiet?

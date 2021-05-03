@@ -16,8 +16,7 @@ class PublicationApiSource < ActiveRecord::Base
     return unless key.present?
 
     @public_url ||= if publication_setup.publish_per_line
-      line = key_source.shift
-      "#{publication_api_url}/lines/#{line}.#{key_source.join('-')}.zip"
+      "#{publication_api_url}/lines/#{generate_key}.zip"
     else
       "#{publication_api_url}.#{generate_key}.zip"
     end

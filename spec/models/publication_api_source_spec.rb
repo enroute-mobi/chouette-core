@@ -39,7 +39,7 @@ RSpec.describe PublicationApiSource, type: :model do
       expect(publication_api_source.public_url).to be_nil
 
       expect(publication_api_source_gtfs.public_url).to eq "#{public_url}.gtfs.zip"
-      expect(publication_api_source_gtfs_line.public_url).to eq "#{public_url}/lines/#{line.registration_number}.gtfs.zip"
+      expect(publication_api_source_gtfs_line.public_url).to eq "#{public_url}/lines/#{line.registration_number}-gtfs.zip"
 
       expect(publication_api_source_idfm_netex_full.public_url).to eq "#{public_url}.netex-full.zip"
     end
@@ -52,7 +52,7 @@ RSpec.describe PublicationApiSource, type: :model do
       expect(publication_api_source.public_url_filename).to be_nil
 
       expect(publication_api_source_gtfs.public_url_filename).to eq "test.gtfs.zip"
-      expect(publication_api_source_gtfs_line.public_url_filename).to eq "#{line.registration_number}.gtfs.zip"
+      expect(publication_api_source_gtfs_line.public_url_filename).to eq "#{line.registration_number}-gtfs.zip"
 
       expect(publication_api_source_idfm_netex_full.public_url_filename).to eq "test.netex-full.zip"
     end

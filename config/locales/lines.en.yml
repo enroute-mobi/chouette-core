@@ -114,6 +114,8 @@ en:
         seasonal: "Seasonal"
         url: "Web page"
         color: "Line color"
+        line_color: "Line color"
+        line_text_color: "Text color"
         text_color: "Text color"
         mobility_restricted_suitability: "PRM accessibility"
         flexible_service: "On demand transportation"

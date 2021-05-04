@@ -84,9 +84,10 @@ class ModelAttribute
   define Chouette::Line, :number, :string
   define Chouette::Line, :company_id, :integer
   define Chouette::Line, :network_id, :integer
-  define Chouette::Line, :color, :string
-  define Chouette::Line, :color, :string
+  define Chouette::Line, :line_color, :string
+  define Chouette::Line, :line_text_color, :string
   define Chouette::Line, :url, :string
+  define Chouette::Line, :transport_mode, :string
   
   # Chouette::StopArea
   define Chouette::StopArea, :street_name, :string

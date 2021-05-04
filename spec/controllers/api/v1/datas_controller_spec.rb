@@ -1,6 +1,7 @@
 RSpec.describe Api::V1::DatasController, type: :controller do
   let(:file){ File.open(File.join(Rails.root, 'spec', 'fixtures', 'google-sample-feed.zip')) }
   let(:export){ create :gtfs_export, status: :successful, file: file}
+
   describe 'GET #info' do
     it 'should not be successful' do
       expect{ get :infos, params: { slug: :foo }}.to raise_error ActiveRecord::RecordNotFound
@@ -17,7 +18,7 @@ RSpec.describe Api::V1::DatasController, type: :controller do
   context 'with a public API' do
     describe 'get #download_full' do
       let(:slug) { :foo }
-      let(:key) { :foo }
+      let(:key) { "gtfs" }
       let(:get_request) { get :download_full, params: { slug: slug, key: key }}
 
       it 'should not be successful' do
@@ -26,6 +27,7 @@ RSpec.describe Api::V1::DatasController, type: :controller do
 
       context 'with a publication_api' do
         let(:publication_api) { create(:publication_api, public: true) }
+        let(:publication) { create(:publication, publication_setup: create(:publication_setup, publish_per_line: false)) }
 
         let(:slug) { publication_api.slug }
 
@@ -35,7 +37,7 @@ RSpec.describe Api::V1::DatasController, type: :controller do
 
         context 'with a publication_api_source' do
           before(:each) do
-            create :publication_api_source, publication_api: publication_api, key: key, export: export
+            create :publication_api_source, publication_api: publication_api, publication: publication, export: export
           end
 
           it 'should be successful' do
@@ -48,9 +50,8 @@ RSpec.describe Api::V1::DatasController, type: :controller do
 
     describe 'get #download_line' do
       let(:slug) { :foo }
-      let(:key) { :foo }
-      let(:line_id) { :foo }
-      let(:get_request) { get :download_line, params: { slug: slug, key: key, line_id: line_id }}
+      let(:key) { "536-gtfs" }
+      let(:get_request) { get :download_line, params: { slug: slug, key: key }}
 
       it 'should not be successful' do
         expect{ get_request }.to raise_error ActiveRecord::RecordNotFound
@@ -58,6 +59,9 @@ RSpec.describe Api::V1::DatasController, type: :controller do
 
       context 'with a publication_api' do
         let(:publication_api) { create(:publication_api, public: true) }
+        let(:publication) { create(:publication, publication_setup: create(:publication_setup, publish_per_line: true)) }
+        let(:line) { create(:line, registration_number: "536") }
+        let(:export_with_line){ create :gtfs_export, status: :successful, file: file, options: {line_ids: [line.id]}}
         let(:publication_api_key) { create :publication_api_key }
 
         let(:slug) { publication_api.slug }
@@ -68,7 +72,7 @@ RSpec.describe Api::V1::DatasController, type: :controller do
 
         context 'with a publication_api_source' do
           before(:each) do
-            create :publication_api_source, publication_api: publication_api, key: "#{key}-#{line_id}", export: export
+            create :publication_api_source, publication_api: publication_api, publication: publication, export: export_with_line
           end
 
           it 'should be successful' do
@@ -89,7 +93,7 @@ RSpec.describe Api::V1::DatasController, type: :controller do
 
     describe 'get #download_full' do
       let(:slug) { :foo }
-      let(:key) { :foo }
+      let(:key) { "gtfs" }
       let(:get_request) { get :download_full, params: { slug: slug, key: key }}
 
       it 'should not be successful' do
@@ -98,6 +102,7 @@ RSpec.describe Api::V1::DatasController, type: :controller do
 
       context 'with a publication_api' do
         let(:publication_api) { create(:publication_api) }
+        let(:publication) { create(:publication, publication_setup: create(:publication_setup, publish_per_line: false)) }
         let(:publication_api_key) { create :publication_api_key }
         let(:auth_token) { publication_api_key.token }
 
@@ -110,7 +115,7 @@ RSpec.describe Api::V1::DatasController, type: :controller do
 
         context 'with a publication_api_source' do
           before(:each) do
-            create :publication_api_source, publication_api: publication_api, key: key, export: export
+            create :publication_api_source, publication_api: publication_api, publication: publication, export: export
           end
 
           it 'should not be successful' do
@@ -132,9 +137,8 @@ RSpec.describe Api::V1::DatasController, type: :controller do
 
     describe 'get #download_line' do
       let(:slug) { :foo }
-      let(:key) { :foo }
-      let(:line_id) { :foo }
-      let(:get_request) { get :download_line, params: { slug: slug, key: key, line_id: line_id }}
+      let(:key) { "536-gtfs" }
+      let(:get_request) { get :download_line, params: { slug: slug, key: key }}
 
       it 'should not be successful' do
         expect{ get_request }.to raise_error ActiveRecord::RecordNotFound
@@ -142,6 +146,9 @@ RSpec.describe Api::V1::DatasController, type: :controller do
 
       context 'with a publication_api' do
         let(:publication_api) { create(:publication_api) }
+        let(:publication) { create(:publication, publication_setup: create(:publication_setup, publish_per_line: true)) }
+        let(:line) { create(:line, registration_number: "536") }
+        let(:export_with_line){ create :gtfs_export, status: :successful, file: file, options: {line_ids: [line.id]}}
         let(:publication_api_key) { create :publication_api_key }
         let(:auth_token) { publication_api_key.token }
 
@@ -154,7 +161,7 @@ RSpec.describe Api::V1::DatasController, type: :controller do
 
         context 'with a publication_api_source' do
           before(:each) do
-            create :publication_api_source, publication_api: publication_api, key: "#{key}-#{line_id}", export: export
+            create :publication_api_source, publication_api: publication_api, publication: publication, export: export_with_line
           end
 
           it 'should not be successful' do

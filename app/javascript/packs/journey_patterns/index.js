@@ -4,6 +4,7 @@ import React from 'react'
 import { render } from 'react-dom'
 import { Provider } from 'react-redux'
 import { createStore } from 'redux'
+import applyMiddleware from '../../helpers/middlewares'
 import journeyPatternsApp from '../../journey_patterns/reducers'
 import App from '../../journey_patterns/components/App'
 import clone from '../../helpers/clone'
@@ -72,12 +73,6 @@ function RouteMap() {
   )
 }
 
-// logger, DO NOT REMOVE
-// var applyMiddleware = require('redux').applyMiddleware
-// import { createLogger } from 'redux-logger'
-// var thunkMiddleware = require('redux-thunk').default
-// var promise = require('redux-promise')
-
 var initialState = {
   editMode: false,
   status: {
@@ -101,12 +96,11 @@ var initialState = {
   },
   custom_fields: window.custom_fields
 }
-// const loggerMiddleware = createLogger()
 
 let store = createStore(
   journeyPatternsApp,
   initialState,
-  // applyMiddleware(thunkMiddleware, promise, loggerMiddleware)
+  applyMiddleware()
 )
 
 render(

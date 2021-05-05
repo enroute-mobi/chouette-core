@@ -7,23 +7,17 @@ import { render } from 'react-dom'
 import { Provider } from 'react-redux'
 import { createStore } from 'redux'
 
+import applyMiddleware from '../../helpers/middlewares'
 import reducers from '../../routes/reducers'
 import App from '../../routes/containers/App'
-
-// logger, DO NOT REMOVE
-import { applyMiddleware } from 'redux'
-import { createLogger } from 'redux-logger'
-import ReduxThunk from 'redux-thunk'
-import promise from 'redux-promise'
   
 let store = null
 
 if(Object.assign){
-  const loggerMiddleware = createLogger()
   store = createStore(
    reducers,
    {},
-   applyMiddleware(ReduxThunk, promise, loggerMiddleware)
+   applyMiddleware()
  )
 }
 else{
@@ -31,7 +25,7 @@ else{
   store = createStore(
    reducers,
    {},
-   applyMiddleware(ReduxThunk, promise)
+   applyMiddleware()
  )
 }
 

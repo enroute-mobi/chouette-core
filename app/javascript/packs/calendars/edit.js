@@ -4,17 +4,12 @@ import React from 'react'
 import { render } from 'react-dom'
 import { Provider } from 'react-redux'
 import { createStore } from 'redux'
+import applyMiddleware from '../../helpers/middlewares'
 import timeTablesApp from '../../time_tables/reducers'
 import App from '../../time_tables/containers/App'
 import clone from '../../helpers/clone'
 
 const actionType = clone(window, "actionType", true)
-
-// logger, DO NOT REMOVE
-// var applyMiddleware = require('redux').applyMiddleware
-// import { createLogger } from 'redux-logger';
-// var thunkMiddleware = require('redux-thunk').default
-// var promise = require('redux-promise')
 
 let initialState = {
   status: {
@@ -60,12 +55,11 @@ let initialState = {
     confirmModal: {}
   }
 }
-// const loggerMiddleware = createLogger()
 
 let store = createStore(
   timeTablesApp,
   initialState,
-  // applyMiddleware(thunkMiddleware, promise, loggerMiddleware)
+  applyMiddleware()
 )
 
 render(

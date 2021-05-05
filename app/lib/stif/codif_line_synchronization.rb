@@ -25,7 +25,7 @@ module Stif
         reset_counts
         start_time = Process.clock_gettime(Process::CLOCK_MONOTONIC, :second)
         # Fetch Codifline data
-        client = Codifligne::API.new
+        client = Codifligne::API.new(160)
 
         operators       = client.operators
         lines           = client.lines

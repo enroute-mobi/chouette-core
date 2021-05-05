@@ -61,7 +61,7 @@ class ModelAttribute
 
   # Chouette::Route
   define Chouette::Route, :name, :string, **{ mandatory: true }
-  define Chouette::Route, :published_name, :string
+  define Chouette::Route, :published_name, :string, **{ mandatory: true }
 
   # Chouette::JourneyPattern
   define Chouette::JourneyPattern, :name, :string, **{ mandatory: true }

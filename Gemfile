@@ -5,7 +5,7 @@ git_source(:github) { |name| "https://github.com/#{name}.git" }
 git_source(:en_route) { |name| "https://bitbucket.org/enroute-mobi/#{name}.git" }
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 5.2.4', '>= 5.2.4.5'
+gem 'rails', '~> 5.2.4', '>= 5.2.4.6'
 
 # Use SCSS for stylesheets
 gem 'sassc-rails', '>= 2.1.2'
@@ -43,7 +43,6 @@ gem 'seedbank', '0.4.0'
 gem 'faraday_middleware'
 gem 'faraday'
 
-gem 'therubyracer'
 gem 'pg'
 
 gem 'activerecord-postgis-adapter'

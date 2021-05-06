@@ -17,7 +17,7 @@
       [ \
         TableBuilderHelper::Column.new( \
           name: t('imports.show.referential_name'), \
-          attribute: :referential_link, \
+          attribute: -> (r) { referential_link(r) }, \
           sortable: false \
         ), \
         TableBuilderHelper::Column.new( \

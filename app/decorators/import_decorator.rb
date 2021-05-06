@@ -16,11 +16,7 @@ class ImportDecorator < AF83::Decorator
   end
 
   define_instance_method :referential_link do
-    if object.referential.present?
-      h.link_to_if_i_can(object.referential.name, object.referential)
-    elsif object.is_a?(Import::Shapefile) || (object.is_a?(Import::Resource) && object.root_import&.import_category == "shape_file") || (object.is_a?(Import::Workbench) && object&.import_category == "shape_file")
-      link_to(ShapeReferential.t.capitalize, workbench_shape_referential_shapes_path(object.workbench))
-    end
+    h.referential_link(object)
   end
 
   create_action_link if: -> { context[:parent].is_a? (Workbench) }

@@ -47,4 +47,12 @@ module ImportsHelper
       )
     end
   end
+
+  def referential_link(import)
+    if import.referential.present?
+      link_to_if_i_can(import.referential.name, import.referential)
+    elsif import.is_a?(Import::Shapefile) || (import.is_a?(Import::Resource) && import.root_import.try(:import_category)=="shape_file") ||(import.is_a?(Import::Workbench) && import.try(:import_category)=="shape_file")
+      link_to(ShapeReferential.t.capitalize, workbench_shape_referential_shapes_path(import.workbench))
+    end
+  end
 end

@@ -48,4 +48,26 @@ RSpec.describe Destination::PublicationApi, type: :model do
       expect{ destination.transmit(other_publication) }.to_not change{ publication_api.publication_api_sources.count }
     end
   end
+
+  context '#generate_key' do
+    it 'should generate for each format the good key' do
+      destination = build(:publication_api_destination, publication_setup: publication_setup, publication_api: publication_api)
+
+      expect(destination.generate_key(nil)).to be_nil
+
+      expect(destination.generate_key(export_1)).to eq 'gtfs.zip'
+
+      netex_export = create(:netex_generic_export)
+      expect(destination.generate_key(netex_export)).to eq 'netex.zip'
+
+      netex_idfm_full_export = create(:netex_export)
+      expect(destination.generate_key(netex_idfm_full_export)).to eq 'netex-full.zip'
+
+      publication_setup_gtfs_line = create(:publication_setup_gtfs, publish_per_line: true, export_options: { duration: 200, line_ids: [line_1.id] } )
+      destination = build(:publication_api_destination, publication_setup: publication_setup_gtfs_line, publication_api: publication_api)
+      expect(destination.generate_key(export_with_line1)).to eq "lines/#{line_1.registration_number}-gtfs.zip"
+
+    end
+  end
+
 end

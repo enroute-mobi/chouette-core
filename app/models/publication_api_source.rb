@@ -8,17 +8,15 @@ class PublicationApiSource < ActiveRecord::Base
   validates :publication_api, presence: true
   validates :publication, presence: true
 
-  before_save :cleanup_previous
-
   delegate :file, to: :export
 
   def public_url
     return unless key.present?
 
     @public_url ||= if publication_setup.publish_per_line
-      "#{publication_api_url}/lines/#{generate_key}.zip"
+      "#{publication_api_url}/#{key}"
     else
-      "#{publication_api_url}.#{generate_key}.zip"
+      "#{publication_api_url}.#{key}"
     end
   end
 
@@ -40,35 +38,4 @@ class PublicationApiSource < ActiveRecord::Base
     @publication_api_url ||= publication_api.public_url
   end
 
-  def cleanup_previous
-    return unless export
-
-    self.key ||= generate_key
-    PublicationApiSource.where(publication_api_id: publication_api_id, key: key).destroy_all
-  end
-
-  def generate_key
-    return unless export.present?
-
-    key_source.join('-')
-  end
-
-  def key_source
-    @key_source ||= [].tap do |key_source|
-      if publication_setup.publish_per_line
-        line = Chouette::Line.find  export.line_ids.first
-        key_source << line.registration_number
-      end
-
-      if export.is_a?(Export::NetexGeneric)
-        key_source << "netex"
-      else
-        key_source << export.class.name.demodulize.downcase
-      end
-
-      if export.is_a?(Export::Netex)
-        key_source << "full"
-      end
-    end
-  end
 end

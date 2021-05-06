@@ -19,19 +19,6 @@ RSpec.describe PublicationApiSource, type: :model do
 
   let(:publication_api_source) { create(:publication_api_source, publication: publication_gtfs, export: nil) }
 
-
-  context '#generate_key' do
-    it 'should generate for each format the good key' do
-      expect(publication_api_source.send(:generate_key)).to be_nil
-
-      expect(publication_api_source_gtfs.send(:generate_key)).to eq 'gtfs'
-      expect(publication_api_source_gtfs_line.send(:generate_key)).to eq "#{line.registration_number}-gtfs"
-
-      expect(publication_api_source_idfm_netex_full.send(:generate_key)).to eq 'netex-full'
-
-    end
-  end
-
   context '#public_url' do
     it 'should generate for each format the good public url' do
       allow_any_instance_of(PublicationApi).to receive(:public_url).and_return public_url

@@ -2,7 +2,7 @@
 
 .row
   .col-lg-6.col-md-6.col-sm-12.col-xs-12
-    = definition_list t('metadatas'), import_metadatas(@import)
+    = render 'metadatas', import: @import
   = processing_helper(@import)
 
 .col-lg-12
@@ -17,9 +17,7 @@
       [ \
         TableBuilderHelper::Column.new( \
           name: t('imports.show.referential_name'), \
-          attribute: lambda do |item| \
-            referential_link(item) \
-          end, \
+          attribute: -> (r) { referential_link(r) }, \
           sortable: false \
         ), \
         TableBuilderHelper::Column.new( \

@@ -32,7 +32,7 @@ module AF83::Decorator::EnhancedDecorator
         before_block: -> (l){
           l.content { h.t("#{object.klass.model_name.plural}.actions.new", raise: true) rescue 'actions.add'.t }
           l.icon :plus
-          l.href    { [:new, scope, object.klass.model_name.singular] }
+          l.href    { [:new, scope, object.klass.model_name.singular.to_sym ] }
         }
       }
       action_link opts.update(args), &block

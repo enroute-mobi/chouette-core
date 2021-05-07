@@ -13,11 +13,7 @@ class PublicationApiSource < ActiveRecord::Base
   def public_url
     return unless key.present?
 
-    @public_url ||= if publication_setup.publish_per_line
-      "#{publication_api_url}/#{key}"
-    else
-      "#{publication_api_url}.#{key}"
-    end
+    @public_url ||= "#{publication_api_url}/#{key}"
   end
 
   def public_url_filename

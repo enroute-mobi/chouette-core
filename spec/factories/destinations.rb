@@ -7,7 +7,9 @@ FactoryBot.define do
     secret_file {nil}
   end
 
-  factory :publication_api_destination, parent: :destination, class: 'Destination::PublicationApi'
+  factory :publication_api_destination, parent: :destination, class: Destination::PublicationApi do
+    type {"Destination::PublicationApi"}
+  end
 
   factory :destination_mail, parent: :destination, class: Destination::Mail do
     type {"Destination::Mail"}

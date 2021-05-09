@@ -285,11 +285,12 @@ ChouetteIhm::Application.routes.draw do
     namespace :v1 do
       get 'datas/:slug', to: 'datas#infos', as: :infos
 
-      get 'datas/:slug/*key', to: 'datas#download', :format => false
-      get 'datas/:slug.*key', to: 'datas#redirect', :format => false
-
+      # Don't move after get 'datas/:slug/*key'
       get 'datas/:slug/lines', to: 'datas#lines', as: :lines
       post 'datas/:slug/graphql', to: "datas#graphql", as: :graphql
+
+      get 'datas/:slug/*key', to: 'datas#download', :format => false
+      get 'datas/:slug.*key', to: 'datas#redirect', :format => false
 
       resources :workbenches, only: [] do
         resources :imports, only: [:index, :show, :create]

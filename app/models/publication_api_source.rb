@@ -7,6 +7,7 @@ class PublicationApiSource < ActiveRecord::Base
 
   validates :publication_api, presence: true
   validates :publication, presence: true
+  validates :key, presence: true
 
   delegate :file, to: :export
 

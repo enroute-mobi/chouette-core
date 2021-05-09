@@ -1,6 +1,5 @@
 RSpec.describe Api::V1::DatasController, type: :controller do
-  let(:file){ File.open(File.join(Rails.root, 'spec', 'fixtures', 'google-sample-feed.zip')) }
-  let(:export){ create :gtfs_export, status: :successful, file: file}
+  let(:gtfs_export){ create :gtfs_export}
 
   describe 'GET #info' do
     it 'should not be successful' do
@@ -16,167 +15,78 @@ RSpec.describe Api::V1::DatasController, type: :controller do
   end
 
   context 'with a public API' do
-    describe 'get #download_full' do
+    describe 'get #download' do
       let(:slug) { :foo }
-      let(:key) { "gtfs" }
-      let(:get_request) { get :download_full, params: { slug: slug, key: key }}
+      let(:key) { "gtfs.zip" }
+      let(:get_request) { get :download, params: { slug: slug, key: key }}
+      let(:publication_api) { create(:publication_api, public: true) }
+      let(:publication_gtfs) { create(:publication, publication_setup: create(:publication_setup, publish_per_line: false)) }
 
-      it 'should not be successful' do
-        expect{ get_request }.to raise_error ActiveRecord::RecordNotFound
-      end
-
-      context 'with a publication_api' do
-        let(:publication_api) { create(:publication_api, public: true) }
-        let(:publication) { create(:publication, publication_setup: create(:publication_setup, publish_per_line: false)) }
-
-        let(:slug) { publication_api.slug }
-
-        it 'should not be successful' do
+        it 'should not be successful without a publication_api_source' do
           expect{ get_request }.to raise_error ActiveRecord::RecordNotFound
         end
 
         context 'with a publication_api_source' do
-          before(:each) do
-            create :publication_api_source, publication_api: publication_api, publication: publication, export: export
-          end
-
+          let!(:publication_api_source_gtfs) { create(:publication_api_source, publication_api: publication_api, publication: publication_gtfs, export: gtfs_export, key: "gtfs.zip") }
+          let(:slug) { publication_api.slug }
           it 'should be successful' do
             get_request
             expect(response).to be_successful
           end
         end
-      end
     end
 
-    describe 'get #download_line' do
-      let(:slug) { :foo }
-      let(:key) { "536-gtfs" }
-      let(:get_request) { get :download_line, params: { slug: slug, key: key }}
+    describe 'get #redirect' do
 
-      it 'should not be successful' do
-        expect{ get_request }.to raise_error ActiveRecord::RecordNotFound
-      end
-
-      context 'with a publication_api' do
-        let(:publication_api) { create(:publication_api, public: true) }
-        let(:publication) { create(:publication, publication_setup: create(:publication_setup, publish_per_line: true)) }
-        let(:line) { create(:line, registration_number: "536") }
-        let(:export_with_line){ create :gtfs_export, status: :successful, file: file, options: {line_ids: [line.id]}}
-        let(:publication_api_key) { create :publication_api_key }
-
-        let(:slug) { publication_api.slug }
-
-        it 'should not be successful' do
-          expect{ get_request }.to raise_error ActiveRecord::RecordNotFound
-        end
-
-        context 'with a publication_api_source' do
-          before(:each) do
-            create :publication_api_source, publication_api: publication_api, publication: publication, export: export_with_line
-          end
-
-          it 'should be successful' do
-            get_request
-            expect(response).to be_successful
-          end
-        end
-      end
     end
   end
 
-  context 'when needing authentication' do
-    let(:auth_token) { 'token' }
+  context 'with a secured API' do
 
-    before do
-      request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Token.encode_credentials(auth_token)
-    end
-
-    describe 'get #download_full' do
+    describe 'get #download' do
       let(:slug) { :foo }
-      let(:key) { "gtfs" }
-      let(:get_request) { get :download_full, params: { slug: slug, key: key }}
+      let(:key) { "gtfs.zip" }
+      let(:get_request) { get :download, params: { slug: slug, key: key }}
+      let(:publication_api) { create(:publication_api, public: false) }
+      let(:publication_gtfs) { create(:publication, publication_setup: create(:publication_setup, publish_per_line: false)) }
 
-      it 'should not be successful' do
-        expect{ get_request }.to raise_error ActiveRecord::RecordNotFound
+      before do
+        request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Token.encode_credentials(auth_token)
       end
 
-      context 'with a publication_api' do
-        let(:publication_api) { create(:publication_api) }
-        let(:publication) { create(:publication, publication_setup: create(:publication_setup, publish_per_line: false)) }
-        let(:publication_api_key) { create :publication_api_key }
+      context 'with good credentials' do
+        let!(:publication_api_source_gtfs) { create(:publication_api_source, publication_api: publication_api, publication: publication_gtfs, export: gtfs_export, key: "gtfs.zip") }
+        let!(:publication_api_key) { create :publication_api_key, publication_api: publication_api }
         let(:auth_token) { publication_api_key.token }
+        let(:slug) { publication_api.slug }
 
+        it 'should be successful' do
+          get_request
+          expect(response).to be_successful
+        end
+      end
+
+      context 'whith bad credentials' do
+        let!(:publication_api_source_gtfs) { create(:publication_api_source, publication_api: publication_api, publication: publication_gtfs, export: gtfs_export, key: "gtfs.zip") }
+        let(:auth_token) { 'token' }
         let(:slug) { publication_api.slug }
 
         it 'should not be successful' do
           get_request
           expect(response).to_not be_successful
-        end
-
-        context 'with a publication_api_source' do
-          before(:each) do
-            create :publication_api_source, publication_api: publication_api, publication: publication, export: export
-          end
-
-          it 'should not be successful' do
-            get_request
-            expect(response).to_not be_successful
-          end
-
-          context 'authenticated' do
-            let(:publication_api_key) { create :publication_api_key, publication_api: publication_api }
-
-            it 'should be successful' do
-              get_request
-              expect(response).to be_successful
-            end
-          end
+          expect(response).to render_template('invalid_authentication_error')
         end
       end
-    end
 
-    describe 'get #download_line' do
-      let(:slug) { :foo }
-      let(:key) { "536-gtfs" }
-      let(:get_request) { get :download_line, params: { slug: slug, key: key }}
-
-      it 'should not be successful' do
-        expect{ get_request }.to raise_error ActiveRecord::RecordNotFound
-      end
-
-      context 'with a publication_api' do
-        let(:publication_api) { create(:publication_api) }
-        let(:publication) { create(:publication, publication_setup: create(:publication_setup, publish_per_line: true)) }
-        let(:line) { create(:line, registration_number: "536") }
-        let(:export_with_line){ create :gtfs_export, status: :successful, file: file, options: {line_ids: [line.id]}}
-        let(:publication_api_key) { create :publication_api_key }
-        let(:auth_token) { publication_api_key.token }
-
+      context 'without credentials' do
+        let!(:publication_api_source_gtfs) { create(:publication_api_source, publication_api: publication_api, publication: publication_gtfs, export: gtfs_export, key: "gtfs.zip") }
+        let(:auth_token) { nil }
         let(:slug) { publication_api.slug }
 
         it 'should not be successful' do
           get_request
           expect(response).to_not be_successful
-        end
-
-        context 'with a publication_api_source' do
-          before(:each) do
-            create :publication_api_source, publication_api: publication_api, publication: publication, export: export_with_line
-          end
-
-          it 'should not be successful' do
-            get_request
-            expect(response).to_not be_successful
-          end
-
-          context 'authenticated' do
-            let(:publication_api_key) { create :publication_api_key, publication_api: publication_api }
-
-            it 'should be successful' do
-              get_request
-              expect(response).to be_successful
-            end
-          end
+          expect(response).to render_template('missing_authentication_error')
         end
       end
     end
@@ -197,6 +107,7 @@ RSpec.describe Api::V1::DatasController, type: :controller do
       let(:second_line) { context.line(:second) }
 
       before do
+        request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Token.encode_credentials(auth_token)
         allow_any_instance_of(ReferentialSuite).to receive(:current).and_return(referential)
       end
 
@@ -205,8 +116,10 @@ RSpec.describe Api::V1::DatasController, type: :controller do
         let(:publication_api) { create(:publication_api, public: false, workgroup: context.workgroup) }
 
         context 'unauthenticated' do
+          let(:auth_token) { "foo" }
+          
           it 'should not be successful' do
-            get( :lines, params: { slug: publication_api.slug, key:  "foo", :format => :json  })
+            get( :lines, params: { slug: publication_api.slug, :format => :json  })
             expect(response).to_not be_successful
           end
         end
@@ -216,12 +129,12 @@ RSpec.describe Api::V1::DatasController, type: :controller do
           let(:auth_token) { publication_api_key.token }
 
           it 'should be successful' do
-            get( :lines, params: { slug: publication_api.slug, key:  publication_api_key.token, :format => :json  })
+            get( :lines, params: { slug: publication_api.slug, :format => :json  })
             expect(response).to be_successful
           end
 
           it 'should render 2 lines with metadatas' do
-            get( :lines, params: { slug: publication_api.slug, key:  publication_api_key.token, :format => :json })
+            get( :lines, params: { slug: publication_api.slug, :format => :json })
 
             json = JSON.parse(response.body).map(&:with_indifferent_access)
 

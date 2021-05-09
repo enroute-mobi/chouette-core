@@ -75,8 +75,8 @@ RSpec.describe Export::Base, type: :model do
         create(:workgroup_export, workbench: workbench)
       end
 
-      create :publication_api_source, export: old_export
-      create :publication_api_source, export: old_export
+      create :publication_api_source, export: old_export, key: 'foo'
+      create :publication_api_source, export: old_export, key: 'foo2'
 
       expect { Export::Workgroup.new(workbench: workbench).purge_exports }.to change {
         workbench.exports.count

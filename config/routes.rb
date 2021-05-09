@@ -285,7 +285,7 @@ ChouetteIhm::Application.routes.draw do
     namespace :v1 do
       get 'datas/:slug', to: 'datas#infos', as: :infos
 
-      # Don't move after get 'datas/:slug/*key'
+      # Don't move after get 'datas/:slug/*key' CHOUETTE-1105
       get 'datas/:slug/lines', to: 'datas#lines', as: :lines
       post 'datas/:slug/graphql', to: "datas#graphql", as: :graphql
 

@@ -285,8 +285,8 @@ ChouetteIhm::Application.routes.draw do
     namespace :v1 do
       get 'datas/:slug', to: 'datas#infos', as: :infos
 
-      get 'datas/:slug/:key', to: 'datas#download'
-      get 'datas/:slug.:key', to: 'datas#redirect'
+      get 'datas/:slug/*key', to: 'datas#download', :format => false
+      get 'datas/:slug.*key', to: 'datas#redirect', :format => false
 
       get 'datas/:slug/lines', to: 'datas#lines', as: :lines
       post 'datas/:slug/graphql', to: "datas#graphql", as: :graphql

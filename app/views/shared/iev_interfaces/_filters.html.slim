@@ -28,5 +28,5 @@
         = f.input :workbench_id_eq_any, collection: parent.workbenches.joins(:organisation).order('organisations.name'), as: :check_boxes, label: false, label_method: lambda{|k| ("<span>#{k.organisation.name}</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list' }
 
   .actions
-    = link_to t('actions.erase'), [parent, collection_name], class: 'btn btn-link'
+    = link_to t('actions.erase'), [parent, collection_name.to_sym], class: 'btn btn-link'
     = f.submit t('actions.filter'), id: "#{collection_name}_filter_btn", class: 'btn btn-default'

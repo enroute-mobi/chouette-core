@@ -84,8 +84,8 @@ class ModelAttribute
   define Chouette::Line, :number, :string
   define Chouette::Line, :company_id, :integer
   define Chouette::Line, :network_id, :integer
-  define Chouette::Line, :line_color, :string
-  define Chouette::Line, :line_text_color, :string
+  define Chouette::Line, :color, :string
+  define Chouette::Line, :text_color, :string
   define Chouette::Line, :url, :string
   define Chouette::Line, :transport_mode, :string
   
@@ -97,7 +97,7 @@ class ModelAttribute
   define Chouette::StopArea, :country_code, :string
   define Chouette::StopArea, :time_zone, :string
   define Chouette::StopArea, :fare_code, :string
-  define Chouette::StopArea, :coordinates, :hash
+  define Chouette::StopArea, :coordinates, :string
 
   # Chouette::Company
   define Chouette::Company, :default_contact_url, :float

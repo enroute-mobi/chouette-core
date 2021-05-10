@@ -38,3 +38,12 @@ module GenericAttributeControl
     end
   end
 end
+
+require_dependency 'compliance_controls/company_control/internal_base'
+require_dependency 'compliance_controls/footnote_control/internal_base'
+require_dependency 'compliance_controls/journey_pattern_control/internal_base'
+require_dependency 'compliance_controls/line_control/internal_base'
+require_dependency 'compliance_controls/route_control/internal_base'
+require_dependency 'compliance_controls/routing_constraint_zone_control/internal_base'
+require_dependency 'compliance_controls/stop_area_control/internal_base'
+require_dependency 'compliance_controls/vehicle_journey_control/internal_base'

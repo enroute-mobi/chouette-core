@@ -6,8 +6,8 @@ FactoryBot.define do
     transient do
       export_type { "Export::Gtfs" }
     end
-    
-    export_options { { duration: 200, prefer_referent_stop_area: false, ignore_single_stop_station: false } }
+
+    export_options { {type: "Export::Gtfs", duration: 200, prefer_referent_stop_area: false, ignore_single_stop_station: false } }
 
     after(:build) do |ps, evaluator|
       ps.export_options[:type] = evaluator.export_type
@@ -15,7 +15,7 @@ FactoryBot.define do
   end
 
   factory :publication_setup_gtfs, :parent => :publication_setup do
-    export_options { { duration: 200, prefer_referent_stop_area: false, ignore_single_stop_station: false } }
+    export_options { {type: "Export::Gtfs", duration: 200, prefer_referent_stop_area: false, ignore_single_stop_station: false } }
 
     transient do
       export_type { "Export::Gtfs" }

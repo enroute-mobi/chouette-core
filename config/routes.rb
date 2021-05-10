@@ -284,11 +284,13 @@ ChouetteIhm::Application.routes.draw do
   namespace :api do
     namespace :v1 do
       get 'datas/:slug', to: 'datas#infos', as: :infos
-      get 'datas/:slug.:key.zip', to: 'datas#download_full', as: :download_full
-      get 'datas/:slug/lines/:line_id.:key.zip', to: 'datas#download_line', as: :download_line
-      get 'datas/:slug/lines', to: 'datas#lines', as: :lines
 
+      # Don't move after get 'datas/:slug/*key' CHOUETTE-1105
+      get 'datas/:slug/lines', to: 'datas#lines', as: :lines
       post 'datas/:slug/graphql', to: "datas#graphql", as: :graphql
+
+      get 'datas/:slug/*key', to: 'datas#download', :format => false
+      get 'datas/:slug.*key', to: 'datas#redirect', :format => false
 
       resources :workbenches, only: [] do
         resources :imports, only: [:index, :show, :create]

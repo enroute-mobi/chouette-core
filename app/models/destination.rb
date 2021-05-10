@@ -10,7 +10,6 @@ class Destination < ApplicationModel
 
   mount_uploader :secret_file, SecretFileUploader
   validates :secret_file, presence: true, if: :secret_file_required?
-  validate :api_is_not_already_used
 
   @secret_file_required = false
 
@@ -58,21 +57,6 @@ class Destination < ApplicationModel
     local_temp_file secret_file
   end
 
-  private
-
-  def api_is_not_already_used
-    return unless publication_api.present?
-
-    scope = publication_api.publication_setups.where(export_type: publication_setup.export_type)
-    scope = scope.where('publication_setups.id != ?', publication_setup.id) if publication_setup.persisted?
-
-    if publication_setup.export_type == "Export::Netex"
-      scope = scope.where("export_options->export_type = ?", publication_setup.export_options["export_type"])
-    end
-    return if scope.empty?
-
-    errors.add(:publication_api_id, I18n.t('destinations.errors.publication_api.already_used'))
-  end
 end
 
 require_dependency './destination/dummy' if ::Destination.enabled?("dummy")

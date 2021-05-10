@@ -275,8 +275,8 @@ class Export::Gtfs < Export::Base
       @trip_ids[vehicle_journey_id]
     end
 
-    def register_pickup_type(vehicle_journey)
-      @pickup_type[vehicle_journey.id] = vehicle_journey.flexible_service
+    def register_pickup_type(vehicle_journey, flexible_service)
+      @pickup_type[vehicle_journey.id] = flexible_service
     end
 
     def pickup_type(vehicle_journey_id)
@@ -755,7 +755,7 @@ class Export::Gtfs < Export::Base
     delegate :vehicle_journeys, to: :export_scope
 
     def export!
-      vehicle_journeys.includes(:time_tables, :route, :journey_pattern, :codes).find_each do |vehicle_journey|
+      vehicle_journeys.includes(:time_tables, :journey_pattern, :codes, route: :line).find_each do |vehicle_journey|
         decorated_vehicle_journey = Decorator.new(vehicle_journey, index: index, code_provider: code_spaces.vehicle_journeys)
 
         decorated_vehicle_journey.service_ids.each do |service_id|
@@ -763,7 +763,9 @@ class Export::Gtfs < Export::Base
 
           target.trips << trip_attributes
           index.register_trip_id vehicle_journey, trip_attributes[:id]
-          index.register_pickup_type vehicle_journey
+
+          flexible_service = vehicle_journey.flexible_service || vehicle_journey.line.flexible_service || false
+          index.register_pickup_type vehicle_journey, flexible_service
         end
       end
     end

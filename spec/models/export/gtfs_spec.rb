@@ -580,17 +580,28 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       index.register_service_ids time_table, [time_table.objectid]
     end
 
-    it "register the GTFS Trip identifiers used for each VehicleJourney" do
+    it "registers the GTFS Trip identifiers used for each VehicleJourney" do
       part.export!
       vehicle_journeys.each do |vehicle_journey|
         expect(index.trip_ids(vehicle_journey.id)).to eq([vehicle_journey.objectid])
       end
     end
 
-    it "register the GTFS pickup_type for each VehicleJourney" do
+    it "registers the GTFS pickup_type for each VehicleJourney" do
       part.export!
       vehicle_journeys.each do |vehicle_journey|
         expect(index.pickup_type(vehicle_journey.id)).to eq(vehicle_journey.flexible_service)
+      end
+    end
+
+    context "when the Line has flexible service" do
+      it "registers the GTFS pickup_type according to the Line" do
+        vehicle_journey = vehicle_journeys.first
+        vehicle_journey.line.update flexible_service: true
+
+        part.export!
+
+        expect(index.pickup_type(vehicle_journey.id)).to be_truthy
       end
     end
 

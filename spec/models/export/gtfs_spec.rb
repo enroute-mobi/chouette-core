@@ -169,6 +169,13 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
         end
       end
 
+      context "when line is flexible" do
+        it "uses value 715 (Demand and Response Bus Service)" do
+          line.flexible_service = true
+          expect(decorator.route_type).to eq(715)
+        end
+      end
+
     end
 
     describe "route_long_name" do

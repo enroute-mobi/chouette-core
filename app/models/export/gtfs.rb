@@ -555,7 +555,11 @@ class Export::Gtfs < Export::Base
       end
 
       def route_type
-        self.class.route_types[transport_mode]
+        unless flexible_service
+          self.class.route_types[transport_mode]
+        else
+          715
+        end
       end
 
       def default_agency?

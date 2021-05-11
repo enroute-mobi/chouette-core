@@ -10,7 +10,6 @@ class MergeContext
 
   def create_context
     Chouette.create(&@context_block).tap do |context_block|
-      # FIXME
       context_block.referential(:source).tap do |source|
         source.switch do
           Chouette::ChecksumUpdater.new(source).update

@@ -33,20 +33,6 @@ RSpec.describe Chouette::VehicleJourneyAtStop, type: :model do
     end
   end
 
-  context 'when updated in a ChecksumManager transaction' do
-    it 'should compute checksum right' do
-      vjas = nil
-      vj = create(:vehicle_journey)
-      Chouette::ChecksumManager.transaction do
-        vjas = create(:vehicle_journey_at_stop, arrival_time: '07:00', departure_time: '08:00', vehicle_journey: vj)
-        vjas = Chouette::VehicleJourneyAtStop.find vjas.id
-        vjas.update departure_time: '10:00'
-      end
-      expect { vjas.reload.set_current_checksum_source }.to_not change { vjas.checksum_source }
-      expect(vjas.current_checksum_source).to eq '10:00|07:00|0|0'
-    end
-  end
-
   describe "#day_offset_outside_range?" do
     let(:at_stop) { build_stubbed(:vehicle_journey_at_stop) }
 

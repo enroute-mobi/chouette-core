@@ -82,7 +82,7 @@ class Import::Gtfs < Import::Base
 
     import_resources :transfers if source.entries.include?('transfers.txt')
 
-    import_resources :stop_times, :missing_checksums
+    import_resources :stop_times
   end
 
   def import_agencies
@@ -485,13 +485,11 @@ class Import::Gtfs < Import::Base
   def import_stop_times
     CustomFieldsSupport.within_workgroup(workbench.workgroup) do
       resource = create_resource(:stop_times)
-      Chouette::ChecksumManager.no_updates do
-        source.to_enum(:each_trip_with_stop_times).each_slice(100) do |slice|
-          Chouette::VehicleJourney.cache do
-            Chouette::VehicleJourney.transaction do
-              slice.each do |trip, stop_times|
-                process_trip(resource, trip, stop_times)
-              end
+      source.to_enum(:each_trip_with_stop_times).each_slice(100) do |slice|
+        Chouette::VehicleJourney.cache do
+          Chouette::VehicleJourney.transaction do
+            slice.each do |trip, stop_times|
+              process_trip(resource, trip, stop_times)
             end
           end
         end
@@ -563,23 +561,21 @@ class Import::Gtfs < Import::Base
     return unless source.entries.include?('calendar.txt')
 
     Chouette::TimeTable.skipping_objectid_uniqueness do
-      Chouette::ChecksumManager.no_updates do
-        create_resource(:calendars).each(source.calendars, slice: 500, transaction: true) do |calendar, resource|
-          time_table = referential.time_tables.build comment: calendar.service_id
-          Chouette::TimeTable.all_days.each do |day|
-            time_table.send("#{day}=", calendar.send(day))
-          end
-          if calendar.start_date == calendar.end_date
-            time_table.dates.build date: calendar.start_date, in_out: true
-          else
-            time_table.periods.build period_start: calendar.start_date, period_end: calendar.end_date
-          end
-          time_table.shortcuts_update
-          time_table.skip_save_shortcuts = true
-          save_model time_table, resource: resource
-
-          time_tables_by_service_id[calendar.service_id] = [time_table.id]
+      create_resource(:calendars).each(source.calendars, slice: 500, transaction: true) do |calendar, resource|
+        time_table = referential.time_tables.build comment: calendar.service_id
+        Chouette::TimeTable.all_days.each do |day|
+          time_table.send("#{day}=", calendar.send(day))
         end
+        if calendar.start_date == calendar.end_date
+          time_table.dates.build date: calendar.start_date, in_out: true
+        else
+          time_table.periods.build period_start: calendar.start_date, period_end: calendar.end_date
+        end
+        time_table.shortcuts_update
+        time_table.skip_save_shortcuts = true
+        save_model time_table, resource: resource
+
+        time_tables_by_service_id[calendar.service_id] = [time_table.id]
       end
     end
   end
@@ -588,28 +584,22 @@ class Import::Gtfs < Import::Base
     return unless source.entries.include?('calendar_dates.txt')
 
     positions = Hash.new{ |h, k| h[k] = 0 }
-    Chouette::ChecksumManager.no_updates do
-      Chouette::TimeTableDate.bulk_insert do |worker|
-        create_resource(:calendar_dates).each(source.calendar_dates, slice: 500, transaction: true) do |calendar_date, resource|
-          comment = "#{calendar_date.service_id}"
-          unless_parent_model_in_error(Chouette::TimeTable, comment, resource) do
-            time_table_id = time_tables_by_service_id[calendar_date.service_id]&.first
-            time_table_id ||= begin
-              tt = referential.time_tables.build comment: comment
-              save_model tt, resource: resource
-              time_tables_by_service_id[calendar_date.service_id] = [tt.id]
-              tt.id
-            end
-            worker.add position: positions[time_table_id], date: Date.parse(calendar_date.date), in_out: calendar_date.exception_type == "1", time_table_id: time_table_id
-            positions[time_table_id] += 1
-          end
+    Chouette::TimeTableDate.bulk_insert do |worker|
+      create_resource(:calendar_dates).each(source.calendar_dates, slice: 500, transaction: true) do |calendar_date, resource|
+        comment = "#{calendar_date.service_id}"
+        unless_parent_model_in_error(Chouette::TimeTable, comment, resource) do
+          time_table_id = time_tables_by_service_id[calendar_date.service_id]&.first
+          time_table_id ||= begin
+                              tt = referential.time_tables.build comment: comment
+                              save_model tt, resource: resource
+                              time_tables_by_service_id[calendar_date.service_id] = [tt.id]
+                              tt.id
+                            end
+          worker.add position: positions[time_table_id], date: Date.parse(calendar_date.date), in_out: calendar_date.exception_type == "1", time_table_id: time_table_id
+          positions[time_table_id] += 1
         end
       end
     end
-  end
-
-  def import_missing_checksums
-    Chouette::ChecksumUpdater.new(referential).update
   end
 
   def find_stop_parent_or_create_message(stop_area_name, parent_station, resource)

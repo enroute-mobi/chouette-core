@@ -373,14 +373,6 @@ RSpec.describe Import::Neptune do
       import.send(:import_time_tables)
       expect{ import.send(:import_time_tables) }.to change{ Chouette::TimeTable.count }.by 0
     end
-
-    it 'should set checksums' do
-      import.send(:import_time_tables)
-      expect(Chouette::TimeTablePeriod).to exist
-      Chouette::TimeTable.find_each do |tt|
-        expect(tt.checksum_source).to eq tt.current_checksum_source
-      end
-    end
   end
 
   describe '#add_time_table_dates' do

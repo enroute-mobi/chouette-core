@@ -44,14 +44,11 @@ module IevInterfaces::Resource
         end
       end
     end
-    checksum_manager_method = opts[:skip_checksums] ? :no_updates : :transaction
 
     transaction_block = proc do |items|
       if opts[:transaction]
         ActiveRecord::Base.transaction do
-          Chouette::ChecksumManager.send(checksum_manager_method) do
-            inner_block.call items
-          end
+          inner_block.call items
         end
       else
         inner_block.call items

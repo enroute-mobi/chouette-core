@@ -63,10 +63,6 @@ RSpec.describe RoutesController, type: :controller do
         route: route.attributes.update({'name' => "New name"})
       }
     }
-    before(:each) do
-      @checksum_source = route.checksum_source
-    end
-
     context "" do
       before{ request }
       it_behaves_like "route, line and referential linked"
@@ -74,18 +70,10 @@ RSpec.describe RoutesController, type: :controller do
       it "sets metadata" do
         expect(Chouette::Route.last.metadata.modifier_username).to eq @user.username
       end
-      it "updates checksum" do
-        expect(route.reload.name).to eq "New name"
-        expect(route.reload.checksum_source).to_not eq @checksum_source
-      end
     end
     it "does not save item twice" do
       counts = Hash.new { |hash, key| hash[key] = 0 }
       allow_any_instance_of(Chouette::Route).to receive(:save).and_wrap_original do |meth, *args|
-        counts[meth.receiver.id] += 1
-        meth.call(*args)
-      end
-      allow_any_instance_of(Chouette::Route).to receive(:save!).and_wrap_original do |meth, *args|
         counts[meth.receiver.id] += 1
         meth.call(*args)
       end
@@ -143,10 +131,6 @@ RSpec.describe RoutesController, type: :controller do
         expect(new_route.published_name).to eq(new_route.name)
         expect(new_route.opposite_route).to eq(route)
         expect(new_route.stop_area_ids).to eq route.stop_area_ids.reverse
-        expect(new_route.checksum).to_not eq route.checksum
-        checksum = new_route.checksum
-        new_route.update_checksum!
-        expect(new_route.checksum).to eq checksum
         route.reload.stop_points.each do |sp|
           expect(sp.position).to eq @positions[sp.id]
         end

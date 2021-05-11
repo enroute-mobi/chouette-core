@@ -1,4 +1,3 @@
-
 describe Chouette::RoutingConstraintZone, type: :model do
 
   subject { create(:routing_constraint_zone) }
@@ -13,10 +12,15 @@ describe Chouette::RoutingConstraintZone, type: :model do
   describe 'checksum' do
     it_behaves_like 'checksum support'
 
-    it "changes when a stop_point is updated" do
-      stop_point = subject.stop_points.first
+    context "when ChecksumManager is inline" do
+      around { |example| Chouette::ChecksumManager.inline{ example.run }}
 
-      expect{stop_point.update(position: subject.stop_points.last.position + 1)}.to change{subject.reload.checksum}
+
+      it "changes when a stop_point is updated" do
+        stop_point = subject.stop_points.first
+
+        expect{stop_point.update(position: subject.stop_points.last.position + 1)}.to(change{subject.reload.checksum})
+      end
     end
   end
 

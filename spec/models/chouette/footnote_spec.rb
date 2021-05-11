@@ -1,4 +1,3 @@
-
 describe Chouette::Footnote, type: :model do
   subject { create(:footnote) }
   it { should validate_presence_of :line }

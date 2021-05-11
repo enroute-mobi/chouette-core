@@ -544,7 +544,6 @@ RSpec.describe Import::Gtfs do
 
     it "should create a VehicleJourneyAtStop for each stop_time" do
       import.import_stop_times
-      import.import_missing_checksums
 
       def t(value)
         Time.parse(value)
@@ -586,10 +585,6 @@ RSpec.describe Import::Gtfs do
         ]
       end
       expect(a).to match_array(expected_attributes)
-
-      referential.vehicle_journeys.each do |vj|
-        expect{ vj.calculate_vehicle_journey_at_stop_day_offset; vj.update_checksum! }.to_not change { vj.checksum }
-      end
     end
 
     context 'with multiple trips with non zero first day offet' do

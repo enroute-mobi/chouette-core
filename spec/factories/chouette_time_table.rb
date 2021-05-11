@@ -34,7 +34,6 @@ FactoryBot.define do
         end
       end
       time_table.save_shortcuts
-      time_table.update_checksum!
     end
   end
 

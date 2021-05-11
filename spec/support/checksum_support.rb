@@ -58,29 +58,50 @@ shared_examples 'checksum support' do
     end
   end
 
-  it 'should save checksum on create' do
-    expect(subject.checksum).to_not be_nil
+  context "when ChecksumManager is inline" do
+
+    around { |example| Chouette::ChecksumManager.inline{ example.run }}
+
+    it 'should save checksum on create' do
+      expect(subject.checksum).to_not be_nil
+    end
+
+    it 'should save checksum_source' do
+      expect(subject.checksum_source).to_not be_nil
+    end
+
+    it 'should trigger set_current_checksum_source on save' do
+      expect(subject).to receive(:set_current_checksum_source).at_least(:once)
+      subject.save
+    end
+
+    it 'should trigger update_checksum on save' do
+      expect(subject).to receive(:update_checksum).at_least(:once)
+      subject.save
+    end
+
+    it "doesn't change the checksum on save if the source hasn't been changed" do
+      subject.save
+      checksum = subject.checksum
+
+      subject.save
+
+      expect(subject.checksum).to eq(checksum)
+    end
+
   end
 
-  it 'should save checksum_source' do
-    expect(subject.checksum_source).to_not be_nil
+  context "by default" do
+
+    it 'has no checksum' do
+      expect(subject.checksum).to be_nil
+    end
+
+    it 'have no checksum_source' do
+      expect(subject.checksum_source).to be_nil
+    end
+
   end
 
-  it 'should trigger set_current_checksum_source on save' do
-    expect(subject).to receive(:set_current_checksum_source).at_least(:once)
-    subject.save
-  end
 
-  it 'should trigger update_checksum on save' do
-    expect(subject).to receive(:update_checksum).at_least(:once)
-    subject.save
-  end
-
-  it "doesn't change the checksum on save if the source hasn't been changed" do
-    checksum = subject.checksum
-
-    subject.save
-
-    expect(subject.checksum).to eq(checksum)
-  end
 end

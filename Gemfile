@@ -12,6 +12,10 @@ gem 'sassc-rails', '>= 2.1.2'
 gem 'sassc', '2.1.0'
 gem 'sass'
 
+group :production do
+  gem 'mini_racer'
+end
+
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier', '~> 2.7.2'
 # Use CoffeeScript for .js.coffee assets and views

@@ -4,14 +4,12 @@ module VehicleJourneyControl
 
     included do
       include ComplianceControls::InternalControlInterface
-    end
 
-    class_methods do
-      def collection_type(_)
+      def self.collection_type(_)
         :vehicle_journeys
       end
 
-      def label_attr(compliance_check)
+      def self.label_attr(_)
         :published_journey_name
       end
     end

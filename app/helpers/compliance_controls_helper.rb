@@ -3,9 +3,9 @@ module ComplianceControlsHelper
     compliance_control_types_options.keys.map(&method(:make_subclass_selection_item))
   end
 
-  def make_subclass_selection_item(key_pattern)
-    key, pattern = key_pattern
-    [t("compliance_controls.filters.subclasses.#{key}"), "-#{pattern}-"]
+  def make_subclass_selection_item(key)
+    
+    [t("compliance_controls.filters.subclasses.#{key}"), "-#{key.camelcase}-"]
   end
 
   def display_control_attribute(key, value, compliance_control)

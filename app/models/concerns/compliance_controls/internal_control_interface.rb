@@ -1,16 +1,14 @@
 module ComplianceControls
   module InternalControlInterface
     extend ActiveSupport::Concern
-  
+    
     included do
       extend Rails.application.routes.url_helpers
       extend ActionDispatch::Routing::PolymorphicRoutes
-
-      enumerize :criticity, in: %i(warning error), scope: true, default: :error
     end
 
     class DefaultControl
-      def initialize(klass, compliance_check)
+      def initialize(klass, _compliance_check)
         @klass = klass
       end
 
@@ -32,11 +30,11 @@ module ComplianceControls
         {}
       end
 
-      def object_path(compliance_check, model)
-        ComplianceControl::ObjectPathFinder.call(compliance_check, object)
+      def object_path(compliance_check, object)
+        ComplianceControls::ObjectPathFinder.call(compliance_check, object)
       end
 
-      def collection_type()
+      def collection_type(_)
         :lines
       end
 
@@ -133,11 +131,11 @@ module ComplianceControls
         end
       end
 
-      def label_attr(compliance_check)
+      def label_attr(_compliance_check)
         :name
       end
 
-      def lines_for compliance_check, model
+      def lines_for _compliance_check, _model
         nil
       end
 

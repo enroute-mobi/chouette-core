@@ -10,8 +10,6 @@ module JourneyPatternControl
 
       validates :min, numericality: true, allow_blank: true
       validates :max, numericality: true, allow_blank: true
-
-      enumerize :criticity, in: %i(warning error), scope: true, default: :warning
     end
 
     class_methods do

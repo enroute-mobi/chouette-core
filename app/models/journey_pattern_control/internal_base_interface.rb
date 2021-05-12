@@ -4,10 +4,8 @@ module JourneyPatternControl
 
     included do
       include ComplianceControls::InternalControlInterface
-    end
-
-    class_methods do
-      def collection_type(_)
+      
+      def self.collection_type(_)
         :journey_patterns
       end
     end

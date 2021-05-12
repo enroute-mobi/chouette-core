@@ -1,6 +1,6 @@
 module VehicleJourneyControl
   class Company < ComplianceControl
-    include ComplianceControls::InternalControlInterface
+    include VehicleJourneyControl::InternalBaseInterface
 
     def self.default_code; '3-VehicleJourney-11' end
 

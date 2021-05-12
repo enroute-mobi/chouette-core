@@ -103,4 +103,12 @@ RSpec.describe ModelAttribute do
       expect(route_name == other_route_name).to be true
     end
   end
+
+  describe 'names' do
+    it 'should all be valid ones' do
+      ModelAttribute.all.each do |m|
+        expect(m.class_name.method_defined?(m.name)).to be_truthy
+      end
+    end
+  end
 end

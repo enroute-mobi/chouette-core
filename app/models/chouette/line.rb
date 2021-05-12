@@ -157,8 +157,7 @@ module Chouette
     end
 
     def activated= val
-      val = val != '0' if val.is_a?(String)
-      bool = !val
+      bool = !(ActiveModel::Type::Boolean.new.cast(val))
       self.deactivated = bool
     end
 

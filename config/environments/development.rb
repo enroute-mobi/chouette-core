@@ -93,7 +93,6 @@ Rails.application.configure do
   config.subscriptions_notifications_recipients = %w{foo@example.com bar@example.com}
   config.automated_audits_recipients = %w{foo@example.com bar@example.com}
 
-  config.additional_compliance_controls << "dummy"
   config.additional_destinations << "dummy" << "mail"
 
   config.to_prepare do

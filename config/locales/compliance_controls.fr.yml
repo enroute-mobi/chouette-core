@@ -8,15 +8,15 @@ fr:
       name: "Chercher le nom ou code d'un contrôle"
       subclass: Objet
       subclasses:
-        generic: 'Générique'
-        journey_pattern: 'Mission'
-        line: 'Ligne'
-        route: 'Itinéraire'
-        routing_constraint_zone: 'ITL'
-        vehicle_journey: 'Course'
-        dummy: 'Test'
-        company: 'Transporteur'
-        stop_area: 'Arrêt'
+        generic: Générique
+        line: Ligne
+        route: Itinéraire
+        routing_constraint: ITL
+        journey_pattern: Mission
+        vehicle_journey: Course
+        dummy: Test
+        company: Transporteur
+        stop_area: Arrêt
     form:
       company_name: Indiquez le nom d'un transporteur
     search_no_results: 'Aucun contrôle ne correspond à votre recherche'
@@ -38,10 +38,10 @@ fr:
         generic: Générique
         line: Ligne
         route: Itinéraire
-        routing_constraint_zone: ITL
+        routing_constraint: ITL
         journey_pattern: Mission
         vehicle_journey: Course
-        dummy: Dummy
+        dummy: Test
         company: Transporteur
         stop_area: Arrêt
     actions:

@@ -4,10 +4,6 @@ class ComplianceControlsController < ChouetteController
   belongs_to :compliance_control_set
   actions :all, :except => [:index]
 
-  def select_type
-    @sti_subclasses = ComplianceControl.subclasses_to_hash(compliance_control_set.organisation)
-  end
-
   def show
     show! do
       @compliance_control = @compliance_control.decorate

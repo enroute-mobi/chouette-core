@@ -36,15 +36,15 @@ en:
       title: "Update compliance control"
     select_type:
       compliance_control_groups:
-        generic: Generic
-        line: Line
-        route: Route
-        routing_constraint_zone: Routing constraint zone
-        journey_pattern: Journey pattern
-        vehicle_journey: Vehicle journey
-        dummy: Dummy
-        company: Company
-        stop_area: Stop area
+        generic_attribute_control: Generic
+        line_control: Line
+        route_control: Route
+        routing_constraint_zone_control: Routing constraint zone
+        journey_pattern_control: Journey pattern
+        vehicle_journey_control: Vehicle journey
+        dummy_control: Dummy
+        company_control: Company
+        stop_area_control: Stop area
     actions:
       new: Add
       edit: Edit

@@ -483,7 +483,7 @@ GEM
     pry-rails (0.3.9)
       pry (>= 0.10.4)
     public_suffix (4.0.6)
-    puma (5.1.0)
+    puma (5.3.1)
       nio4r (~> 2.0)
     pundit (2.1.0)
       activesupport (>= 3.0.0)
@@ -829,7 +829,7 @@ DEPENDENCIES
   postgresql_cursor
   pry-byebug
   pry-rails
-  puma
+  puma (>= 5.3.1)
   pundit
   pundit-matchers (>= 1.6.0)
   rabl
@@ -881,4 +881,4 @@ DEPENDENCIES
   will_paginate-bootstrap
 
 BUNDLED WITH
-   2.2.15
+   2.1.4

@@ -9,9 +9,20 @@ module GenericAttributeControl
 
       validates :target, presence: true
 
-      def self.collection_type(compliance_check)
-        resource_name, _ = compliance_check.target.split('#').first
-        resource_name.pluralize.to_sym
+      class << self
+        def self.collection_type(compliance_check)
+          resource_name(compliance_check).pluralize.to_sym
+        end
+
+        private
+
+        def resource_name(compliance_check)
+          compliance_check.target.split('#').first
+        end
+
+        def attribute_name(compliance_check)
+          compliance_check.target.split('#').last
+        end
       end
     end
   end

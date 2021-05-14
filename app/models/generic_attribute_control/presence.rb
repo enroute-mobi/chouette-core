@@ -12,7 +12,7 @@ module GenericAttributeControl
         ).present?
       end
 
-      def custom_message_attributes (compliance_check, object)
+      def custom_message_attributes(compliance_check, object)
         {
           source_objectid: object.objectid,
           object_type: resource_name(compliance_check),

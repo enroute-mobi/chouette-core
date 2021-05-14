@@ -84,7 +84,7 @@ module ComplianceControlSetsHelper
           ),
           TableBuilderHelper::Column.new(
             key: :subclass,
-            attribute: 'display_translated_subclass '
+            attribute: 'display_translated_subclass'
           ),
           TableBuilderHelper::Column.new(
             key: :name,

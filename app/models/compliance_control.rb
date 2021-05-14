@@ -106,3 +106,20 @@ class ComplianceControl < ApplicationModel
   end
 
 end
+
+# https://guides.rubyonrails.org/autoloading_and_reloading_constants_classic_mode.html#require-dependency-and-initializers
+%w(
+  company
+  custom_field
+  dummy
+  generic_attribute
+  journey_pattern
+  line
+  route
+  routing_constraint_zone
+  stop_area
+  vehicle_journey
+).each do |n|
+  dir = Dir[File.join(__dir__, "#{n}_control", '*.rb')]
+  dir.each { |f| require_dependency f } 
+end

@@ -10,8 +10,12 @@ module GenericAttributeControl
       validates :target, presence: true
 
       class << self
-        def self.collection_type(compliance_check)
+        def collection_type(compliance_check)
           resource_name(compliance_check).pluralize.to_sym
+        end
+
+        def lines_for compliance_check, _object
+          compliance_check.referential.lines
         end
 
         private

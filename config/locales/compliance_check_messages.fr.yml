@@ -41,7 +41,7 @@ fr:
     3_generic_2_1: "L'objet %{source_objectid} a un attribut %{source_attribute} avec une valeur %{error_value} supérieure à la valeur maximale autorisée %{reference_value}"
     3_generic_2_2: "L'objet %{source_objectid} a un attribut %{source_attribute} avec une valeur %{error_value} inférieure à la valeur minimale autorisée %{reference_value}"
     3_generic_3: "L'objet %{source_objectid} a un attribut %{source_attribute} avec une valeur %{error_value} en conflit avec %{target_0_objectid}"
-    3_generic_4: "L'objet %{source_objectid} n'a pas de valeur définie pour le champs personnalisé '%{field_name}'"
+    3_generic_4: "L'attribut %{field_name} pour l'object %{source_objectid} de type %{object_type} n'a pas de valeur définie"
     3_shape_1: "Tracé %{source_objectid} : le tracé passe trop loin de l'arrêt %{target_0_label} (%{target_0_objectid}) : %{error_value} > %{reference_value}"
     3_shape_2: "Tracé %{source_objectid} : le tracé n'est pas défini entre les arrêts %{target_0_label} (%{target_0_objectid}) et %{target_1_label} (%{target_1_objectid})"
     3_shape_3: "Le tracé de l'itinéraire %{source_objectid} est en écart avec la voirie sur %{error_value} sections"

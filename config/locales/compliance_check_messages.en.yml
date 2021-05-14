@@ -39,7 +39,7 @@ en:
     3_generic_2_1: "%{source_objectid} : the %{source_attribute} attributes's value (%{error_value}) is greater than the authorized maximum value : %{reference_value}"
     3_generic_2_2: "%{source_objectid} : the %{source_attribute} attributes's value (%{error_value}) is smaller than the authorized minimum value %{reference_value}"
     3_generic_3: "%{source_objectid} : the %{source_attribute} attribute (%{error_value}) has a value shared with : %{target_0_objectid}"
-    3_generic_4: "%{source_objectid} : The custom field '%{field_name}' has no value"
+    3_generic_4: "%{source_objectid} : The %{object_type}'s %{field_name} field has no value"
     3_shape_1: "Tracé %{source_objectid} : le tracé passe trop loin de l'arrêt %{target_0_label} (%{target_0_objectid}) : %{error_value} > %{reference_value}"
     3_shape_2: "Tracé %{source_objectid} : le tracé n'est pas défini entre les arrêts %{target_0_label} (%{target_0_objectid}) et %{target_1_label} (%{target_1_objectid})"
     3_shape_3: "Le tracé de l'itinéraire %{source_objectid} est en écart avec la voirie sur %{error_value} sections"

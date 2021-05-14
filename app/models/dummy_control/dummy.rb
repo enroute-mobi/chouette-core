@@ -3,6 +3,7 @@ module DummyControl
     include ComplianceControls::InternalControlInterface
 
     store_accessor :control_attributes, :status
+    enumerize :status, in: %i(OK ERROR WARNING IGNORED), default: :OK
 
     def self.default_code; "00-Dummy-00" end
 

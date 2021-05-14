@@ -28,13 +28,8 @@ class ApplicationController < ActionController::Base
 
   protected
 
-  def user_not_authorized
-    render 'errors/forbidden', status: 403
-  end
-
-  def not_found
-    render 'errors/not_found', status: 404
-  end
+  include ErrorManagement
+  alias user_not_authorized forbidden
 
   def current_organisation
     current_user.organisation if current_user

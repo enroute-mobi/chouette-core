@@ -17,7 +17,7 @@ class ComplianceCheckSet < ApplicationModel
 
   validates_presence_of :workgroup
 
-  enumerize :status, in: %w[new pending successful warning failed running aborted canceled]
+  enumerize :status, in: %w[new pending successful warning failed running aborted canceled], predicates: true
 
   scope :where_created_at_between, ->(period_range) do
     where('created_at BETWEEN :begin AND :end', begin: period_range.begin, end: period_range.end)

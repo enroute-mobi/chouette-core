@@ -89,14 +89,14 @@ class Import::Workbench < Import::Base
   def compute_new_status
     new_status_from_children = super
 
-    if new_status_from_children == 'successful'
+    if !self.class.failed_statuses.include?(new_status_from_children)
       Rails.logger.info "#{self.class.name} ##{id}: compliance_check_sets statuses #{compliance_check_sets.reload.map(&:status).inspect}"
       if compliance_check_sets.unfinished.count > 0
         'running'
       else
         if compliance_check_sets.where(status: ComplianceCheckSet.failed_statuses).count > 0
           'failed'
-        elsif children.where(status: "warning").count > 0
+        elsif children.where(status: "warning").count > 0 || compliance_check_sets.any?(&:warning?)
           'warning'
         elsif children.where(status: "successful").count == children.count
           'successful'

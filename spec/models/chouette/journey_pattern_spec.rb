@@ -147,30 +147,6 @@ describe Chouette::JourneyPattern, :type => :model do
     end
   end
 
-  describe "set_distances" do
-    let(:journey_pattern) { create :journey_pattern }
-    let(:distances){ [] }
-    it "should raise an error" do
-      expect{journey_pattern.set_distances(distances)}.to raise_error(RuntimeError)
-    end
-
-    context "with consistent data" do
-      let(:distances){ [0, 100, "200", 500, 1000] }
-
-      it "should set costs" do
-        expect{journey_pattern.set_distances(distances)}.to_not raise_error
-        start, stop = journey_pattern.stop_points[0..1]
-        expect(journey_pattern.costs_between(start, stop)[:distance]).to eq 100
-        start, stop = journey_pattern.stop_points[1..2]
-        expect(journey_pattern.costs_between(start, stop)[:distance]).to eq 100
-        start, stop = journey_pattern.stop_points[2..3]
-        expect(journey_pattern.costs_between(start, stop)[:distance]).to eq 300
-        start, stop = journey_pattern.stop_points[3..4]
-        expect(journey_pattern.costs_between(start, stop)[:distance]).to eq 500
-      end
-    end
-  end
-
   describe "state_update" do
     def journey_pattern_to_state jp
       jp.attributes.slice('name', 'published_name', 'registration_number').tap do |item|

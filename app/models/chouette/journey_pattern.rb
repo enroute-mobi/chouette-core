@@ -256,20 +256,17 @@ module Chouette
       distance_between start, stop
     end
 
-    def set_distances distances
-      raise "inconsistent data: #{distances.count} values for #{stop_points.count} stops" unless distances.count == stop_points.count
-      prev = distances[0].to_i
-      _costs = self.costs
-      distances[1..-1].each_with_index do |distance, i|
-        distance = distance.to_i
-        relative = distance - prev
-        prev = distance
-        start, stop = stop_points[i..i+1]
-        key = "#{start.stop_area_id}-#{stop.stop_area_id}"
-        _costs[key] ||= {}
-        _costs[key]["distance"] = relative
+    def use_default_costs!
+      default_costs = {}
+      stop_points.each_cons(2) do |previous_stop_point, next_stop_point|
+        key = "#{previous_stop_point.stop_area_id}-#{next_stop_point.stop_area_id}"
+        route_costs = route.costs[key]
+        next unless route_costs
+
+        # Route stores meters and seconds, JourneyPatterns use km and minute
+        default_costs[key] = { distance: (route_costs.fetch("distance", 0) / 1000.0).round, time: route_costs.fetch("time", 0) / 60 }
       end
-      self.costs = _costs
+      update_column :costs, default_costs
     end
 
     def self.clean!

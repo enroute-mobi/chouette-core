@@ -243,21 +243,15 @@ en:
         3_generic_1: "%{source_objectid} : the %{source_attribute} attribute value (%{error_value}) does not respect the following pattern : %{reference_value}"
       description: "The object attribute must respect a patten (regular expression)"
       prerequisite: "None"
-    generic_attribute_control/min_max:
+    generic_attribute_control/presence:
       messages:
-        3_generic_2_1: "%{source_objectid}  : the %{source_attribute} attributes's value (%{error_value}) is greater than the authorized maximum value : %{reference_value}"
-        3_generic_2_2: "%{source_objectid}  : the %{source_attribute} attributes's value (%{error_value}) is smaller than the authorized minimum value %{reference_value}"
-      description: "The numeric value of an attribute must be contained between 2 values"
+        3_generic_2: "%{source_objectid}  : the %{source_attribute} value is nil"
+      description: "Ensure that the targeted attribute has a defined value in the tested dataset."
       prerequisite: "None"
     generic_attribute_control/uniqueness:
       messages:
         3_generic_3: "%{source_objectid}  : the %{source_attribute} attribute (%{error_value}) has a value shared with : %{target_0_objectid}"
       description: "The attribute's value must be unique compared to the other objects ofthe same type (related to the same line)"
-      prerequisite: "None"
-    generic_attribute_control/uniqueness:
-      messages:
-        3_generic_4: "%{source_objectid}  : the %{source_attribute} value is nil"
-      description: "Ensure that the targeted attribute has a defined value in the tested dataset."
       prerequisite: "None"
     shape_control:
       3_shape_1: "Tracé %{source_objectid} : le tracé passe trop loin de l'arrêt %{target_0_label} (%{target_0_objectid}) : %{error_value} > %{reference_value}"

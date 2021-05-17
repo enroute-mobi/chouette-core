@@ -4,7 +4,7 @@ module GenericAttributeControl
     
     class << self
       def attribute_type; nil end
-      def default_code; "3-Generic-4" end
+      def default_code; "3-Generic-2" end
 
       def compliance_test(compliance_check, object)
         object.send(

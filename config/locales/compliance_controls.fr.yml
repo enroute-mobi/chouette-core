@@ -242,22 +242,17 @@ fr:
         3_generic_1: "%{source_objectid} : l'attribut %{source_attribute} a une valeur %{error_value} qui ne respecte pas l'expression régulière %{reference_value}"
       description: "L'attribut de l'objet doit respecter une expression régulière"
       prerequisite: "Aucun"
-    generic_attribute_control/min_max:
+    generic_attribute_control/presence:
       messages:
-        3_generic_2_1: "%{source_objectid} : l'attribut %{source_attribute} a une valeur %{error_value} supérieure à la valeur maximale autorisée %{reference_value}"
-        3_generic_2_2: "%{source_objectid} : l'attribut %{source_attribute} a une valeur %{error_value} inférieure à la valeur minimale autorisée %{reference_value}"
-      description: "La valeur numérique de l'attribut doit rester comprise entre 2 valeurs"
+        3_generic_2: "%{source_objectid} : l'attribut %{source_attribute} n'a pas de valeur"
+      description: "S’assure que l’attribut désigné est bien défini dans les données testées"
       prerequisite: "Aucun"
     generic_attribute_control/uniqueness:
       messages:
         3_generic_3: "%{source_objectid} : l'attribut %{source_attribute} a une valeur %{error_value} partagée avec %{target_0_objectid}"
       description: "La valeur de l'attribut doit être unique au sein des objets de la ligne"
       prerequisite: "Aucun"
-    generic_attribute_control/presence:
-      messages:
-        3_generic_4: "%{source_objectid} : l'attribut %{source_attribute} n'a pas de valeur"
-      description: "S’assure que l’attribut désigné est bien défini dans les données testées"
-      prerequisite: "Aucun"
+    
     shape_control:
       3_shape_1: "Tracé %{source_objectid} : le tracé passe trop loin de l'arrêt %{target_0_label} (%{target_0_objectid}) : %{error_value} > %{reference_value}"
       3_shape_2: "Tracé %{source_objectid} : le tracé n'est pas défini entre les arrêts %{target_0_label} (%{target_0_objectid}) et %{target_1_label} (%{target_1_objectid})"

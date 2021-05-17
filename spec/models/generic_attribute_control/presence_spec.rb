@@ -12,7 +12,7 @@ RSpec.describe GenericAttributeControl::Presence, type: :model, scope: :model_at
     context 'when attribute is present' do
       it 'should be compliant' do
         test_model_attributes do |m, compliance_check|
-          instance = m.class_name.new
+          instance = m.klass.new
           instance.send("#{m.name}=", get_default_value(m))
 
           compliant = GenericAttributeControl::Presence.compliance_test(compliance_check, instance)
@@ -25,8 +25,7 @@ RSpec.describe GenericAttributeControl::Presence, type: :model, scope: :model_at
     context 'when attribute is absent' do
       it 'should not be compliant' do
         test_model_attributes do |m, compliance_check|
-          target = "#{m.klass}##{m.name}"
-          instance = m.class_name.new
+          instance = m.klass.new
           instance.send("#{m.name}=", nil)
 
           compliant = GenericAttributeControl::Presence.compliance_test(compliance_check, instance)

@@ -1,12 +1,8 @@
 module Support::ModelAttributeHelper
 	def test_model_attributes
     ModelAttribute.all.each do |m|
-      target = "#{m.klass}##{m.name}"
-      instance = m.class_name.new
-      instance.send("#{m.name}=", nil)
-
-      compliance_check = ComplianceCheck.new(control_attributes: { target: target })
-      yield m,compliance_check
+      compliance_check = ComplianceCheck.new(control_attributes: { target: m.code })
+      yield(m, compliance_check)
     end
   end
 

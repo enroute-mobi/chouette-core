@@ -1,5 +1,5 @@
 class ModelAttribute
-  attr_reader :class_name, :klass, :name, :data_type, :options
+  attr_reader :klass, :name, :data_type, :options
 
   def self.all
     @__all__ ||= []
@@ -10,7 +10,7 @@ class ModelAttribute
       values.reject!{ |x| x.data_type != type } if type
       key = I18n.t("activerecord.models.#{key}.one")
       options.merge(
-        key => values.map { |i| [i.class_name.tmf(i.name), "#{i.klass}\##{i.name}"] }
+        key => values.map { |i| [i.klass.tmf(i.name), "#{i.code}"] }
       )
     end
   end
@@ -19,43 +19,15 @@ class ModelAttribute
     all << new(klass, name, data_type, options)
   end
 
-  def self.classes
-    all
-      .map(&:klass)
-      .uniq
-      .map(&:to_s)
-      .map(&:camelize)
-  end
-
   def self.group_by_class(list = nil)
-    (list || all).group_by(&:klass)
+    (list || all).group_by(&:resource_name)
   end
 
-  def self.from_code(code)
-    klass, name = code.split('#').map(&:to_sym)
-
-    methods_by_class(klass).select do |model_attr|
-      model_attr.name == name
-    end.first
-  end
-
-  def self.methods_by_class(klass)
-    all.select do |model_attr|
-      model_attr.klass == klass
-    end
-  end
-
-  def self.methods_by_class_and_type(klass, type)
-    methods_by_class(klass).select do |model_attr|
-      model_attr.data_type == type
-    end
-  end
-
-  def initialize(class_name, name, data_type, **options)
-    @class_name = class_name
-    @klass = class_name.model_name.param_key.to_sym
+  def initialize(klass, name, data_type, **options)
+    @klass = klass
     @name = name
     @data_type = data_type
+    
     @options = options
   end
 
@@ -104,18 +76,18 @@ class ModelAttribute
   define Chouette::Company, :default_contact_phone, :float
 
   def code
-    "#{@klass}##{@name}"
+    "#{resource_name}##{name}"
+  end
+
+  def resource_name
+    klass.model_name.param_key.to_sym
+  end
+
+  def collection_name
+    klass.model_name.plural.to_sym
   end
 
   def mandatory
     options[:mandatory]
-  end
-
-  def ==(other)
-    self.class === other &&
-      class_name == other.class_name &&
-      name == other.name &&
-      data_type == other.data_type
-      options == other.options
   end
 end

@@ -90,4 +90,12 @@ class ModelAttribute
   def mandatory
     options[:mandatory]
   end
+
+   def ==(other)
+    self.class === other &&
+      klass == other.klass &&
+      name == other.name &&
+      data_type == other.data_type
+      options == other.options
+  end
 end

@@ -12,9 +12,12 @@ RSpec.describe ModelAttribute do
       model_attr = ModelAttribute.all.last
 
       expect(model_attr).to be_an_instance_of(ModelAttribute)
-      expect(model_attr.klass).to eq(:route)
+      expect(model_attr.klass).to eq(Chouette::Route)
       expect(model_attr.name).to eq(:name)
       expect(model_attr.data_type).to eq(:string)
+      expect(model_attr.resource_name).to eq(:route)
+      expect(model_attr.collection_name).to eq(:routes)
+      expect(model_attr.code).to eq('route#name')
     end
   end
 
@@ -37,6 +40,15 @@ RSpec.describe ModelAttribute do
           ModelAttribute.new(Chouette::VehicleJourney, :number, :integer)
         ]
       })
+    end
+  end
+
+  describe "#==" do
+    it "returns true when :class_name, :name, :data_type and :options attributes match" do
+      route_name = ModelAttribute.new(Chouette::Route, :name, :string, **{ mandatory: true })
+      other_route_name = ModelAttribute.new(Chouette::Route, :name, :string,  **{ mandatory: true })
+
+      expect(route_name == other_route_name).to be true
     end
   end
 

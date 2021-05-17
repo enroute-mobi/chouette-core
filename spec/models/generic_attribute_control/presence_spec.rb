@@ -1,7 +1,7 @@
 RSpec.describe GenericAttributeControl::Presence, type: :model, scope: :model_attribute do
   include Support::ModelAttributeHelper
 
-  let( :default_code ){ "3-Generic-4" }
+  let( :default_code ){ "3-Generic-2" }
   let( :factory ){ :generic_attribute_control_presence }
 
   it_behaves_like 'ComplianceControl Class Level Defaults' 

@@ -135,7 +135,7 @@ gem 'whenever', en_route: 'whenever', require: false
 gem 'rake'
 gem 'apartment'
 gem 'aasm'
-gem 'puma'
+gem 'puma', '>= 5.3.1'
 gem 'postgresql_cursor'
 
 # Cache

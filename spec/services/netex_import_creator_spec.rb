@@ -49,9 +49,6 @@ RSpec.describe NetexImportCreator do
     end
 
     file.flush
-
-    FileUtils.cp file.path, "/tmp/test.zip"
-
     file
   end
 

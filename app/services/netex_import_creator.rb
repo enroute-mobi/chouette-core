@@ -100,33 +100,35 @@ class NetexImportCreator
   end
 
   def init_referential
-    if referential.valid?
-      import.referential = referential
-      import.main_resource.update referential: referential
-      import.save!
+    Referential.transaction do
+      if referential.valid?
+        import.referential = referential
+        import.main_resource.update referential: referential
+        import.save!
 
-      return true
+        return true
+      end
+
+      # Create error messages associated to this invalid Referential
+      overlapped_referential_ids = referential.overlapped_referential_ids
+      if overlapped_referential_ids.any?
+        overlapped = Referential.find overlapped_referential_ids.last
+        create_message(
+          "referential_creation_overlapping_existing_referential",
+          referential_name: referential.name,
+          overlapped_name: overlapped.name,
+          overlapped_url:  Rails.application.routes.url_helpers.referential_path(overlapped)
+        )
+      else
+        create_message(
+          "referential_creation",
+          { referential_name: referential.name },
+          { resource_attributes: referential.errors.messages }
+        )
+      end
+
+      false
     end
-
-    # Create error messages associated to this invalid Referential
-    overlapped_referential_ids = referential.overlapped_referential_ids
-    if overlapped_referential_ids.any?
-      overlapped = Referential.find overlapped_referential_ids.last
-      create_message(
-        "referential_creation_overlapping_existing_referential",
-        referential_name: referential.name,
-        overlapped_name: overlapped.name,
-        overlapped_url:  Rails.application.routes.url_helpers.referential_path(overlapped)
-      )
-    else
-      create_message(
-        "referential_creation",
-        { referential_name: referential.name },
-        { resource_attributes: referential.errors.messages }
-      )
-    end
-
-    false
   end
   measure :init_referential
 

@@ -25,6 +25,91 @@ RSpec.describe Import::Workbench do
     Import::Workbench.create workbench: workbench, name: "test", creator: "Albator", file: open_fixture("google-sample-feed.zip"), options: options
   }
 
+  let(:import_workbench) {
+    create :workbench_import, workbench: workbench
+  }
+
+  context '#children_status' do
+    it 'should return failed if a child has a failed status' do
+      create(:netex_import, parent: import_workbench, workbench: workbench, status: "failed", notified_parent_at: Date.today)
+      create(:netex_import, parent: import_workbench, workbench: workbench, status: "warning", notified_parent_at: Date.today)
+      create(:netex_import, parent: import_workbench, workbench: workbench, status: "successful", notified_parent_at: Date.today)
+      expect(import_workbench.children_status).to eq 'failed'
+    end
+
+    it 'should return warning if one child has a warning and not failed status' do
+      create(:netex_import, parent: import_workbench, workbench: workbench, status: "warning", notified_parent_at: Date.today)
+      create(:netex_import, parent: import_workbench, workbench: workbench, status: "successful", notified_parent_at: Date.today)
+      expect(import_workbench.children_status).to eq 'warning'
+    end
+
+    it 'should return successful if children have successful statuses' do
+      create(:netex_import, parent: import_workbench, workbench: workbench, status: "successful", notified_parent_at: Date.today)
+      create(:netex_import, parent: import_workbench, workbench: workbench, status: "successful", notified_parent_at: Date.today)
+      expect(import_workbench.children_status).to eq 'successful'
+    end
+
+    it 'should return running if children have not finished' do
+      create(:netex_import, parent: import_workbench, workbench: workbench, status: "successful", notified_parent_at: Date.today)
+      create(:netex_import, parent: import_workbench, workbench: workbench, status: "pending", notified_parent_at: nil)
+      expect(import_workbench.children_status).to eq 'running'
+    end
+  end
+
+  context '#compliance_check_sets_status' do
+    it 'should return failed if a compliance_check_set has a failed status' do
+      create(:compliance_check_set, parent: import_workbench, parent_type: "Import::Workbench", workbench: workbench, status: "failed", notified_parent_at: Date.today)
+      create(:compliance_check_set, parent: import_workbench, parent_type: "Import::Workbench", workbench: workbench, status: "warning", notified_parent_at: Date.today)
+      create(:compliance_check_set, parent: import_workbench, parent_type: "Import::Workbench", workbench: workbench, status: "successful", notified_parent_at: Date.today)
+      expect(import_workbench.compliance_check_sets_status).to eq 'failed'
+    end
+
+    it 'should return warning if one compliance_check_set has a warning and not failed status' do
+      create(:compliance_check_set, parent: import_workbench, parent_type: "Import::Workbench", workbench: workbench, status: "warning", notified_parent_at: Date.today)
+      create(:compliance_check_set, parent: import_workbench, parent_type: "Import::Workbench", workbench: workbench, status: "successful", notified_parent_at: Date.today)
+      expect(import_workbench.compliance_check_sets_status).to eq 'warning'
+    end
+
+    it 'should return successful if compliance_check_sets have successful statuses' do
+      create(:compliance_check_set, parent: import_workbench, parent_type: "Import::Workbench", workbench: workbench, status: "successful", notified_parent_at: Date.today)
+      create(:compliance_check_set, parent: import_workbench, parent_type: "Import::Workbench", workbench: workbench, status: "successful", notified_parent_at: Date.today)
+      expect(import_workbench.compliance_check_sets_status).to eq 'successful'
+    end
+
+    it 'should return running if compliance_check_sets have not finished' do
+      create(:compliance_check_set, parent: import_workbench, parent_type: "Import::Workbench", workbench: workbench, status: "successful", notified_parent_at: Date.today)
+      create(:compliance_check_set, parent: import_workbench, parent_type: "Import::Workbench", workbench: workbench, status: "pending", notified_parent_at: nil)
+      expect(import_workbench.compliance_check_sets_status).to eq 'running'
+    end
+  end
+
+  context '#compute_new_status' do
+    it 'should return failed if compliance_check_sets_status or children_status is failed' do
+      allow(import_workbench).to receive(:compliance_check_sets_status).and_return 'failed'
+      allow(import_workbench).to receive(:children_status).and_return 'warning'
+      expect(import_workbench.compute_new_status).to eq 'failed'
+    end
+
+    it 'should return warning if compliance_check_sets_status or children_status is warning' do
+      allow(import_workbench).to receive(:compliance_check_sets_status).and_return 'warning'
+      allow(import_workbench).to receive(:children_status).and_return 'successful'
+      expect(import_workbench.compute_new_status).to eq 'warning'
+    end
+
+    it 'should return successful if compliance_check_sets_status and children_status are successful' do
+      allow(import_workbench).to receive(:compliance_check_sets_status).and_return 'successful'
+      allow(import_workbench).to receive(:children_status).and_return 'successful'
+      expect(import_workbench.compute_new_status).to eq 'successful'
+    end
+
+    it 'should return running if compliance_check_sets_status or children_status is running' do
+      allow(import_workbench).to receive(:compliance_check_sets_status).and_return 'running'
+      allow(import_workbench).to receive(:children_status).and_return 'successful'
+      expect(import_workbench.compute_new_status).to eq 'running'
+    end
+
+  end
+
   context '#file_type' do
     let(:filename) { 'google-sample-feed.zip' }
     let(:import) {

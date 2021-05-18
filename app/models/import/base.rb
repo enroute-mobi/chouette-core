@@ -5,6 +5,8 @@ class Import::Base < ApplicationModel
   include PurgeableResource
   include ProfilingSupport
 
+  scope :unfinished, -> { where 'notified_parent_at IS NULL' }
+
   def workgroup
     workbench&.workgroup
   end

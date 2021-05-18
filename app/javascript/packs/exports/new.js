@@ -1,8 +1,8 @@
-import AjaxAutoComplete from '../../helpers/ajax_autocomplete'
+// import AjaxAutoComplete from '../../helpers/ajax_autocomplete'
 
 window.Spruce.store('export', {
 	type: '',
-	exportedLines: '',
+	exportedLines: 'all_line_ids',
 	referentialId: '',
 	updateReferentialId(value) {
 		this.referentialId = value
@@ -53,9 +53,9 @@ window.form = () => ({
 				break
 		}
 
-		new AjaxAutoComplete(
-			selector, 
-			{ ...defaultOptions, ...options }
-		).init()
+		// new AjaxAutoComplete(
+		// 	selector, 
+		// 	{ ...defaultOptions, ...options }
+		// ).init()
 	}
 })

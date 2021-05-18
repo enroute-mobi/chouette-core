@@ -1,4 +1,14 @@
 = simple_fields_for @export, as: :export, wrapper: :horizontal_form do |f|
-	= f.input :line_ids, collection: [], input_html: { multiple: true, style: 'width: 100%' }, label_html: { class: 'hidden' }, include_hidden: false
+	= f.input :line_ids,
+		as: :tom_select,
+		collection: [],
+		input_html: { multiple: true, style: 'width: 100%' }, label_html: { class: 'hidden' },
+		include_hidden: false,
+		select_options: { \
+			multiple: true, \
+			placeholder: I18n.t('exports.form.line_name') , \
+			minimumInputLength: 0, \
+			referentialId: '$refs.referentialIdSelect.value' \
+		}
 
 / = javascript_pack_tag "exports/line_ids"

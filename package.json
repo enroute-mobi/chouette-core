@@ -44,6 +44,7 @@
     "shortid": "^2.2.15",
     "snyk": "^1.518.0",
     "ssri": "~8.0.1",
+    "tom-select": "^1.6.1",
     "uglify-js": "3.3.2",
     "whatwg-fetch": "^2.0.4"
   },

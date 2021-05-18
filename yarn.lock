@@ -1259,6 +1259,11 @@
     sprintf-js "^1.1.2"
     utf8 "^3.0.0"
 
+"@orchidjs/sifter@^0.7.1":
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/@orchidjs/sifter/-/sifter-0.7.1.tgz#0cac2136ef3b69b7cccd9ae7de26f6c89be8cf29"
+  integrity sha512-EStYLl/jdHeTfEZ3Io4hn8+LqkmZAcew3v3E1B16ElASByRdgjDvM3IL/i3E0xzfLbZTjFY71woC3rUWdJtI3Q==
+
 "@rails/webpacker@^5.0.0":
   version "5.2.1"
   resolved "https://registry.yarnpkg.com/@rails/webpacker/-/webpacker-5.2.1.tgz#87cdbd4af2090ae2d74bdc51f6f04717d907c5b3"
@@ -11968,6 +11973,13 @@ to-regex@^3.0.1, to-regex@^3.0.2:
     extend-shallow "^3.0.2"
     regex-not "^1.0.2"
     safe-regex "^1.1.0"
+
+tom-select@^1.6.1:
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/tom-select/-/tom-select-1.6.1.tgz#61961353a81acbbdc26db152dede6877b66b340b"
+  integrity sha512-x/A6fmoBdUj6U0/ERwOi7BAogAV7LCDEm76I4jGwYhe/8kS5IqyXCYsiFi0/CTLKLFHa80wFODU92Ut9u7D9MQ==
+  dependencies:
+    "@orchidjs/sifter" "^0.7.1"
 
 toml@^3.0.0:
   version "3.0.0"

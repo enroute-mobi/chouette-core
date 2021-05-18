@@ -98,21 +98,13 @@ module Chouette
     validates_presence_of :published_name
     validates_presence_of :line
     validates :wayback, inclusion: { in: self.wayback.values }
-    after_commit :calculate_costs!,
-      on: [:create, :update],
-      if: ->() {
-        # Ensure the call back doesn't run during a referential merge
-        !referential.in_referential_suite? &&
-        !prevent_costs_calculation &&
-        # Check the presence of features in organisation
-        has_tomtom_features?
-      }
+    after_commit :calculate_costs!, on: [:create, :update]
 
     scope :with_at_least_three_stop_points, -> { joins(:stop_points).group('routes.id').having("COUNT(stop_points.id) >= 3") }
     scope :without_any_journey_pattern, -> { joins('LEFT JOIN journey_patterns ON journey_patterns.route_id = routes.id').where(journey_patterns: { id: nil }) }
 
     def self.clean!
-      find_each &:clean!
+      find_each(&:clean!)
     end
 
     def clean!
@@ -287,23 +279,15 @@ module Chouette
       candidate
     end
 
-    def calculate_costs! delay: 0, should_retry: true
-      return unless TomTom.enabled?
-      if delay > 0
-        enqueue_job :calculate_costs, should_retry, run_at: delay.from_now
-      else
-        enqueue_job :calculate_costs, should_retry
-      end
+    def calculate_costs!
+      RouteCalculateCostsService.new(referential).update(self)
     end
 
-    def calculate_costs retry_if_empty=false
+    def calculate_costs
       way_costs = TomTom.evaluate WayCost.from(stop_areas)
       if way_costs.present?
         costs = way_costs.inject({}) { |h,cost| h[cost.id] = { distance: cost.distance, time: cost.time } ; h }
         update_column :costs, costs
-      elsif retry_if_empty
-        Rails.logger.info "Waycosts came back empty, trying again in 5 seconds"
-        calculate_costs! delay: 5.seconds, should_retry: false
       end
     end
 
@@ -313,9 +297,5 @@ module Chouette
       all( :conditions => ['vehicle_journeys.id NOT IN (?)', Chouette::VehicleJourneyAtStop.where(stop_point_id: stop_point_id).pluck(:vehicle_journey_id)] )
     end
 
-    def has_tomtom_features?
-      referential.organisation.has_feature?(:route_calculate_costs) &&
-      referential.organisation.has_feature?(:costs_in_journey_patterns)
-    end
   end
 end

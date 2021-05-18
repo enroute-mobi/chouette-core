@@ -59,7 +59,7 @@ module TomTom
         }.to_json
       end
 
-      Rails.logger.info "#{self.class.name}: #{way_costs.size} evaluated"
+      Rails.logger.info "#{self.class.name}: #{way_costs.size} evaluated (#{response.status})"
 
       extract_costs_to_way_costs!(
         way_costs,

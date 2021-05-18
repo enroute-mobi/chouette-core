@@ -83,6 +83,12 @@ class Import::Gtfs < Import::Base
     import_resources :transfers if source.entries.include?('transfers.txt')
 
     import_resources :stop_times
+
+    calculate_route_costs
+  end
+
+  def calculate_route_costs
+    RouteCalculateCostsService.new(referential, update_journey_patterns: true).update_all
   end
 
   def import_agencies

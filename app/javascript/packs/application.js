@@ -10,4 +10,5 @@
 // import jQuery from 'jquery'
 // import {} from 'jquery-ujs'
 import "@fortawesome/fontawesome-free/css/all"
-import "alpinejs"
+import '@ryangjchandler/spruce'
+import 'alpinejs'

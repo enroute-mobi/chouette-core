@@ -1303,6 +1303,13 @@
     webpack-cli "^3.3.12"
     webpack-sources "^1.4.3"
 
+"@ryangjchandler/spruce@^2.7.1":
+  version "2.7.1"
+  resolved "https://registry.yarnpkg.com/@ryangjchandler/spruce/-/spruce-2.7.1.tgz#d61819750817567b1d12f9ce98e79910147c295a"
+  integrity sha512-UfSt3iYDCnErtK6p8OntDIbXYQMmzkozaLONckIqCkSgMSlqPd2VjHB/0IaBcFrbRHhhxHMOvieuiUoYg//s/g==
+  dependencies:
+    alpinejs "^2.5"
+
 "@simonwep/selection-js@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@simonwep/selection-js/-/selection-js-2.0.0.tgz#bb307c984791987f3ce82c43ff57bad38005ce1f"
@@ -2093,7 +2100,7 @@ alphanum-sort@^1.0.0:
   resolved "https://registry.yarnpkg.com/alphanum-sort/-/alphanum-sort-1.0.2.tgz#97a1119649b211ad33691d9f9f486a8ec9fbe0a3"
   integrity sha1-l6ERlkmyEa0zaR2fn0hqjsn74KM=
 
-alpinejs@^2.8.2:
+alpinejs@^2.5, alpinejs@^2.8.2:
   version "2.8.2"
   resolved "https://registry.yarnpkg.com/alpinejs/-/alpinejs-2.8.2.tgz#b14ec21ae3cd78dcee4aed0a78ed0f01b676dac4"
   integrity sha512-5yOUtckn4CBp0qsHpo2qgjZyZit84uXvHbB7NJ27sn4FA6UlFl2i9PGUAdTXkcbFvvxDJBM+zpOD8RuNYFvQAw==

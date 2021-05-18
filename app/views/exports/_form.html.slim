@@ -1,9 +1,4 @@
-div[
-  x-data="{ ...form() }"
-  x-init="
-  initForm();
-  $watch('exportedLines', currentValue => watchExportedLines(currentValue, referentialId))"
-  ]
+div[x-data]
   = simple_form_for @export, as: :export, url: workbench_exports_path(workbench), html: {class: 'form-horizontal', id: 'wb_export_form'}, wrapper: :horizontal_form do |form|
 
     .row
@@ -11,29 +6,38 @@ div[
         = form.input :name
 
       .col-lg-12
-        = form.input :referential_id,
-          as: :select,
-          collection: @referentials,
-          label_method: :name,
-          input_html: { "data-select2ed" => true, 'x-ref': 'referentialIdSelect' }
+        div[
+          x-data
+          x-init="$store.export.referentialId = $refs.referentialIdSelect.value"
+          x-on:change="$store.export.updateReferentialId($event.target.value)"
+        ]
+          = form.input :referential_id,
+            as: :select,
+            collection: @referentials,
+            label_method: :name,
+            input_html: { "data-select2ed" => true, 'x-ref': 'referentialIdSelect' }
+        div[
+          x-data
+          x-init="$store.export.type = $refs.typeSelect.value"
+          x-on:change="$store.export.updateExportType($event.target.value)"
+        ]
+          = form.input :type,
+            as: :select,
+            collection:  workgroup_exports(workbench.workgroup),
+            include_blank: false,
+            label_method: :human_name,
+            selected: 'Export::Gtfs', \
+            input_html: { 'x-model': '$store.export.type', 'x-ref': 'typeSelect' }
 
-        = form.input :type,
-          as: :select,
-          collection:  workgroup_exports(workbench.workgroup),
-          include_blank: false,
-          label_method: :human_name,
-          selected: 'Export::Gtfs', \
-          input_html: { 'x-model': 'type', 'x-ref': 'typeSelect' }
-
-        template[x-if="type == 'Export::Gtfs'"]
+        template[x-if="$store.export.type == 'Export::Gtfs'"]
           div
             = render 'exports/types/gtfs'
 
-        template[x-if="type == 'Export::Netex'"]
+        template[x-if="$store.export.type == 'Export::Netex'"]
           div
             = render 'exports/types/netex'
 
-        template[x-if="type == 'Export::NetexGeneric'"]
+        template[x-if="$store.export.type == 'Export::NetexGeneric'"]
           div
             = render 'exports/types/netex_generic'
 

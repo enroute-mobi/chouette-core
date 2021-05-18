@@ -1,29 +1,26 @@
-= form.input :exported_lines,
-  include_blank: false,
-  input_html: { \
-    id: 'exported_lines', \
-    'x-model': 'exportedLines', \
-    'x-ref': 'exportedLinesSelect', \
-    'x-bind:disabled': "referentialId == ''", \
-    'x-init': 'exportedLines = $refs.exportedLinesSelect.value' \
-  }
+div[
+  x-data
+  x-init="$store.export.exportedLines = $refs.exportedLinesSelect.value"
+  x-on:change="$store.export.updateExportedLines($event.target.value)"
+]
+  = form.input :exported_lines,
+    include_blank: false,
+    input_html: { \
+      id: 'exported_lines', \
+      'x-model': '$store.export.exportedLines', \
+      'x-ref': 'exportedLinesSelect', \
+      'x-bind:disabled': "$store.export.referentialId == ''", \
+      'x-init': 'exportedLines = $refs.exportedLinesSelect.value' \
+    }
 
-div[x-show="exportedLines == 'line_ids'"]
-  div
-    = render 'exports/options/line_ids'
+  div[x-show="$store.export.exportedLines == 'line_ids'"]
+    div
+      = render 'exports/options/line_ids'
 
-div[x-show="exportedLines == 'company_ids'"]
-  div
-   = render 'exports/options/company_ids'
+  div[x-show="$store.export.exportedLines == 'company_ids'"]
+    div
+    = render 'exports/options/company_ids'
 
-div[x-show="exportedLines == 'line_provider_ids'"]
-  div
-    = render 'exports/options/line_provider_ids'
-
-  / #exported_lines_slave
-  /   // Needed for failed validation
-  /   - if local_assigns.has_key?(:export)
-  /     - @export.is_a?(Export::Gtfs) || @export.is_a?(Export::NetexGeneric)
-  /       - Export::Base.exported_lines.values.each do |o|
-  /         - if @export.respond_to?(n)
-  /           = render "exports/options/#{o}"
+  div[x-show="$store.export.exportedLines == 'line_provider_ids'"]
+    div
+      = render 'exports/options/line_provider_ids'

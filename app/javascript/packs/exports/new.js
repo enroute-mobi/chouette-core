@@ -1,22 +1,35 @@
 import AjaxAutoComplete from '../../helpers/ajax_autocomplete'
 
-window.form = () => ({
+window.Spruce.store('export', {
 	type: '',
 	exportedLines: '',
 	referentialId: '',
-	initForm() {
-		this.referentialId = this.$refs.referentialIdSelect.value
-		this.type = this.$refs.typeSelect.value
+	updateReferentialId(value) {
+		this.referentialId = value
+	},
+	updateExportType(value) {
+		this.type = value
+	},
+	updateExportedLines(value) {
+		this.exportedLines = value
+	}
+})
 
-		// Need to use jquery here because the referentialIdSelect uses select2 (it does not work with the defauly alpine way)
-		$(`#${this.$refs.referentialIdSelect.id}`).on('change', e => {
-			this.referentialId = e.target.value
-		})
-	},
-	initExportedLines() {
-		console.log('initExportedLines')
-		console.log(this.$refs.exportedLinesSelect.value)
-	},
+window.form = () => ({
+	// type: '',
+	// exportedLines: '',
+	// referentialId: '',
+	// initForm() {
+	// 	this.referentialId = this.$refs.referentialIdSelect.value
+	// 	this.type = this.$refs.typeSelect.value
+	// 	if (!!this.$refs.exportedLinesSelect) {
+	// 		this.exportedLines = this.$refs.exportedLinesSelect .value
+	// 	}
+	// },
+	// initExportedLines() {
+	// 	console.log('initExportedLines')
+	// 	console.log(this.$refs.exportedLinesSelect.value)
+	// },
 	watchExportedLines(currentValue, referentialId) {
 		const defaultOptions = {
 			minimumInputLength: 0,

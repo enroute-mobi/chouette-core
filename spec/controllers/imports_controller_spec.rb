@@ -1,20 +1,38 @@
 RSpec.describe ImportsController, :type => :controller do
 
-  let(:organisation){ @user.organisation }
-  let(:workbench) { create :workbench, organisation: organisation }
-  let(:import)    { create :import, workbench: workbench }
+  let(:context) do
+    Chouette.create do
+      # To match organisation used by login_user
+      organisation = Organisation.find_by_code('first')
+      workgroup owner: organisation do
+        workbench organisation: organisation do
+          referential
+        end
+      end
+    end
+  end
+
+  let(:referential) { context.referential }
+  let(:import) { Import::Workbench.create!(name: "Test", creator: 'test', file: fixture_file_upload("google-sample-feed.zip"), workbench: workbench) }
+
+  let(:workbench) { referential.workbench }
+  let(:workgroup) { referential.workgroup }
 
   context 'logged in' do
     login_user
     describe "GET index" do
       context 'on a workbench' do
         let(:request){ get :index, params: { workbench_id: workbench.id }}
-        it_behaves_like 'checks current_organisation'
+        it "should be successful" do
+          expect(request).to be_successful
+        end
       end
 
       context 'on a workgroup' do
         let(:request){ get :index, params: { workgroup_id: workbench.workgroup_id }}
-        it_behaves_like 'checks current_organisation'
+        it "should be successful" do
+          expect(request).to be_successful
+        end
       end
     end
 

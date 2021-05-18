@@ -20,17 +20,31 @@ class ImportResourcesController < ChouetteController
   end
 
   protected
+
+  def workbench
+    return unless params[:workbench_id]
+    @workbench ||= current_organisation&.workbenches&.find(params[:workbench_id])
+  end
+
+  def workgroup
+    return unless params[:workgroup_id]
+    @workgroup ||= current_organisation&.workgroups.owned&.find(params[:workgroup_id])
+  end
+
+  def context
+    @context ||= workgroup || workbench
+  end
+
+  def parent
+    @parent ||= context.imports.find params[:import_id]
+  end
+
   def collection
     @import_resources ||= parent.resources
   end
 
   def resource
-    @import ||= current_organisation.imports.find params[:import_id]
-    @import_resource ||= begin
-      import_resource = Import::Resource.find params[:id]
-      raise ActiveRecord::RecordNotFound unless import_resource.import == @import
-      import_resource
-    end
+    @import_resource ||= parent.resources.find params[:id]
   end
 
   private

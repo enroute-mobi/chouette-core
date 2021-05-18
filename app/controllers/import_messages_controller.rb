@@ -15,6 +15,28 @@ class ImportMessagesController < ChouetteController
 
   protected
 
+  def workbench
+    return unless params[:workbench_id]
+    @workbench ||= current_organisation&.workbenches&.find(params[:workbench_id])
+  end
+
+  def workgroup
+    return unless params[:workgroup_id]
+    @workgroup ||= current_organisation&.workgroups.owned&.find(params[:workgroup_id])
+  end
+
+  def context
+    @context ||= workgroup || workbench
+  end
+
+  def import
+    @import ||= context.imports.find params[:import_id]
+  end
+
+  def parent
+    @import_resource ||= import.resources.find params[:import_resource_id]
+  end
+
   def collection
     @import_messages ||= parent.messages
   end

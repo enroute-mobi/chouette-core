@@ -24,7 +24,7 @@ class RouteCalculateCostsService
 
   def disabled?
     @disabled ||= referential.in_referential_suite? ||
-                  !referential.organisation.has_feature?(:route_calculate_costs) &&
+                  !referential.organisation.has_feature?(:route_calculate_costs) ||
                   !referential.organisation.has_feature?(:costs_in_journey_patterns)
   end
 

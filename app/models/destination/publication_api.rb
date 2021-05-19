@@ -5,11 +5,15 @@ class Destination::PublicationApi < ::Destination
   def do_transmit(publication, report)
     publication.exports.successful.each do |export|
       key = generate_key(export)
-      publication_api.publication_api_sources.find_or_create_by(key: key) do |publication_api_source|
+
+      if key
+        publication_api_source = publication_api.publication_api_sources.find_or_create_by(key: key)
         publication_api_source.export = export
         publication_api_source.publication = publication
         publication_api_source.key = key
-      end if key
+        
+        publication_api_source.save
+      end
     end
   end
 

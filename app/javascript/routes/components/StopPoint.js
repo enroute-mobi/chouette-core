@@ -14,18 +14,18 @@ export default function StopPoint(props) {
           <span>{props.value.user_objectid}</span>
         </div>
 
-        <div>
+        <div style={{width: 250}}>
           <BSelect2 id={props.id} value={props.value} onChange={props.onChange} index={props.index} hasError={props.hasError}/>
         </div>
 
-        <div>
+        <div style={{width: 120}}>
           <select className='form-control' value={props.value.for_boarding} id="for_boarding" onChange={props.onSelectChange}>
             <option value="normal">{I18n.t('routes.edit.stop_point.boarding.normal')}</option>
             <option value="forbidden">{I18n.t('routes.edit.stop_point.boarding.forbidden')}</option>
           </select>
         </div>
 
-        <div>
+        <div style={{width: 120}}>
           <select className='form-control' value={props.value.for_alighting} id="for_alighting" onChange={props.onSelectChange}>
             <option value="normal">{I18n.t('routes.edit.stop_point.alighting.normal')}</option>
             <option value="forbidden">{I18n.t('routes.edit.stop_point.alighting.forbidden')}</option>

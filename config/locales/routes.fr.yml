@@ -35,11 +35,11 @@ fr:
         comment: Commentaire
       stop_point:
         boarding:
-          normal: Montée autorisée
-          forbidden: Montée interdite
+          normal: Autorisée
+          forbidden: Interdite
         alighting:
-          normal: Descente autorisée
-          forbidden: Descente interdite
+          normal: Autorisée
+          forbidden: Interdite
     show:
       title: "%{name}"
       stop_points: "Liste des arrêts de l'itinéraire"

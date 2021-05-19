@@ -117,7 +117,7 @@ gem 'draper', '>= 4.0.1'
 gem 'enumerize'
 gem 'deep_cloneable'
 gem 'acts-as-taggable-on'
-gem 'nokogiri', '>= 1.11.0'
+gem 'nokogiri', '>= 1.11.4'
 
 gem 'acts_as_list'
 gem 'acts_as_tree'

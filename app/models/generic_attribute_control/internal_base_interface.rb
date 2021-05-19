@@ -11,21 +11,30 @@ module GenericAttributeControl
 
       class << self
         def collection_type(compliance_check)
-          resource_name(compliance_check).pluralize.to_sym
+          model_attribute(compliance_check).collection_name
         end
 
-        def lines_for compliance_check, _object
-          compliance_check.referential.lines
+        def lines_for compliance_check, object
+          case model_attribute(compliance_check).klass.name
+          when 'Chouette::Company' then compliance_check.referential.lines.where(company_id: object.id)
+          else
+            super
+          end
+        end
+
+        def label_attr(compliance_check)
+          case model_attribute(compliance_check).klass.name
+            when 'Chouette::VehicleJourney' then :published_journey_name
+            when 'Chouette::Line' then :published_name
+            else
+              super
+          end
         end
 
         private
 
-        def resource_name(compliance_check)
-          compliance_check.target.split('#').first
-        end
-
-        def attribute_name(compliance_check)
-          compliance_check.target.split('#').last
+        def model_attribute(compliance_check)
+          ModelAttribute.find_by_code(compliance_check.target)
         end
       end
     end

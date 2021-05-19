@@ -8,15 +8,20 @@ module GenericAttributeControl
 
       def compliance_test(compliance_check, object)
         object.send(
-          attribute_name(compliance_check)
+          model_attribute(compliance_check).name
         ).present?
       end
 
       def custom_message_attributes(compliance_check, object)
+        model_attribute = model_attribute(compliance_check)
+        
+        i18n_object_type = model_attribute.klass.ts
+        i18n_field_name = model_attribute.klass.tmf(model_attribute.name)
+
         {
           source_objectid: object.objectid,
-          object_type: resource_name(compliance_check),
-          field_name: attribute_name(compliance_check)
+          object_type: i18n_object_type,
+          field_name: i18n_field_name
         }
       end
     end

@@ -23,6 +23,10 @@ class ModelAttribute
     (list || all).group_by(&:resource_name)
   end
 
+  def self.find_by_code code
+    all.find { |m| m.code == code }
+  end
+
   def initialize(klass, name, data_type, **options)
     @klass = klass
     @name = name

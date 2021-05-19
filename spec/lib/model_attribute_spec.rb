@@ -43,6 +43,15 @@ RSpec.describe ModelAttribute do
     end
   end
 
+  describe '.find_by_code' do
+    it 'returns the model attribute by code' do
+      ModelAttribute.define(Chouette::Route, :name, :string)
+      
+      expect(ModelAttribute.find_by_code('route#name')).to eq(ModelAttribute.new(Chouette::Route, :name, :string))
+      expect(ModelAttribute.find_by_code('route#published_name')).to be_nil
+    end
+  end
+
   describe "#==" do
     it "returns true when :class_name, :name, :data_type and :options attributes match" do
       route_name = ModelAttribute.new(Chouette::Route, :name, :string, **{ mandatory: true })

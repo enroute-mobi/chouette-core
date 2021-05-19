@@ -245,7 +245,7 @@ en:
       prerequisite: "None"
     generic_attribute_control/presence:
       messages:
-        3_generic_2: "%{source_objectid}  : the %{source_attribute} value is nil"
+        3_generic_2: "%{source_objectid} : the %{source_attribute} value is nil"
       description: "Ensure that the targeted attribute has a defined value in the tested dataset."
       prerequisite: "None"
     generic_attribute_control/uniqueness:
@@ -355,12 +355,10 @@ en:
         one: "The transport mode and submode match those configured in the workgroup"
       generic_attribute_control/pattern:
         one: "Attribute regular expression of an object in a line"
-      generic_attribute_control/min_max:
-        one: "Min, max values of numeric fields"
       generic_attribute_control/uniqueness:
         one: "Attribute uniqueness of an object in a line"
       generic_attribute_control/presence:
-        one: "Attribute presence of an object in a line"
+        one: "Attribute presence of an object"
       dummy_control/dummy:
         one: "Dummy"
       company_control/name_is_present:

@@ -362,7 +362,7 @@ fr:
       generic_attribute_control/uniqueness:
         one: "Unicité d'un attribut d'un objet dans une ligne"
       generic_attribute_control/presence:
-        one: "Présence d'un attribut d'un objet dans une ligne"
+        one: "Présence de valeur pour un attribut"
       dummy_control/dummy:
         one: "Dummy"
       company_control/name_is_present:

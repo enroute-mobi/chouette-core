@@ -36,15 +36,15 @@ en:
       title: "Update compliance control"
     select_type:
       compliance_control_groups:
-        generic: Generic
-        line: Line
-        route: Route
-        routing_constraint_zone: Routing constraint zone
-        journey_pattern: Journey pattern
-        vehicle_journey: Vehicle journey
-        dummy: Dummy
-        company: Company
-        stop_area: Stop area
+        generic_attribute_control: Generic
+        line_control: Line
+        route_control: Route
+        routing_constraint_zone_control: Routing constraint zone
+        journey_pattern_control: Journey pattern
+        vehicle_journey_control: Vehicle journey
+        dummy_control: Dummy
+        company_control: Company
+        stop_area_control: Stop area
     actions:
       new: Add
       edit: Edit
@@ -243,11 +243,10 @@ en:
         3_generic_1: "%{source_objectid} : the %{source_attribute} attribute value (%{error_value}) does not respect the following pattern : %{reference_value}"
       description: "The object attribute must respect a patten (regular expression)"
       prerequisite: "None"
-    generic_attribute_control/min_max:
+    generic_attribute_control/presence:
       messages:
-        3_generic_2_1: "%{source_objectid}  : the %{source_attribute} attributes's value (%{error_value}) is greater than the authorized maximum value : %{reference_value}"
-        3_generic_2_2: "%{source_objectid}  : the %{source_attribute} attributes's value (%{error_value}) is smaller than the authorized minimum value %{reference_value}"
-      description: "The numeric value of an attribute must be contained between 2 values"
+        3_generic_2: "%{source_objectid} : the %{source_attribute} value is nil"
+      description: "Ensure that the targeted attribute has a defined value in the tested dataset."
       prerequisite: "None"
     generic_attribute_control/uniqueness:
       messages:
@@ -356,10 +355,10 @@ en:
         one: "The transport mode and submode match those configured in the workgroup"
       generic_attribute_control/pattern:
         one: "Attribute regular expression of an object in a line"
-      generic_attribute_control/min_max:
-        one: "Min, max values of numeric fields"
       generic_attribute_control/uniqueness:
         one: "Attribute uniqueness of an object in a line"
+      generic_attribute_control/presence:
+        one: "Attribute presence of an object"
       dummy_control/dummy:
         one: "Dummy"
       company_control/name_is_present:

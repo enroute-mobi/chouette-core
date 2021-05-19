@@ -8,15 +8,15 @@ fr:
       name: "Chercher le nom ou code d'un contrôle"
       subclass: Objet
       subclasses:
-        generic: 'Générique'
-        journey_pattern: 'Mission'
-        line: 'Ligne'
-        route: 'Itinéraire'
-        routing_constraint_zone: 'ITL'
-        vehicle_journey: 'Course'
-        dummy: 'Test'
-        company: 'Transporteur'
-        stop_area: 'Arrêt'
+        generic: Générique
+        line: Ligne
+        route: Itinéraire
+        routing_constraint: ITL
+        journey_pattern: Mission
+        vehicle_journey: Course
+        dummy: Test
+        company: Transporteur
+        stop_area: Arrêt
     form:
       company_name: Indiquez le nom d'un transporteur
     search_no_results: 'Aucun contrôle ne correspond à votre recherche'
@@ -38,10 +38,10 @@ fr:
         generic: Générique
         line: Ligne
         route: Itinéraire
-        routing_constraint_zone: ITL
+        routing_constraint: ITL
         journey_pattern: Mission
         vehicle_journey: Course
-        dummy: Dummy
+        dummy: Test
         company: Transporteur
         stop_area: Arrêt
     actions:
@@ -242,17 +242,17 @@ fr:
         3_generic_1: "%{source_objectid} : l'attribut %{source_attribute} a une valeur %{error_value} qui ne respecte pas l'expression régulière %{reference_value}"
       description: "L'attribut de l'objet doit respecter une expression régulière"
       prerequisite: "Aucun"
-    generic_attribute_control/min_max:
+    generic_attribute_control/presence:
       messages:
-        3_generic_2_1: "%{source_objectid} : l'attribut %{source_attribute} a une valeur %{error_value} supérieure à la valeur maximale autorisée %{reference_value}"
-        3_generic_2_2: "%{source_objectid} : l'attribut %{source_attribute} a une valeur %{error_value} inférieure à la valeur minimale autorisée %{reference_value}"
-      description: "La valeur numérique de l'attribut doit rester comprise entre 2 valeurs"
+        3_generic_2: "%{source_objectid} : l'attribut %{source_attribute} n'a pas de valeur"
+      description: "S’assure que l’attribut désigné est bien défini dans les données testées"
       prerequisite: "Aucun"
     generic_attribute_control/uniqueness:
       messages:
         3_generic_3: "%{source_objectid} : l'attribut %{source_attribute} a une valeur %{error_value} partagée avec %{target_0_objectid}"
       description: "La valeur de l'attribut doit être unique au sein des objets de la ligne"
       prerequisite: "Aucun"
+    
     shape_control:
       3_shape_1: "Tracé %{source_objectid} : le tracé passe trop loin de l'arrêt %{target_0_label} (%{target_0_objectid}) : %{error_value} > %{reference_value}"
       3_shape_2: "Tracé %{source_objectid} : le tracé n'est pas défini entre les arrêts %{target_0_label} (%{target_0_objectid}) et %{target_1_label} (%{target_1_objectid})"
@@ -361,6 +361,8 @@ fr:
         one: "Valeur min, max de champs numériques"
       generic_attribute_control/uniqueness:
         one: "Unicité d'un attribut d'un objet dans une ligne"
+      generic_attribute_control/presence:
+        one: "Présence de valeur pour un attribut"
       dummy_control/dummy:
         one: "Dummy"
       company_control/name_is_present:

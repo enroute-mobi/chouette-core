@@ -8,9 +8,9 @@
       = f.input :criticity
       = f.association :compliance_control_block, collection: @available_blocks
       = f.input :comment
-      - f.object.class.dynamic_attributes.each do |attribute|
+      - @compliance_control.class.dynamic_attributes.each do |attribute|
         - if attribute == :target
-          = f.input :target, as: :grouped_select, collection: ModelAttribute.grouped_options(@compliance_control.class.attribute_type), group_method: :last, include_blank: false
+          = f.input :target, as: :grouped_select, collection: compliance_control_target_options(@compliance_control), group_method: :last, include_blank: false
         - elsif attribute == :company_id
           = f.input :company_id,
             as: :select,

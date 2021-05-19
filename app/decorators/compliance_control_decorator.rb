@@ -18,4 +18,8 @@ class ComplianceControlDecorator < AF83::Decorator
   define_instance_class_method :dynamic_attributes do
     object_class.dynamic_attributes
   end
+
+  define_instance_class_method :display_translated_subclass do
+    I18n.t("compliance_controls.filters.subclasses.#{object.object_type}")
+  end
 end

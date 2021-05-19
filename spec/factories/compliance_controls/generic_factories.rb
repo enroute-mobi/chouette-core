@@ -22,4 +22,10 @@ FactoryBot.define do
     association :compliance_control_set
     target {"route#name"}
   end
+
+  factory :generic_attribute_control_presence, class: 'GenericAttributeControl::Presence' do
+    sequence(:name) { |n| "Presence control #{n}" }
+    association :compliance_control_set
+    target {"line#color"}
+  end
 end

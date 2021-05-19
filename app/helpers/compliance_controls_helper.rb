@@ -1,12 +1,11 @@
 module ComplianceControlsHelper
   def subclass_selection_list
-    ComplianceControl.subclass_patterns.map(&method(:make_subclass_selection_item))
+    compliance_control_types_options.keys.map(&method(:make_subclass_selection_item))
   end
 
-
-  def make_subclass_selection_item(key_pattern)
-    key, pattern = key_pattern
-    [t("compliance_controls.filters.subclasses.#{key}"), "-#{pattern}-"]
+  def make_subclass_selection_item(key)
+    
+    [t("compliance_controls.filters.subclasses.#{key}"), "-#{key.camelcase}-"]
   end
 
   def display_control_attribute(key, value, compliance_control)
@@ -33,5 +32,15 @@ module ComplianceControlsHelper
         hash[ComplianceControl.human_attribute_name(attribute)] = display_control_attribute(attribute, resource.send(attribute), compliance_control)
       end
     end
+  end
+
+  def compliance_control_types_options
+    ComplianceControl.descendants.group_by(&:object_type)
+  end
+
+  def compliance_control_target_options(cc)
+    list = ModelAttribute.all.reject(&:mandatory) if cc.is_a? GenericAttributeControl::Presence
+
+    ModelAttribute.grouped_options(list: list, type: cc.class.attribute_type)
   end
 end

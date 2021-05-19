@@ -19,17 +19,17 @@ export default function StopPointList({ stopPoints, onDeleteClick, onMoveUpClick
               <label className="control-label">{I18n.t('simple_form.labels.stop_point.reflex_id')}</label>
             </div>
           </div>
-          <div>
+          <div style={{width: 250}}>
             <div className="form-group">
               <label className="control-label">{I18n.t('simple_form.labels.stop_point.name')}</label>
             </div>
           </div>
-          <div>
+          <div style={{width: 120}}>
             <div className="form-group">
               <label className="control-label">{I18n.t('simple_form.labels.stop_point.for_boarding')}</label>
             </div>
           </div>
-          <div>
+          <div style={{width: 120}}>
             <div className="form-group">
               <label className="control-label">{I18n.t('simple_form.labels.stop_point.for_alighting')}</label>
             </div>

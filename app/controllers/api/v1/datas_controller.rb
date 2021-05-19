@@ -24,7 +24,10 @@ class Api::V1::DatasController < ActionController::Base
   end
 
   def redirect
-    redirect_to "/api/v1/datas/#{params[:slug]}/#{params[:key]}"
+    key = params[:key]
+    # TODO Delete when legacy URLs are not longer required
+    clean_key = key.gsub("-full", "")
+    redirect_to "/api/v1/datas/#{params[:slug]}/#{clean_key}"
   end
 
   around_action :use_published_referential, only: [:lines, :graphql]

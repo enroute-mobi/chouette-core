@@ -4,7 +4,7 @@
   .container-fluid
     .row
       .col-lg-8.col-lg-offset-2.col-md-8.col-md-offset-2.col-sm-10.col-sm-offset-1
-        = simple_form_for @line, url: [@line_referential, @line], html: {class: 'form-horizontal', id: 'attach_form'}, wrapper: :horizontal_form do |form|
+        = simple_form_for @line, url: workbench_line_referential_line_path(@workbench, @line), html: {class: 'form-horizontal', id: 'attach_form'}, wrapper: :horizontal_form do |form|
           .row
             .col-lg-12
               = form.hidden_field :line_notice_ids
@@ -14,7 +14,7 @@
               .head
                 h4= Chouette::LineNotice.t.capitalize
                 .input-group
-                  input.form-control.search type='text' placeholder=I18n.t('actions.search') data={searchUrl: url_for([:available_line_notices, @line_referential, @line])}
+                  input.form-control.search type='text' placeholder=I18n.t('actions.search') data={searchUrl: url_for([:available_line_notices, @workbench, @line_referential, @line])}
                   .input-group-btn.clear-group
                     a.btn.clear
                       span.fa.fa-times

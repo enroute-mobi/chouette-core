@@ -4,7 +4,7 @@ class TomSelectInput < SimpleForm::Inputs::CollectionSelectInput
 
     template.content_tag(:div) do
       template.concat @builder.collection_select(attribute_name, collection, value_method, label_method, input_options, input_html_options)
-      template.concat init_select2
+      # template.concat init_select2
     end
   end
 

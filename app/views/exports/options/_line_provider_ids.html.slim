@@ -1,4 +1,11 @@
-= simple_fields_for @export, as: :export, wrapper: :horizontal_form do |f|
-	= f.input :line_provider_ids, collection: [], input_html: { multiple: true, style: 'width: 100%' }, label_html: { class: 'hidden' }, include_hidden: false
-
-/ = javascript_pack_tag "#{local_assigns[:resource_name]}/line_provider_ids"
+div[
+	x-data
+	x-init="$store.export.initLineProviderIdsSelect(#{@export.line_provider_ids})"
+]
+	= simple_fields_for @export, as: :export, wrapper: :horizontal_form do |f|
+		= f.input :line_provider_ids,
+			as: :tom_select,
+			collection: [],
+			input_html: { multiple: true, style: 'width: 100%' },
+			label_html: { class: 'hidden' },
+			include_hidden: false

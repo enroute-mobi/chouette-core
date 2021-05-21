@@ -16,19 +16,6 @@ ChouetteIhm::Application.routes.draw do
     resources :stop_areas, only: :show
   end
 
-  namespace :refresh_form do
-    resource :export, only: [] do
-      get :edit_type, on: :collection
-      get :edit_exported_lines, on: :collection
-      get :set_export_type, on: :collection
-    end
-
-    resource :publication_setup, only: [] do
-      get :edit_type, on: :collection
-      get :edit_exported_lines, on: :collection
-    end
-  end
-
   concern :iev_interfaces do
     resources :imports do
       get :download, on: :member
@@ -39,7 +26,6 @@ ChouetteIhm::Application.routes.draw do
     end
 
     resources :exports do
-      get :refresh_form, on: :collection
       post :upload, on: :member
       get :download, on: :member
     end

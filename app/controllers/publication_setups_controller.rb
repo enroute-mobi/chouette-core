@@ -4,7 +4,7 @@ class PublicationSetupsController < ChouetteController
   defaults :resource_class => PublicationSetup
   belongs_to :workgroup
 
-  before_action :build_export, only: %i[show create edit update]
+  before_action :build_export, only: %i[show new create edit update]
 
   respond_to :html
 
@@ -35,7 +35,7 @@ class PublicationSetupsController < ChouetteController
   private
 
   def build_export
-    @export = build_resource.new_export(workgroup: @workgroup)
+    @export = build_resource.build_new_export
   end
 
   def publication_setup_params
@@ -49,27 +49,26 @@ class PublicationSetupsController < ChouetteController
 
     params.require(:publication_setup).permit(
       :name,
-      :export_type,
       :enabled,
       :workgroup_id,
       :publish_per_line,
       destinations_attributes: destination_options
     ).tap do |_params|
-      _params[:export_options] = export_options_params
+       _params[:export_options] = export_options_params
     end
   end
 
   def export_options_params
-    permitted_keys = %i[period exported_lines]
-    export_class = params.dig(:publication_setup, :export_type)&.safe_constantize
+    permitted_keys = %i[type]
+    export_class = params.dig(:publication_setup, :export, :type)&.safe_constantize
 
     if export_class
       permitted_keys += export_class.options.keys
     end
+    
+    return {} unless params.dig(:publication_setup, :export)
 
-    return {} unless params[:export]
-
-    params.require(:export).permit(*permitted_keys, line_ids: [], line_provider_ids: [], company_ids: []).tap do |_params|
+    params[:publication_setup].require(:export).permit(*permitted_keys, line_ids: [], line_provider_ids: [], company_ids: []).tap do |_params|
       if export_class == Export::Netex # Specific code see CHOUETTE-1151
         _params[:duration] = _params[:duration].to_i
       elsif export_class&.method_defined?(:duration)

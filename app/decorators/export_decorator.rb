@@ -38,6 +38,24 @@ class ExportDecorator < AF83::Decorator
     I18n.t("enumerize.profile.#{profile}")
   end
 
+  define_instance_method :line_ids do
+    return [] unless object.line_ids
+
+    Rabl::Renderer.json(Chouette::Line.where(id: object.line_ids), 'autocomplete/lines', view_path: 'app/views')
+  end
+
+  define_instance_method :company_ids do
+    return [] unless object.company_ids
+
+    Rabl::Renderer.json(Chouette::Company.where(id: object.company_ids), 'autocomplete/companies', view_path: 'app/views')
+  end
+
+  define_instance_method :line_provider_ids do
+    return [] unless object.line_provider_ids
+
+    Rabl::Renderer.json(LineProvider.where(id: object.line_provider_ids), 'autocomplete/line_providers', view_path: 'app/views')
+  end
+
   define_instance_method :pretty_print_options do
     options = {}
 

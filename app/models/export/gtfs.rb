@@ -7,8 +7,8 @@ class Export::Gtfs < Export::Base
   option :line_ids, serialize: :map_ids
   option :company_ids, serialize: :map_ids
   option :line_provider_ids, serialize: :map_ids
-  option :prefer_referent_stop_area, required: true, default_value: false, enumerize: [true, false]
-  option :ignore_single_stop_station, required: true, default_value: false, enumerize: [true, false]
+  option :prefer_referent_stop_area, required: true, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
+  option :ignore_single_stop_station, required: true, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
 
   DEFAULT_AGENCY_ID = "chouette_default"
   DEFAULT_TIMEZONE = "Etc/UTC"

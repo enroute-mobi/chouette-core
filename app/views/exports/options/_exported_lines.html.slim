@@ -5,17 +5,44 @@ div[
   = form.input :exported_lines,
     include_blank: false,
     input_html: { \
-      id: 'exported_lines', \
       'x-model': '$store.export.exportedLines', \
       'x-ref': 'exportedLinesSelect', \
       'x-bind:disabled': "$store.export.isExport && $store.export.referentialId == ''", \
     }
 
   template[x-if="$store.export.exportedLines == 'line_ids'"]
-    = render 'exports/options/line_ids'
+    div[
+      x-data
+      x-init="$store.export.initLineIdsSelect(#{@export.decorate.line_ids})"
+    ]
+      = form.input :line_ids,
+        as: :tom_select,
+        collection: [],
+        input_html: { multiple: true, style: 'width: 100%' },
+        label_html: { class: 'hidden' },
+        include_hidden: false
+
 
   template[x-if="$store.export.exportedLines == 'company_ids'"]
-    = render 'exports/options/company_ids'
+    div[
+      x-data
+      x-init="$store.export.initCompanyIdsSelect(#{@export.company_ids})"
+    ]
+      = form.input :company_ids,
+        as: :tom_select,
+        collection: [],
+        input_html: { multiple: true, style: 'width: 100%' },
+        label_html: { class: 'hidden' },
+        include_hidden: false
 
   template[x-if="$store.export.exportedLines == 'line_provider_ids'"]
-    = render 'exports/options/line_provider_ids'
+    div[
+      x-data
+      x-init="$store.export.initLineProviderIdsSelect(#{@export.line_provider_ids})"
+    ]
+      = form.input :line_provider_ids,
+        as: :tom_select,
+        collection: [],
+        input_html: { multiple: true, style: 'width: 100%' },
+        label_html: { class: 'hidden' },
+        include_hidden: false

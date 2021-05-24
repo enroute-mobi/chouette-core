@@ -17,6 +17,7 @@ module OptionsSupport
 
         handle_serialize_option(attribute_name, opts)
         handle_enumerize_option(attribute_name, opts)
+        handle_required_option(attribute_name, opts)
         handle_default_value_option(attribute_name, opts)
 
         @options ||= {}
@@ -33,6 +34,10 @@ module OptionsSupport
 
       private
 
+      def handle_required_option attribute_name, opts
+        validates_presence_of attribute_name if opts[:required]
+      end
+
       def handle_serialize_option attribute_name, opts
         serializer = opts[:serialize]
    
@@ -46,7 +51,7 @@ module OptionsSupport
           when 'Proc' then serializer.call(value)
           when 'Symbol' then send(serializer, value)
           else
-            serializer.new(value)
+            serializer.new.cast(value)
           end
         rescue => e
           Rails.logger.warn("Could not serialize #{attribute_name}. value: #{value}, \n Error: #{e}")

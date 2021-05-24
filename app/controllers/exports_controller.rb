@@ -56,20 +56,7 @@ class ExportsController < ChouetteController
   end
 
   def export_params
-    permitted_keys = %i(name type referential_id notification_target)
-    export_class = params[:export] && params[:export][:type] && params[:export][:type].safe_constantize
-
-    if export_class
-      permitted_keys += export_class.options.map { |k, v| v[:name].presence || k }
-    end
-
-    params.require(:export).permit(*permitted_keys, line_ids: [], line_provider_ids: [], company_ids: []).tap do |_params|
-      _params[:user_id] ||= current_user.id
-
-      if export_class&.method_defined?(:duration)
-        _params[:duration] = _params.delete(:period) == 'only_next_days' ?  _params[:duration].to_i : nil
-      end
-    end
+    params.require(:export).permit(:name, :type, :referential_id, :uder_id, :notification_target, options: {})
   end
 
   def decorate_collection(exports)

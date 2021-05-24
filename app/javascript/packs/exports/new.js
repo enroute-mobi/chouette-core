@@ -2,22 +2,17 @@ import TomSelect from 'tom-select'
 class SelectBuilder {
 	static init(selector, pathBuilder, initialValue = []) {
 		new TomSelect(selector, {
-			preload: 'focus',
+			preload: true,
 			openOnFocus: true,
-			load: async (query, callback) => {
-				const path = `${pathBuilder()}?q=${encodeURIComponent(query)}`
-
-				try {
-					const response = await fetch(path)
-					await response.json().then(callback)
-				} catch(error) {
-					callback()
-				}
-			},
+			load: (query, callback) => (
+				fetch(`${pathBuilder()}?q=${encodeURIComponent(query)}`)
+					.then(res => res.json().then(callback))
+					.catch(() => callback())
+			),
 			valueField: 'id',
 			labelField: 'text',
-			options: initialValue,
-			items: initialValue.map(item => item.id)
+			items: 	initialValue.map(item => item.id),
+			options: initialValue
 		})
 	}
 }
@@ -25,10 +20,8 @@ class PathBuilder {
 	constructor(store) {
 		this.store = store
 
-		if (!this.store.isExport) {
-			this.workbenchId = window.location.pathname.match(/(\d+)/)[0]
-			this.workgroupId = window.location.pathname.match(/\d+/)[0]
-		}
+		this.workbenchId = window.location.pathname.match(/(\d+)/)[0]
+		this.workgroupId = window.location.pathname.match(/\d+/)[0]
 	}
 
 	get lineIds() {
@@ -67,19 +60,21 @@ window.Spruce.store('export', {
 		new TomSelect('#export_referential_id', {}).on('change', value => this.referentialId = value)
 	},
 	initLineIdsSelect(lineIds) {
-		// this.setState({ lineIds })
-		SelectBuilder.init('#export_line_ids', this.pathBuilder.lineIds, lineIds)
+		SelectBuilder.init(`#${this.baseName}_line_ids`, this.pathBuilder.lineIds, lineIds)
 	},
 	initCompanyIdsSelect(companyIds) {
-		// this.setState({ companyIds })
-		SelectBuilder.init('#export_company_ids', this.pathBuilder.companyIds, companyIds)
+		SelectBuilder.init(`#${this.baseName}_company_ids`, this.pathBuilder.companyIds, companyIds)
 	},
 	initLineProviderIdsSelect(lineProviderIds) {
-		// this.setState({ lineProviderIds })
-		SelectBuilder.init('#export_line_provider_ids', this.pathBuilder.lineProviderIds, lineProviderIds)
+		SelectBuilder.init(`#${this.baseName}_line_provider_ids`, this.pathBuilder.lineProviderIds, lineProviderIds)
+	},
+	initLineCodeSelect() {
+		SelectBuilder.init(`#${this.baseName}_line_code`, this.pathBuilder.lineIds)
 	}
 })
 
 window.Spruce.watch('export.isExport', isExport => {
 	!isExport && window.Spruce.stores.export.setState({ exportType: 'full' })
+	window.Spruce.stores.export.setState({
+		baseName: isExport ? 'export_options' : 'publication_setup_export_options' })
 })

@@ -10,7 +10,7 @@
     h2.mb-lg= t('publication_setups.form.sections.export')
     .form-group
       .col-lg-12
-        = render'exports/options', form: form, resource_type: 'publication_setup[export_options]', workgroup: @workgroup
+        = render'exports/options', form: form, resource_type: :export_options, workgroup: @workgroup
         
         div[x-data]
           template[x-if="!$store.export.isExport && ($store.export.type == 'Export::Gtfs' || $store.export.type == 'Export::NetexGeneric')"]

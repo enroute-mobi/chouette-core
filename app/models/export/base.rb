@@ -42,8 +42,10 @@ class Export::Base < ApplicationModel
 
   has_many :publication_api_sources, foreign_key: :export_id
 
-  validates :type, :referential_id, presence: true
-  validates_presence_of :workgroup
+  validates :type, presence: true, inclusion: { in: ::Workgroup::DEFAULT_EXPORT_TYPES }
+
+  validates_presence_of :workgroup, :referential_id
+  validates :options, export_options: true
 
   after_create :purge_exports
   def purge_exports

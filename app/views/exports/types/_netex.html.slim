@@ -1,10 +1,19 @@
 - @export = Export::Netex.new(**@export.attributes.except('type'))
 
-= form.simple_fields_for @export do |sub_form|
+= form.simple_fields_for(resource_type, @export) do |sub_form|
   = sub_form.input :duration, required: true, input_html: { value: Export::Netex.options.dig(:duration, :default_value) }
-  = render 'exports/options/export_type', form: sub_form
+  div[x-data]
+    = sub_form.input :export_type,
+      required: true,
+      input_html: { \
+        'x-bind:disabled': '!$store.export.isExport', \
+        'x-model': '$store.export.exportType' \
+      }
 
-  template[x-if="$store.export.exportType == 'line'"]
-    div
-      = render 'exports/options/line_code', form: sub_form
+    template[x-if="$store.export.exportType == 'line'"]
+      div[
+        x-data
+        x-init="$store.export.initLineCodeSelect()"
+      ]
+        = sub_form.input :line_code, as: :tom_select, collection: [], required: true
 

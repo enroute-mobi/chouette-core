@@ -3,6 +3,7 @@
   .row
     .col-lg-12
       = form.input :name
+      = form.input :user_id, as: :hidden, input_html: { value: current_user.id }
 
     .col-lg-12
       div[
@@ -15,7 +16,7 @@
           label_method: :name,
           input_html: { 'x-model': '$store.export.referentialId' }
       
-      = render 'exports/options', form: form, resource_type: 'export', workgroup: @workbench.workgroup
+      = render 'exports/options', form: form, resource_type: :options, workgroup: @workbench.workgroup
 
     .col-lg-12
       = form.input :notification_target, collection: Export::Base.notification_target_options, selected: :user

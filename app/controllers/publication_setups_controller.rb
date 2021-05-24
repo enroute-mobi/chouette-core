@@ -52,29 +52,9 @@ class PublicationSetupsController < ChouetteController
       :enabled,
       :workgroup_id,
       :publish_per_line,
-      destinations_attributes: destination_options
-    ).tap do |_params|
-       _params[:export_options] = export_options_params
-    end
-  end
-
-  def export_options_params
-    permitted_keys = %i[type]
-    export_class = params.dig(:publication_setup, :export, :type)&.safe_constantize
-
-    if export_class
-      permitted_keys += export_class.options.keys
-    end
-    
-    return {} unless params.dig(:publication_setup, :export)
-
-    params[:publication_setup].require(:export).permit(*permitted_keys, line_ids: [], line_provider_ids: [], company_ids: []).tap do |_params|
-      if export_class == Export::Netex # Specific code see CHOUETTE-1151
-        _params[:duration] = _params[:duration].to_i
-      elsif export_class&.method_defined?(:duration)
-        _params[:duration] = _params[:period] == 'only_next_days' ?  _params[:duration].to_i : nil
-      end
-    end
+      destinations_attributes: destination_options,
+      export_options: {}
+    )
   end
 
   def resource

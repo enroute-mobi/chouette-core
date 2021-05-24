@@ -1,9 +1,0 @@
-div[
-  x-data
-]
-= form.input :export_type,
-  required: true,
-  input_html: { \
-    'x-bind:disabled': '!$store.export.isExport', \
-    'x-model': '$store.export.exportType' \
-  }

@@ -13,7 +13,7 @@ class PublicationSetup < ApplicationModel
 
   validates :name, presence: true
   validates :workgroup, presence: true
-  validates_with PublicationSetups::ExportOptionsValidator
+  validates :export_options, export_options: { extra_attributes: %i[type] }
 
   store_accessor :export_options
 
@@ -22,6 +22,9 @@ class PublicationSetup < ApplicationModel
   scope :enabled, -> { where enabled: true }
 
   attr_reader :export
+
+  after_initialize :build_new_export
+  before_validation :build_new_export
 
   def human_export_name
     new_export.human_name
@@ -78,7 +81,7 @@ class PublicationSetup < ApplicationModel
   end
 
   def build_new_export
-    @export = new_export
+    @export = new_export(workgroup: workgroup)
   end
 
   private

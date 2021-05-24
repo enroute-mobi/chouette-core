@@ -1,14 +1,18 @@
+- is_export = resource_type == :options
+
 div[
   x-data
   x-init="
     $store.export.setState({
-      isExport: #{resource_type == 'export'},
+      referentialId: '#{@export.referential_id}',
+      isExport: #{is_export},
       type: '#{@export.type || 'Export::Gtfs'}'
     })
   "
 ]
-  = form.simple_fields_for(@export) do |sub_form|
-    = sub_form.input :type,
+  = form.simple_fields_for(resource_type, @export) do |sub_form|
+    - type_form = is_export ? form : sub_form
+    = type_form.input :type,
       as: :select,
       collection:  workgroup_exports(workgroup),
       include_blank: false,
@@ -17,12 +21,12 @@ div[
 
   template[x-if="$store.export.type == 'Export::Gtfs'"]
     div
-      = render 'exports/types/gtfs', form: form
+      = render 'exports/types/gtfs', form: form, resource_type: resource_type
 
   template[x-if="$store.export.type == 'Export::Netex'"]
     div
-      = render 'exports/types/netex', form: form
+      = render 'exports/types/netex', form: form, resource_type: resource_type
 
   template[x-if="$store.export.type == 'Export::NetexGeneric'"]
     div
-      = render 'exports/types/netex_generic', form: form
+      = render 'exports/types/netex_generic', form: form, resource_type: resource_type

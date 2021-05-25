@@ -35,7 +35,7 @@ module OptionsSupport
       private
 
       def handle_required_option attribute_name, opts
-        validates_presence_of attribute_name if opts[:required]
+        validates_presence_of(attribute_name) if opts[:required]
       end
 
       def handle_serialize_option attribute_name, opts

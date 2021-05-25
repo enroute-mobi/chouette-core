@@ -29,7 +29,7 @@ RSpec.describe PublicationSetup, type: :model, use_chouette_factory: true do
 
   let(:referential) { context.referential }
   let(:line_ids) { referential.lines.pluck(:id) }
-  let(:publication_setup) { PublicationSetup.new(export_type: 'Export::Gtfs', workgroup: context.workgroup, export_options: { line_ids: line_ids } ) }
+  let(:publication_setup) { PublicationSetup.new(workgroup: context.workgroup, export_options: { type: 'Export::Gtfs', line_ids: line_ids } ) }
 
   before(:each) { referential.switch }
 

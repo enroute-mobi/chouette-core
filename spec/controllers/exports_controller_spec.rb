@@ -71,10 +71,13 @@ RSpec.describe ExportsController, :type => :controller do
         context "with full params" do
           let(:params){{
             name: "foo",
-            type: "Export::Gtfs",
-            duration: 12,
-            export_type: :full,
-            referential_id: first_referential.id
+            type: "Export::Netex",
+            referential_id: first_referential.id,
+            options: {
+              duration: 12,
+              export_type: :full,
+            }
+            
           }}
 
           it 'should be successful' do
@@ -96,9 +99,11 @@ RSpec.describe ExportsController, :type => :controller do
         context "with all options" do
           let(:params){{
             name: "foo",
-            type: "Export::Gtfs",
-            duration: 90,
-            referential_id: first_referential.id
+            type: "Export::Workgroup",
+            referential_id: first_referential.id,
+            options: {
+              duration: 90
+            }
           }}
 
           it 'should be successful' do

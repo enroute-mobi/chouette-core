@@ -214,9 +214,10 @@ class LinesController < ChouetteController
 
     scope_root = params[:q][:status] == 'activated' ? 'active' : 'not_active'
     full_status_scope = true
-    @status_from = params[:q][:status_from_enabled] == '1' && params[:q]['status_from(1i)'] && Date.new(params[:q]['status_from(1i)'].to_i, params[:q]['status_from(2i)'].to_i, params[:q]['status_from(3i)'].to_i)
-    @status_until = params[:q][:status_until_enabled] == '1' && params[:q]['status_until(1i)'] && Date.new(params[:q]['status_until(1i)'].to_i, params[:q]['status_until(2i)'].to_i, params[:q]['status_until(3i)'].to_i)
-
+    @status_from = params[:q][:status_from_enabled] == 'true' && params[:q]['status_from(1i)'] && Date.new(params[:q]['status_from(1i)'].to_i, params[:q]['status_from(2i)'].to_i, params[:q]['status_from(3i)'].to_i)
+    @status_until = params[:q][:status_until_enabled] == 'true' && params[:q]['status_until(1i)'] && Date.new(params[:q]['status_until(1i)'].to_i, params[:q]['status_until(2i)'].to_i, params[:q]['status_until(3i)'].to_i)
+    puts @status_from
+    puts @status_until
     if @status_from
       if @status_until
         scope = scope.send("#{scope_root}_between", @status_from, @status_until)

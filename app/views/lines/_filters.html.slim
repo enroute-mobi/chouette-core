@@ -44,17 +44,17 @@
 
     .form-group.togglable class=filter_item_class(params[:q], :status)
       = f.label Chouette::Line.tmf(:status), required: false, class: 'control-label'
-      .form-group.checkbox_list.line_status x-data="{ lineStatusFromDeactivated: true, lineStatusUntilDeactivated: true }"
+      .form-group.checkbox_list.line_status x-data="{ lineStatusFromActivated: #{params.fetch(:q, :status_from_enabled){'false'} == 'true'}, lineStatusUntilActivated: #{params.fetch(:q, :status_until_enabled){'false'} == 'true'} }"
         = f.input :status, as: :radio_buttons, collection: %w(all activated deactivated).map{|status| [("<span>#{t("enumerize.line.status.#{status}")}#{status_symbol(status)}</span>").html_safe, status] }, checked: params[:q] && params[:q][:status] || "all", label: false, wrapper_html: { class: 'radiobox-wrapper' }
         hr
         .col-md-3
-          = f.input :status_from_enabled, as: :switchable_checkbox, value: true, input_html: { checked: params[:q] && params[:q][:status_from_enabled] == '1', 'x-on:click': 'lineStatusFromDeactivated = !lineStatusFromDeactivated' }, label: false
+          = f.input :status_from_enabled, as: :switchable_checkbox, input_html: { checked: params[:q] && params[:q][:status_from_enabled] == 'true', 'x-on:click': 'lineStatusFromActivated = !lineStatusFromActivated' }, label: false
         .col-md-9
-          = f.input :status_from, as: :date, selected: @status_from || Time.now, label: 'lines.filters.status_from'.t, wrapper_html: { class: 'inline-form', 'x-bind:class': "{ 'disabled': lineStatusFromDeactivated }" }, input_html:{ 'x-bind:disabled': "lineStatusFromDeactivated" }, required: false
+          = f.input :status_from, as: :date, selected: @status_from || Time.now, label: 'lines.filters.status_from'.t, wrapper_html: { class: 'inline-form', 'x-bind:class': "{ 'disabled': lineStatusFromActivated }" }, input_html:{ 'x-bind:disabled': "lineStatusFromActivated" }, required: false
         .col-md-3
-          = f.input :status_until_enabled, as: :switchable_checkbox, value: true, input_html: { checked: params[:q] && params[:q][:status_until_enabled] == '1', 'x-on:click': 'lineStatusUntilDeactivated = !lineStatusUntilDeactivated' }, label: false
+          = f.input :status_until_enabled, as: :switchable_checkbox, input_html: { checked: params[:q] && params[:q][:status_until_enabled] == 'true', 'x-on:click': 'lineStatusUntilActivated = !lineStatusUntilActivated' }, label: false
         .col-md-9
-          = f.input :status_until, as: :date, selected: @status_until || Time.now, label: 'lines.filters.status_to'.t, wrapper_html: { class: 'inline-form', 'x-bind:class': "{ 'disabled': lineStatusUntilDeactivated }"}, input_html:{ 'x-bind:disabled': "lineStatusUntilDeactivated" }, required: false
+          = f.input :status_until, as: :date, selected: @status_until || Time.now, label: 'lines.filters.status_to'.t, wrapper_html: { class: 'inline-form', 'x-bind:class': "{ 'disabled': lineStatusUntilActivated }"}, input_html:{ 'x-bind:disabled': "lineStatusUntilActivated" }, required: false
   .actions
     = link_to t('actions.erase'), workbench_line_referential_lines_path(@workbench), class: 'btn btn-link'
     = f.submit t('actions.filter'), class: 'btn btn-default'

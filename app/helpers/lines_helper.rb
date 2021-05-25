@@ -33,4 +33,12 @@ module LinesHelper
       render_icon 'fa fa-exclamation-circle text-danger', Chouette::Line.tmf('activated')
     end
   end
+
+  def status_from_active?
+    params.dig(:q, :status_from_enabled) == 'true'
+  end
+
+  def status_until_active?
+    params.dig(:q, :status_until_enabled) == 'true'
+  end
 end

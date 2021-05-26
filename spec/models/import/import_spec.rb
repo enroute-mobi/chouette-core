@@ -184,11 +184,11 @@ RSpec.describe Import::Base, type: :model do
         create(
           :netex_import,
           parent: workbench_import,
+          notified_parent_at: Date.today,
           status: failure_status
         )
 
         workbench_import.update_status
-
         expect(workbench_import.status).to eq('failed')
       end
     end
@@ -212,6 +212,7 @@ RSpec.describe Import::Base, type: :model do
         :netex_import,
         2,
         parent: workbench_import,
+        notified_parent_at: Date.today,
         status: 'successful'
       )
 
@@ -229,6 +230,7 @@ RSpec.describe Import::Base, type: :model do
         create(
           :netex_import,
           parent: workbench_import,
+          notified_parent_at: Date.today,
           status: status
         )
       end
@@ -247,6 +249,7 @@ RSpec.describe Import::Base, type: :model do
         create(
           :netex_import,
           parent: workbench_import,
+          notified_parent_at: Date.today,
           status: status
         )
       end
@@ -261,6 +264,7 @@ RSpec.describe Import::Base, type: :model do
       create(
         :netex_import,
         parent: workbench_import,
+        notified_parent_at: Date.today,
         status: 'failed'
       )
 

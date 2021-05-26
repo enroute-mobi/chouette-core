@@ -20,9 +20,9 @@ RSpec.describe ComplianceCheckSet, type: :model do
         "#{Rails.configuration.iev_url}/boiv_iev/referentials/validator/new?id=#{check_set.id }"
       )
     end
-    let(:check_set){create :compliance_check_set, parent: create(:netex_import)}
+    let(:check_set){create :compliance_check_set, parent: create(:workbench_import)}
     context "when the referential no longer exists" do
-      let(:check_set){create :compliance_check_set, parent: create(:netex_import), referential: create(:referential)}
+      let(:check_set){create :compliance_check_set, parent: create(:workbench_import), referential: create(:referential)}
       before do
         check_set.referential.destroy
         check_set.reload

@@ -11,6 +11,7 @@
     "@fortawesome/fontawesome-free": "^5.15.1",
     "@rails/webpacker": "^5.0.0",
     "@simonwep/selection-js": "^2.0.0",
+    "alpinejs": "^2.8.2",
     "babel-jest": "26.5.2",
     "babel-loader": "^8.0.0",
     "babelify": "8.0.0",

@@ -6,6 +6,7 @@ import { Fill, Stroke, Circle, Style } from 'ol/style'
 import KML from 'ol/format/KML'
 import GeometryType from 'ol/geom/GeometryType'
 import ShapeEditor from './shapeEditor'
+import List from './list'
 
 function RouteMap() {
   // set intial state
@@ -57,10 +58,26 @@ function RouteMap() {
       })
 
   },[])
+  useEffect(() => {
+    console.log(features)
+  },[features])
 
   return (
-    <div className="openlayers_map">
-      <ShapeEditor features={features} style={style} />
+    <div className="page-content">
+      <div className="container-fluid">
+        <div className="row">
+          <div className="col-md-6">
+            <h4 className="underline">Liste</h4>
+            <List collection={features} />
+          </div>
+          <div className="col-md-6">
+          <h4 className="underline">Carte</h4>
+            <div className="openlayers_map">
+              <ShapeEditor features={features} style={style} />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

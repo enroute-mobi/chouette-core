@@ -2,14 +2,6 @@
   h1 | Shape Editor
 / - page_header_content_for "shape_editor"
 / - breadcrumb :line, @workbench, @line
-/ PageContent
-.page_content
-  .container-fluid
-    .row
-      .col-md-6.col-sm-12
-        h4.underline= t('lines.show.map')
-      .col-md-6.col-sm-12
-        h4.underline= t('lines.show.map')
-        #shape_editor.map.little_map.mb-lg
+#shape_editor
 
 = javascript_pack_tag 'shape_editor/index.js'

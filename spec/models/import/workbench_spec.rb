@@ -84,30 +84,53 @@ RSpec.describe Import::Workbench do
   end
 
   context '#compute_new_status' do
-    it 'should return failed if compliance_check_sets_status or children_status is failed' do
-      allow(import_workbench).to receive(:compliance_check_sets_status).and_return 'failed'
-      allow(import_workbench).to receive(:children_status).and_return 'warning'
-      expect(import_workbench.compute_new_status).to eq 'failed'
+    context 'without compliance_check_sets' do
+      it 'should return failed if children_status is failed' do
+       allow(import_workbench).to receive(:children_status).and_return 'failed'
+       expect(import_workbench.compute_new_status).to eq 'failed'
+     end
+
+     it 'should return warning if children_status is warning' do
+       allow(import_workbench).to receive(:children_status).and_return 'warning'
+       expect(import_workbench.compute_new_status).to eq 'warning'
+     end
+
+     it 'should return successful if children_status are successful' do
+       allow(import_workbench).to receive(:children_status).and_return 'successful'
+       expect(import_workbench.compute_new_status).to eq 'successful'
+     end
+
+     it 'should return running if children_status is running' do
+       allow(import_workbench).to receive(:children_status).and_return 'running'
+       expect(import_workbench.compute_new_status).to eq 'running'
+     end
     end
 
-    it 'should return warning if compliance_check_sets_status or children_status is warning' do
-      allow(import_workbench).to receive(:compliance_check_sets_status).and_return 'warning'
-      allow(import_workbench).to receive(:children_status).and_return 'successful'
-      expect(import_workbench.compute_new_status).to eq 'warning'
-    end
+    context 'with compliance_check_sets' do
+      it 'should return failed if compliance_check_sets_status or children_status is failed' do
+        create(:compliance_check_set, parent: import_workbench, parent_type: "Import::Workbench", workbench: workbench, status: "failed", notified_parent_at: Date.today)
+        allow(import_workbench).to receive(:children_status).and_return 'warning'
+        expect(import_workbench.compute_new_status).to eq 'failed'
+      end
 
-    it 'should return successful if compliance_check_sets_status and children_status are successful' do
-      allow(import_workbench).to receive(:compliance_check_sets_status).and_return 'successful'
-      allow(import_workbench).to receive(:children_status).and_return 'successful'
-      expect(import_workbench.compute_new_status).to eq 'successful'
-    end
+      it 'should return warning if compliance_check_sets_status or children_status is warning' do
+        create(:compliance_check_set, parent: import_workbench, parent_type: "Import::Workbench", workbench: workbench, status: "warning", notified_parent_at: Date.today)
+        allow(import_workbench).to receive(:children_status).and_return 'successful'
+        expect(import_workbench.compute_new_status).to eq 'warning'
+      end
 
-    it 'should return running if compliance_check_sets_status or children_status is running' do
-      allow(import_workbench).to receive(:compliance_check_sets_status).and_return 'running'
-      allow(import_workbench).to receive(:children_status).and_return 'successful'
-      expect(import_workbench.compute_new_status).to eq 'running'
-    end
+      it 'should return successful if compliance_check_sets_status and children_status are successful' do
+        create(:compliance_check_set, parent: import_workbench, parent_type: "Import::Workbench", workbench: workbench, status: "successful", notified_parent_at: Date.today)
+        allow(import_workbench).to receive(:children_status).and_return 'successful'
+        expect(import_workbench.compute_new_status).to eq 'successful'
+      end
 
+      it 'should return running if compliance_check_sets_status or children_status is running' do
+        create(:compliance_check_set, parent: import_workbench, parent_type: "Import::Workbench", workbench: workbench, status: "running", notified_parent_at: nil)
+        allow(import_workbench).to receive(:children_status).and_return 'successful'
+        expect(import_workbench.compute_new_status).to eq 'running'
+      end
+    end
   end
 
   context '#file_type' do

@@ -110,14 +110,18 @@ class Import::Workbench < Import::Base
 
 
   def compute_new_status
-    if children_status == 'running' || compliance_check_sets_status == 'running'
-      return 'running'
-    elsif children_status == 'failed' || compliance_check_sets_status == 'failed'
-      return 'failed'
-    elsif children_status == 'warning' || compliance_check_sets_status == 'warning'
-      return 'warning'
-    elsif children_status == 'successful' && compliance_check_sets_status == 'successful'
-      return 'successful'
+    unless compliance_check_sets.present?
+      return children_status
+    else
+      if children_status == 'running' || compliance_check_sets_status == 'running'
+        return 'running'
+      elsif children_status == 'failed' || compliance_check_sets_status == 'failed'
+        return 'failed'
+      elsif children_status == 'warning' || compliance_check_sets_status == 'warning'
+        return 'warning'
+      elsif children_status == 'successful' && compliance_check_sets_status == 'successful'
+        return 'successful'
+      end
     end
   end
 

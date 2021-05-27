@@ -72,12 +72,12 @@ module IevInterfaces::Task
 
   def notify_parent
     return false unless finished?
-
     return false unless parent.present?
     return false if notified_parent_at
-    parent.child_change
 
     update_column :notified_parent_at, Time.now
+    parent&.child_change
+
     true
   end
 

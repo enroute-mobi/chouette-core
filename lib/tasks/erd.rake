@@ -8,7 +8,7 @@ namespace :generate do
     sh "bundle exec rake erd only='Import::Netex,Import::Base,Import::Workbench,Import::Resource,Import::Message' filename='import' title='Import'"
     sh "bundle exec rake erd only='ComplianceControlSet,ComplianceControlBlock,ComplianceControl,ComplianceCheckSet,ComplianceCheckBlock,ComplianceCheck,ComplianceCheckResource,ComplianceCheckMessage' filename='validation' title='Validation'"
     sh "bundle exec rake erd only='Organisation,Workgroup,Workbench,ReferentialSuite,Referential' filename='merge' title='Merge'"
-    sh "bundle exec rake erd only='Export::Base,Export::Message,Export::Resource,Export::Workgroup' filename='export' title='Export'"
+    sh "bundle exec rake erd only='Export::Base,Export::Message,Export::Resource' filename='export' title='Export'"
     sh "bundle exec rake erd only='Workbench,Referential,ReferentialSuite,Merge' filename='merge' title='Merge'"
     #sh "bundle exec rake erd only='' filename='publication' title='Publication'"
   end

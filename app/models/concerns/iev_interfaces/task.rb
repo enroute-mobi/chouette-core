@@ -72,12 +72,12 @@ module IevInterfaces::Task
 
   def notify_parent
     return false unless finished?
-
     return false unless parent.present?
     return false if notified_parent_at
-    parent.child_change
 
     update_column :notified_parent_at, Time.now
+    parent&.child_change
+
     true
   end
 
@@ -164,22 +164,6 @@ module IevInterfaces::Task
 
   def notify_sub_operation_progress(operation_name, progress)
     notify_progress(@progress + operation_relative_progress_weight(operation_name)*progress) if @progress
-  end
-
-  # Compute new_status from children status
-  # Can be overided (by Import::Workbench for example)
-  def compute_new_status
-    Rails.logger.info "#{self.class.name} ##{id}: children statuses #{children.reload.map(&:status).inspect}"
-
-    if children.where(status: self.class.failed_statuses).count > 0
-      'failed'
-    elsif children.where(status: "warning").count > 0
-      'warning'
-    elsif children.where(status: "successful").count == children.count
-      'successful'
-    else
-      'running'
-    end
   end
 
   # Compute and update status (only when it changes)

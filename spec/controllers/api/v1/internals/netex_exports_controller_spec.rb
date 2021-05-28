@@ -1,8 +1,7 @@
 RSpec.describe Api::V1::Internals::NetexExportsController, type: :controller do
   let( :user ){ create :user }
-  let(:workgroup_export) { create :workgroup_export }
-  let(:export_1) { create :netex_export, creator: user.name, parent: workgroup_export }
-  let(:export_2) { create :netex_export, status: "successful", creator: user.name, parent: workgroup_export }
+  let(:export_1) { create :netex_export, creator: user.name }
+  let(:export_2) { create :netex_export, status: "successful", creator: user.name }
 
   describe "GET #notify_parent" do
     context 'unauthenticated' do
@@ -26,10 +25,6 @@ RSpec.describe Api::V1::Internals::NetexExportsController, type: :controller do
         it 'should be successful' do
           expect(response).to have_http_status 200
         end
-
-        it "calls #notify_parent on the export" do
-          expect(export_2.reload.notified_parent_at).not_to be_nil
-        end
       end
 
       describe "with non existing record" do
@@ -50,7 +45,6 @@ RSpec.describe Api::V1::Internals::NetexExportsController, type: :controller do
         post :upload, params: { id: export_1.id, format: :json, file: file }
         expect(response).to have_http_status 401
         expect(export_1.reload.failed?).to be_truthy
-        expect(export_1.reload.notified_parent_at).not_to be_nil
       end
     end
 
@@ -67,7 +61,6 @@ RSpec.describe Api::V1::Internals::NetexExportsController, type: :controller do
           expect(response).to have_http_status 200
           expect(export_2.reload.file).not_to be_nil
           expect(export_2.reload.successful?).to be_truthy
-          expect(export_2.reload.notified_parent_at).not_to be_nil
         end
       end
 

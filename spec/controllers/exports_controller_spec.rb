@@ -65,44 +65,44 @@ RSpec.describe ExportsController, :type => :controller do
         let(:params){ { name: "foo" } }
         let(:request){ post :create, params: parent_params.merge({ export: params })}
         it 'should create no objects' do
-          expect{request}.to_not change{Export::Netex.count}
+          expect{request}.to_not change{Export::Gtfs.count}
         end
 
         context "with full params" do
           let(:params){{
             name: "foo",
-            type: "Export::Netex",
+            type: "Export::Gtfs",
             duration: 12,
             export_type: :full,
             referential_id: first_referential.id
           }}
 
           it 'should be successful' do
-            expect{request}.to change { Export::Netex.count }.by(1)
+            expect{request}.to change { Export::Gtfs.count }.by(1)
           end
         end
 
         context "with missing options" do
           let(:params){{
             referential_id: first_referential.id,
-            type: "Export::Workgroup"
+            type: "Export::Gtfs"
           }}
 
           it 'should be unsuccessful' do
-            expect{request}.to change{Export::Netex.count}.by(0)
+            expect{request}.to change{Export::Gtfs.count}.by(0)
           end
         end
 
         context "with all options" do
           let(:params){{
             name: "foo",
-            type: "Export::Workgroup",
+            type: "Export::Gtfs",
             duration: 90,
             referential_id: first_referential.id
           }}
 
           it 'should be successful' do
-            expect{request}.to change{Export::Workgroup.count}.by(1)
+            expect{request}.to change{Export::Gtfs.count}.by(1)
           end
         end
 

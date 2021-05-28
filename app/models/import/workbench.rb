@@ -10,6 +10,8 @@ class Import::Workbench < Import::Base
   option :merge_method, collection: %w(legacy experimental), default_value: 'legacy', depends: {option: :import_category, value: "automatic"}
   option :shape_attribute_as_id, type: :string, depends: {option: :import_category, value: "shape_file"}
 
+  has_many :compliance_check_sets, -> { where(parent_type: "Import::Workbench") }, foreign_key: :parent_id, dependent: :destroy
+
   def main_resource; self end
 
   def launch_worker
@@ -69,10 +71,6 @@ class Import::Workbench < Import::Base
     failed!
   end
 
-  def compliance_check_sets
-    ComplianceCheckSet.where parent_id: self.id, parent_type: "Import::Workbench"
-  end
-
   def failed!
     update_column :status, 'failed'
     update_column :ended_at, Time.now
@@ -84,26 +82,46 @@ class Import::Workbench < Import::Base
     referentials.each(&:archive!)
   end
 
-  # Compute new_status from children (super) and compliance_check_sets
-  # Used by IevInterfaces::Task#update_status
-  def compute_new_status
-    new_status_from_children = super
+  # Compute children status
+  def children_status
+    if children.unfinished.count > 0
+      'running'
+    elsif children.where(status: self.class.failed_statuses).count > 0
+      'failed'
+    elsif children.where(status: "warning").count > 0
+      'warning'
+    elsif children.where(status: "successful").count == children.count
+      'successful'
+    end
+  end
 
-    if new_status_from_children == 'successful'
-      Rails.logger.info "#{self.class.name} ##{id}: compliance_check_sets statuses #{compliance_check_sets.reload.map(&:status).inspect}"
-      if compliance_check_sets.unfinished.count > 0
-        'running'
-      else
-        if compliance_check_sets.where(status: ComplianceCheckSet.failed_statuses).count > 0
-          'failed'
-        elsif children.where(status: "warning").count > 0
-          'warning'
-        elsif children.where(status: "successful").count == children.count
-          'successful'
-        end
-      end
+  # Compute compliance_check_sets status
+  def compliance_check_sets_status
+    if compliance_check_sets.unfinished.count > 0
+      'running'
+    elsif compliance_check_sets.where(status: self.class.failed_statuses).count > 0
+      'failed'
+    elsif compliance_check_sets.where(status: "warning").count > 0
+      'warning'
+    elsif compliance_check_sets.where(status: "successful").count == compliance_check_sets.count
+      'successful'
+    end
+  end
+
+
+  def compute_new_status
+    unless compliance_check_sets.present?
+      return children_status
     else
-      new_status_from_children
+      if children_status == 'running' || compliance_check_sets_status == 'running'
+        return 'running'
+      elsif children_status == 'failed' || compliance_check_sets_status == 'failed'
+        return 'failed'
+      elsif children_status == 'warning' || compliance_check_sets_status == 'warning'
+        return 'warning'
+      elsif children_status == 'successful' && compliance_check_sets_status == 'successful'
+        return 'successful'
+      end
     end
   end
 

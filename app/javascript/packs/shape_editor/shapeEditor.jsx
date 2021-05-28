@@ -11,7 +11,10 @@ import VectorSource from 'ol/source/Vector'
 import XYZ from 'ol/source/XYZ'
 import {transform} from 'ol/proj'
 import {toStringXY} from 'ol/coordinate'
-import {Fill, Stroke, Circle, Style} from 'ol/style'
+import { Fill, Stroke, Circle, Style } from 'ol/style'
+import Modify from 'ol/interaction/Modify';
+import Draw from 'ol/interaction/Draw';
+import Snap from 'ol/interaction/Snap';
 
 function ShapeEditor(props) {
 
@@ -35,6 +38,20 @@ function ShapeEditor(props) {
       source: new VectorSource(),
     })
 
+    const source = new VectorSource();
+    const vector = new VectorLayer({
+      source: source,
+      style: new Style({
+        fill: new Fill({
+          color: 'rgba(255, 255, 255, 0.2)',
+        }),
+        stroke: new Stroke({
+          color: '#ffcc33',
+          width: 2,
+        })
+      }),
+    });
+
     // create map
     const initialMap = new Map({
       target: mapElement.current,
@@ -43,7 +60,8 @@ function ShapeEditor(props) {
         new TileLayer({
           source: new OSM({attributions: '&copy; OpenStreetMap contributors'})
         }),
-        initialFeaturesLayer
+        initialFeaturesLayer,
+        vector
       ],
       view: new View({
         projection: 'EPSG:3857',
@@ -53,12 +71,29 @@ function ShapeEditor(props) {
       controls: defaultControls()
     })
 
+    const modify = new Modify({source: source});
+    initialMap.addInteraction(modify);
+
+    let draw, snap; // global so we can remove them later
+    const typeSelect = document.getElementById('type');
+
+    function addInteractions() {
+      draw = new Draw({
+        source: source,
+        type: 'Point',
+      });
+      initialMap.addInteraction(draw);
+      snap = new Snap({source: source});
+      initialMap.addInteraction(snap);
+    }
+
     // set map onclick handler
     // initialMap.on('click', handleMapClick)
 
     // save map and vector layer references to state
     setMap(initialMap)
     setFeaturesLayer(initialFeaturesLayer)
+    addInteractions();
 
   },[])
 

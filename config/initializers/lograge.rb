@@ -1,7 +1,10 @@
 Rails.application.configure do
   config.lograge.enabled = true
 
-  config.lograge.ignore_actions = ['NotificationsController#index']
+  config.lograge.ignore_actions = [
+    'NotificationsController#index',
+    'HealthCheck::HealthCheckController#index'
+  ]
   config.colorize_logging = false
 
   config.lograge.custom_payload do |controller|

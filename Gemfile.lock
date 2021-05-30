@@ -357,6 +357,8 @@ GEM
       actionpack (>= 4.1)
       activesupport (>= 4.1)
     hashdiff (1.0.1)
+    health_check (3.1.0)
+      railties (>= 5.0)
     heapy (0.2.0)
       thor
     highline (2.0.3)
@@ -801,6 +803,7 @@ DEPENDENCIES
   gtfs!
   guard-rspec
   has_array_of!
+  health_check
   htmlbeautifier
   i18n-js
   i18n-tasks (>= 0.9.31)

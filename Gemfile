@@ -107,6 +107,8 @@ gem 'roo', '>= 2.8.3'
 gem 'inherited_resources', '>= 1.11.0'
 gem 'responders', '>= 3.0.1'
 
+gem "lograge"
+
 # Model
 gem 'will_paginate'
 gem 'ransack'

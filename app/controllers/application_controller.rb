@@ -19,7 +19,6 @@ class ApplicationController < ActionController::Base
     effective_locale = I18n.available_locales.include?(wanted_locale) ? wanted_locale : I18n.default_locale
 
     I18n.locale = effective_locale
-    logger.info "Locale set to #{I18n.locale.inspect}"
   end
 
   def pundit_user
@@ -35,11 +34,19 @@ class ApplicationController < ActionController::Base
     current_user.organisation if current_user
   end
 
+  helper_method :current_organisation
+
   def current_workbench
     (self.respond_to? :workbench)? workbench : @workbench
   end
 
-  helper_method :current_organisation
+  def current_workgroup
+    if respond_to? :workgroup
+      workgroup
+    else
+      @workgroup || current_workbench&.workgroup
+    end
+  end
 
   def collection_name
     self.class.name.split("::").last.gsub('Controller', '').underscore

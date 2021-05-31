@@ -74,8 +74,8 @@
                 link_to: ->(source){ [@workgroup, source.publication.publication_setup, source.publication] } \
               ), \
               TableBuilderHelper::Column.new( \
-                key: :created_at, \
-                attribute: ->(key){ l(key.created_at, format: :short_with_time) } \
+                key: :updated_at, \
+                attribute: ->(key){ l(key.updated_at, format: :short_with_time) } \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :file, \

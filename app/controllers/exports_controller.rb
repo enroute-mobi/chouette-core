@@ -56,7 +56,12 @@ class ExportsController < ChouetteController
   end
 
   def export_params
-    params.require(:export).permit(:name, :type, :referential_id, :uder_id, :notification_target, options: {})
+    params.require(:export).permit(:name, :type, :referential_id, :notification_target, options: {}).tap do |export_params|
+      export_params[:workbench_id] = workbench&.id
+      export_params[:workgroup_id] = workgroup&.id || workbench&.workgroup&.id
+      export_params[:creator] = current_user.name
+      export_params[:user_id] = current_user.id
+    end
   end
 
   def decorate_collection(exports)

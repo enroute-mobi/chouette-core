@@ -2,9 +2,7 @@ RSpec.describe ExportsController, :type => :controller do
 
   login_user
 
-  [:workgroup, :workbench].each do |parent|
-
-    let(:context) do
+  let(:context) do
       Chouette.create do
         # To match organisation used by login_user
         organisation = Organisation.find_by_code('first')
@@ -23,7 +21,7 @@ RSpec.describe ExportsController, :type => :controller do
     let(:workgroup) { referential.workgroup }
 
     context "with #{parent} parent" do
-      let(:parent_params) { parent == :workbench ? {workbench_id: workbench.id}:{workgroup_id: workbench.workgroup_id} }
+      let(:parent_params) { { workbench_id: workbench.id, workgroup_id: workbench.workgroup_id } }
 
       describe "GET index" do
         let(:request){ get :index, params: parent_params }
@@ -68,17 +66,14 @@ RSpec.describe ExportsController, :type => :controller do
           expect{request}.to_not change{Export::Gtfs.count}
         end
 
-        context "with full params" do
-          let(:params){{
+        context "with all options" do
+          let(:params){parent_params.merge({
             name: "foo",
-            type: "Export::Netex",
+            type: "Export::Gtfs",
             referential_id: first_referential.id,
-            options: {
-              duration: 12,
-              export_type: :full,
-            }
-            
-          }}
+            creator: 'Test',
+            options: { duration: 12 }
+          })}
 
           it 'should be successful' do
             expect{request}.to change { Export::Gtfs.count }.by(1)
@@ -93,21 +88,6 @@ RSpec.describe ExportsController, :type => :controller do
 
           it 'should be unsuccessful' do
             expect{request}.to change{Export::Gtfs.count}.by(0)
-          end
-        end
-
-        context "with all options" do
-          let(:params){{
-            name: "foo",
-            type: "Export::Workgroup",
-            referential_id: first_referential.id,
-            options: {
-              duration: 90
-            }
-          }}
-
-          it 'should be successful' do
-            expect{request}.to change{Export::Gtfs.count}.by(1)
           end
         end
 
@@ -140,6 +120,5 @@ RSpec.describe ExportsController, :type => :controller do
       end
 
     end
-  end
 
 end

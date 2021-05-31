@@ -17,7 +17,6 @@ module OptionsSupport
 
         handle_serialize_option(attribute_name, opts)
         handle_enumerize_option(attribute_name, opts)
-        handle_required_option(attribute_name, opts)
         handle_default_value_option(attribute_name, opts)
 
         @options ||= {}
@@ -33,10 +32,6 @@ module OptionsSupport
       end
 
       private
-
-      def handle_required_option attribute_name, opts
-        validates_presence_of(attribute_name) if opts[:required]
-      end
 
       def handle_serialize_option attribute_name, opts
         serializer = opts[:serialize]

@@ -1,5 +1,11 @@
 require 'delayed_job'
 
+Delayed::Worker.instance_exec do
+  def self.reload_app?
+    false
+  end
+end
+
 class AutoKillPlugin < Delayed::Plugin
   callbacks do |lifecycle|
     lifecycle.before(:perform) do |worker, job|

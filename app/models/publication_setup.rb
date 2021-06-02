@@ -18,6 +18,7 @@ class PublicationSetup < ApplicationModel
   store_accessor :export_options
 
   accepts_nested_attributes_for :destinations, allow_destroy: true, reject_if: :all_blank
+  validates_associated :destinations
 
   scope :enabled, -> { where enabled: true }
 

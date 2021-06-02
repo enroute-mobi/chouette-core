@@ -1,12 +1,14 @@
-div[x-data="{destinationType: '' }"]
+- destination = local_assigns.fetch(:destination, Destination.new)
+
+div[x-data="{destinationType: '#{destination.type}' }"]
   .destination
     = f.input :name
     .fields
       = f.hidden_field :id
-      = f.input :type, collection: Destination.descendants.map{|k| [k.human_type, k.name]}, input_html: { disabled: !f.object.new_record?, 'x-model': 'destinationType' }
+      = f.input :type, collection: Destination.descendants.map{|k| [k.human_type, k.name]}, selected: destination.type, input_html: { disabled: !f.object.new_record?, 'x-model': 'destinationType' }
       template[x-if="destinationType == 'Destination::PublicationApi'"]
         div
-          = f.input :publication_api_id, collection: @workgroup.publication_apis, required: true
+          = f.input :publication_api_id, collection: @workgroup.publication_apis, required: true, selected: destination.publication_api_id
       - Destination.descendants.each do |child|
         template[x-if="destinationType == '#{child.name}'"]
           div

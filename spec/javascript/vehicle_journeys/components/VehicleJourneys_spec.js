@@ -48,8 +48,9 @@ describe('stopPointHeader', () => {
   })
   set('store', () => ({
     getState: () =>({
-      selection: { active: false },
-      filters: { toggleArrivals: false }
+      selection: { active: false, items: [] },
+      filters: { toggleArrivals: false },
+      vehicleJourneys: []
     }),
     dispatch: () => {},
     subscribe: () => {}

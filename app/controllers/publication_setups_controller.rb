@@ -66,11 +66,13 @@ class PublicationSetupsController < ChouetteController
     if export_class
       permitted_keys += export_class.options.keys
     end
-    
+
     return {} unless params[:export]
 
     params.require(:export).permit(*permitted_keys, line_ids: [], line_provider_ids: [], company_ids: []).tap do |_params|
-      if export_class&.method_defined?(:duration)
+      if export_class == Export::Netex # Specific code see CHOUETTE-1151
+        _params[:duration] = _params[:duration].to_i
+      elsif export_class&.method_defined?(:duration)
         _params[:duration] = _params[:period] == 'only_next_days' ?  _params[:duration].to_i : nil
       end
     end

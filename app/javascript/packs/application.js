@@ -10,4 +10,4 @@
 // import jQuery from 'jquery'
 // import {} from 'jquery-ujs'
 import "@fortawesome/fontawesome-free/css/all"
-require("alpinejs")
+import "alpinejs"

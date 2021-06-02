@@ -77,7 +77,7 @@ class PublicationSetup < ApplicationModel
   end
 
   def export_type
-    new_export.type
+    export.type
   end
 
   def build_new_export

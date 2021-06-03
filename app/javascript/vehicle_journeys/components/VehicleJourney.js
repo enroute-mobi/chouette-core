@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import autoBind from 'react-autobind'
-import { isEqual, last, some } from 'lodash'
+import { last } from 'lodash'
 import actions from '../actions'
 import EditVehicleJourney from '../containers/tools/EditVehicleJourney'
 import VehicleJourneyInfoButton from '../containers/tools/VehicleJourneyInfoButton'
@@ -177,13 +177,15 @@ export default class VehicleJourney extends Component {
 
         </div>
         {this.props.value.vehicle_journey_at_stops.map((vjas, i) => {
-          const isSelectionBottomRight = lastSelectedItem.index == i && lastSelectedItem.vjIndex == this.props.index
+          const isInSelection = !!(selectedItems || []).find(({ x, y }) => x == this.props.index && y == i)
+          const isSelectionBottomRight = lastSelectedItem.y == i && lastSelectedItem.x == this.props.index
 
           return (
              <VehicleJourneyAtStop
               key={i}
-              vjIndex={this.props.index}
-              index={i}
+              x={this.props.index}
+              y={i}
+              isInSelection={isInSelection}
               vjas={vjas}
               selectionMode={this.props.selection.active}
               isSelectionBottomRight={isSelectionBottomRight}
@@ -215,9 +217,4 @@ VehicleJourney.propTypes = {
   allPurchaseWindows: PropTypes.array.isRequired,
   extraHeaders: PropTypes.array.isRequired,
   selection: PropTypes.object.isRequired,
-  selectedItems: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    arrival_time: PropTypes.string.isRequired,
-    departure_time: PropTypes.string.isRequired
-  })).isRequired,
 }

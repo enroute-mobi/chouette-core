@@ -120,8 +120,8 @@ export class PasteContent {
 				const arrival = toggleArrivals ? parseTime(cells[0]) : computeArrivalTime(departure, copyItem)
 
 				return {
-					index: copyItem.index,
-					vjIndex: copyItem.vjIndex,
+					x: copyItem.x,
+					y: copyItem.y,
 					departure_time: {
 						hour: getHours(departure),
 						minute: getMinutes(departure)

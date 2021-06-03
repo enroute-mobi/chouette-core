@@ -34,6 +34,16 @@ export default function selection(state = initialState, action) {
 					items: action.items
 				},
 			}
+		case 'CLEAR_SELECTED_ITEMS':
+			return {
+				...state,
+				selection: {
+					...selection,
+					items: [],
+					width: null,
+					height: null
+				}
+			}
 		case 'UPDATE_SELECTION_DIMENSIONS':
 			return {
 				...state,
@@ -127,9 +137,9 @@ export default function selection(state = initialState, action) {
 
 			// let prevStop
 
-			const vehicleJourneys = state.vehicleJourneys.map((vj, i) => {
-				const newStops = vj.vehicle_journey_at_stops.map((vjas, j) => {
-					const stopParams = stops.find(stop => stop.vjIndex == i && stop.index == j) || vjas
+			const vehicleJourneys = state.vehicleJourneys.map((vj, x) => {
+				const newStops = vj.vehicle_journey_at_stops.map((vjas, y) => {
+					const stopParams = stops.find(stop => stop.x == x && stop.y == y) || vjas
 					// const dayOffSets = computeDayOffSet(prevStop, stopParams)
 
 					// prevStop = vjas

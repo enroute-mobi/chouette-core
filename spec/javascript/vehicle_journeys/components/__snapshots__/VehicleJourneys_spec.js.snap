@@ -83,7 +83,9 @@ exports[`stopPointHeader should display the city name 1`] = `
       <div
         className="t2e-item-list w80"
       >
-        <div />
+        <div
+          className="scrollable-container"
+        />
       </div>
     </div>
   </div>
@@ -173,7 +175,9 @@ exports[`stopPointHeader with the "long_distance_routes" feature should display 
       <div
         className="t2e-item-list w80"
       >
-        <div />
+        <div
+          className="scrollable-container"
+        />
       </div>
     </div>
   </div>

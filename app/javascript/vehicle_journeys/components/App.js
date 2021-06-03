@@ -8,8 +8,6 @@ import SaveVehicleJourneys from '../containers/SaveVehicleJourneys'
 import ConfirmModal from '../containers/ConfirmModal'
 import CopyModal from '../containers/CopyModal'
 import Tools from '../containers/Tools'
-import SelectableContainer from '../containers/SelectableContainer'
-
 export default function App() {
   return (
     <div>
@@ -24,13 +22,9 @@ export default function App() {
       </div>
 
       <Filters />
-      <SelectableContainer>
-        <VehicleJourneysList />
-      </SelectableContainer>
-
-      <SelectableContainer>
-        {window.returnRouteUrl && <VehicleJourneysList routeUrl={window.returnRouteUrl} />}
-      </SelectableContainer>
+      <VehicleJourneysList />
+      {window.returnRouteUrl && <VehicleJourneysList routeUrl={window.returnRouteUrl}/> }
+    
 
       <div className='row'>
         <div className='col-lg-12 text-right'>

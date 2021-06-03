@@ -16,6 +16,9 @@ const actions = {
   updateSelectedItems: items => ({
     type: 'UPDATE_SELECTED_ITEMS', items
   }),
+  clearSelectedItems: () => ({
+    type: 'CLEAR_SELECTED_ITEMS'
+  }),
   updateSelectionDimensions: (width, height) => ({
     type: 'UPDATE_SELECTION_DIMENSIONS', width, height
   }),

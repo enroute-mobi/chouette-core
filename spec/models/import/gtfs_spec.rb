@@ -113,19 +113,12 @@ RSpec.describe Import::Gtfs do
       end
     end
 
-    context 'when a record does not have an id' do
+    context 'when a default agency is defined' do
       before(:each) do
         allow(import.source).to receive(:agencies) {
           [
             GTFS::Agency.new(
-              id: 'DTA',
-              name: 'name',
-              url: 'http://google.com',
-              timezone: 'America/Los_Angeles'
-            ),
-            GTFS::Agency.new(
-              id: '',
-              name: 'name',
+              name: 'Default Agency',
               url: 'http://google.com',
               timezone: 'America/Los_Angeles'
             )
@@ -133,33 +126,187 @@ RSpec.describe Import::Gtfs do
         }
       end
 
-      it 'should not create a company' do
+      it 'should create a company' do
         expect do
           import.import_agencies
         end.to change { Chouette::Company.count }.by 1
       end
 
-      it 'should create an error message' do
-        expect do
-          import.import_agencies
-        end.to change { Import::Message.count }.by 1
+      let(:company) { Chouette::Company.last }
 
-        resource = import.resources.last
-        expect(resource.metrics['ok_count'].to_i).to eq 1
-        expect(resource.metrics['warning_count'].to_i).to eq 0
-        expect(resource.metrics['error_count'].to_i).to eq 1
+      it 'create a company with a default code/registration_number' do
+        import.import_agencies
+        expect(company).to have_attributes(registration_number: 'default-agency')
       end
 
       it 'should create a default timezone' do
-        expect(import).to receive(:check_time_zone_or_create_message).twice
-
         import.import_agencies
+        expect(import.default_time_zone).to eq(ActiveSupport::TimeZone['America/Los_Angeles'])
       end
     end
   end
 
+  describe "Agencies" do
+
+    let(:agency) { GTFS::Agency.new }
+
+    describe "Decorator" do
+
+      let(:decorator) { Import::Gtfs::Agencies::Decorator.new agency }
+
+      describe "#code" do
+        subject { decorator.code }
+
+        context "when GTFS agency id is defined" do
+          it { is_expected.to eq(agency.id) }
+        end
+
+        context "when GTFS agency id is not defined" do
+          before { allow(decorator).to receive(:default_code).and_return("default-id")  }
+          it { is_expected.to eq(decorator.default_code) }
+        end
+      end
+
+      describe "#default_code" do
+        subject { decorator.default_code }
+
+        context "when name is 'Agency Name with &é'_ letters'" do
+          before { agency.name = "Agency Name with &é'_ letters" }
+          it { is_expected.to eq("agency-name-with-e-_-letters") }
+        end
+
+        context "when name is blank" do
+          before { agency.name = "" }
+          it { is_expected.to be_nil }
+        end
+
+      end
+
+      describe "#time_zone" do
+        subject { decorator.time_zone }
+
+        it "is the TimeZone associated to the agency timezone name" do
+          agency.timezone = "Etc/UTC"
+          is_expected.to eq(ActiveSupport::TimeZone["Etc/UTC"])
+        end
+
+        context "when the agency timezone is invalid" do
+          before { agency.timezone = "dummy" }
+          it { is_expected.to be_nil }
+        end
+
+        context "when the agency timezone is blank" do
+          before { agency.timezone = "" }
+          it { is_expected.to be_nil }
+        end
+
+      end
+
+      describe "#time_zone_name" do
+        subject { decorator.time_zone_name }
+
+        it "uses the TimeZone tzinfo name" do
+          allow(decorator).to receive(:time_zone).and_return(ActiveSupport::TimeZone["Etc/UTC"])
+          is_expected.to eq("Etc/UTC")
+        end
+      end
+
+      describe "#company_attributes" do
+        subject { decorator.company_attributes }
+
+        it "uses the agency name" do
+          agency.name = "agency name"
+          is_expected.to include(name: agency.name)
+        end
+
+        it "uses the agency lang as default language" do
+          agency.lang = "agency lang"
+          is_expected.to include(default_language: agency.lang)
+        end
+
+        it "uses the agency url as default contact url" do
+          agency.url = "agency url"
+          is_expected.to include(default_contact_url: agency.url)
+        end
+
+        it "uses the agency phone as default contact phone" do
+          agency.phone = "agency phone"
+          is_expected.to include(default_contact_phone: agency.phone)
+        end
+
+        it "uses the tine zone name" do
+          agency.timezone = "Etc/UTC"
+          is_expected.to include(time_zone: agency.timezone)
+        end
+      end
+
+      describe "validation" do
+        subject { decorator.valid? }
+
+        context "when the agency has a defined id and a valid time_zone" do
+          before do
+            agency.id = "defined"
+            agency.timezone = "Europe/Paris"
+            decorator.mandatory_id = true
+            decorator.default_time_zone = ActiveSupport::TimeZone["Europe/Paris"]
+          end
+
+          it { is_expected.to be_truthy }
+        end
+
+        describe "missing agency id" do
+          context "when agency id is mandatory and agency id is blank" do
+            before do
+              agency.id = ""
+              decorator.mandatory_id = true
+            end
+
+            it "creates an error 'gtfs.agencies.missing_agency_id'" do
+              is_expected.to be_falsy
+              expect(decorator.errors).to include({ criticity: :error, message_key: 'gtfs.agencies.missing_agency_id' })
+            end
+          end
+
+        end
+
+        describe "invalid time zone" do
+          context "when agency timezone doesn't match a known TimeZone" do
+            before do
+              agency.timezone = "invalid timezone"
+            end
+
+            it "creates an error 'invalid_time_zone' with invalid timezone name" do
+              is_expected.to be_falsy
+              expect(decorator.errors).to include({ criticity: :error, message_key: :invalid_time_zone, message_attributes: { time_zone: agency.timezone }})
+            end
+          end
+        end
+
+        describe "default time zone" do
+          context "when the default time zone is known and the agency doesn't match it" do
+            before do
+              decorator.default_time_zone = ActiveSupport::TimeZone["Etc/UTC"]
+              agency.timezone = "Europe/Paris"
+            end
+
+            it "creates an error 'gtfs.agencies.default_time_zone'" do
+              is_expected.to be_falsy
+              expect(decorator.errors).to include({ criticity: :error, message_key: 'gtfs.agencies.default_time_zone'})
+            end
+          end
+        end
+      end
+
+    end
+
+  end
+
   describe '#import_stops' do
-    let(:import) { build_import 'google-sample-feed-with-stop-desc.zip' }
+    let(:import) do
+      build_import('google-sample-feed-with-stop-desc.zip').tap do |import|
+        import.default_time_zone = ActiveSupport::TimeZone['America/Los_Angeles']
+      end
+    end
     it "should create a stop_area for each stop" do
       import.import_stops
 

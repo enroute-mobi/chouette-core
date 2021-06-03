@@ -92,40 +92,150 @@ class Import::Gtfs < Import::Base
   end
 
   def import_agencies
-    create_resource(:agencies).each(source.agencies) do |agency, resource|
-      @default_time_zone ||= check_time_zone_or_create_message(agency.timezone, resource)
+    resource = create_resource(:agencies)
+    resource.rows_count = source.agencies.count
+    resource.save!
 
-      if agency.id.present?
-        company = companies.find_or_initialize_by(registration_number: agency.id)
-        company.line_provider = line_provider
-        company.attributes = { name: agency.name }
-        company.default_language = agency.lang
-        company.default_contact_url = agency.url
-        company.default_contact_phone = agency.phone
-        company.time_zone = @default_time_zone
+    Agencies.new(WithResource.new(self, resource)).import!
+  end
 
-        save_model company, resource: resource
-      else
-        create_message(
-          {
-            criticity: :error,
-            message_key: 'gtfs.agencies.missing_agency_id',
-            resource_attributes: {
-              filename: "#{resource.name}.txt",
-              line_number: resource.rows_count
-            }
-          },
-          resource: resource,
-          commit: true
-        )
-        next
+  # Try to hide the resource management for modern code
+  #
+  # Provides #save_model and #create_message method without resource concept/argument
+  class WithResource < SimpleDelegator
+
+    def initialize(import, resource)
+      super import
+
+      @import, @resource = import, resource
+    end
+
+    attr_reader :import, :resource
+
+    def save_model(model)
+      import.save_model model, resource: resource
+    end
+
+    def create_message(attributes)
+      attributes[:resource_attributes] = {
+        filename: "#{resource.name}.txt",
+        line_number: resource.rows_count
+      }
+      import.create_message attributes, resource: resource, commit: true
+    end
+
+  end
+
+  class Agencies
+
+    def initialize(import)
+      @import = import
+    end
+
+    attr_reader :import
+    delegate :source, :companies, :create_message, :save_model,
+             :default_company_id=, :default_time_zone, :default_time_zone=, to: :import
+
+    def import!
+      source.agencies.each do |agency|
+        decorated_agency = Decorator.new(agency, default_time_zone: default_time_zone, mandatory_id: !default_agency?)
+
+        unless decorated_agency.valid?
+          decorated_agency.errors.each { |error| create_message error }
+          next
+        end
+
+        # TODO use code
+        company = companies.find_or_initialize_by registration_number: decorated_agency.code
+        company.attributes = decorated_agency.company_attributes
+
+        save_model company
+
+        self.default_company_id = company.id if default_agency?
+        self.default_time_zone = decorated_agency.time_zone # TODO Company should support real TimeZone object ..
       end
     end
+
+    def default_agency?
+      @default_agency ||= source.agencies.one?
+    end
+
+    class Decorator < SimpleDelegator
+
+      def initialize(agency, default_time_zone: nil, mandatory_id: false)
+        super agency
+        @agency, @default_time_zone, @mandatory_id = agency, default_time_zone, mandatory_id
+      end
+
+      attr_reader :agency
+      attr_accessor :default_time_zone, :mandatory_id
+      alias mandatory_id? mandatory_id
+
+      def code
+        id.presence || default_code
+      end
+
+      def default_code
+        name.presence && name.parameterize
+      end
+
+      def time_zone
+        @time_zone ||= ActiveSupport::TimeZone[timezone] if timezone
+      end
+
+      def time_zone_name
+        time_zone.tzinfo.name if time_zone
+      end
+
+      def company_attributes
+        {
+          name: name,
+          default_language: lang,
+          default_contact_url: url,
+          default_contact_phone: phone,
+          time_zone: time_zone_name # TODO Company should support real TimeZone object ..
+        }
+      end
+
+      def errors
+        @errors ||= []
+      end
+
+      def valid?
+        errors.clear
+
+        if mandatory_id? && id.blank?
+          errors << {
+            criticity: :error,
+            message_key: 'gtfs.agencies.missing_agency_id'
+          }
+        end
+
+        unless time_zone
+          errors << {
+            criticity: :error,
+            message_key: :invalid_time_zone,
+            message_attributes: {
+              time_zone: timezone,
+            }
+          }
+        end
+
+        if default_time_zone && time_zone != default_time_zone
+          errors << {
+            criticity: :error,
+            message_key: 'gtfs.agencies.default_time_zone'
+          }
+        end
+
+        errors.empty?
+      end
+
+    end
+
   end
 
-  def default_time_zone
-    @default_time_zone_instance ||= ActiveSupport::TimeZone[@default_time_zone]
-  end
+  attr_accessor :default_time_zone, :default_company_id
 
   def import_stops
     sorted_stops = source.stops.sort_by { |s| s.parent_station.present? ? 1 : 0 }
@@ -157,9 +267,28 @@ class Import::Gtfs < Import::Base
             stop_area.time_zone = parent.try(:time_zone)
           end
         elsif stop.timezone.present?
-          stop_area.time_zone = check_time_zone_or_create_message(stop.timezone, resource)
+          time_zone = ActiveSupport::TimeZone[stop.timezone]
+          if time_zone
+            stop_area.time_zone = time_zone.tzinfo.name
+          else
+            create_message(
+              {
+                criticity: :error,
+                message_key: :invalid_time_zone,
+                message_attributes: {
+                  time_zone: stop.timezone,
+                },
+                resource_attributes: {
+                  filename: "#{resource.name}.txt",
+                  line_number: resource.rows_count,
+                  column_number: 0
+                }
+              },
+              resource: resource, commit: true
+            )
+          end
         else
-          stop_area.time_zone = @default_time_zone
+          stop_area.time_zone = default_time_zone&.tzinfo&.name # TODO StopArea should support real TimeZone object ..
         end
 
         save_model stop_area, resource: resource
@@ -185,9 +314,15 @@ class Import::Gtfs < Import::Base
         line.name = route.long_name.presence || route.short_name
         line.number = route.short_name
         line.published_name = route.long_name
-        unless route.agency_id == line.company&.registration_number
-          line.company = companies.find_by(registration_number: route.agency_id) if route.agency_id.present?
+
+        if route.agency_id.blank? && default_company_id
+          line.company_id = default_company_id
+        else
+          unless route.agency_id == line.company&.registration_number
+            line.company = companies.find_by(registration_number: route.agency_id) if route.agency_id.present?
+          end
         end
+
         line.comment = route.desc
 
         line.transport_mode = case route.type
@@ -629,29 +764,6 @@ class Import::Gtfs < Import::Base
       )
     end
     return parent
-  end
-
-  def check_time_zone_or_create_message(imported_time_zone, resource)
-    return unless imported_time_zone
-    time_zone = TZInfo::Timezone.all_country_zone_identifiers.select{|t| t==imported_time_zone}[0]
-    unless time_zone
-      create_message(
-        {
-          criticity: :error,
-          message_key: :invalid_time_zone,
-          message_attributes: {
-            time_zone: imported_time_zone,
-          },
-          resource_attributes: {
-            filename: "#{resource.name}.txt",
-            line_number: resource.rows_count,
-            column_number: 0
-          }
-        },
-        resource: resource, commit: true
-      )
-    end
-    return time_zone
   end
 
   def check_calendar_files_missing_and_create_message

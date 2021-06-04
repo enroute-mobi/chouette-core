@@ -45,6 +45,8 @@ en:
         dummy_control: Dummy
         company_control: Company
         stop_area_control: Stop area
+      generic:
+        no_custom_fields: Your organisation doesn't have any custom fields
     actions:
       new: Add
       edit: Edit

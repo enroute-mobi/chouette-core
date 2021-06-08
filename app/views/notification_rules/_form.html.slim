@@ -14,7 +14,7 @@
           div
             = period_form.label NotificationRule.tmf('period_end'), class: 'col-sm-4 col-xs-5 control-label'
             = period_form.input :max, label: false, as: :date, start_year: years.ago.year, end_year: years.since.year, wrapper_html: { class: 'date smart_date col-sm-8 col-xs-7', style: 'margin-right: 0px; margin-left: 0px'}, selected: @notification_rule.period&.max
-      = f.input :line_id, as: :select, collection: @workbench.lines, selected: f.object.line_id, input_html: { 'data-select2ed': 'true', 'data-select2ed-placeholder': t('simple_form.labels.referential.placeholders.select_lines'), style: 'width: 100%' }, required: true
+      = f.input :line_id, as: :select, collection: @workbench.lines, selected: f.object.line_id, input_html: { 'data-select2-ajax': 'true', 'data-select2ed-placeholder': t('simple_form.labels.referential.placeholders.select_lines'), 'data-url': lines_workbench_autocomplete_index_path(@workbench), style: 'width: 100%' }, required: true
 
   .separator
 

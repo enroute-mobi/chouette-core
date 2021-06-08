@@ -38,20 +38,6 @@ function ShapeEditor(props) {
       source: new VectorSource(),
     })
 
-    const source = new VectorSource();
-    const vector = new VectorLayer({
-      source: source,
-      style: new Style({
-        fill: new Fill({
-          color: 'rgba(255, 255, 255, 0.2)',
-        }),
-        stroke: new Stroke({
-          color: '#ffcc33',
-          width: 2,
-        })
-      }),
-    });
-
     // create map
     const initialMap = new Map({
       target: mapElement.current,
@@ -60,8 +46,7 @@ function ShapeEditor(props) {
         new TileLayer({
           source: new OSM({attributions: '&copy; OpenStreetMap contributors'})
         }),
-        initialFeaturesLayer,
-        vector
+        initialFeaturesLayer
       ],
       view: new View({
         projection: 'EPSG:3857',
@@ -71,51 +56,52 @@ function ShapeEditor(props) {
       controls: defaultControls()
     })
 
-    const modify = new Modify({source: source});
-    initialMap.addInteraction(modify);
-
-    let draw, snap; // global so we can remove them later
-    const typeSelect = document.getElementById('type');
-
-    function addInteractions() {
-      draw = new Draw({
-        source: source,
-        type: 'Point',
-      });
-      initialMap.addInteraction(draw);
-      snap = new Snap({source: source});
-      initialMap.addInteraction(snap);
-    }
-
     // set map onclick handler
     // initialMap.on('click', handleMapClick)
 
     // save map and vector layer references to state
     setMap(initialMap)
     setFeaturesLayer(initialFeaturesLayer)
-    addInteractions();
-
   },[])
 
   // update map if features prop changes - logic formerly put into componentDidUpdate
-  useEffect( () => {
+  useEffect(() => {
+
+    // const vector = new VectorLayer({
+    //   source: source,
+    //   style: new Style({
+    //     fill: new Fill({
+    //       color: 'rgba(255, 255, 255, 0.2)',
+    //     }),
+    //     stroke: new Stroke({
+    //       color: '#ffcc33',
+    //       width: 10,
+    //     })
+    //   }),
+    // });
 
     if (props.features.length) { // may be null on first render
-
-      // set features to map
-      featuresLayer.setSource(
-        new VectorSource({
-          features: props.features // make sure features is an array
-        })
-      )
-
-      // Workaround to prevent openlayer rendering bugs within modal
-      map.updateSize()
-
-      // Fit map to feature extent (with 100px of padding)
-      map.getView().fit(featuresLayer.getSource().getExtent(), {
-        padding: [100,100,100,100]
+      const source = new VectorSource({
+        features: props.features // make sure features is an array
       })
+      // set features to map
+      featuresLayer.setSource(source)
+        const modify = new Modify({source: source});
+        const draw = new Draw({
+          source: source,
+          type: 'LineString',
+        });
+        map.addInteraction(draw);
+        const snap = new Snap({source: source});
+        map.addInteraction(snap);
+        map.addInteraction(modify);
+        // Workaround to prevent openlayer rendering bugs within modal
+        map.updateSize()
+
+        // Fit map to feature extent (with 100px of padding)
+        map.getView().fit(featuresLayer.getSource().getExtent(), {
+          padding: [100,100,100,100]
+        })
     }
   },[props.features])
 

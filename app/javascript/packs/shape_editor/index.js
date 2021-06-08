@@ -36,12 +36,12 @@ function RouteMap() {
             }),
             stroke: new Stroke({
               color: 'rgba(255, 204, 0)',
-              width: 4,
+              width: 10,
             }),
           }),
           stroke: new Stroke({
             color: 'rgba(255, 204, 0)',
-            width: 4,
+            width: 10,
           }),
           fill: new Fill({
             color: 'rgba(255, 153, 0)',

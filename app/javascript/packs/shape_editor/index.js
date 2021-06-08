@@ -11,6 +11,7 @@ import List from './list'
 function RouteMap() {
   // set intial state
   const [ features, setFeatures ] = useState([])
+  const [waypoints, setWaypoints] = useState([])
   const [ style, setStyle ] = useState(new Style({}))
 
   // initialization - retrieve GeoJSON features from Mock JSON API get features from mock
@@ -19,7 +20,7 @@ function RouteMap() {
 
     fetch('/shape_editor/get_waypoints')
       .then(response => response.text())
-      .then( (fetchedFeatures) => {
+      .then(fetchedFeatures => {
 
         // parse fetched geojson into OpenLayers features
         //  use options to convert feature from EPSG:4326 to EPSG:3857
@@ -59,7 +60,7 @@ function RouteMap() {
 
   },[])
   useEffect(() => {
-    console.log(features)
+    features && setWaypoints(() => features.filter(f => f.getGeometry().getType() == 'Point'))
   },[features])
 
   return (
@@ -68,7 +69,7 @@ function RouteMap() {
         <div className="row">
           <div className="col-md-6">
             <h4 className="underline">Liste</h4>
-            <List collection={features} />
+            <List waypoints={waypoints} />
           </div>
           <div className="col-md-6">
           <h4 className="underline">Carte</h4>

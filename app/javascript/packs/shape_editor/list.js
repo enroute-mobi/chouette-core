@@ -1,19 +1,16 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 
-function List({collection}) {
-  // set intial state
-  const [ features, setFeatures ] = useState([])
+function List({ waypoints }) {
+  const renderCoordinates = feature => {
+    const [lon, lat] = feature.getGeometry().getCoordinates()
 
-  // initialization - retrieve GeoJSON features from Mock JSON API get features from mock
-  //  GeoJson API (read from flat .json file in public directory)
-  useEffect( () => {
-
-  },[])
+    return `${lon} - ${lat}`
+  }
 
   return (
     <div className="list">
       <ul>
-        {collection.map((item, i) => <li key={i}>{item.values_.name}</li>)}
+        {waypoints.map((item, i) => <li key={i}>{item.values_.name} | {renderCoordinates(item)}</li>)}
       </ul>
     </div>
   )

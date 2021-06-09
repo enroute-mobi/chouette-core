@@ -1,20 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react'
-
+import { isEmpty } from 'lodash'
 import Map from 'ol/Map'
 import View from 'ol/View'
 import OSM from 'ol/source/OSM'
 import TileLayer from 'ol/layer/Tile'
 import VectorLayer from 'ol/layer/Vector'
-import KML from 'ol/format/KML'
-import {Control, defaults as defaultControls} from 'ol/control'
+import { defaults as defaultControls } from 'ol/control'
 import VectorSource from 'ol/source/Vector'
-import XYZ from 'ol/source/XYZ'
-import {transform} from 'ol/proj'
-import {toStringXY} from 'ol/coordinate'
-import {Fill, Stroke, Circle, Style} from 'ol/style'
+import { transform } from 'ol/proj'
+import { toStringXY } from 'ol/coordinate'
 
-function MapWrapper(props) {
-
+function MapWrapper({ features, onInit, _style }) {
   const [ map, setMap ] = useState()
   const [ featuresLayer, setFeaturesLayer ] = useState()
   const [ selectedCoord , setSelectedCoord ] = useState()
@@ -60,18 +56,17 @@ function MapWrapper(props) {
     setMap(initialMap)
     setFeaturesLayer(initialFeaturesLayer)
 
+    onInit(initialMap, initialFeaturesLayer)
   },[])
 
   // update map if features prop changes - logic formerly put into componentDidUpdate
   useEffect( () => {
 
-    if (props.features.length) { // may be null on first render
+    if (!isEmpty(features)) { // may be null on first render
 
       // set features to map
       featuresLayer.setSource(
-        new VectorSource({
-          features: props.features // make sure features is an array
-        })
+        new VectorSource({ features }) // make sure features is an array
       )
 
       // Workaround to prevent openlayer rendering bugs within modal
@@ -82,7 +77,7 @@ function MapWrapper(props) {
         padding: [100,100,100,100]
       })
     }
-  },[props.features])
+  },[features])
 
   // // map click handler
   // const handleMapClick = (event) => {
@@ -106,6 +101,11 @@ function MapWrapper(props) {
       </div>
     </div>
   )
+}
+
+MapWrapper.defaultProps = {
+  features: [],
+  onInit: (_map, _featuresLayer) => {}
 }
 
 export default MapWrapper

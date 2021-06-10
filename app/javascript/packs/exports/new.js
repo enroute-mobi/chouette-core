@@ -11,7 +11,7 @@ class SelectBuilder {
 			),
 			valueField: 'id',
 			labelField: 'text',
-			items: 	initialValue.map(item => item.id),
+			items: initialValue.map(item => item.id),
 			options: initialValue
 		})
 	}
@@ -27,7 +27,7 @@ class PathBuilder {
 	get lineIds() {
 		return () => 
 			this.store.isExport ?
-				`/referentials/${this.this.referentialId}/autocomplete/lines` :
+				`/referentials/${this.store.referentialId}/autocomplete/lines` :
 				`/workgroups/${this.workgroupId}/autocomplete/lines`
 	}
 
@@ -35,7 +35,6 @@ class PathBuilder {
 		return () => store.isExport ?
 			`/referentials/${this.store.referentialId}/autocomplete/companies` :
 			`/workgroups/${this.workgroupId}/autocomplete/companies`
-
 	}
 
 	get lineProviderIds() {

@@ -29,11 +29,13 @@ module Chouette
     has_many :specific_vehicle_journeys, through: :specific_vehicle_journey_at_stops, class_name: 'Chouette::VehicleJourney', source: :vehicle_journey
     has_many :codes, as: :resource, dependent: :delete_all
 
+    scope :closest_children, ->(point) { order("ST_Distance(lonlat, ST_GeomFromText('#{point.as_text}', #{SRID}))").limit(5) }
     scope :light, ->{ select(:id, :name, :city_name, :zip_code, :time_zone, :registration_number, :kind, :area_type, :time_zone, :stop_area_referential_id, :objectid) }
     scope :with_time_zone, -> { where.not time_zone: nil }
     scope :by_code, ->(code_space, value) {
       joins(:codes).where(codes: { code_space: code_space, value: value })
     }
+    scope :by_text, ->(text) { text.blank? ? all : where('lower(stop_areas.name) LIKE :t or lower(stop_areas.objectid) LIKE :t', t: "%#{text.downcase}%") }
 
     belongs_to :referent, class_name: 'Chouette::StopArea'
     has_many :specific_stops, class_name: 'Chouette::StopArea', foreign_key: 'referent_id'
@@ -504,14 +506,15 @@ module Chouette
       where "stop_areas.id IN (#{union_query})"
     end
 
-    def self.parents_of(relation, ignore_mono_parent: false)
-      parents = joins('JOIN "public"."stop_areas" children on "public"."stop_areas"."id" = children.parent_id').where("children.id" => relation)
+    def self.all_parents(ignore_mono_parent: false)
+      current_scope = self.current_scope || all
+      stop_area_parents = joins('JOIN "public"."stop_areas" children on "public"."stop_areas"."id" = children.parent_id').where("children.id" => current_scope)
 
       if ignore_mono_parent
-        parents = parents.group(:id).having('count(children.id) > 1')
+        stop_area_parents = stop_area_parents.group(:id).having('count(children.id) > 1')
       end
 
-      parents.distinct
+      stop_area_parents.distinct
     end
 
     def formatted_area_type

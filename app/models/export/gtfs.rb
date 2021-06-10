@@ -86,7 +86,7 @@ class Export::Gtfs < Export::Base
   end
 
   def exported_stop_areas
-    parents = Chouette::StopArea.parents_of(export_scope.stop_areas.where(area_type: 'zdep'), ignore_mono_parent: ignore_single_stop_station)
+    parents = export_scope.stop_areas.where(area_type: 'zdep').all_parents(ignore_mono_parent: ignore_single_stop_station)
     Chouette::StopArea.union(export_scope.stop_areas, parents).where(kind: :commercial)
   end
 

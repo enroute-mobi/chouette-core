@@ -51,6 +51,7 @@ fr:
       export_hub_physical: "Export HUB des arrêts physiques"
     filters:
       name_or_objectid: "Recherche par nom ou par objectid..."
+      parent: "Indiquer un parent..."
       zip_code: Indiquez un code postal...
       city_name: Indiquez un nom de commune...
       area_type: "Indiquez un type d'arrêt..."
@@ -113,8 +114,8 @@ fr:
   activerecord:
     models:
       stop_area:
-        zero:  "arrêt"
-        one:   "arrêt"
+        zero: "arrêt"
+        one: "arrêt"
         other: "arrêts"
     attributes:
       stop_area:
@@ -156,6 +157,7 @@ fr:
         creator_id: "Créé par"
         children_ids: "Fils"
         parent: "Parent"
+        parent_id: "Parent"
         is_referent: "Référent"
         referent: "Référent"
         referent_id: "Arrêt référent"

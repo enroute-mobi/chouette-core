@@ -10,14 +10,6 @@ class StopAreasController < ChouetteController
   respond_to :html, :kml, :xml, :json
   respond_to :js, :only => :index
 
-  def autocomplete
-    scope = stop_area_referential.stop_areas.where(deleted_at: nil)
-    scope = scope.referent_only if params[:referent_only]
-    args  = [].tap{|arg| 4.times{arg << "%#{params[:q]}%"}}
-    @stop_areas = scope.where("unaccent(name) ILIKE unaccent(?) OR unaccent(city_name) ILIKE unaccent(?) OR registration_number ILIKE ? OR objectid ILIKE ?", *args).limit(50)
-    @stop_areas
-  end
-
   def select_parent
     @stop_area = stop_area
     @parent = stop_area.parent

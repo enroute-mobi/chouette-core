@@ -1,4 +1,4 @@
-class AutocompleteStopAreaInput < SimpleForm::Inputs::CollectionSelectInput
+class AutocompleteSelectInput < SimpleForm::Inputs::CollectionSelectInput
 
   def collection
     []

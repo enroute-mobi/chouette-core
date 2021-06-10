@@ -30,13 +30,6 @@ class StopAreaProvidersController < ChouetteController
     end
   end
 
-  def autocomplete
-    scope = policy_scope(parent.stop_area_providers)
-    args  = [].tap{|arg| 2.times{arg << "%#{params[:q]}%"}}
-    @stop_area_providers = scope.where("unaccent(name) ILIKE unaccent(?) OR objectid ILIKE ?", *args).limit(50)
-    @stop_area_providers
-  end
-
   protected
 
   def build_resource

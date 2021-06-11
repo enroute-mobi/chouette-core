@@ -10,7 +10,7 @@ function List({ waypoints }) {
   return (
     <div className="list">
       <ul>
-        {waypoints.map((item, i) => <li key={i}>{item.values_.name} | {renderCoordinates(item)}</li>)}
+        {waypoints.map((item, i) => <li key={i}>{item.getProperties().name} | {renderCoordinates(item)}</li>)}
       </ul>
     </div>
   )

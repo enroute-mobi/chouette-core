@@ -47,6 +47,7 @@ class PathBuilder {
 window.Spruce.store('export', {
 	type: 'Export::Gtfs',
 	exportedLines: 'all_line_ids',
+	period: 'all_periods',
 	referentialId: '',
 	isExport: null,
 	pathBuilder: new PathBuilder(this),

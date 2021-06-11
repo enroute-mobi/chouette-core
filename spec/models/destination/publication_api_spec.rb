@@ -34,7 +34,7 @@ RSpec.describe Destination::PublicationApi, type: :model do
       expect{ destination.transmit(publication) }.to change{ publication_api.publication_api_sources.count }.by 0
     end
 
-    let(:new_publication_setup) { create :publication_setup, export_netex: export_netex.type, export_options: export_netex }
+    let(:new_publication_setup) { create :publication_setup, export_type: export_netex.type, export_options: export_netex.options }
     let(:new_publication) { create :publication, publication_setup: new_publication_setup, exports: [export_netex] }
     it 'should create a new publication_api_source if publication_api_source with same key does not exists' do
       create :publication_api_source, publication: publication, publication_api: publication_api, export: export_1, key: "gtfs.zip"

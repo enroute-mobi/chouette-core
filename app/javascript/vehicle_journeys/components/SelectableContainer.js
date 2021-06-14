@@ -81,7 +81,6 @@ const SelectableContainer = props => {
 			duringSelection={handleSelecting}
 			onSelectionFinish={handleSelectFinish}
 			onSelectionClear={handleClear}
-			ignoreList={['.not-selectable']}
 			scrollContainer='.scrollable-container'
 		>
 			{children}

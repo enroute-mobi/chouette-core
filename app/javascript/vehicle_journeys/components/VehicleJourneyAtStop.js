@@ -20,14 +20,13 @@ class VehicleJourneyAtStop extends Component {
 
 	get tdClasses() {
 		const {
-			vjas: { dummy },
 			isSelecting,
 			isSelected,
 			isInSelection
 		} = this.props
 		const out = ['td', 'text-center']
 
-		out.push(dummy ? 'not-selectable' : 'selectable')
+		out.push('selectable')
 
 		if (isSelecting || isSelected || isInSelection) {
 			out.push('selected')	

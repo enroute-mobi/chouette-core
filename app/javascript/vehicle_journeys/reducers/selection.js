@@ -139,6 +139,8 @@ export default function selection(state = initialState, action) {
 
 			const vehicleJourneys = state.vehicleJourneys.map((vj, x) => {
 				const newStops = vj.vehicle_journey_at_stops.map((vjas, y) => {
+					if (vjas.dummy) return vjas // We dont want data to be uptaded in this case
+
 					const stopParams = stops.find(stop => stop.x == x && stop.y == y) || vjas
 					// const dayOffSets = computeDayOffSet(prevStop, stopParams)
 

@@ -1,15 +1,17 @@
 import actions from '../actions'
 import { connect } from 'react-redux'
-import { flatten, sortBy } from 'lodash'
+import { chain } from 'lodash'
 import SelectableContainer from '../components/SelectableContainer'
 
 const sortedVjas = vehicleJourneys => {
-	const vjasMapper = x => (vjas, y) => ({ ...vjas, x, y })
-	const vjMapper = (vj, x) => vj.vehicle_journey_at_stops.map(vjasMapper(x))
+	const vjMapper = (vj, x) => vj.vehicle_journey_at_stops.map(
+		(vjas, y) => ({ ...vjas, x, y })
+	)
 
-	const vjas = flatten(vehicleJourneys.map(vjMapper))
-
-	return sortBy(vjas, ['y', 'x'])
+	return chain(vehicleJourneys)
+		.flatMap(vjMapper)
+		.sortBy(['y', 'x'])
+		.value()
 }
 
 const mapStateToProps = ({ selection, filters, vehicleJourneys }) => ({

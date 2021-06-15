@@ -415,40 +415,70 @@ class Referential < ApplicationModel
     clone
   end
 
-  def self.available_srids
-    [
-      [ "RGF 93 Lambert 93 (2154)", 2154 ],
-      [ "RGF93 CC42 (zone 1) (3942)", 3942 ],
-      [ "RGF93 CC43 (zone 2) (3943)", 3943 ],
-      [ "RGF93 CC44 (zone 3) (3944)", 3944 ],
-      [ "RGF93 CC45 (zone 4) (3945)", 3945 ],
-      [ "RGF93 CC46 (zone 5) (3946)", 3946 ],
-      [ "RGF93 CC47 (zone 6) (3947)", 3947 ],
-      [ "RGF93 CC48 (zone 7) (3948)", 3948 ],
-      [ "RGF93 CC49 (zone 8) (3949)", 3949 ],
-      [ "RGF93 CC50 (zone 9) (3950)", 3950 ],
-      [ "NTF Lambert Zone 1 Nord (27561)", 27561 ],
-      [ "NTF Lambert Zone 2 Centre (27562)", 27562 ],
-      [ "NTF Lambert Zone 3 Sud (27563)", 27563 ],
-      [ "NTF Lambert Zone 4 Corse (27564)", 27564 ],
-      [ "NTF Lambert 1 Carto (27571)", 27571 ],
-      [ "NTF Lambert 2 Carto (27572)", 27572 ],
-      [ "NTF Lambert 3 Carto (27573)", 27573 ],
-      [ "NTF Lambert 4 Carto (27574)", 27574 ] ,
-      [ "Réunion RGR92 - UTM 40S (2975)", 2975 ],
-      [ "Antilles Françaises RRAF1991 - UTM 20N - IGN (4559)", 4559 ],
-      [ "Guyane RGFG95 - UTM 22N (2972)", 2972 ],
-      [ "Guyane RGFG95 - UTM 21N (3312)", 3312 ]
-    ]
+  def line_periods(max_priority: nil)
+    LinePeriod.from self, max_priority: max_priority
   end
 
-  def projection_type_label
-    self.class.available_srids.each do |a|
-      if a.last.to_s == projection_type
-        return a.first.split('(').first.rstrip
+  class LinePeriod
+    attr_reader :period
+    attr_accessor :line_id
+
+    def initialize(attributes = {})
+      attributes.each { |k,v| send "#{k}=", v }
+    end
+
+    def period=(period)
+      @period = self.class.cast_period(period)
+    end
+
+    def self.from(referential, max_priority: nil)
+      Query.new(referential.id, max_priority: max_priority)
+    end
+
+    def self.cast_period(definition)
+      if definition.is_a?(String) && definition =~ /\[([0-9-]+),([0-9-]+)\)/
+        Range.new Date.parse($1), Date.parse($2)-1
+      else
+        definition
       end
     end
-    projection_type || ""
+
+    def ==(other)
+      other.present? &&
+        line_id == other.line_id && period == other.period
+    end
+
+    class Query
+      include Enumerable
+
+      def initialize(referential_id, max_priority: nil)
+        @referential_id, @max_priority = referential_id, max_priority
+      end
+      attr_reader :referential_id, :max_priority
+
+      def all
+        @all ||= to_rows.map { |row| LinePeriod.new row }
+      end
+
+      delegate :each, :empty?, to: :all
+
+      def to_rows
+        ActiveRecord::Base.connection.select_all to_sql
+      end
+
+      def max_priority_condition
+        "AND priority < #{max_priority}" if max_priority
+      end
+
+      def to_sql
+        """
+        select unnest(line_ids) as line_id, period from public.referential_metadata,
+        lateral unnest(periodes) as period where referential_id = #{referential_id} #{max_priority_condition}
+        """.strip
+      end
+
+    end
+
   end
 
   before_validation :assign_line_and_stop_area_referential, on: :create, if: :workbench

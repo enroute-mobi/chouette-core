@@ -200,6 +200,31 @@ RSpec.describe Export::NetexGeneric do
 
   end
 
+  describe "Stops export" do
+    let(:target) { MockNetexTarget.new }
+    let(:export_scope) { Export::Scope::All.new context.referential }
+    let(:export) { Export::NetexGeneric.new export_scope: export_scope, target: target }
+
+    let(:part) do
+      Export::NetexGeneric::Stops.new export
+    end
+
+    let(:context) do
+      Chouette.create do
+        3.times { stop_point }
+      end
+    end
+
+    before { context.referential.switch }
+
+    it "create Netex resources with correct coordinates" do
+      part.export!
+      context.stop_points.each do |sp|
+        expect(target.resources.find { |e| e.longitude == sp.stop_area.longitude && e.latitude == sp.stop_area.latitude }).to be_truthy
+      end
+    end
+  end
+
   describe "StopPoints export" do
 
     let(:target) { MockNetexTarget.new }

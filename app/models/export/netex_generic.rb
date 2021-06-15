@@ -149,15 +149,18 @@ class Export::NetexGeneric < Export::Base
   class StopDecorator < SimpleDelegator
 
     def netex_attributes
-        {
-          id: objectid,
-          name: name,
-          public_code: public_code,
-          raw_xml: import_xml
-          # longitude: longitude,
-          # latitude: latitude
-        }
-      end
+      {
+        id: objectid,
+        name: name,
+        public_code: public_code,
+        centroid: centroid,
+        raw_xml: import_xml
+      }
+    end
+
+    def centroid
+      Netex::Point.new(location: Netex::Location.new(latitude: latitude, longitude: longitude))
+    end
 
     def parent_site_ref
       Netex::Reference.new(parent.objectid, type: 'ParentSiteRef')
@@ -869,7 +872,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def operating_period_ref
-      Netex::Reference.new(id, type: 'OperatinPeriodRef')
+      Netex::Reference.new(operating_period_id, type: 'OperatinPeriodRef')
     end
 
   end

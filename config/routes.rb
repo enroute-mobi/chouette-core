@@ -1,6 +1,7 @@
 ChouetteIhm::Application.routes.draw do
   get 'shape_editor/home'
   get 'shape_editor/get_waypoints', defaults: { format: 'xml' }
+  put 'shape_editor/fetch_new_waypoints', defaults: { format: 'json' }
   
   resource :dashboard
   resource :subscriptions, only: :create

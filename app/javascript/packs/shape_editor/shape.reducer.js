@@ -1,7 +1,6 @@
 import { Style } from 'ol/style'
 import { chain, uniqueId } from 'lodash'
 import {
-  nearestPointOnLine,
   lineString as turfLine,
   point as turfPoint,
   lineSlice,
@@ -9,7 +8,7 @@ import {
   length
 } from '@turf/turf'
 
-const fromOLToTurfCoords = feature =>
+export const convertCoords = feature =>
   feature
   .getGeometry()
   .clone()
@@ -22,7 +21,7 @@ const getSortedWaypoints = (line, waypoints) =>
     // Creaye a line slice from the beginning to the current point to determine the length of this "subLine"
     const subLine = lineSlice(
       turfPoint(getCoords(line)[0]),
-      turfPoint(fromOLToTurfCoords(w)),
+      turfPoint(convertCoords(w)),
       line
     )
 
@@ -45,12 +44,24 @@ export const reducer = (state, action) => {
       return {
         ...state,
         line: action.line,
-        turfLine: turfLine(fromOLToTurfCoords(action.line))
+        turfLine: turfLine(convertCoords(action.line))
       }
     case 'SET_WAYPOINTS':
       return {
         ...state,
         waypoints: getSortedWaypoints(state.turfLine, action.waypoints)
+      }
+    case 'ADD_WAYPOINT':
+      return {
+        ...state,
+        waypoints: getSortedWaypoints(
+          state.turfLine,
+          [...state.waypoints, action.waypoint]
+        )
+      }
+    case 'UPDATE_LINE':
+      return {
+        ...state
       }
     default:
       return state
@@ -65,6 +76,7 @@ export const initialState = {
   waypoints: [],
   draw: null,
   snap: null,
+  modify: null,
   style: new Style({})
 }
 
@@ -72,5 +84,6 @@ export const actions = {
   setAttributes: payload => ({ type: 'SET_ATTRIBUTES', payload }),
   setLine: line => ({ type: 'SET_LINE', line }),
   setWaypoints: waypoints =>  ({ type: 'SET_WAYPOINTS', waypoints }),
-  addNewPoint: point => ({ type: 'ADD_POINT'})
+  addNewPoint: waypoint => ({ type: 'ADD_WAYPOINT', waypoint }),
+  updateLine: coordinates => ({ type: 'UPDATE_LINE', coordinates })
 }

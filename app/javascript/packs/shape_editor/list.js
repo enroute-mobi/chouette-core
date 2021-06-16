@@ -1,8 +1,9 @@
 import React from 'react'
+import { convertCoords } from './shape.reducer'
 
 function List({ waypoints }) {
   const renderCoordinates = feature => {
-    const [lon, lat] = feature.getGeometry().getCoordinates()
+    const [lon, lat] = convertCoords(feature)
 
     return `${lon} - ${lat}`
   }

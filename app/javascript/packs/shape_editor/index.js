@@ -1,17 +1,19 @@
 import '../../helpers/polyfills'
 
-import React, { useEffect, useReducer } from 'react'
+import React, { useEffect, useReducer, useState } from 'react'
 import { render } from 'react-dom'
 import { isEmpty } from 'lodash'
+import Rails from "@rails/ujs"
 
 import { Fill, Stroke, Circle, Style } from 'ol/style'
 import KML from 'ol/format/KML'
+import GeoJSON from 'ol/format/GeoJSON'
 import Collection from 'ol/Collection'
 import Modify from 'ol/interaction/Modify'
 import Draw from 'ol/interaction/Draw'
 import Snap from 'ol/interaction/Snap'
 
-import { reducer, initialState, actions } from './reducer'
+import { convertCoords, reducer, initialState, actions } from './shape.reducer'
 import MapWrapper from '../../components/MapWrapper'
 import List from './list'
 
@@ -42,12 +44,11 @@ const defaultStyle = new Style({
   })
 })
 
-const fromOLToTurfCoordinates = geometry => geometry.clone().transform('EPSG:3857', 'EPSG:4326').getCoordinates()
-
 function ShapeEditorMap() {
   // set intial state
+  const lineId = 'line'
   const [state, dispatch] = useReducer(reducer, initialState)
-  const interactions = [state.draw, state.modify]
+  const [shouldUpdateLine, setShouldUpdateLine] = useState(false)
 
   // Handlers
   const handleMapInit = async (map, featuresLayer) => {  
@@ -56,6 +57,8 @@ function ShapeEditorMap() {
 
     const features = new KML({ extractStyles: false, defaultStyle }).readFeatures(fetchedFeatures, wktOptions)
     const line = features.find(f => f.getGeometry().getType() == 'LineString')
+
+    line.setId(lineId)
     const waypoints = features.filter(f => f.getGeometry().getType() == 'Point')
 
     dispatch(actions.setLine(line))
@@ -65,19 +68,48 @@ function ShapeEditorMap() {
   }
 
   const handleNewPoint = e => {
-    console.log('handleNewPoint', e)
-
-    actions.addNewPoint(e.feature.getGeometry())
+    dispatch(actions.addNewPoint(e.feature))
+    triggerShouldUpdateLine()
   }
 
   const handleMovePoint = e => {
-    console.log('handleMovePoint', e)
+    dispatch(actions.setWaypoints(e.features.getArray()))
+    triggerShouldUpdateLine()
+  }
 
-    actions.movePoint(e.feature.getGeometry())
+  const handleLineUpdate = async () => {
+    const coordinates = state.waypoints.map(convertCoords)
+
+    Rails.ajax({
+      type: 'PUT',
+      url: '/shape_editor/fetch_new_waypoints',
+      data: JSON.stringify({ coordinates }),
+      dataType: 'json',
+      success: data => {
+        const lineFeature = new GeoJSON().readFeature(data, wktOptions)
+        const source = getSource()
+
+        lineFeature.setId(lineId)
+
+        source.removeFeature(
+          source.getFeatureById(lineId)
+        )
+
+        source.addFeature(lineFeature)
+
+        dispatch(actions.setLine(lineFeature))
+      },
+      error: response => console.warn('error', response)
+    })
   }
 
   // Helpers
   const hasWaypoints = () => !isEmpty(state.waypoints)
+  const getSource = () => state.featuresLayer?.getSource()
+  const triggerShouldUpdateLine = () => {
+    setShouldUpdateLine(true)
+    setShouldUpdateLine(false)
+  }
 
   // useEffect hooks
   useEffect(() => {
@@ -95,15 +127,16 @@ function ShapeEditorMap() {
   }, [state.featuresLayer, state.waypoints])
 
   useEffect(() => {
-    state.draw?.on('drawend', handleNewPoint)
-    state.modify?.on('modifyend', handleMovePoint)
-  }, interactions)
+    !!state.draw && state.draw.on('drawend', handleNewPoint)
+  }, [state.draw])
 
   useEffect(() => {
-    if (hasWaypoints()) {
-      state.waypoints.forEach(w => console.log(w.getProperties().name, w.getProperties().distanceFromStart))
-    }
-  }, [state.waypoints])
+    !!state.modify && state.modify.on('modifyend', handleMovePoint)
+  }, [state.modify])
+
+  useEffect(() => {
+    shouldUpdateLine && handleLineUpdate()
+  }, [shouldUpdateLine])
 
   return (
     <div className="page-content">

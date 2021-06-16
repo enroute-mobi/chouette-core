@@ -6,7 +6,7 @@ class ShapeEditorController < ApplicationController
     render xml: File.read(Rails.root.join('tomtom.kml'))
   end
 
-  def fetch_new_waypoints
+  def update_line
     coordinates = JSON.parse(request.raw_post).fetch('coordinates')
     query = coordinates.map { |(longitude, latitude)| "#{latitude},#{longitude}" }.join(':')
 

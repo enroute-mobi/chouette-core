@@ -21,8 +21,8 @@ const CopyModal = props => {
   } = props
 
   const updatePasteContent = useDebounce(
-    () => props.updatePasteContent(pasteContentRef.current.value),
-    300
+    props.updatePasteContent,
+    100
   )
 
   const selectAll = () => {
@@ -94,7 +94,8 @@ const CopyModal = props => {
                 {mode == 'paste' && <div>
                   <textarea
                     ref={pasteContentRef}
-                    onChange={updatePasteContent}
+                    onPaste={e => updatePasteContent(e.clipboardData.getData('text'))}
+                    onKeyDown={() => updatePasteContent(pasteContentRef.current.value)}
                   >
                     {content.paste}
                   </textarea>
@@ -126,7 +127,7 @@ const CopyModal = props => {
               </button>}
               {mode == 'paste' && <button
                 className='btn btn-primary'
-                disabled={!!error}
+                disabled={!!error || !content.paste}
                 onClick={pasteContent}>
                   <i className='fa fa-paste'></i>
                   <span>{ I18n.t('courses_copy_paste.modal.paste_content') }</span>

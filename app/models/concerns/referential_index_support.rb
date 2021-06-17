@@ -21,7 +21,14 @@ module ReferentialIndexSupport
 
         ReferentialIndexSupport.register_target_relation rel
 
-        after_commit on: %i[create update] do
+        after_commit on: :create do
+          # Prevent update with the collection is empty at creation
+          unless rel.collection(self).empty?
+            CrossReferentialIndexEntry.update_index_with_relation_from_target rel, self
+          end
+        end
+
+        after_commit on: :update do
           CrossReferentialIndexEntry.update_index_with_relation_from_target rel, self
         end
 

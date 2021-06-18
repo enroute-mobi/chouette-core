@@ -1,23 +1,31 @@
 class ShapeEditorController < ApplicationController
+  before_action :referential_switch
+
   def home
   end
 
-  def get_waypoints
-    render xml: File.read(Rails.root.join('tomtom.kml'))
+  def get_journey_patterns
+    route = Chouette::Route.find(params.fetch(:route_id))
+
+    options = route.journey_patterns.map do |jp|
+      {
+        value: jp.id,
+        label: jp.published_name
+      }
+    end
+  
+    render json: options
   end
 
   def update_line
     coordinates = JSON.parse(request.raw_post).fetch('coordinates')
-    query = coordinates.map { |(longitude, latitude)| "#{latitude},#{longitude}" }.join(':')
 
-    key = ENV["TOMTOM_API_KEY"]
+    render json: TomTom::BuildLineStringFeature.call(coordinates)
+  end
 
-    url = "https://api.tomtom.com/routing/1/calculateRoute/#{query}/json?routeType=fastest&traffic=false&travelMode=bus&key=#{key}"
+  private
 
-    raw_response = open(url).read
-    response = JSON.parse(raw_response)
-    new_coordinates = response['routes'].first['legs'].flat_map { |leg| leg['points'].flat_map { |point| [ point.values_at("longitude", "latitude") ] } }
-
-    render json: { type: 'Feature', geometry: { type: 'LineString', coordinates: new_coordinates } }
+  def referential_switch
+    Referential.find(params.fetch(:referential_id)).switch
   end
 end

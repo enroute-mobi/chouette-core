@@ -1,8 +1,4 @@
 ChouetteIhm::Application.routes.draw do
-  get 'shape_editor/home'
-  get 'shape_editor/get_waypoints', defaults: { format: 'xml' }
-  put 'shape_editor/update_line', defaults: { format: 'json' }
-  
   resource :dashboard
   resource :subscriptions, only: :create
   resources :notifications, only: :index
@@ -211,6 +207,14 @@ ChouetteIhm::Application.routes.draw do
         get 'name_filter'
       end
       resources :routes do
+        resources :shape_editor, only: [] do
+          collection do
+            get 'home'
+            get 'get_journey_patterns', defaults: { format: 'json' }
+            get 'get_journey_pattern_features', defaults: { format: 'xml' }
+            put 'update_line', defaults: { format: 'json' }
+          end
+        end
         member do
           get 'edit_boarding_alighting'
           put 'save_boarding_alighting'

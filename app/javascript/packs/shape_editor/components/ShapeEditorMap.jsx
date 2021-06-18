@@ -1,67 +1,32 @@
-import React, { useEffect, useReducer, useState } from 'react'
+import React, { useContext, useEffect, useReducer, useState } from 'react'
 import { isEmpty } from 'lodash'
 import Rails from "@rails/ujs"
 
-import { Fill, Stroke, Circle, Style } from 'ol/style'
-import KML from 'ol/format/KML'
 import GeoJSON from 'ol/format/GeoJSON'
 import Collection from 'ol/Collection'
 import Modify from 'ol/interaction/Modify'
 import Draw from 'ol/interaction/Draw'
 import Snap from 'ol/interaction/Snap'
 
+import { ShapeContext } from '../shape.context'
 import { reducer, initialState, actions, selectors } from '../shape.reducer'
 import MapWrapper from '../../../components/MapWrapper'
 import List from './List'
-
-// parse fetched geojson into OpenLayers features
-//  use options to convert feature from EPSG:4326 to EPSG:3857
-const wktOptions = {
-  dataProjection: 'EPSG:4326',
-  featureProjection: 'EPSG:3857'
-}
-
-const defaultStyle = new Style({
-  image: new Circle({
-    radius: 10,
-    fill: new Fill({
-      color: 'rgba(255, 153, 0)',
-    }),
-    stroke: new Stroke({
-      color: 'rgba(255, 204, 0)',
-      width: 10,
-    }),
-  }),
-  stroke: new Stroke({
-    color: 'rgba(255, 204, 0)',
-    width: 10,
-  }),
-  fill: new Fill({
-    color: 'rgba(255, 153, 0)',
-  })
-})
+import Select from './Select'
 
 export default function ShapeEditorMap() {
   // set intial state
   const [state, dispatch] = useReducer(reducer, initialState)
   const [shouldUpdateLine, setShouldUpdateLine] = useState(false)
 
+  const { baseURL, lineId, wktOptions } = useContext(ShapeContext)
+
   const sortedWaypoints = selectors.getSortedWaypoints(state)
   const sortedCoordinates = selectors.getSortedCoordinates(state)
 
   // Handlers
   const handleMapInit = async (map, featuresLayer) => {
-    const response = await fetch('/shape_editor/get_waypoints')
-    const fetchedFeatures = await response.text()
-
-    const features = new KML({ extractStyles: false, defaultStyle }).readFeatures(fetchedFeatures, wktOptions) // TODO use GeoJSON format instead of KML
-    const line = features.find(f => f.getGeometry().getType() == 'LineString')
-    const waypoints = features.filter(f => f.getGeometry().getType() == 'Point')
-
-    dispatch(actions.setLine(line))
-    dispatch(actions.setWaypoints(waypoints))
-
-    dispatch(actions.setAttributes({ map, featuresLayer, features }))
+    dispatch(actions.setAttributes({ map, featuresLayer }))
   }
 
   const handleNewPoint = e => {
@@ -77,17 +42,17 @@ export default function ShapeEditorMap() {
   const handleLineUpdate = () => {
     Rails.ajax({
       type: 'PUT',
-      url: '/shape_editor/update_line',
+      url: `${baseURL}/shape_editor/update_line`,
       data: JSON.stringify({ coordinates: sortedCoordinates }),
       dataType: 'json',
       success: data => {
         const lineFeature = new GeoJSON().readFeature(data, wktOptions)
         const source = getSource()
 
-        lineFeature.setId('line')
+        lineFeature.setId(lineId)
 
         source.removeFeature(
-          source.getFeatureById('line')
+          source.getFeatureById(lineId)
         )
 
         source.addFeature(lineFeature)
@@ -105,11 +70,29 @@ export default function ShapeEditorMap() {
     setShouldUpdateLine(true)
     setShouldUpdateLine(false)
   }
+  const setJourneyPatternId = id => dispatch(actions.setJourneyPatternId(id))
+
+  const fetchWaypoints = async () => {
+    const baseURL = window.location.pathname.split('/shape_editor')[0]
+    const response = await fetch(`${baseURL}/journey_patterns/${state.journeyPatternId}.geojson`)
+    const fetchedFeatures = await response.json()
+
+    const features = new GeoJSON().readFeatures(fetchedFeatures, wktOptions)
+
+    const line = features.find(f => f.getGeometry().getType() == 'LineString')
+    const waypoints = features.filter(f => f.getGeometry().getType() == 'Point')
+
+    dispatch(actions.setLine(line))
+    dispatch(actions.setWaypoints(waypoints))
+    dispatch(actions.setAttributes({ features }))
+  }
 
   // useEffect hooks
   useEffect(() => {
-    if (!!state.featuresLayer && hasWaypoints()) {
-      const source = state.featuresLayer.getSource()
+    !!state.featuresLayer &&
+    hasWaypoints() &&
+    state.featuresLayer.on('change:source', e => {
+      const source = e.target.getSource()
       const modify = new Modify({ features: new Collection(state.waypoints) })
       const draw = new Draw({ source, type: 'Point' })
       const snap = new Snap({ source })
@@ -118,7 +101,7 @@ export default function ShapeEditorMap() {
       interactions.forEach(i => state.map.addInteraction(i))
 
       dispatch(actions.setAttributes({ draw, modify, snap }))
-    }
+    })
   }, [state.featuresLayer, state.waypoints])
 
   useEffect(() => {
@@ -133,9 +116,16 @@ export default function ShapeEditorMap() {
     shouldUpdateLine && handleLineUpdate()
   }, [shouldUpdateLine])
 
+  useEffect(() => {
+    !!state.journeyPatternId && fetchWaypoints()
+  }, [state.journeyPatternId])
+
   return (
     <div className="page-content">
       <div className="container-fluid">
+        <div className="row">
+          <Select setJourneyPatternId={setJourneyPatternId}/>
+        </div>
         <div className="row">
           <div className="col-md-6">
             <h4 className="underline">Liste</h4>

@@ -53,6 +53,11 @@ export const reducer = (state, action) => {
         ...state,
         waypoints: [...state.waypoints, action.waypoint]
       }
+    case 'SET_JOURNEY_PATTERN_ID':
+      return {
+        ...state,
+        journeyPatternId: action.journeyPatternId
+      }
     default:
       return state
   }
@@ -75,7 +80,8 @@ export const actions = {
   setLine: line => ({ type: 'SET_LINE', line }),
   setWaypoints: waypoints =>  ({ type: 'SET_WAYPOINTS', waypoints }),
   addNewPoint: waypoint => ({ type: 'ADD_WAYPOINT', waypoint }),
-  updateLine: coordinates => ({ type: 'UPDATE_LINE', coordinates })
+  updateLine: coordinates => ({ type: 'UPDATE_LINE', coordinates }),
+  setJourneyPatternId: journeyPatternId => ({ type: 'SET_JOURNEY_PATTERN_ID', journeyPatternId })
 }
 
 export const convertCoords = feature =>

@@ -1,9 +1,9 @@
 import React from 'react'
-
 import { render } from 'react-dom'
-import ShapeEditorMap from './components/ShapeEditorMap'
+
+import App from './components/App'
 
 render(
-  <ShapeEditorMap />,
+  <App />,
   document.getElementById('shape_editor')
 )

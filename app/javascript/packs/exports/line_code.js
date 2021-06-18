@@ -4,15 +4,19 @@ import AjaxAutoComplete from '../../helpers/ajax_autocomplete'
 const $referentialId = $('#export_referential_id')
 const $exportLineCode = $('#export_line_code')
 
-// Disable #export_line_code if #export_referential_id is empty
-$exportLineCode.prop('disabled',  isEmpty($referentialId.val())) 
+const handleReferentialId = referentialId => {
+  // Disable #export_line_code if #export_referential_id is empty
+  $exportLineCode.prop('disabled',  isEmpty(referentialId))
+  $exportLineCode.data('ajaxPath', `/referentials/${referentialId}/autocomplete/lines`)
+}
+
+handleReferentialId($referentialId.val())
 
 $referentialId.on('change', e => {
   const { value: referentialId } = e.target
 
-  $exportLineCode.prop('disabled',isEmpty(referentialId))
   $exportLineCode.empty()
-  $exportLineCode.data('ajaxPath', `/referentials/${referentialId}/autocomplete/lines`)
+  handleReferentialId(referentialId)
 })
   
 new AjaxAutoComplete($exportLineCode).init()

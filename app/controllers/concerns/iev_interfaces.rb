@@ -82,7 +82,7 @@ module IevInterfaces
       else
         coll.order(:name)
       end
-      coll = coll.paginate(page: params[:page], per_page: 10)
+      coll = coll.paginate(page: params[:page], per_page: 30)
       instance_variable_set "@#{collection_name}", decorate_collection(coll)
     end
     instance_variable_get "@#{collection_name}"

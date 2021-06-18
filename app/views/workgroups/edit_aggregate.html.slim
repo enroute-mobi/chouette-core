@@ -41,7 +41,7 @@
             .col
               - workbenches.each do |w,i|
                   .cell
-                    = select_tag "piority[#{i}]", options_for_select((0..5).step(1)), prompt: 'please select',
+                    = select_tag "piority[#{i}]", options_for_select((0..5).step(1)), prompt: Workbench.tmf(:prioriy),
                       input_html: { style: 'max-width: 100px;' }
           = cancel_button
           = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'workgroup_form'

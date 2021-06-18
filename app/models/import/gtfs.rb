@@ -444,14 +444,19 @@ class Import::Gtfs < Import::Base
       raise InvalidTripSingleStopTime unless stop_times.many?
 
       journey_pattern = find_or_create_journey_pattern(resource, trip, stop_times)
-
       vehicle_journey = journey_pattern.vehicle_journeys.build route: journey_pattern.route, skip_custom_fields_initialization: true
       vehicle_journey.published_journey_name = trip.short_name.presence || trip.id
+      vehicle_journey.codes.build code_space: code_space, value: trip.id
 
-      starting_day_offset = GTFSTime.parse(stop_times.first.arrival_time).day_offset
-      time_table = referential.time_tables.find(handle_timetable_with_offset(resource, trip, starting_day_offset))
-      if time_table
-        vehicle_journey.time_tables << time_table
+      ApplicationModel.skipping_objectid_uniqueness do
+        save_model vehicle_journey, resource: resource
+      end
+
+      starting_day_offset = GTFSTime.parse(stop_times.first.departure_time).day_offset
+      time_table_id = handle_timetable_with_offset(resource, trip, starting_day_offset)
+
+      if time_table_id
+        Chouette::TimeTablesVehicleJourney.create!(time_table_id: time_table_id, vehicle_journey_id: vehicle_journey.id)
       else
         create_message(
           {
@@ -469,21 +474,13 @@ class Import::Gtfs < Import::Base
         )
       end
 
-      vehicle_journey.codes.build code_space: code_space, value: trip.id
-
-      ApplicationModel.skipping_objectid_uniqueness do
-          save_model vehicle_journey, resource: resource
-      end
-
       Chouette::VehicleJourneyAtStop.bulk_insert do |worker|
         journey_pattern.stop_points.each_with_index do |stop_point, i|
-          add_stop_point stop_times[i], i, starting_day_offset, stop_point, journey_pattern, vehicle_journey, worker
+          add_stop_point stop_times[i], i, starting_day_offset, stop_point, vehicle_journey, worker
         end
       end
 
-      journey_pattern.vehicle_journey_at_stops.reload
       save_model journey_pattern, resource: resource
-
     rescue Import::Gtfs::InvalidTripTimesError, Import::Gtfs::InvalidTripSingleStopTime, Import::Gtfs::InvalidStopAreaError => e
       message_key = case e
         when Import::Gtfs::InvalidTripTimesError
@@ -534,7 +531,9 @@ class Import::Gtfs < Import::Base
     return nil if time_tables_by_service_id[trip.service_id].nil?
     return time_tables_by_service_id[trip.service_id][offset] if time_tables_by_service_id[trip.service_id][offset]
 
-    original_tt = referential.time_tables.find(time_tables_by_service_id[trip.service_id].first)
+    original_tt_id = time_tables_by_service_id[trip.service_id].first
+    original_tt = referential.time_tables.find(original_tt_id)
+
     tmp_tt = original_tt.to_timetable
     tmp_tt.shift offset
 
@@ -612,8 +611,8 @@ class Import::Gtfs < Import::Base
       end
     end
 
-    journey_pattern.stop_points.reload
-    journey_pattern.shortcuts_update_for_add(stop_points.last) if stop_points.present?
+    journey_pattern.departure_stop_point_id = stop_points.first.id
+    journey_pattern.arrival_stop_point_id = stop_points.last.id
 
     ApplicationModel.skipping_objectid_uniqueness do
         save_model journey_pattern, resource: resource
@@ -627,11 +626,9 @@ class Import::Gtfs < Import::Base
     CustomFieldsSupport.within_workgroup(workbench.workgroup) do
       resource = create_resource(:stop_times)
       source.to_enum(:each_trip_with_stop_times).each_slice(100) do |slice|
-        Chouette::VehicleJourney.cache do
-          Chouette::VehicleJourney.transaction do
-            slice.each do |trip, stop_times|
-              process_trip(resource, trip, stop_times)
-            end
+        Chouette::VehicleJourney.transaction do
+          slice.each do |trip, stop_times|
+            process_trip(resource, trip, stop_times)
           end
         end
       end
@@ -669,10 +666,9 @@ class Import::Gtfs < Import::Base
     end
   end
 
-  def add_stop_point(stop_time, position, starting_day_offset, stop_point, journey_pattern, vehicle_journey, worker)
+  def add_stop_point(stop_time, position, starting_day_offset, stop_point, vehicle_journey, worker)
     # JourneyPattern#vjas_add creates automaticaly VehicleJourneyAtStop
-    vehicle_journey_at_stop = journey_pattern.vehicle_journey_at_stops.build(stop_point_id: stop_point.id)
-    vehicle_journey_at_stop.vehicle_journey = vehicle_journey
+    vehicle_journey_at_stop = vehicle_journey.vehicle_journey_at_stops.build(stop_point_id: stop_point.id)
 
     departure_time_of_day = time_of_day stop_time.departure_time, starting_day_offset
     vehicle_journey_at_stop.departure_time_of_day = departure_time_of_day

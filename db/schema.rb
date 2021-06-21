@@ -1319,7 +1319,7 @@ ActiveRecord::Schema.define(version: 2021_06_15_142111) do
     t.string "prefix"
     t.bigint "locked_referential_to_aggregate_id"
     t.string "restrictions", default: [], array: true
-    t.integer "priority"
+    t.integer "priority", default: 1
     t.index ["line_referential_id"], name: "index_workbenches_on_line_referential_id"
     t.index ["locked_referential_to_aggregate_id"], name: "index_workbenches_on_locked_referential_to_aggregate_id"
     t.index ["organisation_id"], name: "index_workbenches_on_organisation_id"

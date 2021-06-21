@@ -52,6 +52,8 @@ class Workbench < ApplicationModel
 
   before_validation :create_dependencies, on: :create
 
+  validates :priority, presence: true, numericality: { greater_than_or_equal_to: 1 }
+
   scope :with_active_workgroup, -> { joins(:workgroup).where('workgroups.deleted_at': nil) }
 
   def locked_referential_to_aggregate_belongs_to_output

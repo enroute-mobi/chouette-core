@@ -38,7 +38,11 @@
                 .cell
                   = hidden_field_tag "workgroup[workbenches_attributes][#{i}][id]", w.id
                   = select_tag "workgroup[workbenches_attributes][#{i}][locked_referential_to_aggregate_id]", options_from_collection_for_select(w.output.referentials_created_before_current, :id, :name, w.locked_referential_to_aggregate_id), include_blank: true, data: { select2ed: true, 'select2ed-allow-clear' => true, 'select2ed-placeholder' => I18n.t('workbenches.current_offer') }
-            .col
+            .col.medium
+              - workbenches.each do |w,i|
+               .cell.organisation-name
+                = Workbench.tmf(:prioriy)
+            .col.big
               - workbenches.each do |w,i|
                   .cell
                     = select_tag "piority[#{i}]", options_for_select((0..5).step(1)), prompt: Workbench.tmf(:prioriy),

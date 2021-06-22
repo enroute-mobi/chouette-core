@@ -64,3 +64,6 @@
 /config/storage-key.json
 
 notes
+
+# Dotenv
+.env

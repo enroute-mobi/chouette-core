@@ -1,8 +1,8 @@
 GIT
   remote: https://bitbucket.org/enroute-mobi/gtfs.git
-  revision: 94ed132c12571c47393c935540a599cd7d885253
+  revision: 1ada10b293f57be2c2a9a56f148d4257bdd9665e
   specs:
-    gtfs (0.3.4)
+    gtfs (0.3.5)
       msgpack
       offline-sort
       rubyzip
@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/icar-api.git
-  revision: 19085a3a77cc1558fba22d48efd63bea650940a4
+  revision: b60bee465411ca3debe67d3279a010adf1a32fad
   specs:
     icar (0.0.3)
       nokogiri (>= 1.8.5)
@@ -29,7 +29,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/ilico-api.git
-  revision: 74c015eac59d3b6303b730c72dada19b56c7e9cc
+  revision: 5d0c02a7b5ef6c8b42d8e1f0696fc9cdf75d820b
   specs:
     codifligne (0.2.00)
       nokogiri (>= 1.8.5)
@@ -67,12 +67,12 @@ GIT
 
 GIT
   remote: https://github.com/metaware/carrierwave-google-storage.git
-  revision: 997eaeda65ae0025e079d5f63ae24883611f82bc
+  revision: d8092cb70096ae599ffb99ab99ee13c9fc4deafd
   specs:
-    carrierwave-google-storage (0.9.0)
+    carrierwave-google-storage (1.0.0)
       activemodel (>= 3.2.0)
-      carrierwave (~> 1.2)
-      google-cloud-storage (~> 1.17.0)
+      carrierwave (>= 1.3.2, < 3)
+      google-cloud-storage (~> 1.18.2)
 
 GEM
   remote: https://rails-assets.org/
@@ -177,7 +177,7 @@ GEM
     bundler-audit (0.9.0.1)
       bundler (>= 1.2.0, < 3)
       thor (~> 1.0)
-    byebug (11.1.1)
+    byebug (11.1.3)
     calendar_helper (0.2.5)
       open4
     capybara (3.15.1)
@@ -188,10 +188,13 @@ GEM
       rack-test (>= 0.6.3)
       regexp_parser (~> 1.2)
       xpath (~> 3.2)
-    carrierwave (1.3.2)
-      activemodel (>= 4.0.0)
-      activesupport (>= 4.0.0)
-      mime-types (>= 1.16)
+    carrierwave (2.2.2)
+      activemodel (>= 5.0.0)
+      activesupport (>= 5.0.0)
+      addressable (~> 2.6)
+      image_processing (~> 1.1)
+      marcel (~> 1.0.0)
+      mini_mime (>= 0.1.3)
       ssrf_filter (~> 1.0)
     choice (0.2.0)
     chronic (0.10.2)
@@ -279,6 +282,10 @@ GEM
     digest-crc (0.6.4)
       rake (>= 12.0.0, < 14.0.0)
     docile (1.4.0)
+    dotenv (2.7.6)
+    dotenv-rails (2.7.6)
+      dotenv (= 2.7.6)
+      railties (>= 3.2)
     draper (4.0.2)
       actionpack (>= 5.0)
       activemodel (>= 5.0)
@@ -293,7 +300,7 @@ GEM
     enumerize (2.4.0)
       activesupport (>= 3.2)
     erubi (1.10.0)
-    execjs (2.7.0)
+    execjs (2.8.1)
     factory_bot (6.2.0)
       activesupport (>= 5.0.0)
     factory_bot_rails (6.2.0)
@@ -314,7 +321,9 @@ GEM
     font_awesome5_rails (1.5.0)
       nokogiri (>= 1.11.3)
       railties (>= 4.2)
-    formatador (0.2.5)
+    formatador (0.3.0)
+    formtastic (4.0.0)
+      actionpack (>= 5.2.0)
     fuubar (2.5.1)
       rspec-core (~> 3.0)
       ruby-progressbar (~> 1.4)
@@ -339,11 +348,13 @@ GEM
     google-cloud-env (1.5.0)
       faraday (>= 0.17.3, < 2.0)
     google-cloud-errors (1.1.0)
-    google-cloud-storage (1.17.0)
+    google-cloud-storage (1.18.2)
+      addressable (~> 2.5)
       digest-crc (~> 0.4)
       google-api-client (~> 0.26)
       google-cloud-core (~> 1.2)
       googleauth (>= 0.6.2, < 0.10.0)
+      mime-types (~> 3.0)
     googleauth (0.9.0)
       faraday (~> 0.12)
       jwt (>= 1.4, < 3.0)
@@ -358,13 +369,13 @@ GEM
     gretel (4.3.0)
       actionview (>= 5.1, < 7.0)
       railties (>= 5.1, < 7.0)
-    guard (2.16.2)
+    guard (2.18.0)
       formatador (>= 0.2.4)
       listen (>= 2.7, < 4.0)
       lumberjack (>= 1.0.12, < 2.0)
       nenv (~> 0.1)
       notiffany (~> 0.0)
-      pry (>= 0.9.12)
+      pry (>= 0.13.0)
       shellany (~> 0.0)
       thor (>= 0.18.1)
     guard-compat (1.2.1)
@@ -399,6 +410,9 @@ GEM
       rainbow (>= 2.2.2, < 4.0)
       terminal-table (>= 1.5.1)
     i18n_data (0.13.0)
+    image_processing (1.12.1)
+      mini_magick (>= 4.9.5, < 5)
+      ruby-vips (>= 2.0.17, < 3)
     inherited_resources (1.13.0)
       actionpack (>= 5.2, < 6.2)
       has_scope (~> 0.6)
@@ -414,15 +428,15 @@ GEM
       railties (>= 3.2.16)
     json (2.5.1)
     jwt (2.2.3)
-    launchy (2.4.3)
-      addressable (~> 2.3)
+    launchy (2.5.0)
+      addressable (~> 2.7)
     letter_opener (1.7.0)
       launchy (~> 2.2)
     letter_opener_web (1.4.0)
       actionmailer (>= 3.2)
       letter_opener (~> 1.0)
       railties (>= 3.2)
-    libv8-node (15.14.0.1)
+    libv8-node (15.14.0.1-x86_64-darwin-20)
     license_finder (6.14.1)
       bundler
       rubyzip (>= 1, < 3)
@@ -430,7 +444,7 @@ GEM
       tomlrb (>= 1.3, < 2.1)
       with_env (= 1.1.0)
       xml-simple (~> 1.1.5)
-    listen (3.2.1)
+    listen (3.5.1)
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)
     lograge (0.11.2)
@@ -469,7 +483,7 @@ GEM
     nenv (0.3.0)
     net-sftp (3.0.0)
       net-ssh (>= 5.0.0, < 7.0.0)
-    net-ssh (6.0.2)
+    net-ssh (6.1.0)
     nio4r (2.5.7)
     nokogiri (1.12.4)
       mini_portile2 (~> 2.6.1)
@@ -485,7 +499,7 @@ GEM
     parallel (1.20.1)
     parallel_tests (3.7.1)
       parallel
-    parser (3.0.1.1)
+    parser (3.0.2.0)
       ast (~> 2.4.1)
     pg (0.20.0)
     phantomjs (2.1.1.0)
@@ -576,7 +590,7 @@ GEM
       activerecord (>= 5.2.4)
       activesupport (>= 5.2.4)
       i18n
-    rb-fsevent (0.10.3)
+    rb-fsevent (0.11.0)
     rb-inotify (0.10.1)
       ffi (~> 1.0)
     redis (4.4.0)
@@ -612,35 +626,35 @@ GEM
     roo (2.8.3)
       nokogiri (~> 1)
       rubyzip (>= 1.3.0, < 3.0.0)
-    rspec (3.5.0)
-      rspec-core (~> 3.5.0)
-      rspec-expectations (~> 3.5.0)
-      rspec-mocks (~> 3.5.0)
+    rspec (3.10.0)
+      rspec-core (~> 3.10.0)
+      rspec-expectations (~> 3.10.0)
+      rspec-mocks (~> 3.10.0)
     rspec-benchmark (0.6.0)
       benchmark-malloc (~> 0.2)
       benchmark-perf (~> 0.6)
       benchmark-trend (~> 0.4)
       rspec (>= 3.0)
-    rspec-core (3.5.4)
-      rspec-support (~> 3.5.0)
-    rspec-expectations (3.5.0)
+    rspec-core (3.10.1)
+      rspec-support (~> 3.10.0)
+    rspec-expectations (3.10.1)
       diff-lcs (>= 1.2.0, < 2.0)
-      rspec-support (~> 3.5.0)
-    rspec-mocks (3.5.0)
+      rspec-support (~> 3.10.0)
+    rspec-mocks (3.10.2)
       diff-lcs (>= 1.2.0, < 2.0)
-      rspec-support (~> 3.5.0)
-    rspec-rails (3.5.2)
-      actionpack (>= 3.0)
-      activesupport (>= 3.0)
-      railties (>= 3.0)
-      rspec-core (~> 3.5.0)
-      rspec-expectations (~> 3.5.0)
-      rspec-mocks (~> 3.5.0)
-      rspec-support (~> 3.5.0)
+      rspec-support (~> 3.10.0)
+    rspec-rails (5.0.1)
+      actionpack (>= 5.2)
+      activesupport (>= 5.2)
+      railties (>= 5.2)
+      rspec-core (~> 3.10)
+      rspec-expectations (~> 3.10)
+      rspec-mocks (~> 3.10)
+      rspec-support (~> 3.10)
     rspec-snapshot (2.0.0)
       awesome_print (> 1.0.0)
       rspec (> 3.0.0)
-    rspec-support (3.5.0)
+    rspec-support (3.10.2)
     rspec_junit_formatter (0.4.1)
       rspec-core (>= 2, < 4, != 2.12.0)
     ruby-filemagic (0.7.2)
@@ -648,7 +662,9 @@ GEM
       rexml
     ruby-progressbar (1.11.0)
     ruby-statistics (2.1.3)
-    ruby2_keywords (0.0.4)
+    ruby-vips (2.1.2)
+      ffi (~> 1.12)
+    ruby2_keywords (0.0.5)
     rubycas-client (2.3.9)
       activesupport
     rubyzip (2.3.2)
@@ -763,7 +779,7 @@ GEM
       nokogiri (~> 1.8)
 
 PLATFORMS
-  ruby
+  x86_64-darwin-20
 
 DEPENDENCIES
   aasm
@@ -801,6 +817,7 @@ DEPENDENCIES
   devise-i18n (>= 1.9.2)
   devise_cas_authenticatable (>= 1.10.4)
   devise_invitable (>= 2.0.3)
+  dotenv-rails
   draper (>= 4.0.1)
   email_spec
   enumerize

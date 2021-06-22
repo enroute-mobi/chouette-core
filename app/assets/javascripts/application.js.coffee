@@ -5,6 +5,7 @@
 # the compiled file.
 #
 #= require jquery
+#= require jquery_ujs
 #= require cocoon
 #= require ./OpenLayers/ol.js
 #= require bootstrap-sass-official

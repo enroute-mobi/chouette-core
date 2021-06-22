@@ -9,7 +9,6 @@
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
     "@fortawesome/fontawesome-free": "^5.15.1",
-    "@rails/ujs": "^6.0.3-7",
     "@rails/webpacker": "^5.0.0",
     "@ryangjchandler/spruce": "^2.7.1",
     "@simonwep/selection-js": "^2.0.0",

@@ -2,7 +2,7 @@ module TomTom
   # Given some coordinates, call the TomTom Routing API to calculate a route
   # From the returned coordinates we build a geojson feature object (line string)
   class BuildLineStringFeature < ApplicationService
-    TOMTOM_API_KEY = ENV['TOMTOM_API_KEY']
+    TOMTOM_API_KEY = Rails.application.secrets.tomtom_api_key
 
     def initialize coordinates
       @coordinates = coordinates
@@ -21,6 +21,12 @@ module TomTom
         geometry: {
           type: 'LineString',
           coordinates: new_coordinates
+        },
+        crs: {
+          type: 'name',
+          properties: {
+            name: 'EPSG:3857',
+          }
         }
       }
     end

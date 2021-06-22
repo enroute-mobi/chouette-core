@@ -62,7 +62,7 @@ function MapWrapper({ features, onInit, _style }) {
   // update map if features prop changes - logic formerly put into componentDidUpdate
   useEffect( () => {
 
-    if (!isEmpty(features)) { // may be null on first render
+    if (!isEmpty(features)) { // may be empty on first render
 
       // set features to map
       featuresLayer.setSource(

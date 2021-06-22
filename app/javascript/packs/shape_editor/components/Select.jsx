@@ -4,14 +4,18 @@ import useSWR from 'swr'
 
 import { ShapeContext } from '../shape.context'
 
-export default props => {
+export default ({ setJourneyPatternId }) => {
   const { baseURL } = useContext(ShapeContext)
 
-  const { data: journeyPatternsOptions, error } = useSWR(`${baseURL}/shape_editor/get_journey_patterns`)
+  const { data: journeyPatternsOptions } = useSWR(
+    `${baseURL}/shape_editor/get_journey_patterns`,
+    { initialData: [], revalidateOnMount: true }
+  )
+
   return (
     <Select
-      options={journeyPatternsOptions || []}
-      onChange={option => props.setJourneyPatternId(option.value)}
+      options={journeyPatternsOptions}
+      onChange={option => setJourneyPatternId(option.value)}
     />
   )
 }

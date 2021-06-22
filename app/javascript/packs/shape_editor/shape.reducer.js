@@ -1,23 +1,14 @@
-import { Circle, Fill, Stroke, Style } from 'ol/style'
-import { chain, flow, uniqueId } from 'lodash'
+import { Style } from 'ol/style'
+import { chain, flow } from 'lodash'
 import {
   nearestPointOnLine,
   lineString as turfLine,
   point as turfPoint,
   lineSlice,
   getCoords,
-  length
+  length,
+  simplify
 } from '@turf/turf'
-
-const lineId = 'line'
-
-const constraintStyle = new Style({
-  image: new Circle({
-    radius: 2.5,
-    stroke: new Stroke({ color: 'black', width: 1 }),
-    fill: new Fill({ color: 'rgba(255, 255, 255, 0.5)' })
-   })
-})
 
 export const reducer = (state, action) => {
   switch(action.type) {
@@ -27,36 +18,20 @@ export const reducer = (state, action) => {
         ...action.payload
       }
     case 'SET_LINE':
-      action.line.setId(lineId)
-  
       return {
         ...state,
         line: action.line,
-        turfLine: turfLine(convertCoords(action.line)),
-        waypoints: state.waypoints
+        turfLine: buildTurfLine(action.line)
       }
     case 'SET_WAYPOINTS':
-      action.waypoints.forEach(w => {
-        w.setId(uniqueId('waypoint_'))
-        w.set('type', 'waypoint')
-      })
-  
       return {
         ...state,
         waypoints: action.waypoints
       }
     case 'ADD_WAYPOINT':
-      action.waypoint.set('type', 'constraint')
-      action.waypoint.setStyle(constraintStyle)
-  
       return {
         ...state,
         waypoints: [...state.waypoints, action.waypoint]
-      }
-    case 'SET_JOURNEY_PATTERN_ID':
-      return {
-        ...state,
-        journeyPatternId: action.journeyPatternId
       }
     default:
       return state
@@ -72,16 +47,8 @@ export const initialState = {
   draw: null,
   snap: null,
   modify: null,
+  shouldUpdateLine: false,
   style: new Style({})
-}
-
-export const actions = {
-  setAttributes: payload => ({ type: 'SET_ATTRIBUTES', payload }),
-  setLine: line => ({ type: 'SET_LINE', line }),
-  setWaypoints: waypoints =>  ({ type: 'SET_WAYPOINTS', waypoints }),
-  addNewPoint: waypoint => ({ type: 'ADD_WAYPOINT', waypoint }),
-  updateLine: coordinates => ({ type: 'UPDATE_LINE', coordinates }),
-  setJourneyPatternId: journeyPatternId => ({ type: 'SET_JOURNEY_PATTERN_ID', journeyPatternId })
 }
 
 export const convertCoords = feature =>
@@ -90,6 +57,10 @@ export const convertCoords = feature =>
   .clone()
   .transform('EPSG:3857', 'EPSG:4326')
   .getCoordinates()
+
+export const buildTurfLine = line => turfLine(convertCoords(line))
+
+export const simplifyGeoJSON = data => simplify(data, { tolerance: 0.0001, highQuality: true }) // We may want to have a dynamic tolerance
 
 const getSortedWaypoints = state => {
   const { turfLine: line, waypoints } = state
@@ -100,7 +71,6 @@ const getSortedWaypoints = state => {
 
   return chain(waypoints)
     .map(w => {
-      // const point = nearestPointOnLine(convertCoords(w), line)
       // Create a line slice from the beginning to the current point to determine the length of this "subLine"
       const subLine = lineSlice(
         firstPoint,
@@ -108,7 +78,6 @@ const getSortedWaypoints = state => {
         line
       )
 
-      
       w.set('distanceFromStart', length(subLine))
 
       return w
@@ -122,7 +91,20 @@ const getSortedCoordinates = flow(
   waypoints => waypoints.map(convertCoords)
 )
 
+export const actions = {
+  setAttributes: payload => ({ type: 'SET_ATTRIBUTES', payload }),
+  setLine: line => ({ type: 'SET_LINE', line, turfLine }),
+  setWaypoints: waypoints =>  ({ type: 'SET_WAYPOINTS', waypoints }),
+  addNewPoint: waypoint => ({ type: 'ADD_WAYPOINT', waypoint })
+}
+
 export const selectors = {
   getSortedWaypoints,
   getSortedCoordinates
+}
+
+export const helpers = {
+  buildTurfLine,
+  convertCoords,
+  simplifyGeoJSON
 }

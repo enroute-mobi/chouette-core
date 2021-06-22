@@ -27,7 +27,7 @@ class ReferentialOverlaps
       @all ||= to_rows.map { |row| Referential::LinePeriod.new row }
     end
 
-    delegate :each, :empty?, to: :all
+    delegate :each, :empty?, :inspect, to: :all
 
     def to_rows
       ActiveRecord::Base.connection.select_all to_sql

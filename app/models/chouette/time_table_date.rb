@@ -9,6 +9,7 @@ module Chouette
     validates_uniqueness_of :date, :scope => :time_table_id
 
     scope :in_dates, -> { where(in_out: true) }
+    scope :in_date_range, -> (date_range) { where("date between ? and ?", date_range.min, date_range.max) }
 
     def self.model_name
       ActiveModel::Name.new Chouette::TimeTableDate, Chouette, "TimeTableDate"

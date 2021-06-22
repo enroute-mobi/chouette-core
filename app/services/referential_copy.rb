@@ -3,19 +3,13 @@ class ReferentialCopy
   include ReferentialCopyHelpers
   include Measurable
 
-  attr_accessor :source, :target, :status, :last_error
+  attr_accessor :source, :target, :source_priority, :status, :last_error, :skip_metadatas
+  alias skip_metadatas? skip_metadatas
 
   enumerize :status, in: %w[new pending successful failed running], default: :new
 
-  def initialize(opts={})
-    @source = opts[:source]
-    @target = opts[:target]
-    @opts = opts
-    @lines = opts[:lines]
-  end
-
-  def skip_metadatas?
-    @opts[:skip_metadatas]
+  def initialize(options={})
+    options.each { |k,v| send "#{k}=", v }
   end
 
   def referential_inserter
@@ -149,6 +143,7 @@ class ReferentialCopy
     source.metadatas.find_each do |metadata|
       candidate = target.metadatas.with_lines(metadata.line_ids).find { |m| m.periodes == metadata.periodes }
       candidate ||= target.metadatas.build(line_ids: metadata.line_ids, periodes: metadata.periodes, referential_source: source, created_at: metadata.created_at, updated_at: metadata.created_at)
+      candidate.priority = source_priority if source_priority
       candidate.flagged_urgent_at = metadata.flagged_urgent_at if metadata.urgent?
       controlled_save! candidate
     end

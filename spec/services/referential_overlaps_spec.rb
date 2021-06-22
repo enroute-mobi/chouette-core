@@ -35,9 +35,10 @@ RSpec.feature ReferentialOverlaps do
       let(:line) { context.line :line }
 
       before do
-        metadata = ReferentialMetadata.new line_ids: [ line.id, context.line(:line_other).id ],
-                                           periodes: [ period('2030-06-01', '2030-06-30'),
-                                                       period('2031-06-01', '2031-06-30') ],
+        metadata = ReferentialMetadata.new line_ids: [ line.id ], # , context.line(:line_other).id ],
+                                           periodes: [ period('2030-06-01', '2030-06-30')
+                                                     ],
+                                                       # period('2031-06-01', '2031-06-30') ],
                                            priority: target_priority
         target.update metadatas: [ metadata ]
       end
@@ -50,6 +51,17 @@ RSpec.feature ReferentialOverlaps do
         end
         it 'overlaps on Line A from 2030-06-10 to 2030-06-20' do
           is_expected.to contain_exactly(line_period(line, '2030-06-10', '2030-06-20'))
+        end
+      end
+
+      context 'when source provides Line A on 2030-06-01..2030-06-30' do
+        before do
+          metadata = ReferentialMetadata.new line_ids: [ line.id ],
+                                             periodes: [ period('2030-06-01', '2030-06-30') ]
+          source.update metadatas: [ metadata ]
+        end
+        it 'overlaps on Line A from 2030-06-01 to 2030-06-30' do
+          is_expected.to contain_exactly(line_period(line, '2030-06-01', '2030-06-30'))
         end
       end
 
@@ -81,7 +93,7 @@ RSpec.feature ReferentialOverlaps do
                                              periodes: [ period('2030-06-10', '2030-06-20') ]
           source.update metadatas: [ metadata ]
 
-          service.priority = target_priority + 1
+          service.priority = target_priority - 1
         end
         it 'overlaps on Line A from 2030-06-10 to 2030-06-20' do
           is_expected.to contain_exactly(line_period(line, '2030-06-10', '2030-06-20'))
@@ -94,7 +106,7 @@ RSpec.feature ReferentialOverlaps do
                                              periodes: [ period('2030-06-15', '2030-07-15') ]
           source.update metadatas: [ metadata ]
 
-          service.priority = target_priority - 1
+          service.priority = target_priority + 1
         end
         it "doesn't overlap" do
           is_expected.to be_empty

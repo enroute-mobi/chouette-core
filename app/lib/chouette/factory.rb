@@ -215,6 +215,7 @@ module Chouette
 
                   transient :with_stops, true
                   transient :departure_time, '12:00:00'
+                  transient :time_tables, []
 
                   after do
                     first_departure_time = Time.parse(transient(:departure_time))
@@ -231,6 +232,10 @@ module Chouette
 
                       new_instance.vehicle_journey_at_stops.build attributes
                     end if transient(:with_stops)
+
+                    transient(:time_tables, resolve_instances: true).each do |time_table|
+                      new_instance.time_tables << time_table
+                    end
                   end
                 end
               end

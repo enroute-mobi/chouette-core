@@ -49,5 +49,17 @@ module Chouette
     def single_day?
       period_start == period_end
     end
+
+    def self.transform_in_dates
+      current_scope = self.current_scope || all
+
+      single_day_periods = current_scope.where('period_start = period_end')
+
+      single_day_periods.select(:period_start).find_each do |period|
+        time_table.dates.create date: period.period_start, in_out: true
+      end
+      single_day_periods.delete_all
+    end
+
   end
 end

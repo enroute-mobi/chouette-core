@@ -66,9 +66,7 @@ module Merge::Referential
 
         metadata.periodes.each do |period|
           line_metadatas.each do |m|
-            m.periodes = m.periodes.map do |existing_period|
-              existing_period.remove period
-            end.flatten
+            m.periodes = Range.remove(m.periodes, period)
           end
 
           attributes = {

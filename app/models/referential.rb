@@ -444,7 +444,7 @@ class Referential < ApplicationModel
     end
 
     def ==(other)
-      other.present? &&
+      other.respond_to?(:line_id) && other.respond_to?(:period) &&
         line_id == other.line_id && period == other.period
     end
 
@@ -460,14 +460,14 @@ class Referential < ApplicationModel
         @all ||= to_rows.map { |row| LinePeriod.new row }
       end
 
-      delegate :each, :empty?, to: :all
+      delegate :each, :empty?, :inspect, to: :all
 
       def to_rows
         ActiveRecord::Base.connection.select_all to_sql
       end
 
       def max_priority_condition
-        "AND priority < #{max_priority}" if max_priority
+        "AND priority > #{max_priority}" if max_priority
       end
 
       def to_sql

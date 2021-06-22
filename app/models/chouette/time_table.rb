@@ -20,6 +20,8 @@ module Chouette
     end
 
     has_and_belongs_to_many :vehicle_journeys, :class_name => 'Chouette::VehicleJourney'
+    has_many :routes, -> { distinct }, through: :vehicle_journeys, :class_name => 'Chouette::Route'
+    has_many :lines, -> { distinct }, through: :routes, :class_name => 'Chouette::Line'
 
     has_many :dates, -> {order(:date)}, inverse_of: :time_table, :validate => :true, :class_name => "Chouette::TimeTableDate", dependent: :destroy
     has_many :periods, -> {order(:period_start)}, inverse_of: :time_table, :validate => :true, :class_name => "Chouette::TimeTablePeriod", dependent: :destroy
@@ -43,12 +45,16 @@ module Chouette
     scope :used, -> { joins(:vehicle_journeys).distinct }
 
     scope :empty, -> {
-      includes(:periods, :dates).where(time_table_periods: {id: nil}, time_table_dates: {id: nil})
+      left_joins(:periods, :dates).where(time_table_periods: {id: nil}, time_table_dates: {id: nil})
     }
 
     scope :non_empty, -> { where.not(id: empty) }
 
     scope :linked_to_lines, ->(lines) { joins(vehicle_journeys: :route).where('routes.line_id' => lines.map(&:id)) }
+
+    def self.shared_by_several_lines?
+      joins(:routes).group(:id).having("count(distinct(line_id)) > 1").exists?
+    end
 
     after_save :save_shortcuts
 
@@ -226,7 +232,31 @@ module Chouette
       self.update_columns start_date: start_date, end_date: end_date
     end
 
-    def shortcuts_update(date=nil)
+    # Update start_date/end_date of all TimeTables in the current scope
+    def self.update_shortcuts
+      current_scope = self.current_scope || all
+
+      bouding_dates = current_scope.left_joins(:dates).left_joins(:periods).group('time_tables.id').select(
+        'time_tables.id as id',
+        'least(min(time_table_dates.date), min(time_table_periods.period_start)) as start_date',
+        'greatest(max(time_table_dates.date), max(time_table_periods.period_end)) as end_date')
+
+      update_query = <<-SQL
+        WITH bounding_dates AS (#{bouding_dates.to_sql})
+        UPDATE time_tables
+        SET start_date = bounding_dates.start_date, end_date = bounding_dates.end_date
+        FROM bounding_dates WHERE time_tables.id = bounding_dates.id
+      SQL
+
+      connection.execute update_query
+    end
+
+    # The period covered by the TimeTable (from the minimum to the maximum dates)
+    def validity_period
+      start_date..end_date if start_date && end_date
+    end
+
+    def shortcuts_update
       dates_array = bounding_dates
 
       if dates_array.empty?

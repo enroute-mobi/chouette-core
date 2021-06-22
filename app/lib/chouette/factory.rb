@@ -23,6 +23,7 @@ module Chouette
       model :workgroup do
         attribute(:name) { |n| "Workgroup #{n}" }
         attribute(:owner) { build_root_model :organisation }
+        attribute(:export_types) { Workgroup::DEFAULT_EXPORT_TYPES }
 
         model :line_referential, required: true, singleton: true do
           attribute(:name) { |n| "Line Referential #{n}" }

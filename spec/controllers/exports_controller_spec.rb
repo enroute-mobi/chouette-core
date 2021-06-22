@@ -6,7 +6,7 @@ RSpec.describe ExportsController, :type => :controller do
       Chouette.create do
         # To match organisation used by login_user
         organisation = Organisation.find_by_code('first')
-        workgroup owner: organisation do
+        workgroup owner: organisation, export_types: ['Export::Gtfs'] do
           workbench organisation: organisation do
             referential
           end

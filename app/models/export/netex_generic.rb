@@ -34,6 +34,10 @@ class Export::NetexGeneric < Export::Base
     profile? ? "zip" : 'xml'
   end
 
+  def stop_areas
+    @stop_areas ||= Chouette::StopArea.union(export_scope.stop_areas, Chouette::StopArea.parents_of(export_scope.stop_areas))
+  end
+
   def quay_registry
     @quay_registry ||= QuayRegistry.new
   end
@@ -204,7 +208,7 @@ class Export::NetexGeneric < Export::Base
 
   class Stops < Part
 
-    delegate :stop_areas, to: :export_scope
+    delegate :stop_areas, to: :export
 
     def export!
       stop_areas.where(area_type: 'zdep').find_each do |stop_area|
@@ -225,7 +229,7 @@ class Export::NetexGeneric < Export::Base
 
   class Stations < Part
 
-    delegate :stop_areas, to: :export_scope
+    delegate :stop_areas, to: :export
 
     def export!
       stop_areas.where.not(area_type: 'zdep').find_each do |stop_area|

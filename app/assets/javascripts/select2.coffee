@@ -51,7 +51,7 @@ bind_select2_ajax = (el, cfg = {}) ->
 
   bind_select2(el, cfg)
 
-@select_2 = ->
+$ ->
   $("[data-select2ed='true']").each ->
     bind_select2(this)
 

@@ -12,17 +12,13 @@
   .ffg-row
     = f.input :zip_code_cont, placeholder: t('.zip_code'), label: Chouette::StopArea.tmf('zip_code'), required: false, wrapper_html: {class: filter_item_class(params[:q], :zip_code_cont)}
     = f.input :city_name_cont, placeholder: t('.city_name'), label: Chouette::StopArea.tmf('city_name'), required: false, wrapper_html: {class: filter_item_class(params[:q], :city_name_cont)}
-    .form-group.togglable class=filter_item_class(params[:q], :stop_area_provider_id_eq)
-      = f.label StopAreaProvider.ts, required: false, class: 'control-label'
-      = f.input :stop_area_provider_id_eq, placeholder: StopAreaProvider.ts, label: false, as: :autocomplete_select, autocomplete_url: stop_area_providers_workbench_autocomplete_index_path(@workbench, format: :json), load_url: stop_area_providers_workbench_autocomplete_index_path(@workbench), required: false, wrapper_html: {class: "checkbox_list"}
-
+    = f.input :parent_id_eq, placeholder: t('.parent'), label: Chouette::StopArea.tmf('parent_id'), as: :autocomplete_select, autocomplete_url: parent_stop_areas_workbench_autocomplete_index_path(@workbench, format: :json), load_url: parent_stop_areas_workbench_autocomplete_index_path(@workbench), required: false
+    = f.input :stop_area_provider_id_eq, placeholder: StopAreaProvider.ts, label: Chouette::StopArea.tmf('stop_area_provider_id'), as: :autocomplete_select, autocomplete_url: stop_area_providers_workbench_autocomplete_index_path(@workbench, format: :json), load_url: stop_area_providers_workbench_autocomplete_index_path(@workbench), required: false
+    
+  .ffg-row
     .form-group.togglable class=filter_item_class(params[:q], :area_type_eq_any)
       = f.label Chouette::StopArea.tmf('area_type'), required: false, class: 'control-label'
       = f.input :area_type_eq_any, checked: params[:q] && params[:q][:area_type_eq_any], collection: area_type_options, as: :check_boxes, label: false, label_method: lambda{|w| ("<span>" + w[0] + "</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list' }
-
-    .form-group.togglable class=filter_item_class(params[:q], :parent_id_eq)
-      = f.label Chouette::StopArea.tmf('parent_id'), required: false, class: 'control-label'
-      = f.input :parent_id_eq, placeholder: t('.parent'), values: params[:q] ? params[:q][:parent_id_eq] : "", label: false, as: :autocomplete_select, autocomplete_url: parent_stop_areas_workbench_autocomplete_index_path(@workbench, format: :json), load_url: parent_stop_areas_workbench_autocomplete_index_path(@workbench), required: false
 
     .form-group.togglable class=filter_item_class(params[:q], :is_referent_true)
       = f.label Chouette::StopArea.tmf('referent'), required: false, class: 'control-label'

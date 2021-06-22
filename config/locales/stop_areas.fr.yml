@@ -51,7 +51,8 @@ fr:
       export_hub_physical: "Export HUB des arrêts physiques"
     filters:
       name_or_objectid: "Recherche par nom ou par objectid..."
-      parent: "Indiquer un parent..."
+      parent: "Indiquez un parent..."
+      stop_area_provider: "Indiquez un fournisseur d'arrêt..."
       zip_code: Indiquez un code postal...
       city_name: Indiquez un nom de commune...
       area_type: "Indiquez un type d'arrêt..."

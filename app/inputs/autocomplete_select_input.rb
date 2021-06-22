@@ -8,6 +8,7 @@ class AutocompleteSelectInput < SimpleForm::Inputs::CollectionSelectInput
     _options = wrapper_options.dup.update({
       data: {
         'select2-ajax': true,
+        val: options[:value],
         url: options[:autocomplete_url],
         "load-url": options[:load_url],
         values: [object.send(reflection_or_attribute_name)].flatten,

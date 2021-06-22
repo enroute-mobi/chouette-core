@@ -6,7 +6,7 @@ import Draw from 'ol/interaction/Draw'
 import Snap from 'ol/interaction/Snap'
 import { Circle, Fill, Stroke, Style } from 'ol/style'
 
-import { actions } from '../../shape.reducer'
+import { addNewPoint, setAttributes, setWaypoints } from '../../shape.actions'
 import { isEmpty } from 'lodash'
 
 const constraintStyle = new Style({
@@ -28,13 +28,13 @@ export default function useMapInteractions({ featuresLayer, map, waypoints }, di
     waypoint.set('type', 'constraint')
     waypoint.setStyle(constraintStyle)
   
-    dispatch(actions.addNewPoint(waypoint))
-    dispatch(actions.setAttributes({ shouldUpdateLine: true }))
+    dispatch(addNewPoint(waypoint))
+    dispatch(setAttributes({ shouldUpdateLine: true }))
   }
 
   const onMovedPoint = e => {
-    dispatch(actions.setWaypoints(e.features.getArray()))
-    dispatch(actions.setAttributes({ shouldUpdateLine: true }))
+    dispatch(setWaypoints(e.features.getArray()))
+    dispatch(setAttributes({ shouldUpdateLine: true }))
   }
 
   useEffect(() => {
@@ -53,7 +53,7 @@ export default function useMapInteractions({ featuresLayer, map, waypoints }, di
 
       interactions.forEach(i => map.addInteraction(i))
 
-      dispatch(actions.setAttributes({ draw, modify, snap }))
+      dispatch(setAttributes({ draw, modify, snap }))
     })
   }, [featuresLayer, waypoints])
 }

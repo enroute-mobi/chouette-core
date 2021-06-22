@@ -1,5 +1,5 @@
 import React from 'react'
-import { convertCoords } from '../shape.reducer'
+import { convertCoords } from '../shape.helpers'
 
 export default function List({ waypoints }) {
   const list = waypoints.filter(w => w.get('type') == 'waypoint')

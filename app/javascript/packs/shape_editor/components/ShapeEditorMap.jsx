@@ -1,10 +1,12 @@
 import React, { useReducer } from 'react'
 
-import { reducer, initialState, actions, selectors } from '../shape.reducer'
+import { reducer, initialState } from '../shape.reducer'
+import { setAttributes } from '../shape.actions'
+import { getSortedWaypoints } from '../shape.selectors'
 
-import { useJourneyPatternGeoJSON, useLineFeatureUpdate } from '../hooks/data'
-
-import { useMapInteractions } from '../hooks/ui'
+import useCombineController from '../controllers'
+import { useMapInteractions } from '../controllers/ui'
+import { useJourneyPatternGeoJSON, useLineFeatureUpdate } from '../controllers/data'
 
 import MapWrapper from '../../../components/MapWrapper'
 import List from './List'
@@ -15,24 +17,24 @@ export default function ShapeEditorMap() {
   const [state, dispatch] = useReducer(reducer, initialState)
 
   // Selectors
-  const sortedWaypoints = selectors.getSortedWaypoints(state)
+  const sortedWaypoints = getSortedWaypoints(state)
 
   // Helpers
   const setJourneyPatternId = journeyPatternId => {
-    dispatch(actions.setAttributes({ journeyPatternId }))
+    dispatch(setAttributes({ journeyPatternId }))
   }
 
-  // Handlers
-  const handleMapInit = (map, featuresLayer) => {
-    dispatch(actions.setAttributes({ map, featuresLayer }))
+  // Evvent Handlers
+  const onMapInit = (map, featuresLayer) => {
+    dispatch(setAttributes({ map, featuresLayer }))
   }
 
-  // UI
-  useMapInteractions(state, dispatch)
-
-  // Data Fetching
-  useJourneyPatternGeoJSON(state, dispatch)
-  useLineFeatureUpdate(state, dispatch)
+  // Controllers
+  useCombineController(state, dispatch)(
+    useMapInteractions,
+    useJourneyPatternGeoJSON,
+    useLineFeatureUpdate
+  )
 
   return (
     <div className="page-content">
@@ -48,7 +50,7 @@ export default function ShapeEditorMap() {
           <div className="col-md-6">
             <h4 className="underline">Carte</h4>
             <div className="openlayers_map">
-              <MapWrapper features={state.features} style={state.style} onInit={handleMapInit} />
+              <MapWrapper features={state.features} style={state.style} onInit={onMapInit} />
             </div>
           </div>
         </div>

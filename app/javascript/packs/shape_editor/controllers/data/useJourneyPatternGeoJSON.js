@@ -4,7 +4,8 @@ import { uniqueId } from 'lodash'
 import GeoJSON from 'ol/format/GeoJSON'
 
 import { ShapeContext } from '../../shape.context'
-import { actions, helpers } from '../../shape.reducer'
+import { setAttributes, setLine, setWaypoints } from '../../shape.actions'
+import { simplifyGeoJSON } from '../../shape.helpers'
 import { usePrevious } from '../../../../helpers/hooks'
 
 // Custom hook which responsability is to fetch a new GeoJSON when the journeyPatternId change
@@ -18,7 +19,7 @@ export default function useJourneyPatternGeoJSON({ journeyPatternId }, dispatch)
   // Event handlers
   const onSuccess = data => {
     const features = new GeoJSON().readFeatures(
-      helpers.simplifyGeoJSON(data),
+      simplifyGeoJSON(data),
       wktOptions
     )
     const line = features.find(f => f.getGeometry().getType() == 'LineString')
@@ -31,9 +32,9 @@ export default function useJourneyPatternGeoJSON({ journeyPatternId }, dispatch)
       w.set('type', 'waypoint')
     })
 
-    dispatch(actions.setLine(line))
-    dispatch(actions.setWaypoints(waypoints))
-    dispatch(actions.setAttributes({ features }))
+    dispatch(setLine(line))
+    dispatch(setWaypoints(waypoints))
+    dispatch(setAttributes({ features }))
   }
   
   return useSWR(

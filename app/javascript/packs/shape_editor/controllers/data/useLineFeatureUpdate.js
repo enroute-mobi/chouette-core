@@ -4,13 +4,15 @@ import useSWR from 'swr'
 import GeoJSON from 'ol/format/GeoJSON'
 
 import { ShapeContext } from '../../shape.context'
-import { actions, helpers, selectors } from '../../shape.reducer'
+import { setLine, setAttributes } from '../../shape.actions'
+import { simplifyGeoJSON } from '../../shape.helpers'
+import { getSortedCoordinates } from '../../shape.selectors'
 
 // Custom hook which responsability is to fetch a new LineString GeoJSON object based on state coordinates when shouldUpdateLine is set to true
 export default function useLineFeatureUpdate(state, dispatch) {
   const { baseURL, lineId, wktOptions } = useContext(ShapeContext)
 
-  const coordinates = selectors.getSortedCoordinates(state)
+  const coordinates = getSortedCoordinates(state)
 
   // Fetcher
   const fetcher = async url =>
@@ -27,10 +29,10 @@ export default function useLineFeatureUpdate(state, dispatch) {
 
   // Event handlers
   const onSuccess = data => {
-    dispatch(actions.setAttributes({ shouldUpdateLine: false }))
+    dispatch(setAttributes({ shouldUpdateLine: false }))
 
     const lineFeature = new GeoJSON().readFeature(
-      helpers.simplifyGeoJSON(data),
+      simplifyGeoJSON(data),
       wktOptions
     )
     const source = state.featuresLayer.getSource()
@@ -43,7 +45,7 @@ export default function useLineFeatureUpdate(state, dispatch) {
 
     source.addFeature(lineFeature)
 
-    dispatch(actions.setLine(lineFeature))
+    dispatch(setLine(lineFeature))
   }
 
   return useSWR(

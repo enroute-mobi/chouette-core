@@ -1,4 +1,8 @@
-export const setAttributes = payload => ({ type: 'SET_ATTRIBUTES', payload })
-export const setLine = line => ({ type: 'SET_LINE', line })
-export const setWaypoints = waypoints =>  ({ type: 'SET_WAYPOINTS', waypoints })
-export const addNewPoint = waypoint => ({ type: 'ADD_WAYPOINT', waypoint })
+const actionDispatcher = dispatch => ({
+  setAttributes: payload => dispatch({ type: 'SET_ATTRIBUTES', payload }),
+  setLine: line => dispatch({ type: 'SET_LINE', line }),
+  setWaypoints: waypoints =>  dispatch({ type: 'SET_WAYPOINTS', waypoints }),
+  addNewPoint: waypoint => dispatch({ type: 'ADD_WAYPOINT', waypoint })
+})
+
+export default actionDispatcher

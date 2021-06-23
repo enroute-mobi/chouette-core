@@ -1,7 +1,7 @@
-import useJourneyPatternGeoJSON from './useJourneyPatternGeoJSON'
-import useLineFeatureUpdate from './useLineFeatureUpdate'
+import useJourneyPatternController from './useJourneyPatternController'
+import useLineController from './useLineController'
 
 export {
-  useJourneyPatternGeoJSON,
-  useLineFeatureUpdate
+  useJourneyPatternController,
+  useLineController
 }

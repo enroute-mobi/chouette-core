@@ -37,3 +37,5 @@ export const getSortedCoordinates = flow(
   getSortedWaypoints,
   curryRight(map)(convertCoords)
 )
+
+export const getSource = state => state.featuresLayer.getSource()

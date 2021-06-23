@@ -1,39 +1,42 @@
 import React, { useReducer } from 'react'
 
 import { reducer, initialState } from '../shape.reducer'
-import { setAttributes } from '../shape.actions'
+import actionDispatcher from '../shape.actions'
 import { getSortedWaypoints } from '../shape.selectors'
 
-import useCombineController from '../controllers'
-import { useMapInteractions } from '../controllers/ui'
-import { useJourneyPatternGeoJSON, useLineFeatureUpdate } from '../controllers/data'
+import combineControllers from '../controllers'
+import { useMapController } from '../controllers/ui'
+import { useJourneyPatternController, useLineController } from '../controllers/data'
 
 import MapWrapper from '../../../components/MapWrapper'
 import List from './List'
 import Select from './Select'
 
 export default function ShapeEditorMap() {
-  // set intial state
+  // Reducer
   const [state, dispatch] = useReducer(reducer, initialState)
+
+  // Action Dispatcher
+  const dispatcher = actionDispatcher(dispatch)
 
   // Selectors
   const sortedWaypoints = getSortedWaypoints(state)
 
   // Helpers
   const setJourneyPatternId = journeyPatternId => {
-    dispatch(setAttributes({ journeyPatternId }))
+    dispatcher.setAttributes({ journeyPatternId })
   }
 
   // Evvent Handlers
   const onMapInit = (map, featuresLayer) => {
-    dispatch(setAttributes({ map, featuresLayer }))
+    dispatcher.setAttributes({ map, featuresLayer })
   }
 
   // Controllers
-  useCombineController(state, dispatch)(
-    useMapInteractions,
-    useJourneyPatternGeoJSON,
-    useLineFeatureUpdate
+  combineControllers(state, dispatcher)(
+    useMapController,
+    useJourneyPatternController,
+    useLineController
   )
 
   return (

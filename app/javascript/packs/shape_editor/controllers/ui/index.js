@@ -1,5 +1,5 @@
-import useMapInteractions from './useMapInteractions'
+import useMapController from './useMapController'
 
 export {
-  useMapInteractions
+  useMapController
 }

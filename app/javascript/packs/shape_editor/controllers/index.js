@@ -1,15 +1,15 @@
 /*
-  React Controller (state: object, dispatch: function) => void
+  React Controller (state: object, actionDispatcher: function) => void
 
   Based on the current state, a React controller is a custom hook that is responsible for :
    - affecting the UI
    - data fetching
 */
 
-const useCombineControllers = (state, dispatch) => (...controllers) => {
+const combineControllers = (state, actionDispatcher) => (...controllers) => {
   controllers.forEach(controller => {
-    controller(state, dispatch)
+    controller(state, actionDispatcher)
   })
 }
 
-export default useCombineControllers
+export default combineControllers

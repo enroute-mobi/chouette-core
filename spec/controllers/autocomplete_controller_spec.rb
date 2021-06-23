@@ -17,6 +17,10 @@ RSpec.describe AutocompleteController, type: :controller do
           line :third, name: "Line three", published_name: "Third Line", number: "z3", company: :c3
         end
 
+        stop_area_provider :sap1, name: "Stop Area Provider 1" do
+          stop_area :sa1, name: "Stop Area 1"
+        end
+
         referential lines: [:first, :second]
       end
     end
@@ -32,6 +36,8 @@ RSpec.describe AutocompleteController, type: :controller do
   let(:third_company) { context.company(:c3) }
   let(:first_line_provider) { context.line_provider(:lp1) }
   let(:second_line_provider) { context.line_provider(:lp2) }
+  let(:first_stop_area) { context.stop_area(:sa1) }
+  let(:first_stop_area_provider) { context.stop_area_provider(:sap1) }
 
   describe "GET #lines" do
 
@@ -213,6 +219,130 @@ RSpec.describe AutocompleteController, type: :controller do
           q: 'LP1'
         }
         expect(assigns(:line_providers).to_a).to eq [first_line_provider]
+        expect(response).to be_successful
+      end
+
+    end
+  end
+
+  describe "GET #stop_areas" do
+
+    context "for a workbench" do
+      it "returns the complete list when the search parameter is not found" do
+        get :stop_areas, params: {
+          workbench_id: workbench.id
+        }
+        expect(assigns(:stop_areas)).to match_array workbench.stop_areas
+        expect(response).to be_successful
+      end
+
+      it "returns a stop_area when the name contains the search parameter" do
+        get :stop_areas, params: {
+          workbench_id: workbench.id,
+          q: 'Stop Area 1'
+        }
+        expect(assigns(:stop_areas).to_a).to eq [first_stop_area]
+        expect(response).to be_successful
+      end
+
+      it "returns a stop_area when the objectid contains the search parameter" do
+        get :stop_areas, params: {
+          workbench_id: workbench.id,
+          q: first_stop_area.get_objectid.short_id
+        }
+        expect(assigns(:stop_areas).to_a).to eq [first_stop_area]
+        expect(response).to be_successful
+      end
+
+    end
+
+    context "for a referential" do
+
+      it "returns the complete list when the search parameter is not found" do
+        get :stop_areas, params: {
+          referential_id: referential.id
+        }
+        expect(assigns(:stop_areas)).to match_array referential.stop_areas
+        expect(response).to be_successful
+      end
+
+      it "returns a stop_area when the name contains the search parameter" do
+        get :stop_areas, params: {
+          referential_id: referential.id,
+          q: 'Stop Area 1'
+        }
+        expect(assigns(:stop_areas).to_a).to eq [first_stop_area]
+        expect(response).to be_successful
+      end
+
+      it "returns a stop_area when the objectid contains the search parameter" do
+        get :stop_areas, params: {
+          referential_id: referential.id,
+          q: first_stop_area.get_objectid.short_id
+        }
+        expect(assigns(:stop_areas).to_a).to eq [first_stop_area]
+        expect(response).to be_successful
+      end
+
+    end
+  end
+
+  describe "GET #stop_area_providers" do
+
+    context "for a workbench" do
+      it "returns the complete list when the search parameter is not found" do
+        get :stop_area_providers, params: {
+          workbench_id: workbench.id
+        }
+        expect(assigns(:stop_area_providers)).to match_array workbench.stop_area_providers
+        expect(response).to be_successful
+      end
+
+      it "returns a stop_area_provider when the name contains the search parameter" do
+        get :stop_area_providers, params: {
+          workbench_id: workbench.id,
+          q: 'Stop Area Provider 1'
+        }
+        expect(assigns(:stop_area_providers).to_a).to eq [first_stop_area_provider]
+        expect(response).to be_successful
+      end
+
+      it "returns a stop_area_provider when the objectid contains the search parameter" do
+        get :stop_area_providers, params: {
+          workbench_id: workbench.id,
+          q: first_stop_area_provider.get_objectid.short_id
+        }
+        expect(assigns(:stop_area_providers).to_a).to eq [first_stop_area_provider]
+        expect(response).to be_successful
+      end
+
+    end
+
+    context "for a referential" do
+
+      it "returns the complete list when the search parameter is not found" do
+        get :stop_area_providers, params: {
+          referential_id: referential.id
+        }
+        expect(assigns(:stop_area_providers)).to match_array referential.stop_area_providers
+        expect(response).to be_successful
+      end
+
+      it "returns a stop_area_provider when the name contains the search parameter" do
+        get :stop_area_providers, params: {
+          referential_id: referential.id,
+          q: 'Stop Area Provider 1'
+        }
+        expect(assigns(:stop_area_providers).to_a).to eq [first_stop_area_provider]
+        expect(response).to be_successful
+      end
+
+      it "returns a stop_area_provider when the objectid contains the search parameter" do
+        get :stop_area_providers, params: {
+          referential_id: referential.id,
+          q: first_stop_area_provider.get_objectid.short_id
+        }
+        expect(assigns(:stop_area_providers).to_a).to eq [first_stop_area_provider]
         expect(response).to be_successful
       end
 

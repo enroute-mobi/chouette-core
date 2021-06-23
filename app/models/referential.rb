@@ -77,6 +77,7 @@ class Referential < ApplicationModel
   belongs_to :stop_area_referential
   validates_presence_of :stop_area_referential
   has_many :stop_areas, through: :stop_area_referential
+  has_many :stop_area_providers, through: :stop_area_referential
 
   belongs_to :workbench
 

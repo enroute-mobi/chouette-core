@@ -8,8 +8,13 @@
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = definition_list t("stop_areas.form.sections.identification"), stop_area_identification_metadatas(@stop_area, @workbench)
         = definition_list t("stop_areas.form.sections.general"), stop_area_general_metadatas(@stop_area)
-        = definition_list t('codes'),
-          {}.tap{|hash| @stop_area.codes.each{|code| hash[code.code_space.short_name] = code.value } }
+        = simple_block_for @stop_area, title: Chouette::StopArea.tmf(:codes) do |d|
+          - if @stop_area.codes.empty?
+            .mb-xs
+              = replacement_msg t('stop_areas.no_codes')
+          - else
+            - @stop_area.codes.each do |c|
+              = d.attribute :value, label: c.code_space.short_name, object: c
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = definition_list t("stop_areas.form.sections.location"), stop_area_location_metadatas(@stop_area, @stop_area_referential)

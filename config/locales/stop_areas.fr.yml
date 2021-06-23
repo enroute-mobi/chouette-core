@@ -3,6 +3,7 @@ fr:
     waiting_time_format: "%{value} minutes"
     search_no_results: "Aucun arrêt ne correspond à votre recherche"
     no_specific_stops: "Cet arrêt n'a aucun arrêt particulier"
+    no_codes: "Cet arrêt n'a pas de codes"
     errors:
       empty: Aucun stop_area_id
       parent_area_type: ne peut être de type %{area_type}
@@ -67,6 +68,7 @@ fr:
         location: "Localisation"
       address: "246 Boulevard Saint-Germain, 75007 Paris"
       geolocalize: "Géolocalisez "
+      add_code: Ajouter un code
     edit:
       title: "Editer l'arrêt %{name}"
     update:
@@ -171,6 +173,7 @@ fr:
         status: État
         stop_area_provider_id: Fournisseur d'arrêts
         stop_area_provider: Fournisseur d'arrêts
+        codes: Codes
   formtastic:
     titles:
       stop_area:

@@ -206,7 +206,8 @@ class StopAreasController < ChouetteController
       :kind,
       :status,
       :stop_area_provider_id,
-      localized_names: @stop_area_referential.locales.map{|l| l[:code]}
+      codes_attributes: [:id, :code_space_id, :value, :_destroy],
+      localized_names: stop_area_referential.locales.map{|l| l[:code]}
     ] + permitted_custom_fields_params(Chouette::StopArea.custom_fields(stop_area_referential.workgroup))
     params.require(:stop_area).permit(fields)
   end

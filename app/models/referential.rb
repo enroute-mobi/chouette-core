@@ -70,6 +70,7 @@ class Referential < ApplicationModel
   has_many :companies, through: :line_referential
   has_many :group_of_lines, through: :line_referential
   has_many :networks, through: :line_referential
+  has_many :line_providers, through: :line_referential
   has_many :metadatas, class_name: "ReferentialMetadata", inverse_of: :referential, dependent: :delete_all
   accepts_nested_attributes_for :metadatas
 

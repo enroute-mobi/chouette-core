@@ -1,7 +1,7 @@
 class RemoveExportTypeFromPublicationSetups < ActiveRecord::Migration[5.2]
   def up
     on_public_schema_only do
-      PublicationSetup.select(:export_type).update_all("export_options = export_options || 'type => export_type' ")
+      PublicationSetup.update_all("export_options = export_options || hstore('type', export_type)")
 
       remove_column :publication_setups, :export_type
     end
@@ -11,7 +11,7 @@ class RemoveExportTypeFromPublicationSetups < ActiveRecord::Migration[5.2]
     on_public_schema_only do
       add_column :publication_setups, :export_type, :string
 
-      PublicationSetup.select("export_options -> 'type' AS type").update_all("SET export_type = type")
+      PublicationSetup.update_all("export_type = export_options -> 'type'")
     end
   end
 end

@@ -163,7 +163,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def centroid
-      Netex::Point.new(location: Netex::Location.new(latitude: latitude, longitude: longitude))
+      Netex::Point.new(location: Netex::Location.new(longitude: longitude, latitude: latitude))
     end
 
     def parent_site_ref

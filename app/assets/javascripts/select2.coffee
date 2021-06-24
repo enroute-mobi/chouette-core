@@ -51,57 +51,9 @@ bind_select2_ajax = (el, cfg = {}) ->
 
   bind_select2(el, cfg)
 
-@select_2 = ->
+$ ->
   $("[data-select2ed='true']").each ->
     bind_select2(this)
 
   $("[data-select2-ajax='true']").each ->
     bind_select2_ajax(this)
-
-$ ->
-  select_2()
-  $('select.autocomplete-async-input').each (i, e)->
-    vals = $(e).data().values
-    select2ed = $(e).select2
-      theme: 'bootstrap',
-      width: '100%',
-      allowClear: true,
-      placeholder: $(e).data().placeholder,
-      ajax:
-        url: $(e).data().url,
-        dataType: 'json',
-        delay: '500',
-        processResults: (data) ->
-          {
-            results: data
-          }
-        data:  (params) ->
-          {
-            q: params.term
-          }
-
-      templateResult: (props) -> $('<span>').html(props.text)
-      templateSelection:  (props) -> $('<span>').html(props.text)
-
-    select2ed.prop("disabled", true)
-    loadNext = ->
-      if vals == null || vals == "" || vals.length == 0
-        select2ed.prop("disabled", false)
-        return
-      val = vals.pop()
-      if val == null || val == ""
-        select2ed.prop("disabled", false)
-        return
-      $.ajax
-        type: 'GET',
-        url: $(e).data().loadUrl + "/" + val + ".json"
-      .then (data)->
-        option = new Option(data.text, data.id, true, true);
-        select2ed.append(option).trigger('change');
-        select2ed.trigger
-          type: 'select2:select',
-          params: {
-              data: data
-          }
-        loadNext()
-    loadNext()

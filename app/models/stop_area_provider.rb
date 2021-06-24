@@ -11,6 +11,8 @@ class StopAreaProvider < ActiveRecord::Base
   has_many :connection_links, class_name: "Chouette::ConnectionLink"
   has_many :stop_area_routing_constraints
 
+  scope :by_text, ->(text) { text.blank? ? all : where('lower(stop_area_providers.name) LIKE :t or lower(stop_area_providers.objectid) LIKE :t', t: "%#{text.downcase}%") }
+
   # TODO Required by Chouette::Sync::Updater::Batch#resolver limitation
   alias_attribute :registration_number, :objectid
   delegate :workgroup, to: :stop_area_referential

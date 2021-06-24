@@ -12,15 +12,15 @@ module OptionsSupport
     class << self
 
       def option name, opts={}
+        @options ||= {}
+        @options[name] = opts
+
         attribute_name =  opts[:name].presence || name
         store_accessor :options, attribute_name
 
         handle_serialize_option(attribute_name, opts)
         handle_enumerize_option(attribute_name, opts)
         handle_default_value_option(attribute_name, opts)
-
-        @options ||= {}
-        @options[name] = opts
       end
 
       def options
@@ -37,7 +37,7 @@ module OptionsSupport
         serializer = opts[:serialize]
    
         define_method attribute_name do
-          raw_value = options.stringify_keys[attribute_name.to_s]
+          raw_value = self.class.options.stringify_keys[attribute_name.to_s]
           value = JSON.parse(raw_value) rescue raw_value
 
           return value unless serializer

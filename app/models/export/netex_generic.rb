@@ -35,7 +35,7 @@ class Export::NetexGeneric < Export::Base
   end
 
   def stop_areas
-    @stop_areas ||= Chouette::StopArea.union(export_scope.stop_areas, Chouette::StopArea.parents_of(export_scope.stop_areas))
+    @stop_areas ||= Chouette::StopArea.union(export_scope.stop_areas, Chouette::StopArea.all_parents(export_scope.stop_areas))
   end
 
   def quay_registry

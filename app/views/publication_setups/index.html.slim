@@ -13,7 +13,7 @@
           .ffg-row
             .form-group.togglable class=filter_item_class(params[:q], :export_type_eq_any)
               = f.label PublicationSetup.tmf(:export_type), required: false, class: 'control-label'
-              = f.input :export_type_eq_any, collection: workgroup_exports(@workgroup), as: :check_boxes, label: false, label_method: lambda{|l| ("<span>#{l.human_name}</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list'}
+              / = f.input :export_type_eq_any, collection: workgroup_exports(@workgroup), as: :check_boxes, label: false, label_method: lambda{|l| ("<span>#{l.human_name}</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list'}
           .actions
             = link_to t('actions.erase'), [@workgroup, :publication_setups], class: 'btn btn-link'
             = f.submit t('actions.filter'), class: 'btn btn-default'

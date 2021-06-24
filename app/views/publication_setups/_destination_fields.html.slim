@@ -1,14 +1,19 @@
-.destination
-  = f.input :name
-  .fields
-    = f.hidden_field :id
-    = f.input :type, collection: Destination.descendants.map{|k| [k.human_type, k.name]}, input_html: { disabled: !f.object.new_record?  }
-    .slave data-master="[name='#{f.object_name}[type]']" data-value='Destination::PublicationApi'
-      = f.input :publication_api_id, collection: @workgroup.publication_apis, required: true
-    - Destination.descendants.each do |child|
-      .slave data-master="[name='#{f.object_name}[type]']" data-value=child.name
-        - child.options.each do |attr, option_def|
-          = option_input f, f.object, attr, option_def, child
-        = f.input :secret_file, wrapper: :inline_file_input, required: true if child.secret_file_required?
+- destination = local_assigns.fetch(:destination, Destination.new)
 
-  = f.input :_destroy, as: :switchable_checkbox
+div[x-data="{destinationType: '#{destination.type}' }"]
+  .destination
+    = f.input :name
+    .fields
+      = f.hidden_field :id
+      = f.input :type, collection: Destination.descendants.map{|k| [k.human_type, k.name]}, selected: destination.type, include_blank: true, input_html: { disabled: !f.object.new_record?, 'x-model': 'destinationType' }
+      template[x-if="destinationType == 'Destination::PublicationApi'"]
+        div
+          = f.input :publication_api_id, collection: @workgroup.publication_apis, required: true, selected: destination.publication_api_id
+      - Destination.descendants.each do |child|
+        template[x-if="destinationType == '#{child.name}'"]
+          div
+            - child.options.each do |attr, option_def|
+              = option_input f, f.object, attr, option_def, child
+            = f.input :secret_file, wrapper: :inline_file_input, required: true if child.secret_file_required?
+
+    = f.input :_destroy, as: :switchable_checkbox

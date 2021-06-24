@@ -42,8 +42,10 @@ class Export::Base < ApplicationModel
 
   has_many :publication_api_sources, foreign_key: :export_id
 
-  validates :type, :referential_id, presence: true
-  validates_presence_of :workgroup
+  validates :type, presence: true, inclusion: { in: Proc.new { |e| e.workgroup&.export_types || ::Workgroup::DEFAULT_EXPORT_TYPES } }
+
+  validates_presence_of :workgroup, :referential_id
+  validates :options, export_options: true
 
   after_create :purge_exports
   def purge_exports
@@ -172,6 +174,11 @@ class Export::Base < ApplicationModel
   end
 
   private
+
+  def type_is_valid
+    unless workgroup.export_types.include?(type)
+    end
+  end
 
   def initialize_fields
     super

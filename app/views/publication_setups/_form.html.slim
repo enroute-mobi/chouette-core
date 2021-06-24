@@ -10,10 +10,12 @@
     h2.mb-lg= t('publication_setups.form.sections.export')
     .form-group
       .col-lg-12
-        = form.input :export_type, as: :select, collection: workgroup_exports(@workgroup), label_method: :human_name, include_blank: false
-        #type_slave
-          - if @publication_setup.export_type.present?
-            = render "edit_#{@publication_setup.export_type.demodulize.underscore}"
+        = render'exports/options', form: form, resource_type: :export_options, workgroup: @workgroup
+        
+        div[x-data]
+          template[x-if="!$store.export.isExport && ($store.export.type == 'Export::Gtfs' || $store.export.type == 'Export::NetexGeneric')"]
+            = form.input :publish_per_line, as: :switchable_checkbox, input_html: { name: 'publication_setup[publish_per_line]' }
+
     .separator.section_separator
 
     h2.mb-lg= t('publication_setups.form.sections.destinations')
@@ -21,7 +23,8 @@
       .col-lg-12
         - form.object.destinations.build unless form.object.destinations.size > 0
         = form.simple_fields_for(:destinations) do |destination_form|
-          = render 'destination_fields', f: destination_form
+          -  @publication_setup.destinations.each do |d|
+            = render 'destination_fields', f: destination_form, destination: d
         .links.nested-linker
           = link_to_add_association t('publication_setups.form.add_destination'), form, :destinations, class: 'btn btn-outline-primary'
 
@@ -33,4 +36,5 @@
       data: { disable_with: t('actions.processing') },
       form: 'publication_setup_form'
 
-= javascript_pack_tag "publication_setups/new"
+= javascript_pack_tag "exports/new"
+= javascript_pack_tag "publication_setups/form"

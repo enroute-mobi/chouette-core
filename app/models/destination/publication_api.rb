@@ -20,7 +20,7 @@ class Destination::PublicationApi < ::Destination
   def api_is_not_already_used
     return unless publication_api.present?
 
-    scope = publication_api.publication_setups.where(export_type: publication_setup.export_type)
+    scope = publication_api.publication_setups.where("export_options -> 'type' = ?", publication_setup.export_type)
     scope = scope.where('publication_setups.id != ? AND publication_setups.publish_per_line = ?', publication_setup.id, publication_setup.publish_per_line) if publication_setup.persisted?
 
     return if scope.empty?

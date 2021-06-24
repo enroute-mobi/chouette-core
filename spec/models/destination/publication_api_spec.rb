@@ -10,7 +10,7 @@ RSpec.describe Destination::PublicationApi, type: :model do
 
   let(:export_1) { create :gtfs_export, status: :successful, options: { duration: 90 }, file: file }
   let(:export_2) { create :gtfs_export, status: :successful, options: { duration: 90}, file: file }
-  let(:export_netex) { create :netex_generic_export, status: :successful, options: { profil: "none" }, file: file }
+  let(:export_netex) { create :netex_generic_export, status: :successful, options: { profile: "none" }, file: file }
 
   let(:export_with_line1) { create :gtfs_export, status: :successful, options: { duration: 90, line_ids: [line_1.id] }, file: file }
   let(:export_with_line2) { create :gtfs_export, status: :successful, options: { duration: 90, line_ids: [line_2.id] }, file: file }
@@ -34,7 +34,7 @@ RSpec.describe Destination::PublicationApi, type: :model do
       expect{ destination.transmit(publication) }.to change{ publication_api.publication_api_sources.count }.by 0
     end
 
-    let(:new_publication_setup) { create :publication_setup, export_type: export_netex.export_type, export_options: export_netex.options }
+    let(:new_publication_setup) { create :publication_setup, export_type: export_netex.type, export_options: export_netex.options }
     let(:new_publication) { create :publication, publication_setup: new_publication_setup, exports: [export_netex] }
     it 'should create a new publication_api_source if publication_api_source with same key does not exists' do
       create :publication_api_source, publication: publication, publication_api: publication_api, export: export_1, key: "gtfs.zip"
@@ -52,7 +52,7 @@ RSpec.describe Destination::PublicationApi, type: :model do
     end
 
     it 'should return nil if a publication with different export_type exists' do
-      new_publication_setup = create :publication_setup, export_type: export_netex.export_type, export_options: export_netex.options
+      new_publication_setup = create :publication_setup, export_type: export_netex.type, export_options: export_netex.options
       new_destination = build :publication_api_destination, publication_setup: new_publication_setup, publication_api: publication_api
       expect( new_destination.api_is_not_already_used ).to be_nil
     end

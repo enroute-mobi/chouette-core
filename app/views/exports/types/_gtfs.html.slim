@@ -1,5 +1,7 @@
-= simple_fields_for @export, as: :export, wrapper: :horizontal_form do |f|
-  = render 'exports/options/period', form: f
-  = render 'exports/options/exported_lines', form: f
-  = f.input :prefer_referent_stop_area, as: :switchable_checkbox
-  = f.input :ignore_single_stop_station, as: :switchable_checkbox
+- @export = Export::Gtfs.new(**@export.attributes.except('type'))
+
+= form.simple_fields_for(resource_type, @export) do |sub_form|
+  = render 'exports/options/period', form: sub_form
+  = render 'exports/options/exported_lines', form: sub_form
+  = sub_form.input :prefer_referent_stop_area, as: :switchable_checkbox
+  = sub_form.input :ignore_single_stop_station, as: :switchable_checkbox

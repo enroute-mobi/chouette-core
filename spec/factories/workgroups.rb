@@ -4,5 +4,6 @@ FactoryBot.define do
     association :line_referential
     association :stop_area_referential
     association :owner, factory: :organisation
+    export_types { %w[Export::Gtfs Export::Netex Export::NetexGeneric] }
   end
 end

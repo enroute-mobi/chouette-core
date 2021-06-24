@@ -10,6 +10,7 @@
     "@babel/preset-react": "^7.0.0",
     "@fortawesome/fontawesome-free": "^5.15.1",
     "@rails/webpacker": "^5.0.0",
+    "@ryangjchandler/spruce": "^2.7.1",
     "@simonwep/selection-js": "^2.0.0",
     "alpinejs": "^2.8.2",
     "babel-jest": "26.5.2",
@@ -43,6 +44,7 @@
     "shortid": "^2.2.15",
     "snyk": "^1.518.0",
     "ssri": "~8.0.1",
+    "tom-select": "^1.6.1",
     "uglify-js": "3.3.2",
     "whatwg-fetch": "^2.0.4"
   },

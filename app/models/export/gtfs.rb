@@ -1,16 +1,14 @@
 class Export::Gtfs < Export::Base
   include LocalExportSupport
 
-  option :period,  enumerize: %w(all_periods only_next_days), default_value: :only_next_days
-  option :exported_lines, enumerize: %w(all_line_ids line_ids company_ids line_provider_ids), default_value: :all_line_ids
+  option :period, default_value: 'all_periods', enumerize: %w[all_periods only_next_days]
   option :duration
+  option :exported_lines, default_value: 'all_line_ids', enumerize: %w[line_ids company_ids line_provider_ids all_line_ids]
   option :line_ids, serialize: :map_ids
   option :company_ids, serialize: :map_ids
   option :line_provider_ids, serialize: :map_ids
-  option :prefer_referent_stop_area, required: true, default_value: false, enumerize: [true, false]
-  option :ignore_single_stop_station, required: true, default_value: false, enumerize: [true, false]
-  option :period, default_value: 'all_periods', enumerize: %w[all_periods only_next_days]
-  option :exported_lines, default_value: 'all_line_ids', enumerize: %w[line_ids company_ids line_provider_ids all_line_ids]
+  option :prefer_referent_stop_area, required: true, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
+  option :ignore_single_stop_station, required: true, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
 
   DEFAULT_AGENCY_ID = "chouette_default"
   DEFAULT_TIMEZONE = "Etc/UTC"

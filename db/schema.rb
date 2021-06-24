@@ -820,7 +820,6 @@ ActiveRecord::Schema.define(version: 2021_06_15_142111) do
 
   create_table "publication_setups", force: :cascade do |t|
     t.bigint "workgroup_id"
-    t.string "export_type"
     t.hstore "export_options"
     t.boolean "enabled"
     t.datetime "created_at", null: false

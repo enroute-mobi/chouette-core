@@ -13,18 +13,19 @@ class PublicationSetup < ApplicationModel
 
   validates :name, presence: true
   validates :workgroup, presence: true
-  validates :export_type, presence: true
-  validate :export_options_are_valid
+  validates :export_options, export_options: { extra_attributes: %i[type] }
 
   store_accessor :export_options
 
   accepts_nested_attributes_for :destinations, allow_destroy: true, reject_if: :all_blank
+  validates_associated :destinations
 
   scope :enabled, -> { where enabled: true }
 
-  def export_class
-    export_type.presence&.safe_constantize || Export::Base
-  end
+  attr_reader :export
+
+  after_initialize :build_new_export
+  before_validation :build_new_export
 
   def human_export_name
     new_export.human_name
@@ -32,18 +33,6 @@ class PublicationSetup < ApplicationModel
 
   def export_creator_name
     "#{self.class.ts} #{name}"
-  end
-
-  # TODO : CHOUETTE-701 find another way to do use export validation
-  def export_options_are_valid
-    return false if export_class == Export::Base
-
-    dummy = new_export
-    dummy.validate
-    errors_keys = new_export.class.options.keys
-    dummy.errors.to_h.slice(*errors_keys).each do |k, v|
-      errors.add(k, v)
-    end
   end
 
   def published_line_ids(referential)
@@ -58,7 +47,7 @@ class PublicationSetup < ApplicationModel
 
   def new_export(extra_options={})
     options = export_options.dup.update(extra_options).symbolize_keys
-    export = export_class.new(**options) do |export|
+    export = Export::Base.new(**options) do |export|
       export.creator = export_creator_name
     end
 
@@ -86,6 +75,14 @@ class PublicationSetup < ApplicationModel
 
   def publish(operation)
     publications.create!(parent: operation)
+  end
+
+  def export_type
+    export.type
+  end
+
+  def build_new_export
+    @export = new_export(workgroup: workgroup)
   end
 
   private

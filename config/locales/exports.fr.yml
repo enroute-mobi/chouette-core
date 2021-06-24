@@ -80,6 +80,8 @@ fr:
             attributes:
               file:
                 wrong_file_extension: "Le fichier exporté doit être au format zip"
+              options:
+                not_supported: L'option %{name} n'est pas valide pour ce type d'export  
     attributes:
       attrs: &attrs
         created_at: Créé le

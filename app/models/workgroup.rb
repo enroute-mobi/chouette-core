@@ -1,5 +1,6 @@
 class Workgroup < ApplicationModel
   NIGHTLY_AGGREGATE_CRON_TIME = 5.minutes
+  DEFAULT_EXPORT_TYPES = %w[Export::Gtfs Export::NetexGeneric].freeze
 
   belongs_to :line_referential, dependent: :destroy, required: true
   belongs_to :stop_area_referential, dependent: :destroy, required: true
@@ -269,17 +270,13 @@ class Workgroup < ApplicationModel
     end
   end
 
-  def self.default_export_types
-    %w[Export::Gtfs Export::NetexGeneric]
-  end
-
   def self.create_with_organisation organisation, params={}
     name = params[:name] || "#{Workgroup.ts} #{organisation.name}"
 
     Workgroup.transaction do
       workgroup = Workgroup.create!(name: name) do |workgroup|
         workgroup.owner = organisation
-        workgroup.export_types = Workgroup.default_export_types
+        workgroup.export_types = DEFAULT_EXPORT_TYPES
 
         workgroup.line_referential ||= LineReferential.create!(name: LineReferential.ts) do |referential|
           referential.add_member organisation, owner: true

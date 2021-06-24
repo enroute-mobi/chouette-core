@@ -7,7 +7,6 @@
 // To reference this file, add <%= javascript_pack_tag 'application' %> to the appropriate
 // layout file, like app/views/layouts/application.html.erb
 
-// import jQuery from 'jquery'
-// import {} from 'jquery-ujs'
 import "@fortawesome/fontawesome-free/css/all"
-import "alpinejs"
+import '@ryangjchandler/spruce'
+import 'alpinejs'

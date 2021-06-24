@@ -46,7 +46,7 @@ module OptionsSupport
           when 'Proc' then serializer.call(value)
           when 'Symbol' then send(serializer, value)
           else
-            serializer.new(value)
+            serializer.new.cast(value)
           end
         rescue => e
           Rails.logger.warn("Could not serialize #{attribute_name}. value: #{value}, \n Error: #{e}")
@@ -57,7 +57,7 @@ module OptionsSupport
       def handle_enumerize_option attribute_name, opts
         if opts.key?(:enumerize)
           collection = opts[:enumerize] == :collection ? opts[:collection] : opts[:enumerize]
-          enumerize attribute_name, in: collection, default: opts[:default_valye]
+          enumerize attribute_name, in: collection, default: opts[:default_value]
         end
       end
 

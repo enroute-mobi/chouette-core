@@ -1,11 +1,16 @@
-import React, { useContext }  from 'react'
+import React from 'react'
 import Select from 'react-select'
 import useSWR from 'swr'
+import { pick } from 'lodash'
 
-import { ShapeContext } from '../shape.context'
+import store from '../shape.store'
+import { useStore } from '../../../helpers/hooks'
 
-export default ({ setJourneyPatternId }) => {
-  const { baseURL } = useContext(ShapeContext)
+export default () => {
+  const [{ baseURL, setAttributes }] = useStore(
+    store,
+    state => pick(state, ['baseURL', 'setAttributes'])
+  )
 
   const { data: journeyPatternsOptions } = useSWR(
     `${baseURL}/shape_editor/get_journey_patterns`,
@@ -15,7 +20,7 @@ export default ({ setJourneyPatternId }) => {
   return (
     <Select
       options={journeyPatternsOptions}
-      onChange={option => setJourneyPatternId(option.value)}
+      onChange={option => setAttributes({ journeyPatternId: option.value })}
     />
   )
 }

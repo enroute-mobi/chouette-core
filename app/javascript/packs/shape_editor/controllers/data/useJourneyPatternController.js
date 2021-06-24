@@ -1,18 +1,26 @@
-import { useContext } from 'react'
 import useSWR from 'swr'
-import { uniqueId } from 'lodash'
+import { pick, uniqueId } from 'lodash'
 import GeoJSON from 'ol/format/GeoJSON'
 
-import { ShapeContext } from '../../shape.context'
 import { simplifyGeoJSON } from '../../shape.helpers'
-import { usePrevious } from '../../../../helpers/hooks'
+import { usePrevious, useStore } from '../../../../helpers/hooks'
+
+const mapStateToProps = state => pick(state, [
+  'baseURL',
+  'journeyPatternId',
+  'lineId',
+  'setAttributes',
+  'setLine',
+  'setWaypoints',
+  'wktOptions'
+])
 
 // Custom hook which responsability is to fetch a new GeoJSON when the journeyPatternId change
-export default function useJourneyPatternController(
-  { journeyPatternId },
-  { setAttributes, setLine, setWaypoints }
-) {
-  const { baseURL, lineId, wktOptions } = useContext(ShapeContext)
+export default function useJourneyPatternController(store) {
+  const [
+    { baseURL, journeyPatternId, lineId, setAttributes, setLine, setWaypoints, wktOptions },
+  ] = useStore(store, mapStateToProps)
+
   const previousJourneyPatternId = usePrevious(journeyPatternId)
 
   // Helpers

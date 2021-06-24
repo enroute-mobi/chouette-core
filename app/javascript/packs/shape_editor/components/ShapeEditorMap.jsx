@@ -1,8 +1,10 @@
-import React, { useReducer } from 'react'
+import React from 'react'
+import { pick } from 'lodash'
 
-import { reducer, initialState } from '../shape.reducer'
-import actionDispatcher from '../shape.actions'
 import { getSortedWaypoints } from '../shape.selectors'
+
+import store from '../shape.store'
+import { useStore } from '../../../helpers/hooks'
 
 import combineControllers from '../controllers'
 import { useMapController } from '../controllers/ui'
@@ -12,28 +14,21 @@ import MapWrapper from '../../../components/MapWrapper'
 import List from './List'
 import Select from './Select'
 
+const mapStateToProps = state => ({
+  ...pick(state, ['features', 'setAttributes', 'style']),
+  waypoints: getSortedWaypoints(state)
+})
+
 export default function ShapeEditorMap() {
-  // Reducer
-  const [state, dispatch] = useReducer(reducer, initialState)
-
-  // Action Dispatcher
-  const dispatcher = actionDispatcher(dispatch)
-
-  // Selectors
-  const sortedWaypoints = getSortedWaypoints(state)
-
-  // Helpers
-  const setJourneyPatternId = journeyPatternId => {
-    dispatcher.setAttributes({ journeyPatternId })
-  }
-
+  // Store
+  const [
+    { features, setAttributes, style, waypoints }
+  ] = useStore(store, mapStateToProps)
   // Evvent Handlers
-  const onMapInit = (map, featuresLayer) => {
-    dispatcher.setAttributes({ map, featuresLayer })
-  }
+  const onMapInit = (map, featuresLayer) => setAttributes({ map, featuresLayer })
 
   // Controllers
-  combineControllers(state, dispatcher)(
+  combineControllers(store)(
     useMapController,
     useJourneyPatternController,
     useLineController
@@ -43,17 +38,17 @@ export default function ShapeEditorMap() {
     <div className="page-content">
       <div className="container-fluid">
         <div className="row">
-          <Select setJourneyPatternId={setJourneyPatternId}/>
+          <Select />
         </div>
         <div className="row">
           <div className="col-md-6">
             <h4 className="underline">Liste</h4>
-            <List waypoints={sortedWaypoints} />
+            <List waypoints={waypoints} />
           </div>
           <div className="col-md-6">
             <h4 className="underline">Carte</h4>
             <div className="openlayers_map">
-              <MapWrapper features={state.features} style={state.style} onInit={onMapInit} />
+              <MapWrapper features={features} style={style} onInit={onMapInit} />
             </div>
           </div>
         </div>

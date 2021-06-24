@@ -1,19 +1,23 @@
-import { useContext } from 'react'
-import { tap } from 'lodash'
+import { pick } from 'lodash'
 import useSWR from 'swr'
 
 import GeoJSON from 'ol/format/GeoJSON'
 
-import { ShapeContext } from '../../shape.context'
+import { useStore } from '../../../../helpers/hooks'
 import { simplifyGeoJSON } from '../../shape.helpers'
 import { getSortedCoordinates, getSource } from '../../shape.selectors'
 
+const mapStateToProps = state => ({
+  ...pick(state, ['baseURL', 'lineId', 'setAttributes', 'setLine', 'shouldUpdateLine', 'wktOptions']),
+  source: getSource(state),
+  coordinates: getSortedCoordinates(state)
+})
+
 // Custom hook which responsability is to fetch a new LineString GeoJSON object based on state coordinates when shouldUpdateLine is set to true
-export default function useLineController(
-  state,
-  { setAttributes, setLine }
-) {
-  const { baseURL, lineId, wktOptions } = useContext(ShapeContext)
+export default function useLineController(store) {
+  const [
+    { baseURL, coordinates, lineId, setAttributes, setLine, shouldUpdateLine, source, wktOptions }
+  ] = useStore(store, mapStateToProps)
 
   // Fetcher
   const fetcher = async url =>
@@ -23,7 +27,7 @@ export default function useLineController(
         'Content-Type': 'application/json',
         'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').attributes.content.value
       },
-      body: JSON.stringify({ coordinates: getSortedCoordinates(state) })
+      body: JSON.stringify({ coordinates })
     })
     .then(res => res.json())
   
@@ -38,19 +42,17 @@ export default function useLineController(
     
     lineFeature.setId(lineId)
 
-    tap(getSource(state), source => {
-      source.removeFeature(
-        source.getFeatureById(lineId)
-      )
+    source.removeFeature(
+      source.getFeatureById(lineId)
+    )
 
-      source.addFeature(lineFeature)
-    })
+    source.addFeature(lineFeature)
 
     setLine(lineFeature)
   }
 
   return useSWR(
-    () => state.shouldUpdateLine ? `${baseURL}/shape_editor/update_line` : null,
+    () => shouldUpdateLine ? `${baseURL}/shape_editor/update_line` : null,
     fetcher,
     { onSuccess }
   )

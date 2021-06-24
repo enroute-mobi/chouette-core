@@ -6,7 +6,9 @@ import Draw from 'ol/interaction/Draw'
 import Snap from 'ol/interaction/Snap'
 import { Circle, Fill, Stroke, Style } from 'ol/style'
 
-import { isEmpty, tap } from 'lodash'
+import { isEmpty, pick, tap } from 'lodash'
+
+import { useStore } from '../../../../helpers/hooks'
 
 const constraintStyle = new Style({
   image: new Circle({
@@ -16,10 +18,22 @@ const constraintStyle = new Style({
    })
 })
 
-export default function useMapInteractions(
-  { featuresLayer, map, waypoints },
-  { addNewPoint, setAttributes, setWaypoints }
-) {
+const mapStateToProps = state =>
+  pick(state, [
+    'addNewPoint',
+    'featuresLayer',
+    'map',
+    'setAttributes',
+    'setWaypoints',
+    'waypoints'
+  ])
+
+export default function useMapInteractions(store) {
+  // Store
+  const [
+    { addNewPoint, featuresLayer, map, setAttributes, setWaypoints, waypoints }
+  ] = useStore(store, mapStateToProps)
+
   // Helpers
   const hasWaypoints = !isEmpty(waypoints)
 

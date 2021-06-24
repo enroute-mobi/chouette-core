@@ -34,6 +34,10 @@ class Export::NetexGeneric < Export::Base
     profile? ? "zip" : 'xml'
   end
 
+  def stop_areas
+    @stop_areas ||= Chouette::StopArea.union(export_scope.stop_areas, Chouette::StopArea.parents_of(export_scope.stop_areas))
+  end
+
   def quay_registry
     @quay_registry ||= QuayRegistry.new
   end
@@ -149,15 +153,18 @@ class Export::NetexGeneric < Export::Base
   class StopDecorator < SimpleDelegator
 
     def netex_attributes
-        {
-          id: objectid,
-          name: name,
-          public_code: public_code,
-          raw_xml: import_xml
-          # longitude: longitude,
-          # latitude: latitude
-        }
-      end
+      {
+        id: objectid,
+        name: name,
+        public_code: public_code,
+        centroid: centroid,
+        raw_xml: import_xml
+      }
+    end
+
+    def centroid
+      Netex::Point.new(location: Netex::Location.new(longitude: longitude, latitude: latitude))
+    end
 
     def parent_site_ref
       Netex::Reference.new(parent.objectid, type: 'ParentSiteRef')
@@ -201,7 +208,7 @@ class Export::NetexGeneric < Export::Base
 
   class Stops < Part
 
-    delegate :stop_areas, to: :export_scope
+    delegate :stop_areas, to: :export
 
     def export!
       stop_areas.where(area_type: 'zdep').find_each do |stop_area|
@@ -222,7 +229,7 @@ class Export::NetexGeneric < Export::Base
 
   class Stations < Part
 
-    delegate :stop_areas, to: :export_scope
+    delegate :stop_areas, to: :export
 
     def export!
       stop_areas.where.not(area_type: 'zdep').find_each do |stop_area|
@@ -869,7 +876,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def operating_period_ref
-      Netex::Reference.new(id, type: 'OperatinPeriodRef')
+      Netex::Reference.new(operating_period_id, type: 'OperatinPeriodRef')
     end
 
   end

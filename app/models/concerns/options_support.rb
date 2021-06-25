@@ -35,9 +35,11 @@ module OptionsSupport
 
       def handle_serialize_option attribute_name, opts
         serializer = opts[:serialize]
-   
+    
         define_method attribute_name do
-          raw_value = self.class.options.stringify_keys[attribute_name.to_s]
+          return nil unless respond_to?(:options)
+    
+          raw_value = options.stringify_keys[attribute_name.to_s]
           value = JSON.parse(raw_value) rescue raw_value
 
           return value unless serializer

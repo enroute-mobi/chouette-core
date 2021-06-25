@@ -506,9 +506,8 @@ module Chouette
       where "stop_areas.id IN (#{union_query})"
     end
 
-    def self.all_parents(ignore_mono_parent: false)
-      current_scope = self.current_scope || all
-      stop_area_parents = joins('JOIN "public"."stop_areas" children on "public"."stop_areas"."id" = children.parent_id').where("children.id" => current_scope)
+    def self.all_parents(relation, ignore_mono_parent: false)
+      stop_area_parents = joins('JOIN "public"."stop_areas" children on "public"."stop_areas"."id" = children.parent_id').where("children.id" => relation)
 
       if ignore_mono_parent
         stop_area_parents = stop_area_parents.group(:id).having('count(children.id) > 1')

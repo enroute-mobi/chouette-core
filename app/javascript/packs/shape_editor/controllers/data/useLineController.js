@@ -15,6 +15,7 @@ const mapStateToProps = state => ({
 
 // Custom hook which responsability is to fetch a new LineString GeoJSON object based on state coordinates when shouldUpdateLine is set to true
 export default function useLineController(store) {
+  // Store
   const [
     { baseURL, coordinates, lineId, setAttributes, setLine, shouldUpdateLine, source, wktOptions }
   ] = useStore(store, mapStateToProps)

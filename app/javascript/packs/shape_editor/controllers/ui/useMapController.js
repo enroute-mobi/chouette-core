@@ -6,7 +6,7 @@ import Draw from 'ol/interaction/Draw'
 import Snap from 'ol/interaction/Snap'
 import { Circle, Fill, Stroke, Style } from 'ol/style'
 
-import { isEmpty, pick, tap } from 'lodash'
+import { first, isEmpty, pick, tap } from 'lodash'
 
 import { useStore } from '../../../../helpers/hooks'
 
@@ -23,15 +23,15 @@ const mapStateToProps = state =>
     'addNewPoint',
     'featuresLayer',
     'map',
+    'moveWaypoint',
     'setAttributes',
-    'setWaypoints',
     'waypoints'
   ])
 
 export default function useMapInteractions(store) {
   // Store
   const [
-    { addNewPoint, featuresLayer, map, setAttributes, setWaypoints, waypoints }
+    { addNewPoint, featuresLayer, map, moveWaypoint, setAttributes, waypoints }
   ] = useStore(store, mapStateToProps)
 
   // Helpers
@@ -49,8 +49,14 @@ export default function useMapInteractions(store) {
   }
 
   const onMovedPoint = e => {
-    setWaypoints(e.features.getArray())
-    setAttributes({ shouldUpdateLine: true })
+    tap(first(e.features.getArray()), waypoint => {
+      moveWaypoint(
+        waypoint.getId(),
+        waypoint.getGeometry().getCoordinates()
+      )
+
+      setAttributes({ shouldUpdateLine: true })
+    })
   }
 
   useEffect(() => {

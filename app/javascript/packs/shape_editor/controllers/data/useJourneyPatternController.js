@@ -17,8 +17,9 @@ const mapStateToProps = state => pick(state, [
 
 // Custom hook which responsability is to fetch a new GeoJSON when the journeyPatternId change
 export default function useJourneyPatternController(store) {
+  // Store
   const [
-    { baseURL, journeyPatternId, lineId, setAttributes, setLine, setWaypoints, wktOptions },
+    { baseURL, journeyPatternId, lineId, setAttributes, setLine, setWaypoints, wktOptions }
   ] = useStore(store, mapStateToProps)
 
   const previousJourneyPatternId = usePrevious(journeyPatternId)

@@ -24,6 +24,7 @@ export default function ShapeEditorMap() {
   const [
     { features, setAttributes, style, waypoints }
   ] = useStore(store, mapStateToProps)
+
   // Evvent Handlers
   const onMapInit = (map, featuresLayer) => setAttributes({ map, featuresLayer })
 

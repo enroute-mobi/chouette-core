@@ -25,6 +25,14 @@ export const reducer = (state, action) => {
         ...state,
         waypoints: [...state.waypoints, action.waypoint]
       }
+    case 'MOVE_WAYPOINT':
+      return {
+        ...state,
+        waypoints: state.waypoints.reduce((result, w) => {
+          w.getId() == action.id && w.setCoordinates(action.coordinates)
+          return result.concat(w)
+        }, [])
+      }
     default:
       return state
   }

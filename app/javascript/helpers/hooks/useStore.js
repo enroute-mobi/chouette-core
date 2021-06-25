@@ -6,7 +6,7 @@ export default function useStore(
   store,
   mapStateToProps = state => state
 ) {
-  const [state, setState] = useState(store.initialState)
+  const [state, setState] = useState(() => mapStateToProps(store.initialState))
 
   useEffect(()=> {
     store.pipe(
@@ -21,6 +21,6 @@ export default function useStore(
 
   return [
     state,
-    store.dispatch,
+    store.dispatch
   ]
 }

@@ -1,10 +1,14 @@
-import { firstValueFrom, ReplaySubject } from 'rxjs'
-import { first, scan, share } from 'rxjs/operators'
+import { firstValueFrom, Subject } from 'rxjs'
+import { first, scan, shareReplay, startWith } from 'rxjs/operators'
 import { bindAll } from 'lodash'
 
 export default class Store {
-  constructor(reducer, initialState, mapDispatchToProps) {
-    this.subject = new ReplaySubject(1)
+  constructor(
+    reducer,
+    initialState,
+    mapDispatchToProps = _dispatch => ({})
+  ) {
+    this.subject = new Subject()
 
     this.initialState = {
       ...initialState,
@@ -13,7 +17,8 @@ export default class Store {
 
     this.$store = this.subject.pipe(
       scan(reducer, this.initialState),
-      share()
+      startWith(this.initialState),
+      shareReplay(1)
     )
 
     bindAll(this, ['dispatch'])

@@ -31,7 +31,7 @@ class AutocompleteController < ChouetteController
   end
 
   def parent_stop_areas
-    @stop_areas = stop_area_scope.stop_areas.all_parents.order(:name).by_text(text)
+    @stop_areas = Chouette::StopArea.all_parents(stop_area_scope.stop_areas).order(:name).by_text(text)
   end
 
   # def autocomplete

@@ -1,4 +1,152 @@
 RSpec.describe Aggregate, type: :model do
+
+  describe "aggregate!" do
+
+    context "when two Workbenches provides data for the same Line on the same Period" do
+      let(:context) do
+        Chouette.create do
+          line :line
+          workbench :workbench do
+            referential lines: [ :line ], periods: [ Date.parse("2030-06-01")..Date.parse("2030-06-30") ] do
+              time_table :time_table_1, periods: [ Date.parse("2030-06-01")..Date.parse("2030-06-30") ]
+              vehicle_journey time_tables: [:time_table_1]
+            end
+          end
+          workbench do
+            referential lines: [ :line ], periods: [ Date.parse("2030-06-01")..Date.parse("2030-06-30") ] do
+              time_table :time_table_2, periods: [ Date.parse("2030-06-01")..Date.parse("2030-06-30") ]
+              vehicle_journey time_tables: [:time_table_2]
+            end
+          end
+        end
+      end
+
+      let(:workbench) { context.workbench(:workbench) }
+      let(:aggregate) { Aggregate.create! workgroup: context.workgroup, referentials: context.referentials }
+
+      let(:workbench_priority) { 1 }
+      before { workbench.update priority: workbench_priority }
+
+      context "after aggregate" do
+
+        before { aggregate.aggregate! }
+
+        context "the aggregated dataset" do
+          subject(:aggregated_dataset) { aggregate.new }
+          before { aggregated_dataset.switch }
+
+          context "when the two Workbenches have the same priority" do
+            it "contains two Vehicle Journeys" do
+              expect(aggregated_dataset.vehicle_journeys.count).to eq(2)
+            end
+
+            it "contains two TimeTables" do
+              expect(aggregated_dataset.time_tables.count).to eq(2)
+            end
+          end
+
+          context "when a Workbench has a lower priority (2 instead of 1)" do
+            let(:workbench_priority) { 2 }
+
+            it "contains a single Vehicle Journey" do
+              expect(aggregated_dataset.vehicle_journeys.count).to eq(1)
+            end
+
+            it "contains a single TimeTable" do
+              expect(aggregated_dataset.vehicle_journeys.count).to eq(1)
+            end
+          end
+        end
+
+      end
+
+    end
+
+    context "when two Workbenches provides data for the same Line on the same Period with a shared timetable" do
+      let(:context) do
+        Chouette.create do
+          line :line
+          line :other_line
+          workbench :workbench do
+            referential lines: [ :line, :other_line ], periods: [ Date.parse("2030-06-01")..Date.parse("2030-06-30") ] do
+              # This Timetable is used by two Vehicle Journeys associated with different Lines
+              time_table :shared_time_table, periods: [ Date.parse("2030-06-01")..Date.parse("2030-06-30") ]
+
+              route line: :line do
+                vehicle_journey time_tables: [:shared_time_table]
+              end
+
+              route line: :other_line do
+                vehicle_journey time_tables: [:shared_time_table]
+              end
+            end
+          end
+          workbench do
+            # This Referential provides a Vehicle Journey on a single Line
+            referential lines: [ :line ], periods: [ Date.parse("2030-06-01")..Date.parse("2030-06-30") ] do
+              time_table :time_table, periods: [ Date.parse("2030-06-01")..Date.parse("2030-06-30") ]
+
+              route line: :line do
+                vehicle_journey time_tables: [:time_table]
+              end
+            end
+          end
+        end
+      end
+
+      let(:workbench) { context.workbench(:workbench) }
+      let(:aggregate) { Aggregate.create! workgroup: context.workgroup, referentials: context.referentials }
+
+      let(:line) { context.line(:line) }
+
+      let(:workbench_priority) { 1 }
+      before { workbench.update priority: workbench_priority }
+
+      context "after aggregate" do
+        before { aggregate.aggregate! }
+
+        context "the aggregated dataset" do
+          subject(:aggregated_dataset) { aggregate.new }
+          before { aggregated_dataset.switch }
+
+          context "when the two Workbenches have the same priority" do
+
+            it "contains three Vehicle Journeys" do
+              expect(aggregated_dataset.vehicle_journeys.count).to eq(3)
+            end
+
+            it "contains two TimeTables" do
+              expect(aggregated_dataset.time_tables.count).to eq(2)
+            end
+          end
+
+          # TODO Support shared timetables
+          #
+          # context "when a Workbench has a lower priority (2 instead of 1)" do
+          #   let(:workbench_priority) { 2 }
+          #
+          #   it "contains a single Vehicle Journey on the Line" do
+          #     expect(aggregated_dataset.vehicle_journeys.with_lines(line).count).to eq(1)
+          #   end
+          #
+          #   it "contains two TimeTables", pending: "Shared timetable not supported" do
+          #     expect(aggregated_dataset.time_tables.count).to eq(2)
+          #   end
+          # end
+        end
+      end
+
+      context "when a Workbench has a lower priority (2 instead of 1)" do
+        let(:workbench_priority) { 2 }
+
+        it "raises an error because of shared timetables" do
+          expect { aggregate.aggregate! }.to raise_error(RuntimeError)
+        end
+      end
+    end
+
+  end
+
   context 'an automatic aggregate' do
     context "without concurent aggregate" do
       let(:aggregate){ Aggregate.new(workgroup: referential.workgroup, referentials: [referential, referential], automatic_operation: true) }

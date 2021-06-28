@@ -586,53 +586,53 @@ module Chouette
       merged
     end
 
+    # Don't use for massive operations. Not optimized !
     def flattened_circulation_periods
-      @flattened_circulation_periods ||= begin
-        periods = time_tables.map(&:periods).flatten
-        out = []
-        dates = periods.map {|p| [p.period_start, p.period_end + 1.day]}
+      periods = time_tables.map(&:periods).flatten
+      out = []
+      dates = periods.map {|p| [p.period_start, p.period_end + 1.day]}
 
-        included_dates = Hash[*time_tables.map do |t|
-          t.dates.select(&:in?).map {|d|
-            int_day_types = t.int_day_types
-            int_day_types = int_day_types | 2**(d.date.days_to_week_start + 2)
-            [d.date, int_day_types]
-          }
-        end.flatten]
+      included_dates = Hash[*time_tables.map do |t|
+                              t.dates.select(&:in?).map {|d|
+                                int_day_types = t.int_day_types
+                                int_day_types = int_day_types | 2**(d.date.days_to_week_start + 2)
+                                [d.date, int_day_types]
+                              }
+                            end.flatten]
 
-        excluded_dates = Hash.new { |hash, key| hash[key] = [] }
-        time_tables.each do |t|
-          t.dates.select(&:out?).each {|d| excluded_dates[d.date] += t.periods.to_a }
-        end
-
-        (included_dates.keys + excluded_dates.keys).uniq.each do |d|
-          dates << d
-          dates << d + 1.day
-        end
-
-        dates = dates.flatten.uniq.sort
-        dates.each_cons(2) do |from, to|
-          to = to - 1.day
-          if from == to
-            matching = periods.select{|p| p.range.include?(from) }
-          else
-            # Find the elements that are both in a and b
-            matching = periods.select{|p| (from..to) & p.range }
-          end
-          # Remove the portential excluded service date from the returned matching periods / dates
-          matching -= excluded_dates[from] || []
-          date_matching = included_dates[from]
-          if matching.any? || date_matching
-            int_day_types = 0
-            matching.each {|p| int_day_types = int_day_types | p.time_table.int_day_types}
-            int_day_types = int_day_types | date_matching if date_matching
-            out << FlattennedCirculationPeriod.new(from, to, int_day_types)
-          end
-        end
-
-        merge_flattened_periods out
+      excluded_dates = Hash.new { |hash, key| hash[key] = [] }
+      time_tables.each do |t|
+        t.dates.select(&:out?).each {|d| excluded_dates[d.date] += t.periods.to_a }
       end
+
+      (included_dates.keys + excluded_dates.keys).uniq.each do |d|
+        dates << d
+        dates << d + 1.day
+      end
+
+      dates = dates.flatten.uniq.sort
+      dates.each_cons(2) do |from, to|
+        to = to - 1.day
+        if from == to
+          matching = periods.select{|p| p.range.include?(from) }
+        else
+          # Find the elements that are both in a and b
+          matching = periods.select{|p| (from..to) & p.range }
+        end
+        # Remove the portential excluded service date from the returned matching periods / dates
+        matching -= excluded_dates[from] || []
+        date_matching = included_dates[from]
+        if matching.any? || date_matching
+          int_day_types = 0
+          matching.each {|p| int_day_types = int_day_types | p.time_table.int_day_types}
+          int_day_types = int_day_types | date_matching if date_matching
+          out << FlattennedCirculationPeriod.new(from, to, int_day_types)
+        end
+      end
+
+      merge_flattened_periods out
     end
+    alias operating_periods flattened_circulation_periods
 
     def flattened_sales_periods
       @flattened_sales_periods ||= begin
@@ -666,6 +666,12 @@ module Chouette
       def <=> period
         period_start <=> period.period_start
       end
+
+      def ==(other)
+        other.respond_to?(:range) && other.respond_to?(:int_day_types) &&
+          range == other.range && int_day_types == other.int_day_types
+      end
+
     end
 
     class FlattennedSalesPeriod < FlattennedCirculationPeriod

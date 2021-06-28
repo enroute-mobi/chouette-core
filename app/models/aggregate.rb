@@ -43,20 +43,75 @@ class Aggregate < ApplicationModel
   end
   alias run aggregate
 
-  def aggregate!
-    measure "aggregate", aggregate: id do
-      prepare_new
+  # Returns aggregated referentials order by the Workbench priority
+  # lower priority first, so higher value first
+  def referentials_by_priority
+    workgroup.referentials.joins(:workbench).merge(Workbench.order(priority: :desc)).where(id: referentials.map(&:id))
+  end
 
-      measure 'referential_copies' do
-        referentials.each do |source|
-          ReferentialCopy.new(source: source, target: new).copy!
+  # Copy the referential provided by a Workbench
+  # Clean the pending aggregated dataset (new) if needed
+  class WorkbenchCopy
+    include Measurable
+
+    def initialize(referential, new)
+      @referential, @new = referential, new
+    end
+    attr_reader :referential, :new
+
+    delegate :workbench, to: :referential
+    delegate :priority, to: :workbench
+
+    def overlaps
+      ReferentialOverlaps.new referential, new, priority: priority
+    end
+
+    def overlapping_periods
+      overlaps.overlapping_periods
+    end
+
+    def clean!
+      overlapping_periods.each do |overlapping_period|
+        Rails.logger.info "Clean Line #{overlapping_period.line_id} on #{overlapping_period.period}"
+
+        clean_scope = Clean::Scope::Line.new(Clean::Scope::Referential.new(new), overlapping_period.line_id)
+        clean_period = overlapping_period.period
+        [
+          Clean::InPeriod.new(clean_scope, clean_period),
+          Clean::Metadata::InPeriod.new(clean_scope, clean_period)
+        ].each(&:clean!)
+      end
+    end
+    measure :clean!
+
+    def copy!
+      measure :copy, workbench_id: workbench.id do
+        Rails.logger.tagged("Workbench ##{workbench.id}") do
+          Rails.logger.info "Aggregate Referential##{referential.id} with priority #{priority}"
+          clean!
+          ReferentialCopy.new(source: referential, target: new, source_priority: priority).copy!
         end
       end
+    end
 
-      if after_aggregate_compliance_control_set.present?
-        create_after_aggregate_compliance_check_set
-      else
-        save_current
+  end
+
+  def aggregate!
+    Rails.logger.tagged("Aggregate ##{id}") do
+      measure "aggregate", aggregate: id do
+        prepare_new
+
+        measure 'referential_copies' do
+          referentials_by_priority.each do |source|
+            WorkbenchCopy.new(source, new).copy!
+          end
+        end
+
+        if after_aggregate_compliance_control_set.present?
+          create_after_aggregate_compliance_check_set
+        else
+          save_current
+        end
       end
     end
   rescue => e

@@ -188,7 +188,7 @@ module OperationSupport
   def failed!
     update_columns status: :failed, ended_at: Time.now
     new&.failed!
-    referentials.each &:active!
+    referentials.each(&:active!)
     run_pending_operations
   end
 

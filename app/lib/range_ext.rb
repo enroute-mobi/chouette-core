@@ -11,7 +11,7 @@ class Range
   end
 
   def remove(other)
-    return self if (self.max < other.min or other.max < self.min)
+    return self if (other.nil? or self.max < other.min or other.max < self.min)
 
     [].tap do |remaining|
       remaining << (self.min..other.min-1) if self.min < other.min
@@ -20,5 +20,13 @@ class Range
     end
   end
   alias_method :-, :remove
+
+  # Returns the periods array after removing the other range.
+  # Can split one of the periods to remove the other range.
+  def self.remove(periods, other)
+    periods.map do |period|
+      period.remove other
+    end.flatten
+  end
 
 end

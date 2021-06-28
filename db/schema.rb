@@ -894,6 +894,7 @@ ActiveRecord::Schema.define(version: 2021_06_15_142111) do
     t.datetime "updated_at"
     t.daterange "periodes", array: true
     t.datetime "flagged_urgent_at"
+    t.integer "priority"
     t.index ["line_ids"], name: "index_referential_metadata_on_line_ids", using: :gin
     t.index ["referential_id"], name: "index_referential_metadata_on_referential_id"
     t.index ["referential_source_id"], name: "index_referential_metadata_on_referential_source_id"

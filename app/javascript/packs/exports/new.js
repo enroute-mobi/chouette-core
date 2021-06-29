@@ -32,13 +32,13 @@ class PathBuilder {
 	}
 
 	get companyIds() {
-		return () => store.isExport ?
+		return () => this.store.isExport ?
 			`/referentials/${this.store.referentialId}/autocomplete/companies` :
 			`/workgroups/${this.workgroupId}/autocomplete/companies`
 	}
 
 	get lineProviderIds() {
-		return () => store.isExport ?
+		return () => this.store.isExport ?
 			`/workbenches/${this.workbenchId}/autocomplete/line_providers` :
 			`/workgroups/${this.workgroupId}/autocomplete/line_providers`
 	}

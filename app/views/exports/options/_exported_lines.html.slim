@@ -1,3 +1,5 @@
+- decorated_export = @export.decorate
+
 div[
   x-data
   x-init="$store.export.setState({ exportedLines: '#{@export.exported_lines}' })"
@@ -13,7 +15,7 @@ div[
   template[x-if="$store.export.exportedLines == 'line_ids'"]
     div[
       x-data
-      x-init="$store.export.initLineIdsSelect(#{@export.decorate.line_ids})"
+      x-init="$store.export.initLineIdsSelect(#{decorated_export.line_ids_options})"
     ]
       = form.input :line_ids,
         as: :tom_select,
@@ -26,7 +28,7 @@ div[
   template[x-if="$store.export.exportedLines == 'company_ids'"]
     div[
       x-data
-      x-init="$store.export.initCompanyIdsSelect(#{@export.company_ids})"
+      x-init="$store.export.initCompanyIdsSelect(#{decorated_export.company_ids_options})"
     ]
       = form.input :company_ids,
         as: :tom_select,
@@ -38,7 +40,7 @@ div[
   template[x-if="$store.export.exportedLines == 'line_provider_ids'"]
     div[
       x-data
-      x-init="$store.export.initLineProviderIdsSelect(#{@export.line_provider_ids})"
+      x-init="$store.export.initLineProviderIdsSelect(#{decorated_export.line_provider_ids_options})"
     ]
       = form.input :line_provider_ids,
         as: :tom_select,

@@ -274,7 +274,7 @@ GEM
     devise_cas_authenticatable (1.10.4)
       devise (>= 1.2.0)
       rubycas-client (>= 2.2.1)
-    devise_invitable (2.0.3)
+    devise_invitable (2.0.5)
       actionmailer (>= 5.0)
       devise (>= 4.6)
     diff-lcs (1.4.4)

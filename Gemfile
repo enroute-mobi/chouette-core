@@ -86,7 +86,7 @@ gem 'ffi'
 gem 'mimemagic'
 
 # User interface
-gem 'language_engine', '0.0.9', en_route: 'language_engine'
+gem 'language_engine', en_route: 'language_engine'
 gem 'calendar_helper', '0.2.5'
 gem 'cocoon'
 gem 'slim-rails', '>= 3.2.0'

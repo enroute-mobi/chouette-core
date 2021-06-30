@@ -36,10 +36,10 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/language_engine.git
-  revision: f0085727b1b5766371af065deaa05a5e5aad81dd
+  revision: d53da8c876de565a39fcb551ebecc3694c3547de
   specs:
-    language_engine (0.0.9)
-      rails (~> 5.2)
+    language_engine (0.0.10)
+      rails (>= 5.2)
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
@@ -818,7 +818,7 @@ DEPENDENCIES
   jquery-rails (>= 4.4.0)
   jquery-ui-rails (>= 6.0.1)
   json
-  language_engine (= 0.0.9)!
+  language_engine!
   letter_opener
   letter_opener_web (~> 1.4, >= 1.4.0)
   license_finder

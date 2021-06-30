@@ -16,7 +16,7 @@ definitions:
     bundler: ./vendor/bundle
     yarn: ./node_modules
     assets: ./public/assets
-    assets-cache: ./tmp/assets/cache
+    assets-cache: ./tmp/cache/assets
     build-cache: ./cache
     codacy-coverage: ./.codacy-coverage
   steps:

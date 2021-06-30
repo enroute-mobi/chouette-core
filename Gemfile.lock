@@ -677,7 +677,7 @@ GEM
     sentry-raven (2.13.0)
       faraday (>= 0.7.6, < 1.0)
     shellany (0.0.1)
-    shoulda-matchers (4.4.1)
+    shoulda-matchers (4.5.1)
       activesupport (>= 4.2.0)
     signet (0.15.0)
       addressable (~> 2.3)

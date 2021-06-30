@@ -22,7 +22,7 @@ const CopyModal = props => {
 
   const updatePasteContent = useDebounce(
     props.updatePasteContent,
-    100
+    200
   )
 
   const selectAll = () => {
@@ -95,7 +95,8 @@ const CopyModal = props => {
                   <textarea
                     ref={pasteContentRef}
                     onPaste={e => updatePasteContent(e.clipboardData.getData('text'))}
-                    onKeyDown={() => updatePasteContent(pasteContentRef.current.value)}
+                    onChange={e => updatePasteContent(e.target.value)}
+                    wrap="off"
                   >
                     {content.paste}
                   </textarea>

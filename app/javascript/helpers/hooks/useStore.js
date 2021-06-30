@@ -9,18 +9,13 @@ export default function useStore(
   const [state, setState] = useState(() => mapStateToProps(store.initialState))
 
   useEffect(()=> {
-    store.pipe(
+    const sub = store.pipe(
       map(mapStateToProps),
       filter(newState => !isEqual(state, newState))
     ).subscribe(setState)
 
-    return () => {
-      store.unsubsribe()
-    }
+    return () => sub.unsubsribe()
   }, [])
 
-  return [
-    state,
-    store.dispatch
-  ]
+  return state
 }

@@ -3,14 +3,18 @@ import {
   nearestPointOnLine,
   point,
   lineSlice,
+  lineString,
   getCoords,
   length
 } from '@turf/turf'
 
 import { convertCoords } from './shape.helpers'
 
+export const getTurfLine = ({ line }) => line ?  lineString(convertCoords(line)) : null
+
 export const getSortedWaypoints = state => {
-  const { turfLine: line, waypoints } = state
+  const { waypoints } = state
+  const line = getTurfLine(state)
 
   if (!line) return []
 
@@ -39,3 +43,5 @@ export const getSortedCoordinates = flow(
 )
 
 export const getSource = state => state.featuresLayer?.getSource()
+
+export const getMapInteractions = ({ draw, modify, snap }) => ([ draw, modify, snap ])

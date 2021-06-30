@@ -1,31 +1,36 @@
 import { firstValueFrom, Subject } from 'rxjs'
-import { first, scan, shareReplay, startWith } from 'rxjs/operators'
-import { bindAll } from 'lodash'
+import { filter, first, scan, shareReplay, startWith } from 'rxjs/operators'
 
-export default class Store {
+import { has, isObject } from 'lodash'
+export default class Store extends Subject {
   constructor(
     reducer,
     initialState,
     mapDispatchToProps = _dispatch => ({})
   ) {
-    this.subject = new Subject()
+    super()
 
-    this.initialState = {
-      ...initialState,
-      ...mapDispatchToProps(this.dispatch.bind(this))
+    this.initialState = initialState
+    this.actionDispatcher = new Subject()
+
+    const funcs = mapDispatchToProps(this.dispatch.bind(this))
+
+    for (const name in funcs) {
+      this[name] = funcs[name]
     }
 
-    this.$store = this.subject.pipe(
-      scan(reducer, this.initialState),
+    this.$store = this.actionDispatcher.pipe(
+      filter(action => {
+        const isValid = isObject(action) && has(action, 'type')
+
+        if (!isValid) console.warn('action is not valid', action)
+
+        return isValid
+      }),
+      scan(reducer,  this.initialState),
       startWith(this.initialState),
       shareReplay(1)
-    )
-
-    bindAll(this, ['dispatch'])
-  }
-
-  pipe(observable) {
-    return this.$store.pipe(observable)
+    ).subscribe(state => this.next(state))
   }
 
   getState(callback) {
@@ -37,14 +42,6 @@ export default class Store {
   }
 
   dispatch(action) {
-    this.subject.next(action)
-  }
-
-  subscribe(setState) {
-    this.$store.subscribe(setState)
-  }
-
-  unsubsribe() {
-    this.$store.unsubsribe()
+    this.actionDispatcher.next(action)
   }
 }

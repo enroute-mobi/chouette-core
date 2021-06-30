@@ -1,14 +1,13 @@
 import { useEffect } from 'react'
+import { fromEvent } from 'rxjs'
+import { distinct, distinctUntilKeyChanged, filter, pairwise, pluck, skip, switchMap, tap } from 'rxjs/operators'
+import { uniqueId } from 'lodash'
 
-import Collection from 'ol/Collection'
-import Modify from 'ol/interaction/Modify'
-import Draw from 'ol/interaction/Draw'
-import Snap from 'ol/interaction/Snap'
 import { Circle, Fill, Stroke, Style } from 'ol/style'
 
-import { first, isEmpty, pick, tap } from 'lodash'
-
-import { useStore } from '../../../../helpers/hooks'
+import { getSource } from '../../shape.selectors'
+import store from '../../shape.store'
+import { addMapInteractions, getLine, getWaypoints, lineId } from '../../shape.helpers'
 
 const constraintStyle = new Style({
   image: new Circle({
@@ -17,65 +16,78 @@ const constraintStyle = new Style({
     fill: new Fill({ color: 'rgba(255, 255, 255, 0.5)' })
    })
 })
-
-const mapStateToProps = state =>
-  pick(state, [
-    'addNewPoint',
-    'featuresLayer',
-    'map',
-    'moveWaypoint',
-    'setAttributes',
-    'waypoints'
-  ])
-
-export default function useMapInteractions(store) {
-  // Store
-  const [
-    { addNewPoint, featuresLayer, map, moveWaypoint, setAttributes, waypoints }
-  ] = useStore(store, mapStateToProps)
-
+  
+export default function useMapInteractions() {
   // Helpers
-  const hasWaypoints = !isEmpty(waypoints)
+  const getStoreAttribute$ = name => source =>
+    source.pipe(pluck(name), distinct())
 
   // Event Handlers
-  const oneNewPoint = e => {
-    tap(e.feature, waypoint => {
+  const onInit$ = store.pipe(
+    getStoreAttribute$('featuresLayer'),
+    switchMap(featuresLayer => fromEvent(featuresLayer, 'change:source')),
+    tap(({ target }) => {
+      const source = target.getSource()
+      const features = source.getFeatures()
+      const line = getLine(features)
+      const waypoints = getWaypoints(features)
+
+      line.setId(lineId)
+
+      waypoints.forEach(w => {
+        w.setId(uniqueId('waypoint_'))
+        w.set('type', 'waypoint')
+      })
+
+      store.setLine(line)
+      store.setWaypoints(waypoints)
+    })
+  )
+
+  const onDrawEnd$ = store.pipe(
+    getStoreAttribute$('draw'),
+    skip(1),
+    switchMap(draw => fromEvent(draw, 'drawend')),
+    tap(({ feature: waypoint }) => {
       waypoint.set('type', 'constraint')
       waypoint.setStyle(constraintStyle)
-      addNewPoint(waypoint)
+      store.addNewPoint(waypoint)
+      store.setAttributes({ shouldUpdateLine: true })
     })
+  )
 
-    setAttributes({ shouldUpdateLine: true })
-  }
+  const onModifyEnd$ = store.pipe(
+    getStoreAttribute$('modify'),
+    skip(1),
+    switchMap(modify => fromEvent(modify, 'modifyend')),
+    tap(({ features }) => {
+      const waypoint = features.getArray()[0]
 
-  const onMovedPoint = e => {
-    tap(first(e.features.getArray()), waypoint => {
-      moveWaypoint(
+      store.moveWaypoint(
         waypoint.getId(),
         waypoint.getGeometry().getCoordinates()
       )
-
-      setAttributes({ shouldUpdateLine: true })
+      store.setAttributes({ shouldUpdateLine: true })
     })
-  }
+  )
+
+  const onNewPoint$ = store.pipe(
+    distinctUntilKeyChanged('waypoints'),
+    pairwise(),
+    filter(([prevState, newState]) => prevState.waypoints.length < newState.waypoints.length),
+    tap(([_, state]) => {
+      addMapInteractions(getSource(state), state)
+    })
+  )
 
   useEffect(() => {
-    hasWaypoints &&
-    featuresLayer &&
-    featuresLayer.on('change:source', e => {
-      tap(e.target.getSource(), source => {
-        const modify = new Modify({ features: new Collection(waypoints) })
-        const draw = new Draw({ source, type: 'Point' })
-        const snap = new Snap({ source })
-        const interactions = [modify, draw, snap]
-
-        draw.on('drawend', oneNewPoint)
-        modify.on('modifyend', onMovedPoint)
-
-        interactions.forEach(i => map.addInteraction(i))
-
-        setAttributes({ draw, modify, snap })
-      })
-    })
-  }, [featuresLayer, waypoints])
+    const subs = [
+      onInit$.subscribe(),
+      onDrawEnd$.subscribe(),
+      onModifyEnd$.subscribe(),
+      onNewPoint$.subscribe(),
+    ]
+     
+    return () => subs.forEach(sub => sub.unsubscribe())
+  }, [])
 }

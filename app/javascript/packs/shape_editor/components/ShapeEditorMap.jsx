@@ -6,7 +6,6 @@ import { getSortedWaypoints } from '../shape.selectors'
 import store from '../shape.store'
 import { useStore } from '../../../helpers/hooks'
 
-import combineControllers from '../controllers'
 import { useMapController } from '../controllers/ui'
 import { useJourneyPatternController, useLineController } from '../controllers/data'
 
@@ -15,25 +14,21 @@ import List from './List'
 import Select from './Select'
 
 const mapStateToProps = state => ({
-  ...pick(state, ['features', 'setAttributes', 'style']),
+  ...pick(state, ['features', 'style']),
   waypoints: getSortedWaypoints(state)
 })
 
 export default function ShapeEditorMap() {
   // Store
-  const [
-    { features, setAttributes, style, waypoints }
-  ] = useStore(store, mapStateToProps)
+  const { features, style, waypoints } = useStore(store, mapStateToProps)
 
   // Evvent Handlers
-  const onMapInit = (map, featuresLayer) => setAttributes({ map, featuresLayer })
+  const onMapInit = (map, featuresLayer) => store.setAttributes({ map, featuresLayer })
 
   // Controllers
-  combineControllers(store)(
-    useMapController,
-    useJourneyPatternController,
-    useLineController
-  )
+  useMapController()
+  useJourneyPatternController()
+  useLineController()
 
   return (
     <div className="page-content">

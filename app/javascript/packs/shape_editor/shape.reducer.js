@@ -1,7 +1,5 @@
 import { Style } from 'ol/style'
 
-import { buildTurfLine } from './shape.helpers'
-
 export const reducer = (state, action) => {
   switch(action.type) {
     case 'SET_ATTRIBUTES':
@@ -12,8 +10,7 @@ export const reducer = (state, action) => {
     case 'SET_LINE':
       return {
         ...state,
-        line: action.line,
-        turfLine: buildTurfLine(action.line)
+        line: action.line
       }
     case 'SET_WAYPOINTS':
       return {

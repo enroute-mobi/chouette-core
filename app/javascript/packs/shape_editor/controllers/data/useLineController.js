@@ -4,21 +4,20 @@ import useSWR from 'swr'
 import GeoJSON from 'ol/format/GeoJSON'
 
 import { useStore } from '../../../../helpers/hooks'
-import { simplifyGeoJSON } from '../../shape.helpers'
+import { baseURL, lineId, simplifyGeoJSON, wktOptions } from '../../shape.helpers'
 import { getSortedCoordinates, getSource } from '../../shape.selectors'
+import store from '../../shape.store'
 
 const mapStateToProps = state => ({
-  ...pick(state, ['baseURL', 'lineId', 'setAttributes', 'setLine', 'shouldUpdateLine', 'wktOptions']),
+  ...pick(state, 'shouldUpdateLine'),
   source: getSource(state),
   coordinates: getSortedCoordinates(state)
 })
 
 // Custom hook which responsability is to fetch a new LineString GeoJSON object based on state coordinates when shouldUpdateLine is set to true
-export default function useLineController(store) {
+export default function useLineController() {
   // Store
-  const [
-    { baseURL, coordinates, lineId, setAttributes, setLine, shouldUpdateLine, source, wktOptions }
-  ] = useStore(store, mapStateToProps)
+  const { coordinates, shouldUpdateLine, source } = useStore(store, mapStateToProps)
 
   // Fetcher
   const fetcher = async url =>
@@ -34,7 +33,7 @@ export default function useLineController(store) {
   
   // Event handlers
   const onSuccess = data => {
-    setAttributes({ shouldUpdateLine: false })
+    store.setAttributes({ shouldUpdateLine: false })
 
     const lineFeature = new GeoJSON().readFeature(
       simplifyGeoJSON(data),
@@ -49,7 +48,7 @@ export default function useLineController(store) {
 
     source.addFeature(lineFeature)
 
-    setLine(lineFeature)
+    store.setLine(lineFeature)
   }
 
   return useSWR(

@@ -45,7 +45,7 @@ $menuW: 300px
       font-size: 1.3333em
       text-align: center
       color: #fff
-      background-color: $brand-color-primary-variant
+      background-color: $brand-color-secondary-dark
       cursor: pointer
       list-style: 0.75em
       visibility: -15%
@@ -70,7 +70,7 @@ $menuW: 300px
 
     .menu-content
       display: block
-      background-color: $brand-color-primary-variant
+      background-color: $brand-color-secondary
       color: #fff
       width: $menuW
       margin-left: -($menuW)
@@ -82,8 +82,9 @@ $menuW: 300px
       z-index: 1050
       overflow: auto
 
-      .brandname
-        margin-bottom: 25px
+      .flex
+        display: flex
+        background-color: $brand-color-secondary-dark
 
       .version
         font-size: 0.7em
@@ -226,7 +227,7 @@ $menuW: 300px
               &.active
                 > span
                   background-color: rgba(#fff, 0.9)
-                  color: $brand-color-primary-variant
+                  color: $brand-color-primary-dark
                   transition: 0.2s
 
               &.disabled
@@ -254,7 +255,7 @@ $menuW: 300px
     height: $menuH
     transition: 0.1s
     padding-left: $menuH
-    background-color: $brand-color-secondary
+    background-color: $brand-color-primary-dark
     color: #fff
 
     > *

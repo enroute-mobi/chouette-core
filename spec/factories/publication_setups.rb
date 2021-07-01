@@ -5,10 +5,6 @@ FactoryBot.define do
     enabled {false}
 
     export_options { {type: "Export::Gtfs", duration: 200, prefer_referent_stop_area: false, ignore_single_stop_station: false } }
-
-    after(:build) do |ps, evaluator|
-      ps.export_options[:type] = evaluator.export_type
-    end
   end
 
   factory :publication_setup_gtfs, :parent => :publication_setup do

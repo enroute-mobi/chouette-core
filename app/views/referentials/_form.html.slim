@@ -58,7 +58,7 @@
       .col-lg-11
         = subform.input :lines, as: :select, collection: @workbench.lines, selected: subform.object.line_ids, input_html: { 'data-select2-ajax': 'true', 'data-select2ed-placeholder': t('simple_form.labels.referential.placeholders.select_lines'), 'multiple': 'multiple', 'data-url': lines_workbench_autocomplete_index_path(@workbench), style: 'width: 100%' }
       .col-lg-1
-        a.clear-lines.btn.btn-default href='#'
+        a.clear-lines.btn.btn-danger href='#'
           .fa.fa-trash
 
 

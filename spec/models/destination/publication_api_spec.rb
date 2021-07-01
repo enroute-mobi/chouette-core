@@ -2,7 +2,6 @@
 RSpec.describe Destination::PublicationApi, type: :model do
   let(:publication_api) { create :publication_api }
   let(:publication_setup) { create :publication_setup }
-  let(:publication_setup_with_line) { create :publication_setup, publish_per_line: true }
   let(:file){ File.open(File.join(Rails.root, 'spec', 'fixtures', 'terminated_job.json')) }
 
   let(:line_1) { create :line }
@@ -92,7 +91,7 @@ RSpec.describe Destination::PublicationApi, type: :model do
       netex_idfm_full_export = create(:netex_export)
       expect(destination.generate_key(netex_idfm_full_export)).to eq 'netex.zip'
 
-      publication_setup_gtfs_line = create(:publication_setup_gtfs, publish_per_line: true, export_options: { duration: 200, line_ids: [line_1.id] } )
+      publication_setup_gtfs_line = create(:publication_setup_gtfs, publish_per_line: true, export_options: { type: "Export::Gtfs", line_ids: [line_1.id] } )
       destination = build(:publication_api_destination, publication_setup: publication_setup_gtfs_line, publication_api: publication_api)
       expect(destination.generate_key(export_with_line1)).to eq "lines/#{line_1.registration_number}-gtfs.zip"
 

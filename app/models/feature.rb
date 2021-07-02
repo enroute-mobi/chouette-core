@@ -11,6 +11,7 @@ class Feature
       journey_length_in_vehicle_journeys
       long_distance_routes
       purchase_windows
+      purge_merged_data
       referential_vehicle_journeys
       route_stop_areas_all_types
       routing_constraint_zone_exclusion_in_vehicle_journey
@@ -20,5 +21,5 @@ class Feature
       stop_area_routing_constraints
       stop_area_connection_links
     }
- end
+  end
 end

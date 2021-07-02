@@ -19,7 +19,7 @@ export default class Store extends Subject {
       this[name] = funcs[name]
     }
 
-    this.$store = this.actionDispatcher.pipe(
+    this.store$ = this.actionDispatcher.pipe(
       filter(action => {
         const isValid = isObject(action) && has(action, 'type')
 
@@ -30,15 +30,19 @@ export default class Store extends Subject {
       scan(reducer,  this.initialState),
       startWith(this.initialState),
       shareReplay(1)
-    ).subscribe(state => this.next(state))
+    )
+
+    this.store$.subscribe(state => {
+      this.next(state)
+    })
   }
 
   getState(callback) {
-    this.$store.pipe(first()).subscribe(callback)
+    this.store$.pipe(first()).subscribe(callback)
   }
 
   getStateAsync() {
-    return firstValueFrom(this.$store)
+    return firstValueFrom(this.store$)
   }
 
   dispatch(action) {

@@ -11,7 +11,7 @@
 
       .row
         .col-lg-12
-          = f.input :nightly_aggregate_enabled, as: :switchable_checkbox, checked_value: true, unchecked_value: false
+          = f.input :nightly_aggregate_enabled, as: :switchable_checkbox
         .col-lg-12
           .slave data-master="#workgroup_nightly_aggregate_enabled" data-value="true"
             = f.input :nightly_aggregate_time, as: :clockpicker, input_html: { value: resource.nightly_aggregate_time&.strftime("%H:%M") || "00:00" }

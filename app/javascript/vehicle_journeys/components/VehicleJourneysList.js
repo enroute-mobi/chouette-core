@@ -47,7 +47,7 @@ export default class VehicleJourneysList extends Component {
     return out.join(' ')
   }
 
-  get allTimeTables() { 
+  get allTimeTables() {
     const tt = flatMap(this.vehicleJourneysList, 'time_tables')
     return uniqBy(tt, 'id')
   }
@@ -299,7 +299,7 @@ export default class VehicleJourneysList extends Component {
                 })}
               </div>
               <SelectableContainer>
-                <div className='t2e-item-list w80'>
+                <div className='t2e-item-list'>
                   <div className='scrollable-container'>
                     {this.vehicleJourneysList.map((vj, index) =>
                       <VehicleJourney

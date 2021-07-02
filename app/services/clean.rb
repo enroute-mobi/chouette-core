@@ -311,8 +311,55 @@ module Clean
   end
 
   module Metadata
-    class InPeriod < Base
+    class Cleaner
+      def initialize(scope)
+        @scope = scope
+      end
+      attr_reader :scope
 
+      # Modify the given metadata (after scope restriction)
+      # Save it or destroy it if empty
+      def clean(metadata, &block)
+        metadata = scope.restricted_metadata(metadata)
+
+        block.call metadata
+
+        if metadata.periodes.empty?
+          metadata.destroy
+        else
+          metadata.save!
+        end
+      end
+    end
+
+    class Before < Base
+      attr_accessor :before
+      def initialize(scope, before)
+        super scope
+        @before = before
+      end
+
+      # Truncate or remove the period from the given metadata (after scope restriction)
+      def clean_metadata(metadata)
+        before_period = Range.new(metadata.bounds.min, before)
+
+        Cleaner.new(scope).clean(metadata) do |m|
+          m.periodes = Range.remove(m.periodes, before_period)
+        end
+      end
+
+      def metadatas
+        scope.metadatas.start_before before
+      end
+
+      def clean!
+        metadatas.find_each do |metadata|
+          clean_metadata metadata
+        end
+      end
+    end
+
+    class InPeriod < Base
       attr_accessor :period
       def initialize(scope, period)
         super scope
@@ -321,13 +368,8 @@ module Clean
 
       # Remove the period from the given metadata (after scope restriction)
       def clean_metadata(metadata)
-        metadata = scope.restricted_metadata(metadata)
-        metadata.periodes = Range.remove(metadata.periodes, period)
-
-        if metadata.periodes.empty?
-          metadata.destroy
-        else
-          metadata.save!
+        Cleaner.new(scope).clean(metadata) do |m|
+          m.periodes = Range.remove(m.periodes, period)
         end
       end
 

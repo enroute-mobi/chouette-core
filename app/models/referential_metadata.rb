@@ -12,7 +12,12 @@ class ReferentialMetadata < ApplicationModel
 
   scope :include_lines, -> (line_ids) { where('line_ids && ARRAY[?]::bigint[]', line_ids) }
   scope :with_lines, -> (line_ids) { where('line_ids = ARRAY[?]::bigint[]', line_ids) }
-  scope :include_daterange, -> (daterange) { where "daterange(:begin, :end,'[]') && ANY(periodes)", begin: daterange.min, end: daterange.max }
+  scope :include_daterange, -> (daterange) {
+    where "daterange(:begin, :end,'[]') && ANY(periodes)", begin: daterange.min, end: daterange.max
+  }
+  scope :start_before, -> (date) {
+    where "id in (select distinct(id) from public.referential_metadata, LATERAL unnest(periodes) period where lower(period) < ?)", date
+  }
 
   # Transform Wed, 22 Feb 2017...Fri, 24 Feb 2017 into Wed, 22 Feb 2017..Thu, 23 Feb 2017
   def periodes
@@ -20,6 +25,11 @@ class ReferentialMetadata < ApplicationModel
       return periods unless periods
       return adapted_periods(periods)
     end
+  end
+
+  # Returns the first and last dates covered by the Metadata periods
+  def bounds
+    Range.bounds periodes
   end
 
   def adapted_periods(periods)

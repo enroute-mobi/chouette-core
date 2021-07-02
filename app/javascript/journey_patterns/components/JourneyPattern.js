@@ -2,11 +2,14 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import actions from '../actions'
 
+import { bindAll } from 'lodash'
+
 export default class JourneyPattern extends Component{
   constructor(props){
     super(props)
     this.previousSpId = undefined
-    this.updateCosts = this.updateCosts.bind(this)
+    
+    bindAll(this, ['updateCosts', 'onCreateShape'])
   }
 
   updateCosts(e) {
@@ -132,6 +135,16 @@ export default class JourneyPattern extends Component{
     }
   }
 
+  onCreateShape() {
+    const { pathname } = window.location
+    const { id } = this.props.value
+
+    const basePath = pathname.split('/journey_patterns_collection')[0]
+    const newPathName = `${basePath}/journey_patterns/${id}/shape_referentials/new`
+
+    window.location.replace(newPathName)
+  }
+
   render() {
     this.previousSpId = undefined
     let [totalTime, totalDistance] = this.totals(false)
@@ -170,6 +183,14 @@ export default class JourneyPattern extends Component{
                   data-target='#JourneyPatternModal'
                   >
                   {this.props.editMode ? I18n.t('actions.edit') : I18n.t('actions.show')}
+                </button>
+              </li>
+              <li>
+                <button
+                  type='button'
+                  onClick={this.onCreateShape}
+                  >
+                  Create Shape
                 </button>
               </li>
               <li className={this.props.value.object_id ? '' : 'disabled'}>

@@ -11,7 +11,6 @@ import { useJourneyPatternController, useLineController } from '../controllers/d
 
 import MapWrapper from '../../../components/MapWrapper'
 import List from './List'
-import Select from './Select'
 
 const mapStateToProps = state => ({
   ...pick(state, ['features', 'style']),
@@ -33,9 +32,6 @@ export default function ShapeEditorMap() {
   return (
     <div className="page-content">
       <div className="container-fluid">
-        <div className="row">
-          <Select />
-        </div>
         <div className="row">
           <div className="col-md-6">
             <h4 className="underline">Liste</h4>

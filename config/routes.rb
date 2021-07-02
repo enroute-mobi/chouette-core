@@ -207,14 +207,6 @@ ChouetteIhm::Application.routes.draw do
         get 'name_filter'
       end
       resources :routes do
-        resources :shape_editor, only: [] do
-          collection do
-            get 'home'
-            get 'get_journey_patterns', defaults: { format: 'json' }
-            get 'get_journey_pattern_features', defaults: { format: 'xml' }
-            put 'update_line', defaults: { format: 'json' }
-          end
-        end
         member do
           get 'edit_boarding_alighting'
           put 'save_boarding_alighting'
@@ -229,6 +221,11 @@ ChouetteIhm::Application.routes.draw do
         resources :journey_patterns do
           member do
             get 'available_specific_stop_places'
+            get 'new_vehicle_journey'
+          end
+
+          resource :shapes, except: :index, module: 'journey_pattern' do
+            put :update_line, on: :collection, defaults: { format: 'json' }
           end
         end
         resource :vehicle_journeys_collection, :only => [:show, :update]

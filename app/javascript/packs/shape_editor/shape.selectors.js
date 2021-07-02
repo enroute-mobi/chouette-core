@@ -20,7 +20,7 @@ export const getSortedWaypoints = state => {
 
   const firstPoint = !!line && point(getCoords(line)[0])
 
-  return chain(waypoints)
+  return chain(waypoints.getArray())
     .map(w => {
       // Create a line slice from the beginning to the current point to determine the length of this "subLine"
       const subLine = lineSlice(
@@ -43,5 +43,3 @@ export const getSortedCoordinates = flow(
 )
 
 export const getSource = state => state.featuresLayer?.getSource()
-
-export const getMapInteractions = ({ draw, modify, snap }) => ([ draw, modify, snap ])

@@ -1,4 +1,5 @@
 import { Style } from 'ol/style'
+import Collection from 'ol/Collection'
 
 export const reducer = (state, action) => {
   switch(action.type) {
@@ -17,19 +18,6 @@ export const reducer = (state, action) => {
         ...state,
         waypoints: action.waypoints
       }
-    case 'ADD_WAYPOINT':
-      return {
-        ...state,
-        waypoints: [...state.waypoints, action.waypoint]
-      }
-    case 'MOVE_WAYPOINT':
-      return {
-        ...state,
-        waypoints: state.waypoints.reduce((result, w) => {
-          w.getId() == action.id && w.setCoordinates(action.coordinates)
-          return result.concat(w)
-        }, [])
-      }
     default:
       return state
   }
@@ -40,16 +28,9 @@ export const initialState = {
   map: null,
   featuresLayer: null,
   line: null,
-  waypoints: [],
+  waypoints: new Collection([]),
   draw: null,
   snap: null,
   modify: null,
-  shouldUpdateLine: false,
-  style: new Style({}),
-  baseURL: window.location.pathname.split('/shape_editor')[0],
-  lineId: 'line',
-  wktOptions: { //  use options to convert feature from EPSG:4326 to EPSG:3857
-    dataProjection: 'EPSG:4326',
-    featureProjection: 'EPSG:3857'
-  }
+  style: new Style({})
 }

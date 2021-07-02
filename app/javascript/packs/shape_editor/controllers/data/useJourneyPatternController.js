@@ -1,22 +1,17 @@
+import { dropRight } from 'lodash'
 import useSWR from 'swr'
 import GeoJSON from 'ol/format/GeoJSON'
 
-import { baseURL, simplifyGeoJSON, wktOptions } from '../../shape.helpers'
+import { simplifyGeoJSON, wktOptions } from '../../shape.helpers'
 import store from '../../shape.store'
-import { usePrevious, useStore } from '../../../../helpers/hooks'
 
-const mapStateToProps = state => state.journeyPatternId
+const baseURL = (() => {
+  const parts = window.location.pathname.split('/')
+  return dropRight(parts, 2).join('/')
+})()
 
 // Custom hook which responsability is to fetch a new GeoJSON when the journeyPatternId change
 export default function useJourneyPatternController() {
-  // Store
-  const journeyPatternId = useStore(store, mapStateToProps)
-
-  const previousJourneyPatternId = usePrevious(journeyPatternId)
-
-  // Helpers
-  const journeyPatternIdDidChange = previousJourneyPatternId != journeyPatternId
-
   // Event handlers
   const onSuccess = data => {
     const features = new GeoJSON().readFeatures(
@@ -27,8 +22,5 @@ export default function useJourneyPatternController() {
     store.setAttributes({ features })
   }
   
-  return useSWR(
-    () => journeyPatternIdDidChange ? `${baseURL}/journey_patterns/${journeyPatternId}.geojson` : null,
-    { onSuccess }
-  )
+  return useSWR(`${baseURL}.geojson`, { onSuccess })
 }

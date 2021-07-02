@@ -1,13 +1,14 @@
 import { useEffect } from 'react'
-import { fromEvent } from 'rxjs'
-import { distinct, distinctUntilKeyChanged, filter, pairwise, pluck, skip, switchMap, tap } from 'rxjs/operators'
 import { uniqueId } from 'lodash'
 
+import Collection from 'ol/Collection'
 import { Circle, Fill, Stroke, Style } from 'ol/style'
 
 import { getSource } from '../../shape.selectors'
 import store from '../../shape.store'
+import eventEmitter from '../../shape.event-emitter'
 import { addMapInteractions, getLine, getWaypoints, lineId } from '../../shape.helpers'
+import { onInit$, onAddPoint$ } from '../../shape.observables'
 
 const constraintStyle = new Style({
   image: new Circle({
@@ -18,74 +19,57 @@ const constraintStyle = new Style({
 })
   
 export default function useMapInteractions() {
-  // Helpers
-  const getStoreAttribute$ = name => source =>
-    source.pipe(pluck(name), distinct())
-
   // Event Handlers
-  const onInit$ = store.pipe(
-    getStoreAttribute$('featuresLayer'),
-    switchMap(featuresLayer => fromEvent(featuresLayer, 'change:source')),
-    tap(({ target }) => {
-      const source = target.getSource()
-      const features = source.getFeatures()
-      const line = getLine(features)
-      const waypoints = getWaypoints(features)
+  const onInit = ([event, state]) => {
+    const source = event.target.getSource()
+    const features = source.getFeatures()
+    const line = getLine(features)
+    const waypoints = new Collection(getWaypoints(features), { unique: true })
 
-      line.setId(lineId)
+    line.setId(lineId)
 
-      waypoints.forEach(w => {
-        w.setId(uniqueId('waypoint_'))
-        w.set('type', 'waypoint')
-      })
-
-      store.setLine(line)
-      store.setWaypoints(waypoints)
+    waypoints.forEach(w => {
+      w.setId(uniqueId('waypoint_'))
+      w.set('type', 'waypoint')
     })
-  )
 
-  const onDrawEnd$ = store.pipe(
-    getStoreAttribute$('draw'),
-    skip(1),
-    switchMap(draw => fromEvent(draw, 'drawend')),
-    tap(({ feature: waypoint }) => {
-      waypoint.set('type', 'constraint')
-      waypoint.setStyle(constraintStyle)
-      store.addNewPoint(waypoint)
-      store.setAttributes({ shouldUpdateLine: true })
-    })
-  )
+    addMapInteractions(source, state.map, waypoints)
 
-  const onModifyEnd$ = store.pipe(
-    getStoreAttribute$('modify'),
-    skip(1),
-    switchMap(modify => fromEvent(modify, 'modifyend')),
-    tap(({ features }) => {
-      const waypoint = features.getArray()[0]
+    store.setLine(line)
+    store.setWaypoints(waypoints)
+  }
 
-      store.moveWaypoint(
-        waypoint.getId(),
-        waypoint.getGeometry().getCoordinates()
-      )
-      store.setAttributes({ shouldUpdateLine: true })
-    })
-  )
+  const onAddPoint = ([event, _]) => {
+    const { element: waypoint, target: waypoints } = event
 
-  const onNewPoint$ = store.pipe(
-    distinctUntilKeyChanged('waypoints'),
-    pairwise(),
-    filter(([prevState, newState]) => prevState.waypoints.length < newState.waypoints.length),
-    tap(([_, state]) => {
-      addMapInteractions(getSource(state), state)
-    })
-  )
+    waypoint.set('type', 'constraint')
+    waypoint.setStyle(constraintStyle)
+
+    store.setWaypoints(waypoints)
+  }
+
+  const onRemovePoint = async waypoint => {
+    const state = await store.getStateAsync()
+    const { waypoints } = state
+    const source = getSource(state)
+
+    waypoints.remove(waypoint)
+    source.removeFeature(waypoint)
+    store.setWaypoints(waypoints)
+  }
+
+  const onWaypointZoom = async waypoint => {
+    const { map } = await store.getStateAsync()
+
+    map.getView().fit(waypoint.getGeometry(), { maxZoom: 17 })
+  }
 
   useEffect(() => {
     const subs = [
-      onInit$.subscribe(),
-      onDrawEnd$.subscribe(),
-      onModifyEnd$.subscribe(),
-      onNewPoint$.subscribe(),
+      onInit$.subscribe(onInit),
+      onAddPoint$.subscribe(onAddPoint),
+      eventEmitter.on('map:zoom-to-waypoint', onWaypointZoom),
+      eventEmitter.on('map:delete-waypoint', onRemovePoint)
     ]
      
     return () => subs.forEach(sub => sub.unsubscribe())

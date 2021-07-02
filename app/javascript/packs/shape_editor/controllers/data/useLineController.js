@@ -1,27 +1,23 @@
-import { pick } from 'lodash'
+import { useEffect, useState } from 'react'
 import useSWR from 'swr'
 
 import GeoJSON from 'ol/format/GeoJSON'
 
-import { useStore } from '../../../../helpers/hooks'
-import { baseURL, lineId, simplifyGeoJSON, wktOptions } from '../../shape.helpers'
-import { getSortedCoordinates, getSource } from '../../shape.selectors'
+import { baseURL, simplifyGeoJSON, wktOptions } from '../../shape.helpers'
+import { getSortedCoordinates } from '../../shape.selectors'
 import store from '../../shape.store'
-
-const mapStateToProps = state => ({
-  ...pick(state, 'shouldUpdateLine'),
-  source: getSource(state),
-  coordinates: getSortedCoordinates(state)
-})
+import { onWaypointsUpdate$ } from '../../shape.observables'
 
 // Custom hook which responsability is to fetch a new LineString GeoJSON object based on state coordinates when shouldUpdateLine is set to true
 export default function useLineController() {
-  // Store
-  const { coordinates, shouldUpdateLine, source } = useStore(store, mapStateToProps)
+  const [shouldUpdateLine, setShouldUpdateLine ] = useState(false)
 
   // Fetcher
-  const fetcher = async url =>
-    fetch(url, {
+  const fetcher = async url => {
+    const state = await store.getStateAsync()
+    const coordinates = getSortedCoordinates(state)
+
+    const response = await fetch(url, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -29,30 +25,34 @@ export default function useLineController() {
       },
       body: JSON.stringify({ coordinates })
     })
-    .then(res => res.json())
+
+    return response.json()
+  }
   
   // Event handlers
-  const onSuccess = data => {
-    store.setAttributes({ shouldUpdateLine: false })
+  const onSuccess = async data => {
+    setShouldUpdateLine(false)
 
     const lineFeature = new GeoJSON().readFeature(
       simplifyGeoJSON(data),
       wktOptions
     )
-    
-    lineFeature.setId(lineId)
 
-    source.removeFeature(
-      source.getFeatureById(lineId)
+    const { line } = await store.getStateAsync()
+
+    line.getGeometry().setCoordinates(
+      lineFeature.getGeometry().getCoordinates()
     )
-
-    source.addFeature(lineFeature)
-
-    store.setLine(lineFeature)
   }
 
+  const onWaypointsUpdate = () => setShouldUpdateLine(true)
+
+  useEffect(() => {
+    onWaypointsUpdate$.subscribe(onWaypointsUpdate)
+  }, [])
+
   return useSWR(
-    () => shouldUpdateLine ? `${baseURL}/shape_editor/update_line` : null,
+    () => shouldUpdateLine ? `${baseURL}/update_line` : null,
     fetcher,
     { onSuccess }
   )

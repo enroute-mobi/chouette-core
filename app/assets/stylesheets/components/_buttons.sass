@@ -62,6 +62,15 @@
     .open > .btn-primary.dropdown-toggle
       background-color: darken($brand-color-primary, 2.5%)
 
+  &.btn-cancel
+    background-color: #fff
+    color: $blue
+    border: 0
+
+    &:hover, &:focus, &.focus, &:active, &.active,
+    .open > .btn-primary.dropdown-toggle
+      background-color: darken(#fff, 2.5%)
+
   &.btn-outline-primary
     background-color: transparent
     color: $brand-color-primary
@@ -82,7 +91,7 @@
 
   &.btn-action
     margin-bottom: 15px
-    background-color: $brand-color-secondary
+    background-color: $brand-color-primary
     color: #fff
     width: 60%
 
@@ -91,7 +100,7 @@
 
     &:hover, &:focus, &.focus, &:active, &.active,
     .open > .btn-primary.dropdown-toggle
-      background-color: darken($brand-color-secondary, 2.5%)
+      background-color: darken($brand-color-primary, 2.5%)
       color: #fff
 
   + .btn

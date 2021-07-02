@@ -86,7 +86,7 @@ export default class ShiftVehicleJourney extends Component {
                       </div>
                       <div className='modal-footer'>
                         <button
-                          className='btn btn-link'
+                          className='btn btn-cancel'
                           data-dismiss='modal'
                           type='button'
                           onClick={this.props.onModalClose}
@@ -94,7 +94,7 @@ export default class ShiftVehicleJourney extends Component {
                           {I18n.t('cancel')}
                         </button>
                         <button
-                          className={'btn btn-primary ' + (this.state.additional_time == 0 ? 'disabled' : '')}
+                          className={'btn btn-default ' + (this.state.additional_time == 0 ? 'disabled' : '')}
                           type='button'
                           onClick={this.handleSubmit.bind(this)}
                           >

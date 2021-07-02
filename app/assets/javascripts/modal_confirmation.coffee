@@ -11,8 +11,8 @@ showConfirmModal = (link) ->
             <p>#{message}</p>
           </div>
           <div class="modal-footer">
-            <a data-dismiss="modal" class="btn">#{I18n.t('no')}</a>
-            <a data-dismiss="modal" class="btn btn-primary" data-method="#{link.data().method}" href="#{link.attr('href')}">#{I18n.t('yes')}</a>
+            <a data-dismiss="modal" class="btn btn-cancel">#{I18n.t('no')}</a>
+            <a data-dismiss="modal" class="btn btn-default" data-method="#{link.data().method}" href="#{link.attr('href')}">#{I18n.t('yes')}</a>
           </div>
         </div>
       </div>

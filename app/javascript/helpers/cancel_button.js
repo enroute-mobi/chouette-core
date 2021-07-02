@@ -11,7 +11,7 @@ export default class CancelButton extends Component {
   }
 
   btnClass() {
-    let className = ['btn btn-primary']
+    let className = ['btn btn-cancel']
     if (this.btnDisabled()) {
       className.push('disabled')
     }
@@ -56,8 +56,8 @@ export default class CancelButton extends Component {
                   <p>{I18n.t('cancel_confirm')}</p>
                 </div>
                 <div className="modal-footer">
-                  <a data-dismiss="modal" className="btn">{I18n.t('no')}</a>
-                  <a data-dismiss="modal" className="btn btn-primary" data-method="get" onClick={this.props.onConfirmCancel}>{I18n.t('yes')}</a>
+                  <a data-dismiss="modal" className="btn btn-cancel">{I18n.t('no')}</a>
+                  <a data-dismiss="modal" className="btn btn-default" data-method="get" onClick={this.props.onConfirmCancel}>{I18n.t('yes')}</a>
                 </div>
               </div>
             </div>

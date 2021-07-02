@@ -144,7 +144,7 @@ export default function Filters({filters, pagination, missions, onFilter, onRese
           {/* Actions */}
           <div className='actions'>
             <span
-              className='btn btn-link'
+              className='btn btn-cancel'
               onClick={(e) => onResetFilters(e, pagination)}>
               {I18n.t('actions.erase')}
             </span>

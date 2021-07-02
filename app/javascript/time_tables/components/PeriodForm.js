@@ -107,7 +107,7 @@ export default function PeriodForm({modal, timetable, metas, onOpenAddPeriodForm
                   </span>
                   <button
                     type='button'
-                    className='btn btn-primary'
+                    className='btn btn-cancel'
                     onClick={onClosePeriodForm}
                   >
                     {I18n.t('cancel')}

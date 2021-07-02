@@ -149,7 +149,7 @@ module ApplicationHelper
   end
 
   def cancel_button(cancel_path = :back)
-    link_to t('cancel'), cancel_path, method: :get, class: 'btn btn-primary formSubmitr', data: {:confirm =>  t('cancel_confirm')}
+    link_to t('cancel'), cancel_path, method: :get, class: 'btn btn-cancel formSubmitr', data: {:confirm =>  t('cancel_confirm')}
   end
 
   def link_to_if_i_can label, url, object: nil, permission: :show

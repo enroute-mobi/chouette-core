@@ -357,16 +357,6 @@ crumb :line do |workbench, line|
   parent :lines, workbench
 end
 
-crumb :purchase_windows do |referential|
-  link I18n.t('purchase_windows.index.title'), referential_purchase_windows_path(referential)
-  parent :referential, referential
-end
-
-crumb :purchase_window do |referential, purchase_window|
-  link breadcrumb_name(purchase_window), referential_purchase_window_path(referential, purchase_window)
-  parent :purchase_windows, referential
-end
-
 crumb :calendars do |workgroup|
   link I18n.t('calendars.index.title'), workgroup_calendars_path(workgroup)
 end

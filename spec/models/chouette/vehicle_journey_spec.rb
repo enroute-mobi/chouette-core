@@ -4,8 +4,6 @@ describe Chouette::VehicleJourney, type: :model do
     Chouette::VehicleJourney.reset_custom_fields
   }
 
-  it { should have_and_belong_to_many(:purchase_windows) }
-
   it "must be valid with an at-stop day offset of 1" do
     vehicle_journey = create(
       :vehicle_journey,
@@ -387,47 +385,6 @@ describe Chouette::VehicleJourney, type: :model do
 
   end
 
-  describe '#in_purchase_window' do
-    let(:start_date){2.month.ago.to_date}
-    let(:end_date){1.month.ago.to_date}
-
-    subject{Chouette::VehicleJourney.in_purchase_window start_date..end_date}
-
-    let!(:without_purchase_window){ create :vehicle_journey }
-    let!(:without_matching_purchase_window){
-      pw = create :purchase_window, date_ranges: [(end_date+1.day..end_date+2.days)]
-      pw2 = create :purchase_window, date_ranges: [(end_date+10.day..end_date+20.days)]
-      create :vehicle_journey, purchase_windows: [pw, pw2]
-    }
-    let!(:included_purchase_window){
-      pw = create :purchase_window, date_ranges: [(start_date..end_date)]
-      pw2 = create :purchase_window
-      create :vehicle_journey, purchase_windows: [pw, pw2]
-    }
-    let!(:overlapping_purchase_window){
-      pw = create :purchase_window, date_ranges: [(end_date..end_date+1.day)]
-      pw2 = create :purchase_window
-      create :vehicle_journey, purchase_windows: [pw, pw2]
-    }
-
-
-    it "should not include VJ with no purchase window" do
-      expect(subject).to_not include without_purchase_window
-    end
-
-    it "should not include VJ with no matching purchase window" do
-      expect(subject).to_not include without_matching_purchase_window
-    end
-
-    it "should include VJ with included purchase window" do
-      expect(subject).to include included_purchase_window
-    end
-
-    it "should include VJ with overlapping purchase_window purchase window" do
-      expect(subject).to include overlapping_purchase_window
-    end
-  end
-
   describe '#in_time_table' do
     let(:start_date){2.month.ago.to_date}
     let(:end_date){1.month.ago.to_date}
@@ -631,10 +588,8 @@ describe Chouette::VehicleJourney, type: :model do
       vj.slice('objectid', 'published_journey_name', 'journey_pattern_id', 'company_id').tap do |item|
         item['vehicle_journey_at_stops'] = []
         item['time_tables']              = []
-        item['purchase_windows']         = []
         item['footnotes']                = []
         item['line_notices']             = [] if line_notices
-        item['purchase_windows']         = []
         item['referential_codes']        = []
         item['custom_fields']            = vj.custom_fields.to_hash
 
@@ -792,23 +747,6 @@ describe Chouette::VehicleJourney, type: :model do
       vehicle_journey.update_has_and_belongs_to_many_from_state(state)
 
       expect(vehicle_journey.reload.time_tables).to be_empty
-    end
-
-    it 'should update vj purchase_windows association from state' do
-      2.times{state['purchase_windows'] << create(:purchase_window).slice('id', 'name', 'objectid', 'color')}
-      vehicle_journey.update_has_and_belongs_to_many_from_state(state)
-
-      expected = state['purchase_windows'].map{|tt| tt['id']}
-      actual   = vehicle_journey.reload.purchase_windows.map(&:id)
-      expect(actual).to match_array(expected)
-    end
-
-    it 'should clear vj purchase_windows association when remove from state' do
-      vehicle_journey.purchase_windows << create(:purchase_window)
-      state['purchase_windows'] = []
-      vehicle_journey.update_has_and_belongs_to_many_from_state(state)
-
-      expect(vehicle_journey.reload.purchase_windows).to be_empty
     end
 
     it 'should update vj footnote association from state' do
@@ -1695,22 +1633,13 @@ describe Chouette::VehicleJourney, type: :model do
 
     let(:referential){ create :referential, objectid_format: :netex }
 
-    let(:purchase_window){
-      purchase_window = create :purchase_window
-      purchase_window.date_ranges = [(origin..origin+8.days)]
-      purchase_window
-    }
-
-    let(:purchase_windows){
-      [purchase_window]
-    }
 
     subject(:result){
       vehicle_journey.flattened_sales_periods.map{|r|
         [r.period_start.to_s, r.period_end.to_s, r.weekdays]
       }
     }
-    let(:vehicle_journey){ create :vehicle_journey, purchase_windows: purchase_windows }
+    let(:vehicle_journey){ create :vehicle_journey }
     let(:expected){
       [
         [origin.to_s, (origin+8.days).to_s, "1,1,1,1,1,1,1"],
@@ -1720,11 +1649,6 @@ describe Chouette::VehicleJourney, type: :model do
     it { should eq expected }
 
     context "with disjoined periods" do
-      let(:purchase_window){
-        purchase_window = create :purchase_window
-        purchase_window.date_ranges = [(origin..origin+8.days), (origin+10.days..origin+12.days)]
-        purchase_window
-      }
       let(:expected){
         [
           [origin.to_s, (origin+8.days).to_s, "1,1,1,1,1,1,1"],
@@ -1735,22 +1659,6 @@ describe Chouette::VehicleJourney, type: :model do
     end
 
     context "with overlapping periods" do
-      let(:purchase_window){
-        purchase_window = create :purchase_window
-        purchase_window.date_ranges = [(origin..origin+8.days), (origin+10.days..origin+12.days)]
-        purchase_window
-      }
-
-      let(:purchase_window_2){
-        purchase_window = create :purchase_window
-        purchase_window.date_ranges = [(origin+7.days..origin+12.days)]
-        purchase_window
-      }
-
-      let(:purchase_windows){
-        [purchase_window, purchase_window_2]
-      }
-
       let(:expected){
         [
           [origin.to_s, (origin+12.days).to_s, "1,1,1,1,1,1,1"]
@@ -1760,22 +1668,6 @@ describe Chouette::VehicleJourney, type: :model do
     end
 
     context "with joined periods" do
-      let(:purchase_window){
-        purchase_window = create :purchase_window
-        purchase_window.date_ranges = [(origin..origin+8.days), (origin+11.days..origin+12.days)]
-        purchase_window
-      }
-
-      let(:purchase_window_2){
-        purchase_window = create :purchase_window
-        purchase_window.date_ranges = [(origin+9.days..origin+10.days)]
-        purchase_window
-      }
-
-      let(:purchase_windows){
-        [purchase_window, purchase_window_2]
-      }
-
       let(:expected){
         [
           [origin.to_s, (origin+12.days).to_s, "1,1,1,1,1,1,1"]
@@ -1786,22 +1678,6 @@ describe Chouette::VehicleJourney, type: :model do
     end
 
     context "with included periods" do
-      let(:purchase_window){
-        purchase_window = create :purchase_window
-        purchase_window.date_ranges = [(origin..origin+20.days)]
-        purchase_window
-      }
-
-      let(:purchase_window_2){
-        purchase_window = create :purchase_window
-        purchase_window.date_ranges = [(origin+9.days..origin+10.days)]
-        purchase_window
-      }
-
-      let(:purchase_windows){
-        [purchase_window, purchase_window_2]
-      }
-
       let(:expected){
         [
           [origin.to_s, (origin+20.days).to_s, "1,1,1,1,1,1,1"]
@@ -1817,9 +1693,8 @@ describe Chouette::VehicleJourney, type: :model do
     let(:context) do
       Chouette.create do
         time_table :time_table
-        purchase_window :purchase_window
 
-        associations = {time_tables: [:time_table], purchase_windows: [:purchase_window]}
+        associations = {time_tables: [:time_table]}
 
         vehicle_journey :target, associations
         vehicle_journey :kept, associations

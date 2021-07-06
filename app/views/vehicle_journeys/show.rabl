@@ -42,15 +42,6 @@ child(:time_tables, :object_root => false) do |time_tables|
   end
 end
 
-if has_feature? :purchase_windows
-  child(:purchase_windows, :object_root => false) do |purchase_windows|
-    attributes :id, :objectid, :name, :color
-    node(:bounding_dates) do |tt|
-      tt.bounding_dates.map {|d| I18n.l(d, format: "%d/%m/%Y")}
-    end
-  end
-end
-
 child :line_notices, :object_root => false do |line_notice|
   node(:code) { |line_notice| line_notice.title }
   node(:label) { |line_notice| line_notice.content }

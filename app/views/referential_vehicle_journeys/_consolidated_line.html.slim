@@ -28,20 +28,6 @@
               div= Chouette::VehicleJourney.tmf(:name)
               div= Chouette::VehicleJourney.tmf(:journey_pattern_id)
               div
-                = link_to '#', class: 'toggle-purchase-windows detailed-timetables-bt' do
-                  span.fa.fa-angle-up
-                  = Chouette::PurchaseWindow.t
-              .detailed-purchase-windows.hidden.togglable
-                - route.purchase_windows.uniq.each do |tt|
-                  div
-                    p
-                      = link_to [@referential, tt] do
-                        span.fa.fa-calendar-alt style="color:##{tt.color || '4B4B4B' }"
-                        | &nbsp;
-                        = tt.name
-
-                    p= tt.bounding_dates.split(' ').join(' > ')
-              div
                 = link_to '#', class: 'toggle-timetables detailed-timetables-bt' do
                   span.fa.fa-angle-up
                   = Chouette::TimeTable.t
@@ -79,16 +65,6 @@
                     div
                       = link_to journey.published_journey_name, [@referential, journey.route.line, journey.route, :vehicle_journeys], title: journey.published_journey_name
                     div= journey.journey_pattern_only_objectid.get_objectid.short_id
-                    div
-                      - journey.purchase_windows[0..3].each do |tt|
-                        span.vj_tt
-                          = link_to [@referential, tt], target: :blank do
-                            span.fa.fa-calendar-alt style="color:##{tt.color || '4B4B4B' }"
-                      - if journey.purchase_windows.size > 3
-                        span.vj_tt = "+ #{journey.purchase_windows.size - 3}"
-                    .detailed-purchase-windows.hidden.togglable
-                      - route.purchase_windows.uniq.each do |tt|
-                        div class=(journey.has_purchase_window?(tt) ? 'active' : 'inactive')
                     div
                       - journey.time_tables[0..3].each do |tt|
                         span.vj_tt

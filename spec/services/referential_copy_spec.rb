@@ -154,24 +154,6 @@ describe ReferentialCopy do
 
   end
 
-  context "#copy_purchase_windows" do
-    let!(:purchase_window){
-      referential.switch do
-        create(:purchase_window)
-      end
-    }
-
-    it "should copy the purchase_windows" do
-      referential.switch
-      route = create :route, line: referential.lines.last
-      create :vehicle_journey, journey_pattern: route.full_journey_pattern, purchase_windows: [purchase_window]
-      expect{ referential_copy.send(:copy_purchase_windows) }.to change{ target.switch{ Chouette::PurchaseWindow.count } }.by 1
-      new_purchase_window = target.switch{ Chouette::PurchaseWindow.last }
-      expect(referential_copy.send(:clean_attributes_for_copy, new_purchase_window)).to eq referential_copy.send(:clean_attributes_for_copy, purchase_window.reload)
-      expect(new_purchase_window.checksum).to eq purchase_window.checksum
-    end
-  end
-
 end
 
 describe ReferentialCopy do

@@ -5,23 +5,18 @@ RSpec.describe ReferentialInserter do
   let(:context) do
     Chouette.create do
       referential :source do
-        purchase_window :purchase_window_1
-        purchase_window :purchase_window_2
         time_table :timetable_1
         time_table :timetable_2
         route stop_count: 25 do
           vehicle_journey time_tables: [:timetable_1, :timetable_2]
-          vehicle_journey time_tables: [:timetable_2], purchase_windows: [:purchase_window_2]
-          vehicle_journey purchase_windows: [:purchase_window_1, :purchase_window_2]
+          vehicle_journey time_tables: [:timetable_2]
         end
       end
       referential :target do
         time_table :timetable_3
         time_table :timetable_4
-        purchase_window :purchase_window_3
-        purchase_window :purchase_window_4
         route stop_count: 25 do
-          vehicle_journey time_tables: [:timetable_3, :timetable_4], purchase_windows: [:purchase_window_3, :purchase_window_4]
+          vehicle_journey time_tables: [:timetable_3, :timetable_4]
         end
       end
     end
@@ -127,34 +122,6 @@ RSpec.describe ReferentialInserter do
 
     it "creates the right number of new records in the target referential" do
       expect(target.switch{Chouette::TimeTablesVehicleJourney.count}).to eq(@ttvj_source_init_count+@ttvj_target_init_count)
-    end
-  end
-
-  describe "VehicleJourneyPurchaseWindowRelationship" do
-    before do
-      @vjpwr_source_init_count = Chouette::VehicleJourneyPurchaseWindowRelationship.count
-      @vjpwr_target_init_count = target.switch{Chouette::VehicleJourneyPurchaseWindowRelationship.count}
-
-      dummy_copy_vehicle_journeys
-
-      # Purchase Window Dummy Mapping
-      @source_purchase_window_1_id = Chouette::PurchaseWindow.first.id
-      @source_purchase_window_2_id = Chouette::PurchaseWindow.last.id
-
-      @target_purchase_window_1_id = target.switch{ Chouette::PurchaseWindow.first.id }
-      @target_purchase_window_2_id = target.switch{ Chouette::PurchaseWindow.last.id }
-
-      inserter.id_map_inserter.register_primary_key!(Chouette::PurchaseWindow, @source_purchase_window_1_id, @target_purchase_window_1_id)
-      inserter.id_map_inserter.register_primary_key!(Chouette::PurchaseWindow, @source_purchase_window_2_id, @target_purchase_window_2_id)
-
-      Chouette::VehicleJourneyPurchaseWindowRelationship.all.each do |vjpwr|
-        inserter.vehicle_journey_purchase_window_relationships << vjpwr
-      end
-      inserter.flush
-    end
-
-    it "creates the right number of new records in the target referential" do
-      expect(target.switch{Chouette::VehicleJourneyPurchaseWindowRelationship.count}).to eq(@vjpwr_source_init_count+@vjpwr_target_init_count)
     end
   end
 end

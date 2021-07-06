@@ -305,10 +305,6 @@ class Referential < ApplicationModel
     Chouette::RoutingConstraintZone.all
   end
 
-  def purchase_windows
-    Chouette::PurchaseWindow.all
-  end
-
   def routes
     Chouette::Route.all
   end
@@ -323,10 +319,6 @@ class Referential < ApplicationModel
 
   def footnotes
     Chouette::Footnote.all
-  end
-
-  def vehicle_journey_purchase_window_relationships
-    Chouette::VehicleJourneyPurchaseWindowRelationship.all
   end
 
   def vehicle_journey_footnote_relationships

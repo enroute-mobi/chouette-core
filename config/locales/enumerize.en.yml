@@ -129,7 +129,6 @@ en:
         clean_journey_patterns_without_vehicle_journey: Journey pattern without any vehicle journey
         clean_routes_without_journey_pattern: Route without any Journey pattern
         clean_unassociated_timetables: Purchase window without any vehicle journey
-        clean_unassociated_purchase_windows: Timetables attached to no one vehicle journey
     transport_mode:
       all: All transport modes
       air: Air

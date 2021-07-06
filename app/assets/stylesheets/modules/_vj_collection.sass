@@ -139,12 +139,12 @@
 
 
   .table-2entries .t2e-head
-    .detailed-timetables, .detailed-purchase-windows
+    .detailed-timetables
       &:after
         left: 0
       .fa
         margin-right: 5px
-    .detailed-timetables-bt, .detailed-purchase-windows-bt
+    .detailed-timetables-bt
       text-decoration: none
       .fa
         margin-right: 5px
@@ -170,7 +170,7 @@
       top: 50%
       margin-top: -8px
 
-  .detailed-timetables, .detailed-purchase-windows
+  .detailed-timetables
     padding-top: 10px
     text-align: left
     margin-bottom: -5px
@@ -207,19 +207,7 @@
         padding-top: 8px
         font-weight: bold
 
-  .detailed-purchase-windows
-    margin-bottom: 12px
-    position: relative
-    &:after
-      position: absolute
-      left: -8px
-      bottom: 0
-      right: -8px
-      content: ""
-      border-top: 1px solid $lightgrey
-
-  .t2e-item-list .detailed-timetables > div,
-  .t2e-item-list .detailed-purchase-windows > div,
+  .t2e-item-list .detailed-timetables > div
     border-left: none
     &:after
       top: 50%

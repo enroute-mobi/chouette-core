@@ -5,7 +5,6 @@ class ReferentialVehicleJourneysController < ChouetteController
   include ReferentialSupport
   include RansackDateFilter
 
-  before_action(only: [:index]) { set_date_time_params("purchase_window", Date, prefix: :purchase_window) }
   before_action(only: [:index]) { set_date_time_params("time_table", Date, prefix: :time_table) }
 
   defaults :resource_class => Chouette::VehicleJourney, collection_name: :vehicle_journeys
@@ -42,7 +41,6 @@ class ReferentialVehicleJourneysController < ChouetteController
       @q = @q.with_companies(company_ids) unless company_ids.empty?
     end
     @q = @q.with_stop_area_ids(params[:q][:stop_area_ids]) if params[:q] && params[:q][:stop_area_ids]
-    @q = ransack_period_range(scope: @q, error_message:  t('vehicle_journeys.errors.purchase_window'), query: :in_purchase_window, prefix: :purchase_window)
     @q = ransack_period_range(scope: @q, error_message:  t('vehicle_journeys.errors.time_table'), query: :with_matching_timetable, prefix: :time_table)
     @q = @q.select("vehicle_journeys.id", "vehicle_journeys.journey_pattern_id", "vehicle_journeys.route_id", "vehicle_journeys.objectid", "vehicle_journeys.published_journey_name")
     @starting_stop = params[:q] && params[:q][:stop_areas] && params[:q][:stop_areas][:start].present? ? Chouette::StopArea.find(params[:q][:stop_areas][:start]) : nil

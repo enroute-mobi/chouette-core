@@ -128,7 +128,6 @@ fr:
         clean_journey_patterns_without_vehicle_journey: Missions sans aucune Course
         clean_routes_without_journey_pattern: Itinéraires sans aucune Mission
         clean_unassociated_timetables: Calendriers de circulation associés à aucune Course
-        clean_unassociated_purchase_windows: Calendriers commerciaux associés à aucune Course
     transport_mode:
       air: Air
       all: Tous les modes de transport

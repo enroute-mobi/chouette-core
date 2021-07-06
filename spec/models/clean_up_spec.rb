@@ -413,26 +413,21 @@ RSpec.describe CleanUp, :type => :model do
     end
 
     it "removes join tables rows" do
-      class PurchaseWindowsVehicleJourney < ActiveRecord::Base; end
       class TimeTablesVehicleJourney < ActiveRecord::Base; end
       class FootnotesVehicleJourney < ActiveRecord::Base; end
       class JourneyPatternsStopPoint < ActiveRecord::Base; end
 
       vehicle_journey = create(:vehicle_journey)
-      purchase_window  = create(:purchase_window)
       footnote  = create(:footnote)
       time_table  = create(:time_table)
-      vehicle_journey.purchase_windows << purchase_window
       vehicle_journey.time_tables << time_table
       vehicle_journey.footnotes << footnote
 
-      expect(PurchaseWindowsVehicleJourney.where(vehicle_journey_id: vehicle_journey.id)).to be_exists
       expect(TimeTablesVehicleJourney.where(vehicle_journey_id: vehicle_journey.id)).to be_exists
       expect(FootnotesVehicleJourney.where(vehicle_journey_id: vehicle_journey.id)).to be_exists
       expect(JourneyPatternsStopPoint.where(journey_pattern_id: vehicle_journey.journey_pattern_id)).to be_exists
 
       cleaner.clean_routes_outside_referential
-      expect(PurchaseWindowsVehicleJourney.where(vehicle_journey_id: vehicle_journey.id)).to_not be_exists
       expect(TimeTablesVehicleJourney.where(vehicle_journey_id: vehicle_journey.id)).to_not be_exists
       expect(FootnotesVehicleJourney.where(vehicle_journey_id: vehicle_journey.id)).to_not be_exists
       expect(JourneyPatternsStopPoint.where(journey_pattern_id: vehicle_journey.journey_pattern_id)).to_not be_exists
@@ -459,27 +454,22 @@ RSpec.describe CleanUp, :type => :model do
     let(:cleaner) { create(:clean_up) }
     it "should destroy all time_tables that are not associated with a vehicle joruney" do
       tt = create(:time_table)
-      pw = create(:purchase_window)
 
       cleaner.clean_unassociated_calendars
 
       expect(Chouette::TimeTable.exists?(tt.id)).to be false
-      expect(Chouette::PurchaseWindow.exists?(pw.id)).to be false
     end
 
 
-    it "should not destroy time_tables nor purchase windows that are associated with a vehicle joruney" do
+    it "should not destroy time_tables that are associated with a vehicle joruney" do
       vj = create(:vehicle_journey)
       tt = create(:time_table)
-      pw = create(:purchase_window)
 
       vj.time_tables << tt
-      vj.purchase_windows << pw
 
       cleaner.clean_unassociated_calendars
 
       expect(Chouette::TimeTable.exists?(tt.id)).to be true
-      expect(Chouette::PurchaseWindow.exists?(pw.id)).to be true
     end
   end
 

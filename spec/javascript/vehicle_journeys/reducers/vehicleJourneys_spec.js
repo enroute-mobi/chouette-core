@@ -160,7 +160,6 @@ describe('vehicleJourneys reducer', () => {
       objectid: '',
       footnotes: [],
       time_tables: [],
-      purchase_windows: [],
       referential_codes: [],
       line_notices: [],
       vehicle_journey_at_stops: pristineVjasList,
@@ -300,7 +299,6 @@ describe('vehicleJourneys reducer', () => {
       objectid: '',
       footnotes: [],
       time_tables: [],
-      purchase_windows: [],
       referential_codes: [],
       line_notices: [],
       vehicle_journey_at_stops: pristineVjasList,
@@ -430,7 +428,6 @@ describe('vehicleJourneys reducer', () => {
       objectid: '',
       footnotes: [],
       time_tables: [],
-      purchase_windows: [],
       referential_codes: [],
       line_notices: [],
       vehicle_journey_at_stops: pristineVjasList,
@@ -551,7 +548,6 @@ describe('vehicleJourneys reducer', () => {
       objectid: '',
       footnotes: [],
       time_tables: [],
-      purchase_windows: [],
       referential_codes: [],
       line_notices: [],
       vehicle_journey_at_stops: pristineVjasList,
@@ -678,7 +674,6 @@ describe('vehicleJourneys reducer', () => {
       objectid: '',
       footnotes: [],
       time_tables: [],
-      purchase_windows: [],
       referential_codes: [],
       line_notices: [],
       vehicle_journey_at_stops: pristineVjasList,
@@ -765,7 +760,6 @@ describe('vehicleJourneys reducer', () => {
       footnotes: [],
       ignored_routing_contraint_zone_ids: [],
       time_tables: [],
-      purchase_windows: [],
       referential_codes: [],
       line_notices: [],
       vehicle_journey_at_stops: pristineVjasList,
@@ -852,7 +846,6 @@ describe('vehicleJourneys reducer', () => {
       footnotes: [],
       ignored_routing_contraint_zone_ids: [],
       time_tables: [],
-      purchase_windows: [],
       referential_codes: [],
       line_notices: [],
       vehicle_journey_at_stops: pristineVjasList,
@@ -1123,18 +1116,6 @@ describe('vehicleJourneys reducer', () => {
         type: 'EDIT_VEHICLEJOURNEYS_TIMETABLES',
         vehicleJourneys: state,
         timetables: [fakeTimeTables[0]]
-      })
-    ).toEqual(newState)
-  })
-
-  it('should handle EDIT_VEHICLEJOURNEYS_PURCHASE_WINDOWS', () => {
-    let newState = JSON.parse(JSON.stringify(state))
-    newState[0].purchase_windows = [fakeTimeTables[0]]
-    expect(
-      vjReducer(state, {
-        type: 'EDIT_VEHICLEJOURNEYS_PURCHASE_WINDOWS',
-        vehicleJourneys: state,
-        purchase_windows: [fakeTimeTables[0]]
       })
     ).toEqual(newState)
   })

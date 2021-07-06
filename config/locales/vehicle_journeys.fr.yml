@@ -5,7 +5,6 @@ fr:
         id: Filtrer par ID course...
         journey_pattern: 'Filtrer par code, nom ou ID de mission...'
         timetable: Filtrer par calendrier...
-        purchase_window: Filtrer par calendrier commercial...
         constraint_zone: Choisir une Interdiction de Trafic Local
         stop_area_constraint: Choisir une Interdiction de Trafic entre Arrêts
         specific_stop_area: Choisir un arrêt spécifique
@@ -15,10 +14,8 @@ fr:
       line_routes: "Séquences d'arrêts de la ligne"
       modal_confirm: 'Voulez-vous valider vos modifications avant de changer de page?'
       selected_journeys: "%{count} course(s) sélectionnée(s)"
-      show_purchase_window: 'Voir le calendrier commercial'
       show_timetable: 'Voir le calendrier'
       no_associated_timetables: Aucun calendrier associé
-      no_associated_purchase_windows: Aucun calendrier commercial associé
       no_associated_footnotes: Aucune note associée
       no_excluded_constraint_zones: Aucune Interdiction de Trafic Local exclue
       no_excluded_stop_area_constraint: Aucune Interdiction de Trafic entre Arrêts exclue
@@ -68,7 +65,6 @@ fr:
       infos: Informations
       hint_info: Informations
       hint_calendars: Calendriers
-      hint_purchase_windows: Calendriers commerciaux
       hint_specific_stops: Arrêts spécifiques
       hint_add_vj: Ajouter
       hint_duplicate: Dupliquer
@@ -93,7 +89,6 @@ fr:
       submit_timed_edit: "Editer course"
       submit_timed: "Créer course"
       time_tables: "Calendriers associés à la course"
-      purchase_windows: "Calendriers commerciaux associés à la course"
       footnotes: "Notes associées à la course"
       add_referential_code: Ajouter un code
       referential_codes: Codes
@@ -130,7 +125,6 @@ fr:
     sidebar:
       timeless: "Courses sans horaire"
     errors:
-      purchase_window: Calendrier commercial invalide
       time_table: Dates d'application invalides
   activerecord:
     models:
@@ -169,7 +163,6 @@ fr:
         on_demand_fs: "Service à la demande"
         published_journey_identifier: Numéro public
         published_journey_name: "Nom public"
-        purchase_window: "Disponibilité commerciale"
         regular_fs: "Service régulier"
         route: "Itinéraire"
         time_slot: "Fréquence"

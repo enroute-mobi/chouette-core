@@ -1626,68 +1626,6 @@ describe Chouette::VehicleJourney, type: :model do
     end
   end
 
-  describe "#flattened_sales_periods" do
-    let(:origin){
-      1.month.from_now.beginning_of_month.to_date
-    }
-
-    let(:referential){ create :referential, objectid_format: :netex }
-
-
-    subject(:result){
-      vehicle_journey.flattened_sales_periods.map{|r|
-        [r.period_start.to_s, r.period_end.to_s, r.weekdays]
-      }
-    }
-    let(:vehicle_journey){ create :vehicle_journey }
-    let(:expected){
-      [
-        [origin.to_s, (origin+8.days).to_s, "1,1,1,1,1,1,1"],
-      ]
-    }
-
-    it { should eq expected }
-
-    context "with disjoined periods" do
-      let(:expected){
-        [
-          [origin.to_s, (origin+8.days).to_s, "1,1,1,1,1,1,1"],
-          [(origin+10.days).to_s, (origin+12.days).to_s, "1,1,1,1,1,1,1"],
-        ]
-      }
-      it { should eq expected }
-    end
-
-    context "with overlapping periods" do
-      let(:expected){
-        [
-          [origin.to_s, (origin+12.days).to_s, "1,1,1,1,1,1,1"]
-        ]
-      }
-      it { should eq expected }
-    end
-
-    context "with joined periods" do
-      let(:expected){
-        [
-          [origin.to_s, (origin+12.days).to_s, "1,1,1,1,1,1,1"]
-        ]
-      }
-      it { should eq expected }
-
-    end
-
-    context "with included periods" do
-      let(:expected){
-        [
-          [origin.to_s, (origin+20.days).to_s, "1,1,1,1,1,1,1"]
-        ]
-      }
-      it { should eq expected }
-
-    end
-  end
-
   describe "#clean!" do
 
     let(:context) do

@@ -634,17 +634,6 @@ module Chouette
 
     end
 
-    class FlattennedSalesPeriod < FlattennedCirculationPeriod
-      def initialize _start, _end, _days=nil
-        super
-        @int_day_types = ApplicationDaysSupport::EVERYDAY
-      end
-
-      def weekdays
-        ([1] * 7).join(',')
-      end
-    end
-
     def self.clean!
       current_scope = self.current_scope || all
 

@@ -14,18 +14,25 @@ class PublicationSetup < ApplicationModel
   validates :name, presence: true
   validates :workgroup, presence: true
   validates :export_options, export_options: { extra_attributes: %i[type] }
-
-  store_accessor :export_options
-
-  accepts_nested_attributes_for :destinations, allow_destroy: true, reject_if: :all_blank
   validates_associated :destinations
 
-  scope :enabled, -> { where enabled: true }
-
+  store_accessor :export_options
   attr_reader :export
+
+  accepts_nested_attributes_for :destinations, allow_destroy: true, reject_if: :all_blank
+
+  scope :enabled, -> { where enabled: true }
+  scope :export_type, ->(export_type) { where("export_options -> 'type' = ?", export_type) }
 
   after_initialize :build_new_export
   before_validation :build_new_export
+
+  def self.same_api_usage(other)
+   scope = export_type(other.export_type).
+     where(publish_per_line: other.publish_per_line)
+   scope = scope.where.not(id: other.id) if other.id
+   scope
+  end
 
   def human_export_name
     new_export.human_name
@@ -41,7 +48,7 @@ class PublicationSetup < ApplicationModel
     line_provider_ids = parse_option :line_provider_ids
 
     options = Export::Scope::Options.new(referential, date_range: date_range, line_ids: line_ids, line_provider_ids: line_provider_ids, company_ids: company_ids)
-    
+
     options.scope.lines.pluck(:id)
   end
 

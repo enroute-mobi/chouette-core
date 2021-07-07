@@ -18,16 +18,12 @@ class Destination::PublicationApi < ::Destination
   end
 
   def api_is_not_already_used
-    return false unless publication_api.present?
-
-    scope = publication_api.publication_setups.where("export_options -> 'type' = ?  AND publication_setups.publish_per_line = ?", publication_setup.export_type, publication_setup.publish_per_line)
-    scope = scope.where('publication_setups.id != ? ', publication_setup.id) if publication_setup.persisted?
-
-    if scope.empty?
-      return true
-    else
+    scope = publication_api.publication_setups.same_api_usage(publication_setup)
+    if scope.exists?
       errors.add(:publication_api_id, I18n.t('destinations.errors.publication_api.already_used'))
-      return false
+      false
+    else
+      true
     end
   end
 

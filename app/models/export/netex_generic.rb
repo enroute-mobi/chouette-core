@@ -801,7 +801,7 @@ class Export::NetexGeneric < Export::Base
 
     DAYS = %w{monday tuesday wednesday thursday friday saturday sunday}
     def days_of_week
-      DAYS.map { |day| day.capitalize if send(day) }.join(' ')
+      DAYS.map { |day| day.capitalize if send(day) }.compact.join(' ')
     end
 
     def exported_periods

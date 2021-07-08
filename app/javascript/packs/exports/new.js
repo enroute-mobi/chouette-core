@@ -76,5 +76,7 @@ window.Spruce.store('export', {
 window.Spruce.watch('export.isExport', isExport => {
 	!isExport && window.Spruce.stores.export.setState({ exportType: 'full' })
 	window.Spruce.stores.export.setState({
-		baseName: isExport ? 'export_options' : 'publication_setup_export_options' })
+		baseName: isExport ? 'export_options' : 'publication_setup_export_options',
+		pathBuilder: new PathBuilder(window.Spruce.stores.export)
+	})
 })

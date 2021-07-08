@@ -43,9 +43,9 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: c023ab5634de83084958e15f6e93794a9ad5d98f
+  revision: cb313fa4d154b7347ee3612ba6ee0e53a46a52d3
   specs:
-    netex (0.1.1)
+    netex (0.1.2)
       ox
       rgeo-proj4
       rubyzip
@@ -636,7 +636,7 @@ GEM
     ruby-statistics (2.1.2)
     rubycas-client (2.3.9)
       activesupport
-    rubyzip (2.3.0)
+    rubyzip (2.3.2)
     sass (3.7.4)
       sass-listen (~> 4.0.0)
     sass-listen (4.0.0)
@@ -890,4 +890,4 @@ DEPENDENCIES
   will_paginate-bootstrap
 
 BUNDLED WITH
-   2.2.15
+   2.2.20

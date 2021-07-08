@@ -1,7 +1,8 @@
 import TomSelect from 'tom-select'
 class SelectBuilder {
 	static init(selector, pathBuilder, initialValue = []) {
-		new TomSelect(selector, {
+		try {
+			new TomSelect(selector, {
 			preload: true,
 			openOnFocus: true,
 			load: (query, callback) => (
@@ -14,6 +15,9 @@ class SelectBuilder {
 			items: initialValue.map(item => item.id),
 			options: initialValue
 		})
+	} catch(e) {
+		// Error happens pretty randomly so we just catch it to avoid a crash
+	}
 	}
 }
 class PathBuilder {
@@ -42,6 +46,10 @@ class PathBuilder {
 			`/workbenches/${this.workbenchId}/autocomplete/line_providers` :
 			`/workgroups/${this.workgroupId}/autocomplete/line_providers`
 	}
+
+	get lineCodeIds() {
+		return () => `/workbenches/${this.workbenchId}/autocomplete/lines`
+	}
 }
 
 window.Spruce.store('export', {
@@ -69,7 +77,7 @@ window.Spruce.store('export', {
 		SelectBuilder.init(`#${this.baseName}_line_provider_ids`, this.pathBuilder.lineProviderIds, lineProviderIds)
 	},
 	initLineCodeSelect() {
-		SelectBuilder.init(`#${this.baseName}_line_code`, this.pathBuilder.lineIds)
+		SelectBuilder.init(`#${this.baseName}_line_code`, this.pathBuilder.lineCodeIds)
 	}
 })
 

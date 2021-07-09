@@ -10,11 +10,6 @@ coffee:
     $(e.target).toggleClass 'active'
     $(e.target).parents('.table').find('.detailed-timetables').customToggle()
 
-  $('a.toggle-purchase-windows').click (e)->
-    e.preventDefault()
-    $(e.target).toggleClass 'active'
-    $(e.target).parents('.table').find('.detailed-purchase-windows').customToggle()
-
   $('.route').find('.togglable.hidden').each (i, e)->
     $e = $(e)
     $e.removeClass 'hidden'

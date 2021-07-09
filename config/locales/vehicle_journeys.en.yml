@@ -6,7 +6,6 @@ en:
         journey_pattern: Filter by journey pattern...
         timetable: Filter by timetable...
         constraint_zone: Select a routing constraint zone
-        purchase_window: Filter by purchase window
         stop_area_constraint: Select a stop area constraint
         specific_stop_area: Select a specific stop area
       cancel_selection: "Cancel Selection"
@@ -15,10 +14,8 @@ en:
       line_routes: "Line's routes"
       modal_confirm: 'Do you want to save mofications before moving on to the next page ?'
       selected_journeys: "%{count} selected journeys"
-      show_purchase_window: 'Show the purchase window'
       show_timetable: 'Show calendar'
       no_associated_timetables: No associated timetables
-      no_associated_purchase_windows: No associated purchase windows
       no_associated_footnotes: No associated footnotes
       no_excluded_constraint_zones: No excluded constraint zone
       no_excluded_stop_area_constraint: No excluded stop area constraints
@@ -68,7 +65,6 @@ en:
       infos: Informations
       hint_info: Informations
       hint_calendars: Calendars
-      hint_purchase_windows: Purchase windows
       hint_specific_stops: Specific stops
       hint_add_vj: Add
       hint_duplicate: Duplicate
@@ -93,7 +89,6 @@ en:
       submit_timed_edit: "Edit vehicle journey"
       submit_timed: "Create vehicle journey"
       time_tables: "Associated timetables"
-      purchase_windows: Associated purchase windows
       footnotes: Associated footnotes
       add_referential_code: Add a code
       referential_codes: Codes
@@ -128,7 +123,6 @@ en:
     sidebar:
       timeless: "Timeless vehicle journeys"
     errors:
-      purchase_window: Invalid purchase window
       time_table: Invalid dates
   activerecord:
     models:
@@ -166,7 +160,6 @@ en:
         on_demand_fs: "On demand service"
         published_journey_identifier: "Published Identifier"
         published_journey_name: "Published Name"
-        purchase_window: "Purchase availability"
         regular_fs: "Regular service"
         route: "Route"
         time_slot: "Time Slot"

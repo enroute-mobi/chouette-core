@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_06_15_142111) do
+ActiveRecord::Schema.define(version: 2021_07_06_093921) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -840,25 +840,6 @@ ActiveRecord::Schema.define(version: 2021_06_15_142111) do
     t.datetime "ended_at"
     t.index ["parent_type", "parent_id"], name: "index_publications_on_parent_type_and_parent_id"
     t.index ["publication_setup_id"], name: "index_publications_on_publication_setup_id"
-  end
-
-  create_table "purchase_windows", force: :cascade do |t|
-    t.string "name"
-    t.string "color"
-    t.daterange "date_ranges", array: true
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "objectid"
-    t.string "checksum"
-    t.text "checksum_source"
-    t.bigint "referential_id"
-    t.jsonb "metadata", default: {}
-    t.index ["referential_id"], name: "index_purchase_windows_on_referential_id"
-  end
-
-  create_table "purchase_windows_vehicle_journeys", id: false, force: :cascade do |t|
-    t.bigint "purchase_window_id"
-    t.bigint "vehicle_journey_id"
   end
 
   create_table "referential_clonings", force: :cascade do |t|

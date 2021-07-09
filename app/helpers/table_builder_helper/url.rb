@@ -10,7 +10,7 @@ module TableBuilderHelper
           polymorph_url << item.route.line if item.is_a?(Chouette::RoutingConstraintZone)
           polymorph_url << item if item.respond_to? :line_referential
           polymorph_url << item.stop_area if item.respond_to? :stop_area
-          polymorph_url << item if item.respond_to?(:stop_points) || item.is_a?(Chouette::TimeTable) || item.is_a?(Chouette::PurchaseWindow)
+          polymorph_url << item if item.respond_to?(:stop_points) || item.is_a?(Chouette::TimeTable)
         elsif item.respond_to? :referential
           if item.respond_to? :workbench
             polymorph_url << item.workbench

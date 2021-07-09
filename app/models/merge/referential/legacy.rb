@@ -405,17 +405,11 @@ class Merge::Referential::Legacy < Merge::Referential::Base
   end
 
   def legacy_merge_vehicle_journeys(referential_vehicle_journeys)
-    referential_purchase_windows_by_checksum = {}
-    referential_vehicle_journey_purchase_window_checksums = Hash.new { |h,k| h[k] = [] }
     referential_vehicle_journey_footnote_checksums = {}
     referential_vehicle_journey_codes = Hash.new { |h,k| h[k] = [] }
 
     referential.switch do
       referential_vehicle_journeys.each do |vehicle_journey|
-        vehicle_journey.purchase_windows.each do |purchase_window|
-          referential_purchase_windows_by_checksum[purchase_window.checksum] = purchase_window
-          referential_vehicle_journey_purchase_window_checksums[vehicle_journey.id] << purchase_window.checksum
-        end
         referential_vehicle_journey_footnote_checksums[vehicle_journey.id] = vehicle_journey.footnotes.pluck(:checksum)
         referential_vehicle_journey_codes[vehicle_journey.id] = vehicle_journey.codes.pluck(:code_space_id, :value)
       end
@@ -464,32 +458,6 @@ class Merge::Referential::Legacy < Merge::Referential::Base
                 vehicle_journey: new_vehicle_journey
               )
               new_vehicle_journey.vehicle_journey_at_stops.build at_stop_attributes
-            end
-
-            # Associate (and create if needed) PurchaseWindows
-
-            referential_vehicle_journey_purchase_window_checksums[vehicle_journey.id].each do |purchase_window_checksum|
-              associated_purchase_window = new.purchase_windows.find_by(checksum: purchase_window_checksum)
-
-              unless associated_purchase_window
-                purchase_window = referential_purchase_windows_by_checksum[purchase_window_checksum]
-
-                objectid = new.purchase_windows.where(objectid: purchase_window.objectid).exists? ? nil : purchase_window.objectid
-                attributes = purchase_window.attributes.merge(
-                  id: nil,
-                  objectid: objectid
-                )
-                new_purchase_window = new.purchase_windows.build attributes
-                save_model! new_purchase_window
-
-                if new_purchase_window.checksum != purchase_window.checksum
-                  raise "Checksum has changed for purchase_window #{purchase_window.id} :\n #{purchase_window.checksum_source} \n => \n #{new_purchase_window.checksum_source}"
-                end
-
-                associated_purchase_window = new_purchase_window
-              end
-
-              new_vehicle_journey.purchase_windows << associated_purchase_window
             end
 
             # Associate Footnotes
@@ -582,7 +550,7 @@ class Merge::Referential::Legacy < Merge::Referential::Base
     referential.switch do
       batch = 0
       Chouette::Benchmark.measure("vehicle_journeys") do
-        referential.vehicle_journeys.includes(:vehicle_journey_at_stops, :purchase_windows, :footnotes, :codes).find_in_batches(batch_size: vehicle_journeys_batch_size) do |referential_vehicle_journeys|
+        referential.vehicle_journeys.includes(:vehicle_journey_at_stops, :footnotes, :codes).find_in_batches(batch_size: vehicle_journeys_batch_size) do |referential_vehicle_journeys|
           batch += 1
           Chouette::Benchmark.measure("batch", batch: batch) do
             legacy_merge_vehicle_journeys referential_vehicle_journeys

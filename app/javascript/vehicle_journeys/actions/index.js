@@ -142,10 +142,6 @@ const actions = {
     zones,
     stop_area_constraints
   }),
-  openPurchaseWindowsEditModal : (vehicleJourneys) => ({
-    type : 'EDIT_PURCHASE_WINDOWS_VEHICLEJOURNEY_MODAL',
-    vehicleJourneys
-  }),
   openConstraintExclusionEditModal : (vehicleJourneys) => ({
     type : 'EDIT_CONSTRAINT_EXCLUSIONS_VEHICLEJOURNEY_MODAL',
     vehicleJourneys
@@ -171,22 +167,6 @@ const actions = {
   deleteStopAreasConstraint : (constraintZone) => ({
     type : 'DELETE_STOPAREAS_CONSTRAINT_MODAL',
     constraintZone
-  }),
-  selectPurchaseWindowsModal: (selectedItem) =>({
-    type: 'SELECT_PURCHASE_WINDOW_MODAL',
-    selectedItem
-  }),
-  addSelectedPurchaseWindow: () => ({
-    type: 'ADD_SELECTED_PURCHASE_WINDOW'
-  }),
-  deletePurchaseWindowsModal : (purchaseWindow) => ({
-    type : 'DELETE_PURCHASE_WINDOW_MODAL',
-    purchaseWindow
-  }),
-  editVehicleJourneyPurchaseWindows : (vehicleJourneys, purchase_windows) => ({
-    type: 'EDIT_VEHICLEJOURNEYS_PURCHASE_WINDOWS',
-    vehicleJourneys,
-    purchase_windows
   }),
   openShiftModal : () => ({
     type : 'SHIFT_VEHICLEJOURNEY_MODAL'
@@ -429,20 +409,11 @@ const actions = {
             let val = json.vehicle_journeys[i]
             i++
             var timeTables = []
-            var purchaseWindows = []
             let k = 0
             while(k < val.time_tables.length){
               let tt = val.time_tables[k]
               k++
               timeTables.push(tt)
-            }
-            if(val.purchase_windows){
-              k = 0
-              while(k < val.purchase_windows.length){
-                let tt = val.purchase_windows[k]
-                k++
-                purchaseWindows.push(tt)
-              }
             }
             let vjasWithDelta = val.vehicle_journey_at_stops.map((vjas, i) => {
               actions.fillEmptyFields(vjas)
@@ -456,7 +427,6 @@ const actions = {
             vehicleJourneys.push(
               _.assign({}, val, {
                 time_tables: timeTables,
-                purchase_windows: purchaseWindows,
                 vehicle_journey_at_stops: vjasWithDelta,
                 deletable: false,
                 selected: false,

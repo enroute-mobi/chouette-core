@@ -14,9 +14,6 @@ fr:
     imports:
       title: Imports
       none: Aucun import
-    purchase_windows:
-      title: Calendriers commerciaux
-      none: Aucun calendrier commercial défini
     line_referentials:
       title: Référentiels de lignes
       none: Aucun référentiels de lignes défini

@@ -41,15 +41,6 @@ export default class VehicleJourney extends Component {
     )
   }
 
-  purchaseWindowURL(tt) {
-    let refURL = window.location.pathname.split('/', 3).join('/')
-    let ttURL = refURL + '/purchase_windows/' + tt.id
-
-    return (
-      <a href={ttURL} title={I18n.t('vehicle_journeys.vehicle_journeys_matrix.show_purchase_window')}><span className='fa fa-calendar-alt' style={{ color: (tt.color ? `#${tt.color}` : '#4B4B4B')}}></span></a>
-    )
-  }
-
   hasTimeTable(time_tables, tt) {
     let found = false
     time_tables.map((t, index) => {
@@ -59,10 +50,6 @@ export default class VehicleJourney extends Component {
       }
     })
     return found
-  }
-
-  hasPurchaseWindow(purchase_windows, window) {
-    return this.hasTimeTable(purchase_windows, window)
   }
 
   extraHeaderValue(header) {
@@ -84,9 +71,7 @@ export default class VehicleJourney extends Component {
     this.previousCity = undefined
     let detailed_calendars = this.hasFeature('detailed_calendars') && !this.disabled
     let detailed_calendars_shown = $('.detailed-timetables-bt').hasClass('active')
-    let detailed_purchase_windows = this.hasFeature('detailed_purchase_windows') && !this.disabled
-    let detailed_purchase_windows_shown = $('.detailed-purchase-windows-bt').hasClass('active')
-    let {time_tables, purchase_windows} = this.props.value
+    let { time_tables } = this.props.value
     const {
       selection: {
         items: selectedItems,
@@ -130,21 +115,6 @@ export default class VehicleJourney extends Component {
           { this.hasFeature('journey_length_in_vehicle_journeys') &&
             <div>
               {this.journey_length()}
-            </div>
-          }
-          { this.hasFeature('purchase_windows') &&
-            <div>
-            {purchase_windows.slice(0,3).map((tt, i)=>
-              <span key={i} className='vj_tt'>{this.purchaseWindowURL(tt)}</span>
-            )}
-            {purchase_windows.length > 3 && <span className='vj_tt'> + {purchase_windows.length - 3}</span>}
-            </div>
-          }
-          { detailed_purchase_windows &&
-            <div className={"detailed-purchase-windows" + (detailed_purchase_windows_shown ? "" : " hidden")}>
-            {this.props.allPurchaseWindows.map((w, i) =>
-              <div key={i} className={(this.hasPurchaseWindow(purchase_windows, w) ? "active" : "inactive")}></div>
-            )}
             </div>
           }
           <div>
@@ -199,7 +169,6 @@ export default class VehicleJourney extends Component {
             />
           )
         }
-         
         )}
       </div>
     )
@@ -214,7 +183,6 @@ VehicleJourney.propTypes = {
   onSelectVehicleJourney: PropTypes.func.isRequired,
   vehicleJourneys: PropTypes.object.isRequired,
   allTimeTables: PropTypes.array.isRequired,
-  allPurchaseWindows: PropTypes.array.isRequired,
   extraHeaders: PropTypes.array.isRequired,
   selection: PropTypes.object.isRequired,
 }

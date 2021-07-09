@@ -23,7 +23,6 @@ class ReferentialCopy
     measure "copy", source: source.id, target: target.id do
       CustomFieldsSupport.within_workgroup(workgroup) do
         copy_resource(:metadatas) unless skip_metadatas?
-        copy_resource(:purchase_windows)
         source.switch do
           lines.includes(:footnotes, :routes).find_each do |line|
             @new_routes = nil
@@ -86,14 +85,6 @@ class ReferentialCopy
 
         time_tables_vehicle_journeys.find_each_without_primary_key do |model|
           referential_inserter.vehicle_journey_time_table_relationships << model
-        end
-      end
-
-      measure "vehicle_journey_purchase_window_relationships" do
-        vehicle_journey_purchase_window_relationships = Chouette::VehicleJourneyPurchaseWindowRelationship.where(vehicle_journey: vehicle_journeys)
-
-        vehicle_journey_purchase_window_relationships.find_each_without_primary_key do |model|
-          referential_inserter.vehicle_journey_purchase_window_relationships << model
         end
       end
 
@@ -175,25 +166,6 @@ class ReferentialCopy
       target.time_table_periods.where(time_table_id: target_time_tables)
     end
 
-  end
-
-
-
-  # PURCHASE WINDOWS
-
-  def copy_purchase_windows
-    Chouette::PurchaseWindow.transaction do
-      source.switch do
-        Chouette::PurchaseWindow.linked_to_lines(lines).distinct.find_each do |pw|
-          attributes = clean_attributes_for_copy pw
-          target.switch do
-            new_pw = Chouette::PurchaseWindow.new attributes
-            controlled_save! new_pw
-            record_match(pw, new_pw)
-          end
-        end
-      end
-    end
   end
 
   # FOOTNOTES

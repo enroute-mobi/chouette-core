@@ -11,9 +11,6 @@ en:
     calendars:
       title: Calendars
       none: No calendar created
-    purchase_windows:
-      title: Purchase windows
-      none: No purchase window created
     line_referentials:
       title: Line referential
       none: No line referential created

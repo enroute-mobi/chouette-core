@@ -25,12 +25,6 @@ module CleanUpMethods
     end
   end
 
-  def clean_unassociated_purchase_windows
-    Chouette::Benchmark.measure 'clean_unassociated_purchase_windows' do
-      Chouette::PurchaseWindow.not_associated.clean!
-    end
-  end
-
   # DEFAULT CLEANINGS
 
   def clean_timetables_and_children
@@ -180,7 +174,6 @@ module CleanUpMethods
 
   def clean_unassociated_calendars
     clean_unassociated_timetables
-    clean_unassociated_purchase_windows
   end
 
   def clean_irrelevant_data

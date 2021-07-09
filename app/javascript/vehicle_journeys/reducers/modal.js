@@ -75,24 +75,6 @@ export default function modal(state = {}, action) {
         },
         confirmModal: {}
       }
-    case 'EDIT_PURCHASE_WINDOWS_VEHICLEJOURNEY_MODAL':
-      var vehicleJourneys = JSON.parse(JSON.stringify(action.vehicleJourneys))
-      let uniqPurchaseWindows = []
-      vehicleJourneys.map((vj, i) => {
-        vj.purchase_windows.map((pw, j) =>{
-          if(!(_.find(uniqPurchaseWindows, pw))){
-            uniqPurchaseWindows.push(pw)
-          }
-        })
-      })
-      return {
-        type: 'purchase_windows_edit',
-        modalProps: {
-          vehicleJourneys: vehicleJourneys,
-          purchase_windows: uniqPurchaseWindows
-        },
-        confirmModal: {}
-      }
     case 'EDIT_CONSTRAINT_EXCLUSIONS_VEHICLEJOURNEY_MODAL':
       var vehicleJourneys = JSON.parse(JSON.stringify(action.vehicleJourneys))
       let uniqExclusions = []
@@ -184,9 +166,6 @@ export default function modal(state = {}, action) {
     case 'SELECT_TT_CALENDAR_MODAL':
       newModalProps = _.assign({}, state.modalProps, {selectedTimetable : action.selectedItem})
       return _.assign({}, state, {modalProps: newModalProps})
-    case 'SELECT_PURCHASE_WINDOW_MODAL':
-      newModalProps = _.assign({}, state.modalProps, {selectedPurchaseWindow : action.selectedItem})
-      return _.assign({}, state, {modalProps: newModalProps})
     case 'SELECT_CONSTRAINT_ZONE_MODAL':
       let selectedConstraintZones = state.modalProps.selectedConstraintZones
       alreadyPresent = false
@@ -239,15 +218,6 @@ export default function modal(state = {}, action) {
         }
         return _.assign({}, state, {modalProps: newModalProps})
       }
-    case 'ADD_SELECTED_PURCHASE_WINDOW':
-      let { modalProps } = state
-      notAlreadyPresent = !modalProps.purchase_windows.find(({ id }) => id == modalProps.selectedPurchaseWindow.id)
-
-      newModalProps = JSON.parse(JSON.stringify(modalProps))
-      if (modalProps.selectedPurchaseWindow && notAlreadyPresent){
-        newModalProps.purchase_windows.push(newModalProps.selectedPurchaseWindow)
-      }
-      return _.assign({}, state, {modalProps: newModalProps})
     case 'DELETE_CALENDAR_MODAL':
       newModalProps = JSON.parse(JSON.stringify(state.modalProps))
       let timetablesModal = state.modalProps.timetables.slice(0)
@@ -267,25 +237,6 @@ export default function modal(state = {}, action) {
       newModalProps.vehicleJourneys = vehicleJourneysModal
       newModalProps.timetables = timetablesModal
       return _.assign({}, state, {modalProps: newModalProps})
-    case 'DELETE_PURCHASE_WINDOW_MODAL':
-        newModalProps = JSON.parse(JSON.stringify(state.modalProps))
-        let purchase_windows = state.modalProps.purchase_windows.slice(0)
-        purchase_windows.map((tt, i) =>{
-          if(tt == action.purchaseWindow){
-            purchase_windows.splice(i, 1)
-          }
-        })
-        vehicleJourneysModal = state.modalProps.vehicleJourneys.slice(0)
-        vehicleJourneysModal.map((vj) =>{
-          vj.purchase_windows.map((tt, i) =>{
-            if (_.isEqual(tt, action.purchaseWindow)){
-              vj.purchase_windows.splice(i, 1)
-            }
-          })
-        })
-        newModalProps.vehicleJourneys = vehicleJourneysModal
-        newModalProps.purchase_windows = purchase_windows
-        return _.assign({}, state, {modalProps: newModalProps})
     case 'CREATE_VEHICLEJOURNEY_MODAL':
       let selectedJP = {}
       if (window.jpOrigin){

@@ -7,10 +7,8 @@ class Feature
       create_opposite_routes
       create_referential_from_merge
       detailed_calendars
-      detailed_purchase_windows
       journey_length_in_vehicle_journeys
       long_distance_routes
-      purchase_windows
       purge_merged_data
       referential_vehicle_journeys
       route_stop_areas_all_types

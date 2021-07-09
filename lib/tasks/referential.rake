@@ -132,13 +132,6 @@ namespace :referential do
     end
   end
 
-  desc 'Update all relevant checksums for PurchaseWindow'
-  task :update_purchase_windows_checksums => :environment do |t, args|
-    each_relevant_referential do |referential|
-      update_checksums_for_referential referential, [Chouette::PurchaseWindow]
-    end
-  end
-
   desc 'Update all relevant checksums for JourneyPattern'
   task :update_journey_patterns_checksums => :environment do |t, args|
     each_relevant_referential do |referential|

@@ -38,7 +38,6 @@ module Chouette
     delegate :line, to: :route
 
     has_and_belongs_to_many :footnotes, :class_name => 'Chouette::Footnote'
-    has_and_belongs_to_many :purchase_windows, :class_name => 'Chouette::PurchaseWindow'
     has_array_of :ignored_routing_contraint_zones, class_name: 'Chouette::RoutingConstraintZone'
     has_array_of :ignored_stop_area_routing_constraints, class_name: 'StopAreaRoutingConstraint'
 
@@ -106,12 +105,6 @@ module Chouette
       end
     }
 
-    scope :in_purchase_window, ->(range){
-      purchase_windows = Chouette::PurchaseWindow.overlap_dates(range)
-      sql = purchase_windows.joins(:vehicle_journeys).select('vehicle_journeys.id').distinct.to_sql
-      where("vehicle_journeys.id IN (#{sql})")
-    }
-
     scope :order_by_departure_time, -> (dir) {
       field = "MIN(current_date + departure_day_offset * interval '24 hours' + departure_time)"
       joins(:vehicle_journey_at_stops)
@@ -128,14 +121,12 @@ module Chouette
       .order(Arel.sql("#{field} #{dir}"))
     }
 
-    scope :without_any_purchase_window, -> { joins('LEFT JOIN purchase_windows_vehicle_journeys ON purchase_windows_vehicle_journeys.vehicle_journey_id = vehicle_journeys.id LEFT JOIN purchase_windows ON purchase_windows.id = purchase_windows_vehicle_journeys.purchase_window_id').where(purchase_windows: { id: nil }) }
     scope :without_any_time_table, -> { joins('LEFT JOIN time_tables_vehicle_journeys ON time_tables_vehicle_journeys.vehicle_journey_id = vehicle_journeys.id LEFT JOIN time_tables ON time_tables.id = time_tables_vehicle_journeys.time_table_id').where(:time_tables => { :id => nil}) }
     scope :without_any_passing_time, -> { joins('LEFT JOIN vehicle_journey_at_stops ON vehicle_journey_at_stops.vehicle_journey_id = vehicle_journeys.id').where(vehicle_journey_at_stops: { id: nil }) }
     scope :scheduled, -> { joins(:time_tables).merge(Chouette::TimeTable.non_empty) }
     scope :with_lines, -> (lines) { joins(route: :line).where(routes: { line_id: lines }) }
 
     # We need this for the ransack object in the filters
-    ransacker :purchase_window_date_gt
     ransacker :stop_area_ids
 
     # returns VehicleJourneys with at least 1 day in their time_tables
@@ -196,8 +187,6 @@ module Chouette
         vjas += VehicleJourneyAtStop.where(vehicle_journey_id: self.id) if db_lookup && !self.new_record?
         attrs << vjas.uniq.sort_by { |s| s.stop_point&.position }.map(&:checksum)
 
-        attrs << self.purchase_windows.map(&:checksum).sort if purchase_windows.present?
-
         # The double condition prevents a SQL query "WHERE 1=0"
         if ignored_routing_contraint_zone_ids.present? && ignored_routing_contraint_zones.present?
           attrs << ignored_routing_contraint_zones.map(&:checksum).sort
@@ -209,7 +198,6 @@ module Chouette
     end
 
     has_checksum_children VehicleJourneyAtStop
-    has_checksum_children PurchaseWindow
     has_checksum_children Footnote
     has_checksum_children Chouette::LineNotice
     has_checksum_children StopPoint
@@ -218,14 +206,6 @@ module Chouette
       if number.nil?
         self.number = 0
       end
-    end
-
-    def sales_start
-      purchase_windows.map{|p| p.date_ranges.map &:first}.flatten.min
-    end
-
-    def sales_end
-      purchase_windows.map{|p| p.date_ranges.map &:max}.flatten.max
     end
 
     def calculate_vehicle_journey_at_stop_day_offset
@@ -302,7 +282,7 @@ module Chouette
     end
 
     def update_has_and_belongs_to_many_from_state item
-      ['time_tables', 'footnotes', 'line_notices', 'purchase_windows'].each do |assos|
+      ['time_tables', 'footnotes', 'line_notices'].each do |assos|
         next unless item[assos]
 
         saved = self.send(assos).map(&:id)
@@ -414,16 +394,6 @@ module Chouette
       end
 
       dates.empty? ? [] : [dates.min, dates.max]
-    end
-
-    def selling_bounding_dates
-      purchase_windows.inject([]) do |memo, pw|
-        pw.date_ranges.each do |date_range|
-          memo[0] = date_range.min if memo[0].nil? || date_range.min <= memo.min
-          memo[1] = date_range.max if memo[1].nil? || date_range.max >= memo.max
-        end
-        memo
-      end
     end
 
     def update_journey_pattern( selected_journey_pattern)
@@ -634,16 +604,6 @@ module Chouette
     end
     alias operating_periods flattened_circulation_periods
 
-    def flattened_sales_periods
-      @flattened_sales_periods ||= begin
-        out = purchase_windows.map(&:date_ranges).flatten.map do |r|
-          FlattennedSalesPeriod.new(r.first, r.max)
-        end.sort
-
-        merge_flattened_periods out
-      end
-    end
-
     class FlattennedCirculationPeriod
       include ApplicationDaysSupport
 
@@ -672,17 +632,6 @@ module Chouette
           range == other.range && int_day_types == other.int_day_types
       end
 
-    end
-
-    class FlattennedSalesPeriod < FlattennedCirculationPeriod
-      def initialize _start, _end, _days=nil
-        super
-        @int_day_types = ApplicationDaysSupport::EVERYDAY
-      end
-
-      def weekdays
-        ([1] * 7).join(',')
-      end
     end
 
     def self.clean!

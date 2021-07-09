@@ -1,12 +1,5 @@
 RSpec.describe 'Checksum', type: :feature do
   let(:footnote){ create :footnote, code: 1, label: "footnote 1", line: line}
-  let(:purchase_window) do
-     create :purchase_window, {
-       name: "purchase_window",
-       color: "9B9B9B",
-       date_ranges: [("2000/01/01".to_date.."2001/01/01".to_date)]
-     }
-   end
 
  let(:time_table) do
     tt = create :time_table, {
@@ -76,7 +69,6 @@ RSpec.describe 'Checksum', type: :feature do
       published_journey_identifier: "published_journey_identifier",
       company: company,
       footnotes: [footnote],
-      purchase_windows: [purchase_window],
       journey_pattern: journey_pattern
     }
   end
@@ -89,16 +81,6 @@ RSpec.describe 'Checksum', type: :feature do
   }
 
   around { |example| Chouette::ChecksumManager.inline{ example.run }}
-
-  context "a PurchaseWindow" do
-    it "should keep the same checksum" do
-      expect(purchase_window.name).to be_present
-      expect(purchase_window.color).to be_present
-      expect(purchase_window.date_ranges).to be_present
-      expect(purchase_window.checksum_source).to eq "purchase_window|9B9B9B|2000-01-01|2001-01-01"
-      expect(purchase_window.checksum).to eq "f375721b67407da3bc161c8965adc8200d4bae3574116e3c2fd69b2c3e58f737"
-    end
-  end
 
   context "a Footnote" do
     it "should keep the same checksum" do
@@ -127,9 +109,8 @@ RSpec.describe 'Checksum', type: :feature do
       expect(vehicle_journey.company.get_objectid.local_id.to_s).to eq "1"
       expect(vehicle_journey.footnotes).to be_present
       expect(vehicle_journey.vehicle_journey_at_stops).to be_present
-      expect(vehicle_journey.purchase_windows).to be_present
-      expect(vehicle_journey.checksum_source).to eq "published_journey_name|published_journey_identifier|1|631761e300cee806ceec55fa27462034da4a83ef35525109387811777b49c5ef|-|46fa73a1d37afcd53d9bb8d8c1f982a632238892be62e4d93019104d69cd40b8,c4f1d8b7656d15667dd3ecf73d1324113fb00b7eeaf63eca0a41e92e4188c413,dcab6bde7033e92dee3afed3ee52691c45334d39cd691705adaf7c92ec9d24d9|f375721b67407da3bc161c8965adc8200d4bae3574116e3c2fd69b2c3e58f737"
-      expect(vehicle_journey.checksum).to eq "c09d89cf64c37354485256d4592c28950dbacc38c6a9a3b9888bf3a61d6be218"
+      expect(vehicle_journey.checksum_source).to eq "published_journey_name|published_journey_identifier|1|631761e300cee806ceec55fa27462034da4a83ef35525109387811777b49c5ef|-|46fa73a1d37afcd53d9bb8d8c1f982a632238892be62e4d93019104d69cd40b8,c4f1d8b7656d15667dd3ecf73d1324113fb00b7eeaf63eca0a41e92e4188c413,dcab6bde7033e92dee3afed3ee52691c45334d39cd691705adaf7c92ec9d24d9"
+      expect(vehicle_journey.checksum).to eq "1edba1ca2cf3394eb2a11e8391678ad7f5873f6475e5f6d9e00653ba049ae40e"
     end
   end
 

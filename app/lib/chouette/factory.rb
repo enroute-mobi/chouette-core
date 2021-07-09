@@ -273,10 +273,6 @@ module Chouette
                 end
               end
             end
-            model :purchase_window do
-              attribute(:name) { |n| "Purchase Window #{n}" }
-              attribute :date_ranges, [ Time.zone.today..1.month.from_now.to_date ]
-            end
           end
         end
       end

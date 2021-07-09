@@ -81,7 +81,7 @@ class ReferentialConsolidated
   end
 
   class Route < Base
-    def_delegators :ar_model, :name, :id, :time_tables, :purchase_windows, :stop_area_ids
+    def_delegators :ar_model, :name, :id, :time_tables, :stop_area_ids
 
     def vehicle_journey_at_stops
       @vehicle_journey_at_stops ||= begin
@@ -132,7 +132,7 @@ class ReferentialConsolidated
   end
 
   class VehicleJourney < Base
-    def_delegators :ar_model, :id, :published_journey_name, :journey_pattern, :time_tables, :purchase_windows, :time_table_ids, :purchase_window_ids, :route, :journey_pattern_only_objectid
+    def_delegators :ar_model, :id, :published_journey_name, :journey_pattern, :time_tables, :time_table_ids, :route, :journey_pattern_only_objectid
 
     def highlighted?
       should_highlight? && @all_vehicle_journeys.where(id: self.id).exists?
@@ -140,10 +140,6 @@ class ReferentialConsolidated
 
     def vehicle_journey_at_stops
       @opts[:vehicle_journey_at_stops] || {}
-    end
-
-    def has_purchase_window? purchase_window
-      purchase_window_ids.include?(purchase_window.id)
     end
 
     def has_time_table? time_table

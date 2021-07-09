@@ -181,7 +181,6 @@ ChouetteIhm::Application.routes.draw do
     resources :autocomplete_stop_areas, only: [:show, :index] do
       get 'around', on: :member
     end
-    resources :autocomplete_purchase_windows, only: [:index]
     resources :autocomplete_time_tables, only: [:index]
 
     resources :autocomplete, only: %i[lines companies line_providers stop_areas parent_stop_areas stop_area_providers] do
@@ -239,8 +238,6 @@ ChouetteIhm::Application.routes.draw do
     end
 
     resources :vehicle_journeys, controller: 'referential_vehicle_journeys', only: [:index]
-
-    resources :purchase_windows
 
     resources :time_tables do
       collection do

@@ -56,12 +56,6 @@
           - opts = opts.update({collection: [@ending_stop].compact, selected: @ending_stop&.id})
           - opts[:input_html][:data][:'select2ed-placeholder'] = I18n.t('vehicle_journeys.form.ending_stop')
           = p.input :end, opts
-    .form-group.togglable class=filter_item_class(params[:q], :purchase_window)
-      = f.label Chouette::VehicleJourney.human_attribute_name(:purchase_window), class: 'control-label'
-      .filter_menu
-        = f.simple_fields_for :purchase_window do |p|
-          = p.input :start_date, as: :date, label: t('simple_form.from'), wrapper_html: { class: 'date smart_date filter_menu-item' }, default: @purchase_window_begin_range, include_blank: @purchase_window_begin_range ? false : true
-          = p.input :end_date, as: :date, label: t('simple_form.to'), wrapper_html: { class: 'date smart_date filter_menu-item' }, default: @purchase_window_end_range, include_blank: @purchase_window_end_range ? false : true
     .form-group.togglable class=filter_item_class(params[:q], :time_table)
       = f.label Chouette::TimeTable.model_name.human, class: 'control-label'
       .filter_menu

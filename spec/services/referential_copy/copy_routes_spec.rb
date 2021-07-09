@@ -119,15 +119,13 @@ RSpec.describe ReferentialCopy do
       before(:each) do
         referential.switch do
           timetable = create :time_table
-          purchase_window = create :purchase_window
           journey_pattern = create :journey_pattern, route: route, stop_points: route.stop_points.sample(3)
-          3.times { create :vehicle_journey, journey_pattern: journey_pattern, time_tables: [timetable], purchase_windows: [purchase_window] }
+          3.times { create :vehicle_journey, journey_pattern: journey_pattern, time_tables: [timetable] }
         end
       end
 
       it "should copy the vehicle_journeys", skip: "See #11869" do
         referential_copy.send(:copy_time_tables)
-        referential_copy.send(:copy_purchase_windows)
         expect{ referential_copy.send(:copy_route, route) }.to change{ target.switch{ Chouette::VehicleJourney.count } }.by 3
 
         target.switch do
@@ -141,19 +139,16 @@ RSpec.describe ReferentialCopy do
         stop_areas = {}
         checksums = {}
         time_tables = {}
-        purchase_windows = {}
 
         referential.switch do
           route.vehicle_journeys.each do |vj|
             stop_areas[vj.objectid] = vj.stop_points.map{|sp| sp.stop_area.objectid}
             checksums[vj.objectid] = vj.checksum
             time_tables[vj.objectid] = vj.time_tables.map(&:objectid)
-            purchase_windows[vj.objectid] = vj.purchase_windows.map(&:objectid)
           end
         end
 
         referential_copy.send(:copy_time_tables)
-        referential_copy.send(:copy_purchase_windows)
         referential_copy.send(:copy_route, route)
         referential_copy.send(:copy_with_inserters)
 
@@ -164,7 +159,6 @@ RSpec.describe ReferentialCopy do
             expect(vj.stop_points.map{|sp| sp.stop_area.objectid}).to eq stop_areas[vj.objectid]
             expect(vj.checksum).to eq checksums[vj.objectid]
             expect(vj.time_tables.map(&:objectid)).to eq time_tables[vj.objectid]
-            expect(vj.purchase_windows.map(&:objectid)).to eq purchase_windows[vj.objectid]
           end
         end
       end

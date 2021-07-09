@@ -13,7 +13,6 @@ class CleanUp < ApplicationModel
     clean_journey_patterns_without_vehicle_journey
     clean_routes_without_journey_pattern
     clean_unassociated_timetables
-    clean_unassociated_purchase_windows
   ), multiple: true
 
   # validates_presence_of :date_type, message: :presence

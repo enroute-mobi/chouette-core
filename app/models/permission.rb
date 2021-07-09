@@ -64,7 +64,7 @@ class Permission
     def extended
       permissions = base
 
-      %w{purchase_windows exports}.each do |resources|
+      %w{exports}.each do |resources|
         actions = %w{edit update create destroy}
         actions.each do |action|
           permissions << "#{resources}.#{action}"

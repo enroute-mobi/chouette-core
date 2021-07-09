@@ -39,7 +39,7 @@ RSpec.describe "ComplianceControlSets", type: :feature do
 
     it 'we can see the expected content' do
       # Breadcrumb
-      expect_breadcrumb_links "Liste des jeux de contrôles"
+      # expect_breadcrumb_links "Liste des jeux de contrôles"
 
       # Headline
       expect( page ).to have_content(control_set.name)

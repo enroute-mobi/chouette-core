@@ -1,8 +1,7 @@
 import TomSelect from 'tom-select'
 class SelectBuilder {
 	static init(selector, pathBuilder, initialValue = []) {
-		try {
-			new TomSelect(selector, {
+		new TomSelect(selector, {
 			preload: true,
 			openOnFocus: true,
 			load: (query, callback) => (
@@ -15,24 +14,22 @@ class SelectBuilder {
 			items: initialValue.map(item => item.id),
 			options: initialValue
 		})
-	} catch(e) {
-		// Error happens pretty randomly so we just catch it to avoid a crash
-	}
 	}
 }
 class PathBuilder {
-	constructor(store) {
-		this.store = store
-
+	constructor() {
 		this.workbenchId = window.location.pathname.match(/(\d+)/)[0]
 		this.workgroupId = window.location.pathname.match(/\d+/)[0]
 	}
 
+	get store() {
+		return window.Spruce.stores.export
+	}
+
 	get lineIds() {
-		return () => 
-			this.store.isExport ?
-				`/referentials/${this.store.referentialId}/autocomplete/lines` :
-				`/workgroups/${this.workgroupId}/autocomplete/lines`
+		return () => this.store.isExport ?
+			`/referentials/${this.store.referentialId}/autocomplete/lines` :
+			`/workgroups/${this.workgroupId}/autocomplete/lines`
 	}
 
 	get companyIds() {
@@ -42,7 +39,7 @@ class PathBuilder {
 	}
 
 	get lineProviderIds() {
-		return () => this.store.isExport ?
+		return () => 	this.store.isExport ?
 			`/workbenches/${this.workbenchId}/autocomplete/line_providers` :
 			`/workgroups/${this.workgroupId}/autocomplete/line_providers`
 	}
@@ -58,7 +55,7 @@ window.Spruce.store('export', {
 	period: 'all_periods',
 	referentialId: '',
 	isExport: null,
-	pathBuilder: new PathBuilder(this),
+	pathBuilder: new PathBuilder(),
 	setState(newState) {
 		Object.entries(newState).forEach(([key, value]) => {
 			this[key] = value
@@ -82,9 +79,11 @@ window.Spruce.store('export', {
 })
 
 window.Spruce.watch('export.isExport', isExport => {
-	!isExport && window.Spruce.stores.export.setState({ exportType: 'full' })
-	window.Spruce.stores.export.setState({
-		baseName: isExport ? 'export_options' : 'publication_setup_export_options',
-		pathBuilder: new PathBuilder(window.Spruce.stores.export)
+	const { export: store } = window.Spruce.stores
+
+	!isExport && store.setState({ exportType: 'full' })
+
+	store.setState({
+		baseName: isExport ? 'export_options' : 'publication_setup_export_options'
 	})
 })

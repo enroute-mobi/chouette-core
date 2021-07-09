@@ -43,12 +43,12 @@
         color: #fff
 
   &.btn-default
-    background-color: $blue
+    background-color: $brand-color-secondary
     color: #fff
 
     &:hover, &:focus, &.focus, &:active, &.active,
     .open > .btn-primary.dropdown-toggle
-      background-color: darken($blue, 2.5%)
+      background-color: darken($brand-color-secondary, 2.5%)
 
   &.btn-primary
     background-color: $brand-color-primary
@@ -64,7 +64,7 @@
 
   &.btn-cancel
     background-color: #fff
-    color: $blue
+    color: $brand-color-secondary
     border: 0
 
     &:hover, &:focus, &.focus, &:active, &.active,
@@ -126,18 +126,11 @@ table, .table
       cursor: pointer
 
       &:hover, &:focus, &.open
-        color: $blue
+        color: $brand-color-secondary
         transition: 0.2s
 
       &.disabled
         cursor: not-allowed
-
-        &, &:hover, &:focus
-          color: rgba($brand-color-secondary, 0.5)
-          background-color: rgba($brand-color-secondary, 0)
-
-          > .btn.disabled
-            opacity: 1
 
       &.open .dropdown-toggle
         box-shadow: none

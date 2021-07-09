@@ -12,7 +12,7 @@
     font-size: 0.8em
     position: relative
     overflow: hidden
-    background-color: $blue
+    background-color: $brand-color-secondary
     transition: background-color 0.2s
     .progress
       z-index: 9
@@ -38,10 +38,10 @@
       display: block
       z-index: 10
       position: relative
-      color: $brand-color-secondary-contrast
+      color: white
       text-decoration: none
       &:hover
-        background-color: transparentize($brand-color-secondary-contrast, 0.9)
+        background-color: transparentize(white, 0.9)
       &.close-notification
         position: absolute
         transition: opacity 0.2s
@@ -50,11 +50,11 @@
         right: 0
         bottom: 0
         width: 30px
-        background-color: $blue
+        background-color: $brand-color-secondary
         opacity: 0
         z-index: 11
         &:hover
-          background-color: transparentize($brand-color-secondary-contrast, 0.9)
+          background-color: transparentize(white, 0.9)
         span
           position: absolute
           top: 50%

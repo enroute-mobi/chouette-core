@@ -15,6 +15,7 @@
         padding-left: 25px /* intial value is 10 */
         overflow: hidden
 
+        // IE FIX
         span
           position: relative
 
@@ -24,7 +25,7 @@
             width: 10px
             height: 10px
             background-color: #fff
-            border: 2px solid $brand-color-secondary
+            border: 2px solid $darkgrey
             border-radius: 50%
             position: absolute
             z-index: 5
@@ -75,7 +76,7 @@
   .nested-fields:last-child > .wrapper:last-child > div:first-child
     span:before
       content: '•'
-      color: $brand-color-secondary
+      color: $darkgrey
       text-align: center
       font-size: 28px
       letter-spacing: 0

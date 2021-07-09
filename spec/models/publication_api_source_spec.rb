@@ -8,7 +8,7 @@ RSpec.describe PublicationApiSource, type: :model do
   let(:publication_gtfs) {create :publication, :with_gtfs}
   let(:publication_api_source_gtfs) { create(:publication_api_source, publication: publication_gtfs, export: create(:gtfs_export), key: "gtfs.zip") }
 
-  let(:publication_setup_gtfs_line) { create :publication_setup_gtfs, publish_per_line: true, export_options: { duration: 200, prefer_referent_stop_area: false, ignore_single_stop_station: false, line_ids: [line.id] } }
+  let(:publication_setup_gtfs_line) { create :publication_setup_gtfs, publish_per_line: true, export_options: { type: "Export::Gtfs", duration: 200, prefer_referent_stop_area: false, ignore_single_stop_station: false, line_ids: [line.id] } }
   let(:publication_gtfs_line) { create :publication, publication_setup: publication_setup_gtfs_line }
   let(:publication_api_source_gtfs_line) { create(:publication_api_source, publication: publication_gtfs_line, export: create(:gtfs_export, options: { duration: 200, prefer_referent_stop_area: false, ignore_single_stop_station: false, line_ids: [line.id] }), key: "lines/#{line.registration_number}-gtfs.zip") }
 

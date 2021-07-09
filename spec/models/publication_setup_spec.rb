@@ -13,7 +13,7 @@ RSpec.describe PublicationSetup, type: :model, use_chouette_factory: true do
 
       line :first, company: :first_company, line_provider: :first_lp
       line :second
-      
+
       referential lines: [:first, :second] do
         time_table :default
 
@@ -32,6 +32,26 @@ RSpec.describe PublicationSetup, type: :model, use_chouette_factory: true do
   let(:publication_setup) { PublicationSetup.new(workgroup: context.workgroup, export_options: { type: 'Export::Gtfs', line_ids: line_ids } ) }
 
   before(:each) { referential.switch }
+
+  describe '.same_api_usage' do
+    let(:publication_setup1) { PublicationSetup.create(name: "PS1", workgroup: context.workgroup, publish_per_line: false, export_options: { type: 'Export::Netex'} ) }
+    let(:publication_setup2) { PublicationSetup.create(name: "PS2", workgroup: context.workgroup, publish_per_line: true, export_options: { type: 'Export::Gtfs'} ) }
+    let(:publication_setup3) { PublicationSetup.create(name: "PS3", workgroup: context.workgroup, publish_per_line: false, export_options: { type: 'Export::Gtfs'} ) }
+
+    context "when publication setup in argument doesn't exist" do
+      let(:search_publication_setup) { PublicationSetup.new(name: "Search", workgroup: context.workgroup, publish_per_line: false, export_options: { type: 'Export::Gtfs' } ) }
+      it 'should return publication setups with same export_options type and publish_per_line attributes by default' do
+        expect(PublicationSetup.same_api_usage(search_publication_setup)).to match_array([publication_setup3])
+      end
+    end
+
+    context "when publication setup in argument exists" do
+      let(:search_publication_setup) { PublicationSetup.create(name: "Search", workgroup: context.workgroup, publish_per_line: false, export_options: { type: 'Export::Gtfs' } ) }
+      it 'should return publication setups without the publication setup in argument if it exists' do
+        expect(PublicationSetup.same_api_usage(search_publication_setup)).to match_array([publication_setup3])
+      end
+    end
+  end
 
   describe '#published_line_ids' do
     let(:workgroup) { referential.workgroup }

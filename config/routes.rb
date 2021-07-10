@@ -364,8 +364,7 @@ ChouetteIhm::Application.routes.draw do
     get "/snap" => "snapshots#show"
   end
 
-  if Rails.env.development?
-    post "/development_toolbar" => "development_toolbar#update_settings", as: :development_toolbar_update_settings
+  if Rails.env.development? 
     mount GraphiQL::Rails::Engine, at: "/graphiql", graphql_path: "/graphql"
   end
 

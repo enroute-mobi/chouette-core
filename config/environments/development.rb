@@ -3,7 +3,6 @@ require Rails.root + 'config/middlewares/cachesettings'
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
-  SmartEnv.add_boolean :ENABLE_DEVELOPMENT_TOOLBAR
   SmartEnv.set :PUBLIC_HOST, default: 'http://localhost:3000'
   SmartEnv.set :RAILS_HOST, default: 'http://localhost:3000'
   SmartEnv.set :IEV_URL, default: "http://localhost:8080"
@@ -99,15 +98,6 @@ Rails.application.configure do
     Chouette::ChecksumManager.cleanup
   end
 
-  if SmartEnv.boolean('ENABLE_DEVELOPMENT_TOOLBAR')
-    config.development_toolbar = OpenStruct.new
-    config.development_toolbar.features_doc_url = nil
-    config.development_toolbar.available_features = %w()
-    config.development_toolbar.available_permissions = %w()
-    config.development_toolbar.tap do |toolbar|
-      eval File.read(Rails.root + 'config/development_toolbar.rb')
-    end
-  end
 end
 
 Dir[File.join(File.dirname(__FILE__), File.basename(__FILE__, ".rb"), "*.rb")].each do |f|

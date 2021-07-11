@@ -24,11 +24,6 @@
           span = current_user.name
           span.fa.fa-lg.fa-user
 
-        - if Rails.application.config.development_toolbar
-          = link_to 'javascript:void(0)', data: { toggle: 'modal', target: '#development-toolbar' }, class: "toolbar-button menu-item" do
-            .fa.fa-cog
-
-
   - if user_signed_in?
     = render 'layouts/navigation/nav_panel_operations'
     = render 'layouts/navigation/nav_panel_profile'

@@ -6,7 +6,6 @@ Rails.application.configure do
   SmartEnv.set :PUBLIC_HOST, default: 'http://localhost:3000'
   SmartEnv.set :RAILS_HOST, default: 'http://localhost:3000'
   SmartEnv.set :IEV_URL, default: "http://localhost:8080"
-  SmartEnv.add_boolean :TOOLBAR
   SmartEnv.set :BYPASS_AUTH_FOR_SIDEKIQ, default: true
   SmartEnv.set :REFERENTIALS_CLEANING_COOLDOWN, default: 30
 
@@ -98,6 +97,7 @@ Rails.application.configure do
   config.to_prepare do
     Chouette::ChecksumManager.cleanup
   end
+
 end
 
 Dir[File.join(File.dirname(__FILE__), File.basename(__FILE__, ".rb"), "*.rb")].each do |f|

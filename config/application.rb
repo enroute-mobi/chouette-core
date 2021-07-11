@@ -61,7 +61,6 @@ module ChouetteIhm
     SmartEnv.add_array :CHOUETTE_EMAIL_BLACKLIST
     SmartEnv.add_boolean :CHOUETTE_TRANSACTIONAL_CHECKSUMS, default: true
     SmartEnv.add_boolean :ENABLE_DELAYED_JOB_REAPER, default: true
-    SmartEnv.add_boolean :ENABLE_DEVELOPMENT_TOOLBAR, default: false
     SmartEnv.add_integer :DELAYED_JOB_MAX_RUN_TIME, default: 24
     SmartEnv.add :DELAYED_JOB_REAPER_HEARTBEAT_INTERVAL_SECONDS, default: 20
     SmartEnv.add :DELAYED_JOB_REAPER_HEARTBEAT_TIMEOUT_SECONDS, default: 60
@@ -96,17 +95,6 @@ module ChouetteIhm
     config.action_dispatch.rescue_responses.merge!(
       'FeatureChecker::NotAuthorizedError' => :unauthorized
     )
-
-    config.development_toolbar = SmartEnv.boolean('ENABLE_DEVELOPMENT_TOOLBAR')
-    if SmartEnv.boolean('ENABLE_DEVELOPMENT_TOOLBAR')
-      config.development_toolbar = OpenStruct.new
-      config.development_toolbar.features_doc_url = nil
-      config.development_toolbar.available_features = %w()
-      config.development_toolbar.available_permissions = %w()
-      config.development_toolbar.tap do |toolbar|
-        eval File.read(Rails.root + 'config/development_toolbar.rb')
-      end
-    end
 
     config.enable_calendar_observer = true
     config.subscriptions_notifications_recipients = []

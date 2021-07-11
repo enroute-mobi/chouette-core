@@ -253,7 +253,7 @@ export default class ConstraintExclusionEditVehicleJourney extends Component {
                         this.props.editMode &&
                         <div className='modal-footer'>
                           <button
-                            className='btn btn-link'
+                            className='btn btn-cancel'
                             data-dismiss='modal'
                             type='button'
                             onClick={this.props.onModalClose}
@@ -261,7 +261,7 @@ export default class ConstraintExclusionEditVehicleJourney extends Component {
                             {I18n.t('cancel')}
                           </button>
                           <button
-                            className='btn btn-primary'
+                            className='btn btn-default'
                             type='button'
                             onClick={this.handleSubmit}
                           >

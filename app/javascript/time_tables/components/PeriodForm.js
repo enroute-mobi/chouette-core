@@ -107,14 +107,14 @@ export default function PeriodForm({modal, timetable, metas, onOpenAddPeriodForm
                   </span>
                   <button
                     type='button'
-                    className='btn btn-link'
+                    className='btn btn-cancel'
                     onClick={onClosePeriodForm}
                   >
                     {I18n.t('cancel')}
                   </button>
                   <button
                     type='button'
-                    className='btn btn-outline-primary mr-sm'
+                    className='btn btn-default mr-sm'
                     onClick={() => onValidatePeriodForm(modal.modalProps, timetable.time_table_periods, metas, filter(timetable.time_table_dates, ['in_out', true]))}
                   >
                     {I18n.t('actions.submit')}

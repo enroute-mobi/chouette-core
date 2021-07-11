@@ -1,8 +1,7 @@
 .nav-menu#menu_top
-  .brandname.col-sm-1 = link_to t('brandname'), root_path
-  .menu-content.col-sm-11
+  .menu-content.col-sm-12
     .menu-item
-      = render 'layouts/navigation/breadcrumb'
+      = breadcrumbs display_single_fragment: true
 
     .menu-item-group.pull-right
       - if !user_signed_in? && I18n.available_locales.size > 1

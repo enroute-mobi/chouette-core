@@ -11,7 +11,7 @@ export default function ConfirmModal({dispatch, modal, onModalAccept, onModalCan
           </div>
           <div className='modal-footer'>
             <button
-              className='btn btn-default'
+              className='btn btn-cancel'
               data-dismiss='modal'
               type='button'
               onClick={() => { onModalCancel(modal.confirmModal.callback) }}

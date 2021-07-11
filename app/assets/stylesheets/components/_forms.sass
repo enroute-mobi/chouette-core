@@ -216,7 +216,7 @@ $cbx-size-xs: 15px
           margin-top: -($cbx-size / 2)
           width: $cbx-size
           height: $cbx-size
-          border: 2px solid $brand-color-secondary
+          border: 2px solid $darkgrey
           background-color: #fff
           border-radius: 3px
 
@@ -239,7 +239,7 @@ $cbx-size-xs: 15px
           color: #fff
 
     &[type='checkbox']:checked + label:before
-      background-color: $brand-color-secondary
+      background-color: $darkgrey
 
     &[type='checkbox']:disabled + label
       &:before
@@ -266,7 +266,7 @@ table, .table
         list-style-type: none
         button
           border-radius: 50%
-          background: $brand-color-secondary
+          background: $brand-color-primary
           color: white
           border: none
 
@@ -324,12 +324,12 @@ table, .table
         width: $cbx-size
         margin: 0
         background-color: #fff
-        border: 2px solid $brand-color-secondary
+        border: 2px solid $darkgrey
         border-radius: 50%
         // cursor: pointer
 
     &:checked + .radio-label
-      background-color: $brand-color-secondary
+      background-color: $darkgrey
 
     &:disabled
       cursor: not-allowed
@@ -365,12 +365,12 @@ table, .table
 
           + .switch-label
             position: relative
-            display: inline-block
+            display: flex;
+            align-items: center;
             width: 100% /* 50px */
-            height: 30px
-            padding-left: 60px
+            height: 22px
+            padding-left: 45px
             line-height: 30px
-            color: $brand-color-secondary
 
             &:before
               content: ''
@@ -378,9 +378,9 @@ table, .table
               left: 0
               top: 0
               display: inline-block
-              width: 50px
-              height: 30px
-              background-color: $brand-color-secondary
+              width: 37px
+              height: 22px
+              background-color: $grey
               border-radius: 18px
 
             &:after
@@ -389,8 +389,8 @@ table, .table
               left: 0
               top: 0
               margin: 2px
-              width: 26px
-              height: 26px
+              width: 18px
+              height: 18px
               border-radius: 50%
               background-color: #fff
               transition: 0.2s
@@ -405,7 +405,7 @@ table, .table
             &:before
               background-color: $brand-color-primary
             &:after
-              left: 20px
+              left: 15px
 
           &:not(:checked) + .switch-label:after
             left: 0
@@ -755,7 +755,7 @@ table, .table
                   margin-top: -($cbx-size-xs / 2)
                   width: $cbx-size-xs
                   height: $cbx-size-xs
-                  border: 2px solid $brand-color-secondary
+                  border: 2px solid $darkgrey
                   background-color: #fff
                   border-radius: 3px
 
@@ -779,7 +779,7 @@ table, .table
             &[type='checkbox']
               &:checked
                 + span:before
-                  background-color: $brand-color-secondary
+                  background-color: $darkgrey
               &:disabled
                 + span:before
                   background-color: $lightgrey

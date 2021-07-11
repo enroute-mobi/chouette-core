@@ -174,7 +174,7 @@ export default class DuplicateVehicleJourney extends Component {
 
                       <div className='modal-footer'>
                         <button
-                          className='btn btn-link'
+                          className='btn btn-cancel'
                           data-dismiss='modal'
                           type='button'
                           onClick={this.props.onModalClose}
@@ -182,7 +182,7 @@ export default class DuplicateVehicleJourney extends Component {
                           {I18n.t('cancel')}
                         </button>
                         <button
-                          className={'btn btn-primary ' + (this.state.additional_time == 0 && this.state.originalDT.hour == this.state.duplicate_time_hh && this.state.originalDT.minute == this.state.duplicate_time_mm ? 'disabled' : '')}
+                          className={'btn btn-default ' + (this.state.additional_time == 0 && this.state.originalDT.hour == this.state.duplicate_time_hh && this.state.originalDT.minute == this.state.duplicate_time_mm ? 'disabled' : '')}
                           type='button'
                           onClick={this.handleSubmit}
                           disabled={this.disableValidateButton()}

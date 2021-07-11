@@ -45,7 +45,7 @@ $menuW: 300px
       font-size: 1.3333em
       text-align: center
       color: #fff
-      background-color: $brand-color-primary
+      background-color: $menu-color-secondary-dark
       cursor: pointer
       list-style: 0.75em
       visibility: -15%
@@ -70,7 +70,7 @@ $menuW: 300px
 
     .menu-content
       display: block
-      background-color: $brand-color-primary
+      background-color: $menu-color-secondary
       color: #fff
       width: $menuW
       margin-left: -($menuW)
@@ -82,8 +82,9 @@ $menuW: 300px
       z-index: 1050
       overflow: auto
 
-      .brandname
-        margin-bottom: 25px
+      .flex
+        display: flex
+        background-color: $menu-color-secondary-dark
 
       .version
         font-size: 0.7em
@@ -101,6 +102,7 @@ $menuW: 300px
         color: white
         display: block
         padding: 10px 25px 0
+        font-weight: 600
 
     &.open .menu-content
       margin-left: 0
@@ -127,8 +129,8 @@ $menuW: 300px
             background-color: rgba(#fff, 0.2)
 
             > .panel-title
-              font-weight: 400
-              font-size: $h2-size
+              font-weight: 600
+              font-size: 1.6rem
               line-height: 30px
 
               > a
@@ -225,7 +227,7 @@ $menuW: 300px
               &.active
                 > span
                   background-color: rgba(#fff, 0.9)
-                  color: $brand-color-primary
+                  color: $brand-color-primary-dark
                   transition: 0.2s
 
               &.disabled
@@ -253,7 +255,7 @@ $menuW: 300px
     height: $menuH
     transition: 0.1s
     padding-left: $menuH
-    background-color: $brand-color-secondary
+    background-color: $brand-color-primary-dark
     color: #fff
 
     > *
@@ -273,16 +275,6 @@ $menuW: 300px
         position: relative
         height: $menuH
         line-height: $menuH
-
-        &:before
-          content: ''
-          display: block
-          position: absolute
-          height: 14px
-          width: 1px
-          background-color: rgba(#fff, 0.8)
-          left: 0
-          top: 13px
 
         & > .menu-item
           max-width: 75%
@@ -423,7 +415,6 @@ $menuW: 300px
 
   .menu-item-group
     .languages
-      background-color: $brand-color-secondary!important
       .dropdown-menu
         position: relative
         top: 0

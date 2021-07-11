@@ -1,4 +1,5 @@
 crumb :root do
+  link image_tag('logo-chouette-2020-vertical-white.png', class: "chouette-little-logo").html_safe, root_path
 end
 
 crumb :workbench do |workbench|

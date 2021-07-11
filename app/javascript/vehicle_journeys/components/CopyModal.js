@@ -52,7 +52,7 @@ const CopyModal = props => {
 
   const pasteFromClipboardAvailable = () =>
     !!(navigator.clipboard && navigator.clipboard.readText)
-  
+
 
   const pasteFromClipboard = async () => {
     try {
@@ -110,12 +110,12 @@ const CopyModal = props => {
               </div>
               <div className='modal-footer'>
               <button
-                className="btn btn-link"
+                className="btn btn-cancel"
                 onClick={closeModal}>
                   {I18n.t('cancel')}
               </button>
               {mode == 'copy' && <button
-                className='btn btn-primary'
+                className='btn btn-default'
                 onClick={toPasteMode}>
                   <i className='fa fa-paste'></i>
                   <span>{ I18n.t('courses_copy_paste.modal.to_paste_mode') }</span>
@@ -127,7 +127,7 @@ const CopyModal = props => {
                   <span>{ I18n.t('courses_copy_paste.modal.to_copy_mode') }</span>
               </button>}
               {mode == 'paste' && <button
-                className='btn btn-primary'
+                className='btn btn-default'
                 disabled={!!error || !content.paste}
                 onClick={pasteContent}>
                   <i className='fa fa-paste'></i>

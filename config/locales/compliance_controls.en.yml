@@ -175,16 +175,6 @@ en:
         3_vehiclejourney_5_2: "The vehicle journey with %{source_objectid} objectid has an departure time %{error_value} at stop point %{target_0_label} (%{target_0_objectid}) greater than the arrival %{reference_value} at the next stop point"
       description: Increasing chronology of the vehicle journey at stops
       prerequisite: "None"
-    vehicle_journey_control/purchase_window:
-      messages:
-        3_vehiclejourney_6: "The vehicle journey %{source_objectid} lacks a purchase window"
-      description: "All vehicle journeys must have a purchase window"
-      prerequisite: "None"
-    vehicle_journey_control/purchase_window_dates:
-      messages:
-        3_vehiclejourney_7: The end date of journey's %{source_objectid} purchase windows must be before or equal of the end date of circulation
-      description: The end of sales must be before end of circulation
-      prerequisite: "None"
     vehicle_journey_control/published_journey_name:
       messages:
         3_vehiclejourney_8: "The vehicle journey with %{source_objectid} must have a published journey name between %{min} and %{max} for the company : %{company_name}"
@@ -333,10 +323,6 @@ en:
         one: "Présence of bus capacity"
       vehicle_journey_control/published_journey_name:
         one: Value of published journey name for one company
-      vehicle_journey_control/purchase_window:
-        one: All vehicle journeys must have a purchase window
-      vehicle_journey_control/purchase_window_dates:
-        one: The end of sales must be before end of circulation
       vehicle_journey_control/empty_time_table:
         one: A vehicle journey cannot have an empty timetable
       vehicle_journey_control/company:

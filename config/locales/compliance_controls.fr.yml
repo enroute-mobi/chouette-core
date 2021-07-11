@@ -174,16 +174,6 @@ fr:
         3_vehiclejourney_5_2: "La course %{source_objectid} a un horaire de départ %{error_value} à l'arrêt %{target_0_label} (%{target_0_objectid}) supérieur à l'horaire d'arrivé %{reference_value} à l'arrêt suivant"
       description: "L'horaire d'arrivée à un arrêt doit être antérieur à l'horaire de départ de cet arrêt ET les horaires de départ aux arrêts doivent être dans l'ordre chronologique croissant."
       prerequisite: "Aucun"
-    vehicle_journey_control/purchase_window:
-      messages:
-        3_vehiclejourney_6: La course %{source_objectid} doit avoir au moins un calendrier de vente
-      description: Une course doit avoir au moins un calendrier de vente
-      prerequisite: "Aucun"
-    vehicle_journey_control/purchase_window_dates:
-      messages:
-        3_vehiclejourney_7: La date de fin du calendrier commercial de la course %{source_objectid} doit être inférieure ou égale à la date de fin de circulation
-      description: Cohérence date de fin de vente - date de fin de circulation
-      prerequisite: "Aucun"
     vehicle_journey_control/published_journey_name:
       messages:
         3_vehiclejourney_8: La course %{source_objectid} doit avoir un numéro de service compris entre %{min} et %{max} pour le transporteur %{company_name}
@@ -254,7 +244,7 @@ fr:
         3_generic_3: "%{source_objectid} : l'attribut %{source_attribute} a une valeur %{error_value} partagée avec %{target_0_objectid}"
       description: "La valeur de l'attribut doit être unique au sein des objets de la ligne"
       prerequisite: "Aucun"
-    
+
     shape_control:
       3_shape_1: "Tracé %{source_objectid} : le tracé passe trop loin de l'arrêt %{target_0_label} (%{target_0_objectid}) : %{error_value} > %{reference_value}"
       3_shape_2: "Tracé %{source_objectid} : le tracé n'est pas défini entre les arrêts %{target_0_label} (%{target_0_objectid}) et %{target_1_label} (%{target_1_objectid})"
@@ -333,10 +323,6 @@ fr:
         one: "Présence de la capacité du bus"
       vehicle_journey_control/published_journey_name:
         one: Valeur du numéro de service pour un transporteur donné
-      vehicle_journey_control/purchase_window:
-        one: Une course doit avoir au moins un calendrier de vente
-      vehicle_journey_control/purchase_window_dates:
-        one: Cohérence date de fin de vente - date de fin de circulation
       vehicle_journey_control/empty_time_table:
         one: Une course ne doit pas être liée à un calendrier d'application vide
       vehicle_journey_control/company:

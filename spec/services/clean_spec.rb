@@ -286,6 +286,89 @@ RSpec.describe Clean::Metadata::InPeriod do
 
 end
 
+RSpec.describe Clean::Metadata::InPeriod do
+  let(:context) do
+    Chouette.create do
+      3.times { line }
+      referential
+    end
+  end
+  let(:referential) { context.referential }
+  let(:lines) { context.lines }
+
+  before { referential.metadatas.clear }
+
+  def period(from, to)
+    Range.new Date.parse(from), Date.parse(to)
+  end
+
+  describe "#clean!" do
+    context "when the clean date is 2030-06-10" do
+      let(:clean) { Clean::Metadata::Before.new scope, Date.parse('2030-06-10') }
+
+      context "when the scope is the whole Referential (no restriction)" do
+        let(:scope) { Clean::Scope::Referential.new(referential) }
+
+        context "when a metadata covers 2030-06-01..2030-06-15, 2030-06-16..2030-06-30" do
+          before do
+            periods = [ period('2030-06-01', '2030-06-15'), period('2030-06-16', '2030-06-20') ]
+            referential.metadatas.create! line_ids: lines.map(&:id), periodes: periods
+          end
+
+          it "should update the periods to 2030-06-11..2030-06-15 and 2030-06-16..2030-06-30" do
+            clean.clean!
+            referential.metadatas.reload
+
+            periods = [ period('2030-06-11','2030-06-15'), period('2030-06-16','2030-06-30') ]
+            expect(referential.metadatas).to contain_exactly(an_object_having_attributes(periodes: periods))
+          end
+
+        end
+      end
+
+      context "when the scope is restricted to a single Line" do
+        let(:line) { lines.first }
+        let(:scope) { Clean::Scope::Line.new Clean::Scope::Referential.new(referential), line }
+
+        let(:other_line_ids) { lines.map(&:id) - [line.id]}
+
+        context "when a metadata covers 2030-06-01..2030-06-15, 2030-06-16..2030-06-30" do
+          before do
+            periods = [ period('2030-06-01', '2030-06-15'), period('2030-06-16', '2030-06-30') ]
+            referential.metadatas.create! line_ids: lines.map(&:id), periodes: periods
+          end
+
+          it "should two metadatas, one on the scoped line, one for the other lines" do
+            clean.clean!
+            referential.metadatas.reload
+
+            expect(referential.metadatas).to contain_exactly(an_object_having_attributes(line_ids: [line.id]),
+                                                             an_object_having_attributes(line_ids: other_line_ids))
+          end
+
+          it "should leave a metadata on the scope line on 2030-06-11..2030-06-15 and 2030-06-16..2030-06-30" do
+            clean.clean!
+            referential.metadatas.reload
+
+            periods = [ period('2030-06-11','2030-06-15'), period('2030-06-16','2030-06-30') ]
+            expect(referential.metadatas).to include(an_object_having_attributes(line_ids: [line.id], periodes: periods))
+          end
+
+          it "should leave unchanged periods for other lines" do
+            clean.clean!
+            referential.metadatas.reload
+
+            periods = [ period('2030-06-01', '2030-06-15'), period('2030-06-16', '2030-06-30') ]
+            expect(referential.metadatas).to include(an_object_having_attributes(line_ids: other_line_ids, periodes: periods))
+          end
+
+        end
+      end
+
+    end
+  end
+end
+
 RSpec.describe Clean::Timetable::Date::InPeriod do
   let(:context) do
     Chouette.create do

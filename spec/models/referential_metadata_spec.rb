@@ -229,4 +229,58 @@ RSpec.describe ReferentialMetadata, :type => :model do
 
   end
 
+  describe ".start_before" do
+
+    let(:context) do
+      Chouette.create do
+        referential periods: [ Date.parse("2030-06-01")..Date.parse("2030-06-14"),
+                               Date.parse("2030-06-15")..Date.parse("2030-06-30") ]
+      end
+    end
+
+    let(:referential) { context.referential }
+    let(:metadata) { referential.metadatas.first }
+    subject { referential.metadatas.start_before(date) }
+
+    context "when the metadata period is 2030-06-01..2030-06-30" do
+
+      context "when the given date is 2030-07-01" do
+        let(:date) { Date.parse '2030-07-01' }
+        it "includes the metadata" do
+          is_expected.to include(metadata)
+        end
+      end
+
+      context "when the given date is 2030-06-30" do
+        let(:date) { Date.parse '2030-06-30' }
+        it "includes the metadata" do
+          is_expected.to include(metadata)
+        end
+      end
+
+      context "when the given date is 2030-06-02" do
+        let(:date) { Date.parse '2030-06-02' }
+        it "includes the metadata" do
+          is_expected.to include(metadata)
+        end
+      end
+
+      context "when the given date is 2030-06-01" do
+        let(:date) { Date.parse '2030-06-01' }
+        it "doesn't include the metadata" do
+          is_expected.to_not include(metadata)
+        end
+      end
+
+      context "when the given date is 2030-05-31" do
+        let(:date) { Date.parse '2030-05-31' }
+        it "doesn't include the metadata" do
+          is_expected.to_not include(metadata)
+        end
+      end
+
+    end
+
+  end
+
 end

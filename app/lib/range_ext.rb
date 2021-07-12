@@ -21,12 +21,23 @@ class Range
   end
   alias_method :-, :remove
 
-  # Returns the periods array after removing the other range.
-  # Can split one of the periods to remove the other range.
-  def self.remove(periods, other)
-    periods.map do |period|
-      period.remove other
+  # Returns the ranges array after removing the other range.
+  # Can split one of the ranges to remove the other range.
+  def self.remove(ranges, other)
+    ranges.map do |range|
+      range.remove other
     end.flatten
+  end
+
+  def self.bounds(ranges)
+    min, max = nil, nil
+
+    Array(ranges).each do |range|
+      min = [min, range.min].compact.min
+      max = [max, range.max].compact.max
+    end
+
+    min..max if min && max
   end
 
 end

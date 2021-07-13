@@ -27,7 +27,7 @@ export default function List({ waypoints }) {
 
           return (
             <tr key={i}>
-              <td>{item.getProperties().name}</td>
+              <td>{item.get('name')}</td>
               <td>{lon}</td>
               <td>{lat}</td>
               <td>

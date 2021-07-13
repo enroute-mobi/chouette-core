@@ -2,9 +2,11 @@ import { useEffect } from 'react'
 import { uniqueId } from 'lodash'
 
 import Collection from 'ol/Collection'
+import Polygon from 'ol/geom/Polygon';
 import { Circle, Fill, Stroke, Style } from 'ol/style'
+import {boundingExtent, getArea } from 'ol/extent';
 
-import { getSource } from '../../shape.selectors'
+import { getSource, getViewExtent } from '../../shape.selectors'
 import store from '../../shape.store'
 import eventEmitter from '../../shape.event-emitter'
 import { addMapInteractions, getLine, getWaypoints, lineId } from '../../shape.helpers'
@@ -17,6 +19,12 @@ const constraintStyle = new Style({
     fill: new Fill({ color: 'rgba(255, 255, 255, 0.5)' })
    })
 })
+
+const getExtent = map => {
+  const coords = map.getView().calculateExtent(map.getSize())
+  const extent = boundingExtent(coords)
+  return extent
+}
   
 export default function useMapInteractions() {
   // Event Handlers
@@ -34,6 +42,23 @@ export default function useMapInteractions() {
     })
 
     addMapInteractions(source, state.map, waypoints)
+
+    state.map.on('moveend', e => {
+      const extent = getExtent(state.map)
+
+      console.log('extent', getArea(extent))
+    })
+
+    // const poly = new Polygon(coords)
+
+    //   console.log('poly', poly)
+
+    // const extent = state.featuresLayer.addFeature(
+    //   new Polygon(
+    //     state.map.getView().calculateExtent(state.map.getSize())
+    //   )
+    // )
+    // console.log('coords', coords)
 
     store.setLine(line)
     store.setWaypoints(waypoints)

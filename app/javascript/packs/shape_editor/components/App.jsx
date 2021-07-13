@@ -1,16 +1,40 @@
 import React from 'react'
+import { BrowserRouter, Route } from 'react-router-dom'
 import { SWRConfig } from 'swr'
 import ShapeEditorMap from './ShapeEditorMap'
 
 const options = {
-  fetcher: url => fetch(url).then(res => res.json()),
+  fetcher: url => {
+    return fetch(url, {
+      headers: {
+        'Accept': 'application/json'
+      }
+    })
+    .then(res => res.json())
+  },
   revalidateOnFocus: false
+}
+
+const renderApp = ({ match }) => {
+  const { action, journeyPatternId, lineId, referentialId, routeId } = match.params
+
+  return (
+    <SWRConfig value={options}>
+      <ShapeEditorMap
+        baseURL={`/referentials/${referentialId}/lines/${lineId}/routes/${routeId}/journey_patterns/${journeyPatternId}`}
+        isEdit={action == 'edit'}
+      />
+    </SWRConfig>
+  )
 }
 
 export default function App() {
   return (
-    <SWRConfig value={options}>
-      <ShapeEditorMap />
-    </SWRConfig>
+    <BrowserRouter>
+      <Route
+        path={'/referentials/:referentialId/lines/:lineId/routes/:routeId/journey_patterns/:journeyPatternId/shapes/:action'}
+        render={renderApp}
+      />
+    </BrowserRouter>
   )
 }

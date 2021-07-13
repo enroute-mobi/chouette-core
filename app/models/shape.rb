@@ -9,6 +9,7 @@ class Shape < ApplicationModel
   has_many :codes, as: :resource, dependent: :delete_all
 
   validates :geometry, presence: true
+  validates :name, presence: true
   # TODO May be usefull, but must not impact performance
   # validates :shape_provider, inclusion: { in: ->(shape) { shape.shape_referential.shape_providers } }, if: :shape_referential
 

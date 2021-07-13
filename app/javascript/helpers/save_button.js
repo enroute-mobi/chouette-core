@@ -17,6 +17,11 @@ export default class SaveButton extends Component{
     return className.join(' ')
   }
 
+  handleClick(e) {
+    e.preventDefault()
+    this.props.editMode ? this.submitForm() : this.props.onEnterEditMode()
+  }
+
   render() {
     if (!this.hasPolicy()) {
       return false
@@ -30,10 +35,7 @@ export default class SaveButton extends Component{
                   className={this.btnClass()}
                   type='button'
                   disabled={this.btnDisabled()}
-                  onClick={e => {
-                    e.preventDefault()
-                    this.props.editMode ? this.submitForm() : this.props.onEnterEditMode()
-                  }}
+                  onClick={this.handleClick}
                 >
                   {this.props.editMode ? I18n.t('actions.submit') : I18n.t('actions.edit')}
                 </button>
@@ -43,5 +45,12 @@ export default class SaveButton extends Component{
         </div>
       )
     }
+  }
+}
+
+SaveButton.defaultProps = {
+  status: {
+    fetchSuccess: false,
+    isFetching: false
   }
 }

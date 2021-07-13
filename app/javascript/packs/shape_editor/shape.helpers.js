@@ -1,11 +1,9 @@
 import { simplify } from '@turf/turf'
-import { dropRight } from 'lodash'
 import Modify from 'ol/interaction/Modify'
 import Draw from 'ol/interaction/Draw'
 import Snap from 'ol/interaction/Snap'
 
 import store from './shape.store'
-import { getMapInteractions } from './shape.selectors'
 
 export const convertCoords = feature =>
   feature
@@ -40,12 +38,34 @@ export const addMapInteractions = (source, map, waypoints) => {
 }
 
 export const lineId = 'line'
-export const baseURL = (() => {
-  const parts = window.location.pathname.split('/')
-  return dropRight(parts).join('/')
-})()
 
 export const wktOptions = { //  use options to convert feature from EPSG:4326 to EPSG:3857
   dataProjection: 'EPSG:4326',
   featureProjection: 'EPSG:3857'
+}
+
+export const submitFetcher = async (url, method, payload) => {
+  const response = await fetch(url, {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json', 
+      'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').attributes.content.value
+    },
+    body: JSON.stringify(payload)
+  })
+
+  for(const [name, value] of response.headers.entries()) {
+    if (name == 'location') {
+      window.location.replace(value)
+    }
+  }
+
+  const data = await response.json() 
+
+  if (!response.ok) {
+    throw data['errors']
+  }
+
+  return data
 }

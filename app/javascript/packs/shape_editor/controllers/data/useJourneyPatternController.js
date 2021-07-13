@@ -1,26 +1,27 @@
-import { dropRight } from 'lodash'
 import useSWR from 'swr'
+import { useParams  } from 'react-router-dom'
 import GeoJSON from 'ol/format/GeoJSON'
 
-import { simplifyGeoJSON, wktOptions } from '../../shape.helpers'
+import { getLine, simplifyGeoJSON, wktOptions } from '../../shape.helpers'
 import store from '../../shape.store'
 
-const baseURL = (() => {
-  const parts = window.location.pathname.split('/')
-  return dropRight(parts, 2).join('/')
-})()
-
 // Custom hook which responsability is to fetch a new GeoJSON when the journeyPatternId change
-export default function useJourneyPatternController() {
+export default function useJourneyPatternController(baseURL) {
+  // Route params
+  const { action } = useParams()
+
   // Event handlers
   const onSuccess = data => {
     const features = new GeoJSON().readFeatures(
       simplifyGeoJSON(data),
       wktOptions
     )
-
-    store.setAttributes({ features })
+  
+    store.setAttributes({
+      features,
+      name: getLine(features).get('name')
+    })
   }
   
-  return useSWR(`${baseURL}.geojson`, { onSuccess })
+  return useSWR(`${baseURL}/shapes/${action}`, { onSuccess })
 }

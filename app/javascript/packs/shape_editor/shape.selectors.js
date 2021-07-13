@@ -43,3 +43,16 @@ export const getSortedCoordinates = flow(
 )
 
 export const getSource = state => state.featuresLayer?.getSource()
+
+export const getSubmitPayload = ({ name, waypoints, line }) => ({
+  shape: {
+    name,
+    coordinates: line.getGeometry().getCoordinates(),
+    waypoints: waypoints.getArray().map((w, position) => ({
+      name: w.get('name'),
+      position,
+      type: w.get('type'),
+      coordinates: w.getGeometry().getCoordinates()
+    }))
+  }
+})

@@ -4,8 +4,9 @@ module TomTom
   class BuildLineStringFeature < ApplicationService
     TOMTOM_API_KEY = Rails.application.secrets.tomtom_api_key
 
-    def initialize coordinates
+    def initialize coordinates, name = ''
       @coordinates = coordinates
+      @name = name
     end
 
     def call
@@ -21,6 +22,9 @@ module TomTom
         geometry: {
           type: 'LineString',
           coordinates: new_coordinates
+        },
+        properties: {
+          name: @name
         },
         crs: {
           type: 'name',

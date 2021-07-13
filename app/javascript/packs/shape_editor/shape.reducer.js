@@ -24,6 +24,11 @@ export const reducer = (state, action) => {
 }
 
 export const initialState = {
+  permissions: {
+    canCreate: false,
+    canUpdate: false
+  },
+  name: '',
   features: [],
   map: null,
   featuresLayer: null,

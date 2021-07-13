@@ -225,7 +225,12 @@ ChouetteIhm::Application.routes.draw do
           end
 
           resource :shapes, except: :index, module: 'journey_pattern' do
-            put :update_line, on: :collection, defaults: { format: 'json' }
+            collection do
+              defaults format: :json do
+                get :get_user_permissions
+                put :update_line
+              end
+            end
           end
         end
         resource :vehicle_journeys_collection, :only => [:show, :update]

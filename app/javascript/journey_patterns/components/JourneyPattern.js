@@ -9,7 +9,7 @@ export default class JourneyPattern extends Component{
     super(props)
     this.previousSpId = undefined
     
-    bindAll(this, ['updateCosts', 'onCreateShape'])
+    bindAll(this, ['updateCosts', 'onCreateShape', 'onEditShape'])
   }
 
   updateCosts(e) {
@@ -28,6 +28,10 @@ export default class JourneyPattern extends Component{
     return (
       <a href={vjURL}>{I18n.t('journey_patterns.journey_pattern.vehicle_journey_at_stops')}</a>
     )
+  }
+
+  hasShape() {
+    return !!this.props.value.shape_id
   }
 
   hasFeature(key) {
@@ -140,9 +144,25 @@ export default class JourneyPattern extends Component{
     const { id } = this.props.value
 
     const basePath = pathname.split('/journey_patterns_collection')[0]
-    const newPathName = `${basePath}/journey_patterns/${id}/shape_referentials/new`
+    const newPathName = `${basePath}/journey_patterns/${id}/shapes/new`
 
     window.location.replace(newPathName)
+  }
+
+  onEditShape() {
+    const { pathname } = window.location
+    const { id, shape_id } = this.props.value
+
+    const basePath = pathname.split('/journey_patterns_collection')[0]
+    const newPathName = `${basePath}/journey_patterns/${id}/shapes/edit`
+
+    console.log('onEditShape', newPathName)
+
+    window.location.replace(newPathName)
+  }
+
+  onUnassociateShape() {
+
   }
 
   render() {
@@ -185,14 +205,32 @@ export default class JourneyPattern extends Component{
                   {this.props.editMode ? I18n.t('actions.edit') : I18n.t('actions.show')}
                 </button>
               </li>
-              <li>
-                <button
-                  type='button'
-                  onClick={this.onCreateShape}
-                  >
-                  Create Shape
-                </button>
-              </li>
+              {
+                !this.hasShape() && (
+                  <li>
+                    <button
+                      type='button'
+                      onClick={this.onCreateShape}
+                      >
+                      Create Shape
+                    </button>
+                  </li>
+                )
+              }
+              {
+                this.hasShape() && (
+                  <>
+                  <li>
+                    <button
+                      type='button'
+                      onClick={this.onEditShape}
+                      >
+                      Edit Shape
+                    </button>
+                  </li>
+                  </>
+                )
+              }
               <li className={this.props.value.object_id ? '' : 'disabled'}>
                 {this.vehicleJourneyURL(this.props.value.object_id)}
               </li>

@@ -5,6 +5,10 @@ class ShapePolicy < ApplicationPolicy
     end
   end
 
+  def create?
+    user.has_permission?('shapes.create')
+  end
+
   def update?
     has_permission?('shapes.update')
   end
@@ -14,7 +18,7 @@ class ShapePolicy < ApplicationPolicy
   end
 
   def has_permission?(permission)
-    return false unless record.shape_provider.workbench_id == @current_workbench&.id
+    return false unless record.shape_provider&.workbench_id == @current_workbench&.id
     return false if user && !user.has_permission?(permission)
     return false if @current_workbench && @current_workbench.has_restriction?(permission)
     true

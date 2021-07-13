@@ -2,6 +2,7 @@
 
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/815b2721c0334346a5ee4f252d23a68e)](https://www.codacy.com?utm_source=bitbucket.org&amp;utm_medium=referral&amp;utm_content=enroute-mobi/chouette-core&amp;utm_campaign=Badge_Grade)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/815b2721c0334346a5ee4f252d23a68e)](https://www.codacy.com?utm_source=bitbucket.org&utm_medium=referral&utm_content=enroute-mobi/chouette-core&utm_campaign=Badge_Coverage)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fenroute-mobi%2Fchouette-core.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fenroute-mobi%2Fchouette-core?ref=badge_shield)
 
 Chouette is a [SaaS platform](https://chouette.enroute.mobi/) dedicated to schedule public transit data : NeTEx, GTFS, Neptune...
 
@@ -29,6 +30,9 @@ Install steps are available [here](https://bitbucket.org/enroute-mobi/chouette-c
 ## License
 
 This project is licensed under the CeCILL-B license, a copy of which can be found in the [LICENSE](./LICENSE.md) file.
+
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fenroute-mobi%2Fchouette-core.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fenroute-mobi%2Fchouette-core?ref=badge_large)
 
 ## Roadmap and Features
 

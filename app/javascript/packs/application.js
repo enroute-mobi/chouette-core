@@ -10,3 +10,5 @@
 import "@fortawesome/fontawesome-free/css/all"
 import '@ryangjchandler/spruce'
 import 'alpinejs'
+
+import './flash_messages'

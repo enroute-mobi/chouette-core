@@ -12,7 +12,9 @@ export default function useShapeController(isEdit, baseURL) {
   const method = isEdit ? 'PUT' : 'POST'
 
   const onError = errors => {
-    // TODO display flash message
+    errors.forEach(text => {
+      window.Spruce.stores.flash.add({ type: 'error', text })
+    })
   }
 
   useEffect(() => {

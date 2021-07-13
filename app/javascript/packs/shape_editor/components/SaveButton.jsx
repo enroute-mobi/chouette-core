@@ -42,7 +42,6 @@ export default class SaveShape extends SaveButton {
   }
 
   handleClick(e) {
-    console.log('click')
     eventEmitter.emit('shape:submit')
   }
 }

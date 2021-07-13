@@ -6,7 +6,7 @@ import { getLine, simplifyGeoJSON, wktOptions } from '../../shape.helpers'
 import store from '../../shape.store'
 
 // Custom hook which responsability is to fetch a new GeoJSON when the journeyPatternId change
-export default function useJourneyPatternController(baseURL) {
+export default function useJourneyPatternController(isEdit, baseURL) {
   // Route params
   const { action } = useParams()
 
@@ -14,7 +14,7 @@ export default function useJourneyPatternController(baseURL) {
   const onSuccess = data => {
     const features = new GeoJSON().readFeatures(
       simplifyGeoJSON(data),
-      wktOptions
+      wktOptions(isEdit)
     )
   
     store.setAttributes({

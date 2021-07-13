@@ -34,7 +34,7 @@ export default function ShapeEditorMap({ isEdit, baseURL }) {
 
   // Controllers
   useMapController()
-  useJourneyPatternController(baseURL)
+  useJourneyPatternController(isEdit, baseURL)
   useLineController(baseURL)
   useUserPermissionsController(baseURL)
   useShapeController(isEdit, baseURL)

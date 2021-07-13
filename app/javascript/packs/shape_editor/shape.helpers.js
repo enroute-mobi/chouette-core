@@ -39,10 +39,10 @@ export const addMapInteractions = (source, map, waypoints) => {
 
 export const lineId = 'line'
 
-export const wktOptions = { //  use options to convert feature from EPSG:4326 to EPSG:3857
-  dataProjection: 'EPSG:4326',
+export const wktOptions = isEdit => ({ //  use options to convert feature from EPSG:4326 to EPSG:3857
+  dataProjection: isEdit ? 'EPSG:3857': 'EPSG:4326',
   featureProjection: 'EPSG:3857'
-}
+})
 
 export const submitFetcher = async (url, method, payload) => {
   const response = await fetch(url, {

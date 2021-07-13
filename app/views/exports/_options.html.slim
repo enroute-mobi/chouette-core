@@ -1,4 +1,5 @@
 - is_export = resource_type == :options
+- exported_lines = @export.exported_lines rescue 'all_line_ids' 
 
 div[
   x-data
@@ -6,7 +7,8 @@ div[
     $store.export.setState({
       referentialId: '#{@export.referential_id}',
       isExport: #{is_export},
-      type: '#{@export.type || 'Export::Gtfs'}'
+      type: '#{@export.type || 'Export::Gtfs'}',
+      exportedLines: '#{exported_lines}'
     })
   "
 ]

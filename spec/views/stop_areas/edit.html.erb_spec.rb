@@ -1,8 +1,12 @@
 describe "/stop_areas/edit", :type => :view do
+  let(:context) do
+    Chouette.create do
+      stop_area
+    end
+  end
   let!(:workbench) { assign :workbench, current_workbench }
-  let(:stop_area_provider) { build :stop_area_provider, stop_area_referential: stop_area_referential, workbench: workbench }
   let!(:stop_area_referential) { assign :stop_area_referential, stop_area.stop_area_referential }
-  let!(:stop_area) { assign(:stop_area, create(:stop_area)) }
+  let!(:stop_area) { assign(:stop_area, context.stop_area) }
   let!(:map) { assign(:map, double(:to_html => '<div id="map"/>'.html_safe)) }
 
   before do

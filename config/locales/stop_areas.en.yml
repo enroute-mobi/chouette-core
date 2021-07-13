@@ -3,6 +3,7 @@ en:
     waiting_time_format: "%{value} minutes"
     search_no_results: "No stop area matching your query"
     no_specific_stops: "This stop area don't have any specific stop"
+    no_codes: "This stop area does not have any codes"
     errors:
       empty: Aucun stop_area_id
       parent_area_type: can not be of type %{area_type}
@@ -65,6 +66,7 @@ en:
         general: "General"
         location: "Location"
       address: "246 Boulevard Saint-Germain, 75007 Paris"
+      add_code: Add a code
       geolocalize: "Pinpoint "
     edit:
       title: "Update stop %{name}"
@@ -170,6 +172,7 @@ en:
         status: Status
         stop_area_provider_id: Stop area provider
         stop_area_provider: Stop area provider
+        codes: "Codes"
   formtastic:
     titles:
       stop_area:

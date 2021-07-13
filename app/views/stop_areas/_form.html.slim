@@ -93,7 +93,17 @@
 
         = f.input :comment, as: :text, input_html: {rows: 5, title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.comment")}
 
-  .separator
+  .separator.section_separator
+
+  .row
+    .col-lg-12
+      h2.mb-lg= Chouette::StopArea.tmf(:codes)
+      - @stop_area.codes.build unless @stop_area.codes.any?
+      = f.simple_fields_for(:codes) do |codes_form|
+        = render 'code_fields', f: codes_form
+
+      .links.nested-linker
+        = link_to_add_association t('stop_areas.form.add_code'), f, :codes, class: 'btn btn-outline-primary'
 
   = cancel_button
   = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'stop_area_form'

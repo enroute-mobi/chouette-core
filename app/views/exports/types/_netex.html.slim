@@ -5,15 +5,5 @@
   div[x-data]
     = sub_form.input :export_type,
       required: true,
-      input_html: { \
-        'x-bind:disabled': '!$store.export.isExport', \
-        'x-model': '$store.export.exportType' \
-      }
-
-    template[x-if="$store.export.exportType == 'line'"]
-      div[
-        x-data
-        x-init="$store.export.initLineCodeSelect()"
-      ]
-        = sub_form.input :line_code, as: :tom_select, collection: [], required: true
-
+      readonly: true,
+      selected: 'full'

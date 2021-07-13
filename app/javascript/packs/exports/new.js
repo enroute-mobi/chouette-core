@@ -43,10 +43,6 @@ class PathBuilder {
 			`/workbenches/${this.workbenchId}/autocomplete/line_providers` :
 			`/workgroups/${this.workgroupId}/autocomplete/line_providers`
 	}
-
-	get lineCodeIds() {
-		return () => `/workbenches/${this.workbenchId}/autocomplete/lines`
-	}
 }
 
 window.Spruce.store('export', {
@@ -72,9 +68,6 @@ window.Spruce.store('export', {
 	},
 	initLineProviderIdsSelect(lineProviderIds) {
 		SelectBuilder.init(`#${this.baseName}_line_provider_ids`, this.pathBuilder.lineProviderIds, lineProviderIds)
-	},
-	initLineCodeSelect() {
-		SelectBuilder.init(`#${this.baseName}_line_code`, this.pathBuilder.lineCodeIds)
 	}
 })
 

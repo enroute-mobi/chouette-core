@@ -69,16 +69,17 @@
                     .title=period.title
                 - line.holes.each do |hole|
                   .period.hole style=hole.html_style class=hole.html_class
-                    .title=hole.title
+                    - if hole.title
+                      .title=hole.title
           - else
             = replacement_msg t('referential_lines.search_no_results')
 
 
   ul.legend
     li.period-container= 'referentials.overview.legend.period'.t
-    li.period-container.empty= 'referentials.overview.legend.empty'.t
-    li.period-container.empty.accepted= 'referentials.overview.legend.accepted'.t
     li.period-container.hole= 'referentials.overview.legend.hole'.t
+    li.period-container.empty= 'referentials.overview.legend.empty'.t
+    
   = new_pagination overview, 'pull-right'
 
 - content_for :javascript do

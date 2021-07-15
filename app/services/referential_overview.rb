@@ -85,7 +85,7 @@ class ReferentialOverview
       @holes ||= begin
         holes = Stat::JourneyPatternCoursesByDate.holes_for_line(@referential_line).map { |hole| Period.new (hole.date..hole.date), @start, h }
         holes = merge_periods holes, join: true
-        holes.select { |h| h.size >= @referential.workgroup.sentinel_min_hole_size }
+        # holes.select { |h| h.size >= @referential.workgroup.sentinel_min_hole_size }
       end
     end
 
@@ -192,18 +192,14 @@ class ReferentialOverview
         @empty
       end
 
-      def accepted?
-        @period.count < 7
-      end
-
+      # Display title if we have at least 2 days
       def title
-        h.l(self.start) + ' - ' + h.l(self.end)
+        h.l(self.start) + ' - ' + h.l(self.end) if size > 1
       end
 
       def html_class
         out = []
         out << "empty" if empty?
-        out << "accepted" if accepted?
         out
       end
     end

@@ -10,7 +10,7 @@ export default function useValidatorController() {
     return eventEmitter.on('map:delete-waypoint-request', async waypoint => {
       store.getState(({ waypoints }) => {
         if (waypoints.getLength() == length) {
-          window.Spruce.stores.flash.add({ type: 'warning', text: 'Could not delete waypoint: a shape must have at least 2 waypoints' })
+          window.Spruce.stores.flash.add({ type: 'warning', text: I18n.t('shapes.errors.must_have_enough_waypoints') })
         } else {
           eventEmitter.emit('map:delete-waypoint', waypoint)
         }

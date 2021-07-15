@@ -212,7 +212,7 @@ export default class JourneyPattern extends Component{
                       type='button'
                       onClick={this.onCreateShape}
                       >
-                      Create Shape
+                      {I18n.t('journey_patterns.actions.create_shape')}
                     </button>
                   </li>
                 )
@@ -225,7 +225,7 @@ export default class JourneyPattern extends Component{
                       type='button'
                       onClick={this.onEditShape}
                       >
-                      Edit Shape
+                      {I18n.t('journey_patterns.actions.edit_shape')}
                     </button>
                   </li>
                   </>

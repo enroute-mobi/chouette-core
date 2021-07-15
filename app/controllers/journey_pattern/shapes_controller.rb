@@ -12,7 +12,7 @@ module JourneyPattern
 
     def new
       if parent.shape
-        flash[:warning] = 'This JP already have a shape'
+        flash[:warning] = I18n.t('shapes.errors.cannot_create')
         return redirect_to edit_referential_line_route_journey_pattern_shapes_path(*parents) 
       end
 
@@ -29,7 +29,7 @@ module JourneyPattern
 
     def edit
       if !parent.shape
-        flash[:warning] = 'This JP does not have a shape'
+        flash[:warning] = I18n.t('shapes.errors.cannot_edit')
         return redirect_to new_referential_line_route_journey_pattern_shapes_path(*parents)
       end
 

@@ -32,10 +32,10 @@ export default function List({ waypoints }) {
               <td>{lat}</td>
               <td>
                 <button onClick={() => onViewPoint(item)}>
-                  View Point
+                  {I18n.t('shapes.actions.view_waypoint')}
                 </button>
                 <button onClick={() => onDeletePoint(item)}>
-                  Delete Point
+                  {I18n.t('shapes.actions.delete_waypoint')}
                 </button>
               </td>
             </tr>

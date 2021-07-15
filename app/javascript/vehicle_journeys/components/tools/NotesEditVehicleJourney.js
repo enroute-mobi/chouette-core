@@ -43,7 +43,7 @@ export default class NotesEditVehicleJourney extends Component {
     } else {
       return <button
         type='button'
-        className='btn btn-outline-primary btn-xs'
+        className='btn btn-primary btn-xs'
         onClick={() => this.props.onToggleFootnoteModal(lf, true)}
       ><span className="fa fa-plus"></span>{I18n.t('actions.add')}</button>
     }

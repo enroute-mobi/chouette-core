@@ -10,7 +10,7 @@ let AddStopPoint = ({ dispatch }) => {
         dispatch(actions.closeMaps())
         dispatch(actions.addStop())
       }}>
-        <button type="submit" className="btn btn-outline-primary">
+        <button type="submit" className="btn btn-primary">
           {I18n.t('stop_areas.actions.new')}
         </button>
       </form>

@@ -126,7 +126,7 @@ export default function PeriodForm({modal, timetable, metas, onOpenAddPeriodForm
               <div className="text-right">
                 <button
                   type='button'
-                  className='btn btn-outline-primary'
+                  className='btn btn-primary'
                   onClick={onOpenAddPeriodForm}
                 >
                   {I18n.t('time_tables.actions.add_period')}

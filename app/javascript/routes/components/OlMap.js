@@ -146,7 +146,7 @@ export default class OlMap extends Component{
               {this.props.value.olMap.json.comment}
             </p>
             {(this.props.value.stoparea_id != this.props.value.olMap.json.stoparea_id) &&(
-              <div className='btn btn-outline-primary btn-sm'
+              <div className='btn btn-primary btn-sm'
                 onClick= {() => {this.props.onUpdateViaOlMap(this.props.index, this.props.value.olMap.json)}}
               >{I18n.t('actions.select')}</div>
             )}

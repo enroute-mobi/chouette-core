@@ -1,7 +1,6 @@
 RSpec.describe TimeOfDay do
 
-  describe '.second_offset' do
-
+  describe '#second_offset' do
     [
       [TimeOfDay.new(0), 0],
       [TimeOfDay.new(0,0,1), 1.second],
@@ -19,11 +18,9 @@ RSpec.describe TimeOfDay do
         expect(time_of_day.second_offset).to eq(expected)
       end
     end
-
   end
 
   describe '.parse' do
-
     [
       ['17', TimeOfDay.new(17)],
       ['17:41', TimeOfDay.new(17, 41)],
@@ -38,11 +35,9 @@ RSpec.describe TimeOfDay do
         expect(TimeOfDay.parse(definition)).to eq(expected)
       end
     end
-
   end
 
   describe '.create' do
-
     [
       [Time.new(2100,01,01,17), nil, TimeOfDay.new(17) ],
       [Time.new(2000,01,01,17,16,15), nil, TimeOfDay.new(17,16,15) ],
@@ -58,11 +53,9 @@ RSpec.describe TimeOfDay do
         expect(TimeOfDay.create(time, attributes)).to eq(expected)
       end
     end
-
   end
 
   describe '.from_second_offset' do
-
     [
       [ 0, TimeOfDay.new(0) ],
       [ 1.second, TimeOfDay.new(0,0,1) ],
@@ -77,7 +70,7 @@ RSpec.describe TimeOfDay do
       end
     end
 
-    it "is the reverse of .second_offset method" do
+    it 'is the reverse of .second_offset method' do
       [
         TimeOfDay.new(23,59,59),
         TimeOfDay.new(1, day_offset: 1),
@@ -86,11 +79,38 @@ RSpec.describe TimeOfDay do
         expect(TimeOfDay.from_second_offset(time_of_day.second_offset)).to eq(time_of_day)
       end
     end
+  end
 
+  describe '.now' do
+    let(:time_zone) { Time.find_zone('Eastern Time (US & Canada)')}
+
+    context 'when no TimeZone is given and the default TimeZone is "Eastern Time (US & Canada)"' do
+      subject { TimeOfDay.now }
+
+      around do |example|
+        Time.use_zone(time_zone) { example.run }
+      end
+
+      context 'when the current time is 22:00' do
+        around do |example|
+          Timecop.freeze(time_zone.parse("22:00")) { example.run }
+        end
+
+        it { is_expected.to have_attributes(hour: 22, minute: 0, second_offset: 97200, utc_offset: -18000) }
+      end
+    end
+
+    context 'when the given TimeZone is "Eastern Time (US & Canada)"' do
+      subject { TimeOfDay.now time_zone: time_zone  }
+
+      context 'when the current time is 22:00' do
+        before { allow(time_zone).to receive(:now).and_return time_zone.parse("22:00") }
+        it { is_expected.to have_attributes(hour: 22, minute: 0, second_offset: 97200, utc_offset: -18000) }
+      end
+    end
   end
 
   describe '#without_utc_offset' do
-
     [
       [ TimeOfDay.new(12, utc_offset: 1.hour), TimeOfDay.new(11) ],
       [ TimeOfDay.new(16, utc_offset: -8.hours), TimeOfDay.new(0, day_offset: 1) ],
@@ -100,11 +120,9 @@ RSpec.describe TimeOfDay do
         expect(with.without_utc_offset).to eq(without)
       end
     end
-
   end
 
   describe '#with_utc_offset' do
-
     [
       [ TimeOfDay.new(14), -8.hours, TimeOfDay.new(6, utc_offset: -8.hours) ],
       [ TimeOfDay.new(0, day_offset: 1), -8.hours, TimeOfDay.new(16, utc_offset: -8.hours) ],
@@ -114,11 +132,9 @@ RSpec.describe TimeOfDay do
         expect(without.with_utc_offset(utc_offset)).to eq(with)
       end
     end
-
   end
 
   describe '#add' do
-
     [
       [ TimeOfDay.new(0), {day_offset: 1}, TimeOfDay.new(0, day_offset: 1) ],
       [ TimeOfDay.new(16, utc_offset: -8.hours), {day_offset: -1}, TimeOfDay.new(0) ],
@@ -129,11 +145,9 @@ RSpec.describe TimeOfDay do
         expect(time_of_day.add(arguments)).to eq(expected)
       end
     end
-
   end
 
   describe '#with_day_offset' do
-
     [
       [ TimeOfDay.new(0), 1, TimeOfDay.new(0, day_offset: 1) ],
       [ TimeOfDay.new(0, day_offset: -1), 1, TimeOfDay.new(0, day_offset: 1) ],
@@ -144,11 +158,9 @@ RSpec.describe TimeOfDay do
         expect(time_of_day.with_day_offset(day_offset)).to eq(expected)
       end
     end
-
   end
 
   describe "real examples" do
-
     it "allows to tranform 16:00:00 at Los Angeles into 00:00 day+1" do
       los_angeles = ActiveSupport::TimeZone["America/Los_Angeles"]
 
@@ -166,11 +178,9 @@ RSpec.describe TimeOfDay do
 
       expect(utc_time_of_day).to have_attributes(hour: 23, minute: 5, day_offset: -1, utc_offset: 0)
     end
-
   end
 
   describe '#to_iso_8601' do
-
     [
       [ TimeOfDay.new(12), "12:00:00Z" ],
       [ TimeOfDay.new(12,13), "12:13:00Z" ],
@@ -185,15 +195,12 @@ RSpec.describe TimeOfDay do
         expect(time_of_day.to_iso_8601).to eq(expected)
       end
     end
-
   end
 
   describe '#-' do
-
     it "returns the seconds between the other TimeOfDay" do
       expect(TimeOfDay.new(12) - TimeOfDay.new(11)).to eq(1.hour)
     end
-
   end
 
 end

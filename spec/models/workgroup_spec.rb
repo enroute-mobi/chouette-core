@@ -49,7 +49,7 @@ RSpec.describe Workgroup, type: :model do
                        nightly_aggregate_enabled: nightly_aggregate_enabled
     end
 
-    let(:time_at_1515) { Time.now.beginning_of_day + 15.hours + 15.minutes }
+    let(:time_at_1515) { Time.zone.now.beginning_of_day + 15.hours + 15.minutes }
 
     context "when nightly_aggregate_enabled is true" do
       let(:nightly_aggregate_enabled) { true }
@@ -143,7 +143,7 @@ RSpec.describe Workgroup, type: :model do
       end
 
       it "creates a new aggregate" do
-        Timecop.freeze(Time.now.beginning_of_day + 6.months + 15.hours + 15.minutes) do
+        Timecop.freeze(Time.zone.now.beginning_of_day + 6.months + 15.hours + 15.minutes) do
           expect { referential.workgroup.nightly_aggregate! }.to change {
             referential.workgroup.aggregates.count
           }.by(1)

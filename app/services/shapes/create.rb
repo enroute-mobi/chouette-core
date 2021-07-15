@@ -1,22 +1,19 @@
 module Shapes
   class Create < ApplicationService
-    attr_reader :coordinates, :factory, :journey_pattern, :shape, :waypoints
+    attr_reader :journey_pattern, :waypoints
 
     def initialize(waypoints: [], coordinates: [], journey_pattern:, **params)
       @waypoints = waypoints
-      @coordinates = coordinates
       @journey_pattern = journey_pattern
       
-      @shape = Shape.new(params)
+      factory = RGeo::Geos.factory(srid: 4326)
 
-      @factory = RGeo::Geos.factory(srid: 4326)
+      shape.update_attributes(params)
+      points = coordinates.map { |(lon, lat)| factory.point(lon, lat) }
+      shape.geometry = factory.line_string(points)
     end
 
     def call
-      points = coordinates.map { |(lon, lat)| factory.point(lon, lat) }
-
-      shape.geometry = factory.line_string(points)
-
       shape.transaction do
         raise ActiveRecord::Rollback unless shape.save
 
@@ -33,6 +30,12 @@ module Shapes
       end
 
       shape
+    end
+
+    private
+
+    def shape
+      @shape ||= Shape.new
     end
   end
 end

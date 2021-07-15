@@ -37,8 +37,8 @@ export default function ShapeEditorMap({ isEdit, baseURL }) {
   useValidatorController()
 
   useJourneyPatternController(isEdit, baseURL)
-  useLineController(baseURL)
-  useUserPermissionsController(baseURL)
+  useLineController(isEdit, baseURL)
+  useUserPermissionsController(isEdit, baseURL)
   useShapeController(isEdit, baseURL)
 
   return (

@@ -13,7 +13,7 @@ module JourneyPattern
     def new
       if parent.shape
         flash[:warning] = I18n.t('shapes.errors.cannot_create')
-        return redirect_to edit_referential_line_route_journey_pattern_shapes_path(*parents) 
+        return redirect_to edit_referential_line_route_journey_pattern_shapes_path(parents) 
       end
 
       respond_to do |format|
@@ -30,7 +30,7 @@ module JourneyPattern
     def edit
       if !parent.shape
         flash[:warning] = I18n.t('shapes.errors.cannot_edit')
-        return redirect_to new_referential_line_route_journey_pattern_shapes_path(*parents)
+        return redirect_to new_referential_line_route_journey_pattern_shapes_path(parents)
       end
 
       respond_to do |format|
@@ -48,16 +48,13 @@ module JourneyPattern
     def create
       @shape = Shapes::Create.call(**shape_params)
       
-      create! do |success, failure|
-        success.json do
-          response.headers['Location'] = referential_line_route_journey_patterns_collection_path(parents.first(3))
-          render json: {}, status: 201
-        end
+      create!(&create_or_update_callback)
+    end
 
-        failure.json do
-          render json: { errors: @shape.errors.full_messages }, status: 400
-        end
-      end
+    def update
+       @shape = Shapes::Update.call(**shape_params)
+      
+      update!(&create_or_update_callback)
     end
 
     def get_user_permissions
@@ -82,6 +79,19 @@ module JourneyPattern
     end
 
     private
+
+    def create_or_update_callback
+      return -> (success, failure) do
+        success.json do
+          response.headers['Location'] = referential_line_route_journey_patterns_collection_path(parents.first(3))
+          render json: {}, status: 201
+        end
+
+        failure.json do
+          render json: { errors: @shape.errors.full_messages }, status: 400
+        end
+      end
+    end
 
     def parents
       [ referential, parent.line, parent.route, parent ]

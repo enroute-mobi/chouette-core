@@ -9,7 +9,7 @@ import store from '../../shape.store'
 import { onWaypointsUpdate$ } from '../../shape.observables'
 
 // Custom hook which responsability is to fetch a new LineString GeoJSON object based on state coordinates when shouldUpdateLine is set to true
-export default function useLineController(baseURL) {
+export default function useLineController(isEdit, baseURL) {
   const [shouldUpdateLine, setShouldUpdateLine ] = useState(false)
 
   // Event handlers
@@ -18,7 +18,7 @@ export default function useLineController(baseURL) {
 
     const lineFeature = new GeoJSON().readFeature(
       simplifyGeoJSON(data),
-      wktOptions
+      wktOptions(isEdit)
     )
 
     const { line } = await store.getStateAsync()

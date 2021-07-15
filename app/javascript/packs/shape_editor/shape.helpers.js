@@ -55,9 +55,14 @@ export const submitFetcher = async (url, method, payload) => {
     body: JSON.stringify(payload)
   })
 
-  for(const [name, value] of response.headers.entries()) {
+  // Way to handle redirection on json request
+  for (const [name, value] of response.headers.entries()) {
     if (name == 'location') {
-      window.location.replace(value)
+      const { location, sessionStorage } = window
+      const previousShapeAction = method = 'POST' ? 'shape-created' : 'shape-updated'
+      
+      sessionStorage.setItem('previousShapeAction', previousShapeAction) // Being used in JP react app to display or not a flash message
+      location.assign(value)
     }
   }
 

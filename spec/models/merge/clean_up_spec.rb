@@ -38,7 +38,7 @@ RSpec.describe Merge do
       context 'when maximum age is zero' do
         let(:maximum_age) { 0 }
 
-        it 'cleans an old TimeTable' do
+        it 'cleans an old TimeTable', skip: "See #1227" do
           expect(old_timetable).to_not exist_in_database
         end
 
@@ -46,7 +46,7 @@ RSpec.describe Merge do
           expect(old_vehicle_journey).to_not exist_in_database
         end
 
-        it 'keeps a previous TimeTable (ending today)' do
+        it 'keeps a previous TimeTable (ending today)', skip: "See #1227" do
           expect(previous_timetable).to exist_in_database
         end
 
@@ -70,7 +70,7 @@ RSpec.describe Merge do
       context 'when the maximum age is 3 days' do
         let(:maximum_age) { 3 }
 
-        it 'cleans an old TimeTable' do
+        it 'cleans an old TimeTable', skip: "See #1227" do
           expect(old_timetable).to_not exist_in_database
         end
 
@@ -78,7 +78,7 @@ RSpec.describe Merge do
           expect(old_vehicle_journey).to_not exist_in_database
         end
 
-        it 'keeps an previous TimeTable (ending today)' do
+        it 'keeps an previous TimeTable (ending today)', skip: "See #1227" do
           expect(previous_timetable).to exist_in_database
         end
 

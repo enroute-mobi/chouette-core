@@ -151,7 +151,7 @@ GEM
       activerecord (>= 4.2)
     acts_as_tree (2.9.1)
       activerecord (>= 3.0.0)
-    addressable (2.7.0)
+    addressable (2.8.0)
       public_suffix (>= 2.0.2, < 5.0)
     apartment (2.2.1)
       activerecord (>= 3.1.2, < 6.0)
@@ -249,7 +249,7 @@ GEM
       delayed_job (> 2.0.3)
       rack-protection (>= 1.5.5)
       sinatra (>= 1.4.4)
-    derailed_benchmarks (2.1.0)
+    derailed_benchmarks (2.1.1)
       benchmark-ips (~> 2)
       dead_end
       get_process_mem (~> 0)
@@ -358,8 +358,8 @@ GEM
     graphiql-rails (1.7.0)
       railties
       sprockets-rails
-    graphql (1.12.12)
-    gretel (4.2.0)
+    graphql (1.12.13)
+    gretel (4.3.0)
       actionview (>= 5.1, < 7.0)
       railties (>= 5.1, < 7.0)
     guard (2.16.2)
@@ -455,7 +455,7 @@ GEM
     method_source (1.0.0)
     mime-types (3.3.1)
       mime-types-data (~> 3.2015)
-    mime-types-data (3.2021.0225)
+    mime-types-data (3.2021.0704)
     mimemagic (0.4.3)
       nokogiri (~> 1)
       rake
@@ -517,7 +517,7 @@ GEM
       nio4r (~> 2.0)
     pundit (2.1.0)
       activesupport (>= 3.0.0)
-    pundit-matchers (1.6.0)
+    pundit-matchers (1.7.0)
       rspec-rails (>= 3.0.0)
     rabl (0.14.5)
       activesupport (>= 2.3.14)
@@ -568,7 +568,7 @@ GEM
       rake (>= 0.8.7)
       thor (>= 0.19.0, < 2.0)
     rainbow (3.0.0)
-    rake (13.0.3)
+    rake (13.0.6)
     ransack (2.4.2)
       activerecord (>= 5.2.4)
       activesupport (>= 5.2.4)
@@ -678,8 +678,8 @@ GEM
     sentry-raven (2.13.0)
       faraday (>= 0.7.6, < 1.0)
     shellany (0.0.1)
-    shoulda-matchers (4.5.1)
-      activesupport (>= 4.2.0)
+    shoulda-matchers (5.0.0)
+      activesupport (>= 5.2.0)
     signet (0.15.0)
       addressable (~> 2.3)
       faraday (>= 0.17.3, < 2.0)
@@ -910,4 +910,4 @@ DEPENDENCIES
   will_paginate-bootstrap
 
 BUNDLED WITH
-   2.2.21
+   2.2.23

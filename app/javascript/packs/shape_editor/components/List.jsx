@@ -8,7 +8,7 @@ export default function List({ waypoints }) {
   }
 
   const onDeletePoint = waypoint => {
-    eventEmitter.emit('map:delete-waypoint', waypoint)
+    eventEmitter.emit('map:delete-waypoint-request', waypoint)
   }
 
   return (

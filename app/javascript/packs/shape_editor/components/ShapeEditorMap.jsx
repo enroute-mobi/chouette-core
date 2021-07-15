@@ -6,7 +6,7 @@ import { getSortedWaypoints } from '../shape.selectors'
 import store from '../shape.store'
 import { useStore } from '../../../helpers/hooks'
 
-import { useMapController } from '../controllers/ui'
+import { useMapController, useValidatorController } from '../controllers/ui'
 import {
   useJourneyPatternController,
   useLineController,
@@ -34,6 +34,8 @@ export default function ShapeEditorMap({ isEdit, baseURL }) {
 
   // Controllers
   useMapController()
+  useValidatorController()
+
   useJourneyPatternController(isEdit, baseURL)
   useLineController(baseURL)
   useUserPermissionsController(baseURL)

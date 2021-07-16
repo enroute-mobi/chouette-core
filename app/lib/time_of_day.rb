@@ -1,3 +1,26 @@
+# Manage time of day like 22:00 without date concept but with support for:
+# * utc_offset / time_zone
+# * day_offset
+#
+# Can be created from a Time:
+#
+# TimeOfDay.create(Time.zone.parse("2021-07-15 21:59:25 +0200")).to_s
+# => "08:48:25 utc_offset:3600"
+#
+# Can be created from a string:
+#
+# TimeOfDay.parse("22:00").to_s
+# => "22:00:00"
+# TimeOfDay.parse("22:00", time_zone: Time.zone).to_s
+# => "22:00:00 utc_offset:3600"
+#
+# Can be created from the current time:
+#
+# TimeOfDay.now.to_s
+# => "10:02:44 utc_offset:3600"
+# TimeOfDay.now(time_zone: Time.find_zone('Eastern Time (US & Canada)')).to_s
+# => "04:02:47 utc_offset:-18000"
+
 class TimeOfDay
   include Comparable
 
@@ -5,7 +28,9 @@ class TimeOfDay
   alias min minute
   alias sec second
 
-  def initialize(hour, minute = nil, second = nil, day_offset: nil, utc_offset: nil)
+  def initialize(hour, minute = nil, second = nil, day_offset: nil, utc_offset: nil, time_zone: nil)
+    utc_offset = time_zone.utc_offset if time_zone
+
     @hour = hour.to_i
     @minute = minute.to_i
     @second = second.to_i
@@ -29,11 +54,11 @@ class TimeOfDay
       attributes[:second] = second
     end
 
-    if zone = attributes.delete(:time_zone)
-      attributes[:utc_offset] = zone.utc_offset
-    end
-
     new attributes.fetch(:hour), attributes[:minute], attributes[:second], attributes.except(:hour, :minute, :second)
+  end
+
+  def self.now(time_zone: Time.zone)
+    create time_zone.now
   end
 
   def self.from_second_offset(offset, utc_offset: 0)
@@ -68,6 +93,16 @@ class TimeOfDay
     with_utc_offset(time_zone&.utc_offset || 0)
   end
 
+  # Returns the *same* hour/minute into another TimeZone
+  #
+  # TimeOfDay.new(6).force_zone("Europe/Paris").to_s
+  # => "06:00:00 utc_offset:3600"
+  def force_zone(time_zone)
+    time_zone = ActiveSupport::TimeZone[time_zone] if time_zone.is_a?(String)
+    utc_offset = time_zone&.utc_offset || 0
+    self.class.from_second_offset second_offset - utc_offset, utc_offset: utc_offset
+  end
+
   def with_day_offset(offset)
     self.class.from_second_offset second_offset + (offset-day_offset).days, utc_offset: utc_offset
   end
@@ -80,9 +115,14 @@ class TimeOfDay
     utc_offset != 0
   end
 
-  SIMPLE_FORMAT = "%.2d:%.2d:%.2d"
+  HMS_FORMAT = "%.2d:%.2d:%.2d"
   def to_hms
-    SIMPLE_FORMAT % [hour, minute, second]
+    HMS_FORMAT % [hour, minute, second]
+  end
+
+  HM_FORMAT = "%.2d:%.2d"
+  def to_hm
+    HM_FORMAT % [hour, minute]
   end
 
   def to_s
@@ -164,4 +204,19 @@ class TimeOfDay
     end
   end
 
+  module Type
+    class TimeWithoutZone < ActiveRecord::Type::Value
+      def cast(value)
+        TimeOfDay.parse(value).force_zone(Time.zone)
+      end
+
+      def serialize(value)
+        value.to_hms
+      end
+
+      def changed_in_place?(raw_old_value, new_value)
+        raw_old_value != serialize(new_value)
+      end
+    end
+  end
 end

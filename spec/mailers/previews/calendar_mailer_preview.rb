@@ -2,12 +2,10 @@
 class CalendarMailerPreview < ActionMailer::Preview
 
   def created
-    cal = Calendar.new(name: 'test calendar', shared: true)
-    CalendarMailer.created(cal, User.take)
+    CalendarMailer.created(Calendar.first.id, User.first.id)
   end
 
   def updated
-    cal = Calendar.new(name: 'test calendar', shared: true)
-    CalendarMailer.updated(cal, User.take)
+    CalendarMailer.updated(Calendar.first.id, User.first.id)
   end
 end

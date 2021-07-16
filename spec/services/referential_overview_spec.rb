@@ -71,7 +71,6 @@ RSpec.describe ReferentialOverview::Line do
       expect(line.periods.count).to eq 3
       expect(line.periods[0].empty?).to be_falsy
       expect(line.periods[1].empty?).to be_truthy
-      expect(line.periods[1].accepted?).to be_truthy
       expect(line.periods[2].empty?).to be_falsy
     end
 
@@ -94,7 +93,6 @@ RSpec.describe ReferentialOverview::Line do
         expect(line.periods.count).to eq 3
         expect(line.periods[0].empty?).to be_falsy
         expect(line.periods[1].empty?).to be_truthy
-        expect(line.periods[1].accepted?).to be_falsy
         expect(line.periods[2].empty?).to be_falsy
       end
     end
@@ -110,7 +108,6 @@ RSpec.describe ReferentialOverview::Line do
         expect(line.periods.count).to eq 2
         expect(line.periods[0].empty?).to be_falsy
         expect(line.periods[1].empty?).to be_truthy
-        expect(line.periods[1].accepted?).to be_falsy
         expect(line.periods[1].end).to eq 1.days.ago.to_date
       end
     end
@@ -126,7 +123,6 @@ RSpec.describe ReferentialOverview::Line do
         expect(line.periods.count).to eq 2
         expect(line.periods[0].start).to eq 200.days.ago.to_date
         expect(line.periods[0].empty?).to be_truthy
-        expect(line.periods[0].accepted?).to be_falsy
         expect(line.periods[1].empty?).to be_falsy
       end
     end

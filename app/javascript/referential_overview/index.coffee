@@ -74,8 +74,7 @@ class window.ReferentialOverview
     $(document).scroll (e)=>
       @documentScroll(e)
     @documentScroll pageY: $(document).scrollTop()
-    if date
-      @showDay date
+    @showDay date ? date : "#{today.getFullYear()}-#{today.getMonth() + 1}-#{today.getDate()}"
 
   showDay: (date)->
     day = @container.find(".day.#{date}")

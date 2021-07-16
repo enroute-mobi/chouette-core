@@ -9,7 +9,6 @@ import eventEmitter from '../../shape.event-emitter'
 // Custom hook which responsability is to fetch a save (create/update) a shape object
 export default function useShapeController(isEdit, baseURL) {
   const [shouldSubmit, setShouldSubmit] = useState(false)
-  const method = isEdit ? 'PUT' : 'POST'
 
   const onError = errors => {
     errors.forEach(text => {
@@ -30,7 +29,7 @@ export default function useShapeController(isEdit, baseURL) {
     async url => {
       const state = await store.getStateAsync()
 
-      return submitFetcher(url, method, getSubmitPayload(state))
+      return submitFetcher(url, isEdit, getSubmitPayload(state))
     },
     { onError }
   )

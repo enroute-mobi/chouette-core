@@ -1,9 +1,8 @@
 module Shapes
-  class Update < Shape::Create
+  class Update < Shapes::Create
 
     def call
-      shape.waypoints.destroy_all
-      super
+      super { shape.waypoints.destroy_all }
     end
 
     private

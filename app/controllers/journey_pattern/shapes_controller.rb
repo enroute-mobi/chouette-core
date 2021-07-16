@@ -52,7 +52,7 @@ module JourneyPattern
     end
 
     def update
-       @shape = Shapes::Update.call(**shape_params)
+      @shape = Shapes::Update.call(**shape_params)
       
       update!(&create_or_update_callback)
     end
@@ -103,6 +103,10 @@ module JourneyPattern
 
     def workbench
       @workbench ||= default_workbench(resource: parent.line)
+    end
+
+    def resource_params
+      [{}] # Needed to avoid ActiveRecord::Mismatch error with update! since Shapes::Update is handling the update 
     end
 
     def shape_params

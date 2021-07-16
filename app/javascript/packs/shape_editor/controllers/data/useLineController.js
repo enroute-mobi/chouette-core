@@ -18,7 +18,10 @@ export default function useLineController(isEdit, baseURL) {
 
     const lineFeature = new GeoJSON().readFeature(
       simplifyGeoJSON(data),
-      wktOptions(isEdit)
+      {
+        dataProjection: 'EPSG:4326',
+        featureProjection: 'EPSG:3857'
+      }
     )
 
     const { line } = await store.getStateAsync()

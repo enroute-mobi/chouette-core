@@ -44,7 +44,9 @@ export const wktOptions = isEdit => ({ //  use options to convert feature from E
   featureProjection: 'EPSG:3857'
 })
 
-export const submitFetcher = async (url, method, payload) => {
+export const submitFetcher = async (url, isEdit, payload) => {
+  const method = isEdit ? 'PUT' : 'POST'
+
   const response = await fetch(url, {
     method,
     headers: {
@@ -59,7 +61,7 @@ export const submitFetcher = async (url, method, payload) => {
   for (const [name, value] of response.headers.entries()) {
     if (name == 'location') {
       const { location, sessionStorage } = window
-      const previousShapeAction = method = 'POST' ? 'shape-created' : 'shape-updated'
+      const previousShapeAction = isEdit ? 'shape-updated' : 'shape-created'
       
       sessionStorage.setItem('previousShapeAction', previousShapeAction) // Being used in JP react app to display or not a flash message
       location.assign(value)

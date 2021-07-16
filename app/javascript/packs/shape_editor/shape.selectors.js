@@ -51,7 +51,7 @@ export const getSubmitPayload = ({ name, waypoints, line }) => ({
     waypoints: waypoints.getArray().map((w, position) => ({
       name: w.get('name'),
       position,
-      type: w.get('type'),
+      waypoint_type: w.get('type'),
       coordinates: w.getGeometry().getCoordinates()
     }))
   }

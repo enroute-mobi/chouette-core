@@ -1,4 +1,4 @@
-# Preview all emails at http://localhost:3000/rails/mailers/calendar_mailer
+# Preview all emails at http://localhost:3000/rails/mailers/aggregate_mailer
 class AggregateMailerPreview < ActionMailer::Preview
 
   def finished

@@ -1,4 +1,4 @@
-# Preview all emails at http://localhost:3000/rails/mailers/calendar_mailer
+# Preview all emails at http://localhost:3000/rails/mailers/merge_mailer
 class MergeMailerPreview < ActionMailer::Preview
 
   def finished

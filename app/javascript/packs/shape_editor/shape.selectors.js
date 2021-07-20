@@ -42,7 +42,25 @@ export const getSortedCoordinates = flow(
   curryRight(map)(convertCoords)
 )
 
-export const getSource = state => state.featuresLayer?.getSource()
+export const getLayers = state => state.map?.getLayers()
+
+const getLayer = type => flow(
+  getLayers,
+  layers => layers?.getArray()?.find(layer => layer.get('type') == type)
+)
+
+const getSource = type => flow(
+  getLayer(type),
+  layer => layer?.getSource()
+)
+
+export const getInteractiveLayer = getLayer('interactive')
+
+export const getStaticlayer = getLayer('static')
+
+export const getInteractiveSource = getSource('interactive')
+
+export const getStaticSource = getSource('static')
 
 export const getSubmitPayload = ({ name, waypoints, line }) => ({
   shape: {

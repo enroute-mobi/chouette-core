@@ -4,6 +4,7 @@ import Draw from 'ol/interaction/Draw'
 import Snap from 'ol/interaction/Snap'
 
 import store from './shape.store'
+import handleRedirect from '../../helpers/redirect'
 
 export const convertCoords = feature =>
   feature
@@ -33,6 +34,10 @@ export const addMapInteractions = (source, map, waypoints) => {
   const snap = new Snap({ source })
   const interactions = [modify, draw, snap]
 
+  draw.on('drawend', () => waypoints.dispatchEvent('change'))
+
+  modify.on('modifyend', () => waypoints.dispatchEvent('change'))
+
   interactions.forEach(i => map.addInteraction(i))
   store.setAttributes({ draw, modify, snap })
 }
@@ -57,16 +62,13 @@ export const submitFetcher = async (url, isEdit, payload) => {
     body: JSON.stringify(payload)
   })
 
-  // Way to handle redirection on json request
-  for (const [name, value] of response.headers.entries()) {
-    if (name == 'location') {
-      const { location, sessionStorage } = window
-      const previousShapeAction = isEdit ? 'shape-updated' : 'shape-created'
-      
-      sessionStorage.setItem('previousShapeAction', previousShapeAction) // Being used in JP react app to display or not a flash message
-      location.assign(value)
+  handleRedirect(() => {
+    const { sessionStorage } = window
+    const previousAction = isEdit ? 'shape-update' : 'shape-create'
+    
+    sessionStorage.setItem('previousAction', previousAction) // Being used in JP react app to display or not a flash message
     }
-  }
+  )(response)
 
   const data = await response.json() 
 

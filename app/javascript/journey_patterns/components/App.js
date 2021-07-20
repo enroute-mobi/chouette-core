@@ -6,25 +6,29 @@ import ConfirmModal from '../containers/ConfirmModal'
 import CancelJourneyPattern from '../containers/CancelJourneyPattern'
 import SaveJourneyPattern from '../containers/SaveJourneyPattern'
 import JourneyPatternList from '../containers/JourneyPatternList'
-import RouteMap from './RouteMap'
+// import RouteMap from './RouteMap'
 
 const App = () => {
-  // Add a flash message if a shape was previoulsy created/updated
+  // Add a flash message if a shape was previoulsy created/updated/unassociated
   useEffect(() => {
+    const { flash } = window.Spruce.stores
     const { sessionStorage } = window
-    const key = 'previousShapeAction'
-    const resource_name = I18n.t('activerecord.models.shape.one')
 
-    switch(sessionStorage.getItem(key)) {
-      case 'shape-created':
-        window.Spruce.stores.flash.add({ type: 'success', text: I18n.t('flash.actions.create.notice', { resource_name } ) })
-        break
-      case 'shape-updated':
-        window.Spruce.stores.flash.add({ type: 'success', text: I18n.t('flash.actions.update.notice', { resource_name } ) })
-        break
+    const key = 'previousAction'
+    const previousAction = sessionStorage.getItem(key)
+
+    if (previousAction) {
+      const [resource, action] = previousAction.split('-')
+
+      flash.add({
+        type: 'success',
+        text: I18n.t(`flash.actions.${action}.notice`, {
+          resource_name: I18n.t(`activerecord.models.${resource}.one`)
+        })
+      })
     }
 
-    sessionStorage.removeItem(key)
+    return () => sessionStorage.removeItem(key) 
   }, [])
 
   return (

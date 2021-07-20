@@ -56,7 +56,7 @@ function MapWrapper({ features, onInit, _style }) {
     setMap(initialMap)
     setFeaturesLayer(initialFeaturesLayer)
 
-    onInit(initialMap, initialFeaturesLayer)
+    onInit(initialMap)
   },[])
 
   // update map if features prop changes - logic formerly put into componentDidUpdate

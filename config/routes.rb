@@ -220,8 +220,9 @@ ChouetteIhm::Application.routes.draw do
         resource :journey_patterns_collection, :only => [:show, :update]
         resources :journey_patterns do
           member do
-            get 'available_specific_stop_places'
             get 'new_vehicle_journey'
+            get 'available_specific_stop_places'
+            put 'unassociate_shape'
           end
 
           resource :shapes, except: :index, module: 'journey_pattern' do

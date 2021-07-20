@@ -3,10 +3,10 @@ import useSWR from 'swr'
 
 import GeoJSON from 'ol/format/GeoJSON'
 
-import { simplifyGeoJSON, submitFetcher, wktOptions } from '../../shape.helpers'
+import { simplifyGeoJSON, submitFetcher } from '../../shape.helpers'
 import { getSortedCoordinates } from '../../shape.selectors'
 import store from '../../shape.store'
-import { onWaypointsUpdate$ } from '../../shape.observables'
+import eventEmitter from '../../shape.event-emitter'
 
 // Custom hook which responsability is to fetch a new LineString GeoJSON object based on state coordinates when shouldUpdateLine is set to true
 export default function useLineController(isEdit, baseURL) {
@@ -34,7 +34,7 @@ export default function useLineController(isEdit, baseURL) {
   const onWaypointsUpdate = () => setShouldUpdateLine(true)
 
   useEffect(() => {
-    onWaypointsUpdate$.subscribe(onWaypointsUpdate)
+    eventEmitter.on('waypoints:updated', onWaypointsUpdate)
   }, [])
 
   return useSWR(

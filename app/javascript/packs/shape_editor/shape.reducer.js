@@ -8,16 +8,6 @@ export const reducer = (state, action) => {
         ...state,
         ...action.payload
       }
-    case 'SET_LINE':
-      return {
-        ...state,
-        line: action.line
-      }
-    case 'SET_WAYPOINTS':
-      return {
-        ...state,
-        waypoints: action.waypoints
-      }
     default:
       return state
   }
@@ -31,7 +21,6 @@ export const initialState = {
   name: '',
   features: [],
   map: null,
-  featuresLayer: null,
   line: null,
   waypoints: new Collection([]),
   draw: null,

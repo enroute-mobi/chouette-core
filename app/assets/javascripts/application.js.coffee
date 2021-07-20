@@ -27,7 +27,6 @@
 #= require jquery-ui/widgets/draggable
 #= require jquery-ui/widgets/droppable
 #= require jquery-ui/widgets/sortable
-#= require ellipsis
 
 $ ->
   $('a[disabled=disabled]').click (event)->
@@ -46,13 +45,3 @@ $ ->
     if $(e.target).is(":checked")
       $(e.target).parents(".custom_field_attachment_wrapper").find('.btn label').html(I18n.t("actions.select"))
       $(e.target).parents(".delete-wrapper").addClass('hidden')
-
-  $('.page-title h1').ellipsis()
-
-  cooldown = null
-  $(window).resize ->
-    clearTimeout(cooldown) if cooldown
-    cooldown = setTimeout ->
-      $('.page-title h1').ellipsis()
-      cooldown = null
-    , 200

@@ -28,9 +28,9 @@
     display: inline-block
     vertical-align: middle
     width: calc(100% - 65px)
-    max-height: 8.4rem
     overflow: hidden
     color: $brand-color-primary
+    margin-bottom: 15px;
 
     &:first-child
       width: 100%
@@ -42,6 +42,9 @@
       line-height: 1.4
       margin: 0 -1.4em 0 0
       padding: 0 1.4em 0 0
+      white-space: nowrap
+      overflow: hidden
+      text-overflow: ellipsis
 
       &.placeholder
         color: red

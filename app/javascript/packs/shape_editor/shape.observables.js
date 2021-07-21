@@ -1,23 +1,19 @@
 import { fromEvent } from 'rxjs'
-import { distinctUntilKeyChanged, filter, first, skip, switchMap  } from 'rxjs/operators'
+import { first, switchMap  } from 'rxjs/operators'
 import store from './shape.store'
 
 const onCollectionUpdate = eventName =>
   store.pipe(
-    distinctUntilKeyChanged('waypoints'),
-    skip(1),
-    switchMap(state => fromEvent(state.waypoints, eventName))
+    switchMap(state => fromEvent(state.shapeFeatures, eventName))
   )
 
-export const onMapInit$ = store.pipe(
-  distinctUntilKeyChanged('map'),
-  filter(state => !!state.map),
+export const onReceiveShapeFeatures$ = store.pipe(
+  switchMap(state => fromEvent(state.shapeFeatures, 'receiveFeatures')),
   first()
 )
 
-export const onReceiveFeatures$ = store.pipe(
-  distinctUntilKeyChanged('features'),
-  filter(state => state.features.length > 0),
+export const onReceiveRouteFeatures$ = store.pipe(
+  switchMap(state => fromEvent(state.routeFeatures, 'receiveFeatures')),
   first()
 )
 

@@ -19,7 +19,7 @@ const List = ({ onWaypointZoom, onDeleteWaypoint, waypoints }) => (
 
         return (
           <tr key={i}>
-            <td>{item.get('name')}</td>
+            <td>{item.get('name') || '-'}</td>
             <td>{lon}</td>
             <td>{lat}</td>
             <td>

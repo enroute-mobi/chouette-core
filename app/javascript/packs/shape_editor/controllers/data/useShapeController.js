@@ -4,7 +4,7 @@ import useSWR from 'swr'
 
 import GeoJSON from 'ol/format/GeoJSON'
 
-import { getLine, simplifyGeoJSON, submitFetcher, wktOptions } from '../../shape.helpers'
+import { simplifyGeoJSON, submitFetcher, wktOptions } from '../../shape.helpers'
 import { getSubmitPayload } from '../../shape.selectors'
 import store from '../../shape.store'
 import eventEmitter from '../../shape.event-emitter'
@@ -20,9 +20,14 @@ export default function useShapeController(isEdit, baseURL) {
   const onFetchSuccess = data => {
     setShouldFetch(false)
 
-    const features = new GeoJSON().readFeatures(simplifyGeoJSON(data), wktOptions(isEdit))
-  
-    store.setAttributes({ features, name: getLine(features).get('name') })
+    store.getState(({ shapeFeatures }) => {
+      shapeFeatures.extend(
+        new GeoJSON().readFeatures(simplifyGeoJSON(data), wktOptions(isEdit))
+      )
+
+      store.setAttributes({ shapeFeatures, name: shapeFeatures.item(0).get('name') })
+      shapeFeatures.dispatchEvent('receiveFeatures')
+    })
   }
 
   const onSubmitSuccess = () => {}

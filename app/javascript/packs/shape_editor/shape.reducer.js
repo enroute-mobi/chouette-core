@@ -19,10 +19,11 @@ export const initialState = {
     canUpdate: false
   },
   name: '',
-  features: [],
+  routeFeatures: new Collection([]),
+  shapeFeatures: new Collection([]),
   map: null,
   line: null,
-  waypoints: new Collection([]),
+  waypoints: new Collection([], { unique: true }),
   draw: null,
   snap: null,
   modify: null,

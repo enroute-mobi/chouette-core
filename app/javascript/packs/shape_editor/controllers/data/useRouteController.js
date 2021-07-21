@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react'
 
 import useSWR from 'swr'
-import { useParams  } from 'react-router-dom'
-import KML from 'ol/format/KML'
+import { useParams } from 'react-router-dom'
+import GeoJSON from 'ol/format/GeoJSON'
 
 import eventEmitter from '../../shape.event-emitter'
-import { getStaticSource } from '../../shape.selectors'
 import store from '../../shape.store'
 
 const wktOptions = {
@@ -19,22 +18,23 @@ export default function useRouteController(isEdit) {
 
   // Route params
   const { referentialId, lineId, routeId } = useParams()
-  const url = `/referentials/${referentialId}/lines/${lineId}/routes/${routeId}.kml`
+  const url = `/referentials/${referentialId}/lines/${lineId}/routes/${routeId}.geojson`
 
   useEffect(() => {
     eventEmitter.on('map:init', () => setShouldFetch(true))
   }, [])
 
   // Event handlers
-  const onSuccess = async data => {
-    const features = new KML().readFeatures(data, wktOptions)
-
-    console.log('features', features)
+  const onSuccess = data => {
+    setShouldFetch(false)
     
-    const state = await store.getStateAsync()
-    const staticSource = getStaticSource(state)
+    store.getState(({ routeFeatures }) => {
+      routeFeatures.extend(
+        new GeoJSON().readFeatures(data, wktOptions)
+      )
 
-    staticSource.addFeatures(features)
+      routeFeatures.dispatchEvent('receiveFeatures')
+    })
   }
   
   return useSWR(

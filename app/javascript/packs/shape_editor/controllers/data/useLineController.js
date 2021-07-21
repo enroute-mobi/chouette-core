@@ -4,7 +4,7 @@ import useSWR from 'swr'
 import GeoJSON from 'ol/format/GeoJSON'
 
 import { simplifyGeoJSON, submitFetcher } from '../../shape.helpers'
-import { getSortedCoordinates } from '../../shape.selectors'
+import { getLine, getSortedCoordinates } from '../../shape.selectors'
 import store from '../../shape.store'
 import eventEmitter from '../../shape.event-emitter'
 
@@ -16,19 +16,17 @@ export default function useLineController(isEdit, baseURL) {
   const onSuccess = async data => {
     setShouldUpdateLine(false)
 
-    const lineFeature = new GeoJSON().readFeature(
+    const newCoordinates = new GeoJSON().readFeature(
       simplifyGeoJSON(data),
       {
         dataProjection: 'EPSG:4326',
         featureProjection: 'EPSG:3857'
       }
-    )
+    ).getGeometry().getCoordinates()
 
-    const { line } = await store.getStateAsync()
-
-    line.getGeometry().setCoordinates(
-      lineFeature.getGeometry().getCoordinates()
-    )
+    store.getState(state => {
+      getLine(state).getGeometry().setCoordinates(newCoordinates)
+    })
   }
 
   const onWaypointsUpdate = () => setShouldUpdateLine(true)

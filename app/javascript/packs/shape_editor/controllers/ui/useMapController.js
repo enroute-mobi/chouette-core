@@ -1,25 +1,57 @@
 import { useEffect } from 'react'
 import { uniqueId } from 'lodash'
 
-import Collection from 'ol/Collection'
-import Polygon from 'ol/geom/Polygon';
 import { Circle, Fill, Stroke, Style } from 'ol/style'
+import { Draw, Modify, Snap } from 'ol/interaction'
 import {boundingExtent, getArea } from 'ol/extent'
 import VectorLayer from 'ol/layer/Vector'
-import { defaults as defaultControls } from 'ol/control'
 import VectorSource from 'ol/source/Vector'
 
-import { getInteractiveSource } from '../../shape.selectors'
 import store from '../../shape.store'
 import eventEmitter from '../../shape.event-emitter'
-import { addMapInteractions, getLine, getWaypoints, lineId } from '../../shape.helpers'
+import { lineId } from '../../shape.helpers'
+import { Collection } from 'ol'
 
-const constraintStyle = new Style({
-  image: new Circle({
-    radius: 2.5,
-    stroke: new Stroke({ color: 'black', width: 1 }),
-    fill: new Fill({ color: 'rgba(255, 255, 255, 0.5)' })
-   })
+const getStyles = () => ({
+  points: {
+    shapeWaypoint: new Style({
+      image: new Circle({
+        radius: 5,
+        stroke: new Stroke({ color: 'red', width: 0.75 }),
+        fill: new Fill({ color: 'rgba(255, 255, 255, 0.5)' })
+      })
+    }),
+    shapeConstraint: new Style({
+      image: new Circle({
+        radius: 2.5,
+        stroke: new Stroke({ color: 'black', width: 1 }),
+        fill: new Fill({ color: 'rgba(255, 255, 255, 0.5)' })
+      })
+    }),
+    route: new Style({
+      image: new Circle({
+        radius: 5,
+        stroke: new Stroke({ color: 'black', width: 0.75 }),
+        fill: new Fill({ color: 'rgba(255, 255, 255, 0.5)' })
+      })
+    }),
+  },
+  lines: {
+    route: new Style({
+      stroke: new Stroke({
+        color: 'black',
+        width: 1,
+        lineDash: [6,6],
+        lineDashOffset: 6
+      })
+    }),
+    shape: new Style({
+      stroke: new Stroke({
+        color: 'red',
+        width: 1.25
+      })
+    })
+  }
 })
 
 const getExtent = map => {
@@ -29,77 +61,80 @@ const getExtent = map => {
 }
   
 export default function useMapInteractions() {
+  const styles = getStyles()
+
   // Event Handlers
-  const onMapInit = map => {
+  const onMapInit = async map => {
+    const state = await store.getStateAsync()
     const layers = map.getLayers()
 
-    const interactiveLayer = layers.getArray()[1]
-  
-    interactiveLayer.set('type', 'interactive')
+    layers.item(1).set('type', 'interactive')
 
     const staticLayer = new VectorLayer({
-      source: new VectorSource(),
+      source: new VectorSource({ features: state.routeFeatures }),
+      properties: { type: 'static' }
     })
 
-    staticLayer.set('type', 'static')
+    layers.insertAt(1, staticLayer) // inserting static layer juste below the interactive one
 
-    map.getLayers().insertAt(1, staticLayer) // inserting static layer juste below the interactive one
+    store.setAttributes({ map })
   }
 
-  const onReceiveFeatures = state => {
-    const source = getInteractiveSource(state)
-    const line = getLine(state.features)
-    const waypoints = new Collection(getWaypoints(state.features), { unique: true })
+  const onReceiveShapeFeatures = async event => {
+    const state = await store.getStateAsync()
+    const { map } = state
+    const featureCollection = event.target
 
-    waypoints.on('change', e => {
-      console.log('waypoints change')
-    })
+    const [line, ...points] = featureCollection.getArray()
 
+    const waypoints = new Collection(points)
+  
     line.setId(lineId)
 
-    waypoints.forEach(w => {
+    line.setStyle(styles.lines.shape)
+
+    points.forEach(w => {
       w.setId(uniqueId('waypoint_'))
       w.set('type', 'waypoint')
+      w.setStyle(styles.points.shapeWaypoint)
     })
 
-    addMapInteractions(source, state.map, waypoints)
+    const modify = new Modify({ features: waypoints })
+    const draw = new Draw({ features: event.target, type: 'Point' })
+    const snap = new Snap({ features: event.target })
+    const interactions = [modify, draw, snap]
 
-    // state.map.on('moveend', e => {
-    //   const extent = getExtent(state.map)
+    draw.on('drawend', () => featureCollection.changed())
+    modify.on('modifyend', () => featureCollection.changed())
 
-    //   console.log('extent', getArea(extent))
-    // })
-
-    // const poly = new Polygon(coords)
-
-    //   console.log('poly', poly)
-
-    // const extent = state.featuresLayer.addFeature(
-    //   new Polygon(
-    //     state.map.getView().calculateExtent(state.map.getSize())
-    //   )
-    // )
-    // console.log('coords', coords)
-    store.setAttributes({ line, waypoints })
+    interactions.forEach(i => map.addInteraction(i))
   }
 
-  const onAddPoint = event => {
-    const { element: waypoint, target: waypoints } = event
+  const onReceiveRouteFeatures = event => {
+    const features = event.target.getArray()
+    const [line, ...waypoints] = features
+
+    line.setStyle(styles.lines.route)
+
+    waypoints.forEach(w => {
+      w.setStyle(styles.points.route)
+    })
+  }
+
+  const onAddPoint = async event => {
+    const { element: waypoint, target: shapeFeatures } = event
 
     waypoint.set('type', 'constraint')
-    waypoint.setStyle(constraintStyle)
-
-    store.setAttributes({ waypoints })
+    waypoint.setStyle(styles.points.shapeConstraint)
+    store.setAttributes({ shapeFeatures })
   }
 
   const onRemovePoint = async waypoint => {
-    const state = await store.getStateAsync()
-    const { waypoints } = state
-    const source = getInteractiveSource(state)
+    const { shapeFeatures } = await store.getStateAsync()
 
-    waypoints.remove(waypoint)
-    source.removeFeature(waypoint)
-    store.setAttributes({ waypoints })
+    shapeFeatures.remove(waypoint)
+    shapeFeatures.changed()
+    store.setAttributes({ shapeFeatures })
   }
 
   const onWaypointZoom = async waypoint => {
@@ -110,7 +145,8 @@ export default function useMapInteractions() {
 
   useEffect(() => {
     eventEmitter.on('map:init', onMapInit)
-    eventEmitter.on('shape:receive-features', onReceiveFeatures)
+    eventEmitter.on('route:receive-features', onReceiveRouteFeatures)
+    eventEmitter.on('shape:receive-features', onReceiveShapeFeatures)
     eventEmitter.on('map:add-point', onAddPoint)
     eventEmitter.on('map:zoom-to-waypoint', onWaypointZoom)
     eventEmitter.on('map:delete-waypoint', onRemovePoint)

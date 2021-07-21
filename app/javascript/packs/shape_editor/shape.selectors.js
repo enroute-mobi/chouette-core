@@ -1,4 +1,4 @@
-import { chain, curryRight, flow, map } from 'lodash'
+import { chain, curryRight, flow, get, map } from 'lodash'
 import {
   nearestPointOnLine,
   point,
@@ -8,21 +8,27 @@ import {
   length
 } from '@turf/turf'
 
-import { convertCoords } from './shape.helpers'
+import { convertCoords, isLine, isWaypoint } from './shape.helpers'
 
-export const getTurfLine = ({ line }) => line ?  lineString(convertCoords(line)) : null
+export const getLine = ({ shapeFeatures }) => shapeFeatures.getArray().find(isLine)
+export const getWaypoints = ({ shapeFeatures }) => shapeFeatures.getArray().filter(isWaypoint)
+
+export const getTurfLine = flow(
+  getLine,
+  line => line ? lineString(convertCoords(line)) : null
+)
 
 export const getSortedWaypoints = state => {
-  const { waypoints } = state
   const line = getTurfLine(state)
+  const waypoints = getWaypoints(state)
 
   if (!line) return []
 
   const firstPoint = !!line && point(getCoords(line)[0])
 
-  return chain(waypoints.getArray())
-    .map(w => {
-      // Create a line slice from the beginning to the current point to determine the length of this "subLine"
+  return chain(waypoints)
+  .map(w => {
+    // Create a line slice from the beginning to the current point to determine the length of this "subLine"
       const subLine = lineSlice(
         firstPoint,
         nearestPointOnLine(line, convertCoords(w)),
@@ -62,11 +68,11 @@ export const getInteractiveSource = getSource('interactive')
 
 export const getStaticSource = getSource('static')
 
-export const getSubmitPayload = ({ name, waypoints, line }) => ({
+export const getSubmitPayload = state => ({
   shape: {
-    name,
-    coordinates: line.getGeometry().getCoordinates(),
-    waypoints: waypoints.getArray().map((w, position) => ({
+    name: state.name,
+    coordinates: getLine(state).getGeometry().getCoordinates(),
+    waypoints: getWaypoints(state).map((w, position) => ({
       name: w.get('name'),
       position,
       waypoint_type: w.get('type'),

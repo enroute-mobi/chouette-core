@@ -5,7 +5,7 @@ import { pick } from 'lodash'
 import { getSortedWaypoints } from '../shape.selectors'
 import store from '../shape.store'
 import eventEmitter from '../shape.event-emitter'
-import { onAddPoint$, onMapInit$, onReceiveFeatures$, onWaypointsUpdate$ } from '../shape.observables'
+import { onAddPoint$, onReceiveRouteFeatures$, onReceiveShapeFeatures$, onWaypointsUpdate$ } from '../shape.observables'
 
 import { useStore } from '../../../helpers/hooks'
 
@@ -24,28 +24,18 @@ import CancelButton from './CancelButton'
 import SaveButton from './SaveButton'
 
 const mapStateToProps = state => ({
-  ...pick(state, ['name', 'features', 'permissions', 'style']),
+  ...pick(state, ['name', 'permissions', 'style']),
+  features: Array.from(state.shapeFeatures.getArray()),
   waypoints: getSortedWaypoints(state)
 })
 export default function ShapeEditorMap({ isEdit, baseURL }) {
   // Store
-  const { features, name, permissions, style, waypoints } = useStore(store, mapStateToProps)
+  const { features, name, permissions, shapeFeatures, style, waypoints } = useStore(store, mapStateToProps)
 
   // Evvent Handlers
-  const onMapInit = map => store.setAttributes({ map })
+  const onMapInit = map => setTimeout(() => eventEmitter.emit('map:init', map), 0) // Need to do this to ensure that controllers can subscribe to event before it is fired
   const onWaypointZoom = waypoint => eventEmitter.emit('map:zoom-to-waypoint', waypoint)
   const onDeleteWaypoint = waypoint => eventEmitter.emit('map:delete-waypoint-request', waypoint)
-
-  useEffect(() => {
-    onMapInit$.subscribe(state => eventEmitter.emit('map:init', state.map))
-    onAddPoint$.subscribe(event => eventEmitter.emit('map:add-point', event))
-    onReceiveFeatures$.subscribe(state => eventEmitter.emit('shape:receive-features', state))
-    onWaypointsUpdate$.subscribe(state => eventEmitter.emit('waypoints:updated', state))
-
-    return () => {
-      eventEmitter.complete()
-    }
-  }, [])
 
   // Controllers
   useMapController()
@@ -55,6 +45,17 @@ export default function ShapeEditorMap({ isEdit, baseURL }) {
   useLineController(isEdit, baseURL)
   useUserPermissionsController(isEdit, baseURL)
   useShapeController(isEdit, baseURL)
+
+  useEffect(() => {
+    onAddPoint$.subscribe(event => eventEmitter.emit('map:add-point', event))
+    onReceiveRouteFeatures$.subscribe(event => eventEmitter.emit('route:receive-features', event))
+    onReceiveShapeFeatures$.subscribe(event => eventEmitter.emit('shape:receive-features', event))
+    onWaypointsUpdate$.subscribe(_state => eventEmitter.emit('waypoints:updated'))
+
+    return () => {
+      eventEmitter.complete()
+    }
+  }, [])
 
   return (
     <div>

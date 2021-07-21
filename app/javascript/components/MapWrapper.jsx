@@ -1,15 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { isEmpty } from 'lodash'
-import Map from 'ol/Map'
-import View from 'ol/View'
-import OSM from 'ol/source/OSM'
-import TileLayer from 'ol/layer/Tile'
-import VectorLayer from 'ol/layer/Vector'
+import { Map, View } from 'ol'
+import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer'
+import { OSM, Vector as VectorSource } from 'ol/source'
 import { defaults as defaultControls } from 'ol/control'
-import VectorSource from 'ol/source/Vector'
-import { transform } from 'ol/proj'
-import { toStringXY } from 'ol/coordinate'
 
+import { toStringXY } from 'ol/coordinate'
 function MapWrapper({ features, onInit, _style }) {
   const [ map, setMap ] = useState()
   const [ featuresLayer, setFeaturesLayer ] = useState()

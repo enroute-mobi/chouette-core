@@ -1,0 +1,56 @@
+module Search
+  class Base
+    extend ActiveModel::Naming
+    include ActiveModel::Conversion
+    include ActiveModel::Validations
+
+    def initialize(scope, attributes = {})
+      @scope = scope
+      @attributes = attributes
+      attributes.each { |k, v| send "#{k}=", v }
+    end
+    attr_reader :scope, :attributes
+
+    validates_numericality_of :page, greater_than_or_equal_to: 0, allow_nil: true
+    validates_numericality_of :per_page, greater_than_or_equal_to: 0, allow_nil: true
+
+    def self.model_name
+      ActiveModel::Name.new(self, nil, 'Search')
+    end
+
+    def collection
+      if valid?
+        scope.order(order.to_hash).paginate(paginate)
+      else
+        scope.none
+      end
+    end
+
+    def order
+      @order ||= Order.new
+    end
+
+    attr_accessor :page
+    attr_writer :per_page
+
+    def per_page
+      @per_page ||= 30
+    end
+
+    def paginate
+      { per_page: per_page, page: page }
+    end
+
+    class Order
+      # TODO: Attributes can only return values :asc, :desc or nil (for securiy reason)
+      # Attributes can be set with "asc", :asc, 1 to have the :asc value
+      # Attributes can be set with "desc", :desc, -1 to have the :desc value
+      # Attributes can be set with nil, 0 to have the nil value
+      #
+      # These methods ensures that the sort attribute is supported and valid
+      def to_hash
+        {}.delete_if { |_, v| v.nil? }
+      end
+    end
+  end
+end

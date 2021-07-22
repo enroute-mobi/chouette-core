@@ -13,7 +13,7 @@
     - if @parent.is_a?(Workgroup)
       .form-group.togglable class=filter_item_class(params[:search], :workbench)
         = f.label Organisation.ts.capitalize, class: 'control-label'
-        = f.input :workbench, as: :check_boxes, collection: @parent.workbenches.joins(:organisation).order('organisations.name').pluck(:'organisations.name', :id), label: false, value_method: :second, label_method: lambda{|k| ("<span>#{k.first}</span>").html_safe}, wrapper_html: { class: 'checkbox_list' }
+        = f.input :workbench, as: :check_boxes, collection: @parent.workbenches.joins(:organisation).order('organisations.name'), label: false, value_method: lambda{|k| k.id.to_s}, label_method: lambda{|k| ("<span>#{k.organisation.name}</span>").html_safe}, wrapper_html: { class: "checkbox_list"}
 
   .actions
     = link_to t('actions.erase'), class: 'btn btn-link'

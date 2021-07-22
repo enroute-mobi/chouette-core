@@ -115,7 +115,7 @@ class ImportsController < ChouetteController
 
   class Search < Search::Base
     # All search attributes
-    attr_accessor :name, :status, :dates
+    attr_accessor :name, :status, :dates, :workbench
 
     # validates :status, inclusion: { in: %w(pending successful warning failed) }
 

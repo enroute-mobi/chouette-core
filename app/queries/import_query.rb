@@ -20,6 +20,7 @@ class ImportQuery
   def call(params = {})
     self.scope = text(params[:name])
     self.scope = statuses(params[:status])
+    self.scope = workbench(params[:workbench])
   end
 
   def text(value)
@@ -30,10 +31,17 @@ class ImportQuery
 
   def statuses(values)
     # Use filter because rails form sends an empty string inside array [""]
-    return scope if values.filter{ |value| value.present? }.blank?
+    return scope if values.blank? || values.filter{ |value| value.present? }.blank?
 
     import_statuses = find_import_statuses(values)
     scope.having_status(import_statuses)
+  end
+
+  def workbench(values)
+    # Use filter because rails form sends an empty string inside array [""]
+    return scope if values.blank? || values.filter{ |value| value.present? }.blank?
+
+    scope.where(workbench: [values])
   end
 
   def include_start_date(begin_date, end_date)

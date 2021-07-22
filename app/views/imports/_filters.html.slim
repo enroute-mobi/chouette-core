@@ -9,14 +9,11 @@
   .ffg-row
     .form-group.togglable class=filter_item_class(params[:search], :status)
       = f.label "Statut", required: false, class: 'control-label'
-      = f.input :status, as: :check_boxes, collection: @statuses, label: false, label_method: lambda{|l| ("<span>" + operation_status(l) + "</span>").html_safe}, required: false, wrapper_html: { class: "checkbox_list"}
-  / .ffg-row
-  /   .input-group.search_bar
-  /     = f.input :dates
-  /   - if @parent.is_a?(Workgroup)
-  /     .form-group.togglable class=filter_item_class(params[:q], :workbench_id_eq_any)
-  /       = f.label Organisation.ts.capitalize, required: false, class: 'control-label'
-  /       = f.input :workbench_id_eq_any, collection: @parent.workbenches.joins(:organisation).order('organisations.name'), as: :check_boxes, label: false, label_method: lambda{|k| ("<span>#{k.organisation.name}</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list' }
+      = f.input :status, as: :check_boxes, collection: @statuses, label: false, label_method: lambda{|l| ("<span>" + operation_status(l) + "</span>").html_safe}, wrapper_html: { class: "checkbox_list"}
+    - if @parent.is_a?(Workgroup)
+      .form-group.togglable class=filter_item_class(params[:search], :workbench)
+        = f.label Organisation.ts.capitalize, class: 'control-label'
+        = f.input :workbench, as: :check_boxes, collection: @parent.workbenches.joins(:organisation).order('organisations.name').pluck(:'organisations.name', :id), label: false, value_method: :second, label_method: lambda{|k| ("<span>#{k.first}</span>").html_safe}, wrapper_html: { class: 'checkbox_list' }
 
   .actions
     = link_to t('actions.erase'), class: 'btn btn-link'

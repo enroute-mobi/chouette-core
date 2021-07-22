@@ -1,4 +1,4 @@
-= simple_form_for @search, url: workbench_imports_path(@workbench), method: "GET", html: { class: 'form form-filter' }  do |f|
+= simple_form_for @search, url: request.path, method: "GET", html: { class: 'form form-filter' }  do |f|
   .ffg-row
     .input-group.search_bar class=filter_item_class(params[:search], :name)
       = f.input :name, label: false, class: 'form-control'

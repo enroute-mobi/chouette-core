@@ -53,4 +53,24 @@ RSpec.describe ImportQuery do
     end
   end
 
+  describe "#workbench" do
+    let(:first_workbench) { create(:workbench) }
+    let(:second_workbench) { create(:workbench) }
+    let(:first_import) { create(:workbench_import, workbench: first_workbench) }
+    let(:second_import) { create(:workbench_import, workbench: second_workbench) }
+
+    it "should return imports with the select workbench name" do
+      expect(subject.workbench([first_workbench.id])).to match_array([first_import])
+    end
+  end
+
+  describe "#text" do
+    let(:first_import) { create(:workbench_import, name: "First") }
+    let(:second_import) { create(:workbench_import, name: "Second") }
+
+    it "should return imports with the select import name First" do
+      expect(subject.text("First")).to match_array([first_import])
+    end
+  end
+
 end

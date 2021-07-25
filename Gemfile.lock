@@ -278,7 +278,7 @@ GEM
       actionmailer (>= 5.0)
       devise (>= 4.6)
     diff-lcs (1.4.4)
-    digest-crc (0.6.3)
+    digest-crc (0.6.4)
       rake (>= 12.0.0, < 14.0.0)
     docile (1.4.0)
     draper (4.0.2)
@@ -358,7 +358,7 @@ GEM
     graphiql-rails (1.7.0)
       railties
       sprockets-rails
-    graphql (1.12.13)
+    graphql (1.12.14)
     gretel (4.3.0)
       actionview (>= 5.1, < 7.0)
       railties (>= 5.1, < 7.0)

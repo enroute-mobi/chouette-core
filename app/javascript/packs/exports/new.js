@@ -1,6 +1,11 @@
 import TomSelect from 'tom-select'
 class SelectBuilder {
-	static init(selector, pathBuilder, initialValue = []) {
+	static init({
+		selector,
+		pathBuilder,
+		placeholder,
+		initialValue = []
+	}) {
 		new TomSelect(selector, {
 			preload: true,
 			openOnFocus: true,
@@ -12,7 +17,8 @@ class SelectBuilder {
 			valueField: 'id',
 			labelField: 'text',
 			items: initialValue.map(item => item.id),
-			options: initialValue
+			options: initialValue,
+			placeholder
 		})
 	}
 }
@@ -61,13 +67,33 @@ window.Spruce.store('export', {
 		new TomSelect('#export_referential_id', {}).on('change', value => this.referentialId = value)
 	},
 	initLineIdsSelect(lineIds) {
-		SelectBuilder.init(`#${this.baseName}_line_ids`, this.pathBuilder.lineIds, lineIds)
+		const options = {
+			selector: `#${this.baseName}_line_ids`,
+			placeholder: I18n.t('exports.form.line_name'),
+			pathBuilder: this.pathBuilder.lineIds,
+			initialValue: lineIds
+		}
+
+		SelectBuilder.init(options)
 	},
 	initCompanyIdsSelect(companyIds) {
-		SelectBuilder.init(`#${this.baseName}_company_ids`, this.pathBuilder.companyIds, companyIds)
+		const options = {
+			selector: `#${this.baseName}_company_ids`,
+			placeholder: I18n.t('exports.form.company_name'),
+			pathBuilder: this.pathBuilder.companyIds,
+			initialValue: companyIds
+		}
+
+		SelectBuilder.init(options)
 	},
 	initLineProviderIdsSelect(lineProviderIds) {
-		SelectBuilder.init(`#${this.baseName}_line_provider_ids`, this.pathBuilder.lineProviderIds, lineProviderIds)
+		const options = {
+			selector: `#${this.baseName}_line_provider_ids`,
+			placeholder: I18n.t('exports.form.line_provider_name'),
+			pathBuilder: this.pathBuilder.lineProviderIds,
+			initialValue: lineProviderIds
+		}
+		SelectBuilder.init(options)
 	}
 })
 

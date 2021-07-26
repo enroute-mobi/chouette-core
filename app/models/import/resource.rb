@@ -5,7 +5,7 @@ class Import::Resource < ApplicationModel
 
   belongs_to :import, class_name: 'Import::Base'
   belongs_to :referential
-  has_many :messages, class_name: 'Import::Message', foreign_key: :resource_id, dependent: :destroy
+  has_many :messages, class_name: 'Import::Message', foreign_key: :resource_id, dependent: :delete_all
 
   scope :main_resources, ->{ where(resource_type: "referential") }
 

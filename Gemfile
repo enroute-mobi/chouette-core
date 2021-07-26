@@ -220,8 +220,6 @@ gem 'i18n-tasks', '>= 0.9.31'
 
 # Rails Assets
 source 'https://rails-assets.org' do
-  gem 'rails-assets-footable', '~> 2.0.3'
-
   # Use twitter bootstrap resources
   gem 'rails-assets-bootstrap-sass-official', '~> 3.3.0'
   gem 'rails-assets-respond'

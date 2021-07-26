@@ -225,7 +225,6 @@ source 'https://rails-assets.org' do
   # Use twitter bootstrap resources
   gem 'rails-assets-bootstrap-sass-official', '~> 3.3.0'
   gem 'rails-assets-respond'
-  gem 'rails-assets-jquery-tokeninput', '~> 1.7.0'
 end
 
 gem 'activerecord-nulldb-adapter', require: (ENV['RAILS_DB_ADAPTER'] == 'nulldb')

@@ -56,7 +56,6 @@ RSpec.configure do |config|
   config.filter_run_excluding truncation: true
   config.filter_run_excluding wip: true
   config.run_all_when_everything_filtered = true
-  config.include TokenInputHelper, type: :feature
 
   config.include EmailSpec::Helpers
   config.include EmailSpec::Matchers

@@ -13,11 +13,6 @@
 #= require select2-full
 #= require select2_locale_fr
 #= require select2_locale_en
-#= require jquery-tokeninput
-#= require footable
-#= require footable/footable.filter
-#= require footable/footable.paginate
-#= require footable/footable.sort
 #= require_directory ./plugins
 #= require_directory .
 # require('whatwg-fetch')

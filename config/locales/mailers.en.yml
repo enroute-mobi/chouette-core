@@ -11,13 +11,11 @@ en:
       created:
         subject: A new shared calendar has been created
         body: |
-          Hello,<br/><br/>
           A new calendar has been shared.<br/>
           In your organization, the %{cal_name} calendar has been shared.<br/><br/>
       updated:
         subject: A shared calendar has been updated
         body: |
-          Hello,<br/><br/>
           A new shared calendar %{cal_name} has been updated.<br/><br/>
     import_mailer:
       button: See Import
@@ -33,7 +31,6 @@ en:
       finished:
         subject: The export is over
         body: |
-          Hello,<br/><br/>
           You launched the export %{export_name}.<br/>
           It is now over.<br/>
           The operation status is %{status}<br/><br/>
@@ -42,7 +39,6 @@ en:
       finished:
         subject: Merge is done
         body: |
-          Hello,<br/><br/>
           You launched the merge %{merge_name}.<br/>
           It is now over.<br/>
           The operation status is %{status}<br/><br/>
@@ -88,7 +84,6 @@ en:
         button: See compliance check set
         subject: Compliance Check set is over
         body: |
-          Hello,<br/><br/>
           The compliance check set is done.<br/>
           You started the validation on %{ref_name}.<br/>
           The operation is now over.<br/>

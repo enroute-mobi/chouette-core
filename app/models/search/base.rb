@@ -51,8 +51,6 @@ module Search
     end
 
     def find_import_statuses(values)
-      puts "*" * 25
-      puts values.inspect
       values.map { |value| self.class.status_group[value] }.flatten.compact
     end
 

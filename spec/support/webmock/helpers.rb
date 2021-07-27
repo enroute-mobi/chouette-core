@@ -1,4 +1,5 @@
 WebMock.disable_net_connect!(allow: 'api.codacy.com')
+WebMock.disable_net_connect!(allow: 'fonts.googleapis.com')
 # Disable WebMock on Datadog trace requests
 WebMock.disable_net_connect!(allow: '127.0.0.1:8126')
 

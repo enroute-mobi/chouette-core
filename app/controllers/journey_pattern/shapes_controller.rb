@@ -83,7 +83,7 @@ module JourneyPattern
     def create_or_update_callback
       return -> (success, failure) do
         success.json do
-          response.headers['Location'] = referential_line_route_journey_patterns_collection_path(parents.first(3))
+          response.set_header('Location', referential_line_route_journey_patterns_collection_path(parents.first(3)))
           render json: {}, status: 201
         end
 

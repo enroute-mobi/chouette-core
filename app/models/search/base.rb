@@ -3,13 +3,13 @@ module Search
     extend ActiveModel::Naming
     include ActiveModel::Conversion
     include ActiveModel::Validations
+    extend Enumerize
 
     def initialize(scope, attributes = {})
       @scope = scope
-      @attributes = attributes
       attributes.each { |k, v| send "#{k}=", v }
     end
-    attr_reader :scope, :attributes
+    attr_reader :scope, :attributes, :calling_object
 
     validates_numericality_of :page, greater_than_or_equal_to: 0, allow_nil: true
     validates_numericality_of :per_page, greater_than_or_equal_to: 0, allow_nil: true
@@ -39,6 +39,21 @@ module Search
 
     def paginate
       { per_page: per_page, page: page }
+    end
+
+    def self.status_group
+      {
+        'pending' => %w[new pending running],
+        'failed' => %w[failed aborted canceled],
+        'warning' => ['warning'],
+        'successful' => ['successful']
+      }
+    end
+
+    def find_import_statuses(values)
+      puts "*" * 25
+      puts values.inspect
+      values.map { |value| self.class.status_group[value] }.flatten.compact
     end
 
     class Order

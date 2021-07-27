@@ -1,5 +1,3 @@
-# require "search/base"
-
 class ImportsController < ChouetteController
   include PolicyChecker
   skip_before_action :authenticate_user!, only: [:internal_download]
@@ -53,7 +51,7 @@ class ImportsController < ChouetteController
                               )
                             end
 
-        @imports = decorate_collection(collection)
+        @imports = collection
       end
     end
   end
@@ -92,7 +90,7 @@ class ImportsController < ChouetteController
   end
 
   def search
-    @search ||= Search.new(scope, params[:search] || {})
+    @search ||= ImportSearch.new(scope, params[:search] || {})
   end
   delegate :collection, to: :search
 
@@ -113,11 +111,22 @@ class ImportsController < ChouetteController
     )
   end
 
-  class Search < Search::Base
+  class ImportSearch < Search::Base
     # All search attributes
-    attr_accessor :name, :status, :dates, :workbench
+    attr_accessor :name, :dates, :workbench, :status
 
-    # validates :status, inclusion: { in: %w(pending successful warning failed) }
+    # validates :status, inclusion: { in: %w(pending successful warning failed), allow_nil: true, allow_blank: true
+    # enumerize :status, in: %w[pending successful warning failed], i18n_scope: "status", multiple: true, allow_blank: true
+
+    def workbench=(_workbench)
+      # Use filter because rails form sends an empty string inside array [""]
+      @workbench = _workbench.filter{ |value| value.present? }
+    end
+
+    def status=(_status)
+      # Use filter because rails form sends an empty string inside array [""]
+      @status = _status.filter{ |value| value.present? }
+    end
 
     def collection
       if valid?
@@ -127,8 +136,14 @@ class ImportsController < ChouetteController
       end
     end
 
+    def candidate_workbenches
+      # How to retrieve protected method parent from ImportsController?
+      # calling_object.parent.workbenches.joins(:organisation).order('organisations.name')
+    end
+
     def query
-      ImportQuery.new(scope).call(attributes)
+      statuses = find_import_statuses(status)
+      ImportQuery.new(scope).text(name).statuses(statuses).scope
     end
 
     class Order

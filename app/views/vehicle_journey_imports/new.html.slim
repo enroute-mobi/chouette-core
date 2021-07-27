@@ -1,9 +1,0 @@
-.main_actions
-
-= semantic_form_for [@referential, @line, @route, @vehicle_journey_import] do |form|
-  = form.inputs do
-    = form.input :file, as: :file, input_html: { title: "#{t('.tooltip.file')}", 'data-placement': "right", 'data-toggle': "tooltip", 'data-trigger': "hover" }
-
-  = form.actions do
-    = form.action :submit, as: :button , label: t('formtastic.import')
-    = form.action :cancel, as: :link

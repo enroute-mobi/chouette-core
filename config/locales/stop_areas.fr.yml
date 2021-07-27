@@ -41,8 +41,6 @@ fr:
       add_children: "Créer ou éditer la relation parent -> enfants"
       clone_as_parent: "Cloner pour créer un père"
       clone_as_child: "Cloner pour créer un enfant"
-      manage_access_points: "Gérer les accès"
-      manage_access_links: "Gérer les liens arrêt-accès"
       default_geometry: "Calculer les géométries manquantes"
       export_kml_place: "Export KML des pôles d'échange"
       export_kml_commercial: "Export KML des arrêts commerciaux"
@@ -95,12 +93,6 @@ fr:
     genealogical:
       genealogical: "Lien entre arrêts"
       genealogical_routing: "Liens de l'ITL"
-    access_links:
-      title: "Liens Accès-Arrêts des accès de %{stop_area}"
-      generic_access_links: "Liens globaux"
-      detail_access_links: "Liens détaillés"
-      access_link_legend_1: "Les flêches grises représentent des liens non définis"
-      access_link_legend_2: "cliquer sur les flêches pour créer/éditer un lien"
     index:
       name: "Recherche par nom..."
       zip_code: "Code Postal"

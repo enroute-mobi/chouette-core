@@ -42,10 +42,6 @@ module StopAreasHelper
     @stop_area.stop_area_type == 'stop_place' || @stop_area.stop_area_type == 'commercial_stop_point'
   end
 
-  def pair_key(access_link)
-    "#{access_link.access_point.id}-#{access_link.stop_area.id}"
-  end
-
   def geo_data(sa, sar)
     if sa.long_lat_type.nil?
       content_tag :span, '-'

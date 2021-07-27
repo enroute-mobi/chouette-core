@@ -40,8 +40,6 @@ en:
       add_children: "Create or modify the relation parent -> children"
       clone_as_parent: "Clone as parent"
       clone_as_child: "Clone as child"
-      manage_access_points: "Manage Access Points"
-      manage_access_links: "Manage Access Links"
       default_geometry: "Compute missing geometries"
       export_kml_place: "Export KML places"
       export_kml_commercial: "Export KML commercial stop points"
@@ -103,12 +101,6 @@ en:
       selection_all: "All"
       area_type: "Area Type"
       advanced_search: "Advanced Search"
-    access_links:
-      title: "Access links for %{stop_area}'s access"
-      generic_access_links: "Glogal links"
-      detail_access_links: "Specific links"
-      access_link_legend_1: "grays arrows for undefined links, green for defined ones"
-      access_link_legend_2: "clic on arrows to create/edit a link"
     select_parent:
       title: "Manage parent of stop area %{stop_area}"
     add_children:

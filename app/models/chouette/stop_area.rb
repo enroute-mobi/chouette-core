@@ -16,11 +16,6 @@ module Chouette
 
     AVAILABLE_LOCALIZATIONS = %i(en_UK nl_NL de_DE fr_FR it_IT es_ES)
 
-    with_options dependent: :destroy do |assoc|
-      assoc.has_many :access_points
-      assoc.has_many :access_links
-    end
-
     # WARNING Only effective in the current Referential
     has_many :stop_points
     has_many :routes, through: :stop_points
@@ -129,7 +124,6 @@ module Chouette
       errors.add(:referent_id, I18n.t('stop_areas.errors.referent_id.cannot_be_referent_and_specific')) if self.referent_id? && (self.is_referent || self.specific_stops.count != 0)
     end
 
-    #after_update :clean_invalid_access_links
     before_save :coordinates_to_lat_lng
 
     def combine_lat_lng
@@ -328,22 +322,6 @@ module Chouette
       GeoRuby::SimpleFeatures::Point.centroid children_geometries if children_geometries.present?
     end
 
-    def generic_access_link_matrix
-      matrix = Array.new
-      access_points.each do |access_point|
-        matrix += access_point.generic_access_link_matrix
-      end
-      matrix
-    end
-
-    def detail_access_link_matrix
-      matrix = Array.new
-      access_points.each do |access_point|
-        matrix += access_point.detail_access_link_matrix
-      end
-      matrix
-    end
-
     def children_at_base
       list = Array.new
       children_in_depth.each do |child|
@@ -361,18 +339,6 @@ module Chouette
         list += parent.parents
       end
       list
-    end
-
-    def clean_invalid_access_links
-      stop_parents = parents
-      access_links.each do |link|
-        unless stop_parents.include? link.access_point.stop_area
-          link.delete
-        end
-      end
-      children.each do |child|
-        child.clean_invalid_access_links
-      end
     end
 
     def duplicate

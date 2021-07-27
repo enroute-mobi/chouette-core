@@ -21,8 +21,6 @@ Apartment.configure do |config|
     'Aggregate',
     'ApiKey',
     'Calendar',
-    'Chouette::AccessLink',
-    'Chouette::AccessPoint',
     'Chouette::LineNoticeMembership',
     'Chouette::Company',
     'Chouette::Network',

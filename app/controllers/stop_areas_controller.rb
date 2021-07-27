@@ -29,12 +29,6 @@ class StopAreasController < ChouetteController
     @children = stop_area.children
   end
 
-  def access_links
-    @stop_area = stop_area
-    @generic_access_links = stop_area.generic_access_link_matrix
-    @detail_access_links = stop_area.detail_access_link_matrix
-  end
-
   def index
     request.format.kml? ? @per_page = nil : @per_page = 12
     @zip_codes = stop_area_referential.stop_areas.where("zip_code is NOT null").distinct.pluck(:zip_code)

@@ -1,8 +1,0 @@
-doctype XML
-
-kml xmlns="http://www.opengis.net/kml/2.2" 
-  document
-    placemark id="#{@access_point.id}" 
-      name = @access_point.name
-      access_point_type = @access_point.access_point_type
-      = (@access_point.position or @access_point.default_position).kml_representation.html_safe

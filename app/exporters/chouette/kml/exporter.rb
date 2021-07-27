@@ -1,7 +1,7 @@
 class Chouette::Kml::Exporter
 
   require 'zip'
-  
+
   attr_reader :referential
   attr_reader :kml_export, :lines, :routes, :journey_patterns
 
@@ -96,12 +96,6 @@ class Chouette::Kml::Exporter
 
           connection_links = referential.connection_links.order(:name)
           Chouette::Kml::ConnectionLinkExporter.save( connection_links, temp_dir, kml_export)
-
-          access_links = referential.access_links.order(:name)
-          Chouette::Kml::AccessLinkExporter.save(access_links, temp_dir, kml_export)
-
-          access_points = referential.access_points.order(:name)
-          Chouette::Kml::AccessPointExporter.save(access_points, temp_dir, kml_export)
 
         end
 

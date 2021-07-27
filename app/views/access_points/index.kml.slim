@@ -1,9 +1,0 @@
-doctype XML
-
-kml xmlns="http://www.opengis.net/kml/2.2" 
-  document
-    - @access_points.where("latitude is not null and longitude is not null").each do |access_point|
-      placemark id="#{access_point.id}" 
-        name = access_point.name
-        access_point_type = access_pointaccess_point_type
-        = access_point.geometry.kml_representation.html_safe

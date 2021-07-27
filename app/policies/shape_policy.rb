@@ -6,7 +6,7 @@ class ShapePolicy < ApplicationPolicy
   end
 
   def create?
-    user.has_permission?('shapes.create')
+    organisation_match? && user.has_permission?('shapes.create')
   end
 
   def update?
@@ -24,4 +24,13 @@ class ShapePolicy < ApplicationPolicy
     true
   end
 
+  private
+
+  def organisation_match?
+    user.organisation_id == organisation_id
+  end
+
+  def organisation_id
+    record.workbench.organisation_id
+  end
 end

@@ -679,6 +679,11 @@ class Export::NetexGeneric < Export::Base
         end
       end
 
+      # Ensure VehicleJourneyAtStops are well ordered by position (see CHOUETTE-1263)
+      def vehicle_journey_at_stops
+        @vehicle_journey_at_stops ||= super.sort_by { |s| s.stop_point.position }
+      end
+
       def decorated_vehicle_journey_at_stops
         @decorated_vehicle_journey_at_stops ||= vehicle_journey_at_stops.map do |vehicle_journey_at_stop|
           VehicleJourneyAtStopDecorator.new(vehicle_journey_at_stop, journey_pattern.objectid)

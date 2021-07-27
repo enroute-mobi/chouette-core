@@ -336,6 +336,19 @@ RSpec.describe Export::NetexGeneric do
       expect(target.resources).to all(have_tag(:line_id))
     end
 
+    describe Export::NetexGeneric::VehicleJourneys::Decorator do
+      let(:vehicle_journey) { vehicle_journeys.first }
+      let(:decorator) { Export::NetexGeneric::VehicleJourneys::Decorator.new vehicle_journey }
+
+      describe "#vehicle_journey_at_stops" do
+        subject { decorator.vehicle_journey_at_stops }
+
+        it "is ordered by stop point position" do
+          expect(subject.map { |s| s.stop_point.position }).to eq([0, 1, 2])
+        end
+      end
+    end
+
     describe 'VehicleJourneyAtStop export' do
       context 'when stop_area is present' do
         before do

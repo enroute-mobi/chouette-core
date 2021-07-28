@@ -51,6 +51,7 @@ module Search
     end
 
     def find_import_statuses(values)
+      return [] if values.blank?
       values.map { |value| self.class.status_group[value] }.flatten.compact
     end
 

@@ -29,6 +29,8 @@ fr:
     actions:
       show_output: "Finaliser l'Offre"
       affect_ccset: "Configurer"
+      lines: "Lignes"
+      stop_area: "Arrêts"
     errors:
       locked_referential_to_aggregate:
         must_belong_to_output: Doit être une offre finalisée

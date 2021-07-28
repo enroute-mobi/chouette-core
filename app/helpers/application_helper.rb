@@ -56,7 +56,7 @@ module ApplicationHelper
   def page_header_content_for(object)
     content_for :page_header_resource_name, page_header_resource_name(object)
     content_for :page_header_title, page_header_title(object)
-    content_for :page_header_meta, page_header_meta(object)
+    # content_for :page_header_meta, page_header_meta(object)
   end
 
   def font_awesome_classic_tag(name)

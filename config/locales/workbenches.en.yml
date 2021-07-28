@@ -29,6 +29,8 @@ en:
     actions:
       show_output: "Merge Data set"
       affect_ccset: "Configure"
+      lines: "Lines"
+      stop_area: "Stop Areas"
     errors:
       locked_referential_to_aggregate:
         must_belong_to_output: Must belong to workbench's output

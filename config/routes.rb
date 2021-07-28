@@ -219,18 +219,9 @@ ChouetteIhm::Application.routes.draw do
           get 'fetch_user_permissions'
         end
         resource :journey_patterns_collection, :only => [:show, :update]
-        resources :journey_patterns do
-          get 'new_vehicle_journey', on: :member
-          get 'available_specific_stop_places', on: :member
-        end
+        resources :journey_patterns
         resource :vehicle_journeys_collection, :only => [:show, :update]
-        resources :vehicle_journeys, :vehicle_journey_frequencies do
-          get 'select_journey_pattern', :on => :member
-          get 'select_vehicle_journey', :on => :member
-          resources :vehicle_translations
-          resources :time_tables
-        end
-        resources :vehicle_journey_imports
+        resources :vehicle_journeys
         resources :vehicle_journey_exports
         resources :stop_points, only: :index, controller: 'route_stop_points'
       end
@@ -364,7 +355,7 @@ ChouetteIhm::Application.routes.draw do
     get "/snap" => "snapshots#show"
   end
 
-  if Rails.env.development? 
+  if Rails.env.development?
     mount GraphiQL::Rails::Engine, at: "/graphiql", graphql_path: "/graphql"
   end
 

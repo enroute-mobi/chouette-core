@@ -153,6 +153,31 @@ RSpec.describe Workgroup, type: :model do
     end
   end
 
+  describe "#nightly_aggregate_days" do
+    it 'should be a instance of Timetable::DaysOfWeek' do
+      expect(
+        workgroup.nightly_aggregate_days.is_a?(Timetable::DaysOfWeek)
+      ).to be_truthy
+    end
+
+    it 'should have at most 7 values' do
+      workgroup.nightly_aggregate_days = []
+      expect(workgroup.nightly_aggregate_days.days).to eq([])
+
+      workgroup.nightly_aggregate_days = ['0', '1', '3', '.', '5', '.']
+      expect(workgroup.nightly_aggregate_days.days).to eq(%i[monday tuesday wednesday friday])
+
+      workgroup.nightly_aggregate_days = %w[monday tuesday wednesday . friday .]
+      expect(workgroup.nightly_aggregate_days.days).to eq(%i[monday tuesday wednesday friday])
+
+      workgroup.nightly_aggregate_days = ['0', '1', '3']
+      expect(workgroup.nightly_aggregate_days.days).to eq(%i[monday tuesday wednesday])
+      
+      workgroup.nightly_aggregate_days = ["0", "1", "2", "3", "4", "5", "6", "7"]
+      expect { workgroup.nightly_aggregate_days }.to raise_error WeekDays::InvalidValue
+    end
+  end
+
   describe "when a workgroup is purged" do
     let!(:workgroup) { create(:workgroup, deleted_at: Time.now) }
     let!(:workbench) { create(:workbench, workgroup: workgroup) }

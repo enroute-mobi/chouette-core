@@ -47,6 +47,8 @@ class Workgroup < ApplicationModel
   @@workbench_scopes_class = WorkbenchScopes::All
   mattr_accessor :workbench_scopes_class
 
+  attribute :nightly_aggregate_days, WeekDays.new
+
   def custom_fields_definitions
     Hash[*custom_fields.map{|cf| [cf.code, cf]}.flatten]
   end

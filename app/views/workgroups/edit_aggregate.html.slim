@@ -15,6 +15,7 @@
         .col-lg-12
           .slave data-master="#workgroup_nightly_aggregate_enabled" data-value="true"
             = f.input :nightly_aggregate_time, as: :clockpicker, input_html: { value: resource.nightly_aggregate_time&.to_hm || "00:00" }
+            = f.input :nightly_aggregate_days, as: :day_type
             = f.input :nightly_aggregate_notification_target,
               collection: NightlyAggregate.notification_target_options,
               selected: f.object.nightly_aggregate_notification_target,

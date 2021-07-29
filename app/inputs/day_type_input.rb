@@ -2,41 +2,53 @@ class DayTypeInput < SimpleForm::Inputs::CollectionCheckBoxesInput
 
   def input(wrapper_options = nil)
     days_of_week = @builder.object.send(attribute_name)
+    value = WeekDays.new.serialize(days_of_week)
 
     raise "#{attribute_name} is not an instance of Timetable::DaysOfWeek" unless days_of_week.is_a?(Timetable::DaysOfWeek)
 
-    template.content_tag(:div, class: 'form-group labelled-checkbox-group') do
-      @builder.collection_check_boxes(
-        attribute_name,
-        collection,
-        :first,
-        :last,
-        {
-          boolean_style: :inline,
-          item_wrapper_tag: false,
-          include_hidden: false
-        }
-      ) do |b|
-        name = "#{@builder.object_name}[#{attribute_name}][#{b.value}]"
-        checked = days_of_week.days.include?(b.value.to_sym)
-        check_box_value = checked ? b.value : '.'
+    content = ''
 
-        options = {
-          name: name,
-          checked: checked,
-          value: check_box_value
-        }
+    content << @builder.hidden_field(attribute_name, value: value, ':value': 'value')
 
-        template.content_tag(:div, class: 'lcbx-group-item') do
-          template.content_tag(:div, class: 'checkbox') do
-            template.content_tag(:label) do
-              template.concat @builder.check_box(attribute_name, options, b.value, '.')
-              template.concat template.content_tag(:span, b.text, class: 'lcbx-group-item-label')
-            end
+    collection.each_with_index.map do |(value, label), index|
+      name = "#{@builder.object_name}[#{attribute_name}][#{value}]"
+      checked = days_of_week.days.include?(value.to_sym)
+
+      options = {
+        name: nil,
+        id: nil,
+        checked: checked,
+        value: checked ? '1' : '0',
+        'data-index': index,
+        'x-on:change': 'handleChange'
+      }
+
+      content << template.content_tag(:div, class: 'lcbx-group-item') do
+        template.content_tag(:div, class: 'checkbox') do
+          template.content_tag(:label) do
+            template.concat @builder.check_box(attribute_name, options, '1', '0')
+            template.concat template.content_tag(:span, label, class: 'lcbx-group-item-label')
           end
         end
       end
     end
+    
+    template.content_tag(
+      :div,
+      content.html_safe,
+      class: 'form-group labelled-checkbox-group',
+      'x-data': "{
+        value: '#{value}', 
+        handleChange(e) {
+          const { checked, dataset: { index } } = e.target
+          const coll = this.value.split('')
+          coll[index] = checked ? '1' : '0'
+
+          this.value = coll.join('')
+          console.log('value', this.value)
+        }
+      }"
+    )
   end
 
   private

@@ -75,9 +75,8 @@ class WorkgroupsController < ChouetteController
       :maximum_data_age,
       :sentinel_min_hole_size,
       :sentinel_delay,
-      :nightly_aggregate_enabled, :nightly_aggregate_time, :nightly_aggregate_notification_target,
+      :nightly_aggregate_enabled, :nightly_aggregate_time, :nightly_aggregate_days, :nightly_aggregate_notification_target,
       :transport_modes_as_json,
-      nightly_aggregate_days: {},
       workbenches_attributes: [
         :id,
         :locked_referential_to_aggregate_id,
@@ -85,9 +84,7 @@ class WorkgroupsController < ChouetteController
         compliance_control_set_ids: @workgroup&.compliance_control_sets_by_workgroup&.keys
       ],
       compliance_control_set_ids: Workgroup.workgroup_compliance_control_sets
-    ).tap do |workgroup_params|
-      workgroup_params[:nightly_aggregate_days] = workgroup_params[:nightly_aggregate_days].values
-    end
+    )
   end
 
   def resource

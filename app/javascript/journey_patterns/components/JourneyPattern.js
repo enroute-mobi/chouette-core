@@ -176,16 +176,62 @@ export default class JourneyPattern extends Component{
     .then(handleRedirect(() => window.sessionStorage.setItem('previousAction', 'journey_pattern-update')))
   }
 
+  renderShapeEditorButtons() {
+    const buttons = []
+
+    if (!this.hasFeature('shape_editor_experimental')) return buttons
+
+    const { id } = this.journeyPattern
+    
+    if (!this.hasShape()) {
+      buttons.push(
+        <li key={`create_shape_${id}`}>
+          <button
+            type='button'
+            onClick={this.onCreateShape}
+            >
+            {I18n.t('journey_patterns.actions.create_shape')}
+          </button>
+        </li>
+      )
+    } else {
+      buttons.push(
+        <>
+          <li key={`edit_shape_${id}`}>
+            <button
+              type='button'
+              onClick={this.onEditShape}
+              >
+              {I18n.t('journey_patterns.actions.edit_shape')}
+            </button>
+          </li>
+          <li key={`unassociate_shape_${id}`}>
+            <button
+              type="button"
+              onClick={this.onUnassociateShape}
+            >
+              {I18n.t('journey_patterns.actions.unassociate_shape')}
+            </button>
+          </li>
+        </>
+      )
+    }
+
+    return buttons
+  }
+
   render() {
     this.previousSpId = undefined
     let [totalTime, totalDistance] = this.totals(false)
     let [commercialTotalTime, commercialTotalDistance] = this.totals(true)
+
+    const { deletable, id, object_id, short_id, stop_points } = this.journeyPattern
     return (
-      <div className={'t2e-item' + (this.journeyPattern.deletable ? ' disabled' : '') + (this.journeyPattern.object_id ? '' : ' to_record') + (this.journeyPattern.errors ? ' has-error': '') + (this.hasFeature('costs_in_journey_patterns') ? ' with-costs' : '')}>
+      <div className={'t2e-item' + (this.journeyPattern.deletable ? ' disabled' : '') + (object_id ? '' : ' to_record') + (this.journeyPattern.errors ? ' has-error': '') + (this.hasFeature('costs_in_journey_patterns') ? ' with-costs' : '')}>
         <div className='th'>
-          <div className='strong mb-xs'>{this.journeyPattern.object_id ? this.journeyPattern.short_id : '-'}</div>
+          <div className='strong mb-xs'>{object_id ? short_id : '-'}</div>
           <div>{this.journeyPattern.registration_number}</div>
-          <div>{I18n.t('journey_patterns.show.stop_points_count', {count: actions.getChecked(this.journeyPattern.stop_points).length})}</div>
+          <div>{I18n.t('journey_patterns.show.stop_points_count', {count: actions.getChecked(stop_points).length})}</div>
           {this.hasFeature('costs_in_journey_patterns') &&
             <div className="small row totals">
               <span className="col-md-6"><i className="fa fa-arrows-h"></i>{totalDistance}</span>
@@ -198,15 +244,15 @@ export default class JourneyPattern extends Component{
               <span className="col-md-6"><i className="fa fa-clock"></i>{commercialTotalTime}</span>
             </div>
           }
-          <div className={this.journeyPattern.deletable ? 'btn-group disabled' : 'btn-group'}>
+          <div className={deletable ? 'btn-group disabled' : 'btn-group'}>
             <div
-              className={this.journeyPattern.deletable ? 'btn dropdown-toggle disabled' : 'btn dropdown-toggle'}
+              className={deletable ? 'btn dropdown-toggle disabled' : 'btn dropdown-toggle'}
               data-toggle='dropdown'
               >
               <span className='fa fa-cog'></span>
             </div>
             <ul className='dropdown-menu'>
-              <li>
+              <li key={`edit_journey_pattern_${id}`}>
                 <button
                   type='button'
                   onClick={this.props.onOpenEditModal}
@@ -216,50 +262,11 @@ export default class JourneyPattern extends Component{
                   {this.props.editMode ? I18n.t('actions.edit') : I18n.t('actions.show')}
                 </button>
               </li>
-              {
-                !this.hasShape() && (
-                  <li>
-                    <button
-                      type='button'
-                      onClick={this.onCreateShape}
-                      >
-                      {I18n.t('journey_patterns.actions.create_shape')}
-                    </button>
-                  </li>
-                )
-              }
-              {
-                this.hasShape() && (
-                  <>
-                  <li>
-                    <button
-                      type='button'
-                      onClick={this.onEditShape}
-                      >
-                      {I18n.t('journey_patterns.actions.edit_shape')}
-                    </button>
-                  </li>
-                  </>
-                )
-              }
-              {
-                this.hasShape() && (
-                  <>
-                  <li>
-                    <button
-                      type="button"
-                      onClick={this.onUnassociateShape}
-                    >
-                      {I18n.t('journey_patterns.actions.unassociate_shape')}
-                    </button>
-                  </li>
-                  </>
-                )
-              }
-              <li className={this.journeyPattern.object_id ? '' : 'disabled'}>
-                {this.vehicleJourneyURL(this.journeyPattern.object_id)}
+              { this.renderShapeEditorButtons() }
+              <li key={`see_vehicle_journeys_${id}`} className={object_id ? '' : 'disabled'}>
+                {this.vehicleJourneyURL(object_id)}
               </li>
-              <li className={'delete-action' + (this.isDisabled('destroy') || !this.props.editMode ? ' disabled' : '')}>
+              <li key={`delete_journey_pattern_${id}`} className={'delete-action' + (this.isDisabled('destroy') || !this.props.editMode ? ' disabled' : '')}>
                 <button
                   type='button'
                   className="disabled"
@@ -276,7 +283,7 @@ export default class JourneyPattern extends Component{
             </div>
           </div>
 
-          {this.journeyPattern.stop_points.map((stopPoint, i) =>{
+          {stop_points.map((stopPoint, i) =>{
             let costs = null
             let costsKey = null
             let time = null
@@ -295,7 +302,7 @@ export default class JourneyPattern extends Component{
                 <div className={'td' + (headlined ? ' with-headline' : '')}>
                   {this.spNode(stopPoint, headlined)}
                 </div>
-                {this.hasFeature('costs_in_journey_patterns') && costs && <div className='costs' id={'costs-' + this.journeyPattern.id + '-' + costsKey }>
+                {this.hasFeature('costs_in_journey_patterns') && costs && <div className='costs' id={'costs-' + id + '-' + costsKey }>
                   {this.props.editMode && <div>
                     <p>
                       <input type="number" value={costs['distance'] || 0} min='0' name="distance" step="0.01" onChange={this.updateCosts} data-costs-key={costsKey}/>

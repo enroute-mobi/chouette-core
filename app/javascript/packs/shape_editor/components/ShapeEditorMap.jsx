@@ -28,14 +28,16 @@ const mapStateToProps = state => ({
   features: Array.from(state.shapeFeatures.getArray()),
   waypoints: getSortedWaypoints(state)
 })
-export default function ShapeEditorMap({ isEdit, baseURL }) {
+export default function ShapeEditorMap({ isEdit, baseURL, redirectURL }) {
   // Store
-  const { features, name, permissions, shapeFeatures, style, waypoints } = useStore(store, mapStateToProps)
+  const { features, name, permissions, style, waypoints } = useStore(store, mapStateToProps)
 
   // Evvent Handlers
   const onMapInit = map => setTimeout(() => eventEmitter.emit('map:init', map), 0) // Need to do this to ensure that controllers can subscribe to event before it is fired
   const onWaypointZoom = waypoint => eventEmitter.emit('map:zoom-to-waypoint', waypoint)
   const onDeleteWaypoint = waypoint => eventEmitter.emit('map:delete-waypoint-request', waypoint)
+  const onSubmit = _event => eventEmitter.emit('shape:submit')
+  const onConfirmCancel = _event => window.location.replace(redirectURL)
 
   // Controllers
   useMapController()
@@ -59,8 +61,8 @@ export default function ShapeEditorMap({ isEdit, baseURL }) {
 
   return (
     <div>
-      <CancelButton />
-      <SaveButton editMode={true} isEdit={isEdit} permissions={permissions} />
+      <CancelButton onConfirmCancel={onConfirmCancel} />
+      <SaveButton isEdit={isEdit} permissions={permissions} onSubmit={onSubmit} />
       <div className="row">
         <NameInput name={name} /> 
       </div>
@@ -82,5 +84,6 @@ export default function ShapeEditorMap({ isEdit, baseURL }) {
 
 ShapeEditorMap.propTypes = {
   isEdit: PropTypes.bool.isRequired,
-  baseURL: PropTypes.string.isRequired
+  baseURL: PropTypes.string.isRequired,
+  redirectURL: PropTypes.string.isRequired,
 }

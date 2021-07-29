@@ -1,40 +1,37 @@
-import { isEqual } from 'lodash'
-
+import PropTypes from 'prop-types'
 import SaveButton from '../../../helpers/save_button'
-import eventEmitter from '../shape.event-emitter'
-
 export default class SaveShape extends SaveButton {
   constructor(props) {
     super(props)
 
     this.state = {
-      disabled: false
+      hasPolicy: false
     }
   }
 
-  // shouldComponentUpdate(nextProps, _nextState) {
-  //   // console.log('shouldComponentUpdate', this.props.permissions, nextProps.permissions, !isEqual(
-  //   //   this.props.permissions,
-  //   //   nextProps.permissions
-  //   // ))
-  //   // return !isEqual(
-  //   //   this.props.permissions,
-  //   //   nextProps.permissions
-  //   // )
+  get policy() {
+    return this.props.isEdit ? 'canUpdate' : 'canCreate'
+  }
 
-  //   return true
-  // }
+  componentDidUpdate(prevProps, prevState) {
+    const { permissions: prevPermissions } = prevProps
+    const { permissions } = this.props
+
+    if (prevPermissions[this.policy] != permissions[this.policy]) {
+      this.setState({ hasPolicy: permissions[this.policy] })
+    }
+
+    if (!prevState.hasPolicy && !!this.state.hasPolicy) {
+      $('.formSubmitr').appendTo('.page-action').addClass('sticky-action')
+    }
+  }
 
   btnDisabled() {
-    return this.state.disabled
+    return !this.state.hasPolicy
   }
 
   hasPolicy() {
-    return true
-    const { isEdit, permissions } = this.props
-    const policy = isEdit ? 'canUpdate' : 'canCreate'
-
-    return permissions[policy]
+    return this.state.hasPolicy
   }
 
   formClassName() {
@@ -42,6 +39,17 @@ export default class SaveShape extends SaveButton {
   }
 
   handleClick(e) {
-    eventEmitter.emit('shape:submit')
+    this.props.onSubmit(e)
   }
+}
+
+SaveShape.propTypes = {
+  permissions: PropTypes.object.isRequired,
+  isEdit: PropTypes.bool.isRequired,
+  onSubmit: PropTypes.func.isRequired
+}
+
+SaveShape.defaultProps = {
+  editMode: true,
+  permissions: []
 }

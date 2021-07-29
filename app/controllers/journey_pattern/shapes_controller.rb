@@ -61,7 +61,7 @@ module JourneyPattern
       shape = begin
         Shape.find(params[:shape_id])
       rescue ActiveRecord::RecordNotFound
-        Shape.new
+        Shape.new(shape_provider: shape_provider)
       end
 
       policy = policy(shape)
@@ -109,10 +109,14 @@ module JourneyPattern
       [{}] # Needed to avoid ActiveRecord::Mismatch error with update! since Shapes::Update is handling the update 
     end
 
+    def shape_provider
+      workbench.shape_providers.first
+    end
+
     def shape_params
       ActionController::Parameters.new(payload).require(:shape).permit(:name).tap do |_params|
         _params[:shape_referential] = workbench.shape_referential
-        _params[:shape_provider] = workbench.shape_providers.first
+        _params[:shape_provider] = shape_provider
         _params[:waypoints] = payload.dig('shape', 'waypoints') || []
         _params[:coordinates] = payload.dig('shape', 'coordinates') || []
 

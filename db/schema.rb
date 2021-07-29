@@ -1286,17 +1286,6 @@ ActiveRecord::Schema.define(version: 2021_07_27_144032) do
     t.index ["route_id"], name: "index_vehicle_journeys_on_route_id"
   end
 
-  create_table "waypoints", force: :cascade do |t|
-    t.string "name"
-    t.integer "position", null: false
-    t.string "waypoint_type", null: false
-    t.bigint "shape_id"
-    t.float "coordinates", array: true
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["shape_id"], name: "index_waypoints_on_shape_id"
-  end
-
   create_table "workbenches", force: :cascade do |t|
     t.string "name"
     t.bigint "organisation_id"

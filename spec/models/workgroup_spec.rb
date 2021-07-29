@@ -43,6 +43,7 @@ RSpec.describe Workgroup, type: :model do
   describe "#nightly_aggregate_timeframe?" do
     let(:nightly_aggregation_time) { "15:15:00" }
     let(:nightly_aggregate_enabled) { false }
+    let(:current_symbolic_day) { Timetable::DaysOfWeek::SYMBOLIC_DAYS[Time.zone.now.wday - 1] }
 
     before do
       workgroup.update nightly_aggregate_time: nightly_aggregation_time,
@@ -54,14 +55,30 @@ RSpec.describe Workgroup, type: :model do
     context "when nightly_aggregate_enabled is true" do
       let(:nightly_aggregate_enabled) { true }
 
-      it "returns true when inside timeframe" do
+      it "returns true when inside timeframe && dayframe" do
         Timecop.freeze(time_at_1515) do
+          workgroup.nightly_aggregate_days.enable(current_symbolic_day)
           expect(workgroup.nightly_aggregate_timeframe?).to be_truthy
         end
       end
+  
+      it "returns false when inside timeframe && not in dayframe" do
+        Timecop.freeze(time_at_1515) do
+          workgroup.nightly_aggregate_days.disable(current_symbolic_day)
+          expect(workgroup.nightly_aggregate_timeframe?).to be_falsy
+        end
+      end
 
-      it "returns false when outside timeframe" do
+      it "returns false when outside timeframe && in dayframe" do
         Timecop.freeze(time_at_1515 - 20.minutes) do
+          workgroup.nightly_aggregate_days.enable(current_symbolic_day)
+          expect(workgroup.nightly_aggregate_timeframe?).to be_falsy
+        end
+      end
+
+      it "returns false when outside timeframe && in not dayframe" do
+        Timecop.freeze(time_at_1515 - 20.minutes) do
+          workgroup.nightly_aggregate_days.disable(current_symbolic_day)
           expect(workgroup.nightly_aggregate_timeframe?).to be_falsy
         end
       end

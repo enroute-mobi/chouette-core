@@ -153,7 +153,7 @@ class Workgroup < ApplicationModel
 
     cron_delay = NIGHTLY_AGGREGATE_CRON_TIME * 2
     Rails.logger.info "cron_delay: #{cron_delay}"
-    within_timeframe = (TimeOfDay.now - nightly_aggregate_time).abs <= cron_delay
+    within_timeframe = (TimeOfDay.now - nightly_aggregate_time).abs <= cron_delay && nightly_aggregate_days.match_date?(Time.zone.now)
     Rails.logger.info "within_timeframe: #{within_timeframe}"
 
     # "5.minutes * 2" returns a FixNum (in our Rails version)

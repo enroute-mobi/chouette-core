@@ -2,7 +2,7 @@ class WeekDays < ActiveRecord::Type::Value
   class InvalidValue < StandardError; end
 
   def type
-    :string
+    'bit(7)'
   end
 
   def cast(value)
@@ -10,27 +10,22 @@ class WeekDays < ActiveRecord::Type::Value
   end
 
   def deserialize(value)
-    value = PG::TextDecoder::Array.new.decode(value)
-
     check_and_format_value(value)
   end
 
   def serialize(value)
-    days = Timetable::DaysOfWeek::SYMBOLIC_DAYS.map do |symbolic_day|
-      value.days.include?(symbolic_day) ? symbolic_day.to_s : '.'
-    end
-
-    PG::TextEncoder::Array.new.encode(days)
+    Timetable::DaysOfWeek::SYMBOLIC_DAYS.map do |symbolic_day|
+      value.days.include?(symbolic_day) ? '1' : '0'
+    end.join('')
   end
 
   private
 
-  def check_and_format_value(value = [])
-    value = value.map(&:first).join('')
-    value = value.ljust(7, '.')
-
+  def check_and_format_value(value)
     raise InvalidValue.new("value (#{value}) should have at most 7 characters") unless value.length == 7
 
-    Timetable::Builder.days_of_week(value)
+    Timetable::Builder.days_of_week(
+      value.gsub('0', '.')
+    )
   end
 end

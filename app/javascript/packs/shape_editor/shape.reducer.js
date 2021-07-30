@@ -21,6 +21,7 @@ export const initialState = {
   name: '',
   routeFeatures: new Collection([]),
   shapeFeatures: new Collection([]),
+  mapWrapperFeatures: [], // Only used or the MapWrapper compnent (should be only update once, when we fetch the features onMount)
   map: null,
   line: null,
   waypoints: new Collection([], { unique: true }),

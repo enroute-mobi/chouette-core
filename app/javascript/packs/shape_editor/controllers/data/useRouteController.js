@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 
-import useSWR from 'swr'
+import useSWR, { mutate } from 'swr'
 import { useParams } from 'react-router-dom'
 import GeoJSON from 'ol/format/GeoJSON'
 
@@ -13,21 +13,17 @@ const wktOptions = {
 }
 
 // Custom hook which responsability is to fetch a new GeoJSON when the journeyPatternId change
-export default function useRouteController(isEdit) {
-  const [shouldFetch, setShouldFetch] = useState(false)
-
+export default function useRouteController(_isEdit) {
   // Route params
   const { referentialId, lineId, routeId } = useParams()
   const url = `/referentials/${referentialId}/lines/${lineId}/routes/${routeId}.geojson`
 
   useEffect(() => {
-    eventEmitter.on('map:init', () => setShouldFetch(true))
+    eventEmitter.on('map:init', () => mutate(url))
   }, [])
 
   // Event handlers
-  const onSuccess = data => {
-    setShouldFetch(false)
-    
+  const onSuccess = data => {    
     store.getState(({ routeFeatures }) => {
       routeFeatures.extend(
         new GeoJSON().readFeatures(data, wktOptions)
@@ -38,7 +34,7 @@ export default function useRouteController(isEdit) {
   }
   
   return useSWR(
-    () => shouldFetch ? url : null,
+    url,
     url => fetch(url).then(res => res.text()),
-    { onSuccess })
+    { onSuccess, revalidateOnMount: false })
 }

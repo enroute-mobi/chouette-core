@@ -12,6 +12,7 @@ const options = {
     })
     .then(res => res.json())
   },
+  errorRetryCount: 0,
   revalidateOnFocus: false
 }
 

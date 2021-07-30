@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useParams  } from 'react-router-dom'
-import useSWR from 'swr'
+import useSWR, { mutate } from 'swr'
 
 import GeoJSON from 'ol/format/GeoJSON'
 
@@ -11,72 +11,55 @@ import eventEmitter from '../../shape.event-emitter'
 
 // Custom hook which responsability is to fetch / submit a shape object
 export default function useShapeController(isEdit, baseURL) {
-  const [shouldFetch, setShouldFetch] = useState(false)
-  const [shouldSubmit, setShouldSubmit] = useState(false)
-
   // Route params
   const { action } = useParams()
 
-  const onFetchSuccess = data => {
-    setShouldFetch(false)
-
-    store.getState(({ shapeFeatures }) => {
-      shapeFeatures.extend(
-        new GeoJSON().readFeatures(simplifyGeoJSON(data), wktOptions(isEdit))
-      )
-
-      store.setAttributes({ shapeFeatures, name: shapeFeatures.item(0).get('name') })
-      shapeFeatures.dispatchEvent('receiveFeatures')
-    })
-  }
-
-  const onSubmitSuccess = () => {}
-
-  const onSubmitError = errors => {
-    errors.forEach(text => {
-      window.Spruce.stores.flash.add({ type: 'error', text })
-    })
-  }
-
-  const params = new Params(isEdit, baseURL, action)
-  const fetchParams = params.fetch(shouldFetch, onFetchSuccess)
-  const submitParams = params.submit(shouldSubmit, onSubmitSuccess, onSubmitError)
+  const fetchURL = `${baseURL}/shapes/${action}`
+  const submitURL = `${baseURL}/shapes`
 
   // Fetch Shape
-  useSWR(...fetchParams)
+  useSWR(...Params.fetch(fetchURL, isEdit))
   
   // Submit Shape
-  useSWR(...submitParams)
+  useSWR(...Params.submit(submitURL, isEdit))
 
   useEffect(() => {
-    eventEmitter.on('shape:submit', () => setShouldSubmit(true))
-    eventEmitter.on('map:init', () => setShouldFetch(true))
+    eventEmitter.on('shape:submit', () => mutate(submitURL))
+    eventEmitter.on('map:init', () => mutate(fetchURL))
   }, [])
 }
-
 class Params {
-  constructor(isEdit, baseURL, action) {
-    this.isEdit = isEdit
-    this.baseURL = baseURL
-    this.action = action
-  }
+  static fetch = (url, isEdit) => [
+    url,
+    {
+      onSuccess(data) {
+        store.getState(({ shapeFeatures }) => {
+          const fetchedFeatures = new GeoJSON().readFeatures(simplifyGeoJSON(data), wktOptions(isEdit))
+          
+          shapeFeatures.extend(fetchedFeatures)
 
-  fetch(shouldFetch, onSuccess) {
-    return [
-      shouldFetch ? `${this.baseURL}/shapes/${this.action}` : null,
-      { onSuccess }
-    ]
-  }
-
-  submit(shouldSubmit, onSuccess, onError) {
-    return [
-      shouldSubmit ? `${this.baseURL}/shapes` : null,
-      async url => {
-        const state = await store.getStateAsync()
-
-        return submitFetcher(url, this.isEdit, getSubmitPayload(state))
+          store.setAttributes({ mapWrapperFeatures: fetchedFeatures, shapeFeatures, name: shapeFeatures.item(0).get('name') })
+          shapeFeatures.dispatchEvent('receiveFeatures')
+        })
       },
-      { onSuccess, onError }
-    ]
-  }
+      revalidateOnMount: false
+    }
+  ]
+
+  static submit = (url, isEdit) => [
+    url,
+    async url => {
+      const state = await store.getStateAsync()
+
+      return submitFetcher(url, isEdit, getSubmitPayload(state))
+    },
+    {
+      onError(errors) {
+        errors.forEach(text => {
+          window.Spruce.stores.flash.add({ type: 'error', text })
+        })
+      },
+      revalidateOnMount: false
+    }
+  ]
 }

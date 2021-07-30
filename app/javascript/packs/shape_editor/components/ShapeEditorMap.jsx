@@ -63,18 +63,22 @@ export default function ShapeEditorMap({ isEdit, baseURL, redirectURL }) {
     <div>
       <CancelButton onConfirmCancel={onConfirmCancel} />
       <SaveButton isEdit={isEdit} permissions={permissions} onSubmit={onSubmit} />
-      <div className="row">
-        <NameInput name={name} /> 
-      </div>
-      <div className="row">
-        <div className="col-md-6">
-          <h4 className="underline">Liste</h4>
-          <List waypoints={waypoints} onWaypointZoom={onWaypointZoom} onDeleteWaypoint={onDeleteWaypoint} />
+      <div className="col-lg-8 col-lg-offset-2 col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
+        <div className="row">
+          <NameInput name={name} />
         </div>
-        <div className="col-md-6">
-          <h4 className="underline">Carte</h4>
-          <div className="openlayers_map">
-            <MapWrapper features={features} style={style} onInit={onMapInit} />
+        <div className="row">
+          <div className="col-md-12">
+            <h4 className="underline">Carte</h4>
+            <div className="openlayers_map">
+              <MapWrapper features={features} style={style} onInit={onMapInit} />
+            </div>
+          </div>
+        </div>
+        <div className="row mt-lg">
+          <div className="col-md-12">
+            <h4 className="underline">Liste</h4>
+            <List waypoints={waypoints} onWaypointZoom={onWaypointZoom} onDeleteWaypoint={onDeleteWaypoint} />
           </div>
         </div>
       </div>

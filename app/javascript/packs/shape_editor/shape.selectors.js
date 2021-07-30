@@ -1,12 +1,5 @@
-import { chain, curryRight, flow, get, map } from 'lodash'
-import {
-  nearestPointOnLine,
-  point,
-  lineSlice,
-  lineString,
-  getCoords,
-  length
-} from '@turf/turf'
+import { curryRight, flow, map, sortBy } from 'lodash'
+import { lineString } from '@turf/turf'
 
 import { convertCoords, isLine, isWaypoint } from './shape.helpers'
 
@@ -18,30 +11,10 @@ export const getTurfLine = flow(
   line => line ? lineString(convertCoords(line)) : null
 )
 
-export const getSortedWaypoints = state => {
-  const line = getTurfLine(state)
-  const waypoints = getWaypoints(state)
-
-  if (!line) return []
-
-  const firstPoint = !!line && point(getCoords(line)[0])
-
-  return chain(waypoints)
-  .map(w => {
-    // Create a line slice from the beginning to the current point to determine the length of this "subLine"
-      const subLine = lineSlice(
-        firstPoint,
-        nearestPointOnLine(line, convertCoords(w)),
-        line
-      )
-
-      w.set('distanceFromStart', length(subLine))
-
-      return w
-    })
-    .sortBy(w => w.getProperties().distanceFromStart)
-    .value()
-}
+export const getSortedWaypoints = state => sortBy(
+  getWaypoints(state),
+  w => w.get('distanceFromStart')
+)
 
 export const getSortedCoordinates = flow(
   getSortedWaypoints,

@@ -1,10 +1,15 @@
-import { simplify } from '@turf/turf'
-import Modify from 'ol/interaction/Modify'
-import Draw from 'ol/interaction/Draw'
-import Snap from 'ol/interaction/Snap'
+import {
+  nearestPointOnLine,
+  point,
+  lineSlice,
+  getCoords,
+  length,
+  simplify
+} from '@turf/turf'
+import handleRedirect from '../../helpers/redirect'
 
 import store from './shape.store'
-import handleRedirect from '../../helpers/redirect'
+import { getTurfLine } from './shape.selectors'
 
 export const convertCoords = feature =>
   feature
@@ -16,6 +21,26 @@ export const convertCoords = feature =>
 export const isLine = feature => feature.getGeometry().getType() == 'LineString'
 export const isWaypoint = feature => feature.getGeometry().getType() == 'Point'
 
+export const setDistanceFromStart = waypoint => {
+  store.getState(state => {
+    const turfLine = getTurfLine(state)
+
+    if (!turfLine) return
+
+    const firstPoint = point(getCoords(turfLine)[0])
+
+     // Create a line slice from the beginning to the current waypoint to determine the length of this "subLine"
+      const subLine = lineSlice(
+        firstPoint,
+        nearestPointOnLine(turfLine, convertCoords(waypoint)),
+        turfLine
+      )
+
+      waypoint.set('distanceFromStart', length(subLine))
+    
+  })
+}
+
 export const getLineSegments = feature => {
   const segments = []
 
@@ -25,8 +50,6 @@ export const getLineSegments = feature => {
 
   return segments
 }
-
-
 
 export const simplifyGeoJSON = data => simplify(data, { tolerance: 0.0001, highQuality: true }) // We may want to have a dynamic tolerance
 

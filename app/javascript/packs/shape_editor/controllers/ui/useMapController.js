@@ -8,7 +8,7 @@ import VectorSource from 'ol/source/Vector'
 
 import store from '../../shape.store'
 import eventEmitter from '../../shape.event-emitter'
-import { lineId } from '../../shape.helpers'
+import { lineId, setDistanceFromStart } from '../../shape.helpers'
 import { Collection } from 'ol'
 
 const getStyles = () => ({
@@ -83,15 +83,13 @@ export default function useMapInteractions() {
     const waypoints = new Collection(points)
   
     line.setId(lineId)
-
     line.setStyle(styles.lines.shape)
 
     points.forEach(w => {
       w.setId(uniqueId('waypoint_'))
       w.set('type', 'waypoint')
+      setDistanceFromStart(w)
 
-      console.log('type', w.getProperties())
-      // const style = w.get('type') == 'waypoint' ? 'shapeWaypoint' : 'shapeConstraint'
       w.setStyle(styles.points.shapeWaypoint)
     })
 
@@ -99,11 +97,13 @@ export default function useMapInteractions() {
     const draw = new Draw({ features: event.target, type: 'Point' })
     const snap = new Snap({ features: event.target })
     const interactions = [modify, draw, snap]
-
+  
     draw.on('drawend', () => featureCollection.changed())
     modify.on('modifyend', () => featureCollection.changed())
 
     interactions.forEach(i => map.addInteraction(i))
+
+    store.setAttributes({ draw })
   }
 
   const onAddPoint = async event => {

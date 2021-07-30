@@ -7,6 +7,8 @@ export default class SaveShape extends SaveButton {
     this.state = {
       hasPolicy: false
     }
+
+    this.handleClick = this.handleClick.bind(this)
   }
 
   get policy() {

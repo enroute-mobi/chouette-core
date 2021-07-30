@@ -25,7 +25,7 @@ import SaveButton from './SaveButton'
 
 const mapStateToProps = state => ({
   ...pick(state, ['name', 'permissions', 'style']),
-  features: state.mapWrapperFeatures,
+  features: state.shapeFeatures.getLength() == 0 ? null : state.shapeFeatures,
   waypoints: getSortedWaypoints(state)
 })
 export default function ShapeEditorMap({ isEdit, baseURL, redirectURL }) {

@@ -31,7 +31,8 @@ node(:features) do
         coordinates: waypoint.coordinates
       },
       properties: {
-        name: waypoint.name
+        name: waypoint.name || '-',
+        type: waypoint.waypoint_type
       }
     }
   end

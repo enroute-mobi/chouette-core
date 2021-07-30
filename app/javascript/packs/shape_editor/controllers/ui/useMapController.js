@@ -3,7 +3,6 @@ import { uniqueId } from 'lodash'
 
 import { Circle, Fill, Stroke, Style } from 'ol/style'
 import { Draw, Modify, Snap } from 'ol/interaction'
-import {boundingExtent, getArea } from 'ol/extent'
 import VectorLayer from 'ol/layer/Vector'
 import VectorSource from 'ol/source/Vector'
 
@@ -16,16 +15,16 @@ const getStyles = () => ({
   points: {
     shapeWaypoint: new Style({
       image: new Circle({
-        radius: 5,
-        stroke: new Stroke({ color: 'red', width: 0.75 }),
-        fill: new Fill({ color: 'rgba(255, 255, 255, 0.5)' })
+        radius: 6,
+        stroke: new Stroke({ color: 'white', width: 1 }),
+        fill: new Fill({ color: 'red' })
       })
     }),
     shapeConstraint: new Style({
       image: new Circle({
-        radius: 2.5,
-        stroke: new Stroke({ color: 'black', width: 1 }),
-        fill: new Fill({ color: 'rgba(255, 255, 255, 0.5)' })
+        radius: 6,
+        stroke: new Stroke({ color: 'red', width: 1 }),
+        fill: new Fill({ color: 'white' })
       })
     }),
     route: new Style({
@@ -48,18 +47,12 @@ const getStyles = () => ({
     shape: new Style({
       stroke: new Stroke({
         color: 'red',
-        width: 1.25
+        width: 1.5
       })
     })
   }
 })
 
-const getExtent = map => {
-  const coords = map.getView().calculateExtent(map.getSize())
-  const extent = boundingExtent(coords)
-  return extent
-}
-  
 export default function useMapInteractions() {
   const styles = getStyles()
 
@@ -96,6 +89,9 @@ export default function useMapInteractions() {
     points.forEach(w => {
       w.setId(uniqueId('waypoint_'))
       w.set('type', 'waypoint')
+
+      console.log('type', w.getProperties())
+      // const style = w.get('type') == 'waypoint' ? 'shapeWaypoint' : 'shapeConstraint'
       w.setStyle(styles.points.shapeWaypoint)
     })
 
@@ -108,17 +104,6 @@ export default function useMapInteractions() {
     modify.on('modifyend', () => featureCollection.changed())
 
     interactions.forEach(i => map.addInteraction(i))
-  }
-
-  const onReceiveRouteFeatures = event => {
-    const features = event.target.getArray()
-    const [line, ...waypoints] = features
-
-    line.setStyle(styles.lines.route)
-
-    waypoints.forEach(w => {
-      w.setStyle(styles.points.route)
-    })
   }
 
   const onAddPoint = async event => {
@@ -145,7 +130,6 @@ export default function useMapInteractions() {
 
   useEffect(() => {
     eventEmitter.on('map:init', onMapInit)
-    eventEmitter.on('route:receive-features', onReceiveRouteFeatures)
     eventEmitter.on('shape:receive-features', onReceiveShapeFeatures)
     eventEmitter.on('map:add-point', onAddPoint)
     eventEmitter.on('map:zoom-to-waypoint', onWaypointZoom)

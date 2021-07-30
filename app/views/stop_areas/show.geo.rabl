@@ -8,7 +8,8 @@ node do |s|
       coordinates: [s.longitude, s.latitude]
     },
     properties: {
-      name: s.name
+      name: s.name,
+      type: 'waypoint'
     }
   }
 end

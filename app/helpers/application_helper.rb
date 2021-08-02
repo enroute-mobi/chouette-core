@@ -122,10 +122,6 @@ module ApplicationHelper
       "routes"
     when path.include?("/lines")
       "lines"
-    when path.include?("/access_points")
-      "access_points_links"
-    when path.include?("/access_links")
-      "access_points_links"
     when path.include?("/stop_areas")
       "stop_areas"
     when path.include?("/time_tables")

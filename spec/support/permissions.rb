@@ -13,7 +13,6 @@ module Support
 
     def _permitted_resources
       %w[
-        access_points
         connection_links
         calendars
         footnotes

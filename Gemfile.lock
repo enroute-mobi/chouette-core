@@ -315,8 +315,6 @@ GEM
       nokogiri (>= 1.11.3)
       railties (>= 4.2)
     formatador (0.2.5)
-    formtastic (4.0.0)
-      actionpack (>= 5.2.0)
     fuubar (2.5.1)
       rspec-core (~> 3.0)
       ruby-progressbar (~> 1.4)
@@ -822,7 +820,6 @@ DEPENDENCIES
   ffi-geos
   flag-icons-rails (>= 3.4.6.1)
   font_awesome5_rails
-  formtastic (>= 3.1.5)
   fuubar
   geokit
   georuby (= 2.3.0)

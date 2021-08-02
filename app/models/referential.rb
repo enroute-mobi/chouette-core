@@ -265,14 +265,6 @@ class Referential < ApplicationModel
     end
   end
 
-  def access_points
-    Chouette::AccessPoint.all
-  end
-
-  def access_links
-    Chouette::AccessLink.all
-  end
-
   def time_tables
     Chouette::TimeTable.all
   end

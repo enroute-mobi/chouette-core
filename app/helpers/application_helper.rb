@@ -35,7 +35,12 @@ module ApplicationHelper
   def page_header_meta(object)
     out = ""
     display = true
-    display = policy(object).synchronize? if policy(object).respond_to?(:synchronize?) rescue false
+    if policy(object).respond_to?(:synchronize?)
+      display = policy(object).synchronize?
+    elsif object.instance_of?(Workbench)
+      display = false
+    end
+
     if display
       info = t('last_update', time: l(object.updated_at))
       if object.try(:has_metadata?)

@@ -119,6 +119,10 @@ module ChouetteIhm
         SmartEnv[:OCCASIONAL_TRAVELLER_CONNECTION_SPEED]
     ]
 
+    config.to_prepare do
+      Devise::Mailer.layout 'mailer'
+    end
+
     unless Rails.env.production?
         # Work around sprockets+teaspoon mismatch:
         Rails.application.config.assets.precompile += %w(spec_helper.js)

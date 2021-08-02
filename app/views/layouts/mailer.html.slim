@@ -2,27 +2,27 @@
 html
   head
     meta http-equiv="Content-Type" content="text/html; charset=utf-8"
-    = mailer_base_css
+    = stylesheet_link_tag 'application'
     link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet"
 
   body
-    table style=mailer_style(:primary_table)
+    table.mail-primary-table
       tr
         - if content_for :header
           = yield :header
         - else
           = mail_header
 
-      tr style=mailer_style(:tbody)
+      tr.mail-body
         td
           table
             tr
               td= yield
             - if Rails.application.config.link_to_support_enabled
               tr
-                td style=mailer_style(:info)
+                td.mail-infos
                   = "mailers.info_contact".t
                   = mailer_link_to Rails.application.config.support_link, Rails.application.config.support_link
 
-    p style=mailer_style(:footer)
+    p.mail-footer
       = mail_footer

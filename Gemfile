@@ -142,6 +142,9 @@ gem 'aasm'
 gem 'puma', '>= 5.3.1'
 gem 'postgresql_cursor'
 
+# CSS styled emails without the hassle.
+gem 'premailer-rails'
+
 # Cache
 gem 'redis-rails', '>= 5.0.2'
 

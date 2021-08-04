@@ -16,14 +16,14 @@ const getStyles = () => ({
     shapeWaypoint: new Style({
       image: new Circle({
         radius: 6,
-        stroke: new Stroke({ color: 'white', width: 1 }),
-        fill: new Fill({ color: 'red' })
+        stroke: new Stroke({ color: '#3399CC', width: 2 }),
+        fill: new Fill({ color: 'white' })
       })
     }),
     shapeConstraint: new Style({
       image: new Circle({
         radius: 6,
-        stroke: new Stroke({ color: 'red', width: 1 }),
+        stroke: new Stroke({ color: 'red', width: 2 }),
         fill: new Fill({ color: 'white' })
       })
     }),
@@ -81,7 +81,7 @@ export default function useMapInteractions() {
     const [line, ...points] = featureCollection.getArray()
 
     const waypoints = new Collection(points)
-  
+
     line.setId(lineId)
     line.setStyle(styles.lines.shape)
 
@@ -97,7 +97,7 @@ export default function useMapInteractions() {
     const draw = new Draw({ features: event.target, type: 'Point' })
     const snap = new Snap({ features: event.target })
     const interactions = [modify, draw, snap]
-  
+
     draw.on('drawend', () => featureCollection.changed())
     modify.on('modifyend', () => featureCollection.changed())
 

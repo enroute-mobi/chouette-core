@@ -145,6 +145,13 @@ module StopAreasHelper
     }
   end
 
+  def stop_area_parents_metadatas(stop_area, stop_area_referential, workbench)
+    {
+      Chouette::StopArea.tmf('parent') => stop_area.parent ? link_to(stop_area.parent.name, workbench_stop_area_referential_stop_area_path(workbench, stop_area.parent)) : "-",
+      Chouette::StopArea.tmf('children') => stop_area.parent && stop_area.parent.children ? stop_area.parent.children.count : '0'
+    }
+  end
+
   def stop_area_general_metadatas(stop_area)
     attributes = {}
     attributes.merge!(Chouette::StopArea.tmf('waiting_time') => stop_area.waiting_time_text) if has_feature?(:stop_area_waiting_time)

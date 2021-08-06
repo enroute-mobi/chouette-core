@@ -49,6 +49,24 @@
                 = link_to t('connection_links.actions.new'), new_workbench_stop_area_referential_connection_link_path(@workbench, departure_id: @stop_area.id), class: 'btn btn-action large'
               .col-md-4
                 = more_connections_link(@stop_area, @workbench) if @stop_area.connection_links.count > 4
+      .row
+        .col-lg-6.col-md-6.col-sm-12.col-xs-12
+          = definition_list t("stop_areas.form.sections.hierarchy"), stop_area_parents_metadatas(@stop_area, @stop_area_referential, @workbench)
+          - if @stop_area.parent && @stop_area.parent.children
+            = table_builder_2 @stop_area.parent.children,
+              [ \
+                TableBuilderHelper::Column.new( \
+                  name: Chouette::StopArea.tmf('full_id'), \
+                  attribute: Proc.new { |c| c.id } \
+                ), \
+                TableBuilderHelper::Column.new( \
+                  name: Chouette::StopArea.tmf('name'), \
+                  attribute: Proc.new { |c| c.name } \
+                ), \
+              ].compact,
+              sortable: false,
+              cls: 'table',
+              action: :index
 
 
 - if has_feature?(:stop_area_connection_links) && @stop_area.connection_links.any?

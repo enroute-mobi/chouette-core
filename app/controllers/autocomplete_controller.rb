@@ -7,6 +7,10 @@ class AutocompleteController < ChouetteController
     @lines = line_scope.lines.order(:name).by_text(text)
   end
 
+  def line_notices
+    @line_notices = line_scope.line_notices.order(:title).by_text(text)
+  end
+
   def companies
     @companies = line_scope.companies.order(:name).by_text(text)
   end

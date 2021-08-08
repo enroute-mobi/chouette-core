@@ -231,6 +231,42 @@ RSpec.describe AutocompleteController, type: :controller do
     end
   end
 
+  describe "GET #line_notices" do
+
+    let(:context) do
+      Chouette.create do
+        workbench organisation: Organisation.find_by_code('first') do
+          line_notice :ln1, title: "LN1"
+        end
+      end
+    end
+
+    let(:workbench) { context.workbench }
+    let(:line_notice) { context.line_notice(:ln1) }
+
+
+    context "for a workbench" do
+      it "returns the complete list when the search parameter is not found" do
+        get :line_notices, params: {
+          workbench_id: workbench.id
+        }
+        expect(assigns(:line_notices)).to match_array workbench.line_notices
+        expect(response).to be_successful
+      end
+
+      it "returns a line_notice when the title contains the search parameter" do
+        get :line_notices, params: {
+          workbench_id: workbench.id,
+          q: 'LN1'
+        }
+        expect(assigns(:line_notices).to_a).to eq [line_notice]
+        expect(response).to be_successful
+      end
+
+    end
+
+  end
+
   describe "GET #stop_areas" do
 
     let(:context) do

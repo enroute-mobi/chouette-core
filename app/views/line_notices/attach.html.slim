@@ -14,7 +14,7 @@
               .head
                 h4= Chouette::LineNotice.t.capitalize
                 .input-group
-                  input.form-control.search type='text' placeholder=I18n.t('actions.search') data={searchUrl: url_for([:available_line_notices, @workbench, @line_referential, @line])}
+                  input.form-control.search type='text' placeholder=I18n.t('actions.search') data={searchUrl: line_notices_workbench_autocomplete_index_path(@workbench, {format: 'json'})}
                   .input-group-btn.clear-group
                     a.btn.clear
                       span.fa.fa-times

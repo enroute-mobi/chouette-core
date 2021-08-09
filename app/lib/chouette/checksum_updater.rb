@@ -21,6 +21,7 @@ module Chouette
 
     def routes
       measure "routes" do
+        update_in_batches scope.routing_constraint_zones.select(:id, :stop_point_ids)
         update_in_batches scope.routes.select(:id, :name, :published_name, :wayback).includes(:stop_points, :routing_constraint_zones)
       end
     end

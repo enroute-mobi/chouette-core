@@ -21,6 +21,7 @@ module Chouette
         all
       end
     }
+    scope :by_text, ->(text) { text.blank? ? all : where('lower(line_notices.title) LIKE :t', t: "%#{text.downcase}%") } 
 
     scope :by_provider, ->(line_provider) { where(line_provider_id: line_provider.id) }
 

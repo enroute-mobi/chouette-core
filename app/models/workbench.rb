@@ -27,6 +27,7 @@ class Workbench < ApplicationModel
   has_many :stop_areas, -> (workbench) { workbench.workbench_scopes.stop_areas_scope(self) }, through: :stop_area_referential
   has_many :networks, through: :line_referential
   has_many :companies, through: :line_referential
+  has_many :line_notices, through: :line_referential
   has_many :group_of_lines, through: :line_referential
   has_many :imports, class_name: 'Import::Base', dependent: :destroy
   has_many :exports, class_name: 'Export::Base', dependent: :destroy

@@ -45,18 +45,6 @@ class LinesController < ChouetteController
     end
   end
 
-  def available_line_notices
-    resource
-    autocomplete_collection = @line.line_referential.line_notices
-    if params[:q].present?
-      autocomplete_collection = autocomplete_collection.autocomplete(params[:q]).order(:name)
-    else
-      autocomplete_collection = autocomplete_collection.order('created_at desc')
-    end
-
-    render json: autocomplete_collection.select(:title, :id).limit(10).map{|r| {name: r.title, id: r.id}}
-  end
-
   def show
     @group_of_lines = resource.group_of_lines
     show! do

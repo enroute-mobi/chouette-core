@@ -35,10 +35,11 @@ ChouetteIhm::Application.routes.draw do
     delete :referentials, on: :member, action: :delete_referentials
     resources :api_keys
 
-    resources :autocomplete, only: %i[lines companies line_providers stop_areas parent_stop_areas stop_area_providers] do
+    resources :autocomplete, only: %i[lines companies line_providers line_notices stop_areas parent_stop_areas stop_area_providers] do
       get :lines, on: :collection, defaults: { format: 'json' }
       get :companies, on: :collection, defaults: { format: 'json' }
       get :line_providers, on: :collection, defaults: { format: 'json' }
+      get :line_notices, on: :collection, defaults: { format: 'json' }
       get :stop_areas, on: :collection, defaults: { format: 'json' }
       get :parent_stop_areas, on: :collection, defaults: { format: 'json' }
       get :stop_area_providers, on: :collection, defaults: { format: 'json' }
@@ -85,9 +86,6 @@ ChouetteIhm::Application.routes.draw do
     resource :line_referential, :only => [:show, :edit, :update] do
       post :sync
       resources :lines do
-        member do
-          get :available_line_notices
-        end
         resources :line_notices do
           collection do
             get :attach
@@ -103,10 +101,11 @@ ChouetteIhm::Application.routes.draw do
       resources :line_notices
     end
 
-    resources :autocomplete, only: %i[lines companies line_providers] do
+    resources :autocomplete, only: %i[lines companies line_providers line_notices] do
       get :lines, on: :collection, defaults: { format: 'json' }
       get :companies, on: :collection, defaults: { format: 'json' }
       get :line_providers, on: :collection, defaults: { format: 'json' }
+      get :line_notices, on: :collection, defaults: { format: 'json' }
     end
 
     resource :shape_referential do

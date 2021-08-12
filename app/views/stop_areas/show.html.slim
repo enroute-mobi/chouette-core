@@ -62,16 +62,17 @@
                     = Chouette::StopArea.tmf('id')
                   th scope="col"
                     = Chouette::StopArea.tmf('name')
-                  th scope="col"  Distance
+                  th scope="col"
+                    = Chouette::StopArea.tmf('distance')
               tbody
-                - @stop_area.children.first(5).each do |c|
+                - @stop_area.closest_children(Chouette::StopArea).each do |c|
                   tr
                     td
                       = c.get_objectid.short_id
                     td
                       = link_to(c.name, workbench_stop_area_referential_stop_area_path(@workbench, c.id))
                     td
-                      / = c.
+                       = c.distance
             - if @stop_area.children.count > 5
               = link_to t('stop_areas.show.more', count: (@stop_area.children.count - 5)), workbench_stop_area_referential_stop_areas_path(@workbench, :'q[parent_id_eq]' => @stop_area.id), class: 'btn btn-link pull-right'
 

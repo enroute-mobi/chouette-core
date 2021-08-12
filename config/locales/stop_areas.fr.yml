@@ -170,6 +170,7 @@ fr:
         stop_area_provider_id: Fournisseur d'arrêts
         stop_area_provider: Fournisseur d'arrêts
         codes: Codes
+        distance: Distance
   formtastic:
     titles:
       stop_area:

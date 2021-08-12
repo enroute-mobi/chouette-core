@@ -26,7 +26,7 @@ gem 'coffee-rails', '>= 5.0.0'
 gem 'sprockets', '~> 3.7.2'
 
 # Webpacker
-gem 'webpacker', '~> 5.2', '>= 5.2.1'
+gem 'webpacker', '6.0.0.beta.7'
 
 # Use jquery as the JavaScript library
 gem 'jquery-rails', '>= 4.4.0'

@@ -210,10 +210,10 @@ module Chouette
       Geokit::LatLng.new(latitude, longitude) if latitude and longitude
     end
 
-    def closest_children(scope)
+    def closest_children
       db   = "ST_Transform(ST_SetSRID(ST_MakePoint(longitude, latitude), 4326), 2154)"
       from = "ST_Transform(ST_PointFromText('POINT(#{self.longitude} #{self.latitude})', 4326), 2154)"
-      scope.order("ST_Distance(#{db}, #{from})").limit(5).select('stop_areas.*', "ST_Distance(#{db}, #{from}) as distance")
+      Chouette::StopArea.where(parent_id: self.id).order("ST_Distance(#{db}, #{from})").limit(5).select('stop_areas.*', "ST_Distance(#{db}, #{from}) as distance")
     end
 
     def geometry

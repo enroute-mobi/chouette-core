@@ -19,33 +19,3 @@
   .col-lg-12
     .error_messages
       = render 'shared/iev_interfaces/messages.html', messages: @export.messages
-
-- if @export.children.any?
-  .row
-    .col-lg-12
-    - coll = @export.children.paginate(page: params[:page] || 1)
-    = table_builder_2 coll,
-      [ \
-        TableBuilderHelper::Column.new( \
-          key: :status, \
-          attribute: Proc.new { |n| operation_status(n.status) }, \
-        ), \
-        TableBuilderHelper::Column.new( \
-          key: :started_at, \
-          attribute: Proc.new { |n| l(n.started_at, format: :short_with_time) if n.started_at }, \
-        ), \
-        TableBuilderHelper::Column.new( \
-          key: :name, \
-          attribute: 'name', \
-          link_to: lambda do |export| \
-            workbench_export_path(@workbench, export) \
-          end \
-        ), \
-        TableBuilderHelper::Column.new( \
-          key: :creator, \
-          attribute: 'creator' \
-        ) \
-      ],
-      cls: 'table has-search'
-
-    = new_pagination coll, 'pull-right'

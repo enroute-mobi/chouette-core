@@ -94,52 +94,6 @@ RSpec.describe Export::Base, type: :model do
     end
   end
 
-  describe "#notify_parent" do
-    let(:publication) { create(:publication) }
-    let(:gtfs_export) { create(:gtfs_export, parent: publication) }
-
-    context "when export is finished" do
-      before do
-        gtfs_export.status = "successful"
-        gtfs_export.notified_parent_at = nil
-      end
-
-      it "must call #child_change on its parent" do
-        expect(publication).to receive(:child_change)
-        gtfs_export.notified_parent_at = nil
-        gtfs_export.notify_parent
-      end
-
-      it "must update the :notified_parent_at field of the child export" do
-        Timecop.freeze(Time.now) do
-          gtfs_export.notify_parent
-          expect(gtfs_export.notified_parent_at.utc.strftime('%Y-%m-%d %H:%M:%S.%3N')).to eq Time.now.utc.strftime('%Y-%m-%d %H:%M:%S.%3N')
-          expect(gtfs_export.reload.notified_parent_at.utc.strftime('%Y-%m-%d %H:%M:%S.%3N')).to eq Time.now.utc.strftime('%Y-%m-%d %H:%M:%S.%3N')
-        end
-      end
-    end
-
-    context "when export is not finished" do
-      before do
-        gtfs_export.status = "running"
-        gtfs_export.notified_parent_at = nil
-      end
-
-      it "must not call #child_change on its parent" do
-        allow(gtfs_export).to receive(:update)
-
-        expect(gtfs_export).to_not receive(:child_change)
-        gtfs_export.notify_parent
-      end
-
-      it "must keep nil the :notified_parent_at field of the child export" do
-        gtfs_export.notify_parent
-        expect(gtfs_export.notified_parent_at).to be_nil
-      end
-
-    end
-  end
-
   describe "#update_status" do
 
     it "updates :ended_at to now when status is finished" do

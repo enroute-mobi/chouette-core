@@ -9,29 +9,16 @@ module Api
         def upload
           if authenticate_token
             @netex_export.file = params[:exportFile]
-            @netex_export.ended_at = Time.now 
+            @netex_export.ended_at = Time.now
             @netex_export.save!
             @netex_export.successful!
-            @netex_export.notify_parent
             render json: {
               status: "ok",
               message:"File successfully uploaded for #{@netex_export.type} (id: #{@netex_export.id})"
             }
           else
             @netex_export.failed!
-            @netex_export.notify_parent
             render_unauthorized("Access denied")
-          end
-        end
-
-        def notify_parent
-          if @netex_export.notify_parent
-            render json: {
-              status: "ok",
-              message:"#{@netex_export.parent_type} (id: #{@netex_export.parent_id}) successfully notified at #{l(@netex_export.notified_parent_at)}"
-            }
-          else
-            render json: {status: "error", message: @netex_export.errors.full_messages }
           end
         end
 

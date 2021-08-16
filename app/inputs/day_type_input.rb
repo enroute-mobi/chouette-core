@@ -7,7 +7,7 @@ class DayTypeInput < SimpleForm::Inputs::CollectionCheckBoxesInput
 
     content = ''
 
-    content << @builder.hidden_field(attribute_name, value: default_value, 'x-model': 'value') # relevant data is coming from this field
+    content << @builder.hidden_field(attribute_name, value: string_value, 'x-model': 'stringValue') # relevant data is coming from this field
 
     collection.each_with_index.map do |(value, label), index|
       content << template.content_tag(:div, class: 'lcbx-group-item') do
@@ -20,18 +20,17 @@ class DayTypeInput < SimpleForm::Inputs::CollectionCheckBoxesInput
       end
     end
     
-    template.content_tag(:div, content.html_safe, class: 'form-group labelled-checkbox-group', 'x-data': x_data)
-  end
-
-  def x_data
-    "{
-      value: '#{default_value}',
-      handleChange(e) {
-        this.value = (
-          parseInt(this.value, 2) ^ parseInt(e.target.value, 2)
-        ).toString(2)
-      }
-    }"
+    template.content_tag(
+      :div,
+      content.html_safe,
+      class: 'form-group labelled-checkbox-group',
+      'x-data':  "{
+        stringValue: '#{string_value}',
+        binaryValue: #{binary_value},
+        isChecked(v) { return Boolean(v & this.binaryValue) }
+        }",
+      'x-init': "$watch('binaryValue', v => stringValue = v.toString(2).padStart(7, '0'))"
+    )
   end
 
   def checkbox_options(value)
@@ -39,13 +38,17 @@ class DayTypeInput < SimpleForm::Inputs::CollectionCheckBoxesInput
     {
       name: nil,
       id: nil,
-      checked: (default_value.to_i(2) & value.to_i(2)) != 0,
-      'x-on:change': 'handleChange' # update the hidden field value on change
+      'x-bind:checked': "isChecked(#{value})",
+      '@change': "binaryValue ^= #{value}"
     }
   end
 
-  def default_value
-    WeekDays.new.serialize(days_of_week)
+  def binary_value
+    @binary_value ||= string_value.to_i(2)
+  end
+
+  def string_value
+    @string_value ||= WeekDays.new.serialize(days_of_week)
   end
 
   def days_of_week
@@ -71,7 +74,7 @@ class DayTypeInput < SimpleForm::Inputs::CollectionCheckBoxesInput
     Timetable::DaysOfWeek::SYMBOLIC_DAYS.each_with_index.map do |d, i|
       value = '0000000'
       value[i] = '1'
-      [value,  Chouette::TimeTable.tmf(d)[0...2]]
+      [value.to_i(2),  Chouette::TimeTable.tmf(d)[0...2]]
     end
   end
 end

@@ -144,8 +144,8 @@ gem 'postgresql_cursor'
 # CSS styled emails without the hassle.
 gem 'premailer-rails'
 
-# Cache
-gem 'redis-rails', '>= 5.0.2'
+# Redis session management
+gem 'redis-actionpack'
 
 gem 'gtfs', en_route: 'gtfs'
 gem 'netex', en_route: 'netex'

@@ -49,9 +49,10 @@ module Lograge
         # To preserve precision during JSON serialization, use strings for large numbers
         trace_id: correlation.trace_id.to_s,
         span_id: correlation.span_id.to_s,
-        env: correlation.env.to_s,
-        service: correlation.service.to_s,
-        version: correlation.version.to_s
+        # See CHOUETTE-1285
+        # env: correlation.env.to_s,
+        # service: correlation.service.to_s,
+        # version: correlation.version.to_s
       } if correlation && correlation.trace_id != 0
     end
 

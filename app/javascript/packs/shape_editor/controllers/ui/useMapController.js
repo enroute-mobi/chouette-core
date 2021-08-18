@@ -8,7 +8,7 @@ import VectorSource from 'ol/source/Vector'
 
 import store from '../../shape.store'
 import eventEmitter from '../../shape.event-emitter'
-import { lineId, setDistanceFromStart } from '../../shape.helpers'
+import { getArrowStyles, lineId, setDistanceFromStart } from '../../shape.helpers'
 import { Collection } from 'ol'
 
 const getStyles = () => ({
@@ -44,12 +44,15 @@ const getStyles = () => ({
         lineDashOffset: 6
       })
     }),
-    shape: new Style({
-      stroke: new Stroke({
-        color: 'red',
-        width: 1.5
-      })
-    })
+    shape: feature => [
+      new Style({
+        stroke: new Stroke({
+          color: 'red',
+          width: 1.5
+        })
+      }),
+      ...getArrowStyles(feature)
+    ]
   }
 })
 

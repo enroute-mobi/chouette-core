@@ -44,12 +44,12 @@ export const getStaticSource = getSource('static')
 export const getSubmitPayload = state => ({
   shape: {
     name: state.name,
-    coordinates: getLine(state).getGeometry().getCoordinates(),
-    waypoints: getWaypoints(state).map((w, position) => ({
+    coordinates: convertCoords(getLine(state)),
+    waypoints: getSortedWaypoints(state).map((w, position) => ({
       name: w.get('name'),
       position,
       waypoint_type: w.get('type'),
-      coordinates: w.getGeometry().getCoordinates()
+      coordinates: convertCoords(w)
     }))
   }
 })

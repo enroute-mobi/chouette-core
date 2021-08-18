@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import useSWR, { mutate } from 'swr'
+import useSWR from 'swr'
 
 import GeoJSON from 'ol/format/GeoJSON'
 
@@ -11,6 +11,17 @@ import eventEmitter from '../../shape.event-emitter'
 // Custom hook which responsability is to fetch a new LineString GeoJSON object based on state coordinates when shouldUpdateLine is set to true
 export default function useLineController(_isEdit, baseURL) {
   const url = `${baseURL}/shapes/update_line`
+
+  const { mutate: updateLine } = useSWR(
+    url,
+    async url => {
+      const state = await store.getStateAsync()
+      const payload = { coordinates: getSortedCoordinates(state) }
+
+      return submitFetcher(url, 'PUT', payload)
+    },
+    { onSuccess, revalidateOnMount: false }
+  )
 
   // Event handlers
   const onSuccess = async data => {
@@ -28,17 +39,6 @@ export default function useLineController(_isEdit, baseURL) {
   }
 
   useEffect(() => {
-    eventEmitter.on('waypoints:updated', () => mutate(url))
+    eventEmitter.on('waypoints:updated', updateLine)
   }, [])
-
-  return useSWR(
-    url,
-    async url => {
-      const state = await store.getStateAsync()
-      const payload = { coordinates: getSortedCoordinates(state) }
-
-      return submitFetcher(url, 'PUT', payload)
-    },
-    { onSuccess, revalidateOnMount: false }
-  )
 }

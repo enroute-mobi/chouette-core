@@ -8,5 +8,5 @@ export default function useUserPermissionsController(_isEdit, baseURL) {
     store.setAttributes({ permissions })
   }
   
-  return useSWR(`${baseURL}/shapes/get_user_permissions`, { onSuccess })
+  useSWR(`${baseURL}/shapes/get_user_permissions`, { onSuccess })
 }

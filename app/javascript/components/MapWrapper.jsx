@@ -100,7 +100,7 @@ function MapWrapper({ features, onInit, _style }) {
 }
 
 MapWrapper.defaultProps = {
-  onInit: (_map, _featuresLayer) => {}
+  onInit: _map => {}
 }
 
 export default MapWrapper

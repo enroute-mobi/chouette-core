@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useParams  } from 'react-router-dom'
-import useSWR, { mutate } from 'swr'
+import useSWR from 'swr'
 
 import GeoJSON from 'ol/format/GeoJSON'
 
@@ -14,31 +14,28 @@ export default function useShapeController(isEdit, baseURL) {
   // Route params
   const { action } = useParams()
 
-  const fetchURL = `${baseURL}/shapes/${action}`
-  const submitURL = `${baseURL}/shapes`
-
   // Fetch Shape
-  useSWR(...Params.fetch(fetchURL, isEdit))
+  const { mutate: fetchShape } = useSWR(...Params.fetch(`${baseURL}/shapes/${action}`))
   
   // Submit Shape
-  useSWR(...Params.submit(submitURL, isEdit))
+  const { mutate: submitShape } = useSWR(...Params.submit(`${baseURL}/shapes`, isEdit))
 
   useEffect(() => {
-    eventEmitter.on('shape:submit', () => mutate(submitURL))
-    eventEmitter.on('map:init', () => mutate(fetchURL))
+    eventEmitter.on('shape:submit', submitShape)
+    eventEmitter.on('map:init', fetchShape)
   }, [])
 }
 class Params {
-  static fetch = (url, isEdit) => [
+  static fetch = url => [
     url,
     {
       onSuccess(data) {
         store.getState(({ shapeFeatures }) => {
-          const fetchedFeatures = new GeoJSON().readFeatures(simplifyGeoJSON(data), wktOptions(isEdit))
+          const fetchedFeatures = new GeoJSON().readFeatures(simplifyGeoJSON(data), wktOptions)
           
           shapeFeatures.extend(fetchedFeatures)
 
-          store.setAttributes({ mapWrapperFeatures: fetchedFeatures, shapeFeatures, name: shapeFeatures.item(0).get('name') })
+          store.setAttributes({ shapeFeatures, name: shapeFeatures.item(0).get('name') })
           shapeFeatures.dispatchEvent('receiveFeatures')
         })
       },

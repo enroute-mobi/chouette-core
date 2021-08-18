@@ -19,6 +19,10 @@ export default class JourneyPattern extends Component{
     return this.props.value
   }
 
+  get canEditShape() {
+    return this.journeyPattern.shape?.has_waypoints
+  }
+
   updateCosts(e) {
     let costs = {
       [e.target.dataset.costsKey]: {
@@ -136,6 +140,7 @@ export default class JourneyPattern extends Component{
   }
 
   formatTime(time){
+    console.log('formatTime', time)
     if(time < 60){
       return time + " min"
     }
@@ -177,47 +182,45 @@ export default class JourneyPattern extends Component{
   }
 
   renderShapeEditorButtons() {
-    const buttons = []
-
-    if (!this.hasFeature('shape_editor_experimental')) return buttons
+    if (!this.hasFeature('shape_editor_experimental')) return []
 
     const { id } = this.journeyPattern
     
     if (!this.hasShape()) {
-      buttons.push(
+      return [
         <li key={`create_shape_${id}`}>
           <button
             type='button'
             onClick={this.onCreateShape}
-            >
+          >
             {I18n.t('journey_patterns.actions.create_shape')}
           </button>
         </li>
-      )
+      ]
     } else {
-      buttons.push(
-        <>
-          <li key={`edit_shape_${id}`}>
-            <button
-              type='button'
-              onClick={this.onEditShape}
+      return [
+        ...this.canEditShape ?
+          [
+            <li key={`edit_shape_${id}`}>
+              <button
+                type='button'
+                onClick={this.onEditShape}
               >
-              {I18n.t('journey_patterns.actions.edit_shape')}
-            </button>
-          </li>
-          <li key={`unassociate_shape_${id}`}>
-            <button
-              type="button"
-              onClick={this.onUnassociateShape}
-            >
-              {I18n.t('journey_patterns.actions.unassociate_shape')}
-            </button>
-          </li>
-        </>
-      )
+                {I18n.t('journey_patterns.actions.edit_shape')}
+              </button>
+            </li>
+          ] :
+          [],
+        <li key={`unassociate_shape_${id}`}>
+          <button
+            type="button"
+            onClick={this.onUnassociateShape}
+          >
+            {I18n.t('journey_patterns.actions.unassociate_shape')}
+          </button>
+        </li>
+      ]
     }
-
-    return buttons
   }
 
   render() {

@@ -25,12 +25,6 @@ module TomTom
         },
         properties: {
           name: @name
-        },
-        crs: {
-          type: 'name',
-          properties: {
-            name: 'EPSG:3857',
-          }
         }
       }
     end

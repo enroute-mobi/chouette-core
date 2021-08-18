@@ -26,6 +26,7 @@ en:
         line: Line
     errors:
       cannot_edit: 'Cannot edit : this journey pattern does not have a shape'
+      cannot_edit_imported_shape: "Cannot edit an imported shape"
       cannot_create: 'Cannot create : this journey pattern already have a shape'
       must_have_two_waypoints: "Could not delete waypoint: a shape must have at least 2 waypoints"
   activerecord:

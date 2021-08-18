@@ -11,7 +11,7 @@ module JourneyPattern
     belongs_to :journey_pattern, parent_class: Chouette::JourneyPattern
 
     def new
-      if parent.shape
+      if resource
         flash[:warning] = I18n.t('shapes.errors.cannot_create')
         return redirect_to edit_referential_line_route_journey_pattern_shapes_path(parents) 
       end
@@ -28,8 +28,13 @@ module JourneyPattern
     end
 
     def edit
-      if !parent.shape
+      if !resource
         flash[:warning] = I18n.t('shapes.errors.cannot_edit')
+        return redirect_to new_referential_line_route_journey_pattern_shapes_path(parents)
+      end
+
+      if resource.waypoints.empty?
+        flash[:warning] = I18n.t('shapes.errors.cannot_edit_imported_shape')
         return redirect_to new_referential_line_route_journey_pattern_shapes_path(parents)
       end
 
@@ -37,10 +42,7 @@ module JourneyPattern
         format.html
 
         format.json do
-          @journey_pattern = parent
-          @shape = parent.shape
-
-          render 'shapes/show.geo'
+          render json: Shapes::GenerateGeoJson.call(resource, parent).render
         end
       end
     end

@@ -1,29 +1,22 @@
-object false
+object @shape
 
 node(:type) { 'FeatureCollection' }
 
-node(:crs) do
-  {
-    type: 'name',
-    properties: {
-      name: 'EPSG:3857',
-    }
-  }
-end
+extends 'geojson/crs'
 
-node(:features) do
+node(:features) do |shape|
   line_string = {
     type: 'Feature',
     geometry: {
       type: 'LineString',
-      coordinates: @shape.geometry.coordinates
+      coordinates: shape.geometry.coordinates
     },
     properties: {
-      name: @shape.name
+      name: shape.name
     }
   }
 
-  points = @shape.waypoints.map do |waypoint|
+  points = shape.waypoints.map do |waypoint|
     {
       type: 'Feature',
       geometry: {
@@ -31,8 +24,8 @@ node(:features) do
         coordinates: waypoint.coordinates
       },
       properties: {
-        name: waypoint.name || '-',
-        type: waypoint.waypoint_type
+        name: waypoint.name,
+        type: waypoint.type
       }
     }
   end

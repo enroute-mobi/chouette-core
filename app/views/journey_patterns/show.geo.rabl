@@ -2,18 +2,12 @@ object @journey_pattern
 
 node(:type) { 'FeatureCollection' }
 
-node(:crs) do
-  {
-    type: 'name',
-    properties: {
-      name: 'EPSG:3857',
-    }
-  }
-end
+extends 'geojson/crs'
 
 node(:features) do |jp|
   line_string = TomTom::BuildLineStringFeature.call(
-    jp.stop_points.map { |sp| [sp.stop_area.longitude, sp.stop_area.latitude] }
+    jp.stop_points.map { |sp| [sp.stop_area.longitude, sp.stop_area.latitude] },
+    @journey_pattern.route.name
   )
 
   points = jp.stop_points.map do |sp|

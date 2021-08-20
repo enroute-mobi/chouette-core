@@ -2,10 +2,9 @@ import React, { useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { pick } from 'lodash'
 
-import { getSortedWaypoints } from '../shape.selectors'
 import store from '../shape.store'
 import eventEmitter from '../shape.event-emitter'
-import { onAddPoint$, onReceiveRouteFeatures$, onReceiveShapeFeatures$, onWaypointsUpdate$ } from '../shape.observables'
+import { onLineModify$, onReceiveRouteFeatures$, onReceiveShapeFeatures$, onWaypointsUpdate$ } from '../shape.observables'
 
 import { useStore } from '../../../helpers/hooks'
 
@@ -22,15 +21,16 @@ import NameInput from './NameInput'
 import List from './List'
 import CancelButton from './CancelButton'
 import SaveButton from './SaveButton'
+import { getLine, getWaypoints } from '../shape.selectors'
 
 const mapStateToProps = state => ({
-  ...pick(state, ['name', 'permissions', 'style']),
-  features: state.shapeFeatures.getLength() == 0 ? null : state.shapeFeatures,
-  waypoints: getSortedWaypoints(state)
+  ...pick(state, ['permissions', 'style', 'shapeFeatures']),
+  name: getLine(state)?.get('name'),
+  waypoints: getWaypoints(state)
 })
 export default function ShapeEditorMap({ isEdit, baseURL, redirectURL }) {
   // Store
-  const { features, name, permissions, style, waypoints } = useStore(store, mapStateToProps)
+  const { shapeFeatures: features, name, permissions, style, waypoints } = useStore(store, mapStateToProps)
 
   // Evvent Handlers
   const onMapInit = map => setTimeout(() => eventEmitter.emit('map:init', map), 0) // Need to do this to ensure that controllers can subscribe to event before it is fired
@@ -49,7 +49,7 @@ export default function ShapeEditorMap({ isEdit, baseURL, redirectURL }) {
   useShapeController(isEdit, baseURL)
 
   useEffect(() => {
-    onAddPoint$.subscribe(event => eventEmitter.emit('map:add-point', event))
+    onLineModify$.subscribe(coords => eventEmitter.emit('line:modify', coords))
     onReceiveRouteFeatures$.subscribe(event => eventEmitter.emit('route:receive-features', event))
     onReceiveShapeFeatures$.subscribe(event => eventEmitter.emit('shape:receive-features', event))
     onWaypointsUpdate$.subscribe(_state => eventEmitter.emit('waypoints:updated'))

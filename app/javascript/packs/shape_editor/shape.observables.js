@@ -1,14 +1,31 @@
-import { fromEvent } from 'rxjs'
-import { filter, first, map, switchMap, skipUntil  } from 'rxjs/operators'
+import { fromEvent, merge } from 'rxjs'
+import { flow, get, isFunction, isString } from 'lodash'
+import { filter, first, map, pluck, switchMap } from 'rxjs/operators'
+
 import store from './shape.store'
-import { getLine } from './shape.selectors'
+
+const has$ = pathOrSelector => {
+  let selectorFunc
+
+  if (isString(pathOrSelector)) {
+    selectorFunc = state => get(state, pathOrSelector)
+  } else if (isFunction(pathOrSelector)) {
+    selectorFunc = pathOrSelector
+  } else {
+    throw('argument must be a string or a selector function')
+  }
+
+  return filter(flow(selectorFunc, Boolean))
+}
 
 const onCollectionUpdate = eventName =>
   store.pipe(
+    has$('shapeFeatures'),
     switchMap(state => fromEvent(state.shapeFeatures, eventName))
   )
 
 export const onReceiveShapeFeatures$ = store.pipe(
+  has$('shapeFeatures'),
   switchMap(state => fromEvent(state.shapeFeatures, 'receiveFeatures')),
   first()
 )
@@ -18,36 +35,30 @@ export const onReceiveRouteFeatures$ = store.pipe(
   first()
 )
 
-export const onAddPoint$ = onCollectionUpdate('add')
-
-export const onRemovePoint$ = onCollectionUpdate('remove')
-
-export const onWaypointsUpdate$ = onCollectionUpdate('change')
-/* TODO add observables to follow the folling chain of eventts: 
-  - map click
-  - check if event coordinate are below a chosen distance from line (use turf helper function to compute the distance)
-  - add last listener of map pointer move (takeUntil map:mousevent) 
-  - dispatch drawend event or use one of draw functions to trigger a draw event
-  - setDistanceFromStart helper & ad coordinates parameter(we can use the event coordinates in this case)
-  */
-export const onDrawEnd$ = store.pipe(
-  filter(state => !!state.map && !!state.draw && getLine(state)),
-  first(),
-  switchMap(state => fromEvent(state.map, 'click').pipe(
-    filter(event => {
-      console.log('click', getLine(state).getGeometry().intersectsCoordinate(event.coordinate))
-      return getLine(state).getGeometry().intersectsCoordinate(event.coordinate)
-    }),
-    map(event => [state, event])
-  )),
-  
-  // switchMap(([state, event]) => {
-    
-  //   return fromEvent(state.map, 'pointermove').pipe(
-  //     debounceTime()
-  //   )
-  // })
-
+const onModify$ = store.pipe(
+  has$('modify'),
+  pluck('modify'),
+  switchMap(modify => fromEvent(modify, 'modifystart').pipe(
+    map(event => [modify, event])
+  ))
 )
 
-onDrawEnd$.subscribe(data => console.log('drawend', data))
+export const onLineModify$ = onModify$.pipe(
+  filter(([_, startEvent]) => startEvent.features.item(0).getGeometry().getType() == 'LineString'),
+  switchMap(([modify, startEvent]) => fromEvent(modify, 'modifyend').pipe(
+    first(),
+    map(endEvent => [startEvent.mapBrowserEvent.coordinate, endEvent.mapBrowserEvent.coordinate])
+  ))
+)
+
+const onWaypointsModify$ = onModify$.pipe(
+  filter(([_, startEvent]) => startEvent.features.item(0).getGeometry().getType() == 'Point'),
+  switchMap(([modify, _]) => fromEvent(modify, 'modifyend').pipe(first()))
+)
+
+export const onWaypointsUpdate$ = merge(
+  onWaypointsModify$,
+  onCollectionUpdate('add'),
+  onCollectionUpdate('remove'),
+  onCollectionUpdate('change')
+)

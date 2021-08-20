@@ -3,8 +3,8 @@ import useSWR from 'swr'
 
 import GeoJSON from 'ol/format/GeoJSON'
 
-import { simplifyGeoJSON, submitFetcher } from '../../shape.helpers'
-import { getLine, getSortedCoordinates } from '../../shape.selectors'
+import { simplifyGeoJSON, submitFetcher, wktOptions } from '../../shape.helpers'
+import { getLine, getWaypointsCoords } from '../../shape.selectors'
 import store from '../../shape.store'
 import eventEmitter from '../../shape.event-emitter'
 
@@ -12,31 +12,28 @@ import eventEmitter from '../../shape.event-emitter'
 export default function useLineController(_isEdit, baseURL) {
   const url = `${baseURL}/shapes/update_line`
 
-  const { mutate: updateLine } = useSWR(
-    url,
-    async url => {
-      const state = await store.getStateAsync()
-      const payload = { coordinates: getSortedCoordinates(state) }
-
-      return submitFetcher(url, 'PUT', payload)
-    },
-    { onSuccess, revalidateOnMount: false }
-  )
-
   // Event handlers
   const onSuccess = async data => {
     const newCoordinates = new GeoJSON().readFeature(
       simplifyGeoJSON(data),
-      {
-        dataProjection: 'EPSG:4326',
-        featureProjection: 'EPSG:3857'
-      }
+      wktOptions
     ).getGeometry().getCoordinates()
 
     store.getState(state => {
       getLine(state).getGeometry().setCoordinates(newCoordinates)
     })
   }
+
+  const { mutate: updateLine } = useSWR(
+    url,
+    async url => {
+      const state = await store.getStateAsync()
+      const payload = { coordinates: getWaypointsCoords(state) }
+
+      return submitFetcher(url, 'PUT', payload)
+    },
+    { onSuccess, revalidateOnMount: false }
+  )
 
   useEffect(() => {
     eventEmitter.on('waypoints:updated', updateLine)

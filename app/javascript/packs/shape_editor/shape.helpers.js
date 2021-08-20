@@ -1,84 +1,149 @@
-import { flow } from 'lodash'
+import { add, each, flow, map } from 'lodash'
 
 import {
+  along,
   bearing,
-  center,
   degreesToRadians,
-  featureReduce,
   getCoord,
   getCoords,
   length,
-  lineChunk,
   lineSlice,
   lineString,
   nearestPointOnLine,
-  point,
   segmentReduce,
   simplify,
-  toMercator
+  toMercator,
+  toWgs84
 } from '@turf/turf'
 
-import { Fill, RegularShape, Style } from 'ol/style'
+import Feature from 'ol/Feature'
+import { Circle, Fill, RegularShape, Stroke, Style } from 'ol/style'
 import Point from 'ol/geom/Point'
 
 import handleRedirect from '../../helpers/redirect'
 
 import store from './shape.store'
-import { getTurfLine } from './shape.selectors'
+import { getLineSections, getWaypointsCoords } from './shape.selectors'
 
-export const convertCoords = feature =>
-  feature
-  .getGeometry()
-  .clone()
-  .transform('EPSG:3857', 'EPSG:4326')
-  .getCoordinates()
+export const getFeatureCoordinates = feature => {
+  const geo = feature.getGeometry()
+  const coords = geo.getCoordinates()
+
+  switch(geo.getType()) {
+    case 'Point':
+      return toWgs84(coords)
+    case 'LineString':
+      return map(coords, toWgs84)
+    default:
+      throw(`Unsupported geometry type: ${geo.getType()}`)
+  }
+}
 
 export const isLine = feature => feature.getGeometry().getType() == 'LineString'
 export const isWaypoint = feature => feature.getGeometry().getType() == 'Point'
 
-export const setDistanceFromStart = waypoint => {
-  store.getState(state => {
-    const turfLine = getTurfLine(state)
+export const getStyles = () => ({
+  points: {
+    shapeWaypoint: new Style({
+      image: new Circle({
+        radius: 8,
+        stroke: new Stroke({ color: 'white', width: 2 }),
+        fill: new Fill({ color: 'red' })
+      })
+    }),
+    shapeConstraint: new Style({
+      image: new Circle({
+        radius: 8,
+        stroke: new Stroke({ color: 'red', width: 2 }),
+        fill: new Fill({ color: 'white' })
+      })
+    }),
+    route: new Style({
+      image: new Circle({
+        radius: 5,
+        stroke: new Stroke({ color: 'black', width: 0.75 }),
+        fill: new Fill({ color: 'rgba(255, 255, 255, 0.5)' })
+      })
+    }),
+  },
+  lines: {
+    route: new Style({
+      stroke: new Stroke({
+        color: 'black',
+        width: 1,
+        lineDash: [6, 6],
+        lineDashOffset: 6
+      })
+    }),
+    shape: _feature => {
+      const state = store.getStateSync()
+    
+      const styles = [
+        new Style({
+          stroke: new Stroke({
+            color: 'red',
+            width: 1.5
+          })
+        })
+      ]
 
-    if (!turfLine) return
+      each(
+        getLineSections(state),
+        chunk => {
+          const segments = segmentReduce(chunk, (collection, currentSegment) => [...collection, currentSegment], [])
+          const midSegment = segments[Math.floor(segments.length / 2)]
 
-    const firstPoint = point(getCoords(turfLine)[0])
-
-     // Create a line slice from the beginning to the current waypoint to determine the length of this "subLine"
-      const subLine = lineSlice(
-        firstPoint,
-        nearestPointOnLine(turfLine, convertCoords(waypoint)),
-        turfLine
+          styles.push(getArrowStyle(midSegment))
+        }
       )
 
-      waypoint.set('distanceFromStart', length(subLine))
+      return styles
+    }
+  }
+})
+
+const getLineMidpoint = line => along(line, length(line) / 2)
+
+export const getArrowStyle = segment => {
+  const arrowRotation = flow(getCoords, coords => bearing(...coords), degreesToRadians)
+  const arrowCoords = flow(getLineMidpoint, toMercator, getCoord)
+  
+  return new Style({
+    geometry: new Point(arrowCoords(segment)),
+    image: new RegularShape({
+      fill: new Fill({ color: 'red' }),
+      points: 3,
+      radius: 8,
+      rotation: arrowRotation(segment)
+    })
   })
 }
 
-export const getArrowStyles = feature => {
-  const line = lineString(convertCoords(feature))
-  const chunks = lineChunk(line, length(line) / 7)
-  const arrowRotation = flow(getCoords, coords => bearing(...coords), degreesToRadians)
-  const arrowCoords = flow(center, toMercator, getCoord)
+export const getWaypointToInsertAttributes = async ([startCoords, endCoords]) => {
+  const styles = getStyles()
+  const state = await store.getStateAsync()
 
-  return featureReduce(chunks, (styles, chunk) => {
-    const segments = segmentReduce(chunk, (collection, currentSegment) => [...collection, currentSegment], [])
-    const midSegment = segments[Math.floor(segments.length / 2)]
+  const waypointsCoords = getWaypointsCoords(state)
+  const line = lineString(waypointsCoords)
+  const linePoint = nearestPointOnLine(line, toWgs84(startCoords))
+  const { index } = linePoint.properties
 
-    return [
-      ...styles,
-      new Style({
-        geometry: new Point(arrowCoords(midSegment)),
-        image: new RegularShape({
-          fill: new Fill({ color: 'red' }),
-          points: 3,
-          radius: 8,
-          rotation: arrowRotation(midSegment)
-        })
-      })
-    ]
-  }, [])
+  const newLine = lineSlice(getCoords(line)[0], getCoord(linePoint), line)
+  const other = lineSlice(getCoords(line)[0], waypointsCoords[index], line)
 
+  const insertIndex = add(
+    index + 1,
+    Boolean(length(newLine) > length(other))
+  )
+
+  const waypoint = new Feature({
+    geometry: new Point(endCoords),
+    type: 'constraint',
+  })
+
+  waypoint.setStyle(styles.points.shapeConstraint)
+
+  return { waypoint, insertIndex }
 }
 
 export const simplifyGeoJSON = data => simplify(data, { tolerance: 0.0001, highQuality: true }) // We may want to have a dynamic tolerance

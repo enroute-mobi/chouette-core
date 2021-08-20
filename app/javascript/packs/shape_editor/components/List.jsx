@@ -1,9 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import { convertCoords } from '../shape.helpers'
+import { getFeatureCoordinates } from '../shape.helpers'
 
-const List = ({ onWaypointZoom, onDeleteWaypoint, waypoints }) => (
+const List = ({ onWaypointZoom, onDeleteWaypoint, waypoints = [] }) => (
   <table className="table">
     <thead>
       <tr>
@@ -15,7 +15,7 @@ const List = ({ onWaypointZoom, onDeleteWaypoint, waypoints }) => (
     </thead>
     <tbody>
       {waypoints.map((item, i) => {
-        const [lon, lat] = convertCoords(item)
+        const [lon, lat] = getFeatureCoordinates(item)
 
         return (
           <tr key={i}>
@@ -36,5 +36,9 @@ const List = ({ onWaypointZoom, onDeleteWaypoint, waypoints }) => (
     </tbody>
   </table>
 )
+
+List.propTypes = {
+  waypoints: PropTypes.array
+}
 
 export default List

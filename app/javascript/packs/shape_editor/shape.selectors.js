@@ -1,25 +1,36 @@
-import { curryRight, flow, map, sortBy } from 'lodash'
-import { lineString } from '@turf/turf'
+import { filter, find, flow, map, partialRight, reduce } from 'lodash'
+import { lineSlice, lineString } from '@turf/turf'
 
-import { convertCoords, isLine, isWaypoint } from './shape.helpers'
+import { getFeatureCoordinates, isLine, isWaypoint } from './shape.helpers'
 
-export const getLine = ({ shapeFeatures }) => shapeFeatures.getArray().find(isLine)
-export const getWaypoints = ({ shapeFeatures }) => shapeFeatures.getArray().filter(isWaypoint)
+const getShapeFeatures = state => state.shapeFeatures
 
-export const getTurfLine = flow(
-  getLine,
-  line => line ? lineString(convertCoords(line)) : null
-)
+const shapeFeaturesToArray = shapeFeatures => shapeFeatures?.getArray() || []
 
-export const getSortedWaypoints = state => sortBy(
-  getWaypoints(state),
-  w => w.get('distanceFromStart')
-)
+export const getLine = flow(getShapeFeatures, shapeFeaturesToArray, partialRight(find, isLine))
+export const getWaypoints = flow(getShapeFeatures, shapeFeaturesToArray, partialRight(filter, isWaypoint))
 
-export const getSortedCoordinates = flow(
-  getSortedWaypoints,
-  curryRight(map)(convertCoords)
-)
+export const getLineCoords = flow(getLine, getFeatureCoordinates)
+export const getWaypointsCoords = flow(getWaypoints, partialRight(map, getFeatureCoordinates))
+
+export const getLineSections = state => {
+  const line = flow(getLineCoords, lineString)(state)
+
+  return reduce(
+    getWaypointsCoords(state),
+    (result, coords, index, collection) => {
+      const nextCoords = collection[index + 1]
+
+      if (!nextCoords) return result
+
+      return [
+        ...result,
+        lineSlice(coords, nextCoords, line)
+      ]
+    },
+    []
+  )
+}
 
 export const getLayers = state => state.map?.getLayers()
 
@@ -44,12 +55,12 @@ export const getStaticSource = getSource('static')
 export const getSubmitPayload = state => ({
   shape: {
     name: state.name,
-    coordinates: convertCoords(getLine(state)),
-    waypoints: getSortedWaypoints(state).map((w, position) => ({
+    coordinates: getLineCoords(state),
+    waypoints: map(getWaypoints(state), (w, position) => ({
       name: w.get('name'),
       position,
       waypoint_type: w.get('type'),
-      coordinates: convertCoords(w)
+      coordinates: getFeatureCoordinates(w)
     }))
   }
 })

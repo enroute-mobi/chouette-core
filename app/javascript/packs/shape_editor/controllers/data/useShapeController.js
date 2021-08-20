@@ -3,6 +3,7 @@ import { useParams  } from 'react-router-dom'
 import useSWR from 'swr'
 
 import GeoJSON from 'ol/format/GeoJSON'
+import Collection from 'ol/Collection'
 
 import { simplifyGeoJSON, submitFetcher, wktOptions } from '../../shape.helpers'
 import { getSubmitPayload } from '../../shape.selectors'
@@ -30,14 +31,13 @@ class Params {
     url,
     {
       onSuccess(data) {
-        store.getState(({ shapeFeatures }) => {
-          const fetchedFeatures = new GeoJSON().readFeatures(simplifyGeoJSON(data), wktOptions)
-          
-          shapeFeatures.extend(fetchedFeatures)
+        const fetchedFeatures = new GeoJSON().readFeatures(simplifyGeoJSON(data), wktOptions)
 
-          store.setAttributes({ shapeFeatures, name: shapeFeatures.item(0).get('name') })
-          shapeFeatures.dispatchEvent('receiveFeatures')
-        })
+        const shapeFeatures = new Collection(fetchedFeatures)
+
+        store.setAttributes({ shapeFeatures })
+
+        shapeFeatures.dispatchEvent('receiveFeatures')
       },
       revalidateOnMount: false
     }

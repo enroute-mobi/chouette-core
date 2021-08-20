@@ -45,6 +45,21 @@ export default class Store extends Subject {
     return firstValueFrom(this.store$)
   }
 
+  // To be use with care since it is a blocking function
+  getStateSync() {
+    let syncState
+    let done = false
+
+    do {
+      this.getState(state => {
+        syncState = state
+        done = true
+      })
+    } while (!done);
+
+    return syncState
+  }
+
   dispatch(action) {
     this.actionDispatcher.next(action)
   }

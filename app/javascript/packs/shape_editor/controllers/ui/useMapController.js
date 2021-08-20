@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { uniqueId } from 'lodash'
+import { debounce, uniqueId } from 'lodash'
 
 import { Modify, Snap } from 'ol/interaction'
 import VectorLayer from 'ol/layer/Vector'
@@ -38,7 +38,10 @@ export default function useMapInteractions() {
     const waypoints = getWaypoints(state)
 
     line.setId(lineId)
-    line.setStyle(styles.lines.shape)
+
+    const shapeLineStyleFunc = debounce(styles.lines.shape, 100, { leading: true })
+    line.setStyle(shapeLineStyleFunc)
+
 
     waypoints.forEach((w, i) => {
       w.setId(uniqueId('waypoint_'))
@@ -50,8 +53,6 @@ export default function useMapInteractions() {
     const modify = new Modify({ features: shapeFeatures })
     const snap = new Snap({ features: shapeFeatures })
     const interactions = [modify, snap]
-
-    modify.on('change', () => console.log('change'))
 
     store.setAttributes({ modify, shapeFeatures })
 

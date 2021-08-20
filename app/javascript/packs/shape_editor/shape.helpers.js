@@ -1,4 +1,4 @@
-import { add, each, flow, map } from 'lodash'
+import { add, each, flow, map, sortBy } from 'lodash'
 
 import {
   along,
@@ -10,6 +10,7 @@ import {
   lineSlice,
   lineString,
   nearestPointOnLine,
+  pointToLineDistance,
   segmentReduce,
   simplify,
   toMercator,
@@ -89,11 +90,17 @@ export const getStyles = () => ({
 
       each(
         getLineSections(state),
-        chunk => {
-          const segments = segmentReduce(chunk, (collection, currentSegment) => [...collection, currentSegment], [])
-          const midSegment = segments[Math.floor(segments.length / 2)]
+        section => {
+          const coords = flow(getLineMidpoint, getCoord)(section)
 
-          styles.push(getArrowStyle(midSegment))
+          const segments = segmentReduce(section, (collection, segment) => [
+            ...collection,
+            { ...segment, properties: { ...segment.properties, distance: pointToLineDistance(coords, segment) } }
+          ],[])
+
+          const midSegment = sortBy(segments, segment => segment.properties.distance)[0]
+        
+          styles.push(getArrowStyle(midSegment, coords))
         }
       )
 
@@ -104,12 +111,11 @@ export const getStyles = () => ({
 
 const getLineMidpoint = line => along(line, length(line) / 2)
 
-export const getArrowStyle = segment => {
+export const getArrowStyle = (segment, coords) => {
   const arrowRotation = flow(getCoords, coords => bearing(...coords), degreesToRadians)
-  const arrowCoords = flow(getLineMidpoint, toMercator, getCoord)
   
   return new Style({
-    geometry: new Point(arrowCoords(segment)),
+    geometry: new Point(toMercator(coords)),
     image: new RegularShape({
       fill: new Fill({ color: 'red' }),
       points: 3,

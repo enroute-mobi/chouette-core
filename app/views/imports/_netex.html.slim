@@ -1,4 +1,4 @@
-- breadcrumb :netex_import, parent, @import
+- breadcrumb :netex_import, @parent, @import
 
 .row
   .col-lg-6.col-md-6.col-sm-12.col-xs-12
@@ -37,7 +37,7 @@
           attribute: Proc.new { |n| '<i class="fa fa-download" aria-hidden="true"></i>'.html_safe }, \
           sortable: false, \
           link_to: lambda do |import_resource| \
-            url_for([parent, import_resource.import, import_resource, :import_messages, format: 'csv']) \
+            url_for([@parent, import_resource.import, import_resource, :import_messages, format: 'csv']) \
           end \
         ), \
       ],

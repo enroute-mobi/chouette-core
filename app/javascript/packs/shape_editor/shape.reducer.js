@@ -14,15 +14,15 @@ export const reducer = (state, action) => {
 }
 
 export const initialState = {
+  line: null,
+  map: null,
+  modify: null,
   permissions: {
     canCreate: false,
     canUpdate: false
   },
-  name: '',
-  routeFeatures: new Collection([]),
-  shapeFeatures: null,
-  map: null,
+  routeFeatures: null,
   snap: null,
-  modify: null,
-  style: new Style({})
+  style: new Style({}),
+  waypoints: new Collection([]),
 }

@@ -4,7 +4,7 @@ import { pick } from 'lodash'
 
 import store from '../shape.store'
 import eventEmitter from '../shape.event-emitter'
-import { onLineModify$, onReceiveRouteFeatures$, onReceiveShapeFeatures$, onWaypointsUpdate$ } from '../shape.observables'
+import { onWaypointsUpdate$ } from '../shape.observables'
 
 import { useStore } from '../../../helpers/hooks'
 
@@ -21,16 +21,14 @@ import NameInput from './NameInput'
 import List from './List'
 import CancelButton from './CancelButton'
 import SaveButton from './SaveButton'
-import { getLine, getWaypoints } from '../shape.selectors'
 
 const mapStateToProps = state => ({
-  ...pick(state, ['permissions', 'style', 'shapeFeatures']),
-  name: getLine(state)?.get('name'),
-  waypoints: getWaypoints(state)
+  ...pick(state, ['permissions', 'style', 'routeFeatures', 'waypoints']),
+  name: state.line?.get('name')
 })
 export default function ShapeEditorMap({ isEdit, baseURL, redirectURL }) {
   // Store
-  const { shapeFeatures: features, name, permissions, style, waypoints } = useStore(store, mapStateToProps)
+  const { routeFeatures: features, name, permissions, style, waypoints } = useStore(store, mapStateToProps)
 
   // Evvent Handlers
   const onMapInit = map => setTimeout(() => eventEmitter.emit('map:init', map), 0) // Need to do this to ensure that controllers can subscribe to event before it is fired
@@ -49,9 +47,6 @@ export default function ShapeEditorMap({ isEdit, baseURL, redirectURL }) {
   useShapeController(isEdit, baseURL)
 
   useEffect(() => {
-    onLineModify$.subscribe(coords => eventEmitter.emit('line:modify', coords))
-    onReceiveRouteFeatures$.subscribe(event => eventEmitter.emit('route:receive-features', event))
-    onReceiveShapeFeatures$.subscribe(event => eventEmitter.emit('shape:receive-features', event))
     onWaypointsUpdate$.subscribe(_state => eventEmitter.emit('waypoints:updated'))
 
     return () => {

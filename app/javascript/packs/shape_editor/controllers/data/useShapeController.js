@@ -5,8 +5,7 @@ import useSWR from 'swr'
 import GeoJSON from 'ol/format/GeoJSON'
 import Collection from 'ol/Collection'
 
-import { simplifyGeoJSON, submitFetcher, wktOptions } from '../../shape.helpers'
-import { getSubmitPayload } from '../../shape.selectors'
+import { getSubmitPayload, simplifyGeoJSON, submitFetcher, wktOptions } from '../../shape.helpers'
 import store from '../../shape.store'
 import eventEmitter from '../../shape.event-emitter'
 
@@ -31,13 +30,13 @@ class Params {
     url,
     {
       onSuccess(data) {
-        const fetchedFeatures = new GeoJSON().readFeatures(simplifyGeoJSON(data), wktOptions)
+        const [line, ...fetchedWaypoints] = new GeoJSON().readFeatures(simplifyGeoJSON(data), wktOptions)
 
-        const shapeFeatures = new Collection(fetchedFeatures)
+        const waypoints = new Collection(fetchedWaypoints)
 
-        store.setAttributes({ shapeFeatures })
+        store.setAttributes({ line, waypoints })
 
-        shapeFeatures.dispatchEvent('receiveFeatures')
+        eventEmitter.emit('shape:receive-features', line, waypoints)
       },
       revalidateOnMount: false
     }

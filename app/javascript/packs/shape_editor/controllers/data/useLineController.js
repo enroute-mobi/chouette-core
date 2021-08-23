@@ -3,8 +3,7 @@ import useSWR from 'swr'
 
 import GeoJSON from 'ol/format/GeoJSON'
 
-import { simplifyGeoJSON, submitFetcher, wktOptions } from '../../shape.helpers'
-import { getLine, getWaypointsCoords } from '../../shape.selectors'
+import { getLine, getWaypointsCoords , simplifyGeoJSON, submitFetcher, wktOptions } from '../../shape.helpers'
 import store from '../../shape.store'
 import eventEmitter from '../../shape.event-emitter'
 
@@ -19,16 +18,15 @@ export default function useLineController(_isEdit, baseURL) {
       wktOptions
     ).getGeometry().getCoordinates()
 
-    store.getState(state => {
-      getLine(state).getGeometry().setCoordinates(newCoordinates)
-    })
+    const { map } = await store.getStateAsync()
+    getLine(map).getGeometry().setCoordinates(newCoordinates)
   }
 
   const { mutate: updateLine } = useSWR(
     url,
     async url => {
-      const state = await store.getStateAsync()
-      const payload = { coordinates: getWaypointsCoords(state) }
+      const { map } = await store.getStateAsync()
+      const payload = { coordinates: getWaypointsCoords(map) }
 
       return submitFetcher(url, 'PUT', payload)
     },

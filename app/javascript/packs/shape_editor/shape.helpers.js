@@ -1,4 +1,4 @@
-import { add, each, flow, map, sortBy } from 'lodash'
+import { add, find, flow, map, partialRight, sortBy } from 'lodash'
 
 import {
   along,
@@ -18,100 +18,77 @@ import {
 } from '@turf/turf'
 
 import Feature from 'ol/Feature'
-import { Circle, Fill, RegularShape, Stroke, Style } from 'ol/style'
+import { Fill, RegularShape, Style } from 'ol/style'
 import Point from 'ol/geom/Point'
 
 import handleRedirect from '../../helpers/redirect'
-
-import store from './shape.store'
-import { getLineSections, getWaypointsCoords } from './shape.selectors'
 
 export const getFeatureCoordinates = feature => {
   const geo = feature.getGeometry()
   const coords = geo.getCoordinates()
 
-  switch(geo.getType()) {
+  switch (geo.getType()) {
     case 'Point':
       return toWgs84(coords)
     case 'LineString':
       return map(coords, toWgs84)
     default:
-      throw(`Unsupported geometry type: ${geo.getType()}`)
+      throw (`Unsupported geometry type: ${geo.getType()}`)
   }
 }
 
-export const isLine = feature => feature.getGeometry().getType() == 'LineString'
-export const isWaypoint = feature => feature.getGeometry().getType() == 'Point'
+const collectionToArray = coll => coll.getArray()
+const getLayers = obj => obj?.getLayers() || { getArray: () => [] }
+const getSource = obj => obj?.getSource()
 
-export const getStyles = () => ({
-  points: {
-    shapeWaypoint: new Style({
-      image: new Circle({
-        radius: 8,
-        stroke: new Stroke({ color: 'white', width: 2 }),
-        fill: new Fill({ color: 'red' })
-      })
-    }),
-    shapeConstraint: new Style({
-      image: new Circle({
-        radius: 8,
-        stroke: new Stroke({ color: 'red', width: 2 }),
-        fill: new Fill({ color: 'white' })
-      })
-    }),
-    route: new Style({
-      image: new Circle({
-        radius: 5,
-        stroke: new Stroke({ color: 'black', width: 0.75 }),
-        fill: new Fill({ color: 'rgba(255, 255, 255, 0.5)' })
-      })
-    }),
-  },
-  lines: {
-    route: new Style({
-      stroke: new Stroke({
-        color: 'black',
-        width: 1,
-        lineDash: [6, 6],
-        lineDashOffset: 6
-      })
-    }),
-    shape: _feature => {
-      const state = store.getStateSync()
-    
-      const styles = [
-        new Style({
-          stroke: new Stroke({
-            color: 'red',
-            width: 1.5
-          })
-        })
-      ]
+const getLayer = key => flow(getLayers, collectionToArray, layers => find(layers, l => l.get(key)))
 
-      each(
-        getLineSections(state),
-        section => {
-          const coords = flow(getLineMidpoint, getCoord)(section)
+export const getStaticlayer = getLayer('static')
+export const getInteractiveLayerGroup = getLayer('interactive')
+export const getLineLayer = flow(getInteractiveLayerGroup, getLayer('line'))
+export const getWaypointsLayer = flow(getInteractiveLayerGroup, getLayer('waypoints'))
 
-          const segments = segmentReduce(section, (collection, segment) => [
-            ...collection,
-            { ...segment, properties: { ...segment.properties, distance: pointToLineDistance(coords, segment) } }
-          ],[])
+export const getLineSource = flow(getLineLayer, getSource)
+export const getWaypointsSource = flow(getWaypointsLayer, getSource)
 
-          const midSegment = sortBy(segments, segment => segment.properties.distance)[0]
-        
-          styles.push(getArrowStyle(midSegment, coords))
-        }
-      )
+export const getLine = flow(getLineSource, source => source.getFeatureById('line'))
+export const getWaypoints = flow(getWaypointsSource, source => source.getFeatures())
 
-      return styles
-    }
+export const getLineCoords = flow(getLine, getFeatureCoordinates)
+export const getWaypointsCoords = flow(getWaypoints, partialRight(map, getFeatureCoordinates))
+
+export const getLineSections = map => {
+  try {
+    const line = flow(getLineCoords, lineString)(map)
+    const waypointsLine = flow(getWaypointsCoords, lineString)(map)
+
+    return segmentReduce(
+      waypointsLine,
+      (result, segment) => [...result, lineSlice(...getCoords(segment), line)],
+      []
+    )
+  } catch(e) {
+    return []
   }
-})
+}
 
 const getLineMidpoint = line => along(line, length(line) / 2)
 
-export const getArrowStyle = (segment, coords) => {
+export const getArrowStyles = map =>
+  getLineSections(map).map(section => {
+    const coords = flow(getLineMidpoint, getCoord)(section)
+
+    const segments = segmentReduce(section, (collection, segment) => [
+      ...collection,
+      { ...segment, properties: { ...segment.properties, distance: pointToLineDistance(coords, segment) } }
+    ], [])
+
+    const midSegment = sortBy(segments, segment => segment.properties.distance)[0]
+
+    return getArrowStyle(midSegment, coords)
+  })
+
+const getArrowStyle = (segment, coords) => {
   const arrowRotation = flow(getCoords, coords => bearing(...coords), degreesToRadians)
   
   return new Style({
@@ -123,33 +100,6 @@ export const getArrowStyle = (segment, coords) => {
       rotation: arrowRotation(segment)
     })
   })
-}
-
-export const getWaypointToInsertAttributes = async ([startCoords, endCoords]) => {
-  const styles = getStyles()
-  const state = await store.getStateAsync()
-
-  const waypointsCoords = getWaypointsCoords(state)
-  const line = lineString(waypointsCoords)
-  const linePoint = nearestPointOnLine(line, toWgs84(startCoords))
-  const { index } = linePoint.properties
-
-  const newLine = lineSlice(getCoords(line)[0], getCoord(linePoint), line)
-  const other = lineSlice(getCoords(line)[0], waypointsCoords[index], line)
-
-  const insertIndex = add(
-    index + 1,
-    Boolean(length(newLine) > length(other))
-  )
-
-  const waypoint = new Feature({
-    geometry: new Point(endCoords),
-    type: 'constraint',
-  })
-
-  waypoint.setStyle(styles.points.shapeConstraint)
-
-  return { waypoint, insertIndex }
 }
 
 export const simplifyGeoJSON = data => simplify(data, { tolerance: 0.0001, highQuality: true }) // We may want to have a dynamic tolerance
@@ -190,3 +140,16 @@ export const submitFetcher = async (url, isEdit, payload) => {
 
   return data
 }
+
+export const getSubmitPayload = state => ({
+  shape: {
+    name: state.name,
+    coordinates: getLineCoords(stae.map),
+    waypoints: map(getWaypoints(state.map), (w, position) => ({
+      name: w.get('name'),
+      position,
+      waypoint_type: w.get('type'),
+      coordinates: getFeatureCoordinates(w)
+    }))
+  }
+})

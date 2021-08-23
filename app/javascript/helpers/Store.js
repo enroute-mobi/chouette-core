@@ -1,7 +1,7 @@
 import { firstValueFrom, Subject } from 'rxjs'
 import { filter, first, scan, shareReplay, startWith } from 'rxjs/operators'
 
-import { has, isObject } from 'lodash'
+import { debounce, has, isObject } from 'lodash'
 export default class Store extends Subject {
   constructor(
     reducer,
@@ -48,14 +48,10 @@ export default class Store extends Subject {
   // To be use with care since it is a blocking function
   getStateSync() {
     let syncState
-    let done = false
+    const getState = debounce(this.getState.bind(this), 100, { leading: true })
+    const setSyncState = state => { syncState = state }
 
-    do {
-      this.getState(state => {
-        syncState = state
-        done = true
-      })
-    } while (!done);
+    do { getState(setSyncState) } while(!syncState)
 
     return syncState
   }

@@ -14,7 +14,7 @@ const List = ({ onWaypointZoom, onDeleteWaypoint, waypoints = [] }) => (
       </tr>
     </thead>
     <tbody>
-      {waypoints.map((item, i) => {
+      {waypoints.getArray().map((item, i) => {
         const [lon, lat] = getFeatureCoordinates(item)
 
         return (
@@ -38,7 +38,11 @@ const List = ({ onWaypointZoom, onDeleteWaypoint, waypoints = [] }) => (
 )
 
 List.propTypes = {
-  waypoints: PropTypes.array
+  waypoints: PropTypes.object
+}
+
+List.defaultProps = {
+  waypoints: { getArray: () => [] }
 }
 
 export default List

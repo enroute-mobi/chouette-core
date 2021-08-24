@@ -304,7 +304,7 @@ class Export::NetexGeneric < Export::Base
 
       def netex_attributes
         {
-          id: id,
+          id: objectid,
           name: name,
           raw_xml: import_xml
         }

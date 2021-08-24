@@ -79,6 +79,28 @@ RSpec.describe Export::NetexGeneric do
 
   end
 
+  describe "Companies export" do
+    describe Export::NetexGeneric::Companies::Decorator do
+
+      let(:company) { Chouette::Company.new }
+      let(:decorator) { Export::NetexGeneric::Companies::Decorator.new company }
+
+      describe "#netex_attributes" do
+        subject { decorator.netex_attributes }
+
+        it "uses Company objectid as id" do
+          company.objectid = "dummy"
+          is_expected.to include(id: company.objectid)
+        end
+
+        it "uses Company name" do
+          company.name = "dummy"
+          is_expected.to include(name: company.name)
+        end
+      end
+    end
+  end
+
   describe "Routes export" do
 
     let(:target) { MockNetexTarget.new }

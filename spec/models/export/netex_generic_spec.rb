@@ -245,6 +245,30 @@ RSpec.describe Export::NetexGeneric do
         expect(target.resources.find { |e| e.longitude == sp.stop_area.longitude && e.latitude == sp.stop_area.latitude }).to be_truthy
       end
     end
+
+    describe Export::NetexGeneric::StopDecorator do
+      let(:stop_area) { Chouette::StopArea.new }
+      let(:decorator) { Export::NetexGeneric::StopDecorator.new stop_area }
+
+      describe "#netex_alternate_identifiers" do
+        subject { decorator.netex_alternate_identifiers }
+
+        context "when StopArea registration number is 'dummy'" do
+          before { stop_area.registration_number = 'dummy' }
+          it { is_expected.to include(an_object_having_attributes(key: "external", value: "dummy", type_of_key: "ALTERNATE_IDENTIFIER")) }
+        end
+
+        context "when StopArea registration number is nil" do
+          before { stop_area.registration_number = nil }
+          it { is_expected.to_not include(an_object_having_attributes(key: "external")) }
+        end
+
+        context "when StopArea code 'public' exists with value 'dummy'" do
+          before { stop_area.codes << Code.new(code_space: CodeSpace.new(short_name: 'public'), value: 'dummy') }
+          it { is_expected.to include(an_object_having_attributes(key: "public", value: "dummy", type_of_key: "ALTERNATE_IDENTIFIER")) }
+        end
+      end
+    end
   end
 
   describe "StopPoints export" do

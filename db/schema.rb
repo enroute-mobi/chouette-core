@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_06_093921) do
+ActiveRecord::Schema.define(version: 2021_07_27_144032) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -1331,6 +1331,7 @@ ActiveRecord::Schema.define(version: 2021_07_06_093921) do
     t.integer "maximum_data_age", default: 0
     t.boolean "enable_purge_merged_data", default: false
     t.bigint "shape_referential_id", null: false
+    t.bit "nightly_aggregate_days", limit: 7, default: "1111111"
     t.index ["shape_referential_id"], name: "index_workgroups_on_shape_referential_id"
   end
 

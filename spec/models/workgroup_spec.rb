@@ -43,6 +43,7 @@ RSpec.describe Workgroup, type: :model do
   describe "#nightly_aggregate_timeframe?" do
     let(:nightly_aggregation_time) { "15:15:00" }
     let(:nightly_aggregate_enabled) { false }
+    let(:current_symbolic_day) { Timetable::DaysOfWeek::SYMBOLIC_DAYS[Time.zone.now.wday - 1] }
 
     before do
       workgroup.update nightly_aggregate_time: nightly_aggregation_time,
@@ -54,14 +55,30 @@ RSpec.describe Workgroup, type: :model do
     context "when nightly_aggregate_enabled is true" do
       let(:nightly_aggregate_enabled) { true }
 
-      it "returns true when inside timeframe" do
+      it "returns true when inside timeframe && dayframe" do
         Timecop.freeze(time_at_1515) do
+          workgroup.nightly_aggregate_days.enable(current_symbolic_day)
           expect(workgroup.nightly_aggregate_timeframe?).to be_truthy
         end
       end
+  
+      it "returns false when inside timeframe && not in dayframe" do
+        Timecop.freeze(time_at_1515) do
+          workgroup.nightly_aggregate_days.disable(current_symbolic_day)
+          expect(workgroup.nightly_aggregate_timeframe?).to be_falsy
+        end
+      end
 
-      it "returns false when outside timeframe" do
+      it "returns false when outside timeframe && in dayframe" do
         Timecop.freeze(time_at_1515 - 20.minutes) do
+          workgroup.nightly_aggregate_days.enable(current_symbolic_day)
+          expect(workgroup.nightly_aggregate_timeframe?).to be_falsy
+        end
+      end
+
+      it "returns false when outside timeframe && in not dayframe" do
+        Timecop.freeze(time_at_1515 - 20.minutes) do
+          workgroup.nightly_aggregate_days.disable(current_symbolic_day)
           expect(workgroup.nightly_aggregate_timeframe?).to be_falsy
         end
       end
@@ -150,6 +167,28 @@ RSpec.describe Workgroup, type: :model do
           expect(referential.workgroup.aggregates.where(creator: 'CRON')).to exist
         end
       end
+    end
+  end
+
+  describe "#nightly_aggregate_days" do
+    it 'should be a instance of Timetable::DaysOfWeek' do
+      expect(
+        workgroup.nightly_aggregate_days.is_a?(Timetable::DaysOfWeek)
+      ).to be_truthy
+    end
+
+    it 'should have at most 7 values' do
+      workgroup.nightly_aggregate_days = '0000000'
+      expect(workgroup.nightly_aggregate_days.days).to eq([])
+
+      workgroup.nightly_aggregate_days = '1111111'
+      expect(workgroup.nightly_aggregate_days.days).to eq(Timetable::DaysOfWeek::SYMBOLIC_DAYS)
+    
+      workgroup.nightly_aggregate_days = '1110100'
+      expect(workgroup.nightly_aggregate_days.days).to eq(%i[monday tuesday wednesday friday])
+
+      workgroup.nightly_aggregate_days = '1110000'
+      expect(workgroup.nightly_aggregate_days.days).to eq(%i[monday tuesday wednesday])
     end
   end
 

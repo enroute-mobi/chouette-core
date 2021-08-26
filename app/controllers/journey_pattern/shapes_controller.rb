@@ -20,9 +20,7 @@ module JourneyPattern
         format.html
 
         format.json do
-          @journey_pattern = parent
-
-          render 'journey_patterns/show.geo'
+          render json: Shapes::GenerateGeoJson.call(Shape.new, parent).render
         end
       end
     end
@@ -33,10 +31,10 @@ module JourneyPattern
         return redirect_to new_referential_line_route_journey_pattern_shapes_path(parents)
       end
 
-      if resource.waypoints.empty?
-        flash[:warning] = I18n.t('shapes.errors.cannot_edit_imported_shape')
-        return redirect_to new_referential_line_route_journey_pattern_shapes_path(parents)
-      end
+      # if resource.waypoints.empty?
+      #   flash[:warning] = I18n.t('shapes.errors.cannot_edit_imported_shape')
+      #   return redirect_to new_referential_line_route_journey_pattern_shapes_path(parents)
+      # end
 
       respond_to do |format|
         format.html
@@ -117,8 +115,8 @@ module JourneyPattern
 
     def shape_params
       ActionController::Parameters.new(payload).require(:shape).permit(:name).tap do |_params|
-        _params[:shape_referential] = workbench.shape_referential
-        _params[:shape_provider] = shape_provider
+        _params[:shape_referential_id] = workbench.shape_referential.id
+        _params[:shape_provider_id] = shape_provider.id
         _params[:waypoints] = payload.dig('shape', 'waypoints') || []
         _params[:coordinates] = payload.dig('shape', 'coordinates') || []
 

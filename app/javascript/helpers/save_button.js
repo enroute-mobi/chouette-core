@@ -1,8 +1,11 @@
 import React, { PropTypes, Component } from 'react'
+import { bindAll } from 'lodash'
 
 export default class SaveButton extends Component{
   constructor(props){
     super(props)
+
+    bindAll(this, 'handleClick')
   }
 
   btnDisabled(){

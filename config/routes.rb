@@ -218,7 +218,11 @@ ChouetteIhm::Application.routes.draw do
           get 'fetch_user_permissions'
         end
         resource :journey_patterns_collection, :only => [:show, :update]
-        resources :journey_patterns
+        resources :journey_patterns do
+          member do
+            get 'available_specific_stop_places'
+          end
+        end
         resource :vehicle_journeys_collection, :only => [:show, :update]
         resources :vehicle_journeys
         resources :vehicle_journey_exports

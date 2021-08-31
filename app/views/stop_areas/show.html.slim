@@ -37,7 +37,7 @@
                 th scope="col"
                   = Chouette::StopArea.tmf('distance')
             tbody
-              - @stop_area.closest_children.each do |c|
+              - @stop_area.closest_children.limit(5).each do |c|
                 tr
                   td
                     = c.get_objectid.short_id

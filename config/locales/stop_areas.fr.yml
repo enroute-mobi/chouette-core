@@ -64,6 +64,7 @@ fr:
         identification: "Identification"
         general: "Général"
         location: "Localisation"
+        hierarchy: "Hiérarchie"
       address: "246 Boulevard Saint-Germain, 75007 Paris"
       geolocalize: "Géolocalisez "
       add_code: Ajouter un code
@@ -80,6 +81,7 @@ fr:
       access_managment: "Gestion des accès et liens associés"
       access_points: "Points d'accès"
       not_editable: "Le type d'arrêt est non modifiable"
+      more: "Et %{count} supplémentaire(s)"
       connections:
         title: "Correspondances"
         stop: "Arrêt"
@@ -114,6 +116,7 @@ fr:
         other: "arrêts"
     attributes:
       stop_area:
+        id: "ID"
         full_id: "ID complet"
         name: "Nom"
         public_code: "Code public"
@@ -150,6 +153,7 @@ fr:
         created_at: "Créé le"
         updated_at: "Edité le"
         creator_id: "Créé par"
+        children: "Fils"
         children_ids: "Fils"
         parent: "Parent"
         parent_id: "Parent"
@@ -166,6 +170,7 @@ fr:
         stop_area_provider_id: Fournisseur d'arrêts
         stop_area_provider: Fournisseur d'arrêts
         codes: Codes
+        distance: Distance
   formtastic:
     titles:
       stop_area:

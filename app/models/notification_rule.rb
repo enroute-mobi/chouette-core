@@ -8,7 +8,7 @@ class NotificationRule < ApplicationModel
 
   # Scopes
   scope :in_periode, -> (daterange) { where('period && daterange(:begin, :end)', begin: daterange.min, end: daterange.max + 1.day) } #Need to add one day because of PostgreSQL behaviour with daterange (exclusvive end)
-  scope :covering, -> (daterange) { where('period @> daterange(:begin, :end)', begin: daterange.min, end: daterange.max + 1.day) }
+  scope :covering, -> (daterange) { where('period @> daterange(:begin, :end)', begin: daterange.min, end: daterange.max) }
 
   # Validations
   validates_presence_of :workbench

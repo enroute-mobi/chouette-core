@@ -22,7 +22,7 @@ class HoleSentinel
         next unless line_holes.offset(min_hole_size).first&.date == line_holes.first.date + min_hole_size
 
         # then we check if there is any notification rule covering the hole
-        next unless @workbench.notification_rules.covering(line_holes.first.date...line_holes.last.date).empty?
+        next unless @workbench.notification_rules.covering(line_holes.first.date..line_holes.last.date).empty?
 
         holes[line.id] = line_holes.first.date
       end

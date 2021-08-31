@@ -24,7 +24,7 @@
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = simple_block_for @stop_area, title: t("stop_areas.form.sections.hierarchy") do |d|
-          = d.attribute :parent, value: (@stop_area.parent.present? ? link_to("#{@stop_area.get_objectid.short_id} #{@stop_area.parent.name}", [@workbench, :stop_area_referential, @stop_area.parent]) : "-")
+          = d.attribute :parent, value: (@stop_area.parent.present? ? link_to("#{@stop_area.parent.get_objectid.short_id} #{@stop_area.parent.name}", [@workbench, :stop_area_referential, @stop_area.parent]) : "-")
           = d.attribute :children, value: (link_to @stop_area.children.count, workbench_stop_area_referential_stop_areas_path(@workbench, :'q[parent_id_eq]' => @stop_area.id))
         - if @stop_area.children.present?
           table.table.table-bordered

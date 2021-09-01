@@ -31,7 +31,6 @@ class ImportsController < ChouetteController
   end
 
   def index
-    @statuses = %w(pending successful warning failed)
     index! do |format|
       format.html do
         # if collection.out_of_bounds?
@@ -94,7 +93,7 @@ class ImportsController < ChouetteController
   delegate :collection, to: :search
 
   def search_params
-    params.require(:search).permit(:name, :start_date, :end_date, status: [])
+    params.require(:search).permit(:name, :start_date, :end_date, status: []) if params[:search]
   end
 
   def import_params
@@ -116,11 +115,16 @@ class ImportsController < ChouetteController
 
   class Search < Search::Base
     # All search attributes
-    attr_accessor :name, :workbench, :status
+    attr_accessor :name, :workbench, :statuses
     attr_reader :start_date, :end_date
 
-    # validates :status, inclusion: { in: %w(pending successful warning failed), allow_nil: true, allow_blank: true
-    # enumerize :status, in: %w[pending successful warning failed], i18n_scope: "status", multiple: true, allow_blank: true
+    # TODO Rename status into statuses into the view
+    alias status statuses
+    alias status= statuses=
+
+    def candidate_statuses
+      Operation::UserStatus.all
+    end
 
     def start_date=(start_date)
       @start_date = Date.parse(start_date) if start_date.present?
@@ -141,23 +145,8 @@ class ImportsController < ChouetteController
       # calling_object.parent.workbenches.joins(:organisation).order('organisations.name')
     end
 
-    def self.status_group
-      {
-        'pending' => %w[new pending running],
-        'failed' => %w[failed aborted canceled],
-        'warning' => ['warning'],
-        'successful' => ['successful']
-      }
-    end
-
-    def find_import_statuses(values)
-      return [] if values.blank?
-      values.map { |value| self.class.status_group[value] }.flatten.compact
-    end
-
     def query
-      statuses = find_import_statuses(status)
-      Query::Import.new(scope).text(name).statuses(statuses).include_in_date_range(date_range)
+      Query::Import.new(scope).text(name).user_statuses(statuses).include_in_date_range(date_range)
     end
 
     class Order < ::Search::Order

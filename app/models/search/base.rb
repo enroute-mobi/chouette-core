@@ -4,8 +4,9 @@ module Search
     include ActiveModel::AttributeAssignment
     include ActiveModel::Validations
 
-    def initialize(scope, attributes = {})
+    def initialize(scope, attributes = nil)
       @scope = scope
+      attributes ||= {}
 
       # Transform 'legacy' parameters into order attributes
       if attributes["sort"]

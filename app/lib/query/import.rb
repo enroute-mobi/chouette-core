@@ -8,7 +8,16 @@ module Query
       self
     end
 
-    def statuses(statuses)
+    def user_statuses(user_statuses)
+      unless user_statuses.blank?
+        statuses Operation::UserStatus.find(user_statuses).flat_map(&:operation_statuses)
+      end
+
+      self
+    end
+
+    def statuses(*statuses)
+      statuses = statuses.flatten
       unless statuses.blank?
         self.scope = scope.having_status statuses
       end

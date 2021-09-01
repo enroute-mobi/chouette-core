@@ -89,7 +89,7 @@ class ImportsController < ChouetteController
   end
 
   def search
-    @search ||= ImportSearch.new(scope, params || {})
+    @search ||= Search.new(scope, params || {})
   end
   delegate :collection, to: :search
 
@@ -110,7 +110,7 @@ class ImportsController < ChouetteController
     )
   end
 
-  class ImportSearch < Search::Base
+  class Search < Search::Base
     # All search attributes
     attr_accessor :name, :dates
     attr_reader :workbench, :status, :start_date, :end_date

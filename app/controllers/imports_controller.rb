@@ -111,8 +111,11 @@ class ImportsController < ChouetteController
 
   class Search < Search::Base
     # All search attributes
-    attr_accessor :name, :workbench, :statuses
-    attr_reader :start_date, :end_date
+    attribute :name
+    attribute :workbench
+    attribute :statuses
+    attribute :start_date, type: Date
+    attribute :end_date, type: Date
 
     # TODO Rename status into statuses into the view
     alias status statuses
@@ -120,14 +123,6 @@ class ImportsController < ChouetteController
 
     def candidate_statuses
       Operation::UserStatus.all
-    end
-
-    def start_date=(start_date)
-      @start_date = Date.parse(start_date) if start_date.present?
-    end
-
-    def end_date=(end_date)
-      @end_date = Date.parse(end_date) if end_date.present?
     end
 
     def date_range

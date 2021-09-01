@@ -1,25 +1,30 @@
 module Search
   class Base
     extend ActiveModel::Naming
-    include ActiveModel::AttributeAssignment
+
     include ActiveModel::Validations
+
+    include ActiveAttr::MassAssignment
+    include ActiveAttr::TypecastedAttributes
+    include ActiveAttr::AttributeDefaults
 
     def initialize(scope, params = nil)
       @scope = scope
 
-      params = self.class.params(params)
+      params = self.class.params(params.dup)
 
-      Rails.logger.debug "[Search] params: #{params.inspect}"
+      Rails.logger.debug "[Search] Params: #{params.inspect}"
 
       order.attributes = params.delete "order" if params["order"]
       self.attributes = params
 
-      Rails.logger.debug "[Search] #{inspect}"
+      Rails.logger.debug "[Search] #{self.class.name}(#{attributes.inspect})"
     end
     attr_reader :scope
 
     def self.params(params)
-      Rails.logger.debug "[Search] raw params: #{params.inspect}"
+      return {} if params.nil?
+      Rails.logger.debug "[Search] Raw params: #{params.inspect}"
 
       params[:search] ||= {}
 
@@ -35,7 +40,13 @@ module Search
         params[:search][param] = params[param] if params[param]
       end
 
-      params[:search].permit!
+      search_params = params[:search]
+
+      if search_params.respond_to?(:permit!)
+        search_params.permit!
+      else
+        search_params
+      end
     end
 
     # Requires to create a form
@@ -66,12 +77,8 @@ module Search
       @order ||= self.class.const_get("Order").new
     end
 
-    attr_accessor :page
-    attr_writer :per_page
-
-    def per_page
-      @per_page ||= 30
-    end
+    attribute :page, type: Integer
+    attribute :per_page, type: Integer, default: 30
 
     def paginate_attributes
       { per_page: per_page, page: page }

@@ -89,9 +89,13 @@ class ImportsController < ChouetteController
   end
 
   def search
-    @search ||= Search.new(scope, params || {})
+    @search ||= Search.new(scope, search_params)
   end
   delegate :collection, to: :search
+
+  def search_params
+    params.require(:search).permit(:name, :start_date, :end_date, status: [])
+  end
 
   def import_params
     permitted_keys = %i(name file type referential_id notification_target)
@@ -112,8 +116,8 @@ class ImportsController < ChouetteController
 
   class Search < Search::Base
     # All search attributes
-    attr_accessor :name, :dates
-    attr_reader :workbench, :status, :start_date, :end_date
+    attr_accessor :name, :workbench, :status
+    attr_reader :start_date, :end_date
 
     # validates :status, inclusion: { in: %w(pending successful warning failed), allow_nil: true, allow_blank: true
     # enumerize :status, in: %w[pending successful warning failed], i18n_scope: "status", multiple: true, allow_blank: true
@@ -132,19 +136,23 @@ class ImportsController < ChouetteController
       (from..to)
     end
 
-    def workbench=(_workbench)
-      # Use filter because rails form sends an empty string inside array [""]
-      @workbench = _workbench.filter{ |value| value.present? }
-    end
-
-    def status=(_status)
-      # Use filter because rails form sends an empty string inside array [""]
-      @status = _status.filter{ |value| value.present? }
-    end
-
     def candidate_workbenches
       # How to retrieve protected method parent from ImportsController?
       # calling_object.parent.workbenches.joins(:organisation).order('organisations.name')
+    end
+
+    def self.status_group
+      {
+        'pending' => %w[new pending running],
+        'failed' => %w[failed aborted canceled],
+        'warning' => ['warning'],
+        'successful' => ['successful']
+      }
+    end
+
+    def find_import_statuses(values)
+      return [] if values.blank?
+      values.map { |value| self.class.status_group[value] }.flatten.compact
     end
 
     def query

@@ -1,14 +1,11 @@
 module Search
   class Base
     extend ActiveModel::Naming
-    include ActiveModel::Conversion
+    include ActiveModel::AttributeAssignment
     include ActiveModel::Validations
-    extend Enumerize
 
     def initialize(scope, attributes = {})
       @scope = scope
-      attributes["search"].each { |k, v| send "#{k}=", v } if attributes["search"]
-      @page = attributes["page"] || 1
 
       # Transform 'legacy' parameters into order attributes
       if attributes["sort"]
@@ -18,11 +15,13 @@ module Search
         attributes["order"] = { sort_attribute => sort_direction.to_sym }
       end
 
-      if attributes["order"]
-        order.attributes = attributes["order"]
-      end
+      order.attributes = attributes.delete "order" if attributes["order"]
+      self.attributes = attributes
     end
     attr_reader :scope
+
+    # Requires to create a form
+    def to_key; end
 
     validates_numericality_of :page, greater_than_or_equal_to: 0, allow_nil: true
     validates_numericality_of :per_page, greater_than_or_equal_to: 0, allow_nil: true
@@ -57,20 +56,6 @@ module Search
 
     def paginate_attributes
       { per_page: per_page, page: page }
-    end
-
-    def self.status_group
-      {
-        'pending' => %w[new pending running],
-        'failed' => %w[failed aborted canceled],
-        'warning' => ['warning'],
-        'successful' => ['successful']
-      }
-    end
-
-    def find_import_statuses(values)
-      return [] if values.blank?
-      values.map { |value| self.class.status_group[value] }.flatten.compact
     end
   end
 

@@ -50,8 +50,7 @@ class ImportsController < ChouetteController
                                 end
                               )
                             end
-
-        @imports = collection
+        @imports = decorate_collection(collection)
       end
     end
   end
@@ -90,7 +89,7 @@ class ImportsController < ChouetteController
   end
 
   def search
-    @search ||= ImportSearch.new(scope, params[:search] || {})
+    @search ||= ImportSearch.new(scope, params || {})
   end
   delegate :collection, to: :search
 
@@ -113,10 +112,25 @@ class ImportsController < ChouetteController
 
   class ImportSearch < Search::Base
     # All search attributes
-    attr_accessor :name, :dates, :workbench, :status
+    attr_accessor :name, :dates
+    attr_reader :workbench, :status, :start_date, :end_date
 
     # validates :status, inclusion: { in: %w(pending successful warning failed), allow_nil: true, allow_blank: true
     # enumerize :status, in: %w[pending successful warning failed], i18n_scope: "status", multiple: true, allow_blank: true
+
+    def start_date=(start_date)
+      @start_date = Date.parse(start_date) if start_date.present?
+    end
+
+    def end_date=(end_date)
+      @end_date = Date.parse(end_date) if end_date.present?
+    end
+
+    def date_range
+      from = start_date || -Float::INFINITY
+      to = end_date || Float::INFINITY # Not have the last day with this code
+      (from..to)
+    end
 
     def workbench=(_workbench)
       # Use filter because rails form sends an empty string inside array [""]
@@ -143,21 +157,21 @@ class ImportsController < ChouetteController
 
     def query
       statuses = find_import_statuses(status)
-      ImportQuery.new(scope).text(name).statuses(statuses).scope
+      ImportQuery.new(scope).text(name).statuses(statuses).include_in_date_range(date_range).scope
     end
 
-    class Order
-      # TODO: Attributes can only return values :asc, :desc or nil (for securiy reason)
-      # Attributes can be set with "asc", :asc, 1 to have the :asc value
-      # Attributes can be set with "desc", :desc, -1 to have the :desc value
-      # Attributes can be set with nil, 0 to have the nil value
-      #
-      # These methods ensures that the sort attribute is supported and valid
-      attr_accessor :name
-
-      def to_hash
-        { name: name }.delete_if { |_, v| v.nil? }
-      end
-    end
+    # class Order
+    #   # TODO: Attributes can only return values :asc, :desc or nil (for securiy reason)
+    #   # Attributes can be set with "asc", :asc, 1 to have the :asc value
+    #   # Attributes can be set with "desc", :desc, -1 to have the :desc value
+    #   # Attributes can be set with nil, 0 to have the nil value
+    #   #
+    #   # These methods ensures that the sort attribute is supported and valid
+    #   attr_accessor :name
+    #
+    #   def to_hash
+    #     { name: name }.delete_if { |_, v| v.nil? }
+    #   end
+    # end
   end
 end

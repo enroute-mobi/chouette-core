@@ -7,9 +7,12 @@ module Search
 
     def initialize(scope, attributes = {})
       @scope = scope
-      attributes.each { |k, v| send "#{k}=", v }
+      attributes["search"].each { |k, v| send "#{k}=", v } if attributes["search"]
+      @page = attributes["page"] || 1
+      @sort_column = attributes["sort"] || 'created_at'
+      @sort_direction = attributes["direction"] || 'desc'
     end
-    attr_reader :scope, :attributes, :calling_object
+    attr_reader :scope, :attributes, :calling_object, :sort_column, :sort_direction
 
     validates_numericality_of :page, greater_than_or_equal_to: 0, allow_nil: true
     validates_numericality_of :per_page, greater_than_or_equal_to: 0, allow_nil: true
@@ -27,7 +30,7 @@ module Search
     end
 
     def order
-      @order ||= Order.new
+      @order ||= Order.new(sort_column => sort_direction)
     end
 
     attr_accessor :page
@@ -56,6 +59,12 @@ module Search
     end
 
     class Order
+
+      def initialize(sort_hash)
+        @sort_hash = sort_hash
+      end
+      attr_reader :sort_hash
+
       # TODO: Attributes can only return values :asc, :desc or nil (for securiy reason)
       # Attributes can be set with "asc", :asc, 1 to have the :asc value
       # Attributes can be set with "desc", :desc, -1 to have the :desc value
@@ -63,7 +72,7 @@ module Search
       #
       # These methods ensures that the sort attribute is supported and valid
       def to_hash
-        {}.delete_if { |_, v| v.nil? }
+        sort_hash.delete_if { |_, v| v.nil? }
       end
     end
   end

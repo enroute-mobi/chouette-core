@@ -7,8 +7,16 @@
 // To reference this file, add <%= javascript_pack_tag 'application' %> to the appropriate
 // layout file, like app/views/layouts/application.html.erb
 
-import "@fortawesome/fontawesome-free/css/all"
 import '@ryangjchandler/spruce'
 import 'alpinejs'
 
 import './flash_messages'
+
+// loading flatpickr
+import flatpickr from "flatpickr"
+import 'flatpickr/dist/flatpickr.css'
+import { French } from "flatpickr/dist/l10n/fr.js";
+import { english } from "flatpickr/dist/l10n/default.js";
+
+// loading font awesome
+import '@fortawesome/fontawesome-free/css/all'

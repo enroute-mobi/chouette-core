@@ -8,13 +8,17 @@
 
   .ffg-row
     .form-group.togglable class=filter_item_class(params[:search], :status)
-      = f.label "Statut", required: false, class: 'control-label'
+      = f.label :status, required: false, class: 'control-label'
       = f.input :status, as: :check_boxes, collection: @statuses, label: false, label_method: lambda{|l| ("<span>" + operation_status(l) + "</span>").html_safe}, wrapper_html: { class: "checkbox_list"}
     - if @parent.is_a?(Workgroup)
       .form-group.togglable class=filter_item_class(params[:search], :workbench)
-        = f.label Organisation.ts.capitalize, class: 'control-label'
+        = f.label :organisation, class: 'control-label'
         = f.input :workbench, as: :check_boxes, collection: @parent.workbenches.joins(:organisation).order('organisations.name'), label: false, value_method: lambda{|k| k.id.to_s}, label_method: lambda{|k| ("<span>#{k.organisation.name}</span>").html_safe}, wrapper_html: { class: "checkbox_list"}
+    = f.input :start_date, as: :date_picker
+    = f.input :end_date, as: :date_picker
 
   .actions
     = link_to t('actions.erase'), class: 'btn btn-link'
     = f.submit t('actions.filter'), class: 'btn btn-default'
+
+= javascript_pack_tag 'components/datetime_picker'

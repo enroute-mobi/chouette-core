@@ -17,9 +17,11 @@ html lang=I18n.locale
 
     = stylesheet_link_tag 'base'
     = stylesheet_link_tag 'application'
+    = javascript_include_tag 'application'
 
     = javascript_pack_tag 'application'
-    = javascript_include_tag 'application'
+    = stylesheet_pack_tag 'application'
+
     = javascript_tag do
       | I18n.locale = '#{I18n.locale}'
 

@@ -21,9 +21,13 @@ module Search
       ActiveModel::Name.new(self, nil, 'Search')
     end
 
+    def query
+      raise "Not yet implemented"
+    end
+
     def collection
       if valid?
-        scope.order(order.to_hash).paginate(paginate)
+        query.scope.order(order.to_hash).paginate(paginate_attributes)
       else
         scope.none
       end
@@ -40,7 +44,7 @@ module Search
       @per_page ||= 30
     end
 
-    def paginate
+    def paginate_attributes
       { per_page: per_page, page: page }
     end
 

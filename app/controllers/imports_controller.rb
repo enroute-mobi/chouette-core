@@ -142,14 +142,6 @@ class ImportsController < ChouetteController
       @status = _status.filter{ |value| value.present? }
     end
 
-    def collection
-      if valid?
-        query.order(order.to_hash).paginate(paginate)
-      else
-        scope.none
-      end
-    end
-
     def candidate_workbenches
       # How to retrieve protected method parent from ImportsController?
       # calling_object.parent.workbenches.joins(:organisation).order('organisations.name')
@@ -157,7 +149,7 @@ class ImportsController < ChouetteController
 
     def query
       statuses = find_import_statuses(status)
-      Query::Import.new(scope).text(name).statuses(statuses).include_in_date_range(date_range).scope
+      Query::Import.new(scope).text(name).statuses(statuses).include_in_date_range(date_range)
     end
 
     # class Order

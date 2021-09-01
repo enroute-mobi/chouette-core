@@ -157,7 +157,7 @@ class ImportsController < ChouetteController
 
     def query
       statuses = find_import_statuses(status)
-      ImportQuery.new(scope).text(name).statuses(statuses).include_in_date_range(date_range).scope
+      Query::Import.new(scope).text(name).statuses(statuses).include_in_date_range(date_range).scope
     end
 
     # class Order

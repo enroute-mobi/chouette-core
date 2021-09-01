@@ -4,22 +4,39 @@ module Search
     include ActiveModel::AttributeAssignment
     include ActiveModel::Validations
 
-    def initialize(scope, attributes = nil)
+    def initialize(scope, params = nil)
       @scope = scope
-      attributes ||= {}
 
-      # Transform 'legacy' parameters into order attributes
-      if attributes["sort"]
-        sort_attribute = attributes.delete("sort").to_sym
-        sort_direction = attributes.delete("direction").presence || :asc
+      params = self.class.params(params)
 
-        attributes["order"] = { sort_attribute => sort_direction.to_sym }
-      end
+      Rails.logger.debug "[Search] params: #{params.inspect}"
 
-      order.attributes = attributes.delete "order" if attributes["order"]
-      self.attributes = attributes
+      order.attributes = params.delete "order" if params["order"]
+      self.attributes = params
+
+      Rails.logger.debug "[Search] #{inspect}"
     end
     attr_reader :scope
+
+    def self.params(params)
+      Rails.logger.debug "[Search] raw params: #{params.inspect}"
+
+      params[:search] ||= {}
+
+      # Transform 'legacy' parameters into order params
+      if params[:sort]
+        sort_attribute = params.delete(:sort).to_sym
+        sort_direction = params.delete(:direction).presence || :asc
+
+        params[:search][:order] = { sort_attribute => sort_direction.to_sym }
+      end
+
+      %i{page per_page}.each do |param|
+        params[:search][param] = params[param] if params[param]
+      end
+
+      params[:search].permit!
+    end
 
     # Requires to create a form
     def to_key; end
@@ -39,6 +56,7 @@ module Search
       if valid?
         query.scope.order(order.to_hash).paginate(paginate_attributes)
       else
+        Rails.logger.debug "[Search] invalid attributes"
         scope.none
       end
     end

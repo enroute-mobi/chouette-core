@@ -88,13 +88,9 @@ class ImportsController < ChouetteController
   end
 
   def search
-    @search ||= Search.new(scope, search_params)
+    @search ||= Search.new(scope, params)
   end
   delegate :collection, to: :search
-
-  def search_params
-    params.require(:search).permit(:name, :start_date, :end_date, status: []) if params[:search]
-  end
 
   def import_params
     permitted_keys = %i(name file type referential_id notification_target)

@@ -125,11 +125,11 @@ class ImportsController < ChouetteController
       Operation::UserStatus.all
     end
 
-    def date_range
-      from = start_date || -Float::INFINITY
-      to = end_date || Float::INFINITY # Not have the last day with this code
-      (from..to)
+    def period
+      Period.new(from: start_date, to: end_date).presence
     end
+
+    validates :period, valid: true
 
     def candidate_workbenches
       # How to retrieve protected method parent from ImportsController?
@@ -137,7 +137,7 @@ class ImportsController < ChouetteController
     end
 
     def query
-      Query::Import.new(scope).text(name).user_statuses(statuses).include_in_date_range(date_range)
+      Query::Import.new(scope).text(name).user_statuses(statuses).in_period(period)
     end
 
     class Order < ::Search::Order

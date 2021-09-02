@@ -34,9 +34,9 @@ module Query
       self
     end
 
-    def include_in_date_range(date_range)
-      if date_range.present?
-        self.scope = scope.where started_at: date_range
+    def in_period(period)
+      if period.present?
+        self.scope = scope.where started_at: period.infinity_range
       end
 
       self

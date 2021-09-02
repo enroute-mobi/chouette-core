@@ -67,7 +67,7 @@ module Search
       if valid?
         query.scope.order(order.to_hash).paginate(paginate_attributes)
       else
-        Rails.logger.debug "[Search] invalid attributes"
+        Rails.logger.debug "[Search] invalid attributes: #{errors.full_messages}"
         scope.none
       end
     end

@@ -66,11 +66,20 @@ class Period < Range
     end
   end
 
-  def infinity_range
-    range_begin = from || -Float::INFINITY
-    range_end = to || Float::INFINITY
+  def time_range
+    range_begin = from&.to_datetime
+    range_end = to ? (to+1).to_datetime : nil
 
     range_begin..range_end
+  end
+
+  def infinity_time_range
+    range = time_range
+
+    range_begin = range.begin || -Float::INFINITY
+    range_end = range.end || Float::INFINITY
+
+    Range.new range_begin, range_end
   end
 
   def include?(date)

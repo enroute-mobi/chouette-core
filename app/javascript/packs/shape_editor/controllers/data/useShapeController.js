@@ -1,13 +1,14 @@
 import { useEffect } from 'react'
 import { useParams  } from 'react-router-dom'
 import useSWR from 'swr'
-
-import GeoJSON from 'ol/format/GeoJSON'
+import { get } from 'lodash'
+import { featureCollection } from '@turf/turf'
 import Collection from 'ol/Collection'
 
-import { getSubmitPayload, simplifyGeoJSON, submitFetcher, wktOptions } from '../../shape.helpers'
+import { mapFormat, submitFetcher, } from '../../shape.helpers'
+import { getSubmitPayload } from '../../shape.selectors'
 import store from '../../shape.store'
-import eventEmitter from '../../shape.event-emitter'
+import eventEmitter, { events } from '../../shape.event-emitter'
 
 // Custom hook which responsability is to fetch / submit a shape object
 export default function useShapeController(isEdit, baseURL) {
@@ -21,22 +22,21 @@ export default function useShapeController(isEdit, baseURL) {
   const { mutate: submitShape } = useSWR(...Params.submit(`${baseURL}/shapes`, isEdit))
 
   useEffect(() => {
-    eventEmitter.on('shape:submit', submitShape)
-    eventEmitter.on('map:init', fetchShape)
+    eventEmitter.on(events.submitShapeRequest, submitShape)
+    eventEmitter.on(events.initMap, fetchShape)
   }, [])
 }
 class Params {
   static fetch = url => [
     url,
     {
-      onSuccess(data) {
-        const [line, ...fetchedWaypoints] = new GeoJSON().readFeatures(simplifyGeoJSON(data), wktOptions)
+      onSuccess({ features }) {
+        const geometry = features[0]
+        const waypoints = new Collection(mapFormat.readFeatures(featureCollection(features.slice(1))))
 
-        const waypoints = new Collection(fetchedWaypoints)
+        store.receivedShapeFeatures({ geometry, waypoints, name: get(geometry, ['properties', 'name']) })
 
-        store.setAttributes({ line, waypoints })
-
-        eventEmitter.emit('shape:receive-features', line, waypoints)
+        eventEmitter.emit(events.receivedShapeFeatures, geometry, waypoints)
       },
       revalidateOnMount: false
     }

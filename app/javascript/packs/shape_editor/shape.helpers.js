@@ -1,15 +1,18 @@
-import { add, find, flow, map, partialRight, sortBy } from 'lodash'
+import { bindAll, find, flatten, flow, map, partialRight, range, reduce, round, sortBy } from 'lodash'
 
 import {
   along,
   bearing,
+  coordAll,
+  coordReduce,
   degreesToRadians,
+  featureCollection,
+  featureReduce,
   getCoord,
   getCoords,
   length,
   lineSlice,
   lineString,
-  nearestPointOnLine,
   pointToLineDistance,
   segmentReduce,
   simplify,
@@ -17,11 +20,30 @@ import {
   toWgs84
 } from '@turf/turf'
 
-import Feature from 'ol/Feature'
 import { Fill, RegularShape, Style } from 'ol/style'
 import Point from 'ol/geom/Point'
+import GeoJSON from 'ol/format/GeoJSON'
 
 import handleRedirect from '../../helpers/redirect'
+
+export const wktOptions = { //  use options to convert feature from EPSG:4326 to EPSG:3857
+  dataProjection: 'EPSG:4326',
+  featureProjection: 'EPSG:3857'
+}
+
+export const mapFormat = bindAll(
+  new GeoJSON(wktOptions),
+  [
+    'readFeature',
+    'readFeatures',
+    'writeFeatureObject',
+    'writeFeaturesObject'
+  ]
+)
+
+export const safeCall = (callback, defaultValue = null) => {
+  try { callback() } catch (_e) { return defaultValue }
+}
 
 export const getFeatureCoordinates = feature => {
   const geo = feature.getGeometry()
@@ -37,79 +59,101 @@ export const getFeatureCoordinates = feature => {
   }
 }
 
-const collectionToArray = coll => coll.getArray()
-const getLayers = obj => obj?.getLayers() || { getArray: () => [] }
-const getSource = obj => obj?.getSource()
-
-const getLayer = key => flow(getLayers, collectionToArray, layers => find(layers, l => l.get(key)))
-
-export const getStaticlayer = getLayer('static')
-export const getInteractiveLayerGroup = getLayer('interactive')
-export const getLineLayer = flow(getInteractiveLayerGroup, getLayer('line'))
-export const getWaypointsLayer = flow(getInteractiveLayerGroup, getLayer('waypoints'))
-
-export const getLineSource = flow(getLineLayer, getSource)
-export const getWaypointsSource = flow(getWaypointsLayer, getSource)
-
-export const getLine = flow(getLineSource, source => source.getFeatureById('line'))
-export const getWaypoints = flow(getWaypointsSource, source => source.getFeatures())
-
-export const getLineCoords = flow(getLine, getFeatureCoordinates)
-export const getWaypointsCoords = flow(getWaypoints, partialRight(map, getFeatureCoordinates))
-
-export const getLineSections = map => {
-  try {
-    const line = flow(getLineCoords, lineString)(map)
-    const waypointsLine = flow(getWaypointsCoords, lineString)(map)
-
-    return segmentReduce(
-      waypointsLine,
-      (result, segment) => [...result, lineSlice(...getCoords(segment), line)],
-      []
-    )
-  } catch(e) {
-    return []
-  }
+const log = (message = '') => data => {
+  console.log(message, data)
+  return data
 }
 
-const getLineMidpoint = line => along(line, length(line) / 2)
+const defaultReducer = mapperFunc => (result, value) => [...result, mapperFunc(value)]
 
-export const getArrowStyles = map =>
-  getLineSections(map).map(section => {
-    const coords = flow(getLineMidpoint, getCoord)(section)
+export const featureMap = (featureCollection, mapperFunc) => featureReduce(featureCollection, defaultReducer(mapperFunc), [])
+export const segmentMap = (feature, mapperFunc) => segmentReduce(feature, defaultReducer(mapperFunc), [])
+export const coordMap = (feature, mapperFunc) => coordReduce(feature, defaultReducer(mapperFunc), [])
 
-    const segments = segmentReduce(section, (collection, segment) => [
-      ...collection,
-      { ...segment, properties: { ...segment.properties, distance: pointToLineDistance(coords, segment) } }
-    ], [])
+export const getLayers = obj => obj?.getLayers() || { getArray: () => [] }
+export const getSource = obj => obj?.getSource()
+export const getLayer = key => flow(getLayers, layers => layers.getArray(), layers => find(layers, l => l.get(key)))
 
-    const midSegment = sortBy(segments, segment => segment.properties.distance)[0]
+const getTolerance = (() => {
+  const tolerances = [1, 0.1, 0.01, 0.001, 0.0009, 0.0007, 0.0005, 0.0003, 0.0001, 0]
+  
+  return view => {
+    const percentage = (view.getZoom() - view.getMinZoom()) / (view.getMaxZoom() - view.getMinZoom())
+    const index = Math.ceil((tolerances.length - 1) * percentage)
 
-    return getArrowStyle(midSegment, coords)
-  })
+    return tolerances[index]
+  }
+})()
+
+export const simplifyGeometry = (sectionCollection, view) => {
+  const sectionMapper = flow(
+    partialRight(simplify, { tolerance: getTolerance(view), highQuality: true }),
+    getCoords
+  )
+
+  return flow(
+    partialRight(featureMap, sectionMapper),
+    flatten,
+    lineString
+  )(sectionCollection)
+}
+
+export const getLineSections = (line, waypoints) => {
+  const sectionsReducer = coords => reduce(
+    coords,
+    (result, coord, index, coll) => {
+      const nextCoord = coll[index + 1]
+
+      if (!Boolean(nextCoord)) return result
+
+      return [...result, lineSlice(coord, nextCoord, line)]
+    },
+    []
+  )
+
+  return flow(coordAll, sectionsReducer, featureCollection)(waypoints)
+}
+    
+export const getSimplifiedLine = flow(getLineSections, simplifyGeometry)
+
+export const getLineMidpoint = line => along(line, length(line) / 2)
+
+export const getArrowStyles = flow(
+  partialRight(
+    featureMap,
+    section => {
+      const midPointCoords = flow(getLineMidpoint, getCoord)(section)
+
+      const segments = segmentMap(
+        section,
+        ({ properties, ...segment }) => ({
+          ...segment,
+          properties: { ...properties, distance: pointToLineDistance(midPointCoords, segment) }
+        })
+      )
+
+      const midSegment = sortBy(segments, segment => segment.properties.distance)[0]
+
+      return getArrowStyle(midSegment, midPointCoords)
+    }
+  )
+)
 
 const getArrowStyle = (segment, coords) => {
-  const arrowRotation = flow(getCoords, coords => bearing(...coords), degreesToRadians)
-  
+  const getArrowRotation = flow(getCoords, coords => bearing(...coords), degreesToRadians)
+
   return new Style({
     geometry: new Point(toMercator(coords)),
     image: new RegularShape({
       fill: new Fill({ color: 'red' }),
       points: 3,
-      radius: 8,
-      rotation: arrowRotation(segment)
+      radius: 7,
+      rotation: getArrowRotation(segment)
     })
   })
 }
 
-export const simplifyGeoJSON = data => simplify(data, { tolerance: 0.0001, highQuality: true }) // We may want to have a dynamic tolerance
-
 export const lineId = 'line'
-
-export const wktOptions = { //  use options to convert feature from EPSG:4326 to EPSG:3857
-  dataProjection: 'EPSG:4326',
-  featureProjection: 'EPSG:3857'
-}
 
 export const submitFetcher = async (url, isEdit, payload) => {
   const method = isEdit ? 'PUT' : 'POST'
@@ -141,15 +185,11 @@ export const submitFetcher = async (url, isEdit, payload) => {
   return data
 }
 
-export const getSubmitPayload = state => ({
-  shape: {
-    name: state.name,
-    coordinates: getLineCoords(stae.map),
-    waypoints: map(getWaypoints(state.map), (w, position) => ({
-      name: w.get('name'),
-      position,
-      waypoint_type: w.get('type'),
-      coordinates: getFeatureCoordinates(w)
-    }))
-  }
-})
+export const SimplifiedLineBuilder = {
+  call: state =>
+    flow(
+      getSimplifiedLine,
+      computeTolerance => computeTolerance(getView(state)),
+      mapFormat.readFeature
+    )(getGeometry(state), getWaypoints(state))
+}

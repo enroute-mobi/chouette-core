@@ -10,7 +10,7 @@ const NameInput = ({ name = '' }) => (
     <input
       id="name"
       className="form-control string required"
-      onChange={e => store.setAttributes({ name: e.target.value })}
+      onChange={e => store.updateName({ name: e.target.value })}
       value={name}
     />
     </div>

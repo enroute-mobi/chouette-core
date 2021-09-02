@@ -3,8 +3,8 @@ import PropTypes from 'prop-types'
 import { pick } from 'lodash'
 
 import store from '../shape.store'
-import eventEmitter from '../shape.event-emitter'
-import { onWaypointsUpdate$ } from '../shape.observables'
+import eventEmitter, { events } from '../shape.event-emitter'
+import { onWaypointsUpdate$, onMapZoom$ } from '../shape.observables'
 
 import { useStore } from '../../../helpers/hooks'
 
@@ -22,19 +22,17 @@ import List from './List'
 import CancelButton from './CancelButton'
 import SaveButton from './SaveButton'
 
-const mapStateToProps = state => ({
-  ...pick(state, ['permissions', 'style', 'routeFeatures', 'waypoints']),
-  name: state.line?.get('name')
-})
+const mapStateToProps = state =>
+  pick(state, ['name', 'permissions', 'style', 'routeFeatures', 'waypoints'])
 export default function ShapeEditorMap({ isEdit, baseURL, redirectURL }) {
   // Store
   const { routeFeatures: features, name, permissions, style, waypoints } = useStore(store, mapStateToProps)
 
   // Evvent Handlers
-  const onMapInit = map => setTimeout(() => eventEmitter.emit('map:init', map), 0) // Need to do this to ensure that controllers can subscribe to event before it is fired
-  const onWaypointZoom = waypoint => eventEmitter.emit('map:zoom-to-waypoint', waypoint)
-  const onDeleteWaypoint = waypoint => eventEmitter.emit('map:delete-waypoint-request', waypoint)
-  const onSubmit = _event => eventEmitter.emit('shape:submit')
+  const onMapInit = map => setTimeout(() => eventEmitter.emit(events.initMap, map), 0) // Need to do this to ensure that controllers can subscribe to event before it is fired
+  const onWaypointZoom = waypoint => eventEmitter.emit(events.waypointZoom, waypoint)
+  const onDeleteWaypoint = waypoint => eventEmitter.emit(events.waypointDeleteRequest, waypoint)
+  const onSubmit = _event => eventEmitter.emit(events.submitShape)
   const onConfirmCancel = _event => window.location.replace(redirectURL)
 
   // Controllers
@@ -47,7 +45,8 @@ export default function ShapeEditorMap({ isEdit, baseURL, redirectURL }) {
   useShapeController(isEdit, baseURL)
 
   useEffect(() => {
-    onWaypointsUpdate$.subscribe(_state => eventEmitter.emit('waypoints:updated'))
+    onWaypointsUpdate$.subscribe(_state => eventEmitter.emit(events.waypointUpdated))
+    onMapZoom$.subscribe(data => eventEmitter.emit(events.mapZoom, data))
 
     return () => {
       eventEmitter.complete()

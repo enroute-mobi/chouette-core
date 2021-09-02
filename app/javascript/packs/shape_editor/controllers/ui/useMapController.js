@@ -1,5 +1,5 @@
-import { useEffect } from 'react'
-import { add, debounce, first, isEmpty, last, uniqueId } from 'lodash'
+import { useEffect, useMemo } from 'react'
+import { add, first, isEmpty, last, uniqueId } from 'lodash'
 
 import Collection from 'ol/Collection'
 import { Modify, Snap } from 'ol/interaction'
@@ -21,8 +21,9 @@ import {
 } from '@turf/turf'
 
 import store from '../../shape.store'
-import eventEmitter from '../../shape.event-emitter'
-import { getArrowStyles, getLineLayer, getWaypointsLayer, getWaypointsCoords, lineId } from '../../shape.helpers'
+import eventEmitter, { events } from '../../shape.event-emitter'
+import { getArrowStyles, getLineSections, lineId, mapFormat, simplifyGeometry } from '../../shape.helpers'
+import { getGeometry, getLineLayer, getMap, getMapLine, getView, getWaypointsLayer, getWaypointsCoords, getWaypoints } from '../../shape.selectors'
 
 const getStyles = () => ({
   points: {
@@ -64,52 +65,78 @@ const getStyles = () => ({
         width: 1.5,
       })
     }),
-    shape: _feature => {
-      const { map } = store.getStateSync()
-
-      return [
-        new Style({
-          stroke: new Stroke({
-            color: 'red',
-            width: 2
-          })
-        }),
-        ...getArrowStyles(map)
-      ]
-    }
+    shape: sections => [
+      new Style({
+        stroke: new Stroke({
+          color: 'red',
+          width: 2
+        })
+      }),
+      ...getArrowStyles(sections)
+    ]
   }
 })
 
 export default function useMapController() {
   const styles = getStyles()
 
+  const SimplifiedLineBuilder = useMemo(() => {
+    const getSectionsWithoutState = state => line => getLineSections(line || getGeometry(state), getWaypoints(state))
+
+    return {
+      call: state => {
+        const getSections = getSectionsWithoutState(state)
+        const simplifiedLine = simplifyGeometry(getSections(), getView(state))
+
+        const OlLine = mapFormat.readFeature(simplifiedLine)
+
+        OlLine.setId(lineId)
+        OlLine.setStyle(styles.lines.shape(getSections(simplifiedLine)))
+
+        return OlLine
+      }
+    } 
+  }, [])
+
+  const updateLine = async () => {
+    const state = await store.getStateAsync()
+    const mapLine = getMapLine(state) // A OL Collection
+    const lineItem = mapLine.item(0)
+
+    const newLine = SimplifiedLineBuilder.call(state)
+    lineItem.getGeometry().setCoordinates(
+      newLine.getGeometry().getCoordinates()
+    )
+
+    lineItem.setStyle(newLine.getStyle())
+
+    mapLine.changed()
+  }
+
   // Event Handlers
-  const onMapInit = async map => {
+  const onMapInit = map => {
     const layers = map.getLayers()
-    window.map = map
 
     layers.item(1).set('static', true)
 
-    const layerGroup = new LayerGroup({ layers: [
-      new VectorLayer({ source: new VectorSource(), line: true }),
-      new VectorLayer({ source: new VectorSource(), waypoints: true })
-    ], interactive: true })
+    const layerGroup = new LayerGroup({
+      layers: [
+        new VectorLayer({ source: new VectorSource(), line: true }),
+        new VectorLayer({ source: new VectorSource(), waypoints: true })
+      ],
+      interactive: true
+    })
 
     layers.push(layerGroup)
 
-    store.setAttributes({ map })
+    store.initMap({ map })
   }
 
-  const onReceiveShapeFeatures = async (line, waypoints) => {
-    const { map } = await store.getStateAsync()
+  const onReceiveShapeFeatures = async (_geometry, waypoints) => {
+    let state = await store.getStateAsync()
 
-    const lineLayer = getLineLayer(map)
-    const waypointsLayer = getWaypointsLayer(map)
-
-    line.setId(lineId)
-
-    const shapeLineStyleFunc = debounce(styles.lines.shape, 100, { leading: true })
-    line.setStyle(shapeLineStyleFunc)
+    // Build features
+    const line = new Collection([SimplifiedLineBuilder.call(state)])
 
     waypoints.forEach(w => {
       w.setId(uniqueId('waypoint_'))
@@ -118,19 +145,18 @@ export default function useMapController() {
       w.setStyle(styles.points[waypointStyle])
     })
 
-    const modify = new Modify({ features: new Collection([line]) })
+    getLineLayer(state).setSource(new VectorSource({ features: line }))
+    getWaypointsLayer(state).setSource(new VectorSource({ features: waypoints }))
 
-    eventEmitter.emit('map:init-modify', modify)
-    
-    const snap = new Snap({ features: new Collection([ line, ...waypoints.getArray()]) })
-    const interactions = [modify, snap]
+    // Add interactions
+    const modify = new Modify({ features: line })
+    const snap = new Snap({ features: new Collection([...line.getArray(), ...waypoints.getArray()]) })
 
-    lineLayer.setSource(new VectorSource({ features: new Collection([line]) }))
-    waypointsLayer.setSource(new VectorSource({ features: waypoints }))
+    Array.of(modify, snap).forEach(i => getMap(state).addInteraction(i))
 
-    store.setAttributes({ modify })
+    store.setAttributes({ line, modify })
 
-    interactions.forEach(i => map.addInteraction(i))
+    eventEmitter.emit(events.initMapInteractions, waypoints, modify, snap)
   }
 
   const onReceiveRouteFeatures = ([line, ...waypoints]) => {
@@ -144,7 +170,9 @@ export default function useMapController() {
     })
   }
 
-  const onInitModify = async modify  => {
+  const handleInteractionsInit = (waypoints, modify, _snap)  => {
+    const map = modify.getMap()
+
     modify.on('modifystart', startEvent => {
       const { pixel, coordinate: startCoords } = startEvent.mapBrowserEvent
       const features = map.getFeaturesAtPixel(pixel, { layerFilter: l => l.get('waypoints') })
@@ -153,27 +181,24 @@ export default function useMapController() {
       map.on('pointermove', moveWaypoint)
 
       modify.once('modifyend', async endEvent => {
-        const { map, waypoints } = await store.getStateAsync()
-
         map.un('pointermove', moveWaypoint)
 
         // if there is not feature at pixel, we should add a waypoint
         if (isEmpty(features)) {
           const { coordinate: endCoords } = endEvent.mapBrowserEvent
-          eventEmitter.emit('map:add-waypoint', map, waypoints, startCoords, endCoords)
+          eventEmitter.emit(events.waypointAdded, startCoords, endCoords)
         } else {
           waypoints.changed()
         }
-
-        store.setAttributes({ waypoints })
       })
     })
   }
 
-  const handleAddPoint = async (map, waypoints, startCoords, endCoords) => {
+  const handleAddPoint = async (startCoords, endCoords) => {
+    const state = await store.getStateAsync()
     const styles = getStyles()
 
-    const waypointsCoords = getWaypointsCoords(map)
+    const waypointsCoords = getWaypointsCoords(state)
     const line = lineString(waypointsCoords)
 
     const linePoint = nearestPointOnLine(line, toWgs84(startCoords))
@@ -189,12 +214,13 @@ export default function useMapController() {
 
     const waypoint = new Feature({
       geometry: new Point(endCoords),
+      id: uniqueId('waypoint_'),
       type: 'constraint',
     })
 
     waypoint.setStyle(styles.points.shapeConstraint)
 
-    waypoints.insertAt(insertIndex, waypoint)
+    state.waypoints.insertAt(insertIndex, waypoint)
   }
 
   const handleWaypointZoom = async waypoint => {
@@ -207,16 +233,19 @@ export default function useMapController() {
     const { waypoints } = await store.getStateAsync()
 
     waypoints.remove(waypoint)
-    store.setAttributes({ waypoints })
   }
 
   useEffect(() => {
-    eventEmitter.on('map:init', onMapInit)
-    eventEmitter.on('route:receive-features', onReceiveRouteFeatures)
-    eventEmitter.on('shape:receive-features', onReceiveShapeFeatures)
-    eventEmitter.on('map:init-modify', onInitModify)
-    eventEmitter.on('map:zoom-to-waypoint', handleWaypointZoom)
-    eventEmitter.on('map:add-waypoint', handleAddPoint)
-    eventEmitter.on('map:delete-waypoint', handleRemovePoint)
+    eventEmitter.on(events.initMap, onMapInit)
+    eventEmitter.on(events.initMapInteractions, handleInteractionsInit)
+    eventEmitter.on(events.mapZoom, updateLine)
+
+    eventEmitter.on(events.receivedRouteFeatures, onReceiveRouteFeatures)
+    eventEmitter.on(events.receivedShapeFeatures, onReceiveShapeFeatures)
+    
+    eventEmitter.on(events.lineUpdated, updateLine)
+    eventEmitter.on(events.waypointZoom, handleWaypointZoom)
+    eventEmitter.on(events.waypointAdded, handleAddPoint)
+    eventEmitter.on(events.waypointDeleted, handleRemovePoint)
   }, [])
 }

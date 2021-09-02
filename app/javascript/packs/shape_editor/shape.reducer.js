@@ -1,9 +1,20 @@
 import { Style } from 'ol/style'
 import Collection from 'ol/Collection'
+import Feature from 'ol/Feature'
+import LineString from 'ol/geom/LineString'
+
+import { INIT_MAP, RECEIVE_PERMISSIONS, RECEIVE_ROUTE_FEATURES, RECEIVE_SHAPE_FEATURES, SET_ATTRIBUTES, UPDATE_GEOMETRY, UPDATE_NAME, UPDATE_WAYPOINTS } from './shape.actions'
 
 export const reducer = (state, action) => {
   switch(action.type) {
-    case 'SET_ATTRIBUTES':
+    case INIT_MAP:
+    case RECEIVE_PERMISSIONS:
+    case RECEIVE_ROUTE_FEATURES:
+    case RECEIVE_SHAPE_FEATURES:
+    case SET_ATTRIBUTES:
+    case UPDATE_GEOMETRY:
+    case UPDATE_NAME:
+    case UPDATE_WAYPOINTS:
       return {
         ...state,
         ...action.payload
@@ -14,15 +25,15 @@ export const reducer = (state, action) => {
 }
 
 export const initialState = {
-  line: null,
+  line: new Collection([]),
   map: null,
   modify: null,
   permissions: {
     canCreate: false,
     canUpdate: false
   },
+  name: '',
   routeFeatures: null,
-  snap: null,
   style: new Style({}),
   waypoints: new Collection([]),
 }

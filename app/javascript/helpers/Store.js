@@ -2,21 +2,21 @@ import { firstValueFrom, Subject } from 'rxjs'
 import { filter, first, scan, shareReplay, startWith } from 'rxjs/operators'
 
 import { debounce, has, isObject } from 'lodash'
+
+import { isDev } from './env'
 export default class Store extends Subject {
   constructor(
     reducer,
     initialState,
-    mapDispatchToProps = _dispatch => ({})
+    actionsCreator = {}
   ) {
     super()
 
     this.initialState = initialState
     this.actionDispatcher = new Subject()
 
-    const funcs = mapDispatchToProps(this.dispatch.bind(this))
-
-    for (const name in funcs) {
-      this[name] = funcs[name]
+    for (const name in actionsCreator) {
+      this[name] = (...args) => this.dispatch(actionsCreator[name](...args))
     }
 
     this.store$ = this.actionDispatcher.pipe(
@@ -27,7 +27,22 @@ export default class Store extends Subject {
 
         return isValid
       }),
-      scan(reducer,  this.initialState),
+      scan(
+        (state, action) => {
+          const newState = reducer(state, action)
+
+          if (isDev) {
+            console.group(action.type)
+            console.log('%cprev state', 'color: #c033d6;', state)
+            console.log('%caction', 'color: #26bfbf;', action)
+            console.log('%cnew state', 'color: #26bf59;', newState)
+            console.groupEnd()
+          }
+
+          return newState
+        },
+        this.initialState
+      ),
       startWith(this.initialState),
       shareReplay(1)
     )

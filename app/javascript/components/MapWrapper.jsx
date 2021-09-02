@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { isEmpty } from 'lodash'
 import { Map, View } from 'ol'
 import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer'
 import { OSM, Vector as VectorSource } from 'ol/source'
@@ -40,7 +39,8 @@ function MapWrapper({ features, onInit, _style }) {
       view: new View({
         projection: 'EPSG:3857',
         center: [0, 0],
-        zoom: 2
+        minZoom: 10,
+        maxZoom: 20
       }),
       controls: defaultControls()
     })

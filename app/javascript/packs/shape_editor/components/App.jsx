@@ -4,14 +4,8 @@ import { SWRConfig } from 'swr'
 import ShapeEditorMap from './ShapeEditorMap'
 
 const options = {
-  fetcher: url => {
-    return fetch(url, {
-      headers: {
-        'Accept': 'application/json'
-      }
-    })
-    .then(res => res.json())
-  },
+  fetcher: url => fetch(url, { headers: { 'Accept': 'application/json' } }).then(res => res.json()),
+  onError: (error, key) => { console.warn(`${key} error :\n`, error) },
   errorRetryCount: 0,
   revalidateOnFocus: false
 }

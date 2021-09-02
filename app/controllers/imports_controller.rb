@@ -88,7 +88,7 @@ class ImportsController < ChouetteController
   end
 
   def search
-    @search ||= Search.new(scope, params)
+    @search ||= Search.new(scope, params, workgroup: workgroup)
   end
   delegate :collection, to: :search
 
@@ -131,9 +131,10 @@ class ImportsController < ChouetteController
 
     validates :period, valid: true
 
+    attr_accessor :workgroup
+
     def candidate_workbenches
-      # How to retrieve protected method parent from ImportsController?
-      # calling_object.parent.workbenches.joins(:organisation).order('organisations.name')
+      workgroup&.workbenches || []
     end
 
     def query

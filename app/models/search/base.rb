@@ -4,12 +4,14 @@ module Search
 
     include ActiveModel::Validations
 
-    include ActiveAttr::MassAssignment
+    include ActiveAttr::Attributes
     include ActiveAttr::TypecastedAttributes
     include ActiveAttr::AttributeDefaults
 
-    def initialize(scope, params = nil)
+    def initialize(scope, params = nil, context = {})
       @scope = scope
+
+      context.each { |k,v| send "#{k}=", v }
 
       params = self.class.params(params.dup)
 
@@ -21,6 +23,13 @@ module Search
       Rails.logger.debug "[Search] #{self.class.name}(#{attributes.inspect})"
     end
     attr_reader :scope
+
+    def attributes=(attributes = {})
+      # Only used defined attributes
+      self.attributes.keys.each do |attribute_name|
+        write_attribute attribute_name, attributes[attribute_name]
+      end
+    end
 
     def self.params(params)
       return {} if params.nil?

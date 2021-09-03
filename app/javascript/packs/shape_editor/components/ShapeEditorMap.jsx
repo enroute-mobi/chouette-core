@@ -5,6 +5,7 @@ import { pick } from 'lodash'
 import store from '../shape.store'
 import eventEmitter, { events } from '../shape.event-emitter'
 import { onWaypointsUpdate$, onMapZoom$ } from '../shape.observables'
+import { getWaypoints } from '../shape.selectors'
 
 import { useStore } from '../../../helpers/hooks'
 
@@ -22,8 +23,10 @@ import List from './List'
 import CancelButton from './CancelButton'
 import SaveButton from './SaveButton'
 
-const mapStateToProps = state =>
-  pick(state, ['name', 'permissions', 'style', 'routeFeatures', 'waypoints'])
+const mapStateToProps = state => ({
+  ...pick(state, ['name', 'permissions', 'style', 'routeFeatures']),
+  waypoints: getWaypoints(state)
+})
 export default function ShapeEditorMap({ isEdit, baseURL, redirectURL }) {
   // Store
   const { routeFeatures: features, name, permissions, style, waypoints } = useStore(store, mapStateToProps)

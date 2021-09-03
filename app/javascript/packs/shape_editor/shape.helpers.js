@@ -1,10 +1,9 @@
-import { bindAll, find, flatten, flow, map, partialRight, range, reduce, round, sortBy } from 'lodash'
+import { bindAll, find, flatten, flow, partialRight, reduce, sortBy } from 'lodash'
 
 import {
   along,
   bearing,
   coordAll,
-  coordReduce,
   degreesToRadians,
   featureCollection,
   featureReduce,
@@ -16,8 +15,7 @@ import {
   pointToLineDistance,
   segmentReduce,
   simplify,
-  toMercator,
-  toWgs84
+  toMercator
 } from '@turf/turf'
 
 import { Fill, RegularShape, Style } from 'ol/style'
@@ -41,34 +39,20 @@ export const mapFormat = bindAll(
   ]
 )
 
-export const safeCall = (callback, defaultValue = null) => {
-  try { callback() } catch (_e) { return defaultValue }
-}
-
-export const getFeatureCoordinates = feature => {
-  const geo = feature.getGeometry()
-  const coords = geo.getCoordinates()
-
-  switch (geo.getType()) {
-    case 'Point':
-      return toWgs84(coords)
-    case 'LineString':
-      return map(coords, toWgs84)
-    default:
-      throw (`Unsupported geometry type: ${geo.getType()}`)
-  }
-}
-
 const log = (message = '') => data => {
   console.log(message, data)
   return data
 }
 
-const defaultReducer = mapperFunc => (result, value) => [...result, mapperFunc(value)]
+const reduceToMapFunc = reduceFunc => (object, mapperFunc) =>
+    reduceFunc(
+      object,
+      (result, value, index) => [...result, mapperFunc(value, index)],
+      []
+    )
 
-export const featureMap = (featureCollection, mapperFunc) => featureReduce(featureCollection, defaultReducer(mapperFunc), [])
-export const segmentMap = (feature, mapperFunc) => segmentReduce(feature, defaultReducer(mapperFunc), [])
-export const coordMap = (feature, mapperFunc) => coordReduce(feature, defaultReducer(mapperFunc), [])
+export const featureMap = reduceToMapFunc(featureReduce)
+export const segmentMap = reduceToMapFunc(segmentReduce)
 
 export const getLayers = obj => obj?.getLayers() || { getArray: () => [] }
 export const getSource = obj => obj?.getSource()
@@ -85,11 +69,18 @@ const getTolerance = (() => {
   }
 })()
 
+/**
+ * Simplify each section based on map's current zoom
+ * @param {GeoJSON} sectionCollection A Feature Collection of LineString
+ * @param {object} view The OL View object
+ * @return {GeoJSON} A simplified version of the sectionCollection transformed into a LineString
+ */
 export const simplifyGeometry = (sectionCollection, view) => {
-  const sectionMapper = flow(
-    partialRight(simplify, { tolerance: getTolerance(view), highQuality: true }),
-    getCoords
-  )
+  const sectionMapper = (object, _i) =>
+    flow(
+      partialRight(simplify, { tolerance: getTolerance(view), highQuality: true }),
+      getCoords
+    )(object)
 
   return flow(
     partialRight(featureMap, sectionMapper),
@@ -98,6 +89,12 @@ export const simplifyGeometry = (sectionCollection, view) => {
   )(sectionCollection)
 }
 
+/**
+ * Compute sections based on a LineString and a collection of points
+ * @param {GeoJSON} line A LineString Feature
+ * @param {GeoJSON} waypoints A Feature Collection of points
+ * @return {GeoJSON} A Feature Collection of LineString
+ */
 export const getLineSections = (line, waypoints) => {
   const sectionsReducer = coords => reduce(
     coords,
@@ -113,11 +110,14 @@ export const getLineSections = (line, waypoints) => {
 
   return flow(coordAll, sectionsReducer, featureCollection)(waypoints)
 }
-    
-export const getSimplifiedLine = flow(getLineSections, simplifyGeometry)
 
 export const getLineMidpoint = line => along(line, length(line) / 2)
 
+/**
+ * Compute Line Arrow Styles that display the line direction
+ * @param {GeoJSON} sectionCollection A Feature Collection of LineString
+ * @return {array} A array of style objects
+ */
 export const getArrowStyles = flow(
   partialRight(
     featureMap,
@@ -183,13 +183,4 @@ export const submitFetcher = async (url, isEdit, payload) => {
   }
 
   return data
-}
-
-export const SimplifiedLineBuilder = {
-  call: state =>
-    flow(
-      getSimplifiedLine,
-      computeTolerance => computeTolerance(getView(state)),
-      mapFormat.readFeature
-    )(getGeometry(state), getWaypoints(state))
 }

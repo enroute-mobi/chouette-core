@@ -1,7 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { get } from 'lodash'
+import { getCoord } from '@turf/turf'
 
-import { getFeatureCoordinates } from '../shape.helpers'
+import { featureMap } from '../shape.helpers'
 
 const List = ({ onWaypointZoom, onDeleteWaypoint, waypoints = [] }) => (
   <table className="table">
@@ -14,12 +16,12 @@ const List = ({ onWaypointZoom, onDeleteWaypoint, waypoints = [] }) => (
       </tr>
     </thead>
     <tbody>
-      {waypoints.getArray().map((item, i) => {
-        const [lon, lat] = getFeatureCoordinates(item)
+      {featureMap(waypoints, (item, i) => {
+        const [lon, lat] = getCoord(item)
 
         return (
           <tr key={i}>
-            <td>{item.get('name') || '-'}</td>
+            <td>{get(item, ['properties', 'name'], '-')}</td>
             <td>{lon}</td>
             <td>{lat}</td>
             <td>
@@ -39,10 +41,6 @@ const List = ({ onWaypointZoom, onDeleteWaypoint, waypoints = [] }) => (
 
 List.propTypes = {
   waypoints: PropTypes.object
-}
-
-List.defaultProps = {
-  waypoints: { getArray: () => [] }
 }
 
 export default List

@@ -1,8 +1,8 @@
-import { flow, map } from 'lodash'
+import { flow, get } from 'lodash'
 
-import { coordAll, getCoords } from '@turf/turf'
+import { coordAll, getCoord, getCoords } from '@turf/turf'
 
-import { getFeatureCoordinates, getLayer, getSource, lineId, mapFormat } from './shape.helpers'
+import { featureMap, getLayer, getSource, mapFormat } from './shape.helpers'
 
 export const getMapLine = ({ line }) => line
 export const getLine = ({ line }) => writeFeatureObject(line.item(0))
@@ -27,13 +27,16 @@ export const getWaypointsSource = flow(getWaypointsLayer, getSource)
 export const getSubmitPayload = state => ({
 	shape: {
 		name: state.name,
-		coordinates: getLineCoords(stae),
-		waypoints: map(getWaypoints(state), (w, position) => ({
-			name: w.get('name'),
-			position,
-			waypoint_type: w.get('type'),
-			coordinates: getFeatureCoordinates(w)
-		}))
+		coordinates: getLineCoords(state),
+		waypoints: featureMap(
+			getWaypoints(state),
+			(w, position) => ({
+				name: get(w, ['properties', 'name'], ''),
+				position,
+				waypoint_type: get(w, ['properties', 'type'], 'waypoint'),
+				coordinates: getCoord(w)
+			})
+		)
 	}
 })
 

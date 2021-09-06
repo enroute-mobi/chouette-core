@@ -18,7 +18,7 @@ describe ReferentialCopy do
       metadatas: [create(:referential_metadata)]
   }
 
-  let(:referential_copy){ ReferentialCopy.new(source: referential, target: target)}
+  let(:referential_copy) { ReferentialCopy.new(source: referential, target: target) }
 
   before(:each) do
     4.times { create :line, line_referential: line_referential, company: company, network: nil }
@@ -199,6 +199,45 @@ describe ReferentialCopy do
 
   end
 
+  describe "when a line is not included in the copy" do
+
+    let(:context) do
+      Chouette.create do
+        line :included
+        line :excluded
+
+        referential :source, lines: [ :included, :excluded ] do
+          route(line: :included) { vehicle_journey }
+          route(line: :excluded) { vehicle_journey }
+        end
+        referential :target, with_metadatas: false, archived_at: Time.now
+      end
+    end
+
+    let(:referential_copy) do
+      ReferentialCopy.new source: source,
+                          target: target,
+                          lines: target.lines.where(id: context.line(:included))
+    end
+    let(:excluded_line) { context.line :excluded }
+
+    context "after copy" do
+      before { referential_copy.copy }
+
+      describe "the target referential" do
+        before { target.switch }
+
+        it "doesn't contain route associated to the excluded line" do
+          expect(target.routes.where(line: excluded_line)).to be_empty
+        end
+
+        it "contain metadata associated to the excluded line (#warning)" do
+          expect(target.metadatas.include_lines(excluded_line.id)).to_not be_empty
+        end
+      end
+    end
+  end
+
   describe "Vehicle Journey copy" do
 
     let(:context) do
@@ -364,7 +403,5 @@ describe ReferentialCopy do
       end
 
     end
-
   end
-
 end

@@ -112,14 +112,10 @@ class ImportsController < ChouetteController
   class Search < Search::Base
     # All search attributes
     attribute :name
-    attribute :workbench
+    attribute :workbench_ids
     attribute :statuses
     attribute :start_date, type: Date
     attribute :end_date, type: Date
-
-    # TODO Rename status into statuses into the view
-    alias status statuses
-    alias status= statuses=
 
     def candidate_statuses
       Operation::UserStatus.all
@@ -134,11 +130,15 @@ class ImportsController < ChouetteController
     attr_accessor :workgroup
 
     def candidate_workbenches
-      workgroup&.workbenches || []
+      workgroup&.workbenches || Workbench.none
+    end
+
+    def workbenches
+      workbench_ids.blank? ? [] : candidate_workbenches.find_by(id: workbench_ids)
     end
 
     def query
-      Query::Import.new(scope).text(name).user_statuses(statuses).in_period(period)
+      Query::Import.new(scope).workbenches(workbenches).text(name).user_statuses(statuses).in_period(period)
     end
 
     class Order < ::Search::Order

@@ -8,12 +8,12 @@
 
   .ffg-row
     .form-group.togglable class=filter_item_class(params[:search], :status)
-      = f.label :status, required: false, class: 'control-label'
-      = f.input :status, as: :check_boxes, collection: @search.candidate_statuses.map(&:slug), label: false, label_method: lambda{|slug| ("<span>" + operation_status(slug) + "</span>").html_safe}, wrapper_html: { class: "checkbox_list"}
+      = f.label :statuses, required: false, class: 'control-label'
+      = f.input :statuses, as: :check_boxes, collection: @search.candidate_statuses.map(&:slug), label: false, label_method: lambda{|slug| ("<span>" + operation_status(slug) + "</span>").html_safe}, wrapper_html: { class: "checkbox_list"}
     - if @parent.is_a?(Workgroup)
       .form-group.togglable class=filter_item_class(params[:search], :workbench)
-        = f.label :organisation, class: 'control-label'
-        = f.input :workbench, as: :check_boxes, collection: @parent.workbenches.joins(:organisation).order('organisations.name'), label: false, value_method: lambda{|k| k.id.to_s}, label_method: lambda{|k| ("<span>#{k.organisation.name}</span>").html_safe}, wrapper_html: { class: "checkbox_list"}
+        = f.label :workbench_ids, class: 'control-label'
+        = f.input :workbench_ids, as: :check_boxes, collection: @search.candidate_workbenches.order('name'), label: false, label_method: lambda{|workbench| ("<span>" + workbench.name + "</span>").html_safe}, value_method: lambda{|workbench| workbench.id.to_s}, wrapper_html: { class: "checkbox_list"}
     = f.input :start_date, as: :date_picker
     = f.input :end_date, as: :date_picker
 

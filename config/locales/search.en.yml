@@ -5,7 +5,7 @@ en:
   activemodel:
     attributes:
       search:
-        status: Status
-        organisation: Organisation
+        statuses: Status
+        workbench_ids: Workbench
         start_date: "After : "
         end_date: "Before : "

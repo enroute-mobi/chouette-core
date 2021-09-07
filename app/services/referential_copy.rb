@@ -6,6 +6,8 @@ class ReferentialCopy
   attr_accessor :source, :target, :source_priority, :status, :last_error, :skip_metadatas
   alias skip_metadatas? skip_metadatas
 
+  attr_writer :lines
+
   enumerize :status, in: %w[new pending successful failed running], default: :new
 
   def initialize(options={})
@@ -119,9 +121,7 @@ class ReferentialCopy
   private
 
   def lines
-    @lines ||= begin
-      source.lines
-    end
+    @lines ||= source.lines
   end
 
   def workgroup

@@ -64,3 +64,4 @@
 /config/storage-key.json
 
 notes
+/.env

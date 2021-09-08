@@ -15,5 +15,7 @@ div[x-data="{destinationType: '#{destination.type}' }"]
             - child.options.each do |attr, option_def|
               = option_input f, f.object, attr, option_def, child
             = f.input :secret_file, wrapper: :inline_file_input, required: true if child.secret_file_required?
+            - if child == Destination::Mail
+              = javascript_pack_tag 'publication_setups/mail'
 
     = f.input :_destroy, as: :switchable_checkbox

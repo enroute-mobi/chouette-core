@@ -1,8 +1,3 @@
 collection @companies
 
-node do |company|
-  {
-    id: company.id,
-    text: company.display_name
-  }
-end
+extends('autocomplete/base', locals: { label_method: :display_name })

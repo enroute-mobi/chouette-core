@@ -23,8 +23,15 @@ module OptionsHelper
       opts[:input_html][:checked] = value
     elsif option_def[:type].to_s == "array"
       opts[:collection] = []
-      opts[:input_html].merge!(multiple: true)
+      opts[:input_html].merge!(
+        multiple: true,
+      )
       opts[:as] = :tom_select
+      opts[:config] = {
+        type: 'create',
+        placeholder: I18n.t('simple_form.custom_inputs.tags.placeholder')
+      }
+
     end
 
     if option_def.has_key?(:collection)

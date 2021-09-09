@@ -74,8 +74,14 @@ class ExportsController < ChouetteController
   end
 
   def load_referentials
-    referentials = parent.referentials.exportable.pluck(:id)
-    referentials += (workgroup || workbench&.workgroup).output.referentials.pluck(:id)
-    @referentials = Referential.where(id: referentials).order("created_at desc")
+    referential_ids = parent.referentials.exportable.pluck(:id)
+    referential_ids += (workgroup || workbench&.workgroup).output.referentials.pluck(:id)
+
+    @referential_options = Rabl::Renderer.new(
+      'autocomplete/referentials',
+      Referential.where(id: referential_ids).order("created_at desc"),
+      format: :hash,
+      view_path: 'app/views'
+    ).render
   end
 end

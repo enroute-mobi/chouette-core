@@ -55,6 +55,7 @@ fr:
         maximum_data_age: Age maximum des données finalisées
         sentinel_min_hole_size: Taille minimum d'un trou d'offre
         sentinel_delay: Distance de détection
+        nightly_aggregate_days:  Jours d’agrégation
         nightly_aggregate_enabled: Lancement quotidien activé
         nightly_aggregate_time: Heure du lancement
         nightly_aggregate_notification_target: Destinataire(s) des notifications

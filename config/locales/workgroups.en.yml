@@ -55,6 +55,7 @@ en:
         maximum_data_age: Maximum age of merged data
         sentinel_min_hole_size: Minimum length of a missing offer
         sentinel_delay: Distance of detection
+        nightly_aggregate_days:  Aggregate days
         nightly_aggregate_enabled: Daily aggregation enabled
         nightly_aggregate_time: Aggregation time
         nightly_aggregate_notification_target: Notification target(s)

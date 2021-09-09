@@ -356,7 +356,8 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
   describe "VehicleJourneyAtStop Decorator" do
 
-    let(:vehicle_journey_at_stop) { Chouette::VehicleJourneyAtStop.new }
+    let(:vehicle_journey) { Chouette::VehicleJourney.new }
+    let(:vehicle_journey_at_stop) { Chouette::VehicleJourneyAtStop.new(vehicle_journey: vehicle_journey) }
     let(:vjas_raw_hash) {
       {
         departure_time: vehicle_journey_at_stop.departure_time,
@@ -366,7 +367,9 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
         vehicle_journey_id: vehicle_journey_at_stop.vehicle_journey_id,
         stop_area_id: vehicle_journey_at_stop.stop_area_id,
         parent_stop_area_id: vehicle_journey_at_stop.stop_point&.stop_area_id,
-        position: vehicle_journey_at_stop.stop_point&.position
+        position: vehicle_journey_at_stop.stop_point&.position,
+        for_alighting: vehicle_journey_at_stop.stop_point&.for_alighting,
+        for_boarding: vehicle_journey_at_stop.stop_point&.for_boarding,
       }.stringify_keys
     }
 
@@ -491,7 +494,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
     describe "stop_area_id" do
 
-      let(:stop_point) { double stop_area_id: 42, position: 21 }
+      let(:stop_point) { double stop_area_id: 42, position: 21, for_alighting:'', for_boarding:'' }
 
       context "when VehicleJourneyAtStop defines a specific stop" do
 
@@ -504,7 +507,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       end
 
       it "uses the Stop Point stop_area_id" do
-        expect(vehicle_journey_at_stop).to receive(:stop_point).twice.and_return(stop_point)
+        expect(vehicle_journey_at_stop).to receive(:stop_point).at_least(:once).and_return(stop_point)
         expect(decorator.stop_area_id).to eq(stop_point.stop_area_id)
       end
 
@@ -512,14 +515,65 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
     describe "position" do
 
-      let(:stop_point) { double stop_area_id: 21, position: 42 }
+      let(:stop_point) { double stop_area_id: 21, position: 42, for_alighting:'', for_boarding:'' }
 
       it "uses the Stop Point position" do
-        expect(vehicle_journey_at_stop).to receive(:stop_point).twice.and_return(stop_point)
+        expect(vehicle_journey_at_stop).to receive(:stop_point).at_least(:once).and_return(stop_point)
         expect(decorator.position).to eq(stop_point.position)
       end
 
     end
+
+    describe "drop_off_type" do
+
+      let(:stop_point) { double stop_area_id: 21, position: 42, for_boarding:''}
+
+      it 'return the correct value when for_alighting is forbidden' do
+        allow(stop_point).to receive(:for_alighting).and_return('forbidden')
+
+        expect(vehicle_journey_at_stop).to receive(:stop_point).at_least(:once).and_return(stop_point)
+        expect(decorator.drop_off_type).to eq(1)
+      end
+
+      it 'return the correct value when for_alighting is not forbidden' do
+        allow(stop_point).to receive(:for_alighting).and_return(nil)
+
+        expect(vehicle_journey_at_stop).to receive(:stop_point).at_least(:once).and_return(stop_point)
+        expect(decorator.drop_off_type).to eq(nil)
+      end
+
+    end
+
+    describe "pickup_type" do
+
+      let(:stop_point) { double stop_area_id: 21, position: 42, for_alighting:''}
+
+      it 'return the correct value when for_boarding is forbidden' do
+        allow(stop_point).to receive(:for_boarding).and_return('forbidden')
+
+        expect(vehicle_journey_at_stop).to receive(:stop_point).at_least(:once).and_return(stop_point)
+        expect(decorator.pickup_type).to eq(1)
+      end
+
+      it 'return the correct value when for_boarding is not forbidden' do
+        allow(index).to receive(:pickup_type).with(vehicle_journey_at_stop.vehicle_journey.id).and_return(nil)
+        allow(stop_point).to receive(:for_boarding).and_return(nil)
+
+        expect(vehicle_journey_at_stop).to receive(:stop_point).at_least(:once).and_return(stop_point)
+        expect(decorator.pickup_type).to eq(0)
+      end
+
+      it 'return the correct value when for_boarding is not forbidden and vehicle_journey is registered in the index' do
+        allow(index).to receive(:pickup_type).with(vehicle_journey_at_stop.vehicle_journey.id).and_return(true)
+
+        allow(stop_point).to receive(:for_boarding).and_return(nil)
+
+        expect(vehicle_journey_at_stop).to receive(:stop_point).at_least(:once).and_return(stop_point)
+        expect(decorator.pickup_type).to eq(2)
+      end
+
+    end
+
 
     describe "stop_time_stop_id" do
 

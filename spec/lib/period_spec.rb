@@ -1,102 +1,208 @@
 RSpec.describe Period do
+  let(:date) { Time.zone.today }
 
-    describe "during" do
-      it "with only Period from date should return a new Period with from and to date calculated from duration" do
-        period = Period.new(from: Date.today)
-        new_period = period.during(14.days)
-        expect(new_period.from).to eq(Date.today)
-        expect(new_period.to).to eq(Date.today + 14.days)
+  describe "#during" do
+    subject { period.during(14.days) }
+
+    context "when the given duration is 14.days" do
+      context "when Period has a start date" do
+        let(:period) { Period.from date }
+
+        it { is_expected.to have_same_attributes(:from, than: period) }
+        it { is_expected.to have_attributes(day_count: 14) }
       end
 
-      it "with only Period to date should return a new Period with from and to date calculated from duration" do
-        period = Period.new(to: Date.today)
-        new_period = period.during(14.days)
-        expect(new_period.to).to eq(Date.today)
-        expect(new_period.from).to eq(Date.today - 14.days)
+      context "when Period has only an end date" do
+        let(:period) { Period.until date }
+
+        it { is_expected.to have_same_attributes(:to, than: period) }
+        it { is_expected.to have_attributes(day_count: 14) }
+      end
+    end
+  end
+
+  describe "#valid?" do
+    subject { period.valid? }
+
+    context "when from and to are not defined" do
+      let(:period) { Period.new }
+      it { is_expected.to be_falsy }
+    end
+
+    context "when from and to are the same" do
+      let(:period) { Period.new from: date, to: date }
+      it { is_expected.to be_truthy }
+    end
+
+    context "when from is before to" do
+      let(:period) { Period.new from: date, to: date+1 }
+      it { is_expected.to be_truthy }
+    end
+
+    context "when to is before from" do
+      let(:period) { Period.new from: date, to: date-1 }
+      it { is_expected.to be_falsy }
+    end
+  end
+
+  describe "#empty?" do
+    subject { period.empty? }
+
+    context "when from and to are not defined" do
+      let(:period) { Period.new }
+      it { is_expected.to be_truthy }
+    end
+
+    context "when from is defined" do
+      let(:period) { Period.new from: date }
+      it { is_expected.to be_falsy }
+    end
+
+    context "when to is defined" do
+      let(:period) { Period.new to: date }
+      it { is_expected.to be_falsy }
+    end
+  end
+
+  describe "#day_count" do
+    subject { period.day_count }
+
+    context "when from and to are two dates separated by 3 days" do
+      let(:period) { Period.new from: date, to: date+3 }
+      it { is_expected.to eq(3) }
+    end
+
+    context "when from isn't defined" do
+      let(:period) { Period.until date }
+      it { is_expected.to eq(Float::INFINITY) }
+    end
+
+    context "when to isn't defined" do
+      let(:period) { Period.from date }
+      it { is_expected.to eq(Float::INFINITY) }
+    end
+
+    context "when to is before from" do
+      let(:period) { Period.new from: date, to: date-1 }
+      it { is_expected.to be_zero }
+    end
+  end
+
+  describe "#time_range" do
+    subject { period.time_range }
+
+    context "when only the beginning date is defined (with) 2030-01-01)" do
+      let(:period) { Period.from Date.parse('2030-01-01') }
+      it { is_expected.to have_attributes begin: DateTime.parse('2030-01-01 00:00'), end: nil }
+    end
+
+    context "when only the end date is defined (with) 2030-01-01)" do
+      let(:period) { Period.until Date.parse('2030-01-01') }
+      it { is_expected.to have_attributes begin: nil, end: DateTime.parse('2030-01-02 00:00') }
+    end
+
+    context "when the beginning date is is 2030-01-01 and the end date is 2030-12-31"  do
+      let(:period) { Period.new from: Date.parse('2030-01-01'), to: Date.parse('2030-12-31') }
+      it { is_expected.to have_attributes begin: DateTime.parse('2030-01-01 00:00'), end: DateTime.parse('2031-01-01 00:00') }
+    end
+
+    context "when from and to are not defined" do
+      let(:period) { Period.new }
+      it { is_expected.to  have_attributes begin: nil, end: nil}
+    end
+  end
+
+  describe "infinite_time_range" do
+    subject { period.infinite_time_range }
+
+    context "when only the beginning date is defined (with) 2030-01-01)" do
+      let(:period) { Period.from Date.parse('2030-01-01') }
+      it { is_expected.to have_attributes begin: DateTime.parse('2030-01-01 00:00'), end: Float::INFINITY }
+    end
+
+    context "when only the end date is defined (with) 2030-01-01)" do
+      let(:period) { Period.until Date.parse('2030-01-01') }
+      it { is_expected.to have_attributes begin: -Float::INFINITY, end: DateTime.parse('2030-01-02 00:00') }
+    end
+
+    context "when the beginning date is is 2030-01-01 and the end date is 2030-12-31"  do
+      let(:period) { Period.new from: Date.parse('2030-01-01'), to: Date.parse('2030-12-31') }
+      it { is_expected.to have_attributes begin: DateTime.parse('2030-01-01 00:00'), end: DateTime.parse('2031-01-01 00:00') }
+    end
+
+    context "when from and to are not defined" do
+      let(:period) { Period.new }
+      it { is_expected.to have_attributes begin: -Float::INFINITY, end: Float::INFINITY }
+    end
+  end
+
+  describe "include?" do
+    subject { period.include? given_date }
+
+    context "when only the start date is defined" do
+      let(:period) { Period.from date }
+
+      context "when the given date is the start date" do
+        let(:given_date) { period.from }
+        it { is_expected.to be_truthy }
+      end
+      context "when the given date before the start date" do
+        let(:given_date) { period.from-1 }
+        it { is_expected.to be_falsy }
+      end
+      context "when the given date after the start date" do
+        let(:given_date) { period.from+1 }
+        it { is_expected.to be_truthy }
       end
     end
 
-    describe "valid?" do
-      it "should return false if Period#from and Period#to are not defined" do
-        period = Period.new()
-        expect(period.valid?).to be_falsy
-      end
+    context "when only the end date is defined" do
+      let(:period) { Period.until date }
 
-      it "should return false if Period#from is not less or equals to Period#to" do
-        period = Period.new(from: Date.today + 1.day, to: Date.today)
-        expect(period.valid?).to be_falsy
+      context "when the given date is the end date" do
+        let(:given_date) { period.to }
+        it { is_expected.to be_truthy }
+      end
+      context "when the given date before the end date" do
+        let(:given_date) { period.to-1 }
+        it { is_expected.to be_truthy }
+      end
+      context "when the given date after the end date" do
+        let(:given_date) { period.to+1 }
+        it { is_expected.to be_falsy }
       end
     end
 
-    describe "empty?" do
-      it "should return true if Period#from and Period#to are not defined" do
-        period = Period.new()
-        expect(period.empty?).to be_truthy
-      end
+    context "when no stard or end dates are defined" do
+      let(:period) { Period.new }
 
-      it "should return false if Period#from or Period#to is not defined" do
-        period = Period.new(from: Date.today)
-        expect(period.empty?).to be_falsy
-      end
+      let(:given_date) { date + rand }
+      it { is_expected.to be_truthy }
     end
 
-    describe "day_count" do
-      it "should return a day count if Period#from and Period#to are defined" do
-        period = Period.new(from: Date.today, to: Date.today + 14.days)
-        expect(period.day_count).to eq(14)
-      end
+    context "when the start and end dates are defined" do
+      let(:period) { Period.from(date).during(3.days)  }
 
-      it "should return a Float::INFINITY if Period#from or/and Period#to is not defined" do
-        period = Period.new(from: Date.today)
-        expect(period.day_count).to eq(Float::INFINITY)
-        period = Period.new()
-        expect(period.day_count).to eq(Float::INFINITY)
+      context "when the given date is the start date" do
+        let(:given_date) { period.from }
+        it { is_expected.to be_truthy }
+      end
+      context "when the given date before the start date" do
+        let(:given_date) { period.from-1 }
+        it { is_expected.to be_falsy }
+      end
+      context "when the given date after the start date and before the end date" do
+        let(:given_date) { period.from+1 }
+        it { is_expected.to be_truthy }
+      end
+      context "when the given date is the end date" do
+        let(:given_date) { period.to }
+        it { is_expected.to be_truthy }
+      end
+      context "when the given date after the end date" do
+        let(:given_date) { period.to+1 }
+        it { is_expected.to be_falsy }
       end
     end
-
-    describe "time_range" do
-      it "should return time range with Period#to +1 day if Period#from and Period#to are defined" do
-        period = Period.new(from: Date.today, to: Date.today + 14.days)
-        expect(period.time_range).to eq(Date.today.to_datetime..(Date.today+15.days).to_datetime)
-      end
-
-      it "should return time range with nil if Period#to is not defined" do
-        period = Period.new(from: Date.today)
-        expect(period.time_range).to eq(Date.today.to_datetime..nil)
-      end
-    end
-
-    describe "infinity_time_range" do
-      it "should return infinity time range with Period#to +1 day if Period#from and Period#to are defined" do
-        period = Period.new(from: Date.today, to: Date.today + 14.days)
-        expect(period.infinity_time_range).to eq(Date.today.to_datetime..(Date.today+15.days).to_datetime)
-      end
-
-      it "should return time range with Float::INFINITY if Period#to is not defined" do
-        period = Period.new(from: Date.today)
-        expect(period.infinity_time_range).to eq(Date.today.to_datetime..Float::INFINITY)
-      end
-
-      it "should return time range with -Float::INFINITY if Period#from is not defined" do
-        period = Period.new(to: Date.today)
-        expect(period.infinity_time_range).to eq(-Float::INFINITY..(Date.today+1.day).to_datetime)
-      end
-    end
-
-    describe "include?" do
-      it "should return true if date is included in Period with from and to attribute" do
-        period = Period.new(from: Date.today, to: Date.today + 14.days)
-        expect(period.include?(Date.today + 2.days)).to be_truthy
-      end
-
-      it "should return true if date is after a Period#from attribute" do
-        period = Period.new(from: Date.today)
-        expect(period.include?(Date.today + 2.days)).to be_truthy
-      end
-
-      it "should return true if date is before a Period#to attribute" do
-        period = Period.new(to: Date.today)
-        expect(period.include?(Date.today - 2.days)).to be_truthy
-      end
-    end
+  end
 end

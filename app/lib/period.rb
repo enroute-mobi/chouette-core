@@ -60,7 +60,11 @@ class Period < Range
 
   def day_count
     if from && to
-      (to - from).to_i
+      if from < to
+        (to - from).to_i
+      else
+        0
+      end
     else
       Float::INFINITY
     end
@@ -73,7 +77,7 @@ class Period < Range
     range_begin..range_end
   end
 
-  def infinity_time_range
+  def infinite_time_range
     range = time_range
 
     range_begin = range.begin || -Float::INFINITY

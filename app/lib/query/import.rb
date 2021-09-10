@@ -36,7 +36,7 @@ module Query
 
     def in_period(period)
       if period.present?
-        self.scope = scope.where started_at: period.infinity_time_range
+        self.scope = scope.where started_at: period.infinite_time_range
       end
 
       self

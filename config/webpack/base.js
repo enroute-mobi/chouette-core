@@ -3,7 +3,7 @@ const loaders = require('./loaders')
 
 const extentionsConfig = {
   resolve: {
-    extensions: ['.js', '.jsx', '.coffee', '.css', '.sass', '.svg', '.png', '.jpg']
+    extensions: ['.js', '.jsx', '.coffee', '.css', '.sass', '.scss', '.svg', '.png', '.jpg', '.woff', '.woff2', '.eot', '.ttf']
   }
 }
 

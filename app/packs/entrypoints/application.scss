@@ -1,0 +1,77 @@
+//-------------//
+//  Libraries  //
+//-------------//
+
+// Bootstrap
+
+$icon-font-path: "~bootstrap-sass/assets/fonts/bootstrap/";
+@import "~bootstrap-sass/assets/stylesheets/_bootstrap.scss";
+
+// FontAwesome
+// @import 'font-awesome-sprockets';
+// @import 'font-awesome';
+
+$fa-font-path: '@fortawesome/fontawesome-free/webfonts';
+@import '@fortawesome/fontawesome-free/scss/fontawesome';
+@import '@fortawesome/fontawesome-free/scss/regular';
+@import '@fortawesome/fontawesome-free/scss/solid';
+@import '@fortawesome/fontawesome-free/scss/brands';
+
+// Select2
+@import 'select2/dist/css/select2';
+@import 'select2-bootstrap-theme/dist/select2-bootstrap';
+
+// OL3
+@import '../stylesheets/OpenLayers/ol';
+
+// Flags
+// @import 'flag-icon';
+
+// TomSelect
+@import 'tom-select/dist/css/tom-select';
+
+span.sb, span.fa {
+  & + span {
+    margin-left: 0.3em;
+  }
+}
+
+.fa-lg {
+  line-height: 1em !important
+}
+
+//----------//
+//  Custom  //
+//----------//
+
+@import '../stylesheets/base/config';
+@import '../stylesheets/base/utilities';
+
+@import '../stylesheets/OpenLayers/custom';
+
+@import '../stylesheets/typography/fonts';
+@import '../stylesheets/typography/sboiv';
+@import '../stylesheets/typography/typography';
+// @import '../stylesheets/font_awesome5_webfont';
+
+@import '../stylesheets/layout';
+
+@import '../stylesheets/components/tables';
+@import '../stylesheets/modules/import_controls';
+@import '../stylesheets/modules/import_messages';
+@import '../stylesheets/modules/jp_collection';
+@import '../stylesheets/modules/publications';
+@import '../stylesheets/modules/routes_stopoints';
+@import '../stylesheets/modules/timetables';
+@import '../stylesheets/modules/vj_collection';
+@import '../stylesheets/modules/workgroup_transport_modes';
+@import '../stylesheets/modules/devise';
+@import '../stylesheets/misc';
+@import '../stylesheets/mailer';
+;
+// @import 'bootstrap/clockpicker';
+// @import '../stylesheets/plugins/bootstrap-colorpicker/*';
+
+span.fa + span {
+  margin-left: 0.2em;
+}

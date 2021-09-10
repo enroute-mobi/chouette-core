@@ -22,7 +22,7 @@ module OptionsHelper
       opts[:as] = :switchable_checkbox
       opts[:input_html][:checked] = value
     elsif option_def[:type].to_s == "array"
-      opts[:collection] = []
+      opts[:collection] = value.map { |v| { id: v, text: v } }
       opts[:input_html].merge!(
         multiple: true,
       )

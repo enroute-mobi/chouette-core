@@ -213,6 +213,8 @@ group :test, :development do
 
   gem 'teaspoon-jasmine', '>= 2.3.4'
   gem 'phantomjs'
+
+  gem 'dotenv-rails'
 end
 
 # I18n

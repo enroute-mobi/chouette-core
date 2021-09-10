@@ -279,6 +279,10 @@ GEM
     digest-crc (0.6.4)
       rake (>= 12.0.0, < 14.0.0)
     docile (1.4.0)
+    dotenv (2.7.6)
+    dotenv-rails (2.7.6)
+      dotenv (= 2.7.6)
+      railties (>= 3.2)
     draper (4.0.2)
       actionpack (>= 5.0)
       activemodel (>= 5.0)
@@ -801,6 +805,7 @@ DEPENDENCIES
   devise-i18n (>= 1.9.2)
   devise_cas_authenticatable (>= 1.10.4)
   devise_invitable (>= 2.0.3)
+  dotenv-rails
   draper (>= 4.0.1)
   email_spec
   enumerize

@@ -134,7 +134,7 @@ class ImportsController < ChouetteController
     end
 
     def workbenches
-      workbench_ids.blank? ? [] : candidate_workbenches.find_by(id: workbench_ids)
+      candidate_workbenches.where(id: workbench_ids)
     end
 
     def query

@@ -16,6 +16,10 @@ class Operation
 
     alias to_sym slug
 
+    def to_s
+      slug.to_s
+    end
+
     def self.find(*slugs)
       slugs = slugs.flatten.map(&:to_sym)
       all.select { |user_status| slugs.include? user_status.slug }

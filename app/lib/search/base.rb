@@ -132,7 +132,7 @@ module Search
       end
     end
 
-    cattr_reader :attributes, default: []
+    class_attribute :attributes, instance_accessor: false, default: []
 
     # TODO: Attributes can only return values :asc, :desc or nil (for securiy reason)
     # Attributes can be set with "asc", :asc, 1 to have the :asc value
@@ -153,14 +153,16 @@ module Search
         instance_variable_set "@#{name}", value
       end
       attr_reader name
-      attributes << name
+
+      # Don't use attributes << name, see class_attribute documentation
+      self.attributes += [ name ]
     end
 
     ASCENDANT_VALUES = [:asc, "asc", 1].freeze
     DESCENDANT_VALUES = [:desc, "desc", -1].freeze
 
     def to_hash
-      attributes.map do |attribute|
+      self.class.attributes.map do |attribute|
         if (attribute_order = send(attribute))
           [ attribute, attribute_order ]
         end

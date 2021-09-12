@@ -4,7 +4,7 @@ RSpec.describe Search::Base do
     attribute :name
     attr_accessor :context
 
-    class Order < Search::Order
+    class Order < ::Search::Order
       attribute :name
       attr_accessor :context
     end

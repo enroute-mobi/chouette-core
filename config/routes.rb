@@ -347,6 +347,8 @@ ChouetteIhm::Application.routes.draw do
 
         post 'netex_exports/:id/upload', to: 'netex_exports#upload'
 
+        get 'netex_exports/:id/notify_parent', to: 'netex_exports#notify_parent'
+
         resources :netex_imports, only: :create do
           member do
             get :notify_parent

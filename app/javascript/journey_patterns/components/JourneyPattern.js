@@ -140,7 +140,6 @@ export default class JourneyPattern extends Component{
   }
 
   formatTime(time){
-    console.log('formatTime', time)
     if(time < 60){
       return time + " min"
     }

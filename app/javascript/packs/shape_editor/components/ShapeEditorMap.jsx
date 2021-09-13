@@ -35,7 +35,7 @@ export default function ShapeEditorMap({ isEdit, baseURL, redirectURL }) {
   const onMapInit = map => setTimeout(() => eventEmitter.emit(events.initMap, map), 0) // Need to do this to ensure that controllers can subscribe to event before it is fired
   const onWaypointZoom = waypoint => eventEmitter.emit(events.waypointZoom, waypoint)
   const onDeleteWaypoint = waypoint => eventEmitter.emit(events.waypointDeleteRequest, waypoint)
-  const onSubmit = _event => eventEmitter.emit(events.submitShape)
+  const onSubmit = _event => eventEmitter.emit(events.submitShapeRequest)
   const onConfirmCancel = _event => window.location.replace(redirectURL)
 
   // Controllers

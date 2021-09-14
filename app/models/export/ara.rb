@@ -7,14 +7,9 @@ class Export::Ara < Export::Base
   option :line_provider_ids, serialize: :map_ids
   option :exported_lines, default_value: 'all_line_ids',
          enumerize: %w[line_ids company_ids line_provider_ids all_line_ids]
-  option :duration # Ignored
+  option :duration # Ignored by this export .. but required by Export::Scope builder
 
   skip_empty_exports
-
-  def target
-    @target ||= ::Ara::File.new export_file
-  end
-  attr_writer :target
 
   def content_type
     'application/csv'
@@ -24,9 +19,15 @@ class Export::Ara < Export::Base
     "csv"
   end
 
+  # TODO Should be shared
   def export_file
     @export_file ||= Tempfile.new(["export#{id}",".#{file_extension}"])
   end
+
+  def target
+    @target ||= ::Ara::File.new export_file
+  end
+  attr_writer :target
 
   def period
     Date.today..Date.today+5
@@ -53,8 +54,8 @@ class Export::Ara < Export::Base
     export_file
   end
 
+  # Use Export::Scope::Scheduled which scopes all models according to vehicle_journeys
   class DailyScope < Export::Scope::Scheduled
-
     def initialize(export_scope, day)
       super export_scope
       @day = day
@@ -65,25 +66,27 @@ class Export::Ara < Export::Base
     def vehicle_journeys
       current_scope.vehicle_journeys.scheduled_on(day)
     end
-
   end
 
   # TODO To be shared
   module CodeProvider
-    # Manage all CodeSpace for a Resource class
-    class Resource
-      def initialize(scope: , resource_class:)
+    # Manage all CodeSpace for a Model class (StopArea, VehicleJourney, ...)
+    class Model
+      def initialize(scope: , model_class:)
         @scope = scope
-        @resource_class = resource_class
+        @model_class = model_class
       end
 
-      def unique_codes(resource)
-        code_spaces = resource.codes.map(&:code_space).uniq
+      # For the given model (StopArea, VehicleJourney, ..), returns all codes which are uniq.
+      def unique_codes(model)
+        code_spaces = model.codes.map(&:code_space).uniq
 
         code_spaces.map do |code_space|
           code_provider = code_providers[code_space]
-          [ code_provider.short_name, code_provider.unique_code(resource) ]
-        end.to_h
+
+          unique_code = code_provider.unique_code(model)
+          [ code_provider.short_name, unique_code ] if unique_code
+        end.compact.to_h
       end
 
       def code_providers
@@ -91,38 +94,40 @@ class Export::Ara < Export::Base
           h[code_space] =
             CodeProvider::CodeSpace.new scope: export_scope,
                                         code_space: code_space,
-                                        resource_class: resource_class
+                                        model_class: model_class
         end
       end
 
-      # Returns original resource codes
+      # Returns a default implementation which simply returns all model codes
+      # Can be used instead of a real CodeProvider::Model when the context is not ready
       def self.null
         @null ||= Null.new
       end
 
       class Null
-        def unique_codes(resource)
-          resource.codes.map do |code|
+        def unique_codes(model)
+          model.codes.map do |code|
             [ code.code_space.short_name, code.value ]
           end.to_h
         end
       end
     end
 
-    # Manage a single CodeSpace for a Resource class
+    # Manage a single CodeSpace for a Model class
     # TODO To be used in Export::Gtfs
     class CodeSpace
 
-      def initialize(scope:, code_space:, resource_class:)
+      def initialize(scope:, code_space:, model_class:)
         @scope = scope
         @code_space = code_space
-        @resource_class = resource_class
+        @model_class = model_class
       end
 
       delegate :short_name, to: :code_space
 
-      def unique_code(resource)
-        candidates = candidate_codes(resource)
+      # Returns the code value for the given Resource if uniq
+      def unique_code(model)
+        candidates = candidate_codes(model)
         return nil unless candidates.one?
 
         candidate_value = candidates.first.value
@@ -131,35 +136,35 @@ class Export::Ara < Export::Base
         candidate_value
       end
 
-      def candidate_codes(resource)
-        resource.codes.select { |code| code.code_space_id == code_space.id }
+      def candidate_codes(model)
+        model.codes.select { |code| code.code_space_id == code_space.id }
       end
 
       def duplicated?(code_value)
         duplicated_code_values.include? code_value
       end
 
-      def resource_collection
-        resource_class.model_name.plural
+      def model_collection
+        model_class.model_name.plural
       end
 
-      def resources
-        scope.send resource_collection
+      def models
+        scope.send model_collection
       end
 
-      def resource_codes
-        codes.where(code_space: code_space, resource: resources)
+      def model_codes
+        codes.where(code_space: code_space, model: models)
       end
 
       def codes
         # FIXME
-        resource_class == Chouette::VehicleJourney ?
+        model_class == Chouette::VehicleJourney ?
           scope.referential_codes : scope.codes
       end
 
       def duplicated_code_values
         @duplicated_code_values ||=
-          SortedSet.new(resource_codes.select(:value, :resource_id).group(:value).having("count(resource_id) > 1").pluck(:value))
+          SortedSet.new(model_codes.select(:value, :model_id).group(:value).having("count(model_id) > 1").pluck(:value))
       end
     end
   end
@@ -170,7 +175,6 @@ class Export::Ara < Export::Base
     def initialize(export_scope:, target:)
       @export_scope = export_scope
       @target = target
-      # options.each { |k,v| send "#{k}=", v }
     end
 
     def name
@@ -190,19 +194,25 @@ class Export::Ara < Export::Base
 
     def export!
       stop_areas.includes(codes: :code_space).find_each do |stop_area|
-        target << Decorator.new(stop_area, code_provider: code_provider).ara_resource
+        target << Decorator.new(stop_area, code_provider: code_provider).ara_model
       end
     end
 
     def code_provider
-      CodeProvider::Resource.new scope: export_scope, resource_class: Chouette::StopArea
+      CodeProvider::Model.new scope: export_scope, model_class: Chouette::StopArea
     end
 
+    # Creates an Ara::StopArea from a StopArea
     class Decorator < SimpleDelegator
 
       def initialize(stop_area, code_provider: nil)
         super stop_area
         @code_provider = code_provider
+      end
+
+      # TODO To be shared
+      def code_provider
+        @code_provider ||= CodeProvider::Model.null
       end
 
       def ara_attributes
@@ -213,24 +223,20 @@ class Export::Ara < Export::Base
         }
       end
 
-      def ara_resource
+      def ara_model
         Ara::StopArea.new ara_attributes
       end
 
+      # TODO To be shared
       def uuid
         get_objectid.local_id
       end
 
-      def code_provider
-        @code_provider ||= CodeProvider::Resource.null
-      end
-
+      # TODO To be shared
       def ara_codes
         code_provider.unique_codes __getobj__
       end
 
     end
-
   end
-
 end

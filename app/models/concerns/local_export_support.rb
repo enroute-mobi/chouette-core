@@ -46,7 +46,10 @@ module LocalExportSupport
         return
       end
 
-      upload_file generate_export_file
+      CustomFieldsSupport.within_workgroup(referential.workgroup) do
+        upload_file generate_export_file
+      end
+
       self.status = :successful
       self.ended_at = Time.now
       self.save!

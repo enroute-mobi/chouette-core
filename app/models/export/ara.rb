@@ -33,13 +33,17 @@ class Export::Ara < Export::Base
   end
 
   def generate_export_file
-    CustomFieldsSupport.within_workgroup(referential.workgroup) do
-      period.each do |day|
-        daily_scope = DailyScope.new export_scope, day
+    period.each do |day|
+      # For each day, a scope selects models to be exported
+      daily_scope = DailyScope.new export_scope, day
 
-        target.model_name(day) do |model_name|
-          Stops.new(export_scope: daily_scope, target: model_name).export
-        end
+      target.model_name(day) do |model_name|
+        Stops.new(export_scope: daily_scope, target: model_name).export
+
+        # TODO
+        # Lines.new(export_scope: daily_scope, target: model_name).export
+        # VehicleJourneys.new(export_scope: daily_scope, target: model_name).export
+        # VehicleJourneyAtStops.new(export_scope: daily_scope, target: model_name).export
       end
     end
 

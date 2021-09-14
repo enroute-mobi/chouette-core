@@ -3,18 +3,36 @@ class DatePickerInput < SimpleForm::Inputs::StringInput
     set_html_options
     set_value_html_option
 
-    super(wrapper_options) # leave StringInput do the real rendering
+    template.content_tag(:div, class: 'flatpickr input-group') do
+      template.concat @builder.text_field(attribute_name, input_html_options)
+      template.concat( template.content_tag(:div, class: 'input-group-btn') do
+        template.concat calendar_button
+        template.concat clear_button
+      end)
+    end
   end
 
-  # def input_html_classes
-  #   super.push ''   # 'form-control'
-  # end
+  def input_html_classes
+    super.push 'form-control'
+  end
 
   private
 
+  def clear_button
+    template.content_tag(:a, title: "clear", class: 'btn btn-default', 'data-clear': "") do
+      template.concat template.content_tag(:i, "", class: 'fas fa-times')
+    end
+  end
+
+  def calendar_button
+    template.content_tag(:a, title: "toggle", class: 'btn btn-default color-danger', 'data-toggle': "") do
+      template.concat template.content_tag(:i, "", class: 'far fa-calendar')
+    end
+  end
+
   def set_html_options
     input_html_options[:type] = 'text'
-    # input_html_options[:data] ||= {}
+    input_html_options[:data] ||= { 'input': ''}
     # input_html_options[:data].merge!(date_options: date_options)
   end
 
@@ -30,7 +48,7 @@ class DatePickerInput < SimpleForm::Inputs::StringInput
   def display_pattern
     I18n.t('datepicker.dformat', default: '%d/%m/%Y')
   end
-  
+
   # def picker_pattern
   #   I18n.t('datepicker.pformat', default: 'DD/MM/YYYY')
   # end

@@ -1,7 +1,8 @@
-flatpickr(".date_picker", {
+flatpickr(".flatpickr", {
   locale: I18n.locale,
   dateFormat: "d/m/Y",
-  allowInput: true
+  allowInput: true,
+  wrap: true
 })
 
 // flatpickr({

@@ -153,6 +153,10 @@ module Chouette
       joins(:time_tables).where("time_tables.id" => time_table_ids).distinct
     end
 
+    def self.scheduled_on(date)
+      with_matching_timetable date..date
+    end
+
     # TODO: Remove this validator
     # We've eliminated this validation because it prevented vehicle journeys
     # from being saved with at-stops having a day offset greater than 0,

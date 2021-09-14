@@ -7,7 +7,13 @@ module LocalExportSupport
   end
 
   module ClassMethods
-    attr_accessor :skip_empty_exports
+    def skip_empty_exports
+      @skip_empty_exports = true
+    end
+
+    def skip_empty_exports?
+      @skip_empty_exports
+    end
   end
 
   def launch_worker

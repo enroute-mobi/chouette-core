@@ -1,6 +1,6 @@
 class Workgroup < ApplicationModel
   NIGHTLY_AGGREGATE_CRON_TIME = 5.minutes
-  DEFAULT_EXPORT_TYPES = %w[Export::Gtfs Export::NetexGeneric].freeze
+  DEFAULT_EXPORT_TYPES = %w[Export::Gtfs Export::NetexGeneric Export::Ara].freeze
 
   belongs_to :line_referential, dependent: :destroy, required: true
   belongs_to :stop_area_referential, dependent: :destroy, required: true

@@ -174,6 +174,11 @@ class Export::Base < ApplicationModel
     'application/zip'
   end
 
+  # TODO Should be shared in Operation
+  def successful?
+    status.to_s == "successful"
+  end
+
   protected
 
   # Expected and used file extension

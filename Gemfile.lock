@@ -1,4 +1,10 @@
 GIT
+  remote: https://bitbucket.org/enroute-mobi/ara-file.git
+  revision: c35ce8f5bf1ab213f4975fba68b63492b83af482
+  specs:
+    ara-file (0.1.0)
+
+GIT
   remote: https://bitbucket.org/enroute-mobi/gtfs.git
   revision: 11460cd8972f1e294dc4cf5dfc96aa9ecdddfc60
   specs:
@@ -776,6 +782,7 @@ DEPENDENCIES
   acts_as_list
   acts_as_tree
   apartment
+  ara-file!
   awesome_print
   better_errors
   binding_of_caller

@@ -1,11 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { get } from 'lodash'
-import { getCoord } from '@turf/turf'
+import { toWgs84 } from '@turf/turf'
+import Collection from 'ol/Collection'
 
-import { featureMap } from '../shape.helpers'
+const getCoord = item => toWgs84(item.getGeometry().getCoordinates())
 
-const List = ({ onWaypointZoom, onDeleteWaypoint, waypoints = [] }) => (
+const List = ({ onWaypointZoom, onDeleteWaypoint, waypoints }) => (
   <table className="table">
     <thead>
       <tr>
@@ -16,12 +16,12 @@ const List = ({ onWaypointZoom, onDeleteWaypoint, waypoints = [] }) => (
       </tr>
     </thead>
     <tbody>
-      {featureMap(waypoints, (item, i) => {
+      {waypoints.getArray().map((item, i) => {
         const [lon, lat] = getCoord(item)
 
         return (
           <tr key={i}>
-            <td>{get(item, ['properties', 'name'], '-')}</td>
+            <td>{item.get('name') || '-'}</td>
             <td>{lon}</td>
             <td>{lat}</td>
             <td>
@@ -41,6 +41,10 @@ const List = ({ onWaypointZoom, onDeleteWaypoint, waypoints = [] }) => (
 
 List.propTypes = {
   waypoints: PropTypes.object
+}
+
+List.defaultProps = {
+  waypoints: new Collection([])
 }
 
 export default List

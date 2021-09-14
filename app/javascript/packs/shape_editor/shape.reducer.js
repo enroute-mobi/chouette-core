@@ -1,7 +1,5 @@
 import { Style } from 'ol/style'
 import Collection from 'ol/Collection'
-import Feature from 'ol/Feature'
-import LineString from 'ol/geom/LineString'
 
 import { INIT_MAP, RECEIVE_PERMISSIONS, RECEIVE_ROUTE_FEATURES, RECEIVE_SHAPE_FEATURES, SET_ATTRIBUTES, UPDATE_GEOMETRY, UPDATE_NAME, UPDATE_WAYPOINTS } from './shape.actions'
 

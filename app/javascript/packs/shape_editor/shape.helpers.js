@@ -1,4 +1,4 @@
-import { bindAll, find, flatten, flow, partialRight, reduce, sortBy } from 'lodash'
+import { bindAll, find, flatten, flow, nth, partialRight, reduce, sortBy } from 'lodash'
 
 import {
   along,
@@ -65,7 +65,7 @@ const getTolerance = (() => {
     const percentage = (view.getZoom() - view.getMinZoom()) / (view.getMaxZoom() - view.getMinZoom())
     const index = Math.ceil((tolerances.length - 1) * percentage)
 
-    return tolerances[index]
+    return nth(tolerances, index)
   }
 })()
 

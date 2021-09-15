@@ -3,9 +3,7 @@ module Shapes
 		attr_reader :object
 
 		def initialize(shape, journey_pattern)
-			@object = shape.persisted? ?
-				ShapeDecorator.new(shape, journey_pattern) :
-				journey_pattern
+			@object = shape.persisted? ? ShapeDecorator.new(shape, journey_pattern) : journey_pattern
 		end
 
 		def call

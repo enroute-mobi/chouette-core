@@ -1,11 +1,11 @@
 import { useEffect } from 'react'
-import { useParams  } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import useSWR from 'swr'
 import { get } from 'lodash'
 import { featureCollection } from '@turf/turf'
 import Collection from 'ol/Collection'
 
-import { mapFormat, submitFetcher, } from '../../shape.helpers'
+import { mapFormat, submitFetcher } from '../../shape.helpers'
 import { getSubmitPayload } from '../../shape.selectors'
 import store from '../../shape.store'
 import eventEmitter, { events } from '../../shape.event-emitter'

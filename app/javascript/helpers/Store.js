@@ -23,7 +23,7 @@ export default class Store extends Subject {
       filter(action => {
         const isValid = isObject(action) && has(action, 'type')
 
-        if (!isValid) console.warn('action is not valid', action)
+        !isValid && isDev && console.warn('action is not valid', action)
 
         return isValid
       }),

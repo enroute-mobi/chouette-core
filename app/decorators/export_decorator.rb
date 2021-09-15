@@ -41,19 +41,19 @@ class ExportDecorator < AF83::Decorator
   define_instance_method :line_ids_options do
     return [] unless object.line_ids
 
-    Rabl::Renderer.json(Chouette::Line.where(id: object.line_ids), 'autocomplete/lines', view_path: 'app/views')
+    Rabl::Renderer.new('autocomplete/lines', Chouette::Line.where(id: object.line_ids), format: :hash, view_path: 'app/views').render
   end
 
   define_instance_method :company_ids_options do
     return [] unless object.company_ids
 
-    Rabl::Renderer.json(Chouette::Company.where(id: object.company_ids), 'autocomplete/companies', view_path: 'app/views')
+    Rabl::Renderer.new('autocomplete/companies', Chouette::Company.where(id: object.company_ids), format: :hash, view_path: 'app/views').render
   end
 
   define_instance_method :line_provider_ids_options do
     return [] unless object.line_provider_ids
 
-    Rabl::Renderer.json(LineProvider.where(id: object.line_provider_ids), 'autocomplete/line_providers', view_path: 'app/views')
+    Rabl::Renderer.new('autocomplete/line_providers', LineProvider.where(id: object.line_provider_ids), format: :hash, view_path: 'app/views').render
   end
 
   define_instance_method :pretty_print_options do

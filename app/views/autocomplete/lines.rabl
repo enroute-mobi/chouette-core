@@ -1,8 +1,3 @@
 collection @lines
 
-node do |line|
-  {
-    id: line.id,
-    text: line.display_name
-  }
-end
+extends('autocomplete/base', locals: { label_method: :display_name })

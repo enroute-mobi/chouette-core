@@ -4,10 +4,12 @@ module OptionsHelper
     attr = option_def[:name] if option_def[:name].present?
     parent_form ||= form
 
+    value = export.try(attr) || option_def[:default_value]
+
     opts = {
-      input_html: {value: export.try(attr) || option_def[:default_value]},
+      input_html: { value: value },
       as: option_def[:type],
-      selected: export.try(attr) || option_def[:default_value]
+      selected: value
     }
 
     if option_def[:hidden]
@@ -18,12 +20,20 @@ module OptionsHelper
       opts[:collection] = []
     elsif option_def[:type].to_s == "boolean"
       opts[:as] = :switchable_checkbox
-      opts[:input_html][:checked] = export.try(attr) || option_def[:default_value]
+      opts[:input_html][:checked] = value
     elsif option_def[:type].to_s == "array"
-      opts[:as] = :tags
-      opts[:input_html].merge!({'data-select2ed-placeholder': t('simple_form.custom_inputs.tags.placeholder')})
-      opts[:wrapper_html]  = { class: '.tags'}
+      opts[:collection] = value.map { |v| { id: v, text: v } }
+      opts[:input_html].merge!(
+        multiple: true,
+      )
+      opts[:as] = :tom_select
+      opts[:config] = {
+        type: 'create',
+        placeholder: I18n.t('simple_form.custom_inputs.tags.placeholder')
+      }
+
     end
+
     if option_def.has_key?(:collection)
       if option_def[:collection].is_a?(Array) && !option_def[:collection].first.is_a?(Array)
         opts[:collection] = option_def[:collection].map{|k| [translate_option_value(type, attr, k), k]}

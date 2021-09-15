@@ -181,7 +181,7 @@ export default class JourneyPattern extends Component{
   }
 
   renderShapeEditorButtons() {
-    if (!this.hasFeature('shape_editor_experimental')) return []
+    if (!this.hasFeature('shape_editor_experimental') || !this.props.editMode) return []
 
     const { id } = this.journeyPattern
     

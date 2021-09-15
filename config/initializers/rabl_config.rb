@@ -17,7 +17,7 @@ Rabl.configure do |config|
   # config.include_child_root = true
   # config.enable_json_callbacks = false
   config.xml_options = { :camelize => true }
-  # config.view_paths = []
+  config.view_paths = ['app/views']
   # config.raise_on_missing_attribute = true # Defaults to false
   # config.replace_nil_values_with_empty_strings = true
   # config.replace_empty_string_values_with_nil_values = true # Defaults to false

@@ -71,3 +71,10 @@ export default class CancelButton extends Component {
 CancelButton.propTypes = {
   onConfirmCancel: PropTypes.func.isRequired
 }
+
+CancelButton.defaultProps = {
+  status: {
+    fetchSuccess: false,
+    isFetching: false
+  }
+}

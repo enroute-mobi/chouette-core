@@ -9,6 +9,8 @@ require_relative '../app/lib/smart_env'
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
+Dotenv::Railtie.load
+
 if defined?(NullDB) and ENV['RAILS_DB_ADAPTER'] != 'nulldb'
   raise "activerecord-nulldb-adapter should not be loaded"
 end

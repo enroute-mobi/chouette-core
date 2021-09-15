@@ -126,7 +126,7 @@ gem 'acts_as_list'
 gem 'acts_as_tree'
 
 gem 'rabl'
-gem 'carrierwave', '>= 1.3.2'
+gem 'carrierwave', '~> 1.3.2'
 gem 'carrierwave-google-storage', github: 'metaware/carrierwave-google-storage'
 gem 'rmagick'
 

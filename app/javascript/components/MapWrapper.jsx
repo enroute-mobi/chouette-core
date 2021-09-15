@@ -1,20 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react'
+import { Map, View } from 'ol'
+import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer'
+import { OSM, Vector as VectorSource } from 'ol/source'
+import { defaults as defaultControls } from 'ol/control'
 
-import Map from 'ol/Map'
-import View from 'ol/View'
-import OSM from 'ol/source/OSM'
-import TileLayer from 'ol/layer/Tile'
-import VectorLayer from 'ol/layer/Vector'
-import KML from 'ol/format/KML'
-import {Control, defaults as defaultControls} from 'ol/control'
-import VectorSource from 'ol/source/Vector'
-import XYZ from 'ol/source/XYZ'
-import {transform} from 'ol/proj'
-import {toStringXY} from 'ol/coordinate'
-import {Fill, Stroke, Circle, Style} from 'ol/style'
-
-function MapWrapper(props) {
-
+import { toStringXY } from 'ol/coordinate'
+function MapWrapper({ features, onInit, _style }) {
   const [ map, setMap ] = useState()
   const [ featuresLayer, setFeaturesLayer ] = useState()
   const [ selectedCoord , setSelectedCoord ] = useState()
@@ -48,7 +39,8 @@ function MapWrapper(props) {
       view: new View({
         projection: 'EPSG:3857',
         center: [0, 0],
-        zoom: 2
+        minZoom: 10,
+        maxZoom: 20
       }),
       controls: defaultControls()
     })
@@ -60,18 +52,17 @@ function MapWrapper(props) {
     setMap(initialMap)
     setFeaturesLayer(initialFeaturesLayer)
 
+    onInit(initialMap)
   },[])
 
   // update map if features prop changes - logic formerly put into componentDidUpdate
   useEffect( () => {
 
-    if (props.features.length) { // may be null on first render
+    if (features) { // may be empty on first render
 
       // set features to map
       featuresLayer.setSource(
-        new VectorSource({
-          features: props.features // make sure features is an array
-        })
+        new VectorSource({ features }) // make sure features is an array
       )
 
       // Workaround to prevent openlayer rendering bugs within modal
@@ -82,7 +73,7 @@ function MapWrapper(props) {
         padding: [100,100,100,100]
       })
     }
-  },[props.features])
+  },[features])
 
   // // map click handler
   // const handleMapClick = (event) => {
@@ -106,6 +97,10 @@ function MapWrapper(props) {
       </div>
     </div>
   )
+}
+
+MapWrapper.defaultProps = {
+  onInit: _map => {}
 }
 
 export default MapWrapper

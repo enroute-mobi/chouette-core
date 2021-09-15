@@ -1,3 +1,15 @@
-- flash.each do |name, msg|
-  - if msg.is_a?(String)
-    = display_flash_message(name, msg)
+div[x-data]
+  - flash.each do |name, msg|
+    - if msg.is_a?(String)
+      = display_flash_message(name, msg)
+  template[x-for="(message, index) in $store.flash.messages"]
+    div[
+      class="alert alert-dismissible"
+      x-bind:class="{[message.bootstrapClass]: true}"
+      role="alert"
+    ]
+      button[class="close" type="button" x-on:click="$store.flash.remove(message.id)"]
+        span.fa.fa-times-circle
+      span[class="fa fa-lg" x-bind:class="{[message.icon]: true}" ]
+      span[x-text="message.text"]
+

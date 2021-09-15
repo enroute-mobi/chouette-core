@@ -12,7 +12,7 @@ import shapeMapStyle from 'helpers/shapeMapStyle'
 
 function ShapeMap(props) {
 
-  const [ features, setFeatures ] = useState([])
+  const [ features, setFeatures ] = useState()
   const [ style, setStyle ] = useState()
 
   let path_prefix = clone(window, "shape_kml_url")

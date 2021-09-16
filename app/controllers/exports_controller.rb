@@ -88,7 +88,7 @@ class ExportsController < ChouetteController
   end
 
   def scope
-    parent.exports.where(type: 'Export::Workbench')
+    parent.exports.where(type: 'Export::Base')
   end
 
   def search

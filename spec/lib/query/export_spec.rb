@@ -9,7 +9,7 @@ RSpec.describe Query::Export do
   end
 
   describe "#statuses" do
-    Export::Workbench.status.values.each do |status|
+    Export::Base.status.values.each do |status|
       context "when the queried status is #{status}" do
         subject { query.statuses(status).scope }
 
@@ -19,7 +19,7 @@ RSpec.describe Query::Export do
         end
 
         it "excludes exports without this status" do
-          other_status = (Export::Workbench.status.values - [ status ]).first
+          other_status = (Export::Base.status.values - [ status ]).first
 
           export.update_column :status, other_status
           is_expected.to_not include(export)

@@ -1,0 +1,11 @@
+# If we want to have specific translations for a search form we should use in the view :
+# = simple_form_for @search, as: :custom_search, url: request.path, method: "GET", html: { class: 'form form-filter' }  do |f|
+# and use custom_search for model name
+en:
+  activemodel:
+    attributes:
+      search:
+        statuses: Status
+        workbench_ids: Workbench
+        start_date: "After : "
+        end_date: "Before : "

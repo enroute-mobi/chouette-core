@@ -1,7 +1,5 @@
 class ImportsController < ChouetteController
   include PolicyChecker
-  include RansackDateFilter
-  include IevInterfaces
   skip_before_action :authenticate_user!, only: [:internal_download]
   defaults resource_class: Import::Base, collection_name: 'imports', instance_name: 'import'
   respond_to :json, :html
@@ -22,20 +20,56 @@ class ImportsController < ChouetteController
   end
 
   def show
-    @import = resource.decorate(context: {parent: parent})
+    @import = resource.decorate(context: { parent: parent })
     respond_to do |format|
       format.html
       format.json do
         fragment = render_to_string(partial: "imports/#{@import.short_type}", formats: :html)
-        render json: {fragment: fragment}
+        render json: { fragment: fragment }
       end
     end
   end
 
-  private
+  def index
+    index! do |format|
+      format.html do
+        # if collection.out_of_bounds?
+        #   redirect_to params.merge(:page => 1)
+        # end
+        @contextual_cols = []
+        @contextual_cols << if workbench
+                              TableBuilderHelper::Column.new(key: :creator, attribute: 'creator')
+                            else
+                              TableBuilderHelper::Column.new(
+                                key: :workbench,
+                                name: Organisation.ts.capitalize,
+                                attribute: proc { |n| n.workbench.organisation.name },
+                                link_to: lambda do |import|
+                                  policy(import.workbench).show? ? import.workbench : nil
+                                end
+                              )
+                            end
+        @imports = decorate_collection(collection)
+      end
+    end
+  end
 
-  def index_model
-    Import::Workbench
+  protected
+
+  def parent
+    @parent ||= workgroup || workbench
+  end
+
+  def workbench
+    return unless params[:workbench_id]
+
+    @workbench ||= current_organisation&.workbenches&.find(params[:workbench_id])
+  end
+
+  def workgroup
+    return unless params[:workgroup_id]
+
+    @workgroup ||= current_organisation&.workgroups.owned&.find(params[:workgroup_id])
   end
 
   def resource
@@ -48,6 +82,15 @@ class ImportsController < ChouetteController
       import.creator   = current_user.name
     end
   end
+
+  def scope
+    parent.imports.where(type: 'Import::Workbench')
+  end
+
+  def search
+    @search ||= Search.new(scope, params, workgroup: workgroup)
+  end
+  delegate :collection, to: :search
 
   def import_params
     permitted_keys = %i(name file type referential_id notification_target)
@@ -64,5 +107,45 @@ class ImportsController < ChouetteController
         parent: parent
       }
     )
+  end
+
+  class Search < Search::Base
+    # All search attributes
+    attribute :name
+    attribute :workbench_ids
+    attribute :statuses
+    attribute :start_date, type: Date
+    attribute :end_date, type: Date
+
+    def candidate_statuses
+      Operation::UserStatus.all
+    end
+
+    def period
+      Period.new(from: start_date, to: end_date).presence
+    end
+
+    validates :period, valid: true
+
+    attr_accessor :workgroup
+
+    def candidate_workbenches
+      workgroup&.workbenches || Workbench.none
+    end
+
+    def workbenches
+      candidate_workbenches.where(id: workbench_ids)
+    end
+
+    def query
+      Query::Import.new(scope).workbenches(workbenches).text(name).user_statuses(statuses).in_period(period)
+    end
+
+    class Order < ::Search::Order
+      attribute :status
+      attribute :name
+      attribute :started_at
+      attribute :creator
+    end
   end
 end

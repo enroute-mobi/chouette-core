@@ -1,19 +1,17 @@
-- breadcrumb :imports, parent
+- breadcrumb :imports, @parent
 
-- if parent.is_a? Workgroup
+- if @parent.is_a? Workgroup
   - content_for(:page_header_title) { 'imports.workgroup_index.title'.t }
 
 .page_content
   .container-fluid
-    - if params[:q].present? or collection.any?
-      .row
-        .col-lg-12
-          = render 'shared/iev_interfaces/filters'
-
+    .row
+      .col-lg-12
+        = render 'filters'
     - if @imports.any?
       .row
         .col-lg-12
-          = table_builder_2 collection,
+          = table_builder_2 @imports,
             [ \
               TableBuilderHelper::Column.new( \
                 key: :status, \
@@ -23,7 +21,7 @@
                 key: :name, \
                 attribute: 'name', \
                 link_to: lambda do |import| \
-                  policy(import).show? ? [parent, import] : nil \
+                  policy(import).show? ? [@parent, import] : nil \
                 end \
               ), \
               TableBuilderHelper::Column.new( \
@@ -39,9 +37,8 @@
             ],
             cls: 'table has-search'
 
-          = new_pagination collection, 'pull-right'
-
-    - unless collection.any?
+          = new_pagination @imports, 'pull-right'
+    - else
       .row.mt-xs
         .col-lg-12
           = replacement_msg t('imports.search_no_results')

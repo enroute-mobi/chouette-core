@@ -49,6 +49,12 @@ class SameAttributesMatcher
   def failure_message_when_negated
     "expected #{@target.inspect} to have a different #{@tested_attribute} than #{@other.inspect} (but #{@actual_value.inspect} matches #{@expected_value.inspect})"
   end
+
+  def description
+    attribute = "attribute"
+    attribute += "s" if @attribute_names.many?
+    "have the same #{attribute} #{@attribute_names.to_sentence} than the #{@than.class.name}"
+  end
 end
 
 module AttributesMatcher

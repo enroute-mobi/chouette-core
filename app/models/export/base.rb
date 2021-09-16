@@ -113,7 +113,7 @@ class Export::Base < ApplicationModel
     return false unless finished?
     return false if notified_parent_at
 
-    return false unless parent.present? || publication.present?
+    return false unless publication.present?
     update_column :notified_parent_at, Time.now
 
     publication&.child_change

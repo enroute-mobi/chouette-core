@@ -54,6 +54,10 @@ class ImportsController < ChouetteController
     end
   end
 
+  def create
+    create! { [parent, resource] }
+  end
+
   protected
 
   def parent

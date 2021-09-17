@@ -88,12 +88,13 @@ class ExportsController < ChouetteController
   end
 
   def scope
-    parent.exports.where(type: 'Export::Base')
+    parent.exports
   end
 
   def search
     @search ||= Search.new(scope, params, workgroup: workgroup)
   end
+
   delegate :collection, to: :search
 
   def export_params

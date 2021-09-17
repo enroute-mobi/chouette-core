@@ -1,4 +1,7 @@
 = simple_form_for @search, url: request.path, method: "GET", html: { class: 'form form-filter' }  do |f|
+  = f.simple_fields_for :order, @search.order do |form_order|
+    - form_order.object.attributes.keys.each do |attribute|
+      = form_order.input attribute, as: :hidden
   .ffg-row
     .input-group.search_bar class=filter_item_class(params[:search], :name)
       = f.input :name, label: false, class: 'form-control'

@@ -641,8 +641,7 @@ RSpec.describe Clean::InPeriod do
           end
 
           it "doesn't change the Vehicle Journey operation periods" do
-            clean.clean!
-            expect(vehicle_journey.reload.operating_periods).to contain_exactly(an_object_having_attributes(range: period('2030-06-01', '2030-06-30'), int_day_types: 508))
+            expect { clean.clean! ; vehicle_journey.reload }.to_not change(vehicle_journey, :operating_periods)
           end
         end
       end
@@ -671,8 +670,7 @@ RSpec.describe Clean::InPeriod do
           end
 
           it "doesn't change the Vehicle Journey operation periods" do
-            clean.clean!
-            expect(vehicle_journey.reload.operating_periods).to contain_exactly(an_object_having_attributes(range: period('2030-06-01', '2030-06-30'), int_day_types: 508))
+            expect { clean.clean! ; vehicle_journey.reload }.to_not change(vehicle_journey, :operating_periods)
           end
         end
       end

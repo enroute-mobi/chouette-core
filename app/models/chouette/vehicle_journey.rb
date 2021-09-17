@@ -632,6 +632,9 @@ module Chouette
           range == other.range && int_day_types == other.int_day_types
       end
 
+      def hash
+        [ range, int_day_types ].hash
+      end
     end
 
     def self.clean!

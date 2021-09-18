@@ -22,7 +22,7 @@ module Search
       order.attributes = params.delete :order if params[:order]
       self.attributes = params
 
-      Rails.logger.debug "[Search] #{self.class.name}(#{attributes.inspect})"
+      Rails.logger.debug "[Search] #{self.class.name}(#{attributes.inspect},order=#{order.attributes.inspect})"
     end
     attr_reader :scope
 
@@ -161,12 +161,14 @@ module Search
     ASCENDANT_VALUES = [:asc, "asc", 1].freeze
     DESCENDANT_VALUES = [:desc, "desc", -1].freeze
 
-    def to_hash
+    def attributes
       self.class.attributes.map do |attribute|
         if (attribute_order = send(attribute))
           [ attribute, attribute_order ]
         end
       end.compact.to_h
     end
+    alias to_hash attributes
+
   end
 end

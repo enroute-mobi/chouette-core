@@ -10,7 +10,6 @@ class Feature
       journey_length_in_vehicle_journeys
       long_distance_routes
       purge_merged_data
-      referential_vehicle_journeys
       route_stop_areas_all_types
       routing_constraint_zone_exclusion_in_vehicle_journey
       stop_area_localized_names

@@ -9,8 +9,6 @@ class ReferentialVehicleJourneysController < ChouetteController
 
   defaults :resource_class => Chouette::VehicleJourney, collection_name: :vehicle_journeys
 
-  requires_feature :referential_vehicle_journeys
-
   belongs_to :referential
 
   def index

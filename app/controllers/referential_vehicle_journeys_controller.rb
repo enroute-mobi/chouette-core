@@ -9,8 +9,6 @@ class ReferentialVehicleJourneysController < ChouetteController
 
   defaults :resource_class => Chouette::VehicleJourney, collection_name: :vehicle_journeys
 
-  requires_feature :referential_vehicle_journeys
-
   belongs_to :referential
 
   def index
@@ -61,7 +59,6 @@ class ReferentialVehicleJourneysController < ChouetteController
     @vehicle_journeys ||= @q.result
     @vehicle_journeys = parse_order @vehicle_journeys
     @all_companies = Chouette::Company.where("id IN (#{@referential.vehicle_journeys.select(:company_id).to_sql})").distinct
-    @consolidated = ReferentialConsolidated.new @vehicle_journeys, params
     @vehicle_journeys = @vehicle_journeys.paginate page: params[:page], per_page: params[:per_page] || 10
   end
 

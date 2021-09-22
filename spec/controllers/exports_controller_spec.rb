@@ -236,7 +236,7 @@ RSpec.describe ExportsController, :type => :controller do
           let(:query) { Query::Mock.new(scope) }
 
           before do
-            allow(Query::Import).to receive(:new).and_return(query)
+            allow(Query::Export).to receive(:new).and_return(query)
           end
 
           it "uses Search workbenches" do

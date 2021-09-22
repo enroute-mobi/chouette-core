@@ -1,11 +1,21 @@
 RSpec.describe Query::Export do
   let(:query) { Query::Export.new(Export::Base.all) }
 
-  let(:context) { Chouette.create { workbench } }
+  let(:context) {
+    Chouette.create do
+      workgroup export_types: ['Export::Gtfs'] do
+        workbench do
+          referential
+        end
+      end
+    end
+  }
+
   let(:workbench) { context.workbench }
+  let(:referential) { context.referential }
 
   let(:export) do
-    workbench.exports.create!(name: "test", creator: "test", file: open_fixture('google-sample-feed.zip'))
+    workbench.exports.create!(name: "Test", creator: 'test', type: "Export::Gtfs", referential: referential, workgroup: referential.workgroup)
   end
 
   describe "#statuses" do
@@ -31,7 +41,9 @@ RSpec.describe Query::Export do
   describe "#workbench" do
     let(:context) do
       Chouette.create do
-        workbench :first
+        workbench :first do
+          referential
+        end
         workbench :other
       end
     end

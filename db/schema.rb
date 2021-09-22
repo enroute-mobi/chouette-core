@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_12_144527) do
+ActiveRecord::Schema.define(version: 2021_07_27_144032) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -472,6 +472,9 @@ ActiveRecord::Schema.define(version: 2021_08_12_144527) do
     t.datetime "ended_at"
     t.string "token_upload"
     t.string "type"
+    t.bigint "parent_id"
+    t.string "parent_type"
+    t.datetime "notified_parent_at"
     t.integer "current_step", default: 0
     t.integer "total_steps", default: 0
     t.string "creator"
@@ -481,7 +484,6 @@ ActiveRecord::Schema.define(version: 2021_08_12_144527) do
     t.bigint "publication_id"
     t.bigint "workgroup_id"
     t.hstore "options", default: {}
-    t.datetime "notified_parent_at"
     t.index ["publication_id"], name: "index_exports_on_publication_id"
     t.index ["referential_id"], name: "index_exports_on_referential_id"
     t.index ["workbench_id"], name: "index_exports_on_workbench_id"

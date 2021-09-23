@@ -2,7 +2,6 @@ RSpec.describe Export::Base, type: :model do
 
   it { should belong_to(:referential) }
   it { should belong_to(:workbench) }
-  it { should belong_to(:parent) }
 
   it { should enumerize(:status).in("aborted", "canceled", "failed", "new", "pending", "running", "successful", "warning") }
 
@@ -96,7 +95,7 @@ RSpec.describe Export::Base, type: :model do
 
   describe "#notify_parent" do
     let(:publication) { create(:publication) }
-    let(:gtfs_export) { create(:gtfs_export, parent: publication) }
+    let(:gtfs_export) { create(:gtfs_export, publication: publication) }
 
     context "when export is finished" do
       before do

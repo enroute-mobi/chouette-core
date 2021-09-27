@@ -156,6 +156,8 @@ gem 'ddtrace'
 # Monitoring
 gem 'sentry-raven'
 
+gem 'nest', en_route: 'nest', branch: 'NEST-1-version'
+
 group :development do
   gem 'rails-erd'
   gem 'license_finder'

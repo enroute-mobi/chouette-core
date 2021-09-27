@@ -16,9 +16,3 @@ function docker_env_production() {
 function docker_whenever() {
     RAILS_ENV=production bundle exec whenever --output '/proc/1/fd/1' --update-crontab chouette --set 'environment=production&bundle_command=bundle exec' --roles=app,db,web
 }
-
-function docker_version() {
-    if [ -n "$VERSION" ]; then
-        echo "{\"build_name\": \"$VERSION\"}" > config/version.json
-    fi
-}

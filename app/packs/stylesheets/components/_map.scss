@@ -1,0 +1,175 @@
+.shape-map {
+  .map-container {
+    height: 300px !important;
+  }
+}
+.openlayers_map {
+  text-align: center;
+  height: 100%;
+  width: 100%;
+
+  .app-label {
+    width: 50%;
+    overflow: auto;
+    margin: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    background: white;
+    pointer-events: none;
+  }
+  .map-container {
+    height: 100vh;
+    width: 100%;
+    border: 1px solid #ccc;
+
+    > * {
+      display: inline-block;
+      vertical-align: top;
+      height: 300px;
+      width: 100%;
+    }
+    .map_metas {
+      width: 33.3333%;
+      background-color: #fff;
+      padding: 15px;
+
+      > p {
+        font-size: 0.85em;
+        margin: 5px 0 0 0;
+
+        &:first-child {
+          margin-top: 0;
+        }
+      }
+      > .btn {
+        float: right;
+        margin-top: 30px;
+      }
+      + .map_content {
+        width: 66.6666%;
+        border-left: 1px solid #ccc;
+      }
+    }
+    .list-group-item & {
+      margin-top: 15px;
+    }
+    .ol-routes-layers {
+      position: absolute;
+      right: 42px;
+      top: .5em;
+      padding: 0;
+      margin: 5px -5px;
+      width: 30%;
+      background-color: transparentize(white, 0.2);
+      border-radius: 3px;
+      max-height: 90%;
+      overflow-y: scroll;
+      a {
+        display: block;
+        width: calc(100% - 10px);
+        border: 1px solid $lightgrey;
+        padding: 5px;
+        margin: 5px;
+        border-radius: 5px;
+        cursor: pointer;
+        color: $brand-color-secondary;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        font-size: 0.6em;
+        &:hover {
+          text-decoration: none;
+          font-weight: bold;
+        }
+        &.active {
+          background: $brand-color-secondary;
+          color: white;
+        }
+      }
+    }
+    .ol-routes-layers-button-wrapper {
+      position: absolute;
+      right: .5em;
+      top: .5em;
+    }
+    .ol-scale-line {
+      background-color: transparent;
+      bottom: 5px;
+      right: 5px;
+      left: auto;
+      padding: 3px;
+      position: absolute;
+
+      .ol-scale-line-inner {
+        position: relative;
+        border: none;
+        border-bottom: 2px solid $brand-color-primary;
+        border-top: none;
+        color: $brand-color-primary;
+        font-size: 0.85em;
+        text-align: center;
+        font-weight: 700;
+
+        &:before {
+          content: '';
+          display: block;
+          position: absolute;
+          left: 0;
+          bottom: 0;
+          right: 0;
+          height: 5px;
+          border-left: 2px solid $brand-color-primary;
+          border-right: 2px solid $brand-color-primary;
+        }
+      }
+    }
+    .ol-zoom {
+      background-color: transparent;
+    }
+    .ol-zoom-in,
+    .ol-zoom-out,
+    .ol-routes-layers-button {
+      background-color: $brand-color-primary;
+      color: #fff;
+      border-radius: 3px;
+      margin: 0;
+    }
+    .ol-zoom-in {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+    .ol-zoom-out {
+      margin-top: 1px;
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
+    .ol-zoomslider {
+      margin: 2px;
+      width: calc(1.375em + 4px);
+      background-color: rgba($brand-color-primary, 0.25);
+
+      button.ol-zoomslider-thumb {
+        margin: 0 -2px 0 -2px;
+        padding: 0 2px;
+        background-color: $brand-color-primary;
+        color: #fff;
+        border-radius: 0;
+        z-index: 5;
+      }
+    }
+  }
+  .clicked-coord-label {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    background: white;
+    border-radius: 5px;
+
+    p {
+      margin: 10px;
+    }
+  }
+}

@@ -1,0 +1,38 @@
+.devise {
+  .page-icon {
+    display: none;
+  }
+  .login,
+  .signup {
+    .checkbox {
+      width: 100%;
+    }
+    .panel-body {
+      padding-left: 35px !important;
+      padding-right: 35px !important;
+    }
+    .panel {
+      .checkbox {
+        padding: 0;
+      }
+    }
+  }
+  .page-action {
+    a {
+      margin-left: 1.5em;
+    }
+  }
+}
+@media (max-width: 640px) {
+  .devise {
+    #main_nav #menu_top {
+      padding-left: 10px;
+      font-size: 0.8em;
+    }
+    .page_header {
+      text-align: center;
+      font-size: 2em;
+      padding-top: 10px;
+    }
+  }
+};

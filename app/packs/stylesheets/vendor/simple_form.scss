@@ -1,0 +1,9 @@
+.simple_form {
+  .help-inline {
+    color: #cc0000;
+  }
+  .form-actions {
+    @extend .col-sm-offset-3;
+    @extend .col-sm-9;
+  }
+}

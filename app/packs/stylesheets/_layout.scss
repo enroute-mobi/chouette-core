@@ -1,0 +1,47 @@
+//----------//
+//  Layout  //
+//----------//
+
+html {
+  box-sizing: border-box;
+
+  * {
+    box-sizing: inherit;
+  }
+}
+body {
+  padding-top: 40px;
+  font-family: $base-font-family;
+  font-size: $base-font-size;
+  line-height: $line-height;
+  color: $darkgrey;
+  background-color: #fff;
+}
+.page_header {
+  padding: 40px 35px 0 35px;
+}
+.page_content {
+  padding: 35px 35px 95px 35px;
+}
+.separator {
+  display: block;
+  height: 0px;
+  // width: 75%
+  border-bottom: 1px solid $grey;
+  margin: 30px auto 45px auto;
+  clear: both;
+  &.section_separator {
+    margin: 30px auto 0 auto;
+  }
+}
+.content_header {
+  font-size: 2.2rem;
+  font-weight: normal;
+  margin: 40px 0;
+  padding: 0px 15px 9px 15px;
+  border-bottom: 1px solid #eee;
+
+  &:first-child {
+    margin-top: 0;
+  }
+}

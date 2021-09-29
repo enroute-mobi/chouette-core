@@ -1,0 +1,16 @@
+#publication_setup_form {
+  .destination {
+    &:not(:first-child) {
+      margin-top: 10px;
+      padding-top: 20px;
+      border-top: 1px solid #ccc;
+    }
+    .fields {
+      overflow: hidden;
+      transition: height 0.5s;
+      &.hidden-fields {
+        height: 0;
+      }
+    }
+  }
+}

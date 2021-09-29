@@ -1,0 +1,73 @@
+#index_item {
+  .panel-heading {
+    @extend .clearfix;
+
+    .validity_out {
+      color: $brand-danger;
+    }
+    .validity_out_soon {
+      color: $brand-warning;
+    }
+    .validity_regular {
+      color: $brand-success;
+    }
+    button {
+      margin-left: 3px;
+    }
+    .date {
+      font-size: 10px;
+      color: gray;
+      text-align: center;
+    }
+    .label {
+      margin-right: 5px;
+    }
+    h5 {
+      margin: 0px;
+      padding-top: 4.5px;
+
+      span.name {
+        .fa {
+          margin-right: 5px;
+        }
+      }
+      p.format {
+        color: $gray;
+        margin: 3px 0px 0px 0px;
+
+        .label {
+          font-size: 10px;
+        }
+      }
+      @import 'job_status_colors';
+    }
+  }
+  .panel-body {
+    p {
+      margin: 0 0 3px;
+      font-size: 12px;
+    }
+    img {
+      margin-right: 5px;
+    }
+    i {
+      color: $gray;
+      margin-right: 5px;
+    }
+    span.included_day_type {
+      font-weight: bolder;
+      margin-right: 3px;
+    }
+    span.excluded_day_type {
+      margin-right: 3px;
+    }
+  }
+  .panel-footer {
+    text-align: center;
+
+    .history {
+      color: $gray;
+      font-size: 10px;
+    }
+  }
+}

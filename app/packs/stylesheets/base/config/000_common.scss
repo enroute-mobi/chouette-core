@@ -1,0 +1,41 @@
+//-------------//
+//  Variables  //
+//-------------//
+
+// Typography
+$base-font-size: 1.4rem;
+$line-height: 1.4;
+$h1-size: 3rem;
+$h2-size: 1.8rem;
+
+$base-font-family: 'Open Sans', sans-serif;
+
+// Colors
+$brand-color-primary: #08B4C1;
+$brand-color-primary-dark: #0395A0;
+$brand-color-secondary: #00217C;
+
+$brand-color-primary-contrast: black;
+$brand-color-secondary-contrast: white;
+
+$menu-color-secondary: #6A4C83;
+$menu-color-secondary-dark: #5B4072;
+// TODO : delete after replace with real icons
+$icon-page-header: #6A4C83;
+
+$darkgrey: #4b4b4b;
+$grey: #a4a4a4;
+$light-grey: #F0F0F0;
+$lightgrey: lighten($grey, 25);
+$lightergrey: lighten($lightgrey,5);
+
+$green: #70b12b;
+$smooth-green: #aedd8a;
+$red: #da2f36;
+
+$orange: #ed7f00;
+$gold: #ffcc00;
+
+
+$mail-dark-grey: #7B7B7B;
+$mail-light-grey: #ccc;

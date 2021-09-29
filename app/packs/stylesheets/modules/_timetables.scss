@@ -1,0 +1,269 @@
+//---------------//
+//  Time Tables  //
+//---------------//
+
+#periods {
+  .t2e-head {
+    > .th {
+      height: 135px;
+      text-align: left;
+      border-color: $darkgrey;
+      border-top-width: 2px;
+
+      > .strong {
+        padding-top: 123px;
+        transform: translateY(-1.4em);
+      }
+    }
+  }
+  .t2e-head > .td,
+  .t2e-item > .td-group > .td {
+    height: 65px;
+  }
+  .t2e-head > .td {
+    line-height: 50px;
+
+    > span {
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1.4;
+    }
+  }
+  .t2e-item-list > div {
+    border-color: #fff;
+  }
+  .t2e-item {
+    .th {
+      height: 135px;
+      padding: 4px 0 0 0;
+      border-color: $darkgrey;
+      border-top-width: 2px;
+
+      > .monthName {
+        padding: 0 0 6px 8px;
+      }
+    }
+    .monthDays {
+      white-space: nowrap;
+
+      .day {
+        display: inline-block;
+        width: 40px;
+        padding: 20px 0 6px 0;
+
+        &.last_wday {
+          &:not(:last-child) {
+            border-right: 2px solid;
+          }
+          &:before {
+            content: attr(data-wday);
+            display: block;
+            text-align: left;
+            color: rgba($grey, 0.5);
+            padding-bottom: 10px;
+          }
+        }
+        .dayname {
+          display: block;
+          text-align: center;
+          text-transform: capitalize;
+          padding-bottom: 2px;
+        }
+        .daynumber {
+          display: block;
+          margin: 0 auto;
+          width: 24px;
+          height: 24px;
+          line-height: 24px;
+          text-align: center;
+          font-weight: bold;
+          border-radius: 50%;
+          background-color: transparent;
+
+          &.included {
+            background-color: rgba($gold, 0.75);
+          }
+        }
+      }
+    }
+    > .td-group {
+      width: 40px;
+      > .td {
+        border-right: 1px solid rgba($grey, 0.5);
+      }
+      &.last_wday {
+        &:not(:last-child) > .td {
+          border-right: 2px solid $darkgrey;
+        }
+      // &.out_from_daytypes
+      //   background-image: linear-gradient(45deg, rgba($grey, 0.15) 0%, rgba($grey, 0.15) 49%, rgba($grey, 0.5) 50%, rgba($grey, 0.15) 51%, rgba($grey, 0.15) 99%, rgba($grey, 0.15) 100%)
+      //   background-size: 25px 25px
+      }
+      > .td {
+        &.out_from_daytypes {
+          background-image: linear-gradient(45deg, rgba($grey, 0.15) 0%, rgba($grey, 0.15) 49%, rgba($grey, 0.5) 50%, rgba($grey, 0.15) 51%, rgba($grey, 0.15) 99%, rgba($grey, 0.15) 100%);
+          background-size: 25px 25px;
+        }
+        &.in_periods {
+          background-color: rgba($gold, 0.5);
+          border-left-color: rgba($gold, 0.5);
+          border-right-color: rgba($gold, 0.5);
+
+          &.start_period {
+            border-left-color: rgba($grey, 0.5);
+          }
+          &.end_period {
+            border-right-color: rgba($grey, 0.5);
+          }
+        }
+      }
+    }
+  }
+  .form-group > .month_selector {
+    > .btn.btn-default {
+      background-color: rgba($grey, 0.15);
+      color: $darkgrey;
+      border: none;
+      border-radius: 0;
+      padding: 8px 15px 7px 15px;
+
+      &:active,
+      &.active {
+        box-shadow: none;
+      }
+      > .caret {
+        margin-left: 10px;
+        color: $brand-color-secondary;
+      }
+    }
+    > .dropdown-menu {
+      margin-top: 1px;
+      border-radius: 0 0 4px 4px;
+      max-height: 230px;
+      overflow: auto;
+    }
+  }
+  .period_manager {
+    display: block;
+    height: auto;
+    word-wrap: normal;
+    white-space: normal;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
+    padding: 0 8px;
+
+    @for $i from 0 through 31 {
+      &[data-toendperiod='#{$i}'] {
+        width: 40px * ($i + 1);
+      }
+    }
+
+    > * {
+      display: inline-block;
+      vertical-align: middle;
+      margin: 0;
+      max-width: calc(100% - 30px);
+
+      &.dropdown {
+        margin-left: 5px;
+      }
+    }
+    &[data-toendperiod='0'],
+    &[data-toendperiod='1'],
+    &[data-toendperiod='2'] {
+      max-width: none;
+      > * {
+        display: none;
+
+        &.dropdown {
+          display: inline-block;
+        }
+      }
+    }
+    .btn.dropdown-toggle {
+      color: $darkgrey;
+      padding: 1px 5px;
+      border-radius: 0;
+      transition: 0.2s;
+
+      &:hover,
+      &:focus,
+      &:active,
+      &.active {
+        color: $brand-color-secondary;
+        outline: none;
+        box-shadow: none;
+        transition: 0.2s;
+      }
+    }
+    .open > .btn.dropdown-toggle {
+      background-color: rgba(#fff, 1);
+      border-color: $darkgrey;
+      box-shadow: none;
+      transition: 0.2s;
+    }
+    .dropdown-menu {
+      margin: 0;
+      border-radius: 0;
+      box-shadow: 0 0 3px rgba($darkgrey, 0.25);
+      min-width: 120px;
+
+      > li > a,
+      > li > button {
+        padding: 5px 15px;
+      }
+      > li.delete-action {
+        > a,
+        > button {
+          display: block;
+          position: relative;
+          margin-top: 11px;
+
+          &:before {
+            content: '';
+            display: block;
+            position: absolute;
+            left: 15px;
+            right: 15px;
+            top: -6px;
+            height: 1px;
+            background-color: $grey;
+          }
+          .fa:first-child {
+            margin-right: 0.5em;
+          }
+        }
+      }
+    }
+  }
+  .td-group.last_wday ~ .td-group.last_wday ~ .td-group.last_wday ~ .td-group.last_wday {
+    > .td,
+    ~ .td-group > .td {
+      > .period_manager .dropdown-menu {
+        left: auto;
+        right: 0;
+      }
+    }
+  }
+  // Period form
+  .nested-head,
+  .nested-fields {
+    .wrapper > div:last-child {
+      width: auto;
+    }
+  }
+  // Daytypes
+  .labelled-checkbox-group {
+    > .lcbx-group-item {
+      float: left;
+
+      &[data-wday='day_0'] {
+        float: none;
+        margin: 0 5px;
+      }
+    }
+  }
+}

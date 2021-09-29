@@ -1,0 +1,34 @@
+h1 {
+  font-size: $h1-size;
+  font-weight: 400;
+}
+h2 {
+  font-size: $h2-size;
+  font-weight: 700;
+}
+h3 {
+  font-size: $h2-size;
+  font-weight: 700;
+}
+p {
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+strong,
+.strong {
+  font-weight: 700;
+}
+// Text coloring
+.text-danger {
+  color: $red;
+}
+.text-success {
+  color: $green;
+}
+.text-warning {
+  color: $orange;
+}
+.disabled {
+  color: $darkgrey;
+}

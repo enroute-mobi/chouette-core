@@ -1,0 +1,38 @@
+.status {
+  margin-left: 10px;
+}
+.resume {
+  &:after {
+    content: " ";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+  }
+  .caption {
+    text-align: center;
+    font-weight: bold;
+  }
+  dl.inline {
+    dd {
+      display: inline;
+      margin: 0;
+
+      &:after {
+        content: '';
+        display: block;
+      }
+    }
+    dt {
+      display: inline-block;
+      min-width: 180px;
+    }
+  }
+}
+.report {
+  margin-top: 20px;
+
+  .form-group {
+    margin-right: 20px;
+  }
+}

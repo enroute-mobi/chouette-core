@@ -1,0 +1,11 @@
+.isLoading {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto;
+
+  .loader {
+    width: 40px;
+    height: 40px;
+    background: url(images/loader.svg) no-repeat center center;
+  }
+}

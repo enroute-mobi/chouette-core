@@ -217,7 +217,7 @@ GEM
     crack (0.4.5)
       rexml
     crass (1.0.6)
-    css_parser (1.9.0)
+    css_parser (1.10.0)
       addressable
     database_cleaner (2.0.1)
       database_cleaner-active_record (~> 2.0.0)
@@ -326,8 +326,8 @@ GEM
     georuby (2.3.0)
     get_process_mem (0.2.7)
       ffi (~> 1.0)
-    globalid (0.4.2)
-      activesupport (>= 4.2.0)
+    globalid (0.5.2)
+      activesupport (>= 5.0)
     google-api-client (0.52.0)
       addressable (~> 2.5, >= 2.5.1)
       googleauth (~> 0.9)
@@ -453,7 +453,7 @@ GEM
     mail (2.7.1)
       mini_mime (>= 0.1.1)
     map_layers (0.0.4)
-    marcel (1.0.1)
+    marcel (1.0.2)
     memoist (0.16.2)
     memory_profiler (1.0.0)
     method_source (1.0.0)
@@ -478,13 +478,13 @@ GEM
     net-sftp (3.0.0)
       net-ssh (>= 5.0.0, < 7.0.0)
     net-ssh (6.1.0)
-    nio4r (2.5.7)
-    nokogiri (1.12.4)
+    nio4r (2.5.8)
+    nokogiri (1.12.5)
       mini_portile2 (~> 2.6.1)
       racc (~> 1.4)
-    nokogiri (1.12.4-x86_64-darwin)
+    nokogiri (1.12.5-x86_64-darwin)
       racc (~> 1.4)
-    nokogiri (1.12.4-x86_64-linux)
+    nokogiri (1.12.5-x86_64-linux)
       racc (~> 1.4)
     notiffany (0.1.3)
       nenv (~> 0.1)
@@ -601,7 +601,7 @@ GEM
       redis-store (>= 1.2, < 2)
     redis-store (1.9.0)
       redis (>= 4, < 5)
-    regexp_parser (1.7.0)
+    regexp_parser (1.8.2)
     representable (3.1.1)
       declarative (< 0.1.0)
       trailblazer-option (>= 0.1.1, < 0.2.0)
@@ -738,7 +738,7 @@ GEM
     teaspoon-jasmine (2.9.1)
       teaspoon (>= 1.0.0)
     temple (0.8.2)
-    terminal-table (3.0.1)
+    terminal-table (3.0.2)
       unicode-display_width (>= 1.1.1, < 3)
     thor (1.0.1)
     thread_safe (0.3.6)
@@ -752,7 +752,7 @@ GEM
     uglifier (2.7.2)
       execjs (>= 0.3.0)
       json (>= 1.8.0)
-    unicode-display_width (2.0.0)
+    unicode-display_width (2.1.0)
     unicode_utils (1.4.0)
     warden (1.2.9)
       rack (>= 2.0.9)
@@ -783,7 +783,7 @@ PLATFORMS
 
 DEPENDENCIES
   aasm
-  active_attr (>= 0.15.0)
+  active_attr (>= 0.15.3)
   activerecord-nulldb-adapter
   activerecord-postgis-adapter
   acts-as-taggable-on
@@ -812,16 +812,16 @@ DEPENDENCIES
   delayed_job_heartbeat_plugin
   delayed_job_web
   derailed_benchmarks
-  devise (>= 4.7.3)
+  devise (>= 4.8.0)
   devise-encryptable (>= 0.2.0)
-  devise-i18n (>= 1.9.2)
+  devise-i18n (>= 1.10.0)
   devise_cas_authenticatable (>= 1.10.4)
-  devise_invitable (>= 2.0.3)
-  dotenv-rails
-  draper (>= 4.0.1)
+  devise_invitable (>= 2.0.5)
+  dotenv-rails (>= 2.7.6)
+  draper (>= 4.0.2)
   email_spec
   enumerize
-  factory_bot_rails (>= 6.1.0)
+  factory_bot_rails (>= 6.2.0)
   faker
   faraday
   faraday_middleware
@@ -829,23 +829,23 @@ DEPENDENCIES
   ffi
   ffi-geos
   flag-icons-rails (>= 3.4.6.1)
-  font_awesome5_rails
+  font_awesome5_rails (>= 1.5.0)
   fuubar
   geokit
   georuby (= 2.3.0)
   google-cloud-storage (> 1.4.0)
-  graphiql-rails (>= 1.7.0)
+  graphiql-rails (>= 1.8.0)
   graphql
-  gretel (>= 4.2.0)
+  gretel (>= 4.3.0)
   gtfs!
   guard-rspec
   has_array_of!
-  health_check
+  health_check (>= 3.1.0)
   htmlbeautifier
   i18n-js
-  i18n-tasks (>= 0.9.31)
+  i18n-tasks (>= 0.9.34)
   icar!
-  inherited_resources (>= 1.11.0)
+  inherited_resources (>= 1.13.0)
   jbuilder
   jquery-rails (>= 4.4.0)
   jquery-ui-rails (>= 6.0.1)
@@ -854,13 +854,13 @@ DEPENDENCIES
   letter_opener
   letter_opener_web (~> 1.4, >= 1.4.0)
   license_finder
-  lograge
+  lograge (>= 0.11.2)
   map_layers (= 0.0.4)
-  mimemagic
+  mimemagic (>= 0.4.3)
   mini_racer
   net-sftp
   netex!
-  nokogiri (>= 1.11.4)
+  nokogiri (>= 1.12.5)
   parallel_tests
   pg
   phantomjs
@@ -868,14 +868,14 @@ DEPENDENCIES
   polylines
   postgres-copy (>= 1.5.0)
   postgresql_cursor
-  premailer-rails
+  premailer-rails (>= 1.11.1)
   pry-byebug
   pry-rails
   puma (>= 5.3.1)
   pundit
-  pundit-matchers (>= 1.6.0)
+  pundit-matchers (>= 1.7.0)
   rabl
-  rails (~> 5.2.4, >= 5.2.4.6)
+  rails (~> 5.2.6)
   rails-assets-bootstrap-sass-official (~> 3.3.0)!
   rails-assets-respond!
   rails-controller-testing (>= 1.0.5)
@@ -884,7 +884,7 @@ DEPENDENCIES
   rails-observers
   rake
   ransack
-  redis-actionpack
+  redis-actionpack (>= 5.2.0)
   responders (>= 3.0.1)
   rgeo
   rgeo-proj4!
@@ -892,7 +892,7 @@ DEPENDENCIES
   rmagick
   roo (>= 2.8.3)
   rspec-benchmark
-  rspec-rails (>= 3.5.2)
+  rspec-rails (>= 5.0.2)
   rspec-snapshot
   rspec_junit_formatter
   rubyzip
@@ -903,19 +903,19 @@ DEPENDENCIES
   select2-rails (~> 4.0, >= 4.0.3)
   sentry-raven
   shoulda-matchers
-  simple_form (>= 5.0.3)
+  simple_form (>= 5.1.0)
   simplecov
   simplecov-cobertura
-  slim-rails (>= 3.2.0)
+  slim-rails (>= 3.3.0)
   spring
   spring-commands-rspec
   sprockets (~> 3.7.2)
   stackprof
-  teaspoon-jasmine (>= 2.3.4)
+  teaspoon-jasmine (>= 2.9.1)
   timecop
   uglifier (~> 2.7.2)
   webmock
-  webpacker (~> 5.2, >= 5.2.1)
+  webpacker (~> 5.4, >= 5.4.3)
   whenever!
   will_paginate
   will_paginate-bootstrap

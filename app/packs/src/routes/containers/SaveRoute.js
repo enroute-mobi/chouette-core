@@ -2,11 +2,7 @@ import  { connect } from 'react-redux'
 import SaveRouteComponent from '../components/SaveRoute'
 import { isActionCreate, getRequestMethod } from '../reducers/status'
 import { getStopPointsAttributes } from '../reducers/route'
-
-import {
-  submitRoute,
-  validateField
-} from '../actions'
+import actions from '../actions'
 
 const mapStateToProps = (state) => {
   const { name, published_name, wayback, opposite_route_id, line_id } = state.route
@@ -31,10 +27,10 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => ({
   onSubmitRoute(route, requestMethod) {
-    submitRoute(dispatch)(requestMethod)(route)
+    actions.submitRoute(dispatch)(requestMethod)(route)
   },
   onValidateField(error) {
-    dispatch(validateField(error))
+    dispatch(actions.validateField(error))
   }
 })
 

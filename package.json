@@ -8,7 +8,7 @@
     "@babel/core": "^7.0.0",
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
-    "@fortawesome/fontawesome-free": "^5.15.1",
+    "@fortawesome/fontawesome-free": "^5.15.4",
     "@rails/webpacker": "^6.0.0-beta.7",
     "@ryangjchandler/spruce": "^2.7.1",
     "@simonwep/selection-js": "^2.0.0",

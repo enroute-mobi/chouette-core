@@ -1,12 +1,7 @@
 import  { connect } from 'react-redux'
 import AppComponent from '../components/App'
-import { isActionCreate } from '../reducers/status' 
-import {
-  fetchResources,
-  fetchRoute,
-  fetchUserPermissions,
-  fetchOppositeRoutes
-} from '../actions'
+import { isActionCreate } from '../reducers/status'
+import actions from '../actions'
 
 const mapStateToProps = state => ({
   isActionUpdate: !isActionCreate(state.status),
@@ -15,7 +10,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   onLoadFirstPage(mustFetchRoute) {
-    fetchResources(dispatch)(mustFetchRoute)()
+    actions.fetchResources(dispatch)(mustFetchRoute)()
   }
 })
 

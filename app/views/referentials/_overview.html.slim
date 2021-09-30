@@ -79,11 +79,11 @@
     li.period-container= 'referentials.overview.legend.period'.t
     li.period-container.hole= 'referentials.overview.legend.hole'.t
     li.period-container.empty= 'referentials.overview.legend.empty'.t
-    
+
   = new_pagination overview, 'pull-right'
 
 - content_for :javascript do
-  = javascript_pack_tag 'referential_overview/overview.js'
+  = javascript_pack_tag 'referential_overview/index'
 
   javascript:
     overview_id = "#{overview.pagination_param_name}";

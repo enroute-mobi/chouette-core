@@ -20,7 +20,7 @@ module FlashHelper
       when :error
         "<i class='fa fa-minus-circle'></i> #{message}".html_safe
       when :alert
-        "<i class='fa fa-exclamation-circle'></i> #{message}".html_safe 
+        "<i class='fa fa-exclamation-circle'></i> #{message}".html_safe
       when :notice
         "<i class='fa fa-info-circle'></i> #{message}".html_safe
       else
@@ -39,9 +39,9 @@ module FlashHelper
   def display_flash_message(flash_type, message)
     content_tag(:div, '', class: "alert #{bootstrap_class_for(flash_type)} alert-dismissible", role: 'alert') do
       concat  content_tag(:button, "<span class='fa fa-times-circle' aria-hidden='true'> </span>".html_safe, class: 'close', type: 'button', "data-dismiss": "alert", "aria-label": "Fermer")
-      concat content_tag(:span, '', class: "fa fa-lg #{flash_icon_for(flash_type)}")
+      concat content_tag(:span, '', class: "fas fa-lg #{flash_icon_for(flash_type)}")
       concat content_tag(:span, message)
     end
   end
-  
+
 end

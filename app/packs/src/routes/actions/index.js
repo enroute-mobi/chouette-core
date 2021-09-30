@@ -93,7 +93,7 @@ const actions = {
   }),
   submitRoute: dispatch => requestMethod => async route => {
     try {
-      dispatch({ type: 'SUBMIT_ROUTE_START' }) 
+      dispatch({ type: 'SUBMIT_ROUTE_START' })
       const response = await fetch(window.routeSubmitUrl, {
         credentials: 'same-origin',
         method: requestMethod,
@@ -114,4 +114,4 @@ const actions = {
   }
 }
 
-module.exports = actions
+export default actions

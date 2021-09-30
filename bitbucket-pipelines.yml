@@ -14,7 +14,7 @@ definitions:
         POSTGRES_DB: chouette
         POSTGRES_USER: chouette
         POSTGRES_PASSWORD: chouette
-      memory: 3072
+      memory: 2048
   caches:
     bundler: ./vendor/bundle
     yarn: ./node_modules

@@ -118,7 +118,7 @@ class MergeReferentialsSelector
       @results.html ''
       _selected = @selectedIds()
       json.forEach (ref) =>
-        li = $("<li data-id='#{ref.id}'><span>#{ref.name}</span><a href='#' class='pull-right delete'><span class='fa fa-times'></a><a href='#' class='pull-right add'><span class='fa fa-arrow-right'></a></li>")
+        li = $("<li data-id='#{ref.id}'><span>#{ref.text}</span><a href='#' class='pull-right delete'><span class='fa fa-times'></a><a href='#' class='pull-right add'><span class='fa fa-arrow-right'></a></li>")
         li.appendTo @results
         li.addClass('disabled') unless _selected.indexOf(ref.id) < 0
         li.find('a.add').click (e)=>

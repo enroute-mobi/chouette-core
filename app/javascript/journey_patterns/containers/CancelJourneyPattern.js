@@ -11,7 +11,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     onConfirmCancel: () => {
-      window.reload()
+      location.reload()
     },
   }
 }

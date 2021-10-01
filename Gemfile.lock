@@ -42,6 +42,14 @@ GIT
       rails (>= 5.2)
 
 GIT
+  remote: https://bitbucket.org/enroute-mobi/nest.git
+  revision: 87c440d6f8060ac0f6edd2e2d072fc16570940e2
+  branch: NEST-1-version
+  specs:
+    nest (0.1)
+      activesupport
+
+GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
   revision: a943b5960a460fb805bc4d6375ba616a23e0899f
   specs:
@@ -858,6 +866,7 @@ DEPENDENCIES
   map_layers (= 0.0.4)
   mimemagic (>= 0.4.3)
   mini_racer
+  nest!
   net-sftp
   netex!
   nokogiri (>= 1.12.5)

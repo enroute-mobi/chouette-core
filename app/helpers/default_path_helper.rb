@@ -127,7 +127,7 @@ module DefaultPathHelper
     end
 
     def shape_referential
-      @shape_referential ||= resource
+      @shape_referential ||= resource.try(:shape_referential)
     end
 
     def shape_referential=(shape_referential)

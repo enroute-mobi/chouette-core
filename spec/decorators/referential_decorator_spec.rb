@@ -61,9 +61,10 @@ RSpec.describe ReferentialDecorator, type: [:helper, :decorator] do
         context "on show" do
           let( :action){ :show }
           it 'has corresponding actions' do
-            expect_action_link_elements(action).to match_array ["Editer ce jeu de données", "Calendriers", "Dupliquer", "Contrôler", "Archiver", "Nettoyer", "Supprimer ce jeu de données"]
+            expect_action_link_elements(action).to match_array ["Courses", "Editer ce jeu de données", "Calendriers", "Dupliquer", "Contrôler", "Archiver", "Nettoyer", "Supprimer ce jeu de données"]
             expect_action_link_hrefs(action).to match_array([
               [:edit, object],
+              referential_vehicle_journeys_path(object),
               referential_time_tables_path(object),
               new_workbench_referential_path(referential.workbench, from: object.id),
               select_compliance_control_set_referential_path(object),

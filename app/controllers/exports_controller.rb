@@ -57,6 +57,10 @@ class ExportsController < ChouetteController
     send_file resource.file.path, filename: resource.user_file.name, type: resource.user_file.content_type
   end
 
+  def create
+    create! { [parent, resource] }
+  end
+
   protected
 
   def parent

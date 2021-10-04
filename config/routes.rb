@@ -168,6 +168,17 @@ ChouetteIhm::Application.routes.draw do
   end
 
   resources :referentials, except: %w(new create index) do
+    resources :autocomplete, controller: 'referential_autocomplete', only: [] do
+      defaults format: :json do
+      collection do
+        get :companies
+        get :lines
+        get :journey_patterns
+        get :time_tables
+        get :vehicle_journeys
+      end
+    end
+  end
 
     member do
       put :archive

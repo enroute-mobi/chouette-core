@@ -9,9 +9,9 @@ flatpickr(".flatpickr", {
 //     "plugins": [new rangePlugin({ input: "#secondRangeInput"})]
 // });
 
-// flatpickr(".time_picker", {
-//     enableTime: true,
-//     noCalendar: true,
-//     dateFormat: "H:i",
-//     time_24hr: true
-// })
+flatpickr(".time_picker", {
+    enableTime: true,
+    noCalendar: true,
+    dateFormat: "H:i",
+    time_24hr: true
+})

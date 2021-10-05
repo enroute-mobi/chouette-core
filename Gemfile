@@ -91,7 +91,6 @@ gem 'gretel', '>= 4.3.0'
 gem 'country_select'
 gem 'flag-icons-rails', '>= 3.4.6.1'
 gem 'i18n-js'
-gem 'clockpicker-rails', '>= 0.0.2'
 gem 'font_awesome5_rails', '>= 1.5.0'
 
 # Format Output

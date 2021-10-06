@@ -10,7 +10,6 @@ class ReferentialAutocompleteController < ChouetteController
     @companies = scope.companies.order(:name).by_text(text)
   end
 
-
   def journey_patterns
     @journey_patterns = route.journey_patterns.by_text(text)
   end

@@ -28,6 +28,4 @@ const TTSelect2 = ({ isFilter, onSelect2Timetable, selectedItem }) => (
   />
 )
 
-const formatRepo = (props) => {
-  if(props.text) return props.text
-}
+export default TTSelect2

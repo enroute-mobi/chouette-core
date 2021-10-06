@@ -20,6 +20,7 @@ module Chouette
     scope :light, ->{ select(:id, :name, :route_id, :objectid) }
 
     scope :without_any_vehicle_journey, -> { joins('LEFT JOIN vehicle_journeys ON vehicle_journeys.journey_pattern_id = journey_patterns.id').where(vehicle_journeys: { id: nil } ) }
+    scope :by_text, ->(text) { text.blank? ? all : where('lower(journey_patterns.published_name) LIKE :t or lower(journey_patterns.objectid) LIKE :t or lower(journey_patterns.registration_number) LIKE :t', t: "%#{text.downcase}%") }
 
     validates_presence_of :route
     validates_presence_of :name

@@ -1,5 +1,5 @@
 class TimePickerInput < SimpleForm::Inputs::Base
-  def input(wrapper_options)
+  def input
     set_html_options
 
     template.content_tag(:div, class: 'time_picker input-group') do

@@ -378,6 +378,10 @@ class Export::Gtfs < Export::Base
         parent_stop_id
       end
 
+      def gtfs_platform_code
+        public_code.presence
+      end
+
       def stop_attributes
         {
           id: stop_id,
@@ -392,7 +396,7 @@ class Export::Gtfs < Export::Base
           timezone: (time_zone unless parent),
           #code: TO DO
           wheelchair_boarding: mobility_restricted_suitability ? 1 : 0,
-          platform_code: public_code
+          platform_code: gtfs_platform_code
         }
       end
 

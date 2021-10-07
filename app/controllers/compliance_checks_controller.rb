@@ -1,4 +1,7 @@
-class ComplianceChecksController <  InheritedResources::Base
+class ComplianceChecksController < ChouetteController
+  include PolicyChecker
+  defaults resource_class: ComplianceCheck
+  
   def parent
     @parent ||= if params[:workgroup_id]
       current_organisation.workgroups.find params[:workgroup_id]

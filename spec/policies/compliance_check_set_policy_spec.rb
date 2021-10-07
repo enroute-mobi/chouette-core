@@ -1,63 +1,71 @@
 RSpec.describe ComplianceCheckSetPolicy, type: :policy do
+  
+  subject { described_class.new UserContext.new(user), compliance_check_set }
 
-  let(:record) { create :compliance_check_set }
-  before(:each) { user.organisation = create(:organisation) }
-
-  context "when the workbench belongs to another organisation (other workgroup)" do
-    permissions :show? do
-      it "denies user" do
-        expect_it.not_to permit(user_context, record)
+  describe "for show action" do
+    context 'when user is ComplianceCheckSet owner' do
+      let(:context) do
+        Chouette.create do
+          organisation(:organisation) { user :user }
+          workbench organisation: :organisation do
+            compliance_check_set user: :user
+          end
+        end
       end
+      let(:compliance_check_set) { context.compliance_check_set }
+      let(:user) { context.user(:user) }
+      it { is_expected.to permit_action(:show) }
+    end
+
+    context 'when user is Workgroup owner' do
+      let(:context) do
+        Chouette.create do
+          organisation(:owner_organisation) { user :owner_user }
+          organisation { user :another_user }
+          workgroup owner: :owner_organisation do
+            compliance_check_set user: :another_user
+          end
+        end
+      end
+      let(:compliance_check_set) { context.compliance_check_set }
+      let(:user) { context.user(:owner_user) }
+      it { is_expected.to permit_action(:show) }
+    end
+
+    context 'when user belongs to another organisation in the same Workgroup' do
+      let(:context) do
+        Chouette.create do
+          organisation(:organisation) { user :user }
+          organisation(:other_organisation) { user :other_user }
+          workgroup do
+            workbench organisation: :organisation
+            workbench organisation: :other_organisation do
+              compliance_check_set user: :other_user
+            end
+          end
+        end
+      end
+      let(:compliance_check_set) { context.compliance_check_set }
+      let(:user) { context.user(:user) }
+      it { is_expected.to forbid_action(:show) }
+    end
+
+    context 'when user belongs to same organisation and the same Workgroup' do
+      let(:context) do
+        Chouette.create do
+          organisation(:organisation) do
+            user :user
+            user :other_user
+          end
+          workbench organisation: :organisation do
+            compliance_check_set user: :other_user
+          end
+        end
+      end
+      let(:compliance_check_set) { context.compliance_check_set }
+      let(:user) { context.user(:user) }
+      it { is_expected.to permit_action(:show) }
     end
   end
 
-  context "when the workbench belongs to another organisation (same workgroup)" do
-    before do
-      allow(user.workgroups).to receive(:pluck).with(:id).and_return [record.workbench.workgroup_id]
-    end
-
-    permissions :show? do
-      it "denies user" do
-        expect_it.not_to permit(user_context, record)
-      end
-    end
-  end
-
-  context "when the workbench belongs to another organisation (same workgroup) but i am the owner of the workgroup" do
-    before do
-      record.workbench.workgroup.update owner_id: user.organisation_id
-      allow(user.workgroups).to receive(:pluck).with(:id).and_return [record.workbench.workgroup_id]
-    end
-
-    permissions :show? do
-      it "allows user" do
-        expect_it.to permit(user_context, record)
-      end
-    end
-  end
-
-  context "when the workbench belongs to the same organisation" do
-    before do
-      user.organisation.workbenches << record.workbench
-    end
-
-    permissions :show? do
-      it "allows user" do
-        expect_it.to permit(user_context, record)
-      end
-    end
-  end
-
-  context "when the CCS workgroup belongs to the same organisation" do
-    let(:new_workbench) { create :workbench, workgroup: record.workgroup }
-    before do
-      user.organisation.workbenches << new_workbench
-    end
-
-    permissions :show? do
-      it "allows user" do
-        expect_it.to permit(user_context, record)
-      end
-    end
-  end
 end

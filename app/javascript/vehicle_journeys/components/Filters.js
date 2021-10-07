@@ -32,7 +32,7 @@ export default function Filters({filters, pagination, onFilter, onResetFilters, 
           <div className='ffg-row'>
             {/* ID course */}
             <div className="form-group w33">
-              <label htmlFor="" className="control-label col-sm-2">{I18n.t('activerecord.attributes.vehicle_journey.id')} :</label>
+              <label htmlFor="" className="control-label col-sm-2">{I18n.t('activerecord.attributes.vehicle_journey.id') + ':'} </label>
               <div className="col-sm-10">
                 <VJSelect2
                   key={filtersKey}
@@ -46,7 +46,7 @@ export default function Filters({filters, pagination, onFilter, onResetFilters, 
 
             {/* Missions */}
             <div className='form-group w33'>
-              <label htmlFor="" className="control-label col-sm-2">{I18n.t('activerecord.attributes.vehicle_journey.journey_pattern_id')} :</label>
+              <label htmlFor="" className="control-label col-sm-2">{I18n.t('activerecord.attributes.vehicle_journey.journey_pattern_id') + ':'}</label>
               <div className="col-sm-10">
                 <MissionSelect2
                   key={filtersKey}
@@ -59,7 +59,7 @@ export default function Filters({filters, pagination, onFilter, onResetFilters, 
 
             {/* Calendriers */}
             <div className='form-group w33'>
-              <label htmlFor="" className="control-label col-sm-2">{I18n.t('activerecord.attributes.time_table.calendars')} :</label>
+              <label htmlFor="" className="control-label col-sm-2">{I18n.t('activerecord.attributes.time_table.calendars') + ':'}</label>
               <div className="col-sm-10">
                 <TimetableSelect2
                   key={filtersKey}

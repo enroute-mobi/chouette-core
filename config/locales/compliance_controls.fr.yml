@@ -375,4 +375,4 @@ fr:
         pattern: Expression régulière
         subclass: Objet
         custom_field_code: "Champs personnalisé"
-        Duration: "Durée de la période de contrôle"
+        duration: "Durée de la période de contrôle"

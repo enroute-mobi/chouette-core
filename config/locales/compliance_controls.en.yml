@@ -372,3 +372,4 @@ en:
         pattern: Regular expression
         subclass: Object
         custom_field_code: "Custom field"
+        duration: "Duration of the controlled period"

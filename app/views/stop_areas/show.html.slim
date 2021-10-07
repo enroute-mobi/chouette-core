@@ -44,7 +44,8 @@
                   td
                     = link_to(c.name, workbench_stop_area_referential_stop_area_path(@workbench, c.id))
                   td
-                     = "#{c.distance.round(2)} m"
+                    - if c.distance
+                      = "#{c.distance.round(2)} m"
           - if @stop_area.children.count > 5
             = link_to t('stop_areas.show.more', count: (@stop_area.children.count - 5)), workbench_stop_area_referential_stop_areas_path(@workbench, :'q[parent_id_eq]' => @stop_area.id), class: 'btn btn-link pull-right'
 

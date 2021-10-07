@@ -76,6 +76,36 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       part.export!
       expect(export.target.stops.map(&:id)).to match_array([first_stop_area.objectid, second_stop_area.objectid])
     end
+
+  end
+
+  describe "Stop Area Decorator" do
+    let(:stop_area) { Chouette::StopArea.new }
+    let(:decorator) { Export::Gtfs::StopAreas::Decorator.new stop_area }
+
+    describe "#gtfs_platform_code" do
+      subject { decorator.gtfs_platform_code }
+      context "when public code is nil" do
+        before { stop_area.public_code = nil }
+        it { is_expected.to be_nil }
+      end
+      context "when public code is ''" do
+        before { stop_area.public_code = '' }
+        it { is_expected.to be_nil }
+      end
+      context "when public code is 'dummy" do
+        before { stop_area.public_code = 'dummy' }
+        it { is_expected.to eq('dummy') }
+      end
+    end
+
+    describe "stop_attributes" do
+      subject { decorator.stop_attributes }
+      context "when gtfs_platform_code is 'dummy'" do
+        before { allow(decorator).to receive(:gtfs_platform_code).and_return("dummy") }
+        it { is_expected.to include(platform_code: 'dummy')}
+      end
+    end
   end
 
   describe 'Line Part' do

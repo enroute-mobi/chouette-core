@@ -11,7 +11,7 @@ module Query
 
     def user_statuses(user_statuses)
       unless user_statuses.blank?
-        statuses Operation::UserStatus.find(user_statuses).flat_map(&:operation_statuses)
+        statuses ::Operation::UserStatus.find(user_statuses).flat_map(&:operation_statuses)
       end
 
       self

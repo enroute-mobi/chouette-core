@@ -27,10 +27,6 @@ class ComplianceCheck < ApplicationModel
   delegate :predicate, to: :control_class, allow_nil: true
   delegate :prerequisite, to: :control_class, allow_nil: true
 
-  def self.policy_class
-    ComplianceCheckSetPolicy
-  end
-
   def method_missing m_name, *args
     if self.control_attributes.has_key?(m_name.to_s)
       self.control_attributes[m_name.to_s]

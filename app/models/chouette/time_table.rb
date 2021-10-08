@@ -51,6 +51,7 @@ module Chouette
     scope :non_empty, -> { where.not(id: empty) }
 
     scope :linked_to_lines, ->(lines) { joins(vehicle_journeys: :route).where('routes.line_id' => lines.map(&:id)) }
+    scope :by_text, ->(text) { text.blank? ? all : where('unaccent(time_tables.comment) ILIKE :t or lower(time_tables.objectid) LIKE :t', t: "%#{text.downcase}%") }
 
     def self.shared_by_several_lines?
       joins(:routes).group(:id).having("count(distinct(line_id)) > 1").exists?

@@ -7,6 +7,7 @@ const mapStateToProps = (state) => {
     filters: state.filters,
     pagination: state.pagination,
     missions: state.missions,
+    vehicleJourneys: state.vehicleJourneys
   }
 }
 
@@ -32,14 +33,14 @@ const mapDispatchToProps = (dispatch) => {
     onFilter: (e, pagination) =>{
       dispatch(actions.checkConfirmModal(e, actions.filterQuery(dispatch), pagination.stateChanged, dispatch))
     },
-    onSelect2Timetable: (e) => {
-      dispatch(actions.filterSelect2Timetable(e.params.data))
+    onSelect2Timetable: selectedItem => {
+      dispatch(actions.filterSelect2Timetable(selectedItem))
     },
-    onSelect2JourneyPattern: (e) => {
-      dispatch(actions.filterSelect2JourneyPattern(e.params.data))
+    onSelect2JourneyPattern: selectedItem => {
+      dispatch(actions.filterSelect2JourneyPattern(selectedItem))
     },
-    onSelect2VehicleJourney: (e) => {
-      dispatch(actions.filterSelect2VehicleJourney(e.params.data))
+    onSelect2VehicleJourney: selectedItem => {
+      dispatch(actions.filterSelect2VehicleJourney(selectedItem))
     }
   }
 }

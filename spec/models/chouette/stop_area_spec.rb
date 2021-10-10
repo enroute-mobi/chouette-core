@@ -252,4 +252,55 @@ describe Chouette::StopArea, :type => :model do
       expect(subject).to_not be_valid
     end
   end
+
+end
+
+RSpec.describe Chouette::StopArea do
+  let(:context) { Chouette.create { stop_area :subject } }
+  subject(:stop_area) { context.stop_area(:subject) }
+
+  describe '#closest_children' do
+    subject { stop_area.closest_children }
+
+    context "when the StopArea has no defined position" do
+      before { stop_area.latitude = stop_area.longitude = nil }
+      it { is_expected.to be_empty }
+    end
+
+    context "when the StopArea has no children" do
+      it { is_expected.to be_empty }
+    end
+
+    context "when the StopArea has children" do
+      let(:context) do
+        Chouette.create do
+          stop_area :subject, latitude: 48.8583736, longitude: 2.2922873, area_type: "zdlp"
+          stop_area :nearest, latitude: 48.85838, longitude: 2.29229, parent: :subject
+          stop_area :farthest, latitude: 48.85839, longitude: 2.29230, parent: :subject
+        end
+      end
+
+      let(:nearest_child) { context.stop_area(:nearest) }
+      let(:farthest_child) { context.stop_area(:farthest) }
+
+      it "returns children ordered by distance" do
+        is_expected.to eq([nearest_child, farthest_child])
+      end
+
+      it { is_expected.to all(having_attributes(distance: a_value)) }
+
+      context "when one of the children has no position" do
+        before { nearest_child.update latitude: nil, longitude: nil }
+        it "this child is returned as last one" do
+          is_expected.to eq([farthest_child, nearest_child])
+        end
+
+        it "this child has a nil distance" do
+          is_expected.to include(an_object_having_attributes(id: nearest_child.id, distance: nil))
+        end
+      end
+
+    end
+
+  end
 end

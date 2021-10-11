@@ -18,14 +18,6 @@ node do |time_table|
     :tags => time_table.tags.join(','),
     :color => time_table.color,
     :day_types => time_table.display_day_types,
-<<<<<<< Updated upstream
-    :short_id => time_table.get_objectid.short_id,
-  }
-end
-=======
     :short_id => time_table.get_objectid.short_id
   }
 end
-
-attributes :comment, :objectid
->>>>>>> Stashed changes

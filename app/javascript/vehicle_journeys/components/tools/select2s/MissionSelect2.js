@@ -32,6 +32,7 @@ const JPSelect2 = ({ isFilter, onSelect2JourneyPattern, selectedItem }) =>  (
         minHeight: '51px',
         height: '51px'
       }),
+      menu: base => ({ ...base, zIndex: 2000 })
     }}
   />
 )

@@ -18,6 +18,7 @@ const VJSelect2 = ({ _isFilter, onSelect2VehicleJourney, options, selectedItem }
         minHeight: '51px',
         height: '51px'
       }),
+      menu: base => ({ ...base, zIndex: 2000 })
     }}
   />
 )

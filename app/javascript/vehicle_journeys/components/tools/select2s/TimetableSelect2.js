@@ -31,6 +31,7 @@ const TTSelect2 = ({ isFilter, onSelect2Timetable, selectedItem }) => (
         minHeight: '51px',
         height: '51px'
       }),
+      menu: base => ({ ...base, zIndex: 2000 })
     }}
   />
 )

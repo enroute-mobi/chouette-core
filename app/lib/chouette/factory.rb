@@ -64,6 +64,13 @@ module Chouette
             new_instance.line_referential.add_member new_instance.organisation
           end
 
+          model :compliance_check_set do
+            attribute(:name) { |n| "Test #{n}" }
+            after do
+              new_instance.workgroup = parent.workgroup
+            end
+          end
+
           model :line_provider do
             attribute(:short_name) { |n| "line_provider_#{n}" }
 

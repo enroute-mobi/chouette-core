@@ -12,6 +12,14 @@ const VJSelect2 = ({ _isFilter, onSelect2VehicleJourney, options, selectedItem }
     onChange={(selectedItem, meta) => {
       meta.action == 'select-option' && onSelect2VehicleJourney(selectedItem)
     }}
+    styles={{
+      control: (provided) => ({
+        ...provided,
+        minHeight: '51px',
+        height: '51px'
+      }),
+      menu: base => ({ ...base, zIndex: 2000 })
+    }}
   />
 )
 

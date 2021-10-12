@@ -7,7 +7,7 @@ const path = `/workgroups/${getWorkgroupId()}/autocomplete/companies`
 
 const CompanySelect2 = ({ company, editMode, editModal, onSelect2Company, onUnselect2Company }) => (
   <Select
-    cacheOptions 
+    cacheOptions
     isClearable
     defaultValue={company?.id ? { id: company.id, text: company.name } : undefined }
     getOptionLabel={({ text }) => text}
@@ -30,6 +30,14 @@ const CompanySelect2 = ({ company, editMode, editModal, onSelect2Company, onUnse
           onUnselect2Company()
           break
       }
+    }}
+    styles={{
+      control: (provided) => ({
+        ...provided,
+        minHeight: '51px',
+        height: '51px'
+      }),
+      menu: base => ({ ...base, zIndex: 2000 })
     }}
   />
 )

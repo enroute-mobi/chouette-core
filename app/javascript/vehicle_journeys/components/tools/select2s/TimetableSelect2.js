@@ -25,6 +25,14 @@ const TTSelect2 = ({ isFilter, onSelect2Timetable, selectedItem }) => (
     onChange={(selectedItem, meta) => {
       meta.action == 'select-option' && onSelect2Timetable(selectedItem)
     }}
+    styles={{
+      control: (provided) => ({
+        ...provided,
+        minHeight: '51px',
+        height: '51px'
+      }),
+      menu: base => ({ ...base, zIndex: 2000 })
+    }}
   />
 )
 

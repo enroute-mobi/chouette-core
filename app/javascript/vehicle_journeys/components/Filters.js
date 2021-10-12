@@ -22,7 +22,7 @@ export default function Filters({filters, pagination, onFilter, onResetFilters, 
         isOptionSelected: filters.query.vehicleJourney?.objectid == vj.objectid,
         ...vj
       }] : []
-    ] 
+    ]
   }, [])
 
   return (
@@ -31,7 +31,7 @@ export default function Filters({filters, pagination, onFilter, onResetFilters, 
         <div className='form form-filter'>
           <div className='ffg-row'>
             {/* ID course */}
-            <div className="form-group w33">
+            <div className="form-group w33 flex items-center">
               <label htmlFor="" className="control-label col-sm-2">{I18n.t('activerecord.attributes.vehicle_journey.id') + ':'} </label>
               <div className="col-sm-10">
                 <VJSelect2
@@ -45,7 +45,7 @@ export default function Filters({filters, pagination, onFilter, onResetFilters, 
             </div>
 
             {/* Missions */}
-            <div className='form-group w33'>
+            <div className='form-group w33 flex items-center'>
               <label htmlFor="" className="control-label col-sm-2">{I18n.t('activerecord.attributes.vehicle_journey.journey_pattern_id') + ':'}</label>
               <div className="col-sm-10">
                 <MissionSelect2
@@ -58,7 +58,7 @@ export default function Filters({filters, pagination, onFilter, onResetFilters, 
             </div>
 
             {/* Calendriers */}
-            <div className='form-group w33'>
+            <div className='form-group w33 flex items-center'>
               <label htmlFor="" className="control-label col-sm-2">{I18n.t('activerecord.attributes.time_table.calendars') + ':'}</label>
               <div className="col-sm-10">
                 <TimetableSelect2

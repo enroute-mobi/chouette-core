@@ -26,6 +26,14 @@ const JPSelect2 = ({ isFilter, onSelect2JourneyPattern, selectedItem }) =>  (
     onChange={(selectedItem, meta) => {
       meta.action == 'select-option' && onSelect2JourneyPattern(selectedItem)
     }}
+    styles={{
+      control: (provided) => ({
+        ...provided,
+        minHeight: '51px',
+        height: '51px'
+      }),
+      menu: base => ({ ...base, zIndex: 2000 })
+    }}
   />
 )
 

@@ -67,7 +67,7 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@fortawesome/fontawesome-free": "^5.15.1",
+    "@fortawesome/fontawesome-free": "^5.15.4",
     "@webpack-cli/serve": "^1.5.1",
     "es6-object-assign": "1.1.0",
     "file-loader": "^6.2.0",

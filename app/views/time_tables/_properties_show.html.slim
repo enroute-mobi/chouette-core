@@ -19,7 +19,7 @@
 
     p
       label = "#{@time_table.human_attribute_name('day_types')} : "
-      
+
       - if @time_table.int_day_types & 508 == 0
         label = @time_table.human_attribute_name("none")
       - else
@@ -47,8 +47,8 @@
     h3.time_table_calendars
       a.calendars
         = @time_table.human_attribute_name("calendars")
-        = image_tag("icons/plus.png"  , class: "switcher", :style => "display: none;")
-        = image_tag("icons/minus.png"  , class: "switcher" )
+        = image_pack_tag("icons/plus.png"  , class: "switcher", :style => "display: none;")
+        = image_pack_tag("icons/minus.png"  , class: "switcher" )
 
     .calendars.content
       .year_choice
@@ -74,8 +74,8 @@
   h3.time_table_periods
     a.periods
       = @time_table.human_attribute_name("periods")
-      = image_tag("icons/plus.png"  , class: "switcher", :style => "display: none;")
-      = image_tag("icons/minus.png"  , class: "switcher" )
+      = image_pack_tag("icons/plus.png"  , class: "switcher", :style => "display: none;")
+      = image_pack_tag("icons/minus.png"  , class: "switcher" )
 
   .periods.content
     == render "time_tables/periods"
@@ -83,8 +83,8 @@
   h3.time_table_dates
     a.dates
       = @time_table.human_attribute_name("dates")
-      = image_tag("icons/plus.png"  , class: "switcher", :style => "display: none;")
-      = image_tag("icons/minus.png"  , class: "switcher" )
+      = image_pack_tag("icons/plus.png"  , class: "switcher", :style => "display: none;")
+      = image_pack_tag("icons/minus.png"  , class: "switcher" )
 
   .dates.content
     == render "time_tables/dates"
@@ -92,8 +92,8 @@
   h3.time_table_dates
     a.excluded_dates
       = @time_table.human_attribute_name("excluded_dates")
-      = image_tag("icons/plus.png", class: "switcher", :style => "display: none;")
-      = image_tag("icons/minus.png", class: "switcher" )
+      = image_pack_tag("icons/plus.png", class: "switcher", :style => "display: none;")
+      = image_pack_tag("icons/minus.png", class: "switcher" )
 
   .excluded_dates.content
     == render "time_tables/excluded_dates"

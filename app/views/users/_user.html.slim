@@ -13,5 +13,5 @@
 
       h5
         = link_to( organisation_user_path(user), class: 'preview', title: "#{User.model_name.human.capitalize} #{user.email}") do
-          = user_gravatar_image_tag(user, 20)
+          = user_gravatar_image_pack_tag(user, 20)
           span.name = truncate(user.name, :length => 15)

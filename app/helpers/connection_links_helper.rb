@@ -20,7 +20,7 @@ module ConnectionLinksHelper
   end
 
   def connection_link_id_with_icon_color(color, text)
-    image_tag(asset_path("icons/map_pin_#{color}.png"), class: 'fa fa-square fa-lg') + text
+    image_pack_tag(asset_path("icons/map_pin_#{color}.png"), class: 'fa fa-square fa-lg') + text
   end
 
   def connection_link_durations_display(duration)

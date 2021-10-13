@@ -1,4 +1,4 @@
-import Store from '../../helpers/Store'
+import Store from '../../src/helpers/Store'
 import { actions } from './shape.actions'
 import { reducer, initialState } from './shape.reducer'
 

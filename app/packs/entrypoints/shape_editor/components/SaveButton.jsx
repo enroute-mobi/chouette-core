@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import SaveButton from '../../../helpers/save_button'
+import SaveButton from '../../../src/helpers/save_button'
 export default class SaveShape extends SaveButton {
   constructor(props) {
     super(props)

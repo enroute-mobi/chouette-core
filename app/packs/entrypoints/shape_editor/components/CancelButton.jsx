@@ -1,4 +1,4 @@
-import CancelButton from '../../../helpers/cancel_button'
+import CancelButton from '../../../src/helpers/cancel_button'
 export default class CancelShape extends CancelButton {
   constructor(props) {
     super(props)

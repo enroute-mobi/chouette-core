@@ -14,12 +14,12 @@
 const images = require.context('../images', true)
 const imagePath = (name) => images(name, true)
 
-import 'core-js/stable'
-import 'regenerator-runtime/runtime'
+// import 'core-js/stable'
+// import 'regenerator-runtime/runtime'
 
 // loading font awesome
 import "@fortawesome/fontawesome-free/js/all"
-import "@fortawesome/fontawesome-free/css/all"
+// import "@fortawesome/fontawesome-free/css/all"
 
 import '@ryangjchandler/spruce'
 import 'alpinejs'

@@ -1,4 +1,4 @@
-import EventEmitter from '../../helpers/EventEmitter'
+import EventEmitter from '../../src/helpers/EventEmitter'
 
 export default new EventEmitter()
 

@@ -6,7 +6,7 @@ import store from '../shape.store'
 import eventEmitter, { events } from '../shape.event-emitter'
 import { onWaypointsUpdate$, onMapZoom$ } from '../shape.observables'
 
-import { useStore } from '../../../helpers/hooks'
+import { useStore } from '../../../src/helpers/hooks'
 
 import { useMapController, useValidatorController } from '../controllers/ui'
 import {
@@ -16,7 +16,7 @@ import {
   useUserPermissionsController
 } from '../controllers/data'
 
-import MapWrapper from '../../../components/MapWrapper'
+import MapWrapper from '../../../src/components/MapWrapper'
 import NameInput from './NameInput'
 import List from './List'
 import CancelButton from './CancelButton'

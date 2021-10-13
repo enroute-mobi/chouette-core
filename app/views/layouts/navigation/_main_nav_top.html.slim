@@ -16,7 +16,7 @@
 
       - if Rails.application.config.link_to_support_enabled
         = link_to Rails.application.config.support_link, target: :blank, title: t('layouts.go_to_to_support_center'), class: 'menu-item' do
-          = image_pack_tag("icons/chaticon.svg", height: 25)
+          = image_pack_tag("static/icons/chaticon.svg", height: 25)
 
       - if user_signed_in?
         = link_to 'javascript:void(0)', id: 'profile_dropdown', class: 'menu-item', data: { panel: 'toggle', target: '#profile_panel' }, title: t('layouts.user.profile') do

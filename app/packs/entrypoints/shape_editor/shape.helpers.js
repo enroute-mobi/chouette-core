@@ -22,7 +22,7 @@ import { Fill, RegularShape, Style } from 'ol/style'
 import Point from 'ol/geom/Point'
 import GeoJSON from 'ol/format/GeoJSON'
 
-import handleRedirect from '../../helpers/redirect'
+import handleRedirect from '../../src/helpers/redirect'
 
 export const wktOptions = { //  use options to convert feature from EPSG:4326 to EPSG:3857
   dataProjection: 'EPSG:4326',
@@ -60,7 +60,7 @@ export const getLayer = key => flow(getLayers, layers => layers.getArray(), laye
 
 const getTolerance = (() => {
   const tolerances = [1, 0.1, 0.01, 0.001, 0.0009, 0.0007, 0.0005, 0.0003, 0.0001, 0]
-  
+
   return view => {
     const percentage = (view.getZoom() - view.getMinZoom()) / (view.getMaxZoom() - view.getMinZoom())
     const index = Math.ceil((tolerances.length - 1) * percentage)
@@ -162,7 +162,7 @@ export const submitFetcher = async (url, isEdit, payload) => {
     method,
     headers: {
       'Content-Type': 'application/json',
-      'Accept': 'application/json', 
+      'Accept': 'application/json',
       'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').attributes.content.value
     },
     body: JSON.stringify(payload)
@@ -171,12 +171,12 @@ export const submitFetcher = async (url, isEdit, payload) => {
   handleRedirect(() => {
     const { sessionStorage } = window
     const previousAction = isEdit ? 'shape-update' : 'shape-create'
-    
+
     sessionStorage.setItem('previousAction', previousAction) // Being used in JP react app to display or not a flash message
     }
   )(response)
 
-  const data = await response.json() 
+  const data = await response.json()
 
   if (!response.ok) {
     throw data['errors']

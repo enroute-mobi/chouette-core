@@ -5,7 +5,7 @@
         = link_to default_stop_area_path(stop_point.stop_area), class: "preview", title: "#{Chouette::StopArea.model_name.human.capitalize} #{stop_point.stop_area.name}" do
           span.name
             span.label.label-primary = stop_point.position + 1
-            = image_pack_tag "map/" + stop_point.stop_area.area_type + ".png"
+            = image_pack_tag "static/map/" + stop_point.stop_area.area_type + ".png"
             = truncate(stop_point.stop_area.name, length: 20)
 
   .panel-body

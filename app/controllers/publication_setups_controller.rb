@@ -50,6 +50,7 @@ class PublicationSetupsController < ChouetteController
     params.require(:publication_setup).permit(
       :name,
       :enabled,
+      :force_daily_publishing,
       :workgroup_id,
       :publish_per_line,
       destinations_attributes: destination_options,

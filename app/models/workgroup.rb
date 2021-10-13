@@ -135,6 +135,13 @@ class Workgroup < ApplicationModel
 
     if target_referentials.empty?
       Rails.logger.info "No aggregatable referential found for nighlty aggregate on Workgroup #{name} (Id: #{id})"
+
+      publication_setups.where(force_daily_publishing: true).each do |ps|
+        aggregate = aggregates.where(status: 'successful').last
+
+        ps.publish(aggregate) if aggregate
+      end
+
       return
     end
 

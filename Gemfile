@@ -9,11 +9,6 @@ gem 'rails', '~> 5.2.4', '>= 5.2.4.6'
 
 gem 'health_check'
 
-# Use SCSS for stylesheets
-gem 'sassc-rails', '>= 2.1.2'
-gem 'sassc', '2.1.0'
-gem 'sass'
-
 group :production do
   gem 'mini_racer'
 end

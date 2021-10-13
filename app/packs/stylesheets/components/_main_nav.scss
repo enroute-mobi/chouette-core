@@ -55,9 +55,10 @@ $menuW: 300px;
 
       &:before {
         // content: unicode("f0c9");
-        // line-height: $menuH;
-        // font-family: "Font Awesome 5 Free";
-        // font-weight: 900;
+        content: '\f00d';
+        line-height: $menuH;
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
       }
     }
     .openMenu {
@@ -65,8 +66,7 @@ $menuW: 300px;
     }
     .closeMenu {
       &:before {
-        content: unicode("f00d");
-        // content: '\f00d';
+        content: '\f00d';
         font-family: "Font Awesome 5 Free";
         font-weight: 900;
       }
@@ -309,6 +309,10 @@ $menuW: 300px;
         }
         .menu-item {
           padding: 0 10px;
+
+          span {
+            margin-right: 0.8em;
+          }
 
           .fa {
             padding-left: 0.5em;

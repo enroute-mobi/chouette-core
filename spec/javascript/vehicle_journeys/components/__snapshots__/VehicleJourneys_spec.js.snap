@@ -19,13 +19,13 @@ exports[`stopPointHeader should display the city name 1`] = `
           <div
             className="strong mb-xs"
           >
-            ID Course
+            Course
           </div>
           <div>
             Nom Course
           </div>
           <div>
-            ID Mission
+            Mission
           </div>
           <div>
             transporteur
@@ -111,13 +111,13 @@ exports[`stopPointHeader with the "long_distance_routes" feature should display 
           <div
             className="strong mb-xs"
           >
-            ID Course
+            Course
           </div>
           <div>
             Nom Course
           </div>
           <div>
-            ID Mission
+            Mission
           </div>
           <div>
             transporteur

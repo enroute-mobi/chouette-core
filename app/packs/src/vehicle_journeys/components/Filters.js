@@ -1,46 +1,73 @@
-import React from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 
 import MissionSelect2 from'./tools/select2s/MissionSelect2'
 import VJSelect2 from'./tools/select2s/VJSelect2'
 import TimetableSelect2 from'./tools/select2s/TimetableSelect2'
 
-export default function Filters({filters, pagination, missions, onFilter, onResetFilters, onUpdateStartTimeFilter, onUpdateEndTimeFilter, onToggleWithoutSchedule, onToggleWithoutTimeTable, onSelect2Timetable, onSelect2JourneyPattern, onSelect2VehicleJourney}) {
+export default function Filters({filters, pagination, onFilter, onResetFilters, onUpdateStartTimeFilter, onUpdateEndTimeFilter, onToggleWithoutSchedule, onToggleWithoutTimeTable, onSelect2Timetable, onSelect2JourneyPattern, onSelect2VehicleJourney, vehicleJourneys }) {
+  const [filtersKey, setFiltersKey] = useState(5)
+
+  const resetFilters = e => {
+    setFiltersKey(value => value ^ 5)
+    onResetFilters(e, pagination)
+  }
+
+  const vjOptions = vehicleJourneys.reduce((options, vj) => {
+    return [
+      ...options,
+      ...vj.objectid ? [{
+        id: vj.objectid,
+        text: `<div><strong>${vj.short_id} - ${vj.published_journey_name}</strong></div>`,
+        isOptionSelected: filters.query.vehicleJourney?.objectid == vj.objectid,
+        ...vj
+      }] : []
+    ]
+  }, [])
+
   return (
     <div className='row'>
       <div className='col-lg-12'>
         <div className='form form-filter'>
           <div className='ffg-row'>
             {/* ID course */}
-            <div className="form-group w33">
-              <VJSelect2
-                onSelect2VehicleJourney={onSelect2VehicleJourney}
-                filters={filters}
-                isFilter={true}
+            <div className="form-group w33 flex items-center">
+              <label htmlFor="" className="control-label col-sm-2">{I18n.t('activerecord.attributes.vehicle_journey.id') + ':'} </label>
+              <div className="col-sm-10">
+                <VJSelect2
+                  key={filtersKey}
+                  selectedItem={filters.query.vehicleJourney}
+                  onSelect2VehicleJourney={onSelect2VehicleJourney}
+                  isFilter={true}
+                  options={vjOptions}
                 />
+              </div>
             </div>
 
             {/* Missions */}
-            <div className='form-group w33'>
-              <MissionSelect2
-                onSelect2JourneyPattern={onSelect2JourneyPattern}
-                filters={filters}
-                isFilter={true}
-                values={missions}
+            <div className='form-group w33 flex items-center'>
+              <label htmlFor="" className="control-label col-sm-2">{I18n.t('activerecord.attributes.vehicle_journey.journey_pattern_id') + ':'}</label>
+              <div className="col-sm-10">
+                <MissionSelect2
+                  key={filtersKey}
+                  selectedItem={filters.query.journeyPattern}
+                  onSelect2JourneyPattern={onSelect2JourneyPattern}
+                  isFilter={true}
                 />
+              </div>
             </div>
 
             {/* Calendriers */}
-            <div className='form-group w33'>
-              <TimetableSelect2
-                placeholder={I18n.t('vehicle_journeys.vehicle_journeys_matrix.filters.timetable')}
-                onSelect2Timetable={onSelect2Timetable}
-                hasRoute={true}
-                chunkURL={("/autocomplete_time_tables.json?route_id=" + String(window.route_id))}
-                searchKey={"unaccented_comment_or_objectid_cont_any"}
-                filters={filters}
-                isFilter={true}
-                />
+            <div className='form-group w33 flex items-center'>
+              <label htmlFor="" className="control-label col-sm-2">{I18n.t('activerecord.attributes.time_table.calendars') + ':'}</label>
+              <div className="col-sm-10">
+                <TimetableSelect2
+                  key={filtersKey}
+                  selectedItem={filters.query.timetable}
+                  onSelect2Timetable={onSelect2Timetable}
+                  isFilter={true}
+                  />
+              </div>
             </div>
           </div>
 
@@ -145,7 +172,7 @@ export default function Filters({filters, pagination, missions, onFilter, onRese
           <div className='actions'>
             <span
               className='btn btn-cancel'
-              onClick={(e) => onResetFilters(e, pagination)}>
+              onClick={resetFilters}>
               {I18n.t('actions.erase')}
             </span>
             <span

@@ -11,7 +11,7 @@
 # docker build -t chouette-core .
 # docker run --add-host "db:172.17.0.1" -e RAILS_DB_PASSWORD=chouette -p 3000:3000 -it chouette-core
 
-FROM eu.gcr.io/enroute-interne/enroute-ruby:2.6 as base
+FROM eu.gcr.io/enroute-interne/enroute-ruby:2.7 as base
 
 WORKDIR /app
 

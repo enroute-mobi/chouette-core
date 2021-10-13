@@ -13,7 +13,7 @@
     = f.input :zip_code_cont, placeholder: t('.zip_code'), label: Chouette::StopArea.tmf('zip_code'), required: false, wrapper_html: {class: filter_item_class(params[:q], :zip_code_cont)}
     = f.input :city_name_cont, placeholder: t('.city_name'), label: Chouette::StopArea.tmf('city_name'), required: false, wrapper_html: {class: filter_item_class(params[:q], :city_name_cont)}
     = f.input :parent_id_eq, placeholder: t('.parent'), label: Chouette::StopArea.tmf('parent_id'), as: :autocomplete_select, autocomplete_url: parent_stop_areas_workbench_autocomplete_index_path(@workbench, format: :json), load_url: parent_stop_areas_workbench_autocomplete_index_path(@workbench), required: false
-    = f.input :stop_area_provider_id_eq, placeholder: StopAreaProvider.ts, label: Chouette::StopArea.tmf('stop_area_provider_id'), as: :autocomplete_select, autocomplete_url: stop_area_providers_workbench_autocomplete_index_path(@workbench, format: :json), load_url: stop_area_providers_workbench_autocomplete_index_path(@workbench), required: false
+    = f.input :stop_area_provider_id_eq, placeholder: StopAreaProvider.ts, label: Chouette::StopArea.tmf('stop_area_provider_id'), as: :autocomplete_select, autocomplete_url: stop_area_providers_workgroup_autocomplete_index_path(@workbench.workgroup, format: :json), load_url: stop_area_providers_workgroup_autocomplete_index_path(@workbench.workgroup), required: false
     
   .ffg-row
     .form-group.togglable class=filter_item_class(params[:q], :area_type_eq_any)

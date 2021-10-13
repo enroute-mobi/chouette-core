@@ -2,7 +2,7 @@ class ReferentialDecorator < AF83::Decorator
   decorates Referential
 
   with_instance_decorator do |instance_decorator|
-    instance_decorator.action_link feature: :referential_vehicle_journeys, secondary: :show, on: :show, policy: :browse do |l|
+    instance_decorator.action_link secondary: :show, on: :show, policy: :browse do |l|
       l.content t('referential_vehicle_journeys.index.title')
       l.href { h.referential_vehicle_journeys_path(object) }
     end

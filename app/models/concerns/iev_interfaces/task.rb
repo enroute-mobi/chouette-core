@@ -22,7 +22,7 @@ module IevInterfaces::Task
     validates :name, presence: true
     validates_presence_of :creator
 
-    has_many :messages, class_name: messages_class_name, dependent: :destroy, foreign_key: "#{messages_class_name.split('::').first.downcase}_id"
+    has_many :messages, class_name: messages_class_name, dependent: :delete_all, foreign_key: "#{messages_class_name.split('::').first.downcase}_id"
     has_many :resources, class_name: resources_class_name, dependent: :destroy, foreign_key: "#{resources_class_name.split('::').first.downcase}_id"
 
     scope :where_started_at_in, ->(period_range) do

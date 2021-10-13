@@ -1,7 +1,5 @@
 class ExportsController < ChouetteController
   include PolicyChecker
-  include RansackDateFilter
-  include IevInterfaces
   skip_before_action :authenticate_user!, only: [:upload]
   skip_before_action :verify_authenticity_token, only: [:upload]
   defaults resource_class: Export::Base, collection_name: 'exports', instance_name: 'export'
@@ -20,12 +18,36 @@ class ExportsController < ChouetteController
   end
 
   def show
-    @export = resource.decorate(context: {parent: parent})
+    @export = resource.decorate(context: { parent: parent })
     respond_to do |format|
       format.html
       format.json do
         fragment = render_to_string(partial: "exports/show", formats: :html)
-        render json: {fragment: fragment}
+        render json: { fragment: fragment }
+      end
+    end
+  end
+
+  def index
+    index! do |format|
+      format.html do
+        # if collection.out_of_bounds?
+        #   redirect_to params.merge(:page => 1)
+        # end
+        @contextual_cols = []
+        @contextual_cols << if workbench
+                              TableBuilderHelper::Column.new(key: :creator, attribute: 'creator')
+                            else
+                              TableBuilderHelper::Column.new(
+                                key: :workbench,
+                                name: Organisation.ts.capitalize,
+                                attribute: proc { |n| n.workbench.organisation.name },
+                                link_to: lambda do |export|
+                                  policy(export.workbench).show? ? export.workbench : nil
+                                end
+                              )
+                            end
+        @exports = decorate_collection(collection)
       end
     end
   end
@@ -35,7 +57,27 @@ class ExportsController < ChouetteController
     send_file resource.file.path, filename: resource.user_file.name, type: resource.user_file.content_type
   end
 
+  def create
+    create! { [parent, resource] }
+  end
+
   protected
+
+  def parent
+    @parent ||= workgroup || workbench
+  end
+
+  def workbench
+    return unless params[:workbench_id]
+
+    @workbench ||= current_organisation&.workbenches&.find(params[:workbench_id])
+  end
+
+  def workgroup
+    return unless params[:workgroup_id]
+
+    @workgroup ||= current_organisation&.workgroups.owned&.find(params[:workgroup_id])
+  end
 
   def resource
     @export ||= parent.exports.find(params[:id])
@@ -49,11 +91,15 @@ class ExportsController < ChouetteController
     end
   end
 
-  private
-
-  def index_model
-    Export::Base
+  def scope
+    parent.exports
   end
+
+  def search
+    @search ||= Search.new(scope, params, workgroup: workgroup)
+  end
+
+  delegate :collection, to: :search
 
   def export_params
     params.require(:export).permit(:name, :type, :referential_id, :notification_target, options: {}).tap do |export_params|
@@ -73,9 +119,21 @@ class ExportsController < ChouetteController
     )
   end
 
+  class Search < Search::Operation
+    def query_class
+      Query::Export
+    end
+  end
+
   def load_referentials
-    referentials = parent.referentials.exportable.pluck(:id)
-    referentials += (workgroup || workbench&.workgroup).output.referentials.pluck(:id)
-    @referentials = Referential.where(id: referentials).order("created_at desc")
+    referential_ids = parent.referentials.exportable.pluck(:id)
+    referential_ids += (workgroup || workbench&.workgroup).output.referentials.pluck(:id)
+
+    @referential_options = Rabl::Renderer.new(
+      'autocomplete/referentials',
+      Referential.where(id: referential_ids).order("created_at desc"),
+      format: :hash,
+      view_path: 'app/views'
+    ).render
   end
 end

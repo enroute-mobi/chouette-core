@@ -5,9 +5,9 @@ git_source(:github) { |name| "https://github.com/#{name}.git" }
 git_source(:en_route) { |name| "https://bitbucket.org/enroute-mobi/#{name}.git" }
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 5.2.4', '>= 5.2.4.6'
+gem 'rails', '~> 5.2.6'
 
-gem 'health_check'
+gem 'health_check', '>= 3.1.0'
 
 group :production do
   gem 'mini_racer'
@@ -60,10 +60,10 @@ gem 'codifligne', en_route: 'ilico-api'
 gem 'icar', en_route: 'icar-api'
 
 # Authentication
-gem 'devise', '>= 4.7.3'
+gem 'devise', '>= 4.8.0'
 gem 'devise_cas_authenticatable', '>= 1.10.4'
 gem 'devise-encryptable', '>= 0.2.0'
-gem 'devise_invitable', '>= 2.0.3'
+gem 'devise_invitable', '>= 2.0.5'
 
 # Authorization
 gem 'pundit'
@@ -78,21 +78,21 @@ gem 'georuby', '2.3.0' # Fix version for georuby-ext because api has changed
 gem 'ffi-geos'
 
 gem 'ffi'
-gem 'mimemagic'
+gem 'mimemagic', '>= 0.4.3'
 
 # User interface
 gem 'language_engine', en_route: 'language_engine'
 gem 'calendar_helper', '0.2.5'
 gem 'cocoon'
-gem 'slim-rails', '>= 3.2.0'
-gem 'simple_form', '>= 5.0.3'
+gem 'slim-rails', '>= 3.3.0'
+gem 'simple_form', '>= 5.1.0'
 gem 'will_paginate-bootstrap'
-gem 'gretel', '>= 4.2.0'
+gem 'gretel', '>= 4.3.0'
 gem 'country_select'
 gem 'flag-icons-rails', '>= 3.4.6.1'
 gem 'i18n-js'
 gem 'clockpicker-rails', '>= 0.0.2'
-gem 'font_awesome5_rails'
+gem 'font_awesome5_rails', '>= 1.5.0'
 
 # Format Output
 gem 'json'
@@ -100,28 +100,28 @@ gem 'rubyzip'
 gem 'roo', '>= 2.8.3'
 
 # Controller
-gem 'inherited_resources', '>= 1.11.0'
+gem 'inherited_resources', '>= 1.13.0'
 gem 'responders', '>= 3.0.1'
 
-gem "lograge"
+gem "lograge", ">= 0.11.2"
 
 # Model
 gem 'will_paginate'
 gem 'ransack'
-gem 'active_attr', '>= 0.15.0'
+gem 'active_attr', '>= 0.15.3'
 
-gem 'draper', '>= 4.0.1'
+gem 'draper', '>= 4.0.2'
 
 gem 'enumerize'
 gem 'deep_cloneable'
 gem 'acts-as-taggable-on'
-gem 'nokogiri', '>= 1.11.4'
+gem 'nokogiri', '>= 1.12.5'
 
 gem 'acts_as_list'
 gem 'acts_as_tree'
 
 gem 'rabl'
-gem 'carrierwave', '>= 1.3.2'
+gem 'carrierwave', '~> 1.3.2'
 gem 'carrierwave-google-storage', github: 'metaware/carrierwave-google-storage'
 gem 'rmagick'
 
@@ -137,10 +137,10 @@ gem 'puma', '>= 5.3.1'
 gem 'postgresql_cursor'
 
 # CSS styled emails without the hassle.
-gem 'premailer-rails'
+gem 'premailer-rails', '>= 1.11.1'
 
-# Cache
-gem 'redis-rails', '>= 5.0.2'
+# Redis session management
+gem 'redis-actionpack', '>= 5.2.0'
 
 gem 'gtfs', en_route: 'gtfs'
 gem 'netex', en_route: 'netex'
@@ -150,6 +150,8 @@ gem 'ddtrace'
 
 # Monitoring
 gem 'sentry-raven'
+
+gem 'nest', en_route: 'nest'
 
 group :development do
   gem 'rails-erd'
@@ -162,7 +164,7 @@ group :development do
   gem 'derailed_benchmarks'
 
   gem 'bummr'
-  gem 'graphiql-rails', '>= 1.7.0'
+  gem 'graphiql-rails', '>= 1.8.0'
 
   gem 'guard-rspec', require: false
 end
@@ -175,7 +177,7 @@ group :test do
   gem 'rails-controller-testing', '>= 1.0.5'
   gem 'fuubar'
   gem 'rspec-benchmark'
-  gem 'pundit-matchers', '>= 1.6.0'
+  gem 'pundit-matchers', '>= 1.7.0'
 
   gem 'rspec_junit_formatter'
   gem 'simplecov', require: false
@@ -183,7 +185,7 @@ group :test do
 end
 
 group :test, :development do
-  gem 'rspec-rails', '>= 3.5.2'
+  gem 'rspec-rails', '>= 5.0.2'
   gem 'capybara', '~> 3.15.1'
   gem 'database_cleaner'
   gem 'poltergeist', '>= 1.18.1'
@@ -200,20 +202,22 @@ group :test, :development do
   gem 'ffaker', '~> 2.1.0'
   gem 'faker'
 
-  gem 'factory_bot_rails', '>= 6.1.0'
+  gem 'factory_bot_rails', '>= 6.2.0'
 
   gem 'awesome_print'
   gem 'pry-rails'
   gem 'pry-byebug'
 
-  gem 'teaspoon-jasmine', '>= 2.3.4'
+  gem 'teaspoon-jasmine', '>= 2.9.1'
   gem 'phantomjs'
+
+  gem 'dotenv-rails', '>= 2.7.6'
 end
 
 # I18n
 gem 'rails-i18n', '>= 5.1.3'
-gem 'devise-i18n', '>= 1.9.2'
-gem 'i18n-tasks', '>= 0.9.31'
+gem 'devise-i18n', '>= 1.10.0'
+gem 'i18n-tasks', '>= 0.9.34'
 
 # Rails Assets
 source 'https://rails-assets.org' do

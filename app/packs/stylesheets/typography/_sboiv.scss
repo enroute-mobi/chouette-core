@@ -67,7 +67,7 @@
 .sb-company:before {
   content: '\e907';
 }
-.sb-trace:before {
+.sb-shape:before {
   content: '\e908';
 }
 .sb-dashboard:before {
@@ -84,10 +84,12 @@
 .sb-import_resource:before {
   content: '\e90d';
 }
-.sb-OAT:before {
+.sb-workbench:before,
+.sb-merge:before {
   content: '\e90e';
 }
-.sb-OAS:before {
+.sb-workgroup:before,
+.sb-aggregate:before {
   content: '\e90f';
 }
 .sb-calendar:before {
@@ -105,8 +107,7 @@
 .sb-LDA:before {
   content: '\e914';
 }
-.sb-referential:before,
-.sb-workbench:before {
+.sb-referential:before {
   content: '\e915';
 }
 .sb-compliance_control_set:before {

@@ -75,7 +75,7 @@ class WorkgroupsController < ChouetteController
       :maximum_data_age,
       :sentinel_min_hole_size,
       :sentinel_delay,
-      :nightly_aggregate_enabled, :nightly_aggregate_time, :nightly_aggregate_notification_target,
+      :nightly_aggregate_enabled, :nightly_aggregate_time, :nightly_aggregate_days, :nightly_aggregate_notification_target,
       :transport_modes_as_json,
       workbenches_attributes: [
         :id,

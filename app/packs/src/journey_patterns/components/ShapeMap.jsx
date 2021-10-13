@@ -12,10 +12,10 @@ import shapeMapStyle from '../../helpers/shapeMapStyle'
 
 function ShapeMap(props) {
 
-  const [ features, setFeatures ] = useState([])
+  const [ features, setFeatures ] = useState()
   const [ style, setStyle ] = useState()
 
-  let path_prefix = clone(window, "shape_kml_url")
+  let path_prefix = clone(window, "shape_url")
 
   const shape_kml_url = id => { // use consts or let
     return path_prefix + "/" + id + ".kml"

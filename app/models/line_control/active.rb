@@ -4,6 +4,8 @@ module LineControl
 
     store_accessor :control_attributes, :duration
 
+    validates_numericality_of :duration
+
     def initialize(*args)
       super
       self.duration ||= 5

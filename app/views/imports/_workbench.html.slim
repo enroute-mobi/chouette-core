@@ -1,4 +1,4 @@
-- breadcrumb :import, parent, @import
+- breadcrumb :import, @parent, @import
 
 .row
   .col-lg-6.col-md-6.col-sm-12.col-xs-12
@@ -23,7 +23,7 @@
         TableBuilderHelper::Column.new( \
           key: :status, \
           attribute: lambda do |n| \
-            url = n.child_import.present? ? [parent, n.child_import] : [parent, @import, n]; \
+            url = n.child_import.present? ? [@parent, n.child_import] : [@parent, @import, n]; \
             link_to_if_i_can(operation_status(n.child_import&.status || n.status, verbose: true, default_status: :pending), url) \
           end, \
           sortable: false, \

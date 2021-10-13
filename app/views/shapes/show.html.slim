@@ -17,8 +17,8 @@
       .col-md-6.col-sm-12
         = definition_list t('codes'),
           {}.tap{|hash| @shape.codes.each{|code| hash[code.code_space.short_name] = code.value } }
-
-      .col-md-6.col-sm-12
+    .row
+      .col-md-12.col-sm-12
         h4.underline= t('lines.show.map')
         #route_map.large_map.mb-lg
 

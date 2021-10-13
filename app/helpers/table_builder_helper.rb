@@ -144,9 +144,7 @@ module TableBuilderHelper
               column,
               sortable,
               model,
-              params,
-              params[:sort],
-              params[:direction]
+              params
             ))
 
           else
@@ -170,9 +168,7 @@ module TableBuilderHelper
                   column,
                   sortable,
                   model,
-                  params,
-                  params[:sort],
-                  params[:direction]
+                  params
                 ), class: td_cls(clsArrayH))
 
               else
@@ -180,9 +176,7 @@ module TableBuilderHelper
                   column,
                   sortable,
                   model,
-                  params,
-                  params[:sort],
-                  params[:direction]
+                  params
                 ))
               end
 
@@ -193,9 +187,7 @@ module TableBuilderHelper
                 column,
                 sortable,
                 model,
-                params,
-                params[:sort],
-                params[:direction]
+                params
               ), class: td_cls(clsArrayH))
 
             end
@@ -366,13 +358,26 @@ module TableBuilderHelper
   end
 
   def build_column_header(
-    column,
-    table_is_sortable,
-    model,
-    params,
-    sort_on,
-    sort_direction
-  )
+        column,
+        table_is_sortable,
+        model,
+        params
+      )
+
+    sort_on = sort_direction = nil
+
+    # Try to detect a current Search order
+    if (order = @search.try(:order))
+      sort_on, sort_direction = order.attributes.first
+    end
+
+    # Legacy sort parameters
+    sort_on ||= params[:sort]
+    sort_direction ||= params[:direction]
+
+    # The following code only supports string values
+    sort_on = sort_on.to_s if sort_on
+    sort_direction = sort_direction.to_s if sort_direction
 
     if !table_is_sortable || !column.sortable
       return column.header_label(model)

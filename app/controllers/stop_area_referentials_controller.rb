@@ -11,12 +11,12 @@ class StopAreaReferentialsController < ChouetteController
 
   def edit
     authorize resource
-    create!
+    edit!
   end
 
   def update
     authorize resource
-    create!
+    update!
   end
 
   def sync

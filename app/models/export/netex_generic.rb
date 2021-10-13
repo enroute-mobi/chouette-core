@@ -158,8 +158,21 @@ class Export::NetexGeneric < Export::Base
         name: name,
         public_code: public_code,
         centroid: centroid,
-        raw_xml: import_xml
+        raw_xml: import_xml,
+        key_list: netex_alternate_identifiers
       }
+    end
+
+    def netex_alternate_identifiers
+      [].tap do |identifiers|
+        identifiers << ["external", registration_number ] if registration_number
+
+        codes.each do |code|
+          identifiers << [code.code_space.short_name, code.value ]
+        end
+      end.map do |key, value|
+        Netex::KeyValue.new key: key, value: value, type_of_key: "ALTERNATE_IDENTIFIER"
+      end
     end
 
     def centroid
@@ -211,8 +224,7 @@ class Export::NetexGeneric < Export::Base
     delegate :stop_areas, to: :export
 
     def export!
-      stop_areas.where(area_type: 'zdep').find_each do |stop_area|
-
+      stop_areas.where(area_type: 'zdep').includes(:codes).find_each do |stop_area|
         decorated_stop = StopDecorator.new(stop_area)
 
         netex_resource = decorated_stop.netex_resource
@@ -232,8 +244,7 @@ class Export::NetexGeneric < Export::Base
     delegate :stop_areas, to: :export
 
     def export!
-      stop_areas.where.not(area_type: 'zdep').find_each do |stop_area|
-
+      stop_areas.where.not(area_type: 'zdep').includes(:codes).find_each do |stop_area|
         decorated_stop = StopDecorator.new(stop_area)
 
         stop_place = decorated_stop.netex_resource
@@ -304,7 +315,7 @@ class Export::NetexGeneric < Export::Base
 
       def netex_attributes
         {
-          id: id,
+          id: objectid,
           name: name,
           raw_xml: import_xml
         }

@@ -29,6 +29,7 @@ env 'SENTRY_CONTEXT', "cron"
 
 set :job_template, "/bin/bash -c ':job'"
 job_type :rake_if, '[ "$:if" == "true" ] && cd :path && :environment_variable=:environment bundle exec rake :task --silent :output'
+job_type :runner,  "cd :path && bundle exec rails runner -e :environment ':task' :output"
 
 every :hour do
   runner "Cron.every_hour"

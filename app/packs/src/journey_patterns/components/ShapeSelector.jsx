@@ -31,7 +31,7 @@ export default class BSelect4 extends Component {
           width: '100%',
           placeholder: I18n.t('journey_patterns.form.shape_placeholder'),
           ajax: {
-            url: window.shapes_path,
+            url: window.shapes_url + ".json",
             dataType: 'json',
             delay: '500',
             data: (params) => ({ q: { name_or_uuid_cont: params.term} }),

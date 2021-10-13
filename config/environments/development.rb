@@ -87,7 +87,7 @@ Rails.application.configure do
     }
   }
 
-  # config.cache_store = :redis_store, "redis://localhost:6379/0/cache", { expires_in: 90.minutes }
+  # config.cache_store = :redis_store, { url: "redis://localhost:6379/0/cache", expires_in: 90.minutes }
 
   config.subscriptions_notifications_recipients = %w{foo@example.com bar@example.com}
   config.automated_audits_recipients = %w{foo@example.com bar@example.com}

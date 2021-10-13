@@ -29,6 +29,9 @@ RSpec.describe LineControl::Active, :type => :model do
     referential.reload
   end
 
+  # Validations
+  it { should validate_numericality_of(:duration) }
+
   context 'when the line is active' do
     it "should find no error" do
       expect{compliance_check.process}.to change{ ComplianceCheckResource.count }.by 1

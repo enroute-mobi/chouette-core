@@ -109,6 +109,7 @@ Apartment.configure do |config|
     'VehicleJourneyControl::TimeTable',
     'VehicleJourneyControl::VehicleJourneyAtStops',
     'VehicleJourneyControl::WaitingTime',
+    'Waypoint',
     'Workbench',
     'Workgroup',
   ]

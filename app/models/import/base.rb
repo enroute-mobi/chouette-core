@@ -6,6 +6,16 @@ class Import::Base < ApplicationModel
   include ProfilingSupport
 
   scope :unfinished, -> { where 'notified_parent_at IS NULL' }
+  scope :having_status, ->(statuses) { where(status: statuses ) }
+  scope :started_at_after, ->(date) do
+    where('started_at > ?', date)
+  end
+  scope :started_at_before, ->(date) do
+    where('started_at < ?', date)
+  end
+  scope :started_at_between, ->(start_date, end_date) do
+    where('started_at BETWEEN :begin AND :end', begin: start_date, end: end_date)
+  end
 
   def workgroup
     workbench&.workgroup

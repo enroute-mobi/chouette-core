@@ -21,7 +21,7 @@ class MergesController < ChouetteController
       autocomplete_collection = autocomplete_collection.order('created_at desc')
     end
 
-    render json: autocomplete_collection.select(:name, :id).limit(10).map{|r| {name: decorate_referential_name(r), id: r.id}}
+    render json: autocomplete_collection.select(:name, :id).limit(10).map{|r| {text: decorate_referential_name(r), id: r.id}}
   end
 
   def rollback

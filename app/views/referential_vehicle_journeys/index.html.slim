@@ -3,21 +3,67 @@
 
 .page_content
   .container-fluid
-    .row
-      .col-lg-3.col-lg-offset-9
-        = render 'display_parameters'
+    .form-group.pull-right
+      .per-page-select
+        = I18n.t("simple_form.per_page")
+        = %w(10 50 100).each_with_index.map{ |v, i| (params[:per_page] == v || params[:per_page].nil? && i == 0) ? "<span class='selected'>#{v}</span>" : link_to(v, referential_vehicle_journeys_path(@referential, q: params.permit(:q), per_page: v)) }.join(' - ').html_safe
     - if params[:q].present? or @vehicle_journeys.present?
       .row
         .col-lg-12
           = render 'filters'
 
-    - if @vehicle_journeys.present?
-      - if params[:display] == "consolidated" && has_feature?(:consolidated_offers)
-        = render partial: "consolidated"
-      - else
-        = render partial: "list"
+    - if @vehicle_journeys&.any?
+      .row
+        .col-lg-12
+          .select_table
+            = table_builder_2 @vehicle_journeys,
+              [ \
+                TableBuilderHelper::Column.new( \
+                  name: t('objectid'), \
+                  attribute: Proc.new { |n| n.get_objectid.short_id }, \
+                  sortable: false \
+                ), \
+                TableBuilderHelper::Column.new( \
+                  key: :published_journey_name, \
+                  attribute: Proc.new {|v| v.published_journey_name.presence||I18n.t('none')}, \
+                  link_to: lambda do |vehicle_journey| \
+                    vehicle_journey.route&.line ? referential_line_route_vehicle_journeys_path(@referential, vehicle_journey.route.line, vehicle_journey.route) : '' \
+                  end, \
+                  sortable: true \
+                ), \
+                TableBuilderHelper::Column.new( \
+                  key: :line, \
+                  attribute: Proc.new {|v| v.route.line.name}, \
+                  sortable: true \
+                ), \
+                TableBuilderHelper::Column.new( \
+                  key: :route, \
+                  attribute: Proc.new {|v| v.route.name}, \
+                  sortable: true \
+                ), \
+                TableBuilderHelper::Column.new( \
+                  key: :departure_time, \
+                  attribute: Proc.new {|v| display_time_of_day(v.vehicle_journey_at_stops.first&.departure_local_time_of_day) }, \
+                  sortable: true \
+                ), \
+                [@starting_stop, @ending_stop].compact.map{|stop| \
+                  TableBuilderHelper::Column.new( \
+                    key: stop.id == @starting_stop&.id ? :starting_stop : :ending_stop, \
+                    attribute: Proc.new {|v| vjas = v.vehicle_journey_at_stops.where("stop_points.stop_area_id" => stop.id).last; vjas && display_time_of_day(vjas.arrival_local_time_of_day) }, \
+                    sortable: true, \
+                    name: stop.name \
+                  )\
+                }, \
+                TableBuilderHelper::Column.new( \
+                  key: :arrival_time, \
+                  attribute: Proc.new {|v| display_time_of_day(v.vehicle_journey_at_stops.last&.arrival_local_time_of_day) }, \
+                  sortable: true, \
+                ), \
+              ].flatten.compact,
+              cls: 'table has-filter has-search'
 
-    - unless @vehicle_journeys.any?
+          = new_pagination @vehicle_journeys, 'pull-right'
+    - else
       .row.mt-xs
         .col-lg-12
           = replacement_msg t('.search_no_results')

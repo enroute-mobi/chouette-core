@@ -1,7 +1,10 @@
+options:
+  size: 2x
+
 definitions:
   services:
     docker:
-      memory: 3072
+      memory: 7128
     postgres:
       image:
         name: eu.gcr.io/enroute-interne/enroute-postgresql:9.6-dev
@@ -26,7 +29,6 @@ definitions:
           name: eu.gcr.io/enroute-interne/enroute-ruby:2.7-dev
           username: _json_key
           password: '$GCLOUD_API_KEYFILE'
-        size: 2x
         caches:
           - bundler
           - yarn
@@ -50,7 +52,6 @@ pipelines:
             name: eu.gcr.io/enroute-interne/enroute-ruby:2.7-dev
             username: _json_key
             password: '$GCLOUD_API_KEYFILE'
-          size: 2x
           caches:
             - bundler
             - yarn

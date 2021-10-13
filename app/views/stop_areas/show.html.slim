@@ -21,7 +21,34 @@
         - if @stop_area.longitude && @stop_area.latitude
           #connection_link_map.map.mb-lg
 
-    .
+    .row
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = simple_block_for @stop_area, title: t("stop_areas.form.sections.hierarchy") do |d|
+          = d.attribute :parent, value: (@stop_area.parent.present? ? link_to("#{@stop_area.parent.get_objectid.short_id} #{@stop_area.parent.name}", [@workbench, :stop_area_referential, @stop_area.parent]) : "-")
+          = d.attribute :children, value: (link_to @stop_area.children.count, workbench_stop_area_referential_stop_areas_path(@workbench, :'q[parent_id_eq]' => @stop_area.id))
+        - if @stop_area.children.present?
+          table.table.table-bordered
+            thead
+              tr
+                th scope="col"
+                  = Chouette::StopArea.tmf('id')
+                th scope="col"
+                  = Chouette::StopArea.tmf('name')
+                th scope="col"
+                  = Chouette::StopArea.tmf('distance')
+            tbody
+              - @stop_area.closest_children.limit(5).each do |c|
+                tr
+                  td
+                    = c.get_objectid.short_id
+                  td
+                    = link_to(c.name, workbench_stop_area_referential_stop_area_path(@workbench, c.id))
+                  td
+                    - if c.distance
+                      = "#{c.distance.round(2)} m"
+          - if @stop_area.children.count > 5
+            = link_to t('stop_areas.show.more', count: (@stop_area.children.count - 5)), workbench_stop_area_referential_stop_areas_path(@workbench, :'q[parent_id_eq]' => @stop_area.id), class: 'btn btn-link pull-right'
+
     - if @stop_area.is_referent || has_feature?(:stop_area_connection_links)
       .row
         - if @stop_area.is_referent
@@ -49,7 +76,6 @@
                 = link_to t('connection_links.actions.new'), new_workbench_stop_area_referential_connection_link_path(@workbench, departure_id: @stop_area.id), class: 'btn btn-action large'
               .col-md-4
                 = more_connections_link(@stop_area, @workbench) if @stop_area.connection_links.count > 4
-
 
 - if has_feature?(:stop_area_connection_links) && @stop_area.connection_links.any?
   = javascript_tag do

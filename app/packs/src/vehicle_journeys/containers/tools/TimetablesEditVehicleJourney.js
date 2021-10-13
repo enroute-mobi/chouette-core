@@ -14,7 +14,7 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onModalClose: () =>{
+    onModalClose: () => {
       dispatch(actions.closeModal())
     },
     onOpenCalendarsEditModal: (vehicleJourneys) =>{
@@ -26,8 +26,8 @@ const mapDispatchToProps = (dispatch) => {
     onTimetablesEditVehicleJourney: (vehicleJourneys, timetables) =>{
       dispatch(actions.editVehicleJourneyTimetables(vehicleJourneys, timetables))
     },
-    onSelect2Timetable: (e) =>{
-      dispatch(actions.selectTTCalendarsModal(e.params.data))
+    onSelect2Timetable: selectedTT =>{
+      dispatch(actions.selectTTCalendarsModal(selectedTT))
       dispatch(actions.addSelectedTimetable())
     }
   }

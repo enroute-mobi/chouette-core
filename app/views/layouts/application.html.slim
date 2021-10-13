@@ -13,13 +13,14 @@ html lang=I18n.locale
 
     title = page_title
 
-    / = favicon_link_tag
+    // Webpack bundle
     = favicon_pack_tag 'favicon.ico'
-
+    = javascript_pack_tag 'application'
     = stylesheet_pack_tag 'application'
 
-    = javascript_pack_tag 'application'
+    // Sprocket bundle
     = javascript_include_tag 'application'
+
     = javascript_tag do
       | I18n.locale = '#{I18n.locale}'
 

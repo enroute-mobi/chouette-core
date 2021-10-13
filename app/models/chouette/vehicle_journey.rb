@@ -126,6 +126,8 @@ module Chouette
     scope :scheduled, -> { joins(:time_tables).merge(Chouette::TimeTable.non_empty) }
     scope :with_lines, -> (lines) { joins(route: :line).where(routes: { line_id: lines }) }
 
+    scope :by_text, ->(text) { text.blank? ? all : where('lower(vehicle_journeys.published_journey_name) LIKE :t or lower(vehicle_journeys.objectid) LIKE :t', t: "%#{text.downcase}%") }
+
     # We need this for the ransack object in the filters
     ransacker :stop_area_ids
 
@@ -632,6 +634,9 @@ module Chouette
           range == other.range && int_day_types == other.int_day_types
       end
 
+      def hash
+        [ range, int_day_types ].hash
+      end
     end
 
     def self.clean!

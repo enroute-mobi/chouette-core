@@ -45,6 +45,12 @@ module DefaultPathHelper
     end
   end
 
+  def default_shapes_path(shape_referential)
+    with_default_workbench do
+      workbench_shape_referential_shapes_path default_workbench(shape_referential: shape_referential)
+    end
+  end
+
   private
 
   def default_workbench(attributes = {})
@@ -85,7 +91,7 @@ module DefaultPathHelper
     def resource_workbench
       return unless resource
 
-      provider = resource.try(:line_provider) || resource.try(:stop_area_provider)
+      provider = resource.try(:line_provider) || resource.try(:stop_area_provider) || resource.try(:shape_provider)
       return unless provider
 
       candidate_workbench_id = provider.workbench_id
@@ -120,8 +126,22 @@ module DefaultPathHelper
       candidate_workbenches.find_by stop_area_referential_id: stop_area_referential_id
     end
 
+    def shape_referential
+      @shape_referential ||= resource.try(:shape_referential)
+    end
+
+    def shape_referential=(shape_referential)
+      @shape_referential = shape_referential
+    end
+
+    # Find the workbench associated to the shape referential
+    def shape_referential_workbench
+      return unless shape_referential
+      candidate_workbenches.find_by(workgroup_id: shape_referential.workgroup.id)
+    end
+
     def workbench
-      @workbench ||= (resource_workbench || line_referential_workbench || stop_area_referential_workbench)
+      @workbench ||= (resource_workbench || line_referential_workbench || stop_area_referential_workbench || shape_referential_workbench)
     end
 
     def workbench!

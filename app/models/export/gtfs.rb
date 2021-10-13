@@ -378,6 +378,10 @@ class Export::Gtfs < Export::Base
         parent_stop_id
       end
 
+      def gtfs_platform_code
+        public_code.presence
+      end
+
       def stop_attributes
         {
           id: stop_id,
@@ -392,7 +396,7 @@ class Export::Gtfs < Export::Base
           timezone: (time_zone unless parent),
           #code: TO DO
           wheelchair_boarding: mobility_restricted_suitability ? 1 : 0,
-          platform_code: public_code
+          platform_code: gtfs_platform_code
         }
       end
 
@@ -885,9 +889,18 @@ class Export::Gtfs < Export::Base
     end
 
     def export!
-      attributes = [ :departure_time, :arrival_time, :departure_day_offset, :arrival_day_offset,
-                     :vehicle_journey_id, "vehicle_journey_at_stops.stop_area_id as stop_area_id",
-                     "stop_points.stop_area_id as parent_stop_area_id", "stop_points.position" ]
+      attributes = [
+        :departure_time,
+        :arrival_time,
+        :departure_day_offset,
+        :arrival_day_offset,
+        :vehicle_journey_id,
+        "vehicle_journey_at_stops.stop_area_id as stop_area_id",
+        "stop_points.stop_area_id as parent_stop_area_id",
+        "stop_points.position",
+        "stop_points.for_boarding as for_boarding",
+        "stop_points.for_alighting as for_alighting"
+      ]
       vehicle_journey_at_stops.joins(:stop_point).select(*attributes).each_row do |vjas_raw_hash|
         decorated_vehicle_journey_at_stop = Decorator.new(vjas_raw_hash, index: index, ignore_time_zone: ignore_time_zone?)
         # Duplicate the stop time for each exported trip
@@ -909,7 +922,7 @@ class Export::Gtfs < Export::Base
       end
 
       %w{
-        vehicle_journey_id departure_time departure_day_offset arrival_time arrival_day_offset position
+        vehicle_journey_id departure_time departure_day_offset arrival_time arrival_day_offset position for_boarding for_alighting
       }.each do |attribute|
         define_method(attribute) do
           @attributes[attribute]
@@ -958,7 +971,12 @@ class Export::Gtfs < Export::Base
         index&.stop_id(stop_area_id)
       end
 
+      def drop_off_type
+        return 1 if for_alighting == 'forbidden'
+      end
+
       def pickup_type
+        return 1 if for_boarding == 'forbidden'
         index&.pickup_type(vehicle_journey_id) ? 2 : 0
       end
 
@@ -967,7 +985,8 @@ class Export::Gtfs < Export::Base
           arrival_time: stop_time_arrival_time,
           stop_id: stop_time_stop_id,
           stop_sequence: position,
-          pickup_type: pickup_type
+          pickup_type: pickup_type,
+          drop_off_type: drop_off_type
         }
       end
 

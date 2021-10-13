@@ -1,13 +1,19 @@
 class ComplianceCheckSetPolicy < ApplicationPolicy
   class Scope < Scope
-    # since CCS has now either workbench or workgroup as parent
     def resolve
-      scope.where(workbench_id: user.organisation.workbench_ids).or(scope.where(workgroup_id: user.organisation.workgroup_ids))
+      scope
     end
   end
 
   def show?
-    user.organisation
-    super || record.workbench.workgroup.owner == user.organisation
+    workgroup_owner? || inside_organisation?
+  end
+
+  def inside_organisation?
+    record.workbench.organisation == user.organisation
+  end
+
+  def workgroup_owner?
+    record.workgroup.owner == user.organisation
   end
 end

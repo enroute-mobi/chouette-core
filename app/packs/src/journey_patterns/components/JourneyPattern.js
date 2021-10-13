@@ -1,12 +1,26 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import actions from '../actions'
+import handleRedirect from '../../helpers/redirect'
+
+import { bindAll } from 'lodash'
 
 export default class JourneyPattern extends Component{
   constructor(props){
     super(props)
     this.previousSpId = undefined
-    this.updateCosts = this.updateCosts.bind(this)
+
+    this.basePath = window.location.pathname.split('/journey_patterns_collection')[0]
+    
+    bindAll(this, ['updateCosts', 'onCreateShape', 'onEditShape', 'onUnassociateShape'])
+  }
+
+  get journeyPattern() {
+    return this.props.value
+  }
+
+  get canEditShape() {
+    return this.journeyPattern.shape?.has_waypoints
   }
 
   updateCosts(e) {
@@ -25,6 +39,10 @@ export default class JourneyPattern extends Component{
     return (
       <a href={vjURL}>{I18n.t('journey_patterns.journey_pattern.vehicle_journey_at_stops')}</a>
     )
+  }
+
+  hasShape() {
+    return !!this.journeyPattern.shape_id
   }
 
   hasFeature(key) {
@@ -47,7 +65,7 @@ export default class JourneyPattern extends Component{
             type='checkbox'
             id={sp.position}
             checked={sp.checked}
-            disabled={(this.props.value.deletable || this.props.status.policy['journey_patterns.update'] == false || this.props.editMode == false) ? 'disabled' : ''}
+            disabled={(this.journeyPattern.deletable || this.props.status.policy['journey_patterns.update'] == false || this.props.editMode == false) ? 'disabled' : ''}
             >
           </input>
           <span className='radio-label'></span>
@@ -78,9 +96,9 @@ export default class JourneyPattern extends Component{
     let totalTime = 0
     let totalDistance = 0
     let from = null
-    this.props.value.stop_points.map((stopPoint, i) =>{
+    this.journeyPattern.stop_points.map((stopPoint, i) =>{
       let usePoint = stopPoint.checked
-      if(onlyCommercial && (i == 0 || i == this.props.value.stop_points.length - 1) && stopPoint.kind == "non_commercial"){
+      if(onlyCommercial && (i == 0 || i == this.journeyPattern.stop_points.length - 1) && stopPoint.kind == "non_commercial"){
         usePoint = false
       }
       if(from && usePoint){
@@ -104,13 +122,13 @@ export default class JourneyPattern extends Component{
   }
 
   getCosts(costsKey) {
-    let cost = this.props.value.costs[costsKey]
+    let cost = this.journeyPattern.costs[costsKey]
 
     if (cost) {
       return cost
     }
 
-    if(!this.props.value.id){
+    if(!this.journeyPattern.id){
       this.props.fetchRouteCosts(costsKey)
     }
 
@@ -132,16 +150,90 @@ export default class JourneyPattern extends Component{
     }
   }
 
+  onCreateShape() {
+    const { id } = this.journeyPattern
+
+    const newPathName = `${this.basePath}/journey_patterns/${id}/shapes/new`
+
+    window.location.replace(newPathName)
+  }
+
+  onEditShape() {
+    const { id } = this.journeyPattern
+
+    const newPathName = `${this.basePath}/journey_patterns/${id}/shapes/edit`
+
+    window.location.replace(newPathName)
+  }
+
+  onUnassociateShape() {
+    const { id } = this.journeyPattern
+
+    const url = `${this.basePath}/journey_patterns/${id}/unassociate_shape`
+
+    fetch(url, {
+      method: 'PUT',
+      headers: {
+      'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').attributes.content.value
+      }
+    })
+    .then(handleRedirect(() => window.sessionStorage.setItem('previousAction', 'journey_pattern-update')))
+  }
+
+  renderShapeEditorButtons() {
+    const { id } = this.journeyPattern
+
+    if (!this.hasFeature('shape_editor_experimental') || !this.props.editMode || !id) return []
+    
+    if (!this.hasShape()) {
+      return [
+        <li key={`create_shape_${id}`}>
+          <button
+            type='button'
+            onClick={this.onCreateShape}
+          >
+            {I18n.t('journey_patterns.actions.create_shape')}
+          </button>
+        </li>
+      ]
+    } else {
+      return [
+        ...this.canEditShape ?
+          [
+            <li key={`edit_shape_${id}`}>
+              <button
+                type='button'
+                onClick={this.onEditShape}
+              >
+                {I18n.t('journey_patterns.actions.edit_shape')}
+              </button>
+            </li>
+          ] :
+          [],
+        <li key={`unassociate_shape_${id}`}>
+          <button
+            type="button"
+            onClick={this.onUnassociateShape}
+          >
+            {I18n.t('journey_patterns.actions.unassociate_shape')}
+          </button>
+        </li>
+      ]
+    }
+  }
+
   render() {
     this.previousSpId = undefined
     let [totalTime, totalDistance] = this.totals(false)
     let [commercialTotalTime, commercialTotalDistance] = this.totals(true)
+
+    const { deletable, id, object_id, short_id, stop_points } = this.journeyPattern
     return (
-      <div className={'t2e-item' + (this.props.value.deletable ? ' disabled' : '') + (this.props.value.object_id ? '' : ' to_record') + (this.props.value.errors ? ' has-error': '') + (this.hasFeature('costs_in_journey_patterns') ? ' with-costs' : '')}>
+      <div className={'t2e-item' + (this.journeyPattern.deletable ? ' disabled' : '') + (object_id ? '' : ' to_record') + (this.journeyPattern.errors ? ' has-error': '') + (this.hasFeature('costs_in_journey_patterns') ? ' with-costs' : '')}>
         <div className='th'>
-          <div className='strong mb-xs'>{this.props.value.object_id ? this.props.value.short_id : '-'}</div>
-          <div>{this.props.value.registration_number}</div>
-          <div>{I18n.t('journey_patterns.show.stop_points_count', {count: actions.getChecked(this.props.value.stop_points).length})}</div>
+          <div className='strong mb-xs'>{object_id ? short_id : '-'}</div>
+          <div>{this.journeyPattern.registration_number}</div>
+          <div>{I18n.t('journey_patterns.show.stop_points_count', {count: actions.getChecked(stop_points).length})}</div>
           {this.hasFeature('costs_in_journey_patterns') &&
             <div className="small row totals">
               <span className="col-md-6"><i className="fa fa-arrows-h"></i>{totalDistance}</span>
@@ -154,15 +246,15 @@ export default class JourneyPattern extends Component{
               <span className="col-md-6"><i className="fa fa-clock"></i>{commercialTotalTime}</span>
             </div>
           }
-          <div className={this.props.value.deletable ? 'btn-group disabled' : 'btn-group'}>
+          <div className={deletable ? 'btn-group disabled' : 'btn-group'}>
             <div
-              className={this.props.value.deletable ? 'btn dropdown-toggle disabled' : 'btn dropdown-toggle'}
+              className={deletable ? 'btn dropdown-toggle disabled' : 'btn dropdown-toggle'}
               data-toggle='dropdown'
               >
               <span className='fa fa-cog'></span>
             </div>
             <ul className='dropdown-menu'>
-              <li>
+              <li key={`edit_journey_pattern_${id}`}>
                 <button
                   type='button'
                   onClick={this.props.onOpenEditModal}
@@ -172,10 +264,11 @@ export default class JourneyPattern extends Component{
                   {this.props.editMode ? I18n.t('actions.edit') : I18n.t('actions.show')}
                 </button>
               </li>
-              <li className={this.props.value.object_id ? '' : 'disabled'}>
-                {this.vehicleJourneyURL(this.props.value.object_id)}
+              { this.renderShapeEditorButtons() }
+              <li key={`see_vehicle_journeys_${id}`} className={object_id ? '' : 'disabled'}>
+                {this.vehicleJourneyURL(object_id)}
               </li>
-              <li className={'delete-action' + (this.isDisabled('destroy') || !this.props.editMode ? ' disabled' : '')}>
+              <li key={`delete_journey_pattern_${id}`} className={'delete-action' + (this.isDisabled('destroy') || !this.props.editMode ? ' disabled' : '')}>
                 <button
                   type='button'
                   className="disabled"
@@ -192,7 +285,7 @@ export default class JourneyPattern extends Component{
             </div>
           </div>
 
-          {this.props.value.stop_points.map((stopPoint, i) =>{
+          {stop_points.map((stopPoint, i) =>{
             let costs = null
             let costsKey = null
             let time = null
@@ -211,7 +304,7 @@ export default class JourneyPattern extends Component{
                 <div className={'td' + (headlined ? ' with-headline' : '')}>
                   {this.spNode(stopPoint, headlined)}
                 </div>
-                {this.hasFeature('costs_in_journey_patterns') && costs && <div className='costs' id={'costs-' + this.props.value.id + '-' + costsKey }>
+                {this.hasFeature('costs_in_journey_patterns') && costs && <div className='costs' id={'costs-' + id + '-' + costsKey }>
                   {this.props.editMode && <div>
                     <p>
                       <input type="number" value={costs['distance'] || 0} min='0' name="distance" step="0.01" onChange={this.updateCosts} data-costs-key={costsKey}/>

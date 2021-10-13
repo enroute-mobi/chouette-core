@@ -29,6 +29,8 @@ child :stop_points => :stop_area_short_descriptions do |stop_points|
   end
 end
 
-child(:shape) do |company|
+child(:shape) do |shape|
   attributes :id, :uuid, :name
+
+  node(:has_waypoints) { |shape| shape.waypoints.any? }
 end

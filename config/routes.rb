@@ -168,6 +168,17 @@ ChouetteIhm::Application.routes.draw do
   end
 
   resources :referentials, except: %w(new create index) do
+    resources :autocomplete, controller: 'referential_autocomplete', only: [] do
+      defaults format: :json do
+      collection do
+        get :companies
+        get :lines
+        get :journey_patterns
+        get :time_tables
+        get :vehicle_journeys
+      end
+    end
+  end
 
     member do
       put :archive
@@ -218,7 +229,22 @@ ChouetteIhm::Application.routes.draw do
           get 'fetch_user_permissions'
         end
         resource :journey_patterns_collection, :only => [:show, :update]
-        resources :journey_patterns
+        resources :journey_patterns do
+          member do
+            get 'new_vehicle_journey'
+            get 'available_specific_stop_places'
+            put 'unassociate_shape'
+          end
+
+          resource :shapes, except: :index, module: 'journey_pattern' do
+            collection do
+              defaults format: :json do
+                get :get_user_permissions
+                put :update_line
+              end
+            end
+          end
+        end
         resource :vehicle_journeys_collection, :only => [:show, :update]
         resources :vehicle_journeys
         resources :vehicle_journey_exports

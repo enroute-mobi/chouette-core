@@ -42,7 +42,8 @@ input {
       border-top-right-radius: 4px;
     }
     &:hover,
-    &:focus {      // Reset default link styles
+    &:focus {
+      // Reset default link styles
       text-decoration: none;
       color: inherit;
       // Add custom
@@ -85,8 +86,8 @@ input {
   &.disabled > .form-control + span {
     background-color: #eee;
   }
-// Validations
 }
+// Validations
 .control-label {
   &.is-required {
     &:after {
@@ -162,7 +163,6 @@ input {
     > .radio {
       position: relative;
       padding: 3px 20px;
-      // cursor: pointer
 
       &:hover,
       &:focus {
@@ -187,7 +187,6 @@ input {
 // Search bar
 .search_bar {
   position: relative;
-  // background-color: rgba($grey, 0.15)
   padding: 7px 15px;
   width: 100%;
   padding-right: 60%;
@@ -546,7 +545,6 @@ $cbx-size-xs: 15px;
     border-top: none;
   }
   > * {
-    display: inline-block;
     vertical-align: top;
     padding: 7px 15px;
   }
@@ -559,7 +557,6 @@ $cbx-size-xs: 15px;
   }
   > .form-group,
   > div > .form-group {
-    display: inline-block;
     vertical-align: top;
     border-right: 1px solid #fff;
     margin: 0;
@@ -928,7 +925,7 @@ $cbx-size-xs: 15px;
     }
   }
   > .ffg-row {
-    display: block;
+    display: flex;
     padding: 0;
     border-right: 1px solid #fff;
 
@@ -943,9 +940,13 @@ $cbx-size-xs: 15px;
         display: inline-block;
       }
     }
+    .form-group {
+      display: flex;
+    }
   }
-}// Form group date
-  .form-group.date {
+}
+// Form group date
+.form-group.date {
   .form-inline {
     letter-spacing: -0.31em;
     text-rendering: optimizespeed;

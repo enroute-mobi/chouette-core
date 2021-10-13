@@ -2,6 +2,34 @@
 //  Utilities  //
 //-------------//
 
+.flex {
+  display: flex;
+}
+.flex-row {
+  flex-direction: row;
+}
+.flex-col {
+  flex-direction: column;
+}
+.justify-center {
+  justify-content: center;
+}
+.justify-start {
+  justify-content: flex-start;
+}
+.justify-end {
+  justify-content: flex-end;
+}
+.items-center {
+  align-items: center;
+}
+.self-end {
+  align-self: flex-end;
+}
+.self-start {
+  align-self: flex-start;
+}
+
 .development-only {
   display: inline-block;
   background-color: #da9d4f;
@@ -11,6 +39,7 @@
   margin: 0 0.5em;
   font-size: 0.8em;
 }
+
 .mt-xs {
   margin-top: 10px !important;
 }
@@ -59,16 +88,19 @@
 .mr-lg {
   margin-right: 40px !important;
 }
+
 @for $i from 5 through 100 {
   .w#{$i} {
     width: $i * 1%;
   }
-// Empty zones
 }
+
+// Empty zones
 @mixin emptyzone($col1, $col2) {
   background-image: linear-gradient(-45deg, $col1 25%, $col2 25%, $col2 50%, $col1 50%, $col1 75%, $col2 75%, $col2);
   background-size: 40px 40px;
 }
+
 .cellwrap {
   display: block;
   // To avoid white spaces between childrend inline-block
@@ -96,8 +128,4 @@
       }
     }
   }
-}
-
-@function unicode($str) {
-  @return unquote("\"")+unquote(str-insert($str, "\\", 1))+unquote("\"")
 }

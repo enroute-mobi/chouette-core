@@ -7,6 +7,7 @@ class ReferentialLinesController < ChouetteController
   respond_to :xml
   respond_to :json
   respond_to :kml, :only => :show
+  respond_to :geojson, :only => :show
   respond_to :js, :only => :index
 
   belongs_to :referential
@@ -34,7 +35,7 @@ class ReferentialLinesController < ChouetteController
       }
     )
 
-    show! do
+    show! do |format|
       @line = ReferentialLineDecorator.decorate(
         @line,
         context: {
@@ -42,6 +43,8 @@ class ReferentialLinesController < ChouetteController
           current_organisation: current_organisation
         }
       )
+
+      format.geojson { render 'routes/index.geo' }
     end
   end
 

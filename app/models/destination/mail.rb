@@ -7,10 +7,10 @@ if ::Destination.enabled?("mail")
       self.recipients = self.recipients.delete_if {|r| r.empty? }
     end
 
-    option :email_title
+    option :email_title, serialize:  ActiveRecord::Type::String
     validates :email_title, presence: true, length: { maximum: 100 }
 
-    option :email_text, type: :text
+    option :email_text, type: :text, serialize:  ActiveRecord::Type::String
     validates :email_text, presence: true, length: { maximum: 1024 }
 
     option :recipients, type: :array, default_value: []

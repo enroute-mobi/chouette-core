@@ -63,6 +63,7 @@ en:
         identification: "Identification"
         general: "General"
         location: "Location"
+        hierarchy: "Hierarchy"
       address: "246 Boulevard Saint-Germain, 75007 Paris"
       add_code: Add a code
       geolocalize: "Pinpoint "
@@ -79,6 +80,7 @@ en:
       access_managment: "Access Points and Links managment"
       access_points: "Access Points"
       not_editable: "The area type is not editable"
+      more: "and %{count} more"
       connections:
         title: "Connections"
         stop: "Stop area"
@@ -113,6 +115,7 @@ en:
         other: "stop areas"
     attributes:
       stop_area:
+        id: "ID"
         full_id: "Full ID"
         name: "Name"
         public_code: "Public Code"
@@ -165,6 +168,7 @@ en:
         stop_area_provider_id: Stop area provider
         stop_area_provider: Stop area provider
         codes: "Codes"
+        distance: Distance
   formtastic:
     titles:
       stop_area:

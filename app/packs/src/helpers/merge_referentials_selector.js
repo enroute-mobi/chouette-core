@@ -152,7 +152,7 @@ class MergeReferentialsSelector {
       this.results.html('');
       const _selected = this.selectedIds();
       json.forEach(ref => {
-        const li = $(`<li data-id='${ref.id}'><span>${ref.name}</span><a href='#' class='pull-right delete'><span class='fa fa-times'></a><a href='#' class='pull-right add'><span class='fa fa-arrow-right'></a></li>`);
+        const li = $(`<li data-id='${ref.id}'><span>${ref.text}</span><a href='#' class='pull-right delete'><span class='fa fa-times'></a><a href='#' class='pull-right add'><span class='fa fa-arrow-right'></a></li>`);
         li.appendTo(this.results);
         if (!(_selected.indexOf(ref.id) < 0)) { li.addClass('disabled'); }
         return li.find('a.add').click(e=> {

@@ -2,15 +2,13 @@
 
 .page_content
   .container-fluid
-    - if params[:q].present? or collection.any?
+    .row
+      .col-lg-12
+        = render 'filters'
+    - if @exports.any?
       .row
         .col-lg-12
-          = render 'shared/iev_interfaces/filters'
-
-    - if collection.any?
-      .row
-        .col-lg-12
-          = table_builder_2 collection,
+          = table_builder_2 @exports,
             [ \
               TableBuilderHelper::Column.new( \
                 key: :status, \
@@ -20,7 +18,7 @@
                 key: :name, \
                 attribute: 'name', \
                 link_to: lambda do |export| \
-                  [parent, export] \
+                  [@parent, export] \
                 end, \
                 sortable: false,\
                 ), \
@@ -54,9 +52,9 @@
             ],
             cls: 'table has-search'
 
-          = new_pagination collection, 'pull-right'
+          = new_pagination @exports, 'pull-right'
 
-    - unless collection.any?
+    - else
       .row.mt-xs
         .col-lg-12
           = replacement_msg t('exports.search_no_results')

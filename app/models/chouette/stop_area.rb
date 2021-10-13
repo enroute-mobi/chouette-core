@@ -24,7 +24,6 @@ module Chouette
     has_many :specific_vehicle_journeys, through: :specific_vehicle_journey_at_stops, class_name: 'Chouette::VehicleJourney', source: :vehicle_journey
     has_many :codes, as: :resource, dependent: :delete_all
 
-    scope :closest_children, ->(point) { order("ST_Distance(lonlat, ST_GeomFromText('#{point.as_text}', #{SRID}))").limit(5) }
     scope :light, ->{ select(:id, :name, :city_name, :zip_code, :time_zone, :registration_number, :kind, :area_type, :time_zone, :stop_area_referential_id, :objectid) }
     scope :with_time_zone, -> { where.not time_zone: nil }
     scope :by_code, ->(code_space, value) {
@@ -208,6 +207,15 @@ module Chouette
 
     def to_lat_lng
       Geokit::LatLng.new(latitude, longitude) if latitude and longitude
+    end
+
+    def closest_children
+      self.class.none if position.blank?
+
+      parent_point = self.class.connection.quote("SRID=4326;POINT(#{longitude} #{latitude})")
+      child_point   = "ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)"
+
+      stop_area_referential.stop_areas.where(parent_id: self.id).order("distance").select('stop_areas.*', "ST_DistanceSphere(#{parent_point}, #{child_point}) as distance")
     end
 
     def geometry

@@ -14,7 +14,6 @@ class ReferentialAudit
   end
 
   def perform opts={}
-    log "youpi"
     @number_of_lines.times do |i|
       @current_line = i
       @statuses += colorize("x", :red)

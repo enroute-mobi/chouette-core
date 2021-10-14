@@ -1,5 +1,5 @@
 import React from 'react'
-import VehicleJourneys from '../../../../app/javascript/vehicle_journeys/components/VehicleJourneysList'
+import VehicleJourneys from '../../../../app/packs/src/vehicle_journeys/components/VehicleJourneysList'
 import renderer from 'react-test-renderer'
 import { Provider } from 'react-redux'
 

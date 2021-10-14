@@ -1,4 +1,4 @@
-import oppositeRoutesReducer from '../../../../app/javascript/routes/reducers/oppositeRoutes'
+import oppositeRoutesReducer from '../../../../app/packs/src/routes/reducers/oppositeRoutes'
 import { actionHandler, receivedOppositeRoutes, state } from '../helpers'
 import _ from 'lodash'
 

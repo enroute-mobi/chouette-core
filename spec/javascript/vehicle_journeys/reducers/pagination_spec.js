@@ -1,4 +1,4 @@
-import reducer from '../../../../app/javascript/vehicle_journeys/reducers/pagination'
+import reducer from '../../../../app/packs/src/vehicle_journeys/reducers/pagination'
 
 const diff = 1
 let state = {

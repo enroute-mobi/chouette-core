@@ -1,4 +1,4 @@
-import statusReducer from '../../../../app/javascript/vehicle_journeys/reducers/filters'
+import statusReducer from '../../../../app/packs/src/vehicle_journeys/reducers/filters'
 
 let state = {}
 

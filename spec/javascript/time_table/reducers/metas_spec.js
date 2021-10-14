@@ -1,4 +1,4 @@
-import metasReducer from '../../../../app/javascript/time_tables/reducers/metas'
+import metasReducer from '../../../../app/packs/src/time_tables/reducers/metas'
 
 let state = {}
 

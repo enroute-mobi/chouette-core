@@ -1,4 +1,4 @@
-import statusReducer, { initialState } from '../../../../app/javascript/routes/reducers/status'
+import statusReducer, { initialState } from '../../../../app/packs/src/routes/reducers/status'
 import { actionHandler, receivedUserPermissions } from '../helpers'
 
 const it_should_handle = actionHandler(statusReducer)(initialState)

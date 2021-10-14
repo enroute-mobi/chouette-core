@@ -1,4 +1,4 @@
-import actions from '../../../app/javascript/routes/actions'
+import actions from '../../../app/packs/src/routes/actions'
 
 describe('actions', () => {
   it('should create an action to add a stop', () => {

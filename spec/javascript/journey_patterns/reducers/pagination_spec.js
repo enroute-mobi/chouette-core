@@ -1,4 +1,4 @@
-import reducer from '../../../../app/javascript/journey_patterns/reducers/pagination'
+import reducer from '../../../../app/packs/src/journey_patterns/reducers/pagination'
 
 const diff = 1
 let state = {

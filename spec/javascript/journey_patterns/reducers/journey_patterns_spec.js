@@ -1,4 +1,4 @@
-import jpReducer from '../../../../app/javascript/journey_patterns/reducers/journeyPatterns'
+import jpReducer from '../../../../app/packs/src/journey_patterns/reducers/journeyPatterns'
 
 let state = []
 let fakeStopPoints = [{

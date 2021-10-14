@@ -243,6 +243,7 @@ ChouetteIhm::Application.routes.draw do
             get 'new_vehicle_journey'
             get 'available_specific_stop_places'
             put 'unassociate_shape'
+            put 'duplicate'
           end
 
           resource :shapes, except: :index, module: 'journey_pattern' do

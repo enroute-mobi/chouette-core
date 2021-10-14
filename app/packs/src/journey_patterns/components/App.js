@@ -18,17 +18,17 @@ const App = () => {
     const previousAction = sessionStorage.getItem(key)
 
     if (previousAction) {
-      const [resource, action] = previousAction.split('-')
+      const { resource, action, status } = JSON.parse(previousAction)
 
       flash.add({
         type: 'success',
-        text: I18n.t(`flash.actions.${action}.notice`, {
+        text: I18n.t(`flash.actions.${action}.${status}`, {
           resource_name: I18n.t(`activerecord.models.${resource}.one`)
         })
       })
-    }
 
-    return () => sessionStorage.removeItem(key) 
+      sessionStorage.removeItem(key) 
+    }
   }, [])
 
   useEffect(() => {

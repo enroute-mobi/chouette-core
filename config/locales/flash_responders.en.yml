@@ -7,6 +7,9 @@ en:
       update:
         notice: "%{resource_name} was successfully updated."
         error: "%{resource_name} couldn't be updated."
+      duplicate:
+        notice: "%{resource_name} was successfully duplicated."
+        error: "%{resource_name} couldn't be duplicated."
       destroy:
         notice: "%{resource_name} was successfully destroyed."
         alert: "%{resource_name} could not be destroyed."

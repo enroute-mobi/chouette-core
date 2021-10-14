@@ -91,6 +91,9 @@ const actions = {
   fetchingApi: () =>({
       type: 'FETCH_API'
   }),
+  duplicateJourneyPattern: () => ({
+    type: 'DUPLICATE_JOURNEY_PATTERN'
+  }),
   selectShape: selectedItem => ({
     type: 'SELECT_SHAPE_EDIT_MODAL',
     selectedItem

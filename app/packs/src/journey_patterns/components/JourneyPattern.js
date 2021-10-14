@@ -11,8 +11,8 @@ export default class JourneyPattern extends Component{
     this.previousSpId = undefined
 
     this.basePath = window.location.pathname.split('/journey_patterns_collection')[0]
-
-    bindAll(this, ['updateCosts', 'onCreateShape', 'onEditShape', 'onUnassociateShape'])
+    
+    bindAll(this, ['updateCosts', 'onCreateShape', 'onEditShape', 'onUnassociateShape', 'onDuplicateJourneyPattern'])
   }
 
   get journeyPattern() {
@@ -150,6 +150,28 @@ export default class JourneyPattern extends Component{
     }
   }
 
+  onDuplicateJourneyPattern() {
+    const { id } = this.journeyPattern
+
+    const url = `${this.basePath}/journey_patterns/${id}/duplicate`
+
+    this.props.onDuplicateJourneyPattern()
+
+    fetch(url, {
+      method: 'PUT',
+      headers: {
+      'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').attributes.content.value
+      }
+    })
+    .then(handleRedirect(status => {
+      sessionStorage.setItem('previousAction', JSON.stringify({
+        resource: 'journey_pattern',
+        action: 'duplicate',
+        status
+      }))
+    }))
+  }
+
   onCreateShape() {
     const { id } = this.journeyPattern
 
@@ -177,7 +199,13 @@ export default class JourneyPattern extends Component{
       'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').attributes.content.value
       }
     })
-    .then(handleRedirect(() => window.sessionStorage.setItem('previousAction', 'journey_pattern-update')))
+    .then(handleRedirect(status => {
+      sessionStorage.setItem('previousAction', JSON.stringify({
+        resource: 'journey_pattern',
+        action: 'update',
+        status
+      }))
+    }))
   }
 
   renderShapeEditorButtons() {
@@ -264,6 +292,16 @@ export default class JourneyPattern extends Component{
                   {this.props.editMode ? I18n.t('actions.edit') : I18n.t('actions.show')}
                 </button>
               </li>
+              {this.props.editMode && !!id && (
+                <li key={`duplicate_journey_pattern_${id}`}>
+                  <button
+                    type='button'
+                    onClick={this.onDuplicateJourneyPattern}
+                    >
+                    {I18n.t('actions.duplicate')}
+                  </button>
+                </li>
+              )}
               { this.renderShapeEditorButtons() }
               <li key={`see_vehicle_journeys_${id}`} className={object_id ? '' : 'disabled'}>
                 {this.vehicleJourneyURL(object_id)}
@@ -335,5 +373,6 @@ JourneyPattern.propTypes = {
   onOpenEditModal: PropTypes.func.isRequired,
   onDeleteJourneyPattern: PropTypes.func.isRequired,
   showHeader: PropTypes.func.isRequired,
-  fetchRouteCosts: PropTypes.func.isRequired
+  fetchRouteCosts: PropTypes.func.isRequired,
+  onDuplicateJourneyPattern: PropTypes.func.isRequired,
 }

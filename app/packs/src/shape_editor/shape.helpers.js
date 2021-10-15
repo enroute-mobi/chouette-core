@@ -1,4 +1,4 @@
-import { bindAll, find, flatten, flow, nth, partialRight, reduce, sortBy } from 'lodash'
+import { bindAll, find, flatten, flow, nth, partialRight, range, reduce, sortBy } from 'lodash'
 
 import {
   along,
@@ -58,16 +58,15 @@ export const getLayers = obj => obj?.getLayers() || { getArray: () => [] }
 export const getSource = obj => obj?.getSource()
 export const getLayer = key => flow(getLayers, layers => layers.getArray(), layers => find(layers, l => l.get(key)))
 
-const getTolerance = (() => {
-  const tolerances = [1, 0.1, 0.01, 0.001, 0.0009, 0.0007, 0.0005, 0.0003, 0.0001, 0]
+const tolerances = [0.1, 0.07, 0.05, 0.04, 0.03, ...range(0.02, 0,  -0.001)]
 
-  return view => {
-    const percentage = (view.getZoom() - view.getMinZoom()) / (view.getMaxZoom() - view.getMinZoom())
-    const index = Math.ceil((tolerances.length - 1) * percentage)
+const getTolerance = (view, sectionCollection) => {
+  if (sectionCollection.features.length <= 30) return 0
 
-    return nth(tolerances, index)
-  }
-})()
+  const percentage = (view.getZoom() - view.getMinZoom()) / (view.getMaxZoom() - view.getMinZoom())
+  const index = Math.ceil((tolerances.length - 1) * percentage)
+  return nth(tolerances, index)
+}
 
 /**
  * Simplify each section based on map's current zoom
@@ -78,7 +77,7 @@ const getTolerance = (() => {
 export const simplifyGeometry = (sectionCollection, view) => {
   const sectionMapper = (object, _i) =>
     flow(
-      partialRight(simplify, { tolerance: getTolerance(view), highQuality: true }),
+      partialRight(simplify, { tolerance: getTolerance(view, sectionCollection), highQuality: true }),
       getCoords
     )(object)
 

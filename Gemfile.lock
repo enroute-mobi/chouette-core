@@ -656,7 +656,7 @@ GEM
       rspec-expectations (~> 3.10)
       rspec-mocks (~> 3.10)
       rspec-support (~> 3.10)
-    rspec-snapshot (2.0.0)
+    rspec-snapshot (2.0.1)
       awesome_print (> 1.0.0)
       rspec (> 3.0.0)
     rspec-support (3.10.2)

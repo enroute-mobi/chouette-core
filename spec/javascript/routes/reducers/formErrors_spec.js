@@ -1,4 +1,4 @@
-import formErrorsReducer, { handleFormValidation, initialState } from '../../../../app/javascript/routes/reducers/formErrors'
+import formErrorsReducer, { handleFormValidation, initialState } from '../../../../app/packs/src/routes/reducers/formErrors'
 import { actionHandler } from '../helpers'
 
 let newError, category, value

@@ -3,29 +3,29 @@ h3 = genealogical_title
 - if @stop_area.parent.present?
   .parent
     = link_to([@stop_area_referential, @stop_area.parent], title: t("area_types.label.#{ @stop_area.parent.stop_area_type}") + " #{ @stop_area.parent.name}") do
-      = image_tag "map/" + @stop_area.parent.stop_area_type + ".png"
+      = image_pack_tag "static/map/" + @stop_area.parent.stop_area_type + ".png"
       span = @stop_area.parent.name
 
-  .link = image_tag "icons/link.png"
+  .link = image_pack_tag "static/icons/link.png"
 
 - else
   .no_parent
 
 .target
-  = image_tag "map/" + @stop_area.stop_area_type + ".png"
+  = image_pack_tag "static/map/" + @stop_area.stop_area_type + ".png"
   span = @stop_area.name
 
 - if @stop_area.children.present?
-  .link = image_tag "icons/link.png"
+  .link = image_pack_tag "static/icons/link.png"
   .children
     - @stop_area.children.each do |child|
       .child
         = link_to([@stop_area_referential, child], :title => t("area_types.label.#{ child.stop_area_type}") + " #{ child.name}") do
-          = image_tag "map/" + child.stop_area_type + ".png"
+          = image_pack_tag "static/map/" + child.stop_area_type + ".png"
           span = child.name
 
 - elsif @stop_area.routes.present?
-  .link = image_tag "icons/link.png"
+  .link = image_pack_tag "static/icons/link.png"
   .children
     - @stop_area.routes.each do |route|
       .child

@@ -2,7 +2,7 @@
   - if field.options["display_inline"]
     - version = field.options["display_inline"].is_a?(String) && field.options["display_inline"]
     = link_to field.value.url do
-      = image_tag version ? field.value.send(version).url : field.value.url, class: "custom_field_attachment"
+      = image_pack_tag version ? field.value.send(version).url : field.value.url, class: "custom_field_attachment"
   - else
     - label = field.options["label"] || I18n.t("actions.download")
     = link_to label, field.value.url

@@ -86,5 +86,5 @@
 = javascript_tag do
   | window.routes = "#{CGI.escape(@routes.select{|r| r.wayback == :outbound}.map{|r| {name: r.name, id: r.id, stops: route_json_for_edit(r, serialize: false)}}.to_json)}"
 
-= javascript_pack_tag 'referential_lines/show.js'
+= javascript_pack_tag 'referential_lines/show'
 = javascript_include_tag 'OpenLayers/maps_backgrounds.js'

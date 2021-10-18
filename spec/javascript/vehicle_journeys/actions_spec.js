@@ -1,4 +1,4 @@
-import actions from '../../../app/javascript/vehicle_journeys/actions/index'
+import actions from '../../../app/packs/src/vehicle_journeys/actions/index'
 import _ from 'lodash'
 window._  = _
 

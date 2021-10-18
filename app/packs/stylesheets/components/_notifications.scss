@@ -1,0 +1,72 @@
+.notifications {
+  position: fixed;
+  bottom: 0;
+  left: 10px;
+  width: 300px;
+  z-index: 2002;
+
+  .notification {
+    border-radius: 5px;
+    margin-bottom: 10px;
+    border: 1px solid white;
+    font-size: 0.8em;
+    position: relative;
+    overflow: hidden;
+    background-color: $brand-color-secondary;
+    transition: background-color 0.2s;
+    .progress {
+      z-index: 9;
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      background-color: transparentize(white, 0.5);
+      transition: width 0.2s;
+      margin: 0;
+      border-radius: 0;
+      height: auto;
+    }
+    &:hover {
+      .close-notification {
+        opacity: 1;
+      }
+    }
+    &.new-notification,
+    &.updated-notification {
+      background-color: $green;
+    }
+    a {
+      padding: 10px;
+      padding-right: 40px;
+      display: block;
+      z-index: 10;
+      position: relative;
+      color: white;
+      text-decoration: none;
+      &:hover {
+        background-color: transparentize(white, 0.9);
+      }
+      &.close-notification {
+        position: absolute;
+        transition: opacity 0.2s;
+        padding: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 30px;
+        background-color: $brand-color-secondary;
+        opacity: 0;
+        z-index: 11;
+        &:hover {
+          background-color: transparentize(white, 0.9);
+        }
+        span {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+        }
+      }
+    }
+  }
+}

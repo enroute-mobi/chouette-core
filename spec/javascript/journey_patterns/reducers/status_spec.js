@@ -1,4 +1,4 @@
-import statusReducer from '../../../../app/javascript/journey_patterns/reducers/status'
+import statusReducer from '../../../../app/packs/src/journey_patterns/reducers/status'
 
 let state = {}
 

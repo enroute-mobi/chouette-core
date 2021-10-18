@@ -9,11 +9,6 @@ gem 'rails', '~> 5.2.6'
 
 gem 'health_check', '>= 3.1.0'
 
-# Use SCSS for stylesheets
-gem 'sassc-rails', '>= 2.1.2'
-gem 'sassc', '2.1.0'
-gem 'sass'
-
 group :production do
   gem 'mini_racer'
 end
@@ -26,7 +21,7 @@ gem 'coffee-rails', '>= 5.0.0'
 gem 'sprockets', '~> 3.7.2'
 
 # Webpacker
-gem 'webpacker', '~> 5.4', '>= 5.4.3'
+gem 'webpacker', '6.0.0.beta.7'
 
 # Use jquery as the JavaScript library
 gem 'jquery-rails', '>= 4.4.0'

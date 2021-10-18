@@ -1,0 +1,10 @@
+table.table.transport-modes {
+  tr {
+    &:nth-child(2n) {
+      background-color: white;
+    }
+  }
+  td {
+    vertical-align: top;
+  }
+}

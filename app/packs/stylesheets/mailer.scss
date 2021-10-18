@@ -1,0 +1,100 @@
+.mail-primary-table {
+  width: 525px;
+  text-align: left;
+  border: 1px solid $mail-light-grey;
+  border-radius: 5px;
+  padding: 20px 55px 10px;
+  border-collapse: initial;
+
+  .mail-body {
+    font-family: $base-font-family;
+    letter-spacing: 0;
+    font-size: 14px;
+
+    .mail-button {
+      color: white !important;
+      font-weight: bold;
+      padding: 10px 15px;
+      background-color: $brand-color-secondary !important;
+      display: inline-block;
+      margin-top: 30px;
+      margin-bottom: 10px;
+      text-decoration: none !important;
+      border-bottom: 0;
+      border-radius: 100px;
+    }
+  }
+
+  .mail-header {
+    position: relative;
+    padding-bottom: 40px;
+
+    .mail_header_img {
+      width: 300px;
+      margin-top: 25px;
+    }
+  }
+
+  .mail-body-link {
+    color: $mail-dark-grey;
+    font-family: $base-font-family;
+    font-size: 14px;
+    text-decoration: none;
+  }
+
+  .mail-title {
+    font-family: $base-font-family;
+    font-weight: 600;
+    letter-spacing: 0;
+    font-size: 14px;
+    margin: 0;
+    margin-bottom: 15px;
+  }
+
+  .mail-content {
+    margin-bottom: 15px;
+  }
+
+
+  .mail-infos {
+    text-align: center;
+    font-size: 12px;
+    color: $mail-dark-grey;
+    padding-top: 30px;
+  }
+
+  .mail-footer-link {
+    text-decoration: none !important;
+    border-bottom: 0;
+  }
+
+  .mail-content-table {
+    margin-top: 1em;
+    width: 100%;
+    text-align: left;
+    border-collapse: collapse;
+  }
+
+  .mail-tbody {
+    font-family: $base-font-family;
+    letter-spacing: 0;
+    font-size: 14px;
+  }
+
+  .mail-th {
+    font-family: $base-font-family;
+    font-weight: 600;
+    letter-spacing: 0;
+    font-size: 14px;
+    margin: 0;
+  }
+}
+
+.mail-footer {
+  text-align: right;
+  color: $mail-dark-grey;
+  width: 525px;
+  font-family: $base-font-family;
+  font-size: 14px;
+  margin-top: 10px;
+}

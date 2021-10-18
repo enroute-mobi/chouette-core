@@ -86,7 +86,7 @@ GEM
   specs:
     rails-assets-bootstrap-sass-official (3.3.7)
       rails-assets-jquery (>= 1.9.1, < 4)
-    rails-assets-jquery (3.4.1)
+    rails-assets-jquery (3.6.0)
     rails-assets-respond (1.4.2)
 
 GEM
@@ -671,11 +671,6 @@ GEM
     rubycas-client (2.3.9)
       activesupport
     rubyzip (2.3.2)
-    sass (3.7.4)
-      sass-listen (~> 4.0.0)
-    sass-listen (4.0.0)
-      rb-fsevent (~> 0.9, >= 0.9.4)
-      rb-inotify (~> 0.9, >= 0.9.7)
     sass-rails (6.0.0)
       sassc-rails (~> 2.1, >= 2.1.1)
     sassc (2.1.0)
@@ -767,7 +762,7 @@ GEM
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
-    webpacker (5.4.3)
+    webpacker (6.0.0.beta.7)
       activesupport (>= 5.2)
       rack-proxy (>= 0.6.1)
       railties (>= 5.2)
@@ -904,9 +899,6 @@ DEPENDENCIES
   rspec-snapshot
   rspec_junit_formatter
   rubyzip
-  sass
-  sassc (= 2.1.0)
-  sassc-rails (>= 2.1.2)
   seedbank (= 0.4.0)
   select2-rails (~> 4.0, >= 4.0.3)
   sentry-raven
@@ -923,7 +915,7 @@ DEPENDENCIES
   timecop
   uglifier (~> 2.7.2)
   webmock
-  webpacker (~> 5.4, >= 5.4.3)
+  webpacker (= 6.0.0.beta.7)
   whenever!
   will_paginate
   will_paginate-bootstrap

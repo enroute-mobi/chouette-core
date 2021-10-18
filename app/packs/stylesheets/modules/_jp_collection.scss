@@ -1,0 +1,351 @@
+//-----------------//
+//  JP Collection  //
+//-----------------//
+
+#journey_patterns {
+  .table-2entries {
+    .t2e-head {
+      > .td {
+        position: relative;
+        padding-left: 25px;
+
+        > .headlined {
+          &:before {
+            margin-left: -25px;
+            padding-left: 25px;
+          }
+        }
+        > div > span {
+          position: relative;
+          display: block;
+          height: 100%;
+
+          > span {
+            position: absolute;
+            display: block;
+            line-height: 1em;
+            top: 50%;
+            transform: translateY(-50%);
+            margin-top: -2px;
+          }
+          &:before {
+            content: '';
+            display: block;
+            width: 10px;
+            height: 10px;
+            background-color: #fff;
+            border: 2px solid $darkgrey;
+            border-radius: 50%;
+            position: absolute;
+            z-index: 5;
+            left: -20px;
+            top: 50%;
+            margin-top: -5px;
+          }
+          &:after {
+            content: '';
+            display: block;
+            width: 4px;
+            margin: 0 3px;
+            background-color: rgba($grey, 0.5);
+            position: absolute;
+            z-index: 3;
+            top: -6px;
+            left: -20px;
+            bottom: 0;
+          }
+        }
+        > .headlined > span {
+          height: calc(100% - (1.4em + 12px));
+
+          &:after {
+            top: calc((1.4em + 18px) * -1);
+          }
+        }
+        &:last-child > div > span {
+          &:after {
+            bottom: 50%;
+          }
+        }
+        &:nth-child(2) > div > span {
+          &:after {
+            top: 50%;
+          }
+        }
+      }
+    }
+    &.no_result {
+      .t2e-head > .td > div > span,
+      .t2e-head > .td > .headlined > span {
+        > span {
+          position: relative;
+          top: 0;
+          transform: none;
+          margin-top: 0;
+        }
+        &:after {
+          bottom: -6px;
+        }
+      }
+      .t2e-head > .td:last-child > div > span {
+        &:after {
+          bottom: 50%;
+        }
+      }
+    }
+    .t2e-head > .td:nth-child(2) > div,
+    .t2e-head > .td:last-child > div {
+      > span:before {
+        content: '•';
+        color: $darkgrey;
+        text-align: center;
+        font-size: 28px;
+        letter-spacing: 0;
+        text-indent: -0.01em;
+        line-height: 12px;
+        width: 15px;
+        height: 15px;
+        left: -23px;
+        top: 50%;
+        margin-top: -8px;
+      }
+    }
+  }
+  .table-2entries {
+    .t2e-item-list {
+      & > div {
+        width: 100%;
+      }
+      .td {
+        overflow: hidden;
+      }
+      .t2e-item {
+        position: relative;
+
+        .th .vj_tt {
+          display: inline-block;
+          vertical-align: top;
+
+          + .vj_tt {
+            margin-left: 5px;
+          }
+        }
+        &.with-costs {
+          .td {
+            padding: 15px 8px;
+          }
+          .totals {
+            color: $darkgrey;
+            padding-top: 4px;
+            margin-left: -5px;
+            margin-right: -5px;
+            span {
+              white-space: nowrap;
+              padding: 0 5px;
+            }
+            i {
+              padding-right: 3px;
+            }
+          }
+          $link-size: 10px;
+          .link {
+            position: absolute;
+            left: 50px;
+            width: 10px;
+            top: -15px;
+            bottom: -15px;
+            background: $darkgrey;
+            z-index: 3;
+            opacity: 0.5;
+            &:after {
+              content: "";
+              width: $link-size;
+              height: $link-size;
+              position: absolute;
+              top: 50%;
+              bottom: 50%;
+              margin-top: -$link-size/2;
+              border-top: $link-size/2 solid transparent;
+              border-left: $link-size/2 solid transparent;
+              border-right: $link-size/2 solid $darkgrey;
+              border-bottom: $link-size/2 solid $darkgrey;
+              transform: rotate(135deg);
+              left: 0%;
+              opacity: 0;
+              transition: left 0.2s, opacity 0.2s;
+            }
+          }
+          .headlined .link {
+            top: 0;
+            bottom: -15px;
+
+            &:after {
+              top: 75%;
+              margin-top: -$link-size/2 - 1px;
+            }
+          }
+          .activated .link {
+            &:after {
+              left: -50%;
+              opacity: 1;
+            }
+          }
+          & > div {
+            position: relative;
+          }
+          .link {
+            left: 35px;
+          }
+          .has_radio {
+            margin-right: 150px;
+          }
+          .costs {
+            background: $darkgrey;
+            opacity: 0.5;
+            padding: 5px;
+            color: white;
+            position: absolute;
+            cursor: not-allowed;
+            left: 75px;
+            top: -1px;
+            transform: translateY(-50%);
+            font-size: 0.75em;
+            transition: background 0.1s;
+            border: 1px solid white;
+
+            &:hover {
+              opacity: 1;
+              &:after {
+                opacity: 1;
+              }
+            }
+            &:after {
+              opacity: 0.5;
+              content: "";
+              height: 2px;
+              position: absolute;
+              left: -23px;
+              background: $darkgrey;
+              right: 100%;
+              top: 50%;
+              transition: background 0.1s;
+            }
+            p {
+              display: block;
+              border: none;
+              margin-bottom: 0;
+              i {
+                margin-right: 3px;
+                width: 12px;
+              }
+              & + p {
+                position: relative;
+                z-index: 2;
+                padding-right: 0;
+                margin: 0;
+                border-right: none;
+              }
+              input {
+                display: inline-block;
+                width: 50px;
+                border: none;
+                margin-right: 5px;
+                color: black;
+              }
+            }
+          }
+        }
+        .edit-mode {
+          .costs {
+            cursor: pointer;
+            p {
+              margin-bottom: 5px;
+              & + p {
+                margin-bottom: 0;
+              }
+            }
+            opacity: 1;
+            &:after {
+              opacity: 1;
+            }
+          }
+          .link {
+            opacity: 1;
+          }
+        }
+        .with-headline + .costs {
+          top: 25%;
+        }
+        .deactivated .costs {
+          display: none;
+        }
+        &.has-error {
+          &:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 2px solid $red;
+          }
+          > .th {
+            > div:first-child,
+            > div:first-child + div {
+              color: $red;
+            }
+          // Reset default behaviour
+          }
+          .form-control {
+            border-color: #ccc;
+          }
+        }
+      }
+    }
+    .t2e-head {
+      .td.with-costs {
+        & > div {
+          &:not(.headlined) {
+            height: calc(100% + 6px);
+          }
+          & > span {
+            &:after {
+              top: -15px;
+              bottom: -9px;
+            }
+          }
+        }
+        div.headlined {
+          &:before {
+            margin-bottom: 0;
+          }
+          & > span {
+            height: calc(100% - (1.4em + 15px));
+            &:after {
+              top: calc((1.4em + 30px) * -1);
+              bottom: 0;
+            }
+          }
+        }
+      }
+    }
+    .td.with-costs,
+    .with-costs .td {
+      padding-top: 15px;
+      padding-bottom: 15px;
+
+      & > div {
+        height: calc(100% + 15px);
+        &.headlined {
+          &:before {
+            padding-top: 15px;
+            padding-bottom: 15px;
+            height: calc(1.4em + 30px);
+            margin-top: -15px;
+            margin-bottom: 15px;
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,78 @@
+.page_header {
+  background-color: $light-grey;
+  color: #fff;
+
+  .container-fluid > .row:first-child {
+    &:last-child {
+      margin-bottom: 15px;
+    }
+  }
+  .page-icon {
+    display: inline-block;
+    vertical-align: middle;
+    width: 49px;
+    height: 49px;
+    line-height: 49px;
+    text-align: center;
+
+    margin-right: 15px;
+
+    > .sb {
+      font-size: 3.5em;
+      color: $icon-page-header;
+    }
+
+    &.page-icon-aggregate,
+    &.page-icon-compliance_control {
+      display: none;
+    }
+  }
+  .page-title {
+    display: inline-block;
+    vertical-align: middle;
+    width: calc(100% - 65px);
+    overflow: hidden;
+    color: $brand-color-primary;
+    margin-bottom: 15px;
+
+
+    &:first-child {
+      width: 100%;
+    }
+    h3 {
+      margin-top: 0;
+    }
+    h1 {
+      position: relative;
+      line-height: 1.4;
+      margin: 0 -1.4em 0 0;
+      padding: 0 1.4em 0 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+
+      &.placeholder {
+        color: red;
+      }
+      .small.fa {
+        margin-left: 0.5em;
+      }
+    }
+  }
+  .page-action {
+    line-height: 42px;
+    margin-bottom: 10px;
+    text-align: right;
+    color: $darkgrey;
+
+    > * {
+      display: inline-block;
+      vertical-align: middle;
+      line-height: $line-height;
+
+      + .btn {
+        margin-left: 15px;
+      }
+    }
+  }
+}

@@ -1,5 +1,5 @@
-import vjReducer from '../../../../app/javascript/vehicle_journeys/reducers/vehicleJourneys'
-import actions from '../../../../app/javascript/vehicle_journeys/actions/index'
+import vjReducer from '../../../../app/packs/src/vehicle_journeys/reducers/vehicleJourneys'
+import actions from '../../../../app/packs/src/vehicle_journeys/actions/index'
 
 let state = []
 let stateModal = {

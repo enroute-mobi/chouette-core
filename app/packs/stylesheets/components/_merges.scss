@@ -1,0 +1,187 @@
+@import 'stylesheets/base/config';
+
+.merge-referentials-selector {
+  display: flex;
+  min-height: 300px;
+  .col {
+    padding: 0;
+    flex: 0 0 45%;
+    position: relative;
+    display: inline-block;
+    min-height: 100%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    .add {
+      display: block;
+      padding: 10px;
+      margin: -10px;
+      span {
+        padding-right: 5px;
+        transition: padding 0.3s;
+      }
+      &:hover {
+        color: white;
+        background-color: $brand-color-secondary;
+      }
+    }
+    .head {
+      padding: 10px;
+      background-color: #eee;
+      height: 110px;
+      .input-group-addon,
+      .input-group-btn {
+        background: white;
+        border: none;
+        position: relative;
+        &:before {
+          content: "";
+          width: 1px;
+          top: 5px;
+          bottom: 5px;
+          background-color: #eee;
+          position: absolute;
+          left: 0;
+        }
+      }
+      .input-group {
+        margin: 0 -1px;
+        border: none;
+        border-radius: 5px;
+        overflow: hidden;
+        & > * {
+          border-radius: 0;
+          box-shadow: none;
+          border: none;
+          transition: all 0.3s;
+          &[readonly] {
+            background-color: #ddd;
+          }
+        }
+        & > div {
+          max-width: 38px;
+        }
+      }
+    }
+    h4 {
+      padding: 10px;
+      margin: 0 0 10px 0;
+      font-weight: bolder;
+    }
+    .target {
+      .add {
+        display: none;
+      }
+      .delete {
+        display: block;
+        padding: 10px;
+        margin: -10px;
+        &:hover {
+          color: white;
+          background-color: $red;
+        }
+      }
+      &.sorting {
+        .remaining-placeholder {
+          display: none;
+        }
+      }
+    }
+    &.middle-col {
+      position: relative;
+      flex: 1 0 10%;
+      border: none;
+      span {
+        color: $green;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+    }
+  }
+  ul {
+    padding: 10px 0;
+    margin: 0;
+    border: none;
+    position: relative;
+    min-height: 100%;
+
+    .placeholder,
+    .remaining-placeholder {
+      height: 40px;
+      border: 1px dashed #ccc;
+      background: #FAFAFA;
+      text-align: center;
+      color: #999;
+    }
+  }
+  li {
+    list-style-type: none;
+    padding: 10px;
+    margin: 10px 10px 0 10px;
+    cursor: grab;
+    border: 1px solid #ccc;
+    background: white;
+    position: relative;
+    transition: opacity 0.3s, height 0.3s, padding 0.3s, margin 0.3s, opacity 0.3s;
+    height: 40px;
+    overflow: hidden;
+    &:hover {
+      .add span {
+        padding: 0;
+      }
+    }
+    &.masked {
+      height: 0;
+      padding: 0 10px;
+      margin: -1px 10px;
+      opacity: 0;
+    }
+    & > span {
+      position: absolute;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      left: 10px;
+      top: 10px;
+      bottom: 10px;
+      right: 50px;
+    }
+    &:after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 2%;
+      right: 98%;
+      height: 2px;
+      transition: all 0.3s;
+      background: transparent;
+      transform: translateY(-1px);
+    }
+    .delete {
+      color: $red;
+      display: none;
+    }
+    &.ui-sortable-helper {
+      cursor: grabbing;
+      border: 1px solid #444;
+    }
+    &.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      // background: repeating-linear-gradient(-45deg, #ecf5cf,#ecf5cf 12px,#cdf563 12px,#cdf563 25px)
+      .add {
+        display: none;
+      }
+      &:after {
+        right: 2%;
+        background: black;
+      }
+    }
+  }
+  &.aggregate {
+    li {
+      cursor: inherit;
+    }
+  }
+}

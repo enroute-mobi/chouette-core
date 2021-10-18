@@ -1,4 +1,4 @@
-import deletedStopPointsReducer from '../../../../app/javascript/routes/reducers/deletedStopPoints'
+import deletedStopPointsReducer from '../../../../app/packs/src/routes/reducers/deletedStopPoints'
 import { actionHandler } from '../helpers'
 import _ from 'lodash'
 

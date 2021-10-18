@@ -1,1 +1,0 @@
-import DateFilter from '../date_filters'

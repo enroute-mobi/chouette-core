@@ -1,0 +1,87 @@
+table.calendar {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+  margin-bottom: 20px;
+
+  th,
+  td {
+    border: 1px solid $darkgrey;
+    text-align: center;
+    padding: 0.35em 0.5em;
+  }
+  th {
+    padding: 0.5em;
+  }
+  thead {
+    tr {
+      > th {
+        border: none;
+      }
+      &:first-child {
+        text-transform: uppercase;
+      }
+    }
+  }
+  tbody {
+    tr > td {
+      &.weekNumber {
+        border: none;
+        padding: 0.5em 0.5em 0.5em 0;
+      }
+      &.outsideMonth {
+        color: rgba($darkgrey, 0.35);
+      }
+      &.weekend {
+        font-weight: bold;
+      }
+      &.selected_period,
+      &.selected_date,
+      &.overlaped_date {
+        > a {
+          display: block;
+          margin: 0 auto;
+          width: 24px;
+          height: 24px;
+          line-height: 24px;
+          color: $darkgrey;
+          background-color: rgba($gold, 0.75);
+          border-radius: 50%;
+
+          &:hover,
+          &:focus {
+            color: $darkgrey;
+            text-decoration: none;
+          }
+        }
+      }
+    }
+  }
+}
+.col-xs-6 {
+  false {
+    clear: both;
+  }
+}
+.col-sm-4 {
+  @media (min-width: 768px) {
+    false {
+      clear: none;
+    }
+    false {
+      clear: both;
+    }
+  }
+}
+
+.col-lg-3 {
+  @media (min-width: 1200px) {
+    false,
+    false {
+      clear: none;
+    }
+    false {
+      clear: both;
+    }
+  }
+}

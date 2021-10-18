@@ -1,0 +1,114 @@
+//-----------------------//
+// Select2 Customisation //
+//-----------------------//
+
+// Dirty hotfix for select2 i18n not working properly
+// .select2-results__options
+//   .select2-results__message, .loading-results
+//     display: none
+
+.select2-results__option,
+.select2-selection__rendered {
+  .label {
+    font-size: 0.8em;
+    margin-right: 0.5em;
+  }
+}
+.select2-container,
+.select2-container--bootstrap {
+  .select2-selection--single .select2-selection__rendered {
+    height: 100%;
+  }
+}
+.select2-selection__placeholder {
+  color: rgba($grey, 0.65);
+  font-style: italic;
+  padding: 0 6px;
+}
+// With Font Awesome adjusts.
+.select2-selection__rendered {
+  position: relative;
+}
+.select2-container--bootstrap {
+  .select2-dropdown {
+    z-index: 2053;
+  }
+  .select2-dropdown--above {
+    box-shadow: 0 -3px 6px rgba(0, 0, 0, 0.175);
+  }
+  .select2-selection--multiple {
+    .select2-selection__clear {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      margin: -10px 0 0 0;
+      font-size: 0;
+      font-family: "Font Awesome 5 Free";
+      text-rendering: auto;
+      -webkit-font-smoothing: antialiased;
+
+      &::before {
+        content: '\f057';
+        color: $grey;
+        display: inline;
+        font-size: 14px;
+        font-weight: normal;
+      }
+    }
+    .select2-selection__choice {
+      background-color: $darkgrey;
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+    }
+    .select2-selection__choice__remove {
+      float: right;
+      color: rgba(#fff, 0.5);
+      margin: 0 0 0 5px;
+
+      &:hover {
+        color: #fff;
+      }
+    }
+  }
+}
+.form-filter {
+  .form-group.select2ed {
+    .select2-container--bootstrap {
+      .select2-selection--single,
+      .select2-selection--multiple {
+        height: 31px;
+        padding: 0px 3px 4px 6px;
+      }
+      .select2-selection--single {
+        line-height: 31px;
+      }
+      .select2-selection--multiple {
+        min-height: 31px;
+
+        .select2-search--inline .select2-search__field {
+          height: 28px;
+        }
+      }
+      .select2-selection__rendered {
+        padding-right: 20px;
+      }
+    }
+    .select2-container--bootstrap .select2-selection {
+      border-color: rgba($grey, 0.3);
+    }
+  }
+}
+// Tags
+.form-filter {
+  .form-group.select2ed {
+    .form-control.tags + .select2-container--bootstrap {
+      input.select2-search__field {
+        padding: 0 6px;
+      }
+    }
+  }
+}
+.select2-resize {
+  min-width: 15% !important;
+}

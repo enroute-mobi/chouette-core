@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import CustomFieldsInputs from '../../../../app/javascript/helpers/CustomFieldsInputs'
+import CustomFieldsInputs from '../../../../app/packs/src/helpers/CustomFieldsInputs'
 import renderer from 'react-test-renderer'
 require('select2')
 

@@ -1,0 +1,51 @@
+//---------//
+//  Fonts  //
+//---------//
+
+//-- OpenSans --//
+
+@font-face {
+  // Regular
+  font-family: 'Open Sans';
+  src: url('fonts/OpenSans/Regular/OpenSans-Regular.woff2') format('woff2'), url('fonts/OpenSans/Regular/OpenSans-Regular.woff') format('woff'), url('fonts/OpenSans/Regular/OpenSans-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  // Regular Italic
+  font-family: 'Open Sans';
+  src: url('fonts/OpenSans/Regular/OpenSans-Italic.woff2') format('woff2'), url('fonts/OpenSans/Regular/OpenSans-Italic.woff') format('woff'), url('fonts/OpenSans/Regular/OpenSans-Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+}
+
+@font-face {
+  // Bold
+  font-family: 'Open Sans';
+  src: url('fonts/OpenSans/Bold/OpenSans-Bold.woff2') format('woff2'), url('fonts/OpenSans/Bold/OpenSans-Bold.woff') format('woff'), url('fonts/OpenSans/Bold/OpenSans-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  // Bold Italic
+  font-family: 'Open Sans';
+  src: url('fonts/OpenSans/Bold/OpenSans-BoldItalic.woff2') format('woff2'), url('fonts/OpenSans/Bold/OpenSans-BoldItalic.woff') format('woff'), url('fonts/OpenSans/Bold/OpenSans-BoldItalic.ttf') format('truetype');
+  font-weight: 700;
+  font-style: italic;
+}
+
+// sBoiv
+@font-face {
+  font-family: 'sboiv';
+  src: url('fonts/sBoiv/sboiv.woff') format('woff'), url('fonts/sBoiv/sboiv.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+// @font-face {
+//   font-family: 'Glyphicons Halflings';
+//   src: url('bootstrap/dist/fonts/glyphicons-halflings-regular.eot');
+//   src: url('bootstrap/dist/fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('../fonts/glyphicons-halflings-regular.woff') format('woff'), url('../fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('../fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
+// }

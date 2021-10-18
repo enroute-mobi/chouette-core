@@ -1,4 +1,4 @@
-import stopPointsReducer from '../../../../app/javascript/routes/reducers/stopPoints'
+import stopPointsReducer from '../../../../app/packs/src/routes/reducers/stopPoints'
 import { receivedRoute } from '../helpers'
 import _ from 'lodash'
 

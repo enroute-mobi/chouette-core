@@ -1,0 +1,60 @@
+//--------------//
+//  Pagination  //
+//--------------//
+
+.pagination {
+  margin: 0;
+  border-radius: 0;
+  line-height: 34px;
+
+  &:first-letter {
+    text-transform: capitalize;
+  }
+  .page_links {
+    display: inline-block;
+    vertical-align: top;
+    margin-left: 15px;
+    // To avoid white spaces between childrend inline-block
+    letter-spacing: -0.31em;
+    text-rendering: optimizespeed;
+    font-weight: 300;
+
+    > * {
+      display: inline-block;
+      font-family: "Font Awesome 5 Free";
+      font-weight: 600;
+      font-size: inherit;
+      text-rendering: auto;
+      -webkit-font-smoothing: antialiased;
+      // To avoid white spaces between children inline-block
+      letter-spacing: normal;
+      word-spacing: normal;
+      text-rendering: auto;
+      overflow: hidden;
+      vertical-align: middle;
+      padding: 4px 10px;
+      text-decoration: none;
+      background-color: transparent;
+      border: none;
+
+      + * {
+        border-left: 1px solid $darkgrey;
+      }
+      &:first-child {
+        padding-left: 0;
+      }
+      &:last-child {
+        padding-right: 0;
+      }
+      &.disabled {
+        color: $grey;
+      }
+      &.previous_page:before {
+        content: '\f053';
+      }
+      &.next_page:before {
+        content: '\f054';
+      }
+    }
+  }
+}

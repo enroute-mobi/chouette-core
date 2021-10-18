@@ -1,4 +1,4 @@
-import statusReducer from '../../../../app/javascript/time_tables/reducers/status'
+import statusReducer from '../../../../app/packs/src/time_tables/reducers/status'
 
 let state = {}
 

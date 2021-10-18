@@ -1,4 +1,4 @@
-import modalReducer from '../../../../app/javascript/vehicle_journeys/reducers/modal'
+import modalReducer from '../../../../app/packs/src/vehicle_journeys/reducers/modal'
 
 let state = {}
 

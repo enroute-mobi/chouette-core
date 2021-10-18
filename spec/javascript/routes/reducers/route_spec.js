@@ -1,4 +1,4 @@
-import routeReducer, { initialState } from '../../../../app/javascript/routes/reducers/route'
+import routeReducer, { initialState } from '../../../../app/packs/src/routes/reducers/route'
 import { actionHandler, receivedRoute } from '../helpers'
 import _ from 'lodash'
 

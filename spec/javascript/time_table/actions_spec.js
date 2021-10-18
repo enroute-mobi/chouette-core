@@ -1,4 +1,4 @@
-import actions from '../../../app/javascript/time_tables/actions'
+import actions from '../../../app/packs/src/time_tables/actions'
 const dispatch = function(){}
 const dayTypes = [true, true, true, true, true, true, true]
 const day = {

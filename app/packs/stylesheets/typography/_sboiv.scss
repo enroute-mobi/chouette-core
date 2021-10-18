@@ -1,0 +1,157 @@
+//-----------------------------//
+//  sBoiv (custom icon fonts)  //
+//-----------------------------//
+
+.sb {
+  display: inline-block;
+  font-family: 'sboiv' !important;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: normal;
+  line-height: 1;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  &[data-textinside] {
+    position: relative;
+    // width: 1em
+    // height: 1em
+    &:after {
+      content: attr(data-textinside);
+      font-family: $base-font-family;
+      font-size: 0.6em;
+      font-weight: 700;
+      display: block;
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      text-align: center;
+      color: #fff;
+    }
+  }
+  &.sb-lg {
+    font-size: 1.33333333em;
+    line-height: 0.75em;
+    vertical-align: -15%;
+  }
+  &.sb-2x {
+    font-size: 2em;
+  }
+  &.sb-3x {
+    font-size: 3em;
+  }
+  &.sb-4x {
+    font-size: 4em;
+  }
+  &.sb-5x {
+    font-size: 5em;
+  }
+  &.sb-strong {
+    font-weight: bold;
+  }
+}
+.sb-ZDLR:before {
+  content: '\e904';
+}
+.sb-ZDER:before {
+  content: '\e905';
+}
+.sb-ZDEP:before {
+  content: '\e906';
+}
+.sb-company:before {
+  content: '\e907';
+}
+.sb-shape:before {
+  content: '\e908';
+}
+.sb-dashboard:before {
+  content: '\e909';
+}
+.sb-line_referential:before,
+.sb-stop_area_referential:before {
+  content: '\e90a';
+}
+.sb-network:before {
+  content: '\e90c';
+}
+.sb-compliance_check_set:before,
+.sb-import_resource:before {
+  content: '\e90d';
+}
+.sb-workbench:before,
+.sb-merge:before {
+  content: '\e90e';
+}
+.sb-workgroup:before,
+.sb-aggregate:before {
+  content: '\e90f';
+}
+.sb-calendar:before {
+  content: '\e910';
+}
+.sb-journey_pattern:before {
+  content: '\e911';
+}
+.sb-ligne_commerciale:before {
+  content: '\e912';
+}
+.sb-ligne_administrative:before {
+  content: '\e913';
+}
+.sb-LDA:before {
+  content: '\e914';
+}
+.sb-referential:before {
+  content: '\e915';
+}
+.sb-compliance_control_set:before {
+  content: '\e916';
+}
+.sb-routing_constraint_zone:before {
+  content: '\e917';
+}
+.sb-route:before {
+  content: '\e918';
+}
+.sb-import:before,
+.sb-export:before {
+  content: '\e919';
+}
+.sb-vehicle_journey:before {
+  content: '\e91a';
+}
+.sb-time_table:before {
+  content: '\e91b';
+}
+.sb-stop_area:before {
+  content: '\e91c';
+}
+.sb-Acces:before {
+  content: '\e91d';
+}
+.sb-chrono:before {
+  content: '\e903';
+}
+.sb-preparing:before {
+  content: '\e901';
+}
+.sb-current-ref:before {
+  content: '\e902';
+}
+.sb-update-vj:before {
+  content: '\e900';
+}
+.sb-line:before {
+  content: '\e91e';
+}
+.sb-connection_link:before {
+  font-family: "Font Awesome 5 Free" !important;
+  content: '\f362';
+  font-weight: 600;
+}

@@ -18,4 +18,4 @@
             li= link_to_language locale, { class: language_class( locale ) }
     p = link_to destroy_user_session_path, method: :delete, class: 'menu-item', title: t('devise.links.sign_out'), data: {:confirm =>  t('devise.links.sign_out_confirm')}  do
       = t('devise.links.sign_out')
-      span.fa.fa-lg.fa-sign-out style="margin-left:5px;"
+      span.fa.fa-lg.fa-sign-out-alt style="margin-left:5px;"

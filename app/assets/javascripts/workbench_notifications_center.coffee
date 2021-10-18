@@ -21,7 +21,7 @@ class WorkbenchNotification
   show: (fancy=true)->
     @container = $('<div class="notification"></div>')
     @updateContainer()
-    close = $("<a class='close-notification' href='#'><span class='fa fa-times'></span></a>")
+    close = $("<a class='close-notification' href='#'><span class='fas fa-times'></span></a>")
     close.appendTo @container
     close.click (e)=>
       e.preventDefault()

@@ -18,6 +18,8 @@ class Shape < ApplicationModel
     joins(:codes).where(codes: { code_space: code_space, value: value })
   }
 
+  scope :by_text, -> (text) { text.blank? ? all : where('unaccent(shapes.name) ILIKE :t OR shapes.uuid::varchar LIKE :t', t: "%#{text.downcase}%") }
+
   def associations
     CrossReferentialIndexEntry.where(relation_name: :shape, parent_id: id)
   end

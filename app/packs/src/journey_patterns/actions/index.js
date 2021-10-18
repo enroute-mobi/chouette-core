@@ -91,9 +91,9 @@ const actions = {
   fetchingApi: () =>({
       type: 'FETCH_API'
   }),
-  selectShape: (selectedShape) => ({
+  selectShape: selectedItem => ({
     type: 'SELECT_SHAPE_EDIT_MODAL',
-    selectedItem: selectedShape
+    selectedItem
   }),
   unselectShape: () => ({
     type: 'UNSELECT_SHAPE_EDIT_MODAL',

@@ -120,8 +120,8 @@ export default class EditModal extends Component {
                           <label className='control-label'>{I18n.attribute_name('journey_pattern', 'shape')}</label>
                           <ShapeSelector
                             shape = {this.props.modal.modalProps.journeyPattern.shape}
-                            onSelectShape = {(e) => this.props.onSelectShape(e)}
-                            onUnselectShape = {() => this.props.onUnselectShape()}
+                            onSelectShape={this.props.onSelectShape}
+                            onUnselectShape={this.props.onUnselectShape}
                             disabled={!this.props.editMode}
                           />
                         </div>

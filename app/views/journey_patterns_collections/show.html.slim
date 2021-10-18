@@ -27,5 +27,6 @@
   | window.route = "#{URI.escape(route_json_for_edit(@route))}";
   | window.lineColor = "#{@route.line.color_hex}";
   | window.shape_url = "#{default_shapes_path(@referential.workgroup.shape_referential).html_safe}";
+  | window.shapes_url = "#{shapes_workgroup_autocomplete_index_path(@referential.workgroup)}";
   | window.route_kml_url = "#{referential_line_route_path(@route.referential, @route.line, @route, format: :kml).html_safe}";
 

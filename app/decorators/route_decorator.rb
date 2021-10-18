@@ -38,7 +38,10 @@ class RouteDecorator < AF83::Decorator
       end
     end
 
-    instance_decorator.action_link secondary: :show do |l|
+    instance_decorator.action_link(
+      secondary: :show,
+      if: ->{h.has_feature?(:vehicle_journey_csv_export)}
+    ) do |l|
       l.content t('vehicle_journey_exports.new.title')
       l.href do
         h.referential_line_route_vehicle_journey_exports_path(

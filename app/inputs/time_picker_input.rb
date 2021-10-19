@@ -25,6 +25,7 @@ class TimePickerInput < SimpleForm::Inputs::Base
   def set_html_options
     input_html_options[:type] = 'text'
     input_html_options[:data] ||= { 'input': ''}
+    # input_html: { value: resource.nightly_aggregate_time&.to_hm || "00:00" }
     # input_html_options[:data].merge!(date_options: date_options)
   end
 end

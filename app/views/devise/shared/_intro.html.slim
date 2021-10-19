@@ -1,7 +1,24 @@
 .col-md-8.product_summary
-  h2 = t("devise.sessions.new.welcome")
-  p = t("devise.sessions.new.introduction1")
-  p = t("devise.sessions.new.introduction2")
-  ul
-    li = "- #{t('devise.sessions.new.introduction_item1')}"
-    li = "- #{t('devise.sessions.new.introduction_item2')}"
+  .content
+    h2 = t("devise.sessions.new.baseline")
+    p = link_to t("devise.sessions.new.know_more").html_safe, 'https://enroute.mobi/chouette/', target: :blank
+
+coffee:
+  $(document).ready ->
+    $('.product_summary').addClass 'loaded'
+    setTimeout ->
+      $('.product_summary a').addClass 'shine'
+    , 1000
+    setTimeout ->
+      $('.product_summary a').removeClass 'shine'
+    , 1300
+
+
+    blink = ->
+      $('.product_summary').addClass 'blink'
+      setTimeout ->
+        $('.product_summary').removeClass 'blink'
+      , 300
+      setTimeout blink, 3000 + Math.random() * 3000
+
+    setTimeout blink, 3000 + Math.random() * 3000

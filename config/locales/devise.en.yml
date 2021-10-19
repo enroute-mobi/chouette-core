@@ -4,15 +4,13 @@ en:
   devise:
     sessions:
       new:
-        title: Sign in
+        title: Welcome to Chouette
         commit: Sign in
-        welcome: "Welcome to Chouette"
-        introduction1: "Chouette is an open source Software for editing, viewing and exchanging
-public transport reference data, and is the reference implementation for
-validating conformance of data wrt Neptune (French standard NFP 99 506)."
-        introduction2: "The application is deployed in Saas mode and supports :"
-        introduction_item1: "several data exchange formats (Neptune, GTFS, CSV ... Netex coming soon)"
-        introduction_item2: "and also several base map backgrounds (Google, OSM, IGN)."
+        baseline: "Visionnary transport"
+        know_more: "Find out more about <strong>Chouette</strong>"
+        sign_in: Sign In
+        support: If you have any question, please contact our Support Team
+        support_link: Contact support
         unauthorized: "Failed to connect due to missing Chouette connection rights"
         no_account: "You don't have an account yet ?"
         sign_up: "Sign up"

@@ -102,8 +102,7 @@ span.sb, span.fa {
 @import 'stylesheets/modules/search';
 @import 'stylesheets/misc';
 @import 'stylesheets/mailer';
-// @import 'bootstrap/clockpicker';
-// @import 'stylesheets/plugins/bootstrap-colorpicker/bootstrap-colorpicker.min.css';
+@import 'stylesheets/plugins/bootstrap-colorpicker/bootstrap-colorpicker';
 
 span.fa + span {
   margin-left: 0.2em;

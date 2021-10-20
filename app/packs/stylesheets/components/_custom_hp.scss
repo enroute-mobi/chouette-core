@@ -1,0 +1,213 @@
+.devise {
+  .alert {
+    height: 40px;
+  }
+  .alert + div + #devise {
+    .product_summary {
+      height: calc(100vh - 187px);
+    }
+    .panel {
+      margin-top: calc((100vh - 188px - 340px)/2 - 1px);
+    }
+    .signup {
+      .panel {
+        margin-top: calc((100vh - 188px - 605px)/2);
+      }
+    }
+  }
+  #devise {
+    padding: 0;
+
+    .product_summary {
+      color: white;
+      background-color: #463593;
+      background-image: url('../images/chouette.png');
+      background-position: 200% 100%;
+      transition: background-position 1s ease-out;
+      background-repeat: no-repeat;
+      height: calc(100vh - 147px);
+      overflow: hidden;
+      &:before {
+        background-image: url('../images/chouette-blink.png');
+        content: "";
+        width: 1px;
+        height: 1px;
+        position: fixed;
+      }
+      &.blink {
+        background-image: url('../images/chouette-blink.png');
+      }
+      .content {
+        position: absolute;
+        bottom: 90px;
+        left: 90px;
+        background-image: url('../images/logo-chouette.svg');
+        background-position: 0 0;
+        background-repeat: no-repeat;
+        background-size: auto 70px;
+        padding-top: 50px;
+        h2 {
+          font-size: 4em;
+          line-height: 0em;
+          overflow: hidden;
+          transition: line-height 1s ease-in-out;
+        }
+        p {
+          margin-top: 2em;
+        }
+        a {
+          font-size: 1.5em;
+          border-radius: 5px;
+          padding: 10px 20px;
+          background-color: rgba(255,255,255,0.1);
+          text-decoration: none;
+          border: none;
+          white-space: nowrap;
+          transition: background-color 0.3s ease-in-out;
+          strong {
+            text-decoration: underline;
+          }
+          &.shine {
+            background-color: rgba(255,255,255,0.15);
+          }
+          &:hover {
+            color: #463593;
+            background-color: rgba(255,255,255,0.75);
+          }
+        }
+      }
+      &.loaded {
+        background-position: 100% 100%;
+        .content {
+          h2 {
+            line-height: 1.2em;
+          }
+        }
+      }
+    }
+  }
+  .login,
+  .signup {
+    padding-bottom: 30px;
+    background: white;
+    height: calc(100vh - 188px - 10px);
+    overflow: hidden;
+    .btn {
+      margin-right: -15px;
+      width: calc(100% + 15px);
+    }
+    @media (max-height: 470px) {
+      overflow-y: scroll;
+    }
+
+    .support {
+      $color: #666;
+      color: $color;
+      margin: 40px 40px 10px;
+      @media (max-width: 1300px) {
+        margin: 40px 0px 10px;
+      }
+      overflow: hidden;
+      display: flex;
+      a {
+        border-radius: 5px;
+        padding: 10px;
+        border: 1px solid $color;
+        display: inline-block;
+        margin-top: 0.5em;
+        color: $color;
+      }
+      img {
+        float: right;
+        margin-top: 1em;
+      }
+      & > div {
+        flex: 120px 0 0;
+        padding: 0 10px;
+        & + div {
+          flex: 1 1;
+        }
+      }
+    }
+    .en-route {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      img {
+        height: 30px;
+      }
+    }
+    .panel {
+      margin-top: calc((100vh - 147px - 340px)/2 - 1px);
+      @media (max-height: 470px) {
+        margin-top: 10px;
+        overflow: scroll;
+      }
+    }
+  }
+  .signup {
+    .btn {
+      margin-right: -15px;
+      width: calc(100% + 30px);
+    }
+    @media (max-height: 1200px) {
+      overflow: auto;
+    }
+    .panel {
+      margin-top: calc((100vh - 147px - 605px)/2);
+      @media (max-height: 1200px) {
+        margin-top: 10px;
+      }
+    }
+  }
+}
+@media (max-width: 640px) {
+  .desktop-only {
+    display: none !important;
+  }
+  .devise {
+    .page_header {
+      padding: 15px;
+      .container-fluid {
+        padding: 0;
+        h1 {
+          font-size: 2.4rem;
+        }
+      }
+    }
+    #devise {
+      .product_summary {
+        min-height: 600px;
+        background-size: 50%;
+        .content {
+          top: 50%;
+          left: 50%;
+          bottom: auto;
+          transform: translate(-50%, -50%);
+          font-size: 0.75em;
+        }
+      }
+      .login,
+      .signup {
+        height: auto;
+        overflow: hidden;
+        padding-top: 20px;
+        .panel {
+          margin-top: 20px;
+          .btn-primary {
+            margin: 0 -15px;
+            width: calc(100% + 30px);
+            display: block;
+          }
+        }
+      }
+      .support {
+        margin: 20px 0;
+        img {
+          float: left;
+          margin-right: 10px;
+        }
+      }
+    }
+  }
+};

@@ -4,16 +4,13 @@ fr:
   devise:
     sessions:
       new:
-        title: Se connecter
+        title: Bienvenue sur Chouette
         commit: Se connecter
-        welcome: "Bienvenue sur Chouette"
-        introduction1: "Chouette est un logiciel Open Source de saisie, de visualisation et
-d'échange d'offre de transport public planifiée, conçu pour être
-l'implémentation de référence pour valider la conformité de données à la
-norme Neptune (NFP 99 506)"
-        introduction2: "Déployé en mode Saas, ce logiciel est ouvert et peut gérer"
-        introduction_item1: "plusieurs formats (Neptune, GTFS, CSV, prochainement Netex)"
-        introduction_item2: "plusieurs fonds cartographiques, notamment IGN, OSM et Google."
+        baseline: "Le transport visionnaire"
+        know_more: "En savoir plus sur <strong>Chouette</strong>"
+        sign_in: Se connecter
+        support: Pour toute question, n'hésitez pas à contacter notre équipe de support
+        support_link: Contactez le support
         unauthorized: "Vous ne pouvez pas vous connecter car vous n'avez pas les permissions pour accéder à Chouette"
         no_account: "Vous n'avez pas de compte ?"
         sign_up: "S'inscrire"
@@ -22,7 +19,8 @@ norme Neptune (NFP 99 506)"
         title: Renvoyer le mail de confirmation
     registrations:
       new:
-        title: "Inscrivez vous"
+        title: Bienvenue sur Chouette
+        sign_up: "Inscrivez vous"
         commit: "S'inscrire"
         already_an_account: "Vous avez déjà un compte ?"
         sign_in: "Se connecter"
@@ -81,4 +79,3 @@ norme Neptune (NFP 99 506)"
       confirmation:
         already_confirmed: Votre compte est déjà confirmé. Vous pouvez vous connecter
         missing_token: Vous n'etes pas autorisé à renvoyer de mail de confirmation
-

@@ -47,8 +47,8 @@
     h3.time_table_calendars
       a.calendars
         = @time_table.human_attribute_name("calendars")
-        = image_pack_tag("static/icons/plus.png"  , class: "switcher", :style => "display: none;")
-        = image_pack_tag("static/icons/minus.png"  , class: "switcher" )
+        = image_pack_tag("static/plus.png"  , class: "switcher", :style => "display: none;")
+        = image_pack_tag("static/minus.png"  , class: "switcher" )
 
     .calendars.content
       .year_choice
@@ -74,8 +74,8 @@
   h3.time_table_periods
     a.periods
       = @time_table.human_attribute_name("periods")
-      = image_pack_tag("static/icons/plus.png"  , class: "switcher", :style => "display: none;")
-      = image_pack_tag("static/icons/minus.png"  , class: "switcher" )
+      = image_pack_tag("static/plus.png"  , class: "switcher", :style => "display: none;")
+      = image_pack_tag("static/minus.png"  , class: "switcher" )
 
   .periods.content
     == render "time_tables/periods"
@@ -83,8 +83,8 @@
   h3.time_table_dates
     a.dates
       = @time_table.human_attribute_name("dates")
-      = image_pack_tag("static/icons/plus.png"  , class: "switcher", :style => "display: none;")
-      = image_pack_tag("static/icons/minus.png"  , class: "switcher" )
+      = image_pack_tag("static/plus.png"  , class: "switcher", :style => "display: none;")
+      = image_pack_tag("static/minus.png"  , class: "switcher" )
 
   .dates.content
     == render "time_tables/dates"
@@ -92,8 +92,8 @@
   h3.time_table_dates
     a.excluded_dates
       = @time_table.human_attribute_name("excluded_dates")
-      = image_pack_tag("static/icons/plus.png", class: "switcher", :style => "display: none;")
-      = image_pack_tag("static/icons/minus.png", class: "switcher" )
+      = image_pack_tag("static/plus.png", class: "switcher", :style => "display: none;")
+      = image_pack_tag("static/minus.png", class: "switcher" )
 
   .excluded_dates.content
     == render "time_tables/excluded_dates"

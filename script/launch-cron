@@ -1,23 +1,29 @@
-#!/bin/bash
+#!/bin/bash -e
 
-function append_var_if_defined
-{
-    VAR_NAME=$1
-    OUTPUT=$2
-    grep -qE "^${VAR_NAME}=" ${OUTPUT}||env|grep -E "^${VAR_NAME}=">>${OUTPUT}
-}
+command=$1
+
 VAR_LIST="DD_AGENT_APP DD_TRACE_DEBUGDD_AGENT_ENV DD_AGENT_HOST SESAME_API_SETTINGS RAILS_DB_HOST RAILS_DB_PORT RAILS_DB_USER RAILS_DB_PASSWORD RAILS_DB_NAME PUBLIC_HOST MAIL_FROM SMTP_HOST SECRET_BASE CODIFLIGNE_API_URL REFLEX_API_URL REDIS_CACHE_STORE_URL RAILS_LOG_TO_STDOUT PATH NR_LICENCE_KEY CHOUETTE_CLEAN_TEST_ORGANISATIONS AUTOMATED_AUDITS_ENABLED CHOUETTE_EMAIL_USER CHOUETTE_EMAIL_WHITELIST CHOUETTE_EMAIL_BLACKLIST REFERENTIALS_CLEANING_COOLDOWN TZ SMTP_SETTINGS PUBLIC_HOST MAIL_DELIVERY_METHOD MAIL_FROM"
 
 # Required by ruby docker image
 VAR_LIST+=" GEM_HOME BUNDLE_APP_CONFIG BUNDLE_PATH BUNDLE_SILENCE_ROOT_WARNING"
 
-TMPF=$(tempfile)
-for v in $VAR_LIST; do
-    append_var_if_defined $v $TMPF
+TEMP_FILE=$(mktemp)
+for variable in $VAR_LIST; do
+    variable_value=$(printenv $variable || true)
+    # Ignore variable if its value is empty
+    if [ -n "${variable_value}" ]; then
+        echo "${variable}=${variable_value}" >> ${TEMP_FILE}
+    fi
 done
 
-crontab -l >> $TMPF
-cat $TMPF |crontab -
-rm $TMPF
+if [ $command = "variables" ]; then
+    cat $TEMP_FILE
+    rm $TEMP_FILE
+    exit 0
+fi
+
+crontab -l >> $TEMP_FILE
+cat $TEMP_FILE | crontab -
+rm $TEMP_FILE
 
 exec cron -f

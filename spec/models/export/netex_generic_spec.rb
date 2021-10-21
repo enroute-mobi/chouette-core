@@ -222,6 +222,96 @@ RSpec.describe Export::NetexGeneric do
 
   end
 
+  describe "RoutingConstraintZones export" do
+
+    let(:target) { MockNetexTarget.new }
+    let(:export_scope) { Export::Scope::All.new context.referential }
+    let(:export) { Export::NetexGeneric.new export_scope: export_scope, target: target }
+
+    let(:part) do
+      Export::NetexGeneric::RoutingConstraintZones.new export
+    end
+
+    let(:context) do
+      Chouette.create do
+        routing_constraint_zone
+      end
+    end
+
+    let(:routing_constraint_zone) { context.routing_constraint_zone }
+
+    context "when RoutingConstraintZones part is exported" do
+      before { part.export! }
+
+      describe "the NeTEx target" do
+
+      end
+    end
+
+    describe Export::NetexGeneric::RoutingConstraintZones::Decorator do
+      let(:routing_constraint_zone) { Chouette::RoutingConstraintZone.new }
+      let(:decorator) { Export::NetexGeneric::RoutingConstraintZones::Decorator.new routing_constraint_zone }
+
+      describe '#netex_attributes' do
+        subject { decorator.netex_attributes }
+
+        context "when RoutingConstraintZone objectid is 'chouette:RoutingConstraintZone:test:LOC'" do
+          before { routing_constraint_zone.objectid = "chouette:RoutingConstraintZone:test:LOC" }
+          it { is_expected.to include(id: routing_constraint_zone.objectid) }
+        end
+
+        context "when RoutingConstraintZone data_source_ref is 'dummy'" do
+          before { routing_constraint_zone.data_source_ref = "dummy" }
+          it { is_expected.to include(data_source_ref: routing_constraint_zone.data_source_ref) }
+        end
+
+        context "when RoutingConstraintZone name is 'dummy'" do
+          before { routing_constraint_zone.name = "dummy" }
+          it { is_expected.to include(name: routing_constraint_zone.name) }
+        end
+
+        it "uses scheduled_stop_point_refs as members" do
+          allow(routing_constraint_zone).to receive(:scheduled_stop_point_refs).and_return(double)
+          is_expected.to include(members: decorator.scheduled_stop_point_refs)
+        end
+
+        it "uses line_refs as lines" do
+          allow(routing_constraint_zone).to receive(:line_refs).and_return(double)
+          is_expected.to include(lines: decorator.line_refs)
+        end
+      end
+
+      describe '#scheduled_stop_point_refs' do
+        subject { decorator.scheduled_stop_point_refs }
+
+        context "when the RoutingConstraintZone is associated with StopPoints 'chouette:StopPoint:A:LOC' and 'chouette:StopPoint:B:LOC" do
+          before do
+            allow(routing_constraint_zone).to receive(:stop_points) do
+              %w{chouette:StopPoint:A:LOC chouette:StopPoint:B:LOC}.map do |objectid|
+                Chouette::StopPoint.new objectid: objectid
+              end
+            end
+          end
+
+          it { is_expected.to contain_exactly(an_object_having_attributes(ref: 'chouette:ScheduledStopPoint:A:LOC'), an_object_having_attributes(ref: 'chouette:ScheduledStopPoint:B:LOC')) }
+        end
+      end
+
+      describe "#line_refs" do
+        subject { decorator.line_refs }
+
+        context "when no Line is associated" do
+          it { is_expected.to be_nil }
+        end
+
+        context "when a Line 'chouette:Line:A:LOC' is associated" do
+          before { allow(decorator).to receive(:line).and_return(double(objectid: "chouette:Line:A:LOC")) }
+          it { is_expected.to contain_exactly(an_object_having_attributes(ref: 'chouette:Line:A:LOC')) }
+        end
+      end
+    end
+  end
+
   describe "Stops export" do
     let(:target) { MockNetexTarget.new }
     let(:export_scope) { Export::Scope::All.new context.referential }

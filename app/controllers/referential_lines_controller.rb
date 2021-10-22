@@ -43,8 +43,6 @@ class ReferentialLinesController < ChouetteController
           current_organisation: current_organisation
         }
       )
-
-      format.geojson { render 'routes/index.geo' }
     end
   end
 

@@ -25,14 +25,14 @@ const loadRouter = async () => {
 		case routeMatch('/workbenches/:workbenchId/exports/:id/edit'):
 			return await import('./exports/form')
 		case routeMatch('/workbenches/:workbenchId/exports'):
-			return await import('./exports/filters')
+			return await import('./inputs/date_picker')
 
 		// Imports
 		case routeMatch('/workbenches/:workbenchId/imports/new'):
 		case routeMatch('/workbenches/:workbenchId/imports/:id/edit'):
-			await import('./imports/form')
+			return await import('./imports/form')
 		case routeMatch('/workbenches/:workbenchId/imports'):
-			await import('./imports/filters')
+			return await import('./inputs/date_picker')
 
 		// Journey Patterns
 		case routeMatch('/referentials/:referentialId/lines/:lineId/routes/:routeId/journey_patterns_collection'):

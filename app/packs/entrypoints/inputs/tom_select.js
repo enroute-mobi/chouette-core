@@ -1,5 +1,4 @@
 import TomSelect from 'tom-select'
-
 class ConfigBuilder {
   static call(select) {
     const { config, url } = select.dataset 
@@ -66,11 +65,10 @@ class ConfigBuilder {
   }
 }
 
-const inputClass = 'tom_selectable'
+window.initTomSelect = id => {
+  const select = document.getElementById(id)
 
-const select = document.getElementsByClassName(inputClass)[0]
-select.classList.remove(inputClass)
-
-if (!Boolean(select.tomselect)) { // if Tom Select has already been initialized on input it raises an error
-  new TomSelect(select, ConfigBuilder.call(select))
+  if (!Boolean(select.tomselect)) { // if Tom Select has already been initialized on input it raises an error
+    new TomSelect(select, ConfigBuilder.call(select))
+  }
 }

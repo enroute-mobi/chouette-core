@@ -1,40 +1,28 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useMemo, useEffect, useCallback, useState } from 'react'
 import { Map, View } from 'ol'
 import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer'
 import { OSM, Vector as VectorSource } from 'ol/source'
-import { defaults as defaultControls } from 'ol/control'
-
+import { ScaleLine, Zoom, ZoomSlider } from 'ol/control'
 import { toStringXY } from 'ol/coordinate'
-function MapWrapper({ features, onInit, _style }) {
-  const [ map, setMap ] = useState()
-  const [ featuresLayer, setFeaturesLayer ] = useState()
+
+import { toWgs84 } from '@turf/turf'
+
+function MapWrapper({ features, onInit, style }) {
   const [ selectedCoord , setSelectedCoord ] = useState()
 
-  // pull refs
-  const mapElement = useRef()
+  const featuresLayer = useMemo(
+    () => new VectorLayer({ source: new VectorSource(), style }),
+    []
+  )
 
-  // create state ref that can be accessed in OpenLayers onclick callback function
-  //  https://stackoverflow.com/a/60643670
-  const mapRef = useRef()
-  mapRef.current = map
-
-  // initialize map on first render - logic formerly put into componentDidMount
-  useEffect( () => {
-
-    // create and add vector source layer
-    const initialFeaturesLayer = new VectorLayer({
-      source: new VectorSource(),
-    })
-
-    // create map
-    const initialMap = new Map({
-      target: mapElement.current,
+  const map = useMemo(
+    () => new Map({
       layers: [
         // OSM Topo
         new TileLayer({
-          source: new OSM({attributions: '&copy; OpenStreetMap contributors'})
+          source: new OSM({ attributions: '&copy; OpenStreetMap contributors' })
         }),
-        initialFeaturesLayer
+        featuresLayer
       ],
       view: new View({
         projection: 'EPSG:3857',
@@ -42,17 +30,30 @@ function MapWrapper({ features, onInit, _style }) {
         minZoom: 10,
         maxZoom: 20
       }),
-      controls: defaultControls()
+      controls: [
+        new ScaleLine(),
+        new Zoom(),
+        new ZoomSlider()
+      ]
+    }),
+    []
+  )
+
+  // pull refs
+  const mapRef = useCallback(node => {
+    if (node !== null) {
+      map.setTarget(node)
+    }
+  }, [])
+
+  // initialize map on first render - logic formerly put into componentDidMount
+  useEffect( () => {
+    map.on('singleclick', e => {
+      setSelectedCoord(
+        toWgs84(e.coordinate)
+      )
     })
-
-    // set map onclick handler
-    // initialMap.on('click', handleMapClick)
-
-    // save map and vector layer references to state
-    setMap(initialMap)
-    setFeaturesLayer(initialFeaturesLayer)
-
-    onInit(initialMap)
+    onInit(map)
   },[])
 
   // update map if features prop changes - logic formerly put into componentDidUpdate
@@ -75,23 +76,10 @@ function MapWrapper({ features, onInit, _style }) {
     }
   },[features])
 
-  // // map click handler
-  // const handleMapClick = (event) => {
-  //   // get clicked coordinate using mapRef to access current React state inside OpenLayers callback
-  //   //  https://stackoverflow.com/a/60643670
-  //   const clickedCoord = mapRef.current.getCoordinateFromPixel(event.pixel)
-  //
-  //   // transform coord to EPSG 4326 standard Lat Long
-  //   const transormedCoord = transform(clickedCoord, 'EPSG:3857', 'EPSG:4326')
-  //
-  //   // set React state
-  //   setSelectedCoord( transormedCoord )
-  // }
-
   // render component
   return (
     <div>
-      <div ref={mapElement} className="map-container"></div>
+      <div ref={mapRef} className="map-container"></div>
       <div className="clicked-coord-label">
         <p>{ (selectedCoord) ? toStringXY(selectedCoord, 5) : '' }</p>
       </div>

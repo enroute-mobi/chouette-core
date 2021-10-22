@@ -76,12 +76,3 @@
                 = link_to t('connection_links.actions.new'), new_workbench_stop_area_referential_connection_link_path(@workbench, departure_id: @stop_area.id), class: 'btn btn-action large'
               .col-md-4
                 = more_connections_link(@stop_area, @workbench) if @stop_area.connection_links.count > 4
-
-- if has_feature?(:stop_area_connection_links) && @stop_area.connection_links.any?
-  = javascript_tag do
-    | window.stop_areas = "#{URI.escape(stop_and_connections_json(@stop_area, has_feature?(:stop_area_connection_links)))}";
-    | window.map_pin_orange = "#{URI.escape(asset_path('icons/map_pin_orange.png'))}";
-    | window.map_pin_blue = "#{URI.escape(asset_path('icons/map_pin_blue.png'))}";
-
-  = javascript_include_tag 'OpenLayers/maps_backgrounds.js'
-  = javascript_pack_tag 'stop_areas/show'

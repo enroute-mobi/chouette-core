@@ -9,9 +9,10 @@ const bootstrapClassFor = type => {
     case 'error':
       return 'alert-danger'
   }
-} 
+}
 
 window.Spruce.store('flash', {
+  ready: true,
   messages: [],
   add({ type, text }) {
     const id = uniqueId('flash_')

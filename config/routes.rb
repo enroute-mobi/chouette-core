@@ -73,6 +73,7 @@ ChouetteIhm::Application.routes.draw do
       # TODO Delete this route and use autocomplete below
       resources :stop_areas do
         get :autocomplete, on: :collection
+        get :fetch_connection_links, on: :member, defaults: { format: 'geojson' }
       end
 
       resources :autocomplete, only: %i[stop_areas parent_stop_areas stop_area_providers ] do
@@ -80,7 +81,9 @@ ChouetteIhm::Application.routes.draw do
         get :parent_stop_areas, on: :collection, defaults: { format: 'json' }
         get :stop_area_providers, on: :collection, defaults: { format: 'json' }
       end
-      resources :connection_links
+      resources :connection_links do
+        get :get_connection_speeds, on: :collection, defaults: { format: 'json' }
+      end
     end
 
     resource :line_referential, :only => [:show, :edit, :update] do
@@ -205,7 +208,11 @@ ChouetteIhm::Application.routes.draw do
 
     match 'lines' => 'lines#destroy_all', :via => :delete
     resources :lines, controller: "referential_lines", except: :index do
-      get :autocomplete, on: :collection, to: 'autocomplete_lines#index'
+      defaults format: :json do
+        collection do
+          get :autocomplete, to: 'autocomplete_lines#index'
+        end
+      end
 
       resources :footnotes do
         collection do
@@ -223,6 +230,7 @@ ChouetteIhm::Application.routes.draw do
           put 'save_boarding_alighting'
           get 'costs'
           post 'duplicate', to: 'routes#duplicate'
+          get 'get_initial_state'
         end
         collection do
           get 'fetch_opposite_routes'

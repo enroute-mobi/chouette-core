@@ -68,8 +68,3 @@
         - else
           = replacement_msg t('stop_areas.filters.search_no_results')
 
-= javascript_tag do
-  | window.route = "#{CGI.escape(route_json_for_edit(@route))}"
-
-= javascript_include_tag 'OpenLayers/maps_backgrounds.js'
-= javascript_pack_tag 'routes/show'

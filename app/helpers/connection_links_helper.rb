@@ -20,7 +20,7 @@ module ConnectionLinksHelper
   end
 
   def connection_link_id_with_icon_color(color, text)
-    image_tag(asset_path("icons/map_pin_#{color}.png"), class: 'fa fa-square fa-lg') + text
+    image_pack_tag("static/map_pin_#{color}.png") + text
   end
 
   def connection_link_durations_display(duration)
@@ -71,15 +71,5 @@ module ConnectionLinksHelper
       Chouette::ConnectionLink.tmf('name') => connection_link.try(:name),
       Chouette::ConnectionLink.tmf('comment') => connection_link.try(:comment)
     }
-  end
-
-  def connection_link_json_for_show(connection_link, serialize: true)
-    data = connection_link.slice(:id)
-    both_areas = connection_link.slice(:departure, :arrival).map do |key, value|
-      {key => value.attributes.slice("longitude", "latitude")}
-    end
-    data = data.merge!(both_areas.reduce(:merge))
-    data = data.to_json if serialize
-    data
   end
 end

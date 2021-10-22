@@ -11,7 +11,7 @@ export default class JourneyPattern extends Component{
     this.previousSpId = undefined
 
     this.basePath = window.location.pathname.split('/journey_patterns_collection')[0]
-    
+
     bindAll(this, ['updateCosts', 'onCreateShape', 'onEditShape', 'onUnassociateShape'])
   }
 
@@ -184,7 +184,7 @@ export default class JourneyPattern extends Component{
     const { id } = this.journeyPattern
 
     if (!this.hasFeature('shape_editor_experimental') || !this.props.editMode || !id) return []
-    
+
     if (!this.hasShape()) {
       return [
         <li key={`create_shape_${id}`}>
@@ -236,13 +236,13 @@ export default class JourneyPattern extends Component{
           <div>{I18n.t('journey_patterns.show.stop_points_count', {count: actions.getChecked(stop_points).length})}</div>
           {this.hasFeature('costs_in_journey_patterns') &&
             <div className="small row totals">
-              <span className="col-md-6"><i className="fa fa-arrows-h"></i>{totalDistance}</span>
+              <span className="col-md-6"><i className="fas fa-arrows-alt-h"></i>{totalDistance}</span>
               <span className="col-md-6"><i className="fa fa-clock"></i>{totalTime}</span>
             </div>
           }
           {this.hasFeature('costs_in_journey_patterns') &&
             <div className="small row totals commercial">
-              <span className="col-md-6"><i className="fa fa-arrows-h"></i>{commercialTotalDistance}</span>
+              <span className="col-md-6"><i className="fas fa-arrows-alt-h"></i>{commercialTotalDistance}</span>
               <span className="col-md-6"><i className="fa fa-clock"></i>{commercialTotalTime}</span>
             </div>
           }
@@ -316,7 +316,7 @@ export default class JourneyPattern extends Component{
                     </p>
                   </div>}
                   {!this.props.editMode && <div>
-                    <p><i className="fa fa-arrows-h"></i>{this.formatDistance(costs['distance'] || 0)}</p>
+                    <p><i className="fas fa-arrows-alt-h"></i>{this.formatDistance(costs['distance'] || 0)}</p>
                     <p><i className="fa fa-clock"></i>{time_in_words}</p>
                   </div>}
                 </div>}

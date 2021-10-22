@@ -6,7 +6,7 @@ class RoutesController < ChouetteController
   respond_to :html, :xml, :json, :geojson
   respond_to :kml, :only => :show
   respond_to :js, :only => :show
-  respond_to :geojson, :only => :show
+  respond_to :geojson, only: %i[show index]
 
   belongs_to :referential do
     belongs_to :line, :parent_class => Chouette::Line, :optional => true, :polymorphic => true
@@ -16,6 +16,11 @@ class RoutesController < ChouetteController
   def index
     index! do |format|
       format.html { redirect_to referential_line_path(@referential, @line) }
+
+      format.geojson do
+        @routes = collection.with_wayback(:outbound)
+        render 'routes/index.geo'
+      end
     end
   end
 

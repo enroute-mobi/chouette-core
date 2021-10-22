@@ -30,7 +30,7 @@ module Chouette
     end
 
     enumerize :direction, in: %i(straight_forward backward clockwise counter_clockwise north north_west west south_west south south_east east north_east)
-    enumerize :wayback, in: [OUTBOUND, INBOUND], default: OUTBOUND
+    enumerize :wayback, in: [OUTBOUND, INBOUND], default: OUTBOUND, scope: true
 
     def self.nullable_attributes
       [:published_name, :comment, :number, :name, :direction, :wayback]

@@ -1,19 +1,29 @@
-import '../../src/helpers/polyfills'
+import React from 'react'
+import { render } from 'react-dom'
+import { Path } from 'path-parser'
+import geoJSON from '../../src/helpers/geoJSON'
 
-import clone from '../../src/helpers/clone'
-import ConnectionLinksMap from '../../src/helpers/connection_links_map'
+import MapWrapper from '../../src/components/MapWrapper'
 
-let connection_link = clone(window, "connection_link", true)
-connection_link = JSON.parse(decodeURIComponent(connection_link))
+import { connectionLinkStyle } from '../../src/helpers/open_layers/styles'
+  
+const initMap = async () => {
+  const path = new Path('/workbenches/:workbenchId/stop_area_referential/connection_links/:id')
+  const { workbenchId, id } = path.partialTest(location.pathname)
 
-let map_pin_orange = clone(window, "map_pin_orange", true)
-map_pin_orange = decodeURIComponent(map_pin_orange)
+  const res = await fetch(`${path.build({ workbenchId, id })}.geojson`)
+  const features = geoJSON.readFeatures(await res.json())
 
-let map_pin_blue = clone(window, "map_pin_blue", true)
-map_pin_blue = decodeURIComponent(map_pin_blue)
+  features.forEach(f => f.setStyle(
+    connectionLinkStyle(f.get('marker'))
+  ))
 
-new ConnectionLinksMap('connection_link_map').prepare().then(function(map){
-  map.addMarker([map_pin_orange, map_pin_blue])
-  map.addConnectionLink(connection_link)
-  map.fitZoom()
-})
+  render(
+    <div className='ol-map'>
+      <MapWrapper features={features} />
+    </div>,
+    document.getElementById('connection_link_map')
+  )
+}
+
+initMap()

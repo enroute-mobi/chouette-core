@@ -47,5 +47,3 @@
   = javascript_tag do
     | window.returnRouteUrl = "#{(@route.opposite_route && url_for([@referential, @route.line, @route.opposite_route, :vehicle_journeys]) || "").html_safe}";
 
-
-= javascript_pack_tag 'vehicle_journeys/index'

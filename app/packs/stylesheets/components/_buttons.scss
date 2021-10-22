@@ -147,8 +147,11 @@
   + .btn {
     margin-left: 15px;
   }
-// Table btn-groups
+  .svg-inline--fa {
+    margin-right: 0;
+  }
 }
+// Table btn-groups
 table,
 .table {
   tbody > tr > td.actions {

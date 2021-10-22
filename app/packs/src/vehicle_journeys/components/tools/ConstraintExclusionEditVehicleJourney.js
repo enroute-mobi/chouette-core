@@ -122,7 +122,7 @@ export default class ConstraintExclusionEditVehicleJourney extends Component {
             onClick={() => this.props.onOpenCalendarsEditModal(actions.getSelected(this.props.vehicleJourneys))}
             title={I18n.t('activerecord.attributes.vehicle_journey.constraint_exclusions')}
           >
-            <span className='fa fa-ban fa-strong'></span>
+            <span className='fas fa-ban'></span>
           </button>
 
           <div className={ 'modal fade ' + ((this.props.modal.type == 'duplicate') ? 'in' : '') } id='ConstraintExclusionEditVehicleJourney'>

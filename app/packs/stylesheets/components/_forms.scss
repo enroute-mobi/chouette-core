@@ -861,9 +861,9 @@ $cbx-size-xs: 15px;
               margin: 0;
 
               + span {
-                display: block;
+                // display: block;
                 padding-left: $cbx-size-xs + 10;
-                padding-right: $cbx-size-xs + 10;
+                // padding-right: $cbx-size-xs + 10;
                 position: relative;
 
                 > .fa:last-child,
@@ -872,6 +872,9 @@ $cbx-size-xs: 15px;
                   top: 50%;
                   right: 0;
                   margin-top: -7px;
+                }
+                .svg-inline--fa {
+                  margin-left: 5px;
                 }
                 &:before {
                   content: '';

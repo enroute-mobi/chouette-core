@@ -20,8 +20,23 @@
 .justify-end {
   justify-content: flex-end;
 }
+.justify-between {
+  justify-content: space-between;
+}
+.justify-around {
+  justify-content: space-around;
+}
+.justify-evenly {
+  justify-content: space-evenly;
+}
+.items-start {
+  align-items: flex-start;
+}
 .items-center {
   align-items: center;
+}
+.items-end {
+  align-items: flex-end;
 }
 .self-end {
   align-self: flex-end;
@@ -87,6 +102,21 @@
 }
 .mr-lg {
   margin-right: 40px !important;
+}
+.mb-0 {
+  margin-bottom: 0 !important;
+}
+.pt-0 {
+  padding-top: 0 !important;
+}
+.m-0 {
+  margin: 0;
+}
+.mr-auto {
+  margin-right: auto;
+}
+.ml-auto {
+  margin-left: auto;
 }
 
 @for $i from 5 through 100 {

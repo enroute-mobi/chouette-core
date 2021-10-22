@@ -1,24 +1,44 @@
-import '../../src/helpers/polyfills'
+import React from 'react'
+import { render } from 'react-dom'
+import { Path } from 'path-parser'
+import { flatten, map } from 'lodash'
+import geoJSON from '../../src/helpers/geoJSON'
 
-import clone from '../../src/helpers/clone'
-import ConnectionLinksMap from '../../src/helpers/connection_links_map'
+import MapWrapper from '../../src/components/MapWrapper'
+import { connectionLinkStyle } from '../../src/helpers/open_layers/styles'
 
-// let connected_stops = clone(window, "connected_stops", true)
-// connected_stops = JSON.parse(decodeURIComponent(connected_stops))
-// console.log(connected_stops)
+const initMap = async () => {
+  const path = new Path('/workbenches/:workbenchId/stop_area_referential/stop_areas/:id')
+  const { workbenchId, id } = path.partialTest(location.pathname)
 
-let stop_areas = clone(window, "stop_areas", true)
-stop_areas = JSON.parse(decodeURIComponent(stop_areas))
-console.log(stop_areas)
+  const baseURL = path.build({ workbenchId, id })
+  const stopAreaURL = `${baseURL}.geojson`
+  const connectionLinksURL = `${baseURL}/fetch_connection_links.geojson`
 
-let map_pin_orange = clone(window, "map_pin_orange", true)
-map_pin_orange = decodeURIComponent(map_pin_orange)
+  const features = await Promise.all([
+    fetch(stopAreaURL),
+    fetch(connectionLinksURL),
+  ]).then(async ([res1, res2]) => {
+    const stopArea = geoJSON.readFeature(await res1.json())
+    const connectionLinksCollection = map(await res2.json(), cl => {
+      const features = geoJSON.readFeatures(cl)
 
-let map_pin_blue = clone(window, "map_pin_blue", true)
-map_pin_blue = decodeURIComponent(map_pin_blue)
+      features.forEach(f => f.setStyle(
+        connectionLinkStyle(f.get('marker'))
+      ))
 
-new ConnectionLinksMap('connection_link_map').prepare().then(function(map){
-  map.addMarker([map_pin_orange, map_pin_blue])
-  map.addStops(stop_areas)
-  map.fitZoom()
-})
+      return features
+    })
+
+    return [stopArea, ...flatten(connectionLinksCollection)]
+  })
+
+  render(
+    <div className='ol-map'>
+      <MapWrapper features={features} />
+    </div>,
+    document.getElementById('connection_link_map')
+  )
+}
+
+initMap()

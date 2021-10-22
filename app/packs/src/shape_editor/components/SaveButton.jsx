@@ -24,7 +24,7 @@ export default class SaveShape extends SaveButton {
     }
 
     if (!prevState.hasPolicy && !!this.state.hasPolicy) {
-      $('.formSubmitr').appendTo('.page-action').addClass('sticky-action')
+      document.dispatchEvent(new Event('submitMover'))
     }
   }
 

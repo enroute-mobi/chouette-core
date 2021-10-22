@@ -1,9 +1,10 @@
-import '../../src/helpers/polyfills'
-import clone from '../../src/helpers/clone'
-import ShapesKml from '../../src/helpers/shapes_kml'
+import { Path } from 'path-parser'
+import GeoJSONMap from '../../src/components/GeoJSONMap'
 
-function fetchApiURL(){
-  return window.location.origin + window.kml_url
-}
+const path = new Path('/workbenches/:workbenchId/shape_referential/shapes/:id')
+const { workbenchId, id } = path.partialTest(location.pathname)
 
-new ShapesKml('route_map', fetchApiURL()).prepare()
+GeoJSONMap.init(
+  `${path.build({ workbenchId, id })}.geojson`,
+  'route_map'
+)

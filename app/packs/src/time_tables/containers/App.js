@@ -16,6 +16,7 @@ import clone from '../../helpers/clone'
 class App extends Component {
   componentDidMount(){
     this.props.onLoadFirstPage()
+    document.dispatchEvent(new Event('submitMover'))
   }
 
   getChildContext() {

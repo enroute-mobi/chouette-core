@@ -82,12 +82,5 @@
 
   = new_pagination overview, 'pull-right'
 
-- content_for :javascript do
-  = javascript_pack_tag 'referential_overview/index'
-
-  javascript:
-    overview_id = "#{overview.pagination_param_name}";
-
-  coffee:
-    $ =>
-      new ReferentialOverview("##{overview_id}")
+= javascript_tag do
+  | window.overviewId = "#{overview.pagination_param_name}";

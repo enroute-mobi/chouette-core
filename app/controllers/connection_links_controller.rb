@@ -8,7 +8,7 @@ class ConnectionLinksController < ChouetteController
   belongs_to :workbench
   belongs_to :stop_area_referential, singleton: true
 
-  respond_to :html
+  respond_to :html, :geojson
 
   def index
     index! do
@@ -17,9 +17,15 @@ class ConnectionLinksController < ChouetteController
   end
 
   def show
-    show! do
+    show! do |format|
       @connection_link = @connection_link.decorate context: { workbench: @workbench }
+
+      format.geojson { render 'connection_links/show.geo' }
     end
+  end
+
+  def get_connection_speeds
+    render json: { connectionSpeed: Rails.application.config.connection_speeds }
   end
 
   protected

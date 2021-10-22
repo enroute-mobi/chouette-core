@@ -88,10 +88,9 @@ class TimeTravel {
     if (progress === 1) { return this.nextBt.addClass('disabled'); }
   }
 }
-
-window.ReferentialOverview = class ReferentialOverview {
+export default class ReferentialOverview {
   constructor(selector){
-    this.container = $(selector);
+    this.container = $(`#${selector}`);
     this.timeTravel = new TimeTravel(this);
     const param_name = `${this.container.attr('id')}_date`;
     const date = new URL(document.location.href).searchParams.get(param_name);
@@ -181,6 +180,3 @@ window.ReferentialOverview = class ReferentialOverview {
   }
 };
 
-
-
-export default ReferentialOverview;

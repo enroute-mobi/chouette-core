@@ -3,6 +3,7 @@ class TomSelectInput < SimpleForm::Inputs::CollectionSelectInput
     label_method, value_method = detect_collection_methods
 
     config = options.fetch(:config, {})
+    id = "#{object.model_name.singular}_#{attribute_name}"
 
     template.content_tag(:div) do
       template.concat @builder.collection_select(
@@ -12,12 +13,13 @@ class TomSelectInput < SimpleForm::Inputs::CollectionSelectInput
         Proc.new { |i| i[:text] },
         input_options,
         input_html_options.merge(
+          id: id,
           class: 'tom_selectable',
           'data-config': config.to_json
         )
       )
 
-      template.concat template.javascript_pack_tag 'inputs/tom_select'
+      template.concat template.javascript_tag "initTomSelect('#{id}')"
     end
   end
 end

@@ -6,18 +6,18 @@
 
     .col-lg-12
       div[x-data]
-        = form.input :referential_id,
-          as: :tom_select,
-          collection: @referential_options,
-          label_method: :name,
-          input_html: { 'x-model': '$store.export.referentialId' }
-      
-      = render 'exports/options', form: form, resource_type: :options, workgroup: @workbench.workgroup
+        template[x-if="!!$store.export"]
+          div
+            = form.input :referential_id,
+              as: :tom_select,
+              collection: @referential_options,
+              label_method: :name,
+              input_html: { 'x-model': '$store.export.referentialId' }
+        
+        = render 'exports/options', form: form, resource_type: :options, workgroup: @workbench.workgroup
 
     .col-lg-12
       = form.input :notification_target, collection: Export::Base.notification_target_options, selected: :user
 
   = cancel_button
   = form.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'wb_export_form'
-
-= javascript_pack_tag "exports/new"

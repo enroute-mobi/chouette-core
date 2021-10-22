@@ -1,10 +1,11 @@
-window.Spruce.store('export', {
+Spruce.store('export', {
+	ready: true,
 	type: 'Export::Gtfs',
 	exportedLines: 'all_line_ids',
 	period: 'all_periods',
 	referentialId: '',
 	isExport: null,
-	workbenchOrWorkgroupId: window.location.pathname.match(/(\d+)/)[0],
+	workbenchOrWorkgroupId: location.pathname.match(/(\d+)/)[0],
 	setSelectURL(select, name) {
 		let prefix
 
@@ -23,18 +24,18 @@ window.Spruce.store('export', {
 	},
 })
 
-window.Spruce.watch('export.isExport', isExport => {
-	const { export: store } = window.Spruce.stores
+Spruce.watch('export.isExport', isExport => {
+	const { export: store } = Spruce.stores
 
 	!isExport && store.setState({ exportType: 'full' })
-	
+
 	store.setState({
 		baseName: isExport ? 'export_options' : 'publication_setup_export_options'
 	})
 })
 
-window.Spruce.watch('export.referentialId', _referentialId => {
-	const { export: store } = window.Spruce.stores
+Spruce.watch('export.referentialId', _referentialId => {
+	const { export: store } = Spruce.stores
 
 	Array.of(
 		['line_ids', 'lines'],

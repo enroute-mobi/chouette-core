@@ -7,7 +7,7 @@ class StopAreasController < ChouetteController
   belongs_to :workbench
   belongs_to :stop_area_referential, singleton: true
 
-  respond_to :html, :kml, :xml, :json
+  respond_to :html, :kml, :geojson, :xml, :json
   respond_to :js, :only => :index
 
   def autocomplete
@@ -61,6 +61,9 @@ class StopAreasController < ChouetteController
           render :nothing => true, :status => :not_found
         }
       end
+
+      format.geojson { render 'stop_areas/show.geo' }
+
       format.json do
         attributes = stop_area.attributes.slice(:id, :name, :objectid, :comment, :area_type, :registration_number, :longitude, :latitude, :long_lat_type, :country_code, :time_zone, :street_name, :kind, :custom_field_values, :metadata)
         area_type_label = I18n.t("area_types.label.#{stop_area.area_type}")
@@ -71,6 +74,15 @@ class StopAreasController < ChouetteController
       @stop_area = @stop_area.decorate(context: { workbench: @workbench })
       @connection_links = ConnectionLinkDecorator.decorate(@stop_area.connection_links.limit(4), context: {workbench: @workbench})
       @specific_stops = @stop_area.specific_stops.paginate(:page => params[:page], :per_page => 5)
+    end
+  end
+
+  def fetch_connection_links
+    @connection_links = []
+    @connection_links = stop_area.connection_links if has_feature?(:stop_area_connection_links)
+    
+    respond_to do |format|
+      format.geojson { render 'connection_links/index.geo' }
     end
   end
 

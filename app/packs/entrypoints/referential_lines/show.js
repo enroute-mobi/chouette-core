@@ -1,13 +1,11 @@
-import '../../src/helpers/polyfills'
+import { Path } from 'path-parser'
 
-import clone from '../../src/helpers/clone'
-import RoutesMap from '../../src/helpers/routes_map'
+import GeoJSONMap from '../../src/components/GeoJSONMap'
 
-let routes = clone(window, "routes", true)
-routes = JSON.parse(decodeURIComponent(routes))
+const path = new Path('/referentials/:referentialId/lines/:id')
+const { referentialId, id } = path.partialTest(location.pathname)
 
-new RoutesMap('routes_map').prepare().then(function(map){
-  map.addRoutes(routes)
-  map.addRoutesLabels()
-  map.fitZoom()
-})
+GeoJSONMap.init(
+  `${path.build({ referentialId, id })}/routes.geojson`,
+  'routes_map'
+)

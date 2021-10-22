@@ -31,6 +31,10 @@ const App = () => {
     return () => sessionStorage.removeItem(key) 
   }, [])
 
+  useEffect(() => {
+    document.dispatchEvent(new Event('submitMover'))
+  }, [])
+
   return (
     <div>
     <Navigate />

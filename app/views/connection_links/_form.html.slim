@@ -41,8 +41,3 @@
 
   = cancel_button
   = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'connection_link_form'
-
-= javascript_pack_tag "connection_links/new"
-
-= javascript_tag do
-  | new TravelTimeCalculator(#{Rails.application.config.connection_speeds});

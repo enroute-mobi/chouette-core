@@ -8,4 +8,3 @@
   | window.fetchUserPermissionsUrl = "#{url_for(action: 'fetch_user_permissions', controller: 'routes')}?v=#{Time.now.to_i}";
   | window.fetchOppositeRoutesUrl = "#{url_for(action: 'fetch_opposite_routes', controller: 'routes')}?route_id=#{@route.id}&v=#{Time.now.to_i}";
 
-= javascript_pack_tag 'routes/form'

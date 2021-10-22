@@ -6,12 +6,14 @@ class ShapesController < ChouetteController
   belongs_to :workbench
   belongs_to :shape_referential, singleton: true
 
-  respond_to :html
-  respond_to :kml, :only => [:index, :show]
+  respond_to :html, :geojson
   respond_to :json, :only => [:index]
+  respond_to :geojson, only: %i[show index]
 
   def index
     index! do |format|
+      format.geojson { render 'shapes/index.geo' }
+
       format.html {
         @shapes = ShapeDecorator.decorate(
           @shapes,
@@ -20,6 +22,12 @@ class ShapesController < ChouetteController
           }
         )
       }
+    end
+  end
+
+  def show
+    show! do |format|
+      format.geojson { render 'shapes/show.geo' }
     end
   end
 

@@ -11,11 +11,11 @@
 // them with the image_pack_tag helper in views (e.g <%= image_pack_tag 'rails.png' %>)
 // or the `imagePath` JavaScript helper below.
 //
-const images = require.context('../images', true)
-const imagePath = (name) => images(name, true)
 
 // import 'core-js/stable'
 // import 'regenerator-runtime/runtime'
+const images = require.context('../images', true)
+const imagePath = (name) => images(name, true)
 
 // loading font awesome
 import "@fortawesome/fontawesome-free/js/all"
@@ -24,12 +24,4 @@ import "@fortawesome/fontawesome-free/js/all"
 import '@ryangjchandler/spruce'
 import 'alpinejs'
 
-// loading flatpickr
-import flatpickr from "flatpickr"
-import 'flatpickr/dist/flatpickr.css'
-import { French } from "flatpickr/dist/l10n/fr.js";
-import { english } from "flatpickr/dist/l10n/default.js";
-
 console.log('Hello World from Webpacker 6')
-
-import './flash_messages'

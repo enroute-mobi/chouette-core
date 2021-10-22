@@ -13,8 +13,9 @@
         = render'exports/options', form: form, resource_type: :export_options, workgroup: @workgroup
 
         div[x-data]
-          template[x-if="!$store.export.isExport && ($store.export.type == 'Export::Gtfs' || $store.export.type == 'Export::NetexGeneric')"]
-            = form.input :publish_per_line, as: :switchable_checkbox, input_html: { name: 'publication_setup[publish_per_line]' }
+          template[x-if="!!$store.export && (!$store.export.isExport && ($store.export.type == 'Export::Gtfs' || $store.export.type == 'Export::NetexGeneric'))"]
+            div
+              = form.input :publish_per_line, as: :switchable_checkbox, input_html: { name: 'publication_setup[publish_per_line]' }
 
     .separator.section_separator
 
@@ -36,5 +37,3 @@
       data: { disable_with: t('actions.processing') },
       form: 'publication_setup_form'
 
-= javascript_pack_tag "exports/new"
-= javascript_pack_tag "publication_setups/form"

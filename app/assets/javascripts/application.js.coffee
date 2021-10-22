@@ -7,7 +7,6 @@
 #= require jquery
 #= require jquery_ujs
 #= require cocoon
-#= require ./OpenLayers/ol.js
 #= require bootstrap-sass-official
 #= require select2-full
 #= require select2_locale_fr

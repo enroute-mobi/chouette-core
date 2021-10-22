@@ -26,12 +26,16 @@ const loadRouter = async () => {
 			return await import('./exports/form')
 		case routeMatch('/workbenches/:workbenchId/exports'):
 			return await import('./inputs/date_picker')
+		case routeMatch('/workgroups/:workgroupId/exports'):
+			return await import('./inputs/date_picker')
 
 		// Imports
 		case routeMatch('/workbenches/:workbenchId/imports/new'):
 		case routeMatch('/workbenches/:workbenchId/imports/:id/edit'):
 			return await import('./imports/form')
 		case routeMatch('/workbenches/:workbenchId/imports'):
+			return await import('./inputs/date_picker')
+		case routeMatch('/workgroups/:workgroupId/imports'):
 			return await import('./inputs/date_picker')
 
 		// Journey Patterns
@@ -114,7 +118,7 @@ const loadRouter = async () => {
 		case routeMatch('/workgroups/:workgroupId/edit_aggregate'):
 			return await Promise.all([
 				import('./workgroups/edit_aggregate'),
-				import('../src/components/datetime_picker'),
+				import('./inputs/date_picker'),
 			])
 		case routeMatch('/workgroups/:workgroupId/edit_merge'):
 			return await import('./workgroups/edit_merge')

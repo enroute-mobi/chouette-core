@@ -52,8 +52,11 @@ fr:
             successful: Succès
             unexpected_failure: Erreur non-controlée
             expected_failure: Erreur controlée
+        ara:
+          ara_url: Url d'Ara
+          credentials: Token d'identification
         google_cloud_storage:
-          project: Project
+          project: Projet
           bucket:  Bucket
         mail:
           email_title: Titre du mail

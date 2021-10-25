@@ -52,8 +52,11 @@ en:
             successful: Success
             unexpected_failure: Unexpected failure
             expected_failure: Expected failure
+        ara:
+          ara_url: Ara url
+          credentials: Identification token
         google_cloud_storage:
-          project: Projet
+          project: Project
           bucket:  Bucket
         mail:
           email_title: Email title

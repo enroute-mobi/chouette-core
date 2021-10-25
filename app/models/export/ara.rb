@@ -77,6 +77,8 @@ class Export::Ara < Export::Base
         @model_class = model_class
       end
 
+      attr_reader :scope, :model_class
+
       # For the given model (StopArea, VehicleJourney, ..), returns all codes which are uniq.
       def unique_codes(model)
         code_spaces = model.codes.map(&:code_space).uniq
@@ -92,7 +94,7 @@ class Export::Ara < Export::Base
       def code_providers
         @code_providers ||= Hash.new do |h, code_space|
           h[code_space] =
-            CodeProvider::CodeSpace.new scope: export_scope,
+            CodeProvider::CodeSpace.new scope: scope,
                                         code_space: code_space,
                                         model_class: model_class
         end
@@ -123,6 +125,7 @@ class Export::Ara < Export::Base
         @model_class = model_class
       end
 
+      attr_reader :scope, :code_space, :model_class
       delegate :short_name, to: :code_space
 
       # Returns the code value for the given Resource if uniq

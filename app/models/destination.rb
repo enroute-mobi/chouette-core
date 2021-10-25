@@ -64,3 +64,4 @@ require_dependency './destination/google_cloud_storage' if ::Destination.enabled
 require_dependency './destination/sftp' if ::Destination.enabled?("sftp")
 require_dependency './destination/mail' if ::Destination.enabled?("mail")
 require_dependency './destination/publication_api'
+require_dependency './destination/ara'

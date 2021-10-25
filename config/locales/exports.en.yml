@@ -48,6 +48,7 @@ en:
     netex_generic: Netex Generic
     referential_companies: Companies
     gtfs: GTFS
+    ara: Ara
     base:
       <<: *exports
   activerecord:

@@ -595,6 +595,7 @@ class Export::NetexGeneric < Export::Base
           name: name,
           members: scheduled_stop_point_refs,
           lines: line_refs,
+          zone_use: zone_use
         }
       end
 
@@ -612,6 +613,10 @@ class Export::NetexGeneric < Export::Base
 
       def netex_resource
         Netex::RoutingConstraintZone.new netex_attributes
+      end
+
+      def zone_use
+        "cannotBoardAndAlightInSameZone"
       end
 
       def decorated_stop_points

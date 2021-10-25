@@ -255,6 +255,8 @@ RSpec.describe Export::NetexGeneric do
       describe '#netex_attributes' do
         subject { decorator.netex_attributes }
 
+        it { is_expected.to include(zone_use: "cannotBoardAndAlightInSameZone") }
+
         context "when RoutingConstraintZone objectid is 'chouette:RoutingConstraintZone:test:LOC'" do
           before { routing_constraint_zone.objectid = "chouette:RoutingConstraintZone:test:LOC" }
           it { is_expected.to include(id: routing_constraint_zone.objectid) }

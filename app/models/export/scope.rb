@@ -84,7 +84,7 @@ module Export::Scope
 
     delegate :codes, to: :workgroup
 
-    delegate :vehicle_journeys, :vehicle_journey_at_stops, :journey_patterns, :routes, :stop_points, :time_tables, :referential_codes, to: :referential
+    delegate :vehicle_journeys, :vehicle_journey_at_stops, :journey_patterns, :routes, :stop_points, :time_tables, :referential_codes, :routing_constraint_zones, to: :referential
 
     def organisations
       workgroup.organisations.where(id: metadatas.joins(referential_source: :organisation).distinct.pluck('organisations.id'))
@@ -165,10 +165,13 @@ module Export::Scope
 
       Chouette::StopArea.union(stop_areas_in_routes, stop_areas_in_specific_vehicle_journey_at_stops)
     end
+
+    def routing_constraint_zones
+      current_scope.routing_constraint_zones.where(route: routes)
+    end
   end
 
-  # Selects VehicleJourneys in a Date range, and all other models if they are required
-  # to describe these VehicleJourneys
+  # Selects VehicleJourneys in a Date range
   class DateRange < Base
     attr_reader :date_range
 
@@ -186,6 +189,7 @@ module Export::Scope
     end
   end
 
+  # Selects VehicleJourneys associated to selected lines
   class Lines < Base
     attr_reader :selected_line_ids
 

@@ -59,6 +59,7 @@ class Export::NetexGeneric < Export::Base
         Companies,
         Routes,
         StopPoints,
+        RoutingConstraintZones,
         JourneyPatterns,
         VehicleJourneys,
         TimeTables,
@@ -569,6 +570,61 @@ class Export::NetexGeneric < Export::Base
       end
     end
 
+  end
+
+  class RoutingConstraintZones < Part
+
+    delegate :routing_constraint_zones, to: :export_scope
+
+    def export!
+      routing_constraint_zones.includes(route: :line).find_each do |routing_constraint_zone|
+        tags = resource_tagger.tags_for(routing_constraint_zone.route.line_id)
+        tagged_target = TaggedTarget.new(target, tags)
+
+        decorated_zone = Decorator.new(routing_constraint_zone)
+        tagged_target << decorated_zone.netex_resource
+      end
+    end
+
+    class Decorator < SimpleDelegator
+
+      def netex_attributes
+        {
+          id: objectid,
+          data_source_ref: data_source_ref,
+          name: name,
+          members: scheduled_stop_point_refs,
+          lines: line_refs,
+          zone_use: zone_use
+        }
+      end
+
+      def scheduled_stop_point_refs
+        decorated_stop_points.map(&:scheduled_stop_point_ref)
+      end
+
+      def line
+        route&.line
+      end
+
+      def line_refs
+        [ Netex::Reference.new(line.objectid, type: 'LineRef') ] if line
+      end
+
+      def netex_resource
+        Netex::RoutingConstraintZone.new netex_attributes
+      end
+
+      def zone_use
+        "cannotBoardAndAlightInSameZone"
+      end
+
+      def decorated_stop_points
+        stop_points.map do |stop_point|
+          StopPointDecorator.new stop_point
+        end
+      end
+    end
   end
 
   class JourneyPatterns < Part

@@ -138,6 +138,42 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
         expect(scope.vehicle_journeys).not_to include(out_scope_vj)
       end
     end
+
+    describe '#routing_constraint_zones' do
+      subject { scope.routing_constraint_zones }
+
+      context "when no Route is scoped" do
+        let(:context) do
+          Chouette.create { referential }
+        end
+
+        it { is_expected.to be_empty }
+      end
+
+      context "when a Route which a RoutingConstraintZone is scoped" do
+        let(:context) do
+          Chouette.create do
+            route { routing_constraint_zone }
+          end
+        end
+        before { allow(scope).to receive(:routes).and_return(referential.routes) }
+
+        let(:routing_constraint_zone) { context.routing_constraint_zone }
+        it "includes this RoutingConstraintZone" do
+          is_expected.to include(routing_constraint_zone)
+        end
+      end
+
+      context "when a Route which a RoutingConstraintZone is not scoped" do
+        let(:context) do
+          Chouette.create do
+            route { routing_constraint_zone }
+          end
+        end
+        before { allow(scope).to receive(:routes).and_return(Chouette::Route.none) }
+        it { is_expected.to be_empty }
+      end
+    end
   end
 
   describe Export::Scope::DateRange do

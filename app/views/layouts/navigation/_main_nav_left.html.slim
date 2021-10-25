@@ -1,9 +1,13 @@
-.nav-menu#menu_left
-  .openMenu.fa.fa-bars title='Ouvrir le menu'
+.nav-menu#menu_left[
+  x-ref="mainNavLeft"
+  x-bind:class="{ open: mainNavLeftIsOpen }"
+  x-on:click.away="mainNavLeftIsOpen = false"
+]
+  .openMenu.fa.fa-bars[x-on:click="mainNavLeftIsOpen = true" title='Ouvrir le menu']
 
   .menu-content
     .flex
-      .closeMenu.fas.fa-times title='Fermer le menu'
+      .closeMenu.fas.fa-times[x-on:click="mainNavLeftIsOpen = false" title='Fermer le menu']
 
     = render_custom_view 'layouts/navigation/main_nav_left_content'
 

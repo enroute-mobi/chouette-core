@@ -24,7 +24,7 @@ html lang=I18n.locale
     = javascript_tag do
       | I18n.locale = '#{I18n.locale}'
 
-  body
+  body(x-data="{ mainNavLeftIsOpen: #{current_page?('/') ? "true" : "false"}, profileMenuIsOpen: false }" x-on:keydown.escape="mainNavLeftIsOpen = false; profileMenuIsOpen = false" x-on:scroll="profileMenuIsOpen = false")
     nav#main_nav
       // Left menu content
       = render 'layouts/navigation/main_nav_left'

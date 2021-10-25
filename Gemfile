@@ -142,7 +142,7 @@ gem 'premailer-rails', '>= 1.11.1'
 gem 'redis-actionpack', '>= 5.2.0'
 
 gem 'gtfs', en_route: 'gtfs'
-gem 'netex', en_route: 'netex', branch: "NETEX-25-add-routing-constraint-zone"
+gem 'netex', en_route: 'netex'
 gem 'rgeo-shapefile'
 
 gem 'ddtrace'

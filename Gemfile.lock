@@ -50,8 +50,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: 658f3900b10bce04838fa0991c0d5973dcd780bc
-  branch: NETEX-25-add-routing-constraint-zone
+  revision: f3319cc735dd38f1feef17c87b345c3095dc35d7
   specs:
     netex (0.1.2)
       ox

@@ -3,14 +3,13 @@ import actions from '../actions'
 import EditModal from '../components/EditModal'
 import CreateModal from '../components/CreateModal'
 
-const mapStateToProps = (state) => {
-  return {
-    editMode: state.editMode,
-    modal: state.modal,
-    journeyPattern: state.journeyPattern,
-    custom_fields: state.custom_fields,
-  }
-}
+const mapStateToProps = state => ({
+  editMode: state.editMode,
+  custom_fields: state.custom_fields,
+  status: state.status,
+  type: state.modal.type,
+  ...state.modal.modalProps
+})
 
 const mapDispatchToProps = (dispatch) => {
   return {
@@ -29,6 +28,6 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-const ModalContainer = connect(mapStateToProps, mapDispatchToProps)(EditModal, CreateModal)
+const ModalContainer = connect(mapStateToProps, mapDispatchToProps)(EditModal)
 
 export default ModalContainer

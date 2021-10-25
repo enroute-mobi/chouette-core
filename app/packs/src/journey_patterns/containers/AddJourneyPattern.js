@@ -3,12 +3,14 @@ import actions from '../actions'
 import CreateModal from '../components/CreateModal'
 
 const mapStateToProps = (state) => {
+
   return {
-    modal: state.modal,
-    journeyPatterns: state.journeyPatterns,
     editMode: state.editMode,
     status: state.status,
-    custom_fields: state.custom_fields
+    custom_fields: state.custom_fields,
+    status: state.status,
+    type: state.modal.type,
+    ...state.modal.modalProps
   }
 }
 

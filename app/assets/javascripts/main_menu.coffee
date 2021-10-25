@@ -1,36 +1,13 @@
 stickyActions = []
 ptitleCont = ""
 mainNav = $('#main_nav')
-navMenu = $('#menu_left.nav-menu')
 
-@handleOpenMenu = ->
-  mainNav.find('.openMenu').on 'click', (e) ->
-    navMenu.addClass 'open'
-
-@handleCloseMenu = ->
-  closeMenu = ->
-    navMenu.removeClass 'open'
-
-  mainNav.find('.closeMenu').on 'click', (e) ->
-    closeMenu()
-
-  $(document).on 'keyup', (e) ->
-    closeMenu() if  navMenu.hasClass('open') && e.keyCode == 27
-
-  $(document).on 'click', (e) ->
-    closeMenu() unless mainNav.is(e.target) || mainNav.has(e.target).length > 0
-
-@handleResetMenu = ->
+handleResetMenu = ->
   $(document).on 'page:before-change', ->
     stickyActions = []
     ptitleCont = ""
 
-@handleOpenMenuPanel = ->
-  selectedItem = mainNav.find('.active')
-  selectedItem.closest('.panel-collapse').addClass 'in'
-  selectedItem.closest('.panel-title').children('a').attr('aria-expanded') == true
-
-@sticker = ->
+sticker = ->
   # Sticky behavior
 
   didScroll = ->
@@ -89,10 +66,6 @@ $ ->
   stickyActions = []
   ptitleCont = ""
   mainNav = $('#main_nav')
-  navMenu = $('#menu_left.nav-menu')
 
-  handleOpenMenu()
-  handleCloseMenu()
   handleResetMenu()
-  handleOpenMenuPanel()
   sticker()

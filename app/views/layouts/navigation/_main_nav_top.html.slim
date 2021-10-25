@@ -19,7 +19,13 @@
           = image_pack_tag("static/chaticon.svg", height: 25)
 
       - if user_signed_in?
-        = link_to 'javascript:void(0)', id: 'profile_dropdown', class: 'menu-item', data: { panel: 'toggle', target: '#profile_panel' }, title: t('layouts.user.profile') do
+        = link_to 'javascript:void(0)',
+          id: 'profile_dropdown',
+          class: 'menu-item',
+          title: t('layouts.user.profile'),
+          'x-bind:class': '{ active: profileMenuIsOpen }',
+          'x-on:click.prevent': 'profileMenuIsOpen = true',
+          'x-on:click.away': 'profileMenuIsOpen = false' do
           span = current_user.name
           span.fa.fa-lg.fa-user
 

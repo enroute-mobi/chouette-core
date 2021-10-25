@@ -143,9 +143,7 @@ class Export::Base < ApplicationModel
     filename = File.basename(file.path)
     content_type = MIME::Types.type_for(filename).first&.content_type
     File.open(file.path) do |file_content|
-      req = Net::HTTP::Post::Multipart.new url.path,
-      file: UploadIO.new(file_content, content_type, filename),
-      token: self.token_upload
+      req = Net::HTTP::Post::Multipart.new(url.path, file: UploadIO.new(file_content, content_type, filename), token: self.token_upload, max_retries: 3)
       res = Net::HTTP.start(url.host, url.port) do |http|
         http.request(req)
       end

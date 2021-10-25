@@ -108,5 +108,12 @@ module Cron
         Workgroup.purge_all
       end
     end
+
+    def retrieve_all_sources
+      protected_action do
+        Source.retrieve_all
+      end
+    end
+
   end
 end

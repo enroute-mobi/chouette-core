@@ -25,7 +25,7 @@ node(:features) do |shape|
       },
       properties: {
         name: waypoint.name,
-        type: waypoint.type
+        type: waypoint.waypoint_type
       }
     }
   end

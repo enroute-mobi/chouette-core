@@ -35,8 +35,8 @@ module Shapes
 				''
 			end
 
-			def type
-				waypoint_type
+			def waypoint_type
+				super
 			rescue
 				'waypoint'
 			end

@@ -141,7 +141,7 @@ export default function useMapController() {
     waypoints.forEach(w => {
       w.setId(uniqueId('waypoint_'))
 
-      const waypointStyle = w.get('type') === 'waypoint' ? 'shapeWaypoint' : 'shapeConstraint'
+      const waypointStyle = w.get('waypoint_type') === 'waypoint' ? 'shapeWaypoint' : 'shapeConstraint'
       w.setStyle(styles.points[waypointStyle])
     })
 

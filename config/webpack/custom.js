@@ -1,5 +1,5 @@
-const globImporter = require('node-sass-glob-importer')
-const webpack = require('webpack')
+const globImporter = require('node-sass-glob-importer');
+const Dotenv = require('dotenv-webpack');
 
 module.exports = {
   module: {
@@ -20,10 +20,6 @@ module.exports = {
     ]
   },
   plugins: [
-    new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: JSON.stringify(process.env.NODE_ENV)
-      }
-    }),
+    new Dotenv()
   ]
 }

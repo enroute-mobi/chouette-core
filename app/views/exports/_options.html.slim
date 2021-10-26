@@ -4,8 +4,8 @@
 div[
   x-data
   x-init="
-    Spruce.watch('export',  store => {
-      store && store.setState({
+    Spruce.watch('export',  _ => {
+      $store.export.setState({
         referentialId: '#{@export.referential_id}',
         isExport: #{is_export},
         type: '#{@export.type || 'Export::Gtfs'}',

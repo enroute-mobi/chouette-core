@@ -21,7 +21,7 @@ class TomSelectInput < SimpleForm::Inputs::CollectionSelectInput
     template.content_tag(:div) do
       template.concat select
 
-      template.concat template.javascript_tag "initTomSelect('#{id}')"
+      template.concat template.javascript_tag("initTomSelect('#{id}')", defer: true)
     end
   end
 end

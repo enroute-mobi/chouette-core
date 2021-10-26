@@ -91,28 +91,7 @@
     "sinon": "4.1.3",
     "webpack-dev-server": "^4.3.1"
   },
-  "jest": {
-    "testRegex": "(/test/.*|(\\_|/)spec)\\.js$",
-    "roots": [
-      "<rootDir>/spec/javascript"
-    ],
-    "transform": {
-      "^.+\\.coffee$": "<rootDir>/spec/javascript/preprocessor.js",
-      "^.+\\.jsx?$": "babel-jest"
-    },
-    "testEnvironment": "jest-environment-jsdom-global",
-    "setupFiles": [
-      "<rootDir>/spec/javascript/spec_helper.js",
-      "jest-plugin-context/setup",
-      "jest-plugin-set/setup"
-    ]
-  },
   "snyk": true,
-  "babel": {
-    "presets": [
-      "./node_modules/@rails/webpacker/package/babel/preset.js"
-    ]
-  },
   "browserslist": [
     "defaults"
   ]

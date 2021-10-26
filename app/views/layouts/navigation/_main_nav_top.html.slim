@@ -24,8 +24,7 @@
           class: 'menu-item',
           title: t('layouts.user.profile'),
           'x-bind:class': '{ active: profileMenuIsOpen }',
-          'x-on:click.prevent': 'profileMenuIsOpen = true',
-          'x-on:click.away': 'profileMenuIsOpen = false' do
+          'x-on:click.prevent': 'profileMenuIsOpen = true' do
           span = current_user.name
           span.fa.fa-lg.fa-user
 

@@ -51,9 +51,13 @@ class Params {
     },
     {
       onError(errors) {
-        errors.forEach(text => {
-          window.Spruce.stores.flash.add({ type: 'error', text })
-        })
+        try {
+          errors.forEach(text => {
+            Spruce.stores.flash.add({ type: 'error', text })
+          })
+        } catch(e) {
+          
+        }
       },
       revalidateOnMount: false
     }

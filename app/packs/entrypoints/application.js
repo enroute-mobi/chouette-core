@@ -23,5 +23,6 @@ import "@fortawesome/fontawesome-free/js/all"
 
 import '@ryangjchandler/spruce'
 import 'alpinejs'
+import 'flag-icon-css/css/flag-icons.css'
 
 console.log('Hello World from Webpacker 6')

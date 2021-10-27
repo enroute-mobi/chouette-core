@@ -89,7 +89,6 @@ gem 'simple_form', '>= 5.1.0'
 gem 'will_paginate-bootstrap'
 gem 'gretel', '>= 4.3.0'
 gem 'country_select'
-gem 'flag-icons-rails', '>= 3.4.6.1'
 gem 'i18n-js'
 gem 'font_awesome5_rails', '>= 1.5.0'
 

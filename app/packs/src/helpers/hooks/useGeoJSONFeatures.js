@@ -70,7 +70,7 @@ const useGeoJSONFeatures = url => {
 		)
 	}
 
-	useSWR(url, { onSuccess })
+	useSWR(url, { onSuccess, revalidateOnFocus: false })
 
 	return features
 }

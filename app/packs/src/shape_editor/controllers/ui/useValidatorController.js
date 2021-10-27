@@ -10,7 +10,7 @@ export default function useValidatorController() {
     return eventEmitter.on(events.waypointDeleteRequest, async waypoint => {
       store.getState(({ waypoints }) => {
         if (waypoints.getLength() == length) {
-          window.Spruce.stores.flash.add({ type: 'warning', text: I18n.t('shapes.errors.must_have_enough_waypoints') })
+          Spruce.stores.flash.add({ type: 'warning', text: I18n.t('shapes.errors.must_have_enough_waypoints') })
         } else {
           eventEmitter.emit(events.waypointDeleted, waypoint)
         }

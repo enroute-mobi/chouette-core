@@ -1,7 +1,7 @@
 import TomSelect from 'tom-select'
 class ConfigBuilder {
   static call(select) {
-    const { config, url } = select.dataset 
+    const { config } = select.dataset 
 
     const { type, ...payload } = JSON.parse(config)
     
@@ -9,7 +9,7 @@ class ConfigBuilder {
 
     switch(type) {
       case 'ajax':
-        specificConfig = ConfigBuilder.configs.ajax(select, url)
+        specificConfig = ConfigBuilder.configs.ajax(select)
         break
       case 'create':
         specificConfig = ConfigBuilder.configs.create
@@ -48,9 +48,9 @@ class ConfigBuilder {
           no_results: () => null
         }
       },
-      ajax(select, url) {
+      ajax(select) {
         return {
-          preload: Boolean(url),
+          preload: true,
           openOnFocus: true,
           load: (query, callback) => {
             const { url } = select.dataset

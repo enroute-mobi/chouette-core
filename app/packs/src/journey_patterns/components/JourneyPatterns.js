@@ -142,7 +142,7 @@ export default class JourneyPatterns extends Component {
                       onUpdateJourneyPatternCosts={(costs) => this.props.onUpdateJourneyPatternCosts(index, costs)}
                       status= {this.props.status}
                       editMode= {this.props.editMode}
-                      journeyPatterns= {this}
+                      showHeader={this.showHeader.bind(this)}
                       fetchRouteCosts={(costsKey) => this.props.fetchRouteCosts(costsKey, index)}
                       />
                   )}

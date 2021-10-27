@@ -4,7 +4,7 @@ import { Async as Select } from 'react-select'
 const ShapeSelect2 = ({ disabled, onSelectShape, onUnselectShape, shape }) => (
   <Select
     isClearable
-    disabled={disabled}
+    isDisabled={disabled}
     defaultValue={shape ? { id: shape.id, text: (shape.name || shape.uuid) } : undefined}
     cacheOptions
     defaultOptions

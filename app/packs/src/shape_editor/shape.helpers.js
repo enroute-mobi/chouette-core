@@ -168,13 +168,17 @@ export const submitFetcher = async (url, isEdit, payload) => {
     body: JSON.stringify(payload)
   })
 
-  handleRedirect(() => {
-    const { sessionStorage } = window
-    const previousAction = isEdit ? 'shape-update' : 'shape-create'
-
-    sessionStorage.setItem('previousAction', previousAction) // Being used in JP react app to display or not a flash message
-    }
-  )(response)
+  handleRedirect(status => {
+    // used in JP react app to display or not a flash message
+    sessionStorage.setItem(
+      'previousAction',
+      JSON.stringify({
+        resource: 'shape',
+        action: isEdit ? 'update' : 'create',
+        status
+      })
+    )
+  })(response)
 
   const data = await response.json()
 

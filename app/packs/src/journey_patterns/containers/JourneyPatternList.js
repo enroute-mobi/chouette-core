@@ -32,6 +32,9 @@ const mapDispatchToProps = (dispatch) => {
     fetchRouteCosts: (key, index) => {
       actions.fetchRouteCosts(dispatch, key, index)
     },
+    onDuplicateJourneyPattern: () => {
+      dispatch(actions.duplicateJourneyPattern())
+    }
   }
 }
 

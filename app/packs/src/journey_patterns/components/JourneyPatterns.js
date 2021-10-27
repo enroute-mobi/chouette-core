@@ -134,6 +134,7 @@ export default class JourneyPatterns extends Component {
                 <div>
                   {this.props.journeyPatterns.map((journeyPattern, index) =>
                     <JourneyPattern
+                      onDuplicateJourneyPattern={this.props.onDuplicateJourneyPattern}
                       value={ journeyPattern }
                       key={ index }
                       onCheckboxChange= {(e) => this.props.onCheckboxChange(e, index)}

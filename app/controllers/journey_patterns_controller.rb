@@ -62,6 +62,12 @@ class JourneyPatternsController < ChouetteController
     response.set_header('Location', referential_line_route_journey_patterns_collection_path(@referential, @line, @route))
   end
 
+  def duplicate
+    journey_pattern.duplicate!
+
+    response.set_header('Location', referential_line_route_journey_patterns_collection_path(@referential, @line, @route))
+  end
+
   private
 
   def journey_pattern_params

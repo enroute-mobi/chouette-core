@@ -270,6 +270,14 @@ module Chouette
       update_column :costs, default_costs
     end
 
+    def duplicate!
+      dup = self.deep_clone(include: [:stop_points], except: [:objectid])
+
+      dup.save!
+      dup
+    end
+
+
     def self.clean!
       current_scope = self.current_scope || all
 

@@ -1,7 +1,8 @@
 const handleRedirect = callback => response => {
   for (const [name, value] of response.headers.entries()) {
     if (name === 'location') {
-      callback()
+      const status = response.ok ? 'notice' : 'error'
+      callback(status)
 
       location.assign(value)
     }

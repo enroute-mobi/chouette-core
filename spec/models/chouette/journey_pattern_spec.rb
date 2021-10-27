@@ -379,4 +379,32 @@ describe Chouette::JourneyPattern, :type => :model do
 
   end
 
+  describe '#duplicate!' do
+    let(:journey_pattern) { create(:journey_pattern) }
+    
+    before do
+      3.times do
+        FactoryBot.create(:vehicle_journey, journey_pattern: journey_pattern)
+      end
+    end
+
+    it 'creates an new journey pattern' do
+      dup = journey_pattern.duplicate!
+
+      expect(dup.persisted?).to be_truthy
+    end
+
+    it 'should not have stop points' do
+      dup = journey_pattern.duplicate!
+
+      expect(dup.stop_point_ids).to match_array(journey_pattern.stop_point_ids)
+    end
+
+    it 'should not create vehicle journeys' do
+      dup = journey_pattern.duplicate!
+
+      expect(journey_pattern.vehicle_journey_ids).to be_empty
+    end
+  end
+
 end

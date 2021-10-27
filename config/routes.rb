@@ -167,6 +167,7 @@ ChouetteIhm::Application.routes.draw do
       get :stop_areas, on: :collection, defaults: { format: 'json' }
       get :parent_stop_areas, on: :collection, defaults: { format: 'json' }
       get :stop_area_providers, on: :collection, defaults: { format: 'json' }
+      get :shapes, on: :collection, defaults: { format: 'json' }
     end
   end
 

@@ -16,7 +16,7 @@ export default class CreateModal extends Component {
     if(actions.validateFields(this.refs) == true) {
       this.props.onAddJourneyPattern(_.assign({}, this.refs, {
         custom_fields: this.custom_fields,
-        shape: _.get(this.props.modal.modalProps, 'journeyPattern.shape') ? {id: this.props.modal.modalProps.journeyPattern.shape.id, name: this.props.modal.modalProps.journeyPattern.shape.name, uuid: this.props.modal.modalProps.journeyPattern.shape.uuid } : undefined
+        shape: this.props?.journeyPattern?.shape ? { id: this.props.journeyPattern.shape.id, name: this.props.journeyPattern.shape.name, uuid: this.props.journeyPattern.shape.uuid } : undefined
        }
      ))
       this.props.onModalClose()
@@ -25,10 +25,15 @@ export default class CreateModal extends Component {
   }
 
   render() {
-    if(this.props.status.isFetching == true || this.props.status.policy['journey_patterns.create'] == false || this.props.editMode == false) {
+    const {
+      editMode, journeyPattern, status, type,
+      onModalClose, onOpenCreateModal, onSelectShape, onUnselectShape
+    } = this.props
+  
+    if(status.isFetching == true || status.policy['journey_patterns.create'] == false || editMode == false) {
       return false
     }
-    if(this.props.status.fetchSuccess == true) {
+    if(status.fetchSuccess == true) {
       return (
         <div>
           <div className="select_toolbox">
@@ -38,14 +43,14 @@ export default class CreateModal extends Component {
                   type='button'
                   data-toggle='modal'
                   data-target='#NewJourneyPatternModal'
-                  onClick={this.props.onOpenCreateModal}
+                  onClick={onOpenCreateModal}
                   >
                   <span className="fa fa-plus"></span>
                 </button>
               </li>
             </ul>
           </div>
-          <div className={ 'modal fade ' + ((this.props.modal.type == 'create') ? 'in' : '') } id='NewJourneyPatternModal'>
+          <div className={ 'modal fade ' + ((type == 'create') ? 'in' : '') } id='NewJourneyPatternModal'>
             <div className='modal-container'>
               <div className='modal-dialog'>
                 <div className='modal-content'>
@@ -53,7 +58,7 @@ export default class CreateModal extends Component {
                     <h4 className='modal-title'>{I18n.t('journey_patterns.actions.new')}</h4>
                   </div>
 
-                  {(this.props.modal.type == 'create') && (
+                  {(type == 'create') && (
                     <form>
                       <div className='modal-body'>
                         <div className='row'>
@@ -98,7 +103,7 @@ export default class CreateModal extends Component {
 
                         <div className='row'>
                           <CustomFieldsInputs
-                            values={this.props.custom_fields}
+                            values={custom_fields}
                             onUpdate={(code, value) => this.custom_fields[code]["value"] = value}
                             disabled={false}
                           />
@@ -108,19 +113,21 @@ export default class CreateModal extends Component {
                             <div className='form-group'>
                               <label className='control-label'>{I18n.attribute_name('journey_pattern', 'shape')}</label>
                               <ShapeSelector
-                                shape = {_.get(this.props.modal.modalProps, 'journeyPattern.shape')}
-                                onSelectShape = {(e) => this.props.onSelectShape(e)}
-                                onUnselectShape = {() => this.props.onUnselectShape()}
-                                disabled={!this.props.editMode}
+                                shape = {journeyPattern?.shape}
+                                onSelectShape={onSelectShape}
+                                onUnselectShape={onUnselectShape}
+                                disabled={!editMode}
                               />
                             </div>
                           </div>
                         </div>
-                        <div className='row'>
-                          <div className='col-xs-12 shape-map'>
-                            <ShapeMap shapeId={_.get(this.props.modal.modalProps, 'journeyPattern.shape.id')}/>
+                        {journeyPattern?.shape?.id && (
+                          <div className='row'>
+                            <div className='col-xs-12 shape-map'>
+                              <ShapeMap shapeId={journeyPattern.shape.id} />
+                            </div>
                           </div>
-                        </div>
+                        )}
                       </div>
 
                       <div className='modal-footer'>
@@ -128,7 +135,7 @@ export default class CreateModal extends Component {
                           className='btn btn-cancel'
                           data-dismiss='modal'
                           type='button'
-                          onClick={this.props.onModalClose}
+                          onClick={onModalClose}
                           >
                           {I18n.t('cancel')}
                         </button>

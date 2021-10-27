@@ -42,7 +42,7 @@ export default class JourneyPattern extends Component{
   }
 
   hasShape() {
-    return !!this.journeyPattern.shape_id
+    return !!this.journeyPattern.shape?.id
   }
 
   hasFeature(key) {
@@ -50,7 +50,7 @@ export default class JourneyPattern extends Component{
   }
 
   cityNameChecker(sp, i) {
-    return this.props.journeyPatterns.showHeader((sp.stop_area_object_id || sp.object_id) + "-" + i)
+    return this.props.showHeader((sp.stop_area_object_id || sp.object_id) + "-" + i)
   }
 
   spNode(sp, headlined){
@@ -334,6 +334,6 @@ JourneyPattern.propTypes = {
   onCheckboxChange: PropTypes.func.isRequired,
   onOpenEditModal: PropTypes.func.isRequired,
   onDeleteJourneyPattern: PropTypes.func.isRequired,
-  journeyPatterns: PropTypes.object.isRequired,
+  showHeader: PropTypes.func.isRequired,
   fetchRouteCosts: PropTypes.func.isRequired
 }

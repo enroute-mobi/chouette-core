@@ -10,7 +10,7 @@ class LineNoticeDecorator < AF83::Decorator
   action_link if: Proc.new { context[:line].present? }, secondary: true, policy: :attach do |l|
     l.content t('line_notices.actions.attach')
     l.href { [:attach, *scope, :line_notices] }
-    l.icon 'chain'
+    l.icon 'link'
   end
 
   with_instance_decorator do |instance_decorator|

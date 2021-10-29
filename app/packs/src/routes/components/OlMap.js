@@ -41,7 +41,7 @@ export default function StopPointsMap({ index, onSelectMarker, onUpdateViaOlMap,
 
   const centerLayer = new VectorLayer({ style: styles.default })
 
-  const onMapInit = async map => {  
+  const onMapInit = async map => {
     const fetchedFeatures = await (await fetch(`${path.build({ referentialId })}/autocomplete_stop_areas/${stoparea_id}/around?target_type=zdep`)).json()
 
     const centerSource = new VectorSource({ features: geoJSON.readFeatures(fetchedFeatures) })
@@ -125,7 +125,7 @@ export default function StopPointsMap({ index, onSelectMarker, onUpdateViaOlMap,
           >{I18n.t('actions.select')}</div>
         )}
       </div>
-      <div className='map_content stop-point-map'>
+      <div className='map_content ol-map'>
         <MapWrapper features={[feature]} onInit={onMapInit} style={styles.selected} />
       </div>
     </div>

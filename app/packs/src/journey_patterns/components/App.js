@@ -17,16 +17,22 @@ const App = () => {
     const previousAction = sessionStorage.getItem(key)
 
     if (previousAction) {
-      const { resource, action, status } = JSON.parse(previousAction)
+      try {
+        const { resource, action, status } = JSON.parse(previousAction)
 
-      flash.add({
-        type: 'success',
-        text: I18n.t(`flash.actions.${action}.${status}`, {
-          resource_name: I18n.t(`activerecord.models.${resource}.one`)
+        flash.add({
+          type: 'success',
+          text: I18n.t(`flash.actions.${action}.${status}`, {
+            resource_name: I18n.t(`activerecord.models.${resource}.one`)
+          })
         })
-      })
 
-      sessionStorage.removeItem(key) 
+      } catch(e) {
+        // CHOUETTE-1522
+        sessionStorage.clear()
+      } finally {
+        sessionStorage.removeItem(key)
+      }
     }
   }, [])
 

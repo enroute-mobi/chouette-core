@@ -11,7 +11,7 @@ export default class JourneyPattern extends Component{
     this.previousSpId = undefined
 
     this.basePath = window.location.pathname.split('/journey_patterns_collection')[0]
-    
+
     bindAll(this, ['updateCosts', 'onCreateShape', 'onEditShape', 'onUnassociateShape', 'onDuplicateJourneyPattern'])
   }
 
@@ -304,7 +304,7 @@ export default class JourneyPattern extends Component{
               )}
               { this.renderShapeEditorButtons() }
               <li key={`see_vehicle_journeys_${id}`} className={object_id ? '' : 'disabled'}>
-                {this.vehicleJourneyURL(object_id)}
+                {object_id ? this.vehicleJourneyURL(object_id) : <a>{I18n.t('journey_patterns.journey_pattern.vehicle_journey_at_stops')}</a> }
               </li>
               <li key={`delete_journey_pattern_${id}`} className={'delete-action' + (this.isDisabled('destroy') || !this.props.editMode ? ' disabled' : '')}>
                 <button

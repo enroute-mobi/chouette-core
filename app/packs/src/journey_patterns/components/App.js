@@ -6,7 +6,6 @@ import ConfirmModal from '../containers/ConfirmModal'
 import CancelJourneyPattern from '../containers/CancelJourneyPattern'
 import SaveJourneyPattern from '../containers/SaveJourneyPattern'
 import JourneyPatternList from '../containers/JourneyPatternList'
-// import RouteMap from './RouteMap'
 
 const App = () => {
   // Add a flash message if a shape was previoulsy created/updated/unassociated

@@ -22,11 +22,6 @@ RSpec.describe ShapesController, :type => :controller do
       expect(assigns(:shapes)).to include(context.shape(:second))
     end
 
-    it 'should be successful using kml format' do
-      get :index, params: { workbench_id: context.workbench.id, format: :kml }
-      expect(response).to be_successful
-    end
-
     context "with filters" do
       let(:title_or_content_cont){ line_notices.first.title }
       let(:lines_id_eq){ line_notices.last.lines.first.id }

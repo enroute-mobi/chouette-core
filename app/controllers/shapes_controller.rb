@@ -6,8 +6,9 @@ class ShapesController < ChouetteController
   belongs_to :workbench
   belongs_to :shape_referential, singleton: true
 
-  respond_to :html, :geojson
+  respond_to :html, :kml, :geojson
   respond_to :json, :only => [:index]
+  respond_to :kml, :only => [:index, :show]
   respond_to :geojson, only: %i[show index]
 
   def index

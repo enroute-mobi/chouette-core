@@ -1,4 +1,5 @@
 import React, { useMemo, useEffect, useCallback, useState } from 'react'
+import { PropTypes } from 'prop-types'
 import { Map, View } from 'ol'
 import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer'
 import { OSM, Vector as VectorSource } from 'ol/source'
@@ -7,8 +8,11 @@ import { toStringXY } from 'ol/coordinate'
 
 import { toWgs84 } from '@turf/turf'
 
+import { usePrevious } from '../helpers/hooks'
+
 function MapWrapper({ features, onInit, style }) {
   const [ selectedCoord , setSelectedCoord ] = useState()
+  const previousFeatures = usePrevious(features)
 
   const featuresLayer = useMemo(
     () => new VectorLayer({ source: new VectorSource(), style }),
@@ -59,11 +63,11 @@ function MapWrapper({ features, onInit, style }) {
   // update map if features prop changes - logic formerly put into componentDidUpdate
   useEffect( () => {
 
-    if (features) { // may be empty on first render
+    if (features && !previousFeatures) { // we just want to execute this block once
 
       // set features to map
       featuresLayer.setSource(
-        new VectorSource({ features }) // make sure features is an array
+        new VectorSource({ features })
       )
 
       // Workaround to prevent openlayer rendering bugs within modal
@@ -88,6 +92,7 @@ function MapWrapper({ features, onInit, style }) {
 }
 
 MapWrapper.defaultProps = {
+  features: PropTypes.array,
   onInit: _map => {}
 }
 

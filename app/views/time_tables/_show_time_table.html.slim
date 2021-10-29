@@ -1,10 +1,12 @@
 .row
-  - (1..12).each do |month|
-    .col-lg-3.col-md-4.col-sm-4.col-xs-6
-      = new_alt_calendar(year: @year, month: month, first_day_of_week: 1, calendar_title: "#{I18n.t("date.month_names")[month]}", show_today: false) do |d|
-        - if time_table.include_in_overlap_dates?(d)
-          - [link_to(d.mday, edit_url, {disabled: disabled}), {class: "day overlaped_date", title: 'Voir'}]
-        - elsif time_table.include_in_dates?(d)
-          - [link_to(d.mday, edit_url, {disabled: disabled}), {class: "day selected_date", title: 'Voir'}]
-        - elsif time_table.include_in_periods?(d)
-          - [link_to(d.mday, edit_url, {disabled: disabled}), {class: "day selected_period", title: 'Voir'}]
+  - (1..12).each_slice(4).each do |chunk|
+    .row.flex.items-center.justify-between
+      - chunk.each do |month|
+          .col-lg-3.col-md-4.col-sm-4.col-xs-6
+            = new_alt_calendar(year: @year, month: month, first_day_of_week: 1, calendar_title: "#{I18n.t("date.month_names")[month]}", show_today: false) do |d|
+              - if time_table.include_in_overlap_dates?(d)
+                - [link_to(d.mday, edit_url, {disabled: disabled}), {class: "day overlaped_date", title: 'Voir'}]
+              - elsif time_table.include_in_dates?(d)
+                - [link_to(d.mday, edit_url, {disabled: disabled}), {class: "day selected_date", title: 'Voir'}]
+              - elsif time_table.include_in_periods?(d)
+                - [link_to(d.mday, edit_url, {disabled: disabled}), {class: "day selected_period", title: 'Voir'}]

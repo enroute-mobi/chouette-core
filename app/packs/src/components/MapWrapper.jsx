@@ -62,7 +62,6 @@ function MapWrapper({ features, onInit, style }) {
 
   // update map if features prop changes - logic formerly put into componentDidUpdate
   useEffect( () => {
-
     if (features && !previousFeatures) { // we just want to execute this block once
 
       // set features to map
@@ -92,8 +91,13 @@ function MapWrapper({ features, onInit, style }) {
 }
 
 MapWrapper.defaultProps = {
-  features: PropTypes.array,
   onInit: _map => {}
+}
+
+MapWrapper.propTypes = {
+  fetchFeatures: PropTypes.array,
+  onInit: PropTypes.func,
+  style: PropTypes.object
 }
 
 export default MapWrapper

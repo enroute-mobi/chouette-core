@@ -435,20 +435,24 @@ ActiveRecord::Schema.define(version: 2021_10_22_073107) do
 
   create_table "entrances", force: :cascade do |t|
     t.string "name"
+    t.string "short_name"
     t.bigint "stop_area_id"
+    t.bigint "stop_area_provider_id"
+    t.bigint "stop_area_referential_id"
     t.boolean "entry", default: false
     t.boolean "exit", default: false
-    t.jsonb "entrance_type", default: {}
+    t.string "entrance_type"
     t.string "description"
-    t.jsonb "localisation", default: {}
-    t.decimal "longitude", precision: 19, scale: 16
-    t.decimal "latitude", precision: 19, scale: 16
+    t.geography "position", limit: {:srid=>4326, :type=>"st_point", :geographic=>true}
     t.string "address"
     t.string "zip_code"
     t.string "city_name"
     t.string "country"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["stop_area_id"], name: "index_entrances_on_stop_area_id"
+    t.index ["stop_area_provider_id"], name: "index_entrances_on_stop_area_provider_id"
+    t.index ["stop_area_referential_id"], name: "index_entrances_on_stop_area_referential_id"
   end
 
   create_table "export_messages", force: :cascade do |t|

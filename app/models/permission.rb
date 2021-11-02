@@ -25,6 +25,7 @@ class Permission
         footnotes
         imports
         journey_patterns
+        entrances
         merges
         publication_api_keys
         publication_apis

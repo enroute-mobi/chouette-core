@@ -1,8 +1,6 @@
 class EntrancesController < ChouetteController
   # include ReferentialSupport
   # include PolicyChecker
-
-  defaults resource_class: Chouette::Entrance
   respond_to :html, :xml, :json
 
   # before_action :check_stoppoint_param, only: [:create, :update]

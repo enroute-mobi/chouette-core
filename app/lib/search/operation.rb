@@ -38,7 +38,7 @@ module Search
     class Order < ::Search::Order
       attribute :status
       attribute :name
-      attribute :started_at
+      attribute :started_at, default: :desc
       attribute :creator
     end
   end

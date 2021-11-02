@@ -19,7 +19,12 @@ module Search
 
       Rails.logger.debug "[Search] Params: #{params.inspect}"
 
-      order.attributes = params.delete :order if params[:order]
+      if params[:order]
+        order.attributes = params.delete :order
+      else
+        order.use_defaults
+      end
+
       self.attributes = params
 
       Rails.logger.debug "[Search] #{self.class.name}(#{attributes.inspect},order=#{order.attributes.inspect})"
@@ -132,7 +137,12 @@ module Search
       end
     end
 
+    def use_defaults
+      self.attributes = self.class.defaults
+    end
+
     class_attribute :attributes, instance_accessor: false, default: []
+    class_attribute :defaults, instance_accessor: false, default: {}
 
     # TODO: Attributes can only return values :asc, :desc or nil (for securiy reason)
     # Attributes can be set with "asc", :asc, 1 to have the :asc value
@@ -140,7 +150,7 @@ module Search
     # Attributes can be set with nil, 0 to have the nil value
     #
     # These methods ensures that the sort attribute is supported and valid
-    def self.attribute(name)
+    def self.attribute(name, default: nil)
       name = name.to_sym
 
       define_method "#{name}=" do |value|
@@ -156,6 +166,7 @@ module Search
 
       # Don't use attributes << name, see class_attribute documentation
       self.attributes += [ name ]
+      self.defaults[name] = default if default
     end
 
     ASCENDANT_VALUES = [:asc, "asc", 1].freeze

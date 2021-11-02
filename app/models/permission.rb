@@ -34,6 +34,7 @@ class Permission
         routing_constraint_zones
         shapes
         stop_area_routing_constraints
+        stop_area_entrances
         time_tables
         vehicle_journeys
         workbenches

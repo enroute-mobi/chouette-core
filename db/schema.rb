@@ -433,6 +433,24 @@ ActiveRecord::Schema.define(version: 2021_10_22_073107) do
     t.index ["publication_setup_id"], name: "index_destinations_on_publication_setup_id"
   end
 
+  create_table "entrances", force: :cascade do |t|
+    t.string "name"
+    t.bigint "stop_area_id"
+    t.boolean "entry", default: false
+    t.boolean "exit", default: false
+    t.jsonb "entrance_type", default: {}
+    t.string "description"
+    t.jsonb "localisation", default: {}
+    t.decimal "longitude", precision: 19, scale: 16
+    t.decimal "latitude", precision: 19, scale: 16
+    t.string "address"
+    t.string "zip_code"
+    t.string "city_name"
+    t.string "country"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "export_messages", force: :cascade do |t|
     t.string "criticity"
     t.string "message_key"
@@ -472,9 +490,6 @@ ActiveRecord::Schema.define(version: 2021_10_22_073107) do
     t.datetime "ended_at"
     t.string "token_upload"
     t.string "type"
-    t.bigint "parent_id"
-    t.string "parent_type"
-    t.datetime "notified_parent_at"
     t.integer "current_step", default: 0
     t.integer "total_steps", default: 0
     t.string "creator"
@@ -484,6 +499,8 @@ ActiveRecord::Schema.define(version: 2021_10_22_073107) do
     t.bigint "publication_id"
     t.bigint "workgroup_id"
     t.hstore "options", default: {}
+    t.datetime "notified_parent_at"
+    t.bigint "parent_id"
     t.index ["publication_id"], name: "index_exports_on_publication_id"
     t.index ["referential_id"], name: "index_exports_on_referential_id"
     t.index ["workbench_id"], name: "index_exports_on_workbench_id"
@@ -1132,6 +1149,7 @@ ActiveRecord::Schema.define(version: 2021_10_22_073107) do
     t.datetime "updated_at"
     t.jsonb "metadata", default: {}
     t.index ["objectid"], name: "stop_points_objectid_key", unique: true
+    t.index ["route_id", "position"], name: "index_stop_points_on_route_id_and_position", unique: true
     t.index ["route_id"], name: "index_stop_points_on_route_id"
   end
 

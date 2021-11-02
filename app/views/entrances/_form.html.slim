@@ -1,0 +1,10 @@
+/ = simple_form_for [@workbench, :entrance, @entrance], html: {class: 'form-horizontal', id: 'entrance_form'}, wrapper: :horizontal_form do |f|
+/   .row
+/     .col-lg-12
+/       = f.input :from_id, as: :select, collection: [f.object.from_id], input_html: { data: { select2ed_placeholder: StopAreaRoutingConstraint.tmf('from'), select2ed_allow_clear: 'true', select2_ajax: 'true', url: autocomplete_workbench_stop_area_referential_stop_areas_path(@workbench), initvalue: {id: f.object.from_id, text: f.object.from_light.try(:formatted_selection_details)}}}
+/       = f.input :to_id, as: :select, collection: [f.object.to_id], input_html: { data: { select2ed_placeholder: StopAreaRoutingConstraint.tmf('to'), select2ed_allow_clear: 'true', select2_ajax: 'true', url: autocomplete_workbench_stop_area_referential_stop_areas_path(@workbench), initvalue: {id: f.object.to_id, text: f.object.to_light.try(:formatted_selection_details)}}}
+/       = f.input :both_way, as: :switchable_checkbox
+
+/   .separator
+
+/   = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'entrance_form'

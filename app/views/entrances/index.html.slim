@@ -1,0 +1,55 @@
+/ - breadcrumb :entrances, @workbench
+
+.page_content
+  .container-fluid
+    - if params[:q].present? or @entrances.any?
+      .row
+        .col-lg-12
+          / = render partial: 'filters'
+
+    - if @entrances.any?
+      .row
+        .col-lg-12
+          / = @entrances.inspect
+          = table_builder_2 @entrances,
+            [ \
+              TableBuilderHelper::Column.new( \
+                name: t('.id'), \
+                attribute: Proc.new { |c| c.id }, \
+                sortable: false \
+              ), \
+              \
+              TableBuilderHelper::Column.new( \
+                name: t('.entrances.name'), \
+                attribute: Proc.new { |c| c.name }, \
+                sortable: false \
+              ), \
+              TableBuilderHelper::Column.new( \
+                name: t('entrances.description'), \
+                attribute: Proc.new { |c| c.description }, \
+                sortable: false \
+              ), \
+              TableBuilderHelper::Column.new( \
+                name: t('entrances.zip_code'), \
+                attribute: Proc.new { |c| c.zip_code }, \
+                sortable: false \
+              ), \
+              TableBuilderHelper::Column.new( \
+                name: t('entrances.city_name'), \
+                attribute: Proc.new { |c| c.city_name }, \
+                sortable: false \
+              ), \
+              TableBuilderHelper::Column.new( \
+                name: t('entrances.entrance_type'), \
+                attribute: Proc.new { |c| c.entrance_type }, \
+                sortable: false \
+              ), \
+            ].compact,
+            cls: 'table has-filter has-search'
+
+          / = new_pagination @entrances, 'pull-right'
+
+    - unless @entrances.any?
+      .row.mt-xs
+        .col-lg-12
+          = replacement_msg t('entrances.search_no_results')

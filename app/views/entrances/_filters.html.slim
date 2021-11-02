@@ -1,0 +1,20 @@
+= search_form_for @q, url: [@workbench, :stop_area_referential, :stop_area_routing_constraints], html: {method: :get}, class: 'form form-filter' do |f|
+  .ffg-row
+    .form-group.togglable class=filter_item_class(params[:q], :with_stop)
+      = f.label Chouette::StopArea.ts.capitalize, required: false, class: 'control-label'
+      .filter_menu.stop-areas
+        - json_url = autocomplete_workbench_stop_area_referential_stop_areas_path(@workbench, :format => :json)
+        - opts = {as: :select, label: false, required: false, wrapper_html: { class: 'filter_menu-item select2ed' }, input_html: {style: "width: 100%", data: { 'select2-ajax': 'true', 'select2ed-placeholder': '', url: json_url, 'select2ed-allow-clear': true}}}
+        - opts = opts.update({collection: [@with_stop].compact, selected: @with_stop&.id})
+        - opts[:input_html][:data][:'select2ed-placeholder'] = t('stop_area_routing_constraints.filters.stop')
+
+        = f.input :with_stop, opts
+
+    .form-group.togglable class=filter_item_class(params[:q], :both_way_eq_any)
+      = f.label StopAreaRoutingConstraint.tmf('direction'), required: false, class: 'control-label'
+      = f.input :both_way_eq_any, checked: params[:q] && params[:q][:both_way_eq_any], collection: [['stop_area_routing_constraints.direction.both_way'.t, true], ['stop_area_routing_constraints.direction.one_way'.t, false]], as: :check_boxes, label: false, label_method: lambda{|w| ("<span>" + w[0] + "</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list' }
+
+
+  .actions
+    = link_to t('actions.erase'), [@workbench, :stop_area_referential, :stop_area_routing_constraints], class: 'btn btn-link'
+    = f.submit t('actions.filter'), class: 'btn btn-default'

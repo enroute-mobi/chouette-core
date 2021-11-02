@@ -10,6 +10,7 @@ class StopAreaProvider < ActiveRecord::Base
   has_many :stop_areas, class_name: "Chouette::StopArea"
   has_many :connection_links, class_name: "Chouette::ConnectionLink"
   has_many :stop_area_routing_constraints
+  has_many :entrances
 
   scope :by_text, ->(text) { text.blank? ? all : where('lower(stop_area_providers.name) LIKE :t or lower(stop_area_providers.objectid) LIKE :t', t: "%#{text.downcase}%") }
 

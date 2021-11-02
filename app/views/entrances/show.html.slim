@@ -1,0 +1,9 @@
+/ - breadcrumb :entrance, @workbench, @entrance
+/ - page_header_content_for @entrance
+
+/ PageContent
+.page_content
+  .container-fluid
+    .row
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = definition_list t("connection_links.form.sections.identification"), connection_link_identification_metadatas(@connection_link)

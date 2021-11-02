@@ -1,0 +1,68 @@
+fr:
+  entrances:
+    search_no_results: "Aucune entrée ne correspond à votre recherche"
+    actions:
+      show: "Afficher cette entrée"
+      new: "Ajouter une entrée"
+      edit: "Editer cette entrée"
+      destroy: "Supprimer cette entrée"
+      destroy_confirm: "Etes vous sûr de supprimer cette entrée ?"
+    errors:
+      same_arrival_and_departure: "Les deux arrêts doivent être distincts"
+    new:
+      title: "Créer une entrée pour l'arrêt"
+    edit:
+      title: "Editer la entrée %{id}"
+    show:
+      title: "Entrée %{id}"
+    direction:
+      name: "Sens"
+      both: "Double"
+      one: "Simple"
+    index:
+      title: "Entrées"
+      duration: "Durée"
+    form:
+      calculate_costs: "Recalculer les durées"
+      sections:
+        identification: "Identification"
+        path: "Parcours"
+        departure: "Premier arrêt"
+        arrival: "Deuxième arrêt"
+        general: "Général"
+    filters:
+      departure_or_arrival_name: "Recherche par nom d'arrêt"
+  activerecord:
+    models:
+      entrance:
+        zero:  "entrées"
+        one:   "entrée"
+        other: "entrées"
+    attributes:
+      entrance:
+        name: "Nom"
+        stop_area: "Arrêt"
+        entry: "Entrée"
+        exit: "Sortie"
+        entrance_type: "Type"
+        description: "Description"
+        localisation: "Position"
+        coordinates: "Coordonnées"
+        adress: "Adresse"
+        zip_code: "Code Postal"
+        city_name: "Ville"
+        country: "Pays"
+        opening: "Ouvert"
+        openDoor: "Porte Ouverte"
+        door: "Porte"
+        swingDoor: "Porte battante"
+        revolvingDoor: "Porte à tambour"
+        automaticDoor: "Porte automatique"
+        ticketBarrier: "Portillon à ticket"
+        gate: "Barrière"
+        other: "Autre"
+        objectid: "Identifiant Neptune"
+        object_version: "Version"
+        created_at: "Créé le"
+        updated_at: "Edité le"
+        creator_id: "Créé par"

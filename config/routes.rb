@@ -67,6 +67,7 @@ ChouetteIhm::Application.routes.draw do
     resource :stop_area_referential, :only => [:show, :edit, :update] do
       post :sync, on: :member
       resources :stop_area_routing_constraints
+      resources :entrances
 
       resources :stop_area_providers
 

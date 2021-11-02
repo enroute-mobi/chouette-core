@@ -82,7 +82,7 @@ module Chouette
     scope :not_active_between, ->(from, to) { where('deactivated = ? OR (active_from IS NOT NULL AND active_from >= ?) OR (active_until IS NOT NULL AND active_until < ?)', true, to, from) }
 
     def self.nullable_attributes
-      [:published_name, :number, :comment, :url, :color, :text_color, :stable_id]
+      [:registration_number, :published_name, :number, :comment, :url, :color, :text_color, :stable_id]
     end
 
     def geometry_presenter

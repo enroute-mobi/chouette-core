@@ -1,4 +1,3 @@
-
 describe Chouette::Line, :type => :model do
   subject { create(:line) }
 
@@ -222,6 +221,17 @@ describe Chouette::Line, :type => :model do
 
     let(:first_line) { context.line(:first) }
     let(:second_line) { context.line(:second) }
+
+    context "when is an empty String" do
+      let(:context) { Chouette.create { line }}
+      let(:line) { context.line }
+
+      it "saved as nil" do
+        line.registration_number = ""
+        line.save!
+        expect(line.reload).to have_attributes(registration_number: nil)
+      end
+    end
 
     context "for two lines into two line providers" do
       let(:context) do

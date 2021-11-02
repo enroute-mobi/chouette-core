@@ -8,7 +8,7 @@ const path = `/referentials/${getReferentialId()}/autocomplete/journey_patterns`
 const JPSelect2 = ({ isFilter, onSelect2JourneyPattern, selectedItem }) =>  (
   <Select
     defaultValue={(isFilter && selectedItem?.id) ? { id: selectedItem.id, text: selectedItem.published_name } : undefined}
-    className={isFilter ? 'vjCreateSelectJP' : null}
+    className={isFilter ? null : 'vjCreateSelectJP'}
     cacheOptions
     cacheOptions
     defaultOptions

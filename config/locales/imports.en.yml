@@ -119,6 +119,7 @@ en:
           shape_attribute_as_id: Attribute used as id
           import_category: Import type
           import_category_collection:
+            netex_generic: Netex Generic
             shape_file: Shape file
             automatic: Automatic
           merge_method_collection:

@@ -123,11 +123,19 @@ class Import::Base < ApplicationModel
 
   def file_type
     return unless file
-    import_types = workgroup.import_types.presence || %w(Import::Gtfs Import::Netex Import::Neptune Import::Shapefile)
-    import_types.each do |import_type|
-      return import_type.demodulize.underscore.to_sym if import_type.constantize.accepts_file?(file.path)
+
+    get_file_type = ->(import_type) { return import_type.demodulize.underscore.to_sym if import_type.constantize.accepts_file?(file.path) }
+
+    case import_category
+    when 'automatic'
+      import_types = workgroup.import_types.presence || [Import::Gtfs, Import::Netex, Import::Neptune, Import::Shapefile, Import::NetexGeneric].map(&:name)
+      import_types.each { |import_type| return get_file_type.call(import_type) } # import_types.each(&get_file_type) did not work
+      get_file_type.call(Import::Shapefile.name)
+    when 'netex_generic'
+      get_file_type.call(Import::NetexGeneric.name)
+    else
+      nil
     end
-    return nil
   end
 
   # Returns all attributes of the imported file from the user point of view

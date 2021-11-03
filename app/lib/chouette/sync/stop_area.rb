@@ -36,9 +36,9 @@ module Chouette::Sync
         end
       end
 
-      def counts
+      def counters
         counters = [stop_place_updater, quay_updater, deleter].map(&:counters)
-        Counters.sum(counters).to_hash
+        Counters.sum(counters)
       end
 
       class Decorator < Chouette::Sync::Updater::ResourceDecorator

@@ -23,6 +23,10 @@ module Chouette
         counts[type]
       end
 
+      def total
+        TYPES.reduce(0) { |total, type| total + count(type) }
+      end
+
       types.each do |type|
         define_method type do
           count type

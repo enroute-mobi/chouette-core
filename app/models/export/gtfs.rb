@@ -367,7 +367,12 @@ class Export::Gtfs < Export::Base
       attr_reader :index, :public_code_space, :duplicated_registration_numbers
 
       def stop_id
-        registration_number && duplicated_registration_numbers.exclude?(registration_number) ? registration_number : objectid
+        if registration_number.present? &&
+           duplicated_registration_numbers.exclude?(registration_number)
+          registration_number
+        else
+          objectid
+        end
       end
 
       def parent_station
@@ -528,7 +533,12 @@ class Export::Gtfs < Export::Base
       attr_reader :index, :duplicated_registration_numbers
 
       def route_id
-        registration_number && duplicated_registration_numbers.exclude?(registration_number) ? registration_number : objectid
+        if registration_number.present? &&
+           duplicated_registration_numbers.exclude?(registration_number)
+          registration_number
+        else
+          objectid
+        end
       end
 
       def route_long_name

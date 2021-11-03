@@ -83,6 +83,37 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
     let(:stop_area) { Chouette::StopArea.new }
     let(:decorator) { Export::Gtfs::StopAreas::Decorator.new stop_area }
 
+    describe "#stop_id" do
+      subject { decorator.stop_id }
+
+      context "when the Stop Area registration number is 'test" do
+        before { stop_area.registration_number = "test" }
+        it { is_expected.to be(stop_area.registration_number) }
+      end
+
+      context "when the Stop Area registration number an empty string" do
+        before do
+          stop_area.registration_number = ""
+          stop_area.objectid = "chouette:StopArea:test:LOC"
+        end
+
+        it "is expected to be the objectid" do
+          is_expected.to eq(stop_area.objectid)
+        end
+      end
+
+      context "when the Stop Area registration number is nil" do
+         before do
+          stop_area.registration_number = ""
+          stop_area.objectid = "chouette:StopArea:test:LOC"
+        end
+
+        it "is expected to be the objectid" do
+          is_expected.to eq(stop_area.objectid)
+        end
+      end
+    end
+
     describe "#gtfs_platform_code" do
       subject { decorator.gtfs_platform_code }
       context "when public code is nil" do
@@ -154,19 +185,35 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
     let(:line) { Chouette::Line.new }
     let(:decorator) { Export::Gtfs::Lines::Decorator.new line }
 
-    describe "route_id" do
+    describe "#route_id" do
+      subject { decorator.route_id }
 
-      it "uses line registration_number when available" do
-        line.registration_number = "test"
-        expect(decorator.route_id).to be(line.registration_number)
+      context "when the Line registration_number is 'test" do
+        before { line.registration_number = "test" }
+        it { is_expected.to be(line.registration_number) }
       end
 
-      it "uses line objectid when registration_number is not available" do
-        line.registration_number = nil
-        line.objectid = "test"
-        expect(decorator.route_id).to be(line.objectid)
+      context "when the Line registration_number an empty string" do
+        before do
+          line.registration_number = ""
+          line.objectid = "chouette:Line:test:LOC"
+        end
+
+        it "is expected to be the objectid" do
+          is_expected.to eq(line.objectid)
+        end
       end
 
+      context "when the Line registration_number is nil" do
+         before do
+          line.registration_number = ""
+          line.objectid = "chouette:Line:test:LOC"
+        end
+
+        it "is expected to be the objectid" do
+          is_expected.to eq(line.objectid)
+        end
+      end
     end
 
     describe "route_type" do

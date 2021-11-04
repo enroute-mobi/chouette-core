@@ -2,17 +2,13 @@ class Import::NetexGeneric < Import::Base
 	include LocalImportSupport
 	include Imports::WithoutReferentialSupport
 
-	has_one :workgroup, through: :workbench
-
-	delegate :stop_area_referential, :line_referential, to: :workgroup
+	delegate :stop_area_referential, :line_referential, to: :workbench
 
 	def self.accepts_file?(file)
-    Zip::File.open(file) do |zip_file|
-      zip_file.glob('**/*.xml').size >= 1
-    end
+		!!Netex::Source.read(file)
   rescue => e
     Chouette::Safe.capture "Error in testing NeTEx file: #{file}", e
-    return false
+    false
   end
 
 	def import_without_status
@@ -36,9 +32,7 @@ class Import::NetexGeneric < Import::Base
 	end
 
 	def netex_source
-		@netex_source ||= Netex::Source.new.tap do |source|
-			Netex::Source::ZipReader.new(source, local_file).read
-		end
+		@netex_source ||= Netex::Source.read(file.current_path)
 	end
 
 	private

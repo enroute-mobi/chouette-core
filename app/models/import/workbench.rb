@@ -14,6 +14,10 @@ class Import::Workbench < Import::Base
 
   def main_resource; self end
 
+  def file_extension_whitelist
+    import_category == 'netex_generic' ? %w(zip xml) : %w(zip)
+  end
+
   def launch_worker
     update_column :status, 'running'
     update_column :started_at, Time.now

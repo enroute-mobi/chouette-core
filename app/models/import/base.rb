@@ -17,6 +17,10 @@ class Import::Base < ApplicationModel
     where('started_at BETWEEN :begin AND :end', begin: start_date, end: end_date)
   end
 
+  def file_extension_whitelist
+    %w(zip)
+  end
+
   def workgroup
     workbench&.workgroup
   end
@@ -40,10 +44,6 @@ class Import::Base < ApplicationModel
 
   def self.resources_class_name
     "Import::Resource"
-  end
-
-  def self.file_extension_whitelist
-    %w(zip)
   end
 
   def self.human_name

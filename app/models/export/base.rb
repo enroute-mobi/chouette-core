@@ -24,6 +24,10 @@ class Export::Base < ApplicationModel
     where('started_at BETWEEN :begin AND :end', begin: start_date, end: end_date)
   end
 
+  def file_extension_whitelist
+    %w(zip csv json)
+  end
+
   class << self
     # Those two methods are defined here because they are required to include IevInterfaces::Task
     def messages_class_name
@@ -39,10 +43,6 @@ class Export::Base < ApplicationModel
     end
 
     alias_method :human_type, :human_name
-
-    def file_extension_whitelist
-      %w(zip csv json)
-    end
   end
 
   include IevInterfaces::Task

@@ -7,12 +7,11 @@ html lang=I18n.locale
     = csrf_meta_tag
 
     title = t('brandname')
-    = stylesheet_link_tag 'base'
-    = stylesheet_link_tag 'api'
+    = stylesheet_pack_tag 'application'
 
   body
     .container-fluid
-      .page_header
+      .page_header.api
         .brandname
           = link_to root_path, target: :blank, class: '' do
             = image_pack_tag("static/logo-chouette-2020-saas.svg", height: 72)

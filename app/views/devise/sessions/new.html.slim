@@ -40,3 +40,8 @@
                     - if devise_mapping.confirmable? && controller_name != 'confirmations'
                       br
                       = mailer_link_to t("devise.links.new_confirmation"), new_confirmation_path(:user)
+
+        = render 'devise/shared/support'
+
+        = link_to 'https://enroute.mobi/', target: :blank, class: 'en-route' do
+          = image_pack_tag 'static/enRoute-picto.svg'

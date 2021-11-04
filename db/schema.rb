@@ -1165,6 +1165,7 @@ ActiveRecord::Schema.define(version: 2021_11_17_172911) do
     t.datetime "updated_at"
     t.jsonb "metadata", default: {}
     t.index ["objectid"], name: "stop_points_objectid_key", unique: true
+    t.index ["route_id", "position"], name: "index_stop_points_on_route_id_and_position", unique: true
     t.index ["route_id"], name: "index_stop_points_on_route_id"
   end
 
@@ -1199,6 +1200,7 @@ ActiveRecord::Schema.define(version: 2021_11_17_172911) do
     t.boolean "in_out"
     t.string "checksum"
     t.text "checksum_source"
+    t.index ["date", "time_table_id"], name: "index_time_table_dates_on_date_and_time_table_id", unique: true
     t.index ["time_table_id"], name: "index_time_table_dates_on_time_table_id"
   end
 
@@ -1208,6 +1210,7 @@ ActiveRecord::Schema.define(version: 2021_11_17_172911) do
     t.date "period_end"
     t.string "checksum"
     t.text "checksum_source"
+    t.index ["period_start", "period_end", "time_table_id"], name: "uniq_reference_code_per_advertiser", unique: true
     t.index ["period_start", "period_end"], name: "index_time_table_periods_on_period_start_and_period_end"
     t.index ["time_table_id"], name: "index_time_table_periods_on_time_table_id"
   end

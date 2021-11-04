@@ -5,9 +5,18 @@ module Chouette
 
     belongs_to :time_table, inverse_of: :periods
 
-    validates_presence_of :period_start, :period_end
+    scope :overlaps, -> (period_range) do
+      where("(time_table_periods.period_start <= :end AND time_table_periods.period_end >= :begin)", {begin: period_range.begin, end: period_range.end})
+    end
 
+    validates_presence_of :period_start, :period_end
+    validate :validate_period_uniqueness
     validate :start_must_be_before_end
+
+    def validate_period_uniqueness
+      overlapped_periods = time_table.periods.where.not(id: id).overlaps(range)
+      errors.add(:overlap_error, 'There is already an event scheduled in this hour!') if overlapped_periods.present?
+    end
 
     def checksum_attributes(db_lookup = true)
       attrs = ['period_start', 'period_end']
@@ -23,23 +32,12 @@ module Chouette
       if period_end.nil? || period_start.nil?
         return
       end
-      if period_end <= period_start
-        errors.add(:period_end,I18n.t("activerecord.errors.models.time_table_period.start_must_be_before_end"))
-      end
+
+      errors.add(:period_end,I18n.t("activerecord.errors.models.time_table_period.start_must_be_before_end")) if period_end <= period_start
     end
 
     def copy
       Chouette::TimeTablePeriod.new(:period_start => self.period_start,:period_end => self.period_end)
-    end
-
-    # Test to see if a period overlap this period
-    def overlap?(p)
-      (p.period_start >= self.period_start && p.period_start <= self.period_end) || (p.period_end >= self.period_start && p.period_end <= self.period_end)
-    end
-
-    # Test to see if a period is included in this period
-    def contains?(p)
-      (p.period_start >= self.period_start && p.period_end <= self.period_end)
     end
 
     def range

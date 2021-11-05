@@ -3,25 +3,27 @@ class EntrancesController < ChouetteController
   # include PolicyChecker
   respond_to :html, :xml, :json
 
-  # before_action :check_stoppoint_param, only: [:create, :update]
+  defaults :resource_class => Entrance
 
-  # belongs_to :referential do
-  #   belongs_to :stop_area, parent_class: Chouette::StopArea
-  # end
+  before_action :check_entrance_param, only: [:create, :update]
+
+  belongs_to :referential do
+    belongs_to :stop_area, parent_class: Chouette::StopArea
+  end
 
   def index
+    @entrances = Entrance.all
     # index! do
-      @entrances = Chouette::Entrance.all
-      # @entrances = EntranceDecorator.decorate(@entrances, context: { workbench: @workbench })
+    #   @entrances = EntranceDecorator.decorate(@entrances, context: { referential: referential })
+    #   # @stop_area_providers = StopAreaProviderDecorator.decorate(@stop_area_providers, context: {workbench: @workbench})
     # end
   end
 
   def show
-    @entrances = Chouette::Entrance.first
+    @entrance = Entrance.find(params[:id])
   end
 
   def new
-
   end
 
   def create
@@ -97,7 +99,7 @@ class EntrancesController < ChouetteController
   #   end
   # end
 
-  # def entrances_params
+  # def entrance_params
   #   params.require(:entrances).permit(
   #     :name,
   #     { stop_point_ids: [] },

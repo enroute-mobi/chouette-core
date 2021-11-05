@@ -1,3 +1,3 @@
 # collection @entrances
 
-attributes :id, :name
+# attributes :id, :name

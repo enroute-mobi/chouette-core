@@ -1,5 +1,7 @@
 / - breadcrumb :entrances, @workbench
 
+- content_for(:page_header_title) { 'entrances.index.title'.t }
+
 .page_content
   .container-fluid
     - if params[:q].present? or @entrances.any?
@@ -10,6 +12,7 @@
     - if @entrances.any?
       .row
         .col-lg-12
+          / = resource_class.model_name.inspect
           / = @entrances.inspect
           = table_builder_2 @entrances,
             [ \
@@ -22,7 +25,10 @@
               TableBuilderHelper::Column.new( \
                 name: t('.entrances.name'), \
                 attribute: Proc.new { |c| c.name }, \
-                sortable: false \
+                sortable: false, \
+                link_to: lambda do |entrance| \
+                  workbench_stop_area_referential_entrance_path entrance, entrance \
+                end \
               ), \
               TableBuilderHelper::Column.new( \
                 name: t('entrances.description'), \

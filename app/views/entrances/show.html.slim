@@ -6,4 +6,15 @@
   .container-fluid
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        = definition_list t("connection_links.form.sections.identification"), connection_link_identification_metadatas(@connection_link)
+      = simple_block_for @entrance, title: Entrance.tmf(:title) do |d|
+        = d.attribute :id
+        = d.attribute :name
+        = d.attribute :short_name
+        = d.attribute :entrance_type
+        = d.attribute :description
+        = d.attribute :address
+        = d.attribute :zip_code
+        = d.attribute :city_name
+        = d.attribute :country
+        = d.attribute :entry, as: :boolean
+        = d.attribute :exit, as: :boolean

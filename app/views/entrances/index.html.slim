@@ -1,6 +1,4 @@
-/ - breadcrumb :entrances, @workbench
-
-- content_for(:page_header_title) { 'entrances.index.title'.t }
+- breadcrumb :entrances, @workbench
 
 .page_content
   .container-fluid
@@ -9,11 +7,11 @@
         .col-lg-12
           / = render partial: 'filters'
 
+    / = @entrances.inspect
     - if @entrances.any?
       .row
         .col-lg-12
           / = resource_class.model_name.inspect
-          / = @entrances.inspect
           = table_builder_2 @entrances,
             [ \
               TableBuilderHelper::Column.new( \

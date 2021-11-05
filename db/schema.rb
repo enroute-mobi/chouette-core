@@ -439,8 +439,8 @@ ActiveRecord::Schema.define(version: 2021_10_22_073107) do
     t.bigint "stop_area_id"
     t.bigint "stop_area_provider_id"
     t.bigint "stop_area_referential_id"
-    t.boolean "entry", default: false
-    t.boolean "exit", default: false
+    t.boolean "entry_flag", default: false
+    t.boolean "exit_flag", default: false
     t.string "entrance_type"
     t.string "description"
     t.geography "position", limit: {:srid=>4326, :type=>"st_point", :geographic=>true}

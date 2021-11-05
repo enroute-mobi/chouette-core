@@ -1,45 +1,46 @@
 class EntrancesController < ChouetteController
   # include ReferentialSupport
-  # include PolicyChecker
-  respond_to :html, :xml, :json
+  include PolicyChecker
 
   defaults :resource_class => Entrance
 
   before_action :check_entrance_param, only: [:create, :update]
 
-  belongs_to :referential do
-    belongs_to :stop_area, parent_class: Chouette::StopArea
-  end
+  belongs_to :workbench
+  belongs_to :stop_area_referential, singleton: true
+
+  respond_to :html, :xml, :json
 
   def index
-    @entrances = Entrance.all
-    # index! do
-    #   @entrances = EntranceDecorator.decorate(@entrances, context: { referential: referential })
-    #   # @stop_area_providers = StopAreaProviderDecorator.decorate(@stop_area_providers, context: {workbench: @workbench})
-    # end
+    index! do
+      @entrances = EntranceDecorator.decorate(@entrances, context: { workbench: @workbench })
+    end
   end
 
   def show
-    @entrance = Entrance.find(params[:id])
+    # @entrance = Entrance.find(params[:id])
+    show! do |format|
+      @entrance = @entrance.decorate context: { workbench: @workbench }
+    end
   end
 
   def new
   end
 
   def create
-    # authorize resource_class
-    # build_resource
-    # super
+    authorize resource_class
+    build_resource
+    super
   end
 
   def update
-    # update! do
-    #   if entrance_params[:entrance_ids]
-    #     workbench_line_referential_line_line_notices_path @workbench, @line
-    #   else
-    #     workbench_line_referential_line_path @workbench, @line
-    #   end
-    # end
+    update! do
+      if entrance_params[:entrance_ids]
+        workbench_stop_area_referential_entrances_path @workbench, @entrance
+      else
+        workbench_line_referential_line_path @workbench, @line
+      end
+    end
   end
 
   protected
@@ -99,16 +100,24 @@ class EntrancesController < ChouetteController
   #   end
   # end
 
-  # def entrance_params
-  #   params.require(:entrances).permit(
-  #     :name,
-  #     { stop_point_ids: [] },
-  #     :line_id,
-  #     :route_id,
-  #     :objectid,
-  #     :object_version,
-  #   )
-  # end
+  def entrance_params
+    params.require(:entrances).permit(
+      :objectid,
+      :name,
+      :short_name,
+      :entry,
+      :exit,
+      :entrance_type,
+      :description,
+      :position,
+      :address,
+      :zip_code,
+      :city_name,
+      :country,
+      :created_at,
+      :updated_at,
+    )
+  end
 
   # def check_stoppoint_param
   #   spArr = []

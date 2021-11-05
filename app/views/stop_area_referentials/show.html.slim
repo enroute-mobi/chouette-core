@@ -79,16 +79,16 @@
             h3.panel-title.with_actions
               div
                 = link_to Entrance.t, workbench_stop_area_referential_entrances_path(@workbench)
-                / span.badge.ml-xs =  @stop_area_referential.entrances.count
+                span.badge.ml-xs =  @stop_area_referential.entrances.count
               div
                 = link_to '', workbench_stop_area_referential_entrances_path(@workbench), class: ' fa fa-chevron-right pull-right', title: t('workbenches.index.offers.see')
           .list-group
-            / - @stop_area_referential.entrances.order("updated_at desc").limit(5).each do |entrance|
-            /   .list-group-item
-            /     = link_to entrance.name, workbench_stop_area_referential_entrance_path(@workbench, entrance)
-            /     =< t('date.updated', distance_in_time: time_ago_in_words(entrance.updated_at))
-            / - unless @stop_area_referential.entrances.any?
-            /   = replacement_msg t('no_result_text')
+            - @stop_area_referential.entrances.order("updated_at desc").limit(5).each do |entrance|
+              .list-group-item
+                = link_to entrance.name, workbench_stop_area_referential_entrance_path(@workbench, entrance)
+                =< t('date.updated', distance_in_time: time_ago_in_words(entrance.updated_at))
+            - unless @stop_area_referential.entrances.any?
+              = replacement_msg t('no_result_text')
     .row
       .col-md-12
         - if @stop_area_referential.stop_area_referential_syncs.any?

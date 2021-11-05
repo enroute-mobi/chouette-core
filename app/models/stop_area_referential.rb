@@ -15,7 +15,7 @@ class StopAreaReferential < ApplicationModel
   has_one  :workgroup, dependent: :nullify
   has_many :stop_area_providers
   has_many :stop_area_routing_constraints
-  has_many :entrances, class_name: 'Chouette::Entrance'
+  has_many :entrances, class_name: 'Entrance'
 
   def add_member(organisation, options = {})
     attributes = options.merge organisation: organisation

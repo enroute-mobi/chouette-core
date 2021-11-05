@@ -22,10 +22,6 @@ export default class SaveShape extends SaveButton {
     if (prevPermissions[this.policy] != permissions[this.policy]) {
       this.setState({ hasPolicy: permissions[this.policy] })
     }
-
-    if (!prevState.hasPolicy && !!this.state.hasPolicy) {
-      document.dispatchEvent(new Event('submitMover'))
-    }
   }
 
   btnDisabled() {

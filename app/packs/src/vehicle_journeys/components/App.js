@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import VehicleJourneysList from '../containers/VehicleJourneysList'
 import Navigate from '../containers/Navigate'
 import ToggleArrivals from '../containers/ToggleArrivals'
@@ -8,11 +8,12 @@ import SaveVehicleJourneys from '../containers/SaveVehicleJourneys'
 import ConfirmModal from '../containers/ConfirmModal'
 import CopyModal from '../containers/CopyModal'
 import Tools from '../containers/Tools'
+
+import { useSubmitMover } from '../../helpers/hooks'
+
 export default function App() {
 
-  useEffect(() => {
-    document.dispatchEvent(new Event('submitMover'))
-  }, [])
+  useSubmitMover()
 
   return (
     <div>

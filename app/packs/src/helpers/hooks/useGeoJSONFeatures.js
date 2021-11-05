@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import useSWR from 'swr'
 import { Circle, Fill, Stroke, Style } from 'ol/style'
-import { head, isArray, last } from 'lodash'
+import { head, isArray, isEmpty, last } from 'lodash'
 
 import geoJSON from '../geoJSON'
 
@@ -48,7 +48,7 @@ const useGeoJSONFeatures = url => {
 	const onSuccess = data => {
 		const fetchFeatures = isArray(data) ? data : [data]
 
-		setFeatures(() =>
+		!isEmpty(fetchFeatures) && setFeatures(() =>
 			fetchFeatures.map(featureCollection => {
 				const convertedFeatures = geoJSON.readFeatures(
 					featureCollection,

@@ -83,14 +83,32 @@ class Export::Ara < Export::Base
       def unique_codes(model)
         code_spaces = model.codes.map(&:code_space).uniq
 
-        code_spaces.map do |code_space|
+        unique_codes = code_spaces.map do |code_space|
           code_provider = code_providers[code_space]
 
           unique_code = code_provider.unique_code(model)
           [ code_provider.short_name, unique_code ] if unique_code
         end.compact.to_h
+
+        # Use registration_number as legacy mode
+        if model.respond_to?(:registration_number) &&
+           !unique_codes.key?(registration_number_provider.short_name)
+
+          unique_code = registration_number_provider.unique_code(model)
+          unique_codes[code_provider.short_name] = unique_code if unique_code
+        end
+
+        unique_codes
       end
 
+      # Provide (unique) value from registration provider
+      def registration_number_provider
+        @registration_number_provider ||=
+          CodeProvider::RegistrationNumber.new scope: scope,
+                                               model_class: model_class
+      end
+
+      # Provide (unique) value for each Copde Space
       def code_providers
         @code_providers ||= Hash.new do |h, code_space|
           h[code_space] =
@@ -112,6 +130,43 @@ class Export::Ara < Export::Base
             [ code.code_space.short_name, code.value ]
           end.to_h
         end
+      end
+    end
+
+    # Manage registration number attribute as a code space
+    class RegistrationNumber
+      def initialize(scope:, model_class:)
+        @scope = scope
+        @model_class = model_class
+      end
+
+      def short_name
+        "external"
+      end
+
+      def unique_code(model)
+        candidate_value = model.registration_number
+        return nil if candidate_value.blank?
+        return nil if duplicated?(candidate_value)
+
+        candidate_value
+      end
+
+      def duplicated?(code_value)
+        duplicated_code_values.include? code_value
+      end
+
+      def model_collection
+        model_class.model_name.plural
+      end
+
+      def models
+        scope.send model_collection
+      end
+
+      def duplicated_registration_numbers
+        @duplicated_registration_numbers ||=
+          SortedSet.new(models.group(:registration_number).having("count(id) > 1").pluck(:registration_number))
       end
     end
 
@@ -192,7 +247,6 @@ class Export::Ara < Export::Base
   end
 
   class Stops < Part
-
     delegate :stop_areas, to: :export_scope
 
     def export!
@@ -207,7 +261,6 @@ class Export::Ara < Export::Base
 
     # Creates an Ara::StopArea from a StopArea
     class Decorator < SimpleDelegator
-
       def initialize(stop_area, code_provider: nil)
         super stop_area
         @code_provider = code_provider
@@ -239,7 +292,6 @@ class Export::Ara < Export::Base
       def ara_codes
         code_provider.unique_codes __getobj__
       end
-
     end
   end
 end

@@ -108,9 +108,6 @@ module ChouetteIhm
     config.additional_compliance_controls = []
     config.additional_compliance_controls.push *SmartEnv["CHOUETTE_ADDITIONAL_COMPLIANCE_CONTROLS"].split(',')
 
-    config.additional_destinations = []
-    config.additional_destinations.push *SmartEnv["CHOUETTE_ADDITIONAL_PUBLICATION_DESTINATIONS"].split(',')
-
     config.enable_transactional_checksums = SmartEnv.boolean('CHOUETTE_TRANSACTIONAL_CHECKSUMS')
 
     config.connection_speeds = [

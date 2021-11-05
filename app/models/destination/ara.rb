@@ -5,42 +5,44 @@ class Destination::Ara < ::Destination
   validates :ara_url, presence: true
   validates :credentials, presence: true
 
-  @secret_file_required = true
-
   def do_transmit(publication, report)
-    publication.exports.each do |export|
-      send_to_ara export.file if export[:file]
+    Rails.logger.tagged("Destination::Ara ##{id}") do
+      publication.exports.each do |export|
+        send_to_ara export.file, report if export[:file]
+      end
     end
   end
 
-  def send_to_ara file
-    connection = Faraday.new(
-      url: ara_url,
-      headers: {'Content-Type' => 'application/json', Authorization: "Token token=#{credentials}" }
-    ) do |conn|
-      conn.request :multipart
-      conn.response :json, content_type: /\bjson$/
-      conn.use Faraday::Response::RaiseError
-      conn.adapter Faraday.default_adapter
-
-      conn.use BadRequestMiddlewareParser
-    end
-
-    payload = { request: '{"force": true}' }
-    payload[:data] = Faraday::FilePart.new(file, 'text/csv')
-
-    connection.post('/', payload)
+  def ara_import_url
+    "#{ara_url}/import"
   end
 
-  class BadRequestMiddlewareParser < Faraday::Response::Middleware
-    def on_complete(env)
-      return env unless env.response.status == 400
+  def send_to_ara(file, report)
+    payload = { "force": true }
+    uri = URI(ara_import_url)
 
-      env.body = parse(env.body)
+    request = Net::HTTP::Post.new(uri)
+    request['Authorization'] = "Token token=#{credentials}"
+
+    local_file = local_temp_file(file)
+    form_data = [['request', payload.to_json], ['data', local_file]]
+    request.set_form form_data, 'multipart/form-data'
+
+    Rails.logger.info "Send file to Ara on #{ara_import_url}"
+
+    response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
+      http.request(request)
     end
 
-    def parse(body)
-      JSON.parse(body)['Errors'].transform_keys(&:underscore)
+    Rails.logger.info "Ara response #{response.code} #{response.body.truncate(256)}"
+
+    if response.is_a?(Net::HTTPSuccess) && response["content-type"] == "application/json"
+      import_status = JSON.parse response.body
+      unless import_status["Errors"].empty?
+        report.failed! "Errors returned by Ara API: #{import_status["Errors"].inspect}"
+      end
+    else
+      report.failed! "Unexpected response from Ara API: #{response.code}"
     end
   end
 end

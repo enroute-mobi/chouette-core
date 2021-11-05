@@ -39,6 +39,10 @@ fr:
         zero:  "Notification email"
         one:   "Notification email"
         other: "Notifications email"
+      destination/ara:
+        zero:  "Ara SaaS"
+        one:   "Ara SaaS"
+        other: "Ara SaaS"
     attributes:
       destination:
         name: "Nom"
@@ -53,7 +57,7 @@ fr:
             unexpected_failure: Erreur non-controlée
             expected_failure: Erreur controlée
         ara:
-          ara_url: Url d'Ara
+          ara_url: URL du Réferential
           credentials: Token d'identification
         google_cloud_storage:
           project: Projet

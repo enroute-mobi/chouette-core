@@ -1,6 +1,6 @@
 import { fromEvent, merge } from 'rxjs'
-import { flow, get, isFunction, isString } from 'lodash'
-import { distinctUntilKeyChanged, filter, first, map, pluck, skip, switchMap } from 'rxjs/operators'
+import { flow, get, isEmpty, isFunction, isString } from 'lodash'
+import { debounceTime, distinctUntilKeyChanged, filter, map, skip, skipUntil, switchMap, tap } from 'rxjs/operators'
 
 import store from './shape.store'
 
@@ -11,7 +11,7 @@ const has$ = pathOrSelector => {
     selectorFunc = state => get(state, pathOrSelector)
   } else if (isFunction(pathOrSelector)) {
     selectorFunc = pathOrSelector
-  } else {
+  } else {z
     throw('argument must be a string or a selector function')
   }
 
@@ -30,19 +30,44 @@ export const onWaypointsUpdate$ = merge(
   onCollectionUpdate('change')
 )
 
-const getZoom = e => e.map.getView().getZoom()
-
-export const onMapZoom$ = store.pipe(
+const mapWithFeatures$ = store.pipe(
   has$('map'),
-  pluck('map'),
-  switchMap(map_ => fromEvent(map_, 'movestart').pipe(
-    map(startEvent => [map_, getZoom(startEvent)])
+  skipUntil(store.pipe(has$('geometry'))),
+)
+
+export const onMapZoom$ = mapWithFeatures$.pipe(
+  switchMap(({ map }) => fromEvent(map.getView(), 'change:resolution').pipe(
+    debounceTime(100)
+  ))
+)
+
+export const onMapMove$ = mapWithFeatures$.pipe(
+  switchMap(({ map }) => fromEvent(map, 'moveend'))
+)
+
+export const onLineStringModify$ = mapWithFeatures$.pipe(
+  has$('modify'),
+  switchMap(state => fromEvent(state.modify, 'modifystart').pipe(
+    map(startEvent => {
+      const { pixel, coordinate: startCoords } = startEvent.mapBrowserEvent
+      const features = state.map.getFeaturesAtPixel(pixel, { layerFilter: l => l.get('waypoints') })
+      const moveWaypoint = e => features.forEach(w => w.getGeometry().setCoordinates(e.coordinate))
+
+      return { ...state, features, moveWaypoint, startCoords }
+    }),
+    tap(state => { state.map.on('pointermove', state.moveWaypoint) })
   )),
-  switchMap(([map_, startCoords]) => fromEvent(map_, 'moveend').pipe(
-    map(endEvent => [startCoords, getZoom(endEvent)])
-  )),
-  filter(([startZoom, endZoom]) => startZoom != endZoom),
-  map(([_, zoom]) => zoom)
+  switchMap(state => fromEvent(state.modify, 'modifyend').pipe(
+    tap(() => { state.map.un('pointermove', state.moveWaypoint) }),
+    map(endEvent => {
+      const { features, startCoords, waypoints } = state
+      if (isEmpty(features)) {
+        return { type: 'ADD_WAYPOINT', startCoords, endCoords: endEvent.mapBrowserEvent.coordinate }
+      } else {
+        return { type: 'UPDATE_LINESTRING', waypoints }
+      }
+    })
+  ))
 )
 
 export const onReceivePermissions$ = store.pipe(

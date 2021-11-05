@@ -1,25 +1,20 @@
-import { bindAll, find, flatten, flow, nth, partialRight, range, reduce, sortBy } from 'lodash'
+import { bindAll, find, flatten, flow, partialRight, reduce } from 'lodash'
 
 import {
-  along,
-  bearing,
+  bboxPolygon,
+  booleanContains,
+  booleanIntersects,
   coordAll,
-  degreesToRadians,
   featureCollection,
   featureReduce,
-  getCoord,
   getCoords,
-  length,
   lineSlice,
   lineString,
-  pointToLineDistance,
   segmentReduce,
   simplify,
-  toMercator
+  toWgs84
 } from '@turf/turf'
 
-import { Fill, RegularShape, Style } from 'ol/style'
-import Point from 'ol/geom/Point'
 import GeoJSON from 'ol/format/GeoJSON'
 
 import handleRedirect from '../../src/helpers/redirect'
@@ -44,7 +39,8 @@ const log = (message = '') => data => {
   return data
 }
 
-const reduceToMapFunc = reduceFunc => (object, mapperFunc) =>
+const reduceToMapFunc = reduceFunc =>
+  (object, mapperFunc) =>
     reduceFunc(
       object,
       (result, value, index) => [...result, mapperFunc(value, index)],
@@ -58,14 +54,20 @@ export const getLayers = obj => obj?.getLayers() || { getArray: () => [] }
 export const getSource = obj => obj?.getSource()
 export const getLayer = key => flow(getLayers, layers => layers.getArray(), layers => find(layers, l => l.get(key)))
 
-const tolerances = [0.1, 0.07, 0.05, 0.04, 0.03, ...range(0.02, 0,  -0.001)]
-
-const getTolerance = (view, sectionCollection) => {
-  if (sectionCollection.features.length <= 30) return 0
-
-  const percentage = (view.getZoom() - view.getMinZoom()) / (view.getMaxZoom() - view.getMinZoom())
-  const index = Math.ceil((tolerances.length - 1) * percentage)
-  return nth(tolerances, index)
+const getTolerance = zoom => {
+  if (zoom < 10) {
+    return 1
+  } else if (zoom >= 10 && zoom < 11) {
+    return 0.01
+  } else if (zoom >= 11 && zoom < 12) {
+    return 0.001
+  } else if (zoom >= 12 && zoom < 13) {
+    return 0.0005
+  } else if (zoom >= 13 && zoom < 14) {
+    return 0.0001
+  } else {
+    return 0
+  }
 }
 
 /**
@@ -74,12 +76,28 @@ const getTolerance = (view, sectionCollection) => {
  * @param {object} view The OL View object
  * @return {GeoJSON} A simplified version of the sectionCollection transformed into a LineString
  */
-export const simplifyGeometry = (sectionCollection, view) => {
-  const sectionMapper = (object, _i) =>
-    flow(
-      partialRight(simplify, { tolerance: getTolerance(view, sectionCollection), highQuality: true }),
+export const simplifyGeometry = (sectionCollection, map) => {
+  const view = map.getView()
+
+  const simplifySection = (section, tolerance) => simplify(section, { tolerance, highQuality: true })
+
+  const extent = flow(
+    view.calculateExtent.bind(view),
+    bboxPolygon,
+    toWgs84
+  )(map.getSize())
+
+  const sectionMapper = section => {
+    const isInExtent = booleanContains(extent, section) || booleanIntersects(extent, section)
+
+    return flow(
+      section => simplify(section, {
+        tolerance: isInExtent ? getTolerance(view.getZoom()) : 1,
+        highQuality: true
+      }),
       getCoords
-    )(object)
+    )(section)
+  }
 
   return flow(
     partialRight(featureMap, sectionMapper),
@@ -108,48 +126,6 @@ export const getLineSections = (line, waypoints) => {
   )
 
   return flow(coordAll, sectionsReducer, featureCollection)(waypoints)
-}
-
-export const getLineMidpoint = line => along(line, length(line) / 2)
-
-/**
- * Compute Line Arrow Styles that display the line direction
- * @param {GeoJSON} sectionCollection A Feature Collection of LineString
- * @return {array} A array of style objects
- */
-export const getArrowStyles = flow(
-  partialRight(
-    featureMap,
-    section => {
-      const midPointCoords = flow(getLineMidpoint, getCoord)(section)
-
-      const segments = segmentMap(
-        section,
-        ({ properties, ...segment }) => ({
-          ...segment,
-          properties: { ...properties, distance: pointToLineDistance(midPointCoords, segment) }
-        })
-      )
-
-      const midSegment = sortBy(segments, segment => segment.properties.distance)[0]
-
-      return getArrowStyle(midSegment, midPointCoords)
-    }
-  )
-)
-
-const getArrowStyle = (segment, coords) => {
-  const getArrowRotation = flow(getCoords, coords => bearing(...coords), degreesToRadians)
-
-  return new Style({
-    geometry: new Point(toMercator(coords)),
-    image: new RegularShape({
-      fill: new Fill({ color: 'red' }),
-      points: 3,
-      radius: 7,
-      rotation: getArrowRotation(segment)
-    })
-  })
 }
 
 export const lineId = 'line'

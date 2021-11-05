@@ -4,7 +4,7 @@ import { pick } from 'lodash'
 
 import store from '../shape.store'
 import eventEmitter, { events } from '../shape.event-emitter'
-import { onWaypointsUpdate$, onMapZoom$, onReceivePermissions$ } from '../shape.observables'
+import { onLineStringModify$, onMapMove$, onMapZoom$, onReceivePermissions$, onWaypointsUpdate$ } from '../shape.observables'
 
 import { useStore } from '../../../src/helpers/hooks'
 
@@ -47,8 +47,21 @@ export default function ShapeEditorMap({ isEdit, baseURL, redirectURL }) {
   useShapeController(isEdit, baseURL)
 
   useEffect(() => {
+    onLineStringModify$.subscribe(action => {
+      switch(action.type) {
+        case 'ADD_WAYPOINT':
+          eventEmitter.emit(events.waypointAdded, action.startCoords, action.endCoords)
+          break
+        case 'UPDATE_LINESTRING':
+          action.waypoints.changed()
+          break
+
+      }
+    })
+
+    onMapMove$.subscribe(() => eventEmitter.emit(events.mapMove))
+    onMapZoom$.subscribe(() => eventEmitter.emit(events.mapZoom))
     onWaypointsUpdate$.subscribe(_state => eventEmitter.emit(events.waypointUpdated))
-    onMapZoom$.subscribe(data => eventEmitter.emit(events.mapZoom, data))
     onReceivePermissions$.subscribe(() => { SubmitMover.init() })
 
     return () => {

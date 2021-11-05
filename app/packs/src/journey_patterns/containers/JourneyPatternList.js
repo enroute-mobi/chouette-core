@@ -13,8 +13,14 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onLoadFirstPage: () =>{
+    onLoadFirstPage() {
+      this.fetchingApi()
+      this.fetchJourneyPatterns()
+    },
+    fetchingApi: () => {
       dispatch(actions.fetchingApi())
+    },
+    fetchJourneyPatterns: () => {
       actions.fetchJourneyPatterns(dispatch)
     },
     onCheckboxChange: (e, index) =>{

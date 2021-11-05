@@ -66,6 +66,8 @@ class JourneyPatternsController < ChouetteController
     journey_pattern.duplicate!
 
     response.set_header('Location', referential_line_route_journey_patterns_collection_path(@referential, @line, @route))
+
+    render json: {}
   end
 
   private

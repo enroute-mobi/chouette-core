@@ -134,6 +134,8 @@ export default class JourneyPatterns extends Component {
                 <div>
                   {this.props.journeyPatterns.map((journeyPattern, index) =>
                     <JourneyPattern
+                      fetchingApi={this.props.fetchingApi}
+                      fetchJourneyPatterns={this.props.fetchJourneyPatterns}
                       onDuplicateJourneyPattern={this.props.onDuplicateJourneyPattern}
                       value={ journeyPattern }
                       key={ index }
@@ -163,6 +165,8 @@ JourneyPatterns.propTypes = {
   status: PropTypes.object.isRequired,
   onCheckboxChange: PropTypes.func.isRequired,
   onLoadFirstPage: PropTypes.func.isRequired,
+  fetchingApi: PropTypes.func.isRequired,
+  fetchJourneyPatterns: PropTypes.func.isRequired,
   onOpenEditModal: PropTypes.func.isRequired,
   fetchRouteCosts: PropTypes.func.isRequired
 }

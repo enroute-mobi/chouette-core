@@ -272,7 +272,7 @@ GEM
       warden (~> 1.2.3)
     devise-encryptable (0.2.0)
       devise (>= 2.1.0)
-    devise-i18n (1.10.0)
+    devise-i18n (1.10.1)
       devise (>= 4.8.0)
     devise_cas_authenticatable (1.10.4)
       devise (>= 1.2.0)
@@ -539,7 +539,7 @@ GEM
       rspec-rails (>= 3.0.0)
     rabl (0.14.5)
       activesupport (>= 2.3.14)
-    racc (1.5.2)
+    racc (1.6.0)
     rack (2.2.3)
     rack-protection (2.1.0)
       rack

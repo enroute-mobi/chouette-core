@@ -1,6 +1,7 @@
 RSpec.describe Shape do
 
   it { is_expected.to validate_presence_of(:geometry) }
+  it { should have_many(:waypoints).order(:position).dependent(:delete_all) }
 
   describe "#uuid" do
 

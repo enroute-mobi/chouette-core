@@ -2,7 +2,7 @@ class Shape < ApplicationModel
 
   belongs_to :shape_referential, required: true
   belongs_to :shape_provider, required: true
-  has_many :waypoints, dependent: :delete_all
+  has_many :waypoints, -> { order(:position) }, inverse_of: :shape, dependent: :delete_all
 
   delegate :workbench, :to => :shape_provider, :allow_nil => true
 

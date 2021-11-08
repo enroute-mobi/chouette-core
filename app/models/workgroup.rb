@@ -126,35 +126,51 @@ class Workgroup < ApplicationModel
   end
 
   def nightly_aggregate!
-    Rails.logger.info "Workgroup #{id}: nightly_aggregate!"
+    Rails.logger.debug "[Workgroup ##{id}]: Test nightly aggregate time frame"
     return unless nightly_aggregate_timeframe?
+
+    Rails.logger.info "[Workgroup ##{id}] Check nightly Aggregate (at #{nightly_aggregate_time})"
+
+    update_column :nightly_aggregated_at, Time.current
 
     target_referentials = aggregatable_referentials.select do |r|
       aggregated_at.blank? || (r.created_at > aggregated_at)
     end
 
     if target_referentials.empty?
-      Rails.logger.info "No aggregatable referential found for nighlty aggregate on Workgroup #{name} (Id: #{id})"
+      Rails.logger.info "[Workgroup ##{id}] No Aggregate is required"
+
+      aggregate = aggregates.where(status: 'successful').last
+
+      if aggregate
+        publication_setups.where(force_daily_publishing: true).each do |ps|
+          Rails.logger.info "[Workgroup ##{id}] Start daily publication #{name}"
+          ps.publish(aggregate) if aggregate
+        end
+      end
+
       return
     end
 
+    Rails.logger.info "[Workgroup ##{id}] Start nightly Aggregate"
+
     nightly_aggregates.create!(referentials: aggregatable_referentials, creator: 'CRON', notification_target: nightly_aggregate_notification_target)
-    update(nightly_aggregated_at: Time.current)
+
   end
 
   def nightly_aggregate_timeframe?
     return false unless nightly_aggregate_enabled?
 
-    Rails.logger.info "Workgroup #{id}: nightly_aggregate_timeframe!"
-    Rails.logger.info "Time.now: #{Time.now.inspect}"
-    Rails.logger.info "TimeOfDay.now: #{TimeOfDay.now.inspect}"
-    Rails.logger.info "nightly_aggregate_time: #{nightly_aggregate_time.inspect}"
-    Rails.logger.info "diff: #{(TimeOfDay.now - nightly_aggregate_time)}"
+    Rails.logger.debug "Workgroup #{id}: nightly_aggregate_timeframe!"
+    Rails.logger.debug "Time.now: #{Time.now.inspect}"
+    Rails.logger.debug "TimeOfDay.now: #{TimeOfDay.now.inspect}"
+    Rails.logger.debug "nightly_aggregate_time: #{nightly_aggregate_time.inspect}"
+    Rails.logger.debug "diff: #{(TimeOfDay.now - nightly_aggregate_time)}"
 
     cron_delay = NIGHTLY_AGGREGATE_CRON_TIME * 2
-    Rails.logger.info "cron_delay: #{cron_delay}"
+    Rails.logger.debug "cron_delay: #{cron_delay}"
     within_timeframe = (TimeOfDay.now - nightly_aggregate_time).abs <= cron_delay && nightly_aggregate_days.match_date?(Time.zone.now)
-    Rails.logger.info "within_timeframe: #{within_timeframe}"
+    Rails.logger.debug "within_timeframe: #{within_timeframe}"
 
     # "5.minutes * 2" returns a FixNum (in our Rails version)
     within_timeframe && (nightly_aggregated_at.blank? || nightly_aggregated_at < NIGHTLY_AGGREGATE_CRON_TIME.seconds.ago)

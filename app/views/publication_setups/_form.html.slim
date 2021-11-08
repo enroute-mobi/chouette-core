@@ -5,6 +5,7 @@
         = form.input :workgroup_id, as: :hidden, input_html: { value: @workgroup.id }
         = form.input :name
         = form.input :enabled, as: :switchable_checkbox
+        = form.input :force_daily_publishing, as: :switchable_checkbox
     .separator.section_separator
 
     h2.mb-lg= t('publication_setups.form.sections.export')

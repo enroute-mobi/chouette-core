@@ -826,6 +826,7 @@ ActiveRecord::Schema.define(version: 2021_10_22_073107) do
     t.datetime "updated_at", null: false
     t.string "name"
     t.boolean "publish_per_line", default: false
+    t.boolean "force_daily_publishing", default: false
     t.index ["workgroup_id"], name: "index_publication_setups_on_workgroup_id"
   end
 

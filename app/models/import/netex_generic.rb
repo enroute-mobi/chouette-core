@@ -13,9 +13,7 @@ class Import::NetexGeneric < Import::Base
 
 	def import_without_status
     import_resources(
-			:stop_areas,
-			:lines,
-			:companies
+			:stop_areas
 		)
   end
 
@@ -23,13 +21,13 @@ class Import::NetexGeneric < Import::Base
 		synchronize(:stop_area, stop_area_referential)
 	end
 
-	def import_lines
-		synchronize(:line, line_referential)
-	end	
+	# def import_lines
+	# 	synchronize(:line, line_referential)
+	# end	
 
-	def import_companies
-		synchronize(:company, line_referential)
-	end
+	# def import_companies
+	# 	synchronize(:company, line_referential)
+	# end
 
 	def netex_source
 		@netex_source ||= Netex::Source.read(file.current_path)

@@ -1,5 +1,5 @@
 - is_export = resource_type == :options
-- exported_lines = @export.exported_lines rescue 'all_line_ids' 
+- exported_lines = @export.exported_lines rescue 'all_line_ids'
 
 div[
   x-data
@@ -36,3 +36,7 @@ div[
       template[x-if="$store.export.type == 'Export::NetexGeneric'"]
         div
           = render 'exports/types/netex_generic', form: form, resource_type: resource_type
+
+      template[x-if="$store.export.type == 'Export::Ara'"]
+        div
+          = render 'exports/types/ara', form: form, resource_type: resource_type

@@ -30,18 +30,25 @@ class Export::Ara < Export::Base
   attr_writer :target
 
   def period
-    Date.today..Date.today+5
+    @period ||=
+      begin
+        today = Time.zone.today
+        today..today+5
+      end
   end
 
   def generate_export_file
+    parts = [ Stops, Lines, VehicleJourneys ]
+
     period.each do |day|
       # For each day, a scope selects models to be exported
       daily_scope = DailyScope.new export_scope, day
 
       target.model_name(day) do |model_name|
-        Stops.new(export_scope: daily_scope, target: model_name).export
-        Lines.new(export_scope: daily_scope, target: model_name).export
-        VehicleJourneys.new(export_scope: daily_scope, target: model_name).export
+        # For each day, each kind of model is exported
+        parts.each do |part|
+          part.new(export_scope: daily_scope, target: model_name).export
+        end
 
         # TODO
         # VehicleJourneyAtStops.new(export_scope: daily_scope, target: model_name).export
@@ -220,8 +227,11 @@ class Export::Ara < Export::Base
 
       def codes
         # FIXME
-        model_class == Chouette::VehicleJourney ?
-          scope.referential_codes : scope.codes
+        if model_class == Chouette::VehicleJourney
+          scope.referential_codes
+        else
+          scope.codes
+        end
       end
 
       def duplicated_code_values

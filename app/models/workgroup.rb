@@ -131,6 +131,8 @@ class Workgroup < ApplicationModel
 
     Rails.logger.info "[Workgroup ##{id}] Check nightly Aggregate (at #{nightly_aggregate_time})"
 
+    update_column :nightly_aggregated_at, Time.current
+
     target_referentials = aggregatable_referentials.select do |r|
       aggregated_at.blank? || (r.created_at > aggregated_at)
     end
@@ -153,7 +155,7 @@ class Workgroup < ApplicationModel
     Rails.logger.info "[Workgroup ##{id}] Start nightly Aggregate"
 
     nightly_aggregates.create!(referentials: aggregatable_referentials, creator: 'CRON', notification_target: nightly_aggregate_notification_target)
-    update(nightly_aggregated_at: Time.current)
+
   end
 
   def nightly_aggregate_timeframe?

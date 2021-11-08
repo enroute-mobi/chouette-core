@@ -106,7 +106,7 @@ class Export::Ara < Export::Base
            !unique_codes.key?(registration_number_provider.short_name)
 
           unique_code = registration_number_provider.unique_code(model)
-          unique_codes[code_provider.short_name] = unique_code if unique_code
+          unique_codes[registration_number_provider.short_name] = unique_code if unique_code
         end
 
         unique_codes
@@ -150,6 +150,7 @@ class Export::Ara < Export::Base
         @scope = scope
         @model_class = model_class
       end
+      attr_reader :scope, :model_class
 
       def short_name
         "external"
@@ -164,7 +165,7 @@ class Export::Ara < Export::Base
       end
 
       def duplicated?(code_value)
-        duplicated_code_values.include? code_value
+        duplicated_registration_numbers.include? code_value
       end
 
       def model_collection
@@ -222,7 +223,7 @@ class Export::Ara < Export::Base
       end
 
       def model_codes
-        codes.where(code_space: code_space, model: models)
+        codes.where(code_space: code_space, resource: models)
       end
 
       def codes
@@ -236,7 +237,7 @@ class Export::Ara < Export::Base
 
       def duplicated_code_values
         @duplicated_code_values ||=
-          SortedSet.new(model_codes.select(:value, :model_id).group(:value).having("count(model_id) > 1").pluck(:value))
+          SortedSet.new(model_codes.select(:value, :resource_id).group(:value).having("count(resource_id) > 1").pluck(:value))
       end
     end
   end

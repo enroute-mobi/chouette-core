@@ -29,7 +29,7 @@ RSpec.describe Export::Ara do
       # TODO Use Ara::File to read the file
       subject { export.file.read.split("\n") }
 
-      it { is_expected.to have_attributes(size: 18) }
+      it { is_expected.to have_attributes(size: 30) }
     end
   end
 end

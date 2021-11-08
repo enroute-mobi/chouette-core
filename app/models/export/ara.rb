@@ -40,10 +40,10 @@ class Export::Ara < Export::Base
 
       target.model_name(day) do |model_name|
         Stops.new(export_scope: daily_scope, target: model_name).export
+        Lines.new(export_scope: daily_scope, target: model_name).export
+        VehicleJourneys.new(export_scope: daily_scope, target: model_name).export
 
         # TODO
-        # Lines.new(export_scope: daily_scope, target: model_name).export
-        # VehicleJourneys.new(export_scope: daily_scope, target: model_name).export
         # VehicleJourneyAtStops.new(export_scope: daily_scope, target: model_name).export
       end
     end
@@ -81,14 +81,18 @@ class Export::Ara < Export::Base
 
       # For the given model (StopArea, VehicleJourney, ..), returns all codes which are uniq.
       def unique_codes(model)
-        code_spaces = model.codes.map(&:code_space).uniq
+        unique_codes = {}
 
-        unique_codes = code_spaces.map do |code_space|
-          code_provider = code_providers[code_space]
+        if model.respond_to?(:codes)
+          code_spaces = model.codes.map(&:code_space).uniq
 
-          unique_code = code_provider.unique_code(model)
-          [ code_provider.short_name, unique_code ] if unique_code
-        end.compact.to_h
+          unique_codes = code_spaces.map do |code_space|
+            code_provider = code_providers[code_space]
+
+            unique_code = code_provider.unique_code(model)
+            [ code_provider.short_name, unique_code ] if unique_code
+          end.compact.to_h
+        end
 
         # Use registration_number as legacy mode
         if model.respond_to?(:registration_number) &&
@@ -281,6 +285,104 @@ class Export::Ara < Export::Base
 
       def ara_model
         Ara::StopArea.new ara_attributes
+      end
+
+      # TODO To be shared
+      def uuid
+        get_objectid.local_id
+      end
+
+      # TODO To be shared
+      def ara_codes
+        code_provider.unique_codes __getobj__
+      end
+    end
+  end
+
+  class Lines < Part
+    delegate :lines, to: :export_scope
+
+    def export!
+      lines.find_each do |line|
+        target << Decorator.new(line, code_provider: code_provider).ara_model
+      end
+    end
+
+    def code_provider
+      CodeProvider::Model.new scope: export_scope, model_class: Chouette::Line
+    end
+
+    # Creates an Ara::StopArea from a StopArea
+    class Decorator < SimpleDelegator
+      def initialize(line, code_provider: nil)
+        super line
+        @code_provider = code_provider
+      end
+
+      # TODO To be shared
+      def code_provider
+        @code_provider ||= CodeProvider::Model.null
+      end
+
+      def ara_attributes
+        {
+          id: uuid,
+          name: name,
+          objectids: ara_codes,
+        }
+      end
+
+      def ara_model
+        Ara::Line.new ara_attributes
+      end
+
+      # TODO To be shared
+      def uuid
+        get_objectid.local_id
+      end
+
+      # TODO To be shared
+      def ara_codes
+        code_provider.unique_codes __getobj__
+      end
+    end
+  end
+
+  class VehicleJourneys < Part
+    delegate :vehicle_journeys, to: :export_scope
+
+    def export!
+      vehicle_journeys.includes(codes: :code_space).find_each do |vehicle_journey|
+        target << Decorator.new(vehicle_journey, code_provider: code_provider).ara_model
+      end
+    end
+
+    def code_provider
+      CodeProvider::Model.new scope: export_scope, model_class: Chouette::VehicleJourney
+    end
+
+    # Creates an Ara::StopArea from a StopArea
+    class Decorator < SimpleDelegator
+      def initialize(vehicle_journey, code_provider: nil)
+        super vehicle_journey
+        @code_provider = code_provider
+      end
+
+      # TODO To be shared
+      def code_provider
+        @code_provider ||= CodeProvider::Model.null
+      end
+
+      def ara_attributes
+        {
+          id: uuid,
+          name: published_journey_name,
+          objectids: ara_codes,
+        }
+      end
+
+      def ara_model
+        Ara::VehicleJourney.new ara_attributes
       end
 
       # TODO To be shared

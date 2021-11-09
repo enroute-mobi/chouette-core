@@ -332,6 +332,18 @@ describe Chouette::TimeTable, :type => :model do
       }.to change {subject.periods.count}.by(-1)
     end
 
+    it 'should accept to delete a time table period and create a new one on the same period' do
+      state['time_table_periods'].first['deleted'] = true
+      state['time_table_periods'] << {
+        'id' => false,
+        'period_start' => (Date.today + 1.year).to_s,
+        'period_end' => (Date.today + 2.year).to_s
+      }
+      expect {
+        subject.state_update_periods state['time_table_periods']
+      }.to change {subject.periods.count}.by(1)
+    end
+
     it 'should update caldendar association' do
       subject.calendar = create(:calendar)
       subject.save

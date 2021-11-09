@@ -134,8 +134,8 @@ GEM
       activemodel (= 5.2.6)
       activesupport (= 5.2.6)
       arel (>= 9.0)
-    activerecord-nulldb-adapter (0.7.0)
-      activerecord (>= 5.2.0, < 6.3)
+    activerecord-nulldb-adapter (0.8.0)
+      activerecord (>= 5.2.0, < 7.1)
     activerecord-postgis-adapter (5.2.3)
       activerecord (~> 5.1)
       rgeo-activerecord (~> 6.0)
@@ -272,7 +272,7 @@ GEM
       warden (~> 1.2.3)
     devise-encryptable (0.2.0)
       devise (>= 2.1.0)
-    devise-i18n (1.10.0)
+    devise-i18n (1.10.1)
       devise (>= 4.8.0)
     devise_cas_authenticatable (1.10.4)
       devise (>= 1.2.0)
@@ -363,7 +363,7 @@ GEM
     graphiql-rails (1.8.0)
       railties
       sprockets-rails
-    graphql (1.12.17)
+    graphql (1.12.19)
     gretel (4.3.0)
       actionview (>= 5.1, < 7.0)
       railties (>= 5.1, < 7.0)
@@ -393,11 +393,11 @@ GEM
     htmlbeautifier (1.3.1)
     htmlentities (4.3.4)
     httpclient (2.8.3)
-    i18n (1.8.10)
+    i18n (1.8.11)
       concurrent-ruby (~> 1.0)
     i18n-js (3.9.0)
       i18n (>= 0.6.6)
-    i18n-tasks (0.9.34)
+    i18n-tasks (0.9.35)
       activesupport (>= 4.0.2)
       ast (>= 2.1.0)
       erubi
@@ -434,7 +434,7 @@ GEM
     libv8-node (15.14.0.1)
     libv8-node (15.14.0.1-x86_64-darwin-20)
     libv8-node (15.14.0.1-x86_64-linux)
-    license_finder (6.14.1)
+    license_finder (6.14.2)
       bundler
       rubyzip (>= 1, < 3)
       thor (~> 1.0.1)
@@ -539,7 +539,7 @@ GEM
       rspec-rails (>= 3.0.0)
     rabl (0.14.5)
       activesupport (>= 2.3.14)
-    racc (1.5.2)
+    racc (1.6.0)
     rack (2.2.3)
     rack-protection (2.1.0)
       rack
@@ -758,7 +758,8 @@ GEM
     will_paginate-bootstrap (1.0.2)
       will_paginate (>= 3.0.3)
     with_env (1.1.0)
-    xml-simple (1.1.8)
+    xml-simple (1.1.9)
+      rexml
     xpath (3.2.0)
       nokogiri (~> 1.8)
 

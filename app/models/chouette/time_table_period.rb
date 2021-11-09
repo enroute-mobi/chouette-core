@@ -15,6 +15,7 @@ module Chouette
 
     def validate_period_uniqueness
       overlapped_periods = time_table.periods.where.not(id: id).overlaps(range)
+      puts "overlapped_periods #{overlapped_periods.inspect}" if overlapped_periods.present?
       errors.add(:overlap_error, 'There is already an event scheduled in this hour!') if overlapped_periods.present?
     end
 
@@ -38,6 +39,16 @@ module Chouette
 
     def copy
       Chouette::TimeTablePeriod.new(:period_start => self.period_start,:period_end => self.period_end)
+    end
+
+    # Test to see if a period overlap this period
+    def overlap?(p)
+      (p.period_start >= self.period_start && p.period_start <= self.period_end) || (p.period_end >= self.period_start && p.period_end <= self.period_end)
+    end
+
+    # Test to see if a period is included in this period
+    def contains?(p)
+      (p.period_start >= self.period_start && p.period_end <= self.period_end)
     end
 
     def range

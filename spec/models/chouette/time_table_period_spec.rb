@@ -17,7 +17,7 @@ describe Chouette::TimeTablePeriod, :type => :model do
       it "should detect period overlap" do
         create(:time_table_period ,:time_table => time_table, :period_start => Date.new(2014,6,15), :period_end => Date.new(2014,6,30) )
         expect(new_period.valid?).to be_falsey
-        expect(new_period.errors[:overlap_error]).not_to be_empty
+        expect(new_period.errors[:overlapped_periods]).not_to be_empty
       end
     end
 
@@ -25,7 +25,7 @@ describe Chouette::TimeTablePeriod, :type => :model do
       it "should detect period overlap" do
         create(:time_table_period ,:time_table => time_table, :period_start => Date.new(2014,7,6), :period_end => Date.new(2014,7,14) )
         expect(new_period.valid?).to be_falsey
-        expect(new_period.errors[:overlap_error]).not_to be_empty
+        expect(new_period.errors[:overlapped_periods]).not_to be_empty
       end
     end
 
@@ -33,7 +33,7 @@ describe Chouette::TimeTablePeriod, :type => :model do
       it "should detect period overlap" do
         create(:time_table_period ,:time_table => time_table, :period_start => Date.new(2014,7,1), :period_end => Date.new(2014,7,14) )
         expect(new_period.valid?).to be_falsey
-        expect(new_period.errors[:overlap_error]).not_to be_empty
+        expect(new_period.errors[:overlapped_periods]).not_to be_empty
       end
     end
 
@@ -41,7 +41,7 @@ describe Chouette::TimeTablePeriod, :type => :model do
       it "should detect period overlap" do
         create(:time_table_period ,:time_table => time_table, :period_start => Date.new(2014,6,25), :period_end => Date.new(2014,7,8) )
         expect(new_period.valid?).to be_falsey
-        expect(new_period.errors[:overlap_error]).not_to be_empty
+        expect(new_period.errors[:overlapped_periods]).not_to be_empty
       end
     end
 
@@ -49,7 +49,7 @@ describe Chouette::TimeTablePeriod, :type => :model do
       it "should not detect period overlap" do
         create(:time_table_period ,:time_table => time_table, :period_start => Date.new(2014,7,10), :period_end => Date.new(2014,7,12) )
         expect(new_period.valid?).to be_truthy
-        expect(new_period.errors[:overlap_error]).to be_empty
+        expect(new_period.errors[:overlapped_periods]).to be_empty
       end
     end
   end

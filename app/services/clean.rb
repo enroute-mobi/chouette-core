@@ -284,17 +284,15 @@ module Clean
 
         def split_over
           criteria = [ 'period_start < :min and period_end > :max', min: period.min, max: period.max ]
-
-          # Create a new TimeTablePeriod after the clean period
-          scope.timetable_periods.where(criteria).select(:id, :time_table_id, :period_end).find_each do |after_period|
-            after_period = after_period.dup
+          scope.timetable_periods.where(criteria).select(:id, :time_table_id, :period_start, :period_end).find_each do |initial_period|
+            # Duplicate the period to create a new TimeTablePeriod after the clean period
+            after_period = initial_period.dup
+            # Update period_end of the initial period
+            initial_period.update period_end: period.min - 1
             after_period.id = nil
             after_period.period_start = period.max + 1
             after_period.save!
           end
-
-          # Truncate the initial TimeTablePeriod before the clean period
-          timetable_periods.where(criteria).update_all period_end: period.min - 1
         end
 
         def clean!

@@ -304,7 +304,7 @@ describe Chouette::TimeTable, :type => :model do
     it 'should update time table periods association' do
       period = state['time_table_periods'].first
       period['period_start'] = (Date.today - 1.month).to_s
-      period['period_end']   = (Date.today + 1.month).to_s
+      period['period_end']   = (Date.today - 1.day).to_s
 
       subject.state_update_periods state['time_table_periods']
       ['period_end', 'period_start'].each do |prop|
@@ -492,72 +492,80 @@ describe "update_attributes on periods and dates" do
 
         end
     end
-    context "add a new period" do
-        let!( :new_start_date ){ subject.start_date - 20.days }
-        let!( :new_end_date ){ subject.end_date + 20.days }
-        let!( :new_period_attributes ) {
-            pa = periods_attributes
-            pa[ "11111111111" ] = { "period_end" => new_end_date, "period_start" => new_start_date, "_destroy" => "", "id" => "", "time_table_id" => subject.id.to_s}
-            pa
-        }
-        it "should update start_date and end_end" do
-            subject.update_attributes( :periods_attributes => new_period_attributes)
 
-            read = Chouette::TimeTable.find( subject.id )
-            expect(read.start_date).to eq(new_start_date)
-            expect(read.end_date).to eq(new_end_date)
-        end
-    end
-    context "update period end" do
-        let!( :new_end_date ){ subject.end_date + 20.days }
-        let!( :new_period_attributes ) {
-            pa = periods_attributes
-            pa[ "0" ].merge! "period_end" => new_end_date
-            pa
-        }
-        it "should update end_date" do
-            subject.update_attributes :periods_attributes => new_period_attributes
+    context 'add a new period' do
+      let!(:new_start_date) { subject.start_date - 20.days }
+      let!(:new_end_date) { subject.start_date - 1.day }
+      let!(:new_period_attributes) do
+        pa = periods_attributes
+        pa['11111111111'] =
+          { 'period_end' => new_end_date, 'period_start' => new_start_date, '_destroy' => '', 'id' => '',
+            'time_table_id' => subject.id.to_s }
+        pa
+      end
 
-            read = Chouette::TimeTable.find( subject.id )
-            expect(read.end_date).to eq(new_end_date)
-        end
-    end
-    context "update period start" do
-        let!( :new_start_date ){ subject.start_date - 20.days }
-        let!( :new_period_attributes ) {
-            pa = periods_attributes
-            pa[ "0" ].merge! "period_start" => new_start_date
-            pa
-        }
-        it "should update start_date" do
-            subject.update_attributes :periods_attributes => new_period_attributes
+      it 'should update start_date and end_end' do
+        end_date = subject.end_date
+        subject.update_attributes(periods_attributes: new_period_attributes)
 
-            read = Chouette::TimeTable.find( subject.id )
-            expect(read.start_date).to eq(new_start_date)
-        end
+        expect(subject.reload.start_date).to eq(new_start_date)
+        expect(subject.reload.end_date).to eq(end_date)
+      end
     end
-    context "remove periods and dates and add a new period" do
-        let!( :new_start_date ){ subject.start_date + 1.days }
-        let!( :new_end_date ){ subject.end_date - 1.days }
-        let!( :new_dates_attributes ) {
-            da = dates_attributes
-            da.each { |k,v| v.merge! "_destroy" => true}
-            da
-        }
-        let!( :new_period_attributes ) {
-            pa = periods_attributes
-            pa.each { |k,v| v.merge! "_destroy" => true}
-            pa[ "11111111111" ] = { "period_end" => new_end_date, "period_start" => new_start_date, "_destroy" => "", "id" => "", "time_table_id" => subject.id.to_s}
-            pa
-        }
-        it "should update start_date and end_date with new period added" do
-            subject.update_attributes :periods_attributes => new_period_attributes, :dates_attributes => new_dates_attributes
 
-            read = Chouette::TimeTable.find( subject.id )
-            expect(read.start_date).to eq(new_start_date)
-            expect(read.end_date).to eq(new_end_date)
-        end
+    context 'update period end' do
+      let!(:new_end_date) { subject.end_date + 20.days }
+      let!(:new_period_attributes) do
+        pa = periods_attributes
+        pa['3']['period_end'] = new_end_date
+        pa
+      end
+      it 'should update end_date' do
+        subject.update_attributes periods_attributes: new_period_attributes
+
+        expect(subject.reload.end_date).to eq(new_end_date)
+      end
     end
+
+    context 'update period start' do
+      let!(:new_start_date) { subject.start_date - 20.days }
+      let!(:new_period_attributes) do
+        pa = periods_attributes
+        pa['0'].merge! 'period_start' => new_start_date
+        pa
+      end
+      it 'should update start_date' do
+        subject.update_attributes periods_attributes: new_period_attributes
+
+        expect(subject.reload.start_date).to eq(new_start_date)
+      end
+    end
+
+    context 'remove periods and dates and add a new period' do
+      let!(:new_start_date) { subject.start_date + 1.days }
+      let!(:new_end_date) { subject.end_date - 1.days }
+      let!(:new_dates_attributes) do
+        da = dates_attributes
+        da.each { |_k, v| v.merge! '_destroy' => true }
+        da
+      end
+      let!(:new_period_attributes) do
+        pa = periods_attributes
+        pa.each { |_k, v| v.merge! '_destroy' => true }
+        pa['11111111111'] =
+          { 'period_end' => new_end_date, 'period_start' => new_start_date, '_destroy' => '', 'id' => '',
+            'time_table_id' => subject.id.to_s }
+        pa
+      end
+      it 'should update start_date and end_date with new period added' do
+        subject.update_attributes periods_attributes: new_period_attributes,
+                                  dates_attributes: new_dates_attributes
+
+        expect(subject.reload.start_date).to eq(new_start_date)
+        expect(subject.reload.end_date).to eq(new_end_date)
+      end
+    end
+
     def dates_attributes
         {}.tap do |hash|
             subject.dates.each_with_index do |p, index|
@@ -572,7 +580,7 @@ describe "update_attributes on periods and dates" do
             end
         end
     end
-end
+  end
 
   describe "#periods_min_date" do
     context "when all period extends from 04/10/2013 to 04/15/2013," do
@@ -634,73 +642,59 @@ end
       expect(period.period_end).to be_nil
     end
   end
+
   describe "#periods" do
+
     context "when a period is added," do
-      before(:each) do
-        subject.periods << Chouette::TimeTablePeriod.new( :period_start => (subject.bounding_dates.min - 1), :period_end => (subject.bounding_dates.max + 1))
-        subject.save
-      end
+      let!(:time_table) {
+        create(:time_table, :empty) do |time_table|
+          time_table.periods.create( :period_start => Date.today, :period_end => Date.today + 3.days)
+        end
+      }
+
       it "should update shortcut" do
-        expect(subject.start_date).to eq(subject.bounding_dates.min)
-        expect(subject.end_date).to eq(subject.bounding_dates.max)
+        time_table.periods << build(:time_table_period, time_table: time_table, :period_start => Date.today + 4.days, :period_end => Date.today + 6.days)
+        time_table.save
+        expect(time_table.start_date).to eq(Date.today)
+        expect(time_table.end_date).to eq(Date.today + 6.days)
       end
     end
+
     context "when a period is removed," do
-      before(:each) do
-        subject.dates = []
-        subject.periods = []
-        subject.periods << Chouette::TimeTablePeriod.new(
-                              :period_start => 4.days.since.to_date,
-                              :period_end => 6.days.since.to_date)
-        subject.periods << Chouette::TimeTablePeriod.new(
-                              :period_start => 1.days.since.to_date,
-                              :period_end => 10.days.since.to_date)
-        subject.save
-        subject.periods = subject.periods - [subject.periods.last]
-        subject.save_shortcuts
-      end
-      def read_tm
-        Chouette::TimeTable.find subject.id
-      end
+      let!(:time_table) {
+        create(:time_table, :empty) do |time_table|
+          time_table.periods.create( :period_start => Date.today, :period_end => Date.today + 3.days)
+          time_table.periods.create( :period_start => Date.today + 4.days, :period_end => Date.today + 6.days)
+        end
+      }
+
       it "should update shortcut" do
-        tm = read_tm
-        expect(subject.start_date).to eq(subject.bounding_dates.min)
-        expect(subject.start_date).to eq(tm.bounding_dates.min)
-        expect(subject.start_date).to eq(4.days.since.to_date)
-        expect(subject.end_date).to eq(subject.bounding_dates.max)
-        expect(subject.end_date).to eq(tm.bounding_dates.max)
-        expect(subject.end_date).to eq(6.days.since.to_date)
+        time_table.periods = [ build( :time_table_period, :period_start => Date.today + 4.days, :period_end => Date.today + 6.days, time_table: time_table) ]
+        time_table.save
+        expect(time_table.reload.start_date).to eq(Date.today + 4.days)
+        expect(time_table.reload.end_date).to eq(Date.today + 6.days)
       end
     end
+
     context "when a period is updated," do
-      before(:each) do
-        subject.dates = []
-        subject.periods = []
-        subject.periods << Chouette::TimeTablePeriod.new(
-                              :period_start => 4.days.since.to_date,
-                              :period_end => 6.days.since.to_date)
-        subject.periods << Chouette::TimeTablePeriod.new(
-                              :period_start => 1.days.since.to_date,
-                              :period_end => 10.days.since.to_date)
-        subject.save
-        subject.periods.last.period_end = 15.days.since.to_date
-        subject.save
-      end
-      def read_tm
-        Chouette::TimeTable.find subject.id
-      end
+      let!(:time_table) {
+        create(:time_table, :empty) do |time_table|
+          time_table.periods.create( :period_start => Date.today, :period_end => Date.today + 3.days)
+        end
+      }
+
       it "should update shortcut" do
-        tm = read_tm
-        expect(subject.start_date).to eq(subject.bounding_dates.min)
-        expect(subject.start_date).to eq(tm.bounding_dates.min)
-        expect(subject.start_date).to eq(1.days.since.to_date)
-        expect(subject.end_date).to eq(subject.bounding_dates.max)
-        expect(subject.end_date).to eq(tm.bounding_dates.max)
-        expect(subject.end_date).to eq(15.days.since.to_date)
+        first_period = time_table.periods.first
+        first_period.period_start = Date.today - 1.day
+        first_period.period_end = Date.today + 5.days
+        time_table.save
+        expect(time_table.start_date).to eq( Date.today - 1.day)
+        expect(time_table.end_date).to eq(Date.today + 5.days)
       end
     end
 
   end
+
   describe "#periods.valid?" do
     context "when an empty period is set," do
       it "should not save tm if period invalid" do
@@ -747,65 +741,51 @@ end
   end
 
   describe "#dates" do
+    let(:timetable) { create(:time_table, :empty)}
+
     context "when a date is added," do
       before(:each) do
-        subject.dates << Chouette::TimeTableDate.new( :date => (subject.bounding_dates.max + 1), :in_out => true)
-        subject.save
+        timetable.dates << Chouette::TimeTableDate.new( :date => Date.today, :in_out => true)
+        timetable.save
       end
       it "should update shortcut" do
-        expect(subject.start_date).to eq(subject.bounding_dates.min)
-        expect(subject.end_date).to eq(subject.bounding_dates.max)
+        expect(timetable.start_date).to eq(Date.today)
+        expect(timetable.end_date).to eq(Date.today)
       end
     end
+
     context "when a date is removed," do
       before(:each) do
-        subject.periods = []
-        subject.dates = subject.dates - [subject.bounding_dates.max + 1]
-        subject.save_shortcuts
+        timetable.dates << Chouette::TimeTableDate.new( :date => Date.today, :in_out => true)
+        timetable.dates << Chouette::TimeTableDate.new( :date => Date.today + 1, :in_out => true)
+        subject.save
       end
       it "should update shortcut" do
-        expect(subject.start_date).to eq(subject.bounding_dates.min)
-        expect(subject.end_date).to eq(subject.bounding_dates.max)
+        timetable.dates = [ Chouette::TimeTableDate.new( :date => Date.today + 1, :in_out => true) ]
+        timetable.save
+        expect(timetable.start_date).to eq(Date.today + 1)
+        expect(timetable.end_date).to eq(Date.today + 1)
       end
     end
+
     context "when all the dates and periods are removed," do
-      before(:each) do
-        subject.periods = []
-        subject.dates = []
-        subject.save_shortcuts
-      end
       it "should update shortcut" do
-        expect(subject.start_date).to be_nil
-        expect(subject.end_date).to be_nil
+        expect(timetable.start_date).to be_nil
+        expect(timetable.end_date).to be_nil
       end
     end
+
     context "when a date is updated," do
       before(:each) do
-        subject.dates = []
+        timetable.dates << Chouette::TimeTableDate.new( :date => Date.today, :in_out => true)
+        timetable.save
+      end
 
-        subject.periods = []
-        subject.periods << Chouette::TimeTablePeriod.new(
-                              :period_start => 4.days.since.to_date,
-                              :period_end => 6.days.since.to_date)
-        subject.periods << Chouette::TimeTablePeriod.new(
-                              :period_start => 1.days.since.to_date,
-                              :period_end => 10.days.since.to_date)
-        subject.dates << Chouette::TimeTableDate.new( :date => 10.days.since.to_date, :in_out => true)
-        subject.save
-        subject.dates.last.date = 15.days.since.to_date
-        subject.save
-      end
-      def read_tm
-        Chouette::TimeTable.find subject.id
-      end
       it "should update shortcut" do
-        tm = read_tm
-        expect(subject.start_date).to eq(subject.bounding_dates.min)
-        expect(subject.start_date).to eq(tm.bounding_dates.min)
-        expect(subject.start_date).to eq(1.days.since.to_date)
-        expect(subject.end_date).to eq(subject.bounding_dates.max)
-        expect(subject.end_date).to eq(tm.bounding_dates.max)
-        expect(subject.end_date).to eq(15.days.since.to_date)
+        timetable.dates.first.date = Date.today + 5.day
+        timetable.save
+        expect(timetable.reload.start_date).to eq(Date.today + 5.day)
+        expect(timetable.reload.end_date).to eq(Date.today + 5.day)
       end
     end
   end
@@ -1006,6 +986,7 @@ end
       expect(subject.validity_out_from_on?( expected_date)).to be_falsey
     end
   end
+
   describe "#bounding_dates" do
     context "when timetable contains only periods" do
       before do
@@ -1017,6 +998,7 @@ end
         expect(subject.bounding_dates.max).to eq(subject.periods.map(&:period_end).max)
       end
     end
+
     context "when timetable contains only dates" do
       before do
         subject.periods = []
@@ -1027,6 +1009,7 @@ end
         expect(subject.bounding_dates.max).to eq(subject.dates.map(&:date).max)
       end
     end
+
     it "should contains min date" do
       min_date = subject.bounding_dates.min
       subject.dates.each do |tm_date|
@@ -1037,6 +1020,7 @@ end
       end
 
     end
+
     it "should contains max date" do
       max_date = subject.bounding_dates.max
       subject.dates.each do |tm_date|
@@ -1048,23 +1032,20 @@ end
 
     end
   end
+
   describe "#periods" do
+    let(:time_table) { create(:time_table, :empty) }
+
     it "should have period_start before period_end" do
-      period = Chouette::TimeTablePeriod.new
-      period.period_start = Date.today
-      period.period_end = Date.today + 10
+      period = build(:time_table_period, time_table: time_table, period_start: Date.today, period_end: Date.today + 10)
       expect(period.valid?).to be_truthy
     end
     it "should not have period_start after period_end" do
-      period = Chouette::TimeTablePeriod.new
-      period.period_start = Date.today
-      period.period_end = Date.today - 10
+      period = build(:time_table_period, time_table: time_table, period_start: Date.today, period_end: Date.today - 10)
       expect(period.valid?).to be_falsey
     end
     it "should not have period_start equal to period_end" do
-      period = Chouette::TimeTablePeriod.new
-      period.period_start = Date.today
-      period.period_end = Date.today
+      period = build(:time_table_period, time_table: time_table, period_start: Date.today, period_end: Date.today)
       expect(period.valid?).to be_falsey
     end
   end
@@ -1086,7 +1067,7 @@ end
                     } do
                       let(:checksum_owner) {
                         checksum_owner = build(:time_table)
-                        checksum_owner.periods.build period_start: Time.now, period_end: 1.month.from_now
+                        checksum_owner.periods.build period_start: Time.now, period_end: 10.days.from_now
                         checksum_owner.dates.build date: Time.now
                         checksum_owner.save!
                         checksum_owner
@@ -1095,7 +1076,7 @@ end
 
     it_behaves_like 'it works with both checksums modes',
                     'changes when a date is updated',
-                    ->{ checksum_owner.dates.last.update_attribute(:date, Time.now) }
+                    ->{ checksum_owner.dates.last.update_attribute(:date, Time.now + 10.days) }
 
     it_behaves_like 'it works with both checksums modes',
                     'changes when a date is added',
@@ -1107,7 +1088,7 @@ end
 
     it_behaves_like 'it works with both checksums modes',
                     'changes when a period is added',
-                    ->{ create(:time_table_period, time_table: checksum_owner) }
+                    ->{ create(:time_table_period, period_start: 5.month.from_now, period_end: 6.month.from_now, time_table: checksum_owner) }
   end
 
   describe "#excluded_days" do

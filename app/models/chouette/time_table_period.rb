@@ -16,7 +16,7 @@ module Chouette
     def validate_period_uniqueness
       overlapped_periods = time_table.periods.where.not(id: id).overlaps(range)
       puts "overlapped_periods #{overlapped_periods.inspect}" if overlapped_periods.present?
-      errors.add(:overlap_error, 'There is already an event scheduled in this hour!') if overlapped_periods.present?
+      errors.add(:overlapped_periods, I18n.t("time_tables.activerecord.errors.messages.overlapped_periods")) if overlapped_periods.present?
     end
 
     def checksum_attributes(db_lookup = true)

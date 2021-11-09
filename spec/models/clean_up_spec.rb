@@ -183,7 +183,7 @@ RSpec.describe CleanUp, :type => :model do
         end
 
         it 'create dates when remaining period is too short' do
-          Time.zone.toda = time_table.periods.create(period_start: begin_date - 10.days, period_end: begin_date)
+          time_table.periods.create(period_start: begin_date - 10.days, period_end: begin_date)
           expect{ cleaner.clean_time_table_periods }.to change{ Chouette::TimeTableDate.count }.by 1
           expect(Chouette::TimeTableDate.last.date).to eq begin_date
         end

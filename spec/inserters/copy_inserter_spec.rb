@@ -207,7 +207,7 @@ RSpec.describe CopyInserter do
     describe "Dates" do
 
       let(:dates) { time_table.dates }
-      # let(:date) { time_table.dates.new(date: Time.zone.today - 10.days ) }
+      let(:date) { dates.first }
 
       it "creates the same CSV content than PostgreSQL gives by COPY TO" do
         expected_csv = Chouette::TimeTableDate.copy_to_string
@@ -232,9 +232,8 @@ RSpec.describe CopyInserter do
       end
 
       it "inserts model in database" do
-        puts time_table.dates.inspect
-        date = time_table.dates.new(date: Time.zone.today - 10.days )
         date.id = next_id(Chouette::TimeTableDate)
+        date.date = Time.zone.today - 1.month
 
         inserter.insert date
 
@@ -243,8 +242,8 @@ RSpec.describe CopyInserter do
 
       it "inserts 50000 models / second (1 million in 20s)", :performance do
         expect {
-          date = time_table.dates.new(date: Time.zone.today - 10.days )
           date.id = next_id(Chouette::TimeTableDate)
+          date.date = Time.zone.today - 1.month
           inserter.insert date
         }.to perform_at_least(50000).within(1.seconds).ips
       end
@@ -254,7 +253,7 @@ RSpec.describe CopyInserter do
     describe "Periods" do
 
       let(:periods) { time_table.periods }
-      let(:period) { time_table.periods.new(period_start: Time.zone.today - 10.days , period_end: Time.zone.today - 1.day) }
+      let(:period) { periods.first }
 
       it "creates the same CSV content than PostgreSQL gives by COPY TO" do
         expected_csv = Chouette::TimeTablePeriod.copy_to_string
@@ -265,7 +264,8 @@ RSpec.describe CopyInserter do
 
       it "inserts model in database" do
         period.id = next_id(Chouette::TimeTablePeriod)
-
+        period.period_start = Time.zone.today - 10
+        period.period_end = Time.zone.today - 1
         inserter.insert period
 
         expect { inserter.flush }.to change(Chouette::TimeTablePeriod, :count).by(1)

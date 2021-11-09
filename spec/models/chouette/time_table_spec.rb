@@ -542,8 +542,8 @@ describe "update_attributes on periods and dates" do
     end
 
     context 'remove periods and dates and add a new period' do
-      let!(:new_start_date) { subject.start_date + 1.days }
-      let!(:new_end_date) { subject.end_date - 1.days }
+      let!(:new_start_date) { subject.start_date - 20.days }
+      let!(:new_end_date) { subject.start_date - 1.days  }
       let!(:new_dates_attributes) do
         da = dates_attributes
         da.each { |_k, v| v.merge! '_destroy' => true }

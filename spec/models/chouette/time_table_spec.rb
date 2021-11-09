@@ -93,7 +93,7 @@ describe Chouette::TimeTable, :type => :model do
     end
 
     it 'should remove all date in_out false' do
-      subject.dates.create(in_out: false, date: Date.today + 5.day + 1.year)
+      subject.dates.create(in_out: false, date: Time.zone.today + 5.day + 1.year)
       another_tt.dates.last.in_out = false
       subject.merge!(another_tt)
       expect(subject.reload.excluded_days.count).to eq(0)
@@ -101,7 +101,7 @@ describe Chouette::TimeTable, :type => :model do
   end
 
   context "#merge! with calendar" do
-    let(:calendar) { create(:calendar, date_ranges: [Date.today + 1.year..Date.tomorrow + 1.year]) }
+    let(:calendar) { create(:calendar, date_ranges: [Time.zone.today + 1.year..Date.tomorrow + 1.year]) }
     let(:another_tt) { calendar.convert_to_time_table }
     let(:dates) { subject.dates.map(&:date) }
     let(:continuous_dates) { subject.continuous_dates.flatten.map(&:date) }
@@ -172,11 +172,11 @@ describe Chouette::TimeTable, :type => :model do
           subject.periods.clear
           another_tt.periods.clear
 
-          subject.periods << create_time_table_periode(subject, Date.today, Date.today + 10.day)
-          another_tt.periods << create_time_table_periode(another_tt, Date.tomorrow, Date.today + 3.day)
+          subject.periods << create_time_table_periode(subject, Time.zone.today, Time.zone.today + 10.day)
+          another_tt.periods << create_time_table_periode(another_tt, Date.tomorrow, Time.zone.today + 3.day)
 
           subject.disjoin!(another_tt)
-          expected_range = Date.tomorrow..Date.today + 3.day
+          expected_range = Date.tomorrow..Time.zone.today + 3.day
 
           expect(subject_periods_to_range).to_not include(expected_range)
           expect(subject.periods.count).to eq 1
@@ -227,11 +227,11 @@ describe Chouette::TimeTable, :type => :model do
         subject.periods.clear
         another_tt.periods.clear
 
-        subject.periods << create_time_table_periode(subject, Date.today, Date.today + 10.day)
-        another_tt.periods << create_time_table_periode(another_tt, Date.tomorrow, Date.today + 3.day)
+        subject.periods << create_time_table_periode(subject, Time.zone.today, Time.zone.today + 10.day)
+        another_tt.periods << create_time_table_periode(another_tt, Date.tomorrow, Time.zone.today + 3.day)
 
         subject.intersect!(another_tt)
-        expected_range = Date.tomorrow..Date.today + 3.day
+        expected_range = Date.tomorrow..Time.zone.today + 3.day
 
         expect(subject_periods_to_range).to include(expected_range)
         expect(subject.periods.count).to eq 1
@@ -292,8 +292,8 @@ describe Chouette::TimeTable, :type => :model do
     def time_table_to_state time_table
       time_table.slice('id', 'comment').tap do |item|
         item['day_types'] = "Di,Lu,Ma,Me,Je,Ve,Sa"
-        item['current_month'] = time_table.month_inspect(Date.today.beginning_of_month)
-        item['current_periode_range'] = Date.today.beginning_of_month.to_s
+        item['current_month'] = time_table.month_inspect(Time.zone.today.beginning_of_month)
+        item['current_periode_range'] = Time.zone.today.beginning_of_month.to_s
         item['tags'] = time_table.tags.map{ |tag| {id: tag.id, name: tag.name}}
         item['time_table_periods'] = time_table.periods.map{|p| {'id': p.id, 'period_start': p.period_start.to_s, 'period_end': p.period_end.to_s}}
       end
@@ -303,8 +303,8 @@ describe Chouette::TimeTable, :type => :model do
 
     it 'should update time table periods association' do
       period = state['time_table_periods'].first
-      period['period_start'] = (Date.today - 1.month).to_s
-      period['period_end']   = (Date.today - 1.day).to_s
+      period['period_start'] = (Time.zone.today - 1.month).to_s
+      period['period_end']   = (Time.zone.today - 1.day).to_s
 
       subject.state_update_periods state['time_table_periods']
       ['period_end', 'period_start'].each do |prop|
@@ -315,8 +315,8 @@ describe Chouette::TimeTable, :type => :model do
     it 'should create time table periods association' do
       state['time_table_periods'] << {
         'id' => false,
-        'period_start' => (Date.today + 1.year).to_s,
-        'period_end' => (Date.today + 2.year).to_s
+        'period_start' => (Time.zone.today + 1.year).to_s,
+        'period_end' => (Time.zone.today + 2.year).to_s
       }
 
       expect {
@@ -336,12 +336,12 @@ describe Chouette::TimeTable, :type => :model do
       state['time_table_periods'].first['deleted'] = true
       state['time_table_periods'] << {
         'id' => false,
-        'period_start' => (Date.today + 1.year).to_s,
-        'period_end' => (Date.today + 2.year).to_s
+        'period_start' => (Time.zone.today + 1.year).to_s,
+        'period_end' => (Time.zone.today + 2.year).to_s
       }
       expect {
         subject.state_update_periods state['time_table_periods']
-      }.to change {subject.periods.count}.by(1)
+      }.to change {subject.periods.count}.by(0)
     end
 
     it 'should update caldendar association' do
@@ -660,48 +660,48 @@ describe "update_attributes on periods and dates" do
     context "when a period is added," do
       let!(:time_table) {
         create(:time_table, :empty) do |time_table|
-          time_table.periods.create( :period_start => Date.today, :period_end => Date.today + 3.days)
+          time_table.periods.create( :period_start => Time.zone.today, :period_end => Time.zone.today + 3.days)
         end
       }
 
       it "should update shortcut" do
-        time_table.periods << build(:time_table_period, time_table: time_table, :period_start => Date.today + 4.days, :period_end => Date.today + 6.days)
+        time_table.periods << build(:time_table_period, time_table: time_table, :period_start => Time.zone.today + 4.days, :period_end => Time.zone.today + 6.days)
         time_table.save
-        expect(time_table.start_date).to eq(Date.today)
-        expect(time_table.end_date).to eq(Date.today + 6.days)
+        expect(time_table.start_date).to eq(Time.zone.today)
+        expect(time_table.end_date).to eq(Time.zone.today + 6.days)
       end
     end
 
     context "when a period is removed," do
       let!(:time_table) {
         create(:time_table, :empty) do |time_table|
-          time_table.periods.create( :period_start => Date.today, :period_end => Date.today + 3.days)
-          time_table.periods.create( :period_start => Date.today + 4.days, :period_end => Date.today + 6.days)
+          time_table.periods.create( :period_start => Time.zone.today, :period_end => Time.zone.today + 3.days)
+          time_table.periods.create( :period_start => Time.zone.today + 4.days, :period_end => Time.zone.today + 6.days)
         end
       }
 
       it "should update shortcut" do
-        time_table.periods = [ build( :time_table_period, :period_start => Date.today + 4.days, :period_end => Date.today + 6.days, time_table: time_table) ]
+        time_table.periods = [ build( :time_table_period, :period_start => Time.zone.today + 4.days, :period_end => Time.zone.today + 6.days, time_table: time_table) ]
         time_table.save
-        expect(time_table.reload.start_date).to eq(Date.today + 4.days)
-        expect(time_table.reload.end_date).to eq(Date.today + 6.days)
+        expect(time_table.reload.start_date).to eq(Time.zone.today + 4.days)
+        expect(time_table.reload.end_date).to eq(Time.zone.today + 6.days)
       end
     end
 
     context "when a period is updated," do
       let!(:time_table) {
         create(:time_table, :empty) do |time_table|
-          time_table.periods.create( :period_start => Date.today, :period_end => Date.today + 3.days)
+          time_table.periods.create( :period_start => Time.zone.today, :period_end => Time.zone.today + 3.days)
         end
       }
 
       it "should update shortcut" do
         first_period = time_table.periods.first
-        first_period.period_start = Date.today - 1.day
-        first_period.period_end = Date.today + 5.days
+        first_period.period_start = Time.zone.today - 1.day
+        first_period.period_end = Time.zone.today + 5.days
         time_table.save
-        expect(time_table.start_date).to eq( Date.today - 1.day)
-        expect(time_table.end_date).to eq(Date.today + 5.days)
+        expect(time_table.start_date).to eq( Time.zone.today - 1.day)
+        expect(time_table.end_date).to eq(Time.zone.today + 5.days)
       end
     end
 
@@ -757,26 +757,26 @@ describe "update_attributes on periods and dates" do
 
     context "when a date is added," do
       before(:each) do
-        timetable.dates << Chouette::TimeTableDate.new( :date => Date.today, :in_out => true)
+        timetable.dates << Chouette::TimeTableDate.new( :date => Time.zone.today, :in_out => true)
         timetable.save
       end
       it "should update shortcut" do
-        expect(timetable.start_date).to eq(Date.today)
-        expect(timetable.end_date).to eq(Date.today)
+        expect(timetable.start_date).to eq(Time.zone.today)
+        expect(timetable.end_date).to eq(Time.zone.today)
       end
     end
 
     context "when a date is removed," do
       before(:each) do
-        timetable.dates << Chouette::TimeTableDate.new( :date => Date.today, :in_out => true)
-        timetable.dates << Chouette::TimeTableDate.new( :date => Date.today + 1, :in_out => true)
+        timetable.dates << Chouette::TimeTableDate.new( :date => Time.zone.today, :in_out => true)
+        timetable.dates << Chouette::TimeTableDate.new( :date => Time.zone.today + 1, :in_out => true)
         subject.save
       end
       it "should update shortcut" do
-        timetable.dates = [ Chouette::TimeTableDate.new( :date => Date.today + 1, :in_out => true) ]
+        timetable.dates = [ Chouette::TimeTableDate.new( :date => Time.zone.today + 1, :in_out => true) ]
         timetable.save
-        expect(timetable.start_date).to eq(Date.today + 1)
-        expect(timetable.end_date).to eq(Date.today + 1)
+        expect(timetable.start_date).to eq(Time.zone.today + 1)
+        expect(timetable.end_date).to eq(Time.zone.today + 1)
       end
     end
 
@@ -789,15 +789,15 @@ describe "update_attributes on periods and dates" do
 
     context "when a date is updated," do
       before(:each) do
-        timetable.dates << Chouette::TimeTableDate.new( :date => Date.today, :in_out => true)
+        timetable.dates << Chouette::TimeTableDate.new( :date => Time.zone.today, :in_out => true)
         timetable.save
       end
 
       it "should update shortcut" do
-        timetable.dates.first.date = Date.today + 5.day
+        timetable.dates.first.date = Time.zone.today + 5.day
         timetable.save
-        expect(timetable.reload.start_date).to eq(Date.today + 5.day)
-        expect(timetable.reload.end_date).to eq(Date.today + 5.day)
+        expect(timetable.reload.start_date).to eq(Time.zone.today + 5.day)
+        expect(timetable.reload.end_date).to eq(Time.zone.today + 5.day)
       end
     end
   end
@@ -863,8 +863,8 @@ describe "update_attributes on periods and dates" do
   describe "#intersects" do
     it "should return day if a date equal day" do
       time_table = Chouette::TimeTable.create!(:comment => "Test", :objectid => "test:Timetable:1:loc")
-      time_table.dates << Chouette::TimeTableDate.new( :date => Date.today, :in_out => true)
-      expect(time_table.intersects([Date.today])).to eq([Date.today])
+      time_table.dates << Chouette::TimeTableDate.new( :date => Time.zone.today, :in_out => true)
+      expect(time_table.intersects([Time.zone.today])).to eq([Time.zone.today])
     end
 
     it "should return [] if a period not include days" do
@@ -887,8 +887,8 @@ describe "update_attributes on periods and dates" do
   describe "#include_day?" do
     it "should return true if a date equal day" do
       time_table = Chouette::TimeTable.create!(:comment => "Test", :objectid => "test:Timetable:1:loc")
-      time_table.dates << Chouette::TimeTableDate.new( :date => Date.today, :in_out => true)
-      expect(time_table.include_day?(Date.today)).to eq(true)
+      time_table.dates << Chouette::TimeTableDate.new( :date => Time.zone.today, :in_out => true)
+      expect(time_table.include_day?(Time.zone.today)).to eq(true)
     end
 
     it "should return true if a period include day" do
@@ -903,8 +903,8 @@ describe "update_attributes on periods and dates" do
   describe "#include_in_dates?" do
     it "should return true if a date equal day" do
       time_table = Chouette::TimeTable.create!(:comment => "Test", :objectid => "test:Timetable:1:loc")
-      time_table.dates << Chouette::TimeTableDate.new( :date => Date.today, :in_out => true)
-      expect(time_table.include_in_dates?(Date.today)).to eq(true)
+      time_table.dates << Chouette::TimeTableDate.new( :date => Time.zone.today, :in_out => true)
+      expect(time_table.include_in_dates?(Time.zone.today)).to eq(true)
     end
 
     it "should return false if a period include day  but that is exclued" do
@@ -957,7 +957,7 @@ describe "update_attributes on periods and dates" do
   describe "#validity_out_between?" do
     let(:empty_tm) {build(:time_table)}
     it "should be false if empty calendar" do
-      expect(empty_tm.validity_out_between?( Date.today, Date.today + 7.day)).to be_falsey
+      expect(empty_tm.validity_out_between?( Time.zone.today, Time.zone.today + 7.day)).to be_falsey
     end
     it "should be true if caldendar is out during start_date and end_date period" do
       start_date = subject.bounding_dates.max - 2.day
@@ -983,7 +983,7 @@ describe "update_attributes on periods and dates" do
   describe "#validity_out_from_on?" do
     let(:empty_tm) {build(:time_table)}
     it "should be false if empty calendar" do
-      expect(empty_tm.validity_out_from_on?( Date.today)).to be_falsey
+      expect(empty_tm.validity_out_from_on?( Time.zone.today)).to be_falsey
     end
     it "should be true if caldendar ends on expected date" do
       expected_date = subject.bounding_dates.max
@@ -1049,15 +1049,15 @@ describe "update_attributes on periods and dates" do
     let(:time_table) { create(:time_table, :empty) }
 
     it "should have period_start before period_end" do
-      period = build(:time_table_period, time_table: time_table, period_start: Date.today, period_end: Date.today + 10)
+      period = build(:time_table_period, time_table: time_table, period_start: Time.zone.today, period_end: Time.zone.today + 10)
       expect(period.valid?).to be_truthy
     end
     it "should not have period_start after period_end" do
-      period = build(:time_table_period, time_table: time_table, period_start: Date.today, period_end: Date.today - 10)
+      period = build(:time_table_period, time_table: time_table, period_start: Time.zone.today, period_end: Time.zone.today - 10)
       expect(period.valid?).to be_falsey
     end
     it "should not have period_start equal to period_end" do
-      period = build(:time_table_period, time_table: time_table, period_start: Date.today, period_end: Date.today)
+      period = build(:time_table_period, time_table: time_table, period_start: Time.zone.today, period_end: Time.zone.today)
       expect(period.valid?).to be_falsey
     end
   end

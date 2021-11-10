@@ -2,52 +2,45 @@ import React, { Component } from 'react'
 
 import I18n from '../../support/jest-i18n'
 
-import JourneyPattern from '../../../../app/packs/src/journey_patterns/components/JourneyPattern'
-
 import renderer from 'react-test-renderer'
 
+
+beforeEach(() => {
+  Object.defineProperty(window, 'location', {
+    get() {
+      return { pathname: '/referentials/1/lines/1/routes/1' }
+    }
+  })
+})
+
 describe('the edit button', () => {
-  set('policy', () => {
-    return {}
-  })
-  set('features', () => {
-    return []
-  })
-  set('editMode', () => {
-    return false
-  })
+  set('policy', () => ({}))
+
+  set('features', () => [])
+
+  set('editMode', () => false)
+
   set('component', () => {
-    let props = {
+    const props = {
       status: {
-        policy: policy,
-        features: features
+        policy,
+        features
       },
-      onCheckboxChange: ()=>{},
-      onDeleteJourneyPattern: ()=>{},
-      onOpenEditModal: ()=>{},
+      onCheckboxChange: () => {},
+      onDeleteJourneyPattern: () => {},
+      onOpenEditModal: () => {},
       journeyPatterns: {},
       value: {
         stop_points: []
       },
       index: 0,
-      editMode: editMode,
+      editMode,
       fetchRouteCosts: () => {}
     }
-    let list = renderer.create(
-      <JourneyPattern
-        status={props.status}
-        journeyPatterns={props.journeyPatterns}
-        value={props.value}
-        index={props.index}
-        onCheckboxChange={props.onCheckboxChange}
-        onDeleteJourneyPattern={props.onDeleteJourneyPattern}
-        onOpenEditModal={props.onOpenEditModal}
-        editMode={props.editMode}
-        fetchRouteCosts={props.fetchRouteCosts}
-      />
-    )
 
-    return list
+    const { default: JourneyPattern } = require('../../../../app/packs/src/journey_patterns/components/JourneyPattern')
+
+    return renderer.create(<JourneyPattern { ...props} />)
   })
 
   it('should display the show link', () => {
@@ -56,9 +49,7 @@ describe('the edit button', () => {
   })
 
   context('in edit mode', () => {
-    set('editMode', () => {
-      return true
-    })
+    set('editMode', () => true)
 
     it('should display the edit link', () => {
       expect(component.toJSON()).toMatchSnapshot()

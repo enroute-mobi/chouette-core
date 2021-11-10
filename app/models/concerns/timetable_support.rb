@@ -94,15 +94,20 @@ module TimetableSupport
 
   def state_update_periods state_periods
     # Delete periods before save new or updated to avoid overlapped periods
-    state_periods.select {|item| item['deleted']}.each do |item|
-      period = self.find_period_by_id(item['id']) if item['id']
-      if period
-        self.destroy_period(period)
-        state_periods.delete(item)
+    state_periods.delete_if do |item|
+      if item['deleted']
+        period = self.find_period_by_id(item['id']) if item['id']
+        if period
+          self.destroy_period(period)
+          state_periods.delete(item)
+        end
+        true
+      else
+        false
       end
     end
 
-    
+
     state_periods.each do |item|
       period = self.find_period_by_id(item['id']) if item['id']
       period ||= self.build_period

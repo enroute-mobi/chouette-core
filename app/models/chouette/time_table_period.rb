@@ -14,9 +14,11 @@ module Chouette
     validate :start_must_be_before_end
 
     def validate_period_uniqueness
-      overlapped_periods = time_table.periods.where.not(id: id).overlaps(range)
-      puts "overlapped_periods #{overlapped_periods.inspect}" if overlapped_periods.present?
-      errors.add(:overlapped_periods, I18n.t("time_tables.activerecord.errors.messages.overlapped_periods")) if overlapped_periods.present?
+      scope = time_table.periods
+      scope = scope.where.not(id: id) if id
+      if scope.overlaps(range).exists?
+        errors.add(:overlapped_periods, I18n.t("activerecord.time_table.errors.messages.overlapped_periods"))
+      end
     end
 
     def checksum_attributes(db_lookup = true)

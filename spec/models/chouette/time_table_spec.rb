@@ -344,7 +344,38 @@ describe Chouette::TimeTable, :type => :model do
       }.to change {subject.periods.count}.by(0)
     end
 
-    it 'should update caldendar association' do
+    it 'should deny to create two time table periods on the same period' do
+      state['time_table_periods'] += [{
+        'id' => false,
+        'period_start' => (Time.zone.today + 1.year).to_s,
+        'period_end' => (Time.zone.today + 2.year).to_s
+      },
+      {
+        'id' => false,
+        'period_start' => (Time.zone.today + 1.year).to_s,
+        'period_end' => (Time.zone.today + 2.year).to_s
+      }]
+      subject.state_update_periods(state['time_table_periods'])
+
+      invalid_periods = subject.periods.select{ |m| m.invalid? }
+      expect(invalid_periods.count).to eq 1
+      expect(invalid_periods.first.errors[:overlapped_periods]).not_to be_empty
+    end
+
+    it 'should deny to create one time table period on the same period than existing one' do
+
+      state['time_table_periods'] << {
+        'id' => false,
+        'period_start' => state['time_table_periods'].first['period_start'],
+        'period_end' => state['time_table_periods'].first['period_end']
+      }
+      subject.state_update_periods(state['time_table_periods'])
+      invalid_periods = subject.periods.select{ |m| m.invalid? }
+      expect(invalid_periods.count).to eq 1
+      expect(invalid_periods.first.errors[:overlapped_periods]).not_to be_empty
+    end
+
+    it 'should update calendar association' do
       subject.calendar = create(:calendar)
       subject.save
       state['calendar'] = nil

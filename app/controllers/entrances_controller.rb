@@ -1,10 +1,11 @@
 class EntrancesController < ChouetteController
+  include ApplicationHelper
   # include ReferentialSupport
   include PolicyChecker
 
   defaults :resource_class => Entrance
 
-  before_action :check_entrance_param, only: [:create, :update]
+  before_action :entrance_params, only: [:create, :update]
 
   belongs_to :workbench
   belongs_to :stop_area_referential, singleton: true
@@ -18,19 +19,9 @@ class EntrancesController < ChouetteController
   end
 
   def show
-    # @entrance = Entrance.find(params[:id])
     show! do |format|
       @entrance = @entrance.decorate context: { workbench: @workbench }
     end
-  end
-
-  def new
-  end
-
-  def create
-    authorize resource_class
-    build_resource
-    super
   end
 
   def update
@@ -38,25 +29,22 @@ class EntrancesController < ChouetteController
       if entrance_params[:entrance_ids]
         workbench_stop_area_referential_entrances_path @workbench, @entrance
       else
-        workbench_line_referential_line_path @workbench, @line
+        workbench_stop_area_referential_entrance_path @workbench, @entrance
       end
     end
   end
 
   protected
 
-  # alias_method :routing_constraint_zone, :resource
-  # alias_method :line, :parent
+  alias_method :entrance, :resource
+  alias_method :stop_area_referential, :parent
 
   # def collection
-  #   @q = line.routing_constraint_zones.ransack(params[:q])
-
-  #   @routing_constraint_zones ||= begin
-  #     routing_constraint_zones = sort_collection
-  #     routing_constraint_zones = routing_constraint_zones.paginate(
-  #       page: params[:page],
-  #       per_page: 10
-  #     )
+  #   @q = parent.stop_area_referential.search(params[:q])
+  #   @entrances ||= if sort_column == 'entrance_type'
+  #     @q.result.joins('INNER JOIN public.stop_areas departures ON departures.id = connection_links.departure_id').order("departures.name #{sort_direction}").paginate(:page => params[:page])
+  #   else
+  #     @q.result.joins('INNER JOIN public.stop_areas arrivals ON arrivals.id = connection_links.arrival_id').order("arrivals.name #{sort_direction}").paginate(:page => params[:page])
   #   end
   # end
 
@@ -75,38 +63,24 @@ class EntrancesController < ChouetteController
   # end
 
   private
-  # def sort_column
-  #   (
-  #     Chouette::RoutingConstraintZone.column_names +
-  #     [
-  #       'stop_points_count',
-  #       'route'
-  #     ]
-  #   ).include?(params[:sort]) ? params[:sort] : 'name'
-  # end
-  # def sort_direction
-  #   %w[asc desc].include?(params[:direction]) ?  params[:direction] : 'asc'
-  # end
 
-  # def sort_collection
-  #   sort_by = sort_column
+  def sort_column
+    params[:sort].presence || 'departure'
+  end
 
-  #   if sort_by == 'stop_points_count'
-  #     @q.result.order_by_stop_points_count(sort_direction)
-  #   elsif sort_by == 'route'
-  #     @q.result.order_by_route_name(sort_direction)
-  #   else
-  #     @q.result.order(sort_column + ' ' + sort_direction)
-  #   end
-  # end
+  def sort_direction
+    %w[asc desc].include?(params[:direction]) ?  params[:direction] : 'asc'
+  end
 
   def entrance_params
-    params.require(:entrances).permit(
+    params.require(:entrance).permit(
       :objectid,
+      :stop_area_id,
+      :stop_area_provider_id,
       :name,
       :short_name,
-      :entry,
-      :exit,
+      :entry_flag,
+      :exit_flag,
       :entrance_type,
       :description,
       :position,

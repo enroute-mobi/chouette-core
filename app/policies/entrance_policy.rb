@@ -10,10 +10,10 @@ class EntrancePolicy < ApplicationPolicy
   end
 
   def destroy?
-    user.has_permission?('entrances.destroy')
+    user.has_permission?('entrances.destroy') && stop_area_provider_matches?
   end
 
   def update?
-    user.has_permission?('entrances.update')
+    user.has_permission?('entrances.update') && stop_area_provider_matches?
   end
 end

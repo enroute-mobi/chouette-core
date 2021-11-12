@@ -12,7 +12,7 @@ fr:
     new:
       title: "Créer une entrée pour l'arrêt"
     edit:
-      title: "Editer la entrée %{id}"
+      title: "Editer l'entrée %{id}"
     show:
       title: "Entrée %{id}"
     direction:

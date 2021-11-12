@@ -53,7 +53,7 @@ module Chouette
     validates_format_of :coordinates, :with => %r{\A *-?(0?[0-9](\.[0-9]*)?|[0-8][0-9](\.[0-9]*)?|90(\.[0]*)?) *\, *-?(0?[0-9]?[0-9](\.[0-9]*)?|1[0-7][0-9](\.[0-9]*)?|180(\.[0]*)?) *\Z}, allow_nil: true, allow_blank: true
 
     validates_numericality_of :waiting_time, greater_than_or_equal_to: 0, only_integer: true, if: :waiting_time
-    validates :time_zone, inclusion: { in: TZInfo::Timezone.all_country_zone_identifiers }, allow_nil: true, allow_blank: true
+    validates :time_zone, inclusion: { in: TZInfo::Timezone.all_identifiers }, allow_nil: true, allow_blank: true
     validate :parent_area_type_must_be_greater
     validate :parent_kind_must_be_the_same
     validate :area_type_of_right_kind

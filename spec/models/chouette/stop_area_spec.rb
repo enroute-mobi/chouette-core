@@ -1,7 +1,7 @@
 # coding: utf-8
 
 describe Chouette::StopArea, :type => :model do
-  subject { create(:stop_area) }
+  subject(:stop_area) { create(:stop_area) }
 
   let!(:quay) { create :stop_area, :zdep }
   let!(:commercial_stop_point) { create :stop_area, :lda }
@@ -14,15 +14,29 @@ describe Chouette::StopArea, :type => :model do
   it { should validate_numericality_of :longitude }
 
   describe "#time_zone" do
-    it "should validate the value is a correct canonical timezone" do
-      subject.time_zone = nil
-      expect(subject).to be_valid
+    context "when nil" do
+      before { stop_area.time_zone = nil }
+      it { is_expected.to be_valid }
+    end
 
-      subject.time_zone = "Europe/Lisbon"
-      expect(subject).to be_valid
+    context "when 'Europe/Lisbon' (canonical timezone)" do
+      before { stop_area.time_zone = "Europe/Lisbon" }
+      it { is_expected.to be_valid }
+    end
 
-      subject.time_zone = "Portugal"
-      expect(subject).not_to be_valid
+    context "when 'Europe/Montreal' (non canonical timezone)" do
+      before { stop_area.time_zone = "America/Montreal" }
+      it { is_expected.to be_valid }
+    end
+
+    context "when 'Etc/UTC' (non canonical timezone)" do
+      before { stop_area.time_zone = "Etc/UTC" }
+      it { is_expected.to be_valid }
+    end
+
+    context "when 'Lisbon' (invalid timezone)" do
+      before { stop_area.time_zone = "Lisbon" }
+      it { is_expected.to_not be_valid }
     end
   end
 

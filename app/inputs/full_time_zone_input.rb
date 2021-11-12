@@ -1,16 +1,24 @@
 class FullTimeZoneInput < SimpleForm::Inputs::CollectionSelectInput
+
+  mattr_reader :collection_cache, default: SmartCache::Localized.new
+
+  def self.default_collection
+    collection_cache.fetch do
+      raw_collection = {}
+      # TODO Optimize TimeZone collection build
+      TZInfo::Timezone.all_identifiers.map do |identifier|
+        tzinfo = TZInfo::Timezone.get identifier
+        tz = ActiveSupport::TimeZone[identifier]
+        raw_collection[[tz.utc_offset, tzinfo.friendly_identifier(true)]] =
+          ["(#{tz.formatted_offset}) #{tzinfo.friendly_identifier(true)}", tz.name]
+      end
+      raw_collection.sort.map(&:last).unshift([I18n.t('none'), nil])
+    end
+  end
+
   def collection
     @collection ||= begin
-      collection = options.delete(:collection) || begin
-        coll = {}
-
-        TZInfo::Timezone.all_country_zones.map do |tzinfo|
-          next if tzinfo.friendly_identifier =~ /^etc/i
-          tz = ActiveSupport::TimeZone.new tzinfo.name#, nil, tzinfo
-          coll[[tz.utc_offset, tzinfo.friendly_identifier(true)]] = ["(#{tz.formatted_offset}) #{tzinfo.friendly_identifier(true)}", tz.name]
-        end
-        coll.sort.map(&:last).unshift([t('none'), nil])
-      end
+      collection = options.delete(:collection) || self.class.default_collection
       collection.respond_to?(:call) ? collection.call : collection.to_a
     end
   end

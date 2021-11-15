@@ -18,8 +18,8 @@ class WorkgroupWorkbenchPolicy < ApplicationPolicy
   #   update?
   # end
 
-  # def create?
-  #   update?
-  # end
+  def create?
+    user.has_permission?('workbenches.create')
+  end
 
 end

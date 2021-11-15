@@ -182,7 +182,7 @@ ChouetteIhm::Application.routes.draw do
       resources :compliance_check_messages, only: [:index]
     end
 
-    resources :workbenches, controller: :workgroup_workbenches, only: [:show, :edit, :update]
+    resources :workbenches, controller: :workgroup_workbenches, only: [:new, :create, :show, :edit, :update]
 
     resource :output, controller: :workgroup_outputs
     resources :aggregates do

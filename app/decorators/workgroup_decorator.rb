@@ -9,6 +9,12 @@ class WorkgroupDecorator < AF83::Decorator
     instance_decorator.show_action_link
     instance_decorator.edit_action_link
 
+    instance_decorator.action_link policy: :add_workbench, secondary: :show do |l|
+      l.content t('workgroups.actions.add_workbench')
+      l.href { h.new_workgroup_workbench_path(object.id) }
+      # l.icon :"pencil-alt"
+    end
+
     instance_decorator.action_link policy: :edit, secondary: :show do |l|
       l.content t('workgroups.actions.edit_transport_modes')
       l.href { h.edit_transport_modes_workgroup_path(object.id) }

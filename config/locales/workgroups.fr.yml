@@ -10,6 +10,7 @@ fr:
       setup_workgroup_deletion: Planifier la suppression du groupe de travail
       restore_workgroup: Restaurer
       edit_transport_modes: Paramétrer les modes de transport
+      add_workbench: Ajouter un espace de travail
     edit_controls: &edit_controls
       title: 'Paramétrage de la validation du Groupe de Travail'
     edit:

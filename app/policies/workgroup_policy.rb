@@ -36,4 +36,8 @@ class WorkgroupPolicy < ApplicationPolicy
   def remove_deletion?
     destroy?
   end
+
+  def add_workbench?
+    user.has_permission?('workbenches.create')
+  end
 end

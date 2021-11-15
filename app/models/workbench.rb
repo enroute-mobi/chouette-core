@@ -12,6 +12,8 @@ class Workbench < ApplicationModel
   prepend LockedReferentialToAggregateWithLog
 
   include ObjectidFormatterSupport
+  include AASM
+
   belongs_to :organisation
   belongs_to :workgroup
   belongs_to :line_referential
@@ -37,10 +39,10 @@ class Workbench < ApplicationModel
   has_many :source_retrievals, class_name: "Source::Retrieval"
 
   validates :name, presence: true
-  validates :organisation, presence: true
-  validates :prefix, presence: true
-  validates_format_of :prefix, with: %r{\A[0-9a-zA-Z_]+\Z}
-  validates :output, presence: true
+  validates :organisation, presence: true, unless: :pending?
+  validates :prefix, presence: true, unless: :pending?
+  validates_format_of :prefix, with: %r{\A[0-9a-zA-Z_]+\Z}, unless: :pending?
+  validates :output, presence: true, unless: :pending?
   validate  :locked_referential_to_aggregate_belongs_to_output
 
   has_many :referentials, dependent: :destroy
@@ -62,6 +64,23 @@ class Workbench < ApplicationModel
   validates :priority, presence: true, numericality: { greater_than_or_equal_to: 1 }
 
   scope :with_active_workgroup, -> { joins(:workgroup).where('workgroups.deleted_at': nil) }
+
+  aasm column: :status do
+    state :pending, initial: true
+    state :accepted
+
+    event :accept do
+      before_success do
+        Proc.new { |_code, organisation| assign_attributes(prefix: organisation.code, organisation_id: organisation.id) }
+      end
+
+      transitions  from: :pending, to: :accepted do
+        guard do
+          Proc.new { |code, _organisation| invitation_code == code }
+        end
+      end
+    end
+  end
 
   def locked_referential_to_aggregate_belongs_to_output
     return unless locked_referential_to_aggregate.present?

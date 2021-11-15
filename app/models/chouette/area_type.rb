@@ -34,9 +34,12 @@ class Chouette::AreaType
     @@options = nil
   end
 
+  mattr_reader :options_cache, default: SmartCache::Localized.new
+
   def self.options(kind=:all)
-    @@options ||= Hash.new { |h,locale| h[locale] = {} }
-    @@options[I18n.locale][kind] ||= self.send(kind).map { |c| find(c) }.map(&:to_option)
+    options_cache.fetch(kind) do
+      self.send(kind).map { |c| find(c) }.map(&:to_option)
+    end
   end
 
   attr_reader :code

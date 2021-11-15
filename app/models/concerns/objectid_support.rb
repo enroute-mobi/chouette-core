@@ -42,7 +42,7 @@ module ObjectidSupport
       end
 
       def has_objectid_format? referential_class, referential_find
-        @_objectid_format_cache ||= AF83::SmartCache.new
+        @_objectid_format_cache ||= SmartCache::Sized.new
         cache_key = { referential_class.name => referential_find }
         @_objectid_format_cache.fetch cache_key do
           referential = referential_class.find_by referential_find

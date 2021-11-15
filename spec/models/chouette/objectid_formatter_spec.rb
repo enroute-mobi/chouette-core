@@ -29,15 +29,5 @@ RSpec.describe Chouette::ObjectidFormatter do
         expect(@initializations_count).to eq 2
       end
     end
-
-    it 'should not bloat the memory' do
-      referentials = Array.new(51) { create(:line_referential) }
-      referentials.each do |referential|
-        Chouette::ObjectidFormatter.for_objectid_provider LineReferential, {id: referential.id}
-      end
-      expect(
-        Chouette::ObjectidFormatter.instance_variable_get(:@_cache).size
-      ).to eq 50
-    end
   end
 end

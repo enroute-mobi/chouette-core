@@ -10,7 +10,8 @@
       = f.association :stop_area, as: :select, collection: [f.object.stop_area_id], input_html: { data: { select2_ajax: 'true', url: autocomplete_workbench_stop_area_referential_stop_areas_path(@workbench), initvalue: {id: f.object.stop_area_id, text: f.object.stop_area.try(:formatted_selection_details)}}}
       = f.input :entry_flag, as: :switchable_checkbox
       = f.input :exit_flag, as: :switchable_checkbox
-      = f.input :description
+      = f.input :description, as: :text
+      = f.input :position_input, as: :string
       = f.input :address
       = f.input :zip_code
       = f.input :city_name

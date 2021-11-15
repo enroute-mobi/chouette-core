@@ -83,7 +83,7 @@ class EntrancesController < ChouetteController
       :exit_flag,
       :entrance_type,
       :description,
-      :position,
+      :position_input,
       :address,
       :zip_code,
       :city_name,

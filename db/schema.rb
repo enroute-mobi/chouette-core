@@ -434,6 +434,7 @@ ActiveRecord::Schema.define(version: 2021_10_22_073107) do
   end
 
   create_table "entrances", force: :cascade do |t|
+    t.string "objectid", null: false
     t.string "name"
     t.string "short_name"
     t.bigint "stop_area_id"
@@ -450,6 +451,7 @@ ActiveRecord::Schema.define(version: 2021_10_22_073107) do
     t.string "country"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["objectid"], name: "index_entrances_on_objectid", unique: true
     t.index ["stop_area_id"], name: "index_entrances_on_stop_area_id"
     t.index ["stop_area_provider_id"], name: "index_entrances_on_stop_area_provider_id"
     t.index ["stop_area_referential_id"], name: "index_entrances_on_stop_area_referential_id"
@@ -1153,7 +1155,6 @@ ActiveRecord::Schema.define(version: 2021_10_22_073107) do
     t.datetime "updated_at"
     t.jsonb "metadata", default: {}
     t.index ["objectid"], name: "stop_points_objectid_key", unique: true
-    t.index ["route_id", "position"], name: "index_stop_points_on_route_id_and_position", unique: true
     t.index ["route_id"], name: "index_stop_points_on_route_id"
   end
 

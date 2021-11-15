@@ -178,7 +178,7 @@ class Export::Ara < Export::Base
 
       def duplicated_registration_numbers
         @duplicated_registration_numbers ||=
-          SortedSet.new(models.group(:registration_number).having("count(id) > 1").pluck(:registration_number))
+          SortedSet.new(models.group(:registration_number).having("count(#{model_class.model_name.plural}.id) > 1").pluck(:registration_number))
       end
     end
 

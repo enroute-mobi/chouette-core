@@ -19,5 +19,4 @@ class Entrance < ActiveRecord::Base
   def position_from_input
     self.position = "POINT(#{position_input})" if @position_input
   end
-
 end

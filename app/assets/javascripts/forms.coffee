@@ -58,7 +58,6 @@ $ ->
   switchInput()
   colorSelector()
   $(document).on 'submitMover', (e) ->
-    console.log('submit mover')
     submitMover()
 
 if isIE || isEdge

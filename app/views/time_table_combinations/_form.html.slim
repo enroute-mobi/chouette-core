@@ -18,5 +18,5 @@
       = f.label :operation, class: 'col-sm-4 col-xs-5 control-label'
       = f.input :operation, as: :radio_buttons, label: false, collection: TimeTableCombination.operations, label_method: lambda{|o| t("time_table_combinations.operations.#{o}")}, wrapper_html: { class: 'col-sm-8 col-xs-7' }
 
-
+  = cancel_button
   = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'tt_combination_form'

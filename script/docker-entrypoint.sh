@@ -16,7 +16,7 @@ case $command in
     exec bundle exec ./script/delayed-job-worker
     ;;
   sync)
-    exec bash ./script/launch-cron
+    exec ./script/launch-cron
     ;;
   front)
     if [ "$RUN_MIGRATIONS" = "true" ]; then

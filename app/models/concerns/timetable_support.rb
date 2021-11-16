@@ -99,7 +99,6 @@ module TimetableSupport
         period = self.find_period_by_id(item['id']) if item['id']
         if period
           self.destroy_period(period)
-          state_periods.delete(item)
         end
         true
       else

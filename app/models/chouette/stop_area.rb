@@ -478,10 +478,6 @@ module Chouette
       Chouette::ConnectionLink.where('departure_id = :id or arrival_id = :id', id: self.id)
     end
 
-    # def entrances
-    #   Chouette::Entrance.all
-    # end
-
     def self.union(relation1, relation2)
       union_query = "select id from ((#{relation1.select(:id).to_sql}) UNION (#{relation2.select(:id).to_sql})) stop_area_ids"
       where "stop_areas.id IN (#{union_query})"

@@ -5,7 +5,6 @@
     - if params[:q].present? or @entrances.any?
       .row
         .col-lg-12
-          / = render partial: 'filters'
 
     - if @entrances.any?
       .row
@@ -69,7 +68,7 @@
             ].compact,
             cls: 'table has-filter has-search'
 
-          = new_pagination @entrances, 'pull-right'
+          / = new_pagination @entrances, 'pull-right'
 
     - unless @entrances.any?
       .row.mt-xs

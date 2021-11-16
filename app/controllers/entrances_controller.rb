@@ -12,20 +12,18 @@ class EntrancesController < ChouetteController
   respond_to :html, :xml, :json
 
   def index
-    respond_to do |format|
+    index! do |format|
       format.html do
-        index! do
-          @entrances = EntranceDecorator.decorate(
-            @entrances,
-            context: {
-              workbench: @workbench
-            }
-          )
-
-          if collection.out_of_bounds?
-            redirect_to params.merge(:page => 1)
-          end
+        if collection.out_of_bounds?
+          redirect_to params.merge(:page => 1)
         end
+
+        @entrances = EntranceDecorator.decorate(
+          @entrances,
+          context: {
+            workbench: @workbench
+          }
+        )
       end
     end
   end

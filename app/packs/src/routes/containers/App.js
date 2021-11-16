@@ -10,7 +10,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   onLoadFirstPage(mustFetchRoute) {
-    actions.fetchResources(dispatch)(mustFetchRoute)()
+    return actions.fetchResources(dispatch)(mustFetchRoute)()
   }
 })
 

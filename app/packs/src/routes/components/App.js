@@ -1,11 +1,12 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { Path } from 'path-parser'
 import RouteForm from '../containers/Route'
 import AddStopPoint from '../containers/AddStopPoint'
 import VisibleStopPoints from'../containers/VisibleStopPoints'
 import SaveRoute from'../containers/SaveRoute'
 import CancelRoute from'../containers/CancelRoute'
+
+import SubmitMover from '../../helpers/SubmitMover'
 
 export default class App extends Component {
   constructor(props) {
@@ -14,15 +15,10 @@ export default class App extends Component {
   
   componentDidMount() {
     const { onLoadFirstPage, isActionUpdate } = this.props
-    onLoadFirstPage(isActionUpdate)
+    onLoadFirstPage(isActionUpdate).then(() => {
+      SubmitMover.init()
+    })
   }
-
-  componentDidUpdate(prevProps, prevState) {
-    let fetchDone = !!prevProps.isFetching && !this.props.isFetching
-    if (fetchDone && $('.route.formSubmitr').length > 0) {
-      $(document).trigger('submitMover')
-    }
-   }
 
   render() {
     if (this.props.isFetching) {

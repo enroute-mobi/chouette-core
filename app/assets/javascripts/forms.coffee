@@ -22,9 +22,6 @@ isEdge = !isIE && !!window.StyleMedia
         labelCont.text(labelCont.data('checkedvalue'))
 
 @submitMover = ->
-  if $('.page-action').children('.formSubmitr').length > 0
-    $('.page-action').children('.formSubmitr').remove()
-
   $('.formSubmitr').appendTo('.page-action').addClass('sticky-action')
 
   if isIE || isEdge
@@ -61,6 +58,7 @@ $ ->
   switchInput()
   colorSelector()
   $(document).on 'submitMover', (e) ->
+    console.log('submit mover')
     submitMover()
 
 if isIE || isEdge

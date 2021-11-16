@@ -33,41 +33,39 @@ class Export::Gtfs < Export::Base
   end
 
   def export_to_dir(directory)
-    CustomFieldsSupport.within_workgroup(referential.workgroup) do
-      operations_count = 7
+    operations_count = 7
 
-      # FIXME
-      @target = GTFS::Target.new(File.join(directory, "#{zip_file_name}.zip"))
+    # FIXME
+    @target = GTFS::Target.new(File.join(directory, "#{zip_file_name}.zip"))
 
-      Companies.new(self).export_part
-      notify_progress 1.0/operations_count
+    Companies.new(self).export_part
+    notify_progress 1.0/operations_count
 
-      StopAreas.new(self).export_part
-      notify_progress 2.0/operations_count
+    StopAreas.new(self).export_part
+    notify_progress 2.0/operations_count
 
-      Lines.new(self).export_part
-      notify_progress 3.0/operations_count
+    Lines.new(self).export_part
+    notify_progress 3.0/operations_count
 
-      Chouette::Benchmark.measure "transfers" do
-        export_transfers_to target
-        notify_progress 4.0/operations_count
-      end
-
-      Shapes.new(self).export_part
-      notify_progress 5.0/operations_count
-
-      # Export Trips
-      TimeTables.new(self).export_part
-      VehicleJourneys.new(self).export_part
-      notify_progress 6.0/operations_count
-
-      # Export stop_times.txt
-      filter_non_commercial = referential.stop_areas.non_commercial.exists?
-      ignore_time_zone = !export_scope.stop_areas.with_time_zone.exists?
-
-      VehicleJourneyAtStops.new(self, filter_non_commercial: filter_non_commercial, ignore_time_zone: ignore_time_zone).export_part
-      notify_progress 7.0/operations_count
+    Chouette::Benchmark.measure "transfers" do
+      export_transfers_to target
+      notify_progress 4.0/operations_count
     end
+
+    Shapes.new(self).export_part
+    notify_progress 5.0/operations_count
+
+    # Export Trips
+    TimeTables.new(self).export_part
+    VehicleJourneys.new(self).export_part
+    notify_progress 6.0/operations_count
+
+    # Export stop_times.txt
+    filter_non_commercial = referential.stop_areas.non_commercial.exists?
+    ignore_time_zone = !export_scope.stop_areas.with_time_zone.exists?
+
+    VehicleJourneyAtStops.new(self, filter_non_commercial: filter_non_commercial, ignore_time_zone: ignore_time_zone).export_part
+    notify_progress 7.0/operations_count
 
     target.close
   end

@@ -1,0 +1,4 @@
+- @export = Export::Ara.new(@export.attributes.except('id', 'type').symbolize_keys)
+
+= form.simple_fields_for(resource_type, @export) do |sub_form|
+  = render 'exports/options/exported_lines', form: sub_form

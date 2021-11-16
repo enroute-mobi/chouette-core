@@ -70,8 +70,6 @@ Rails.application.configure do
   config.logger = ActiveSupport::Logger.new("log/test.log", 3, 250.megabytes)
   config.colorize_logging = false
 
-  config.additional_destinations << "dummy" << "mail"
-
   config.enable_transactional_checksums = true
 end
 

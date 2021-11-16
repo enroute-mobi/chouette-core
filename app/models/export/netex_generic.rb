@@ -51,25 +51,23 @@ class Export::NetexGeneric < Export::Base
   end
 
   def generate_export_file
-    CustomFieldsSupport.within_workgroup(referential.workgroup) do
-      part_classes = [
-        Stops,
-        Stations,
-        Lines,
-        Companies,
-        Routes,
-        StopPoints,
-        RoutingConstraintZones,
-        JourneyPatterns,
-        VehicleJourneys,
-        TimeTables,
-        Organisations
-      ]
+    part_classes = [
+      Stops,
+      Stations,
+      Lines,
+      Companies,
+      Routes,
+      StopPoints,
+      RoutingConstraintZones,
+      JourneyPatterns,
+      VehicleJourneys,
+      TimeTables,
+      Organisations
+    ]
 
-      part_classes.each_with_index do |part_class, index|
-        part_class.new(self).export_part
-        notify_progress((index+1)/part_classes.count)
-      end
+    part_classes.each_with_index do |part_class, index|
+      part_class.new(self).export_part
+      notify_progress((index+1)/part_classes.count)
     end
 
     target.close

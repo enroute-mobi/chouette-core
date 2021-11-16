@@ -49,6 +49,7 @@ fr:
     netex_generic: Netex Générique
     referential_companies: Transporteurs
     gtfs: GTFS
+    ara: Ara
     base:
       <<: *exports
   activerecord:

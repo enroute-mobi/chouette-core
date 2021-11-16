@@ -15,6 +15,13 @@ en:
         successful: "%{status_html} Export <i>%{name}</i> succeeded"
         warning: "%{status_html} Export <i>%{name}</i> succeeded with warnings"
         progress: "%{status_html} Export <i>%{name}</i>: %{progress}%"
+      ara: &export_messages
+        aborted: "%{status_html} Export <i>%{name}</i> has been cancelled"
+        failed: "%{status_html} Export <i>%{name}</i> has failed"
+        running: "%{status_html} Export <i>%{name}</i> has started"
+        successful: "%{status_html} Export <i>%{name}</i> succeeded"
+        warning: "%{status_html} Export <i>%{name}</i> succeeded with warnings"
+        progress: "%{status_html} Export <i>%{name}</i>: %{progress}%"
       netex: *export_messages
       netex_full: *export_messages
       netex_generic: *export_messages

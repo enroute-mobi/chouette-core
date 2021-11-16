@@ -7,7 +7,13 @@ module LocalExportSupport
   end
 
   module ClassMethods
-    attr_accessor :skip_empty_exports
+    def skip_empty_exports
+      @skip_empty_exports = true
+    end
+
+    def skip_empty_exports?
+      @skip_empty_exports
+    end
   end
 
   def launch_worker
@@ -40,7 +46,10 @@ module LocalExportSupport
         return
       end
 
-      upload_file generate_export_file
+      CustomFieldsSupport.within_workgroup(referential.workgroup) do
+        upload_file generate_export_file
+      end
+
       self.status = :successful
       self.ended_at = Time.now
       self.save!

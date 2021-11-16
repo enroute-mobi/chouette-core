@@ -1,4 +1,3 @@
-
 RSpec.describe Destination::PublicationApi, type: :model do
   let(:publication_api) { create :publication_api }
   let(:publication_setup) { create :publication_setup }

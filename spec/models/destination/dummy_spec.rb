@@ -1,4 +1,3 @@
-
 RSpec.describe Destination::Dummy, type: :model do
   let(:result){ :successful }
   let(:publication){ create(:publication) }

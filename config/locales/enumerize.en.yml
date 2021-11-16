@@ -314,3 +314,13 @@ en:
     export_type:
       line: line
       full: full
+    entrance_type:
+      opening: "Opening"
+      open_door: "Open Door"
+      door: "Door"
+      swing_door: "Swing Door"
+      revolving_door: "Revolving Door"
+      automatic_door: "Automatic Door"
+      ticket_barrier: "Ticket Barrier"
+      gate: "Gate"
+      other: "Other"

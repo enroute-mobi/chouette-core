@@ -1,0 +1,49 @@
+en:
+  entrances:
+    search_no_results: "No Entry Points match your search"
+    actions:
+      show: "Show this Entry Point"
+      new: "Add a Entry Point"
+      edit: "Edit this Entry Point"
+      destroy: "Delete this Entry Point"
+      destroy_confirm: "Are you sur to delete this Entry Point"
+    errors:
+    new:
+      title: "Create an Entry Point for the stop"
+    edit:
+      title: "Edit %{name}"
+    show:
+      title: "%{name}"
+    index:
+      title: "Entry Points"
+    form:
+      sections:
+        identification: "Identification"
+    filters:
+  activerecord:
+    models:
+      entrance:
+        zero:  "Entry Points"
+        one:   "Entry Point"
+        other: "Entry Points"
+    attributes:
+      entrance:
+        id: 'ID'
+        name: "Name"
+        short_name: "Short Name"
+        stop_area: "Stop Area"
+        entry_flag: "Entry"
+        exit_flag: "Exit"
+        entrance_type: "Type"
+        description: "Description"
+        position_input: "Position"
+        coordinates: "Coordinates"
+        address: "Address"
+        zip_code: "Zip Code"
+        city_name: "City"
+        country: "Country"
+        objectid: "Object ID"
+        object_version: "Version"
+        created_at: "Created at"
+        updated_at: "Updated at"
+        creator_id: "Create by"

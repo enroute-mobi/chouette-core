@@ -6,7 +6,7 @@
       = f.input :stop_area_provider_id, as: :hidden
       = f.input :name
       = f.input :short_name
-      = f.input :entrance_type, as: :select, collection: Entrance::TYPE
+      = f.input :entrance_type, as: :select
       = f.association :stop_area, as: :select, collection: [f.object.stop_area_id], input_html: { data: { select2_ajax: 'true', url: autocomplete_workbench_stop_area_referential_stop_areas_path(@workbench), initvalue: {id: f.object.stop_area_id, text: f.object.stop_area.try(:formatted_selection_details)}}}
       = f.input :entry_flag, as: :switchable_checkbox
       = f.input :exit_flag, as: :switchable_checkbox
@@ -16,7 +16,7 @@
       = f.input :zip_code
       = f.input :city_name
       = f.input :country
-      = f.association :stop_area_provider, as: :select, collection: @workbench.stop_area_providers, include_blank: false
+      = f.association :stop_area_provider, as: :select, collection: @workbench.stop_area_providers, include_blank: false, label: StopAreaProvider.model_name.human
 
   .separator
 

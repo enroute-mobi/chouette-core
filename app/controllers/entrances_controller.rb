@@ -13,8 +13,25 @@ class EntrancesController < ChouetteController
   respond_to :html, :xml, :json
 
   def index
-    index! do
-      @entrances = EntranceDecorator.decorate(@entrances, context: { workbench: @workbench })
+    # index! do
+    #   @entrances = EntranceDecorator.decorate(@entrances, context: { workbench: @workbench })
+    # end
+
+    respond_to do |format|
+      format.html do
+        index! do
+          @entrances = EntranceDecorator.decorate(
+            @entrances,
+            context: {
+              workbench: @workbench
+            }
+          )
+
+          if collection.out_of_bounds?
+            redirect_to params.merge(:page => 1)
+          end
+        end
+      end
     end
   end
 
@@ -39,14 +56,9 @@ class EntrancesController < ChouetteController
   alias_method :entrance, :resource
   alias_method :stop_area_referential, :parent
 
-  # def collection
-  #   @q = parent.stop_area_referential.search(params[:q])
-  #   @entrances ||= if sort_column == 'entrance_type'
-  #     @q.result.joins('INNER JOIN public.stop_areas departures ON departures.id = connection_links.departure_id').order("departures.name #{sort_direction}").paginate(:page => params[:page])
-  #   else
-  #     @q.result.joins('INNER JOIN public.stop_areas arrivals ON arrivals.id = connection_links.arrival_id').order("arrivals.name #{sort_direction}").paginate(:page => params[:page])
-  #   end
-  # end
+  def collection
+    @entrances = parent.entrances.paginate(page: params[:page], per_page: 30)
+  end
 
   # def build_resource
   #   super.tap do |rcz|

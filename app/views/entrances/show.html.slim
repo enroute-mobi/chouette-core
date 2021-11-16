@@ -1,18 +1,17 @@
 - breadcrumb :entrance, @workbench, @entrance
-= content_for :page_header_title, t('.title', id: @entrance.get_objectid.short_id)
-/ - page_header_content_for @entrance
+- page_header_content_for @entrance
 
 / PageContent
 .page_content
   .container-fluid
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-      = simple_block_for @entrance, title: Entrance.tmf(:title) do |d|
+      = simple_block_for @entrance, title: t('entrances.section.form.identification') do |d|
         = d.attribute :objectid, as: :objectid
         = d.attribute :name
         = d.attribute :short_name
         = d.attribute :stop_area, as: :association, link: workbench_stop_area_referential_stop_area_path(@workbench, @entrance.stop_area)
-        = d.attribute :entrance_type
+        = d.attribute :entrance_type, as: :enumerize
         = d.attribute :description
         = d.attribute :position_input
         = d.attribute :address
@@ -21,4 +20,4 @@
         = d.attribute :country
         = d.attribute :entry_flag, as: :boolean
         = d.attribute :exit_flag, as: :boolean
-        = d.attribute :stop_area_provider, as: :association, link: workbench_stop_area_referential_stop_area_provider_path(@workbench, @entrance.stop_area_provider)
+        = d.attribute :stop_area_provider, as: :association, link: workbench_stop_area_referential_stop_area_provider_path(@workbench, @entrance.stop_area_provider), label: StopAreaProvider.model_name.human

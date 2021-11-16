@@ -13,14 +13,14 @@
           = table_builder_2 @entrances,
             [ \
               TableBuilderHelper::Column.new( \
-                name: t('.id'), \
-                attribute: Proc.new { |c| c.id }, \
+                key: :id, \
+                attribute: :id, \
                 sortable: false \
               ), \
               \
               TableBuilderHelper::Column.new( \
-                name: t('.entrances.name'), \
-                attribute: Proc.new { |c| c.name }, \
+                key: :name, \
+                attribute: :name, \
                 sortable: false, \
                 link_to: lambda do |entrance| \
                 workbench_stop_area_referential_entrance_path( \
@@ -30,29 +30,46 @@
                 end \
               ), \
               TableBuilderHelper::Column.new( \
-                name: t('entrances.description'), \
-                attribute: Proc.new { |c| c.description }, \
+                key: :stop_area, \
+                attribute: Proc.new{|entrance| entrance.stop_area.name}, \
+                sortable: false, \
+                link_to: lambda do |entrance| \
+                workbench_stop_area_referential_stop_area_path( \
+                    @workbench, \
+                    entrance.stop_area \
+                  ) \
+                end \
+              ), \
+              TableBuilderHelper::Column.new( \
+                name: StopAreaProvider.model_name.human, \
+                attribute: Proc.new{|entrance| entrance.stop_area_provider.name}, \
+                sortable: false, \
+                link_to: lambda do |entrance| \
+                workbench_stop_area_referential_stop_area_provider_path( \
+                    @workbench, \
+                    entrance.stop_area_provider \
+                  ) \
+                end \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :zip_code, \
+                attribute: :zip_code, \
                 sortable: false \
               ), \
               TableBuilderHelper::Column.new( \
-                name: t('entrances.zip_code'), \
-                attribute: Proc.new { |c| c.zip_code }, \
+                key: :city_name, \
+                attribute: :city_name, \
                 sortable: false \
               ), \
               TableBuilderHelper::Column.new( \
-                name: t('entrances.city_name'), \
-                attribute: Proc.new { |c| c.city_name }, \
-                sortable: false \
-              ), \
-              TableBuilderHelper::Column.new( \
-                name: t('entrances.entrance_type'), \
-                attribute: Proc.new { |c| c.entrance_type }, \
+                key: :entrance_type, \
+                attribute: Proc.new{|entrance| entrance.entrance_type.text}, \
                 sortable: false \
               ), \
             ].compact,
             cls: 'table has-filter has-search'
 
-          / = new_pagination @entrances, 'pull-right'
+          = new_pagination @entrances, 'pull-right'
 
     - unless @entrances.any?
       .row.mt-xs

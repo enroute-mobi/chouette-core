@@ -62,13 +62,13 @@
               ), \
               TableBuilderHelper::Column.new( \
                 key: :entrance_type, \
-                attribute: Proc.new{|entrance| entrance.entrance_type.text}, \
+                attribute: Proc.new{|entrance| entrance.entrance_type.text  if entrance.entrance_type}, \
                 sortable: false \
               ), \
             ].compact,
             cls: 'table has-filter has-search'
 
-          / = new_pagination @entrances, 'pull-right'
+          = new_pagination @entrances, 'pull-right'
 
     - unless @entrances.any?
       .row.mt-xs

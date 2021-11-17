@@ -123,6 +123,13 @@ module Chouette
               after do
                 new_instance.stop_area_referential = parent.stop_area_referential
               end
+
+              model :entrance do
+                attribute(:name) { |n| "Entrance #{n}" }
+                after do
+                  new_instance.stop_area_provider = parent.stop_area_provider
+                end
+              end
             end
           end
 

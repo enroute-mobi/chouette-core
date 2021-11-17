@@ -4,7 +4,7 @@ import { pick } from 'lodash'
 
 import store from '../shape.store'
 import eventEmitter, { events } from '../shape.event-emitter'
-import { onWaypointsUpdate$, onMapZoom$ } from '../shape.observables'
+import { onWaypointsUpdate$, onMapZoom$, onReceivePermissions$ } from '../shape.observables'
 
 import { useStore } from '../../../src/helpers/hooks'
 
@@ -21,6 +21,8 @@ import NameInput from './NameInput'
 import List from './List'
 import CancelButton from './CancelButton'
 import SaveButton from './SaveButton'
+
+import SubmitMover from '../../helpers/SubmitMover'
 
 const mapStateToProps = state => pick(state, ['name', 'permissions', 'style', 'routeFeatures', 'waypoints'])
 
@@ -47,6 +49,7 @@ export default function ShapeEditorMap({ isEdit, baseURL, redirectURL }) {
   useEffect(() => {
     onWaypointsUpdate$.subscribe(_state => eventEmitter.emit(events.waypointUpdated))
     onMapZoom$.subscribe(data => eventEmitter.emit(events.mapZoom, data))
+    onReceivePermissions$.subscribe(() => { SubmitMover.init() })
 
     return () => {
       eventEmitter.complete()

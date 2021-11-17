@@ -7,6 +7,8 @@ import CancelJourneyPattern from '../containers/CancelJourneyPattern'
 import SaveJourneyPattern from '../containers/SaveJourneyPattern'
 import JourneyPatternList from '../containers/JourneyPatternList'
 
+import { useSubmitMover } from '../../helpers/hooks'
+
 const App = () => {
   // Add a flash message if a shape was previoulsy created/updated/unassociated
   useEffect(() => {
@@ -36,9 +38,7 @@ const App = () => {
     }
   }, [])
 
-  useEffect(() => {
-    document.dispatchEvent(new Event('submitMover'))
-  }, [])
+  useSubmitMover()
 
   return (
     <div>

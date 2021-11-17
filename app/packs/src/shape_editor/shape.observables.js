@@ -1,6 +1,6 @@
 import { fromEvent, merge } from 'rxjs'
 import { flow, get, isFunction, isString } from 'lodash'
-import { filter, map, pluck, switchMap } from 'rxjs/operators'
+import { distinctUntilKeyChanged, filter, first, map, pluck, skip, switchMap } from 'rxjs/operators'
 
 import store from './shape.store'
 
@@ -43,4 +43,9 @@ export const onMapZoom$ = store.pipe(
   )),
   filter(([startZoom, endZoom]) => startZoom != endZoom),
   map(([_, zoom]) => zoom)
+)
+
+export const onReceivePermissions$ = store.pipe(
+  distinctUntilKeyChanged('permissions'),
+  skip(1)
 )

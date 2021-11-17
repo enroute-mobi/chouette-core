@@ -75,7 +75,8 @@ const actions = {
   },
   fetchResources: dispatch => mustFetchRoute => async () => {
     dispatch({ type: 'FETCH_START' })
-    Promise.all([
+
+    return Promise.all([
       actions.fetchUserPermissions(dispatch),
       actions.fetchOppositeRoutes(dispatch),
       ...(mustFetchRoute ? [actions.fetchRoute(dispatch)] : [])

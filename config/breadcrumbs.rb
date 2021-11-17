@@ -269,6 +269,16 @@ crumb :stop_areas do |workbench|
   parent :stop_area_referential, workbench
 end
 
+crumb :entrances do |workbench|
+  link I18n.t('entrances.index.title'), workbench_stop_area_referential_entrances_path(workbench)
+  parent :stop_area_referential, workbench
+end
+
+crumb :entrance do |workbench, entrance|
+  link breadcrumb_name(entrance), workbench_stop_area_referential_entrance_path(workbench, entrance)
+  parent :entrances, workbench
+end
+
 crumb :connection_links do |workbench|
   link I18n.t('connection_links.index.title'), workbench_stop_area_referential_connection_links_path(workbench)
   parent :stop_area_referential, workbench

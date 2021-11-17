@@ -23,6 +23,7 @@ module Chouette
     has_many :specific_vehicle_journey_at_stops, :class_name => 'Chouette::VehicleJourneyAtStop', :foreign_key => "stop_area_id"
     has_many :specific_vehicle_journeys, through: :specific_vehicle_journey_at_stops, class_name: 'Chouette::VehicleJourney', source: :vehicle_journey
     has_many :codes, as: :resource, dependent: :delete_all
+    has_many :entrances, dependent: :delete_all
 
     scope :light, ->{ select(:id, :name, :city_name, :zip_code, :time_zone, :registration_number, :kind, :area_type, :time_zone, :stop_area_referential_id, :objectid) }
     scope :with_time_zone, -> { where.not time_zone: nil }

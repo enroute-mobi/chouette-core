@@ -29,6 +29,7 @@ Apartment.configure do |config|
     'Chouette::GroupOfLine',
     'Chouette::Line',
     'Chouette::LineNotice',
+    'Entrance',
     'LineProvider',
     'Chouette::StopArea',
     'CleanUp',

@@ -1,0 +1,49 @@
+fr:
+  entrances:
+    search_no_results: "Aucun Point d’entrée ne correspond à votre recherche"
+    actions:
+      show: "Afficher ce Point d’entrée"
+      new: "Ajouter un Point d’entrée"
+      edit: "Editer ce Point d’entrée"
+      destroy: "Supprimer ce Point d’entrée"
+      destroy_confirm: "Etes vous sûr de supprimer ce Point d’entrée ?"
+    errors:
+    new:
+      title: "Créer un Point d’entrée pour l'arrêt"
+    edit:
+      title: "Editer %{name}"
+    show:
+      title: "%{name}"
+    index:
+      title: "Point d’entrées"
+    form:
+      sections:
+        identification: "Identification"
+    filters:
+  activerecord:
+    models:
+      entrance:
+        zero:  "Point d’entrées"
+        one:   "Point d’entrée"
+        other: "Point d’entrées"
+    attributes:
+      entrance:
+        id: "ID"
+        name: "Nom"
+        short_name: "Nom Court"
+        stop_area: "Arrêt"
+        entry_flag: "Entrée"
+        exit_flag: "Sortie"
+        entrance_type: "Type"
+        description: "Description"
+        position_input: "Position"
+        coordinates: "Coordonnées"
+        address: "Adresse"
+        zip_code: "Code Postal"
+        city_name: "Ville"
+        country: "Pays"
+        objectid: "Identifiant"
+        object_version: "Version"
+        created_at: "Créé le"
+        updated_at: "Edité le"
+        creator_id: "Créé par"

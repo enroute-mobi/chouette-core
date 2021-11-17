@@ -30,6 +30,7 @@ module SimpleBlockForHelper
       @options = options
     end
 
+    # as: :association, link: workbench_stop_area_referential_stop_area_path(@workbench, stop_area)
     def attribute(attribute_name, options = {})
       resource = options[:object] || object
 
@@ -52,6 +53,25 @@ module SimpleBlockForHelper
             raw_value.text
           when :boolean
             t(raw_value)
+          when :objectid
+            if resource.respond_to?(:get_objectid)
+              resource.get_objectid.short_id
+            else
+              raw_value
+            end
+          when :association
+            association_displayed_value =
+              if raw_value.respond_to?(:name)
+                raw_value.name
+              else
+                raw_value
+              end
+
+            if options[:link]
+              link_to(association_displayed_value, options[:link])
+            else
+              association_displayed_value
+            end
           else
             raw_value
           end

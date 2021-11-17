@@ -1,0 +1,23 @@
+= simple_form_for [@workbench, :stop_area_referential, @entrance], html: {class: 'form-horizontal', id: 'entrance_form'}, wrapper: :horizontal_form do |f|
+  .row
+    .col-lg-12
+      h2.mb-lg= t("connection_links.form.sections.identification")
+      = f.input :stop_area_provider_id, as: :hidden
+      = f.input :name
+      = f.input :short_name
+      = f.input :entrance_type, as: :select
+      = f.association :stop_area, as: :select, collection: [f.object.stop_area_id], input_html: { data: { select2_ajax: 'true', url: autocomplete_workbench_stop_area_referential_stop_areas_path(@workbench), initvalue: {id: f.object.stop_area_id, text: f.object.stop_area.try(:formatted_selection_details)}}}
+      = f.input :entry_flag, as: :switchable_checkbox
+      = f.input :exit_flag, as: :switchable_checkbox
+      = f.input :description, as: :text
+      = f.input :position_input, as: :string
+      = f.input :address
+      = f.input :zip_code
+      = f.input :city_name
+      = f.input :country
+      = f.association :stop_area_provider, as: :select, collection: @workbench.stop_area_providers, include_blank: false, label: StopAreaProvider.model_name.human
+
+  .separator
+
+  = cancel_button
+  = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'entrance_form'

@@ -7,6 +7,9 @@ VAR_LIST="DD_AGENT_APP DD_TRACE_DEBUG DD_AGENT_ENV DD_AGENT_HOST SESAME_API_SETT
 # Required by ruby docker image
 VAR_LIST+=" GEM_HOME BUNDLE_APP_CONFIG BUNDLE_PATH BUNDLE_SILENCE_ROOT_WARNING"
 
+# Required by Sentry initializer
+VAR_LIST+=" SENTRY_APP SENTRY_CONTEXT SENTRY_DSN"
+
 TEMP_FILE=$(mktemp)
 for variable in $VAR_LIST; do
     variable_value=$(printenv $variable || true)

@@ -27,7 +27,7 @@
                 ), \
               TableBuilderHelper::Column.new( \
                 key: :organisation, \
-                attribute: Proc.new { |workbench| workbench.organisation.name }, \
+                attribute: Proc.new { |workbench| workbench&.organisation&.name || '-' }, \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :last_merged_data, \

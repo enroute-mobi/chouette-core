@@ -5,6 +5,11 @@ class WorkgroupDecorator < AF83::Decorator
     l.content t('workgroups.actions.new')
   end
 
+  action_link primary: :index, policy: :confirm do |l|
+    l.href { h.confirm_workgroups_path }
+    l.content t('workgroups.actions.confirm_workbench')
+  end
+
   with_instance_decorator do |instance_decorator|
     instance_decorator.show_action_link
     instance_decorator.edit_action_link
@@ -12,7 +17,6 @@ class WorkgroupDecorator < AF83::Decorator
     instance_decorator.action_link policy: :add_workbench, secondary: :show do |l|
       l.content t('workgroups.actions.add_workbench')
       l.href { h.new_workgroup_workbench_path(object.id) }
-      # l.icon :"pencil-alt"
     end
 
     instance_decorator.action_link policy: :edit, secondary: :show do |l|

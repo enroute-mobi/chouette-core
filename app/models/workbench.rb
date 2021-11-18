@@ -69,14 +69,10 @@ class Workbench < ApplicationModel
     state :pending, initial: true
     state :accepted
 
-    event :accept do
-      before_success do
-        Proc.new { |_code, organisation| assign_attributes(prefix: organisation.code, organisation_id: organisation.id) }
-      end
-
+    event :accept, timestamps: true do
       transitions  from: :pending, to: :accepted do
         guard do
-          Proc.new { |code, _organisation| invitation_code == code }
+          Proc.new { |confirmation_code| invitation_code == confirmation_code }
         end
       end
     end

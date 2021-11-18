@@ -6,6 +6,17 @@ fr:
       title: "%{name}"
       sections:
         permissions: "Permissions"
+        pending_invitation:
+          title: Invitation en attente
+          text: Vous pouvez partager ce code de confirmation avec une autre organisation pour qu'ils puissent rejoindre votre groupe de travail.
+    new:
+      title: Ajouter un espace de travail
+      text: Ce nouvel espace de travail vous fournira un code d'invitation.
+    confirm:
+      title: Confirmer un espace de travail
+      text: |
+        Vous avex recu un code permettant de rejoindre ce groupe de travail appartenant a une autre organisation
+        En acceptant cette invitation, votre organisation aura un nouvel espace de travail pour collaborer avec ce groupe de travail.
     edit:
       title: "Editer l'espace de travail %{name}"
       link:  "Paramétrages"
@@ -48,3 +59,4 @@ fr:
         organisation: Organisation
         last_merged_data: Dernière finalisation
         priority: Priorité
+        confirmation_code: Code de confirmation

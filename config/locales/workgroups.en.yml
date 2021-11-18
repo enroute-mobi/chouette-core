@@ -11,6 +11,7 @@ en:
       restore_workgroup: Restore workgroup
       edit_transport_modes: Edit transport modes
       add_workbench: Add workbench
+      confirm_workbench: Confirm workbench
     edit_controls: &edit_controls
       title: "Workgroup Validation Settings"
     edit:

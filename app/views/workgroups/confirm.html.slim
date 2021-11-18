@@ -1,0 +1,21 @@
+- breadcrumb :workbench_confirmation
+= content_for :page_header_title, t('workbenches.confirm.title')
+
+.page_content
+  .container-fluid
+    .row
+      .col-lg-8.col-lg-offset-2.col-md-8.col-md-offset-2.col-sm-10.col-sm-offset-1
+        = simple_form_for :workbench_confirmation, url: confirm_workgroups_path, html: {class: 'form-horizontal', id: 'workbench_form', method: :post }, wrapper: :horizontal_form do |f|
+					.row
+						.col-lg-12
+							= f.input :confirmation_code, required: true, label: Workbench.tmf(:confirmation_code)
+							= f.hidden_field :organisation_id, value: current_organisation.id
+					
+					.row
+						.col-lg-8.col-lg-offset-4 style='font-style: italic;'
+							div
+								p = t('workbenches.confirm.text')
+
+
+					= cancel_button
+					= f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'workbench_form'

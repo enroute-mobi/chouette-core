@@ -40,4 +40,8 @@ class WorkgroupPolicy < ApplicationPolicy
   def add_workbench?
     user.has_permission?('workbenches.create')
   end
+
+  def confirm?
+    user.has_permission?('workbenches.confirm')
+  end
 end

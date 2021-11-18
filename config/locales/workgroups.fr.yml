@@ -11,6 +11,7 @@ fr:
       restore_workgroup: Restaurer
       edit_transport_modes: Paramétrer les modes de transport
       add_workbench: Ajouter un espace de travail
+      confirm_workbench: Confirmer un espace de travail
     edit_controls: &edit_controls
       title: 'Paramétrage de la validation du Groupe de Travail'
     edit:

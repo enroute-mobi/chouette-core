@@ -55,6 +55,9 @@ RSpec.describe "launch-cron" do
       REFLEX_API_URL
       RUBYOPT
       SECRET_BASE
+      SENTRY_APP
+      SENTRY_CONTEXT
+      SENTRY_DSN
       SESAME_API_SETTINGS
       SMTP_HOST
       SMTP_SETTINGS

@@ -104,6 +104,7 @@ Apartment.configure do |config|
     'StopAreaReferentialSync',
     'StopAreaReferentialSyncMessage',
     'StopAreaRoutingConstraint',
+    'Source',
     'User',
     'VehicleJourneyControl::Delta',
     'VehicleJourneyControl::Speed',

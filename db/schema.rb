@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_10_22_073107) do
+ActiveRecord::Schema.define(version: 2021_11_17_172911) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -865,6 +865,15 @@ ActiveRecord::Schema.define(version: 2021_10_22_073107) do
     t.datetime "ended_at"
     t.index ["parent_type", "parent_id"], name: "index_publications_on_parent_type_and_parent_id"
     t.index ["publication_setup_id"], name: "index_publications_on_publication_setup_id"
+  end
+
+  create_table "raw_imports", force: :cascade do |t|
+    t.string "model_type"
+    t.bigint "model_id"
+    t.text "content"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["model_type", "model_id"], name: "index_raw_imports_on_model_type_and_model_id"
   end
 
   create_table "referential_clonings", force: :cascade do |t|

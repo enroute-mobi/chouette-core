@@ -1,7 +1,7 @@
 class Export::NetexGeneric < Export::Base
   include LocalExportSupport
 
-  option :profile, enumerize: %w(none european idfm/line), default: :none
+  option :profile, enumerize: %w(none european idfm/line idfm/full), default: :none
   option :duration
   option :line_ids, serialize: :map_ids
   option :company_ids, serialize: :map_ids
@@ -139,7 +139,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def register_tag_for(line)
-      tag_index[line.id] = { line_id: line.objectid, line_name: line.name, company_id: line.company&.id }
+      tag_index[line.id] = { line_id: line.objectid, line_name: line.name, operator_id: line.company&.objectid, operator_name: line.company&.name }
     end
 
     protected

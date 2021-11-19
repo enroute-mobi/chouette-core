@@ -70,10 +70,6 @@ module ApplicationHelper
     content_tag(:i, nil, {class: "fa #{name}"})
   end
 
-  def stop_area_picture_url(stop_area)
-    image_pack_tag("static/#{(stop_area.area_type || 'zdep').underscore}.png")
-  end
-
   def selected_referential?
     @referential.present? and not @referential.new_record?
   end

@@ -19,7 +19,3 @@ node do |stop_area|
     :kind                      => stop_area.kind
   }
 end
-
-node(:stop_area_path) { |stop_area|
-  stop_area_picture_url(stop_area) || ""
-}

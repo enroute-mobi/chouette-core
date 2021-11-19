@@ -1,16 +1,5 @@
 # coding: utf-8
 module StopAreasHelper
-  def explicit_name(stop_area)
-    name = localization = ""
-
-    name += truncate(stop_area.name, :length => 30) || ""
-    name += (" <small>["+ ( truncate(stop_area.registration_number, :length => 10) || "") + "]</small>") if stop_area.registration_number
-
-    localization += stop_area.zip_code || ""
-    localization += ( truncate(stop_area.city_name, :length => 15) ) if stop_area.city_name
-
-    ( "<img src='#{stop_area_picture_url(stop_area)}'/>" + " <span style='height:25px; line-height:25px; margin-left: 5px; '>" + name + " <small style='height:25px; line-height:25px; margin-left: 10px; color: #555;'>" + localization + "</small></span>").html_safe
-  end
 
   def label_for_country country, txt=nil
     if country.to_s =~ /_/ # en_GB => gb

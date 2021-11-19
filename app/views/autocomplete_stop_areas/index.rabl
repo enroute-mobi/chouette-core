@@ -20,7 +20,3 @@ node do |stop_area|
   :stop_area_referential_id => stop_area.stop_area_referential_id
   }
 end
-
-node(:stop_area_path) { |stop_area|
-  stop_area_picture_url(stop_area) || ""
-}

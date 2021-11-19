@@ -72,8 +72,8 @@
                 =< t('date.updated', distance_in_time: time_ago_in_words(constraint.updated_at))
             - unless @stop_area_referential.stop_area_routing_constraints.any?
               = replacement_msg t('no_result_text')
-
-      .col-sm-offset-1.col-sm-4.col-xs-12
+    .row
+      .col-sm-4.col-xs-12
         .panel.panel-default
           .panel-heading
             h3.panel-title.with_actions

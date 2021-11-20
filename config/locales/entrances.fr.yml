@@ -1,21 +1,21 @@
 fr:
   entrances:
-    search_no_results: "Aucun Point d’entrée ne correspond à votre recherche"
+    search_no_results: "Aucun Point d'accès ne correspond à votre recherche"
     actions:
-      show: "Afficher ce Point d’entrée"
-      new: "Ajouter un Point d’entrée"
-      edit: "Editer ce Point d’entrée"
-      destroy: "Supprimer ce Point d’entrée"
-      destroy_confirm: "Etes vous sûr de supprimer ce Point d’entrée ?"
+      show: "Afficher ce Point d'accès"
+      new: "Ajouter un Point d'accès"
+      edit: "Editer ce Point d'accès"
+      destroy: "Supprimer ce Point d'accès"
+      destroy_confirm: "Etes vous sûr de supprimer ce Point d'accès ?"
     errors:
     new:
-      title: "Créer un Point d’entrée pour l'arrêt"
+      title: "Créer un Point d'accès pour l'arrêt"
     edit:
       title: "Editer %{name}"
     show:
       title: "%{name}"
     index:
-      title: "Point d’entrées"
+      title: "Point d'accès"
     form:
       sections:
         identification: "Identification"
@@ -23,9 +23,9 @@ fr:
   activerecord:
     models:
       entrance:
-        zero:  "Point d’entrées"
-        one:   "Point d’entrée"
-        other: "Point d’entrées"
+        zero:  "Point d'accès"
+        one:   "Point d'accès"
+        other: "Point d'accès"
     attributes:
       entrance:
         id: "ID"

@@ -58,7 +58,6 @@ class Import::Base < ApplicationModel
     self.class.short_type
   end
 
-
   scope :workbench, -> { where type: "Import::Workbench" }
 
   include IevInterfaces::Task
@@ -134,7 +133,7 @@ class Import::Base < ApplicationModel
 
     case import_category
     when 'automatic'
-      import_types = workgroup.import_types.presence || [Import::Gtfs, Import::Netex, Import::Neptune, Import::Shapefile].map(&:name)
+      import_types = workgroup.import_types.presence || [Import::Gtfs, Import::Netex, Import::Neptune, Import::NetexGeneric, Import::Shapefile].map(&:name)
 
       get_file_type.call(*import_types)
     when 'shape_file'

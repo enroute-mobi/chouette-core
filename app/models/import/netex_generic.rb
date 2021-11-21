@@ -4,10 +4,20 @@ class Import::NetexGeneric < Import::Base
 
 	delegate :stop_area_referential, :line_referential, to: :workbench
 
-	def self.accepts_file?(file)
-		!!Netex::Source.read(file)
+  def self.accepts_file?(file)
+    case File.extname(file)
+    when ".xml"
+      true
+    when ".zip"
+      Zip::File.open(file) do |zip_file|
+        files_count = zip_file.glob('*').size
+        zip_file.glob('*.xml').size == files_count
+      end
+    else
+      false
+    end
   rescue => e
-    Chouette::Safe.capture "Error in testing NeTEx file: #{file}", e
+    Chouette::Safe.capture "Error in testing NeTEx (Generic) file: #{file}", e
     false
   end
 

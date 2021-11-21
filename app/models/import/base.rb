@@ -151,17 +151,28 @@ class Import::Base < ApplicationModel
   end
 
   # Expected and used file content type
-  # Can be overrided by sub classes
   def content_type
-    'application/zip'
+    content_type = file&.content_type
+
+    # Some zip files are viewed as "application/octet-stream"
+    case content_type
+    when "application/octet-stream"
+      "application/zip"
+    else
+      content_type
+    end
   end
 
   protected
 
   # Expected and used file extension
-  # Can be overrided by sub classes
   def file_extension
-    "zip"
+    case content_type
+    when "application/zip"
+      "zip"
+    when "application/xml"
+      "xml"
+    end
   end
 
   private

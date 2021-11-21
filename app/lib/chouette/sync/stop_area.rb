@@ -111,6 +111,8 @@ module Chouette::Sync
           {
             name: name,
             area_type: stop_area_type,
+            street_name: postal_address&.address_line_1,
+            zip_code: postal_address&.post_code,
             postal_region: postal_address&.postal_region,
             city_name: stop_area_city_name,
             object_version: stop_area_object_version,

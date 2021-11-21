@@ -2,11 +2,7 @@ class Import::Neptune < Import::Base
   include LocalImportSupport
 
   def self.accepts_file?(file)
-    Zip::File.open(file) do |zip_file|
-      files_count = zip_file.glob('*').size
-      files_count -= zip_file.glob('metadata*.txt').size
-      zip_file.glob('*.xml').size == files_count
-    end
+    Neptune::Source.accept?(file)
   rescue => e
     Chouette::Safe.capture "Error in testing Neptune file: #{file}", e
     return false

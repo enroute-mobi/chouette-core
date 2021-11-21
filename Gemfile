@@ -144,6 +144,7 @@ gem 'gtfs', en_route: 'gtfs'
 gem 'netex', en_route: 'netex'
 gem 'rgeo-shapefile'
 gem 'ara-file', en_route: 'ara-file'
+gem 'neptune', en_route: 'neptune'
 
 gem 'ddtrace'
 

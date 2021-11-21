@@ -45,7 +45,7 @@ RSpec.describe Import::NetexGeneric do
 	describe '#import_stop_areas' do
     def build_stop_area_xml(stop_area)
       %{
-        <StopPlace dataSourceRef="#{stop_area_provider.objectid}" id="#{stop_area.registration_number}">
+        <StopPlace id="#{stop_area.registration_number}">
           <Name>#{stop_area.name}</Name>
           <Centroid>
             <Location>

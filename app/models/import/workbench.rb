@@ -18,6 +18,14 @@ class Import::Workbench < Import::Base
     import_category == 'netex_generic' ? %w(zip xml) : %w(zip)
   end
 
+  def assign_attributes(attributes)
+    if (import_category = attributes.delete(:import_category))
+      self.import_category = import_category
+    end
+
+    super attributes
+  end
+
   def launch_worker
     update_column :status, 'running'
     update_column :started_at, Time.now

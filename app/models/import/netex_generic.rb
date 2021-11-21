@@ -21,6 +21,9 @@ class Import::NetexGeneric < Import::Base
     false
   end
 
+  def file_extension_whitelist
+    %w(zip xml)
+  end
 	def import_without_status
     import_resources(
 			:stop_areas

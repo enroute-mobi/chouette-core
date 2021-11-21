@@ -49,8 +49,12 @@ module Chouette::Sync
           CANDIDATE_TYPES.find { |type| id.downcase.include?(type.downcase) }
         end
 
+        def type_of_place_in_resource_class
+          name_of_class == 'quay' ? 'quay' : 'monomodalStopPlace'
+        end
+
         def type_of_place
-          super || type_of_place_in_id
+          super || type_of_place_in_id || type_of_place_in_resource_class
         end
 
         # Could be managed into a Netex::Source transformer

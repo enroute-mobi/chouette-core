@@ -2,8 +2,6 @@ class Import::NetexGeneric < Import::Base
 	include LocalImportSupport
 	include Imports::WithoutReferentialSupport
 
-	delegate :stop_area_referential, :line_referential, to: :workbench
-
   def self.accepts_file?(file)
     case File.extname(file)
     when ".xml"
@@ -24,6 +22,11 @@ class Import::NetexGeneric < Import::Base
   def file_extension_whitelist
     %w(zip xml)
   end
+
+  def stop_area_provider
+    workbench.default_stop_area_provider
+  end
+
 	def import_without_status
     import_resources(
 			:stop_areas
@@ -31,16 +34,8 @@ class Import::NetexGeneric < Import::Base
   end
 
 	def import_stop_areas
-		synchronize(:stop_area, stop_area_referential)
+		synchronize(:stop_area, stop_area_provider)
 	end
-
-	# def import_lines
-	# 	synchronize(:line, line_referential)
-	# end	
-
-	# def import_companies
-	# 	synchronize(:company, line_referential)
-	# end
 
 	def netex_source
 		@netex_source ||= Netex::Source.read(file.current_path)

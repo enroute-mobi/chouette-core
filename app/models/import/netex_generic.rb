@@ -38,7 +38,7 @@ class Import::NetexGeneric < Import::Base
 	end
 
 	def netex_source
-		@netex_source ||= Netex::Source.read(file.current_path)
+		@netex_source ||= Netex::Source.read(local_file.path)
 	end
 
 	private

@@ -1,7 +1,7 @@
 = simple_form_for @search, url: request.path, method: "GET", html: { class: 'form form-filter' }  do |f|
   .ffg-row
     .input-group.search_bar class=filter_item_class(params[:search], :name)
-      = f.input :name, label: false, class: 'form-control'
+      = f.input :name, label: false, class: 'form-control', placeholder: I18n.t('exports.filters.name_or_creator_cont')
       span.input-group-btn
         button.btn.btn-default#search_btn type='submit'
           span.fa.fa-search

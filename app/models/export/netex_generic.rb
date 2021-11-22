@@ -134,6 +134,24 @@ class Export::NetexGeneric < Export::Base
   end
 
   class ResourceTagger
+
+    # Returns tags for several lines.
+    # Returns only uniq values accross all given lines
+    def tags_for_lines line_ids
+      tags = Hash.new { |h,k| h[k] = Set.new }
+
+      line_ids.each do |line_id|
+        tags_for(line_id).each do |key, value|
+          tags[key] << value
+        end
+      end
+
+      # Remove multiple values
+      tags.map do |key, set|
+        [ key, set.first ] if set.size == 1
+      end.compact.to_h
+    end
+
     def tags_for line_id
       tag_index[line_id]
     end
@@ -989,10 +1007,14 @@ class Export::NetexGeneric < Export::Base
     delegate :time_tables, to: :export_scope
 
     def export!
-      time_tables.includes(:periods, :dates).find_each do |time_table|
+      time_tables.includes(:periods, :dates, :lines).find_each do |time_table|
         decorated_time_table = TimeTableDecorator.new(time_table)
+
+        tags = resource_tagger.tags_for_lines(time_table.line_ids)
+        tagged_target = TaggedTarget.new(target, tags)
+
         decorated_time_table.netex_resources.each do |resource|
-          target << resource
+          tagged_target << resource
         end
       end
     end

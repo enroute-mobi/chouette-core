@@ -680,4 +680,63 @@ RSpec.describe Export::NetexGeneric do
 
   end
 
+  describe Export::NetexGeneric::ResourceTagger do
+    subject(:tagger) { Export::NetexGeneric::ResourceTagger.new }
+
+    def mock_line(id:, objectid:, name:, company_id:, company_name:)
+      double(id: id, objectid: objectid, name: name,
+             company: double(objectid: company_id, name: company_name))
+    end
+
+    describe "#tags_for_lines" do
+      subject { tagger.tags_for_lines(lines.map(&:id)) }
+
+      before do
+        lines.each { |line| tagger.register_tag_for(line) }
+      end
+
+      context "when a single line is given" do
+        let(:line) do
+          mock_line(id: 1, objectid: "1", name: "Test",
+                    company_id: "1", company_name: "Dummy")
+        end
+        let(:lines) { [ line ] }
+
+        it "returns tags associated to the line" do
+          is_expected.to eq(tagger.tags_for(line.id))
+        end
+      end
+
+      context "when several lines are given" do
+        context "with the same Company" do
+          let(:lines) do
+            [
+              mock_line(id: 1, objectid: "1", name: "Test 1",
+                        company_id: "1", company_name: "Dummy"),
+              mock_line(id: 2, objectid: "2", name: "Test 2",
+                        company_id: "1", company_name: "Dummy"),
+            ]
+          end
+
+          it "returns tags associated to the Company" do
+            is_expected.to eq({operator_id: "1", operator_name: "Dummy"})
+          end
+        end
+
+        context "with several Companies" do
+          let(:lines) do
+            [
+              mock_line(id: 1, objectid: "1", name: "Test 1",
+                        company_id: "1", company_name: "Dummy"),
+              mock_line(id: 2, objectid: "2", name: "Test 2",
+                        company_id: "2", company_name: "Other"),
+            ]
+          end
+
+          it { is_expected.to be_empty }
+        end
+      end
+
+    end
+  end
 end

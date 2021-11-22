@@ -38,6 +38,12 @@ class Export::NetexGeneric < Export::Base
     @stop_areas ||= Chouette::StopArea.union(export_scope.stop_areas, Chouette::StopArea.all_parents(export_scope.stop_areas))
   end
 
+  def entrances
+    # Must unscope the entrances to find entrances associated with all exported Stop Areas
+    # (including parent Stop Areas)
+    Entrance.where(stop_area: stop_areas)
+  end
+
   def quay_registry
     @quay_registry ||= QuayRegistry.new
   end
@@ -54,6 +60,7 @@ class Export::NetexGeneric < Export::Base
     part_classes = [
       Stops,
       Stations,
+      Entrances,
       Lines,
       Companies,
       Routes,
@@ -217,9 +224,16 @@ class Export::NetexGeneric < Export::Base
       end
     end
 
+    def entrance_refs
+      entrances.map do |entrance|
+        Netex::Reference.new entrance.objectid, type: 'StopPlaceEntranceRef'
+      end
+    end
+
     def netex_resource
       netex_resource_class.new(netex_attributes).tap do |stop|
         unless netex_resource_class.is_a?(Netex::Quay)
+          stop.entrances = entrance_refs
           stop.parent_site_ref = parent_site_ref if parent_id
           stop.place_types = place_types
         end
@@ -261,7 +275,7 @@ class Export::NetexGeneric < Export::Base
     delegate :stop_areas, to: :export
 
     def export!
-      stop_areas.where.not(area_type: 'zdep').includes(:codes).find_each do |stop_area|
+      stop_areas.where.not(area_type: 'zdep').includes(:codes, :entrances).find_each do |stop_area|
         decorated_stop = StopDecorator.new(stop_area)
 
         stop_place = decorated_stop.netex_resource
@@ -271,6 +285,68 @@ class Export::NetexGeneric < Export::Base
       end
     end
 
+  end
+
+  class Entrances < Part
+
+    delegate :entrances, to: :export
+
+    def export!
+      entrances.includes(:raw_import).find_each do |entrance|
+        decorated_entrance = Decorator.new(entrance)
+        target << decorated_entrance.netex_resource
+      end
+    end
+
+    class Decorator < SimpleDelegator
+
+      def netex_attributes
+        {
+          id: netex_identifier,
+          name: name,
+          short_name: short_name,
+          description: description,
+          centroid: centroid,
+          postal_address: postal_address,
+          entrance_type: entrance_type,
+          is_entry: entry?,
+          is_exit: exit?,
+          raw_xml: raw_xml,
+        }
+      end
+
+      def netex_resource
+        Netex::StopPlaceEntrance.new netex_attributes
+      end
+
+      def netex_identifier
+        @netex_identifier ||= Netex::ObjectId.parse(objectid)
+      end
+
+      def centroid
+        Netex::Point.new(
+          location: Netex::Location.new(longitude: longitude, latitude: latitude)
+        )
+      end
+
+      def postal_address_objectid
+        netex_identifier.change(type: 'PostalAddress').to_s
+      end
+
+      def postal_address
+        Netex::PostalAddress.new(
+          id: postal_address_objectid,
+          address_line_1: address,
+          post_code: zip_code,
+          town: city_name,
+          country_name: country
+        )
+      end
+
+      def raw_xml
+        raw_import&.content
+      end
+    end
   end
 
   class Lines < Part

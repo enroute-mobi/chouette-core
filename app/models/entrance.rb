@@ -15,6 +15,21 @@ class Entrance < ActiveRecord::Base
     @position_input || ("#{position.x} #{position.y}" if position)
   end
 
+  def longitude
+    position&.x
+  end
+  def latitude
+    position&.y
+  end
+
+  def entry?
+    entry_flag
+  end
+
+  def exit?
+    exit_flag
+  end
+
   before_validation :position_from_input
 
   def position_from_input

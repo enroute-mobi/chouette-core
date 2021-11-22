@@ -79,6 +79,7 @@ module Export::Scope
     delegate :shape_referential, to: :workgroup
 
     delegate :companies, to: :line_referential
+    delegate :entrances, to: :stop_area_referential
 
     delegate :shapes, to: :shape_referential
 
@@ -164,6 +165,10 @@ module Export::Scope
           .where("vehicle_journey_at_stops.vehicle_journey_id" => vehicle_journeys)
 
       Chouette::StopArea.union(stop_areas_in_routes, stop_areas_in_specific_vehicle_journey_at_stops)
+    end
+
+    def entrances
+      current_scope.entrances.where(stop_area: stop_areas)
     end
 
     def routing_constraint_zones

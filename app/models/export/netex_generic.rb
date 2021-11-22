@@ -38,6 +38,10 @@ class Export::NetexGeneric < Export::Base
     @stop_areas ||= Chouette::StopArea.union(export_scope.stop_areas, Chouette::StopArea.all_parents(export_scope.stop_areas))
   end
 
+  def entrances
+    export_scope.entrances.where(stop_area: stop_areas)
+  end
+
   def quay_registry
     @quay_registry ||= QuayRegistry.new
   end
@@ -283,11 +287,10 @@ class Export::NetexGeneric < Export::Base
 
   class Entrances < Part
 
-    delegate :entrances, to: :export_scope
+    delegate :entrances, to: :export
 
     def export!
       entrances.includes(:raw_import).find_each do |entrance|
-        Rails.logger.debug "Entrance #{entrance.inspect}"
         decorated_entrance = Decorator.new(entrance)
         target << decorated_entrance.netex_resource
       end

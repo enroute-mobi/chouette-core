@@ -1,0 +1,39 @@
+- breadcrumb :netex_import, @parent, @import
+
+.row
+  .col-lg-6.col-md-6.col-sm-12.col-xs-12
+    = render 'metadatas', import: @import
+  = processing_helper(@import)
+
+.col-lg-12
+  .error_messages
+    = render 'shared/iev_interfaces/messages', messages: @import.main_resource.messages
+
+- if @import.resources.present?
+  .col-lg-12
+    h2 = t('imports.show.netex.table_title')
+  .col-lg-12
+    = table_builder_2 @import.resources,
+      [ \
+        TableBuilderHelper::Column.new( \
+          key: :resource_type, \
+          attribute: 'resource_type', \
+          sortable: false, \
+        ), \
+        TableBuilderHelper::Column.new( \
+          key: :status, \
+          attribute: Proc.new { |n| import_resource_status(n.status) }, \
+          sortable: false, \
+        ), \
+        TableBuilderHelper::Column.new( \
+          key: :number_of_resources, \
+          attribute: Proc.new { |n| n.metrics.values.reduce(0) { |sum, v| sum + v.to_i } }, \
+          sortable: false, \
+        ), \
+        TableBuilderHelper::Column.new( \
+          name: t('imports.show.table.test_results') , \
+          attribute: Proc.new { |n| I18n.t('import_resources.index.metrics', n.metrics.deep_symbolize_keys) }, \
+          sortable: false, \
+        ) \
+      ],
+      cls: 'table has-search'

@@ -17,6 +17,10 @@ class Import::Base < ApplicationModel
     where('started_at BETWEEN :begin AND :end', begin: start_date, end: end_date)
   end
 
+  def file_extension_whitelist
+    %w(zip)
+  end
+
   def workgroup
     workbench&.workgroup
   end
@@ -42,10 +46,6 @@ class Import::Base < ApplicationModel
     "Import::Resource"
   end
 
-  def self.file_extension_whitelist
-    %w(zip)
-  end
-
   def self.human_name
     I18n.t("import.#{short_type}")
   end
@@ -57,7 +57,6 @@ class Import::Base < ApplicationModel
   def short_type
     self.class.short_type
   end
-
 
   scope :workbench, -> { where type: "Import::Workbench" }
 
@@ -123,11 +122,27 @@ class Import::Base < ApplicationModel
 
   def file_type
     return unless file
-    import_types = workgroup.import_types.presence || %w(Import::Gtfs Import::Netex Import::Neptune Import::Shapefile)
-    import_types.each do |import_type|
-      return import_type.demodulize.underscore.to_sym if import_type.constantize.accepts_file?(file.path)
+
+    get_file_type = ->(*import_types) do
+      import_types.each do |import_type|
+        return import_type.demodulize.underscore.to_sym if import_type.constantize.accepts_file?(file.path)
+      end
+
+      return nil
     end
-    return nil
+
+    case import_category
+    when 'automatic'
+      import_types = workgroup.import_types.presence || [Import::Gtfs, Import::Netex, Import::Neptune, Import::NetexGeneric, Import::Shapefile].map(&:name)
+
+      get_file_type.call(*import_types)
+    when 'shape_file'
+      get_file_type.call(Import::Shapefile.name)
+    when 'netex_generic'
+      get_file_type.call(Import::NetexGeneric.name)
+    else
+      nil
+    end
   end
 
   # Returns all attributes of the imported file from the user point of view
@@ -136,17 +151,28 @@ class Import::Base < ApplicationModel
   end
 
   # Expected and used file content type
-  # Can be overrided by sub classes
   def content_type
-    'application/zip'
+    content_type = file&.content_type
+
+    # Some zip files are viewed as "application/octet-stream"
+    case content_type
+    when "application/octet-stream"
+      "application/zip"
+    else
+      content_type
+    end
   end
 
   protected
 
   # Expected and used file extension
-  # Can be overrided by sub classes
   def file_extension
-    "zip"
+    case content_type
+    when "application/zip"
+      "zip"
+    when "application/xml"
+      "xml"
+    end
   end
 
   private

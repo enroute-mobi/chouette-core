@@ -48,6 +48,15 @@ GIT
       rails (>= 5.2)
 
 GIT
+  remote: https://bitbucket.org/enroute-mobi/neptune.git
+  revision: 9aae710b69b2c8c04771d1725a9ff311cb51d5f8
+  specs:
+    neptune (0.1.0)
+      ox
+      rubyzip
+      saxerator
+
+GIT
   remote: https://bitbucket.org/enroute-mobi/nest.git
   revision: 702efc36320755d83a00913580febafeaa248d77
   specs:
@@ -850,6 +859,7 @@ DEPENDENCIES
   map_layers (= 0.0.4)
   mimemagic (>= 0.4.3)
   mini_racer
+  neptune!
   nest!
   net-sftp
   netex!

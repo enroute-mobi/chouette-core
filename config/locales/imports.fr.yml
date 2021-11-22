@@ -129,6 +129,7 @@ fr:
           shape_attribute_as_id: Attribut utilisé comme identifiant
           import_category: Type d'import
           import_category_collection:
+            netex_generic: Netex Générique
             shape_file: Fichier tracé
             automatic: Automatique
           merge_method_collection:

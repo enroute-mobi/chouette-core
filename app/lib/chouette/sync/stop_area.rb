@@ -36,9 +36,9 @@ module Chouette::Sync
         end
       end
 
-      def counts
+      def counters
         counters = [stop_place_updater, quay_updater, deleter].map(&:counters)
-        Counters.sum(counters).to_hash
+        Counters.sum(counters)
       end
 
       class Decorator < Chouette::Sync::Updater::ResourceDecorator
@@ -49,8 +49,12 @@ module Chouette::Sync
           CANDIDATE_TYPES.find { |type| id.downcase.include?(type.downcase) }
         end
 
+        def type_of_place_in_resource_class
+          name_of_class == 'quay' ? 'quay' : 'monomodalStopPlace'
+        end
+
         def type_of_place
-          super || type_of_place_in_id
+          super || type_of_place_in_id || type_of_place_in_resource_class
         end
 
         # Could be managed into a Netex::Source transformer
@@ -107,6 +111,8 @@ module Chouette::Sync
           {
             name: name,
             area_type: stop_area_type,
+            street_name: postal_address&.address_line_1,
+            zip_code: postal_address&.post_code,
             postal_region: postal_address&.postal_region,
             city_name: stop_area_city_name,
             object_version: stop_area_object_version,

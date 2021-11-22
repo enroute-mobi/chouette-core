@@ -18,3 +18,5 @@ en:
         resource:
           name: "Filename"
           status: "Status"
+          resource_type: Resource Type
+          number_of_resources: Number of resources

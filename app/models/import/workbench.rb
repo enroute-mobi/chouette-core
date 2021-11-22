@@ -3,7 +3,7 @@ class Import::Workbench < Import::Base
 
   after_commit :launch_worker, :on => :create
 
-  option :import_category, collection: %w(automatic shape_file), default_value: 'automatic'
+  option :import_category, collection: %w(automatic shape_file netex_generic), default_value: 'automatic'
   option :automatic_merge, default_value: false, depends: {option: :import_category, value: "automatic"}, type: :boolean
   option :archive_on_fail, default_value: false, depends: {option: :import_category, value: "automatic"}, type: :boolean
   option :flag_urgent, default_value: false, depends: {option: :import_category, value: "automatic"}, type: :boolean
@@ -13,6 +13,18 @@ class Import::Workbench < Import::Base
   has_many :compliance_check_sets, -> { where(parent_type: "Import::Workbench") }, foreign_key: :parent_id, dependent: :destroy
 
   def main_resource; self end
+
+  def file_extension_whitelist
+    import_category == 'netex_generic' ? %w(zip xml) : %w(zip)
+  end
+
+  def assign_attributes(attributes)
+    if (import_category = attributes.delete(:import_category))
+      self.import_category = import_category
+    end
+
+    super attributes
+  end
 
   def launch_worker
     update_column :status, 'running'
@@ -61,6 +73,10 @@ class Import::Workbench < Import::Base
 
   def import_shapefile
     create_child_import Import::Shapefile
+  end
+
+  def import_netex_generic
+    create_child_import Import::NetexGeneric
   end
 
   def create_child_import(klass)

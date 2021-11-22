@@ -47,4 +47,7 @@ RSpec.describe Chouette::Sync::Counters do
 
   end
 
+  describe '#total' do
+  end
+
 end

@@ -2,7 +2,7 @@ class Import::Neptune < Import::Base
   include LocalImportSupport
 
   def self.accepts_file?(file)
-    Neptune::Source.accept?(file)
+    ::Neptune::Source.accept?(file)
   rescue => e
     Chouette::Safe.capture "Error in testing Neptune file: #{file}", e
     return false

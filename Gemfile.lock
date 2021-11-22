@@ -49,7 +49,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/neptune.git
-  revision: 9aae710b69b2c8c04771d1725a9ff311cb51d5f8
+  revision: cb5d1f245d55afb1b307b47a1679f28da299fb82
   specs:
     neptune (0.1.0)
       ox

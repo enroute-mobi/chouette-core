@@ -80,6 +80,7 @@ Apartment.configure do |config|
     'PublicationApiKey',
     'PublicationApiSource',
     'PublicationSetup',
+    'RawImport',
     'Referential',
     'ReferentialCloning',
     'ReferentialMetadata',

@@ -39,7 +39,9 @@ class Export::NetexGeneric < Export::Base
   end
 
   def entrances
-    export_scope.entrances.where(stop_area: stop_areas)
+    # Must unscope the entrances to find entrances associated with all exported Stop Areas
+    # (including parent Stop Areas)
+    Entrance.where(stop_area: stop_areas)
   end
 
   def quay_registry

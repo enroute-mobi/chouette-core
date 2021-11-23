@@ -72,8 +72,8 @@ RSpec.describe Import::NetexGeneric do
     it 'should create new stop_areas' do
       expect{ import.import_stop_areas }.to change{ imported_stop_areas.count }.by 1
       new_stop_area = Chouette::StopArea.find_by registration_number: stop_area.registration_number
-      expect(new_stop_area.latitude).to eq(stop_area.latitude)
-      expect(new_stop_area.longitude).to eq(stop_area.longitude)
+      expect(new_stop_area.latitude).to be_within(0.0000001).of(stop_area.latitude)
+      expect(new_stop_area.longitude).to be_within(0.0000001).of(stop_area.longitude)
       expect(new_stop_area.name).to eq(stop_area.name)
     end
 

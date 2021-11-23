@@ -17,7 +17,7 @@ module Chouette
       scope = time_table.periods
       scope = scope.where.not(id: id) if id
       if scope.overlaps(range).exists?
-        Chouette::Safe.capture "TimeTablePeriod from #{period_start} to #{period_end} can't be saved for TimeTable #{time_table.id}", RangeError.new("TimeTablePeriod from #{period_start} to #{period_end} can't be saved for TimeTable #{time_table.id}")
+        Rails.logger.error "TimeTablePeriod from #{period_start} to #{period_end} can't be saved for TimeTable #{time_table.id}"
         errors.add(:overlapped_periods, I18n.t("activerecord.time_table.errors.messages.overlapped_periods"))
       end
     end

@@ -25,8 +25,8 @@
       .col-lg-12
         - form.object.destinations.build unless form.object.destinations.size > 0
         = form.simple_fields_for(:destinations) do |destination_form|
-          -  @publication_setup.destinations.each do |d|
-            = render 'destination_fields', f: destination_form, destination: d
+          = render 'destination_fields', f: destination_form, destination: destination_form.object
+          
         .links.nested-linker
           = link_to_add_association t('publication_setups.form.add_destination'), form, :destinations, class: 'btn btn-primary'
 

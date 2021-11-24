@@ -18,7 +18,7 @@ const handleResponse = (action, status) => _data => {
   })
 }
 
-const swrOptions = (fetchingApi, fetchJourneyPatterns) => action => [
+const swrOptions = (fetchingApi, fetchJourneyPatterns, enterEditMode) => action => [
   url => {
     fetchingApi()
 
@@ -31,7 +31,9 @@ const swrOptions = (fetchingApi, fetchJourneyPatterns) => action => [
       }
     })
     .then(res => res.json())
-    .then(() => fetchJourneyPatterns())
+    .then(() => {
+      fetchJourneyPatterns().then(() => enterEditMode())
+    })
   },
   {
     revalidateOnMount: false,
@@ -40,8 +42,10 @@ const swrOptions = (fetchingApi, fetchJourneyPatterns) => action => [
     onError: handleResponse(action, 'error')
   }
 ]
+
 export default function JourneyPattern({
   editMode,
+  enterEditMode,
   fetchingApi,
   fetchRouteCosts,
   fetchJourneyPatterns,
@@ -60,7 +64,7 @@ export default function JourneyPattern({
 
   const hasShape = !!shape.id
   const canEditShape = !!shape?.has_waypoints
-  const options = swrOptions(fetchingApi, fetchJourneyPatterns)
+  const options = swrOptions(fetchingApi, fetchJourneyPatterns, enterEditMode)
 
   const { mutate: duplicateJourneyPattern } = useSWR(`${basePath}/duplicate`, ...options('duplicate') )
 

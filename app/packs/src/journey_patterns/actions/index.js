@@ -186,7 +186,8 @@ const actions = {
     }
     let urlJSON = window.location.pathname + str
     let hasError = false
-    fetch(urlJSON, {
+  
+    return fetch(urlJSON, {
       credentials: 'same-origin',
     }).then(response => {
         if(response.status == 500) {

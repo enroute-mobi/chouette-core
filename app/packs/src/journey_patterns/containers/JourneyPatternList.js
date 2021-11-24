@@ -21,7 +21,10 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(actions.fetchingApi())
     },
     fetchJourneyPatterns: () => {
-      actions.fetchJourneyPatterns(dispatch)
+      return actions.fetchJourneyPatterns(dispatch)
+    },
+    enterEditMode: () => {
+      dispatch(actions.enterEditMode())
     },
     onCheckboxChange: (e, index) =>{
       dispatch(actions.updateCheckboxValue(e, index))

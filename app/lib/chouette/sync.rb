@@ -9,6 +9,8 @@ module Chouette
 
       mattr_accessor :default_model_id_attribute, default: :registration_number
 
+      delegate :resources, :models, to: :counters
+
       def initialize(options = {})
         default_options = {
           model_id_attribute: default_model_id_attribute

@@ -3,7 +3,7 @@ module Chouette
     class Counters
 
       def initialize(initial_counts = {})
-        @counts = Hash.new { |h,k| h[k] = 0 }
+        @counts = Hash.new { |h,k| h[k] = [] }
         @counts.merge! initial_counts.slice(*TYPES)
       end
 
@@ -20,11 +20,23 @@ module Chouette
 
       def count(type)
         check_type! type
-        counts[type]
+        counts[type].length
       end
 
       def total
         TYPES.reduce(0) { |total, type| total + count(type) }
+      end
+
+      def resources
+        TYPES.reduce([]) do |list, type|
+          count(type) > 0 ? [*list, *@counts[type].last] : list
+        end
+      end
+
+      def models
+        TYPES.reduce([]) do |list, type|
+          count(type) > 0 ? [*list, *@counts[type].first] : list
+        end
       end
 
       types.each do |type|
@@ -33,18 +45,18 @@ module Chouette
         end
       end
 
-      def increment_count(type, count: 1)
+      def increment_count(type, model, resource = nil, count: 1)
         check_type! type
-        counts[type] += count
+        counts[type].push(model, resource)
       end
 
       def sum(other)
-        added_counts = counts.merge(other.counts) { |_, a, b| a + b }
+        added_counts = counts.merge(other.counts) { |_, a, b| [*a, *b] }
         self.class.new added_counts
       end
 
       def sum!(other)
-        @counts = counts.merge(other.counts) { |_, a, b| a + b }
+        @counts = counts.merge(other.counts) { |_, a, b| [*a, *b] }
       end
 
       def to_hash

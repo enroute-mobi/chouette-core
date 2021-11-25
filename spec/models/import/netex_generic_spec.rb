@@ -6,6 +6,8 @@ RSpec.describe Import::NetexGeneric do
     end
   end
 
+  let(:workgroup) { workbench.workgroup }
+
   let(:stop_area_referential) { workbench.stop_area_referential }
   let(:stop_area_provider) { workbench.stop_area_providers.first }
   let(:line_referential) { workbench.line_referential }
@@ -85,6 +87,100 @@ RSpec.describe Import::NetexGeneric do
       new_stop_area.update name: "Dummy"
 
       expect { import.import_stop_areas }.to change { new_stop_area.reload.name }.from("Dummy").to(stop_area.name)
+    end
+
+    context 'codes' do
+      before do
+        FactoryBot.create(:code_space, short_name: 'foo', workgroup: workgroup)
+      end
+  
+      context 'when some are valid' do
+        let(:xml) do
+          %{
+            <StopPlace id='test'>
+              <Name>test</Name>
+              <keyList>
+                <KeyValue typeOfKey="ALTERNATE_IDENTIFIER">
+                  <Key>foo</Key>
+                  <Value>704A</Value>
+                </KeyValue>
+                <KeyValue typeOfKey="ALTERNATE_IDENTIFIER">
+                  <Key>foo</Key>
+                  <Value>704B</Value>
+                </KeyValue>
+              </keyList>
+            </StopPlace>
+          }
+        end
+  
+        it 'should them' do
+          import.import_stop_areas
+
+          new_stop_area = imported_stop_areas.last
+          codes = new_stop_area.codes
+
+          expect(codes).to include(an_object_having_attributes(value: "704A"), an_object_having_attributes(value: "704B"))
+        end
+      end
+
+      context 'when some are invalid' do
+        let(:xml) do
+          %{
+            <StopPlace id='test'>
+              <Name>test</Name>
+              <keyList>
+                <KeyValue typeOfKey="ALTERNATE_IDENTIFIER">
+                  <Key>bar</Key>
+                  <Value>704A</Value>
+                </KeyValue>
+                <KeyValue typeOfKey="ALTERNATE_IDENTIFIER">
+                  <Key>bar</Key>
+                  <Value>704B</Value>
+                </KeyValue>
+              </keyList>
+            </StopPlace>
+          }
+        end
+
+        it 'should add import messages if codes are not valid' do
+          import.import_stop_areas
+
+          resource = import.resources.first
+
+          code_space_error_count = resource
+            .messages
+            .where(
+              criticity: :error,
+              message_key: :code_space_error
+            ).count
+
+          expect(code_space_error_count).to eq(2)
+        end
+      end
+  
+      context 'when one has the external code space' do
+        let(:xml) do
+          %{
+            <StopPlace id='test'>
+              <Name>test</Name>
+              <keyList>
+                <KeyValue typeOfKey="ALTERNATE_IDENTIFIER">
+                  <Key>external</Key>
+                  <Value>704A</Value>
+                </KeyValue>
+              </keyList>
+            </StopPlace>
+          }
+        end
+
+        it 'should use code value as a registration number' do
+          import.import_stop_areas
+
+          new_stop_area = imported_stop_areas.last
+
+          expect(new_stop_area.registration_number).to eq('704A')
+        end
+      end
     end
   end
 

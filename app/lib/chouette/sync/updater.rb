@@ -46,12 +46,12 @@ module Chouette
         @counters ||= Counters.new
       end
 
-      def increment_count(type)
-        counters.increment_count(type)
+      def increment_count(type, model, resource = nil)
+        counters.increment_count(type, model, resource)
       end
 
       def report_invalid_model(model, resource = nil)
-        counters.increment_count(:errors)
+        increment_count(:errors, model, resource)
 
         resource_part = resource ? " from #{resource.inspect}" : ""
         Rails.logger.warn "Invalid model in synchronization: #{model.inspect} #{model.errors.inspect}#{resource_part}"
@@ -108,7 +108,7 @@ module Chouette
           attributes = prepare_attributes(resource)
           model = scope.create(attributes)
           if model.persisted?
-            increment_count :create
+            increment_count :create, model, resource
           else
             report_invalid_model model, resource
           end
@@ -118,7 +118,7 @@ module Chouette
           attributes = prepare_attributes(resource)
           Rails.logger.debug { "Update #{model.inspect} with #{attributes.inspect}" }
           if model.update(attributes)
-            increment_count :update
+            increment_count :update, model, resource
           else
             report_invalid_model model, resource
           end

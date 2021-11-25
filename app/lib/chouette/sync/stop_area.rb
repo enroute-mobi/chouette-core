@@ -64,6 +64,14 @@ module Chouette::Sync
           'multimodalStopPlace' => 'lda',
         }.freeze
 
+        def id
+          codes.find { |key_value| key_value.key == 'external' }&.value || super
+        end
+
+        def stop_area
+          @stop_area ||= Chouette::StopArea.find_by_registration_number(id)
+        end
+
         def stop_area_type
           TYPE_MAPPING[type_of_place]
         end
@@ -107,6 +115,26 @@ module Chouette::Sync
           resolve :stop_area_provider, data_source_ref
         end
 
+        def codes
+          key_list.select do |key_value|
+            key_value.type_of_key == 'ALTERNATE_IDENTIFIER'
+          end
+        end
+
+        def codes_attributes
+          codes.reduce([]) do |list, key_value|
+            code_space = CodeSpace.find_by_short_name!(key_value.key)
+
+            # We have a database constraint that prevent to have duplicate codes so we dont want to add an invalid one
+            raise ActiveRecord::RecordNotUnique if code_space.codes.exists?(resource_type: 'Chouette::StopArea', resource_id: stop_area&.id, code_space_id: code_space.id, value: key_value.value)
+
+            [*list, { code_space_id: code_space.id, value: key_value.value}]
+          rescue ActiveRecord::RecordNotUnique
+          rescue ActiveRecord::RecordNotFound
+            list
+          end
+        end
+
         def model_attributes
           {
             name: name,
@@ -122,6 +150,7 @@ module Chouette::Sync
             parent_id: stop_area_parent_id,
             stop_area_provider_id: stop_area_provider_id,
             status: :confirmed,
+            codes_attributes: codes_attributes,
             import_xml: raw_xml
           }
         end

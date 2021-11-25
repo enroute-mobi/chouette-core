@@ -34,7 +34,23 @@ class Import::NetexGeneric < Import::Base
   end
 
 	def import_stop_areas
-		synchronize(:stop_area, stop_area_provider)
+		synchronize(:stop_area, stop_area_provider) do |sync, import_resource|	
+			import_resource.transaction do
+				sync.resources.each do |r|
+					r.codes.each do |key_value|
+						CodeSpace.find_by_short_name!(key_value.key)
+					rescue ActiveRecord::RecordNotFound
+						import_resource.messages.create(
+							criticity: :error,
+							message_key: :code_space_error,
+							message_attributes: {
+								short_name: key_value.value
+							}
+						)
+					end
+				end
+			end
+		end
 	end
 
 	def netex_source
@@ -51,11 +67,13 @@ class Import::NetexGeneric < Import::Base
 
 		sync.update_or_create
 
-		create_resource(sync.counters, resource_name)
+		resource = create_resource(sync.counters, resource_name)
 		
 		if sync.counters.count(:errors) > 0
 			@status = 'failed'
 		end
+
+		yield(sync, resource) if block_given?
 	
 		sync
 	end
@@ -80,5 +98,7 @@ class Import::NetexGeneric < Import::Base
 			resource.save!
 			resource.update_status_from_messages
 		end
+
+		resource
 	end
 end

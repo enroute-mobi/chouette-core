@@ -19,6 +19,7 @@ fr:
     form:
       sections:
         identification: "Identification"
+        localization: "Localisation"
     filters:
   activerecord:
     models:

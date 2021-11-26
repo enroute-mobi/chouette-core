@@ -6,18 +6,21 @@
   .container-fluid
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-      = simple_block_for @entrance, title: t('entrances.section.form.identification') do |d|
-        = d.attribute :objectid, as: :objectid
-        = d.attribute :name
-        = d.attribute :short_name
-        = d.attribute :stop_area, as: :association, link: workbench_stop_area_referential_stop_area_path(@workbench, @entrance.stop_area)
-        = d.attribute :entrance_type, as: :enumerize
-        = d.attribute :description
-        = d.attribute :position_input
-        = d.attribute :address
-        = d.attribute :zip_code
-        = d.attribute :city_name
-        = d.attribute :country
-        = d.attribute :entry_flag, as: :boolean
-        = d.attribute :exit_flag, as: :boolean
-        = d.attribute :stop_area_provider, as: :association, link: workbench_stop_area_referential_stop_area_provider_path(@workbench, @entrance.stop_area_provider), label: StopAreaProvider.model_name.human
+        = simple_block_for @entrance, title: t('entrances.form.sections.identification') do |d|
+          = d.attribute :objectid, as: :objectid
+          = d.attribute :name
+          = d.attribute :short_name
+          = d.attribute :stop_area, as: :association, link: workbench_stop_area_referential_stop_area_path(@workbench, @entrance.stop_area)
+          = d.attribute :entry_flag, as: :boolean
+          = d.attribute :exit_flag, as: :boolean
+          = d.attribute :entrance_type, as: :enumerize
+          = d.attribute :description
+
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = simple_block_for @entrance, title: t('entrances.form.sections.localization') do |d|
+          = d.attribute :position_input
+          = d.attribute :address
+          = d.attribute :zip_code
+          = d.attribute :city_name
+          = d.attribute :country
+          = d.attribute :stop_area_provider, as: :association, link: workbench_stop_area_referential_stop_area_provider_path(@workbench, @entrance.stop_area_provider), label: StopAreaProvider.model_name.human

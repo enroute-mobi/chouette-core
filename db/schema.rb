@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_11_17_172911) do
+ActiveRecord::Schema.define(version: 2021_11_19_102837) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -873,7 +873,7 @@ ActiveRecord::Schema.define(version: 2021_11_17_172911) do
     t.text "content"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["model_type", "model_id"], name: "index_raw_imports_on_model_type_and_model_id"
+    t.index ["model_id", "model_type"], name: "index_raw_imports_on_model_id_and_model_type", unique: true
   end
 
   create_table "referential_clonings", force: :cascade do |t|

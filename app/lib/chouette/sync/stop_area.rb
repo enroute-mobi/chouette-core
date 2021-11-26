@@ -20,10 +20,10 @@ module Chouette::Sync
         @stop_place_updater ||= new_updater(resource_type: :stop_place)
       end
 
-      def update_or_create
+      def update_or_create(&block)
         # Order matters, parents "first"
-        stop_place_updater.update_or_create
-        quay_updater.update_or_create
+        stop_place_updater.update_or_create(&block)
+        quay_updater.update_or_create(&block)
       end
 
       def delete_after_update_or_create
@@ -116,22 +116,22 @@ module Chouette::Sync
         end
 
         def codes
-          key_list.select do |key_value|
-            key_value.type_of_key == 'ALTERNATE_IDENTIFIER'
-          end
+          key_list.select(&type_of_key_filter('ALTERNATE_IDENTIFIER'))
         end
 
         def codes_attributes
           codes.reduce([]) do |list, key_value|
-            code_space = CodeSpace.find_by_short_name!(key_value.key)
+            begin
+              code_space = CodeSpace.find_by_short_name!(key_value.key)
 
-            # We have a database constraint that prevent to have duplicate codes so we dont want to add an invalid one
-            raise ActiveRecord::RecordNotUnique if code_space.codes.exists?(resource_type: 'Chouette::StopArea', resource_id: stop_area&.id, code_space_id: code_space.id, value: key_value.value)
+              # We have a database constraint that prevent to have duplicate codes so we dont want to add an invalid one
+              raise ActiveRecord::RecordNotUnique if code_space.codes.exists?(resource_type: 'Chouette::StopArea', resource_id: stop_area&.id, code_space_id: code_space.id, value: key_value.value)
 
-            [*list, { code_space_id: code_space.id, value: key_value.value}]
-          rescue ActiveRecord::RecordNotUnique
-          rescue ActiveRecord::RecordNotFound
-            list
+              list = [*list, { code_space_id: code_space.id, value: key_value.value}]
+            rescue ActiveRecord::RecordNotUnique
+            rescue ActiveRecord::RecordNotFound
+              list
+            end
           end
         end
 
@@ -153,6 +153,12 @@ module Chouette::Sync
             codes_attributes: codes_attributes,
             import_xml: raw_xml
           }
+        end
+
+        private
+
+        def type_of_key_filter(value)
+          Proc.new { |key_value| key_value.type_of_key == value }
         end
 
       end

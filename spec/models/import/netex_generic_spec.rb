@@ -113,7 +113,7 @@ RSpec.describe Import::NetexGeneric do
           }
         end
   
-        it 'should them' do
+        it 'should add them' do
           import.import_stop_areas
 
           new_stop_area = imported_stop_areas.last

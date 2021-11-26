@@ -18,9 +18,13 @@ module Chouette
         end
       end
 
-      def count(type)
+      def get(type)
         check_type! type
-        counts[type].length
+        counts[type]
+      end
+
+      def count(type)
+        get(type).length
       end
 
       def total
@@ -45,9 +49,9 @@ module Chouette
         end
       end
 
-      def increment_count(type, model, resource = nil, count: 1)
+      def increment_count(type, count: 1, **options)
         check_type! type
-        counts[type].push(model, resource)
+        count.times { counts[type].push(options) }
       end
 
       def sum(other)

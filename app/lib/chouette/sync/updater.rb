@@ -27,11 +27,11 @@ module Chouette
         end
       end
 
-      def update_or_create
+      def update_or_create(&block)
         resources_in_batches do |batch|
           transaction do
-            batch.update_all
-            batch.create_all
+            batch.update_all(&block)
+            batch.create_all(&block)
           end
 
           processed_identifiers.concat batch.resource_ids
@@ -46,12 +46,16 @@ module Chouette
         @counters ||= Counters.new
       end
 
-      def increment_count(type, model, resource = nil)
-        counters.increment_count(type, model, resource)
+      def increment_count(type, **options)
+        counters.increment_count(type, options)
       end
 
-      def report_invalid_model(model, resource = nil)
-        increment_count(:errors, model, resource)
+      def report_invalid_model(model:, resource: nil, **options)
+        increment_count(:errors,
+          model: model,
+          resource: resource,
+          **options
+        )
 
         resource_part = resource ? " from #{resource.inspect}" : ""
         Rails.logger.warn "Invalid model in synchronization: #{model.inspect} #{model.errors.inspect}#{resource_part}"
@@ -104,24 +108,28 @@ module Chouette
           attributes
         end
 
-        def create(resource)
+        def create(resource, &block)
           attributes = prepare_attributes(resource)
           model = scope.create(attributes)
           if model.persisted?
-            increment_count :create, model, resource
+            increment_count :create, model: model, resource: resource
           else
-            report_invalid_model model, resource
+            report_invalid_model model: model, resource: resource
           end
+
+          yield(updater, model, resource) if block_given?
         end
 
-        def update(model, resource)
+        def update(model, resource, &block)
           attributes = prepare_attributes(resource)
           Rails.logger.debug { "Update #{model.inspect} with #{attributes.inspect}" }
           if model.update(attributes)
-            increment_count :update, model, resource
+            increment_count :update, model: model, resource: resource
           else
-            report_invalid_model model, resource
+            report_invalid_model model: model, resource: resource
           end
+
+          yield(updater, model, resource) if block_given?
         end
 
       end
@@ -177,15 +185,15 @@ module Chouette
           end
         end
 
-        def update_all
+        def update_all(&block)
           existing_models do |model, decorated_resource|
-            models.update model, decorated_resource
+            models.update model, decorated_resource, &block
           end
         end
 
-        def create_all
+        def create_all(&block)
           new_resources do |decorated_resource|
-            models.create decorated_resource
+            models.create decorated_resource, &block
           end
         end
 

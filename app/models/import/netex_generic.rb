@@ -34,21 +34,21 @@ class Import::NetexGeneric < Import::Base
   end
 
 	def import_stop_areas
-		synchronize(:stop_area, stop_area_provider) do |sync, import_resource|	
-			import_resource.transaction do
-				sync.resources.each do |r|
-					r.codes.each do |key_value|
-						CodeSpace.find_by_short_name!(key_value.key)
-					rescue ActiveRecord::RecordNotFound
-						import_resource.messages.create(
-							criticity: :error,
-							message_key: :code_space_error,
-							message_attributes: {
-								short_name: key_value.value
-							}
-						)
-					end
-				end
+		synchronize(:stop_area, stop_area_provider) do |updater, model, resource|
+			resource.codes.each do |key_value|
+				CodeSpace.find_by_short_name!(key_value.key)
+			rescue ActiveRecord::RecordNotFound
+				updater.report_invalid_model(
+					model: model,
+					resource: resource,
+					import_message: {
+						criticity: :error,
+						message_key: :code_space_error,
+						message_attributes: {
+							short_name: key_value.value
+						}
+					}
+				)
 			end
 		end
 	end
@@ -59,21 +59,19 @@ class Import::NetexGeneric < Import::Base
 
 	private
 
-	def synchronize(resource_name, target)
+	def synchronize(resource_name, target, &block)
 		sync = "Chouette::Sync::#{resource_name.to_s.camelcase}::Netex".constantize.new(
 			source: netex_source,
 			target: target
 		)
 
-		sync.update_or_create
+		sync.update_or_create(&block)
 
 		resource = create_resource(sync.counters, resource_name)
 		
 		if sync.counters.count(:errors) > 0
 			@status = 'failed'
 		end
-
-		yield(sync, resource) if block_given?
 	
 		sync
 	end
@@ -90,8 +88,9 @@ class Import::NetexGeneric < Import::Base
       r.import = self
     end
 
-		counters.count(:errors).times do
-			resource.messages.build(criticity: :error)
+		counters.get(:errors).each do |error|
+			message_attributes = (error[:import_message] || {}).reverse_merge(criticity: :error)
+			resource.messages.build(message_attributes)
 		end
 
 		resource.transaction do

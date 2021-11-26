@@ -9,7 +9,7 @@ class EntrancesController < ChouetteController
   belongs_to :workbench
   belongs_to :stop_area_referential, singleton: true
 
-  respond_to :html, :xml, :json
+  respond_to :html, :xml, :json, :geojson
 
   def index
     index! do |format|
@@ -31,6 +31,8 @@ class EntrancesController < ChouetteController
   def show
     show! do |format|
       @entrance = @entrance.decorate context: { workbench: @workbench }
+
+      format.geojson { render 'entrances/show.geo' }
     end
   end
 

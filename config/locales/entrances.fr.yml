@@ -14,6 +14,7 @@ fr:
       title: "Editer %{name}"
     show:
       title: "%{name}"
+      map: "Carte"
     index:
       title: "Point d'accès"
     form:

@@ -129,8 +129,8 @@ class Referential < ApplicationModel
 
   def self.clean!
     Rails.logger.info "Cleaning Referentials (cooldown: #{TIME_BEFORE_CLEANING} days)"
-    clean_scope.find_each do |referential|
-      Rails.logger.info "Clean Referential #{referential.id} #{referential.slug}"
+    clean_scope.pluck(:id, :slug).each do |id, slug|
+      Rails.logger.info "Clean Referential #{id} #{slug}"
     end
     clean_scope.destroy_all
   end

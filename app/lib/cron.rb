@@ -87,9 +87,7 @@ module Cron
     end
 
     def purge_referentials
-      Workbench.find_each do |w|
-        w.referentials.clean!
-      end
+      Referential.clean!
     end
 
     def purge_workgroups

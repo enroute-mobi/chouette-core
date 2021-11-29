@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_11_19_102837) do
+ActiveRecord::Schema.define(version: 2021_11_29_091129) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -739,6 +739,28 @@ ActiveRecord::Schema.define(version: 2021_11_19_102837) do
     t.index ["objectid"], name: "lines_objectid_key", unique: true
     t.index ["registration_number"], name: "lines_registration_number_key"
     t.index ["secondary_company_ids"], name: "index_lines_on_secondary_company_ids", using: :gin
+  end
+
+  create_table "macro_lists", force: :cascade do |t|
+    t.bigint "workgroup_id"
+    t.text "name"
+    t.text "comments"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["workgroup_id"], name: "index_macro_lists_on_workgroup_id"
+  end
+
+  create_table "macros", force: :cascade do |t|
+    t.string "type", null: false
+    t.bigint "macro_list_id"
+    t.integer "position", null: false
+    t.text "name"
+    t.text "comments"
+    t.jsonb "options", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["macro_list_id", "position"], name: "index_macros_on_macro_list_id_and_position", unique: true
+    t.index ["macro_list_id"], name: "index_macros_on_macro_list_id"
   end
 
   create_table "merges", force: :cascade do |t|

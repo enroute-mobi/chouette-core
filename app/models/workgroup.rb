@@ -20,6 +20,7 @@ class Workgroup < ApplicationModel
   has_many :publication_setups, dependent: :destroy
   has_many :publication_apis, dependent: :destroy
   has_many :compliance_check_sets, dependent: :destroy
+  has_many :macro_lists, class_name: "Macro::List", dependent: :destroy
 
   validates_uniqueness_of :name
   validates_uniqueness_of :stop_area_referential_id

@@ -741,6 +741,28 @@ ActiveRecord::Schema.define(version: 2021_12_02_142900) do
     t.index ["secondary_company_ids"], name: "index_lines_on_secondary_company_ids", using: :gin
   end
 
+  create_table "macro_lists", force: :cascade do |t|
+    t.bigint "workgroup_id"
+    t.text "name"
+    t.text "comments"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["workgroup_id"], name: "index_macro_lists_on_workgroup_id"
+  end
+
+  create_table "macros", force: :cascade do |t|
+    t.string "type", null: false
+    t.bigint "macro_list_id"
+    t.integer "position", null: false
+    t.text "name"
+    t.text "comments"
+    t.jsonb "options", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["macro_list_id", "position"], name: "index_macros_on_macro_list_id_and_position", unique: true
+    t.index ["macro_list_id"], name: "index_macros_on_macro_list_id"
+  end
+
   create_table "merges", force: :cascade do |t|
     t.bigint "workbench_id"
     t.bigint "referential_ids", array: true

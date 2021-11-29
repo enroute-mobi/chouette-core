@@ -1,3 +1,6 @@
+# TODO Make a standalone Geo module
+require 'geo_ext.rb'
+
 class Entrance < ActiveRecord::Base
   include StopAreaReferentialSupport
   include ObjectidSupport
@@ -12,7 +15,7 @@ class Entrance < ActiveRecord::Base
   attr_writer :position_input
 
   def position_input
-    @position_input || ("#{position.x} #{position.y}" if position)
+    @position_input || ("#{position.y} #{position.x}" if position)
   end
 
   def longitude
@@ -31,8 +34,36 @@ class Entrance < ActiveRecord::Base
   end
 
   before_validation :position_from_input
-
   def position_from_input
-    self.position = "POINT(#{position_input})" if @position_input
+    PositionInput.new(@position_input).change_position(self)
+  end
+
+  # Transform the position input into position when defined and valid
+  class PositionInput
+    def initialize(input)
+      @input = input
+    end
+
+    def change_position(model)
+      if blank?
+        model.position = nil
+      elsif valid?
+        model.position = position
+      else
+        model.errors.add :position_input
+      end
+    end
+
+    def position
+      geo_position.to_point
+    end
+
+    attr_reader :input
+    delegate :blank?, to: :input
+
+    def geo_position
+      Geo::Position.parse(input)
+    end
+    delegate :valid?, to: :geo_position, allow_nil: true
   end
 end

@@ -14,7 +14,7 @@ fr:
         routing_constraint: ITL
         journey_pattern: Mission
         vehicle_journey: Course
-        dummy: Test
+        dummy: Simulation
         company: Transporteur
         stop_area: Arrêt
     form:
@@ -41,7 +41,7 @@ fr:
         routing_constraint: ITL
         journey_pattern: Mission
         vehicle_journey: Course
-        dummy: Test
+        dummy: Simulation
         company: Transporteur
         stop_area: Arrêt
       generic:
@@ -250,7 +250,7 @@ fr:
       3_shape_2: "Tracé %{source_objectid} : le tracé n'est pas défini entre les arrêts %{target_0_label} (%{target_0_objectid}) et %{target_1_label} (%{target_1_objectid})"
       3_shape_3: "Le tracé de l'itinéraire %{source_objectid} est en écart avec la voirie sur %{error_value} sections"
     dummy_control/dummy:
-      description: "Controle de test"
+      description: "Simulation de contrôle"
       prerequisite: "Aucun"
     company_control/name_is_present:
       description: "Un transporteur doit avoir un nom commercial"
@@ -352,7 +352,7 @@ fr:
       generic_attribute_control/presence:
         one: "Présence de valeur pour un attribut"
       dummy_control/dummy:
-        one: "Dummy"
+        one: "Simulation de contrôle"
       company_control/name_is_present:
         one: "Présence du nom des transporteurs"
       stop_area_control/time_zone:

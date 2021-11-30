@@ -13,7 +13,7 @@ en:
         route: 'Route'
         routing_constraint_zone: 'Routing Constraint Zone'
         vehicle_journey: 'Vehicle Journey'
-        dummy: 'Test'
+        dummy: Simulation
         company: 'Company'
         stop_area: 'Stop Area'
     form:
@@ -42,7 +42,7 @@ en:
         routing_constraint_zone_control: Routing constraint zone
         journey_pattern_control: Journey pattern
         vehicle_journey_control: Vehicle journey
-        dummy_control: Dummy
+        dummy_control: Simulation
         company_control: Company
         stop_area_control: Stop area
       generic:
@@ -250,7 +250,7 @@ en:
       3_shape_2: "Tracé %{source_objectid} : le tracé n'est pas défini entre les arrêts %{target_0_label} (%{target_0_objectid}) et %{target_1_label} (%{target_1_objectid})"
       3_shape_3: "Le tracé de l'itinéraire %{source_objectid} est en écart avec la voirie sur %{error_value} sections"
     dummy_control/dummy:
-      description: "Test control"
+      description: "Simulated control"
       prerequisite: "None"
     company_control/name_is_present:
       description: "A company must have a name"
@@ -348,7 +348,7 @@ en:
       generic_attribute_control/presence:
         one: "Attribute presence of an object"
       dummy_control/dummy:
-        one: "Dummy"
+        one: "simulated control"
       company_control/name_is_present:
         one: "Company name is present"
       stop_area_control/time_zone:

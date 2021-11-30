@@ -4,7 +4,7 @@ export default new EventEmitter()
 
 export const events = {
 	initMap: 'map:init',
-	initMapInteractions: 'map:init:interactions',
+	mapMove: 'map:move',
 	mapZoom: 'map:zoom',
 	waypointZoom: 'map:zoom:waypoint',
 	receivedRouteFeatures: 'route:received-features',

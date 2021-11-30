@@ -23,40 +23,20 @@ function MapWrapper({ features, onInit, style }) {
     () => new Map({
       layers: [
         // OSM Topo
-        new TileLayer({
-          source: new OSM({ attributions: '&copy; OpenStreetMap contributors' })
-        }),
+        new TileLayer({ source: new OSM({ attributions: '&copy; OpenStreetMap contributors' }) }),
         featuresLayer
       ],
-      view: new View({
-        projection: 'EPSG:3857',
-        center: [0, 0],
-        minZoom: 10,
-        maxZoom: 20
-      }),
-      controls: [
-        new ScaleLine(),
-        new Zoom(),
-        new ZoomSlider()
-      ]
+      view: new View({ center: [0, 0], zoom: 2 }),
+      controls: [new ScaleLine(), new Zoom(), new ZoomSlider()]
     }),
     []
   )
 
   // pull refs
-  const mapRef = useCallback(node => {
-    if (node !== null) {
-      map.setTarget(node)
-    }
-  }, [])
+  const mapRef = useCallback(node => { node !== null && map.setTarget(node) }, [])
 
-  // initialize map on first render - logic formerly put into componentDidMount
-  useEffect( () => {
-    map.on('singleclick', e => {
-      setSelectedCoord(
-        toWgs84(e.coordinate)
-      )
-    })
+  useEffect(() => {
+    map.on('singleclick', e => { setSelectedCoord(toWgs84(e.coordinate)) })
     onInit(map)
   },[])
 
@@ -65,9 +45,7 @@ function MapWrapper({ features, onInit, style }) {
     if (features && !previousFeatures) { // we just want to execute this block once
 
       // set features to map
-      featuresLayer.setSource(
-        new VectorSource({ features })
-      )
+      featuresLayer.setSource(new VectorSource({ features }))
 
       // Workaround to prevent openlayer rendering bugs within modal
       map.updateSize()

@@ -23,6 +23,7 @@ export const reducer = (state, action) => {
 }
 
 export const initialState = {
+  geometry: null,
   line: new Collection([]),
   map: null,
   modify: null,

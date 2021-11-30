@@ -18,6 +18,7 @@ import {
 import GeoJSON from 'ol/format/GeoJSON'
 
 import handleRedirect from '../../src/helpers/redirect'
+import xCrsfToken from '../helpers/xCrsfToken'
 
 export const wktOptions = { //  use options to convert feature from EPSG:4326 to EPSG:3857
   dataProjection: 'EPSG:4326',
@@ -138,7 +139,7 @@ export const submitFetcher = async (url, isEdit, payload) => {
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').attributes.content.value
+      'X-CSRF-Token': xCrsfToken
     },
     body: JSON.stringify(payload)
   })

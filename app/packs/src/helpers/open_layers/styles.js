@@ -122,3 +122,73 @@ export const shapeEditorSyle = {
 		]
 	}
 }
+
+export const setLineStyle = features => {
+	const styles = lineStyle(features)
+	features.forEach((f, i) => {
+		f.setStyle(styles[i])
+	})
+}
+
+export const lineStyle = ([_line, ...waypoints]) => {
+	const styles = [
+		new Style({
+			stroke: new Stroke({
+				color: '#007fbb',
+				width: 2
+			})
+		}),
+		new Style({
+			image: new Circle({
+				radius: 5,
+				stroke: new Stroke({
+					color: '#007fbb',
+					width: 0
+				}),
+				fill: new Fill({
+					color: '#007fbb',
+					width: 0
+				})
+			})
+		}),
+		new Style({
+			image: new Circle({
+				radius: 5,
+				stroke: new Stroke({
+					color: '#007fbb',
+					width: 0
+				}),
+				fill: new Fill({
+					color: '#007fbb',
+					width: 0
+				})
+			})
+		})
+	]
+
+	return [
+		...styles.slice(0, 2),
+		...waypoints.reduce((list, _waypoint, i) => {
+
+			if (i == 0 || i == (waypoints.length - 1)) return list
+
+			return [
+				...list,
+				new Style({
+					image: new Circle({
+						radius: 4,
+						stroke: new Stroke({
+							color: '#007fbb',
+							width: 0
+						}),
+						fill: new Fill({
+							color: '#ffffff',
+							width: 0
+						})
+					})
+				})
+			]
+		}, []),
+		...styles.slice(2)
+	]
+}

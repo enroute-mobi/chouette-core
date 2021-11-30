@@ -75,7 +75,7 @@ MapWrapper.defaultProps = {
 MapWrapper.propTypes = {
   fetchFeatures: PropTypes.array,
   onInit: PropTypes.func,
-  style: PropTypes.object
+  // style: PropTypes.object
 }
 
 export default MapWrapper

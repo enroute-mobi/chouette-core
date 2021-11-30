@@ -329,6 +329,7 @@ ChouetteIhm::Application.routes.draw do
 
       post 'stop_area_referentials/:id/webhook', to: 'stop_area_referentials#webhook'
       post 'line_referentials/:id/webhook', to: 'line_referentials#webhook'
+      get 'browser_environment', to: 'browser_environment#show', defaults: { format: 'json' }
 
       namespace :internals do
         get 'compliance_check_sets/:id/notify_parent', to: 'compliance_check_sets#notify_parent'

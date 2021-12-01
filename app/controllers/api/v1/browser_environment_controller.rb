@@ -4,10 +4,9 @@ class Api::V1::BrowserEnvironmentController < ActionController::Base
 
   def show
     browser_environment = {
-      dsn: ENV['SENTRY_DSN'],
-      environment: ENV['SENTRY_CURRENT_ENV'],
-      app: ENV['SENTRY_APP'],
-      context: ENV['SENTRY_CONTEXT'],
+      sentry_dsn: ENV['SENTRY_DSN'],
+      sentry_environment: ENV['SENTRY_CURRENT_ENV'],
+      sentry_app: ENV['SENTRY_APP']
     }
     render json: browser_environment.to_json
   end

@@ -1,14 +1,14 @@
 RSpec.describe Macro::List do
   let(:context) do
-    Chouette.create { workgroup }
+    Chouette.create { workbench }
   end
 
   subject(:macro_list) do
-    context.workgroup.macro_lists.create! name: "Test"
+    context.workbench.macro_lists.create! name: "Test"
   end
 
   it { is_expected.to validate_presence_of(:name) }
-  it { is_expected.to belong_to(:workgroup).required(true) }
+  it { is_expected.to belong_to(:workbench).required(true) }
 
   describe ".macros"do
     before do

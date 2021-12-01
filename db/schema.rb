@@ -742,12 +742,12 @@ ActiveRecord::Schema.define(version: 2021_11_29_091129) do
   end
 
   create_table "macro_lists", force: :cascade do |t|
-    t.bigint "workgroup_id"
+    t.bigint "workbench_id"
     t.text "name"
     t.text "comments"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["workgroup_id"], name: "index_macro_lists_on_workgroup_id"
+    t.index ["workbench_id"], name: "index_macro_lists_on_workbench_id"
   end
 
   create_table "macros", force: :cascade do |t|

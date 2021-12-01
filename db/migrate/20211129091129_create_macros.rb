@@ -2,7 +2,7 @@ class CreateMacros < ActiveRecord::Migration[5.2]
   def change
     on_public_schema_only do
       create_table :macro_lists do |t|
-        t.references :workgroup
+        t.references :workbench
         t.text :name
         t.text :comments
         t.timestamps

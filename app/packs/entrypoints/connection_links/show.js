@@ -1,29 +1,14 @@
-import React from 'react'
-import { render } from 'react-dom'
 import { Path } from 'path-parser'
-import geoJSON from '../../src/helpers/geoJSON'
+import GeoJSONMap from '../../src/components/GeoJSONMap'
 
-import MapWrapper from '../../src/components/MapWrapper'
+import { setConnectionLinkStyle } from '../../src/helpers/open_layers/styles'
 
-import { connectionLinkStyle } from '../../src/helpers/open_layers/styles'
-  
-const initMap = async () => {
-  const path = new Path('/workbenches/:workbenchId/stop_area_referential/connection_links/:id')
-  const { workbenchId, id } = path.partialTest(location.pathname)
+const path = new Path('/workbenches/:workbenchId/stop_area_referential/connection_links/:id')
+const params = path.partialTest(location.pathname)
 
-  const res = await fetch(`${path.build({ workbenchId, id })}.geojson`)
-  const features = geoJSON.readFeatures(await res.json())
+GeoJSONMap.init(
+  [`${path.build(params)}.geojson`],
+  'connection_link_map',
+  setConnectionLinkStyle
+)
 
-  features.forEach(f => f.setStyle(
-    connectionLinkStyle(f.get('marker'))
-  ))
-
-  render(
-    <div className='ol-map'>
-      <MapWrapper features={features} />
-    </div>,
-    document.getElementById('connection_link_map')
-  )
-}
-
-initMap()

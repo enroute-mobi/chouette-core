@@ -6,6 +6,6 @@ const path = new Path('/workbenches/:workbenchId/stop_area_referential/entrances
 const params = path.partialTest(location.pathname)
 
 GeoJSONMap.init(
-  `${path.build(params)}.geojson`,
+  [`${path.build(params)}.geojson`],
   'entrance_map'
 )

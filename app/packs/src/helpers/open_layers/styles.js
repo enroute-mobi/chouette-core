@@ -192,3 +192,11 @@ export const lineStyle = ([_line, ...waypoints]) => {
 		...styles.slice(2)
 	]
 }
+
+export const setConnectionLinkStyle = connectionLinks => {
+	connectionLinks.forEach(connectionLink => {
+		connectionLink.setStyle(
+			connectionLinkStyle(connectionLink.get('marker'))
+		)
+	})
+}

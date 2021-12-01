@@ -1,32 +1,45 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import useSWR from 'swr'
 import { isArray, isEmpty } from 'lodash'
 
 import geoJSON from '../geoJSON'
 
 const useGeoJSONFeatures = (
-	url,
+	urls,
 	callback = () => {}
 ) => {
+	const [loadingStatus, setLoadingStatus] = useState(() =>
+		new Map(urls.map(url => [url, true]))
+	)
 	const [features, setFeatures] = useState()
 
-	const onSuccess = data => {
+	const doneFetching = Array.from(loadingStatus.entries()).every(([_key, isFetching]) => !isFetching)
+
+	const onSuccess = (data, key) => {
 		const fetchFeatures = isArray(data) ? data : [data]
 
-		!isEmpty(fetchFeatures) && setFeatures(() =>
-			fetchFeatures.map(featureCollection => {
-				const convertedFeatures = geoJSON.readFeatures(featureCollection)
+		!isEmpty(fetchFeatures) && setFeatures(prevFeatures => [
+			...(prevFeatures || []),
+			...fetchFeatures.map(featureCollection => geoJSON.readFeatures(featureCollection)).flat()
+		])
 
-				callback(convertedFeatures)
-
-				return convertedFeatures
-			}).flat()
+		setLoadingStatus(prevLoadingStatus =>
+			new Map([
+				...prevLoadingStatus.entries(),
+				[key, false]
+			])
 		)
 	}
 
-	useSWR(url, { onSuccess, revalidateOnFocus: false })
+	urls.forEach(url => {
+		useSWR(url, { onSuccess, revalidateOnFocus: false })
+	})
 
-	return features
+	useEffect(() => {
+		doneFetching && callback(features)
+	}, [doneFetching])
+
+	return doneFetching ? features : null
 }
 
 export default useGeoJSONFeatures

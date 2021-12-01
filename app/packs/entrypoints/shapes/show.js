@@ -5,6 +5,6 @@ const path = new Path('/workbenches/:workbenchId/shape_referential/shapes/:id')
 const { workbenchId, id } = path.partialTest(location.pathname)
 
 GeoJSONMap.init(
-  `${path.build({ workbenchId, id })}.geojson`,
+  [`${path.build({ workbenchId, id })}.geojson`],
   'route_map'
 )

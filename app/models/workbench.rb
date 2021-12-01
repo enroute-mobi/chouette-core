@@ -49,6 +49,8 @@ class Workbench < ApplicationModel
   has_many :line_providers, dependent: :destroy
   has_many :stop_area_providers, dependent: :destroy
 
+  has_many :macro_lists, class_name: "Macro::List", dependent: :destroy
+
   before_validation :create_dependencies, on: :create
 
   validates :priority, presence: true, numericality: { greater_than_or_equal_to: 1 }

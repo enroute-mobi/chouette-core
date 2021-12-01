@@ -21,6 +21,3 @@ let browser_environment = fetch("/api/v1/browser_environment.json")
 
     Sentry.setTag("service", browser_environment["sentry_app"] + "-browser" );
   })
-  .catch((error) => {
-    console.error('Error:', error)
-  })

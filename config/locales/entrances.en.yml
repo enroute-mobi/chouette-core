@@ -21,6 +21,7 @@ en:
         identification: "Identification"
         localization: "Localization"
     filters:
+      name_or_short_name_matches: Search by name or short name...
   activerecord:
     models:
       entrance:
@@ -33,6 +34,7 @@ en:
         name: "Name"
         short_name: "Short Name"
         stop_area: "Stop Area"
+        stop_area_provider: "Stop Area Provider"
         entry_flag: "Entry"
         exit_flag: "Exit"
         entrance_type: "Type"

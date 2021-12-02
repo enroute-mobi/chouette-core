@@ -21,6 +21,7 @@ fr:
         identification: "Identification"
         localization: "Localisation"
     filters:
+      name_or_short_name_matches: "Indiquez un nom ou un nom court..."
   activerecord:
     models:
       entrance:
@@ -33,6 +34,7 @@ fr:
         name: "Nom"
         short_name: "Nom Court"
         stop_area: "Arrêt"
+        stop_area_provider: "Fournisseur d'arrêt"
         entry_flag: "Entrée"
         exit_flag: "Sortie"
         entrance_type: "Type"

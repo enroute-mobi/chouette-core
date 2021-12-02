@@ -19,7 +19,7 @@ class EntrancesController < ChouetteController
         end
 
         @entrances = EntranceDecorator.decorate(
-          @entrances,
+          collection,
           context: {
             workbench: @workbench
           }
@@ -52,6 +52,16 @@ class EntrancesController < ChouetteController
   def collection
     @entrances = parent.entrances.paginate(page: params[:page], per_page: 30)
   end
+
+  def scope
+    parent.entrances
+  end
+
+  def search
+    @search ||= Search::Entrance.new(scope, params)
+  end
+
+  delegate :collection, to: :search
 
   private
 

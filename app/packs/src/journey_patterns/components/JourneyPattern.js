@@ -254,7 +254,7 @@ export default function JourneyPattern({
               <li key={`duplicate_journey_pattern_${id}`}>
                 <button
                   type='button'
-                  onClick={duplicateJourneyPattern}
+                  onClick={() => duplicateJourneyPattern()}
                 >
                   {I18n.t('actions.duplicate')}
                 </button>

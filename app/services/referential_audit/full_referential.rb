@@ -27,28 +27,32 @@ class ReferentialAudit
     end
 
     def perform opts={}
-      plain_output = !!opts.delete(:plain_output)
-      @output = opts.delete(:output) || :console
-      @status = :success
-      referential.switch do
-        self.class.items.each do |item|
-          instance = item.new(referential)
-          instance.perform(self)
-          if @status == :success || @status == :warning && instance.status == :error
-            @status = instance.status
+      Chouette::Benchmark.measure("referential", referential_id: referential.id) do
+        CustomFieldsSupport.within_workgroup(referential.workgroup) do
+          plain_output = !!opts.delete(:plain_output)
+          @output = opts.delete(:output) || :console
+          @status = :success
+          referential.switch do
+            self.class.items.each do |item|
+              instance = item.new(referential)
+              instance.perform(self)
+              if @status == :success || @status == :warning && instance.status == :error
+                @status = instance.status
+              end
+              res = send("#{instance.status}_status")
+              @statuses += res
+              log instance.pretty_name + " " + "." * (@left_part - instance.pretty_name.size) + " ", silent: plain_output
+              log res, append: true, silent: plain_output
+              unless plain_output
+                print_state
+              end
+              @current_line += 1
+            end
           end
-          res = send("#{instance.status}_status")
-          @statuses += res
-          log instance.pretty_name + " " + "." * (@left_part - instance.pretty_name.size) + " ", silent: plain_output
-          log res, append: true, silent: plain_output
-          unless plain_output
-            print_state
-          end
-          @current_line += 1
+          @banner += ": " + send("#{@status}_status")
+          full_state
         end
       end
-      @banner += ": " + send("#{@status}_status")
-      full_state
     end
 
     def encode_string s

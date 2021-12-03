@@ -17,13 +17,15 @@ class ReferentialAudit
     end
 
     def perform logger
-      faulty.each do |record|
-        logger.add_error full_message(record, output: logger.output)
-      end
-      if faulty.size == 0 || faulty == [nil]
-        @status = :success
-      else
-        @status = :error
+      Chouette::Benchmark.measure(pretty_name.parameterize) do
+        faulty.each do |record|
+          logger.add_error full_message(record, output: logger.output)
+        end
+        if faulty.size == 0 || faulty == [nil]
+          @status = :success
+        else
+          @status = :error
+        end
       end
     end
 

@@ -52,7 +52,8 @@ function MapWrapper({ features, onInit, style }) {
 
       // Fit map to feature extent (with 100px of padding)
       map.getView().fit(featuresLayer.getSource().getExtent(), {
-        padding: [100,100,100,100]
+        padding: [100,100,100,100],
+        maxZoom: 18
       })
     }
   },[features])

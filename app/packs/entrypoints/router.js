@@ -20,6 +20,10 @@ class FileRouter {
 			case routeMatch('/workbenches/:workbenchId/stop_area_referential/connection_links/:id'):
 				return await import('./connection_links/show')
 
+			// Entrances
+			case routeMatch('/workbenches/:workbenchId/stop_area_referential/entrances/:id'):
+				return await import('./entrances/show')
+
 			// Exports
 			case routeMatch('/workbenches/:workbenchId/exports/new'):
 			case routeMatch('/workbenches/:workbenchId/exports/:id/edit'):

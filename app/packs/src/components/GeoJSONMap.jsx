@@ -4,8 +4,8 @@ import { render } from 'react-dom'
 import { useGeoJSONFeatures } from '../helpers/hooks'
 import MapWrapper from './MapWrapper'
 
-const App = ({ url }) => {
-	const features = useGeoJSONFeatures(url)
+const App = ({ urls, callback }) => {
+	const features = useGeoJSONFeatures(urls, callback)
 
 	return (
 		<div className="ol-map">
@@ -15,9 +15,10 @@ const App = ({ url }) => {
 }
 
 export default {
-	init(url, selector) {
+	init(urls, selector, callback = () => {}) {
+		
 		render(
-			<App url={url} />,
+			<App urls={urls} callback={callback} />,
 			document.getElementById(selector)
 		)
 	}

@@ -1,78 +1,45 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import useSWR from 'swr'
-import { Circle, Fill, Stroke, Style } from 'ol/style'
-import { head, isArray, isEmpty, last } from 'lodash'
+import { isArray, isEmpty } from 'lodash'
 
 import geoJSON from '../geoJSON'
 
-const getStyles = () => ({
-	line: new Style({
-		stroke: new Stroke({
-			color: '#007fbb',
-			width: 2
-		})
-	}),
-	edgePoint: new Style({
-		image: new Circle({
-			radius: 5,
-			stroke: new Stroke({
-				color: '#007fbb',
-				width: 0
-			}),
-			fill: new Fill({
-				color: '#007fbb',
-				width: 0
-			})
-		})
-	}),
-	defaultPoint: new Style({
-		image: new Circle({
-			radius: 4,
-			stroke: new Stroke({
-				color: '#007fbb',
-				width: 0
-			}),
-			fill: new Fill({
-				color: '#ffffff',
-				width: 0
-			})
-		})
-	})
-})
-
-const useGeoJSONFeatures = url => {
+const useGeoJSONFeatures = (
+	urls,
+	callback = () => {}
+) => {
+	const [loadingStatus, setLoadingStatus] = useState(() =>
+		new Map(urls.map(url => [url, true]))
+	)
 	const [features, setFeatures] = useState()
 
-	const styles = getStyles()
+	const doneFetching = Array.from(loadingStatus.entries()).every(([_key, isFetching]) => !isFetching)
 
-	const onSuccess = data => {
+	const onSuccess = (data, key) => {
 		const fetchFeatures = isArray(data) ? data : [data]
 
-		!isEmpty(fetchFeatures) && setFeatures(() =>
-			fetchFeatures.map(featureCollection => {
-				const convertedFeatures = geoJSON.readFeatures(
-					featureCollection,
-				)
+		!isEmpty(fetchFeatures) && setFeatures(prevFeatures => [
+			...(prevFeatures || []),
+			...fetchFeatures.map(featureCollection => geoJSON.readFeatures(featureCollection)).flat()
+		])
 
-				const [line, ...waypoints] = convertedFeatures
-
-				line.setStyle(styles.line)
-
-				head(waypoints)?.setStyle(styles.edgePoint)
-				last(waypoints)?.setStyle(styles.edgePoint)
-
-				waypoints.forEach(w => {
-					!w.getStyle() && w.setStyle(styles.defaultPoint)
-				})
-
-				return convertedFeatures
-			}).flat()
+		setLoadingStatus(prevLoadingStatus =>
+			new Map([
+				...prevLoadingStatus.entries(),
+				[key, false]
+			])
 		)
 	}
 
-	useSWR(url, { onSuccess, revalidateOnFocus: false })
+	urls.forEach(url => {
+		useSWR(url, { onSuccess, revalidateOnFocus: false })
+	})
 
-	return features
+	useEffect(() => {
+		doneFetching && callback(features)
+	}, [doneFetching])
+
+	return doneFetching ? features : null
 }
 
 export default useGeoJSONFeatures

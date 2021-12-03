@@ -6,7 +6,7 @@ import { useGeoJSONFeatures } from '../../helpers/hooks'
 
 
 function ShapeMap({ shapeId }) {
-  const features = useGeoJSONFeatures(`${window.shape_url}/${shapeId}.geojson`)
+  const features = useGeoJSONFeatures([`${window.shape_url}/${shapeId}.geojson`])
 
   return (
     <div className="openlayers_map">

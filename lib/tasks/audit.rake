@@ -14,7 +14,7 @@ end
 
 namespace :referential do
   desc "Audit the specified referential (by id or slug)"
-  task :audit, [:id_or_slug] => :environment do |t, args|
+  task :audit, [:id_or_slug] => :environment do |_, args|
     id_or_slug = args[:id_or_slug]
     referential = Referential.find_by(id: id_or_slug) || Referential.find_by(slug: id_or_slug)
     if referential

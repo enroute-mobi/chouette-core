@@ -50,7 +50,9 @@ module Chouette
 
     protected
 
-    attr_reader :updater
+    def updater
+      @updater ||= Updater.new(self)
+    end
 
     def measure(name, &block)
       Chouette::Benchmark.measure "checksum_updater/#{name}", id: referential.id, &block
@@ -63,6 +65,12 @@ module Chouette
     end
 
     class Updater
+      def initialize(context)
+        @context = context
+      end
+      attr_reader :context
+      delegate :workgroup, :referential, to: :context
+
       def call(collection)
         CustomFieldsSupport.within_workgroup(workgroup) do
           referential.switch do

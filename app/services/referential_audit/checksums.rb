@@ -10,7 +10,7 @@ class ReferentialAudit
 
       if @referential.referential_suite_id.present?
         checker = Proc.new do |collection|
-          collection.select(:checksum, :checksum_source).find_each do |model|
+          collection.select(:checksum, :checksum_source).find_each(batch_size: 200) do |model|
             expected_source = model.current_checksum_source(db_lookup: false)
 
             if model.checksum_source != expected_source

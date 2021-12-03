@@ -3,6 +3,8 @@ module PrettyOutput
 
   included do
     def self.colorize txt, color, output = :console
+      return txt if ENV['NO_COLOR'] = "true"
+
       if output == :html
         "<span style='color: #{color}'>#{txt}</span>"
       else

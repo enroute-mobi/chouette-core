@@ -1,11 +1,12 @@
 module Chouette
   class ChecksumUpdater
 
-    def initialize(referential, scope: nil)
+    def initialize(referential, scope: nil, updater: nil)
       @referential = referential
 
       scope ||= referential
       @scope = scope
+      @updater = updater
     end
 
     attr_reader :referential, :scope
@@ -49,6 +50,8 @@ module Chouette
 
     protected
 
+    attr_reader :updater
+
     def measure(name, &block)
       Chouette::Benchmark.measure "checksum_updater/#{name}", id: referential.id, &block
     end
@@ -56,9 +59,15 @@ module Chouette
     delegate :workgroup, to: :referential
 
     def update_in_batches(collection)
-      CustomFieldsSupport.within_workgroup(workgroup) do
-        referential.switch do
-          Chouette::ChecksumManager.update_checkum_in_batches(collection, referential)
+      updater.call(collection)
+    end
+
+    class Updater
+      def call(collection)
+        CustomFieldsSupport.within_workgroup(workgroup) do
+          referential.switch do
+            Chouette::ChecksumManager.update_checkum_in_batches(collection, referential)
+          end
         end
       end
     end

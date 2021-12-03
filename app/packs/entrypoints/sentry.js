@@ -20,7 +20,8 @@ let browser_environment = fetch("/api/v1/browser_environment.json")
           tracesSampleRate: 1.0,
       });
 
-      Sentry.setTag("service", browser_environment["sentry_app"] + "-browser" );
+      sentry_app = browser_environment["sentry_app"] || "chouette-core"
+      Sentry.setTag("service", sentry_app + "-browser" );
       console.log("Sentry initialized");
     } else {
       console.log("Sentry not initialized");

@@ -1,9 +1,9 @@
 class ReferentialAudit
   class DuplicatedDatesForTimeTable < Base
-    include ReferentialAudit::Concerns::RouteBase
+    include ReferentialAudit::Concerns::TimeTableBase
 
     def message(record, output: :console)
-      "#{record_name(record, output)} is a duplicated date for timetable #{record.time_table_id}"
+      "#{record_name(record, output)} has a duplicated TimeTableDate #{record.id}"
     end
 
     def find_faulty

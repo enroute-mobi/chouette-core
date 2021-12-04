@@ -1,7 +1,7 @@
 class ReferentialAudit
   class Full
     def perform opts={}
-      Chouette::Benchmark.measure("audit", referential_id: referential.id) do
+      Chouette::Benchmark.measure("audit") do
         limit = opts.delete(:limit)
         referentials = Referential.mergeable.uniq
         referentials += Workbench.all.map { |w| w.output.current }.compact

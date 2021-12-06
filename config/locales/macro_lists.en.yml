@@ -1,0 +1,39 @@
+en:
+  macro_lists:
+    search_no_results: "No Macros match your search"
+    actions:
+      show: "Shwo this Macro"
+      new: "Add a Macro"
+      edit: "Edit this Macro"
+      destroy: "Delete this Macro"
+      destroy_confirm: "Are you sur to delete this Macro ?"
+    errors:
+    new:
+      title: "Create a Macro"
+    edit:
+      title: "Edit %{name}"
+    show:
+      title: "%{name}"
+    index:
+      title: "Macros"
+    form:
+      sections:
+        macros: "Macros"
+    filters:
+  activerecord:
+    models:
+      macro/list:
+        zero:  "Macros"
+        one:   "Macro"
+        other: "Macros"
+    attributes:
+      macro:
+        list:
+          id: "ID"
+          name: "Name"
+          comments: "Comments"
+          objectid: "Object ID"
+          object_version: "Version"
+          created_at: "Created at"
+          updated_at: "Updated at"
+          creator_id: "Create by"

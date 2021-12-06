@@ -27,6 +27,7 @@ class Permission
         journey_patterns
         entrances
         merges
+        macro_lists
         publication_api_keys
         publication_apis
         publication_setups

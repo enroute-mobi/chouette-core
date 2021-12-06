@@ -1,0 +1,11 @@
+- breadcrumb :macro_list, @workbench, @macro_list
+- page_header_content_for @macro_list
+
+/ PageContent
+.page_content
+  .container-fluid
+    .row
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = simple_block_for @macro_list, title: t('macro_lists.form.sections.identification') do |d|
+          = d.attribute :name
+          = d.attribute :comments

@@ -35,6 +35,16 @@ crumb :merges do |workbench|
   parent :workbench, workbench
 end
 
+crumb :macro_lists do |workbench|
+  link I18n.t('macro_lists.index.title'), workbench_macro_lists_path(workbench)
+  parent :workbench, workbench
+end
+
+crumb :macro_list do |workbench, macro_list|
+  link breadcrumb_name(macro_list), workbench_macro_list_path(workbench, macro_list)
+  parent :macro_lists, workbench
+end
+
 crumb :merge do |merge|
   link breadcrumb_name(merge), workbench_merge_path(merge.workbench, merge)
   parent :merges, merge.workbench

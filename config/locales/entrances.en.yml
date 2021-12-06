@@ -30,7 +30,6 @@ en:
         other: "Entry Points"
     attributes:
       entrance:
-        id: 'ID'
         name: "Name"
         short_name: "Short Name"
         stop_area: "Stop Area"
@@ -44,7 +43,7 @@ en:
         zip_code: "Zip Code"
         city_name: "City"
         country: "Country"
-        objectid: "Object ID"
+        objectid: "ID"
         object_version: "Version"
         created_at: "Created at"
         updated_at: "Updated at"

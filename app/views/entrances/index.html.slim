@@ -12,8 +12,8 @@
           = table_builder_2 @entrances,
             [ \
               TableBuilderHelper::Column.new( \
-                key: :id, \
-                attribute: :id, \
+                key: :objectid, \
+                attribute: Proc.new { |n| n.get_objectid.try(:short_id) }, \
                 sortable: false \
               ), \
               \

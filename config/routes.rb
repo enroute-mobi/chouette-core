@@ -63,6 +63,7 @@ ChouetteIhm::Application.routes.draw do
 
     resources :referentials, only: %w(new create index)
     resources :notification_rules
+    resources :macro_lists
 
     resource :stop_area_referential, :only => [:show, :edit, :update] do
       post :sync, on: :member

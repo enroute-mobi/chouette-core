@@ -30,7 +30,6 @@ fr:
         other: "Point d'accès"
     attributes:
       entrance:
-        id: "ID"
         name: "Nom"
         short_name: "Nom Court"
         stop_area: "Arrêt"
@@ -44,7 +43,7 @@ fr:
         zip_code: "Code Postal"
         city_name: "Ville"
         country: "Pays"
-        objectid: "Identifiant"
+        objectid: "ID"
         object_version: "Version"
         created_at: "Créé le"
         updated_at: "Edité le"

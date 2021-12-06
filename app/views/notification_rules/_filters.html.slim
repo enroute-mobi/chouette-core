@@ -16,7 +16,7 @@
       = f.input :notification_type_eq_any,
         as: :check_boxes,
         checked: params[:q] && params[:q][:notification_type_eq_any],
-        label_method: lambda {|w| ("<span>#{I18n.t("notification_rules.notification_types.#{w}")}</span>").html_safe},
+        label_method: lambda {|w| ("<span>#{I18n.t("enumerize.notification_rules.notification_type.#{w}")}</span>").html_safe},
         collection: NotificationRule.notification_type.values,
         label: false,
         required: false,

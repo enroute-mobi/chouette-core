@@ -3,13 +3,13 @@ class ConfigBuilder {
   static call(select) {
     const { config } = select.dataset 
 
-    const { type, ...payload } = JSON.parse(config)
+    const { type, url, ...payload } = JSON.parse(config)
     
     let specificConfig
 
     switch(type) {
       case 'ajax':
-        specificConfig = ConfigBuilder.configs.ajax(select)
+        specificConfig = ConfigBuilder.configs.ajax(select, url)
         break
       case 'create':
         specificConfig = ConfigBuilder.configs.create
@@ -29,7 +29,8 @@ class ConfigBuilder {
     return {
       default: {
         valueField: 'id',
-        labelField: 'text'
+        labelField: 'text',
+        plugins: ['clear_button']
       },
       create: {
         create: true,
@@ -48,19 +49,15 @@ class ConfigBuilder {
           no_results: () => null
         }
       },
-      ajax(select) {
-        return {
-          preload: true,
-          openOnFocus: true,
-          load: (query, callback) => {
-            const { url } = select.dataset
-
-            fetch(`${url}?q=${encodeURIComponent(query)}`)
-              .then(res => res.json().then(callback))
-              .catch(() => callback())
-          },
+      ajax: (select, url) => ({
+        preload: true,
+        openOnFocus: true,
+        load: (query, callback) => {
+          fetch(`${select.dataset.url || url}?q=${encodeURIComponent(query)}`)
+            .then(res => res.json().then(callback))
+            .catch(() => callback())
         }
-      }
+      })
     }
   }
 }

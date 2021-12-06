@@ -23,6 +23,10 @@ class AutocompleteController < ChouetteController
     @shapes ||= shape_referential.shapes.by_text(text)
   end
 
+  def users
+    @users ||= current_organisation.users.by_text(text)
+  end
+
   ##################
   # StopArea scope #
   ##################

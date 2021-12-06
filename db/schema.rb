@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_11_19_102837) do
+ActiveRecord::Schema.define(version: 2021_12_02_142900) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -784,10 +784,16 @@ ActiveRecord::Schema.define(version: 2021_11_19_102837) do
   create_table "notification_rules", force: :cascade do |t|
     t.string "notification_type"
     t.daterange "period"
-    t.bigint "line_id"
     t.bigint "workbench_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.bigint "user_ids", default: [], array: true
+    t.string "external_email"
+    t.integer "priority", default: 10
+    t.string "target_type"
+    t.bigint "line_ids", default: [], array: true
+    t.string "rule_type"
+    t.string "operation_statuses", default: [], array: true
   end
 
   create_table "notifications", force: :cascade do |t|
@@ -1199,6 +1205,7 @@ ActiveRecord::Schema.define(version: 2021_11_19_102837) do
     t.boolean "in_out"
     t.string "checksum"
     t.text "checksum_source"
+    t.index ["date", "time_table_id"], name: "uniq_date_per_time_table", unique: true
     t.index ["time_table_id"], name: "index_time_table_dates_on_time_table_id"
   end
 
@@ -1208,6 +1215,7 @@ ActiveRecord::Schema.define(version: 2021_11_19_102837) do
     t.date "period_end"
     t.string "checksum"
     t.text "checksum_source"
+    t.index ["period_start", "period_end", "time_table_id"], name: "uniq_period_start_and_period_end_per_time_table", unique: true
     t.index ["period_start", "period_end"], name: "index_time_table_periods_on_period_start_and_period_end"
     t.index ["time_table_id"], name: "index_time_table_periods_on_time_table_id"
   end
@@ -1359,6 +1367,9 @@ ActiveRecord::Schema.define(version: 2021_11_19_102837) do
     t.bigint "locked_referential_to_aggregate_id"
     t.string "restrictions", default: [], array: true
     t.integer "priority", default: 1
+    t.string "status"
+    t.string "invitation_code", limit: 6
+    t.datetime "accepted_at"
     t.index ["line_referential_id"], name: "index_workbenches_on_line_referential_id"
     t.index ["locked_referential_to_aggregate_id"], name: "index_workbenches_on_locked_referential_to_aggregate_id"
     t.index ["organisation_id"], name: "index_workbenches_on_organisation_id"

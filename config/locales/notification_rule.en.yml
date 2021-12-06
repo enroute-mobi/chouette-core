@@ -18,8 +18,6 @@ en:
       edit: Add deactivation
     create:
       <<: *notification_rule_new
-    notification_types:
-      hole_sentinel: Hole Sentinel
     errors:
       period: "Invalid period"
   activerecord:

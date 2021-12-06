@@ -5,6 +5,11 @@ en:
         for_boarding: "Undefined"
         for_alighting: "Undefined"
   enumerize:
+    notification_rule:
+      notification_type:
+        hole_sentinel: Hole Sentinel
+        merge: Merge
+        import: Import
     notification_target:
       user:       Only Me
       workbench:  All workbench's users

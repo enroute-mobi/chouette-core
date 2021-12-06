@@ -14,7 +14,7 @@
             [ \
               TableBuilderHelper::Column.new( \
                 key: :notification_type, \
-                attribute: Proc.new {|o| "notification_rules.notification_types.#{o.notification_type}".t}, \
+                attribute: Proc.new {|o| "enumerize.notification_rules.notification_type.#{o.notification_type}".t}, \
                 sortable: false \
               ),
               TableBuilderHelper::Column.new( \

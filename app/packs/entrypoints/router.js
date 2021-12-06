@@ -60,6 +60,10 @@ class FileRouter {
 			// Merges
 			case routeMatch('/workbenches/:workbenchId/merges/new'):
 				return await import('./merges/new')
+			
+			// Notifications Rules
+			case routeMatch('/workbenches/:workbenchId/notification_rules/new'):
+				return await import('./inputs/date_picker')
 
 			// Publications APIs
 			case routeMatch('/workgroups/:workgroupId/publication_apis/new'):

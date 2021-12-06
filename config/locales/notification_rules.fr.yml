@@ -18,8 +18,6 @@ fr:
       edit: Ajouter une désactivation
     create:
       <<: *notification_rule_new
-    notification_types:
-      hole_sentinel: Trou d'offre
     errors:
       period: "Invalid period"
   activerecord:

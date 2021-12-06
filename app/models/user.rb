@@ -75,6 +75,8 @@ class User < ApplicationModel
     where(subqueries.join(' OR '))
   end
 
+  scope :by_text, -> (text) { text.blank? ? all : where('lower(users.email) LIKE :t or lower(users.name) LIKE :t', t: "%#{text}%") }
+
   def self.ransackable_scopes(auth_object = nil)
     super + %w[with_profiles with_states]
   end

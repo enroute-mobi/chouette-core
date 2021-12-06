@@ -5,6 +5,15 @@ fr:
         for_boarding: "Non défini"
         for_alighting: "Non défini"
   enumerize:
+    notification_rule:
+      notification_type:
+        hole_sentinel: Trou d'offre
+        merge: Aggrégation
+        import: Import
+      operation_statuses:
+        success: Succès
+        warning: Avertissement
+        error: Erreur
     notification_target:
       user:       Moi uniquement
       workbench:  Tous les utilisateurs de l'espace de travail

@@ -5,7 +5,6 @@ class NotificationRulesController < ChouetteController
 
   defaults resource_class: NotificationRule
   belongs_to :workbench
-  before_action :update_period_params, only: [:create, :update]
 
   def index
     index! do |format|
@@ -23,6 +22,11 @@ class NotificationRulesController < ChouetteController
     end
   end
 
+  def new
+    @notification_rule = NotificationRule.new(workbench_id: parent.id).decorate
+    new!
+  end
+
   def show
     show! do
       @notification_rule = @notification_rule.decorate(context: { workbench: @workbench })
@@ -30,37 +34,19 @@ class NotificationRulesController < ChouetteController
   end
 
   private
+
   def notification_rule_params
     params.require(:notification_rule).permit(
-      :id,
       :notification_type,
+      :priority,
+      :rule_type,
+      :target_type,
+      :external_email,
       :period,
-      :line_id
-    )
-  end
-
-  def create_resource(object)
-    object.period = params[:period]
-    super
-  end
-
-  def update_resource(object, attributes)
-    object.period = params[:period]
-    super
-  end
-
-  def update_period_params
-    start_date = Date.new(
-      params['period']['min(1i)'].to_i,
-      params['period']['min(2i)'].to_i,
-      params['period']['min(3i)'].to_i,
-    )
-
-    end_date = Date.new(
-      params['period']['max(1i)'].to_i,
-      params['period']['max(2i)'].to_i,
-      params['period']['max(3i)'].to_i,
-    )
-    params['period'] = Range.new(start_date, end_date)
+      user_ids: [],
+      operation_statuses: [],
+      line_ids: [],
+      workbench_id: parent.id
+    ).with_defaults(workbench_id: parent.id)
   end
 end

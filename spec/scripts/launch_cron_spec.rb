@@ -57,6 +57,7 @@ RSpec.describe "launch-cron" do
       SECRET_BASE
       SENTRY_APP
       SENTRY_CONTEXT
+      SENTRY_CURRENT_ENV
       SENTRY_DSN
       SESAME_API_SETTINGS
       SMTP_HOST

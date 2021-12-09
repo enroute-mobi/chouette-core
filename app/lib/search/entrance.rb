@@ -16,14 +16,14 @@ module Search
 
     def query
 			Query::Entrance.new(scope)
-				.where(name, :matches, :name, :short_name)
-				.where(entrance_type, :in, :entrance_type)
-				.where(stop_area, :eq, :stop_area_id)
-				.where(zip_code, :matches, :zip_code)
-				.where(city, :matches, :city_name)
-				.where(stop_area_provider, :eq, :stop_area_provider_id)
-				.where(entry_flag, :in, :entry_flag)
-				.where(exit_flag, :in, :exit_flag)
+				.name(name)
+				.entrance_type(entrance_type)
+				.stop_area_id(stop_area)
+				.zip_code(zip_code)
+				.city_name(city)
+				.stop_area_provider_id(stop_area_provider)
+				.entry_flag(entry_flag)
+				.exit_flag(exit_flag)
     end
 
 		def entry_flag

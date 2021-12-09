@@ -163,6 +163,12 @@ class Import::Base < ApplicationModel
     end
   end
 
+  def line_ids
+    return [] unless referential
+
+    referential.metadatas.pluck(:line_ids).flatten
+  end
+
   protected
 
   # Expected and used file extension

@@ -11,9 +11,17 @@ fr:
         merge: Aggrégation
         import: Import
       operation_statuses:
-        success: Succès
+        all: Tous
+        successful: Succès
         warning: Avertissement
-        error: Erreur
+        failed: Erreur
+      rule_type:
+        block: Bloque
+        notify: Notifie
+      target_type:
+        user: Utilisateurs selectionnes
+        workbench:  Tous les utilisateurs de l'espace de travail
+        external_email: Utilisateur externe
     notification_target:
       user:       Moi uniquement
       workbench:  Tous les utilisateurs de l'espace de travail

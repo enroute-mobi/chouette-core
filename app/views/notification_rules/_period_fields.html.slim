@@ -1,0 +1,17 @@
+- form = local_assigns.fetch(:form)
+- label = local_assigns.fetch(:label, true)
+- period_start =  I18n.l(form.object.period&.min, format: '%d/%m/%Y') rescue nil
+- period_end =  I18n.l(form.object.period&.max, format: '%d/%m/%Y') rescue nil
+
+.flex[x-data="{ start: '#{period_start}', end: '#{period_end}'}"]
+	= form.input :period, as: :hidden, input_html: { ':value': "!!start && !!end ? '[' + start + ',' + end + ']' : ''" }
+
+	= simple_fields_for :period do |period_form|
+		- %w[start end].each do |type|
+			div
+				= period_form.label NotificationRule.tmf("period_#{type}"), class: 'col-sm-4 col-xs-5 control-label'
+				= period_form.input "period_#{type}".to_sym,
+					label: false,
+					as: :date_picker,
+					input_html: { 'x-model': type },
+          wrapper_html: { class: 'date smart_date col-sm-8 col-xs-7', style: 'margin-right: 0px; margin-left: 0px' }

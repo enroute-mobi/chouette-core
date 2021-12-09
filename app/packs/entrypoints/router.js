@@ -64,6 +64,8 @@ class FileRouter {
 			// Notifications Rules
 			case routeMatch('/workbenches/:workbenchId/notification_rules/new'):
 				return await import('./inputs/date_picker')
+			case routeMatch('/workbenches/:workbenchId/notification_rules'):
+				return await import('./inputs/date_picker')
 
 			// Publications APIs
 			case routeMatch('/workgroups/:workgroupId/publication_apis/new'):

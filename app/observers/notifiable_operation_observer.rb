@@ -3,11 +3,23 @@ class NotifiableOperationObserver < ActiveRecord::Observer
     "#{model.class.name}Mailer"
   end
 
+  def mailer(model)
+    mailer_name(model).constantize
+  end
+
   def after_update(model)
     return unless email_sendable_for?(model)
 
-    model.notify_relevant_users mailer_name(model), 'finished' do |recipients|
-      [model.id, recipients, model.status]
+    line_ids = begin
+      model.line_ids
+    rescue
+      []
+    end
+
+    NotificationCenter::NotifyUsers.new(model, line_ids).call do |recipients|
+      mailer(model).finished(model.id, recipients, model.status).deliver_later
+
+      model.update_column(:notified_recipients_at, Time.now)
     end
   end
 

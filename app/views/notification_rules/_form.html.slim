@@ -5,12 +5,12 @@
       = f.input :priority, type: :integer
       
       .form-group
-        = f.label 'Rule Type', class: 'col-sm-4 col-xs-5 control-label'
+        = f.label NotificationRule.tmf(:rule_type), class: 'col-sm-4 col-xs-5 control-label'
         = f.input :rule_type, as: :radio_buttons, label: false, wrapper_html: { class: 'date smart_date col-sm-8 col-xs-7', style: 'margin-right: 0px; margin-left: 0px' }
 
       div[x-data="{ targetType: '#{@notification_rule.target_type}' }"]
         .form-group
-          = f.label 'Target Type', class: 'col-sm-4 col-xs-5 control-label'
+          = f.label NotificationRule.tmf(:target_type), class: 'col-sm-4 col-xs-5 control-label'
           = f.input :target_type,
             as: :radio_buttons,
             label: false,
@@ -21,9 +21,11 @@
           template[x-if="targetType =='user'"]
             = f.input :user_ids,
               as: :tom_select,
-              collection: [],
+              collection: @notification_rule.user_items,
+              selected: @notification_rule.user_items,
               required: true,
-              input_html: { ':disabled': "targetType != 'user'" },
+              include_blank: false,
+              input_html: { multiple: true, ':disabled': "targetType != 'user'" },
               config: { type: 'ajax', url: users_workbench_autocomplete_index_path(@workbench) }
 
           template[x-if="targetType =='external_email'"]
@@ -34,33 +36,16 @@
   h3 = t('publication_setups.form.sections.export')
   .separator
     .form-group
-      div[x-data="{ start: '#{@notification_rule.period_start}', end: '#{@notification_rule.period_end}'}"]
-        = f.input :period, as: :hidden, input_html: { ':value': "'[' + start + ',' + end + ']'" }
-
-        = simple_fields_for :period do |period_form|
-          - %w[start end].each do |type|
-            div
-              = period_form.label NotificationRule.tmf("period_#{type}"), class: 'col-sm-4 col-xs-5 control-label'
-              = period_form.input "period_#{type}".to_sym,
-                label: false,
-                as: :date_picker,
-                input_html: { 'x-model': type },
-                wrapper_html: { class: 'date smart_date col-sm-8 col-xs-7', style: 'margin-right: 0px; margin-left: 0px' }
+      = render 'period_fields', form: f
 
     = f.input :operation_statuses,
       as: :tom_select,
-      collection: @notification_rule.operation_statuses_options,
+      collection: operation_statuses_options,
+      selected: @notification_rule.operation_statuses_items,
       include_blank: false,
       config: { hidePlaceholder: true }
 
-    = f.input :line_ids,
-      as: :tom_select,
-      collection: @notification_rule.line_items,
-      include_blank: false,
-      selected: @notification_rule.line_items,
-      required: true,
-      config: { type: 'ajax', url: lines_workbench_autocomplete_index_path(@workbench), placeholder: t('simple_form.labels.referential.placeholders.select_lines'), hidePlaceholder: true },
-      input_html: { multiple: true, style: 'width: 100%' }
+    = render 'line_ids_field', form: f
 
     = cancel_button
     = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'notification_rule_form'

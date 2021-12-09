@@ -787,6 +787,7 @@ ActiveRecord::Schema.define(version: 2021_12_02_142900) do
     t.bigint "workbench_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.bigint "line_id"
     t.bigint "user_ids", default: [], array: true
     t.string "external_email"
     t.integer "priority", default: 10
@@ -794,6 +795,7 @@ ActiveRecord::Schema.define(version: 2021_12_02_142900) do
     t.bigint "line_ids", default: [], array: true
     t.string "rule_type"
     t.string "operation_statuses", default: [], array: true
+    t.index ["workbench_id"], name: "index_notification_rules_on_workbench_id"
   end
 
   create_table "notifications", force: :cascade do |t|

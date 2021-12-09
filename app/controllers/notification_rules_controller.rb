@@ -1,19 +1,15 @@
 class NotificationRulesController < ChouetteController
   include PolicyChecker
   include RansackDateFilter
-  before_action(only: [:index]) { set_date_time_params("period", Date, prefix: :notification_rule) }
 
   defaults resource_class: NotificationRule
   belongs_to :workbench
 
   def index
     index! do |format|
-      scope = ransack_period_range(scope: @notification_rules, error_message:  t('referentials.errors.validity_period'), query: :in_periode, prefix: :notification_rule)
-      @q = scope.ransack(params[:q])
-
       format.html {
         @notification_rules = NotificationRuleDecorator.decorate(
-          @q.result(distinct: true).paginate(page: params[:page]),
+          collection,
             context: {
               workbench: @workbench
             }
@@ -23,7 +19,7 @@ class NotificationRulesController < ChouetteController
   end
 
   def new
-    @notification_rule = NotificationRule.new(workbench_id: parent.id).decorate
+    @notification_rule = NotificationRule.new.decorate(context: { workbench: parent })
     new!
   end
 
@@ -32,6 +28,16 @@ class NotificationRulesController < ChouetteController
       @notification_rule = @notification_rule.decorate(context: { workbench: @workbench })
     end
   end
+
+  def scope
+    parent.notification_rules
+  end
+
+  def search
+    @search ||= Search::NotificationRule.new(scope, params)
+  end
+
+  delegate :collection, to: :search
 
   private
 

@@ -115,10 +115,6 @@ class Workbench < ApplicationModel
     self.owner_compliance_control_set_ids = (owner_compliance_control_set_ids || {}).merge compliance_control_set_ids
   end
 
-  def sentinel_notifications_recipients
-    users.map(&:email_recipient)
-  end
-
   def has_restriction?(restriction)
     restrictions && restrictions.include?(restriction.to_s)
   end

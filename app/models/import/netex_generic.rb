@@ -40,6 +40,10 @@ class Import::NetexGeneric < Import::Base
 		@netex_source ||= Netex::Source.read(local_file.path)
 	end
 
+	def line_ids
+		[]
+	end
+
 	private
 
 	def synchronize(resource_name, target)

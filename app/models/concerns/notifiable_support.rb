@@ -3,29 +3,14 @@ module NotifiableSupport
 
   included do
     extend Enumerize
-    enumerize :notification_target, in: %w[none user workbench], default: :none
+    enumerize :notification_target, in: %w[none user workbench], default: :user
     belongs_to :user
   end
 
-  module ClassMethods
+  class_methods do
     def notification_target_options
       notification_target.values.map { |k| [k && "enumerize.notification_target.#{k}".t, k] }
     end
-  end
-
-  def notify_relevant_users(mailer, action)
-    recipients = notification_recipients
-    return unless recipients.present?
-
-    mailer_params = yield(recipients)
-
-    begin
-      mailer.constantize.public_send(action, *mailer_params).deliver_later
-    rescue => e
-      Chouette::Safe.capture "Can't notify users", e
-    end
-
-    notify_recipients!
   end
 
   def notified_recipients?
@@ -44,18 +29,13 @@ module NotifiableSupport
     workgroup
   end
 
-  def notification_recipients
-    return [] unless has_notification_recipients?
-
-    users = if notification_target.to_s == 'user'
-      [user]
-    elsif notification_target.to_s == 'workbench'
-      workbench_for_notifications.users
-    else
-      workgroup_for_notifications.workbenches.map(&:users)
-    end
-
-    users.compact.flatten.map(&:email_recipient)
+  def notification_users
+    case notification_target.to_s
+      when 'none', '' then []
+      when 'user' then [user]
+      when 'workbench' then workbench_for_notifications.users
+      when 'workgroup' then workgroup_for_notifications.workbenches.map(&:users)
+    end.compact.flatten
   end
 
   def has_notification_recipients?

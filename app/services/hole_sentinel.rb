@@ -1,4 +1,6 @@
 class HoleSentinel
+  extend ActiveModel::Naming
+
   def initialize(workbench)
     @workbench = workbench
   end
@@ -30,11 +32,21 @@ class HoleSentinel
     holes
   end
 
+  def notification_users
+    workbench.users
+  end
+
+  def status
+    'successful'
+  end
+
   def watch!
     holes = incoming_holes
     return unless holes.present?
 
-    SentinelMailer.notify_incoming_holes(@workbench, referential).deliver_now
+    NotificationCenter::NotifyUsers.new(self, holes.keys).call do |recipients|
+      SentinelMailer.notify_incoming_holes(recipients, referential).deliver_now
+    end
   end
 
   protected

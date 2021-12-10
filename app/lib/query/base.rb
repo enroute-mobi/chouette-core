@@ -3,6 +3,7 @@ module Query
     def initialize(scope)
       @scope = scope
     end
+
     attr_reader :scope
 
     def where(raw_value, predicate, *columns)
@@ -32,5 +33,13 @@ module Query
 
 			value
 		end
+
+    def set_scope(value)
+      return self if value.blank?
+
+      self.scope = yield
+
+      self
+    end
   end
 end

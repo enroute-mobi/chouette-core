@@ -10,6 +10,18 @@ en:
         hole_sentinel: Hole Sentinel
         merge: Merge
         import: Import
+      operation_statuses:
+        all: all
+        successful: Success
+        warning: Warning
+        failed: Error
+      rule_type:
+        block: Block
+        notify: Notify
+      target_type:
+        user: Selected users
+        workbench:  All workbench's users
+        external_email: External enail
     notification_target:
       user:       Only Me
       workbench:  All workbench's users

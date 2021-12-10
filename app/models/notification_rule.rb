@@ -40,7 +40,12 @@ class NotificationRule < ApplicationModel
     super("NotificationRule::#{target_type.classify}")
   end
 
-  def name
-    NotificationRule.tmf('name', notification_type: "notification_rules.notification_types.#{notification_type}".t, from: I18n.l(period.begin), to: I18n.l(period.end))
+    def self.inherited(child)
+      child.instance_eval do
+        def model_name
+          NotificationRule.model_name
+        end
+      end
+      super
   end
 end

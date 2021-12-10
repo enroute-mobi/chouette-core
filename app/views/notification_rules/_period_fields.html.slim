@@ -1,9 +1,12 @@
 - form = local_assigns.fetch(:form)
-- label = local_assigns.fetch(:label, true)
+- is_filter = local_assigns.fetch(:is_filter, false)
 - period_start =  I18n.l(form.object.period&.min, format: '%d/%m/%Y') rescue nil
 - period_end =  I18n.l(form.object.period&.max, format: '%d/%m/%Y') rescue nil
 
-.flex[x-data="{ start: '#{period_start}', end: '#{period_end}'}"]
+div[
+	x-data="{ start: '#{period_start}', end: '#{period_end}', isFilter: #{is_filter} }"
+	x-bind:class="isFilter && 'flex'"
+	]
 	= form.input :period, as: :hidden, input_html: { ':value': "!!start && !!end ? '[' + start + ',' + end + ']' : ''" }
 
 	= simple_fields_for :period do |period_form|

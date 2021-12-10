@@ -64,6 +64,15 @@ module Chouette
             new_instance.line_referential.add_member new_instance.organisation
           end
 
+          model :notification_rule do
+            attribute(:period) { Range.new(Date.today, Date.today + 10.days) }
+            attribute(:priority) { 10 }
+            attribute(:notification_type) { 'hole_sentinel' }
+            attribute(:target_type) { 'workbench' }
+            attribute(:operation_statuses) { [] }
+            attribute(:line_ids) { [] }
+          end
+
           model :compliance_check_set do
             attribute(:name) { |n| "Test #{n}" }
             after do

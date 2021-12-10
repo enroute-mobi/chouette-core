@@ -20,6 +20,10 @@ class NotificationRuleDecorator < AF83::Decorator
     end
   end
 
+  define_instance_method :name do
+    NotificationRule.tmf('name', notification_type: "enumerize.notification_rule.notification_type.#{notification_type}".t, from: I18n.l(period.begin), to: I18n.l(period.end))
+  end
+
   define_instance_method :user_items do
     users = context[:workbench].users.where(id: object.user_ids)
 

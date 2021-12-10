@@ -19,10 +19,12 @@
       = f.input :operation_statuses, as: :check_boxes, collection: operation_statuses_options, label: false, value_method: Proc.new { |w| w[:id] }, label_method: lambda { |w| ("<span>#{w[:text]}</span>").html_safe }, include_hidden: false, wrapper_html: { class: 'checkbox_list' }
 
     .form-group
-      = render 'period_fields', form: f
-
-    .form-group
       = render 'line_ids_field', form: f
+
+  .ffg-row
+    .form-group
+      = render 'period_fields', form: f, is_filter: true
+
   
 
   .actions

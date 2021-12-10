@@ -7,8 +7,8 @@ module Query
 
     def where(raw_value, predicate, *columns)
       return self if raw_value.blank?
-			
-			value = serialize_value(raw_value, predicate)
+
+      value = serialize_value(raw_value, predicate)
 			get_clause = Proc.new { |c| scope.arel_table[c.to_sym].send(predicate, value) }
 
 			where_clause = columns[1..]
@@ -17,7 +17,7 @@ module Query
 				end
 
       self.scope = scope.where where_clause
-			
+
 			self
     end
 

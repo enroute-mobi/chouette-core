@@ -1,7 +1,7 @@
 module Search
   class Entrance < Base
 		extend Enumerize
-	
+
     # All search attributes
     attribute :name
     attribute :stop_area
@@ -55,5 +55,3 @@ module Search
     end
   end
 end
-
-

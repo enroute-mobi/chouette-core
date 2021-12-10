@@ -65,13 +65,13 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: f92aca35fcb70156dd35eee7561fdb5f6099930c
+  revision: 9967ed4f193ed079fce43fadfac31e6aff4b0d30
+  branch: NETEX-14-ox-sax-source
   specs:
     netex (0.1.2)
       ox
       rgeo-proj4
       rubyzip
-      saxerator
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/rgeo-proj4.git

@@ -25,7 +25,6 @@ fr:
     shapefile_empty_linestring: "L'objet situé à l'index #%{shape_index} de votre fichier ne contient aucun tracé"
     shapefile_more_than_one_linestring: "L'objet situé à l'index #%{shape_index} de votre fichier contient plusieurs tracé"
     shapefile_geometry_parsing_error: "Impossible de parser le tracé de l'objet situé à l'index #%{shape_index} de votre fichier"
-    code_space_error: Aucun code space ayant %{short_name} comme nom court n'existe dans votre groupe de travail
     invalid_model_attribute: "L'attribut %{attribute_name} ne peut avoir la valeur '%{attribute_value}'"
     gtfs:
       agencies:

@@ -12,6 +12,8 @@ module Chouette
       attr_accessor :model_type, :model_id_attribute
       include Event::HandlerSupport
 
+      delegate :workgroup, to: :target
+
       def resources
         @resources ||= source.send(resource_type.to_s.pluralize)
       end
@@ -23,7 +25,7 @@ module Chouette
       end
 
       def transaction(&block)
-        CustomFieldsSupport.within_workgroup(target.workgroup) do
+        CustomFieldsSupport.within_workgroup(workgroup) do
           target.class.transaction(&block)
         end
       end
@@ -61,7 +63,7 @@ module Chouette
           @updater = updater
         end
 
-        delegate :model_id_attribute, :event_handler, :report_invalid_model, to: :updater
+        delegate :model_id_attribute, :event_handler, :workgroup, to: :updater
 
         def with_resource_ids(resource_ids)
           scope.where(model_id_attribute => resource_ids).find_each do |model|
@@ -114,7 +116,7 @@ module Chouette
         end
 
         def code_space(short_name)
-          @code_space ||= CodeSpace.find_by_short_name(short_name)
+          workgroup.code_spaces.find_by short_name: short_name
         end
 
         def update_codes(model, resource, event)
@@ -127,7 +129,7 @@ module Chouette
             if (code_space = code_space(short_name))
               model.codes.find_or_initialize_by code_space: code_space, value: value
             else
-              (event.errors[:codes] ||= []) << { error: :invalid_code_space, value: value }
+              (event.errors[:codes] ||= []) << { error: :invalid_code_space, value: short_name }
             end
           end
         end

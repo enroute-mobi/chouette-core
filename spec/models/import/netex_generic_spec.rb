@@ -265,5 +265,69 @@ RSpec.describe Import::NetexGeneric do
         end
       end
     end
+
+    context 'custom_fields' do
+      self::XML = %{
+        <StopPlace id='test'>
+          <Name>Test</Name>
+          <keyList>
+            <KeyValue typeOfKey="chouette::custom-field">
+              <Key>custom_field_code</Key>
+              <Value>custom_field_value</Value>
+            </KeyValue>
+          </keyList>
+        </StopPlace>
+      }
+
+      subject(:custom_field_values) { stop_area.reload.custom_field_values }
+
+      context "when XML is #{self::XML}" do
+        let(:xml) { self.class::XML }
+
+        context "when the required code space exists" do
+          let!(:custom_field) { workgroup.custom_fields.create!(code: 'custom_field_code', resource_type: "StopArea", field_type: "string" ) }
+
+          context "when no StopArea exists with this registration number" do
+            let(:stop_area) { workbench.stop_areas.find_by(registration_number: 'test') }
+
+            before { import.import_stop_areas }
+
+            it { is_expected.to include("custom_field_code" => "custom_field_value") }
+          end
+
+          context "when a StopArea exists with this registration number" do
+            let(:context) do
+              Chouette.create { stop_area registration_number: 'test' }
+            end
+            before { import.stop_area_provider = stop_area.stop_area_provider }
+            let!(:stop_area) { context.stop_area }
+
+            before { import.import_stop_areas }
+
+            it { is_expected.to include("custom_field_code" => "custom_field_value") }
+          end
+        end
+
+        context "when the required custom field doesn't exist" do
+          let(:stop_area) { workbench.stop_areas.find_by(registration_number: 'test') }
+          before { import.import_stop_areas }
+          it { is_expected.to be_empty }
+
+          describe "resource messages" do
+            let(:resource) { import.resources.first }
+            subject { resource.messages }
+
+            it do
+              expected_message = an_object_having_attributes(
+                criticity: "error",
+                message_key: "invalid_model_attribute",
+                message_attributes: {"attribute_name"=>"custom_fields", "attribute_value"=> "custom_field_code"}
+              )
+              is_expected.to include(expected_message)
+            end
+          end
+        end
+      end
+    end
   end
 end

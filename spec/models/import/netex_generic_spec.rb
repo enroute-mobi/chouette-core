@@ -1,204 +1,269 @@
 RSpec.describe Import::NetexGeneric do
-	let(:workbench) do
-    create :workbench do |workbench|
-      workbench.line_referential.update objectid_format: "netex"
-      workbench.stop_area_referential.update objectid_format: "netex"
-    end
-  end
 
-  let(:workgroup) { workbench.workgroup }
-
-  let(:stop_area_referential) { workbench.stop_area_referential }
-  let(:stop_area_provider) { workbench.stop_area_providers.first }
-  let(:line_referential) { workbench.line_referential }
-  let(:line_provider) { workbench.line_providers.first }
-
-  let(:workbench_import){ create :workbench_import }
+  let(:context) { Chouette.create { workbench } }
+  let(:workbench) { context.workbench }
+  let(:workgroup) { context.workgroup }
 
   def build_import(xml)
-    i = Import::NetexGeneric.new workbench: workbench, creator: "test", name: "test", parent: workbench_import
-
-    allow(i).to receive(:netex_source) do
-      Netex::Source.new.tap { |s| s.parse(StringIO.new(xml)) }
-    end
-
-    i
-  end
-
-  it 'should accept an xml file' do
-    filename = 'test.xml'
-    begin
-      File.open(filename, 'w') do |f|
-        stop_area = FactoryBot.build(:stop_area, stop_area_referential: stop_area_referential, stop_area_provider: stop_area_provider)
-        xml = "<StopPlace><Centroid><Location><gml:pos>#{stop_area.longitude} #{stop_area.latitude}</gml:pos></Location></Centroid></StopPlace>"
-        f.write(xml)
-
-        expect(Import::NetexGeneric.accepts_file?(filename)).to be_truthy
+    Import::NetexGeneric.new(workbench: workbench, creator: "test", name: "test").tap do |import|
+      allow(import).to receive(:netex_source) do
+        Netex::Source.new.tap { |s| s.parse(StringIO.new(xml)) }
       end
-    ensure
-      File.delete(filename) if File.exists?(filename)
     end
   end
 
-  it 'should accept a zip file' do
-    expect(Import::NetexGeneric.accepts_file?(fixtures_path("sample_neptune.zip"),)).to be_truthy
+  describe ".accepts_file?" do
+    subject { Import::NetexGeneric.accepts_file?(filename) }
+
+    context "when filename is file.xml" do
+      let(:filename) { "file.xml" }
+      it { is_expected.to be_truthy }
+    end
+
+    context "when file is Zip file with only .xml entries" do
+      let(:filename) { fixtures_path("sample_neptune.zip") }
+      it { is_expected.to be_truthy }
+    end
+
+    context "when file is GTFS file" do
+      let(:filename) { fixtures_path("sample_gtfs.zip") }
+      it { is_expected.to be_falsy }
+    end
   end
 
-	describe '#import_stop_areas' do
-    def build_stop_area_xml(stop_area)
-      %{
-        <StopPlace id="#{stop_area.registration_number}">
-          <Name>#{stop_area.name}</Name>
+  describe '#import_stop_areas' do
+
+    let(:import) { build_import xml }
+
+    self::XML = '<StopPlace id="42"><Name>Tour Eiffel</Name></StopPlace>'
+    context "when XML is #{self::XML}" do
+      let(:xml) { self.class::XML }
+      context "when no StopArea exists with the registration number '42'" do
+        def stop_area
+          workbench.stop_areas.find_by(registration_number: '42')
+        end
+
+        it { expect { import.import_stop_areas }.to change { stop_area }.from(nil).to(an_object_having_attributes(registration_number: '42', name: 'Tour Eiffel')) }
+      end
+
+      context "when a StopArea exists with the registration number '42'" do
+        let(:context) do
+          Chouette.create { stop_area registration_number: '42' }
+        end
+        before { import.stop_area_provider = stop_area.stop_area_provider }
+        let!(:stop_area) { context.stop_area }
+
+        it { expect { import.import_stop_areas ; stop_area.reload }.to change(stop_area, :name).from(a_string_not_matching('Tour Eiffel')).to('Tour Eiffel') }
+      end
+
+      describe 'resource' do
+        subject(:resource) { import.resources.first }
+        before { import.import_stop_areas }
+        it { is_expected.to have_attributes(status: "OK", metrics: a_hash_including("error_count"=>"0","ok_count"=>"1")) }
+      end
+    end
+
+    self::INVALID_XML = '<StopPlace id="test"><Name></Name></StopPlace>'
+    context "when XML is #{self::INVALID_XML}" do
+      let(:xml) { self.class::INVALID_XML }
+      before { import.import_stop_areas }
+
+      describe 'status' do
+        subject { import.status }
+        it { is_expected.to eq("failed") }
+      end
+
+      describe 'resource' do
+        subject(:resource) { import.resources.first }
+        it { is_expected.to have_attributes(status: "ERROR", metrics: a_hash_including("error_count"=>"1")) }
+      end
+    end
+
+    describe 'attributes' do
+      let(:stop_area) { workbench.stop_areas.find_by(registration_number: 'test') }
+      before { import.import_stop_areas }
+
+      def self::xml_with(content)
+        %{
+        <StopPlace id="test">
+          <Name>Tour Eiffel</Name>
+          #{content.strip}
+        </StopPlace>
+        }
+      end
+
+      describe 'name' do
+        self::INVALID_XML = '<StopPlace id="test"><Name></Name></StopPlace>'
+
+        context "when XML is #{self::INVALID_XML}" do
+          let(:xml) { self.class::INVALID_XML }
+
+          describe "resource messages" do
+            let(:resource) { import.resources.first }
+            subject { resource.messages }
+
+            it do
+              expected_message = an_object_having_attributes(
+                criticity: "error",
+                message_key: "invalid_model_attribute",
+                message_attributes: {"attribute_name"=>"name", "attribute_value"=> nil}
+              )
+              is_expected.to include(expected_message)
+            end
+          end
+        end
+      end
+
+      describe 'latitude' do
+        subject { stop_area.latitude }
+        self::XML = xml_with(
+          %{
           <Centroid>
             <Location>
-              <Latitude>#{stop_area.latitude}</Latitude>
-              <Longitude>#{stop_area.longitude}</Longitude>
+              <Latitude>48.8583701</Latitude>
+              <Longitude>2.2922873</Longitude>
             </Location>
           </Centroid>
-          <PostalAddress version="any">
-            <Town>#{stop_area.city_name}</Town>
-            <PostalRegion>#{stop_area.zip_code}</PostalRegion>
-          </PostalAddress>
-          <StopPlaceType>onstreetBus</StopPlaceType>
-        </StopPlace>
-      }
-    end
+          }
+        )
+        context "when XML is #{self::XML}" do
+          let(:xml) { self.class::XML }
+          it { is_expected.to be_within(0.0000001).of(48.8583701) }
+        end
+      end
 
-    let(:stop_area) { FactoryBot.build(:stop_area, stop_area_referential: stop_area_referential, stop_area_provider: stop_area_provider) }
+      describe 'longitude' do
+        subject { stop_area.longitude }
+        self::XML = xml_with(
+          %{
+          <Centroid>
+            <Location>
+              <Latitude>48.8583701</Latitude>
+              <Longitude>2.2922873</Longitude>
+            </Location>
+          </Centroid>
+          }
+        )
+        context "when XML is #{self::XML}" do
+          let(:xml) { self.class::XML }
+          it { is_expected.to be_within(0.0000001).of(2.2922873) }
+        end
+      end
 
-    let(:xml) { build_stop_area_xml(stop_area)}
-    let(:import) { build_import(xml) }
+      describe 'city_name' do
+        subject { stop_area.city_name }
+        self::XML = xml_with('<PostalAddress version="any"><Town>Paris</Town></PostalAddress>')
+        context "when XML is #{self::XML}" do
+          let(:xml) { self.class::XML }
+          it { is_expected.to eq('Paris') }
+        end
+      end
 
-    let(:imported_stop_areas) { workbench.stop_area_referential.stop_areas }
-
-    it 'should create new stop_areas' do
-      expect{ import.import_stop_areas }.to change{ imported_stop_areas.count }.by 1
-      new_stop_area = Chouette::StopArea.find_by registration_number: stop_area.registration_number
-      expect(new_stop_area.latitude).to be_within(0.0000001).of(stop_area.latitude)
-      expect(new_stop_area.longitude).to be_within(0.0000001).of(stop_area.longitude)
-      expect(new_stop_area.name).to eq(stop_area.name)
-    end
-
-    it 'should update existing stop_areas' do
-      import.import_stop_areas
-
-      new_stop_area = imported_stop_areas.last
-
-      new_stop_area.update name: "Dummy"
-
-      expect { import.import_stop_areas }.to change { new_stop_area.reload.name }.from("Dummy").to(stop_area.name)
+      describe 'postal_region' do
+        subject { stop_area.postal_region }
+        self::XML = xml_with('<PostalAddress version="any"><PostalRegion>75107</PostalRegion></PostalAddress>')
+        context "when XML is #{self::XML}" do
+          let(:xml) { self.class::XML }
+          it { is_expected.to eq('75107') }
+        end
+      end
     end
 
     context 'codes' do
-      before do
-        FactoryBot.create(:code_space, short_name: 'foo', workgroup: workgroup)
+      self::XML = %{
+        <StopPlace id='test'>
+          <Name>Test</Name>
+          <keyList>
+            <KeyValue typeOfKey="ALTERNATE_IDENTIFIER">
+              <Key>code_space_shortname</Key>
+              <Value>code_value</Value>
+            </KeyValue>
+          </keyList>
+        </StopPlace>
+      }
+
+      subject(:codes) { stop_area.reload.codes }
+
+      context "when XML is #{self::XML}" do
+        let(:xml) { self.class::XML }
+
+        context "when the required code space exists" do
+          let!(:code_space) { workgroup.code_spaces.create!(short_name: 'code_space_shortname') }
+
+          context "when no StopArea exists with this registration number" do
+            let(:stop_area) { workbench.stop_areas.find_by(registration_number: 'test') }
+
+            before { import.import_stop_areas }
+
+            it { is_expected.to include(an_object_having_attributes(code_space_id: code_space.id, value: "code_value")) }
+          end
+
+          context "when a StopArea exists with this registration number" do
+            let(:context) do
+              Chouette.create { stop_area registration_number: 'test' }
+            end
+            before { import.stop_area_provider = stop_area.stop_area_provider }
+            let!(:stop_area) { context.stop_area }
+
+            before { import.import_stop_areas }
+
+            it { is_expected.to include(an_object_having_attributes(code_space_id: code_space.id, value: "code_value")) }
+          end
+        end
+
+        context "when the required code space doesn't exist" do
+          let(:stop_area) { workbench.stop_areas.find_by(registration_number: 'test') }
+          before { import.import_stop_areas }
+          it { is_expected.to be_empty }
+
+          describe "resource messages" do
+            let(:resource) { import.resources.first }
+            subject { resource.messages }
+
+            it do
+              expected_message = an_object_having_attributes(
+                criticity: "error",
+                message_key: "invalid_model_attribute",
+                message_attributes: {"attribute_name"=>"codes", "attribute_value"=> "code_value"}
+              )
+              is_expected.to include(expected_message)
+            end
+          end
+        end
       end
 
-      context 'when some are valid' do
-        let(:xml) do
-          %{
-            <StopPlace id='test'>
-              <Name>test</Name>
-              <keyList>
-                <KeyValue typeOfKey="ALTERNATE_IDENTIFIER">
-                  <Key>foo</Key>
-                  <Value>704A</Value>
-                </KeyValue>
-                <KeyValue typeOfKey="ALTERNATE_IDENTIFIER">
-                  <Key>foo</Key>
-                  <Value>704B</Value>
-                </KeyValue>
-              </keyList>
-            </StopPlace>
-          }
-        end
+      self::XML_WITH_2_VALUES = %{
+        <StopPlace id='test'>
+          <Name>Test</Name>
+          <keyList>
+            <KeyValue typeOfKey="ALTERNATE_IDENTIFIER">
+              <Key>code_space_shortname</Key>
+              <Value>code_value1</Value>
+            </KeyValue>
+            <KeyValue typeOfKey="ALTERNATE_IDENTIFIER">
+              <Key>code_space_shortname</Key>
+              <Value>code_value2</Value>
+            </KeyValue>
+          </keyList>
+        </StopPlace>
+      }
 
-        it 'should add them' do
-          import.import_stop_areas
+      context "when XML is #{self::XML_WITH_2_VALUES}" do
+        let(:xml) { self.class::XML_WITH_2_VALUES }
 
-          new_stop_area = imported_stop_areas.last
-          codes = new_stop_area.codes
+        let!(:code_space) { workgroup.code_spaces.create!(short_name: 'code_space_shortname') }
+        let(:stop_area) { workbench.stop_areas.find_by(registration_number: 'test') }
 
-          expect(codes).to include(an_object_having_attributes(value: "704A"), an_object_having_attributes(value: "704B"))
-        end
-      end
+        before { import.import_stop_areas }
 
-      context 'when some are invalid' do
-        let(:xml) do
-          %{
-            <StopPlace id='test'>
-              <Name>test</Name>
-              <keyList>
-                <KeyValue typeOfKey="ALTERNATE_IDENTIFIER">
-                  <Key>bar</Key>
-                  <Value>704A</Value>
-                </KeyValue>
-                <KeyValue typeOfKey="ALTERNATE_IDENTIFIER">
-                  <Key>bar</Key>
-                  <Value>704B</Value>
-                </KeyValue>
-              </keyList>
-            </StopPlace>
-          }
-        end
-
-        it 'should add import messages if codes are not valid' do
-          import.import_stop_areas
-
-          resource = import.resources.first
-
-          code_space_error_count = resource
-            .messages
-            .where(
-              criticity: :error,
-              message_key: :code_space_error
-            ).count
-
-          expect(code_space_error_count).to eq(2)
+        it do
+          expected_codes = [
+            an_object_having_attributes(code_space_id: code_space.id, value: "code_value1"),
+            an_object_having_attributes(code_space_id: code_space.id, value: "code_value2")
+          ]
+          is_expected.to match_array(expected_codes)
         end
       end
     end
   end
-
-  # describe '#import_lines' do
-  #   def build_line_xml(line)
-  #     %{
-  #       <Line dataSourceRef="#{line_provider.object_id}" id="#{line.registration_number}">
-  #         <Name>#{line.name}</Name>
-  #       </Line>
-  #     }
-  #   end
-
-  #   let(:line) { FactoryBot.build(:line, line_referential: line_referential, line_provider: line_provider) }
-
-  #   let(:xml) { build_line_xml(line)}
-  #   let(:import) { build_import(xml) }
-
-  #   let(:imported_lines) { workbench.line_referential.lines }
-
-  #   it 'should create new lines' do
-  #     expect{ import.import_lines }.to change{ imported_lines.count }.by 1
-  #     new_line = Chouette::Line.find_by registration_number: line.registration_number
-
-  #     expect(new_line.name).to eq(line.name)
-  #   end
-
-  #   it 'should update existing lines' do
-  #     import.import_lines
-
-  #     new_line = imported_lines.last
-
-  #     new_line.update name: "Dummy"
-
-  #     expect { import.import_lines }.to change { new_line.reload.name }.from("Dummy").to(line.name)
-  #   end
-  # end
-
-  # describe '#import_companies' do
-  #   def build_company_xml(company)
-  #     %{
-  #       Organisation
-  #     }
-  #   end
-  # end
 end

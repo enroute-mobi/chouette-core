@@ -91,7 +91,7 @@ module IevInterfaces::Resource
     raise
   end
 
-  def inc_rows_count(count: 1)
+  def inc_rows_count(count = 1)
     @rows_count += count
   end
 

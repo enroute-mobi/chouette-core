@@ -24,8 +24,9 @@ class Import::NetexGeneric < Import::Base
   end
 
   def stop_area_provider
-    workbench.default_stop_area_provider
+    @stop_area_provider ||= workbench.default_stop_area_provider
   end
+  attr_writer :stop_area_provider
 
 	def import_without_status
     import_resources :stop_areas
@@ -43,40 +44,30 @@ class Import::NetexGeneric < Import::Base
 
 	def synchronize(resource_name, target)
     resource = create_resource(resource_name)
+    resource.status = "OK"
 
     event_handler = Chouette::Sync::Event::Handler.new do |event|
       unless event.has_error?
-        if event.type.created? or event.type.updated?
+        if event.type.create? || event.type.update?
           resource.inc_rows_count event.count
         end
       else
         resource.status = "ERROR"
 
         event.errors.each do |attribute, errors|
-          if attribute == :codes
-            errors.each do |code_error|
-              message_attributes = {
-                criticity: :error,
-                message_key: :code_space_error,
-                message_attributes: {
-                  short_name: code_error[:value]
-                }
+          errors.each do |error|
+            message_attributes = {
+              criticity: :error,
+              message_key: :invalid_model_attribute,
+              message_attributes: {
+                attribute_name: attribute,
+                attribute_value: error[:value]
               }
-              resource.messages.build(message_attributes)
-            end
-          else
-            errors.each do |error|
-              message_attributes.merge(
-                message_key: :invalid_model_attribute,
-                message_attributes: {
-                  attribute_name: attribute,
-                  attribute_value: error[:value]
-                }
-              )
-            end
+            }
             resource.messages.build(message_attributes)
           end
         end
+        # TODO Should we saved each time ?
         resource.save!
 
         self.status = 'failed'
@@ -89,6 +80,9 @@ class Import::NetexGeneric < Import::Base
 		)
 
 		sync.update_or_create
+
+    resource.update_metrics
+    resource.save!
 	end
 
 	def create_resource(resource_name)

@@ -224,7 +224,7 @@ RSpec.describe Import::NetexGeneric do
               expected_message = an_object_having_attributes(
                 criticity: "error",
                 message_key: "invalid_model_attribute",
-                message_attributes: {"attribute_name"=>"codes", "attribute_value"=> "code_value"}
+                message_attributes: {"attribute_name"=>"codes", "attribute_value"=> "code_space_shortname"}
               )
               is_expected.to include(expected_message)
             end

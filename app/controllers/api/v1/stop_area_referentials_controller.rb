@@ -17,8 +17,8 @@ class Api::V1::StopAreaReferentialsController < ActionController::Base
         synchronization.delete deleted_ids
       end
 
-      logger.info "Synchronization done: #{synchronization.counts}"
-      render json: synchronization.counts, status: :ok
+      logger.info "Synchronization done: #{counters}"
+      render json: counters.to_hash, status: :ok
     else
       render json: { message: event.errors.full_messages }, status: :unprocessable_entity
     end
@@ -30,9 +30,13 @@ class Api::V1::StopAreaReferentialsController < ActionController::Base
     @event ||= WebhookEvent::StopAreaReferential.new event_params
   end
 
+  def counters
+    @counters ||= Chouette::Sync::Counters.new
+  end
+
   def synchronization
     @synchronization ||=
-      Chouette::Sync::StopArea::Netex.new target: stop_area_referential
+      Chouette::Sync::StopArea::Netex.new target: stop_area_referential, event_handler: counters.event_handler
   end
 
   def stop_area_referential

@@ -93,7 +93,7 @@ RSpec.describe Import::NetexGeneric do
       before do
         FactoryBot.create(:code_space, short_name: 'foo', workgroup: workgroup)
       end
-  
+
       context 'when some are valid' do
         let(:xml) do
           %{
@@ -112,7 +112,7 @@ RSpec.describe Import::NetexGeneric do
             </StopPlace>
           }
         end
-  
+
         it 'should add them' do
           import.import_stop_areas
 
@@ -155,30 +155,6 @@ RSpec.describe Import::NetexGeneric do
             ).count
 
           expect(code_space_error_count).to eq(2)
-        end
-      end
-  
-      context 'when one has the external code space' do
-        let(:xml) do
-          %{
-            <StopPlace id='test'>
-              <Name>test</Name>
-              <keyList>
-                <KeyValue typeOfKey="ALTERNATE_IDENTIFIER">
-                  <Key>external</Key>
-                  <Value>704A</Value>
-                </KeyValue>
-              </keyList>
-            </StopPlace>
-          }
-        end
-
-        it 'should use code value as a registration number' do
-          import.import_stop_areas
-
-          new_stop_area = imported_stop_areas.last
-
-          expect(new_stop_area.registration_number).to eq('704A')
         end
       end
     end

@@ -10,6 +10,7 @@ module Chouette
       attr_accessor :source, :target, :update_batch_size
       attr_accessor :resource_type, :resource_id_attribute, :resource_decorator
       attr_accessor :model_type, :model_id_attribute
+      include Event::HandlerSupport
 
       def resources
         @resources ||= source.send(resource_type.to_s.pluralize)
@@ -27,11 +28,11 @@ module Chouette
         end
       end
 
-      def update_or_create(&block)
+      def update_or_create
         resources_in_batches do |batch|
           transaction do
-            batch.update_all(&block)
-            batch.create_all(&block)
+            batch.update_all
+            batch.create_all
           end
 
           processed_identifiers.concat batch.resource_ids
@@ -40,25 +41,6 @@ module Chouette
 
       def processed_identifiers
         @processed_identifiers ||= []
-      end
-
-      def counters
-        @counters ||= Counters.new
-      end
-
-      def increment_count(type, **options)
-        counters.increment_count(type, options)
-      end
-
-      def report_invalid_model(model:, resource: nil, **options)
-        increment_count(:errors,
-          model: model,
-          resource: resource,
-          **options
-        )
-
-        resource_part = resource ? " from #{resource.inspect}" : ""
-        Rails.logger.warn "Invalid model in synchronization: #{model.inspect} #{model.errors.inspect}#{resource_part}"
       end
 
       # Collection to be modified in the target: lines, stop_areas, etc
@@ -79,7 +61,7 @@ module Chouette
           @updater = updater
         end
 
-        delegate :model_id_attribute, :increment_count, :report_invalid_model, to: :updater
+        delegate :model_id_attribute, :event_handler, :report_invalid_model, to: :updater
 
         def with_resource_ids(resource_ids)
           scope.where(model_id_attribute => resource_ids).find_each do |model|
@@ -108,28 +90,46 @@ module Chouette
           attributes
         end
 
-        def create(resource, &block)
+        def create(resource)
           attributes = prepare_attributes(resource)
-          model = scope.create(attributes)
-          if model.persisted?
-            increment_count :create, model: model, resource: resource
-          else
-            report_invalid_model model: model, resource: resource
-          end
+          model = scope.build attributes
 
-          yield(updater, model, resource) if block_given?
+          event = Event.new :create, model: model, resource: resource
+          update_codes model, resource, event
+
+          model.save
+          event_handler.event event
         end
 
-        def update(model, resource, &block)
+        def update(model, resource)
           attributes = prepare_attributes(resource)
           Rails.logger.debug { "Update #{model.inspect} with #{attributes.inspect}" }
-          if model.update(attributes)
-            increment_count :update, model: model, resource: resource
-          else
-            report_invalid_model model: model, resource: resource
-          end
 
-          yield(updater, model, resource) if block_given?
+          model.attributes = attributes
+
+          event = Event.new :update, model: model, resource: resource
+          update_codes model, resource, event
+          model.save
+          event_handler.event event
+        end
+
+        def code_space(short_name)
+          @code_space ||= CodeSpace.find_by_short_name(short_name)
+        end
+
+        def update_codes(model, resource, event)
+          return unless model.respond_to?(:codes) && resource.respond_to?(:codes_attributes)
+
+          resource.codes_attributes.each do |code_attributes|
+            short_name = code_attributes[:short_name]
+            value = code_attributes[:value]
+
+            if (code_space = code_space(short_name))
+              model.codes.find_or_initialize_by code_space: code_space, value: value
+            else
+              (event.errors[:codes] ||= []) << { error: :invalid_code_space, value: value }
+            end
+          end
         end
 
       end
@@ -185,15 +185,15 @@ module Chouette
           end
         end
 
-        def update_all(&block)
+        def update_all
           existing_models do |model, decorated_resource|
-            models.update model, decorated_resource, &block
+            models.update model, decorated_resource
           end
         end
 
-        def create_all(&block)
+        def create_all
           new_resources do |decorated_resource|
-            models.create decorated_resource, &block
+            models.create decorated_resource
           end
         end
 

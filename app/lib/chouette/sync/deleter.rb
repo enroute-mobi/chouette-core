@@ -11,11 +11,12 @@ module Chouette
       attr_accessor :model_type, :model_id_attribute
 
       attr_reader :delete_count
+      include Event::HandlerSupport
 
       def delete(resource_ids)
         resource_ids.each_slice(delete_batch_size) do |identifiers|
           delete_all existing_models(identifiers)
-          increment_count identifiers.count
+          event_handler.event :delete, count: identifiers.count
         end
       end
 
@@ -27,15 +28,7 @@ module Chouette
         delete useless_identifiers
       end
 
-      def counters
-        @counters ||= Counters.new
-      end
-
       protected
-
-      def increment_count(count)
-        counters.increment_count(:delete, count: count)
-      end
 
       def scope
         @scope ||= target.send(model_type.to_s.pluralize)

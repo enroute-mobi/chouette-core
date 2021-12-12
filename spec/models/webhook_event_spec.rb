@@ -119,9 +119,7 @@ RSpec.describe WebhookEvent do
   describe "netex source" do
 
     it "returns a Netex::Source which has parsed the payloads" do
-      stop_place_xml = %{<StopPlace id='42'>
-  <Name>Test</Name>
-</StopPlace>}
+      stop_place_xml = %{<StopPlace id='42'><Name>Test</Name></StopPlace>}
       event.test = "<stopPlaces>#{stop_place_xml}</stopPlaces>"
 
       source = event.netex_source

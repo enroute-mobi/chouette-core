@@ -18,8 +18,8 @@ class Api::V1::LineReferentialsController < ActionController::Base
         end
       end
 
-      logger.info "Synchronization done: #{synchronization.counts}"
-      render json: synchronization.counts, status: :ok
+      logger.info "Synchronization done: #{counters}"
+      render json: counters.to_hash, status: :ok
     else
       render json: { message: event.errors.full_messages }, status: :unprocessable_entity
     end
@@ -31,12 +31,18 @@ class Api::V1::LineReferentialsController < ActionController::Base
     @event ||= WebhookEvent::LineReferential.new event_params
   end
 
+  def counters
+    @counters ||= Chouette::Sync::Counters.new
+  end
+
   def synchronization
     @synchronization ||= Chouette::Sync::Referential.new(line_referential).tap do |sync|
       sync.synchronize_with Chouette::Sync::Company::Netex
       sync.synchronize_with Chouette::Sync::Network::Netex
       sync.synchronize_with Chouette::Sync::LineNotice::Netex
       sync.synchronize_with Chouette::Sync::Line::Netex
+
+      sync.event_handler = counters.event_handler
     end
   end
 

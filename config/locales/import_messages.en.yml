@@ -26,6 +26,7 @@ en:
     shapefile_more_than_one_linestring: "Object at index #%{shape_index} in the provided file includes more than one shape"
     shapefile_geometry_parsing_error: "Shape parsing failed for the object at index #%{shape_index}"
     code_space_error: No code space with %{short_name} short name is present in your workgroup
+    invalid_model_attribute: "The attribute %{attribute_name} can't have value '%{attribute_value}'"
     gtfs:
       agencies:
         imported: "%{count} agency(ies) imported"

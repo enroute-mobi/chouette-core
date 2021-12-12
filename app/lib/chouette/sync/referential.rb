@@ -15,17 +15,18 @@ module Chouette
         syncs.each(&:update_or_create)
       end
 
+      def event_handler=(event_handler)
+        syncs.each do |sync|
+          sync.event_handler = event_handler
+        end
+      end
+
       def delete(resource_type, deleted_ids)
         syncs.each do |sync|
           if sync.resource_type == resource_type
             sync.delete deleted_ids
           end
         end
-      end
-
-      def counts
-        counters = syncs.map(&:counters)
-        Counters.sum(counters).to_hash
       end
 
       def synchronize

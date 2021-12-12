@@ -28,29 +28,11 @@ class Import::NetexGeneric < Import::Base
   end
 
 	def import_without_status
-    import_resources(
-			:stop_areas
-		)
+    import_resources :stop_areas
   end
 
 	def import_stop_areas
-		synchronize(:stop_area, stop_area_provider) do |updater, model, resource|
-			resource.codes.each do |key_value|
-				CodeSpace.find_by_short_name!(key_value.key)
-			rescue ActiveRecord::RecordNotFound
-				updater.report_invalid_model(
-					model: model,
-					resource: resource,
-					import_message: {
-						criticity: :error,
-						message_key: :code_space_error,
-						message_attributes: {
-							short_name: key_value.value
-						}
-					}
-				)
-			end
-		end
+		synchronize :stop_area, stop_area_provider
 	end
 
 	def netex_source
@@ -59,45 +41,61 @@ class Import::NetexGeneric < Import::Base
 
 	private
 
-	def synchronize(resource_name, target, &block)
+	def synchronize(resource_name, target)
+    resource = create_resource(resource_name)
+
+    event_handler = Chouette::Sync::Event::Handler.new do |event|
+      unless event.has_error?
+        if event.type.created? or event.type.updated?
+          resource.inc_rows_count event.count
+        end
+      else
+        resource.status = "ERROR"
+
+        event.errors.each do |attribute, errors|
+          if attribute == :codes
+            errors.each do |code_error|
+              message_attributes = {
+                criticity: :error,
+                message_key: :code_space_error,
+                message_attributes: {
+                  short_name: code_error[:value]
+                }
+              }
+              resource.messages.build(message_attributes)
+            end
+          else
+            errors.each do |error|
+              message_attributes.merge(
+                message_key: :invalid_model_attribute,
+                message_attributes: {
+                  attribute_name: attribute,
+                  attribute_value: error[:value]
+                }
+              )
+            end
+            resource.messages.build(message_attributes)
+          end
+        end
+        resource.save!
+
+        self.status = 'failed'
+      end
+    end
 		sync = "Chouette::Sync::#{resource_name.to_s.camelcase}::Netex".constantize.new(
 			source: netex_source,
-			target: target
+			target: target,
+      event_handler: event_handler
 		)
 
-		sync.update_or_create(&block)
-
-		resource = create_resource(sync.counters, resource_name)
-		
-		if sync.counters.count(:errors) > 0
-			@status = 'failed'
-		end
-	
-		sync
+		sync.update_or_create
 	end
 
-	def create_resource(counters, resource_name)
-		return if counters.total == 0
-
-		resource = resources.find_or_initialize_by(
+	def create_resource(resource_name)
+		resources.build(
 			name: resource_name,
 			resource_type: resource_name.to_s.pluralize,
 			reference: resource_name,
-		).tap do |r|
-			r.rows_count = counters.total
-      r.import = self
-    end
-
-		counters.get(:errors).each do |error|
-			message_attributes = (error[:import_message] || {}).reverse_merge(criticity: :error)
-			resource.messages.build(message_attributes)
-		end
-
-		resource.transaction do
-			resource.save!
-			resource.update_status_from_messages
-		end
-
-		resource
+		)
 	end
 end

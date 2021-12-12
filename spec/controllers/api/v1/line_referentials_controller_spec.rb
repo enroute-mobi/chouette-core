@@ -26,10 +26,6 @@ RSpec.describe Api::V1::LineReferentialsController do
         @deleted_ids = deleted_ids
       end
 
-      def counts
-        @counts ||= {}
-      end
-
     end
 
     def mock_synchronisation

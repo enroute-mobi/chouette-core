@@ -37,8 +37,10 @@ RSpec.describe Chouette::Sync::Deleter do
       expect { deleter.delete(resource_identifiers) }.to_not(change { target.stop_areas.where("name like 'Usefull%'").count })
     end
 
-    it "increments the delete count" do
-      expect { deleter.delete(resource_identifiers) }.to change { deleter.counters.delete }.by(useless_models.size)
+    it "sends events with deleted model counts" do
+      delete_count = 0
+      deleter.event_handler = Chouette::Sync::Event::Handler.new { |event| delete_count += event.count }
+      expect { deleter.delete(resource_identifiers) }.to change{delete_count}.by(useless_models.size)
     end
 
   end

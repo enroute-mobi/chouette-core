@@ -18,7 +18,8 @@ class RoutesController < ChouetteController
       format.html { redirect_to referential_line_path(@referential, @line) }
 
       format.geojson do
-        @routes = collection.with_wayback(:outbound)
+        direction = collection.exists?(wayback: :outbound) ? :outbound : :inbound
+        @routes = collection.with_wayback(direction)
         render 'routes/index.geo'
       end
     end

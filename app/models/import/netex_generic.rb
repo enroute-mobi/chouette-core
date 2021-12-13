@@ -24,17 +24,16 @@ class Import::NetexGeneric < Import::Base
   end
 
   def stop_area_provider
-    workbench.default_stop_area_provider
+    @stop_area_provider ||= workbench.default_stop_area_provider
   end
+  attr_writer :stop_area_provider
 
 	def import_without_status
-    import_resources(
-			:stop_areas
-		)
+    import_resources :stop_areas
   end
 
 	def import_stop_areas
-		synchronize(:stop_area, stop_area_provider)
+		synchronize :stop_area, stop_area_provider
 	end
 
 	def netex_source
@@ -44,41 +43,53 @@ class Import::NetexGeneric < Import::Base
 	private
 
 	def synchronize(resource_name, target)
+    resource = create_resource(resource_name)
+    resource.status = "OK"
+
+    event_handler = Chouette::Sync::Event::Handler.new do |event|
+      unless event.has_error?
+        if event.type.create? || event.type.update?
+          resource.inc_rows_count event.count
+        end
+      else
+        resource.status = "ERROR"
+
+        event.errors.each do |attribute, errors|
+          errors.each do |error|
+            message_attributes = {
+              criticity: :error,
+              message_key: :invalid_model_attribute,
+              message_attributes: {
+                attribute_name: attribute,
+                attribute_value: error[:value]
+              }
+            }
+            resource.messages.build(message_attributes)
+          end
+        end
+        # TODO Should we saved each time ?
+        resource.save!
+
+        self.status = 'failed'
+      end
+    end
 		sync = "Chouette::Sync::#{resource_name.to_s.camelcase}::Netex".constantize.new(
 			source: netex_source,
-			target: target
+			target: target,
+      event_handler: event_handler
 		)
 
 		sync.update_or_create
 
-		create_resource(sync.counters, resource_name)
-		
-		if sync.counters.count(:errors) > 0
-			@status = 'failed'
-		end
-	
-		sync
+    resource.update_metrics
+    resource.save!
 	end
 
-	def create_resource(counters, resource_name)
-		return if counters.total == 0
-
-		resource = resources.find_or_initialize_by(
+	def create_resource(resource_name)
+		resources.build(
 			name: resource_name,
 			resource_type: resource_name.to_s.pluralize,
 			reference: resource_name,
-		).tap do |r|
-			r.rows_count = counters.total
-      r.import = self
-    end
-
-		counters.count(:errors).times do
-			resource.messages.build(criticity: :error)
-		end
-
-		resource.transaction do
-			resource.save!
-			resource.update_status_from_messages
-		end
+		)
 	end
 end

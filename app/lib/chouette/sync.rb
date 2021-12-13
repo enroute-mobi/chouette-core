@@ -8,6 +8,7 @@ module Chouette
       attr_accessor :model_type, :model_id_attribute
 
       mattr_accessor :default_model_id_attribute, default: :registration_number
+      include Event::HandlerSupport
 
       def initialize(options = {})
         default_options = {
@@ -30,15 +31,6 @@ module Chouette
 
       def delete(resource_identifiers)
         deleter.delete resource_identifiers
-      end
-
-      def counts
-        counters.to_hash
-      end
-
-      def counters
-        counters = [updater, deleter].map(&:counters)
-        Counters.sum(counters)
       end
 
       protected
@@ -83,7 +75,8 @@ module Chouette
           update_batch_size: update_batch_size,
           resource_type: resource_type, resource_id_attribute: resource_id_attribute,
           resource_decorator: resource_decorator,
-          model_type: model_type, model_id_attribute: model_id_attribute
+          model_type: model_type, model_id_attribute: model_id_attribute,
+          event_handler: event_handler
         }.delete_if { |_,v| v.nil? }
         options = default_options.merge(options)
         updater_class.new options
@@ -97,7 +90,8 @@ module Chouette
         options = {
           target: target,
           delete_batch_size: delete_batch_size,
-          model_type: model_type, model_id_attribute: model_id_attribute
+          model_type: model_type, model_id_attribute: model_id_attribute,
+          event_handler: event_handler
         }.delete_if { |_,v| v.nil? }
 
         @deleter ||= deleter_class.new options

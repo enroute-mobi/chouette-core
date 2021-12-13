@@ -15,7 +15,7 @@ RSpec.describe Chouette::Sync::Updater do
   let(:target) { context.stop_area_provider }
 
   def resource(id)
-    double id: id, name: "Name #{id}"
+    double "Resource #{id}", id: id, name: "Name #{id}"
   end
 
   def resources(*identifiers)
@@ -48,16 +48,6 @@ RSpec.describe Chouette::Sync::Updater do
         batched_resources.concat batch.resources
       end
       expect(batched_resources).to eq(all_resources)
-    end
-
-  end
-
-  describe "#report_invalid_model" do
-
-    let(:model) { double errors: [] }
-
-    it "increments the errors counter" do
-      expect { updater.report_invalid_model(model) }.to change { updater.counters.errors }.by(1)
     end
 
   end
@@ -135,10 +125,26 @@ RSpec.describe Chouette::Sync::Updater do
         expect { updater.update_or_create }.to change { target.stop_areas.count }.by(1)
       end
 
-      it "increments the create_count" do
-        expect { updater.update_or_create }.to change{ updater.counters.create }.by(1)
-      end
+      describe "emitted events" do
+        subject(:events) { [] }
 
+        before do
+          updater.event_handler = Chouette::Sync::Event::Handler.new { |event| events << event }
+          updater.update_or_create
+        end
+
+        it do
+          is_expected.to include(
+                           an_object_having_attributes(
+                             type: "create",
+                             resource: source.resources.first,
+                             model: target.stop_areas.first,
+                             count: 1,
+                             errors: {}
+                           )
+                         )
+        end
+      end
     end
 
     context "when the source provides several new Models" do
@@ -150,8 +156,10 @@ RSpec.describe Chouette::Sync::Updater do
         expect { updater.update_or_create }.to change { target.stop_areas.count }.by(resource_count)
       end
 
-      it "increments the :create count" do
-        expect { updater.update_or_create }.to change{ updater.counters.create }.by(resource_count)
+      it "sends events with created model counts" do
+        create_count = 0
+        updater.event_handler = Chouette::Sync::Event::Handler.new { |event| create_count += event.count }
+        expect { updater.update_or_create }.to change{ create_count }.by(resource_count)
       end
 
     end
@@ -169,10 +177,26 @@ RSpec.describe Chouette::Sync::Updater do
         expect { updater.update_or_create }.to change { existing_model.reload.name }.to(source_resource.name)
       end
 
-      it "increments the :update count" do
-        expect { updater.update_or_create }.to change{ updater.counters.update }.by(1)
-      end
+      describe "emitted events" do
+        subject(:events) { [] }
 
+        before do
+          updater.event_handler = Chouette::Sync::Event::Handler.new { |event| events << event }
+          updater.update_or_create
+        end
+
+        it do
+          is_expected.to include(
+                           an_object_having_attributes(
+                             type: "update",
+                             resource: source.resources.first,
+                             model: target.stop_areas.first,
+                             count: 1,
+                             errors: {}
+                           )
+                         )
+        end
+      end
     end
 
     context "when the source provides several existing Models" do
@@ -193,10 +217,10 @@ RSpec.describe Chouette::Sync::Updater do
         }.from(resource_count).to(0)
       end
 
-      it "increments the update count" do
-        expect { updater.update_or_create }.to change{
-          updater.counters.update
-        }.by(resource_count)
+      it "sends events with updated model counts" do
+        update_count = 0
+        updater.event_handler = Chouette::Sync::Event::Handler.new { |event| update_count += event.count }
+        expect { updater.update_or_create }.to change{ update_count }.by(resource_count)
       end
 
     end

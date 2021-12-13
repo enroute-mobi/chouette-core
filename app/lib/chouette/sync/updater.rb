@@ -10,6 +10,9 @@ module Chouette
       attr_accessor :source, :target, :update_batch_size
       attr_accessor :resource_type, :resource_id_attribute, :resource_decorator
       attr_accessor :model_type, :model_id_attribute
+      include Event::HandlerSupport
+
+      delegate :workgroup, to: :target
 
       def resources
         @resources ||= source.send(resource_type.to_s.pluralize)
@@ -22,7 +25,7 @@ module Chouette
       end
 
       def transaction(&block)
-        CustomFieldsSupport.within_workgroup(target.workgroup) do
+        CustomFieldsSupport.within_workgroup(workgroup) do
           target.class.transaction(&block)
         end
       end
@@ -40,21 +43,6 @@ module Chouette
 
       def processed_identifiers
         @processed_identifiers ||= []
-      end
-
-      def counters
-        @counters ||= Counters.new
-      end
-
-      def increment_count(type)
-        counters.increment_count(type)
-      end
-
-      def report_invalid_model(model, resource = nil)
-        counters.increment_count(:errors)
-
-        resource_part = resource ? " from #{resource.inspect}" : ""
-        Rails.logger.warn "Invalid model in synchronization: #{model.inspect} #{model.errors.inspect}#{resource_part}"
       end
 
       # Collection to be modified in the target: lines, stop_areas, etc
@@ -75,7 +63,7 @@ module Chouette
           @updater = updater
         end
 
-        delegate :model_id_attribute, :increment_count, :report_invalid_model, to: :updater
+        delegate :model_id_attribute, :event_handler, :workgroup, to: :updater
 
         def with_resource_ids(resource_ids)
           scope.where(model_id_attribute => resource_ids).find_each do |model|
@@ -106,21 +94,43 @@ module Chouette
 
         def create(resource)
           attributes = prepare_attributes(resource)
-          model = scope.create(attributes)
-          if model.persisted?
-            increment_count :create
-          else
-            report_invalid_model model, resource
-          end
+          model = scope.build attributes
+
+          event = Event.new :create, model: model, resource: resource
+          update_codes model, resource, event
+
+          model.save
+          event_handler.event event
         end
 
         def update(model, resource)
           attributes = prepare_attributes(resource)
           Rails.logger.debug { "Update #{model.inspect} with #{attributes.inspect}" }
-          if model.update(attributes)
-            increment_count :update
-          else
-            report_invalid_model model, resource
+
+          model.attributes = attributes
+
+          event = Event.new :update, model: model, resource: resource
+          update_codes model, resource, event
+          model.save
+          event_handler.event event
+        end
+
+        def code_space(short_name)
+          workgroup.code_spaces.find_by short_name: short_name
+        end
+
+        def update_codes(model, resource, event)
+          return unless model.respond_to?(:codes) && resource.respond_to?(:codes_attributes)
+
+          resource.codes_attributes.each do |code_attributes|
+            short_name = code_attributes[:short_name]
+            value = code_attributes[:value]
+
+            if (code_space = code_space(short_name))
+              model.codes.find_or_initialize_by code_space: code_space, value: value
+            else
+              (event.errors[:codes] ||= []) << { error: :invalid_code_space, value: short_name }
+            end
           end
         end
 

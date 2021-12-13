@@ -91,8 +91,8 @@ module IevInterfaces::Resource
     raise
   end
 
-  def inc_rows_count
-    @rows_count += 1
+  def inc_rows_count(count = 1)
+    @rows_count += count
   end
 
   def update_status_from_importer(importer_status)
@@ -121,7 +121,7 @@ module IevInterfaces::Resource
     warning = messages.warning.count
     error = messages.error.count
     self.metrics = {
-      ok_count: [self.rows_count - warning - error].max,
+      ok_count: [self.rows_count - warning - error, 0].max,
       warning_count: warning,
       error_count: error
     }

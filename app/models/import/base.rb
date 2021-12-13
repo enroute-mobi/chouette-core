@@ -152,7 +152,8 @@ class Import::Base < ApplicationModel
 
   # Expected and used file content type
   def content_type
-    content_type = file&.content_type
+    default_content_type = 'application/zip'
+    content_type = file&.content_type || default_content_type
 
     # Some zip files are viewed as "application/octet-stream"
     case content_type

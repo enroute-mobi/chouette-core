@@ -1,4 +1,7 @@
 RSpec.describe Import::Base, type: :model do
+
+  subject(:import) { Import::Base.new }
+
   it { should belong_to(:referential) }
   it { should belong_to(:workbench) }
   it { should belong_to(:parent) }
@@ -32,10 +35,6 @@ RSpec.describe Import::Base, type: :model do
         create(:workbench_import, workbench: workbench)
       end
 
-      other_old_import = Timecop.freeze(90.days.ago) do
-        create(:workbench_import, workbench: other_workbench)
-      end
-
       expect { Import::Workbench.new(workbench: workbench).purge_imports }.to change {
         old_import.workbench.imports.purgeable.count
       }.from(1).to(0)
@@ -64,6 +63,24 @@ RSpec.describe Import::Base, type: :model do
       expect(subject.user_file.extension).to eq(subject.send(:file_extension))
     end
 
+  end
+
+  describe "#file_extension" do
+    subject { import.send(:file_extension) }
+
+    [
+      [ nil, nil ],
+      [ "dummy", nil ],
+      [ "application/x-zip-compressed", "zip" ],
+      [ "application/zip", "zip" ],
+      [ "application/xml", "xml" ],
+      [ "text/xml", "xml" ],
+    ].each do |content_type, expected_file_extension|
+      context "when content type is #{content_type.inspect}" do
+        before { allow(import).to receive(:content_type).and_return(content_type) }
+        it { is_expected.to eq(expected_file_extension) }
+      end
+    end
   end
 
 end

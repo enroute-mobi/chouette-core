@@ -10,6 +10,6 @@ class NotificationRule::ExternalEmail < NotificationRule
 	end
 
 	def recipients
-		[User.new(email: external_email)]
+		[::User.new(email: external_email)]
 	end
 end

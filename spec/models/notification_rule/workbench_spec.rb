@@ -1,15 +1,24 @@
 RSpec.describe NotificationRule::Workbench, type: :model do
-	describe '#recipients' do
-		before do
-			3.times do
-				subject.workbench.organisation.users << create(:user)
+	let(:context) do
+		Chouette.create do
+			organisation :owner do
+				user :first
+				user :last
+			end
+
+			workbench :first, organisation: :owner do
+				notification_rule :first, target_type: 'workbench'
 			end
 		end
+	end
 
-		let(:workbench) { subject.workbench }
-	
+	let(:workbench) { context.workbench(:first) }
+	let(:notification_rule) { context.notification_rule(:first) }
+
+	describe '#recipients' do
 		it 'should return a collection with only on user' do
-			expect(subject.recipients).to match_array(workbench.users)
+			expect(notification_rule.recipients).to match_array(workbench.users)
+			expect(notification_rule.recipients.length).to eq(2)
 		end
 	end
 end

@@ -1,9 +1,13 @@
 class HoleSentinel
   extend ActiveModel::Naming
 
+  attr_reader :workbench
+
   def initialize(workbench)
     @workbench = workbench
   end
+
+  alias_method :workbench_for_notifications, :workbench
 
   def incoming_holes
     holes = {}

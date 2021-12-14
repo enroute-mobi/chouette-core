@@ -152,8 +152,7 @@ class Import::Base < ApplicationModel
 
   # Expected and used file content type
   def content_type
-    default_content_type = 'application/zip'
-    content_type = file&.content_type || default_content_type
+    content_type = file&.content_type
 
     # Some zip files are viewed as "application/octet-stream"
     case content_type
@@ -169,9 +168,9 @@ class Import::Base < ApplicationModel
   # Expected and used file extension
   def file_extension
     case content_type
-    when "application/zip"
+    when "application/zip", "application/x-zip-compressed"
       "zip"
-    when "application/xml"
+    when "application/xml", "text/xml"
       "xml"
     end
   end

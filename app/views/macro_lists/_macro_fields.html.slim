@@ -1,0 +1,7 @@
+- macro_class = local_assigns.fetch(:macro_class)
+
+- if f.object
+	.macro
+		- macro_class.options.each do |attr, option_def|
+			= option_input f, f.object, attr, option_def, macro_class
+		= f.input :_destroy, as: :switchable_checkbox

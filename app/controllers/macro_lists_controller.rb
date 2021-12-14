@@ -27,6 +27,11 @@ class MacroListsController < ChouetteController
     end
   end
 
+  def new
+    @macro_list = MacroListDecorator.decorate Macro::List.new, context: { workbench: @workbench }
+    new!
+  end
+
   # def show
   #   show! do |format|
   #     @macro_list = MacroListDecorator.decorate context: { workbench: @workbench }

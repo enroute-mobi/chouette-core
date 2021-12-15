@@ -37,6 +37,8 @@ RSpec.describe "launch-cron" do
       DD_AGENT_ENV
       DD_AGENT_HOST
       DD_TRACE_DEBUG
+      GCLOUD_BUCKET
+      GCLOUD_PROJECT
       GEM_HOME
       MAIL_DELIVERY_METHOD
       MAIL_FROM
@@ -62,6 +64,7 @@ RSpec.describe "launch-cron" do
       SESAME_API_SETTINGS
       SMTP_HOST
       SMTP_SETTINGS
+      STORAGE
       TZ
     }
 

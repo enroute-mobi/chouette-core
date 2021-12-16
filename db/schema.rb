@@ -505,6 +505,7 @@ ActiveRecord::Schema.define(version: 2021_11_29_091129) do
     t.bigint "publication_id"
     t.bigint "workgroup_id"
     t.hstore "options", default: {}
+    t.string "parent_type"
     t.datetime "notified_parent_at"
     t.bigint "parent_id"
     t.index ["publication_id"], name: "index_exports_on_publication_id"

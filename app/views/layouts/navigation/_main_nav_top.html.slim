@@ -1,12 +1,12 @@
 .nav-menu#menu_top
-  .menu-content.col-sm-12
+  .menu-content.flex.items-center.w-full.h-full.px-5
     .menu-item
-      = breadcrumbs display_single_fragment: true
+      = breadcrumbs display_single_fragment: true, class: "breadcrumbs flex items-center"
 
-    .menu-item-group.pull-right
+    .menu-item-group.ml-auto
       - if !user_signed_in? && I18n.available_locales.size > 1
         .dropdown.languages.menu-item
-          = link_to 'javascript:void(0)', class: 'dropdown-toggle', data: { toggle: 'dropdown' } do
+          = link_to 'javascript:void(0)', class: 'dropdown-toggle flex items-center relative', data: { toggle: 'dropdown' } do
             = image_tag("language_engine/#{selected_language}_flag.png", { :'data-locale' => "#{selected_language}" } )
             b.caret
 

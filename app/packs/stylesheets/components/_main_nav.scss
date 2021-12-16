@@ -55,7 +55,7 @@ $menuW: 300px;
 
       &:before {
         // content: unicode("f0c9");
-        content: '\f00d';
+        content: "\f00d";
         line-height: $menuH;
         font-family: "Font Awesome 5 Free";
         font-weight: 900;
@@ -66,7 +66,7 @@ $menuW: 300px;
     }
     .closeMenu {
       &:before {
-        content: '\f00d';
+        content: "\f00d";
         font-family: "Font Awesome 5 Free";
         font-weight: 900;
       }
@@ -169,7 +169,7 @@ $menuW: 300px;
                   right: 10px;
                 }
                 &.collapsed,
-                &[aria-expanded='false'] {
+                &[aria-expanded="false"] {
                   &:after {
                     transform: rotate(0deg);
                   }
@@ -293,7 +293,6 @@ $menuW: 300px;
     }
     > .brandname,
     > .menu-content {
-      display: inline-block;
       overflow: hidden;
 
       &.brandname {
@@ -301,17 +300,16 @@ $menuW: 300px;
       }
       &.menu-content {
         position: relative;
-        height: $menuH;
-        line-height: $menuH;
+        // height: $menuH;
+        // line-height: $menuH;
 
         & > .menu-item {
           max-width: 75%;
         }
         .menu-item {
-          padding: 0 10px;
-
           span {
             margin-right: 0.8em;
+            margin-left: 5px;
           }
 
           .fa {
@@ -364,11 +362,11 @@ $menuW: 300px;
         color: #fff;
       }
       + li:before {
-        content: '\003e';
+        content: "\003e";
         color: #fff;
         padding: 0 0.5em;
       }
-  // Nav panels
+      // Nav panels
     }
   }
   .nav_panel {
@@ -401,7 +399,7 @@ $menuW: 300px;
     .panel-body {
       padding: 15px 20px;
     }
-  // Sticky behavior
+    // Sticky behavior
   }
   &.sticky {
     &,
@@ -476,9 +474,8 @@ $menuW: 300px;
   .menu-item-group {
     .languages {
       .dropdown-menu {
-        position: relative;
-        top: 0;
-        left: 30px;
+        top: -10px;
+        left: -48px;
         right: auto;
         white-space: nowrap;
         line-height: 11px;

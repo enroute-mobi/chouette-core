@@ -1,4 +1,151 @@
-class Operation
+# Each subclass should define its perform method
+#
+# def perform
+#   puts "Just do it !"
+# end
+class Operation  < ApplicationModel
+  self.abstract_class = true
+
+  extend Enumerize
+
+  enumerize :status, in: %w{new enqueued running done}, default: "new"
+
+  def user_status
+    if Operation.status.done
+      error_uuid.present? ? UserStatus.failed : UserStatus.successful
+    else
+      UserStatus.pending
+    end
+  end
+
+  validates :creator, presence: true
+
+  def user=(user)
+    @user = user
+    self.creator = user.name
+  end
+  attr_reader :user
+
+  def enqueue
+    raise "Operation must be persisted before starting its Job" unless persisted?
+    raise "Invalid status #{status}" unless status == Operation.status.new
+
+    # We'll certainly need to manage queues
+    Delayed::Job.enqueue job
+    change_status Operation.status.enqueued
+  end
+
+  def job
+    # We could use a dedicated subclass for each Operation class (Control::Job, Macro::Job, etc)
+    Job.new id, self.class if persisted?
+  end
+
+  def operation_description
+    "#{self.class.name}(id=#{self.id})"
+  end
+
+  def logger
+    Rails.logger
+  end
+
+  # Ensure that the perform method is always invoked within around_perform
+  # TODO Share this mechanism
+  def self.method_added(method_name)
+    unless @setting_callback || method_name != :perform
+      @setting_callback = true
+      original = instance_method :perform
+      define_method :protected_perform do |*args, &block|
+        around_perform do
+          original.bind(self).call(*args, &block)
+        end
+      end
+      alias_method :perform, :protected_perform
+      @setting_callback = false
+    end
+
+    super method_name
+  end
+
+  protected
+
+  def around_perform(&block)
+    logger.tagged operation_description do
+      uuid = nil
+      begin
+        if status.in?([Operation.status.running, Operation.status.done])
+          logger.warn "Skip operation since status is already #{status}"
+          return
+        end
+
+        Chouette::Benchmark.measure(self.class.to_s, id: id) do
+          change_status Operation.status.running, started_at: Time.zone.now
+          block.call
+        end
+      rescue => e
+        self.error_uuid = uuid = Chouette::Safe.capture("Operation #{operation_description} failed", e)
+      end
+
+      change_status Operation.status.done, ended_at: Time.zone.now, error_uuid: uuid
+    end
+  end
+
+  def change_status(status, attributes = {})
+    attributes.delete_if { |_,v| v.nil? }
+    # TODO the operation description is already present when logger is tagged during around_perform
+    status_log_message = "[#{operation_description}] Status: #{status}"
+    status_log_message += " #{attributes.inspect}" unless attributes.empty?
+    logger.info status_log_message
+
+    attributes = attributes.merge(status: status) if status
+    if persisted?
+      update_columns attributes
+    else
+      self.attributes = attributes
+    end
+  end
+
+  # Store operation id and class name to load and perform it into Delayed worker
+  class Job
+    def initialize(operation_id, operation_class)
+      @operation_id = operation_id
+      @operation_class_name = operation_class.to_s
+    end
+
+    attr_reader :operation_id, :operation_class_name
+    def operation_class
+      @operation_class ||= @operation_class_name.constantize
+    end
+
+    def operation
+      @operation ||= operation_class.find_by(id: operation_id)
+    end
+
+    def operation_description
+      "#{operation_class_name}(id=#{operation_id})"
+    end
+
+    def explain
+      operation_description
+    end
+
+    def perform
+      unless operation
+        logger.warn "Can't find operation #{operation_description}"
+        return
+      end
+
+      operation.perform
+    end
+
+    def max_attempts
+      1
+    end
+
+    def max_run_time
+      Delayed::Worker.max_run_time
+    end
+  end
+
   class UserStatus
     def initialize(slug, operation_statuses = nil)
       operation_statuses ||= [ slug ]
@@ -31,5 +178,17 @@ class Operation
     SUCCESSFUL = new 'successful'
 
     ALL = [ PENDING, SUCCESSFUL, WARNING, FAILED ].freeze
+
+    def self.pending
+      PENDING
+    end
+
+    def self.successful
+      SUCCESSFUL
+    end
+
+    def self.failed
+      FAILED
+    end
   end
 end

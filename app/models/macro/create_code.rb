@@ -1,9 +1,9 @@
 module Macro
   class CreateCode < Base
-    option :target_model
     # Use enumerize directly
     enumerize :target_model, in: %w{StopArea Line VehicleJourney}
 
+    option :target_model, collection: target_model.values
     option :source_attribute # TODO use ModelAttribute ?
     option :source_pattern
     option :target_code_space # TODO must be id or short_name of one of Workgroup CodeSpaces

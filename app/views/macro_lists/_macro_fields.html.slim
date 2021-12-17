@@ -1,8 +1,8 @@
 div
 	.flex.flex-col.items-center.mt-5 x-data=("{ expanded: true }")
 		.flex.items-center.w-full
-			button @click="expanded = ! expanded" type="button" class="flex items-center justify-between p-3 pl-3 mr-3 font-bold text-white bg-enroute-chouette-green rounded cursor-pointer hover:text-indigo-100"
-				<span class="text-3xl" x-text="expanded ? '-' : '+'">+</span>
+			button @click="expanded = ! expanded" type="button" class="flex items-center justify-between p-3 pl-3 mr-3 w-10 font-bold text-white bg-enroute-chouette-green rounded cursor-pointer hover:text-indigo-100"
+				<span class="text-3xl w-full" x-text="expanded ? '-' : '+'">+</span>
 			.w-full x-text="macro.name"
 
 			.btn-group
@@ -25,7 +25,7 @@ div
 					label  class="col-sm-4 col-xs-5 control-label" :for="$store.macroList.bindName(index, option[0])" x-text="option[0]"
 					.col-sm-8.col-xs-7
 						input class="form-control" x-bind:name="$store.macroList.bindName(index, option[0])"
-			
+
 			.form-group
 				.col-md-12
 					= button_tag 'Supprimer', class: 'btn btn-danger', '@click.prevent': '$store.macroList.removeMacro(index)'

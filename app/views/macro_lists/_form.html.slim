@@ -16,7 +16,7 @@
               template[x-for="(macro, index) in $store.macroList.macros"]
                 = render 'macro_fields', f: macro_form
 
-            .flex.flex-col
+            .flex.flex-col.mt-5
               = simple_fields_for(:macro_select) do |macro_select_form|
                 = f.label Macro::List.human_attribute_name(:type), class: 'mb-3'
                 = macro_select_form.input :type, as: :tom_select, collection: @macro_list.macro_options, input_html: { 'x-model': '$store.macroList.selectedType' }, wrapper: false, label: false

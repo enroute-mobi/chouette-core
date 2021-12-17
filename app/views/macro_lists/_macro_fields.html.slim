@@ -1,14 +1,32 @@
-- macro_class = local_assigns.fetch(:macro_class)
-
-- if f.object
+div
 	.flex.flex-col.items-center.mt-5 x-data=("{ expanded: true }")
 		.flex.items-center.w-full
 			button @click="expanded = ! expanded" type="button" class="flex items-center justify-between p-3 pl-3 mr-3 font-bold text-white bg-enroute-chouette-green rounded cursor-pointer hover:text-indigo-100"
-				<span class="text-3xl" x-text="expanded == true ? '-' : '+'">+</span>
-			.w-full
-				= macro_class.name
+				<span class="text-3xl" x-text="expanded ? '-' : '+'">+</span>
+			.w-full x-text="macro.name"
+
+			.btn-group
+				.btn.dropdown-toggle data-toggle="dropdown"
+					.span.fa.fa-cog
+				ul.dropdown-menu
+					li
+						a @click="$store.macroList.sendToTop(index)" Send To Top
+					li
+						a @click="$store.macroList.moveUp(index)" Move Up
+					li
+						a @click="$store.macroList.moveDown(index)" Move Down
+					li
+						a @click="$store.macroList.sendToBottom(index)" Send to Bottom
+
 		.macro.flex.flex-col x-show="expanded" class="w-full"
-			= f.input :position, as: :hidden, input_html: {value: '0'}
-			- macro_class.options.each do |attr, option_def|
-				= option_input f, f.object, attr, option_def, macro_class
-			= f.input :_destroy, as: :switchable_checkbox
+			= f.input :position, as: :hidden, ':value': 'index'
+			template[x-for="option in Object.entries(macro.options)"]
+				.form-group
+					label  class="col-sm-4 col-xs-5 control-label" :for="$store.macroList.bindName(index, option[0])" x-text="option[0]"
+					.col-sm-8.col-xs-7
+						input class="form-control" x-bind:name="$store.macroList.bindName(index, option[0])"
+			
+			.form-group
+				.col-md-12
+					= button_tag 'Supprimer', class: 'btn btn-danger', '@click.prevent': '$store.macroList.removeMacro(index)'
+			= f.input :_destroy, as: :hidden, ':value': 'macro.isDeleted'

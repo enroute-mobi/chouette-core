@@ -40,6 +40,19 @@ Alpine.store('macroList', {
 			...this.macros.filter((_m, i) => i != index),
 			this.macros[index]
 		]
+	},
+	optionInput(name, params) {
+		if (params.hasOwnProperty('collection')) {
+			return (
+				`
+				<select class="form-control" name="${name}">
+					${params.collection.map(o => `<option value="${o}">${o}</option>`)}
+				</select>
+				`
+			)
+		}
+
+		return `<input class="form-control" name="${name}">`
 	}
 })
 

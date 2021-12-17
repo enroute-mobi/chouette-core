@@ -11,5 +11,11 @@ module Macro
 
     # Use standard Rails validation methods
     validates :target_model, :source_attribute, :target_code_space, presence: true
+
+    class Run < Macro::Base::Run
+      def run
+        logger.info "TODO"
+      end
+    end
   end
 end

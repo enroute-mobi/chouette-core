@@ -1,8 +1,71 @@
-# Each subclass should define its perform method
+# == Start an Operation
 #
-# def perform
-#   puts "Just do it !"
-# end
+#   operation = build_method(user: current_user)
+#   if operation.save
+#      operation.enqueue
+#   else
+#      # ...
+#   end
+#
+# == Live Cycle
+#
+#   operation = <RealOperationClass>.new(user: current_user)
+#   operation.status => 'new'
+#   operation.creator => "Current User Name"
+#
+#   operation.perform
+#
+#   # during perform
+#   operation.status => 'running'
+#   operation.started_at => <1s ago
+
+#   # when perform is finished
+#   operation.status => 'done'
+#   operation.ended_at => <1s ago>
+#
+# If an Ruby error occurs during perform:
+#
+#   operation.perform
+#   operation.status => 'done'
+#   operation.error_uuid => '6a651109-ac36-409d-8f1f-d95c78b46eb3'
+#
+# To perform the (persisted) Operation with a Job:
+#
+#   operation.save! # the Operation must be persisted before enqueuing it
+#   operation.enqueue
+#   operation.status => 'enqueued'
+#
+# == Implement a new Operation
+#
+#   class Dummy < Operation
+#
+#     def perform
+#        logger.info "Just do it !"
+#     end
+#
+#   end
+#
+# == User Status
+#
+#   operation.user_status => <#UserStatus slug='pending'>
+#   operation.perform => <#UserStatus slug='successful'>
+#
+# == Log
+#
+# All log messages during the perform method are tagged:
+#
+#   [Macro::List::Run(id=4)] Status: enqueued
+#   [Macro::List::Run(id=4)] [Macro::List::Run(id=4)] Status: running {:started_at=>Fri, 17 Dec 2021 11:38:40 CET +01:00}
+#   [Macro::List::Run(id=4)]   Macro::List::Run Update (0.1ms)  UPDATE ...
+#   [Macro::List::Run(id=4)]   Macro::Base::Run Load (0.2ms)  SELECT ...
+#   [Macro::List::Run(id=4)] [ERROR] Operation Macro::List::Run(id=4) failed (6a651109-ac36-409d-8f1f-d95c78b46eb3): RuntimeError Raise error as expected /home/alban/Projects/chouette-core/app/models/macro/dummy.rb:8:in `run'
+#   [Macro::List::Run(id=4)] [Macro::List::Run(id=4)] Status: done {:ended_at=>Fri, 17 Dec 2021 11:38:40 CET +01:00, :error_uuid=>"6a651109-ac36-409d-8f1f-d95c78b46eb3"}
+#
+# == Benchmark
+#
+# The perform method enables Chouette::Benchmark measure.
+#
+
 class Operation  < ApplicationModel
   self.abstract_class = true
 

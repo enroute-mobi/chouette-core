@@ -20,12 +20,15 @@ div
 
 		.macro.flex.flex-col x-show="expanded" class="w-full"
 			= f.input :position, as: :hidden, ':value': 'index'
-			template[x-for="option in Object.entries(macro.options)"]
+			template[x-for="[optionName, params] in Object.entries(macro.options)"]
 				.form-group
-					label  class="col-sm-4 col-xs-5 control-label" :for="$store.macroList.bindName(index, option[0])" x-text="option[0]"
+					label class="col-sm-4 col-xs-5 control-label" :class="params.required && 'required'" :for="$store.macroList.bindName(index, optionName)"
+						span x-text="optionName"
+						template[x-if="!!params.required"]
+							abbr title="#{I18n.t('simple_form.required.text')}" = I18n.t('simple_form.required.mark')
 					.col-sm-8.col-xs-7
-						input class="form-control" x-bind:name="$store.macroList.bindName(index, option[0])"
-
+						div x-html="$store.macroList.optionInput($store.macroList.bindName(index, optionName), params)"
+			
 			.form-group
 				.col-md-12
 					= button_tag 'Supprimer', class: 'btn btn-danger', '@click.prevent': '$store.macroList.removeMacro(index)'

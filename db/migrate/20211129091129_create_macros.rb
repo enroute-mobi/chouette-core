@@ -3,7 +3,7 @@ class CreateMacros < ActiveRecord::Migration[5.2]
     on_public_schema_only do
       create_table :macro_lists do |t|
         t.references :workbench
-        t.text :name
+        t.string :name
         t.text :comments
         t.timestamps
       end
@@ -12,7 +12,7 @@ class CreateMacros < ActiveRecord::Migration[5.2]
         t.references :macro_list
         t.integer :position, null: false
 
-        t.text :name
+        t.string :name
         t.text :comments
         t.jsonb :options, default: {}
         t.timestamps

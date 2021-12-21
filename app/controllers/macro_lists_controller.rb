@@ -4,6 +4,7 @@ class MacroListsController < ChouetteController
 
   defaults :resource_class => Macro::List
 
+  before_action :decorate_macro_list, only: %i[show new edit]
   before_action :macro_list_params, only: [:create, :update]
 
   belongs_to :workbench
@@ -27,23 +28,22 @@ class MacroListsController < ChouetteController
     end
   end
 
-  def new
-    @macro_list = MacroListDecorator.decorate Macro::List.new, context: { workbench: @workbench }
-    new!
+  def create
+    create! do |success, failure|
+      failure.html do
+        @macro_list = MacroListDecorator.decorate(macro_list, context: { workbench: @workbench })
+
+        render 'new'
+      end
+    end
   end
 
-  # def show
-  #   show! do |format|
-  #     @macro_list = MacroListDecorator.decorate context: { workbench: @workbench }
-  #   end
-  # end
-
   def update
-    update! do
-      if macro_list_params[:macro_list_ids]
-        workbench_macro_lists_path @workbench, @macro_list
-      else
-        workbench_macro_list_path @workbench, @macro_list
+     update! do |success, failure|
+      failure.html do
+        @macro_list = MacroListDecorator.decorate(macro_list, context: { workbench: @workbench })
+
+        render 'edit'
       end
     end
   end
@@ -59,6 +59,16 @@ class MacroListsController < ChouetteController
 
   private
 
+  def decorate_macro_list
+    object = macro_list rescue build_resource 
+    @macro_list = MacroListDecorator.decorate(
+      object,
+      context: {
+        workbench: workbench
+      }
+    )
+  end
+
   # def sort_column
   #   params[:sort].presence || 'departure'
   # end
@@ -68,12 +78,23 @@ class MacroListsController < ChouetteController
   # end
 
   def macro_list_params
+    macro_options = %i[id name position type macro_list_id _destroy]
+
+    macro_options += Macro::Base.descendants.map do |t|
+      t.options.map do |key, value|
+        # To accept an array value directly in params, a permit({key: []}) is required instead of just permit(:key)
+        value.try(:[], :type)&.equal?(:array) ? Hash[key => []] : key
+      end
+    end.flatten
+
+    byebug
+
     params.require(:macro_list).permit(
-      :workbench_id,
       :name,
       :comments,
       :created_at,
       :updated_at,
-    )
+      macros_attributes: macro_options
+    ).with_defaults(workbench_id: parent.id)
   end
 end

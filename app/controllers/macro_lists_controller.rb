@@ -87,8 +87,6 @@ class MacroListsController < ChouetteController
       end
     end.flatten
 
-    byebug
-
     params.require(:macro_list).permit(
       :name,
       :comments,

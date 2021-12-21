@@ -4,7 +4,7 @@ module Macro
 
     self.table_name = "macros"
 
-    belongs_to :macro_list, class_name: "Macro::List", optional: false
+    belongs_to :macro_list, class_name: "Macro::List", optional: false, inverse_of: :macros
     acts_as_list scope: :macro_list
 
     store :options, coder: JSON

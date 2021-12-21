@@ -1,11 +1,13 @@
 div
 	.flex.flex-col.items-center.mt-5 x-data=("{ expanded: true }")
 		.flex.items-center.w-full
-			button @click="expanded = ! expanded" type="button" class="flex items-center justify-between p-3 pl-3 mr-3 w-10 font-bold text-white bg-enroute-chouette-green rounded cursor-pointer hover:text-indigo-100"
+			button @click="expanded = ! expanded" type="button" x-bind:disabled="macro.isDeleted" class="flex items-center justify-between p-3 pl-3 mr-3 w-10 font-bold text-white bg-enroute-chouette-green rounded cursor-pointer hover:text-indigo-100"
 				<span class="text-3xl w-full" x-text="expanded ? '-' : '+'">+</span>
-			.w-full x-text="macro.name"
+			.w-full
+				= f.input :id, as: :hidden, input_html: { 'x-model': 'macro.id', ':name': "$store.macroList.inputName(index, 'id')" }
+				= f.input :name, input_html: { 'x-model': 'macro.name', ':readonly': '!expanded', ':name': "$store.macroList.inputName(index, 'name')" }, label: false
 
-			.btn-group
+			.btn-group x-show="!macro.isDeleted"
 				.btn.dropdown-toggle data-toggle="dropdown"
 					.span.fa.fa-cog
 				ul.dropdown-menu
@@ -18,18 +20,18 @@ div
 					li
 						a @click="$store.macroList.sendToBottom(index)" Send to Bottom
 
-		.macro.flex.flex-col x-show="expanded" class="w-full"
-			= f.input :position, as: :hidden, ':value': 'index'
+		.macro.flex.flex-col x-show="expanded && !macro.isDeleted" class="w-full"
+			= f.input :type, as: :hidden, input_html: { 'x-model': 'macro.type', ':name': "$store.macroList.inputName(index, 'type')" }
+			= f.input :position, as: :hidden, input_html: { ':value': 'index + 1', ':name': "$store.macroList.inputName(index, 'position')" }
 			template[x-for="[optionName, params] in Object.entries(macro.options)"]
-				.form-group
-					label class="col-sm-4 col-xs-5 control-label" :class="params.required && 'required'" :for="$store.macroList.bindName(index, optionName)"
-						span x-text="optionName"
-						template[x-if="!!params.required"]
-							abbr title="#{I18n.t('simple_form.required.text')}" = I18n.t('simple_form.required.mark')
-					.col-sm-8.col-xs-7
-						div x-html="$store.macroList.optionInput($store.macroList.bindName(index, optionName), params)"
+				div[x-data="{ inputName: $store.macroList.inputName(index, optionName), hasError: !!macro.errors[optionName], error: (macro.errors[optionName] || [])[0] }"]
+					= render 'macro_option_input'
 			
 			.form-group
 				.col-md-12
-					= button_tag 'Supprimer', class: 'btn btn-danger', '@click.prevent': '$store.macroList.removeMacro(index)'
-			= f.input :_destroy, as: :hidden, ':value': 'macro.isDeleted'
+					template[x-if="!macro.isDeleted"]
+						= button_tag 'Supprimer', class: 'btn btn-danger', '@click.prevent': '$store.macroList.removeMacro(index)'
+		template[x-if="macro.isDeleted"]
+			= button_tag  I18n.t('actions.restore'), class: 'btn btn-info', '@click.prevent': '$store.macroList.restoreMacro(index)'
+
+		= f.input :_destroy, as: :hidden, input_html: { ':value': 'macro.isDeleted', ':name': "$store.macroList.inputName(index, '_destroy')" }

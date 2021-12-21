@@ -1,0 +1,17 @@
+en:
+  activerecord:
+    models:
+      macro:
+        zero:  "Macros"
+        one:   "Macro"
+        other: "Macros"
+      macro/create_code:
+        one: Create Code
+    attributes:
+      macro:
+        name: Name
+        target_model: Target Model
+        source_attribute: Source Attribute
+        source_pattern: Source Pattern
+        target_code_space: Target Code Space
+        target_pattern: Target Pattern

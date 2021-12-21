@@ -53,10 +53,6 @@ class FileRouter {
 			case routeMatch('/workbenches/:workbenchId/line_referential/lines'):
 				return await import('./lines/index')
 
-			// Macro Lits
-			case routeMatch('/workbenches/:workbenchId/macro_lists/new'):
-				return await import('./macro_lists/form')
-	
 			// Merges
 			case routeMatch('/workbenches/:workbenchId/merges/new'):
 				return await import('./merges/new')

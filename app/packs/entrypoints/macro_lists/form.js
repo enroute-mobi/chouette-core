@@ -4,30 +4,30 @@ Alpine.store('macroList', {
 	selectedType: '',
 	macros: [],
 	addMacro(attributes) {
-		this.macros = [...this.macros, attributes]
+		this.macros = [...this.macros, { ...attributes, isDeleted: false }]
+	},
+	setMacros(macros) {
+		macros.forEach(this.addMacro.bind(this))
 	},
 	removeMacro(index) {
-		const macro = this.macros[index]
-
-		if (!!macro.id) {
-			macro.isDeleted = true
-		} else {
-			this.macros = this.macros.filter((_m, i) => i != index)
-		}
+		this.macros[index].isDeleted = true
 	},
-	bindName(position, name) { return `macros_attributes[${position}][${name}]` },
-	swap(indexA, indexB) {
+	restoreMacro(index) {
+		this.macros[index].isDeleted = false
+	},
+	swapMacro(indexA, indexB) {
 		[this.macros[indexA], this.macros[indexB]] = [this.macros[indexB], this.macros[indexA]]
 	},
+	inputName(position, name) { return `macro_list[macros_attributes][${position}][${name}]` },
 	moveUp(index) {
 		if (index == 0) return
 
-		this.swap(index, index - 1)
+		this.swapMacro(index, index - 1)
 	},
 	moveDown(index) {
 		if (index + 1 == this.macros.length) return
 
-		this.swap(index, index + 1)
+		this.swapMacro(index, index + 1)
 	},
 	sendToTop(index) {
 		this.macros = [
@@ -40,20 +40,39 @@ Alpine.store('macroList', {
 			...this.macros.filter((_m, i) => i != index),
 			this.macros[index]
 		]
-	},
-	optionInput(name, params) {
-		if (params.hasOwnProperty('collection')) {
-			return (
-				`
-				<select class="form-control" name="${name}">
-					${params.collection.map(o => `<option value="${o}">${o}</option>`)}
-				</select>
-				`
-			)
-		}
-
-		return `<input class="form-control" name="${name}">`
 	}
+})
+
+const buildLabel = (attributeName, inputName, optionDefinition, _errors) => {
+	let label, span, abbr
+
+	label = document.createElement('label')
+	span = document.createElement('span')
+
+	label.classList.add('col-sm-4', 'col-xs-5', 'control-label')
+	label.setAttribute('for', inputName)
+
+	span.textContent = I18n.t(`activerecord.attributes.macro.${attributeName}`)
+
+	label.appendChild(span)
+
+	if (optionDefinition.required) {
+		label.classList.add('required')
+
+		abbr = document.createElement('abbr')
+		abbr.setAttribute('title', I18n.t('simple_form.required.text'))
+
+		abbr.innerText = I18n.t('simple_form.required.mark')
+
+		label.appendChild(abbr)
+	}
+
+	return label
+}
+
+Alpine.effect(() => {
+	const macros = Alpine.store('macroList').macros
+	console.log('macros', macros)
 })
 
 Alpine.start()

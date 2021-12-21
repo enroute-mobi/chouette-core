@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_11_29_091129) do
+ActiveRecord::Schema.define(version: 2021_12_02_142900) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -505,6 +505,7 @@ ActiveRecord::Schema.define(version: 2021_11_29_091129) do
     t.bigint "publication_id"
     t.bigint "workgroup_id"
     t.hstore "options", default: {}
+    t.string "parent_type"
     t.datetime "notified_parent_at"
     t.bigint "parent_id"
     t.index ["publication_id"], name: "index_exports_on_publication_id"
@@ -742,7 +743,7 @@ ActiveRecord::Schema.define(version: 2021_11_29_091129) do
 
   create_table "macro_lists", force: :cascade do |t|
     t.bigint "workbench_id"
-    t.string "name"
+    t.text "name"
     t.text "comments"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -753,12 +754,11 @@ ActiveRecord::Schema.define(version: 2021_11_29_091129) do
     t.string "type", null: false
     t.bigint "macro_list_id"
     t.integer "position", null: false
-    t.string "name"
+    t.text "name"
     t.text "comments"
     t.jsonb "options", default: {}
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["macro_list_id", "position"], name: "index_macros_on_macro_list_id_and_position", unique: true
     t.index ["macro_list_id"], name: "index_macros_on_macro_list_id"
   end
 
@@ -1186,6 +1186,7 @@ ActiveRecord::Schema.define(version: 2021_11_29_091129) do
     t.datetime "updated_at"
     t.jsonb "metadata", default: {}
     t.index ["objectid"], name: "stop_points_objectid_key", unique: true
+    t.index ["route_id", "position"], name: "index_stop_points_on_route_id_and_position", unique: true
     t.index ["route_id"], name: "index_stop_points_on_route_id"
   end
 

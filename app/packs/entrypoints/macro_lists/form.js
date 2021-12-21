@@ -43,36 +43,3 @@ Alpine.store('macroList', {
 	}
 })
 
-const buildLabel = (attributeName, inputName, optionDefinition, _errors) => {
-	let label, span, abbr
-
-	label = document.createElement('label')
-	span = document.createElement('span')
-
-	label.classList.add('col-sm-4', 'col-xs-5', 'control-label')
-	label.setAttribute('for', inputName)
-
-	span.textContent = I18n.t(`activerecord.attributes.macro.${attributeName}`)
-
-	label.appendChild(span)
-
-	if (optionDefinition.required) {
-		label.classList.add('required')
-
-		abbr = document.createElement('abbr')
-		abbr.setAttribute('title', I18n.t('simple_form.required.text'))
-
-		abbr.innerText = I18n.t('simple_form.required.mark')
-
-		label.appendChild(abbr)
-	}
-
-	return label
-}
-
-Alpine.effect(() => {
-	const macros = Alpine.store('macroList').macros
-	console.log('macros', macros)
-})
-
-Alpine.start()

@@ -280,7 +280,6 @@ $menuW: 300px;
     text-rendering: optimizespeed;
     font-weight: 400;
     height: $menuH;
-    transition: 0.1s;
     padding-left: $menuH;
     background-color: $brand-color-primary-dark;
     color: #fff;
@@ -405,8 +404,8 @@ $menuW: 300px;
     &,
     #menu_left .openMenu,
     #menu_top {
-      height: $menuH * 2;
-      transition: 0.1s;
+      // height: $menuH * 2;
+      @apply h-40;
     }
     #menu_top > .menu-content {
       & > .menu-item {

@@ -79,13 +79,15 @@ export default class TimetablesEditVehicleJourney extends Component {
                                         <a
                                           href='#'
                                           title='Supprimer'
-                                          className='fa fa-trash remove_fields'
+                                          className='remove_fields'
                                           style={{ height: 'auto', lineHeight: 'normal' }}
-                                          onClick={(e) => {
+                                          onClick={e => {
                                             e.preventDefault()
                                             this.props.onDeleteCalendarModal(tt)
                                           }}
-                                        ></a>
+                                        >
+                                          <i className='fa fa-trash '></i>
+                                        </a>
                                       </div>
                                     }
                                   </div>

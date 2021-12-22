@@ -23,3 +23,5 @@ div
 			template[x-for="[optionName, params] in Object.entries(macro.options)"]
 				div[x-data="{ inputName: store.inputName(index, optionName), hasError: !!macro.errors[optionName], error: (macro.errors[optionName] || [])[0] }"]
 					= render 'macro_option_input'
+			
+			= f.input :comments, as: :text, required: false, input_html: { 'x-model': 'macro.comments', ':name': "store.inputName(index, 'comments')"}

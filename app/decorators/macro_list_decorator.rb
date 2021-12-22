@@ -17,7 +17,7 @@ class MacroListDecorator < AF83::Decorator
     klass = macro.class
 
     attributes = klass.options.map { |k, v| [k, nil] }.to_h # Ensuring that attributes have all options values defined
-    attributes.merge!(**macro.attributes.except('options'))
+    attributes.merge!(**macro.attributes.except('position', 'options'))
     attributes.merge!(**macro.options)
 
     attributes.merge!(name: macro.type) unless attributes['name'] # Set a default name

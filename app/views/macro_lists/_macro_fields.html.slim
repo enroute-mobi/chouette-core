@@ -6,7 +6,7 @@ div
 			.w-full
 				= f.input :id, as: :hidden, input_html: { 'x-model': 'macro.id', ':name': "store.inputName(index, 'id')" }, wrapper: false
 				= f.input :type, as: :hidden, input_html: { 'x-model': 'macro.type', ':name': "store.inputName(index, 'type')" }, wrapper: false
-				= f.input :position, as: :hidden, input_html: { 'x-model': 'macro.position', ':value': 'index + 1', ':name': "store.inputName(index, 'position')" }, wrapper: false
+				= f.input :position, as: :hidden, input_html: { ':value': 'store.getPosition(macro)', ':name': "store.inputName(index, 'position')" }, wrapper: false
 				= f.input :_destroy, as: :hidden, input_html: { ':value': 'macro.isDeleted', ':name': "store.inputName(index, '_destroy')" }, wrapper: false
 
 				= f.input :name, input_html: { 'x-model': 'macro.name', ':readonly': '!expanded || macro.isDeleted', ':name': "store.inputName(index, 'name')" }, label: false

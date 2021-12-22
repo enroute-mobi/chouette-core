@@ -381,12 +381,21 @@ RSpec.describe Export::NetexGeneric do
 
     before { context.referential.switch }
 
-    it "create Netex resources with line_id tag" do
-      context.routes.each { |route| export.resource_tagger.register_tag_for(route.line) }
-      part.export!
-      expect(target.resources).to all(have_tag(:line_id))
-    end
+    describe "NeTEx resources" do
+      subject { target.resources }
 
+      it "have line_id tag" do
+        context.routes.each { |route| export.resource_tagger.register_tag_for(route.line) }
+        part.export!
+        is_expected.to all(have_tag(:line_id))
+      end
+
+      it "have data_source_ref attribute (using Route data_source_ref)" do
+        context.routes.each { |route| route.update data_source_ref: 'test' }
+        part.export!
+        is_expected.to all(have_attributes(data_source_ref: 'test'))
+      end
+    end
   end
 
   describe "JourneyPatterns export" do

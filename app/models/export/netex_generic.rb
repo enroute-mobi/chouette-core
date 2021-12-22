@@ -520,7 +520,8 @@ class Export::NetexGeneric < Export::Base
     def route_point_attributes
       {
         id: route_point_id,
-        projections: point_projection
+        projections: point_projection,
+        data_source_ref: route&.data_source_ref
       }
     end
 
@@ -655,7 +656,7 @@ class Export::NetexGeneric < Export::Base
         tags = resource_tagger.tags_for(stop_point.line_id)
         tagged_target = TaggedTarget.new(target, tags)
 
-        decorated_stop_point = StopPointDecorator.new(stop_point)
+        decorated_stop_point = StopPointDecorator.new(stop_point, route: stop_point.route)
         tagged_target << decorated_stop_point.scheduled_stop_point
         tagged_target << decorated_stop_point.passenger_stop_assignment
         tagged_target << decorated_stop_point.route_point

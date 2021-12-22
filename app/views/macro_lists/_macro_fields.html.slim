@@ -4,34 +4,22 @@ div
 			button @click="expanded = ! expanded" type="button" x-bind:disabled="macro.isDeleted" class="flex items-center justify-between p-3 pl-3 mr-3 w-10 font-bold text-white bg-enroute-chouette-green rounded cursor-pointer hover:text-indigo-100"
 				<span class="text-3xl w-full" x-text="expanded ? '-' : '+'">+</span>
 			.w-full
-				= f.input :id, as: :hidden, input_html: { 'x-model': 'macro.id', ':name': "$store.macroList.inputName(index, 'id')" }
-				= f.input :name, input_html: { 'x-model': 'macro.name', ':readonly': '!expanded', ':name': "$store.macroList.inputName(index, 'name')" }, label: false
+				= f.input :id, as: :hidden, input_html: { 'x-model': 'macro.id', ':name': "store.inputName(index, 'id')" }
+				= f.input :type, as: :hidden, input_html: { 'x-model': 'macro.type', ':name': "store.inputName(index, 'type')" }
+				= f.input :position, as: :hidden, input_html: { ':value': 'index + 1', ':name': "store.inputName(index, 'position')" }
+				= f.input :_destroy, as: :hidden, input_html: { ':value': 'macro.isDeleted', ':name': "store.inputName(index, '_destroy')" }
 
-			.btn-group x-show="!macro.isDeleted"
+				= f.input :name, input_html: { 'x-model': 'macro.name', ':readonly': '!expanded', ':name': "store.inputName(index, 'name')" }, label: false
+
+			.btn-group
 				.btn.dropdown-toggle data-toggle="dropdown"
 					.span.fa.fa-cog
 				ul.dropdown-menu
-					li
-						a @click="$store.macroList.sendToTop(index)" Send To Top
-					li
-						a @click="$store.macroList.moveUp(index)" Move Up
-					li
-						a @click="$store.macroList.moveDown(index)" Move Down
-					li
-						a @click="$store.macroList.sendToBottom(index)" Send to Bottom
+					template[x-for="action in store.actions"]
+						li
+							a @click="store[action](index)" x-text="I18n.t(`macros.actions.${action}`)" x-show="(action == 'restore' && macro.isDeleted) || (action != 'restore' && !macro.isDeleted)"
 
 		.macro.flex.flex-col x-show="expanded && !macro.isDeleted" class="w-full"
-			= f.input :type, as: :hidden, input_html: { 'x-model': 'macro.type', ':name': "$store.macroList.inputName(index, 'type')" }
-			= f.input :position, as: :hidden, input_html: { ':value': 'index + 1', ':name': "$store.macroList.inputName(index, 'position')" }
 			template[x-for="[optionName, params] in Object.entries(macro.options)"]
-				div[x-data="{ inputName: $store.macroList.inputName(index, optionName), hasError: !!macro.errors[optionName], error: (macro.errors[optionName] || [])[0] }"]
+				div[x-data="{ inputName: store.inputName(index, optionName), hasError: !!macro.errors[optionName], error: (macro.errors[optionName] || [])[0] }"]
 					= render 'macro_option_input'
-			
-			.form-group
-				.col-md-12
-					template[x-if="!macro.isDeleted"]
-						= button_tag 'Supprimer', class: 'btn btn-danger', '@click.prevent': '$store.macroList.removeMacro(index)'
-		template[x-if="macro.isDeleted"]
-			= button_tag  I18n.t('actions.restore'), class: 'btn btn-info', '@click.prevent': '$store.macroList.restoreMacro(index)'
-
-		= f.input :_destroy, as: :hidden, input_html: { ':value': 'macro.isDeleted', ':name': "$store.macroList.inputName(index, '_destroy')" }

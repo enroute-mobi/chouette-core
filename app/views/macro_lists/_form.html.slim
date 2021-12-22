@@ -10,25 +10,25 @@
       = t("macro.form.sections.macros")
     .separator.mb-5
     .w-full-px-5
-      div[x-data]
-        template[x-if="!!$store.macroList"]
-          div[x-init="$store.macroList.setMacros(#{@macro_list.macros_json})"]
+      div[x-data="{ store: $store.macroList}"]
+        template[x-if="!!store"]
+          div[x-init="store.setMacros(#{@macro_list.macros_json})"]
             = f.simple_fields_for(:macros_attributes) do |macro_form|
-              template[x-for="(macro, index) in $store.macroList.macros"]
+              template[x-for="(macro, index) in store.macros"]
                 = render 'macro_fields', f: macro_form
 
             .flex.flex-col.mt-5
               = simple_fields_for(:macro_select) do |macro_select_form|
                 = f.label Macro::List.human_attribute_name(:type), class: 'mb-3'
-                = macro_select_form.input :type, as: :tom_select, collection: @macro_list.macro_options, input_html: { 'x-model': '$store.macroList.selectedType' }, wrapper: false, label: false
+                = macro_select_form.input :type, as: :tom_select, collection: @macro_list.macro_options, input_html: { 'x-model': 'store.selectedType' }, wrapper: false, label: false
 
-              template[x-if="$store.macroList.selectedType == ''"]
+              template[x-if="store.selectedType == ''"]
                 .links.nested-linker
                   = button_tag 'Add Macro', class: 'btn btn-primary', disabled: true
               - Macro.available.map do |m|
-                template[x-if="$store.macroList.selectedType == '#{m.name}'"]
+                template[x-if="store.selectedType == '#{m.name}'"]
                   .links.nested-linker
-                    = button_tag 'Add Macro', class: 'btn btn-primary', '@click.prevent': "$store.macroList.addMacro(#{@macro_list.macro_json(m.new)})"
+                    = button_tag 'Add Macro', class: 'btn btn-primary', '@click.prevent': "store.addMacro(#{@macro_list.macro_json(m.new)})"
 
   = cancel_button
   = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'macro_list_form'

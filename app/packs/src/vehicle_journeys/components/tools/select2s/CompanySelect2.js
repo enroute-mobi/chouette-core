@@ -2,7 +2,7 @@ import React from 'react'
 import { Async as Select } from 'react-select'
 import { Path } from 'path-parser'
 
-const { lineId } = new Path('/referentials/:referentialId/lines/:lineId/routes/:routeId').partialTest(location.pathname)
+const params = new Path('/referentials/:referentialId/lines/:lineId/routes/:routeId').partialTest(location.pathname)
 
 const path = `/workbenches/${window.workbench_id}/autocomplete/companies`
 
@@ -14,7 +14,7 @@ const CompanySelect2 = ({ company, editMode, editModal, onSelect2Company, onUnse
     getOptionLabel={({ text }) => text}
     getOptionValue={({ id }) => id}
     loadOptions={async inputValue => {
-      const response = await fetch(`${path}.json?${new URLSearchParams({ line_id: lineId, q: inputValue }).toString()}`)
+      const response = await fetch(`${path}.json?${new URLSearchParams({ line_id: params?.lineId, q: inputValue }).toString()}`)
       const companies = await response.json()
 
       return companies

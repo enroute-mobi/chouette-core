@@ -24,9 +24,9 @@
           class: 'menu-item',
           title: t('layouts.user.profile'),
           'x-bind:class': '{ active: profileMenuIsOpen }',
-          'x-on:click.prevent': 'profileMenuIsOpen = true' do
-          span = current_user.name
-          span.fa.fa-lg.fa-user
+          'x-on:click.stop': 'profileMenuIsOpen = true' do
+            span = current_user.name
+            span.fa.fa-lg.fa-user
 
   - if user_signed_in?
     = render 'layouts/navigation/nav_panel_operations'

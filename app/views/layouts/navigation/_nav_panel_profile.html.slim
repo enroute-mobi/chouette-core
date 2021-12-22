@@ -1,4 +1,4 @@
-#profile_panel.nav_panel[x-bind:class="{ open: profileMenuIsOpen }" x-on:click.away = 'profileMenuIsOpen = false']
+#profile_panel.nav_panel[x-bind:class="{ open: profileMenuIsOpen }" x-on:click.outside = 'profileMenuIsOpen = false']
   .panel-title
     h2 = t('layouts.user.profile')
   .panel-body

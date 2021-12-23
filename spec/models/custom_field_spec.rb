@@ -102,7 +102,8 @@ RSpec.describe CustomField, type: :model do
     let!(:field){ [create(:custom_field, code: :energy, field_type: 'list', options: {list_values: %w(foo bar baz), default: 1}, workgroup: workgroup)] }
     let!( :vj ){ create :vehicle_journey, custom_field_values: {energy: "1"} }
     it "should cast the value" do
-      expect(vj.custom_fields[:energy].value).to eq 1
+      expect(vj.custom_fields[:energy].value).to eq "1"
+      expect(vj.custom_fields[:energy].key_or_index).to eq 1
       expect(vj.custom_fields[:energy].display_value).to eq "bar"
     end
 
@@ -136,7 +137,8 @@ RSpec.describe CustomField, type: :model do
     context 'with the values defined in a Hash' do
       let!(:field){ [create(:custom_field, code: :energy, field_type: 'list', options: {list_values:{"1" => "foo", "2" => "bar", "3" => "BAZ"}}, workgroup: workgroup)] }
       it "should cast the value" do
-        expect(vj.custom_fields[:energy].value).to eq 1
+        expect(vj.custom_fields[:energy].value).to eq "1"
+        expect(vj.custom_fields[:energy].key_or_index).to eq "1"
         expect(vj.custom_fields[:energy].display_value).to eq "foo"
       end
 

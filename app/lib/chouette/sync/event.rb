@@ -56,6 +56,8 @@ module Chouette
         protected
 
         def handle(event)
+          Rails.logger.debug { "Broadcast Synchronization Event #{event.inspect}" }
+
           @block.call event if @block
         end
       end

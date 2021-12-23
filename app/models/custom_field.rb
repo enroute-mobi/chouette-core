@@ -103,6 +103,10 @@ class CustomField < ApplicationModel
         @raw_value
       end
 
+      def value=(value)
+        @raw_value = value
+      end
+
       def checksum
         val = @raw_value
         return nil if !val.present? && !!options["ignore_empty_value_in_checksums"]
@@ -231,31 +235,49 @@ class CustomField < ApplicationModel
       end
     end
 
-    class List < Integer
+    class List < Base
       def collection_is_a_hash?
         options["list_values"].is_a?(Hash)
       end
 
       def validate
         return unless value.present?
+        @valid = true
+
         if collection_is_a_hash?
-          unless options["list_values"].keys.map(&:to_s).include?(value.to_s)
+          unless options["list_values"].keys.map(&:to_s).include?(key)
             @owner.errors.add errors_key, "'#{@raw_value}' is not a valid value"
             @valid = false
           end
         else
-          super
-          unless value >= 0 && value < options["list_values"].size
+          unless index && index >= 0 && index < options["list_values"].size
             @owner.errors.add errors_key, "'#{@raw_value}' is not a valid value"
             @valid = false
           end
         end
       end
 
+      def key
+        return unless value.present?
+        return unless collection_is_a_hash?
+
+        value.to_s
+      end
+
+      def index
+        return unless value.present?
+        return if collection_is_a_hash?
+        return if value.is_a?(::String) && !value.match?(/^[0-9]+$/)
+
+        @index ||= value.to_i
+      end
+
+      def key_or_index
+        key || index
+      end
+
       def display_value
-        return unless value
-        k = collection_is_a_hash? ? value.to_s : value.to_i
-        options["list_values"][k]
+        options["list_values"][key_or_index]
       end
 
       class Input < Base::Input

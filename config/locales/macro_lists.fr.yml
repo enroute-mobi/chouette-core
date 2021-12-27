@@ -1,31 +1,36 @@
 fr:
-  macro_lists:
-    search_no_results: "Aucun Macros ne correspond à votre recherche"
-    actions:
-      show: "Afficher ce Macro"
-      new: "Ajouter un Macro"
-      edit: "Editer ce Macro"
-      destroy: "Supprimer ce Macro"
-      destroy_confirm: "Etes vous sûr de supprimer ce Macro ?"
-    errors:
-    new:
-      title: "Créer un Macro"
-    edit:
-      title: "Editer %{name}"
+  macro/lists:
+    index:
+      title: Jeu d'instructions
     show:
       title: "%{name}"
+    actions:
+      show: "Afficher ce Jeu d'instructions"
+      new: "Ajouter un Jeu d'instructions"
+      edit: "Editer ce Jeu d'instructions"
+      destroy: "Supprimer ce Jeu d'instructions"
+      destroy_confirm: "Etes vous sûr de supprimer ce Jeu d'instructions ?"
+    new:
+      title: "Créer un Jeu d'instructions"
+  macro_lists:
+    actions:
+      new: "Ajouter un Jeu d'instructions"
+    search_no_results: "Aucun Jeu d'instructions ne correspond à votre recherche"
+    errors:
+    edit:
+      title: "Editer %{name}"
     index:
-      title: "Liste des Macros"
+      title: "Liste des Jeu d'instructions"
     form:
       sections:
-        macros: "Macros"
+        macros: "Jeu d'instructions"
     filters:
   activerecord:
     models:
       macro/list:
-        zero:  "Macros"
-        one:   "Macro"
-        other: "Macros"
+        zero:  "Jeu d'instructions"
+        one:   "Jeu d'instruction"
+        other: "Jeu d'instructions"
     attributes:
       macro:
         list:

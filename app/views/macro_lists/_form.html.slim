@@ -1,6 +1,6 @@
 - content_for :additional_packs, 'macro_lists/form'
 
-= simple_form_for [@workbench, @macro_list], html: {class: 'form-horizontal', id: 'macro_list_form'}, wrapper: :horizontal_form do |f|
+= simple_form_for [@workbench, @macro_list], html: {class: 'form-horizontal', id: 'macro_list_form'}, wrapper: false do |f|
   .row
     .col-lg-12
       = f.input :name

@@ -1,11 +1,34 @@
 - breadcrumb :macro_list, @workbench, @macro_list
 - page_header_content_for @macro_list
+- content_for :additional_packs, 'macro_lists/form'
 
 / PageContent
 .page_content
   .container-fluid
     .row
-      .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        = simple_block_for @macro_list, title: t('macro_lists.form.sections.identification') do |d|
-          = d.attribute :name
-          = d.attribute :comments
+      .col-lg-8.col-lg-offset-2.col-md-8.col-md-offset-2.col-sm-10.col-sm-offset-1
+        = simple_form_for [@workbench, @macro_list], html: {class: 'form-horizontal', id: 'macro_list_form'}, wrapper: false, defaults: { disabled: true } do |f|
+          .row
+            .col-lg-12
+              = f.input :name
+              = f.input :comments, as: :text
+          .row
+            h2
+              = t("macro.form.sections.macros")
+            .separator.mb-5
+            .w-full-px-5
+              div[x-data="{ store: $store.macroList}"]
+                template[x-if="!!store"]
+                  div[x-init="store.setMacros(#{@macro_list.macros_json})"]
+                    = f.simple_fields_for(:macros_attributes) do |macro_form|
+                      template[x-for="(macro, index) in store.macros"]
+                        = render 'macro_fields_disable', f: macro_form
+
+                    .flex.flex-col.mt-5
+                      - Macro.available.map do |m|
+                        template[x-if="store.selectedType == '#{m.name}'"]
+    / .row
+    /   .col-lg-6.col-md-6.col-sm-12.col-xs-12
+    /     = simple_block_for @macro_list, title: t('macro_lists.form.sections.identification') do |d|
+    /       = d.attribute :name
+    /       = d.attribute :comments

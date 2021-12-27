@@ -12,12 +12,6 @@
           = table_builder_2 @macro_lists,
             [ \
               TableBuilderHelper::Column.new( \
-                key: :id, \
-                attribute: :id, \
-                sortable: false \
-              ), \
-              \
-              TableBuilderHelper::Column.new( \
                 key: :name, \
                 attribute: :name, \
                 sortable: false, \
@@ -28,6 +22,17 @@
                   ) \
                 end \
               ), \
+              TableBuilderHelper::Column.new( \
+                key: :comments, \
+                attribute: :comments, \
+                sortable: false \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :updated_at, \
+                attribute: Proc.new { |n| l(n.updated_at, format: :short_with_time) if n.updated_at }, \
+                sortable: false,\
+              ) \
+              \
             ].compact,
             cls: 'table has-filter has-search'
 

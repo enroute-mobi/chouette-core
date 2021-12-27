@@ -16,6 +16,8 @@ en:
         other: "Macros"
       macro/create_code:
         one: Create Code
+      macro/dummy:
+        one: Dummy
     attributes:
       macro:
         name: Name

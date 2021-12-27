@@ -12,5 +12,45 @@ module Macro
     def self.policy_class
       MacroListPolicy
     end
+
+    def build_run(attributes = {})
+      attributes = attributes.reverse_merge(workbench: workbench)
+
+      Run.new(attributes).tap do |run|
+        macros.each do |macro|
+          run.macro_runs << macro.build_run
+        end
+      end
+    end
+
+    # macro_list_run = macro_list.build_run user: user, workbench: workbench, referential: target
+    #
+    # if macro_list_run.save
+    #   macro_list_run.enqueue
+    # else
+    #   render ...
+    # end
+    class Run < Operation
+      # The Workbench where macros are executed
+      belongs_to :workbench, optional: false
+
+      # The Referential where macros are executed.
+      # Optional, because the user can run macros on Stop Areas for example
+      belongs_to :referential, optional: true
+
+
+      # The original macro list definition. This macro list can have been modified or deleted since.
+      # Should only used to provide a link in the UI
+      belongs_to :original_macro_list, optional: true
+
+      has_many :macro_runs, -> { order(position: :asc) }, class_name: "Macro::Base::Run",
+               dependent: :delete_all, foreign_key: "macro_list_run_id"
+
+      def perform
+        macro_runs.each do |macro_run|
+          macro_run.run
+        end
+      end
+    end
   end
 end

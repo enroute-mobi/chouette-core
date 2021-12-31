@@ -185,6 +185,23 @@ RSpec.describe Export::NetexGeneric do
           is_expected.to include(direction_ref: nil)
         end
 
+        it "includes direction_type" do
+          allow(decorator).to receive(:direction_type).and_return("inbound")
+          is_expected.to include(direction_type: "inbound")
+        end
+      end
+
+      describe "#direction_type" do
+        subject { decorator.direction_type }
+
+        context "when Route wayback is :inbound" do
+          before { route.wayback = :inbound }
+          it { is_expected.to eq("inbound") }
+        end
+        context "when Route wayback is :outbound" do
+          before { route.wayback = :outbound }
+          it { is_expected.to eq("outbound") }
+        end
       end
 
     end

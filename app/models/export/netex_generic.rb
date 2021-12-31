@@ -629,6 +629,7 @@ class Export::NetexGeneric < Export::Base
           name: netex_name,
           line_ref: line_ref,
           direction_ref: direction_ref,
+          direction_type: direction_type,
           points_in_sequence: points_in_sequence
         }.tap do |attributes|
           attributes[:direction_ref] = direction_ref if published_name.present?
@@ -661,6 +662,10 @@ class Export::NetexGeneric < Export::Base
 
       def direction_ref
         Netex::Reference.new(direction_id, type: 'DirectionRef') if direction
+      end
+
+      def direction_type
+        wayback.to_s
       end
 
       def line_ref

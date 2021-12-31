@@ -58,17 +58,19 @@ class Export::NetexGeneric < Export::Base
 
   def generate_export_file
     part_classes = [
+      Entrances,
       Stops,
       Stations,
-      Entrances,
-      Lines,
       Companies,
-      Routes,
+      Networks,
+      Lines,
+      # Export StopPoints before Routes to detect local references
       StopPoints,
+      Routes,
       RoutingConstraintZones,
       JourneyPatterns,
-      VehicleJourneys,
       TimeTables,
+      VehicleJourneys,
       Organisations
     ]
 
@@ -204,11 +206,11 @@ class Export::NetexGeneric < Export::Base
     end
 
     def parent_site_ref
-      Netex::Reference.new(parent.objectid, type: 'ParentSiteRef')
+      Netex::Reference.new(parent.objectid, type: 'StopPlace')
     end
 
     def place_types
-      [Netex::Reference.new(type_of_place, type: 'TypeOfPlaceRef')]
+      [Netex::Reference.new(type_of_place, type: String)]
     end
 
     def type_of_place
@@ -545,7 +547,8 @@ class Export::NetexGeneric < Export::Base
     end
 
     def project_to_point_ref
-      Netex::Reference.new(scheduled_stop_point_id, type: 'ProjectToPointRef')
+      # Netex::Reference.new(scheduled_stop_point_id, type: 'ProjectToPointRef')
+      Netex::Reference.new(scheduled_stop_point_id, type: 'ScheduledStopPoint')
     end
 
     def stop_point_in_journey_pattern
@@ -581,8 +584,9 @@ class Export::NetexGeneric < Export::Base
         tagged_target = TaggedTarget.new(target, tags)
 
         decorated_route = Decorator.new(route)
-        tagged_target << decorated_route.netex_resource
+        # Export Direction before the Route to detect local reference
         tagged_target << decorated_route.direction if decorated_route.direction
+        tagged_target << decorated_route.netex_resource
       end
     end
 
@@ -730,8 +734,9 @@ class Export::NetexGeneric < Export::Base
         tagged_target = TaggedTarget.new(target, tags)
 
         decorated_journey_pattern = Decorator.new(journey_pattern)
-        tagged_target << decorated_journey_pattern.netex_resource
+        # Export Destination Displays before the JourneyPattern to detect local reference
         tagged_target << decorated_journey_pattern.destination_display if journey_pattern.published_name.present?
+        tagged_target << decorated_journey_pattern.netex_resource
       end
     end
 
@@ -1041,7 +1046,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def operating_period_ref
-      Netex::Reference.new(operating_period_id, type: 'OperatinPeriodRef')
+      Netex::Reference.new(operating_period_id, type: 'OperatingPeriodRef')
     end
 
   end

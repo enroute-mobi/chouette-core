@@ -78,7 +78,7 @@ module Export::Scope
     delegate :workgroup, :workbench, :line_referential, :stop_area_referential, :metadatas, to: :referential
     delegate :shape_referential, to: :workgroup
 
-    delegate :companies, to: :line_referential
+    delegate :companies, :networks, to: :line_referential
     delegate :entrances, to: :stop_area_referential
 
     delegate :shapes, to: :shape_referential
@@ -88,7 +88,16 @@ module Export::Scope
     delegate :vehicle_journeys, :vehicle_journey_at_stops, :journey_patterns, :routes, :stop_points, :time_tables, :referential_codes, :routing_constraint_zones, to: :referential
 
     def organisations
-      workgroup.organisations.where(id: metadatas.joins(referential_source: :organisation).distinct.pluck('organisations.id'))
+      # Find organisations which provided metadata in the referential
+      # Only works for merged/aggregated datasets
+      organisation_ids = metadatas.joins(referential_source: :organisation).distinct.pluck('organisations.id')
+
+      # Use the Referential owner in fallback
+      if organisation_ids.empty?
+        organisation_ids = [ referential.organisation_id ]
+      end
+
+      workgroup.organisations.where(id: organisation_ids)
     end
 
     def stop_areas
@@ -126,6 +135,14 @@ module Export::Scope
     def lines
       current_scope.lines.distinct.joins(routes: :vehicle_journeys)
         .where("vehicle_journeys.id" => vehicle_journeys)
+    end
+
+    def companies
+      current_scope.companies.where(id: lines.where.not(company_id: nil).select(:company_id))
+    end
+
+    def networks
+      current_scope.networks.where(id: lines.where.not(network_id: nil).select(:network_id))
     end
 
     def time_tables

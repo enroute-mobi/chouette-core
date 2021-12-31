@@ -424,6 +424,36 @@ class Export::NetexGeneric < Export::Base
 
   end
 
+  class Networks < Part
+
+    delegate :networks, to: :export_scope
+
+    def export!
+      networks.find_each do |network|
+        Rails.logger.debug { "Export Network #{network.inspect}" }
+        decorated_network = Decorator.new(network)
+        target << decorated_network.netex_resource
+      end
+    end
+
+    class Decorator < SimpleDelegator
+
+      def netex_attributes
+        {
+          id: objectid,
+          name: name,
+          raw_xml: import_xml
+        }
+      end
+
+      def netex_resource
+        Netex::Network.new netex_attributes
+      end
+
+    end
+
+  end
+
   class StopPointDecorator < SimpleDelegator
 
     attr_accessor :journey_pattern_id, :route

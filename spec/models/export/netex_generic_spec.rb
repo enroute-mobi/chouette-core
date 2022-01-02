@@ -235,6 +235,23 @@ RSpec.describe Export::NetexGeneric do
         end
       end
 
+      describe "#netex_for_boarding" do
+        subject { decorator.netex_for_boarding }
+
+        context "when for_boarding is 'normal'" do
+          before { stop_point.for_boarding = "normal" }
+          it { is_expected.to be_truthy }
+        end
+      end
+
+      describe "#netex_for_alighting" do
+        subject { decorator.netex_for_alighting }
+
+        context "when for_alighting is 'normal'" do
+          before { stop_point.for_alighting = "normal" }
+          it { is_expected.to be_truthy }
+        end
+      end
     end
 
   end

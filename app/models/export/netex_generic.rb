@@ -589,8 +589,18 @@ class Export::NetexGeneric < Export::Base
       {
         id: stop_point_in_journey_pattern_id,
         order: position+1,
-        scheduled_stop_point_ref: scheduled_stop_point_ref
+        scheduled_stop_point_ref: scheduled_stop_point_ref,
+        for_boarding: netex_for_boarding,
+        for_alighting: netex_for_alighting
       }
+    end
+
+    def netex_for_boarding
+      for_boarding == "normal"
+    end
+
+    def netex_for_alighting
+      for_alighting == "normal"
     end
 
     def stop_point_in_journey_pattern_id

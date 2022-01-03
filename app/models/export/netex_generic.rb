@@ -866,6 +866,7 @@ class Export::NetexGeneric < Export::Base
           data_source_ref: data_source_ref,
           name: published_journey_name,
           journey_pattern_ref: journey_pattern_ref,
+          public_code: published_journey_identifier,
           passing_times: passing_times,
           day_types: day_types
         }

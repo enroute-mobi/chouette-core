@@ -528,6 +528,15 @@ RSpec.describe Export::NetexGeneric do
           expect(subject.map { |s| s.stop_point.position }).to eq([0, 1, 2])
         end
       end
+
+      describe "#netex_attributes" do
+        subject { decorator.netex_attributes }
+
+        context "when VehicleJourney published_journey_identifier is 'dummy'" do
+          before { vehicle_journey.published_journey_identifier = 'dummy' }
+          it { is_expected.to include(public_code: 'dummy') }
+        end
+      end
     end
 
     describe 'VehicleJourneyAtStop export' do

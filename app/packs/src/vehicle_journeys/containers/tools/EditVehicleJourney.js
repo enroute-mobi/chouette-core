@@ -23,8 +23,8 @@ const mapDispatchToProps = (dispatch) => {
     onEditVehicleJourney: (data, selectedCompany) =>{
       dispatch(actions.editVehicleJourney(data, selectedCompany))
     },
-    onSelect2Company: (e) => {
-      dispatch(actions.select2Company(e.params.data))
+    onSelect2Company: company => {
+      dispatch(actions.select2Company(company))
     },
     onUnselect2Company: () => {
       dispatch(actions.unselect2Company())

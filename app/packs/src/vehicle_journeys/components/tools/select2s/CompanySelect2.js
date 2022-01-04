@@ -3,8 +3,9 @@ import { Async as Select } from 'react-select'
 import { Path } from 'path-parser'
 
 const params = new Path('/referentials/:referentialId/lines/:lineId/routes/:routeId').partialTest(location.pathname)
+const { workbenchId } = new Path('/workbenches/:workbenchId/line_referential/companies').partialTest(window.companiesPath)
 
-const path = `/workbenches/${window.workbench_id}/autocomplete/companies`
+const path = `/workbenches/${workbenchId}/autocomplete/companies`
 
 const CompanySelect2 = ({ company, editMode, editModal, onSelect2Company, onUnselect2Company }) => (
   <Select
@@ -21,10 +22,10 @@ const CompanySelect2 = ({ company, editMode, editModal, onSelect2Company, onUnse
     }}
     isDisabled={!editMode && editModal}
     placeholder={I18n.t('vehicle_journeys.vehicle_journeys_matrix.affect_company')}
-    onChange={(selectIem, meta) => {
+    onChange={({ id, text: name }, meta) => {
       switch(meta.action) {
         case 'select-option':
-          onSelect2Company(selectIem)
+          onSelect2Company({ id, name })
           break
         case 'deselect-option':
         case 'clear':

@@ -192,13 +192,9 @@ const actions = {
     stopPointsList,
     selectedCompany
   }),
-  select2Company: (selectedCompany) => ({
+  select2Company: selectedItem => ({
     type: 'SELECT_CP_EDIT_MODAL',
-    selectedItem: {
-      id: selectedCompany.id,
-      name: selectedCompany.name,
-      objectid: selectedCompany.objectid
-    }
+    selectedItem
   }),
   unselect2Company: () => ({
     type: 'UNSELECT_CP_EDIT_MODAL',

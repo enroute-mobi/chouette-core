@@ -185,6 +185,23 @@ RSpec.describe Export::NetexGeneric do
           is_expected.to include(direction_ref: nil)
         end
 
+        it "includes direction_type" do
+          allow(decorator).to receive(:direction_type).and_return("inbound")
+          is_expected.to include(direction_type: "inbound")
+        end
+      end
+
+      describe "#direction_type" do
+        subject { decorator.direction_type }
+
+        context "when Route wayback is :inbound" do
+          before { route.wayback = :inbound }
+          it { is_expected.to eq("inbound") }
+        end
+        context "when Route wayback is :outbound" do
+          before { route.wayback = :outbound }
+          it { is_expected.to eq("outbound") }
+        end
       end
 
     end
@@ -218,6 +235,23 @@ RSpec.describe Export::NetexGeneric do
         end
       end
 
+      describe "#netex_for_boarding" do
+        subject { decorator.netex_for_boarding }
+
+        context "when for_boarding is 'normal'" do
+          before { stop_point.for_boarding = "normal" }
+          it { is_expected.to be_truthy }
+        end
+      end
+
+      describe "#netex_for_alighting" do
+        subject { decorator.netex_for_alighting }
+
+        context "when for_alighting is 'normal'" do
+          before { stop_point.for_alighting = "normal" }
+          it { is_expected.to be_truthy }
+        end
+      end
     end
 
   end
@@ -381,12 +415,21 @@ RSpec.describe Export::NetexGeneric do
 
     before { context.referential.switch }
 
-    it "create Netex resources with line_id tag" do
-      context.routes.each { |route| export.resource_tagger.register_tag_for(route.line) }
-      part.export!
-      expect(target.resources).to all(have_tag(:line_id))
-    end
+    describe "NeTEx resources" do
+      subject { target.resources }
 
+      it "have line_id tag" do
+        context.routes.each { |route| export.resource_tagger.register_tag_for(route.line) }
+        part.export!
+        is_expected.to all(have_tag(:line_id))
+      end
+
+      it "have data_source_ref attribute (using Route data_source_ref)" do
+        context.routes.each { |route| route.update data_source_ref: 'test' }
+        part.export!
+        is_expected.to all(have_attributes(data_source_ref: 'test'))
+      end
+    end
   end
 
   describe "JourneyPatterns export" do
@@ -483,6 +526,15 @@ RSpec.describe Export::NetexGeneric do
 
         it "is ordered by stop point position" do
           expect(subject.map { |s| s.stop_point.position }).to eq([0, 1, 2])
+        end
+      end
+
+      describe "#netex_attributes" do
+        subject { decorator.netex_attributes }
+
+        context "when VehicleJourney published_journey_identifier is 'dummy'" do
+          before { vehicle_journey.published_journey_identifier = 'dummy' }
+          it { is_expected.to include(public_code: 'dummy') }
         end
       end
     end

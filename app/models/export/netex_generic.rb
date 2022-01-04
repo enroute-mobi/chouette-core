@@ -58,17 +58,19 @@ class Export::NetexGeneric < Export::Base
 
   def generate_export_file
     part_classes = [
+      Entrances,
       Stops,
       Stations,
-      Entrances,
-      Lines,
       Companies,
-      Routes,
+      Networks,
+      Lines,
+      # Export StopPoints before Routes to detect local references
       StopPoints,
+      Routes,
       RoutingConstraintZones,
       JourneyPatterns,
-      VehicleJourneys,
       TimeTables,
+      VehicleJourneys,
       Organisations
     ]
 
@@ -204,11 +206,11 @@ class Export::NetexGeneric < Export::Base
     end
 
     def parent_site_ref
-      Netex::Reference.new(parent.objectid, type: 'ParentSiteRef')
+      Netex::Reference.new(parent.objectid, type: 'StopPlace')
     end
 
     def place_types
-      [Netex::Reference.new(type_of_place, type: 'TypeOfPlaceRef')]
+      [Netex::Reference.new(type_of_place, type: String)]
     end
 
     def type_of_place
@@ -422,6 +424,36 @@ class Export::NetexGeneric < Export::Base
 
   end
 
+  class Networks < Part
+
+    delegate :networks, to: :export_scope
+
+    def export!
+      networks.find_each do |network|
+        Rails.logger.debug { "Export Network #{network.inspect}" }
+        decorated_network = Decorator.new(network)
+        target << decorated_network.netex_resource
+      end
+    end
+
+    class Decorator < SimpleDelegator
+
+      def netex_attributes
+        {
+          id: objectid,
+          name: name,
+          raw_xml: import_xml
+        }
+      end
+
+      def netex_resource
+        Netex::Network.new netex_attributes
+      end
+
+    end
+
+  end
+
   class StopPointDecorator < SimpleDelegator
 
     attr_accessor :journey_pattern_id, :route
@@ -520,7 +552,8 @@ class Export::NetexGeneric < Export::Base
     def route_point_attributes
       {
         id: route_point_id,
-        projections: point_projection
+        projections: point_projection,
+        data_source_ref: route&.data_source_ref
       }
     end
 
@@ -544,7 +577,8 @@ class Export::NetexGeneric < Export::Base
     end
 
     def project_to_point_ref
-      Netex::Reference.new(scheduled_stop_point_id, type: 'ProjectToPointRef')
+      # Netex::Reference.new(scheduled_stop_point_id, type: 'ProjectToPointRef')
+      Netex::Reference.new(scheduled_stop_point_id, type: 'ScheduledStopPoint')
     end
 
     def stop_point_in_journey_pattern
@@ -555,8 +589,18 @@ class Export::NetexGeneric < Export::Base
       {
         id: stop_point_in_journey_pattern_id,
         order: position+1,
-        scheduled_stop_point_ref: scheduled_stop_point_ref
+        scheduled_stop_point_ref: scheduled_stop_point_ref,
+        for_boarding: netex_for_boarding,
+        for_alighting: netex_for_alighting
       }
+    end
+
+    def netex_for_boarding
+      for_boarding == "normal"
+    end
+
+    def netex_for_alighting
+      for_alighting == "normal"
     end
 
     def stop_point_in_journey_pattern_id
@@ -580,8 +624,9 @@ class Export::NetexGeneric < Export::Base
         tagged_target = TaggedTarget.new(target, tags)
 
         decorated_route = Decorator.new(route)
-        tagged_target << decorated_route.netex_resource
+        # Export Direction before the Route to detect local reference
         tagged_target << decorated_route.direction if decorated_route.direction
+        tagged_target << decorated_route.netex_resource
       end
     end
 
@@ -594,6 +639,7 @@ class Export::NetexGeneric < Export::Base
           name: netex_name,
           line_ref: line_ref,
           direction_ref: direction_ref,
+          direction_type: direction_type,
           points_in_sequence: points_in_sequence
         }.tap do |attributes|
           attributes[:direction_ref] = direction_ref if published_name.present?
@@ -628,6 +674,10 @@ class Export::NetexGeneric < Export::Base
         Netex::Reference.new(direction_id, type: 'DirectionRef') if direction
       end
 
+      def direction_type
+        wayback.to_s
+      end
+
       def line_ref
         Netex::Reference.new(line.objectid, type: 'LineRef') if line
       end
@@ -655,7 +705,7 @@ class Export::NetexGeneric < Export::Base
         tags = resource_tagger.tags_for(stop_point.line_id)
         tagged_target = TaggedTarget.new(target, tags)
 
-        decorated_stop_point = StopPointDecorator.new(stop_point)
+        decorated_stop_point = StopPointDecorator.new(stop_point, route: stop_point.route)
         tagged_target << decorated_stop_point.scheduled_stop_point
         tagged_target << decorated_stop_point.passenger_stop_assignment
         tagged_target << decorated_stop_point.route_point
@@ -729,8 +779,9 @@ class Export::NetexGeneric < Export::Base
         tagged_target = TaggedTarget.new(target, tags)
 
         decorated_journey_pattern = Decorator.new(journey_pattern)
-        tagged_target << decorated_journey_pattern.netex_resource
+        # Export Destination Displays before the JourneyPattern to detect local reference
         tagged_target << decorated_journey_pattern.destination_display if journey_pattern.published_name.present?
+        tagged_target << decorated_journey_pattern.netex_resource
       end
     end
 
@@ -815,6 +866,7 @@ class Export::NetexGeneric < Export::Base
           data_source_ref: data_source_ref,
           name: published_journey_name,
           journey_pattern_ref: journey_pattern_ref,
+          public_code: published_journey_identifier,
           passing_times: passing_times,
           day_types: day_types
         }
@@ -1040,7 +1092,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def operating_period_ref
-      Netex::Reference.new(operating_period_id, type: 'OperatinPeriodRef')
+      Netex::Reference.new(operating_period_id, type: 'OperatingPeriodRef')
     end
 
   end

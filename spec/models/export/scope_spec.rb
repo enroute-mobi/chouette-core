@@ -108,12 +108,14 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
       subject { scope.organisations }
 
       context 'no metadatas are related to organisations through referential_source' do
-        it { is_expected.to be_empty }
+        it "returns the organisation which owns the Referential" do
+          is_expected.to contain_exactly(referential.organisation)
+        end
       end
 
       context 'some metadatas are related to organisations through referential_source' do
         before do
-          # Use the referential .. as its own source for the test
+          # FIXME Use the referential .. as its own source for the test
           default_scope.metadatas.update_all referential_source_id: referential.id
         end
 

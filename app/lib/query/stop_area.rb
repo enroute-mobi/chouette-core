@@ -60,9 +60,8 @@ module Query
       scope.where("#{table_name}.id IN (#{tree_sql})")
     end
 
-    private
-
     # TODO Could use a nice RecurviseQuery common object
     delegate :table_name, to: Chouette::StopArea
+    private :table_name
   end
 end

@@ -241,7 +241,7 @@ class Export::NetexGeneric < Export::Base
 
     def netex_resource
       netex_resource_class.new(netex_attributes).tap do |stop|
-        unless netex_resource_class.is_a?(Netex::Quay)
+        unless stop.is_a?(Netex::Quay)
           stop.entrances = entrance_refs
           stop.parent_site_ref = parent_site_ref if parent_id
           stop.place_types = place_types

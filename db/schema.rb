@@ -743,6 +743,7 @@ ActiveRecord::Schema.define(version: 2021_12_17_073653) do
 
   create_table "macro_list_runs", force: :cascade do |t|
     t.bigint "workbench_id"
+    t.bigint "referential_id"
     t.string "status"
     t.string "error_uuid"
     t.string "creator"
@@ -750,12 +751,13 @@ ActiveRecord::Schema.define(version: 2021_12_17_073653) do
     t.datetime "ended_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["referential_id"], name: "index_macro_list_runs_on_referential_id"
     t.index ["workbench_id"], name: "index_macro_list_runs_on_workbench_id"
   end
 
   create_table "macro_lists", force: :cascade do |t|
     t.bigint "workbench_id"
-    t.text "name"
+    t.string "name"
     t.text "comments"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

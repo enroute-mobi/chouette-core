@@ -4,6 +4,7 @@ module Macro
     # Could use groups in the future
     [
       Macro::CreateCode,
+      Macro::AssociateShape,
       Macro::Dummy
     ]
   end

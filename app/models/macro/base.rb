@@ -32,6 +32,8 @@ module Macro
       store :options, coder: JSON
       # TODO Retrieve options definition from Macro class
 
+      delegate :referential, :workgroup, to: :macro_list_run
+
       # TODO Share this mechanism
       def self.method_added(method_name)
         unless @setting_callback || method_name != :run

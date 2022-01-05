@@ -298,5 +298,30 @@ RSpec.describe Search::Base do
         it { is_expected.to be_empty }
       end
     end
+
+    describe ".attribute" do
+      context "when another Order is defined" do
+        before do
+          Class.new(::Search::Order) do
+            attribute :other, default: :desc
+          end
+        end
+
+        it "defines attributes specific the Order class" do
+          order_class = Class.new(::Search::Order) do
+            attribute :dummy
+          end
+          expect(order_class.attributes).to contain_exactly(:dummy)
+        end
+
+        it "defines defaults specific the Order class" do
+          order_class = Class.new(::Search::Order) do
+            attribute :dummy, default: :desc
+          end
+          expect(order_class.defaults).to eq(dummy: :desc)
+        end
+
+      end
+    end
   end
 end

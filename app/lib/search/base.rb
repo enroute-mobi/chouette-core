@@ -166,7 +166,7 @@ module Search
 
       # Don't use attributes << name, see class_attribute documentation
       self.attributes += [ name ]
-      self.defaults[name] = default if default
+      self.defaults = defaults.merge(name => default) if default
     end
 
     ASCENDANT_VALUES = [:asc, "asc", 1].freeze

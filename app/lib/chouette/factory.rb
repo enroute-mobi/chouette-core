@@ -49,6 +49,10 @@ module Chouette
 
         end
 
+        model :code_space do
+          attribute(:short_name) { |n| "code_space_#{n}" }
+        end
+
         model :workbench do
           attribute(:name) { |n| "Workbench #{n}" }
           attribute(:organisation) { build_root_model :organisation }

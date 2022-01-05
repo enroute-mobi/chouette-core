@@ -33,11 +33,11 @@ module Macro
     class Run < Operation
       # The Workbench where macros are executed
       belongs_to :workbench, optional: false
+      delegate :workgroup, to: :workbench
 
       # The Referential where macros are executed.
       # Optional, because the user can run macros on Stop Areas for example
       belongs_to :referential, optional: true
-
 
       # The original macro list definition. This macro list can have been modified or deleted since.
       # Should only used to provide a link in the UI
@@ -47,6 +47,8 @@ module Macro
                dependent: :delete_all, foreign_key: "macro_list_run_id"
 
       def perform
+        referential.switch if referential
+
         macro_runs.each do |macro_run|
           macro_run.run
         end

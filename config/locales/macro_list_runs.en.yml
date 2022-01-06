@@ -1,0 +1,18 @@
+en:
+  activerecord:
+    models:
+      macro/list/run:
+        zero:  "Rapport de jeu d'instructions"
+        one:   "Rapport de jeu d'instruction"
+        other: "Rapports de jeux d'instructions"
+    attributes:
+      macro:
+        list:
+          run:
+            status: Status
+            creator: "Creator"
+            original_macro_list_id: "Name"
+            referential_id: "Target"
+            started_at: "Started At"
+            created_at: "Créé le"
+            updated_at: "Edité le"

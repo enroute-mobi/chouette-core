@@ -1,15 +1,13 @@
 import TomSelect from 'tom-select'
 class ConfigBuilder {
-  static call(select) {
-    const { config } = select.dataset 
-
-    const { type, ...payload } = JSON.parse(config)
+  static call(select, config) {
+    const { type, url, ...payload } = config
     
     let specificConfig
 
     switch(type) {
       case 'ajax':
-        specificConfig = ConfigBuilder.configs.ajax(select)
+        specificConfig = ConfigBuilder.configs.ajax(url, select)
         break
       case 'create':
         specificConfig = ConfigBuilder.configs.create
@@ -48,14 +46,12 @@ class ConfigBuilder {
           no_results: () => null
         }
       },
-      ajax(select) {
+      ajax(url, select) {
         return {
           preload: true,
           openOnFocus: true,
           load: (query, callback) => {
-            const { url } = select.dataset
-
-            fetch(`${url}?q=${encodeURIComponent(query)}`)
+            fetch(`${select.dataset.url || url}?q=${encodeURIComponent(query)}`)
               .then(res => res.json().then(callback))
               .catch(() => callback())
           },
@@ -68,7 +64,11 @@ class ConfigBuilder {
 window.initTomSelect = id => {
   const select = document.getElementById(id)
 
+  const config = JSON.parse(select.dataset.config)
+
   if (!Boolean(select.tomselect)) { // if Tom Select has already been initialized on input it raises an error
-    new TomSelect(select, ConfigBuilder.call(select))
+    const tomSelect = new TomSelect(select, ConfigBuilder.call(select, config))
+
+    config.lock && tomSelect.lock()
   }
 }

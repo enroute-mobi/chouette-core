@@ -23,6 +23,10 @@ class AutocompleteController < ChouetteController
     @shapes ||= shape_referential.shapes.by_text(text)
   end
 
+  def macro_lists
+    @macro_lists ||= workbench.macro_lists.by_text(text)
+  end
+
   ##################
   # StopArea scope #
   ##################

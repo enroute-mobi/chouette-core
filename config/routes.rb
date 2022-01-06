@@ -43,6 +43,7 @@ ChouetteIhm::Application.routes.draw do
       get :stop_areas, on: :collection, defaults: { format: 'json' }
       get :parent_stop_areas, on: :collection, defaults: { format: 'json' }
       get :stop_area_providers, on: :collection, defaults: { format: 'json' }
+      get :macro_lists, on: :collection, defaults: { format: 'json' }
     end
 
     resources :compliance_check_sets, only: [:index, :show] do
@@ -63,7 +64,11 @@ ChouetteIhm::Application.routes.draw do
 
     resources :referentials, only: %w(new create index)
     resources :notification_rules
-    resources :macro_lists
+    resources :macro_lists do
+      resources :macro_list_runs, only: %w(new create)
+    end
+
+    resources :macro_list_runs, only: %w(new create show index)
 
     resource :stop_area_referential, :only => [:show, :edit, :update] do
       post :sync, on: :member

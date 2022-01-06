@@ -6,15 +6,18 @@ module Macro
     validates :name, presence: true
 
     has_many :macros, -> { order(position: :asc) }, class_name: "Macro::Base", dependent: :delete_all, foreign_key: "macro_list_id", inverse_of: :macro_list
+    has_many :macro_list_runs, class_name: 'Macro::List::Run', foreign_key: :original_macro_list_id
 
     accepts_nested_attributes_for :macros, allow_destroy: true, reject_if: :all_blank
+
+    scope :by_text, ->(text) { text.blank? ? all : where('lower(name) LIKE :t', t: "%#{text.downcase}%") } 
 
     def self.policy_class
       MacroListPolicy
     end
 
     def build_run(attributes = {})
-      attributes = attributes.reverse_merge(workbench: workbench)
+      attributes = attributes.reverse_merge(workbench: workbench, original_macro_list_id: self.id)
 
       Run.new(attributes).tap do |run|
         macros.each do |macro|
@@ -41,18 +44,22 @@ module Macro
 
       # The original macro list definition. This macro list can have been modified or deleted since.
       # Should only used to provide a link in the UI
-      belongs_to :original_macro_list, optional: true
+      belongs_to :original_macro_list, optional: true, foreign_key: :original_macro_list_id, class_name: 'Macro::List'
 
       has_many :macro_runs, -> { order(position: :asc) }, class_name: "Macro::Base::Run",
                dependent: :delete_all, foreign_key: "macro_list_run_id"
 
+      def self.policy_class
+        MacroListRunPolicy
+      end
+
       def perform
         referential.switch if referential
 
-        macro_runs.each do |macro_run|
-          macro_run.run
-        end
+        macro_runs.each(&:run)
       end
+
+      after_create :enqueue
     end
   end
 end

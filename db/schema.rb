@@ -743,6 +743,7 @@ ActiveRecord::Schema.define(version: 2021_12_17_073653) do
 
   create_table "macro_list_runs", force: :cascade do |t|
     t.bigint "workbench_id"
+    t.bigint "original_macro_list_id"
     t.bigint "referential_id"
     t.string "status"
     t.string "error_uuid"
@@ -751,6 +752,7 @@ ActiveRecord::Schema.define(version: 2021_12_17_073653) do
     t.datetime "ended_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["original_macro_list_id"], name: "index_macro_list_runs_on_original_macro_list_id"
     t.index ["referential_id"], name: "index_macro_list_runs_on_referential_id"
     t.index ["workbench_id"], name: "index_macro_list_runs_on_workbench_id"
   end
@@ -1220,6 +1222,7 @@ ActiveRecord::Schema.define(version: 2021_12_17_073653) do
     t.datetime "updated_at"
     t.jsonb "metadata", default: {}
     t.index ["objectid"], name: "stop_points_objectid_key", unique: true
+    t.index ["route_id", "position"], name: "index_stop_points_on_route_id_and_position", unique: true
     t.index ["route_id"], name: "index_stop_points_on_route_id"
   end
 

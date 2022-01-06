@@ -28,6 +28,7 @@ class Permission
         entrances
         merges
         macro_lists
+        macro_list_runs
         publication_api_keys
         publication_apis
         publication_setups

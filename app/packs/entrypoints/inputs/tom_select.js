@@ -1,9 +1,7 @@
 import TomSelect from 'tom-select'
 class ConfigBuilder {
-  static call(select) {
-    const { config } = select.dataset 
-
-    const { type, url, ...payload } = JSON.parse(config)
+  static call(select, config) {
+    const { type, url, ...payload } = config
     
     let specificConfig
 
@@ -65,7 +63,11 @@ class ConfigBuilder {
 window.initTomSelect = id => {
   const select = document.getElementById(id)
 
+  const config = JSON.parse(select.dataset.config)
+
   if (!Boolean(select.tomselect)) { // if Tom Select has already been initialized on input it raises an error
-    new TomSelect(select, ConfigBuilder.call(select))
+    const tomSelect = new TomSelect(select, ConfigBuilder.call(select, config))
+
+    config.lock && tomSelect.lock()
   }
 }

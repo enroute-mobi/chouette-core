@@ -16,4 +16,8 @@ class MacroListPolicy < ApplicationPolicy
   def update?
     user.has_permission?('macro_lists.update')
   end
+
+  def execute?
+     user.has_permission?('macro_list_runs.create')
+  end
 end

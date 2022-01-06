@@ -3,7 +3,7 @@ module NotifiableSupport
 
   included do
     extend Enumerize
-    enumerize :notification_target, in: %w[none user workbench], default: :user
+    enumerize :notification_target, in: %w[none user workbench], default: :none
     belongs_to :user
   end
 
@@ -13,32 +13,14 @@ module NotifiableSupport
     end
   end
 
-  def notified_recipients?
-    notified_recipients_at.present?
-  end
-
-  def notify_recipients!
-    update_column :notified_recipients_at, Time.now
-  end
-
-  def workbench_for_notifications
-    workbench
-  end
-
-  def workgroup_for_notifications
-    workgroup
-  end
-
-  def notification_users
+  def notification_recipients
     case notification_target.to_s
-      when 'none', '' then []
-      when 'user' then [user]
-      when 'workbench' then workbench_for_notifications.users
-      when 'workgroup' then workgroup_for_notifications.workbenches.map(&:users)
-    end.compact.flatten
-  end
-
-  def has_notification_recipients?
-    notification_target.present? && notification_target.to_s != 'none'
+    when 'user'
+      [ user&.email ].compact
+    when 'workbench'
+      workbench.users.pluck(:email)
+    else
+      []
+    end
   end
 end

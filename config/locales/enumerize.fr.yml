@@ -8,7 +8,8 @@ fr:
     notification_rule:
       notification_type:
         hole_sentinel: Trou d'offre
-        merge: Aggrégation
+        merge: Finalisation
+        aggregate: Agrégation
         import: Import
       operation_statuses:
         all: Tous
@@ -19,7 +20,7 @@ fr:
         block: Bloque
         notify: Notifie
       target_type:
-        user: Utilisateurs selectionnes
+        user: Utilisateurs sélectionnés
         workbench:  Tous les utilisateurs de l'espace de travail
         external_email: Utilisateur externe
     notification_target:

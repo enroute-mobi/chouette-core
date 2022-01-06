@@ -17,6 +17,10 @@ class Import::Base < ApplicationModel
     where('started_at BETWEEN :begin AND :end', begin: start_date, end: end_date)
   end
 
+  def self.mailer_name
+    'ImportMailer'
+  end
+
   def file_extension_whitelist
     %w(zip)
   end

@@ -1,6 +1,5 @@
 class UpdateNotificationRules < ActiveRecord::Migration[5.2]
-
-  def change
+  def up
     on_public_schema_only do
       change_table(:notification_rules) do |t|
         t.column(:user_ids, :bigint, array: true, default: [])
@@ -11,28 +10,18 @@ class UpdateNotificationRules < ActiveRecord::Migration[5.2]
         t.column(:rule_type, :string)
         t.column(:operation_statuses, :string, array: true, default: [])
         t.index(:workbench_id)
-  
-        reversible do |dir|
-          NotificationRule.find_each do |nf|
-            dir.up do
-              nf.assign_attributes(
-                priority: 10,
-                target_type: 'workbench',
-                rule_type: 'block',
-                line_ids: [nf.line_id]
-              )
-            end
-          
-            dir.down do
-              nf.assign_attributes(line_id: nf.line_ids.first)
-            end
-
-            nf.save
-          end
-        end
-
-        revert { t.column(:line_id, :bigint) }
       end
+
+      NotificationRule.reset_column_information
+      # Prevent loading models
+      NotificationRule.update_all(
+        priority: 10,
+        target_type: 'workbench',
+        rule_type: 'block'
+      )
+      NotificationRule.update_all('line_ids = ARRAY[line_id]')
+
+      remove_column :notification_rules, :line_id
     end
   end
 end

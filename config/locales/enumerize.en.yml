@@ -9,9 +9,10 @@ en:
       notification_type:
         hole_sentinel: Hole Sentinel
         merge: Merge
+        aggregate: Aggregate
         import: Import
       operation_statuses:
-        all: all
+        all: All
         successful: Success
         warning: Warning
         failed: Error

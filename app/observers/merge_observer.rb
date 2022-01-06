@@ -1,2 +1,0 @@
-class MergeObserver < NotifiableOperationObserver
-end

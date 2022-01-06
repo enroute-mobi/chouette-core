@@ -1,31 +1,23 @@
 class NotifiableOperationObserver < ActiveRecord::Observer
-  def mailer_name(model)
-    "#{model.class.name}Mailer"
-  end
+  observe Export::Gtfs, Export::Netex, Export::NetexGeneric, Import::Workbench, Aggregate, NightlyAggregate, Merge, ComplianceCheckSet
 
-  def mailer(model)
-    mailer_name(model).constantize
-  end
+  def after_update(operation)
+    begin
+      return unless email_sendable_for?(operation)
 
-  def after_update(model)
-    return unless email_sendable_for?(model)
+      workbench = operation.try(:workbench) || operation.try(:workbench_for_notifications)
+      return unless workbench
 
-    line_ids = begin
-      model.line_ids
-    rescue
-      []
-    end
-
-    NotificationCenter::NotifyUsers.new(model, line_ids).call do |recipients|
-      mailer(model).finished(model.id, recipients, model.status).deliver_later
-
-      model.update_column(:notified_recipients_at, Time.now)
+      workbench.notification_center.notify(operation)
+    rescue => e
+      Chouette::Safe.capture "Notification processing failed for #{operation.class}##{operation.id}", e
     end
   end
 
   private
 
-  def email_sendable_for?(model)
-    model.class.finished_statuses.include?(model.status) && model.notified_recipients_at.blank? && model.has_notification_recipients?
+  def email_sendable_for?(operation)
+    return false if operation.is_a?(ComplianceCheckSet) && operation.context != 'manual'
+    operation.class.finished_statuses.include?(operation.status)
   end
 end

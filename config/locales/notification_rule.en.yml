@@ -29,12 +29,13 @@ en:
     attributes:
       notification_rule:
         period: Period
-        period_start: Suspension start date
-        period_end: Suspension end date
-        notification_type: Notification types
+        period_start: Start date
+        period_end: End date
+        notification_type: Notification type
         line_ids: Associated lines
+        user_ids: Users
         name: "%{notification_type} from %{from} to %{to}"
         priority: Priority
         target_type: Target type
-        rule_type: Ru;e type
+        rule_type: Rule type
         operation_statuses: Operation Statuses

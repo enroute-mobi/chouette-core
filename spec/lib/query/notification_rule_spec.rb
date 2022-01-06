@@ -16,15 +16,15 @@ RSpec.describe Query::NotificationRule do
 			end
 
 			workbench :period do
-				notification_rule :in_period, period: Range.new(Date.today - 1.day, Date.today + 1.day)
-				notification_rule :out_of_period, period: Range.new(Date.today - 10.days, Date.today - 5.days)
+				notification_rule :in_period, period: Range.new(Time.zone.today - 1.day, Time.zone.today + 1.day)
+				notification_rule :out_of_period, period: Range.new(Time.zone.today - 10.days, Time.zone.today - 5.days)
 			end
 
 			workbench :notification_type do
 				notification_rule :hole_sentinel, notification_type: 'hole_sentinel'
 				notification_rule :import, notification_type: 'import'
 			end
-	
+
 			workbench :rule_type do
 				notification_rule :block, rule_type: 'block'
 				notification_rule :notify, rule_type: 'notify'
@@ -68,7 +68,7 @@ RSpec.describe Query::NotificationRule do
 				nf.update_columns(user_ids: [context.user(:last).id])
         nf.reload
 			end
-	
+
 			it 'should return notification rule with user target type' do
 				scope = query.email('test').scope
 				expect(scope).to match_array(expected_scope)
@@ -90,7 +90,7 @@ RSpec.describe Query::NotificationRule do
     let(:expected_scope) { context.notification_rules(:in_period) }
 
     it 'should return the notification rule with the overlapping period' do
-      scope = query.period(Date.today..Date.today).scope
+      scope = query.in_period(Time.zone.today..Time.zone.today).scope
 			expect(scope).to match_array(expected_scope)
     end
   end
@@ -101,7 +101,7 @@ RSpec.describe Query::NotificationRule do
 
     it 'should return the notification type with the hole_sentinel notification_type' do
       scope = query.notification_type(['hole_sentinel']).scope
-      expect(scope).to eq(expected_scope)
+      expect(scope).to match_array(expected_scope)
     end
   end
 
@@ -111,7 +111,7 @@ RSpec.describe Query::NotificationRule do
 
     it 'should return the notification type with the block rule_type' do
       scope = query.rule_type(['block']).scope
-      expect(scope).to eq(expected_scope)
+      expect(scope).to match_array(expected_scope)
     end
   end
 
@@ -127,9 +127,8 @@ RSpec.describe Query::NotificationRule do
 
     it 'should return the notification type that does not have any operation_statuses' do
       scope = query.operation_statuses(['warning', 'failed']).scope
-      expect(scope).to eq(expected_scope)
+      expect(scope).to match_array(expected_scope)
     end
-	
   end
 
   describe '#line_ids' do
@@ -143,7 +142,7 @@ RSpec.describe Query::NotificationRule do
 
     it 'should return the notification type with line_ids <=> [1]' do
       scope = query.line_ids([1]).scope
-      expect(scope).to eq(expected_scope)
+      expect(scope).to match_array(expected_scope)
     end
   end
 end

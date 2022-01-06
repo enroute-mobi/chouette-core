@@ -33,6 +33,7 @@ fr:
         period_end: Fin
         notification_type: Type de notification
         line_ids: Lignes associées
+        user_ids: Utilisateur(s)
         name: "%{notification_type} du %{from} au %{to}"
         priority: Priorité
         target_type: Destinataire(s) des notifications

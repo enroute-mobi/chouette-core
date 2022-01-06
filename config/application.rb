@@ -88,7 +88,7 @@ module ChouetteIhm
     # Configure Browserify to use babelify to compile ES6
     # config.browserify_rails.commandline_options = "-t [ babelify --presets [ react es2015 ] ]"
 
-    config.active_record.observers = [:route_observer, :calendar_observer, :import_observer, :export_observer, :compliance_check_set_observer, :merge_observer, :aggregate_observer]
+    config.active_record.observers = [:route_observer, :calendar_observer, :notifiable_operation_observer]
 
     config.active_job.queue_adapter = :delayed_job
 

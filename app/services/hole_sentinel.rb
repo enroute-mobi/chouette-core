@@ -7,7 +7,7 @@ class HoleSentinel
     @workbench = workbench
   end
 
-  alias_method :workbench_for_notifications, :workbench
+  alias workbench_for_notifications workbench
 
   def incoming_holes
     holes = {}
@@ -27,8 +27,15 @@ class HoleSentinel
         # then we check that we have N consecutive 'no circulation' days
         next unless line_holes.offset(min_hole_size).first&.date == line_holes.first.date + min_hole_size
 
+        blocked_for_everyone = !workbench.notification_center.has_recipients?(
+            :hole_sentinel,
+            base_recipients: base_recipients,
+            line_ids: [line.id],
+            period: line_holes.first.date..line_holes.last.date,
+        )
+
         # then we check if there is any notification rule covering the hole
-        next unless @workbench.notification_rules.covering(line_holes.first.date..line_holes.last.date).empty?
+        next if blocked_for_everyone
 
         holes[line.id] = line_holes.first.date
       end
@@ -36,20 +43,17 @@ class HoleSentinel
     holes
   end
 
-  def notification_users
-    workbench.users
-  end
-
-  def status
-    'successful'
+  def base_recipients
+    @base_recipients ||= workbench.organisation.users.pluck(:email)
   end
 
   def watch!
     holes = incoming_holes
     return unless holes.present?
 
-    NotificationCenter::NotifyUsers.new(self, holes.keys).call do |recipients|
-      SentinelMailer.notify_incoming_holes(recipients, referential).deliver_now
+    workbench.notification_center.recipients(:hole_sentinel, line_ids: holes.keys, base_recipients: base_recipients).each do |recipient|
+      Rails.logger.info "Notify #{recipient} for Hole Sentinel on Workbench##{workbench.id}"
+      SentinelMailer.notify_incoming_holes(recipient, referential).deliver_now
     end
   end
 

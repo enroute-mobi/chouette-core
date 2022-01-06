@@ -7,19 +7,17 @@ module Query
     attr_reader :scope
 
     def where(raw_value, predicate, *columns)
-      return self if raw_value.blank?
+      change_scope(if: raw_value.present?) do |scope|
+        value = serialize_value(raw_value, predicate)
+			  get_clause = Proc.new { |c| scope.arel_table[c.to_sym].send(predicate, value) }
 
-      value = serialize_value(raw_value, predicate)
-			get_clause = Proc.new { |c| scope.arel_table[c.to_sym].send(predicate, value) }
-
-			where_clause = columns[1..]
-				.reduce(get_clause.call(columns[0])) do |clause, column|
+			  where_clause = columns[1..]
+				                 .reduce(get_clause.call(columns[0])) do |clause, column|
 					clause.or(get_clause.call(column))
 				end
 
-      self.scope = scope.where where_clause
-
-			self
+        scope.where where_clause
+      end
     end
 
     protected
@@ -32,12 +30,12 @@ module Query
 			return "%#{value}%" if predicate == :matches
 
 			value
-		end
+    end
 
-    def set_scope(value)
-      return self if value.blank?
-
-      self.scope = yield
+    def change_scope(options = {}, &block)
+      unless options.has_key?(:if) && !options[:if]
+        self.scope = block.call(scope)
+      end
 
       self
     end

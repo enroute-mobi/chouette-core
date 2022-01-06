@@ -1,14 +1,24 @@
 RSpec.describe HoleSentinel do
-  let(:referential) { create :workbench_referential }
+
+  let(:context) do
+    Chouette.create do
+      organisation :with_user do
+        user
+      end
+
+      workbench organisation: :with_user do
+        referential
+      end
+    end
+  end
+
+  let(:referential) { context.referential }
   let(:workbench) { referential.workbench }
+  let(:line) { referential.lines.first }
   let(:sentinel) { HoleSentinel.new(workbench) }
-  let(:line) { create :line, line_referential: referential.line_referential }
-  let(:line2) { create :line, line_referential: referential.line_referential }
 
   before(:each) do
     workbench.output.update current: referential
-    referential.metadatas << create(:referential_metadata, line_ids: [line.id, line2.id], periodes: [(Time.now..1.month.since)])
-    allow(referential).to receive(:notifiable_lines).and_return([line, line2])
     referential.switch
   end
 
@@ -22,7 +32,7 @@ RSpec.describe HoleSentinel do
       context 'with no hole' do
         before(:each) do
           1.upto(10).each do |i|
-            Stat::JourneyPatternCoursesByDate.create date: i.day.since.to_date, count: 1, line_id: line.id
+            referential.service_counts.create! date: i.day.since.to_date, count: 1, line_id: line.id
           end
         end
 
@@ -32,13 +42,13 @@ RSpec.describe HoleSentinel do
       context 'with a tiny hole' do
         before(:each) do
           1.upto(3).each do |i|
-            Stat::JourneyPatternCoursesByDate.create date: i.day.since.to_date, count: 1, line_id: line.id
+            referential.service_counts.create! date: i.day.since.to_date, count: 1, line_id: line.id
           end
           4.upto(5).each do |i|
-            Stat::JourneyPatternCoursesByDate.create date: i.day.since.to_date, count: 0, line_id: line.id
+            referential.service_counts.create! date: i.day.since.to_date, count: 0, line_id: line.id
           end
           6.upto(30).each do |i|
-            Stat::JourneyPatternCoursesByDate.create date: i.day.since.to_date, count: 1, line_id: line.id
+            referential.service_counts.create! date: i.day.since.to_date, count: 1, line_id: line.id
           end
         end
 
@@ -48,41 +58,35 @@ RSpec.describe HoleSentinel do
       context 'with a hole' do
         before(:each) do
           1.upto(3).each do |i|
-            Stat::JourneyPatternCoursesByDate.create date: i.day.since.to_date, count: 1, line_id: line.id
+            referential.service_counts.create! date: i.day.since.to_date, count: 1, line_id: line.id
           end
           4.upto(9).each do |i|
-            Stat::JourneyPatternCoursesByDate.create date: i.day.since.to_date, count: 0, line_id: line.id
+            referential.service_counts.create! date: i.day.since.to_date, count: 0, line_id: line.id
           end
           10.upto(30).each do |i|
-            Stat::JourneyPatternCoursesByDate.create date: i.day.since.to_date, count: 1, line_id: line.id
+            referential.service_counts.create! date: i.day.since.to_date, count: 1, line_id: line.id
           end
         end
 
         context "without notification rules" do
           it { should be_present }
-
-          it 'should have a hole for the line with the date' do
-            expect(subject[line.id]).to eq 4.days.since.to_date
-            expect(subject[line2.id]).to be_nil
-          end
         end
 
         context "with notification rules not covering all the holes" do
           before(:each) do
-            workbench.notification_rules << create(:notification_rule, workbench: workbench, line_id: line.id, period: Date.today...8.day.since.to_date)
+            workbench.notification_rules << create(:notification_rule, workbench: workbench, line_ids: [line.id], period: Time.zone.today...8.day.since.to_date)
           end
 
           it { should be_present }
 
           it 'should have a hole for the line with the date' do
             expect(subject[line.id]).to eq 4.days.since.to_date
-            expect(subject[line2.id]).to be_nil
           end
         end
 
         context "with notification rules covering all the holes" do
           before(:each) do
-            workbench.notification_rules << create(:notification_rule, workbench: workbench, line_id: line.id, period: Date.today...30.day.since.to_date)
+            workbench.notification_rules << create(:notification_rule, workbench: workbench, line_ids: [line.id], period: Time.zone.today...30.day.since.to_date)
           end
 
           it { should be_empty }
@@ -92,13 +96,13 @@ RSpec.describe HoleSentinel do
       context 'with a hole in the past' do
         before(:each) do
           -20.upto(-10).each do |i|
-            Stat::JourneyPatternCoursesByDate.create date: i.day.since.to_date, count: 1, line_id: line.id
+            referential.service_counts.create! date: i.day.since.to_date, count: 1, line_id: line.id
           end
           -9.upto(-3).each do |i|
-            Stat::JourneyPatternCoursesByDate.create date: i.day.since.to_date, count: 0, line_id: line.id
+            referential.service_counts.create! date: i.day.since.to_date, count: 0, line_id: line.id
           end
           -3.upto(30).each do |i|
-            Stat::JourneyPatternCoursesByDate.create date: i.day.since.to_date, count: 1, line_id: line.id
+            referential.service_counts.create! date: i.day.since.to_date, count: 1, line_id: line.id
           end
         end
 

@@ -9,8 +9,6 @@ module LockedReferentialToAggregateWithLog
 end
 
 class Workbench < ApplicationModel
-  DEFAULT_WORKBENCH_NAME = "Gestion de l'offre"
-
   prepend LockedReferentialToAggregateWithLog
 
   include ObjectidFormatterSupport
@@ -96,6 +94,10 @@ class Workbench < ApplicationModel
 
   def notifications_channel
     "/workbenches/#{id}"
+  end
+
+  def notification_center
+    @notification_center ||= NotificationCenter.new(self)
   end
 
   def referential_to_aggregate

@@ -1,7 +1,7 @@
 class NotificationRule < ApplicationModel
   extend Enumerize
 
-  enumerize :notification_type, in: %w(hole_sentinel import merge), default: :hole_sentinel
+  enumerize :notification_type, in: %w(import merge aggregate hole_sentinel), default: :import
   enumerize :target_type, in: %w(workbench user external_email), default: :workbench, predicates: true
   enumerize :rule_type, in: %w(block notify), default: :block
   enumerize :operation_statuses, in: %w(successful warning failed), multiple: true
@@ -11,15 +11,22 @@ class NotificationRule < ApplicationModel
   has_one :organisation, through: :workbench
 
   # Scopes
-  scope :in_periode, -> (value) { query.period(value).scope }
+  scope :in_period, -> (value) { query.in_period(value).scope }
   scope :covering, -> (daterange) { where('period @> daterange(:begin, :end)', begin: daterange.min, end: daterange.max) }
-  scope :active, -> { covering(Date.today..Date.today) }
+  scope :active, -> { covering(Time.zone.today..Time.zone.today) }
   scope :by_email, -> (value) { query.email(value).scope }
   scope :for_statuses, -> (value) { query.operation_statuses(value).scope }
   scope :for_line_ids, -> (value) { query.line_ids(value).scope }
 
-  scope :for_operation, -> (operation, line_ids) do
-    for_statuses([operation.status]).for_line_ids(line_ids).where(notification_type: operation.class.model_name.singular)
+  def self.for_operation(operation)
+    operation_scope = for_statuses([operation.status]).
+                      where(notification_type: operation.class.model_name.singular)
+
+    if operation.respond_to? :line_ids
+      operation_scope = operation_scope.for_line_ids operation.line_ids
+    end
+
+    operation_scope
   end
 
   def self.query
@@ -27,25 +34,69 @@ class NotificationRule < ApplicationModel
   end
 
   # Validations
-  validates_presence_of :workbench
-  validates_presence_of :notification_type
-  validates_presence_of :target_type
-  validates_presence_of :period
+  validates :workbench, :notification_type, :target_type, :period, presence: true
 
-  validates :priority, numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 1000 }
+  validates :priority, numericality: {
+              only_integer: true,
+              greater_than_or_equal_to: 1, less_than_or_equal_to: 1000
+            }
+  validates :user_ids, length: { minimum: 1 }, if: Proc.new { |rule| rule.target_type == 'user' }
 
-  self.inheritance_column = 'target_type'
-
-  def self.find_sti_class(target_type)
-    super("NotificationRule::#{target_type.classify}")
+  def target_class
+    "#{self.class}::Target::#{target_type.classify}".constantize
   end
 
-    def self.inherited(child)
-      child.instance_eval do
-        def model_name
-          NotificationRule.model_name
-        end
+  def target
+    @target ||= target_class.new(self)
+  end
+  delegate :recipients, to: :target
+
+  def self.recipients(initial_recipients = [])
+    all.reduce(initial_recipients) do |recipients, rule|
+			case rule.rule_type
+			when 'notify'
+          recipients | rule.recipients
+			when 'block'
+        recipients - rule.recipients
+			else
+        recipients
+			end
+		end.uniq
+  end
+
+  module Target
+    class Base
+      def initialize(notification_rule)
+        @notification_rule = notification_rule
       end
-      super
+
+      attr_reader :notification_rule
+      delegate :workbench, to: :notification_rule
+    end
+
+    class ExternalEmail < Base
+      delegate :external_email, to: :notification_rule
+
+      def recipients
+        [external_email]
+      end
+    end
+
+    class Workbench < Base
+      delegate :users, to: :workbench
+      def recipients
+        users.pluck(:email)
+      end
+    end
+
+    class User < Base
+      delegate :user_ids, to: :notification_rule
+      def users
+        workbench.users.where(id: user_ids)
+      end
+      def recipients
+        users.pluck(:email)
+      end
+    end
   end
 end

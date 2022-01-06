@@ -25,7 +25,13 @@ class NotificationRulesController < ChouetteController
 
   def show
     show! do
-      @notification_rule = @notification_rule.decorate(context: { workbench: @workbench })
+      @notification_rule = @notification_rule.decorate(context: { workbench: parent })
+    end
+  end
+
+  def edit
+    edit! do
+      @notification_rule = @notification_rule.decorate(context: { workbench: parent })
     end
   end
 

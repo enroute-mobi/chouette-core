@@ -1,7 +1,7 @@
 module Query
   class NotificationRule < Base
 		def email(value)
-			set_scope(value) do
+      change_scope(if: value.present?) do |scope|
 				scope
 					.joins(workbench: :organisation)
 					.left_joins(organisation: :users)
@@ -19,32 +19,32 @@ module Query
 			end
 		end
 
-		def period(value)
-			set_scope(value) do
-				scope.where('period::daterange && daterange(:begin, :end)', begin: value.min, end: value.max + 1.day) #Need to add one day because of PostgreSQL behaviour with daterange (exclusvive end)
+		def in_period(period)
+			change_scope(if: period.present?) do |scope|
+				scope.where('period::daterange && daterange(:begin, :end)', begin: period.min, end: period.max + 1.day) #Need to add one day because of PostgreSQL behaviour with daterange (exclusvive end)
 			end
 		end
 
 		def notification_type(value)
-			set_scope(value) do
+			change_scope(if: value.present?) do |scope|
 				scope.where('ARRAY[?]::text[] @> ARRAY[notification_rules.notification_type]::text[]', value)
 			end
 		end
 
 		def rule_type(value)
-			set_scope(value) do
+			change_scope(if: value.present?) do |scope|
 				scope.where('ARRAY[?]::text[] @> ARRAY[notification_rules.rule_type]::text[]', value)
 			end
 		end
 
 		def operation_statuses(value)
-			set_scope(value) do
+			change_scope(if: value.present?) do |scope|
 				scope.where(operation_statuses: []).or(scope.where('operation_statuses::text[] && ARRAY[?]', value))
 			end
 		end
 
 		def line_ids(value)
-			set_scope(value) do
+			change_scope(if: value.present?) do |scope|
 				scope.where(line_ids: []).or(scope.where('line_ids::integer[] && ARRAY[?]', value))
 			end
 		end

@@ -34,14 +34,18 @@ class Export::NetexGeneric < Export::Base
     profile? ? "zip" : 'xml'
   end
 
+  delegate :stop_area_referential, to: :workbench
+
   def stop_areas
-    @stop_areas ||= Chouette::StopArea.union(export_scope.stop_areas, Chouette::StopArea.all_parents(export_scope.stop_areas))
+    @stop_areas ||=
+      ::Query::StopArea.new(stop_area_referential.stop_areas).
+        self_referents_and_ancestors(export_scope.stop_areas)
   end
 
   def entrances
     # Must unscope the entrances to find entrances associated with all exported Stop Areas
     # (including parent Stop Areas)
-    Entrance.where(stop_area: stop_areas)
+    stop_area_referential.entrances.where(stop_area: stop_areas)
   end
 
   def quay_registry
@@ -181,12 +185,17 @@ class Export::NetexGeneric < Export::Base
     def netex_attributes
       {
         id: objectid,
+        derived_from_object_ref: derived_from_object_ref,
         name: name,
         public_code: public_code,
         centroid: centroid,
         raw_xml: import_xml,
         key_list: netex_alternate_identifiers
       }
+    end
+
+    def derived_from_object_ref
+      referent&.objectid
     end
 
     def netex_alternate_identifiers
@@ -234,7 +243,7 @@ class Export::NetexGeneric < Export::Base
 
     def netex_resource
       netex_resource_class.new(netex_attributes).tap do |stop|
-        unless netex_resource_class.is_a?(Netex::Quay)
+        unless stop.is_a?(Netex::Quay)
           stop.entrances = entrance_refs
           stop.parent_site_ref = parent_site_ref if parent_id
           stop.place_types = place_types
@@ -257,7 +266,7 @@ class Export::NetexGeneric < Export::Base
     delegate :stop_areas, to: :export
 
     def export!
-      stop_areas.where(area_type: 'zdep').includes(:codes).find_each do |stop_area|
+      stop_areas.where(area_type: 'zdep').includes(:codes, :parent, :referent).find_each do |stop_area|
         decorated_stop = StopDecorator.new(stop_area)
 
         netex_resource = decorated_stop.netex_resource
@@ -277,7 +286,7 @@ class Export::NetexGeneric < Export::Base
     delegate :stop_areas, to: :export
 
     def export!
-      stop_areas.where.not(area_type: 'zdep').includes(:codes, :entrances).find_each do |stop_area|
+      stop_areas.where.not(area_type: 'zdep').includes(:codes, :entrances, :parent, :referent).find_each do |stop_area|
         decorated_stop = StopDecorator.new(stop_area)
 
         stop_place = decorated_stop.netex_resource

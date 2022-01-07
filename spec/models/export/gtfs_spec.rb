@@ -136,6 +136,10 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
         before { allow(decorator).to receive(:gtfs_platform_code).and_return("dummy") }
         it { is_expected.to include(platform_code: 'dummy')}
       end
+      context "when fare_code is 'dummy'" do
+        before { stop_area.fare_code = 'dummy' }
+        it { is_expected.to include(zone_id: 'dummy')}
+      end
     end
   end
 

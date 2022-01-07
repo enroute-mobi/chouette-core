@@ -397,7 +397,7 @@ class Export::Gtfs < Export::Base
           desc: comment,
           url: url,
           timezone: (time_zone unless parent),
-          #code: TO DO
+          zone_id: fare_code,
           wheelchair_boarding: mobility_restricted_suitability ? 1 : 0,
           platform_code: gtfs_platform_code
         }

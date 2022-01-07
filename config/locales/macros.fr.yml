@@ -1,13 +1,13 @@
 fr:
   macros:
     actions:
-      duplicate: Duplicate
-      send_to_top:  Send to top
-      move_up: Move up
-      move_down: Move down
-      send_to_bottom: Send to bottom
-      delete: Delete
-      restore: Restore
+      duplicate: Dupliquer
+      send_to_top:  Envoyer au début
+      move_up: Remonter
+      move_down: Descendre
+      send_to_bottom: Envoyer vers le bas
+      delete: Supprimer
+      restore: Restaurer
   activerecord:
     models:
       macro:
@@ -20,9 +20,11 @@ fr:
         one: Dummy
     attributes:
       macro:
-        name: Name
-        target_model: Target Model
-        source_attribute: Source Attribute
-        source_pattern: Source Pattern
-        target_code_space: Target Code Space
-        target_pattern: Target Pattern
+        name: Nom
+        comments: Commentaire
+        target_model: Modèle cible
+        source_attribute: Attribut de la source
+        source_pattern: Modèle de source
+        target_code_space: Espace code cible
+        target_pattern: Modèle de cible
+        expected_result: Résultat attendu

@@ -783,11 +783,12 @@ ActiveRecord::Schema.define(version: 2021_12_17_073653) do
     t.string "type", null: false
     t.bigint "macro_list_id"
     t.integer "position", null: false
-    t.text "name"
+    t.string "name"
     t.text "comments"
     t.jsonb "options", default: {}
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["macro_list_id", "position"], name: "index_macros_on_macro_list_id_and_position", unique: true
     t.index ["macro_list_id"], name: "index_macros_on_macro_list_id"
   end
 

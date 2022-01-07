@@ -21,8 +21,10 @@ en:
     attributes:
       macro:
         name: Name
+        comments: Comments
         target_model: Target Model
         source_attribute: Source Attribute
         source_pattern: Source Pattern
         target_code_space: Target Code Space
         target_pattern: Target Pattern
+        expected_result: Expected result

@@ -30,6 +30,8 @@ class MacroListDecorator < AF83::Decorator
 
     attributes.merge!(name: macro.type) unless attributes['name'] # Set a default name
 
+    attributes.merge!(class_description: macro.class.model_name.human) # Set a default class description
+
     attributes.merge!(options: klass.options, errors: macro.errors.messages)
 
     attributes

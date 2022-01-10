@@ -72,7 +72,7 @@ class MacroListRunsController < ChouetteController
 		params
 			.require(:macro_list_run)
 			.require(:attributes)
-			.permit(:referential)
+			.permit(:referential_id)
 			.with_defaults(creator: current_user.name)
 			.to_h
 			.delete_if { |k,v| v.blank? }

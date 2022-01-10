@@ -5,6 +5,10 @@ en:
         for_boarding: "Undefined"
         for_alighting: "Undefined"
   enumerize:
+    search:
+      rule_type:
+        block: Block
+        notify: Notify
     notification_rule:
       notification_type:
         hole_sentinel: Hole Sentinel

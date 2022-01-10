@@ -39,3 +39,4 @@ en:
         target_type: Target type
         rule_type: Rule type
         operation_statuses: Operation Statuses
+        external_email: External email

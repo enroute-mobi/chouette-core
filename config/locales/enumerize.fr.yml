@@ -5,6 +5,10 @@ fr:
         for_boarding: "Non défini"
         for_alighting: "Non défini"
   enumerize:
+    search:
+      rule_type:
+        block: Bloque
+        notify: Notifie
     notification_rule:
       notification_type:
         hole_sentinel: Trou d'offre

@@ -8,7 +8,6 @@ RSpec.describe NotificationRule, type: :model do
 
   it { is_expected.to validate_presence_of(:workbench) }
   it { is_expected.to validate_presence_of(:notification_type) }
-  it { is_expected.to validate_presence_of(:period) }
   it { is_expected.to validate_numericality_of(:priority).only_integer.is_greater_than_or_equal_to(1).is_less_than_or_equal_to(1000) }
 
   it { is_expected.to enumerize(:notification_type).in(:hole_sentinel, :import, :merge, :aggregate).with_default(:import) }

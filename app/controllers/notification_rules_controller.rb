@@ -48,17 +48,21 @@ class NotificationRulesController < ChouetteController
   private
 
   def notification_rule_params
-    params.require(:notification_rule).permit(
-      :notification_type,
-      :priority,
-      :rule_type,
-      :target_type,
-      :external_email,
-      :period,
-      user_ids: [],
-      operation_statuses: [],
-      line_ids: [],
-      workbench_id: parent.id
-    ).with_defaults(workbench_id: parent.id)
+    params
+      .require(:notification_rule)
+      .permit(
+        :notification_type,
+        :priority,
+        :rule_type,
+        :target_type,
+        :external_email,
+        :period,
+        user_ids: [],
+        operation_statuses: [],
+        line_ids: [],
+        workbench_id: parent.id
+      )
+      .with_defaults(workbench_id: parent.id)
+      .delete_if { |k,v| v.blank? } # Need to remove empty string values because of period column (the pg daterange adapter try to split a non existing range)
   end
 end

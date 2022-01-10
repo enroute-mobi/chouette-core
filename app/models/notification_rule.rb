@@ -34,7 +34,7 @@ class NotificationRule < ApplicationModel
   end
 
   # Validations
-  validates :workbench, :notification_type, :target_type, :period, presence: true
+  validates :workbench, :notification_type, :target_type, presence: true
 
   validates :priority, numericality: {
               only_integer: true,

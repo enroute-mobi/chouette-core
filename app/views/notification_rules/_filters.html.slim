@@ -21,11 +21,8 @@
     .form-group
       = render 'line_ids_field', form: f
 
-  .ffg-row
     .form-group
       = render 'period_fields', form: f, is_filter: true
-
-  
 
   .actions
     = link_to t('actions.erase'), workbench_notification_rules_path(@workbench), class: 'btn btn-link'

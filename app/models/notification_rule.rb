@@ -9,6 +9,8 @@ class NotificationRule < ApplicationModel
   # Associations
   belongs_to :workbench, class_name: '::Workbench'
   has_one :organisation, through: :workbench
+  has_array_of :lines, class_name: 'Chouette::Line'
+  has_array_of :users
 
   # Scopes
   scope :in_period, -> (value) { query.in_period(value).scope }

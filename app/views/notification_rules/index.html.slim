@@ -28,12 +28,19 @@
               ),
               TableBuilderHelper::Column.new( \
                 key: :operation_statuses, \
-                attribute: :display_operation_statuses \
+                attribute: :display_operation_statuses, \
+                sortable: true \
               ),
               TableBuilderHelper::Column.new( \
                 key: :period, \
                 attribute: Proc.new {|o| t('bounding_dates', debut: l(o.period.begin), end: l(o.period.end))}, \
                 link_to: Proc.new {|o| [o.workbench, o]}, \
+                sortable: false, \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :line_ids, \
+                attribute: Proc.new {|n| n.lines.map(&:name).join(",") }, \
+                sortable: false, \
               ), \
             ],
             links: [:show],

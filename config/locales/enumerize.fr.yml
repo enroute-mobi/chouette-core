@@ -5,10 +5,6 @@ fr:
         for_boarding: "Non défini"
         for_alighting: "Non défini"
   enumerize:
-    search:
-      rule_type:
-        block: Bloque
-        notify: Notifie
     notification_rule:
       notification_type:
         hole_sentinel: Trou d'offre
@@ -20,7 +16,7 @@ fr:
         successful: Succès
         warning: Avertissement
         failed: Erreur
-      rule_type:
+      rule_type: &notification_rule_rule_type
         block: Bloque
         notify: Notifie
       target_type:
@@ -347,3 +343,5 @@ fr:
       ticket_barrier: "Portillon à ticket"
       gate: "Barrière"
       other: "Autre"
+    search:
+      rule_type: *notification_rule_rule_type

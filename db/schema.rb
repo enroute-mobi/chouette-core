@@ -1223,7 +1223,6 @@ ActiveRecord::Schema.define(version: 2021_12_17_073653) do
     t.datetime "updated_at"
     t.jsonb "metadata", default: {}
     t.index ["objectid"], name: "stop_points_objectid_key", unique: true
-    t.index ["route_id", "position"], name: "index_stop_points_on_route_id_and_position", unique: true
     t.index ["route_id"], name: "index_stop_points_on_route_id"
   end
 

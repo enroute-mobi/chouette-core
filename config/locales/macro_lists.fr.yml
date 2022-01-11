@@ -20,7 +20,7 @@ fr:
     edit:
       title: "Editer %{name}"
     index:
-      title: "Liste des Jeu d'instructions"
+      title: "Jeu d'instructions"
     form:
       sections:
         macros: "Jeu d'instructions"

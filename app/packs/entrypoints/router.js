@@ -63,6 +63,7 @@ class FileRouter {
 			
 			// Notifications Rules
 			case routeMatch('/workbenches/:workbenchId/notification_rules/new'):
+			case routeMatch('/workbenches/:workbenchId/notification_rules/:id/edit'):
 				return await import('./inputs/date_picker')
 			case routeMatch('/workbenches/:workbenchId/notification_rules'):
 				return await import('./inputs/date_picker')

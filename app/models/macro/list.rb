@@ -10,7 +10,7 @@ module Macro
 
     accepts_nested_attributes_for :macros, allow_destroy: true, reject_if: :all_blank
 
-    scope :by_text, ->(text) { text.blank? ? all : where('lower(name) LIKE :t', t: "%#{text.downcase}%") } 
+    scope :by_text, ->(text) { text.blank? ? all : where('lower(name) LIKE :t', t: "%#{text.downcase}%") }
 
     def self.policy_class
       MacroListPolicy
@@ -59,7 +59,6 @@ module Macro
         macro_runs.each(&:run)
       end
 
-      after_create :enqueue
     end
   end
 end

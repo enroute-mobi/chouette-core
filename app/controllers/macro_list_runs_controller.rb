@@ -30,7 +30,7 @@ class MacroListRunsController < ChouetteController
 		@macro_list_run = Macro::List
 			.find(params.dig(:macro_list_run, :original_macro_list_id))
 			.build_run(macro_list_run_attributes_params)
-	
+
     create! do |success, failure|
       failure.html do
         @macro_list_run = MacroListRunDecorator.decorate(@macro_list_run, context: { workbench: workbench })
@@ -38,7 +38,10 @@ class MacroListRunsController < ChouetteController
         render 'new'
       end
 
-			success.html { redirect_to workbench_macro_list_run_url(workbench, @macro_list_run) }
+			success.html do
+        @macro_list_run.enqueue
+        redirect_to workbench_macro_list_run_url(workbench, @macro_list_run)
+      end
     end
   end
 
@@ -54,7 +57,7 @@ class MacroListRunsController < ChouetteController
   private
 
   def decorate_macro_list_run
-    object = macro_list_run rescue build_resource 
+    object = macro_list_run rescue build_resource
     @macro_list_run = MacroListRunDecorator.decorate(
       object,
       context: {
@@ -70,11 +73,10 @@ class MacroListRunsController < ChouetteController
 
 	def macro_list_run_attributes_params
 		params
-			.require(:macro_list_run)
-			.require(:attributes)
-			.permit(:referential_id)
-			.with_defaults(creator: current_user.name)
-			.to_h
-			.delete_if { |k,v| v.blank? }
+    .require(:macro_list_run)
+      .permit(:name, {attributes: [:referential_id] })
+      .with_defaults(creator: current_user.name)
+      .to_h
+      .delete_if { |k,v| v.blank? }
 	end
 end

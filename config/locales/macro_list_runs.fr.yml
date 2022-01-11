@@ -3,7 +3,9 @@ fr:
     index:
       title: Rapports de Jeu d'instructions
     show:
-      title: "%{referential}"
+      title: "%{name}"
+    new:
+      title: "Créer un rapport"
     actions:
       create: "Créer un rapport"
       show: "Afficher ce Rapport de Jeu d'instructions"
@@ -11,15 +13,16 @@ fr:
       destroy: "Supprimer ce Rapport de Jeu d'instructions"
       destroy_confirm: "Etes vous sûr de supprimer ce Rapport de Jeu d'instructions ?"
   macro_list_run:
-    new: "Créer un rapport"
+    new:
+      title: "Créer un rapport"
     index:
       title: "Rapports de Jeu d'instructions"
     show:
-      title: "%{referential}"
+      title: "%{name}"
     actions:
       create: "Créer un rapport"
       new: "Executer ce Jeu d'instructions"
-      show: "Rapport de Jeu d'instructions"
+      show: "Voir les Jeu d'instructions"
     search_no_results: "Aucun Rapport de Jeu d'instructions ne correspond à votre recherche"
   activerecord:
     models:

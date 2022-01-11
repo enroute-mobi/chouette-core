@@ -51,8 +51,8 @@ crumb :macro_list_runs do |workbench|
 end
 
 crumb :macro_list_run do |workbench, macro_list_run|
-  link I18n.t('macro_list_run.show.title'), workbench_macro_list_run_path(workbench, macro_list_run)
-  parent :macro_lists, workbench
+  link breadcrumb_name(macro_list_run), workbench_macro_list_run_path(workbench, macro_list_run)
+  parent :macro_list_runs, workbench
 end
 
 crumb :merge do |merge|

@@ -1,18 +1,45 @@
 en:
+  macro/list/runs:
+    index:
+      title: Macro Runs Reports
+    show:
+      title: "%{referential}"
+    actions:
+      create: "Create a report"
+      show: "Show this report"
+      new: "Execute this report"
+      destroy: "Delete this report"
+      destroy_confirm: "Are you sur to delete this report ?"
+  macro_list_run:
+    new: "Create a report"
+    index:
+      title: "Macro Runs Reports"
+    show:
+      title: "%{referential}"
+    actions:
+      create: "Create a report"
+      new: "Execute this report"
+      show: "Macro Runs Reports"
+    search_no_results: "No Macro Runs Reports matching your search"
   activerecord:
     models:
       macro/list/run:
-        zero:  "Rapport de jeu d'instructions"
-        one:   "Rapport de jeu d'instruction"
-        other: "Rapports de jeux d'instructions"
+        zero:  "Macro Runs Reports"
+        one:   "Macro Runs Report"
+        other: "Macro Runs Reports"
     attributes:
       macro:
         list:
           run:
-            status: Status
+            status: Statut
+            name: Name
+            created_by: Create by
             creator: "Creator"
             original_macro_list_id: "Name"
             referential_id: "Target"
-            started_at: "Started At"
-            created_at: "Créé le"
-            updated_at: "Edité le"
+            started_at: "Started at"
+            duration: Duration
+            created_at: "Created at"
+            updated_at: "Updated at"
+            creator_id: "Create by"
+            ended_at: Ended at

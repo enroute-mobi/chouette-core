@@ -1,4 +1,26 @@
 fr:
+  macro/list/runs:
+    index:
+      title: Rapports de Jeu d'instructions
+    show:
+      title: "%{referential}"
+    actions:
+      create: "Créer un rapport"
+      show: "Afficher ce Rapport de Jeu d'instructions"
+      new: "Executer ce Jeu d'instructions"
+      destroy: "Supprimer ce Rapport de Jeu d'instructions"
+      destroy_confirm: "Etes vous sûr de supprimer ce Rapport de Jeu d'instructions ?"
+  macro_list_run:
+    new: "Créer un rapport"
+    index:
+      title: "Rapports de Jeu d'instructions"
+    show:
+      title: "%{referential}"
+    actions:
+      create: "Créer un rapport"
+      new: "Executer ce Jeu d'instructions"
+      show: "Rapport de Jeu d'instructions"
+    search_no_results: "Aucun Rapport de Jeu d'instructions ne correspond à votre recherche"
   activerecord:
     models:
       macro/list/run:
@@ -11,13 +33,13 @@ fr:
           run:
             status: Statut
             name: Nom
-            created_by: Créé par
+            created_by: Créer par
             creator: "Creator"
             original_macro_list_id: "Name"
             referential_id: "Target"
             started_at: "Date et heure de lancement"
-            duration: Duréé
-            created_at: "Créé le"
+            duration: Durée
+            created_at: "Créer le"
             updated_at: "Edité le"
-            creator_id: "Créé par"
+            creator_id: "Créer par"
             ended_at: Fini le

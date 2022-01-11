@@ -43,16 +43,22 @@ class NotificationRuleDecorator < AF83::Decorator
   end
 
   define_instance_method :display_period do
-    return '-' unless object.period
+    return 'always'.t unless object.period
 
     I18n.t('bounding_dates', debut: l(object.period.min), end: l(object.period.max))
   end
 
+  define_instance_method :display_lines do
+    return 'all.feminine'.t unless object.line_ids.any?
+
+    object.lines.map(&:name).join(",")
+  end
+
   define_instance_method :display_operation_statuses do
     case object.operation_statuses.size
-    when 0, 3 then I18n.t("enumerize.notification_rule.operation_statuses.all")
+    when 0, 3 then 'all.masculine'.t
     else
-      object.operation_statuses.map { |o| I18n.t("enumerize.notification_rule.operation_statuses.#{o}") }.join(', ')
+      object.operation_statuses.texts.join(', ')
     end
   end
 end

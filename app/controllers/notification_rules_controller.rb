@@ -63,6 +63,6 @@ class NotificationRulesController < ChouetteController
         workbench_id: parent.id
       )
       .with_defaults(workbench_id: parent.id)
-      .delete_if { |k,v| v.blank? } # Need to remove empty string values because of period column (the pg daterange adapter try to split a non existing range)
+      .transform_values(&:presence) # Need to remove empty string values because of period column (the pg daterange adapter try to split a non existing range)
   end
 end

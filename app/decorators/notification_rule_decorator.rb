@@ -14,7 +14,7 @@ class NotificationRuleDecorator < AF83::Decorator
     instance_decorator.edit_action_link do |l|
       l.href { h.edit_workbench_notification_rule_path(object.workbench, object) }
     end
-  
+
     instance_decorator.destroy_action_link do |l|
       l.href { h.workbench_notification_rule_path(object.workbench, object) }
     end
@@ -34,7 +34,7 @@ class NotificationRuleDecorator < AF83::Decorator
 
   define_instance_method :line_items do
     lines = context[:workbench].lines.where(id: object.line_ids)
-  
+
     Rabl::Renderer.new('autocomplete/lines', lines, format: :hash, view_path: 'app/views').render
   end
 
@@ -51,7 +51,7 @@ class NotificationRuleDecorator < AF83::Decorator
   define_instance_method :display_lines do
     return 'all.feminine'.t unless object.line_ids.any?
 
-    object.lines.map(&:name).join(",")
+    object.lines.map(&:name).join(", ")
   end
 
   define_instance_method :display_operation_statuses do

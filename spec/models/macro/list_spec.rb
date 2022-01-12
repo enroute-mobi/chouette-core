@@ -3,6 +3,11 @@ RSpec.describe Macro::List do
     Chouette.create { workbench }
   end
 
+  describe ".table_name" do
+    subject { described_class.table_name }
+    it { is_expected.to eq("public.macro_lists") }
+  end
+
   subject(:macro_list) do
     context.workbench.macro_lists.create! name: "Test"
   end
@@ -37,11 +42,4 @@ RSpec.describe Macro::List do
       expect { macro_list.destroy }.to change { Macro::Base.count }.by(-3)
     end
   end
-end
-
-RSpec.describe Macro::Base do
-
-  subject { Macro::Dummy.new }
-  it { is_expected.to belong_to(:macro_list).required(true) }
-
 end

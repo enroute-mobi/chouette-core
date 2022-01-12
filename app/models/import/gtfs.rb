@@ -254,6 +254,7 @@ class Import::Gtfs < Import::Base
         stop_area.deleted_at = nil
         stop_area.confirmed_at ||= Time.now
         stop_area.comment = stop.desc
+        stop_area.fare_code = stop.zone_id if stop.zone_id.present?
         stop_area.mobility_restricted_suitability = stop.wheelchair_boarding == '1'
         stop_area.codes.find_or_initialize_by(code_space: public_code_space).tap do |code|
           code.value = stop.code

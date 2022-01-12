@@ -16,11 +16,7 @@ class RoutesController < ChouetteController
   def index
     index! do |format|
       format.html { redirect_to referential_line_path(@referential, @line) }
-
-      format.geojson do
-        @routes = collection.with_wayback(:outbound)
-        render 'routes/index.geo'
-      end
+      format.geojson { render 'routes/index.geo' }
     end
   end
 

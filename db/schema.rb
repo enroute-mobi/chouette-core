@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_12_17_073653) do
+ActiveRecord::Schema.define(version: 2022_01_07_120759) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -1172,7 +1172,7 @@ ActiveRecord::Schema.define(version: 2021_12_17_073653) do
     t.string "area_type"
     t.string "registration_number"
     t.string "nearest_topic_name"
-    t.integer "fare_code"
+    t.string "fare_code"
     t.decimal "longitude", precision: 19, scale: 16
     t.decimal "latitude", precision: 19, scale: 16
     t.string "long_lat_type"

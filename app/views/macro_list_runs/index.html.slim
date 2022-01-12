@@ -17,7 +17,7 @@
               ), \
               TableBuilderHelper::Column.new( \
                 key: :name, \
-                attribute: Proc.new { |m| m.original_macro_list.name }, \
+                attribute: :name, \
                 sortable: false, \
                 link_to: lambda do |macro_list_run| \
                 workbench_macro_list_run_path( \

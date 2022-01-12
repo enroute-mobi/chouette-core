@@ -3,7 +3,7 @@ en:
     index:
       title: Macro Runs Reports
     show:
-      title: "%{referential}"
+      title: "%{name}"
     actions:
       create: "Create a report"
       show: "Show this report"

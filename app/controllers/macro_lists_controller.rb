@@ -78,7 +78,7 @@ class MacroListsController < ChouetteController
   # end
 
   def macro_list_params
-    macro_options = %i[id name position type macro_list_id _destroy]
+    macro_options = %i[id name position type comments macro_list_id _destroy]
 
     macro_options += Macro::Base.descendants.map do |t|
       t.options.map do |key, value|

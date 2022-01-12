@@ -21,7 +21,17 @@ class TomSelectInput < SimpleForm::Inputs::CollectionSelectInput
     template.content_tag(:div) do
       template.concat select
 
-      template.concat template.javascript_tag("initTomSelect('#{id}')", defer: true)
+      template.concat template.javascript_tag(
+        %{
+          var waitFor = name => {
+            setTimeout(() => {
+              window.hasOwnProperty(name) ? window[name]('#{id}') : waitFor(name)
+            }, 100)
+          }
+          waitFor('initTomSelect')
+        },
+        defer: true
+      )
     end
   end
 end

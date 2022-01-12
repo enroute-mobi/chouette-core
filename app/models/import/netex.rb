@@ -37,6 +37,10 @@ class Import::Netex < Import::Base
     super
   end
 
+  def line_ids
+    referential_metadata.line_ids
+  end
+
   private
 
   def update_referential

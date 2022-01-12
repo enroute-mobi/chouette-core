@@ -13,6 +13,10 @@ class Export::Base < ApplicationModel
   include NotifiableSupport
   include PurgeableResource
 
+  def self.mailer_name
+    'ExportMailer'
+  end
+
   scope :having_status, ->(statuses) { where(status: statuses ) }
   scope :started_at_after, ->(date) do
     where('started_at > ?', date)

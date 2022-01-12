@@ -5,6 +5,24 @@ fr:
         for_boarding: "Non défini"
         for_alighting: "Non défini"
   enumerize:
+    notification_rule:
+      notification_type:
+        hole_sentinel: Trou d'offre
+        merge: Finalisation
+        aggregate: Agrégation
+        import: Import
+      operation_statuses:
+        all: Tous
+        successful: Succès
+        warning: Avertissement
+        failed: Erreur
+      rule_type: &notification_rule_rule_type
+        block: Bloque
+        notify: Notifie
+      target_type:
+        user: Utilisateurs sélectionnés
+        workbench:  Tous les utilisateurs de l'espace de travail
+        external_email: Utilisateur externe
     notification_target:
       user:       Moi uniquement
       workbench:  Tous les utilisateurs de l'espace de travail
@@ -325,3 +343,5 @@ fr:
       ticket_barrier: "Portillon à ticket"
       gate: "Barrière"
       other: "Autre"
+    search:
+      rule_type: *notification_rule_rule_type

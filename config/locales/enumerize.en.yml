@@ -5,6 +5,24 @@ en:
         for_boarding: "Undefined"
         for_alighting: "Undefined"
   enumerize:
+    notification_rule:
+      notification_type:
+        hole_sentinel: Hole Sentinel
+        merge: Merge
+        aggregate: Aggregate
+        import: Import
+      operation_statuses:
+        all: All
+        successful: Success
+        warning: Warning
+        failed: Error
+      rule_type: &notification_rule_rule_type
+        block: Block
+        notify: Notify
+      target_type:
+        user: Selected users
+        workbench:  All workbench's users
+        external_email: External enail
     notification_target:
       user:       Only Me
       workbench:  All workbench's users
@@ -325,3 +343,5 @@ en:
       ticket_barrier: "Ticket Barrier"
       gate: "Gate"
       other: "Other"
+    search:
+      rule_type: *notification_rule_rule_type

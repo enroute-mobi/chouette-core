@@ -1,38 +1,42 @@
 fr:
   notification_rules:
-    search_no_results: "Aucune désactivation de notification ne correspond à votre recherche"
+    search_no_results: "Aucune règle de notification ne correspond à votre recherche"
     actions:
       index: Centre de notifications
-      new: Ajouter une désactivation
-      destroy: Supprimer la désactivation de notification
-      destroy_confirm: Êtes-vous sûr de vouloir supprimer la désactivation de notification ?
+      new: Ajouter une règle de notification
+      destroy: Supprimer la règle de notification
+      destroy_confirm: Êtes-vous sûr de vouloir supprimer la règle de notification ?
     index:
       title: Centre de notifications
     show:
-      title: Désactivation de notification
+      title: Règle de notification
     edit: &notification_rule_edit
-      title: Editer la désactivation de notification
+      title: Editer la règle de notification
     update:
       <<: *notification_rule_edit
     new: &notification_rule_new
-      edit: Ajouter une désactivation
+      edit: Ajouter une règle de notification
     create:
       <<: *notification_rule_new
-    notification_types:
-      hole_sentinel: Trou d'offre
     errors:
       period: "Invalid period"
   activerecord:
     models:
       notification_rule:
-        zero: "désactivation de notification"
-        one: "désactivation de notification"
-        other: "désactivations de notification"
+        zero: "règle de notification"
+        one: "règle de notification"
+        other: "règles de notification"
     attributes:
       notification_rule:
-        period: Période de désactivation
-        period_start: Début de désactivation
-        period_end: Fin de désactivation
+        period: Période
+        period_start: Début
+        period_end: Fin
         notification_type: Type de notification
-        line_id: Ligne associée
+        line_ids: Lignes associées
+        user_ids: Utilisateur(s)
         name: "%{notification_type} du %{from} au %{to}"
+        priority: Priorité
+        target_type: Destinataire(s) des notifications
+        rule_type: Action
+        operation_statuses: Statut(s) des opérations
+        external_email: Email externe

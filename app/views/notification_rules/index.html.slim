@@ -2,10 +2,9 @@
 
 .page_content
   .container-fluid
-    - if params[:q].present? or @notification_rules.any?
-        .row
-          .col-lg-12
-            = render 'filters'
+    .row
+      .col-lg-12
+        = render 'filters'
 
     - if @notification_rules.any?
       .row
@@ -14,17 +13,33 @@
             [ \
               TableBuilderHelper::Column.new( \
                 key: :notification_type, \
-                attribute: Proc.new {|o| "notification_rules.notification_types.#{o.notification_type}".t}, \
+                attribute: Proc.new {|o| "enumerize.notification_rule.notification_type.#{o.notification_type}".t}, \
                 sortable: false \
               ),
               TableBuilderHelper::Column.new( \
+                key: :priority, \
+                attribute: :priority, \
+                sortable: true \
+              ),
+              TableBuilderHelper::Column.new( \
+                key: :rule_type, \
+                attribute: Proc.new {|o| "enumerize.notification_rule.rule_type.#{o.rule_type}".t}, \
+                sortable: true \
+              ),
+              TableBuilderHelper::Column.new( \
+                key: :operation_statuses, \
+                attribute: :display_operation_statuses, \
+                sortable: true \
+              ),
+              TableBuilderHelper::Column.new( \
                 key: :period, \
-                attribute: Proc.new {|o| t('bounding_dates', debut: l(o.period.begin), end: l(o.period.end))}, \
-                link_to: Proc.new {|o| [o.workbench, o]}, \
+                attribute: :display_period, \
+                sortable: false, \
               ), \
               TableBuilderHelper::Column.new( \
-                key: :line_id, \
-                attribute: Proc.new{|o| o.line.name},\
+                key: :line_ids, \
+                attribute: :display_lines, \
+                sortable: false, \
               ), \
             ],
             links: [:show],

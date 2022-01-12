@@ -1,8 +1,12 @@
 FactoryBot.define do
   factory :notification_rule do
     notification_type { 'hole_sentinel' }
+    target_type { 'workbench' }
+    operation_statuses { [] }
     association :workbench
-    association :line
+    priority { 10 }
     period { (Date.today...Date.today + 10.days) }
+
+    line_ids { [] }
   end
 end

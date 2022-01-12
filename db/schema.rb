@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_11_19_102837) do
+ActiveRecord::Schema.define(version: 2021_12_02_142900) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -784,10 +784,17 @@ ActiveRecord::Schema.define(version: 2021_11_19_102837) do
   create_table "notification_rules", force: :cascade do |t|
     t.string "notification_type"
     t.daterange "period"
-    t.bigint "line_id"
     t.bigint "workbench_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.bigint "user_ids", default: [], array: true
+    t.string "external_email"
+    t.integer "priority", default: 10
+    t.string "target_type"
+    t.bigint "line_ids", default: [], array: true
+    t.string "rule_type"
+    t.string "operation_statuses", default: [], array: true
+    t.index ["workbench_id"], name: "index_notification_rules_on_workbench_id"
   end
 
   create_table "notifications", force: :cascade do |t|

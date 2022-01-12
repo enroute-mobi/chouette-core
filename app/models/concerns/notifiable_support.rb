@@ -7,58 +7,20 @@ module NotifiableSupport
     belongs_to :user
   end
 
-  module ClassMethods
+  class_methods do
     def notification_target_options
       notification_target.values.map { |k| [k && "enumerize.notification_target.#{k}".t, k] }
     end
   end
 
-  def notify_relevant_users(mailer, action)
-    recipients = notification_recipients
-    return unless recipients.present?
-
-    mailer_params = yield(recipients)
-
-    begin
-      mailer.constantize.public_send(action, *mailer_params).deliver_later
-    rescue => e
-      Chouette::Safe.capture "Can't notify users", e
-    end
-
-    notify_recipients!
-  end
-
-  def notified_recipients?
-    notified_recipients_at.present?
-  end
-
-  def notify_recipients!
-    update_column :notified_recipients_at, Time.now
-  end
-
-  def workbench_for_notifications
-    workbench
-  end
-
-  def workgroup_for_notifications
-    workgroup
-  end
-
   def notification_recipients
-    return [] unless has_notification_recipients?
-
-    users = if notification_target.to_s == 'user'
-      [user]
-    elsif notification_target.to_s == 'workbench'
-      workbench_for_notifications.users
+    case notification_target.to_s
+    when 'user'
+      [ user&.email ].compact
+    when 'workbench'
+      workbench.users.pluck(:email)
     else
-      workgroup_for_notifications.workbenches.map(&:users)
+      []
     end
-
-    users.compact.flatten.map(&:email_recipient)
-  end
-
-  def has_notification_recipients?
-    notification_target.present? && notification_target.to_s != 'none'
   end
 end

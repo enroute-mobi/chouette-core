@@ -204,6 +204,8 @@ class Merge < ApplicationModel
     referentials.map { |r| r.metadatas_lines.map(&:id) }.flatten.uniq
   end
 
+  alias line_ids merged_line_ids
+
   def aggregate_if_urgent_offer
     workbench.workgroup.aggregate_urgent_data! if new&.contains_urgent_offer?
   end

@@ -9,8 +9,6 @@ module LockedReferentialToAggregateWithLog
 end
 
 class Workbench < ApplicationModel
-  DEFAULT_WORKBENCH_NAME = "Gestion de l'offre"
-
   prepend LockedReferentialToAggregateWithLog
 
   include ObjectidFormatterSupport
@@ -98,6 +96,10 @@ class Workbench < ApplicationModel
     "/workbenches/#{id}"
   end
 
+  def notification_center
+    @notification_center ||= NotificationCenter.new(self)
+  end
+
   def referential_to_aggregate
     locked_referential_to_aggregate || output.current
   end
@@ -113,10 +115,6 @@ class Workbench < ApplicationModel
 
   def compliance_control_set_ids=(compliance_control_set_ids)
     self.owner_compliance_control_set_ids = (owner_compliance_control_set_ids || {}).merge compliance_control_set_ids
-  end
-
-  def sentinel_notifications_recipients
-    users.map(&:email_recipient)
   end
 
   def has_restriction?(restriction)

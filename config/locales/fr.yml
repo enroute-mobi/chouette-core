@@ -6,6 +6,10 @@ fr:
   "none": "Aucun(e)"
   "unknown": "Non précisé"
   label_with_colon: "%{label} : "
+  always: Toujours
+  all:
+    masculine: Tous
+    feminine: Toutes
 
   time:
     formats:

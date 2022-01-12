@@ -5,4 +5,17 @@
   .container-fluid
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        = definition_list t('metadatas'), notification_rules_metadatas(@notification_rule)
+        = simple_block_for @notification_rule, title: t('metadatas') do |d|
+          = d.attribute :notification_type, value: t("enumerize.notification_rule.notification_type.#{@notification_rule.notification_type}")
+          = d.attribute :period, value_method: :display_period
+          = d.attribute :line_ids, value_method: :display_lines
+          = d.attribute :priority
+          = d.attribute :target_type, value: t("enumerize.notification_rule.target_type.#{@notification_rule.target_type}")
+
+          - if @notification_rule.user?
+            = d.attribute :user_ids, value: @notification_rule.users.map(&:name).join(', ')
+          - elsif @notification_rule.external_email?
+            = d.attribute :external_email
+
+          = d.attribute :rule_type, value: t("enumerize.notification_rule.rule_type.#{@notification_rule.rule_type}")
+          = d.attribute :operation_statuses, value_method: :display_operation_statuses

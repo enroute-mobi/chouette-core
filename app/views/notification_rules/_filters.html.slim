@@ -1,26 +1,28 @@
-= search_form_for @q, url: workbench_notification_rules_path(@workbench), html: { method: :get, class: 'form form-filter' } do |f|
+= simple_form_for @search, url: request.path, html: { method: :get, class: 'form form-filter' } do |f|
+  = f.simple_fields_for :order, @search.order, defaults: { wrapper: false } do |form_order|
+    - form_order.object.attributes.keys.each do |attribute|
+      = form_order.input attribute, as: :hidden
   .ffg-row
-    .form-group class=filter_item_class(params[:q], :line_id_eq)
-      = f.label t('activerecord.models.line.one').upcase, required: false, class: 'control-label'
-      = f.input :line_id_eq, as: :select, collection: @workbench.lines.includes(:company_light, :line_referential).order(:name), input_html: { 'data-select2ed': 'true', 'data-select2ed-placeholder': t('referentials.filters.line') }, label: false, label_method: :full_display_name, wrapper_html: { class: 'select2ed'}
+    .input-group.search_bar class=filter_item_class(params[:search], :email)
+      = f.input :email, label: false, class: 'form-control', placeholder: 'Email'
+      span.input-group-btn
+        button.btn.btn-default#search_btn type='submit'
+          span.fa.fa-search
 
-    .form-group.togglable class=filter_item_class(params[:q], :period)
-      = f.label NotificationRule.tmf(:period), required: false, class: 'control-label'
-      .filter_menu
-        = f.simple_fields_for :period do |p|
-          = p.input :start_date, as: :date, label: t('simple_form.from'), wrapper_html: { class: 'date smart_date filter_menu-item' }, default: @notification_rule_begin_range, include_blank: @notification_rule_begin_range ? false : true
-          = p.input :end_date, as: :date, label: t('simple_form.to'), wrapper_html: { class: 'date smart_date filter_menu-item' }, default: @notification_rule_end_range, include_blank: @notification_rule_end_range ? false : true
-    
-    .form-group.togglable class=filter_item_class(params[:q], :state)
-      = f.label NotificationRule.tmf(:notification_type), required: false, class: 'control-label'
-      = f.input :notification_type_eq_any,
-        as: :check_boxes,
-        checked: params[:q] && params[:q][:notification_type_eq_any],
-        label_method: lambda {|w| ("<span>#{I18n.t("notification_rules.notification_types.#{w}")}</span>").html_safe},
-        collection: NotificationRule.notification_type.values,
-        label: false,
-        required: false,
-        wrapper_html: { class: 'checkbox_list' }
+  .ffg-row
+    .form-group.togglable  class=filter_item_class(params[:search], :rule_type)
+      = f.label NotificationRule.tmf(:rule_type), required: false, class: 'control-label'
+      = f.input :rule_type, as: :check_boxes, label: false, label_method: lambda { |w| ("<span>#{w.first}</span>").html_safe }, include_hidden: false, wrapper_html: { class: 'checkbox_list' }
+
+    .form-group.togglable  class=filter_item_class(params[:search], :operation_statuses)
+      = f.label NotificationRule.tmf(:operation_statuses), required: false, class: 'control-label'
+      = f.input :operation_statuses, as: :check_boxes, collection: operation_statuses_options, label: false, value_method: Proc.new { |w| w[:id] }, label_method: lambda { |w| ("<span>#{w[:text]}</span>").html_safe }, include_hidden: false, wrapper_html: { class: 'checkbox_list' }
+
+    .form-group
+      = render 'line_ids_field', form: f
+
+    .form-group
+      = render 'period_fields', form: f, is_filter: true
 
   .actions
     = link_to t('actions.erase'), workbench_notification_rules_path(@workbench), class: 'btn btn-link'

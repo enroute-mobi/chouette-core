@@ -1,38 +1,42 @@
 en:
   notification_rules:
-    search_no_results: "No notification suspension matching your query"
+    search_no_results: "No notification rule matching your query"
     actions:
       index: Notifications center
-      new: Add deactivation
-      destroy: Delete the notification suspension
-      destroy_confirm: Are you sure you want to delete the notification suspension ?
+      new: Add notification rule
+      destroy: Delete the notification rule
+      destroy_confirm: Are you sure you want to delete the notification rule ?
     index:
       title: Notification center
     show:
-      title: Notification suspension
+      title: Notification rule
     edit: &notification_rule_edit
-      title: Edit the notification suspension
+      title: Edit the notification rule
     update:
       <<: *notification_rule_edit
     new: &notification_rule_new
-      edit: Add deactivation
+      edit: Add notification rule
     create:
       <<: *notification_rule_new
-    notification_types:
-      hole_sentinel: Hole Sentinel
     errors:
       period: "Invalid period"
   activerecord:
     models:
       notification_rule:
-        zero: "notification suspensions"
-        one: "notification suspension"
-        other: "notification suspensions"
+        zero: "notification rules"
+        one: "notification rule"
+        other: "notification rules"
     attributes:
       notification_rule:
         period: Period
-        period_start: Suspension start date
-        period_end: Suspension end date
-        notification_type: Notification types
-        line_id: Line
+        period_start: Start date
+        period_end: End date
+        notification_type: Notification type
+        line_ids: Associated lines
+        user_ids: Users
         name: "%{notification_type} from %{from} to %{to}"
+        priority: Priority
+        target_type: Target type
+        rule_type: Rule type
+        operation_statuses: Operation Statuses
+        external_email: External email

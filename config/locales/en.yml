@@ -6,6 +6,10 @@ en:
   "none": "None"
   "unknown": "Unknown"
   label_with_colon: "%{label}: "
+  always: always
+  all:
+    masculine: all
+    feminine: all
 
   time:
     formats:

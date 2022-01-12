@@ -17,6 +17,10 @@ class Import::Base < ApplicationModel
     where('started_at BETWEEN :begin AND :end', begin: start_date, end: end_date)
   end
 
+  def self.mailer_name
+    'ImportMailer'
+  end
+
   def file_extension_whitelist
     %w(zip)
   end
@@ -161,6 +165,12 @@ class Import::Base < ApplicationModel
     else
       content_type
     end
+  end
+
+  def line_ids
+    return [] unless referential
+
+    referential.metadatas.pluck(:line_ids).flatten
   end
 
   protected

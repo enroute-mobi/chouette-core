@@ -47,8 +47,8 @@ class MacroListRunsController < ChouetteController
 
   protected
 
-  alias_method :macro_list, :parent
-  alias_method :macro_list_run, :resource
+  alias macro_list parent
+  alias macro_list_run resource
 
   def collection
     workbench.macro_list_runs.paginate(page: params[:page], per_page: 30)
@@ -77,6 +77,6 @@ class MacroListRunsController < ChouetteController
       .permit(:name, {attributes: [:referential_id] })
       .with_defaults(creator: current_user.name)
       .to_h
-      .delete_if { |k,v| v.blank? }
+      .delete_if { |_,v| v.blank? }
 	end
 end

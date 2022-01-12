@@ -26,8 +26,6 @@ class MacroListRunDecorator < AF83::Decorator
 		(end_date - object.started_at).minutes
 	end
 
-	private
-
 	define_instance_method(:workbench) { context[:workbench] }
 
 	define_instance_method(:macro_list) { context[:macro_list] }

@@ -29,7 +29,7 @@ class MacroListDecorator < AF83::Decorator
   define_instance_method :new_macro do |macro|
     klass = macro.class
 
-    attributes = klass.options.map { |k, v| [k, nil] }.to_h # Ensuring that attributes have all options values defined
+    attributes = klass.options.map { |k, _| [k, nil] }.to_h # Ensuring that attributes have all options values defined
     attributes.merge!(**macro.attributes.except('position', 'options'))
     attributes.merge!(**macro.options)
 

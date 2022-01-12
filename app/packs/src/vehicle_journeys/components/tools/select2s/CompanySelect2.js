@@ -22,10 +22,10 @@ const CompanySelect2 = ({ company, editMode, editModal, onSelect2Company, onUnse
     }}
     isDisabled={!editMode && editModal}
     placeholder={I18n.t('vehicle_journeys.vehicle_journeys_matrix.affect_company')}
-    onChange={({ id, text: name }, meta) => {
+    onChange={(company, meta) => {
       switch(meta.action) {
         case 'select-option':
-          onSelect2Company({ id, name })
+          onSelect2Company({ id: company.id, name: company.text })
           break
         case 'deselect-option':
         case 'clear':

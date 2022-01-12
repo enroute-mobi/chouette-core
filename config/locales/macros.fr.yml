@@ -17,7 +17,7 @@ fr:
       macro/create_code:
         one: Create Code
       macro/dummy:
-        one: Dummy
+        one: Simulation
     attributes:
       macro:
         name: Nom

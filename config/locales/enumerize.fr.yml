@@ -33,6 +33,12 @@ fr:
         all: Tous
         activated: Activée
         deactivated: Désactivée
+    macro/list:
+      status:
+        new: Nouveau
+        running: En cours
+        enqueued: En file d'attente
+        done: Terminé
     import:
       status:
         new: Nouveau

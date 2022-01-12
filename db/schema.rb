@@ -743,6 +743,7 @@ ActiveRecord::Schema.define(version: 2021_12_17_073653) do
 
   create_table "macro_list_runs", force: :cascade do |t|
     t.bigint "workbench_id"
+    t.string "name"
     t.bigint "original_macro_list_id"
     t.bigint "referential_id"
     t.string "status"

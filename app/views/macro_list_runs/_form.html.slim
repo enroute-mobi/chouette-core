@@ -1,7 +1,8 @@
 = simple_form_for [@workbench, @macro_list, @macro_list_run].compact, html: {class: 'form-horizontal', id: 'macro_list_form'}, wrapper: false do |f|
   .row
     .col-lg-12
-      = f.input :original_macro_list_id,
+			= f.input :name
+			= f.input :original_macro_list_id,
 				as: :tom_select,
 				selected: @macro_list&.id,
 				required: true,

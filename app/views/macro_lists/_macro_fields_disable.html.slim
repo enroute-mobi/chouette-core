@@ -14,7 +14,7 @@ div
 					p.mb-0.mr-5 x-text="macro.name" x-show="!expanded"
 					p.mb-0 x-text="'(' + macro.class_description + ')'" x-show="!expanded"
 						| ()
-			.flex.ml-3
+			.flex.ml-3 x-show="expanded"
 				p.flex.w-64 x-text="macro.class_description"
 
 		.macro.flex.flex-col x-show="expanded && !macro.isDeleted" class="w-full"

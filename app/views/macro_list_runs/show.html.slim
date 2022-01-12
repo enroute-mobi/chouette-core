@@ -7,8 +7,11 @@
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = simple_block_for @macro_list_run, title: 'Information' do |d|
-          = d.attribute :original_macro_list_id
-          = d.attribute :referential, as: :association, link: referential_path(@macro_list_run.referential)
+          = d.attribute :name
+          = d.attribute :original_macro_list, as: :association,
+                        link: (workbench_macro_list_path(@workbench, @macro_list_run.original_macro_list) if @macro_list_run.original_macro_list)
+          = d.attribute :referential, as: :association,
+                        link: (referential_path(@macro_list_run.referential) if @macro_list_run.referential)
           = d.attribute :status
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12

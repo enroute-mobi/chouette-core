@@ -5,6 +5,11 @@ class MacroListRunDecorator < AF83::Decorator
 
   create_action_link
 
+	action_link(on: %i[index], secondary: :index) do |l|
+    l.content t('macro_list_run.actions.show')
+    l.href { h.workbench_macro_lists_path }
+  end
+
   with_instance_decorator do |instance_decorator|
     instance_decorator.show_action_link
   end
@@ -20,8 +25,6 @@ class MacroListRunDecorator < AF83::Decorator
 
 		(end_date - object.started_at).minutes
 	end
-
-	private
 
 	define_instance_method(:workbench) { context[:workbench] }
 

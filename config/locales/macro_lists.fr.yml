@@ -4,23 +4,26 @@ fr:
       title: Jeu d'instructions
     show:
       title: "%{name}"
+    new:
+      title: "Créer un Jeu d'instructions"
     actions:
       show: "Afficher ce Jeu d'instructions"
-      new: "Ajouter un Jeu d'instructions"
+      new: "Créer un Jeu d'instructions"
       edit: "Editer ce Jeu d'instructions"
       destroy: "Supprimer ce Jeu d'instructions"
       destroy_confirm: "Etes vous sûr de supprimer ce Jeu d'instructions ?"
-    new:
-      title: "Créer un Jeu d'instructions"
   macro_lists:
     actions:
-      new: "Ajouter un Jeu d'instructions"
+      new: "Créer un Jeu d'instructions"
+      show: "Voir les Rapports"
     search_no_results: "Aucun Jeu d'instructions ne correspond à votre recherche"
     errors:
     edit:
       title: "Editer %{name}"
     index:
       title: "Jeu d'instructions"
+    show:
+      title: "%{name}"
     form:
       sections:
         macros: "Jeu d'instructions"
@@ -34,11 +37,13 @@ fr:
     attributes:
       macro:
         list:
-          id: "ID"
           name: "Nom"
           comments: "Commentaires"
-          objectid: "Identifiant"
-          object_version: "Version"
-          created_at: "Créé le"
-          updated_at: "Edité le"
-          creator_id: "Créé par"
+      macro/list:
+        name: "Nom"
+        comments: "Commentaires"
+        objectid: "Identifiant"
+        object_version: "Version"
+        created_at: "Créé le"
+        updated_at: "Edité le"
+        creator_id: "Créé par"

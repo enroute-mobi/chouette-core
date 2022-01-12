@@ -59,7 +59,6 @@ module Macro
         macro_runs.each(&:run)
       end
 
-      after_create :enqueue
     end
   end
 end

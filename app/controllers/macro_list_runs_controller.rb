@@ -38,14 +38,17 @@ class MacroListRunsController < ChouetteController
         render 'new'
       end
 
-			success.html { redirect_to workbench_macro_list_run_url(workbench, @macro_list_run) }
+			success.html do
+        @macro_list_run.enqueue
+        redirect_to workbench_macro_list_run_url(workbench, @macro_list_run)
+      end
     end
   end
 
   protected
 
-  alias_method :macro_list, :parent
-  alias_method :macro_list_run, :resource
+  alias macro_list parent
+  alias macro_list_run resource
 
   def collection
     workbench.macro_list_runs.paginate(page: params[:page], per_page: 30)
@@ -70,11 +73,10 @@ class MacroListRunsController < ChouetteController
 
 	def macro_list_run_attributes_params
 		params
-			.require(:macro_list_run)
-			.require(:attributes)
-			.permit(:referential_id)
-			.with_defaults(creator: current_user.name)
-			.to_h
-			.delete_if { |k,v| v.blank? }
+      .require(:macro_list_run)
+      .permit(:name, {attributes: [:referential_id] })
+      .with_defaults(creator: current_user.name)
+      .to_h
+      .delete_if { |_,v| v.blank? }
 	end
 end

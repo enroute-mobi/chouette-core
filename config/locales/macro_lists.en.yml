@@ -13,16 +13,16 @@ en:
       destroy: "Delete this Macro Lists"
       destroy_confirm: "Are you sur to delete this Macro Lists ?"
   macro_lists:
+    actions:
+      new: "Add a Macro List"
     search_no_results: "No Macro Lists match your search"
     errors:
-    new:
-      title: "Create a Macro Lists"
     edit:
       title: "Edit %{name}"
-    show:
-      title: "%{name}"
     index:
       title: "Macro Lists"
+    show:
+      title: "%{name}"
     form:
       sections:
         macros: "Macro Lists"
@@ -36,11 +36,13 @@ en:
     attributes:
       macro:
         list:
-          id: "ID"
           name: "Name"
           comments: "Comments"
-          objectid: "Object ID"
-          object_version: "Version"
-          created_at: "Created at"
-          updated_at: "Updated at"
-          creator_id: "Create by"
+      macro/list:
+        name: "Name"
+        comments: "Comments"
+        objectid: "Object ID"
+        object_version: "Version"
+        created_at: "Created at"
+        updated_at: "Updated at"
+        creator_id: "Create by"

@@ -3,6 +3,7 @@ class CreateMacroRuns < ActiveRecord::Migration[5.2]
     on_public_schema_only do
       create_table :macro_list_runs do |t|
         t.references :workbench
+        t.string :name
         t.references :original_macro_list
         t.references :referential
 

@@ -29,7 +29,7 @@ class MacroListsController < ChouetteController
   end
 
   def create
-    create! do |success, failure|
+    create! do |_success, failure|
       failure.html do
         @macro_list = MacroListDecorator.decorate(macro_list, context: { workbench: @workbench })
 
@@ -39,7 +39,7 @@ class MacroListsController < ChouetteController
   end
 
   def update
-     update! do |success, failure|
+     update! do |_success, failure|
       failure.html do
         @macro_list = MacroListDecorator.decorate(macro_list, context: { workbench: @workbench })
 
@@ -50,8 +50,8 @@ class MacroListsController < ChouetteController
 
   protected
 
-  alias_method :macro_list, :resource
-  alias_method :workbench, :parent
+  alias macro_list resource
+  alias workbench parent
 
   def collection
     @macro_lists = parent.macro_lists.paginate(page: params[:page], per_page: 30)
@@ -60,7 +60,7 @@ class MacroListsController < ChouetteController
   private
 
   def decorate_macro_list
-    object = macro_list rescue build_resource 
+    object = macro_list rescue build_resource
     @macro_list = MacroListDecorator.decorate(
       object,
       context: {
@@ -78,7 +78,7 @@ class MacroListsController < ChouetteController
   # end
 
   def macro_list_params
-    macro_options = %i[id name position type macro_list_id _destroy]
+    macro_options = %i[id name position type comments macro_list_id _destroy]
 
     macro_options += Macro::Base.descendants.map do |t|
       t.options.map do |key, value|

@@ -27,10 +27,6 @@ class MacroListRunsController < ChouetteController
   end
 
   def create
-		@macro_list_run = Macro::List
-			.find(params.dig(:macro_list_run, :original_macro_list_id))
-			.build_run(macro_list_run_attributes_params)
-	
     create! do |success, failure|
       failure.html do
         @macro_list_run = MacroListRunDecorator.decorate(@macro_list_run, context: { workbench: workbench })
@@ -54,10 +50,16 @@ class MacroListRunsController < ChouetteController
     workbench.macro_list_runs.paginate(page: params[:page], per_page: 30)
   end
 
+  def build_resource
+    super.tap do |macro_list_run|
+      macro_list_run.build_with_original_macro_list
+    end
+  end
+
   private
 
   def decorate_macro_list_run
-    object = macro_list_run rescue build_resource 
+    object = macro_list_run rescue build_resource
     @macro_list_run = MacroListRunDecorator.decorate(
       object,
       context: {
@@ -71,12 +73,11 @@ class MacroListRunsController < ChouetteController
 		@workbench ||= Workbench.find(params[:workbench_id])
 	end
 
-	def macro_list_run_attributes_params
+	def macro_list_run_params
 		params
       .require(:macro_list_run)
-      .permit(:name, {attributes: [:referential_id] })
+      .permit(:name, :original_macro_list_id, :referential_id)
       .with_defaults(creator: current_user.name)
-      .to_h
       .delete_if { |_,v| v.blank? }
 	end
 end

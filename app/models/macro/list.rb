@@ -16,16 +16,6 @@ module Macro
       MacroListPolicy
     end
 
-    def build_run(attributes = {})
-      attributes = attributes.reverse_merge(workbench: workbench, original_macro_list_id: self.id)
-
-      Run.new(attributes).tap do |run|
-        macros.each do |macro|
-          run.macro_runs << macro.build_run
-        end
-      end
-    end
-
     # macro_list_run = macro_list.build_run user: user, workbench: workbench, referential: target
     #
     # if macro_list_run.save
@@ -48,6 +38,19 @@ module Macro
 
       has_many :macro_runs, -> { order(position: :asc) }, class_name: "Macro::Base::Run",
                dependent: :delete_all, foreign_key: "macro_list_run_id"
+
+      validates :name, presence: true
+      validates :original_macro_list_id, presence: true, if: :new_record?
+
+      def build_with_original_macro_list
+        return unless original_macro_list
+
+        original_macro_list.macros.each do |macro|
+          macro_runs << macro.build_run
+        end
+
+        self.workbench = original_macro_list.workbench
+      end
 
       def self.policy_class
         MacroListRunPolicy

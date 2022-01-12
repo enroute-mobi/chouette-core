@@ -1,0 +1,24 @@
+- breadcrumb :macro_list_run, @workbench, @macro_list_run
+- page_header_content_for @macro_list_run
+
+/ PageContent
+.page_content
+  .container-fluid
+    .row
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = simple_block_for @macro_list_run, title: 'Information' do |d|
+          = d.attribute :name
+          = d.attribute :original_macro_list, as: :association,
+                        link: (workbench_macro_list_path(@workbench, @macro_list_run.original_macro_list) if @macro_list_run.original_macro_list)
+          = d.attribute :referential, as: :association,
+                        link: (referential_path(@macro_list_run.referential) if @macro_list_run.referential)
+          = d.attribute :status, as: :enumerize
+
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = simple_block_for @macro_list_run, title: 'Operation' do |d|
+          = d.attribute :created_at
+          = d.attribute :created_by, value_method: :creator
+					- unless @macro_list_run.status == 'new'
+						= d.attribute :duration
+          = d.attribute :started_at
+          = d.attribute :ended_at

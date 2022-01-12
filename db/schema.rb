@@ -496,9 +496,6 @@ ActiveRecord::Schema.define(version: 2022_01_07_120759) do
     t.datetime "ended_at"
     t.string "token_upload"
     t.string "type"
-    t.bigint "parent_id"
-    t.string "parent_type"
-    t.datetime "notified_parent_at"
     t.integer "current_step", default: 0
     t.integer "total_steps", default: 0
     t.string "creator"
@@ -508,6 +505,9 @@ ActiveRecord::Schema.define(version: 2022_01_07_120759) do
     t.bigint "publication_id"
     t.bigint "workgroup_id"
     t.hstore "options", default: {}
+    t.string "parent_type"
+    t.datetime "notified_parent_at"
+    t.bigint "parent_id"
     t.index ["publication_id"], name: "index_exports_on_publication_id"
     t.index ["referential_id"], name: "index_exports_on_referential_id"
     t.index ["workbench_id"], name: "index_exports_on_workbench_id"
@@ -739,6 +739,58 @@ ActiveRecord::Schema.define(version: 2022_01_07_120759) do
     t.index ["objectid"], name: "lines_objectid_key", unique: true
     t.index ["registration_number"], name: "lines_registration_number_key"
     t.index ["secondary_company_ids"], name: "index_lines_on_secondary_company_ids", using: :gin
+  end
+
+  create_table "macro_list_runs", force: :cascade do |t|
+    t.bigint "workbench_id"
+    t.string "name"
+    t.bigint "original_macro_list_id"
+    t.bigint "referential_id"
+    t.string "status"
+    t.string "error_uuid"
+    t.string "creator"
+    t.datetime "started_at"
+    t.datetime "ended_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["original_macro_list_id"], name: "index_macro_list_runs_on_original_macro_list_id"
+    t.index ["referential_id"], name: "index_macro_list_runs_on_referential_id"
+    t.index ["workbench_id"], name: "index_macro_list_runs_on_workbench_id"
+  end
+
+  create_table "macro_lists", force: :cascade do |t|
+    t.bigint "workbench_id"
+    t.string "name"
+    t.text "comments"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["workbench_id"], name: "index_macro_lists_on_workbench_id"
+  end
+
+  create_table "macro_runs", force: :cascade do |t|
+    t.string "type", null: false
+    t.bigint "macro_list_run_id"
+    t.integer "position", null: false
+    t.text "name"
+    t.text "comments"
+    t.jsonb "options", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["macro_list_run_id", "position"], name: "index_macro_runs_on_macro_list_run_id_and_position", unique: true
+    t.index ["macro_list_run_id"], name: "index_macro_runs_on_macro_list_run_id"
+  end
+
+  create_table "macros", force: :cascade do |t|
+    t.string "type", null: false
+    t.bigint "macro_list_id"
+    t.integer "position", null: false
+    t.string "name"
+    t.text "comments"
+    t.jsonb "options", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["macro_list_id", "position"], name: "index_macros_on_macro_list_id_and_position", unique: true
+    t.index ["macro_list_id"], name: "index_macros_on_macro_list_id"
   end
 
   create_table "merges", force: :cascade do |t|

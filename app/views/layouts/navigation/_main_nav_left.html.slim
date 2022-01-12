@@ -1,7 +1,7 @@
 .nav-menu#menu_left[
   x-ref="mainNavLeft"
   x-bind:class="{ open: mainNavLeftIsOpen }"
-  x-on:click.away="mainNavLeftIsOpen = false"
+  x-on:click.outside="mainNavLeftIsOpen = false"
 ]
   .openMenu.fa.fa-bars[x-on:click="mainNavLeftIsOpen = true" title='Ouvrir le menu']
 

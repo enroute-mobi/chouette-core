@@ -5,6 +5,12 @@ fr:
         for_boarding: "Non défini"
         for_alighting: "Non défini"
   enumerize:
+    operation:
+      status:
+        new: Nouveau
+        running: En cours
+        enqueued: En file d'attente
+        done: Terminé
     notification_rule:
       notification_type:
         hole_sentinel: Trou d'offre

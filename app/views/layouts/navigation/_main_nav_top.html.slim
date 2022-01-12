@@ -1,12 +1,12 @@
-.nav-menu#menu_top
-  .menu-content.col-sm-12
+.nav-menu.transition.duration-300.ease-in-out#menu_top
+  .menu-content.flex.items-center.w-full.h-16.px-5
     .menu-item
-      = breadcrumbs display_single_fragment: true
+      = breadcrumbs display_single_fragment: true, class: "breadcrumbs flex items-center"
 
-    .menu-item-group.pull-right
+    .menu-item-group.ml-auto
       - if !user_signed_in? && I18n.available_locales.size > 1
         .dropdown.languages.menu-item
-          = link_to 'javascript:void(0)', class: 'dropdown-toggle', data: { toggle: 'dropdown' } do
+          = link_to 'javascript:void(0)', class: 'dropdown-toggle flex items-center relative', data: { toggle: 'dropdown' } do
             = image_tag("language_engine/#{selected_language}_flag.png", { :'data-locale' => "#{selected_language}" } )
             b.caret
 
@@ -24,9 +24,9 @@
           class: 'menu-item',
           title: t('layouts.user.profile'),
           'x-bind:class': '{ active: profileMenuIsOpen }',
-          'x-on:click.prevent': 'profileMenuIsOpen = true' do
-          span = current_user.name
-          span.fa.fa-lg.fa-user
+          'x-on:click.stop': 'profileMenuIsOpen = true' do
+            span = current_user.name
+            span.fa.fa-lg.fa-user
 
   - if user_signed_in?
     = render 'layouts/navigation/nav_panel_operations'

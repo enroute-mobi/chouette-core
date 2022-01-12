@@ -9,7 +9,9 @@ class TomSelectInput < SimpleForm::Inputs::CollectionSelectInput
         collection,
         Proc.new { |i| i[:id] },
         Proc.new { |i| i[:text] },
-        input_options,
+        input_options.merge(
+          include_hidden: false
+        ),
         input_html_options.merge(
           class: 'tom_selectable',
           'data-config': config.to_json

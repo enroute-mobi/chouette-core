@@ -1,0 +1,30 @@
+fr:
+  macros:
+    actions:
+      duplicate: Dupliquer
+      send_to_top:  Envoyer au début
+      move_up: Remonter
+      move_down: Descendre
+      send_to_bottom: Envoyer vers le bas
+      delete: Supprimer
+      restore: Restaurer
+  activerecord:
+    models:
+      macro:
+        zero:  "Macros"
+        one:   "Macro"
+        other: "Macros"
+      macro/create_code:
+        one: Create Code
+      macro/dummy:
+        one: Simulation
+    attributes:
+      macro:
+        name: Nom
+        comments: Commentaire
+        target_model: Modèle cible
+        source_attribute: Attribut de la source
+        source_pattern: Modèle de source
+        target_code_space: Espace code cible
+        target_pattern: Modèle de cible
+        expected_result: Résultat attendu

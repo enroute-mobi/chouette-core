@@ -1,4 +1,4 @@
-#profile_panel.nav_panel[x-bind:class="{ open: profileMenuIsOpen }" x-on:click.away = 'profileMenuIsOpen = false']
+#profile_panel.nav_panel[x-bind:class="{ open: profileMenuIsOpen }" x-on:click.outside = 'profileMenuIsOpen = false']
   .panel-title
     h2 = t('layouts.user.profile')
   .panel-body
@@ -8,7 +8,7 @@
     p = t('last_sync', time: l(current_user.synced_at)) if current_user.synced_at
     - if I18n.available_locales.size > 1
       .dropdown.languages.menu-item
-        = link_to 'javascript:void(0)', class: 'dropdown-toggle', style: "color:#4b4b4b;", data: { toggle: 'dropdown' } do
+        = link_to 'javascript:void(0)', class: 'dropdown-toggle flex items-center', style: "color:#4b4b4b;", data: { toggle: 'dropdown' } do
           span = t('layouts.language')
           b.caret
           = image_tag("language_engine/#{selected_language}_flag.png", { :'data-locale' => "#{selected_language}", style: "margin-left:5px;"} )

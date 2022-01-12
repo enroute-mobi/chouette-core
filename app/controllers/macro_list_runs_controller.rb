@@ -1,0 +1,83 @@
+class MacroListRunsController < ChouetteController
+  include ApplicationHelper
+  include PolicyChecker
+
+  defaults :resource_class => Macro::List::Run
+
+  before_action :decorate_macro_list_run, only: %i[show new edit]
+
+	belongs_to :workbench
+	belongs_to :macro_list, optional: true
+
+  respond_to :html, :json
+
+  def index
+    index! do |format|
+      format.html do
+        redirect_to params.merge(:page => 1) if collection.out_of_bounds?
+
+        @macro_list_runs = MacroListRunDecorator.decorate(
+          collection,
+          context: {
+            workbench: @workbench
+          }
+        )
+      end
+    end
+  end
+
+  def create
+    create! do |success, failure|
+      failure.html do
+        @macro_list_run = MacroListRunDecorator.decorate(@macro_list_run, context: { workbench: workbench })
+
+        render 'new'
+      end
+
+			success.html do
+        @macro_list_run.enqueue
+        redirect_to workbench_macro_list_run_url(workbench, @macro_list_run)
+      end
+    end
+  end
+
+  protected
+
+  alias macro_list parent
+  alias macro_list_run resource
+
+  def collection
+    workbench.macro_list_runs.paginate(page: params[:page], per_page: 30)
+  end
+
+  def build_resource
+    super.tap do |macro_list_run|
+      macro_list_run.build_with_original_macro_list
+    end
+  end
+
+  private
+
+  def decorate_macro_list_run
+    object = macro_list_run rescue build_resource
+    @macro_list_run = MacroListRunDecorator.decorate(
+      object,
+      context: {
+        workbench: workbench,
+				macro_list: macro_list
+      }
+    )
+  end
+
+	def workbench
+		@workbench ||= Workbench.find(params[:workbench_id])
+	end
+
+	def macro_list_run_params
+		params
+      .require(:macro_list_run)
+      .permit(:name, :original_macro_list_id, :referential_id)
+      .with_defaults(creator: current_user.name)
+      .delete_if { |_,v| v.blank? }
+	end
+end

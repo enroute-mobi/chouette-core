@@ -1,0 +1,48 @@
+en:
+  macro/lists:
+    index:
+      title: Macro Lists
+    show:
+      title: "%{name}"
+    new:
+      title: "Create a Macro Lists"
+    actions:
+      show: "Show this Macro Lists"
+      new: "Add a Macro Lists"
+      edit: "Edit this Macro Lists"
+      destroy: "Delete this Macro Lists"
+      destroy_confirm: "Are you sur to delete this Macro Lists ?"
+  macro_lists:
+    actions:
+      new: "Add a Macro List"
+    search_no_results: "No Macro Lists match your search"
+    errors:
+    edit:
+      title: "Edit %{name}"
+    index:
+      title: "Macro Lists"
+    show:
+      title: "%{name}"
+    form:
+      sections:
+        macros: "Macro Lists"
+    filters:
+  activerecord:
+    models:
+      macro/list:
+        zero:  "Macro Lists"
+        one:   "Macro Lists"
+        other: "Macro Lists"
+    attributes:
+      macro:
+        list:
+          name: "Name"
+          comments: "Comments"
+      macro/list:
+        name: "Name"
+        comments: "Comments"
+        objectid: "Object ID"
+        object_version: "Version"
+        created_at: "Created at"
+        updated_at: "Updated at"
+        creator_id: "Create by"

@@ -4,6 +4,12 @@
 //  Libraries  //
 //-------------//
 
+// Tailwind
+
+@import "tailwindcss/base";
+@import "tailwindcss/utilities";
+@import "tailwindcss/components";
+
 // Bootstrap
 
 $icon-font-path: "~bootstrap-sass/assets/fonts/bootstrap/";
@@ -13,97 +19,98 @@ $icon-font-path: "~bootstrap-sass/assets/fonts/bootstrap/";
 // @import 'font-awesome-sprockets';
 // @import 'font-awesome';
 
-$fa-font-path: '@fortawesome/fontawesome-free/webfonts';
-@import '@fortawesome/fontawesome-free/scss/fontawesome';
-@import '@fortawesome/fontawesome-free/scss/regular';
-@import '@fortawesome/fontawesome-free/scss/solid';
-@import '@fortawesome/fontawesome-free/scss/brands';
+$fa-font-path: "@fortawesome/fontawesome-free/webfonts";
+@import "@fortawesome/fontawesome-free/scss/fontawesome";
+@import "@fortawesome/fontawesome-free/scss/regular";
+@import "@fortawesome/fontawesome-free/scss/solid";
+@import "@fortawesome/fontawesome-free/scss/brands";
 
 // Select2
-@import 'select2/dist/css/select2';
-@import 'select2-bootstrap-theme/dist/select2-bootstrap';
+@import "select2/dist/css/select2";
+@import "select2-bootstrap-theme/dist/select2-bootstrap";
 
 // OL3
-@import 'stylesheets/OpenLayers/ol';
+@import "stylesheets/OpenLayers/ol";
 
 // Flags
 // @import 'flag-icon';
 
 // TomSelect
-@import 'tom-select/dist/css/tom-select';
+@import "tom-select/dist/css/tom-select";
 
-span.sb, span.fa {
+span.sb,
+span.fa {
   & + span {
     margin-left: 0.3em;
   }
 }
 
 .fa-lg {
-  line-height: 1em !important
+  line-height: 1em !important;
 }
 
 //----------//
 //  Custom  //
 //----------//
 
-@import 'stylesheets/base/config';
-@import 'stylesheets/base/utilities';
+@import "stylesheets/base/config";
+@import "stylesheets/base/utilities";
 
-@import 'stylesheets/OpenLayers/custom';
+@import "stylesheets/OpenLayers/custom";
 
-@import 'stylesheets/typography/fonts';
-@import 'stylesheets/typography/sboiv';
-@import 'stylesheets/typography/typography';
+@import "stylesheets/typography/fonts";
+@import "stylesheets/typography/sboiv";
+@import "stylesheets/typography/typography";
 // @import 'stylesheets/font_awesome5_webfont';
 
-@import 'stylesheets/layout';
+@import "stylesheets/layout";
 
-@import 'stylesheets/components/alerts';
-@import 'stylesheets/components/breadcrumb';
-@import 'stylesheets/components/buttons';
-@import 'stylesheets/components/calendar';
-@import 'stylesheets/components/color_picker_inputs';
-@import 'stylesheets/components/color_selector';
-@import 'stylesheets/components/compliance_control_blocks';
-@import 'stylesheets/components/device';
-@import 'stylesheets/components/dropdown';
-@import 'stylesheets/components/forms';
-@import 'stylesheets/components/labels';
-@import 'stylesheets/components/lists';
-@import 'stylesheets/components/loader';
-@import 'stylesheets/components/main_nav';
-@import 'stylesheets/components/map';
-@import 'stylesheets/components/merges';
-@import 'stylesheets/components/modals';
-@import 'stylesheets/components/notifications';
-@import 'stylesheets/components/olMap';
-@import 'stylesheets/components/on_off_switch';
-@import 'stylesheets/components/page_header';
-@import 'stylesheets/components/pagination';
-@import 'stylesheets/components/panels';
-@import 'stylesheets/components/permissions';
-@import 'stylesheets/components/referential_overview';
-@import 'stylesheets/components/referential_suites';
-@import 'stylesheets/components/referentials';
-@import 'stylesheets/components/select2';
-@import 'stylesheets/components/stop_area_referentials';
-@import 'stylesheets/components/tables';
-@import 'stylesheets/components/custom_hp';
+@import "stylesheets/components/alerts";
+@import "stylesheets/components/breadcrumb";
+@import "stylesheets/components/buttons";
+@import "stylesheets/components/calendar";
+@import "stylesheets/components/color_picker_inputs";
+@import "stylesheets/components/color_selector";
+@import "stylesheets/components/compliance_control_blocks";
+@import "stylesheets/components/device";
+@import "stylesheets/components/dropdown";
+@import "stylesheets/components/forms";
+@import "stylesheets/components/labels";
+@import "stylesheets/components/lists";
+@import "stylesheets/components/loader";
+@import "stylesheets/components/main_nav";
+@import "stylesheets/components/map";
+@import "stylesheets/components/merges";
+@import "stylesheets/components/modals";
+@import "stylesheets/components/notifications";
+@import "stylesheets/components/olMap";
+@import "stylesheets/components/on_off_switch";
+@import "stylesheets/components/page_header";
+@import "stylesheets/components/pagination";
+@import "stylesheets/components/panels";
+@import "stylesheets/components/permissions";
+@import "stylesheets/components/referential_overview";
+@import "stylesheets/components/referential_suites";
+@import "stylesheets/components/referentials";
+@import "stylesheets/components/select2";
+@import "stylesheets/components/stop_area_referentials";
+@import "stylesheets/components/tables";
+@import "stylesheets/components/custom_hp";
 
-@import 'stylesheets/modules/import_controls';
-@import 'stylesheets/modules/import_messages';
-@import 'stylesheets/modules/jp_collection';
-@import 'stylesheets/modules/publications';
-@import 'stylesheets/modules/routes_stopoints';
-@import 'stylesheets/modules/timetables';
-@import 'stylesheets/modules/vj_collection';
-@import 'stylesheets/modules/workgroup_transport_modes';
-@import 'stylesheets/modules/devise';
-@import 'stylesheets/modules/search';
-@import 'stylesheets/misc';
-@import 'stylesheets/mailer';
-@import 'stylesheets/api';
-@import 'stylesheets/plugins/bootstrap-colorpicker/bootstrap-colorpicker';
+@import "stylesheets/modules/import_controls";
+@import "stylesheets/modules/import_messages";
+@import "stylesheets/modules/jp_collection";
+@import "stylesheets/modules/publications";
+@import "stylesheets/modules/routes_stopoints";
+@import "stylesheets/modules/timetables";
+@import "stylesheets/modules/vj_collection";
+@import "stylesheets/modules/workgroup_transport_modes";
+@import "stylesheets/modules/devise";
+@import "stylesheets/modules/search";
+@import "stylesheets/misc";
+@import "stylesheets/mailer";
+@import "stylesheets/api";
+@import "stylesheets/plugins/bootstrap-colorpicker/bootstrap-colorpicker";
 
 span.fa + span {
   margin-left: 0.2em;

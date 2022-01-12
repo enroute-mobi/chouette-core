@@ -1,12 +1,39 @@
 module Chouette
   module Safe
-
     def self.capture(message, e)
-      Rails.logger.error "[ERROR] #{message}: #{e.class.name} #{e.message} #{e.backtrace.join("\n")}"
+      Error.new(e, message: message).capture
+    end
 
-      if ENV['SENTRY_DSN']
-        Raven.capture_exception e
+    class Error
+      def initialize(error, message: nil)
+        @error = error
+        @message = message
+      end
+      attr_reader :error, :message
+
+      def capture
+        log_capture
+        raven_capture
+
+        uuid
+      end
+
+      def log_capture
+        Rails.logger.error log_message
+      end
+
+      def raven_capture
+        Raven.capture_exception error, tags: {uuid: uuid} if ENV['SENTRY_DSN']
+      end
+
+      def log_message
+        "[ERROR] #{message} (#{uuid}): #{error.class.name} #{error.message} #{error.backtrace.join("\n")}"
+      end
+
+      def uuid
+        @uuid ||= SecureRandom.uuid
       end
     end
+
   end
 end

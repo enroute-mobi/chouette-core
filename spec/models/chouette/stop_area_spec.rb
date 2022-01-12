@@ -12,6 +12,7 @@ describe Chouette::StopArea, :type => :model do
   it { should validate_presence_of :kind }
   it { should validate_numericality_of :latitude }
   it { should validate_numericality_of :longitude }
+  it { should validate_numericality_of :compass_bearing }
 
   describe "#time_zone" do
     context "when nil" do
@@ -267,6 +268,35 @@ describe Chouette::StopArea, :type => :model do
     end
   end
 
+  describe "#compass_bearing" do
+    context "when the value is between 0 and < 360" do
+
+      it "should be validated" do
+        stop_area.compass_bearing = 120.5
+
+        expect(subject).to be_valid
+
+      end
+    end
+
+    context "when the value is less than 0" do
+      it "should be not validated" do
+        stop_area.compass_bearing = 400
+        stop_area.valid?
+
+        expect(stop_area.errors).to have_key(:compass_bearing)
+      end
+    end
+
+    context "when the value greater or equal to 360" do
+      it "should be not validated" do
+        stop_area.compass_bearing = -1.2
+        stop_area.valid?
+
+        expect(stop_area.errors).to have_key(:compass_bearing)
+      end
+    end
+  end
 end
 
 RSpec.describe Chouette::StopArea do

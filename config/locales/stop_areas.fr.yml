@@ -147,6 +147,7 @@ fr:
         longitude: "Longitude"
         latitude: "Latitude"
         time_zone: "Fuseau horaire"
+        compass_bearing: "Orientation"
         url: "Page web associée"
         objectid: "Identifiant Neptune"
         object_version: "Version"

@@ -124,7 +124,8 @@ module StopAreasHelper
 
   def stop_area_location_metadatas(stop_area, stop_area_referential)
     {
-      "Coordonnées" => geo_data(stop_area, stop_area_referential),
+      Chouette::StopArea.tmf('coordinates') => geo_data(stop_area, stop_area_referential),
+      Chouette::StopArea.tmf('compass_bearing') => stop_area.compass_bearing.presence || '-',
       Chouette::StopArea.tmf('street_name') => stop_area.street_name,
       Chouette::StopArea.tmf('zip_code') => stop_area.zip_code,
       Chouette::StopArea.tmf('city_name') => stop_area.city_name,

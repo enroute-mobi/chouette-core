@@ -228,10 +228,10 @@ RSpec.describe Import::Neptune do
         comment: "Defined",
         street_name: "Defined",
         nearest_topic_name: "Defined",
-        fare_code: 42,
+        fare_code: "42",
         area_type: "zdep",
-        latitude: 42,
-        longitude: 42,
+        latitude: 0.42e2,
+        longitude: 0.42e2,
         parent: nil
       }
 

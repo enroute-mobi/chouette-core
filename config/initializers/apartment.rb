@@ -72,6 +72,8 @@ Apartment.configure do |config|
     'LineReferentialSyncMessage',
     'Merge',
     'Macro::List',
+    'Macro::Base',
+    'Macro::Base::Run',
     'Notification',
     'NotificationRule',
     'Organisation',

@@ -1,6 +1,5 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import useSWR from 'swr'
 import { Path } from 'path-parser'
 
 import actions from '../actions'
@@ -8,21 +7,15 @@ import xCrsfToken from '../../helpers/xCrsfToken'
 
 const path = new Path('/referentials/:referentialId/lines/:lineId/routes/:routeId')
 const params = path.partialTest(location.pathname)
+class MutationBuilder {
+  constructor(fetchingApi, fetchJourneyPatterns, enterEditMode) {
+    this.fetchingApi = fetchingApi
+    this.fetchJourneyPatterns = fetchJourneyPatterns
+    this.enterEditMode = enterEditMode
+  }
 
-const handleResponse = (action, status) => _data => {
-  Spruce.stores.flash.add({
-    type: 'success',
-    text: I18n.t(`flash.actions.${action}.${status}`, {
-      resource_name: I18n.t(`activerecord.models.journey_pattern.one`)
-    })
-  })
-}
-
-const swrOptions = (fetchingApi, fetchJourneyPatterns, enterEditMode) => action => [
-  url => {
-    fetchingApi()
-
-    return fetch(url, {
+   prepare(url, action) {
+    return () => fetch(url, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -30,19 +23,25 @@ const swrOptions = (fetchingApi, fetchJourneyPatterns, enterEditMode) => action 
         'X-CSRF-Token': xCrsfToken
       }
     })
-    .then(res => res.json())
-    .then(() => {
-      fetchJourneyPatterns().then(() => enterEditMode())
-    })
-  },
-  {
-    revalidateOnMount: false,
-    revalidateOnFocus: false,
-    onSuccess: handleResponse(action, 'notice'),
-    onError: handleResponse(action, 'error')
-  }
-]
+      .then(res => res.json())
+      .then(async () => {
+        await this.fetchJourneyPatterns()
+        await this.enterEditMode()
 
+        this.handleResponse(action, 'notice')
+      })
+      .catch(() => this.handleResponse(action, 'error'))
+  }
+
+  handleResponse = (action, status) => {
+    Spruce.stores.flash.add({
+      type: 'success',
+      text: I18n.t(`flash.actions.${action}.${status}`, {
+        resource_name: I18n.t(`activerecord.models.journey_pattern.one`)
+      })
+    })
+  }
+}
 export default function JourneyPattern({
   editMode,
   enterEditMode,
@@ -64,11 +63,10 @@ export default function JourneyPattern({
 
   const hasShape = !!shape.id
   const canEditShape = !!shape?.has_waypoints
-  const options = swrOptions(fetchingApi, fetchJourneyPatterns, enterEditMode)
 
-  const { mutate: duplicateJourneyPattern } = useSWR(`${basePath}/duplicate`, ...options('duplicate') )
-
-  const { mutate: unassociateShape } = useSWR(`${basePath}/unassociate_shape`, ...options('update'))
+  const mutationBuilder = new MutationBuilder(fetchingApi, fetchJourneyPatterns, enterEditMode)
+  const duplicateJourneyPattern = mutationBuilder.prepare(`${basePath}/duplicate`, 'duplicate')
+  const unassociateShape = mutationBuilder.prepare(`${basePath}/unassociate_shape`, 'update')
 
   const updateCosts = ({ target: { dataset, name, value } }) => {
     const costs = {

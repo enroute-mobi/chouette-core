@@ -270,30 +270,34 @@ describe Chouette::StopArea, :type => :model do
 
   describe "#compass_bearing" do
     context "when the value is between 0 and < 360" do
+      before { stop_area.compass_bearing = 120.5 }
 
-      it "should be validated" do
-        stop_area.compass_bearing = 120.5
-
-        expect(subject).to be_valid
-
-      end
+      it { is_expected.to be_valid }
     end
 
     context "when the value is less than 0" do
-      it "should be not validated" do
-        stop_area.compass_bearing = 400
-        stop_area.valid?
+      before { stop_area.compass_bearing = -1.2 }
 
-        expect(stop_area.errors).to have_key(:compass_bearing)
+      it { is_expected.to_not be_valid }
+
+      describe "#errors" do
+        subject { stop_area.errors }
+        before { stop_area.validate }
+
+        it { is_expected.to have_key(:compass_bearing) }
       end
     end
 
     context "when the value greater or equal to 360" do
-      it "should be not validated" do
-        stop_area.compass_bearing = -1.2
-        stop_area.valid?
+      before { stop_area.compass_bearing = 360 }
 
-        expect(stop_area.errors).to have_key(:compass_bearing)
+      it { is_expected.to_not be_valid }
+
+      describe "#errors" do
+        subject { stop_area.errors }
+        before { stop_area.validate }
+
+        it { is_expected.to have_key(:compass_bearing) }
       end
     end
   end

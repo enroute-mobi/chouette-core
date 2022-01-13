@@ -54,12 +54,14 @@ export default class CodesInputs extends Component {
             {!this.props.disabled &&
               <div className='col-xs-1'>
                 <div className='form-group'>
-                  <a
-                    href='#'
+                  <button
                     title={I18n.t('actions.delete')}
-                    className='fa fa-trash fa-lg'
+                    type="button"
+                    className=''
                     onClick={() => { this.props.onDeleteReferentialCode(index) }}
-                  ></a>
+                  >
+                    <i className='fa fa-trash fa-lg'></i>
+                  </button>
                 </div>
               </div>
             }

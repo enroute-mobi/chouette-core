@@ -29,10 +29,7 @@ module TableBuilderHelper
       return @name unless @name.nil?
 
       # Transform `Chouette::Line` into "line"
-      model_key = model.to_s.underscore
-      model_key.gsub! 'chouette/', ''
-      model_key.gsub! '/', '.'
-
+      model_key = model.model_name.i18n_key.to_s
       I18n.t("activerecord.attributes.#{model_key}.#{@key}")
     end
 

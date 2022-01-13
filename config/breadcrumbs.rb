@@ -316,7 +316,7 @@ end
 
 crumb :stop_area_routing_constraints do |workbench|
   link StopAreaRoutingConstraint.t, workbench_stop_area_referential_stop_area_routing_constraints_path(workbench)
-  parent workbench
+  parent :stop_area_referential, workbench
 end
 
 crumb :stop_area_routing_constraint do |workbench, stop_area_routing_constraint|

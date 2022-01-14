@@ -276,11 +276,6 @@ RSpec.describe Chouette::StopArea do
   describe '#closest_children' do
     subject { stop_area.closest_children }
 
-    context "when the StopArea has no defined position" do
-      before { stop_area.latitude = stop_area.longitude = nil }
-      it { is_expected.to be_empty }
-    end
-
     context "when the StopArea has no children" do
       it { is_expected.to be_empty }
     end
@@ -302,6 +297,11 @@ RSpec.describe Chouette::StopArea do
       end
 
       it { is_expected.to all(having_attributes(distance: a_value)) }
+
+      context "when the StopArea has no defined position" do
+        before { stop_area.latitude = stop_area.longitude = nil }
+        it { is_expected.to be_empty }
+      end
 
       context "when one of the children has no position" do
         before { nearest_child.update latitude: nil, longitude: nil }

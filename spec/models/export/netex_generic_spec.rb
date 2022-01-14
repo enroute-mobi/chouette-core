@@ -32,6 +32,16 @@ RSpec.describe Export::NetexGeneric do
 
   end
 
+  describe "#stop_area_referential" do
+    let(:export) { Export::NetexGeneric.new }
+    subject { export.stop_area_referential }
+
+    let(:workgroup) { double stop_area_referential: double("Workgroup StopAreaReferential") }
+    before { allow(export).to receive(:workgroup).and_return(workgroup) }
+
+    it { is_expected.to eq(workgroup.stop_area_referential) }
+  end
+
   describe "#netex_profile" do
 
     subject { export.netex_profile }
@@ -55,7 +65,7 @@ RSpec.describe Export::NetexGeneric do
       double "Export::Scope",
              stop_areas: context.referential.stop_areas.where(id: stop_area)
     end
-    let(:export) { Export::NetexGeneric.new export_scope: export_scope, workbench: context.workbench }
+    let(:export) { Export::NetexGeneric.new export_scope: export_scope, workgroup: context.workgroup }
 
     subject { export.stop_areas }
 
@@ -479,7 +489,7 @@ RSpec.describe Export::NetexGeneric do
     let(:export) do
       Export::NetexGeneric.new export_scope: export_scope,
                                target: target,
-                               workbench: context.workbench
+                               workgroup: context.workgroup
     end
 
     let(:part) do

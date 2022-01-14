@@ -18,6 +18,8 @@
 = javascript_tag do
   | window.route_id = #{params[:route_id]};
   | window.referential_id = #{@referential.id};
+  | window.workbench_id = #{@referential.workbench_id};
+  | window.companiesPath = '#{default_companies_path(@referential.line_referential)}';
   | window.line_id = #{@line.id};
   | window.line_referential_id = #{@referential.line_referential_id};
   | window.stopPoints = #{(@stop_points_list.to_json).html_safe};

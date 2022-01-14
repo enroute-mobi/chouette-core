@@ -5,8 +5,26 @@
       = form.input :name
 
     .col-lg-12
-      div[x-data]
-        template[x-if="!!$store.export"]
+      div[
+        x-data="{ initialized: false, waitForStore: null }"
+        x-init="
+          waitForStore = () => {
+            setTimeout(() => {
+              if ($store.export) {
+                initialized = true
+
+                $watch('$store.export.isExport', $store.export.handleIsExportUpdate.bind($store.export))
+                $watch('$store.export.referentialId', $store.export.handleReferentialIdUpdate.bind($store.export))
+              } else {
+                waitForStore()
+              }
+            }, 100)
+          }
+
+          waitForStore()
+        "
+      ]
+        template[x-if="initialized"]
           div
             = form.input :referential_id,
               as: :tom_select,

@@ -14,7 +14,17 @@ class NotificationCenter
   end
 
   def recipients(notification_type, line_ids: nil, period: nil, base_recipients: [])
-    rules.where(notification_type: notification_type).for_line_ids(line_ids).covering(period).recipients(base_recipients)
+    rules_scope = rules.where(notification_type: notification_type)
+
+    if line_ids.present?
+      rules_scope = rules_scope.for_line_ids(line_ids)
+    end
+
+    if period
+      rules_scope = rules_scope.covering(period)
+    end
+
+    rules_scope.recipients(base_recipients)
   end
 
   def has_recipients?(notification_type, line_ids: nil, period: nil, base_recipients: [])

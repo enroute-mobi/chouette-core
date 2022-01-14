@@ -211,7 +211,7 @@ module Chouette
     end
 
     def closest_children
-      self.class.none if position.blank?
+      return self.class.none if position.blank?
 
       parent_point = self.class.connection.quote("SRID=4326;POINT(#{longitude} #{latitude})")
       child_point   = "ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)"

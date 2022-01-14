@@ -680,6 +680,10 @@ class Referential < ApplicationModel
   end
 
   def self.mergeable
+    editable
+  end
+
+  def self.editable
     active.not_merged.not_in_referential_suite
   end
 

@@ -5,6 +5,7 @@ class MacroListRunsController < ChouetteController
   defaults :resource_class => Macro::List::Run
 
   before_action :decorate_macro_list_run, only: %i[show new edit]
+  before_action :select_referentials, only: %i{new create}
 
 	belongs_to :workbench
 	belongs_to :macro_list, optional: true
@@ -72,6 +73,10 @@ class MacroListRunsController < ChouetteController
 	def workbench
 		@workbench ||= Workbench.find(params[:workbench_id])
 	end
+
+  def select_referentials
+    @referentials ||= workbench.referentials.editable
+  end
 
 	def macro_list_run_params
 		params

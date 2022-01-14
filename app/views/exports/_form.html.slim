@@ -1,3 +1,4 @@
+- javascript_additional_packs 'exports/form'
 = simple_form_for @export, as: :export, url: workbench_exports_path(workbench), html: {class: 'form-horizontal', id: 'wb_export_form'}, wrapper: :horizontal_form do |form|
 
   .row
@@ -6,31 +7,21 @@
 
     .col-lg-12
       div[
-        x-data="{ initialized: false, waitForStore: null }"
+        x-data
         x-init="
-          waitForStore = () => {
-            setTimeout(() => {
-              if ($store.export) {
-                initialized = true
-
-                $watch('$store.export.isExport', $store.export.handleIsExportUpdate.bind($store.export))
-                $watch('$store.export.referentialId', $store.export.handleReferentialIdUpdate.bind($store.export))
-              } else {
-                waitForStore()
-              }
-            }, 100)
-          }
-
-          waitForStore()
+          Array.of('isExport', 'referentialId', 'exportedLines').forEach(attributeName => {
+            $watch(
+              '$store.export.' + attributeName,
+              $store.export.handleUpdate(attributeName).bind($store.export)
+            )
+          })
         "
       ]
-        template[x-if="initialized"]
-          div
-            = form.input :referential_id,
-              as: :tom_select,
-              collection: @referential_options,
-              label_method: :name,
-              input_html: { 'x-model': '$store.export.referentialId' }
+        = form.input :referential_id,
+          as: :tom_select,
+          collection: @referential_options,
+          label_method: :name,
+          input_html: { 'x-model': '$store.export.referentialId' }
         
         = render 'exports/options', form: form, resource_type: :options, workgroup: @workbench.workgroup
 

@@ -1,4 +1,5 @@
 import { useEffect } from "react"
+import Alpine from 'alpinejs'
 
 /*
 This custom hook display a flash message based on data set previoulsy in the session storage.
@@ -19,7 +20,7 @@ export default function useFlashMessage(key = 'previousAction') {
 		try {
 			const { resource, action, status } = JSON.parse(previousAction)
 
-			Spruce.stores.flash.add({
+			Alpine.store('flash').add({
 				type: 'success',
 				text: I18n.t(`flash.actions.${action}.${status}`, {
 					resource_name: I18n.t(`activerecord.models.${resource}.one`)

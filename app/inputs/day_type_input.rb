@@ -72,9 +72,8 @@ class DayTypeInput < SimpleForm::Inputs::CollectionCheckBoxesInput
 
   def collection
     Timetable::DaysOfWeek::SYMBOLIC_DAYS.each_with_index.map do |d, i|
-      value = '0000000'
-      value[i] = '1'
-      [value.to_i(2),  Chouette::TimeTable.tmf(d)[0...2]]
+      value = Array.new(7) { |j| ActiveModel::Type::Integer.new.cast(j == i) }
+      [value.join.to_i(2),  Chouette::TimeTable.tmf(d)[0...2]]
     end
   end
 end

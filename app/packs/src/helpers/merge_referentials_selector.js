@@ -6,7 +6,7 @@
  */
 class MergeReferentialsSelector {
   constructor(container_selector, formInput){
-    this.formInput = formInput;
+    this.formInput = $(formInput);
     this.container = $(container_selector);
     this.searchInput = this.container.find('.search');
     this.loader = this.container.find('.loader');
@@ -31,7 +31,7 @@ class MergeReferentialsSelector {
     this.searchInput.on('keyup', () => {
       return this.searchKeyUp();
     });
-    this.searchInput.on('keyup keypress', e=> {
+    this.searchInput.on('keyup keypress', e => {
       const keyCode = e.keyCode || e.which;
       if (keyCode === 13) {
         e.preventDefault();
@@ -63,6 +63,7 @@ class MergeReferentialsSelector {
   }
 
   initSortables() {
+    console.log(this.container.find(".source-referentials li"))
     this.container.find(".source-referentials li").draggable({
       connectToSortable: ".target",
       placeholder: "placeholder",

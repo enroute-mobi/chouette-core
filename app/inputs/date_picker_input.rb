@@ -1,13 +1,23 @@
 class DatePickerInput < SimpleForm::Inputs::StringInput
+  delegate :content_tag, :concat, :javascript_additional_packs, :stylesheet_additional_packs, to: :template
+
   def input(wrapper_options)
-    set_html_options
     set_value_html_option
 
-    template.content_tag(:div, class: 'flatpickr input-group') do
-      template.concat @builder.text_field(attribute_name, input_html_options)
-      template.concat( template.content_tag(:div, class: 'input-group-btn') do
-        template.concat calendar_button
-        template.concat clear_button
+    javascript_additional_packs 'inputs/date_picker'
+
+    content_tag(:div, class: 'flatpickr input-group', 'x-data': '', 'x-init': 'initDatePicker($el)') do
+      concat @builder.text_field(
+        attribute_name,
+        input_html_options.merge(
+            'data-input': '',
+            'readonly': 'readonly',
+            'style': 'background-color: white;'
+          )
+        )
+      concat( content_tag(:div, class: 'input-group-btn') do
+        concat calendar_button
+        concat clear_button
       end)
     end
   end
@@ -28,12 +38,6 @@ class DatePickerInput < SimpleForm::Inputs::StringInput
     template.content_tag(:a, title: "toggle", class: 'btn btn-default color-danger', 'data-toggle': "") do
       template.concat template.content_tag(:i, "", class: 'far fa-calendar')
     end
-  end
-
-  def set_html_options
-    input_html_options[:type] = 'text'
-    input_html_options[:data] ||= { 'input': ''}
-    # input_html_options[:data].merge!(date_options: date_options)
   end
 
   def set_value_html_option

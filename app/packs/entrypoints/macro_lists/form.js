@@ -75,4 +75,3 @@ Alpine.store('macroList', {
 	inputName(index, name) { return `macro_list[macros_attributes][${index}][${name}]` },
 })
 
-Alpine.start()

@@ -295,4 +295,11 @@ module NewapplicationHelper
     end
   end
 
+  def javascript_additional_packs *packs
+    packs.each do |pack|
+      additional_pack = content_for?(:additional_packs) ? " #{pack}" : pack
+
+     content_for(:additional_packs, *additional_pack)
+    end
+  end
 end

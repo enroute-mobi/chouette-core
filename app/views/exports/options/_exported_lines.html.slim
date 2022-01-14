@@ -1,51 +1,42 @@
 - decorated_export = @export.decorate
 
-= form.input :exported_lines,
-  include_blank: false,
-  input_html: { \
-    'x-model': '$store.export.exportedLines', \
-    'x-ref': 'exportedLinesSelect', \
-    'x-bind:disabled': "$store.export.isExport && $store.export.referentialId == ''", \
-  }
+div[x-data="{ store: $store.export }"]
+  = form.input :exported_lines,
+    include_blank: false,
+    input_html: { \
+      'x-model': 'store.exportedLines', \
+      'x-bind:disabled': "store.isExport && store.referentialId == ''", \
+    }
 
-template[x-if="$store.export.exportedLines == 'line_ids'"]
-  div[
-    x-data
-    x-init="$store.export.setSelectURL($refs.lineIdsSelect, 'lines')"
-  ]
-    = form.input :line_ids,
-      as: :tom_select,
-      collection: decorated_export.line_ids_options,
-      input_html: { multiple: true, style: 'width: 100%', 'x-ref': 'lineIdsSelect' },
-      label_html: { class: 'hidden' },
-      include_hidden: false,
-      config: { type: 'ajax', placeholder: I18n.t('exports.form.line_name') },
-      selected: decorated_export.line_ids
+  template[x-if="store.exportedLines == 'line_ids'"]
+    div
+      = form.input :line_ids,
+        as: :tom_select,
+        collection: decorated_export.line_ids_options,
+        input_html: { multiple: true, style: 'width: 100%', ':data-url': "store.exportedLines == 'line_ids' && store.exportedLinesSelectURL" },
+        label_html: { class: 'hidden' },
+        include_hidden: false,
+        config: { type: 'ajax', placeholder: I18n.t('exports.form.line_name') },
+        selected: decorated_export.line_ids
 
-template[x-if="$store.export.exportedLines == 'company_ids'"]
-  div[
-    x-data
-    x-init="$store.export.setSelectURL($refs.companyIdsSelect, 'companies')"
-  ]
-    = form.input :company_ids,
-      as: :tom_select,
-      collection: decorated_export.company_ids_options,
-      input_html: { multiple: true, style: 'width: 100%',  'x-ref': 'companyIdsSelect' },
-      label_html: { class: 'hidden' },
-      include_hidden: false,
-      config: { type: 'ajax', placeholder: I18n.t('exports.form.company_name') },
-      selected: decorated_export.company_ids
+  template[x-if="store.exportedLines == 'company_ids'"]
+    div
+      = form.input :company_ids,
+        as: :tom_select,
+        collection: decorated_export.company_ids_options,
+        input_html: { multiple: true, style: 'width: 100%', ':data-url': "store.exportedLines == 'company_ids' && store.exportedLinesSelectURL" },
+        label_html: { class: 'hidden' },
+        include_hidden: false,
+        config: { type: 'ajax', placeholder: I18n.t('exports.form.company_name') },
+        selected: decorated_export.company_ids
 
-template[x-if="$store.export.exportedLines == 'line_provider_ids'"]
-  div[
-    x-data
-    x-init="$store.export.setSelectURL($refs.lineProviderIdsSelect, 'line_providers')"
-  ]
-    = form.input :line_provider_ids,
-      as: :tom_select,
-      collection: decorated_export.line_provider_ids_options,
-      input_html: { multiple: true, style: 'width: 100%', 'x-ref': 'lineProviderIdsSelect' },
-      label_html: { class: 'hidden' },
-      include_hidden: false,
-      config: { type: 'ajax', placeholder: I18n.t('exports.form.line_provider_name') },
-      selected: decorated_export.line_provider_ids
+  template[x-if="store.exportedLines == 'line_provider_ids'"]
+    div
+      = form.input :line_provider_ids,
+        as: :tom_select,
+        collection: decorated_export.line_provider_ids_options,
+        input_html: { multiple: true, style: 'width: 100%', ':data-url': "store.exportedLines == 'line_provider_ids' && store.exportedLinesSelectURL" },
+        label_html: { class: 'hidden' },
+        include_hidden: false,
+        config: { type: 'ajax', placeholder: I18n.t('exports.form.line_provider_name') },
+        selected: decorated_export.line_provider_ids

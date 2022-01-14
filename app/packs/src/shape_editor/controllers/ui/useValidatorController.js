@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import Alpine from 'alpinejs'
 
 import store from '../../shape.store'
 import eventEmitter, { events } from '../../shape.event-emitter'
@@ -10,7 +11,7 @@ export default function useValidatorController() {
     return eventEmitter.on(events.waypointDeleteRequest, async waypoint => {
       store.getState(({ waypoints }) => {
         if (waypoints.getLength() == length) {
-          Spruce.stores.flash.add({ type: 'warning', text: I18n.t('shapes.errors.must_have_enough_waypoints') })
+          Alpine.store('flash').add({ type: 'warning', text: I18n.t('shapes.errors.must_have_enough_waypoints') })
         } else {
           eventEmitter.emit(events.waypointDeleted, waypoint)
         }

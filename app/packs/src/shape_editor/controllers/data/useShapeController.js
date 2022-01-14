@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import useSWR from 'swr'
 import { get } from 'lodash'
 import { featureCollection } from '@turf/turf'
+import Alpine from 'alpinejs'
 import Collection from 'ol/Collection'
 
 import { mapFormat, submitFetcher } from '../../shape.helpers'
@@ -53,7 +54,7 @@ class Params {
       onError(errors) {
         try {
           errors.forEach(text => {
-            Spruce.stores.flash.add({ type: 'error', text })
+            Alpine.store('flash').add({ type: 'error', text })
           })
         } catch(e) {
           

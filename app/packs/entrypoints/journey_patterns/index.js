@@ -5,10 +5,6 @@ import { createStore } from 'redux'
 import applyMiddleware from '../../src/helpers/middlewares'
 import journeyPatternsApp from '../../src/journey_patterns/reducers'
 import App from '../../src/journey_patterns/components/App'
-import clone from '../../src/helpers/clone'
-
-let route = clone(window, "route", true)
-route = JSON.parse(decodeURIComponent(route))
 
 const initialState = {
   editMode: false,

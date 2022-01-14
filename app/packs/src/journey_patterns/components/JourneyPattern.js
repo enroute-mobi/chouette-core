@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Path } from 'path-parser'
+import Alpine from 'alpinejs'
 
 import actions from '../actions'
 import xCrsfToken from '../../helpers/xCrsfToken'
@@ -34,7 +35,7 @@ class MutationBuilder {
   }
 
   handleResponse = (action, status) => {
-    Spruce.stores.flash.add({
+    Alpine.store('flash').add({
       type: 'success',
       text: I18n.t(`flash.actions.${action}.${status}`, {
         resource_name: I18n.t(`activerecord.models.journey_pattern.one`)

@@ -1291,13 +1291,6 @@
     webpack-merge "^5.8.0"
     webpack-sources "^3.2.0"
 
-"@ryangjchandler/spruce@^2.7.1":
-  version "2.7.1"
-  resolved "https://registry.yarnpkg.com/@ryangjchandler/spruce/-/spruce-2.7.1.tgz#d61819750817567b1d12f9ce98e79910147c295a"
-  integrity sha512-UfSt3iYDCnErtK6p8OntDIbXYQMmzkozaLONckIqCkSgMSlqPd2VjHB/0IaBcFrbRHhhxHMOvieuiUoYg//s/g==
-  dependencies:
-    alpinejs "^2.5"
-
 "@sentry/browser@6.13.3", "@sentry/browser@^6.13.3":
   version "6.13.3"
   resolved "https://registry.yarnpkg.com/@sentry/browser/-/browser-6.13.3.tgz#d4511791b1e484ad48785eba3bce291fdf115c1e"
@@ -2952,11 +2945,6 @@ ajv@^6.12.3, ajv@^6.12.4, ajv@^6.12.5:
     fast-json-stable-stringify "^2.0.0"
     json-schema-traverse "^0.4.1"
     uri-js "^4.2.2"
-
-alpinejs@^2.5:
-  version "2.8.2"
-  resolved "https://registry.yarnpkg.com/alpinejs/-/alpinejs-2.8.2.tgz#b14ec21ae3cd78dcee4aed0a78ed0f01b676dac4"
-  integrity sha512-5yOUtckn4CBp0qsHpo2qgjZyZit84uXvHbB7NJ27sn4FA6UlFl2i9PGUAdTXkcbFvvxDJBM+zpOD8RuNYFvQAw==
 
 alpinejs@^3.7.0:
   version "3.7.0"

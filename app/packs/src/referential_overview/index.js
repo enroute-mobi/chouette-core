@@ -90,17 +90,19 @@ class TimeTravel {
 }
 export default class ReferentialOverview {
   constructor(selector){
-    this.container = $(`#${selector}`);
-    this.timeTravel = new TimeTravel(this);
-    const param_name = `${this.container.attr('id')}_date`;
-    const date = new URL(document.location.href).searchParams.get(param_name);
+    $.ready(() => {
+      this.container = $(`#${selector}`);
+      this.timeTravel = new TimeTravel(this);
+      const param_name = `${this.container.attr('id')}_date`;
+      const date = new URL(document.location.href).searchParams.get(param_name);
 
-    this.currentOffset = 0;
-    $(document).scroll(e=> {
-      return this.documentScroll(e);
-    });
-    this.documentScroll({pageY: $(document).scrollTop()});
-    this.showDay(date != null ? date : {date : `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`});
+      this.currentOffset = 0;
+      $(document).scroll(e => {
+        return this.documentScroll(e);
+      });
+      this.documentScroll({ pageY: $(document).scrollTop() });
+      this.showDay(date != null ? date : { date: `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}` });
+    })
   }
 
   showDay(date){

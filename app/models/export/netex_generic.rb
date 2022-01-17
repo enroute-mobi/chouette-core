@@ -34,7 +34,7 @@ class Export::NetexGeneric < Export::Base
     profile? ? "zip" : 'xml'
   end
 
-  delegate :stop_area_referential, to: :workbench
+  delegate :stop_area_referential, to: :workgroup
 
   def stop_areas
     @stop_areas ||=

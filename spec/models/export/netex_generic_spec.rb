@@ -184,9 +184,7 @@ RSpec.describe Export::NetexGeneric do
   end
 
   describe "Lines export" do
-
     describe Export::NetexGeneric::Lines::Decorator do
-
       let(:line) { Chouette::Line.new }
       let(:decorator) { Export::NetexGeneric::Lines::Decorator.new line }
 
@@ -201,6 +199,10 @@ RSpec.describe Export::NetexGeneric do
 
         context "when transport submode is a standard value" do
           before { line.transport_submode = :schoolBus }
+
+          it "is a string (to avoid troubles in the netex gem)" do
+            is_expected.to be_instance_of(String)
+          end
 
           it "is the same value than the line submode" do
             is_expected.to eq(line.transport_submode)

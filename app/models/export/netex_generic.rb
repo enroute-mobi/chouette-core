@@ -991,7 +991,7 @@ class Export::NetexGeneric < Export::Base
       end
 
       def vehicle_journey_refs
-        [Netex::Reference.new(vehicle_journey.objectid, type: 'VehicleJourneyRef')]
+        [Netex::Reference.new(vehicle_journey.objectid, type: 'ServiceJourney')]
       end
     end
 

@@ -5,7 +5,7 @@ fr:
       send_to_top:  Envoyer au début
       move_up: Remonter
       move_down: Descendre
-      send_to_bottom: Envoyer vers le bas
+      send_to_bottom: Envoyer à la fin
       delete: Supprimer
       restore: Restaurer
   activerecord:
@@ -18,6 +18,8 @@ fr:
         one: Create Code
       macro/dummy:
         one: Simulation
+      macro/associate_shape:
+        one: Shape associée
     attributes:
       macro:
         name: Nom

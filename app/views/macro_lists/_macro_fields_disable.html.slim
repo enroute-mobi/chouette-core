@@ -1,8 +1,8 @@
 div
-	.flex.flex-col.items-center.mt-5 x-data=("{ expanded: true }")
+	.flex.flex-col.items-center.mt-5 x-data=("{ expanded: false }")
 		.flex.items-center.w-full.mb-8
 			button @click="expanded = ! expanded" type="button" x-bind:disabled="macro.isDeleted" class="flex items-center justify-between p-3 pl-3 mr-3 font-bold text-white bg-enroute-chouette-green rounded cursor-pointer hover:text-indigo-100"
-				<span class="text-3xl w-full" x-text="expanded ? '-' : '+'">+</span>
+				<span class="text-3xl w-4" x-text="expanded ? '-' : '+'">+</span>
 			.w-full
 				= f.input :id, as: :hidden, input_html: { 'x-model': 'macro.id', ':name': "store.inputName(index, 'id')" }, wrapper: false
 				= f.input :type, as: :hidden, input_html: { 'x-model': 'macro.type', ':name': "store.inputName(index, 'type')" }, wrapper: false
@@ -11,7 +11,7 @@ div
 
 				= f.input :name, input_html: { 'x-model': 'macro.name', 'x-show': 'expanded', ':readonly': '!expanded', ':name': "store.inputName(index, 'name')" }, label: false, wrapper_html: {'class': 'mb-0 mx-0'}, placeholder: I18n.t(`activerecord.models.macro.macro.name`)
 				.flex.items-center
-					p.mb-0.mr-5 x-text="macro.name" x-show="!expanded"
+					p.mb-0.mr-2 x-text="macro.name" x-show="!expanded"
 					p.mb-0 x-text="'(' + macro.class_description + ')'" x-show="!expanded"
 						| ()
 			.flex.ml-3 x-show="expanded"
@@ -23,5 +23,4 @@ div
 					= render 'macro_option_input_disable'
 			.form-group
 				= f.label Macro::List.human_attribute_name(:comments), class: 'col-sm-4 col-xs-5 control-label mb-3'
-				.col-sm-8.col-xs-7
-					= f.input :comments, as: :text, required: false, input_html: { 'x-model': 'macro.comments', ':name': "store.inputName(index, 'comments')"}, label: false, wrapper: false
+				= f.input :comments, as: :text, required: false, input_html: { 'x-model': 'macro.comments', ':name': "store.inputName(index, 'comments')"}, label: false, wrapper: false

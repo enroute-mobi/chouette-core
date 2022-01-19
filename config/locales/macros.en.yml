@@ -18,6 +18,8 @@ en:
         one: Create Code
       macro/dummy:
         one: Simulation
+      macro/associate_shape:
+        one: Associate Shape
     attributes:
       macro:
         name: Name

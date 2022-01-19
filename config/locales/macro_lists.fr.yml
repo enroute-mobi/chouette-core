@@ -1,7 +1,7 @@
 fr:
   macro/lists:
     index:
-      title: Jeu d'instructions
+      title: Jeux d'instructions
     show:
       title: "%{name}"
     new:
@@ -16,24 +16,27 @@ fr:
     actions:
       new: "Créer un Jeu d'instructions"
       show: "Voir les Rapports"
-    search_no_results: "Aucun Jeu d'instructions ne correspond à votre recherche"
+    search_no_results: "Aucun Jeux d'instructions ne correspond à votre recherche"
     errors:
     edit:
       title: "Editer %{name}"
     index:
-      title: "Jeu d'instructions"
+      title: "Jeux d'instructions"
     show:
       title: "%{name}"
     form:
       sections:
-        macros: "Jeu d'instructions"
+        macros: "Jeux d'instructions"
+      macro_placeholder: "Ajouter une nouvelle instruction en sélectionnant son type"
+      macro_type: "Type d’instruction"
+      add: "Ajouter une nouvelle instruction"
     filters:
   activerecord:
     models:
       macro/list:
         zero:  "Jeu d'instructions"
-        one:   "Jeu d'instruction"
-        other: "Jeu d'instructions"
+        one:   "Jeu d'instructions"
+        other: "Jeux d'instructions"
     attributes:
       macro:
         list:

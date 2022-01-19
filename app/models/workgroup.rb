@@ -173,7 +173,7 @@ class Workgroup < ApplicationModel
     Rails.logger.debug "within_timeframe: #{within_timeframe}"
 
     # "5.minutes * 2" returns a FixNum (in our Rails version)
-    within_timeframe && (nightly_aggregated_at.blank? || nightly_aggregated_at < NIGHTLY_AGGREGATE_CRON_TIME.seconds.ago)
+    within_timeframe && (nightly_aggregated_at.blank? || nightly_aggregated_at < cron_delay.seconds.ago)
   end
 
   def import_compliance_control_sets

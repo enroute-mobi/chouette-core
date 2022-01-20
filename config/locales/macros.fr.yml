@@ -15,7 +15,7 @@ fr:
         one:   "Macro"
         other: "Macros"
       macro/create_code:
-        one: Create Code
+        one: Création de code
       macro/dummy:
         one: Simulation
       macro/associate_shape:

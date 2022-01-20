@@ -45,6 +45,11 @@ crumb :macro_list do |workbench, macro_list|
   parent :macro_lists, workbench
 end
 
+crumb :new_macro_list do |workbench|
+  link I18n.t('macro_lists.new.title')
+  parent :macro_lists, workbench
+end
+
 crumb :macro_list_runs do |workbench|
   link I18n.t('macro_list_run.index.title'), workbench_macro_list_runs_path(workbench)
   parent :workbench, workbench
@@ -52,6 +57,11 @@ end
 
 crumb :macro_list_run do |workbench, macro_list_run|
   link breadcrumb_name(macro_list_run), workbench_macro_list_run_path(workbench, macro_list_run)
+  parent :macro_list_runs, workbench
+end
+
+crumb :new_macro_list_run do |workbench|
+  link I18n.t('macro_list_run.new.title')
   parent :macro_list_runs, workbench
 end
 

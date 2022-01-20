@@ -44,7 +44,7 @@ en:
             name: Name
             created_by: Create by
             creator: "Creator"
-            original_macro_list: "Name"
+            original_macro_list: "Original macro list"
             referential_id: "Target"
             started_at: "Started at"
             duration: Duration

@@ -5,7 +5,7 @@ fr:
     show:
       title: "%{name}"
     new:
-      title: "Créer un rapport"
+      title: "Exécuter un Jeu d’instructions"
     actions:
       create: "Créer un rapport"
       show: "Afficher ce Rapport de Jeu d'instructions"
@@ -19,9 +19,9 @@ fr:
     actions:
       new: "Exécuter un Jeu d'instructions"
       show: "Voir les Jeux d'instructions"
-      create: "Créer un rapport"
+      create: "Exécuter un Jeu d’instructions"
     new:
-      title: "Créer un rapport"
+      title: "Exécuter un Jeu d’instructions"
     index:
       title: "Rapports de Jeux d'instructions"
     show:
@@ -43,9 +43,9 @@ fr:
             status: Statut
             name: Nom
             created_by: Créer par
-            creator: "Creator"
-            original_macro_list: "Name"
-            referential_id: "Target"
+            creator: "Créateur"
+            original_macro_list_id: "Jeu d'instructions"
+            referential_id: "Cible"
             started_at: "Date et heure de lancement"
             duration: Durée
             created_at: "Crée le"

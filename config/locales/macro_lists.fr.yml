@@ -24,10 +24,13 @@ fr:
       title: "Jeux d'instructions"
     show:
       title: "%{name}"
+    new:
+      title: "Créer un Jeu d'instructions"
     form:
       sections:
         macros: "Jeux d'instructions"
-      macro_placeholder: "Ajouter une nouvelle instruction en sélectionnant son type"
+      macro_placeholder: "Décrivez l’objectif de cette instruction"
+      macro_type_placeholder: "Ajouter une nouvelle instruction en sélectionnant son type"
       macro_type: "Type d’instruction"
       add: "Ajouter une nouvelle instruction"
     filters:

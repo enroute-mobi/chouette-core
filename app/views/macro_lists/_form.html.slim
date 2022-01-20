@@ -22,7 +22,7 @@
                 = simple_fields_for(:macro_select) do |macro_select_form|
                   = f.label t('macro_lists.form.macro_type'), class: 'mb-3'
                   .w-full.mx-5
-                    = macro_select_form.input :type, as: :tom_select, collection: @macro_list.macro_options, placeholder: "#{I18n.t('macro_lists.form.macro_placeholder')}", input_html: { 'x-model': 'store.selectedType' }, wrapper: false, label: false
+                    = macro_select_form.input :type, as: :tom_select, collection: @macro_list.macro_options, placeholder: "#{I18n.t('macro_lists.form.macro_type_placeholder')}", input_html: { 'x-model': 'store.selectedType' }, wrapper: false, label: false
 
                 template[x-if="store.selectedType == ''"]
                   .links

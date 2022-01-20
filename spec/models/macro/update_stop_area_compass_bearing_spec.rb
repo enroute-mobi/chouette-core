@@ -5,9 +5,9 @@ RSpec.describe Macro::UpdateStopAreaCompassBearing do
 
   describe Macro::UpdateStopAreaCompassBearing::Run do
     let(:macro_list_run) do
-      Macro::List::Run.new referential: context.referential, workbench: context.workbench
+      Macro::List::Run.create referential: context.referential, workbench: context.workbench
     end
-    subject(:macro_run) { Macro::UpdateStopAreaCompassBearing::Run.new macro_list_run: macro_list_run }
+    subject(:macro_run) { Macro::UpdateStopAreaCompassBearing::Run.create macro_list_run: macro_list_run }
 
     describe ".run" do
       subject { macro_run.run }
@@ -43,7 +43,7 @@ RSpec.describe Macro::UpdateStopAreaCompassBearing do
 
           journey_pattern.reload
           expect(journey_pattern.stop_areas.map(&:compass_bearing)).to match_array([62.0, 96.4, 125.7])
-
+          expect(macro_run.macro_messages).not_to be_empty
         end
       end
     end

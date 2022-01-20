@@ -28,6 +28,7 @@ module Macro
 
       belongs_to :macro_list_run, class_name: "Macro::List::Run"
       acts_as_list scope: :macro_list_run
+      has_many :macro_messages, class_name: "Macro::Message"
 
       store :options, coder: JSON
       # TODO Retrieve options definition from Macro class

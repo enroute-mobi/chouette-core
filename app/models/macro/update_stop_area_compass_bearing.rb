@@ -10,7 +10,17 @@ module Macro
           stop_area.compass_bearing = average_bearings[stop_area.id]
           if stop_area.compass_bearing_changed?
             if stop_area.save
-              # create message here
+              self.macro_messages.create(
+                criticity: "info",
+                message_attributes: { value: "Stop Area #{stop_area.name} has a new compass bearing of #{stop_area.compass_bearing}"},
+                source: stop_area
+              )
+            else
+              self.macro_messages.create(
+                criticity: "error",
+                message_attributes: { value: stop_area.errors.details },
+                source: stop_area
+              )
             end
           end
         end

@@ -1,5 +1,8 @@
 class ReferentialAudit
-  class Full
+  class Full < ActiveJob::Base
+
+    attr_accessor :mail_content
+
     def perform opts={}
       Chouette::Benchmark.measure("audit") do
         limit = opts.delete(:limit)
@@ -22,8 +25,13 @@ class ReferentialAudit
           out << audit.perform(opts.dup.update({plain_output: true}))
         end
 
+        @mail_content = out.join("</td></tr><tr><td>")
         out
       end
+    end
+
+    after_perform do |job|
+      AuditMailer.audit(job.mail_content)
     end
   end
 end

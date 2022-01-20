@@ -6,6 +6,7 @@ FactoryBot.define do
     area_type { Chouette::AreaType.commercial.sample }
     latitude {10.0 * rand}
     longitude {10.0 * rand}
+    compass_bearing {rand(0.0...359.9)}
     kind {"commercial"}
     confirmed_at { Time.now }
     city_name {'Bordeaux'}

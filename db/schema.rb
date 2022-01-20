@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_01_07_120759) do
+ActiveRecord::Schema.define(version: 2022_01_11_154109) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -1204,6 +1204,7 @@ ActiveRecord::Schema.define(version: 2022_01_07_120759) do
     t.string "postal_region"
     t.bigint "stop_area_provider_id"
     t.string "public_code"
+    t.float "compass_bearing"
     t.index ["name"], name: "index_stop_areas_on_name"
     t.index ["objectid", "stop_area_referential_id"], name: "stop_areas_objectid_key", unique: true
     t.index ["parent_id"], name: "index_stop_areas_on_parent_id"

@@ -146,6 +146,7 @@ en:
         longitude: "Longitude"
         latitude: "Latitude"
         time_zone: "Time zone"
+        compass_bearing: "Compass bearing"
         url: "Web page"
         objectid: "Neptune identifier"
         object_version: "Version"

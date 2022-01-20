@@ -62,6 +62,7 @@
           = f.input :projection_xy, label: t("activerecord.attributes.stop_area.projection_xy", projection: @referential.projection_type_label), input_html: { title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.projection_xy") }
 
         = f.input :coordinates, input_html: { title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.coordinates") }
+        = f.input :compass_bearing
         = f.input :street_name
         = f.input :zip_code, input_html: { title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.zip_code") }
         = f.input :city_name, required: format_restriction_for_locales(@referential) == '.hub', input_html: {title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.city_name")}

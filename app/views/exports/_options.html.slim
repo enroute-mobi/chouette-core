@@ -1,5 +1,5 @@
 - is_export = resource_type == :options
-- exported_lines = @export.exported_lines rescue 'all_line_ids'
+- alpine_state = @export.alpine_state(is_export)
 
 div[
   x-data="{ initialized: false, waitForStore: null }"
@@ -9,12 +9,7 @@ div[
         if ($store.export) {
           initialized = true
 
-          $store.export.setState({
-            referentialId: '#{@export.referential_id}',
-            isExport: #{is_export},
-            type: '#{@export.type || 'Export::Gtfs'}',
-            exportedLines: '#{exported_lines}'
-          })
+          $store.export.setState(#{alpine_state})
         } else {
           waitForStore()
         }

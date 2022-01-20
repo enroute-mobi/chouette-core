@@ -5,7 +5,8 @@ module Macro
     [
       Macro::CreateCode,
       Macro::AssociateShape,
-      Macro::Dummy
+      Macro::Dummy,
+      Macro::UpdateStopAreaCompassBearing,
     ]
   end
 end

@@ -25,6 +25,7 @@ fr:
         export_type: "Type d'export"
         export_options: "Paramètres de l'export"
         enabled: "Activée"
+        force_daily_publishing: "Forcer la Publication Quotidiennement"
         destinations: "Destinations"
         duration: Durée (en jours)
         prefer_referent_stop_area: Préférer les arrêts Référents

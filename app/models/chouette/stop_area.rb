@@ -66,10 +66,12 @@ module Chouette
     validates :registration_number, uniqueness: { scope: :stop_area_provider_id }, allow_blank: true
 
     accepts_nested_attributes_for :codes, allow_destroy: true, reject_if: :all_blank
-     validates_associated :codes
+    validates_associated :codes
 
     before_validation do
-      self.registration_number = self.stop_area_referential.generate_registration_number unless self.registration_number.present?
+      unless self.registration_number.present?
+        self.registration_number = stop_area_referential&.generate_registration_number
+      end
     end
 
     def self.nullable_attributes

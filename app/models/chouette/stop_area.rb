@@ -514,29 +514,12 @@ module Chouette
 
     class << self
       def compute_bearings(options={})
-        limit = options[:limit] || 1000
-        page = options[:page] || 1
-        stop_area = options[:stop_area] || nil
-        debug_mode = options[:debug_mode] || false
-        options[:ref].switch if options[:ref].present?
-
-        if debug_mode
-          debug_infos = <<~TEXT
-            journey_pattern_id, shape_id, latitude, longitude,
-            ST_AsText(point) AS projected_point, projected_distance,
-            ST_Length(ST_Transform(line, 26915)) AS shape_length,
-            shape_delta,
-          TEXT
-        end
-
         query = <<~TEXT
           SELECT
-            stop_area_id,
-            AVG(bearing) AS avg_bearing
+            stop_area_id, AVG(bearing) AS avg_bearing
           FROM (
               SELECT DISTINCT
                 stop_area_id,
-                #{debug_infos}
                 Degrees(
                   ST_Azimuth(
                     ST_LineInterpolatePoint(line, (projected_distance - shape_delta  + abs(projected_distance - shape_delta)) / 2),
@@ -559,9 +542,9 @@ module Chouette
                   INNER JOIN journey_patterns_stop_points ON journey_patterns_stop_points.journey_pattern_id = journey_patterns.id
                   INNER JOIN stop_points ON stop_points.id = journey_patterns_stop_points.stop_point_id
                   INNER JOIN public.stop_areas ON public.stop_areas.id = stop_points.stop_area_id
-                  WHERE stop_areas.id #{stop_area&.id.present? ? ["=", stop_area.id].join : "IS NOT NULL"}
-                  LIMIT #{limit}
-                  OFFSET #{limit * page - limit}
+                  WHERE stop_areas.id #{options[:stop_area]&.id.present? ? ["=", options[:stop_area].id].join : "IS NOT NULL"}
+                  LIMIT #{options[:limit] || 1000}
+                  OFFSET #{(options[:limit] || 1000) *  (options[:page] || 1) - (options[:limit] || 1000)}
                 ) AS inputs
               ) AS azimuth_points
           ) AS raw_bearings

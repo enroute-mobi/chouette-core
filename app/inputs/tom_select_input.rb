@@ -10,7 +10,9 @@ class TomSelectInput < SimpleForm::Inputs::CollectionSelectInput
         Proc.new { |i| i[:id] },
         Proc.new { |i| i[:text] },
         input_options.merge(
-          include_hidden: false
+          selected: selected,
+          include_hidden: include_hidden,
+          include_blank: include_blank,
         ),
         input_html_options.merge(
           class: 'tom_selectable',
@@ -35,5 +37,25 @@ class TomSelectInput < SimpleForm::Inputs::CollectionSelectInput
         defer: true
       )
     end
+  end
+
+  private
+
+  def multiple?
+    !!input_html_options[:multiple]
+  end
+
+  def include_hidden
+    options.fetch(:include_hidden, multiple? ? true : false)
+  end
+  
+  def include_blank
+    options.fetch(:include_blank, multiple? ? true : false)
+  end
+
+  def selected
+    options.fetch(:selected, object.send(attribute_name))
+  rescue NoMethodError
+    []
   end
 end

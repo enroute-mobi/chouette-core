@@ -22,9 +22,7 @@
             = f.input :user_ids,
               as: :tom_select,
               collection: @notification_rule.user_items,
-              selected: @notification_rule.user_ids,
               required: true,
-              include_blank: false,
               input_html: { multiple: true, ':disabled': "targetType != 'user'" },
               config: { type: 'ajax', url: users_workbench_autocomplete_index_path(@workbench) }
 
@@ -41,8 +39,6 @@
     = f.input :operation_statuses,
       as: :tom_select,
       collection: operation_statuses_options,
-      selected: @notification_rule.operation_statuses,
-      include_blank: false,
       config: { hidePlaceholder: true }
 
     = render 'line_ids_field', form: f

@@ -1,0 +1,42 @@
+fr:
+  line_routing_constraint_zones:
+    search_no_results: "Aucune Interdiction de Trafic local"
+    actions:
+      new: "Ajouter une ITL"
+      create: "Ajouter une ITL"
+      edit: "Editer cette ITL"
+      update: "Editer cette ITL"
+      destroy: "Supprimer"
+      destroy_confirm: "Etes vous sûr de supprimer cette ITL?"
+    filters:
+      stop: Indiquez un arrêt...
+      direction: Indiquez une direction...
+    new:
+      title: "Ajouter une Interdiction de Trafic local"
+    create:
+      title: "Ajouter une Interdiction de Trafic local"
+    edit:
+      title: "Editer %{name}"
+    update:
+      title: "Editer %{name}"
+    show:
+      title: "%{name}"
+    index:
+      title: "Interdictions de Trafic local"
+
+  activerecord:
+    models:
+      line_routing_constraint_zone:
+        zero:  "Interdiction de Trafic local"
+        one:   "Interdiction de Trafic local"
+        other: "Interdictions de Trafic local"
+    attributes:
+      line_routing_constraint_zone:
+        information: "Information"
+        name: "Nom"
+        lines: "Lignes"
+        stop_areas: "Arrêts"
+    errors:
+      models:
+        line_routing_constraint_zone:
+          attributes:

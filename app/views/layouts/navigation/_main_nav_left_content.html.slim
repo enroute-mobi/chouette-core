@@ -65,6 +65,10 @@
         span = Chouette::Company.t.capitalize
       = link_to workbench_line_referential_line_notices_path(workbench), class: "list-group-item" do
         span = Chouette::LineNotice.t.capitalize
+      = link_to workbench_line_referential_line_routing_constraint_zones_path(workbench), class: 'list-group-item' do
+        span = LineRoutingConstraintZone.t.capitalize
+      = link_to workbench_line_referential_path(workbench), class: "list-group-item" do
+        span = 'line_referentials.show.title'.t
 
     = main_nav_menu_item 'layouts.navbar.shape_referential'.t do
       = link_to workbench_shape_referential_shapes_path(workbench), class: 'list-group-item' do

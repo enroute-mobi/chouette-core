@@ -96,6 +96,7 @@ ChouetteIhm::Application.routes.draw do
 
     resource :line_referential, :only => [:show, :edit, :update] do
       post :sync
+      resources :line_routing_constraint_zones
       resources :lines do
         resources :line_notices do
           collection do

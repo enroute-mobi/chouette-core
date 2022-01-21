@@ -1,0 +1,22 @@
+/ - decorated_line_routing_constraint_zone = @line_routing_constraint_zone.decorate
+= simple_form_for [@workbench, :line_referential, @line_routing_constraint_zone], html: {class: 'form-horizontal', id: 'line_provider_form'}, wrapper: :horizontal_form do |f|
+  .row
+    .col-lg-12
+      / = f.input :stop_area_referential, as: :hidden
+      / = f.input :stop_area_provider, as: :hidden
+      / = f.input :line_referential_id, as: :hidden
+      / = f.input :line_provider_id, as: :hidden
+      = f.input :name
+      / = f.input :lines,
+      /   as: :tom_select,
+      /   collection: @line_referential.lines.all,
+      /   input_html: { multiple: true, style: 'width: 100%', 'x-ref': 'lineIdsSelect' },
+      /   label_html: { class: 'hidden' },
+      /   include_hidden: false,
+      /   config: { type: 'ajax', placeholder: I18n.t('exports.form.line_name') }
+      = f.input :line_ids, :collection => @line_referential.lines.order(Arel.sql('lower(name) asc')), include_blank: false, input_html: { multiple: true, 'data-select2ed': true }, label: LineRoutingConstraintZone.tmf(:lines)
+      / = f.input :stop_area_ids, :collection => @stop_area_referential.stop_areas.order(Arel.sql('lower(name) asc')), include_blank: false, input_html: { multiple: true, 'data-select2ed': true }, label: LineRoutingConstraintZone.tmf(:stop_areas)
+
+  .separator
+
+  = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'line_provider_form'

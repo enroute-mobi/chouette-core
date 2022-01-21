@@ -7,6 +7,7 @@ class LineProvider < ApplicationModel
   has_many :networks, class_name: "Chouette::Network"
   has_many :group_of_lines, class_name: "Chouette::GroupOfLine"
   has_many :line_notices, class_name: "Chouette::LineNotice"
+  has_many :line_routing_constraint_zones
 
   validates :short_name, presence: true
 

@@ -705,6 +705,16 @@ ActiveRecord::Schema.define(version: 2022_01_28_083110) do
     t.string "objectid_format"
   end
 
+  create_table "line_routing_constraint_zones", force: :cascade do |t|
+    t.string "name"
+    t.bigint "line_ids", array: true
+    t.bigint "stop_area_ids", array: true
+    t.bigint "line_referential_id"
+    t.bigint "line_provider_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "lines", force: :cascade do |t|
     t.bigint "network_id"
     t.bigint "company_id"

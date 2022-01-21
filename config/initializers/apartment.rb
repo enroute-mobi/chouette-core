@@ -70,6 +70,7 @@ Apartment.configure do |config|
     'LineReferentialMembership',
     'LineReferentialSync',
     'LineReferentialSyncMessage',
+    'LineRoutingConstraintZone',
     'Merge',
     'Macro::Base',
     'Macro::Base::Run',

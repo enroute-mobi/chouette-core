@@ -398,6 +398,21 @@ crumb :line do |workbench, line|
   parent :lines, workbench
 end
 
+crumb :line_routing_constraint_zones do |workbench|
+  link I18n.t('line_routing_constraint_zones.index.title'), workbench_line_referential_line_routing_constraint_zones_path(workbench)
+  parent :line_referential, workbench
+end
+
+crumb :line_routing_constraint_zone do |workbench, line_routing_constraint_zone|
+  link line_routing_constraint_zone.name, workbench_line_referential_line_routing_constraint_zone_path(workbench, line_routing_constraint_zone)
+  parent :line_routing_constraint_zones, workbench
+end
+
+crumb :new_line_routing_constraint_zone do |line_referential|
+  link I18n.t('line_routing_constraint_zones.new.title')
+  parent :line_routing_constraint_zones, line_referential
+end
+
 crumb :calendars do |workgroup|
   link I18n.t('calendars.index.title'), workgroup_calendars_path(workgroup)
 end

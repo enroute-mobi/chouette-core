@@ -11,6 +11,7 @@ class LineReferential < ApplicationModel
   has_many :line_referential_syncs, -> { order created_at: :desc }, dependent: :destroy
   has_many :workbenches, dependent: :nullify
   has_many :line_notices, class_name: 'Chouette::LineNotice', inverse_of: :line_referential, dependent: :destroy
+  has_many :line_routing_constraint_zones
   has_one  :workgroup, dependent: :nullify
 
   has_many :line_providers

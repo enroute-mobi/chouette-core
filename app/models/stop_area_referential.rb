@@ -8,14 +8,14 @@ class StopAreaReferential < ApplicationModel
   has_many :stop_area_referential_memberships, dependent: :destroy
   has_many :organisations, through: :stop_area_referential_memberships
 
-  has_many :stop_areas, class_name: 'Chouette::StopArea'
-  has_many :stop_area_referential_syncs, -> {order created_at: :desc}
-  has_many :connection_links, class_name: 'Chouette::ConnectionLink'
+  has_many :stop_areas, class_name: 'Chouette::StopArea', dependent: :destroy
+  has_many :stop_area_referential_syncs, -> {order created_at: :desc}, dependent: :destroy
+  has_many :connection_links, class_name: 'Chouette::ConnectionLink', dependent: :destroy
   has_many :workbenches, dependent: :nullify
   has_one  :workgroup, dependent: :nullify
   has_many :stop_area_providers
-  has_many :stop_area_routing_constraints
-  has_many :entrances
+  has_many :stop_area_routing_constraints, dependent: :destroy
+  has_many :entrances, dependent: :destroy
 
   def add_member(organisation, options = {})
     attributes = options.merge organisation: organisation

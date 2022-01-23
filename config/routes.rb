@@ -138,6 +138,8 @@ ChouetteIhm::Application.routes.draw do
       get :edit_transport_modes
     end
 
+    resources :code_spaces, except: :destroy
+
     resources :compliance_check_sets, only: [:index, :show] do
       get :executed, on: :member
       resources :compliance_checks, only: [:show]

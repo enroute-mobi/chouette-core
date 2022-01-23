@@ -1,0 +1,46 @@
+fr:
+  activerecord:
+    models:
+      code_space:
+        zero: Espace de Code
+        one: Espace de Code
+        other: Espaces de Code
+    attributes:
+      code_space:
+        short_name: Nom Court
+        name: Nom
+  code_spaces:
+    actions:
+      new: Ajouter un Espace de Code
+    index:
+      title: Espaces de Code
+    show:
+      title: Espace de Code %{name}
+    edit:
+      title: Modifier l'Espace de Code %{name}
+    new:
+      title: Ajouter un Espace de Code
+    create:
+      title: Ajouter un Espace de Code
+en:
+  activerecord:
+    models:
+      code_space:
+        zero: "Code Space"
+        one: "Code Spaces"
+        other: "Code Spaces"
+    attributes:
+      code_space:
+        short_name: Short Name
+        name: Name
+  code_spaces:
+    index:
+      title: Code Spaces
+    show:
+      title: Code Space %{name}
+    edit:
+      title: Edit Code Space %{name}
+    new:
+      title: Create new Code Space
+    create:
+      title: Create new Code Space

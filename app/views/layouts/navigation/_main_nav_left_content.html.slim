@@ -19,6 +19,8 @@
           span = 'activerecord.models.export.other'.t.capitalize
         = link_to workgroup_compliance_check_sets_path(workbench.workgroup), class: "list-group-item" do
           span = 'activerecord.models.compliance_check_set.other'.t.capitalize
+        = link_to workgroup_code_spaces_path(workbench.workgroup), class: 'list-group-item' do
+          span = 'activerecord.models.code_space.other'.t.capitalize
 
     = main_nav_menu_item 'activerecord.models.workbench.one'.t.capitalize do
       = link_to workbench_path(workbench), class: "list-group-item" do

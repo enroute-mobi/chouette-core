@@ -476,3 +476,18 @@ crumb :shape do |workbench, shape|
   link breadcrumb_name(shape, (shape.name.present? ? :name : :uuid )), workbench_shape_referential_shape_path(workbench, shape)
   parent :shapes, workbench
 end
+
+crumb :code_spaces do |workgroup|
+  link CodeSpace.model_name.human(count: 2), workgroup_code_spaces_path(workgroup)
+  parent workgroup
+end
+
+crumb :code_space do |workgroup, code_space|
+  link "#{CodeSpace.model_name.human} #{code_space.short_name}", workgroup_code_space_path(workgroup, code_space)
+  parent :code_spaces, workgroup
+end
+
+crumb :new_code_space do |workgroup|
+  link I18n.t('code_spaces.new.title')
+  parent :code_spaces, workgroup
+end

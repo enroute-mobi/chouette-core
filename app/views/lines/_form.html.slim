@@ -42,8 +42,16 @@
         = f.input :activated, as: :switchable_checkbox
         = f.input :active_from, wrapper: :horizontal_date
         = f.input :active_until, wrapper: :horizontal_date
-    .separator
+
+  .separator.section_separator
+  .row
+    .col-lg-12
+      h2.mb-lg= Chouette::Line.tmf(:codes)
+      = f.simple_fields_for(:codes) do |codes_form|
+        = render 'code_fields', f: codes_form
+
+      .links.nested-linker
+        = link_to_add_association t('lines.form.add_code'), f, :codes, class: 'btn btn-primary'
 
   = cancel_button
   = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'lines_form'
-

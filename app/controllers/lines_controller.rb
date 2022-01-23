@@ -188,7 +188,8 @@ class LinesController < ChouetteController
       :seasonal,
       :line_notice_ids,
       :secondary_company_ids => [],
-      footnotes_attributes: [:code, :label, :_destroy, :id]
+      footnotes_attributes: [:code, :label, :_destroy, :id],
+      codes_attributes: [:id, :code_space_id, :value, :_destroy],
     )
     out[:line_notice_ids] = out[:line_notice_ids].split(',') if out[:line_notice_ids]
     out[:secondary_company_ids] = (out[:secondary_company_ids] || []).select(&:present?)

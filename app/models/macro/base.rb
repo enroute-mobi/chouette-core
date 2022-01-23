@@ -31,8 +31,10 @@ module Macro
 
       store :options, coder: JSON
       # TODO Retrieve options definition from Macro class
+      include OptionsSupport
 
-      delegate :referential, :workgroup, to: :macro_list_run
+      delegate :referential, :workbench, to: :macro_list_run, allow_nil: true
+      delegate :workgroup, to: :workbench
 
       # TODO Share this mechanism
       def self.method_added(method_name)

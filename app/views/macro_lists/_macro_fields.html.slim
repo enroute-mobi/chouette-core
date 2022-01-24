@@ -20,7 +20,7 @@ div
 				.btn.dropdown-toggle data-toggle="dropdown"
 					.span.fa.fa-cog
 				ul.dropdown-menu
-					template[x-for="(action, index) in store.actions"]
+					template[x-for="action in store.actions"]
 						li
 							a class="cursor-pointer" @click="store[action](index)" x-text="I18n.t(`macros.actions.${action}`)" x-show="(action == 'restore' && macro.isDeleted) || (action != 'restore' && !macro.isDeleted)"
 

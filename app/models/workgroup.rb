@@ -167,13 +167,11 @@ class Workgroup < ApplicationModel
     Rails.logger.debug "nightly_aggregate_time: #{nightly_aggregate_time.inspect}"
     Rails.logger.debug "diff: #{(TimeOfDay.now - nightly_aggregate_time)}"
 
-    cron_delay = NIGHTLY_AGGREGATE_CRON_TIME * 2
-    Rails.logger.debug "cron_delay: #{cron_delay}"
-    within_timeframe = (TimeOfDay.now - nightly_aggregate_time).abs <= cron_delay && nightly_aggregate_days.match_date?(Time.zone.now)
+    within_timeframe = (TimeOfDay.now - nightly_aggregate_time).abs <= NIGHTLY_AGGREGATE_CRON_TIME && nightly_aggregate_days.match_date?(Time.zone.now)
     Rails.logger.debug "within_timeframe: #{within_timeframe}"
 
     # "5.minutes * 2" returns a FixNum (in our Rails version)
-    within_timeframe && (nightly_aggregated_at.blank? || nightly_aggregated_at < NIGHTLY_AGGREGATE_CRON_TIME.seconds.ago)
+    within_timeframe && (nightly_aggregated_at.blank? || nightly_aggregated_at < NIGHTLY_AGGREGATE_CRON_TIME*3)
   end
 
   def import_compliance_control_sets

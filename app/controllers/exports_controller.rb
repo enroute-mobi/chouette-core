@@ -88,7 +88,7 @@ class ExportsController < ChouetteController
       export.workbench = workbench
       export.workgroup = workgroup || workbench&.workgroup
       export.creator   = current_user.name
-    end
+    end.decorate
   end
 
   def scope

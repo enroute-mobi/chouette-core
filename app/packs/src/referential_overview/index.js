@@ -6,6 +6,18 @@
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
+
+import { flow, toString, padStart } from 'lodash'
+
+const getDate = () => {
+  const format = flow(toString, str => padStart(str, 2, '0'))
+
+  const today = new Date()
+  const month = format(today.getMonth() + 1)
+  const day = format(today.getDate())
+
+  return `${today.getFullYear()}-${month}-${day}`
+}
 class TimeTravel {
   constructor(overview){
     this.overview = overview;
@@ -31,18 +43,14 @@ class TimeTravel {
       return false;
     });
 
-    this.todayBt.click(e=> {
-      const today = new Date();
-      let month = today.getMonth() + 1;
-      if (month < 10) { month = `0${month}`; }
-      let day = today.getDate();
-      if (day < 10) { day = `0${day}`; }
-      const date = `${today.getFullYear()}-${month}-${day}`;
-      this.overview.showDay(date);
-      this.pushDate(date);
-      e.preventDefault();
-      return false;
-    });
+    this.todayBt.click(e => {
+      const date = getDate()
+
+      this.overview.showDay(date)
+      this.pushDate(date)
+      e.preventDefault()
+      return false
+    })
 
     return this.searchDateBt.click(e=> {
       const date = this.searchDateInput.val();
@@ -93,23 +101,29 @@ export default class ReferentialOverview {
     this.container = $(`#${selector}`);
     this.timeTravel = new TimeTravel(this);
     const param_name = `${this.container.attr('id')}_date`;
-    const date = new URL(document.location.href).searchParams.get(param_name);
+    
+    const date = new URL(document.location.href).searchParams.get(param_name) || getDate()
 
     this.currentOffset = 0;
-    $(document).scroll(e=> {
+    $(document).scroll(e => {
       return this.documentScroll(e);
     });
-    this.documentScroll({pageY: $(document).scrollTop()});
-    this.showDay(date != null ? date : {date : `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`});
+    this.documentScroll({ pageY: $(document).scrollTop() });
+    this.showDay(date)
   }
 
   showDay(date){
-    const day = this.container.find(`.day.${date}`);
-    this.container.find(".day.selected").removeClass('selected');
-    day.addClass("selected");
-    const offset = day.offset().left;
-    const parentOffset = this.currentOffset + this.container.find(".right").offset().left;
-    return this.scrollTo(parentOffset - offset);
+    const day = this.container.find(`.day.${date}`)
+    const dayExists = Boolean(day.length)
+
+    if (dayExists) {
+      this.container.find(".day.selected").removeClass('selected');
+      day.addClass("selected");
+      const offset = day.offset().left;
+      const parentOffset = this.currentOffset + this.container.find(".right").offset().left;
+      this.scrollTo(parentOffset - offset);
+    }
+    
   }
 
   currentOffset() {

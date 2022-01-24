@@ -741,6 +741,28 @@ ActiveRecord::Schema.define(version: 2022_01_24_151311) do
     t.index ["secondary_company_ids"], name: "index_lines_on_secondary_company_ids", using: :gin
   end
 
+  create_table "macro_context_runs", force: :cascade do |t|
+    t.bigint "macro_context_id"
+    t.bigint "macro_list_run_id"
+    t.string "name"
+    t.jsonb "options", default: {}
+    t.text "comments"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["macro_context_id"], name: "index_macro_context_runs_on_macro_context_id"
+    t.index ["macro_list_run_id"], name: "index_macro_context_runs_on_macro_list_run_id"
+  end
+
+  create_table "macro_contexts", force: :cascade do |t|
+    t.bigint "macro_list_id"
+    t.string "name"
+    t.jsonb "options", default: {}
+    t.text "comments"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["macro_list_id"], name: "index_macro_contexts_on_macro_list_id"
+  end
+
   create_table "macro_list_runs", force: :cascade do |t|
     t.bigint "workbench_id"
     t.string "name"
@@ -789,6 +811,8 @@ ActiveRecord::Schema.define(version: 2022_01_24_151311) do
     t.jsonb "options", default: {}
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "macro_context_run_id"
+    t.index ["macro_context_run_id"], name: "index_macro_runs_on_macro_context_run_id"
     t.index ["macro_list_run_id", "position"], name: "index_macro_runs_on_macro_list_run_id_and_position", unique: true
     t.index ["macro_list_run_id"], name: "index_macro_runs_on_macro_list_run_id"
   end
@@ -802,6 +826,8 @@ ActiveRecord::Schema.define(version: 2022_01_24_151311) do
     t.jsonb "options", default: {}
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "macro_context_id"
+    t.index ["macro_context_id"], name: "index_macros_on_macro_context_id"
     t.index ["macro_list_id", "position"], name: "index_macros_on_macro_list_id_and_position", unique: true
     t.index ["macro_list_id"], name: "index_macros_on_macro_list_id"
   end
@@ -1487,6 +1513,8 @@ ActiveRecord::Schema.define(version: 2022_01_24_151311) do
   add_foreign_key "journey_patterns", "stop_points", column: "departure_stop_point_id", name: "departure_point_fkey", on_delete: :nullify
   add_foreign_key "journey_patterns_stop_points", "journey_patterns", name: "jpsp_jp_fkey", on_delete: :cascade
   add_foreign_key "journey_patterns_stop_points", "stop_points", name: "jpsp_stoppoint_fkey", on_delete: :cascade
+  add_foreign_key "macro_runs", "macro_context_runs"
+  add_foreign_key "macros", "macro_contexts"
   add_foreign_key "referentials", "referential_suites"
   add_foreign_key "routes", "routes", column: "opposite_route_id", name: "route_opposite_route_fkey"
   add_foreign_key "stop_areas", "stop_areas", column: "parent_id", name: "area_parent_fkey", on_delete: :nullify

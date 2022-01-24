@@ -92,6 +92,15 @@ module Chouette
               attribute :transport_mode, "bus"
               attribute :transport_submode, "undefined"
               attribute(:number) { |n| n }
+
+              transient :codes
+
+              after do
+                (transient(:codes) || {}).each do |code_space_short_name, value|
+                  code_space = new_instance.workgroup.code_spaces.find_by!(short_name: code_space_short_name)
+                  new_instance.codes.build(code_space: code_space, value: value)
+                end
+              end
             end
 
             model :company do

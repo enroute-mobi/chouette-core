@@ -3,7 +3,7 @@ fr:
     waiting_time_format: "%{value} minutes"
     search_no_results: "Aucun arrêt ne correspond à votre recherche"
     no_specific_stops: "Cet arrêt n'a aucun arrêt particulier"
-    no_codes: "Cet arrêt n'a pas de codes"
+    no_codes: "Cet arrêt n'a pas de code"
     errors:
       empty: Aucun stop_area_id
       parent_area_type: ne peut être de type %{area_type}

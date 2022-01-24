@@ -15,7 +15,7 @@ class CodeSpacesController < ChouetteController
   end
 
   def code_space_params
-    params.require(:code_space).permit(:name, :short_name)
+    params.require(:code_space).permit(:name, :short_name, :description)
   end
 
   # def build_resource

@@ -9,6 +9,7 @@ fr:
       code_space:
         short_name: Nom Court
         name: Nom
+        description: Description
   code_spaces:
     actions:
       new: Ajouter un Espace de Code
@@ -33,6 +34,7 @@ en:
       code_space:
         short_name: Short Name
         name: Name
+        description: Description
   code_spaces:
     index:
       title: Code Spaces

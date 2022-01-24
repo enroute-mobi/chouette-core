@@ -24,6 +24,11 @@
                 end \
               ), \
               TableBuilderHelper::Column.new( \
+                key: :description, \
+                attribute: Proc.new { |code_space| code_space.description&.truncate(100) }, \
+                sortable: false \
+              ), \
+              TableBuilderHelper::Column.new( \
                 key: :created_at, \
                 attribute: 'created_at', \
                 sortable: false, \

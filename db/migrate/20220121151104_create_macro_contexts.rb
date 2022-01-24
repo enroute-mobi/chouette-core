@@ -11,7 +11,6 @@ class CreateMacroContexts < ActiveRecord::Migration[5.2]
         t.timestamps
       end
       create_table :macro_context_runs do |t|
-        t.references :macro_context
         t.references :macro_list_run
 
         t.string :name

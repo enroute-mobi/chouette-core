@@ -76,6 +76,8 @@ Apartment.configure do |config|
     'Macro::List',
     'Macro::List::Run',
     'Macro::Message',
+    'Macro::Context',
+    'Macro::Context::Run',
     'Notification',
     'NotificationRule',
     'Organisation',

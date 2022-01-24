@@ -24,6 +24,7 @@ module Macro
     # else
     #   render ...
     # end
+
     class Run < Operation
       # The Workbench where macros are executed
       self.table_name = "macro_list_runs"
@@ -42,7 +43,7 @@ module Macro
       has_many :macro_runs, -> { order(position: :asc) }, class_name: "Macro::Base::Run",
                dependent: :delete_all, foreign_key: "macro_list_run_id"
 
-      has_many :macro_context_runs, class_name: "Macro::Context::Run", dependent: :delete_all, foreign_key: "macro_list_run_id"
+      has_many :macro_context_runs, class_name: "Macro::Context::Run", dependent: :delete_all, foreign_key: "macro_list_run_id", inverse_of: :macro_list_run
 
       validates :name, presence: true
       validates :original_macro_list_id, presence: true, if: :new_record?
@@ -52,6 +53,10 @@ module Macro
 
         original_macro_list.macros.each do |macro|
           macro_runs << macro.build_run
+        end
+
+        original_macro_list.macro_contexts.each do |macro_context|
+          self.macro_context_runs << macro_context.build_run
         end
 
         self.workbench = original_macro_list.workbench
@@ -65,6 +70,7 @@ module Macro
         referential.switch if referential
 
         macro_runs.each(&:run)
+        macro_context_runs.each(&:run)
       end
 
     end

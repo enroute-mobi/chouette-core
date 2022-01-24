@@ -32,8 +32,8 @@ module Chouette
       joins(:codes).where(codes: { code_space: code_space, value: value })
     }
     scope :by_text, ->(text) { text.blank? ? all : where('lower(stop_areas.name) LIKE :t or lower(stop_areas.objectid) LIKE :t', t: "%#{text.downcase}%") }
-    scope :with_compass_bearing_empty, -> { where compass_bearing: nil }
-    scope :without_compass_bearing_empty, -> { where.not compass_bearing: nil }
+    scope :without_compass_bearing, -> { where compass_bearing: nil }
+    scope :with_compass_bearing, -> { where.not compass_bearing: nil }
 
     belongs_to :referent, class_name: 'Chouette::StopArea'
     has_many :specific_stops, class_name: 'Chouette::StopArea', foreign_key: 'referent_id'

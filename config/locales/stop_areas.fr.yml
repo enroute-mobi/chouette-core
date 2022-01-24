@@ -162,7 +162,7 @@ fr:
         referent: "Référent"
         referent_id: "Arrêt référent"
         specific_stops: "Arrêts particuliers"
-        coordinates: "Coordonnées (lat,lng) WGS84"
+        coordinates: "Coordonnées"
         zip_code: "Code postal"
         city_name: "Commune"
         postal_region: "Région postale"

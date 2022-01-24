@@ -160,7 +160,7 @@ en:
         referent: "Referent"
         referent_id: "Referent stop area"
         specific_stops: "Specific stops"
-        coordinates: "Coordinates (lat,lng) WGS84"
+        coordinates: "Coordinates"
         zip_code: "Zip code"
         city_name: "City"
         postal_region: "Postal region"

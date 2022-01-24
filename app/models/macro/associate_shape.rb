@@ -12,7 +12,7 @@ module Macro
       end
 
       def journey_patterns
-        referential.journey_patterns
+        context.journey_patterns
       end
 
       def shapes

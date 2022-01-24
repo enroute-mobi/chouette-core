@@ -6,7 +6,8 @@ module Macro
     validates :name, presence: true
 
     has_many :macros, -> { order(position: :asc) }, class_name: "Macro::Base", dependent: :delete_all, foreign_key: "macro_list_id", inverse_of: :macro_list
-    has_many :macro_list_runs, class_name: 'Macro::List::Run', foreign_key: :original_macro_list_id
+    has_many :macro_list_runs, class_name: "Macro::List::Run", foreign_key: :original_macro_list_id
+    has_many :macro_contexts, class_name: "Macro::Context", foreign_key: "macro_list_id", inverse_of: :macro_list
 
     accepts_nested_attributes_for :macros, allow_destroy: true, reject_if: :all_blank
 
@@ -25,6 +26,8 @@ module Macro
     # end
     class Run < Operation
       # The Workbench where macros are executed
+      self.table_name = "macro_list_runs"
+
       belongs_to :workbench, optional: false
       delegate :workgroup, to: :workbench
 
@@ -38,6 +41,8 @@ module Macro
 
       has_many :macro_runs, -> { order(position: :asc) }, class_name: "Macro::Base::Run",
                dependent: :delete_all, foreign_key: "macro_list_run_id"
+
+      has_many :macro_context_runs, class_name: "Macro::Context::Run", dependent: :delete_all, foreign_key: "macro_list_run_id"
 
       validates :name, presence: true
       validates :original_macro_list_id, presence: true, if: :new_record?

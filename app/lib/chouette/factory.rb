@@ -199,6 +199,9 @@ module Chouette
               transient :with_stops, true
               transient :stop_count, 3
 
+              # Can be used to specify a stop area list to create stop points
+              transient :stop_areas
+
               model :stop_point do
                 attribute(:stop_area) do
                   # TODO create a StopArea with Factory::Model ?
@@ -219,9 +222,16 @@ module Chouette
               end
 
               after do |route|
+                (transient(:stop_areas, resolve_instances: true) || []).each do |stop_area|
+                  stop_point = build_model(:stop_point)
+                  stop_point.stop_area = stop_area
+
+                  route.stop_points << stop_point
+                end
+
                 transient(:stop_count).times do
                   route.stop_points << build_model(:stop_point)
-                end if transient(:with_stops)
+                end if transient(:stop_areas).blank? && transient(:with_stops)
               end
 
               model :journey_pattern do

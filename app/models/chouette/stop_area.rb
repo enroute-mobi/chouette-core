@@ -24,6 +24,7 @@ module Chouette
     has_many :specific_vehicle_journeys, through: :specific_vehicle_journey_at_stops, class_name: 'Chouette::VehicleJourney', source: :vehicle_journey
     has_many :codes, as: :resource, dependent: :delete_all
     has_many :entrances, dependent: :delete_all
+    has_many :macro_messages, as: :source, class_name: "::Macro::Message", foreign_key: :source_id
 
     scope :light, ->{ select(:id, :name, :city_name, :zip_code, :time_zone, :registration_number, :kind, :area_type, :time_zone, :stop_area_referential_id, :objectid) }
     scope :with_time_zone, -> { where.not time_zone: nil }
@@ -31,6 +32,8 @@ module Chouette
       joins(:codes).where(codes: { code_space: code_space, value: value })
     }
     scope :by_text, ->(text) { text.blank? ? all : where('lower(stop_areas.name) LIKE :t or lower(stop_areas.objectid) LIKE :t', t: "%#{text.downcase}%") }
+    scope :without_compass_bearing, -> { where compass_bearing: nil }
+    scope :with_compass_bearing, -> { where.not compass_bearing: nil }
 
     belongs_to :referent, class_name: 'Chouette::StopArea'
     has_many :specific_stops, class_name: 'Chouette::StopArea', foreign_key: 'referent_id'
@@ -510,6 +513,67 @@ module Chouette
         extra << send(f) if stop_area_referential.stops_selection_displayed_fields[f.to_s]
       end
       out + extra.select(&:present?).join(' - ')
+    end
+
+    class << self
+      def compute_bearings(options={})
+        query = <<~TEXT
+          SELECT
+            stop_area_id, AVG(bearing) AS avg_bearing
+          FROM (
+              SELECT DISTINCT
+                stop_area_id,
+                Degrees(
+                  ST_Azimuth(
+                    ST_LineInterpolatePoint(line, (projected_distance - shape_delta  + abs(projected_distance - shape_delta)) / 2),
+                    ST_LineInterpolatePoint(line, ((projected_distance + shape_delta + 1) - abs(projected_distance + shape_delta - 1)) / 2))
+                  ) AS bearing
+              FROM (
+                SELECT *,
+                  10 / ST_LengthSpheroid(line, 'SPHEROID["WGS 84", 6378137, 298.257223563]') AS shape_delta,
+                  ST_LineLocatePoint(line, point) AS projected_distance
+                FROM (
+                  SELECT DISTINCT
+                    journey_patterns.id AS journey_pattern_id,
+                    stop_areas.id AS stop_area_id,
+                    shapes.id AS shape_id,
+                    stop_areas.latitude AS latitude,
+                    stop_areas.longitude AS longitude,
+                    ST_SetSRID(ST_Point(stop_areas.longitude, stop_areas.latitude), 4326) AS point,
+                    shapes.geometry AS line
+                  FROM journey_patterns INNER JOIN public.shapes ON public.shapes.id = journey_patterns.shape_id
+                  INNER JOIN journey_patterns_stop_points ON journey_patterns_stop_points.journey_pattern_id = journey_patterns.id
+                  INNER JOIN stop_points ON stop_points.id = journey_patterns_stop_points.stop_point_id
+                  INNER JOIN public.stop_areas ON public.stop_areas.id = stop_points.stop_area_id
+                  WHERE stop_areas.id #{options[:stop_area]&.id.present? ? ["=", options[:stop_area].id].join : "IS NOT NULL"}
+                  LIMIT #{options[:limit] || 1000}
+                  OFFSET #{(options[:limit] || 1000) *  (options[:page] || 1) - (options[:limit] || 1000)}
+                ) AS inputs
+              ) AS azimuth_points
+          ) AS raw_bearings
+          GROUP BY stop_area_id
+        TEXT
+        ::ActiveRecord::Base.connection.execute(query)
+      end
+
+      def average_bearings(options={})
+        options_ = options.dup
+        options_[:limit] = 5000 unless options_[:limit]
+        options_[:page] = 1 unless options_[:page]
+        options_[:debug_mode] = false
+
+        result = {}
+        loop do
+          avg_bearings = compute_bearings(options_)
+          avg_bearings.each do |h|
+            result[h["stop_area_id"]] = result[h["stop_area_id"]].present? ? (result[h["stop_area_id"]] + h["avg_bearing"]) / 2.0 : h["avg_bearing"]
+          end
+          break if avg_bearings.count < options_[:limit]
+          options_[:page] += 1
+        end
+
+        return result.each { |k,v| result[k] = v.round(1)}
+      end
     end
   end
 end

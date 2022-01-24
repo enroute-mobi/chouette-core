@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_01_11_154109) do
+ActiveRecord::Schema.define(version: 2022_01_24_151311) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -496,6 +496,9 @@ ActiveRecord::Schema.define(version: 2022_01_11_154109) do
     t.datetime "ended_at"
     t.string "token_upload"
     t.string "type"
+    t.bigint "parent_id"
+    t.string "parent_type"
+    t.datetime "notified_parent_at"
     t.integer "current_step", default: 0
     t.integer "total_steps", default: 0
     t.string "creator"
@@ -505,9 +508,6 @@ ActiveRecord::Schema.define(version: 2022_01_11_154109) do
     t.bigint "publication_id"
     t.bigint "workgroup_id"
     t.hstore "options", default: {}
-    t.string "parent_type"
-    t.datetime "notified_parent_at"
-    t.bigint "parent_id"
     t.index ["publication_id"], name: "index_exports_on_publication_id"
     t.index ["referential_id"], name: "index_exports_on_referential_id"
     t.index ["workbench_id"], name: "index_exports_on_workbench_id"
@@ -765,6 +765,19 @@ ActiveRecord::Schema.define(version: 2022_01_11_154109) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["workbench_id"], name: "index_macro_lists_on_workbench_id"
+  end
+
+  create_table "macro_messages", force: :cascade do |t|
+    t.string "source_type"
+    t.bigint "source_id"
+    t.bigint "macro_run_id"
+    t.string "message_key"
+    t.string "criticity"
+    t.jsonb "message_attributes", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["macro_run_id"], name: "index_macro_messages_on_macro_run_id"
+    t.index ["source_type", "source_id"], name: "index_macro_messages_on_source_type_and_source_id"
   end
 
   create_table "macro_runs", force: :cascade do |t|

@@ -15,13 +15,13 @@ fr:
         one:   "Macro"
         other: "Macros"
       macro/create_code:
-        one: Création de code
+        one: Créer un code
       macro/dummy:
-        one: Simulation
+        one: Simuler une instruction
       macro/associate_shape:
-        one: Shape associée
+        one: Associer les Tracés
       macro/update_stop_area_compass_bearing:
-        one: Orientation des Arrêts selon les Tracés
+        one: Définir l'Orientation des Arrêts selon les Tracés
     attributes:
       macro:
         name: Nom

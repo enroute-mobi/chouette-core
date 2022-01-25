@@ -17,11 +17,11 @@ en:
       macro/create_code:
         one: Create Code
       macro/dummy:
-        one: Simulation
+        one: Simulate Macro
       macro/associate_shape:
-        one: Associate Shape
+        one: Associate Shapes
       macro/update_stop_area_compass_bearing:
-        one: Stop Area compass bearing from Shapes
+        one: Define Stop Area compass bearing from Shapes
     attributes:
       macro:
         name: Name

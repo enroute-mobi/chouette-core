@@ -77,17 +77,59 @@ end
 
 namespace :cucumber do
   desc "Remove all test organisations created by cucumber"
-  task :clean_test_organisations, [:delay] => [:environment] do |task, args|
-    args.with_defaults(delay: 2.hour)
+  task :clean_test_organisations => [:environment] do |task|
+    Cleaner.new.load_env.clean
+  end
 
-    organisation_ids = User.where("email like 'test+%@chouette.test'").pluck(:organisation_id).uniq
-    organisations = Organisation.where(id: organisation_ids).where("created_at < ?", Time.now - args[:delay].to_i)
+  class Cleaner
+    def initialize
+      self.delay = 2.hours
+      self.dry_run = false
+    end
 
-    puts "Remove #{organisations.count} test organisation(s)"
+    attr_accessor :delay, :dry_run, :keep_count
 
-    organisations.find_each do |organisation|
-      organisation.workgroups.destroy_all
-      organisation.destroy
+    def load_env
+      self.delay = env('DELAY').hours if env('DELAY')
+      self.keep_count = env('KEEP_COUNT')&.to_i
+      self.dry_run = (env('DRY_RUN') == "true")
+
+      self
+    end
+
+    def env(name)
+      ENV["CHOUETTE_CLEAN_TEST_ORGANISATIONS_#{name}"]
+    end
+
+    def organisations
+      organisations =
+        Organisation.joins(:users).
+          where("users.email like 'test+%@chouette.test'").distinct
+
+      if delay
+        organisations = organisations.where("organisations.created_at < ?", Time.zone.now - delay)
+      end
+
+      if keep_count
+        organisations = organisations.offset(keep_count)
+      end
+
+      organisations
+    end
+
+    def clean
+      puts "Remove #{organisations.count} test organisation(s)"
+
+      organisations.find_each do |organisation|
+        unless dry_run
+          Organisation.transaction do
+            organisation.workgroups.owned.each(&:destroy!)
+            organisation.destroy!
+          end
+        else
+          puts "Destroy Organisation '#{organisation.name}' ##{organisation.id}"
+        end
+      end
     end
   end
 end

@@ -19,11 +19,6 @@ class MacroListDecorator < AF83::Decorator
       l.href { h.new_workbench_macro_list_macro_list_run_path(scope, object) }
     end
 
-    instance_decorator.action_link(on: %i[show index], policy: :show, secondary: :show) do |l|
-      l.content t('macro_list_run.actions.show')
-      l.href { h.workbench_macro_list_runs_path }
-    end
-
     instance_decorator.destroy_action_link
   end
 
@@ -37,8 +32,6 @@ class MacroListDecorator < AF83::Decorator
     attributes = klass.options.map { |k, _| [k, nil] }.to_h # Ensuring that attributes have all options values defined
     attributes.merge!(**macro.attributes.except('position', 'options'))
     attributes.merge!(**macro.options)
-
-    attributes.merge!(name: macro.type) unless attributes['name'] # Set a default name
 
     attributes.merge!(class_description: macro.class.model_name.human) # Set a default class description
 

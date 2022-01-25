@@ -32,10 +32,14 @@
           span = 'activerecord.models.export.other'.t.capitalize
       = link_to workgroup_calendars_path(workbench.workgroup), class: 'list-group-item' do
         span = 'activerecord.models.calendar.other'.t.capitalize
-      = link_to workbench_compliance_check_sets_path(workbench), class: 'list-group-item' do
-        span = 'activerecord.models.compliance_check_set.other'.t.capitalize
       = link_to compliance_control_sets_path, class: 'list-group-item' do
         span = 'activerecord.models.compliance_control_set.other'.t.capitalize
+      = link_to workbench_compliance_check_sets_path(workbench), class: 'list-group-item' do
+        span = 'activerecord.models.compliance_check_set.other'.t.capitalize
+      = link_to workbench_macro_lists_path(workbench), class: "list-group-item" do
+        span = Macro::List.model_name.human(count: 2)
+      = link_to workbench_macro_list_runs_path(workbench), class: "list-group-item" do
+        span = Macro::List::Run.model_name.human(count: 2)
 
     = main_nav_menu_item 'layouts.navbar.stop_area_referential'.t do
       = link_to workbench_stop_area_referential_stop_areas_path(workbench), class: "list-group-item" do

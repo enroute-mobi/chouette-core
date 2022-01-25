@@ -76,4 +76,14 @@ class ExportDecorator < AF83::Decorator
     options.map { |k, v| "#{k} : #{v}"}.join('<br/>').html_safe
   end
 
+  define_instance_method :alpine_state do |is_export|
+    initial_state = { referentialId: object.referential_id, isExport: is_export, type: object.type || 'Export::Gtfs' }
+
+    object.options.reduce(initial_state) do |result, (k, v)|
+      result[k.camelcase(:lower)] = v
+
+      result
+    end.to_json
+  end
+
 end

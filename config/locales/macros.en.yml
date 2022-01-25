@@ -20,6 +20,8 @@ en:
         one: Simulation
       macro/associate_shape:
         one: Associate Shape
+      macro/update_stop_area_compass_bearing:
+        one: Stop Area compass bearing from Shapes
     attributes:
       macro:
         name: Name

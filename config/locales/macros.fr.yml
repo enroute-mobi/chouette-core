@@ -20,6 +20,8 @@ fr:
         one: Simulation
       macro/associate_shape:
         one: Shape associée
+      macro/update_stop_area_compass_bearing:
+        one: Orientation des Arrêts selon les Tracés
     attributes:
       macro:
         name: Nom

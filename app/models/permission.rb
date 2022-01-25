@@ -16,6 +16,7 @@ class Permission
         aggregates
         api_keys
         calendars
+        code_spaces
         compliance_check_sets
         compliance_control_blocks
         compliance_control_sets

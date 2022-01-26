@@ -14,7 +14,7 @@ class NotificationRule < ApplicationModel
 
   # Scopes
   scope :in_period, -> (value) { query.in_period(value).scope }
-  scope :covering, -> (daterange) { where('period @> daterange(:begin, :end)', begin: daterange.min, end: daterange.max) }
+  scope :covering, -> (daterange) { where(period: nil).or where('period @> daterange(:begin, :end)', begin: daterange.min, end: daterange.max) }
   scope :active, -> { covering(Time.zone.today..Time.zone.today) }
   scope :by_email, -> (value) { query.email(value).scope }
   scope :for_statuses, -> (value) { query.operation_statuses(value).scope }

@@ -1,5 +1,5 @@
 class ReferentialAudit
-  class Full < ActiveJob::Base
+  class Full
 
     attr_accessor :mail_content
 
@@ -30,8 +30,8 @@ class ReferentialAudit
       end
     end
 
-    after_perform do |job|
-      AuditMailer.audit(job.mail_content)
+    def after job
+      AuditMailer.audit(job.payload_object.mail_content)
     end
   end
 end

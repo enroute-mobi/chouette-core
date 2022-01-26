@@ -69,9 +69,8 @@ module Chouette
           end
 
           model :notification_rule do
-            attribute(:period) { Range.new(Time.zone.today, Time.zone.today + 10.days) }
             attribute(:priority) { 10 }
-            attribute(:notification_type) { 'hole_sentinel' }
+            attribute(:notification_type) { 'import' }
             attribute(:target_type) { 'workbench' }
             attribute(:operation_statuses) { [] }
             attribute(:line_ids) { [] }

@@ -21,8 +21,39 @@ class Period < Range
     new to: to
   end
 
+  # Period.after(date) returns a Period from the day after the given date
+  # Period.after(period]) returns a Period from the day after the last day of the given period
+  def self.after(date_or_period)
+    date =
+      if date_or_period.respond_to?(:end)
+        date_or_period.end
+      else
+        date_or_period
+      end
+
+    from date+1
+  end
+
+  # Period.before(date) returns a Period until the day before the given date
+  # Period.before(period) returns a Period util the day before the first day of the given period
+  def self.before(date_or_period)
+    date =
+      if date_or_period.respond_to?(:begin)
+        date_or_period.begin
+      else
+        date_or_period
+      end
+
+    self.until date-1
+  end
+
   def until(to)
     self.class.new from: from, to: to
+  end
+
+  def middle
+    return nil if infinite?
+    from + day_count / 2
   end
 
   # period.during(14.days)
@@ -58,8 +89,12 @@ class Period < Range
     from.nil? && to.nil?
   end
 
+  def infinite?
+    from.nil? || to.nil?
+  end
+
   def day_count
-    if from && to
+    unless infinite?
       if from < to
         (to - from).to_i
       else
@@ -68,6 +103,11 @@ class Period < Range
     else
       Float::INFINITY
     end
+  end
+
+  def duration
+    return nil if infinite?
+    day_count.days
   end
 
   def time_range

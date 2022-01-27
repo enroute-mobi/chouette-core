@@ -6,7 +6,6 @@ module Macro
 
     belongs_to :macro_context, class_name: "Macro::Context", optional: true, inverse_of: :macros
     belongs_to :macro_list, class_name: "Macro::List", optional: true, inverse_of: :macros
-    #acts_as_list scope: :macro_list
     acts_as_list scope: 'macro_list_id #{macro_list_id ? "= #{macro_list_id}" : "IS NULL"} AND macro_context_id #{macro_context_id ? "= #{macro_context_id}" : "IS NULL"}'
 
     store :options, coder: JSON
@@ -31,7 +30,6 @@ module Macro
       belongs_to :macro_context_run, class_name: "Macro::Context::Run", optional: true, inverse_of: :macro_runs
       belongs_to :macro_list_run, class_name: "Macro::List::Run", inverse_of: :macro_runs
 
-      #acts_as_list scope: :macro_list_run
       has_many :macro_messages, class_name: "Macro::Message", foreign_key: "macro_run_id", inverse_of: :macro_run
 
       store :options, coder: JSON

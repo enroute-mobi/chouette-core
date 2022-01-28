@@ -43,7 +43,9 @@ module Macro
       end
 
       def run
-        macro_runs.each(&:run)
+        logger.tagged "#{self.class.to_s}(id:#{id||object_id})" do
+          macro_runs.each(&:run)
+        end
       end
     end
 

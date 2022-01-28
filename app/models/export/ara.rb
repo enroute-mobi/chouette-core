@@ -71,7 +71,7 @@ class Export::Ara < Export::Base
     attr_reader :day
 
     def vehicle_journeys
-      current_scope.vehicle_journeys.scheduled_on(day)
+      @vehicle_journeys ||= current_scope.vehicle_journeys.scheduled_on(day)
     end
   end
 
@@ -119,7 +119,7 @@ class Export::Ara < Export::Base
                                                model_class: model_class
       end
 
-      # Provide (unique) value for each Copde Space
+      # Provide (unique) value for each Code Space
       def code_providers
         @code_providers ||= Hash.new do |h, code_space|
           h[code_space] =
@@ -271,7 +271,7 @@ class Export::Ara < Export::Base
     end
 
     def code_provider
-      CodeProvider::Model.new scope: export_scope, model_class: Chouette::StopArea
+      @code_provider ||= CodeProvider::Model.new scope: export_scope, model_class: Chouette::StopArea
     end
 
     # Creates an Ara::StopArea from a StopArea
@@ -320,7 +320,7 @@ class Export::Ara < Export::Base
     end
 
     def code_provider
-      CodeProvider::Model.new scope: export_scope, model_class: Chouette::Line
+      @code_provider ||= CodeProvider::Model.new scope: export_scope, model_class: Chouette::Line
     end
 
     # Creates an Ara::StopArea from a StopArea
@@ -369,7 +369,7 @@ class Export::Ara < Export::Base
     end
 
     def code_provider
-      CodeProvider::Model.new scope: export_scope, model_class: Chouette::VehicleJourney
+      @code_provider ||= CodeProvider::Model.new scope: export_scope, model_class: Chouette::VehicleJourney
     end
 
     # Creates an Ara::StopArea from a StopArea

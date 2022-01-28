@@ -43,7 +43,12 @@ module Query
 			end
 		end
 
-		def line_ids(value)
+		def lines(value)
+      value = if value.blank?
+                []
+              elsif String === value.first || Integer === value.first
+                value.delete_if(&:blank?).map(&:to_i)
+              end
 			change_scope(if: value.present?) do |scope|
 				scope.where(line_ids: []).or(scope.where('line_ids::integer[] && ARRAY[?]', value))
 			end

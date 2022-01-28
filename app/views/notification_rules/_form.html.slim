@@ -3,7 +3,7 @@
     .col-lg-12
       = f.input :notification_type, include_blank: false
       = f.input :priority, type: :integer
-      
+
       .form-group
         = f.label NotificationRule.tmf(:rule_type), class: 'col-sm-4 col-xs-5 control-label'
         = f.input :rule_type, as: :radio_buttons, label: false, wrapper_html: { class: 'date smart_date col-sm-8 col-xs-7', style: 'margin-right: 0px; margin-left: 0px' }
@@ -19,9 +19,11 @@
 
         div
           template[x-if="targetType =='user'"]
-            = f.input :user_ids,
+
+            = f.input :users,
               as: :tom_select,
               collection: @notification_rule.user_items,
+              selected: @notification_rule.user_ids,
               required: true,
               input_html: { multiple: true, ':disabled': "targetType != 'user'" },
               config: { type: 'ajax', url: users_workbench_autocomplete_index_path(@workbench) }
@@ -29,8 +31,8 @@
           template[x-if="targetType =='external_email'"]
             = f.input :external_email,
               required: true,
-              input_html: { ':disabled': "targetType != 'external_email'" } 
-  
+              input_html: { ':disabled': "targetType != 'external_email'" }
+
   h3 = 'Conditions'
   .separator
     .form-group

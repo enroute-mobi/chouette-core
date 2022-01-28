@@ -8,7 +8,7 @@ module Search
     attribute :rule_type
     attribute :operation_statuses
     attribute :period
-    attribute :line_ids
+    attribute :lines
 
     enumerize :notification_type, in: ::NotificationRule.notification_type.values
     enumerize :rule_type, in: ::NotificationRule.rule_type.values, multiple: true
@@ -21,11 +21,11 @@ module Search
         .notification_type(notification_type)
         .rule_type(rule_type)
         .operation_statuses(operation_statuses)
-        .line_ids(line_ids)
+        .lines(lines)
     end
 
     def line_items
-      Rabl::Renderer.new('autocomplete/lines', Chouette::Line.where(id: line_ids), format: :hash, view_path: 'app/views').render
+      Rabl::Renderer.new('autocomplete/lines', Chouette::Line.where(id: lines), format: :hash, view_path: 'app/views').render
     end
 
     def period

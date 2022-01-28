@@ -48,6 +48,10 @@ class NotificationRulesController < ChouetteController
   private
 
   def notification_rule_params
+    # TODO This horrible hack is made to avoid errors when PostgreSQL read empty string for period start and period end
+    puts "*" * 25
+    params['notification_rule']['period'] = nil if params['notification_rule']['period'] == ""
+    puts params.inspect
     params
       .require(:notification_rule)
       .permit(
@@ -57,12 +61,10 @@ class NotificationRulesController < ChouetteController
         :target_type,
         :external_email,
         :period,
-        user_ids: [],
+        users: [],
         operation_statuses: [],
-        line_ids: [],
-        workbench_id: parent.id
+        lines: []
       )
-      .with_defaults(workbench_id: parent.id)
-      .transform_values(&:presence) # Need to remove empty string values because of period column (the pg daterange adapter try to split a non existing range)
+      .with_defaults(workbench_id: parent.id, users: [], external_email: nil) # CHOUETTE-1713 (depending on the chosen target_type, some inputs are disabled, we then need to ensure default values)
   end
 end

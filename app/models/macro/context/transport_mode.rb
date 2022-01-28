@@ -21,7 +21,7 @@ class Macro::Context::TransportMode < Macro::Context
     end
 
     def vehicle_journeys
-      context.vehcile_journeys.where(journey_pattern: journey_patterns)
+      context.vehicle_journeys.where(journey_pattern: journey_patterns)
     end
   end
 end

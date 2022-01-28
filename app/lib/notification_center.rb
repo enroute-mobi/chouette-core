@@ -17,7 +17,7 @@ class NotificationCenter
     rules_scope = rules.where(notification_type: notification_type)
 
     if line_ids.present?
-      rules_scope = rules_scope.for_line_ids(line_ids)
+      rules_scope = rules_scope.for_lines(line_ids)
     end
 
     if period

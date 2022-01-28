@@ -1,10 +1,9 @@
 - form = local_assigns.fetch(:form)
 
-= form.input :line_ids,
+= form.input :lines,
 	as: :tom_select,
-	label: NotificationRule.tmf(:line_ids),
+	label: NotificationRule.tmf(:lines),
 	collection: form.object.line_items,
-	include_hidden: false,
 	selected: form.object.line_ids,
 	config: { type: 'ajax', url: lines_workbench_autocomplete_index_path(@workbench), placeholder: t('simple_form.labels.referential.placeholders.select_lines'), hidePlaceholder: true },
 	input_html: { multiple: true, style: 'width: 35rem' }

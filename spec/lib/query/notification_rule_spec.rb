@@ -10,7 +10,7 @@ RSpec.describe Query::NotificationRule do
 			workgroup owner: :owner_organisation do
 				workbench :email, organisation: :owner_organisation do
 					notification_rule :workbench, target_type: 'workbench'
-					notification_rule :user, target_type: 'user', user_ids: ['test']
+					notification_rule :user, target_type: 'user', users: [:last]
 					notification_rule :external_email, target_type: 'external_email', external_email: 'external@email.com'
 				end
 			end
@@ -37,7 +37,7 @@ RSpec.describe Query::NotificationRule do
 				notification_rule :failed, operation_statuses: ['failed']
 			end
 
-			workbench :line_ids do
+			workbench :lines do
 				notification_rule :all_line_ids, line_ids: []
 				notification_rule :first_line, line_ids: [1]
 				notification_rule :last_line, line_ids: [2]
@@ -131,8 +131,8 @@ RSpec.describe Query::NotificationRule do
     end
   end
 
-  describe '#line_ids' do
-    let(:workbench) { context.workbench(:line_ids) }
+  describe '#lines' do
+    let(:workbench) { context.workbench(:lines) }
     let(:expected_scope) do
       [
         context.notification_rule(:all_line_ids),
@@ -141,7 +141,7 @@ RSpec.describe Query::NotificationRule do
     end
 
     it 'should return the notification type with line_ids <=> [1]' do
-      scope = query.line_ids([1]).scope
+      scope = query.lines([1]).scope
       expect(scope).to match_array(expected_scope)
     end
   end

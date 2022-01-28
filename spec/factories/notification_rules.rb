@@ -7,6 +7,6 @@ FactoryBot.define do
     priority { 10 }
     period { (Date.today...Date.today + 10.days) }
 
-    line_ids { [] }
+    lines { [] }
   end
 end

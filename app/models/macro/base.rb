@@ -36,7 +36,11 @@ module Macro
       # TODO Retrieve options definition from Macro class
       include OptionsSupport
 
-      delegate :referential, :workbench, to: :macro_list_run, allow_nil: true
+      def parent
+        macro_list_run || macro_context_run
+      end
+
+      delegate :referential, :workbench, to: :parent, allow_nil: true
       delegate :workgroup, to: :workbench
 
       # TODO Share this mechanism

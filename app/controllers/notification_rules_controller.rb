@@ -48,10 +48,8 @@ class NotificationRulesController < ChouetteController
   private
 
   def notification_rule_params
-    # TODO This horrible hack is made to avoid errors when PostgreSQL read empty string for period start and period end
-    puts "*" * 25
+    # TODO This horrible hack is made to avoid errors when PostgreSQL read empty string for period
     params['notification_rule']['period'] = nil if params['notification_rule']['period'] == ""
-    puts params.inspect
     params
       .require(:notification_rule)
       .permit(

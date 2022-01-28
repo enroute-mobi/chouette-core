@@ -42,6 +42,6 @@ end
 RSpec.describe Macro::Base do
 
   subject { Macro::Dummy.new }
-  it { is_expected.to belong_to(:macro_list).required(true) }
+  it { is_expected.to belong_to(:macro_list).required(false) }
 
 end

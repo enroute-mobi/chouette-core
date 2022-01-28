@@ -14,6 +14,8 @@ module Search
     enumerize :rule_type, in: ::NotificationRule.rule_type.values, multiple: true
     enumerize :operation_statuses, in: ::NotificationRule.operation_statuses.values, multiple: true
 
+    alias_method :line_ids, :lines
+
     def query
       Query::NotificationRule.new(scope)
         .email(email)

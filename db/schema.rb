@@ -142,6 +142,8 @@ ActiveRecord::Schema.define(version: 2022_01_24_151311) do
     t.string "short_name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "name"
+    t.string "description"
     t.index ["workgroup_id"], name: "index_code_spaces_on_workgroup_id"
   end
 
@@ -742,14 +744,12 @@ ActiveRecord::Schema.define(version: 2022_01_24_151311) do
   end
 
   create_table "macro_context_runs", force: :cascade do |t|
-    t.bigint "macro_context_id"
     t.bigint "macro_list_run_id"
     t.string "name"
     t.jsonb "options", default: {}
     t.text "comments"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["macro_context_id"], name: "index_macro_context_runs_on_macro_context_id"
     t.index ["macro_list_run_id"], name: "index_macro_context_runs_on_macro_list_run_id"
   end
 
@@ -775,7 +775,6 @@ ActiveRecord::Schema.define(version: 2022_01_24_151311) do
     t.datetime "ended_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["original_macro_list_id"], name: "index_macro_list_runs_on_original_macro_list_id"
     t.index ["referential_id"], name: "index_macro_list_runs_on_referential_id"
     t.index ["workbench_id"], name: "index_macro_list_runs_on_workbench_id"
   end

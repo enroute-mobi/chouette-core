@@ -34,6 +34,10 @@ body {
     margin: 30px auto 0 auto;
   }
 }
+
+.simple-separator {
+  border-bottom: 1px solid $grey;
+}
 .content_header {
   font-size: 2.2rem;
   font-weight: normal;

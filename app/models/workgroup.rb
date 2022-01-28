@@ -6,6 +6,13 @@ class Workgroup < ApplicationModel
   belongs_to :stop_area_referential, dependent: :destroy, required: true
   belongs_to :shape_referential, dependent: :destroy, required: true
 
+  # Ensure StopAreaReferential and LineReferential (and their contents)
+  # are destroyed before other relations
+  before_destroy(prepend: true)  do |workgroup|
+    workgroup.stop_area_referential&.destroy!
+    workgroup.line_referential&.destroy!
+  end
+
   belongs_to :owner, class_name: "Organisation", required: true
   belongs_to :output, class_name: 'ReferentialSuite', dependent: :destroy, required: true
 

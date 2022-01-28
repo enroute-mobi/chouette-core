@@ -1,0 +1,19 @@
+- breadcrumb :code_space, @workgroup, @code_space
+- page_header_content_for @code_space
+
+- Rails.logger.debug @code_space.inspect
+- Rails.logger.debug params[:action].inspect
+- Rails.logger.debug @code_space.action_links(params[:action]).inspect
+
+/ PageContent
+.page_content
+  .container-fluid
+    .row
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = definition_list t("metadatas"),
+          {  \
+            CodeSpace.tmf('short_name') => @code_space.short_name, \
+            CodeSpace.tmf('name') => @code_space.name, \
+            CodeSpace.tmf('created_at') => @code_space.created_at, \
+            CodeSpace.tmf('updated_at') => @code_space.updated_at \
+          }

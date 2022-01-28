@@ -1,6 +1,6 @@
 - content_for :additional_packs, 'macro_lists/form'
 
-= simple_form_for [@workbench, @macro_list], html: {class: 'form-horizontal', id: 'macro_list_form'}, wrapper: false do |f|
+= simple_form_for [@workbench, @macro_list], html: {class: 'form-horizontal', id: 'macro_list_form'}, wrapper: :horizontal_form do |f|
   .row
     .col-lg-12
       = f.input :name
@@ -8,7 +8,7 @@
   .row
     h2
       = t("macro.form.sections.macros")
-    .separator.mb-5
+    .simple-separator.mb-5
     .w-full-px-5
       div[x-data="{ store: $store.macroList}"]
         template[x-if="!!store"]
@@ -17,18 +17,20 @@
               template[x-for="(macro, index) in store.macros"]
                 = render 'macro_fields', f: macro_form
 
-            .flex.flex-col.mt-5
-              = simple_fields_for(:macro_select) do |macro_select_form|
-                = f.label Macro::List.human_attribute_name(:type), class: 'mb-3'
-                = macro_select_form.input :type, as: :tom_select, collection: @macro_list.macro_options, input_html: { 'x-model': 'store.selectedType' }, wrapper: false, label: false
+            .flex.flex-col.items-center.mt-5
+              .flex.items-center.w-full.mb-8
+                = simple_fields_for(:macro_select) do |macro_select_form|
+                  = f.label t('macro_lists.form.macro_type'), class: 'mb-3'
+                  .w-full.mx-5
+                    = macro_select_form.input :type, as: :tom_select, collection: @macro_list.macro_options, placeholder: "#{I18n.t('macro_lists.form.macro_type_placeholder')}", input_html: { 'x-model': 'store.selectedType' }, wrapper: false, label: false
 
-              template[x-if="store.selectedType == ''"]
-                .links.nested-linker
-                  = button_tag 'Add Macro', class: 'btn btn-primary', disabled: true
-              - Macro.available.map do |m|
-                template[x-if="store.selectedType == '#{m.name}'"]
-                  .links.nested-linker
-                    = button_tag 'Add Macro', class: 'btn btn-primary', '@click.prevent': "store.addMacro(#{@macro_list.macro_json(m.new)})"
+                template[x-if="store.selectedType == ''"]
+                  .links
+                    = button_tag t('macro_lists.form.add'), class: 'btn btn-primary', disabled: true
+                - Macro.available.map do |m|
+                  template[x-if="store.selectedType == '#{m.name}'"]
+                    .links
+                      = button_tag t('macro_lists.form.add'), class: 'btn btn-primary', '@click.prevent': "store.addMacro(#{@macro_list.macro_json(m.new)})"
 
   = cancel_button
   = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'macro_list_form'

@@ -1,0 +1,44 @@
+- breadcrumb :code_spaces, @workgroup
+
+.page_content
+  .container-fluid
+    - if @code_spaces.any?
+      .row
+        .col-lg-12
+          = table_builder_2 @code_spaces,
+            [ \
+              TableBuilderHelper::Column.new( \
+                key: :short_name, \
+                attribute: 'short_name', \
+                sortable: false, \
+                link_to: lambda do |code_space| \
+                  workgroup_code_space_path(@workgroup,code_space) \
+                end \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :name, \
+                attribute: 'name', \
+                sortable: false, \
+                link_to: lambda do |code_space| \
+                  workgroup_code_space_path(@workgroup,code_space) \
+                end \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :description, \
+                attribute: Proc.new { |code_space| code_space.description&.truncate(100) }, \
+                sortable: false \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :created_at, \
+                attribute: 'created_at', \
+                sortable: false, \
+              ), \
+            ],\
+            cls: 'table has-filter has-search'
+
+          = new_pagination @code_spaces, 'pull-right'
+
+    - if @code_spaces.blank?
+      .row.mt-xs
+        .col-lg-12
+          = replacement_msg t('code_spaces.search_no_results')

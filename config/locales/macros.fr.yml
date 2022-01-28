@@ -5,7 +5,7 @@ fr:
       send_to_top:  Envoyer au début
       move_up: Remonter
       move_down: Descendre
-      send_to_bottom: Envoyer vers le bas
+      send_to_bottom: Envoyer à la fin
       delete: Supprimer
       restore: Restaurer
   activerecord:
@@ -15,9 +15,13 @@ fr:
         one:   "Macro"
         other: "Macros"
       macro/create_code:
-        one: Create Code
+        one: Créer un code
       macro/dummy:
-        one: Simulation
+        one: Simuler une instruction
+      macro/associate_shape:
+        one: Associer les Tracés
+      macro/update_stop_area_compass_bearing:
+        one: Définir l'Orientation des Arrêts selon les Tracés
     attributes:
       macro:
         name: Nom

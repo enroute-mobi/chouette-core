@@ -132,23 +132,25 @@ class Operation  < ApplicationModel
   protected
 
   def around_perform(&block)
-    logger.tagged operation_description do
-      uuid = nil
-      begin
-        if status.in?([Operation.status.running, Operation.status.done])
-          logger.warn "Skip operation since status is already #{status}"
-          return
+    CustomFieldsSupport.within_workgroup(workgroup) do
+      logger.tagged operation_description do
+        uuid = nil
+        begin
+          if status.in?([Operation.status.running, Operation.status.done])
+            logger.warn "Skip operation since status is already #{status}"
+            return
+          end
+
+          Chouette::Benchmark.measure(self.class.to_s, id: id) do
+            change_status Operation.status.running, started_at: Time.zone.now
+            block.call
+          end
+        rescue => e
+          self.error_uuid = uuid = Chouette::Safe.capture("Operation #{operation_description} failed", e)
         end
 
-        Chouette::Benchmark.measure(self.class.to_s, id: id) do
-          change_status Operation.status.running, started_at: Time.zone.now
-          block.call
-        end
-      rescue => e
-        self.error_uuid = uuid = Chouette::Safe.capture("Operation #{operation_description} failed", e)
+        change_status Operation.status.done, ended_at: Time.zone.now, error_uuid: uuid
       end
-
-      change_status Operation.status.done, ended_at: Time.zone.now, error_uuid: uuid
     end
   end
 

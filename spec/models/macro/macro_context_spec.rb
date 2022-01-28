@@ -1,4 +1,4 @@
-RSpec.describe Macro::Context::TransportMode::Run do
+RSpec.describe Macro::Context do
   let(:macro_list) do
     Macro::List.create name: "Macro List 1", workbench: context.workbench
   end
@@ -8,7 +8,7 @@ RSpec.describe Macro::Context::TransportMode::Run do
   end
 
   let(:macro_context_run) do
-    Macro::Context::Run.create name: "Macro Context Run 1", macro_list_run: macro_list_run, options: {transport_mode: "bus"}
+    Macro::Context::Run.create name: "Macro Context Run 1", macro_list_run: macro_list_run, options: {transport_mode: "bus"}, type: "Macro::Context::Run"
   end
 
   let(:macro_run) { Macro::Base::Run.new macro_list_run: macro_list_run, macro_context_run: macro_context_run}

@@ -84,10 +84,6 @@ module Macro
         #
         # models.left_joins(:codes).where(codes: { code_space: code_space, id: nil }))
         # doesn't work
-      end
-
-      def context
-        referential || workbench
         models.where.not(id: models.joins(:codes).where(code_model => { code_space_id: code_space }))
       end
     end

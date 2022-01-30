@@ -3,10 +3,7 @@ module Macro
 
     class Run < Macro::Base::Run
       def run
-        return unless referential
-
-        average_bearings = referential.stop_areas.average_bearings
-        referential.stop_areas.without_compass_bearing.find_each do |stop_area|
+        stop_areas.find_each do |stop_area|
           stop_area.compass_bearing = average_bearings[stop_area.id]
           if stop_area.save
             self.macro_messages.create(
@@ -22,6 +19,14 @@ module Macro
             )
           end
         end
+      end
+
+      def stop_areas
+        context.stop_areas.without_compass_bearing
+      end
+
+      def average_bearings
+        @average_bearings ||= stop_areas.average_bearings
       end
     end
   end

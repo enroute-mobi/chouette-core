@@ -5,7 +5,7 @@ RSpec.describe Macro::UpdateStopAreaCompassBearing do
   end
 
   describe Macro::UpdateStopAreaCompassBearing::Run do
-    subject(:macro_run) { Macro::UpdateStopAreaCompassBearing::Run.create macro_list_run: macro_list_run }
+    subject(:macro_run) { Macro::UpdateStopAreaCompassBearing::Run.create macro_list_run: macro_list_run, position: 0 }
 
     let(:macro_list_run) do
       Macro::List::Run.create referential: context.referential, workbench: context.workbench

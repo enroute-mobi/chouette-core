@@ -27,10 +27,14 @@ module Macro
         # - read all source value (with cursor)
         # - compute all target value
         # - create all required codes with inserter ?
-        models_without_code.find_each do |model|
-          code_value = target.value(source.value(model))
-          Rails.logger.debug { "Create code '#{code_value}' for #{model.class}##{model.id}" }
-          model.codes.create! code_space: code_space, value: code_value
+        models_without_code.find_in_batches do |batch|
+          model_class.transaction do
+            batch.each do |model|
+              code_value = target.value(source.value(model))
+              Rails.logger.debug { "Create code '#{code_value}' for #{model.class}##{model.id}" }
+              model.codes.create! code_space: code_space, value: code_value
+            end
+          end
         end
       end
 
@@ -50,12 +54,23 @@ module Macro
         @code_space ||= workgroup.code_spaces.find_by(short_name: target_code_space)
       end
 
+      def model_class
+        @model_class ||=
+          "Chouette::#{target_model}".constantize rescue nil || target_model.constantize
+      end
+
       def model_collection
         target_model.underscore.pluralize
       end
 
       def models
         @models ||= context.send(model_collection)
+      end
+
+      def code_model
+        # FIXME
+        model_class == Chouette::VehicleJourney ?
+          :referential_codes : :codes
       end
 
       def models_without_code
@@ -69,11 +84,7 @@ module Macro
         #
         # models.left_joins(:codes).where(codes: { code_space: code_space, id: nil }))
         # doesn't work
-        models.where.not(id: models.joins(:codes).where(codes: { code_space: code_space }))
-      end
-
-      def context
-        referential || workbench
+        models.where.not(id: models.joins(:codes).where(code_model => { code_space_id: code_space }))
       end
     end
 

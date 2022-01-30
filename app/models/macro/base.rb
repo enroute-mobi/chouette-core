@@ -4,8 +4,9 @@ module Macro
 
     self.table_name = "macros"
 
-    belongs_to :macro_list, class_name: "Macro::List", optional: false, inverse_of: :macros
-    acts_as_list scope: :macro_list
+    belongs_to :macro_context, class_name: "Macro::Context", optional: true, inverse_of: :macros
+    belongs_to :macro_list, class_name: "Macro::List", optional: true, inverse_of: :macros
+    acts_as_list scope: 'macro_list_id #{macro_list_id ? "= #{macro_list_id}" : "IS NULL"} AND macro_context_id #{macro_context_id ? "= #{macro_context_id}" : "IS NULL"}'
 
     store :options, coder: JSON
 
@@ -26,15 +27,20 @@ module Macro
     class Run < ApplicationModel
       self.table_name = "macro_runs"
 
-      belongs_to :macro_list_run, class_name: "Macro::List::Run"
-      acts_as_list scope: :macro_list_run
+      belongs_to :macro_context_run, class_name: "Macro::Context::Run", optional: true, inverse_of: :macro_runs
+      belongs_to :macro_list_run, class_name: "Macro::List::Run", inverse_of: :macro_runs
+
       has_many :macro_messages, class_name: "Macro::Message", foreign_key: "macro_run_id", inverse_of: :macro_run
 
       store :options, coder: JSON
       # TODO Retrieve options definition from Macro class
       include OptionsSupport
 
-      delegate :referential, :workbench, to: :macro_list_run, allow_nil: true
+      def parent
+        macro_list_run || macro_context_run
+      end
+
+      delegate :referential, :workbench, to: :parent, allow_nil: true
       delegate :workgroup, to: :workbench
 
       # TODO Share this mechanism
@@ -56,6 +62,10 @@ module Macro
 
       def logger
         Rails.logger
+      end
+
+      def context
+        macro_context_run || referential || workbench
       end
 
       protected

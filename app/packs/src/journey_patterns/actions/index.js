@@ -138,27 +138,31 @@ const actions = {
       headers: {
         'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
       }
-    }).then(response => {
-        if(!response.ok) {
-          hasError = true
-        }
-        return response.json()
-      }).then((json) => {
-        if(hasError == true) {
-          dispatch(actions.receiveErrors(json))
+    })
+    .then(response => {
+      if(!response.ok) {
+        hasError = true
+      }
+      return response.json()
+    })
+    .then((json) => {
+      if(hasError == true) {
+        dispatch(actions.receiveErrors(json))
+      } else {
+        if(next) {
+          dispatch(next)
         } else {
-          if(next) {
-            dispatch(next)
-          } else {
-            if(json.length != window.currentItemsLength){
-              dispatch(actions.updateTotalCount(window.currentItemsLength - json.length))
-            }
-            window.currentItemsLength = json.length
-            dispatch(actions.exitEditMode())
-            dispatch(actions.receiveJourneyPatterns(json))
+          if(json.length != window.currentItemsLength){
+            dispatch(actions.updateTotalCount(window.currentItemsLength - json.length))
           }
+          window.currentItemsLength = json.length
         }
-      })
+      }
+    })
+    .then(() => {
+      dispatch(actions.exitEditMode())
+      actions.fetchJourneyPatterns(dispatch)
+    })
   },
   fetchJourneyPatterns : (dispatch, currentPage, nextPage) => {
     if(currentPage == undefined){

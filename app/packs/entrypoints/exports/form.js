@@ -1,7 +1,5 @@
 import Alpine from 'alpinejs'
 
-window.Alpine = Alpine
-
 Alpine.store('export', {
 	ready: true,
 	type: 'Export::Gtfs',

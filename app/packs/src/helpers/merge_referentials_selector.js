@@ -63,7 +63,6 @@ class MergeReferentialsSelector {
   }
 
   initSortables() {
-    console.log(this.container.find(".source-referentials li"))
     this.container.find(".source-referentials li").draggable({
       connectToSortable: ".target",
       placeholder: "placeholder",

@@ -1,16 +1,9 @@
 - is_export = resource_type == :options
-- exported_lines = @export.exported_lines rescue 'all_line_ids'
+- alpine_state = @export.alpine_state(is_export)
 
 div[
   x-data
-  x-init="
-    $store.export.setState({
-      referentialId: '#{@export.referential_id}',
-      isExport: #{is_export},
-      type: '#{@export.type || 'Export::Gtfs'}',
-      exportedLines: '#{exported_lines}'
-    })
-  "
+  x-init="$store.export.setState(#{alpine_state})"
 ]
   = form.simple_fields_for(resource_type, @export) do |sub_form|
     - type_form = is_export ? form : sub_form

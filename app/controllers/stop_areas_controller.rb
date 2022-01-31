@@ -184,6 +184,7 @@ class StopAreasController < ChouetteController
       :city_name,
       :comment,
       :coordinates,
+      :compass_bearing,
       :country_code,
       :fare_code,
       :referent_only,

@@ -35,7 +35,7 @@ class PublicationSetupsController < ChouetteController
   private
 
   def build_export
-    @export = build_resource.export
+    @export = build_resource.export.decorate
   end
 
   def publication_setup_params

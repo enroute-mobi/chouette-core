@@ -14,6 +14,7 @@
 							TableBuilderHelper::Column.new( \
                 key: :status, \
                 attribute: :status, \
+                attribute: Proc.new { |n| n.status.present? ? t("enumerize.operation.status.#{n.try(:status)}") : "-" } \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :name, \
@@ -34,12 +35,12 @@
               ), \
               TableBuilderHelper::Column.new( \
                 key: :created_at, \
-                attribute: :created_at, \
+                attribute: Proc.new { |n| l(n.created_at, format: :short_with_time) if n.created_at }, \
                 sortable: false,\
               ), \
               TableBuilderHelper::Column.new( \
                 key: :duration, \
-                attribute: Proc.new { |m| m.duration }, \
+                attribute: Proc.new { |object| object.ended_at.presence && object.started_at.presence && duration_in_words(object.ended_at - object.started_at)}, \
                 sortable: false,\
               ), \
               TableBuilderHelper::Column.new( \
@@ -56,4 +57,4 @@
     - unless @macro_list_runs.any?
       .row.mt-xs
         .col-lg-12
-          = replacement_msg t('macro.search_no_results')
+          = replacement_msg t('macro_list_run.search_no_results')

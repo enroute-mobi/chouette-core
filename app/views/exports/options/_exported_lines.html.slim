@@ -5,7 +5,7 @@ div[x-data="{ store: $store.export }"]
     include_blank: false,
     input_html: { \
       'x-model': 'store.exportedLines', \
-      'x-bind:disabled': "store.isExport && store.referentialId == ''", \
+      'x-bind:disabled': "store.isExport && !Boolean(store.referentialId)", \
     }
 
   template[x-if="store.exportedLines == 'line_ids'"]

@@ -24,7 +24,7 @@
               ), \
               TableBuilderHelper::Column.new( \
                 key: :comments, \
-                attribute: :comments, \
+                attribute: ->(l){ truncate(l.comments, length: 150) }, \
                 sortable: false \
               ), \
               TableBuilderHelper::Column.new( \
@@ -41,4 +41,4 @@
     - unless @macro_lists.any?
       .row.mt-xs
         .col-lg-12
-          = replacement_msg t('macro.search_no_results')
+          = replacement_msg t('macro_lists.search_no_results')

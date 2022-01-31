@@ -1,10 +1,9 @@
 describe "/lines/new", :type => :view do
-
-  let(:context) { Chouette.create { line_provider } }
+  let(:context) { Chouette.create { line } }
 
   let!(:workbench) { assign :workbench, context.workbench }
   let!(:line_referential) { assign :line_referential, context.line_referential }
-  let!(:line) { assign :line, context.line_provider.lines.build(name: 'Test') }
+  let!(:line) { assign :line, context.line }
 
   describe "form" do
     before :each do

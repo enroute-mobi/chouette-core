@@ -110,12 +110,12 @@ RSpec.describe Export::Ara do
           it { is_expected.to_not include(an_object_having_attributes(objectids: {"external" => "dummy"})) }
         end
 
-        context "when one of the Line has a code 'test': 'dummy", pending: "no code for line for the moment" do
+        context "when one of the Line has a code 'test': 'dummy" do
           before { line.codes.create!(code_space: code_space, value: "dummy") }
           it { is_expected.to include(an_object_having_attributes(objectids: {"test" => "dummy"})) }
         end
 
-        context "when all Lines has a code 'test': 'dummy", pending: "no code for line for the moment" do
+        context "when all Lines has a code 'test': 'dummy" do
           before do
             scope.lines.each do |line|
               line.codes.create! code_space: code_space, value: "dummy"

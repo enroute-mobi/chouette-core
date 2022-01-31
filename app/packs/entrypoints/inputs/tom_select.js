@@ -60,9 +60,7 @@ class ConfigBuilder {
   }
 }
 
-window.initTomSelect = select => {
-  const config = JSON.parse(select.dataset.config)
-
+window.initTomSelect = (select, config) => {
   if (!Boolean(select.tomselect)) { // if Tom Select has already been initialized on input it raises an error
     const tomSelect = new TomSelect(select, ConfigBuilder.call(select, config))
 

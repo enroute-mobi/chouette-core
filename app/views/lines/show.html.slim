@@ -23,6 +23,14 @@
              Chouette::Line.tmf(:seasonal) => boolean_icon(@line.seasonal),
              Chouette::Line.tmf(:comment) => @line.comment.presence || '-' }
 
+        = simple_block_for @line, title: Chouette::StopArea.tmf(:codes) do |d|
+          - if @line.codes.empty?
+            .mb-xs
+              = replacement_msg t('lines.no_codes')
+          - else
+            - @line.codes.each do |c|
+              = d.attribute :value, label: c.code_space.short_name, object: c
+
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = definition_list t("lines.form.sections.location"),
           {  Chouette::Line.tmf(:network_id) => (@line.network.blank? ? t('lines.index.unset') : link_to(@line.network.name, workbench_line_referential_network_path(@workbench, @line.network))),

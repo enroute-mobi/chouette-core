@@ -15,6 +15,7 @@ en:
   macro_lists:
     actions:
       new: "Add a Macro List"
+      show: "Show Macro Lists Run"
     search_no_results: "No Macro Lists match your search"
     errors:
     edit:
@@ -26,6 +27,10 @@ en:
     form:
       sections:
         macros: "Macro Lists"
+      macro_placeholder: "Describe the macro objective"
+      macro_type_placeholder: "Add a first macro by selecting its type"
+      macro_type: "Macro Type"
+      add: "Add a new Macro"
     filters:
   activerecord:
     models:

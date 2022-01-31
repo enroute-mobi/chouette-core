@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_01_07_120759) do
+ActiveRecord::Schema.define(version: 2022_01_28_083110) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -142,6 +142,8 @@ ActiveRecord::Schema.define(version: 2022_01_07_120759) do
     t.string "short_name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "name"
+    t.string "description"
     t.index ["workgroup_id"], name: "index_code_spaces_on_workgroup_id"
   end
 
@@ -496,6 +498,9 @@ ActiveRecord::Schema.define(version: 2022_01_07_120759) do
     t.datetime "ended_at"
     t.string "token_upload"
     t.string "type"
+    t.bigint "parent_id"
+    t.string "parent_type"
+    t.datetime "notified_parent_at"
     t.integer "current_step", default: 0
     t.integer "total_steps", default: 0
     t.string "creator"
@@ -505,9 +510,6 @@ ActiveRecord::Schema.define(version: 2022_01_07_120759) do
     t.bigint "publication_id"
     t.bigint "workgroup_id"
     t.hstore "options", default: {}
-    t.string "parent_type"
-    t.datetime "notified_parent_at"
-    t.bigint "parent_id"
     t.index ["publication_id"], name: "index_exports_on_publication_id"
     t.index ["referential_id"], name: "index_exports_on_referential_id"
     t.index ["workbench_id"], name: "index_exports_on_workbench_id"
@@ -741,6 +743,28 @@ ActiveRecord::Schema.define(version: 2022_01_07_120759) do
     t.index ["secondary_company_ids"], name: "index_lines_on_secondary_company_ids", using: :gin
   end
 
+  create_table "macro_context_runs", force: :cascade do |t|
+    t.bigint "macro_list_run_id"
+    t.string "name"
+    t.jsonb "options", default: {}
+    t.text "comments"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "type", null: false
+    t.index ["macro_list_run_id"], name: "index_macro_context_runs_on_macro_list_run_id"
+  end
+
+  create_table "macro_contexts", force: :cascade do |t|
+    t.bigint "macro_list_id"
+    t.string "name"
+    t.jsonb "options", default: {}
+    t.text "comments"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "type", null: false
+    t.index ["macro_list_id"], name: "index_macro_contexts_on_macro_list_id"
+  end
+
   create_table "macro_list_runs", force: :cascade do |t|
     t.bigint "workbench_id"
     t.string "name"
@@ -767,6 +791,19 @@ ActiveRecord::Schema.define(version: 2022_01_07_120759) do
     t.index ["workbench_id"], name: "index_macro_lists_on_workbench_id"
   end
 
+  create_table "macro_messages", force: :cascade do |t|
+    t.string "source_type"
+    t.bigint "source_id"
+    t.bigint "macro_run_id"
+    t.string "message_key"
+    t.string "criticity"
+    t.jsonb "message_attributes", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["macro_run_id"], name: "index_macro_messages_on_macro_run_id"
+    t.index ["source_type", "source_id"], name: "index_macro_messages_on_source_type_and_source_id"
+  end
+
   create_table "macro_runs", force: :cascade do |t|
     t.string "type", null: false
     t.bigint "macro_list_run_id"
@@ -776,6 +813,8 @@ ActiveRecord::Schema.define(version: 2022_01_07_120759) do
     t.jsonb "options", default: {}
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "macro_context_run_id"
+    t.index ["macro_context_run_id"], name: "index_macro_runs_on_macro_context_run_id"
     t.index ["macro_list_run_id", "position"], name: "index_macro_runs_on_macro_list_run_id_and_position", unique: true
     t.index ["macro_list_run_id"], name: "index_macro_runs_on_macro_list_run_id"
   end
@@ -789,6 +828,8 @@ ActiveRecord::Schema.define(version: 2022_01_07_120759) do
     t.jsonb "options", default: {}
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "macro_context_id"
+    t.index ["macro_context_id"], name: "index_macros_on_macro_context_id"
     t.index ["macro_list_id", "position"], name: "index_macros_on_macro_list_id_and_position", unique: true
     t.index ["macro_list_id"], name: "index_macros_on_macro_list_id"
   end
@@ -1204,6 +1245,7 @@ ActiveRecord::Schema.define(version: 2022_01_07_120759) do
     t.string "postal_region"
     t.bigint "stop_area_provider_id"
     t.string "public_code"
+    t.float "compass_bearing"
     t.index ["name"], name: "index_stop_areas_on_name"
     t.index ["objectid", "stop_area_referential_id"], name: "stop_areas_objectid_key", unique: true
     t.index ["parent_id"], name: "index_stop_areas_on_parent_id"
@@ -1473,6 +1515,8 @@ ActiveRecord::Schema.define(version: 2022_01_07_120759) do
   add_foreign_key "journey_patterns", "stop_points", column: "departure_stop_point_id", name: "departure_point_fkey", on_delete: :nullify
   add_foreign_key "journey_patterns_stop_points", "journey_patterns", name: "jpsp_jp_fkey", on_delete: :cascade
   add_foreign_key "journey_patterns_stop_points", "stop_points", name: "jpsp_stoppoint_fkey", on_delete: :cascade
+  add_foreign_key "macro_runs", "macro_context_runs"
+  add_foreign_key "macros", "macro_contexts"
   add_foreign_key "referentials", "referential_suites"
   add_foreign_key "routes", "routes", column: "opposite_route_id", name: "route_opposite_route_fkey"
   add_foreign_key "stop_areas", "stop_areas", column: "parent_id", name: "area_parent_fkey", on_delete: :nullify

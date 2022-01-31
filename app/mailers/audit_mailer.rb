@@ -8,8 +8,8 @@ class AuditMailer < ApplicationMailer
     audit(opts).deliver
   end
 
-  def audit opts={}
-    @content = ReferentialAudit::Full.new.perform(opts.update({output: :html})).join("</td></tr><tr><td>")
+  def audit content
+    @content = content
     mail to: Rails.configuration.automated_audits_recipients, subject: t('mailers.audit_mailer.audit.subject', date: Time.now.l, host: URI.parse(Rails.application.config.action_mailer.asset_host).host)
   end
 end

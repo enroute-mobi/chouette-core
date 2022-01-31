@@ -32,8 +32,8 @@ en:
         period_start: Start date
         period_end: End date
         notification_type: Notification type
-        line_ids: Associated lines
-        user_ids: Users
+        lines: Associated lines
+        users: Users
         name: "%{notification_type} from %{from} to %{to}"
         priority: Priority
         target_type: Target type

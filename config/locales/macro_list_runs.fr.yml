@@ -1,34 +1,40 @@
 fr:
   macro/list/runs:
     index:
-      title: Rapports de Jeu d'instructions
+      title: Rapports de Jeux d'instructions
     show:
       title: "%{name}"
     new:
-      title: "Créer un rapport"
+      title: "Exécuter un Jeu d’instructions"
     actions:
       create: "Créer un rapport"
       show: "Afficher ce Rapport de Jeu d'instructions"
-      new: "Executer ce Jeu d'instructions"
+      new: "Exécuter un Jeu d'instructions"
       destroy: "Supprimer ce Rapport de Jeu d'instructions"
       destroy_confirm: "Etes vous sûr de supprimer ce Rapport de Jeu d'instructions ?"
+  macro_list_runs:
+    actions:
+      new: "Exécuter un Jeu d'instructions"
   macro_list_run:
+    actions:
+      new: "Exécuter un Jeu d'instructions"
+      show: "Voir les Jeux d'instructions"
+      create: "Exécuter un Jeu d’instructions"
     new:
-      title: "Créer un rapport"
+      title: "Exécuter un Jeu d’instructions"
     index:
-      title: "Rapports de Jeu d'instructions"
+      title: "Rapports de Jeux d'instructions"
     show:
       title: "%{name}"
-    actions:
-      create: "Créer un rapport"
-      new: "Executer ce Jeu d'instructions"
-      show: "Voir les Jeu d'instructions"
-    search_no_results: "Aucun Rapport de Jeu d'instructions ne correspond à votre recherche"
+      section:
+        processing: Traitement
+        information: Information
+    search_no_results: "Aucun Rapport de Jeux d'instructions ne correspond à votre recherche"
   activerecord:
     models:
       macro/list/run:
         zero:  "Rapport de jeu d'instructions"
-        one:   "Rapport de jeu d'instruction"
+        one:   "Rapport de jeu d'instructions"
         other: "Rapports de jeux d'instructions"
     attributes:
       macro:
@@ -37,12 +43,12 @@ fr:
             status: Statut
             name: Nom
             created_by: Créer par
-            creator: "Creator"
-            original_macro_list_id: "Name"
-            referential_id: "Target"
+            creator: "Créateur"
+            original_macro_list_id: "Jeu d'instructions"
+            referential_id: "Cible"
             started_at: "Date et heure de lancement"
             duration: Durée
-            created_at: "Créer le"
+            created_at: "Crée le"
             updated_at: "Edité le"
-            creator_id: "Créer par"
+            creator_id: "Crée par"
             ended_at: Fini le

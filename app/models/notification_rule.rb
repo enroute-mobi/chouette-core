@@ -14,18 +14,18 @@ class NotificationRule < ApplicationModel
 
   # Scopes
   scope :in_period, -> (value) { query.in_period(value).scope }
-  scope :covering, -> (daterange) { where('period @> daterange(:begin, :end)', begin: daterange.min, end: daterange.max) }
+  scope :covering, -> (daterange) { where(period: nil).or where('period @> daterange(:begin, :end)', begin: daterange.min, end: daterange.max) }
   scope :active, -> { covering(Time.zone.today..Time.zone.today) }
   scope :by_email, -> (value) { query.email(value).scope }
   scope :for_statuses, -> (value) { query.operation_statuses(value).scope }
-  scope :for_line_ids, -> (value) { query.line_ids(value).scope }
+  scope :for_lines, -> (value) { query.lines(value).scope }
 
   def self.for_operation(operation)
     operation_scope = for_statuses([operation.status]).
                       where(notification_type: operation.class.model_name.singular)
 
-    if operation.respond_to? :line_ids
-      operation_scope = operation_scope.for_line_ids operation.line_ids
+    if operation.respond_to? :lines
+      operation_scope = operation_scope.for_lines operation.lines
     end
 
     operation_scope
@@ -42,7 +42,7 @@ class NotificationRule < ApplicationModel
               only_integer: true,
               greater_than_or_equal_to: 1, less_than_or_equal_to: 1000
             }
-  validates :user_ids, length: { minimum: 1 }, if: Proc.new { |rule| rule.target_type == 'user' }
+  validates :users, length: { minimum: 1 }, if: Proc.new { |rule| rule.target_type == 'user' }
 
   def target_class
     "#{self.class}::Target::#{target_type.classify}".constantize

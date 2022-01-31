@@ -2,18 +2,17 @@ div
 	.flex.flex-col.items-center.mt-5 x-data=("{ expanded: true }")
 		.flex.items-center.w-full.mb-8
 			button @click="expanded = ! expanded" type="button" x-bind:disabled="macro.isDeleted" class="flex items-center justify-between p-3 pl-3 mr-3 font-bold text-white bg-enroute-chouette-green rounded cursor-pointer hover:text-indigo-100"
-				<span class="text-3xl w-full" x-text="expanded ? '-' : '+'">+</span>
+				<span class="text-3xl w-4" x-text="expanded ? '-' : '+'">+</span>
 			.w-full
 				= f.input :id, as: :hidden, input_html: { 'x-model': 'macro.id', ':name': "store.inputName(index, 'id')" }, wrapper: false
 				= f.input :type, as: :hidden, input_html: { 'x-model': 'macro.type', ':name': "store.inputName(index, 'type')" }, wrapper: false
 				= f.input :position, as: :hidden, input_html: { ':value': 'store.getPosition(macro)', ':name': "store.inputName(index, 'position')" }, wrapper: false
 				= f.input :_destroy, as: :hidden, input_html: { ':value': 'macro.isDeleted', ':name': "store.inputName(index, '_destroy')" }, wrapper: false
 
-				= f.input :name, input_html: { 'x-model': 'macro.name', 'x-show': 'expanded', ':readonly': '!expanded || macro.isDeleted', ':name': "store.inputName(index, 'name')" }, label: false, wrapper_html: {'class': 'mb-0 mx-0'}
+				= f.input :name, placeholder: "#{I18n.t('macro_lists.form.macro_placeholder')}", input_html: { 'x-model': 'macro.name', 'x-show': 'expanded', ':readonly': '!expanded || macro.isDeleted', ':name': "store.inputName(index, 'name')" }, label: false, wrapper_html: {'class': 'mb-0 mx-0'}
 				.flex.items-center
-					p.mb-0.mr-5 x-text="macro.name" x-show="!expanded"
+					p.mb-0.mr-2 x-text="macro.name" x-show="!expanded"
 					p.mb-0 x-text="'(' + macro.class_description + ')'" x-show="!expanded"
-						| ()
 			.flex.ml-3 x-show="expanded"
 				p.flex.w-64 x-text="macro.class_description"
 
@@ -23,7 +22,7 @@ div
 				ul.dropdown-menu
 					template[x-for="action in store.actions"]
 						li
-							a @click="store[action](index)" x-text="I18n.t(`macros.actions.${action}`)" x-show="(action == 'restore' && macro.isDeleted) || (action != 'restore' && !macro.isDeleted)"
+							a class="cursor-pointer" @click="store[action](index)" x-text="I18n.t(`macros.actions.${action}`)" x-show="(action == 'restore' && macro.isDeleted) || (action != 'restore' && !macro.isDeleted)"
 
 		.macro.flex.flex-col x-show="expanded && !macro.isDeleted" class="w-full"
 			template[x-for="[optionName, params] in Object.entries(macro.options)"]
@@ -31,5 +30,4 @@ div
 					= render 'macro_option_input'
 			.form-group
 				= f.label Macro::List.human_attribute_name(:comments), class: 'col-sm-4 col-xs-5 control-label mb-3'
-				.col-sm-8.col-xs-7
-					= f.input :comments, as: :text, required: false, input_html: { 'x-model': 'macro.comments', ':name': "store.inputName(index, 'comments')"}, label: false, wrapper: false
+				= f.input :comments, as: :text, required: false, input_html: { 'x-model': 'macro.comments', ':name': "store.inputName(index, 'comments')"}, label: false, wrapper: false

@@ -51,8 +51,14 @@ module ObjectidSupport
       end
     end
 
+    mattr_accessor :default_objectid_formatter, default: Chouette::ObjectidFormatter::Netex.new
+
     def objectid_formatter
-      Chouette::ObjectidFormatter.for_objectid_provider(*referential_identifier)
+      if referential_identifier.blank?
+        @objectid_formatter ||= default_objectid_formatter
+      else
+        Chouette::ObjectidFormatter.for_objectid_provider(*referential_identifier)
+      end
     end
 
     def referential_identifier

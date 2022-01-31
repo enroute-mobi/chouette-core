@@ -37,7 +37,7 @@ class Import::NetexGeneric < Import::Base
 	end
 
 	def netex_source
-		@netex_source ||= Netex::Source.read(local_file.path)
+		@netex_source ||= Netex::Source.read(local_file.path, type: file_extension)
 	end
 
 	def line_ids

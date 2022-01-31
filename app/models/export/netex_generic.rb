@@ -389,7 +389,7 @@ class Export::NetexGeneric < Export::Base
       end
 
       def netex_transport_submode
-        transport_submode unless transport_submode == :undefined
+        transport_submode&.to_s unless transport_submode == :undefined
       end
 
       def netex_resource
@@ -991,7 +991,7 @@ class Export::NetexGeneric < Export::Base
       end
 
       def vehicle_journey_refs
-        [Netex::Reference.new(vehicle_journey.objectid, type: 'VehicleJourneyRef')]
+        [Netex::Reference.new(vehicle_journey.objectid, type: 'ServiceJourney')]
       end
     end
 

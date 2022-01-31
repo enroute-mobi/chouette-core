@@ -1,7 +1,7 @@
 - @export = Export::Netex.new(@export.attributes.except('id', 'type').symbolize_keys)
 
 = form.simple_fields_for(resource_type, @export) do |sub_form|
-  = sub_form.input :duration, required: true, input_html: { value: Export::Netex.options.dig(:duration, :default_value) }
+  = sub_form.input :duration, required: true
   div[x-data]
     = sub_form.input :export_type,
       required: true,

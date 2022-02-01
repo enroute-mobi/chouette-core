@@ -1,5 +1,7 @@
 fr:
   line_routing_constraint_zones:
+    no_lines: "Cette ITL n'a pas de Lignes"
+    no_stop_areas: "Cette ITL n'a pas d'arrêts"
     search_no_results: "Aucune Interdiction de Trafic local"
     actions:
       new: "Ajouter une ITL"
@@ -23,6 +25,9 @@ fr:
       title: "%{name}"
     index:
       title: "Interdictions de Trafic local"
+    form:
+      line_placeholder: "Rechercher par nom de lignes"
+      stop_area_placeholder: "Rechercher par nom d'arrêts"
 
   activerecord:
     models:
@@ -36,6 +41,8 @@ fr:
         name: "Nom"
         lines: "Lignes"
         stop_areas: "Arrêts"
+        line_ids: "Lignes"
+        stop_area_ids: "Arrêts"
     errors:
       models:
         line_routing_constraint_zone:

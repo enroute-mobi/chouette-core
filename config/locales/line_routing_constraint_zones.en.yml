@@ -1,23 +1,22 @@
 en:
   line_routing_constraint_zones:
-    search_no_results: "No Stop Area Routing Constraint"
-    direction:
-      both_way: Both ways
-      one_way: One way
+    no_lines: "This LTI has no lines"
+    no_stop_areas: "This ITL has no stop areas"
+    search_no_results: "No Local Traffic"
     actions:
-      new: "Add a Stop Area Routing Constraint"
-      create: "Add a Stop Area Routing Constraint"
-      edit: "Edit Stop Area Routing Constraint"
-      update: "Edit Stop Area Routing Constraint"
-      destroy: "Supprimer"
-      destroy_confirm: "Are you sure to destroy Stop Area Routing Constraint?"
+      new: "Add an ITL"
+      create: "Add an ITL"
+      edit: "Edit this ITL"
+      update: "Edit this ITL"
+      destroy: "Delete"
+      destroy_confirm: "Are you sure you want to remove this ITL?"
     filters:
-      stop: Fill Stop Area...
-      direction: Fill a direction...
+      stop: Indiquez un arrêt...
+      direction: Indiquez une direction...
     new:
-      title: "Add a Stop Area Routing Constraint"
+      title: "Add a Line Routing Constraint Zones"
     create:
-      title: "Add a Stop Area Routing Constraint"
+      title: "Add a Line Routing Constraint Zones"
     edit:
       title: "Edit %{name}"
     update:
@@ -25,31 +24,26 @@ en:
     show:
       title: "%{name}"
     index:
-      title: "Stop Area Routing Constraints"
+      title: "Line Routing Constraint Zones"
+    form:
+      line_placeholder: "Search by line name"
+      stop_area_placeholder: "Search by stop area name"
 
   activerecord:
     models:
-      line_routing_constraint_zones:
-        zero:  "StopAreas Routing Constraint"
-        one:   "StopAreas Routing Constraint"
-        other: "StopAreas Routing Constraints"
+      line_routing_constraint_zone:
+        zero:  "Line Routing Constraint Zones"
+        one:   "Line Routing Constraint Zones"
+        other: "Line Routing Constraint Zones"
     attributes:
-      line_routing_constraint_zones:
-        name: "Nom"
-        both_way: Both ways
-        direction: Direction
-        from: Start stop
-        to: Destination stop
-        from_id: Start stop
-        to_id: Destination stop
-        from_name: Start stop
-        to_name: Destination stop
+      line_routing_constraint_zone:
+        information: "Information"
+        name: "Name"
+        lines: "Lines"
+        stop_areas: "Stop areas"
+        line_ids: "Lines"
+        stop_area_ids: "Stop areas"
     errors:
       models:
-        line_routing_constraint_zones:
+        line_routing_constraint_zone:
           attributes:
-            to:
-              must_be_in_same_referential: Both stops miust belong to the same referential
-              must_be_a_different_stop: The 2 stops must be distinct
-            from:
-              must_be_in_same_referential: Both stops must belong to the same referential

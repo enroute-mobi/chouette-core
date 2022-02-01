@@ -1,3 +1,4 @@
+import Alpine from 'alpinejs'
 import { reject, uniqueId } from 'lodash'
 
 const bootstrapClassFor = type => {
@@ -10,8 +11,7 @@ const bootstrapClassFor = type => {
       return 'alert-danger'
   }
 }
-
-window.Spruce.store('flash', {
+Alpine.store('flash', {
   ready: true,
   messages: [],
   add({ type, text }) {

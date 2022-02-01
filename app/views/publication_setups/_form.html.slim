@@ -1,3 +1,5 @@
+- javascript_additional_packs 'exports/form', 'publication_setups/form'
+
 = simple_form_for @publication_setup, url: [@workgroup, @publication_setup], html: {class: 'form-horizontal', id: 'publication_setup_form'}, wrapper: :horizontal_form do |form|
   .row
     .form-group
@@ -14,7 +16,7 @@
         = render'exports/options', form: form, resource_type: :export_options, workgroup: @workgroup
 
         div[x-data]
-          template[x-if="!!$store.export && (!$store.export.isExport && ($store.export.type == 'Export::Gtfs' || $store.export.type == 'Export::NetexGeneric'))"]
+          template[x-if="(!$store.export.isExport && ($store.export.type == 'Export::Gtfs' || $store.export.type == 'Export::NetexGeneric'))"]
             div
               = form.input :publish_per_line, as: :switchable_checkbox, input_html: { name: 'publication_setup[publish_per_line]' }
 

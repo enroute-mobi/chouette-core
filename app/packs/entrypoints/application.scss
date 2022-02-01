@@ -38,6 +38,9 @@ $fa-font-path: "@fortawesome/fontawesome-free/webfonts";
 // TomSelect
 @import "tom-select/dist/css/tom-select";
 
+// Date Picker
+@import 'flatpickr/dist/flatpickr.css';
+
 span.sb,
 span.fa {
   & + span {

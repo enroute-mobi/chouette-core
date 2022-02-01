@@ -2,6 +2,7 @@
 - page_header_content_for @route
 - content_for :page_header_resource_name, Chouette::JourneyPattern.ts.pluralize.capitalize, flush: true
 - content_for :page_header_title, t('journey_patterns.index.title', route: @route.name), flush: true
+- javascript_additional_packs 'journey_patterns/index'
 
 - @journey_patterns.each do |jp|
   - jp.errors.each do |error_message|
@@ -24,7 +25,7 @@
   | window.features = #{raw @features};
   | window.routeCostsUrl = "#{costs_referential_line_route_url(@referential, @route.line, @route, format: :json).html_safe}";
   | window.custom_fields = #{(@custom_fields.to_json).html_safe};
-  | window.route = "#{URI.escape(route_json_for_edit(@route))}";
+  | window.route = "#{URI.escape(route_json_for_edit(@route, serialize: true))}";
   | window.lineColor = "#{@route.line.color_hex}";
   | window.shape_url = "#{default_shapes_path(@referential.workgroup.shape_referential).html_safe}";
   | window.shapes_url = "#{shapes_workgroup_autocomplete_index_path(@referential.workgroup)}";

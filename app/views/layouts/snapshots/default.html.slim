@@ -11,7 +11,9 @@ html lang=I18n.locale
     = stylesheet_link_tag 'base'
     = stylesheet_link_tag 'application'
 
-    = javascript_pack_tag 'application', 'router', 'flash_messages', 'date_filters', 'inputs/tom_select', defer: true
+    - packs = %w(sentry application date_filters flash_messages)
+    - additional_packs = (yield :additional_packs).split.to_set.to_a
+    = javascript_pack_tag *(packs | additional_packs), defer: true
     = javascript_include_tag 'application'
 
   body

@@ -1,4 +1,4 @@
-let validateSlugValue = function (val) {
+const validateSlugValue =  val => {
 	let label = $('label[for=publication_api_slug]')
 	let group = $(label.parents('.form-group')[0])
 
@@ -12,8 +12,8 @@ let validateSlugValue = function (val) {
 	return !!valid
 }
 
-$('input[name*=slug]').keyup(function () {
-	if (validateSlugValue($(this).val())) {
-		$('.slug-preview').text($(this).val())
-	}
+$('input[name*=slug]').on('keyup', e => {
+	const { value } = e.currentTarget
+
+	validateSlugValue(value) && $('.slug-preview').text(value)
 })

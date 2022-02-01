@@ -21,4 +21,4 @@ const updateSubmodeOptions = (event) => {
   }
 }
 
-transportModeCheckboxes.change(updateSubmodeOptions)
+transportModeCheckboxes.on('change', updateSubmodeOptions)

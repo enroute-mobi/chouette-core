@@ -21,11 +21,12 @@ const imagePath = (name) => images(name, true)
 import "@fortawesome/fontawesome-free/js/all"
 // import "@fortawesome/fontawesome-free/css/all"
 
-import '@ryangjchandler/spruce'
 import Alpine from 'alpinejs'
 import 'flag-icon-css/css/flag-icons.css'
 // import "./application.scss"
 
-Alpine.start()
+document.addEventListener('DOMContentLoaded',  _event => {
+	Alpine.start()
+})
 
 console.log('Hello World from Webpacker 6')

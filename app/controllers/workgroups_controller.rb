@@ -73,7 +73,7 @@ class WorkgroupsController < ChouetteController
     when 'GET'
       render 'confirm'
     when 'POST'
-      if @workbench = Workbenches::Confirm.call(workbench_confirmation_params)
+      if @workbench = Workbenches::AcceptInvitation.call(workbench_confirmation_params)
         flash[:success] = I18n.t('flash.actions.update.notice', resource_name: Workbench.model_name.name)
         redirect_to workgroup_workbench_path(@workbench.workgroup, @workbench)
       else
@@ -82,6 +82,8 @@ class WorkgroupsController < ChouetteController
       end
     end
   end
+
+  private
 
   def workgroup_params 
     params.require(:workgroup).permit(

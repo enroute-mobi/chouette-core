@@ -14,7 +14,7 @@ class Workbench < ApplicationModel
   include ObjectidFormatterSupport
   include AASM
 
-  belongs_to :organisation
+  belongs_to :organisation, optional: true
   belongs_to :workgroup
   belongs_to :line_referential
   belongs_to :stop_area_referential

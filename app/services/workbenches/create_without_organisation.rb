@@ -2,9 +2,9 @@ module Workbenches
 	class CreateWithoutOrganisation < ApplicationService
 		attr_reader :name, :workgroup
 
-		def initialize(params)
-			@name = params[:name]
-			@workgroup = params[:workgroup]
+		def initialize(name:, workgroup:)
+			@name = name
+			@workgroup = workgroup
 		end
 
 		def call

@@ -6,7 +6,7 @@
  */
 class MergeReferentialsSelector {
   constructor(container_selector, formInput){
-    this.formInput = $(formInput);
+    this.formInput = formInput;
     this.container = $(container_selector);
     this.searchInput = this.container.find('.search');
     this.loader = this.container.find('.loader');

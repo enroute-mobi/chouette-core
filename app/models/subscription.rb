@@ -1,8 +1,6 @@
 # coding: utf-8
 class Subscription
-  include ActiveModel::Validations
-  include ActiveModel::Conversion
-  extend ActiveModel::Naming
+  include ActiveModel::Model
 
   validates_with SubscriptionValidator
 
@@ -10,17 +8,7 @@ class Subscription
     Rails.application.config.accept_user_creation
   end
 
-  attr_accessor :organisation_name, :user_name, :email, :password, :password_confirmation
-
-  def initialize(attributes = {})
-    attributes.each do |name, value|
-      send("#{name}=", value)
-    end
-  end
-
-  def persisted?
-    false
-  end
+  attr_accessor :organisation_name, :user_name, :email, :password, :password_confirmation, :workbench_confirmation_code
 
   def user
     @user ||= organisation.users.build name: user_name, email: email, password: password, password_confirmation: password_confirmation, profile: :admin
@@ -43,7 +31,11 @@ class Subscription
       organisation.save!
       user.save!
 
-      create_workgroup!
+      if workbench_confirmation_code.present?
+        Workbenches::AcceptInvitation.new(confirmation_code: workbench_confirmation_code, organisation_id: organisation.id).call
+      else
+        create_workgroup!
+      end 
 
       SubscriptionMailer.new_subscription(user)
     end

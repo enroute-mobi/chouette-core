@@ -19,12 +19,14 @@ class SubscriptionValidator < ActiveModel::Validator
      def call
       validate_organisation
       validate_user
+      validate_workgroup_confirmation_code
     end
 
     private
 
-     def validate_organisation
+    def validate_organisation
       return if organisation.valid?
+
       %i[name code].each do |attribute|
         add_errors on: :organisation_name, from: organisation.errors[attribute]
       end
@@ -38,6 +40,14 @@ class SubscriptionValidator < ActiveModel::Validator
       end
 
       add_errors on: :user_name, from: user.errors[:name]
+    end
+
+    def validate_workgroup_confirmation_code
+      return unless record.workbench_confirmation_code
+
+      code_is_valid = Workbench.where(invitation_code: record.workbench_confirmation_code).exists?
+
+      record.errors.add(:workbench_confirmation_code) unless code_is_valid
     end
 
     def add_errors(on:, from:)

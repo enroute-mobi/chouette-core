@@ -32,8 +32,8 @@
                 end \
               ), \
               TableBuilderHelper::Column.new( \
-                name: t(".table_headers.ended_at"), \
-                attribute: Proc.new { |n| l(n.ended_at, format: :short_with_time) if n.ended_at }, \
+                key: :started_at, \
+                attribute: Proc.new { |n| l(n.started_at, format: :short_with_time) if n.started_at }, \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :duration, \

@@ -3,5 +3,3 @@ fr:
     show:
       title: Agrégation de l'Offre du Groupe de Travail
       see_current_output: "Voir l'Offre actuelle"
-      table_headers:
-        ended_at: "Date et heure de création"

@@ -173,30 +173,17 @@ RSpec.describe CleanUp, :type => :model do
     end
 
     context '#clean_time_table_periods' do
-      before(:each) { Chouette::TimeTablePeriod.delete_all }
-      let(:time_table) { create :time_table, periods_count: 0 }
-      let!(:before_period) { create :time_table_period, period_start: begin_date - 10.days, period_end: begin_date - 1.day,time_table: time_table }
-      let!(:overlapping_period) { create :time_table_period, period_start: begin_date - 2.days, period_end: begin_date + 10.day,time_table: time_table }
-      let!(:after_period) { create :time_table_period, period_start: begin_date + 100.days, period_end: begin_date + 110.day,time_table: time_table }
+      let(:time_table) { create :time_table, :empty }
 
       context 'before' do
         let(:date_type){ :before }
-        let!(:overlapping_after_period_only_one_day) { create :time_table_period, period_start: begin_date - 1.days, period_end: begin_date, time_table: time_table }
-
         it 'should destroy periods before begin_date' do
-          expect{ cleaner.clean_time_table_periods }.to change{ Chouette::TimeTablePeriod.count }.by -2
-          expect{ after_period.reload }.to_not raise_error
-          expect{ overlapping_period.reload }.to_not raise_error
-          expect{ before_period.reload }.to raise_error ActiveRecord::RecordNotFound
-          expect{ overlapping_after_period_only_one_day.reload }.to raise_error ActiveRecord::RecordNotFound
-        end
-
-        it 'should truncate periods' do
-          cleaner.clean_time_table_periods
-          expect(overlapping_period.reload.period_start).to eq begin_date
+          period = time_table.periods.create(period_start: begin_date - 10.days, period_end: begin_date + 10.day)
+          expect{ cleaner.clean_time_table_periods }.to change{ period.reload.period_start }.from(begin_date - 10.days).to(begin_date)
         end
 
         it 'create dates when remaining period is too short' do
+          time_table.periods.create(period_start: begin_date - 10.days, period_end: begin_date)
           expect{ cleaner.clean_time_table_periods }.to change{ Chouette::TimeTableDate.count }.by 1
           expect(Chouette::TimeTableDate.last.date).to eq begin_date
         end
@@ -204,22 +191,14 @@ RSpec.describe CleanUp, :type => :model do
 
       context 'after' do
         let(:date_type){ :after }
-        let!(:overlapping_before_period_only_one_day) { create :time_table_period, period_start: begin_date, period_end: begin_date + 1, time_table: time_table }
-
-        it 'should destroy periods after begin_date' do
-          expect{ cleaner.clean_time_table_periods }.to change{ Chouette::TimeTablePeriod.count }.by -2
-          expect{ before_period.reload }.to_not raise_error
-          expect{ overlapping_period.reload }.to_not raise_error
-          expect{ after_period.reload }.to raise_error ActiveRecord::RecordNotFound
-          expect{ overlapping_before_period_only_one_day.reload }.to raise_error ActiveRecord::RecordNotFound
-        end
 
         it 'should truncate periods' do
-          cleaner.clean_time_table_periods
-          expect(overlapping_period.reload.period_end).to eq begin_date
+          period = time_table.periods.create(period_start: begin_date - 10.days, period_end: begin_date + 10.day)
+          expect{ cleaner.clean_time_table_periods }.to change{ period.reload.period_end }.from(begin_date + 10.days).to(begin_date)
         end
 
         it 'create dates when remaining period is too short' do
+          time_table.periods.create(period_start: begin_date, period_end: begin_date + 10.days)
           expect{ cleaner.clean_time_table_periods }.to change{ Chouette::TimeTableDate.count }.by 1
           expect(Chouette::TimeTableDate.last.date).to eq begin_date
         end
@@ -227,105 +206,37 @@ RSpec.describe CleanUp, :type => :model do
 
       context 'between' do
         let(:date_type){ :between }
-        let(:end_date){ overlapping_period.period_end - 2.day }
-        let!(:inside_period) { create :time_table_period, period_start: begin_date + 1.days, period_end: end_date - 1.day, time_table: time_table }
-        let!(:overlapping_before_period) { create :time_table_period, period_start: begin_date - 10.days, period_end: begin_date + 1.day, time_table: time_table }
-        let!(:overlapping_after_period) { create :time_table_period, period_start: end_date - 1.days, period_end: end_date + 10.days, time_table: time_table }
-        let!(:overlapping_after_period_only_one_day) { create :time_table_period, period_start: end_date - 1.days, period_end: end_date + 1.days, time_table: time_table }
-
-        it 'should destroy periods between dates' do
-          expect{ cleaner.clean_time_table_periods }.to change{ Chouette::TimeTablePeriod.count }.by -1
-          expect{ before_period.reload }.to_not raise_error
-          expect{ overlapping_period.reload }.to raise_error ActiveRecord::RecordNotFound
-          expect{ after_period.reload }.to_not raise_error
-          expect{ overlapping_before_period.reload }.to_not raise_error
-          expect{ overlapping_after_period.reload }.to_not raise_error
-          expect{ inside_period.reload }.to raise_error ActiveRecord::RecordNotFound
-        end
+        let(:end_date){ begin_date + 2.day }
 
         it 'should truncate periods' do
-          expect{ cleaner.clean_time_table_periods }.to change{ Chouette::TimeTablePeriod.last.id }.by 2
-          expect(overlapping_after_period.reload.period_start).to eq end_date + 1.day
-          expect(overlapping_before_period.reload.period_end).to eq begin_date - 1.day
-          periods =  Chouette::TimeTablePeriod.order(:id).last(2)
-          expect(periods.first.period_start).to eq overlapping_period.period_start
-          expect(periods.first.period_end).to eq begin_date - 1.day
-          expect(periods.last.period_start).to eq end_date + 1.day
-          expect(periods.last.period_end).to eq overlapping_period.period_end
+          period = time_table.periods.create(period_start: begin_date - 10.days, period_end: begin_date + 1.day)
+          cleaner.clean_time_table_periods
+          expect(period.reload.period_start).to eq(begin_date - 10.days)
+          expect(period.reload.period_end).to eq(begin_date - 1.day)
         end
 
         it 'create dates when remaining period is too short' do
+          time_table.periods.create(period_start: begin_date - 1.day, period_end: begin_date)
           expect{ cleaner.clean_time_table_periods }.to change{ Chouette::TimeTableDate.count }.by 1
-          expect(Chouette::TimeTableDate.last.date).to eq end_date + 1
+          expect(Chouette::TimeTableDate.last.date).to eq begin_date - 1.day
         end
       end
 
       context 'outside' do
         let(:date_type){ :outside }
         let(:end_date){ begin_date + 2.day }
-        let!(:overlapping_before_period) { create :time_table_period, period_start: begin_date - 10.days, period_end: begin_date + 1.day, time_table: time_table }
-        let!(:overlapping_after_period) { create :time_table_period, period_start: end_date - 1.days, period_end: end_date + 10.days, time_table: time_table }
-        let!(:overlapping_before_period_only_one_day) { create :time_table_period, period_start: begin_date - 1, period_end: begin_date, time_table: time_table }
-        let!(:overlapping_after_period_only_one_day) { create :time_table_period, period_start: end_date, period_end: end_date + 1, time_table: time_table }
-
-        it 'should destroy periods outside dates' do
-          expect{ cleaner.clean_time_table_periods }.to change{ Chouette::TimeTablePeriod.count }.by -4
-          expect{ before_period.reload }.to raise_error ActiveRecord::RecordNotFound
-          expect{ overlapping_before_period.reload }.to_not raise_error
-          expect{ overlapping_after_period.reload }.to_not raise_error
-          expect{ after_period.reload }.to raise_error ActiveRecord::RecordNotFound
-          expect{ overlapping_before_period_only_one_day.reload }.to raise_error ActiveRecord::RecordNotFound
-          expect{ overlapping_after_period_only_one_day.reload }.to raise_error ActiveRecord::RecordNotFound
-        end
 
         it 'should truncate periods' do
+          period = time_table.periods.create(period_start: begin_date - 10.days, period_end: begin_date + 10.day)
           cleaner.clean_time_table_periods
-          expect(overlapping_after_period.reload.period_end).to eq end_date
-          expect(overlapping_before_period.reload.period_start).to eq begin_date
+          expect(period.reload.period_start).to eq(begin_date)
+          expect(period.reload.period_end).to eq(end_date)
         end
 
         it 'create dates when remaining period is too short' do
-          expect{cleaner.clean_time_table_periods}.to change{ Chouette::TimeTableDate.count }.by 2
-          dates = Chouette::TimeTableDate.order(:id).last(2)
-          expect(dates.first.date).to eq begin_date
-          expect(dates.last.date).to eq end_date
-        end
-      end
-
-      context '#clean_timetables_and_children' do
-        let(:time_table) { create :time_table, dates_count: 0 }
-        let!(:before_date) { create :time_table_date, date: begin_date - 1.day, in_out: true, time_table: time_table }
-        let!(:after_date) { create :time_table_date, date: begin_date + 1.day, in_out: true, time_table: time_table }
-
-        before(:each) { time_table.reload.save_shortcuts }
-
-        context 'before' do
-          let(:date_type){ :before }
-
-          it 'should truncate time_table' do
-            cleaner.clean_timetables_and_children
-            expect(time_table.reload.start_date).to eq begin_date
-          end
-        end
-
-        context 'after' do
-          let(:date_type){ :after }
-
-          # TODO:
-        end
-
-        context 'between' do
-          let(:date_type){ :between }
-          let(:end_date){ begin_date + 2.day }
-
-          # TODO:
-        end
-
-        context 'outside' do
-          let(:date_type){ :outside }
-          let(:end_date){ begin_date + 2.day }
-
-          # TODO:
+          time_table.periods.create(period_start: begin_date - 10, period_end: begin_date)
+          expect{cleaner.clean_time_table_periods}.to change{ Chouette::TimeTableDate.count }.by 1
+          expect(Chouette::TimeTableDate.last.date).to eq begin_date
         end
       end
     end

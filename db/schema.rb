@@ -1300,6 +1300,7 @@ ActiveRecord::Schema.define(version: 2022_01_28_083110) do
     t.boolean "in_out"
     t.string "checksum"
     t.text "checksum_source"
+    t.index ["date", "time_table_id"], name: "index_time_table_dates_on_date_and_time_table_id", unique: true
     t.index ["time_table_id"], name: "index_time_table_dates_on_time_table_id"
   end
 
@@ -1309,6 +1310,7 @@ ActiveRecord::Schema.define(version: 2022_01_28_083110) do
     t.date "period_end"
     t.string "checksum"
     t.text "checksum_source"
+    t.index ["period_start", "period_end", "time_table_id"], name: "uniq_period_start_and_period_end_per_time_table", unique: true
     t.index ["period_start", "period_end"], name: "index_time_table_periods_on_period_start_and_period_end"
     t.index ["time_table_id"], name: "index_time_table_periods_on_time_table_id"
   end

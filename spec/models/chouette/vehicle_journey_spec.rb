@@ -421,12 +421,9 @@ describe Chouette::VehicleJourney, type: :model do
     end
 
     context "with a time table with a matching period but not the right day" do
-      let(:start_date){end_date - 1.day}
-      let(:end_date){Time.now.end_of_week.to_date}
-
       let(:timetable){
-        period = create :time_table_period, period_start: start_date-1.month, period_end: end_date+1.month
-        create :time_table, periods: [period], int_day_types: 4 + 8, dates_count: 0
+        period = create :time_table_period, period_start: end_date - 1.day, period_end: end_date + 14.day
+        create :time_table, :empty, periods: [period], int_day_types: 0, dates_count: 0
       }
       let!(:vehicle_journey){ create :vehicle_journey, time_tables: [timetable] }
       it "should not include VJ " do

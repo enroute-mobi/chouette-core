@@ -233,6 +233,7 @@ RSpec.describe CopyInserter do
 
       it "inserts model in database" do
         date.id = next_id(Chouette::TimeTableDate)
+        date.date = Time.zone.today - 1.month
 
         inserter.insert date
 
@@ -242,6 +243,7 @@ RSpec.describe CopyInserter do
       it "inserts 50000 models / second (1 million in 20s)", :performance do
         expect {
           date.id = next_id(Chouette::TimeTableDate)
+          date.date = Time.zone.today - 1.month
           inserter.insert date
         }.to perform_at_least(50000).within(1.seconds).ips
       end
@@ -262,7 +264,8 @@ RSpec.describe CopyInserter do
 
       it "inserts model in database" do
         period.id = next_id(Chouette::TimeTablePeriod)
-
+        period.period_start = Time.zone.today - 10
+        period.period_end = Time.zone.today - 1
         inserter.insert period
 
         expect { inserter.flush }.to change(Chouette::TimeTablePeriod, :count).by(1)

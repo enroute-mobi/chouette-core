@@ -111,19 +111,6 @@ RSpec.describe JourneyPatternOfferService do
         end
       end
 
-      context 'with an overlap' do
-        before do
-          time_table.periods.create!(period_start: period_start, period_end: circulation_day.next)
-          time_table.periods.create!(period_start: circulation_day.prev_day, period_end: period_end)
-        end
-
-        it 'should detect the circulation days' do
-          period_start.upto(period_end).each do |date|
-            expect(service.circulation_dates[date]).to eq 1
-          end
-        end
-      end
-
       context 'not matching days' do
         before do
           time_table.update int_day_types: ApplicationDaysSupport::ALL_DAYS
@@ -258,19 +245,6 @@ RSpec.describe JourneyPatternOfferService do
                 expect(service.circulation_dates[date]).to eq 2
               end
               (circulation_day + 3).upto(period_end).each do |date|
-                expect(service.circulation_dates[date]).to eq 2
-              end
-            end
-          end
-
-          context 'with an overlap' do
-            before do
-              time_table.periods.create!(period_start: period_start, period_end: circulation_day.next)
-              time_table.periods.create!(period_start: circulation_day.prev_day, period_end: period_end)
-            end
-
-            it 'should detect the circulation days' do
-              period_start.upto(period_end).each do |date|
                 expect(service.circulation_dates[date]).to eq 2
               end
             end

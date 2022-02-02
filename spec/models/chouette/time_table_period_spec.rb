@@ -1,8 +1,9 @@
 describe Chouette::TimeTablePeriod, :type => :model do
 
-  let!(:time_table) { create(:time_table)}
-  subject { create(:time_table_period ,:time_table => time_table, :period_start => Date.new(2014,6,30), :period_end => Date.new(2014,7,6) ) }
-  let!(:p2) {create(:time_table_period ,:time_table => time_table, :period_start => Date.new(2014,7,6), :period_end => Date.new(2014,7,14) ) }
+  let!(:time_table) { create(:time_table, :empty)}
+  let!(:new_period) { build(:time_table_period ,:time_table => time_table, :period_start => Date.new(2014,6,30), :period_end => Date.new(2014,7,6) ) }
+  # Used only for checksum
+  subject { create(:time_table_period ,:time_table => time_table, :period_start => Date.new(2020,6,30), :period_end => Date.new(2020,7,6) ) }
 
   it { is_expected.to validate_presence_of :period_start }
   it { is_expected.to validate_presence_of :period_end }
@@ -11,58 +12,46 @@ describe Chouette::TimeTablePeriod, :type => :model do
     it_behaves_like 'checksum support'
   end
 
-  describe "#overlap" do
-    context "when periods intersect, " do
+  describe "#validate_period_uniqueness" do
+    context "when period intersect with other period on the first day, " do
       it "should detect period overlap" do
-         expect(subject.overlap?(p2)).to be_truthy
-         expect(p2.overlap?(subject)).to be_truthy
+        create(:time_table_period ,:time_table => time_table, :period_start => Date.new(2014,6,15), :period_end => Date.new(2014,6,30) )
+        expect(new_period.valid?).to be_falsey
+        expect(new_period.errors[:overlapped_periods]).not_to be_empty
       end
     end
-    context "when periods don't intersect, " do
-      before(:each) do
-        p2.period_start = Date.new(2014,7,7)
+
+    context "when period intersect with other period on the last day, " do
+      it "should detect period overlap" do
+        create(:time_table_period ,:time_table => time_table, :period_start => Date.new(2014,7,6), :period_end => Date.new(2014,7,14) )
+        expect(new_period.valid?).to be_falsey
+        expect(new_period.errors[:overlapped_periods]).not_to be_empty
       end
+    end
+
+    context "when period intersect with other period on many days, " do
+      it "should detect period overlap" do
+        create(:time_table_period ,:time_table => time_table, :period_start => Date.new(2014,7,1), :period_end => Date.new(2014,7,14) )
+        expect(new_period.valid?).to be_falsey
+        expect(new_period.errors[:overlapped_periods]).not_to be_empty
+      end
+    end
+
+    context "when period is included in another period, " do
+      it "should detect period overlap" do
+        create(:time_table_period ,:time_table => time_table, :period_start => Date.new(2014,6,25), :period_end => Date.new(2014,7,8) )
+        expect(new_period.valid?).to be_falsey
+        expect(new_period.errors[:overlapped_periods]).not_to be_empty
+      end
+    end
+
+    context "when periods doesn't intersect, " do
       it "should not detect period overlap" do
-         expect(subject.overlap?(p2)).to be_falsey
-         expect(p2.overlap?(subject)).to be_falsey
-      end
-    end
-    context "when period 1 contains period 2, " do
-      before(:each) do
-        p2.period_start = Date.new(2014,7,1)
-        p2.period_end = Date.new(2014,7,6)
-      end
-      it "should detect period overlap" do
-         expect(subject.overlap?(p2)).to be_truthy
-         expect(p2.overlap?(subject)).to be_truthy
+        create(:time_table_period ,:time_table => time_table, :period_start => Date.new(2014,7,10), :period_end => Date.new(2014,7,12) )
+        expect(new_period.valid?).to be_truthy
+        expect(new_period.errors[:overlapped_periods]).to be_empty
       end
     end
   end
-  describe "#contains" do
-    context "when periods intersect, " do
-      it "should not detect period inclusion" do
-         expect(subject.contains?(p2)).to be_falsey
-         expect(p2.contains?(subject)).to be_falsey
-      end
-    end
-    context "when periods don't intersect, " do
-      before(:each) do
-        p2.period_start = Date.new(2014,7,7)
-      end
-      it "should not detect period inclusion" do
-         expect(subject.contains?(p2)).to be_falsey
-         expect(p2.contains?(subject)).to be_falsey
-      end
-    end
-    context "when period 1 contains period 2, " do
-      before(:each) do
-        p2.period_start = Date.new(2014,7,1)
-        p2.period_end = Date.new(2014,7,6)
-      end
-      it "should detect period inclusion" do
-         expect(subject.contains?(p2)).to be_truthy
-         expect(p2.contains?(subject)).to be_falsey
-      end
-    end
-  end
+
 end

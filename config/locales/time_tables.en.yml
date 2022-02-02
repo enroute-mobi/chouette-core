@@ -101,6 +101,10 @@ en:
       selection_all: "All"
       advanced_search: "Advanced Search"
   activerecord:
+    time_table:
+      errors:
+        messages:
+          overlapped_periods: "This period can't be created because it has dates in common with another periods"
     models:
       time_table:
         zero:  "timetable"

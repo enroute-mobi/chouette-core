@@ -5,9 +5,22 @@ module Chouette
 
     belongs_to :time_table, inverse_of: :periods
 
-    validates_presence_of :period_start, :period_end
+    scope :overlaps, -> (period_range) do
+      where("(time_table_periods.period_start <= :end AND time_table_periods.period_end >= :begin)", {begin: period_range.begin, end: period_range.end})
+    end
 
+    validates_presence_of :period_start, :period_end
+    validate :validate_period_uniqueness
     validate :start_must_be_before_end
+
+    def validate_period_uniqueness
+      scope = time_table.periods
+      scope = scope.where.not(id: id) if id
+      if scope.overlaps(range).exists?
+        Rails.logger.error "TimeTablePeriod from #{period_start} to #{period_end} can't be saved for TimeTable #{time_table.id}"
+        errors.add(:overlapped_periods, I18n.t("activerecord.time_table.errors.messages.overlapped_periods"))
+      end
+    end
 
     def checksum_attributes(db_lookup = true)
       attrs = ['period_start', 'period_end']
@@ -23,9 +36,8 @@ module Chouette
       if period_end.nil? || period_start.nil?
         return
       end
-      if period_end <= period_start
-        errors.add(:period_end,I18n.t("activerecord.errors.models.time_table_period.start_must_be_before_end"))
-      end
+
+      errors.add(:period_end,I18n.t("activerecord.errors.models.time_table_period.start_must_be_before_end")) if period_end <= period_start
     end
 
     def copy

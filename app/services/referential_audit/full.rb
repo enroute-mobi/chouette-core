@@ -30,8 +30,8 @@ class ReferentialAudit
       end
     end
 
-    def after job
-      AuditMailer.audit(job.payload_object.mail_content)
+    def after(job)
+      AuditMailer.audit(job.payload_object.mail_content).deliver_now
     end
   end
 end

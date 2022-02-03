@@ -73,11 +73,15 @@ module Chouette::Sync
           resolve :line_notice, line_notice_refs
         end
 
+        def line_transport_submode
+          transport_submode || "undefined"
+        end
+
         def model_attributes
           {
             name: name,
             transport_mode: transport_mode,
-            transport_submode: transport_submode,
+            transport_submode: line_transport_submode,
             number: line_number,
             desactivated: line_desactivated,
             seasonal: line_seasonal,

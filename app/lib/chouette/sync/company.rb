@@ -18,7 +18,7 @@ module Chouette::Sync
         delegate :house_number, :address_line_1, :address_line_2, :street, :town,
                  :post_code, :post_code_extension, :postal_region, to: :address, allow_nil: true
 
-        delegate :email, :phone, :url, to: :contact_details, prefix: :default_contact
+        delegate :email, :phone, :url, to: :contact_details, prefix: :default_contact, allow_nil: true
 
         def company_default_contact_name
           contact_details&.contact_person

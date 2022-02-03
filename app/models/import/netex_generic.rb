@@ -19,81 +19,53 @@ class Import::NetexGeneric < Import::Base
     false
   end
 
-  def file_extension_whitelist
-    %w(zip xml)
-  end
-
+  # stop_areas
   def stop_area_provider
     @stop_area_provider ||= workbench.default_stop_area_provider
   end
   attr_writer :stop_area_provider
 
-	def import_without_status
+  def import_stop_areas
+    Chouette::Sync::Referential.new(stop_area_provider).tap do |sync|
+      sync.synchronize_with Chouette::Sync::StopArea::Netex
+      #sync.synchronize_with Chouette::Sync::Entrance::Netex
+
+      sync.import = self
+      sync.source = netex_source
+
+      sync.update_or_create
+    end
+  end
+
+  # lines
+  def line_provider
+    @line_provider ||= workbench.default_line_provider
+  end
+  attr_writer :line_provider
+
+  def import_lines
+    Chouette::Sync::Referential.new(line_provider).tap do |sync|
+      sync.synchronize_with Chouette::Sync::Company::Netex
+      sync.synchronize_with Chouette::Sync::Network::Netex
+      sync.synchronize_with Chouette::Sync::LineNotice::Netex
+      sync.synchronize_with Chouette::Sync::Line::Netex
+
+      sync.import = self
+      sync.source = netex_source
+
+      sync.update_or_create
+    end
+	end
+
+  def import_without_status
     import_resources :stop_areas
   end
 
-	def import_stop_areas
-		synchronize :stop_area, stop_area_provider
-	end
-
 	def netex_source
-		@netex_source ||= Netex::Source.read(local_file.path, type: file_extension)
+    @netex_source ||= Netex::Source.read(local_file.path, type: file_extension)
 	end
 
 	def line_ids
-		[]
-	end
-
-	private
-
-	def synchronize(resource_name, target)
-    resource = create_resource(resource_name)
-    resource.status = "OK"
-
-    event_handler = Chouette::Sync::Event::Handler.new do |event|
-      unless event.has_error?
-        if event.type.create? || event.type.update?
-          resource.inc_rows_count event.count
-        end
-      else
-        resource.status = "ERROR"
-
-        event.errors.each do |attribute, errors|
-          errors.each do |error|
-            message_attributes = {
-              criticity: :error,
-              message_key: :invalid_model_attribute,
-              message_attributes: {
-                attribute_name: attribute,
-                attribute_value: error[:value]
-              }
-            }
-            resource.messages.build(message_attributes)
-          end
-        end
-        # TODO Should we saved each time ?
-        resource.save!
-
-        self.status = 'failed'
-      end
-    end
-		sync = "Chouette::Sync::#{resource_name.to_s.camelcase}::Netex".constantize.new(
-			source: netex_source,
-			target: target,
-      event_handler: event_handler
-		)
-
-		sync.update_or_create
-
-    resource.update_metrics
-    resource.save!
-	end
-
-	def create_resource(resource_name)
-		resources.build(
-			name: resource_name,
-			resource_type: resource_name.to_s.pluralize,
-			reference: resource_name,
-		)
+    []
 	end
 end

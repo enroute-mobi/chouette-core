@@ -1,9 +1,9 @@
 describe Workbench, type: :model do
   it { should validate_presence_of(:name) }
-  it { should validate_presence_of(:organisation) }
+  # it { should validate_presence_of(:organisation) }
   it { should validate_presence_of(:objectid_format) }
 
-  it { should belong_to(:organisation) }
+  it { should belong_to(:organisation).optional }
   it { should belong_to(:line_referential) }
   it { should belong_to(:stop_area_referential) }
   it { should belong_to(:workgroup) }
@@ -17,10 +17,19 @@ describe Workbench, type: :model do
   it { should have_many(:stop_areas).through(:stop_area_referential) }
   it { should have_many(:notification_rules).dependent(:destroy) }
 
-  context "dependencies" do
-    before { allow(subject).to receive(:create_dependencies) }
+  context 'when status is accepted' do
+    before { allow(subject).to receive(:pending?) { false } }
+  
+    context "dependencies" do
+      before { allow(subject).to receive(:create_dependencies) }
 
-    it { is_expected.to validate_presence_of(:output) }
+      it { is_expected.to validate_presence_of(:output) }
+    end
+
+    context 'organisation' do
+      it { should validate_presence_of(:organisation) }
+    end
+
   end
 
   context 'aggregation setup' do

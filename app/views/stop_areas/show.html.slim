@@ -7,24 +7,12 @@
   .container-fluid
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        = definition_list t("stop_areas.form.sections.identification"), stop_area_identification_metadatas(@stop_area, @workbench)
-        = definition_list t("stop_areas.form.sections.general"), stop_area_general_metadatas(@stop_area)
-        = simple_block_for @stop_area, title: Chouette::StopArea.tmf(:codes) do |d|
-          - if @stop_area.codes.empty?
-            .mb-xs
-              = replacement_msg t('stop_areas.no_codes')
-          - else
-            - @stop_area.codes.each do |c|
-              = d.attribute :value, label: c.code_space.short_name, object: c
-
-      .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        = definition_list t("stop_areas.form.sections.location"), stop_area_location_metadatas(@stop_area, @stop_area_referential)
-        - if @stop_area.longitude && @stop_area.latitude
-          #connection_link_map.map.mb-lg
-
-    .row
-      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = simple_block_for @stop_area, title: t("stop_areas.form.sections.identification") do |d|
+          = d.attribute :id, value: @stop_area.get_objectid.short_id
+          = d.attribute :name
+          = d.attribute :public_code
         = simple_block_for @stop_area, title: t("stop_areas.form.sections.hierarchy") do |d|
+          = d.attribute :area_type, value: ("#{Chouette::AreaType.find(@stop_area.area_type).try(:label)} (#{@stop_area.kind})")
           = d.attribute :parent, value: (@stop_area.parent.present? ? link_to("#{@stop_area.parent.get_objectid.short_id} #{@stop_area.parent.name}", [@workbench, :stop_area_referential, @stop_area.parent]) : "-")
           = d.attribute :children, value: (link_to @stop_area.children.count, workbench_stop_area_referential_stop_areas_path(@workbench, :'q[parent_id_eq]' => @stop_area.id))
         - if @stop_area.children.present?
@@ -50,30 +38,68 @@
           - if @stop_area.children.count > 5
             = link_to t('stop_areas.show.more', count: (@stop_area.children.count - 5)), workbench_stop_area_referential_stop_areas_path(@workbench, :'q[parent_id_eq]' => @stop_area.id), class: 'btn btn-link pull-right'
 
-    - if @stop_area.is_referent || has_feature?(:stop_area_connection_links)
-      .row
         - if @stop_area.is_referent
-          .col-lg-6.col-md-6.col-sm-12.col-xs-12
-            h4.underline= Chouette::StopArea.tmf('specific_stops')
+          = simple_block_for @stop_area, title: Chouette::StopArea.tmf('specific_stops') do |d|
+            = d.attribute :specific_stops, value: (link_to @stop_area.specific_stops.count, workbench_stop_area_referential_stop_areas_path(@workbench, :'q[referent_id_eq]' => @stop_area.id))
 
-            - if @specific_stops.any?
-              = stop_area_specific_stops(@specific_stops, @workbench)
-              = new_pagination @specific_stops, 'pull-right'
-            - else
-              .mb-xs
-                = replacement_msg t('stop_areas.no_specific_stops')
+          - if @specific_stops.any?
+            table.table.table-bordered
+              thead
+                tr
+                  th scope="col"
+                    = Chouette::StopArea.tmf('id')
+                  th scope="col"
+                    = Chouette::StopArea.tmf('name')
+              tbody
+                - @stop_area.specific_stops.limit(5).each do |c|
+                  tr
+                    td
+                      = c.get_objectid.short_id
+                    td
+                      = link_to(c.name, workbench_stop_area_referential_stop_area_path(@workbench, c.id))
+            - if @stop_area.specific_stops.count > 5
+              = link_to t('stop_areas.show.more', count: (@stop_area.specific_stops.count - 5)), workbench_stop_area_referential_stop_areas_path(@workbench, :'q[referent_id_eq]' => @stop_area.id), class: 'btn btn-link pull-right'
+          - else
+            .mb-xs
+              = replacement_msg t('stop_areas.no_specific_stops')
+
+        = simple_block_for @stop_area, title: t("stop_areas.form.sections.internals") do |d|
+          = d.attribute :status
+          = d.attribute :stop_area_provider, value: (link_to @stop_area.stop_area_provider.name, workbench_stop_area_referential_stop_area_provider_path(@workbench, @stop_area.stop_area_provider))
+          = d.attribute :comment, as: :association
+
+        = simple_block_for @stop_area, title: Chouette::StopArea.tmf(:codes) do |d|
+          - if @stop_area.codes.empty?
+            .mb-xs
+              = replacement_msg t('stop_areas.no_codes')
+          - else
+            - @stop_area.codes.each do |c|
+              = d.attribute :value, label: c.code_space.short_name, object: c
+
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        - if @stop_area.longitude && @stop_area.latitude
+          #connection_link_map.medium_map.mb-lg
+
+        = simple_block_for @stop_area, title: t("stop_areas.form.sections.location") do |d|
+          = d.attribute :coordinates, value: geo_data(@stop_area, @stop_area_referential)
+          = d.attribute :compass_bearing
+          = d.attribute :street_name
+          = d.attribute :zip_code
+          = d.attribute :city_name
+          = d.attribute :postal_region
+          = d.attribute :country_code
+          = d.attribute :time_zone
 
         - if has_feature?(:stop_area_connection_links)
-          .col-lg-6.col-md-6.col-sm-12.col-xs-12
-            h4.underline= t('.connections.title')
-            - if @connection_links.any?
-              = stop_area_connections(@connection_links, @stop_area, @workbench)
-            - unless @connection_links.any?
-              .mb-xs
-                = replacement_msg t('.connections.no_connection')
+          h4.underline= t('.connections.title')
+          - if @connection_links.any?
+            = stop_area_connections(@connection_links, @stop_area, @workbench)
+          - unless @connection_links.any?
+            .mb-xs
+              = replacement_msg t('.connections.no_connection')
 
-            .row
-              .col-md-8
-                = link_to t('connection_links.actions.new'), new_workbench_stop_area_referential_connection_link_path(@workbench, departure_id: @stop_area.id), class: 'btn btn-action large'
-              .col-md-4
-                = more_connections_link(@stop_area, @workbench) if @stop_area.connection_links.count > 4
+          .row
+            .col-md-8
+              = link_to t('connection_links.actions.new'), new_workbench_stop_area_referential_connection_link_path(@workbench, departure_id: @stop_area.id), class: 'btn btn-action large'
+            .col-md-4
+              = more_connections_link(@stop_area, @workbench) if @stop_area.connection_links.count > 4

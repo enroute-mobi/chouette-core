@@ -13,6 +13,7 @@ module Chouette
     extend Enumerize
     enumerize :area_type, in: Chouette::AreaType::ALL, default: Chouette::AreaType::COMMERCIAL.first
     enumerize :kind, in: %i(commercial non_commercial), default: :commercial
+    enumerize :status, in: %w{in_creation confirmed deactivated}, default: "in_creation"
 
     AVAILABLE_LOCALIZATIONS = %i(en_UK nl_NL de_DE fr_FR it_IT es_ES)
 

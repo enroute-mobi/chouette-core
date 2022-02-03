@@ -65,6 +65,8 @@ fr:
         general: "Général"
         location: "Localisation"
         hierarchy: "Hiérarchie"
+        referent: "Référent"
+        internals: "Interne"
       address: "246 Boulevard Saint-Germain, 75007 Paris"
       geolocalize: "Géolocalisez "
       add_code: Ajouter un code

@@ -64,6 +64,8 @@ en:
         general: "General"
         location: "Location"
         hierarchy: "Hierarchy"
+        referent: "Referent"
+        internals: "Internals"
       address: "246 Boulevard Saint-Germain, 75007 Paris"
       add_code: Add a code
       geolocalize: "Pinpoint "

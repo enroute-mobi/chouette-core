@@ -245,14 +245,14 @@ RSpec.describe Period do
       it { is_expected.to eq(Period.new(from: '01-01', to: '12-31')) }
     end
 
-    context "when definition is '01..30'" do
-      let(:definition) { '01..30' }
-      it { is_expected.to eq(Period.new(from: '01', to: '30')) }
+    context "when definition is '01..15'" do
+      let(:definition) { '01..15' }
+      it { is_expected.to eq(Period.new(from: '01', to: '15')) }
     end
 
-    context "when definition is 01..30" do
-      let(:definition) { 01..30 }
-      it { is_expected.to eq(Period.new(from: '01', to: '30')) }
+    context "when definition is 01..15" do
+      let(:definition) { 01..15 }
+      it { is_expected.to eq(Period.new(from: '01', to: '15')) }
     end
   end
 

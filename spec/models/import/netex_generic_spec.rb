@@ -31,8 +31,9 @@ RSpec.describe Import::NetexGeneric do
     end
   end
 
-  describe '#import_stop_areas' do
+  describe 'StopArea Referential Part' do
 
+    subject { import.part(:stop_area_referential).import! }
     let(:import) { build_import xml }
 
     self::XML = '<StopPlace id="42"><Name>Tour Eiffel</Name></StopPlace>'
@@ -43,7 +44,7 @@ RSpec.describe Import::NetexGeneric do
           workbench.stop_areas.find_by(registration_number: '42')
         end
 
-        it { expect { import.import_stop_areas }.to change { stop_area }.from(nil).to(an_object_having_attributes(registration_number: '42', name: 'Tour Eiffel')) }
+        it { expect { subject }.to change { stop_area }.from(nil).to(an_object_having_attributes(registration_number: '42', name: 'Tour Eiffel')) }
       end
 
       context "when a StopArea exists with the registration number '42'" do
@@ -53,12 +54,12 @@ RSpec.describe Import::NetexGeneric do
         before { import.stop_area_provider = stop_area.stop_area_provider }
         let!(:stop_area) { context.stop_area }
 
-        it { expect { import.import_stop_areas ; stop_area.reload }.to change(stop_area, :name).from(a_string_not_matching('Tour Eiffel')).to('Tour Eiffel') }
+        it { expect { subject ; stop_area.reload }.to change(stop_area, :name).from(a_string_not_matching('Tour Eiffel')).to('Tour Eiffel') }
       end
 
       describe 'resource' do
         subject(:resource) { import.resources.first }
-        before { import.import_stop_areas }
+        before { import.part(:stop_area_referential).import! }
 
         it { is_expected.to have_attributes(status: "OK", metrics: a_hash_including("error_count"=>"0","ok_count"=>"1")) }
       end
@@ -67,7 +68,7 @@ RSpec.describe Import::NetexGeneric do
     self::INVALID_XML = '<StopPlace id="test"><Name></Name></StopPlace>'
     context "when XML is #{self::INVALID_XML}" do
       let(:xml) { self.class::INVALID_XML }
-      before { import.import_stop_areas }
+      before { import.part(:stop_area_referential).import! }
 
       describe 'status' do
         subject { import.status }
@@ -82,7 +83,7 @@ RSpec.describe Import::NetexGeneric do
 
     describe 'attributes' do
       let(:stop_area) { workbench.stop_areas.find_by(registration_number: 'test') }
-      before { import.import_stop_areas }
+      before { import.part(:stop_area_referential).import!}
 
       def self::xml_with(content)
         %{
@@ -194,7 +195,7 @@ RSpec.describe Import::NetexGeneric do
           context "when no StopArea exists with this registration number" do
             let(:stop_area) { workbench.stop_areas.find_by(registration_number: 'test') }
 
-            before { import.import_stop_areas }
+            before { import.part(:stop_area_referential).import! }
 
             it { is_expected.to include(an_object_having_attributes(code_space_id: code_space.id, value: "code_value")) }
           end
@@ -206,7 +207,7 @@ RSpec.describe Import::NetexGeneric do
             before { import.stop_area_provider = stop_area.stop_area_provider }
             let!(:stop_area) { context.stop_area }
 
-            before { import.import_stop_areas }
+            before { import.part(:stop_area_referential).import! }
 
             it { is_expected.to include(an_object_having_attributes(code_space_id: code_space.id, value: "code_value")) }
           end
@@ -214,7 +215,7 @@ RSpec.describe Import::NetexGeneric do
 
         context "when the required code space doesn't exist" do
           let(:stop_area) { workbench.stop_areas.find_by(registration_number: 'test') }
-          before { import.import_stop_areas }
+          before { import.part(:stop_area_referential).import! }
           it { is_expected.to be_empty }
 
           describe "resource messages" do
@@ -255,7 +256,7 @@ RSpec.describe Import::NetexGeneric do
         let!(:code_space) { workgroup.code_spaces.create!(short_name: 'code_space_shortname') }
         let(:stop_area) { workbench.stop_areas.find_by(registration_number: 'test') }
 
-        before { import.import_stop_areas }
+        before { import.part(:stop_area_referential).import! }
 
         it do
           expected_codes = [
@@ -291,7 +292,7 @@ RSpec.describe Import::NetexGeneric do
           context "when no StopArea exists with this registration number" do
             let(:stop_area) { workbench.stop_areas.find_by(registration_number: 'test') }
 
-            before { import.import_stop_areas }
+            before { import.part(:stop_area_referential).import! }
 
             it { is_expected.to include("custom_field_code" => "custom_field_value") }
           end
@@ -303,7 +304,7 @@ RSpec.describe Import::NetexGeneric do
             before { import.stop_area_provider = stop_area.stop_area_provider }
             let!(:stop_area) { context.stop_area }
 
-            before { import.import_stop_areas }
+            before { import.part(:stop_area_referential).import! }
 
             it { is_expected.to include("custom_field_code" => "custom_field_value") }
           end
@@ -311,7 +312,7 @@ RSpec.describe Import::NetexGeneric do
 
         context "when the required custom field doesn't exist" do
           let(:stop_area) { workbench.stop_areas.find_by(registration_number: 'test') }
-          before { import.import_stop_areas }
+          before { import.part(:stop_area_referential).import! }
           it { is_expected.to be_empty }
 
           describe "resource messages" do
@@ -332,7 +333,7 @@ RSpec.describe Import::NetexGeneric do
     end
   end
 
-  describe '#import_lines' do
+  describe 'Line Referential part' do
     let(:import) { build_import xml }
 
     context "when XML contains lines, operators and notices" do
@@ -392,7 +393,7 @@ RSpec.describe Import::NetexGeneric do
       end
 
       context "when no object exists" do
-        before { import.import_lines }
+        before { import.part(:line_referential).import! }
 
         describe "#models" do
           subject { model.pluck(:registration_number) }

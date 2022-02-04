@@ -1,6 +1,27 @@
 RSpec.describe Period do
   let(:date) { Time.zone.today }
 
+  describe ".new" do
+    %i{from to}.each do |attribute|
+      context "with #{attribute} attribute" do
+        subject { Period.new(**{ attribute => value }) }
+
+        [
+          [ Time.zone.today ] * 2,
+          [ '01', Date.parse('01') ],
+          [ :today, Time.zone.today ],
+          [ :yesterday, Time.zone.yesterday ],
+          [ :tomorrow, Time.zone.tomorrow ]
+        ].each do |value, expected_attribute|
+          context "when is a #{value.class} #{value.inspect}" do
+            let(:value) { value }
+            it { is_expected.to have_attributes(**{attribute => expected_attribute}) }
+          end
+        end
+      end
+    end
+  end
+
   describe "#during" do
     subject { period.during(14.days) }
 
@@ -9,14 +30,14 @@ RSpec.describe Period do
         let(:period) { Period.from date }
 
         it { is_expected.to have_same_attributes(:from, than: period) }
-        it { is_expected.to have_attributes(day_count: 14) }
+        it { is_expected.to have_attributes(duration: 14.days) }
       end
 
       context "when Period has only an end date" do
         let(:period) { Period.until date }
 
         it { is_expected.to have_same_attributes(:to, than: period) }
-        it { is_expected.to have_attributes(day_count: 14) }
+        it { is_expected.to have_attributes(duration: 14.days) }
       end
     end
   end
@@ -67,8 +88,13 @@ RSpec.describe Period do
   describe "#day_count" do
     subject { period.day_count }
 
-    context "when from and to are two dates separated by 3 days" do
-      let(:period) { Period.new from: date, to: date+3 }
+    context "when from and to are the same day" do
+      let(:period) { Period.new from: date, to: date }
+      it { is_expected.to eq(1) }
+    end
+
+    context "when from and to are two dates separated by 2 days (1..3)" do
+      let(:period) { Period.new from: date, to: date+2 }
       it { is_expected.to eq(3) }
     end
 
@@ -92,17 +118,17 @@ RSpec.describe Period do
     subject { period.time_range }
 
     context "when only the beginning date is defined (with) 2030-01-01)" do
-      let(:period) { Period.from Date.parse('2030-01-01') }
+      let(:period) { Period.from '2030-01-01' }
       it { is_expected.to have_attributes begin: DateTime.parse('2030-01-01 00:00'), end: nil }
     end
 
     context "when only the end date is defined (with) 2030-01-01)" do
-      let(:period) { Period.until Date.parse('2030-01-01') }
+      let(:period) { Period.until '2030-01-01' }
       it { is_expected.to have_attributes begin: nil, end: DateTime.parse('2030-01-02 00:00') }
     end
 
     context "when the beginning date is is 2030-01-01 and the end date is 2030-12-31"  do
-      let(:period) { Period.new from: Date.parse('2030-01-01'), to: Date.parse('2030-12-31') }
+      let(:period) { Period.new from: '2030-01-01', to: '2030-12-31' }
       it { is_expected.to have_attributes begin: DateTime.parse('2030-01-01 00:00'), end: DateTime.parse('2031-01-01 00:00') }
     end
 
@@ -116,17 +142,17 @@ RSpec.describe Period do
     subject { period.infinite_time_range }
 
     context "when only the beginning date is defined (with) 2030-01-01)" do
-      let(:period) { Period.from Date.parse('2030-01-01') }
+      let(:period) { Period.from '2030-01-01' }
       it { is_expected.to have_attributes begin: DateTime.parse('2030-01-01 00:00'), end: Float::INFINITY }
     end
 
     context "when only the end date is defined (with) 2030-01-01)" do
-      let(:period) { Period.until Date.parse('2030-01-01') }
+      let(:period) { Period.until '2030-01-01' }
       it { is_expected.to have_attributes begin: -Float::INFINITY, end: DateTime.parse('2030-01-02 00:00') }
     end
 
     context "when the beginning date is is 2030-01-01 and the end date is 2030-12-31"  do
-      let(:period) { Period.new from: Date.parse('2030-01-01'), to: Date.parse('2030-12-31') }
+      let(:period) { Period.new from: '2030-01-01', to: '2030-12-31' }
       it { is_expected.to have_attributes begin: DateTime.parse('2030-01-01 00:00'), end: DateTime.parse('2031-01-01 00:00') }
     end
 
@@ -205,4 +231,48 @@ RSpec.describe Period do
       end
     end
   end
+
+  describe ".parse" do
+    subject { Period.parse definition }
+
+    context "when definition is '2030-01-01..2030-12-31'" do
+      let(:definition) { '2030-01-01..2030-12-31' }
+      it { is_expected.to eq(Period.new(from: '2030-01-01', to: '2030-12-31')) }
+    end
+
+    context "when definition is '01-01..12-31'" do
+      let(:definition) { '01-01..12-31' }
+      it { is_expected.to eq(Period.new(from: '01-01', to: '12-31')) }
+    end
+
+    context "when definition is '01..30'" do
+      let(:definition) { '01..30' }
+      it { is_expected.to eq(Period.new(from: '01', to: '30')) }
+    end
+
+    context "when definition is 01..30" do
+      let(:definition) { 01..30 }
+      it { is_expected.to eq(Period.new(from: '01', to: '30')) }
+    end
+  end
+
+  describe "#mid_time" do
+    subject { period.mid_time }
+
+    context "when period is '2030-01-01..2030-01-01'" do
+      let(:period) { Period.from('2030-01-01').during(1.day) }
+      it { is_expected.to eq(Time.parse('2030-01-01 12:00')) }
+    end
+
+    context "when period is '2030-01-01..2030-01-02'" do
+      let(:period) { Period.from('2030-01-01').during(2.days) }
+      it { is_expected.to eq(Time.parse('2030-01-02 00:00')) }
+    end
+
+    context "when period is '2030-01-01..2030-01-03'" do
+      let(:period) { Period.from('2030-01-01').during(3.days) }
+      it { is_expected.to eq(Time.parse('2030-01-02 12:00')) }
+    end
+  end
+
 end

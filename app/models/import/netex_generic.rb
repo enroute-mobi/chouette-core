@@ -1,6 +1,6 @@
 class Import::NetexGeneric < Import::Base
-	include LocalImportSupport
-	include Imports::WithoutReferentialSupport
+  include LocalImportSupport
+  include Imports::WithoutReferentialSupport
 
   def self.accepts_file?(file)
     case File.extname(file)
@@ -17,6 +17,10 @@ class Import::NetexGeneric < Import::Base
   rescue => e
     Chouette::Safe.capture "Error in testing NeTEx (Generic) file: #{file}", e
     false
+  end
+
+  def file_extension_whitelist
+    %w(zip xml)
   end
 
   # stop_areas
@@ -55,17 +59,17 @@ class Import::NetexGeneric < Import::Base
 
       sync.update_or_create
     end
-	end
+  end
 
   def import_without_status
     import_resources :stop_areas
   end
 
-	def netex_source
+  def netex_source
     @netex_source ||= Netex::Source.read(local_file.path, type: file_extension)
-	end
+  end
 
-	def line_ids
+  def line_ids
     []
-	end
+  end
 end

@@ -118,7 +118,6 @@ module Chouette
         sync.update_or_create
 
         resource.update_metrics
-        #resource.save!
       end
     end
   end

@@ -40,7 +40,7 @@ class Export::Base < ApplicationModel
   def initialize_fields
     self.token_upload = SecureRandom.urlsafe_base64
   end
-  
+
   after_create :purge_exports
   def purge_exports
     return unless workbench.present?
@@ -98,10 +98,6 @@ class Export::Base < ApplicationModel
 
     def finished_statuses
       %w(successful failed warning aborted canceled)
-    end
-
-    def mailer_name
-      'ExportMailer'
     end
 
     def human_name(_options = {})
@@ -270,7 +266,7 @@ class Export::Base < ApplicationModel
 
   end
 
-  def operation_progress_weight(operation_name)
+  def operation_progress_weight
     1
   end
 
@@ -279,7 +275,7 @@ class Export::Base < ApplicationModel
   end
 
   def operation_relative_progress_weight(operation_name)
-    operation_progress_weight(operation_name).to_f/operations_progress_total_weight
+    operation_progress_weight.to_f/operations_progress_total_weight
   end
 
   def notify_operation_progress(operation_name)

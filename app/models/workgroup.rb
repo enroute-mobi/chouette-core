@@ -177,8 +177,8 @@ class Workgroup < ApplicationModel
     within_timeframe = (TimeOfDay.now - nightly_aggregate_time).abs <= NIGHTLY_AGGREGATE_CRON_TIME && nightly_aggregate_days.match_date?(Time.zone.now)
     Rails.logger.debug "within_timeframe: #{within_timeframe}"
 
-    # "5.minutes * 2" returns a FixNum (in our Rails version)
-    within_timeframe && (nightly_aggregated_at.blank? || nightly_aggregated_at < NIGHTLY_AGGREGATE_CRON_TIME*3)
+    cool_down_time = (NIGHTLY_AGGREGATE_CRON_TIME*3).ago
+    within_timeframe && (nightly_aggregated_at.blank? || nightly_aggregated_at < cool_down_time)
   end
 
   def import_compliance_control_sets

@@ -7,10 +7,6 @@ RSpec.describe Export::Base, type: :model do
 
   it { should validate_presence_of(:creator) }
 
-  include ActionDispatch::TestProcess
-  it { should allow_value(fixture_file_upload('OFFRE_TRANSDEV_2017030112251.zip')).for(:file) }
-  it { should_not allow_value(fixture_file_upload('reflex_updated.xml')).for(:file).with_message(I18n.t('errors.messages.extension_whitelist_error', extension: '"xml"', allowed_types: "zip, csv, json")) }
-
   describe ".purge_exports" do
     let(:workbench) { create(:workbench) }
     let(:other_workbench) { create(:workbench) }
@@ -76,21 +72,12 @@ RSpec.describe Export::Base, type: :model do
 
     it "must destroy all associated Export::Messages" do
       export = create(:gtfs_export)
-      create(:export_resource, export: export)
-
-      export.destroy
-
-      expect(Export::Resource.count).to eq(0)
-    end
-
-    it "must destroy all associated Export::Resources" do
-      export = create(:gtfs_export)
       create(:export_message, export: export)
-
       export.destroy
 
       expect(Export::Message.count).to eq(0)
     end
+
   end
 
   describe "#notify_parent" do
@@ -137,19 +124,6 @@ RSpec.describe Export::Base, type: :model do
       end
 
     end
-  end
-
-  describe "#update_status" do
-
-    it "updates :ended_at to now when status is finished" do
-      gtfs_export = create(:gtfs_export)
-      allow(gtfs_export).to receive(:compute_new_status).and_return('failed')
-      Timecop.freeze(Time.now) do
-        gtfs_export.update_status
-        expect(gtfs_export.ended_at).to eq(Time.now)
-      end
-    end
-
   end
 
   context "#user_file" do

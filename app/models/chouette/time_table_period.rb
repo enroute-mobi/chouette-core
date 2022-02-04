@@ -14,6 +14,8 @@ module Chouette
     validate :start_must_be_before_end
 
     def validate_period_uniqueness
+      return unless time_table
+
       scope = time_table.periods
       scope = scope.where.not(id: id) if id
       if scope.overlaps(range).exists?
@@ -58,6 +60,11 @@ module Chouette
       period_start..period_end
     end
 
+    def range=(range)
+      self.period_start = range.min
+      self.period_end = range.max
+    end
+
     def single_day?
       period_start == period_end
     end
@@ -67,8 +74,8 @@ module Chouette
 
       single_day_periods = current_scope.where('period_start = period_end')
 
-      single_day_periods.select(:period_start).find_each do |period|
-        time_table.dates.create date: period.period_start, in_out: true
+      single_day_periods.select(:id, :time_table_id, :period_start).find_each do |period|
+        period.time_table.dates.create date: period.period_start, in_out: true
       end
       single_day_periods.delete_all
     end

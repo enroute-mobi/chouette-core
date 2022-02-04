@@ -50,13 +50,18 @@
                     = Chouette::StopArea.tmf('id')
                   th scope="col"
                     = Chouette::StopArea.tmf('name')
+                  th scope="col"
+                    = Chouette::StopArea.tmf('distance')
               tbody
-                - @stop_area.specific_stops.limit(5).each do |c|
+                - @stop_area.closest_specific_stops.limit(5).each do |c|
                   tr
                     td
                       = c.get_objectid.short_id
                     td
                       = link_to(c.name, workbench_stop_area_referential_stop_area_path(@workbench, c.id))
+                    td
+                      - if c.distance
+                        = "#{c.distance.round(2)} m"
             - if @stop_area.specific_stops.count > 5
               = link_to t('stop_areas.show.more', count: (@stop_area.specific_stops.count - 5)), workbench_stop_area_referential_stop_areas_path(@workbench, :'q[referent_id_eq]' => @stop_area.id), class: 'btn btn-link pull-right'
           - else
@@ -64,11 +69,12 @@
               = replacement_msg t('stop_areas.no_specific_stops')
 
         = simple_block_for @stop_area, title: t("stop_areas.form.sections.internals") do |d|
-          = d.attribute :status
+          = d.attribute :human_status
           = d.attribute :stop_area_provider, value: (link_to @stop_area.stop_area_provider.name, workbench_stop_area_referential_stop_area_provider_path(@workbench, @stop_area.stop_area_provider))
           = d.attribute :comment, as: :association
 
         = simple_block_for @stop_area, title: Chouette::StopArea.tmf(:codes) do |d|
+          = d.attribute :registration_number
           - if @stop_area.codes.empty?
             .mb-xs
               = replacement_msg t('stop_areas.no_codes')
@@ -89,6 +95,12 @@
           = d.attribute :postal_region
           = d.attribute :country_code
           = d.attribute :time_zone
+
+        = simple_block_for @stop_area, title: t("stop_areas.form.sections.usage") do |d|
+          = d.attribute :waiting_time, as: :duration
+          = d.attribute :fare_code
+          = d.attribute :url, as: :association, link: @stop_area.url
+          / = d.attribute :stop_area_provider, value: (link_to @stop_area.stop_area_provider.name, workbench_stop_area_referential_stop_area_provider_path(@workbench, @stop_area.stop_area_provider))
 
         - if has_feature?(:stop_area_connection_links)
           h4.underline= t('.connections.title')

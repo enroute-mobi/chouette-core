@@ -13,7 +13,6 @@ module Chouette
     extend Enumerize
     enumerize :area_type, in: Chouette::AreaType::ALL, default: Chouette::AreaType::COMMERCIAL.first
     enumerize :kind, in: %i(commercial non_commercial), default: :commercial
-    enumerize :status, in: %w{in_creation confirmed deactivated}, default: "in_creation"
 
     AVAILABLE_LOCALIZATIONS = %i(en_UK nl_NL de_DE fr_FR it_IT es_ES)
 
@@ -224,6 +223,15 @@ module Chouette
       child_point   = "ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)"
 
       stop_area_referential.stop_areas.where(parent_id: self.id).order("distance").select('stop_areas.*', "ST_DistanceSphere(#{parent_point}, #{child_point}) as distance")
+    end
+
+    def closest_specific_stops
+      return self.class.none if position.blank?
+
+      parent_point = self.class.connection.quote("SRID=4326;POINT(#{longitude} #{latitude})")
+      specific_point   = "ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)"
+
+      stop_area_referential.stop_areas.where(referent_id: self.id).order("distance").select('stop_areas.*', "ST_DistanceSphere(#{parent_point}, #{specific_point}) as distance")
     end
 
     def geometry

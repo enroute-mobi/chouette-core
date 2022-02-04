@@ -135,20 +135,4 @@ module StopAreasHelper
     stop = (connection_link.departure_id == stop_id ? connection_link.arrival : connection_link.departure)
     stop.slice(:id, :longitude, :latitude)
   end
-
-  def stop_area_specific_stops(specific_stops, workbench)
-    table_builder_2 specific_stops,
-      [ \
-        TableBuilderHelper::Column.new( \
-          key: :name, \
-          attribute: Proc.new { |s| link_to s.name, workbench_stop_area_referential_stop_area_path(workbench, s) } \
-        ), \
-        TableBuilderHelper::Column.new( \
-          name: t('id_reflex'), \
-          attribute: Proc.new { |s| s.get_objectid.try(:short_id) }, \
-        ), \
-      ].compact,
-      sortable: false,
-      cls: 'table'
-  end
 end

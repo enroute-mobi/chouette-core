@@ -88,10 +88,20 @@
 
     .separator.section_separator
 
+    .row
+      .col-lg-12
+        h2.mb-lg= t("stop_areas.form.sections.usage")
+        - if has_feature?(:stop_area_waiting_time)
+          = f.input :waiting_time, input_html: { min: 0 }
+        = f.input :fare_code
+        = f.input :url
+
+
+    .separator.section_separator
   .row
     .col-lg-12
       h2.mb-lg= Chouette::StopArea.tmf(:codes)
-      = f.input :registration_number, required: stop_area_registration_number_is_required(f.object), input_html: {title: stop_area_registration_number_title(f.object), value: stop_area_registration_number_value(f.object)}, hint: stop_area_registration_number_hint
+      = f.input :registration_number, required: stop_area_registration_number_is_required(f.object), input_html: {title: stop_area_registration_number_title(f.object), value: stop_area_registration_number_value(f.object)}
       = f.simple_fields_for(:codes) do |codes_form|
         = render 'code_fields', f: codes_form
 

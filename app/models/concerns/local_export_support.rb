@@ -57,6 +57,7 @@ module LocalExportSupport
   rescue => e
     Chouette::Safe.capture "#{self.class.name} ##{id} failed", e
     self.status = :failed
+    self.ended_at = Time.now
     self.save!
   end
 

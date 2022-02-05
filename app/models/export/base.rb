@@ -126,6 +126,10 @@ class Export::Base < ApplicationModel
   end
   alias human_type human_name
 
+  def successful!
+    update_columns status: :successful, ended_at: Time.now
+  end
+
   def failed!
     update_columns status: :failed, ended_at: Time.now
   end
@@ -151,7 +155,7 @@ class Export::Base < ApplicationModel
     Chouette::Safe.capture "Export ##{id} failed", e
 
     messages.create(criticity: :error, message_attributes: { text: e.message }, message_key: :full_text)
-    update status: 'failed'
+    self.update status: :failed, ended_at: Time.now
     notify_state
     raise
   end
@@ -205,6 +209,10 @@ class Export::Base < ApplicationModel
 
   def successful?
     status.to_s == "successful"
+  end
+
+  def failed?
+    self.class.failed_statuses.include?(status)
   end
 
   def warning?

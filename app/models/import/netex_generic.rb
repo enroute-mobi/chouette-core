@@ -109,6 +109,7 @@ class Import::NetexGeneric < Import::Base
     def synchronization
       Chouette::Sync::Referential.new(target).tap do |sync|
         sync.synchronize_with Chouette::Sync::StopArea::Netex
+        sync.synchronize_with Chouette::Sync::Entrance::Netex
       end
     end
 

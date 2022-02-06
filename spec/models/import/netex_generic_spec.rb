@@ -424,6 +424,63 @@ RSpec.describe Import::NetexGeneric do
         end
       end
     end
+
+    context 'When XML contains stop place entrances' do
+      let(:xml) do
+        %{
+          <StopPlace id="stop-place-1" version="any">
+            <Name>North Ave </Name>
+            <entrances>
+              <StopPlaceEntranceRef ref="entrance-1" version="any"/>
+            </entrances>
+          </StopPlace>
+          <StopPlaceEntrance id="entrance-1" version="any">
+            <Name>Centre ville</Name>
+            <Centroid version="any">
+              <Location>
+                <Longitude>2.292</Longitude>
+                <Latitude>48.858</Latitude>
+              </Location>
+            </Centroid>
+            <PostalAddress id="postal-address-1" version="any">
+              <HouseNumber>123</HouseNumber>
+              <AddressLine1>Address Line 1</AddressLine1>
+              <AddressLine2>Address Line 2</AddressLine2>
+              <Street>Route ST Félix</Street>
+              <Town>Nantes</Town>
+              <PostCode>44300</PostCode>
+              <PostCodeExtension>44300</PostCodeExtension>
+              <PostalRegion>44</PostalRegion>
+              <CountryName>France</CountryName>
+            </PostalAddress>
+            <IsEntry>false</IsEntry>
+            <IsExit>false</IsExit>
+            <IsExternal>true</IsExternal>
+            <Height>2</Height>
+            <Width>3</Width>
+            <EntranceType>opening</EntranceType>
+          </StopPlaceEntrance>
+        }
+      end
+
+      let(:entrance) {::Entrance.find_by_registration_number("entrance-1")}
+      let(:stop_area) {::Chouette::StopArea.find_by_registration_number("stop-place-1")}
+
+      before { import.part(:stop_area_referential).import! }
+
+      it "should import stop_area" do
+        expect(stop_area).not_to be_nil
+      end
+
+      it "should import entrance" do
+        expect(entrance).not_to be_nil
+      end
+
+      it "should create association between stop_area and entrance" do
+        expect(entrance.stop_area).to eq(stop_area)
+        expect(stop_area.entrances).to eq([entrance])
+      end
+    end
   end
 
   describe 'Line Referential part' do

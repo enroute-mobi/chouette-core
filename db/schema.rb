@@ -602,6 +602,10 @@ ActiveRecord::Schema.define(version: 2022_05_29_090410) do
     t.string "country"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "registration_number"
+    t.boolean "external_flag"
+    t.float "width"
+    t.float "height"
     t.index ["objectid"], name: "index_entrances_on_objectid", unique: true
     t.index ["stop_area_id"], name: "index_entrances_on_stop_area_id"
     t.index ["stop_area_provider_id"], name: "index_entrances_on_stop_area_provider_id"

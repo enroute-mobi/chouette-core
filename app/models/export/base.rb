@@ -79,6 +79,8 @@ class Export::Base < ApplicationModel
     where('started_at BETWEEN :begin AND :end', begin: start_date, end: end_date)
   }
 
+  scope :successful, -> { where(status: :successful) }
+
   def self.mailer_name
     'ExportMailer'
   end

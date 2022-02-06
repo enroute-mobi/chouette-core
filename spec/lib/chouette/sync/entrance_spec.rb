@@ -6,12 +6,13 @@ RSpec.describe Chouette::Sync::Entrance do
     let(:context) do
       Chouette.create do
         stop_area registration_number: "stop-place-1"
-        stop_area_provider
+        #stop_area_provider
       end
     end
 
     let(:target) { context.stop_area_referential }
     let(:stop_area_provider) { context.stop_area_provider }
+    let(:stop_area) { context.stop_area }
 
     let(:xml) do
       %{
@@ -22,7 +23,7 @@ RSpec.describe Chouette::Sync::Entrance do
           </entrances>
         </StopPlace>
         <StopPlaceEntrance id="entrance-1" version="any">
-          <Name>test</Name>
+          <Name>Centre ville</Name>
           <Centroid version="any">
             <Location>
               <Longitude>2.292</Longitude>
@@ -72,13 +73,9 @@ RSpec.describe Chouette::Sync::Entrance do
 
     let(:model_id_attribute) { Chouette::Sync::Base.default_model_id_attribute }
 
-    let(:created_stop_area_entrance) {Entrance.find_by_registration_number("entrance-1")}
-
-    it "should create stop place entrance" do
-      sync.synchronize
-
-      expected_attributes = {
-        name: "test",
+    let(:expected_attributes) do 
+      {
+        name: "Centre ville",
         entry_flag: false,
         exit_flag: false,
         entrance_type: "opening",
@@ -90,7 +87,33 @@ RSpec.describe Chouette::Sync::Entrance do
         width: 3.0,
         height: 2.0
       }
-      expect(created_stop_area_entrance).to have_attributes(expected_attributes)
+    end
+
+    context "when no entrance exists" do
+      let(:created_stop_area_entrance) {target.entrances.where(model_id_attribute => "entrance-1").first}
+
+      it "should create stop place entrance" do
+        sync.synchronize
+
+        expect(created_stop_area_entrance).to have_attributes(expected_attributes)
+      end
+    end
+
+    context "when entrance exists" do
+      let!(:existing_stop_area_entrance) do
+        target.entrances.create!({
+          name: "test",
+          stop_area_provider: stop_area_provider,
+          model_id_attribute => "entrance-1",
+          stop_area: stop_area,
+        })
+      end
+
+      it "should update stop place entrance" do
+        sync.synchronize
+
+        expect(existing_stop_area_entrance.reload).to have_attributes(expected_attributes)
+      end
     end
   end
 end

@@ -81,10 +81,6 @@ class Export::Base < ApplicationModel
 
   scope :successful, -> { where(status: :successful) }
 
-  def self.mailer_name
-    'ExportMailer'
-  end
-
   def file_extension_whitelist
     %w[zip csv json]
   end
@@ -105,8 +101,11 @@ class Export::Base < ApplicationModel
     def human_name(_options = {})
       I18n.t("export.#{name.demodulize.underscore}")
     end
-
     alias human_type human_name
+
+    def mailer_name
+      'ExportMailer'
+    end
   end
 
   def code_space
@@ -136,30 +135,14 @@ class Export::Base < ApplicationModel
     update_columns status: :failed, ended_at: Time.now
   end
 
-  def notify_parent
+  def notify_publication
     return false unless finished?
     return false if notified_parent_at
-
     return false unless publication.present?
 
     update_column :notified_parent_at, Time.now
-
     publication&.child_change
-
     true
-  end
-
-  def run
-    update status: 'running', started_at: Time.now
-    export
-    notify_state unless publication.present?
-  rescue Exception => e
-    Chouette::Safe.capture "Export ##{id} failed", e
-
-    messages.create(criticity: :error, message_attributes: { text: e.message }, message_key: :full_text)
-    self.update status: :failed, ended_at: Time.now
-    notify_state
-    raise
   end
 
   def upload_file(file)

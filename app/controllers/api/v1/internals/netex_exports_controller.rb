@@ -12,7 +12,7 @@ module Api
             @netex_export.ended_at = Time.now
             @netex_export.save!
             @netex_export.successful!
-            @netex_export.notify_parent
+            @netex_export.notify_publication
             render json: {
               status: "ok",
               message:"File successfully uploaded for #{@netex_export.type} (id: #{@netex_export.id})"

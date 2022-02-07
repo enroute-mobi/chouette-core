@@ -14,9 +14,8 @@ en:
         one:   "netex conformity"
         other: "netex conformities"
     attributes:
-      import:
-        resource:
-          name: "Filename"
-          status: "Status"
-          resource_type: Resource Type
-          number_of_resources: Number of resources
+      import/resource:
+        name: "Filename"
+        status: "Status"
+        resource_type: Resource Type
+        number_of_resources: Number of resources

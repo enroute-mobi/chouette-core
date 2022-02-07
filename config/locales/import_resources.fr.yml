@@ -19,9 +19,8 @@ fr:
         one:   "rapport de conformité Netex"
         other: "rapports de conformité Netex"
     attributes:
-      import:
-        resource:
-          name: "Fichier"
-          status: "État"
-          number_of_resources: Nombre de ressources
-          resource_type: Type de ressource
+      import/resource:
+        name: "Fichier"
+        status: "État"
+        number_of_resources: Nombre de ressources
+        resource_type: Type de ressource

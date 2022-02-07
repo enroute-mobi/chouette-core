@@ -37,18 +37,16 @@ en:
         one:   "Macro Runs Report"
         other: "Macro Runs Reports"
     attributes:
-      macro:
-        list:
-          run:
-            status: Statut
-            name: Name
-            created_by: Create by
-            creator: "Creator"
-            original_macro_list: "Original macro list"
-            referential_id: "Target"
-            started_at: "Started at"
-            duration: Duration
-            created_at: "Created at"
-            updated_at: "Updated at"
-            creator_id: "Create by"
-            ended_at: Ended at
+      macro/list/run:
+        status: Statut
+        name: Name
+        created_by: Create by
+        creator: "Creator"
+        original_macro_list: "Original macro list"
+        referential_id: "Target"
+        started_at: "Started at"
+        duration: Duration
+        created_at: "Created at"
+        updated_at: "Updated at"
+        creator_id: "Create by"
+        ended_at: Ended at

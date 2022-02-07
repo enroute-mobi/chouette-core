@@ -19,13 +19,13 @@ module Api
             }
           else
             @netex_export.failed!
-            @netex_export.notify_parent
+            @netex_export.notify_publication
             render_unauthorized("Access denied")
           end
         end
 
         def notify_parent
-          if @netex_export.notify_parent
+          if @netex_export.notify_publication
             render json: {
               status: "ok",
               message:"#{@netex_export.parent_type} (id: #{@netex_export.parent_id}) successfully notified at #{l(@netex_export.notified_parent_at)}"

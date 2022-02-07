@@ -26,7 +26,7 @@ module Chouette::Sync
         end
 
         def position
-          "POINT(#{longitude} #{latitude})"
+          "#{longitude} #{latitude}"
         end
 
         def address
@@ -57,7 +57,7 @@ module Chouette::Sync
             zip_code: zip_code,
             city_name: city_name,
             country: country,
-            position: position,
+            position_input: position,
             entrance_type: entrance_type,
             stop_area_id: stop_area_id,
             stop_area_provider_id: stop_area_provider_id,

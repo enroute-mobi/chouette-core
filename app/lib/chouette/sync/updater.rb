@@ -96,7 +96,7 @@ module Chouette
           attributes = prepare_attributes(resource)
           model = scope.build attributes
 
-          event = Event.new :create, model: model, resource: resource
+          event = Event.new :create, model: model, resource: ResourceDecorator.undecorate(resource)
 
           update_codes model, resource, event
           update_custom_fields model, resource, event
@@ -111,7 +111,7 @@ module Chouette
 
           model.attributes = attributes
 
-          event = Event.new :update, model: model, resource: resource
+          event = Event.new :update, model: model, resource: ResourceDecorator.undecorate(resource)
 
           update_codes model, resource, event
           update_custom_fields model, resource, event
@@ -260,10 +260,23 @@ module Chouette
         # Batch is optionnal .. for tests
         def initialize(resource, batch: nil)
           super resource
+          @resource = resource
           @batch = batch
         end
 
+        def to_resource
+          @resource
+        end
+
         delegate :resolve, :updater, to: :batch
+
+        def self.undecorate(resource_or_decorator)
+          if resource_or_decorator.respond_to?(:to_resource)
+            resource_or_decorator.to_resource
+          else
+            resource_or_decorator
+          end
+        end
 
       end
 

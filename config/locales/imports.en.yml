@@ -38,7 +38,7 @@ en:
       parent: Parent
       status: State
       netex:
-        table_title: "Satus of anlyzed files"
+        table_title: "Status of analyzed files"
         table_explanation: "When calendriers.xml and/or commun.xml are not imported, then all lines file are not processed."
       table:
         test_results: Test results

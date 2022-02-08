@@ -6,6 +6,7 @@ module Chouette
       def initialize(target, options = {})
         @target, @options = target, options
       end
+      attr_accessor :source
 
       def synchronize_with(sync_class)
         sync_classes << sync_class
@@ -33,10 +34,6 @@ module Chouette
         syncs.each(&:synchronize)
       end
 
-      def source=(source)
-        options[:source] = source
-      end
-
       protected
 
       def sync_classes
@@ -50,13 +47,12 @@ module Chouette
       end
 
       def sync_options
-        options.merge(target: target)
+        options.merge(target: target, source: source)
       end
 
       def create_sync(sync_class)
         sync_class.new sync_options
       end
-
     end
   end
 end

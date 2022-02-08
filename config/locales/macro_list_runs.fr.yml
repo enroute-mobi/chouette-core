@@ -37,18 +37,16 @@ fr:
         one:   "Rapport de jeu d'instructions"
         other: "Rapports de jeux d'instructions"
     attributes:
-      macro:
-        list:
-          run:
-            status: Statut
-            name: Nom
-            created_by: Créer par
-            creator: "Créateur"
-            original_macro_list_id: "Jeu d'instructions"
-            referential_id: "Cible"
-            started_at: "Date et heure de lancement"
-            duration: Durée
-            created_at: "Crée le"
-            updated_at: "Edité le"
-            creator_id: "Crée par"
-            ended_at: Fini le
+      macro/list/run:
+        status: Statut
+        name: Nom
+        created_by: Créer par
+        creator: "Créateur"
+        original_macro_list_id: "Jeu d'instructions"
+        referential_id: "Cible"
+        started_at: "Date et heure de lancement"
+        duration: Durée
+        created_at: "Crée le"
+        updated_at: "Edité le"
+        creator_id: "Crée par"
+        ended_at: Fini le

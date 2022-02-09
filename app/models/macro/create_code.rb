@@ -30,9 +30,11 @@ module Macro
         models_without_code.find_in_batches do |batch|
           model_class.transaction do
             batch.each do |model|
-              code_value = target.value(source.value(model))
-              Rails.logger.debug { "Create code '#{code_value}' for #{model.class}##{model.id}" }
-              model.codes.create! code_space: code_space, value: code_value
+              if source_value = source.value(model)
+                code_value = target.value(source_value)
+                Rails.logger.debug { "Create code '#{code_value}' for #{model.class}##{model.id}" }
+                model.codes.create! code_space: code_space, value: code_value
+              end
             end
           end
         end
@@ -102,7 +104,7 @@ module Macro
         unless code_space
           model.send attribute
         else
-          model.codes.find_by(code_space: code_space).value
+          model.codes.find_by(code_space: code_space)&.value
         end
       end
 

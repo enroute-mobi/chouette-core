@@ -114,6 +114,20 @@ RSpec.describe Macro::CreateCode do
             expect { macro_run.run }.to_not change_code_value
           end
         end
+
+        context "when a StopArea exists without a registration_number" do
+          let(:context) do
+            Chouette.create do
+              code_space short_name: 'test'
+              stop_area registration_number: nil
+            end
+          end
+          let(:stop_area) { context.stop_area }
+
+          it "doesn't create a code" do
+            expect { macro_run.run }.to_not change { stop_area.reload.codes.count }
+          end
+        end
       end
     end
   end
@@ -138,6 +152,8 @@ RSpec.describe Macro::CreateCode do
       context "when attribute is 'code:test'" do
         before { source.attribute = 'code:test' }
 
+        before { source.workgroup = context.workgroup }
+
         context "when model is a StopArea with a code 'test' with value 'dummy'" do
           let(:context) do
             Chouette.create do
@@ -146,9 +162,20 @@ RSpec.describe Macro::CreateCode do
             end
           end
           let(:model) { context.stop_area }
-          before { source.workgroup = context.workgroup }
 
           it { is_expected.to eq("dummy") }
+        end
+
+        context "when model is a StopArea without a code 'test'" do
+          let(:context) do
+            Chouette.create do
+              code_space short_name: 'test'
+              stop_area
+            end
+          end
+          let(:model) { context.stop_area }
+
+          it { is_expected.to be_nil }
         end
       end
     end

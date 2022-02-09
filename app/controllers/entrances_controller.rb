@@ -93,6 +93,7 @@ class EntrancesController < ChouetteController
       :country,
       :created_at,
       :updated_at,
+      codes_attributes: [:id, :code_space_id, :value, :_destroy],
     )
   end
 end

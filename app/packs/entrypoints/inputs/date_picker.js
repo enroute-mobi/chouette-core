@@ -7,20 +7,22 @@ const locales = {
 	en: english
 }
 
-window.initDatePicker = node => {
-	flatpickr(node, {
-		locale: locales[I18n.locale],
-		dateFormat: "d/m/Y",
-		allowInput: true,
-		wrap: true
-	})
-}
+document.addEventListener("DOMContentLoaded", () => {
+  if (document.getElementsByClassName("flatpickr")) {
+    flatpickr('.flatpickr', {
+	  locale: locales[I18n.locale],
+      dateFormat: "d/m/Y",
+      wrap: true
+    })
+  }
 
-window.initDateTimePicker = () => {
-	flatpickr(".time_picker", {
-		enableTime: true,
-		noCalendar: true,
-		dateFormat: "H:i",
-		time_24hr: true
-	})
-}
+  if (document.getElementsByClassName("time_picker")) {
+    flatpickr(".time_picker", {
+			enableTime: true,
+			noCalendar: true,
+			dateFormat: "H:i",
+			time_24hr: true,
+			wrap: true
+		})
+  }
+})

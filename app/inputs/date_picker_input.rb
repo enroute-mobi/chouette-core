@@ -1,25 +1,23 @@
 class DatePickerInput < SimpleForm::Inputs::StringInput
-  delegate :content_tag, :concat, :javascript_additional_packs, :stylesheet_additional_packs, to: :template
+  delegate :content_tag, :concat, :javascript_additional_packs, to: :template
 
   def input(wrapper_options)
-    set_value_html_option
-
     javascript_additional_packs 'inputs/date_picker'
 
-    content_tag(:div, class: 'flatpickr input-group', 'x-data': '', 'x-init': 'initDatePicker($el)') do
-      concat @builder.text_field(
-        attribute_name,
-        input_html_options.merge(
-            'data-input': '',
-            'readonly': 'readonly',
-            'style': 'background-color: white;'
-          )
-        )
+    # Never update the code before read https://flatpickr.js.org/examples/#flatpickr--external-elements
+    input_html_options[:type] = 'text'
+    input_html_options[:data] = { 'input': ''}
+    input_html_options[:style] = 'background-color: white;'
+    input_html_options[:value] ||= I18n.localize(value, format: display_pattern) if value
+
+    content_tag(:div, class: 'flatpickr input-group') do
+      concat @builder.text_field(attribute_name, input_html_options)
       concat( content_tag(:div, class: 'input-group-btn') do
         concat calendar_button
         concat clear_button
       end)
     end
+
   end
 
   def input_html_classes
@@ -29,20 +27,15 @@ class DatePickerInput < SimpleForm::Inputs::StringInput
   private
 
   def clear_button
-    template.content_tag(:a, title: "clear", class: 'btn btn-default', 'data-clear': "") do
-      template.concat template.content_tag(:i, "", class: 'fas fa-times')
+    content_tag(:a, title: "clear", class: 'btn btn-default', 'data-clear': "") do
+      concat content_tag(:i, "", class: 'fas fa-times')
     end
   end
 
   def calendar_button
-    template.content_tag(:a, title: "toggle", class: 'btn btn-default color-danger', 'data-toggle': "") do
-      template.concat template.content_tag(:i, "", class: 'far fa-calendar')
+    content_tag(:a, title: "toggle", class: 'btn btn-default color-danger', 'data-toggle': "") do
+      concat content_tag(:i, "", class: 'far fa-calendar')
     end
-  end
-
-  def set_value_html_option
-    return unless value.present?
-    input_html_options[:value] ||= I18n.localize(value, format: display_pattern)
   end
 
   def value

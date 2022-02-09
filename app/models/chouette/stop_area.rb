@@ -6,7 +6,6 @@ module Chouette
 
     has_metadata
     include ProjectionFields
-    include StopAreaRestrictions
     include ObjectidSupport
     include CustomFieldsSupport
 

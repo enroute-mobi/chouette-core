@@ -4,7 +4,6 @@ module Chouette
     has_metadata
     include ChecksumSupport
     include CustomFieldsSupport
-    include VehicleJourneyRestrictions
     include ObjectidSupport
     include TransportModeEnumerations
 

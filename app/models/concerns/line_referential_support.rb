@@ -10,8 +10,4 @@ module LineReferentialSupport
   def workgroup
     line_referential&.workgroup
   end
-
-  def hub_restricted?
-    false
-  end
 end

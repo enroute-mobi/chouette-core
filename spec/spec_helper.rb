@@ -9,7 +9,6 @@ unless ENV['NO_RCOV']
 
     enable_coverage :branch
     add_filter 'vendor'
-    add_filter 'app/exporters/chouette/hub'
 
     #command_name "Job #{ENV["TEST_ENV_NUMBER"]}" if ENV["TEST_ENV_NUMBER"]
     #formatter SimpleCov::Formatter::SimpleFormatter

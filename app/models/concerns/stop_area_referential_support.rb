@@ -16,10 +16,6 @@ module StopAreaReferentialSupport
     @workgroup ||= self.class.current_workgroup || Workgroup.where(stop_area_referential_id: stop_area_referential_id).last
   end
 
-  def hub_restricted?
-    false
-  end
-
   private
 
   def define_stop_area_referential

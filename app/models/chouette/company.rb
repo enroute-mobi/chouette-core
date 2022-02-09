@@ -12,7 +12,6 @@ module Chouette
 
     prepend WorkgroupFromClass
 
-    include CompanyRestrictions
     include LineReferentialSupport
     include ObjectidSupport
     include CustomFieldsSupport

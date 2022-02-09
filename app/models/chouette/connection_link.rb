@@ -4,7 +4,6 @@ module Chouette
 
     has_metadata
     include ObjectidSupport
-    include ConnectionLinkRestrictions
     include CustomFieldsSupport
 
     belongs_to :departure, :class_name => 'Chouette::StopArea'

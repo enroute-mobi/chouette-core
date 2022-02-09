@@ -11,8 +11,6 @@ fr:
       destroy_confirm: "Etes vous sûr de supprimer cet itinéraire ?"
       export_kml: "Export KML de l'itinéraire"
       export_kml_all: "Export KML des itinéraires"
-      export_hub: "Export HUB de l'itinéraire"
-      export_hub_all: "Export HUB des itinéraires"
       add_stop_point: "Ajouter un arrêt"
       new_stop_point: "Créer un arrêt pour l'ajouter"
       reversed_vehicle_journey: "Horaires retour"
@@ -123,6 +121,3 @@ fr:
       gtfs:
         route:
           objectid: "[prefixe]:Route:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
-      hub:
-        route:
-          objectid: "[prefixe]:Route:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'. Longueur maximale de la clé unique = 8."

@@ -45,9 +45,6 @@ fr:
       export_kml_place: "Export KML des pôles d'échange"
       export_kml_commercial: "Export KML des arrêts commerciaux"
       export_kml_physical: "Export KML des arrêts physiques"
-      export_hub_place: "Export HUB des pôles d'échange"
-      export_hub_commercial: "Export HUB des arrêts commerciaux"
-      export_hub_physical: "Export HUB des arrêts physiques"
     filters:
       name_or_objectid: "Recherche par nom ou par objectid..."
       parent: "Indiquez un parent..."
@@ -218,17 +215,6 @@ fr:
           zip_code: ""
           comment: ""
           coordinates: "latitude,longitude dans le référentiel WGS84, le séparateur de décimales est 'point'"
-          projection_xy: "x,y dans le référentiel secondaire, le séparateur de décimales est 'point'"
-      hub:
-        stop_area:
-          name: "Longueur maximale = 75."
-          registration_number: "Entier positif, clé unique, d'un maximum de 8 chiffres. Obligatoire pour les arrêts physiques."
-          objectid: "[prefixe]:StopArea:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'. Longueur maximale de la clé unique = 12."
-          nearest_topic_name: "Longueur maximale = 255 pour les arrêts logiques et 60 pour les arrêts physiques."
-          city_name: "Obligatoire pour les arrêts physiques. Longueur maximale = 80."
-          zip_code: "Entier positif de 8 chiffres. Obligatoire pour les arrêts physiques."
-          comment: "Longueur maximale = 255."
-          coordinates: "Les coordonnées sont obligatoires."
           projection_xy: "x,y dans le référentiel secondaire, le séparateur de décimales est 'point'"
     hints:
       stop_area:

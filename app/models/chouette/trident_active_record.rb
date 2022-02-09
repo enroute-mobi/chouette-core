@@ -24,10 +24,6 @@ module Chouette
       self.class.current_workgroup || referential&.workgroup
     end
 
-    def hub_restricted?
-      referential.data_format == "hub"
-    end
-
     def prefix
       referential.prefix
     end

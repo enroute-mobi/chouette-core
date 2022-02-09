@@ -192,9 +192,6 @@ en:
       gtfs:
         vehicle_journey:
           objectid: "[prefix]:VehicleJourney:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-      hub:
-        vehicle_journey:
-          objectid: "[prefix]:VehicleJourney:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character. Maximum length of the unique key = 8."
   referential_vehicle_journeys:
     index:
       title: "Vehicle Journeys"

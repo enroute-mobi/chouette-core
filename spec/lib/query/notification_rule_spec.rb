@@ -16,8 +16,8 @@ RSpec.describe Query::NotificationRule do
 			end
 
 			workbench :period do
-				notification_rule :in_period, period: Range.new(Time.zone.today - 1.day, Time.zone.today + 1.day)
-				notification_rule :out_of_period, period: Range.new(Time.zone.today - 10.days, Time.zone.today - 5.days)
+				notification_rule :in_period, period: Period.from(:yesterday).until(:tomorrow)
+				notification_rule :out_of_period, period: Period.before(:today).during(10.days)
 			end
 
 			workbench :notification_type do

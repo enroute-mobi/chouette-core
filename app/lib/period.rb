@@ -123,7 +123,7 @@ class Period < Range
       if date_or_period.respond_to?(:end)
         date_or_period.end
       else
-        date_or_period
+        to_date date_or_period
       end
 
     from date + 1
@@ -136,7 +136,7 @@ class Period < Range
       if date_or_period.respond_to?(:begin)
         date_or_period.begin
       else
-        date_or_period
+        to_date date_or_period
       end
 
     self.until date - 1
@@ -156,8 +156,8 @@ class Period < Range
 
   # period.during(14.days)
   # period.during(1.month)
-  # Period.from(Date.today).during(14.days)
-  # Period.until(Date.today).during(14.days)
+  # Period.from(:today).during(14.days)
+  # Period.until(:today).during(14.days)
   def during(duration)
     in_days = duration.respond_to?(:in_days) ? duration.in_days : duration / 1.day
 

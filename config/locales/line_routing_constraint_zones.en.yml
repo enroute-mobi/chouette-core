@@ -1,7 +1,5 @@
 en:
   line_routing_constraint_zones:
-    no_lines: "This Line Routing Constraint Zone has no line"
-    no_stop_areas: "This Line Routing Constraint Zone has no stop area"
     search_no_results: "No Local Traffic"
     actions:
       new: "Add an Line Routing Constraint Zone"
@@ -10,9 +8,6 @@ en:
       update: "Edit this Line Routing Constraint Zone"
       destroy: "Delete"
       destroy_confirm: "Are you sure you want to remove this Routing Constraint Zone?"
-    filters:
-      stop: Indiquez un arrêt...
-      direction: Indiquez une direction...
     new:
       title: "Add a Line Routing Constraint Zones"
     create:

@@ -1,7 +1,5 @@
 fr:
   line_routing_constraint_zones:
-    no_lines: "Cette ITL n'a pas de Lignes"
-    no_stop_areas: "Cette ITL n'a pas d'Arrêts"
     search_no_results: "Aucune Interdiction de Trafic local"
     actions:
       new: "Ajouter une ITL"
@@ -10,9 +8,6 @@ fr:
       update: "Editer cette ITL"
       destroy: "Supprimer"
       destroy_confirm: "Etes vous sûr de supprimer cette ITL?"
-    filters:
-      stop: Indiquez un arrêt...
-      direction: Indiquez une direction...
     new:
       title: "Ajouter une Interdiction de Trafic local"
     create:

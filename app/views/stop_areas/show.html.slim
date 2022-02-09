@@ -40,9 +40,14 @@
 
         - if @stop_area.is_referent
           = simple_block_for @stop_area, title: Chouette::StopArea.tmf('specific_stops') do |d|
-            = d.attribute :specific_stops, value: (link_to @stop_area.specific_stops.count, workbench_stop_area_referential_stop_areas_path(@workbench, :'q[referent_id_eq]' => @stop_area.id))
+            - if @specific_stops.count > 1
+              = d.attribute :specific_stops, value: (link_to @stop_area.specific_stops.count, workbench_stop_area_referential_stop_areas_path(@workbench, :'q[referent_id_eq]' => @stop_area.id))
+            - elsif @specific_stops.count == 1
+              = d.attribute :specific_stops, value: (link_to @stop_area.specific_stops.first.name, workbench_stop_area_referential_stop_area_path(@workbench, @stop_area.specific_stops.first.id))
+            - else
+              = d.attribute :specific_stops
 
-          - if @specific_stops.any?
+          - if @specific_stops.count > 1
             table.table.table-bordered
               thead
                 tr
@@ -64,9 +69,6 @@
                         = "#{c.distance.round(2)} m"
             - if @stop_area.specific_stops.count > 5
               = link_to t('stop_areas.show.more', count: (@stop_area.specific_stops.count - 5)), workbench_stop_area_referential_stop_areas_path(@workbench, :'q[referent_id_eq]' => @stop_area.id), class: 'btn btn-link pull-right'
-          - else
-            .mb-xs
-              = replacement_msg t('stop_areas.no_specific_stops')
 
         = simple_block_for @stop_area, title: t("stop_areas.form.sections.internals") do |d|
           = d.attribute :human_status

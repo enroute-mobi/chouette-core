@@ -10,7 +10,7 @@ const locales = {
 document.addEventListener("DOMContentLoaded", () => {
   if (document.getElementsByClassName("flatpickr")) {
     flatpickr('.flatpickr', {
-	  locale: locales[I18n.locale],
+			locale: locales[I18n.locale],
       dateFormat: "d/m/Y",
       wrap: true
     })

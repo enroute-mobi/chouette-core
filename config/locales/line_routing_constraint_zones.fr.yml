@@ -1,7 +1,7 @@
 fr:
   line_routing_constraint_zones:
     no_lines: "Cette ITL n'a pas de Lignes"
-    no_stop_areas: "Cette ITL n'a pas d'arrêts"
+    no_stop_areas: "Cette ITL n'a pas d'Arrêts"
     search_no_results: "Aucune Interdiction de Trafic local"
     actions:
       new: "Ajouter une ITL"
@@ -43,7 +43,3 @@ fr:
         stop_areas: "Arrêts"
         line_ids: "Lignes"
         stop_area_ids: "Arrêts"
-    errors:
-      models:
-        line_routing_constraint_zone:
-          attributes:

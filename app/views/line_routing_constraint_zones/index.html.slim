@@ -24,14 +24,22 @@
               end \
             ), \
             TableBuilderHelper::Column.new( \
+              key: :lines, \
+              attribute: Proc.new { |zone| zone.lines.map(&:name).join(", ").truncate(100) }, \
+              sortable: false, \
+            ), \
+            TableBuilderHelper::Column.new( \
+              key: :stop_areas, \
+              attribute: Proc.new { |zone| zone.stop_areas.map(&:name).join(", ").truncate(100) }, \
+              sortable: false, \
+            ), \
+            TableBuilderHelper::Column.new( \
                 key: :created_at, \
-                attribute: :created_at, \
                 attribute: Proc.new { |n| l(n.created_at, format: :short_with_time) if n.created_at }, \
                 sortable: false,\
               ), \
             TableBuilderHelper::Column.new( \
                 key: :updated_at, \
-                attribute: :updated_at, \
                 attribute: Proc.new { |n| l(n.updated_at, format: :short_with_time) if n.updated_at }, \
                 sortable: false,\
               ), \

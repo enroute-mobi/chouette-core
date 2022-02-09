@@ -1,15 +1,15 @@
 en:
   line_routing_constraint_zones:
-    no_lines: "This LTI has no lines"
-    no_stop_areas: "This ITL has no stop areas"
+    no_lines: "This Line Routing Constraint Zone has no line"
+    no_stop_areas: "This Line Routing Constraint Zone has no stop area"
     search_no_results: "No Local Traffic"
     actions:
-      new: "Add an ITL"
-      create: "Add an ITL"
-      edit: "Edit this ITL"
-      update: "Edit this ITL"
+      new: "Add an Line Routing Constraint Zone"
+      create: "Add an Line Routing Constraint Zone"
+      edit: "Edit this Line Routing Constraint Zone"
+      update: "Edit this Line Routing Constraint Zone"
       destroy: "Delete"
-      destroy_confirm: "Are you sure you want to remove this ITL?"
+      destroy_confirm: "Are you sure you want to remove this Routing Constraint Zone?"
     filters:
       stop: Indiquez un arrêt...
       direction: Indiquez une direction...
@@ -32,18 +32,14 @@ en:
   activerecord:
     models:
       line_routing_constraint_zone:
-        zero:  "Line Routing Constraint Zones"
-        one:   "Line Routing Constraint Zones"
+        zero:  "Line Routing Constraint Zone"
+        one:   "Line Routing Constraint Zone"
         other: "Line Routing Constraint Zones"
     attributes:
       line_routing_constraint_zone:
         information: "Information"
         name: "Name"
         lines: "Lines"
-        stop_areas: "Stop areas"
+        stop_areas: "Stop Areas"
         line_ids: "Lines"
-        stop_area_ids: "Stop areas"
-    errors:
-      models:
-        line_routing_constraint_zone:
-          attributes:
+        stop_area_ids: "Stop Areas"

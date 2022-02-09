@@ -5,8 +5,8 @@ class CreateLineRoutingConstraintZones < ActiveRecord::Migration[5.2]
         t.string :name
         t.bigint :line_ids, array: true
         t.bigint :stop_area_ids, array: true
-        t.bigint :line_referential_id
-        t.bigint :line_provider_id
+        t.references :line_referential
+        t.references :line_provider
         t.timestamps
       end
     end

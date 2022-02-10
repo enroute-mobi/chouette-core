@@ -52,8 +52,8 @@ class LineRoutingConstraintZonesController < ChouetteController
       :name,
       :created_at,
       :updated_at,
-      line_ids: [],
-      stop_area_ids: [],
+      lines: [],
+      stop_areas: [],
     )
   end
 end

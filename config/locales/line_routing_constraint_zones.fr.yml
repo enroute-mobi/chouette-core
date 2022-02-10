@@ -36,5 +36,3 @@ fr:
         name: "Nom"
         lines: "Lignes"
         stop_areas: "Arrêts"
-        line_ids: "Lignes"
-        stop_area_ids: "Arrêts"

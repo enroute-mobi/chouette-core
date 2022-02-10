@@ -2,18 +2,18 @@
   .row
     .col-lg-12
       = f.input :name
-      = f.input :line_ids,
-        as: :tom_select,
-        collection: @workbench.lines.where(id: @line_routing_constraint_zone.line_ids).map { |l| {id: l.id, text: l.name } },
+      = f.input :lines,
+       # as: :tom_select,
+        collection: @workbench.lines,
         input_html: { multiple: true, style: 'width: 100%' },
-        include_hidden: false,
+        #selected: @line_routing_constraint_zone.line_ids,
         config: { type: 'ajax', url: lines_workbench_autocomplete_index_path(@workbench), placeholder: I18n.t('line_routing_constraint_zones.form.line_placeholder') }
 
-      = f.input :stop_area_ids,
+      = f.input :stop_areas,
         as: :tom_select,
         collection: @workbench.stop_areas.where(id: @line_routing_constraint_zone.stop_area_ids).map { |l| {id: l.id, text: l.name } },
         input_html: { multiple: true, style: 'width: 100%' },
-        include_hidden: false,
+        selected: @line_routing_constraint_zone.stop_area_ids,
         config: { type: 'ajax', url: stop_areas_workbench_autocomplete_index_path(@workbench), placeholder: I18n.t('line_routing_constraint_zones.form.stop_area_placeholder') }
   .separator
 

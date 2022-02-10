@@ -36,5 +36,3 @@ en:
         name: "Name"
         lines: "Lines"
         stop_areas: "Stop Areas"
-        line_ids: "Lines"
-        stop_area_ids: "Stop Areas"

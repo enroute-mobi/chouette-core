@@ -408,9 +408,9 @@ crumb :line_routing_constraint_zone do |workbench, line_routing_constraint_zone|
   parent :line_routing_constraint_zones, workbench
 end
 
-crumb :new_line_routing_constraint_zone do |line_referential|
+crumb :new_line_routing_constraint_zone do |workbench|
   link I18n.t('line_routing_constraint_zones.new.title')
-  parent :line_routing_constraint_zones, line_referential
+  parent :line_routing_constraint_zones, workbench
 end
 
 crumb :calendars do |workgroup|

@@ -195,9 +195,6 @@ fr:
       gtfs:
         vehicle_journey:
           objectid: "[prefixe]:VehicleJourney:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'"
-      hub:
-        vehicle_journey:
-          objectid: "[prefixe]:VehicleJourney:[clé_unique]  caractères autorisés : alphanumériques et 'souligné' pour le préfixe, la clé unique accepte en plus le 'moins'. Longueur maximale de la clé unique = 8."
   referential_vehicle_journeys:
     index:
       title: "Courses"

@@ -2,7 +2,6 @@ module Chouette
   class TimeTable < Chouette::TridentActiveRecord
     has_metadata
     include ChecksumSupport
-    include TimeTableRestrictions
     include ObjectidSupport
     include ApplicationDaysSupport
     include TimetableSupport

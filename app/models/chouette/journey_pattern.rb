@@ -3,7 +3,6 @@ module Chouette
     has_metadata
     include ChecksumSupport
     include CustomFieldsSupport
-    include JourneyPatternRestrictions
     include ObjectidSupport
 
     belongs_to :route

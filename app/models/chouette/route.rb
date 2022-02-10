@@ -4,7 +4,6 @@ module Chouette
 
     attr_accessor :prevent_costs_calculation
 
-    include RouteRestrictions
     include ChecksumSupport
     include ObjectidSupport
     extend Enumerize

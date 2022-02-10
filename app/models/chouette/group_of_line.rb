@@ -4,7 +4,6 @@ module Chouette
 
     has_metadata
     include ObjectidSupport
-    include GroupOfLineRestrictions
     include LineReferentialSupport
 
     belongs_to :line_provider, required: true

@@ -3,12 +3,6 @@ class ReferentialLineDecorator < AF83::Decorator
 
   set_scope { context[:referential] }
 
-  # Action links require:
-  #   context: {
-  #     referential: ,
-  #     current_organisation:
-  #   }
-
   with_instance_decorator do |instance_decorator|
     instance_decorator.show_action_link
 
@@ -29,10 +23,8 @@ class ReferentialLineDecorator < AF83::Decorator
 
     instance_decorator.action_link(
       if: ->() {
-        (!object.hub_restricted? ||
-          (object.hub_restricted? && object.routes.size < 2)) &&
-        (h.policy(Chouette::Route).create? &&
-          context[:referential].organisation == context[:current_organisation])
+        h.policy(Chouette::Route).create? &&
+          context[:referential].organisation == context[:current_organisation]
       },
       secondary: true
     ) do |l|

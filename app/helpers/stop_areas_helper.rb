@@ -52,9 +52,7 @@ module StopAreasHelper
   end
 
   def stop_area_registration_number_is_required stop_area
-    val = format_restriction_for_locales(@referential) == '.hub'
-    val ||= stop_area&.stop_area_referential&.registration_number_format.present?
-    val
+    stop_area&.stop_area_referential&.registration_number_format.present?
   end
 
   def stop_area_registration_number_value stop_area

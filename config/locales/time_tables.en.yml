@@ -161,10 +161,6 @@ en:
         time_table:
           comment: ""
           objectid: "[prefix]:Timetable:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-      hub:
-        time_table:
-          comment: "Maximum length = 75."
-          objectid: "[prefix]:Timetable:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character. Maximum length of the unique key = 6."
     placeholders:
       time_table:
         tag_search: "ex: Public hollidays,School holidays"

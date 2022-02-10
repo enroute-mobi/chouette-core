@@ -72,13 +72,11 @@ fr:
       neptune: "Profil Neptune"
       gtfs: "GTFS"
       netex: "Profil NeTEx"
-      hub: "HUB 1.3"
       kml: "KML"
     data_format_detail:
       neptune: ""
       gtfs: "General Transit Feed Specification défini par Google"
       netex: "Expérimental"
-      hub: "Format spécifique Transdev"
       kml: "Tracés de lignes, séquences d'arrêts, ...  en 'Keyhole Markup Language'"
     route:
       direction:

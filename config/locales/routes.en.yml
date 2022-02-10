@@ -11,8 +11,6 @@ en:
       destroy_confirm: "Are you sure you want destroy this route?"
       export_kml: "Export KML route"
       export_kml_all: "Export KML routes"
-      export_hub: "Export HUB route"
-      export_hub_all: "Export HUB routes"
       add_stop_point: "Add stop point"
       new_stop_point: "Create new stop"
       reversed_vehicle_journey: "Reversed vehicle journeys"
@@ -95,7 +93,7 @@ en:
         updated_at: Updated at
         creator_id: "Created by"
         no_journey_pattern: "No journey pattern"
-        stop_area_departure: Stop area departure 
+        stop_area_departure: Stop area departure
         stop_area_arrival: Stop area arrival
     errors:
       models:
@@ -117,6 +115,3 @@ en:
       gtfs:
         route:
           objectid: "[prefix]:Route:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-      hub:
-        route:
-          objectid: "[prefix]:Route:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character. Maximum length of the unique key = 8."

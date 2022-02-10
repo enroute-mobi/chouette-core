@@ -1,6 +1,7 @@
+# DEPRECATED
 module DataFormatEnumerations
   extend Enumerize
   extend ActiveModel::Naming
 
-  enumerize :data_format, in: %w[neptune netex gtfs hub], default: "netex"
+  enumerize :data_format, in: %w[neptune netex gtfs], default: "netex"
 end

@@ -44,9 +44,6 @@ en:
       export_kml_place: "Export KML places"
       export_kml_commercial: "Export KML commercial stop points"
       export_kml_physical: "Export KML physical"
-      export_hub_place: "Export HUB places"
-      export_hub_commercial: "Export HUB commercial stop points"
-      export_hub_physical: "Export HUB physical"
     filters:
       name_or_objectid: "Search by name or by objectid..."
       parent: "Enter a parent..."
@@ -216,17 +213,6 @@ en:
           zip_code: ""
           comment: ""
           coordinates: "latitude,longitude in WGS84 referential, dot for decimal separator"
-          projection_xy: "x,y in secondary referential, dot for decimal separator"
-      hub:
-        stop_area:
-          name: "Maximum length = 255."
-          registration_number: "Positif integer, unique key, of no more than 8 digits. Mandatory for physical stops."
-          objectid: "[prefix]:StopArea:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character. Maximum length of the unique key = 12."
-          nearest_topic_name: "Maximum length = 255 for logical stops and 60 for physical stops."
-          city_name: "Mandatory for physical stops. Maximum length = 75."
-          zip_code: "Positif integer 5 digits. Mandatory for physical stops."
-          comment: "Maximum length = 255."
-          coordinates: "Coordinates are mandatory."
           projection_xy: "x,y in secondary referential, dot for decimal separator"
     hints:
       stop_area:

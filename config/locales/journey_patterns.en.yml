@@ -89,8 +89,3 @@ en:
           name: ""
           registration_number: "Positif integer."
           objectid: "[prefix]:JourneyPattern:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-      hub:
-        journey_pattern:
-          name: "Maximum length = 75."
-          registration_number: "Positif integer, unique key, of no more than 8 digits."
-          objectid: "[prefix]:JourneyPattern:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character. Maximum length of the unique key = 30."

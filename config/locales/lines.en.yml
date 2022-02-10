@@ -15,8 +15,6 @@ en:
       import: "Import lines"
       export_kml: "Export KML line"
       export_kml_all: "Export KML lines"
-      export_hub: "Export HUB line"
-      export_hub_all: "Export HUB lines"
       show: 'Show'
       show_network: 'Show network'
       show_company: 'Show company'
@@ -177,11 +175,5 @@ en:
           registration_number: "only alphanumerical or underscore characters"
           objectid: "[prefix]:Line:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
           number: ""
-      hub:
-        line:
-          name: "maximum 75 characters"
-          registration_number: "Positif integer, unique key, of no more than 8 digits."
-          objectid: "[prefix]:Line:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character. Maximum length of the unique key = 14."
-          number: "Only alphanumerical or underscore characters. Maximum length = 6."
   referential_lines:
     <<: *en_lines

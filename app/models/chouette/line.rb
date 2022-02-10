@@ -4,7 +4,6 @@ module Chouette
     before_validation :define_line_referential, on: :create
 
     has_metadata
-    include LineRestrictions
     include LineReferentialSupport
     include ObjectidSupport
     include TransportModeEnumerations

@@ -59,11 +59,6 @@ en:
           name: ""
           registration_number: "only alphanumerical or underscore characters"
           objectid: "[prefix]:PTNetwork:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character"
-      hub:
-        network:
-          name: "maximum 75 characters"
-          registration_number: "Positif integer, unique key, of no more than 8 digits."
-          objectid: "[prefix]:PTNetwork:[unique_key] : prefix contains only alphanumerical or underscore characters, unique_key accepts also minus character. Maximum length of the unique key = 3."
 
   table:
     show: Show

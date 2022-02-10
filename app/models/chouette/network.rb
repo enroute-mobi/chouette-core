@@ -3,7 +3,6 @@ module Chouette
     before_validation :define_line_referential
 
     has_metadata
-    include NetworkRestrictions
     include LineReferentialSupport
     include ObjectidSupport
     extend Enumerize

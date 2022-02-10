@@ -10,7 +10,9 @@
         = simple_block_for @stop_area, title: t("stop_areas.form.sections.identification") do |d|
           = d.attribute :id, value: @stop_area.get_objectid.short_id
           = d.attribute :name
-          = d.attribute :public_code
+          - @stop_area.localized_names.keep_if { |key, value| value.present? }.each do |k, v|
+            = d.attribute :name, value: v, label: label_for_country(k, Chouette::StopArea.tmf('name'))
+
         = simple_block_for @stop_area, title: t("stop_areas.form.sections.hierarchy") do |d|
           = d.attribute :area_type, value: ("#{Chouette::AreaType.find(@stop_area.area_type).try(:label)} (#{@stop_area.kind})")
           = d.attribute :parent, value: (@stop_area.parent.present? ? link_to("#{@stop_area.parent.get_objectid.short_id} #{@stop_area.parent.name}", [@workbench, :stop_area_referential, @stop_area.parent]) : "-")

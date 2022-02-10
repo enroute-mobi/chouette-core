@@ -36,6 +36,18 @@ RSpec.describe NotifiableOperationObserver do
             end
           end
         end
+
+        context "when notified_recipients_at is defined" do
+          before do
+            operation.status = :successful
+            operation.notified_recipients_at = Time.zone.now
+          end
+
+          it "doesn't send notification via Workbench NotificationCenter" do
+            expect(notification_center).to_not receive(:notify).with(operation)
+            subject.after_update(operation)
+          end
+        end
       end
     end
   end

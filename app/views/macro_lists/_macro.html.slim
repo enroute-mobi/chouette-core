@@ -1,0 +1,53 @@
+- form = local_assigns.fetch(:form)
+- macro = local_assigns.fetch(:macro)
+- index = local_assigns.fetch(:index)
+- class_description = macro.class.model_name.human
+
+= form.simple_fields_for("macros_attributes[#{index}]", macro) do |macro_form|
+	.flex.flex-col.items-center.mt-5 x-data=("{ expanded: true }")
+		.flex.items-center.w-full.mb-8
+			button @click="expanded = ! expanded" type="button" x-bind:disabled="macro.isDeleted" class="flex items-center justify-between p-3 pl-3 mr-3 font-bold text-white bg-enroute-chouette-green rounded cursor-pointer hover:text-indigo-100"
+				<span class="text-3xl w-4" x-text="expanded ? '-' : '+'">+</span>
+			.w-full
+				= macro_form.input :id, as: :hidden, wrapper: false,  input_html: { 'x-model': 'macro.id' }
+				= macro_form.input :type, as: :hidden,  input_html: { 'x-model': 'macro.type' }, wrapper: false
+				= macro_form.input :position, as: :hidden, input_html: { ':value': 'macro.position' }, wrapper: false
+				= macro_form.input :_destroy, as: :hidden, input_html: { ':value': 'macro.isDeleted' }, wrapper: false
+
+				= macro_form.input :name,
+					placeholder: "#{I18n.t('macro_lists.form.macro_placeholder')}",
+					input_html: { 'x-show': 'expanded', ':readonly': '!expanded || macro.isDeleted', ':disabled': '$store.macroList.isShow' },
+					label: false,
+					wrapper_html: {'class': 'mb-0 mx-0'}
+	
+				.flex.items-center
+				p.mb-0.mr-2 x-text="macro.name" x-show="!expanded"
+					p.mb-0 x-show="!expanded" = "(#{class_description})"
+			.flex.ml-3 x-show="expanded"
+				p.flex.w-64 = class_description
+
+			.btn-group x-show="!$store.macroList.isShow"
+				.btn.dropdown-toggle data-toggle="dropdown"
+					.span.fa.fa-cog
+				ul.dropdown-menu
+					li
+						a class="cursor-pointer" @click="$store.macroList.duplicate(macro)" x-text="I18n.t('macros.actions.duplicate')" x-show='!macro.isDeleted'
+					li
+						a class="cursor-pointer" @click="$store.macroList.sendToTop(index)" x-text="I18n.t('macros.actions.send_to_top')" x-show='!macro.isDeleted && !macro.isFirst()'
+					li
+						a class="cursor-pointer" @click="$store.macroList.moveUp(index)" x-text="I18n.t('macros.actions.move_up')" x-show='!macro.isDeleted && !macro.isFirst()'
+					li
+						a class="cursor-pointer" @click="$store.macroList.moveDown(index)" x-text="I18n.t('macros.actions.move_down')" x-show='!macro.isDeleted && !macro.isLast()'
+					li
+						a class="cursor-pointer" @click="$store.macroList.sendToBottom(index)" x-text="I18n.t('macros.actions.send_to_bottom')" x-show='!macro.isDeleted && !macro.isLast()'
+					li
+						a class="cursor-pointer" @click="$store.macroList.delete(macro, index)" x-text="I18n.t('macros.actions.delete')" x-show='!macro.isDeleted'
+					li
+						a class="cursor-pointer" @click="$store.macroList.restore(macro)" x-text="I18n.t('macros.actions.restore')" x-show='macro.isDeleted'
+
+		.macro.flex.flex-col x-show="expanded && !macro.isDeleted" class="w-full"
+			= render "macro_lists/#{macro.model_name.i18n_key.to_s}", form: macro_form
+			.form-group
+				= macro_form.label Macro::List.human_attribute_name(:comments), class: 'col-sm-4 col-xs-5 control-label mb-3'
+				= macro_form.input :comments, as: :text, required: false, input_html: { 'x-model': 'macro.comments', ':disabled': '$store.macroList.isShow' }, label: false, wrapper: false
+				

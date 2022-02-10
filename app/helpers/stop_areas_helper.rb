@@ -95,62 +95,6 @@ module StopAreasHelper
     [[t(true), true], [t(false), false]]
   end
 
-  def stop_area_identification_metadatas(stop_area, workbench)
-    attributes = { t('id_reflex') => stop_area.get_objectid.short_id,
-      Chouette::StopArea.tmf('full_id') => stop_area.objectid,
-      Chouette::StopArea.tmf('name') => stop_area.name,
-      Chouette::StopArea.tmf('public_code') => stop_area.public_code,
-      Chouette::StopArea.tmf('kind') => stop_area.kind,
-    }
-
-    if has_feature?(:stop_area_localized_names)
-      stop_area.stop_area_referential.sorted_locales.each do |locale|
-        val = stop_area.localized_names[locale[:code]]
-        attributes.merge!(label_for_country(locale[:code], Chouette::StopArea.tmf('name')) => val ) if val.present?
-      end
-    end
-
-    attributes.merge!(Chouette::StopArea.tmf('parent') => stop_area.parent ? link_to(stop_area.parent.name, workbench_stop_area_referential_stop_area_path(workbench, stop_area.parent)) : "-") if stop_area.commercial?
-    attributes.merge!(Chouette::StopArea.tmf('referent_id') => stop_area.referent ? link_to(stop_area.referent.name, workbench_stop_area_referential_stop_area_path(workbench, stop_area.referent)) : "-") if !stop_area.is_referent
-    attributes.merge!(Chouette::StopArea.tmf('stop_area_type') => Chouette::AreaType.find(stop_area.area_type).try(:label),
-      Chouette::StopArea.tmf('registration_number') => stop_area.registration_number,
-      Chouette::StopArea.tmf('status') => stop_area_status(stop_area.status),
-    )
-
-    attributes.merge!(Chouette::StopArea.tmf('stop_area_provider') => link_to(stop_area.stop_area_provider.name, workbench_stop_area_referential_stop_area_provider_path(workbench, stop_area.stop_area_provider)).html_safe)
-  end
-
-  def stop_area_location_metadatas(stop_area, stop_area_referential)
-    {
-      Chouette::StopArea.tmf('coordinates') => geo_data(stop_area, stop_area_referential),
-      Chouette::StopArea.tmf('compass_bearing') => stop_area.compass_bearing.presence || '-',
-      Chouette::StopArea.tmf('street_name') => stop_area.street_name,
-      Chouette::StopArea.tmf('zip_code') => stop_area.zip_code,
-      Chouette::StopArea.tmf('city_name') => stop_area.city_name,
-      Chouette::StopArea.tmf('postal_region') => stop_area.postal_region,
-      Chouette::StopArea.tmf('country_code') => stop_area.country_code.presence || '-',
-      Chouette::StopArea.tmf('time_zone') => stop_area.time_zone.presence || '-',
-    }
-  end
-
-  def stop_area_general_metadatas(stop_area)
-    attributes = {}
-    attributes.merge!(Chouette::StopArea.tmf('waiting_time') => stop_area.waiting_time_text) if has_feature?(:stop_area_waiting_time)
-    attributes.merge!(Chouette::StopArea.tmf('fare_code') => stop_area.fare_code,
-      Chouette::StopArea.tmf('url') => stop_area.url,
-    )
-    unless manage_itl
-      attributes.merge!(Chouette::StopArea.tmf('mobility_restricted_suitability') => stop_area.mobility_restricted_suitability? ? "yes".t : "no".t,
-        Chouette::StopArea.tmf('stairs_availability') => stop_area.stairs_availability? ? "yes".t : "no".t,
-        Chouette::StopArea.tmf('lift_availability') => stop_area.lift_availability? ? "yes".t : "no".t,
-      )
-    end
-    stop_area.custom_fields.each do |code, field|
-      attributes.merge!(field.name => field.display_value)
-    end
-    attributes.merge!(Chouette::StopArea.tmf('comment') => stop_area.try(:comment))
-  end
-
   def stop_area_connections(connection_links, stop_area, workbench)
     table_builder_2 connection_links,
       [ \
@@ -188,21 +132,5 @@ module StopAreasHelper
   def connected_stop_json_for_show(connection_link, stop_id)
     stop = (connection_link.departure_id == stop_id ? connection_link.arrival : connection_link.departure)
     stop.slice(:id, :longitude, :latitude)
-  end
-
-  def stop_area_specific_stops(specific_stops, workbench)
-    table_builder_2 specific_stops,
-      [ \
-        TableBuilderHelper::Column.new( \
-          key: :name, \
-          attribute: Proc.new { |s| link_to s.name, workbench_stop_area_referential_stop_area_path(workbench, s) } \
-        ), \
-        TableBuilderHelper::Column.new( \
-          name: t('id_reflex'), \
-          attribute: Proc.new { |s| s.get_objectid.try(:short_id) }, \
-        ), \
-      ].compact,
-      sortable: false,
-      cls: 'table'
   end
 end

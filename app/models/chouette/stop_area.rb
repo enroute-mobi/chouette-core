@@ -232,6 +232,15 @@ module Chouette
       stop_area_referential.stop_areas.where(parent_id: self.id).order("distance").select('stop_areas.*', "ST_DistanceSphere(#{parent_point}, #{child_point}) as distance")
     end
 
+    def closest_specific_stops
+      return self.class.none if position.blank?
+
+      parent_point = self.class.connection.quote("SRID=4326;POINT(#{longitude} #{latitude})")
+      specific_point   = "ST_SetSRID(ST_MakePoint(longitude, latitude), 4326)"
+
+      stop_area_referential.stop_areas.where(referent_id: self.id).order("distance").select('stop_areas.*', "ST_DistanceSphere(#{parent_point}, #{specific_point}) as distance")
+    end
+
     def geometry
       GeoRuby::SimpleFeatures::Point.from_lon_lat(longitude, latitude, 4326) if latitude and longitude
     end

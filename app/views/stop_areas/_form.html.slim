@@ -25,6 +25,13 @@
                 = link_to '#', class: 'btn btn-primary add-locale' do
                   = fa_icon :plus, {text: 'actions.add'.t}
         = f.input :public_code
+
+    .separator.section_separator
+
+    .row
+      .col-lg-12
+        h2.mb-lg= t("stop_areas.form.sections.hierarchy")
+          // as: :radio_buttons
         - if has_feature?("route_stop_areas_all_types")
           = f.input :kind,
               as: :radio_buttons,
@@ -39,19 +46,27 @@
           .slave data-master="[name='stop_area[kind]']" data-value="commercial"
         - else
           = f.input :kind, as: :hidden, input_html: { value: :commercial }
-        = f.input :parent_id, as: :select, collection: [f.object.parent_id], input_html: { data: { select2ed_placeholder: Chouette::StopArea.tmf('parent'), select2ed_allow_clear: 'true', select2_ajax: 'true', url: autocomplete_workbench_stop_area_referential_stop_areas_path(@workbench), initvalue: {id: f.object.parent_id, text: f.object.parent.try(:formatted_selection_details)}}}
         - %i(non_commercial commercial).each do |kind|
           .slave data-master="[name='stop_area[kind]']" data-value=kind
             = f.input :area_type, as: :select, input_html: {id: kind, disabled: !@stop_area.new_record?}, collection: area_type_options(kind), include_blank: false, disabled: !@stop_area.new_record?
+        = f.input :parent_id, as: :select, collection: [f.object.parent_id], input_html: { data: { select2ed_placeholder: Chouette::StopArea.tmf('parent'), select2ed_allow_clear: 'true', select2_ajax: 'true', url: autocomplete_workbench_stop_area_referential_stop_areas_path(@workbench), initvalue: {id: f.object.parent_id, text: f.object.parent.try(:formatted_selection_details)}}}
 
+    .separator.section_separator
+
+    .row
+      .col-lg-12
+        h2.mb-lg= t("stop_areas.form.sections.referent")
         = f.input :is_referent, as: :switchable_checkbox
         = f.input :referent_id, as: :select, collection: [f.object.referent_id], input_html: { style: 'width: 100%', data: { select2ed_placeholder: Chouette::StopArea.tmf('referent'), select2ed_allow_clear: 'true', select2_ajax: 'true', url: (autocomplete_workbench_stop_area_referential_stop_areas_path(@workbench)+"?referent_only=true"), initvalue: {id: f.object.referent_id, text: f.object.referent.try(:formatted_selection_details)}}}, wrapper_html: { id: 'referent_input' }
-        = f.input :registration_number, required: stop_area_registration_number_is_required(f.object), input_html: {title: stop_area_registration_number_title(f.object), value: stop_area_registration_number_value(f.object)}, hint: stop_area_registration_number_hint
+
+    .separator.section_separator
+
+    .row
+      .col-lg-12
+        h2.mb-lg= t("stop_areas.form.sections.internals")
         = f.input :status, as: :select, collection: stop_area_status_options, include_blank: false
-
         = f.association :stop_area_provider, as: :select, collection: @workbench.stop_area_providers, include_blank: false
-
-
+        = f.input :comment, as: :text, input_html: {rows: 5, title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.comment")}
 
     .separator.section_separator
 
@@ -69,37 +84,24 @@
         = f.input :city_name, input_html: {title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.city_name")}
         = f.input :postal_region
         = f.input :country_code, as: :country, priority: ['FR', 'GB', 'DE', 'ES'], include_blank: true, input_html: { data: { select2ed: true } }
-        = f.input :nearest_topic_name, input_html: { title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.nearest_topic_name") }
         = f.input :time_zone, as: :full_time_zone, include_blank: false
 
     .separator.section_separator
 
     .row
       .col-lg-12
-        h2.mb-lg= t("stop_areas.form.sections.general")
-
+        h2.mb-lg= t("stop_areas.form.sections.usage")
         - if has_feature?(:stop_area_waiting_time)
           = f.input :waiting_time, input_html: { min: 0 }
-
         = f.input :fare_code
         = f.input :url
 
-        - if !manage_itl
-          = f.input :mobility_restricted_suitability, as: :switchable_checkbox
-          = f.input :stairs_availability, as: :switchable_checkbox
-          = f.input :lift_availability, as: :switchable_checkbox
 
-        - if resource.custom_fields.present?
-          - resource.custom_fields.each do |code, field|
-            = field.input(f).to_s
-
-        = f.input :comment, as: :text, input_html: {rows: 5, title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.comment")}
-
-  .separator.section_separator
-
+    .separator.section_separator
   .row
     .col-lg-12
       h2.mb-lg= Chouette::StopArea.tmf(:codes)
+      = f.input :registration_number, required: stop_area_registration_number_is_required(f.object), input_html: {title: stop_area_registration_number_title(f.object), value: stop_area_registration_number_value(f.object)}
       = f.simple_fields_for(:codes) do |codes_form|
         = render 'code_fields', f: codes_form
 

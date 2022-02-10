@@ -16,6 +16,10 @@ class StopAreaDecorator < AF83::Decorator
     h.t('stop_areas.waiting_time_format', value: waiting_time)
   end
 
+  define_instance_method :human_status do
+    h.t(status, scope: 'activerecord.attributes.stop_area')
+  end
+
   define_instance_method :codes do
     object.codes.joins(:code_space).order('code_spaces.short_name ASC')
   end

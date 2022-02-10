@@ -62,6 +62,9 @@ fr:
         general: "Général"
         location: "Localisation"
         hierarchy: "Hiérarchie"
+        referent: "Référent"
+        internals: "Interne"
+        usage: "Utilisation"
       address: "246 Boulevard Saint-Germain, 75007 Paris"
       geolocalize: "Géolocalisez "
       add_code: Ajouter un code
@@ -165,6 +168,7 @@ fr:
         postal_region: "Région postale"
         waiting_time: Temps de desserte (minutes)
         status: État
+        human_status: État
         stop_area_provider_id: Fournisseur d'arrêts
         stop_area_provider: Fournisseur d'arrêts
         codes: Codes

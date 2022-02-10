@@ -5,6 +5,12 @@ en:
         for_boarding: "Undefined"
         for_alighting: "Undefined"
   enumerize:
+    operation:
+        status:
+          new: New
+          running: Running
+          enqueued: Enqueued
+          done: Done
     notification_rule:
       notification_type:
         hole_sentinel: Hole Sentinel
@@ -134,6 +140,10 @@ en:
       kind:
         commercial: Commercial
         non_commercial: Non-commercial
+      status:
+        in_creation: In creation
+        confirmed: Confirmed
+        deactivated: Deactivated
     clean_up:
       date_type:
         outside: Outside defined periodes in the data set

@@ -139,6 +139,10 @@ fr:
       kind:
         commercial: Commercial
         non_commercial: Non commercial
+      status:
+        in_creation: En création
+        confirmed: Confirmé
+        deactivated: Désactivé
     clean_up:
       date_type:
         outside: En dehors des périodes définies dans le jeu de données

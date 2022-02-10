@@ -61,6 +61,9 @@ en:
         general: "General"
         location: "Location"
         hierarchy: "Hierarchy"
+        referent: "Referent"
+        internals: "Internals"
+        usage: "Usage"
       address: "246 Boulevard Saint-Germain, 75007 Paris"
       add_code: Add a code
       geolocalize: "Pinpoint "
@@ -163,6 +166,7 @@ en:
         postal_region: "Postal region"
         waiting_time: Waiting time (minutes)
         status: Status
+        human_status: Status
         stop_area_provider_id: Stop area provider
         stop_area_provider: Stop area provider
         codes: "Codes"

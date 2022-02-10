@@ -3,10 +3,10 @@
     .col-lg-12
       = f.input :name
       = f.input :lines,
-       # as: :tom_select,
-        collection: @workbench.lines,
+        as: :tom_select,
+        collection: @workbench.lines.where(id: @line_routing_constraint_zone.line_ids).map { |l| {id: l.id, text: l.name } },
         input_html: { multiple: true, style: 'width: 100%' },
-        #selected: @line_routing_constraint_zone.line_ids,
+        selected: @line_routing_constraint_zone.line_ids,
         config: { type: 'ajax', url: lines_workbench_autocomplete_index_path(@workbench), placeholder: I18n.t('line_routing_constraint_zones.form.line_placeholder') }
 
       = f.input :stop_areas,

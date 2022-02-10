@@ -5,7 +5,6 @@ class LineRoutingConstraintZonesController < ChouetteController
   defaults :resource_class => LineRoutingConstraintZone
 
   before_action :decorate_line_routing_constraint_zone, only: %i[show new edit]
-  before_action :line_routing_constraint_zone_params, only: [:create, :update]
 
   belongs_to :workbench
   belongs_to :line_referential, singleton: true
@@ -28,8 +27,8 @@ class LineRoutingConstraintZonesController < ChouetteController
 
   protected
 
-  alias_method :line_routing_constraint_zone, :resource
-  alias_method :line_referential, :parent
+  alias :line_routing_constraint_zone :resource
+  alias :line_referential :parent
 
   def collection
     @line_routing_constraint_zones = parent.line_routing_constraint_zones.paginate(page: params[:page], per_page: 30)

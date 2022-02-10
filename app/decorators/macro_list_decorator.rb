@@ -26,26 +26,8 @@ class MacroListDecorator < AF83::Decorator
     Macro.available.map { |m| { id: m.name, text: m.model_name.human } }
   end
 
-  define_instance_method :new_macro do |macro|
-    klass = macro.class
-
-    attributes = klass.options.map { |k, _| [k, nil] }.to_h # Ensuring that attributes have all options values defined
-    attributes.merge!(**macro.attributes.except('position', 'options'))
-    attributes.merge!(**macro.options)
-
-    attributes.merge!(class_description: macro.class.model_name.human) # Set a default class description
-
-    attributes.merge!(options: klass.options, errors: macro.errors.messages)
-
-    attributes
-  end
-
-  define_instance_method :macro_json do |macro|
-    JSON.generate(new_macro(macro))
-  end
-
   define_instance_method :macros_json do
-    macros = object.macros.map { |m| new_macro(m) }
+    macros = object.macros.map { |m| { id: m.id, type: m.type, **m.options } }
 
     JSON.generate(macros)
   end

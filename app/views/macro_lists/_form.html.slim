@@ -10,27 +10,22 @@
       = t("macro.form.sections.macros")
     .simple-separator.mb-5
     .w-full-px-5
-      div[x-data="{ store: $store.macroList}"]
-        template[x-if="!!store"]
-          div[x-init="store.setMacros(#{@macro_list.macros_json})"]
-            = f.simple_fields_for(:macros_attributes) do |macro_form|
-              template[x-for="(macro, index) in store.macros"]
-                = render 'macro_fields', f: macro_form
+      div x-init="$store.macroList.setMacros(#{@macro_list.macros_json})"
+        template[x-for="(macro, index) in $store.macroList.macros"]
+          div x-html="await macro.getHTML(index)"
 
-            .flex.flex-col.items-center.mt-5
-              .flex.items-center.w-full.mb-8
-                = simple_fields_for(:macro_select) do |macro_select_form|
-                  = f.label t('macro_lists.form.macro_type'), class: 'mb-3'
-                  .w-full.mx-5
-                    = macro_select_form.input :type, as: :tom_select, collection: @macro_list.macro_options, placeholder: "#{I18n.t('macro_lists.form.macro_type_placeholder')}", input_html: { 'x-model': 'store.selectedType' }, wrapper: false, label: false
+      .flex.flex-col.items-center.mt-5
+        .flex.items-center.w-full.mb-8
+          = simple_fields_for(:macro_select) do |macro_select_form|
+            = f.label t('macro_lists.form.macro_type'), class: 'mb-3'
+            .w-full.mx-5
+              = macro_select_form.input :type, as: :tom_select, collection: @macro_list.macro_options, placeholder: "#{I18n.t('macro_lists.form.macro_type_placeholder')}", input_html: { 'x-model': '$store.macroList.selectedType' }, wrapper: false, label: false
 
-                template[x-if="store.selectedType == ''"]
-                  .links
-                    = button_tag t('macro_lists.form.add'), class: 'btn btn-primary', disabled: true
-                - Macro.available.map do |m|
-                  template[x-if="store.selectedType == '#{m.name}'"]
-                    .links
-                      = button_tag t('macro_lists.form.add'), class: 'btn btn-primary', '@click.prevent': "store.addMacro(#{@macro_list.macro_json(m.new)})"
+
+          = button_tag t('macro_lists.form.add'),
+            class: 'btn btn-primary',
+            ':disabled': "$store.macroList.selectedType == ''",
+            '@click.prevent': "$store.macroList.addMacro({ type: $store.macroList.selectedType })"
 
   = cancel_button
   = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'macro_list_form'

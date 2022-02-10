@@ -48,6 +48,10 @@ class MacroListsController < ChouetteController
     end
   end
 
+  def fetch_macro_html
+    render json: RenderMacroPartial.new(template: helpers, id: params[:id], type: params[:type], macro_list_id: params[:macro_list_id], index: params[:index]).call
+  end
+
   protected
 
   alias macro_list resource

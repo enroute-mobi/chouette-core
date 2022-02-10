@@ -17,18 +17,10 @@
               = t("macro.form.sections.macros")
             .separator.mb-5
             .w-full-px-5
-              div[x-data="{ store: $store.macroList}"]
-                template[x-if="!!store"]
-                  div[x-init="store.setMacros(#{@macro_list.macros_json})"]
-                    = f.simple_fields_for(:macros_attributes) do |macro_form|
-                      template[x-for="(macro, index) in store.macros"]
-                        = render 'macro_fields_disable', f: macro_form
-
-                    .flex.flex-col.mt-5
-                      - Macro.available.map do |m|
-                        template[x-if="store.selectedType == '#{m.name}'"]
-    / .row
-    /   .col-lg-6.col-md-6.col-sm-12.col-xs-12
-    /     = simple_block_for @macro_list, title: t('macro_lists.form.sections.identification') do |d|
-    /       = d.attribute :name
-    /       = d.attribute :comments
+              div[x-init="
+                  $store.macroList.setMacros(#{@macro_list.macros_json});
+                  $store.macroList.isShow = true;
+                "
+              ]
+                template[x-for="(macro, index) in $store.macroList.macros"]
+                  div x-html="await macro.getHTML(index)"

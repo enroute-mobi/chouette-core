@@ -1,77 +1,122 @@
 import Alpine from 'alpinejs'
+import { Path } from 'path-parser'
 
-import { add, filter, findIndex, flow, omit, partialRight, reduce, uniqueId } from 'lodash'
+const { workbenchId, id } = Path
+	.createPath('/workbenches/:workbenchId/macro_lists/:id')
+	.partialTest(location.pathname)
+
+import { filter, findIndex, omit, reject } from 'lodash'
+class Macro {
+	constructor(attributes) {
+		this.uuid = crypto.randomUUID()
+		this.isDeleted = false
+
+		for (const key in attributes) {
+			this[key] = attributes[key]
+		}
+	}
+
+	static from(macro) {
+		const attributes = omit(Object.assign(macro), ['id', 'uuid', 'isDeleted'])
+		return new Macro(attributes)
+	}
+
+	get position() {
+		return findIndex(this.store.macros, ['uuid', this.uuid]) + 1
+	}
+
+	isFirst() {
+		return this.position === 1
+	}
+
+	isLast() {
+		return this.position == this.store.activeMacros().length
+	}
+
+	delete() {
+		this.isDeleted = true
+	}
+
+	restore() {
+		this.isDeleted = false
+	}
+
+	async getHTML(index) {
+		const cachedHTML = sessionStorage.getItem(this.type)
+
+		if (!!cachedHTML) return cachedHTML
+
+		const params = new URLSearchParams({ type: this.type, index })
+
+		this.id && params.set('id', this.id)
+		Boolean(parseInt(id)) && params.set('macro_list_id', id)
+
+		const url = Path
+			.createPath('/workbenches/:workbenchId/macro_lists/fetch_macro_html')
+			.build({ workbenchId }) +
+			'.json?' +
+			params.toString()
+
+		const response = await fetch(url)
+		const { html } = await response.json()
+
+		sessionStorage.setItem(this.type, html) // Caching result
+
+		return html
+	}
+}
 
 Alpine.store('macroList', {
 	selectedType: '',
 	macros: [],
-	actions: ['duplicate', 'send_to_top', 'move_up', 'move_down', 'send_to_bottom', 'delete', 'restore'],
-	addMacro(attributes) {
-		this.macros = [...this.macros, { ...attributes, isDeleted: false, uniqueId: uniqueId('macro_') }]
+	isShow: false,
+	activeMacros() { return reject(this.macros, 'isDeleted') },
+	deletedMacros() { return filter(this.macros, 'isDeleted') },
+	addMacro(attributes) {		
+		this.macros.push(new Macro({ ...attributes, store: this } ))
 	},
 	setMacros(macros) {
-		macros.forEach(this.addMacro.bind(this))
+		macros.forEach(m => this.addMacro(m))
 	},
-	getMacro(index) {
-		return this.macros[index]
+	duplicate(macro) {
+		this.addMacro(Macro.from(macro))
 	},
-	getPosition(macro) {
-		if (macro.isDeleted) return null
+	moveUp(index) {
+		this.swapMacros(index, index - 1)
+	},
+	moveDown(index) {
+		this.swapMacros(index, index + 1)
+	},
+	sendToTop(index) {
+		do {
+			this.moveUp(index)
 
-		const filterNotDeletedMacros = partialRight(filter, m => !m.isDeleted) // We need to determine macro position from non-deleted macros and not the whole collection
-		const findMacroIndex = partialRight(findIndex, ['uniqueId', macro.uniqueId])
-		const addOneToIndex = partialRight(add, 1) // Adding one to index to get a position
-		
-		return flow(filterNotDeletedMacros, findMacroIndex, addOneToIndex)(this.macros)
+			index -= 1
+		} while (index > 0)
 	},
-	duplicate(index) {
-		this.addMacro(
-			omit(this.getMacro(index), ['id', 'uniqueId', 'created_at', 'updated_at']),
-		)
-	},
-	move_up(index) {
-		if (index == 0) return
+	sendToBottom(index) {
+		do {
+			this.moveDown(index)
 
-		this.swapMacro(index, index - 1)
+			index += 1
+		} while (index < this.macros.length - 1)
 	},
-	move_down(index) {
-		if (index + 1 == this.macros.length) return
+	delete(macro, index) {
+		this.sendToBottom(index)
+		macro.delete()
+	},
+	restore(macro) {
+		macro.restore()
 
-		this.swapMacro(index, index + 1)
-	},
-	send_to_top(index) {
 		this.macros = [
-			this.getMacro(index),
-			...this.macros.filter((_m, i) => i != index),
+			...reject(this.activeMacros(), ['uuid', macro.uuid]),
+			macro,
+			...this.deletedMacros()
 		]
 	},
-	send_to_bottom(index) {
-		this.macros = [
-			...this.macros.filter((_m, i) => i != index),
-			this.getMacro(index)
-		]
-	},
-	delete(index) {
-		this.macros = reduce(this.macros, (result, macro, macroIndex) => [
-			...result,
-			{
-				...macro,
-				...index == macroIndex ? { isDeleted: true } : {}
-			}
-		], [])
-	},
-	restore(index) {
-		this.macros = reduce(this.macros, (result, macro, macroIndex) => [
-			...result,
-			{
-				...macro,
-				...index == macroIndex ? { isDeleted: false } : {}
-			}
-		], [])
-	},
-	swapMacro(indexA, indexB) {
-		[this.macros[indexA], this.macros[indexB]] = [this.macros[indexB], this.macros[indexA]]
-	},
-	inputName(index, name) { return `macro_list[macros_attributes][${index}][${name}]` },
+	swapMacros(indexA, indexB) {
+		if (!!this.macros[indexA] && !!this.macros[indexB]) {
+			[this.macros[indexA], this.macros[indexB]] = [this.macros[indexB], this.macros[indexA]]
+		}
+	}
 })
-

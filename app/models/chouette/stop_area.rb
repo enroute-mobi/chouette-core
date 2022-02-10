@@ -157,6 +157,14 @@ module Chouette
       "#{name} #{zip_code} #{city_name} - #{local_id}"
     end
 
+    def full_display_name
+      [self.get_objectid.short_id, name, zip_code, city_name].compact.join(' - ')
+    end
+
+    def display_name
+      full_display_name.truncate(50)
+    end
+
     def local_id
       get_objectid.short_id
     end

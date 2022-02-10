@@ -72,6 +72,23 @@
                 =< t('date.updated', distance_in_time: time_ago_in_words(line_notice.updated_at))
             - unless @line_referential.line_notices.any?
               = replacement_msg t('no_result_text')
+    .row
+      .col-sm-4.col-xs-12
+        .panel.panel-default
+          .panel-heading
+            h3.panel-title.with_actions
+              div
+                = link_to LineRoutingConstraintZone.t, workbench_line_referential_line_routing_constraint_zones_path(@workbench)
+                span.badge.ml-xs =  @line_referential.line_routing_constraint_zones.count
+              div
+                = link_to '', workbench_line_referential_line_routing_constraint_zones_path(@workbench), class: ' fa fa-chevron-right pull-right', title: t('workbenches.index.offers.see')
+          .list-group
+            - @line_referential.line_routing_constraint_zones.order("updated_at desc").limit(5).each do |constraint|
+              .list-group-item
+                = link_to constraint.name, workbench_line_referential_line_routing_constraint_zone_path(@workbench, constraint)
+                =< t('date.updated', distance_in_time: time_ago_in_words(constraint.updated_at))
+            - unless @line_referential.line_routing_constraint_zones.any?
+              = replacement_msg t('no_result_text')
 
     -if @line_referential.line_referential_syncs.any?
       .row

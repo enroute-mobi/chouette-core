@@ -1,0 +1,23 @@
+- breadcrumb :line_routing_constraint_zone, @workbench, @line_routing_constraint_zone
+- page_header_content_for @line_routing_constraint_zone
+
+/ PageContent
+.page_content
+  .container-fluid
+    .row
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = simple_block_for @line_routing_constraint_zone, title: LineRoutingConstraintZone.tmf(:information) do |d|
+          = d.attribute :name
+          = d.attribute :created_at, as: :datetime
+          = d.attribute :updated_at, as: :datetime
+
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = simple_block_for @line_routing_constraint_zone.lines, title: LineRoutingConstraintZone.tmf(:lines) do |d|
+          - @line_routing_constraint_zone.lines.each do |c|
+            = d.attribute :name, object: c, value: "#{c.name} - #{c.get_objectid.short_id}"
+
+    .row
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = simple_block_for @line_routing_constraint_zone.stop_areas, title: LineRoutingConstraintZone.tmf(:stop_areas) do |d|
+          - @line_routing_constraint_zone.stop_areas.each do |c|
+            = d.attribute :name, object: c, value: "#{c.name} - #{c.get_objectid.short_id}"

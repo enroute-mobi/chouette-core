@@ -1,0 +1,21 @@
+= simple_form_for [@workbench, :line_referential, @line_routing_constraint_zone], html: {class: 'form-horizontal', id: 'line_provider_form'}, wrapper: :horizontal_form do |f|
+  .row
+    .col-lg-12
+      = f.input :name
+      = f.input :lines,
+        as: :tom_select,
+        collection: @workbench.lines.where(id: @line_routing_constraint_zone.line_ids).map { |l| {id: l.id, text: l.name } },
+        input_html: { multiple: true, style: 'width: 100%' },
+        selected: @line_routing_constraint_zone.line_ids,
+        config: { type: 'ajax', url: lines_workbench_autocomplete_index_path(@workbench), placeholder: I18n.t('line_routing_constraint_zones.form.line_placeholder') }
+
+      = f.input :stop_areas,
+        as: :tom_select,
+        collection: @workbench.stop_areas.where(id: @line_routing_constraint_zone.stop_area_ids).map { |l| {id: l.id, text: l.name } },
+        input_html: { multiple: true, style: 'width: 100%' },
+        selected: @line_routing_constraint_zone.stop_area_ids,
+        config: { type: 'ajax', url: stop_areas_workbench_autocomplete_index_path(@workbench), placeholder: I18n.t('line_routing_constraint_zones.form.stop_area_placeholder') }
+  .separator
+
+  = cancel_button
+  = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'line_provider_form'

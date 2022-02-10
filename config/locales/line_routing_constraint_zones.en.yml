@@ -1,0 +1,38 @@
+en:
+  line_routing_constraint_zones:
+    search_no_results: "No Local Traffic"
+    actions:
+      new: "Add an Line Routing Constraint Zone"
+      create: "Add an Line Routing Constraint Zone"
+      edit: "Edit this Line Routing Constraint Zone"
+      update: "Edit this Line Routing Constraint Zone"
+      destroy: "Delete"
+      destroy_confirm: "Are you sure you want to remove this Routing Constraint Zone?"
+    new:
+      title: "Add a Line Routing Constraint Zones"
+    create:
+      title: "Add a Line Routing Constraint Zones"
+    edit:
+      title: "Edit %{name}"
+    update:
+      title: "Edit %{name}"
+    show:
+      title: "%{name}"
+    index:
+      title: "Line Routing Constraint Zones"
+    form:
+      line_placeholder: "Search by line name"
+      stop_area_placeholder: "Search by stop area name"
+
+  activerecord:
+    models:
+      line_routing_constraint_zone:
+        zero:  "Line Routing Constraint Zone"
+        one:   "Line Routing Constraint Zone"
+        other: "Line Routing Constraint Zones"
+    attributes:
+      line_routing_constraint_zone:
+        information: "Information"
+        name: "Name"
+        lines: "Lines"
+        stop_areas: "Stop Areas"

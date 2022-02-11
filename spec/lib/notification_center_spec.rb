@@ -49,4 +49,25 @@ RSpec.describe NotificationCenter do
     end
   end
 
+  describe NotificationCenter::Notification do
+    subject(:notification) { NotificationCenter::Notification.new(operation) }
+
+    let(:operation) { Merge.new }
+    before { allow(operation).to receive(:update_column) }
+
+    describe "#deliver" do
+      context "when operation is already notified" do
+        before do
+          operation.notified_recipients_at = Time.zone.now
+          allow(notification).to receive(:recipients).and_return(%w{dummy@example.com})
+        end
+
+        it "should not send mail" do
+          expect(notification.mailer).to_not receive(:finished)
+          notification.deliver
+        end
+      end
+    end
+  end
+
 end

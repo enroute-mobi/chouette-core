@@ -44,6 +44,8 @@ class NotificationCenter
     end
 
     def deliver
+      return if operation.notified_recipients_at
+
       Rails.logger.info "Notify #{recipients.inspect} for #{operation.class}##{operation.id} (status: #{operation.status})"
 
       recipients.each do |recipient|
@@ -54,7 +56,7 @@ class NotificationCenter
     end
 
     def mailer
-      mailer_name.constantize
+      @mailer ||= mailer_name.constantize
     end
 
     def mailer_name

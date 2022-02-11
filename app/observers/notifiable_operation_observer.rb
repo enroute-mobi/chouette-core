@@ -18,6 +18,8 @@ class NotifiableOperationObserver < ActiveRecord::Observer
 
   def email_sendable_for?(operation)
     return false if operation.is_a?(ComplianceCheckSet) && operation.context != 'manual'
+    return false if operation.try(:notified_recipients_at)
+
     operation.class.finished_statuses.include?(operation.status)
   end
 end

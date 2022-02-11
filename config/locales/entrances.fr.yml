@@ -21,8 +21,10 @@ fr:
       sections:
         identification: "Identification"
         localization: "Localisation"
+      add_code: "Ajouter un code"
     filters:
       name_or_short_name_matches: "Indiquez un nom ou un nom court..."
+    no_codes: "Ce point d'accès n'a pas de code"
   activerecord:
     models:
       entrance:
@@ -50,3 +52,4 @@ fr:
         created_at: "Créé le"
         updated_at: "Edité le"
         creator_id: "Créé par"
+        codes: "Codes"

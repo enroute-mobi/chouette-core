@@ -2,7 +2,7 @@ class SubscriptionMailer < ApplicationMailer
   add_template_helper MailerHelper
 
   def self.recipients
-    Rails.configuration.subscriptions_notifications_recipients
+    Chouette::Config.subscription.notification_recipients
   end
 
   def self.enabled?

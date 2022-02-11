@@ -13,6 +13,9 @@ if defined?(NullDB) and ENV['RAILS_DB_ADAPTER'] != 'nulldb'
   raise "activerecord-nulldb-adapter should not be loaded"
 end
 
+require_relative '../app/lib/chouette/config'
+Chouette::Config.load
+
 module ChouetteIhm
   class Application < Rails::Application
 

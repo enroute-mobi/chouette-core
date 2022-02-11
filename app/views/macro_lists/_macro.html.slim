@@ -16,7 +16,12 @@
 
 				= macro_form.input :name,
 					placeholder: "#{I18n.t('macro_lists.form.macro_placeholder')}",
-					input_html: { 'x-show': 'expanded', ':readonly': '!expanded || macro.isDeleted', ':disabled': '$store.macroList.isShow' },
+					input_html: { \
+						'x-show': 'expanded', \
+						':readonly': '!expanded || macro.isDeleted', \
+						':disabled': '$store.macroList.isShow', \
+						'x-model': 'macro.name' \
+					}, \
 					label: false,
 					wrapper_html: {'class': 'mb-0 mx-0'}
 	

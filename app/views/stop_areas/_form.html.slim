@@ -96,6 +96,24 @@
         = f.input :fare_code
         = f.input :url
 
+    .separator.section_separator
+
+    .row
+      .col-lg-12
+        h2.mb-lg= t("stop_areas.form.sections.accessibility")
+        = f.input :mobility_impaired_accessility, as: :select, include_blank: false
+    .row
+      .col-md-6
+        = f.input :wheelchair_accessibility, as: :select, include_blank: false
+        = f.input :step_free_accessibility, as: :select, include_blank: false
+        = f.input :escalator_free_accessibility, as: :select, include_blank: false
+      .col-md-6
+        = f.input :lift_free_accessibility, as: :select, include_blank: false
+        = f.input :audible_signals_availability, as: :select, include_blank: false
+        = f.input :visual_signs_availability, as: :select, include_blank: false
+    .row
+      .col-lg-12
+        = f.input :accessibility_limitation_description
 
     .separator.section_separator
   .row

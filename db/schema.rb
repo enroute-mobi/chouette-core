@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_01_28_083110) do
+ActiveRecord::Schema.define(version: 2022_02_11_095318) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -713,8 +713,6 @@ ActiveRecord::Schema.define(version: 2022_01_28_083110) do
     t.bigint "line_provider_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["line_provider_id"], name: "index_line_routing_constraint_zones_on_line_provider_id"
-    t.index ["line_referential_id"], name: "index_line_routing_constraint_zones_on_line_referential_id"
   end
 
   create_table "lines", force: :cascade do |t|
@@ -1258,6 +1256,15 @@ ActiveRecord::Schema.define(version: 2022_01_28_083110) do
     t.bigint "stop_area_provider_id"
     t.string "public_code"
     t.float "compass_bearing"
+    t.string "accessibility_status"
+    t.string "mobility_impaired_accessility"
+    t.string "wheelchair_accessibility"
+    t.string "step_free_accessibility"
+    t.string "escalator_free_accessibility"
+    t.string "lift_free_accessibility"
+    t.string "audible_signals_availability"
+    t.string "visual_signs_availability"
+    t.text "accessibility_limitation_description"
     t.index ["name"], name: "index_stop_areas_on_name"
     t.index ["objectid", "stop_area_referential_id"], name: "stop_areas_objectid_key", unique: true
     t.index ["parent_id"], name: "index_stop_areas_on_parent_id"

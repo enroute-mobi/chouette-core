@@ -1,11 +1,18 @@
 import Alpine from 'alpinejs'
 import { Path } from 'path-parser'
-
-const { workbenchId, id } = Path
-	.createPath('/workbenches/:workbenchId/macro_lists/:id')
-	.partialTest(location.pathname)
-
 import { filter, findIndex, omit, reject } from 'lodash'
+
+window.Alpine = Alpine
+
+const getURLParams = () => 
+	Array
+		.of(
+			'/workbenches/:id/macro_lists',
+			'/workbenches/:workbenchId/macro_lists/:id<d+>'
+		)
+		.map(p => Path.createPath(p).partialTest(location.pathname)?.id || {})
+
+const [workbenchId, id] = getURLParams()
 class Macro {
 	constructor(attributes) {
 		this.uuid = crypto.randomUUID()

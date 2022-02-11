@@ -9,10 +9,9 @@
 			button @click="expanded = ! expanded" type="button" x-bind:disabled="macro.isDeleted" class="flex items-center justify-between p-3 pl-3 mr-3 font-bold text-white bg-enroute-chouette-green rounded cursor-pointer hover:text-indigo-100"
 				<span class="text-3xl w-4" x-text="expanded ? '-' : '+'">+</span>
 			.w-full
-				= macro_form.input :id, as: :hidden, wrapper: false,  input_html: { 'x-model': 'macro.id' }
-				= macro_form.input :type, as: :hidden,  input_html: { 'x-model': 'macro.type' }, wrapper: false
-				= macro_form.input :position, as: :hidden, input_html: { ':value': 'macro.position' }, wrapper: false
-				= macro_form.input :_destroy, as: :hidden, input_html: { ':value': 'macro.isDeleted' }, wrapper: false
+				// Hidden inputs
+				- %w[id type position destroy].each do |name|
+					= macro_form.input name, as: :hidden, wrapper: false,  input_html: { ':value': "macro.#{name}" }
 
 				= macro_form.input :name,
 					placeholder: "#{I18n.t('macro_lists.form.macro_placeholder')}",

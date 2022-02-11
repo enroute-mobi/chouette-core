@@ -1,11 +1,10 @@
 class RenderMacroPartial
-	attr_reader :macro, :template, :macro_list_id, :index
+	attr_reader :macro, :template, :macro_list_id
 
-	def initialize type:, template:, id: nil, macro_list_id: nil, index:
+	def initialize type:, template:, id: nil, macro_list_id: nil
 		@template = template
 		@macro = Macro::Base.find_or_initialize_by(id: id, type: type)
 		@macro_list_id = macro_list_id
-		@index = index
 	end
 
 	def call
@@ -32,8 +31,7 @@ class RenderMacroPartial
 			partial: "macro_lists/macro",
 			locals: {
         form: form,
-        macro: macro,
-				index: index
+        macro: macro
       }
 		)
 	end

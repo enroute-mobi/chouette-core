@@ -2,7 +2,33 @@ import Alpine from 'alpinejs'
 import { Path } from 'path-parser'
 import { filter, findIndex, omit, reject } from 'lodash'
 
-window.Alpine = Alpine
+const parser = new DOMParser()
+
+/**
+ * Check the session storage for a cache HTML string related to the macroType
+ * @param {macroType} string The type of the macro
+ * @return {Promise}
+ */
+const checkHTMLCache = macroType => {
+	return new Promise((resolve, reject) => {
+		const html = sessionStorage.getItem(macroType)
+
+		Boolean(!!html) ? resolve(html) : reject()
+	})
+}
+
+// Based on given index update every macro inputs (id & name)
+// This is to avoid conflicts between sub forms
+const updateInputNames = index => html => {
+	const doc = parser.parseFromString(html, 'text/html')
+
+	doc.querySelectorAll(`[name*=macros_attributes]`).forEach(i => {
+		i.name = i.name.replace(/\[\d+\]/, `[${index}]`)
+		i.id = i.id.replace(/_\d+_/, `_${index}_`)
+	})
+
+	return doc.body.innerHTML
+}
 
 const getURLParams = () => 
 	Array
@@ -48,28 +74,36 @@ class Macro {
 		this.isDeleted = false
 	}
 
-	async getHTML(index) {
-		const cachedHTML = sessionStorage.getItem(this.type)
+/**
+ * Based on macro index (in macros list) return the HTML related to macro sub form
+ * Either by getting the cached one or fetching it from the server
+ * @param {index} integer The index of the macro in the macros list
+ * @return {Promise{html}} a promise which result is a HTML string
+ */
+	getHTML(index) {
+		const inputUpdater = updateInputNames(index)
 
-		if (!!cachedHTML) return cachedHTML
+		return checkHTMLCache(this.type)
+			.then(inputUpdater)
+			.catch(async () => {
+				const params = new URLSearchParams({ type: this.type })
 
-		const params = new URLSearchParams({ type: this.type, index })
+				this.id && params.set('id', this.id)
+				Boolean(parseInt(id)) && params.set('macro_list_id', id)
 
-		this.id && params.set('id', this.id)
-		Boolean(parseInt(id)) && params.set('macro_list_id', id)
+				const url = Path
+					.createPath('/workbenches/:workbenchId/macro_lists/fetch_macro_html')
+					.build({ workbenchId }) +
+					'.json?' +
+					params.toString()
 
-		const url = Path
-			.createPath('/workbenches/:workbenchId/macro_lists/fetch_macro_html')
-			.build({ workbenchId }) +
-			'.json?' +
-			params.toString()
+				const response = await fetch(url)
+				const { html } = await response.json()
 
-		const response = await fetch(url)
-		const { html } = await response.json()
+				sessionStorage.setItem(this.type, html) // Caching result
 
-		sessionStorage.setItem(this.type, html) // Caching result
-
-		return html
+				return inputUpdater(html)
+			})
 	}
 }
 

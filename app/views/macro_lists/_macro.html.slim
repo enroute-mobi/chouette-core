@@ -1,9 +1,8 @@
 - form = local_assigns.fetch(:form)
 - macro = local_assigns.fetch(:macro)
-- index = local_assigns.fetch(:index)
 - class_description = macro.class.model_name.human
 
-= form.simple_fields_for("macros_attributes[#{index}]", macro) do |macro_form|
+= form.simple_fields_for(:macros, macro) do |macro_form|
 	.flex.flex-col.items-center.mt-5 x-data=("{ expanded: true }")
 		.flex.items-center.w-full.mb-8
 			button @click="expanded = ! expanded" type="button" x-bind:disabled="macro.isDeleted" class="flex items-center justify-between p-3 pl-3 mr-3 font-bold text-white bg-enroute-chouette-green rounded cursor-pointer hover:text-indigo-100"

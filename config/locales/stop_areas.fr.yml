@@ -168,7 +168,6 @@ fr:
         postal_region: "Région postale"
         waiting_time: Temps de desserte (minutes)
         status: État
-        human_status: État
         stop_area_provider_id: Fournisseur d'arrêts
         stop_area_provider: Fournisseur d'arrêts
         codes: Codes

@@ -1,17 +1,30 @@
 import Alpine from 'alpinejs'
-
 import { filter, reject } from 'lodash'
-
 import Macro from '../../src/macro_lists/Macro'
+
+// Use Proxy to extend array setter and ensure that some macro's attributes are always in sync
+const macros = new Proxy([], {
+	set(obj, prop, value) {
+		if (value.constructor === Macro) {
+			value.position = parseInt(prop) + 1 // Setting macro's position based on index
+			value.isFirst = value.position === 1
+			value.isLast = !value.isDeleted && (!obj[prop + 1] || obj[prop + 1].isDeleted)
+		}
+
+		obj[prop] = value
+
+		return true
+	}
+})
 
 Alpine.store('macroList', {
 	selectedType: '',
-	macros: [],
+	macros,
 	isShow: false,
 	activeMacros() { return reject(this.macros, 'isDeleted') },
 	deletedMacros() { return filter(this.macros, 'isDeleted') },
-	addMacro(attributes) {		
-		this.macros.push(new Macro({ ...attributes, store: this } ))
+	addMacro(attributes) {
+		this.macros.push(new Macro(attributes))
 	},
 	setMacros(macros) {
 		macros.forEach(m => this.addMacro(m))

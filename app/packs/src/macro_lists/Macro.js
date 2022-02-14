@@ -1,42 +1,35 @@
-import { findIndex, omit } from 'lodash'
+import { omit } from 'lodash'
 import HTMLFinder from './HTMLFinder'
 
 export default class Macro {
 	constructor(attributes) {
 		this.uuid = crypto.randomUUID()
-		this.isDeleted = false
-
+		this._destroy = false
+		this.errors = []
+	
 		for (const key in attributes) {
 			this[key] = attributes[key]
 		}
 	}
 
 	static from(macro) {
-		const attributes = omit(Object.assign(macro), ['id', 'uuid', 'isDeleted'])
+		const attributes = omit(Object.assign(macro), ['id', 'uuid', 'errors', '_destroy'])
 		return new Macro(attributes)
 	}
 
-	get position() {
-		return findIndex(this.store.macros, ['uuid', this.uuid]) + 1
-	}
+	get isDeleted() { return this._destroy }
 
-	isFirst() {
-		return this.position === 1
-	}
-
-	isLast() {
-		return this.position == this.store.activeMacros().length
-	}
+	get hasErrors() { return this.errors.length > 0 }
 
 	delete () {
-		this.isDeleted = true
+		this._destroy = true
 	}
 
 	restore() {
-		this.isDeleted = false
+		this._destroy = false
 	}
 
-	getHTML(index) {
-		return new HTMLFinder(this.id, this.type, index).render()
+	getHTML(index) { 
+		return new HTMLFinder({ index, macro: this }).render()
 	}
 }

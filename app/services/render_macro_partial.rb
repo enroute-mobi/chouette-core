@@ -1,31 +1,13 @@
-class RenderMacroPartial
-	attr_reader :macro, :template, :macro_list_id
+class RenderMacroPartial < ApplicationService
+	attr_reader :macro, :template
 
-	def initialize type:, template:, id: nil, macro_list_id: nil
-		@template = template
-		@macro = Macro::Base.find_or_initialize_by(id: id, type: type)
-		@macro_list_id = macro_list_id
+	def initialize params
+		@template = params[:template]
+		@macro = Macro::Base.find_or_initialize_by(id: params[:id], type: params[:type])
+		@macro.validate if params[:validate]
 	end
 
 	def call
-		{ html: html }
-	end
-
-	private
-
-	def macro_list
-		@macro_list ||= begin
-			Macro::List.find(macro_list_id)
-		rescue ActiveRecord::RecordNotFound
-			Macro::List.new
-		end
-	end
-
-	def form
-		@form ||= SimpleForm::FormBuilder.new('macro_list', macro_list, template, wrapper: :horizontal_form)
-	end
-
-	def html
 		template.render(
 			formats: [:html],
 			partial: "macro_lists/macro",
@@ -36,5 +18,9 @@ class RenderMacroPartial
 		)
 	end
 
+	private
 
+	def form
+		@form ||= SimpleForm::FormBuilder.new('macro_list', Macro::List.new, template, wrapper: :horizontal_form)
+	end
 end

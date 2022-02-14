@@ -1,70 +1,50 @@
-import { bindAll } from 'lodash'
 import { Path } from 'path-parser'
 
-const parser = new DOMParser()
+const paths = Array.of(
+	'/workbenches/:id/macro_lists',
+	'/workbenches/:workbenchId/macro_lists/fetch_macro_html'
+).map(Path.createPath)
 
-const getURLParams = () =>
-	Array
-		.of(
-			'/workbenches/:id/macro_lists',
-			'/workbenches/:workbenchId/macro_lists/:id<d+>'
-		)
-		.map(p => Path.createPath(p).partialTest(location.pathname)?.id || {})
-
-const [workbenchId, id] = getURLParams()
-
+const workbenchId = paths[0].partialTest(location.pathname)?.id
 export default class HTMLFinder {
-	constructor(macroId, macroType, index) {
-		this.macroId = macroId
-		this.macroType = macroType
-		this.index = index
+	constructor(attributes) {
+		for (const key in attributes) {
+			this[key] = attributes[key]
+		}
 
-		bindAll(this, ['fecthHTML', 'updateInputNames'])
+		if (!this.macro.hasErrors && !!this.macro.html) {
+			this.cacheHTML = this.macro.html
+		}
 	}
 
-	render() {
-		return this.checkHTMLCache()
-			.catch(this.fecthHTML)
-			.then(this.updateInputNames)
+	async render() {
+		return this.updateHTML(this.macro.html || this.cacheHTML || await this.fecthedHTML())
 	}
 
-	/**
- * Check the session storage for a cache HTML string related to the macroType
- * @param {macroType} string The type of the macro
- * @return {Promise}
- */
-	checkHTMLCache() {
-		return new Promise((resolve, reject) => {
-			const html = sessionStorage.getItem(this.macroType)
+	get cacheHTML() { return sessionStorage.getItem(this.macro.type) }
 
-			Boolean(!!html) ? resolve(html) : reject()
-		})
+	set cacheHTML(html) {
+		sessionStorage.setItem(this.macro.type, html)
 	}
 
-	async fecthHTML() {
-		const params = new URLSearchParams({ type: this.macroType })
+	async fecthedHTML() {
+		const params = new URLSearchParams()
+		params.set('html[id]', this.macro.id)
+		params.set('html[type]', this.macro.type)
 
-		this.macroId && params.set('id', this.macroId)
-		Boolean(parseInt(id)) && params.set('macro_list_id', id)
+		const url = paths[1].build({ workbenchId }) + '.json?' + params.toString()
 
-		const url = Path
-			.createPath('/workbenches/:workbenchId/macro_lists/fetch_macro_html')
-			.build({ workbenchId }) +
-			'.json?' +
-			params.toString()
+		const { html } = await (await fetch(url)).json()
 
-		const response = await fetch(url)
-		const { html } = await response.json()
-
-		sessionStorage.setItem(this.macroType, html) // Caching result
+		this.cacheHTML = html
 
 		return html
 	}
 
 	// Based on given index update every macro inputs (id & name)
 	// This is to avoid conflicts between sub forms
-	updateInputNames(html) {
-		const doc = parser.parseFromString(html, 'text/html')
+	updateHTML(html) {
+		const doc = new DOMParser().parseFromString(html, 'text/html')
 
 		doc.querySelectorAll(`[name*=macros_attributes]`).forEach(i => {
 			i.name = i.name.replace(/\[\d+\]/, `[${this.index}]`)

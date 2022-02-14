@@ -9,7 +9,7 @@
 				<span class="text-3xl w-4" x-text="expanded ? '-' : '+'">+</span>
 			.w-full
 				// Hidden inputs
-				- %w[id type position destroy].each do |name|
+				- %w[id type position _destroy].each do |name|
 					= macro_form.input name, as: :hidden, wrapper: false,  input_html: { ':value': "macro.#{name}" }
 
 				= macro_form.input :name,
@@ -36,13 +36,13 @@
 					li
 						a class="cursor-pointer" @click="$store.macroList.duplicate(macro)" x-text="I18n.t('macros.actions.duplicate')" x-show='!macro.isDeleted'
 					li
-						a class="cursor-pointer" @click="$store.macroList.sendToTop(index)" x-text="I18n.t('macros.actions.send_to_top')" x-show='!macro.isDeleted && !macro.isFirst()'
+						a class="cursor-pointer" @click="$store.macroList.sendToTop(index)" x-text="I18n.t('macros.actions.send_to_top')" x-show='!macro.isDeleted && !macro.isFirst'
 					li
-						a class="cursor-pointer" @click="$store.macroList.moveUp(index)" x-text="I18n.t('macros.actions.move_up')" x-show='!macro.isDeleted && !macro.isFirst()'
+						a class="cursor-pointer" @click="$store.macroList.moveUp(index)" x-text="I18n.t('macros.actions.move_up')" x-show='!macro.isDeleted && !macro.isFirst'
 					li
-						a class="cursor-pointer" @click="$store.macroList.moveDown(index)" x-text="I18n.t('macros.actions.move_down')" x-show='!macro.isDeleted && !macro.isLast()'
+						a class="cursor-pointer" @click="$store.macroList.moveDown(index)" x-text="I18n.t('macros.actions.move_down')" x-show='!macro.isDeleted && !macro.isLast'
 					li
-						a class="cursor-pointer" @click="$store.macroList.sendToBottom(index)" x-text="I18n.t('macros.actions.send_to_bottom')" x-show='!macro.isDeleted && !macro.isLast()'
+						a class="cursor-pointer" @click="$store.macroList.sendToBottom(index)" x-text="I18n.t('macros.actions.send_to_bottom')" x-show='!macro.isDeleted && !macro.isLast'
 					li
 						a class="cursor-pointer" @click="$store.macroList.delete(macro, index)" x-text="I18n.t('macros.actions.delete')" x-show='!macro.isDeleted'
 					li

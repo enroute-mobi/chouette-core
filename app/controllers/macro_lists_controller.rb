@@ -49,7 +49,7 @@ class MacroListsController < ChouetteController
   end
 
   def fetch_macro_html
-    render json: RenderMacroPartial.new(template: helpers, id: params[:id], type: params[:type], macro_list_id: params[:macro_list_id]).call
+    render json: { html: RenderMacroPartial.call(macro_html_params) }
   end
 
   protected
@@ -80,6 +80,15 @@ class MacroListsController < ChouetteController
   # def sort_direction
   #   %w[asc desc].include?(params[:direction]) ?  params[:direction] : 'asc'
   # end
+
+  def macro_html_params
+    params.require(:html).permit(
+      :id,
+      :type,
+    ).with_defaults(
+      template: helpers
+    )
+  end
 
   def macro_list_params
     macro_options = %i[id name position type comments macro_list_id _destroy]

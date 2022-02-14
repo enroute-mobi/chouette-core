@@ -9,10 +9,9 @@
 			button @click="expanded = ! expanded" type="button" x-bind:disabled="macro.isDeleted" class="flex items-center justify-between p-3 pl-3 mr-3 font-bold text-white bg-enroute-chouette-green rounded cursor-pointer hover:text-indigo-100"
 				<span class="text-3xl w-4" x-text="expanded ? '-' : '+'">+</span>
 			.w-full
-				= macro_form.input :id, as: :hidden, wrapper: false,  input_html: { 'x-model': 'macro.id' }
-				= macro_form.input :type, as: :hidden,  input_html: { 'x-model': 'macro.type' }, wrapper: false
-				= macro_form.input :position, as: :hidden, input_html: { ':value': 'macro.position' }, wrapper: false
-				= macro_form.input :_destroy, as: :hidden, input_html: { ':value': 'macro.isDeleted' }, wrapper: false
+				// Hidden inputs
+				- %w[id type position _destroy].each do |name|
+					= macro_form.input name, as: :hidden, wrapper: false,  input_html: { ':value': "macro.#{name}" }
 
 				= macro_form.input :name,
 					placeholder: "#{I18n.t('macro_lists.form.macro_placeholder')}",
@@ -33,13 +32,13 @@
 					li
 						a class="cursor-pointer" @click="$store.macroList.duplicate(macro)" x-text="I18n.t('macros.actions.duplicate')" x-show='!macro.isDeleted'
 					li
-						a class="cursor-pointer" @click="$store.macroList.sendToTop(index)" x-text="I18n.t('macros.actions.send_to_top')" x-show='!macro.isDeleted && !macro.isFirst()'
+						a class="cursor-pointer" @click="$store.macroList.sendToTop(index)" x-text="I18n.t('macros.actions.send_to_top')" x-show='!macro.isDeleted && !macro.isFirst'
 					li
-						a class="cursor-pointer" @click="$store.macroList.moveUp(index)" x-text="I18n.t('macros.actions.move_up')" x-show='!macro.isDeleted && !macro.isFirst()'
+						a class="cursor-pointer" @click="$store.macroList.moveUp(index)" x-text="I18n.t('macros.actions.move_up')" x-show='!macro.isDeleted && !macro.isFirst'
 					li
-						a class="cursor-pointer" @click="$store.macroList.moveDown(index)" x-text="I18n.t('macros.actions.move_down')" x-show='!macro.isDeleted && !macro.isLast()'
+						a class="cursor-pointer" @click="$store.macroList.moveDown(index)" x-text="I18n.t('macros.actions.move_down')" x-show='!macro.isDeleted && !macro.isLast'
 					li
-						a class="cursor-pointer" @click="$store.macroList.sendToBottom(index)" x-text="I18n.t('macros.actions.send_to_bottom')" x-show='!macro.isDeleted && !macro.isLast()'
+						a class="cursor-pointer" @click="$store.macroList.sendToBottom(index)" x-text="I18n.t('macros.actions.send_to_bottom')" x-show='!macro.isDeleted && !macro.isLast'
 					li
 						a class="cursor-pointer" @click="$store.macroList.delete(macro, index)" x-text="I18n.t('macros.actions.delete')" x-show='!macro.isDeleted'
 					li

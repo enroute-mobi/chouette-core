@@ -8,6 +8,7 @@ class Destination::Ara < ::Destination
   def do_transmit(publication, report)
     Rails.logger.tagged("Destination::Ara ##{id}") do
       publication.exports.each do |export|
+        export.file.cache_stored_file!
         send_to_ara export.file, report if export[:file]
       end
     end
@@ -24,8 +25,7 @@ class Destination::Ara < ::Destination
     request = Net::HTTP::Post.new(uri)
     request['Authorization'] = "Token token=#{credentials}"
 
-    local_file = local_temp_file(file)
-    form_data = [['request', payload.to_json], ['data', local_file]]
+    form_data = [['request', payload.to_json], ['data', file]]
     request.set_form form_data, 'multipart/form-data'
 
     Rails.logger.info "Send file to Ara on #{ara_import_url}"
@@ -39,10 +39,10 @@ class Destination::Ara < ::Destination
     if response.is_a?(Net::HTTPSuccess) && response["content-type"] == "application/json"
       import_status = JSON.parse response.body
       unless import_status["Errors"].empty?
-        report.failed! "Errors returned by Ara API: #{import_status["Errors"].inspect}"
+        report.failed! message: "Errors returned by Ara API: #{import_status["Errors"].inspect}"
       end
     else
-      report.failed! "Unexpected response from Ara API: #{response.code}"
+      report.failed! message: "Unexpected response from Ara API: #{response.code}"
     end
   end
 end

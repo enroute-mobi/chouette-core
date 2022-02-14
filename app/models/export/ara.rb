@@ -363,7 +363,7 @@ class Export::Ara < Export::Base
     delegate :vehicle_journeys, to: :export_scope
 
     def export!
-      vehicle_journeys.includes(codes: :code_space).find_each do |vehicle_journey|
+      vehicle_journeys.includes(codes: :code_space, route: :line).find_each do |vehicle_journey|
         target << Decorator.new(vehicle_journey, code_provider: code_provider).ara_model
       end
     end
@@ -372,7 +372,7 @@ class Export::Ara < Export::Base
       @code_provider ||= CodeProvider::Model.new scope: export_scope, model_class: Chouette::VehicleJourney
     end
 
-    # Creates an Ara::StopArea from a StopArea
+    # Creates an Ara::VehicleJourney from a VehicleJourney
     class Decorator < SimpleDelegator
       def initialize(vehicle_journey, code_provider: nil)
         super vehicle_journey
@@ -389,6 +389,7 @@ class Export::Ara < Export::Base
           id: uuid,
           name: published_journey_name,
           objectids: ara_codes,
+          line_id: self.line.get_objectid.local_id
         }
       end
 

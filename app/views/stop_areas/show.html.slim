@@ -8,15 +8,15 @@
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = simple_block_for @stop_area, title: t("stop_areas.form.sections.identification") do |d|
-          = d.attribute :id, value: @stop_area.get_objectid.short_id
+          = d.attribute :id, as: :objectid
           = d.attribute :name
           - @stop_area.localized_names.keep_if { |key, value| value.present? }.each do |k, v|
             = d.attribute :name, value: v, label: label_for_country(k, Chouette::StopArea.tmf('name'))
 
         = simple_block_for @stop_area, title: t("stop_areas.form.sections.hierarchy") do |d|
-          = d.attribute :area_type, value: ("#{Chouette::AreaType.find(@stop_area.area_type).try(:label)} (#{@stop_area.kind})")
-          = d.attribute :parent, value: (@stop_area.parent.present? ? link_to("#{@stop_area.parent.get_objectid.short_id} #{@stop_area.parent.name}", [@workbench, :stop_area_referential, @stop_area.parent]) : "-")
-          = d.attribute :children, value: (link_to @stop_area.children.count, workbench_stop_area_referential_stop_areas_path(@workbench, :'q[parent_id_eq]' => @stop_area.id))
+          = d.attribute :area_type, value: "#{Chouette::AreaType.find(@stop_area.area_type).try(:label)} (#{@stop_area.kind})"
+          = d.attribute :parent, as: :association, link: ->(parent) { workbench_stop_area_referential_stop_area_path(@workbench, parent) }
+          = d.attribute :children, as: :count, value: @stop_area.children, link: workbench_stop_area_referential_stop_areas_path(@workbench, :'q[parent_id_eq]' => @stop_area.id)
         - if @stop_area.children.present?
           table.table.table-bordered
             thead
@@ -33,18 +33,16 @@
                   td
                     = c.get_objectid.short_id
                   td
-                    = link_to(c.name, workbench_stop_area_referential_stop_area_path(@workbench, c.id))
+                    = link_to(c.name, workbench_stop_area_referential_stop_area_path(@workbench, c))
                   td
                     - if c.distance
                       = "#{c.distance.round(2)} m"
           - if @stop_area.children.count > 5
             = link_to t('stop_areas.show.more', count: (@stop_area.children.count - 5)), workbench_stop_area_referential_stop_areas_path(@workbench, :'q[parent_id_eq]' => @stop_area.id), class: 'btn btn-link pull-right'
 
-        = simple_block_for @stop_area, title: Chouette::StopArea.tmf('specific_stops') do |d|
-          - if @stop_area.referent
-            = d.attribute :referent, value: (link_to @stop_area.referent.get_objectid.short_id, workbench_stop_area_referential_stop_area_path(@workbench, @stop_area.referent.id))
-          - if @stop_area.specific_stops.present?
-            = d.attribute :specific_stops, value: (link_to @stop_area.specific_stops.count, workbench_stop_area_referential_stop_areas_path(@workbench, :'q[referent_id_eq]' => @stop_area.id))
+        = simple_block_for @stop_area, title: Chouette::StopArea.tmf('referent') do |d|
+          - if @stop_area.is_referent
+            = d.attribute :specific_stops, as: :count, value: @stop_area.specific_stops, link: workbench_stop_area_referential_stop_areas_path(@workbench, :'q[referent_id_eq]' => @stop_area.id)
             - if @stop_area.closest_specific_stops.present?
               table.table.table-bordered
                 thead
@@ -61,15 +59,17 @@
                       td
                         = c.get_objectid.short_id
                       td
-                        = link_to(c.name, workbench_stop_area_referential_stop_area_path(@workbench, c.id))
+                        = link_to(c.name, workbench_stop_area_referential_stop_area_path(@workbench, c))
                       td
                         - if c.distance
                           = "#{c.distance.round(2)} m"
+          - else
+            = d.attribute :referent, as: :association, link: ->(referent) { workbench_stop_area_referential_stop_area_path(@workbench, referent) }
 
         = simple_block_for @stop_area, title: t("stop_areas.form.sections.internals") do |d|
-          = d.attribute :human_status
-          = d.attribute :stop_area_provider, value: (link_to @stop_area.stop_area_provider.name, workbench_stop_area_referential_stop_area_provider_path(@workbench, @stop_area.stop_area_provider))
-          = d.attribute :comment, as: :association
+          = d.attribute :status, value_method: :human_status
+          = d.attribute :stop_area_provider, as: :association, link: workbench_stop_area_referential_stop_area_provider_path(@workbench, @stop_area.stop_area_provider)
+          = d.attribute :comment
 
         = simple_block_for @stop_area, title: Chouette::StopArea.tmf(:codes) do |d|
           = d.attribute :registration_number
@@ -95,10 +95,9 @@
           = d.attribute :time_zone
 
         = simple_block_for @stop_area, title: t("stop_areas.form.sections.usage") do |d|
-          = d.attribute :waiting_time, as: :duration
+          = d.attribute :waiting_time, as: :duration, value: @stop_area.waiting_time&.minutes
           = d.attribute :fare_code
-          = d.attribute :url, as: :association, link: @stop_area.url
-          / = d.attribute :stop_area_provider, value: (link_to @stop_area.stop_area_provider.name, workbench_stop_area_referential_stop_area_provider_path(@workbench, @stop_area.stop_area_provider))
+          = d.attribute :url, link: @stop_area.url
 
         - if has_feature?(:stop_area_connection_links)
           h4.underline= t('.connections.title')

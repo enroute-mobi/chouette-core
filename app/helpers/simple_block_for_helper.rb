@@ -1,10 +1,55 @@
 module SimpleBlockForHelper
-  # Generates a block.
-  # Usage:
-  #   <%= simple_block_for @object do |b| %>
-  #     <%= b.title :processing %>
-  #     <%= b.attribute :started_at %>
+  # Generates a block with object attributes
+  #
+  # == Examples
+  #
+  #   <%= simple_block_for @object, title: t("...") do |b| %>
+  #     <%= b.attribute :started_at, as: :datetime %>
   #   <% end %>
+  #
+  # == Attribute
+  #
+  # === Attribute value
+  #
+  # By default, the attribute value is the value returned by the attribut method
+  #
+  # value::
+  #   The value to replace the attribute value
+  # value_method::
+  #   The method to be invoked to retrieve the attribute value
+  #
+  # === Displayed value
+  #
+  # If present, the attribute value is transformed into a displayed value according to
+  # the :as option:
+  #
+  # datetime::
+  #   the value is localized (with short_with_time format)
+  # duration::
+  #   the value is displayed as "NN min" or "NN sec"
+  # enumeriwe::
+  #   the #text method is invoked on the value
+  # boolean::
+  #   the value is displayed as Yes/No, Oui/Non, etc
+  # objectid::
+  #   the #short_id method is invoked on the value
+  # association::
+  #   the #name method is invoked on the value. If the value has an objectid,
+  #   its short_id is prefixed
+  # count:
+  #   the #count method is invoked on the value. If the count is 0, the value is ignored
+  #
+  # === Link
+  #
+  # When the :link option is used, if a value is displayed, a link is build.
+  #
+  #   d.attribute :parent, as: :association, link: parent_path(@resource.parent)
+  #
+  # If the link need to create only if a value is displayed, a lambda/Proc can be provided.
+  # In this case, the attribute value is provided as argument:
+  #
+  #   d.attribute :referent, as: :association, link: ->(parent) { referent_path(@parent) }
+  #
   def simple_block_for(object, options = {}, &block)
     block_builder = BlockBuilder.new(self, object, options)
     output = capture(block_builder, &block)
@@ -42,44 +87,61 @@ module SimpleBlockForHelper
         raw_value = resource.send(attribute_name)
       end
 
-      displayed_value =
-        if raw_value.present? || raw_value.in?([true, false])
+      label = options[:label] || resource.class.human_attribute_name(attribute_name)
+      displayed_value = nil
+
+      if raw_value.present? || raw_value.in?([true, false])
+        displayed_value =
           case options[:as]
           when :datetime
             I18n.l(raw_value, format: :short_with_time)
           when :duration
-            raw_value > 60 ? "#{(raw_value /  1.minute).round} min" : "#{raw_value.round} sec"
+            raw_value >= 60 ? "#{(raw_value /  1.minute).round} min" : "#{raw_value.round} sec"
           when :enumerize
             raw_value.text
           when :boolean
             t(raw_value)
           when :objectid
-            if resource.respond_to?(:get_objectid)
-              resource.get_objectid.short_id
+            if raw_value.respond_to?(:short_id)
+              raw_value.short_id
             else
               raw_value
             end
           when :association
-            association_displayed_value =
-              if raw_value.respond_to?(:name)
-                raw_value.name
-              else
-                raw_value
-              end
-
-            if options[:link]
-              link_to(association_displayed_value, options[:link])
+            if raw_value.respond_to?(:name)
+              [].tap do |parts|
+                if raw_value.respond_to?(:get_objectid)
+                  parts << raw_value.get_objectid&.short_id
+                end
+                parts << raw_value.name
+              end.compact.join(" ")
             else
-              association_displayed_value
+              raw_value
+            end
+          when :count
+            if raw_value.respond_to?(:count)
+              raw_value = raw_value.count
+            end
+
+            if raw_value > 0
+              raw_value
+            else
+              nil
             end
           else
             raw_value
           end
-        else
-          '-'
-        end
 
-      label = options[:label] || resource.class.human_attribute_name(attribute_name)
+      end
+
+      if displayed_value && link = options[:link]
+        if link.respond_to?(:call)
+          link = link.call(raw_value)
+        end
+        displayed_value = link_to(displayed_value, link)
+      end
+
+      displayed_value ||= "-"
 
       content_tag(:div, label, class: "dl-term") +
         content_tag(:div, displayed_value, class: "dl-def")

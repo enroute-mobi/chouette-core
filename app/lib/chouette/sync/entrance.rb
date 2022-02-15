@@ -8,8 +8,10 @@ module Chouette::Sync
           resource_id_attribute: :id,
           resource_decorator: Decorator,
           model_type: :entrance,
+          model_id_attribute: :codes,
         }
         options.reverse_merge!(default_options)
+
         super options
       end
 
@@ -48,17 +50,17 @@ module Chouette::Sync
         def model_attributes
           {
             name: name,
-            entry_flag: is_entry,
-            exit_flag: is_exit,
-            external_flag: is_external,
-            height: height,
-            width: width,
+            short_name: short_name,
+            description: description,
+            position_input: position,
             address: address,
             zip_code: zip_code,
             city_name: city_name,
             country: country,
-            position_input: position,
             entrance_type: entrance_type,
+            entry_flag: is_entry,
+            exit_flag: is_exit,
+            import_xml: raw_xml,
             stop_area_id: stop_area_id,
             stop_area_provider_id: stop_area_provider_id,
           }

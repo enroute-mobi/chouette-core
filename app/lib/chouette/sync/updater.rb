@@ -159,7 +159,7 @@ module Chouette
         end
 
         def update(model, resource)
-          attributes = prepare_attributes(resource)
+          attributes = prepare_attributes(resource).except(:codes_attributes)
           Rails.logger.debug { "Update #{model.inspect} with #{attributes.inspect}" }
 
           model.attributes = attributes.except(:codes_attributes)
@@ -350,6 +350,11 @@ module Chouette
         end
 
         # Basic resolver implementation
+
+        def model_id_attribute_from_reference_type(reference_type)
+          "Chouette::Sync::#{reference_type.to_s.classify}::Netex".
+            constantize.default_model_id_attribute
+        end
 
         def resolve(reference_type, resource_ids)
           if resource_ids.is_a? Array

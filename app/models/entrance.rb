@@ -1,6 +1,7 @@
 class Entrance < ActiveRecord::Base
   include StopAreaReferentialSupport
   include ObjectidSupport
+  include CodeSupport
   extend Enumerize
 
   belongs_to :stop_area, class_name: 'Chouette::StopArea', optional: false

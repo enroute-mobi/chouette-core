@@ -6,13 +6,14 @@ RSpec.describe Chouette::Sync::Entrance do
     let(:context) do
       Chouette.create do
         stop_area registration_number: "stop-place-1"
-        #stop_area_provider
+        code_space
       end
     end
 
     let(:target) { context.stop_area_referential }
     let(:stop_area_provider) { context.stop_area_provider }
     let(:stop_area) { context.stop_area }
+    let(:code_space) { context.code_space }
 
     let(:xml) do
       %{
@@ -68,10 +69,10 @@ RSpec.describe Chouette::Sync::Entrance do
     end
 
     subject(:sync) do
-      Chouette::Sync::Entrance::Netex.new source: source, target: target
+      Chouette::Sync::Entrance::Netex.new source: source, target: target, code_space: code_space
     end
 
-    let(:model_id_attribute) { Chouette::Sync::Base.default_model_id_attribute }
+    let(:model_id_attribute) { sync.model_id_attribute }
 
     let(:expected_attributes) do 
       {
@@ -83,20 +84,38 @@ RSpec.describe Chouette::Sync::Entrance do
         zip_code: "44300",
         city_name: "Nantes",
         country: "France",
-        external_flag: true,
-        width: 3.0,
-        height: 2.0
+        #import_xml: source.raw_xml,
       }
     end
 
     context "when no entrance exists" do
-      let(:created_stop_area_entrance) {target.entrances.where(model_id_attribute => "entrance-1").first}
+      let(:created_stop_area_entrance) {target.entrances.by_code(code_space, "entrance-1").first}
+      let(:created_code) {Code.find_by_value("entrance-1")}
+      let(:expected_code_attributes) do
+        {
+          code_space_id: code_space&.id,
+          resource_type: "Entrance",
+          resource_id: created_stop_area_entrance&.id,
+          value: "entrance-1",
+        }
+      end
+
+      before do
+        sync.synchronize
+      end
+
+      it "should create code" do
+        expect(created_code).to have_attributes(expected_code_attributes)
+      end
 
       it "should create stop place entrance" do
-        sync.synchronize
-
         expect(created_stop_area_entrance).to have_attributes(expected_attributes)
       end
+
+      it "should create association between Entrances and Code" do
+        expect( created_stop_area_entrance.codes).to match_array([created_code])
+      end
+
     end
 
     context "when entrance exists" do
@@ -104,8 +123,13 @@ RSpec.describe Chouette::Sync::Entrance do
         target.entrances.create!({
           name: "test",
           stop_area_provider: stop_area_provider,
-          model_id_attribute => "entrance-1",
           stop_area: stop_area,
+          codes_attributes: [
+            {
+              code_space: code_space,
+              value: "entrance-1"
+            }
+          ]
         })
       end
 

@@ -17,6 +17,10 @@ en:
       reset_password: "Reset password"
       reset_password_confirm: "Do you want to send password reset intructions to this user ?"
       reset_password_flash: "A password reset link has been sent"
+    form:
+      sections:
+        password: "Password"
+        localization: "Localization"
     locked: Your account has been deactivated
     new:
       title: "Add a new user"
@@ -56,6 +60,8 @@ en:
         updated_at: Updated at
         invitation_sent_at: Invitation sent at
         last_sign_in_at: Last connection
+        user_locale: Language
+        time_zone: Time Zone
     errors:
       models:
         calendar:

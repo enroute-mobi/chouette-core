@@ -2,7 +2,8 @@
   .panel-title
     h2 = t('layouts.user.profile')
   .panel-body
-    p = current_user.name
+    p = link_to edit_user_registration_path, class: 'menu-item', title: current_user.name do
+      = current_user.name
     p = current_organisation.name
     p = mail_to current_user.email, current_user.email
     p = t('last_sync', time: l(current_user.synced_at)) if current_user.synced_at

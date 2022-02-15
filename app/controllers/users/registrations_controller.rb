@@ -22,7 +22,9 @@ class Users::RegistrationsController < Devise::RegistrationsController
       :email,
       :password,
       :password_confirmation,
-      :current_password
+      :current_password,
+      :user_locale,
+      :time_zone
     )
   end
 

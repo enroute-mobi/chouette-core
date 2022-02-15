@@ -391,6 +391,36 @@ RSpec.describe Export::NetexGeneric do
       end
     end
 
+    describe Export::NetexGeneric::Routes::Decorator::LineRoutingConstraintZoneDecorator do
+
+      let(:stop_area0) { routes[0].stop_points[0].stop_area }
+      let(:stop_area1) { routes[0].stop_points[1].stop_area }
+      let(:stop_area2) { routes[0].stop_points[2].stop_area }
+
+      before do
+        LineRoutingConstraintZone.create(
+          name: "Line Routing Constraint Zone 1",
+          stop_areas: [stop_area0, stop_area1],
+          lines: [Chouette::Line.first],
+          line_referential: context.line_referential
+        )
+
+        # update the same stop_areas for routes[1]
+        routes[1].stop_points[0].update stop_area: stop_area0
+        routes[1].stop_points[1].update stop_area: stop_area1
+        routes[1].stop_points[2].update stop_area: stop_area2
+
+        part.export!
+      end
+
+      let(:routes_resources) { target.resources.select { |r| r.is_a? Netex::RoutingConstraintZone } }
+
+      context "when two routes have the same stop_areas for each stop_point" do
+        it "create a Netex::Route for each Chouette Route with a Netex::RoutingConstraintZone" do
+          expect(routes_resources.first.members).to match_array(routes_resources.last.members)
+        end
+      end
+    end
   end
 
   describe "RoutingConstraintZones export" do

@@ -296,7 +296,8 @@ ChouetteIhm::Application.routes.draw do
   devise_for :users, :controllers => {
     confirmations: 'users/confirmations',
     invitations: 'users/invitations',
-    passwords: 'users/passwords'
+    passwords: 'users/passwords',
+    registrations: 'users/registrations'
   }
 
   devise_scope :user do

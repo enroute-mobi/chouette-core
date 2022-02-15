@@ -1,38 +1,35 @@
 import { Path } from 'path-parser'
 
-const paths = Array.of(
-	'/workbenches/:id/macro_lists',
-	'/workbenches/:workbenchId/macro_lists/fetch_macro_html'
-).map(Path.createPath)
+const path = Path.createPath('/workbenches/:workbenchId/macro_lists')
 
-const workbenchId = paths[0].partialTest(location.pathname)?.id
+const workbenchId = path.partialTest(location.pathname)?.workbenchId
 export default class HTMLFinder {
 	constructor(attributes) {
 		for (const key in attributes) {
 			this[key] = attributes[key]
 		}
 
-		if (!this.macro.hasErrors && !!this.macro.html) {
-			this.cacheHTML = this.macro.html
+		if (!this.object.hasErrors && !!this.object.html) {
+			this.cacheHTML = this.object.html
 		}
 	}
 
 	async render() {
-		return this.updateHTML(this.macro.html || this.cacheHTML || await this.fecthedHTML())
+		return this.updateHTML(this.object.html || this.cacheHTML || await this.fecthedHTML())
 	}
 
-	get cacheHTML() { return sessionStorage.getItem(this.macro.type) }
+	get cacheHTML() { return sessionStorage.getItem(this.object.type) }
 
 	set cacheHTML(html) {
-		sessionStorage.setItem(this.macro.type, html)
+		sessionStorage.setItem(this.object.type, html)
 	}
 
 	async fecthedHTML() {
 		const params = new URLSearchParams()
-		params.set('html[id]', this.macro.id)
-		params.set('html[type]', this.macro.type)
+		params.set('html[id]', this.object.id)
+		params.set('html[type]', this.object.type)
 
-		const url = paths[1].build({ workbenchId }) + '.json?' + params.toString()
+		const url = path.build({ workbenchId }) + '/fetch_object_html.json?' + params.toString()
 
 		const { html } = await (await fetch(url)).json()
 

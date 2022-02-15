@@ -66,7 +66,7 @@ ChouetteIhm::Application.routes.draw do
     resources :referentials, only: %w(new create index)
     resources :notification_rules
     resources :macro_lists do
-      get :fetch_macro_html, on: :collection, defaults: { format: 'json' }
+      get :fetch_object_html, on: :collection, defaults: { format: 'json' }
       resources :macro_list_runs, only: %w(new create)
     end
 

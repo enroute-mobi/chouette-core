@@ -22,10 +22,6 @@ class MacroListDecorator < AF83::Decorator
     instance_decorator.destroy_action_link
   end
 
-  define_instance_method :macro_options do
-    Macro.available.map { |m| { id: m.name, text: m.model_name.human } }
-  end
-
   define_instance_method :macros_json do
     macros = object.macros.map do |m|
       m.attributes

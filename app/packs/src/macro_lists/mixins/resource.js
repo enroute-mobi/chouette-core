@@ -1,27 +1,28 @@
 import { omit } from 'lodash'
-import HTMLFinder from './HTMLFinder'
+import HTMLFinder from '../HTMLFinder'
 
-export default class Macro {
+export default superclass => class Resource extends superclass {
 	constructor(attributes) {
+		super(attributes)
+
 		this.uuid = crypto.randomUUID()
 		this._destroy = false
 		this.errors = []
-	
+
 		for (const key in attributes) {
 			this[key] = attributes[key]
 		}
 	}
 
-	static from(macro) {
-		const attributes = omit(Object.assign(macro), ['id', 'uuid', 'errors', '_destroy'])
-		return new Macro(attributes)
+	static from(object) {
+		return omit(Object.assign(object), ['id', 'uuid', 'errors', 'position', '_destroy'])
 	}
 
 	get isDeleted() { return this._destroy }
 
 	get hasErrors() { return this.errors.length > 0 }
 
-	delete () {
+	delete() {
 		this._destroy = true
 	}
 
@@ -29,7 +30,7 @@ export default class Macro {
 		this._destroy = false
 	}
 
-	getHTML(index) { 
-		return new HTMLFinder({ index, macro: this }).render()
+	getHTML(index) {
+		return new HTMLFinder({ index, object: this, url: '' }).render()
 	}
 }

@@ -10,6 +10,7 @@ module Macro
     has_many :macro_contexts, class_name: "Macro::Context", foreign_key: "macro_list_id", inverse_of: :macro_list
 
     accepts_nested_attributes_for :macros, allow_destroy: true, reject_if: :all_blank
+    accepts_nested_attributes_for :macro_contexts, allow_destroy: true, reject_if: :all_blank
 
     scope :by_text, ->(text) { text.blank? ? all : where('lower(name) LIKE :t', t: "%#{text.downcase}%") } 
 

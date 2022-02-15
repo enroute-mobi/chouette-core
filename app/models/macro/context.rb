@@ -1,5 +1,7 @@
 module Macro
   class Context < ApplicationModel
+    include OptionsSupport # Check which methods are/should be deprecated
+
     self.table_name = "macro_contexts"
 
     belongs_to :macro_list, class_name: "Macro::List", optional: false, inverse_of: :macro_contexts
@@ -8,6 +10,10 @@ module Macro
     has_many :macro_context_runs, class_name: "Macro::Context::Run", foreign_key: "macro_context_id", inverse_of: :macro_context
 
     store :options, coder: JSON
+
+    def self.available
+      [Macro::Context::TransportMode]
+    end
 
     def build_run
       run_attributes = {

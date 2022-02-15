@@ -1,5 +1,5 @@
 - form = local_assigns.fetch(:form)
-- macro = local_assigns.fetch(:macro)
+- macro = local_assigns.fetch(:resource)
 - class_description = macro.class.model_name.human
 
 = form.simple_fields_for(:macros, macro) do |macro_form|
@@ -29,28 +29,11 @@
 			.flex.ml-3 x-show="expanded"
 				p.flex.w-64 = class_description
 
-			.btn-group x-show="!$store.macroList.isShow"
-				.btn.dropdown-toggle data-toggle="dropdown"
-					.span.fa.fa-cog
-				ul.dropdown-menu
-					li
-						a class="cursor-pointer" @click="$store.macroList.duplicate(macro)" x-text="I18n.t('macros.actions.duplicate')" x-show='!macro.isDeleted'
-					li
-						a class="cursor-pointer" @click="$store.macroList.sendToTop(index)" x-text="I18n.t('macros.actions.send_to_top')" x-show='!macro.isDeleted && !macro.isFirst'
-					li
-						a class="cursor-pointer" @click="$store.macroList.moveUp(index)" x-text="I18n.t('macros.actions.move_up')" x-show='!macro.isDeleted && !macro.isFirst'
-					li
-						a class="cursor-pointer" @click="$store.macroList.moveDown(index)" x-text="I18n.t('macros.actions.move_down')" x-show='!macro.isDeleted && !macro.isLast'
-					li
-						a class="cursor-pointer" @click="$store.macroList.sendToBottom(index)" x-text="I18n.t('macros.actions.send_to_bottom')" x-show='!macro.isDeleted && !macro.isLast'
-					li
-						a class="cursor-pointer" @click="$store.macroList.delete(macro, index)" x-text="I18n.t('macros.actions.delete')" x-show='!macro.isDeleted'
-					li
-						a class="cursor-pointer" @click="$store.macroList.restore(macro)" x-text="I18n.t('macros.actions.restore')" x-show='macro.isDeleted'
+			div[x-data="{ resource: macro, collection: macros }"]
+				= render 'actions'
 
 		.macro.flex.flex-col x-show="expanded && !macro.isDeleted" class="w-full"
 			= render "macro_lists/#{macro.model_name.i18n_key.to_s}", form: macro_form
 			.form-group
 				= macro_form.label Macro::List.human_attribute_name(:comments), class: 'col-sm-4 col-xs-5 control-label mb-3'
 				= macro_form.input :comments, as: :text, required: false, input_html: { 'x-model': 'macro.comments', ':disabled': '$store.macroList.isShow' }, label: false, wrapper: false
-				

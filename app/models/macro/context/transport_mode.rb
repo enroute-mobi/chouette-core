@@ -1,4 +1,8 @@
 class Macro::Context::TransportMode < Macro::Context
+  enumerize :transport_mode, in: TransportModeEnumerations.sorted_transport_modes.map { |t| t.to_s.camelcase }
+
+  option :transport_mode
+
   class Run < Macro::Context::Run
     def lines
       context.lines.where(transport_mode: options[:transport_mode])

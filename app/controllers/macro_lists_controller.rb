@@ -48,8 +48,8 @@ class MacroListsController < ChouetteController
     end
   end
 
-  def fetch_macro_html
-    render json: { html: RenderMacroPartial.call(macro_html_params) }
+  def fetch_object_html
+    render json: { html: MacroLists::RenderPartial.call(macro_html_params) }
   end
 
   protected

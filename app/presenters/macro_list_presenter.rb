@@ -6,12 +6,18 @@ class MacroListPresenter
 		@template = template
 	end
 
+	def transport_mode_options
+		macro_list.workbench.workgroup.sorted_transport_modes.map { |t| ["enumerize.transport_mode.#{t}".t, t] }
+	end
+
 	def json_state
 		JSON.generate({
 			macros: macros(macro_list),
 			macro_contexts: macro_contexts(macro_list)
 		})
 	end
+
+	private
 
 	def macros(object)
 		object.macros.map do |macro|
@@ -26,8 +32,6 @@ class MacroListPresenter
 				**merged_options(macro_context))
 		end
 	end
-
-	private
 
 	def merged_options object
 		{

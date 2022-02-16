@@ -1,4 +1,4 @@
-import { flow } from 'lodash'
+import { flow, omit } from 'lodash'
 import ResourceMixin from './mixins/resource'
 import CollectionMixin from './mixins/collection'
 import { MacroCollection } from './macro'
@@ -40,6 +40,16 @@ const MacroCollectionMixin = superclass => class MacroContextCollection extends 
 		this.push(macroContext)
 
 		callback(macroContext)
+	}
+
+	duplicate(macroContext) {
+		const getAttributes = object => omit(Object.assign(object), ['id', 'uuid', 'errors', 'position', '_destroy'])
+		
+		this.add(getAttributes(macroContext), duplicate => {
+			macroContext.macros.forEach(macro => {
+				duplicate.macros.add(getAttributes(macro))
+			})
+		})
 	}
 }
 

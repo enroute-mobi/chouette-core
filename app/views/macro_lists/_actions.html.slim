@@ -3,7 +3,7 @@
 		.span.fa.fa-cog
 	ul.dropdown-menu
 		li
-			a class="cursor-pointer" @click="collection.duplicate(index)" x-text="I18n.t('macros.actions.duplicate')" x-show='!resource.isDeleted'
+			a class="cursor-pointer" @click="collection.duplicate(resource)" x-text="I18n.t('macros.actions.duplicate')" x-show='!resource.isDeleted'
 		li
 			a class="cursor-pointer" @click="collection.sendToTop(index)" x-text="I18n.t('macros.actions.send_to_top')" x-show='!resource.isDeleted && !resource.isFirst'
 		li
@@ -13,6 +13,6 @@
 		li
 			a class="cursor-pointer" @click="collection.sendToBottom(index)" x-text="I18n.t('macros.actions.send_to_bottom')" x-show='!resource.isDeleted && !resource.isLast'
 		li
-			a class="cursor-pointer" @click="collection.delete(index)" x-text="I18n.t('macros.actions.delete')" x-show='!resource.isDeleted'
+			a class="cursor-pointer" @click="collection.delete(resource, index)" x-text="I18n.t('macros.actions.delete')" x-show='!resource.isDeleted'
 		li
-			a class="cursor-pointer" @click="collection.restore(index)" x-text="I18n.t('macros.actions.restore')" x-show='resource.isDeleted'
+			a class="cursor-pointer" @click="collection.restore(resource)" x-text="I18n.t('macros.actions.restore')" x-show='resource.isDeleted'

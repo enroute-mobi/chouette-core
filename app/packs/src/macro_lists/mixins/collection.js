@@ -1,4 +1,4 @@
-import { find, filter, omit, reject } from 'lodash'
+import { find, filter, first, isEmpty, last, omit, nth, reject } from 'lodash'
 
 const constructors = ['Macro', 'MacroContext']
 
@@ -25,15 +25,15 @@ export default superclass => class Collection extends superclass {
 		})
 	}
 
-	get first() { return this[0] }
+	get first() { return first(this) }
 
-	get last() { return this[this.length - 1] }
+	get last() { return last(this) }
 
 	get active() { return reject(this, 'isDeleted') }
 
 	get deleted() { return filter(this, 'isDeleted') }
 
-	isEmpty() { return this.length === 0 }
+	isEmpty() { return isEmpty(this) }
 
 	get(uuid) { return find(this, ['uuid', uuid]) }
 
@@ -41,34 +41,18 @@ export default superclass => class Collection extends superclass {
 		throw new Error('add function not implemented')
 	}
 
-	delete(index) {
-		const object = this[index]
-
-		if(!object) return false
-
+	delete(object, index) {
 		this.sendToBottom(index)
 		object.delete()
-
-		return true
 	}
 
-	restore(index) {
-		const object = this[index]
-
-		if (!object) return false
-
+	restore(object) {
 		object.restore()
-
 		this.sendToBottomOfActiveResources(object)
 	}
 
-	duplicate(index) {
-		const object = this[index]
-
-		if (!object) return false
-
+	duplicate(object) {
 		const attributes = omit(Object.assign(object), ['id', 'uuid', 'errors', 'position', '_destroy'])
-
 		this.add(attributes)
 	}
 

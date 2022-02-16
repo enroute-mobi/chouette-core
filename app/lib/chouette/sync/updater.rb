@@ -287,7 +287,7 @@ module Chouette
           @updater = updater
         end
 
-        delegate :resource_id_attribute, :model_id_attribute, :models, :resource_decorator, :code_space,  to: :updater
+        delegate :resource_id_attribute, :model_id_attribute, :models, :resource_decorator, :code_space, to: :updater
 
         def decorate(resource)
           resource_decorator.new resource, batch: self
@@ -350,11 +350,6 @@ module Chouette
         end
 
         # Basic resolver implementation
-
-        def model_id_attribute_from_reference_type(reference_type)
-          "Chouette::Sync::#{reference_type.to_s.classify}::Netex".
-            constantize.default_model_id_attribute
-        end
 
         def resolve(reference_type, resource_ids)
           if resource_ids.is_a? Array

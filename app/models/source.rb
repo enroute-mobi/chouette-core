@@ -53,11 +53,10 @@ class Source < ApplicationModel
       end
 
       def link
-        # New layout : some download links are in a "resource--download" class element, others just in a table
-        l = page.css('div.resource-actions')
+        # New layout : some download links are in a "div.resource-actions" class element, others just in a table
+        # We prefer to use table links because we have absolute url and never relative url
         l = page.css('table') if l.empty?
-        href = l.css('a.download-button').first["href"]
-        "https://transport.data.gouv.fr" + href if href
+        l.css('a').first["href"]
       end
     end
   end

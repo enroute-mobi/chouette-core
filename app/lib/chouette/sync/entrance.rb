@@ -69,7 +69,21 @@ module Chouette::Sync
         private
 
         def stop_place_ref_id
-          source.resources.find{ |resource| resource&.entrances&.map(&:ref).include? id }&.id
+          mapping_entrance_stop_place[id]
+        end
+
+        def mapping_entrance_stop_place
+          unless @mapping_entrance_stop_place.present?
+            @mapping_entrance_stop_place = {}
+            source.resources.each do |resource|
+              next unless resource.is_a? ::Netex::StopPlace
+
+              resource&.entrances.each do |entrance|
+                @mapping_entrance_stop_place[entrance.ref] = resource&.id
+              end
+            end
+          end
+          @mapping_entrance_stop_place
         end
 
       end

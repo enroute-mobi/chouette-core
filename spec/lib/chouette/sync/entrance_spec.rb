@@ -84,7 +84,6 @@ RSpec.describe Chouette::Sync::Entrance do
         zip_code: "44300",
         city_name: "Nantes",
         country: "France",
-        #import_xml: source.raw_xml,
       }
     end
 

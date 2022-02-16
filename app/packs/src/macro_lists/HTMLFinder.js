@@ -4,10 +4,9 @@ const path = Path.createPath('/workbenches/:workbenchId/macro_lists')
 
 const workbenchId = path.partialTest(location.pathname)?.workbenchId
 export default class HTMLFinder {
-	constructor(attributes) {
-		for (const key in attributes) {
-			this[key] = attributes[key]
-		}
+	constructor(index, object) {
+		this.index = index
+		this.object = object
 
 		if (!this.object.hasErrors && !!this.object.html) {
 			this.cacheHTML = this.object.html
@@ -43,9 +42,14 @@ export default class HTMLFinder {
 	updateHTML(html) {
 		const doc = new DOMParser().parseFromString(html, 'text/html')
 
-		doc.querySelectorAll(`[name*=macros_attributes]`).forEach(i => {
-			i.name = i.name.replace(/\[\d+\]/, `[${this.index}]`)
-			i.id = i.id.replace(/_\d+_/, `_${this.index}_`)
+		const input = this.object.input
+
+		const nameRegex = new RegExp(`\\[${input.selector}\\]\\[[0-9]+\\]`)
+		const idRegex = new RegExp(`${input.selector}_[0-9]+`)
+
+		doc.querySelectorAll(`[name*=${input.selector}]`).forEach(i => {
+			i.name = i.name.replace(nameRegex, input.replaceName)
+			i.id = i.id.replace(idRegex, input.replaceId)
 		})
 
 		return doc.body.innerHTML

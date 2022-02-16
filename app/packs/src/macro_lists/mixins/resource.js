@@ -31,6 +31,6 @@ export default superclass => class Resource extends superclass {
 	}
 
 	getHTML(index) {
-		return new HTMLFinder({ index, object: this, url: '' }).render()
+		return new HTMLFinder(index, this).render()
 	}
 }

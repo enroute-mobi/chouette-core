@@ -12,6 +12,13 @@ module Chouette
     extend Enumerize
     enumerize :area_type, in: Chouette::AreaType::ALL, default: Chouette::AreaType::COMMERCIAL.first
     enumerize :kind, in: %i(commercial non_commercial), default: :commercial
+    enumerize :mobility_impaired_accessility, in: %i(unknown yes no partial), default: :unknown
+    enumerize :wheelchair_accessibility, in: %i(unknown yes no partial), default: :unknown
+    enumerize :step_free_accessibility, in: %i(unknown yes no partial), default: :unknown
+    enumerize :escalator_free_accessibility, in: %i(unknown yes no partial), default: :unknown
+    enumerize :lift_free_accessibility, in: %i(unknown yes no partial), default: :unknown
+    enumerize :audible_signals_availability, in: %i(unknown yes no partial), default: :unknown
+    enumerize :visual_signs_availability, in: %i(unknown yes no partial), default: :unknown
 
     AVAILABLE_LOCALIZATIONS = %i(en_UK nl_NL de_DE fr_FR it_IT es_ES)
 

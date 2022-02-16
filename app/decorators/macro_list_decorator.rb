@@ -21,18 +21,4 @@ class MacroListDecorator < AF83::Decorator
 
     instance_decorator.destroy_action_link
   end
-
-  define_instance_method :macros_json do
-    macros = object.macros.map do |m|
-      m.attributes
-        .slice('id', 'name', 'comments', 'type')
-        .merge(
-          errors: m.errors.full_messages,
-          html: RenderMacroPartial.call(template: h, id: m.id, type: m.type, validate: true),
-          **m.options
-        )
-    end
-
-    JSON.generate(macros)
-  end
 end

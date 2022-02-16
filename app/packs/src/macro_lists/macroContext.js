@@ -4,8 +4,8 @@ import CollectionMixin from './mixins/collection'
 import { MacroCollection } from './macro'
 
 // Macro Context
-const macroContextMixin = superclass => class MacroContext extends superclass {
-	constructor(attributes) {
+const MacroContextMixin = superclass => class MacroContext extends superclass {
+	constructor({ macros, ...attributes}) {
 		super(attributes)
 
 		this.macros = new Proxy(new MacroCollection(), {
@@ -21,8 +21,6 @@ const macroContextMixin = superclass => class MacroContext extends superclass {
 		})
 	}
 
-	get fetchHTMLPath() { return '/fetch_macro_context_html' }
-
 	get input() {
 		const index = this.position - 1
 		return {
@@ -31,16 +29,17 @@ const macroContextMixin = superclass => class MacroContext extends superclass {
 			replaceId: `macro_contexts_attributes_${index}`
 		}
 	}
-
-	get inputBasename() { return 'macro_contexts_attributes' }
 }
 
-export const MacroContext = flow(ResourceMixin, macroContextMixin)(class {})
+export const MacroContext = flow(ResourceMixin, MacroContextMixin)(class {})
 
 // Macro Context Collection
 const MacroCollectionMixin = superclass => class MacroContextCollection extends superclass {
-	add(attributes) {
-		this.push(new MacroContext(attributes))
+	add(attributes, callback = () => {}) {
+		const macroContext = new MacroContext(attributes)
+		this.push(macroContext)
+
+		callback(macroContext)
 	}
 }
 

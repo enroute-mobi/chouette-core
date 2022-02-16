@@ -11,8 +11,6 @@ const MacroMixin = superclass => class Macro extends superclass {
 		this.macroContextUUID = null
 	}
 
-	get fetchHTMLPath() { return '/fetch_macro_html' }
-
 	get input() {
 		const index = this.position - 1
 		const contextIndex = this.macroContext?.position - 1

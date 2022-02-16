@@ -5,6 +5,11 @@ class MacroListsController < ChouetteController
   defaults :resource_class => Macro::List
 
   before_action :decorate_macro_list, only: %i[show new edit]
+  after_action :decorate_macro_list, only: %i[create update]
+
+  before_action :init_presenter, only: %i[show new edit]
+  after_action :init_presenter, only: %i[create update]
+
   before_action :macro_list_params, only: [:create, :update]
 
   belongs_to :workbench
@@ -28,26 +33,6 @@ class MacroListsController < ChouetteController
     end
   end
 
-  def create
-    create! do |_success, failure|
-      failure.html do
-        @macro_list = MacroListDecorator.decorate(macro_list, context: { workbench: @workbench })
-
-        render 'new'
-      end
-    end
-  end
-
-  def update
-     update! do |_success, failure|
-      failure.html do
-        @macro_list = MacroListDecorator.decorate(macro_list, context: { workbench: @workbench })
-
-        render 'edit'
-      end
-    end
-  end
-
   def fetch_object_html
     render json: { html: MacroLists::RenderPartial.call(macro_html_params) }
   end
@@ -62,6 +47,10 @@ class MacroListsController < ChouetteController
   end
 
   private
+
+  def init_presenter
+    @presenter ||= MacroListPresenter.new(@macro_list, helpers)
+  end
 
   def decorate_macro_list
     object = macro_list rescue build_resource
@@ -90,22 +79,31 @@ class MacroListsController < ChouetteController
     )
   end
 
-  def macro_list_params
+  def macro_params
     macro_options = %i[id name position type comments macro_list_id _destroy]
 
-    macro_options += Macro::Base.descendants.map do |t|
-      t.options.map do |key, value|
-        # To accept an array value directly in params, a permit({key: []}) is required instead of just permit(:key)
-        value.try(:[], :type)&.equal?(:array) ? Hash[key => []] : key
-      end
-    end.flatten
+    macro_options += Macro::Base.descendants.flat_map { |n| n.options.keys }
+    
+    macro_options
+  end
 
+  def macro_context_params
+    macro_context_options = %i[id name type comments]
+    macro_context_options += Macro::Context.descendants.flat_map { |n| n.options.keys }
+
+    macro_context_options.push(macros_attributes: macro_params)
+
+    macro_context_options
+  end
+
+  def macro_list_params
     params.require(:macro_list).permit(
       :name,
       :comments,
       :created_at,
       :updated_at,
-      macros_attributes: macro_options
+      macros_attributes: macro_params,
+      macro_contexts_attributes: macro_context_params
     ).with_defaults(workbench_id: parent.id)
   end
 end

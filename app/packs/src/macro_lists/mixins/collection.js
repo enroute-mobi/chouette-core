@@ -81,19 +81,11 @@ export default superclass => class Collection extends superclass {
 	}
 
 	sendToTop(index) {
-		do {
-			this.moveUp(index)
-
-			index -= 1
-		} while (index > 0)
+		do { this.moveUp(index); index -= 1 } while (index > 0)
 	}
 
 	sendToBottom(index) {
-		do {
-			this.moveDown(index)
-
-			index += 1
-		} while (index < this.length - 1)
+		do { this.moveDown(index); index += 1 } while (index < this.length - 1)
 	}
 
 	swap(indexA, indexB) {

@@ -14,10 +14,10 @@ module Macro
 
     class Run < Macro::Base::Run
       # TODO copy options from Macro::CreateCode class
-      option :target_model, required: true
-      option :source_attribute, required: true
+      option :target_model
+      option :source_attribute
       option :source_pattern
-      option :target_code_space, required: true
+      option :target_code_space
       option :target_pattern
 
       def run

@@ -18,9 +18,14 @@
             .separator.mb-5
             .w-full-px-5
               div[x-init="
-                  $store.macroList.setMacros(#{@macro_list.macros_json});
+                  $store.macroList.initState(#{@presenter.json_state});
                   $store.macroList.isShow = true;
                 "
               ]
-                template[x-for="(macro, index) in $store.macroList.macros"]
-                  div x-html="await macro.getHTML(index)"
+                div[x-data="{ macroContexts: $store.macroList.macroContexts }"]
+                  template[x-for="(macroContext, index) in macroContexts"]
+                    div x-html="await macroContext.getHTML(index)"
+                
+                div[x-data="{ macros: $store.macroList.macros }"]
+                  template[x-for="(macro, index) in macros"]
+                    div x-html="await macro.getHTML(index)"

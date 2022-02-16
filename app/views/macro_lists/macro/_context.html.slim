@@ -8,10 +8,15 @@ div[x-data="{ macros:  macroContext.macros }"]
 
 			div[x-data="{ resource: macroContext, collection: $store.macroList.macroContexts }"]
 				= render 'actions'
+		
+		// Hidden inputs
+		- %w[id type _destroy].each do |name|
+			= macro_context_form.input name, as: :hidden, wrapper: false,  input_html: { ':value': "macroContext.#{name}" }
 
 		template[x-for="(macro, index) in macros"]
 			div x-html="await macro.getHTML(index)"
 
-		= render 'macro_select'
+		template[x-if="!$store.macroList.isShow"]
+			= render 'macro_select'
 
 	.simple-separator.mb-5

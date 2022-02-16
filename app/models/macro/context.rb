@@ -11,6 +11,8 @@ module Macro
 
     store :options, coder: JSON
 
+    accepts_nested_attributes_for :macros, allow_destroy: true, reject_if: :all_blank
+
     def self.available
       [Macro::Context::TransportMode]
     end
@@ -86,3 +88,6 @@ module Macro
     end
   end
 end
+
+# STI
+require_dependency 'macro/context/transport_mode'

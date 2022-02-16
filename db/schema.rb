@@ -713,6 +713,8 @@ ActiveRecord::Schema.define(version: 2022_02_11_095318) do
     t.bigint "line_provider_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["line_provider_id"], name: "index_line_routing_constraint_zones_on_line_provider_id"
+    t.index ["line_referential_id"], name: "index_line_routing_constraint_zones_on_line_referential_id"
   end
 
   create_table "lines", force: :cascade do |t|

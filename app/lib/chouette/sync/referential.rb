@@ -3,6 +3,7 @@ module Chouette
     class Referential
 
       attr_reader :target, :options
+
       def initialize(target, options = {})
         @target, @options = target, options
       end

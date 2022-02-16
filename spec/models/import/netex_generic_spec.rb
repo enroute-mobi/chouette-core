@@ -1,6 +1,11 @@
 RSpec.describe Import::NetexGeneric do
 
-  let(:context) { Chouette.create { workbench } }
+  let(:context) do
+    Chouette.create do
+      workbench
+      code_space
+    end
+  end
   let(:workbench) { context.workbench }
   let(:workgroup) { context.workgroup }
 
@@ -463,22 +468,47 @@ RSpec.describe Import::NetexGeneric do
         }
       end
 
-      let(:entrance) {::Entrance.find_by_registration_number("entrance-1")}
+      let(:code_space) {workgroup.code_spaces.first}
       let(:stop_area) {::Chouette::StopArea.find_by_registration_number("stop-place-1")}
 
-      before { import.part(:stop_area_referential).import! }
+      context "when import has space code input" do
+        let(:entrance) {::Entrance.by_code(code_space, "entrance-1").first}
+        before do
+          import.code_space = code_space
+          import.part(:stop_area_referential).import!
+        end
 
-      it "should import stop_area" do
-        expect(stop_area).not_to be_nil
+        it "should import stop_area" do
+          expect(stop_area.reload).not_to be_nil
+        end
+
+        it "should import entrance" do
+          expect(entrance.reload).not_to be_nil
+        end
+
+        it "should create association between stop_area and entrance" do
+          expect(entrance&.stop_area).to eq(stop_area)
+          expect(stop_area&.entrances).to eq([entrance])
+        end
       end
 
-      it "should import entrance" do
-        expect(entrance).not_to be_nil
-      end
+      context "when import has no space code input" do
+        let(:entrance) {::Entrance.by_code(import.code_space_default, "entrance-1").first}
 
-      it "should create association between stop_area and entrance" do
-        expect(entrance.stop_area).to eq(stop_area)
-        expect(stop_area.entrances).to eq([entrance])
+        before { import.part(:stop_area_referential).import! }
+
+        it "should import stop_area" do
+          expect(stop_area.reload).not_to be_nil
+        end
+
+        it "should import entrance" do
+          expect(entrance.reload).not_to be_nil
+        end
+
+        it "should create association between stop_area and entrance" do
+          expect(entrance&.stop_area).to eq(stop_area)
+          expect(stop_area&.entrances).to eq([entrance])
+        end
       end
     end
   end

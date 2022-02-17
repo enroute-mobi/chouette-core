@@ -144,7 +144,7 @@ en:
         in_creation: In creation
         confirmed: Confirmed
         deactivated: Deactivated
-      mobility_impaired_accessility:
+      mobility_impaired_accessibility:
         unknown: Unknown
         'yes': Yes
         'no': No

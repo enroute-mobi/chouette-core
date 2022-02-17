@@ -149,7 +149,7 @@ fr:
         latitude: "Latitude"
         time_zone: "Fuseau horaire"
         compass_bearing: "Orientation"
-        mobility_impaired_accessility: "Accès pour voyageur à mobilité réduite"
+        mobility_impaired_accessibility: "Accès pour voyageur à mobilité réduite"
         wheelchair_accessibility: "Accès en fauteuil roulant"
         step_free_accessibility: "Accès sans marche"
         escalator_free_accessibility: "Accès sans ascenseur"

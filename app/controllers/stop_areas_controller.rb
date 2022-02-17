@@ -194,7 +194,7 @@ class StopAreasController < ChouetteController
       :long_lat_type,
       :longitude,
       :mobility_restricted_suitability,
-      :mobility_impaired_accessility,
+      :mobility_impaired_accessibility,
       :wheelchair_accessibility,
       :step_free_accessibility,
       :escalator_free_accessibility,

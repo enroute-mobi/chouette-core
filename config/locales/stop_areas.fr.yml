@@ -137,7 +137,6 @@ fr:
         street_name: "Nom de la rue"
         country_code: "Pays"
         fare_code: "Zone tarifaire"
-        mobility_restricted_suitability: "Accès pour voyageur à mobilité réduite"
         stairs_availability: "Escalator"
         lift_availability: "Ascenseur"
         projection: "Projection"

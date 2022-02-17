@@ -130,17 +130,38 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       end
     end
 
+    describe "#gtfs_wheelchair_boarding" do
+      subject { decorator.gtfs_wheelchair_boarding }
+
+      [
+        [nil, '0'],
+        ['unknown', '0'],
+        ['yes', '1'],
+        ['no', '2'],
+      ].each do |mobility_impaired_accessibility, expected|
+        context "when mobility_impaired_accessibility is #{mobility_impaired_accessibility.inspect}" do
+          before { stop_area.mobility_impaired_accessibility = mobility_impaired_accessibility }
+          it { is_expected.to eq(expected) }
+        end
+      end
+    end
+
     describe "stop_attributes" do
       subject { decorator.stop_attributes }
       context "when gtfs_platform_code is 'dummy'" do
         before { allow(decorator).to receive(:gtfs_platform_code).and_return("dummy") }
         it { is_expected.to include(platform_code: 'dummy')}
       end
+      context "when gtfs_wheelchair_boarding is 'dummy'" do
+        before { allow(decorator).to receive(:gtfs_wheelchair_boarding).and_return("dummy") }
+        it { is_expected.to include(wheelchair_boarding: 'dummy')}
+      end
       context "when fare_code is 'dummy'" do
         before { stop_area.fare_code = 'dummy' }
         it { is_expected.to include(zone_id: 'dummy')}
       end
     end
+
   end
 
   describe 'Line Part' do

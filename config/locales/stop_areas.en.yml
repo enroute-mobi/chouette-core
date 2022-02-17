@@ -136,7 +136,6 @@ en:
         street_name: "Street name"
         country_code: "Country"
         fare_code: "Fare code"
-        mobility_restricted_suitability: "Mobility reduced passenger suitable"
         stairs_availability: "Escalator"
         lift_availability: "Lift"
         projection: "Projection type"

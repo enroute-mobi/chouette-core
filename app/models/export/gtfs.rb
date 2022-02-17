@@ -385,6 +385,17 @@ class Export::Gtfs < Export::Base
         public_code.presence
       end
 
+      def gtfs_wheelchair_boarding
+        case mobility_impaired_accessibility
+        when nil, 'unknown'
+          '0'
+        when 'yes'
+          '1'
+        when 'no'
+          '2'
+        end
+      end
+
       def stop_attributes
         {
           id: stop_id,
@@ -398,7 +409,7 @@ class Export::Gtfs < Export::Base
           url: url,
           timezone: (time_zone unless parent),
           zone_id: fare_code,
-          wheelchair_boarding: mobility_restricted_suitability ? 1 : 0,
+          wheelchair_boarding: gtfs_wheelchair_boarding,
           platform_code: gtfs_platform_code
         }
       end

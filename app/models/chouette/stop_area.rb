@@ -12,7 +12,7 @@ module Chouette
     extend Enumerize
     enumerize :area_type, in: Chouette::AreaType::ALL, default: Chouette::AreaType::COMMERCIAL.first
     enumerize :kind, in: %i(commercial non_commercial), default: :commercial
-    enumerize :mobility_impaired_accessility, in: %i(unknown yes no partial), default: :unknown
+    enumerize :mobility_impaired_accessibility, in: %i(unknown yes no partial), default: :unknown
     enumerize :wheelchair_accessibility, in: %i(unknown yes no partial), default: :unknown
     enumerize :step_free_accessibility, in: %i(unknown yes no partial), default: :unknown
     enumerize :escalator_free_accessibility, in: %i(unknown yes no partial), default: :unknown

@@ -4,6 +4,7 @@
   = sub_form.input :duration, required: true
   div[x-data]
     = sub_form.input :export_type,
+      as: :string,
       required: true,
       readonly: true,
-      selected: 'full'
+      input_html: { value: 'full' }

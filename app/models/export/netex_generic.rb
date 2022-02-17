@@ -727,7 +727,7 @@ class Export::NetexGeneric < Export::Base
         def netex_attributes
           return {} unless stops.present?
           {
-            id: "chouette:RoutingContraintZone:#{route.id}-#{line.objectid.gsub("chouette:Line:","")}",
+            id: Netex::ObjectId.merge(route.objectid, line_routing_constraint_zone.id, type: "RoutingConstraintZone"),
             name: [route.name, line_routing_constraint_zone&.name].join(" - "),
             members: scheduled_stop_point_refs,
             lines: line_refs,

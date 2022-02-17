@@ -707,11 +707,15 @@ class Export::NetexGeneric < Export::Base
         end
       end
 
+      def filter_line_routing_constraint_zones
+        line_routing_constraint_zones.
+          with_stop_areas_contained_in(*stop_areas.to_a)
+      end
+
       def routing_constraint_zones
-        line_routing_constraint_zones.map do |line_routing_constraint_zone|
-          netex_resource = LineRoutingConstraintZoneDecorator.new(line_routing_constraint_zone, self).netex_resource
-          netex_resource if netex_resource.present?
-        end.compact
+        filter_line_routing_constraint_zones.map do |line_routing_constraint_zone|
+          LineRoutingConstraintZoneDecorator.new(line_routing_constraint_zone, self).netex_resource
+        end
       end
 
       class LineRoutingConstraintZoneDecorator < SimpleDelegator
@@ -725,10 +729,13 @@ class Export::NetexGeneric < Export::Base
         end
 
         def netex_attributes
-          return {} unless stops.present?
           {
-            id: Netex::ObjectId.merge(route.objectid, line_routing_constraint_zone.id, type: "RoutingConstraintZone"),
-            name: [route.name, line_routing_constraint_zone&.name].join(" - "),
+            id: Netex::ObjectId.merge(
+              route.objectid,
+              line_routing_constraint_zone.objectid,
+              type: "RoutingConstraintZone"
+            ),
+            name: line_routing_constraint_zone&.name,
             members: scheduled_stop_point_refs,
             lines: line_refs,
             zone_use: zone_use
@@ -743,18 +750,14 @@ class Export::NetexGeneric < Export::Base
           [Netex::Reference.new(line.objectid, type: 'LineRef')]
         end
 
-        def stops
-          @stops ||=
-            (line_routing_constraint_zone.stop_areas || []) &
-              (route.stop_points&.map(&:stop_area) || [])
+        def stop_poins
+          line_routing_constraint_zone.stop_areas.to_a.
+            map(&:stop_points).flatten.uniq & route.stop_points.to_a
         end
 
         def scheduled_stop_point_refs
-          stops.map do |stop|
-            Netex::Reference.new(
-              stop.objectid.gsub("StopArea", "ScheduledStopPoint"),
-              type: "ScheduledStopPointRef"
-            )
+          stop_poins.map do |stop_point|
+            StopPointDecorator.new(stop_point).scheduled_stop_point_ref
           end
         end
 

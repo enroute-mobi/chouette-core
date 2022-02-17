@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_02_17_083423) do
+ActiveRecord::Schema.define(version: 2022_02_17_172628) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -453,6 +453,10 @@ ActiveRecord::Schema.define(version: 2022_02_17_083423) do
     t.string "country"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "external_flag"
+    t.float "width"
+    t.float "height"
+    t.text "import_xml"
     t.index ["objectid"], name: "index_entrances_on_objectid", unique: true
     t.index ["stop_area_id"], name: "index_entrances_on_stop_area_id"
     t.index ["stop_area_provider_id"], name: "index_entrances_on_stop_area_provider_id"
@@ -713,6 +717,7 @@ ActiveRecord::Schema.define(version: 2022_02_17_083423) do
     t.bigint "line_provider_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "objectid", null: false
     t.index ["line_provider_id"], name: "index_line_routing_constraint_zones_on_line_provider_id"
     t.index ["line_referential_id"], name: "index_line_routing_constraint_zones_on_line_referential_id"
   end
@@ -1320,7 +1325,7 @@ ActiveRecord::Schema.define(version: 2022_02_17_083423) do
     t.boolean "in_out"
     t.string "checksum"
     t.text "checksum_source"
-    t.index ["date", "time_table_id"], name: "index_time_table_dates_on_date_and_time_table_id", unique: true
+    t.index ["date", "time_table_id"], name: "uniq_date_per_time_table", unique: true
     t.index ["time_table_id"], name: "index_time_table_dates_on_time_table_id"
   end
 

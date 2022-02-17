@@ -46,6 +46,8 @@ module Chouette
 
     acts_as_tree :foreign_key => 'parent_id', :order => "name"
 
+    belongs_to_array_in_many :line_routing_constraint_zones, class_name: "LineRoutingConstraintZone", array_name: :stop_areas
+
     attr_accessor :stop_area_type
     attr_accessor :children_ids
     attr_writer :coordinates

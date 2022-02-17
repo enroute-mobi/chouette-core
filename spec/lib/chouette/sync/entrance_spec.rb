@@ -17,7 +17,7 @@ RSpec.describe Chouette::Sync::Entrance do
 
     let(:xml) do
       %{
-        <StopPlace id="stop-place-1" version="any">
+        <StopPlace dataSourceRef="FR1-ARRET_AUTO" version="811108" created="2016-10-23T22:00:00Z" changed="2019-04-02T09:43:08Z" id="stop-place-1">
           <Name>North Ave </Name>
           <entrances>
             <StopPlaceEntranceRef ref="entrance-1" version="any"/>
@@ -66,6 +66,8 @@ RSpec.describe Chouette::Sync::Entrance do
       if Chouette::Sync::Base.default_model_id_attribute == :objectid
         context.stop_area_referential.update objectid_format: "stif_reflex"
       end
+
+      stop_area_provider.update objectid: "FR1-ARRET_AUTO"
     end
 
     subject(:sync) do
@@ -80,7 +82,7 @@ RSpec.describe Chouette::Sync::Entrance do
         entry_flag: false,
         exit_flag: false,
         entrance_type: "opening",
-        address: "123 Route ST Félix",
+        address: "Address Line 1",
         zip_code: "44300",
         city_name: "Nantes",
         country: "France",

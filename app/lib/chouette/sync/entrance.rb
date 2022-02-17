@@ -20,11 +20,11 @@ module Chouette::Sync
         delegate :source, to: :updater
 
         def stop_area_id
-          resolve :stop_area, stop_place_ref_id
+          resolve :stop_area, stop_place_ref
         end
 
         def stop_area_provider_id
-          ::Chouette::StopArea.find_by_id(stop_area_id)&.stop_area_provider_id
+          resolve :stop_area_provider, data_source_ref
         end
 
         def position
@@ -32,7 +32,7 @@ module Chouette::Sync
         end
 
         def address
-          [postal_address&.house_number, postal_address&.street].compact.join(" ")
+          postal_address&.address_line_1
         end
 
         def zip_code
@@ -68,14 +68,14 @@ module Chouette::Sync
 
         private
 
-        def stop_place_ref_id
+        def stop_place_ref
           mapping_entrance_stop_place[id]
         end
 
         def mapping_entrance_stop_place
           unless @mapping_entrance_stop_place.present?
             @mapping_entrance_stop_place = {}
-            source.resources.each do |resource|
+            resources.each do |resource|
               next unless resource.is_a? ::Netex::StopPlace
 
               resource&.entrances.each do |entrance|
@@ -86,6 +86,13 @@ module Chouette::Sync
           @mapping_entrance_stop_place
         end
 
+        def data_source_ref
+          resources.find{ |resource| resource.is_a? ::Netex::StopPlace }.data_source_ref
+        end
+
+        def resources
+          source.resources
+        end
       end
     end
   end

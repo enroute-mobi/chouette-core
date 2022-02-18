@@ -735,11 +735,7 @@ class Export::NetexGeneric < Export::Base
 
         def netex_attributes
           {
-            id: Netex::ObjectId.merge(
-              route.objectid,
-              id,
-              type: "RoutingConstraintZone"
-            ),
+            id: Netex::ObjectId.merge(route.objectid, id, type: "RoutingConstraintZone"),
             name: name,
             members: scheduled_stop_point_refs,
             lines: line_refs,

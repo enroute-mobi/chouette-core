@@ -707,9 +707,16 @@ class Export::NetexGeneric < Export::Base
         end
       end
 
+      def stop_area_ids
+        @stop_area_ids ||= stop_areas.pluck(:id)
+      end
+
       def filter_line_routing_constraint_zones
-        line_routing_constraint_zones.
-          with_stop_areas_contained_in(*stop_areas.to_a)
+        # update gem has_array_of to use with_any_stop_areas_from scope
+        # line_routing_constraint_zones.with_any_stop_areas_from(*stop_areas.to_a)
+        line_routing_constraint_zones.select do |line_routing_constraint_zone|
+          (line_routing_constraint_zone.stop_area_ids & stop_area_ids).present?
+        end
       end
 
       def routing_constraint_zones

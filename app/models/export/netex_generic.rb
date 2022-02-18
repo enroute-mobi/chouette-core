@@ -708,14 +708,12 @@ class Export::NetexGeneric < Export::Base
       end
 
       def stop_area_ids
-        @stop_area_ids ||= stop_areas.pluck(:id)
+        @stop_area_ids ||= stop_points.map(&:stop_area_id)
       end
 
       def filter_line_routing_constraint_zones
-        # update gem has_array_of to use with_any_stop_areas_from scope
-        # line_routing_constraint_zones.with_any_stop_areas_from(*stop_areas.to_a)
         line_routing_constraint_zones.select do |line_routing_constraint_zone|
-          (line_routing_constraint_zone.stop_area_ids & stop_area_ids).present?
+          (line_routing_constraint_zone.stop_area_ids & stop_area_ids).many?
         end
       end
 
@@ -728,10 +726,10 @@ class Export::NetexGeneric < Export::Base
       class LineRoutingConstraintZoneDecorator < SimpleDelegator
         delegate :line, to: :route
 
-        attr_accessor :line_routing_constraint_zone, :route
+        attr_accessor :route
 
         def initialize(line_routing_constraint_zone, route)
-          @line_routing_constraint_zone = line_routing_constraint_zone
+          super line_routing_constraint_zone
           @route = route
         end
 
@@ -739,10 +737,10 @@ class Export::NetexGeneric < Export::Base
           {
             id: Netex::ObjectId.merge(
               route.objectid,
-              line_routing_constraint_zone.objectid,
+              id,
               type: "RoutingConstraintZone"
             ),
-            name: line_routing_constraint_zone&.name,
+            name: name,
             members: scheduled_stop_point_refs,
             lines: line_refs,
             zone_use: zone_use
@@ -757,13 +755,12 @@ class Export::NetexGeneric < Export::Base
           [Netex::Reference.new(line.objectid, type: 'LineRef')]
         end
 
-        def stop_poins
-          line_routing_constraint_zone.stop_areas.to_a.
-            map(&:stop_points).flatten.uniq & route.stop_points.to_a
+        def stop_points
+          route.stop_points.select { |stop_point| stop_area_ids.include? stop_point.stop_area_id }
         end
 
         def scheduled_stop_point_refs
-          stop_poins.map do |stop_point|
+          stop_points.map do |stop_point|
             StopPointDecorator.new(stop_point).scheduled_stop_point_ref
           end
         end

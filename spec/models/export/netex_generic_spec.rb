@@ -438,8 +438,8 @@ RSpec.describe Export::NetexGeneric do
 
       let(:route_line_routing_constraint_zone_ids) do
         [
-          [ route_0.objectid.split(":")[2], line_routing_constraint_zone.objectid.split(":")[2] ].join("-"),
-          [ route_1.objectid.split(":")[2], line_routing_constraint_zone.objectid.split(":")[2] ].join("-")
+          [ route_0.objectid.split(":")[2], line_routing_constraint_zone.id ].join("-"),
+          [ route_1.objectid.split(":")[2], line_routing_constraint_zone.id ].join("-")
         ]
       end
 

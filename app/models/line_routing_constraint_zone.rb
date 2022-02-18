@@ -1,6 +1,5 @@
 class LineRoutingConstraintZone < ApplicationModel
   include LineReferentialSupport
-  include ObjectidSupport
 
   validates :name, :lines, :stop_areas, presence: true
 

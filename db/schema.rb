@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_02_17_172628) do
+ActiveRecord::Schema.define(version: 2022_02_17_171044) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -717,7 +717,6 @@ ActiveRecord::Schema.define(version: 2022_02_17_172628) do
     t.bigint "line_provider_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "objectid", null: false
     t.index ["line_provider_id"], name: "index_line_routing_constraint_zones_on_line_provider_id"
     t.index ["line_referential_id"], name: "index_line_routing_constraint_zones_on_line_referential_id"
   end
@@ -1262,7 +1261,6 @@ ActiveRecord::Schema.define(version: 2022_02_17_172628) do
     t.bigint "stop_area_provider_id"
     t.string "public_code"
     t.float "compass_bearing"
-    t.string "accessibility_status"
     t.string "mobility_impaired_accessibility"
     t.string "wheelchair_accessibility"
     t.string "step_free_accessibility"

@@ -13,8 +13,7 @@ module Chouette::Sync
         super options
       end
 
-      class Decorator < Chouette::Sync::Updater::ResourceDecorator
-
+      class Decorator < Chouette::Sync::Netex::Decorator
         def line_number
           short_name
         end
@@ -74,7 +73,7 @@ module Chouette::Sync
         end
 
         def line_transport_submode
-          transport_submode || "undefined"
+          transport_submode
         end
 
         def model_attributes
@@ -96,9 +95,7 @@ module Chouette::Sync
             import_xml: raw_xml
           }
         end
-
       end
-
     end
 
     class Deleter < Chouette::Sync::Deleter

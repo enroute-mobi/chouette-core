@@ -13,7 +13,7 @@ module Chouette::Sync
         super options
       end
 
-      class Decorator < Chouette::Sync::Updater::ResourceDecorator
+      class Decorator < Chouette::Sync::Netex::Decorator
 
         def model_attributes
           {

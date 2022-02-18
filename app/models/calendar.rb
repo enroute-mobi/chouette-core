@@ -25,7 +25,7 @@ class Calendar < ApplicationModel
   end
 
   def self.state_permited_attributes item
-    {name: item["comment"]}
+    { name: item["comment"], shared: item['shared'] }
   end
 
   def set_defaults

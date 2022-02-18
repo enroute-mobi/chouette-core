@@ -62,7 +62,7 @@ let store = createStore(
 
 render(
   <Provider store={store}>
-    <App />
+    <App isCalendar />
   </Provider>,
   document.getElementById('periods')
 )

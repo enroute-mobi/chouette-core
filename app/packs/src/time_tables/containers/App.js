@@ -11,7 +11,6 @@ import CancelTimetable from './CancelTimetable'
 import SaveTimetable from './SaveTimetable'
 import ConfirmModal from './ConfirmModal'
 import ErrorModal from './ErrorModal'
-import clone from '../../helpers/clone'
 
 class App extends Component {
   componentDidMount(){
@@ -27,7 +26,7 @@ class App extends Component {
     return(
       <div className='row'>
         <div className="col-lg-8 col-lg-offset-2 col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
-          <Metas />
+          <Metas isCalendar={this.props.isCalendar} />
           <Navigate />
           <Timetable />
           <PeriodForm />
@@ -41,7 +40,7 @@ class App extends Component {
     )
   }
 }
-
+const mapStateToProps = (_state, ownProps) => ({ ...ownProps })
 const mapDispatchToProps = (dispatch) => {
   return {
     onLoadFirstPage: () =>{
@@ -51,10 +50,19 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
+App.defaultProps = {
+  isCalendar: false
+}
+
+App.propTypes = {
+  isCalendar: PropTypes.bool.isRequired,
+  onLoadFirstPage: PropTypes.func.isRequired
+}
+
 App.childContextTypes = {
   I18n: PropTypes.object
 }
 
-const timeTableApp = connect(null, mapDispatchToProps)(App)
+const timeTableApp = connect(mapStateToProps, mapDispatchToProps)(App)
 
 export default timeTableApp

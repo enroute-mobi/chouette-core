@@ -114,6 +114,7 @@ en:
       time_table:
         checksum: Checksum
         comment: "Name"
+        shared: "Shared"
         color: "Associated color"
         bounding_dates: 'Global validity period'
         version: "Short name"

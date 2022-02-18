@@ -114,6 +114,7 @@ fr:
       time_table:
         checksum: Signature métier
         comment: "Nom du calendrier"
+        shared: "Partagé"
         color: "Couleur associée"
         bounding_dates: 'Période contenue dans le calendrier'
         version: "Abréviation"

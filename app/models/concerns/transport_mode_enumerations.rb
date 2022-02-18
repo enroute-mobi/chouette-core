@@ -21,7 +21,7 @@ module TransportModeEnumerations
 
   module ClassMethods
     def enumerize_transport_submode
-      enumerize :transport_submode, in: TransportModeEnumerations.transport_submodes
+      enumerize :transport_submode, in: TransportModeEnumerations.transport_submodes, default: "undefined"
     end
 
     def transport_modes

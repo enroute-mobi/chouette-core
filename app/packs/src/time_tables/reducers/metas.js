@@ -17,7 +17,7 @@ export default function metas(state = {}, action) {
         calendar,
         shared
       }
-        
+
     case 'RECEIVE_MONTH':
       let dt = (typeof state.day_types === 'string') ? actions.strToArrayDayTypes(state.day_types) : state.day_types
       return assign({}, state, {day_types: dt})
@@ -42,8 +42,3 @@ export default function metas(state = {}, action) {
       return state
   }
 }
-
-
-// toggleActive: (state) => {
-//   state.active = !state.active;
-// }

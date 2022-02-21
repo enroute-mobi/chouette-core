@@ -41,8 +41,7 @@ module Chouette::Sync
         Counters.sum(counters)
       end
 
-      class Decorator < Chouette::Sync::Updater::ResourceDecorator
-
+      class Decorator < Chouette::Sync::Netex::Decorator
         # Use type_of_place found in the id when no defined
         CANDIDATE_TYPES = %w{quay monomodalStopPlace multimodalStopPlace}
         def type_of_place_in_id
@@ -107,26 +106,6 @@ module Chouette::Sync
           resolve :stop_area_provider, data_source_ref
         end
 
-        def codes
-          key_list.select(&type_of_key_filter('ALTERNATE_IDENTIFIER'))
-        end
-
-        def codes_attributes
-          codes.map do |key_value|
-            { short_name: key_value.key, value: key_value.value}
-          end
-        end
-
-        def custom_fields
-          key_list.select(&type_of_key_filter('chouette::custom-field'))
-        end
-
-        def custom_fields_attributes
-          custom_fields.map do |key_value|
-            { code: key_value.key, value: key_value.value}
-          end
-        end
-
         def model_attributes
           {
             name: name,
@@ -145,13 +124,6 @@ module Chouette::Sync
             import_xml: raw_xml
           }
         end
-
-        private
-
-        def type_of_key_filter(value)
-          Proc.new { |key_value| key_value.type_of_key == value }
-        end
-
       end
 
     end

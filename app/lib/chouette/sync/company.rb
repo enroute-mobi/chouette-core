@@ -13,7 +13,7 @@ module Chouette::Sync
         super options
       end
 
-      class Decorator < Chouette::Sync::Updater::ResourceDecorator
+      class Decorator < Chouette::Sync::Netex::Decorator
 
         delegate :house_number, :address_line_1, :address_line_2, :street, :town,
                  :post_code, :post_code_extension, :postal_region, to: :address, allow_nil: true

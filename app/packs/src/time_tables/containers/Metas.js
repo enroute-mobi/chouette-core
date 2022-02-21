@@ -29,7 +29,7 @@ const mapDispatchToProps = dispatch => ({
     dispatch(actions.setNewTags(newTags))
   },
   onUpdateShared: newValue => {
-    dispatch(actions.updateShared(Boolean(newValue)))
+    dispatch(actions.updateShared(newValue))
   }
 })
 

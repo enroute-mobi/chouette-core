@@ -51,7 +51,7 @@ const Metas = ({
                   type="checkbox"
                   checked={metas.shared}
                   name="time_table[shared]"
-                  onChange={e => onUpdateShared(e.currentTarget.value)}
+                  onChange={() => onUpdateShared(!metas.shared)}
                 />
                 <label className="onoffswitch-label" htmlFor="time_table_shared">
                   <span className="onoffswitch-inner" on={I18n.t('yes')} off={I18n.t('no')}></span>

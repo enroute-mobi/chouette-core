@@ -636,10 +636,16 @@ class Export::NetexGeneric < Export::Base
         # Export Direction before the Route to detect local reference
         tagged_target << decorated_route.direction if decorated_route.direction
         tagged_target << decorated_route.netex_resource
+
+        decorated_route.routing_constraint_zones.each do |zone|
+          tagged_target << zone
+        end
       end
     end
 
     class Decorator < SimpleDelegator
+
+      delegate :line_routing_constraint_zones, to: :line
 
       def netex_attributes
         {
@@ -701,6 +707,64 @@ class Export::NetexGeneric < Export::Base
         end
       end
 
+      def stop_area_ids
+        @stop_area_ids ||= stop_points.map(&:stop_area_id)
+      end
+
+      def filter_line_routing_constraint_zones
+        line_routing_constraint_zones.select do |line_routing_constraint_zone|
+          (line_routing_constraint_zone.stop_area_ids & stop_area_ids).many?
+        end
+      end
+
+      def routing_constraint_zones
+        filter_line_routing_constraint_zones.map do |line_routing_constraint_zone|
+          LineRoutingConstraintZoneDecorator.new(line_routing_constraint_zone, self).netex_resource
+        end
+      end
+
+      class LineRoutingConstraintZoneDecorator < SimpleDelegator
+        delegate :line, to: :route
+
+        attr_accessor :route
+
+        def initialize(line_routing_constraint_zone, route)
+          super line_routing_constraint_zone
+          @route = route
+        end
+
+        def netex_attributes
+          {
+            id: Netex::ObjectId.merge(route.objectid, id, type: "RoutingConstraintZone"),
+            name: name,
+            members: scheduled_stop_point_refs,
+            lines: line_refs,
+            zone_use: zone_use
+          }
+        end
+
+        def zone_use
+          "cannotBoardAndAlightInSameZone"
+        end
+
+        def line_refs
+          [Netex::Reference.new(line.objectid, type: 'LineRef')]
+        end
+
+        def stop_points
+          route.stop_points.select { |stop_point| stop_area_ids.include? stop_point.stop_area_id }
+        end
+
+        def scheduled_stop_point_refs
+          stop_points.map do |stop_point|
+            StopPointDecorator.new(stop_point).scheduled_stop_point_ref
+          end
+        end
+
+        def netex_resource
+          Netex::RoutingConstraintZone.new netex_attributes
+        end
+      end
     end
 
   end

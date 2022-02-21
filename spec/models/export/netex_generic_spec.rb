@@ -391,6 +391,79 @@ RSpec.describe Export::NetexGeneric do
       end
     end
 
+    describe Export::NetexGeneric::Routes::Decorator::LineRoutingConstraintZoneDecorator do
+
+      let(:route_0) {routes[0]}
+      let(:route_1) {routes[1]}
+
+      let(:stop_points_0_route_0) { route_0.stop_points[0] }
+      let(:stop_points_1_route_0) { route_0.stop_points[1] }
+      let(:stop_points_2_route_0) { route_0.stop_points[2] }
+
+      let(:stop_area_0) { stop_points_0_route_0.stop_area }
+      let(:stop_area_1) { stop_points_1_route_0.stop_area }
+      let(:stop_area_2) { stop_points_2_route_0.stop_area }
+
+      let(:stop_points_0_route_1) { route_1.stop_points[0] }
+      let(:stop_points_1_route_1) { route_1.stop_points[1] }
+      let(:stop_points_2_route_1) { route_1.stop_points[2] }
+
+      let!(:line_routing_constraint_zone) do
+        LineRoutingConstraintZone.create(
+          name: "Line Routing Constraint Zone 1",
+          stop_areas: [stop_area_0, stop_area_1],
+          lines: [Chouette::Line.first],
+          line_referential: context.line_referential
+        )
+      end
+
+      let(:netex_member_ids) do
+        m_ids = []
+        routing_constraint_zone_resources.map do |resource|
+          m_ids << resource.members.map{ |m| m.ref.gsub("Scheduled","")}.sort
+        end
+        m_ids
+      end
+
+      let(:stop_point_ids) do
+        [
+          [stop_points_0_route_0.objectid, stop_points_1_route_0.objectid ].sort,
+          [stop_points_0_route_1.objectid, stop_points_1_route_1.objectid ].sort
+        ]
+      end
+
+      let(:technicals) do
+        routing_constraint_zone_resources.map{ |resource| resource.id.technical }
+      end
+
+      let(:route_line_routing_constraint_zone_ids) do
+        [
+          [ route_0.objectid.split(":")[2], line_routing_constraint_zone.id ].join("-"),
+          [ route_1.objectid.split(":")[2], line_routing_constraint_zone.id ].join("-")
+        ]
+      end
+
+      before do
+        line_routing_constraint_zone
+
+        # update the same stop_areas for routes[1]
+        stop_points_0_route_1.update(stop_area: stop_area_0)
+        stop_points_1_route_1.update(stop_area: stop_area_1)
+        stop_points_2_route_1.update(stop_area: stop_area_2)
+
+        part.export!
+      end
+
+      let(:routing_constraint_zone_resources) { target.resources.select { |r| r.is_a? Netex::RoutingConstraintZone } }
+
+      context "when two routes have the same stop_areas for each stop_point" do
+        it "create a Netex::Route for each Chouette Route with a Netex::RoutingConstraintZone" do
+          expect(routing_constraint_zone_resources.map(&:name)).to match_array([line_routing_constraint_zone.name, line_routing_constraint_zone.name])
+          expect(technicals).to match_array(route_line_routing_constraint_zone_ids)
+          expect(netex_member_ids).to match_array(stop_point_ids)
+        end
+      end
+    end
   end
 
   describe "RoutingConstraintZones export" do

@@ -21,6 +21,8 @@ module Chouette
     # this 'light' relation prevents the custom fields loading
     belongs_to :company_light, -> { select(:id, :name, :line_referential_id, :objectid) }, class_name: "Chouette::Company", foreign_key: :company_id
 
+    belongs_to_array_in_many :line_routing_constraint_zones, class_name: "LineRoutingConstraintZone", array_name: :lines
+
     has_array_of :secondary_companies, class_name: 'Chouette::Company'
 
     has_many :routes

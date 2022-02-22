@@ -5,6 +5,7 @@ module Macro
     [
       Macro::CreateCode,
       Macro::AssociateShape,
+      Macro::CreateShape,
       Macro::UpdateStopAreaCompassBearing,
       Macro::CreateStopAreaReferents,
       Macro::AssociateStopAreaReferent,

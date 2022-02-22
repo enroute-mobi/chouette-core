@@ -20,6 +20,8 @@ module Chouette
 
     scope :without_any_vehicle_journey, -> { joins('LEFT JOIN vehicle_journeys ON vehicle_journeys.journey_pattern_id = journey_patterns.id').where(vehicle_journeys: { id: nil } ) }
     scope :by_text, ->(text) { text.blank? ? all : where('lower(journey_patterns.published_name) LIKE :t or lower(journey_patterns.objectid) LIKE :t or lower(journey_patterns.registration_number) LIKE :t', t: "%#{text.downcase}%") }
+    scope :with_associated_shape, -> { where.not(shape_id: nil) }
+    scope :without_associated_shape, -> { where(shape_id: nil) }
 
     validates_presence_of :route
     validates_presence_of :name
@@ -299,5 +301,12 @@ module Chouette
       end
     end
 
+    def waypoints
+      stop_points.each_with_index.map do |stop_point, position|
+        stop_area = stop_point.stop_area
+        longitude, latitude = stop_area.longitude, stop_area.latitude
+        Waypoint.new name: stop_area.name, position: position, waypoint_type: "waypoint", coordinates: [longitude, latitude]
+      end
+    end
   end
 end

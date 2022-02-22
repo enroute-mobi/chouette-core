@@ -66,6 +66,10 @@ const actions = {
     type: 'UPDATE_COMMENT',
     comment
   }),
+  updateShared: (shared) => ({
+    type: 'UPDATE_SHARED',
+    shared
+  }),
   updateColor: (color) => ({
     type: 'UPDATE_COLOR',
     color

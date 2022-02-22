@@ -6,17 +6,6 @@ en:
     audit_mailer:
       audit:
         subject: "Audit automatique du %{date}"
-    calendar_mailer:
-      sent_by: "Sent by"
-      created:
-        subject: A new shared calendar has been created
-        body: |
-          A new calendar has been shared.<br/>
-          In your organization, the %{cal_name} calendar has been shared.<br/><br/>
-      updated:
-        subject: A shared calendar has been updated
-        body: |
-          A new shared calendar %{cal_name} has been updated.<br/><br/>
     import_mailer:
       button: See Import
       finished:

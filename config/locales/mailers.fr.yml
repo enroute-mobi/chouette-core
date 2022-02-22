@@ -6,17 +6,6 @@ fr:
     audit_mailer:
       audit:
         subject: "Audit automatique du %{date} sur %{host}"
-    calendar_mailer:
-      sent_by: "Envoyé par"
-      button: Voir le modèle de calendrier
-      created:
-        subject: Un modèle de calendrier vient d'être partagé
-        body: |
-          Au sein de votre organisation, le modèle de calendrier "%{cal_name}" a été partagé.<br/><br/>
-      updated:
-        subject: Un modèle de calendrier a été modifié
-        body: |
-          Au sein de votre organisation, le modèle de calendrier partagé "%{cal_name}" a été modifié.
     import_mailer:
       button: Voir l'import
       finished:

@@ -109,8 +109,6 @@
           = d.attribute :visual_signs_availability, as: :enumerize
           = d.attribute :accessibility_limitation_description
 
-
-
         = simple_block_for @stop_area, title: t("stop_areas.form.sections.custom_fields") do |d|
           - if @stop_area.custom_fields.empty?
             .mb-xs

@@ -277,7 +277,7 @@ class CustomField < ApplicationModel
       end
 
       def display_value
-        options["list_values"][key_or_index]
+        options["list_values"][key_or_index] if key_or_index
       end
 
       class Input < Base::Input

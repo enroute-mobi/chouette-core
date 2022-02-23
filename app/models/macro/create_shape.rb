@@ -8,7 +8,7 @@ module Macro
           shape = shape_provider.shapes.create(
             name: shape_name(journey_pattern),
             waypoints: waypoints,
-            geometry: workgroup.route_planner.shape(waypoints)
+            geometry: compute_geometry(waypoints, journey_pattern)
           )
 
           journey_pattern.update shape: shape if shape.present?
@@ -21,6 +21,14 @@ module Macro
 
       def shape_name(journey_pattern)
         [ journey_pattern.line.name, journey_pattern.registration_number, journey_pattern.name ].join(" - ")
+      end
+
+      def compute_geometry(waypoints, journey_pattern)
+        workgroup.route_planner.shape(waypoints, transport_mode(journey_pattern))
+      end
+
+      def transport_mode(journey_pattern)
+        journey_pattern.line&.transport_mode
       end
 
       def shapes

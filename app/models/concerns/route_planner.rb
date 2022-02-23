@@ -1,9 +1,10 @@
 module RoutePlanner
   class TomTom
-    attr_accessor :points
+    attr_accessor :points, :transport_mode
 
-    def initialize(points)
+    def initialize(points, transport_mode)
       @points = points
+      @transport_mode = transport_mode
     end
 
     def shape
@@ -34,11 +35,11 @@ module RoutePlanner
     end
 
     def url
-      "#{route_calculation_url}/#{locations}/json?routeType=fastest&traffic=false&travelMode=bus&key=#{api_key}"
+      "#{route_calculation_url}/#{locations}/json?routeType=fastest&traffic=false&travelMode=#{transport_mode}&key=#{api_key}"
     end
 
     def api_key
-      if Rails.env == "test"
+      if Rails.env.test?
         "mock_tomtom_api_key"
       else
         Rails.application.secrets.tomtom_api_key
@@ -46,14 +47,18 @@ module RoutePlanner
     end
 
     def route_calculation_url
-      "https://api.tomtom.com/routing/1/calculateRoute"
+      if Rails.env.test?
+        "http://mock.api.tomtom.com/calculateRoute"
+      else
+        Rails.application.secrets.tomtom_route_calculation_url
+      end
     end
   end
 
   class Cache
-    def shape(points)
-      Rails.cache.fetch(rounded_points(points)) do
-        TomTom.new(points).shape
+    def shape(points, transport_mode)
+      Rails.cache.fetch([rounded_points(points), transport_mode]) do
+        TomTom.new(points, transport_mode).shape
       end
     end
 

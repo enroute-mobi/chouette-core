@@ -34,11 +34,20 @@ module RoutePlanner
     end
 
     def url
-      "#{ROUTE_CALCULATION_URL}/#{locations}/json?routeType=fastest&traffic=false&travelMode=bus&key=#{API_KEY}"
+      "#{route_calculation_url}/#{locations}/json?routeType=fastest&traffic=false&travelMode=bus&key=#{api_key}"
     end
 
-    ROUTE_CALCULATION_URL = Rails.application.secrets.tomtom_route_calculation_url
-    API_KEY = Rails.application.secrets.tomtom_api_key
+    def api_key
+      if Rails.env == "test"
+        "mock_tomtom_api_key"
+      else
+        Rails.application.secrets.tomtom_api_key
+      end
+    end
+
+    def route_calculation_url
+      "https://api.tomtom.com/routing/1/calculateRoute"
+    end
   end
 
   class Cache

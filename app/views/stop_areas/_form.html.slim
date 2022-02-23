@@ -1,121 +1,130 @@
 - javascript_additional_packs 'stop_areas/form'
 
 = simple_form_for [@workbench, :stop_area_referential, @stop_area], html: {class: 'form-horizontal', id: 'stop_area_form'}, wrapper: :horizontal_form do |f|
-  - if !manage_itl
-    .row
-      .col-lg-12
-        h2.mb-lg= t("stop_areas.form.sections.identification")
-        = f.input :id, as: :hidden
-        = f.input :name
-        - if has_feature?(:stop_area_localized_names)
-          .form-group
-            .col-sm-3.col-xs-5
-            .col-sm-9.col-xs-7.locales
-              - default = f.object.stop_area_referential.sorted_locales.select{|l| l[:default] || f.object.localized_names[l[:code]].present? }.map{|l| l[:code]}
-              - default.each do |k|
-                .col-md-6= f.input "localized_names[#{k}]", input_html: { value: f.object.localized_names[k.to_s] }, label: label_for_country(k)
+  .row
+    .col-lg-12
+      h2.mb-lg= t("stop_areas.form.sections.identification")
+      = f.input :id, as: :hidden
+      = f.input :name
+      - if has_feature?(:stop_area_localized_names)
+        .form-group
+          .col-sm-3.col-xs-5
+          .col-sm-9.col-xs-7.locales
+            - default = f.object.stop_area_referential.sorted_locales.select{|l| l[:default] || f.object.localized_names[l[:code]].present? }.map{|l| l[:code]}
+            - default.each do |k|
+              .col-md-6= f.input "localized_names[#{k}]", input_html: { value: f.object.localized_names[k.to_s] }, label: label_for_country(k)
 
-          .row.add-locales.mb-md
-            - countries = f.object.stop_area_referential.sorted_locales.map{|l| l[:code]} - default
-            - if countries.present?
-              - options = countries.map { |c| "<option id='#{c}' country_name='#{@stop_area_referential.locale_name(code: c)}'>#{@stop_area_referential.locale_name(code: c)}</option>" }.join('')
-              .col-sm-4.col-xs-5
-              .col-sm-8.col-xs-7
-                = select_tag :add_locale, raw(options), 'data-select2ed': 'true', class: 'select2-resize'
-                = link_to '#', class: 'btn btn-primary add-locale' do
-                  = fa_icon :plus, {text: 'actions.add'.t}
-        = f.input :public_code
+        .row.add-locales.mb-md
+          - countries = f.object.stop_area_referential.sorted_locales.map{|l| l[:code]} - default
+          - if countries.present?
+            - options = countries.map { |c| "<option id='#{c}' country_name='#{@stop_area_referential.locale_name(code: c)}'>#{@stop_area_referential.locale_name(code: c)}</option>" }.join('')
+            .col-sm-4.col-xs-5
+            .col-sm-8.col-xs-7
+              = select_tag :add_locale, raw(options), 'data-select2ed': 'true', class: 'select2-resize'
+              = link_to '#', class: 'btn btn-primary add-locale' do
+                = fa_icon :plus, {text: 'actions.add'.t}
+      = f.input :public_code
 
-    .separator.section_separator
+  .separator.section_separator
 
-    .row
-      .col-lg-12
-        h2.mb-lg= t("stop_areas.form.sections.hierarchy")
-          // as: :radio_buttons
-        - if has_feature?("route_stop_areas_all_types")
-          = f.input :kind,
-              as: :radio_buttons,
-              checked: @stop_area.new_record? ? :commercial : @stop_area.kind,
-              input_html: { disabled: !@stop_area.new_record? },
-              include_blank: false,
-              item_wrapper_class: 'radio-inline',
-              wrapper: :horizontal_form,
-              disabled: !@stop_area.new_record?
-          - unless @stop_area.new_record?
-              = f.input :kind, as: :hidden, input_html: { value: @stop_area.kind }
-          .slave data-master="[name='stop_area[kind]']" data-value="commercial"
-        - else
-          = f.input :kind, as: :hidden, input_html: { value: :commercial }
-        - %i(non_commercial commercial).each do |kind|
-          .slave data-master="[name='stop_area[kind]']" data-value=kind
-            = f.input :area_type, as: :select, input_html: {id: kind, disabled: !@stop_area.new_record?}, collection: area_type_options(kind), include_blank: false, disabled: !@stop_area.new_record?
-        = f.input :parent_id, as: :select, collection: [f.object.parent_id], input_html: { data: { select2ed_placeholder: Chouette::StopArea.tmf('parent'), select2ed_allow_clear: 'true', select2_ajax: 'true', url: autocomplete_workbench_stop_area_referential_stop_areas_path(@workbench), initvalue: {id: f.object.parent_id, text: f.object.parent.try(:formatted_selection_details)}}}
+  .row
+    .col-lg-12
+      h2.mb-lg= t("stop_areas.form.sections.hierarchy")
+        // as: :radio_buttons
+      - if has_feature?("route_stop_areas_all_types")
+        = f.input :kind,
+            as: :radio_buttons,
+            checked: @stop_area.new_record? ? :commercial : @stop_area.kind,
+            input_html: { disabled: !@stop_area.new_record? },
+            include_blank: false,
+            item_wrapper_class: 'radio-inline',
+            wrapper: :horizontal_form,
+            disabled: !@stop_area.new_record?
+        - unless @stop_area.new_record?
+            = f.input :kind, as: :hidden, input_html: { value: @stop_area.kind }
+        .slave data-master="[name='stop_area[kind]']" data-value="commercial"
+      - else
+        = f.input :kind, as: :hidden, input_html: { value: :commercial }
+      - %i(non_commercial commercial).each do |kind|
+        .slave data-master="[name='stop_area[kind]']" data-value=kind
+          = f.input :area_type, as: :select, input_html: {id: kind, disabled: !@stop_area.new_record?}, collection: area_type_options(kind), include_blank: false, disabled: !@stop_area.new_record?
+      = f.input :parent_id, as: :select, collection: [f.object.parent_id], input_html: { data: { select2ed_placeholder: Chouette::StopArea.tmf('parent'), select2ed_allow_clear: 'true', select2_ajax: 'true', url: autocomplete_workbench_stop_area_referential_stop_areas_path(@workbench), initvalue: {id: f.object.parent_id, text: f.object.parent.try(:formatted_selection_details)}}}
 
-    .separator.section_separator
+  .separator.section_separator
 
-    .row
-      .col-lg-12
-        h2.mb-lg= t("stop_areas.form.sections.referent")
-        = f.input :is_referent, as: :switchable_checkbox
-        = f.input :referent_id, as: :select, collection: [f.object.referent_id], input_html: { style: 'width: 100%', data: { select2ed_placeholder: Chouette::StopArea.tmf('referent'), select2ed_allow_clear: 'true', select2_ajax: 'true', url: (autocomplete_workbench_stop_area_referential_stop_areas_path(@workbench)+"?referent_only=true"), initvalue: {id: f.object.referent_id, text: f.object.referent.try(:formatted_selection_details)}}}, wrapper_html: { id: 'referent_input' }
+  .row
+    .col-lg-12 x-data="{ isReferentActivated: #{@stop_area.is_referent} }"
+      h2.mb-lg= t("stop_areas.form.sections.referent")
+      = f.input :is_referent, as: :switchable_checkbox, input_html: { checked: @stop_area.is_referent, 'x-on:click': 'isReferentActivated = !isReferentActivated' }
+      = f.input :referent_id, as: :select, collection: [f.object.referent_id], input_html: { style: 'width: 100%', 'x-bind:disabled': "isReferentActivated", data: { select2ed_placeholder: Chouette::StopArea.tmf('referent'), select2ed_allow_clear: 'true', select2_ajax: 'true', url: (autocomplete_workbench_stop_area_referential_stop_areas_path(@workbench)+"?referent_only=true"), initvalue: {id: f.object.referent_id, text: f.object.referent.try(:formatted_selection_details)}}}, wrapper_html: { id: 'referent_input', class: 'inline-form', 'x-bind:class': "{ 'disabled': isReferentActivated }" }
 
-    .separator.section_separator
+  .separator.section_separator
 
-    .row
-      .col-lg-12
-        h2.mb-lg= t("stop_areas.form.sections.internals")
-        = f.input :status, as: :select, collection: stop_area_status_options, include_blank: false
-        = f.association :stop_area_provider, as: :select, collection: @workbench.stop_area_providers, include_blank: false
-        = f.input :comment, as: :text, input_html: {rows: 5, title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.comment")}
+  .row
+    .col-lg-12
+      h2.mb-lg= t("stop_areas.form.sections.internals")
+      = f.input :status, as: :select, collection: stop_area_status_options, include_blank: false
+      = f.association :stop_area_provider, as: :select, collection: @workbench.stop_area_providers, include_blank: false
+      = f.input :comment, as: :text, input_html: {rows: 5, title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.comment")}
 
-    .separator.section_separator
+  .separator.section_separator
 
-    .row
-      .col-lg-12
-        h2.mb-lg= t("stop_areas.form.sections.location")
+  .row
+    .col-lg-12
+      h2.mb-lg= t("stop_areas.form.sections.location")
 
-        - if @stop_area.projection.present? && @stop_area.projection_type_label.present?
-          = f.input :projection_xy, label: t("activerecord.attributes.stop_area.projection_xy", projection: @referential.projection_type_label), input_html: { title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.projection_xy") }
+      - if @stop_area.projection.present? && @stop_area.projection_type_label.present?
+        = f.input :projection_xy, label: t("activerecord.attributes.stop_area.projection_xy", projection: @referential.projection_type_label), input_html: { title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.projection_xy") }
 
-        = f.input :coordinates, input_html: { title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.coordinates") }
-        = f.input :compass_bearing
-        = f.input :street_name
-        = f.input :zip_code, input_html: { title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.zip_code") }
-        = f.input :city_name, input_html: {title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.city_name")}
-        = f.input :postal_region
-        = f.input :country_code, as: :country, priority: ['FR', 'GB', 'DE', 'ES'], include_blank: true, input_html: { data: { select2ed: true } }
-        = f.input :time_zone, as: :full_time_zone, include_blank: false
+      = f.input :coordinates, input_html: { title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.coordinates") }
+      = f.input :compass_bearing
+      = f.input :street_name
+      = f.input :zip_code, input_html: { title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.zip_code") }
+      = f.input :city_name, input_html: {title: t("formtastic.titles#{format_restriction_for_locales(@referential)}.stop_area.city_name")}
+      = f.input :postal_region
+      = f.input :country_code, as: :country, priority: ['FR', 'GB', 'DE', 'ES'], include_blank: true, input_html: { data: { select2ed: true } }
+      = f.input :time_zone, as: :full_time_zone, include_blank: false
 
-    .separator.section_separator
+  .separator.section_separator
 
-    .row
-      .col-lg-12
-        h2.mb-lg= t("stop_areas.form.sections.usage")
-        - if has_feature?(:stop_area_waiting_time)
-          = f.input :waiting_time, input_html: { min: 0 }
-        = f.input :fare_code
-        = f.input :url
+  .row
+    .col-lg-12
+      h2.mb-lg= t("stop_areas.form.sections.usage")
+      - if has_feature?(:stop_area_waiting_time)
+        = f.input :waiting_time, input_html: { min: 0 }
+      = f.input :fare_code
+      = f.input :url
 
-    .separator.section_separator
+  .separator.section_separator
 
-    .row
-      .col-lg-12
-        h2.mb-lg= t("stop_areas.form.sections.accessibility")
-        = f.input :mobility_impaired_accessibility, as: :select, include_blank: false
-    .row
-      .col-md-6
-        = f.input :wheelchair_accessibility, as: :select, include_blank: false
-        = f.input :step_free_accessibility, as: :select, include_blank: false
-        = f.input :escalator_free_accessibility, as: :select, include_blank: false
-      .col-md-6
-        = f.input :lift_free_accessibility, as: :select, include_blank: false
-        = f.input :audible_signals_availability, as: :select, include_blank: false
-        = f.input :visual_signs_availability, as: :select, include_blank: false
-    .row
-      .col-lg-12
-        = f.input :accessibility_limitation_description
+  .row
+    .col-lg-12
+      h2.mb-lg= t("stop_areas.form.sections.accessibility")
+      = f.input :mobility_impaired_accessibility, as: :select, include_blank: false
+  .row
+    .col-md-6
+      = f.input :wheelchair_accessibility, as: :select, include_blank: false
+      = f.input :step_free_accessibility, as: :select, include_blank: false
+      = f.input :escalator_free_accessibility, as: :select, include_blank: false
+    .col-md-6
+      = f.input :lift_free_accessibility, as: :select, include_blank: false
+      = f.input :audible_signals_availability, as: :select, include_blank: false
+      = f.input :visual_signs_availability, as: :select, include_blank: false
+  .row
+    .col-lg-12
+      = f.input :accessibility_limitation_description
 
-    .separator.section_separator
+  .separator.section_separator
+
+  .row
+    .col-lg-12
+      h2.mb-lg= t("stop_areas.form.sections.custom_fields")
+      - if @stop_area.custom_fields.present?
+        - @stop_area.custom_fields.each do |code, field|
+          = field.input(f).to_s
+
+  .separator.section_separator
+
   .row
     .col-lg-12
       h2.mb-lg= Chouette::StopArea.tmf(:codes)

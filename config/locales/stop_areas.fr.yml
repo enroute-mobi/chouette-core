@@ -4,6 +4,7 @@ fr:
     search_no_results: "Aucun arrêt ne correspond à votre recherche"
     no_specific_stops: "Cet arrêt n'a aucun arrêt particulier"
     no_codes: "Cet arrêt n'a pas de code"
+    no_custom_fields: "Cet arrêt n'a pas de Champs personnalisés"
     errors:
       empty: Aucun stop_area_id
       parent_area_type: ne peut être de type %{area_type}
@@ -66,6 +67,7 @@ fr:
         internals: "Interne"
         usage: "Utilisation"
         accessibility: "Accessibilité"
+        custom_fields: "Champs personnalisés"
       address: "246 Boulevard Saint-Germain, 75007 Paris"
       geolocalize: "Géolocalisez "
       add_code: Ajouter un code

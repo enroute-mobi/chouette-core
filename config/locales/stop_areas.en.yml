@@ -4,6 +4,7 @@ en:
     search_no_results: "No stop area matching your query"
     no_specific_stops: "This stop area don't have any specific stop"
     no_codes: "This stop area does not have any codes"
+    no_custom_fields: "This stop area does not have any custom fields"
     errors:
       empty: Aucun stop_area_id
       parent_area_type: can not be of type %{area_type}
@@ -65,6 +66,7 @@ en:
         internals: "Internals"
         usage: "Usage"
         accessibility: "Accessibility"
+        custom_fields: "Custom fields"
       address: "246 Boulevard Saint-Germain, 75007 Paris"
       add_code: Add a code
       geolocalize: "Pinpoint "

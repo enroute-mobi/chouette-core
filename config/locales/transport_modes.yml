@@ -1,0 +1,280 @@
+fr:
+  transport_modes:
+    modes:
+      air: Air
+      all: Tous les modes de transport
+      bicycle: Vélo
+      bus: Bus
+      cableway: Téléphérique
+      coach: Autocar
+      ferry: Ferry
+      funicular: Funiculaire
+      hireCar: Voiture de location
+      interchange: Interconnection
+      local_train: TER
+      long_distance_train: Train Grande Ligne
+      metro: Métro
+      other: Autre
+      private_vehicle: Voiture particulière
+      rail: Train
+      rapid_transit: RER
+      shuttle: Navette
+      taxi: Taxi
+      telecabin: Télécabine
+      train: Train
+      tram: Tramway
+      tramway: Tramway
+      trolleyBus: Trolleybus
+      walk: Marche à pied
+      water: Eau
+      waterborne: Bac
+    sub_modes:
+      airportBoatLink: "Bateau d'aéroport"
+      airportLinkBus: "Bus d'aéroport"
+      airshipService: Aérostat
+      allFunicularServices: Tous services de funiculaire
+      allHireVehicles: Tous véhicules de location
+      allTaxiServices: Service Taxi
+      bikeTaxi: Taxi triporteur
+      blackCab: Taxi noir
+      cableCar: Téléphérique
+      cableFerry: Ferry à câble
+      canalBarge: Péniche
+      carTransportRailService: Transport de véhicules par le train
+      chairLift: Télésiège
+      cityTram: Tram urbain
+      communalTaxi: Taxi communal
+      commuterCoach: Car navette
+      crossCountryRail: Train national
+      dedicatedLaneBus: Bus à voie réservée
+      demandAndResponseBus: Bus à la demande
+      domesticCharterFlight: Vol Charter National
+      domesticFlight: Vol intérieur
+      domesticScheduledFlight: Vol intérieur régulier
+      dragLift: Téléski
+      expressBus: Bus express
+      funicular: Funiculaire
+      helicopterService: Service d'hélicoptère
+      highFrequencyBus: Bus à haute fréquence
+      highSpeedPassengerService: Navire public à grande vitesse
+      highSpeedRail: Train à grande vitesse
+      highSpeedVehicleService: Navire à grande vitesse
+      hireCar: Voiture de location
+      hireCycle: Vélo de location
+      hireMotorbike: Moto de location
+      hireVan: Fourgon de location
+      intercontinentalCharterFlight: Vol Charter Intercontinental
+      intercontinentalFlight: Vol Intercontinental
+      international: International
+      internationalCarFerry: Ferry international
+      internationalCharterFlight: Vol Charter International
+      internationalCoach: Autocar international
+      internationalFlight: Vol International
+      internationalPassengerFerry: Ferry public international
+      interregionalRail: Train interregional
+      lift: Ascenseur
+      local: Local
+      localBus: Bus local
+      localCarFerry: Ferry local
+      localPassengerFerry: Ferry public local
+      localTram: Tram local
+      longDistance: Longue distance
+      metro: Métro
+      miniCab: Véhicule avec chauffeur privé
+      mobilityBus: Bus Mobilité
+      mobilityBusForRegisteredDisabled: Bus adapté aux personnes à mobilité reduite
+      nationalCarFerry: Ferry national
+      nationalCoach: Car interregional
+      nationalPassengerFerry: Ferry public national
+      nightBus: Bus de nuit
+      nightRail: Train de nuit
+      nightTrain: Train de nuit
+      postBoat: Bateau postal
+      postBus: Bus postal
+      rackAndPinionRailway: Train à crémaillère
+      railReplacementBus: Bus de remplacement ferré
+      railShuttle: Train navette
+      railTaxi: Taxi de gare
+      regionalBus: Bus régional
+      regionalCarFerry: Ferry régional
+      regionalCoach: Car régional
+      regionalPassengerFerry: Ferry public régional
+      regionalRail: TER
+      regionalTram: Tram régional
+      replacementRailService: Train de remplacement
+      riverBus: Bus Navette fluviale
+      roadFerryLink: Ferry de liaison
+      roundTripCharterFlight: Vol Charter aller-retour
+      scheduledFerry: Ferry régulier
+      schengenAreaFlight: Vol Zone Schengen
+      schoolAndPublicServiceBus: Bus scolaire et de service public
+      schoolBoat: Bateau scolaire
+      schoolBus: Bus scolaire
+      schoolCoach: Autocar scolaire
+      shortHaulInternationalFlight: Vol court-courrier international
+      shuttleBus: Bus navette
+      shuttleCoach: Car navette
+      shuttleFerryService: Ferry navette
+      shuttleFlight: Vol Navette
+      shuttleTram: Tram navette
+      sightseeingBus: Bus touristique
+      sightseeingCoach: Car de visite
+      sightseeingFlight: Vol touristique
+      sightseeingService: Service Touristique
+      sightseeingTram: Tram de tourisme
+      sleeperRailService: Train couchette
+      specialCoach: Car spécial
+      specialNeedsBus: Bus pour besoins particuliers
+      specialTrain: Train spécial
+      streetCableCar: Cable Car
+      suburbanRailway: Train périurbain
+      telecabin: Télécabine
+      telecabinLink: Téléphérique
+      touristCoach: Car touristique
+      touristRailway: Train touristique
+      trainFerry: Traversier-rail
+      trainTram: Train Tramway
+      tramTrain: Tram Train
+      tube: Tube
+      undefinedFunicular: Funiculaire non défini
+      urbanRailway: Rail urbain
+      waterTaxi: Taxi fluviale
+
+en:
+  transport_modes:
+    modes:
+      air: Air
+      bicycle: Bicycle
+      bus: Bus
+      cableway: Cableway
+      coach: Coach
+      ferry: Ferry
+      funicular: Funicular
+      hireCar: Hire car
+      interchange: Interchange
+      local_train: Local train
+      long_distance_train: Long distance train
+      metro: Metro
+      other: Other
+      private_vehicle: Private vehicle
+      rail: Rail
+      rapid_transit: Rapid transit
+      shuttle: Shuttle
+      taxi: Taxi
+      telecabin: Telecabin
+      train: Train
+      tram: Tramway
+      tramway: Tramway
+      trolleybus: Trolleybus
+      walk: Walk
+      water: Water
+      waterborne: Waterborne
+    submodes:
+      airportBoatLink: Airport Boat Link
+      airportLinkBus: Airport Link Bus
+      airshipService: Airship service
+      allFunicularServices: All FunicularServices
+      allHireVehicles: All hire vehicles
+      allTaxiServices: All taxi services
+      bikeTaxi: Bike taxi (Rickshaw)
+      blackCab: Registered taxi
+      cableCar: Aerial cable car
+      cableFerry: Cable Ferry
+      canalBarge: Canal barge
+      carTransportRailService: Car Transport Rail Service
+      chairLift: Chair lift
+      cityTram: City Tram
+      communalTaxi: Communal Taxi
+      commuterCoach: Commuter Coach
+      crossCountryRail: Cross Country Rail
+      dedicatedLaneBus: Dedicated lane bus
+      demandAndResponseBus: Demande and response Bus
+      domesticCharterFlight: Domestic Charter flight
+      domesticFlight: Domestic Flight
+      domesticScheduledFlight: Scheduled domestic Flight
+      dragLift: Drag lift
+      expressBus: Express Bus
+      funicular: Funicular
+      helicopterService: Helicopter service
+      highFrequencyBus: High frequency bus
+      highSpeedPassengerService: High Speed Passenger Service
+      highSpeedRail: High speed rail
+      highSpeedVehicleService: High Speed Vehicle Service
+      hireCar: Hire car.
+      hireCycle: Hire cycle.
+      hireMotorbike: Hire motorbike.
+      hireVan: Hire Van.
+      intercontinentalCharterFlight: Intercontinental Flight
+      intercontinentalFlight: Intercontinental Flight
+      international: International
+      internationalCarFerry: International Car Ferry
+      internationalCharterFlight: International Charter Flight
+      internationalCoach: International Coach
+      internationalFlight: International Flight
+      internationalPassengerFerry: International Passenger Ferry
+      interregionalRail: Interregional Rail
+      lift: Any lift
+      local: Local
+      localBus: Local Bus
+      localCarFerry: Local Car Ferry
+      localPassengerFerry: Local Passenger Ferry
+      localTram: Local Tram
+      longDistance: Long Distance
+      metro: Metro
+      miniCab: Minicab service
+      mobilityBus: Mobility Bus
+      mobilityBusForRegisteredDisabled: Mobility Bus for registered disabled
+      nationalCarFerry: National Car Ferry
+      nationalCoach: National Coach
+      nationalPassengerFerry: National Passenger Ferry
+      nighBus: Night Bus
+      nightTrain: Night Train
+      postBoat: Post Boat
+      postBus: Post Bus
+      rackAndPinionRailway: Rack and Pinion Railway
+      railReplacementBus: Rail Replacement Bus
+      railShuttle: Rail Shuttle
+      railTaxi: Rail taxi
+      regionalBus: Regional Bus
+      regionalCarFerry: Regional Car Ferry
+      regionalCoach: Regional Coach
+      regionalPassengerFerry: Regional Passenger Ferry
+      regionalRail: Regional rail
+      regionalTram: Regional Tram
+      replacementRailService: Replacement Rail Service
+      riverBus: River Bus
+      roadFerryLink: Road Ferry Link
+      roundTripCharterFlight: Roundtrip charter flight
+      scheduledFerry: Scheduled Ferry
+      schengenAreaFlight: Schengen area flight
+      schoolAndPublicServiceBus: School and Public Service Bus
+      schoolBoat: School Boat
+      schoolBus: School Bus
+      schoolCoach: School coach
+      shortHaulInternationalFlight: Short haul international flight
+      shuttleBus: Shuttle Bus
+      shuttleCoach: Shuttle Coach
+      shuttleFerryService: Shuttle Ferry Service
+      shuttleFlight: Shuttle Flight
+      shuttleTram: Shuttle Tram
+      sightseeingBus: Sightseeing Bus
+      sightseeingCoach: Sightseeing Coach
+      sightseeingFlight: Sightseeing flight
+      sightseeingService: Sightseeing Service
+      sightseeingTram: Sightseeing Tram
+      sleeperRailService: Sleeper Train
+      specialCoach: Special Coach
+      specialNeedsBus: Special needs Bus
+      specialTrain: Special Train
+      streetCableCar: Street cable car
+      suburbanRailway: Suburban Railway
+      telecabin: Telecabine lift
+      telecabinLink: Link between telecabines
+      touristCoach: Tourist Coach
+      touristRailway: Tourist Railway
+      trainFerry: Train Ferry
+      trainTram: Train tram
+      tramTrain: Tram Train
+      tube: Tube
+      urbanRailway: Urban Railway
+      waterTaxi: Water Taxi

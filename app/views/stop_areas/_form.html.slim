@@ -116,14 +116,14 @@
 
   .separator.section_separator
 
-  .row
-    .col-lg-12
-      h2.mb-lg= t("stop_areas.form.sections.custom_fields")
-      - if @stop_area.custom_fields.present?
+  - if @stop_area.custom_fields.present?
+    .row
+      .col-lg-12
+        h2.mb-lg= t("stop_areas.form.sections.custom_fields")
         - @stop_area.custom_fields.each do |code, field|
           = field.input(f).to_s
 
-  .separator.section_separator
+    .separator.section_separator
 
   .row
     .col-lg-12

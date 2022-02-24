@@ -1,24 +1,58 @@
 import Alpine from 'alpinejs'
-import { isArray } from 'lodash'
+import { get, isArray } from 'lodash'
 
-import { MacroCollection } from '../../src/macro_lists/macro'
-import { MacroContextCollection } from '../../src/macro_lists/macroContext'
+import { MacroCollection } from '../../src/operations/macro'
+import { MacroContextCollection } from '../../src/operations/macroContext'
 
 Alpine.store('macroList', {
 	isShow: false,
+	name: '',
+	comments: '',
 	macros: new MacroCollection(),
-	macroContexts: new MacroContextCollection(),
-	initState({ macros, macro_contexts }) {
+	contexts: new MacroContextCollection(),
+	initState({ name, comments, macros, macro_contexts }) {
+		this.name = name
+		this.comments = comments
+
 		macros.forEach(macroAttributes => this.macros.add(macroAttributes))
 
 		macro_contexts.forEach(({ macros, ...macroContextAttributes }) => {
-			this.macroContexts.add(macroContextAttributes, macroContext => {
-				if (isArray(macros)) {
-					for (const macroAttributes of macros) {
-						macroContext.macros.add(macroAttributes)
+			this.contexts
+				.add(macroContextAttributes)
+				.then(macroContext => {
+					if (isArray(macros)) {
+						for (const macroAttributes of macros) {
+							macroContext.macros.add(macroAttributes)
+						}
 					}
-				}
-			})
+				})
 		})
+	},
+	setFormData(event) {
+		// We had some issues to keep store & form in sync. Especially during edit where we had conflicts between subforms.
+		// As a solution we decided to compute manually the formData.
+		const { formData } = event
+
+		for (const [key] of [...formData]) { /^macro/.test(key) && formData.delete(key) } // Reset all macro related fields
+
+		const setFormDataForObject = (parentName = '') => (object, index) => {
+			for (const key in object.attributes) {	
+				formData.set(
+					`macro_list${parentName}[${object.inputSelector}][${index}][${key}]`,
+					get(object, key, '')
+				)
+			}
+		}
+
+		formData.set('macro_list[name]', this.name || '')
+		formData.set('macro_list[comments]', this.comments || '')
+
+		this.contexts.forEach((c, i) => {
+			setFormDataForObject()(c, i)
+
+			c.macros.forEach(setFormDataForObject(`[macro_contexts_attributes][${i}]`))
+		})
+
+		this.macros.forEach(setFormDataForObject())
 	}
 })

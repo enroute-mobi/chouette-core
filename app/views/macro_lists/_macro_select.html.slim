@@ -15,4 +15,4 @@ div[x-data="{ selectedOption: '' }"]
 			= button_tag t('macro_lists.form.add_macro'),
 				class: 'btn btn-primary',
 				':disabled': "!Boolean(selectedOption)",
-				'@click.prevent': "macros.add({ type: selectedOption })"
+				'@click.prevent': "#{collection}.add({ type: selectedOption })"

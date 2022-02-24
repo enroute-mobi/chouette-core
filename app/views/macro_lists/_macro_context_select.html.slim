@@ -15,4 +15,4 @@ div[x-data="{ selectedOption: '' }"]
 			= button_tag t('macro_lists.form.add_macro_context'),
 				class: 'btn btn-primary',
 				':disabled': "!Boolean(selectedOption)",
-				'@click.prevent': "$store.macroList.macroContexts.add({ type: selectedOption })"
+				'@click.prevent': "$store.macroList.contexts.add({ type: selectedOption })"

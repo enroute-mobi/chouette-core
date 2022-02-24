@@ -1,6 +1,4 @@
-import { find, filter, first, isEmpty, last, omit, nth, reject } from 'lodash'
-
-const constructors = ['Macro', 'MacroContext']
+import { find, filter, first, isEmpty, last, omit, reject } from 'lodash'
 
 export default superclass => class Collection extends superclass {
 	constructor(...args) {
@@ -8,14 +6,8 @@ export default superclass => class Collection extends superclass {
 
 		return new Proxy(this, {
 			set(obj, prop, value) {
-				if (constructors.includes(value.constructor.name)) {
-					const index = parseInt(prop)
-					const prevObject = obj[index - 1]
-					const nextObject = obj[index + 1]
-
-					value.position = index + 1 // Setting object's position based on index
-					value.isFirst = !prevObject
-					value.isLast = !value.isDeleted && (!nextObject || nextObject.isDeleted)
+				if (typeof(value) === 'object' ) {
+					value.position = parseInt(prop) + 1 // Setting object's position based on index
 				}
 
 				obj[prop] = value
@@ -24,6 +16,8 @@ export default superclass => class Collection extends superclass {
 			}
 		})
 	}
+
+	static get ResourceConstructor() { throw new Error('ResourceConstructor not implemented') }
 
 	get first() { return first(this) }
 
@@ -37,8 +31,12 @@ export default superclass => class Collection extends superclass {
 
 	get(uuid) { return find(this, ['uuid', uuid]) }
 
-	add(_attributes) {
-		throw new Error('add function not implemented')
+	add(attributes) {
+		const resource = new this.constructor.ResourceConstructor(attributes)
+
+		this.push(resource)
+
+		return Promise.resolve(resource)
 	}
 
 	delete(object, index) {
@@ -52,8 +50,7 @@ export default superclass => class Collection extends superclass {
 	}
 
 	duplicate(object) {
-		const attributes = omit(Object.assign(object), ['id', 'uuid', 'errors', 'position', '_destroy'])
-		this.add(attributes)
+		this.add(omit(object.attributes, ['id', 'position', '_destroy']))
 	}
 
 	moveUp(index) {

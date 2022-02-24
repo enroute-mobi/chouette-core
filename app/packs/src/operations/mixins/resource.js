@@ -1,5 +1,5 @@
 import { omit } from 'lodash'
-import HTMLFinder from '../HTMLFinder'
+import HTMLFinder from '../helpers/HTMLFinder'
 
 export default superclass => class Resource extends superclass {
 	constructor(attributes) {
@@ -14,13 +14,17 @@ export default superclass => class Resource extends superclass {
 		}
 	}
 
-	static from(object) {
-		return omit(Object.assign(object), ['id', 'uuid', 'errors', 'position', '_destroy'])
-	}
+	get storeName() { throw new Error('storeName getter not implemented') }
 
 	get isDeleted() { return this._destroy }
 
 	get hasErrors() { return this.errors.length > 0 }
+
+	get index() { return this.position - 1 }
+
+	get attributes() {
+		return omit(Object.assign(this), ['uuid', 'errors', 'html'])
+	}
 
 	delete() {
 		this._destroy = true

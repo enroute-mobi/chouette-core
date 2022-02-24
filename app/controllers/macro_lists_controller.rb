@@ -94,7 +94,7 @@ class MacroListsController < ChouetteController
   end
 
   def macro_context_params
-    macro_context_options = %i[id name type comment _destroys]
+    macro_context_options = %i[id name type comment _destroy]
     macro_context_options += Macro::Context.descendants.flat_map { |n| n.options.keys }
 
     macro_context_options.push(macros_attributes: macro_params)

@@ -12,6 +12,8 @@ class MacroListPresenter
 
 	def json_state
 		JSON.generate({
+			name: macro_list.name,
+			comments: macro_list.comments,
 			macros: macros(macro_list),
 			macro_contexts: macro_contexts(macro_list)
 		})

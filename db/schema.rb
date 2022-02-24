@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_02_17_083423) do
+ActiveRecord::Schema.define(version: 2022_02_24_095842) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -1231,9 +1231,6 @@ ActiveRecord::Schema.define(version: 2022_02_17_083423) do
     t.string "long_lat_type"
     t.string "country_code"
     t.string "street_name"
-    t.boolean "stairs_availability"
-    t.boolean "lift_availability"
-    t.integer "int_user_needs"
     t.string "zip_code"
     t.string "city_name"
     t.string "url"

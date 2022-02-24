@@ -138,8 +138,6 @@ en:
         street_name: "Street name"
         country_code: "Country"
         fare_code: "Fare code"
-        stairs_availability: "Escalator"
-        lift_availability: "Lift"
         projection: "Projection type"
         projection_x: "x-position"
         projection_y: "y-position"

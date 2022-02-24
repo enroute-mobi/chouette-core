@@ -1320,7 +1320,7 @@ ActiveRecord::Schema.define(version: 2022_02_17_083423) do
     t.boolean "in_out"
     t.string "checksum"
     t.text "checksum_source"
-    t.index ["date", "time_table_id"], name: "index_time_table_dates_on_date_and_time_table_id", unique: true
+    t.index ["date", "time_table_id"], name: "uniq_date_per_time_table", unique: true
     t.index ["time_table_id"], name: "index_time_table_dates_on_time_table_id"
   end
 

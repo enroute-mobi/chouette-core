@@ -1,4 +1,4 @@
-import { find, filter, first, isEmpty, last, omit, reject } from 'lodash'
+import { filter, first, isEmpty, last, omit, reject } from 'lodash'
 
 export default superclass => class Collection extends superclass {
 	static get ResourceConstructor() { throw new Error('ResourceConstructor not implemented') }
@@ -12,8 +12,6 @@ export default superclass => class Collection extends superclass {
 	get deleted() { return filter(this, 'isDeleted') }
 
 	isEmpty() { return isEmpty(this) }
-
-	get(uuid) { return find(this, ['uuid', uuid]) }
 
 	add(attributes) {
 		const resource = new this.constructor.ResourceConstructor(attributes)
@@ -29,12 +27,18 @@ export default superclass => class Collection extends superclass {
 	}
 
 	restore(object) {
+		const activeObjects = this.active
 		object.restore()
-		this.sendToBottomOfActiveResources(object)
+
+		this.splice(
+			0,
+			this.length,
+			...[...activeObjects, object, ...this.deleted]
+		)
 	}
 
 	duplicate(object) {
-		this.add(omit(object.attributes, ['id', 'uuid', '_destroy']))
+		this.add(omit(object.attributes, ['id', '_destroy']))
 	}
 
 	moveUp(index) { this.swap(index, index - 1) }
@@ -53,17 +57,5 @@ export default superclass => class Collection extends superclass {
 		if (!!this[indexA] && !!this[indexB]) {
 			[this[indexA], this[indexB]] = [this[indexB], this[indexA]]
 		}
-	}
-
-	sendToBottomOfActiveResources(object) {
-		this.splice(
-			0,
-			this.length,
-			...[
-				...reject(this.active, ['uuid', object.uuid]),
-				object,
-				...this.deleted
-			]
-		)
 	}
 }

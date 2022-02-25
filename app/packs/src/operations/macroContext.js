@@ -1,4 +1,4 @@
-import { flow, omit } from 'lodash'
+import { flow } from 'lodash'
 import ResourceMixin from './mixins/resource'
 import CollectionMixin from './mixins/collection'
 import { MacroCollection } from './macro'
@@ -13,7 +13,8 @@ const MacroContextMixin = superclass => class MacroContext extends superclass {
 
 	get inputSelector() { return 'macro_contexts_attributes' }
 
-	get attributes() { return omit(this, ['uuid', 'errors', 'html', 'macros']) }
+	// Private methods
+	get attributesList() { return ['errors', 'html', 'macros'] } 
 }
 
 export const MacroContext = flow(ResourceMixin, MacroContextMixin)(class {})

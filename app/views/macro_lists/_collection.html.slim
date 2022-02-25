@@ -2,4 +2,4 @@
 
 div[x-data="{ collection: #{collection} }"]
 	template[x-for="(resource, index) in collection"]
-		div x-html="await resource.getHTML(index)"
+		div x-html="await resource.render()"

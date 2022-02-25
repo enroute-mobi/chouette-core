@@ -19,9 +19,7 @@ export default class HTMLFinder {
 
 	get cacheHTML() { return sessionStorage.getItem(this.object.type) }
 
-	set cacheHTML(html) {
-		sessionStorage.setItem(this.object.type, html)
-	}
+	set cacheHTML(html) { sessionStorage.setItem(this.object.type, html) }
 
 	async fecthedHTML() {
 		const params = new URLSearchParams()

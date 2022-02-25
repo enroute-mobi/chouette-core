@@ -14,27 +14,15 @@ export default superclass => class Resource extends superclass {
 		}
 	}
 
-	get storeName() { throw new Error('storeName getter not implemented') }
-
 	get isDeleted() { return this._destroy }
 
 	get hasErrors() { return this.errors.length > 0 }
 
-	get index() { return this.position - 1 }
+	get attributes() { return omit(Object.assign(this), ['uuid', 'errors', 'html']) }
 
-	get attributes() {
-		return omit(Object.assign(this), ['uuid', 'errors', 'html'])
-	}
+	delete() { this._destroy = true }
 
-	delete() {
-		this._destroy = true
-	}
+	restore() { this._destroy = false }
 
-	restore() {
-		this._destroy = false
-	}
-
-	getHTML(index) {
-		return new HTMLFinder(index, this).render()
-	}
+	getHTML(index) { return new HTMLFinder(index, this).render() }
 }

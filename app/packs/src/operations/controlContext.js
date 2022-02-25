@@ -13,7 +13,7 @@ const ControlContextMixin = superclass => class ConrolContext extends superclass
 
 	get inputSelector() { return 'control_contexts_attributes' }
 
-	get storeName() { return 'controlList' }
+	get attributes() { return omit(this, ['uuid', 'errors', 'html', 'controls']) }
 }
 
 export const ConrolContext = flow(ResourceMixin, ControlContextMixin)(class {})
@@ -22,14 +22,12 @@ export const ConrolContext = flow(ResourceMixin, ControlContextMixin)(class {})
 const ControlCollectionMixin = superclass => class ControlContextCollection extends superclass {
 	static get ResourceConstructor() { return ConrolContext }
 
-	duplicate(macroContext) {
-		const getAttributes = object => omit(Object.assign(object), ['id', 'uuid', 'errors', 'position', '_destroy'])
-
+	duplicate(controlContext) {
 		this
-			.add(getAttributes(macroContext))
+			.add(controlContext.attributes)
 			.then(duplicate => {
-				macroContext.macros.forEach(macro => {
-					duplicate.macros.add(getAttributes(macro))
+				controlContext.controls.forEach(control => {
+					duplicate.controls.add(control.attributes)
 				})
 			})
 	}

@@ -28,20 +28,19 @@ Alpine.store('macroList', {
 				})
 		})
 	},
-	setFormData(event) {
+	setFormData({ formData }) {
 		// We had some issues to keep store & form in sync. Especially during edit where we had conflicts between subforms.
 		// As a solution we decided to compute manually the formData.
-		const { formData } = event
-
 		for (const [key] of [...formData]) { /^macro/.test(key) && formData.delete(key) } // Reset all macro related fields
 
 		const setFormDataForObject = (parentName = '') => (object, index) => {
-			for (const key in object.attributes) {	
-				formData.set(
-					`macro_list${parentName}[${object.inputSelector}][${index}][${key}]`,
-					get(object, key, '')
-				)
+			const getName = key => `macro_list${parentName}[${object.inputSelector}][${index}][${key}]`
+
+			for (const key in object.attributes) {
+				formData.set(getName(key), get(object, key, ''))
 			}
+
+			formData.set(getName('position'), index + 1)
 		}
 
 		formData.set('macro_list[name]', this.name || '')

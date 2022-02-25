@@ -5,8 +5,6 @@ import CollectionMixin from './mixins/collection'
 // Control
 const ControlMixin = superclass => class Control extends superclass {
 	get inputSelector() { return 'controls_attributes' }
-
-	get storeName() { return 'controlList' }
 }
 
 export const Control = flow(ResourceMixin, ControlMixin)(class {})

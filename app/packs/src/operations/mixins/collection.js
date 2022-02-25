@@ -1,22 +1,6 @@
 import { find, filter, first, isEmpty, last, omit, reject } from 'lodash'
 
 export default superclass => class Collection extends superclass {
-	constructor(...args) {
-		super(...args)
-
-		return new Proxy(this, {
-			set(obj, prop, value) {
-				if (typeof(value) === 'object' ) {
-					value.position = parseInt(prop) + 1 // Setting object's position based on index
-				}
-
-				obj[prop] = value
-
-				return true
-			}
-		})
-	}
-
 	static get ResourceConstructor() { throw new Error('ResourceConstructor not implemented') }
 
 	get first() { return first(this) }
@@ -50,16 +34,12 @@ export default superclass => class Collection extends superclass {
 	}
 
 	duplicate(object) {
-		this.add(omit(object.attributes, ['id', 'position', '_destroy']))
+		this.add(omit(object.attributes, ['id', 'uuid', '_destroy']))
 	}
 
-	moveUp(index) {
-		this.swap(index, index - 1)
-	}
+	moveUp(index) { this.swap(index, index - 1) }
 
-	moveDown(index) {
-		this.swap(index, index + 1)
-	}
+	moveDown(index) { this.swap(index, index + 1) }
 
 	sendToTop(index) {
 		do { this.moveUp(index); index -= 1 } while (index > 0)

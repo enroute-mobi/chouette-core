@@ -13,8 +13,6 @@ const MacroContextMixin = superclass => class MacroContext extends superclass {
 
 	get inputSelector() { return 'macro_contexts_attributes' }
 
-	get storeName() { return 'macroList' }
-
 	get attributes() { return omit(this, ['uuid', 'errors', 'html', 'macros']) }
 }
 

@@ -4,8 +4,6 @@ import CollectionMixin from './mixins/collection'
 
 // Macro
 const MacroMixin = superclass => class Macro extends superclass {
-	get storeName() { return 'macroList' }
-
 	get inputSelector() { return 'macros_attributes' }
 }
 

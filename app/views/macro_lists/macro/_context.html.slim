@@ -7,9 +7,11 @@
 
 		= render 'actions'
 
-	= render 'collection', collection: 'resource.macros'
+	template[x-if="!resource.isDeleted"]
+		div
+			= render 'collection', collection: 'resource.macros'
 
-	template[x-if="!$store.macroList.isShow"]
-		= render 'macro_select', collection: 'resource.macros'
+			template[x-if="!$store.macroList.isShow"]
+				= render 'macro_select', collection: 'resource.macros'
 
-.simple-separator.mb-5
+.simple-separator.m-5

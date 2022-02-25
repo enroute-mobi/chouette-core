@@ -1,4 +1,4 @@
 = form.input :transport_mode,
 	collection: presenter.transport_mode_options,
-	input_html: { 'x-model': 'resource.transport_mode'},
+	input_html: { 'x-model': 'resource.transport_mode', ':disabled': 'resource.isDeleted' },
 	wrapper_html: { class: 'mb-0 mx-0', style: 'padding:10px; background-color: grey; flex-grow: 1;'}

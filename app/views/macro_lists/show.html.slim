@@ -1,13 +1,12 @@
 - breadcrumb :macro_list, @workbench, @macro_list
 - page_header_content_for @macro_list
-- content_for :additional_packs, 'macro_lists/form'
 
 / PageContent
 .page_content
   .container-fluid
     .row
       .col-lg-8.col-lg-offset-2.col-md-8.col-md-offset-2.col-sm-10.col-sm-offset-1
-        = simple_form_for [@workbench, @macro_list], html: {class: 'form-horizontal', id: 'macro_list_form'}, wrapper: false, defaults: { disabled: true } do |f|
+        = simple_form_for [@workbench, @macro_list], wrapper: :horizontal_form, html: {class: 'form-horizontal', id: 'macro_list_form'}, defaults: { disabled: true } do |f|
           .row
             .col-lg-12
               = f.input :name
@@ -17,15 +16,13 @@
               = t("macro.form.sections.macros")
             .separator.mb-5
             .w-full-px-5
-              div[x-init="
-                  $store.macroList.initState(#{presenter.json_state});
-                  $store.macroList.isShow = true;
-                "
-              ]
-                div[x-data="{ macroContexts: $store.macroList.macroContexts }"]
-                  template[x-for="(macroContext, index) in macroContexts"]
-                    div x-html="await macroContext.getHTML(index)"
+              div[x-data="{ state: #{presenter.json_state} }"]
+                template[x-for="context in state.macro_contexts"]
+                  div
+                    div x-html="context.html"
+                    template[x-for="macro in context.macros"]
+                      div x-html="macro.html"
+                    .simple-separator.m-5
                 
-                div[x-data="{ macros: $store.macroList.macros }"]
-                  template[x-for="(macro, index) in macros"]
-                    div x-html="await macro.getHTML(index)"
+                template[x-for="macro in state.macros"]
+                  div x-html="macro.html"

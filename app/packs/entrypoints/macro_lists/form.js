@@ -1,11 +1,10 @@
 import Alpine from 'alpinejs'
-import { get, isArray } from 'lodash'
 
 import { MacroCollection } from '../../src/operations/macro'
 import { MacroContextCollection } from '../../src/operations/macroContext'
+import { addMacros, formDataSetter } from '../../src/operations/helpers'
 
 Alpine.store('macroList', {
-	isShow: false,
 	name: '',
 	comments: '',
 	macros: new MacroCollection(),
@@ -14,18 +13,10 @@ Alpine.store('macroList', {
 		this.name = name
 		this.comments = comments
 
-		macros.forEach(macroAttributes => this.macros.add(macroAttributes))
+		addMacros(macros)(this)
 
-		macro_contexts.forEach(({ macros, ...macroContextAttributes }) => {
-			this.contexts
-				.add(macroContextAttributes)
-				.then(macroContext => {
-					if (isArray(macros)) {
-						for (const macroAttributes of macros) {
-							macroContext.macros.add(macroAttributes)
-						}
-					}
-				})
+		macro_contexts.forEach(({ macros, ...attributes }) => {
+			this.contexts.add(attributes).then(addMacros(macros))
 		})
 	},
 	setFormData({ formData }) {
@@ -33,15 +24,7 @@ Alpine.store('macroList', {
 		// As a solution we decided to compute manually the formData.
 		for (const [key] of [...formData]) { /^macro/.test(key) && formData.delete(key) } // Reset all macro related fields
 
-		const setFormDataForObject = (parentName = '') => (object, index) => {
-			const getName = key => `macro_list${parentName}[${object.inputSelector}][${index}][${key}]`
-
-			for (const key in object.attributes) {
-				formData.set(getName(key), get(object, key, ''))
-			}
-
-			formData.set(getName('position'), index + 1)
-		}
+		const setFormDataForObject = formDataSetter(formData)
 
 		formData.set('macro_list[name]', this.name || '')
 		formData.set('macro_list[comments]', this.comments || '')

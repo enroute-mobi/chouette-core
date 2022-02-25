@@ -1,6 +1,8 @@
 - form = local_assigns.fetch(:form)
-- macro = local_assigns.fetch(:resource)
+- macro = local_assigns.fetch(:resource, :macro)
 - class_description = macro.class.model_name.human
+
+- is_show = controller.action_name == 'show'
 
 = form.simple_fields_for(:macros, macro) do |macro_form|
 	.flex.flex-col.items-center.mt-5 x-data=("{ expanded: true }")
@@ -13,7 +15,6 @@
 					input_html: { \
 						'x-show': 'expanded', \
 						':readonly': '!expanded || resource.isDeleted', \
-						':disabled': '$store.macroList.isShow', \
 						'x-model': 'resource.name' \
 					}, \
 					label: false,
@@ -25,10 +26,11 @@
 			.flex.ml-3 x-show="expanded"
 				p.flex.w-64 = class_description
 
-			= render 'actions'
+			- unless is_show
+				= render 'actions'
 
 		.macro.flex.flex-col x-show="expanded && !resource.isDeleted" class="w-full"
 			= render "macro_lists/#{macro.model_name.i18n_key.to_s}", form: macro_form
 			.form-group
 				= macro_form.label Macro::List.human_attribute_name(:comments), class: 'col-sm-4 col-xs-5 control-label mb-3'
-				= macro_form.input :comments, as: :text, required: false, input_html: { 'x-model': 'resource.comments', ':disabled': '$store.macroList.isShow' }, label: false, wrapper: false
+				= macro_form.input :comments, as: :text, required: false, input_html: { 'x-model': 'resource.comments' }, label: false, wrapper: false

@@ -1,4 +1,4 @@
-import { omit } from 'lodash'
+import { get, omit } from 'lodash'
 import HTMLFinder from '../helpers/HTMLFinder'
 
 export default superclass => class Resource extends superclass {
@@ -12,6 +12,10 @@ export default superclass => class Resource extends superclass {
 		for (const key in attributes) {
 			this[key] = attributes[key]
 		}
+
+		return new Proxy(this, {
+			get: (target, prop) => get(target, prop, '')
+		})
 	}
 
 	get isDeleted() { return this._destroy }

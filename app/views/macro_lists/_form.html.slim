@@ -19,6 +19,7 @@
     .w-full-px-5
 
       = render 'collection', collection: '$store.macroList.contexts'
+      .simple-separator.m-5
       = render 'collection', collection: '$store.macroList.macros'
   
       = render 'macro_context_select'

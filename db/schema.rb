@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_02_24_095842) do
+ActiveRecord::Schema.define(version: 2022_02_28_082025) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -354,6 +354,30 @@ ActiveRecord::Schema.define(version: 2022_02_24_095842) do
     t.index ["objectid"], name: "connection_links_objectid_key", unique: true
     t.index ["stop_area_provider_id"], name: "index_connection_links_on_stop_area_provider_id"
     t.index ["stop_area_referential_id"], name: "index_connection_links_on_stop_area_referential_id"
+  end
+
+  create_table "control_lists", force: :cascade do |t|
+    t.bigint "workbench_id"
+    t.string "name"
+    t.text "comments"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["workbench_id"], name: "index_control_lists_on_workbench_id"
+  end
+
+  create_table "controls", force: :cascade do |t|
+    t.string "type", null: false
+    t.bigint "control_list_id"
+    t.integer "position", null: false
+    t.string "name"
+    t.text "comments"
+    t.string "criticity"
+    t.string "code"
+    t.jsonb "options", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["control_list_id", "position"], name: "index_controls_on_control_list_id_and_position", unique: true
+    t.index ["control_list_id"], name: "index_controls_on_control_list_id"
   end
 
   create_table "cross_referential_index_entries", force: :cascade do |t|

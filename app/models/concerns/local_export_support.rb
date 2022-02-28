@@ -2,7 +2,6 @@ module LocalExportSupport
   extend ActiveSupport::Concern
 
   included do |into|
-    include ImportResourcesSupport
     after_commit :launch_worker, on: :create
   end
 
@@ -16,6 +15,15 @@ module LocalExportSupport
     end
   end
 
+  def date_range
+    return nil if duration.nil?
+    @date_range ||= Time.now.to_date..self.duration.to_i.days.from_now.to_date
+  end
+
+  def export_type
+    self.class.name.demodulize.underscore
+  end
+
   def launch_worker
     if synchronous
       run unless status == "running"
@@ -24,13 +32,17 @@ module LocalExportSupport
     end
   end
 
-  def date_range
-    return nil if duration.nil?
-    @date_range ||= Time.now.to_date..self.duration.to_i.days.from_now.to_date
-  end
+  def run
+    update status: 'running', started_at: Time.now
+    export
+    notify_state unless publication.present?
+  rescue Exception => e
+    Chouette::Safe.capture "Export ##{id} failed", e
 
-  def export_type
-    self.class.name.demodulize.underscore
+    messages.create(criticity: :error, message_attributes: { text: e.message }, message_key: :full_text)
+    self.update status: :failed, ended_at: Time.now
+    notify_state unless publication.present?
+    raise
   end
 
   def export
@@ -57,6 +69,7 @@ module LocalExportSupport
   rescue => e
     Chouette::Safe.capture "#{self.class.name} ##{id} failed", e
     self.status = :failed
+    self.ended_at = Time.now
     self.save!
   end
 

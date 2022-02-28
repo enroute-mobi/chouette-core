@@ -51,7 +51,6 @@ Apartment.configure do |config|
     'Entrance',
     'Export::Base',
     'Export::Message',
-    'Export::Resource',
     # 'GenericAttributeControl::MinMax',
     'GenericAttributeControl::Pattern',
     'GenericAttributeControl::Uniqueness',

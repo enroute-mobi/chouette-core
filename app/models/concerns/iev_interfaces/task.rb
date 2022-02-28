@@ -25,17 +25,20 @@ module IevInterfaces::Task
     has_many :messages, class_name: messages_class_name, dependent: :delete_all, foreign_key: "#{messages_class_name.split('::').first.downcase}_id"
     has_many :resources, class_name: resources_class_name, dependent: :destroy, foreign_key: "#{resources_class_name.split('::').first.downcase}_id"
 
+    # Scope unused in Chouette
     scope :where_started_at_in, ->(period_range) do
       where('started_at BETWEEN :begin AND :end', begin: period_range.begin, end: period_range.end)
     end
-
+    # Scope unused in Chouette
     scope :for_referential, ->(referential) do
       where(referential_id: referential.id)
     end
-
+    # Scope unused in Chouette
     scope :blocked, -> { where('created_at < ? AND status = ?', 4.hours.ago, 'running') }
-    scope :successful, -> { where(status: :successful) }
+    # Scope unused in Chouette
     scope :new_or_pending, -> { where(status: [:new, :pending]) }
+
+    scope :successful, -> { where(status: :successful) }
 
     before_save :initialize_fields, on: :create
 

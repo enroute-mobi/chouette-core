@@ -2,15 +2,10 @@ RSpec.describe Export::Base, type: :model do
 
   it { should belong_to(:referential) }
   it { should belong_to(:workbench) }
-  it { should belong_to(:parent) }
 
   it { should enumerize(:status).in("aborted", "canceled", "failed", "new", "pending", "running", "successful", "warning") }
 
   it { should validate_presence_of(:creator) }
-
-  include ActionDispatch::TestProcess
-  it { should allow_value(fixture_file_upload('OFFRE_TRANSDEV_2017030112251.zip')).for(:file) }
-  it { should_not allow_value(fixture_file_upload('reflex_updated.xml')).for(:file).with_message(I18n.t('errors.messages.extension_whitelist_error', extension: '"xml"', allowed_types: "zip, csv, json")) }
 
   describe ".purge_exports" do
     let(:workbench) { create(:workbench) }
@@ -77,26 +72,17 @@ RSpec.describe Export::Base, type: :model do
 
     it "must destroy all associated Export::Messages" do
       export = create(:gtfs_export)
-      create(:export_resource, export: export)
-
-      export.destroy
-
-      expect(Export::Resource.count).to eq(0)
-    end
-
-    it "must destroy all associated Export::Resources" do
-      export = create(:gtfs_export)
       create(:export_message, export: export)
-
       export.destroy
 
       expect(Export::Message.count).to eq(0)
     end
+
   end
 
-  describe "#notify_parent" do
+  describe "#notify_publication" do
     let(:publication) { create(:publication) }
-    let(:gtfs_export) { create(:gtfs_export, parent: publication) }
+    let(:gtfs_export) { create(:gtfs_export, publication: publication) }
 
     context "when export is finished" do
       before do
@@ -107,12 +93,12 @@ RSpec.describe Export::Base, type: :model do
       it "must call #child_change on its parent" do
         expect(publication).to receive(:child_change)
         gtfs_export.notified_parent_at = nil
-        gtfs_export.notify_parent
+        gtfs_export.notify_publication
       end
 
       it "must update the :notified_parent_at field of the child export" do
         Timecop.freeze(Time.now) do
-          gtfs_export.notify_parent
+          gtfs_export.notify_publication
           expect(gtfs_export.notified_parent_at.utc.strftime('%Y-%m-%d %H:%M:%S.%3N')).to eq Time.now.utc.strftime('%Y-%m-%d %H:%M:%S.%3N')
           expect(gtfs_export.reload.notified_parent_at.utc.strftime('%Y-%m-%d %H:%M:%S.%3N')).to eq Time.now.utc.strftime('%Y-%m-%d %H:%M:%S.%3N')
         end
@@ -129,28 +115,15 @@ RSpec.describe Export::Base, type: :model do
         allow(gtfs_export).to receive(:update)
 
         expect(gtfs_export).to_not receive(:child_change)
-        gtfs_export.notify_parent
+        gtfs_export.notify_publication
       end
 
       it "must keep nil the :notified_parent_at field of the child export" do
-        gtfs_export.notify_parent
+        gtfs_export.notify_publication
         expect(gtfs_export.notified_parent_at).to be_nil
       end
 
     end
-  end
-
-  describe "#update_status" do
-
-    it "updates :ended_at to now when status is finished" do
-      gtfs_export = create(:gtfs_export)
-      allow(gtfs_export).to receive(:compute_new_status).and_return('failed')
-      Timecop.freeze(Time.now) do
-        gtfs_export.update_status
-        expect(gtfs_export.ended_at).to eq(Time.now)
-      end
-    end
-
   end
 
   context "#user_file" do

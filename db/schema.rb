@@ -498,9 +498,6 @@ ActiveRecord::Schema.define(version: 2022_02_24_095842) do
     t.datetime "ended_at"
     t.string "token_upload"
     t.string "type"
-    t.bigint "parent_id"
-    t.string "parent_type"
-    t.datetime "notified_parent_at"
     t.integer "current_step", default: 0
     t.integer "total_steps", default: 0
     t.string "creator"
@@ -510,6 +507,7 @@ ActiveRecord::Schema.define(version: 2022_02_24_095842) do
     t.bigint "publication_id"
     t.bigint "workgroup_id"
     t.hstore "options", default: {}
+    t.datetime "notified_parent_at"
     t.index ["publication_id"], name: "index_exports_on_publication_id"
     t.index ["referential_id"], name: "index_exports_on_referential_id"
     t.index ["workbench_id"], name: "index_exports_on_workbench_id"

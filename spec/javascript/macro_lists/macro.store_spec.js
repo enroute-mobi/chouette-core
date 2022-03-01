@@ -51,20 +51,20 @@ describe('setFormData', () => {
 		// Macros
 		const macroKeys = keys.filter(k => /^macro_list\[macros_attributes\]/.test(k))
 
-		expect(macroKeys).toHaveLength(4 * 2)
+		expect(macroKeys).toHaveLength(7)
 	
 		expect(result.get('macro_list[macros_attributes][0][id]')).toEqual('1')
 		expect(result.get('macro_list[macros_attributes][0][name]')).toEqual('macro1')
 		expect(result.get('macro_list[macros_attributes][0][position]')).toEqual('1')
 		expect(result.get('macro_list[macros_attributes][0][_destroy]')).toEqual('false')
 	
-		expect(result.get('macro_list[macros_attributes][1][id]')).toEqual('')
+		expect(result.has('macro_list[macros_attributes][1][id]')).toBeFalsy()
 		expect(result.get('macro_list[macros_attributes][1][name]')).toEqual('macro2')
 		expect(result.get('macro_list[macros_attributes][1][position]')).toEqual('2')
 		expect(result.get('macro_list[macros_attributes][1][_destroy]')).toEqual('false')
 
 		// Macro Contexts
-		const macroContextKeys = keys.filter(k => /^macro_list\[macro_contexts_attributes\]\[\d+\]/.test(k))
+		const macroContextKeys = keys.filter(k => /^macro_list\[macro_contexts_attributes\]\[\d+\]\[\w+\]$/.test(k))
 
 		expect(macroContextKeys).toHaveLength(4 * 2)
 		

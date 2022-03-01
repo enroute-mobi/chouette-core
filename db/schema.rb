@@ -491,9 +491,9 @@ ActiveRecord::Schema.define(version: 2022_02_25_141451) do
     t.datetime "updated_at", null: false
     t.integer "position"
     t.bigint "custom_field_group_id"
-    t.index ["custom_field_group_id", "position"], name: "uniq_custom_field_group_id_and_position", unique: true
     t.index ["custom_field_group_id"], name: "index_custom_fields_on_custom_field_group_id"
     t.index ["resource_type"], name: "index_custom_fields_on_resource_type"
+    t.index ["workgroup_id", "resource_type", "custom_field_group_id", "position"], name: "uniq_workgroup_id_resource_type_custom_field_group_id_position", unique: true
   end
 
   create_table "delayed_jobs", force: :cascade do |t|

@@ -5,7 +5,7 @@ module Control
     self.table_name = "controls"
 
     belongs_to :control_context, class_name: "Control::Context", optional: true, inverse_of: :controls
-    belongs_to :control_list, class_name: "Macro::List", optional: true, inverse_of: :controls
+    belongs_to :control_list, class_name: "Control::List", optional: true, inverse_of: :controls
     acts_as_list scope: 'control_list_id #{control_list_id ? "= #{control_list_id}" : "IS NULL"} AND control_context_id #{control_context_id ? "= #{control_context_id}" : "IS NULL"}'
 
     store :options, coder: JSON
@@ -30,7 +30,7 @@ module Control
       self.table_name = "control_runs"
 
       belongs_to :control_context_run, class_name: "Control::Context::Run", optional: true, inverse_of: :control_runs
-      belongs_to :contol_list_run, class_name: "Control::List::Run", inverse_of: :control_runs
+      belongs_to :control_list_run, class_name: "Control::List::Run", inverse_of: :control_runs
 
       has_many :control_messages, class_name: "Control::Message", foreign_key: "control_run_id", inverse_of: :control_run
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_02_24_095842) do
+ActiveRecord::Schema.define(version: 2022_03_01_144132) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -498,6 +498,7 @@ ActiveRecord::Schema.define(version: 2022_02_24_095842) do
     t.datetime "ended_at"
     t.string "token_upload"
     t.string "type"
+    t.datetime "notified_parent_at"
     t.integer "current_step", default: 0
     t.integer "total_steps", default: 0
     t.string "creator"
@@ -507,7 +508,6 @@ ActiveRecord::Schema.define(version: 2022_02_24_095842) do
     t.bigint "publication_id"
     t.bigint "workgroup_id"
     t.hstore "options", default: {}
-    t.datetime "notified_parent_at"
     t.index ["publication_id"], name: "index_exports_on_publication_id"
     t.index ["referential_id"], name: "index_exports_on_referential_id"
     t.index ["workbench_id"], name: "index_exports_on_workbench_id"
@@ -1137,6 +1137,8 @@ ActiveRecord::Schema.define(version: 2022_02_24_095842) do
     t.jsonb "import_options", default: {}
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "enabled", default: true
+    t.boolean "ignore_checksum", default: false
     t.index ["workbench_id"], name: "index_sources_on_workbench_id"
   end
 
@@ -1252,7 +1254,6 @@ ActiveRecord::Schema.define(version: 2022_02_24_095842) do
     t.bigint "stop_area_provider_id"
     t.string "public_code"
     t.float "compass_bearing"
-    t.string "accessibility_status"
     t.string "mobility_impaired_accessibility"
     t.string "wheelchair_accessibility"
     t.string "step_free_accessibility"
@@ -1315,7 +1316,7 @@ ActiveRecord::Schema.define(version: 2022_02_24_095842) do
     t.boolean "in_out"
     t.string "checksum"
     t.text "checksum_source"
-    t.index ["date", "time_table_id"], name: "uniq_date_per_time_table", unique: true
+    t.index ["date", "time_table_id"], name: "index_time_table_dates_on_date_and_time_table_id", unique: true
     t.index ["time_table_id"], name: "index_time_table_dates_on_time_table_id"
   end
 

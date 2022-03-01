@@ -1,4 +1,4 @@
-import { isArray } from 'lodash'
+import { isArray, isNil } from 'lodash'
 
 import { MacroCollection } from './macro'
 import { MacroContextCollection } from './macroContext'
@@ -11,17 +11,21 @@ const formDataSetter = formData => (parentName = '') => (object, index) => {
 	const getName = key => `macro_list${parentName}[${object.inputSelector}][${index}][${key}]`
 
 	for (const key in object.attributes) {
-		formData.set(getName(key), object[key])
+		const value = object[key]
+		formData.set(getName(key), isNil(value) ? '' : value)
 	}
 
 	formData.set(getName('position'), index + 1)
 }
 
-export default {
-	name: '',
-	comments: '',
-	macros: new MacroCollection(),
-	contexts: new MacroContextCollection(),
+export default class Store {
+	constructor() {
+		this.name = ''
+		this.comments = ''
+		this.macros = new MacroCollection() 
+		this.contexts = new MacroContextCollection()
+	}
+	
 	initState({ name, comments, macros, macro_contexts }) {
 		this.name = name
 		this.comments = comments
@@ -31,7 +35,8 @@ export default {
 		macro_contexts.forEach(({ macros, ...attributes }) => {
 			this.contexts.add(attributes).then(addMacros(macros))
 		})
-	},
+	}
+
 	setFormData({ formData }) {
 		// We had some issues to keep store & form in sync. Especially during edit where we had conflicts between subforms.
 		// As a solution we decided to compute manually the formData.

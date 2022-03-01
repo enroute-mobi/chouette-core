@@ -1,4 +1,4 @@
-import { get, omit } from 'lodash'
+import { omit } from 'lodash'
 import { Path } from 'path-parser'
 
 const path = Path.createPath('/workbenches/:workbenchId/macro_lists')
@@ -20,12 +20,7 @@ export default superclass => class Resource extends superclass {
 
 	get hasErrors() { return this.errors.length > 0 }
 
-	get attributes() {
-		return new Proxy(
-			omit(this, this.attributesList),
-			{ get: (target, prop) => get(target, prop, '') }
-		)
-	}
+	get attributes() { return omit(this, this.attributesList) }
 
 	delete() { this._destroy = true }
 

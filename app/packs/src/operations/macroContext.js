@@ -13,7 +13,6 @@ const MacroContextMixin = superclass => class MacroContext extends superclass {
 
 	get inputSelector() { return 'macro_contexts_attributes' }
 
-	// Private methods
 	get attributesList() { return ['errors', 'html', 'macros'] } 
 }
 
@@ -24,7 +23,7 @@ const MacroCollectionMixin = superclass => class MacroContextCollection extends 
 	static get ResourceConstructor() { return MacroContext }
 
 	duplicate(macroContext) {		
-		this
+		return this
 			.add(macroContext.attributes)
 			.then(duplicate => {
 				macroContext.macros.forEach(macro => {

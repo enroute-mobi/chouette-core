@@ -6,6 +6,8 @@ module MacroLists
 			@template = params[:template]
 			@klass = params[:type].constantize
 			@resource = klass.find_or_initialize_by(id: params[:id])
+			@resource.validate if params[:validate]
+
 			@form_options = { wrapper: :horizontal_form }
 
 			if template.action_name === 'show'

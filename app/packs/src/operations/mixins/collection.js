@@ -1,7 +1,10 @@
 import { filter, first, isEmpty, last, omit, reject } from 'lodash'
+import ResourceMixin from './resource'
+
+const Resource = ResourceMixin(class {})
 
 export default superclass => class Collection extends superclass {
-	static get ResourceConstructor() { throw new Error('ResourceConstructor not implemented') }
+	static get ResourceConstructor() { return Resource }
 
 	get first() { return first(this) }
 

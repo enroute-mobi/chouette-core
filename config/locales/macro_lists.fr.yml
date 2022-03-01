@@ -31,6 +31,7 @@ fr:
         macros: "Jeux d'instructions"
       macro_placeholder: "Décrivez l’objectif de cette instruction"
       macro_type_placeholder: "Ajouter une nouvelle instruction en sélectionnant son type"
+      macro_context_type_placeholder: "Ajouter un nouveau contexte d'instructions en sélectionnant son type"
       macro_type: "Type d’instruction"
       add_macro: "Ajouter une nouvelle instruction"
       macro_context_type: Type de contexte

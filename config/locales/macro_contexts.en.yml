@@ -1,0 +1,13 @@
+en:
+  activerecord:
+    models:
+      macro:
+        zero:  "Macro Contexts"
+        one:   "Macro Context"
+        other: "Macro Contexts"
+    attributes:
+      macro/context:
+        name: Name
+        comments: Comments
+      macro/context/transport_mode:
+        transport_mode: Transport Mode

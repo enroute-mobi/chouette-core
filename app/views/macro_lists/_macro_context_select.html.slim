@@ -7,12 +7,12 @@ div[x-data="{ selectedOption: '' }"]
 					= sub.input :type,
 						as: :tom_select,
 						collection: Macro::Context.available.map { |m| { id: m.name, text: m.model_name.human } },
-						placeholder: "#{I18n.t('macro_lists.form.macro_type_placeholder')}",
+						placeholder: "#{I18n.t('macro_lists.form.macro_context_type_placeholder')}",
 						input_html: { 'x-model': 'selectedOption' },
 						wrapper: false,
 						label: false
 
-			= button_tag t('macro_lists.form.add_macro_context'),
+			= button_tag t('macro_lists.form.add_context'),
 				class: 'btn btn-primary',
 				':disabled': "!Boolean(selectedOption)",
 				'@click.prevent': "$store.macroList.contexts.add({ type: selectedOption })"

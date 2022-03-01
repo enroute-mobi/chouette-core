@@ -1,0 +1,13 @@
+fr:
+  activerecord:
+    models:
+      macro:
+        zero:  "Contexte d'instructions"
+        one:   "MContexte d'instructions"
+        other: "Contexte d'instructions"
+    attributes:
+      macro/context:
+        name: Nom
+        comments: Commentaire
+      macro/context/transport_mode:
+        transport_mode: Mode de transport

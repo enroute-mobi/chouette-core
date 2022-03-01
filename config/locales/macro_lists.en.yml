@@ -28,7 +28,8 @@ en:
       sections:
         macros: "Macro Lists"
       macro_placeholder: "Describe the macro objective"
-      macro_type_placeholder: "Add a first macro by selecting its type"
+      macro_type_placeholder: "Add a macro by selecting its type"
+      macro_context_type_placeholder: "Add a macro context by selecting its type"
       macro_type: "Macro Type"
       add_macro: "Add a new Macro"
       macro_context_type: Macro Context Type

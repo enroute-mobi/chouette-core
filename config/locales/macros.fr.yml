@@ -26,6 +26,7 @@ fr:
       macro:
         name: Nom
         comments: Commentaire
+      macro/create_code:
         target_model: Modèle cible
         source_attribute: Attribut de la source
         source_pattern: Modèle de source

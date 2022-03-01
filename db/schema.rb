@@ -10,7 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
+<<<<<<< HEAD
 ActiveRecord::Schema.define(version: 2022_03_01_144132) do
+=======
+ActiveRecord::Schema.define(version: 2022_02_25_141451) do
+>>>>>>> 91344ed71 (CHOUETTE-1823 - begin migration, add new attributes and create new columns, begin model)
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -465,6 +469,17 @@ ActiveRecord::Schema.define(version: 2022_03_01_144132) do
     t.index ["relation_name"], name: "index_cross_referential_index_entries_on_relation_name"
   end
 
+  create_table "custom_field_groups", force: :cascade do |t|
+    t.bigint "workgroup_id"
+    t.string "name"
+    t.integer "position"
+    t.string "resource_type"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["workgroup_id", "resource_type", "position"], name: "uniq_workgroup_id_and_resource_type_and_position", unique: true
+    t.index ["workgroup_id"], name: "index_custom_field_groups_on_workgroup_id"
+  end
+
   create_table "custom_fields", force: :cascade do |t|
     t.string "code"
     t.string "resource_type"
@@ -474,6 +489,10 @@ ActiveRecord::Schema.define(version: 2022_03_01_144132) do
     t.bigint "workgroup_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "position"
+    t.bigint "custom_field_group_id"
+    t.index ["custom_field_group_id", "position"], name: "uniq_custom_field_group_id_and_position", unique: true
+    t.index ["custom_field_group_id"], name: "index_custom_fields_on_custom_field_group_id"
     t.index ["resource_type"], name: "index_custom_fields_on_resource_type"
   end
 
@@ -1624,6 +1643,7 @@ ActiveRecord::Schema.define(version: 2022_03_01_144132) do
   add_foreign_key "compliance_controls", "compliance_control_sets"
   add_foreign_key "control_runs", "control_context_runs"
   add_foreign_key "controls", "control_contexts"
+  add_foreign_key "custom_fields", "custom_field_groups"
   add_foreign_key "exports", "workgroups"
   add_foreign_key "group_of_lines_lines", "group_of_lines", name: "groupofline_group_fkey", on_delete: :cascade
   add_foreign_key "journey_patterns", "routes", name: "jp_route_fkey", on_delete: :cascade

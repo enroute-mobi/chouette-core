@@ -378,7 +378,7 @@ GEM
     graphiql-rails (1.8.0)
       railties
       sprockets-rails
-    graphql (2.0.1)
+    graphql (1.12.24)
     gretel (4.4.0)
       actionview (>= 5.1, < 7.1)
       railties (>= 5.1, < 7.1)
@@ -839,7 +839,7 @@ DEPENDENCIES
   georuby (= 2.3.0)
   google-cloud-storage (> 1.4.0)
   graphiql-rails (>= 1.8.0)
-  graphql
+  graphql (~> 1.12.19)
   gretel (>= 4.3.0)
   gtfs!
   guard-rspec

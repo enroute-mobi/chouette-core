@@ -2,8 +2,6 @@
 - macro = local_assigns.fetch(:resource, :macro)
 - class_description = macro.class.model_name.human
 
-- is_show = controller.action_name == 'show'
-
 = form.simple_fields_for(:macros, macro) do |macro_form|
 	.flex.flex-col.items-center.mt-5 x-data=("{ expanded: true }")
 		.flex.items-center.w-full.mb-8
@@ -22,12 +20,11 @@
 	
 				.flex.items-center
 				p.mb-0.mr-2 x-text="resource.name" x-show="!expanded"
-					- unless is_show
-						p.mb-0 x-show="!expanded" = "(#{class_description})"
+					p.mb-0 x-show="!expanded" = "(#{class_description})"
 			.flex.ml-3 x-show="expanded"
 				p.flex.w-64 = class_description
 
-			- unless is_show
+			- unless presenter.is_show
 				= render 'actions'
 
 		.macro.flex.flex-col x-show="expanded && !resource.isDeleted" class="w-full"

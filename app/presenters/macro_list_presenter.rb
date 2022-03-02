@@ -6,6 +6,23 @@ class MacroListPresenter
 		@template = template
 	end
 
+	def form_options
+		{
+			wrapper: :horizontal_form,
+			html: {
+				class: 'form-horizontal',
+				id: 'macro_list_form',
+				'x-data': '',
+				'x-init': "$store.macroList.initState(#{json_state})",
+				'@formdata': '$store.macroList.setFormData($event)'
+			}
+		}
+	end
+
+	def is_show
+		template.controller.action_name == 'show'
+	end
+
 	def transport_mode_options
 		macro_list.workbench.workgroup.sorted_transport_modes.map { |t| ["enumerize.transport_mode.#{t}".t, t] }
 	end

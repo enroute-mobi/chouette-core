@@ -37,24 +37,26 @@ class MacroListsController < ChouetteController
     render json: { html: MacroLists::RenderPartial.call(object_html_params) }
   end
 
-  def init_presenter
-    object = macro_list rescue Macro::List.new(workbench: workbench)
-    @presenter ||= MacroListPresenter.new(object, helpers)
-  end
-
-  helper_method :presenter
-
   protected
 
   alias macro_list resource
   alias workbench parent
-  alias presenter init_presenter
+  # alias presenter init_presenter
 
   def collection
     @macro_lists = parent.macro_lists.paginate(page: params[:page], per_page: 30)
   end
 
   private
+
+  def init_presenter
+    object = macro_list rescue Macro::List.new(workbench: workbench)
+    @presenter ||= MacroListPresenter.new(object, helpers)
+  end
+
+  alias presenter init_presenter
+
+  helper_method :presenter
 
   def decorate_macro_list
     object = macro_list rescue build_resource

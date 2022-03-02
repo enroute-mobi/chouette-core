@@ -2,7 +2,8 @@ class CustomField < ApplicationModel
 
   extend Enumerize
   belongs_to :workgroup
-  belongs_to :custom_fields_group
+  belongs_to :custom_field_group, optional: true
+
   enumerize :field_type, in: %i{list integer float string attachment}
 
   validates :name, uniqueness: {scope: [:resource_type, :workgroup_id]}

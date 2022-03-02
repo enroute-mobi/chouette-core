@@ -38,7 +38,9 @@ class Workgroup < ApplicationModel
 
   validates :sentinel_min_hole_size, presence: true, numericality: { greater_than_or_equal_to: 0 }
 
-  has_many :custom_fields, dependent: :destroy
+  has_many :custom_fields, -> { order(position: :asc) }, class_name: "CustomField", dependent: :delete_all, foreign_key: "workgroup_id", inverse_of: :workgroup
+  has_many :custom_field_groups, -> { order(position: :asc) }, class_name: "CustomFieldGroup", dependent: :delete_all, foreign_key: "workgroup_id", inverse_of: :workgroup
+
   has_many :code_spaces, dependent: :destroy do
     def default
       find_or_create_by(short_name: CodeSpace::DEFAULT_SHORT_NAME)

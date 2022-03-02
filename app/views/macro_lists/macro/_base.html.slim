@@ -22,7 +22,8 @@
 	
 				.flex.items-center
 				p.mb-0.mr-2 x-text="resource.name" x-show="!expanded"
-					p.mb-0 x-show="!expanded" = "(#{class_description})"
+					- unless is_show
+						p.mb-0 x-show="!expanded" = "(#{class_description})"
 			.flex.ml-3 x-show="expanded"
 				p.flex.w-64 = class_description
 

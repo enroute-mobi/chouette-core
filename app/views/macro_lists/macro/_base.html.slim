@@ -1,0 +1,34 @@
+- form = local_assigns.fetch(:form)
+- macro = local_assigns.fetch(:resource, :macro)
+- class_description = macro.class.model_name.human
+
+= form.simple_fields_for(:macros, macro) do |macro_form|
+	.flex.flex-col.items-center.mt-5 x-data=("{ expanded: true }")
+		.flex.items-center.w-full.mb-8
+			button @click="expanded = ! expanded" type="button" x-bind:disabled="resource.isDeleted" class="flex items-center justify-between p-3 pl-3 mr-3 font-bold text-white bg-enroute-chouette-green rounded cursor-pointer hover:text-indigo-100"
+				<span class="text-3xl w-4" x-text="expanded ? '-' : '+'">+</span>
+			.w-full
+				= macro_form.input :name,
+					placeholder: "#{I18n.t('macro_lists.form.macro_placeholder')}",
+					input_html: { \
+						'x-show': 'expanded', \
+						':readonly': '!expanded || resource.isDeleted', \
+						'x-model': 'resource.name' \
+					}, \
+					label: false,
+					wrapper_html: {'class': 'mb-0 mx-0'}
+	
+				.flex.items-center
+				p.mb-0.mr-2 x-text="resource.name" x-show="!expanded"
+					p.mb-0 x-show="!expanded" = "(#{class_description})"
+			.flex.ml-3 x-show="expanded"
+				p.flex.w-64 = class_description
+
+			- unless presenter.is_show
+				= render 'actions'
+
+		.macro.flex.flex-col x-show="expanded && !resource.isDeleted" class="w-full"
+			= render "macro_lists/#{macro.model_name.i18n_key.to_s}", form: macro_form
+			.form-group
+				= macro_form.label Macro::List.human_attribute_name(:comments), class: 'col-sm-4 col-xs-5 control-label mb-3'
+				= macro_form.input :comments, as: :text, required: false, input_html: { 'x-model': 'resource.comments' }, label: false, wrapper: false

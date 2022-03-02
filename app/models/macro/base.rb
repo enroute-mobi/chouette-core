@@ -82,3 +82,9 @@ module Macro
     end
   end
 end
+
+# STI
+require_dependency 'macro/associate_shape'
+require_dependency 'macro/create_code'
+require_dependency 'macro/dummy'
+require_dependency 'macro/update_stop_area_compass_bearing'

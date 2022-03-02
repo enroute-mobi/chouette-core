@@ -1,0 +1,18 @@
+div[x-data="{ selectedOption: '' }"]
+	.flex.flex-col.items-center.mt-5
+		.flex.items-center.w-full.mb-8
+			= simple_fields_for(:macro_select) do |sub|
+				= sub.label t('macro_lists.form.macro_type'), class: 'mb-3', required: false
+				.w-full.mx-5
+					= sub.input :type,
+						as: :tom_select,
+						collection: Macro.available.map { |m| { id: m.name, text: m.model_name.human } },
+						placeholder: "#{I18n.t('macro_lists.form.macro_type_placeholder')}",
+						input_html: { 'x-model': 'selectedOption' },
+						wrapper: false,
+						label: false
+
+			= button_tag t('macro_lists.form.add_macro'),
+				class: 'btn btn-primary',
+				':disabled': "!Boolean(selectedOption)",
+				'@click.prevent': "#{collection}.add({ type: selectedOption })"

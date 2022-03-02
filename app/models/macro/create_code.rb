@@ -3,10 +3,10 @@ module Macro
     # Use enumerize directly
     enumerize :target_model, in: %w{StopArea Line VehicleJourney}
 
-    option :target_model, collection: target_model.values, required: true
-    option :source_attribute, required: true # TODO use ModelAttribute ?
+    option :target_model
+    option :source_attribute # TODO use ModelAttribute ?
     option :source_pattern
-    option :target_code_space, required: true # TODO must be id or short_name of one of Workgroup CodeSpaces
+    option :target_code_space# TODO must be id or short_name of one of Workgroup CodeSpaces
     option :target_pattern
 
     # Use standard Rails validation methods
@@ -14,10 +14,10 @@ module Macro
 
     class Run < Macro::Base::Run
       # TODO copy options from Macro::CreateCode class
-      option :target_model, required: true
-      option :source_attribute, required: true
+      option :target_model
+      option :source_attribute
       option :source_pattern
-      option :target_code_space, required: true
+      option :target_code_space
       option :target_pattern
 
       def run

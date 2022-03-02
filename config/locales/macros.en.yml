@@ -26,6 +26,7 @@ en:
       macro:
         name: Name
         comments: Comments
+      macro/create_code:
         target_model: Target Model
         source_attribute: Source Attribute
         source_pattern: Source Pattern

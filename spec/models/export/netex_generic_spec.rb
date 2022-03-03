@@ -558,7 +558,7 @@ RSpec.describe Export::NetexGeneric do
     end
   end
 
-  describe "Stops export" do
+  describe "Quays export" do
     let(:target) { MockNetexTarget.new }
     let(:export_scope) { Export::Scope::All.new context.referential }
     let(:export) do
@@ -568,11 +568,13 @@ RSpec.describe Export::NetexGeneric do
     end
 
     let(:part) do
-      Export::NetexGeneric::Stops.new export
+      Export::NetexGeneric::Quays.new export
     end
 
     let(:context) do
       Chouette.create do
+        stop_area :parent_stop_place, area_type: "zdlp"
+        stop_area :quay, parent: :parent_stop_place
         3.times { stop_point }
       end
     end
@@ -606,6 +608,16 @@ RSpec.describe Export::NetexGeneric do
         context "when StopArea code 'public' exists with value 'dummy'" do
           before { stop_area.codes << Code.new(code_space: CodeSpace.new(short_name: 'public'), value: 'dummy') }
           it { is_expected.to include(an_object_having_attributes(key: "public", value: "dummy", type_of_key: "ALTERNATE_IDENTIFIER")) }
+        end
+
+        context "when StopArea has parent_id tag" do
+          let(:quay) { context.stop_area :quay }
+          let(:parent_stop_place) { context.stop_area :parent_stop_place }
+          let(:quay_decorator) { Export::NetexGeneric::StopDecorator.new quay }
+
+          subject { quay_decorator.netex_resource.tag(:parent_id) }
+
+          it { is_expected.to eq(parent_stop_place.objectid) }
         end
       end
     end

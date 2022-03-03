@@ -65,9 +65,11 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: 5a2ddee1dac02721f3b2eceb08e9700ca6818b4c
+  revision: 61f91621c1f0729d0560970284cb954ec0d34739
+  branch: CHOUETTE-1815-embedded-resources
   specs:
     netex (0.1.2)
+      activesupport
       ox
       rgeo-proj4
       rubyzip
@@ -96,8 +98,15 @@ GIT
       google-cloud-storage (~> 1.18.2)
 
 GEM
-  remote: https://rubygems.org/
   remote: https://rails-assets.org/
+  specs:
+    rails-assets-bootstrap-sass-official (3.3.7)
+      rails-assets-jquery (>= 1.9.1, < 4)
+    rails-assets-jquery (3.6.0)
+    rails-assets-respond (1.4.2)
+
+GEM
+  remote: https://rubygems.org/
   specs:
     aasm (5.2.0)
       concurrent-ruby (~> 1.0)
@@ -569,10 +578,6 @@ GEM
       bundler (>= 1.3.0)
       railties (= 5.2.6.2)
       sprockets-rails (>= 2.0.0)
-    rails-assets-bootstrap-sass-official (3.3.7)
-      rails-assets-jquery (>= 1.9.1, < 4)
-    rails-assets-jquery (3.6.0)
-    rails-assets-respond (1.4.2)
     rails-controller-testing (1.0.5)
       actionpack (>= 5.0.1.rc1)
       actionview (>= 5.0.1.rc1)

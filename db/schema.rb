@@ -10,11 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-<<<<<<< HEAD
 ActiveRecord::Schema.define(version: 2022_03_01_144132) do
-=======
-ActiveRecord::Schema.define(version: 2022_02_25_141451) do
->>>>>>> 91344ed71 (CHOUETTE-1823 - begin migration, add new attributes and create new columns, begin model)
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -489,7 +485,7 @@ ActiveRecord::Schema.define(version: 2022_02_25_141451) do
     t.bigint "workgroup_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "position"
+    t.integer "position", null: false
     t.bigint "custom_field_group_id"
     t.index ["custom_field_group_id"], name: "index_custom_fields_on_custom_field_group_id"
     t.index ["resource_type"], name: "index_custom_fields_on_resource_type"

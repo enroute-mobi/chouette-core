@@ -10,11 +10,13 @@ module Control
 
     store :options, coder: JSON
 
-		enumerize :criticity, in: %w(warning error)
+		enumerize :criticity, in: %w(warning error), default: "warning"
 
     def build_run
       run_attributes = {
         name: name,
+        criticity: criticity,
+        code: code,
         comments: comments,
         position: position,
         options: options

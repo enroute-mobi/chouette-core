@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_03_01_144101) do
+ActiveRecord::Schema.define(version: 2022_03_01_144132) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -380,7 +380,7 @@ ActiveRecord::Schema.define(version: 2022_03_01_144101) do
 
   create_table "control_list_runs", force: :cascade do |t|
     t.bigint "workbench_id"
-    t.string "name"
+    t.string "name", null: false
     t.bigint "original_control_list_id"
     t.bigint "referential_id"
     t.string "status"
@@ -397,7 +397,7 @@ ActiveRecord::Schema.define(version: 2022_03_01_144101) do
 
   create_table "control_lists", force: :cascade do |t|
     t.bigint "workbench_id"
-    t.string "name"
+    t.string "name", null: false
     t.text "comments"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -408,8 +408,8 @@ ActiveRecord::Schema.define(version: 2022_03_01_144101) do
     t.string "source_type"
     t.bigint "source_id"
     t.bigint "control_run_id"
-    t.string "message_key"
-    t.string "criticity"
+    t.string "message_key", null: false
+    t.string "criticity", null: false
     t.jsonb "message_attributes", default: {}
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -420,32 +420,34 @@ ActiveRecord::Schema.define(version: 2022_03_01_144101) do
   create_table "control_runs", force: :cascade do |t|
     t.string "type", null: false
     t.bigint "control_list_run_id"
+    t.bigint "control_context_run_id"
     t.integer "position", null: false
     t.text "name"
     t.text "comments"
+    t.string "criticity", null: false
+    t.string "code"
     t.jsonb "options", default: {}
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "control_context_run_id"
     t.index ["control_context_run_id"], name: "index_control_runs_on_control_context_run_id"
-    t.index ["control_list_run_id", "position"], name: "index_control_runs_on_control_list_run_id_and_position", unique: true
+    t.index ["control_list_run_id", "control_context_run_id", "position"], name: "index_control_runs_position", unique: true
     t.index ["control_list_run_id"], name: "index_control_runs_on_control_list_run_id"
   end
 
   create_table "controls", force: :cascade do |t|
     t.string "type", null: false
     t.bigint "control_list_id"
+    t.bigint "control_context_id"
     t.integer "position", null: false
     t.string "name"
     t.text "comments"
-    t.string "criticity"
+    t.string "criticity", null: false
     t.string "code"
     t.jsonb "options", default: {}
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "control_context_id"
     t.index ["control_context_id"], name: "index_controls_on_control_context_id"
-    t.index ["control_list_id", "position"], name: "index_controls_on_control_list_id_and_position", unique: true
+    t.index ["control_list_id", "control_context_id", "position"], name: "index_controls_position", unique: true
     t.index ["control_list_id"], name: "index_controls_on_control_list_id"
   end
 

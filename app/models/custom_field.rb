@@ -41,6 +41,12 @@ class CustomField < ApplicationModel
       HashWithIndifferentAccess[*self.map{|k, v| [k, v.to_hash]}.flatten(1)]
     end
 
+    def by_group(&block)
+      values.group_by(&:custom_field_group).to_a.sort_by { |group, _| group&.position || 0 }.each do |group, custom_fields|
+        yield group, custom_fields
+      end
+    end
+
     def for_section(section)
       select do |_code, field|
         field.options["section"] == section
@@ -81,6 +87,7 @@ class CustomField < ApplicationModel
       attr_accessor :owner, :custom_field
 
       delegate :code, :name, :field_type, to: :@custom_field
+      delegate :custom_field_group, :position, to: :@custom_field
 
       def default_value
         options["default"]

@@ -86,8 +86,7 @@ class CustomField < ApplicationModel
 
       attr_accessor :owner, :custom_field
 
-      delegate :code, :name, :field_type, to: :@custom_field
-      delegate :custom_field_group, :position, to: :@custom_field
+      delegate :code, :name, :field_type, :custom_field_group, :position, to: :custom_field
 
       def default_value
         options["default"]

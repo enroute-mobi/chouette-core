@@ -296,7 +296,7 @@ class Export::NetexGeneric < Export::Base
       end
 
       def netex_resource
-        Netex::StopPlaceEntrance.new netex_attributes
+        Netex::StopPlaceEntrance.new(netex_attributes).with_tag(parent_id: parent_objectid)
       end
 
       def netex_identifier
@@ -321,6 +321,10 @@ class Export::NetexGeneric < Export::Base
           town: city_name,
           country_name: country
         )
+      end
+
+      def parent_objectid
+        stop_area&.objectid
       end
 
       def raw_xml

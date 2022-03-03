@@ -22,7 +22,9 @@ class Source < ApplicationModel
   end
 
   def retrieve
-    Retrieval.new(self).perform
+    if enabled
+      Retrieval.new(self).perform
+    end
   end
 
   module Downloader
@@ -186,7 +188,7 @@ class Source < ApplicationModel
     end
 
     def checksum_changed?
-      source.checksum != checksum
+      source.ignore_checksum || (source.checksum != checksum)
     end
 
     def import

@@ -53,6 +53,8 @@
       - if policy(StopAreaProvider).create?
         = link_to workbench_stop_area_referential_stop_area_providers_path(workbench), class: 'list-group-item' do
           span = StopAreaProvider.t.capitalize
+      = link_to workbench_stop_area_referential_entrances_path(@workbench), class: 'list-group-item' do
+        span = Entrance.t.capitalize
       = link_to workbench_stop_area_referential_path(workbench), class: "list-group-item" do
         span = 'stop_area_referentials.show.title'.t
 

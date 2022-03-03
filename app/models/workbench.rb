@@ -52,6 +52,9 @@ class Workbench < ApplicationModel
   has_many :macro_lists, class_name: "Macro::List", dependent: :destroy
   has_many :macro_list_runs, class_name: "Macro::List::Run", dependent: :destroy
 
+  has_many :control_lists, class_name: "Control::List", dependent: :destroy
+  has_many :control_list_runs, class_name: "Control::List::Run", dependent: :destroy
+
   before_validation :create_dependencies, on: :create
 
   validates :priority, presence: true, numericality: { greater_than_or_equal_to: 1 }

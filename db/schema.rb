@@ -356,6 +356,101 @@ ActiveRecord::Schema.define(version: 2022_03_01_144132) do
     t.index ["stop_area_referential_id"], name: "index_connection_links_on_stop_area_referential_id"
   end
 
+  create_table "control_context_runs", force: :cascade do |t|
+    t.bigint "control_list_run_id"
+    t.string "name"
+    t.string "type", null: false
+    t.jsonb "options", default: {}
+    t.text "comments"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["control_list_run_id"], name: "index_control_context_runs_on_control_list_run_id"
+  end
+
+  create_table "control_contexts", force: :cascade do |t|
+    t.bigint "control_list_id"
+    t.string "name"
+    t.string "type", null: false
+    t.jsonb "options", default: {}
+    t.text "comments"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["control_list_id"], name: "index_control_contexts_on_control_list_id"
+  end
+
+  create_table "control_list_runs", force: :cascade do |t|
+    t.bigint "workbench_id"
+    t.string "name", null: false
+    t.bigint "original_control_list_id"
+    t.bigint "referential_id"
+    t.string "status"
+    t.string "error_uuid"
+    t.string "creator"
+    t.datetime "started_at"
+    t.datetime "ended_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["original_control_list_id"], name: "index_control_list_runs_on_original_control_list_id"
+    t.index ["referential_id"], name: "index_control_list_runs_on_referential_id"
+    t.index ["workbench_id"], name: "index_control_list_runs_on_workbench_id"
+  end
+
+  create_table "control_lists", force: :cascade do |t|
+    t.bigint "workbench_id"
+    t.string "name", null: false
+    t.text "comments"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["workbench_id"], name: "index_control_lists_on_workbench_id"
+  end
+
+  create_table "control_messages", force: :cascade do |t|
+    t.string "source_type"
+    t.bigint "source_id"
+    t.bigint "control_run_id"
+    t.string "message_key", null: false
+    t.string "criticity", null: false
+    t.jsonb "message_attributes", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["control_run_id"], name: "index_control_messages_on_control_run_id"
+    t.index ["source_type", "source_id"], name: "index_control_messages_on_source_type_and_source_id"
+  end
+
+  create_table "control_runs", force: :cascade do |t|
+    t.string "type", null: false
+    t.bigint "control_list_run_id"
+    t.bigint "control_context_run_id"
+    t.integer "position", null: false
+    t.text "name"
+    t.text "comments"
+    t.string "criticity", null: false
+    t.string "code"
+    t.jsonb "options", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["control_context_run_id"], name: "index_control_runs_on_control_context_run_id"
+    t.index ["control_list_run_id", "control_context_run_id", "position"], name: "index_control_runs_position", unique: true
+    t.index ["control_list_run_id"], name: "index_control_runs_on_control_list_run_id"
+  end
+
+  create_table "controls", force: :cascade do |t|
+    t.string "type", null: false
+    t.bigint "control_list_id"
+    t.bigint "control_context_id"
+    t.integer "position", null: false
+    t.string "name"
+    t.text "comments"
+    t.string "criticity", null: false
+    t.string "code"
+    t.jsonb "options", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["control_context_id"], name: "index_controls_on_control_context_id"
+    t.index ["control_list_id", "control_context_id", "position"], name: "index_controls_position", unique: true
+    t.index ["control_list_id"], name: "index_controls_on_control_list_id"
+  end
+
   create_table "cross_referential_index_entries", force: :cascade do |t|
     t.string "parent_type"
     t.bigint "parent_id"
@@ -1527,6 +1622,8 @@ ActiveRecord::Schema.define(version: 2022_03_01_144132) do
   add_foreign_key "compliance_control_sets", "organisations"
   add_foreign_key "compliance_controls", "compliance_control_blocks"
   add_foreign_key "compliance_controls", "compliance_control_sets"
+  add_foreign_key "control_runs", "control_context_runs"
+  add_foreign_key "controls", "control_contexts"
   add_foreign_key "exports", "workgroups"
   add_foreign_key "group_of_lines_lines", "group_of_lines", name: "groupofline_group_fkey", on_delete: :cascade
   add_foreign_key "journey_patterns", "routes", name: "jp_route_fkey", on_delete: :cascade

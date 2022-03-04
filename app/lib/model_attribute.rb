@@ -1,4 +1,16 @@
 class ModelAttribute
+
+  MODELS = [
+    Chouette::Line,
+    Chouette::Company,
+    Chouette::StopArea,
+    Chouette::Route,
+    Chouette::JourneyPattern,
+    Chouette::VehicleJourney,
+    Chouette::Footnote,
+    Chouette::RoutingConstraintZone,
+  ]
+
   attr_reader :klass, :name, :data_type, :options
 
   def self.all
@@ -35,50 +47,6 @@ class ModelAttribute
     @options = options
   end
 
-  # Chouette::Route
-  define Chouette::Route, :name, :string, **{ mandatory: true }
-  define Chouette::Route, :published_name, :string, **{ mandatory: true }
-
-  # Chouette::JourneyPattern
-  define Chouette::JourneyPattern, :name, :string, **{ mandatory: true }
-  define Chouette::JourneyPattern, :published_name, :string, **{ mandatory: true }
-  define Chouette::JourneyPattern, :registration_number, :string
-
-  # Chouette::VehicleJourney
-  define Chouette::VehicleJourney, :published_journey_name, :string
-  define Chouette::VehicleJourney, :published_journey_identifier, :string
-
-  # Chouette::Footnote
-  define Chouette::Footnote, :code, :string
-  define Chouette::Footnote, :label, :string
-
-  # Chouette::RoutingConstraintZone
-  define Chouette::RoutingConstraintZone, :name, :string, **{ mandatory: true }
-
-  # Chouette::Line
-  define Chouette::Line, :published_name, :string, **{ mandatory: true }
-  define Chouette::Line, :number, :string
-  define Chouette::Line, :company_id, :integer
-  define Chouette::Line, :network_id, :integer
-  define Chouette::Line, :color, :string
-  define Chouette::Line, :text_color, :string
-  define Chouette::Line, :url, :string
-  define Chouette::Line, :transport_mode, :string
-  
-  # Chouette::StopArea
-  define Chouette::StopArea, :street_name, :string
-  define Chouette::StopArea, :zip_code, :string
-  define Chouette::StopArea, :city_name, :string
-  define Chouette::StopArea, :postal_region, :string
-  define Chouette::StopArea, :country_code, :string
-  define Chouette::StopArea, :time_zone, :string
-  define Chouette::StopArea, :fare_code, :string
-  define Chouette::StopArea, :coordinates, :string
-
-  # Chouette::Company
-  define Chouette::Company, :default_contact_url, :float
-  define Chouette::Company, :default_contact_phone, :float
-
   def code
     "#{resource_name}##{name}"
   end
@@ -101,5 +69,22 @@ class ModelAttribute
       name == other.name &&
       data_type == other.data_type
       options == other.options
+  end
+
+  def self.associations(model)
+    associations = model.reflect_on_all_associations
+    associations = associations.select { |a| a.macro == :belongs_to }
+    associations.map{ |a| ["#{a.name}_id", a.name] }.to_h
+  end
+
+  # create automatically all model_attributes from DB
+  MODELS.each do |model|
+    refs = self.associations(model)
+
+    model.columns_hash.each do |attr_name, attr_infos|
+      options = attr_infos.null ? {} : { mandatory: !attr_infos.null }
+      options[:ref] = refs[attr_name] if refs[attr_name]
+      define model, attr_name, attr_infos.type, options
+    end
   end
 end

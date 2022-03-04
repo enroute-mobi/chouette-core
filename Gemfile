@@ -46,13 +46,13 @@ gem 'faraday'
 
 gem 'pg'
 
-gem 'activerecord-postgis-adapter'
+gem 'activerecord-postgis-adapter', '~> 5.2.3'
 gem 'postgres-copy', '>= 1.5.0'
 
 gem 'polylines'
 gem 'bulk_insert'
 
-gem 'graphql'
+gem 'graphql', '~> 1.12.19'
 
 # Codifligne API
 gem 'codifligne', en_route: 'ilico-api'

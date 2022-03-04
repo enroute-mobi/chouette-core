@@ -592,6 +592,61 @@ RSpec.describe Export::NetexGeneric do
       let(:stop_area) { Chouette::StopArea.new }
       let(:decorator) { Export::NetexGeneric::StopDecorator.new stop_area }
 
+      describe "#netex_quay?" do
+        subject { decorator.netex_quay? }
+        context "when the StoArea has zdep area_type" do
+          before { stop_area.area_type = Chouette::AreaType::QUAY }
+          it { is_expected.to be_truthy }
+        end
+
+        (Chouette::AreaType.commercial - [Chouette::AreaType::QUAY]).each do |area_type|
+          context "when the StoArea has #{area_type} area_type" do
+            before { stop_area.area_type = area_type }
+            it { is_expected.to be_falsy }
+          end
+        end
+      end
+
+      describe "#netex_resource_class" do
+        subject { decorator.netex_resource_class }
+        context "when netex_quay? is true" do
+          before { allow(decorator).to receive(:netex_quay?).and_return(true) }
+          it { is_expected.to eq(Netex::Quay) }
+        end
+        context "when netex_quay? is false" do
+          before { allow(decorator).to receive(:netex_quay?).and_return(false) }
+          it { is_expected.to eq(Netex::StopPlace) }
+        end
+      end
+
+      describe "#netex_attributes" do
+        subject { decorator.netex_attributes }
+
+        it "uses StopArea objectid as id" do
+          stop_area.objectid = "dummy"
+          is_expected.to include(id: stop_area.objectid)
+        end
+
+        context "when netex_quay? is true" do
+          it { is_expected.to_not have_key(:parent_site_ref)}
+          it { is_expected.to_not have_key(:place_types)}
+        end
+
+        context "when netex_quay? is false" do
+          before { allow(decorator).to receive(:netex_quay?).and_return(false) }
+          it { is_expected.to have_key(:parent_site_ref)}
+          it { is_expected.to have_key(:place_types)}
+        end
+      end
+
+      describe "#netex_resource" do
+        subject { decorator.netex_resource }
+        context "when netex_quay? is true" do
+          before { allow(decorator).to receive(:parent_objectid).and_return("dummy") }
+          it { is_expected.to have_tag(:parent_id)}
+        end
+      end
+
       describe "#netex_alternate_identifiers" do
         subject { decorator.netex_alternate_identifiers }
 

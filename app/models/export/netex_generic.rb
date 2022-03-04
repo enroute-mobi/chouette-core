@@ -165,7 +165,12 @@ class Export::NetexGeneric < Export::Base
         centroid: centroid,
         raw_xml: import_xml,
         key_list: netex_alternate_identifiers
-      }
+      }.tap do |attributes|
+        unless netex_quay?
+          attributes[:parent_site_ref] = parent_site_ref
+          attributes[:place_types] = place_types
+        end
+      end
     end
 
     def parent_objectid
@@ -193,7 +198,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def parent_site_ref
-      Netex::Reference.new(parent.objectid, type: 'StopPlace')
+      Netex::Reference.new(parent_objectid, type: 'StopPlace') if parent_objectid
     end
 
     def place_types
@@ -202,7 +207,7 @@ class Export::NetexGeneric < Export::Base
 
     def type_of_place
       case area_type
-      when 'zdep'
+      when Chouette::AreaType::QUAY
         'quay'
       when 'zdlp'
         'monomodalStopPlace'
@@ -213,32 +218,21 @@ class Export::NetexGeneric < Export::Base
       end
     end
 
-    def entrance_refs
-      entrances.map do |entrance|
-        Netex::Reference.new entrance.objectid, type: 'StopPlaceEntranceRef'
-      end
-    end
-
     def netex_resource
       netex_resource_class.new(netex_attributes).tap do |stop|
-        unless stop.is_a?(Netex::Quay)
-          stop.entrances = entrance_refs
-          stop.parent_site_ref = parent_site_ref if parent_id
-          stop.place_types = place_types
-        else
-          stop.tags[:parent_id] = parent_objectid if parent_id
+        if netex_quay?
+          stop.with_tag parent_id: parent_objectid
         end
       end
     end
 
     def netex_quay?
-      area_type == 'zdep'
+      area_type == Chouette::AreaType::QUAY
     end
 
     def netex_resource_class
-      parent_id && area_type == 'zdep' ? Netex::Quay : Netex::StopPlace
+      netex_quay? ? Netex::Quay : Netex::StopPlace
     end
-
   end
 
   class Quays < Part
@@ -246,7 +240,7 @@ class Export::NetexGeneric < Export::Base
     delegate :stop_areas, to: :export
 
     def export!
-      stop_areas.where(area_type: 'zdep').includes(:codes, :parent, :referent).find_each do |stop_area|
+      stop_areas.where(area_type: Chouette::AreaType::QUAY).includes(:codes, :parent, :referent).find_each do |stop_area|
         netex_resource = StopDecorator.new(stop_area).netex_resource
         target << netex_resource
       end
@@ -259,7 +253,7 @@ class Export::NetexGeneric < Export::Base
     delegate :stop_areas, to: :export
 
     def export!
-      stop_areas.where.not(area_type: 'zdep').includes(:codes, :entrances, :parent, :referent).find_each do |stop_area|
+      stop_areas.where.not(area_type: Chouette::AreaType::QUAY).includes(:codes, :entrances, :parent, :referent).find_each do |stop_area|
         stop_place = StopDecorator.new(stop_area).netex_resource
         target << stop_place
       end
@@ -494,7 +488,7 @@ class Export::NetexGeneric < Export::Base
 
     def passenger_stop_assignment
       Netex::PassengerStopAssignment.new(passenger_stop_assignment_attributes).tap do |passenger_stop_assignment|
-        if stop_area.area_type == 'zdep'
+        if stop_area.area_type == Chouette::AreaType::QUAY
           passenger_stop_assignment.quay_ref = quay_ref
         else
           passenger_stop_assignment.stop_place_ref = stop_place_ref

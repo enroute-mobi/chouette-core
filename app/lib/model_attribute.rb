@@ -63,7 +63,7 @@ class ModelAttribute
     options[:mandatory]
   end
 
-   def ==(other)
+  def ==(other)
     self.class === other &&
       klass == other.klass &&
       name == other.name &&
@@ -77,14 +77,35 @@ class ModelAttribute
     associations.map{ |a| ["#{a.name}_id", a.name] }.to_h
   end
 
-  # create automatically all model_attributes from DB
-  MODELS.each do |model|
-    refs = self.associations(model)
+  def self.except_columns
+    unless @except_columns.present?
+      @except_columns = {
+        "id" => true,
+        "objectid" => true,
+        "registration_number" => true,
+        "created_at" => true,
+        "updated_at" => true,
+      }
+    end
+    @except_columns
+  end
 
-    model.columns_hash.each do |attr_name, attr_infos|
+  # attributes from SQL
+  MODELS.each do |klass|
+    refs = self.associations(klass)
+
+    klass.columns_hash.each do |attr_name, attr_infos|
+      next if except_columns[attr_name]
+
+      name = refs[attr_name] || attr_name
+      type = attr_infos.type
       options = attr_infos.null ? {} : { mandatory: !attr_infos.null }
-      options[:ref] = refs[attr_name] if refs[attr_name]
-      define model, attr_name, attr_infos.type, options
+
+      define klass, name, type, options
     end
   end
+
+  # attributes from class
+  define Chouette::StopArea, :coordinates, :string, {}
+
 end

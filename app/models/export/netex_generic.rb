@@ -48,10 +48,6 @@ class Export::NetexGeneric < Export::Base
     stop_area_referential.entrances.where(stop_area: stop_areas)
   end
 
-  def quay_registry
-    @quay_registry ||= QuayRegistry.new
-  end
-
   def resource_tagger
     @resource_tagger ||= ResourceTagger.new
   end
@@ -63,8 +59,8 @@ class Export::NetexGeneric < Export::Base
   def generate_export_file
     part_classes = [
       Entrances,
-      Stops,
-      Stations,
+      Quays,
+      StopPlaces,
       Companies,
       Networks,
       Lines,
@@ -110,7 +106,7 @@ class Export::NetexGeneric < Export::Base
       options.each { |k,v| send "#{k}=", v }
     end
 
-    delegate :target, :quay_registry, :resource_tagger, :export_scope, to: :export
+    delegate :target, :resource_tagger, :export_scope, to: :export
 
     def part_name
       @part_name ||= self.class.name.demodulize.underscore
@@ -120,28 +116,6 @@ class Export::NetexGeneric < Export::Base
       Chouette::Benchmark.measure part_name do
         export!
       end
-    end
-
-  end
-
-  class QuayRegistry
-
-    def quay?(stop_id)
-      !quays_index.has_key? stop_id
-    end
-
-    def quays_for(parent_station)
-      quays_index[parent_station]
-    end
-
-    def register(netex_quay, parent_station:)
-      quays_index[parent_station] << netex_quay
-    end
-
-    protected
-
-    def quays_index
-      @quays_index ||= Hash.new { |h,k| h[k] = [] }
     end
 
   end
@@ -191,7 +165,16 @@ class Export::NetexGeneric < Export::Base
         centroid: centroid,
         raw_xml: import_xml,
         key_list: netex_alternate_identifiers
-      }
+      }.tap do |attributes|
+        unless netex_quay?
+          attributes[:parent_site_ref] = parent_site_ref
+          attributes[:place_types] = place_types
+        end
+      end
+    end
+
+    def parent_objectid
+      parent&.objectid
     end
 
     def derived_from_object_ref
@@ -215,7 +198,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def parent_site_ref
-      Netex::Reference.new(parent.objectid, type: 'StopPlace')
+      Netex::Reference.new(parent_objectid, type: 'StopPlace') if parent_objectid
     end
 
     def place_types
@@ -224,7 +207,7 @@ class Export::NetexGeneric < Export::Base
 
     def type_of_place
       case area_type
-      when 'zdep'
+      when Chouette::AreaType::QUAY
         'quay'
       when 'zdlp'
         'monomodalStopPlace'
@@ -235,63 +218,43 @@ class Export::NetexGeneric < Export::Base
       end
     end
 
-    def entrance_refs
-      entrances.map do |entrance|
-        Netex::Reference.new entrance.objectid, type: 'StopPlaceEntranceRef'
-      end
-    end
-
     def netex_resource
       netex_resource_class.new(netex_attributes).tap do |stop|
-        unless stop.is_a?(Netex::Quay)
-          stop.entrances = entrance_refs
-          stop.parent_site_ref = parent_site_ref if parent_id
-          stop.place_types = place_types
+        if netex_quay?
+          stop.with_tag parent_id: parent_objectid
         end
       end
     end
 
     def netex_quay?
-      area_type == 'zdep'
+      area_type == Chouette::AreaType::QUAY
     end
 
     def netex_resource_class
-      parent_id && area_type == 'zdep' ? Netex::Quay : Netex::StopPlace
+      netex_quay? ? Netex::Quay : Netex::StopPlace
     end
-
   end
 
-  class Stops < Part
+  class Quays < Part
 
     delegate :stop_areas, to: :export
 
     def export!
-      stop_areas.where(area_type: 'zdep').includes(:codes, :parent, :referent).find_each do |stop_area|
-        decorated_stop = StopDecorator.new(stop_area)
-
-        netex_resource = decorated_stop.netex_resource
-        if netex_resource.is_a?(Netex::Quay)
-          quay_registry.register netex_resource,
-                                 parent_station: decorated_stop.parent_id
-        else
-          target << netex_resource
-        end
+      stop_areas.where(area_type: Chouette::AreaType::QUAY).includes(:codes, :parent, :referent).find_each do |stop_area|
+        netex_resource = StopDecorator.new(stop_area).netex_resource
+        target << netex_resource
       end
     end
 
   end
 
-  class Stations < Part
+  class StopPlaces < Part
 
     delegate :stop_areas, to: :export
 
     def export!
-      stop_areas.where.not(area_type: 'zdep').includes(:codes, :entrances, :parent, :referent).find_each do |stop_area|
-        decorated_stop = StopDecorator.new(stop_area)
-
-        stop_place = decorated_stop.netex_resource
-        stop_place.quays = quay_registry.quays_for(decorated_stop.id)
-
+      stop_areas.where.not(area_type: Chouette::AreaType::QUAY).includes(:codes, :entrances, :parent, :referent).find_each do |stop_area|
+        stop_place = StopDecorator.new(stop_area).netex_resource
         target << stop_place
       end
     end
@@ -327,7 +290,7 @@ class Export::NetexGeneric < Export::Base
       end
 
       def netex_resource
-        Netex::StopPlaceEntrance.new netex_attributes
+        Netex::StopPlaceEntrance.new(netex_attributes).with_tag(parent_id: parent_objectid)
       end
 
       def netex_identifier
@@ -352,6 +315,10 @@ class Export::NetexGeneric < Export::Base
           town: city_name,
           country_name: country
         )
+      end
+
+      def parent_objectid
+        stop_area&.objectid
       end
 
       def raw_xml
@@ -521,7 +488,7 @@ class Export::NetexGeneric < Export::Base
 
     def passenger_stop_assignment
       Netex::PassengerStopAssignment.new(passenger_stop_assignment_attributes).tap do |passenger_stop_assignment|
-        if stop_area.area_type == 'zdep'
+        if stop_area.area_type == Chouette::AreaType::QUAY
           passenger_stop_assignment.quay_ref = quay_ref
         else
           passenger_stop_assignment.stop_place_ref = stop_place_ref
@@ -694,7 +661,7 @@ class Export::NetexGeneric < Export::Base
       end
 
       def line_ref
-        Netex::Reference.new(line.objectid, type: 'LineRef') if line
+        Netex::Reference.new(line.objectid, type: Netex::Line) if line
       end
 
       def points_in_sequence
@@ -897,7 +864,7 @@ class Export::NetexGeneric < Export::Base
       end
 
       def destination_display_ref
-        Netex::Reference.new(destination_display_id, type: 'DestinationDisplayRef')
+        Netex::Reference.new(destination_display_id, type: Netex::DestinationDisplay)
       end
 
       def points_in_sequence

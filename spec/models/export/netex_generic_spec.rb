@@ -271,12 +271,12 @@ RSpec.describe Export::NetexGeneric do
 
         expect(resource.line_ref).to be
         expect(resource.line_ref.ref).to eq(route.line.objectid)
-        expect(resource.line_ref.type).to eq('LineRef')
+        expect(resource.line_ref.type).to eq(Netex::Line)
 
         if route.published_name
           expect(resource.direction_ref).to be
           expect(resource.direction_ref.ref).to eq(route.objectid.gsub(/r|Route/, 'Direction'))
-          expect(resource.direction_ref.type).to eq('DirectionRef')
+          expect(resource.direction_ref.type).to eq(Netex::Direction)
         end
       end
     end
@@ -558,7 +558,7 @@ RSpec.describe Export::NetexGeneric do
     end
   end
 
-  describe "Stops export" do
+  describe "Quays export" do
     let(:target) { MockNetexTarget.new }
     let(:export_scope) { Export::Scope::All.new context.referential }
     let(:export) do
@@ -568,11 +568,13 @@ RSpec.describe Export::NetexGeneric do
     end
 
     let(:part) do
-      Export::NetexGeneric::Stops.new export
+      Export::NetexGeneric::Quays.new export
     end
 
     let(:context) do
       Chouette.create do
+        stop_area :parent_stop_place, area_type: "zdlp"
+        stop_area :quay, parent: :parent_stop_place
         3.times { stop_point }
       end
     end
@@ -590,6 +592,61 @@ RSpec.describe Export::NetexGeneric do
       let(:stop_area) { Chouette::StopArea.new }
       let(:decorator) { Export::NetexGeneric::StopDecorator.new stop_area }
 
+      describe "#netex_quay?" do
+        subject { decorator.netex_quay? }
+        context "when the StoArea has zdep area_type" do
+          before { stop_area.area_type = Chouette::AreaType::QUAY }
+          it { is_expected.to be_truthy }
+        end
+
+        (Chouette::AreaType.commercial - [Chouette::AreaType::QUAY]).each do |area_type|
+          context "when the StoArea has #{area_type} area_type" do
+            before { stop_area.area_type = area_type }
+            it { is_expected.to be_falsy }
+          end
+        end
+      end
+
+      describe "#netex_resource_class" do
+        subject { decorator.netex_resource_class }
+        context "when netex_quay? is true" do
+          before { allow(decorator).to receive(:netex_quay?).and_return(true) }
+          it { is_expected.to eq(Netex::Quay) }
+        end
+        context "when netex_quay? is false" do
+          before { allow(decorator).to receive(:netex_quay?).and_return(false) }
+          it { is_expected.to eq(Netex::StopPlace) }
+        end
+      end
+
+      describe "#netex_attributes" do
+        subject { decorator.netex_attributes }
+
+        it "uses StopArea objectid as id" do
+          stop_area.objectid = "dummy"
+          is_expected.to include(id: stop_area.objectid)
+        end
+
+        context "when netex_quay? is true" do
+          it { is_expected.to_not have_key(:parent_site_ref)}
+          it { is_expected.to_not have_key(:place_types)}
+        end
+
+        context "when netex_quay? is false" do
+          before { allow(decorator).to receive(:netex_quay?).and_return(false) }
+          it { is_expected.to have_key(:parent_site_ref)}
+          it { is_expected.to have_key(:place_types)}
+        end
+      end
+
+      describe "#netex_resource" do
+        subject { decorator.netex_resource }
+        context "when netex_quay? is true" do
+          before { allow(decorator).to receive(:parent_objectid).and_return("dummy") }
+          it { is_expected.to have_tag(:parent_id)}
+        end
+      end
+
       describe "#netex_alternate_identifiers" do
         subject { decorator.netex_alternate_identifiers }
 
@@ -606,6 +663,16 @@ RSpec.describe Export::NetexGeneric do
         context "when StopArea code 'public' exists with value 'dummy'" do
           before { stop_area.codes << Code.new(code_space: CodeSpace.new(short_name: 'public'), value: 'dummy') }
           it { is_expected.to include(an_object_having_attributes(key: "public", value: "dummy", type_of_key: "ALTERNATE_IDENTIFIER")) }
+        end
+
+        context "when StopArea has parent_id tag" do
+          let(:quay) { context.stop_area :quay }
+          let(:parent_stop_place) { context.stop_area :parent_stop_place }
+          let(:quay_decorator) { Export::NetexGeneric::StopDecorator.new quay }
+
+          subject { quay_decorator.netex_resource.tag(:parent_id) }
+
+          it { is_expected.to eq(parent_stop_place.objectid) }
         end
       end
     end
@@ -681,7 +748,7 @@ RSpec.describe Export::NetexGeneric do
         if jp.published_name
           expect(resource.destination_display_ref).to be
           expect(resource.destination_display_ref.ref).to eq(jp.objectid.gsub(/j|JourneyPattern/) { 'DestinationDisplay' })
-          expect(resource.destination_display_ref.type).to eq('DestinationDisplayRef')
+          expect(resource.destination_display_ref.type).to eq(Netex::DestinationDisplay)
         end
       end
     end

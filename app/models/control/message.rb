@@ -6,6 +6,6 @@ module Control
     belongs_to :control_run, class_name: "Control::Base::Run", optional: false
 
     extend Enumerize
-		enumerize :criticity, in: %w(warning error)
+    enumerize :criticity, in: %w(info warning error)
   end
 end

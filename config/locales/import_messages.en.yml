@@ -66,6 +66,7 @@ en:
     2_netexstif_daytype_2: "%{source_filename}-Ligne %{source_line_number}-Colonne %{source_column_number} : l'objet DayType d'identifiant %{source_objectid} est reliée à des périodes mais ne définit pas de types de jours"
     2_netexstif_daytypeassignment_1: "%{source_filename}-Ligne %{source_line_number}-Colonne %{source_column_number} : l'objet DayTypeAssignment d'identifiant %{source_objectid} ne peut référencer un OperatingDay"
     2_netexstif_daytypeassignment_2: "%{source_filename}-Ligne %{source_line_number}-Colonne %{source_column_number} : l'objet DayTypeAssignment d'identifiant %{source_objectid} ne peut référencer un OperatingPeriod sur la condition IsAvailable à faux."
+    2_netexstif_daytypeassignment_3: "%{source_filename}-Ligne %{source_line_number}-Colonne %{source_column_number} : l'objet DayTypeAssignment d'identifiant %{source_objectid} contient une date déjà définie dans un autre DayTypeAssignment."
     2_netexstif_direction_1: "%{source_filename}-Ligne %{source_line_number}-Colonne %{source_column_number} : l'objet Direction d'identifiant %{source_objectid} n'a pas de valeur pour l'attribut Name"
     2_netexstif_direction_2: "%{source_filename}-Ligne %{source_line_number}-Colonne %{source_column_number} : l'objet Direction d'identifiant %{source_objectid} définit un attribut %{error_value} non autorisé"
     2_netexstif_notice_1: "%{source_filename}-Ligne %{source_line_number}-Colonne %{source_column_number} : l'objet Notice d'identifiant %{source_objectid} doit définir un texte"

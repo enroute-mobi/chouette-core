@@ -271,12 +271,12 @@ RSpec.describe Export::NetexGeneric do
 
         expect(resource.line_ref).to be
         expect(resource.line_ref.ref).to eq(route.line.objectid)
-        expect(resource.line_ref.type).to eq('LineRef')
+        expect(resource.line_ref.type).to eq(Netex::Line)
 
         if route.published_name
           expect(resource.direction_ref).to be
           expect(resource.direction_ref.ref).to eq(route.objectid.gsub(/r|Route/, 'Direction'))
-          expect(resource.direction_ref.type).to eq('DirectionRef')
+          expect(resource.direction_ref.type).to eq(Netex::Direction)
         end
       end
     end
@@ -748,7 +748,7 @@ RSpec.describe Export::NetexGeneric do
         if jp.published_name
           expect(resource.destination_display_ref).to be
           expect(resource.destination_display_ref.ref).to eq(jp.objectid.gsub(/j|JourneyPattern/) { 'DestinationDisplay' })
-          expect(resource.destination_display_ref.type).to eq('DestinationDisplayRef')
+          expect(resource.destination_display_ref.type).to eq(Netex::DestinationDisplay)
         end
       end
     end

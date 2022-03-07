@@ -65,8 +65,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: 61f91621c1f0729d0560970284cb954ec0d34739
-  branch: CHOUETTE-1815-embedded-resources
+  revision: 9a145ea56e20aff91e2c3cc6b9fd66638763b371
   specs:
     netex (0.1.2)
       activesupport

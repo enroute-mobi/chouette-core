@@ -141,7 +141,7 @@ gem 'premailer-rails', '>= 1.11.1'
 gem 'redis-actionpack', '>= 5.2.0'
 
 gem 'gtfs', en_route: 'gtfs'
-gem 'netex', en_route: 'netex', branch: 'CHOUETTE-1815-embedded-resources'
+gem 'netex', en_route: 'netex'
 gem 'rgeo-shapefile'
 gem 'ara-file', en_route: 'ara-file'
 gem 'neptune', en_route: 'neptune'

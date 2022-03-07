@@ -661,7 +661,7 @@ class Export::NetexGeneric < Export::Base
       end
 
       def line_ref
-        Netex::Reference.new(line.objectid, type: 'LineRef') if line
+        Netex::Reference.new(line.objectid, type: Netex::Line) if line
       end
 
       def points_in_sequence
@@ -864,7 +864,7 @@ class Export::NetexGeneric < Export::Base
       end
 
       def destination_display_ref
-        Netex::Reference.new(destination_display_id, type: 'DestinationDisplayRef')
+        Netex::Reference.new(destination_display_id, type: Netex::DestinationDisplay)
       end
 
       def points_in_sequence

@@ -12,6 +12,7 @@ module Chouette
     has_and_belongs_to_many :stop_point_lights, -> { light.order("stop_points.position") }, class_name: 'Chouette::StopPoint', join_table: :journey_patterns_stop_points, foreign_key: :journey_pattern_id
     has_many :stop_areas, through: :stop_points
     has_many :courses_stats, class_name: "Stat::JourneyPatternCoursesByDate"
+    has_many :control_messages, as: :source, class_name: "::Control::Message", foreign_key: :source_id
 
     belongs_to :shape, optional: true
     belongs_to_public :shape

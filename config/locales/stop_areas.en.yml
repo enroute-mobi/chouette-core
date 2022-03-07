@@ -118,7 +118,6 @@ en:
         other: "stop areas"
     attributes:
       stop_area:
-        id: "ID"
         full_id: "Full ID"
         name: "Name"
         public_code: "Public Code"
@@ -156,7 +155,7 @@ en:
         visual_signs_availability: "Visual Signs Available"
         accessibility_limitation_description: "Description"
         url: "Web page"
-        objectid: "Neptune identifier"
+        objectid: "ID"
         object_version: "Version"
         created_at: Created at
         updated_at: Updated at

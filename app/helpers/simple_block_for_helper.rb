@@ -84,7 +84,12 @@ module SimpleBlockForHelper
       elsif options.key?(:value_method)
         raw_value = resource.send(options[:value_method])
       else
-        raw_value = resource.send(attribute_name)
+        attribute_method = attribute_name
+        if attribute_name == :objectid
+          attribute_method = :get_objectid
+        end
+
+        raw_value = resource.send(attribute_method)
       end
 
       label = options[:label] || resource.class.human_attribute_name(attribute_name)

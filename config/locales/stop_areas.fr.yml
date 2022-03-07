@@ -157,7 +157,7 @@ fr:
         visual_signs_availability: "Signalétique visuelle disponible"
         accessibility_limitation_description: "Description"
         url: "Page web associée"
-        objectid: "Identifiant Neptune"
+        objectid: "ID"
         object_version: "Version"
         created_at: "Créé le"
         updated_at: "Edité le"

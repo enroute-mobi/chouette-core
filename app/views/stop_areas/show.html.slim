@@ -8,7 +8,7 @@
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = simple_block_for @stop_area, title: t("stop_areas.form.sections.identification") do |d|
-          = d.attribute :id, as: :objectid
+          = d.attribute :objectid, as: :objectid
           = d.attribute :name
           - @stop_area.localized_names.keep_if { |key, value| value.present? }.each do |k, v|
             = d.attribute :name, value: v, label: label_for_country(k, Chouette::StopArea.tmf('name'))

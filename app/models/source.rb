@@ -1,7 +1,26 @@
 class Source < ApplicationModel
+  extend Enumerize
   belongs_to :workbench, optional: false
   validates :name, presence: true
   validates :url, presence: true
+
+  enumerize :downloader_type, in: %i(direct french_nap), default: :direct
+
+  def import_option_automatic_merge
+    import_options["automatic_merge"]
+  end
+
+  def import_option_archive_on_fail
+    import_options["archive_on_fail"]
+  end
+
+  def import_option_automatic_merge=(value)
+    import_options["automatic_merge"] = value
+  end
+
+  def import_option_archive_on_fail=(value)
+    import_options["archive_on_fail"] = value
+  end
 
   def self.retrieve_all
     find_each do |source|

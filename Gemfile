@@ -140,7 +140,7 @@ gem 'premailer-rails', '>= 1.11.1'
 # Redis session management
 gem 'redis-actionpack', '>= 5.2.0'
 
-gem 'gtfs', en_route: 'gtfs'
+gem 'gtfs', en_route: 'gtfs', branch: 'GTFS-28-rewrite-every-calendar-date'
 gem 'netex', en_route: 'netex'
 gem 'rgeo-shapefile'
 gem 'ara-file', en_route: 'ara-file'

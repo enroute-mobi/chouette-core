@@ -17,6 +17,10 @@ fr:
       reset_password: "Réinitialiser le mot de passe"
       reset_password_confirm: "Voulez vous envoyer un lien de réinitialisation de mot de passe à cet utilisateur ?"
       reset_password_flash: "Un lien de réinitialisation de mot de passe a été envoyé"
+    form:
+      sections:
+        password: "Mot de passe"
+        localization: "Localisation"
     locked: Votre compte a été désactivé
     new:
       title: "Ajouter un utilisateur"
@@ -60,6 +64,8 @@ fr:
         created_at: Créé le
         updated_at: Modifié le
         invitation_sent_at: Invitation envoyée le
+        user_locale: Langue
+        time_zone: Fuseau Horaire
     errors:
       models:
         calendar:

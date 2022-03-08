@@ -1,45 +1,29 @@
 class Users::RegistrationsController < Devise::RegistrationsController
-  before_action :configure_sign_up_params, only: [:create]
   before_action :configure_account_update_params, only: [:update]
-
-  prepend_before_action :accept_user_creation, only: [:new, :create]
 
   protected
 
-  def configure_sign_up_params
-    devise_parameter_sanitizer.for(:sign_up).push(
-      :name,
-      :email,
-      :password,
-      :password_confirmation,
-      organisation_attributes: [:name]
-    )
-  end
-
   def configure_account_update_params
-    devise_parameter_sanitizer.for(:account_update).push(
-      :name,
+    devise_parameter_sanitizer.permit(:account_update, keys: [:name,
       :email,
       :password,
       :password_confirmation,
-      :current_password
-    )
+      :current_password,
+      :user_locale,
+      :time_zone])
   end
 
-  # The default url to be used after updating a resource. You need to overwrite
-  # this method in your own RegistrationsController.
-  def after_update_path_for(resource)
-    organisation_user_path(resource)
+  def update_resource(resource, params)
+    if params[:password].present?
+      resource.update_with_password(params)
+    else
+      params.delete :password
+      params.delete :password_confirmation
+      params.delete :current_password
+      resource.update(params)
+    end
   end
 
   private
 
-  def accept_user_creation
-    if !Subscription.enabled?
-      redirect_to unauthenticated_root_path
-      return false
-    else
-      return true
-    end
-  end
 end

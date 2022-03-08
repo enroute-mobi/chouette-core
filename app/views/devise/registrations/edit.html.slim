@@ -1,19 +1,39 @@
-= title_tag t('.title')
+- page_header_content_for @user
+- breadcrumb :edit_user, @user, current_organisation
 
-= simple_form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: "form-horizontal", method: :put }) do |f|
-  = f.error_notification
+.page_content
+  .container-fluid
+    .row
+      .col-lg-8.col-lg-offset-2.col-md-8.col-md-offset-2.col-sm-10.col-sm-offset-1
+        = simple_form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: "form-horizontal", method: :put, id: 'edit_form' }, wrapper: :horizontal_form) do |f|
+          = f.error_notification
+          .row
+            .col-lg-12
+              = f.input :name, required: true
+              = f.input :email, required: true, autofocus: true
 
-  .form-inputs
-    = f.input :email, required: true, autofocus: true
-    = f.input :name, required: true
+              - if devise_mapping.confirmable? && resource.pending_reconfirmation?
+                p = "Currently waiting confirmation for: #{resource.unconfirmed_email}."
 
-    - if devise_mapping.confirmable? && resource.pending_reconfirmation?
-      p = "Currently waiting confirmation for: #{resource.unconfirmed_email}."
+          .separator.section_separator
+          .row
+            .col-lg-12
+              h2.mb-lg= t("users.form.sections.password")
 
-    = f.input :password, autocomplete: "off", required: false, hint: t('simple_form.hints.user.edit.password') if resource.encrypted_password.present?
-    = f.input :password_confirmation, required: false
-    = f.input :current_password, required: true
+              = f.input :password, autocomplete: "off", required: false, hint: t('simple_form.hints.user.edit.password') if resource.encrypted_password.present?
+              = f.input :password_confirmation, required: false
+              = f.input :current_password, required: true
 
-  .form-actions
-    = f.button :submit
-    = mailer_link_to t('cancel'), :back
+          .separator.section_separator
+          .row
+            .col-lg-12
+              h2.mb-lg= t("users.form.sections.localization")
+              = f.input :user_locale,
+                as: :select,
+                collection: I18n.available_locales,
+                #collection: [['English', 'en_EN'], ['French', 'fr_FR']],
+                include_blank: false
+              = f.input :time_zone
+
+            = cancel_button
+            = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'edit_form'

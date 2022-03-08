@@ -41,8 +41,6 @@ module Chouette
     has_many :footnotes, inverse_of: :line, validate: true
     accepts_nested_attributes_for :footnotes, reject_if: :all_blank, :allow_destroy => true
 
-    has_many :control_messages, as: :source, class_name: "::Control::Message", foreign_key: :source_id
-
     attr_reader :group_of_line_tokens
 
     validates_presence_of :name

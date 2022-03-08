@@ -132,6 +132,37 @@ RSpec.describe Control::PresenceAttribute do
           end
         end
 
+        describe "#url" do
+          let(:attribute_name) { "url"}
+          let(:target_attribute) { "url"}
+
+          context "when value is present" do
+            before { line.update url: "http://www.adresse.net" }
+
+            let(:message_key) { "presence_of_attribute" }
+            let(:criticity) { "info" }
+
+            it "should create info message" do
+              subject
+
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
+
+          context "when value is not present" do
+            before { line.update url: nil }
+
+            let(:message_key) { "no_presence_of_attribute" }
+            let(:criticity) { "warning" }
+
+            it "should create warning message" do
+              subject
+
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
+        end
+
         describe "#transport_mode" do
           let(:attribute_name) { "transport_mode"}
           let(:target_model) { "Line" }

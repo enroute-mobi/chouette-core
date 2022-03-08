@@ -3,6 +3,7 @@ class Source < ApplicationModel
   belongs_to :workbench, optional: false
   validates :name, presence: true
   validates :url, presence: true
+  validates :downloader_type, presence: true
 
   enumerize :downloader_type, in: %i(direct french_nap), default: :direct
 

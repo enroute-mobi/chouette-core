@@ -16,5 +16,5 @@
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = simple_block_for @source, title: t('sources.form.sections.import_options') do |d|
-          = d.attribute :import_option_automatic_merge, as: :boolean, label: Source.tmf(:automatic_merge)
-          = d.attribute :import_option_archive_on_fail, as: :boolean, label: Source.tmf(:archive_on_fail)
+          = d.attribute :import_option_automatic_merge, as: :boolean
+          = d.attribute :import_option_archive_on_fail, as: :boolean

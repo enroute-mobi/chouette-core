@@ -15,10 +15,10 @@
                 key: :name, \
                 attribute: :name, \
                 sortable: false, \
-                link_to: lambda do |macro_list| \
-                workbench_macro_list_path( \
+                link_to: lambda do |source| \
+                workbench_source_path( \
                     @workbench, \
-                    macro_list \
+                    source \
                   ) \
                 end \
               ), \

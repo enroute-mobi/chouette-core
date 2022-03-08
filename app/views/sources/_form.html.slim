@@ -3,7 +3,7 @@
     .col-lg-12
       = f.input :name
       = f.input :url
-      = f.input :downloader_type, as: :select
+      = f.input :downloader_type, as: :select, include_blank: false
   .row
     h2
       = t("sources.form.sections.retrieval")
@@ -16,8 +16,8 @@
       = t("sources.form.sections.import_options")
     .simple-separator.mb-5
     .col-lg-12
-     = f.input :import_option_automatic_merge, as: :switchable_checkbox, label: Source.tmf(:automatic_merge)
-     = f.input :import_option_archive_on_fail, as: :switchable_checkbox, label: Source.tmf(:archive_on_fail)
+     = f.input :import_option_automatic_merge, as: :switchable_checkbox
+     = f.input :import_option_archive_on_fail, as: :switchable_checkbox
 
   = cancel_button
   = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'source_form'

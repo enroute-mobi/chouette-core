@@ -1,4 +1,4 @@
-fr:
+en:
   sources:
     index:
       title: Data Sources
@@ -35,8 +35,8 @@ fr:
         downloader_options: "Downloader options"
         checksum: "Checksum"
         import_options: "Import options"
-        automatic_merge: Automatic_merge
-        archive_on_fail: Archive on fail
+        import_option_automatic_merge: Automatic merge
+        import_option_archive_on_fail: Archive on fail
         enabled: "Enabled"
         ignore_checksum: "Ignore checksum"
         created_at: "Created at"

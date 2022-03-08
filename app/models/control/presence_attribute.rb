@@ -35,7 +35,7 @@ module Control
           source: object,
         }
 
-        message = self.control_messages.where(params).
+        self.control_messages.where(params).
           first_or_create(params.merge( criticity: "info",  message_key: :presence_of_attribute))
       end
 

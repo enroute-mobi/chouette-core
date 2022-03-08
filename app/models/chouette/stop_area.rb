@@ -31,7 +31,6 @@ module Chouette
     has_many :codes, as: :resource, dependent: :delete_all
     has_many :entrances, dependent: :delete_all
     has_many :macro_messages, as: :source, class_name: "::Macro::Message", foreign_key: :source_id
-    has_many :control_messages, as: :source, class_name: "::Control::Message", foreign_key: :source_id
 
     scope :light, ->{ select(:id, :name, :city_name, :zip_code, :time_zone, :registration_number, :kind, :area_type, :time_zone, :stop_area_referential_id, :objectid) }
     scope :with_time_zone, -> { where.not time_zone: nil }

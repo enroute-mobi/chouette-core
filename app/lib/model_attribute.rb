@@ -71,10 +71,19 @@ class ModelAttribute
       options == other.options
   end
 
-  def self.associations(model)
+  def self.mapping_id_name_of_belongs_to_attributes(model)
+    belongs_to_attributes(model).map{ |a| ["#{a.name}_id", a.name] }.to_h
+  end
+
+  def self.mapping_id_class_name_of_belongs_to_attributes(model)
+    belongs_to_attributes(model).
+      select{ |e| e.options[:class_name].present? }.
+        map{ |e| [e.foreign_key.to_s, e.options[:class_name]]}.to_h
+  end
+
+  def self.belongs_to_attributes(model)
     associations = model.reflect_on_all_associations
-    associations = associations.select { |a| a.macro == :belongs_to }
-    associations.map{ |a| ["#{a.name}_id", a.name] }.to_h
+    associations.select { |a| a.macro == :belongs_to }
   end
 
   def self.except_columns
@@ -92,22 +101,25 @@ class ModelAttribute
 
   # attributes from SQL
   MODELS.each do |klass|
-    refs = self.associations(klass)
+    refs = self.mapping_id_name_of_belongs_to_attributes(klass)
+    map_id_class_names = self.mapping_id_class_name_of_belongs_to_attributes(klass)
 
     klass.columns_hash.each do |attr_name, attr_infos|
       next if except_columns[attr_name]
 
       name = refs[attr_name] || attr_name
       type = attr_infos.type
-      options = attr_infos.null ? {} : { mandatory: !attr_infos.null }
+      options = { is_ref: refs[attr_name].present? }
+      options[:mandatory] = !attr_infos.null unless attr_infos.null
+      options[:belongs_to_itself] = true if map_id_class_names[attr_name] == klass.name
 
       define klass, name, type, options
     end
   end
 
   # attributes from class
-  define Chouette::StopArea, :coordinates, :string, {}
-  define Chouette::StopArea, :country, :string, {}
+  define Chouette::StopArea, :coordinates, :string, { source_sql_attributes: [:latitude, :longitude] }
+  define Chouette::StopArea, :country, :string, { source_sql_attributes: [:country_code] }
 
-  define Chouette::Company, :country, :string, {}
+  define Chouette::Company, :country, :string, { source_sql_attributes: [:country_code] }
 end

@@ -52,7 +52,6 @@ module Chouette
     has_many :vehicle_journey_at_stops, -> { includes(:stop_point).order("stop_points.position") }, dependent: :destroy
     has_and_belongs_to_many :time_tables, :class_name => 'Chouette::TimeTable', :foreign_key => "vehicle_journey_id", :association_foreign_key => "time_table_id"
     has_many :stop_points, -> { order("stop_points.position") }, :through => :vehicle_journey_at_stops
-    has_many :control_messages, as: :source, class_name: "::Control::Message", foreign_key: :source_id
 
     before_validation :set_default_values,
       :calculate_vehicle_journey_at_stop_day_offset

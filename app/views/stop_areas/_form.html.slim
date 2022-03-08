@@ -120,8 +120,14 @@
     .row
       .col-lg-12
         h2.mb-lg= t("stop_areas.form.sections.custom_fields")
-        - @stop_area.custom_fields.each do |code, field|
-          = field.input(f).to_s
+        - @stop_area.custom_fields.by_group do |custom_field_group, custom_fields|
+          - if custom_field_group
+            .form-group.mt-20
+              .col-sm-4.col-xs-5.control-label.strong
+                = custom_field_group.name
+
+          - custom_fields.each do |field|
+            = field.input(f).to_s
 
     .separator.section_separator
 

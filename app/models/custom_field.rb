@@ -2,11 +2,15 @@ class CustomField < ApplicationModel
 
   extend Enumerize
   belongs_to :workgroup
+  belongs_to :custom_field_group, optional: true
+
   enumerize :field_type, in: %i{list integer float string attachment}
 
   validates :name, uniqueness: {scope: [:resource_type, :workgroup_id]}
   validates :code, uniqueness: {scope: [:resource_type, :workgroup_id], case_sensitive: false}, presence: true
   validates :workgroup, :resource_type, :field_type, presence: true
+
+  acts_as_list scope: 'custom_field_group_id #{custom_field_group_id ? "= #{custom_field_group_id}" : "IS NULL"} AND workgroup_id #{workgroup_id ? "= #{workgroup_id}" : "IS NULL"}'
 
   after_save do
     resource_class&.reset_custom_fields
@@ -35,6 +39,12 @@ class CustomField < ApplicationModel
 
     def to_hash
       HashWithIndifferentAccess[*self.map{|k, v| [k, v.to_hash]}.flatten(1)]
+    end
+
+    def by_group(&block)
+      values.group_by(&:custom_field_group).to_a.sort_by { |group, _| group&.position || 0 }.each do |group, custom_fields|
+        yield group, custom_fields
+      end
     end
 
     def for_section(section)
@@ -76,7 +86,7 @@ class CustomField < ApplicationModel
 
       attr_accessor :owner, :custom_field
 
-      delegate :code, :name, :field_type, to: :@custom_field
+      delegate :code, :name, :field_type, :custom_field_group, :position, to: :custom_field
 
       def default_value
         options["default"]

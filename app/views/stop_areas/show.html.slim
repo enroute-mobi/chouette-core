@@ -114,8 +114,15 @@
             .mb-xs
               = replacement_msg t('stop_areas.no_custom_fields')
           - else
-            - @stop_area.custom_fields { |key, value| value.present? }.each do |k, v|
-              = d.attribute :name, value: v.display_value, label: v.name
+            - @stop_area.custom_fields.by_group do |custom_field_group, custom_fields|
+              - if custom_field_group
+                = content_tag(:div, "", class: "dl-term mb-6") + content_tag(:div, "", class: "dl-def mb-6")
+                = content_tag(:div, custom_field_group.name, class: "dl-term") + content_tag(:div, "", class: "dl-def")
+
+              - custom_fields.sort_by(&:position).each do |custom_field|
+                = d.attribute :name, value: custom_field.display_value, label: custom_field.name
+              end
+            end
 
         - if has_feature?(:stop_area_connection_links)
           h4.underline= t('.connections.title')

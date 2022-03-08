@@ -153,6 +153,37 @@ RSpec.describe Control::PresenceAttribute do
           end
         end
 
+        describe "#url" do
+          let(:attribute_name) { "url"}
+          let(:target_attribute) { "url"}
+
+          context "when value is present" do
+            before { line.update url: "http://www.adresse.net" }
+
+            let(:message_key) { "presence_of_attribute" }
+            let(:criticity) { "info" }
+
+            it "should create info message" do
+              subject
+
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
+
+          context "when value is not present" do
+            before { line.update url: nil }
+
+            let(:message_key) { "no_presence_of_attribute" }
+            let(:criticity) { "warning" }
+
+            it "should create warning message" do
+              subject
+
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
+        end
+
         describe "#transport_mode" do
           let(:attribute_name) { "transport_mode"}
           let(:target_model) { "Line" }
@@ -340,6 +371,37 @@ RSpec.describe Control::PresenceAttribute do
 
           context "when value is not present" do
             before { stop_area.update public_code: nil }
+
+            let(:message_key) { "no_presence_of_attribute" }
+            let(:criticity) { "warning" }
+
+            it "should create warning message" do
+              subject
+
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
+        end
+
+        describe "#url" do
+          let(:attribute_name) { "url"}
+          let(:target_attribute) { "url"}
+
+          context "when value is present" do
+            before { stop_area.update url: "http://www.adresse.net" }
+
+            let(:message_key) { "presence_of_attribute" }
+            let(:criticity) { "info" }
+
+            it "should create info message" do
+              subject
+
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
+
+          context "when value is not present" do
+            before { stop_area.update url: nil }
 
             let(:message_key) { "no_presence_of_attribute" }
             let(:criticity) { "warning" }
@@ -830,6 +892,263 @@ RSpec.describe Control::PresenceAttribute do
           end
         end
 
+        describe "#published_journey_name" do
+          let(:attribute_name) { "published_journey_name"}
+          let(:target_attribute) { "published_journey_name"}
+
+          context "when value is present" do
+            before { vehicle_journey.update published_journey_name: "published_journey_name" }
+
+            let(:message_key) { "presence_of_attribute" }
+            let(:criticity) { "info" }
+
+            it "should create info message" do
+              subject
+
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
+
+          context "when value is not present" do
+            before { vehicle_journey.update published_journey_name: nil }
+
+            let(:message_key) { "no_presence_of_attribute" }
+            let(:criticity) { "warning" }
+
+            it "should create warning message" do
+              subject
+
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
+        end
+      end
+
+      describe "#Company" do
+        let(:company) {context.company}
+        let(:source) { company }
+        let(:target_model) { "Company" }
+
+        [ "short_name", "house_number", "street", "address_line_1", "address_line_2",
+          "town", "postcode", "postcode_extension", "default_contact_name", "code"  ].each do |attr_name|
+          describe "##{attr_name}" do
+            let(:attribute_name) { attr_name}
+            let(:target_attribute) { attr_name}
+
+            context "when value is present" do
+              before { company.update({attr_name.to_sym => "#{attr_name}-value"}) }
+
+              let(:message_key) { "presence_of_attribute" }
+              let(:criticity) { "info" }
+
+              it "should create info message" do
+                subject
+
+                expect(control_run.control_messages).to include(expected_message)
+              end
+            end
+
+            context "when value is not present" do
+              before { company.update({attr_name.to_sym => nil}) }
+
+              let(:message_key) { "no_presence_of_attribute" }
+              let(:criticity) { "warning" }
+
+              it "should create warning message" do
+                subject
+
+                expect(control_run.control_messages).to include(expected_message)
+              end
+            end
+          end
+        end
+
+
+        describe "#country" do
+          let(:attribute_name) { "country" }
+          let(:target_attribute) { "country" }
+
+          context "when value is present" do
+            before { company.update country_code: "FR"}
+
+            let(:message_key) { "presence_of_attribute" }
+            let(:criticity) { "info" }
+
+            it "should create info message" do
+              subject
+
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
+
+          context "when value is not present" do
+            before { company.update country_code: nil }
+
+            let(:message_key) { "no_presence_of_attribute" }
+            let(:criticity) { "warning" }
+
+            it "should create warning message" do
+              subject
+
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
+        end
+
+        describe "#time_zone" do
+          let(:attribute_name) { "time_zone" }
+          let(:target_attribute) { "time_zone" }
+
+          context "when value is present" do
+            before { company.update time_zone: "Europe/Paris"}
+
+            let(:message_key) { "presence_of_attribute" }
+            let(:criticity) { "info" }
+
+            it "should create info message" do
+              subject
+
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
+
+          context "when value is not present" do
+            before { company.update time_zone: nil }
+
+            let(:message_key) { "no_presence_of_attribute" }
+            let(:criticity) { "warning" }
+
+            it "should create warning message" do
+              subject
+
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
+        end
+
+        describe "#default_language" do
+          let(:attribute_name) { "default_language" }
+          let(:target_attribute) { "default_language" }
+
+          context "when value is present" do
+            before { company.update default_language: "FR"}
+
+            let(:message_key) { "presence_of_attribute" }
+            let(:criticity) { "info" }
+
+            it "should create info message" do
+              subject
+
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
+
+          context "when value is not present" do
+            before { company.update default_language: nil }
+
+            let(:message_key) { "no_presence_of_attribute" }
+            let(:criticity) { "warning" }
+
+            it "should create warning message" do
+              subject
+
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
+        end
+
+        describe "#default_contact_url" do
+          let(:attribute_name) { "default_contact_url" }
+          let(:target_attribute) { "default_contact_url" }
+
+          context "when value is present" do
+            before { company.update default_contact_url: "http://www.adresse.net" }
+
+            let(:message_key) { "presence_of_attribute" }
+            let(:criticity) { "info" }
+
+            it "should create info message" do
+              subject
+
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
+
+          context "when value is not present" do
+            before { company.update default_contact_url: nil }
+
+            let(:message_key) { "no_presence_of_attribute" }
+            let(:criticity) { "warning" }
+
+            it "should create warning message" do
+              subject
+
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
+        end
+
+        describe "#default_contact_phone" do
+          let(:attribute_name) { "default_contact_phone" }
+          let(:target_attribute) { "default_contact_phone" }
+
+          context "when value is present" do
+            before { company.update default_contact_phone: "+33(0)123456" }
+
+            let(:message_key) { "presence_of_attribute" }
+            let(:criticity) { "info" }
+
+            it "should create info message" do
+              subject
+
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
+
+          context "when value is not present" do
+            before { company.update default_contact_phone: nil }
+
+            let(:message_key) { "no_presence_of_attribute" }
+            let(:criticity) { "warning" }
+
+            it "should create warning message" do
+              subject
+
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
+        end
+
+        describe "#default_contact_email" do
+          let(:attribute_name) { "default_contact_email" }
+          let(:target_attribute) { "default_contact_email" }
+
+          context "when value is present" do
+            before { company.update default_contact_email: "test@test.com" }
+
+            let(:message_key) { "presence_of_attribute" }
+            let(:criticity) { "info" }
+
+            it "should create info message" do
+              subject
+
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
+
+          context "when value is not present" do
+            before { company.update default_contact_email: nil }
+
+            let(:message_key) { "no_presence_of_attribute" }
+            let(:criticity) { "warning" }
+
+            it "should create warning message" do
+              subject
+
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
+        end
       end
     end
   end

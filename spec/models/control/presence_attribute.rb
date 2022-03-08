@@ -352,6 +352,74 @@ RSpec.describe Control::PresenceAttribute do
           end
         end
 
+        describe "#parent" do
+          let(:attribute_name) { "parent" }
+          let(:target_attribute) { "parent" }
+          let(:parent) { create(:stop_area) }
+
+          context "when value is present" do
+            before do
+              stop_area.update area_type: 'zdep'
+              parent.update area_type: 'zdlp'
+              stop_area.update parent: parent
+            end
+
+            let(:message_key) { "presence_of_attribute" }
+            let(:criticity) { "info" }
+
+            it "should create info message" do
+              subject
+
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
+
+          context "when value is not present" do
+            before { stop_area.update parent: nil}
+
+            let(:message_key) { "no_presence_of_attribute" }
+            let(:criticity) { "warning" }
+
+            it "should create warning message" do
+              subject
+
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
+        end
+
+        describe "#referent" do
+          let(:attribute_name) { "referent" }
+          let(:target_attribute) { "referent" }
+          let(:referent) { create(:stop_area) }
+
+          context "when value is present" do
+            before { stop_area.update referent: referent }
+
+            let(:message_key) { "presence_of_attribute" }
+            let(:criticity) { "info" }
+
+            it "should create info message" do
+              subject
+
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
+
+          context "when value is not present" do
+            before { stop_area.update referent: nil}
+
+            let(:message_key) { "no_presence_of_attribute" }
+            let(:criticity) { "warning" }
+
+            it "should create warning message" do
+              subject
+
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
+        end
+
         describe "#coordinates" do
           let(:attribute_name) { "coordinates" }
           let(:target_attribute) { "coordinates" }
@@ -719,6 +787,37 @@ RSpec.describe Control::PresenceAttribute do
 
           context "when value is not present" do
             before { vehicle_journey.update company: nil }
+
+            let(:message_key) { "no_presence_of_attribute" }
+            let(:criticity) { "warning" }
+
+            it "should create warning message" do
+              subject
+
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
+        end
+
+        describe "#published_journey_identifier" do
+          let(:attribute_name) { "published_journey_identifier"}
+          let(:target_attribute) { "published_journey_identifier"}
+
+          context "when value is present" do
+            before { vehicle_journey.update published_journey_identifier: "published_journey_identifier" }
+
+            let(:message_key) { "presence_of_attribute" }
+            let(:criticity) { "info" }
+
+            it "should create info message" do
+              subject
+
+              expect(control_run.control_messages).to include(expected_message)
+            end
+          end
+
+          context "when value is not present" do
+            before { vehicle_journey.update published_journey_identifier: nil }
 
             let(:message_key) { "no_presence_of_attribute" }
             let(:criticity) { "warning" }

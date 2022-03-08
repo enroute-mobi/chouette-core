@@ -52,6 +52,16 @@ module Chouette
       full_display_name.truncate(50)
     end
 
+    def country
+      return unless country_code
+      country = ISO3166::Country[country_code]
+    end
+
+    def country_name
+      return unless country
+      country.translations[I18n.locale.to_s] || country.name
+    end
+
     private
 
     def define_line_referential

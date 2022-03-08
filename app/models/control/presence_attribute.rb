@@ -11,32 +11,51 @@ module Control
       option :target_attribute
 
       def run
-        model_class.find_each do |object|
-          message = find_or_create_message(object)
-
-          begin
-            value = object.send(model_attribute.name)
-            unless value.present?
-              message.criticity = "warning"
-              message.message_key = :no_presence_of_attribute
-            end
-          rescue
-            message.criticity = "error"
-            message.message_key = "invalid"
+        models.find_each do |object|
+          if attribute_or_method_klass? || belongs_to_itself?
+            value = object.send(model_attribute_name) rescue nil
+            next if value.present?
           end
 
-          message.save if message.changed?
+          self.control_messages.create({
+            message_attributes: { attribute_name: target_attribute },
+            criticity: self.criticity,
+            message_key: :no_presence_of_attribute,
+            source: object,
+          })
         end
       end
 
-      def find_or_create_message(object)
-        params = {
-          message_attributes: { attribute_name: target_attribute },
-          source: object,
-        }
+      def models
+        if belongs_to_itself?
+          # TODO: the referent and parent attributes don't work with left_joins
+          model_class
+        elsif belongs_to_attribute?
+          model_class.left_joins(model_attribute_name).
+            where(model_attribute_name.to_s.pluralize.to_sym => { id: nil })
+        elsif attribute_or_method_klass?
+          condition = model_attribute.
+            options[:source_sql_attributes].map{ |a| "#{a} IS NULL" }.join(" OR ")
+          model_class.where(condition)
+        else
+          model_class.where(model_attribute_name => nil)
+        end
+      end
 
-        self.control_messages.where(params).
-          first_or_create(params.merge( criticity: "info",  message_key: :presence_of_attribute))
+      def belongs_to_itself?
+        model_attribute.options[:belongs_to_itself] || false
+      end
+
+      def belongs_to_attribute?
+        model_attribute.options[:is_ref]
+      end
+
+      def attribute_or_method_klass?
+        model_attribute.options[:source_sql_attributes].present?
+      end
+
+      def model_attribute_name
+        @model_attribute_name ||= model_attribute.name
       end
 
       def model_attribute

@@ -358,7 +358,7 @@ describe Chouette::TimeTable, :type => :model do
       subject.state_update_periods(state['time_table_periods'])
 
       invalid_periods = subject.periods.select{ |m| m.invalid? }
-      expect(invalid_periods.count).to eq 1
+      expect(invalid_periods.count).to eq 2
       expect(invalid_periods.first.errors[:overlapped_periods]).not_to be_empty
     end
 
@@ -371,7 +371,7 @@ describe Chouette::TimeTable, :type => :model do
       }
       subject.state_update_periods(state['time_table_periods'])
       invalid_periods = subject.periods.select{ |m| m.invalid? }
-      expect(invalid_periods.count).to eq 1
+      expect(invalid_periods.count).to eq 2
       expect(invalid_periods.first.errors[:overlapped_periods]).not_to be_empty
     end
 

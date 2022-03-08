@@ -107,5 +107,6 @@ class ModelAttribute
 
   # attributes from class
   define Chouette::StopArea, :coordinates, :string, {}
+  define Chouette::StopArea, :country, :string, {}
 
 end

@@ -247,7 +247,7 @@ class Source < ApplicationModel
         gtfs_target_for = Proc.new do |resource, associations|
           ignored = (route_ids & associations[:route_ids]).empty?
 
-          if !ignored && resource.is_a?(::GTFS::Stop)
+          if ignore_parents? && !ignored && resource.is_a?(::GTFS::Stop)
             resource.parent_station = nil
             ignored = true if resource.station?
           end

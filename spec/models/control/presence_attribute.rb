@@ -54,19 +54,6 @@ RSpec.describe Control::PresenceAttribute do
         let(:target_attribute) { "shape" }
         let(:shape) { context.shape(:shape) }
 
-        context "when shape is present" do
-          let(:message_key) { "presence_of_attribute" }
-          let(:criticity) { "info" }
-          let(:attribute_name) { "shape"}
-          let(:source) { journey_pattern }
-
-          it "should create a info message" do
-            subject
-
-            expect(control_run.control_messages).to include(expected_message)
-          end
-        end
-
         context "when shape is not present" do
           before { shape.delete }
 
@@ -94,19 +81,6 @@ RSpec.describe Control::PresenceAttribute do
           let(:attribute_name) { "published_name"}
           let(:target_attribute) { "published_name"}
 
-          context "when value is present" do
-            before { line.update published_name: "Published Name" }
-
-            let(:message_key) { "presence_of_attribute" }
-            let(:criticity) { "info" }
-
-            it "should create info message" do
-              subject
-
-              expect(control_run.control_messages).to include(expected_message)
-            end
-          end
-
           context "when value is not present" do
             before { line.update published_name: nil }
 
@@ -126,19 +100,6 @@ RSpec.describe Control::PresenceAttribute do
           let(:target_model) { "Line" }
           let(:target_attribute) { "number"}
 
-          context "when value is present" do
-            before { line.update number: "number" }
-
-            let(:message_key) { "presence_of_attribute" }
-            let(:criticity) { "info" }
-
-            it "should create info message" do
-              subject
-
-              expect(control_run.control_messages).to include(expected_message)
-            end
-          end
-
           context "when value is not present" do
             before { line.update number: nil }
 
@@ -156,19 +117,6 @@ RSpec.describe Control::PresenceAttribute do
         describe "#url" do
           let(:attribute_name) { "url"}
           let(:target_attribute) { "url"}
-
-          context "when value is present" do
-            before { line.update url: "http://www.adresse.net" }
-
-            let(:message_key) { "presence_of_attribute" }
-            let(:criticity) { "info" }
-
-            it "should create info message" do
-              subject
-
-              expect(control_run.control_messages).to include(expected_message)
-            end
-          end
 
           context "when value is not present" do
             before { line.update url: nil }
@@ -189,19 +137,6 @@ RSpec.describe Control::PresenceAttribute do
           let(:target_model) { "Line" }
           let(:target_attribute) { "transport_mode"}
 
-          context "when value is present" do
-            before { line.update transport_mode: "bus" }
-
-            let(:message_key) { "presence_of_attribute" }
-            let(:criticity) { "info" }
-
-            it "should create info message" do
-              subject
-
-              expect(control_run.control_messages).to include(expected_message)
-            end
-          end
-
           context "when value is not present" do
             before { line.update transport_mode: nil }
 
@@ -220,19 +155,6 @@ RSpec.describe Control::PresenceAttribute do
           let(:attribute_name) { "company"}
           let(:target_model) { "Line" }
           let(:target_attribute) { "company"}
-
-          context "when value is present" do
-            before { line.update company: company }
-
-            let(:message_key) { "presence_of_attribute" }
-            let(:criticity) { "info" }
-
-            it "should create info message" do
-              subject
-
-              expect(control_run.control_messages).to include(expected_message)
-            end
-          end
 
           context "when value is not present" do
             before { line.update company: nil }
@@ -253,19 +175,6 @@ RSpec.describe Control::PresenceAttribute do
           let(:target_model) { "Line" }
           let(:target_attribute) { "network"}
 
-          context "when value is present" do
-            before { line.update network: network }
-
-            let(:message_key) { "presence_of_attribute" }
-            let(:criticity) { "info" }
-
-            it "should create info message" do
-              subject
-
-              expect(control_run.control_messages).to include(expected_message)
-            end
-          end
-
           context "when value is not present" do
             before { line.update network: nil }
 
@@ -285,19 +194,6 @@ RSpec.describe Control::PresenceAttribute do
           let(:target_model) { "Line" }
           let(:target_attribute) { "color"}
 
-          context "when value is present" do
-            before { line.update color: "FF5733" }
-
-            let(:message_key) { "presence_of_attribute" }
-            let(:criticity) { "info" }
-
-            it "should create info message" do
-              subject
-
-              expect(control_run.control_messages).to include(expected_message)
-            end
-          end
-
           context "when value is not present" do
             before { line.update color: nil }
 
@@ -316,19 +212,6 @@ RSpec.describe Control::PresenceAttribute do
           let(:attribute_name) { "text_color"}
           let(:target_model) { "Line" }
           let(:target_attribute) { "text_color"}
-
-          context "when value is present" do
-            before { line.update text_color: "FF5733" }
-
-            let(:message_key) { "presence_of_attribute" }
-            let(:criticity) { "info" }
-
-            it "should create info message" do
-              subject
-
-              expect(control_run.control_messages).to include(expected_message)
-            end
-          end
 
           context "when value is not present" do
             before { line.update text_color: nil }
@@ -353,21 +236,8 @@ RSpec.describe Control::PresenceAttribute do
         let(:target_model) { "StopArea" }
 
         describe "#public_code" do
-          let(:attribute_name) { "public_code"}
-          let(:target_attribute) { "public_code"}
-
-          context "when value is present" do
-            before { stop_area.update public_code: "12345" }
-
-            let(:message_key) { "presence_of_attribute" }
-            let(:criticity) { "info" }
-
-            it "should create info message" do
-              subject
-
-              expect(control_run.control_messages).to include(expected_message)
-            end
-          end
+          let(:attribute_name) { "public_code" }
+          let(:target_attribute) { "public_code" }
 
           context "when value is not present" do
             before { stop_area.update public_code: nil }
@@ -386,19 +256,6 @@ RSpec.describe Control::PresenceAttribute do
         describe "#url" do
           let(:attribute_name) { "url"}
           let(:target_attribute) { "url"}
-
-          context "when value is present" do
-            before { stop_area.update url: "http://www.adresse.net" }
-
-            let(:message_key) { "presence_of_attribute" }
-            let(:criticity) { "info" }
-
-            it "should create info message" do
-              subject
-
-              expect(control_run.control_messages).to include(expected_message)
-            end
-          end
 
           context "when value is not present" do
             before { stop_area.update url: nil }
@@ -419,23 +276,6 @@ RSpec.describe Control::PresenceAttribute do
           let(:target_attribute) { "parent" }
           let(:parent) { create(:stop_area) }
 
-          context "when value is present" do
-            before do
-              stop_area.update area_type: 'zdep'
-              parent.update area_type: 'zdlp'
-              stop_area.update parent: parent
-            end
-
-            let(:message_key) { "presence_of_attribute" }
-            let(:criticity) { "info" }
-
-            it "should create info message" do
-              subject
-
-              expect(control_run.control_messages).to include(expected_message)
-            end
-          end
-
           context "when value is not present" do
             before { stop_area.update parent: nil}
 
@@ -453,20 +293,6 @@ RSpec.describe Control::PresenceAttribute do
         describe "#referent" do
           let(:attribute_name) { "referent" }
           let(:target_attribute) { "referent" }
-          let(:referent) { create(:stop_area) }
-
-          context "when value is present" do
-            before { stop_area.update referent: referent }
-
-            let(:message_key) { "presence_of_attribute" }
-            let(:criticity) { "info" }
-
-            it "should create info message" do
-              subject
-
-              expect(control_run.control_messages).to include(expected_message)
-            end
-          end
 
           context "when value is not present" do
             before { stop_area.update referent: nil}
@@ -486,19 +312,6 @@ RSpec.describe Control::PresenceAttribute do
           let(:attribute_name) { "coordinates" }
           let(:target_attribute) { "coordinates" }
 
-          context "when value is present" do
-            before { stop_area.update longitude: 0.7091187, latitude: 0.43600792}
-
-            let(:message_key) { "presence_of_attribute" }
-            let(:criticity) { "info" }
-
-            it "should create info message" do
-              subject
-
-              expect(control_run.control_messages).to include(expected_message)
-            end
-          end
-
           context "when value is not present" do
             before { stop_area.update longitude: nil, latitude: nil}
 
@@ -516,19 +329,6 @@ RSpec.describe Control::PresenceAttribute do
         describe "#compass_bearing" do
           let(:attribute_name) { "compass_bearing" }
           let(:target_attribute) { "compass_bearing" }
-
-          context "when value is present" do
-            before { stop_area.update compass_bearing: 120}
-
-            let(:message_key) { "presence_of_attribute" }
-            let(:criticity) { "info" }
-
-            it "should create info message" do
-              subject
-
-              expect(control_run.control_messages).to include(expected_message)
-            end
-          end
 
           context "when value is not present" do
             before { stop_area.update compass_bearing: nil }
@@ -548,19 +348,6 @@ RSpec.describe Control::PresenceAttribute do
           let(:attribute_name) { "street_name" }
           let(:target_attribute) { "street_name" }
 
-          context "when value is present" do
-            before { stop_area.update street_name: "123 route de Saint Joseph"}
-
-            let(:message_key) { "presence_of_attribute" }
-            let(:criticity) { "info" }
-
-            it "should create info message" do
-              subject
-
-              expect(control_run.control_messages).to include(expected_message)
-            end
-          end
-
           context "when value is not present" do
             before { stop_area.update street_name: nil }
 
@@ -578,19 +365,6 @@ RSpec.describe Control::PresenceAttribute do
         describe "#zip_code" do
           let(:attribute_name) { "zip_code" }
           let(:target_attribute) { "zip_code" }
-
-          context "when value is present" do
-            before { stop_area.update zip_code: "44300" }
-
-            let(:message_key) { "presence_of_attribute" }
-            let(:criticity) { "info" }
-
-            it "should create info message" do
-              subject
-
-              expect(control_run.control_messages).to include(expected_message)
-            end
-          end
 
           context "when value is not present" do
             before { stop_area.update zip_code: nil }
@@ -610,19 +384,6 @@ RSpec.describe Control::PresenceAttribute do
           let(:attribute_name) { "city_name" }
           let(:target_attribute) { "city_name" }
 
-          context "when value is present" do
-            before { stop_area.update city_name: "Nantes" }
-
-            let(:message_key) { "presence_of_attribute" }
-            let(:criticity) { "info" }
-
-            it "should create info message" do
-              subject
-
-              expect(control_run.control_messages).to include(expected_message)
-            end
-          end
-
           context "when value is not present" do
             before { stop_area.update city_name: nil }
 
@@ -640,19 +401,6 @@ RSpec.describe Control::PresenceAttribute do
         describe "#postal_region" do
           let(:attribute_name) { "postal_region" }
           let(:target_attribute) { "postal_region" }
-
-          context "when value is present" do
-            before { stop_area.update postal_region: "44" }
-
-            let(:message_key) { "presence_of_attribute" }
-            let(:criticity) { "info" }
-
-            it "should create info message" do
-              subject
-
-              expect(control_run.control_messages).to include(expected_message)
-            end
-          end
 
           context "when value is not present" do
             before { stop_area.update postal_region: nil }
@@ -672,19 +420,6 @@ RSpec.describe Control::PresenceAttribute do
           let(:attribute_name) { "country" }
           let(:target_attribute) { "country" }
 
-          context "when value is present" do
-            before { stop_area.update country_code: "FR"}
-
-            let(:message_key) { "presence_of_attribute" }
-            let(:criticity) { "info" }
-
-            it "should create info message" do
-              subject
-
-              expect(control_run.control_messages).to include(expected_message)
-            end
-          end
-
           context "when value is not present" do
             before { stop_area.update country_code: nil }
 
@@ -702,19 +437,6 @@ RSpec.describe Control::PresenceAttribute do
         describe "#time_zone" do
           let(:attribute_name) { "time_zone" }
           let(:target_attribute) { "time_zone" }
-
-          context "when value is present" do
-            before { stop_area.update time_zone: "Europe/Paris"}
-
-            let(:message_key) { "presence_of_attribute" }
-            let(:criticity) { "info" }
-
-            it "should create info message" do
-              subject
-
-              expect(control_run.control_messages).to include(expected_message)
-            end
-          end
 
           context "when value is not present" do
             before { stop_area.update time_zone: nil }
@@ -734,19 +456,6 @@ RSpec.describe Control::PresenceAttribute do
           let(:attribute_name) { "waiting_time" }
           let(:target_attribute) { "waiting_time" }
 
-          context "when value is present" do
-            before { stop_area.update waiting_time: 30}
-
-            let(:message_key) { "presence_of_attribute" }
-            let(:criticity) { "info" }
-
-            it "should create info message" do
-              subject
-
-              expect(control_run.control_messages).to include(expected_message)
-            end
-          end
-
           context "when value is not present" do
             before { stop_area.update waiting_time: nil }
 
@@ -764,19 +473,6 @@ RSpec.describe Control::PresenceAttribute do
         describe "#fare_code" do
           let(:attribute_name) { "fare_code" }
           let(:target_attribute) { "fare_code" }
-
-          context "when value is present" do
-            before { stop_area.update fare_code: "12345"}
-
-            let(:message_key) { "presence_of_attribute" }
-            let(:criticity) { "info" }
-
-            it "should create info message" do
-              subject
-
-              expect(control_run.control_messages).to include(expected_message)
-            end
-          end
 
           context "when value is not present" do
             before { stop_area.update fare_code: nil }
@@ -803,19 +499,6 @@ RSpec.describe Control::PresenceAttribute do
           let(:attribute_name) { "transport_mode"}
           let(:target_attribute) { "transport_mode"}
 
-          context "when value is present" do
-            before { vehicle_journey.update transport_mode: "bus" }
-
-            let(:message_key) { "presence_of_attribute" }
-            let(:criticity) { "info" }
-
-            it "should create info message" do
-              subject
-
-              expect(control_run.control_messages).to include(expected_message)
-            end
-          end
-
           context "when value is not present" do
             before { vehicle_journey.update transport_mode: nil }
 
@@ -833,19 +516,6 @@ RSpec.describe Control::PresenceAttribute do
         describe "#company" do
           let(:attribute_name) { "company"}
           let(:target_attribute) { "company"}
-
-          context "when value is present" do
-            before { vehicle_journey.update company: company }
-
-            let(:message_key) { "presence_of_attribute" }
-            let(:criticity) { "info" }
-
-            it "should create info message" do
-              subject
-
-              expect(control_run.control_messages).to include(expected_message)
-            end
-          end
 
           context "when value is not present" do
             before { vehicle_journey.update company: nil }
@@ -865,19 +535,6 @@ RSpec.describe Control::PresenceAttribute do
           let(:attribute_name) { "published_journey_identifier"}
           let(:target_attribute) { "published_journey_identifier"}
 
-          context "when value is present" do
-            before { vehicle_journey.update published_journey_identifier: "published_journey_identifier" }
-
-            let(:message_key) { "presence_of_attribute" }
-            let(:criticity) { "info" }
-
-            it "should create info message" do
-              subject
-
-              expect(control_run.control_messages).to include(expected_message)
-            end
-          end
-
           context "when value is not present" do
             before { vehicle_journey.update published_journey_identifier: nil }
 
@@ -895,19 +552,6 @@ RSpec.describe Control::PresenceAttribute do
         describe "#published_journey_name" do
           let(:attribute_name) { "published_journey_name"}
           let(:target_attribute) { "published_journey_name"}
-
-          context "when value is present" do
-            before { vehicle_journey.update published_journey_name: "published_journey_name" }
-
-            let(:message_key) { "presence_of_attribute" }
-            let(:criticity) { "info" }
-
-            it "should create info message" do
-              subject
-
-              expect(control_run.control_messages).to include(expected_message)
-            end
-          end
 
           context "when value is not present" do
             before { vehicle_journey.update published_journey_name: nil }
@@ -935,19 +579,6 @@ RSpec.describe Control::PresenceAttribute do
             let(:attribute_name) { attr_name}
             let(:target_attribute) { attr_name}
 
-            context "when value is present" do
-              before { company.update({attr_name.to_sym => "#{attr_name}-value"}) }
-
-              let(:message_key) { "presence_of_attribute" }
-              let(:criticity) { "info" }
-
-              it "should create info message" do
-                subject
-
-                expect(control_run.control_messages).to include(expected_message)
-              end
-            end
-
             context "when value is not present" do
               before { company.update({attr_name.to_sym => nil}) }
 
@@ -963,23 +594,9 @@ RSpec.describe Control::PresenceAttribute do
           end
         end
 
-
         describe "#country" do
           let(:attribute_name) { "country" }
           let(:target_attribute) { "country" }
-
-          context "when value is present" do
-            before { company.update country_code: "FR"}
-
-            let(:message_key) { "presence_of_attribute" }
-            let(:criticity) { "info" }
-
-            it "should create info message" do
-              subject
-
-              expect(control_run.control_messages).to include(expected_message)
-            end
-          end
 
           context "when value is not present" do
             before { company.update country_code: nil }
@@ -999,19 +616,6 @@ RSpec.describe Control::PresenceAttribute do
           let(:attribute_name) { "time_zone" }
           let(:target_attribute) { "time_zone" }
 
-          context "when value is present" do
-            before { company.update time_zone: "Europe/Paris"}
-
-            let(:message_key) { "presence_of_attribute" }
-            let(:criticity) { "info" }
-
-            it "should create info message" do
-              subject
-
-              expect(control_run.control_messages).to include(expected_message)
-            end
-          end
-
           context "when value is not present" do
             before { company.update time_zone: nil }
 
@@ -1029,19 +633,6 @@ RSpec.describe Control::PresenceAttribute do
         describe "#default_language" do
           let(:attribute_name) { "default_language" }
           let(:target_attribute) { "default_language" }
-
-          context "when value is present" do
-            before { company.update default_language: "FR"}
-
-            let(:message_key) { "presence_of_attribute" }
-            let(:criticity) { "info" }
-
-            it "should create info message" do
-              subject
-
-              expect(control_run.control_messages).to include(expected_message)
-            end
-          end
 
           context "when value is not present" do
             before { company.update default_language: nil }
@@ -1061,19 +652,6 @@ RSpec.describe Control::PresenceAttribute do
           let(:attribute_name) { "default_contact_url" }
           let(:target_attribute) { "default_contact_url" }
 
-          context "when value is present" do
-            before { company.update default_contact_url: "http://www.adresse.net" }
-
-            let(:message_key) { "presence_of_attribute" }
-            let(:criticity) { "info" }
-
-            it "should create info message" do
-              subject
-
-              expect(control_run.control_messages).to include(expected_message)
-            end
-          end
-
           context "when value is not present" do
             before { company.update default_contact_url: nil }
 
@@ -1092,19 +670,6 @@ RSpec.describe Control::PresenceAttribute do
           let(:attribute_name) { "default_contact_phone" }
           let(:target_attribute) { "default_contact_phone" }
 
-          context "when value is present" do
-            before { company.update default_contact_phone: "+33(0)123456" }
-
-            let(:message_key) { "presence_of_attribute" }
-            let(:criticity) { "info" }
-
-            it "should create info message" do
-              subject
-
-              expect(control_run.control_messages).to include(expected_message)
-            end
-          end
-
           context "when value is not present" do
             before { company.update default_contact_phone: nil }
 
@@ -1122,19 +687,6 @@ RSpec.describe Control::PresenceAttribute do
         describe "#default_contact_email" do
           let(:attribute_name) { "default_contact_email" }
           let(:target_attribute) { "default_contact_email" }
-
-          context "when value is present" do
-            before { company.update default_contact_email: "test@test.com" }
-
-            let(:message_key) { "presence_of_attribute" }
-            let(:criticity) { "info" }
-
-            it "should create info message" do
-              subject
-
-              expect(control_run.control_messages).to include(expected_message)
-            end
-          end
 
           context "when value is not present" do
             before { company.update default_contact_email: nil }

@@ -17,7 +17,7 @@
 					}, \
 					label: false,
 					wrapper_html: {'class': 'mb-0 mx-0' }
-	
+
 				.flex.items-center
 				p.mb-0.mr-2 x-text="resource.name" x-show="!expanded"
 					p.mb-0 x-show="!expanded" = "(#{class_description})"
@@ -30,9 +30,9 @@
 			= render "control_lists/#{control.model_name.i18n_key.to_s}", form: control_form
 
 			= control_form.input :code, input_html: { 'x-model': 'resource.code' }
-
-			= control_form.label Control::Base.human_attribute_name(:criticity), class: 'col-sm-4 col-xs-5 control-label mb-3'
-			= control_form.input :criticity, as: :radio_buttons, collection: facade.criticity_options, input_html: { 'x-model': 'resource.criticity' }, label: false, label_method: Proc.new { |o| o.text.html_safe }
+			.form-group
+				= control_form.label Control::Base.human_attribute_name(:criticity), class: 'col-sm-4 col-xs-5 control-label mb-3'
+				= control_form.input :criticity, as: :radio_buttons, collection: facade.criticity_options, input_html: { 'x-model': 'resource.criticity' }, label: false, label_method: Proc.new { |o| o.text.html_safe }, wrapper_html: { class: 'col-sm-8 col-xs-7 flex items-center' }
 
 			.form-group
 				= control_form.label Control::List.human_attribute_name(:comments), class: 'col-sm-4 col-xs-5 control-label mb-3'

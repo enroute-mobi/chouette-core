@@ -36,7 +36,8 @@ class MacroListFacade
 			name: macro_list.name,
 			comments: macro_list.comments,
 			macros: macros(macro_list),
-			macro_contexts: macro_contexts(macro_list)
+			macro_contexts: macro_contexts(macro_list),
+			is_show: show?
 		})
 	end
 

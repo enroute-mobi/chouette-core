@@ -52,7 +52,8 @@ class ControlListFacade
 			name: control_list.name,
 			comments: control_list.comments,
 			controls: controls(control_list),
-			control_contexts: control_contexts(control_list)
+			control_contexts: control_contexts(control_list),
+			is_show: show?
 		})
 	end
 

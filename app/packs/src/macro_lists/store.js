@@ -12,9 +12,10 @@ export default class Store {
 		this.addMacros = addResourceToCollection('macros')
 	}
 	
-	initState({ name, comments, macros, macro_contexts }) {
+	initState({ name, comments, macros, macro_contexts, is_show }) {
 		this.name = name
 		this.comments = comments
+		this.isShow = is_show
 
 		this.addMacros(macros)(this)
 

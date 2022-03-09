@@ -12,9 +12,10 @@ export default class Store {
 		this.addControls = addResourceToCollection('controls')
 	}
 
-	initState({ name, comments, controls, control_contexts }) {
+	initState({ name, comments, controls, control_contexts, is_show }) {
 		this.name = name
 		this.comments = comments
+		this.isShow = is_show
 
 		this.addControls(controls)(this)
 

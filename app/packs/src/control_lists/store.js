@@ -36,7 +36,5 @@ export default class Store {
 		})
 
 		this.controls.forEach(formDataUpdater.call())
-
-		console.log('fmreogjkt')
 	}
 }

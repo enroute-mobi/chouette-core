@@ -4,7 +4,7 @@ import CollectionMixin from '../operations/mixins/collection'
 import { ControlCollection } from './control'
 
 // Control Context
-const ControlContextMixin = superclass => class ConrolContext extends superclass {
+const ControlContextMixin = superclass => class ControlContext extends superclass {
 	constructor({ macros, ...attributes }) {
 		super(attributes)
 
@@ -13,14 +13,14 @@ const ControlContextMixin = superclass => class ConrolContext extends superclass
 
 	get inputSelector() { return 'control_contexts_attributes' }
 
-	get attributes() { return omit(this, ['errors', 'html', 'controls']) }
+	get attributesList() { return ['errors', 'html', 'controls'] }
 }
 
-export const ConrolContext = flow(ResourceMixin, ControlContextMixin)(class {})
+export const ControlContext = flow(ResourceMixin, ControlContextMixin)(class {})
 
 // Control Context Collection
 const ControlCollectionMixin = superclass => class ControlContextCollection extends superclass {
-	static get ResourceConstructor() { return ConrolContext }
+	static get ResourceConstructor() { return ControlContext }
 
 	duplicate(controlContext) {
 		this

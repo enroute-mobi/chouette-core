@@ -32,11 +32,10 @@ class ControlListPresenter
 	end
 
 	def criticity_options
-		
+
 	end
 
 	def json_state
-		byebug
 		JSON.generate({
 			name: control_list.name,
 			comments: control_list.comments,

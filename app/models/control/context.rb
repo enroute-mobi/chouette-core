@@ -11,6 +11,8 @@ module Control
 
     store :options, coder: JSON
 
+    accepts_nested_attributes_for :controls, allow_destroy: true, reject_if: :all_blank
+
     def self.available
       [
         Control::Context::TransportMode

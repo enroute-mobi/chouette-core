@@ -11,7 +11,7 @@ module Control
       option :target_attribute
 
       def run
-        models.find_each do |object|
+        faulty_models.find_each do |object|
           if attribute_or_method_klass? || belongs_to_itself?
             value = object.send(model_attribute_name) rescue nil
             next if value.present?
@@ -26,19 +26,17 @@ module Control
         end
       end
 
-      def models
+      def faulty_models
         if belongs_to_itself?
           # TODO: the referent and parent attributes don't work with left_joins
-          model_class
+          models
         elsif belongs_to_attribute?
-          model_class.left_joins(model_attribute_name).
-            where(model_attribute_name.to_s.pluralize.to_sym => { id: nil })
+          models.left_joins(model_attribute_name).where(association_collection => { id: nil })
         elsif attribute_or_method_klass?
-          condition = model_attribute.
-            options[:source_sql_attributes].map{ |a| "#{a} IS NULL" }.join(" OR ")
-          model_class.where(condition)
+          condition = model_attribute.options[:source_sql_attributes].map{ |a| "#{a} IS NULL" }.join(" OR ")
+          models.where(condition)
         else
-          model_class.where(model_attribute_name => nil)
+          models.where(model_attribute_name => nil)
         end
       end
 
@@ -54,6 +52,10 @@ module Control
         model_attribute.options[:source_sql_attributes].present?
       end
 
+      def association_collection
+        @association_collection ||= model_attribute.name.to_s.pluralize.to_sym
+      end
+
       def model_attribute_name
         @model_attribute_name ||= model_attribute.name
       end
@@ -66,9 +68,12 @@ module Control
         @model_attribute_code ||= "#{target_model.underscore}##{target_attribute}"
       end
 
-      def model_class
-        @model_class ||=
-          "Chouette::#{target_model}".constantize rescue nil || target_model.constantize
+      def model_collection
+        @model_collection ||= target_model.underscore.pluralize.to_sym
+      end
+
+      def models
+        @models ||= context.send(model_collection)
       end
     end
   end

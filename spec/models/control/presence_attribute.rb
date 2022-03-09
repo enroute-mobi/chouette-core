@@ -22,7 +22,6 @@ RSpec.describe Control::PresenceAttribute do
         Chouette.create do
           company
           network
-          line
           stop_area :first
           stop_area :middle
           stop_area :last
@@ -35,6 +34,8 @@ RSpec.describe Control::PresenceAttribute do
         end
       end
 
+      let(:referential) { context.referential }
+
       let(:expected_message) do
         an_object_having_attributes({
           source: source,
@@ -45,7 +46,7 @@ RSpec.describe Control::PresenceAttribute do
       end
 
       before do
-        context.referential.switch
+        referential.switch
       end
 
       describe "JourneyPattern" do
@@ -73,7 +74,7 @@ RSpec.describe Control::PresenceAttribute do
       describe "Line" do
         let(:company) { context.company }
         let(:network) { context.network }
-        let(:line) { context.line }
+        let(:line) { referential.lines.first }
         let(:source) { line }
         let(:target_model) { "Line" }
 

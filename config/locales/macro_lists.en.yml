@@ -28,12 +28,6 @@ en:
       sections:
         macros: "Macro Lists"
       macro_placeholder: "Describe the macro objective"
-      macro_type_placeholder: "Add a macro by selecting its type"
-      macro_context_type_placeholder: "Add a macro context by selecting its type"
-      macro_type: "Macro Type"
-      add_macro: "Add a new Macro"
-      macro_context_type: Macro Context Type
-      add_context: "Add a new Macro Context"
     filters:
   activerecord:
     models:
@@ -54,3 +48,16 @@ en:
         created_at: "Created at"
         updated_at: "Updated at"
         creator_id: "Create by"
+  simple_form:
+    labels:
+      macro_list:
+        macro_type: "Macro Type"
+        macro_context_type: Macro Context Type
+    placeholders:
+      macro_list:
+        macro_type: Add a macro by selecting its type
+        macro_context_type: Add a macro context by selecting its type
+    buttons:
+      macro_list:
+        macro_type: Add a new Macro
+        macro_context_type: Add a new Macro Context

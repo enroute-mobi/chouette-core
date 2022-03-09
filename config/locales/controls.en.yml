@@ -1,0 +1,16 @@
+en:
+  activerecord:
+    models:
+      control:
+        zero:  controls
+        one:   control
+        other: controls
+      control/dummy:
+        one: Simulate control
+    attributes:
+      control:
+        name: Name
+        comments: Comments
+        criticity: Criticity
+      control/dummy:
+        expected_result: Expected Result

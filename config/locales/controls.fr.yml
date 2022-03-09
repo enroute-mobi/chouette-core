@@ -1,0 +1,16 @@
+fr:
+  activerecord:
+    models:
+      control:
+        zero:  "contrôle"
+        one:   "contrôle"
+        other: "contrôles"
+      control/dummy:
+        one: Simuler un contrôle
+    attributes:
+      control:
+        name: Nom
+        comments: Commentaire
+        criticity: Criticité
+      control/dummy:
+        expected_result: Résultat attendu

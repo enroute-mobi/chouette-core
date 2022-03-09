@@ -1,5 +1,6 @@
 import { omit } from 'lodash'
 import { Path } from 'path-parser'
+import { isProd } from '../../../src/helpers/env'
 
 const path = Path.createPath('/workbenches/:workbenchId/:controllerName')
 const URLParams = path.partialTest(location.pathname)
@@ -43,7 +44,9 @@ export default superclass => class Resource extends superclass {
 
 		const { html } = await (await fetch(url)).json()
 
-		this.cacheHTML = html
+		if (isProd) {
+			this.cacheHTML = html
+		}
 
 		return html
 	}

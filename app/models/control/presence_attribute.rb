@@ -62,6 +62,10 @@ module Control
         @association_collection ||= model_attribute.name.to_s.pluralize.to_sym
       end
 
+      def association_collection
+        @association_collection ||= model_attribute.name.to_s.pluralize.to_sym
+      end
+
       def model_attribute_name
         @model_attribute_name ||= model_attribute.name
       end

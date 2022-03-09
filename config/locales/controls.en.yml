@@ -8,7 +8,7 @@ en:
       control/dummy:
         one: Simulate control
     attributes:
-      control:
+      control/base:
         name: Name
         comments: Comments
         criticity: Criticity

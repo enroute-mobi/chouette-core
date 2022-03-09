@@ -20,7 +20,7 @@ export class FormDataUpdater {
 	}
 
 	clear() {
-		const keys = ['utf8', 'authenticity_token']
+		const keys = ['utf8', 'authenticity_token', '_method', 'commit']
 		// We had some issues to keep store & form in sync. Especially during edit where we had conflicts between subforms.
 		// As a solution we decided to compute manually the formData.
 		for (const [key] of [...this.formData]) { !keys.includes(key) && this.formData.delete(key) } // Reset all macro related fields

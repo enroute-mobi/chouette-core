@@ -8,7 +8,7 @@ fr:
       control/dummy:
         one: Simuler un contrôle
     attributes:
-      control:
+      control/base:
         name: Nom
         comments: Commentaire
         criticity: Criticité

@@ -1,0 +1,44 @@
+- breadcrumb :control_lists, @workbench
+
+.page_content
+  .container-fluid
+    - if params[:q].present? or @control_lists.any?
+      .row
+        .col-lg-12
+
+    - if @control_lists.any?
+      .row
+        .col-lg-12
+          = table_builder_2 @control_lists,
+            [ \
+              TableBuilderHelper::Column.new( \
+                key: :name, \
+                attribute: :name, \
+                sortable: false, \
+                link_to: lambda do |control_list| \
+                workbench_control_list_path( \
+                    @workbench, \
+                    control_list \
+                  ) \
+                end \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :comments, \
+                attribute: ->(l){ truncate(l.comments, length: 150) }, \
+                sortable: false \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :updated_at, \
+                attribute: Proc.new { |n| l(n.updated_at, format: :short_with_time) if n.updated_at }, \
+                sortable: false,\
+              ) \
+              \
+            ].compact,
+            cls: 'table has-filter has-search'
+
+          = new_pagination @control_lists, 'pull-right'
+
+    - unless @control_lists.any?
+      .row.mt-xs
+        .col-lg-12
+          = replacement_msg t('control_lists.search_no_results')

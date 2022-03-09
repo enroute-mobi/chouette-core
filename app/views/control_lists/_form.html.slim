@@ -1,0 +1,26 @@
+- content_for :additional_packs, 'control_lists/form'
+- form_options = local_assigns.fetch(:options, {})
+
+= simple_form_for [@workbench, @control_list], presenter.form_options.merge(form_options) do |f|
+  .row
+    .col-lg-12
+      = f.input :name, input_html: { 'x-model': '$store.controlList.name' }
+      = f.input :comments, as: :text, input_html: { 'x-model': '$store.controlList.comments' }
+  .row
+    h2
+      = t("control.form.sections.controls")
+    .simple-separator.mb-5
+    .w-full-px-5
+
+      = render 'operations/collection', collection: '$store.controlList.contexts'
+
+      template[x-if="!$store.controlList.contexts.isEmpty"]
+        .simple-separator.m-5
+      = render 'operations/collection', collection: '$store.controlList.controls'
+
+      = render 'operations/select', **presenter.control_context_select_options
+      = render 'operations/select', **presenter.control_select_options('$store.controlList.controls')
+
+  - unless presenter.show?
+    = cancel_button
+    = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'control_list_form'

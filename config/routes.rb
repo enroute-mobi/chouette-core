@@ -45,6 +45,7 @@ ChouetteIhm::Application.routes.draw do
       get :stop_area_providers, on: :collection, defaults: { format: 'json' }
       get :users, on: :collection, defaults: { format: 'json' }
       get :macro_lists, on: :collection, defaults: { format: 'json' }
+      get :control_lists, on: :collection, defaults: { format: 'json' }
     end
 
     resources :compliance_check_sets, only: [:index, :show] do

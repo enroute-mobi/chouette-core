@@ -1,0 +1,60 @@
+- breadcrumb :control_list_runs, @workbench
+
+.page_content
+  .container-fluid
+    - if params[:q].present? or @control_list_runs.any?
+      .row
+        .col-lg-12
+
+    - if @control_list_runs.any?
+      .row
+        .col-lg-12
+          = table_builder_2 @control_list_runs,
+            [ \
+							TableBuilderHelper::Column.new( \
+                key: :status, \
+                attribute: :status, \
+                attribute: Proc.new { |n| n.status.present? ? t("enumerize.operation.status.#{n.try(:status)}") : "-" } \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :name, \
+                attribute: :name, \
+                sortable: false, \
+                link_to: lambda do |control_list_run| \
+                workbench_control_list_run_path( \
+                    @workbench, \
+                    control_list_run \
+                  ) \
+                end \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :referential_id, \
+                attribute: Proc.new { |m| m.referential.name }, \
+								if: Proc.new { |m| m.referential }, \
+                sortable: false \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :created_at, \
+                attribute: Proc.new { |n| l(n.created_at, format: :short_with_time) if n.created_at }, \
+                sortable: false,\
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :duration, \
+                attribute: Proc.new { |object| object.ended_at.presence && object.started_at.presence && duration_in_words(object.ended_at - object.started_at)}, \
+                sortable: false,\
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :created_by, \
+                attribute: :creator, \
+                sortable: false,\
+              ) \
+              \
+            ].compact,
+            cls: 'table has-filter has-search'
+
+          = new_pagination @control_list_runs, 'pull-right'
+
+    - unless @control_list_runs.any?
+      .row.mt-xs
+        .col-lg-12
+          = replacement_msg t('control_list_run.search_no_results')

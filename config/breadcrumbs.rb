@@ -96,7 +96,7 @@ crumb :new_control_list do |workbench|
 end
 
 crumb :control_list_runs do |workbench|
-  link I18n.t('control/list_run.index.title'), workbench_control_list_runs_path(workbench)
+  link I18n.t('control/list/runs.index.title'), workbench_control_list_runs_path(workbench)
   parent :workbench, workbench
 end
 

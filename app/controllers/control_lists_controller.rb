@@ -34,27 +34,28 @@ class ControlListsController < ChouetteController
   end
 
   def fetch_object_html
-    render json: { html: ControlLists::RenderPartial.call(object_html_params) }
+    render json: { html: Operations::RenderPartial.call(object_html_params) }
   end
-
-  def init_presenter
-    object = control_list rescue Control::List.new(workbench: workbench)
-    @presenter ||= ControlListPresenter.new(object, helpers)
-  end
-
-  helper_method :presenter
 
   protected
 
   alias control_list resource
   alias workbench parent
-  alias presenter init_presenter
 
   def collection
     @control_lists = parent.control_lists.paginate(page: params[:page], per_page: 30)
   end
 
   private
+
+  def init_presenter
+    object = control_list rescue Control::List.new(workbench: workbench)
+    @presenter ||= ControlListPresenter.new(object, helpers)
+  end
+
+  alias presenter init_presenter
+
+  helper_method :presenter
 
   def decorate_control_list
     object = control_list rescue build_resource
@@ -69,16 +70,16 @@ class ControlListsController < ChouetteController
   def object_html_params
     params.require(:html).permit(
       :id,
-      :type,
-      :control_list_id
+      :type
     ).with_defaults(
       template: helpers,
-      workbench: workbench
+      workbench: workbench,
+      parent_klass: Control::List
     )
   end
 
   def control_params
-    control_options = %i[id name position type comments control_list_id _destroy]
+    control_options = %i[id name position type code criticity comments control_list_id _destroy]
 
     control_options += Control::Base.descendants.flat_map { |n| n.options.keys }
     

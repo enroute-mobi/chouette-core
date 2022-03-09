@@ -34,14 +34,13 @@ class MacroListsController < ChouetteController
   end
 
   def fetch_object_html
-    render json: { html: MacroLists::RenderPartial.call(object_html_params) }
+    render json: { html: Operations::RenderPartial.call(object_html_params) }
   end
 
   protected
 
   alias macro_list resource
   alias workbench parent
-  # alias presenter init_presenter
 
   def collection
     @macro_lists = parent.macro_lists.paginate(page: params[:page], per_page: 30)
@@ -80,10 +79,10 @@ class MacroListsController < ChouetteController
     params.require(:html).permit(
       :id,
       :type,
-      :macro_list_id
     ).with_defaults(
       template: helpers,
-      workbench: workbench
+      workbench: workbench,
+      parent_klass: Macro::List
     )
   end
 

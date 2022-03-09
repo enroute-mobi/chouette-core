@@ -74,6 +74,13 @@ ChouetteIhm::Application.routes.draw do
 
     resources :macro_list_runs, only: %w(new create show index)
 
+    resources :control_lists do
+      get :fetch_object_html, on: :collection, defaults: { format: 'json' }
+      resources :control_list_runs, only: %w(new create)
+    end
+
+    resources :control_list_runs, only: %w(new create show index)
+
     resource :stop_area_referential, :only => [:show, :edit, :update] do
       post :sync, on: :member
       resources :stop_area_routing_constraints

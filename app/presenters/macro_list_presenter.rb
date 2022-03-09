@@ -6,6 +6,10 @@ class MacroListPresenter
 		@template = template
 	end
 
+	def form_basename
+		'macro_list'
+	end
+
 	def form_options
 		{
 			wrapper: :horizontal_form,
@@ -19,7 +23,7 @@ class MacroListPresenter
 		}
 	end
 
-	def is_show
+	def show?
 		template.controller.action_name == 'show'
 	end
 
@@ -34,6 +38,14 @@ class MacroListPresenter
 			macros: macros(macro_list),
 			macro_contexts: macro_contexts(macro_list)
 		})
+	end
+
+	def macro_select_options store_collection
+		{ name: 'macro_type', collection: Macro.available, store_collection: store_collection }
+	end
+
+	def macro_context_select_options
+		{ name: 'macro_context_type', collection: Macro::Context.available, store_collection: '$store.macroList.contexts' }
 	end
 
 	private
@@ -55,7 +67,7 @@ class MacroListPresenter
 	def merged_options object
 		{
 			errors: object.errors.full_messages,
-    	html: MacroLists::RenderPartial.call(template: template, id: object.id, type: object.type, validate: true),
+    	html: Operations::RenderPartial.call(template: template, id: object.id, type: object.type, parent_klass: Macro::List, validate: true),
       **object.options
 		}
 	end

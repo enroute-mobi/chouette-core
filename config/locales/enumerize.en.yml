@@ -392,3 +392,7 @@ en:
       other: "Other"
     search:
       rule_type: *notification_rule_rule_type
+    control:
+      criticity:
+        warning: Warning
+        error: Error

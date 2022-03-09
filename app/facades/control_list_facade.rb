@@ -34,7 +34,12 @@ class ControlListFacade
 	def criticity_options
 		option = Struct.new('Option', :id, :text)
 
-		render_option = Proc.new { |key, color| template.content_tag :div,  I18n.t("enumerize.control.criticity.#{key}"), class: 'span fa fa-cog' }
+		render_option = Proc.new do |key, color|
+			template.content_tag :div do
+				template.concat template.content_tag :div, nil, class: 'span fa fa-circle', style: "color:#{color};"
+				template.concat I18n.t("enumerize.control.criticity.#{key}")
+			end
+		end
 
 		[
 			option.new('warning', render_option.call('warning', '#ed7f00'), ),

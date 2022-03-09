@@ -70,6 +70,8 @@ ChouetteIhm::Application.routes.draw do
       resources :macro_list_runs, only: %w(new create)
     end
 
+    resources :sources
+
     resources :macro_list_runs, only: %w(new create show index)
 
     resource :stop_area_referential, :only => [:show, :edit, :update] do

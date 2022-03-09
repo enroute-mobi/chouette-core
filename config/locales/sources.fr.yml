@@ -1,0 +1,44 @@
+fr:
+  sources:
+    index:
+      title: Source de données
+    show:
+      title: "%{name}"
+    new:
+      title: "Créer une Source de données"
+    edit:
+      title: "Editer %{name}"
+    actions:
+      show: "Afficher cette Source de données"
+      new: "Créer une Source de données"
+      edit: "Editer cette Source de données"
+      destroy: "Supprimer cette Source de données"
+      destroy_confirm: "Etes vous sûr de supprimer cette Source de données ?"
+    search_no_results: "Aucune Source de données ne correspond à votre recherche"
+    form:
+      sections:
+        retrieval: "Récupération"
+        import_options: "Options d'importation"
+    filters:
+    errors:
+  activerecord:
+    models:
+      source:
+        zero:  "Source de données"
+        one:   "Source de données"
+        other: "Source de données"
+    attributes:
+      source:
+        name: "Nom"
+        url: "URL"
+        downloader_type: "Type de téléchargement"
+        downloader_options: "Options de téléchargement"
+        checksum: "Signature métier"
+        import_options: "Options d'importation"
+        import_option_automatic_merge: Finalisation automatique des jeux de données importés
+        import_option_archive_on_fail: Archivage automatique en cas d'erreur
+        enabled: "Activée"
+        ignore_checksum: "Ignorer la Signature"
+        created_at: "Créé le"
+        updated_at: "Edité le"
+        creator_id: "Créé par"

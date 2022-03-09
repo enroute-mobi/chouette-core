@@ -37,6 +37,7 @@ class Permission
         routes
         routing_constraint_zones
         shapes
+        sources
         stop_area_routing_constraints
         line_routing_constraint_zones
         time_tables

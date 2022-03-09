@@ -130,6 +130,10 @@ en:
         cableway: Cableway
         funicular: Funicular
         other: Other
+    source:
+      downloader_type:
+        direct: Direct
+        french_nap: French NAP
     stop_area:
       area_type:
         zdep: ZDEp

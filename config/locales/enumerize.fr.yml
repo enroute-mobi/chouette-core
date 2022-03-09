@@ -129,6 +129,10 @@ fr:
         cableway: Téléphérique
         funicular: Funiculaire
         other: Autre
+    source:
+      downloader_type:
+        direct: Direct
+        french_nap: French NAP
     stop_area:
       area_type:
         zdep: ZDEp

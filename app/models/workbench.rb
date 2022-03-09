@@ -29,6 +29,7 @@ class Workbench < ApplicationModel
   has_many :group_of_lines, through: :line_referential
   has_many :imports, class_name: 'Import::Base', dependent: :destroy
   has_many :exports, class_name: 'Export::Base', dependent: :destroy
+  has_many :sources, dependent: :destroy
   has_many :workbench_imports, class_name: 'Import::Workbench', dependent: :destroy
   has_many :compliance_check_sets, dependent: :destroy
   has_many :merges, dependent: :destroy

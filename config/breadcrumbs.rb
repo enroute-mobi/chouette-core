@@ -50,6 +50,21 @@ crumb :new_macro_list do |workbench|
   parent :macro_lists, workbench
 end
 
+crumb :sources do |workbench|
+  link I18n.t('sources.index.title'), workbench_sources_path(workbench)
+  parent :workbench, workbench
+end
+
+crumb :source do |workbench, source|
+  link breadcrumb_name(source), workbench_source_path(workbench, source)
+  parent :sources, workbench
+end
+
+crumb :new_source do |workbench|
+  link I18n.t('sources.new.title')
+  parent :sources, workbench
+end
+
 crumb :macro_list_runs do |workbench|
   link I18n.t('macro_list_run.index.title'), workbench_macro_list_runs_path(workbench)
   parent :workbench, workbench

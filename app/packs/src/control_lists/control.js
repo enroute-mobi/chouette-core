@@ -1,9 +1,14 @@
 import { flow } from 'lodash'
-import ResourceMixin from './mixins/resource'
-import CollectionMixin from './mixins/collection'
+import ResourceMixin from '../operations/mixins/resource'
+import CollectionMixin from '../operations/mixins/collection'
 
 // Control
 const ControlMixin = superclass => class Control extends superclass {
+	constructor(attributes) {
+		super(attributes)
+
+		this.criticity = this.criticity || 'warning'
+	}
 	get inputSelector() { return 'controls_attributes' }
 }
 

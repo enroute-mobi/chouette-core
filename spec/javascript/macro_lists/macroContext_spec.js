@@ -1,4 +1,4 @@
-import { MacroContext, MacroContextCollection } from '../../../app/packs/src/operations/macroContext'
+import { MacroContext, MacroContextCollection } from '../../../app/packs/src/macro_lists/macroContext'
 
 context('MacroContext', () => {
 	set('macroContext', () => new MacroContext({}))

@@ -1,4 +1,4 @@
-import { Macro, MacroCollection } from '../../../app/packs/src/operations/macro'
+import { Macro, MacroCollection } from '../../../app/packs/src/macro_lists/macro'
 
 context('Macro', () => {
 	describe('inputSelector', () => {

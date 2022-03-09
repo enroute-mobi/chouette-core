@@ -1,6 +1,6 @@
 import { flow } from 'lodash'
-import ResourceMixin from './mixins/resource'
-import CollectionMixin from './mixins/collection'
+import ResourceMixin from '../operations/mixins/resource'
+import CollectionMixin from '../operations/mixins/collection'
 import { MacroCollection } from './macro'
 
 // Macro Context

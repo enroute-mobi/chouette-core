@@ -1,6 +1,6 @@
 import { flow, omit } from 'lodash'
-import ResourceMixin from './mixins/resource'
-import CollectionMixin from './mixins/collection'
+import ResourceMixin from '../operations/mixins/resource'
+import CollectionMixin from '../operations/mixins/collection'
 import { ControlCollection } from './control'
 
 // Control Context
@@ -8,7 +8,7 @@ const ControlContextMixin = superclass => class ConrolContext extends superclass
 	constructor({ macros, ...attributes }) {
 		super(attributes)
 
-		this.macros = new ControlCollection
+		this.controls = new ControlCollection
 	}
 
 	get inputSelector() { return 'control_contexts_attributes' }
@@ -33,4 +33,4 @@ const ControlCollectionMixin = superclass => class ControlContextCollection exte
 	}
 }
 
-export const MacroContextCollection = flow(CollectionMixin, ControlCollectionMixin)(Array)
+export const ControlContextCollection = flow(CollectionMixin, ControlCollectionMixin)(Array)

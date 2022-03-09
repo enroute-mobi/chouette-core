@@ -10,7 +10,7 @@ import { toWgs84 } from '@turf/turf'
 
 import { usePrevious } from '../helpers/hooks'
 
-function MapWrapper({ features, onInit, style }) {
+function MapWrapper({ features, onInit, style, height, width }) {
   const [ selectedCoord , setSelectedCoord ] = useState()
   const previousFeatures = usePrevious(features)
 
@@ -61,7 +61,7 @@ function MapWrapper({ features, onInit, style }) {
   // render component
   return (
     <div>
-      <div ref={mapRef} className="map-container"></div>
+      <div ref={mapRef} className="map-container" style={{ width, height }}></div>
       <div className="clicked-coord-label">
         <p>{ (selectedCoord) ? toStringXY(selectedCoord, 5) : '' }</p>
       </div>
@@ -70,13 +70,17 @@ function MapWrapper({ features, onInit, style }) {
 }
 
 MapWrapper.defaultProps = {
-  onInit: _map => {}
+  onInit: _map => {},
+  height: 370,
+  width: '100%'
 }
 
 MapWrapper.propTypes = {
   fetchFeatures: PropTypes.array,
   onInit: PropTypes.func,
-  style: PropTypes.object
+  style: PropTypes.object,
+  height: PropTypes.number,
+  width: PropTypes.number,
 }
 
 export default MapWrapper

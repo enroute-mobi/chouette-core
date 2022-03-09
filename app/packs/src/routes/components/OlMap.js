@@ -126,7 +126,7 @@ export default function StopPointsMap({ index, onSelectMarker, onUpdateViaOlMap,
         )}
       </div>
       <div className='map_content ol-map'>
-        <MapWrapper features={[feature]} onInit={onMapInit} style={styles.selected} />
+        <MapWrapper features={[feature]} onInit={onMapInit} style={styles.selected} height={300} />
       </div>
     </div>
   )

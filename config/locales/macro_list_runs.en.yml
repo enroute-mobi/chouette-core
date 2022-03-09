@@ -43,7 +43,7 @@ en:
         created_by: Create by
         creator: "Creator"
         original_macro_list: "Original macro list"
-        referential_id: "Target"
+        referential: "Target"
         started_at: "Started at"
         duration: Duration
         created_at: "Created at"

@@ -1,0 +1,52 @@
+en:
+  control/list/runs:
+    index:
+      title: Control Runs Reports
+    show:
+      title: "%{name}"
+    new:
+      title: "Créer un rapport"
+    actions:
+      create: "Create a report"
+      show: "Show this report"
+      new: "Execute this report"
+      destroy: "Delete this report"
+      destroy_confirm: "Are you sur to delete this report ?"
+  control_list_runs:
+    actions:
+      new: "Execute this report"
+  control_list_run:
+    actions:
+      new: "Execute this report"
+      show: "Control Runs Reports"
+      create: "Create a report"
+    new:
+      title: "Create a report"
+    index:
+      title: "Control Runs Reports"
+    show:
+      title: "%{name}"
+      section:
+        processing: Processing
+        information: Information
+    search_no_results: "No Control Runs Reports matching your search"
+  activerecord:
+    models:
+      control/list/run:
+        zero:  "Control Runs Reports"
+        one:   "Control Runs Report"
+        other: "Control Runs Reports"
+    attributes:
+      control/list/run:
+        status: Statut
+        name: Name
+        created_by: Create by
+        creator: "Creator"
+        original_control_list: "Original control list"
+        referential: "Target"
+        started_at: "Started at"
+        duration: Duration
+        created_at: "Created at"
+        updated_at: "Updated at"
+        creator_id: "Create by"
+        ended_at: Ended at

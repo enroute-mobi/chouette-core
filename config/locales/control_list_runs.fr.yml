@@ -1,0 +1,52 @@
+fr:
+  control/list/runs:
+    index:
+      title: Rapports de Jeux de contrôles
+    show:
+      title: "%{name}"
+    new:
+      title: "Exécuter un Jeu de contrôles"
+    actions:
+      create: "Créer un rapport"
+      show: "Afficher ce Rapport de Jeu de contrôles"
+      new: "Exécuter un Jeu de contrôles"
+      destroy: "Supprimer ce Rapport de Jeu de contrôles"
+      destroy_confirm: "Etes vous sûr de supprimer ce Rapport de Jeu de contrôles ?"
+  control_list_runs:
+    actions:
+      new: "Exécuter un Jeu de contrôles"
+  control_list_run:
+    actions:
+      new: "Exécuter un Jeu de contrôles"
+      show: "Voir les Jeux de contrôles"
+      create: "Exécuter un Jeu de contrôles"
+    new:
+      title: "Exécuter un Jeu de contrôles"
+    index:
+      title: "Rapports de Jeux de contrôles"
+    show:
+      title: "%{name}"
+      section:
+        processing: Traitement
+        information: Information
+    search_no_results: "Aucun Rapport de Jeux de contrôles ne correspond à votre recherche"
+  activerecord:
+    models:
+      control/list/run:
+        zero:  "Rapport de jeu de contrôles"
+        one:   "Rapport de jeu de contrôles"
+        other: "Rapports de jeux de contrôles"
+    attributes:
+      control/list/run:
+        status: Statut
+        name: Nom
+        created_by: Créer par
+        creator: "Créateur"
+        original_control_list: "Jeu de contrôles"
+        referential: "Cible"
+        started_at: "Date et heure de lancement"
+        duration: Durée
+        created_at: "Crée le"
+        updated_at: "Edité le"
+        creator_id: "Crée par"
+        ended_at: Fini le

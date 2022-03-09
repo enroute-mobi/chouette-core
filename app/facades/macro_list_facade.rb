@@ -1,4 +1,4 @@
-class MacroListPresenter
+class MacroListFacade
 	attr_reader :macro_list, :template
 
 	def initialize(macro_list, template)

@@ -32,8 +32,8 @@
 			= control_form.input :code, input_html: { 'x-model': 'resource.code' }
 
 			.form-group
-				= control_form.label Control::List.human_attribute_name(:criticity), class: 'col-sm-4 col-xs-5 control-label mb-3'
-				= control_form.input :criticity, as: :radio_buttons, input_html: { 'x-model': 'resource.criticity' }, label: false, wrapper: false
+				= control_form.label Control::Base.human_attribute_name(:criticity), class: 'col-sm-4 col-xs-5 control-label mb-3'
+				= control_form.input :criticity, as: :radio_buttons, collection: facade.criticity_options, input_html: { 'x-model': 'resource.criticity' }, label: false, wrapper: false, label_method: Proc.new { |o| o.text.html_safe }
 
 			.form-group
 				= control_form.label Control::List.human_attribute_name(:comments), class: 'col-sm-4 col-xs-5 control-label mb-3'

@@ -1,4 +1,4 @@
-class ControlListPresenter
+class ControlListFacade
 	attr_reader :control_list, :template
 
 	def initialize(control_list, template)
@@ -32,7 +32,14 @@ class ControlListPresenter
 	end
 
 	def criticity_options
+		option = Struct.new('Option', :id, :text)
 
+		render_option = Proc.new { |key, color| template.content_tag :div,  I18n.t("enumerize.control.criticity.#{key}"), class: 'span fa fa-cog' }
+
+		[
+			option.new('warning', render_option.call('warning', '#ed7f00'), ),
+			option.new('error', render_option.call('error', '#da2f36'))
+		]
 	end
 
 	def json_state

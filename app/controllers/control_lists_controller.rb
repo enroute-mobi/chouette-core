@@ -7,8 +7,8 @@ class ControlListsController < ChouetteController
   before_action :decorate_control_list, only: %i[show new edit]
   after_action :decorate_control_list, only: %i[create update]
 
-  before_action :init_presenter, only: %i[show new edit]
-  after_action :init_presenter, only: %i[create update]
+  before_action :init_facade, only: %i[show new edit]
+  after_action :init_facade, only: %i[create update]
 
   before_action :control_list_params, only: [:create, :update]
 
@@ -48,14 +48,14 @@ class ControlListsController < ChouetteController
 
   private
 
-  def init_presenter
+  def init_facade
     object = control_list rescue Control::List.new(workbench: workbench)
-    @presenter ||= ControlListPresenter.new(object, helpers)
+    @facade ||= ControlListFacade.new(object, helpers)
   end
 
-  alias presenter init_presenter
+  alias facade init_facade
 
-  helper_method :presenter
+  helper_method :facade
 
   def decorate_control_list
     object = control_list rescue build_resource

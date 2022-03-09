@@ -1,14 +1,14 @@
 - name = local_assigns.fetch(:name)
 - collection = local_assigns.fetch(:collection)
 - store_collection = local_assigns.fetch(:store_collection)
-- suffix = "#{presenter.form_basename}.#{name}"
+- suffix = "#{facade.form_basename}.#{name}"
 - struct = Struct.new('Select', name.to_sym)
 
-- unless presenter.show?
+- unless facade.show?
 	div[x-data="{ selectedOption: '' }"]
 		.flex.flex-col.items-center.mt-5
 			.flex.items-center.w-full.mb-8
-				= simple_fields_for(presenter.form_basename, struct.new) do |sub|
+				= simple_fields_for(facade.form_basename, struct.new) do |sub|
 					= sub.label name, class: 'mb-3', required: false
 					.w-full.mx-5
 						= sub.input name,

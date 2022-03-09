@@ -22,6 +22,8 @@ class Permission
         compliance_control_sets
         compliance_controls
         connection_links
+        control_lists
+        control_list_runs
         exports
         footnotes
         imports
@@ -30,8 +32,6 @@ class Permission
         merges
         macro_lists
         macro_list_runs
-        control_lists
-        control_list_runs
         publication_api_keys
         publication_apis
         publication_setups

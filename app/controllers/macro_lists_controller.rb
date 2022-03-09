@@ -7,8 +7,8 @@ class MacroListsController < ChouetteController
   before_action :decorate_macro_list, only: %i[show new edit]
   after_action :decorate_macro_list, only: %i[create update]
 
-  before_action :init_presenter, only: %i[show new edit]
-  after_action :init_presenter, only: %i[create update]
+  before_action :init_facade, only: %i[show new edit]
+  after_action :init_facade, only: %i[create update]
 
   before_action :macro_list_params, only: [:create, :update]
 
@@ -48,14 +48,14 @@ class MacroListsController < ChouetteController
 
   private
 
-  def init_presenter
+  def init_facade
     object = macro_list rescue Macro::List.new(workbench: workbench)
-    @presenter ||= MacroListPresenter.new(object, helpers)
+    @facade ||= MacroListFacade.new(object, helpers)
   end
 
-  alias presenter init_presenter
+  alias facade init_facade
 
-  helper_method :presenter
+  helper_method :facade
 
   def decorate_macro_list
     object = macro_list rescue build_resource

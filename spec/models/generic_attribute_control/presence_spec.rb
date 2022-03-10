@@ -10,7 +10,7 @@ RSpec.describe GenericAttributeControl::Presence, type: :model, scope: :model_at
 
   describe '#compliance_test' do
     context 'when attribute is present' do
-      xit 'should be compliant' do
+      it 'should be compliant' do
         test_model_attributes do |m, compliance_check|
           instance = m.klass.new
           if source_attributes = m.options[:source_attributes]
@@ -28,7 +28,7 @@ RSpec.describe GenericAttributeControl::Presence, type: :model, scope: :model_at
     end
 
     context 'when attribute is absent' do
-      xit 'should not be compliant' do
+      it 'should not be compliant' do
         test_model_attributes do |m, compliance_check|
           instance = m.klass.new
           if source_attributes = m.options[:source_attributes]

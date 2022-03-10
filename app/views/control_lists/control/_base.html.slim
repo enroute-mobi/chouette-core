@@ -7,7 +7,7 @@
 		.flex.items-center.w-full.mb-8
 			button @click="expanded = ! expanded" type="button" x-bind:disabled="resource.isDeleted" class="flex items-center justify-between p-3 pl-3 mr-3 font-bold text-white bg-enroute-chouette-green rounded cursor-pointer hover:text-indigo-100"
 				<span class="text-3xl w-4" x-text="expanded ? '-' : '+'">+</span>
-			.w-full
+			.flex.w-full
 				= control_form.input :name,
 					placeholder: "#{I18n.t('control_lists.form.control_placeholder')}",
 					input_html: { \
@@ -16,13 +16,9 @@
 						'x-model': 'resource.name' \
 					}, \
 					label: false,
-					wrapper_html: {'class': 'mb-0 mx-0' }
+					wrapper_html: {'class': 'mb-0', ':style': "expanded && { width: '75%' }" }
 
-				.flex.items-center
-				p.mb-0.mr-2 x-text="resource.name" x-show="!expanded"
-					p.mb-0 x-show="!expanded" = "(#{class_description})"
-			.flex.ml-3 x-show="expanded"
-				p.flex.w-64 = class_description
+				.mb-0 :class="!expanded && 'w-full'" x-html="resource.renderClassDescription(expanded, '#{class_description}')"
 
 			= render 'operations/actions'
 

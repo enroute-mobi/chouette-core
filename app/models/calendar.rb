@@ -106,7 +106,7 @@ class Calendar < ApplicationModel
     self.dates.delete(date)||self.excluded_dates.delete(date)
   end
 
-  def create_date in_out:, date:
+  def build_date in_out, date
     update_in_out date, in_out
   end
 
@@ -119,7 +119,11 @@ class Calendar < ApplicationModel
     self.periods.last
   end
 
-  def destroy_period period
-    @periods = self.periods.select{|p| p.end != period.end || p.begin != period.begin}
+  def delete_periods deleted_periods
+    self.periods.delete_if{ |period|
+      deleted_periods.each do |deleted_period|
+        deleted_period.begin == period.begin && deleted_period.end == period.end
+      end
+    }
   end
 end

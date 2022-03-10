@@ -92,34 +92,6 @@ module TimetableSupport
                                 ! excluded_date?(day) }
   end
 
-  def state_update_periods state_periods
-    # Delete periods before save new or updated to avoid overlapped periods
-    state_periods.delete_if do |item|
-      if item['deleted']
-        period = self.find_period_by_id(item['id']) if item['id']
-        if period
-          self.destroy_period(period)
-        end
-        true
-      else
-        false
-      end
-    end
-
-
-    state_periods.each do |item|
-      period = self.find_period_by_id(item['id']) if item['id']
-      period ||= self.build_period
-
-      period.period_start = Date.parse(item['period_start'])
-      period.period_end   = Date.parse(item['period_end'])
-
-      period.save if period.is_a?(ActiveRecord::Base) && period.changed?
-
-      item['id'] = period.id
-    end
-  end
-
   def state_update state
     update_attributes(self.class.state_permited_attributes(state))
     self.tag_list    = state['tags'].collect{|t| t['label']}.join(', ') if state['tags']
@@ -131,8 +103,8 @@ module TimetableSupport
       send("#{name}=", days.include?(prefix))
     end
 
-    cmonth = Date.parse(state['current_periode_range'])
-
+    # Delete dates to avoid overlap and build or update dates in memory
+    deleted_dates = []
     state['current_month'].each do |d|
       date    = Date.parse(d['date'])
       checked = d['include_date'] || d['excluded_date']
@@ -141,19 +113,37 @@ module TimetableSupport
       date_id = saved_dates.key(date)
       time_table_date = self.find_date_by_id(date_id) if date_id
 
-      next if !checked && !time_table_date
-      # Destroy date if no longer checked
-      next if !checked && destroy_date(time_table_date)
-
-      # Create new date
-      unless time_table_date
-        time_table_date = self.create_date in_out: in_out, date: date
+      if checked && time_table_date.present?
+        self.update_in_out time_table_date, in_out # Update date
+      elsif checked && time_table_date.blank?
+        self.build_date in_out, date # Build date
+      elsif !checked && time_table_date.present?
+        deleted_dates << time_table_date # Delete date
       end
-      # Update in_out
-      self.update_in_out time_table_date, in_out
+    end
+    self.dates.delete(deleted_dates)
+
+    # Delete periods to avoid overlap and build or update periods in memory
+    deleted_periods = []
+    state_periods = state['time_table_periods'].delete_if do |item|
+      if item['deleted']
+        period = self.find_period_by_id(item['id'])
+        deleted_periods << period
+        true
+      else
+        false
+      end
+    end
+    self.delete_periods(deleted_periods)
+
+    state_periods.each do |item|
+      period = self.find_period_by_id(item['id']) if item['id']
+      period ||= self.build_period
+
+      period.period_start = Date.parse(item['period_start'])
+      period.period_end   = Date.parse(item['period_end'])
     end
 
-    self.state_update_periods state['time_table_periods']
     self.save
   end
 

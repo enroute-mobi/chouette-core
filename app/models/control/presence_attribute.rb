@@ -12,44 +12,50 @@ module Control
 
       def run
         faulty_models.find_each do |object|
-          if attribute_or_method_klass? || belongs_to_itself?
+          if source_attributes.present? || self_reference?
             value = object.send(model_attribute_name) rescue nil
             next if value.present?
           end
 
-          self.control_messages.create({
+          control_messages.create({
             message_attributes: { attribute_name: target_attribute },
-            criticity: self.criticity,
-            message_key: :no_presence_of_attribute,
+            criticity: criticity,
             source: object,
           })
         end
       end
 
       def faulty_models
-        if belongs_to_itself?
-          # TODO: the referent and parent attributes don't work with left_joins
+        if self_reference?
           models
-        elsif belongs_to_attribute?
+        elsif reference?
           models.left_joins(model_attribute_name).where(association_collection => { id: nil })
-        elsif attribute_or_method_klass?
-          condition = model_attribute.options[:source_sql_attributes].map{ |a| "#{a} IS NULL" }.join(" OR ")
+        elsif source_attributes
+          condition = source_attributes.map{ |a| "#{a} IS NULL" }.join(" OR ")
           models.where(condition)
         else
           models.where(model_attribute_name => nil)
         end
       end
 
-      def belongs_to_itself?
-        model_attribute.options[:belongs_to_itself] || false
+      def source_attributes
+        @source_attributes ||= model_attribute.options[:source_attributes]
       end
 
-      def belongs_to_attribute?
-        model_attribute.options[:is_ref]
+      def self_reference?
+        @self_referent ||= belongs_to_attributes.find do |e|
+          e.name == model_attribute_name &&
+          e.options.dig(:class_name) == model_class.name
+        end.present?
       end
 
-      def attribute_or_method_klass?
-        model_attribute.options[:source_sql_attributes].present?
+      def reference?
+        @referent ||= model_attribute.options[:reference] || false
+      end
+
+      def belongs_to_attributes
+        @belongs_to_attributes ||=
+          models.reflect_on_all_associations.select { |a| a.macro == :belongs_to }
       end
 
       def association_collection
@@ -74,6 +80,11 @@ module Control
 
       def models
         @models ||= context.send(model_collection)
+      end
+
+      def model_class
+        @model_class ||=
+          "Chouette::#{target_model}".constantize rescue nil || target_model.constantize
       end
     end
   end

@@ -39,7 +39,6 @@ RSpec.describe Control::PresenceAttribute do
       let(:expected_message) do
         an_object_having_attributes({
           source: source,
-          message_key: message_key,
           criticity: criticity,
           message_attributes: {"attribute_name" => attribute_name}
         })

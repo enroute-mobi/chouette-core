@@ -6,7 +6,7 @@ RSpec.describe ModelAttribute do
   describe ".define" do
     it "adds a new instance of ModelAttribute to .all" do
       expect do
-        ModelAttribute.define(Chouette::Route, :name, :string)
+        ModelAttribute.define(klass: Chouette::Route, name: :name, data_type: :string)
       end.to change { ModelAttribute.all.length }.by(1)
 
       model_attr = ModelAttribute.all.last
@@ -23,10 +23,10 @@ RSpec.describe ModelAttribute do
 
   describe ".group_by_class" do
     it "returns all ModelAttributes grouped by klass" do
-      ModelAttribute.define(Chouette::Route, :name, :string)
-      ModelAttribute.define(Chouette::Route, :published_name, :string)
-      ModelAttribute.define(Chouette::JourneyPattern, :name, :string)
-      ModelAttribute.define(Chouette::VehicleJourney, :number, :integer)
+      ModelAttribute.define(klass: Chouette::Route, name: :name, data_type: :string)
+      ModelAttribute.define(klass: Chouette::Route, name: :published_name, data_type: :string)
+      ModelAttribute.define(klass: Chouette::JourneyPattern, name: :name, data_type: :string)
+      ModelAttribute.define(klass: Chouette::VehicleJourney, name: :number, data_type: :integer)
 
       expect(ModelAttribute.group_by_class).to eq({
         route: [
@@ -45,7 +45,7 @@ RSpec.describe ModelAttribute do
 
   describe '.find_by_code' do
     it 'returns the model attribute by code' do
-      ModelAttribute.define(Chouette::Route, :name, :string)
+      ModelAttribute.define(klass: Chouette::Route, name: :name, data_type: :string)
       
       expect(ModelAttribute.find_by_code('route#name')).to eq(ModelAttribute.new(Chouette::Route, :name, :string))
       expect(ModelAttribute.find_by_code('route#published_name')).to be_nil
@@ -54,8 +54,8 @@ RSpec.describe ModelAttribute do
 
   describe "#==" do
     it "returns true when :class_name, :name, :data_type and :options attributes match" do
-      route_name = ModelAttribute.new(Chouette::Route, :name, :string, **{ mandatory: true })
-      other_route_name = ModelAttribute.new(Chouette::Route, :name, :string,  **{ mandatory: true })
+      route_name = ModelAttribute.new(Chouette::Route, :name, :string, true )
+      other_route_name = ModelAttribute.new(Chouette::Route, :name, :string, true )
 
       expect(route_name == other_route_name).to be true
     end

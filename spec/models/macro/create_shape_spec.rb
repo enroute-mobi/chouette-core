@@ -58,7 +58,7 @@ RSpec.describe Macro::CreateShape do
             {"latitude"=>43.57468, "longitude"=>7.09883},
             {"latitude"=>43.5745, "longitude"=>7.09907}]}],
        "sections"=>[{"startPointIndex"=>0, "endPointIndex"=>29, "sectionType"=>"TRAVEL_MODE", "travelMode"=>"bus"}]}]}
-    stub_request(:get, "http://mock.api.tomtom.com/calculateRoute/43.574325,7.091888:43.575067,7.095608:43.574477,7.099041/json?routeType=fastest&traffic=false&travelMode=bus&key=mock_tomtom_api_key").
+    stub_request(:get, "https://api.tomtom.com/routing/1/calculateRoute/43.574325,7.091888:43.575067,7.095608:43.574477,7.099041/json?routeType=fastest&traffic=false&travelMode=bus&key=mock_tomtom_api_key").
     to_return(status: 200, body: shape_response.to_json)
   end
 

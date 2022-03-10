@@ -3,32 +3,42 @@ module Macro
     class Run < Macro::Base::Run
       def run
         journey_patterns.find_each do |journey_pattern|
-          waypoints = journey_pattern.waypoints
+          next unless journey_pattern.waypoints
 
-          shape = shape_provider.shapes.create(
-            name: shape_name(journey_pattern),
-            waypoints: waypoints,
-            geometry: compute_geometry(waypoints, journey_pattern)
-          )
-
+          shape = ShapeFactory.new(journey_pattern, workgroup, shape_provider).shape
           journey_pattern.update shape: shape if shape.present?
         end
       end
 
+      class ShapeFactory
+        def initialize(journey_pattern, workgroup, shape_provider)
+          @journey_pattern = journey_pattern
+          @workgroup = workgroup
+          @shape_provider = shape_provider
+        end
+        attr_accessor :journey_pattern, :workgroup, :shape_provider
+
+        delegate :waypoints, to: :journey_pattern
+
+        def shape
+          shape_provider.shapes.create(
+            name: shape_name,
+            waypoints: waypoints,
+            geometry: geometry
+          )
+        end
+
+        def shape_name
+          [ journey_pattern.registration_number, journey_pattern.name ].join(" - ")
+        end
+
+        def geometry
+          workgroup.route_planner.shape(waypoints)
+        end
+      end
+
       def journey_patterns
-        context.journey_patterns.without_associated_shape.includes(:shape, stop_points: :stop_area)
-      end
-
-      def shape_name(journey_pattern)
-        [ journey_pattern.line.name, journey_pattern.registration_number, journey_pattern.name ].join(" - ")
-      end
-
-      def compute_geometry(waypoints, journey_pattern)
-        workgroup.route_planner.shape(waypoints, transport_mode(journey_pattern))
-      end
-
-      def transport_mode(journey_pattern)
-        journey_pattern.line&.transport_mode
+        context.journey_patterns.without_associated_shape
       end
 
       def shapes
@@ -36,7 +46,7 @@ module Macro
       end
 
       def shape_provider
-        workgroup.shape_referential.shape_providers.first
+        workbench.shape_providers.first
       end
     end
   end

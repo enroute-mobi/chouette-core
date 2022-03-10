@@ -1,64 +1,64 @@
 module RoutePlanner
   class TomTom
-    attr_accessor :points, :transport_mode
-
-    def initialize(points, transport_mode)
-      @points = points
-      @transport_mode = transport_mode
+    def shape(points)
+      Request.new(points).shape
     end
 
-    def shape
-      begin
-        response = JSON.parse(open(url).read)
-        tomtom_points = response['routes'].first['legs'].flat_map do |leg|
-          leg['points'].flat_map do |point|
-            longitude, latitude = point.values_at("longitude", "latitude")
-            rgeo_factory.point(longitude, latitude)
+    class Request
+      def initialize(points)
+        @points = points
+      end
+      attr_accessor :points
+
+      def shape
+        begin
+          response = JSON.parse(open(url).read)
+          tomtom_points = response['routes'].first['legs'].flat_map do |leg|
+            leg['points'].flat_map do |point|
+              longitude, latitude = point.values_at("longitude", "latitude")
+              rgeo_factory.point(longitude, latitude)
+            end
           end
+
+          return rgeo_factory.line_string(tomtom_points)
+        rescue => e
+          Chouette::Safe.capture "Something goes wrong in TomTom API", e
+          return nil
         end
-
-        return rgeo_factory.line_string(tomtom_points)
-      rescue => e
-        Chouette::Safe.capture "Something goes wrong in TomTom API", e
-        return nil
       end
-    end
 
-    private
+      private
 
-    def rgeo_factory
-      @rgeo_factory ||= RGeo::Geos.factory srid: 4326
-    end
-
-    def locations
-      points.map { |point| "#{point.latitude},#{point.longitude}" }.join(':')
-    end
-
-    def url
-      "#{route_calculation_url}/#{locations}/json?routeType=fastest&traffic=false&travelMode=#{transport_mode}&key=#{api_key}"
-    end
-
-    def api_key
-      if Rails.env.test?
-        "mock_tomtom_api_key"
-      else
-        Rails.application.secrets.tomtom_api_key
+      def rgeo_factory
+        @rgeo_factory ||= RGeo::Geos.factory srid: 4326
       end
-    end
 
-    def route_calculation_url
-      if Rails.env.test?
-        "http://mock.api.tomtom.com/calculateRoute"
-      else
-        Rails.application.secrets.tomtom_route_calculation_url
+      def locations
+        points.map { |point| "#{point.latitude},#{point.longitude}" }.join(':')
+      end
+
+      def url
+        "#{route_calculation_url}/#{locations}/json?routeType=fastest&traffic=false&travelMode=bus&key=#{api_key}"
+      end
+
+      def api_key
+        if Rails.env.test?
+          "mock_tomtom_api_key"
+        else
+          Rails.application.secrets.tomtom_api_key
+        end
+      end
+
+      def route_calculation_url
+        "https://api.tomtom.com/routing/1/calculateRoute"
       end
     end
   end
 
   class Cache
-    def shape(points, transport_mode)
-      Rails.cache.fetch([rounded_points(points), transport_mode]) do
-        TomTom.new(points, transport_mode).shape
+    def shape(points)
+      Rails.cache.fetch(rounded_points(points)) do
+        TomTom.new.shape(points)
       end
     end
 

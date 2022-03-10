@@ -305,6 +305,9 @@ module Chouette
       stop_points.each_with_index.map do |stop_point, position|
         stop_area = stop_point.stop_area
         longitude, latitude = stop_area.longitude, stop_area.latitude
+
+        return nil unless longitude && latitude
+
         Waypoint.new name: stop_area.name, position: position, waypoint_type: "waypoint", coordinates: [longitude, latitude]
       end
     end

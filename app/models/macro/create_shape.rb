@@ -52,7 +52,7 @@ module Macro
       end
 
       def journey_patterns
-        context.journey_patterns.without_associated_shape.includes(:stop_areas)
+        context.journey_patterns.without_associated_shape.includes(:stop_points)
       end
 
       def shapes

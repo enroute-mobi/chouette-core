@@ -43,7 +43,8 @@ module Macro
         end
 
         def stop_area_ids
-          journey_pattern.stop_points.map{ |stop_point| stop_point.stop_area&.id }.join('-')
+          @stop_area_ids ||=
+            journey_pattern.stop_points.map{ |stop_point| stop_point.stop_area&.id }.join('-')
         end
       end
 

@@ -5,8 +5,14 @@ module Macro
         journey_patterns.find_each do |journey_pattern|
           next unless journey_pattern.waypoints
 
-          shape = ShapeFactory.new(journey_pattern, workgroup, shape_provider).shape
-          journey_pattern.update shape: shape if shape.present?
+          factory = ShapeFactory.new(journey_pattern, workgroup, shape_provider)
+
+          unless shape_id = shape_cache[factory.stop_area_ids]
+            journey_pattern.update shape_id: shape_id
+          else
+            shape = factory.shape
+            shape_cache[factory.stop_area_ids] = shape.id
+          end
         end
       end
 
@@ -35,10 +41,18 @@ module Macro
         def geometry
           workgroup.route_planner.shape(waypoints)
         end
+
+        def stop_area_ids
+          journey_pattern.stop_areas.pluck(:id).join('-')
+        end
+      end
+
+      def shape_cache
+        @shape_cache ||= {}
       end
 
       def journey_patterns
-        context.journey_patterns.without_associated_shape
+        context.journey_patterns.without_associated_shape.includes(:stop_areas)
       end
 
       def shapes

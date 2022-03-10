@@ -103,7 +103,9 @@ RSpec.describe Macro::CreateShape do
         let(:geom) { journey_pattern.reload.shape&.geometry.to_s }
 
         it "should create shape" do
-          expect { subject }.to change { Shape.count }.from(0).to(1)
+          subject
+
+          expect change { Shape.count }.from(0).to(1)
         end
 
         it "should update association between Journey Pattern and Shape" do

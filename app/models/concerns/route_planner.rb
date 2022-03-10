@@ -38,7 +38,10 @@ module RoutePlanner
       end
 
       def url
-        "#{route_calculation_url}/#{locations}/json?routeType=fastest&traffic=false&travelMode=bus&key=#{api_key}"
+        [
+          "https://api.tomtom.com/routing/1/calculateRoute/#{locations}/",
+          "json?routeType=fastest&traffic=false&travelMode=bus&key=#{api_key}"
+        ].join
       end
 
       def api_key
@@ -47,10 +50,6 @@ module RoutePlanner
         else
           Rails.application.secrets.tomtom_api_key
         end
-      end
-
-      def route_calculation_url
-        "https://api.tomtom.com/routing/1/calculateRoute"
       end
     end
   end

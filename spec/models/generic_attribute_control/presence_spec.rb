@@ -10,11 +10,16 @@ RSpec.describe GenericAttributeControl::Presence, type: :model, scope: :model_at
 
   describe '#compliance_test' do
     context 'when attribute is present' do
-      xit 'should be compliant' do
+      it 'should be compliant' do
         test_model_attributes do |m, compliance_check|
           instance = m.klass.new
-          instance.send("#{m.name}=", get_default_value(m))
-
+          if source_attributes = m.options[:source_attributes]
+            source_attributes.each do |source_attribute|
+              instance.send("#{source_attribute}=", get_default_value(m))
+            end
+          else
+            instance.send("#{m.name}=", get_default_value(m))
+          end
           compliant = GenericAttributeControl::Presence.compliance_test(compliance_check, instance)
 
           expect(compliant).to be_truthy
@@ -23,11 +28,16 @@ RSpec.describe GenericAttributeControl::Presence, type: :model, scope: :model_at
     end
 
     context 'when attribute is absent' do
-      xit 'should not be compliant' do
+      it 'should not be compliant' do
         test_model_attributes do |m, compliance_check|
           instance = m.klass.new
-          instance.send("#{m.name}=", nil)
-
+          if source_attributes = m.options[:source_attributes]
+            source_attributes.each do |source_attribute|
+              instance.send("#{source_attribute}=", nil)
+            end
+          else
+            instance.send("#{m.name}=", nil)
+          end
           compliant = GenericAttributeControl::Presence.compliance_test(compliance_check, instance)
 
           expect(compliant).to be_falsey

@@ -67,5 +67,47 @@ RSpec.describe Control::PresenceCode do
       end
     end
 
+    describe "#Line" do
+      let(:target_model) { "Line" }
+      let(:source) { referential.lines.first }
+
+
+      context "when a Line exists without code" do
+        let(:context) do
+          Chouette.create do
+            code_space short_name: "test"
+            line
+            referential
+          end
+        end
+
+        before { referential.switch }
+
+        it "should create a warning message" do
+          subject
+
+          expect(control_run.control_messages).to include(expected_message)
+        end
+      end
+
+      context "when a Line exists a code 'test'" do
+        let(:context) do
+          Chouette.create do
+            code_space short_name: 'test'
+            line codes: { test: 'dummy'} #FIXME: can not find workgroup in factory
+            referential
+          end
+        end
+
+        before { referential.switch }
+
+        xit "should have no warning message created" do
+          subject
+
+          expect(control_run.control_messages).to be_empty
+        end
+      end
+    end
+
   end
 end

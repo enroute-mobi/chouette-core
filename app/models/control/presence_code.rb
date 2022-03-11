@@ -26,8 +26,11 @@ module Control
       end
 
       def code_model
-        model_class == Chouette::VehicleJourney ?
-          :referential_codes : :codes
+        unless model_class == Chouette::VehicleJourney
+          :codes
+        else
+          :referential_codes
+        end
       end
 
       def faulty_models
@@ -45,8 +48,6 @@ module Control
       def models
         @models ||= context.send(model_collection)
       end
-
-
     end
   end
 end

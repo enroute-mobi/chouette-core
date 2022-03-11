@@ -7,11 +7,7 @@ import MapWrapper from './MapWrapper'
 const App = ({ urls, callback }) => {
 	const features = useGeoJSONFeatures(urls, callback)
 
-	return (
-		<div className="ol-map">
-			<MapWrapper features={features} />
-		</div>
-	)
+	return <MapWrapper features={features} />
 }
 
 export default {

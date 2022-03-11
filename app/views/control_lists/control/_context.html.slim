@@ -5,7 +5,7 @@
 	.flex.items-center
 		= render "control_lists/#{control_context.model_name.i18n_key.to_s}", form: control_context_form
 
-		= render 'operations/actions'
+		= render 'operations/context_actions'
 
 	template[x-if="!resource.isDeleted"]
 		div

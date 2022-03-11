@@ -138,6 +138,14 @@ module Chouette
       errors.add(:referent_id, I18n.t('stop_areas.errors.referent_id.cannot_be_referent_and_specific')) if self.referent_id? && (self.is_referent || self.specific_stops.count != 0)
     end
 
+    def referent?
+      is_referent
+    end
+
+    def particular?
+      !referent?
+    end
+
     before_save :coordinates_to_lat_lng
 
     def combine_lat_lng
@@ -591,13 +599,14 @@ module Chouette
         loop do
           avg_bearings = compute_bearings(options_)
           avg_bearings.each do |h|
+            next unless h["avg_bearing"]
             result[h["stop_area_id"]] = result[h["stop_area_id"]].present? ? (result[h["stop_area_id"]] + h["avg_bearing"]) / 2.0 : h["avg_bearing"]
           end
           break if avg_bearings.count < options_[:limit]
           options_[:page] += 1
         end
 
-        return result.each { |k,v| result[k] = v.round(1)}
+        return result.each { |k,v| result[k] = v.round(1) }
       end
     end
   end

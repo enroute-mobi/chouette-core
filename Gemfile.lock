@@ -6,8 +6,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/gtfs.git
-  revision: 3f4fee45d9d6d1caa79ee4e5c564ddbb53737183
-  branch: GTFS-28-rewrite-every-calendar-date
+  revision: 8c41500e9d21da44b12b7059156e42014345be3b
   specs:
     gtfs (0.3.5)
       msgpack

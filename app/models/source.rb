@@ -30,7 +30,7 @@ class Source < ApplicationModel
   end
 
   def downloader_class
-    if downloader_type.present?
+    if downloader_type.present? && downloader_type != :direct
       Downloader.const_get(downloader_type)
     else
       Downloader::URL
@@ -243,11 +243,16 @@ class Source < ApplicationModel
 
       def process(source_file, target_file)
         route_ids = self.route_ids
+        ignore_parents = self.ignore_parents?
 
         gtfs_target_for = Proc.new do |resource, associations|
-          ignored = (route_ids & associations[:route_ids]).empty?
+          ignored = false
 
-          if ignore_parents? && !ignored && resource.is_a?(::GTFS::Stop)
+          if route_ids.present?
+            ignored = (route_ids & associations[:route_ids]).empty?
+          end
+
+          if ignore_parents && !ignored && resource.is_a?(::GTFS::Stop)
             resource.parent_station = nil
             ignored = true if resource.station?
           end

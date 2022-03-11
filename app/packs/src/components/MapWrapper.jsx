@@ -80,7 +80,7 @@ MapWrapper.propTypes = {
   onInit: PropTypes.func,
   style: PropTypes.object,
   height: PropTypes.number,
-  width: PropTypes.number,
+  width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 }
 
 export default MapWrapper

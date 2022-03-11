@@ -10,7 +10,7 @@
           .row
             .col-lg-12
               = f.input :name, required: true
-              = f.input :email, required: true, autofocus: true
+              = f.input :email, required: true, autofocus: true, disabled: true
 
               - if devise_mapping.confirmable? && resource.pending_reconfirmation?
                 p = "Currently waiting confirmation for: #{resource.unconfirmed_email}."
@@ -31,7 +31,6 @@
               = f.input :user_locale,
                 as: :select,
                 collection: I18n.available_locales,
-                #collection: [['English', 'en_EN'], ['French', 'fr_FR']],
                 include_blank: false
               = f.input :time_zone
 

@@ -15,7 +15,17 @@
       .col-lg-12
         = render'exports/options', form: form, resource_type: :export_options, workgroup: @workgroup
 
-        div[x-data]
+        div[
+          x-data
+          x-init="
+            Array.of('isExport', 'exportedLines').forEach(attributeName => {
+              $watch(
+                '$store.export.' + attributeName,
+                $store.export.handleUpdate(attributeName).bind($store.export)
+              )
+            })
+          "
+        ]
           template[x-if="(!$store.export.isExport && ($store.export.type == 'Export::Gtfs' || $store.export.type == 'Export::NetexGeneric'))"]
             div
               = form.input :publish_per_line, as: :switchable_checkbox, input_html: { name: 'publication_setup[publish_per_line]' }
@@ -28,7 +38,7 @@
         - form.object.destinations.build unless form.object.destinations.size > 0
         = form.simple_fields_for(:destinations) do |destination_form|
           = render 'destination_fields', f: destination_form, destination: destination_form.object
-          
+
         .links.nested-linker
           = link_to_add_association t('publication_setups.form.add_destination'), form, :destinations, class: 'btn btn-primary'
 
@@ -39,4 +49,3 @@
       class: 'btn btn-default formSubmitr',
       data: { disable_with: t('actions.processing') },
       form: 'publication_setup_form'
-

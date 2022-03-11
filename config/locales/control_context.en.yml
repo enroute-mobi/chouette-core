@@ -1,0 +1,13 @@
+en:
+  activerecord:
+    models:
+      control:
+        zero:  "Control Contexts"
+        one:   "Control Context"
+        other: "Control Contexts"
+    attributes:
+      control/context:
+        name: Name
+        comments: Comments
+      control/context/transport_mode:
+        transport_mode: Transport Mode

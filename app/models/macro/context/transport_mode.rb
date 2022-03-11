@@ -1,6 +1,8 @@
 class Macro::Context::TransportMode < Macro::Context
   option :transport_mode
 
+  validates_presence_of :transport_mode
+
   class Run < Macro::Context::Run
     def lines
       context.lines.where(transport_mode: options[:transport_mode])

@@ -28,8 +28,8 @@ context('ControlContextCollection', () => {
 		set('controlContext', () => collection.first)
 
 		beforeEach(() => {
-			collection.add({ name: 'context1'})
-			controlContext.controls.add({ name: 'test' })
+			collection.add({ id: 1, name: 'context1'})
+			controlContext.controls.add({ id: 1, name: 'test' })
 		})
 	
 		it('should duplicate an controlContext & its controls', async () => {
@@ -38,6 +38,15 @@ context('ControlContextCollection', () => {
 			expect(collection).toHaveLength(2)
 
 			expect(collection.last.controls).toHaveLength(1)
+		})
+
+		it('should remove id from duplicates', async () => {
+			await collection.duplicate(controlContext)
+
+			const duplicate = collection.last
+			expect(duplicate.id).toBeUndefined()
+
+			expect(duplicate.controls.first.id).toBeUndefined()
 		})
 	})
 })

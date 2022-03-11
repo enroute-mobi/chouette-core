@@ -28,8 +28,8 @@ context('MacroContextCollection', () => {
 		set('macroContext', () => collection.first)
 
 		beforeEach(() => {
-			collection.add({ name: 'context1'})
-			macroContext.macros.add({ name: 'test' })
+			collection.add({ id: 1, name: 'context1'})
+			macroContext.macros.add({ id: 1, name: 'test' })
 		})
 	
 		it('should duplicate an macroContext & its macros', async () => {
@@ -38,6 +38,15 @@ context('MacroContextCollection', () => {
 			expect(collection).toHaveLength(2)
 
 			expect(collection.last.macros).toHaveLength(1)
+		})
+
+		it('should remove id from duplicates', async () => {
+			await collection.duplicate(macroContext)
+
+			const duplicate = collection.last
+			expect(duplicate.id).toBeUndefined()
+
+			expect(duplicate.macros.first.id).toBeUndefined()
 		})
 	})
 })

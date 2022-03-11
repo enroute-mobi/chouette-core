@@ -23,11 +23,12 @@ const ControlCollectionMixin = superclass => class ControlContextCollection exte
 	static get ResourceConstructor() { return ControlContext }
 
 	duplicate(controlContext) {
-		this
-			.add(controlContext.attributes)
+		const build = object => omit(object.attributes, 'id')
+		return this
+			.add(build(controlContext))
 			.then(duplicate => {
 				controlContext.controls.forEach(control => {
-					duplicate.controls.add(control.attributes)
+					duplicate.controls.add(build(control))
 				})
 			})
 	}

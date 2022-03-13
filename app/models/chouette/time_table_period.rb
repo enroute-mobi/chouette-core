@@ -15,10 +15,12 @@ module Chouette
 
     def validate_period_uniqueness
       return unless time_table
+      # We should never read database (with where for example) otherwise memory validation fails
+      intersection = time_table.periods.any? do |other|
+        other != self && other.overlap?(self)
+      end
 
-      scope = time_table.periods
-      scope = scope.where.not(id: id) if id
-      if scope.overlaps(range).exists?
+      if intersection
         Rails.logger.error "TimeTablePeriod from #{period_start} to #{period_end} can't be saved for TimeTable #{time_table.id}"
         errors.add(:overlapped_periods, I18n.t("activerecord.time_table.errors.messages.overlapped_periods"))
       end

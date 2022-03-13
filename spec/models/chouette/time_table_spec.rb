@@ -290,7 +290,9 @@ describe Chouette::TimeTable, :type => :model do
 
   describe "Update state" do
     def time_table_to_state time_table
-      time_table.slice('id', 'comment').tap do |item|
+      time_table.slice('id').tap do |item|
+        item['comment'] = time_table.comment
+        item['color'] = time_table.color
         item['day_types'] = "Di,Lu,Ma,Me,Je,Ve,Sa"
         item['current_month'] = time_table.month_inspect(Time.zone.today.beginning_of_month)
         item['current_periode_range'] = Time.zone.today.beginning_of_month.to_s
@@ -306,7 +308,7 @@ describe Chouette::TimeTable, :type => :model do
       period['period_start'] = (Time.zone.today - 1.month).to_s
       period['period_end']   = (Time.zone.today - 1.day).to_s
 
-      subject.state_update_periods state['time_table_periods']
+      subject.state_update state
       ['period_end', 'period_start'].each do |prop|
         expect(subject.reload.periods.first.send(prop).to_s).to eq(period[prop])
       end
@@ -320,15 +322,14 @@ describe Chouette::TimeTable, :type => :model do
       }
 
       expect {
-        subject.state_update_periods state['time_table_periods']
+        subject.state_update state
       }.to change {subject.periods.count}.by(1)
-      expect(state['time_table_periods'].last['id']).to eq subject.reload.periods.last.id
     end
 
     it 'should delete time table periods association' do
       state['time_table_periods'].first['deleted'] = true
       expect {
-        subject.state_update_periods state['time_table_periods']
+        subject.state_update state
       }.to change {subject.periods.count}.by(-1)
     end
 
@@ -340,7 +341,7 @@ describe Chouette::TimeTable, :type => :model do
         'period_end' => (Time.zone.today + 2.year).to_s
       }
       expect {
-        subject.state_update_periods state['time_table_periods']
+        subject.state_update state
       }.to change {subject.periods.count}.by(0)
     end
 
@@ -355,10 +356,10 @@ describe Chouette::TimeTable, :type => :model do
         'period_start' => (Time.zone.today + 1.year).to_s,
         'period_end' => (Time.zone.today + 2.year).to_s
       }]
-      subject.state_update_periods(state['time_table_periods'])
+      subject.state_update state
 
       invalid_periods = subject.periods.select{ |m| m.invalid? }
-      expect(invalid_periods.count).to eq 1
+      expect(invalid_periods.count).to eq 2
       expect(invalid_periods.first.errors[:overlapped_periods]).not_to be_empty
     end
 
@@ -369,9 +370,9 @@ describe Chouette::TimeTable, :type => :model do
         'period_start' => state['time_table_periods'].first['period_start'],
         'period_end' => state['time_table_periods'].first['period_end']
       }
-      subject.state_update_periods(state['time_table_periods'])
+      subject.state_update state
       invalid_periods = subject.periods.select{ |m| m.invalid? }
-      expect(invalid_periods.count).to eq 1
+      expect(invalid_periods.count).to eq 2
       expect(invalid_periods.first.errors[:overlapped_periods]).not_to be_empty
     end
 

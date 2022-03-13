@@ -183,21 +183,19 @@ module Chouette
     end
 
     def update_in_out date, in_out
-      if in_out != date.in_out
-        date.update_attributes({in_out: in_out})
-      end
+      date.in_out = in_out
     end
 
     def find_period_by_id id
-      self.periods.where(id: id).last
+      self.periods.find(id)
     end
 
     def build_period
-      periods.build
+      self.periods.build
     end
 
-    def destroy_period period
-      period.destroy
+    def delete_periods deleted_periods
+      self.periods.delete(deleted_periods)
     end
 
     def self.state_permited_attributes item
@@ -429,8 +427,8 @@ module Chouette
       days.sort
     end
 
-    def create_date in_out:, date:
-      self.dates.create in_out: in_out, date: date
+    def build_date in_out, date
+      self.dates.build in_out: in_out, date: date
     end
 
     def saved_dates

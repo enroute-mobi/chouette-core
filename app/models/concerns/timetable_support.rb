@@ -121,7 +121,9 @@ module TimetableSupport
         deleted_dates << time_table_date # Delete date
       end
     end
-    self.dates.delete(deleted_dates)
+    deleted_dates.each do |deleted_date|
+      dates.delete deleted_date
+    end
 
     # Delete periods to avoid overlap and build or update periods in memory
     deleted_periods = []

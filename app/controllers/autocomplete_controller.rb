@@ -32,7 +32,7 @@ class AutocompleteController < ChouetteController
   end
 
   def control_lists
-    @macro_lists ||= workbench.control_lists.by_text(text)
+    @control_lists ||= workbench.control_lists.by_text(text)
   end
 
   ##################

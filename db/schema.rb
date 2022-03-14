@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_03_01_144132) do
+ActiveRecord::Schema.define(version: 2022_03_14_111039) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -408,7 +408,7 @@ ActiveRecord::Schema.define(version: 2022_03_01_144132) do
     t.string "source_type"
     t.bigint "source_id"
     t.bigint "control_run_id"
-    t.string "message_key", null: false
+    t.string "message_key"
     t.string "criticity", null: false
     t.jsonb "message_attributes", default: {}
     t.datetime "created_at", null: false

@@ -40,7 +40,7 @@ en:
       control/list/run:
         status: Statut
         name: Name
-        created_by: Create by
+        created_by: Created by
         creator: "Creator"
         original_control_list_id: "Original control list"
         referential_id: "Target"

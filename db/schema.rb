@@ -13,6 +13,7 @@
 ActiveRecord::Schema.define(version: 2022_04_06_200454) do
 
   # These are extensions that must be enabled in order to support this database
+  enable_extension "btree_gin"
   enable_extension "hstore"
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -204,6 +205,7 @@ ActiveRecord::Schema.define(version: 2022_04_06_200454) do
     t.bigint "line_provider_id"
     t.boolean "is_referent", default: false
     t.bigint "referent_id"
+    t.index ["custom_field_values"], name: "index_companies_on_custom_field_values", using: :gin
     t.index ["line_provider_id"], name: "index_companies_on_line_provider_id"
     t.index ["line_referential_id", "registration_number"], name: "index_companies_on_referential_id_and_registration_number"
     t.index ["line_referential_id"], name: "index_companies_on_line_referential_id"
@@ -740,6 +742,7 @@ ActiveRecord::Schema.define(version: 2022_04_06_200454) do
     t.jsonb "custom_field_values"
     t.bigint "shape_id"
     t.index ["checksum"], name: "index_journey_patterns_on_checksum"
+    t.index ["custom_field_values"], name: "index_journey_patterns_on_custom_field_values", using: :gin
     t.index ["objectid"], name: "journey_patterns_objectid_key", unique: true
     t.index ["route_id"], name: "index_journey_patterns_on_route_id"
     t.index ["shape_id"], name: "index_journey_patterns_on_shape_id"
@@ -1433,6 +1436,7 @@ ActiveRecord::Schema.define(version: 2022_04_06_200454) do
     t.string "audible_signals_availability"
     t.string "visual_signs_availability"
     t.text "accessibility_limitation_description"
+    t.index ["custom_field_values"], name: "index_stop_areas_on_custom_field_values", using: :gin
     t.index ["name"], name: "index_stop_areas_on_name"
     t.index ["objectid", "stop_area_referential_id"], name: "stop_areas_objectid_key", unique: true
     t.index ["parent_id"], name: "index_stop_areas_on_parent_id"
@@ -1620,6 +1624,7 @@ ActiveRecord::Schema.define(version: 2022_04_06_200454) do
     t.bigint "ignored_stop_area_routing_constraint_ids", default: [], array: true
     t.bigint "line_notice_ids", default: [], array: true
     t.index ["checksum"], name: "index_vehicle_journeys_on_checksum"
+    t.index ["custom_field_values"], name: "index_vehicle_journeys_on_custom_field_values", using: :gin
     t.index ["journey_pattern_id"], name: "index_vehicle_journeys_on_journey_pattern_id"
     t.index ["objectid"], name: "vehicle_journeys_objectid_key", unique: true
     t.index ["route_id"], name: "index_vehicle_journeys_on_route_id"

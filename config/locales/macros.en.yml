@@ -24,6 +24,8 @@ en:
         one: Define Stop Area compass bearing from Shapes
       macro/create_stop_area_referents:
         one: Create Referent Stop Areas
+      macro/associate_stop_area_referent:
+        one: Assocate Stop Areas with a Referent
     attributes:
       macro:
         name: Name

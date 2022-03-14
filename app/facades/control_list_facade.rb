@@ -69,7 +69,7 @@ class ControlListFacade
 
 	def controls(object)
 		object.controls.map do |control|
-      control.attributes.slice('id', 'name', 'comments', 'type').merge(merged_options(control))
+      control.attributes.slice('id', 'name', 'comments', 'criticity', 'code', 'type').merge(merged_options(control))
     end
 	end
 

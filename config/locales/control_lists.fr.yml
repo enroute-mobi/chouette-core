@@ -1,0 +1,65 @@
+fr:
+  control/lists:
+    index:
+      title: Jeux de contrôles
+    show:
+      title: "%{name}"
+    new:
+      title: "Créer un Jeu de contrôle"
+    actions:
+      show: "Afficher ce Jeu de contrôle"
+      new: "Créer un Jeu de contrôle"
+      edit: "Editer ce Jeu de contrôle"
+      destroy: "Supprimer ce Jeu de contrôle"
+      destroy_confirm: "Etes vous sûr de supprimer ce Jeu de contrôle ?"
+  control_lists:
+    actions:
+      new: "Créer un Jeu de contrôle"
+      show: "Voir les Rapports"
+    search_no_results: "Aucun Jeux de contrôle ne correspond à votre recherche"
+    errors:
+    edit:
+      title: "Editer %{name}"
+    index:
+      title: "Jeux de contrôle"
+    show:
+      title: "%{name}"
+    new:
+      title: "Créer un Jeu de contrôle"
+    form:
+      sections:
+        controls: "Jeux de contrôle"
+      control_placeholder: "Décrivez l’objectif de ce contrôle"
+    filters:
+  activerecord:
+    models:
+      control/list:
+        zero:  "jeu contrôle"
+        one: "jeu contrôle"
+        other: "jeux contrôles"
+    attributes:
+      control:
+        list:
+          name: "Nom"
+          comments: "Commentaires"
+      control/list:
+        name: "Nom"
+        comments: "Commentaires"
+        objectid: "Identifiant"
+        object_version: "Version"
+        created_at: "Créé le"
+        updated_at: "Edité le"
+        creator_id: "Créé par"
+  simple_form:
+    labels:
+      control_list:
+        control_type: "Type de contrôle"
+        control_context_type: Type de contexte
+    placeholders:
+      control_list:
+        control_type: "Ajouter une nouvelle instruction en sélectionnant son type"
+        control_context_type: "Ajouter un nouveau contexte de contrôle en sélectionnant son type"
+    buttons:
+      control_list:
+        control_type: "Ajouter une nouvelle instruction"
+        control_context_type: "Ajouter un nouveau contexte"

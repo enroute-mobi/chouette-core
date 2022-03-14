@@ -1,0 +1,24 @@
+- unless facade.show?
+	div[x-data="{
+			isFirst: (resource, collection) => collection.first === resource,
+			isLast: (resource, collection) => collection.last === resource
+		}"
+	]
+		.btn-group
+			.btn.dropdown-toggle data-toggle="dropdown"
+				.span.fa.fa-cog
+			ul.dropdown-menu
+				li
+					a class="cursor-pointer" @click="collection.duplicate(resource)" x-text="I18n.t('macros.actions.duplicate')" x-show='!resource.isDeleted'
+				li
+					a class="cursor-pointer" @click="collection.sendToTop(index)" x-text="I18n.t('macros.actions.send_to_top')" x-show='!resource.isDeleted && !isFirst(resource, collection)'
+				li
+					a class="cursor-pointer" @click="collection.moveUp(index)" x-text="I18n.t('macros.actions.move_up')" x-show='!resource.isDeleted && !isFirst(resource, collection)'
+				li
+					a class="cursor-pointer" @click="collection.moveDown(index)" x-text="I18n.t('macros.actions.move_down')" x-show='!resource.isDeleted && !isLast(resource, collection)'
+				li
+					a class="cursor-pointer" @click="collection.sendToBottom(index)" x-text="I18n.t('macros.actions.send_to_bottom')" x-show='!resource.isDeleted && !isLast(resource, collection)'
+				li
+					a class="cursor-pointer" @click="collection.delete(resource, index)" x-text="I18n.t('macros.actions.delete')" x-show='!resource.isDeleted'
+				li
+					a class="cursor-pointer" @click="collection.restore(resource)" x-text="I18n.t('macros.actions.restore')" x-show='resource.isDeleted'

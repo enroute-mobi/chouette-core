@@ -80,6 +80,36 @@ crumb :new_macro_list_run do |workbench|
   parent :macro_list_runs, workbench
 end
 
+crumb :control_lists do |workbench|
+  link I18n.t('control/lists.index.title'), workbench_control_lists_path(workbench)
+  parent :workbench, workbench
+end
+
+crumb :control_list do |workbench, control_list|
+  link breadcrumb_name(control_list), workbench_control_list_path(workbench, control_list)
+  parent :control_lists, workbench
+end
+
+crumb :new_control_list do |workbench|
+  link I18n.t('control/lists.new.title')
+  parent :control_lists, workbench
+end
+
+crumb :control_list_runs do |workbench|
+  link I18n.t('control/list/runs.index.title'), workbench_control_list_runs_path(workbench)
+  parent :workbench, workbench
+end
+
+crumb :control_list_run do |workbench, control_list_run|
+  link breadcrumb_name(control_list_run), workbench_control_list_run_path(workbench, control_list_run)
+  parent :control_list_runs, workbench
+end
+
+crumb :new_control_list_run do |workbench|
+  link I18n.t('control/list_run.new.title')
+  parent :control_list_runs, workbench
+end
+
 crumb :merge do |merge|
   link breadcrumb_name(merge), workbench_merge_path(merge.workbench, merge)
   parent :merges, merge.workbench

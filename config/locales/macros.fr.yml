@@ -33,3 +33,7 @@ fr:
         target_code_space: Espace code cible
         target_pattern: Modèle de cible
         expected_result: Résultat attendu
+  simple_form:
+    placeholders:
+      macro_base:
+        name: Décrivez l’objectif de cette instruction

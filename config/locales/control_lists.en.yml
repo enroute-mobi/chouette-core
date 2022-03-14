@@ -1,0 +1,63 @@
+en:
+  control/lists:
+    index:
+      title: Control Lists
+    show:
+      title: "%{name}"
+    new:
+      title: "Create a Control Lists"
+    actions:
+      show: "Show this Control Lists"
+      new: "Add a Control Lists"
+      edit: "Edit this Control Lists"
+      destroy: "Delete this Control Lists"
+      destroy_confirm: "Are you sur to delete this Control Lists ?"
+  control_lists:
+    actions:
+      new: "Add a Control List"
+      show: "Show Control Lists Run"
+    search_no_results: "No Control Lists match your search"
+    errors:
+    edit:
+      title: "Edit %{name}"
+    index:
+      title: "Control Lists"
+    show:
+      title: "%{name}"
+    form:
+      sections:
+        controls: "Control Lists"
+      control_placeholder: "Describe the control objective"
+    filters:
+  activerecord:
+    models:
+      control/list:
+        zero:  "Control Lists"
+        one:   "Control Lists"
+        other: "Control Lists"
+    attributes:
+      control:
+        list:
+          name: "Name"
+          comments: "Comments"
+      control/list:
+        name: "Name"
+        comments: "Comments"
+        objectid: "Object ID"
+        object_version: "Version"
+        created_at: "Created at"
+        updated_at: "Updated at"
+        creator_id: "Create by"
+  simple_form:
+    labels:
+      control_list:
+        control_type: "Control Type"
+        control_context_type: Control Context Type
+    placeholders:
+      control_list:
+        control_type: Add a control by selecting its type
+        control_context_type: Add a control context by selecting its type
+    buttons:
+      control_list:
+        control_type: Add a new Control
+        control_context_type: Add a new Control Context

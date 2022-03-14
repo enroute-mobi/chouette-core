@@ -30,12 +30,6 @@ fr:
       sections:
         macros: "Jeux d'instructions"
       macro_placeholder: "Décrivez l’objectif de cette instruction"
-      macro_type_placeholder: "Ajouter une nouvelle instruction en sélectionnant son type"
-      macro_context_type_placeholder: "Ajouter un nouveau contexte d'instructions en sélectionnant son type"
-      macro_type: "Type d’instruction"
-      add_macro: "Ajouter une nouvelle instruction"
-      macro_context_type: Type de contexte
-      add_context: "Ajouter un nouveau contexte"
     filters:
   activerecord:
     models:
@@ -56,3 +50,16 @@ fr:
         created_at: "Créé le"
         updated_at: "Edité le"
         creator_id: "Créé par"
+  simple_form:
+    labels:
+      macro_list:
+        macro_type: "Type d’instruction"
+        macro_context_type: Type de contexte
+    placeholders:
+      macro_list:
+        macro_type: "Ajouter une nouvelle instruction en sélectionnant son type"
+        macro_context_type: "Ajouter un nouveau contexte d'instructions en sélectionnant son type"
+    buttons:
+      macro_list:
+        macro_type: "Ajouter une nouvelle instruction"
+        macro_context_type: "Ajouter un nouveau contexte"

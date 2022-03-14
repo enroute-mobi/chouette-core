@@ -7,18 +7,16 @@
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = simple_block_for @macro_list_run, title: t('macro_list_run.show.section.information') do |d|
-          = d.attribute :name, label: t('activerecord.attributes.macro.list.run.name')
-          = d.attribute :original_macro_list, as: :association, label: t('activerecord.attributes.macro.list.run.original_macro_list_id'),
-                        link: (workbench_macro_list_path(@workbench, @macro_list_run.original_macro_list) if @macro_list_run.original_macro_list)
-          = d.attribute :referential, as: :association, label: t('activerecord.attributes.macro.list.run.referential'),
-                        link: (referential_path(@macro_list_run.referential) if @macro_list_run.referential)
-          = d.attribute :status, as: :enumerize, label: t('activerecord.attributes.macro.list.run.status')
+          = d.attribute :name
+          = d.attribute :original_macro_list, as: :association, link: (workbench_macro_list_path(@workbench, @macro_list_run.original_macro_list) if @macro_list_run.original_macro_list)
+          = d.attribute :referential, as: :association, link: (referential_path(@macro_list_run.referential) if @macro_list_run.referential)
+          = d.attribute :status, as: :enumerize
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = simple_block_for @macro_list_run, title: t('macro_list_run.show.section.processing') do |d|
-          = d.attribute :created_at, as: :datetime, label: t('activerecord.attributes.macro.list.run.created_at')
-          = d.attribute :created_by, value_method: :creator, label: t('activerecord.attributes.macro.list.run.created_by')
+          = d.attribute :created_at, as: :datetime
+          = d.attribute :created_by, value_method: :creator
 					- unless @macro_list_run.status == 'new'
-						= d.attribute :duration, as: :duration, label: t('activerecord.attributes.macro.list.run.duration')
-          = d.attribute :started_at, as: :datetime, label: t('activerecord.attributes.macro.list.run.started_at')
-          = d.attribute :ended_at, as: :datetime, label: t('activerecord.attributes.macro.list.run.ended_at')
+						= d.attribute :duration, as: :duration
+          = d.attribute :started_at, as: :datetime
+          = d.attribute :ended_at, as: :datetime

@@ -1,6 +1,6 @@
-import Store from '../../../app/packs/src/operations/macro.store'
-import { Macro } from '../../../app/packs/src/operations/macro'
-import { MacroContext } from '../../../app/packs/src/operations/macroContext'
+import Store from '../../../app/packs/src/macro_lists/store'
+import { Macro } from '../../../app/packs/src/macro_lists/macro'
+import { MacroContext } from '../../../app/packs/src/macro_lists/macroContext'
 
 const intitialState = {
 	name: 'foo',

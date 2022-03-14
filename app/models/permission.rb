@@ -22,6 +22,8 @@ class Permission
         compliance_control_sets
         compliance_controls
         connection_links
+        control_lists
+        control_list_runs
         exports
         footnotes
         imports

@@ -1,9 +1,13 @@
-class MacroListPresenter
+class MacroListFacade
 	attr_reader :macro_list, :template
 
 	def initialize(macro_list, template)
 		@macro_list = macro_list
 		@template = template
+	end
+
+	def form_basename
+		'macro_list'
 	end
 
 	def form_options
@@ -19,7 +23,7 @@ class MacroListPresenter
 		}
 	end
 
-	def is_show
+	def show?
 		template.controller.action_name == 'show'
 	end
 
@@ -32,8 +36,17 @@ class MacroListPresenter
 			name: macro_list.name,
 			comments: macro_list.comments,
 			macros: macros(macro_list),
-			macro_contexts: macro_contexts(macro_list)
+			macro_contexts: macro_contexts(macro_list),
+			is_show: show?
 		})
+	end
+
+	def macro_select_options store_collection
+		{ name: 'macro_type', collection: Macro.available, store_collection: store_collection }
+	end
+
+	def macro_context_select_options
+		{ name: 'macro_context_type', collection: Macro::Context.available, store_collection: '$store.macroList.contexts' }
 	end
 
 	private
@@ -55,7 +68,7 @@ class MacroListPresenter
 	def merged_options object
 		{
 			errors: object.errors.full_messages,
-    	html: MacroLists::RenderPartial.call(template: template, id: object.id, type: object.type, validate: true),
+    	html: Operations::RenderPartial.call(template: template, id: object.id, type: object.type, parent_klass: Macro::List, validate: true),
       **object.options
 		}
 	end

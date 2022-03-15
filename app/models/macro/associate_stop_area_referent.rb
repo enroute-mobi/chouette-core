@@ -37,26 +37,25 @@ module Macro
       end
 
       def raw_associations
-        query = <<~SQL
-SELECT
-particulars.id as particular_id, closest_referent.id as closest_referent_id
-FROM (#{particulars.to_sql}) AS particulars
-CROSS JOIN LATERAL
-(
-  select referents.id
-  FROM (#{referents.to_sql}) as referents
-  where
-    referents.area_type = particulars.area_type
-    AND
-    referents.compass_bearing between
-      particulars.compass_bearing-#{max_bearing_distance} and particulars.compass_bearing+#{max_bearing_distance}
-    AND
-    st_dwithin(particulars.position, referents.position, #{max_srid_distance})
-  order by particulars.position <-> referents.position, abs(referents.compass_bearing-particulars.compass_bearing)
-  limit 1
-) as closest_referent;
-SQL
-        PostgreSQLCursor::Cursor.new(query)
+         query = <<~SQL
+           SELECT particulars.id AS particular_id, closest_referent.id AS closest_referent_id
+           FROM (#{particulars.to_sql}) AS particulars
+           CROSS JOIN LATERAL(
+             SELECT referents.id
+             FROM (#{referents.to_sql}) AS referents
+             WHERE referents.area_type = particulars.area_type
+               AND referents.compass_bearing
+                 BETWEEN particulars.compass_bearing - #{max_bearing_distance}
+                  AND particulars.compass_bearing + #{max_bearing_distance}
+               AND st_dwithin(particulars.position, referents.position, #{max_srid_distance})
+             ORDER BY
+               particulars.position <-> referents.position,
+               abs(referents.compass_bearing - particulars.compass_bearing)
+            LIMIT 1
+          ) AS closest_referent;
+         SQL
+
+         PostgreSQLCursor::Cursor.new(query)
       end
     end
   end

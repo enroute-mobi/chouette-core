@@ -24,6 +24,8 @@ fr:
         one: Définir l'Orientation des Arrêts selon les Tracés
       macro/create_stop_area_referents:
         one: Créer les Arrêts référents
+      macro/associate_stop_area_referent:
+        one: Associer les Arrêts à un Référent
     attributes:
       macro:
         name: Nom

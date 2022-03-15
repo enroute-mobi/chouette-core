@@ -65,7 +65,41 @@ module Macro
       end
 
       def context
-        macro_context_run || referential || workbench
+        @context ||= OwnerContext.new(macro_context_run || referential || workbench, workbench)
+      end
+
+      class OwnerContext
+        def initialize(context, workbench)
+          @context = context
+          @workbench = workbench
+        end
+        attr_accessor :context, :workbench
+
+        delegate :stop_area_providers, :shape_providers, :line_providers, to: :workbench
+
+        def stop_areas
+          context.stop_areas.where(stop_area_provider: stop_area_providers)
+        end
+
+        def shapes
+          context.shapes.where(shape_provider: shape_providers)
+        end
+
+        def lines
+          context.lines.where(line_provider: line_providers)
+        end
+
+        def networks
+          context.networks.where(line_provider: line_providers)
+        end
+
+        def companies
+          context.companies.where(line_provider: line_providers)
+        end
+
+        def journey_patterns
+          context.journey_patterns
+        end
       end
 
       protected

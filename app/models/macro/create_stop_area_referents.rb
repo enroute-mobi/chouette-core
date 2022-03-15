@@ -25,15 +25,22 @@ module Macro
           where.not(latitude: nil, longitude: nil, compass_bearing: nil)
       end
 
+      # Creates a cluster with ~20 meters between two positions
+      def cluster_distance
+        0.0002
+      end
+
       def raw_clusterized_stop_areas
         query = <<~SQL
-select geo_cluster, id, latitude, longitude, compass_bearing, is_referent, name, area_type from (
-  SELECT id, latitude, longitude, compass_bearing, is_referent, name, area_type, ST_ClusterDBSCAN(ST_SetSRID(ST_Point(longitude, latitude), 4326), 0.0002, 2) over () as geo_cluster
-  from stop_areas
-  where id in (#{stop_areas.select(:id).to_sql})
-) as clusters
-where geo_cluster is not null;
-SQL
+          SELECT geo_cluster, id, latitude, longitude, compass_bearing, is_referent, name, area_type
+          FROM (
+            SELECT id, latitude, longitude, compass_bearing, is_referent, name, area_type,
+                  ST_ClusterDBSCAN(ST_SetSRID(ST_Point(longitude, latitude), 4326), #{cluster_distance}, 2) over () AS geo_cluster
+            FROM public.stop_areas
+            WHERE id IN (#{stop_areas.select(:id).to_sql})
+          ) AS clusters
+          WHERE geo_cluster IS NOT NULL;
+        SQL
 
         Chouette::StopArea.connection.select_all(query)
       end
@@ -86,22 +93,16 @@ SQL
         end
 
         def accept?(stop_area)
-          compass_bearing_range.include? stop_area.compass_bearing
+          angle_delta = ((stop_area.compass_bearing-compass_bearing+180) % 360 - 180).abs
+          angle_delta <= compass_bearing_delta
         end
 
-        def compass_bearing_range
-          @compass_bearing_range ||= Range.new(
-            compass_bearing - compass_bearing_width / 2,
-            compass_bearing + compass_bearing_width / 2
-          )
-        end
-
-        def compass_bearing_width
-          15
+        def compass_bearing_delta
+          7.5
         end
 
         def reset
-          @compass_bearing = @compass_bearing_range = nil
+          @compass_bearing = nil
         end
 
         def stop_areas

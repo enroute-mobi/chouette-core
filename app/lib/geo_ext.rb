@@ -10,6 +10,12 @@ module Geo
       end
     end
 
+    def self.from(position)
+      if position.respond_to?(:latitude) && position.respond_to?(:longitude)
+        Geo::Position.new latitude: position.latitude.to_f, longitude: position.longitude.to_f
+      end
+    end
+
     def to_point
       "POINT(#{x} #{y})"
     end
@@ -33,6 +39,7 @@ module Geo
     def distance_with(other)
       self.class.distance_between self, other
     end
+    alias - distance_with
 
     # TODO Use your own computation
     def self.distance_between(from, to)

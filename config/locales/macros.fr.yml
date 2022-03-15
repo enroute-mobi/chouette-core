@@ -22,6 +22,8 @@ fr:
         one: Associer les Tracés
       macro/update_stop_area_compass_bearing:
         one: Définir l'Orientation des Arrêts selon les Tracés
+      macro/create_stop_area_referents:
+        one: Créer les Arrêts référents
     attributes:
       macro:
         name: Nom

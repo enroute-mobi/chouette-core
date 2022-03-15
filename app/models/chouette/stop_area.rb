@@ -40,6 +40,8 @@ module Chouette
     scope :by_text, ->(text) { text.blank? ? all : where('lower(stop_areas.name) LIKE :t or lower(stop_areas.objectid) LIKE :t', t: "%#{text.downcase}%") }
     scope :without_compass_bearing, -> { where compass_bearing: nil }
     scope :with_compass_bearing, -> { where.not compass_bearing: nil }
+    scope :referents, -> { where is_referent: true }
+    scope :particulars, -> { where.not is_referent: true }
 
     belongs_to :referent, class_name: 'Chouette::StopArea'
     has_many :specific_stops, class_name: 'Chouette::StopArea', foreign_key: 'referent_id'
@@ -136,6 +138,14 @@ module Chouette
 
     def valid_referent
       errors.add(:referent_id, I18n.t('stop_areas.errors.referent_id.cannot_be_referent_and_specific')) if self.referent_id? && (self.is_referent || self.specific_stops.count != 0)
+    end
+
+    def referent?
+      is_referent
+    end
+
+    def particular?
+      !referent?
     end
 
     before_save :coordinates_to_lat_lng
@@ -591,13 +601,14 @@ module Chouette
         loop do
           avg_bearings = compute_bearings(options_)
           avg_bearings.each do |h|
+            next unless h["avg_bearing"]
             result[h["stop_area_id"]] = result[h["stop_area_id"]].present? ? (result[h["stop_area_id"]] + h["avg_bearing"]) / 2.0 : h["avg_bearing"]
           end
           break if avg_bearings.count < options_[:limit]
           options_[:page] += 1
         end
 
-        return result.each { |k,v| result[k] = v.round(1)}
+        return result.each { |k,v| result[k] = v.round(1) }
       end
     end
   end

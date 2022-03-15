@@ -15,6 +15,7 @@ RSpec.describe Macro::CreateStopAreaReferents::Run do
         # Distance between them: 9.999385455380681 meters
         stop_area :first, coordinates: "43.9856,5.118601", compass_bearing: 129
         stop_area coordinates: "43.98568803,5.118576", compass_bearing: 131
+        stop_area coordinates: "43.98568803,6.118576", compass_bearing: 4 # Required because Postgis has a bug in 3.0.X  https://trac.osgeo.org/postgis/ticket/4853 
       end
     end
 

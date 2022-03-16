@@ -347,16 +347,59 @@ class Export::NetexGeneric < Export::Base
       def netex_attributes
         {
           id: objectid,
-          name: name,
+          name: netex_name,
           transport_mode: transport_mode,
           transport_submode: netex_transport_submode,
           operator_ref: operator_ref,
+          public_code: number,
+          represented_by_group_ref: represented_by_group_ref,
+          presentation: presentation,
+          additional_operators: additional_operators,
+          key_list: netex_alternate_identifiers,
+          status: status,
+          valid_between: valid_between,
           raw_xml: import_xml
         }
       end
 
+      def netex_alternate_identifiers
+        [].tap do |identifiers|
+          codes.each do |code|
+            identifiers << [ code.code_space.short_name, code.value ]
+          end
+        end.map do |key, value|
+          Netex::KeyValue.new key: key, value: value, type_of_key: "ALTERNATE_IDENTIFIER"
+        end
+      end
+
+      def netex_name
+        name || published_name
+      end
+
+      def valid_between
+        return unless active_from || active_until
+        Netex::ValidBetween.new(
+          from_date: active_from.strftime("%Y-%m-%dT%H:%M:%S"),
+          to_date: active_until.strftime("%Y-%m-%dT%H:%M:%S")
+        )
+      end
+
+      def additional_operators
+        secondary_companies.map do |company|
+          Netex::Reference.new(company&.objectid, type: 'OperatorRef')
+        end
+      end
+
+      def status
+        deactivated ? 'inactive' : ''
+      end
+
       def netex_transport_submode
         transport_submode&.to_s unless transport_submode == :undefined
+      end
+
+      def presentation
+        Netex::Presentation.new(text_colour: text_color&.downcase, colour: color&.downcase)
       end
 
       def netex_resource
@@ -367,8 +410,11 @@ class Export::NetexGeneric < Export::Base
         Netex::Reference.new(company&.objectid, type: 'OperatorRef')
       end
 
-    end
+      def represented_by_group_ref
+        Netex::Reference.new(network.objectid, type: 'NetworkRef')
+      end
 
+    end
   end
 
   class Companies < Part

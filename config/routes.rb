@@ -73,14 +73,22 @@ ChouetteIhm::Application.routes.draw do
 
     resources :sources
 
-    resources :macro_list_runs, only: %w(new create show index)
+    resources :macro_list_runs, only: %w(new create show index)do
+      resources :macro_runs, only: [] do
+        resources :macro_messages, only: :index, defaults: { format: 'js' }
+      end
+    end
 
     resources :control_lists do
       get :fetch_object_html, on: :collection, defaults: { format: 'json' }
       resources :control_list_runs, only: %w(new create)
     end
 
-    resources :control_list_runs, only: %w(new create show index)
+    resources :control_list_runs, only: %w(new create show index) do
+      resources :control_runs, only: [] do
+        resources :control_messages, only: :index, defaults: { format: 'js' }
+      end
+    end
 
     resource :stop_area_referential, :only => [:show, :edit, :update] do
       post :sync, on: :member

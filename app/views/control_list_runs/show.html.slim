@@ -1,5 +1,6 @@
 - breadcrumb :control_list_run, @workbench, @control_list_run
 - page_header_content_for @control_list_run
+- content_for :additional_packs, 'control_list_runs/show'
 
 / PageContent
 .page_content
@@ -8,8 +9,8 @@
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = simple_block_for @control_list_run, title: t('control_list_run.show.section.information') do |d|
           = d.attribute :name
-          = d.attribute :original_control_list, as: :association, link: (workbench_control_list_path(@workbench, @control_list_run.original_control_list) if @control_list_run.original_control_list)
-          = d.attribute :referential, as: :association, link: (referential_path(@control_list_run.referential) if @control_list_run.referential)
+          = d.attribute :original_control_list_id, as: :association, link: (workbench_control_list_path(@workbench, @control_list_run.original_control_list) if @control_list_run.original_control_list)
+          = d.attribute :referential_id, as: :association, link: (referential_path(@control_list_run.referential) if @control_list_run.referential)
           = d.attribute :status, as: :enumerize
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
@@ -20,3 +21,12 @@
 						= d.attribute :duration, as: :duration
           = d.attribute :started_at, as: :datetime
           = d.attribute :ended_at, as: :datetime
+
+    
+    .flex.flex-col.items-center.w75.ml-auto.mr-auto
+      .definition-list
+        .dl-head.w-full
+          = I18n.t('other', scope: 'activerecord.models.control/run').capitalize
+      
+      - @control_list_run.control_runs.each do |control_run|
+        = render 'control_run', control_run: control_run

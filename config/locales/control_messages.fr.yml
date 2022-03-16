@@ -1,0 +1,14 @@
+fr:
+  control_messages:
+    default: "Message sur la ligne %{name}"
+  activerecord:
+    models:
+      control/message:
+        zero:  "message"
+        one:   "message"
+        other: "messages"
+    attributes:
+      control/message:
+        criticity: Criticité
+        message: Message
+        source: Ressource

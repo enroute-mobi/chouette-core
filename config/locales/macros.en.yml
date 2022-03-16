@@ -27,9 +27,10 @@ en:
       macro/associate_stop_area_referent:
         one: Assocate Stop Areas with a Referent
     attributes:
-      macro:
+      macro/base:
         name: Name
         comments: Comments
+        options: Options
       macro/create_code:
         target_model: Target Model
         source_attribute: Source Attribute

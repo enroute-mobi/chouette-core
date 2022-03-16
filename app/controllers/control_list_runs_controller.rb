@@ -7,6 +7,8 @@ class ControlListRunsController < ChouetteController
   before_action :decorate_control_list_run, only: %i[show new edit]
   before_action :select_referentials, only: %i{new create}
 
+  before_action :init_facade, only: %i[show]
+
 	belongs_to :workbench
 	belongs_to :control_list, optional: true
 
@@ -58,6 +60,15 @@ class ControlListRunsController < ChouetteController
   end
 
   private
+
+  def init_facade
+    object = control_list_run rescue Control::List::Run.new(workbench: workbench)
+    @facade ||= ControlListRunFacade.new(object)
+  end
+
+  alias facade init_facade
+
+  helper_method :facade
 
   def decorate_control_list_run
     object = control_list_run rescue build_resource

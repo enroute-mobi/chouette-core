@@ -4,7 +4,7 @@ module Macro
     enumerize :expected_result, in: %w{success warning error fail}, default: "success"
 
     option :target_model
-    enumerize :target_model, in: %w{Line StopArea JourneyPattern Company}, default: "StopArea"
+    enumerize :target_model, in: %w{Line StopArea JourneyPattern Company}, default: "Line"
 
     validates :target_model, presence: true
     class Run < Macro::Base::Run

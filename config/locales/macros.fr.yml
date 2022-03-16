@@ -27,15 +27,17 @@ fr:
       macro/associate_stop_area_referent:
         one: Associer les Arrêts à un Référent
     attributes:
-      macro:
+      macro/base:
         name: Nom
         comments: Commentaire
-      macro/create_code:
         target_model: Modèle cible
+        options: Options
+      macro/create_code:
         source_attribute: Attribut de la source
         source_pattern: Modèle de source
         target_code_space: Espace code cible
         target_pattern: Modèle de cible
+      macro/dummy:
         expected_result: Résultat attendu
   simple_form:
     placeholders:

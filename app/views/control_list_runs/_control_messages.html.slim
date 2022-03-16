@@ -1,0 +1,26 @@
+- messages = control_run.control_messages.paginate(page: params[:page], per_page: 10)
+
+.definition-list
+	.dl-head
+		= I18n.t('other', scope: 'activerecord.models.control/message').capitalize
+- if messages.any?
+	= table_builder_2 messages,
+		[ \
+			TableBuilderHelper::Column.new( \
+				key: :criticity, \
+				attribute: -> (m) { facade.criticity_span(m).html_safe }, \
+				sortable: false\
+			), \
+			TableBuilderHelper::Column.new(key: :message, attribute: :full_message, sortable: false),
+			TableBuilderHelper::Column.new( \
+				key: :source, \
+				attribute: -> (m) { '<span class="fa fa-link"></span>'.html_safe }, \
+				link_to: -> (m) { facade.source_link(m) }, \
+				sortable: false \
+			), \
+		],
+		cls: 'table'
+
+	= new_pagination messages, 'pull-right', renderer: facade.paginate_renderer_for(control_run)
+- else
+	= replacement_msg t('control_messages.search_no_results')

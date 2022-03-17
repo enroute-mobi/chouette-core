@@ -2,13 +2,24 @@ module Control
   class PresenceCustomField < Control::Base
     enumerize :target_model, in: %w{ Line StopArea Company JourneyPattern VehicleJourney }, default: "Line"
     option :target_model
-    option :target_custom_field
+    option :target_custom_field_id
 
-    validates :target_model, :target_custom_field, presence: true
+    validates :target_model, :target_custom_field_id, presence: true
+    validate :custom_field_is_present_in_workgroup
+
+    def target_custom_field
+      CustomField.where(id: target_custom_field_id, workgroup_id: control_list.workbench.workgroup_id).first
+    end
+
+    private
+
+    def custom_field_is_present_in_workgroup
+      errors.add(:target_custom_field_id, :invalid) unless target_custom_field
+    end 
 
     class Run < Control::Base::Run
       option :target_model
-      option :target_custom_field
+      option :target_custom_field_id
 
       def run
         return unless custom_field

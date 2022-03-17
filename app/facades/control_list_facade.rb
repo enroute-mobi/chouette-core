@@ -1,5 +1,5 @@
 class ControlListFacade
-	attr_reader :control_list, :workbench, :workgroup, :template
+	attr_reader :control_list, :template, :workbench, :workgroup
 
 	def initialize(control_list, template)
 		@control_list = control_list
@@ -35,6 +35,10 @@ class ControlListFacade
 
 	def target_code_space_options
 		workgroup.code_spaces.map { |c| [c.short_name, c.id] }
+	end
+	
+	def custom_fields_options
+		workgroup.custom_fields.map { |c| [c.name, c.id]}
 	end
 
 	def criticity_options

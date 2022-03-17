@@ -2,25 +2,10 @@
 
 .definition-list
 	.dl-head
-		= 'Messages'
+		= I18n.t('other', scope: 'activerecord.models.macro/message').capitalize
 - if messages.any?
-	= table_builder_2 messages,
-		[ \
-			TableBuilderHelper::Column.new( \
-				key: :criticity, \
-				attribute: -> (m) { facade.criticity_span(m).html_safe }, \
-				sortable: false\
-			), \
-			TableBuilderHelper::Column.new(key: :message, attribute: :message, sortable: false),
-			TableBuilderHelper::Column.new( \
-				key: :source, \
-				attribute: -> (m) { '<span class="fa fa-link"></span>'.html_safe }, \
-				link_to: -> (m) { m.source.decorate(context: { workbench: @workbench}).action_links.first.href }, \
-				sortable: false \
-			), \
-		],
-		cls: 'table'
+	= table_builder_2 messages, *facade.message_table_params
 
-	= new_pagination messages, 'pull-right', renderer: facade.paginate_renderer_for(macro_run)
+	= new_pagination messages, 'pull-right', renderer: facade.paginate_renderer_for('macro', macro_run)
 - else
 	= replacement_msg t('macro_messages.search_no_results')

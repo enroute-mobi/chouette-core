@@ -63,7 +63,7 @@ class MacroListRunsController < ChouetteController
 
   def init_facade
     object = macro_list_run rescue Macro::List::Run.new(workbench: workbench)
-    @facade ||= MacroListRunFacade.new(object)
+    @facade ||= OperationRunFacade.new(object)
   end
 
   alias facade init_facade

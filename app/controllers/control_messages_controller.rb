@@ -16,7 +16,7 @@ class ControlMessagesController < ChouetteController
 						partial: 'control_list_runs/control_messages',
 						locals: {
 							control_run: parent,
-							facade: ControlListRunFacade.new(control_list_run)
+							facade: OperationRunFacade.new(control_list_run)
 						}
 					)
 				}

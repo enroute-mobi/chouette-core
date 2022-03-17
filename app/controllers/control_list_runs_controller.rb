@@ -63,7 +63,7 @@ class ControlListRunsController < ChouetteController
 
   def init_facade
     object = control_list_run rescue Control::List::Run.new(workbench: workbench)
-    @facade ||= ControlListRunFacade.new(object)
+    @facade ||= OperationRunFacade.new(object)
   end
 
   alias facade init_facade

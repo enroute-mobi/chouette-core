@@ -16,7 +16,7 @@ class MacroMessagesMacroler < ChouetteMacroler
 						partial: 'macro_list_runs/macro_messages',
 						locals: {
 							macro_run: parent,
-							facade: MacroListRunFacade.new(macro_list_run)
+							facade: OperationRunFacade.new(macro_list_run)
 						}
 					)
 				}

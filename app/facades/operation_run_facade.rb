@@ -20,18 +20,20 @@ class OperationRunFacade
 
 	def message_table_params
 		[
-			TableBuilderHelper::Column.new(
-				key: :criticity,
-				attribute: -> (m) { criticity_span(m.criticity).html_safe },
-				sortable: false
-			),
-			TableBuilderHelper::Column.new(key: :message, attribute: :full_message, sortable: false),
-			TableBuilderHelper::Column.new(
-				key: :source,
-				attribute: -> (m) { '<span class="fa fa-link"></span>'.html_safe },
-				link_to: -> (m) { source_link(m) },
-				sortable: false
-			),
+			[
+				TableBuilderHelper::Column.new(
+					key: :criticity,
+					attribute: -> (m) { criticity_span(m.criticity).html_safe },
+					sortable: false
+				),
+				TableBuilderHelper::Column.new(key: :message, attribute: :full_message, sortable: false),
+				TableBuilderHelper::Column.new(
+					key: :source,
+					attribute: -> (m) { '<span class="fa fa-link"></span>'.html_safe },
+					link_to: -> (m) { source_link(m) },
+					sortable: false
+				),
+			],
 			{ cls: 'table' }
 		]
 	end

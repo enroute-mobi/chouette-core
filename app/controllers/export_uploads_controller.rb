@@ -10,7 +10,7 @@ class ExportUploadsController < ApplicationController
       render json: {status: :ok}
     else
       Rails.logger.error("Export token : #{resource.token_upload} is different from params token : #{params[:token]}")
-      render json: 'Access Denied',  status: 403
+      render json: {status: 'Unauthorized'},  status: 401
     end
   end
 end

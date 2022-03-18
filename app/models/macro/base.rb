@@ -100,6 +100,18 @@ module Macro
         def journey_patterns
           context.journey_patterns
         end
+
+        def vehicle_journeys
+          context.vehicle_journeys
+        end
+
+        def routes
+          context.routes
+        end
+
+        def stop_points
+          context.stop_points
+        end
       end
 
       protected

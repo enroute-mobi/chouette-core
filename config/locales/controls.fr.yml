@@ -9,6 +9,8 @@ fr:
         one: Simuler un contrôle
       control/presence_attribute:
         one: Présence d’un attribut
+      control/presence_code:
+        one:  Présence d’un code
     attributes:
       control/base:
         name: Nom
@@ -21,3 +23,6 @@ fr:
       control/presence_attribute:
         target_attribute: Attribut cible
         description:  L’attribut sélectionné doit avoir une valeur dans le modèle cible
+      control/presence_code:
+        target_code_space_id: Espace de Code cible
+        description: L’espace de code sélectionné doit avoir un code dans le modèle cible

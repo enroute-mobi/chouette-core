@@ -2,13 +2,26 @@ module Control
   class PresenceCode < Control::Base
     enumerize :target_model, in: %w{Line StopArea VehicleJourney}, default: "Line"
     option :target_model
-    option :target_code_space
+    option :target_code_space_id
 
-    validates :target_model, :target_code_space, presence: true
+    validates :target_model, :target_code_space_id, presence: true
+
+    validate :code_space_belong_to_workgroup
+
+    def target_code_space
+      control_list&.workbench&.workgroup.code_spaces.find_by_id(target_code_space_id)
+    end
+
+    private
+
+    def code_space_belong_to_workgroup
+      errors.add(:target_code_space_id, :invalid) unless target_code_space
+    end
+
 
     class Run < Control::Base::Run
       option :target_model
-      option :target_code_space
+      option :target_code_space_id
 
       def run
         faulty_models.find_each do |model|

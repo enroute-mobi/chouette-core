@@ -129,6 +129,76 @@ RSpec.describe Macro::CreateCode do
           end
         end
       end
+
+      context "when the macro has target_model 'VehicleJourney' target_code_space 'test'" do
+        let(:macro_list_run) do
+          Macro::List::Run.create referential: context.referential, workbench: context.workbench
+        end
+        let(:macro_run) do
+          Macro::CreateCode::Run.new(
+            target_model: 'VehicleJourney',
+            source_attribute: 'published_journey_identifier',
+            target_code_space: 'test',
+            macro_list_run: macro_list_run,
+          )
+        end
+
+        context "when a VehicleJourney exists with a published_journey_identifier 'dummy'" do
+          let(:context) do
+            Chouette.create do
+              code_space short_name: 'test'
+              vehicle_journey published_journey_identifier: 'dummy'
+            end
+          end
+          let(:code_space) { context.code_space }
+          let(:vehicle_journey) { context.vehicle_journey }
+
+          before {context.referential.switch}
+
+          it "creates a code 'test' with value 'dummy' for this Vehicle Journey" do
+            expected_change = change { vehicle_journey.codes.find_by(code_space: code_space)&.value }.
+                                from(nil).to('dummy')
+            expect { macro_run.run }.to expected_change
+          end
+        end
+
+        context "when a VehicleJourney exists with a code 'test'" do
+          let(:context) do
+            Chouette.create do
+              code_space short_name: 'test'
+              vehicle_journey
+            end
+          end
+          let(:code_space) { context.code_space }
+          let(:vehicle_journey) { context.vehicle_journey }
+
+          before do
+            context.referential.switch
+            vehicle_journey.codes.create(code_space: code_space, value: "unchanged")
+          end
+
+          it "doesn't change the existing code for this Vehicle Journey" do
+            change_code_value = change { vehicle_journey.codes.find_by(code_space: code_space)&.value }
+            expect { macro_run.run }.to_not change_code_value
+          end
+        end
+
+        context "when a VehicleJourney exists without a published_journey_identifier " do
+          let(:context) do
+            Chouette.create do
+              code_space short_name: 'test'
+              vehicle_journey published_journey_identifier: nil
+            end
+          end
+          let(:vehicle_journey) { context.vehicle_journey }
+
+          before {context.referential.switch}
+
+          it "doesn't create a code" do
+            expect { macro_run.run }.to_not change { vehicle_journey.reload.codes.count }
+          end
+        end
+      end
     end
   end
 

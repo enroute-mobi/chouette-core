@@ -5,7 +5,7 @@ module Control
     self.table_name = "controls"
 
     belongs_to :control_context, class_name: "Control::Context", optional: true, inverse_of: :controls
-    belongs_to :control_list, class_name: "Control::List", optional: true, inverse_of: :controls
+    belongs_to :control_list, class_name: "Control::List", inverse_of: :controls
     acts_as_list scope: 'control_list_id #{control_list_id ? "= #{control_list_id}" : "IS NULL"} AND control_context_id #{control_context_id ? "= #{control_context_id}" : "IS NULL"}'
 
     store :options, coder: JSON

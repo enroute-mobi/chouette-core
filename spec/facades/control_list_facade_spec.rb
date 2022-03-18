@@ -47,12 +47,12 @@ describe ControlListFacade do
 				expected_json = JSON.generate({
 					name: 'name',
 					comments: 'comments',
-					controls: [{ id: nil, name: 'name', comments: 'comments', criticity: 'warning', code: 'code', type: 'Control::Dummy', errors: [], html: '', expected_result: 'warning' }],
+					controls: [{ id: nil, name: 'name', comments: 'comments', criticity: 'warning', code: 'code', type: 'Control::Dummy', errors: [], html: '', expected_result: 'warning', target_model: 'Line' }],
 					control_contexts: [
 						{
 							id: nil,
 							type: 'Control::Context::TransportMode',
-							controls: [{ id: nil, name: 'name', comments: 'comments', criticity: 'warning', code: 'code', type: 'Control::Dummy', errors: [], html: '', expected_result: 'warning' }],
+							controls: [{ id: nil, name: 'name', comments: 'comments', criticity: 'warning', code: 'code', type: 'Control::Dummy', errors: [], html: '', expected_result: 'warning', target_model: 'Line' }],
 							errors: [],
 							html: '',
 							transport_mode: 'bus'

@@ -47,12 +47,12 @@ describe MacroListFacade do
 				expected_json = JSON.generate({
 					name: 'name',
 					comments: 'comments',
-					macros: [{ id: nil, name: 'name', comments: 'comments', type: 'Macro::Dummy', errors: [], html: '', expected_result: 'warning' }],
+					macros: [{ id: nil, name: 'name', comments: 'comments', type: 'Macro::Dummy', errors: [], html: '', expected_result: 'warning', target_model: 'Line' }],
 					macro_contexts: [
 						{
 							id: nil,
 							type: 'Macro::Context::TransportMode',
-							macros: [{ id: nil, name: 'name', comments: 'comments', type: 'Macro::Dummy', errors: [], html: '', expected_result: 'warning' }],
+							macros: [{ id: nil, name: 'name', comments: 'comments', type: 'Macro::Dummy', errors: [], html: '', expected_result: 'warning', target_model: 'Line' }],
 							errors: [],
 							html: '',
 							transport_mode: 'bus'

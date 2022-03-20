@@ -290,6 +290,16 @@ RSpec.describe Macro::CreateCode do
           before { target.pattern = '%{value//m/M}' }
           it { is_expected.to eq('duMMy') }
         end
+
+        context "when pattern is '%{value//m/MM}'" do
+          before { target.pattern = '%{value//m/MM}' }
+          it { is_expected.to eq('duMMMMy') }
+        end
+
+        context "when pattern is '%{value//(.*)(.)/\1_\2}'" do
+          before { target.pattern = '%{value//(.*)(.)/\1_\2}' }
+          it { is_expected.to eq('dumm_y') }
+        end
       end
     end
   end

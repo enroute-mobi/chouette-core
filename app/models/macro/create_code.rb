@@ -154,8 +154,10 @@ module Macro
       end
 
       def value_substitution
-        if has_pattern? && %r@%{value//([^/]+)/([^}*])}@ =~ pattern
-          Proc.new { |value| value.gsub($1, $2) }
+        if has_pattern? && %r@%{value//([^/]+)/([^}]*)}@ =~ pattern
+          from = Regexp.new $1
+          to = $2
+          Proc.new { |value| value.gsub(from, to) }
         else
           Proc.new { |value| value }
         end

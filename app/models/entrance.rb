@@ -6,6 +6,7 @@ class Entrance < ActiveRecord::Base
 
   belongs_to :stop_area, class_name: 'Chouette::StopArea', optional: false
   has_one :raw_import, as: :model, dependent: :delete
+  accepts_nested_attributes_for :raw_import
 
   has_many :codes, as: :resource, dependent: :delete_all
   accepts_nested_attributes_for :codes

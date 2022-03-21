@@ -141,11 +141,7 @@ gem 'premailer-rails', '>= 1.11.1'
 gem 'redis-actionpack', '>= 5.3.0'
 
 gem 'gtfs', en_route: 'gtfs'
-<<<<<<< HEAD
-gem 'netex', en_route: 'netex', branch: 'CHOUETTE-1459-import-stop-place-entrances-from-generic-netex'
-=======
-gem 'netex', en_route: 'netex'
->>>>>>> 171f122b3 (CHOUETTE-1459 fix deleter with codes)
+gem 'netex', en_route: 'netex', branch: 'NETEX-47-manage-embedded-resources-in-import'
 gem 'rgeo-shapefile'
 gem 'ara-file', en_route: 'ara-file'
 gem 'neptune', en_route: 'neptune', branch:'NEPTUNE-5-test-file-extension-case'

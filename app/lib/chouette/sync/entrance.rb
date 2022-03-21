@@ -60,7 +60,7 @@ module Chouette::Sync
             entrance_type: entrance_type,
             entry_flag: is_entry,
             exit_flag: is_exit,
-            import_xml: raw_xml,
+            raw_import_attributes: { content: raw_xml },
             stop_area_id: stop_area_id,
             stop_area_provider_id: stop_area_provider_id,
           }
@@ -69,29 +69,11 @@ module Chouette::Sync
         private
 
         def stop_place_ref
-          mapping_entrance_stop_place[id]
-        end
-
-        def mapping_entrance_stop_place
-          unless @mapping_entrance_stop_place.present?
-            @mapping_entrance_stop_place = {}
-            resources.each do |resource|
-              next unless resource.is_a? ::Netex::StopPlace
-
-              resource&.entrances.each do |entrance|
-                @mapping_entrance_stop_place[entrance.ref] = resource&.id
-              end
-            end
-          end
-          @mapping_entrance_stop_place
+          tag(:parent_id)
         end
 
         def data_source_ref
-          resources.find{ |resource| resource.is_a? ::Netex::StopPlace }.data_source_ref
-        end
-
-        def resources
-          source.resources
+          source.stop_places.first&.data_source_ref
         end
       end
     end

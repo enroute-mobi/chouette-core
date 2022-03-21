@@ -16,7 +16,7 @@ RSpec.describe Chouette::Sync::Entrance do
     let(:code_space) { context.code_space }
 
     let(:xml) do
-      %{
+      <<~XML
         <StopPlace dataSourceRef="FR1-ARRET_AUTO" version="811108" created="2016-10-23T22:00:00Z" changed="2019-04-02T09:43:08Z" id="stop-place-1">
           <Name>North Ave </Name>
           <entrances>
@@ -49,7 +49,7 @@ RSpec.describe Chouette::Sync::Entrance do
           <Width>3</Width>
           <EntranceType>opening</EntranceType>
         </StopPlaceEntrance>
-      }
+      XML
     end
 
     let(:source) do

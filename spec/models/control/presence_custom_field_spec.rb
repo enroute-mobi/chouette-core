@@ -10,7 +10,7 @@ RSpec.describe Control::PresenceCustomField do
       Control::PresenceCustomField::Run.create(
         control_list_run: control_list_run,
         criticity: "warning",
-        options: { target_model: target_model, target_custom_field: target_custom_field },
+        options: { target_model: target_model, target_custom_field_id: target_custom_field_id },
         position: 0
       )
     end
@@ -21,7 +21,7 @@ RSpec.describe Control::PresenceCustomField do
       an_object_having_attributes({
         source: source,
         criticity: "warning",
-        message_attributes: {"target_custom_field" => target_custom_field.to_s}
+        message_attributes: {"target_custom_field" => custom_field_public_name.code.to_s}
       })
     end
 
@@ -39,7 +39,7 @@ RSpec.describe Control::PresenceCustomField do
 
       let(:company) { context.company }
       let(:target_model) { "Company" }
-      let(:target_custom_field) { :public_name }
+      let(:target_custom_field_id) { custom_field_public_name.id }
       let(:source) { company }
 
       before { context.referential.switch }
@@ -81,7 +81,7 @@ RSpec.describe Control::PresenceCustomField do
 
       let(:stop_area) { context.stop_area }
       let(:target_model) { "StopArea" }
-      let(:target_custom_field) { :public_name }
+      let(:target_custom_field_id) { custom_field_public_name.id }
       let(:source) { stop_area }
 
       before { context.referential.switch }

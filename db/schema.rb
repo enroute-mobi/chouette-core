@@ -1550,7 +1550,7 @@ ActiveRecord::Schema.define(version: 2022_03_25_152937) do
     t.datetime "synced_at"
     t.string "permissions", array: true
     t.string "profile"
-    t.string "user_locale", default: "fr_FR"
+    t.string "user_locale", default: "fr"
     t.string "time_zone", limit: 255, default: "Paris"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true

@@ -35,6 +35,8 @@ module Control
     class Run < Control::Base::Run
       include Options
 
+      delegate :custom_field, to: :control
+
       def run
         return unless custom_field
 
@@ -45,6 +47,10 @@ module Control
             source: model,
           })
         end
+      end
+
+      def custom_field
+        workgroup.custom_fields.find_by_id(target_custom_field_id)
       end
 
       def faulty_models

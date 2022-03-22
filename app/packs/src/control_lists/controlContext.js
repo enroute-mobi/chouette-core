@@ -14,7 +14,7 @@ const ControlContextMixin = superclass => class ControlContext extends superclas
 
 	get inputSelector() { return 'control_contexts_attributes' }
 
-	get attributesList() { return ['errors', 'html', 'controls'] }
+	get attributesList() { return ['nodeId', 'errors', 'html', 'controls'] }
 }
 
 export const ControlContext = flow(ResourceMixin, ControlContextMixin)(class {})

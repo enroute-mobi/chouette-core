@@ -14,7 +14,7 @@ const MacroContextMixin = superclass => class MacroContext extends superclass {
 
 	get inputSelector() { return 'macro_contexts_attributes' }
 
-	get attributesList() { return ['errors', 'html', 'macros'] } 
+	get attributesList() { return ['nodeId', 'errors', 'html', 'macros'] } 
 }
 
 export const MacroContext = flow(ResourceMixin, MacroContextMixin)(class {})

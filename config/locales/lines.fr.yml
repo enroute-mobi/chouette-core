@@ -97,6 +97,7 @@ fr:
         id: "ID"
         full_id: "ID complet"
         network_id: "Réseau"
+        network: "Réseau"
         networks:
           name: "Réseau"
         company_id: "Transporteur principal"

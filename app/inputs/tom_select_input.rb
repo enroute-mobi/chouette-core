@@ -6,10 +6,12 @@ class TomSelectInput < SimpleForm::Inputs::CollectionSelectInput
 
     config = options.fetch(:config, {})
 
+    x_init = input_html_options.delete(:"x-init") || ''
+
     merged_input_options = merge_wrapper_options(
       input_html_options.merge(
-        'x-data': '',
-        'x-init': "initTomSelect($el, #{config.to_json})"
+        'x-data': '{ tomSelect: null }',
+        'x-init': "tomSelect = initTomSelect($el, #{config.to_json}); #{x_init}"
       ),
       {}
     )

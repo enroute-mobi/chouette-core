@@ -7,10 +7,16 @@ fr:
         other: "contrôles"
       control/dummy:
         one: Simuler un contrôle
+      control/presence_attribute:
+        one: Présence d’un attribut
     attributes:
       control/base:
         name: Nom
         comments: Commentaire
         criticity: Criticité
+        target_model: Modèle cible
       control/dummy:
         expected_result: Résultat attendu
+      control/presence_attribute:
+        target_attribute: Attribut cible
+        description:  L’attribut sélectionné doit avoir une valeur dans le modèle cible

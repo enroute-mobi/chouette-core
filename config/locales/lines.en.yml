@@ -96,6 +96,7 @@ en:
         id: "ID"
         full_id: "Full ID"
         network_id: "Network"
+        network: "Network"
         networks:
           name: "Network"
         company_id: "Company"

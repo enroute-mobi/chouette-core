@@ -7,10 +7,16 @@ en:
         other: controls
       control/dummy:
         one: Simulate control
+      control/presence_attribute:
+        one: Pesence of attribute
     attributes:
       control/base:
         name: Name
         comments: Comments
         criticity: Criticity
+        target_model: target_model
       control/dummy:
         expected_result: Expected Result
+      control/presence_attribute:
+        target_attribute: Target Attribute
+        description: The specified attribute must have a value in the target model

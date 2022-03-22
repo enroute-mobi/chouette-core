@@ -4,6 +4,7 @@ module Control
     # Could use groups in the future
     [
       Control::Dummy,
+      Control::PresenceAttribute
     ]
   end
 end

@@ -49,7 +49,7 @@ class ConfigBuilder {
           option_create: (data, escape) => (
             `<div class="create">${I18n.t('actions.add')} <strong>${escape(data.input)}</strong>&hellip;</div>`
           ),
-          no_results: () => null
+          no_results: () => null,
         }
       },
       ajax: (select, url) => ({
@@ -66,9 +66,12 @@ class ConfigBuilder {
 }
 
 window.initTomSelect = (select, config) => {
-  if (!Boolean(select.tomselect)) { // if Tom Select has already been initialized on input it raises an error
+  try {
     const tomSelect = new TomSelect(select, ConfigBuilder.call(select, config))
-
     config.lock && tomSelect.lock()
+
+    return tomSelect
+  } catch(e) {
+    return select.tomSelect
   }
 }

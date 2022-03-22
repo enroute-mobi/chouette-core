@@ -1,6 +1,7 @@
 import { flow, omit } from 'lodash'
 import ResourceMixin from '../operations/mixins/resource'
 import CollectionMixin from '../operations/mixins/collection'
+import { nodeId } from '../operations/helpers'
 import { MacroCollection } from './macro'
 
 // Macro Context
@@ -21,6 +22,8 @@ export const MacroContext = flow(ResourceMixin, MacroContextMixin)(class {})
 // Macro Context Collection
 const MacroCollectionMixin = superclass => class MacroContextCollection extends superclass {
 	static get ResourceConstructor() { return MacroContext }
+
+	static nodeIdGenerator = nodeId('macro-context')
 
 	duplicate(macroContext) {
 		const build = object => omit(object.attributes, 'id')

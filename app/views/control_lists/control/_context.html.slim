@@ -9,6 +9,6 @@
 
 	template[x-if="!resource.isDeleted"]
 		div
-			= render 'operations/collection', collection: 'resource.controls'
+			= render 'operations/collection', collection: 'resource.controls', resource_name: 'control'
 
 			= render 'operations/select', **facade.control_select_options('resource.controls')

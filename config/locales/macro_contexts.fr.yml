@@ -1,10 +1,12 @@
 fr:
   activerecord:
     models:
-      macro:
+      macro/context:
         zero:  "Contexte d'instructions"
-        one:   "MContexte d'instructions"
+        one:   "Contexte d'instructions"
         other: "Contexte d'instructions"
+      macro/context/transport_mode:
+        one: Mode de transport
     attributes:
       macro/context:
         name: Nom

@@ -9,6 +9,6 @@
 
 	template[x-if="!resource.isDeleted"]
 		div
-			= render 'operations/collection', collection: 'resource.macros'
+			= render 'operations/collection', collection: 'resource.macros', resource_name: 'macro'
 
 			= render 'operations/select', **facade.macro_select_options('resource.macros')

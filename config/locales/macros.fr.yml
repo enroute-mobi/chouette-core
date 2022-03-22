@@ -32,6 +32,8 @@ fr:
         comments: Commentaire
         target_model: Modèle cible
         options: Options
+      macro/dummy:
+        expected_result: Résultat attendu
       macro/create_code:
         source_attribute: Attribut de la source
         source_pattern: Modèle de source

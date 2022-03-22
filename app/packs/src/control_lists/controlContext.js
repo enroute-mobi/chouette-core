@@ -2,6 +2,7 @@ import { flow, omit } from 'lodash'
 import ResourceMixin from '../operations/mixins/resource'
 import CollectionMixin from '../operations/mixins/collection'
 import { ControlCollection } from './control'
+import { nodeId } from '../operations/helpers'
 
 // Control Context
 const ControlContextMixin = superclass => class ControlContext extends superclass {
@@ -21,6 +22,8 @@ export const ControlContext = flow(ResourceMixin, ControlContextMixin)(class {})
 // Control Context Collection
 const ControlCollectionMixin = superclass => class ControlContextCollection extends superclass {
 	static get ResourceConstructor() { return ControlContext }
+
+	static nodeIdGenerator = nodeId('control-context')
 
 	duplicate(controlContext) {
 		const build = object => omit(object.attributes, 'id')

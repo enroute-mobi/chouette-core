@@ -2,7 +2,7 @@
 - form_options = local_assigns.fetch(:options, {})
 
 = simple_form_for [@workbench, @control_list], facade.form_options.merge(form_options) do |f|
-  .row
+  .row.control_list
     .col-lg-12
       = f.input :name, input_html: { 'x-model': '$store.controlList.name' }
       = f.input :comments, as: :text, input_html: { 'x-model': '$store.controlList.comments' }
@@ -12,11 +12,11 @@
     .simple-separator.mb-5
     .w-full-px-5
 
-      = render 'operations/collection', collection: '$store.controlList.contexts'
+      = render 'operations/collection', collection: '$store.controlList.contexts', resource_name: 'control_context'
 
       template[x-if="!$store.controlList.contexts.isEmpty"]
         .simple-separator.m-5
-      = render 'operations/collection', collection: '$store.controlList.controls'
+      = render 'operations/collection', collection: '$store.controlList.controls', resource_name: 'control'
 
       = render 'operations/select', **facade.control_context_select_options
       = render 'operations/select', **facade.control_select_options('$store.controlList.controls')

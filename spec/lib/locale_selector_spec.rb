@@ -94,4 +94,23 @@ describe LocaleSelector do
 				end
 		end
 	end
+
+	describe '#locale' do
+		it 'should select locale by priority' do
+			allow(subject).to receive(:request_locale) { 'fr' }
+			allow(subject).to receive(:session_locale) { 'en' }
+			allow(subject).to receive(:user_locale) { 'it' }
+			allow(subject).to receive(:default_locale) { 'br' }
+			expect(subject.locale).to eq('fr')
+
+			allow(subject).to receive(:request_locale) { nil }
+			expect(subject.locale).to eq('en')
+
+			allow(subject).to receive(:session_locale) { nil }
+			expect(subject.locale).to eq('it')
+
+			allow(subject).to receive(:user_locale) { nil }
+			expect(subject.locale).to eq('br')
+		end
+	end
 end

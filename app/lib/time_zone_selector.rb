@@ -11,7 +11,7 @@ class TimeZoneSelector
 	end
 
 	def browser_time_zone
-		supported_time_zone(cookies.try(:[], 'browser.timezone'))
+		supported_time_zone(cookies.try(:[], :'browser.timezone'))
 	end
 
 	def user_time_zone
@@ -19,17 +19,17 @@ class TimeZoneSelector
 	end
 
 	def default_time_zone
-		Time.zone_default.name
+		Time.zone_default.tzinfo.identifier
 	end
 
   def time_zone
-		browser_time_zone || user_time_zone || default_time_zone
+		user_time_zone || default_time_zone
   end
 
 	private
 
 	def supported_time_zone value
-		ActiveSupport::TimeZone.new(value)&.name
+		ActiveSupport::TimeZone.new(value)&.tzinfo&.identifier
 	rescue ArgumentError
 	end
 end

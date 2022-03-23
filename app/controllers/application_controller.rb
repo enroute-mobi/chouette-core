@@ -20,7 +20,7 @@ class ApplicationController < ActionController::Base
   end
 
   def set_time_zone
-    Time.zone = TimeZoneSelector.time_zone_for(self)
+    Time.zone = TimeZoneSelector.time_zone_for(cookies, current_user)
   end
 
   def pundit_user

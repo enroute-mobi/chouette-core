@@ -1,4 +1,5 @@
 class User < ApplicationModel
+  extend Enumerize
   # Include default devise modules. Others available are:
   # :token_authenticatable, :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable, :database_authenticatable
 
@@ -40,6 +41,9 @@ class User < ApplicationModel
   validates :organisation, presence: true
   validates :email, presence: true, uniqueness: true
   validates :name, presence: true
+
+  enumerize :user_locale, in: %w(fr en), default: 'fr'
+  enumerize :time_zone, in: TZInfo::Timezone.all_identifiers, default: 'Europe/Paris'
 
   before_validation(:on => :create) do
     self.password ||= Devise.friendly_token.first(6)

@@ -73,3 +73,8 @@ fr:
             permissions:
               must_be_unique: Une permission ne peut pas apparaître deux fois chez un même utilisateur.
               must_be_nonempty: Une permission ne peut pas être une chaine vide.
+  enumerize:
+    user:
+      user_locale:
+        fr: Français
+        en: Anglais

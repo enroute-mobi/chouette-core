@@ -2,6 +2,7 @@ class Control::Context::OperatingPeriod < Control::Context
   option :next_days
 
   validates_presence_of :next_days
+  validates_numericality_of :next_days
 
   class Run < Control::Context::Run
 

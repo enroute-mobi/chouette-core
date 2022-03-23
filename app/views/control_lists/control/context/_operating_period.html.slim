@@ -1,0 +1,5 @@
+div[class="flex items-baseline justify-center p-5 w-full font-bold bg-light-grey"]
+	p = I18n.t('control_contexts.form.operating_period.label.start')
+	.mx-3.w-40
+		input type="number" step="1" name="control_list[control_contexts_attributes][0][next_days]" id="control_list_control_contexts_attributes_0_next_days" class="form-control" x-model="resource.next_days" :disabled="$store.controlList.isShow || resource.isDeleted"
+	p = I18n.t('control_contexts.form.operating_period.label.end')

@@ -1,10 +1,24 @@
 fr:
+  control_contexts:
+    form:
+      operating_period:
+        label:
+          start: Opérant les
+          end: jours suivants
+      transport_mode:
+        label: Quand le mode de transport est
+
   activerecord:
     models:
-      control:
+      control/context:
         zero:  "Contexte d'instructions"
         one:   "Contexte d'instructions"
         other: "Contexte d'instructions"
+      control/context/transport_mode:
+        one: Mode de transport
+      control/context/operating_period:
+        one: Prochains jours de fonctionnement
+
     attributes:
       control/context: &control_context
         name: Nom
@@ -15,3 +29,5 @@ fr:
         <<: *control_context
       control/context/transport_mode/run:
         <<: *transport_mode
+      control/context/operating_period:
+        next_days: Prochains jours

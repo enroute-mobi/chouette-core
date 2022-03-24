@@ -36,7 +36,7 @@ class Export::Base < ApplicationModel
 
   before_save :initialize_fields, on: :create
   def initialize_fields
-    self.token_upload = SecureRandom.urlsafe_base64
+    self.token_upload ||= SecureRandom.urlsafe_base64
   end
 
   after_create :purge_exports
@@ -141,26 +141,6 @@ class Export::Base < ApplicationModel
     update_column :notified_parent_at, Time.now
     publication&.child_change
     true
-  end
-
-  def upload_file(file)
-    # FIXME: See CHOUETTE-207
-    url = if workbench.present?
-            URI.parse upload_workbench_export_url(workbench_id, id, host: Rails.application.config.rails_host)
-          else
-            URI.parse upload_export_url(id, host: Rails.application.config.rails_host)
-          end
-    res = nil
-    filename = File.basename(file.path)
-    content_type = MIME::Types.type_for(filename).first&.content_type
-    File.open(file.path) do |file_content|
-      req = Net::HTTP::Post::Multipart.new(url.path, file: UploadIO.new(file_content, content_type, filename),
-                                                     token: token_upload, max_retries: 3)
-      res = Net::HTTP.start(url.host, url.port) do |http|
-        http.request(req)
-      end
-    end
-    res
   end
 
   def self.model_name

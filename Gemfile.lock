@@ -6,9 +6,10 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/gtfs.git
-  revision: 8c41500e9d21da44b12b7059156e42014345be3b
+  revision: 8826a9b93fe352362171be0805c5332ae212124c
+  branch: CHOUETTE-1904-support-whitespaces-in-csv-headers
   specs:
-    gtfs (0.3.5)
+    gtfs (0.3.6)
       msgpack
       offline-sort
       rubyzip

@@ -13,6 +13,8 @@ fr:
         one:  Présence d’un code
       control/presence_custom_field:
         one: Présence d’un champ personnalisé
+      control/code_format:
+        one: Formatter un code
     attributes:
       control/base:
         name: Nom
@@ -20,6 +22,7 @@ fr:
         criticity: Criticité
         options: Options
         target_model: Modèle cible
+        target_code_space_id: Espace de code cible
       control/dummy:
         expected_result: Résultat attendu
       control/presence_attribute:

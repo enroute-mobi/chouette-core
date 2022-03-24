@@ -6,7 +6,8 @@ module Control
       Control::Dummy,
       Control::PresenceAttribute,
       Control::PresenceCode,
-      Control::PresenceCustomField
+      Control::PresenceCustomField,
+      Control::CodeFormat
     ]
   end
 end

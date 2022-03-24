@@ -16,9 +16,6 @@ RSpec.describe Export::Ara do
     end
 
     before do
-      allow(export).to receive(:upload_file) do |file|
-        export.file = file
-      end
       export.export
       export.reload
     end

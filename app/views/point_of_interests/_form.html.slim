@@ -1,0 +1,48 @@
+= simple_form_for [@workbench, :shape_referential, @point_of_interest], html: {class: 'form-horizontal', id: 'point_of_interest_form'}, wrapper: :horizontal_form  do |f|
+  .row
+    .col-lg-12
+      h2.my-16
+        = t("point_of_interests.form.sections.identification")
+      = f.input :name
+      = f.input :point_of_interest_category,
+        as: :tom_select,
+        collection: @workbench.shape_referential.point_of_interest_categories.all.map { |l| {id: l.id, text: l.name } },
+        input_html: { style: 'width: 100%' },
+        selected: @point_of_interest.point_of_interest_category_id,
+        config: { placeholder: I18n.t('point_of_interests.form.point_of_interest_category_placeholder') }
+      = f.input :url
+  .separator.section_separator
+  .row
+    .col-lg-12
+      h2.my-16
+        = t("point_of_interests.form.sections.localisation")
+      = f.input :position, as: :string
+      = f.input :address
+      = f.input :zip_code
+      = f.input :city_name
+      = f.input :country
+  .separator.section_separator
+  .row
+    .col-lg-12
+      h2.my-16
+        = t("point_of_interests.form.sections.contact")
+      = f.input :email
+      = f.input :phone
+  .separator.section_separator
+  .row
+    .col-lg-12
+      h2.my-16
+        = t("point_of_interests.form.sections.hours")
+  .separator.section_separator
+  .row
+    .col-lg-12
+      h2.my-16
+        = Chouette::StopArea.tmf(:codes)
+      = f.simple_fields_for(:codes) do |codes_form|
+        = render 'code_fields', f: codes_form
+
+      .links.nested-linker
+        = link_to_add_association t('entrances.form.add_code'), f, :codes, class: 'btn btn-primary'
+
+  = cancel_button
+  = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'point_of_interest_form'

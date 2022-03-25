@@ -1,0 +1,47 @@
+fr:
+  point_of_interest_categories:
+    index:
+      title: Catégorie de Point d'intérêts
+    show:
+      title: "%{name}"
+    new:
+      title: "Créer une Catégorie de Point d'intérêt"
+    edit:
+      title: "Editer %{name}"
+    actions:
+      show: "Afficher cette Catégorie de Point d'intérêt"
+      show_poi: "Afficher les Points d'intérêt"
+      new: "Créer une Catégorie de Point d'intérêt"
+      edit: "Editer cette Catégorie de Point d'intérêt"
+      destroy: "Supprimer cette Catégorie de Point d'intérêt"
+      destroy_confirm: "Etes vous sûr de supprimer cette Catégorie de Point d'intérêt ?"
+    search_no_results: "Aucune Catégorie de Point d'intérêts ne correspond à votre recherche"
+    errors:
+    filters:
+  point_of_interest/categories:
+    index:
+      title: Catégorie de Point d'intérêts
+    show:
+      title: "%{name}"
+    actions:
+      show: "Afficher cette Catégorie de Point d'intérêt"
+      show_poi: "Afficher les Points d'intérêt"
+      new: "Créer une Catégorie de Point d'intérêt"
+      edit: "Editer cette Catégorie de Point d'intérêt"
+      destroy: "Supprimer cette Catégorie de Point d'intérêt"
+      destroy_confirm: "Etes vous sûr de supprimer cette Catégorie de Point d'intérêt ?"
+    form:
+      sections:
+        identification: "Identification"
+  activerecord:
+    models:
+      point_of_interest/category:
+        zero:  "Catégorie de Point d'intérêt"
+        one: "Catégorie de Point d'intérêt"
+        other: "Catégories de Point d'intérêts"
+    attributes:
+      point_of_interest/category:
+        name: "Nom"
+        parent: "Categorie parente"
+        updated_at: "Edité le"
+        creator_id: "Créé par"

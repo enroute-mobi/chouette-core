@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_03_14_111039) do
+ActiveRecord::Schema.define(version: 2022_03_16_101826) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -1031,6 +1031,48 @@ ActiveRecord::Schema.define(version: 2022_03_14_111039) do
     t.index ["code"], name: "index_organisations_on_code", unique: true
   end
 
+  create_table "point_of_interest_categories", force: :cascade do |t|
+    t.bigint "shape_referential_id", null: false
+    t.bigint "shape_provider_id", null: false
+    t.bigint "parent_id"
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["parent_id"], name: "index_point_of_interest_categories_on_parent_id"
+    t.index ["shape_provider_id"], name: "index_point_of_interest_categories_on_shape_provider_id"
+    t.index ["shape_referential_id"], name: "index_point_of_interest_categories_on_shape_referential_id"
+  end
+
+  create_table "point_of_interest_hours", force: :cascade do |t|
+    t.bigint "point_of_interest_id", null: false
+    t.time "opening_time_of_day", null: false
+    t.time "closing_time_of_day", null: false
+    t.bit "week_days", limit: 7, default: "1111111"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["point_of_interest_id"], name: "index_point_of_interest_hours_on_point_of_interest_id"
+  end
+
+  create_table "point_of_interests", force: :cascade do |t|
+    t.bigint "shape_referential_id", null: false
+    t.bigint "shape_provider_id", null: false
+    t.bigint "point_of_interest_category_id", null: false
+    t.string "name", null: false
+    t.string "url"
+    t.geography "position", limit: {:srid=>4326, :type=>"st_point", :geographic=>true}
+    t.string "address"
+    t.string "zip_code"
+    t.string "city_name"
+    t.string "country"
+    t.string "email"
+    t.string "phone"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["point_of_interest_category_id"], name: "index_point_of_interests_on_point_of_interest_category_id"
+    t.index ["shape_provider_id"], name: "index_point_of_interests_on_shape_provider_id"
+    t.index ["shape_referential_id"], name: "index_point_of_interests_on_shape_referential_id"
+  end
+
   create_table "publication_api_keys", force: :cascade do |t|
     t.string "name"
     t.string "token"
@@ -1651,6 +1693,7 @@ ActiveRecord::Schema.define(version: 2022_03_14_111039) do
   add_foreign_key "journey_patterns_stop_points", "stop_points", name: "jpsp_stoppoint_fkey", on_delete: :cascade
   add_foreign_key "macro_runs", "macro_context_runs"
   add_foreign_key "macros", "macro_contexts"
+  add_foreign_key "point_of_interest_categories", "point_of_interest_categories", column: "parent_id"
   add_foreign_key "referentials", "referential_suites"
   add_foreign_key "routes", "routes", column: "opposite_route_id", name: "route_opposite_route_fkey"
   add_foreign_key "stop_areas", "stop_areas", column: "parent_id", name: "area_parent_fkey", on_delete: :nullify

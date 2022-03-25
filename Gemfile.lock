@@ -6,9 +6,9 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/gtfs.git
-  revision: 8c41500e9d21da44b12b7059156e42014345be3b
+  revision: 7cd0f912d4bc449bfed252d969a1ec2ddc58a0fd
   specs:
-    gtfs (0.3.5)
+    gtfs (0.3.6)
       msgpack
       offline-sort
       rubyzip

@@ -110,6 +110,11 @@ en:
       title: "Manage parent of stop area %{stop_area}"
     add_children:
       title: "Manage children of stop area %{stop_area}"
+  companies:
+    errors:
+      referent_id:
+        a_referent_cannot_have_a_referent: "A referent can't have a referent"
+        an_object_used_as_referent_must_be_flagged_as_referent: "A company used as referent must be flagged as referent"
   activerecord:
     models:
       stop_area:

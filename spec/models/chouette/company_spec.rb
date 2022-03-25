@@ -86,4 +86,57 @@ describe Chouette::Company, :type => :model do
 
   end
 
+  describe "#referent" do
+    let(:context) do
+      Chouette.create do
+        line_provider do
+          company :first
+          company :second, is_referent: true
+        end
+      end
+    end
+
+    let(:first_company) { context.company(:first) }
+    let(:second_company) { context.company(:second) }
+
+    subject { first_company }
+
+    context "when a company has a referent" do
+      before { first_company.referent = second_company }
+
+      it { is_expected.to be_valid }
+    end
+
+    context "when a referent can not have a referent" do
+      before do
+        first_company.update is_referent: true
+        first_company.referent = second_company
+      end
+
+      it { is_expected.not_to be_valid }
+
+      describe "#errors" do
+        subject { first_company.errors }
+        before { first_company.validate }
+
+        it { is_expected.to have_key(:referent_id) }
+      end
+    end
+
+    context "when a company used as referent must be flagged as referent" do
+      before do
+        second_company.update is_referent: false
+        first_company.referent = second_company
+      end
+
+      it { is_expected.not_to be_valid }
+
+      describe "#errors" do
+        subject { first_company.errors }
+        before { first_company.validate }
+
+        it { is_expected.to have_key(:referent_id) }
+      end
+    end
+  end
 end

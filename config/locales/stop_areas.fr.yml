@@ -111,6 +111,11 @@ fr:
       title: "Gérer le parent de l'arrêt %{stop_area}"
     add_children:
       title: "Gérer les fils de l'arrêt %{stop_area}"
+  companies:
+    errors:
+      referent_id:
+        a_referent_cannot_have_a_referent: "Un référent ne peut pas avoir de référent"
+        an_object_used_as_referent_must_be_flagged_as_referent: "Une entreprise utilisée comme référent doit être signalée comme référent"
   activerecord:
     models:
       stop_area:

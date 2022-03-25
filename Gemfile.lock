@@ -1,6 +1,7 @@
 GIT
   remote: https://bitbucket.org/enroute-mobi/ara-file.git
-  revision: e8d5de169e3f465c59a1caaf28e2f70007617dcc
+  revision: a122c5dd09e008a5af78d1891c6e3d79f11819a3
+  branch: ARA-1043-support-ara-stop-visit-into-ara-file
   specs:
     ara-file (0.1.0)
 

@@ -29,4 +29,20 @@ RSpec.describe Source do
       expect(retrieval.checksum_changed?).to eq(true)
     end
   end
+
+  describe "#downloader_class" do
+    subject { source.downloader_class }
+    context "when downloader_type is nil" do
+      before { source.downloader_type = nil }
+      it { is_expected.to eq(Source::Downloader::URL) }
+    end
+    context "when downloader_type is :direct" do
+      before { source.downloader_type = :direct }
+      it { is_expected.to eq(Source::Downloader::URL) }
+    end
+    context "when downloader_type is :french_nap" do
+      before { source.downloader_type = :french_nap }
+      it { is_expected.to eq(Source::Downloader::FrenchNap) }
+    end
+  end
 end

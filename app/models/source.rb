@@ -31,7 +31,7 @@ class Source < ApplicationModel
 
   def downloader_class
     if downloader_type.present? && downloader_type != :direct
-      Downloader.const_get(downloader_type)
+      Downloader.const_get(downloader_type.camelcase)
     else
       Downloader::URL
     end
@@ -65,7 +65,7 @@ class Source < ApplicationModel
       end
     end
 
-    class FrenchNAP < Base
+    class FrenchNap < Base
       def download(path)
         URL.new(link).download(path)
       end
@@ -77,7 +77,7 @@ class Source < ApplicationModel
       def link
         # New layout : some download links are in a "div.resource-actions" class element, others just in a table
         # We prefer to use table links because we have absolute url and never relative url
-        l = page.css('table') if l.empty?
+        l = page.css('table')
         l.css('a').first["href"]
       end
     end

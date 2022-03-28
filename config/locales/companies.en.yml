@@ -40,6 +40,8 @@ en:
         code: "Code"
         time_zone: "Time zone"
         default_language: "Default language"
+        is_referent: "Referent"
+        referent_id: "Referent Company"
         objectid: "External identifier"
         object_version: "Version"
         created_at: Created at

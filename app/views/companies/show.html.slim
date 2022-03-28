@@ -30,3 +30,6 @@
         - if @company.has_customer_service_contact?
           - attributes =  %w(name email phone url more).map { |attr| [Chouette::Company.tmf("customer_service_contact_#{attr}"), @company.send("customer_service_contact_#{attr}")]}.to_h
           = definition_list Chouette::Company.tmf(:customer_service_contact), attributes
+
+        = simple_block_for @company, title: Chouette::Company.tmf('referent_id') do |d|
+          = d.attribute :referent, as: :association, link: ->(referent) { workbench_stop_area_referential_stop_area_path(@workbench, referent) }

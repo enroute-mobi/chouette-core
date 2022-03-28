@@ -40,6 +40,8 @@ fr:
         code: "Code"
         time_zone: "Fuseau horaire"
         default_language: "Langue par défaut"
+        is_referent: "Référent"
+        referent_id: "Transporteur Référent"
         objectid: "Identifiant externe"
         object_version: "Version"
         created_at: "Créé le"

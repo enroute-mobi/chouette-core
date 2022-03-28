@@ -42,6 +42,7 @@ fr:
         default_language: "Langue par défaut"
         is_referent: "Référent"
         referent_id: "Transporteur Référent"
+        specific_companies: "Transporteur particuliers"
         objectid: "Identifiant externe"
         object_version: "Version"
         created_at: "Créé le"

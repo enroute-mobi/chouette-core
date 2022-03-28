@@ -31,5 +31,23 @@
           - attributes =  %w(name email phone url more).map { |attr| [Chouette::Company.tmf("customer_service_contact_#{attr}"), @company.send("customer_service_contact_#{attr}")]}.to_h
           = definition_list Chouette::Company.tmf(:customer_service_contact), attributes
 
-        = simple_block_for @company, title: Chouette::Company.tmf('referent_id') do |d|
-          = d.attribute :referent, as: :association, link: ->(referent) { workbench_stop_area_referential_stop_area_path(@workbench, referent) }
+        = simple_block_for @company, title: Chouette::Company.tmf('is_referent') do |d|
+          - if @company.is_referent
+            = d.attribute :specific_companies, as: :count, value: @company.specific_companies, link: workbench_line_referential_companies_path(@workbench, :'q[referent_id_eq]' => @company.id)
+            - if @company.specific_companies.present?
+              table.table.table-bordered.mt-5
+                thead
+                  tr
+                    th scope="col"
+                      = Chouette::StopArea.tmf('id')
+                    th scope="col"
+                      = Chouette::StopArea.tmf('name')
+                tbody
+                  - @company.specific_companies.limit(5).each do |c|
+                    tr
+                      td
+                        = c.get_objectid.short_id
+                      td
+                        = link_to(c.name, workbench_line_referential_company_path(@workbench, c))
+          - else
+            = d.attribute :referent, as: :association, link: ->(referent) { workbench_line_referential_company_path(@workbench, referent) }

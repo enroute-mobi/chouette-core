@@ -199,10 +199,10 @@ RSpec.describe Export::NetexGeneric do
 
         let(:decorator) { Export::NetexGeneric::Lines::Decorator.new line }
 
-        let(:active_from) { "2022-03-16".to_datetime }
+        let(:active_from) { "2022-03-16".to_date }
         let(:active_until) { active_from + 3 }
-        let(:company_first) { context.company(:first) }
-        let(:company_second_id) { context.company(:second).id}
+        let(:first_company) { context.company(:first) }
+        let(:second_company_id) { context.company(:second).id}
         let(:network) { context.network }
         let(:objectid) { 'chouette:Line:497d415e-fe15-46cf-9219-ee8bed76c95c:LOC' }
         let(:code_space) { context.code_space }
@@ -212,14 +212,14 @@ RSpec.describe Export::NetexGeneric do
         before do
           line.update(
             objectid: objectid,
-            company: company_first,
+            company: first_company,
             network: network,
             active_from: active_from,
             active_until: active_until,
             color: 'FF0000',
             text_color: 'FFFFFF',
             deactivated: true,
-            secondary_company_ids: [company_second_id],
+            secondary_company_ids: [second_company_id],
           )
           line.codes.create(code_space: code_space, value: "code_value")
         end
@@ -263,13 +263,25 @@ RSpec.describe Export::NetexGeneric do
         context "when netex_key is operator_ref" do
           let(:netex_key) { :operator_ref }
 
-          it { expect(subject.ref).to eq(company_first.objectid) }
+          it { expect(subject.ref).to eq(first_company.objectid) }
+
+          context "when the line has no company" do
+            let(:first_company) { nil }
+
+            it { expect(subject).to be_nil }
+          end
         end
 
         context "when netex_key is represented_by_group_ref" do
           let(:netex_key) { :represented_by_group_ref }
 
           it { expect(subject.ref).to eq(network.objectid) }
+
+          context "when the line has no network" do
+            let(:network) { nil }
+
+            it { expect(subject).to be_nil }
+          end
         end
 
         context "when netex_key is presentation" do
@@ -300,14 +312,13 @@ RSpec.describe Export::NetexGeneric do
 
         context "when netex_key is valid_between" do
           let(:netex_key) { :valid_between }
-          let(:line_active_from) { active_from.strftime("%Y-%m-%dT%H:%M:%S") }
-          let(:line_active_until) { active_until.strftime("%Y-%m-%dT%H:%M:%S") }
           let(:netex_from_date) { subject.from_date.strftime("%Y-%m-%dT%H:%M:%S") }
           let(:netex_to_date) { subject.to_date.strftime("%Y-%m-%dT%H:%M:%S") }
 
-          it { expect(netex_from_date).to eq(line_active_from) }
-          it { expect(netex_to_date).to eq(line_active_until) }
+          it { expect(netex_from_date).to eq("2022-03-16T00:00:00") }
+          it { expect(netex_to_date).to eq("2022-03-20T00:00:00") }
         end
+
       end
     end
   end

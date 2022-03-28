@@ -1,0 +1,49 @@
+en:
+  point_of_interest_categories:
+    index:
+      title: Point of interest categories
+    show:
+      title: "%{name}"
+    new:
+      title: "Create a Point of interest category"
+    edit:
+      title: "Edit %{name}"
+    actions:
+      show: "Show this Point of interest category"
+      show_poi: "Show Point of interests"
+      new: "Create a Point of interest category"
+      edit: "Edit this Point of interest category"
+      destroy: "Delete this Point of interest category"
+      destroy_confirm: "Are you sure you want to delete this Point of interest Category ?"
+    search_no_results: "No Point of interest category matches your search"
+    errors:
+    filters:
+  point_of_interest/categories:
+    index:
+      title: Point of interest categories
+    show:
+      title: "%{name}"
+    actions:
+      show: "Show this Point of interest category"
+      show_poi: "Show Point of interests"
+      new: "Create a Point of interest category"
+      edit: "Edit this Point of interest category"
+      destroy: "Delete this Point of interest category"
+      destroy_confirm: "Are you sure you want to delete this Point of interest Category ?"
+    form:
+      sections:
+        identification: "Identification"
+  activerecord:
+    models:
+      point_of_interest/category:
+        zero:  "Point of interest category"
+        one: "Point of interest category"
+        other: "Point of interest categories"
+    attributes:
+      point_of_interest/category:
+        name: "Name"
+        parent: "Parent Category"
+        parent_id: "Parent Category"
+        updated_at: "Updated at"
+        creator_id: "Create by"
+        shape_provider: "Topological Provider"

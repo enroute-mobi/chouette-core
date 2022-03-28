@@ -10,7 +10,7 @@ class PointOfInterestCategoryPolicy < ApplicationPolicy
   end
 
   def destroy?
-    user.has_permission?('point_of_interest_categories.destroy')
+    user.has_permission?('point_of_interest_categories.destroy') && !record.used?
   end
 
   def update?

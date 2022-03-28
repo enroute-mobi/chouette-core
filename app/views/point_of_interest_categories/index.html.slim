@@ -18,8 +18,15 @@
                 link_to: lambda do |point_of_interest_category| \
                 workbench_shape_referential_point_of_interest_category_path( \
                     @workbench, \
-                    point_of_interest_category \
+                    point_of_interest_category\
                   ) \
+                end \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :parent, \
+                sortable: false, \
+                attribute: lambda do |point_of_interest_category| \
+                  link_to_if_i_can(point_of_interest_category.parent.name, [@workbench, :shape_referential, point_of_interest_category.parent]) if point_of_interest_category.parent  \
                 end \
               ), \
               TableBuilderHelper::Column.new( \

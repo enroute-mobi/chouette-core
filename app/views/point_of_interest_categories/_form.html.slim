@@ -4,7 +4,13 @@
       h2.my-16
         = t("point_of_interest_categories.form.sections.identification")
       = f.input :name
-      / = f.input :parent_id
+      = f.input :parent_id,
+        as: :tom_select,
+        collection: @workbench.shape_referential.point_of_interest_categories.all.map { |l| {id: l.id, text: l.name } },
+        input_html: { style: 'width: 100%' },
+        selected: @point_of_interest_category.parent_id,
+        config: { placeholder: I18n.t('point_of_interests.form.point_of_interest_category_placeholder') }
+      = f.association :shape_provider, as: :select, collection: @workbench.shape_providers, include_blank: false, label_method: :short_name
   .separator.section_separator
   .row
     .col-lg-12

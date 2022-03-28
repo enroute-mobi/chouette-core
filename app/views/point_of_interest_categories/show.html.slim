@@ -7,7 +7,7 @@
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = simple_block_for @point_of_interest_category, title: t('point_of_interest_categories.form.sections.identification') do |d|
           = d.attribute :name
-          / = d.attribute :parent_id, as: :association, link: workbench_shape_referential_point_of_interest_category_path(@workbench, @point_of_interest_category.parent_id)
+          = d.attribute :parent, as: :association, link: ->(category) { workbench_shape_referential_point_of_interest_category_path(@workbench, category) }
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = simple_block_for @stop_area, title: Chouette::StopArea.tmf(:codes) do |d|

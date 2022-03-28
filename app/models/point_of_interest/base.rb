@@ -8,7 +8,7 @@ module PointOfInterest
     belongs_to :shape_referential, required: true
     belongs_to :shape_provider, required: true
 
-    belongs_to :point_of_interest_category, class_name: "PointOfInterest::Category", optional: false, inverse_of: :point_of_interests
+    belongs_to :point_of_interest_category, class_name: "PointOfInterest::Category", optional: false, inverse_of: :point_of_interests, required: true
     belongs_to :point_of_interest_hour, class_name: "PointOfInterest::Hour", optional: true, inverse_of: :point_of_interests
 
     has_many :codes, as: :resource, dependent: :delete_all

@@ -61,6 +61,8 @@ class PointOfInterestCategoriesController < ChouetteController
       :name,
       :created_at,
       :updated_at,
+      :parent_id,
+      :shape_provider_id,
       codes_attributes: [:id, :code_space_id, :value, :_destroy],
     )
   end

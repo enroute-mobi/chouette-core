@@ -7,7 +7,7 @@ fr:
     new:
       title: "Créer une Catégorie de Point d'intérêt"
     edit:
-      title: "Editer %{name}"
+      title: "Edit %{name}"
     actions:
       show: "Afficher cette Catégorie de Point d'intérêt"
       show_poi: "Afficher les Points d'intérêt"
@@ -43,5 +43,7 @@ fr:
       point_of_interest/category:
         name: "Nom"
         parent: "Categorie parente"
+        parent_id: "Categorie parente"
         updated_at: "Edité le"
         creator_id: "Créé par"
+        shape_provider: "Fournisseur Topologique"

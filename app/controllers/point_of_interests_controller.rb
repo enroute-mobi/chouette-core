@@ -66,7 +66,8 @@ class PointOfInterestsController < ChouetteController
       :phone,
       :created_at,
       :updated_at,
-      :point_of_interest_category,
+      :point_of_interest_category_id,
+      :shape_provider_id,
       codes_attributes: [:id, :code_space_id, :value, :_destroy],
     )
   end

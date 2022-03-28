@@ -7,8 +7,8 @@
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = simple_block_for @point_of_interest, title: t('point_of_interest.form.sections.identification') do |d|
           = d.attribute :name
-          = d.attribute :url
-          = d.attribute :point_of_interest_category_id
+          = d.attribute :url, link: @point_of_interest.url
+          = d.attribute :point_of_interest_category, as: :association, link: ->(category) { workbench_shape_referential_point_of_interest_category_path(@workbench, category) }
           = d.attribute :position
           = d.attribute :address
           = d.attribute :zip_code

@@ -36,6 +36,7 @@ fr:
       point_of_interest:
         name: "Nom"
         url: "Url"
+        point_of_interest_category_id: "Catégories"
         point_of_interest_category: "Catégories"
         position: "Coordonnées"
         address: "Adresse"
@@ -44,5 +45,6 @@ fr:
         country: "Pays"
         email: "Email"
         phone: "Téléphone"
+        shape_provider: "Fournisseur Topologique"
         updated_at: "Edité le"
         creator_id: "Créé par"

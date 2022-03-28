@@ -23,6 +23,17 @@
                 end \
               ), \
               TableBuilderHelper::Column.new( \
+                key: :point_of_interest_category, \
+                attribute: Proc.new { |n| n.try(:point_of_interest_category).try(:name) }, \
+                sortable: false, \
+                link_to: lambda do |point_of_interest| \
+                workbench_shape_referential_point_of_interest_category_path( \
+                    @workbench, \
+                    point_of_interest.point_of_interest_category\
+                  ) \
+                end \
+              ), \
+              TableBuilderHelper::Column.new( \
                 key: :updated_at, \
                 attribute: Proc.new { |n| l(n.updated_at, format: :short_with_time) if n.updated_at }, \
                 sortable: false,\

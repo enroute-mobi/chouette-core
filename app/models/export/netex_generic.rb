@@ -407,11 +407,11 @@ class Export::NetexGeneric < Export::Base
       end
 
       def operator_ref
-        Netex::Reference.new(company&.objectid, type: 'OperatorRef')
+        Netex::Reference.new(company.objectid, type: 'OperatorRef') if company
       end
 
       def represented_by_group_ref
-        Netex::Reference.new(network.objectid, type: 'NetworkRef')
+        Netex::Reference.new(network.objectid, type: 'NetworkRef') if network
       end
 
     end

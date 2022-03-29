@@ -2,7 +2,7 @@ RSpec.describe User, :type => :model do
   # it { should validate_uniqueness_of :email }
   # it { should validate_presence_of :name }
   it { should enumerize(:user_locale).in(*I18n.available_locales) }
-  it { should enumerize(:time_zone).in(*ActiveSupport::TimeZone.all.map { |tz| tz.tzinfo.identifier }) }
+  it { should enumerize(:time_zone).in(*TZInfo::Timezone.all_identifiers) }
 
   describe "#destroy" do
     let!(:organisation){create(:organisation)}

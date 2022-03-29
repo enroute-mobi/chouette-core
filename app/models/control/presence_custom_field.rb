@@ -5,17 +5,6 @@ module Control
     option :target_custom_field_id
 
     validates :target_model, :target_custom_field_id, presence: true
-    validate :custom_field_is_present_in_workgroup
-
-    def custom_field
-      workgroup.custom_fields.find_by_id(target_custom_field_id)
-    end
-
-    private
-
-    def custom_field_is_present_in_workgroup
-      errors.add(:target_custom_field_id, :invalid) unless custom_field
-    end 
 
     class Run < Control::Base::Run
       option :target_model

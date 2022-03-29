@@ -1,10 +1,10 @@
 class Control::Context::OperatingPeriod < Control::Context
   option :next_days
 
-  validates_presence_of :next_days
-  validates_numericality_of :next_days
+  validates :next_days, numericality: { only_integer: true, greater_than: 0, allow_nil: false }
 
   class Run < Control::Context::Run
+    option :next_days
 
     def vehicle_journeys
       context.vehicle_journeys.with_matching_timetable data_range
@@ -73,7 +73,7 @@ class Control::Context::OperatingPeriod < Control::Context
 
     def data_range
       date = Date.current
-      date..(date + options[:next_days])
+      date..(date + next_days)
     end
   end
 end

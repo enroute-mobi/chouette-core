@@ -39,7 +39,7 @@ RSpec.describe Control::Context::OperatingPeriod::Run do
     Control::Context::OperatingPeriod.create!(
       name: "Control Context OperatingPeriod 1",
       control_list: control_list,
-      options: { next_days: 10 }
+      next_days: 10
     )
   end
 
@@ -47,7 +47,7 @@ RSpec.describe Control::Context::OperatingPeriod::Run do
    Control::Context::OperatingPeriod.create!(
      name: "Control Context OperatingPeriod 2",
      control_list: control_list,
-     options: { next_days: 50 }
+     next_days: 50
    )
   end
 

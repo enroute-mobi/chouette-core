@@ -32,6 +32,6 @@ class LocaleSelector
 	private
 
 	def supported_locale(value)
-		value if available_locales.include?(value)
+		value&.to_sym if available_locales.include?(value.to_sym)
 	end
 end

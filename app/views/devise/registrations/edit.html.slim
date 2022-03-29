@@ -33,10 +33,8 @@
                 include_blank: false
 
               = f.input :time_zone,
-                as: :grouped_tom_select,
-                label_method: :name,
-                value_method: :name,
-                collection: ActiveSupport::TimeZone.all.map { |tz| OpenStruct.new(name: tz.tzinfo.name, group: tz.formatted_offset) }.group_by(&:group),
+                as: :tom_select,
+                collection: TZInfo::Timezone.all_identifiers.sort.map { |i| { id: i, text: i} },
                 include_blank: false
 
             = cancel_button

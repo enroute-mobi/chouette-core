@@ -12,6 +12,14 @@ class CompaniesController < ChouetteController
   respond_to :json
   respond_to :js, :only => :index
 
+  def autocomplete
+    scope = line_referential.companies
+    scope = scope.referent_only if params[:referent_only]
+    args  = [].tap{|arg| 4.times{arg << "%#{params[:q]}%"}}
+    @companies = scope.where("unaccent(name) ILIKE unaccent(?) OR unaccent(short_name) ILIKE unaccent(?) OR registration_number ILIKE ? OR objectid ILIKE ?", *args).limit(50)
+    @companies
+  end
+
   def index
     index! do |format|
       format.html {

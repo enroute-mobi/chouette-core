@@ -119,7 +119,9 @@ ChouetteIhm::Application.routes.draw do
           end
         end
       end
-      resources :companies
+      resources :companies do
+        get :autocomplete, on: :collection
+      end
       resources :networks
       resources :line_notices
     end

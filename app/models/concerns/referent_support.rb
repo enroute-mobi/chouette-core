@@ -29,4 +29,10 @@ module ReferentSupport
       !referent?
     end
   end
+
+  module ClassMethods
+    def referent_only
+      where is_referent: true
+    end
+  end
 end

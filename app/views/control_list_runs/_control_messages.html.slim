@@ -1,8 +1,5 @@
 - messages = control_run.control_messages.paginate(page: params[:page], per_page: 10)
 
-.definition-list
-	.dl-head
-		= I18n.t('other', scope: 'activerecord.models.control/message').capitalize
 - if messages.any?
 	= table_builder_2 messages, *facade.message_table_params
 

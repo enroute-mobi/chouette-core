@@ -1,5 +1,5 @@
-.w-full x-data=("{ showDetails: false, showMessages: false }")
-	.flex.items-center.w-full.mb-8
+.w-full.mt-md.mb-md x-data=("{ showDetails: false, showMessages: false }")
+	.flex.items-center.w-full
 		button @click="showDetails = ! showDetails" type="button" class="flex items-center p-3 pl-3 mr-3 font-bold text-white bg-enroute-chouette-primary rounded cursor-pointer  hover:text-indigo-100"
 			<span class="text-3xl w-4" x-text="showDetails ? '-' : '+'">+</span>
 		

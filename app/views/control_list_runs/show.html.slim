@@ -23,9 +23,9 @@
           = d.attribute :ended_at, as: :datetime
 
     
-    .flex.flex-col.items-center.w75.ml-auto.mr-auto
-      .definition-list
-        .dl-head.w-full
+    .flex.flex-col.items-center.w-full.ml-auto.mr-auto
+      .definition-list.w-full
+        .dl-head  
           = I18n.t('other', scope: 'activerecord.models.control/run').capitalize
       
       - @control_list_run.control_runs.each do |control_run|

@@ -22,9 +22,9 @@
           = d.attribute :started_at, as: :datetime
           = d.attribute :ended_at, as: :datetime
 
-    .flex.flex-col.items-center.w75.ml-auto.mr-auto
-      .definition-list
-        .dl-head.w-full
+    .flex.flex-col.items-center.w-full.ml-auto.mr-auto
+      .definition-list.w-full
+        .dl-head
           = I18n.t('other', scope: 'activerecord.models.macro/base/run').capitalize
 
       - @macro_list_run.macro_runs.each do |macro_run|

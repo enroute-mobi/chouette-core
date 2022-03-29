@@ -33,8 +33,8 @@
 
         = simple_block_for @company, title: Chouette::Company.tmf('is_referent') do |d|
           - if @company.is_referent
-            = d.attribute :specific_companies, as: :count, value: @company.specific_companies, link: workbench_line_referential_companies_path(@workbench, :'q[referent_id_eq]' => @company.id)
-            - if @company.specific_companies.present?
+            = d.attribute :particulars, as: :count, value: @company.particulars, link: workbench_line_referential_companies_path(@workbench, :'q[referent_id_eq]' => @company.id)
+            - if @company.particulars.present?
               table.table.table-bordered.mt-5
                 thead
                   tr
@@ -43,7 +43,7 @@
                     th scope="col"
                       = Chouette::StopArea.tmf('name')
                 tbody
-                  - @company.specific_companies.limit(5).each do |c|
+                  - @company.particulars.limit(5).each do |c|
                     tr
                       td
                         = c.get_objectid.short_id

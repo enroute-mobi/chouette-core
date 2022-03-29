@@ -42,7 +42,7 @@ fr:
         default_language: "Langue par défaut"
         is_referent: "Référent"
         referent_id: "Transporteur Référent"
-        specific_companies: "Transporteur particuliers"
+        particulars: "Transporteur particuliers"
         objectid: "Identifiant externe"
         object_version: "Version"
         created_at: "Créé le"
@@ -85,6 +85,7 @@ fr:
             referent_id:
               a_referent_cannot_have_a_referent: "Un référent ne peut pas avoir de référent"
               an_object_used_as_referent_must_be_flagged_as_referent: "Un transporteur utilisé comme référent doit être signalée comme référent"
+              the_particulars_collection_should_be_empty: "The particulars collection should be empty when the model is not a referent"
   formtastic:
     titles:
       company:

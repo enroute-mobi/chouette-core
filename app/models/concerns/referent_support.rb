@@ -15,6 +15,10 @@ module ReferentSupport
       if referent.present? && !referent.referent?
         errors.add :referent_id, :an_object_used_as_referent_must_be_flagged_as_referent
       end
+
+      if particular? && particulars.present?
+        errors.add :referent_id, :the_particulars_collection_should_be_empty
+      end
     end
 
     def referent?

@@ -83,9 +83,10 @@ fr:
         company:
           attributes:
             referent_id:
-              a_referent_cannot_have_a_referent: "Un référent ne peut pas avoir de référent"
-              an_object_used_as_referent_must_be_flagged_as_referent: "Un transporteur utilisé comme référent doit être signalée comme référent"
-              the_particulars_collection_should_be_empty: "The particulars collection should be empty when the model is not a referent"
+              a_referent_cannot_have_a_referent: "Un transporteur référent ne peut pas avoir de référent"
+              an_object_used_as_referent_must_be_flagged_as_referent: "Un transporteur utilisé comme référent doit être signalé comme référent"
+            is_referent:
+              the_particulars_collection_should_be_empty: "Un transporteur non-référent ne peut avoir des transporteurs particuliers"
   formtastic:
     titles:
       company:

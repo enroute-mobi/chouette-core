@@ -17,7 +17,7 @@ module ReferentSupport
       end
 
       if particular? && particulars.present?
-        errors.add :referent_id, :the_particulars_collection_should_be_empty
+        errors.add :is_referent, :the_particulars_collection_should_be_empty
       end
     end
 

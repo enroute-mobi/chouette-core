@@ -2,10 +2,10 @@ module ReferentSupport
   extend ActiveSupport::Concern
 
   included do
-    belongs_to :referent, class_name: class_name
+    belongs_to :referent, class_name: name
     validate :valid_referent
 
-    has_many :particulars, class_name: class_name, foreign_key: 'referent_id'
+    has_many :particulars, class_name: name, foreign_key: 'referent_id'
 
     def valid_referent
       if referent_id.present? && referent?
@@ -27,12 +27,6 @@ module ReferentSupport
 
     def particular?
       !referent?
-    end
-  end
-
-  module ClassMethods
-    def class_name
-      self.name
     end
   end
 end

@@ -29,7 +29,7 @@ module Control
     end
 
     def workgroup
-      control_list.workbench&.workgroup
+      control_list&.workbench&.workgroup
     end
 
     class Run < Control::Base::Run

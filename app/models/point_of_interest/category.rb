@@ -28,7 +28,6 @@ module PointOfInterest
     private
 
     def define_shape_referential
-      # TODO Improve performance ?
       self.shape_referential ||= shape_provider&.shape_referential
     end
   end

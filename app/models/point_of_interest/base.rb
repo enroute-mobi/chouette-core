@@ -17,6 +17,7 @@ module PointOfInterest
     validates :point_of_interest_category, presence: true
     validates_format_of :position_input, :with => %r{\A *-?(0?[0-9](\.[0-9]*)?|[0-8][0-9](\.[0-9]*)?|90(\.[0]*)?) *\, *-?(0?[0-9]?[0-9](\.[0-9]*)?|1[0-7][0-9](\.[0-9]*)?|180(\.[0]*)?) *\Z}, allow_nil: true, allow_blank: true
 
+    before_validation :define_shape_referential, on: :create
     before_validation :position_from_input
     def position_from_input
       PositionInput.new(@position_input).change_position(self)
@@ -41,6 +42,12 @@ module PointOfInterest
     end
     def latitude
       position&.y
+    end
+
+    private
+
+    def define_shape_referential
+      self.shape_referential ||= shape_provider&.shape_referential
     end
 
   end

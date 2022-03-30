@@ -1,5 +1,5 @@
 describe TimeZoneSelector do
-	subject { TimeZoneSelector.new(nil, nil) }
+	subject { TimeZoneSelector.new }
 
 	describe "#browser_time_zone" do
 

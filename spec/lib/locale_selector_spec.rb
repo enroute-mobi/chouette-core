@@ -11,7 +11,7 @@ describe LocaleSelector do
 		end
 
 		context "when params[:lang] is not defined" do
-			before { allow(subject).to receive(:params) { {} } }
+			before { allow(subject).to receive(:params) { ActionController::Parameters.new } }
 
 			it 'should be nil' do
 				expect(subject.request_locale).to be_nil
@@ -19,16 +19,16 @@ describe LocaleSelector do
 		end
 
 		context "when params[:lang] is a not supported locale" do
-			before { allow(subject).to receive(:params) { { 'lang': 'dummy' } } }
+			before { allow(subject).to receive(:params) { ActionController::Parameters.new(lang: 'dummy') } }
 				it 'should be nil' do
 					expect(subject.request_locale).to be_nil
 				end
 		end
 
 		context "when params[:lang] is 'fr'" do
-			before { allow(subject).to receive(:params) { { 'lang': 'fr' } } }
+			before { allow(subject).to receive(:params) { ActionController::Parameters.new(lang: 'fr') } }
 				it "should be 'fr'" do
-					expect(subject.request_locale).to be_nil
+					expect(subject.request_locale).to eq(:fr)
 				end
 		end
 	end
@@ -59,7 +59,7 @@ describe LocaleSelector do
 		context "when session[:language] is 'fr'" do
 			before { allow(subject).to receive(:session) { { language: 'fr' } } }
 				it "should be 'fr'" do
-					expect(subject.session_locale).to be_nil
+					expect(subject.session_locale).to eq(:fr)
 				end
 		end
 	end
@@ -88,9 +88,9 @@ describe LocaleSelector do
 		end
 
 		context "when current_user#user_locale is 'fr'" do
-			before { allow(subject).to receive(:current_user) { instance_double('User', user_locale: 'fr') } }
+			before { allow(subject).to receive(:user) { instance_double('User', user_locale: 'fr') } }
 				it "should be 'fr'" do
-					expect(subject.user_locale).to be_nil
+					expect(subject.user_locale).to eq(:fr)
 				end
 		end
 	end

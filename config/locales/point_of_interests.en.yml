@@ -1,7 +1,7 @@
 en:
-  point_of_interests:
+  point_of_interest:
     index:
-      title: Points of interests
+      title: Points of interest
     show:
       title: "%{name}"
     new:
@@ -31,7 +31,7 @@ en:
       point_of_interest:
         zero:  "Point of interest"
         one: "Point of interest"
-        other: "Point of interests"
+        other: "Point of interest"
     attributes:
       point_of_interest:
         name: "Name"

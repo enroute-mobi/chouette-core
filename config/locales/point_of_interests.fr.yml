@@ -10,7 +10,7 @@ fr:
       title: "Editer %{name}"
     actions:
       show: "Afficher ce Point d'intérêt"
-      show_categories: "Afficher Les Catégories de Point d'intérêts"
+      show_categories: "Afficher Les Catégories de Point d'intérêt"
       new: "Créer un Point d'intérêt"
       edit: "Editer ce Point d'intérêt"
       destroy: "Supprimer ce Point d'intérêt"
@@ -22,7 +22,7 @@ fr:
         contact: "Contact"
         hours: "Heures"
         codes: "Codes"
-      point_of_interest_category_placeholder: Rechercher par nom de Catégorie de Point d'intérêts
+      point_of_interest_category_placeholder: Rechercher par nom de Catégorie de Point d'intérêt
     search_no_results: "Aucun Point d'intérêts ne correspond à votre recherche"
     errors:
     filters:
@@ -31,13 +31,13 @@ fr:
       point_of_interest:
         zero:  "Point d'intérêt"
         one: "Point d'intérêt"
-        other: "Point d'intérêts"
+        other: "Points d'intérêt"
     attributes:
       point_of_interest:
         name: "Nom"
         url: "Url"
-        point_of_interest_category_id: "Catégories"
-        point_of_interest_category: "Catégories"
+        point_of_interest_category_id: "Catégorie"
+        point_of_interest_category: "Catégorie"
         position: "Coordonnées"
         address: "Adresse"
         zip_code: "Code Postal"

@@ -10,7 +10,7 @@ en:
       title: "Edit %{name}"
     actions:
       show: "Show this Point of interest category"
-      show_poi: "Show Point of interests"
+      show_poi: "Show Point of interest"
       new: "Create a Point of interest category"
       edit: "Edit this Point of interest category"
       destroy: "Delete this Point of interest category"
@@ -25,7 +25,7 @@ en:
       title: "%{name}"
     actions:
       show: "Show this Point of interest category"
-      show_poi: "Show Point of interests"
+      show_poi: "Show Point of interest"
       new: "Create a Point of interest category"
       edit: "Edit this Point of interest category"
       destroy: "Delete this Point of interest category"

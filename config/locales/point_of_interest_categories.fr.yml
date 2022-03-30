@@ -1,7 +1,7 @@
 fr:
   point_of_interest_categories:
     index:
-      title: Catégorie de Point d'intérêts
+      title: Catégorie de Point d'intérêt
     show:
       title: "%{name}"
     new:
@@ -15,12 +15,12 @@ fr:
       edit: "Editer cette Catégorie de Point d'intérêt"
       destroy: "Supprimer cette Catégorie de Point d'intérêt"
       destroy_confirm: "Etes vous sûr de supprimer cette Catégorie de Point d'intérêt ?"
-    search_no_results: "Aucune Catégorie de Point d'intérêts ne correspond à votre recherche"
+    search_no_results: "Aucune Catégorie de Point d'intérêt ne correspond à votre recherche"
     errors:
     filters:
   point_of_interest/categories:
     index:
-      title: Catégorie de Point d'intérêts
+      title: Catégorie de Point d'intérêt
     show:
       title: "%{name}"
     actions:
@@ -38,7 +38,7 @@ fr:
       point_of_interest/category:
         zero:  "Catégorie de Point d'intérêt"
         one: "Catégorie de Point d'intérêt"
-        other: "Catégories de Point d'intérêts"
+        other: "Catégories de Point d'intérêt"
     attributes:
       point_of_interest/category:
         name: "Nom"

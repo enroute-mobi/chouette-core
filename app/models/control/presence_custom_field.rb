@@ -1,14 +1,39 @@
 module Control
   class PresenceCustomField < Control::Base
-    enumerize :target_model, in: %w{ Line StopArea Company JourneyPattern VehicleJourney }
-    option :target_model
-    option :target_custom_field_id
 
-    validates :target_model, :target_custom_field_id, presence: true
+    module Options
+      extend ActiveSupport::Concern
+
+      included do
+        option :target_model
+        option :target_custom_field_id
+
+        validates :target_model, :target_custom_field_id, presence: true
+        enumerize :target_model, in: %w{ Line StopArea Company JourneyPattern VehicleJourney }
+      end
+
+      def custom_field
+        return unless workgroup.present?
+
+        workgroup.custom_fields.find_by_id(target_custom_field_id)
+      end
+    end
+    include Options
+
+    validate :custom_field_is_present_in_workgroup
+
+    private
+
+    def custom_field_is_present_in_workgroup
+      errors.add(:target_custom_field_id, :invalid) unless custom_field
+    end
+
+    def workgroup
+      control_list.workbench&.workgroup
+    end
 
     class Run < Control::Base::Run
-      option :target_model
-      option :target_custom_field_id
+      include Options
 
       def run
         return unless custom_field
@@ -20,10 +45,6 @@ module Control
             source: model,
           })
         end
-      end
-
-      def custom_field
-        workgroup.custom_fields.find_by_id(target_custom_field_id)
       end
 
       def faulty_models

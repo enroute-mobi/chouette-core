@@ -12,6 +12,14 @@ class CompaniesController < ChouetteController
   respond_to :json
   respond_to :js, :only => :index
 
+  def autocomplete
+    scope = line_referential.companies
+    scope = scope.referent_only if params[:referent_only]
+    args  = [].tap{|arg| 4.times{arg << "%#{params[:q]}%"}}
+    @companies = scope.where("unaccent(name) ILIKE unaccent(?) OR unaccent(short_name) ILIKE unaccent(?) OR registration_number ILIKE ? OR objectid ILIKE ?", *args).limit(50)
+    @companies
+  end
+
   def index
     index! do |format|
       format.html {
@@ -83,7 +91,7 @@ class CompaniesController < ChouetteController
   helper_method :current_referential
 
   def company_params
-    fields = [:objectid, :object_version, :name, :short_name, :default_language, :default_contact_organizational_unit, :default_contact_operating_department_name, :code, :default_contact_phone, :default_contact_fax, :default_contact_email, :registration_number, :default_contact_url, :time_zone]
+    fields = [:objectid, :object_version, :name, :short_name, :default_language, :default_contact_organizational_unit, :default_contact_operating_department_name, :code, :default_contact_phone, :default_contact_fax, :default_contact_email, :registration_number, :default_contact_url, :time_zone, :is_referent, :referent_id]
     fields += [:house_number, :address_line_1, :address_line_2, :street, :town, :postcode, :postcode_extension ,:country_code]
     fields += permitted_custom_fields_params(Chouette::Company.custom_fields(line_referential.workgroup))
     fields += %w(default_contact private_contact customer_service_contact).product(%w(name email phone url more)).map{ |k| k.join('_')}

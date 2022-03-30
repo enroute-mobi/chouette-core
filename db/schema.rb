@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_03_16_101826) do
+ActiveRecord::Schema.define(version: 2022_03_25_152937) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -202,10 +202,13 @@ ActiveRecord::Schema.define(version: 2022_03_16_101826) do
     t.string "country_code"
     t.string "default_language"
     t.bigint "line_provider_id"
+    t.boolean "is_referent", default: false
+    t.bigint "referent_id"
     t.index ["line_provider_id"], name: "index_companies_on_line_provider_id"
     t.index ["line_referential_id", "registration_number"], name: "index_companies_on_referential_id_and_registration_number"
     t.index ["line_referential_id"], name: "index_companies_on_line_referential_id"
     t.index ["objectid"], name: "companies_objectid_key", unique: true
+    t.index ["referent_id"], name: "index_companies_on_referent_id"
     t.index ["registration_number"], name: "companies_registration_number_key"
   end
 

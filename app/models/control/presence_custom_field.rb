@@ -47,10 +47,6 @@ module Control
         end
       end
 
-      def custom_field
-        workgroup.custom_fields.find_by_id(target_custom_field_id)
-      end
-
       def faulty_models
         models.where("custom_field_values ->> '#{custom_field.code}' IS NULL")
       end

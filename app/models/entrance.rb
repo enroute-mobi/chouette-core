@@ -1,6 +1,3 @@
-# TODO Make a standalone Geo module
-require 'geo_ext.rb'
-
 class Entrance < ActiveRecord::Base
   include StopAreaReferentialSupport
   include ObjectidSupport
@@ -16,6 +13,7 @@ class Entrance < ActiveRecord::Base
   enumerize :entrance_type, in: %i(opening open_door door swing_door revolving_door automatic_door ticket_barrier gate other), scope: true
 
   validates :name, presence: true
+  validates_format_of :position_input, :with => %r{\A *-?(0?[0-9](\.[0-9]*)?|[0-8][0-9](\.[0-9]*)?|90(\.[0]*)?) *\, *-?(0?[0-9]?[0-9](\.[0-9]*)?|1[0-7][0-9](\.[0-9]*)?|180(\.[0]*)?) *\Z}, allow_nil: true, allow_blank: true
   attr_writer :position_input
 
   def position_input
@@ -42,32 +40,4 @@ class Entrance < ActiveRecord::Base
     PositionInput.new(@position_input).change_position(self)
   end
 
-  # Transform the position input into position when defined and valid
-  class PositionInput
-    def initialize(input)
-      @input = input
-    end
-
-    def change_position(model)
-      if blank?
-        model.position = nil
-      elsif valid?
-        model.position = position
-      else
-        model.errors.add :position_input
-      end
-    end
-
-    def position
-      geo_position.to_point
-    end
-
-    attr_reader :input
-    delegate :blank?, to: :input
-
-    def geo_position
-      Geo::Position.parse(input)
-    end
-    delegate :valid?, to: :geo_position, allow_nil: true
-  end
 end

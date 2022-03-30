@@ -57,7 +57,7 @@ class PointOfInterestsController < ChouetteController
     params.require(:point_of_interest).permit(
       :name,
       :url,
-      :position,
+      :position_input,
       :address,
       :zip_code,
       :city_name,

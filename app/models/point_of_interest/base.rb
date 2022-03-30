@@ -2,8 +2,6 @@ module PointOfInterest
   class Base < ApplicationModel
 
     self.table_name = "point_of_interests"
-    validates :name, presence: true
-    validates :point_of_interest_category, presence: true
 
     belongs_to :shape_referential, required: true
     belongs_to :shape_provider, required: true
@@ -13,7 +11,18 @@ module PointOfInterest
 
     has_many :codes, as: :resource, dependent: :delete_all
     accepts_nested_attributes_for :codes, allow_destroy: true, reject_if: :all_blank
+
     validates_associated :codes
+    validates :name, presence: true
+    validates :point_of_interest_category, presence: true
+    validates_format_of :position_input, :with => %r{\A *-?(0?[0-9](\.[0-9]*)?|[0-8][0-9](\.[0-9]*)?|90(\.[0]*)?) *\, *-?(0?[0-9]?[0-9](\.[0-9]*)?|1[0-7][0-9](\.[0-9]*)?|180(\.[0]*)?) *\Z}, allow_nil: true, allow_blank: true
+
+    before_validation :position_from_input
+    def position_from_input
+      PositionInput.new(@position_input).change_position(self)
+    end
+
+    attr_writer :position_input
 
     def self.policy_class
       PointOfInterestPolicy
@@ -21,6 +30,17 @@ module PointOfInterest
 
     def self.model_name
       ActiveModel::Name.new self, nil, "PointOfInterest"
+    end
+
+    def position_input
+      @position_input || ("#{position.y} #{position.x}" if position)
+    end
+
+    def longitude
+      position&.x
+    end
+    def latitude
+      position&.y
     end
 
   end

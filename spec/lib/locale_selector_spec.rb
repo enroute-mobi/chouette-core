@@ -1,15 +1,7 @@
 describe LocaleSelector do
-	let(:context) { instance_double('Context', current_user: nil, params: nil, session: nil) }
-	subject { LocaleSelector.new(context) }
+	subject { LocaleSelector.new }
 
 	describe "#request_locale" do
-
-		context "when params is not defined" do
-			it 'should be nil' do
-				expect(subject.request_locale).to be_nil
-			end
-		end
-
 		context "when params[:lang] is not defined" do
 			before { allow(subject).to receive(:params) { ActionController::Parameters.new } }
 
@@ -34,13 +26,6 @@ describe LocaleSelector do
 	end
 
 	describe "#session_locale" do
-
-		context "when session is not defined" do
-			it 'should be nil' do
-				expect(subject.session_locale).to be_nil
-			end
-		end
-
 		context "when session[:language] is not defined" do
 			before { allow(subject).to receive(:session) { {} } }
 

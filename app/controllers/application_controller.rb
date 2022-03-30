@@ -15,7 +15,7 @@ class ApplicationController < ActionController::Base
   layout :layout_by_resource
 
   def set_locale
-    I18n.locale = LocaleSelector.locale_for(self)
+    I18n.locale = LocaleSelector.locale_for(params, session, current_user)
   end
 
   def pundit_user

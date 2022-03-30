@@ -1,24 +1,22 @@
 class LocaleSelector
-	def self.locale_for(context)
-		LocaleSelector.new(context).locale
+	def self.locale_for(params, session, user)
+		LocaleSelector.new.tap do |selector|
+			selector.params = params
+			selector.session = session
+			selector.user = user
+		end.locale
 	end
 
-	attr_reader :params, :session, :user
-
-	def initialize(context)
-		@params = context.params
-		@session = context.session
-		@user = context&.current_user
-	end
+	attr_accessor :params, :session, :user
 
 	delegate :available_locales, :default_locale, to: I18n
   
   def request_locale
-		supported_locale(params.try :[], 'lang')
+		supported_locale(params['lang'])
   end
   
   def session_locale
-		supported_locale(session.try :[], :language)
+		supported_locale(session[:language])
   end
 
 	def user_locale

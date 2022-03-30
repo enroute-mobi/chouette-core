@@ -35,8 +35,6 @@ module Control
     class Run < Control::Base::Run
       include Options
 
-      delegate :custom_field, to: :control
-
       def run
         return unless custom_field
 

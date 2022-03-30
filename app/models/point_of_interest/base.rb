@@ -15,7 +15,6 @@ module PointOfInterest
     validates_associated :codes
     validates :name, presence: true
     validates :point_of_interest_category, presence: true
-    validates_format_of :position_input, :with => %r{\A *-?(0?[0-9](\.[0-9]*)?|[0-8][0-9](\.[0-9]*)?|90(\.[0]*)?) *\, *-?(0?[0-9]?[0-9](\.[0-9]*)?|1[0-7][0-9](\.[0-9]*)?|180(\.[0]*)?) *\Z}, allow_nil: true, allow_blank: true
 
     before_validation :define_shape_referential, on: :create
     before_validation :position_from_input

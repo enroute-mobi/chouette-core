@@ -5,6 +5,13 @@ fr:
         for_boarding: "Non défini"
         for_alighting: "Non défini"
   enumerize:
+    statuses: &statuses
+      warning: Avertissement
+      successful: Succès
+      success: Succès
+      warning: Avertissement
+      failed: Erreur
+      error: Erreur
     operation:
       status:
         new: Nouveau
@@ -390,5 +397,15 @@ fr:
       ticket_barrier: "Portillon à ticket"
       gate: "Barrière"
       other: "Autre"
+    target_model:
+      line: Ligne
+      stop_area: Arrêt
+      journey_pattern: Mission
+      vehicle_journey: Course
+      company: Transporteur
     search:
       rule_type: *notification_rule_rule_type
+    control:
+      criticity: *statuses
+    control/dummy:
+      expected_result: *statuses

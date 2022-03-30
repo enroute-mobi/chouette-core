@@ -40,7 +40,7 @@ fr:
       macro/list/run:
         status: Statut
         name: Nom
-        created_by: Créer par
+        created_by: Créé par
         creator: "Créateur"
         original_macro_list_id: "Jeu d'instructions"
         referential_id: "Cible"

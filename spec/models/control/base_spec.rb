@@ -6,7 +6,7 @@ RSpec.describe Control::Base do
 
   describe ".table_name" do
     subject { described_class.table_name }
-    it { is_expected.to eq("controls") }
+    it { is_expected.to eq("public.controls") }
   end
 
 end

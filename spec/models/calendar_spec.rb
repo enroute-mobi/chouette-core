@@ -5,7 +5,7 @@ RSpec.describe Calendar, :type => :model do
 
   it { is_expected.to validate_presence_of(:organisation) }
   it { is_expected.to validate_presence_of(:name) }
-  
+
 
   describe '#to_time_table' do
     let(:calendar) { create(:calendar, int_day_types: Calendar::MONDAY | Calendar::SUNDAY, date_ranges: [Date.today...(Date.today + 1.month)]) }
@@ -76,7 +76,7 @@ RSpec.describe Calendar, :type => :model do
       period['period_start'] = (Date.today - 1.month).to_s
       period['period_end']   = (Date.today + 1.month).to_s
 
-      subject.state_update_periods state['time_table_periods']
+      subject.state_update state
       ['period_end', 'period_start'].each do |prop|
         expect(subject.reload.periods.first.send(prop).to_s).to eq(period[prop])
       end
@@ -90,15 +90,14 @@ RSpec.describe Calendar, :type => :model do
       }
 
       expect {
-        subject.state_update_periods state['time_table_periods']
+        subject.state_update state
       }.to change {subject.periods.count}.by(1)
-      expect(state['time_table_periods'].last['id']).to eq subject.reload.periods.last.id
     end
 
     it 'should delete time table periods association' do
       state['time_table_periods'].first['deleted'] = true
       expect {
-        subject.state_update_periods state['time_table_periods']
+        subject.state_update state
       }.to change {subject.periods.count}.by(-1)
     end
 

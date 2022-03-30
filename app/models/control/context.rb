@@ -1,5 +1,7 @@
 module Control
   class Context < ApplicationModel
+    include OptionsSupport 
+
     self.table_name = "control_contexts"
 
     belongs_to :control_list, class_name: "Control::List", optional: false, inverse_of: :control_contexts
@@ -8,6 +10,14 @@ module Control
     has_many :control_context_runs, class_name: "Control::Context::Run", foreign_key: "control_context_id", inverse_of: :control_context
 
     store :options, coder: JSON
+
+    accepts_nested_attributes_for :controls, allow_destroy: true, reject_if: :all_blank
+
+    def self.available
+      [
+        Control::Context::TransportMode
+      ]
+    end
 
     def build_run
       run_attributes = {

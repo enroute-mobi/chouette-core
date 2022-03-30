@@ -1,8 +1,9 @@
 import { omit } from 'lodash'
 import { Path } from 'path-parser'
+import { isProd } from '../../../src/helpers/env'
 
-const path = Path.createPath('/workbenches/:workbenchId/macro_lists')
-const workbenchId = path.partialTest(location.pathname)?.workbenchId
+const path = Path.createPath('/workbenches/:workbenchId/:controllerName')
+const URLParams = path.partialTest(location.pathname)
 
 export default superclass => class Resource extends superclass {
 	constructor(attributes) {
@@ -35,15 +36,17 @@ export default superclass => class Resource extends superclass {
 	set cacheHTML(html) { sessionStorage.setItem(this.type, html) }
 
 	async fecthedHTML() {
-		const params = new URLSearchParams()
-		params.set('html[id]', this.id)
-		params.set('html[type]', this.type)
+		const searchParams = new URLSearchParams()
+		searchParams.set('html[id]', this.id)
+		searchParams.set('html[type]', this.type)
 
-		const url = path.build({ workbenchId }) + '/fetch_object_html.json?' + params.toString()
+		const url = path.build(URLParams) + '/fetch_object_html.json?' + searchParams.toString()
 
 		const { html } = await (await fetch(url)).json()
 
-		this.cacheHTML = html
+		if (isProd) {
+			this.cacheHTML = html
+		}
 
 		return html
 	}

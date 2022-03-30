@@ -1,5 +1,5 @@
 - form = local_assigns.fetch(:form)
-- macro = local_assigns.fetch(:resource, :macro)
+- macro = local_assigns.fetch(:resource)
 - class_description = macro.class.model_name.human
 
 = form.simple_fields_for(:macros, macro) do |macro_form|
@@ -24,10 +24,9 @@
 			.flex.ml-3 x-show="expanded"
 				p.flex.w-64 = class_description
 
-			- unless presenter.is_show
-				= render 'actions'
+			= render 'operations/actions'
 
-		.macro.flex.flex-col x-show="expanded && !resource.isDeleted" class="w-full"
+		.flex.flex-col x-show="expanded && !resource.isDeleted" class="w-full"
 			= render "macro_lists/#{macro.model_name.i18n_key.to_s}", form: macro_form
 			.form-group
 				= macro_form.label Macro::List.human_attribute_name(:comments), class: 'col-sm-4 col-xs-5 control-label mb-3'

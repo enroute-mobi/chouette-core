@@ -2,6 +2,7 @@ class Chouette::AreaType
   include Comparable
 
   QUAY = :zdep
+  STOP_PLACE = :zdlp
 
   COMMERCIAL = %i(zdep zdlp lda gdl).freeze
   NON_COMMERCIAL = %i(deposit border service_area relief other).freeze

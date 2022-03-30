@@ -46,8 +46,8 @@ class ModelAttribute
   define klass: Chouette::Line, name: :active_from, data_type: :date
   define klass: Chouette::Line, name: :active_until, data_type: :date
   define klass: Chouette::Line, name: :color
-  define klass: Chouette::Line, name: :company, options: { reference: true }
-  define klass: Chouette::Line, name: :network, options: { reference: true }
+  define klass: Chouette::Line, name: :company, options: { reference: true, association_collection: :companies }
+  define klass: Chouette::Line, name: :network, options: { reference: true, association_collection: :networks }
   define klass: Chouette::Line, name: :number
   define klass: Chouette::Line, name: :published_name
   define klass: Chouette::Line, name: :text_color
@@ -80,7 +80,7 @@ class ModelAttribute
   define klass: Chouette::Company, name: :private_contact_url
   define klass: Chouette::Company, name: :address_line_1
   define klass: Chouette::Company, name: :address_line_2
-  define klass: Chouette::Company, name: :country, options: { source_attributes: [:country_code] }
+  define klass: Chouette::Company, name: :country
   define klass: Chouette::Company, name: :country_code
   define klass: Chouette::Company, name: :house_number
   define klass: Chouette::Company, name: :postcode
@@ -94,8 +94,8 @@ class ModelAttribute
   define klass: Chouette::StopArea, name: :parent,  options: { reference: true }
   define klass: Chouette::StopArea, name: :referent,  options: { reference: true }
   define klass: Chouette::StopArea, name: :fare_code
-  define klass: Chouette::StopArea, name: :coordinates, options: { source_attributes: [:latitude, :longitude] }
-  define klass: Chouette::StopArea, name: :country, options: { source_attributes: [:country_code] }
+  define klass: Chouette::StopArea, name: :country
+  define klass: Chouette::StopArea, name: :coordinates
   define klass: Chouette::StopArea, name: :country_code
   define klass: Chouette::StopArea, name: :street_name
   define klass: Chouette::StopArea, name: :zip_code
@@ -117,11 +117,11 @@ class ModelAttribute
   # Chouette::JourneyPattern
   define klass: Chouette::JourneyPattern, name: :name, mandatory: true
   define klass: Chouette::JourneyPattern, name: :published_name
-  define klass: Chouette::JourneyPattern, name: :shape, options: { reference: true }
+  define klass: Chouette::JourneyPattern, name: :shape, options: { reference: true, association_collection: :shapes }
 
   # Chouette::VehicleJourney
   define klass: Chouette::VehicleJourney, name: :published_journey_name
-  define klass: Chouette::VehicleJourney, name: :company, options: { reference: true }
+  define klass: Chouette::VehicleJourney, name: :company, options: { reference: true, association_collection: :companies }
   define klass: Chouette::VehicleJourney, name: :transport_mode
   define klass: Chouette::VehicleJourney, name: :published_journey_identifier
 

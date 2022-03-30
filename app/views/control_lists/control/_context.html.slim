@@ -1,0 +1,14 @@
+- form = local_assigns.fetch(:form)
+- control_context = local_assigns.fetch(:resource)
+
+= form.simple_fields_for(:control_contexts, control_context) do |control_context_form|
+	.flex.items-center
+		= render "control_lists/#{control_context.model_name.i18n_key.to_s}", form: control_context_form
+
+		= render 'operations/context_actions'
+
+	template[x-if="!resource.isDeleted"]
+		div
+			= render 'operations/collection', collection: 'resource.controls'
+
+			= render 'operations/select', **facade.control_select_options('resource.controls')

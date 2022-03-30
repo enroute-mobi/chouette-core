@@ -22,6 +22,10 @@ fr:
         one: Associer les Tracés
       macro/update_stop_area_compass_bearing:
         one: Définir l'Orientation des Arrêts selon les Tracés
+      macro/create_stop_area_referents:
+        one: Créer les Arrêts référents
+      macro/associate_stop_area_referent:
+        one: Associer les Arrêts à un Référent
     attributes:
       macro:
         name: Nom
@@ -33,3 +37,7 @@ fr:
         target_code_space: Espace code cible
         target_pattern: Modèle de cible
         expected_result: Résultat attendu
+  simple_form:
+    placeholders:
+      macro_base:
+        name: Décrivez l’objectif de cette instruction

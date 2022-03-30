@@ -10,6 +10,7 @@ module Control
     has_many :control_contexts, class_name: "Control::Context", foreign_key: "control_list_id", inverse_of: :control_list
 
     accepts_nested_attributes_for :controls, allow_destroy: true, reject_if: :all_blank
+    accepts_nested_attributes_for :control_contexts, allow_destroy: true, reject_if: :all_blank
 
     scope :by_text, ->(text) { text.blank? ? all : where('lower(name) LIKE :t', t: "%#{text.downcase}%") } 
 

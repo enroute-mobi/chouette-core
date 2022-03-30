@@ -31,6 +31,10 @@ class AutocompleteController < ChouetteController
     @macro_lists ||= workbench.macro_lists.by_text(text)
   end
 
+  def control_lists
+    @control_lists ||= workbench.control_lists.by_text(text)
+  end
+
   ##################
   # StopArea scope #
   ##################

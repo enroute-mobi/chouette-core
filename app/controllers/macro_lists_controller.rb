@@ -7,8 +7,8 @@ class MacroListsController < ChouetteController
   before_action :decorate_macro_list, only: %i[show new edit]
   after_action :decorate_macro_list, only: %i[create update]
 
-  before_action :init_presenter, only: %i[show new edit]
-  after_action :init_presenter, only: %i[create update]
+  before_action :init_facade, only: %i[show new edit]
+  after_action :init_facade, only: %i[create update]
 
   before_action :macro_list_params, only: [:create, :update]
 
@@ -34,14 +34,13 @@ class MacroListsController < ChouetteController
   end
 
   def fetch_object_html
-    render json: { html: MacroLists::RenderPartial.call(object_html_params) }
+    render json: { html: Operations::RenderPartial.call(object_html_params) }
   end
 
   protected
 
   alias macro_list resource
   alias workbench parent
-  # alias presenter init_presenter
 
   def collection
     @macro_lists = parent.macro_lists.paginate(page: params[:page], per_page: 30)
@@ -49,14 +48,14 @@ class MacroListsController < ChouetteController
 
   private
 
-  def init_presenter
+  def init_facade
     object = macro_list rescue Macro::List.new(workbench: workbench)
-    @presenter ||= MacroListPresenter.new(object, helpers)
+    @facade ||= MacroListFacade.new(object, helpers)
   end
 
-  alias presenter init_presenter
+  alias facade init_facade
 
-  helper_method :presenter
+  helper_method :facade
 
   def decorate_macro_list
     object = macro_list rescue build_resource
@@ -80,10 +79,10 @@ class MacroListsController < ChouetteController
     params.require(:html).permit(
       :id,
       :type,
-      :macro_list_id
     ).with_defaults(
       template: helpers,
-      workbench: workbench
+      workbench: workbench,
+      parent_klass: Macro::List
     )
   end
 

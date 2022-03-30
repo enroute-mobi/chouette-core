@@ -62,7 +62,7 @@ class SourcesController < ChouetteController
       :import_option_archive_on_fail,
       :created_at,
       :updated_at,
-      downloader_type: [:direct, :french_nap],
+      :downloader_type
     ).with_defaults(workbench_id: parent.id)
   end
 end

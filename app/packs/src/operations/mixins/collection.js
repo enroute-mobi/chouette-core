@@ -14,7 +14,7 @@ export default superclass => class Collection extends superclass {
 
 	get deleted() { return filter(this, 'isDeleted') }
 
-	isEmpty() { return isEmpty(this) }
+	get isEmpty() { return isEmpty(this) }
 
 	add(attributes) {
 		const resource = new this.constructor.ResourceConstructor(attributes)

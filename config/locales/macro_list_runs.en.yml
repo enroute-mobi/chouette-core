@@ -40,9 +40,9 @@ en:
       macro/list/run:
         status: Statut
         name: Name
-        created_by: Create by
+        created_by: Created by
         creator: "Creator"
-        original_macro_list: "Original macro list"
+        original_macro_list_id: "Original macro list"
         referential_id: "Target"
         started_at: "Started at"
         duration: Duration

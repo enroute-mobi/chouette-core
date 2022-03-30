@@ -28,7 +28,15 @@ class ConfigBuilder {
       default: {
         valueField: 'id',
         labelField: 'text',
-        plugins: ['clear_button']
+        plugins: ['clear_button'],
+        render: {
+          item: (data, escape) => (
+            `<div data-group="${data.group}">${escape(data.text)}</div>`
+          ),
+          optgroup_header: (data, escape) => (
+            `<div class="font-bold ml-2 my-2 p-3 text-2xl">${escape(data.label)}</div>`
+          )
+        }
       },
       create: {
         create: true,
@@ -44,7 +52,7 @@ class ConfigBuilder {
           option_create: (data, escape) => (
             `<div class="create">${I18n.t('actions.add')} <strong>${escape(data.input)}</strong>&hellip;</div>`
           ),
-          no_results: () => null
+          no_results: () => null,
         }
       },
       ajax: (select, url) => ({
@@ -61,9 +69,12 @@ class ConfigBuilder {
 }
 
 window.initTomSelect = (select, config) => {
-  if (!Boolean(select.tomselect)) { // if Tom Select has already been initialized on input it raises an error
+  try {
     const tomSelect = new TomSelect(select, ConfigBuilder.call(select, config))
-
     config.lock && tomSelect.lock()
+
+    return tomSelect
+  } catch(e) {
+    return select.tomSelect
   }
 }

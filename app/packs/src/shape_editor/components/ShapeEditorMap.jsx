@@ -81,7 +81,7 @@ export default function ShapeEditorMap({ isEdit, baseURL, redirectURL }) {
           <div className="col-md-12">
             <h4 className="underline">Carte</h4>
             <div className="openlayers_map">
-              <MapWrapper features={features} style={style} onInit={onMapInit} />
+              <MapWrapper features={features} style={style} onInit={onMapInit} height={1289} />
             </div>
           </div>
         </div>

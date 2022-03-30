@@ -5,12 +5,10 @@
 	.flex.items-center
 		= render "macro_lists/#{macro_context.model_name.i18n_key.to_s}", form: macro_context_form
 
-		- unless presenter.is_show
-			= render 'actions'
+		= render 'operations/context_actions'
 
 	template[x-if="!resource.isDeleted"]
 		div
-			= render 'collection', collection: 'resource.macros'
+			= render 'operations/collection', collection: 'resource.macros'
 
-			- unless presenter.is_show
-				= render 'macro_select', collection: 'resource.macros'
+			= render 'operations/select', **facade.macro_select_options('resource.macros')

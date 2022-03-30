@@ -38,7 +38,7 @@ class ControlListFacade
 	end
 	
 	def custom_fields_options
-		workgroup.custom_fields.map { |c| [c.name, c.id]}
+		workgroup.custom_fields.map { |c| { text: c.name, id: c.id, resource_type: c.resource_type } }.to_json
 	end
 
 	def criticity_options

@@ -1,6 +1,6 @@
 module Control
   class PresenceCustomField < Control::Base
-    enumerize :target_model, in: %w{ Line StopArea Company JourneyPattern VehicleJourney }, default: "Line"
+    enumerize :target_model, in: %w{ Line StopArea Company JourneyPattern VehicleJourney }
     option :target_model
     option :target_custom_field_id
 
@@ -9,8 +9,6 @@ module Control
     class Run < Control::Base::Run
       option :target_model
       option :target_custom_field_id
-
-      delegate :custom_field, to: :control
 
       def run
         return unless custom_field

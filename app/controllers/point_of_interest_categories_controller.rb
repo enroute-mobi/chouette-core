@@ -52,10 +52,6 @@ class PointOfInterestCategoriesController < ChouetteController
     )
   end
 
-  def shape_provider
-    workbench.shape_providers.first
-  end
-
   def point_of_interest_category_params
     params.require(:point_of_interest_category).permit(
       :name,

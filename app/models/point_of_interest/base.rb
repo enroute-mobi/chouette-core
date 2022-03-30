@@ -13,8 +13,7 @@ module PointOfInterest
     accepts_nested_attributes_for :codes, allow_destroy: true, reject_if: :all_blank
 
     validates_associated :codes
-    validates :name, presence: true
-    validates :point_of_interest_category, presence: true
+    validates :name, :point_of_interest_category_id, presence: true
 
     before_validation :define_shape_referential, on: :create
     before_validation :position_from_input

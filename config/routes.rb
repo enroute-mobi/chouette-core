@@ -135,6 +135,8 @@ ChouetteIhm::Application.routes.draw do
       resources :shapes, except: [:create] do
         get :associations, on: :member
       end
+      resources :point_of_interests
+      resources :point_of_interest_categories
     end
   end
 

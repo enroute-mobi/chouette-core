@@ -17,7 +17,7 @@ fr:
       return_to_dashboard: "Retour au Tableau de Bord"
       dashboard: Tableau de bord
       referential_datas: "Données"
-      shape_referential: "Référentiel de tracés"
+      shape_referential: "Référentiel Topologique"
       line_referential: "Référentiel de lignes"
       stop_area_referential: "Référentiel d'arrêts"
       settings: "Paramètres"

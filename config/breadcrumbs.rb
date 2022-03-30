@@ -50,6 +50,36 @@ crumb :new_macro_list do |workbench|
   parent :macro_lists, workbench
 end
 
+crumb :point_of_interests do |workbench|
+  link I18n.t('point_of_interests.index.title'), workbench_shape_referential_point_of_interests_path(workbench)
+  parent :workbench, workbench
+end
+
+crumb :point_of_interest do |workbench, point_of_interest|
+  link breadcrumb_name(point_of_interest), workbench_shape_referential_point_of_interest_path(workbench, point_of_interest)
+  parent :point_of_interests, workbench
+end
+
+crumb :new_point_of_interest do |workbench|
+  link I18n.t('point_of_interests.new.title')
+  parent :point_of_interests, workbench
+end
+
+crumb :point_of_interest_categories do |workbench|
+  link I18n.t('point_of_interest_categories.index.title'), workbench_shape_referential_point_of_interest_categories_path(workbench)
+  parent :workbench, workbench
+end
+
+crumb :point_of_interest_category do |workbench, point_of_interest_category|
+  link breadcrumb_name(point_of_interest_category), workbench_shape_referential_point_of_interest_category_path(workbench, point_of_interest_category)
+  parent :point_of_interest_categories, workbench
+end
+
+crumb :new_point_of_interest_category do |workbench|
+  link I18n.t('point_of_interest_categories.new.title')
+  parent :point_of_interest_categories, workbench
+end
+
 crumb :sources do |workbench|
   link I18n.t('sources.index.title'), workbench_sources_path(workbench)
   parent :workbench, workbench

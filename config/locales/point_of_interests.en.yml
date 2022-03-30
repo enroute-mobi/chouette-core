@@ -1,0 +1,50 @@
+en:
+  point_of_interest:
+    index:
+      title: Points of interest
+    show:
+      title: "%{name}"
+    new:
+      title: "Create a Point of interest"
+    edit:
+      title: "Editer %{name}"
+    actions:
+      show: "Show this Point of interest"
+      show_categories: "Show Point of interest Categories"
+      new: "Create a Point of interest"
+      edit: "Edit this Point of interest"
+      destroy: "Delete this Point of interest"
+      destroy_confirm: "Are you sure you want to delete this Point of interest ?"
+    form:
+      sections:
+        identification: "Identification"
+        localisation: "Localisation"
+        contact: "Contact"
+        hours: "Hours"
+        codes: "Codes"
+      point_of_interest_category_placeholder: Search by name of Point of interest Category
+    search_no_results: "No Point of interest matches your search"
+    errors:
+    filters:
+  activerecord:
+    models:
+      point_of_interest:
+        zero:  "Point of interest"
+        one: "Point of interest"
+        other: "Point of interest"
+    attributes:
+      point_of_interest:
+        name: "Name"
+        url: "Url"
+        point_of_interest_category_id: "Catégories"
+        point_of_interest_category: "Catégories"
+        position: "Position"
+        address: "Address"
+        zip_code: "Zip Code"
+        city_name: "City name"
+        country: "Country"
+        email: "Email"
+        phone: "Phone"
+        shape_provider: "Topological Provider"
+        updated_at: "Updated At"
+        creator_id: "Create by"

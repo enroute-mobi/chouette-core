@@ -1,0 +1,50 @@
+fr:
+  point_of_interests:
+    index:
+      title: Point d'intérêts
+    show:
+      title: "%{name}"
+    new:
+      title: "Créer un Point d'intérêt"
+    edit:
+      title: "Editer %{name}"
+    actions:
+      show: "Afficher ce Point d'intérêt"
+      show_categories: "Afficher Les Catégories de Point d'intérêt"
+      new: "Créer un Point d'intérêt"
+      edit: "Editer ce Point d'intérêt"
+      destroy: "Supprimer ce Point d'intérêt"
+      destroy_confirm: "Etes vous sûr de supprimer ce Point d'intérêt ?"
+    form:
+      sections:
+        identification: "Identification"
+        localisation: "Localisation"
+        contact: "Contact"
+        hours: "Heures"
+        codes: "Codes"
+      point_of_interest_category_placeholder: Rechercher par nom de Catégorie de Point d'intérêt
+    search_no_results: "Aucun Point d'intérêts ne correspond à votre recherche"
+    errors:
+    filters:
+  activerecord:
+    models:
+      point_of_interest:
+        zero:  "Point d'intérêt"
+        one: "Point d'intérêt"
+        other: "Points d'intérêt"
+    attributes:
+      point_of_interest:
+        name: "Nom"
+        url: "Url"
+        point_of_interest_category_id: "Catégorie"
+        point_of_interest_category: "Catégorie"
+        position: "Coordonnées"
+        address: "Adresse"
+        zip_code: "Code Postal"
+        city_name: "Ville"
+        country: "Pays"
+        email: "Email"
+        phone: "Téléphone"
+        shape_provider: "Fournisseur Topologique"
+        updated_at: "Edité le"
+        creator_id: "Créé par"

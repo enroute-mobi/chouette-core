@@ -1,4 +1,4 @@
-- messages = control_run.control_messages.paginate(page: params[:page], per_page: 10)
+- messages = control_run.control_messages.paginate(page: params[:page], per_page: 15)
 
 - if messages.any?
 	= table_builder_2 messages, *facade.message_table_params

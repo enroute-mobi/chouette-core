@@ -1,4 +1,4 @@
-- messages = macro_run.macro_messages.paginate(page: params[:page], per_page: 10)
+- messages = macro_run.macro_messages.paginate(page: params[:page], per_page: 15)
 
 - if messages.any?
 	= table_builder_2 messages, *facade.message_table_params

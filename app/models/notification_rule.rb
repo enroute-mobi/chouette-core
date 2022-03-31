@@ -20,19 +20,21 @@ class NotificationRule < ApplicationModel
   scope :for_statuses, -> (value) { query.operation_statuses(value).scope }
   scope :for_lines, -> (value) { query.lines(value).scope }
 
-  def self.for_operation(operation)
-    operation_scope = for_statuses([operation.status]).
-                      where(notification_type: operation.class.model_name.singular)
+  class << self
+    def for_operation(operation)
+      operation_scope = for_statuses([operation.status]).
+                        where(notification_type: operation.class.model_name.singular)
 
-    if operation.respond_to? :lines
-      operation_scope = operation_scope.for_lines operation.lines
+      if (line_ids = operation.line_ids).present?
+        operation_scope = operation_scope.for_lines line_ids
+      end
+
+      operation_scope
     end
 
-    operation_scope
-  end
-
-  def self.query
-    ::Query::NotificationRule.new(all)
+    def query
+      ::Query::NotificationRule.new(all)
+    end
   end
 
   # Validations

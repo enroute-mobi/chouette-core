@@ -6,11 +6,8 @@ const addEventListeners = message => {
 
 		link?.addEventListener('click', async e => {
 			e.preventDefault()
-			const { html } = await (await fetch(link.href, fetchOptions)).json()
-
-			message.innerHTML = html
-
-			addEventListeners(message) // Ensure that eventListeners persist
+			const { html } = await (await fetch(link.href, fetchOptions))
+			addEventListeners(html) // Ensure that eventListeners persist
 		})
 	})
 }

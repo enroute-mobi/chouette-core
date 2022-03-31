@@ -10,16 +10,12 @@ class ControlMessagesController < ChouetteController
 
 	def index
 		index! do |format|
-			format.js do
-				render json: {
-					html: render_to_string(
-						partial: 'control_list_runs/control_messages',
-						locals: {
-							control_run: parent,
-							facade: OperationRunFacade.new(control_list_run)
-						}
-					)
-				}
+			format.html do
+		     render('control_list_runs/control_messages',
+           locals: {
+             control_run: parent,
+             facade: OperationRunFacade.new(control_list_run)
+           })
 			end
 		end
 	end

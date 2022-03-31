@@ -67,6 +67,7 @@ module Control
         end
 
         def association_collection
+          model_attribute.options[:association_collection] ||
           model_attribute.name.to_s.pluralize.to_sym
         end
       end
@@ -82,7 +83,7 @@ module Control
         end
 
         def query_class
-          "Query::#{model_attribute.klass.to_s.split('::').last}".constantize rescue Null
+          "Query::#{model_attribute.klass.model_name.name}".constantize rescue Null
         end
 
         def query

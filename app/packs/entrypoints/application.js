@@ -24,12 +24,9 @@ import "@fortawesome/fontawesome-free/js/all"
 import Alpine from 'alpinejs'
 import 'flag-icon-css/css/flag-icons.css'
 // import "./application.scss"
-import BrowerTimeZoneSetter from '../src/helpers/BrowerTimeZoneSetter'
 
 document.addEventListener('DOMContentLoaded',  _event => {
 	Alpine.start()
 })
 
 console.log('Hello World from Webpacker 6')
-
-BrowerTimeZoneSetter.call()

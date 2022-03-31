@@ -1,6 +1,6 @@
 en:
   control_messages:
-    00_dummy_00: "Message on line %{name}"
+    default: "Message on line %{name}"
   activerecord:
     models:
       control/message:

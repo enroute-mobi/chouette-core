@@ -53,14 +53,42 @@ module Control
         @referent ||= model_attribute.options[:reference] || false
       end
 
-      def belongs_to_attributes
-        @belongs_to_attributes ||=
-          models.reflect_on_all_associations.select { |a| a.macro == :belongs_to }
+      class Reference < Finder
+        def faulty_models
+          scope.left_joins(model_attribute.name).where(association_collection => { id: nil })
+        end
+
+        def association_collection
+          model_attribute.options[:association_collection] ||
+          model_attribute.name.to_s.pluralize.to_sym
+        end
       end
 
-      def association_collection
-        @association_collection ||= model_attribute.name.to_s.pluralize.to_sym
-      end
+      class WithQuery < Finder
+        def self.create(scope, model_attribute)
+          with_query = new(scope, model_attribute)
+          with_query if with_query.support?
+        end
+
+        def support?
+          query.respond_to? query_method
+        end
+
+        def query_class
+          "Query::#{model_attribute.klass.model_name.name}".constantize rescue Null
+        end
+
+        def query
+          @query ||= query_class.new scope
+        end
+
+        def query_method
+          "without_#{model_attribute.name}"
+        end
+
+        def faulty_models
+          query.send query_method
+        end
 
       def association_collection
         @association_collection ||= model_attribute.name.to_s.pluralize.to_sym

@@ -38,3 +38,9 @@ en:
         target_code_space: Target Code Space
         target_pattern: Target Pattern
         expected_result: Expected result
+      macro/dummy:
+        expected_result: Expected result
+  simple_form:
+    placeholders:
+      macro_base:
+        name: Describe macro goal

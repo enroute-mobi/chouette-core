@@ -11,7 +11,8 @@ class ControlMessagesController < ChouetteController
 	def index
 		index! do |format|
 			format.html do
-		     render('control_list_runs/control_messages',
+		     render(partial: 'control_list_runs/control_messages',
+           layout: false,
            locals: {
              control_run: parent,
              facade: OperationRunFacade.new(control_list_run)

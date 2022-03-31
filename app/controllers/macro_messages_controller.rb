@@ -11,6 +11,7 @@ class MacroMessagesController < ChouetteController
   def index
     index! do |format|
       render( partial: 'macro_list_runs/macro_messages',
+              layout: false,
 						  locals: {
                 macro_run: parent,
                 facade: OperationRunFacade.new(macro_list_run)

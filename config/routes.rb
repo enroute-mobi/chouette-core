@@ -75,7 +75,7 @@ ChouetteIhm::Application.routes.draw do
 
     resources :macro_list_runs, only: %w(new create show index)do
       resources :macro_runs, only: [] do
-        resources :macro_messages, only: :index, defaults: { format: 'js' }
+        resources :macro_messages, only: :index
       end
     end
 
@@ -86,7 +86,7 @@ ChouetteIhm::Application.routes.draw do
 
     resources :control_list_runs, only: %w(new create show index) do
       resources :control_runs, only: [] do
-        resources :control_messages, only: :index, defaults: { format: 'js' }
+        resources :control_messages, only: :index
       end
     end
 

@@ -1,4 +1,4 @@
-class MacroMessagesMacroler < ChouetteController
+class MacroMessagesController < ChouetteController
   include ApplicationHelper
   include PolicyChecker
 

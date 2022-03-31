@@ -611,6 +611,7 @@ ActiveRecord::Schema.define(version: 2022_03_25_152937) do
     t.datetime "ended_at"
     t.string "token_upload"
     t.string "type"
+    t.datetime "notified_parent_at"
     t.integer "current_step", default: 0
     t.integer "total_steps", default: 0
     t.string "creator"
@@ -620,7 +621,6 @@ ActiveRecord::Schema.define(version: 2022_03_25_152937) do
     t.bigint "publication_id"
     t.bigint "workgroup_id"
     t.hstore "options", default: {}
-    t.datetime "notified_parent_at"
     t.index ["publication_id"], name: "index_exports_on_publication_id"
     t.index ["referential_id"], name: "index_exports_on_referential_id"
     t.index ["workbench_id"], name: "index_exports_on_workbench_id"
@@ -1409,7 +1409,6 @@ ActiveRecord::Schema.define(version: 2022_03_25_152937) do
     t.bigint "stop_area_provider_id"
     t.string "public_code"
     t.float "compass_bearing"
-    t.string "accessibility_status"
     t.string "mobility_impaired_accessibility"
     t.string "wheelchair_accessibility"
     t.string "step_free_accessibility"
@@ -1550,7 +1549,7 @@ ActiveRecord::Schema.define(version: 2022_03_25_152937) do
     t.datetime "synced_at"
     t.string "permissions", array: true
     t.string "profile"
-    t.string "user_locale", default: "fr"
+    t.string "user_locale"
     t.string "time_zone", limit: 255, default: "Paris"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true

@@ -66,6 +66,10 @@ module Macro
         @workbench.lines
       end
 
+      def companies
+        @workbench.companies
+      end
+
       def routes
         Chouette::Route.none
       end

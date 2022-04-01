@@ -1,12 +1,12 @@
 module Macro
   class Dummy < Base
     option :expected_result
-    enumerize :expected_result, in: %w{success warning error fail}, default: "success"
+    enumerize :expected_result, in: %w{info warning error fail}, default: "info"
 
     option :target_model
     enumerize :target_model, in: %w{Line StopArea JourneyPattern Company}, default: "Line"
-
     validates :target_model, presence: true
+
     class Run < Macro::Base::Run
       option :target_model
 
@@ -16,7 +16,7 @@ module Macro
         models.select(:id, :name).find_each do |model|
           macro_messages.create(
             message_attributes: model.attributes,
-            criticity: "info",
+            criticity: options[:expected_result],
             source: model
           )
         end

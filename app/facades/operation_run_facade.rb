@@ -47,9 +47,9 @@ class OperationRunFacade
 	def source_link(message)
 		case message.source_type
 			when 'Chouette::Line' then workbench_line_referential_line_path(workbench, message.source_id)
-			when 'Chouette::StopArea' then workbench_stop_area_referential_line_path(workbench, message.source_id)
+			when 'Chouette::StopArea' then workbench_stop_area_referential_stop_area_path(workbench, message.source_id)
 			when 'Chouette::JourneyPattern' then resource.try(:referential_id) ? journey_patterns_referential_path(resource.referential_id, journey_pattern_id: message.source_id) : '#'
-			when 'Company' then workbench_line_referential_company_path(workbench, message.source_id)
+			when 'Chouette::Company' then workbench_line_referential_company_path(workbench, message.source_id)
 		end
 	end
 

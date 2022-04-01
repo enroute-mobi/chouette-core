@@ -1,4 +1,6 @@
 class OperationRunFacade
+	include Rails.application.routes.url_helpers
+
 	attr_reader :resource, :workbench
 
 	def initialize(resource)
@@ -43,7 +45,12 @@ class OperationRunFacade
 	end
 
 	def source_link(message)
-		message.source.decorate(context: { workbench: workbench }).action_links.first.href
+		case message.source_type
+			when 'Chouette::Line' then workbench_line_referential_line_path(workbench, message.source_id)
+			when 'Chouette::StopArea' then workbench_stop_area_referential_line_path(workbench, message.source_id)
+			when 'Chouette::JourneyPattern' then resource.try(:referential_id) ? journey_patterns_referential_path(resource.referential_id, journey_pattern_id: message.source_id) : '#'
+			when 'Company' then workbench_line_referential_company_path(workbench, message.source_id)
+		end
 	end
 
 	class	PaginateLinkRenderer < WillPaginate::ActionView::LinkRenderer

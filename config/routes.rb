@@ -224,6 +224,7 @@ ChouetteIhm::Application.routes.draw do
       get :select_compliance_control_set
       post :validate
       put :clean
+      get :journey_patterns
     end
 
     resources :autocomplete_stop_areas, only: [:show, :index] do

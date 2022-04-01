@@ -1,0 +1,17 @@
+fr:
+  activerecord:
+    models:
+      control/run:
+        zero:  "rapport de contrôles"
+        one:   "rapport de contrôles"
+        other: "rapports de contrôles"
+      control/dummy/run:
+        one: Simuler un contrôle
+    attributes:
+      control/base/run:
+        name: Nom
+        comments: Commentaire
+        criticity: Criticité
+      control/dummy/run:
+        expected_result: Résultat attendu
+        target_model: Modèle cible

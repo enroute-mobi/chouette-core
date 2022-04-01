@@ -1,6 +1,6 @@
 module Control
   class Context < ApplicationModel
-    include OptionsSupport 
+    include OptionsSupport
 
     self.table_name = "control_contexts"
 
@@ -66,6 +66,10 @@ module Control
 
       def lines
         @workbench.lines
+      end
+
+      def companies
+        @workbench.companies
       end
 
       def routes

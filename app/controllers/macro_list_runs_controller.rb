@@ -7,6 +7,8 @@ class MacroListRunsController < ChouetteController
   before_action :decorate_macro_list_run, only: %i[show new edit]
   before_action :select_referentials, only: %i{new create}
 
+  before_action :init_facade, only: %i[show]
+
 	belongs_to :workbench
 	belongs_to :macro_list, optional: true
 
@@ -58,6 +60,15 @@ class MacroListRunsController < ChouetteController
   end
 
   private
+
+  def init_facade
+    object = macro_list_run rescue Macro::List::Run.new(workbench: workbench)
+    @facade ||= OperationRunFacade.new(object)
+  end
+
+  alias facade init_facade
+
+  helper_method :facade
 
   def decorate_macro_list_run
     object = macro_list_run rescue build_resource

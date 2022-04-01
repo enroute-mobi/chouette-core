@@ -1,0 +1,28 @@
+.w-full.mt-md.mb-md x-data=("{ showDetails: false, showMessages: false }")
+	.flex.items-center.w-full
+		button @click="showDetails = ! showDetails" type="button" class="flex items-center p-3 pl-3 mr-3 font-bold text-white rounded cursor-pointer bg-enroute-chouette-primary hover:text-indigo-100"
+			<span class="text-3xl w-4" x-text="showDetails ? '-' : '+'">+</span>
+		
+		.grow
+			= truncate("#{control_run.name} (#{control_run.model_name.human})", length: 60)
+
+		.flex.items-center.ml-auto
+			.flex.justify-center.rounded.mx-5.p-5.font-bold.border.border-black.text-black.bg-enroute-chouette-gold style="min-width: 50px;"
+				p = control_run.control_messages.warning.size
+			.flex.justify-center.rounded.mx-5.p-5.font-bold.border.border-black.text-white.bg-enroute-chouette-red style="min-width: 50px;"
+				p = control_run.control_messages.error.size
+			
+			button @click="showMessages = ! showMessages" type="button" class="flex px-7 py-3 ml-xs font-bold text-white rounded cursor-pointer bg-enroute-chouette-primary h-[50%] hover:text-indigo-100"
+				.span.fa.fa-caret-down.mx-1 x-show="showMessages"
+				.span.fa.fa-caret-up.mx-1 x-show="!showMessages"
+
+	div x-show="showDetails"
+		= simple_block_for control_run, title: I18n.t('options', scope: 'activerecord.attributes.control/base') do |d|
+			= d.attribute :comments
+			= d.attribute :criticity, value: I18n.t(control_run.criticity, scope: 'enumerize.control.criticity')
+			= d.attribute :code
+			- control_run.options.each do |k, v|
+				= d.attribute k, value: v
+
+	.control_messages x-show="showMessages"
+		= render 'control_messages', control_run: control_run

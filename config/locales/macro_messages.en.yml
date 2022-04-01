@@ -1,0 +1,14 @@
+en:
+  macro_messages:
+    default: "Message on line %{name}"
+  activerecord:
+    models:
+      macro/message:
+        zero:  "messages"
+        one:   "message"
+        other: "messages"
+    attributes:
+      macro/message:
+        criticity: Criticity
+        message: Message
+        source: Source

@@ -9,8 +9,11 @@ RSpec.describe Macro::Dummy do
     let(:macro_run) do
       Macro::Dummy::Run.create(
         macro_list_run: macro_list_run,
-        target_model: target_model,
-        position: 0
+        position: 0,
+        options: {
+          expected_result: "warning",
+          target_model: target_model
+        }
       )
     end
 
@@ -21,7 +24,7 @@ RSpec.describe Macro::Dummy do
     let(:expected_message) do
       an_object_having_attributes({
         source: source,
-        criticity: "info",
+        criticity: "warning",
         message_attributes: { "id" => source.id, "name" => source.name }
       })
     end

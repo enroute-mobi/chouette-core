@@ -1,0 +1,28 @@
+en:
+  activerecord:
+    models:
+      macro/base/run:
+        zero: "Macro"
+        one: "Macro"
+        other: "Macros"
+      macro/create_code/run:
+        one: Create code
+      macro/dummy/run:
+        one: Simulate a macro
+      macro/associate_shape/run:
+        one: Associate shapes
+      macro/update_stop_area_compass_bearing/run:
+        one: Define the orientation of stop areas according to the shapes
+    attributes:
+      macro/base/run:
+        name: Name
+        comments: Comment
+        target_model: Target model
+        options: Options
+      macro/create_code/run:
+        source_attribute: Source Attribute
+        source_pattern: Source Pattern
+        target_code_space: Target code space
+        target_pattern: Target pattern
+      macro/dummy/run:
+        expected_result: Expected result

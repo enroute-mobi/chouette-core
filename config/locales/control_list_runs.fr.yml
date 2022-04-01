@@ -12,9 +12,6 @@ fr:
       new: "Exécuter un Jeu de contrôles"
       destroy: "Supprimer ce Rapport de Jeu de contrôles"
       destroy_confirm: "Etes vous sûr de supprimer ce Rapport de Jeu de contrôles ?"
-  control_list_runs:
-    actions:
-      new: "Exécuter un Jeu de contrôles"
   control_list_run:
     actions:
       new: "Exécuter un Jeu de contrôles"

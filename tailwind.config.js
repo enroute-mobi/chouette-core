@@ -5,7 +5,12 @@ module.exports = {
       colors: {
         'enroute-blue': '#00217C',
         'enroute-chouette': '#5B4072',
-        'enroute-chouette-green': '#08B4C1',
+        'enroute-chouette-primary': '#08B4C1',
+        'enroute-chouette-green': '#70B12B',
+        'enroute-chouette-smooth-green': '#AEDD8A',
+        'enroute-chouette-red':'#DA2F36',
+        'enroute-chouette-orange':'#ED7F00',
+        'enroute-chouette-gold':'#FFCC00',
         'enroute-ara': '#DB8100',
         'enroute-ara-yellow': '#F4CD0B',
         'light-blue': '#F0F7FD',

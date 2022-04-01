@@ -43,7 +43,6 @@ class User < ApplicationModel
   validates :name, presence: true
 
   enumerize :user_locale, in: %w(fr en), default: 'fr'
-  enumerize :time_zone, in: TZInfo::Timezone.all_identifiers, default: 'Europe/Paris'
 
   before_validation(:on => :create) do
     self.password ||= Devise.friendly_token.first(6)

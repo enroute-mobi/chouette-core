@@ -30,11 +30,17 @@
       = f.input :email
       = f.input :phone
   .separator.section_separator
-  / .row
-  /   .col-lg-12
-  /     h2.my-16
-  /       = t("point_of_interests.form.sections.hours")
-  / .separator.section_separator
+  .row
+    .col-lg-12
+      h2.my-16
+        = t("point_of_interests.form.sections.hours")
+      = f.simple_fields_for(:point_of_interest_hours) do |point_of_interest_hours_form|
+        = render 'point_of_interest_hour_fields', f: point_of_interest_hours_form
+
+      .links.nested-linker
+        = link_to_add_association t('point_of_interests.form.add_hours'), f, :point_of_interest_hours, class: 'btn btn-primary'
+
+  .separator.section_separator
   .row
     .col-lg-12
       h2.my-16

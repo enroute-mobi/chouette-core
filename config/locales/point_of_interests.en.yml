@@ -48,3 +48,9 @@ en:
         shape_provider: "Topological Provider"
         updated_at: "Updated At"
         creator_id: "Create by"
+      point_of_interest/hour:
+        opening_time_of_day: "Open"
+        closing_time_of_day: "Close"
+        week_days: "Days"
+        add_hours: "Add hours"
+

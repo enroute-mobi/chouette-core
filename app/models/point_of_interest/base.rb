@@ -7,11 +7,16 @@ module PointOfInterest
 
     belongs_to :shape_referential, required: true
     belongs_to :shape_provider, required: true
+    belongs_to :point_of_interest_category, class_name: "PointOfInterest::Category", optional: false, inverse_of: :point_of_interests, required: true
 
-    belongs_to :point_of_interest_category, class_name: "PointOfInterest::Category", optional: false, inverse_of: :point_of_interests
-    belongs_to :point_of_interest_hour, class_name: "PointOfInterest::Hour", optional: true, inverse_of: :point_of_interests
+    has_many :codes, as: :resource, dependent: :delete_all
+    has_many :point_of_interest_hours, dependent: :delete_all, class_name: "PointOfInterest::Hour", foreign_key: :point_of_interest_id
+    accepts_nested_attributes_for :codes, allow_destroy: true, reject_if: :all_blank
+    accepts_nested_attributes_for :point_of_interest_hours, allow_destroy: true, reject_if: :all_blank
 
-    validates :name, presence: true
+    validates_associated :codes
+    validates_associated :point_of_interest_hours
+    validates :name, :point_of_interest_category_id, presence: true
 
     before_validation :define_shape_referential, on: :create
     before_validation :position_from_input

@@ -23,6 +23,7 @@ fr:
         hours: "Heures"
         codes: "Codes"
       point_of_interest_category_placeholder: Rechercher par nom de Catégorie de Point d'intérêt
+      add_hours: "Ajouter une heures"
     search_no_results: "Aucun Point d'intérêts ne correspond à votre recherche"
     errors:
     filters:
@@ -48,3 +49,7 @@ fr:
         shape_provider: "Fournisseur Topologique"
         updated_at: "Edité le"
         creator_id: "Créé par"
+      point_of_interest/hour:
+        opening_time_of_day: "Ouvert"
+        closing_time_of_day: "Fermé"
+        week_days: "Jours"

@@ -55,9 +55,15 @@ module RoutePlanner
   end
 
   class Cache
+
+    def initialize(next_instance)
+      @next_instance = next_instance
+    end
+    attr_reader :next_instance
+
     def shape(points)
       Rails.cache.fetch(rounded_points(points)) do
-        TomTom.new.shape(points)
+        next_instance.shape(points)
       end
     end
 

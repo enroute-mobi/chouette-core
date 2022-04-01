@@ -56,10 +56,6 @@ module Macro
         context.journey_patterns.without_associated_shape.includes(:stop_points)
       end
 
-      def shapes
-        workgroup.shape_referential.shapes
-      end
-
       def shape_provider
         workbench.shape_providers.first
       end

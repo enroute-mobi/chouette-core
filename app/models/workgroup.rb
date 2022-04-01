@@ -282,10 +282,11 @@ class Workgroup < ApplicationModel
 
   def route_planner
     if owner.has_feature?("route_planner")
-      RoutePlanner::Cache.new
+      instance = RoutePlanner::TomTom.new
     else
-      RoutePlanner::Null.new
+      instance = RoutePlanner::Null.new
     end
+    RoutePlanner::Cache.new instance
   end
 
   def self.compliance_control_sets_label(key)

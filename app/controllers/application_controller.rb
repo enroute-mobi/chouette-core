@@ -9,6 +9,7 @@ class ApplicationController < ActionController::Base
   protect_from_forgery unless: -> { request.get? && (request.format.json? || request.format.js?) }
   before_action :authenticate_user!
   before_action :set_locale, unless: -> { params[:controller] == 'notifications' }
+  before_action :set_time_zone
 
   # Load helpers in rails engine
   helper LanguageEngine::Engine.helpers
@@ -16,6 +17,10 @@ class ApplicationController < ActionController::Base
 
   def set_locale
     I18n.locale = LocaleSelector.locale_for(params, session, current_user)
+  end
+
+  def set_time_zone
+    Time.zone = TimeZoneSelector.time_zone_for(current_user)
   end
 
   def pundit_user

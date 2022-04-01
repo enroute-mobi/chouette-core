@@ -28,7 +28,12 @@ class ConfigBuilder {
       default: {
         valueField: 'id',
         labelField: 'text',
-        plugins: ['clear_button']
+        plugins: ['clear_button'],
+        render: {
+          optgroup_header: (data, escape) => (
+            `<div class="font-bold ml-2 my-2 p-3 text-2xl">${escape(data.label)}</div>`
+          )
+        }
       },
       create: {
         create: true,

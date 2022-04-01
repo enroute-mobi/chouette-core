@@ -69,3 +69,8 @@ en:
             permissions:
               must_be_unique: User's permissions must be unique.
               must_be_nonempty: A permission can't be empty.
+  enumerize:
+    user:
+      user_locale:
+        fr: French
+        en: English

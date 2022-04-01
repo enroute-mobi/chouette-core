@@ -1,5 +1,5 @@
 RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
-  let(:gtfs_export) { create :gtfs_export, referential: exported_referential, workbench: workbench, duration: 5, prefer_referent_stop_area: true}
+  let(:gtfs_export) { create :gtfs_export, referential: exported_referential, workbench: workbench, duration: 5, prefer_referent_stop_area: true, prefer_referent_company: true}
 
   describe 'Company Part' do
     let(:export_scope) { Export::Scope::All.new context.referential }
@@ -40,6 +40,57 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
     it "should use companies objectid when their registration_number is not unique" do
       part.export!
       expect(export.target.agencies.map(&:id)).to match_array([first_company.objectid, second_company.objectid])
+    end
+
+    context "when several companies are associated to referent" do
+      let!(:context) do
+        Chouette.create do
+          line_provider :other do
+            company :referent, registration_number: "1", time_zone: "Eastern Time (US & Canada)", is_referent: true
+            line :l0, company: :referent
+          end
+
+          line_provider :first do
+            company :c1, registration_number: "1", time_zone: "Europe/Paris", referent: :referent
+            line :l1, company: :c1
+          end
+
+          line_provider :second do
+            company :c2, registration_number: "1", time_zone: "Europe/Paris", referent: :referent
+            line :l2, company: :c2
+          end
+
+          line_provider :third do
+            company :c3, registration_number: "1", time_zone: "Europe/Paris"
+            line :l3, company: :c3
+          end
+
+          route line: :l0 do
+            vehicle_journey
+          end
+          route line: :l1 do
+            vehicle_journey
+          end
+          route line: :l2 do
+            vehicle_journey
+          end
+          route line: :l3 do
+            vehicle_journey
+          end
+        end
+      end
+
+      let(:third_company) {context.company(:c3)}
+      let(:referent_company) {context.company(:referent)}
+
+      before do
+        context.referential.switch
+      end
+
+      it "should not export several times the same Company Referent" do
+        part.export!
+        expect(export.target.agencies.map(&:id)).to match_array([referent_company.objectid, third_company.objectid])
+      end
     end
   end
 

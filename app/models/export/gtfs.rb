@@ -9,6 +9,8 @@ class Export::Gtfs < Export::Base
   option :line_provider_ids, serialize: :map_ids
   option :prefer_referent_stop_area, required: true, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
   option :ignore_single_stop_station, required: true, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
+  option :prefer_referent_company, required: true, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
+
 
   DEFAULT_AGENCY_ID = "chouette_default"
   DEFAULT_TIMEZONE = "Etc/UTC"
@@ -305,7 +307,8 @@ class Export::Gtfs < Export::Base
       options.each { |k,v| send "#{k}=", v }
     end
 
-    delegate :target, :index, :export_scope, :messages, :date_range, :code_spaces, :public_code_space, :prefer_referent_stop_area, :referential, to: :export
+    delegate :target, :index, :export_scope, :messages, :date_range, :code_spaces, :public_code_space,
+             :prefer_referent_stop_area, :prefer_referent_company, :referential, to: :export
 
     def part_name
       @part_name ||= self.class.name.demodulize.underscore
@@ -431,11 +434,29 @@ class Export::Gtfs < Export::Base
         each do |vehicle_journey_id, vehicle_journeys_company_id, line_company_id, company_time_zone|
 
         company_id = vehicle_journeys_company_id.presence || line_company_id.presence || DEFAULT_AGENCY_ID
-        ids << company_id
+        time_zone = company_time_zone
 
-        index.register_vehicle_journey_time_zone vehicle_journey_id, company_time_zone if company_time_zone
+        if referent = referents[company_id]
+          company_id = referent.id
+          time_zone = referent.time_zone
+        end
+
+        ids << company_id
+        index.register_vehicle_journey_time_zone vehicle_journey_id, time_zone if time_zone
       end
       ids
+    end
+
+    def referents
+      @referents ||= companies.where.not(referent: nil).map{ |company| [ company.id, company.referent ] }.to_h
+    end
+
+    def handle_referent(company, duplicated_registration_numbers)
+      if prefer_referent_company && referent = company.referent
+        Decorator.new(referent, duplicated_registration_numbers)
+      else
+        Decorator.new(company, duplicated_registration_numbers)
+      end
     end
 
     def create_message(decorated_company)
@@ -451,8 +472,8 @@ class Export::Gtfs < Export::Base
     end
 
     def export!
-      Chouette::Company.where(id: company_ids-[DEFAULT_AGENCY_ID]).order('name').find_each do |company|
-        decorated_company = Decorator.new(company, duplicated_registration_numbers)
+      Chouette::Company.includes(:referent).where(id: company_ids-[DEFAULT_AGENCY_ID]).order('name').find_each do |company|
+        decorated_company = handle_referent(company, duplicated_registration_numbers)
 
         create_message decorated_company
         target.agencies << decorated_company.agency_attributes

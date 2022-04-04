@@ -38,7 +38,7 @@ class Export::Ara < Export::Base
   end
 
   def generate_export_file
-    parts = [ Stops, Lines, VehicleJourneys ]
+    parts = [ Stops, Lines, VehicleJourneys, StopVisits ]
 
     period.each do |day|
       # For each day, a scope selects models to be exported
@@ -49,9 +49,6 @@ class Export::Ara < Export::Base
         parts.each do |part|
           part.new(export_scope: daily_scope, target: model_name).export
         end
-
-        # TODO
-        # VehicleJourneyAtStops.new(export_scope: daily_scope, target: model_name).export
       end
     end
 
@@ -307,6 +304,65 @@ class Export::Ara < Export::Base
       # TODO To be shared
       def ara_codes
         code_provider.unique_codes __getobj__
+      end
+    end
+  end
+
+  class StopVisits < Part
+    delegate :vehicle_journey_at_stops, to: :export_scope
+
+    def export!
+      vehicle_journey_at_stops.includes(:vehicle_journey, stop_point: :stop_area).find_each do |stop_visit|
+        target << Decorator.new(stop_visit).ara_model
+      end
+    end
+
+    class Decorator < SimpleDelegator
+      def initialize(stop_visit)
+        super stop_visit
+      end
+
+      def ara_attributes
+        {
+          id: uuid,
+          objectids: ara_codes,
+          stop_area_id: stop_area_id,
+          vehicle_journey_id: vehicle_journey_id,
+          passage_order: passage_order,
+          schedules: schedules,
+        }
+      end
+
+      def ara_model
+        Ara::StopVisit.new ara_attributes
+      end
+
+      def stop_area_id
+        stop_point&.stop_area&.get_objectid.local_id
+      end
+
+      def vehicle_journey_id
+        vehicle_journey&.get_objectid.local_id
+      end
+
+      def passage_order
+        stop_point&.position.to_s
+      end
+
+      def schedules
+        [{
+          "Kind" => "expected",
+          "ArrivalTime" => arrival_time.strftime('%Y-%m-%dT%H:%M:%S%z'),
+          "DepartureTime" => departure_time.strftime('%Y-%m-%dT%H:%M:%S%z')
+        }]
+      end
+
+      def uuid
+        @uuid ||= SecureRandom.uuid
+      end
+
+      def ara_codes
+        { external: uuid }
       end
     end
   end

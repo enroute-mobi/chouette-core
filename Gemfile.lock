@@ -1,6 +1,6 @@
 GIT
   remote: https://bitbucket.org/enroute-mobi/ara-file.git
-  revision: e8d5de169e3f465c59a1caaf28e2f70007617dcc
+  revision: 6e358cfffc07cd8930136332bbadeed689ec8a7f
   specs:
     ara-file (0.1.0)
 

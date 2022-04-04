@@ -26,7 +26,7 @@ RSpec.describe Export::Ara do
       # TODO Use Ara::File to read the file
       subject { export.file.read.split("\n") }
 
-      it { is_expected.to have_attributes(size: 30) }
+      it { is_expected.to have_attributes(size: 48) }
     end
   end
 
@@ -163,4 +163,57 @@ RSpec.describe Export::Ara do
       end
     end
   end
+
+  describe "StopVisit export" do
+    context "when Stop Visits are exported" do
+      let(:context) do
+        Chouette.create { vehicle_journey }
+      end
+      let(:target) { [] }
+      let(:referential) { context.referential }
+      let(:vehicle_journey) { context.vehicle_journey }
+
+      let(:part) { Export::Ara::StopVisits.new export_scope: referential, target: target }
+
+      before { referential.switch }
+
+      describe "the Ara File target" do
+        subject { part.export! ; target }
+
+        let(:at_stops_count) { vehicle_journey.vehicle_journey_at_stops.count }
+
+        it { is_expected.to match_array([an_instance_of(Ara::StopVisit)] * at_stops_count) }
+
+        describe Export::Ara::StopVisits::Decorator do
+
+          let(:vehicle_journey_at_stop) {vehicle_journey.vehicle_journey_at_stops.first }
+          let(:stop_visit_decorator) { Export::Ara::StopVisits::Decorator.new vehicle_journey_at_stop }
+
+          let(:experted_attributes) do
+            an_object_having_attributes({
+              schedules: [{
+                "Kind" => "expected",
+                "ArrivalTime" => "2000-01-01T19:01:00+0000",
+                "DepartureTime" => "2000-01-01T15:01:00+0000"
+              }],
+              passage_order: "0"
+            })
+          end
+
+          before do
+            vehicle_journey_at_stop.update(
+              arrival_time: "2000-01-01T19:01:00+000".to_datetime,
+              departure_time: "2000-01-01T15:01:00+0000".to_datetime
+            )
+            vehicle_journey_at_stop.stop_point.update position: 0
+          end
+
+          it "should create stop_visits with the correct attributes" do
+            expect([stop_visit_decorator.ara_model]).to include(experted_attributes)
+          end
+        end
+      end
+    end
+  end
+
 end

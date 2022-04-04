@@ -9,7 +9,7 @@ const locales = {
 
 document.addEventListener("DOMContentLoaded", () => {
   if (document.getElementsByClassName("flatpickr")) {
-    flatpickr('.flatpickr', {
+    flatpickr('.date_picker_block', {
 			locale: locales[I18n.locale],
       dateFormat: "d/m/Y",
       wrap: true
@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   if (document.getElementsByClassName("time_picker")) {
-    flatpickr(".time_picker", {
+    flatpickr(".time_picker_block", {
 			enableTime: true,
 			noCalendar: true,
 			dateFormat: "H:i",

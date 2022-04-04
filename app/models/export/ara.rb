@@ -312,7 +312,7 @@ class Export::Ara < Export::Base
     delegate :vehicle_journey_at_stops, to: :export_scope
 
     def export!
-      vehicle_journey_at_stops.find_each do |stop_visit|
+      vehicle_journey_at_stops.includes(:vehicle_journey, stop_point: :stop_area).find_each do |stop_visit|
         target << Decorator.new(stop_visit).ara_model
       end
     end

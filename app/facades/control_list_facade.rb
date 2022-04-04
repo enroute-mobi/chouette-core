@@ -47,13 +47,8 @@ class ControlListFacade
 		]
 	end
 
-	def control
-		OpenStruct.new(
-			target_attribute: OpenStruct.new(
-				options: ModelAttribute.all.map { |m| { id: m.name, text: m.klass.tmf(m.name), group: m.resource_name.to_s.camelcase } },
-				groups: Control::PresenceAttribute.target_model.values.map { |v| { value: v, label: I18n.t(v.underscore, scope: 'enumerize.target_model') } }
-			)
-		)
+	def target_attribute_options
+		ModelAttribute.all.map { |m| { id: m.name, text: m.klass.tmf(m.name), resource_type: m.resource_name.to_s.camelcase } }.to_json
 	end
 
 	def json_state

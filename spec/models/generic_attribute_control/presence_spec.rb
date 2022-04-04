@@ -13,12 +13,10 @@ RSpec.describe GenericAttributeControl::Presence, type: :model, scope: :model_at
       it 'should be compliant' do
         test_model_attributes do |m, compliance_check|
           instance = m.klass.new
-          if source_attributes = m.options[:source_attributes]
-            source_attributes.each do |source_attribute|
-              instance.send("#{source_attribute}=", get_default_value(m))
-            end
-          else
+          unless virtual_attributes[m.code]
             instance.send("#{m.name}=", get_default_value(m))
+          else
+            instance.send("country_code=", "FR")
           end
           compliant = GenericAttributeControl::Presence.compliance_test(compliance_check, instance)
 
@@ -31,13 +29,8 @@ RSpec.describe GenericAttributeControl::Presence, type: :model, scope: :model_at
       it 'should not be compliant' do
         test_model_attributes do |m, compliance_check|
           instance = m.klass.new
-          if source_attributes = m.options[:source_attributes]
-            source_attributes.each do |source_attribute|
-              instance.send("#{source_attribute}=", nil)
-            end
-          else
-            instance.send("#{m.name}=", nil)
-          end
+          instance.send("#{m.name}=", nil) unless virtual_attributes[m.code]
+
           compliant = GenericAttributeControl::Presence.compliance_test(compliance_check, instance)
 
           expect(compliant).to be_falsey

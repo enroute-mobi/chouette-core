@@ -1,14 +1,6 @@
-- target_attribute = facade.control.target_attribute
-
-= form.input :target_attribute,
-	as: :tom_select,
-	collection: target_attribute.options,
-	input_html: { \
-		'x-model': 'resource.target_attribute',
-		'@change': "resource.target_model = Boolean($event.target.value) ? tomSelect.getItem($event.target.value).dataset.group : ''" \
-		},
-	config: { \
-		options: target_attribute.options, \
-		optgroups: target_attribute.groups, \
-		optgroupField: 'group', \
-	}
+= form.input :target_model, input_html: { 'x-model': 'resource.target_model', '@change': "resource.target_attribute = ''" }
+= form.input :target_attribute do
+	select.select.form-control.required name="control_list[controls_attributes][0][target_attribute]" x-model="resource.target_attribute" :disabled="!Boolean(resource.target_model)"
+		option value=""
+		template[x-for="option in #{facade.target_attribute_options}"]
+			option :value="option.id" x-text="option.text" x-show="option.resource_type == resource.target_model"

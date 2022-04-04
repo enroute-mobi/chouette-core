@@ -83,11 +83,11 @@ module Control
         end
 
         def query_class
-          "Query::#{model_attribute.klass.model_name.name}".constantize rescue Null
+          Query.for model_attribute.klass rescue nil
         end
 
         def query
-          @query ||= query_class.new scope
+          @query ||= query_class.new scope if query_class
         end
 
         def query_method
@@ -96,12 +96,6 @@ module Control
 
         def faulty_models
           query.send query_method
-        end
-
-        class Null
-          def initialize(*); end
-
-          def support?; false; end
         end
       end
 

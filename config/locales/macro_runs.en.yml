@@ -13,6 +13,10 @@ en:
         one: Associate shapes
       macro/update_stop_area_compass_bearing/run:
         one: Define the orientation of stop areas according to the shapes
+      macro/create_stop_area_referents/run:
+        one: Create stop area referent
+      macro/associate_stop_area_referent/run:
+        one: Associate stop area referent
     attributes:
       macro/base/run:
         name: Name

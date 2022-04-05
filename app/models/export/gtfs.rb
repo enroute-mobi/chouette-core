@@ -452,11 +452,15 @@ class Export::Gtfs < Export::Base
     end
 
     def handle_referent(company, duplicated_registration_numbers)
-      if prefer_referent_company && referent = company.referent
-        Decorator.new(referent, duplicated_registration_numbers)
-      else
-        Decorator.new(company, duplicated_registration_numbers)
+      decorated_company = Decorator.new(company, duplicated_registration_numbers)
+
+      index.register_agency_id(decorated_company, decorated_company.agency_id)
+
+      company.particulars.each do |particular_company|
+        index.register_agency_id(particular_company, decorated_company.agency_id)
       end
+
+      decorated_company
     end
 
     def create_message(decorated_company)
@@ -472,13 +476,11 @@ class Export::Gtfs < Export::Base
     end
 
     def export!
-      Chouette::Company.includes(:referent).where(id: company_ids-[DEFAULT_AGENCY_ID]).order('name').find_each do |company|
+      Chouette::Company.includes(:particulars).where(id: company_ids-[DEFAULT_AGENCY_ID]).order("name").find_each do |company|
         decorated_company = handle_referent(company, duplicated_registration_numbers)
 
         create_message decorated_company
         target.agencies << decorated_company.agency_attributes
-
-        index.register_agency_id(decorated_company, decorated_company.agency_id)
       end
 
       if company_ids.include? DEFAULT_AGENCY_ID

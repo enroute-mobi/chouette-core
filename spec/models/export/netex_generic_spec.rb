@@ -185,35 +185,142 @@ RSpec.describe Export::NetexGeneric do
 
   describe "Lines export" do
     describe Export::NetexGeneric::Lines::Decorator do
-      let(:line) { Chouette::Line.new }
-      let(:decorator) { Export::NetexGeneric::Lines::Decorator.new line }
+      describe "#netex_attributes" do
+        let!(:context) do
+          Chouette.create do
+            company :first
+            company :second
+            network
+            code_space short_name: 'test'
+            line
+          end
+        end
+        let(:line) { context.line }
 
-      describe "#netex_transport_submode" do
-        subject { decorator.netex_transport_submode }
+        let(:decorator) { Export::NetexGeneric::Lines::Decorator.new line }
 
-        context "when transport submode is 'undefined'" do
-          before { line.transport_submode = :undefined }
+        let(:active_from) { "2022-03-16".to_date }
+        let(:active_until) { active_from + 3 }
+        let(:first_company) { context.company(:first) }
+        let(:second_company_id) { context.company(:second).id}
+        let(:network) { context.network }
+        let(:objectid) { 'chouette:Line:497d415e-fe15-46cf-9219-ee8bed76c95c:LOC' }
+        let(:code_space) { context.code_space }
+
+        subject { decorator.netex_attributes[netex_key] }
+
+        before do
+          line.update(
+            objectid: objectid,
+            company: first_company,
+            network: network,
+            active_from: active_from,
+            active_until: active_until,
+            color: 'FF0000',
+            text_color: 'FFFFFF',
+            deactivated: true,
+            secondary_company_ids: [second_company_id],
+          )
+          line.codes.create(code_space: code_space, value: "code_value")
+        end
+
+        context "when netex_key is objectid" do
+          let(:netex_key) { :id }
+
+          it { is_expected.to eq(objectid) }
+        end
+
+        context "when netex_key is status" do
+          let(:netex_key) { :status }
+
+          it { is_expected.to eq('inactive') }
+        end
+
+        context "when netex_key is name" do
+          let(:netex_key) { :name }
+
+          it { is_expected.to eq(line.name) }
+        end
+
+        context "when netex_key is transport_mode" do
+          let(:netex_key) { :transport_mode }
+
+          it { is_expected.to eq(line.transport_mode) }
+        end
+
+        context "when netex_key is transport_submode" do
+          let(:netex_key) { :transport_submode }
 
           it { is_expected.to be_nil }
         end
 
-        context "when transport submode is a standard value" do
-          before { line.transport_submode = :schoolBus }
+        context "when netex_key is public_code" do
+          let(:netex_key) { :public_code }
 
-          it "is a string (to avoid troubles in the netex gem)" do
-            is_expected.to be_instance_of(String)
+          it { is_expected.to eq(line.number) }
+        end
+
+        context "when netex_key is operator_ref" do
+          let(:netex_key) { :operator_ref }
+
+          it { expect(subject.ref).to eq(first_company.objectid) }
+
+          context "when the line has no company" do
+            let(:first_company) { nil }
+
+            it { expect(subject).to be_nil }
           end
+        end
 
-          it "is the same value than the line submode" do
-            is_expected.to eq(line.transport_submode)
+        context "when netex_key is represented_by_group_ref" do
+          let(:netex_key) { :represented_by_group_ref }
+
+          it { expect(subject.ref).to eq(network.objectid) }
+
+          context "when the line has no network" do
+            let(:network) { nil }
+
+            it { expect(subject).to be_nil }
           end
+        end
 
+        context "when netex_key is presentation" do
+          let(:netex_key) { :presentation }
+          let(:color) { subject.colour.upcase }
+          let(:text_color) { subject.text_colour.upcase }
+
+          it { expect(color).to eq(line.color) }
+          it { expect(text_color).to eq(line.text_color) }
+        end
+
+        context "when netex_key is additional_operators" do
+          let(:netex_key) { :additional_operators }
+          let(:additional_operators) { subject.map(&:ref) }
+          let(:secondary_companies) { line.secondary_companies.map(&:objectid) }
+
+          it { expect(additional_operators).to match_array(secondary_companies) }
+        end
+
+        context "when netex_key is key_list" do
+          let(:netex_key) { :key_list }
+
+          let(:key_list) { subject.map{ |e| [e.key, e.value] } }
+          let(:codes) { line.codes.map{ |code| [ code.code_space.short_name, code.value ] } }
+
+          it { expect(key_list).to match_array(codes) }
+        end
+
+        context "when netex_key is valid_between" do
+          let(:netex_key) { :valid_between }
+          let(:netex_from_date) { subject.from_date.strftime("%Y-%m-%dT%H:%M:%S") }
+          let(:netex_to_date) { subject.to_date.strftime("%Y-%m-%dT%H:%M:%S") }
+
+          it { expect(netex_from_date).to eq("2022-03-16T00:00:00") }
+          it { expect(netex_to_date).to eq("2022-03-20T00:00:00") }
         end
 
       end
-
     end
-
   end
 
   describe "Companies export" do

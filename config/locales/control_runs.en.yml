@@ -1,0 +1,17 @@
+en:
+  activerecord:
+    models:
+      control/run:
+        zero:  control runs
+        one:   control run
+        other: control runs
+      control/dummy/run:
+        one: Simulate a control
+    attributes:
+      control/base/run:
+        name: Name
+        comments: Comments
+        criticity: Criticity
+      control/dummy/run:
+        expected_result: Expected result
+        target_model: Target model

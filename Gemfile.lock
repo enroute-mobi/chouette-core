@@ -1,14 +1,14 @@
 GIT
   remote: https://bitbucket.org/enroute-mobi/ara-file.git
-  revision: e8d5de169e3f465c59a1caaf28e2f70007617dcc
+  revision: 6e358cfffc07cd8930136332bbadeed689ec8a7f
   specs:
     ara-file (0.1.0)
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/gtfs.git
-  revision: 8c41500e9d21da44b12b7059156e42014345be3b
+  revision: 7cd0f912d4bc449bfed252d969a1ec2ddc58a0fd
   specs:
-    gtfs (0.3.5)
+    gtfs (0.3.6)
       msgpack
       offline-sort
       rubyzip
@@ -548,7 +548,7 @@ GEM
     pry-rails (0.3.9)
       pry (>= 0.10.4)
     public_suffix (4.0.6)
-    puma (5.6.2)
+    puma (5.6.4)
       nio4r (~> 2.0)
     pundit (2.2.0)
       activesupport (>= 3.0.0)
@@ -878,7 +878,7 @@ DEPENDENCIES
   premailer-rails (>= 1.11.1)
   pry-byebug
   pry-rails
-  puma (>= 5.3.1)
+  puma (>= 5.6.4)
   pundit
   pundit-matchers (>= 1.7.0)
   rabl

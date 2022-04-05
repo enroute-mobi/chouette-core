@@ -8,6 +8,14 @@
       = f.input :registration_number, input_html: { title: t("formtastic.titles#{format_restriction_for_locales(@line_referential)}.company.registration_number") }
       = custom_fields_for_section(f, "identification")
 
+    .separator.section_separator
+
+  .row
+    .col-lg-12 x-data="{ isReferentActivated: #{@company.is_referent} }"
+      h2.mb-lg= t("stop_areas.form.sections.referent")
+      = f.input :is_referent, as: :switchable_checkbox, input_html: { checked: @company.is_referent, 'x-on:click': 'isReferentActivated = !isReferentActivated' }
+      = f.input :referent_id, as: :select, collection: [f.object.referent_id], input_html: { style: 'width: 100%', 'x-bind:disabled': "isReferentActivated", data: { select2ed_placeholder: Chouette::StopArea.tmf('referent'), select2ed_allow_clear: true, select2_ajax: true, url: (autocomplete_workbench_line_referential_companies_path(@workbench, {referent_only: true})), initvalue: {id: f.object.referent_id, text: f.object.referent.try(:name)}}}, wrapper_html: { id: 'referent_input', class: 'inline-form', 'x-bind:class': "{ 'disabled': isReferentActivated }" }
+
   .separator.section_separator
 
   .row

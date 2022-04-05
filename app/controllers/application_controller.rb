@@ -8,17 +8,19 @@ class ApplicationController < ActionController::Base
   # TODO : Delete hack to authorize Cross Request for js and json get request from javascript
   protect_from_forgery unless: -> { request.get? && (request.format.json? || request.format.js?) }
   before_action :authenticate_user!
-  before_action :set_locale
+  before_action :set_locale, unless: -> { params[:controller] == 'notifications' }
+  before_action :set_time_zone
 
   # Load helpers in rails engine
   helper LanguageEngine::Engine.helpers
   layout :layout_by_resource
 
   def set_locale
-    wanted_locale = (params['lang'] || session[:language] || I18n.default_locale).to_sym
-    effective_locale = I18n.available_locales.include?(wanted_locale) ? wanted_locale : I18n.default_locale
+    I18n.locale = LocaleSelector.locale_for(params, session, current_user)
+  end
 
-    I18n.locale = effective_locale
+  def set_time_zone
+    Time.zone = TimeZoneSelector.time_zone_for(current_user)
   end
 
   def pundit_user

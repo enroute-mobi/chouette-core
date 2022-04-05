@@ -15,6 +15,7 @@ module Chouette
     include LineReferentialSupport
     include ObjectidSupport
     include CustomFieldsSupport
+    include ReferentSupport
 
     belongs_to :line_provider, required: true
 

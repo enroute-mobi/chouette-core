@@ -1,0 +1,8 @@
+- messages = control_run.control_messages.paginate(page: params[:page], per_page: 15)
+
+- if messages.any?
+	= table_builder_2 messages, *facade.message_table_params
+
+	= new_pagination messages, 'pull-right', renderer: facade.paginate_renderer_for('control', control_run)
+- else
+	= replacement_msg t('control_messages.search_no_results')

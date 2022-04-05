@@ -24,7 +24,7 @@ class ControlListFacade
 	end
 
 	def show?
-		template.controller.action_name == 'show'
+		template.action_name == 'show'
 	end
 
 	def transport_mode_options

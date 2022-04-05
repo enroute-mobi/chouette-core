@@ -77,6 +77,10 @@
     = main_nav_menu_item 'layouts.navbar.shape_referential'.t do
       = link_to workbench_shape_referential_shapes_path(workbench), class: 'list-group-item' do
         span = Shape.t.capitalize
+      = link_to workbench_shape_referential_point_of_interests_path(workbench), class: 'list-group-item' do
+        span = PointOfInterest::Base.t.capitalize
+      = link_to workbench_shape_referential_point_of_interest_categories_path(workbench), class: 'list-group-item' do
+        span = PointOfInterest::Category.t.capitalize
 
     = main_nav_menu_item 'layouts.navbar.configuration'.t do
       - if policy(workbench).edit?

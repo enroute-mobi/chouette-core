@@ -1,7 +1,7 @@
 en:
   activerecord:
     models:
-      control:
+      control/base:
         zero:  controls
         one:   control
         other: controls
@@ -14,7 +14,8 @@ en:
         name: Name
         comments: Comments
         criticity: Criticity
-        target_model: target_model
+        options: Options
+        target_model: Target Model
       control/dummy:
         expected_result: Expected Result
       control/presence_attribute:

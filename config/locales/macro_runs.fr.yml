@@ -1,0 +1,32 @@
+fr:
+  activerecord:
+    models:
+      macro/base/run:
+        zero: "rapport d'instructions"
+        one: "rapport d'instructions"
+        other: "rapports d'instructions"
+      macro/create_code/run:
+        one: Créer un code
+      macro/dummy/run:
+        one: Simuler une instruction
+      macro/associate_shape/run:
+        one: Associer les Tracés
+      macro/update_stop_area_compass_bearing/run:
+        one: Définir l'Orientation des Arrêts selon les Tracés
+      macro/create_stop_area_referents/run:
+        one: Créer les arrêts référent
+      macro/associate_stop_area_referent/run:
+        one: Associer les arrêts référent
+    attributes:
+      macro/base/run:
+        name: Nom
+        comments: Commentaire
+        target_model: Modèle cible
+        options: Options
+      macro/create_code/run:
+        source_attribute: Attribut de la source
+        source_pattern: Modèle de source
+        target_code_space: Espace code cible
+        target_pattern: Modèle de cible
+      macro/dummy/run:
+        expected_result: Résultat attendu

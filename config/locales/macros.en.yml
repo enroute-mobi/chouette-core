@@ -27,9 +27,10 @@ en:
       macro/associate_stop_area_referent:
         one: Assocate Stop Areas with a Referent
     attributes:
-      macro:
+      macro/base:
         name: Name
         comments: Comments
+        options: Options
       macro/create_code:
         target_model: Target Model
         source_attribute: Source Attribute
@@ -37,3 +38,9 @@ en:
         target_code_space: Target Code Space
         target_pattern: Target Pattern
         expected_result: Expected result
+      macro/dummy:
+        expected_result: Expected result
+  simple_form:
+    placeholders:
+      macro_base:
+        name: Describe macro goal

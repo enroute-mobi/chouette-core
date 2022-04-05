@@ -1,0 +1,19 @@
+- breadcrumb :point_of_interest_category, @workbench, @point_of_interest_category
+- page_header_content_for @point_of_interest_category
+
+.page_content
+  .container-fluid
+    .row
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = simple_block_for @point_of_interest_category, title: t('point_of_interest_categories.form.sections.identification') do |d|
+          = d.attribute :name
+          = d.attribute :parent, as: :association, link: ->(category) { workbench_shape_referential_point_of_interest_category_path(@workbench, category) }
+
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = simple_block_for @stop_area, title: Chouette::StopArea.tmf(:codes) do |d|
+          - if @point_of_interest_category.codes.empty?
+            .mb-xs
+              = replacement_msg t('stop_areas.no_codes')
+          - else
+            - @point_of_interest_category.codes.each do |c|
+              = d.attribute :value, label: c.code_space.short_name, object: c

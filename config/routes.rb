@@ -73,14 +73,22 @@ ChouetteIhm::Application.routes.draw do
 
     resources :sources
 
-    resources :macro_list_runs, only: %w(new create show index)
+    resources :macro_list_runs, only: %w(new create show index)do
+      resources :macro_runs, only: [] do
+        resources :macro_messages, only: :index
+      end
+    end
 
     resources :control_lists do
       get :fetch_object_html, on: :collection, defaults: { format: 'json' }
       resources :control_list_runs, only: %w(new create)
     end
 
-    resources :control_list_runs, only: %w(new create show index)
+    resources :control_list_runs, only: %w(new create show index) do
+      resources :control_runs, only: [] do
+        resources :control_messages, only: :index
+      end
+    end
 
     resource :stop_area_referential, :only => [:show, :edit, :update] do
       post :sync, on: :member
@@ -119,7 +127,9 @@ ChouetteIhm::Application.routes.draw do
           end
         end
       end
-      resources :companies
+      resources :companies do
+        get :autocomplete, on: :collection
+      end
       resources :networks
       resources :line_notices
     end
@@ -135,6 +145,8 @@ ChouetteIhm::Application.routes.draw do
       resources :shapes, except: [:create] do
         get :associations, on: :member
       end
+      resources :point_of_interests
+      resources :point_of_interest_categories
     end
   end
 
@@ -212,6 +224,7 @@ ChouetteIhm::Application.routes.draw do
       get :select_compliance_control_set
       post :validate
       put :clean
+      get :journey_patterns
     end
 
     resources :autocomplete_stop_areas, only: [:show, :index] do

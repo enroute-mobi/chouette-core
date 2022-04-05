@@ -5,7 +5,7 @@
 = form.simple_fields_for(:macros, macro) do |macro_form|
 	.flex.flex-col.items-center.mt-5 x-data=("{ expanded: true }")
 		.flex.items-center.w-full.mb-8
-			button @click="expanded = ! expanded" type="button" x-bind:disabled="resource.isDeleted" class="flex items-center justify-between p-3 pl-3 mr-3 font-bold text-white bg-enroute-chouette-green rounded cursor-pointer hover:text-indigo-100"
+			button @click="expanded = ! expanded" type="button" x-bind:disabled="resource.isDeleted" class="flex items-center justify-between p-3 pl-3 mr-3 font-bold text-white bg-enroute-chouette-primary rounded cursor-pointer hover:text-indigo-100"
 				<span class="text-3xl w-4" x-text="expanded ? '-' : '+'">+</span>
 			.w-full
 				= macro_form.input :name,

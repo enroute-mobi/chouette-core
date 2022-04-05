@@ -112,6 +112,12 @@ class ReferentialsController < ChouetteController
     redirect_back fallback_location: root_path
   end
 
+  def journey_patterns
+    referential.switch
+    jp = Chouette::JourneyPattern.find(params[:journey_pattern_id])
+    redirect_to referential_line_route_journey_patterns_collection_path(referential, jp.route.line, jp.route)
+  end
+
   protected
 
   alias_method :referential, :resource

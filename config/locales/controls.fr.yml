@@ -1,7 +1,7 @@
 fr:
   activerecord:
     models:
-      control:
+      control/base:
         zero:  "contrôle"
         one:   "contrôle"
         other: "contrôles"
@@ -14,6 +14,7 @@ fr:
         name: Nom
         comments: Commentaire
         criticity: Criticité
+        options: Options
         target_model: Modèle cible
       control/dummy:
         expected_result: Résultat attendu

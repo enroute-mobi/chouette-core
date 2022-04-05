@@ -1,0 +1,50 @@
+- breadcrumb :point_of_interests, @workbench
+
+.page_content
+  .container-fluid
+    - if params[:q].present? or @point_of_interests.any?
+      .row
+        .col-lg-12
+
+    - if @point_of_interests.any?
+      .row
+        .col-lg-12
+          = table_builder_2 @point_of_interests,
+            [ \
+              TableBuilderHelper::Column.new( \
+                key: :name, \
+                attribute: :name, \
+                sortable: false, \
+                link_to: lambda do |point_of_interest| \
+                workbench_shape_referential_point_of_interest_path( \
+                    @workbench, \
+                    point_of_interest \
+                  ) \
+                end \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :point_of_interest_category, \
+                attribute: Proc.new { |n| n.try(:point_of_interest_category).try(:name) }, \
+                sortable: false, \
+                link_to: lambda do |point_of_interest| \
+                workbench_shape_referential_point_of_interest_category_path( \
+                    @workbench, \
+                    point_of_interest.point_of_interest_category\
+                  ) \
+                end \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :updated_at, \
+                attribute: Proc.new { |n| l(n.updated_at, format: :short_with_time) if n.updated_at }, \
+                sortable: false,\
+              ) \
+              \
+            ].compact,
+            cls: 'table has-filter has-search'
+
+          = new_pagination @point_of_interests, 'pull-right'
+
+    - unless @point_of_interests.any?
+      .row.mt-xs
+        .col-lg-12
+          = replacement_msg t('point_of_interests.search_no_results')

@@ -10,7 +10,7 @@ class DatePickerInput < SimpleForm::Inputs::StringInput
     input_html_options[:style] = 'background-color: white;'
     input_html_options[:value] ||= I18n.localize(value, format: display_pattern) if value
 
-    content_tag(:div, class: 'flatpickr input-group') do
+    content_tag(:div, class: 'date_picker_block input-group') do
       concat @builder.text_field(attribute_name, input_html_options)
       concat( content_tag(:div, class: 'input-group-btn') do
         concat calendar_button

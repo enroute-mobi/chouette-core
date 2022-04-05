@@ -402,3 +402,14 @@ en:
       criticity:
         warning: Warning
         error: Error
+    control/dummy:
+      expected_result:
+        warning: Avertissement
+        error: Erreur
+        failed: Echec
+    macro/dummy:
+      expected_result:
+        info: Succès
+        warning: Avertissement
+        error: Erreur
+        failed: Echec

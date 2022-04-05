@@ -5,13 +5,6 @@ fr:
         for_boarding: "Non défini"
         for_alighting: "Non défini"
   enumerize:
-    statuses: &statuses
-      warning: Avertissement
-      successful: Succès
-      success: Succès
-      warning: Avertissement
-      failed: Erreur
-      error: Erreur
     operation:
       status:
         new: Nouveau
@@ -406,6 +399,17 @@ fr:
     search:
       rule_type: *notification_rule_rule_type
     control:
-      criticity: *statuses
+      criticity:
+        warning: Avertissement
+        error: Erreur
     control/dummy:
-      expected_result: *statuses
+      expected_result:
+        warning: Avertissement
+        error: Erreur
+        failed: Echec
+    macro/dummy:
+      expected_result:
+        info: Succès
+        warning: Avertissement
+        error: Erreur
+        failed: Echec

@@ -40,6 +40,9 @@ en:
         code: "Code"
         time_zone: "Time zone"
         default_language: "Default language"
+        is_referent: "Referent"
+        referent_id: "Referent Company"
+        particulars: "Specific Companies"
         objectid: "External identifier"
         object_version: "Version"
         created_at: Created at
@@ -74,6 +77,15 @@ en:
         postcode: Postcode
         postcode_extension: Postcode Extension
         country_code: Country
+    errors:
+      models:
+        company:
+          attributes:
+            referent_id:
+              a_referent_cannot_have_a_referent: "A referent can't have a referent"
+              an_object_used_as_referent_must_be_flagged_as_referent: "A company used as referent must be flagged as referent"
+            is_referent:
+              the_particulars_collection_should_be_empty: "A non-referent company can't have particular companies"
   formtastic:
     titles:
       company:

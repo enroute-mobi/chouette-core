@@ -59,7 +59,7 @@ module LocalExportSupport
       end
 
       CustomFieldsSupport.within_workgroup(referential.workgroup) do
-        upload_file generate_export_file
+        self.file = generate_export_file
       end
 
       self.status = :successful

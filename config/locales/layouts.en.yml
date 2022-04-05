@@ -17,7 +17,7 @@ en:
       return_to_dashboard: "Return to Dashboard"
       dashboard: Dashboard
       referential_datas: "Datas"
-      shape_referential: "Shape referential"
+      shape_referential: "Topological referential"
       line_referential: "Line referential"
       stop_area_referential: "Stop area referential"
       settings: "Settings"

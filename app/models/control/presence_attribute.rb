@@ -106,11 +106,6 @@ module Control
       def models
         @models ||= context.send(model_collection)
       end
-
-      def model_class
-        @model_class ||=
-          "Chouette::#{target_model}".constantize rescue nil || target_model.constantize
-      end
     end
   end
 end

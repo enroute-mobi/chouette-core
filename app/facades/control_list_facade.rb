@@ -4,7 +4,7 @@ class ControlListFacade
 	def initialize(control_list, template)
 		@control_list = control_list
 		@workbench = control_list.workbench
-		@workgroup = workbench.workgroup
+		@workgroup = workbench&.workgroup
 		@template = template
 	end
 

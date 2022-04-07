@@ -436,7 +436,7 @@ class Export::Gtfs < Export::Base
         company_id = vehicle_journeys_company_id.presence || line_company_id.presence || DEFAULT_AGENCY_ID
         time_zone = company_time_zone
 
-        if referent = referents[company_id]
+        if  prefer_referent_company && (referent = referents[company_id]).present?
           company_id = referent.id
           time_zone = referent.time_zone
         end

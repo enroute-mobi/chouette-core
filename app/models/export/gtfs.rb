@@ -456,6 +456,8 @@ class Export::Gtfs < Export::Base
 
       index.register_agency_id(decorated_company, decorated_company.agency_id)
 
+      return decorated_company unless prefer_referent_company
+
       company.particulars.each do |particular_company|
         index.register_agency_id(particular_company, decorated_company.agency_id)
       end

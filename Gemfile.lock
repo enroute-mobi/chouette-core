@@ -49,7 +49,8 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/neptune.git
-  revision: 9f0c9e7f5b99cb1ce6f5d75f4f2512671d3e2a1c
+  revision: 37e9249e2669e38eebca876a1c090c5efb04bc41
+  branch: NEPTUNE-5-test-file-extension-case
   specs:
     neptune (0.1.0)
       ox
@@ -514,7 +515,7 @@ GEM
     open4 (1.3.4)
     orm_adapter (0.5.0)
     os (1.1.4)
-    ox (2.14.9)
+    ox (2.14.11)
     parallel (1.21.0)
     parallel_tests (3.7.3)
       parallel

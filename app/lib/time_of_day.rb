@@ -137,6 +137,8 @@ class TimeOfDay
     ::Time.new(2000, 1, 1, hour, minute, second, "+00:00")
   end
 
+  alias to_time to_vehicle_journey_at_stop_time
+
   def to_iso_8601
     @iso_8601 ||= ISO8601.new(self).to_s
   end

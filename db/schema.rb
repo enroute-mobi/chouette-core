@@ -1051,8 +1051,8 @@ ActiveRecord::Schema.define(version: 2022_04_06_200454) do
 
   create_table "point_of_interest_hours", force: :cascade do |t|
     t.bigint "point_of_interest_id", null: false
-    t.time "opening_time_of_day", null: false
-    t.time "closing_time_of_day", null: false
+    t.time "opening_time_of_day", default: "2000-01-01 00:00:00", null: false
+    t.time "closing_time_of_day", default: "2000-01-01 00:00:00", null: false
     t.bit "week_days", limit: 7, default: "1111111"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

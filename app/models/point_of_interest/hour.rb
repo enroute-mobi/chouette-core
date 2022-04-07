@@ -10,5 +10,8 @@ module PointOfInterest
 
     attribute :week_days, WeekDays.new
 
+    attribute :opening_time_of_day, TimeOfDay::Type::TimeWithoutZone.new
+    attribute :closing_time_of_day, TimeOfDay::Type::TimeWithoutZone.new
+
   end
 end

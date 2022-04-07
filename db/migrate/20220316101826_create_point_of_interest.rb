@@ -12,8 +12,8 @@ class CreatePointOfInterest < ActiveRecord::Migration[5.2]
 
       create_table :point_of_interest_hours do |t|
         t.references :point_of_interest, null: false
-        t.time :opening_time_of_day, null: false
-        t.time :closing_time_of_day, null: false
+        t.time :opening_time_of_day, null: false, default: "2000-01-01 00:00:00"
+        t.time :closing_time_of_day, null: false, default: "2000-01-01 00:00:00"
         t.bit :week_days, limit: 7, default: "1111111"
 
         t.timestamps

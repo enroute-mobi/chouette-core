@@ -4,9 +4,11 @@ RSpec.describe Source do
     expect(Source.table_name).to eq("public.sources")
   end
 
-  let(:source) { Source.new(name: "Source Test", url: "url.com") }
+  let(:workbench) { create(:workbench) }
 
-  let(:retrieval) {Source::Retrieval.new(source)}
+  let(:source) { Source.create(name: "Source Test", url: "url.com", workbench: workbench) }
+
+  let(:retrieval) {Source::Retrieval.create!({source: source, workbench: workbench, creator: "Source"})}
 
   context "when source is enabled" do
     it "should perform" do

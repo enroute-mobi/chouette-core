@@ -11,6 +11,7 @@
         = d.attribute :profile, value_method: :display_profile
       - if @export.type == "Export::Gtfs"
         = d.attribute :prefer_referent_stop_area, as: :boolean
+        = d.attribute :prefer_referent_company, as: :boolean
         = d.attribute :ignore_single_stop_station, as: :boolean
 
   = processing_helper(@export)

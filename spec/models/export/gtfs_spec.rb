@@ -4,7 +4,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
   describe 'Company Part' do
     let(:export_scope) { Export::Scope::All.new context.referential }
     let(:index) { export.index }
-    let(:export) { Export::Gtfs.new export_scope: export_scope, workbench: context.workbench, workgroup: context.workgroup, referential: context.referential }
+    let(:export) { Export::Gtfs.new export_scope: export_scope, workbench: context.workbench, workgroup: context.workgroup, referential: context.referential, prefer_referent_company: true}
 
     let(:part) do
       Export::Gtfs::Companies.new export

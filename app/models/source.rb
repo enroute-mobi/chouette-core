@@ -47,9 +47,15 @@ class Source < ApplicationModel
   def retrieve
     if enabled
       source_retrieve = Retrieval.create(source: self, workbench: workbench)
-      retrievals.first.destroy if retrievals.count > 20
+
+      remove_older_retrievals
+
       source_retrieve.perform
     end
+  end
+
+  def remove_older_retrievals(offset=20)
+    retrievals.order(created_at: :desc).offset(offset).delete_all
   end
 
   module Downloader

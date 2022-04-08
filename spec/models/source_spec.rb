@@ -32,6 +32,22 @@ RSpec.describe Source do
     end
   end
 
+  context "when the number of records is greater than 20" do
+    let(:source) { Source.create(name: "Source Test", url: "url.com", workbench: workbench) }
+
+    before do
+      30.times do
+        Source::Retrieval.create!({source: source, workbench: workbench, creator: "Source"})
+      end
+    end
+
+    subject { source.retrieve }
+
+    it "should perform and not keep more than 20 retrievals" do
+      expect { subject }.to change { source.retrievals.count }.from(30).to(20)
+    end
+  end
+
   describe "#downloader_class" do
     subject { source.downloader_class }
     context "when downloader_type is nil" do

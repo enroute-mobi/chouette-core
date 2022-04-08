@@ -38,7 +38,7 @@ fr:
         url: "Url"
         point_of_interest_category_id: "Catégorie"
         point_of_interest_category: "Catégorie"
-        position: "Coordonnées"
+        position_input: "Coordonnées"
         address: "Adresse"
         zip_code: "Code Postal"
         city_name: "Ville"

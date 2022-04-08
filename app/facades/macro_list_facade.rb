@@ -68,7 +68,7 @@ class MacroListFacade
 	def merged_options object
 		{
 			errors: object.errors.full_messages,
-    	html: Operations::RenderPartial.call(template: template, id: object.id, type: object.type, parent_klass: Macro::List, validate: true),
+    	html: Operations::RenderPartial.call(template: template, resource: object, parent_klass: Macro::List),
       **object.options
 		}
 	end

@@ -37,7 +37,6 @@ export default superclass => class Resource extends superclass {
 
 	async fecthedHTML() {
 		const searchParams = new URLSearchParams()
-		searchParams.set('html[id]', this.id)
 		searchParams.set('html[type]', this.type)
 
 		const url = path.build(URLParams) + '/fetch_object_html.json?' + searchParams.toString()

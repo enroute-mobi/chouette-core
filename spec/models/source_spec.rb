@@ -8,24 +8,20 @@ RSpec.describe Source do
 
   let(:source) { Source.create(name: "Source Test", url: "url.com", workbench: workbench) }
 
-  let(:retrieval) {Source::Retrieval.create!({source: source, workbench: workbench, creator: "Source"})}
+  subject { source.retrieve }
 
-  context "when source is enabled" do
-    it "should perform" do
-      expect(source.retrieve).not_to be_empty
-    end
-  end
-
-  context "when source is enabled" do
+  context "when source is not enabled" do
     before {source.enabled = false }
 
     it "should return without creating a Retrieval" do
-      expect(source.retrieve).to be_nil
+      expect(source.retrievals).to be_empty
     end
   end
 
   context "when ignore_checksum is enabled" do
-    before {source.ignore_checksum = true }
+    let(:retrieval) { source.retrievals.create workbench: workbench, creator: "Source" }
+
+    before { source.update ignore_checksum: true }
 
     it "should return true for checksum_changed?" do
       expect(retrieval.checksum_changed?).to eq(true)
@@ -33,17 +29,13 @@ RSpec.describe Source do
   end
 
   context "when the number of records is greater than 20" do
-    let(:source) { Source.create(name: "Source Test", url: "url.com", workbench: workbench) }
-
     before do
       30.times do
-        Source::Retrieval.create!({source: source, workbench: workbench, creator: "Source"})
+        source.retrievals.create creator: "Source"
       end
     end
 
-    subject { source.retrieve }
-
-    it "should perform and not keep more than 20 retrievals" do
+    it "should enqueue the operation and not keep more than 20 retrievals" do
       expect { subject }.to change { source.retrievals.count }.from(30).to(20)
     end
   end

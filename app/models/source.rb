@@ -10,6 +10,8 @@ class Source < ApplicationModel
 
   enumerize :downloader_type, in: %i(direct french_nap), default: :direct
 
+  scope :enabled, -> { where enabled: true }
+
   def import_option_automatic_merge
     import_options["automatic_merge"]
   end
@@ -46,16 +48,10 @@ class Source < ApplicationModel
 
   def retrieve
     if enabled
-      source_retrieve = Retrieval.create(source: self, workbench: workbench)
-
-      remove_older_retrievals
-
-      source_retrieve.perform
+      retrieval = retrievals.create(creator: "Source")
+      retrieval.enqueue
+      retrievals.delete_older
     end
-  end
-
-  def remove_older_retrievals(offset=20)
-    retrievals.order(created_at: :desc).offset(offset).delete_all
   end
 
   module Downloader
@@ -136,9 +132,13 @@ class Source < ApplicationModel
   end
 
   class Retrieval < Operation
-    belongs_to :workbench, optional: false
+    include Measurable
+
     belongs_to :source, optional: false
     belongs_to :import, class_name: "::Import::Workbench"
+    belongs_to :workbench, optional: false
+
+    before_validation :set_workbench
 
     def perform
       download
@@ -156,7 +156,6 @@ class Source < ApplicationModel
     end
 
     delegate :downloader, :import_options, to: :source
-    delegate :workgroup, to: :workbench
 
     def downloaded_file
       @downloaded_file ||= Tempfile.new(["retrieval-downloaded", ".zip"])
@@ -166,6 +165,7 @@ class Source < ApplicationModel
       logger.info "Download with #{downloader.class}"
       downloader.download downloaded_file
     end
+    measure :download
 
     # To be replaced by import features (line selection, ignore parents, etc)
     def process
@@ -173,6 +173,7 @@ class Source < ApplicationModel
       logger.info "Process downloaded file"
       processor.process downloaded_file, processed_file
     end
+    measure :process
 
     def processor
       Processor::GTFS.new.with_options(import_options).presence
@@ -203,7 +204,21 @@ class Source < ApplicationModel
     end
 
     def create_import
-      self.update import: Import::Workbench.create!(workbench: workbench, name: import_name, creator: creator || "Source", file: imported_file, options: import_options)
+      self.update import: Import::Workbench.create!(workbench: workbench, name: import_name, creator: creator, file: imported_file, options: import_options)
+    end
+
+    def workgroup
+      workbench&.workgroup
+    end
+
+    def self.delete_older(offset=20)
+      order(created_at: :desc).offset(offset).delete_all
+    end
+
+    private
+
+    def set_workbench
+      self.workbench = self.source&.workbench
     end
   end
 

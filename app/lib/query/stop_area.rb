@@ -60,6 +60,22 @@ module Query
       scope.where("#{table_name}.id IN (#{tree_sql})")
     end
 
+    def without_referent
+      scope.where(referent: nil)
+    end
+
+    def without_parent
+      scope.where(parent: nil)
+    end
+
+    def without_coordinates
+      scope.where(latitude: nil).or(scope.where(longitude: nil))
+    end
+
+    def without_country
+      scope.where(country_code: nil)
+    end
+
     # TODO Could use a nice RecurviseQuery common object
     delegate :table_name, to: Chouette::StopArea
     private :table_name

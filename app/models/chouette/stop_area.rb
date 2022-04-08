@@ -410,7 +410,6 @@ module Chouette
       [:by_status]
     end
 
-
     def self.by_status(*statuses)
       return Chouette::StopArea.all if statuses.reject(&:blank?).length == 3 || statuses.reject(&:blank?).empty?
 

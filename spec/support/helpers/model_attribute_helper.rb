@@ -1,4 +1,12 @@
 module Support::ModelAttributeHelper
+
+  def virtual_attributes
+    {
+      "stop_area#country" => true,
+      "company#country" => true
+    }
+  end
+
 	def test_model_attributes
     ModelAttribute.all.each do |m|
       compliance_check = ComplianceCheck.new(control_attributes: { target: m.code })

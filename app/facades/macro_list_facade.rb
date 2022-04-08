@@ -12,7 +12,7 @@ class MacroListFacade
 
 	def form_options
 		{
-			wrapper: :horizontal_form,
+			wrapper: :horizontal_form_tailwind,
 			html: {
 				class: 'form-horizontal',
 				id: 'macro_list_form',

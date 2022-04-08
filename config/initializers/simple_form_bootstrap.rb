@@ -67,6 +67,22 @@ SimpleForm.setup do |config|
     end
   end
 
+  config.wrappers :horizontal_form_tailwind, tag: 'div', class: 'flex items-center mb-10 relative', error_class: 'has-error' do |b|
+    b.use :html5
+    b.use :placeholder
+    b.optional :maxlength
+    b.optional :pattern
+    b.optional :min_max
+    b.optional :readonly
+    b.use :label, class: 'flex justify-end w-2/6 mr-8 mb-0 control-label pt-0'
+
+    b.wrapper tag: 'div', class: 'w-4/6' do |ba|
+      ba.use :input, class: 'form-control'
+      ba.use :error, wrap_with: { tag: 'span', class: 'help-block small absolute ml-2' }
+      ba.use :hint,  wrap_with: { tag: 'p', class: 'help-block small absolute ml-2' }
+    end
+  end
+
   config.wrappers :horizontal_date, tag: 'div', class: 'form-group', error_class: 'has-error', html5: true do |b|
     b.use :html5
     b.use :placeholder

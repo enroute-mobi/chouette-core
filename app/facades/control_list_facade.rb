@@ -12,7 +12,7 @@ class ControlListFacade
 
 	def form_options
 		{
-			wrapper: :horizontal_form,
+			wrapper: :horizontal_form_tailwind,
 			html: {
 				class: 'form-horizontal',
 				id: 'control_list_form',

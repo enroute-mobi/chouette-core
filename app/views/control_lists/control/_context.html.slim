@@ -2,7 +2,7 @@
 - control_context = local_assigns.fetch(:resource)
 
 = form.simple_fields_for(:control_contexts, control_context) do |control_context_form|
-	.flex.items-center
+	.flex.items-center.py-10
 		= render "control_lists/#{control_context.model_name.i18n_key.to_s}", form: control_context_form
 
 		= render 'operations/context_actions'

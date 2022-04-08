@@ -9,14 +9,17 @@ class ControlMessagesController < ChouetteController
   defaults :resource_class => Control::Message
 
 	def index
-		index! do |format|
-			format.html do
-		     render(partial: 'control_list_runs/control_messages',
-           layout: false,
-           locals: {
-             control_run: parent,
-             facade: OperationRunFacade.new(control_list_run)
-           })
+		respond_to do |format|
+			format.js do
+				render json: {
+					html: render_to_string(
+						partial: 'control_list_runs/control_messages',
+						locals: {
+							control_run: parent,
+							facade: OperationRunFacade.new(control_list_run)
+						}
+					)
+				}
 			end
 		end
 	end

@@ -9,13 +9,18 @@ class MacroMessagesController < ChouetteController
   defaults :resource_class => Macro::Message
 
   def index
-    index! do |format|
-      render( partial: 'macro_list_runs/macro_messages',
-              layout: false,
-						  locals: {
-                macro_run: parent,
-                facade: OperationRunFacade.new(macro_list_run)
-						  })
+    respond_to do |format|
+      format.js do
+				render json: {
+					html: render_to_string(
+						partial: 'macro_list_runs/macro_messages',
+						locals: {
+              macro_run: parent,
+							facade: OperationRunFacade.new(macro_list_run)
+						}
+					)
+				}
+			end
     end
   end
 

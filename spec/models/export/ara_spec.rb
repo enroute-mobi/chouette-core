@@ -2,8 +2,11 @@ RSpec.describe Export::Ara do
   describe "a whole export" do
     let(:context) do
       Chouette.create do
-        time_table :default
-        vehicle_journey time_tables: [:default]
+        organisation :owner, features: %w{export_ara_stop_visits}
+        workbench organisation: :owner do
+          time_table :default
+          vehicle_journey time_tables: [:default]
+        end
       end
     end
 
@@ -25,7 +28,6 @@ RSpec.describe Export::Ara do
     describe "file" do
       # TODO Use Ara::File to read the file
       subject { export.file.read.split("\n") }
-
       it { is_expected.to have_attributes(size: 48) }
     end
   end

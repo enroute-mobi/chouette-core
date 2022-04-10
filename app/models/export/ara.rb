@@ -37,9 +37,15 @@ class Export::Ara < Export::Base
       end
   end
 
-  def generate_export_file
-    parts = [ Stops, Lines, VehicleJourneys, StopVisits ]
+  def parts
+    @parts ||= [ Stops, Lines, VehicleJourneys ].tap do |parts|
+      if organisation.has_feature?("export_ara_stop_visits")
+        parts << StopVisits
+      end
+    end
+  end
 
+  def generate_export_file
     period.each do |day|
       # For each day, a scope selects models to be exported
       daily_scope = DailyScope.new export_scope, day

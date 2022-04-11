@@ -39,6 +39,11 @@ class Export::Base < ApplicationModel
     self.token_upload ||= SecureRandom.urlsafe_base64
   end
 
+  def has_feature?(feature)
+    organisation = self.organisation || workgroup&.owner
+    organisation&.has_feature?(feature)
+  end
+
   after_create :purge_exports
   def purge_exports
     return unless workbench.present?

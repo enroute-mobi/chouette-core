@@ -1,11 +1,16 @@
 class Source < ApplicationModel
   extend Enumerize
   belongs_to :workbench, optional: false
+
+  has_many :retrievals, class_name: "Source::Retrieval", foreign_key: "source_id", dependent: :destroy
+
   validates :name, presence: true
   validates :url, presence: true
   validates :downloader_type, presence: true
 
   enumerize :downloader_type, in: %i(direct french_nap), default: :direct
+
+  scope :enabled, -> { where enabled: true }
 
   def import_option_automatic_merge
     import_options["automatic_merge"]
@@ -43,7 +48,9 @@ class Source < ApplicationModel
 
   def retrieve
     if enabled
-      Retrieval.new(self).perform
+      retrieval = retrievals.create(creator: "Source")
+      retrieval.enqueue
+      retrievals.delete_older
     end
   end
 
@@ -124,46 +131,32 @@ class Source < ApplicationModel
     end
   end
 
-  class Retrieval # < Operation
-    attr_reader :source
-    def initialize(source)
-      @source = source
-    end
-
+  class Retrieval < Operation
     include Measurable
-    def uuid
-      @uuid ||= SecureRandom.uuid
-    end
 
-    def logger
-      Rails.logger
-    end
+    belongs_to :source, optional: false
+    belongs_to :import, class_name: "::Import::Workbench"
+    belongs_to :workbench, optional: false
+
+    before_validation :set_workbench, on: :create
+    delegate :workgroup, to: :workbench
 
     def perform
-      # The Operation base code should manage logger, uuid, status, error, include measurable, etc
-      logger.tagged("Retrieval ##{uuid}") do
-        measure "retrieval", source_id: source.id do
-          logger.info "Retrieve Source ##{source.id}"
-          begin
-            download
-            process
+      download
+      process
 
-            # We could add an option to ignore the checksum / force the import
-            if checksum_changed?
-              logger.info "Checksum has changed"
-              import
-              source.update checksum: checksum
-            else
-              logger.info "Checksum unchanged. Import is skipped"
-            end
-          rescue => e
-            Chouette::Safe.capture "Failed to retrieve #{source.inspect}",e
-          end
-        end
+      # We could add an option to ignore the checksum / force the import
+      if checksum_changed?
+        logger.info "Checksum has changed"
+
+        create_import
+        source.update checksum: checksum
+      else
+        logger.info "Checksum unchanged. Import is skipped"
       end
     end
 
-    delegate :downloader, :import_options, :workbench, to: :source
+    delegate :downloader, :import_options, to: :source
 
     def downloaded_file
       @downloaded_file ||= Tempfile.new(["retrieval-downloaded", ".zip"])
@@ -211,12 +204,28 @@ class Source < ApplicationModel
       source.ignore_checksum || (source.checksum != checksum)
     end
 
-    def import
-      import = Import::Workbench.create!(workbench: workbench, name: import_name, creator: "Source", file: imported_file, options: import_options)
-      logger.info "Started Import #{import.id}"
+    def import_attributes
+      {
+        name: import_name,
+        creator: creator,
+        file: imported_file,
+        options: import_options
+      }
     end
-    measure :import
 
+    def create_import
+      update import: workbench.imports.create!(import_attributes)
+    end
+
+    def self.delete_older(offset=20)
+      order(created_at: :desc).offset(offset).delete_all
+    end
+
+    private
+
+    def set_workbench
+      self.workbench = self.source&.workbench
+    end
   end
 
   module Processor

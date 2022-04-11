@@ -97,7 +97,7 @@ module Cron
     end
 
     def retrieve_all_sources
-      Source.retrieve_all
+      Source.enabled.retrieve_all
     end
 
   end

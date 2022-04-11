@@ -34,6 +34,7 @@ class Workbench < ApplicationModel
   has_many :compliance_check_sets, dependent: :destroy
   has_many :merges, dependent: :destroy
   has_many :api_keys, dependent: :destroy
+  has_many :source_retrievals, class_name: "Source::Retrieval"
 
   validates :name, presence: true
   validates :organisation, presence: true

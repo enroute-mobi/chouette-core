@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_03_25_152937) do
+ActiveRecord::Schema.define(version: 2022_04_06_200454) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "hstore"
@@ -1280,6 +1280,22 @@ ActiveRecord::Schema.define(version: 2022_03_25_152937) do
     t.datetime "updated_at", null: false
     t.index ["shape_provider_id"], name: "index_shapes_on_shape_provider_id"
     t.index ["shape_referential_id"], name: "index_shapes_on_shape_referential_id"
+  end
+
+  create_table "source_retrievals", force: :cascade do |t|
+    t.bigint "workbench_id"
+    t.bigint "source_id"
+    t.bigint "import_id"
+    t.string "status"
+    t.string "error_uuid"
+    t.string "creator"
+    t.datetime "started_at"
+    t.datetime "ended_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["import_id"], name: "index_source_retrievals_on_import_id"
+    t.index ["source_id"], name: "index_source_retrievals_on_source_id"
+    t.index ["workbench_id"], name: "index_source_retrievals_on_workbench_id"
   end
 
   create_table "sources", force: :cascade do |t|

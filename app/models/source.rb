@@ -138,7 +138,8 @@ class Source < ApplicationModel
     belongs_to :import, class_name: "::Import::Workbench"
     belongs_to :workbench, optional: false
 
-    before_validation :set_workbench
+    before_validation :set_workbench, on: :create
+    delegate :workgroup, to: :workbench
 
     def perform
       download
@@ -203,12 +204,17 @@ class Source < ApplicationModel
       source.ignore_checksum || (source.checksum != checksum)
     end
 
-    def create_import
-      self.update import: Import::Workbench.create!(workbench: workbench, name: import_name, creator: creator, file: imported_file, options: import_options)
+    def import_attributes
+      {
+        name: import_name,
+        creator: creator,
+        file: imported_file,
+        options: import_options
+      }
     end
 
-    def workgroup
-      workbench&.workgroup
+    def create_import
+      update import: workbench.imports.create!(import_attributes)
     end
 
     def self.delete_older(offset=20)

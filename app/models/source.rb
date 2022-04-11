@@ -135,7 +135,7 @@ class Source < ApplicationModel
     include Measurable
 
     belongs_to :source, optional: false
-    belongs_to :import, class_name: "::Import::Workbench"
+    belongs_to :import, class_name: "Import::Workbench"
     belongs_to :workbench, optional: false
 
     before_validation :set_workbench, on: :create
@@ -209,7 +209,8 @@ class Source < ApplicationModel
         name: import_name,
         creator: creator,
         file: imported_file,
-        options: import_options
+        options: import_options,
+        type: "Import::Workbench"
       }
     end
 

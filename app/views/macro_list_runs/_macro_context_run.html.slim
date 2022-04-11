@@ -1,0 +1,15 @@
+- i18n_key = macro_context_run.model_name.i18n_key.to_s
+
+.flex.w-full.rounded.border-4.border-light-grey
+	- macro_context_run.options.each do |name, value|
+		.w-full
+			.flex.context-header.bg-light-grey.font-semibold.p-5.text-3xl
+				.ml-5 = I18n.t(name, scope: "activerecord.attributes.#{i18n_key}")
+				.mx-4 = ':'
+				div = value
+			
+			.flex.context-body.p-5
+				- macro_context_run.macro_runs.each do |macro_run|
+					= render 'macro_run',
+					macro_run: macro_run,
+					messages_base_url: workbench_macro_list_run_macro_context_run_macro_run_macro_messages_path(@workbench, @macro_list_run, macro_context_run, macro_run)

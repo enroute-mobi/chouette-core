@@ -6,8 +6,12 @@ fr:
         one:   "MContexte d'instructions"
         other: "Contexte d'instructions"
     attributes:
-      macro/context:
+      macro/context: &macro_context
         name: Nom
         comments: Commentaire
-      macro/context/transport_mode:
+      macro/context/transport_mode: &transport_mode
         transport_mode: Mode de transport
+      macro/context/run:
+        <<: *macro_context
+      macro/context/transport_mode/run:
+        <<: *transport_mode

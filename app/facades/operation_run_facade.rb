@@ -21,27 +21,20 @@ class OperationRunFacade
 	end
 
 	def message_table_params
-		[
-			[
-				TableBuilderHelper::Column.new(
-					key: :criticity,
-					attribute: -> (m) { criticity_span(m.criticity).html_safe },
-					sortable: false
-				),
-				TableBuilderHelper::Column.new(key: :message, attribute: :full_message, sortable: false),
-				TableBuilderHelper::Column.new(
-					key: :source,
-					attribute: -> (m) { '<span class="fa fa-link"></span>'.html_safe },
-					link_to: -> (m) { source_link(m) },
-					sortable: false
-				),
-			],
-			{ cls: 'table' }
+		criticity = TableBuilderHelper::Column.new(key: :criticity, attribute: -> (m) { criticity_span(m.criticity).html_safe }, sortable: false)		
+		columns = [
+			TableBuilderHelper::Column.new(key: :message, attribute: :full_message, sortable: false),
+			TableBuilderHelper::Column.new(
+				key: :source,
+				attribute: -> (m) { '<span class="fa fa-link"></span>'.html_safe },
+				link_to: -> (m) { source_link(m) },
+				sortable: false
+			)
 		]
-	end
 
-	def paginate_renderer_for(prefix, object)
-		PaginateLinkRenderer.new controller: "#{prefix}_messages", action: 'index', workbench_id: workbench.id, "#{prefix}_list_run_id": resource.id, "#{prefix}_run_id": object.id
+		columns.unshift(criticity) if resource.is_a?(Macro::List::Run)
+		
+		[columns, { cls: 'table' }]
 	end
 
 	def source_link(message)

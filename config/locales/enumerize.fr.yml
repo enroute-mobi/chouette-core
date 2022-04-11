@@ -52,6 +52,13 @@ fr:
         ERROR: error
         WARNING: warning
         IGNORED: "n/a"
+    source/retrievals:
+      status:
+        new: Nouveau
+        pending: En file d'attente
+        successful: Réussi
+        failed: Echoué
+        canceled: Annulé
     for_boarding:
       normal: "Montée autorisée"
       forbidden: "Montée interdite"

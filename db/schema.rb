@@ -488,7 +488,7 @@ ActiveRecord::Schema.define(version: 2022_04_06_200454) do
     t.bigint "workgroup_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "position", null: false
+    t.integer "position"
     t.bigint "custom_field_group_id"
     t.index ["custom_field_group_id"], name: "index_custom_fields_on_custom_field_group_id"
     t.index ["resource_type"], name: "index_custom_fields_on_resource_type"
@@ -1048,8 +1048,8 @@ ActiveRecord::Schema.define(version: 2022_04_06_200454) do
 
   create_table "point_of_interest_hours", force: :cascade do |t|
     t.bigint "point_of_interest_id", null: false
-    t.time "opening_time_of_day", null: false
-    t.time "closing_time_of_day", null: false
+    t.time "opening_time_of_day", default: "2000-01-01 00:00:00", null: false
+    t.time "closing_time_of_day", default: "2000-01-01 00:00:00", null: false
     t.bit "week_days", limit: 7, default: "1111111"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -1425,6 +1425,7 @@ ActiveRecord::Schema.define(version: 2022_04_06_200454) do
     t.bigint "stop_area_provider_id"
     t.string "public_code"
     t.float "compass_bearing"
+    t.string "accessibility_status"
     t.string "mobility_impaired_accessibility"
     t.string "wheelchair_accessibility"
     t.string "step_free_accessibility"

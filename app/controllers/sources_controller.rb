@@ -4,8 +4,8 @@ class SourcesController < ChouetteController
 
   defaults :resource_class => Source
 
-  before_action :decorate_source, only: %i[show new edit]
-  after_action :decorate_source, only: %i[create update]
+  before_action :decorate_source, only: [:show, :new, :edit]
+  after_action :decorate_source, only: [:create, :update]
 
   before_action :source_params, only: [:create, :update]
 
@@ -28,6 +28,18 @@ class SourcesController < ChouetteController
         )
       end
     end
+  end
+
+  def retrieve
+    source = workbench.sources.find_by_id(params[:id])
+    begin
+      source.retrieve
+    rescue => e
+      Chouette::Safe.capture "Source::Retrieve #{source.inspect} failed", e
+      flash[:alert] = t('sources.retrieve.failure')
+    end
+
+    redirect_to action: :show
   end
 
   protected

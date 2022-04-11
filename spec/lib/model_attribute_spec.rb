@@ -1,6 +1,6 @@
 RSpec.describe ModelAttribute do
   before(:each) do
-    ModelAttribute.instance_variable_set(:@__all__, [])
+    allow(ModelAttribute).to receive(:all).and_return([])
   end
 
   describe ".define" do

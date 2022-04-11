@@ -39,7 +39,7 @@ class Export::Ara < Export::Base
 
   def parts
     @parts ||= [ Stops, Lines, VehicleJourneys ].tap do |parts|
-      if organisation.has_feature?("export_ara_stop_visits")
+      if has_feature?("export_ara_stop_visits")
         parts << StopVisits
       end
     end

@@ -146,4 +146,35 @@ RSpec.describe Export::Base, type: :model do
 
   end
 
+  context "#has_feature?" do
+    subject { export.has_feature?(feature) }
+
+    let(:export) { Export::Base.new }
+    let(:feature) { "dummy"}
+
+    let(:organisation) { Organisation.new }
+
+    context "when a Workbench is defined" do
+      before { export.organisation = organisation }
+      context "when the Workbench organisation has the feature" do
+        before { organisation.features << feature }
+        it { is_expected.to be_truthy }
+      end
+      context "when the Workbench organisation hasn't the feature" do
+        it { is_expected.to be_falsy }
+      end
+    end
+
+    context "when only the Workgroup is defined" do
+      before { export.workgroup = Workgroup.new(owner: organisation) }
+      context "when the Workgroup organisation has the feature" do
+        before { organisation.features << feature }
+        it { is_expected.to be_truthy }
+      end
+      context "when the Workgroup organisation hasn't the feature" do
+        it { is_expected.to be_falsy }
+      end
+    end
+  end
+
 end

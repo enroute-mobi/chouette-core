@@ -1,34 +1,40 @@
-class ControlMessagesController < ChouetteController
-  include ApplicationHelper
-  include PolicyChecker
+class ControlMessagesController < ActionController::Base
+  include Pundit::Authorization
+
+	respond_to :js
+	inherit_resources
 
 	belongs_to :workbench
 	belongs_to :control_list_run
+	belongs_to :control_context_run, optional: true
 	belongs_to :control_run
 
-  defaults :resource_class => Control::Message
+  def index
+		authorize Control::Message
+    messages = collection.where(search_params).paginate(page: params[:page], per_page: 15)
 
-	def index
-		respond_to do |format|
-			format.js do
-				render json: {
-					html: render_to_string(
-						partial: 'control_list_runs/control_messages',
-						locals: {
-							control_run: parent,
-							facade: OperationRunFacade.new(control_list_run)
-						}
-					)
-				}
-			end
-		end
-	end
+		html = render_to_string(
+			partial: 'control_list_runs/control_messages',
+			locals: {
+				messages: messages,
+				facade: OperationRunFacade.new(@control_list_run)
+			}
+		)
 
-	alias control_run parent
+		render json: { html: html }
+  end
+
+	protected
+
+	def pundit_user
+    UserContext.new(current_user, workbench: @workbench)
+  end
 
 	private
 
-	def control_list_run
-		control_run.control_list_run
-	end
+  def search_params
+    params.require(:search).permit(
+      criticity: []
+    )
+  end
 end

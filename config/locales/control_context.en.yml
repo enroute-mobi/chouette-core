@@ -6,8 +6,12 @@ en:
         one:   "Control Context"
         other: "Control Contexts"
     attributes:
-      control/context:
+      control/context: &control_context
         name: Name
         comments: Comments
-      control/context/transport_mode:
+      control/context/transport_mode: &transport_mode
         transport_mode: Transport Mode
+      control/context/run:
+        <<: *control_context
+      control/context/transport_mode/run:
+        <<: *transport_mode

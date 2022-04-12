@@ -88,10 +88,14 @@ ChouetteIhm::Application.routes.draw do
       resources :control_list_runs, only: %w(new create)
     end
 
-    resources :control_list_runs, only: %w(new create show index) do
+    concern :control_runs do
       resources :control_runs, only: [] do
         resources :control_messages, only: :index
       end
+    end
+
+    resources :control_list_runs, only: %w(new create show index), concerns: :control_runs do
+      resources :control_context_runs, only: [], concerns: :control_runs
     end
 
     resource :stop_area_referential, :only => [:show, :edit, :update] do

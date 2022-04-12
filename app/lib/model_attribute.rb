@@ -1,5 +1,5 @@
 class ModelAttribute
-  attr_reader :klass, :name, :data_type, :options
+  attr_reader :klass, :name, :data_type, :mandatory, :options
 
   def self.all
     @__all__ ||= []
@@ -15,8 +15,14 @@ class ModelAttribute
     end
   end
 
-  def self.define(klass, name, data_type, **options)
-    all << new(klass, name, data_type, options)
+  def self.define(**params)
+    all << new(
+      params[:klass],
+      params[:name],
+      params[:data_type] || :string,
+      params[:mandatory] || false,
+      params[:options] || {},
+    )
   end
 
   def self.group_by_class(list = nil)
@@ -27,57 +33,104 @@ class ModelAttribute
     all.find { |m| m.code == code }
   end
 
-  def initialize(klass, name, data_type, **options)
+  def initialize(klass, name, data_type, mandatory=false, **options)
     @klass = klass
     @name = name
     @data_type = data_type
-    
+    @mandatory = mandatory
     @options = options
   end
 
-  # Chouette::Route
-  define Chouette::Route, :name, :string, **{ mandatory: true }
-  define Chouette::Route, :published_name, :string, **{ mandatory: true }
-
-  # Chouette::JourneyPattern
-  define Chouette::JourneyPattern, :name, :string, **{ mandatory: true }
-  define Chouette::JourneyPattern, :published_name, :string, **{ mandatory: true }
-  define Chouette::JourneyPattern, :registration_number, :string
-
-  # Chouette::VehicleJourney
-  define Chouette::VehicleJourney, :published_journey_name, :string
-  define Chouette::VehicleJourney, :published_journey_identifier, :string
-
-  # Chouette::Footnote
-  define Chouette::Footnote, :code, :string
-  define Chouette::Footnote, :label, :string
-
-  # Chouette::RoutingConstraintZone
-  define Chouette::RoutingConstraintZone, :name, :string, **{ mandatory: true }
-
   # Chouette::Line
-  define Chouette::Line, :published_name, :string, **{ mandatory: true }
-  define Chouette::Line, :number, :string
-  define Chouette::Line, :company_id, :integer
-  define Chouette::Line, :network_id, :integer
-  define Chouette::Line, :color, :string
-  define Chouette::Line, :text_color, :string
-  define Chouette::Line, :url, :string
-  define Chouette::Line, :transport_mode, :string
-  
-  # Chouette::StopArea
-  define Chouette::StopArea, :street_name, :string
-  define Chouette::StopArea, :zip_code, :string
-  define Chouette::StopArea, :city_name, :string
-  define Chouette::StopArea, :postal_region, :string
-  define Chouette::StopArea, :country_code, :string
-  define Chouette::StopArea, :time_zone, :string
-  define Chouette::StopArea, :fare_code, :string
-  define Chouette::StopArea, :coordinates, :string
+  define klass: Chouette::Line, name: :name, mandatory: true
+  define klass: Chouette::Line, name: :active_from, data_type: :date
+  define klass: Chouette::Line, name: :active_until, data_type: :date
+  define klass: Chouette::Line, name: :color
+  define klass: Chouette::Line, name: :company, options: { reference: true, association_collection: :companies }
+  define klass: Chouette::Line, name: :network, options: { reference: true, association_collection: :networks }
+  define klass: Chouette::Line, name: :number
+  define klass: Chouette::Line, name: :published_name
+  define klass: Chouette::Line, name: :text_color
+  define klass: Chouette::Line, name: :transport_mode
+  define klass: Chouette::Line, name: :transport_submode
+  define klass: Chouette::Line, name: :url
 
   # Chouette::Company
-  define Chouette::Company, :default_contact_url, :float
-  define Chouette::Company, :default_contact_phone, :float
+  define klass: Chouette::Company, name: :name, mandatory: true
+  define klass: Chouette::Company, name: :short_name
+  define klass: Chouette::Company, name: :code
+  define klass: Chouette::Company, name: :customer_service_contact_email
+  define klass: Chouette::Company, name: :customer_service_contact_more
+  define klass: Chouette::Company, name: :customer_service_contact_name
+  define klass: Chouette::Company, name: :customer_service_contact_phone
+  define klass: Chouette::Company, name: :customer_service_contact_url
+  define klass: Chouette::Company, name: :default_contact_email
+  define klass: Chouette::Company, name: :default_contact_fax
+  define klass: Chouette::Company, name: :default_contact_more
+  define klass: Chouette::Company, name: :default_contact_name
+  define klass: Chouette::Company, name: :default_contact_operating_department_name
+  define klass: Chouette::Company, name: :default_contact_organizational_unit
+  define klass: Chouette::Company, name: :default_contact_phone
+  define klass: Chouette::Company, name: :default_contact_url
+  define klass: Chouette::Company, name: :default_language
+  define klass: Chouette::Company, name: :private_contact_email
+  define klass: Chouette::Company, name: :private_contact_more
+  define klass: Chouette::Company, name: :private_contact_name
+  define klass: Chouette::Company, name: :private_contact_phone
+  define klass: Chouette::Company, name: :private_contact_url
+  define klass: Chouette::Company, name: :address_line_1
+  define klass: Chouette::Company, name: :address_line_2
+  define klass: Chouette::Company, name: :country
+  define klass: Chouette::Company, name: :country_code
+  define klass: Chouette::Company, name: :house_number
+  define klass: Chouette::Company, name: :postcode
+  define klass: Chouette::Company, name: :postcode_extension
+  define klass: Chouette::Company, name: :street
+  define klass: Chouette::Company, name: :time_zone
+  define klass: Chouette::Company, name: :town
+
+  # Chouette::StopArea
+  define klass: Chouette::StopArea, name: :name, mandatory: true
+  define klass: Chouette::StopArea, name: :parent,  options: { reference: true }
+  define klass: Chouette::StopArea, name: :referent,  options: { reference: true }
+  define klass: Chouette::StopArea, name: :fare_code
+  define klass: Chouette::StopArea, name: :country
+  define klass: Chouette::StopArea, name: :coordinates
+  define klass: Chouette::StopArea, name: :country_code
+  define klass: Chouette::StopArea, name: :street_name
+  define klass: Chouette::StopArea, name: :zip_code
+  define klass: Chouette::StopArea, name: :city_name
+  define klass: Chouette::StopArea, name: :url
+  define klass: Chouette::StopArea, name: :time_zone
+  define klass: Chouette::StopArea, name: :waiting_time, data_type: :integer
+  define klass: Chouette::StopArea, name: :postal_region
+  define klass: Chouette::StopArea, name: :public_code
+  define klass: Chouette::StopArea, name: :compass_bearing, data_type: :float
+  define klass: Chouette::StopArea, name: :accessibility_limitation_description
+
+  # Chouette::Route
+  define klass: Chouette::Route, name: :name, mandatory: true
+  define klass: Chouette::Route, name: :published_name
+  define klass: Chouette::Route, name: :opposite_route, options: { reference: true }
+  define klass: Chouette::Route, name: :wayback
+
+  # Chouette::JourneyPattern
+  define klass: Chouette::JourneyPattern, name: :name, mandatory: true
+  define klass: Chouette::JourneyPattern, name: :published_name
+  define klass: Chouette::JourneyPattern, name: :shape, options: { reference: true, association_collection: :shapes }
+
+  # Chouette::VehicleJourney
+  define klass: Chouette::VehicleJourney, name: :published_journey_name
+  define klass: Chouette::VehicleJourney, name: :company, options: { reference: true, association_collection: :companies }
+  define klass: Chouette::VehicleJourney, name: :transport_mode
+  define klass: Chouette::VehicleJourney, name: :published_journey_identifier
+
+  # Chouette::Footnote
+  define klass: Chouette::Footnote, name: :code
+  define klass: Chouette::Footnote, name: :label
+
+  # Chouette::RoutingConstraintZone
+  define klass: Chouette::RoutingConstraintZone, name: :name, mandatory: true
 
   def code
     "#{resource_name}##{name}"
@@ -91,15 +144,12 @@ class ModelAttribute
     klass.model_name.plural.to_sym
   end
 
-  def mandatory
-    options[:mandatory]
-  end
-
-   def ==(other)
+  def ==(other)
     self.class === other &&
       klass == other.klass &&
       name == other.name &&
-      data_type == other.data_type
+      data_type == other.data_type &&
+      mandatory == other.mandatory &&
       options == other.options
   end
 end

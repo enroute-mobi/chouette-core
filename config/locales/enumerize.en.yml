@@ -390,6 +390,12 @@ en:
       ticket_barrier: "Ticket Barrier"
       gate: "Gate"
       other: "Other"
+    target_model:
+      line: Line
+      stop_area: Stop Area
+      journey_pattern: Journey Pattern
+      vehicle_journey: Vehicle Kourney
+      company: Company
     search:
       rule_type: *notification_rule_rule_type
     control:

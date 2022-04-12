@@ -1,0 +1,8 @@
+- disabled = form.options.dig(:defaults, :disabled) || false
+
+= form.input :target_model, input_html: { 'x-model': 'resource.target_model', '@change': "resource.target_attribute = ''" }
+= form.input :target_attribute do
+	select.select.form-control.required name="control_list[controls_attributes][0][target_attribute]" x-model="resource.target_attribute" :disabled="#{disabled} || !Boolean(resource.target_model)"
+		option value=""
+		template[x-for="option in #{facade.target_attribute_options}"]
+			option :selected="'#{form.object.target_attribute}' == option.id" :value="option.id" x-text="option.text" x-show="option.resource_type == resource.target_model"

@@ -47,6 +47,10 @@ class ControlListFacade
 		]
 	end
 
+	def target_attribute_options
+		ModelAttribute.all.map { |m| { id: m.name, text: m.klass.tmf(m.name), resource_type: m.resource_name.to_s.camelcase } }.to_json
+	end
+
 	def json_state
 		JSON.generate({
 			name: control_list.name,

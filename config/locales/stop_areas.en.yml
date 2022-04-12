@@ -136,6 +136,7 @@ en:
         nearest_topic_name: "Nearest point of interest"
         street_name: "Street name"
         country_code: "Country"
+        country: "Country"
         fare_code: "Fare code"
         projection: "Projection type"
         projection_x: "x-position"

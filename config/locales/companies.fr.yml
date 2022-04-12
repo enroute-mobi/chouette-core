@@ -78,6 +78,7 @@ fr:
         postcode: Code postal
         postcode_extension: Extension de CP
         country_code: Pays
+        country: Pays
     errors:
       models:
         company:

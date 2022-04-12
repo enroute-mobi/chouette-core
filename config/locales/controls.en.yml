@@ -8,7 +8,7 @@ en:
       control/dummy:
         one: Simulate control
       control/presence_attribute:
-        one: Pesence of attribute
+        one: Presence of attribute
     attributes:
       control/base:
         name: Name

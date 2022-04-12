@@ -11,7 +11,7 @@ class MacroMessagesController < ActionController::Base
 
   def index
 		authorize Macro::Message
-    messages = collection.where(search_params).paginate(page: params[:page], per_page: 2)
+    messages = collection.where(search_params).paginate(page: params[:page], per_page: 15)
 
 		html = render_to_string(
 			partial: 'macro_list_runs/macro_messages',

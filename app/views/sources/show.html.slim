@@ -21,7 +21,7 @@
 
       .row
         .col-lg-12
-          h4.underline= t('.sources.form.sections.retrieval')
+          h3.mx-5.my-0.-mb-3 = t('.sources.form.sections.retrieval')
           - if @source.retrievals.any?
             = table_builder_2 @source.retrievals,
               [ \

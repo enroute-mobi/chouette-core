@@ -10,12 +10,12 @@ RSpec.describe Control::PresenceCode do
       Control::PresenceCode::Run.create(
         control_list_run: control_list_run,
         criticity: "warning",
-        options: { target_model: target_model, target_code_space: target_code_space },
+        options: { target_model: target_model, target_code_space_id: target_code_space_id },
         position: 0
       )
     end
 
-    let(:target_code_space) { "test" }
+    let(:target_code_space_id) { context.code_space&.id }
     let(:referential) { context.referential }
     subject { control_run.run }
 
@@ -23,7 +23,7 @@ RSpec.describe Control::PresenceCode do
       an_object_having_attributes({
         source: source,
         criticity: "warning",
-        message_attributes: {"target_code_space" => target_code_space}
+        message_attributes: {"name" => source.name}
       })
     end
 

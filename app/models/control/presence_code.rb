@@ -1,10 +1,18 @@
 module Control
   class PresenceCode < Control::Base
-    enumerize :target_model, in: %w{Line StopArea VehicleJourney}, default: "Line"
-    option :target_model
-    option :target_code_space_id
 
-    validates :target_model, :target_code_space_id, presence: true
+    module Options
+      extend ActiveSupport::Concern
+
+      included do
+        enumerize :target_model, in: %w{Line StopArea VehicleJourney}, default: "Line"
+        option :target_model
+        option :target_code_space_id
+
+        validates :target_model, :target_code_space_id, presence: true
+      end
+    end
+    include Options
 
     validate :code_space_belong_to_workgroup
 
@@ -18,15 +26,13 @@ module Control
       errors.add(:target_code_space_id, :invalid) unless target_code_space
     end
 
-
     class Run < Control::Base::Run
-      option :target_model
-      option :target_code_space_id
+      include Options
 
       def run
         faulty_models.find_each do |model|
           control_messages.create({
-            message_attributes: { target_code_space: target_code_space },
+            message_attributes: { name: (model.name rescue model.id) },
             criticity: criticity,
             source: model,
           })
@@ -47,11 +53,7 @@ module Control
       end
 
       def faulty_models
-        models.where.not(id: models.joins(:codes).where(code_model => { code_space_id: code_space }))
-      end
-
-      def code_space
-        @code_space ||= workgroup.code_spaces.find_by(short_name: target_code_space)
+        models.where.not(id: models.joins(:codes).where(code_model => { code_space_id: target_code_space_id }))
       end
 
       def model_collection

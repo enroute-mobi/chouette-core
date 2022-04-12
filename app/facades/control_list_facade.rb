@@ -88,7 +88,7 @@ class ControlListFacade
 	def merged_options object
 		{
 			errors: object.errors.full_messages,
-    	html: Operations::RenderPartial.call(template: template, id: object.id, type: object.type, parent_klass: Control::List, validate: true),
+    	html: Operations::RenderPartial.call(template: template, resource: object, parent_klass: Control::List),
       **object.options
 		}
 	end

@@ -8,7 +8,7 @@ module Control
         option :target_model
         option :target_attribute
 
-        enumerize :target_model, in: %w{Line StopArea JourneyPattern VehicleJourney Company}, default: "Line"
+        enumerize :target_model, in: %w{Line StopArea JourneyPattern VehicleJourney Company}
         validates :target_model, :target_attribute, presence: true
       end
     end

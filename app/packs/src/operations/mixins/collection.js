@@ -1,10 +1,14 @@
 import { filter, first, isEmpty, last, omit, reject } from 'lodash'
 import ResourceMixin from './resource'
+import { nodeId } from '../helpers'
 
 const Resource = ResourceMixin(class {})
-
 export default superclass => class Collection extends superclass {
 	static get ResourceConstructor() { return Resource }
+
+	static get resourceName() { return this.ResourceConstructor.name.toLowerCase() }
+
+	static nodeIdGenerator = nodeId('resource')
 
 	get first() { return first(this) }
 
@@ -17,7 +21,8 @@ export default superclass => class Collection extends superclass {
 	get isEmpty() { return isEmpty(this) }
 
 	add(attributes) {
-		const resource = new this.constructor.ResourceConstructor(attributes)
+		const { value: nodeId } = this.constructor.nodeIdGenerator.next()
+		const resource = new this.constructor.ResourceConstructor({ ...attributes, nodeId })
 
 		this.push(resource)
 

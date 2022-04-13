@@ -11,7 +11,7 @@ context('MacroContext', () => {
 
 	describe('attributesList', () => {
 		it('should return the right list', () => {
-			expect(macroContext.attributesList).toEqual(['errors', 'html', 'macros'])
+			expect(macroContext.attributesList).toEqual(['nodeId', 'errors', 'html', 'macros'])
 		})
 	})
 })

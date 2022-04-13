@@ -12,11 +12,14 @@
     .simple-separator.mb-5
     .w-full-px-5
 
-      = render 'operations/collection', collection: '$store.macroList.contexts'
+      .macro_contexts
+        = render 'operations/collection', collection: '$store.macroList.contexts', resource_name: 'macro_context'
 
       template[x-if="$store.macroList.contexts.length > 0"]
         .simple-separator.m-5
-      = render 'operations/collection', collection: '$store.macroList.macros'
+      
+      .macros
+        = render 'operations/collection', collection: '$store.macroList.macros', resource_name: 'macro'
 
       = render 'operations/select', **facade.macro_context_select_options
       = render 'operations/select', **facade.macro_select_options('$store.macroList.macros')

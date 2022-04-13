@@ -25,7 +25,7 @@ class NotificationRule < ApplicationModel
       operation_scope = for_statuses([operation.status]).
                         where(notification_type: operation.class.model_name.singular)
 
-      if (line_ids = operation.line_ids).present?
+      if (line_ids = operation.try(:line_ids)).present?
         operation_scope = operation_scope.for_lines line_ids
       end
 

@@ -168,7 +168,7 @@ class Import::Base < ApplicationModel
   end
 
   def line_ids
-    return [] unless referential
+    return children.first&.referential_metadata&.line_ids unless referential
 
     referential.metadatas.pluck(:line_ids).flatten
   end

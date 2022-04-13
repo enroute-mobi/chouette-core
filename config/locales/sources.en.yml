@@ -14,12 +14,12 @@ en:
       edit: "Edit this Data Source"
       destroy: "Delete this Data Source"
       destroy_confirm: "Are you sure you want to delete this Data Source ?"
-      retrieve: "Retry Now"
+      retrieve: "Retrieve Now"
     search_no_results: "No Data Source matches your search"
     form:
       sections:
         identification: "Identification"
-        retrieval: "Retrieval"
+        retrieval: "Last Retrievals"
         import_options: "Import Options"
     filters:
     errors:

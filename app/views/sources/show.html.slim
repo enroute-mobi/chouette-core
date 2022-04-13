@@ -21,9 +21,9 @@
 
       .row
         .col-lg-12
-          h3.mx-5.my-0.-mb-3 = t('.sources.form.sections.retrieval')
-          - if @source.retrievals.any?
-            = table_builder_2 @source.retrievals,
+          .h3 = t('sources.form.sections.retrieval')
+          - if @retrievals.any?
+            = table_builder_2 @retrievals,
               [ \
                 TableBuilderHelper::Column.new( \
                   key: :started_at, \
@@ -49,8 +49,8 @@
                   end \
                 ), \
               ],
-              cls: 'table has-search'
-
+              sortable: false,
+              cls: 'table'
             / = new_pagination @source.retrievals, 'pull-right'
           - else
             .row.mt-xs

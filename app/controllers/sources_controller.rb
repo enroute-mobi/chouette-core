@@ -30,6 +30,10 @@ class SourcesController < ChouetteController
     end
   end
 
+  def show
+    @retrievals = @source.retrievals.order(created_at: :desc)
+  end
+
   def retrieve
     source = workbench.sources.find_by_id(params[:id])
     begin

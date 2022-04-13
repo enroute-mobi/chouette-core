@@ -27,7 +27,7 @@ const ControlMixin = superclass => class Control extends superclass {
 				break
 		}
 
-		const container = parse('<div class="flex w-full"></div>')
+		const container = parse('<div class="flex w-full items-center"></div>')
 		const criticity = parse(`<span class="fa fa-circle mr-xs" style="color:${color};"></span>`)
 		const name = parse(`<div>${this.name}</div>`)
 		const description = parse(`<div class="ml-auto">${text}</div>`)
@@ -45,7 +45,7 @@ const ControlMixin = superclass => class Control extends superclass {
 	}
 
 	get criticityIcon() {
-		return 
+		return
 	}
 }
 

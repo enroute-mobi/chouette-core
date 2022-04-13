@@ -5,23 +5,18 @@
   .row
     .col-lg-12
       = f.input :name, input_html: { 'x-model': '$store.macroList.name' }
-      = f.input :comments, as: :text, input_html: { 'x-model': '$store.macroList.comments' }
+      = f.input :comments, as: :text, input_html: { 'x-model': '$store.macroList.comments', 'x-data': '', ':style': "{ height: $el.scrollHeight + 'px'}" }
   .row
     h2
       = t("macro.form.sections.macros")
     .simple-separator.mb-5
     .w-full-px-5
-
-      .macro_contexts
-        = render 'operations/collection', collection: '$store.macroList.contexts', resource_name: 'macro_context'
-
-      template[x-if="$store.macroList.contexts.length > 0"]
-        .simple-separator.m-5
-      
-      .macros
+      = render 'operations/collection', collection: '$store.macroList.contexts', resource_name: 'macro_context'
+      .mt-16
+        = render 'operations/select', **facade.macro_context_select_options
+      .mt-16
         = render 'operations/collection', collection: '$store.macroList.macros', resource_name: 'macro'
 
-      = render 'operations/select', **facade.macro_context_select_options
       = render 'operations/select', **facade.macro_select_options('$store.macroList.macros')
 
   - unless facade.show?

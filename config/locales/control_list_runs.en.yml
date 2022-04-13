@@ -42,7 +42,9 @@ en:
         name: Name
         created_by: Created by
         creator: "Creator"
+        original_control_list: "Original control list"
         original_control_list_id: "Original control list"
+        referential: "Target"
         referential_id: "Target"
         started_at: "Started at"
         duration: Duration

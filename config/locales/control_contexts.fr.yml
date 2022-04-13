@@ -3,11 +3,15 @@ fr:
     models:
       control:
         zero:  "Contexte d'instructions"
-        one:   "MContexte d'instructions"
+        one:   "Contexte d'instructions"
         other: "Contexte d'instructions"
     attributes:
-      control/context:
+      control/context: &control_context
         name: Nom
         comments: Commentaire
-      control/context/transport_mode:
+      control/context/transport_mode: &transport_mode
         transport_mode: Mode de transport
+      control/context/run:
+        <<: *control_context
+      control/context/transport_mode/run:
+        <<: *transport_mode

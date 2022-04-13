@@ -1,6 +1,5 @@
 - breadcrumb :control_list_run, @workbench, @control_list_run
 - page_header_content_for @control_list_run
-- content_for :additional_packs, 'control_list_runs/show'
 
 / PageContent
 .page_content
@@ -28,5 +27,8 @@
         .dl-head
           = I18n.t('other', scope: 'activerecord.models.control/run').capitalize
 
+      - @control_list_run.control_context_runs.each do |context|
+        = render 'control_context_run', control_context_run: context
+
       - @control_list_run.control_runs.each do |control_run|
-        = render 'control_run', control_run: control_run
+        = render 'control_run', control_run: control_run, messages_base_url: workbench_control_list_run_control_run_control_messages_path(@workbench, @control_list_run, control_run)

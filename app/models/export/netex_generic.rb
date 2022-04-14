@@ -377,11 +377,14 @@ class Export::NetexGeneric < Export::Base
       end
 
       def valid_between
-        return unless active_from || active_until
+        return unless active_from.present? || active_until.present?
+
+        from_date = active_from.present? ? active_from.beginning_of_day : nil
+        to_date = active_until.present? ? (active_until + 1).beginning_of_day : nil
 
         Netex::ValidBetween.new(
-          from_date: active_from.beginning_of_day,
-          to_date: (active_until + 1).beginning_of_day
+          from_date: from_date,
+          to_date: to_date
         )
       end
 

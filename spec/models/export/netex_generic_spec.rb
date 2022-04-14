@@ -317,6 +317,32 @@ RSpec.describe Export::NetexGeneric do
 
           it { expect(netex_from_date).to eq("2022-03-16T00:00:00") }
           it { expect(netex_to_date).to eq("2022-03-20T00:00:00") }
+
+          context "when active_until is empty" do
+            before do
+              line.update active_until: nil
+            end
+
+            it { expect(netex_from_date).to eq("2022-03-16T00:00:00") }
+            it { expect(subject.to_date).to be_nil }
+          end
+
+          context "when active_from is empty" do
+            before do
+              line.update active_from: nil
+            end
+
+            it { expect(subject.from_date).to be_nil }
+            it { expect(netex_to_date).to eq("2022-03-20T00:00:00") }
+          end
+
+          context "when active_from and active_until are empty" do
+            before do
+              line.update active_from: nil, active_until: nil
+            end
+
+            it { is_expected.to be_nil }
+          end
         end
 
       end

@@ -36,6 +36,10 @@
         span = 'activerecord.models.compliance_control_set.other'.t.capitalize
       = link_to workbench_compliance_check_sets_path(workbench), class: 'list-group-item' do
         span = 'activerecord.models.compliance_check_set.other'.t.capitalize
+      = link_to workbench_control_lists_path(workbench), class: "list-group-item" do
+        span = Control::List.model_name.human(count: 2) + ' (bêta)'
+      = link_to workbench_control_list_runs_path(workbench), class: "list-group-item" do
+        span = Control::List::Run.model_name.human(count: 2) + ' (bêta)'
       = link_to workbench_macro_lists_path(workbench), class: "list-group-item" do
         span = Macro::List.model_name.human(count: 2)
       = link_to workbench_macro_list_runs_path(workbench), class: "list-group-item" do

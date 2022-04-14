@@ -30,15 +30,9 @@ const ControlMixin = superclass => class Control extends superclass {
 		const container = parse('<div class="flex w-full items-center"></div>')
 		const criticity = parse(`<span class="fa fa-circle mr-xs" style="color:${color};"></span>`)
 		const name = parse(`<div>${this.name}</div>`)
-		const description = parse(`<div class="ml-auto">${text}</div>`)
+		const description = parse(`<div class="ml-auto">${expanded ? text : '('+ text +')' }</div>`)
 
 		container.appendChild(criticity)
-
-		if(Boolean(this.name) && !expanded) {
-			container.appendChild(name)
-			// description.classList.add('ml-auto')
-		}
-
 		container.appendChild(description)
 
 		return container.outerHTML

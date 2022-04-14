@@ -16,12 +16,11 @@
 						'x-model': 'resource.name' \
 					}, \
 					label: false,
-					wrapper_html: {'class': 'mb-0', ':style': "expanded && { width: '75%' }" }
+					wrapper_html: {'class': 'mb-0'}
 
 				.flex.items-center.max-w-8xl
 						p.mb-0.mr-2.truncate x-text="resource.name" x-show="!expanded"
-						p.mb-0 x-show="!expanded && resource.name" = "(#{class_description})"
-						p.mb-0 x-show="!expanded && !resource.name" x-html="resource.renderClassDescription(expanded, '#{class_description}')"
+						p.mb-0 x-show="!expanded" x-html="resource.renderClassDescription(expanded, '#{class_description}')"
 			.flex.ml-auto x-show="expanded"
 				p.flex x-html="resource.renderClassDescription(expanded, '#{class_description}')"
 

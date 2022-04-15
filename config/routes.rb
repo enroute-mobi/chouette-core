@@ -72,7 +72,7 @@ ChouetteIhm::Application.routes.draw do
     end
 
     resources :sources do
-      get :retrieve, on: :member
+      post :retrieve, on: :member
     end
 
     resources :macro_list_runs, only: %w(new create show index)do

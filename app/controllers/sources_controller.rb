@@ -35,13 +35,8 @@ class SourcesController < ChouetteController
   end
 
   def retrieve
-    source = workbench.sources.find_by_id(params[:id])
-    begin
-      source.retrieve
-    rescue => e
-      Chouette::Safe.capture "Source::Retrieve #{source.inspect} failed", e
-      flash[:alert] = t('sources.retrieve.failure')
-    end
+    source = workbench.sources.find(params[:id])
+    source.retrieve
 
     redirect_to action: :show
   end

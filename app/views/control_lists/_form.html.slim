@@ -5,20 +5,18 @@
   .row.control_list
     .col-lg-12
       = f.input :name, input_html: { 'x-model': '$store.controlList.name' }
-      = f.input :comments, as: :text, input_html: { 'x-model': '$store.controlList.comments' }
+      = f.input :comments, as: :text, input_html: { 'x-model': '$store.controlList.comments', 'x-data': '', ':style': "{ height: $el.scrollHeight + 'px'}" }
   .row
     h2
       = t("control.form.sections.controls")
     .simple-separator.mb-5
     .w-full-px-5
-
       = render 'operations/collection', collection: '$store.controlList.contexts', resource_name: 'control_context'
+      .mt-16
+        = render 'operations/select', **facade.control_context_select_options
+      .mt-16
+        = render 'operations/collection', collection: '$store.controlList.controls', resource_name: 'control'
 
-      template[x-if="!$store.controlList.contexts.isEmpty"]
-        .simple-separator.m-5
-      = render 'operations/collection', collection: '$store.controlList.controls', resource_name: 'control'
-
-      = render 'operations/select', **facade.control_context_select_options
       = render 'operations/select', **facade.control_select_options('$store.controlList.controls')
 
   - unless facade.show?

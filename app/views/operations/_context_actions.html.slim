@@ -1,12 +1,11 @@
 - unless facade.show?
-	.actions
-		.btn-group
-			.btn.dropdown-toggle data-toggle="dropdown"
-				.span.fa.fa-cog
-			ul.dropdown-menu
-				li
-					a class="cursor-pointer duplicate" @click="collection.duplicate(resource)" x-text="I18n.t('macros.actions.duplicate')" x-show='!resource.isDeleted'
-				li
-					a class="cursor-pointer delete" @click="collection.delete(resource, index)" x-text="I18n.t('macros.actions.delete')" x-show='!resource.isDeleted'
-				li
-					a class="cursor-pointer restore" @click="collection.restore(resource)" x-text="I18n.t('macros.actions.restore')" x-show='resource.isDeleted'
+	.btn-group.ml-auto
+		.btn.dropdown-toggle data-toggle="dropdown"
+			.span.fa.fa-cog
+		ul.dropdown-menu
+			li
+				a class="cursor-pointer" @click="collection.duplicate(resource)" x-text="I18n.t('macros.actions.duplicate')" x-show='!resource.isDeleted'
+			li
+				a class="cursor-pointer" @click="collection.delete(resource, index)" x-text="I18n.t('macros.actions.delete')" x-show='!resource.isDeleted'
+			li
+				a class="cursor-pointer" @click="collection.restore(resource)" x-text="I18n.t('macros.actions.restore')" x-show='resource.isDeleted'

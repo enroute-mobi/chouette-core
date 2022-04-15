@@ -9,7 +9,7 @@ module Operations
 
 			@resource.validate if %w[create update].include?(@template.action_name)
 
-			@form_options = { wrapper: :horizontal_form }
+			@form_options = { wrapper: :horizontal_form_tailwind }
 
 			if template.action_name === 'show'
 				form_options[:defaults] = { disabled: true }

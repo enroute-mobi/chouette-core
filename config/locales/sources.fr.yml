@@ -14,10 +14,12 @@ fr:
       edit: "Editer cette Source de données"
       destroy: "Supprimer cette Source de données"
       destroy_confirm: "Etes vous sûr de supprimer cette Source de données ?"
+      retrieve: "Récupérer maintenant"
     search_no_results: "Aucune Source de données ne correspond à votre recherche"
     form:
       sections:
-        retrieval: "Récupération"
+        identification: "Identification"
+        retrieval: "Dernières Récuperations"
         import_options: "Options d'importation"
     filters:
     errors:
@@ -42,3 +44,8 @@ fr:
         created_at: "Créé le"
         updated_at: "Edité le"
         creator_id: "Créé par"
+      source/retrieval:
+        started_at: Début
+        status: État
+        duration: Durée
+        import: Import

@@ -14,10 +14,12 @@ en:
       edit: "Edit this Data Source"
       destroy: "Delete this Data Source"
       destroy_confirm: "Are you sure you want to delete this Data Source ?"
+      retrieve: "Retrieve Now"
     search_no_results: "No Data Source matches your search"
     form:
       sections:
-        retrieval: "Retrieval"
+        identification: "Identification"
+        retrieval: "Last Retrievals"
         import_options: "Import Options"
     filters:
     errors:
@@ -42,3 +44,8 @@ en:
         created_at: "Created at"
         updated_at: "Updated at"
         creator_id: "Creator ID"
+      source/retrieval:
+        started_at: Started at
+        status: Status
+        duration: Duration
+        import: Import

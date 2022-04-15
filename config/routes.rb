@@ -71,7 +71,9 @@ ChouetteIhm::Application.routes.draw do
       resources :macro_list_runs, only: %w(new create)
     end
 
-    resources :sources
+    resources :sources do
+      post :retrieve, on: :member
+    end
 
     concern :macro_runs do
       resources :macro_runs, only: [] do

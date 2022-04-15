@@ -88,6 +88,7 @@ class Permission
       permissions << "workgroups.update"
       permissions << "referentials.flag_urgent"
       permissions << "stop_area_referentials.update"
+      permissions << "sources.retrieve"
     end
 
     def referentials

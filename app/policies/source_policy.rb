@@ -17,4 +17,8 @@ class SourcePolicy < ApplicationPolicy
     user.has_permission?('sources.update')
   end
 
+  def retrieve?
+    user.has_permission?('sources.retrieve')
+  end
+
 end

@@ -952,13 +952,8 @@ class Export::NetexGeneric < Export::Base
 
   class VehicleJourneys < Part
 
-    delegate :vehicle_journeys, to: :export_scope
-
     def export!
-      vehicle_journeys.joins(:journey_pattern, :route)
-        .includes(vehicle_journey_at_stops: [:stop_area, { stop_point: :stop_area }])
-        .select(selected).group(group_by).find_each(batch_size: 200) do |vehicle_journey|
-
+      vehicle_journeys.find_each(batch_size: 200) do |vehicle_journey|
         tags = resource_tagger.tags_for(vehicle_journey.line_id)
         tagged_target = TaggedTarget.new(target, tags)
 
@@ -968,6 +963,51 @@ class Export::NetexGeneric < Export::Base
         decorated_vehicle_journey.vehicle_journey_stop_assignments.each do |assignment|
           tagged_target << assignment.netex_resource
         end
+      end
+    end
+
+    def vehicle_journeys
+      Query.new(export_scope.vehicle_journeys).scope
+    end
+
+    class Query
+
+      def initialize(vehicle_journeys)
+        @vehicle_journeys = vehicle_journeys
+      end
+      attr_accessor :vehicle_journeys
+
+      def scope
+        return base_query unless vehicle_journeys.joins_values.include? :time_tables
+        base_query.select(array_agg_time_tables).group(group_by)
+      end
+
+      def base_query
+        vehicle_journeys.joins(journey_pattern: :route)
+          .includes(vehicle_journey_at_stops: [:stop_area, { stop_point: :stop_area }])
+          .select(selected)
+      end
+
+      private
+
+      def selected
+        [
+          'vehicle_journeys.*',
+          'routes.line_id AS line_id',
+          'journey_patterns.objectid AS journey_pattern_objectid',
+        ]
+      end
+
+      def array_agg_time_tables
+        'array_agg(time_tables.objectid) AS time_table_objectids'
+      end
+
+      def group_by
+        [
+          'vehicle_journeys.id',
+          'routes.line_id',
+          'journey_patterns.objectid',
+        ]
       end
     end
 
@@ -1019,7 +1059,8 @@ class Export::NetexGeneric < Export::Base
       end
 
       def day_types
-        time_table_objectids.map do |objectid|
+        objectids = try(:time_table_objectids) || time_tables.pluck(:objectid)
+        objectids.map do |objectid|
           Netex::Reference.new(objectid, type: 'DayTypeRef')
         end
       end
@@ -1097,25 +1138,6 @@ class Export::NetexGeneric < Export::Base
       def vehicle_journey_refs
         [Netex::Reference.new(vehicle_journey.objectid, type: 'ServiceJourney')]
       end
-    end
-
-    private
-
-    def selected
-      [
-        'vehicle_journeys.*',
-        'routes.line_id AS line_id',
-        'journey_patterns.objectid AS journey_pattern_objectid',
-        'array_agg(time_tables.objectid) AS time_table_objectids',
-      ]
-    end
-
-    def group_by
-      [
-        'vehicle_journeys.id',
-        'routes.line_id',
-        'journey_patterns.objectid',
-      ]
     end
   end
 

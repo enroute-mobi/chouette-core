@@ -955,8 +955,11 @@ class Export::NetexGeneric < Export::Base
     delegate :vehicle_journeys, to: :export_scope
 
     def export!
-      vehicle_journeys.includes(:time_tables, {journey_pattern: :route}, vehicle_journey_at_stops: [:stop_area, { stop_point: :stop_area }]).find_each(batch_size: 200) do |vehicle_journey|
-        tags = resource_tagger.tags_for(vehicle_journey.journey_pattern.route.line_id)
+      vehicle_journeys.joins(:journey_pattern, :route)
+        .includes(vehicle_journey_at_stops: [:stop_area, { stop_point: :stop_area }])
+        .select(selected).group(group_by).find_each(batch_size: 200) do |vehicle_journey|
+
+        tags = resource_tagger.tags_for(vehicle_journey.line_id)
         tagged_target = TaggedTarget.new(target, tags)
 
         decorated_vehicle_journey = Decorator.new(vehicle_journey)
@@ -987,7 +990,11 @@ class Export::NetexGeneric < Export::Base
       end
 
       def journey_pattern_ref
-        Netex::Reference.new(journey_pattern.objectid, type: 'JourneyPatternRef')
+        Netex::Reference.new(journey_pattern_objectid, type: 'JourneyPatternRef')
+      end
+
+      def journey_pattern_objectid
+        __getobj__.try(:journey_pattern_objectid) || journey_pattern&.objectid
       end
 
       def passing_times
@@ -1007,17 +1014,13 @@ class Export::NetexGeneric < Export::Base
 
       def decorated_vehicle_journey_at_stops
         @decorated_vehicle_journey_at_stops ||= vehicle_journey_at_stops.map do |vehicle_journey_at_stop|
-          VehicleJourneyAtStopDecorator.new(vehicle_journey_at_stop, journey_pattern.objectid)
+          VehicleJourneyAtStopDecorator.new(vehicle_journey_at_stop, journey_pattern_objectid)
         end
       end
 
       def day_types
-        decorated_time_tables.map(&:day_type_ref)
-      end
-
-      def decorated_time_tables
-        @decorated_time_tables ||= time_tables.map do |time_table|
-          TimeTableDecorator.new(time_table)
+        time_table_objectids.map do |objectid|
+          Netex::Reference.new(objectid, type: 'DayTypeRef')
         end
       end
     end
@@ -1096,6 +1099,24 @@ class Export::NetexGeneric < Export::Base
       end
     end
 
+    private
+
+    def selected
+      [
+        'vehicle_journeys.*',
+        'routes.line_id AS line_id',
+        'journey_patterns.objectid AS journey_pattern_objectid',
+        'array_agg(time_tables.objectid) AS time_table_objectids',
+      ]
+    end
+
+    def group_by
+      [
+        'vehicle_journeys.id',
+        'routes.line_id',
+        'journey_patterns.objectid',
+      ]
+    end
   end
 
   class TimeTableDecorator < SimpleDelegator

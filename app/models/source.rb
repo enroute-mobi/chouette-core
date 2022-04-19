@@ -7,8 +7,9 @@ class Source < ApplicationModel
   validates :name, presence: true
   validates :url, presence: true
   validates :downloader_type, presence: true
+  validates :downloader_option_raw_authorization, presence: true
 
-  enumerize :downloader_type, in: %i(direct french_nap), default: :direct
+  enumerize :downloader_type, in: %i(direct french_nap authorization), default: :direct
 
   scope :enabled, -> { where enabled: true }
 
@@ -26,6 +27,14 @@ class Source < ApplicationModel
 
   def import_option_archive_on_fail=(value)
     import_options["archive_on_fail"] = value
+  end
+
+  def downloader_option_raw_authorization
+    downloader_options["raw_authorization"]
+  end
+
+  def downloader_option_raw_authorization=(value)
+    downloader_options["raw_authorization"] = value
   end
 
   def self.retrieve_all
@@ -86,6 +95,23 @@ class Source < ApplicationModel
         # We prefer to use table links because we have absolute url and never relative url
         l = page.css('table')
         l.css('a').first["href"]
+      end
+    end
+
+    class Authorization < Base
+      attr_accessor :raw_authorization
+
+      def download(path)
+        File.open(path, "wb") do |file|
+          IO.copy_stream open(url, api_request), file
+        end
+      end
+
+      private
+
+      def api_request
+        return {} unless raw_authorization
+        { "Authorization" => raw_authorization }
       end
     end
   end

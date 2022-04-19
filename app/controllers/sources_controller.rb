@@ -73,7 +73,8 @@ class SourcesController < ChouetteController
       :import_option_archive_on_fail,
       :created_at,
       :updated_at,
-      :downloader_type
+      :downloader_type,
+      :downloader_option_raw_authorization
     ).with_defaults(workbench_id: parent.id)
   end
 end

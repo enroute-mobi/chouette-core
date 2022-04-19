@@ -185,6 +185,54 @@ RSpec.describe Export::NetexGeneric do
 
   describe "Lines export" do
     describe Export::NetexGeneric::Lines::Decorator do
+      let(:line) { Chouette::Line.new }
+      let(:decorator) { Export::NetexGeneric::Lines::Decorator.new line }
+
+      def t(definition)
+        Time.zone.parse definition
+      end
+
+      describe "#valid_between" do
+        subject { decorator.valid_between }
+
+        context "when Line validity period is not defined" do
+          before { line.active_from = line.active_until = nil }
+          it { is_expected.to be_nil }
+        end
+
+        context "when Line is active from 2030-01-01" do
+          before { line.active_from = Date.parse("2030-01-01") }
+          it { is_expected.to be_a(Netex::ValidBetween) }
+          it { is_expected.to have_attributes(from_date: t("2030-01-01 00:00"), to_date: nil) }
+        end
+
+        context "when Line is active until 2030-01-31" do
+          before { line.active_until = Date.parse("2030-01-31") }
+          it { is_expected.to be_a(Netex::ValidBetween) }
+          it { is_expected.to have_attributes(to_date: t("2030-02-01 00:00"), from_date: nil) }
+        end
+
+        context "when Line is active from 2030-01-01 to 2030-01-31" do
+          before do
+            line.active_from = Date.parse("2030-01-01")
+            line.active_until = Date.parse("2030-01-31")
+          end
+          it { is_expected.to be_a(Netex::ValidBetween) }
+          it { is_expected.to have_attributes(from_date: t("2030-01-01 00:00"), to_date: t("2030-02-01 00:00")) }
+        end
+      end
+
+      # lighter version
+      describe "#netex_attributes" do
+        subject { decorator.netex_attributes }
+
+        it "uses valid_between result as valid_between attribute" do
+          allow(decorator).to receive(:valid_between).and_return("dummy")
+          is_expected.to include(valid_between: decorator.valid_between)
+        end
+      end
+
+      # heavy version (deprecated)
       describe "#netex_attributes" do
         let!(:context) do
           Chouette.create do
@@ -196,8 +244,6 @@ RSpec.describe Export::NetexGeneric do
           end
         end
         let(:line) { context.line }
-
-        let(:decorator) { Export::NetexGeneric::Lines::Decorator.new line }
 
         let(:active_from) { "2022-03-16".to_date }
         let(:active_until) { active_from + 3 }
@@ -309,16 +355,6 @@ RSpec.describe Export::NetexGeneric do
 
           it { expect(key_list).to match_array(codes) }
         end
-
-        context "when netex_key is valid_between" do
-          let(:netex_key) { :valid_between }
-          let(:netex_from_date) { subject.from_date.strftime("%Y-%m-%dT%H:%M:%S") }
-          let(:netex_to_date) { subject.to_date.strftime("%Y-%m-%dT%H:%M:%S") }
-
-          it { expect(netex_from_date).to eq("2022-03-16T00:00:00") }
-          it { expect(netex_to_date).to eq("2022-03-20T00:00:00") }
-        end
-
       end
     end
   end

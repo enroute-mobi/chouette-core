@@ -7,7 +7,10 @@ class Source < ApplicationModel
   validates :name, presence: true
   validates :url, presence: true
   validates :downloader_type, presence: true
-  validates :downloader_option_raw_authorization, presence: true
+
+  before_validation do
+    self.downloader_options = self.downloader_options.except("raw_authorization") unless downloader_type == "authorization"
+  end
 
   enumerize :downloader_type, in: %i(direct french_nap authorization), default: :direct
 

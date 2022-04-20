@@ -35,6 +35,7 @@ fr:
         url: "URL"
         downloader_type: "Type de téléchargement"
         downloader_options: "Options de téléchargement"
+        downloader_option_raw_authorization: Autorisation brute
         checksum: "Signature métier"
         import_options: "Options d'importation"
         import_option_automatic_merge: Finalisation automatique des jeux de données importés

@@ -7,14 +7,19 @@ class Source < ApplicationModel
   validates :name, presence: true
   validates :url, presence: true
   validates :downloader_type, presence: true
+  validates :downloader_option_raw_authorization, presence: true, if: :authorization_downloader_type?
 
-  validates_associated :downloader
+  #validates_associated :downloader
 
   enumerize :downloader_type, in: %i(direct french_nap authorization), default: :direct
 
   scope :enabled, -> { where enabled: true }
 
   before_validation :clean, on: :update
+
+  def authorization_downloader_type?
+    downloader_type == 'authorization'
+  end
 
   def clean
     unless downloader_type == "authorization"
@@ -74,7 +79,7 @@ class Source < ApplicationModel
 
   module Downloader
     class Base
-      include ActiveModel::Validations
+      #include ActiveModel::Validations
 
       attr_reader :url
 
@@ -111,7 +116,7 @@ class Source < ApplicationModel
 
     class Authorization < Base
       attr_accessor :raw_authorization
-      validates_presence_of :raw_authorization
+      #validates_presence_of :raw_authorization
 
       def download(path)
         File.open(path, "wb") do |file|

@@ -1,5 +1,6 @@
 - javascript_additional_packs 'sources/form'
-= simple_form_for [@workbench, @source], html: {class: 'form-horizontal', id: 'source_form'}, wrapper: :horizontal_form do |f|
+= simple_form_for [@workbench, @source], html: {class: 'form-horizontal', id: 'source_form', 'x-data': '',
+	'x-init': "$store.source.type = '#{@source.downloader_type}'"}, wrapper: :horizontal_form do |f|
   .row
     .col-lg-12
       = f.input :name

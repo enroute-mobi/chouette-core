@@ -8,13 +8,19 @@ class Source < ApplicationModel
   validates :url, presence: true
   validates :downloader_type, presence: true
 
-  before_validation do
-    self.downloader_options = self.downloader_options.except("raw_authorization") unless downloader_type == "authorization"
-  end
+  validates_associated :downloader
 
   enumerize :downloader_type, in: %i(direct french_nap authorization), default: :direct
 
   scope :enabled, -> { where enabled: true }
+
+  before_validation :clean, on: :update
+
+  def clean
+    unless downloader_type == "authorization"
+      self.downloader_options = self.downloader_options.except("raw_authorization")
+    end
+  end
 
   def import_option_automatic_merge
     import_options["automatic_merge"]
@@ -68,6 +74,8 @@ class Source < ApplicationModel
 
   module Downloader
     class Base
+      include ActiveModel::Validations
+
       attr_reader :url
 
       def initialize(url, options = {})
@@ -103,6 +111,7 @@ class Source < ApplicationModel
 
     class Authorization < Base
       attr_accessor :raw_authorization
+      validates_presence_of :raw_authorization
 
       def download(path)
         File.open(path, "wb") do |file|

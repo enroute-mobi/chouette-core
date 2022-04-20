@@ -1,4 +1,4 @@
-= simple_form_for [@workbench, :shape_referential, @point_of_interest], html: {class: 'form-horizontal', id: 'point_of_interest_form'}, wrapper: :horizontal_form  do |f|
+= simple_form_for [@workbench, :shape_referential, @point_of_interest], html: {class: 'form-horizontal', id: 'point_of_interest_form'}, wrapper: :horizontal_form_tailwind  do |f|
   .row
     .col-lg-12
       h2.my-16
@@ -34,7 +34,7 @@
     .col-lg-12
       h2.my-16
         = t("point_of_interests.form.sections.hours")
-      = f.simple_fields_for(:point_of_interest_hours) do |point_of_interest_hours_form|
+      = f.simple_fields_for(:point_of_interest_hours, defaults: { wrapper: :horizontal_form_tailwind }) do |point_of_interest_hours_form|
         = render 'point_of_interest_hour_fields', f: point_of_interest_hours_form
 
       .links.nested-linker

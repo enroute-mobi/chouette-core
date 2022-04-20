@@ -1,10 +1,8 @@
-.nested-fields
-  .wrapper.mt-5
-    div
-      .col-sm-4
-      .flex.items-center.mb-10
-        = f.input :opening_time_of_day, as: :time_picker, label_html: { class: 'col-sm-5' }
-        = f.input :closing_time_of_day, as: :time_picker, label_html: { class: 'col-sm-5' }
-      = f.input :week_days, as: :day_type
-    div
-      = link_to_remove_association '', f, class: 'fa fa-trash'
+.nested-fields.flex.items-center.mb-10
+  .flex.flex-col.w-full.mr-6
+    .flex.items-center.justify-center.ml-8
+      = f.input :opening_time_of_day, as: :time_picker
+      = f.input :closing_time_of_day, as: :time_picker
+    = f.input :week_days, as: :day_type
+  .flex.mb-28
+    = link_to_remove_association '', f, class: 'fa fa-trash'

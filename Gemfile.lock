@@ -65,8 +65,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: d430dae98de6baab71c58a87ff790dc31dff0e2b
-  branch: NETEX-48-target-builder-cache
+  revision: eaa0c02a5babf4f1e8a621edeb30938102143499
   specs:
     netex (0.1.2)
       activesupport

@@ -12,7 +12,6 @@
           = d.attribute :downloader_type, as: :enumerize
           = d.attribute :enabled, as: :boolean
           = d.attribute :ignore_checksum, as: :boolean
-          = d.attribute :downloader_options
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = simple_block_for @source, title: t('sources.form.sections.import_options') do |d|

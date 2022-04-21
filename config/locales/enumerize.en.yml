@@ -134,6 +134,7 @@ en:
       downloader_type:
         direct: Direct
         french_nap: French NAP
+        authorization: Authorization Header
     stop_area:
       area_type:
         zdep: ZDEp

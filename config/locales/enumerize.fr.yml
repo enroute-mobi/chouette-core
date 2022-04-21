@@ -133,6 +133,7 @@ fr:
       downloader_type:
         direct: Direct
         french_nap: French NAP
+        authorization: Entête d'authentification
     stop_area:
       area_type:
         zdep: ZDEp

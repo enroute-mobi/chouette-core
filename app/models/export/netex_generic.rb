@@ -227,7 +227,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def netex_quay?
-      area_type == Chouette::AreaType::QUAY
+      area_type&.to_sym == Chouette::AreaType::QUAY
     end
 
     def netex_resource_class
@@ -545,12 +545,16 @@ class Export::NetexGeneric < Export::Base
     end
 
     def scheduled_stop_point_id
-      @scheduled_stop_point_id ||= netex_identifier.change(type: 'ScheduledStopPoint').to_s
+      @scheduled_stop_point_id ||= netex_identifier.change(type: 'ScheduledStopPoint').to_s if netex_identifier
+    end
+
+    def netex_quay?
+      stop_area_area_type&.to_sym == Chouette::AreaType::QUAY
     end
 
     def passenger_stop_assignment
       Netex::PassengerStopAssignment.new(passenger_stop_assignment_attributes).tap do |passenger_stop_assignment|
-        if stop_area_area_type == Chouette::AreaType::QUAY
+        if netex_quay?
           passenger_stop_assignment.quay_ref = quay_ref
         else
           passenger_stop_assignment.stop_place_ref = stop_place_ref
@@ -568,7 +572,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def passenger_stop_assignment_id
-      netex_identifier.change(type: 'PassengerStopAssignment').to_s
+      netex_identifier.change(type: 'PassengerStopAssignment').to_s if netex_identifier
     end
 
     def scheduled_stop_point_ref

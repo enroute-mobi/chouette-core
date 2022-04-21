@@ -487,12 +487,10 @@ RSpec.describe Export::NetexGeneric do
     end
 
     describe Export::NetexGeneric::StopPointDecorator do
-
       let(:stop_point) { Chouette::StopPoint.new position: 0 }
       let(:decorator) { Export::NetexGeneric::StopPointDecorator.new stop_point }
 
       describe "#netex_order" do
-
         subject { decorator.netex_order }
 
         it "returns the StopPoint position plus one (to avoid zero value)" do
@@ -532,6 +530,40 @@ RSpec.describe Export::NetexGeneric do
           it { is_expected.to be_truthy }
         end
       end
+
+      describe "#netex_quay?" do
+        subject { decorator.netex_quay? }
+
+        context "when stop_area_area_type is :#{Chouette::AreaType::QUAY}" do
+          before { allow(decorator).to receive(:stop_area_area_type).and_return(Chouette::AreaType::QUAY) }
+          it { is_expected.to be_truthy }
+        end
+
+        context "when stop_area_area_type is '#{Chouette::AreaType::QUAY}'" do
+          before { allow(decorator).to receive(:stop_area_area_type).and_return(Chouette::AreaType::QUAY) }
+          it { is_expected.to be_truthy }
+        end
+
+        context "when stop_area_area_type is :#{Chouette::AreaType::STOP_PLACE}" do
+          before { allow(decorator).to receive(:stop_area_area_type).and_return(Chouette::AreaType::STOP_PLACE) }
+          it { is_expected.to be_falsy }
+        end
+      end
+
+      describe "#passenger_stop_assignment" do
+        subject { decorator.passenger_stop_assignment }
+
+        context "when the associated Stop Place is a Quay" do
+          before { allow(decorator).to receive(:netex_quay?).and_return(true) }
+          it { is_expected.to have_attributes(quay_ref: an_instance_of(Netex::Reference)) }
+        end
+
+        context "when the assocaited Stop Place is not a Quay" do
+          before { allow(decorator).to receive(:netex_quay?).and_return(false) }
+          it { is_expected.to have_attributes(stop_place_ref: an_instance_of(Netex::Reference)) }
+        end
+      end
+
     end
 
     describe Export::NetexGeneric::Routes::Decorator::LineRoutingConstraintZoneDecorator do

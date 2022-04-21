@@ -51,24 +51,24 @@ en:
         default_contact: Default Contact
         private_contact: Private Contact
         customer_service_contact: Customer Service Contact
-        default_contact_email: "Email"
-        default_contact_fax: "Fax number"
-        default_contact_more: Comments
-        default_contact_name: Name
+        default_contact_email: Default Contact Email
+        default_contact_fax: Default Fax number
+        default_contact_more: Default Contact Comments
+        default_contact_name: Default Contact Name
         default_contact_operating_department_name: "Department"
         default_contact_organizational_unit: "Unit"
-        default_contact_phone: "Phone number"
-        default_contact_url: "Web page"
-        private_contact_name: Name
-        private_contact_email: Email
-        private_contact_phone: Phone
-        private_contact_url: Web page
-        private_contact_more: Comments
-        customer_service_contact_name: Name
-        customer_service_contact_email: Email
-        customer_service_contact_phone: Phone
-        customer_service_contact_url: Web page
-        customer_service_contact_more: Comments
+        default_contact_phone: Default Contact Phone Number
+        default_contact_url: "Default Contact Website"
+        private_contact_name: Private Contact Name
+        private_contact_email: Private Contact Email
+        private_contact_phone: Private Contact Phone
+        private_contact_url: Private Contact Website
+        private_contact_more: Private Contact Comments
+        customer_service_contact_name: Customer Service Contact Name
+        customer_service_contact_email: Customer Service Contact Email
+        customer_service_contact_phone: Customer Service Contact Phone
+        customer_service_contact_url: Customer Service Contact Website
+        customer_service_contact_more: Customer Service Contact Comments
         house_number: House Number
         address_line_1: Address (line 1)
         address_line_2: Address (line 2)
@@ -76,7 +76,7 @@ en:
         town: Town
         postcode: Postcode
         postcode_extension: Postcode Extension
-        country_code: Country
+        country_code: Country code
         country: Country
     errors:
       models:

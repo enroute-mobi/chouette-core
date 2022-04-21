@@ -7,7 +7,10 @@
       = f.input :url
       = f.input :downloader_type, as: :select, include_blank: false, input_html: { 'x-model': '$store.source.type' }
       template[x-if="$store.source.type == 'authorization'"]
-        = f.input :downloader_option_raw_authorization, :as => :password, required: true
+        .relative x-data=("{ input: 'password' }")
+          = f.input :downloader_option_raw_authorization, input_html: { 'class': 'password relative', 'id': 'password', 'x-bind:type': 'input'}
+          .absolute.right-0.top-0.mr-2.mt-3 x-on:click=("input = (input === 'password') ? 'text' : 'password'")
+            span.body.text-show-hide.text-gray-600.cursor-pointer x-text=("input == 'password' ? 'Show' : 'Hide'")  Show
   .row
     h2
       = t("sources.form.sections.retrieval")

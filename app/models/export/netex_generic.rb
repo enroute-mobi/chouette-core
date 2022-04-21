@@ -537,8 +537,8 @@ class Export::NetexGeneric < Export::Base
       __getobj__.try(:stop_area_objectid) || stop_area&.objectid
     end
 
-    def stop_area_type
-      __getobj__.try(:stop_area_type) || stop_area&.area_type
+    def stop_area_area_type
+      __getobj__.try(:stop_area_area_type) || stop_area&.area_type
     end
 
     def scheduled_stop_point_id
@@ -547,7 +547,7 @@ class Export::NetexGeneric < Export::Base
 
     def passenger_stop_assignment
       Netex::PassengerStopAssignment.new(passenger_stop_assignment_attributes).tap do |passenger_stop_assignment|
-        if stop_area_type == Chouette::AreaType::QUAY
+        if stop_area_area_type == Chouette::AreaType::QUAY
           passenger_stop_assignment.quay_ref = quay_ref
         else
           passenger_stop_assignment.stop_place_ref = stop_place_ref
@@ -817,7 +817,7 @@ class Export::NetexGeneric < Export::Base
       [
         'stop_points.*',
         'stop_areas.objectid AS stop_area_objectid',
-        'stop_areas.area_type AS stop_area_type',
+        'stop_areas.area_type AS stop_area_area_type',
         'routes.line_id AS line_id',
         'routes.data_source_ref AS route_data_source_ref',
       ]

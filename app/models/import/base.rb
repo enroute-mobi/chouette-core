@@ -168,9 +168,11 @@ class Import::Base < ApplicationModel
   end
 
   def line_ids
-    return children.first&.referential_metadata&.line_ids unless referential
+    unless referential
+      return children.map(&:line_ids).flatten.uniq
+    end
 
-    referential.metadatas.pluck(:line_ids).flatten
+    referential.metadatas.pluck(:line_ids).flatten.uniq
   end
 
   protected

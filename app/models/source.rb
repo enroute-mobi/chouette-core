@@ -252,8 +252,8 @@ class Source < ApplicationModel
         name: import_name,
         creator: creator,
         file: imported_file,
-        options: import_options,
-        type: "Import::Workbench"
+        options: import_workbench_options,
+        type: 'Import::Workbench'
       }
     end
 
@@ -269,6 +269,11 @@ class Source < ApplicationModel
 
     def set_workbench
       self.workbench = self.source&.workbench
+    end
+
+    def import_workbench_options
+      processing_options = import_options.keys.select{ |key| key.start_with?('process_') }
+      import_options.except(*processing_options)
     end
   end
 

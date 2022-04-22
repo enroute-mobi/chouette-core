@@ -5,7 +5,7 @@ module Control
       extend ActiveSupport::Concern
 
       included do
-        enumerize :target_model, in: %w{Line StopArea VehicleJourney}, default: "Line"
+        enumerize :target_model, in: %w{Line StopArea VehicleJourney}
         option :target_model
         option :target_code_space_id
 
@@ -17,8 +17,14 @@ module Control
     validate :code_space_belong_to_workgroup
 
     def target_code_space
-      control_list&.workbench&.workgroup.code_spaces.find_by_id(target_code_space_id)
+      workgroup.code_spaces.find_by_id(target_code_space_id)
     end
+
+    def workbench
+      (control_list || control_context).workbench
+    end
+
+    delegate :workgroup, to: :workbench
 
     private
 

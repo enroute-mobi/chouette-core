@@ -1,5 +1,6 @@
 describe ControlListFacade do
-	let(:workbench) { FactoryBot.create(:workbench) }
+	let(:context) { Chouette.create { workbench } }
+	let(:workbench) { context.workbench }
 	let(:control_list) { workbench.control_lists.build }
 	let(:template) do
 		template = Object.new

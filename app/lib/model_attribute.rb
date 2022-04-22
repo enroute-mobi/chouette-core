@@ -80,7 +80,6 @@ class ModelAttribute
   define klass: Chouette::Company, name: :private_contact_url
   define klass: Chouette::Company, name: :address_line_1
   define klass: Chouette::Company, name: :address_line_2
-  define klass: Chouette::Company, name: :country
   define klass: Chouette::Company, name: :country_code
   define klass: Chouette::Company, name: :house_number
   define klass: Chouette::Company, name: :postcode

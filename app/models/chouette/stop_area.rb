@@ -494,7 +494,7 @@ module Chouette
 
     def country
       return unless country_code
-      country = ISO3166::Country[country_code]
+      ISO3166::Country[country_code]
     end
 
     def country_name

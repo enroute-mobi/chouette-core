@@ -76,7 +76,7 @@ en:
         town: Town
         postcode: Postcode
         postcode_extension: Postcode Extension
-        country_code: Country code
+        country_code: Country
         country: Country
     errors:
       models:

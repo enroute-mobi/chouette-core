@@ -137,7 +137,7 @@ fr:
         area_type: "Type d'arrêt"
         nearest_topic_name: "Point d'intérêt le plus proche"
         street_name: "Nom de la rue"
-        country_code: "Code du pays"
+        country_code: "Pays"
         country: "Pays"
         fare_code: "Zone tarifaire"
         projection: "Projection"

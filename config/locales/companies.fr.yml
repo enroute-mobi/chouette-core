@@ -50,26 +50,26 @@ fr:
         creator_id: "Créé par"
         default_contact: Contact par défaut
         private_contact: Contact privé
-        customer_service_contact: Contact Service Client
-        default_contact_name: Nom
+        customer_service_contact: Contact du service client
+        default_contact_name: Nom de contact par défaut
         default_contact_url: Page Web
         default_contact_more: Commentaires
         default_contact_organizational_unit: "Nom d'unité dans la société"
         default_contact_operating_department_name: "Nom du département dans la société"
         default_contact_phone: "Numéro de téléphone"
-        default_contact_fax: "Numéro de fax"
+        default_contact_fax: "Numéro de fax par défaut"
         default_contact_email: "Email"
         default_contact_url: "Page web associée"
-        private_contact_name: Nom
-        private_contact_email: Email
-        private_contact_phone: "Numéro de téléphone"
-        private_contact_more: Commentaires
-        private_contact_url: "Page web associée"
-        customer_service_contact_name: Nom
-        customer_service_contact_email: Email
-        customer_service_contact_phone: "Numéro de téléphone"
-        customer_service_contact_url: "Page web associée"
-        customer_service_contact_more: Commentaires
+        private_contact_name: Nom de contact privé
+        private_contact_email: Email de contect privé
+        private_contact_phone: "Numéro de téléphone privé"
+        private_contact_more: Commentaires de contact privé
+        private_contact_url: "Page web privé"
+        customer_service_contact_name: Nom du contact du service client
+        customer_service_contact_email: Email du service client
+        customer_service_contact_phone: "Téléphone du service client"
+        customer_service_contact_url: "Page web du service client"
+        customer_service_contact_more: Commentaires du service client
         house_number: Numéro
         address_line_1: Adresse (ligne 1)
         address_line_2: Adresse (ligne 2)

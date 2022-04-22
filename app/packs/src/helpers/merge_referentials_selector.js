@@ -6,7 +6,7 @@
  */
 class MergeReferentialsSelector {
   constructor(container_selector, formInput){
-    this.formInput = formInput;
+    this.formInput = $(formInput);
     this.container = $(container_selector);
     this.searchInput = this.container.find('.search');
     this.loader = this.container.find('.loader');
@@ -20,7 +20,9 @@ class MergeReferentialsSelector {
     this.hideLoader();
     this.initSortables();
     this.performSearch();
-    if (!this.formInput) { this.formInput = $('input[name*=referential_ids]'); }
+    if (!this.formInput) {
+      this.formInput = $('input[name*=referential_ids]') || $('input[name*=line_notice_ids]');
+    }
     this.clearBt.click(() => {
       return this.clear();
     });

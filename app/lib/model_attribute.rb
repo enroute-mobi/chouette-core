@@ -93,7 +93,6 @@ class ModelAttribute
   define klass: Chouette::StopArea, name: :parent,  options: { reference: true }
   define klass: Chouette::StopArea, name: :referent,  options: { reference: true }
   define klass: Chouette::StopArea, name: :fare_code
-  define klass: Chouette::StopArea, name: :country
   define klass: Chouette::StopArea, name: :coordinates
   define klass: Chouette::StopArea, name: :country_code
   define klass: Chouette::StopArea, name: :street_name

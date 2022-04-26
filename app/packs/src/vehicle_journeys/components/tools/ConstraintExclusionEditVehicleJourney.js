@@ -162,13 +162,15 @@ export default class ConstraintExclusionEditVehicleJourney extends Component {
                                         <a
                                           href='#'
                                           title='Supprimer'
-                                          className='fa fa-trash remove_fields'
+                                          className='remove_fields'
                                           style={{ height: 'auto', lineHeight: 'normal' }}
                                           onClick={(e) => {
                                             e.preventDefault()
                                             this.props.onDeleteConstraintZone(contraint_zone)
                                           }}
-                                        ></a>
+                                        >
+                                          <i className='fa fa-trash'></i>
+                                        </a>
                                       </div>
                                     }
                                   </div>
@@ -218,13 +220,15 @@ export default class ConstraintExclusionEditVehicleJourney extends Component {
                                         <a
                                           href='#'
                                           title='Supprimer'
-                                          className='fa fa-trash remove_fields'
+                                          className='remove_fields'
                                           style={{ height: 'auto', lineHeight: 'normal' }}
                                           onClick={(e) => {
                                             e.preventDefault()
                                             this.props.onDeleteStopAreasConstraint(contraint_zone)
                                           }}
-                                        ></a>
+                                        >
+                                            <i className='fa fa-trash'></i>
+                                        </a>
                                       </div>
                                     }
                                   </div>

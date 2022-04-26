@@ -9,7 +9,7 @@
 			= truncate("#{control_run.name} (#{control_run.model_name.human})", length: 60)
 
 		.flex.items-center.ml-auto
-			.flex.justify-center.rounded.mx-5.p-5.font-bold.border.border-black.text-black.bg-enroute-chouette-gold style="min-width: 50px;" class="#{control_run.criticity == 'warning' ? 'bg-enroute-chouette-gold' : 'bg-enroute-chouette-red' }"
+			.flex.justify-center.rounded.mx-5.p-5.font-bold.border.border-black.text-black style="min-width: 50px;" class="#{control_run.criticity == 'warning' ? 'bg-enroute-chouette-gold' : 'bg-enroute-chouette-red' }"
 				p = control_run.control_messages.send(control_run.criticity).size
 			
 			button @click="showMessages = ! showMessages" type="button" class="flex px-7 py-3 ml-xs font-bold text-white rounded cursor-pointer bg-enroute-chouette-primary h-[50%] hover:text-indigo-100"

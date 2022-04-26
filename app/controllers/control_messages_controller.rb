@@ -11,7 +11,7 @@ class ControlMessagesController < ActionController::Base
 
   def index
 		authorize Control::Message
-    messages = collection.where(search_params).paginate(page: params[:page], per_page: 15)
+    messages = collection.paginate(page: params[:page], per_page: 15)
 
 		html = render_to_string(
 			partial: 'control_list_runs/control_messages',
@@ -30,11 +30,4 @@ class ControlMessagesController < ActionController::Base
     UserContext.new(current_user, workbench: @workbench)
   end
 
-	private
-
-  def search_params
-    params.require(:search).permit(
-      criticity: []
-    )
-  end
 end

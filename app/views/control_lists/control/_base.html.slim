@@ -30,9 +30,8 @@
 			= render "control_lists/#{control.model_name.i18n_key.to_s}", form: control_form
 
 			= control_form.input :code, input_html: { 'x-model': 'resource.code' }
-
 			.flex.items-center.mb-10
-				= control_form.label Control::Base.human_attribute_name(:criticity), class: 'flex justify-end w-2/6 mr-8 mb-0 control-label'
-				= control_form.input :criticity, as: :radio_buttons, collection: facade.criticity_options, input_html: { 'x-model': 'resource.criticity', ':name': "'control_list' + Array.of('controls_attributes', $id('control'), 'criticity').map(n => '[' + n + ']').join('')" }, label: false, label_method: Proc.new { |o| o.text.html_safe }, wrapper_html: { class: 'form-group w-3/6 flex items-center mb-0 mx-0' }
+				= control_form.label Control::Base.human_attribute_name(:criticity), class: 'col-sm-4 col-xs-5 control-label mb-3'
+				= control_form.input :criticity, as: :radio_buttons, collection: facade.criticity_options, input_html: { name: SecureRandom.uuid, id: SecureRandom.uuid, 'x-model': 'resource.criticity' }, label: false, label_method: Proc.new { |o| o.text.html_safe }, wrapper_html: { class: 'col-sm-8 col-xs-7 flex items-center' }
 
 			= control_form.input :comments, as: :text, required: false, input_html: { 'x-model': 'resource.comments' }

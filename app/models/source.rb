@@ -90,9 +90,13 @@ class Source < ApplicationModel
     end
 
     class URL < Base
-      def download(path)
+      mattr_accessor :timeout, default: 120.seconds
+
+      def download(path, options = {})
+        options = options.reverse_merge read_timeout: timeout
+
         File.open(path, "wb") do |file|
-          IO.copy_stream open(url), file
+          IO.copy_stream URI.open(url, options), file
         end
       end
     end
@@ -119,14 +123,12 @@ class Source < ApplicationModel
       #validates_presence_of :raw_authorization
 
       def download(path)
-        File.open(path, "wb") do |file|
-          IO.copy_stream open(url, api_request), file
-        end
+        URL.new(url).download(path, options)
       end
 
       private
 
-      def api_request
+      def options
         return {} unless raw_authorization
         { "Authorization" => raw_authorization }
       end

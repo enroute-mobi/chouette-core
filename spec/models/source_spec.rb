@@ -56,3 +56,22 @@ RSpec.describe Source do
     end
   end
 end
+
+RSpec.describe Source::Downloader::URL do
+
+  subject(:downloader) { Source::Downloader::URL.new("http://chouette.test") }
+
+  describe "#download" do
+
+    let(:path) { Tempfile.new.path }
+
+    it "uses a (read) timeout of 120 seconds" do
+      expected_options = a_hash_including(read_timeout: 120)
+      expect(URI).to receive(:open).
+                       with(downloader.url, expected_options).
+                       and_return(StringIO.new("dummy"))
+
+      downloader.download(path)
+    end
+  end
+end

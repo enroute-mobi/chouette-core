@@ -1,6 +1,6 @@
 import _ from 'lodash'
 
-let vehicleJourneysModal, newModalProps, vehicleJourney, alreadyPresent, notAlreadyPresent, newReferentialCodesArray, selectedConstraintZones
+let vehicleJourneysModal, newModalProps, vehicleJourney, alreadyPresent, notAlreadyPresent, newReferentialCodesArray, selectedConstraintZones, selectedStopAreasConstraints
 
 export default function modal(state = {}, action) {
   switch (action.type) {
@@ -189,7 +189,7 @@ export default function modal(state = {}, action) {
         newModalProps.selectedConstraintZones = selectedConstraintZones
         return _.assign({}, state, {modalProps: newModalProps})
     case 'SELECT_STOPAREAS_CONSTRAINT_MODAL':
-      let selectedStopAreasConstraints = state.modalProps.selectedStopAreasConstraints
+      selectedStopAreasConstraints = state.modalProps.selectedStopAreasConstraints
       alreadyPresent = false
       selectedStopAreasConstraints.map((zone_id, i)=>{
         if(zone_id == parseInt(action.selectedZone.id)){

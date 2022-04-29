@@ -39,7 +39,7 @@ class DayTypeInput < SimpleForm::Inputs::CollectionCheckBoxesInput
       name: nil,
       id: nil,
       'x-bind:checked': "isChecked(#{value})",
-      '@change': "binaryValue ^= #{value}"
+      'x-on:change': "binaryValue ^= #{value}"
     }
   end
 

@@ -18,7 +18,7 @@ class MacroListFacade
 				id: 'macro_list_form',
 				'x-data': '',
 				'x-init': "$store.macroList.initState(#{json_state})",
-				'@formdata': '$store.macroList.setFormData($event)'
+				'x-on:formdata': '$store.macroList.setFormData($event)'
 			}
 		}
 	end

@@ -22,4 +22,4 @@
 				= button_tag t("simple_form.buttons.#{suffix}"),
 					class: 'btn btn-primary',
 					':disabled': "!Boolean(selectedOption)",
-					'@click.prevent': "#{store_collection}.add({ type: selectedOption })"
+					'x-on:click.prevent': "#{store_collection}.add({ type: selectedOption })"

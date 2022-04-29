@@ -18,7 +18,7 @@ class ControlListFacade
 				id: 'control_list_form',
 				'x-data': '',
 				'x-init': "$store.controlList.initState(#{json_state})",
-				'@formdata': '$store.controlList.setFormData($event)'
+				'x-on:formdata': '$store.controlList.setFormData($event)'
 			}
 		}
 	end
@@ -35,7 +35,7 @@ class ControlListFacade
 		option = Struct.new('Option', :id, :text)
 
 		render_option = Proc.new do |key, color|
-			template.content_tag :div, nil, class: 'mr-3', '@click': "$event.target.previousElementSibling.checked = true ; $event.target.previousElementSibling.dispatchEvent(new Event('change'))" do
+			template.content_tag :div, nil, class: 'mr-3', 'x-on:click': "$event.target.previousElementSibling.checked = true ; $event.target.previousElementSibling.dispatchEvent(new Event('change'))" do
 				template.concat template.content_tag :div, nil, class: 'span fa fa-circle', style: "color:#{color};"
 				template.concat I18n.t("enumerize.control.criticity.#{key}")
 			end

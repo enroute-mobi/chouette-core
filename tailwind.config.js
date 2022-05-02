@@ -1,8 +1,16 @@
 module.exports = {
-  purge: ["./app/helpers/**/*.rb",
-    "./app/**/*.html.slim",
-    "./app/packs/**/*.js",
-    "./app/packs/**/*.jsx"],
+  purge: {
+    content: [
+      "./app/helpers/**/*.rb",
+      "./app/**/*.html.slim",
+      "./app/packs/**/*.js",
+      "./app/packs/**/*.jsx"
+    ],
+    options: {
+      // Whitelisting some classes to avoid purge
+      safelist: [/^bg-/, /^text-/, /^border-/]
+    }
+  },
   theme: {
     extend: {
       colors: {

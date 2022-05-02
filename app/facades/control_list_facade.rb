@@ -16,7 +16,7 @@ class ControlListFacade
 		{
 			wrapper: :horizontal_form_tailwind,
 			html: {
-				class: 'form-horizontal',
+				class: '',
 				id: 'control_list_form',
 				'x-data': '',
 				'x-init': "$store.controlList.initState(#{json_state})",

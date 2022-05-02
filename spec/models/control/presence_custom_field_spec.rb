@@ -20,9 +20,11 @@ RSpec.describe Control::PresenceCustomField do
     let(:expected_message) do
       an_object_having_attributes({
         source: source,
+        message_key: "presence_custom_field",
         criticity: "warning",
         message_attributes: {
-          "name"=> source.name
+          "name"=> source.name,
+          "custom_field" => custom_field_public_name.code,
         }
       })
     end

@@ -42,9 +42,13 @@ module Control
 
         faulty_models.find_each do |model|
           control_messages.create({
-            message_attributes: { name: (model.name rescue model.id) },
+            message_attributes: {
+              name: model.try(:name) || model.id,
+              custom_field: custom_field.code,
+            },
             criticity: criticity,
             source: model,
+            message_key: :presence_custom_field
           })
         end
       end

@@ -21,7 +21,9 @@ RSpec.describe Control::PresenceCustomField do
       an_object_having_attributes({
         source: source,
         criticity: "warning",
-        message_attributes: {"target_custom_field" => custom_field_public_name.code.to_s}
+        message_attributes: {
+          "name"=> source.name
+        }
       })
     end
 

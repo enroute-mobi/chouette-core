@@ -22,14 +22,16 @@ module Control
 
     validate :custom_field_is_present_in_workgroup
 
+    def workbench
+      (control_list || control_context).workbench
+    end
+
+    delegate :workgroup, to: :workbench
+
     private
 
     def custom_field_is_present_in_workgroup
       errors.add(:target_custom_field_id, :invalid) unless custom_field
-    end
-
-    def workgroup
-      control_list&.workbench&.workgroup
     end
 
     class Run < Control::Base::Run
@@ -40,7 +42,7 @@ module Control
 
         faulty_models.find_each do |model|
           control_messages.create({
-            message_attributes: { target_custom_field: custom_field.code },
+            message_attributes: { name: (model.name rescue model.id) },
             criticity: criticity,
             source: model,
           })

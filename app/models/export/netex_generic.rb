@@ -979,35 +979,57 @@ class Export::NetexGeneric < Export::Base
 
       def scope
         return base_query unless vehicle_journeys.joins_values.include? :time_tables
-        base_query.select(array_agg_time_tables).group(group_by)
+        base_query
+          .joins(:codes)
+          .select(time_table_objectids, vehicle_journey_codes)
+          .group(group_by)
       end
 
       def base_query
-        vehicle_journeys.joins(journey_pattern: :route)
+        vehicle_journeys
           .includes(vehicle_journey_at_stops: [:stop_area, { stop_point: :stop_area }])
+          .joins(journey_pattern: :route)
           .select(selected)
       end
 
       private
 
       def selected
-        [
-          'vehicle_journeys.*',
-          'routes.line_id AS line_id',
-          'journey_patterns.objectid AS journey_pattern_objectid',
-        ]
+        <<~SQL
+          vehicle_journeys.*,
+          routes.line_id AS line_id,
+          journey_patterns.objectid AS journey_pattern_objectid
+        SQL
       end
 
-      def array_agg_time_tables
-        'array_agg(time_tables.objectid) AS time_table_objectids'
+      def time_table_objectids
+        <<~SQL
+          array_agg(time_tables.objectid) AS time_table_objectids
+        SQL
+      end
+
+      def vehicle_journey_codes
+        <<~SQL
+          array_agg(
+            json_build_object(
+              'value', referential_codes.value,
+              'key', (
+                SELECT public.code_spaces.short_name
+                FROM public.code_spaces JOIN referential_codes
+                ON public.code_spaces.id = referential_codes.code_space_id
+                LIMIT 1
+              )
+            )
+          ) AS vehicle_journey_codes
+        SQL
       end
 
       def group_by
-        [
-          'vehicle_journeys.id',
-          'routes.line_id',
-          'journey_patterns.objectid',
-        ]
+        <<~SQL
+          vehicle_journeys.id,
+          routes.line_id,
+          journey_patterns.objectid
+        SQL
       end
     end
 
@@ -1022,11 +1044,23 @@ class Export::NetexGeneric < Export::Base
           public_code: published_journey_identifier,
           passing_times: passing_times,
           day_types: day_types
-        }
+        }.tap do |attributes|
+          if netex_alternate_identifiers
+            attributes[:key_list] = netex_alternate_identifiers
+          end
+        end
       end
 
       def netex_resource
         Netex::ServiceJourney.new netex_attributes
+      end
+
+      def netex_alternate_identifiers
+        return unless try(:vehicle_journey_codes).present?
+
+        vehicle_journey_codes.map do |vehicle_journey_code|
+          Netex::KeyValue.new vehicle_journey_code.merge(type_of_key: "ALTERNATE_IDENTIFIER").symbolize_keys
+        end
       end
 
       def journey_pattern_ref

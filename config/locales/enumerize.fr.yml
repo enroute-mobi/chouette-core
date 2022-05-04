@@ -391,12 +391,12 @@ fr:
       ticket_barrier: "Portillon à ticket"
       gate: "Barrière"
       other: "Autre"
-    target_model:
-      line: Ligne
-      stop_area: Arrêt
-      journey_pattern: Mission
-      vehicle_journey: Course
-      company: Transporteur
+    target_model: &target_model
+      Line: Ligne
+      StopArea: Arrêt
+      JourneyPattern: Mission
+      VehicleJourney: Course
+      Company: Transporteur
     search:
       rule_type: *notification_rule_rule_type
     control:
@@ -408,6 +408,8 @@ fr:
         warning: Avertissement
         error: Erreur
         failed: Echec
+    control/presence_attribute:
+      target_model: *target_model
     macro/dummy:
       expected_result:
         info: Succès

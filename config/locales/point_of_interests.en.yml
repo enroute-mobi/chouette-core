@@ -24,6 +24,8 @@ en:
         codes: "Codes"
       point_of_interest_category_placeholder: Search by name of Point of interest Category
     search_no_results: "No Point of interest matches your search"
+    no_codes: "This Point of interest does not have any codes"
+    no_hours: "This Point of interest does not have any hours"
     errors:
     filters:
   activerecord:

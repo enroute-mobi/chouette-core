@@ -25,6 +25,8 @@ fr:
       point_of_interest_category_placeholder: Rechercher par nom de Catégorie de Point d'intérêt
       add_hours: "Ajouter une heures"
     search_no_results: "Aucun Point d'intérêts ne correspond à votre recherche"
+    no_codes: "Ce Point d'intérêt n'a pas de codes"
+    no_hours: "Ce Point d'intérêt n'a pas d'heures"
     errors:
     filters:
   activerecord:

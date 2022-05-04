@@ -21,7 +21,7 @@
         = simple_block_for @point_of_interest, title: Chouette::StopArea.tmf(:codes) do |d|
           - if @point_of_interest.codes.empty?
             .mb-xs
-              = replacement_msg t('stop_areas.no_codes')
+              = replacement_msg t('point_of_interests.no_codes')
           - else
             - @point_of_interest.codes.each do |c|
               = d.attribute :value, label: c.code_space.short_name, object: c
@@ -30,7 +30,7 @@
         = simple_block_for @point_of_interest, title: t('point_of_interests.form.sections.hours') do |d|
           - if @point_of_interest.point_of_interest_hours.empty?
             .mb-xs
-              = replacement_msg t('stop_areas.no_codes')
+              = replacement_msg t('point_of_interests.no_hours')
           - else
             - @point_of_interest.point_of_interest_hours.each do |c|
               = d.attribute :opening_time_of_day, object: c, as: :time, value: c.opening_time_of_day.to_time

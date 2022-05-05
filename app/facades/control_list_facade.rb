@@ -34,7 +34,7 @@ class ControlListFacade
 	end
 
 	def target_code_space_options
-		workgroup.code_spaces.map { [c.name, c.id] }
+		workgroup.code_spaces.map { |c| [c.name, c.id] }
 	end
 
 	def criticity_options

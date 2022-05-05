@@ -393,9 +393,9 @@ en:
       other: "Other"
     target_model:
       Line: Line
-      StopArea: StopArea
-      JourneyPattern: JourneyPattern
-      VehicleJourney: VehicleJourney
+      StopArea: Stop area
+      JourneyPattern: Journey pattern
+      VehicleJourney: Vehicle journey
       Company: Company
     search:
       rule_type: *notification_rule_rule_type

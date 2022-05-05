@@ -957,7 +957,7 @@ class Export::NetexGeneric < Export::Base
         tags = resource_tagger.tags_for(vehicle_journey.line_id)
         tagged_target = TaggedTarget.new(target, tags)
 
-        decorated_vehicle_journey = Decorator.new(vehicle_journey)
+        decorated_vehicle_journey = Decorator.new(vehicle_journey, export)
         tagged_target << decorated_vehicle_journey.netex_resource
 
         decorated_vehicle_journey.vehicle_journey_stop_assignments.each do |assignment|
@@ -1013,12 +1013,7 @@ class Export::NetexGeneric < Export::Base
           array_agg(
             json_build_object(
               'value', referential_codes.value,
-              'key', (
-                SELECT public.code_spaces.short_name
-                FROM public.code_spaces JOIN referential_codes
-                ON public.code_spaces.id = referential_codes.code_space_id
-                LIMIT 1
-              )
+              'key', referential_codes.code_space_id
             )
           ) AS vehicle_journey_codes
         SQL
@@ -1034,6 +1029,12 @@ class Export::NetexGeneric < Export::Base
     end
 
     class Decorator < SimpleDelegator
+
+      def initialize(vehicle_journey, export=nil)
+        super vehicle_journey
+        @export = export
+      end
+      attr_accessor :export
 
       def netex_attributes
         {
@@ -1056,10 +1057,14 @@ class Export::NetexGeneric < Export::Base
       end
 
       def netex_alternate_identifiers
-        return unless try(:vehicle_journey_codes).present?
+        return if export || try(:vehicle_journey_codes).blank?
 
         vehicle_journey_codes.map do |vehicle_journey_code|
-          Netex::KeyValue.new vehicle_journey_code.merge(type_of_key: "ALTERNATE_IDENTIFIER").symbolize_keys
+          Netex::KeyValue.new({
+            value: vehicle_journey_code['value'],
+            key: export.cache_code_spaces[vehicle_journey_code['key'].to_i],
+            type_of_key: "ALTERNATE_IDENTIFIER"
+          })
         end
       end
 

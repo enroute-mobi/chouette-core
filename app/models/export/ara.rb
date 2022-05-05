@@ -358,8 +358,8 @@ class Export::Ara < Export::Base
       def schedules
         [{
           "Kind" => "expected",
-          "ArrivalTime" => arrival_time.strftime('%Y-%m-%dT%H:%M:%S%z'),
-          "DepartureTime" => departure_time.strftime('%Y-%m-%dT%H:%M:%S%z')
+          "ArrivalTime" => arrival_time.strftime('%Y-%m-%dT%H:%M:%S%:z'),
+          "DepartureTime" => departure_time.strftime('%Y-%m-%dT%H:%M:%S%:z')
         }]
       end
 

@@ -23,7 +23,10 @@ RSpec.describe Control::PresenceCode do
       an_object_having_attributes({
         source: source,
         criticity: "warning",
-        message_attributes: {"name" => source.name}
+        message_attributes: {
+          "name" => source.name,
+          "code_space_name" => "test"
+        }
       })
     end
 

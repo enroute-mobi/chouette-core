@@ -14,13 +14,13 @@ class ControlListFacade
 
 	def form_options
 		{
-			wrapper: :horizontal_form,
+			wrapper: :horizontal_form_tailwind,
 			html: {
 				class: 'form-horizontal',
 				id: 'control_list_form',
 				'x-data': '',
 				'x-init': "$store.controlList.initState(#{json_state})",
-				'@formdata': '$store.controlList.setFormData($event)'
+				'x-on:formdata': '$store.controlList.setFormData($event)'
 			}
 		}
 	end
@@ -34,14 +34,14 @@ class ControlListFacade
 	end
 
 	def target_code_space_options
-		workgroup.code_spaces.map { [c.name, c.id] }
+		workgroup.code_spaces.map { |c| [c.short_name, c.id] }
 	end
 
 	def criticity_options
 		option = Struct.new('Option', :id, :text)
 
 		render_option = Proc.new do |key, color|
-			template.content_tag :div, nil, class: 'mr-3' do
+			template.content_tag :div, nil, class: 'mr-3', 'x-on:click': "$event.target.previousElementSibling.checked = true ; $event.target.previousElementSibling.dispatchEvent(new Event('change'))" do
 				template.concat template.content_tag :div, nil, class: 'span fa fa-circle', style: "color:#{color};"
 				template.concat I18n.t("enumerize.control.criticity.#{key}")
 			end
@@ -94,7 +94,7 @@ class ControlListFacade
 	def merged_options object
 		{
 			errors: object.errors.full_messages,
-    	html: Operations::RenderPartial.call(template: template, id: object.id, type: object.type, parent_klass: Control::List, validate: true),
+    	html: Operations::RenderPartial.call(template: template, resource: object, parent_klass: Control::List),
       **object.options
 		}
 	end

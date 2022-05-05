@@ -40,6 +40,24 @@ RSpec.describe Source do
     end
   end
 
+  context "when import options contain processing options" do
+    before do
+      source.update import_options: source.import_options.
+        merge({
+          "process_gtfs_route_ids" => ["LR100|20181016", "LR112|20181112"],
+          "process_gtfs_ignore_parents" => true
+        })
+    end
+
+    let(:import_workbench_options) { source.retrievals.last.send(:import_workbench_options) }
+
+    it "should remove all options prefixed by 'process_' beforce create import" do
+      subject
+
+      expect(import_workbench_options).not_to match(hash_including("process_gtfs_route_ids", "process_gtfs_ignore_parents"))
+    end
+  end
+
   describe "#downloader_class" do
     subject { source.downloader_class }
     context "when downloader_type is nil" do
@@ -53,6 +71,25 @@ RSpec.describe Source do
     context "when downloader_type is :french_nap" do
       before { source.downloader_type = :french_nap }
       it { is_expected.to eq(Source::Downloader::FrenchNap) }
+    end
+  end
+end
+
+RSpec.describe Source::Downloader::URL do
+
+  subject(:downloader) { Source::Downloader::URL.new("http://chouette.test") }
+
+  describe "#download" do
+
+    let(:path) { Tempfile.new.path }
+
+    it "uses a (read) timeout of 120 seconds" do
+      expected_options = a_hash_including(read_timeout: 120)
+      expect(URI).to receive(:open).
+                       with(downloader.url, expected_options).
+                       and_return(StringIO.new("dummy"))
+
+      downloader.download(path)
     end
   end
 end

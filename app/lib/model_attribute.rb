@@ -80,7 +80,6 @@ class ModelAttribute
   define klass: Chouette::Company, name: :private_contact_url
   define klass: Chouette::Company, name: :address_line_1
   define klass: Chouette::Company, name: :address_line_2
-  define klass: Chouette::Company, name: :country
   define klass: Chouette::Company, name: :country_code
   define klass: Chouette::Company, name: :house_number
   define klass: Chouette::Company, name: :postcode
@@ -94,7 +93,6 @@ class ModelAttribute
   define klass: Chouette::StopArea, name: :parent,  options: { reference: true }
   define klass: Chouette::StopArea, name: :referent,  options: { reference: true }
   define klass: Chouette::StopArea, name: :fare_code
-  define klass: Chouette::StopArea, name: :country
   define klass: Chouette::StopArea, name: :coordinates
   define klass: Chouette::StopArea, name: :country_code
   define klass: Chouette::StopArea, name: :street_name

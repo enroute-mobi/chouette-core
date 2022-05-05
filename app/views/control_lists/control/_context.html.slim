@@ -2,13 +2,12 @@
 - control_context = local_assigns.fetch(:resource)
 
 = form.simple_fields_for(:control_contexts, control_context) do |control_context_form|
-	.flex.items-center
+	.flex.items-center.pt-10 :class="!resource.controls.isEmpty && 'pb-10'"
 		= render "control_lists/#{control_context.model_name.i18n_key.to_s}", form: control_context_form
 
 		= render 'operations/context_actions'
 
 	template[x-if="!resource.isDeleted"]
-		div
-			= render 'operations/collection', collection: 'resource.controls'
-
+		div.ml-16.border-l-2.pl-12
+			= render 'operations/collection', collection: 'resource.controls', resource_name: 'control'
 			= render 'operations/select', **facade.control_select_options('resource.controls')

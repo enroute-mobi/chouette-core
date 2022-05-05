@@ -5,7 +5,7 @@ git_source(:github) { |name| "https://github.com/#{name}.git" }
 git_source(:en_route) { |name| "https://bitbucket.org/enroute-mobi/#{name}.git" }
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 5.2.6.2'
+gem 'rails', '~> 5.2.7.1'
 
 gem 'health_check', '>= 3.1.0'
 
@@ -60,10 +60,10 @@ gem 'codifligne', en_route: 'ilico-api'
 gem 'icar', en_route: 'icar-api'
 
 # Authentication
-gem 'devise', '>= 4.8.0'
+gem 'devise', '>= 4.8.1'
 gem 'devise_cas_authenticatable', '>= 1.10.4'
 gem 'devise-encryptable', '>= 0.2.0'
-gem 'devise_invitable', '>= 2.0.5'
+gem 'devise_invitable', '>= 2.0.6'
 
 # Authorization
 gem 'pundit'
@@ -87,7 +87,7 @@ gem 'cocoon'
 gem 'slim-rails', '>= 3.3.0'
 gem 'simple_form', '>= 5.1.0'
 gem 'will_paginate-bootstrap'
-gem 'gretel', '>= 4.3.0'
+gem 'gretel', '>= 4.4.0'
 gem 'country_select'
 gem 'i18n-js'
 gem 'font_awesome5_rails', '>= 1.5.0'
@@ -98,7 +98,7 @@ gem 'rubyzip'
 gem 'roo', '>= 2.8.3'
 
 # Controller
-gem 'inherited_resources', '>= 1.13.0'
+gem 'inherited_resources', '>= 1.13.1'
 gem 'responders', '>= 3.0.1'
 
 gem "lograge", ">= 0.11.2"
@@ -106,7 +106,7 @@ gem "lograge", ">= 0.11.2"
 # Model
 gem 'will_paginate'
 gem 'ransack'
-gem 'active_attr', '>= 0.15.3'
+gem 'active_attr', '>= 0.15.4'
 
 gem 'draper', '>= 4.0.2'
 
@@ -138,13 +138,13 @@ gem 'postgresql_cursor'
 gem 'premailer-rails', '>= 1.11.1'
 
 # Redis session management
-gem 'redis-actionpack', '>= 5.2.0'
+gem 'redis-actionpack', '>= 5.3.0'
 
 gem 'gtfs', en_route: 'gtfs'
 gem 'netex', en_route: 'netex'
 gem 'rgeo-shapefile'
 gem 'ara-file', en_route: 'ara-file'
-gem 'neptune', en_route: 'neptune'
+gem 'neptune', en_route: 'neptune', branch:'NEPTUNE-5-test-file-extension-case'
 
 gem 'ddtrace'
 
@@ -185,7 +185,7 @@ group :test do
 end
 
 group :test, :development do
-  gem 'rspec-rails', '>= 5.0.2'
+  gem 'rspec-rails', '>= 5.1.0'
   gem 'capybara', '~> 3.15.1'
   gem 'database_cleaner'
   gem 'poltergeist', '>= 1.18.1'
@@ -197,7 +197,7 @@ group :test, :development do
   gem 'parallel_tests'
 
   gem 'letter_opener'
-  gem 'letter_opener_web', '~> 1.4', '>= 1.4.0'
+  gem 'letter_opener_web', '~> 1.4', '>= 1.4.1'
 
   gem 'ffaker', '~> 2.1.0'
   gem 'faker'
@@ -216,8 +216,8 @@ end
 
 # I18n
 gem 'rails-i18n', '>= 5.1.3'
-gem 'devise-i18n', '>= 1.10.0'
-gem 'i18n-tasks', '>= 0.9.34'
+gem 'devise-i18n', '>= 1.10.2'
+gem 'i18n-tasks', '>= 0.9.37'
 
 # Rails Assets
 source 'https://rails-assets.org' do

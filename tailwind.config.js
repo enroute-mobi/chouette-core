@@ -1,5 +1,8 @@
 module.exports = {
-  purge: ["./app/**/*.html.slim"],
+  purge: ["./app/helpers/**/*.rb",
+    "./app/**/*.html.slim",
+    "./app/packs/**/*.js",
+    "./app/packs/**/*.jsx"],
   theme: {
     extend: {
       colors: {

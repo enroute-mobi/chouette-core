@@ -37,12 +37,11 @@ RSpec.describe Query::NotificationRule do
 				notification_rule :failed, operation_statuses: ['failed']
 			end
 
-			workbench :lines do
-				notification_rule :all_line_ids, line_ids: []
-				notification_rule :first_line, line_ids: [1]
-				notification_rule :last_line, line_ids: [2]
-			end
-
+      workbench :lines do
+        notification_rule :all_line_ids, line_ids: []
+        notification_rule :first_line, line_ids: [1]
+        notification_rule :last_line, line_ids: [2]
+      end
     end
   end
 

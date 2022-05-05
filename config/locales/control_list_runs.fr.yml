@@ -39,7 +39,9 @@ fr:
         name: Nom
         created_by: Créé par
         creator: "Créateur"
+        original_control_list: "Jeu de contrôles"
         original_control_list_id: "Jeu de contrôles"
+        referential: "Cible"
         referential_id: "Cible"
         started_at: "Date et heure de lancement"
         duration: Durée

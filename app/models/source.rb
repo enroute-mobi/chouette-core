@@ -7,10 +7,25 @@ class Source < ApplicationModel
   validates :name, presence: true
   validates :url, presence: true
   validates :downloader_type, presence: true
+  validates :downloader_option_raw_authorization, presence: true, if: :authorization_downloader_type?
 
-  enumerize :downloader_type, in: %i(direct french_nap), default: :direct
+  #validates_associated :downloader
+
+  enumerize :downloader_type, in: %i(direct french_nap authorization), default: :direct
 
   scope :enabled, -> { where enabled: true }
+
+  before_validation :clean, on: :update
+
+  def authorization_downloader_type?
+    downloader_type == 'authorization'
+  end
+
+  def clean
+    unless downloader_type == "authorization"
+      self.downloader_options = self.downloader_options.except("raw_authorization")
+    end
+  end
 
   def import_option_automatic_merge
     import_options["automatic_merge"]
@@ -26,6 +41,14 @@ class Source < ApplicationModel
 
   def import_option_archive_on_fail=(value)
     import_options["archive_on_fail"] = value
+  end
+
+  def downloader_option_raw_authorization
+    downloader_options["raw_authorization"]
+  end
+
+  def downloader_option_raw_authorization=(value)
+    downloader_options["raw_authorization"] = value
   end
 
   def self.retrieve_all
@@ -56,6 +79,8 @@ class Source < ApplicationModel
 
   module Downloader
     class Base
+      #include ActiveModel::Validations
+
       attr_reader :url
 
       def initialize(url, options = {})
@@ -65,9 +90,13 @@ class Source < ApplicationModel
     end
 
     class URL < Base
-      def download(path)
+      mattr_accessor :timeout, default: 120.seconds
+
+      def download(path, options = {})
+        options = options.reverse_merge read_timeout: timeout
+
         File.open(path, "wb") do |file|
-          IO.copy_stream open(url), file
+          IO.copy_stream URI.open(url, options), file
         end
       end
     end
@@ -86,6 +115,22 @@ class Source < ApplicationModel
         # We prefer to use table links because we have absolute url and never relative url
         l = page.css('table')
         l.css('a').first["href"]
+      end
+    end
+
+    class Authorization < Base
+      attr_accessor :raw_authorization
+      #validates_presence_of :raw_authorization
+
+      def download(path)
+        URL.new(url).download(path, options)
+      end
+
+      private
+
+      def options
+        return {} unless raw_authorization
+        { "Authorization" => raw_authorization }
       end
     end
   end
@@ -135,7 +180,7 @@ class Source < ApplicationModel
     include Measurable
 
     belongs_to :source, optional: false
-    belongs_to :import, class_name: "::Import::Workbench"
+    belongs_to :import, class_name: "Import::Workbench"
     belongs_to :workbench, optional: false
 
     before_validation :set_workbench, on: :create
@@ -209,7 +254,8 @@ class Source < ApplicationModel
         name: import_name,
         creator: creator,
         file: imported_file,
-        options: import_options
+        options: import_workbench_options,
+        type: 'Import::Workbench'
       }
     end
 
@@ -225,6 +271,11 @@ class Source < ApplicationModel
 
     def set_workbench
       self.workbench = self.source&.workbench
+    end
+
+    def import_workbench_options
+      processing_options = import_options.keys.select{ |key| key.start_with?('process_') }
+      import_options.except(*processing_options)
     end
   end
 

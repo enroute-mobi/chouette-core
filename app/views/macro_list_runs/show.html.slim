@@ -1,6 +1,5 @@
 - breadcrumb :macro_list_run, @workbench, @macro_list_run
 - page_header_content_for @macro_list_run
-- content_for :additional_packs, 'macro_list_runs/show'
 
 / PageContent
 .page_content
@@ -27,5 +26,8 @@
         .dl-head
           = I18n.t('other', scope: 'activerecord.models.macro/base/run').capitalize
 
+      - @macro_list_run.macro_context_runs.each do |context|
+        = render 'macro_context_run', macro_context_run: context
+
       - @macro_list_run.macro_runs.each do |macro_run|
-        = render 'macro_run', macro_run: macro_run
+        = render 'macro_run', macro_run: macro_run, messages_base_url: workbench_macro_list_run_macro_run_macro_messages_path(@workbench, @macro_list_run, macro_run)

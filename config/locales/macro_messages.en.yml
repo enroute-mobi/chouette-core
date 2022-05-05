@@ -1,6 +1,7 @@
 en:
   macro_messages:
     default: "Message on line %{name}"
+    search_no_results_for_filter: "No messages found"
   activerecord:
     models:
       macro/message:

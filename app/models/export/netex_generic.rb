@@ -227,7 +227,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def netex_quay?
-      area_type == Chouette::AreaType::QUAY
+      area_type&.to_sym == Chouette::AreaType::QUAY
     end
 
     def netex_resource_class
@@ -377,11 +377,14 @@ class Export::NetexGeneric < Export::Base
       end
 
       def valid_between
-        return unless active_from || active_until
+        return unless active_from.present? || active_until.present?
+
+        from_date = active_from.present? ? active_from.beginning_of_day : nil
+        to_date = active_until.present? ? (active_until + 1).beginning_of_day : nil
 
         Netex::ValidBetween.new(
-          from_date: active_from.beginning_of_day,
-          to_date: (active_until + 1).beginning_of_day
+          from_date: from_date,
+          to_date: to_date
         )
       end
 
@@ -525,17 +528,33 @@ class Export::NetexGeneric < Export::Base
     def scheduled_stop_point_attributes
       {
         id: scheduled_stop_point_id,
-        data_source_ref: route&.data_source_ref,
+        data_source_ref: route_data_source_ref,
       }
     end
 
+    def route_data_source_ref
+      __getobj__.try(:route_data_source_ref) || route&.data_source_ref
+    end
+
+    def stop_area_objectid
+      __getobj__.try(:stop_area_objectid) || stop_area&.objectid
+    end
+
+    def stop_area_area_type
+      __getobj__.try(:stop_area_area_type) || stop_area&.area_type
+    end
+
     def scheduled_stop_point_id
-      @scheduled_stop_point_id ||= netex_identifier.change(type: 'ScheduledStopPoint').to_s
+      @scheduled_stop_point_id ||= netex_identifier.change(type: 'ScheduledStopPoint').to_s if netex_identifier
+    end
+
+    def netex_quay?
+      stop_area_area_type&.to_sym == Chouette::AreaType::QUAY
     end
 
     def passenger_stop_assignment
       Netex::PassengerStopAssignment.new(passenger_stop_assignment_attributes).tap do |passenger_stop_assignment|
-        if stop_area.area_type == Chouette::AreaType::QUAY
+        if netex_quay?
           passenger_stop_assignment.quay_ref = quay_ref
         else
           passenger_stop_assignment.stop_place_ref = stop_place_ref
@@ -546,14 +565,14 @@ class Export::NetexGeneric < Export::Base
     def passenger_stop_assignment_attributes
       {
         id: passenger_stop_assignment_id,
-        data_source_ref: route&.data_source_ref,
+        data_source_ref: route_data_source_ref,
         order: 0,
         scheduled_stop_point_ref: scheduled_stop_point_ref
       }
     end
 
     def passenger_stop_assignment_id
-      netex_identifier.change(type: 'PassengerStopAssignment').to_s
+      netex_identifier.change(type: 'PassengerStopAssignment').to_s if netex_identifier
     end
 
     def scheduled_stop_point_ref
@@ -561,11 +580,11 @@ class Export::NetexGeneric < Export::Base
     end
 
     def quay_ref
-      Netex::Reference.new(stop_area.objectid, type: 'QuayRef')
+      Netex::Reference.new(stop_area_objectid, type: 'QuayRef')
     end
 
     def stop_place_ref
-      Netex::Reference.new(stop_area.objectid, type: 'StopPlaceRef')
+      Netex::Reference.new(stop_area_objectid, type: 'StopPlaceRef')
     end
 
     def route_point
@@ -576,7 +595,7 @@ class Export::NetexGeneric < Export::Base
       {
         id: route_point_id,
         projections: point_projection,
-        data_source_ref: route&.data_source_ref
+        data_source_ref: route_data_source_ref
       }
     end
 
@@ -788,17 +807,28 @@ class Export::NetexGeneric < Export::Base
     delegate :stop_points, to: :export_scope
 
     def export!
-      stop_points.includes(:stop_area).joins(:route).select('stop_points.*', 'routes.line_id as line_id').find_each do |stop_point|
+      stop_points.joins(:route, :stop_area).select(selected).find_each do |stop_point|
         tags = resource_tagger.tags_for(stop_point.line_id)
         tagged_target = TaggedTarget.new(target, tags)
 
-        decorated_stop_point = StopPointDecorator.new(stop_point, route: stop_point.route)
+        decorated_stop_point = StopPointDecorator.new(stop_point)
         tagged_target << decorated_stop_point.scheduled_stop_point
         tagged_target << decorated_stop_point.passenger_stop_assignment
         tagged_target << decorated_stop_point.route_point
       end
     end
 
+    private
+
+    def selected
+      [
+        'stop_points.*',
+        'stop_areas.objectid AS stop_area_objectid',
+        'stop_areas.area_type AS stop_area_area_type',
+        'routes.line_id AS line_id',
+        'routes.data_source_ref AS route_data_source_ref',
+      ]
+    end
   end
 
   class RoutingConstraintZones < Part
@@ -1251,6 +1281,5 @@ class Export::NetexGeneric < Export::Base
       end
     end
   end
-
 
 end

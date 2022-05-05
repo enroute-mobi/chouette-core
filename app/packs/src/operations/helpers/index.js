@@ -30,3 +30,12 @@ export class FormDataUpdater {
 export const addResourceToCollection = collectionName => collection => object => {
 	isArray(collection) && collection.forEach(attributes => object[collectionName].add(attributes))
 }
+
+export function* nodeId(resourceName) {
+	let index = 0
+
+	while (true) {
+		index += 1
+		yield `${resourceName}-${index}`
+	}
+}

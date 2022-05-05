@@ -38,9 +38,13 @@ module Control
       def run
         faulty_models.find_each do |model|
           control_messages.create({
-            message_attributes: { name: (model.name rescue model.id) },
+            message_attributes: {
+              name: model.try(:name) || model.id,
+              code_space_name: code_space_keys[target_code_space_id.to_i]
+            },
             criticity: criticity,
             source: model,
+            message_key: :presence_code
           })
         end
       end
@@ -68,6 +72,10 @@ module Control
 
       def models
         @models ||= context.send(model_collection)
+      end
+
+      def code_space_keys
+        @code_space_keys ||= workgroup.code_spaces.pluck(:id, :short_name).to_h
       end
     end
   end

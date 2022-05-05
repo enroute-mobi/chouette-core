@@ -400,8 +400,8 @@ RSpec.describe Control::PresenceAttribute do
           end
         end
 
-        describe "#country" do
-          let(:target_attribute) { "country" }
+        describe "#country_code" do
+          let(:target_attribute) { "country_code" }
 
           context "when value is not present" do
             before { stop_area.update country_code: nil }
@@ -571,7 +571,7 @@ RSpec.describe Control::PresenceAttribute do
           end
         end
 
-        describe "#country" do
+        describe "#country_code" do
           let(:target_attribute) { "country_code" }
 
           context "when value is not present" do

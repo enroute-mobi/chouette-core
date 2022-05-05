@@ -1,6 +1,7 @@
 import { flow } from 'lodash'
 import ResourceMixin from '../operations/mixins/resource'
 import CollectionMixin from '../operations/mixins/collection'
+import { nodeId } from '../operations/helpers'
 
 // Control
 const ControlMixin = superclass => class Control extends superclass {
@@ -26,25 +27,19 @@ const ControlMixin = superclass => class Control extends superclass {
 				break
 		}
 
-		const container = parse('<div class="flex w-full"></div>')
+		const container = parse('<div class="flex w-full items-center"></div>')
 		const criticity = parse(`<span class="fa fa-circle mr-xs" style="color:${color};"></span>`)
 		const name = parse(`<div>${this.name}</div>`)
-		const description = parse(`<div class="ml-auto">${text}</div>`)
+		const description = parse(`<div class="ml-auto">${expanded ? text : '('+ text +')' }</div>`)
 
 		container.appendChild(criticity)
-
-		if(Boolean(this.name) && !expanded) {
-			container.appendChild(name)
-			// description.classList.add('ml-auto')
-		}
-
 		container.appendChild(description)
 
 		return container.outerHTML
 	}
 
 	get criticityIcon() {
-		return 
+		return
 	}
 }
 
@@ -53,6 +48,8 @@ export const Control = flow(ResourceMixin, ControlMixin)(class {})
 // Control Collection
 const ControlCollectionMixin = superclass => class ControlCollection extends superclass {
 	static get ResourceConstructor() { return Control }
+
+	static nodeIdGenerator = nodeId('control')
 }
 
 export const ControlCollection = flow(CollectionMixin, ControlCollectionMixin)(Array)

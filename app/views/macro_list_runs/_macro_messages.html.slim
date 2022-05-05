@@ -1,8 +1,6 @@
-- messages = macro_run.macro_messages.paginate(page: params[:page], per_page: 15)
-
 - if messages.any?
 	= table_builder_2 messages, *facade.message_table_params
 
-	= new_pagination messages, 'pull-right', renderer: facade.paginate_renderer_for('macro', macro_run)
+	= new_pagination messages, 'pull-right'
 - else
-	= replacement_msg t('macro_messages.search_no_results')
+	= replacement_msg t('macro_messages.search_no_results_for_filter')

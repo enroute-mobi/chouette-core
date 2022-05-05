@@ -1,6 +1,7 @@
 en:
   control_messages:
     default: "Message on line %{name}"
+    presence_code: "The %{target_model} %{name} hasn’t got the code space %{code_space_name}"
   activerecord:
     models:
       control/message:

@@ -1,5 +1,6 @@
 - collection = local_assigns.fetch(:collection)
+- resource_name = local_assigns.fetch(:resource_name)
 
 div[x-data="{ collection: #{collection} }"]
 	template[x-for="(resource, index) in collection"]
-		div x-html="await resource.render()"
+		div class="#{resource_name}" :id="resource.nodeId" x-html="await resource.render()"

@@ -68,14 +68,12 @@ class ControlListsController < ChouetteController
   end
 
   def object_html_params
-    params.require(:html).permit(
-      :id,
-      :type
-    ).with_defaults(
-      template: helpers,
-      workbench: workbench,
-      parent_klass: Control::List
-    )
+    params.require(:html).tap do |html_params|
+      html_params[:template] = helpers
+      html_params[:resource] = html_params[:type].constantize.new
+      html_params[:workbench] = workbench
+      html_params[:parent_klass] = Control::List
+    end
   end
 
   def control_params

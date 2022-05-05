@@ -9,8 +9,8 @@
 		.flex.flex-col.items-center.mt-5
 			.flex.items-center.w-full.mb-8
 				= simple_fields_for(facade.form_basename, struct.new) do |sub|
-					= sub.label name, class: 'mb-3', required: false
-					.w-full.mx-5
+					/ = sub.label name, class: 'mb-3', required: false
+					.w-full.mr-5
 						= sub.input name,
 							as: :tom_select,
 							placeholder: t("simple_form.placeholders.#{suffix}"),
@@ -22,4 +22,4 @@
 				= button_tag t("simple_form.buttons.#{suffix}"),
 					class: 'btn btn-primary',
 					':disabled': "!Boolean(selectedOption)",
-					'@click.prevent': "#{store_collection}.add({ type: selectedOption })"
+					'x-on:click.prevent': "#{store_collection}.add({ type: selectedOption })"

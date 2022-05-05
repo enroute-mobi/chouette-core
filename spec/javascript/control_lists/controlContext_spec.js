@@ -11,7 +11,7 @@ context('ControlContext', () => {
 
 	describe('attributesList', () => {
 		it('should return the right list', () => {
-			expect(controlContext.attributesList).toEqual(['errors', 'html', 'controls'])
+			expect(controlContext.attributesList).toEqual(['nodeId', 'errors', 'html', 'controls'])
 		})
 	})
 })

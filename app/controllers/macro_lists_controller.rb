@@ -33,6 +33,7 @@ class MacroListsController < ChouetteController
     end
   end
 
+
   def fetch_object_html
     render json: { html: Operations::RenderPartial.call(object_html_params) }
   end
@@ -76,14 +77,12 @@ class MacroListsController < ChouetteController
   # end
 
   def object_html_params
-    params.require(:html).permit(
-      :id,
-      :type,
-    ).with_defaults(
-      template: helpers,
-      workbench: workbench,
-      parent_klass: Macro::List
-    )
+    params.require(:html).tap do |html_params|
+      html_params[:template] = helpers
+      html_params[:resource] = html_params[:type].constantize.new
+      html_params[:workbench] = workbench
+      html_params[:parent_klass] = Macro::List
+    end
   end
 
   def macro_params

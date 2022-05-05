@@ -34,9 +34,9 @@ fr:
   activerecord:
     models:
       control/list:
-        zero:  "jeu contrôle"
-        one: "jeu contrôle"
-        other: "jeux contrôles"
+        zero:  "Jeu de contrôle"
+        one: "Jeu de contrôle"
+        other: "Jeux de contrôles"
     attributes:
       control:
         list:

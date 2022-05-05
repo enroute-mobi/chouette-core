@@ -392,11 +392,11 @@ fr:
       gate: "Barrière"
       other: "Autre"
     target_model:
-      line: Ligne
-      stop_area: Arrêt
-      journey_pattern: Mission
-      vehicle_journey: Course
-      company: Transporteur
+      Line: Ligne
+      StopArea: Arrêt
+      JourneyPattern: Mission
+      VehicleJourney: Course
+      Company: Transporteur
     search:
       rule_type: *notification_rule_rule_type
     control:

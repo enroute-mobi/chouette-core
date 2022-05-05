@@ -195,8 +195,8 @@ RSpec.describe Export::Ara do
             an_object_having_attributes({
               schedules: [{
                 "Kind" => "expected",
-                "ArrivalTime" => "2000-01-01T19:01:00+0000",
-                "DepartureTime" => "2000-01-01T15:01:00+0000"
+                "ArrivalTime" => "2000-01-01T19:01:00+00:00",
+                "DepartureTime" => "2000-01-01T15:01:00+00:00"
               }],
               passage_order: "0"
             })

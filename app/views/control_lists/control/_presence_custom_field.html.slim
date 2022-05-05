@@ -1,6 +1,6 @@
-= form.input :target_model, input_html: { 'x-model': 'resource.target_model', '@change': "resource.target_custom_field_id = ''" }
+= form.input :target_model, input_html: { 'x-model': 'resource.target_model', 'x-on:change': "resource.target_custom_field_id = ''" }
 = form.input :target_custom_field_id do
-	select.form-control.select.required name="control_list[controls_attributes][0][target_custom_field_id]" x-model="resource.target_custom_field_id" :disabled="!Boolean(resource.target_model)"
+	select.form-control.select.required name="control_list[controls_attributes][0][target_custom_field_id]" x-model="resource.target_custom_field_id" :disabled="!Boolean(resource.target_model) || #{facade.show?}"
 		option value=""
 		template[x-for="option in #{facade.custom_fields_options}"]
-			option :value="option.id" x-text="option.text" x-show="option.resource_type == resource.target_model"
+			option :value="option.id" x-text="option.text" x-show="option.resource_type == resource.target_model" :selected="option.id == resource.target_custom_field_id"

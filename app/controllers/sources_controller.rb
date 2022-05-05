@@ -71,6 +71,7 @@ class SourcesController < ChouetteController
       :notification_target,
       :import_option_automatic_merge,
       :import_option_archive_on_fail,
+      :import_option_update_workgroup_providers,
       :created_at,
       :updated_at,
       :downloader_type,

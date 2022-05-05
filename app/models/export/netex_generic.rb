@@ -106,7 +106,7 @@ class Export::NetexGeneric < Export::Base
       options.each { |k,v| send "#{k}=", v }
     end
 
-    delegate :target, :resource_tagger, :export_scope, to: :export
+    delegate :target, :resource_tagger, :export_scope, :workgroup, to: :export
 
     def part_name
       @part_name ||= self.class.name.demodulize.underscore
@@ -957,7 +957,7 @@ class Export::NetexGeneric < Export::Base
         tags = resource_tagger.tags_for(vehicle_journey.line_id)
         tagged_target = TaggedTarget.new(target, tags)
 
-        decorated_vehicle_journey = Decorator.new(vehicle_journey, export)
+        decorated_vehicle_journey = Decorator.new(vehicle_journey, code_space_keys)
         tagged_target << decorated_vehicle_journey.netex_resource
 
         decorated_vehicle_journey.vehicle_journey_stop_assignments.each do |assignment|
@@ -968,6 +968,10 @@ class Export::NetexGeneric < Export::Base
 
     def vehicle_journeys
       Query.new(export_scope.vehicle_journeys).scope
+    end
+
+    def code_space_keys
+      @code_space_keys ||= workgroup.code_spaces.pluck(:id, :short_name).to_h
     end
 
     class Query
@@ -1012,8 +1016,8 @@ class Export::NetexGeneric < Export::Base
         <<~SQL
           array_agg(
             json_build_object(
-              'value', referential_codes.value,
-              'key', referential_codes.code_space_id
+              'id', referential_codes.code_space_id,
+              'value', referential_codes.value
             )
           ) AS vehicle_journey_codes
         SQL
@@ -1030,11 +1034,11 @@ class Export::NetexGeneric < Export::Base
 
     class Decorator < SimpleDelegator
 
-      def initialize(vehicle_journey, export=nil)
+      def initialize(vehicle_journey, code_space_keys = nil)
         super vehicle_journey
-        @export = export
+        @code_space_keys = code_space_keys
       end
-      attr_accessor :export
+      attr_accessor :code_space_keys
 
       def netex_attributes
         {
@@ -1056,13 +1060,17 @@ class Export::NetexGeneric < Export::Base
         Netex::ServiceJourney.new netex_attributes
       end
 
+      def code_space_key(code_space_id)
+        code_space_key[code_space_id]
+      end
+
       def netex_alternate_identifiers
-        return if export || try(:vehicle_journey_codes).blank?
+        return if code_space_keys.blank? || try(:vehicle_journey_codes).blank?
 
         vehicle_journey_codes.map do |vehicle_journey_code|
           Netex::KeyValue.new({
+            key: code_space_key(vehicle_journey_code['id'].to_i),
             value: vehicle_journey_code['value'],
-            key: export.cache_code_spaces[vehicle_journey_code['key'].to_i],
             type_of_key: "ALTERNATE_IDENTIFIER"
           })
         end

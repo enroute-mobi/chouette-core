@@ -882,7 +882,7 @@ RSpec.describe Export::NetexGeneric do
 
     let(:target) { MockNetexTarget.new }
     let(:export_scope) { Export::Scope::All.new context.referential }
-    let(:export) { Export::NetexGeneric.new export_scope: export_scope, target: target }
+    let(:export) { Export::NetexGeneric.new export_scope: export_scope, target: target, workgroup: context.workgroup }
 
     let(:part) do
       Export::NetexGeneric::VehicleJourneys.new export

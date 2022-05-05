@@ -106,7 +106,7 @@ class Export::NetexGeneric < Export::Base
       options.each { |k,v| send "#{k}=", v }
     end
 
-    delegate :target, :resource_tagger, :export_scope, to: :export
+    delegate :target, :resource_tagger, :export_scope, :workgroup, to: :export
 
     def part_name
       @part_name ||= self.class.name.demodulize.underscore
@@ -959,14 +959,12 @@ class Export::NetexGeneric < Export::Base
 
   class VehicleJourneys < Part
 
-    delegate :vehicle_journeys, to: :export_scope
-
     def export!
-      vehicle_journeys.includes(:time_tables, {journey_pattern: :route}, vehicle_journey_at_stops: [:stop_area, { stop_point: :stop_area }]).find_each(batch_size: 200) do |vehicle_journey|
-        tags = resource_tagger.tags_for(vehicle_journey.journey_pattern.route.line_id)
+      vehicle_journeys.find_each(batch_size: 200) do |vehicle_journey|
+        tags = resource_tagger.tags_for(vehicle_journey.line_id)
         tagged_target = TaggedTarget.new(target, tags)
 
-        decorated_vehicle_journey = Decorator.new(vehicle_journey)
+        decorated_vehicle_journey = Decorator.new(vehicle_journey, code_space_keys)
         tagged_target << decorated_vehicle_journey.netex_resource
 
         decorated_vehicle_journey.vehicle_journey_stop_assignments.each do |assignment|
@@ -975,7 +973,79 @@ class Export::NetexGeneric < Export::Base
       end
     end
 
+    def vehicle_journeys
+      Query.new(export_scope.vehicle_journeys).scope
+    end
+
+    def code_space_keys
+      @code_space_keys ||= workgroup.code_spaces.pluck(:id, :short_name).to_h
+    end
+
+    class Query
+
+      def initialize(vehicle_journeys)
+        @vehicle_journeys = vehicle_journeys
+      end
+      attr_accessor :vehicle_journeys
+
+      def scope
+        return base_query unless vehicle_journeys.joins_values.include? :time_tables
+        base_query
+          .joins(:codes)
+          .select(time_table_objectids, vehicle_journey_codes)
+          .group(group_by)
+      end
+
+      def base_query
+        vehicle_journeys
+          .includes(vehicle_journey_at_stops: [:stop_area, { stop_point: :stop_area }])
+          .joins(journey_pattern: :route)
+          .select(selected)
+      end
+
+      private
+
+      def selected
+        <<~SQL
+          vehicle_journeys.*,
+          routes.line_id AS line_id,
+          journey_patterns.objectid AS journey_pattern_objectid
+        SQL
+      end
+
+      def time_table_objectids
+        <<~SQL
+          array_agg(time_tables.objectid) AS time_table_objectids
+        SQL
+      end
+
+      def vehicle_journey_codes
+        <<~SQL
+          array_agg(
+            json_build_object(
+              'id', referential_codes.code_space_id,
+              'value', referential_codes.value
+            )
+          ) AS vehicle_journey_codes
+        SQL
+      end
+
+      def group_by
+        <<~SQL
+          vehicle_journeys.id,
+          routes.line_id,
+          journey_patterns.objectid
+        SQL
+      end
+    end
+
     class Decorator < SimpleDelegator
+
+      def initialize(vehicle_journey, code_space_keys = nil)
+        super vehicle_journey
+        @code_space_keys = code_space_keys
+      end
+      attr_accessor :code_space_keys
 
       def netex_attributes
         {
@@ -986,15 +1056,39 @@ class Export::NetexGeneric < Export::Base
           public_code: published_journey_identifier,
           passing_times: passing_times,
           day_types: day_types
-        }
+        }.tap do |attributes|
+          if netex_alternate_identifiers
+            attributes[:key_list] = netex_alternate_identifiers
+          end
+        end
       end
 
       def netex_resource
         Netex::ServiceJourney.new netex_attributes
       end
 
+      def code_space_key(code_space_id)
+        code_space_key[code_space_id]
+      end
+
+      def netex_alternate_identifiers
+        return if code_space_keys.blank? || try(:vehicle_journey_codes).blank?
+
+        vehicle_journey_codes.map do |vehicle_journey_code|
+          Netex::KeyValue.new({
+            key: code_space_key(vehicle_journey_code['id'].to_i),
+            value: vehicle_journey_code['value'],
+            type_of_key: "ALTERNATE_IDENTIFIER"
+          })
+        end
+      end
+
       def journey_pattern_ref
-        Netex::Reference.new(journey_pattern.objectid, type: 'JourneyPatternRef')
+        Netex::Reference.new(journey_pattern_objectid, type: 'JourneyPatternRef')
+      end
+
+      def journey_pattern_objectid
+        __getobj__.try(:journey_pattern_objectid) || journey_pattern&.objectid
       end
 
       def passing_times
@@ -1014,17 +1108,14 @@ class Export::NetexGeneric < Export::Base
 
       def decorated_vehicle_journey_at_stops
         @decorated_vehicle_journey_at_stops ||= vehicle_journey_at_stops.map do |vehicle_journey_at_stop|
-          VehicleJourneyAtStopDecorator.new(vehicle_journey_at_stop, journey_pattern.objectid)
+          VehicleJourneyAtStopDecorator.new(vehicle_journey_at_stop, journey_pattern_objectid)
         end
       end
 
       def day_types
-        decorated_time_tables.map(&:day_type_ref)
-      end
-
-      def decorated_time_tables
-        @decorated_time_tables ||= time_tables.map do |time_table|
-          TimeTableDecorator.new(time_table)
+        objectids = try(:time_table_objectids) || time_tables.pluck(:objectid)
+        objectids.map do |objectid|
+          Netex::Reference.new(objectid, type: 'DayTypeRef')
         end
       end
     end
@@ -1102,7 +1193,6 @@ class Export::NetexGeneric < Export::Base
         [Netex::Reference.new(vehicle_journey.objectid, type: 'ServiceJourney')]
       end
     end
-
   end
 
   class TimeTableDecorator < SimpleDelegator

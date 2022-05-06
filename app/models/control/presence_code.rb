@@ -20,12 +20,6 @@ module Control
 
     validate :code_space_belong_to_workgroup
 
-    def workbench
-      (control_list || control_context).workbench
-    end
-
-    delegate :workgroup, to: :workbench
-
     private
 
     def code_space_belong_to_workgroup

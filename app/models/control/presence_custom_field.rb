@@ -22,12 +22,6 @@ module Control
 
     validate :custom_field_is_present_in_workgroup
 
-    def workbench
-      (control_list || control_context).workbench
-    end
-
-    delegate :workgroup, to: :workbench
-
     private
 
     def custom_field_is_present_in_workgroup

@@ -28,6 +28,12 @@ module Control
       @run_class ||= self.class.const_get("Run")
     end
 
+    def workbench
+      (control_list || control_context).workbench
+    end
+
+    delegate :workgroup, to: :workbench
+
     class Run < ApplicationModel
       self.table_name = "control_runs"
 

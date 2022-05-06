@@ -10,15 +10,15 @@ module Control
         option :target_code_space_id
 
         validates :target_model, :target_code_space_id, presence: true
+
+        def target_code_space
+          @target_code_space ||= workgroup.code_spaces.find_by_id(target_code_space_id)
+        end
       end
     end
     include Options
 
     validate :code_space_belong_to_workgroup
-
-    def target_code_space
-      workgroup.code_spaces.find_by_id(target_code_space_id)
-    end
 
     def workbench
       (control_list || control_context).workbench
@@ -40,7 +40,7 @@ module Control
           control_messages.create({
             message_attributes: {
               name: model.try(:name) || model.id,
-              code_space_name: code_space_keys[target_code_space_id.to_i]
+              code_space_name: target_code_space.short_name
             },
             criticity: criticity,
             source: model,
@@ -72,10 +72,6 @@ module Control
 
       def models
         @models ||= context.send(model_collection)
-      end
-
-      def code_space_keys
-        @code_space_keys ||= workgroup.code_spaces.pluck(:id, :short_name).to_h
       end
     end
   end

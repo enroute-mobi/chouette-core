@@ -48,7 +48,7 @@ module Control
       end
 
       def faulty_models
-        models.where("custom_field_values ->> '#{custom_field.code}' IS NULL")
+        models.where("custom_field_values ->> ? IS NULL", custom_field.code)
       end
 
       def model_collection

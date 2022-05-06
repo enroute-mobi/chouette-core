@@ -11,6 +11,9 @@ module Operations
 
 			@form_options = { wrapper: :horizontal_form_tailwind }
 
+			if template.action_name === 'show'
+				form_options[:defaults] = { disabled: true }
+			end
 		end
 
 		def call

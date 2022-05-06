@@ -11,6 +11,8 @@ en:
         one: Presence of attribute
       control/presence_code:
         one: Presence of code
+      control/presence_custom_field:
+        one: Validate presence of a custom field
     attributes:
       control/base:
         name: Name
@@ -26,3 +28,6 @@ en:
       control/presence_code:
         target_code_space_id: Target code space
         description: The specified code space must have a code in the target model
+        target_model: Target Model
+      control/presence_custom_field:
+        target_custom_field_id: Target Custom Field

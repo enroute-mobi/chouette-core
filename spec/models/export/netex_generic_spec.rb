@@ -362,7 +362,7 @@ RSpec.describe Export::NetexGeneric do
   describe "Companies export" do
     describe Export::NetexGeneric::Companies::Decorator do
 
-      let(:company) { Chouette::Company.new }
+      let(:company) { create(:company) }
       let(:decorator) { Export::NetexGeneric::Companies::Decorator.new company }
 
       describe "#netex_attributes" do
@@ -376,6 +376,34 @@ RSpec.describe Export::NetexGeneric do
         it "uses Company name" do
           company.name = "dummy"
           is_expected.to include(name: company.name)
+        end
+      end
+
+      describe "#key_list" do
+        subject { decorator.netex_resource.key_list }
+
+        let(:expected_message) do
+          an_object_having_attributes({
+            source: source,
+            criticity: criticity,
+            message_attributes: {"name" => attribute_name}
+          })
+        end
+
+        context "when company has a registration number" do
+          before { company.update registration_number: 'RN' }
+
+          it "generate key_list" do
+            is_expected.to include(an_object_having_attributes({key: "external", value: "RN", type_of_key: "ALTERNATE_IDENTIFIER" }))
+          end
+        end
+
+        context "when company has no registration number" do
+          before { company.update registration_number: nil }
+
+          it "don't generate key_list" do
+            is_expected.to be_empty
+          end
         end
       end
     end

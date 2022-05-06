@@ -439,13 +439,38 @@ class Export::NetexGeneric < Export::Base
           id: objectid,
           name: name,
           raw_xml: import_xml
-        }
+        }.tap do |attributes|
+          if netex_alternate_identifiers.present?
+            attributes[:key_list] = netex_alternate_identifiers
+          end
+        end
       end
 
       def netex_resource
         Netex::Operator.new netex_attributes
       end
 
+      def netex_alternate_identifiers
+        (netex_codes.presence || netex_registration_numbers).map do |key, value|
+          Netex::KeyValue.new key: key, value: value, type_of_key: "ALTERNATE_IDENTIFIER"
+        end
+      end
+
+      private
+
+      def netex_registration_numbers
+        return [] unless registration_number.present?
+
+        [[ 'external', registration_number ]]
+      end
+
+      def netex_codes
+        [].tap do |identifiers|
+          (try(:codes) || []).each do |code|
+            identifiers << [ code.code_space.short_name, code.value ]
+          end
+        end
+      end
     end
 
   end

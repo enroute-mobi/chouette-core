@@ -1,8 +1,10 @@
 class ControlListFacade
-	attr_reader :control_list, :template
+	attr_reader :control_list, :workbench, :workgroup, :template
 
 	def initialize(control_list, template)
 		@control_list = control_list
+		@workbench = control_list.workbench
+		@workgroup = workbench.workgroup
 		@template = template
 	end
 
@@ -28,7 +30,11 @@ class ControlListFacade
 	end
 
 	def transport_mode_options
-		control_list.workbench.workgroup.sorted_transport_modes.map { |t| ["enumerize.transport_mode.#{t}".t, t] }
+		workgroup.sorted_transport_modes.map { |t| ["enumerize.transport_mode.#{t}".t, t] }
+	end
+
+	def target_code_space_options
+		workgroup.code_spaces.map { |c| [c.short_name, c.id] }
 	end
 
 	def criticity_options

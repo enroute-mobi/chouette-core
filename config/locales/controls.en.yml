@@ -9,6 +9,8 @@ en:
         one: Simulate control
       control/presence_attribute:
         one: Presence of attribute
+      control/presence_code:
+        one: Presence of code
     attributes:
       control/base:
         name: Name
@@ -21,3 +23,6 @@ en:
       control/presence_attribute:
         target_attribute: Target Attribute
         description: The specified attribute must have a value in the target model
+      control/presence_code:
+        target_code_space_id: Target code space
+        description: The specified code space must have a code in the target model

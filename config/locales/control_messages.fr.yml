@@ -1,6 +1,7 @@
 fr:
   control_messages:
     default: "Message sur la ligne %{name}"
+    presence_code: "Un(e) %{target_model} %{name} ne possède pas d’espace de code %{code_space_name}"
   activerecord:
     models:
       control/message:

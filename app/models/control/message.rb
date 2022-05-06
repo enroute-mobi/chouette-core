@@ -14,7 +14,10 @@ module Control
     scope :error, -> { where(criticity: :error ) }
 
     def full_message
-      I18n.t("control_messages.#{message_key || 'default'}", message_attributes.symbolize_keys)
+      I18n.t(
+        "control_messages.#{message_key || 'default'}",
+        message_attributes.merge(target_model: source.model_name.human).symbolize_keys
+      )
     end
   end
 end

@@ -1,5 +1,7 @@
 describe ControlListFacade do
-
+	let(:context) { Chouette.create { workbench } }
+	let(:workbench) { context.workbench }
+	let(:control_list) { workbench.control_lists.build }
 	let(:template) do
 		template = Object.new
 		allow(template).to receive(:action_name) { 'new' }
@@ -7,19 +9,16 @@ describe ControlListFacade do
 
 		template
 	end
+	let(:facade) { described_class.new(control_list, template) }
 
 	describe '#form_basename' do
-		it "should return macro_list" do
-			expect(described_class.new(Control::List.new, template).form_basename).to eq('control_list')
-		end
+		subject { facade.form_basename }
+		it { is_expected.to eq('control_list') }
 	end
 
 	describe '#json_state' do
 		context "when control is not persisted" do
 			it 'should return empty state' do
-				control_list = Control::List.new
-				facade = described_class.new(control_list, template)
-
 				expected_json = JSON.generate({
 					name: nil,
 					comments: nil,
@@ -34,7 +33,7 @@ describe ControlListFacade do
 
 		context 'when control list has controls & contexts' do
 			it 'should return a properly formed state' do
-				control_list = Control::List.new(name: 'name', comments: 'comments')
+				control_list = workbench.control_lists.build(name: 'name', comments: 'comments')
 				dummy_control = Control::Dummy.new(name: 'name', criticity: 'warning', code: 'code', comments: 'comments', expected_result: 'warning')
 				context = Control::Context::TransportMode.new(transport_mode: 'bus')
 
@@ -42,7 +41,7 @@ describe ControlListFacade do
 				control_list.control_contexts.push context
 				control_list.controls.push dummy_control
 
-				facade = described_class.new(control_list, template)
+				allow(facade).to receive(:control_list) { control_list}
 
 				expected_json = JSON.generate({
 					name: 'name',

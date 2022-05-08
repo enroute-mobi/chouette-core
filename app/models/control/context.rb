@@ -13,6 +13,8 @@ module Control
 
     accepts_nested_attributes_for :controls, allow_destroy: true, reject_if: :all_blank
 
+    delegate :workbench, to: :control_list
+
     def self.available
       [
         Control::Context::TransportMode

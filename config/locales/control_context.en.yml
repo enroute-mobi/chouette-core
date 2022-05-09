@@ -23,9 +23,11 @@ en:
         comments: Comments
       control/context/transport_mode: &transport_mode
         transport_mode: Transport Mode
+      control/context/operating_period: &operating_period
+        next_days: Next days
       control/context/run:
         <<: *control_context
       control/context/transport_mode/run:
         <<: *transport_mode
-      control/context/operating_period:
-        next_days: Next days
+      control/context/operating_period/run:
+        <<: *operating_period

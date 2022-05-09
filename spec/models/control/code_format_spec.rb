@@ -28,7 +28,12 @@ RSpec.describe Control::CodeFormat do
       an_object_having_attributes({
         source: source,
         criticity: "warning",
-        message_attributes: {"code_values" => ["BAD_CODE"] }
+        message_attributes: {
+          'name' => source.try(:name) || source.id,
+          'code_space_name' => 'test',
+          'expected_format' => '[BFHJ][0-9]{4,6}-[A-Z]{3}'
+        },
+        message_key: 'code_format'
       })
     end
 
@@ -101,5 +106,6 @@ RSpec.describe Control::CodeFormat do
         end
       end
     end
+
   end
 end

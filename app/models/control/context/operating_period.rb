@@ -1,9 +1,11 @@
 class Control::Context::OperatingPeriod < Control::Context
+  attribute :next_days, :integer
   option :next_days
 
   validates :next_days, numericality: { only_integer: true, greater_than: 0, allow_nil: false }
 
   class Run < Control::Context::Run
+    attribute :next_days, :integer
     option :next_days
 
     def vehicle_journeys

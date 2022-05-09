@@ -1,31 +1,40 @@
 module Control
 
   class CodeFormat < Control::Base
-    enumerize :target_model, in: %w{Line StopArea VehicleJourney}, default: "Line"
-    option :target_model
-    option :target_code_space_id
-    option :expected_format
 
-    validates :target_model, :target_code_space_id, :expected_format, presence: true
+    module Options
+      extend ActiveSupport::Concern
+
+      included do
+        enumerize :target_model, in: %w{Line StopArea VehicleJourney}
+        option :target_model
+        option :target_code_space_id
+        option :expected_format
+
+        validates :target_model, :target_code_space_id, :expected_format, presence: true
+
+        def target_code_space
+          @target_code_space ||= workgroup.code_spaces.find_by_id(target_code_space_id)
+        end
+      end
+    end
+    include Options
 
     class Run < Control::Base::Run
-      option :target_model
-      option :target_code_space_id
-      option :expected_format
+      include Options
 
       def run
         faulty_models.includes(:codes).find_each do |model|
           control_messages.create({
-            message_attributes: { code_values: code_values(model) },
+            message_attributes: {
+              name: model.try(:name) || model.id,
+              code_space_name: target_code_space.short_name,
+              expected_format: expected_format
+            },
             criticity: criticity,
             source: model,
+            message_key: :code_format
           })
-        end
-      end
-
-      def code_values(model)
-        model.codes.pluck(:value).select do | code_value |
-          code_value.match(Regexp.new(expected_format)).blank?
         end
       end
 

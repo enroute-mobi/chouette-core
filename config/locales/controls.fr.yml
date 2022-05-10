@@ -14,7 +14,7 @@ fr:
       control/presence_custom_field:
         one: Présence d’un champ personnalisé
       control/code_format:
-        one: Formatter un code
+        one: Format d'un code
     attributes:
       control/base:
         name: Nom

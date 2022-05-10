@@ -12,9 +12,9 @@ en:
       control/presence_code:
         one: Presence of code
       control/presence_custom_field:
-        one: Validate presence of a custom field
+        one: Presence of custom field
       control/code_format:
-        one: Format a code
+        one: Code format
     attributes:
       control/base:
         name: Name

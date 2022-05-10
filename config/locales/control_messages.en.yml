@@ -3,7 +3,7 @@ en:
     default: "Message on line %{name}"
     presence_code: "The %{target_model} %{name} hasn’t got the code space %{code_space_name}"
     presence_custom_field: "The %{target_model} %{name} hasn’t got the custom field %{custom_field}"
-    code_format: "The %{target_model} %{name} hasn’t got the code space %{code_space_name} with the format de code %{expected_format}"
+    code_format: "The %{target_model} %{name} hasn’t got the code space %{code_space_name} with the expected format %{expected_format}"
   activerecord:
     models:
       control/message:

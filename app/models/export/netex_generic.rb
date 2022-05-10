@@ -144,7 +144,12 @@ class Export::NetexGeneric < Export::Base
     end
 
     def register_tag_for(line)
-      tag_index[line.id] = { line_id: line.objectid, line_name: line.name, operator_id: line.company&.objectid, operator_name: line.company&.name }
+      tag_index[line.id] = {
+        line_id: line.objectid,
+        line_name: line.name,
+        operator_id: line.company&.objectid,
+        operator_name: line.company&.name
+      }
     end
 
     protected
@@ -152,6 +157,53 @@ class Export::NetexGeneric < Export::Base
     def tag_index
       @tag_index ||= Hash.new { |h,k| h[k] = {} }
     end
+  end
+
+  class AlternateIdentifiersExtractor
+
+    def initialize(model)
+      @model = model
+    end
+    attr_reader :model
+
+    delegate :registration_number, :codes, to: :model
+
+    def registration_number_value
+      if has_registration_number?
+        [[ "external", registration_number ]]
+      else
+        []
+      end
+    end
+
+    def has_registration_number?
+      model.respond_to?(:registration_number) && registration_number.present?
+    end
+
+    def has_codes?
+      model.respond_to? :codes
+    end
+
+    def codes_values
+      if has_codes?
+        codes.map do |code|
+          [ code.code_space.short_name, code.value ]
+        end
+      else
+        []
+      end
+    end
+
+    def alternate_identifiers_values
+      registration_number_value + codes_values
+    end
+
+    def alternate_identifiers
+      alternate_identifiers_values.map do |key, value|
+        Netex::KeyValue.new key: key, value: value, type_of_key: "ALTERNATE_IDENTIFIER"
+      end
+    end
+
   end
 
   class StopDecorator < SimpleDelegator
@@ -182,15 +234,7 @@ class Export::NetexGeneric < Export::Base
     end
 
     def netex_alternate_identifiers
-      [].tap do |identifiers|
-        identifiers << ["external", registration_number ] if registration_number
-
-        codes.each do |code|
-          identifiers << [code.code_space.short_name, code.value ]
-        end
-      end.map do |key, value|
-        Netex::KeyValue.new key: key, value: value, type_of_key: "ALTERNATE_IDENTIFIER"
-      end
+      AlternateIdentifiersExtractor.new(self).alternate_identifiers
     end
 
     def centroid
@@ -363,13 +407,7 @@ class Export::NetexGeneric < Export::Base
       end
 
       def netex_alternate_identifiers
-        [].tap do |identifiers|
-          codes.each do |code|
-            identifiers << [ code.code_space.short_name, code.value ]
-          end
-        end.map do |key, value|
-          Netex::KeyValue.new key: key, value: value, type_of_key: "ALTERNATE_IDENTIFIER"
-        end
+        AlternateIdentifiersExtractor.new(self).alternate_identifiers
       end
 
       def netex_name
@@ -451,25 +489,7 @@ class Export::NetexGeneric < Export::Base
       end
 
       def netex_alternate_identifiers
-        (netex_codes.presence || netex_registration_numbers).map do |key, value|
-          Netex::KeyValue.new key: key, value: value, type_of_key: "ALTERNATE_IDENTIFIER"
-        end
-      end
-
-      private
-
-      def netex_registration_numbers
-        return [] unless registration_number.present?
-
-        [[ 'external', registration_number ]]
-      end
-
-      def netex_codes
-        [].tap do |identifiers|
-          (try(:codes) || []).each do |code|
-            identifiers << [ code.code_space.short_name, code.value ]
-          end
-        end
+        AlternateIdentifiersExtractor.new(self).alternate_identifiers
       end
     end
 
@@ -1093,7 +1113,7 @@ class Export::NetexGeneric < Export::Base
       end
 
       def code_space_key(code_space_id)
-        code_space_key[code_space_id]
+        code_space_keys[code_space_id]
       end
 
       def netex_alternate_identifiers

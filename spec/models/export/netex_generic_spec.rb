@@ -362,7 +362,7 @@ RSpec.describe Export::NetexGeneric do
   describe "Companies export" do
     describe Export::NetexGeneric::Companies::Decorator do
 
-      let(:company) { create(:company) }
+      let(:company) { Chouette::Company.new }
       let(:decorator) { Export::NetexGeneric::Companies::Decorator.new company }
 
       describe "#netex_attributes" do

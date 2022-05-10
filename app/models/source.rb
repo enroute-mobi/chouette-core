@@ -51,6 +51,10 @@ class Source < ApplicationModel
     import_options["update_workgroup_providers"] = value
   end
 
+  def update_workgroup_providers?
+    import_options["update_workgroup_providers"] == "true"
+  end
+
   def downloader_option_raw_authorization
     downloader_options["raw_authorization"]
   end

@@ -31,12 +31,10 @@ class ProcessingRulesController < ChouetteController
   def get_processables
     fetch_params = get_processables_params
 
-    result = fetch_params[:processable_type].constantize
-      .where(workbench_id: workbench.id)
-      .where("lower(name) LIKE :query", query: "%#{fetch_params[:query].downcase}%")
-      .select("id, name AS text")
+    result = fetch_params[:processable_type].constantize.where(workbench_id: workbench.id)
+    result = result.where("lower(name) LIKE :query", query: "%#{fetch_params[:query].downcase}%") if fetch_params[:query]
 
-    render json: { processables: result }
+    render json: { processables: result.select("id, name AS text") }
   end
 
   protected
@@ -74,7 +72,6 @@ class ProcessingRulesController < ChouetteController
 
   def get_processables_params
     params.require(:search).permit(:query, :processable_type).tap do |params|
-      params.require(:query)
       params.require(:processable_type)
     end
   end

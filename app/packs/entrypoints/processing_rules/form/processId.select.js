@@ -4,6 +4,8 @@ import Select from './base.select'
 const path = new Path('/workbenches/:workbenchId/processing_rules')
 const { workbenchId } = path.partialTest(location.pathname)
 
+const isEdit = location.pathname.includes('edit')
+
 export default class ProcessableIdSelect extends Select {
 	shouldLoad(query) {
 		return this.form.hasProcessableType() && query.length > 0
@@ -27,6 +29,7 @@ export default class ProcessableIdSelect extends Select {
 
 	get params() {
 		return {
+			preload: isEdit,
 			shouldLoad: this.shouldLoad.bind(this),
 			load: this.load.bind(this)
 		}

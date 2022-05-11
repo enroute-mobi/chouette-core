@@ -434,4 +434,125 @@ RSpec.describe Import::NetexGeneric do
       end
     end
   end
+
+  describe 'Shape Referential part' do
+    let(:import) { build_import xml }
+
+    context "when XML contains PonitOfInterest" do
+      let(:xml) do
+        <<~XML
+          <pointOfInterests>
+            <PointOfInterest version="any" id="point_of_interest-1">
+              <validityConditions>
+                <AvailabilityCondition version="any" id="1">
+                  <dayTypes>
+                    <DayType version="any" id="1">
+                      <properties>
+                        <PropertyOfDay>
+                          <DaysOfWeek>Monday Tuesday Wednesday Thursday Friday</DaysOfWeek>
+                        </PropertyOfDay>
+                      </properties>
+                    </DayType>
+                  </dayTypes>
+                  <timebands>
+                    <Timeband version="any" id="1">
+                      <StartTime>08:30:00</StartTime>
+                      <EndTime>17:30:00</EndTime>
+                    </Timeband>
+                  </timebands>
+                </AvailabilityCondition>
+
+                <AvailabilityCondition version="any" id="2">
+                  <dayTypes>
+                    <DayType version="any" id="2">
+                      <Name>Working day</Name>
+                      <properties>
+                        <PropertyOfDay>
+                          <DaysOfWeek>Saturday Sunday</DaysOfWeek>
+                        </PropertyOfDay>
+                      </properties>
+                    </DayType>
+                  </dayTypes>
+                  <timebands>
+                    <Timeband version="any" id="2">
+                      <StartTime>10:30:00</StartTime>
+                      <EndTime>12:30:00</EndTime>
+                    </Timeband>
+                  </timebands>
+                </AvailabilityCondition>
+              </validityConditions>
+
+              <keyList>
+                <KeyValue typeOfKey="ALTERNATE_IDENTIFIER">
+                  <Key>osm</Key>
+                  <Value>7817817891</Value>
+                </KeyValue>
+                <KeyValue typeOfKey="ALTERNATE_IDENTIFIER">
+                <Key>osm</Key>
+                <Value>999999999999</Value>
+              </KeyValue>
+              </keyList>
+
+              <Name>Frampton Football Stadium</Name>
+
+              <Centroid>
+                <Location>
+                  <Longitude>2.287592</Longitude>
+                  <Latitude>48.862725</Latitude>
+                </Location>
+              </Centroid>
+
+              <Url>http://www.barpark.co.uk</Url>
+              <PostalAddress version="any" id="2">
+                <CountryName>France</CountryName>
+              <AddressLine1>23 Foo St</AddressLine1>
+              <Town>Frampton</Town>
+              <PostCode>FGR 1JS</PostCode>
+              </PostalAddress>
+
+              <OperatingOrganisationView>
+                <ContactDetails>
+                  <Email>ola@nordman.no</Email>
+                  <Phone>815 00 888</Phone>
+                </ContactDetails>
+              </OperatingOrganisationView>
+
+              <classifications>
+                <PointOfInterestClassificationView>
+                  <Name>Category 2</Name>
+                </PointOfInterestClassificationView>
+              </classifications>
+            </PointOfInterest>
+          </pointOfInterests>
+        XML
+      end
+
+      context "when no object exists" do
+        before { import.part(:shape_referential).import! }
+
+        describe "#models" do
+
+          context "when model is PointOfInterest::Base" do
+
+            let(:model) { PointOfInterest::Base }
+
+            let(:expected_point_of_interest_attributes) do
+              an_object_having_attributes(
+                name: 'Frampton Football Stadium',
+                url: 'http://www.barpark.co.uk',
+                address: '23 Foo St',
+                zip_code: 'FGR 1JS',
+                city_name: 'Frampton',
+                country: 'France',
+                phone: '815 00 888',
+                email: 'ola@nordman.no',
+              )
+            end
+            
+            it { expect(model.all).to include(expected_point_of_interest_attributes) }
+          end
+        end
+      end
+    end
+  end
 end

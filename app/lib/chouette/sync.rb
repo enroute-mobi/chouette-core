@@ -5,7 +5,7 @@ module Chouette
       attr_accessor :source, :target
       attr_accessor :delete_batch_size, :update_batch_size
       attr_accessor :resource_type, :resource_id_attribute, :resource_decorator
-      attr_accessor :model_type, :model_id_attribute
+      attr_accessor :model_type, :model_id_attribute, :code_space
 
       mattr_accessor :default_model_id_attribute, default: :registration_number
       include Event::HandlerSupport
@@ -76,7 +76,8 @@ module Chouette
           resource_type: resource_type, resource_id_attribute: resource_id_attribute,
           resource_decorator: resource_decorator,
           model_type: model_type, model_id_attribute: model_id_attribute,
-          event_handler: event_handler
+          event_handler: event_handler,
+          code_space: code_space,
         }.delete_if { |_,v| v.nil? }
         options = default_options.merge(options)
         updater_class.new options
@@ -91,7 +92,8 @@ module Chouette
           target: target,
           delete_batch_size: delete_batch_size,
           model_type: model_type, model_id_attribute: model_id_attribute,
-          event_handler: event_handler
+          event_handler: event_handler,
+          code_space: code_space,
         }.delete_if { |_,v| v.nil? }
 
         @deleter ||= deleter_class.new options

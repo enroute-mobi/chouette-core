@@ -35,10 +35,17 @@ class Import::NetexGeneric < Import::Base
   end
   attr_writer :line_provider
 
+  # shapes
+  def shape_provider
+    @shape_provider ||= workbench.default_shape_provider
+  end
+  attr_writer :shape_provider
+
   def import_without_status
     [
       StopAreaReferential,
-      LineReferential
+      LineReferential,
+      ShapeReferential,
     ].each do |part_class|
       part(part_class).import!
     end
@@ -62,12 +69,13 @@ class Import::NetexGeneric < Import::Base
   end
 
   class SynchronizedPart < Part
-    delegate :netex_source, :event_handler, to: :import
+    delegate :netex_source, :event_handler, :code_space, to: :import
 
     def import!
       synchronization.tap do |sync|
         sync.source = netex_source
         sync.event_handler = event_handler
+        sync.code_space = code_space
 
         sync.update_or_create
       end
@@ -100,6 +108,16 @@ class Import::NetexGeneric < Import::Base
         sync.synchronize_with Chouette::Sync::Network::Netex
         sync.synchronize_with Chouette::Sync::LineNotice::Netex
         sync.synchronize_with Chouette::Sync::Line::Netex
+      end
+    end
+  end
+
+  class ShapeReferential < SynchronizedPart
+    delegate :shape_provider, to: :import
+
+    def synchronization
+      Chouette::Sync::Referential.new(shape_provider).tap do |sync|
+        sync.synchronize_with Chouette::Sync::PointOfInterest::Netex
       end
     end
   end

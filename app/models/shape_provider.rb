@@ -1,18 +1,24 @@
 class ShapeProvider < ApplicationModel
+  include CodeSupport
 
   belongs_to :shape_referential, required: true
   belongs_to :workbench, required: true
+
   has_many :shapes
+  has_many :point_of_interests, class_name: 'PointOfInterest::Base'
+  has_many :point_of_interest_categories, class_name: 'PointOfInterest::Category'
 
   validates :short_name, presence: true
 
   before_validation :define_shape_referential, on: :create
 
+  def workgroup
+    workbench&.workgroup
+  end
+
   private
 
   def define_shape_referential
-    self.shape_referential ||= workbench&.workgroup&.shape_referential
+    self.shape_referential ||= workgroup&.shape_referential
   end
-
-
 end

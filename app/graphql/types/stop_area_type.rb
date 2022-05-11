@@ -36,6 +36,11 @@ module Types
       object.codes.map {|c| [c.code_space.short_name, c.value]}.to_h
     end
 
+    field :custom_fields, GraphQL::Types::JSON, null: true
+    def custom_fields
+      object.custom_field_values
+    end
+
     field :referent, Types::StopAreaType, null: true
     def referent
       LazyLoading::StopRelation.new(context, object.referent_id) if object.referent_id

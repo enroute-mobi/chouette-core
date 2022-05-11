@@ -9,6 +9,7 @@ class Import::Workbench < Import::Base
   option :flag_urgent, default_value: false, depends: {option: :import_category, value: "automatic"}, type: :boolean
   option :merge_method, collection: %w(legacy experimental), default_value: 'legacy', depends: {option: :import_category, value: "automatic"}
   option :shape_attribute_as_id, type: :string, depends: {option: :import_category, value: "shape_file"}
+  option :update_workgroup_providers, default_value: false, depends: {option: :import_category, value: "automatic"}, type: :boolean
 
   has_many :compliance_check_sets, -> { where(parent_type: "Import::Workbench") }, foreign_key: :parent_id, dependent: :destroy
 

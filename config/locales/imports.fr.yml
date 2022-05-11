@@ -125,6 +125,7 @@ fr:
           automatic_merge: Finalisation automatique des jeux de données importés
           archive_on_fail: Archivage automatique en cas d'erreur
           flag_urgent: Contient de l'offre urgente
+          update_workgroup_providers: Autorisation des changements sur les ressources de l'Espace de travail
           merge_method: Méthode de finalisation
           shape_attribute_as_id: Attribut utilisé comme identifiant
           import_category: Type d'import

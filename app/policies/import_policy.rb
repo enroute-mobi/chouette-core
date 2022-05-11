@@ -20,7 +20,7 @@ class ImportPolicy < ApplicationPolicy
   def option?(option_name)
     option_method = "option_#{option_name}?"
     if respond_to? option_method
-      return option_flag_urgent?
+      return send(option_method)
     end
 
     # By default, options don't require permission
@@ -45,6 +45,10 @@ class ImportPolicy < ApplicationPolicy
 
   def option_flag_urgent?
     has_permission? 'referentials.flag_urgent'
+  end
+
+  def option_update_workgroup_providers?
+    has_permission? 'imports.update_workgroup_providers'
   end
 
 end

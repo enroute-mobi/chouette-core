@@ -21,4 +21,8 @@ class SourcePolicy < ApplicationPolicy
     user.has_permission?('sources.retrieve')
   end
 
+  def update_workgroup_providers?
+    user.has_permission?('imports.update_workgroup_providers')
+  end
+
 end

@@ -1063,7 +1063,9 @@ ActiveRecord::Schema.define(version: 2022_08_08_124959) do
     t.string "channel"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "workbench_id"
     t.index ["channel"], name: "index_notifications_on_channel"
+    t.index ["workbench_id"], name: "index_notifications_on_workbench_id"
   end
 
   create_table "organisations", force: :cascade do |t|
@@ -1120,6 +1122,18 @@ ActiveRecord::Schema.define(version: 2022_08_08_124959) do
     t.index ["point_of_interest_category_id"], name: "index_point_of_interests_on_point_of_interest_category_id"
     t.index ["shape_provider_id"], name: "index_point_of_interests_on_shape_provider_id"
     t.index ["shape_referential_id"], name: "index_point_of_interests_on_shape_referential_id"
+  end
+
+  create_table "processing_rules", force: :cascade do |t|
+    t.bigint "workbench_id"
+    t.string "name"
+    t.string "processable_type"
+    t.bigint "processable_id"
+    t.string "operation_step"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["processable_type", "processable_id"], name: "index_processing_rules_on_processable_type_and_processable_id"
+    t.index ["workbench_id"], name: "index_processing_rules_on_workbench_id"
   end
 
   create_table "publication_api_keys", force: :cascade do |t|
@@ -1763,6 +1777,7 @@ ActiveRecord::Schema.define(version: 2022_08_08_124959) do
   add_foreign_key "journey_patterns_stop_points", "stop_points", name: "jpsp_stoppoint_fkey", on_delete: :cascade
   add_foreign_key "macro_runs", "macro_context_runs"
   add_foreign_key "macros", "macro_contexts"
+  add_foreign_key "notifications", "workbenches"
   add_foreign_key "point_of_interest_categories", "point_of_interest_categories", column: "parent_id"
   add_foreign_key "referentials", "referential_suites"
   add_foreign_key "routes", "routes", column: "opposite_route_id", name: "route_opposite_route_fkey"

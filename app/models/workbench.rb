@@ -62,6 +62,7 @@ class Workbench < ApplicationModel
 
   has_many :document_providers
   has_many :documents, through: :document_providers
+  has_many :processing_rules, dependent: :destroy
 
   before_validation :create_dependencies, on: :create
   before_validation :create_default_prefix

@@ -2,6 +2,8 @@ module Macro
   class List < ApplicationModel
     self.table_name = "macro_lists"
 
+    include Processable
+
     belongs_to :workbench, optional: false
     validates :name, presence: true
 
@@ -29,6 +31,8 @@ module Macro
     class Run < Operation
       # The Workbench where macros are executed
       self.table_name = "macro_list_runs"
+
+      include Processable
 
       belongs_to :workbench, optional: false
       delegate :workgroup, to: :workbench

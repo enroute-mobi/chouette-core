@@ -1,0 +1,23 @@
+en:
+  processing_rules:
+    index:
+      title: Processing Rules
+    show:
+      title: "%{name}"
+    new:
+      title: "Create a Processing Rule"
+    edit:
+      title: "Edit %{name}"
+    search_no_results: "No processing rule matches your search"
+  activerecord:
+    models:
+      processing_rule:
+        zero: Processings rules
+        one: Processing rules
+        other: Processings rules
+    attributes:
+      processing_rule:
+        processable_type: Processable Type
+        processable_id: Processable
+        operation_step: Operation Step
+        workgroup: Workgroup

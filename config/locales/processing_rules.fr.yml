@@ -1,0 +1,23 @@
+fr:
+  processing_rules:
+    index:
+      title: Règles de traitement
+    show:
+      title: "%{name}"
+    new:
+      title: "Créer une Règle de traitement"
+    edit:
+      title: "Editer %{name}"
+    search_no_results: "Aucune Règle de traitement ne correspond à votre recherche"
+  activerecord:
+    models:
+      processing_rule:
+        zero: Règle de traitement
+        one: Règle de traitement
+        other: Règles de traitement
+    attributes:
+      processing_rule:
+        processable_type: Type de traitement
+        processable_id: Traitement
+        operation_step: Etape
+        workgroup: Groupe de travail

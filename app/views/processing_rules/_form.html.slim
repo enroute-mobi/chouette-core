@@ -1,0 +1,31 @@
+- javascript_additional_packs 'processing_rules/form'
+
+= simple_form_for [@workbench, @processing_rule], html: { class: 'form-horizontal', id: 'processing_rule_form', 'x-data': "processingRuleForm(#{@processing_rule.alpine_state})" }, wrapper: :horizontal_form  do |f|
+  .row
+    .col-lg-12
+			.flex.items-baseline.justify-center
+				= f.label I18n.t('activerecord.attributes.processing_rule.processable_type'), class: 'col-sm-4 col-xs-5 control-label mb-3'
+				= f.input :processable_type,
+					as: :radio_buttons,
+					input_html: { 'x-model': 'processableType', class: 'mx-2' },
+					wrapper_html: { class: 'col-sm-8 col-xs-7 flex items-baseline mr-4' },
+					label: false,
+					label_method: lambda { |l| "<span class='mx-2'>#{l.first}</span>".html_safe },
+					checked: @processing_rule.processable_type
+
+			.form-group
+				label.col-sm-4.col-xs-5.control-label.mb-3 x-text="processableIdSelect.label" x-transition=""
+				.col-sm-8.col-xs-7
+					select name="processing_rule[processable_id]" x-ref="processableIdSelect" x-model="processableId"
+						- if @processing_rule.processable
+							option value="#{@processing_rule.processable_id}" selected="true" = @processing_rule.processable.name
+
+			.form-group
+				= f.label I18n.t('activerecord.attributes.processing_rule.operation_step'), class: 'col-sm-4 col-xs-5 control-label mb-3'
+				.col-sm-8.col-xs-7
+					select name="processing_rule[operation_step]" x-ref="operationStepSelect" x-model="operationStep"
+						option value=""
+						= @processing_rule.operation_step_options
+
+  = cancel_button
+  = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'processing_rule_form'

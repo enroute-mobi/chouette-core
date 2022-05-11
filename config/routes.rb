@@ -165,6 +165,9 @@ ChouetteIhm::Application.routes.draw do
     end
 
     resources :documents
+    resources :processing_rules do
+      get :get_processables, on: :collection, defaults: { format: 'json' }
+    end
   end
 
   resource :workbench_confirmation, only: [:new, :create]

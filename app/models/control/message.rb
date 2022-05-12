@@ -16,7 +16,7 @@ module Control
     def full_message
       I18n.t(
         "control_messages.#{message_key || 'default'}",
-        message_attributes.merge(target_model: source.model_name.human).symbolize_keys
+        message_attributes.merge(target_model: source_type.constantize.model_name.human).symbolize_keys
       )
     end
   end

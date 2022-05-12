@@ -34,3 +34,5 @@ en:
         target_model: Target Model
       control/presence_custom_field:
         target_custom_field_id: Target Custom Field
+      control/code_format:
+        expected_format: Expected format        

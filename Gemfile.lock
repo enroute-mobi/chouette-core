@@ -6,7 +6,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/gtfs.git
-  revision: 7cd0f912d4bc449bfed252d969a1ec2ddc58a0fd
+  revision: a993d2cf2a3a5c2ac8963021703400ec0309c50b
   specs:
     gtfs (0.3.6)
       msgpack

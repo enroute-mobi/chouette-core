@@ -24,7 +24,7 @@ module Control
       include Options
 
       def run
-        faulty_models.includes(:codes).find_each do |model|
+        faulty_models.find_each do |model|
           control_messages.create({
             message_attributes: {
               name: model.try(:name) || model.id,

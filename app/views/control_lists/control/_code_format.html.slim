@@ -1,3 +1,3 @@
-= form.input :target_model
-= form.input :target_code_space_id, collection: facade.target_code_space_options
-= form.input :expected_format
+= form.input :target_model, input_html: { 'x-model': 'resource.target_model' }
+= form.input :target_code_space_id, collection: facade.target_code_space_options, input_html: { 'x-model': 'resource.target_code_space_id' }
+= form.input :expected_format, input_html: { 'x-model': 'resource.expected_format' }

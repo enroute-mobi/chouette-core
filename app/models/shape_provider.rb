@@ -12,9 +12,7 @@ class ShapeProvider < ApplicationModel
 
   before_validation :define_shape_referential, on: :create
 
-  def workgroup
-    workbench&.workgroup
-  end
+  delegate :workgroup, to: :workbench, allow_nil: true
 
   private
 

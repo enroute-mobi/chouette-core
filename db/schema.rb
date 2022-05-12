@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_05_11_091107) do
+ActiveRecord::Schema.define(version: 2022_04_06_200454) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -1062,7 +1062,7 @@ ActiveRecord::Schema.define(version: 2022_05_11_091107) do
   create_table "point_of_interests", force: :cascade do |t|
     t.bigint "shape_referential_id", null: false
     t.bigint "shape_provider_id", null: false
-    t.bigint "point_of_interest_category_id"
+    t.bigint "point_of_interest_category_id", null: false
     t.string "name", null: false
     t.string "url"
     t.geography "position", limit: {:srid=>4326, :type=>"st_point", :geographic=>true}

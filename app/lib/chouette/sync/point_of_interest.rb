@@ -17,6 +17,7 @@ module Chouette::Sync
       class Decorator < Chouette::Sync::Updater::ResourceDecorator
 
         delegate :contact_details, to: :operating_organisation_view
+        delegate :target, to: :updater
 
         def position
           "#{longitude} #{latitude}"
@@ -46,15 +47,32 @@ module Chouette::Sync
           contact_details&.phone
         end
 
-        def netex_shape_provider_id
-          resolve :shape_provider, data_source_ref
+        def shape_provider_id
+          shape_provider&.id
         end
 
-        def netex_point_of_interest_category_id
-          ::PointOfInterest::Category.find_by(
-            shape_provider_id: netex_shape_provider_id,
-            name: classifications.first.try(:name)
-          )&.id
+        def shape_provider
+          if target.respond_to? :shape_providers
+            target.shape_providers.last
+          end
+        end
+
+        def point_of_interest_category_name
+          classifications.first&.name
+        end
+
+        def point_of_interest_category
+          if point_of_interest_category_name.present?
+            point_of_interest_categories.find_by(name: point_of_interest_category_name)
+          end
+        end
+
+        def point_of_interest_category_id
+          point_of_interest_category&.id
+        end
+
+        def point_of_interest_categories
+          target.point_of_interest_categories
         end
 
         def model_attributes
@@ -66,12 +84,11 @@ module Chouette::Sync
             zip_code: zip_code,
             city_name: city_name,
             country: country,
-            raw_import_attributes: { content: raw_xml },
             phone: phone,
             email: email,
-            point_of_interest_category_id: netex_point_of_interest_category_id
+            point_of_interest_category_id: point_of_interest_category_id
           }.tap do |attributes|
-            attributes[:shape_provider_id] = netex_shape_provider_id if netex_shape_provider_id
+            attributes[:shape_provider_id] = shape_provider_id if shape_provider_id.present?
           end
         end
       end

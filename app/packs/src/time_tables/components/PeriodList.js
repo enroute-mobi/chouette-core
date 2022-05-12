@@ -35,7 +35,7 @@ export default class PeriodList extends Component {
                   <span style={{ "verticalAlign": "middle"}}>{ I18n.t('time_tables.edit.period_form.all_periods') }</span>
                 </div>
               </div>
-              <div className={"dl-checkboxes foldable-content " + (this.state.display ? '':'fade')}>
+              <div className={"dl-checkboxes foldable-content " + (this.state.display ? 'fade':'')}>
                 {this.props.timetable.time_table_periods.map((p, i) => {
                   return !p.deleted && (
                     <div key={i} className="dl-checkboxes-groups">

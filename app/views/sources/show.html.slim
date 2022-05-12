@@ -17,6 +17,8 @@
         = simple_block_for @source, title: t('sources.form.sections.import_options') do |d|
           = d.attribute :import_option_automatic_merge, as: :boolean
           = d.attribute :import_option_archive_on_fail, as: :boolean
+          - if policy(@source).update_workgroup_providers?
+            = d.attribute :import_option_update_workgroup_providers, as: :boolean
 
       .row
         .col-lg-12

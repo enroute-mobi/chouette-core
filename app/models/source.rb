@@ -35,12 +35,24 @@ class Source < ApplicationModel
     import_options["archive_on_fail"]
   end
 
+  def import_option_update_workgroup_providers
+    import_options["update_workgroup_providers"]
+  end
+
   def import_option_automatic_merge=(value)
     import_options["automatic_merge"] = value
   end
 
   def import_option_archive_on_fail=(value)
     import_options["archive_on_fail"] = value
+  end
+
+  def import_option_update_workgroup_providers=(value)
+    import_options["update_workgroup_providers"] = value
+  end
+
+  def update_workgroup_providers?
+    import_options["update_workgroup_providers"] == "true"
   end
 
   def downloader_option_raw_authorization

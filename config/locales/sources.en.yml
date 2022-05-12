@@ -40,6 +40,7 @@ en:
         import_options: "Import options"
         import_option_automatic_merge: Automatic merge
         import_option_archive_on_fail: Archive on fail
+        import_option_update_workgroup_providers: Allow changes on Workbenches resources
         enabled: "Enabled"
         ignore_checksum: "Ignore checksum"
         created_at: "Created at"

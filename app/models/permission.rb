@@ -87,6 +87,7 @@ class Permission
       permissions << "api_keys.index"
       permissions << "workgroups.update"
       permissions << "referentials.flag_urgent"
+      permissions << "imports.update_workgroup_providers"
       permissions << "stop_area_referentials.update"
       permissions << "sources.retrieve"
     end

@@ -301,6 +301,36 @@ describe Chouette::StopArea, :type => :model do
       end
     end
   end
+
+  describe "#code_support" do
+    let(:context) do
+      Chouette.create do
+        code_space short_name: 'test'
+        stop_area :first, codes: { test: 'dummy' }
+        stop_area :second
+      end
+    end
+    let(:code_space) { context.code_space }
+    let(:workbench) { context.workbench }
+    let(:first_stop_area) { context.stop_area(:first) }
+
+    let(:expected_code) do
+      an_object_having_attributes({
+        code_space: code_space,
+        value: "dummy"
+      })
+    end
+
+    let(:stop_area) { workbench.stop_areas.by_code(code_space, 'dummy').first }
+
+    it "should create a stop area and find by code" do
+      expect(stop_area).to eq(first_stop_area)
+    end
+
+    it "should create and associate to codes" do
+      expect(stop_area.codes).to include(expected_code)
+    end
+  end
 end
 
 RSpec.describe Chouette::StopArea do

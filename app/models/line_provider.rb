@@ -1,4 +1,5 @@
 class LineProvider < ApplicationModel
+  include CodeSupport
 
   belongs_to :line_referential, required: true
   belongs_to :workbench, required: true

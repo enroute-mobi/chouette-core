@@ -10,6 +10,8 @@ module Chouette
     enumerize_transport_submode
 
     include ColorSupport
+    include CodeSupport
+
     open_color_attribute
     open_color_attribute :text_color
 
@@ -30,10 +32,6 @@ module Chouette
     has_many :vehicle_journeys, :through => :journey_patterns
     has_many :routing_constraint_zones, through: :routes
     has_many :time_tables, -> { distinct }, through: :vehicle_journeys
-
-    has_many :codes, as: :resource, dependent: :delete_all
-    accepts_nested_attributes_for :codes, allow_destroy: true, reject_if: :all_blank
-    validates_associated :codes
 
     has_and_belongs_to_many :group_of_lines, :class_name => 'Chouette::GroupOfLine', :order => 'group_of_lines.name'
     has_and_belongs_to_many :line_notices, :class_name => 'Chouette::LineNotice', :join_table => "public.line_notices_lines"

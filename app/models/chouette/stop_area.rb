@@ -8,6 +8,7 @@ module Chouette
     include ProjectionFields
     include ObjectidSupport
     include CustomFieldsSupport
+    include CodeSupport
 
     extend Enumerize
     enumerize :area_type, in: Chouette::AreaType::ALL, default: Chouette::AreaType::COMMERCIAL.first
@@ -28,15 +29,12 @@ module Chouette
     has_many :lines, through: :routes
     has_many :specific_vehicle_journey_at_stops, :class_name => 'Chouette::VehicleJourneyAtStop', :foreign_key => "stop_area_id"
     has_many :specific_vehicle_journeys, through: :specific_vehicle_journey_at_stops, class_name: 'Chouette::VehicleJourney', source: :vehicle_journey
-    has_many :codes, as: :resource, dependent: :delete_all
     has_many :entrances, dependent: :delete_all
     has_many :macro_messages, as: :source, class_name: "::Macro::Message", foreign_key: :source_id
 
     scope :light, ->{ select(:id, :name, :city_name, :zip_code, :time_zone, :registration_number, :kind, :area_type, :time_zone, :stop_area_referential_id, :objectid) }
     scope :with_time_zone, -> { where.not time_zone: nil }
-    scope :by_code, ->(code_space, value) {
-      joins(:codes).where(codes: { code_space: code_space, value: value })
-    }
+
     scope :by_text, ->(text) { text.blank? ? all : where('lower(stop_areas.name) LIKE :t or lower(stop_areas.objectid) LIKE :t', t: "%#{text.downcase}%") }
     scope :without_compass_bearing, -> { where compass_bearing: nil }
     scope :with_compass_bearing, -> { where.not compass_bearing: nil }
@@ -77,9 +75,6 @@ module Chouette
     validate :valid_referent
 
     validates :registration_number, uniqueness: { scope: :stop_area_provider_id }, allow_blank: true
-
-    accepts_nested_attributes_for :codes, allow_destroy: true, reject_if: :all_blank
-    validates_associated :codes
 
     before_validation do
       unless self.registration_number.present?

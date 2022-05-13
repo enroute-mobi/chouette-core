@@ -274,4 +274,42 @@ describe Chouette::Line, :type => :model do
 
   end
 
+  describe "#code_support" do
+    let(:context) do
+      Chouette.create do
+        code_space short_name: 'test'
+        line_provider do
+          line :first
+          line :second
+        end
+      end
+    end
+
+    let(:code_space) { context.code_space }
+    let(:workbench) { context.workbench }
+    let(:line_provider) { context.line_provider }
+    let(:first_line) { context.line(:first)}
+
+    let(:expected_code) do
+      an_object_having_attributes({
+        code_space: code_space,
+        value: "dummy"
+      })
+    end
+
+    before do
+      first_line.codes.create(code_space: code_space, value: 'dummy')
+    end
+
+    let(:line) { workbench.lines.by_code(code_space, 'dummy').first }
+
+    it "should create a line and find by code" do
+      expect(line).to eq(first_line)
+    end
+
+    it "should create and associate to codes" do
+      expect(line.codes).to include(expected_code)
+    end
+  end
+
 end

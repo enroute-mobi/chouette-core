@@ -216,6 +216,7 @@ RSpec.describe Import::NetexGeneric do
         context "when the required code space doesn't exist" do
           let(:stop_area) { workbench.stop_areas.find_by(registration_number: 'test') }
           before { import.part(:stop_area_referential).import! }
+
           it { is_expected.to be_empty }
 
           describe "resource messages" do
@@ -231,6 +232,7 @@ RSpec.describe Import::NetexGeneric do
               is_expected.to include(expected_message)
             end
           end
+
         end
       end
 

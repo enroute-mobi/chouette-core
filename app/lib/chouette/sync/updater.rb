@@ -90,13 +90,10 @@ module Chouette
           end
 
           if model_id_attribute == :codes
-            code_values = resource.key_list.map(&:value) || [ resource.id ]
-            attributes[:codes_attributes] = code_values.map do |code_value|
-              {
-                value: code_value,
-                code_space_id: code_space.try(:id)
-              }
-            end
+            attributes[:codes_attributes] = [{
+              value: resource.id,
+              code_space: code_space
+            }]
           else
             attributes[model_id_attribute] = resource.id
           end
@@ -116,14 +113,16 @@ module Chouette
           event = Event.new :create, model: model, resource: ResourceDecorator.undecorate(resource)
 
           update_codes model, resource, event
+          # model, resource, event
           update_custom_fields model, resource, event
 
           model.save
+
           event_handler.event event
         end
 
         def update(model, resource)
-          attributes = prepare_attributes(resource).except(:codes_attributes)
+          attributes = prepare_attributes(resource)
           Rails.logger.debug { "Update #{model.inspect} with #{attributes.inspect}" }
 
           model.attributes = attributes
@@ -202,7 +201,7 @@ module Chouette
         end
 
         def resources_by_id
-            @resources_by_id ||=  Hash[resources.map { |r| [ r.send(resource_id_attribute).to_s, r ] }]
+          @resources_by_id ||=  Hash[resources.map { |r| [ r.send(resource_id_attribute).to_s, r ] }]
         end
 
         def resource_by_id(resource_id)

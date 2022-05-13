@@ -5,12 +5,14 @@ RSpec.describe Chouette::Sync::PointOfInterest do
     let(:context) do
       Chouette.create do
         shape_provider
-        code_space short_name: 'osm'
+        code_space short_name: 'external'
       end
     end
 
     let(:shape_provider) { context.shape_provider }
-    let(:target) { context.shape_referential }
+    let(:workgroup) { context.workgroup }
+    let!(:alternate_code_space) { workgroup.code_spaces.create(short_name: 'osm')}
+    let(:target) { shape_provider }
     let(:code_space) { context.code_space }
     let!(:category) { shape_provider.point_of_interest_categories.create(name: 'Category 2') }
 
@@ -107,10 +109,6 @@ RSpec.describe Chouette::Sync::PointOfInterest do
       end
     end
 
-    before do
-       shape_provider.codes.create(code_space: code_space, value: "data-source-ref-1" )
-    end
-
     subject(:sync) do
       Chouette::Sync::PointOfInterest::Netex.new source: source, target: target, code_space: code_space
     end
@@ -130,10 +128,17 @@ RSpec.describe Chouette::Sync::PointOfInterest do
       )
     end
 
-    let(:first_expected_code_attributes) do
+    let(:expected_code_attributes) do
+      an_object_having_attributes(
+        value: 'point_of_interest-1',
+        code_space_id: code_space.id
+      )
+    end
+
+    let(:alternate_expected_code_attributes) do
       an_object_having_attributes(
         value: '7817817891',
-        code_space_id: code_space.id
+        code_space_id: alternate_code_space.id
       )
     end
 
@@ -141,8 +146,12 @@ RSpec.describe Chouette::Sync::PointOfInterest do
 
       before { sync.synchronize }
 
-      it "should create code" do
-        expect(code_space.codes).to include(first_expected_code_attributes)
+      it "should create codes" do
+        expect(code_space.codes).to include(expected_code_attributes)
+      end
+
+      it "should create alternate codes" do
+        expect(alternate_code_space.codes).to include(alternate_expected_code_attributes)
       end
 
       it "should import point_of_interests" do

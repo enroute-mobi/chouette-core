@@ -47,16 +47,6 @@ module Chouette::Sync
           contact_details&.phone
         end
 
-        def shape_provider_id
-          shape_provider&.id
-        end
-
-        def shape_provider
-          if target.respond_to? :shape_providers
-            target.shape_providers.last
-          end
-        end
-
         def point_of_interest_category_name
           classifications.first&.name
         end
@@ -75,6 +65,16 @@ module Chouette::Sync
           target.point_of_interest_categories
         end
 
+        def codes_attributes
+          return [] unless key_list.present?
+          key_list.map do |netex_code|
+            {
+              short_name: netex_code.key,
+              value: netex_code.value
+            }
+          end
+        end
+
         def model_attributes
           {
             name: name,
@@ -86,10 +86,9 @@ module Chouette::Sync
             country: country,
             phone: phone,
             email: email,
-            point_of_interest_category_id: point_of_interest_category_id
-          }.tap do |attributes|
-            attributes[:shape_provider_id] = shape_provider_id if shape_provider_id.present?
-          end
+            point_of_interest_category_id: point_of_interest_category_id,
+            codes_attributes: codes_attributes
+          }
         end
       end
     end

@@ -44,6 +44,7 @@ en:
         name: "Name"
         comments: "Comments"
         objectid: "Object ID"
+        shared: "Share with the Workgroup"
         object_version: "Version"
         created_at: "Created at"
         updated_at: "Updated at"

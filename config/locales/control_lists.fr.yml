@@ -45,6 +45,7 @@ fr:
       control/list:
         name: "Nom"
         comments: "Commentaires"
+        shared: "Partager avec le groupe de travail"
         objectid: "Identifiant"
         object_version: "Version"
         created_at: "Créé le"

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_04_06_200454) do
+ActiveRecord::Schema.define(version: 2022_05_13_084426) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -406,6 +406,7 @@ ActiveRecord::Schema.define(version: 2022_04_06_200454) do
     t.text "comments"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "shared", default: false
     t.index ["workbench_id"], name: "index_control_lists_on_workbench_id"
   end
 

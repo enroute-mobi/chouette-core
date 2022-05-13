@@ -6,6 +6,7 @@
     .col-lg-12
       = f.input :name, input_html: { 'x-model': '$store.controlList.name' }
       = f.input :comments, as: :text, input_html: { 'x-model': '$store.controlList.comments', 'x-data': '', ':style': "{ height: $el.scrollHeight + 'px'}" }
+      = f.input :shared, as: :switchable_checkbox, input_html: { 'x-model': '$store.controlList.shared' }
   .row
     h2
       = t("control.form.sections.controls")

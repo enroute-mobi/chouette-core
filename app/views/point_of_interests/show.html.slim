@@ -33,6 +33,6 @@
               = replacement_msg t('point_of_interests.no_hours')
           - else
             - @point_of_interest.point_of_interest_hours.each do |c|
-              = d.attribute :opening_time_of_day, object: c, as: :time, value: c.opening_time_of_day.to_time
-              = d.attribute :closing_time_of_day, object: c, as: :time, value: c.closing_time_of_day.to_time
+              = d.attribute :opening_time_of_day, object: c, value: c.opening_time_of_day.to_hm
+              = d.attribute :closing_time_of_day, object: c, value: c.closing_time_of_day.to_hm
               = d.attribute :week_days, value: %w(monday tuesday wednesday thursday friday saturday sunday).collect{ |d| content_tag(:span, t("calendars.days.#{d}"), class: "label label-default #{c.week_days.send(d + '?') ? '' : 'disabled'}") }.join.html_safe, object: c

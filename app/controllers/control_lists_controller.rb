@@ -80,7 +80,7 @@ class ControlListsController < ChouetteController
     control_options = %i[id name position type code criticity comments control_list_id _destroy]
 
     control_options += Control::Base.descendants.flat_map { |n| n.options.keys }
-    
+
     control_options
   end
 
@@ -97,6 +97,7 @@ class ControlListsController < ChouetteController
     params.require(:control_list).permit(
       :name,
       :comments,
+      :shared,
       :created_at,
       :updated_at,
       controls_attributes: control_params,

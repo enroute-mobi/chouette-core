@@ -1,5 +1,6 @@
 module Control
-  class PresenceCode < Control::Base
+
+  class CodeFormat < Control::Base
 
     module Options
       extend ActiveSupport::Concern
@@ -8,8 +9,9 @@ module Control
         enumerize :target_model, in: %w{Line StopArea VehicleJourney}
         option :target_model
         option :target_code_space_id
+        option :expected_format
 
-        validates :target_model, :target_code_space_id, presence: true
+        validates :target_model, :target_code_space_id, :expected_format, presence: true
 
         def target_code_space
           @target_code_space ||= workgroup.code_spaces.find_by_id(target_code_space_id)
@@ -17,14 +19,6 @@ module Control
       end
     end
     include Options
-
-    validate :code_space_belong_to_workgroup
-
-    private
-
-    def code_space_belong_to_workgroup
-      errors.add(:target_code_space_id, :invalid) unless target_code_space
-    end
 
     class Run < Control::Base::Run
       include Options
@@ -34,11 +28,12 @@ module Control
           control_messages.create({
             message_attributes: {
               name: model.try(:name) || model.id,
-              code_space_name: target_code_space.short_name
+              code_space_name: target_code_space.short_name,
+              expected_format: expected_format
             },
             criticity: criticity,
             source: model,
-            message_key: :presence_code
+            message_key: :code_format
           })
         end
       end
@@ -53,7 +48,9 @@ module Control
       end
 
       def faulty_models
-        models.where.not(id: models.joins(:codes).where(code_model => { code_space_id: target_code_space_id }))
+        models.distinct.joins(codes: :code_space)
+          .where.not("#{code_model}.value ~ ?", expected_format)
+          .where(code_spaces: { id: target_code_space_id })
       end
 
       def model_collection

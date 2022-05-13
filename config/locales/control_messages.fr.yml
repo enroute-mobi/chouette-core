@@ -3,6 +3,7 @@ fr:
     default: "Message sur la ligne %{name}"
     presence_code: "Un(e) %{target_model} %{name} ne possède pas d’espace de code %{code_space_name}"
     presence_custom_field: "Un(e) %{target_model} %{name} ne possède pas de champs personnalisé %{custom_field}"
+    code_format: "Un(e) %{target_model} %{name} ne possède pas d’espace de code %{code_space_name} au format attendu %{expected_format}"
   activerecord:
     models:
       control/message:

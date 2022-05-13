@@ -41,6 +41,10 @@ class ControlListFacade
 		workgroup.custom_fields.map { |c| { text: c.name, id: c.id, resource_type: c.resource_type } }.to_json
 	end
 
+	def target_code_space_options
+		workgroup.code_spaces.map { |c| [c.short_name, c.id] }
+ 	end
+
 	def criticity_options
 		option = Struct.new('Option', :id, :text)
 

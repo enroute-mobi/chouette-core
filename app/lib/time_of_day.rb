@@ -209,11 +209,9 @@ class TimeOfDay
   module Type
     class TimeWithoutZone < ActiveRecord::Type::Value
       def cast(value)
-        if value.is_a?(TimeOfDay)
-          value
-        else
-          TimeOfDay.parse(value).force_zone(Time.zone)
-        end
+        return TimeOfDay.parse(value).force_zone(Time.zone) if value.is_a?(String)
+
+        value
       end
 
       def serialize(value)

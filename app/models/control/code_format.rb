@@ -44,11 +44,7 @@ module Control
       end
 
       def code_model
-        unless model_class == Chouette::VehicleJourney
-          :codes
-        else
-          :referential_codes
-        end
+        model_class.reflections["codes"].class_name.underscore.pluralize.to_sym
       end
 
       def faulty_models

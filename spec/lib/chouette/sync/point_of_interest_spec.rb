@@ -157,7 +157,7 @@ RSpec.describe Chouette::Sync::PointOfInterest do
           name: 'test_name',
           codes_attributes: [
             {
-              value: '7817817891',
+              value: 'data-source-ref-1',
               code_space_id: code_space.id
             }
           ]

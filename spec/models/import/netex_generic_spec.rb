@@ -528,13 +528,16 @@ RSpec.describe Import::NetexGeneric do
       end
 
       context "when no object exists" do
-        before { import.part(:shape_referential).import! }
 
         describe "#models" do
 
           context "when model is PointOfInterest::Base" do
 
             let(:model) { PointOfInterest::Base }
+            let(:shape_provider) {import.workbench.default_shape_provider}
+            let!(:category) { shape_provider.point_of_interest_categories.create(name: 'Category 2') }
+
+            before { import.part(:shape_referential).import! }
 
             let(:expected_point_of_interest_attributes) do
               an_object_having_attributes(
@@ -546,9 +549,10 @@ RSpec.describe Import::NetexGeneric do
                 country: 'France',
                 phone: '815 00 888',
                 email: 'ola@nordman.no',
+                point_of_interest_category_id: category.id
               )
             end
-            
+
             it { expect(model.all).to include(expected_point_of_interest_attributes) }
           end
         end

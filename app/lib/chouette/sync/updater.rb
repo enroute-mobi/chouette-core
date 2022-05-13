@@ -202,19 +202,7 @@ module Chouette
         end
 
         def resources_by_id
-          if key_list.present? && resource_id_attribute == :codes
-            @resources_by_id ||= Hash[key_list]
-          else
             @resources_by_id ||=  Hash[resources.map { |r| [ r.send(resource_id_attribute).to_s, r ] }]
-          end
-        end
-
-        def key_list
-          resources.map do |r|
-            if r.try(:key_list).present?
-              r.key_list.map{ |code| [ code.value, r ] }
-            end
-          end.uniq.compact.first
         end
 
         def resource_by_id(resource_id)

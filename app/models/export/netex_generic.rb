@@ -1067,7 +1067,7 @@ class Export::NetexGeneric < Export::Base
       def vehicle_journey_codes
         <<~SQL
           array_agg(
-            json_build_object(
+            jsonb_build_object(
               'id', referential_codes.code_space_id,
               'value', referential_codes.value
             )

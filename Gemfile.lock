@@ -66,8 +66,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: 012aeca4b1b1aa10f9d39cdc1493b8123e078157
-  branch: NETEX-49-add-support-for-point-of-interest
+  revision: ab41bce9b1ac7c72c87dca043c84fceb6603fec0
   specs:
     netex (0.1.2)
       activesupport

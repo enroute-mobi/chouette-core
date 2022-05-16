@@ -206,6 +206,25 @@ class Export::NetexGeneric < Export::Base
 
   end
 
+  class CustomFieldExtractor
+
+    def initialize(model)
+      @model = model
+    end
+    attr_reader :model
+
+    delegate :custom_field_values, to: :model, allow_nil: true
+
+    def custom_field_identifiers
+      return [] unless custom_field_values.present?
+
+      custom_field_values.map do |key, value|
+        Netex::KeyValue.new key: key, value: value, type_of_key: "chouette::custom-field"
+      end
+    end
+
+  end
+
   class StopDecorator < SimpleDelegator
 
     def netex_attributes
@@ -216,7 +235,7 @@ class Export::NetexGeneric < Export::Base
         public_code: public_code,
         centroid: centroid,
         raw_xml: import_xml,
-        key_list: netex_alternate_identifiers
+        key_list: key_list
       }.tap do |attributes|
         unless netex_quay?
           attributes[:parent_site_ref] = parent_site_ref
@@ -233,8 +252,16 @@ class Export::NetexGeneric < Export::Base
       referent&.objectid
     end
 
+    def key_list
+      netex_alternate_identifiers + nexte_custom_field_identifiers
+    end
+
     def netex_alternate_identifiers
       AlternateIdentifiersExtractor.new(self).alternate_identifiers
+    end
+
+    def nexte_custom_field_identifiers
+      CustomFieldExtractor.new(self).custom_field_identifiers
     end
 
     def centroid

@@ -55,3 +55,4 @@ fr:
         opening_time_of_day: "Ouvert"
         closing_time_of_day: "Fermé"
         week_days: "Jours"
+        add_hours: "Ajouter une heure"

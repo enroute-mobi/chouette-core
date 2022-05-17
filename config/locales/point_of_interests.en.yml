@@ -1,5 +1,5 @@
 en:
-  point_of_interest:
+  point_of_interests:
     index:
       title: Points of interest
     show:
@@ -23,6 +23,7 @@ en:
         hours: "Hours"
         codes: "Codes"
       point_of_interest_category_placeholder: Search by name of Point of interest Category
+      add_hours: "Add hour"
     search_no_results: "No Point of interest matches your search"
     no_codes: "This Point of interest does not have any codes"
     no_hours: "This Point of interest does not have any hours"
@@ -54,5 +55,4 @@ en:
         opening_time_of_day: "Open"
         closing_time_of_day: "Close"
         week_days: "Days"
-        add_hours: "Add hours"
-
+        add_hours: "Add hour"

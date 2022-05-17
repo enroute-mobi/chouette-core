@@ -9,7 +9,7 @@ module Chouette
 
       attr_accessor :source, :target, :update_batch_size
       attr_accessor :resource_type, :resource_id_attribute, :resource_decorator
-      attr_accessor :model_type, :model_id_attribute
+      attr_accessor :model_type, :model_id_attribute, :code_space
       include Event::HandlerSupport
 
       delegate :workgroup, to: :target
@@ -63,12 +63,19 @@ module Chouette
           @updater = updater
         end
 
-        delegate :model_id_attribute, :event_handler, :workgroup, to: :updater
+        delegate :model_id_attribute, :event_handler, :workgroup, :code_space, to: :updater
 
         def with_resource_ids(resource_ids)
           scope.where(model_id_attribute => resource_ids).find_each do |model|
             resource_id = model.send model_id_attribute
             yield model, resource_id
+          end
+        end
+
+        def with_codes(resource_ids)
+          scope.by_code(code_space, resource_ids).find_each do |model|
+            value = model.codes&.first&.value
+            yield model, value
           end
         end
 
@@ -82,7 +89,14 @@ module Chouette
             Rails.logger.warn "Can't update primary key with resource: #{resource.class}"
           end
 
-          attributes[model_id_attribute] = resource.id
+          if model_id_attribute == :codes
+            attributes[:codes_attributes] = [{
+              value: resource.id,
+              code_space: code_space
+            }]
+          else
+            attributes[model_id_attribute] = resource.id
+          end
 
           # Could be conditionnal
           attributes.delete_if do |_, value|
@@ -99,9 +113,11 @@ module Chouette
           event = Event.new :create, model: model, resource: ResourceDecorator.undecorate(resource)
 
           update_codes model, resource, event
+          # model, resource, event
           update_custom_fields model, resource, event
 
           model.save
+
           event_handler.event event
         end
 
@@ -120,7 +136,7 @@ module Chouette
           event_handler.event event
         end
 
-        def code_space(short_name)
+        def find_code_space(short_name)
           workgroup.code_spaces.find_by short_name: short_name
         end
 
@@ -131,7 +147,7 @@ module Chouette
             short_name = code_attributes[:short_name]
             value = code_attributes[:value]
 
-            if (code_space = code_space(short_name))
+            if (code_space = find_code_space(short_name))
               model.codes.find_or_initialize_by code_space: code_space, value: value
             else
               (event.errors[:codes] ||= []) << { error: :invalid_code_space, value: short_name }
@@ -174,7 +190,7 @@ module Chouette
           @updater = updater
         end
 
-        delegate :resource_id_attribute, :model_id_attribute, :models, :resource_decorator, to: :updater
+        delegate :resource_id_attribute, :model_id_attribute, :models, :resource_decorator, :code_space,  to: :updater
 
         def decorate(resource)
           resource_decorator.new resource, batch: self
@@ -185,15 +201,23 @@ module Chouette
         end
 
         def resources_by_id
-          @resources_by_id ||= Hash[resources.map { |r| [ r.send(resource_id_attribute).to_s, r ] }]
+          @resources_by_id ||=  Hash[resources.map { |r| [ r.send(resource_id_attribute).to_s, r ] }]
         end
 
         def resource_by_id(resource_id)
           resources_by_id.fetch resource_id
         end
 
+        def with_model_ids
+          if model_id_attribute == :codes
+            "with_codes"
+          else
+            "with_resource_ids"
+          end
+        end
+
         def existing_models
-          models.with_resource_ids(resource_ids) do |model, resource_id|
+          models.send(with_model_ids, resource_ids) do |model, resource_id|
             resource = resource_by_id(resource_id)
 
             yield model, decorate(resource)
@@ -244,12 +268,62 @@ module Chouette
 
         def resolve_multiple(reference_type, resource_ids)
           resource_ids.compact!
-          return [] if resource_ids.empty?
 
-          # TODO this method should use the model_id_attribute
-          # nothing says that the resolved model has the same attribute
-          updater.target.send(reference_type.to_s.pluralize).
-            where(model_id_attribute => resource_ids).pluck(:id)
+          Identifier.new(reference_type, resource_ids, model_id_attribute, code_space, updater).identifiers
+        end
+
+        class Identifier
+          def initialize(reference_type, resource_ids, model_id_attribute, code_space, updater)
+            @reference_type = reference_type
+            @resource_ids = resource_ids
+            @model_id_attribute = model_id_attribute
+            @code_space = code_space
+            @updater = updater
+          end
+          attr_accessor :reference_type, :resource_ids, :model_id_attribute, :code_space, :updater
+
+          def identifiers
+            return [] if resource_ids.empty? || !model_ref
+
+            ids = if support_model_id_attribute?
+              model_ref.where(model_id_attribute => resource_ids).pluck(:id)
+            elsif support_codes?
+              model_ref.by_code(code_space, resource_ids).pluck(:id)
+            end
+
+            unless ids.present?
+              key_field = model_id_attribute_from_reference_type(reference_type)
+              ids = model_ref.where(key_field => resource_ids).pluck(:id)
+            end
+
+            ids
+          end
+
+          private
+
+          def model_ref
+            collection = reference_type.to_s.pluralize
+            if updater.target.respond_to? collection
+              updater.target.send(collection)
+            end
+          end
+
+          def support_codes?
+            model_ref.reflect_on_all_associations(:has_many).map(&:name).include?(:codes)
+          end
+
+          def support_model_id_attribute?
+            model_ref.column_names.include? model_id_attribute.to_s
+          end
+
+          def model_id_attribute_from_reference_type(reference_type)
+            begin
+            "Chouette::Sync::#{reference_type.to_s.classify}::Netex".
+              constantize.default_model_id_attribute
+            rescue
+              ::Chouette::Sync::Base.default_model_id_attribute
+            end
+          end
         end
       end
 

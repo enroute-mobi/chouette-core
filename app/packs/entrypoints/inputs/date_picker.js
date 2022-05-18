@@ -26,3 +26,13 @@ document.addEventListener("DOMContentLoaded", () => {
 		})
   }
 })
+
+$('.simple_form').on('cocoon:after-insert', function(e, insertedItem, originalEvent) {
+  flatpickr(".time_picker_block", {
+    enableTime: true,
+    noCalendar: true,
+    dateFormat: "H:i",
+    time_24hr: true,
+    wrap: true
+  })
+});

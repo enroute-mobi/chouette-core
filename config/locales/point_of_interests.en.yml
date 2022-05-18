@@ -1,5 +1,5 @@
 en:
-  point_of_interest:
+  point_of_interests:
     index:
       title: Points of interest
     show:
@@ -23,7 +23,10 @@ en:
         hours: "Hours"
         codes: "Codes"
       point_of_interest_category_placeholder: Search by name of Point of interest Category
+      add_hours: "Add hour"
     search_no_results: "No Point of interest matches your search"
+    no_codes: "This Point of interest does not have any codes"
+    no_hours: "This Point of interest does not have any hours"
     errors:
     filters:
   activerecord:
@@ -48,3 +51,8 @@ en:
         shape_provider: "Topological Provider"
         updated_at: "Updated At"
         creator_id: "Create by"
+      point_of_interest/hour:
+        opening_time_of_day: "Open"
+        closing_time_of_day: "Close"
+        week_days: "Days"
+        add_hours: "Add hour"

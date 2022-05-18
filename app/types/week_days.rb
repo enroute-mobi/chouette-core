@@ -6,7 +6,11 @@ class WeekDays < ActiveRecord::Type::Value
   end
 
   def cast(value)
-    check_and_format_value(value)
+    if value.is_a?(String)
+      check_and_format_value(value)
+    else
+      value
+    end
   end
 
   def deserialize(value)

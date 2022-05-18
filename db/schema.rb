@@ -256,7 +256,6 @@ ActiveRecord::Schema.define(version: 2022_04_06_200454) do
     t.bigint "workbench_id"
     t.string "status"
     t.string "parent_type"
-    t.datetime "notified_parent_at"
     t.bigint "parent_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -265,6 +264,7 @@ ActiveRecord::Schema.define(version: 2022_04_06_200454) do
     t.string "name"
     t.datetime "started_at"
     t.datetime "ended_at"
+    t.datetime "notified_parent_at"
     t.jsonb "metadata", default: {}
     t.string "context"
     t.string "notification_target"
@@ -1051,8 +1051,8 @@ ActiveRecord::Schema.define(version: 2022_04_06_200454) do
 
   create_table "point_of_interest_hours", force: :cascade do |t|
     t.bigint "point_of_interest_id", null: false
-    t.time "opening_time_of_day", default: "2000-01-01 00:00:00", null: false
-    t.time "closing_time_of_day", default: "2000-01-01 00:00:00", null: false
+    t.time "opening_time_of_day", null: false
+    t.time "closing_time_of_day", null: false
     t.bit "week_days", limit: 7, default: "1111111"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

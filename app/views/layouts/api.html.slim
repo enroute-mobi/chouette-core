@@ -12,8 +12,8 @@ html lang=I18n.locale
   body.api
     .container-fluid
       .page_header
-        .brandname
+        .flex.items-center.justify-center
           = link_to root_path, target: :blank, class: '' do
-            = image_pack_tag("static/logo-chouette-2020-saas.svg", height: 72)
+            = image_pack_tag("static/logo-chouette-2020-saas.svg", class: "object-cover h-48")
       .col-md-12
         = yield

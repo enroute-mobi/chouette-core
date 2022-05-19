@@ -41,6 +41,16 @@ class Import::Base < ApplicationModel
     @public_code_space ||= workgroup.code_spaces.public if workgroup
   end
 
+  def update_workgroup_providers?
+    if options['update_workgroup_providers']
+      true
+    elsif (parent_options = parent&.options).present?
+      parent_options['update_workgroup_providers'] == 'true'
+    else
+      false
+    end
+  end
+
   PERIOD_EXTREME_VALUE = 15.years
 
   after_create :purge_imports

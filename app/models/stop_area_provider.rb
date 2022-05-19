@@ -3,6 +3,7 @@ class StopAreaProvider < ActiveRecord::Base
   # I removed the on_create argument, since that callback needs to be fired even on initialize in workbench#create_dependencies
   before_validation :define_stop_area_referential
   include ObjectidSupport
+  include CodeSupport
 
   belongs_to :stop_area_referential
   belongs_to :workbench, required: true

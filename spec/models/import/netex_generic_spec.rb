@@ -36,6 +36,97 @@ RSpec.describe Import::NetexGeneric do
     subject { import.part(:stop_area_referential).import! }
     let(:import) { build_import xml }
 
+    context "when update_workgroup_providers option is enabled" do
+      before do
+        import.update options: { 'update_workgroup_providers' => true }
+        workbench.stop_area_providers.create(objectid: 'FR1-ARRET_AUTO', name: 'stop_area_provider 1')
+      end
+      let(:stop_area_provider) { workbench.stop_area_providers.find_by(objectid: 'FR1-ARRET_AUTO') }
+
+      let(:xml) do
+        %{
+          <stopPlaces>
+            <StopPlace dataSourceRef="FR1-ARRET_AUTO" version="811108" created="2016-10-23T22:00:00Z" changed="2019-04-02T09:43:08Z" id="FR::multimodalStopPlace:424920:FR1">
+              <Name>Petits Ponts</Name>
+              <PostalAddress version="any" id="FR1:PostalAddress:424920:">
+                <Town>Pantin</Town>
+                <PostalRegion>93055</PostalRegion>
+              </PostalAddress>
+              <StopPlaceType>onstreetBus</StopPlaceType>
+            </StopPlace>
+          </stopPlaces>
+        }
+      end
+
+      let(:expected_attributes) do
+          an_object_having_attributes({
+          name: "Petits Ponts",
+          area_type: "lda",
+          object_version: 811108,
+          city_name: "Pantin",
+          postal_region: "93055",
+        })
+      end
+
+      context 'when stop_area_provider has id = "FR1-ARRET_AUTO"' do
+        it 'should import stop area' do
+          subject
+
+          expect(stop_area_provider.stop_areas).to include(expected_attributes)
+        end
+      end
+
+      context 'when stop_area_provider has no id = "FR1-ARRET_AUTO"' do
+
+        before { stop_area_provider.update objectid: 'test' }
+
+        let(:expected_message) do
+          an_object_having_attributes(
+            criticity: "error",
+            message_key: "invalid_model_attribute",
+            message_attributes: {
+              "attribute_name"=>"provider",
+              "attribute_value"=> "FR1-ARRET_AUTO"
+            }
+          )
+        end
+
+        let(:messages) { import.resources.first.messages }
+
+        it 'should create an error message' do
+          subject
+
+          expect(messages).to include(expected_message)
+        end
+      end
+
+      context 'when data_source_ref is empty' do
+        let(:xml) do
+          %{
+            <stopPlaces>
+            <StopPlace version="811108" created="2016-10-23T22:00:00Z" changed="2019-04-02T09:43:08Z" id="FR::multimodalStopPlace:424920:FR1">
+              <Name>Petits Ponts</Name>
+              <PostalAddress version="any" id="FR1:PostalAddress:424920:">
+                <Town>Pantin</Town>
+                <PostalRegion>93055</PostalRegion>
+              </PostalAddress>
+              <StopPlaceType>onstreetBus</StopPlaceType>
+            </StopPlace>
+          </stopPlaces>
+          }
+        end
+
+        let!(:stop_area_provider) { workbench.default_stop_area_provider }
+        let(:stop_areas) { stop_area_provider.reload.stop_areas }
+  
+        it 'should create a stop area with the default stop_area_provider' do
+          subject
+
+          expect(stop_areas).to include(expected_attributes)
+        end
+      end
+    end
+
     self::XML = '<StopPlace id="42"><Name>Tour Eiffel</Name></StopPlace>'
     context "when XML is #{self::XML}" do
       let(:xml) { self.class::XML }
@@ -337,6 +428,125 @@ RSpec.describe Import::NetexGeneric do
 
   describe 'Line Referential part' do
     let(:import) { build_import xml }
+
+    context "when update_workgroup_providers option is enabled" do
+      subject { import.part(:line_referential).import! }
+
+      let(:code_space) { workgroup.code_spaces.first }
+      before do
+        import.update options: { 'update_workgroup_providers' => true }
+        workbench.line_providers.create(
+          short_name: 'line_provider 1',
+          line_referential: workbench.line_referential,
+          codes_attributes: [{
+            value: '2003-line-provider-existing',
+            code_space: code_space
+          }]
+        )
+      end
+      let(:line_provider) { workbench.line_providers.by_code(code_space, '2003-line-provider-existing').first }
+
+      let(:xml) do
+        %{
+          <frames>
+          <ResourceFrame id="2003-enRoute:ResourceFrame:1" version="any">
+            <organisations>
+              <Operator id="2003-company-1" version="any">
+                <Name>Demo Transit Authority</Name>
+              </Operator>
+            </organisations>
+          </ResourceFrame>
+          <ServiceFrame id="enRoute:ServiceFrame:1" version="any">
+            <lines>
+              <Line dataSourceRef="2003-line-provider-existing" id="2003-line-1" version="any">
+                <Name>Airport - Bullfrog</Name>
+                <TransportMode>bus</TransportMode>
+                <OperatorRef ref="2003-company-1"/>
+              </Line>
+            </lines>
+          </ServiceFrame>
+          </frames>
+        }
+      end
+
+      let(:expected_attributes) do
+          an_object_having_attributes({
+          name: "Airport - Bullfrog",
+        })
+      end
+
+      context 'when line_provider has id' do
+        it 'should import stop area' do
+          subject
+
+          expect(line_provider.lines).to include(expected_attributes)
+        end
+      end
+
+      context 'when line_provider has no id' do
+
+        before { line_provider.codes.destroy_all }
+
+        let(:expected_message) do
+          an_object_having_attributes(
+            criticity: "error",
+            message_key: "invalid_model_attribute",
+            message_attributes: {
+              "attribute_name"=>"provider",
+              "attribute_value"=> "2003-line-provider-existing"
+            }
+          )
+        end
+
+        let(:messages) { import.resources.last.messages }
+
+        it 'should create an error message' do
+          subject
+
+          expect(messages).to include(expected_message)
+        end
+      end
+
+      context 'when data_source_ref is empty' do
+        let(:xml) do
+          %{
+            <frames>
+              <ResourceFrame id="2003-enRoute:ResourceFrame:1" version="any">
+                <organisations>
+                  <Operator id="2003-company-1" version="any">
+                    <Name>Demo Transit Authority</Name>
+                  </Operator>
+                </organisations>
+              </ResourceFrame>
+              <ServiceFrame id="enRoute:ServiceFrame:1" version="any">
+                <lines>
+                  <Line id="2003-line-2" version="any">
+                    <Name>Bullfrog - Furnace Creek Resort</Name>
+                    <TransportMode>bus</TransportMode>
+                    <OperatorRef ref="2003-company-1"/>
+                  </Line>
+                </lines>
+              </ServiceFrame>
+            </frames>
+          }
+        end
+
+        let!(:line_provider) { workbench.default_line_provider }
+        let(:lines) { line_provider.reload.lines }
+        let(:expected_attributes) do
+            an_object_having_attributes({
+              name: "Bullfrog - Furnace Creek Resort",
+              line_provider_id: line_provider.id
+          })
+        end
+
+        it 'should create a stop area with the default line_provider' do
+          subject
+
+          expect(lines).to include(expected_attributes)
+        end
+      end
+    end
 
     context "when XML contains lines, operators and notices" do
       let(:xml) do

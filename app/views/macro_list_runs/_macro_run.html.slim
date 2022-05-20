@@ -23,8 +23,7 @@
 	.mt-md x-show="showDetails" x-transition.delay.50ms=""
 		= simple_block_for macro_run, title: false do |d|
 			= d.attribute :comments
-			- macro_run.options.each do |k, v|
-				= render k, d: d, v: v, k: k
-				/ = d.attribute k, value: v
+			- macro_run.options.each do |option, value|
+				= render option, d: d, value: value, option: option
 
 	.macro_messages.w-full.mx-auto.mt-md x-show="showMessages" x-transition.delay.50ms=""

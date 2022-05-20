@@ -408,6 +408,8 @@ en:
         warning: Avertissement
         error: Erreur
         failed: Echec
+    control/presence_attribute:
+      published_name: Published name
     macro/dummy:
       expected_result:
         info: Succès

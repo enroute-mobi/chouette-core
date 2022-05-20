@@ -408,9 +408,13 @@ fr:
         warning: Avertissement
         error: Erreur
         failed: Echec
+    control/presence_attribute:
+      published_name: Nom publié
     macro/dummy:
       expected_result:
         info: Succès
         warning: Avertissement
         error: Erreur
         failed: Echec
+    macro/source_attribute:
+      published_name: Nom publié

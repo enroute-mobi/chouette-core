@@ -4,7 +4,7 @@
 	.flex.items-center.w-full
 		button @click="showDetails = ! showDetails" type="button" class="flex items-center p-3 pl-3 mr-3 font-bold text-white bg-enroute-chouette-primary rounded cursor-pointer  hover:text-indigo-100"
 			<span class="text-3xl w-4" x-text="showDetails ? '-' : '+'">+</span>
-		
+
 		.grow
 			= truncate("#{macro_run.name} (#{macro_run.model_name.human})", length: 60)
 
@@ -15,7 +15,7 @@
 				= macro_run.macro_messages.warning.size
 			a x-bind="statusFilter('error')"
 				= macro_run.macro_messages.error.size
-			
+
 			button @click="showMessages = ! showMessages" type="button" class="flex items-center px-7 py-3 ml-xs font-bold text-white bg-enroute-chouette-primary rounded cursor-pointer  hover:text-indigo-100"
 				.span.fa.fa-caret-down.mx-1 x-show="showMessages"
 				.span.fa.fa-caret-up.mx-1 x-show="!showMessages"
@@ -24,6 +24,7 @@
 		= simple_block_for macro_run, title: false do |d|
 			= d.attribute :comments
 			- macro_run.options.each do |k, v|
-				= d.attribute k, value: v
+				= render k, d: d, v: v, k: k
+				/ = d.attribute k, value: v
 
 	.macro_messages.w-full.mx-auto.mt-md x-show="showMessages" x-transition.delay.50ms=""

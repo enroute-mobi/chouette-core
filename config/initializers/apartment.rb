@@ -48,6 +48,7 @@ Apartment.configure do |config|
     'Delayed::Job',
     'Destination',
     'DestinationReport',
+    'DocumentType',
     'Entrance',
     'Export::Base',
     'Export::Message',

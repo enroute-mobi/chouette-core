@@ -80,6 +80,21 @@ crumb :new_point_of_interest_category do |workbench|
   parent :point_of_interest_categories, workbench
 end
 
+crumb :document_types do |workgroup|
+  link I18n.t('document_types.index.title'), workgroup_document_types_path(workgroup)
+  parent :workgroup, workgroup
+end
+
+crumb :document_type do |workgroup, document_type|
+  link breadcrumb_name(document_type), workgroup_document_type_path(workgroup, document_type)
+  parent :document_types, workgroup
+end
+
+crumb :new_document_type do |workgroup|
+  link I18n.t('document_types.new.title')
+  parent :document_types, workgroup
+end
+
 crumb :sources do |workbench|
   link I18n.t('sources.index.title'), workbench_sources_path(workbench)
   parent :workbench, workbench

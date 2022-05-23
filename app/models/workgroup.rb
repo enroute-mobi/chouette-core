@@ -17,6 +17,7 @@ class Workgroup < ApplicationModel
   belongs_to :output, class_name: 'ReferentialSuite', dependent: :destroy, required: true
 
   has_many :workbenches, dependent: :destroy
+  has_many :document_types, dependent: :destroy
   has_many :imports, through: :workbenches
   has_many :exports, class_name: 'Export::Base', dependent: :destroy
   has_many :calendars, dependent: :destroy

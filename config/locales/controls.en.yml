@@ -22,7 +22,6 @@ en:
         criticity: Criticity
         options: Options
         target_model: Target Model
-        target_code_space_id: Target code space
       control/dummy:
         expected_result: Expected Result
       control/presence_attribute:
@@ -31,8 +30,8 @@ en:
       control/presence_code:
         target_code_space_id: Target code space
         description: The specified code space must have a code in the target model
-        target_model: Target Model
       control/presence_custom_field:
         target_custom_field_id: Target Custom Field
       control/code_format:
-        expected_format: Expected format        
+        target_code_space_id: Target code space
+        expected_format: Expected format

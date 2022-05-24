@@ -12,6 +12,18 @@ fr:
         name: Nom
         comments: Commentaire
         criticity: Criticité
+        options: Options
+        target_model: Modèle cible
       control/dummy/run:
         expected_result: Résultat attendu
-        target_model: Modèle cible
+      control/presence_attribute/run:
+        target_attribute: Attribut cible
+        description:  "L’attribut sélectionné doit avoir une valeur dans le modèle cible"
+      control/presence_code/run:
+        target_code_space_id: Espace de code cible
+        description: "L’espace de code sélectionné doit avoir un code dans le modèle cible"
+      control/presence_custom_field/run:
+        target_custom_field_id: Champ personnalisé cible
+      control/code_format/run:
+        target_code_space_id: Espace de code cible
+        expected_format: Format attendu

@@ -21,9 +21,11 @@ fr:
         description:  "L’attribut sélectionné doit avoir une valeur dans le modèle cible"
       control/presence_code/run:
         target_code_space_id: Espace de code cible
+        target_code_space: Espace de code cible
         description: "L’espace de code sélectionné doit avoir un code dans le modèle cible"
       control/presence_custom_field/run:
         target_custom_field_id: Champ personnalisé cible
+        custom_field: Champ personnalisé cible
       control/code_format/run:
         target_code_space_id: Espace de code cible
         expected_format: Format attendu

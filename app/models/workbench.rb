@@ -42,7 +42,7 @@ class Workbench < ApplicationModel
   validates :organisation, presence: true, unless: :pending?
   validates :prefix, presence: true, unless: :pending?
   validates_format_of :prefix, with: %r{\A[0-9a-zA-Z_]+\Z}, unless: :pending?
-  validates :output, presence: true, unless: :pending?
+  validates :output, presence: true
   validate  :locked_referential_to_aggregate_belongs_to_output
 
   has_many :referentials, dependent: :destroy
@@ -60,6 +60,7 @@ class Workbench < ApplicationModel
   has_many :control_list_runs, class_name: "Control::List::Run", dependent: :destroy
 
   before_validation :create_dependencies, on: :create
+  before_validation :create_default_prefix
 
   validates :priority, presence: true, numericality: { greater_than_or_equal_to: 1 }
 
@@ -86,15 +87,6 @@ class Workbench < ApplicationModel
       :locked_referential_to_aggregate,
       I18n.t('workbenches.errors.locked_referential_to_aggregate.must_belong_to_output')
     )
-  end
-
-  def self.normalize_prefix input
-    input ||= ""
-    input.to_s.strip.gsub(/[^0-9a-zA-Z_]/, '_')
-  end
-
-  def prefix= val
-    self[:prefix] = Workbench.normalize_prefix(val)
   end
 
   def workbench_scopes
@@ -188,11 +180,28 @@ class Workbench < ApplicationModel
     default_line_provider.save
   end
 
+  def create_invitation_code
+    self.invitation_code	||= "%06d" % SecureRandom.random_number(1000000)
+  end
+
   private
+
+  def create_default_prefix
+    self.prefix ||= organisation&.code&.parameterize(separator: "_")
+  end
 
   def create_dependencies
     self.output ||= ReferentialSuite.create
+
+    unless organisation.present?
+      create_invitation_code
+    end
+
     if workgroup
+			self.line_referential      ||= workgroup.line_referential
+      self.stop_area_referential ||= workgroup.stop_area_referential
+      self.objectid_format       ||= 'netex'
+
       default_shape_provider
       default_line_provider
       default_stop_area_provider

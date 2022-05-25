@@ -19,7 +19,7 @@ describe Workbench, type: :model do
 
   context 'when status is accepted' do
     before { allow(subject).to receive(:pending?) { false } }
-  
+
     context "dependencies" do
       before { allow(subject).to receive(:create_dependencies) }
 
@@ -90,19 +90,6 @@ describe Workbench, type: :model do
     end
   end
 
-  context "normalize_prefix" do
-    it "should ensure the resulting prefix is valid" do
-      workbench = create(:workbench)
-      ["aaa ", "aaa-bbb", "aaa_bbb", "aaa bbb", " aaa bb ccc"].each do |val|
-        workbench.update_column :prefix, nil
-        workbench.prefix = val
-        expect(workbench).to be_valid
-        workbench.update_column :prefix, nil
-        expect(workbench.update(prefix: val)).to be_truthy
-      end
-    end
-  end
-
   context '.lines' do
     let!(:ids) { ['STIF:CODIFLIGNE:Line:C00840', 'STIF:CODIFLIGNE:Line:C00086'] }
     let!(:organisation) { create :organisation, sso_attributes: { functional_scope: ids.to_json } }
@@ -155,19 +142,79 @@ describe Workbench, type: :model do
     end
   end
 
-  describe "on creation" do
-    let(:context) { Chouette.create { workbench } }
-    let(:workbench) { context.workbench }
+  describe "#create_invitation_code" do
+    let(:workbench) { Workbench.new }
+    subject { workbench.create_invitation_code }
 
-    it "must have a ReferentialSuite" do
-      expect(workbench.output).to be_an_instance_of(ReferentialSuite)
+    it "defines Workbench invitation_code" do
+      expect { subject }.to change(workbench, :invitation_code).from(nil).to(matching(/[0-9]{6}/))
     end
 
-    it "must have a default ShapeProvider" do
-      expect(workbench.shape_providers.count).to eq(1)
+    it { is_expected.to match(/[0-9]{6}/) }
+  end
 
-      shape_provider = workbench.shape_providers.first
-      expect(shape_provider.short_name).to eq('default')
+  describe "on creation" do
+    let(:context) { Chouette.create { workbench } }
+    subject(:workbench) { context.workbench }
+
+    it { is_expected.to have_same_attributes(:line_referential, than: workbench.workgroup) }
+    it { is_expected.to have_same_attributes(:stop_area_referential, than: workbench.workgroup) }
+
+    it { is_expected.to have_attributes(objectid_format: 'netex') }
+    it { is_expected.to have_attributes(output: an_instance_of(ReferentialSuite)) }
+
+    describe "prefix" do
+      subject { workbench.prefix }
+
+      it { is_expected.to match(%r{\A[0-9a-zA-Z_]+\Z}) }
+
+      context "when Organisation code is 'Tôô Exotic'" do
+        let(:context) do
+          Chouette.create do
+            organisation :first, code: 'Tôô Exotic'
+            workbench organisation: :first
+          end
+        end
+
+        it { is_expected.to eq("too_exotic") }
+      end
+    end
+
+    describe "default Shape Provider" do
+      subject { workbench.default_shape_provider }
+
+      it "must be the first/single Shape Provider" do
+        is_expected.to eq(workbench.shape_providers.first)
+      end
+
+      it { is_expected.to have_attributes(short_name: 'default') }
+    end
+
+    describe "default Line Provider" do
+      subject { workbench.default_line_provider }
+
+      it "must be the first/single Line Provider" do
+        is_expected.to eq(workbench.line_providers.first)
+      end
+
+      it { is_expected.to have_attributes(short_name: 'default') }
+    end
+
+    describe "default Stop Area Provider" do
+      subject { workbench.default_stop_area_provider }
+
+      it "must be the first/single Stop Area Provider" do
+        is_expected.to eq(workbench.stop_area_providers.first)
+      end
+
+      it { is_expected.to have_attributes(name: 'Default') }
+    end
+
+    context "without an Organisation" do
+      let(:context) { Chouette.create { workbench organisation: nil } }
+
+      it { is_expected.to have_attributes(organisation: a_nil_value, prefix: a_nil_value) }
+      it { is_expected.to have_attributes(invitation_code: matching(/[0-9]{6}/)) }
     end
   end
 end

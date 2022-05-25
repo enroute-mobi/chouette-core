@@ -298,7 +298,6 @@ class Workgroup < ApplicationModel
         workgroup.line_referential ||= LineReferential.create!(name: LineReferential.ts) do |referential|
           referential.add_member organisation, owner: true
           referential.objectid_format = :netex
-          referential.sync_interval = 1 # XXX is this really useful ?
         end
 
         workgroup.stop_area_referential ||= StopAreaReferential.create!(name: StopAreaReferential.ts) do |referential|
@@ -307,13 +306,7 @@ class Workgroup < ApplicationModel
         end
       end
 
-      organisation.workbenches.create!(name: Workbench.ts) do |w|
-        w.line_referential      = workgroup.line_referential
-        w.stop_area_referential = workgroup.stop_area_referential
-        w.workgroup             = workgroup
-        w.objectid_format       = 'netex'
-        w.prefix = organisation.code
-      end
+      workgroup.workbenches.create!(name: Workbench.ts, organisation: organisation)
 
       workgroup
     end

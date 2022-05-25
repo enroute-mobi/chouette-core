@@ -43,7 +43,7 @@ class ControlListsController < ChouetteController
   alias workbench parent
 
   def collection
-    @control_lists = parent.control_lists.paginate(page: params[:page], per_page: 30)
+    @control_lists = parent.control_lists_shared_with_workgroup.paginate(page: params[:page], per_page: 30)
   end
 
   private

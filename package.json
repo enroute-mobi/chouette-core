@@ -82,7 +82,7 @@
     "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
     "es6-object-assign": "1.1.0",
     "file-loader": "^6.2.0",
-    "grunt": "^1.0.1",
+    "grunt": "^1.5.3",
     "grunt-contrib-watch": "^1.0.0",
     "grunt-watch-change": "^0.1.1",
     "jest": "^26.5.3",

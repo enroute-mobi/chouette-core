@@ -64,15 +64,7 @@ class Workbench < ApplicationModel
   scope :with_active_workgroup, -> { joins(:workgroup).where('workgroups.deleted_at': nil) }
 
   def control_lists_shared_with_workgroup
-    (
-      (
-        control_lists.joins(workbench: :workgroup)
-          .where("workgroups.id = ?", workgroup)
-      ).or(
-        Control::List.joins(workbench: :workgroup)
-          .where("workgroups.id = ? AND shared = ?", workgroup, true)
-      )
-    ).distinct
+    workgroup.control_lists.where("shared = ? OR workbench_id = ?", true, self).distinct
   end
 
   def locked_referential_to_aggregate_belongs_to_output

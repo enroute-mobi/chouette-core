@@ -60,6 +60,10 @@ class Workbench < ApplicationModel
   has_many :control_lists, class_name: "Control::List", dependent: :destroy
   has_many :control_list_runs, class_name: "Control::List::Run", dependent: :destroy
 
+  # has_many :document_types
+  has_many :document_providers
+  has_many :documents, through: :document_providers
+
   before_validation :create_dependencies, on: :create
   before_validation :create_default_prefix
 

@@ -1,0 +1,53 @@
+en:
+  documents:
+    index:
+      title: Documents
+    show:
+      title: "%{name}"
+    new:
+      title: "Create a Document"
+    edit:
+      title: "Edit %{name}"
+    actions:
+      show: "Show this  Document"
+      new: "Create a Document"
+      edit: "Edit thi Document"
+      destroy: "Delte ce Document"
+      destroy_confirm: "Are you sure you want to delete this Document ?"
+    form:
+      placeholders:
+        select_file: Select file
+      sections:
+        identification: "Identification"
+        content: Content
+        internals: Internals
+        codes: "Codes"
+    search_no_results: "No Documents match this search"
+    no_codes: "This Document does not have any codes"
+  activerecord:
+    models:
+      document:
+        zero:  "Documents"
+        one: "Document"
+        other: "Documents"
+    attributes:
+      document:
+        uuid: ID
+        name: Name
+        valid_after: Valid after
+        valid_until: Valid until
+        file: File
+        description: Description
+        content_type: Content Type
+        preview: Preview
+        document_type_id: Document Type
+        document_provider_id: Document provider
+    errors:
+      models:
+        document:
+          attributes:
+            validity_period:
+              no_bounds: A validity period must have a beginning or an end
+              after_before_begin: Invalid validity period (valid_after must be before valid_until)
+            file:
+              blank: File is required

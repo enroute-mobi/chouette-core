@@ -3,13 +3,14 @@ div[x-data]
     - if msg.is_a?(String)
       = display_flash_message(name, msg)
 
-  template[x-for="(message, index) in $store.flash.messages"]
-    div[
-      class="alert alert-dismissible"
+  template[x-for="[id, message] in [...$store.flash.messages]"]
+    .alert.alert-dismissible[
       x-bind:class="{[message.bootstrapClass]: true}"
       role="alert"
+      x-transition=""
+      x-show="message.show"
     ]
-      button[class="close" type="button" x-on:click="$store.flash.remove(message.id)"]
+      button[class="close" type="button" x-on:click="$store.flash.remove(id)"]
         span.fa.fa-times-circle
       span[class="fa fa-lg" x-bind:class="{[message.icon]: true}" ]
       span[x-text="message.text"]

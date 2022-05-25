@@ -158,6 +158,8 @@ ChouetteIhm::Application.routes.draw do
       resources :point_of_interests
       resources :point_of_interest_categories
     end
+
+    resources :documents
   end
 
   resource :workbench_confirmation, only: [:new, :create]

@@ -1,0 +1,75 @@
+- content_for :additional_packs, 'documents/form'
+
+= simple_form_for([@workbench, @document],
+    html: { \
+      multipart: true, \
+      class: 'form-horizontal', \
+      id: 'document_form', \
+      'x-data': "documentForm(#{@document.json_state})", \
+      'x-on:formdata': 'onFormData' \
+    }, \
+    wrapper: :horizontal_form_tailwind \
+  ) do |f|
+  .row
+    .col-lg-12
+      h2.my-16
+        = t("documents.form.sections.identification")
+      = f.input :name
+      = f.input :document_type_id, as: :select, collection: @workbench.workgroup.document_types.map { |dt| [dt.short_name, dt.id] }
+
+      div[x-data="{ input: inputs.get('validityPeriod') }"]
+        input name="document[validity_period]" type="hidden" x-bind:value="input.value"
+
+        = f.simple_fields_for(:validity_period) do |sub|
+          = sub.input :valid_after,
+            as: :date_picker,
+            label: I18n.t('activerecord.attributes.document.valid_after'),
+            value: @document.validity_period&.begin,
+            input_html: { name: nil, 'x-model': 'input.validAfter' }
+
+          = sub.input :valid_until,
+            as: :date_picker,
+            label: I18n.t('activerecord.attributes.document.valid_until'),
+            value: @document.validity_period&.end,
+            input_html: { name: nil, 'x-model': 'input.validUntil' }
+
+  .separator.section_separator
+  .row
+    .col-lg-12
+      h2.my-16
+        = t('documents.form.sections.content')
+
+      .flex.items-center.mb-10.relative x-data="{ input: inputs.get('file') }"
+        label.flex.justify-end.w-2/6.mr-8.mb-0.control-label.pt-0.text.required = I18n.t('activerecord.attributes.document.file')
+        .flex.justify-center.w-4/6
+          .btn.btn-primary x-on:click="input.openFileDialog()"
+            span.fa.fa-upload
+            span.ml-4 x-text="input.label"
+
+            input type="file" x-show="false" id="document_file" name="document[file]" x-on:change="input.onUpload()"
+            
+          .btn x-on:click="input.onRemove()" x-bind:class="!input.hasFile && 'disabled'"
+            span.fa.fa-trash.text-red-600
+            span.ml-4 = I18n.t('actions.remove')
+
+      = f.input :description
+  .separator.section_separator
+  .row
+    .col-lg-12
+      h2.my-16
+        = t('documents.form.sections.internals')
+      = f.input :document_provider_id, as: :select, collection: @workbench.document_providers.map { |dp| [dp.name, dp.id] }
+
+  .separator.section_separator
+  .row
+    .col-lg-12
+      h2.my-16
+        = Chouette::StopArea.tmf(:codes)
+      = f.simple_fields_for(:codes) do |codes_form|
+        = render 'code_fields', f: codes_form
+
+      .links.nested-linker
+        = link_to_add_association t('entrances.form.add_code'), f, :codes, class: 'btn btn-primary'
+
+  = cancel_button
+  = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'document_form', 'x-on:click': 'onSubmit'

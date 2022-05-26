@@ -1,10 +1,11 @@
 class ApplicationPolicy
 
-  attr_reader :current_referential, :current_workbench, :record, :user
+  attr_reader :current_referential, :current_workbench, :current_workgroup, :record, :user
   def initialize(user_context, record)
     @user                = user_context.user
     @current_referential = user_context.context[:referential]
     @current_workbench   = user_context.context[:workbench]
+    @current_workgroup   = user_context.context[:workgroup]
     @record              = record
     @user_context        = user_context
   end
@@ -115,6 +116,18 @@ class ApplicationPolicy
 
   def record_workbench
     record.workbench if record.respond_to?(:workbench)
+  end
+
+  def workgroup
+    @workgroup ||= current_workgroup || record_workgroup
+  end
+
+  def record_workgroup
+    record.workgroup if record.respond_to?(:workgroup)
+  end
+
+  def workgroup_owner?
+    workgroup && workgroup.owner_id == user.organisation_id
   end
 
   def stop_area_provider_matches?

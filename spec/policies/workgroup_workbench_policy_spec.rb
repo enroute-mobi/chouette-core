@@ -1,39 +1,87 @@
 RSpec.describe WorkgroupWorkbenchPolicy, type: :policy do
+  let(:context) do
+    Chouette.create do
+      organisation(:owner_organisation) { user :owner }
+      organisation(:workbench_organisation) { user :workbench_user }
+      workgroup owner: :owner_organisation do
+        workbench organisation: :workbench_organisation
+      end
+    end
+  end
 
-  let( :record ){ build_stubbed :workbench }
+  let(:workbench) { context.workbench }
+  let(:owner_user) { context.user(:owner) }
+  let(:workbench_user) { context.user(:workbench_user) }
 
-    permissions :create? do
-      it "should not allow for creation" do
-        expect_it.not_to permit(user_context, record)
+  subject { described_class.new UserContext.new(user), workbench }
+
+  describe "create action" do
+    subject { described_class.new UserContext.new(user, workgroup: workbench.workgroup), Workbench }
+
+    context 'when user is Workgroup owner' do
+      let(:user) { owner_user }
+
+      context 'with the permission "workbenches.create"' do
+        before { user.permissions << 'workbenches.create' }
+        it { is_expected.to permit_action(:create) }
+      end
+
+      context 'without the permission "workbenches.create"' do
+        before { user.permissions.delete 'workbenches.create' }
+        it { is_expected.to_not permit_action(:create) }
       end
     end
 
-    permissions :update? do
-      it "should not allow for update" do
-        expect_it.not_to permit(user_context, record)
+    context 'when user is not Workgroup owner' do
+      let(:user) { workbench_user }
+
+      context 'with the permission "workbenches.create"' do
+        before { user.permissions << 'workbenches.create' }
+        it { is_expected.to_not permit_action(:create) }
       end
 
-      context "for the workgroup owner" do
-        before do
-          record.workgroup.owner = user.organisation
-        end
-
-        it "should not allow for update" do
-          expect_it.not_to permit(user_context, record)
-        end
-
-        context "with the permission" do
-          it "should allow for update" do
-            add_permissions('workbenches.update', to_user: user)
-            expect_it.to permit(user_context, record)
-          end
-        end
+      context 'with the permission "workbenches.update"' do
+        before { user.permissions << 'workbenches.update' }
+        it { is_expected.to_not permit_action(:update) }
       end
     end
+  end
 
-    permissions :destroy? do
-      it "should not allow for destroy" do
-        expect_it.not_to permit(user_context, record)
-      end
+  context 'when user is Workgroup owner' do
+    let(:user) { owner_user }
+
+    context 'with the permission "workbenches.update"' do
+      before { user.permissions << 'workbenches.update' }
+      it { is_expected.to permit_action(:update) }
     end
+
+    context 'without the permission "workbenches.update"' do
+      before { user.permissions.delete 'workbenches.update' }
+      it { is_expected.to_not permit_action(:update) }
+    end
+
+    it { is_expected.to_not permit_action(:destroy) }
+  end
+
+  context 'when user is not Workgroup owner' do
+    let(:user) { workbench_user }
+
+    it { is_expected.to permit_action(:show) }
+    it { is_expected.to_not permit_action(:show_invitation_code) }
+
+    context 'with the permission "workbenches.update"' do
+      before { user.permissions << 'workbenches.update' }
+      it { is_expected.to_not permit_action(:update) }
+    end
+
+    it { is_expected.to_not permit_action(:destroy) }
+  end
+
+  context 'when user is not member of the Workgroup' do
+    let(:other_context) { Chouette.create { user } }
+    let(:user) { other_context.user }
+
+    it { is_expected.to_not permit_action(:show) }
+    it { is_expected.to_not permit_action(:show_invitation_code) }
+  end
 end

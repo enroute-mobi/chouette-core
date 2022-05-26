@@ -6,11 +6,16 @@ class WorkgroupWorkbenchPolicy < ApplicationPolicy
   end
 
   def show?
-    record.workgroup.organisations.exists?(id: user.organisation_id)
+    workgroup.organisations.exists?(id: user.organisation_id)
+  end
+
+  def show_invitation_code?
+    # Only users which can create a Workbench can see the invitation code
+    create?
   end
 
   def update?
-    record.workgroup.owner_id == user.organisation_id && user.has_permission?('workbenches.update')
+    workgroup_owner? && user.has_permission?('workbenches.update')
   end
 
   # TODO Enable workbench deletion / creation from workgroup admin section
@@ -19,7 +24,6 @@ class WorkgroupWorkbenchPolicy < ApplicationPolicy
   # end
 
   def create?
-    user.has_permission?('workbenches.create')
+    workgroup_owner? && user.has_permission?('workbenches.create')
   end
-
 end

@@ -24,7 +24,7 @@ class ApplicationController < ActionController::Base
   end
 
   def pundit_user
-    UserContext.new(current_user, referential: @referential, workbench: current_workbench)
+    UserContext.new(current_user, referential: @referential, workbench: current_workbench, workgroup: current_workgroup)
   end
 
   protected
@@ -43,7 +43,7 @@ class ApplicationController < ActionController::Base
   end
 
   def current_workgroup
-    if respond_to? :workgroup
+    if respond_to? :workgroup, true
       workgroup
     else
       @workgroup || current_workbench&.workgroup

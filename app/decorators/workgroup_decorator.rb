@@ -5,9 +5,9 @@ class WorkgroupDecorator < AF83::Decorator
     l.content t('workgroups.actions.new')
   end
 
-  action_link primary: :index, policy: :confirm do |l|
-    l.href { h.confirm_workgroups_path }
-    l.content t('workgroups.actions.confirm_workbench')
+  action_link secondary: :index, policy: :confirm do |l|
+    l.href { h.new_workbench_confirmation_path }
+    l.content t('workbench_confirmation.new.title')
   end
 
   with_instance_decorator do |instance_decorator|

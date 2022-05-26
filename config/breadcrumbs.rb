@@ -22,7 +22,7 @@ crumb :add_workbench do |workgroup|
 end
 
 crumb :workbench_confirmation do |workgroup|
-  link I18n.t('workbenches.confirm.title'), '#'
+  link I18n.t('workbench_confirmation.new.title'), workbench_confirmation_path
   parent :workgroups
 end
 

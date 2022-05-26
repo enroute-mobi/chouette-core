@@ -12,13 +12,6 @@ en:
     new:
       title: Add a workbench
       text: The new Workbench will provide you an invitation code
-    confirm:
-      title: Confirm workgroup participation
-      text:  |
-        You received a confirmation code to join the Workgroup from another Organisation.
-
-        By accepting this invitation, our Organisation will have a new Workbench to collaborate (and provide data) into this Workgroup.
-
     edit:
       title: "Update workbench %{name}"
       link:  "Settings"
@@ -47,6 +40,12 @@ en:
     errors:
       locked_referential_to_aggregate:
         must_belong_to_output: Must belong to workbench's output
+  workbench_confirmation:
+    new:
+      title: Confirm Workgroup participation
+      text:  |
+        You received a confirmation code to join the Workgroup from another Organisation.
+        By accepting this invitation, our Organisation will have a new Workbench to collaborate (and provide data) into this Workgroup.
 
   activerecord:
     models:
@@ -62,4 +61,7 @@ en:
         organisation: Organisation
         last_merged_data: Last merged data
         priority: Priority
-        confirmation_code: Confirmation code
+  activemodel:
+    attributes:
+      workbench/confirmation:
+        invitation_code: Confirmation Code

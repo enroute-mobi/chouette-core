@@ -12,7 +12,7 @@
       - if @workbench.invitation_code && WorkgroupWorkbenchPolicy.new(pundit_user, @workbench).show_invitation_code?
         .col-lg-6.col-md-6.col-sm-12.col-xs-12
           = simple_block_for @workbench, title: t('workbenches.show.sections.pending_invitation.title') do |d|
-            = d.attribute :confirmation_code, value_method: :invitation_code
+            = d.attribute :invitation_code
             p[style='font-style:italic;'] = t('workbenches.show.sections.pending_invitation.text')
 
     .row

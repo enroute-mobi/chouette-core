@@ -38,10 +38,10 @@ class WorkgroupPolicy < ApplicationPolicy
   end
 
   def add_workbench?
-    user.has_permission?('workbenches.create')
+    WorkgroupWorkbenchPolicy.new(@user_context, Workbench).create?
   end
 
   def confirm?
-    user.has_permission?('workbenches.confirm')
+    WorkbenchConfirmationPolicy.new(@user_context, Workbench::Confirmation).create?
   end
 end

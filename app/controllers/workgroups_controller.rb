@@ -15,7 +15,7 @@ class WorkgroupsController < ChouetteController
   def create
     @workgroup = Workgroup.create_with_organisation current_organisation, workgroup_params
     redirect_to(@workgroup)
-  rescue ActiveRecord::RecordInvalid => e
+  rescue ActiveRecord::RecordInvalid
     @workgroup = Workgroup.new workgroup_params
     render :new
   end
@@ -68,24 +68,9 @@ class WorkgroupsController < ChouetteController
     redirect_to resource
   end
 
-  def confirm
-    case request.method
-    when 'GET'
-      render 'confirm'
-    when 'POST'
-      if @workbench = Workbenches::AcceptInvitation.call(workbench_confirmation_params)
-        flash[:success] = I18n.t('flash.actions.update.notice', resource_name: Workbench.model_name.name)
-        redirect_to workgroup_workbench_path(@workbench.workgroup, @workbench)
-      else
-        flash[:error] = I18n.t('flash.actions.update.error', resource_name: Workbench.model_name.name)
-        render 'confirm'
-      end
-    end
-  end
-
   private
 
-  def workgroup_params 
+  def workgroup_params
     params.require(:workgroup).permit(
       :name,
       :enable_purge_merged_data,
@@ -101,13 +86,6 @@ class WorkgroupsController < ChouetteController
         compliance_control_set_ids: @workgroup&.compliance_control_sets_by_workgroup&.keys
       ],
       compliance_control_set_ids: Workgroup.workgroup_compliance_control_sets
-    )
-  end
-
-  def workbench_confirmation_params
-    params.require(:workbench_confirmation).permit(
-      :confirmation_code,
-      :organisation_id
     )
   end
 

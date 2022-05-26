@@ -160,6 +160,8 @@ ChouetteIhm::Application.routes.draw do
     end
   end
 
+  resource :workbench_confirmation
+
   resources :workgroups, except: [:destroy], concerns: :iev_interfaces do
     put :setup_deletion, on: :member
     put :remove_deletion, on: :member
@@ -175,11 +177,6 @@ ChouetteIhm::Application.routes.draw do
     resources :code_spaces, except: :destroy
 
     resources :document_types
-
-    collection do
-      get :confirm
-      post :confirm
-    end
 
     resources :compliance_check_sets, only: [:index, :show] do
       get :executed, on: :member

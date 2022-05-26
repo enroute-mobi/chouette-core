@@ -184,6 +184,36 @@ class Workbench < ApplicationModel
     self.invitation_code	||= "%06d" % SecureRandom.random_number(1000000)
   end
 
+  class Confirmation
+    include ActiveModel::Model
+
+    def self.policy_class
+      WorkbenchConfirmationPolicy
+    end
+
+    attr_accessor :organisation, :invitation_code
+
+    validates :organisation, :invitation_code, presence: true
+    validates :invitation_code, format: { with: /\A\d{6}\z/ }
+
+    validate :workbench_exists
+
+    def workbench
+      @workbench ||= Workbench.where(invitation_code: invitation_code).where.not(workgroup: organisation.workgroups).first
+    end
+
+    def workbench_exists
+      unless workbench
+        errors.add :invitation_code, :invalid
+      end
+    end
+
+    def save
+      return false unless valid?
+      workbench.update organisation: organisation, invitation_code: nil
+    end
+  end
+
   private
 
   def create_default_prefix

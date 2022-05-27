@@ -407,7 +407,6 @@ ActiveRecord::Schema.define(version: 2022_05_29_090410) do
     t.text "comments"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "shared", default: false
     t.index ["workbench_id"], name: "index_control_lists_on_workbench_id"
   end
 

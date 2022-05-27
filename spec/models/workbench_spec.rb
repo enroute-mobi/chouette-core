@@ -1,35 +1,38 @@
 describe Workbench, type: :model do
-  it { should validate_presence_of(:name) }
-  # it { should validate_presence_of(:organisation) }
-  it { should validate_presence_of(:objectid_format) }
+  describe "validations" do
+    it { is_expected.to validate_presence_of(:name) }
+    it { is_expected.to validate_presence_of(:objectid_format) }
 
-  it { should belong_to(:organisation).optional }
-  it { should belong_to(:line_referential) }
-  it { should belong_to(:stop_area_referential) }
-  it { should belong_to(:workgroup) }
-  it { should belong_to(:output).class_name('ReferentialSuite') }
+    it { is_expected.to belong_to(:organisation).optional }
+    it { is_expected.to belong_to(:line_referential) }
+    it { is_expected.to belong_to(:stop_area_referential) }
+    it { is_expected.to belong_to(:workgroup) }
+    it { is_expected.to belong_to(:output).class_name('ReferentialSuite') }
 
-  it { should have_many(:lines).through(:line_referential) }
-  it { should have_many(:networks).through(:line_referential) }
-  it { should have_many(:companies).through(:line_referential) }
-  it { should have_many(:group_of_lines).through(:line_referential) }
+    it { is_expected.to have_many(:lines).through(:line_referential) }
+    it { is_expected.to have_many(:networks).through(:line_referential) }
+    it { is_expected.to have_many(:companies).through(:line_referential) }
+    it { is_expected.to have_many(:group_of_lines).through(:line_referential) }
 
-  it { should have_many(:stop_areas).through(:stop_area_referential) }
-  it { should have_many(:notification_rules).dependent(:destroy) }
+    it { is_expected.to have_many(:stop_areas).through(:stop_area_referential) }
+    it { is_expected.to have_many(:notification_rules).dependent(:destroy) }
 
-  context 'when status is accepted' do
-    before { allow(subject).to receive(:pending?) { false } }
+    context 'when the Workbench is waiting an associated Organisation' do
+      before { allow(subject).to receive(:pending?) { true } }
+      it { is_expected.to_not validate_presence_of(:organisation) }
+      it { is_expected.to_not validate_presence_of(:prefix) }
 
-    context "dependencies" do
-      before { allow(subject).to receive(:create_dependencies) }
-
-      it { is_expected.to validate_presence_of(:output) }
+      context "when another Workbench has the invitation code '123456" do
+        let!(:context) { Chouette.create { workbench invitation_code: '123456' } }
+        it { is_expected.to_not allow_value('123456').for(:invitation_code) }
+      end
     end
 
-    context 'organisation' do
-      it { should validate_presence_of(:organisation) }
+    context 'when the Workbench is associated to an Organisation' do
+      before { allow(subject).to receive(:pending?) { false } }
+      it { is_expected.to validate_presence_of(:organisation) }
+      it { is_expected.to validate_presence_of(:prefix) }
     end
-
   end
 
   context 'aggregation setup' do

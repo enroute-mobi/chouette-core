@@ -4,7 +4,7 @@ class WorkbenchConfirmationsController < ChouetteController
   include PolicyChecker
 
   def create
-    create! do |success, failure|
+    create! do |success, _|
       success.html { workbench_path @workbench_confirmation.workbench }
     end
   end

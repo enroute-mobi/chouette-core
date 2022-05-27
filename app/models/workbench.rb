@@ -12,7 +12,6 @@ class Workbench < ApplicationModel
   prepend LockedReferentialToAggregateWithLog
 
   include ObjectidFormatterSupport
-  include AASM
 
   belongs_to :organisation, optional: true
   belongs_to :workgroup
@@ -42,6 +41,8 @@ class Workbench < ApplicationModel
   validates :organisation, presence: true, unless: :pending?
   validates :prefix, presence: true, unless: :pending?
   validates_format_of :prefix, with: %r{\A[0-9a-zA-Z_]+\Z}, unless: :pending?
+  validates :invitation_code, presence: true, uniqueness: true, if: :pending?
+
   validates :output, presence: true
   validate  :locked_referential_to_aggregate_belongs_to_output
 
@@ -66,17 +67,8 @@ class Workbench < ApplicationModel
 
   scope :with_active_workgroup, -> { joins(:workgroup).where('workgroups.deleted_at': nil) }
 
-  aasm column: :status do
-    state :pending, initial: true
-    state :accepted
-
-    event :accept, timestamps: true do
-      transitions  from: :pending, to: :accepted do
-        guard do
-          Proc.new { |confirmation_code| invitation_code == confirmation_code }
-        end
-      end
-    end
+  def pending?
+    organisation_id.blank?
   end
 
   def locked_referential_to_aggregate_belongs_to_output
@@ -227,7 +219,7 @@ class Workbench < ApplicationModel
   def create_dependencies
     self.output ||= ReferentialSuite.create
 
-    unless organisation.present?
+    if pending?
       create_invitation_code
     end
 

@@ -37,10 +37,12 @@ class WorkgroupPolicy < ApplicationPolicy
     destroy?
   end
 
+  # FIXME Required only by Workgroup decorator and associated action :-/
   def add_workbench?
     WorkgroupWorkbenchPolicy.new(@user_context, Workbench).create?
   end
 
+  # FIXME Required only by Workgroup decorator and associated action :-/
   def confirm?
     WorkbenchConfirmationPolicy.new(@user_context, Workbench::Confirmation).create?
   end

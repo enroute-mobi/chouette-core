@@ -1,7 +1,7 @@
 class CodeSpace < ActiveRecord::Base
 
   belongs_to :workgroup
-  validates :short_name, presence: true, format: { with: /\A[a-z0-9_]+\z/ }
+  validates :short_name, presence: true, uniqueness: {scope: :workgroup_id}, format: { with: /\A[a-z0-9_]+\z/ }
 
   DEFAULT_SHORT_NAME = 'external'
   PUBLIC_SHORT_NAME  = 'public'

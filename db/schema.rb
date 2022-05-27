@@ -145,6 +145,7 @@ ActiveRecord::Schema.define(version: 2022_05_29_090410) do
     t.datetime "updated_at", null: false
     t.string "name"
     t.string "description"
+    t.index ["short_name", "workgroup_id"], name: "index_code_spaces_on_short_name_and_workgroup_id", unique: true
     t.index ["workgroup_id"], name: "index_code_spaces_on_workgroup_id"
   end
 

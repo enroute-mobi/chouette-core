@@ -44,11 +44,6 @@ class User < ApplicationModel
 
   enumerize :user_locale, in: %w(fr en), default: 'fr'
 
-  before_validation(:on => :create) do
-    self.password ||= Devise.friendly_token.first(6)
-    self.password_confirmation ||= self.password
-  end
-
   after_initialize do
     self.profile ||= :custom
   end

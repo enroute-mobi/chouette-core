@@ -10,7 +10,7 @@ en:
       setup_workgroup_deletion: Plan workgroup deletion
       restore_workgroup: Restore workgroup
       edit_transport_modes: Edit transport modes
-      add_workbench: Add workbench
+      add_workbench: Add Workbench
     edit_controls: &edit_controls
       title: "Workgroup Validation Settings"
     edit:

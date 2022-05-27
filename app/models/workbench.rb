@@ -212,6 +212,10 @@ class Workbench < ApplicationModel
       return false unless valid?
       workbench.update organisation: organisation, invitation_code: nil
     end
+
+    def save!
+      save || raise(ActiveRecord::RecordNotSaved.new("Failed to save the record", self))
+    end
   end
 
   private

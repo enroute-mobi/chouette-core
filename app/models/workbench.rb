@@ -173,7 +173,7 @@ class Workbench < ApplicationModel
   end
 
   def create_invitation_code
-    self.invitation_code	||= "%06d" % SecureRandom.random_number(1000000)
+    self.invitation_code	||= 3.times.map { "%03d" % SecureRandom.random_number(1000) }.join('-')
   end
 
   class Confirmation
@@ -185,13 +185,23 @@ class Workbench < ApplicationModel
 
     attr_accessor :organisation, :invitation_code
 
+    CODE_FORMAT = /\A\d{3}-\d{3}-\d{3}\z/
+
     validates :organisation, :invitation_code, presence: true
-    validates :invitation_code, format: { with: /\A\d{6}\z/ }
+    validates :invitation_code, format: { with: CODE_FORMAT }
 
     validate :workbench_exists
 
     def workbench
-      @workbench ||= Workbench.where(invitation_code: invitation_code).where.not(workgroup: organisation.workgroups).first
+      @workbench ||= Workbench.where(invitation_code: invitation_code).where.not(workgroup: existing_workgroups).first
+    end
+
+    def existing_workgroups
+      if organisation
+        organisation.workgroups
+      else
+        Workgroup.none
+      end
     end
 
     def workbench_exists

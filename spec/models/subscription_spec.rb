@@ -36,7 +36,7 @@ RSpec.describe Subscription do
     subject { subscription.workbench_confirmation }
 
     context "when Subscription workbench invitation code is defined" do
-      before { subscription.workbench_invitation_code = '123456' }
+      before { subscription.workbench_invitation_code = '123-456-789' }
 
       context "when Subscription workbench invitation code is 'Code Sample'" do
         before { subscription.workbench_invitation_code = 'Code Sample' }
@@ -134,12 +134,12 @@ RSpec.describe Subscription do
 
     context "when a workbench invitation code is provided" do
       let(:context) do
-        Chouette.create { workbench invitation_code: '123456', organisation: nil }
+        Chouette.create { workbench invitation_code: '123-456-789', organisation: nil }
       end
       let(:workbench) { context.workbench }
 
       before do
-        subscription.workbench_invitation_code = "123456"
+        subscription.workbench_invitation_code = "123-456-789"
       end
 
       it "doesn't create a Workgroup" do
@@ -151,7 +151,7 @@ RSpec.describe Subscription do
           expect { subscription.save }.to change { workbench.reload.organisation }.from(nil).to(subscription.organisation)
         end
         it "loses its invitation code" do
-          expect { subscription.save }.to change { workbench.reload.invitation_code }.from("123456").to(nil)
+          expect { subscription.save }.to change { workbench.reload.invitation_code }.from("123-456-789").to(nil)
         end
       end
     end

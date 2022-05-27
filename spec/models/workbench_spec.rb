@@ -1,4 +1,4 @@
-describe Workbench, type: :model do
+RSpec.describe Workbench, type: :model do
   describe "validations" do
     it { is_expected.to validate_presence_of(:name) }
     it { is_expected.to validate_presence_of(:objectid_format) }
@@ -23,8 +23,8 @@ describe Workbench, type: :model do
       it { is_expected.to_not validate_presence_of(:prefix) }
 
       context "when another Workbench has the invitation code '123456" do
-        let!(:context) { Chouette.create { workbench invitation_code: '123456' } }
-        it { is_expected.to_not allow_value('123456').for(:invitation_code) }
+        let!(:context) { Chouette.create { workbench invitation_code: '123-456-789' } }
+        it { is_expected.to_not allow_value('123-456-789').for(:invitation_code) }
       end
     end
 
@@ -150,10 +150,10 @@ describe Workbench, type: :model do
     subject { workbench.create_invitation_code }
 
     it "defines Workbench invitation_code" do
-      expect { subject }.to change(workbench, :invitation_code).from(nil).to(matching(/[0-9]{6}/))
+      expect { subject }.to change(workbench, :invitation_code).from(nil).to(matching(/\d{3}-\d{3}-\d{3}/))
     end
 
-    it { is_expected.to match(/[0-9]{6}/) }
+    it { is_expected.to match(/\d{3}-\d{3}-\d{3}/) }
   end
 
   describe "on creation" do
@@ -217,7 +217,17 @@ describe Workbench, type: :model do
       let(:context) { Chouette.create { workbench organisation: nil } }
 
       it { is_expected.to have_attributes(organisation: a_nil_value, prefix: a_nil_value) }
-      it { is_expected.to have_attributes(invitation_code: matching(/[0-9]{6}/)) }
+      it { is_expected.to have_attributes(invitation_code: matching(/\d{3}-\d{3}-\d{3}/)) }
     end
+  end
+end
+
+RSpec.describe Workbench::Confirmation do
+  it { is_expected.to_not allow_value('dummy', '123456789').for(:invitation_code) }
+
+  context "when a Workbench exists with invitation code '123-456-789'" do
+    let!(:context) { Chouette.create { workbench invitation_code: '123-456-789' } }
+
+    it { is_expected.to allow_value('123-456-789').for(:invitation_code) }
   end
 end

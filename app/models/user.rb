@@ -168,7 +168,11 @@ class User < ApplicationModel
       return [true, user]
     end
 
-    user = User.new email: email, name: name, profile: profile, organisation: organisation
+    random_password = SecureRandom.alphanumeric(30)
+    user = User.new(
+      email: email, name: name, profile: profile, organisation: organisation,
+      password: random_password, password_confirmation: random_password
+    )
     user.try(:skip_confirmation!)
     user.save!
     user.invite_from_user! from_user

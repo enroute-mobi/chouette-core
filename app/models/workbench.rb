@@ -220,11 +220,13 @@ class Workbench < ApplicationModel
     end
   end
 
-  private
-
   def create_default_prefix
-    self.prefix ||= organisation&.code&.parameterize(separator: "_")
+    if code = organisation&.code
+      self.prefix ||= code.gsub("-","_").parameterize(separator: "_")
+    end
   end
+
+  private
 
   def create_dependencies
     self.output ||= ReferentialSuite.create

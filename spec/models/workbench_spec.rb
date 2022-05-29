@@ -145,6 +145,23 @@ RSpec.describe Workbench, type: :model do
     end
   end
 
+  describe "#create_default_prefix" do
+    subject { workbench.create_default_prefix }
+
+    let(:organisation) { Organisation.new }
+    let(:workbench) { Workbench.new organisation: organisation }
+
+    context "when organisation code is 'test-abc'" do
+      before { organisation.code = 'test-abc' }
+      it { is_expected.to eq('test_abc') }
+    end
+
+    context "when organisation code is 'test+abc'" do
+      before { organisation.code = 'test+abc' }
+      it { is_expected.to eq('test_abc') }
+    end
+  end
+
   describe "#create_invitation_code" do
     let(:workbench) { Workbench.new }
     subject { workbench.create_invitation_code }

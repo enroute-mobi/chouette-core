@@ -18,12 +18,12 @@
   .row
     .col-lg-12
       .select-table
-        = table_builder_2 @workgroup.workbenches.joins(:organisation).order('organisations.name'),
+        = table_builder_2 @workgroup.workbenches.order('name'),
           [ \
             TableBuilderHelper::Column.new( \
-              key: :organisation_name, \
-              name: Organisation.ts.capitalize, \
-              attribute: Proc.new {|w| w.organisation.name }, \
+              key: :name, \
+              name: Workbench.ts.capitalize, \
+              attribute: :name, \
               sortable: false\
             ), \
             TableBuilderHelper::Column.new( \

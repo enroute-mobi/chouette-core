@@ -5,7 +5,7 @@
       - if import.referential_link
         = b.attribute :referential, value_method: :referential_link
       - unless @workbench
-        = b.attribute :workbench, label: Workbench.ts.capitalize ,value: link_to_if_i_can(import.workbench.organisation.name, import.workbench)
+        = b.attribute :workbench, label: Workbench.ts.capitalize ,value: link_to_if_i_can(import.workbench.name, import.workbench)
       - import.visible_options.map do |k, v|
         - if policy(import).option?(k)
           = b.attribute k, label: t(k, scope: import.i18n_attribute_scope), value: display_option_value(import, k)

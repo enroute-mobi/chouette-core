@@ -35,8 +35,8 @@ ruby:
             sortable: false \
           ), \
           TableBuilderHelper::Column.new( \
-            name: Organisation.ts.capitalize, \
-            attribute: Proc.new {|item| item.workbench.organisation.name }, \
+            name: Workbench.ts.capitalize, \
+            attribute: Proc.new {|item| item.workbench.name }, \
             sortable: false, \
           )\
         ], cls: 'table'

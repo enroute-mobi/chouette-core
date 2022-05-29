@@ -35,7 +35,7 @@ RSpec.describe Referential do
         subject.valid?
         errors = subject.errors.messages[:inconsistent_organisation]
         expect(errors.grep(%r<#{subject.organisation.name}>)).not_to be_empty
-        expect(errors.grep(%r<#{workbench.organisation.name}>)).not_to be_empty
+        expect(errors.grep(%r<#{workbench.name}>)).not_to be_empty
       end
     end
 

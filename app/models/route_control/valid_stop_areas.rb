@@ -14,7 +14,7 @@ module RouteControl
       {
         route_name: route.name,
         stop_area_ids: invalid_stop_areas.pluck(:name).to_sentence,
-        organisation_name: route.referential.workbench.organisation.name
+        organisation_name: route.referential.workbench.name
       }
     end
   end

@@ -64,7 +64,6 @@ class WorkbenchesController < ChouetteController
   end
 
   def query_params
-    #params[:q] ||= {organisation_name_eq_any: current_organisation.name}
     params[:q] ||= {}
     params[:q].delete_if { |query, value| value.blank? }
   end

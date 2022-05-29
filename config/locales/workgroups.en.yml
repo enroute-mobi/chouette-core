@@ -52,6 +52,7 @@ en:
         other: Workgroups
     attributes:
       workgroup:
+        description: Description
         enable_purge_merged_data: Enable purge of past merged data
         maximum_data_age: Maximum age of merged data
         sentinel_min_hole_size: Minimum length of a missing offer

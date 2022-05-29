@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_05_20_131227) do
+ActiveRecord::Schema.define(version: 2022_05_29_090410) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -1698,6 +1698,7 @@ ActiveRecord::Schema.define(version: 2022_05_20_131227) do
     t.boolean "enable_purge_merged_data", default: false
     t.bigint "shape_referential_id", null: false
     t.bit "nightly_aggregate_days", limit: 7, default: "1111111"
+    t.string "description"
     t.index ["shape_referential_id"], name: "index_workgroups_on_shape_referential_id"
   end
 

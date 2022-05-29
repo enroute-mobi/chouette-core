@@ -29,7 +29,7 @@ class Workgroup < ApplicationModel
   has_many :publication_apis, dependent: :destroy
   has_many :compliance_check_sets, dependent: :destroy
 
-  validates_uniqueness_of :name
+  validates :name, presence: true, uniqueness: true
   validates_uniqueness_of :stop_area_referential_id
   validates_uniqueness_of :line_referential_id
   validates_uniqueness_of :shape_referential_id

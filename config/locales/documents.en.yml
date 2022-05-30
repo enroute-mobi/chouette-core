@@ -9,10 +9,10 @@ en:
     edit:
       title: "Edit %{name}"
     actions:
-      show: "Show this  Document"
+      show: "Show this Document"
       new: "Create a Document"
-      edit: "Edit thi Document"
-      destroy: "Delte ce Document"
+      edit: "Edit this Document"
+      destroy: "Delete this Document"
       destroy_confirm: "Are you sure you want to delete this Document ?"
     form:
       placeholders:

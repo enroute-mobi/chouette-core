@@ -92,6 +92,7 @@ class Import::NetexGeneric < Import::Base
       end
       import.resources.each do |resource|
         resource.update_metrics
+        resource.save
       end
     end
   end

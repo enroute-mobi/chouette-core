@@ -26,14 +26,17 @@
           sortable: false, \
         ), \
         TableBuilderHelper::Column.new( \
-          key: :number_of_resources, \
-          attribute: Proc.new { |n| n.metrics.values.reduce(0) { |sum, v| sum + v.to_i } }, \
-          sortable: false, \
-        ), \
-        TableBuilderHelper::Column.new( \
           name: t('imports.show.table.test_results') , \
           attribute: Proc.new { |n| I18n.t('import_resources.index.metrics', n.metrics.deep_symbolize_keys) }, \
           sortable: false, \
-        ) \
+        ), \
+        TableBuilderHelper::Column.new( \
+          name: t('imports.show.table.download') , \
+          attribute: Proc.new { |n| '<i class="fa fa-download" aria-hidden="true"></i>'.html_safe }, \
+          sortable: false, \
+          link_to: lambda do |import_resource| \
+            url_for([@parent, import_resource.import, import_resource, :import_messages, format: 'csv']) \
+          end \
+        ), \
       ],
       cls: 'table has-search'

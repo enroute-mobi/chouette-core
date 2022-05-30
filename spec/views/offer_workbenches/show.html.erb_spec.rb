@@ -1,4 +1,3 @@
-
 RSpec::Matchers.define :have_box_for_item do |item, disabled|
   match do |actual|
     klass = "#{TableBuilderHelper.item_row_class_name([item])}-#{item.id}"
@@ -12,40 +11,26 @@ RSpec::Matchers.define :have_box_for_item do |item, disabled|
   description { "have a #{disabled ? "disabled ": ""}box for the item ##{item.id}" }
 end
 
-
-describe "workbenches/show", :type => :view do
-  before(:each) do
-    allow(view).to receive(:resource_class).and_return(Workbench)
-  end
-  
-  let!(:ids) { ['STIF:CODIFLIGNE:Line:C00840', 'STIF:CODIFLIGNE:Line:C00086'] }
-  let!(:lines) {
-    ids.map do |id|
-      create :line, objectid: id, line_referential: workbench.line_referential, referential: same_organisation_referential
+RSpec.describe "workbenches/show", :type => :view do
+  let(:context) do
+    Chouette.create do
+      workgroup do
+        workbench(:user_workbench) { referential :user_referential }
+        workbench { referential :other_referential }
+      end
     end
-  }
-  let!(:workbench){ assign :workbench, create(:workbench) }
-  let!(:same_organisation_referential){ create :workbench_referential, workbench: workbench }
-  let!(:different_organisation_referential) do
-    create(
-      :workbench_referential,
-      workbench: create(:workbench, workgroup: workbench.workgroup),
-      metadatas: [create(:referential_metadata, lines: lines)]
-    )
   end
-  let!(:referentials){
-    same_organisation_referential && different_organisation_referential
-    assign :wbench_refs, paginate_collection(Referential, ReferentialDecorator)
-  }
+
+  let!(:workbench) { assign :workbench, context.workbench(:user_workbench) }
+  let!(:same_organisation_referential) { context.referential(:user_referential) }
+  let!(:different_organisation_referential) { context.referential(:other_referential) }
+  let!(:referentials) { assign :wbench_refs, paginate_collection(workbench.all_referentials, ReferentialDecorator) }
   let!(:q) { assign :q_for_form, Ransack::Search.new(Referential) }
+
   before :each do
-    same_organisation_referential.update metadatas: [create(:referential_metadata, lines: lines)]
-    lines
+    allow(view).to receive(:resource_class).and_return(Workbench)
     controller.request.path_parameters[:id] = workbench.id
-    expect(workbench.referentials).to     include same_organisation_referential
-    expect(workbench.referentials).to_not include different_organisation_referential
-    expect(workbench.all_referentials).to include same_organisation_referential
-    expect(workbench.all_referentials).to include different_organisation_referential
+
     render
   end
 

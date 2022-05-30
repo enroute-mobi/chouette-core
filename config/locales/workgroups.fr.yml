@@ -15,6 +15,7 @@ fr:
       title: 'Paramétrage de la validation du Groupe de Travail'
     edit:
       <<: *edit_controls
+      success: "Le Groupe de Travail a bien éte modifié"
     index:
       name_cont: Nom
       title: Groupes de travail

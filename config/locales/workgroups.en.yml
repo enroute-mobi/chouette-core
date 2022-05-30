@@ -15,6 +15,7 @@ en:
       title: "Workgroup Validation Settings"
     edit:
       <<: *edit_controls
+      success: The Workgroup is modified
     index:
       name_cont: Name
       title: Workgroups

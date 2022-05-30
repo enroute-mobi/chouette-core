@@ -17,6 +17,10 @@ class CreateDocuments < ActiveRecord::Migration[5.2]
         t.references :document_provider
         t.timestamps
       end
+
+      reversible do |dir|
+        dir.up { Workbench.find_each(&:create_default_document_provider) }
+      end
     end
   end
 end

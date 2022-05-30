@@ -7,8 +7,9 @@
 		.col-lg-6.col-md-6.col-sm-12.col-xs-12
 			.row
 				= simple_block_for @document, title: t('documents.form.sections.identification') do |d|
+					= d.attribute :uuid
 					= d.attribute :name
-					/ = d.attribute :document_type, as: :association, link: ->(type) { workbench_document_type_path(@workbench, type) }
+					= d.attribute :document_type, as: :association, link: ->(type) { workgroup_document_type_path(@workbench.workgroup, type) }
 					= d.attribute :valid_after, value: @document.display_validity_period_part(:begin)
 					= d.attribute :valid_until, value: @document.display_validity_period_part(:end)
 			.row

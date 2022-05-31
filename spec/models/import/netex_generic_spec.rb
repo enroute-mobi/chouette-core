@@ -118,7 +118,7 @@ RSpec.describe Import::NetexGeneric do
 
         let!(:stop_area_provider) { workbench.default_stop_area_provider }
         let(:stop_areas) { stop_area_provider.reload.stop_areas }
-  
+
         it 'should create a stop area with the default stop_area_provider' do
           subject
 
@@ -540,7 +540,7 @@ RSpec.describe Import::NetexGeneric do
           })
         end
 
-        it 'should create a stop area with the default line_provider' do
+        it 'should create a line with the default line_provider' do
           subject
 
           expect(lines).to include(expected_attributes)

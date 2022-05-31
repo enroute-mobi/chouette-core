@@ -14,7 +14,7 @@ class Document < ApplicationModel
 	mount_uploader :file, DocumentUploader
 
 	def self.file_extension_whitelist
-		%w(pdf kml jpeg png)
+		%w(pdf kml jpg jpeg png)
 	end
 
 	def valid_after

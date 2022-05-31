@@ -55,9 +55,7 @@ class DocumentTypesController < ChouetteController
     params.require(:document_type).permit(
       :name,
       :short_name,
-      :description,
-      :created_at,
-      :updated_at
+      :description
     )
   end
 end

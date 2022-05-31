@@ -6,7 +6,6 @@
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = simple_block_for @document_type, title: t('document_types.form.sections.identification') do |d|
-          = d.attribute :id
           = d.attribute :name
           = d.attribute :short_name
           = d.attribute :description

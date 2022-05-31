@@ -21,8 +21,8 @@
 			= d.attribute :comments
 			= d.attribute :criticity, value: I18n.t(control_run.criticity, scope: 'enumerize.control.criticity')
 			= d.attribute :code
-			- control_run.options.each do |option, value|
-				= render option, d: d, value: value, option: option
+			- control_run.options.each do |attribute_name, value|
+				= render attribute_name, d: d, value: value, control_run: control_run
 
 	.control_messages x-show="showMessages" x-transition.delay.50ms=""
 		= render 'control_messages', messages: control_run.control_messages.paginate(page: 1, per_page: 15)

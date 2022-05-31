@@ -28,4 +28,5 @@ fr:
         custom_field: Champ personnalisé cible
       control/code_format/run:
         target_code_space_id: Espace de code cible
+        target_code_space: Espace de code cible
         expected_format: Format attendu

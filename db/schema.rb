@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_04_06_200454) do
+ActiveRecord::Schema.define(version: 2022_05_20_131227) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -548,6 +548,16 @@ ActiveRecord::Schema.define(version: 2022_04_06_200454) do
     t.bigint "publication_api_id"
     t.index ["publication_api_id"], name: "index_destinations_on_publication_api_id"
     t.index ["publication_setup_id"], name: "index_destinations_on_publication_setup_id"
+  end
+
+  create_table "document_types", force: :cascade do |t|
+    t.bigint "workgroup_id"
+    t.string "name"
+    t.string "short_name"
+    t.string "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["workgroup_id"], name: "index_document_types_on_workgroup_id"
   end
 
   create_table "entrances", force: :cascade do |t|

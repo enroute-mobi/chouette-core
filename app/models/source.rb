@@ -279,6 +279,44 @@ class Source < ApplicationModel
       order(created_at: :desc).offset(offset).delete_all
     end
 
+    class ImportCategory
+      def initialize(tempfile)
+        @tempfile = tempfile
+      end
+      attr_accessor :tempfile
+
+      def import_category
+        return {} unless file_type
+        { import_category: import_types[file_type] }
+      end
+
+      def file_type
+        @file_type ||= MimeMagic.by_magic(zip_content)&.subtype
+      end
+
+      def import_types
+        @import_type = {
+          'xml' => 'netex_generic',
+        }
+      end
+
+      def path
+        tempfile.path rescue tempfile
+      end
+
+      def zip_content
+        Zip::File.open(path) do |zip_file|
+          zip_file.each do |entry|
+            if entry.file?
+              entry.get_input_stream do |io|
+                return io.read
+              end
+            end
+          end
+        end
+      end
+    end
+
     private
 
     def set_workbench
@@ -286,8 +324,17 @@ class Source < ApplicationModel
     end
 
     def import_workbench_options
-      processing_options = import_options.keys.select{ |key| key.start_with?('process_') }
-      import_options.except(*processing_options)
+      import_options
+        .merge(import_category)
+        .except(*processing_options)
+    end
+
+    def processing_options
+      import_options.keys.select{ |key| key.start_with?('process_') }
+    end
+
+    def import_category
+      ImportCategory.new(imported_file).import_category
     end
   end
 

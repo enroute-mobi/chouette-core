@@ -73,6 +73,16 @@ RSpec.describe Source do
       it { is_expected.to eq(Source::Downloader::FrenchNap) }
     end
   end
+
+  describe Source::Retrieval::ImportCategory do
+
+    let(:import_category) { Source::Retrieval::ImportCategory.new 'spec/fixtures/reflex_updated.zip' }
+
+    subject { import_category.import_category }
+
+    it { is_expected.to eq({:import_category => "netex_generic"}) }
+  end
+
 end
 
 RSpec.describe Source::Downloader::URL do

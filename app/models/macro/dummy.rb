@@ -35,7 +35,7 @@ module Macro
       end
 
       def models
-        @models ||= context.send(model_collection)
+        @models ||= scope.send(model_collection)
       end
     end
   end

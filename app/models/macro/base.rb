@@ -72,53 +72,26 @@ module Macro
         Rails.logger
       end
 
-      def context
-        @context ||= OwnerContext.new(macro_context_run || referential || workbench, workbench)
+      def scope
+        parent&.scope
       end
 
-      class OwnerContext
-        def initialize(context, workbench)
-          @context = context
-          @workbench = workbench
+      class CustomScope
+        def initialize(macro_run)
+          @macro_run = macro_run
         end
-        attr_accessor :context, :workbench
+        attr_accessor :macro_run
 
-        delegate :stop_area_providers, :shape_providers, :line_providers, to: :workbench
-
-        def stop_areas
-          context.stop_areas.where(stop_area_provider: stop_area_providers)
-        end
-
-        def shapes
-          context.shapes.where(shape_provider: shape_providers)
+        def contexts
+          # TODO Support nested contexts
+          # For the moment only a single Macro::Context:Run can be defined
+          @contexts ||= [ macro_run.macro_context_run ].compact
         end
 
-        def lines
-          context.lines.where(line_provider: line_providers)
-        end
-
-        def networks
-          context.networks.where(line_provider: line_providers)
-        end
-
-        def companies
-          context.companies.where(line_provider: line_providers)
-        end
-
-        def journey_patterns
-          context.journey_patterns
-        end
-
-        def vehicle_journeys
-          context.vehicle_journeys
-        end
-
-        def routes
-          context.routes
-        end
-
-        def stop_points
-          context.stop_points
+        def scope(initial_scope)
+          contexts.inject(initial_scope) do |scope, context|
+            context.scope(scope)
+          end
         end
       end
 

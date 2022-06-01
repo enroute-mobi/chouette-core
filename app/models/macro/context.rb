@@ -46,48 +46,20 @@ module Macro
 
       delegate :referential, :workbench, to: :macro_list_run
 
-      def context
-        referential || WorkbenchScope.new(workbench)
+      def parent
+        macro_list_run
+        # TODO Nested context should change this method into
+        # macro_context_run || macro_list_run
+      end
+
+      def scope(initial_scope = parent.scope)
+        initial_scope
       end
 
       def run
         logger.tagged "#{self.class.to_s}(id:#{id||object_id})" do
           macro_runs.each(&:run)
         end
-      end
-    end
-
-    class WorkbenchScope
-      def initialize(workbench)
-        @workbench = workbench
-      end
-
-      def lines
-        @workbench.lines
-      end
-
-      def companies
-        @workbench.companies
-      end
-
-      def routes
-        Chouette::Route.none
-      end
-
-      def stop_points
-        Chouette::StopPoint.none
-      end
-
-      def stop_areas
-        @workbench.stop_areas
-      end
-
-      def journey_patterns
-        Chouette::JourneyPattern.none
-      end
-
-      def vehicle_journeys
-        Chouette::VehicleJourney.none
       end
     end
   end

@@ -17,8 +17,13 @@ RSpec.describe Macro::CreateCode do
       subject { macro_run.models_without_code }
 
       context "when the macro has target_model 'StopArea' and target_code_space 'test'" do
+        let!(:macro_list_run) do
+          Macro::List::Run.create referential: context.referential, workbench: context.workbench
+        end
+
         let(:macro_run) do
           Macro::CreateCode::Run.new(
+            macro_list_run: macro_list_run,
             target_model: 'StopArea',
             target_code_space: 'test'
           ).tap do |run|
@@ -31,6 +36,7 @@ RSpec.describe Macro::CreateCode do
             Chouette.create do
               code_space short_name: 'test'
               stop_area
+              referential
             end
           end
           let(:stop_area) { context.stop_area }
@@ -45,6 +51,7 @@ RSpec.describe Macro::CreateCode do
             Chouette.create do
               code_space short_name: 'other'
               stop_area codes: { other: 'dummy'}
+              referential
             end
           end
           let(:stop_area) { context.stop_area }
@@ -59,6 +66,7 @@ RSpec.describe Macro::CreateCode do
             Chouette.create do
               code_space short_name: 'test'
               stop_area codes: { test: 'dummy'}
+              referential
             end
           end
           let(:stop_area) { context.stop_area }
@@ -72,11 +80,16 @@ RSpec.describe Macro::CreateCode do
 
     describe "#run" do
       context "when the macro has target_model 'StopArea', source_attribute 'registration_number' and target_code_space 'test'" do
+        let!(:macro_list_run) do
+          Macro::List::Run.create referential: context.referential, workbench: context.workbench
+        end
+
         let(:macro_run) do
           Macro::CreateCode::Run.new(
             target_model: 'StopArea',
             source_attribute: 'registration_number',
-            target_code_space: 'test'
+            target_code_space: 'test',
+            macro_list_run: macro_list_run
           ).tap do |run|
             allow(run).to receive(:workbench).and_return(context.workbench)
           end
@@ -87,6 +100,7 @@ RSpec.describe Macro::CreateCode do
             Chouette.create do
               code_space short_name: 'test'
               stop_area registration_number: 'dummy'
+              referential
             end
           end
           let(:code_space) { context.code_space }
@@ -104,6 +118,7 @@ RSpec.describe Macro::CreateCode do
             Chouette.create do
               code_space short_name: 'test'
               stop_area codes: { test: 'unchanged' }
+              referential
             end
           end
           let(:code_space) { context.code_space }
@@ -120,6 +135,7 @@ RSpec.describe Macro::CreateCode do
             Chouette.create do
               code_space short_name: 'test'
               stop_area registration_number: nil
+              referential
             end
           end
           let(:stop_area) { context.stop_area }

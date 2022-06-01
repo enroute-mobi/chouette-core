@@ -12,7 +12,7 @@ module Macro
       end
 
       def stop_areas
-        context.stop_areas
+        scope.stop_areas
       end
 
       def selected_attributes

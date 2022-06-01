@@ -227,4 +227,23 @@ RSpec.describe Chouette::Sync::Updater do
 
   end
 
+  describe Chouette::Sync::Updater::Provider do
+
+    let(:context) { Chouette.create { workbench } }
+    let(:workbench) { context.workbench }
+    let(:workgroup) { context.workgroup }
+    let(:target) { workbench.stop_area_referential }
+    let(:default_provider) { workbench.default_stop_area_provider }
+    let!(:provider) { Chouette::Sync::Updater::Provider.new target, default_provider }
+
+    describe "#scope" do
+      subject {provider.scope }
+      it { is_expected.to eq(target.stop_area_providers) }
+    end
+
+    describe "#target_is_provider?" do
+      subject {provider.target_is_provider? }
+      it { is_expected.to eq(false) }
+    end
+  end
 end

@@ -8,7 +8,7 @@ class ImportMessagesController < ChouetteController
   def index
     index! do |format|
       format.csv {
-        send_data Import::MessageExport.new(:import_messages => @import_messages).to_csv(:col_sep => "\;", :quote_char=>'"', force_quotes: true) , :filename => "#{t('import_messages.import_errors')}_#{@import_resource.name.gsub('.xml', '')}_#{Time.now.strftime("%d-%m-%Y_%H-%M")}.csv"
+        send_data Import::MessageExport.new(:import_messages => @import_messages.warnings_or_errors).to_csv(:col_sep => "\;", :quote_char=>'"', force_quotes: true) , :filename => "#{t('import_messages.import_errors')}_#{@import_resource.name.gsub('.xml', '')}_#{Time.now.strftime("%d-%m-%Y_%H-%M")}.csv"
       }
     end
   end

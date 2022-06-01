@@ -2,7 +2,7 @@ module Chouette
   module Sync
     class Base
 
-      attr_accessor :source, :target
+      attr_accessor :source, :target, :default_provider
       attr_accessor :delete_batch_size, :update_batch_size
       attr_accessor :resource_type, :resource_id_attribute, :resource_decorator
       attr_accessor :model_type, :model_id_attribute, :code_space
@@ -78,6 +78,7 @@ module Chouette
           model_type: model_type, model_id_attribute: model_id_attribute,
           event_handler: event_handler,
           code_space: code_space,
+          default_provider: default_provider,
         }.delete_if { |_,v| v.nil? }
         options = default_options.merge(options)
         updater_class.new options

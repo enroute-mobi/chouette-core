@@ -242,11 +242,9 @@ module Chouette
           end
 
           def find_provider_by_columns
-            [:objectid, :short_name].each do |column_name|
-              if scope.column_names.include? column_name.to_s
-                if (p = scope.find_by(column_name => data_source_ref)).present?
-                  return p
-                end
+            if scope.column_names.include? 'objectid'
+              if (p = scope.find_by(objectid: data_source_ref)).present?
+                return p
               end
             end
 

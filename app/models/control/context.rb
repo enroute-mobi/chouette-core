@@ -17,7 +17,8 @@ module Control
 
     def self.available
       [
-        Control::Context::TransportMode
+        Control::Context::TransportMode,
+        Control::Context::OperatingPeriod
       ]
     end
 
@@ -39,6 +40,8 @@ module Control
     end
 
     class Run < ApplicationModel
+      include OptionsSupport
+
       self.table_name = "control_context_runs"
 
       belongs_to :control_list_run, class_name: "Control::List::Run", optional: false, inverse_of: :control_context_runs

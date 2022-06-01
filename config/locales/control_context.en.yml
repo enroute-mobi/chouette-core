@@ -1,17 +1,33 @@
 en:
+  control_contexts:
+    form:
+      operating_period:
+        label:
+          start: Operating in the next
+          end: days
+      transport_mode:
+        label: When transport mode is
   activerecord:
     models:
-      control:
+      control/context:
         zero:  "Control Contexts"
         one:   "Control Context"
         other: "Control Contexts"
+      control/context/transport_mode:
+        one: Transport mode
+      control/context/operating_period:
+        one: Operating period
     attributes:
       control/context: &control_context
         name: Name
         comments: Comments
       control/context/transport_mode: &transport_mode
         transport_mode: Transport Mode
+      control/context/operating_period: &operating_period
+        next_days: Next days
       control/context/run:
         <<: *control_context
       control/context/transport_mode/run:
         <<: *transport_mode
+      control/context/operating_period/run:
+        <<: *operating_period

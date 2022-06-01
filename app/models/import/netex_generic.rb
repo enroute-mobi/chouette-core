@@ -90,10 +90,13 @@ class Import::NetexGeneric < Import::Base
 
         sync.update_or_create
       end
+
       import.resources.each do |resource|
         resource.update_metrics
         resource.save
       end
+    ensure
+      import.save
     end
   end
 
@@ -223,21 +226,13 @@ class Import::NetexGeneric < Import::Base
         end
 
         # TODO As ugly as necessary
+        # Need to save resource because it's used in resource method
         resource.save
       end
 
       def process_create_or_update
         resource.status = "OK"
         resource.inc_rows_count event.count
-        resource.messages.build(
-          criticity: :info,
-          message_attributes: {
-            attribute_name: {
-              id: event.model&.id,
-              name: event.model&.name
-            },
-          }
-        )
       end
 
       def process_error

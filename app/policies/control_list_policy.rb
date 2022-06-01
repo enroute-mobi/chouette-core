@@ -10,11 +10,11 @@ class ControlListPolicy < ApplicationPolicy
   end
 
   def destroy?
-    user.has_permission?('control_lists.destroy')
+    user.has_permission?('control_lists.destroy') && @current_workbench.control_lists.include?(record)
   end
 
   def update?
-    user.has_permission?('control_lists.update')
+    user.has_permission?('control_lists.update') && @current_workbench.control_lists.include?(record)
   end
 
   def execute?

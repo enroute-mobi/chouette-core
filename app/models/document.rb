@@ -8,7 +8,7 @@ class Document < ApplicationModel
 
 	validates_associated :codes
 
-	validates :name, :file, presence: true
+	validates :name, :file, :document_type_id, :document_provider_id, presence: true
 	validate :has_valid_validity_period
 
 	mount_uploader :file, DocumentUploader

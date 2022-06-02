@@ -299,7 +299,8 @@ class Source < ApplicationModel
         creator: creator,
         file: imported_file,
         options: import_workbench_options,
-        type: 'Import::Workbench'
+        type: 'Import::Workbench',
+        import_category: import_category
       }
     end
 
@@ -327,6 +328,10 @@ class Source < ApplicationModel
       else
         {}
       end
+    end
+
+    def import_category
+      "netex_generic" if downloaded_file_type&.xml?
     end
 
     private

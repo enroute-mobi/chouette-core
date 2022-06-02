@@ -92,9 +92,22 @@ RSpec.describe Source::Retrieval do
       is_expected.to_not include("process_option_1" =>  "excluded")
     end
 
-    context "when imported file is an XML file" do
-      before { allow(retrieval).to receive(:imported_file_type).and_return(double('xml?' => true)) }
+    context "when downloaded file is an XML file" do
+      before { allow(retrieval).to receive(:downloaded_file_type).and_return(double('xml?' => true)) }
       it { is_expected.to include(import_category: "netex_generic") }
+    end
+  end
+
+  describe "#import_attributes" do
+    subject { retrieval.import_attributes }
+
+    describe "import_category" do
+      it { is_expected.to include(import_category: nil) }
+
+      context "when downloaded file is an XML file" do
+        before { allow(retrieval).to receive(:downloaded_file_type).and_return(double('xml?' => true)) }
+        it { is_expected.to include(import_category: "netex_generic") }
+      end
     end
   end
 
@@ -107,28 +120,28 @@ RSpec.describe Source::Retrieval do
     end
   end
 
-  describe "#imported_file_type" do
-    subject { retrieval.imported_file_type }
-    context "when imported file is an XML file" do
-      before { allow(retrieval).to receive(:imported_file).and_return(open_fixture('reflex.xml')) }
+  describe "#downloaded_file_type" do
+    subject { retrieval.downloaded_file_type }
+    context "when downloaded file is an XML file" do
+      before { allow(retrieval).to receive(:downloaded_file).and_return(open_fixture('reflex.xml')) }
       it { is_expected.to be_xml }
     end
 
-    context "when imported file is an ZIP file" do
-      before { allow(retrieval).to receive(:imported_file).and_return(open_fixture('reflex_updated.zip')) }
+    context "when downloaded file is an ZIP file" do
+      before { allow(retrieval).to receive(:downloaded_file).and_return(open_fixture('reflex_updated.zip')) }
       it { is_expected.to be_zip }
     end
   end
 
   describe "#checksum" do
     subject { retrieval.checksum }
-    context "when imported file is an XML file" do
-      before { allow(retrieval).to receive(:imported_file).and_return(open_fixture('reflex.xml')) }
+    context "when downloaded file is an XML file" do
+      before { allow(retrieval).to receive(:downloaded_file).and_return(open_fixture('reflex.xml')) }
       it { is_expected.to match(/^[0-9a-f]{64}$/) }
     end
 
-    context "when imported file is an ZIP file" do
-      before { allow(retrieval).to receive(:imported_file).and_return(open_fixture('reflex_updated.zip')) }
+    context "when downloaded file is an ZIP file" do
+      before { allow(retrieval).to receive(:downloaded_file).and_return(open_fixture('reflex_updated.zip')) }
       it { is_expected.to match(/^[0-9a-f]{64}$/) }
     end
   end

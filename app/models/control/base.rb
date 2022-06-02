@@ -28,6 +28,10 @@ module Control
       @run_class ||= self.class.const_get("Run")
     end
 
+    def self.short_type
+      @short_type ||= self.name.demodulize.underscore
+    end
+
     def workbench
       (control_list || control_context).workbench
     end
@@ -48,6 +52,10 @@ module Control
 
       def parent
         control_list_run || control_context_run
+      end
+
+      def control_class
+        self.class.parent
       end
 
       delegate :referential, :workbench, to: :parent, allow_nil: true

@@ -4,14 +4,14 @@
 	.flex.items-center.w-full
 		button @click="showDetails = ! showDetails" type="button" class="flex items-center p-3 pl-3 mr-3 font-bold text-white rounded cursor-pointer bg-enroute-chouette-primary hover:text-indigo-100"
 			<span class="text-3xl w-4" x-text="showDetails ? '-' : '+'">+</span>
-		
+
 		.grow
 			= truncate("#{control_run.name} (#{control_run.model_name.human})", length: 60)
 
 		.flex.items-center.ml-auto
 			.flex.justify-center.rounded.mx-5.p-5.font-bold.border.border-black.text-black style="min-width: 50px;" class="#{control_run.criticity == 'warning' ? 'bg-enroute-chouette-gold' : 'bg-enroute-chouette-red' }"
 				p = control_run.control_messages.send(control_run.criticity).size
-			
+
 			button @click="showMessages = ! showMessages" type="button" class="flex px-7 py-3 ml-xs font-bold text-white rounded cursor-pointer bg-enroute-chouette-primary h-[50%] hover:text-indigo-100"
 				.span.fa.fa-caret-down.mx-1 x-show="showMessages"
 				.span.fa.fa-caret-up.mx-1 x-show="!showMessages"
@@ -21,8 +21,7 @@
 			= d.attribute :comments
 			= d.attribute :criticity, value: I18n.t(control_run.criticity, scope: 'enumerize.control.criticity')
 			= d.attribute :code
-			- control_run.options.each do |k, v|
-				= d.attribute k, value: v
+			= render "control_options/#{control_run.control_class.short_type}", d: d, control_run: control_run
 
 	.control_messages x-show="showMessages" x-transition.delay.50ms=""
 		= render 'control_messages', messages: control_run.control_messages.paginate(page: 1, per_page: 15)

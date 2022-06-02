@@ -20,6 +20,10 @@ module Macro
       run_class.new run_attributes
     end
 
+    def self.short_type
+      @short_type ||= self.name.demodulize.underscore
+    end
+
     def run_class
       @run_class ||= self.class.const_get("Run")
     end
@@ -38,6 +42,10 @@ module Macro
 
       def parent
         macro_list_run || macro_context_run
+      end
+
+      def control_class
+        self.class.parent
       end
 
       delegate :referential, :workbench, to: :parent, allow_nil: true

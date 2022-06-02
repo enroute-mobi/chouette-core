@@ -1,3 +1,5 @@
+require 'mimemagic_ext'
+
 class Source < ApplicationModel
   extend Enumerize
   belongs_to :workbench, optional: false
@@ -148,7 +150,11 @@ class Source < ApplicationModel
   end
 
   module Checksumer
-    class Zip
+    def self.for(type)
+      type.zip? ? ZIP : File
+    end
+
+    class File
       include Measurable
 
       attr_reader :file
@@ -156,35 +162,53 @@ class Source < ApplicationModel
         @file = file
       end
 
+      def digest
+        @digest ||= Digest::SHA256.new
+      end
+
+      def checksum
+        checksum!
+        digest.hexdigest
+      end
+
+      protected
+
+      def digest_stream(io)
+        buffer = ""
+        while io.read 16384, buffer
+          digest.update buffer
+        end
+      end
+
+      def checksum!
+        ::File.open(file) do |file|
+          digest_stream file
+        end
+      end
+    end
+
+    class ZIP < File
+
       MAX_SIZE = 512.megabytes
 
       # Digest entries name and content
       # Don't use a Zip::InputStream to avoid difference with entry order change
-      def checksum
-        digest = Digest::SHA256.new
-
-        ::Zip::File.open(@file) do |zip_file|
+      def checksum!
+        ::Zip::File.open(file) do |zip_file|
           # Sort the entries by name to always digest in the same order
           zip_file.glob('*').sort_by(&:name).each do |entry|
             # We could read only the beginning of larger files
             raise 'File too large when extracted' if entry.size > MAX_SIZE
 
+            next unless entry.file?
+
             # Digest the entry name
             digest.update entry.name
-
             # Digest the entry content
-            buffer = ""
-            io = entry.get_input_stream
-            while io.read 16384, buffer
-              digest.update buffer
-            end
+            digest_stream entry.get_input_stream
           end
         end
-
-        digest.hexdigest
       end
-      measure :checksum
-
     end
   end
 
@@ -216,7 +240,7 @@ class Source < ApplicationModel
     delegate :downloader, :import_options, to: :source
 
     def downloaded_file
-      @downloaded_file ||= Tempfile.new(["retrieval-downloaded", ".zip"])
+      @downloaded_file ||= Tempfile.new(["retrieval-downloaded"])
     end
 
     def download
@@ -234,11 +258,11 @@ class Source < ApplicationModel
     measure :process
 
     def processor
-      Processor::GTFS.new.with_options(import_options).presence
+      Processor::GTFS.new.with_options(processing_options).presence || Processor::Copy.new
     end
 
     def processed_file
-      @processed_file ||= Tempfile.new(["retrieval-processed",".zip"])
+      @processed_file ||= Tempfile.new(["retrieval-processed",".#{downloaded_file_type.default_extension}"])
     end
 
     def import_name
@@ -249,8 +273,16 @@ class Source < ApplicationModel
       @processed_file || downloaded_file
     end
 
+    def downloaded_file_type
+      @file_type ||= MimeMagic.by_magic(downloaded_file)
+    end
+
+    def checksumer_class
+      Checksumer.for(downloaded_file_type)
+    end
+
     def checksumer
-      Checksumer::Zip.new imported_file
+      checksumer_class.new imported_file
     end
 
     def checksum
@@ -267,7 +299,8 @@ class Source < ApplicationModel
         creator: creator,
         file: imported_file,
         options: import_workbench_options,
-        type: 'Import::Workbench'
+        type: 'Import::Workbench',
+        import_category: import_category
       }
     end
 
@@ -279,19 +312,42 @@ class Source < ApplicationModel
       order(created_at: :desc).offset(offset).delete_all
     end
 
+    def import_workbench_options
+      import_options
+        .merge(import_category_option)
+        .except(*processing_options.keys)
+    end
+
+    def processing_options
+      import_options.select{ |key, _| key.start_with?('process_') }
+    end
+
+    def import_category_option
+      if downloaded_file_type&.xml?
+        { import_category: "netex_generic" }
+      else
+        {}
+      end
+    end
+
+    def import_category
+      "netex_generic" if downloaded_file_type&.xml?
+    end
+
     private
 
     def set_workbench
       self.workbench = self.source&.workbench
     end
-
-    def import_workbench_options
-      processing_options = import_options.keys.select{ |key| key.start_with?('process_') }
-      import_options.except(*processing_options)
-    end
   end
 
   module Processor
+    class Copy
+      def process(source_file, target_file)
+        IO.copy_stream(source_file, target_file)
+      end
+    end
+
     class GTFS
 
       def with_options(options = {})

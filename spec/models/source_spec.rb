@@ -75,6 +75,78 @@ RSpec.describe Source do
   end
 end
 
+RSpec.describe Source::Retrieval do
+  let(:source) { Source.new }
+  subject(:retrieval) { Source::Retrieval.new source: source }
+
+  describe "#import_workbench_options" do
+    subject { retrieval.import_workbench_options }
+
+    it "includes Source import_options" do
+      source.import_options = { dummy: true }
+      is_expected.to include(source.import_options)
+    end
+
+    it "exclude Source processing options" do
+      source.import_options = { dummy: true, process_option_1: "excluded" }
+      is_expected.to_not include("process_option_1" =>  "excluded")
+    end
+
+    context "when downloaded file is an XML file" do
+      before { allow(retrieval).to receive(:downloaded_file_type).and_return(double('xml?' => true)) }
+      it { is_expected.to include(import_category: "netex_generic") }
+    end
+  end
+
+  describe "#import_attributes" do
+    subject { retrieval.import_attributes }
+
+    describe "import_category" do
+      it { is_expected.to include(import_category: nil) }
+
+      context "when downloaded file is an XML file" do
+        before { allow(retrieval).to receive(:downloaded_file_type).and_return(double('xml?' => true)) }
+        it { is_expected.to include(import_category: "netex_generic") }
+      end
+    end
+  end
+
+  describe "#processing_options" do
+    subject { retrieval.processing_options }
+
+    it "include all import options with a key starting with process_" do
+      source.import_options = { not_process_option: "excluded", process_option_1: "included" }.stringify_keys
+      is_expected.to include("process_option_1" => "included")
+    end
+  end
+
+  describe "#downloaded_file_type" do
+    subject { retrieval.downloaded_file_type }
+    context "when downloaded file is an XML file" do
+      before { allow(retrieval).to receive(:downloaded_file).and_return(open_fixture('reflex.xml')) }
+      it { is_expected.to be_xml }
+    end
+
+    context "when downloaded file is an ZIP file" do
+      before { allow(retrieval).to receive(:downloaded_file).and_return(open_fixture('reflex_updated.zip')) }
+      it { is_expected.to be_zip }
+    end
+  end
+
+  describe "#checksum" do
+    subject { retrieval.checksum }
+    context "when downloaded file is an XML file" do
+      before { allow(retrieval).to receive(:downloaded_file).and_return(open_fixture('reflex.xml')) }
+      it { is_expected.to match(/^[0-9a-f]{64}$/) }
+    end
+
+    context "when downloaded file is an ZIP file" do
+      before { allow(retrieval).to receive(:downloaded_file).and_return(open_fixture('reflex_updated.zip')) }
+      it { is_expected.to match(/^[0-9a-f]{64}$/) }
+    end
+  end
+end
+
 RSpec.describe Source::Downloader::URL do
 
   subject(:downloader) { Source::Downloader::URL.new("http://chouette.test") }

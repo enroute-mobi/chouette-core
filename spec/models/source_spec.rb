@@ -114,9 +114,22 @@ RSpec.describe Source::Retrieval do
       it { is_expected.to be_xml }
     end
 
-    context "when imported file is an XML file" do
+    context "when imported file is an ZIP file" do
       before { allow(retrieval).to receive(:imported_file).and_return(open_fixture('reflex_updated.zip')) }
       it { is_expected.to be_zip }
+    end
+  end
+
+  describe "#checksum" do
+    subject { retrieval.checksum }
+    context "when imported file is an XML file" do
+      before { allow(retrieval).to receive(:imported_file).and_return(open_fixture('reflex.xml')) }
+      it { is_expected.to match(/^[0-9a-f]{64}$/) }
+    end
+
+    context "when imported file is an ZIP file" do
+      before { allow(retrieval).to receive(:imported_file).and_return(open_fixture('reflex_updated.zip')) }
+      it { is_expected.to match(/^[0-9a-f]{64}$/) }
     end
   end
 end

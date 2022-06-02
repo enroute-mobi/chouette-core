@@ -150,7 +150,11 @@ class Source < ApplicationModel
   end
 
   module Checksumer
-    class Zip
+    def self.for(type)
+      type.zip? ? ZIP : File
+    end
+
+    class File
       include Measurable
 
       attr_reader :file
@@ -158,35 +162,53 @@ class Source < ApplicationModel
         @file = file
       end
 
+      def digest
+        @digest ||= Digest::SHA256.new
+      end
+
+      def checksum
+        checksum!
+        digest.hexdigest
+      end
+
+      protected
+
+      def digest_stream(io)
+        buffer = ""
+        while io.read 16384, buffer
+          digest.update buffer
+        end
+      end
+
+      def checksum!
+        ::File.open(file) do |file|
+          digest_stream file
+        end
+      end
+    end
+
+    class ZIP < File
+
       MAX_SIZE = 512.megabytes
 
       # Digest entries name and content
       # Don't use a Zip::InputStream to avoid difference with entry order change
-      def checksum
-        digest = Digest::SHA256.new
-
-        ::Zip::File.open(@file) do |zip_file|
+      def checksum!
+        ::Zip::File.open(file) do |zip_file|
           # Sort the entries by name to always digest in the same order
           zip_file.glob('*').sort_by(&:name).each do |entry|
             # We could read only the beginning of larger files
             raise 'File too large when extracted' if entry.size > MAX_SIZE
 
+            next unless entry.file?
+
             # Digest the entry name
             digest.update entry.name
-
             # Digest the entry content
-            buffer = ""
-            io = entry.get_input_stream
-            while io.read 16384, buffer
-              digest.update buffer
-            end
+            digest_stream entry.get_input_stream
           end
         end
-
-        digest.hexdigest
       end
-      measure :checksum
-
     end
   end
 
@@ -255,8 +277,12 @@ class Source < ApplicationModel
       @file_type ||= MimeMagic.by_magic(imported_file)
     end
 
+    def checksumer_class
+      Checksumer.for(imported_file_type)
+    end
+
     def checksumer
-      Checksumer::Zip.new imported_file
+      checksumer_class.new imported_file
     end
 
     def checksum

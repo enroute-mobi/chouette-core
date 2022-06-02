@@ -22,6 +22,7 @@ class ControlListsController < ChouetteController
         if collection.out_of_bounds?
           redirect_to params.merge(:page => 1)
         end
+        @control_lists = collection
       end
     end
   end
@@ -36,7 +37,11 @@ class ControlListsController < ChouetteController
   alias workbench parent
 
   def collection
-    get_collection_ivar || set_collection_ivar(end_of_association_chain.paginate(:page => params[:page], per_page: 30).decorate)
+    get_collection_ivar || set_collection_ivar(ControlListDecorator.decorate(end_of_association_chain.paginate(:page => params[:page], per_page: 30),
+    context: {
+      workbench: @workbench
+      })
+    )
   end
 
   private

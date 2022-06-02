@@ -240,7 +240,7 @@ class Source < ApplicationModel
     delegate :downloader, :import_options, to: :source
 
     def downloaded_file
-      @downloaded_file ||= Tempfile.new(["retrieval-downloaded", ".zip"])
+      @downloaded_file ||= Tempfile.new(["retrieval-downloaded"])
     end
 
     def download
@@ -258,11 +258,11 @@ class Source < ApplicationModel
     measure :process
 
     def processor
-      Processor::GTFS.new.with_options(processing_options).presence
+      Processor::GTFS.new.with_options(processing_options).presence || Processor::Copy.new
     end
 
     def processed_file
-      @processed_file ||= Tempfile.new(["retrieval-processed",".zip"])
+      @processed_file ||= Tempfile.new(["retrieval-processed",".#{downloaded_file_type.default_extension}"])
     end
 
     def import_name
@@ -273,12 +273,12 @@ class Source < ApplicationModel
       @processed_file || downloaded_file
     end
 
-    def imported_file_type
-      @file_type ||= MimeMagic.by_magic(imported_file)
+    def downloaded_file_type
+      @file_type ||= MimeMagic.by_magic(downloaded_file)
     end
 
     def checksumer_class
-      Checksumer.for(imported_file_type)
+      Checksumer.for(downloaded_file_type)
     end
 
     def checksumer
@@ -322,7 +322,7 @@ class Source < ApplicationModel
     end
 
     def import_category_option
-      if imported_file_type&.xml?
+      if downloaded_file_type&.xml?
         { import_category: "netex_generic" }
       else
         {}
@@ -337,6 +337,12 @@ class Source < ApplicationModel
   end
 
   module Processor
+    class Copy
+      def process(source_file, target_file)
+        IO.copy_stream(source_file, target_file)
+      end
+    end
+
     class GTFS
 
       def with_options(options = {})

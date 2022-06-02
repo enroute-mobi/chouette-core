@@ -15,7 +15,7 @@ module RouteControl
         stop_area_names: invalid_stop_areas.pluck(:name).to_sentence,
         stop_area_types: invalid_stop_areas.pluck(:area_type).map{ |s| I18n.t("area_types.label.#{s}") }.to_sentence,
         permitted_types: route.referential.stop_area_referential.available_stops.map{|s| I18n.t("area_types.label.#{s}") }.to_sentence,
-        organisation_name: route.referential.workbench.organisation.name
+        organisation_name: route.referential.workbench.name
       }
     end
   end

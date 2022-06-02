@@ -5,6 +5,8 @@ FactoryBot.define do
     prefix {'local'}
     restrictions {[]}
 
+    invitation_code { nil }
+
     association :organisation
     association :line_referential
     association :stop_area_referential

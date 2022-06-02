@@ -21,7 +21,7 @@
            .col.first
              .cell
              - @workgroup.workbenches.each do |w,i|
-               .cell.organisation-name = w.organisation.name
+               .cell.organisation-name = w.name
 
            - @workgroup.compliance_control_sets_by_workgroup.each do |k, v|
              .col

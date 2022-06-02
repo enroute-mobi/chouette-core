@@ -136,6 +136,7 @@ fr:
         number_of_lines: 'Nb lignes'
         from_current_offer: "Utiliser l'offre finalisée courante"
         urgent: Contient de l'offre urgente
+        workbench: Espace de Travail
   formtastic:
     titles:
       referential:

@@ -42,8 +42,8 @@ class ImportsController < ChouetteController
                             else
                               TableBuilderHelper::Column.new(
                                 key: :workbench,
-                                name: Organisation.ts.capitalize,
-                                attribute: proc { |n| n.workbench.organisation.name },
+                                name: Workbench.ts.capitalize,
+                                attribute: proc { |n| n.workbench.name },
                                 link_to: lambda do |import|
                                   policy(import.workbench).show? ? import.workbench : nil
                                 end

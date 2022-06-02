@@ -17,6 +17,10 @@
               end \
             ), \
             TableBuilderHelper::Column.new( \
+              key: 'description', \
+              attribute: :description \
+            ), \
+            TableBuilderHelper::Column.new( \
               key: 'owner', \
               attribute: Proc.new { |n| n.owner.name } \
             ), \

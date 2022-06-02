@@ -45,8 +45,8 @@
                 ), \
                 TableBuilderHelper::Column.new( \
                   key: :organisation_name, \
-                  name: Referential.tmf('organisation'), \
-                  attribute: Proc.new {|w| w.organisation.name} \
+                  name: Referential.tmf('workbench'), \
+                  attribute: Proc.new {|referential| referential.workbench.name} \
                 ), \
                 TableBuilderHelper::Column.new( \
                   key: :validity_period, \
@@ -85,4 +85,3 @@
       .row.mt-xs
         .col-lg-12
           = replacement_msg t('referentials.search_no_results')
-

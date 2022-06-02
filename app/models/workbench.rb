@@ -12,7 +12,8 @@ class Workbench < ApplicationModel
   prepend LockedReferentialToAggregateWithLog
 
   include ObjectidFormatterSupport
-  belongs_to :organisation
+
+  belongs_to :organisation, optional: true
   belongs_to :workgroup
   belongs_to :line_referential
   belongs_to :stop_area_referential
@@ -37,9 +38,11 @@ class Workbench < ApplicationModel
   has_many :source_retrievals, class_name: "Source::Retrieval"
 
   validates :name, presence: true
-  validates :organisation, presence: true
-  validates :prefix, presence: true
-  validates_format_of :prefix, with: %r{\A[0-9a-zA-Z_]+\Z}
+  validates :organisation, presence: true, unless: :pending?
+  validates :prefix, presence: true, unless: :pending?
+  validates_format_of :prefix, with: %r{\A[0-9a-zA-Z_]+\Z}, unless: :pending?
+  validates :invitation_code, presence: true, uniqueness: true, if: :pending?
+
   validates :output, presence: true
   validate  :locked_referential_to_aggregate_belongs_to_output
 
@@ -58,10 +61,15 @@ class Workbench < ApplicationModel
   has_many :control_list_runs, class_name: "Control::List::Run", dependent: :destroy
 
   before_validation :create_dependencies, on: :create
+  before_validation :create_default_prefix
 
   validates :priority, presence: true, numericality: { greater_than_or_equal_to: 1 }
 
   scope :with_active_workgroup, -> { joins(:workgroup).where('workgroups.deleted_at': nil) }
+
+  def pending?
+    organisation_id.blank?
+  end
 
   def locked_referential_to_aggregate_belongs_to_output
     return unless locked_referential_to_aggregate.present?
@@ -71,15 +79,6 @@ class Workbench < ApplicationModel
       :locked_referential_to_aggregate,
       I18n.t('workbenches.errors.locked_referential_to_aggregate.must_belong_to_output')
     )
-  end
-
-  def self.normalize_prefix input
-    input ||= ""
-    input.to_s.strip.gsub(/[^0-9a-zA-Z_]/, '_')
-  end
-
-  def prefix= val
-    self[:prefix] = Workbench.normalize_prefix(val)
   end
 
   def workbench_scopes
@@ -173,11 +172,74 @@ class Workbench < ApplicationModel
     default_line_provider.save
   end
 
+  def create_invitation_code
+    self.invitation_code	||= 3.times.map { "%03d" % SecureRandom.random_number(1000) }.join('-')
+  end
+
+  class Confirmation
+    include ActiveModel::Model
+
+    def self.policy_class
+      WorkbenchConfirmationPolicy
+    end
+
+    attr_accessor :organisation, :invitation_code
+
+    CODE_FORMAT = /\A\d{3}-\d{3}-\d{3}\z/
+
+    validates :organisation, :invitation_code, presence: true
+    validates :invitation_code, format: { with: CODE_FORMAT }
+
+    validate :workbench_exists
+
+    def workbench
+      @workbench ||= Workbench.where(invitation_code: invitation_code).where.not(workgroup: existing_workgroups).first
+    end
+
+    def existing_workgroups
+      if organisation
+        organisation.workgroups
+      else
+        Workgroup.none
+      end
+    end
+
+    def workbench_exists
+      unless workbench
+        errors.add :invitation_code, :invalid
+      end
+    end
+
+    def save
+      return false unless valid?
+      workbench.update organisation: organisation, invitation_code: nil
+    end
+
+    def save!
+      save || raise(ActiveRecord::RecordNotSaved.new("Failed to save the record", self))
+    end
+  end
+
+  def create_default_prefix
+    if code = organisation&.code
+      self.prefix ||= code.gsub("-","_").parameterize(separator: "_")
+    end
+  end
+
   private
 
   def create_dependencies
     self.output ||= ReferentialSuite.create
+
+    if pending?
+      create_invitation_code
+    end
+
     if workgroup
+			self.line_referential      ||= workgroup.line_referential
+      self.stop_area_referential ||= workgroup.stop_area_referential
+      self.objectid_format       ||= 'netex'
+
       default_shape_provider
       default_line_provider
       default_stop_area_provider

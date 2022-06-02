@@ -17,10 +17,10 @@
         - Referential::STATES.each do |s|
           = f.input "state[#{s}]", input_html: {checked: (params[:q] && params[:q][:state] && params[:q][:state][s]) == "1"}, label: ("<span class='flex items-center m-0'><p class='m-0 mr-auto'>#{"referentials.states.#{s}".t}</p>#{icon_for_referential_state(s)}</span>").html_safe, as: :boolean, wrapper_html: { class: 'checkbox-wrapper' }
 
-    .form-group.togglable class=filter_item_class(params[:q], :organisation_name_eq_any)
-      = f.label t('activerecord.models.organisation.one'), required: false, class: 'control-label'
-      = f.input :organisation_name_eq_any,
-          collection: @workbench.workgroup.organisations.order('name').pluck(:name),
+    .form-group.togglable class=filter_item_class(params[:q], :workbench_name_eq_any)
+      = f.label t('activerecord.models.workbench.one'), required: false, class: 'control-label'
+      = f.input :workbench_name_eq_any,
+          collection: @workbench.workgroup.workbenches.order('name').pluck(:name),
           as: :check_boxes,
           label: false,
           label_method: lambda { |w| ("<span>#{w}</span>").html_safe },

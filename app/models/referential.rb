@@ -58,7 +58,7 @@ class Referential < ApplicationModel
     return true if ids.first == ids.last
     errors.add(:inconsistent_organisation,
                I18n.t('referentials.errors.inconsistent_organisation',
-                      indirect_name: workbench.organisation.name,
+                      indirect_name: workbench.name,
                       direct_name: organisation.name))
   end, if: :organisation
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_05_20_131227) do
+ActiveRecord::Schema.define(version: 2022_05_29_090410) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -1666,6 +1666,7 @@ ActiveRecord::Schema.define(version: 2022_05_20_131227) do
     t.bigint "locked_referential_to_aggregate_id"
     t.string "restrictions", default: [], array: true
     t.integer "priority", default: 1
+    t.string "invitation_code"
     t.index ["line_referential_id"], name: "index_workbenches_on_line_referential_id"
     t.index ["locked_referential_to_aggregate_id"], name: "index_workbenches_on_locked_referential_to_aggregate_id"
     t.index ["organisation_id"], name: "index_workbenches_on_organisation_id"
@@ -1697,6 +1698,7 @@ ActiveRecord::Schema.define(version: 2022_05_20_131227) do
     t.boolean "enable_purge_merged_data", default: false
     t.bigint "shape_referential_id", null: false
     t.bit "nightly_aggregate_days", limit: 7, default: "1111111"
+    t.string "description"
     t.index ["shape_referential_id"], name: "index_workgroups_on_shape_referential_id"
   end
 

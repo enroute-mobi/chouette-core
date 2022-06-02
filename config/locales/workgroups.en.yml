@@ -10,10 +10,12 @@ en:
       setup_workgroup_deletion: Plan workgroup deletion
       restore_workgroup: Restore workgroup
       edit_transport_modes: Edit transport modes
+      add_workbench: Add Workbench
     edit_controls: &edit_controls
       title: "Workgroup Validation Settings"
     edit:
       <<: *edit_controls
+      success: The Workgroup is modified
     index:
       name_cont: Name
       title: Workgroups
@@ -51,6 +53,7 @@ en:
         other: Workgroups
     attributes:
       workgroup:
+        description: Description
         enable_purge_merged_data: Enable purge of past merged data
         maximum_data_age: Maximum age of merged data
         sentinel_min_hole_size: Minimum length of a missing offer

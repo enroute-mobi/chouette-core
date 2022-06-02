@@ -24,8 +24,8 @@
           = p.input :end_date, as: :date, label: false, wrapper_html: { class: 'date smart_date filter_menu-item' }, default: @end_range, include_blank: @end_range ? false : true
     - if parent.is_a?(Workgroup)
       .form-group.togglable class=filter_item_class(params[:q], :workbench_id_eq_any)
-        = f.label Organisation.ts.capitalize, required: false, class: 'control-label'
-        = f.input :workbench_id_eq_any, collection: parent.workbenches.joins(:organisation).order('organisations.name'), as: :check_boxes, label: false, label_method: lambda{|k| ("<span>#{k.organisation.name}</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list' }
+        = f.label Workbench.ts.capitalize, required: false, class: 'control-label'
+        = f.input :workbench_id_eq_any, collection: parent.workbenches.order('name'), as: :check_boxes, label: false, label_method: lambda{|k| ("<span>#{k.name}</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list' }
 
   .actions
     = link_to t('actions.erase'), [parent, collection_name.to_sym], class: 'btn btn-link'

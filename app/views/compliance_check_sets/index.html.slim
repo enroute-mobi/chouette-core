@@ -1,13 +1,6 @@
 - breadcrumb :compliance_check_sets, @parent
 
-- extra_cols = []
 - if parent.is_a?(Workgroup)
-  - extra_cols << TableBuilderHelper::Column.new( \
-                    key: :workbench, \
-                    name: Workbench.ts.capitalize, \
-                    attribute: Proc.new { |n| n.workbench.organisation.name }, \
-                    link_to: Proc.new { |n| n.workbench } \
-                  )
   - content_for(:page_header_title) { 'compliance_check_sets.workgroup_index.title'.t }
 
 .page_content

@@ -1,0 +1,5 @@
+= d.attribute :target_model, value: I18n.t(macro_run.target_model, scope: 'enumerize.target_model')
+= d.attribute :source_attribute
+= d.attribute :source_pattern
+= d.attribute :target_code_space, as: :association, link: ->(code_space) { workgroup_code_space_path(@workbench.workgroup, code_space) }
+= d.attribute :target_pattern

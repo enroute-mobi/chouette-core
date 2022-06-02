@@ -17,3 +17,8 @@ fr:
         password: "Mot de passe"
         password_confirmation: "Confirmation du mot de passe"
         current_password: "Mot de passe actuel"
+        workbench_invitation_code: "Code de confirmation d'un Groupe de Travail"
+  simple_form:
+    hints:
+      subscription:
+        workbench_invitation_code: "Si vous avez reçu un code pour rejoindre un Groupe de Travail"

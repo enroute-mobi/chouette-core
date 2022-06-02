@@ -9,7 +9,7 @@
           .panel-heading
             h3.panel-title.with_actions
               div
-                = link_to t('dashboards.workbench_output.title', organisation: workbench.organisation.name), workbench_output_path(workbench)
+                = link_to t('dashboards.workbench_output.title', name: workbench.name), workbench_output_path(workbench)
                 span.badge.ml-xs = workbench.output.referentials.count if workbench.output.referentials.present?
 
               div
@@ -30,7 +30,7 @@
               - if @dashboard.current_organisation.workbenches.many?
                 = link_to Workbench.ts, workbench_path(workbench)
               - else
-                = link_to t('dashboards.workbench.title', organisation: workbench.organisation.name), workbench_path(workbench)
+                = link_to t('dashboards.workbench.title', name: workbench.name), workbench_path(workbench)
               span.badge.ml-xs = workbench.all_referentials.uniq.count if workbench.all_referentials.present?
 
             div

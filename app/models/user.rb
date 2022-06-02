@@ -44,11 +44,6 @@ class User < ApplicationModel
 
   enumerize :user_locale, in: %w(fr en), default: 'fr'
 
-  before_validation(:on => :create) do
-    self.password ||= Devise.friendly_token.first(6)
-    self.password_confirmation ||= self.password
-  end
-
   after_initialize do
     self.profile ||= :custom
   end
@@ -173,7 +168,11 @@ class User < ApplicationModel
       return [true, user]
     end
 
-    user = User.new email: email, name: name, profile: profile, organisation: organisation
+    random_password = SecureRandom.alphanumeric(30)
+    user = User.new(
+      email: email, name: name, profile: profile, organisation: organisation,
+      password: random_password, password_confirmation: random_password
+    )
     user.try(:skip_confirmation!)
     user.save!
     user.invite_from_user! from_user

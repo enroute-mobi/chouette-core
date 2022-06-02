@@ -6,7 +6,7 @@ RSpec.describe 'Workbenches', type: :feature do
   let(:line) { create :line, line_referential: line_ref, referential: referential }
   let(:ref_metadata) { create(:referential_metadata) }
 
-  let!(:workbench) { create(:workbench, line_referential: line_ref, organisation: @user.organisation, workgroup: workgroup) }
+  let!(:workbench) { create(:workbench, name: "Test", line_referential: line_ref, organisation: @user.organisation, workgroup: workgroup) }
   let!(:referential) { create :workbench_referential, workbench: workbench, metadatas: [ref_metadata], organisation: @user.organisation }
 
   before(:each) do
@@ -106,6 +106,7 @@ RSpec.describe 'Workbenches', type: :feature do
       let(:other_workbench) do
         create(
           :workbench,
+          name: "Other",
           line_referential: line_ref,
           organisation: another_organisation,
           workgroup: workbench.workgroup
@@ -136,7 +137,7 @@ RSpec.describe 'Workbenches', type: :feature do
 
       context 'filter by organisation' do
         it 'should be possible to filter by organisation' do
-          find("#q_organisation_name_eq_any_#{@user.organisation.name.parameterize.underscore}").set(true)
+          find("#q_workbench_name_eq_any_#{workbench.name.parameterize.underscore}").set(true)
           click_button I18n.t('actions.filter')
 
           expect(page).to have_content(referential.name)
@@ -144,8 +145,8 @@ RSpec.describe 'Workbenches', type: :feature do
         end
 
         it 'should be possible to filter by multiple organisation' do
-          find("#q_organisation_name_eq_any_#{@user.organisation.name.parameterize.underscore}").set(true)
-          find("#q_organisation_name_eq_any_#{other_referential.organisation.name.parameterize.underscore}").set(true)
+          find("#q_workbench_name_eq_any_#{workbench.name.parameterize}").set(true)
+          find("#q_workbench_name_eq_any_#{other_referential.workbench.name.parameterize}").set(true)
           click_button I18n.t('actions.filter')
 
           expect(page).to have_content(referential.name)
@@ -153,22 +154,10 @@ RSpec.describe 'Workbenches', type: :feature do
         end
 
         it 'should keep filter value on submit' do
-          box = "#q_organisation_name_eq_any_#{another_organisation.name.parameterize.underscore}"
+          box = "#q_workbench_name_eq_any_#{other_workbench.name.parameterize}"
           find(box).set(true)
           click_button I18n.t('actions.filter')
           expect(find(box)).to be_checked
-        end
-
-        it 'only lists organisations in the current workgroup' do
-          unaffiliated_workbench = workbench.dup
-          unaffiliated_workbench.update(organisation: create(:organisation))
-
-          expect(page).to have_selector(
-            "#q_organisation_name_eq_any_#{@user.organisation.name.parameterize.underscore}"
-          )
-          expect(page).to_not have_selector(
-            "#q_organisation_name_eq_any_#{unaffiliated_workbench.name.parameterize.underscore}"
-          )
         end
       end
 

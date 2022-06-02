@@ -4,9 +4,9 @@ en:
     show:
       title: "Dashboard %{organisation}"
     workbench:
-      title: Transport offer %{organisation}
+      title: Transport offer %{name}
     workbench_output:
-      title: Merged Data %{organisation}
+      title: Merged Data %{name}
       none: No merged data
     calendars:
       title: Calendars

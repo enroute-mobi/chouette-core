@@ -29,11 +29,21 @@ class Import::NetexGeneric < Import::Base
   end
   attr_writer :stop_area_provider
 
+  def stop_area_referential
+    @stop_area_referential ||= workbench.stop_area_referential
+  end
+  attr_writer :stop_area_referential
+
   # lines
   def line_provider
     @line_provider ||= workbench.default_line_provider
   end
   attr_writer :line_provider
+
+  def line_referential
+    @line_referential ||= workbench.line_referential
+  end
+  attr_writer :line_referential
 
   # shapes
   def shape_provider
@@ -76,12 +86,17 @@ class Import::NetexGeneric < Import::Base
         sync.source = netex_source
         sync.event_handler = event_handler
         sync.code_space = code_space
+        sync.default_provider = default_provider
 
         sync.update_or_create
       end
+
       import.resources.each do |resource|
         resource.update_metrics
+        resource.save
       end
+    ensure
+      import.save
     end
   end
 
@@ -89,11 +104,24 @@ class Import::NetexGeneric < Import::Base
   # with associated NeTEx resources
   class StopAreaReferential < SynchronizedPart
     delegate :stop_area_provider, to: :import
+    delegate :stop_area_referential, to: :import
 
     def synchronization
-      Chouette::Sync::Referential.new(stop_area_provider).tap do |sync|
+      Chouette::Sync::Referential.new(target).tap do |sync|
         sync.synchronize_with Chouette::Sync::StopArea::Netex
       end
+    end
+
+    def target
+      if import.update_workgroup_providers?
+        stop_area_referential
+      else
+        stop_area_provider
+      end
+    end
+
+    def default_provider
+      stop_area_provider
     end
   end
 
@@ -101,14 +129,27 @@ class Import::NetexGeneric < Import::Base
   # with associated NeTEx resources
   class LineReferential < SynchronizedPart
     delegate :line_provider, to: :import
+    delegate :line_referential, to: :import
 
     def synchronization
-      Chouette::Sync::Referential.new(line_provider).tap do |sync|
+      Chouette::Sync::Referential.new(target).tap do |sync|
         sync.synchronize_with Chouette::Sync::Company::Netex
         sync.synchronize_with Chouette::Sync::Network::Netex
         sync.synchronize_with Chouette::Sync::LineNotice::Netex
         sync.synchronize_with Chouette::Sync::Line::Netex
       end
+    end
+
+    def target
+      if import.update_workgroup_providers?
+        line_referential
+      else
+        line_provider
+      end
+    end
+
+    def default_provider
+      line_provider
     end
   end
 
@@ -119,6 +160,10 @@ class Import::NetexGeneric < Import::Base
       Chouette::Sync::Referential.new(shape_provider).tap do |sync|
         sync.synchronize_with Chouette::Sync::PointOfInterest::Netex
       end
+    end
+
+    def default_provider
+      shape_provider
     end
   end
 
@@ -181,21 +226,13 @@ class Import::NetexGeneric < Import::Base
         end
 
         # TODO As ugly as necessary
+        # Need to save resource because it's used in resource method
         resource.save
       end
 
       def process_create_or_update
         resource.status = "OK"
         resource.inc_rows_count event.count
-        resource.messages.build(
-          criticity: :info,
-          message_attributes: {
-            attribute_name: {
-              id: event.model&.id,
-              name: event.model&.name
-            },
-          }
-        )
       end
 
       def process_error

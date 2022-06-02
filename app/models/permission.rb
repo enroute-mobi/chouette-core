@@ -90,6 +90,7 @@ class Permission
       permissions << "referentials.flag_urgent"
       permissions << "imports.update_workgroup_providers"
       permissions << "stop_area_referentials.update"
+      permissions << "workbenches.confirm"
       permissions << "sources.retrieve"
     end
 

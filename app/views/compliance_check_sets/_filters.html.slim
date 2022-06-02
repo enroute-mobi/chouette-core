@@ -32,7 +32,7 @@
     - if parent.is_a?(Workgroup)
       .form-group.togglable class=filter_item_class(params[:q], :workbench_id_eq_any)
         = f.label Workbench.ts.capitalize, required: false, class: 'control-label'
-        = f.input :workbench_id_eq_any, collection: parent.workbenches.joins(:organisation).order('organisations.name'), as: :check_boxes, label: false, label_method: lambda{|k| ("<span>#{k.organisation.name}</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list' }
+        = f.input :workbench_id_eq_any, collection: parent.workbenches.order('name'), as: :check_boxes, label: false, label_method: lambda{|k| ("<span>#{k.name}</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list' }
 
     .form-group.search
       .input-group.search_bar class=filter_item_class(params[:q], :compliance_control_set_name_cont)

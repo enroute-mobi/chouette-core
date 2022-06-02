@@ -1,26 +1,38 @@
-describe Workbench, type: :model do
-  it { should validate_presence_of(:name) }
-  it { should validate_presence_of(:organisation) }
-  it { should validate_presence_of(:objectid_format) }
+RSpec.describe Workbench, type: :model do
+  describe "validations" do
+    it { is_expected.to validate_presence_of(:name) }
+    it { is_expected.to validate_presence_of(:objectid_format) }
 
-  it { should belong_to(:organisation) }
-  it { should belong_to(:line_referential) }
-  it { should belong_to(:stop_area_referential) }
-  it { should belong_to(:workgroup) }
-  it { should belong_to(:output).class_name('ReferentialSuite') }
+    it { is_expected.to belong_to(:organisation).optional }
+    it { is_expected.to belong_to(:line_referential) }
+    it { is_expected.to belong_to(:stop_area_referential) }
+    it { is_expected.to belong_to(:workgroup) }
+    it { is_expected.to belong_to(:output).class_name('ReferentialSuite') }
 
-  it { should have_many(:lines).through(:line_referential) }
-  it { should have_many(:networks).through(:line_referential) }
-  it { should have_many(:companies).through(:line_referential) }
-  it { should have_many(:group_of_lines).through(:line_referential) }
+    it { is_expected.to have_many(:lines).through(:line_referential) }
+    it { is_expected.to have_many(:networks).through(:line_referential) }
+    it { is_expected.to have_many(:companies).through(:line_referential) }
+    it { is_expected.to have_many(:group_of_lines).through(:line_referential) }
 
-  it { should have_many(:stop_areas).through(:stop_area_referential) }
-  it { should have_many(:notification_rules).dependent(:destroy) }
+    it { is_expected.to have_many(:stop_areas).through(:stop_area_referential) }
+    it { is_expected.to have_many(:notification_rules).dependent(:destroy) }
 
-  context "dependencies" do
-    before { allow(subject).to receive(:create_dependencies) }
+    context 'when the Workbench is waiting an associated Organisation' do
+      before { allow(subject).to receive(:pending?) { true } }
+      it { is_expected.to_not validate_presence_of(:organisation) }
+      it { is_expected.to_not validate_presence_of(:prefix) }
 
-    it { is_expected.to validate_presence_of(:output) }
+      context "when another Workbench has the invitation code '123456" do
+        let!(:context) { Chouette.create { workbench invitation_code: '123-456-789' } }
+        it { is_expected.to_not allow_value('123-456-789').for(:invitation_code) }
+      end
+    end
+
+    context 'when the Workbench is associated to an Organisation' do
+      before { allow(subject).to receive(:pending?) { false } }
+      it { is_expected.to validate_presence_of(:organisation) }
+      it { is_expected.to validate_presence_of(:prefix) }
+    end
   end
 
   context 'aggregation setup' do
@@ -81,19 +93,6 @@ describe Workbench, type: :model do
     end
   end
 
-  context "normalize_prefix" do
-    it "should ensure the resulting prefix is valid" do
-      workbench = create(:workbench)
-      ["aaa ", "aaa-bbb", "aaa_bbb", "aaa bbb", " aaa bb ccc"].each do |val|
-        workbench.update_column :prefix, nil
-        workbench.prefix = val
-        expect(workbench).to be_valid
-        workbench.update_column :prefix, nil
-        expect(workbench.update(prefix: val)).to be_truthy
-      end
-    end
-  end
-
   context '.lines' do
     let!(:ids) { ['STIF:CODIFLIGNE:Line:C00840', 'STIF:CODIFLIGNE:Line:C00086'] }
     let!(:organisation) { create :organisation, sso_attributes: { functional_scope: ids.to_json } }
@@ -146,20 +145,107 @@ describe Workbench, type: :model do
     end
   end
 
+  describe "#create_default_prefix" do
+    subject { workbench.create_default_prefix }
+
+    let(:organisation) { Organisation.new }
+    let(:workbench) { Workbench.new organisation: organisation }
+
+    context "when organisation code is 'test-abc'" do
+      before { organisation.code = 'test-abc' }
+      it { is_expected.to eq('test_abc') }
+    end
+
+    context "when organisation code is 'test+abc'" do
+      before { organisation.code = 'test+abc' }
+      it { is_expected.to eq('test_abc') }
+    end
+  end
+
+  describe "#create_invitation_code" do
+    let(:workbench) { Workbench.new }
+    subject { workbench.create_invitation_code }
+
+    it "defines Workbench invitation_code" do
+      expect { subject }.to change(workbench, :invitation_code).from(nil).to(matching(/\d{3}-\d{3}-\d{3}/))
+    end
+
+    it { is_expected.to match(/\d{3}-\d{3}-\d{3}/) }
+  end
+
   describe "on creation" do
     let(:context) { Chouette.create { workbench } }
-    let(:workbench) { context.workbench }
+    subject(:workbench) { context.workbench }
 
-    it "must have a ReferentialSuite" do
-      expect(workbench.output).to be_an_instance_of(ReferentialSuite)
+    it { is_expected.to have_same_attributes(:line_referential, than: workbench.workgroup) }
+    it { is_expected.to have_same_attributes(:stop_area_referential, than: workbench.workgroup) }
+
+    it { is_expected.to have_attributes(objectid_format: 'netex') }
+    it { is_expected.to have_attributes(output: an_instance_of(ReferentialSuite)) }
+
+    describe "prefix" do
+      subject { workbench.prefix }
+
+      it { is_expected.to match(%r{\A[0-9a-zA-Z_]+\Z}) }
+
+      context "when Organisation code is 'Tôô Exotic'" do
+        let(:context) do
+          Chouette.create do
+            organisation :first, code: 'Tôô Exotic'
+            workbench organisation: :first
+          end
+        end
+
+        it { is_expected.to eq("too_exotic") }
+      end
     end
 
-    it "must have a default ShapeProvider" do
-      expect(workbench.shape_providers.count).to eq(1)
+    describe "default Shape Provider" do
+      subject { workbench.default_shape_provider }
 
-      shape_provider = workbench.shape_providers.first
-      expect(shape_provider.short_name).to eq('default')
+      it "must be the first/single Shape Provider" do
+        is_expected.to eq(workbench.shape_providers.first)
+      end
+
+      it { is_expected.to have_attributes(short_name: 'default') }
     end
+
+    describe "default Line Provider" do
+      subject { workbench.default_line_provider }
+
+      it "must be the first/single Line Provider" do
+        is_expected.to eq(workbench.line_providers.first)
+      end
+
+      it { is_expected.to have_attributes(short_name: 'default') }
+    end
+
+    describe "default Stop Area Provider" do
+      subject { workbench.default_stop_area_provider }
+
+      it "must be the first/single Stop Area Provider" do
+        is_expected.to eq(workbench.stop_area_providers.first)
+      end
+
+      it { is_expected.to have_attributes(name: 'Default') }
+    end
+
+    context "without an Organisation" do
+      let(:context) { Chouette.create { workbench organisation: nil } }
+
+      it { is_expected.to have_attributes(organisation: a_nil_value, prefix: a_nil_value) }
+      it { is_expected.to have_attributes(invitation_code: matching(/\d{3}-\d{3}-\d{3}/)) }
+    end
+  end
+end
+
+RSpec.describe Workbench::Confirmation do
+  it { is_expected.to_not allow_value('dummy', '123456789').for(:invitation_code) }
+
+  context "when a Workbench exists with invitation code '123-456-789'" do
+    let!(:context) { Chouette.create { workbench invitation_code: '123-456-789' } }
+
+    it { is_expected.to allow_value('123-456-789').for(:invitation_code) }
   end
 
   describe "#control_lists_shared_with_workgroup" do

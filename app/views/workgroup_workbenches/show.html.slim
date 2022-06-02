@@ -5,11 +5,15 @@
   .container-fluid
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        = definition_list t("metadatas"),
-          { \
-            Workbench.tmf(:name) => @workbench.name, \
-            Workbench.tmf(:organisation) => @workbench.organisation&.name \
-          }
+        = simple_block_for @workbench, title: t('metadatas') do |d|
+          = d.attribute :name
+          = d.attribute :organisation, as: :association
+
+      - if @workbench.invitation_code && WorkgroupWorkbenchPolicy.new(pundit_user, @workbench).show_invitation_code?
+        .col-lg-6.col-md-6.col-sm-12.col-xs-12
+          = simple_block_for @workbench, title: t('workbenches.show.sections.pending_invitation.title') do |d|
+            = d.attribute :invitation_code
+            p[style='font-style:italic;'] = t('workbenches.show.sections.pending_invitation.text')
 
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
@@ -28,4 +32,3 @@
                   - feature_restriction.each do |restriction|
                     li
                       = t("permissions.actions.#{restriction.split('.').last}")
-              end

@@ -6,6 +6,12 @@ fr:
       title: "%{name}"
       sections:
         permissions: "Permissions"
+        pending_invitation:
+          title: Invitation en attente
+          text: Vous pouvez partager ce code de confirmation avec une autre organisation pour qu'ils puissent rejoindre votre groupe de travail.
+    new:
+      title: Ajouter un espace de travail
+      text: Ce nouvel espace de travail vous fournira un code d'invitation.
     edit:
       title: "Editer l'espace de travail %{name}"
       link:  "Paramétrages"
@@ -34,6 +40,13 @@ fr:
     errors:
       locked_referential_to_aggregate:
         must_belong_to_output: Doit être une offre finalisée
+  workbench_confirmation:
+    new:
+      title: Confirmer un Espace de Travail
+      text: |
+        Vous avex recu un code permettant de rejoindre ce groupe de travail appartenant a une autre organisation
+        En acceptant cette invitation, votre organisation aura un nouvel espace de travail pour collaborer avec ce groupe de travail.
+
   activerecord:
     models:
       workbench:
@@ -48,3 +61,8 @@ fr:
         organisation: Organisation
         last_merged_data: Dernière finalisation
         priority: Priorité
+        invitation_code: Code de confirmation
+  activemodel:
+    attributes:
+      workbench/confirmation:
+        invitation_code: Code de confirmation

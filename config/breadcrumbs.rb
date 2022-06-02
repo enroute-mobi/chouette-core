@@ -16,6 +16,16 @@ crumb :workgroup do |workgroup, display_parent|
   parent :workgroups if display_parent
 end
 
+crumb :add_workbench do |workgroup|
+  link I18n.t('workbenches.new.title'), '#'
+  parent :workgroup, workgroup
+end
+
+crumb :workbench_confirmation do
+  link I18n.t('workbench_confirmation.new.title'), workbench_confirmation_path
+  parent :workgroups
+end
+
 crumb :workbench_configure do |workbench|
   link I18n.t('workbenches.edit.title'), edit_workbench_path(workbench)
   parent :workbench, workbench

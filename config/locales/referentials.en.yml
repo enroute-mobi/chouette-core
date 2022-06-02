@@ -138,6 +138,7 @@ en:
         number_of_lines: 'No. of lines'
         from_current_offer: "Use current offer"
         urgent: 'Contains urgent data'
+        workbench: Workbench
   formtastic:
     titles:
       referential:

@@ -10,10 +10,12 @@ fr:
       setup_workgroup_deletion: Planifier la suppression du groupe de travail
       restore_workgroup: Restaurer
       edit_transport_modes: Paramétrer les modes de transport
+      add_workbench: Ajouter un espace de travail
     edit_controls: &edit_controls
       title: 'Paramétrage de la validation du Groupe de Travail'
     edit:
       <<: *edit_controls
+      success: "Le Groupe de Travail a bien éte modifié"
     index:
       name_cont: Nom
       title: Groupes de travail
@@ -51,6 +53,7 @@ fr:
         other: Groupes de travail
     attributes:
       workgroup:
+        description: Description
         enable_purge_merged_data: Activer la purge des données après finalisation
         maximum_data_age: Age maximum des données finalisées
         sentinel_min_hole_size: Taille minimum d'un trou d'offre

@@ -21,5 +21,6 @@
               = form.input :email, input_html: { :class => "form-control" }, required: true
               = form.input :password, :as => :password, input_html: { :class => "form-control" }, required: true
               = form.input :password_confirmation, :as => :password, input_html: { :class => "form-control" }, required: true
+              = form.input :workbench_invitation_code, input_html: { :class => "form-control" }
               = form.button :submit, t("devise.registrations.new.commit"), class: "btn-primary pull-right"
               = link_to 'devise.registrations.new.already_an_account'.t, new_user_session_path

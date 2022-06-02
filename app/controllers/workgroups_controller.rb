@@ -8,14 +8,10 @@ class WorkgroupsController < ChouetteController
     edit!
   end
 
-  def update_controls
-    update!
-  end
-
   def create
     @workgroup = Workgroup.create_with_organisation current_organisation, workgroup_params
     redirect_to(@workgroup)
-  rescue ActiveRecord::RecordInvalid => e
+  rescue ActiveRecord::RecordInvalid
     @workgroup = Workgroup.new workgroup_params
     render :new
   end
@@ -49,13 +45,15 @@ class WorkgroupsController < ChouetteController
     unless resource.update workgroup_params
       if workgroup_params.has_key? :sentinel_min_hole_size
         render :edit_merge
+      elsif workgroup_params.has_key? :compliance_control_set_ids
+        render :edit_controls
       else
         render :edit
       end
-      return
+    else
+      flash[:success] = t('workgroups.edit.success')
+      redirect_to resource
     end
-
-    redirect_to resource
   end
 
   def setup_deletion
@@ -68,9 +66,12 @@ class WorkgroupsController < ChouetteController
     redirect_to resource
   end
 
+  private
+
   def workgroup_params
     params.require(:workgroup).permit(
       :name,
+      :description,
       :enable_purge_merged_data,
       :maximum_data_age,
       :sentinel_min_hole_size,

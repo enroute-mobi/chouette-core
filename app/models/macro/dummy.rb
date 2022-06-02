@@ -1,14 +1,22 @@
 module Macro
   class Dummy < Base
-    option :expected_result
-    enumerize :expected_result, in: %w{info warning error fail}, default: "info"
+    module Options
+      extend ActiveSupport::Concern
 
-    option :target_model
-    enumerize :target_model, in: %w{Line StopArea JourneyPattern Company}, default: "Line"
-    validates :target_model, presence: true
+      included do
+        option :expected_result
+        enumerize :expected_result, in: %w{info warning error fail}, default: "info"
+
+        option :target_model
+        enumerize :target_model, in: %w{Line StopArea JourneyPattern Company}, default: "Line"
+        validates :target_model, presence: true
+      end
+    end
+
+    include Options
 
     class Run < Macro::Base::Run
-      option :target_model
+      include Options
 
       def run
         raise "Raise error as expected" if options[:expected_result] == "fail"

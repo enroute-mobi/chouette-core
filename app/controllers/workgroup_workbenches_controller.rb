@@ -8,11 +8,18 @@ class WorkgroupWorkbenchesController < ChouetteController
   belongs_to :workgroup
   helper_method :has_restriction?
 
+  def create
+    @workbench = workgroup.workbenches.create workbench_params
+    create! { workbench_path }
+  end
+
   def update
-    update! { workgroup_workbench_path(@workbench.workgroup, @workbench) }
+    update! { workbench_path }
   end
 
   protected
+
+  alias workgroup parent
 
   def has_restriction?(*restrictions)
     return false unless @workbench
@@ -34,15 +41,15 @@ class WorkgroupWorkbenchesController < ChouetteController
 
   private
 
+  def workbench_path
+    workgroup_workbench_path(workgroup, @workbench)
+  end
+
   def resource
-    WorkgroupWorkbenchDecorator.decorate(super, context: { workgroup: parent })
+    WorkgroupWorkbenchDecorator.decorate(super, context: { workgroup: workgroup })
   end
 
   def workbench_params
-    # the next line prevents a small bug => if every restrictions are removed (unchecked) then the restrictions key doesn't even appear in params[:workbench] and thus that field isn't updated
-    # related to the way the array value is passed from html form / inputs to the controller
-    params[:workbench][:restrictions]=[] unless params[:workbench].key? :restrictions
-    params.require(:workbench).permit(:name, :organisation_id, restrictions: [])
+    params.require(:workbench).permit(:name, :organisation_id, restrictions: []).with_defaults(restrictions: [])
   end
-
 end

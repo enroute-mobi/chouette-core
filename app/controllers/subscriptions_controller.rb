@@ -27,7 +27,8 @@ class SubscriptionsController < ChouetteController
   end
 
   def subscription_params
-    params.require(:subscription).permit %i(organisation_name user_name email password password_confirmation)
+    params.require(:subscription)
+      .permit %i(organisation_name user_name email password password_confirmation workbench_invitation_code)
   end
 
   private

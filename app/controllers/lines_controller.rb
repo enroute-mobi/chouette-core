@@ -143,7 +143,7 @@ class LinesController < ChouetteController
   end
 
   alias_method :line_referential, :parent
-  delegate :workgroup, to: :workbench
+  delegate :workgroup, to: :workbench, allow_nil: true
 
   private
 

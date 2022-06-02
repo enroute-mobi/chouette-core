@@ -56,17 +56,6 @@ module Chouette
         model :workbench do
           attribute(:name) { |n| "Workbench #{n}" }
           attribute(:organisation) { build_root_model :organisation }
-          attribute :objectid_format, "netex"
-          attribute(:prefix) { |n| "prefix-#{n}" }
-
-          after do
-            # TODO shouldn't be explicit but managed by Workbench model
-            new_instance.stop_area_referential = parent.stop_area_referential
-            new_instance.line_referential = parent.line_referential
-
-            new_instance.stop_area_referential.add_member new_instance.organisation
-            new_instance.line_referential.add_member new_instance.organisation
-          end
 
           model :notification_rule do
             attribute(:priority) { 10 }

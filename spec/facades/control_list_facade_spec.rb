@@ -22,6 +22,7 @@ describe ControlListFacade do
 				expected_json = JSON.generate({
 					name: nil,
 					comments: nil,
+					shared: false,
 					controls: [],
 					control_contexts: [],
 					is_show: false
@@ -33,7 +34,7 @@ describe ControlListFacade do
 
 		context 'when control list has controls & contexts' do
 			it 'should return a properly formed state' do
-				control_list = workbench.control_lists.build(name: 'name', comments: 'comments')
+				control_list = workbench.control_lists.build(name: 'name', comments: 'comments', shared: false)
 				dummy_control = Control::Dummy.new(name: 'name', criticity: 'warning', code: 'code', comments: 'comments', expected_result: 'warning')
 				context = Control::Context::TransportMode.new(transport_mode: 'bus')
 
@@ -46,6 +47,7 @@ describe ControlListFacade do
 				expected_json = JSON.generate({
 					name: 'name',
 					comments: 'comments',
+					shared: false,
 					controls: [{ id: nil, name: 'name', comments: 'comments', criticity: 'warning', code: 'code', type: 'Control::Dummy', errors: [], html: '', expected_result: 'warning', target_model: 'Line' }],
 					control_contexts: [
 						{

@@ -12,7 +12,7 @@ module Control
     accepts_nested_attributes_for :controls, allow_destroy: true, reject_if: :all_blank
     accepts_nested_attributes_for :control_contexts, allow_destroy: true, reject_if: :all_blank
 
-    scope :by_text, ->(text) { text.blank? ? all : where('lower(name) LIKE :t', t: "%#{text.downcase}%") } 
+    scope :by_text, ->(text) { text.blank? ? all : where('lower(name) LIKE :t', t: "%#{text.downcase}%") }
 
     def self.policy_class
       ControlListPolicy
@@ -59,8 +59,6 @@ module Control
         original_control_list.control_contexts.each do |control_context|
           self.control_context_runs << control_context.build_run
         end
-
-        self.workbench = original_control_list.workbench
       end
 
       def self.policy_class

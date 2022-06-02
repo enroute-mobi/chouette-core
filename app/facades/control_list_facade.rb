@@ -36,7 +36,7 @@ class ControlListFacade
 	def target_code_space_options
 		workgroup.code_spaces.map { |c| [c.short_name, c.id] }
 	end
-	
+
 	def custom_fields_options
 		workgroup.custom_fields.map { |c| { text: c.name, id: c.id, resource_type: c.resource_type } }.to_json
 	end
@@ -69,6 +69,7 @@ class ControlListFacade
 		JSON.generate({
 			name: control_list.name,
 			comments: control_list.comments,
+			shared: control_list.shared,
 			controls: controls(control_list),
 			control_contexts: control_contexts(control_list),
 			is_show: show?

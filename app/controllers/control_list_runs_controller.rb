@@ -10,7 +10,7 @@ class ControlListRunsController < ChouetteController
   before_action :init_facade, only: %i[show]
 
 	belongs_to :workbench
-	belongs_to :control_list, optional: true
+	belongs_to :control_list, optional: true, collection_name: :control_lists_shared_with_workgroup
 
   respond_to :html, :json
 
@@ -55,6 +55,7 @@ class ControlListRunsController < ChouetteController
 
   def build_resource
     super.tap do |control_list_run|
+      control_list_run.workbench = workbench
       control_list_run.build_with_original_control_list
     end
   end

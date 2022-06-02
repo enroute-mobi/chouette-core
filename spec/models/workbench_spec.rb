@@ -247,4 +247,26 @@ RSpec.describe Workbench::Confirmation do
 
     it { is_expected.to allow_value('123-456-789').for(:invitation_code) }
   end
+
+  describe "#control_lists_shared_with_workgroup" do
+    let(:context) do
+      Chouette.create do
+        workbench :first
+        workbench :second
+        workbench :third
+      end
+    end
+
+    let(:first_workbench) { context.workbench(:first) }
+    let(:second_workbench) { context.workbench(:second) }
+
+    let!(:first_control_list) { first_workbench.control_lists.create! name: "first control list" }
+    let!(:second_control_list) { second_workbench.control_lists.create! name: "second control list", shared: true }
+    let!(:third_control_list) { second_workbench.control_lists.create! name: "third control list" }
+
+    subject { first_workbench.control_lists_shared_with_workgroup.all }
+
+    it { is_expected.to match_array([first_control_list, second_control_list]) }
+    it { is_expected.not_to include(third_control_list)}
+  end
 end

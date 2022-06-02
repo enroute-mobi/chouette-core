@@ -6,15 +6,17 @@ export default class Store {
 	constructor() {
 		this.name = ''
 		this.comments = ''
+		this.shared = false
 		this.controls = new ControlCollection()
 		this.contexts = new ControlContextCollection()
 
 		this.addControls = addResourceToCollection('controls')
 	}
 
-	initState({ name, comments, controls, control_contexts, is_show }) {
+	initState({ name, comments, shared, controls, control_contexts, is_show }) {
 		this.name = name
 		this.comments = comments
+		this.shared = shared
 		this.isShow = is_show
 
 		this.addControls(controls)(this)
@@ -29,6 +31,7 @@ export default class Store {
 
 		formData.set('control_list[name]', this.name || '')
 		formData.set('control_list[comments]', this.comments || '')
+		formData.set('control_list[shared]', this.shared || false)
 
 		this.contexts.forEach((c, i) => {
 			formDataUpdater.call()(c, i)

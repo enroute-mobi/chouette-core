@@ -71,6 +71,10 @@ class Workbench < ApplicationModel
     organisation_id.blank?
   end
 
+  def control_lists_shared_with_workgroup
+    workgroup.control_lists.where("shared = ? OR workbench_id = ?", true, self).distinct
+  end
+
   def locked_referential_to_aggregate_belongs_to_output
     return unless locked_referential_to_aggregate.present?
     return if locked_referential_to_aggregate.referential_suite == output

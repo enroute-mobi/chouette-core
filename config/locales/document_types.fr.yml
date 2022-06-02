@@ -1,0 +1,37 @@
+fr:
+  document_types:
+    index:
+      title: Type de documents
+    show:
+      title: "%{name}"
+    new:
+      title: "Créer un Type de document"
+    edit:
+      title: "Editer %{name}"
+    actions:
+      show: "Afficher ce Type de document"
+      new: "Créer un Type de document"
+      edit: "Editer ce Type de document"
+      destroy: "Supprimer ce Type de document"
+      destroy_confirm: "Etes vous sûr de supprimer ce Type de document ?"
+    form:
+      sections:
+        identification: "Identification"
+        internal: "Interne"
+    search_no_results: "Aucun Type de document ne correspond à votre recherche"
+    errors:
+    filters:
+  activerecord:
+    models:
+      document_type:
+        zero:  "Type de document"
+        one: "Type de document"
+        other: "Type de documents"
+    attributes:
+      document_type:
+        id: "ID"
+        name: "Nom"
+        short_name: "Nom court"
+        description: "Description"
+        updated_at: "Edité le"
+        creator_id: "Créé par"

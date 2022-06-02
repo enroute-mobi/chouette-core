@@ -2,7 +2,7 @@ class ControlListsController < ChouetteController
   include ApplicationHelper
   include PolicyChecker
 
-  defaults :resource_class => Control::List
+  defaults :resource_class => Control::List, collection_name: :control_lists_shared_with_workgroup
 
   before_action :decorate_control_list, only: %i[show new edit]
   after_action :decorate_control_list, only: %i[create update]
@@ -22,13 +22,6 @@ class ControlListsController < ChouetteController
         if collection.out_of_bounds?
           redirect_to params.merge(:page => 1)
         end
-
-        @control_lists = ControlListDecorator.decorate(
-          @control_lists,
-          context: {
-            workbench: @workbench
-          }
-        )
       end
     end
   end
@@ -43,7 +36,7 @@ class ControlListsController < ChouetteController
   alias workbench parent
 
   def collection
-    @control_lists = parent.control_lists_shared_with_workgroup.paginate(page: params[:page], per_page: 30)
+    get_collection_ivar || set_collection_ivar(end_of_association_chain.paginate(:page => params[:page], per_page: 30).decorate)
   end
 
   private

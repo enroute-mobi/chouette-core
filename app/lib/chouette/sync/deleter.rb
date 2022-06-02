@@ -8,7 +8,7 @@ module Chouette
       end
 
       attr_accessor :target, :delete_batch_size
-      attr_accessor :model_type, :model_id_attribute
+      attr_accessor :model_type, :model_id_attribute, :code_space
 
       attr_reader :delete_count
       include Event::HandlerSupport
@@ -28,6 +28,10 @@ module Chouette
         delete useless_identifiers
       end
 
+      def model_uses_code?
+        model_id_attribute == :codes
+      end
+
       protected
 
       def scope
@@ -36,14 +40,26 @@ module Chouette
 
       def existing_models(identifiers = nil)
         if identifiers
-          scope.where(model_id_attribute => identifiers)
+          if model_uses_code?
+            scope.by_code(code_space, identifiers)
+          else
+            scope.where(model_id_attribute => identifiers)
+          end
         else
-          scope.where.not(model_id_attribute => nil)
+          if model_uses_code?
+            scope.without_code(code_space)
+          else
+            scope.where.not(model_id_attribute => nil)
+          end
         end
       end
 
       def existing_identifiers
-        existing_models.distinct(model_id_attribute).pluck(model_id_attribute)
+        if model_uses_code?
+          code_space.codes.where(resource: existing_models).pluck(:value)
+        else
+          existing_models.distinct(model_id_attribute).pluck(model_id_attribute)
+        end
       end
 
       # To be customized

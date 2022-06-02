@@ -24,6 +24,7 @@ class Permission
         connection_links
         control_lists
         control_list_runs
+        document_types
         exports
         footnotes
         imports

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_05_13_084426) do
+ActiveRecord::Schema.define(version: 2022_05_20_131227) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -256,7 +256,6 @@ ActiveRecord::Schema.define(version: 2022_05_13_084426) do
     t.bigint "workbench_id"
     t.string "status"
     t.string "parent_type"
-    t.datetime "notified_parent_at"
     t.bigint "parent_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -265,6 +264,7 @@ ActiveRecord::Schema.define(version: 2022_05_13_084426) do
     t.string "name"
     t.datetime "started_at"
     t.datetime "ended_at"
+    t.datetime "notified_parent_at"
     t.jsonb "metadata", default: {}
     t.string "context"
     t.string "notification_target"
@@ -551,6 +551,16 @@ ActiveRecord::Schema.define(version: 2022_05_13_084426) do
     t.index ["publication_setup_id"], name: "index_destinations_on_publication_setup_id"
   end
 
+  create_table "document_types", force: :cascade do |t|
+    t.bigint "workgroup_id"
+    t.string "name"
+    t.string "short_name"
+    t.string "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["workgroup_id"], name: "index_document_types_on_workgroup_id"
+  end
+
   create_table "entrances", force: :cascade do |t|
     t.string "objectid", null: false
     t.string "name"
@@ -614,7 +624,6 @@ ActiveRecord::Schema.define(version: 2022_05_13_084426) do
     t.datetime "ended_at"
     t.string "token_upload"
     t.string "type"
-    t.datetime "notified_parent_at"
     t.integer "current_step", default: 0
     t.integer "total_steps", default: 0
     t.string "creator"
@@ -624,6 +633,7 @@ ActiveRecord::Schema.define(version: 2022_05_13_084426) do
     t.bigint "publication_id"
     t.bigint "workgroup_id"
     t.hstore "options", default: {}
+    t.datetime "notified_parent_at"
     t.index ["publication_id"], name: "index_exports_on_publication_id"
     t.index ["referential_id"], name: "index_exports_on_referential_id"
     t.index ["workbench_id"], name: "index_exports_on_workbench_id"
@@ -1429,6 +1439,7 @@ ActiveRecord::Schema.define(version: 2022_05_13_084426) do
     t.bigint "stop_area_provider_id"
     t.string "public_code"
     t.float "compass_bearing"
+    t.string "accessibility_status"
     t.string "mobility_impaired_accessibility"
     t.string "wheelchair_accessibility"
     t.string "step_free_accessibility"

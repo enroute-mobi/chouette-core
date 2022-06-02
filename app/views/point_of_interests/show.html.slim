@@ -5,7 +5,7 @@
   .container-fluid
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        = simple_block_for @point_of_interest, title: t('point_of_interest.form.sections.identification') do |d|
+        = simple_block_for @point_of_interest, title: t('point_of_interests.form.sections.identification') do |d|
           = d.attribute :name
           = d.attribute :url, link: @point_of_interest.url
           = d.attribute :point_of_interest_category, as: :association, link: ->(category) { workbench_shape_referential_point_of_interest_category_path(@workbench, category) }
@@ -13,15 +13,26 @@
           = d.attribute :address
           = d.attribute :zip_code
           = d.attribute :city_name
-          = d.attribute :country
+          = d.attribute :country, as: :country
           = d.attribute :email
           = d.attribute :phone
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        = simple_block_for @stop_area, title: Chouette::StopArea.tmf(:codes) do |d|
+        = simple_block_for @point_of_interest, title: Chouette::StopArea.tmf(:codes) do |d|
           - if @point_of_interest.codes.empty?
             .mb-xs
-              = replacement_msg t('stop_areas.no_codes')
+              = replacement_msg t('point_of_interests.no_codes')
           - else
             - @point_of_interest.codes.each do |c|
               = d.attribute :value, label: c.code_space.short_name, object: c
+    .row
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = simple_block_for @point_of_interest, title: t('point_of_interests.form.sections.hours') do |d|
+          - if @point_of_interest.point_of_interest_hours.empty?
+            .mb-xs
+              = replacement_msg t('point_of_interests.no_hours')
+          - else
+            - @point_of_interest.point_of_interest_hours.each do |c|
+              = d.attribute :opening_time_of_day, object: c, value: c.opening_time_of_day.to_hm
+              = d.attribute :closing_time_of_day, object: c, value: c.closing_time_of_day.to_hm
+              = d.attribute :week_days, value: %w(monday tuesday wednesday thursday friday saturday sunday).collect{ |d| content_tag(:span, t("calendars.days.#{d}"), class: "label label-default #{c.week_days.send(d + '?') ? '' : 'disabled'}") }.join.html_safe, object: c

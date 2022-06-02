@@ -203,4 +203,36 @@ RSpec.describe TimeOfDay do
     end
   end
 
+  describe 'Type::TimeWithoutZone' do
+    subject { TimeOfDay::Type::TimeWithoutZone.new }
+    describe '#cast' do
+      [
+        [ nil, nil ],
+        [ "", nil ],
+        [ "08:00", TimeOfDay.parse("08:00").force_zone(Time.zone) ],
+        [ TimeOfDay.parse("08:00"), TimeOfDay.parse("08:00") ],
+        [ TimeOfDay.parse("08:00:00"), TimeOfDay.parse("08:00:00") ],
+      ].each do |cast_value, expected|
+        it "should return #{expected.inspect} when #{cast_value.inspect} value" do
+          expect(subject.cast(cast_value)).to eq(expected)
+        end
+      end
+    end
+
+    describe '#serialize' do
+      [
+        [ nil, nil ],
+        [ "", nil ],
+        [ TimeOfDay.parse("08:00"), "08:00:00"],
+        [ TimeOfDay.parse("08:00:00"), "08:00:00" ],
+      ].each do |serialize_value, expected|
+        it "should return #{expected.inspect} when #{serialize_value.inspect} value" do
+          expect(subject.serialize(serialize_value)).to eq(expected)
+        end
+      end
+    end
+
+  end
+
+
 end

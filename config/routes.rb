@@ -174,6 +174,8 @@ ChouetteIhm::Application.routes.draw do
 
     resources :code_spaces, except: :destroy
 
+    resources :document_types
+
     resources :compliance_check_sets, only: [:index, :show] do
       get :executed, on: :member
       resources :compliance_checks, only: [:show]

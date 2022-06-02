@@ -6,7 +6,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/gtfs.git
-  revision: 7cd0f912d4bc449bfed252d969a1ec2ddc58a0fd
+  revision: a993d2cf2a3a5c2ac8963021703400ec0309c50b
   specs:
     gtfs (0.3.6)
       msgpack
@@ -66,7 +66,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: eaa0c02a5babf4f1e8a621edeb30938102143499
+  revision: ab41bce9b1ac7c72c87dca043c84fceb6603fec0
   specs:
     netex (0.1.2)
       activesupport

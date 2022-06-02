@@ -100,6 +100,8 @@ module SimpleBlockForHelper
           case options[:as]
           when :datetime
             I18n.l(raw_value, format: :short_with_time)
+          when :time
+            I18n.l(raw_value, format: :hour)
           when :duration
             raw_value >= 60 ? "#{(raw_value /  1.minute).round} min" : "#{raw_value.round} sec"
           when :enumerize
@@ -112,6 +114,8 @@ module SimpleBlockForHelper
             else
               raw_value
             end
+          when :country
+            ISO3166::Country[raw_value]&.name || raw_value
           when :association
             if raw_value.respond_to?(:name)
               [].tap do |parts|

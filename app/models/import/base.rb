@@ -5,6 +5,9 @@ class Import::Base < ApplicationModel
   include PurgeableResource
   include ProfilingSupport
 
+  attr_accessor :code_space
+  after_initialize :initialize_space_code
+
   scope :unfinished, -> { where 'notified_parent_at IS NULL' }
   scope :having_status, ->(statuses) { where(status: statuses ) }
   scope :started_at_after, ->(date) do
@@ -29,7 +32,7 @@ class Import::Base < ApplicationModel
     workbench&.workgroup
   end
 
-  def code_space
+  def code_space_default
     # User option in the future
     @code_space ||= workgroup.code_spaces.default if workgroup
   end
@@ -194,4 +197,9 @@ class Import::Base < ApplicationModel
     self.token_download ||= SecureRandom.urlsafe_base64
   end
 
+  def initialize_space_code
+    unless self.code_space.present?
+      self.code_space = code_space_default
+    end
+  end
 end

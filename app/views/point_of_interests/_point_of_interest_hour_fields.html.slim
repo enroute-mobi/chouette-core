@@ -1,0 +1,8 @@
+.nested-fields.flex.items-center.mb-10
+  .flex.flex-col.w-full.mr-6
+    .flex.items-center.justify-center.-ml-48
+      = f.input :opening_time_of_day, as: :time_picker
+      = f.input :closing_time_of_day, as: :time_picker
+    = f.input :week_days, as: :day_type
+  .flex.mb-28
+    = link_to_remove_association '', f, class: 'fa fa-trash'

@@ -1,19 +1,20 @@
 - javascript_additional_packs 'macro_list_runs/macro_run'
 
-.w-full.mt-md x-data="macroRun('#{messages_base_url}')"
+.w-full.mt-md.macro_run x-data="macroRun('#{messages_base_url}')"
 	.flex.items-center.w-full
 		button @click="showDetails = ! showDetails" type="button" class="flex items-center p-3 pl-3 mr-3 font-bold text-white bg-enroute-chouette-primary rounded cursor-pointer  hover:text-indigo-100"
 			<span class="text-3xl w-4" x-text="showDetails ? '-' : '+'">+</span>
 
 		.grow
-			= truncate("#{macro_run.name} (#{macro_run.model_name.human})", length: 60)
+			= truncate(macro_run.name, length: 60)
+			span.human_model_name = "(#{macro_run.model_name.human})"
 
 		.flex.items-center.ml-auto
-			a x-bind="statusFilter('info')"
+			a.count.info x-bind="statusFilter('info')"
 				= macro_run.macro_messages.info.size
-			a x-bind="statusFilter('warning')"
+			a.count.warning x-bind="statusFilter('warning')"
 				= macro_run.macro_messages.warning.size
-			a x-bind="statusFilter('error')"
+			a.count.error x-bind="statusFilter('error')"
 				= macro_run.macro_messages.error.size
 
 			button @click="showMessages = ! showMessages" type="button" class="flex items-center px-7 py-3 ml-xs font-bold text-white bg-enroute-chouette-primary rounded cursor-pointer  hover:text-indigo-100"

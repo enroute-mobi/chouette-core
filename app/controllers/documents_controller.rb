@@ -69,6 +69,7 @@ class DocumentsController < ChouetteController
       :description,
       :validity_period,
       :file,
+      :file_cache,
       :document_type_id,
       :document_provider_id
     )

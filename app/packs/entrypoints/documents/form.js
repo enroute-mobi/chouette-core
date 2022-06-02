@@ -1,25 +1,35 @@
 import Alpine from 'alpinejs'
 
-import { FileInput, ValidityPeriodInput } from './form/inputs'
-
-Alpine.data('documentForm', ({ filename, validityPeriod, errors }) => ({
+Alpine.data('documentForm', ({ errors }) => ({
 	init() {
-		const hasErrors = errors.length > 0
-		this.inputs.set('file', new FileInput({ filename: hasErrors ? '' : filename, hasErrors }))
-		this.inputs.set('validityPeriod', new ValidityPeriodInput(validityPeriod))
-
 		errors.forEach(text => {
 			Alpine.store('flash').add({ type: 'error', text })
 		})
+	}
+}))
 
-		if (Boolean(filename) && hasErrors) {
-			Alpine.store('flash').add({ type: 'warning', text: 'Veuillez re-uploader votre fichier' })
-		}
+Alpine.data('fileInput', ({ filename }) => ({
+	init() {
+		this.filename = filename
 	},
+	get node() {
+		return document.getElementById('document_file')
+	},
+	get file() {
+		return this.node.files[0]
+	},
+	getLabel() {
+		return Boolean(this.filename) ? this.filename : I18n.t('documents.form.placeholders.select_file')
+	},
+	openFileDialog() {
+		this.node.click()
+	}
+}))
 
-	// Form
-	inputs: new Map,
-	onFormData({ formData }) {
-		this.inputs.forEach(input => { input.onFormData(formData) })
+Alpine.data('validityPeriodInput', ({ validityPeriod }) => ({
+	validAfter: validityPeriod.validAfter || '',
+	validUntil: validityPeriod.validUntil || '',
+	getValue() {
+		return `[${this.validAfter},${this.validUntil}]`
 	}
 }))

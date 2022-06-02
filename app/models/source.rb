@@ -1,3 +1,5 @@
+require 'mimemagic_ext'
+
 class Source < ApplicationModel
   extend Enumerize
   belongs_to :workbench, optional: false
@@ -234,7 +236,7 @@ class Source < ApplicationModel
     measure :process
 
     def processor
-      Processor::GTFS.new.with_options(import_options).presence
+      Processor::GTFS.new.with_options(processing_options).presence
     end
 
     def processed_file
@@ -247,6 +249,10 @@ class Source < ApplicationModel
 
     def imported_file
       @processed_file || downloaded_file
+    end
+
+    def imported_file_type
+      @file_type ||= MimeMagic.by_magic(imported_file)
     end
 
     def checksumer
@@ -279,41 +285,21 @@ class Source < ApplicationModel
       order(created_at: :desc).offset(offset).delete_all
     end
 
-    class ImportCategory
-      def initialize(tempfile)
-        @tempfile = tempfile
-      end
-      attr_accessor :tempfile
+    def import_workbench_options
+      import_options
+        .merge(import_category_option)
+        .except(*processing_options.keys)
+    end
 
-      def import_category
-        return {} unless file_type
-        { import_category: import_types[file_type] }
-      end
+    def processing_options
+      import_options.select{ |key, _| key.start_with?('process_') }
+    end
 
-      def file_type
-        @file_type ||= MimeMagic.by_magic(zip_content)&.subtype
-      end
-
-      def import_types
-        @import_type = {
-          'xml' => 'netex_generic',
-        }
-      end
-
-      def path
-        tempfile.path rescue tempfile
-      end
-
-      def zip_content
-        Zip::File.open(path) do |zip_file|
-          zip_file.each do |entry|
-            if entry.file?
-              entry.get_input_stream do |io|
-                return io.read
-              end
-            end
-          end
-        end
+    def import_category_option
+      if imported_file_type&.xml?
+        { import_category: "netex_generic" }
+      else
+        {}
       end
     end
 
@@ -321,20 +307,6 @@ class Source < ApplicationModel
 
     def set_workbench
       self.workbench = self.source&.workbench
-    end
-
-    def import_workbench_options
-      import_options
-        .merge(import_category)
-        .except(*processing_options)
-    end
-
-    def processing_options
-      import_options.keys.select{ |key| key.start_with?('process_') }
-    end
-
-    def import_category
-      ImportCategory.new(imported_file).import_category
     end
   end
 

@@ -414,5 +414,3 @@ fr:
         warning: Avertissement
         error: Erreur
         failed: Echec
-    macro/source_attribute:
-      published_name: Nom publié

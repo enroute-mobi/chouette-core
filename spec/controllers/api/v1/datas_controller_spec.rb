@@ -389,6 +389,40 @@ RSpec.describe Api::V1::DatasController, type: :controller do
           data = json['data']['stopAreas']
           expect(data['nodes'].count).to eq(context.line(:first).stop_areas.count + context.line(:second).stop_areas.count)
         end
+
+        it 'should return stop_areas -> custom_fields when asked' do
+          stop_area_ids = [*context.line(:first).stop_areas.pluck(:id), *context.line(:second).stop_areas.pluck(:id)]
+          stop_areas = Chouette::StopArea.where(id: stop_area_ids)
+
+          context.workgroup.custom_fields.create(
+            code: 'test',
+            name: 'Test',
+            field_type: 'string',
+            resource_type: 'StopArea'
+          )
+
+          context.line(:first).stop_areas.first.update(custom_field_values: { test: 'foo'})
+          context.line(:first).stop_areas.second.update(custom_field_values: { test: ''})
+          context.line(:first).stop_areas.third.update(custom_field_values: { test: nil})
+
+           query = <<~GQL
+          {
+            stopAreas {
+              nodes {
+                customFields
+              }
+            }
+          }
+          GQL
+
+          post :graphql, params: {slug: publication_api.slug, query: query}
+          json = JSON.parse response.body
+          stop_areas = json['data']['stopAreas']['nodes']
+
+          expect(stop_areas[0]['customFields']).to eq({ 'test' => 'foo' })
+          expect(stop_areas[1]['customFields']).to be_empty
+          expect(stop_areas[2]['customFields']).to be_empty
+        end
       end
     end
   end

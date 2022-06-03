@@ -38,7 +38,7 @@ module Types
 
     field :custom_fields, GraphQL::Types::JSON, null: true
     def custom_fields
-      object.custom_field_values
+      object.custom_field_values.delete_if { |k,v| v.presence.nil? }
     end
 
     field :referent, Types::StopAreaType, null: true

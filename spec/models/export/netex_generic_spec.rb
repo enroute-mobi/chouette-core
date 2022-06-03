@@ -187,19 +187,18 @@ RSpec.describe Export::NetexGeneric do
 
       let!(:context) do
         Chouette.create do
+          custom_field code: 'customfield1'
           stop_area
         end
       end
 
-      let!(:custom_field) do
-        create :custom_field, field_type: :string, code: :customfield1, name: "Test CF", workgroup: context.workgroup, resource_type: "StopArea"
-      end
+      let(:custom_field) { context.custom_field }
       let(:stop_area) { context.stop_area }
 
       let(:decorator) { Export::NetexGeneric::StopDecorator.new stop_area }
 
       context "when stop_area has a custom file value" do
-        before { stop_area.update custom_field_values: { 'customfield1' => 'custom field value 1' } }
+        before { stop_area.custom_field_values = { 'customfield1' => 'custom field value 1' } }
 
         it "generate key_list custom field" do
           is_expected.to include(

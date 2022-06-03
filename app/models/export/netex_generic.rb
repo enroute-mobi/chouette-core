@@ -253,14 +253,14 @@ class Export::NetexGeneric < Export::Base
     end
 
     def key_list
-      netex_alternate_identifiers + nexte_custom_field_identifiers
+      netex_alternate_identifiers + netex_custom_field_identifiers
     end
 
     def netex_alternate_identifiers
       AlternateIdentifiersExtractor.new(self).alternate_identifiers
     end
 
-    def nexte_custom_field_identifiers
+    def netex_custom_field_identifiers
       CustomFieldExtractor.new(self).custom_field_identifiers
     end
 

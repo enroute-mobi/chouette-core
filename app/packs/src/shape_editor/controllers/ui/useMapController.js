@@ -49,9 +49,9 @@ export default function useMapController() {
     const mapLine = getMapLine(state) // A OL Collection
     const lineItem = mapLine.item(0)
 
-    const shouldSimplifyLine = state => getWaypoints(state).length > 25
+    const shouldSimplifyLine = state.waypoints.getLength() > 25
 
-    if (shouldSimplifyLine(state)) {
+    if (shouldSimplifyLine) {
       const simplifiedLine = SimplifiedLineBuilder.call(state)
 
       lineItem.getGeometry().setCoordinates(

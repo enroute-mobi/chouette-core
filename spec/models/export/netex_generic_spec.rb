@@ -181,6 +181,36 @@ RSpec.describe Export::NetexGeneric do
         is_expected.to include(referent_parent)
       end
     end
+
+    describe "#custom_field" do
+      subject { decorator.netex_resource.key_list }
+
+      let!(:context) do
+        Chouette.create do
+          custom_field code: 'customfield1'
+          stop_area
+        end
+      end
+
+      let(:custom_field) { context.custom_field }
+      let(:stop_area) { context.stop_area }
+
+      let(:decorator) { Export::NetexGeneric::StopDecorator.new stop_area }
+
+      context "when stop_area has a custom file value" do
+        before { stop_area.custom_field_values = { 'customfield1' => 'custom field value 1' } }
+
+        it "generate key_list custom field" do
+          is_expected.to include(
+            an_object_having_attributes({
+              key: "customfield1",
+              value: "custom field value 1",
+              type_of_key: "chouette::custom-field"
+            })
+          )
+        end
+      end
+    end
   end
 
   describe "Lines export" do
@@ -381,14 +411,6 @@ RSpec.describe Export::NetexGeneric do
 
       describe "#key_list" do
         subject { decorator.netex_resource.key_list }
-
-        let(:expected_message) do
-          an_object_having_attributes({
-            source: source,
-            criticity: criticity,
-            message_attributes: {"name" => attribute_name}
-          })
-        end
 
         context "when company has a registration number" do
           before { company.update registration_number: 'RN' }

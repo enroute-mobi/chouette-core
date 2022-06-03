@@ -53,6 +53,13 @@ module Chouette
           attribute(:short_name) { |n| "code_space_#{n}" }
         end
 
+        model :custom_field do
+          attribute(:name) { |n| "Custom Field #{n}"}
+          attribute(:code) { |n| "field_#{n}" }
+          attribute(:field_type) { :string }
+          attribute(:resource_type) { "StopArea" }
+        end
+
         model :workbench do
           attribute(:name) { |n| "Workbench #{n}" }
           attribute(:organisation) { build_root_model :organisation }

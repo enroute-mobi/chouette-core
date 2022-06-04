@@ -134,4 +134,17 @@ RSpec.describe User, :type => :model do
       expect(User.with_profiles(:custom)).to match_array [custom]
     end
   end
+
+  describe "#with_random_password" do
+    subject { User.new.with_random_password }
+
+    let(:random_format) { /[a-zA-Z0-9]{30}/ }
+
+    it {
+      is_expected.to have_attributes(
+                       password: a_string_matching(random_format),
+                       password_confirmation: a_string_matching(random_format))
+    }
+  end
+
 end

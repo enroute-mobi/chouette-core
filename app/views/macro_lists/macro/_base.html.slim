@@ -22,7 +22,7 @@
 						p.mb-0.mr-2.truncate x-text="resource.name" x-show="!expanded"
 						p.mb-0 x-show="!expanded && resource.name" = "(#{class_description})"
 						p.mb-0 x-show="!expanded && !resource.name" = "#{class_description}"
-			.flex.ml-auto x-show="expanded"
+			.flex.ml-auto.human_model_name x-show="expanded"
 				p.flex = class_description
 
 			= render 'operations/actions'

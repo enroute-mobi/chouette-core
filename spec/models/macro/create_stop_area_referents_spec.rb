@@ -1,5 +1,3 @@
-require 'geo_ext.rb'
-
 RSpec.describe Macro::CreateStopAreaReferents::Run do
 
   let(:macro_list_run) do

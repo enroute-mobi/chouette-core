@@ -22,7 +22,7 @@ module Macro
       end
 
       def stop_areas
-        context.stop_areas.without_compass_bearing
+        scope.stop_areas.without_compass_bearing
       end
 
       def average_bearings

@@ -12,7 +12,7 @@ module Macro
       end
 
       def stop_areas
-        context.stop_areas
+        scope.stop_areas
       end
 
       def selected_attributes
@@ -25,7 +25,7 @@ module Macro
       end
 
       def referents
-        stop_areas.where(is_referent: true).select(*selected_attributes)
+        CustomScope.new(self).scope(macro_list_run.base_scope).stop_areas.where(is_referent: true).select(*selected_attributes)
       end
 
       def max_srid_distance

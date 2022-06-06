@@ -133,3 +133,5 @@ module ChouetteIhm
     end
   end
 end
+
+require_relative '../app/lib/geo_ext'

@@ -1,6 +1,3 @@
-# TODO Make a standalone Geo module
-require 'geo_ext.rb'
-
 # Transform the position input into position when defined and valid
 class PositionInput
   def initialize(input)

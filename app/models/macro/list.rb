@@ -74,6 +74,98 @@ module Macro
         macro_context_runs.each(&:run)
       end
 
+      def base_scope
+        referential || WorkbenchScope.new(workbench)
+      end
+
+      def owned_scope
+        OwnerScope.new(base_scope, workbench)
+      end
+
+      def scope
+        owned_scope
+      end
+
+      class WorkbenchScope
+        def initialize(workbench)
+          @workbench = workbench
+        end
+
+        def lines
+          @workbench.lines
+        end
+
+        def companies
+          @workbench.companies
+        end
+
+        def routes
+          Chouette::Route.none
+        end
+
+        def stop_points
+          Chouette::StopPoint.none
+        end
+
+        def stop_areas
+          @workbench.stop_areas
+        end
+
+        def journey_patterns
+          Chouette::JourneyPattern.none
+        end
+
+        def vehicle_journeys
+          Chouette::VehicleJourney.none
+        end
+      end
+
+      class OwnerScope
+        def initialize(scope, workbench)
+          @scope = scope
+          @workbench = workbench
+        end
+        attr_accessor :scope, :workbench
+
+        delegate :stop_area_providers, :shape_providers, :line_providers, to: :workbench
+
+        def stop_areas
+          scope.stop_areas.where(stop_area_provider: stop_area_providers)
+        end
+
+        def shapes
+          scope.shapes.where(shape_provider: shape_providers)
+        end
+
+        def lines
+          scope.lines.where(line_provider: line_providers)
+        end
+
+        def networks
+          scope.networks.where(line_provider: line_providers)
+        end
+
+        def companies
+          scope.companies.where(line_provider: line_providers)
+        end
+
+        def journey_patterns
+          scope.journey_patterns
+        end
+
+        def vehicle_journeys
+          scope.vehicle_journeys
+        end
+
+        def routes
+          scope.routes
+        end
+
+        def stop_points
+          scope.stop_points
+        end
+      end
+
     end
   end
 end

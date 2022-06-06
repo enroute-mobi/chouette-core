@@ -11,7 +11,7 @@ module Macro
       end
 
       def journey_patterns
-        context.journey_patterns.where(shape: nil)
+        scope.journey_patterns.where(shape: nil)
       end
 
       def shapes

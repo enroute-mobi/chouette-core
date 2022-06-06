@@ -20,8 +20,12 @@ module Macro
         workbench.default_stop_area_provider
       end
 
+      def scope
+        CustomScope.new(self).scope(macro_list_run.base_scope)
+      end
+
       def stop_areas
-        context.stop_areas.where(area_type: Chouette::AreaType::QUAY).
+        scope.stop_areas.where(area_type: Chouette::AreaType::QUAY).
           where.not(latitude: nil, longitude: nil, compass_bearing: nil)
       end
 

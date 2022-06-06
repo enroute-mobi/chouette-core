@@ -37,42 +37,42 @@ RSpec.describe Macro::Context do
       end
 
       context "when model is stop_areas" do
-        let(:model) { macro_run.context.context.context.stop_areas }
+        let(:model) { macro_run.scope.scope.stop_areas }
         let(:referential_stop_area_ids) { context.referential.stop_areas.pluck(:id) }
 
         it {is_expected.to match_array(referential_stop_area_ids)}
       end
 
       context "when model is lines" do
-        let(:model) { macro_run.context.context.context.lines }
+        let(:model) { macro_run.scope.scope.lines }
         let(:referential_line_ids) { context.referential.lines.pluck(:id) }
 
         it {is_expected.to match_array(referential_line_ids)}
       end
 
       context "when model is routes" do
-        let(:model) { macro_run.context.context.context.routes }
+        let(:model) { macro_run.scope.scope.routes }
         let(:referential_route_ids) { context.referential.routes.pluck(:id) }
 
         it {is_expected.to match_array(referential_route_ids)}
       end
 
       context "when model is stop_points" do
-        let(:model) { macro_run.context.context.context.stop_points }
+        let(:model) { macro_run.scope.scope.stop_points }
         let(:referential_stop_point_ids) { context.referential.stop_points.pluck(:id) }
 
         it {is_expected.to match_array(referential_stop_point_ids)}
       end
 
       context "when model is journey_patterns" do
-        let(:model) { macro_run.context.context.context.journey_patterns }
+        let(:model) { macro_run.scope.scope.journey_patterns }
         let(:referential_journey_pattern_ids) { context.referential.journey_patterns.pluck(:id) }
 
         it {is_expected.to match_array(referential_journey_pattern_ids)}
       end
 
       context "when model is vehicle_journeys" do
-        let(:model) { macro_run.context.context.context.vehicle_journeys }
+        let(:model) { macro_run.scope.scope.vehicle_journeys }
         let(:referential_vehicle_journey_ids) { context.referential.vehicle_journeys.pluck(:id) }
 
         it {is_expected.to match_array(referential_vehicle_journey_ids)}
@@ -85,39 +85,39 @@ RSpec.describe Macro::Context do
       end
 
       context "when model is stop_areas" do
-        let(:model) { macro_run.context.context.context.stop_areas }
+        let(:model) { macro_run.scope.scope.stop_areas }
         let(:workbench_stop_area_ids) { context.workbench.stop_areas.pluck(:id) }
 
         it {is_expected.to match_array(workbench_stop_area_ids)}
       end
 
       context "when model is lines" do
-        let(:model) { macro_run.context.context.context.lines }
+        let(:model) { macro_run.scope.scope.lines }
         let(:workbench_line_ids) { context.workbench.lines.pluck(:id) }
 
         it {is_expected.to match_array(workbench_line_ids)}
       end
 
       context "when model is routes" do
-        let(:model) { macro_run.context.context.context.routes }
+        let(:model) { macro_run.scope.scope.routes }
 
         it {is_expected.to match_array([])}
       end
 
       context "when model is stop_points" do
-        let(:model) { macro_run.context.context.context.stop_points }
+        let(:model) { macro_run.scope.scope.stop_points }
 
         it {is_expected.to match_array([])}
       end
 
       context "when model is journey_patterns" do
-        let(:model) { macro_run.context.context.context.journey_patterns }
+        let(:model) { macro_run.scope.scope.journey_patterns }
 
         it {is_expected.to match_array([])}
       end
 
       context "when model is vehicle_journeys" do
-        let(:model) { macro_run.context.context.context.vehicle_journeys }
+        let(:model) { macro_run.scope.scope.vehicle_journeys }
 
         it {is_expected.to match_array([])}
       end

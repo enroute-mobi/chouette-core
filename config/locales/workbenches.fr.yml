@@ -44,8 +44,8 @@ fr:
     new:
       title: Confirmer un Espace de Travail
       text: |
-        Vous avex recu un code permettant de rejoindre ce groupe de travail appartenant a une autre organisation
-        En acceptant cette invitation, votre organisation aura un nouvel espace de travail pour collaborer avec ce groupe de travail.
+        <p>Vous avez reçu un code permettant de rejoindre ce groupe de travail appartenant a une autre organisation.</p>
+        <p>En acceptant cette invitation, votre organisation aura un nouvel espace de travail pour collaborer avec ce groupe de travail.</p>
 
   activerecord:
     models:

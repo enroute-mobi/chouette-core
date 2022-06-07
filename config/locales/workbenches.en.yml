@@ -44,8 +44,8 @@ en:
     new:
       title: Confirm Workgroup participation
       text:  |
-        You received a confirmation code to join the Workgroup from another Organisation.
-        By accepting this invitation, our Organisation will have a new Workbench to collaborate (and provide data) into this Workgroup.
+        <p>You received a confirmation code to join the Workgroup from another Organisation.</p>
+        <p>By accepting this invitation, our Organisation will have a new Workbench to collaborate (and provide data) into this Workgroup.</p>
 
   activerecord:
     models:

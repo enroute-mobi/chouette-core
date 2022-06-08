@@ -1008,6 +1008,7 @@ RSpec.describe Export::NetexGeneric do
 
     let(:context) do
       Chouette.create do
+        code_space
         3.times { vehicle_journey }
       end
     end
@@ -1021,6 +1022,26 @@ RSpec.describe Export::NetexGeneric do
       context.routes.each { |route| export.resource_tagger.register_tag_for(route.line) }
       part.export!
       expect(target.resources).to all(have_tag(:line_id))
+    end
+
+    describe Export::NetexGeneric::VehicleJourneys do
+      let(:export_scope_vehicle_journeys) { export.export_scope.vehicle_journeys.distinct.to_a }
+
+      subject { Export::NetexGeneric::VehicleJourneys.new(export).vehicle_journeys.to_a }
+
+      context 'when a Vehicle Journey has an associated code' do
+        before do
+          vehicle_journeys.each do |vehicle_journey|
+            vehicle_journey.codes.create value: "dummy-#{vehicle_journey.id}", code_space: context.code_space
+          end
+        end
+
+        it { is_expected.to match_array(export_scope_vehicle_journeys) }
+      end
+
+      context 'when a Vehicle Journey has no associated code' do
+        it { is_expected.to match_array(export_scope_vehicle_journeys) }
+      end
     end
 
     describe Export::NetexGeneric::VehicleJourneys::Decorator do

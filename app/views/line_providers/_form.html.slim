@@ -1,0 +1,17 @@
+= simple_form_for [@workbench, :line_referential, @line_provider], html: {class: 'form-horizontal', id: 'line_provider_form'}, wrapper: :horizontal_form do |f|
+  .row
+    .col-lg-12
+      = f.input :name
+      = f.input :short_name
+
+  .separator.section_separator
+  .row
+    .col-lg-12
+      h2.mb-lg= LineProvider.tmf(:codes)
+      = f.simple_fields_for(:codes) do |codes_form|
+        = render 'code_fields', f: codes_form
+
+      .links.nested-linker
+        = link_to_add_association t('line_providers.form.add_code'), f, :codes, class: 'btn btn-primary'
+
+  = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'line_provider_form'

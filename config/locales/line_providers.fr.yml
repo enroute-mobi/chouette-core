@@ -1,0 +1,37 @@
+fr:
+  line_providers:
+    actions:
+      destroy_confirm: "Etes vous sûr de supprimer ce fournisseur de lignes ?"
+    search_no_results: "Aucun fournisseur de lignes"
+    no_codes: "Ce fournisseur de lignes n'a pas de code"
+    index:
+      title: "Fournisseurs de lignes"
+    new:
+      title: "Ajouter un fournisseurs de lignes"
+    show:
+      title: "%{name}"
+    edit:
+      title: "Editer %{name}"
+    update:
+      title: "Editer %{name}"
+    form:
+      sections:
+        informations: "Informations"
+        associated_resources: "Ressources associées"
+      add_code: "Ajouter un code"
+  activerecord:
+    models:
+      line_provider:
+        one: "Fournisseur de ligne"
+        other: "Fournisseurs de lignes"
+    attributes:
+      line_provider:
+        name: Nom
+        short_name: Nom court
+        workbench: Espace de travail
+        lines: Lignes
+        companies: Transporteurs
+        networks: Réseaux
+        line_notices: Notes de lignes
+        line_routing_constraint_zones: Interdictions de Trafic local
+        codes: "Codes"

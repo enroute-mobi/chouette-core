@@ -10,7 +10,12 @@ class LineProvider < ApplicationModel
   has_many :line_notices, class_name: "Chouette::LineNotice"
   has_many :line_routing_constraint_zones
 
-  validates :short_name, presence: true
+  has_many :codes, as: :resource, dependent: :delete_all
+  accepts_nested_attributes_for :codes, allow_destroy: true, reject_if: :all_blank
+  validates_associated :codes
+
+  validates :name, presence: true
+  validates :short_name, presence: true, uniqueness: { scope: :workbench }, format: { with: %r{\A[0-9a-zA-Z_]+\Z} }
 
   before_validation :define_line_referential, on: :create
 

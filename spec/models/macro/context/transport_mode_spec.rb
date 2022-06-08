@@ -58,6 +58,48 @@ RSpec.describe Macro::Context::TransportMode::Run do
       it "should return all macro_runs for each macro_context_runs" do
         expect(macro_run_names).to include(macro_dummy.name)
       end
+
+      describe "#scope" do
+        subject do
+          macro_list_run.macro_context_runs.map{ |context_run| context_run.scope.send collection }
+        end
+
+        describe "#lines" do
+          let(:collection) { :lines }
+
+          it { is_expected.not_to be_empty }
+        end
+
+        describe "#routes" do
+          let(:collection) { :routes }
+
+          it { is_expected.not_to be_empty }
+        end
+
+        describe "#stop_points" do
+          let(:collection) { :stop_points }
+
+          it { is_expected.not_to be_empty }
+        end
+
+        describe "#stop_areas" do
+          let(:collection) { :stop_areas }
+
+          it { is_expected.not_to be_empty }
+        end
+
+        describe "#journey_patterns" do
+          let(:collection) { :journey_patterns }
+
+          it { is_expected.not_to be_empty }
+        end
+
+        describe "#vehicle_journeys" do
+          let(:collection) { :vehicle_journeys }
+
+          it { is_expected.not_to be_empty }
+        end
+      end
     end
   end
 end

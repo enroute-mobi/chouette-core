@@ -1061,10 +1061,25 @@ class Export::NetexGeneric < Export::Base
       attr_accessor :vehicle_journeys
 
       def scope
-        return base_query unless vehicle_journeys.joins_values.include? :time_tables
+        return with_codes unless include_time_tables?
+
+        with_codes_and_time_tables
+      end
+
+      private
+
+      def include_time_tables?
+        vehicle_journeys.joins_values.include? :time_tables
+      end
+
+      def with_codes_and_time_tables
+        with_codes.select(time_table_objectids)
+      end
+
+      def with_codes
         base_query
-          .joins(:codes)
-          .select(time_table_objectids, vehicle_journey_codes)
+          .left_joins(:codes)
+          .select(vehicle_journey_codes)
           .group(group_by)
       end
 
@@ -1074,8 +1089,6 @@ class Export::NetexGeneric < Export::Base
           .joins(journey_pattern: :route)
           .select(selected)
       end
-
-      private
 
       def selected
         <<~SQL

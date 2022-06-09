@@ -5,7 +5,7 @@ class LineProviderPolicy < ApplicationPolicy
   end
 
   def destroy?
-    user.has_permission?('line_providers.destroy')
+    user.has_permission?('line_providers.destroy') && current_workbench.line_providers.exists?(record.id)
   end
 
   def update?

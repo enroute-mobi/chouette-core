@@ -9,7 +9,7 @@
         - attributes = {}
         - attributes[@referential.human_attribute_name(:state)] = referential_state(@referential) unless @referential.in_referential_suite?
         - attributes[@referential.human_attribute_name(:validity_period)] = (@referential.validity_period.present? ? t('validity_range', debut: l(@referential.try(:validity_period).try(:begin)), end: l(@referential.try(:validity_period).try(:end))) : '-')
-        - attributes[@referential.human_attribute_name(:workbench)] = @referential.workbench&.name if @@referential.workbench
+        - attributes[@referential.human_attribute_name(:workbench)] = @referential.workbench&.name if @referential.workbench
         - unless @referential.in_referential_suite?
           - attributes[@referential.human_attribute_name(:merged_at)] = @referential.merged_at ? l(@referential.merged_at) : '-'
           - attributes[@referential.human_attribute_name(:urgent)] = boolean_icon(@referential.contains_urgent_offer?)

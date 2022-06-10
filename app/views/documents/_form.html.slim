@@ -16,21 +16,16 @@
       = f.input :name
       = f.input :document_type_id, as: :select, collection: @workbench.workgroup.document_types.map { |dt| [dt.short_name, dt.id] }
 
-      div[x-data="validityPeriodInput(#{@document.json_state})"]
-        input name="document[validity_period]" type="hidden" x-bind:value="getValue()"
+      = f.simple_fields_for(:validity_period) do |sub|
+        = sub.input :from,
+          as: :date_picker,
+          label: I18n.t('activerecord.attributes.document.valid_after'),
+          input_html: { value: @document.validity_period.from&.to_s }
 
-        = f.simple_fields_for(:validity_period) do |sub|
-          = sub.input :valid_after,
-            as: :date_picker,
-            label: I18n.t('activerecord.attributes.document.valid_after'),
-            value: @document.validity_period&.begin,
-            input_html: { name: nil, 'x-model': 'validAfter' }
-
-          = sub.input :valid_until,
-            as: :date_picker,
-            label: I18n.t('activerecord.attributes.document.valid_until'),
-            value: @document.validity_period&.end,
-            input_html: { name: nil, 'x-model': 'validUntil' }
+        = sub.input :to,
+          as: :date_picker,
+          label: I18n.t('activerecord.attributes.document.valid_until'),
+          input_html: { value: @document.validity_period.to&.to_s }
 
   .separator.section_separator
   .row

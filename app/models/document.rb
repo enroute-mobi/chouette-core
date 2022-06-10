@@ -8,10 +8,13 @@ class Document < ApplicationModel
 
 	validates_associated :codes
 
-	validates :name, :file, :document_type_id, :document_provider_id, :validity_period, presence: true
+	validates :name, :file, :document_type_id, :document_provider_id, presence: true
+	
 	validate :has_valid_validity_period
 
 	mount_uploader :file, DocumentUploader
+
+	attribute :validity_period, Period::Type.new
 
 	def self.file_extension_whitelist
 		%w(pdf kml jpg jpeg png)
@@ -28,11 +31,11 @@ class Document < ApplicationModel
 	private
 
 	def has_valid_validity_period
-		errors.add(:validity_period, :no_bounds) unless valid_after.is_a?(Date) || valid_until.is_a?(Date)
+		return if validity_period.valid?
 
-		if (valid_after.is_a?(Date) && valid_until.is_a?(Date)) && (valid_until < valid_after)
-			errors.add(:validity_period, :after_before_begin)
-		end
+		errors.add(:validity_period, :no_bounds) if validity_period.empty?
+
+		errors.add(:validity_period, :after_before_begin)
 	end
 end
 

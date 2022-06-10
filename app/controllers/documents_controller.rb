@@ -67,11 +67,11 @@ class DocumentsController < ChouetteController
     params.require(:document).permit(
       :name,
       :description,
-      :validity_period,
       :file,
       :file_cache,
       :document_type_id,
-      :document_provider_id
+      :document_provider_id,
+      validity_period: [:from, :to]
     )
   end
 end

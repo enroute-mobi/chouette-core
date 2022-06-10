@@ -217,6 +217,28 @@ class Period < Range
     end
   end
 
+  class Type < ActiveRecord::Type::Value
+    delegate :serialize, to: :pg_range_adapter
+
+    def cast value
+      value = Range.new(*value.with_indifferent_access.values_at(:from, :to)) if value.is_a?(Hash)
+      value = pg_range_adapter.deserialize(value) if value.is_a?(String)
+
+      deserialize(value)
+    end
+
+    def deserialize value
+      value = pg_range_adapter.deserialize(value) if value.is_a?(String)
+      Period.new from: value&.begin, to: value&.end
+    end
+
+    private
+
+    def pg_range_adapter
+      @pg_range_adapter ||= ActiveRecord::ConnectionAdapters::PostgreSQL::OID::Range.new(ActiveRecord::ConnectionAdapters::PostgreSQL::OID::Date.new)
+    end
+  end
+
   private
 
   # Invokes to_date method if available

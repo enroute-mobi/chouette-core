@@ -25,11 +25,3 @@ Alpine.data('fileInput', ({ filename }) => ({
 		this.node.click()
 	}
 }))
-
-Alpine.data('validityPeriodInput', ({ validityPeriod }) => ({
-	validAfter: validityPeriod.validAfter || '',
-	validUntil: validityPeriod.validUntil || '',
-	getValue() {
-		return `[${this.validAfter},${this.validUntil}]`
-	}
-}))

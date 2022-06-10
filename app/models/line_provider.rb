@@ -10,14 +10,11 @@ class LineProvider < ApplicationModel
   has_many :line_notices, class_name: "Chouette::LineNotice"
   has_many :line_routing_constraint_zones
 
-  has_many :codes, as: :resource, dependent: :delete_all
-  accepts_nested_attributes_for :codes, allow_destroy: true, reject_if: :all_blank
-  validates_associated :codes
-
   validates :name, presence: true
-  validates :short_name, presence: true, uniqueness: { scope: :workbench }, format: { with: %r{\A[0-9a-zA-Z_]+\Z} }
+  validates :short_name, presence: true, uniqueness: { scope: :workbench }
+  # validates :short_name, presence: true, uniqueness: { scope: :workbench }, format: { with: %r{\A[0-9a-zA-Z_]+\Z} }
 
-  before_validation :define_line_referential, on: :create
+  before_validation :define_line_referential, :set_name, on: :create
 
   scope :by_text, ->(text) { text.blank? ? all : where('lower(line_providers.short_name) LIKE :t', t: "%#{text.downcase}%") }
 
@@ -29,5 +26,9 @@ class LineProvider < ApplicationModel
 
   def define_line_referential
     self.line_referential ||= workgroup&.line_referential
+  end
+
+  def set_name
+    self.name = short_name unless self.name
   end
 end

@@ -17,27 +17,27 @@ class Macro::Context::TransportMode < Macro::Context
       attr_accessor :initial_scope, :transport_mode
 
       def lines
-        context.lines.where(transport_mode: transport_mode)
+        initial_scope.lines.where(transport_mode: transport_mode)
       end
 
       def routes
-        context.routes.where(line: lines)
+        initial_scope.routes.where(line: lines)
       end
 
       def stop_points
-        context.stop_points.where(route: routes)
+        initial_scope.stop_points.where(route: routes)
       end
 
       def stop_areas
-        context.stop_areas.where(id: stop_points.select(:stop_area_id))
+        initial_scope.stop_areas.where(id: stop_points.select(:stop_area_id))
       end
 
       def journey_patterns
-        context.journey_patterns.where(route: routes)
+        initial_scope.journey_patterns.where(route: routes)
       end
 
       def vehicle_journeys
-        context.vehicle_journeys.where(journey_pattern: journey_patterns)
+        initial_scope.vehicle_journeys.where(journey_pattern: journey_patterns)
       end
     end
   end

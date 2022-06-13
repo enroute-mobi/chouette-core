@@ -11,8 +11,7 @@ class LineProvider < ApplicationModel
   has_many :line_routing_constraint_zones
 
   validates :name, presence: true
-  validates :short_name, presence: true, uniqueness: { scope: :workbench }
-  # validates :short_name, presence: true, uniqueness: { scope: :workbench }, format: { with: %r{\A[0-9a-zA-Z_]+\Z} }
+  validates :short_name, presence: true, uniqueness: { scope: :workbench }, format: { with: %r{\A[0-9a-zA-Z_]+\Z} }
 
   before_validation :define_line_referential, :set_name, on: :create
 

@@ -117,7 +117,7 @@ RSpec.describe Api::V1::DatasController, type: :controller do
 
         context 'unauthenticated' do
           let(:auth_token) { "foo" }
-          
+
           it 'should not be successful' do
             get( :lines, params: { slug: publication_api.slug, :format => :json  })
             expect(response).to_not be_successful
@@ -391,8 +391,6 @@ RSpec.describe Api::V1::DatasController, type: :controller do
         end
 
         it 'should return stop_areas -> custom_fields when asked' do
-          stop_area_ids = [*context.line(:first).stop_areas.pluck(:id), *context.line(:second).stop_areas.pluck(:id)]
-          stop_areas = Chouette::StopArea.where(id: stop_area_ids)
 
           context.workgroup.custom_fields.create(
             code: 'test',

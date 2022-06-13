@@ -13,6 +13,7 @@ RSpec.describe Macro::Context::TransportMode::Run do
   let!(:macro_context2) do
    Macro::Context::TransportMode.create! name: "Macro Context TransportMode 2", macro_list: macro_list, options: { transport_mode: "tram" }
   end
+
   let!(:macro_dummy) do
     Macro::Dummy.create name: "Macro dummy 1", macro_context: macro_context1, position: 0
   end
@@ -27,11 +28,25 @@ RSpec.describe Macro::Context::TransportMode::Run do
 
     let(:context) do
       Chouette.create do
+        stop_area :first
+        stop_area :second
+
         referential do
-          journey_pattern
+          route :route, stop_areas: [:first, :second] do
+            journey_pattern :journey_pattern
+          end
         end
       end
     end
+
+    let(:route) { context.route(:route) }
+    let(:line) { route.line }
+    let(:first_stop_point) { route.stop_points.first }
+    let(:second_stop_point) { route.stop_points.second }
+    let(:first_stop_area) { context.stop_area(:first) }
+    let(:second_stop_area) { context.stop_area(:second) }
+    let(:journey_pattern) { context.journey_pattern(:journey_pattern) }
+    let(:vehicle_journey) { journey_pattern.reload.vehicle_journeys.find_by_objectid('objectid-vehicle-journey-in-context') }
 
     before { context.referential.switch }
 
@@ -45,6 +60,10 @@ RSpec.describe Macro::Context::TransportMode::Run do
       end
 
       before do
+        journey_pattern.vehicle_journeys.create(
+          objectid: 'objectid-vehicle-journey-in-context',
+          route: route, transport_mode: 'bus'
+        )
         macro_list.reload
         macro_list_run.build_with_original_macro_list
         macro_list_run.save
@@ -61,43 +80,49 @@ RSpec.describe Macro::Context::TransportMode::Run do
 
       describe "#scope" do
         subject do
-          macro_list_run.macro_context_runs.map{ |context_run| context_run.scope.send collection }
+          macro_list_run.macro_context_runs.map{ |context_run| context_run.scope.send collection }.flatten.compact
         end
 
         describe "#lines" do
           let(:collection) { :lines }
 
-          it { is_expected.not_to be_empty }
+          it { is_expected.to include an_object_having_attributes(id: line.id) }
         end
 
         describe "#routes" do
           let(:collection) { :routes }
 
-          it { is_expected.not_to be_empty }
+          it { is_expected.to include an_object_having_attributes(id: route.id) }
         end
 
         describe "#stop_points" do
           let(:collection) { :stop_points }
 
-          it { is_expected.not_to be_empty }
+          it { is_expected.to include an_object_having_attributes(id: first_stop_point.id) }
+          it { is_expected.to include an_object_having_attributes(id: second_stop_point.id) }
         end
 
         describe "#stop_areas" do
           let(:collection) { :stop_areas }
 
-          it { is_expected.not_to be_empty }
+          it { is_expected.to include an_object_having_attributes(id: first_stop_area.id) }
+          it { is_expected.to include an_object_having_attributes(id: second_stop_area.id) }
         end
 
         describe "#journey_patterns" do
           let(:collection) { :journey_patterns }
 
-          it { is_expected.not_to be_empty }
+          it do
+            is_expected.to include an_object_having_attributes(id: journey_pattern.id)
+          end
         end
 
         describe "#vehicle_journeys" do
           let(:collection) { :vehicle_journeys }
 
-          it { is_expected.not_to be_empty }
+          it do
+            is_expected.to include an_object_having_attributes(id: vehicle_journey.id)
+          end
         end
       end
     end

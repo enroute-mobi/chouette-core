@@ -33,7 +33,7 @@ class Document < ApplicationModel
 	def has_valid_validity_period
 		return if validity_period.valid?
 
-		errors.add(:validity_period, :no_bounds) if validity_period.empty?
+		return errors.add(:validity_period, :no_bounds) if validity_period.empty?
 
 		errors.add(:validity_period, :after_before_begin)
 	end

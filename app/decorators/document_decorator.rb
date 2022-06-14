@@ -7,6 +7,16 @@ class DocumentDecorator < AF83::Decorator
 
 	with_instance_decorator(&:crud)
 
+	define_instance_method :display_validity_period_part do |part|
+		value = validity_period.try(part)
+
+		return '-' if value.nil?
+		return '-' if value.is_a?(Float)
+
+		I18n.l(value)
+	end
+
+
 	define_instance_method :json_state do
 		JSON.generate({
 			filename: file&.file&.identifier || '',

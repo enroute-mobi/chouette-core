@@ -30,12 +30,12 @@
               ), \
               TableBuilderHelper::Column.new( \
                 key: :valid_after, \
-                attribute: -> (doc) { doc.validity_period.from.to_s.presence || '-' }, \
+                attribute: -> (doc) { doc.display_validity_period_part(:from) }, \
                 sortable: false,\
               ), \
               TableBuilderHelper::Column.new( \
                 key: :valid_until, \
-                attribute: -> (doc) { doc.validity_period.to.to_s.presence || '-' }, \
+                attribute: -> (doc) { doc.display_validity_period_part(:to) }, \
                 sortable: false,\
               ) \
             ].compact,

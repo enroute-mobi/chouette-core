@@ -1,9 +1,9 @@
 RSpec.describe Macro::CreateStopAreaReferents::Run do
 
   let(:macro_list_run) do
-    Macro::List::Run.new workbench: context.workbench
+    Macro::List::Run.create workbench: context.workbench
   end
-  let(:macro_run) { described_class.new macro_list_run: macro_list_run }
+  let(:macro_run) { described_class.create macro_list_run: macro_list_run, position: 0 }
 
   let(:context) do
     Chouette.create { workbench }
@@ -23,6 +23,10 @@ RSpec.describe Macro::CreateStopAreaReferents::Run do
 
     it "creates a Referent Stop Area" do
       expect { subject }.to change { context.stop_area_referential.stop_areas.referents.count }.from(0).to(1)
+    end
+
+    it "creates a message" do
+      expect { subject }.to change { macro_run.macro_messages.count }.from(0).to(1)
     end
 
     describe "created Referent" do

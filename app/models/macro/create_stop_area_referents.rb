@@ -8,8 +8,13 @@ module Macro
             if cluster.count > 1
               builder = ReferentBuilder.create(cluster.stop_areas)
               if builder
-                # TODO Create message
-                stop_area_provider.stop_areas.create!(builder.attributes)
+                if stop_area = stop_area_provider.stop_areas.create!(builder.attributes)
+                  self.macro_messages.create(
+                    criticity: "info",
+                    message_attributes: { name: stop_area.name },
+                    source: stop_area
+                  )
+                end
               end
             end
           end

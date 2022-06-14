@@ -6,8 +6,20 @@ module Macro
           particular_id = association["particular_id"]
           closest_referent_id = association["closest_referent_id"]
 
-          # TODO Create Message
-           stop_areas.find(particular_id).update referent_id: closest_referent_id
+          stop_area = stop_areas.find(particular_id)
+          if stop_area.update(referent_id: closest_referent_id)
+            self.macro_messages.create(
+              criticity: "info",
+              message_attributes: { name: stop_area.name },
+              source: stop_area
+            )
+          else
+            self.macro_messages.create(
+              criticity: "error",
+              message_attributes: { name: stop_area.name },
+              source: stop_area
+            )
+          end
         end
       end
 

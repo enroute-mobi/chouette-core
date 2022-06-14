@@ -1,9 +1,9 @@
 RSpec.describe Macro::AssociateStopAreaReferent::Run do
 
   let(:macro_list_run) do
-    Macro::List::Run.new workbench: context.workbench
+    Macro::List::Run.create workbench: context.workbench
   end
-  let(:macro_run) { described_class.new macro_list_run: macro_list_run }
+  let(:macro_run) { described_class.create macro_list_run: macro_list_run, position: 0 }
 
   let(:context) do
     Chouette.create { workbench }
@@ -31,6 +31,10 @@ RSpec.describe Macro::AssociateStopAreaReferent::Run do
 
     it "associates the two Stop Areas to the Referent Stop Area" do
       expect { subject }.to change { targets_referents }.from([nil]).to([referent])
+    end
+
+    it "creates messages" do
+      expect { subject }.to change { macro_run.macro_messages.count }.from(0).to(2)
     end
 
     context "when Referent has a too different compass bearing" do

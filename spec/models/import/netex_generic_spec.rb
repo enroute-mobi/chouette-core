@@ -524,6 +524,7 @@ RSpec.describe Import::NetexGeneric do
         import.update options: { 'update_workgroup_providers' => true }
         workbench.line_providers.create(
           short_name: 'line_provider_1',
+          name: 'line provider 1',
           line_referential: workbench.line_referential,
           codes_attributes: [{
             value: '2003-line-provider-existing',

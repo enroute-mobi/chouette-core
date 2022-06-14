@@ -17,6 +17,7 @@ RSpec.describe LineProvider do
     before do
       LineProvider.create(
         short_name: "Line_provider_1",
+        name: "Line Provider 1",
         workbench: workbench,
         line_referential: line_referential,
         codes_attributes: [

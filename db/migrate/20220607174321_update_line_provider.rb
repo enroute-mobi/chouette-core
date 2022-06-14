@@ -4,11 +4,9 @@ class UpdateLineProvider < ActiveRecord::Migration[5.2]
       add_column :line_providers, :name, :string
 
       LineProvider.reset_column_information
-      LineProvider.find_each do |line_provider|
-        line_provider.update(name: line_provider.short_name) unless line_provider.name
-      end
+      LineProvider.where(name: nil).update_all("name = short_name")
 
-      change_column_null :line_providers, :name, true
+      change_column_null :line_providers, :name, false
     end
   end
 end

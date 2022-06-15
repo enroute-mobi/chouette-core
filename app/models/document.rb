@@ -6,36 +6,23 @@ class Document < ApplicationModel
 
 	has_many :codes, as: :resource, dependent: :delete_all
 
-	validates_associated :codes
-
-	validates :name, :file, :document_type_id, :document_provider_id, presence: true
-	
-	validate :has_valid_validity_period
-
 	mount_uploader :file, DocumentUploader
 
-	attribute :validity_period, Period::Type.new
+	validates :name, :file, :document_type_id, :document_provider_id, presence: true
+
+	attribute :validity_period, Period::Type.new, range: true
+
+	validates_associated :codes
+	validates_associated :validity_period
+
+	validates :name, :file, :document_type_id, :document_provider_id, presence: true
+
+	def validity_period_attributes=(validity_period_attributes)
+		self.validity_period = Period.new(from: validity_period_attributes["from"], to: validity_period_attributes["to"])
+	end
 
 	def self.file_extension_whitelist
 		%w(pdf kml jpg jpeg png)
 	end
 
-	def valid_after
-		validity_period&.begin
-	end
-
-	def valid_until
-		validity_period&.end
-	end
-
-	private
-
-	def has_valid_validity_period
-		return if validity_period.valid?
-
-		return errors.add(:validity_period, :no_bounds) if validity_period.empty?
-
-		errors.add(:validity_period, :after_before_begin)
-	end
 end
-

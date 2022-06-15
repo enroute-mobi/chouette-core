@@ -43,6 +43,9 @@
 #
 class Period < Range
 
+  extend ActiveModel::Naming
+  include ActiveModel::Validations
+
   alias_method :start_date, :begin
   alias_method :from, :begin
 
@@ -52,8 +55,11 @@ class Period < Range
   def initialize(from: nil, to: nil)
     from = self.class.to_date(from)
     to = self.class.to_date(to)
-
     super from, to
+  end
+
+  def persisted?
+    false
   end
 
   # Use given definition to Period
@@ -153,10 +159,21 @@ class Period < Range
   end
 
   def valid?
-    return false unless from || to
-    return from <= to if from && to
+    validate!
+    errors.empty?
+  end
 
-    true
+  def validate!
+    unless(from || to)
+      errors.add(:from, :invalid_bounds)
+      errors.add(:to, :invalid_bounds)
+    end
+
+    if (from && to) && (to < from)
+      errors.add(:from, :to_before_from)
+      errors.add(:to, :to_before_from)
+    end
+    errors
   end
 
   def empty?
@@ -185,6 +202,13 @@ class Period < Range
   def duration
     return nil if infinite?
     day_count.days
+  end
+
+  def date_range
+    range_begin = from ? from&.to_date : nil
+    range_end = to ? to&.to_date : nil
+
+    range_begin..range_end
   end
 
   def time_range
@@ -217,28 +241,6 @@ class Period < Range
     end
   end
 
-  class Type < ActiveRecord::Type::Value
-    delegate :serialize, to: :pg_range_adapter
-
-    def cast value
-      value = Range.new(*value.with_indifferent_access.values_at(:from, :to)) if value.is_a?(Hash)
-      value = pg_range_adapter.deserialize(value) if value.is_a?(String)
-
-      deserialize(value)
-    end
-
-    def deserialize value
-      value = pg_range_adapter.deserialize(value) if value.is_a?(String)
-      Period.new from: value&.begin, to: value&.end
-    end
-
-    private
-
-    def pg_range_adapter
-      @pg_range_adapter ||= ActiveRecord::ConnectionAdapters::PostgreSQL::OID::Range.new(ActiveRecord::ConnectionAdapters::PostgreSQL::OID::Date.new)
-    end
-  end
-
   private
 
   # Invokes to_date method if available
@@ -263,6 +265,34 @@ class Period < Range
     else
       date
     end
+  end
+
+  class Type < ActiveRecord::Type::Value
+
+    def cast(value)
+      return unless value.present?
+      return value if value.is_a?(Period)
+      date_range = oid_range.cast_value(value)
+      Period.new(from: date_range.min, to: date_range.max) if value.is_a?(String)
+    end
+
+    def serialize(value)
+      return unless value.present?
+      date_range_serialized = if value.is_a?(Period)
+        date_range = value.date_range
+        oid_range.serialize(date_range)
+      else
+        value
+      end
+      date_range_serialized
+    end
+
+    private
+
+    def oid_range
+      @oid_range ||= ActiveRecord::ConnectionAdapters::PostgreSQL::OID::Range.new(ActiveRecord::ConnectionAdapters::PostgreSQL::OID::Date.new)
+    end
+
   end
 
 end

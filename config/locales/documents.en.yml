@@ -34,8 +34,8 @@ en:
       document:
         uuid: ID
         name: Name
-        valid_after: Valid after
-        valid_until: Valid until
+        from: Valid after
+        to: Valid until
         file: File
         description: Description
         content_type: Content Type
@@ -46,8 +46,5 @@ en:
       models:
         document:
           attributes:
-            validity_period:
-              no_bounds: A validity period must have a beginning or an end
-              after_before_begin: Invalid validity period (valid_after must be before valid_until)
             file:
               blank: File is required

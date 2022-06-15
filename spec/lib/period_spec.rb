@@ -66,6 +66,38 @@ RSpec.describe Period do
     end
   end
 
+  describe "#validate!" do
+    subject { period.validate! }
+
+    context "when from and to are not defined" do
+      let(:period) { Period.new }
+      it {
+        expect(subject.details).to eq({:from=>[{:error=>:invalid_bounds}], :to=>[{:error=>:invalid_bounds}]})
+      }
+    end
+
+    context "when from and to are the same" do
+      let(:period) { Period.new from: date, to: date }
+      it {
+        expect(subject.details).to be_empty
+      }
+    end
+
+    context "when from is before to" do
+      let(:period) { Period.new from: date, to: date+1 }
+      it {
+        expect(subject.details).to be_empty
+      }
+    end
+
+    context "when to is before from" do
+      let(:period) { Period.new from: date, to: date-1 }
+      it {
+        expect(subject.details).to eq({:from=>[{:error=>:to_before_from}], :to=>[{:error=>:to_before_from}]})
+      }
+    end
+  end
+
   describe "#empty?" do
     subject { period.empty? }
 

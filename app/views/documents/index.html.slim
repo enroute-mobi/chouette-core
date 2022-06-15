@@ -29,13 +29,13 @@
                 link_to: -> (doc) { workgroup_document_type_path(@workbench.workgroup, doc.document_type) } \
               ), \
               TableBuilderHelper::Column.new( \
-                key: :valid_after, \
-                attribute: -> (doc) { doc.display_validity_period_part(:from) }, \
+                key: :from, \
+                attribute: -> (doc) { doc.validity_period.from.present? ? l(doc.validity_period.from) : '-' }, \
                 sortable: false,\
               ), \
               TableBuilderHelper::Column.new( \
-                key: :valid_until, \
-                attribute: -> (doc) { doc.display_validity_period_part(:to) }, \
+                key: :to, \
+                attribute: -> (doc) { doc.validity_period.to.present? ? l(doc.validity_period.to) : '-' }, \
                 sortable: false,\
               ) \
             ].compact,

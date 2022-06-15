@@ -26,7 +26,7 @@ class FileRender {
 		const file = await pdfjsLib.getDocument({ url }).promise
 		const fileCover = await file.getPage(1)
 		const viewport = fileCover.getViewport({ scale: 0.8 })
-		
+
 		// Canvas
 		const canvas = document.createElement('canvas')
 		canvas.width = this.preview.width

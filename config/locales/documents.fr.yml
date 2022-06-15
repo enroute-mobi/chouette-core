@@ -34,8 +34,8 @@ fr:
       document:
         uuid: ID
         name: "Nom"
-        valid_after: Valide à partir de
-        valid_until: Valide jusqu'au
+        from: Valide à partir de
+        to: Valide jusqu'au
         file: Nom du fichier
         description: Description
         content_type: Type de fichier
@@ -46,8 +46,5 @@ fr:
       models:
         document:
           attributes:
-            validity_period:
-              no_bounds: La période de validité doit avoir un début ou une fin
-              after_before_begin: La début période de validité ne doit pas etre avant la fin
             file:
               blank: Aucun fichier présent

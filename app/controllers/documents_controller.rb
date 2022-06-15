@@ -5,26 +5,9 @@ class DocumentsController < ChouetteController
   defaults resource_class: Document
 
   before_action :decorate_document, only: %i[show new edit]
+  after_action :decorate_document, only: %i[create update]
 
   belongs_to :workbench
-
-  def create
-    create! do |_success, failure|
-      failure.html do
-        decorate_document
-        render 'new'
-      end
-    end
-  end
-
-  def update
-    update! do |_success, failure|
-      failure.html do
-        decorate_document
-        render 'edit'
-      end
-    end
-  end
 
   def index
     index! do |format|
@@ -71,7 +54,8 @@ class DocumentsController < ChouetteController
       :file_cache,
       :document_type_id,
       :document_provider_id,
-      validity_period: [:from, :to]
+      validity_period_attributes: [:from, :to],
+      codes_attributes: [:id, :code_space_id, :value, :_destroy],
     )
   end
 end

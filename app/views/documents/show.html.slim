@@ -10,8 +10,8 @@
 					= d.attribute :uuid
 					= d.attribute :name
 					= d.attribute :document_type, as: :association, link: ->(type) { workgroup_document_type_path(@workbench.workgroup, type) }
-					= d.attribute :valid_after, value: @document.validity_period.from.to_s.presence || '-'
-					= d.attribute :valid_until, value: @document.validity_period.to.to_s.presence || '-'
+					= d.attribute :from, as: :date, value: @document.validity_period.from
+					= d.attribute :to, as: :date, value: @document.validity_period.to
 			.row
 				= simple_block_for @document, title: Chouette::StopArea.tmf(:codes) do |d|
 				  - if @document.codes.empty?
@@ -20,7 +20,7 @@
 				  - else
 						- @document.codes.each do |c|
 							= d.attribute :value, label: c.code_space.short_name, object: c
-		
+
 		.col-lg-6.col-md-6.col-sm-12.col-xs-12
 			= simple_block_for @document, title: t('documents.form.sections.content') do |d|
 				= d.attribute :file, value: @document.file.file.identifier

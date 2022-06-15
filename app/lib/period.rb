@@ -270,7 +270,7 @@ class Period < Range
   class Type < ActiveRecord::Type::Value
 
     def cast(value)
-      return unless value.present?
+      return Period.new(from: nil, to: nil) unless value.present?
       return value if value.is_a?(Period)
       date_range = oid_range.cast_value(value)
       Period.new(from: date_range.min, to: date_range.max) if value.is_a?(String)

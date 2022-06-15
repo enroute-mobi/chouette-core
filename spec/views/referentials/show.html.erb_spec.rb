@@ -1,5 +1,39 @@
+RSpec.describe "referentials/show" do
+  subject { render template: "referentials/show" }
 
-describe "referentials/show", type: :view do
+  let(:context) { Chouette.create { referential } }
+  let(:referential) { context.referential }
+
+  before do
+    assign :referential, referential#.decorate
+
+    # Required by #page_header_content_for :-/
+    allow(view).to receive(:resource).and_return(referential)
+    allow(view).to receive(:resource_class).and_return(referential.class)
+
+    # Required by filters :-/
+    controller.request.path_parameters[:id] = referential.id
+
+    # View fails without @reflines :-/
+    assign :reflines, []
+  end
+
+  describe "Workbench name" do
+    it "displays Workbench name" do
+      is_expected.to have_selector(".dl-term", text: referential.human_attribute_name(:workbench))
+      is_expected.to have_selector(".dl-def", text: referential.workbench.name)
+    end
+
+    context "when no Workbench is associated" do
+      before { referential.workbench = nil }
+
+      it { is_expected.to_not have_selector(".dl-term", text: referential.human_attribute_name(:workbench)) }
+    end
+  end
+end
+
+# Legacy view specs
+RSpec.describe "referentials/show", type: :view do
 
   let(:referential) do
     referential = create(:workbench_referential)

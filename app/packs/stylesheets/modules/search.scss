@@ -5,4 +5,9 @@
   .inline_date {
     display: flex;
   }
+  > .ffg-row {
+    .form-group:not(.checkbox_list) {
+      display: flex;
+    }
+  }
 }

@@ -70,6 +70,7 @@ class Export::NetexGeneric < Export::Base
       RoutingConstraintZones,
       JourneyPatterns,
       TimeTables,
+      VehicleJourneyAtStops,
       VehicleJourneys,
       Organisations
     ]
@@ -1029,6 +1030,85 @@ class Export::NetexGeneric < Export::Base
 
   end
 
+  class VehicleJourneyAtStops < Part
+    def export!
+      vehicle_journey_at_stops.find_each do |vehicle_journey_at_stop|
+        decorated_vehicle_journey_at_stop = Decorator.new(vehicle_journey_at_stop)
+        target << decorated_vehicle_journey_at_stop.netex_resource
+      end
+    end
+
+    def vehicle_journey_at_stops
+      export_scope.vehicle_journey_at_stops
+        .joins(stop_point: :stop_area, vehicle_journey: { journey_pattern: :route })
+        .select(
+          "vehicle_journey_at_stops.*",
+          "journey_patterns.id AS journey_pattern_id",
+          "vehicle_journeys.objectid AS vehicle_journey_objectid",
+          "stop_points.objectid AS stop_point_objectid"
+        )
+    end
+
+    class Decorator < SimpleDelegator
+
+      def netex_attributes
+        {
+          stop_point_in_journey_pattern_ref: stop_point_in_journey_pattern_ref,
+          departure_time: departure_time,
+          departure_day_offset: departure_day_offset,
+          arrival_time: arrival_time,
+          arrival_day_offset: arrival_day_offset,
+        }
+      end
+
+      def netex_resource
+        Netex::TimetabledPassingTime.new(netex_attributes).with_tag(parent_id: parent_id)
+      end
+
+      def netex_identifier
+        @netex_identifier ||= Netex::ObjectId.parse(stop_point_objectid)
+      end
+
+      def parent_id
+        vehicle_journey_objectid
+      end
+
+      def stop_point_in_journey_pattern_id
+        merged_object_id = Netex::ObjectId.merge(journey_pattern_id, netex_identifier, type: "StopPointInJourneyPattern")
+
+        if merged_object_id
+          merged_object_id.to_s
+        else
+          "#{journey_pattern_id}-#{stop_point_objectid}"
+        end
+      end
+
+      def stop_point_in_journey_pattern_ref
+        Netex::Reference.new(stop_point_in_journey_pattern_id, type: 'StopPointInJourneyPatternRef')
+      end
+
+      def netex_time time_of_day
+        Netex::Time.new time_of_day.hour, time_of_day.minute, time_of_day.second
+      end
+
+      def departure_day_offset
+        departure_local_time_of_day.day_offset
+      end
+
+      def arrival_day_offset
+        arrival_local_time_of_day.day_offset
+      end
+
+      def arrival_time
+        netex_time arrival_local_time_of_day
+      end
+
+      def departure_time
+        netex_time departure_local_time_of_day
+      end
+    end
+  end
+
   class VehicleJourneys < Part
 
     def export!
@@ -1061,34 +1141,21 @@ class Export::NetexGeneric < Export::Base
       attr_accessor :vehicle_journeys
 
       def scope
-        return with_codes unless include_time_tables?
+        # Join / Select Journey Pattern and Route Information
+        scope = vehicle_journeys.joins(journey_pattern: :route).select(selected)
 
-        with_codes_and_time_tables
+        # Join / Select Aggr Vehicle Journey codes
+        scope = scope.left_joins(:codes).select(vehicle_journey_codes).group(group_by)
+
+        # Join / Select TimeTable objectids
+        if vehicle_journeys.joins_values.include? :time_tables
+          scope = scope.select(time_table_objectids)
+        end
+
+        scope
       end
 
       private
-
-      def include_time_tables?
-        vehicle_journeys.joins_values.include? :time_tables
-      end
-
-      def with_codes_and_time_tables
-        with_codes.select(time_table_objectids)
-      end
-
-      def with_codes
-        base_query
-          .left_joins(:codes)
-          .select(vehicle_journey_codes)
-          .group(group_by)
-      end
-
-      def base_query
-        vehicle_journeys
-          .includes(vehicle_journey_at_stops: [:stop_area, { stop_point: :stop_area }])
-          .joins(journey_pattern: :route)
-          .select(selected)
-      end
 
       def selected
         <<~SQL
@@ -1139,7 +1206,6 @@ class Export::NetexGeneric < Export::Base
           name: published_journey_name,
           journey_pattern_ref: journey_pattern_ref,
           public_code: published_journey_identifier,
-          passing_times: passing_times,
           day_types: day_types
         }.tap do |attributes|
           if netex_alternate_identifiers
@@ -1176,10 +1242,6 @@ class Export::NetexGeneric < Export::Base
         __getobj__.try(:journey_pattern_objectid) || journey_pattern&.objectid
       end
 
-      def passing_times
-        decorated_vehicle_journey_at_stops.map(&:timetabled_passing_time)
-      end
-
       def vehicle_journey_stop_assignments
         vehicle_journey_at_stops.select(&:stop_area_id).map do |stop|
           VehicleJourneyStopAssignmentDecorator.new(stop, self)
@@ -1191,45 +1253,11 @@ class Export::NetexGeneric < Export::Base
         @vehicle_journey_at_stops ||= super.sort_by { |s| s.stop_point.position }
       end
 
-      def decorated_vehicle_journey_at_stops
-        @decorated_vehicle_journey_at_stops ||= vehicle_journey_at_stops.map do |vehicle_journey_at_stop|
-          VehicleJourneyAtStopDecorator.new(vehicle_journey_at_stop, journey_pattern_objectid)
-        end
-      end
-
       def day_types
         objectids = try(:time_table_objectids) || time_tables.pluck(:objectid)
         objectids.map do |objectid|
           Netex::Reference.new(objectid, type: 'DayTypeRef')
         end
-      end
-    end
-
-    class VehicleJourneyAtStopDecorator < SimpleDelegator
-
-      attr_accessor :journey_pattern_id
-      def initialize(vehicle_journey_at_stop, journey_pattern_id)
-        super vehicle_journey_at_stop
-        @journey_pattern_id = journey_pattern_id
-      end
-
-      def timetabled_passing_time
-        Netex::TimetabledPassingTime.new.tap do |passing_time|
-          passing_time.stop_point_in_journey_pattern_ref = stop_point_in_journey_pattern_ref
-          passing_time.departure_time = netex_time(departure_local_time_of_day)
-          passing_time.departure_day_offset = departure_local_time_of_day.day_offset
-          passing_time.arrival_time = netex_time(arrival_local_time_of_day)
-          passing_time.arrival_day_offset = arrival_local_time_of_day.day_offset
-        end
-      end
-
-      def stop_point_in_journey_pattern_ref
-        decorated_stop_point = StopPointDecorator.new(stop_point, journey_pattern_id: journey_pattern_id)
-        Netex::Reference.new(decorated_stop_point.stop_point_in_journey_pattern_id, type: 'StopPointInJourneyPatternRef')
-      end
-
-      def netex_time time_of_day
-        Netex::Time.new time_of_day.hour, time_of_day.minute, time_of_day.second
       end
     end
 

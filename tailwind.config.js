@@ -2,7 +2,9 @@ module.exports = {
   purge: {
     content: [
       "./app/helpers/**/*.rb",
-      "./app/**/*.html.slim",
+      "./app/views/**/*.html.slim",
+      "./app/decorators/*/*.rb",
+      "./app/facades/*/*.rb",
       "./app/packs/**/*.js",
       "./app/packs/**/*.jsx"
     ],

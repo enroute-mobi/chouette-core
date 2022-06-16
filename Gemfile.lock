@@ -6,7 +6,8 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/gtfs.git
-  revision: a993d2cf2a3a5c2ac8963021703400ec0309c50b
+  revision: db0467b4cf400923db37889290a49fcaf1a2bf3b
+  branch: GTFS-33-support-gtfs-attribution
   specs:
     gtfs (0.3.6)
       msgpack

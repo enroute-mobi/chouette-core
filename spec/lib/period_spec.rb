@@ -332,3 +332,34 @@ RSpec.describe Period do
   end
 
 end
+
+RSpec.describe Period::Type do
+
+  subject { Period::Type.new }
+  describe '#cast' do
+    [
+      [ nil, Period.new(from: nil, to: nil) ],
+      [ "[2022-06-07,)", Period.new(from: Date.parse("2022-06-07"), to: nil) ],
+      [ "(,2022-06-07]", Period.new(from: nil, to: Date.parse("2022-06-07")) ],
+      [ "[2022-06-07,2022-06-17]", Period.new(from: Date.parse("2022-06-07"), to: Date.parse("2022-06-17")) ],
+    ].each do |cast_value, expected|
+      it "should return #{expected.inspect} when #{cast_value.inspect} value" do
+        expect(subject.cast(cast_value)).to eq(expected)
+      end
+    end
+  end
+
+  describe '#serialize' do
+    [
+      [ Period.new(from: nil, to: nil), nil ],
+      [ Period.new(from: Date.parse("2022-06-07"), to: nil), Date.parse("2022-06-07")..Float::INFINITY  ],
+      [ Period.new(from: nil, to: Date.parse("2022-06-07")), -Float::INFINITY..Date.parse("2022-06-07") ],
+      [ Period.new(from: Date.parse("2022-06-07"), to: Date.parse("2022-06-17")), Date.parse("2022-06-07")..Date.parse("2022-06-17") ],
+    ].each do |serialize_value, expected|
+      it "should return #{expected.inspect} when #{serialize_value.inspect} value" do
+        expect(subject.serialize(serialize_value)).to eq(expected)
+      end
+    end
+  end
+
+end

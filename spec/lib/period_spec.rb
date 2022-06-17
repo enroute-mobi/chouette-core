@@ -170,6 +170,30 @@ RSpec.describe Period do
     end
   end
 
+  describe "infinite_date_range" do
+    subject { period.infinite_time_range }
+
+    context "when only the beginning date is defined (with) 2030-01-01)" do
+      let(:period) { Period.from '2030-01-01' }
+      it { is_expected.to have_attributes begin: Date.parse('2030-01-01'), end: Float::INFINITY }
+    end
+
+    context "when only the end date is defined (with) 2030-01-01)" do
+      let(:period) { Period.until '2030-01-01' }
+      it { is_expected.to have_attributes begin: -Float::INFINITY, end: Date.parse('2030-01-02') }
+    end
+
+    context "when the beginning date is is 2030-01-01 and the end date is 2030-12-31"  do
+      let(:period) { Period.new from: '2030-01-01', to: '2030-12-31' }
+      it { is_expected.to have_attributes begin: Date.parse('2030-01-01'), end: DateTime.parse('2031-01-01') }
+    end
+
+    context "when from and to are not defined" do
+      let(:period) { Period.new }
+      it { is_expected.to have_attributes begin: -Float::INFINITY, end: Float::INFINITY }
+    end
+  end
+
   describe "infinite_time_range" do
     subject { period.infinite_time_range }
 

@@ -1,13 +1,5 @@
 import Alpine from 'alpinejs'
 
-Alpine.data('documentForm', ({ errors }) => ({
-	init() {
-		errors.forEach(text => {
-			Alpine.store('flash').add({ type: 'error', text })
-		})
-	}
-}))
-
 Alpine.data('fileInput', ({ filename }) => ({
 	init() {
 		this.filename = filename

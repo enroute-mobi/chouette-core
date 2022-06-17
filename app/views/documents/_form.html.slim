@@ -4,8 +4,7 @@
     html: { \
       multipart: true, \
       class: 'form-horizontal', \
-      id: 'document_form', \
-      'x-data': "documentForm(#{@document.json_state})", \
+      id: 'document_form'\
     }, \
     wrapper: :horizontal_form_tailwind \
   ) do |f|
@@ -28,13 +27,14 @@
       .flex.items-center.mb-10.relative x-data="fileInput(#{@document.json_state})"
         label.flex.justify-end.w-2/6.mr-8.mb-0.control-label.pt-0.text.required = I18n.t('activerecord.attributes.document.file')
         .flex.justify-center.w-4/6
+          .flex.flex-col.justify-center
+            .btn.btn-primary x-on:click="openFileDialog()"
+              span.fa.fa-upload
+              span.ml-4 x-text="getLabel()"
 
-          = f.input :file, as: :file, label: false, input_html: { 'x-show': 'false', 'x-on:change': 'filename = file.name' }
-          = f.input :file_cache, as: :hidden
-
-          .btn.btn-primary x-on:click="openFileDialog()"
-            span.fa.fa-upload
-            span.ml-4 x-text="getLabel()"
+            .flex.justify-center
+              = f.input :file, as: :file, label: false, input_html: { 'x-show': 'false', 'x-on:change': 'filename = file.name' }
+              = f.input :file_cache, as: :hidden
 
       = f.input :description
   .separator.section_separator

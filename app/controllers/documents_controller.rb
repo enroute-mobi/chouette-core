@@ -4,8 +4,7 @@ class DocumentsController < ChouetteController
 
   defaults resource_class: Document
 
-  before_action :decorate_document, only: %i[show new edit]
-  after_action :decorate_document, only: %i[create update]
+  before_action :decorate_document, only: %i[show new edit create update]
 
   belongs_to :workbench
 

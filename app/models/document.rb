@@ -13,7 +13,10 @@ class Document < ApplicationModel
 	attribute :validity_period, Period::Type.new, range: true
 
 	validates_associated :codes
-	validates_associated :validity_period
+	# Can't use it for the moment because it fails with an error
+  # "convert endless range to an array error due to Array conversion" in AssociatedValidator
+	# validates_associated :validity_period
+	validates :validity_period, valid: true
 
 	validates :name, :file, :document_type_id, :document_provider_id, presence: true
 

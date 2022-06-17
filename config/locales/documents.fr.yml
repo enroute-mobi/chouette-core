@@ -24,10 +24,15 @@ fr:
         codes: "Codes"
     search_no_results: "Aucun Document ne correspond à votre recherche"
     no_codes: "Ce Document n'a pas de codes"
+  activemodel:
+    attributes:
+      period:
+        from: Valide à partir de
+        to: Valide jusqu'au
   activerecord:
     models:
       document:
-        zero:  "Document"
+        zero: "Document"
         one: "Document"
         other: "Documents"
     attributes:

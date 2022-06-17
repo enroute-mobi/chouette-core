@@ -204,9 +204,9 @@ class Period < Range
     day_count.days
   end
 
-  def date_range
-    range_begin = from ? from&.to_date : nil
-    range_end = to ? to&.to_date : nil
+  def infinity_date_range
+    range_begin = from ? from&.to_date : -Float::INFINITY
+    range_end = to ? to&.to_date : Float::INFINITY
 
     range_begin..range_end
   end
@@ -273,13 +273,15 @@ class Period < Range
       return Period.new(from: nil, to: nil) unless value.present?
       return value if value.is_a?(Period)
       date_range = oid_range.cast_value(value)
-      Period.new(from: date_range.min, to: date_range.max) if value.is_a?(String)
+      date_range_min = date_range.begin == -Float::INFINITY ? nil : date_range.min
+      date_range_max = date_range.end == Float::INFINITY ? nil : date_range.max
+      Period.new(from: date_range_min, to: date_range_max) if value.is_a?(String)
     end
 
     def serialize(value)
       return unless value.present?
       date_range_serialized = if value.is_a?(Period)
-        date_range = value.date_range
+        date_range = value.infinity_date_range
         oid_range.serialize(date_range)
       else
         value

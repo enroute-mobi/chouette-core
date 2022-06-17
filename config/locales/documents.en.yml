@@ -24,6 +24,11 @@ en:
         codes: "Codes"
     search_no_results: "No Documents match this search"
     no_codes: "This Document does not have any codes"
+  activemodel:
+    attributes:
+      period:
+        from: Valid after
+        to: Valid until
   activerecord:
     models:
       document:

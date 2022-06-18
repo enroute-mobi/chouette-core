@@ -1,6 +1,11 @@
 en:
   macro_messages:
     default: "Message on line %{name}"
+    associate_shape: "Shape %{shape_name} has been associated to journey pattern %{journey_pattern_name}"
+    associate_stop_area_referent: "Referent of Stop area %{name} has been updated"
+    create_code: "A code %{code_value} on the code space %{code_space} has been added for a %{target_model} %{name}"
+    create_stop_area_referent: "Referent Stop area %{name} is created"
+    update_stop_area_compass_bearing: "Compass bearing of of Stop area %{name} has been updated with value %{bearing}"
     search_no_results_for_filter: "No messages found"
     no_address: "No address"
     invalid_address: "Invalid address"

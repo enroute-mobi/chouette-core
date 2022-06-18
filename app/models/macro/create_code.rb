@@ -32,8 +32,16 @@ module Macro
             batch.each do |model|
               if source_value = source.value(model)
                 code_value = target.value(source_value)
-                Rails.logger.debug { "Create code '#{code_value}' for #{model.class}##{model.id}" }
-                model.codes.create! code_space: code_space, value: code_value
+                if model.codes.create code_space: code_space, value: code_value
+                  self.macro_messages.create(
+                    criticity: "info",
+                    message_attributes: { code_value: code_value, code_space: code_space, model_name: model.name},
+                    source: stop_area,
+                    message_key: :create_code
+                  )
+                else
+                  logger.error "Impossible to create code %{code_value} on the code space %{code_space} for a %{target_model} %{name}"
+                end
               end
             end
           end

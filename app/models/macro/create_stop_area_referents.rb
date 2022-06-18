@@ -12,8 +12,11 @@ module Macro
                   self.macro_messages.create(
                     criticity: "info",
                     message_attributes: { name: stop_area.name },
-                    source: stop_area
+                    source: stop_area,
+                    message_key: :create_stop_area_referent
                   )
+                else
+                  logger.error "Impossible to create referent Stop area %{name}"
                 end
               end
             end

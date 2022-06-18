@@ -6,7 +6,16 @@ module Macro
 
         journey_patterns.find_each do |journey_pattern|
           shape = shapes.by_code(code_space, journey_pattern.name).first
-          journey_pattern.update shape: shape
+          if journey_pattern.update shape: shape
+            self.macro_messages.create(
+              criticity: "info",
+              message_attributes: { shape_name: shape.name, journey_pattern_name: journey_pattern.name},
+              source: stop_area,
+              message_key: :associate_shape
+            )
+          else
+            logger.error "Impossible to associate shape %{shape_name} with journey pattern %{journey_pattern_name}"
+          end
         end
       end
 

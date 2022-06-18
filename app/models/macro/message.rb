@@ -14,7 +14,10 @@ module Macro
     scope :error, -> { where(criticity: :error ) }
 
     def full_message
-      I18n.t("macro_messages.#{message_key || 'default'}", message_attributes.symbolize_keys)
+      I18n.t(
+        "macro_messages.#{message_key || 'default'}",
+        message_attributes.merge(target_model: source_type.constantize.model_name.human).symbolize_keys
+      )
     end
   end
 end

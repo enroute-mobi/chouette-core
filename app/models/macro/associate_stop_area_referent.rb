@@ -11,14 +11,11 @@ module Macro
             self.macro_messages.create(
               criticity: "info",
               message_attributes: { name: stop_area.name },
-              source: stop_area
+              source: stop_area,
+              message_key: :associate_stop_area
             )
           else
-            self.macro_messages.create(
-              criticity: "error",
-              message_attributes: { name: stop_area.name },
-              source: stop_area
-            )
+            logger.error "Impossible to associate referent for Stop area %{name}"
           end
         end
       end

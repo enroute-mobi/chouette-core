@@ -1,6 +1,11 @@
 fr:
   macro_messages:
     default: "Message sur la ligne %{name}"
+    associate_shape: "Le tracé %{shape_name} a été associé à la mission %{journey_pattern_name}"
+    associate_stop_area_referent: "Le référent de l'arrêt %{name} a été mis à jour"
+    create_code: "Un code %{code_value} sur l'espace de code %{code_space} a été ajouté sur un(e) %{target_model} %{name}"
+    create_stop_area_referent: "L'arrêt référent %{name} est créé"
+    update_stop_area_compass_bearing: "L'orientation de l'arrêt %{name} a été mis à jour avec la valeur %{bearing}"
     search_no_results_for_filter: "Aucun messages"
     no_address: "Aucune adresse"
     invalid_address: "Adresse non valide"

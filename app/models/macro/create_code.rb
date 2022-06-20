@@ -35,8 +35,12 @@ module Macro
                 if model.codes.create code_space: code_space, value: code_value
                   self.macro_messages.create(
                     criticity: "info",
-                    message_attributes: { code_value: code_value, code_space: code_space, model_name: model.name},
-                    source: stop_area,
+                    message_attributes: {
+                      code_value: code_value,
+                      code_space: code_space,
+                      model_name: model.try(:name) || model.id
+                    },
+                    source: model,
                     message_key: :create_code
                   )
                 else

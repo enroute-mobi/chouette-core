@@ -85,11 +85,12 @@ RSpec.describe Macro::CreateCode do
         end
 
         let(:macro_run) do
-          Macro::CreateCode::Run.new(
+          Macro::CreateCode::Run.create(
             target_model: 'StopArea',
             source_attribute: 'registration_number',
             target_code_space: 'test',
-            macro_list_run: macro_list_run
+            macro_list_run: macro_list_run,
+            position: 0
           ).tap do |run|
             allow(run).to receive(:workbench).and_return(context.workbench)
           end
@@ -151,11 +152,12 @@ RSpec.describe Macro::CreateCode do
           Macro::List::Run.create referential: context.referential, workbench: context.workbench
         end
         let(:macro_run) do
-          Macro::CreateCode::Run.new(
+          Macro::CreateCode::Run.create(
             target_model: 'VehicleJourney',
             source_attribute: 'published_journey_identifier',
             target_code_space: 'test',
             macro_list_run: macro_list_run,
+            position: 0
           )
         end
 

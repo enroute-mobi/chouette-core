@@ -5,9 +5,9 @@ RSpec.describe Macro::AssociateShape do
 
   describe Macro::AssociateShape::Run do
     let(:macro_list_run) do
-      Macro::List::Run.new referential: context.referential, workbench: context.workbench
+      Macro::List::Run.create referential: context.referential, workbench: context.workbench
     end
-    subject(:macro_run) { Macro::AssociateShape::Run.new macro_list_run: macro_list_run }
+    subject(:macro_run) { Macro::AssociateShape::Run.create macro_list_run: macro_list_run, position: 0 }
 
     describe ".run" do
       subject { macro_run.run }

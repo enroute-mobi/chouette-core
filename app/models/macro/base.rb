@@ -100,7 +100,7 @@ end
 require_dependency 'macro/associate_shape'
 require_dependency 'macro/associate_stop_area_referent'
 require_dependency 'macro/create_code'
-require_dependency 'macro/create_stop_area_referent'
+require_dependency 'macro/create_stop_area_referents'
 require_dependency 'macro/dummy'
 require_dependency 'macro/update_stop_area_compass_bearing'
 require_dependency 'macro/define_postal_address'

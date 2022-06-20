@@ -5,6 +5,8 @@ class Document < ApplicationModel
 	belongs_to :document_provider, required: true
 
 	has_many :codes, as: :resource, dependent: :delete_all
+	has_many :memberships, class_name: 'DocumentMembership', dependent: :delete_all
+	has_many :lines, through: :memberships, source: :documentable, source_type: 'Chouette::Line'
 
 	mount_uploader :file, DocumentUploader
 
@@ -27,5 +29,4 @@ class Document < ApplicationModel
 	def self.file_extension_whitelist
 		%w(pdf kml jpg jpeg png)
 	end
-
 end

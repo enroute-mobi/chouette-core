@@ -19,6 +19,7 @@ en:
       show_network: 'Show network'
       show_company: 'Show company'
       add_notice: 'Add a notice'
+      associate_other_documents: Associate other documents
     search_no_results: "No results found"
     filters:
       name_or_short_id_cont: "Search by name or objectid"

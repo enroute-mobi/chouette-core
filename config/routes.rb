@@ -139,6 +139,13 @@ ChouetteIhm::Application.routes.draw do
             post :detach
           end
         end
+
+        resources :documents, controller: :line_documents do
+          member do
+            put :associate
+            put :unassociate
+          end
+        end
       end
       resources :companies do
         get :autocomplete, on: :collection

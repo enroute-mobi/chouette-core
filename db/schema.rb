@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_06_07_174321) do
+ActiveRecord::Schema.define(version: 2022_06_10_094124) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -550,6 +550,13 @@ ActiveRecord::Schema.define(version: 2022_06_07_174321) do
     t.bigint "publication_api_id"
     t.index ["publication_api_id"], name: "index_destinations_on_publication_api_id"
     t.index ["publication_setup_id"], name: "index_destinations_on_publication_setup_id"
+  end
+
+  create_table "document_memberships", force: :cascade do |t|
+    t.bigint "documentable_id", null: false
+    t.string "documentable_type", null: false
+    t.bigint "document_id"
+    t.index ["document_id"], name: "index_document_memberships_on_document_id"
   end
 
   create_table "document_providers", force: :cascade do |t|
@@ -1112,18 +1119,6 @@ ActiveRecord::Schema.define(version: 2022_06_07_174321) do
     t.index ["point_of_interest_category_id"], name: "index_point_of_interests_on_point_of_interest_category_id"
     t.index ["shape_provider_id"], name: "index_point_of_interests_on_shape_provider_id"
     t.index ["shape_referential_id"], name: "index_point_of_interests_on_shape_referential_id"
-  end
-
-  create_table "processing_rules", force: :cascade do |t|
-    t.bigint "workbench_id"
-    t.string "name"
-    t.string "processable_type"
-    t.bigint "processable_id"
-    t.string "operation_step"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["processable_type", "processable_id"], name: "index_processing_rules_on_processable_type_and_processable_id"
-    t.index ["workbench_id"], name: "index_processing_rules_on_workbench_id"
   end
 
   create_table "publication_api_keys", force: :cascade do |t|

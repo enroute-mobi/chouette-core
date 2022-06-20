@@ -39,6 +39,9 @@ module Chouette
     has_many :footnotes, inverse_of: :line, validate: true
     accepts_nested_attributes_for :footnotes, reject_if: :all_blank, :allow_destroy => true
 
+    has_many :document_memberships, as: :documentable, dependent: :delete_all
+    has_many :documents, through: :document_memberships
+
     attr_reader :group_of_line_tokens
 
     validates_presence_of :name

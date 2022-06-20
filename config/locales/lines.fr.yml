@@ -19,6 +19,7 @@ fr:
       show_network: 'Voir le réseau'
       show_company: 'Voir le transporteur principal'
       add_notice: 'Ajouter une note'
+      associate_other_documents: Associer d'autres documents
     search_no_results: "Aucun résultat"
     filters:
       name_or_short_id_cont: "Indiquez un nom d'itinéraire ou un ID..."

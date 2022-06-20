@@ -14,6 +14,8 @@ en:
       edit: "Edit this Document"
       destroy: "Delete this Document"
       destroy_confirm: "Are you sure you want to delete this Document ?"
+      associate: Associate
+      unassociate: Unassociate
     form:
       placeholders:
         select_file: Select file
@@ -24,6 +26,13 @@ en:
         codes: "Codes"
     search_no_results: "No Documents match this search"
     no_codes: "This Document does not have any codes"
+    flash:
+      associate:
+        notice: Successfully associated document to line
+        error: Could not associate document to line
+      unassociate:
+        notice: Successfully unassociated document to line
+        error: Could not unassociate document to line
   activemodel:
     attributes:
       period:

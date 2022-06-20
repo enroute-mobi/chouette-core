@@ -14,6 +14,8 @@ fr:
       edit: "Editer ce Document"
       destroy: "Supprimer ce Document"
       destroy_confirm: "Etes vous sûr de supprimer ce Document ?"
+      associate: Associer
+      unassociate: Dissocier
     form:
       placeholders:
         select_file: Sélectionnez
@@ -23,6 +25,13 @@ fr:
         internals: "Interne"
         codes: "Codes"
     search_no_results: "Aucun Document ne correspond à votre recherche"
+    flash:
+      associate:
+        notice: Le document a été associé à la ligne avec success
+        error: Le document n'a pu etre associe à la ligne
+      unassociate:
+        notice: Le document a été dissocié à la ligne avec success
+        error: Le document n'a pu etre dissocié à la ligne
     no_codes: "Ce Document n'a pas de codes"
   activemodel:
     attributes:

@@ -338,7 +338,7 @@ class Import::Gtfs < Import::Base
 
         line.comment = route.desc
 
-        transport_mode =
+        transport_mode, transport_submode =
           case route.type
           when '0', '5'
             'tram'
@@ -350,10 +350,15 @@ class Import::Gtfs < Import::Base
             'bus'
           when '7'
             'funicular'
+          when '204'
+            [ 'coach', 'regionalCoach' ]
           end
+
+        transport_submode ||= 'undefined'
+
         if transport_mode
           line.transport_mode = transport_mode
-          line.transport_submode = 'undefined'
+          line.transport_submode = transport_submode
         end
 
         # White is the default color in the gtfs spec

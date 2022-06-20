@@ -7,15 +7,13 @@ module Macro
           closest_referent_id = association["closest_referent_id"]
 
           stop_area = stop_areas.find(particular_id)
-          if stop_area.update(referent_id: closest_referent_id)
+          if stop_area.update!(referent_id: closest_referent_id)
             self.macro_messages.create(
               criticity: "info",
               message_attributes: { name: stop_area.name },
               source: stop_area,
               message_key: :associate_stop_area
             )
-          else
-            logger.error "Impossible to associate referent for Stop area %{stop_area.name}"
           end
         end
       end

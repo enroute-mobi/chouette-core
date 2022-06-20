@@ -8,15 +8,13 @@ module Macro
             if cluster.count > 1
               builder = ReferentBuilder.create(cluster.stop_areas)
               if builder
-                if stop_area = stop_area_provider.stop_areas.create!(builder.attributes)
+                if referent = stop_area_provider.stop_areas.create!(builder.attributes)
                   self.macro_messages.create(
                     criticity: "info",
-                    message_attributes: { name: stop_area.name },
-                    source: stop_area,
+                    message_attributes: { name: referent.name },
+                    source: referent,
                     message_key: :create_stop_area_referent
                   )
-                else
-                  logger.error "Impossible to create referent Stop area %{stop_area.name}"
                 end
               end
             end

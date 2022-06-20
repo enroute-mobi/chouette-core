@@ -94,6 +94,54 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
     end
   end
 
+  describe 'Attribution Part' do
+    let(:export_scope) { Export::Scope::All.new context.referential }
+    let(:index) { export.index }
+    let(:export) { Export::Gtfs.new export_scope: export_scope, workbench: context.workbench, workgroup: context.workgroup, referential: context.referential }
+
+    let(:part) do
+      Export::Gtfs::VehicleJourneyCompany.new export
+    end
+
+    let(:context) do
+      Chouette.create do
+        line_provider do
+          company :first, name: 'dummy1'
+          company :second, name: 'dummy2'
+        end
+
+        vehicle_journey :first, objectid: 'objectid1', company: :first
+        vehicle_journey :second, objectid: 'objectid2', company: :second
+      end
+    end
+
+    let(:first_company) { context.company(:first) }
+    let(:second_company) { context.company(:second) }
+    let(:first_vehicle_journey) { context.vehicle_journey(:first) }
+    let(:second_vehicle_journey) { context.vehicle_journey(:second) }
+    let(:line) { first_vehicle_journey.line }
+
+    before do
+      context.referential.switch
+
+      line.update(company: second_company)
+    end
+
+    subject { export.target.attributions.map(&:trip_id) }
+
+    it "should export attribution of the first vehicle_journey - company" do
+      part.export!
+
+      is_expected.to include(first_vehicle_journey.objectid)
+    end
+
+    it "should not export attribution of the second vehicle_journey - company" do
+      part.export!
+
+      is_expected.not_to include(second_vehicle_journey.objectid)
+    end
+  end
+
   describe 'StopArea Part' do
     let(:export_scope) { Export::Scope::All.new context.referential }
     let(:index) { export.index }

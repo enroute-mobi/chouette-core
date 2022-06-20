@@ -35,7 +35,7 @@ class Export::Gtfs < Export::Base
   end
 
   def export_to_dir(directory)
-    operations_count = 7
+    operations_count = 8
 
     # FIXME
     @target = GTFS::Target.new(File.join(directory, "#{zip_file_name}.zip"))
@@ -68,6 +68,9 @@ class Export::Gtfs < Export::Base
 
     VehicleJourneyAtStops.new(self, filter_non_commercial: filter_non_commercial, ignore_time_zone: ignore_time_zone).export_part
     notify_progress 7.0/operations_count
+
+    VehicleJourneyCompany.new(self).export_part
+    notify_progress 8.0/operations_count
 
     target.close
   end
@@ -420,7 +423,6 @@ class Export::Gtfs < Export::Base
     end
 
   end
-
 
   class Companies < Part
 
@@ -1083,5 +1085,49 @@ class Export::Gtfs < Export::Base
 
     end
 
+  end
+
+  class VehicleJourneyCompany < Part
+    def export!
+      vehicle_journeys.find_each do |vehicle_journey|
+        target.attributions << Decorator.new(vehicle_journey).gtfs_attribution
+      end
+    end
+
+    delegate :lines, to: :export_scope
+
+    def vehicle_journeys
+      export_scope.vehicle_journeys
+        .where.not(company: nil)
+        .where.not(company: lines.pluck(:company_id).compact.uniq)
+    end
+
+    class Decorator < SimpleDelegator
+
+      def gtfs_attribution
+        {
+          attribution_id: attribution_id,
+          trip_id: trip_id,
+          organization_name: organization_name,
+          is_operator: is_operator,
+        }
+      end
+
+      def trip_id
+        objectid # or code value ?
+      end
+
+      def attribution_id
+        @attribution_id ||= SecureRandom.uuid
+      end
+
+      def organization_name
+        company&.name
+      end
+
+      def is_operator
+        1
+      end
+    end
   end
 end

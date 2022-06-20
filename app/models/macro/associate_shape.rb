@@ -9,12 +9,12 @@ module Macro
           if journey_pattern.update shape: shape
             self.macro_messages.create(
               criticity: "info",
-              message_attributes: { shape_name: shape.name, journey_pattern_name: journey_pattern.name},
+              message_attributes: { shape_name: shape.uuid, journey_pattern_name: journey_pattern.name},
               source: stop_area,
               message_key: :associate_shape
             )
           else
-            logger.error "Impossible to associate shape %{shape_name} with journey pattern %{journey_pattern_name}"
+            logger.error "Impossible to associate shape %{shape.uuid} with journey pattern %{journey_pattern.name}"
           end
         end
       end

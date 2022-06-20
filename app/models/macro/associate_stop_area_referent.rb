@@ -15,7 +15,7 @@ module Macro
               message_key: :associate_stop_area
             )
           else
-            logger.error "Impossible to associate referent for Stop area %{name}"
+            logger.error "Impossible to associate referent for Stop area %{stop_area.name}"
           end
         end
       end

@@ -16,7 +16,7 @@ module Macro
                     message_key: :create_stop_area_referent
                   )
                 else
-                  logger.error "Impossible to create referent Stop area %{name}"
+                  logger.error "Impossible to create referent Stop area %{stop_area.name}"
                 end
               end
             end

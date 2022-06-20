@@ -40,7 +40,7 @@ module Macro
                     message_key: :create_code
                   )
                 else
-                  logger.error "Impossible to create code %{code_value} on the code space %{code_space} for a %{target_model} %{name}"
+                  logger.error "Impossible to create code %{code_value} on the code space %{code_space} for a %{target_model} %{model.name}"
                 end
               end
             end

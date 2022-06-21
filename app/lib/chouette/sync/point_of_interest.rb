@@ -75,6 +75,56 @@ module Chouette::Sync
           end
         end
 
+        class Hour
+          def initialize(point_of_interest)
+            @point_of_interest = point_of_interest
+          end
+          attr_accessor :point_of_interest
+
+          delegate :validity_conditions, to: :point_of_interest
+
+          def hours_attributes
+            [].tap do |point_of_interest_hours_attributes|
+              validity_conditions.each do |validity_condition|
+                if (timebands = validity_condition.timebands.presence) &&
+                  (day_types = validity_condition.day_types.presence)
+                  timebands.each do |timeband|
+                    day_types.each do |day_type|
+                      if properties = day_type.properties.presence
+                        properties.each do |property|
+                          point_of_interest_hours_attributes << {
+                            opening_time_of_day: netex_time_of_day(timeband.start_time),
+                            closing_time_of_day: netex_time_of_day(timeband.end_time),
+                            week_days: netex_week_days(property.days_of_week)
+                          }
+                        end
+                      end
+                    end
+                  end
+                end
+              end
+            end
+          end
+
+          private
+
+          def netex_time_of_day(time)
+            TimeOfDay.new time.hour, time.minute, time.second
+          end
+
+          def netex_week_days(days_of_week)
+            Timetable::DaysOfWeek.new.tap do |dow|
+              days_of_week.split(/\s/).map(&:to_sym).each do |day|
+                dow.send("#{day.downcase}=", true)
+              end
+            end
+          end
+        end
+
+        def hours_attributes
+          Hour.new(self).hours_attributes
+        end
+
         def model_attributes
           {
             name: name,
@@ -87,6 +137,7 @@ module Chouette::Sync
             phone: phone,
             email: email,
             point_of_interest_category_id: point_of_interest_category_id,
+            point_of_interest_hours_attributes: hours_attributes,
             codes_attributes: codes_attributes
           }
         end

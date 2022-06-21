@@ -127,6 +127,8 @@ module Chouette
 
     scope :by_text, ->(text) { text.blank? ? all : where('lower(vehicle_journeys.published_journey_name) LIKE :t or lower(vehicle_journeys.objectid) LIKE :t', t: "%#{text.downcase}%") }
 
+    scope :by_code, ->(code_space, value) { joins(codes: :code_space).where("referential_codes.code_space_id = ? AND value = ?", code_space, value) }
+
     # We need this for the ransack object in the filters
     ransacker :stop_area_ids
 

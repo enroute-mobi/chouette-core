@@ -301,6 +301,43 @@ RSpec.describe Import::Gtfs do
 
   end
 
+  describe "Attributions" do
+
+    let!(:attribution1) do
+      GTFS::Attribution.new.tap do |attribution|
+        attribution.trip_id = "AB1"
+        attribution.operator = true
+        attribution.organization_name = "Company1"
+      end
+    end
+
+    let!(:attribution2) do
+      GTFS::Attribution.new.tap do |attribution|
+        attribution.trip_id = "AB2"
+        attribution.operator = false
+        attribution.organization_name = "Company2"
+      end
+    end
+
+    it { expect(attribution1.operator?).to be_truthy }
+    it { expect(attribution2.operator?).not_to be_truthy }
+  end
+
+  describe "#import_attributions" do
+    let(:import) { create_import 'google-sample-feed-with-attributions.zip' }
+    let(:referential) { import.referential }
+    let(:vehicle_journey) { referential.vehicle_journeys.by_code(import.code_space, 'AB1').first }
+    let(:company_name) { 'Demo Transit Authority' }
+
+    context "when there is only one company with the name 'Demo Transit Authority'" do
+      before { import.import_without_status }
+
+      it 'should associate vehicle_journey to company' do
+        expect(vehicle_journey.company.name).to eq(company_name)
+      end
+    end
+  end
+
   describe '#import_stops' do
     let(:import) do
       build_import('google-sample-feed-with-stop-desc.zip').tap do |import|

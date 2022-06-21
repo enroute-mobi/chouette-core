@@ -815,8 +815,9 @@ ActiveRecord::Schema.define(version: 2022_06_07_174321) do
     t.bigint "line_referential_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "name"
+    t.string "name", null: false
     t.index ["line_referential_id"], name: "index_line_providers_on_line_referential_id"
+    t.index ["name"], name: "index_line_providers_on_name", unique: true
     t.index ["workbench_id"], name: "index_line_providers_on_workbench_id"
   end
 

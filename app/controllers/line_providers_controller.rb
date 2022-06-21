@@ -15,16 +15,13 @@ class LineProvidersController < ChouetteController
           redirect_to params.merge(:page => 1)
         end
 
-        @line_providers = LineProviderDecorator.decorate(@line_providers, context: {workbench: @workbench})
+       @line_providers = collection
       }
     end
   end
 
   def show
     respond_to do |format|
-      format.json do
-        render json: resource.attributes.update(text: resource.name)
-      end
       @line_provider = resource.decorate(context: {workbench: @workbench})
       format.html
     end
@@ -39,23 +36,20 @@ class LineProvidersController < ChouetteController
   end
 
   def collection
-    scope = policy_scope(end_of_association_chain)
-
-    @line_providers ||= begin
-      line_providers = scope.order(:name)
-      line_providers = line_providers.paginate(:page => params[:page])
-      line_providers
-    end
+    get_collection_ivar || set_collection_ivar(LineProviderDecorator.decorate(end_of_association_chain.order(:name).paginate(:page => params[:page], per_page: 30),
+    context: {
+      workbench: @workbench
+      })
+    )
   end
 
   def line_provider_params
-    fields = [
+   params.require(:line_provider).permit(
       :name,
       :short_name,
       :created_at,
       :updated_at,
       codes_attributes: [:id, :code_space_id, :value, :_destroy]
-    ]
-    params.require(:line_provider).permit(fields)
+    )
   end
 end

@@ -616,3 +616,18 @@ crumb :new_code_space do |workgroup|
   link I18n.t('code_spaces.new.title')
   parent :code_spaces, workgroup
 end
+
+crumb :documents do |workbench|
+  link I18n.t('documents.index.title'), workbench_documents_path(workbench)
+  parent :workbench, workbench
+end
+
+crumb :document do |workbench, document|
+  link breadcrumb_name(document), workbench_document_path(workbench, document)
+  parent :documents, workbench
+end
+
+crumb :new_document do |workbench|
+  link I18n.t('documents.new.title')
+  parent :documents, workbench
+end

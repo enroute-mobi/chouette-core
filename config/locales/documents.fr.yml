@@ -1,0 +1,55 @@
+fr:
+  documents:
+    index:
+      title: Documents
+    show:
+      title: "%{name}"
+    new:
+      title: "Créer un Document"
+    edit:
+      title: "Editer %{name}"
+    actions:
+      show: "Afficher ce Document"
+      new: "Créer un Document"
+      edit: "Editer ce Document"
+      destroy: "Supprimer ce Document"
+      destroy_confirm: "Etes vous sûr de supprimer ce Document ?"
+    form:
+      placeholders:
+        select_file: Sélectionnez
+      sections:
+        identification: "Identification"
+        content: Contenu
+        internals: "Interne"
+        codes: "Codes"
+    search_no_results: "Aucun Document ne correspond à votre recherche"
+    no_codes: "Ce Document n'a pas de codes"
+  activemodel:
+    attributes:
+      period:
+        from: Valide à partir de
+        to: Valide jusqu'au
+  activerecord:
+    models:
+      document:
+        zero: "Document"
+        one: "Document"
+        other: "Documents"
+    attributes:
+      document:
+        uuid: ID
+        name: "Nom"
+        from: Valide à partir de
+        to: Valide jusqu'au
+        file: Nom du fichier
+        description: Description
+        content_type: Type de fichier
+        preview: Aperçu
+        document_type_id: "Type de Document"
+        document_provider_id: "Fournisseur de Document"
+    errors:
+      models:
+        document:
+          attributes:
+            file:
+              blank: Aucun fichier présent

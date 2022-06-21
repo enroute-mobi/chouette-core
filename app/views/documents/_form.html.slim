@@ -1,0 +1,59 @@
+- content_for :additional_packs, 'documents/form'
+
+= simple_form_for([@workbench, @document],
+    html: { \
+      multipart: true, \
+      class: 'form-horizontal', \
+      id: 'document_form'\
+    }, \
+    wrapper: :horizontal_form_tailwind \
+  ) do |f|
+  .row
+    .col-lg-12
+      h2.my-16
+        = t("documents.form.sections.identification")
+      = f.input :name
+      = f.input :document_type_id, as: :select, collection: @workbench.workgroup.document_types.map { |dt| [dt.short_name, dt.id] }
+      = f.simple_fields_for :validity_period do |validity_period_form|
+        = validity_period_form.input :from, as: :date_picker
+        = validity_period_form.input :to, as: :date_picker
+
+  .separator.section_separator
+  .row
+    .col-lg-12
+      h2.my-16
+        = t('documents.form.sections.content')
+
+      .flex.items-center.mb-10.relative x-data="fileInput(#{@document.json_state})"
+        label.flex.justify-end.w-2/6.mr-8.mb-0.control-label.pt-0.text.required = I18n.t('activerecord.attributes.document.file')
+        .flex.justify-center.w-4/6
+          .flex.flex-col.justify-center
+            .btn.btn-primary x-on:click="openFileDialog()"
+              span.fa.fa-upload
+              span.ml-4 x-text="getLabel()"
+
+            .flex.justify-center
+              = f.input :file, as: :file, label: false, input_html: { 'x-show': 'false', 'x-on:change': 'filename = file.name' }
+              = f.input :file_cache, as: :hidden
+
+      = f.input :description
+  .separator.section_separator
+  .row
+    .col-lg-12
+      h2.my-16
+        = t('documents.form.sections.internals')
+      = f.input :document_provider_id, as: :select, collection: @workbench.document_providers, include_blank: false
+
+  .separator.section_separator
+  .row
+    .col-lg-12
+      h2.my-16
+        = Chouette::StopArea.tmf(:codes)
+      = f.simple_fields_for(:codes) do |codes_form|
+        = render 'code_fields', f: codes_form
+
+      .links.nested-linker
+        = link_to_add_association t('entrances.form.add_code'), f, :codes, class: 'btn btn-primary'
+
+  = cancel_button
+  = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'document_form'

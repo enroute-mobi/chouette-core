@@ -60,6 +60,9 @@ class Workbench < ApplicationModel
   has_many :control_lists, class_name: "Control::List", dependent: :destroy
   has_many :control_list_runs, class_name: "Control::List::Run", dependent: :destroy
 
+  has_many :document_providers
+  has_many :documents, through: :document_providers
+
   before_validation :create_dependencies, on: :create
   before_validation :create_default_prefix
 
@@ -161,6 +164,10 @@ class Workbench < ApplicationModel
     @default_stop_area_provider ||= stop_area_providers.first || create_default_stop_area_provider
   end
 
+  def default_document_provider
+    @default_document_provider ||= document_providers.find_or_initialize_by(name: DEFAULT_PROVIDER_SHORT_NAME)
+  end
+
   def create_default_stop_area_provider
     return if disable_default_stop_area_provider
     stop_area_providers.find_or_initialize_by(name: DEFAULT_PROVIDER_SHORT_NAME.capitalize) do |p|
@@ -230,6 +237,10 @@ class Workbench < ApplicationModel
     end
   end
 
+  def create_default_document_provider
+    default_document_provider.save
+  end
+
   private
 
   def create_dependencies
@@ -247,6 +258,7 @@ class Workbench < ApplicationModel
       default_shape_provider
       default_line_provider
       default_stop_area_provider
+      create_default_document_provider
     end
   end
 end

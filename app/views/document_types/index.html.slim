@@ -33,6 +33,12 @@
                 sortable: false, \
               ), \
               \
+            TableBuilderHelper::Column.new( \
+              key: :count, \
+              attribute: Proc.new { |document_type| document_type.documents.count }, \
+              sortable: false \
+            ), \
+              \
             ].compact,
             cls: 'table has-filter has-search'
 

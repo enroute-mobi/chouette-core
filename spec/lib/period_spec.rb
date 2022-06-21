@@ -66,6 +66,38 @@ RSpec.describe Period do
     end
   end
 
+  describe "#validate!" do
+    subject { period.validate! }
+
+    context "when from and to are not defined" do
+      let(:period) { Period.new }
+      it {
+        expect(subject.details).to eq({:from=>[{:error=>:invalid_bounds}], :to=>[{:error=>:invalid_bounds}]})
+      }
+    end
+
+    context "when from and to are the same" do
+      let(:period) { Period.new from: date, to: date }
+      it {
+        expect(subject.details).to be_empty
+      }
+    end
+
+    context "when from is before to" do
+      let(:period) { Period.new from: date, to: date+1 }
+      it {
+        expect(subject.details).to be_empty
+      }
+    end
+
+    context "when to is before from" do
+      let(:period) { Period.new from: date, to: date-1 }
+      it {
+        expect(subject.details).to eq({:from=>[{:error=>:to_before_from}], :to=>[{:error=>:to_before_from}]})
+      }
+    end
+  end
+
   describe "#empty?" do
     subject { period.empty? }
 
@@ -135,6 +167,30 @@ RSpec.describe Period do
     context "when from and to are not defined" do
       let(:period) { Period.new }
       it { is_expected.to  have_attributes begin: nil, end: nil}
+    end
+  end
+
+  describe "infinite_date_range" do
+    subject { period.infinite_time_range }
+
+    context "when only the beginning date is defined (with) 2030-01-01)" do
+      let(:period) { Period.from '2030-01-01' }
+      it { is_expected.to have_attributes begin: Date.parse('2030-01-01'), end: Float::INFINITY }
+    end
+
+    context "when only the end date is defined (with) 2030-01-01)" do
+      let(:period) { Period.until '2030-01-01' }
+      it { is_expected.to have_attributes begin: -Float::INFINITY, end: Date.parse('2030-01-02') }
+    end
+
+    context "when the beginning date is is 2030-01-01 and the end date is 2030-12-31"  do
+      let(:period) { Period.new from: '2030-01-01', to: '2030-12-31' }
+      it { is_expected.to have_attributes begin: Date.parse('2030-01-01'), end: DateTime.parse('2031-01-01') }
+    end
+
+    context "when from and to are not defined" do
+      let(:period) { Period.new }
+      it { is_expected.to have_attributes begin: -Float::INFINITY, end: Float::INFINITY }
     end
   end
 
@@ -272,6 +328,37 @@ RSpec.describe Period do
     context "when period is '2030-01-01..2030-01-03'" do
       let(:period) { Period.from('2030-01-01').during(3.days) }
       it { is_expected.to eq(Time.parse('2030-01-02 12:00')) }
+    end
+  end
+
+end
+
+RSpec.describe Period::Type do
+
+  subject { Period::Type.new }
+  describe '#cast' do
+    [
+      [ nil, Period.new(from: nil, to: nil) ],
+      [ "[2022-06-07,)", Period.new(from: Date.parse("2022-06-07"), to: nil) ],
+      [ "(,2022-06-07]", Period.new(from: nil, to: Date.parse("2022-06-07")) ],
+      [ "[2022-06-07,2022-06-17]", Period.new(from: Date.parse("2022-06-07"), to: Date.parse("2022-06-17")) ],
+    ].each do |cast_value, expected|
+      it "should return #{expected.inspect} when #{cast_value.inspect} value" do
+        expect(subject.cast(cast_value)).to eq(expected)
+      end
+    end
+  end
+
+  describe '#serialize' do
+    [
+      [ Period.new(from: nil, to: nil), nil ],
+      [ Period.new(from: Date.parse("2022-06-07"), to: nil), Date.parse("2022-06-07")..Float::INFINITY  ],
+      [ Period.new(from: nil, to: Date.parse("2022-06-07")), -Float::INFINITY..Date.parse("2022-06-07") ],
+      [ Period.new(from: Date.parse("2022-06-07"), to: Date.parse("2022-06-17")), Date.parse("2022-06-07")..Date.parse("2022-06-17") ],
+    ].each do |serialize_value, expected|
+      it "should return #{expected.inspect} when #{serialize_value.inspect} value" do
+        expect(subject.serialize(serialize_value)).to eq(expected)
+      end
     end
   end
 

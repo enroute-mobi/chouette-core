@@ -1,0 +1,49 @@
+- breadcrumb :documents, @workbench
+
+.page_content
+  .container-fluid
+    - if params[:q].present? or @documents.any?
+      .row
+        .col-lg-12
+
+    - if @documents.any?
+      .row
+        .col-lg-12
+          = table_builder_2 @documents,
+            [ \
+              TableBuilderHelper::Column.new( \
+                key: :uuid, \
+                attribute: :uuid, \
+                sortable: false, \
+							), \
+              TableBuilderHelper::Column.new( \
+                key: :name, \
+                attribute: :name, \
+                sortable: false, \
+                link_to: -> (doc) { workbench_document_path(@workbench, doc) } \
+							), \
+              TableBuilderHelper::Column.new( \
+                key: :document_type_id, \
+                attribute: -> (doc) { doc.document_type.short_name }, \
+                sortable: false, \
+                link_to: -> (doc) { workgroup_document_type_path(@workbench.workgroup, doc.document_type) } \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :from, \
+                attribute: -> (doc) { doc.validity_period.from.present? ? l(doc.validity_period.from) : '-' }, \
+                sortable: false,\
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :to, \
+                attribute: -> (doc) { doc.validity_period.to.present? ? l(doc.validity_period.to) : '-' }, \
+                sortable: false,\
+              ) \
+            ].compact,
+            cls: 'table has-filter has-search'
+
+          = new_pagination @documents, 'pull-right'
+
+    - unless @documents.any?
+      .row.mt-xs
+        .col-lg-12
+          = replacement_msg t('documents.search_no_results')

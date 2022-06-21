@@ -90,7 +90,6 @@ module Chouette
         end
       end
 
-
       class Models
 
         attr_accessor :scope, :updater
@@ -159,7 +158,7 @@ module Chouette
         end
 
         def update(model, resource)
-          attributes = prepare_attributes(resource).except(:codes_attributes)
+          attributes = prepare_attributes(resource)
           Rails.logger.debug { "Update #{model.inspect} with #{attributes.inspect}" }
 
           model.attributes = attributes.except(:codes_attributes)

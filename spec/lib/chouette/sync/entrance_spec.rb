@@ -6,11 +6,11 @@ RSpec.describe Chouette::Sync::Entrance do
     let(:context) do
       Chouette.create do
         stop_area registration_number: "stop-place-1"
-        code_space
+        code_space short_name: 'external'
       end
     end
 
-    let(:target) { context.stop_area_referential }
+    let(:target) { context.stop_area_provider }
     let(:stop_area_provider) { context.stop_area_provider }
     let(:stop_area) { context.stop_area }
     let(:code_space) { context.code_space }

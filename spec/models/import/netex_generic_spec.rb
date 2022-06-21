@@ -519,18 +519,8 @@ RSpec.describe Import::NetexGeneric do
     context "when update_workgroup_providers option is enabled" do
       subject { import.part(:line_referential).import! }
 
-      let(:code_space) { workgroup.code_spaces.first }
-      before do
-        import.update options: { 'update_workgroup_providers' => true }
-        workbench.line_providers.create(
-          short_name: 'line_provider 1',
-          line_referential: workbench.line_referential,
-          codes_attributes: [{
-            value: '2003-line-provider-existing',
-            code_space: code_space
-          }]
-        )
-      end
+      let(:code_space) { workgroup.code_spaces.default}
+
       let(:line_provider) { workbench.line_providers.by_code(code_space, '2003-line-provider-existing').first }
 
       let(:xml) do
@@ -562,11 +552,24 @@ RSpec.describe Import::NetexGeneric do
         })
       end
 
+      before do
+        import.update options: { 'update_workgroup_providers' => true }
+
+        workbench.line_providers.create(
+          short_name: 'line_provider 1',
+          line_referential: workbench.line_referential,
+          codes_attributes: [{
+            value: '2003-line-provider-existing',
+            code_space: code_space
+          }]
+        )
+      end
+
       context 'when line_provider has id' do
-        it 'should import stop area' do
+        it 'should import line' do
           subject
 
-          expect(line_provider.lines).to include(expected_attributes)
+          expect(line_provider.reload.lines).to include(expected_attributes)
         end
       end
 

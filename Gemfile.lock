@@ -6,8 +6,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/gtfs.git
-  revision: db0467b4cf400923db37889290a49fcaf1a2bf3b
-  branch: GTFS-33-support-gtfs-attribution
+  revision: d347a347b68e4deefcb85197868bb0a86d826d7c
   specs:
     gtfs (0.3.6)
       msgpack
@@ -492,7 +491,7 @@ GEM
     mini_racer (0.6.2)
       libv8-node (~> 16.10.0.0)
     minitest (5.16.0)
-    msgpack (1.4.5)
+    msgpack (1.5.2)
     multi_json (1.15.0)
     multipart-post (2.1.1)
     mustermann (1.1.1)

@@ -270,12 +270,22 @@ class Period < Range
   class Type < ActiveRecord::Type::Value
 
     def cast(value)
-      return Period.new(from: nil, to: nil) unless value.present?
       return value if value.is_a?(Period)
-      date_range = oid_range.cast_value(value)
-      date_range_min = date_range.begin == -Float::INFINITY ? nil : date_range.min
-      date_range_max = date_range.end == Float::INFINITY ? nil : date_range.max
-      Period.new(from: date_range_min, to: date_range_max) if value.is_a?(String)
+
+      case value
+        when NilClass
+          new_value = Period.new(from: nil, to: nil)
+        when String
+          new_value = oid_range.cast_value(value)
+        when Hash
+          new_value = Range.new value[:from], value[:to]
+        when Range
+          date_range_min = value.begin == -Float::INFINITY ? nil : value.begin
+          date_range_max = value.end == Float::INFINITY ? nil : value.end
+          new_value = Period.new(from: date_range_min, to: date_range_max)
+      end
+
+      cast(new_value)
     end
 
     def serialize(value)

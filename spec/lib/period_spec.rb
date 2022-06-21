@@ -342,6 +342,15 @@ RSpec.describe Period::Type do
       [ "[2022-06-07,)", Period.new(from: Date.parse("2022-06-07"), to: nil) ],
       [ "(,2022-06-07]", Period.new(from: nil, to: Date.parse("2022-06-07")) ],
       [ "[2022-06-07,2022-06-17]", Period.new(from: Date.parse("2022-06-07"), to: Date.parse("2022-06-17")) ],
+      [ Range.new(nil, nil), Period.new(from: nil, to: nil) ],
+      [ Range.new('2022-06-07', nil), Period.new(from: Date.parse("2022-06-07"), to: nil) ],
+      [ Range.new(nil, '2022-06-07'), Period.new(from: nil, to: Date.parse("2022-06-07")) ],
+      [ Range.new('2022-06-07', '2022-06-17'), Period.new(from: Date.parse("2022-06-07"), to: Date.parse("2022-06-17")) ],
+      [ {}, Period.new(from: nil, to: nil) ],
+      [ { from: '2022-06-07' }, Period.new(from: Date.parse("2022-06-07"), to: nil) ],
+      [ { to: '2022-06-07' }, Period.new(from: nil, to: Date.parse("2022-06-07")) ],
+      [ { from: '2022-06-07' , to: '2022-06-17' }, Period.new(from: Date.parse("2022-06-07"), to: Date.parse("2022-06-17")) ],
+    
     ].each do |cast_value, expected|
       it "should return #{expected.inspect} when #{cast_value.inspect} value" do
         expect(subject.cast(cast_value)).to eq(expected)

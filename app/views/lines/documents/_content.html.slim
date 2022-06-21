@@ -22,12 +22,12 @@
 							link_to: -> (doc) { workgroup_document_type_path(@workbench.workgroup, doc.document_type) } \
 						), \
 						TableBuilderHelper::Column.new( \
-							key: :valid_after, \
+							key: :from, \
 							attribute: -> (doc) { doc.display_validity_period_part(:form) }, \
 							sortable: false,\
 						), \
 						TableBuilderHelper::Column.new( \
-							key: :valid_until, \
+							key: :to, \
 							attribute: -> (doc) { doc.display_validity_period_part(:to) }, \
 							sortable: false,\
 						) \
@@ -76,12 +76,12 @@
 						link_to: -> (doc) { workgroup_document_type_path(@workbench.workgroup, doc.document_type) } \
 					), \
 					TableBuilderHelper::Column.new( \
-						key: :valid_after, \
+						key: :from, \
 						attribute: -> (doc) { doc.validity_period.from.to_s.presence || '-' }, \
 						sortable: false,\
 					), \
 					TableBuilderHelper::Column.new( \
-						key: :valid_until, \
+						key: :to, \
 						attribute: -> (doc) { doc.validity_period.to.to_s.presence || '-' }, \
 						sortable: false,\
 					) \

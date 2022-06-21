@@ -42,7 +42,10 @@
              Chouette::Line.tmf(:text_color) => color_icon(@line.text_color),
              Chouette::Line.tmf(:url) => (@line.url.present? ? link_to(@line.url, @line.url, target: :blank) : t('lines.index.unset')) }
 
-        - if @line.documents.any?
-          = simple_block_for @line, title: 'Documents' do
+        = simple_block_for @line, title: 'Documents' do
+          - if @line.documents.any?
             = @line.documents_table
-            = link_to I18n.t('lines.actions.associate_other_documents'), workbench_line_referential_line_documents_path(@workbench, @line), class: 'btn btn-link'
+          - else
+             = replacement_msg t('lines.no_documents')
+          = link_to I18n.t('lines.actions.associate_other_documents'), workbench_line_referential_line_documents_path(@workbench, @line), class: 'btn btn-primary my-2'
+          .mt-2

@@ -1,6 +1,7 @@
 fr:
   lines: &fr_lines
     no_codes: "Cette ligne n'a pas de code"
+    no_documents: "Cette ligne n'a pas de document"
     actions:
       new: "Ajouter une ligne"
       edit: "Editer cette ligne"

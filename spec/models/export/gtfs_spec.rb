@@ -94,7 +94,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
     end
   end
 
-  describe 'Attribution Part' do
+  describe 'VehicleJourneyCompany Part' do
     let(:export_scope) { Export::Scope::All.new context.referential }
     let(:index) { export.index }
     let(:export) { Export::Gtfs.new export_scope: export_scope, workbench: context.workbench, workgroup: context.workgroup, referential: context.referential }
@@ -122,6 +122,9 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
     let(:line) { first_vehicle_journey.line }
 
     before do
+      part.index.register_trip_id(first_vehicle_journey, 'trip_1')
+      part.index.register_trip_id(second_vehicle_journey, 'trip_2')
+
       context.referential.switch
 
       line.update(company: second_company)
@@ -132,7 +135,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
     it "should export attribution of the first vehicle_journey - company" do
       part.export!
 
-      is_expected.to include(first_vehicle_journey.objectid)
+      is_expected.to include('trip_1')
     end
 
     it "should not export attribution of the second vehicle_journey - company" do

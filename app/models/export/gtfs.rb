@@ -432,13 +432,13 @@ class Export::Gtfs < Export::Base
       ids = Set.new
       # OPTIMIZEME pluck is great bu can consume a lot of memory for very large Vehicle Journey collection
       vehicle_journeys.left_joins(route: { line: :company }).
-        pluck("vehicle_journeys.id", "vehicle_journeys.company_id", "companies.id", "companies.time_zone").
-        each do |vehicle_journey_id, vehicle_journeys_company_id, line_company_id, company_time_zone|
+        pluck("vehicle_journeys.id", "companies.id", "companies.time_zone").
+        each do |vehicle_journey_id, line_company_id, company_time_zone|
 
-        company_id = vehicle_journeys_company_id.presence || line_company_id.presence || DEFAULT_AGENCY_ID
+        company_id = line_company_id.presence || DEFAULT_AGENCY_ID
         time_zone = company_time_zone
 
-        if  prefer_referent_company && (referent = referents[company_id]).present?
+        if prefer_referent_company && (referent = referents[company_id]).present?
           company_id = referent.id
           time_zone = referent.time_zone
         end
@@ -667,7 +667,7 @@ class Export::Gtfs < Export::Base
         @periods ||= if @export_date_range.nil?
           super
         else
-            super.select { |p| p.range & @export_date_range }
+          super.select { |p| p.range & @export_date_range }
         end
       end
 
@@ -1090,21 +1090,43 @@ class Export::Gtfs < Export::Base
   class VehicleJourneyCompany < Part
     def export!
       vehicle_journeys.find_each do |vehicle_journey|
-        target.attributions << Decorator.new(vehicle_journey).gtfs_attribution
+        Decorator.new(vehicle_journey, index: index).attributions.each do |attribution|
+          target.attributions << attribution
+        end
       end
     end
 
-    delegate :lines, to: :export_scope
-
     def vehicle_journeys
-      export_scope.vehicle_journeys
-        .where.not(company: nil)
-        .where.not(company: lines.pluck(:company_id).compact.uniq)
+      export_scope.vehicle_journeys.joins(route: :line).where.not(company: nil).where("vehicle_journeys.company_id != lines.company_id")
     end
 
     class Decorator < SimpleDelegator
+      attr_reader :index, :vehicle_journey
+      def initialize(vehicle_journey, index: nil)
+        super vehicle_journey
+        @vehicle_journey = vehicle_journey
+        @index = index
+      end
 
-      def gtfs_attribution
+      def trip_ids
+        index ? index.trip_ids(id) : []
+      end
+
+      def attributions
+        trip_ids.map do |trip_id|
+          TripDecorator.new(vehicle_journey, trip_id: trip_id).attribution
+        end
+      end
+    end
+
+    class TripDecorator < SimpleDelegator
+
+      def initialize(vehicle_journey, trip_id: nil)
+        super vehicle_journey
+        @trip_id = trip_id
+      end
+
+      def attribution_attributes
         {
           attribution_id: attribution_id,
           trip_id: trip_id,
@@ -1113,8 +1135,12 @@ class Export::Gtfs < Export::Base
         }
       end
 
+      def attribution
+        GTFS::Attribution.new attribution_attributes
+      end
+
       def trip_id
-        objectid # or code value ?
+        @trip_id || objectid
       end
 
       def attribution_id

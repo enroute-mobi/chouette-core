@@ -2,6 +2,7 @@ import Select from './base.select'
 
 export default class OperationStepSelect extends Select {
 	addOptions() {
+		const isControlList = this.form.processableType === 'Control::List'
 		this.options.forEach(option => {
 			let shouldAdd = false
 
@@ -11,10 +12,10 @@ export default class OperationStepSelect extends Select {
 					shouldAdd = true
 					break
 				case 'after_merge':
-					shouldAdd = this.form.processableType === 'Control::List'
+					shouldAdd = isControlList
 					break
 				case 'after_aggregate':
-					shouldAdd = this.form.isWorkgroupOwner
+					shouldAdd = this.form.isWorkgroupOwner && isControlList
 					break
 			}
 

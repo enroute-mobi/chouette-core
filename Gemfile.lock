@@ -66,7 +66,8 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: e702d0c4c69e985d0868560232a6be7a2f3eda15
+  revision: 722284b6f3ca0eea90ccace0ffd699e6750790b9
+  branch: NETEX-47-manage-embedded-resources-in-import
   specs:
     netex (0.1.2)
       activesupport

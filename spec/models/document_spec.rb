@@ -7,4 +7,37 @@ RSpec.describe Document, type: :model do
   it { should validate_presence_of :file }
   it { should validate_presence_of :document_type_id }
   it { should validate_presence_of :document_provider_id }
+
+  let(:context) do
+    Chouette.create do
+      workbench organisation: Organisation.find_by_code('first') do
+        line :first
+      end
+    end
+  end
+
+  let(:workbench) { context.workbench }
+  let(:line) { context.line(:first) }
+
+
+  let(:document_provider) { workbench.document_providers.create(name: 'document_provider_name') }
+  let(:document_type) { workbench.workgroup.document_types.create(name: 'document_type_name', short_name: 'toto')}
+  let(:file) { fixture_file_upload('sample_pdf.pdf') }
+  let(:document) { Document.create(name: 'test', document_type_id: document_type.id, document_provider_id: document_provider.id, file: file, validity_period: (Date.today...Date.today + 1.day)) }
+
+  describe '#memberships' do
+    describe '#add_member' do
+      it 'should add a document membership' do
+        expect { document.memberships.add_member(line) }.to change { DocumentMembership.count }.by(1)
+      end
+    end
+
+    describe '#remove_member' do
+      it 'should remove a document membership' do
+        document.memberships.add_member(line)
+
+        expect { document.memberships.remove_member(line) }.to change { DocumentMembership.count }.by(-1)
+      end
+    end
+  end
 end

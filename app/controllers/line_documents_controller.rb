@@ -23,16 +23,17 @@ class LineDocumentsController < ChouetteController
 	def associate
 		document = workbench.documents.find(params[:id])
 
-		document.add_member(line)
+		document.memberships.add_member(line)
 		flash[:success] = I18n.t('documents.flash.associate.notice')
-	rescue
+	rescue => e
+		byebug
 		flash[:error] = I18n.t('documents.flash.associate.error')
 	ensure
 		redirect_back(fallback_location: workbench_line_referential_line_documents_path(workbench, line))
 	end
 
 	def unassociate
-		document.remove_member(line)
+		document.memberships.remove_member(line)
 		flash[:success] = I18n.t('documents.flash.unassociate.notice')
 	rescue
 		flash[:error] = I18n.t('documents.flash.unassociate.error')

@@ -28,7 +28,7 @@ module Chouette::Sync
         end
 
         def position
-          "#{longitude} #{latitude}"
+          "#{latitude} #{longitude}"
         end
 
         def address

@@ -90,7 +90,6 @@ module Chouette
         end
       end
 
-
       class Models
 
         attr_accessor :scope, :updater
@@ -287,7 +286,7 @@ module Chouette
           @updater = updater
         end
 
-        delegate :resource_id_attribute, :model_id_attribute, :models, :resource_decorator, :code_space,  to: :updater
+        delegate :resource_id_attribute, :model_id_attribute, :models, :resource_decorator, :code_space, to: :updater
 
         def decorate(resource)
           resource_decorator.new resource, batch: self

@@ -27,7 +27,7 @@ module SimpleBlockForHelper
   #   the value is localized (with short_with_time format)
   # duration::
   #   the value is displayed as "NN min" or "NN sec"
-  # enumeriwe::
+  # enumerize::
   #   the #text method is invoked on the value
   # boolean::
   #   the value is displayed as Yes/No, Oui/Non, etc

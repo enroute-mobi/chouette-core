@@ -36,4 +36,5 @@ class Document < ApplicationModel
 	def self.file_extension_whitelist
 		%w(pdf kml jpg jpeg png)
 	end
+
 end

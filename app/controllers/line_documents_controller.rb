@@ -3,6 +3,7 @@ class LineDocumentsController < ChouetteController
   include PolicyChecker
 
   defaults resource_class: Document, collection_name: 'documents', instance_name: 'document'
+	custom_actions resource: :associate, resource: :unassociate
 
 	belongs_to :workbench
 	belongs_to :line_referential, singleton: true
@@ -13,38 +14,37 @@ class LineDocumentsController < ChouetteController
 			@documents = DocumentDecorator.decorate(documents, context: decorator_context.merge(pagination_param_name: :documents_page))
 			@unassociated_documents_search = Search::Document.new(unassociated_documents, params)
 			@unassociated_documents = DocumentDecorator.decorate(@unassociated_documents_search.collection, context: decorator_context.merge(pagination_param_name: :unassociated_documents_page))
-
-      format.html { render 'lines/documents/index' }
-
-			format.js { render 'lines/documents/index' }
     end
 	end
 
 	def associate
-		document = workbench.documents.find(params[:id])
-
-		document.memberships.add_member(line)
-		flash[:success] = I18n.t('documents.flash.associate.notice')
-	rescue => e
-		byebug
-		flash[:error] = I18n.t('documents.flash.associate.error')
-	ensure
-		redirect_back(fallback_location: workbench_line_referential_line_documents_path(workbench, line))
+		document_membership = resource.memberships.build(documentable: line)
+		if document_membership.save
+			flash[:success] = I18n.t('documents.flash.associate.notice')
+		else
+			flash[:error] = I18n.t('documents.flash.associate.error')
+		end
+		redirect_to workbench_line_referential_line_documents_path(workbench, line)
 	end
 
 	def unassociate
-		document.memberships.remove_member(line)
-		flash[:success] = I18n.t('documents.flash.unassociate.notice')
-	rescue
-		flash[:error] = I18n.t('documents.flash.unassociate.error')
-	ensure
-		redirect_back(fallback_location: workbench_line_referential_line_documents_path(workbench, line))
+		document_membership = resource.memberships.find_by!(documentable_id: line.id, documentable_type: line.class.name).destroy
+		if document_membership.destroyed?
+			flash[:success] = I18n.t('documents.flash.unassociate.notice')
+		else
+			flash[:error] = I18n.t('documents.flash.unassociate.error')
+		end
+		redirect_to workbench_line_referential_line_documents_path(workbench, line)
 	end
 
 	protected
 
 	alias document resource
 	alias line parent
+
+	def resource
+		get_resource_ivar || set_resource_ivar(workbench.documents.find(params[:id]))
+	end
 
 	def documents
 		line.documents.paginate(page: params[:documents_page], per_page: 30)
@@ -55,21 +55,14 @@ class LineDocumentsController < ChouetteController
 	end
 
 	def workbench
-		@workbench ||= Workbench.find(params[:workbench_id])
+		@workbench ||= current_organisation.workbenches.find(params[:workbench_id])
 	end
 
 	def line_referential
-		@line_referential ||= LineReferential.find(params[:line_referential_id])
+		@line_referential ||= workbench.line_referential
 	end
 
 	private
-
-	def search_params
-	end
-
-	def get_all_documents
-		
-	end
 
 	def decorator_context
 		{

@@ -25,19 +25,5 @@ RSpec.describe Document, type: :model do
   let(:file) { fixture_file_upload('sample_pdf.pdf') }
   let(:document) { Document.create(name: 'test', document_type_id: document_type.id, document_provider_id: document_provider.id, file: file, validity_period: (Date.today...Date.today + 1.day)) }
 
-  describe '#memberships' do
-    describe '#add_member' do
-      it 'should add a document membership' do
-        expect { document.memberships.add_member(line) }.to change { DocumentMembership.count }.by(1)
-      end
-    end
 
-    describe '#remove_member' do
-      it 'should remove a document membership' do
-        document.memberships.add_member(line)
-
-        expect { document.memberships.remove_member(line) }.to change { DocumentMembership.count }.by(-1)
-      end
-    end
-  end
 end

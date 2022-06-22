@@ -23,24 +23,24 @@
 						), \
 						TableBuilderHelper::Column.new( \
 							key: :from, \
-							attribute: -> (doc) { doc.display_validity_period_part(:form) }, \
+							attribute: -> (doc) { doc.validity_period.from.present? ? l(doc.validity_period.from) : '-' }, \
 							sortable: false,\
 						), \
 						TableBuilderHelper::Column.new( \
 							key: :to, \
-							attribute: -> (doc) { doc.display_validity_period_part(:to) }, \
+							attribute: -> (doc) { doc.validity_period.to.present? ? l(doc.validity_period.to) : '-' }, \
 							sortable: false,\
 						) \
 					].compact,
 					cls: 'table'
 
-				= new_pagination @documents, 'pull-right', renderer: WillPaginate::RemoteLinkRenderer 
+				= new_pagination @documents, 'pull-right', renderer: WillPaginate::RemoteLinkRenderer
 
 	- else
 		.row.mt-xs
 			.col-lg-12
 				= replacement_msg t('documents.search_no_results')
-    
+
 	h2 = I18n.t('lines.actions.associate_other_documents')
 	.row
 		= simple_form_for @unassociated_documents_search, url: request.path, method: "GET", remote: true, html: { class: 'form form-filter' }  do |f|
@@ -77,17 +77,17 @@
 					), \
 					TableBuilderHelper::Column.new( \
 						key: :from, \
-						attribute: -> (doc) { doc.validity_period.from.to_s.presence || '-' }, \
+						attribute: -> (doc) { doc.validity_period.from.present? ? l(doc.validity_period.from) : '-' }, \
 						sortable: false,\
 					), \
 					TableBuilderHelper::Column.new( \
 						key: :to, \
-						attribute: -> (doc) { doc.validity_period.to.to_s.presence || '-' }, \
+						attribute: -> (doc) { doc.validity_period.to.present? ? l(doc.validity_period.to) : '-' }, \
 						sortable: false,\
 					) \
 				].compact,
 				cls: 'table has-filter has-search'
-			= new_pagination @unassociated_documents, 'pull-right', renderer: WillPaginate::RemoteLinkRenderer 
+			= new_pagination @unassociated_documents, 'pull-right', renderer: WillPaginate::RemoteLinkRenderer
 
 	- else
 		.row.mt-xs

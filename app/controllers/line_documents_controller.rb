@@ -10,11 +10,10 @@ class LineDocumentsController < ChouetteController
 	belongs_to :line
 
 	def index
-		index! do |format|
 			@documents = DocumentDecorator.decorate(documents, context: decorator_context.merge(pagination_param_name: :documents_page))
 			@unassociated_documents_search = Search::Document.new(unassociated_documents, params)
 			@unassociated_documents = DocumentDecorator.decorate(@unassociated_documents_search.collection, context: decorator_context.merge(pagination_param_name: :unassociated_documents_page))
-    end
+			index!
 	end
 
 	def associate

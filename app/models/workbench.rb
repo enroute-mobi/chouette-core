@@ -156,7 +156,7 @@ class Workbench < ApplicationModel
   def default_line_provider
     @default_line_provider ||= line_providers.find_or_initialize_by(name: DEFAULT_PROVIDER_NAME) do |p|
       p.line_referential_id = workgroup.line_referential_id
-      p.name = DEFAULT_PROVIDER_NAME
+      p.short_name = DEFAULT_PROVIDER_SHORT_NAME
     end
   end
 

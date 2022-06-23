@@ -24,7 +24,7 @@ ruby:
         = simple_block_for @aggregate, title: t('aggregate.form.sections.informations') do |d|
 					= d.attribute :referentials, value: @aggregate.referentials.map{ |r| decorate_referential_name(r) }.join(', ').html_safe
 					= d.attribute :status, value: operation_status(@aggregate.status, verbose: true, i18n_prefix: "aggregates.statuses")
-					= d.attribute :new, as: :association, link: referential_path(@aggregate.new)
+					= d.attribute :new, as: :association, link: ->(new) { referential_path(new) }
 					= d.attribute :contains_urgent_offer, value: boolean_icon(@aggregate.contains_urgent_offer?)
       = processing_helper(@aggregate)
 

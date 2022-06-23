@@ -157,6 +157,14 @@ RSpec.describe Chouette::Sync::PointOfInterest do
       it "should import point_of_interests" do
         expect(target.point_of_interests).to include(expected_point_of_interest_attributes)
       end
+
+      describe '#point_of_interest_hours' do
+        subject { target.point_of_interests.map(&:point_of_interest_hours).flatten.count }
+
+        it "should import point_of_interest_hours" do
+          expect(subject).to eq(2)
+        end
+      end
     end
 
     context "when point_of_interest exists with codes" do
@@ -177,6 +185,14 @@ RSpec.describe Chouette::Sync::PointOfInterest do
 
       it "should upddate point_of_interests" do
         expect(target.point_of_interests).to include(expected_point_of_interest_attributes)
+      end
+
+      describe '#point_of_interest_hours' do
+        subject { target.point_of_interests.map(&:point_of_interest_hours).flatten.count }
+
+        it "should import point_of_interest_hours" do
+          expect(subject).to eq(2)
+        end
       end
     end
   end

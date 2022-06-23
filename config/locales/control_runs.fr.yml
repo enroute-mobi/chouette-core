@@ -15,6 +15,8 @@ fr:
         one: Présence d’un champ personnalisé
       control/code_format/run:
         one: Format d'un code
+      control/format_attribute/run:
+        one: Format d'un attribut
     attributes:
       control/base/run:
         name: Nom

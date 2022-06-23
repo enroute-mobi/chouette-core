@@ -16,7 +16,7 @@ module Chouette::Sync
 
       class Decorator < Chouette::Sync::Updater::ResourceDecorator
 
-        delegate :contact_details, to: :operating_organisation_view
+        delegate :contact_details, to: :operating_organisation_view, allow_nil: true
         delegate :target, to: :updater
 
         def position
@@ -76,31 +76,23 @@ module Chouette::Sync
         end
 
         class Hour
-          def initialize(point_of_interest)
-            @point_of_interest = point_of_interest
+          def initialize(validity_conditions)
+            @validity_conditions = validity_conditions
           end
-          attr_accessor :point_of_interest
-
-          delegate :validity_conditions, to: :point_of_interest
+          attr_accessor :validity_conditions
 
           def hours_attributes
-            [].tap do |point_of_interest_hours_attributes|
+            [].tap do |hours_attributes|
               validity_conditions.each do |validity_condition|
-                if (timebands = validity_condition.timebands.presence) &&
-                  (day_types = validity_condition.day_types.presence)
-                  timebands.each do |timeband|
-                    day_types.each do |day_type|
-                      if properties = day_type.properties.presence
-                        properties.each do |property|
-                          point_of_interest_hours_attributes << {
-                            opening_time_of_day: netex_time_of_day(timeband.start_time),
-                            closing_time_of_day: netex_time_of_day(timeband.end_time),
-                            week_days: netex_week_days(property.days_of_week)
-                          }
-                        end
-                      end
-                    end
-                  end
+                validity_condition.timebands.each do |timeband|
+                  # All DayTypes are merged into a single DaysOfWeek
+                  days_of_week = netex_week_days(validity_condition.day_types)
+
+                  hours_attributes << {
+                    opening_time_of_day: netex_time_of_day(timeband.start_time),
+                    closing_time_of_day: netex_time_of_day(timeband.end_time),
+                    week_days: days_of_week
+                  }
                 end
               end
             end
@@ -112,17 +104,21 @@ module Chouette::Sync
             TimeOfDay.new time.hour, time.minute, time.second
           end
 
-          def netex_week_days(days_of_week)
+          def netex_week_days(day_types)
             Timetable::DaysOfWeek.new.tap do |dow|
-              days_of_week.split(/\s/).map(&:to_sym).each do |day|
-                dow.send("#{day.downcase}=", true)
+              day_types.each do |day_type|
+                day_type.properties.each do |property|
+                  property.days_of_week.split(/\s/).map(&:downcase).each do |day|
+                    dow.send("#{day}=", true)
+                  end
+                end
               end
             end
           end
         end
 
         def hours_attributes
-          Hour.new(self).hours_attributes
+          Hour.new(validity_conditions).hours_attributes
         end
 
         def model_attributes

@@ -50,6 +50,7 @@ class ModelAttribute
   define klass: Chouette::Line, name: :network, options: { reference: true, association_collection: :networks }
   define klass: Chouette::Line, name: :number
   define klass: Chouette::Line, name: :published_name
+  define klass: Chouette::Line, name: :registration_number
   define klass: Chouette::Line, name: :text_color
   define klass: Chouette::Line, name: :transport_mode
   define klass: Chouette::Line, name: :transport_submode
@@ -84,6 +85,7 @@ class ModelAttribute
   define klass: Chouette::Company, name: :house_number
   define klass: Chouette::Company, name: :postcode
   define klass: Chouette::Company, name: :postcode_extension
+  define klass: Chouette::Company, name: :registration_number
   define klass: Chouette::Company, name: :street
   define klass: Chouette::Company, name: :time_zone
   define klass: Chouette::Company, name: :town
@@ -103,6 +105,7 @@ class ModelAttribute
   define klass: Chouette::StopArea, name: :waiting_time, data_type: :integer
   define klass: Chouette::StopArea, name: :postal_region
   define klass: Chouette::StopArea, name: :public_code
+  define klass: Chouette::StopArea, name: :registration_number
   define klass: Chouette::StopArea, name: :compass_bearing, data_type: :float
   define klass: Chouette::StopArea, name: :accessibility_limitation_description
 

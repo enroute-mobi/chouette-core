@@ -5,16 +5,7 @@ class Document < ApplicationModel
 	belongs_to :document_provider, required: true
 
 	has_many :codes, as: :resource, dependent: :delete_all
-	has_many :memberships, class_name: 'DocumentMembership', dependent: :delete_all do
-		def add_member(record)
-			create(documentable: record)
-		end
-
-		def remove_member(record)
-			find_by!(documentable: record).destroy
-		end
-	end
-
+	has_many :memberships, class_name: 'DocumentMembership', dependent: :delete_all
 	has_many :lines, through: :memberships, source: :documentable, source_type: 'Chouette::Line'
 
 	mount_uploader :file, DocumentUploader

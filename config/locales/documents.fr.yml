@@ -27,11 +27,11 @@ fr:
     search_no_results: "Aucun Document ne correspond à votre recherche"
     flash:
       associate:
-        notice: Le document a été associé à la ligne avec success
-        error: Le document n'a pu etre associe à la ligne
+        notice: Le document a été associé à la ligne avec succès
+        error: Le document n'a pas pu être associé avec la ligne
       unassociate:
-        notice: Le document a été dissocié à la ligne avec success
-        error: Le document n'a pu etre dissocié à la ligne
+        notice: Le document a été dissocié de la ligne avec succès
+        error: Le document n'a pas pu être dissocié de la ligne
     no_codes: "Ce Document n'a pas de codes"
   activemodel:
     attributes:

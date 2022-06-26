@@ -28,11 +28,11 @@ en:
     no_codes: "This Document does not have any codes"
     flash:
       associate:
-        notice: Successfully associated document to line
-        error: Could not associate document to line
+        notice: The document is successfully associated to the line
+        error: The document could not be associated to the line
       unassociate:
-        notice: Successfully unassociated document to line
-        error: Could not unassociate document to line
+        notice: The document is successfully unassociated to the line
+        error: The document could not be unassociated to the line
   activemodel:
     attributes:
       period:

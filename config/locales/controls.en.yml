@@ -6,7 +6,7 @@ en:
         one:   control
         other: controls
       control/dummy:
-        one: Simulate control
+        one: Simulate Control
       control/presence_attribute:
         one: Presence of attribute
       control/presence_code:

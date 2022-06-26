@@ -12,15 +12,6 @@ class DocumentDocumentMembershipDecorator < AF83::Decorator
 		end
 	end
 
-	define_instance_method :display_validity_period_part do |part|
-		value = validity_period.try(part)
-
-		return '-' if value.nil?
-		return '-' if value.is_a?(Float)
-
-		I18n.l(value)
-	end
-
 	def pagination_param_name
 		context[:pagination_param_name]
 	end

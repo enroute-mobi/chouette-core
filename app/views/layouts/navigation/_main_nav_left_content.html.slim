@@ -79,6 +79,8 @@
         span = Chouette::LineNotice.t.capitalize
       = link_to workbench_line_referential_line_routing_constraint_zones_path(workbench), class: 'list-group-item' do
         span = LineRoutingConstraintZone.t.capitalize
+      = link_to workbench_line_referential_line_providers_path(workbench), class: 'list-group-item' do
+        span = LineProvider.t.capitalize
       = link_to workbench_line_referential_path(workbench), class: "list-group-item" do
         span = 'line_referentials.show.title'.t
 

@@ -18,7 +18,7 @@ class DocumentMembershipsController < ChouetteController
 	end
 
 	def create
-		document_membership = document.memberships.build(documentable: line)
+		document_membership = build_resource
 		if document_membership.save
 			flash[:success] = I18n.t('documents.flash.associate.notice')
 		else
@@ -44,6 +44,10 @@ class DocumentMembershipsController < ChouetteController
 
 	def document
 		workbench.documents.find(params[:document_id])
+	end
+
+	def build_resource
+		get_resource_ivar || set_resource_ivar(document.memberships.build(documentable: line))
 	end
 
 	def resource

@@ -70,10 +70,6 @@ class DocumentMembershipsController < ChouetteController
 		@workbench ||= current_organisation.workbenches.find(params[:workbench_id])
 	end
 
-	def line
-		@line ||= workbench.line_referential.lines.find(params[:line_id])
-	end
-
 	private
 
 	def decorator_context

@@ -21,6 +21,10 @@ class LineProvider < ApplicationModel
     workbench&.workgroup
   end
 
+  def used?
+    [ lines, companies, networks, group_of_lines, line_notices, line_routing_constraint_zones ].any?(&:exists?)
+  end
+
   private
 
   def define_line_referential

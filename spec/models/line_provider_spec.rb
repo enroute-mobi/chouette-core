@@ -1,5 +1,4 @@
 RSpec.describe LineProvider do
-
   describe "#code_support" do
     let(:context) do
       Chouette.create do
@@ -43,6 +42,50 @@ RSpec.describe LineProvider do
 
     it "should create and associate code codes" do
       expect(line_provider.codes).to include(expected_code)
+    end
+  end
+
+  describe "#used?" do
+    subject { line_provider.used? }
+
+    context "when a Line is associated" do
+      let(:context) { Chouette.create { line } }
+      let(:line_provider) { context.line.line_provider }
+
+      it { is_expected.to be_truthy }
+    end
+
+    context "when a Company is associated" do
+      let(:context) { Chouette.create { company } }
+      let(:line_provider) { context.company.line_provider }
+
+      it { is_expected.to be_truthy }
+    end
+
+    context "when a Network is associated" do
+      let(:context) { Chouette.create { network } }
+      let(:line_provider) { context.network.line_provider }
+
+      it { is_expected.to be_truthy }
+    end
+    context "when a Line Notice is associated" do
+      let(:context) { Chouette.create { line_notice } }
+      let(:line_provider) { context.line_notice.line_provider }
+
+      it { is_expected.to be_truthy }
+    end
+    context "when a Line Routing Constraint is associated", pending: true do
+      let(:context) { Chouette.create { line_routing_constraint } }
+      let(:line_provider) { context.line_routing_constraint.line_provider }
+
+      it { is_expected.to be_truthy }
+    end
+
+    context "when no resource is associated" do
+      let(:context) { Chouette.create { line_provider } }
+      let(:line_provider) { context.line_provider }
+
+      it { is_expected.to be_falsy }
     end
   end
 end

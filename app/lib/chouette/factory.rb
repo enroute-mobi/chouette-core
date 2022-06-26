@@ -81,6 +81,7 @@ module Chouette
 
           model :line_provider do
             attribute(:short_name) { |n| "line_provider_#{n}" }
+            attribute(:name) { |n| "Line Provider #{n}" }
 
             model :line do
               attribute(:name) { |n| "Line #{n}" }

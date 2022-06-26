@@ -90,6 +90,23 @@
             - unless @line_referential.line_routing_constraint_zones.any?
               = replacement_msg t('no_result_text')
 
+      .col-sm-offset-1.col-sm-4.col-xs-12
+        .panel.panel-default
+          .panel-heading
+            h3.panel-title.with_actions
+              div
+                = link_to LineProvider.t, workbench_line_referential_line_providers_path(@workbench)
+                span.badge.ml-xs =  @line_referential.line_providers.count
+              div
+                = link_to '', workbench_line_referential_line_providers_path(@workbench), class: ' fa fa-chevron-right pull-right', title: t('workbenches.index.offers.see')
+          .list-group
+            - @line_referential.line_providers.order("updated_at desc").limit(5).each do |line_provider|
+              .list-group-item
+                = link_to line_provider.name, workbench_line_referential_line_provider_path(@workbench, line_provider)
+                =< t('date.updated', distance_in_time: time_ago_in_words(line_provider.updated_at))
+            - unless @line_referential.line_providers.any?
+              = replacement_msg t('no_result_text')
+
     -if @line_referential.line_referential_syncs.any?
       .row
         .col-lg-12

@@ -1,0 +1,37 @@
+en:
+  line_providers:
+    actions:
+      destroy_confirm: "Are you sur to delete this line provider ?"
+    search_no_results: "No line providers"
+    no_codes: "Ce fournisseur de lignes n'a pas de code"
+    index:
+      title: "Line providers"
+    new:
+      title: "Add a line provider"
+    show:
+      title: "%{name}"
+    edit:
+      title: "Edit %{name}"
+    update:
+      title: "Edit %{name}"
+    form:
+      sections:
+        informations: "Informations"
+        associated_resources: "Associated Resources"
+      add_code: "Add a code"
+  activerecord:
+    models:
+      line_provider:
+        one: "Line provider"
+        other: "Line providers"
+    attributes:
+      line_provider:
+        name: Name
+        short_name: Short name
+        workbench: Workbench
+        lines: Lines
+        companies: Companies
+        networks: Networks
+        line_notices: Line notices
+        line_routing_constraint_zones: Line routing constraint zones
+        codes: "Codes"

@@ -488,6 +488,21 @@ crumb :attach_notice do |line_referential, line|
   parent line, line_referential
 end
 
+crumb :line_providers do |workbench|
+  link LineProvider.t, workbench_line_referential_line_providers_path(workbench)
+  parent :line_referential, workbench
+end
+
+crumb :new_line_provider do |workbench, line_provider|
+  link I18n.t('line_providers.new.title')
+  parent :line_providers, workbench
+end
+
+crumb :line_provider do |workbench, line_provider|
+  link line_provider.short_name, workbench_line_referential_line_provider_path(workbench, line_provider)
+  parent :line_providers, workbench
+end
+
 crumb :lines do |workbench|
   link I18n.t('lines.index.title'), workbench_line_referential_lines_path(workbench)
   parent :line_referential, workbench

@@ -24,7 +24,7 @@ class StopAreaProvider < ActiveRecord::Base
   validates :name, presence: true
 
   def used?
-    [ stop_areas, connection_links, stop_area_routing_constraints ].any?(&:exists?)
+    [ stop_areas, connection_links, stop_area_routing_constraints, entrances ].any?(&:exists?)
   end
 
   private
@@ -39,5 +39,4 @@ class StopAreaProvider < ActiveRecord::Base
       throw :abort
     end
   end
-
 end

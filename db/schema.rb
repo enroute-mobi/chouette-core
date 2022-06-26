@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_05_29_090410) do
+ActiveRecord::Schema.define(version: 2022_06_07_174321) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -815,6 +815,7 @@ ActiveRecord::Schema.define(version: 2022_05_29_090410) do
     t.bigint "line_referential_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "name", null: false
     t.index ["line_referential_id"], name: "index_line_providers_on_line_referential_id"
     t.index ["workbench_id"], name: "index_line_providers_on_workbench_id"
   end

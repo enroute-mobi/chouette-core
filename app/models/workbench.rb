@@ -143,6 +143,7 @@ class Workbench < ApplicationModel
     merges.select(&:successful?).map(&:updated_at).max
   end
 
+  DEFAULT_PROVIDER_NAME = 'default'
   DEFAULT_PROVIDER_SHORT_NAME = 'default'
 
   def default_shape_provider
@@ -153,8 +154,9 @@ class Workbench < ApplicationModel
   end
 
   def default_line_provider
-    @default_line_provider ||= line_providers.find_or_initialize_by(short_name: DEFAULT_PROVIDER_SHORT_NAME) do |p|
+    @default_line_provider ||= line_providers.find_or_initialize_by(name: DEFAULT_PROVIDER_NAME) do |p|
       p.line_referential_id = workgroup.line_referential_id
+      p.short_name = DEFAULT_PROVIDER_SHORT_NAME
     end
   end
 

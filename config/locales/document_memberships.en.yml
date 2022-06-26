@@ -1,0 +1,21 @@
+en:
+  document_memberships:
+    index:
+      title: Associate documents
+    actions:
+      associate: Associate
+      unassociate: Unassociate
+    search_no_results: "No document found"
+    flash:
+      associate:
+        notice: The document is associated to the line
+        error: The document can't be associated to the line
+      unassociate:
+        notice: The document is unassociated to the line
+        error: The document can't be unassociated to the line
+  activerecord:
+    models:
+      document_membership:
+        zero: "Associate documents"
+        one: "Associate documents"
+        other: "Associate documents"

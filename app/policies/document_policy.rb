@@ -17,11 +17,4 @@ class DocumentPolicy < ApplicationPolicy
     user.has_permission?('documents.destroy')
   end
 
-  def associate?
-    update?
-  end
-
-  def unassociate?
-    update?
-  end
 end

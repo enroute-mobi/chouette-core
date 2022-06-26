@@ -1,11 +1,12 @@
 class ApplicationPolicy
 
-  attr_reader :current_referential, :current_workbench, :current_workgroup, :record, :user
+  attr_reader :current_referential, :current_workbench, :current_workgroup, :current_line, :record, :user
   def initialize(user_context, record)
     @user                = user_context.user
     @current_referential = user_context.context[:referential]
     @current_workbench   = user_context.context[:workbench]
     @current_workgroup   = user_context.context[:workgroup]
+    @current_line        = user_context.context[:line]
     @record              = record
     @user_context        = user_context
   end

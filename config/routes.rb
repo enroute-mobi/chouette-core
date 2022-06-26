@@ -140,12 +140,7 @@ ChouetteIhm::Application.routes.draw do
           end
         end
 
-        resources :documents, controller: :line_documents do
-          member do
-            put :associate
-            put :unassociate
-          end
-        end
+        resources :document_memberships, :only => [:index, :create, :destroy]
       end
       resources :companies do
         get :autocomplete, on: :collection

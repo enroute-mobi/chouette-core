@@ -1,0 +1,21 @@
+fr:
+  document_memberships:
+    index:
+      title: Association de documents
+    actions:
+      associate: Associer
+      unassociate: Dissocier
+    search_no_results: "Aucun Document ne correspond à votre recherche"
+    flash:
+      associate:
+        notice: Le document a été associé à la ligne avec success
+        error: Le document n'a pu etre associe à la ligne
+      unassociate:
+        notice: Le document a été dissocié à la ligne avec success
+        error: Le document n'a pu etre dissocié à la ligne
+  activerecord:
+    models:
+      document_membership:
+        zero: "Association de documents"
+        one: "Association de documents"
+        other: "Associations de documents"

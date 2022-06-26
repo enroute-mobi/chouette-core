@@ -522,10 +522,9 @@ RSpec.describe Import::NetexGeneric do
       let(:code_space) { workgroup.code_spaces.default }
       before do
         import.update options: { 'update_workgroup_providers' => true }
-        workbench.line_providers.create(
+        workbench.line_providers.create!(
           short_name: 'line_provider_1',
           name: 'line provider 1',
-          line_referential: workbench.line_referential,
           codes_attributes: [{
             value: '2003-line-provider-existing',
             code_space: code_space
@@ -561,19 +560,6 @@ RSpec.describe Import::NetexGeneric do
           an_object_having_attributes({
           name: "Airport - Bullfrog",
         })
-      end
-
-      before do
-        import.update options: { 'update_workgroup_providers' => true }
-
-        workbench.line_providers.create(
-          short_name: 'line_provider 1',
-          line_referential: workbench.line_referential,
-          codes_attributes: [{
-            value: '2003-line-provider-existing',
-            code_space: code_space
-          }]
-        )
       end
 
       context 'when line_provider has id' do

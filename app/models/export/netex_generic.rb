@@ -1041,6 +1041,7 @@ class Export::NetexGeneric < Export::Base
     def vehicle_journey_at_stops
       export_scope.vehicle_journey_at_stops
         .joins(stop_point: :stop_area, vehicle_journey: { journey_pattern: :route })
+        .order(:vehicle_journey_id, "stop_points.position": :asc)
         .select(
           "vehicle_journey_at_stops.*",
           "journey_patterns.id AS journey_pattern_id",
@@ -1091,40 +1092,8 @@ class Export::NetexGeneric < Export::Base
         Netex::Time.new time_of_day.hour, time_of_day.minute, time_of_day.second
       end
 
-      def time_zone
-        missing('time_zone')
-      end
-
-      def journey_pattern_id
-        missing('journey_pattern_id')
-      end
-
-      def stop_point_objectid
-        missing('stop_point_objectid')
-      end
-
-      def vehicle_journey_objectid
-        missing('vehicle_journey_objectid')
-      end
-
-      def arrival_time_of_day
-        @arrival_time_of_day ||= TimeOfDay.parse(arrival_time, day_offset: arrival_day_offset) if arrival_time
-      end
-
-      def arrival_local_time_of_day
-        @arrival_local_time_of_day ||= arrival_time_of_day&.with_zone(time_zone)
-      end
-
       def stop_time_arrival_time
         netex_time arrival_local_time_of_day if arrival_local_time_of_day
-      end
-
-      def departure_time_of_day
-        @departure_time_of_day ||= TimeOfDay.parse(departure_time, day_offset: departure_day_offset) if departure_time
-      end
-
-      def departure_local_time_of_day
-        @departure_local_time_of_day ||= departure_time_of_day&.with_zone(time_zone)
       end
 
       def stop_time_departure_time

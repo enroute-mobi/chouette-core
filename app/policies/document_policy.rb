@@ -16,4 +16,5 @@ class DocumentPolicy < ApplicationPolicy
   def destroy?
     user.has_permission?('documents.destroy')
   end
+
 end

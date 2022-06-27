@@ -30,4 +30,5 @@ class DocumentDecorator < AF83::Decorator
 			url: file.url
 		})
 	end
+	
 end

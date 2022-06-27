@@ -1,6 +1,7 @@
 fr:
   lines: &fr_lines
     no_codes: "Cette ligne n'a pas de code"
+    no_documents: "Cette ligne n'a pas de document"
     actions:
       new: "Ajouter une ligne"
       edit: "Editer cette ligne"
@@ -19,6 +20,7 @@ fr:
       show_network: 'Voir le réseau'
       show_company: 'Voir le transporteur principal'
       add_notice: 'Ajouter une note'
+      associate_other_documents: Associer d'autres documents
     search_no_results: "Aucun résultat"
     filters:
       name_or_short_id_cont: "Indiquez un nom d'itinéraire ou un ID..."
@@ -76,6 +78,7 @@ fr:
         general: "Général"
         line_notices: "Notes de lignes"
         activation: "Activation"
+        documents: "Documents"
       group_of_lines: "Groupes de lignes associés"
       no_group_of_line: "Aucun groupe de lignes"
       several_group_of_lines: "%{count} groupes of lignes"

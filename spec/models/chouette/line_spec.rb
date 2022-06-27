@@ -5,6 +5,8 @@ describe Chouette::Line, :type => :model do
   # it { is_expected.to validate_presence_of :network }
   # it { is_expected.to validate_presence_of :company }
   it { should validate_presence_of :name }
+  it { should have_many(:document_memberships) }
+  it { should have_many(:documents) }
 
   it "validates that transport mode and submode are matching" do
     subject.transport_mode = "bus"

@@ -646,3 +646,8 @@ crumb :new_document do |workbench|
   link I18n.t('documents.new.title')
   parent :documents, workbench
 end
+
+crumb :document_memberships do |workbench, line|
+  link I18n.t('documents.index.title'), workbench_line_referential_line_document_memberships_path(workbench, line)
+  parent :line, workbench, line
+end

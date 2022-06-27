@@ -139,6 +139,8 @@ ChouetteIhm::Application.routes.draw do
             post :detach
           end
         end
+
+        resources :document_memberships, :only => [:index, :create, :destroy]
       end
       resources :companies do
         get :autocomplete, on: :collection

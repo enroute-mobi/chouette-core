@@ -94,6 +94,8 @@ class Permission
       permissions << "stop_area_referentials.update"
       permissions << "workbenches.confirm"
       permissions << "sources.retrieve"
+      permissions << "document_memberships.create"
+      permissions << "document_memberships.destroy"
     end
 
     def referentials

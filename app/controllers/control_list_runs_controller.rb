@@ -50,7 +50,7 @@ class ControlListRunsController < ChouetteController
   alias control_list_run resource
 
   def collection
-    workbench.control_list_runs.paginate(page: params[:page], per_page: 30)
+    workbench.control_list_runs.order(created_at: :desc).paginate(page: params[:page], per_page: 30)
   end
 
   def build_resource

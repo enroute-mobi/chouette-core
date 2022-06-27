@@ -20,9 +20,9 @@
 
 				.flex.items-center.max-w-8xl
 						p.mb-0.mr-2.truncate x-text="resource.name" x-show="!expanded"
-						p.mb-0 x-show="!expanded" x-html="resource.renderClassDescription(expanded, '#{class_description}')"
+						p.mb-0 x-show="!expanded" x-html='resource.renderClassDescription(expanded, "#{class_description}")'
 			.flex.ml-auto x-show="expanded"
-				p.flex x-html="resource.renderClassDescription(expanded, '#{class_description}')"
+				p.flex x-html='resource.renderClassDescription(expanded, "#{class_description}")'
 
 			= render 'operations/actions'
 

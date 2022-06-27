@@ -7,7 +7,8 @@ module Control
       Control::PresenceAttribute,
       Control::PresenceCode,
       Control::PresenceCustomField,
-      Control::CodeFormat
+      Control::CodeFormat,
+      Control::FormatAttribute,
     ]
   end
 end

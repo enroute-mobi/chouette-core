@@ -16,7 +16,7 @@ fr:
       title: "%{name}"
       map: "Carte"
     index:
-      title: "Point d'accès"
+      title: "Points d'accès"
     form:
       sections:
         identification: "Identification"
@@ -30,7 +30,7 @@ fr:
       entrance:
         zero:  "Point d'accès"
         one:   "Point d'accès"
-        other: "Point d'accès"
+        other: "Points d'accès"
     attributes:
       entrance:
         name: "Nom"
@@ -41,7 +41,7 @@ fr:
         exit_flag: "Sortie"
         entrance_type: "Type"
         description: "Description"
-        position_input: "Position"
+        position_input: "Coordonnées"
         coordinates: "Coordonnées"
         address: "Adresse"
         zip_code: "Code Postal"

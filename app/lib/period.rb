@@ -43,6 +43,9 @@
 #
 class Period < Range
 
+  extend ActiveModel::Naming
+  include ActiveModel::Validations
+
   alias_method :start_date, :begin
   alias_method :from, :begin
 
@@ -52,8 +55,11 @@ class Period < Range
   def initialize(from: nil, to: nil)
     from = self.class.to_date(from)
     to = self.class.to_date(to)
-
     super from, to
+  end
+
+  def persisted?
+    false
   end
 
   # Use given definition to Period
@@ -153,10 +159,21 @@ class Period < Range
   end
 
   def valid?
-    return false unless from || to
-    return from <= to if from && to
+    validate!
+    errors.empty?
+  end
 
-    true
+  def validate!
+    unless(from || to)
+      errors.add(:from, :invalid_bounds)
+      errors.add(:to, :invalid_bounds)
+    end
+
+    if (from && to) && (to < from)
+      errors.add(:from, :to_before_from)
+      errors.add(:to, :to_before_from)
+    end
+    errors
   end
 
   def empty?
@@ -185,6 +202,13 @@ class Period < Range
   def duration
     return nil if infinite?
     day_count.days
+  end
+
+  def infinity_date_range
+    range_begin = from ? from&.to_date : -Float::INFINITY
+    range_end = to ? to&.to_date : Float::INFINITY
+
+    range_begin..range_end
   end
 
   def time_range
@@ -241,6 +265,36 @@ class Period < Range
     else
       date
     end
+  end
+
+  class Type < ActiveRecord::Type::Value
+
+    def cast(value)
+      return Period.new(from: nil, to: nil) unless value.present?
+      return value if value.is_a?(Period)
+      date_range = oid_range.cast_value(value)
+      date_range_min = date_range.begin == -Float::INFINITY ? nil : date_range.min
+      date_range_max = date_range.end == Float::INFINITY ? nil : date_range.max
+      Period.new(from: date_range_min, to: date_range_max) if value.is_a?(String)
+    end
+
+    def serialize(value)
+      return unless value.present?
+      date_range_serialized = if value.is_a?(Period)
+        date_range = value.infinity_date_range
+        oid_range.serialize(date_range)
+      else
+        value
+      end
+      date_range_serialized
+    end
+
+    private
+
+    def oid_range
+      @oid_range ||= ActiveRecord::ConnectionAdapters::PostgreSQL::OID::Range.new(ActiveRecord::ConnectionAdapters::PostgreSQL::OID::Date.new)
+    end
+
   end
 
 end

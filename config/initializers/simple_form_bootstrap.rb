@@ -51,6 +51,15 @@ SimpleForm.setup do |config|
     b.use :hint,  wrap_with: { tag: 'p', class: 'help-block small' }
   end
 
+  config.wrappers :vertical_radio_and_checkboxes_tailwind, tag: 'div', class: 'flex flex-col', error_class: 'has-error' do |b|
+    b.use :html5
+    b.optional :readonly
+    b.use :label, class: 'control-label'
+    b.use :input, class: 'cursor-pointer'
+    b.use :error, wrap_with: { tag: 'span', class: 'help-block small' }
+    b.use :hint,  wrap_with: { tag: 'p', class: 'help-block small' }
+  end
+
   config.wrappers :horizontal_form, tag: 'div', class: 'form-group', error_class: 'has-error' do |b|
     b.use :html5
     b.use :placeholder

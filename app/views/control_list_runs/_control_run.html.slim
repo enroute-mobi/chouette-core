@@ -1,16 +1,17 @@
 - javascript_additional_packs 'control_list_runs/control_run'
 
-.w-full.mt-md x-data="controlRun('#{messages_base_url}')"
-	.flex.items-center.w-full
+.w-full.mt-md.control_run x-data="controlRun('#{messages_base_url}')"
+	.flex.items-center.w-full.mb-3
 		button @click="showDetails = ! showDetails" type="button" class="flex items-center p-3 pl-3 mr-3 font-bold text-white rounded cursor-pointer bg-enroute-chouette-primary hover:text-indigo-100"
 			<span class="text-3xl w-4" x-text="showDetails ? '-' : '+'">+</span>
 
 		.grow
-			= truncate("#{control_run.name} (#{control_run.model_name.human})", length: 60)
+			= truncate(control_run.name, length: 60)
+			span.human_model_name = " (#{control_run.model_name.human})"
 
 		.flex.items-center.ml-auto
 			.flex.justify-center.rounded.mx-5.p-5.font-bold.border.border-black.text-black style="min-width: 50px;" class="#{control_run.criticity == 'warning' ? 'bg-enroute-chouette-gold' : 'bg-enroute-chouette-red' }"
-				p = control_run.control_messages.send(control_run.criticity).size
+				p.count class=control_run.criticity = control_run.control_messages.size
 
 			button @click="showMessages = ! showMessages" type="button" class="flex px-7 py-3 ml-xs font-bold text-white rounded cursor-pointer bg-enroute-chouette-primary h-[50%] hover:text-indigo-100"
 				.span.fa.fa-caret-down.mx-1 x-show="showMessages"

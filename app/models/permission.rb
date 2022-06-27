@@ -24,6 +24,8 @@ class Permission
         connection_links
         control_lists
         control_list_runs
+        documents
+        document_providers
         document_types
         exports
         footnotes
@@ -96,7 +98,7 @@ class Permission
 
     def referentials
       permissions = []
-      %w{stop_areas stop_area_providers lines companies networks line_notices}.each do |resources|
+      %w{stop_areas stop_area_providers lines line_providers companies networks line_notices}.each do |resources|
         actions = %w{edit update create}
         if resources == 'lines'
           actions << "update_activation_dates"

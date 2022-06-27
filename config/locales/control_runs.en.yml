@@ -6,7 +6,17 @@ en:
         one:   control run
         other: control runs
       control/dummy/run:
-        one: Simulate a control
+        one: Simulate Control
+      control/presence_attribute/run:
+        one: Presence of attribute
+      control/presence_code/run:
+        one: Presence of code
+      control/presence_custom_field/run:
+        one: Presence of custom field
+      control/code_format/run:
+        one: Code format
+      control/format_attribute/run:
+        one: Format of attribute
     attributes:
       control/base/run:
         name: Name

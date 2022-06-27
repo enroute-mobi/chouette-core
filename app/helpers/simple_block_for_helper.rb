@@ -27,7 +27,7 @@ module SimpleBlockForHelper
   #   the value is localized (with short_with_time format)
   # duration::
   #   the value is displayed as "NN min" or "NN sec"
-  # enumeriwe::
+  # enumerize::
   #   the #text method is invoked on the value
   # boolean::
   #   the value is displayed as Yes/No, Oui/Non, etc
@@ -98,6 +98,8 @@ module SimpleBlockForHelper
       if raw_value.present? || raw_value.in?([true, false])
         displayed_value =
           case options[:as]
+          when :date
+            I18n.l(raw_value, format: :default)
           when :datetime
             I18n.l(raw_value, format: :short_with_time)
           when :time

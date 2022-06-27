@@ -488,6 +488,21 @@ crumb :attach_notice do |line_referential, line|
   parent line, line_referential
 end
 
+crumb :line_providers do |workbench|
+  link LineProvider.t, workbench_line_referential_line_providers_path(workbench)
+  parent :line_referential, workbench
+end
+
+crumb :new_line_provider do |workbench, line_provider|
+  link I18n.t('line_providers.new.title')
+  parent :line_providers, workbench
+end
+
+crumb :line_provider do |workbench, line_provider|
+  link line_provider.short_name, workbench_line_referential_line_provider_path(workbench, line_provider)
+  parent :line_providers, workbench
+end
+
 crumb :lines do |workbench|
   link I18n.t('lines.index.title'), workbench_line_referential_lines_path(workbench)
   parent :line_referential, workbench
@@ -615,4 +630,19 @@ end
 crumb :new_code_space do |workgroup|
   link I18n.t('code_spaces.new.title')
   parent :code_spaces, workgroup
+end
+
+crumb :documents do |workbench|
+  link I18n.t('documents.index.title'), workbench_documents_path(workbench)
+  parent :workbench, workbench
+end
+
+crumb :document do |workbench, document|
+  link breadcrumb_name(document), workbench_document_path(workbench, document)
+  parent :documents, workbench
+end
+
+crumb :new_document do |workbench|
+  link I18n.t('documents.new.title')
+  parent :documents, workbench
 end

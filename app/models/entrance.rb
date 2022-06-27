@@ -1,14 +1,14 @@
 class Entrance < ActiveRecord::Base
   include StopAreaReferentialSupport
   include ObjectidSupport
+  include CodeSupport
   extend Enumerize
 
   belongs_to :stop_area, class_name: 'Chouette::StopArea', optional: false
   has_one :raw_import, as: :model, dependent: :delete
+  accepts_nested_attributes_for :raw_import
 
   has_many :codes, as: :resource, dependent: :delete_all
-  accepts_nested_attributes_for :codes, allow_destroy: true, reject_if: :all_blank
-  validates_associated :codes
 
   enumerize :entrance_type, in: %i(opening open_door door swing_door revolving_door automatic_door ticket_barrier gate other), scope: true
 

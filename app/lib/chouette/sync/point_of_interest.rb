@@ -16,7 +16,7 @@ module Chouette::Sync
 
       class Decorator < Chouette::Sync::Updater::ResourceDecorator
 
-        delegate :contact_details, to: :operating_organisation_view
+        delegate :contact_details, to: :operating_organisation_view, allow_nil: true
         delegate :target, to: :updater
 
         def position
@@ -75,6 +75,52 @@ module Chouette::Sync
           end
         end
 
+        class Hour
+          def initialize(validity_conditions)
+            @validity_conditions = validity_conditions
+          end
+          attr_accessor :validity_conditions
+
+          def hours_attributes
+            [].tap do |hours_attributes|
+              validity_conditions.each do |validity_condition|
+                validity_condition.timebands.each do |timeband|
+                  # All DayTypes are merged into a single DaysOfWeek
+                  days_of_week = netex_week_days(validity_condition.day_types)
+
+                  hours_attributes << {
+                    opening_time_of_day: netex_time_of_day(timeband.start_time),
+                    closing_time_of_day: netex_time_of_day(timeband.end_time),
+                    week_days: days_of_week
+                  }
+                end
+              end
+            end
+          end
+
+          private
+
+          def netex_time_of_day(time)
+            TimeOfDay.new time.hour, time.minute, time.second
+          end
+
+          def netex_week_days(day_types)
+            Timetable::DaysOfWeek.new.tap do |dow|
+              day_types.each do |day_type|
+                day_type.properties.each do |property|
+                  property.days_of_week.split(/\s/).map(&:downcase).each do |day|
+                    dow.send("#{day}=", true)
+                  end
+                end
+              end
+            end
+          end
+        end
+
+        def hours_attributes
+          Hour.new(validity_conditions).hours_attributes
+        end
+
         def model_attributes
           {
             name: name,
@@ -87,6 +133,7 @@ module Chouette::Sync
             phone: phone,
             email: email,
             point_of_interest_category_id: point_of_interest_category_id,
+            point_of_interest_hours_attributes: hours_attributes,
             codes_attributes: codes_attributes
           }
         end

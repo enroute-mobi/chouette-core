@@ -6,7 +6,7 @@ en:
         one:   control
         other: controls
       control/dummy:
-        one: Simulate control
+        one: Simulate Control
       control/presence_attribute:
         one: Presence of attribute
       control/presence_code:
@@ -15,6 +15,8 @@ en:
         one: Presence of custom field
       control/code_format:
         one: Code format
+      control/format_attribute:
+        one: Format of attribute
     attributes:
       control/base:
         name: Name
@@ -34,4 +36,7 @@ en:
         target_custom_field_id: Target Custom Field
       control/code_format:
         target_code_space_id: Target code space
+        expected_format: Expected format
+      control/format_attribute:
+        target_attribute: Target Attribute
         expected_format: Expected format

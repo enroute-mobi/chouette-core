@@ -33,5 +33,6 @@ en:
         name: "Name"
         short_name: "Short Name"
         description: Description
+        count: "Documents count"
         updated_at: "Updated At"
         creator_id: "Create by"

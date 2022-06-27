@@ -1,7 +1,7 @@
 - javascript_additional_packs 'macro_list_runs/macro_run'
 
 .w-full.mt-md.macro_run x-data="macroRun('#{messages_base_url}')"
-	.flex.items-center.w-full
+	.flex.items-center.w-full.mb-3
 		button @click="showDetails = ! showDetails" type="button" class="flex items-center p-3 pl-3 mr-3 font-bold text-white bg-enroute-chouette-primary rounded cursor-pointer  hover:text-indigo-100"
 			<span class="text-3xl w-4" x-text="showDetails ? '-' : '+'">+</span>
 

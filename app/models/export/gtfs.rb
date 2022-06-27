@@ -35,7 +35,7 @@ class Export::Gtfs < Export::Base
   end
 
   def export_to_dir(directory)
-    operations_count = 7
+    operations_count = 8
 
     # FIXME
     @target = GTFS::Target.new(File.join(directory, "#{zip_file_name}.zip"))
@@ -68,6 +68,9 @@ class Export::Gtfs < Export::Base
 
     VehicleJourneyAtStops.new(self, filter_non_commercial: filter_non_commercial, ignore_time_zone: ignore_time_zone).export_part
     notify_progress 7.0/operations_count
+
+    VehicleJourneyCompany.new(self).export_part
+    notify_progress 8.0/operations_count
 
     target.close
   end
@@ -421,7 +424,6 @@ class Export::Gtfs < Export::Base
 
   end
 
-
   class Companies < Part
 
     delegate :companies, :vehicle_journeys, to: :export_scope
@@ -430,13 +432,13 @@ class Export::Gtfs < Export::Base
       ids = Set.new
       # OPTIMIZEME pluck is great bu can consume a lot of memory for very large Vehicle Journey collection
       vehicle_journeys.left_joins(route: { line: :company }).
-        pluck("vehicle_journeys.id", "vehicle_journeys.company_id", "companies.id", "companies.time_zone").
-        each do |vehicle_journey_id, vehicle_journeys_company_id, line_company_id, company_time_zone|
+        pluck("vehicle_journeys.id", "companies.id", "companies.time_zone").
+        each do |vehicle_journey_id, line_company_id, company_time_zone|
 
-        company_id = vehicle_journeys_company_id.presence || line_company_id.presence || DEFAULT_AGENCY_ID
+        company_id = line_company_id.presence || DEFAULT_AGENCY_ID
         time_zone = company_time_zone
 
-        if  prefer_referent_company && (referent = referents[company_id]).present?
+        if prefer_referent_company && (referent = referents[company_id]).present?
           company_id = referent.id
           time_zone = referent.time_zone
         end
@@ -602,6 +604,7 @@ class Export::Gtfs < Export::Base
 
       def route_type
         unless flexible_service
+          return 204 if transport_mode == 'coach' && transport_submode == 'regionalCoach'
           self.class.route_types[transport_mode]
         else
           715
@@ -664,7 +667,7 @@ class Export::Gtfs < Export::Base
         @periods ||= if @export_date_range.nil?
           super
         else
-            super.select { |p| p.range & @export_date_range }
+          super.select { |p| p.range & @export_date_range }
         end
       end
 
@@ -1082,5 +1085,75 @@ class Export::Gtfs < Export::Base
 
     end
 
+  end
+
+  class VehicleJourneyCompany < Part
+    def export!
+      vehicle_journeys.find_each do |vehicle_journey|
+        Decorator.new(vehicle_journey, index: index).attributions.each do |attribution|
+          target.attributions << attribution
+        end
+      end
+    end
+
+    def vehicle_journeys
+      export_scope.vehicle_journeys.joins(route: :line).where.not(company: nil).where("vehicle_journeys.company_id != lines.company_id")
+    end
+
+    class Decorator < SimpleDelegator
+      attr_reader :index, :vehicle_journey
+      def initialize(vehicle_journey, index: nil)
+        super vehicle_journey
+        @vehicle_journey = vehicle_journey
+        @index = index
+      end
+
+      def trip_ids
+        index ? index.trip_ids(id) : []
+      end
+
+      def attributions
+        trip_ids.map do |trip_id|
+          TripDecorator.new(vehicle_journey, trip_id: trip_id).attribution
+        end
+      end
+    end
+
+    class TripDecorator < SimpleDelegator
+
+      def initialize(vehicle_journey, trip_id: nil)
+        super vehicle_journey
+        @trip_id = trip_id
+      end
+
+      def attribution_attributes
+        {
+          attribution_id: attribution_id,
+          trip_id: trip_id,
+          organization_name: organization_name,
+          is_operator: is_operator,
+        }
+      end
+
+      def attribution
+        GTFS::Attribution.new attribution_attributes
+      end
+
+      def trip_id
+        @trip_id || objectid
+      end
+
+      def attribution_id
+        @attribution_id ||= SecureRandom.uuid
+      end
+
+      def organization_name
+        company&.name
+      end
+
+      def is_operator
+        1
+      end
+    end
   end
 end

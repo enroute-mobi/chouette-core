@@ -1,0 +1,12 @@
+fr:
+  activemodel:
+    errors:
+      models:
+        period:
+          attributes:
+            from:
+              invalid_bounds: La période de validité doit avoir un début ou une fin
+              to_before_from: La début période de validité ne doit pas etre avant la fin
+            to:
+              invalid_bounds: La période de validité doit avoir un début ou une fin
+              to_before_from: La début période de validité ne doit pas etre avant la fin

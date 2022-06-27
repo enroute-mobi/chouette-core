@@ -10,7 +10,8 @@ class LineProvider < ApplicationModel
   has_many :line_notices, class_name: "Chouette::LineNotice"
   has_many :line_routing_constraint_zones
 
-  validates :short_name, presence: true
+  validates :name, presence: true
+  validates :short_name, presence: true, uniqueness: { scope: :workbench }, format: { with: %r{\A[0-9a-zA-Z_]+\Z} }
 
   before_validation :define_line_referential, on: :create
 
@@ -18,6 +19,10 @@ class LineProvider < ApplicationModel
 
   def workgroup
     workbench&.workgroup
+  end
+
+  def used?
+    [ lines, companies, networks, group_of_lines, line_notices, line_routing_constraint_zones ].any?(&:exists?)
   end
 
   private

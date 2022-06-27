@@ -48,6 +48,8 @@
         span = Macro::List::Run.model_name.human(count: 2)
       = link_to workbench_sources_path(workbench), class: "list-group-item" do
         span = 'activerecord.models.source.other'.t.capitalize
+      = link_to workbench_documents_path(workbench), class: "list-group-item" do
+        span = 'activerecord.models.document.other'.t.capitalize
 
     = main_nav_menu_item 'layouts.navbar.stop_area_referential'.t do
       = link_to workbench_stop_area_referential_stop_areas_path(workbench), class: "list-group-item" do
@@ -77,6 +79,8 @@
         span = Chouette::LineNotice.t.capitalize
       = link_to workbench_line_referential_line_routing_constraint_zones_path(workbench), class: 'list-group-item' do
         span = LineRoutingConstraintZone.t.capitalize
+      = link_to workbench_line_referential_line_providers_path(workbench), class: 'list-group-item' do
+        span = LineProvider.t.capitalize
       = link_to workbench_line_referential_path(workbench), class: "list-group-item" do
         span = 'line_referentials.show.title'.t
 

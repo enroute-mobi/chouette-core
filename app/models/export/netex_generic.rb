@@ -72,6 +72,7 @@ class Export::NetexGeneric < Export::Base
       TimeTables,
       VehicleJourneyAtStops,
       VehicleJourneys,
+      VehicleJourneyStopAssignments,
       Organisations
     ]
 
@@ -1041,6 +1042,7 @@ class Export::NetexGeneric < Export::Base
     def vehicle_journey_at_stops
       export_scope.vehicle_journey_at_stops
         .joins(stop_point: :stop_area, vehicle_journey: { journey_pattern: :route })
+        .order(:vehicle_journey_id, "stop_points.position": :asc)
         .select(
           "vehicle_journey_at_stops.*",
           "journey_patterns.id AS journey_pattern_id",
@@ -1091,40 +1093,8 @@ class Export::NetexGeneric < Export::Base
         Netex::Time.new time_of_day.hour, time_of_day.minute, time_of_day.second
       end
 
-      def time_zone
-        missing('time_zone')
-      end
-
-      def journey_pattern_id
-        missing('journey_pattern_id')
-      end
-
-      def stop_point_objectid
-        missing('stop_point_objectid')
-      end
-
-      def vehicle_journey_objectid
-        missing('vehicle_journey_objectid')
-      end
-
-      def arrival_time_of_day
-        @arrival_time_of_day ||= TimeOfDay.parse(arrival_time, day_offset: arrival_day_offset) if arrival_time
-      end
-
-      def arrival_local_time_of_day
-        @arrival_local_time_of_day ||= arrival_time_of_day&.with_zone(time_zone)
-      end
-
       def stop_time_arrival_time
         netex_time arrival_local_time_of_day if arrival_local_time_of_day
-      end
-
-      def departure_time_of_day
-        @departure_time_of_day ||= TimeOfDay.parse(departure_time, day_offset: departure_day_offset) if departure_time
-      end
-
-      def departure_local_time_of_day
-        @departure_local_time_of_day ||= departure_time_of_day&.with_zone(time_zone)
       end
 
       def stop_time_departure_time
@@ -1136,16 +1106,12 @@ class Export::NetexGeneric < Export::Base
   class VehicleJourneys < Part
 
     def export!
-      vehicle_journeys.find_each(batch_size: 200) do |vehicle_journey|
+      vehicle_journeys.find_each do |vehicle_journey|
         tags = resource_tagger.tags_for(vehicle_journey.line_id)
         tagged_target = TaggedTarget.new(target, tags)
 
         decorated_vehicle_journey = Decorator.new(vehicle_journey, code_space_keys)
         tagged_target << decorated_vehicle_journey.netex_resource
-
-        decorated_vehicle_journey.vehicle_journey_stop_assignments.each do |assignment|
-          tagged_target << assignment.netex_resource
-        end
       end
     end
 
@@ -1263,17 +1229,6 @@ class Export::NetexGeneric < Export::Base
         __getobj__.try(:journey_pattern_objectid) || journey_pattern&.objectid
       end
 
-      def vehicle_journey_stop_assignments
-        vehicle_journey_at_stops.select(&:stop_area_id).map do |stop|
-          VehicleJourneyStopAssignmentDecorator.new(stop, self)
-        end
-      end
-
-      # Ensure VehicleJourneyAtStops are well ordered by position (see CHOUETTE-1263)
-      def vehicle_journey_at_stops
-        @vehicle_journey_at_stops ||= super.sort_by { |s| s.stop_point.position }
-      end
-
       def day_types
         objectids = try(:time_table_objectids) || time_tables.pluck(:objectid)
         objectids.map do |objectid|
@@ -1281,19 +1236,34 @@ class Export::NetexGeneric < Export::Base
         end
       end
     end
+  end
 
-    class VehicleJourneyStopAssignmentDecorator < SimpleDelegator
-      attr_reader :vehicle_journey
+  class VehicleJourneyStopAssignments < Part
 
-      def initialize(vehicle_journey_at_stop, vehicle_journey)
-        super vehicle_journey_at_stop
-        @vehicle_journey = vehicle_journey
+    def export!
+      vehicle_journey_at_stops.find_each do |vehicle_journey_at_stop|
+        target << Decorator.new(vehicle_journey_at_stop).netex_resource
       end
+    end
 
+    def vehicle_journey_at_stops
+      export_scope.vehicle_journey_at_stops
+        .where.not(stop_area: nil)
+        .joins(:vehicle_journey, :stop_point, :stop_area)
+        .select(
+          "vehicle_journey_at_stops.*",
+          "vehicle_journeys.objectid AS vehicle_journey_objectid",
+          "vehicle_journeys.data_source_ref AS vehicle_journey_data_source_ref",
+          "stop_points.objectid AS stop_point_objectid",
+          "stop_areas.objectid AS stop_area_objectid",
+        )
+    end
+
+    class Decorator < SimpleDelegator
       def netex_attributes
         {
           id: objectid,
-          data_source_ref: vehicle_journey.data_source_ref,
+          data_source_ref: vehicle_journey_data_source_ref,
           scheduled_stop_point_ref: scheduled_stop_point_ref,
           stop_place_ref: stop_place_ref,
           quay_ref: quay_ref,
@@ -1306,27 +1276,46 @@ class Export::NetexGeneric < Export::Base
       end
 
       def objectid
-        name, _type, uuid, loc = vehicle_journey.objectid.split(':')
+        Netex::ObjectId.merge(vehicle_journey_objectid, stop_point_position, type: "VehicleJourneyStopAssignment").to_s
+      end
 
-        "#{name}:VehicleJourneyStopAssignment:#{uuid}:#{loc}-#{stop_point.position}"
+      def stop_point_position
+        __getobj__.try(:stop_point_position) || stop_point&.position
+      end
+
+      def stop_point_objectid
+        __getobj__.try(:stop_point_objectid) || stop_point&.objectid
+      end
+
+      def stop_area_objectid
+        __getobj__.try(:stop_area_objectid) || stop_area&.objectid
+      end
+
+      def vehicle_journey_objectid
+        __getobj__.try(:vehicle_journey_objectid) || vehicle_journey&.objectid
+      end
+
+      def vehicle_journey_data_source_ref
+        __getobj__.try(:vehicle_journey_data_source_ref) || vehicle_journey&.data_source_ref
       end
 
       def scheduled_stop_point_ref
-        Netex::Reference.new(stop_point.objectid, type: 'ScheduledStopPointRef')
+        Netex::Reference.new(stop_point_objectid, type: 'ScheduledStopPointRef')
       end
 
       def stop_place_ref
-        Netex::Reference.new(stop_area.objectid, type: 'StopPlaceRef')
+        Netex::Reference.new(stop_area_objectid, type: 'StopPlaceRef')
       end
 
       def quay_ref
-        Netex::Reference.new(stop_area.objectid, type: 'QuayRef')
+        Netex::Reference.new(stop_area_objectid, type: 'QuayRef')
       end
 
       def vehicle_journey_refs
-        [Netex::Reference.new(vehicle_journey.objectid, type: 'ServiceJourney')]
+        [Netex::Reference.new(vehicle_journey_objectid, type: 'ServiceJourney')]
       end
     end
+
   end
 
   class TimeTableDecorator < SimpleDelegator

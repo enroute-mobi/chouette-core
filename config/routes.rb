@@ -126,6 +126,9 @@ ChouetteIhm::Application.routes.draw do
     resource :line_referential, :only => [:show, :edit, :update] do
       post :sync
       resources :line_routing_constraint_zones
+
+      resources :line_providers
+
       resources :lines do
         resources :line_notices do
           collection do
@@ -158,6 +161,8 @@ ChouetteIhm::Application.routes.draw do
       resources :point_of_interests
       resources :point_of_interest_categories
     end
+
+    resources :documents
   end
 
   resource :workbench_confirmation, only: [:new, :create]

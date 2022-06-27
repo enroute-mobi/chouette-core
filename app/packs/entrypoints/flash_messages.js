@@ -1,5 +1,7 @@
 import Alpine from 'alpinejs'
-import { reject, uniqueId } from 'lodash'
+import { uniqueId } from 'lodash'
+
+window.Alpine = Alpine
 
 const bootstrapClassFor = type => {
   switch(type) {
@@ -13,17 +15,22 @@ const bootstrapClassFor = type => {
 }
 Alpine.store('flash', {
   ready: true,
-  messages: [],
+  messages: new Map,
   add({ type, text }) {
     const id = uniqueId('flash_')
     const bootstrapClass = bootstrapClassFor(type)
     const icon = type == 'warning' ? 'fa-exclamation-triangle' : 'fa-exclamation-circle'
   
-    this.messages.push({ id, type, text, bootstrapClass, icon })
-
-    setTimeout(() => this.remove(id), 5000)
+    this.messages = this.messages.set(id, { type, text, bootstrapClass, icon, show: false })
+    
+    this.show(id)
+    setTimeout(() => { this.remove(id) }, 5000)
+  },
+  show(id) {
+    setTimeout(() => { this.messages.get(id).show = true }, 100)
   },
   remove(id) {
-    this.messages = reject(this.messages, ['id', id])
+    setTimeout(() => { this.messages.get(id).show = false }, 100)
+    setTimeout(() => { this.messages.delete(id) }, 3000)
   }
 })

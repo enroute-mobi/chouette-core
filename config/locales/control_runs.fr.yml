@@ -7,6 +7,16 @@ fr:
         other: "rapports de contrôles"
       control/dummy/run:
         one: Simuler un contrôle
+      control/presence_attribute/run:
+        one: Présence d’un attribut
+      control/presence_code/run:
+        one:  Présence d’un code
+      control/presence_custom_field/run:
+        one: Présence d’un champ personnalisé
+      control/code_format/run:
+        one: Format d'un code
+      control/format_attribute/run:
+        one: Format d'un attribut
     attributes:
       control/base/run:
         name: Nom

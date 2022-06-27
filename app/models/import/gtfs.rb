@@ -84,11 +84,79 @@ class Import::Gtfs < Import::Base
 
     import_resources :stop_times
 
+    import_resources :attributions
+
     calculate_route_costs
   end
 
   def calculate_route_costs
     RouteCalculateCostsService.new(referential, update_journey_patterns: true).update_all
+  end
+
+  def import_attributions
+    Attributions.new(self).import!
+  end
+
+  class Attributions
+
+    def initialize(import)
+      @import = import
+    end
+    attr_reader :import
+
+    delegate :source, :workbench, :referential, :code_space, to: :import
+
+    def import!
+      source.attributions.each do |attribution|
+        decorator = Decorator.for(attribution).new(
+          attribution,
+          referential: referential,
+          code_space: code_space,
+          workbench: workbench
+        ) rescue nil
+
+        decorator.attribute! if decorator
+      end
+    end
+
+    class Decorator < SimpleDelegator
+
+      def initialize(attribution, referential: nil, code_space: nil, workbench: nil)
+        super attribution
+        @referential = referential
+        @code_space = code_space
+        @workbench = workbench
+      end
+      attr_accessor :referential, :code_space, :workbench
+
+      def self.for(gtfs_attribution)
+        [ TripOperatorDecorator ].find do |decorator_class|
+          decorator_class.matches?(gtfs_attribution)
+        end
+      end
+    end
+
+    class TripOperatorDecorator < Decorator
+      def self.matches?(gtfs_attribution)
+        gtfs_attribution.operator? && gtfs_attribution.trip_id && gtfs_attribution.organization_name
+      end
+
+      def vehicle_journey
+        referential.vehicle_journeys.by_code(code_space, trip_id).first
+      end
+
+      def company
+        unless (companies = workbench.companies.where(name: organization_name)).many?
+          companies.first
+        end
+      end
+
+      def attribute!
+        return if vehicle_journey.blank? || company.blank?
+
+        vehicle_journey.update company: company
+      end
+    end
   end
 
   def import_agencies
@@ -338,7 +406,7 @@ class Import::Gtfs < Import::Base
 
         line.comment = route.desc
 
-        transport_mode =
+        transport_mode, transport_submode =
           case route.type
           when '0', '5'
             'tram'
@@ -350,10 +418,15 @@ class Import::Gtfs < Import::Base
             'bus'
           when '7'
             'funicular'
+          when '204'
+            [ 'coach', 'regionalCoach' ]
           end
+
+        transport_submode ||= 'undefined'
+
         if transport_mode
           line.transport_mode = transport_mode
-          line.transport_submode = 'undefined'
+          line.transport_submode = transport_submode
         end
 
         # White is the default color in the gtfs spec

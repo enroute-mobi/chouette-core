@@ -29,13 +29,16 @@ class LineDecorator < AF83::Decorator
   end
 
   define_instance_method :documents_table do
-    documents = DocumentDecorator.decorate(object.documents, context: context.merge(parent: object))
-
     h.table_builder_2(
-      documents,
+      object.documents,
       [
         TableBuilderHelper::Column.new(key: :uuid, attribute: :uuid, sortable: false),
-        TableBuilderHelper::Column.new(key: :name, attribute: :name, sortable: false), 
+        TableBuilderHelper::Column.new(
+          key: :name,
+          attribute: :name,
+          sortable: false,
+          link_to: -> (doc) { h.workbench_document_path(context[:workbench], doc) }
+        ),
         TableBuilderHelper::Column.new( \
           key: :document_type_id,
           attribute: -> (doc) { doc.document_type.short_name },

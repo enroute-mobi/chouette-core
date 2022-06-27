@@ -26,7 +26,7 @@
               ), \
               TableBuilderHelper::Column.new( \
                 key: :name, \
-                attribute: 'full_names', \
+                attribute: Proc.new { |n| "#{Aggregate.model_name.human} #{n.name}" },\
                 link_to: lambda do |aggregate| \
                   workgroup_aggregate_path aggregate.workgroup, aggregate \
                 end \

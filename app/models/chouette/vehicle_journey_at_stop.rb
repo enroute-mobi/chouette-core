@@ -204,11 +204,13 @@ module Chouette
 
         attr_accessor :id, :vehicle_journey_id, :stop_point_id, :stop_area_id
         attr_accessor :arrival_time, :departure_time, :departure_day_offset, :arrival_day_offset
-        attr_accessor :for_boarding, :for_alighting, :checksum, :checksum_source
+        attr_accessor :for_boarding, :for_alighting, :checksum, :checksum_source, :time_zone
 
         def initialize(attributes = {})
           self.attributes = attributes
+          @attributes = attributes
         end
+        attr_accessor :attributes
 
         def attributes=(attributes)
           @id = attributes["id"]
@@ -223,6 +225,12 @@ module Chouette
           @stop_area_id = attributes["stop_area_id"]
           @checksum = attributes["checksum"]
           @checksum_source = attributes["checksum_source"]
+
+          @attributes = attributes
+        end
+
+        def missing(attr)
+          attributes[attr]
         end
 
       end

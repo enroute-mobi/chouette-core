@@ -719,14 +719,18 @@ class Export::NetexGeneric < Export::Base
       for_alighting == "normal"
     end
 
-    def stop_point_in_journey_pattern_id
-      merged_object_id = Netex::ObjectId.merge(journey_pattern_id, netex_identifier, type: "StopPointInJourneyPattern")
+    def self.stop_point_in_journey_pattern_id(stop_point_objectid, journey_pattern_objectid)
+      merged_object_id = Netex::ObjectId.merge(journey_pattern_objectid, stop_point_objectid, type: "StopPointInJourneyPattern")
 
       if merged_object_id
         merged_object_id.to_s
       else
-        "#{journey_pattern_id}-#{objectid}"
+        "#{journey_pattern_objectid}-#{stop_point_objectid}"
       end
+    end
+
+    def stop_point_in_journey_pattern_id
+      self.class.stop_point_in_journey_pattern_id(netex_identifier, journey_pattern_id)
     end
   end
 
@@ -1045,7 +1049,7 @@ class Export::NetexGeneric < Export::Base
         .order(:vehicle_journey_id, "stop_points.position": :asc)
         .select(
           "vehicle_journey_at_stops.*",
-          "journey_patterns.id AS journey_pattern_id",
+          "journey_patterns.objectid AS journey_pattern_objectid",
           "vehicle_journeys.objectid AS vehicle_journey_objectid",
           "stop_points.objectid AS stop_point_objectid",
           "stop_areas.time_zone AS time_zone",
@@ -1075,18 +1079,20 @@ class Export::NetexGeneric < Export::Base
         vehicle_journey_objectid
       end
 
-      def stop_point_in_journey_pattern_id
-        merged_object_id = Netex::ObjectId.merge(journey_pattern_id, netex_identifier, type: "StopPointInJourneyPattern")
+      def journey_pattern_objectid
+        __getobj__.try(:journey_pattern_objectid) || journey_pattern&.objectid
+      end
 
-        if merged_object_id
-          merged_object_id.to_s
-        else
-          "#{journey_pattern_id}-#{stop_point_objectid}"
-        end
+      def stop_point_objectid
+        __getobj__.try(:stop_point_objectid) || stop_point&.objectid
+      end
+
+      def stop_point_in_journey_pattern_id
+        StopPointDecorator.stop_point_in_journey_pattern_id(stop_point_objectid, journey_pattern_objectid)
       end
 
       def stop_point_in_journey_pattern_ref
-        Netex::Reference.new(stop_point_in_journey_pattern_id, type: 'StopPointInJourneyPatternRef')
+        Netex::Reference.new(stop_point_in_journey_pattern_id, type: Netex::StopPointInJourneyPattern)
       end
 
       def netex_time time_of_day

@@ -996,6 +996,62 @@ RSpec.describe Export::NetexGeneric do
 
   end
 
+  describe "VehicleJourneyStopAssignments export" do
+
+    let(:target) { MockNetexTarget.new }
+    let(:export_scope) { Export::Scope::All.new context.referential }
+    let(:export) { Export::NetexGeneric.new export_scope: export_scope, target: target, workgroup: context.workgroup }
+
+    let(:part) do
+      Export::NetexGeneric::VehicleJourneyStopAssignments.new export
+    end
+
+    let(:context) do
+      Chouette.create do
+        3.times { vehicle_journey }
+      end
+    end
+
+    let(:vehicle_journeys) { context.vehicle_journeys }
+    let(:vehicle_journey_at_stops) { vehicle_journeys.flat_map { |vj| vj.vehicle_journey_at_stops } }
+
+    before { context.referential.switch }
+
+    context 'when stop_area is present' do
+      before do
+        vehicle_journey_at_stops.each do |vjas|
+          vjas.update(stop_area: vjas.stop_point.stop_area)
+        end
+      end
+
+      it 'should create a Netex::VehicleJourneyStopAssignment' do
+        part.export!
+
+        vjas_assignments = target.resources.select { |r| r.is_a? Netex::VehicleJourneyStopAssignment }
+
+        expect(vjas_assignments.count).to eq(vehicle_journey_at_stops.count)
+
+        vjas_assignments.each do |vjas_assignment|
+          expect(vjas_assignment.id).to include('VehicleJourneyStopAssignment')
+          expect(vjas_assignment.scheduled_stop_point_ref).to be_kind_of(Netex::Reference)
+          expect(vjas_assignment.quay_ref).to be_kind_of(Netex::Reference)
+          expect(vjas_assignment.vehicle_journey_refs).to be_kind_of(Array)
+          expect(vjas_assignment.vehicle_journey_refs.size).to eq(1)
+        end
+      end
+    end
+
+    context 'when stop_area is absent' do
+      it 'should not create a Netex::VehicleJourneyStopAssignment' do
+        part.export!
+
+        vjas_assignments_count = target.resources.count { |r| r.is_a? Netex::VehicleJourneyStopAssignment }
+
+        expect(vjas_assignments_count).to eq(0)
+      end
+    end
+  end
+
   describe "VehicleJourneys export" do
 
     let(:target) { MockNetexTarget.new }
@@ -1062,44 +1118,6 @@ RSpec.describe Export::NetexGeneric do
         context "when VehicleJourney published_journey_identifier is 'dummy'" do
           before { vehicle_journey.published_journey_identifier = 'dummy' }
           it { is_expected.to include(public_code: 'dummy') }
-        end
-      end
-    end
-
-    describe 'VehicleJourneyAtStop export' do
-      context 'when stop_area is present' do
-        before do
-          vehicle_journey_at_stops.each do |vjas|
-            vjas.update(stop_area: vjas.stop_point.stop_area)
-          end
-        end
-
-        it 'should create a Netex::VehicleJourneyStopAssignment' do
-          context.routes.each { |route| export.resource_tagger.register_tag_for(route.line) }
-          part.export!
-
-          vjas_assignments = target.resources.select { |r| r.is_a? Netex::VehicleJourneyStopAssignment }
-
-          expect(vjas_assignments.count).to eq(vehicle_journey_at_stops.count)
-
-          vjas_assignments.each do |vjas_assignment|
-            expect(vjas_assignment.id).to include('VehicleJourneyStopAssignment')
-            expect(vjas_assignment.scheduled_stop_point_ref).to be_kind_of(Netex::Reference)
-            expect(vjas_assignment.quay_ref).to be_kind_of(Netex::Reference)
-            expect(vjas_assignment.vehicle_journey_refs).to be_kind_of(Array)
-            expect(vjas_assignment.vehicle_journey_refs.size).to eq(1)
-          end
-        end
-      end
-
-      context 'when stop_area is absent' do
-        it 'should not create a Netex::VehicleJourneyStopAssignment' do
-          context.routes.each { |route| export.resource_tagger.register_tag_for(route.line) }
-          part.export!
-
-          vjas_assignments_count = target.resources.count { |r| r.is_a? Netex::VehicleJourneyStopAssignment }
-
-          expect(vjas_assignments_count).to eq(0)
         end
       end
     end

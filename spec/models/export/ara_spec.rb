@@ -127,26 +127,41 @@ RSpec.describe Export::Ara do
   end
 
   describe "VehicleJourneys export" do
+    subject { part.export! ; target }
+
+    let(:referential) { context.referential }
+    before { referential.switch }
+
+    let(:vehicle_journey) { context.vehicle_journey(:first ) }
+    let(:other_vehicle_journey) { context.vehicle_journey(:other) }
+
+    let(:scope) { referential }
+    let(:target) { [] }
+
+    let(:code_space) { context.workgroup.code_spaces.create! short_name: 'test' }
+
+    let(:part) { Export::Ara::VehicleJourneys.new export_scope: scope, target: target }
+
+    context 'when one Vehicle Journey is exported' do
+      let(:context) do
+        Chouette.create { vehicle_journey(:first) }
+      end
+
+      describe 'the Ara File target' do
+        it { is_expected.to match_array([an_instance_of(Ara::VehicleJourney)]) }
+
+        it 'contains a Vehicle journey having a direction_type attribute' do
+          expect(subject.first).to respond_to(:direction_type)
+        end
+      end
+    end
+
     context "when two Vehicle Journeys are exported" do
       let(:context) do
         Chouette.create { vehicle_journey(:first) ; vehicle_journey(:other) }
       end
 
-      let(:referential) { context.referential }
-      before { referential.switch }
-
-      let(:vehicle_journey) { context.vehicle_journey(:first ) }
-      let(:other_vehicle_journey) { context.vehicle_journey(:other) }
-
-      let(:scope) { referential }
-      let(:target) { [] }
-
-      let(:code_space) { context.workgroup.code_spaces.create! short_name: 'test' }
-
-      let(:part) { Export::Ara::VehicleJourneys.new export_scope: scope, target: target }
-
       describe "the Ara File target" do
-        subject { part.export! ; target }
         it { is_expected.to match_array([an_instance_of(Ara::VehicleJourney)]*2) }
 
         context "when one of the Vehicle Journey has a code 'test': 'dummy" do

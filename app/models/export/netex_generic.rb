@@ -35,6 +35,7 @@ class Export::NetexGeneric < Export::Base
   end
 
   delegate :stop_area_referential, to: :workgroup
+  delegate :shape_referential, to: :workgroup
 
   def stop_areas
     @stop_areas ||=
@@ -46,6 +47,10 @@ class Export::NetexGeneric < Export::Base
     # Must unscope the entrances to find entrances associated with all exported Stop Areas
     # (including parent Stop Areas)
     stop_area_referential.entrances.where(stop_area: stop_areas)
+  end
+
+  def point_of_interests
+    shape_referential.point_of_interests
   end
 
   def resource_tagger
@@ -73,7 +78,8 @@ class Export::NetexGeneric < Export::Base
       VehicleJourneyAtStops,
       VehicleJourneys,
       VehicleJourneyStopAssignments,
-      Organisations
+      Organisations,
+      PointOfInterests
     ]
 
     part_classes.each_with_index do |part_class, index|
@@ -396,6 +402,140 @@ class Export::NetexGeneric < Export::Base
 
       def raw_xml
         raw_import&.content
+      end
+    end
+  end
+
+  class PointOfInterests < Part
+
+    def export!
+      point_of_interests.find_each do |point_of_interest|
+        decorated_point_of_interest = Decorator.new(point_of_interest)
+        target << decorated_point_of_interest.netex_resource
+      end
+    end
+
+    def point_of_interests
+      export.point_of_interests
+        .includes(:codes, :point_of_interest_hours)
+        .joins(:point_of_interest_category)
+        .select(
+          "point_of_interests.*",
+          "point_of_interest_categories.name AS category_name"
+        )
+    end
+
+    class Decorator < SimpleDelegator
+
+      def netex_attributes
+        {
+          id: uuid,
+          name: name,
+          url: url,
+          centroid: centroid,
+          postal_address: postal_address,
+          key_list: key_list,
+          operating_organisation_view: operating_organisation_view,
+          classifications: classifications,
+          validity_conditions: validity_conditions,
+        }
+      end
+
+      def uuid
+        @uuid ||= SecureRandom.uuid
+      end
+
+      def netex_resource
+        Netex::PointOfInterest.new(netex_attributes)
+      end
+
+      def centroid
+        Netex::Point.new(
+          location: Netex::Location.new(longitude: position.lon, latitude: position.lat)
+        )
+      end
+
+      def postal_address
+        Netex::PostalAddress.new(
+          id: uuid,
+          address_line_1: address,
+          post_code: zip_code,
+          town: city_name,
+          country_name: country
+        )
+      end
+
+      def operating_organisation_view
+        Netex::OperatingOrganisationView.new(
+          contact_details: Netex::ContactDetails.new(
+            phone: phone,
+            email: email
+          )
+        )
+      end
+
+      def classifications
+        [ Netex::PointOfInterestClassificationView.new(name: category_name) ]
+      end
+
+      def key_list
+        AlternateIdentifiersExtractor.new(self).alternate_identifiers
+      end
+
+      def validity_conditions
+        [].tap do |validity_conditions|
+          point_of_interest_hours.find_each do |hour|
+            validity_condition = ValidityCondition.new(hour, uuid)
+            validity_conditions << Netex::AvailabilityCondition.new(
+              day_types: validity_condition.day_types,
+              timebands: validity_condition.timebands
+            )
+          end
+        end
+      end
+
+      class ValidityCondition
+        def initialize(hour, uuid)
+          @hour = hour
+          @uuid = uuid
+        end
+        attr_accessor :hour, :uuid
+
+        def timebands
+          [
+            Netex::Timeband.new(
+              id: "#{uuid}-#{hour.id}",
+              start_time: hour.opening_time_of_day.to_hms,
+              end_time: hour.closing_time_of_day.to_hms
+            )
+          ]
+        end
+
+        def day_types
+          [
+            Netex::DayType.new(
+              id: "#{uuid}-#{hour.id}",
+              properties: [ Netex::PropertyOfDay.new(days_of_week: days_of_week) ]
+            )
+          ]
+        end
+
+        private
+
+        def days_of_week
+          all_days
+            .select{ |day| contains_day?(day) }
+            .map{ |day| day.to_s.capitalize }
+            .join(' ')
+        end
+
+        def all_days
+          @all_days ||= Timetable::DaysOfWeek.all.days
+        end
+
+        def contains_day?(day)
+          hour.week_days.send("#{day}?")
+        end
       end
     end
   end

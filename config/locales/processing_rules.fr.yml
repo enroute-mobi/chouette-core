@@ -9,6 +9,13 @@ fr:
     edit:
       title: "Editer %{name}"
     search_no_results: "Aucune Règle de traitement ne correspond à votre recherche"
+    actions:
+      show: "Afficher cette Règle de traitement"
+      new: "Créer une Règle de traitement"
+      edit: "Editer cette Règle de traitement"
+      destroy: "Supprimer cette Règle de traitement"
+      add_workgroup_rule: Ajouter un règle de groupe de travail
+    name: "%{processable_type} %{operation_step} %{processable_name} pour %{target_workbenches}"
   activerecord:
     models:
       processing_rule:
@@ -21,3 +28,4 @@ fr:
         processable_id: Traitement
         operation_step: Etape
         workgroup: Groupe de travail
+        target_workbenches: Espace(s) de travail cible(s)

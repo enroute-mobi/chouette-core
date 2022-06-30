@@ -13,12 +13,25 @@
 					label_method: lambda { |l| "<span class='mx-2'>#{l.first}</span>".html_safe },
 					checked: @processing_rule.processable_type
 
+				- if @processing_rule.workgroup?
+					= f.input :workgroup_id, as: :hidden, input_html: { value: @processing_rule.workgroup_id }
+				- else
+					= f.input :workbench_id, as: :hidden, input_html: { value: @workbench.id }
+
 			.form-group
 				label.col-sm-4.col-xs-5.control-label.mb-3 x-text="processableIdSelect.label" x-transition=""
 				.col-sm-8.col-xs-7
 					select name="processing_rule[processable_id]" x-ref="processableIdSelect" x-model="processableId"
 						- if @processing_rule.processable
 							option value="#{@processing_rule.processable_id}" selected="true" = @processing_rule.processable.name
+
+			- if @processing_rule.workgroup?
+				div
+					= f.input :target_workbenches,
+					as: :tom_select,
+					collection: @processing_rule.target_workbench_ids_options,
+					input_html: { multiple: true },
+					selected: @processing_rule.target_workbench_ids
 
 			.form-group
 				= f.label I18n.t('activerecord.attributes.processing_rule.operation_step'), class: 'col-sm-4 col-xs-5 control-label mb-3'

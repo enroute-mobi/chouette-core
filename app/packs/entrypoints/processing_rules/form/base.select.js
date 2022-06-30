@@ -10,6 +10,7 @@ export default class Select {
 				valueField: 'id',
 				labelField: 'text',
 				plugins: ['clear_button'],
+				openOnFocus: true,
 				...this.params
 			}
 		)

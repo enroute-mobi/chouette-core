@@ -27,6 +27,11 @@ export default class ProcessableIdSelect extends Select {
 			.catch(() => { })
 	}
 
+	reload() {
+		super.reload()
+		this.tomSelect.load('')
+	}
+
 	get params() {
 		return {
 			preload: isEdit,

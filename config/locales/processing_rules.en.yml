@@ -9,6 +9,13 @@ en:
     edit:
       title: "Edit %{name}"
     search_no_results: "No processing rule matches your search"
+    actions:
+      show: "Show this Processing Rule"
+      new: "Create a Processing Rule"
+      edit: "Editer cette Processing Rule"
+      destroy: "Supprimer cette Processing Rule"
+      add_workgroup_rule: Add a workgroup rule
+    name: "%{processable_type} %{operation_step} %{processable_name} on %{target_workbenches}"
   activerecord:
     models:
       processing_rule:
@@ -21,3 +28,4 @@ en:
         processable_id: Processable
         operation_step: Operation Step
         workgroup: Workgroup
+        target_workbenches: Target(s) workbench(es)

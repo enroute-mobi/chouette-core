@@ -1,5 +1,5 @@
 module OperationsHelper
-  def operation_status(status, verbose: false, default_status: nil, i18n_prefix: nil)
+  def operation_status(status, verbose: true, default_status: nil, i18n_prefix: nil)
     status = status.status if status.respond_to?(:status)
     status ||= default_status
     return unless status

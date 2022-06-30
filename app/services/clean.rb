@@ -17,25 +17,11 @@ module Clean
       @scope = scope
     end
 
-    def around_clean(&block)
+    include AroundMethod
+    around_method :clean!
+
+    def around_clean!(&block)
       scope.switch(&block)
-    end
-
-    # Add callback (around_clean) to every clean! method defined by subclasses
-    def self.method_added(method_name)
-      unless @setting_callback || method_name != :clean!
-        @setting_callback = true
-        original = instance_method :clean!
-        define_method :clean_with_callbacks do |*args, &block|
-          self.around_clean do
-            original.bind(self).call(*args, &block)
-          end
-        end
-        alias_method :clean!, :clean_with_callbacks
-        @setting_callback = false
-      end
-
-      super method_name
     end
   end
 

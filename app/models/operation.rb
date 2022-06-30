@@ -111,25 +111,10 @@ class Operation  < ApplicationModel
     Rails.logger
   end
 
-  # Ensure that the perform method is always invoked within around_perform
-  # TODO Share this mechanism
-  def self.method_added(method_name)
-    unless @setting_callback || method_name != :perform
-      @setting_callback = true
-      original = instance_method :perform
-      define_method :protected_perform do |*args, &block|
-        around_perform do
-          original.bind(self).call(*args, &block)
-        end
-      end
-      alias_method :perform, :protected_perform
-      @setting_callback = false
-    end
-
-    super method_name
-  end
-
   protected
+
+  include AroundMethod
+  around_method :perform
 
   def around_perform(&block)
     CustomFieldsSupport.within_workgroup(workgroup) do

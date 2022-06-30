@@ -14,6 +14,9 @@
 
 					= d.attribute :operation_step, value: @processing_rule.operation_step.text
 
+					- if @processing_rule.workgroup?
+						= d.attribute :target_workbenches, value: @processing_rule.display_target_workbenches
+
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = simple_block_for @processing_rule, title: 'Metadata' do |d|
           = d.attribute :created_at, as: :datetime

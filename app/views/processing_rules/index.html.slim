@@ -18,7 +18,7 @@
               ), \
               TableBuilderHelper::Column.new( \
                 key: :workgroup, \
-                attribute: -> (pr) { pr.is_workgroup(@workbench.id) }, \
+                attribute: -> (pr) { pr.workgroup? ? 'yes'.t : 'no'.t }, \
                 sortable: false \
               ), \
               TableBuilderHelper::Column.new( \
@@ -30,6 +30,11 @@
                 key: :processable_id, \
                 attribute: -> (pr) { pr.processable.name }, \
                 link_to: -> (pr) { url_for([@workbench, pr.processable]) }, \
+                sortable: false,\
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :target_workbenches, \
+                attribute: -> (pr) { pr.display_target_workbenches }, \
                 sortable: false,\
               ) \
               \

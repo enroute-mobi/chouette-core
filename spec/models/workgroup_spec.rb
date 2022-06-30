@@ -5,6 +5,7 @@ RSpec.describe Workgroup, type: :model do
 
   context "associations" do
     it{ should have_many(:workbenches) }
+    it { is_expected.to have_many(:processing_rules) }
 
     it { is_expected.to belong_to(:owner).required }
     it { is_expected.to belong_to(:stop_area_referential).required }

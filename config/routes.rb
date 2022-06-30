@@ -166,7 +166,10 @@ ChouetteIhm::Application.routes.draw do
 
     resources :documents
     resources :processing_rules do
-      get :get_processables, on: :collection, defaults: { format: 'json' }
+      collection do
+        get :add_workgroup_rule
+        get :get_processables, defaults: { format: 'json' }
+      end
     end
   end
 

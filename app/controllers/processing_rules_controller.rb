@@ -28,13 +28,34 @@ class ProcessingRulesController < ChouetteController
     end
   end
 
+  def add_workgroup_rule
+    @processing_rule = ProcessingRuleDecorator.decorate(
+      ProcessingRule.new(workgroup_id: workbench.workgroup_id),
+      context: {
+        workbench: @workbench
+      }
+    )
+  end
+
   def get_processables
     fetch_params = get_processables_params
+    query = fetch_params[:query]&.downcase
 
-    result = fetch_params[:processable_type].constantize.where(workbench_id: workbench.id)
-    result = result.where("lower(name) LIKE :query", query: "%#{fetch_params[:query].downcase}%") if fetch_params[:query]
+    case fetch_params[:processable_type]
+    when 'Control::List'
+      result = workbench.workgroup.control_lists.where("workbench_id = :workbench_id OR (workbench_id != :workbench_id AND shared IS TRUE)")
+    when 'Macro::List'
+      result = workbench.macro_lists
+    else
+      Rails.logger.warn('processable_type not defined when trying to fetch processables')
+      result = []
+    end
 
-    render json: { processables: result.select("id, name AS text") }
+    result = result
+      .then { |c| query ? c.where("lower(name) LIKE :query", query: "%#{query}%") : c }
+      .select("id, name AS text")
+
+    render json: { processables: result }
   end
 
   protected
@@ -43,9 +64,12 @@ class ProcessingRulesController < ChouetteController
   alias workbench parent
 
   def collection
-    scope = workbench.workgroup.owner_id == workbench.organisation_id ? workbench.workgroup : workbench
+    is_owner = workbench.workgroup.owner_id == workbench.organisation_id
 
-    @processing_rules = scope.processing_rules.paginate(page: params[:page], per_page: 30)    
+    @processing_rules = workbench.workgroup.processing_rules
+      .then { |collection| is_owner ? collection : collection.where('target_workbench_ids::integer[] @> ARRAY[?]', workbench.id) }
+      .or(workbench.processing_rules)
+      .paginate(page: params[:page], per_page: 30)    
   end
 
   private
@@ -64,7 +88,10 @@ class ProcessingRulesController < ChouetteController
     params.require(:processing_rule).permit(
 			:processable_type,
 			:processable_id,
-			:operation_step
+			:operation_step,
+      :workbench_id,
+      :workgroup_id,
+      target_workbenches: []
 		).tap do |params|
 			%i[processable_type processable_id operation_step].each { |key| params.require(key) }
 		end

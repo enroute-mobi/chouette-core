@@ -28,7 +28,7 @@ class Workgroup < ApplicationModel
   has_many :publication_apis, dependent: :destroy
   has_many :compliance_check_sets, dependent: :destroy
   has_many :control_lists, :through => :workbenches
-  has_many :processing_rules, through: :workbenches
+  has_many :processing_rules
 
   validates :name, presence: true, uniqueness: true
   validates_uniqueness_of :stop_area_referential_id

@@ -446,8 +446,10 @@ class Export::NetexGeneric < Export::Base
       end
 
       def centroid
+        return unless longitude || latitude
+
         Netex::Point.new(
-          location: Netex::Location.new(longitude: position.lon, latitude: position.lat)
+          location: Netex::Location.new(longitude: longitude, latitude: latitude)
         )
       end
 

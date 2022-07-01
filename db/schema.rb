@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_06_10_094124) do
+ActiveRecord::Schema.define(version: 2022_07_01_085131) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -1116,6 +1116,7 @@ ActiveRecord::Schema.define(version: 2022_06_10_094124) do
     t.string "phone"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
     t.index ["point_of_interest_category_id"], name: "index_point_of_interests_on_point_of_interest_category_id"
     t.index ["shape_provider_id"], name: "index_point_of_interests_on_shape_provider_id"
     t.index ["shape_referential_id"], name: "index_point_of_interests_on_shape_referential_id"

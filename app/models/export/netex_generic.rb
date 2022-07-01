@@ -441,10 +441,6 @@ class Export::NetexGeneric < Export::Base
         }
       end
 
-      def uuid
-        @uuid ||= SecureRandom.uuid
-      end
-
       def netex_resource
         Netex::PointOfInterest.new(netex_attributes)
       end

@@ -111,47 +111,172 @@ class Operation  < ApplicationModel
     Rails.logger
   end
 
-  protected
+  class Callback
+    def initialize(operation)
+      @operation = operation
+    end
+    attr_reader :operation
 
-  include AroundMethod
-  around_method :perform
+    delegate :logger, to: :operation
 
-  def around_perform(&block)
-    CustomFieldsSupport.within_workgroup(workgroup) do
-      logger.tagged operation_description do
-        uuid = nil
-        begin
-          if status.in?([Operation.status.running, Operation.status.done])
-            logger.warn "Skip operation since status is already #{status}"
-            return
-          end
-
-          Chouette::Benchmark.measure(self.class.to_s, id: id) do
-            change_status Operation.status.running, started_at: Time.zone.now
-            block.call
-          end
-        rescue => e
-          self.error_uuid = uuid = Chouette::Safe.capture("Operation #{operation_description} failed", e)
-        end
-
-        change_status Operation.status.done, ended_at: Time.zone.now, error_uuid: uuid
+    def around(&block)
+      result = nil
+      if before
+        result = yield
+        after
       end
+      result
+    end
+
+    def before
+      true
+    end
+
+    def after; end
+
+    # Invoke given callbacks before invoking the given block
+    class Invoker
+      def initialize(callbacks, &block)
+        @final_proc = block
+        @callbacks = callbacks
+      end
+      attr_reader :callbacks, :final_proc
+
+      def enumerator
+        @enumerator ||= callbacks.each
+      end
+
+      def next_callback
+        enumerator.next
+      end
+
+      def call
+        callback = next_callback
+        Rails.logger.debug "Invoke Callback #{callback.class}"
+        callback.around { self.call }
+      rescue StopIteration
+        final_proc.call
+      end
+    end
+  end
+
+  class CustomFieldLoader < Callback
+    delegate :workgroup, to: :operation
+    def around(&block)
+      CustomFieldsSupport.within_workgroup(workgroup) do
+        yield
+      end
+    end
+  end
+
+  class LogTagger < Callback
+    delegate :operation_description, to: :operation
+    def around(&block)
+      logger.tagged(operation_description) do
+        yield
+      end
+    end
+  end
+
+  class PerformedSkipper < Callback
+    delegate :status, to: :operation
+
+    def skipped_statuses
+      [ Operation.status.running, Operation.status.done ]
+    end
+
+    def before
+      if status.in?(skipped_statuses)
+        logger.warn "Skip operation since status is already #{status}"
+        return false
+      end
+
+      true
+    end
+  end
+
+  class Benchmarker < Callback
+    delegate :id, to: :operation
+    def around(&block)
+      Chouette::Benchmark.measure(operation.class.to_s, id: id) do
+        yield
+      end
+    end
+  end
+
+  class StatusChanger < Callback
+    def now
+      Time.zone.now
+    end
+
+    delegate :change_status, :error_uuid, to: :operation
+
+    def before
+      change_status Operation.status.running
+    end
+
+    def after
+      change_status Operation.status.done, error_uuid: error_uuid
     end
   end
 
   def change_status(status, attributes = {})
     attributes.delete_if { |_,v| v.nil? }
-    # TODO the operation description is already present when logger is tagged during around_perform
-    status_log_message = "[#{operation_description}] Status: #{status}"
+
+    now = Time.zone.now
+    case status
+    when Operation.status.running
+      attributes[:started_at] = now
+    when Operation.status.done
+      attributes[:ended_at] = now
+    end
+
+    status_log_message = ""
+    # the operation description is already present when logger is tagged during around_perform
+    status_log_message += "[#{operation_description}] " if status == Operation.status.enqueued
+    status_log_message += "Status: #{status}"
     status_log_message += " #{attributes.inspect}" unless attributes.empty?
+
     logger.info status_log_message
 
-    attributes = attributes.merge(status: status) if status
+    attributes = attributes.merge(status: status)
     if persisted?
       update_columns attributes
     else
       self.attributes = attributes
     end
+  end
+
+  protected
+
+  mattr_reader :callback_classes, default: []
+
+  def self.callback(callback_class)
+    callback_classes << callback_class
+  end
+
+  # Define logics to be performed before and after Operation#perform
+  callback LogTagger
+  callback CustomFieldLoader
+  callback PerformedSkipper
+  callback Benchmarker
+  callback StatusChanger
+
+  def callbacks
+    callback_classes.map { |callback_class| callback_class.new(self) }
+  end
+
+  include AroundMethod
+  around_method :perform
+
+  def around_perform(&block)
+    Callback::Invoker.new(callbacks) do
+      begin
+        block.call
+      rescue => e
+        self.error_uuid = Chouette::Safe.capture("Operation #{operation_description} failed", e)
+      end
+    end.call
   end
 
   # Store operation id and class name to load and perform it into Delayed worker

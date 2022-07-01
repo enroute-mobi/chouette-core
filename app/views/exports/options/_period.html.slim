@@ -1,5 +1,5 @@
 
-= form.input :period, as: :radio_buttons, required: true, wrapper: :horizontal_form, input_html: { 'x-model': '$store.export.period' }
+= form.input :period, as: :radio_buttons, required: true, wrapper: :horizontal_form, input_html: { 'x-model': 'period' }
 .form-group
   .col-sm-4.col-xs-5
-  = form.input :duration, wrapper: false, legend_tag: false, label: false, input_html: { class: "simple_form_input_offset", 'x-bind:disabled': "$store.export.period == 'all_periods'", 'x-model': '$store.export.duration' }
+  = form.input :duration, wrapper: false, legend_tag: false, label: false, input_html: { class: "simple_form_input_offset", 'x-bind:disabled': "period == 'all_periods'", 'x-model': 'duration' }

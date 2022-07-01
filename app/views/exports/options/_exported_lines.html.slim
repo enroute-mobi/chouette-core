@@ -1,42 +1,24 @@
 - decorated_export = @export.decorate
 
-div[x-data="{ store: $store.export }"]
+div
   = form.input :exported_lines,
     include_blank: false,
     input_html: { \
-      'x-model': 'store.exportedLines', \
-      'x-bind:disabled': "store.isExport && !Boolean(store.referentialId)", \
+      'x-model': 'exportedLines', \
+      'x-bind:disabled': "isExport && !Boolean(referentialId)", \
     }
 
-  template[x-if="store.exportedLines == 'line_ids'"]
-    div
-      = form.input :line_ids,
-        as: :tom_select,
-        collection: decorated_export.line_ids_options,
-        input_html: { multiple: true, style: 'width: 100%', ':data-url': "store.exportedLines == 'line_ids' && store.exportedLinesSelectURL" },
-        label_html: { class: 'hidden' },
-        include_hidden: false,
-        config: { type: 'ajax', placeholder: I18n.t('exports.form.line_name') },
-        selected: decorated_export.line_ids
+  - %w(line company line_provider).each do |n|
+    - attribute = "#{n}_ids"
+    - options = "#{attribute}_options"
 
-  template[x-if="store.exportedLines == 'company_ids'"]
-    div
-      = form.input :company_ids,
-        as: :tom_select,
-        collection: decorated_export.company_ids_options,
-        input_html: { multiple: true, style: 'width: 100%', ':data-url': "store.exportedLines == 'company_ids' && store.exportedLinesSelectURL" },
-        label_html: { class: 'hidden' },
-        include_hidden: false,
-        config: { type: 'ajax', placeholder: I18n.t('exports.form.company_name') },
-        selected: decorated_export.company_ids
-
-  template[x-if="store.exportedLines == 'line_provider_ids'"]
-    div
-      = form.input :line_provider_ids,
-        as: :tom_select,
-        collection: decorated_export.line_provider_ids_options,
-        input_html: { multiple: true, style: 'width: 100%', ':data-url': "store.exportedLines == 'line_provider_ids' && store.exportedLinesSelectURL" },
-        label_html: { class: 'hidden' },
-        include_hidden: false,
-        config: { type: 'ajax', placeholder: I18n.t('exports.form.line_provider_name') },
-        selected: decorated_export.line_provider_ids
+    template[x-if="exportedLines == '#{attribute}'"]
+      div
+        = form.input attribute.to_sym,
+          as: :tom_select,
+          collection: decorated_export.exported_lines_options(n),
+          input_html: { multiple: true, style: 'width: 100%', 'x-bind:data-url': "getExportedLinesSelectURL()", 'x-ref': 'exprtedLinesSelect' },
+          label_html: { class: 'hidden' },
+          include_hidden: false,
+          config: { type: 'ajax', placeholder: I18n.t("exports.form.#{n}_name") },
+          selected: decorated_export.send(attribute)

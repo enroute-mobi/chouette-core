@@ -1,32 +1,39 @@
 import Alpine from 'alpinejs'
+import { bindAll, tap } from 'lodash'
 
-Alpine.store('export', {
-	ready: true,
-	type: 'Export::Gtfs',
-	exportedLines: 'all_line_ids',
-	period: 'all_periods',
-	referentialId: '',
-	isExport: null,
-	workbenchOrWorkgroupId: location.pathname.match(/(\d+)/)[0],
-	exportedLinesSelectURL: '',
-	setState(newState) {
-		Object.entries(newState).forEach(([key, value]) => {
-			this[key] = value
-		})
-	},
-	handleUpdate(attributeName) {
-		return function(value) {
-			switch (attributeName) {
-				case 'isExport':
-					return this.handleIsExportUpdate(value)
-				case 'referentialId':
-					return this.handleReferentialIdUpdate(value)
-				case 'exportedLines':
-					return this.setSelectURL(value)
-			}
-		}
-	},
-	setSelectURL(_exportedLines) {
+class Store {
+	constructor({
+		type = '',
+		exportedLines = 'all_line_ids',
+		period = '',
+		referentialId = '',
+		isExport = null,
+		duration = null
+	} = {}) {
+		this.type = type
+		this.exportedLines = exportedLines
+		this.period = period
+		this.referentialId = referentialId
+		this.isExport = isExport
+		this.duration = duration
+		this.workbenchOrWorkgroupId = location.pathname.match(/(\d+)/)[0]
+		this.exportedLinesSelectURL = ''
+		this.exportType = isExport ? null : 'full'
+		this.baseName = isExport ? 'export_options' : 'publication_setup_export_options'
+
+		bindAll(this, 'getExportedLinesSelectURL', 'handleReferentialIdUpdate')
+	}
+
+	init() {
+		this.$watch('referentialId', () => this.handleReferentialIdUpdate())
+	}
+
+	/* Used in app/views/exports/options/_exported_lines.html.slim as x-bind:data-url
+		on all exported lines related select inputs
+	*/
+	getExportedLinesSelectURL() {
+		if (this.exportedLines === 'all_line_ids') return null
+
 		let prefix
 
 		const suffixMap = new Map([['line_ids', 'lines'], ['company_ids', 'companies'], ['line_provider_ids', 'line_providers']])
@@ -38,29 +45,20 @@ Alpine.store('export', {
 			prefix = `/workgroups/${this.workbenchOrWorkgroupId}`
 		}
 
-		this.exportedLinesSelectURL = `${prefix}/autocomplete/${suffix}`
-	},
-	handleIsExportUpdate(isExport) {
-		!isExport && this.setState({ exportType: 'full' })
+		return `${prefix}/autocomplete/${suffix}`
+	}
 
-		this.setState({
-			baseName: isExport ? 'export_options' : 'publication_setup_export_options'
-		})
-	},
+	// Event handlers
 	handleReferentialIdUpdate(_referentialId) {
-		Array.of(
-			['line_ids', 'lines'],
-			['company_ids', 'companies']
-		).forEach(([inputName, name]) => {
-			const input = document.getElementById(`${this.baseName}_${inputName}`)
+		if (this.exportedLines === 'all_line_ids') return
 
-			if (input) {
-				input.tomselect.clear()
-				input.tomselect.clearOptions()
-				this.setSelectURL(input, name)
-				input.tomselect.load('')
-			}
+		tap(this.$refs.exprtedLinesSelect.tomselect, tomselect => {
+			tomselect.clear()
+			tomselect.clearOptions()
+			tomselect.load('')
 		})
 	}
-})
+}
+
+Alpine.data('exportForm', state => new Store(state))
 

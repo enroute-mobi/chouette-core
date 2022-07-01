@@ -459,8 +459,14 @@ class Export::NetexGeneric < Export::Base
           address_line_1: address,
           post_code: zip_code,
           town: city_name,
-          country_name: country
+          country_name: country_alpha2
         )
+      end
+
+      def country_alpha2
+        ISO3166::Country.countries.find do |c|
+          c.translated_names.include?(country.capitalize)
+        end&.alpha2 || country
       end
 
       def operating_organisation_view
@@ -502,9 +508,9 @@ class Export::NetexGeneric < Export::Base
         def timebands
           [
             Netex::Timeband.new(
-              id: "#{uuid}-#{hour.id}",
-              start_time: hour.opening_time_of_day.to_hms,
-              end_time: hour.closing_time_of_day.to_hms
+              id: id,
+              start_time: start_time,
+              end_time: end_time
             )
           ]
         end
@@ -512,13 +518,29 @@ class Export::NetexGeneric < Export::Base
         def day_types
           [
             Netex::DayType.new(
-              id: "#{uuid}-#{hour.id}",
-              properties: [ Netex::PropertyOfDay.new(days_of_week: days_of_week) ]
+              id: id,
+              properties: properties
             )
           ]
         end
 
         private
+
+        def id
+          "#{uuid}-#{hour.id}"
+        end
+
+        def start_time
+          hour.opening_time_of_day.to_hms
+        end
+
+        def end_time
+          hour.closing_time_of_day.to_hms
+        end
+
+        def properties
+          [ Netex::PropertyOfDay.new(days_of_week: days_of_week) ]
+        end
 
         def days_of_week
           all_days

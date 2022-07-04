@@ -1264,6 +1264,106 @@ RSpec.describe Export::NetexGeneric do
     end
   end
 
+  describe 'PointOfInterests export' do
+    let(:target) { MockNetexTarget.new }
+    let(:export_scope) { Export::Scope::All.new context }
+    let(:export) { Export::NetexGeneric.new export_scope: export_scope, target: target, workgroup: context.workgroup }
+
+    let(:part) do
+      Export::NetexGeneric::PointOfInterests.new export
+    end
+
+    let!(:context) do
+      Chouette.create do
+        point_of_interest_category do
+          point_of_interest url: "http://www.test.fr", position_input: '2.292 48.858', address: "78 rue des chantiers",
+          zip_code: "78000", city_name: "Versailles", country: "FR", email: "hello@yopmail.com", phone: "0129349878" do
+            point_of_interest_hours opening_time_of_day: TimeOfDay.new(14), closing_time_of_day: TimeOfDay.new(18)
+          end
+        end
+      end
+    end
+
+    let(:point_of_interest_category) { context.point_of_interest_category }
+    let(:point_of_interest) { part.point_of_interests.first }
+    let(:decorator) { Export::NetexGeneric::PointOfInterests::Decorator.new point_of_interest }
+
+    describe Export::NetexGeneric::PointOfInterests::Decorator do
+      subject { decorator.netex_attributes }
+
+      describe "netex_resource" do
+
+        describe '#id' do
+          it 'uses Point of interest\'s uuid' do
+            is_expected.to include(id: point_of_interest.uuid)
+          end
+        end
+
+        describe '#name' do
+          it 'uses Point of interest\'s name' do
+            is_expected.to include(name: point_of_interest.name)
+          end
+        end
+
+        describe '#url' do
+          it 'uses Point of interest\'s url' do
+            is_expected.to include(url: point_of_interest.url)
+          end
+        end
+
+        describe '#centroid' do
+          it 'uses Point of interest\'s centroid' do
+            expect(subject[:centroid].location).to have_attributes(
+              longitude: point_of_interest.longitude,
+              latitude: point_of_interest.latitude
+            )
+          end
+        end
+
+        describe '#postal_address' do
+          it 'uses Point of interest\'s postal_address' do
+            expect(subject[:postal_address]).to have_attributes(
+              id: point_of_interest.uuid,
+              address_line_1: point_of_interest.address,
+              post_code: point_of_interest.zip_code,
+              town: point_of_interest.city_name,
+              country_name: "France"
+            )
+          end
+        end
+
+        describe '#operating_organisation_view' do
+          it 'uses Point of interest\'s operating_organisation_view' do
+            expect(subject[:operating_organisation_view].contact_details).to have_attributes(
+              phone: point_of_interest.phone,
+              email: point_of_interest.email
+            )
+          end
+        end
+
+        describe '#classifications' do
+          it 'uses Point of interest\'s classifications' do
+            expect(subject[:classifications].first).to have_attributes(
+              name: point_of_interest_category.name
+            )
+          end
+        end
+
+        describe '#validity_conditions' do
+          it 'uses Point of interest\'s validity_conditions' do
+            # expect(subject[:validity_conditions].first.day_types).to have_attributes(
+            # )
+            expect(subject[:validity_conditions].first.timebands.first).to have_attributes(
+              start_time: "14:00:00",
+              end_time: "18:00:00"
+            )
+          end
+        end
+
+      end
+    end
+  end
+
   class MockNetexTarget
 
     def add(resource)

@@ -333,7 +333,6 @@ class Export::Gtfs < Export::Base
           .where(id: export_scope.send(part_name))
           .pluck(:registration_number))
     end
-
   end
 
   class StopAreas < Part
@@ -426,7 +425,7 @@ class Export::Gtfs < Export::Base
 
   class Companies < Part
 
-    delegate :companies, :vehicle_journeys, to: :export_scope
+    delegate :vehicle_journeys, to: :export_scope
 
     def company_ids
       ids = Set.new
@@ -450,7 +449,22 @@ class Export::Gtfs < Export::Base
     end
 
     def referents
-      @referents ||= companies.where.not(referent: nil).map{ |company| [ company.id, company.referent ] }.to_h
+      @referents ||= export_scope.companies.includes(:referent).where.not(referent: nil).map { |company| [ company.id, company.referent ] }.to_h
+    end
+
+    def companies
+      @companies ||= referential.companies.where(id: company_ids-[DEFAULT_AGENCY_ID])
+    end
+
+    # CHOUETTE-2156 Detect duplicated into exported Companies
+    def duplicated_registration_numbers
+      @duplicated_registration_numbers ||=
+        SortedSet.new(companies
+          .select(:registration_number, :id)
+          .group(:registration_number)
+          .having("count(?) > 1", ActiveRecord::Base.connection.quote_column_name("#{part_name}.id"))
+          .where(id: export_scope.send(part_name))
+          .pluck(:registration_number))
     end
 
     def handle_referent(company, duplicated_registration_numbers)
@@ -480,7 +494,7 @@ class Export::Gtfs < Export::Base
     end
 
     def export!
-      Chouette::Company.includes(:particulars).where(id: company_ids-[DEFAULT_AGENCY_ID]).order("name").find_each do |company|
+      companies.includes(:particulars).order("name").find_each do |company|
         decorated_company = handle_referent(company, duplicated_registration_numbers)
 
         create_message decorated_company

@@ -1312,8 +1312,10 @@ RSpec.describe Export::NetexGeneric do
         end
 
         describe '#centroid' do
+          subject { decorator.netex_attributes[:centroid] }
+
           it 'uses Point of interest\'s centroid' do
-            expect(subject[:centroid].location).to have_attributes(
+            expect(subject).to have_attributes(
               longitude: point_of_interest.longitude,
               latitude: point_of_interest.latitude
             )
@@ -1321,8 +1323,10 @@ RSpec.describe Export::NetexGeneric do
         end
 
         describe '#postal_address' do
+          subject { decorator.netex_attributes[:postal_address] }
+
           it 'uses Point of interest\'s postal_address' do
-            expect(subject[:postal_address]).to have_attributes(
+            expect(subject).to have_attributes(
               id: point_of_interest.uuid,
               address_line_1: point_of_interest.address,
               post_code: point_of_interest.zip_code,
@@ -1333,8 +1337,10 @@ RSpec.describe Export::NetexGeneric do
         end
 
         describe '#operating_organisation_view' do
+          subject { decorator.netex_attributes[:operating_organisation_view].contact_details }
+
           it 'uses Point of interest\'s operating_organisation_view' do
-            expect(subject[:operating_organisation_view].contact_details).to have_attributes(
+            expect(subject).to have_attributes(
               phone: point_of_interest.phone,
               email: point_of_interest.email
             )
@@ -1342,20 +1348,30 @@ RSpec.describe Export::NetexGeneric do
         end
 
         describe '#classifications' do
+          subject { decorator.netex_attributes[:classifications].first }
+
           it 'uses Point of interest\'s classifications' do
-            expect(subject[:classifications].first).to have_attributes(
+            expect(subject).to have_attributes(
               name: point_of_interest_category.name
             )
           end
         end
 
         describe '#validity_conditions' do
+          subject { decorator.netex_attributes[:validity_conditions].first }
+
           it 'uses Point of interest\'s validity_conditions' do
             # expect(subject[:validity_conditions].first.day_types).to have_attributes(
             # )
-            expect(subject[:validity_conditions].first.timebands.first).to have_attributes(
-              start_time: "14:00:00",
-              end_time: "18:00:00"
+            expect(subject.timebands.first.start_time).to have_attributes(
+              hour: 14,
+              minute: 0,
+              second: 0
+            )
+            expect(subject.timebands.first.end_time).to have_attributes(
+              hour: 18,
+              minute: 0,
+              second: 0
             )
           end
         end

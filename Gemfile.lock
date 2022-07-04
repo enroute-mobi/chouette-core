@@ -66,8 +66,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: f4e329bcb5e2f5f4b1804a2a6dcef49e399f05bd
-  branch: NETEX-53-support-poi-export
+  revision: c2b46f216be49831c0f9f397b7065d22f789c87c
   specs:
     netex (0.1.2)
       activesupport
@@ -491,7 +490,7 @@ GEM
     mini_portile2 (2.8.0)
     mini_racer (0.6.2)
       libv8-node (~> 16.10.0.0)
-    minitest (5.16.1)
+    minitest (5.16.2)
     msgpack (1.5.2)
     multi_json (1.15.0)
     multipart-post (2.1.1)

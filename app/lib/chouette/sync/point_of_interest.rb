@@ -101,8 +101,7 @@ module Chouette::Sync
           private
 
           def netex_time_of_day(time)
-            hour, minute, second = time.split(':')
-            TimeOfDay.new hour, minute, second
+            TimeOfDay.new time.hour, time.minute, time.second
           end
 
           def netex_week_days(day_types)

@@ -15,7 +15,7 @@
             [ \
               TableBuilderHelper::Column.new( \
                 key: :status, \
-                attribute: Proc.new { |n| operation_status(n.status) }, \
+                attribute: Proc.new { |n| operation_status(n.status, verbose: true) }, \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :name, \
@@ -42,4 +42,3 @@
       .row.mt-xs
         .col-lg-12
           = replacement_msg t('imports.search_no_results')
-

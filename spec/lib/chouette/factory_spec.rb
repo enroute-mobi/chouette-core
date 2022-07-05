@@ -397,32 +397,40 @@ RSpec.describe Chouette::Factory do
     end
 
     describe "StopArea" do
-        let(:context) do
-          Chouette::Factory.create do
-            stop_area :first
-            stop_area :second
-            stop_area :third
-          end
+      let(:context) do
+        Chouette::Factory.create do
+          stop_area :first
+          stop_area :second
+          stop_area :third
         end
+      end
 
-        it "creates 3 stop areas" do
-          expect{context}.to change { Chouette::StopArea.count }.by(3)
+      it "creates 3 stop areas" do
+        expect{context}.to change { Chouette::StopArea.count }.by(3)
+      end
+
+      it "creates a Stop Area Provider" do
+        # The Workbench creates a default StopAreaProvider and the Factory creates its StopAreaProvider
+        stop_area_providers = StopAreaProvider.where.not(name: Workbench::DEFAULT_PROVIDER_SHORT_NAME.capitalize)
+        expect{ context }.to(change { stop_area_providers.count }.by(1))
+      end
+
+      it "each newly created object is related to the same stop area referential" do
+        expect(context.stop_area(:first).stop_area_referential).to eq(context.stop_area_provider.stop_area_referential)
+      end
+
+      it "creates a stop_area_referential" do
+        expect{context}.to change { StopAreaReferential.count }.by(1)
+      end
+
+      describe "attributes" do
+        subject { context.stop_area }
+
+        context "when an Area Type is specified" do
+          let(:context) { Chouette::Factory.create { stop_area area_type: Chouette::AreaType::STOP_PLACE.to_s } }
+          it { is_expected.to have_attributes(area_type: Chouette::AreaType::STOP_PLACE.to_s) }
         end
-
-        it "creates a Stop Area Provider" do
-          # The Workbench creates a default StopAreaProvider and the Factory creates its StopAreaProvider
-          stop_area_providers = StopAreaProvider.where.not(name: Workbench::DEFAULT_PROVIDER_SHORT_NAME.capitalize)
-          expect{ context }.to(change { stop_area_providers.count }.by(1))
-        end
-
-        it "each newly created object is related to the same stop area referential" do
-          expect(context.stop_area(:first).stop_area_referential).to eq(context.stop_area_provider.stop_area_referential)
-        end
-
-        it "creates a stop_area_referential" do
-          expect{context}.to change { StopAreaReferential.count }.by(1)
-        end
-
+      end
     end
 
     describe %{

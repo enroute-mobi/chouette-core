@@ -22,11 +22,15 @@ class Import::Resource < ApplicationModel
 
       return unless child_import&.successful? || child_import&.warning?
 
+      # We should not execute compliance_check_set if referential doesn't exist
+      # It's useful for partial netex generic import (Stop area, Line,....) 
+      return if referential_id.present?
+
       Rails.logger.info "Import ##{child_import.id}: Create import_compliance_control_sets"
       workbench.workgroup.import_compliance_control_sets.map do |key, label|
         next unless (control_set = workbench.compliance_control_set(key)).present?
         compliance_check_set = workbench_import_check_set key
-        if compliance_check_set.nil? && referential_id.present?
+        if compliance_check_set.nil?
           ComplianceControlSetCopier.new.copy control_set.id, referential_id, nil, root_import.class.name, root_import.id, key
         end
       end

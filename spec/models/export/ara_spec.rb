@@ -194,7 +194,7 @@ RSpec.describe Export::Ara do
           let(:experted_attributes) do
             an_object_having_attributes({
               schedules: [{
-                "Kind" => "expected",
+                "Kind" => "aimed",
                 "ArrivalTime" => "2000-01-01T19:01:00+00:00",
                 "DepartureTime" => "2000-01-01T15:01:00+00:00"
               }],

@@ -51,22 +51,8 @@ module Macro
       delegate :referential, :workbench, to: :parent, allow_nil: true
       delegate :workgroup, to: :workbench
 
-      # TODO Share this mechanism
-      def self.method_added(method_name)
-        unless @setting_callback || method_name != :run
-          @setting_callback = true
-          original = instance_method :run
-          define_method :protected_run do |*args, &block|
-            around_run do
-              original.bind(self).call(*args, &block)
-            end
-          end
-          alias_method :run, :protected_run
-          @setting_callback = false
-        end
-
-        super method_name
-      end
+      include AroundMethod
+      around_method :run
 
       def logger
         Rails.logger

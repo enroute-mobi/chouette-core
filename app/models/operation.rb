@@ -10,30 +10,30 @@
 # == Live Cycle
 #
 #   operation = <RealOperationClass>.new(user: current_user)
-#   operation.status => 'new'
+#   operation.status.new? => true
 #   operation.creator => "Current User Name"
 #
 #   operation.perform
 #
 #   # during perform
-#   operation.status => 'running'
+#   operation.status.running? => true
 #   operation.started_at => <1s ago
 
 #   # when perform is finished
-#   operation.status => 'done'
+#   operation.status.done? => true
 #   operation.ended_at => <1s ago>
 #
 # If an Ruby error occurs during perform:
 #
 #   operation.perform
-#   operation.status => 'done'
+#   operation.status.done? => true
 #   operation.error_uuid => '6a651109-ac36-409d-8f1f-d95c78b46eb3'
 #
 # To perform the (persisted) Operation with a Job:
 #
 #   operation.save! # the Operation must be persisted before enqueuing it
 #   operation.enqueue
-#   operation.status => 'enqueued'
+#   operation.status.enqueued? => true
 #
 # == Implement a new Operation
 #
@@ -47,8 +47,14 @@
 #
 # == User Status
 #
-#   operation.user_status => <#UserStatus slug='pending'>
-#   operation.perform => <#UserStatus slug='successful'>
+#   operation.user_status.pending? => true
+#   operation.perform
+#   operation.user_status.successful? =>  true
+#
+# If the operation isn't successful:
+#
+#   operation.user_status.failed?
+#   operation.user_status.warning?
 #
 # == Log
 #
@@ -71,15 +77,8 @@ class Operation  < ApplicationModel
 
   extend Enumerize
 
-  enumerize :status, in: %w{new enqueued running done}, default: "new"
-
-  def user_status
-    if Operation.status.done
-      error_uuid.present? ? UserStatus.failed : UserStatus.successful
-    else
-      UserStatus.pending
-    end
-  end
+  enumerize :status, in: %i{new enqueued running done}, default: :new, scope: true
+  enumerize :user_status, in: %i{pending successful warning failed}, default: :pending, scope: true
 
   validates :creator, presence: true
 
@@ -89,9 +88,23 @@ class Operation  < ApplicationModel
   end
   attr_reader :user
 
+  class NotPersistedError < StandardError
+    def message
+      "Operation must be persisted before starting its Job"
+    end
+  end
+  class InvalidStatusError < StandardError
+    def initialize(status)
+      @status = status
+    end
+    def message
+      "Invalid status #{@status}"
+    end
+  end
+
   def enqueue
-    raise "Operation must be persisted before starting its Job" unless persisted?
-    raise "Invalid status #{status}" unless status == Operation.status.new
+    raise NotPersistedError unless persisted?
+    raise InvalidStatusError.new(status) unless status.new?
 
     # We'll certainly need to manage queues
     Delayed::Job.enqueue job
@@ -103,7 +116,7 @@ class Operation  < ApplicationModel
     Job.new id, self.class if persisted?
   end
 
-  def operation_description
+  def internal_description
     "#{self.class.name}(id=#{self.id})"
   end
 
@@ -122,7 +135,7 @@ class Operation  < ApplicationModel
     def around(&block)
       result = nil
       if before
-        result = yield
+        result = block.call
         after
       end
       result
@@ -152,7 +165,6 @@ class Operation  < ApplicationModel
 
       def call
         callback = next_callback
-        Rails.logger.debug "Invoke Callback #{callback.class}"
         callback.around { self.call }
       rescue StopIteration
         final_proc.call
@@ -170,9 +182,9 @@ class Operation  < ApplicationModel
   end
 
   class LogTagger < Callback
-    delegate :operation_description, to: :operation
+    delegate :internal_description, to: :operation
     def around(&block)
-      logger.tagged(operation_description) do
+      logger.tagged(internal_description) do
         yield
       end
     end
@@ -205,10 +217,6 @@ class Operation  < ApplicationModel
   end
 
   class StatusChanger < Callback
-    def now
-      Time.zone.now
-    end
-
     delegate :change_status, :error_uuid, to: :operation
 
     def before
@@ -220,20 +228,35 @@ class Operation  < ApplicationModel
     end
   end
 
+  # Can be overrided by subclass to customize the User Status according internal information (messages, resources, controls, etc)
+  def final_user_status
+    Operation.user_status.successful
+  end
+
   def change_status(status, attributes = {})
     attributes.delete_if { |_,v| v.nil? }
 
     now = Time.zone.now
-    case status
-    when Operation.status.running
+
+    if status.running?
       attributes[:started_at] = now
-    when Operation.status.done
+    end
+
+    if status.done?
       attributes[:ended_at] = now
+
+      user_status =
+        if attributes[:error_uuid] || error_uuid
+          Operation.user_status.failed
+        else
+          final_user_status.to_s
+        end
+      attributes[:user_status] = user_status
     end
 
     status_log_message = ""
     # the operation description is already present when logger is tagged during around_perform
-    status_log_message += "[#{operation_description}] " if status == Operation.status.enqueued
+    status_log_message += "[#{internal_description}] " if status.enqueued?
     status_log_message += "Status: #{status}"
     status_log_message += " #{attributes.inspect}" unless attributes.empty?
 
@@ -274,7 +297,7 @@ class Operation  < ApplicationModel
       begin
         block.call
       rescue => e
-        self.error_uuid = Chouette::Safe.capture("Operation #{operation_description} failed", e)
+        self.error_uuid = Chouette::Safe.capture("Operation #{internal_description} failed", e)
       end
     end.call
   end
@@ -295,17 +318,21 @@ class Operation  < ApplicationModel
       @operation ||= operation_class.find_by(id: operation_id)
     end
 
-    def operation_description
+    def internal_description
       "#{operation_class_name}(id=#{operation_id})"
     end
 
     def explain
-      operation_description
+      internal_description
+    end
+
+    def logger
+      Rails.logger
     end
 
     def perform
       unless operation
-        logger.warn "Can't find operation #{operation_description}"
+        logger.warn "Can't find operation #{internal_description}"
         return
       end
 
@@ -321,6 +348,7 @@ class Operation  < ApplicationModel
     end
   end
 
+  # Deprecated. Use Operation.user_status enumerize logic
   class UserStatus
     def initialize(slug, operation_statuses = nil)
       operation_statuses ||= [ slug ]

@@ -1,0 +1,17 @@
+fr:
+  enumerize:
+    operation:
+      user_status:
+        successful: "Succès"
+        warning: "Avertissement"
+        failed: "Échoué"
+        pending: "En cours"
+
+en:
+  enumerize:
+    operation:
+      user_status:
+        successful: "Successful"
+        warning: "Warning"
+        failed: "Failed"
+        pending: "Pending"

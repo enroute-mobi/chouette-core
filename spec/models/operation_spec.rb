@@ -1,13 +1,12 @@
 RSpec.describe Operation do
 
   class self::Test < Operation
-    attr_accessor :workgroup, :error_uuid, :status, :ended_at
+    attr_accessor :workgroup, :error_uuid, :status, :started_at, :ended_at
 
     def perform_logic(&block)
       @perform_logic = block
     end
     def perform
-      puts "perform"
       @perform_logic.call
     end
 
@@ -20,6 +19,14 @@ RSpec.describe Operation do
   subject(:operation) { self.class::Test.new }
 
   describe "#perform" do
+    context "when perform experiences no error" do
+      before { operation.perform_logic { } }
+
+      it "leaves error uuid undefined" do
+        expect { operation.perform }.to_not change(operation, :error_uuid).from(nil)
+      end
+    end
+
     context "when perform experiences an error" do
       before { operation.perform_logic { raise "Error" } }
 

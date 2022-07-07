@@ -49,6 +49,8 @@ module Control
       validates :name, presence: true
       validates :original_control_list_id, presence: true, if: :new_record?
 
+      has_many :control_messages, class_name: "Control::Message", through: :control_runs
+
       def build_with_original_control_list
         return unless original_control_list
 
@@ -58,6 +60,41 @@ module Control
 
         original_control_list.control_contexts.each do |control_context|
           self.control_context_runs << control_context.build_run
+        end
+      end
+
+      def final_user_status
+        UserStatusFinalizer.new(self).user_status
+      end
+
+      class UserStatusFinalizer
+        def initialize(control_list_run)
+          @control_list_run = control_list_run
+        end
+        attr_reader :control_list_run
+
+        delegate :control_messages, to: :control_list_run
+
+        def criticities
+          # reorder! to avoid problems with default order and pluck
+          @criticities ||= control_messages.reorder!.distinct.pluck(:criticity)
+        end
+
+        def worst_criticity
+          %w{error warning}.find do |criticity|
+            criticity.in?(criticities)
+          end
+        end
+
+        def user_status
+          case worst_criticity
+          when "error"
+            Operation.user_status.failed
+          when "warning"
+            Operation.user_status.warning
+          else
+            Operation.user_status.successful
+          end
         end
       end
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_07_01_085131) do
+ActiveRecord::Schema.define(version: 2022_07_05_065413) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -396,6 +396,7 @@ ActiveRecord::Schema.define(version: 2022_07_01_085131) do
     t.datetime "ended_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "user_status", null: false
     t.index ["original_control_list_id"], name: "index_control_list_runs_on_original_control_list_id"
     t.index ["referential_id"], name: "index_control_list_runs_on_referential_id"
     t.index ["workbench_id"], name: "index_control_list_runs_on_workbench_id"
@@ -946,6 +947,7 @@ ActiveRecord::Schema.define(version: 2022_07_01_085131) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["original_macro_list_id"], name: "index_macro_list_runs_on_original_macro_list_id"
+    t.string "user_status", null: false
     t.index ["referential_id"], name: "index_macro_list_runs_on_referential_id"
     t.index ["workbench_id"], name: "index_macro_list_runs_on_workbench_id"
   end
@@ -1339,6 +1341,7 @@ ActiveRecord::Schema.define(version: 2022_07_01_085131) do
     t.datetime "ended_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "user_status", null: false
     t.index ["import_id"], name: "index_source_retrievals_on_import_id"
     t.index ["source_id"], name: "index_source_retrievals_on_source_id"
     t.index ["workbench_id"], name: "index_source_retrievals_on_workbench_id"

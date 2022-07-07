@@ -20,5 +20,8 @@
     = f.input :end_date, as: :date_picker
 
   .actions
+    .flex
+      = f.label :per_page, class: 'control-label'
+      = f.input :per_page, as: :per_page, wrapper_html: {class: "ml-3"}, label: false
     = link_to t('actions.erase'), [@parent, :exports], class: 'btn btn-link'
     = f.submit t('actions.filter'), class: 'btn btn-default'

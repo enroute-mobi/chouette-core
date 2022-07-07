@@ -9,3 +9,4 @@ en:
         workbench_ids: Workbench
         start_date: "After : "
         end_date: "Before : "
+        per_page: "Display per"

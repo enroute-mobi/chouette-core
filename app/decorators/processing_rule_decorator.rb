@@ -1,17 +1,21 @@
 class ProcessingRuleDecorator < AF83::Decorator
   decorates ProcessingRule
 
-  set_scope { context[:workbench] }
+  set_scope { context[:parent] }
 
 	action_link on: :index, secondary: :index, policy: :create do |l|
 		l.icon :plus
 		l.content { I18n.t('processing_rules.actions.add_workgroup_rule') }
-		l.href { h.add_workgroup_rule_workbench_processing_rules_path(context[:workbench]) }
+		l.href { h.new_workgroup_processing_rule_path(context[:workgroup]) }
 	end
 
-  create_action_link
+  create_action_link if: -> { context[:parent].is_a?(Workbench) }
 
-  with_instance_decorator(&:crud)
+  with_instance_decorator do |i|
+		i.show_action_link { |l| l.href { [object.parent, object] } }
+		i.edit_action_link { |l| l.href { [:edit, object.parent, object] } }
+		i.destroy_action_link { |l| l.href { [object.parent, object] } }
+	end
 
 	define_instance_method :name do
 		return unless processable
@@ -27,10 +31,11 @@ class ProcessingRuleDecorator < AF83::Decorator
 
 	define_instance_method :alpine_state do
 		JSON.generate({
-			isWorkgroupOwner: workbench.organisation_id === workbench.workgroup.owner_id,
+			isWorkgroupOwner: workgroup? || object.workbench.organisation_id === object.workbench.workgroup.owner_id,
 			processableType: processable_type,
 			processableId: processable_id,
-			operationStep: operation_step
+			operationStep: operation_step,
+			baseURL: h.url_for([object.parent, :processing_rules])
 		})
 	end
 
@@ -41,7 +46,7 @@ class ProcessingRuleDecorator < AF83::Decorator
 	end
 
 	define_instance_method :target_workbench_ids_options do
-		workbench.workgroup.workbenches.map do |w|
+		object.workgroup.workbenches.map do |w|
 			{ id: w.id, text: w.name }
 		end
 	end
@@ -52,6 +57,5 @@ class ProcessingRuleDecorator < AF83::Decorator
 		object.target_workbenches.map(&:name).join(', ')
 	end
 
-	define_instance_method(:workgroup?) { !!workgroup_id }
-	define_instance_method(:workbench) { context[:workbench] }
+	define_instance_method(:workgroup?) { object.parent.is_a?(Workgroup) }
 end

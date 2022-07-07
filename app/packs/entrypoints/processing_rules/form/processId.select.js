@@ -1,14 +1,20 @@
 import { Path } from 'path-parser'
 import Select from './base.select'
 
-const path = new Path('/workbenches/:workbenchId/processing_rules')
-const { workbenchId } = path.partialTest(location.pathname)
-
 const isEdit = location.pathname.includes('edit')
 
 export default class ProcessableIdSelect extends Select {
-	shouldLoad(query) {
-		return this.form.hasProcessableType() && query.length > 0
+	constructor(form, xRef, baseURL) {
+		super(form, xRef)
+
+		this.baseURL = baseURL
+	}
+
+	get path() { return new Path(this.baseURL) }
+
+
+	shouldLoad(_query) {
+		return this.form.hasProcessableType()
 	}
 
 	load(query, callback) {
@@ -17,7 +23,7 @@ export default class ProcessableIdSelect extends Select {
 		searchParams.set('search[query]', encodeURIComponent(query))
 		searchParams.set('search[processable_type]', this.form.processableType)
 
-		const url = `${path.build({ workbenchId })}/get_processables?${searchParams}`
+		const url = `${this.baseURL}/get_processables?${searchParams}`
 
 		fetch(url)
 			.then(res => res.json())

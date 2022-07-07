@@ -90,6 +90,22 @@ crumb :new_processing_rule do |workbench|
   parent :processing_rules, workbench
 end
 
+crumb :workgroup_processing_rules do |workgroup|
+  link I18n.t('processing_rules.index.title')
+
+  parent :workgroup, workgroup
+end
+
+crumb :workgroup_processing_rule do |workgroup, processing_rule|
+  link breadcrumb_name(processing_rule), workgroup_processing_rule_path(workgroup, processing_rule)
+  parent :workgroup_processing_rules, workgroup
+end
+
+crumb :new_workgroup_processing_rule do |workgroup|
+  link I18n.t('processing_rules.new.title')
+  parent :workgroup_processing_rules, workgroup
+end
+
 crumb :point_of_interest_categories do |workbench|
   link I18n.t('point_of_interest_categories.index.title'), workbench_shape_referential_point_of_interest_categories_path(workbench)
   parent :workbench, workbench

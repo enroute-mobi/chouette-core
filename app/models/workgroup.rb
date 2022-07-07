@@ -27,6 +27,7 @@ class Workgroup < ApplicationModel
   has_many :publication_setups, dependent: :destroy
   has_many :publication_apis, dependent: :destroy
   has_many :compliance_check_sets, dependent: :destroy
+  has_many :macro_lists, :through => :workbenches
   has_many :control_lists, :through => :workbenches
   has_many :processing_rules
 

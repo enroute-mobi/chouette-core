@@ -1,25 +1,37 @@
 import Alpine from 'alpinejs'
+import { bindAll } from 'lodash'
 
 import ProcessableIdSelect from './form/processId.select'
 import OperationStepSelect from './form/operationStep.select'
 
-document.addEventListener('alpine:init', () => {
-	Alpine.data('processingRuleForm', (initialState = {}) => ({
-		isWorkgroupOwner: false,
-		processableType: null,
-		processableId: null,
-		operationStep: null,
-		...initialState,
-		hasProcessableType() { return Boolean(this.processableType) },
-		init() {
-			this.processableIdSelect = new ProcessableIdSelect(this, 'processableIdSelect')
-			this.operationStepSelect = new OperationStepSelect(this, 'operationStepSelect')
+class Store {
+	constructor({
+		isWorkgroupOwner = false,
+		processableType = null,
+		processableId = null,
+		operationStep = null,
+		baseURL = ''
+	} = {}) {
+		this.isWorkgroupOwner = isWorkgroupOwner
+		this.processableType = processableType
+		this.processableId = processableId
+		this.operationStep = operationStep
+		this.baseURL = baseURL
 
-			this.$watch('processableType', () => {
-				this.processableIdSelect.reload()
-				this.operationStepSelect.reload()
-			})
-		},
-	})
-	)
-})
+		bindAll(this, 'hasProcessableType')
+	}
+
+	hasProcessableType() { return Boolean(this.processableType)  }
+
+	init() {
+		this.processableIdSelect = new ProcessableIdSelect(this, 'processableIdSelect', this.baseURL)
+		this.operationStepSelect = new OperationStepSelect(this, 'operationStepSelect')
+	
+		this.$watch('processableType', () => {
+			this.processableIdSelect.reload()
+			this.operationStepSelect.reload()
+		})
+	}
+}
+
+Alpine.data('processingRuleForm', initialState => new Store(initialState))

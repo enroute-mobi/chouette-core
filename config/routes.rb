@@ -167,7 +167,6 @@ ChouetteIhm::Application.routes.draw do
     resources :documents
     resources :processing_rules do
       collection do
-        get :add_workgroup_rule
         get :get_processables, defaults: { format: 'json' }
       end
     end
@@ -218,6 +217,12 @@ ChouetteIhm::Application.routes.draw do
       get :autocomplete, on: :collection, controller: 'autocomplete_calendars'
       member do
         get 'month', defaults: { format: :json }
+      end
+    end
+
+    resources :processing_rules do
+      collection do
+        get :get_processables, defaults: { format: 'json' }
       end
     end
 

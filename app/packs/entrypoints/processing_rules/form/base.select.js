@@ -25,6 +25,7 @@ export default class Select {
 	}
 
 	handleDisable() {
+		console.log('handleDisable', this.form.hasProcessableType())
 		this.form.hasProcessableType() ? this.tomSelect.enable() : this.tomSelect.disable()
 	}
 

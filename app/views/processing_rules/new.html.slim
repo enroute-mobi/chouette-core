@@ -1,4 +1,7 @@
-- breadcrumb :new_processing_rule, @workbench
+- if @workgroup
+  - breadcrumb :new_workgroup_processing_rule,  @workgroup
+- else
+  - breadcrumb :new_processing_rule, @workbench
 
 .page_content
   .container-fluid

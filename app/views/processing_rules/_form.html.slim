@@ -1,6 +1,6 @@
 - javascript_additional_packs 'processing_rules/form'
 
-= simple_form_for [@workbench, @processing_rule], html: { class: 'form-horizontal', id: 'processing_rule_form', 'x-data': "processingRuleForm(#{@processing_rule.alpine_state})" }, wrapper: :horizontal_form  do |f|
+= simple_form_for [@processing_rule.parent, @processing_rule], html: { class: 'form-horizontal', id: 'processing_rule_form', 'x-data': "processingRuleForm(#{@processing_rule.alpine_state})" }, wrapper: :horizontal_form  do |f|
   .row
     .col-lg-12
 			.flex.items-baseline.justify-center

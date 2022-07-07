@@ -4,10 +4,9 @@ class ProcessingRulesController < ChouetteController
 
 	defaults :resource_class => ProcessingRule
 
-  before_action :decorate_processing_rule, only: %i[show new edit]
-  after_action :decorate_processing_rule, only: %i[create update]
+  belongs_to :workbench, :workgroup, polymorphic: true
 
-  belongs_to :workbench
+  before_action :decorate_processing_rule, only: %i[show new edit create update]
 
   respond_to :html, :xml, :json
 
@@ -21,65 +20,43 @@ class ProcessingRulesController < ChouetteController
         @processing_rules = ProcessingRuleDecorator.decorate(
           collection,
           context: {
-            workbench: @workbench,
+            workgroup: workgroup,
+            parent: parent
           }
         )
       end
     end
   end
 
-  def add_workgroup_rule
-    @processing_rule = ProcessingRuleDecorator.decorate(
-      ProcessingRule.new(workgroup_id: workbench.workgroup_id),
-      context: {
-        workbench: @workbench
-      }
-    )
-  end
-
   def get_processables
-    fetch_params = get_processables_params
-    query = fetch_params[:query]&.downcase
-
-    case fetch_params[:processable_type]
-    when 'Control::List'
-      result = workbench.workgroup.control_lists.where("workbench_id = :workbench_id OR (workbench_id != :workbench_id AND shared IS TRUE)")
-    when 'Macro::List'
-      result = workbench.macro_lists
-    else
-      Rails.logger.warn('processable_type not defined when trying to fetch processables')
-      result = []
-    end
-
-    result = result
-      .then { |c| query ? c.where("lower(name) LIKE :query", query: "%#{query}%") : c }
-      .select("id, name AS text")
-
-    render json: { processables: result }
+    payload = get_processables_params.merge(parent: parent)
+    render json: { processables: ProcessingRules::GetProcessables.call(payload) }
   end
 
   protected
 
   alias processing_rule resource
-  alias workbench parent
 
   def collection
-    is_owner = workbench.workgroup.owner_id == workbench.organisation_id
-
-    @processing_rules = workbench.workgroup.processing_rules
-      .then { |collection| is_owner ? collection : collection.where('target_workbench_ids::integer[] @> ARRAY[?]', workbench.id) }
-      .or(workbench.processing_rules)
-      .paginate(page: params[:page], per_page: 30)    
+    ProcessingRules::GetCollection.call(parent).paginate(page: params[:page], per_page: 30)  
   end
 
   private
+
+  def workbench
+    @workbench ||= parent.is_a?(Workbench) ? parent : nil
+  end
+
+  def workgroup
+    @workgroup ||= parent.is_a?(Workbench) ? parent.workgroup : parent
+  end
 
   def decorate_processing_rule
     object = processing_rule rescue build_resource
     @processing_rule = ProcessingRuleDecorator.decorate(
       object,
       context: {
-        workbench: @workbench
+        parent: parent
       }
     )
   end

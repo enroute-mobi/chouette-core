@@ -39,12 +39,6 @@ class ProcessingRuleDecorator < AF83::Decorator
 		})
 	end
 
-	define_instance_method :operation_step_options do
-		ProcessingRule.operation_step.values.map do |value|
-			h.content_tag(:option, value: value, selected: operation_step === value) { value.text }
-		end.join.html_safe
-	end
-
 	define_instance_method :target_workbench_ids_options do
 		object.workgroup.workbenches.map do |w|
 			{ id: w.id, text: w.name }

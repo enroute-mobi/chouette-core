@@ -69,9 +69,7 @@ class ProcessingRulesController < ChouetteController
       :workbench_id,
       :workgroup_id,
       target_workbenches: []
-		).tap do |params|
-			%i[processable_type processable_id operation_step].each { |key| params.require(key) }
-		end
+		)
   end
 
   def get_processables_params

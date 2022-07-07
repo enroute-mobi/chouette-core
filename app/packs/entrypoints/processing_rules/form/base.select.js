@@ -1,19 +1,11 @@
-import TomSelect from 'tom-select'
-
+import '../../inputs/tom_select'
 export default class Select {
-	constructor(form, xRef) {
+	constructor(form, selectId) {
 		this.form = form
-		this.select = form.$refs[xRef]
-		this.tomSelect = new TomSelect(
-			this.select,
-			{
-				valueField: 'id',
-				labelField: 'text',
-				plugins: ['clear_button'],
-				openOnFocus: true,
-				...this.params
-			}
-		)
+		this.select = document.getElementById(selectId)
+
+		this.select.classList.remove('form-control')
+		this.tomSelect = initTomSelect(this.select, this.params)
 		this.options = this.select.querySelectorAll('option')
 
 		this.handleDisable()
@@ -25,7 +17,6 @@ export default class Select {
 	}
 
 	handleDisable() {
-		console.log('handleDisable', this.form.hasProcessableType())
 		this.form.hasProcessableType() ? this.tomSelect.enable() : this.tomSelect.disable()
 	}
 

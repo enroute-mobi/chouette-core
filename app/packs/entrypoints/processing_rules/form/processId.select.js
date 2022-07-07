@@ -17,7 +17,7 @@ export default class ProcessableIdSelect extends Select {
 		return this.form.hasProcessableType()
 	}
 
-	load(query, callback) {
+	async load(query, callback) {
 		const searchParams = new URLSearchParams()
 
 		searchParams.set('search[query]', encodeURIComponent(query))
@@ -25,12 +25,12 @@ export default class ProcessableIdSelect extends Select {
 
 		const url = `${this.baseURL}/get_processables?${searchParams}`
 
-		fetch(url)
-			.then(res => res.json())
-			.then(json => {
-				callback(json.processables)()
-			})
-			.catch(() => { })
+		try {
+			const { processables } = await (await fetch(url)).json() 
+			callback(processables)
+		} catch (e) {
+			callback()
+		}
 	}
 
 	reload() {
@@ -43,22 +43,6 @@ export default class ProcessableIdSelect extends Select {
 			preload: isEdit,
 			shouldLoad: this.shouldLoad.bind(this),
 			load: this.load.bind(this)
-		}
-	}
-
-	get label() {
-		const { processableType } = this.form
-
-		switch (processableType) {
-			case '':
-			case null:
-			case undefined:
-				return I18n.t('activerecord.attributes.processing_rule.processable_id')
-			case 'Macro::List':
-			case 'Control::List':
-				const key = processableType.replace('::', '/').toLowerCase()
-
-				return I18n.t(`activerecord.models.${key}.one`)
 		}
 	}
 }

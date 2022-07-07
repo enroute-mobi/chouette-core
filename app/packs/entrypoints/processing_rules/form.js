@@ -24,8 +24,8 @@ class Store {
 	hasProcessableType() { return Boolean(this.processableType)  }
 
 	init() {
-		this.processableIdSelect = new ProcessableIdSelect(this, 'processableIdSelect', this.baseURL)
-		this.operationStepSelect = new OperationStepSelect(this, 'operationStepSelect')
+		this.processableIdSelect = new ProcessableIdSelect(this, 'processing_rule_processable_id', this.baseURL)
+		this.operationStepSelect = new OperationStepSelect(this, 'processing_rule_operation_step')
 	
 		this.$watch('processableType', () => {
 			this.processableIdSelect.reload()

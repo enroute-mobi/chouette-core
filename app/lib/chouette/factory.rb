@@ -161,10 +161,32 @@ module Chouette
 
           model :shape_provider do
             attribute(:short_name) { |n| "shape_provider_#{n}" }
+            after do
+              new_instance.shape_referential = parent.workgroup.shape_referential
+            end
 
             model :shape do
               attribute(:name) { |n| "Shape #{n}" }
               attribute(:geometry) { |n| "LINESTRING(48.8584 2.2945,48.859 2.295)" }
+            end
+
+            model :point_of_interest_category do
+              attribute(:name) { |n| "Point of interest category #{n}" }
+              after do
+                new_instance.shape_referential = parent.shape_referential
+              end
+
+              model :point_of_interest do
+                attribute(:name) { |n| "Point of interest #{n}" }
+                after do
+                  new_instance.shape_referential = parent.shape_referential
+                  new_instance.shape_provider = parent.shape_provider
+                end
+                model :point_of_interest_hours do
+                  attribute(:opening_time_of_day) { TimeOfDay.new(14) }
+                  attribute(:closing_time_of_day) { TimeOfDay.new(18) }
+                end
+              end
             end
 
           end

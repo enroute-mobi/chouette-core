@@ -19,7 +19,7 @@ class DocumentDecorator < AF83::Decorator
 
 	define_instance_method :json_state do
 		JSON.generate({
-			filename: file&.file&.identifier || '',
+			filename: file&.file&.filename || '',
 			errors: errors.messages.slice(:file, :validity_period).values
 		})
 	end
@@ -30,5 +30,5 @@ class DocumentDecorator < AF83::Decorator
 			url: file.url
 		})
 	end
-	
+
 end

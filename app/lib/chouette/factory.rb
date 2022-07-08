@@ -301,6 +301,7 @@ module Chouette
             model :footnote do
               attribute(:code) { |n| "FootNote #{n}" }
               attribute(:label) { |n| "FootNote Label #{n}" }
+              attribute(:line) { parent.metadatas_lines.first }
             end
 
             model :time_table do

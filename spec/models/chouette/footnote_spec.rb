@@ -1,14 +1,19 @@
 describe Chouette::Footnote, type: :model do
-  subject { create(:footnote) }
-  it { should validate_presence_of :line }
+  let(:context) { Chouette.create { footnote } }
+  subject(:footnote) { context.footnote }
 
-  describe 'data_source_ref' do
+  before { context.referential.switch }
 
-    it 'should not set default if not omitted' do
-      source = "RANDOM_DATASOURCE"
-      object = build(:footnote, data_source_ref: source)
-      object.save
-      expect(object.data_source_ref).to eq source
+  it { is_expected.to validate_presence_of :line }
+
+  describe '#data_source_ref' do
+    subject { footnote.data_source_ref }
+    context "when data source ref is specified" do
+      let(:context) { Chouette.create { footnote data_source_ref: "dummy" } }
+
+      it "should use a default value" do
+        is_expected.to eq("dummy")
+      end
     end
   end
 

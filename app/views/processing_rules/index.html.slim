@@ -1,7 +1,4 @@
-- if @workgroup
-  - breadcrumb :workgroup_processing_rules, @workgroup
-- else
-  - breadcrumb :processing_rules, @workbench
+- breadcrumb :processing_rules, @workbench
 
 .page_content
   .container-fluid
@@ -21,7 +18,7 @@
               ), \
               TableBuilderHelper::Column.new( \
                 key: :workgroup, \
-                attribute: -> (pr) { pr.workgroup? ? 'yes'.t : 'no'.t }, \
+                attribute: -> (pr) { pr.workgroup_rule ? 'yes'.t : 'no'.t }, \
                 sortable: false \
               ), \
               TableBuilderHelper::Column.new( \

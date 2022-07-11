@@ -758,6 +758,8 @@ ActiveRecord::Schema.define(version: 2022_08_08_124959) do
     t.string "notification_target"
     t.datetime "notified_recipients_at"
     t.bigint "user_id"
+    t.bigint "code_space_id"
+    t.index ["code_space_id"], name: "index_imports_on_code_space_id"
     t.index ["referential_id"], name: "index_imports_on_referential_id"
     t.index ["workbench_id"], name: "index_imports_on_workbench_id"
   end
@@ -1130,11 +1132,23 @@ ActiveRecord::Schema.define(version: 2022_08_08_124959) do
     t.string "operation_step"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "workgroup_id"
+    t.boolean "workgroup_rule", default: false
     t.bigint "target_workbench_ids", default: [], array: true
     t.index ["processable_type", "processable_id"], name: "index_processing_rules_on_processable_type_and_processable_id"
     t.index ["workbench_id"], name: "index_processing_rules_on_workbench_id"
-    t.index ["workgroup_id"], name: "index_processing_rules_on_workgroup_id"
+  end
+
+  create_table "processings", force: :cascade do |t|
+    t.bigint "workbench_id"
+    t.bigint "workgroup_id"
+    t.string "operation_type"
+    t.bigint "operation_id"
+    t.string "processed_type"
+    t.bigint "processed_id"
+    t.index ["operation_type", "operation_id"], name: "index_processings_on_operation_type_and_operation_id"
+    t.index ["processed_type", "processed_id"], name: "index_processings_on_processed_type_and_processed_id"
+    t.index ["workbench_id"], name: "index_processings_on_workbench_id"
+    t.index ["workgroup_id"], name: "index_processings_on_workgroup_id"
   end
 
   create_table "publication_api_keys", force: :cascade do |t|
@@ -1771,6 +1785,7 @@ ActiveRecord::Schema.define(version: 2022_08_08_124959) do
   add_foreign_key "custom_fields", "custom_field_groups"
   add_foreign_key "exports", "workgroups"
   add_foreign_key "group_of_lines_lines", "group_of_lines", name: "groupofline_group_fkey", on_delete: :cascade
+  add_foreign_key "imports", "code_spaces"
   add_foreign_key "journey_patterns", "routes", name: "jp_route_fkey", on_delete: :cascade
   add_foreign_key "journey_patterns", "stop_points", column: "arrival_stop_point_id", name: "arrival_point_fkey", on_delete: :nullify
   add_foreign_key "journey_patterns", "stop_points", column: "departure_stop_point_id", name: "departure_point_fkey", on_delete: :nullify

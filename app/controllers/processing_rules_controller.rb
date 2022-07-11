@@ -4,7 +4,7 @@ class ProcessingRulesController < ChouetteController
 
 	defaults :resource_class => ProcessingRule
 
-  belongs_to :workbench, :workgroup, polymorphic: true
+  belongs_to :workbench
 
   before_action :decorate_processing_rule, only: %i[show new edit create update]
 
@@ -20,43 +20,45 @@ class ProcessingRulesController < ChouetteController
         @processing_rules = ProcessingRuleDecorator.decorate(
           collection,
           context: {
-            workgroup: workgroup,
-            parent: parent
+            workbench: @workbench
           }
         )
       end
     end
   end
 
+  def add_workgroup_rule
+    @processing_rule = ProcessingRuleDecorator.decorate(
+      workbench.processing_rules.build(workgroup_rule: true),
+      context: {
+        workbench: workbench
+      }
+    )
+  end
+
   def get_processables
-    payload = get_processables_params.merge(parent: parent)
-    render json: { processables: ProcessingRules::GetProcessables.call(payload) }
+    render json: { processables: ProcessingRules::GetProcessables.call(get_processables_params) }
   end
 
   protected
 
   alias processing_rule resource
+  alias workbench parent
 
   def collection
-    ProcessingRules::GetCollection.call(parent).paginate(page: params[:page], per_page: 30)  
+    result = workbench.owner? ? workbench.workgroup.processing_rules : workbench.processing_rules
+
+    result.paginate(page: params[:page], per_page: 30)  
   end
 
   private
-
-  def workbench
-    @workbench ||= parent.is_a?(Workbench) ? parent : nil
-  end
-
-  def workgroup
-    @workgroup ||= parent.is_a?(Workbench) ? parent.workgroup : parent
-  end
 
   def decorate_processing_rule
     object = processing_rule rescue build_resource
     @processing_rule = ProcessingRuleDecorator.decorate(
       object,
       context: {
-        parent: parent
+        workbench: @workbench
       }
     )
   end
@@ -68,13 +70,20 @@ class ProcessingRulesController < ChouetteController
 			:operation_step,
       :workbench_id,
       :workgroup_id,
+      :workgroup_rule,
       target_workbenches: []
 		)
   end
 
   def get_processables_params
-    params.require(:search).permit(:query, :processable_type).tap do |params|
+    params.require(:search)
+      .permit(
+        :query,
+        :processable_type,
+        :workgroup_rule
+      ).with_defaults(workbench: workbench).tap do |params|
       params.require(:processable_type)
+      params.require(:workgroup_rule)
     end
   end
 end

@@ -29,7 +29,7 @@ class Workgroup < ApplicationModel
   has_many :compliance_check_sets, dependent: :destroy
   has_many :macro_lists, :through => :workbenches
   has_many :control_lists, :through => :workbenches
-  has_many :processing_rules
+  has_many :processing_rules, -> { workgroup.distinct }, through: :workbenches
 
   validates :name, presence: true, uniqueness: true
   validates_uniqueness_of :stop_area_referential_id

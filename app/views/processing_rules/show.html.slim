@@ -1,9 +1,4 @@
-- workbench = @processing_rule.processable.workbench
-
-- if @processing_rule.workgroup?
-  - breadcrumb :workgroup_processing_rule, @workgroup, @processing_rule
-- else
-  - breadcrumb :processing_rule, @workbench, @processing_rule
+- breadcrumb :processing_rule, @workbench, @processing_rule
 
 - page_header_content_for @processing_rule
 - content_for :page_header_title, @processing_rule.name, flush: true
@@ -16,11 +11,11 @@
 					= d.attribute :processable,
 						as: :association,
 						label: I18n.t(@processing_rule.processable_type, scope: 'enumerize.processing_rule.processable_type'),
-						link: url_for([workbench, @processing_rule.processable])
+						link: url_for([@workbench, @processing_rule.processable])
 
 					= d.attribute :operation_step, value: @processing_rule.operation_step.text
 
-					- if @processing_rule.workgroup?
+					- if @processing_rule.workgroup_rule
 						= d.attribute :target_workbenches, value: @processing_rule.display_target_workbenches
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12

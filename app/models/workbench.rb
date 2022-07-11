@@ -62,7 +62,7 @@ class Workbench < ApplicationModel
 
   has_many :document_providers
   has_many :documents, through: :document_providers
-  has_many :processing_rules, dependent: :destroy
+  has_many :processing_rules, -> (w) { workbench.or(workgroup.where('array_length(target_workbench_ids, 1) = 0 OR target_workbench_ids::integer[] @> ARRAY[?]', w.id)) }
 
   before_validation :create_dependencies, on: :create
   before_validation :create_default_prefix
@@ -116,7 +116,7 @@ class Workbench < ApplicationModel
   end
 
   def referential_to_aggregate
-    locked_referential_to_aggregate || output.current
+    locked_referential_to_aggregate || output. current
   end
 
   def calendars
@@ -243,6 +243,16 @@ class Workbench < ApplicationModel
   def create_default_document_provider
     default_document_provider.save
   end
+
+  def owner?
+    workgroup.owner_id == organisation_id
+  end
+
+  # def processing_rules
+  #   workgroup.processing_rules
+  #   .then { |collection| owner? ? collection : collection.where('target_workbench_ids::integer[] @> ARRAY[?]', id) }
+  #   .or(super)
+  # end
 
   private
 

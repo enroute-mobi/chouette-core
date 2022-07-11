@@ -1,6 +1,7 @@
 - javascript_additional_packs 'processing_rules/form'
 
-= simple_form_for [@processing_rule.parent, @processing_rule], html: { class: 'form-horizontal', id: 'processing_rule_form', 'x-data': "processingRuleForm(#{@processing_rule.alpine_state})" }, wrapper: :horizontal_form  do |f|
+- byebug
+= simple_form_for [@workbench, @processing_rule], html: { class: 'form-horizontal', id: 'processing_rule_form', 'x-data': "processingRuleForm(#{@processing_rule.alpine_state})" }, wrapper: :horizontal_form  do |f|
   .row
     .col-lg-12
 			.flex.items-baseline.justify-center
@@ -14,9 +15,10 @@
 					label_method: lambda { |l| "<span class='mx-2'>#{l.first}</span>".html_safe },
 					checked: @processing_rule.processable_type
 			
-			= f.input :processable_id, as: :select
+			= f.input :processable_id, as: :select, collection: []
+			= f.input :workgroup_rule, as: :hidden
 
-			- if @processing_rule.workgroup?
+			- if @processing_rule.workgroup_rule
 				div
 					= f.input :target_workbenches,
 					as: :tom_select,

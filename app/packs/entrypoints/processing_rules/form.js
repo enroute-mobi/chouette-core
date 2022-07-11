@@ -6,12 +6,14 @@ import OperationStepSelect from './form/operationStep.select'
 
 class Store {
 	constructor({
+		workgroupRule = false,
 		isWorkgroupOwner = false,
 		processableType = null,
 		processableId = null,
 		operationStep = null,
 		baseURL = ''
 	} = {}) {
+		this.workgroupRule = workgroupRule
 		this.isWorkgroupOwner = isWorkgroupOwner
 		this.processableType = processableType
 		this.processableId = processableId
@@ -24,8 +26,8 @@ class Store {
 	hasProcessableType() { return Boolean(this.processableType)  }
 
 	init() {
-		this.processableIdSelect = new ProcessableIdSelect(this, 'processing_rule_processable_id', this.baseURL)
-		this.operationStepSelect = new OperationStepSelect(this, 'processing_rule_operation_step')
+		this.processableIdSelect = new ProcessableIdSelect('processing_rule_processable_id', this)
+		this.operationStepSelect = new OperationStepSelect('processing_rule_operation_step', this)
 	
 		this.$watch('processableType', () => {
 			this.processableIdSelect.reload()

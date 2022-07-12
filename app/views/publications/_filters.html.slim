@@ -1,8 +1,9 @@
 = simple_form_for @search, url: request.path, method: "GET", html: { class: 'form form-filter' }  do |f|
   = f.simple_fields_for :order, @search.status, defaults: { wrapper: false } do |form_order|
-   .form-group.togglable class=filter_item_class(params[:search], :statuses)
-     = f.label :status, required: false, class: 'control-label'
-     = f.input :status, as: :check_boxes, collection: @search.candidate_statuses.map(&:slug), label: false, label_method: lambda{|slug| ("<span>" + operation_status(slug, verbose: true) + "</span>").html_safe}, wrapper_html: { class: "checkbox_list"}
+    .ffg-row
+      .form-group.togglable class=filter_item_class(params[:search], :statuses)
+        = f.label :status, required: false, class: 'control-label'
+        = f.input :status, as: :check_boxes, collection: @search.candidate_statuses.map(&:slug), label: false, label_method: lambda{|slug| ("<span>" + operation_status(slug, verbose: true) + "</span>").html_safe}, wrapper_html: { class: "checkbox_list"}
   .actions
     = link_to t('actions.erase'), workgroup_publication_setup_publication_path(@workgroup), class: 'btn btn-link'
     = f.submit t('actions.filter'), class: 'btn btn-default'

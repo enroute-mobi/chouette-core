@@ -11,6 +11,7 @@ const CompanySelect2 = ({ company, editMode, editModal, onSelect2Company, onUnse
   <Select
     cacheOptions
     isClearable
+    defaultOptions
     defaultValue={company?.id ? { id: company.id, text: company.name } : undefined }
     getOptionLabel={({ text }) => text}
     getOptionValue={({ id }) => id}

@@ -16,7 +16,7 @@ div
       div
         = form.input attribute.to_sym,
           as: :tom_select,
-          collection: decorated_export.exported_lines_options(n),
+          collection: decorated_export.send(options),
           input_html: { multiple: true, style: 'width: 100%', 'x-bind:data-url': "getExportedLinesSelectURL()", 'x-ref': 'exprtedLinesSelect' },
           label_html: { class: 'hidden' },
           include_hidden: false,

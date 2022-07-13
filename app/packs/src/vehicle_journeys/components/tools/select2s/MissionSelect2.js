@@ -10,7 +10,6 @@ const JPSelect2 = ({ isFilter, onSelect2JourneyPattern, selectedItem }) =>  (
     defaultValue={(isFilter && selectedItem?.id) ? { id: selectedItem.id, text: selectedItem.published_name } : undefined}
     className={isFilter ? null : 'vjCreateSelectJP'}
     cacheOptions
-    cacheOptions
     defaultOptions
     formatOptionLabel={(option, _meta) => <div dangerouslySetInnerHTML={{ __html: option.text }} />}
     getOptionLabel={({ text }) => text}

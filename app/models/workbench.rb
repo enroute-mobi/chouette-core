@@ -62,7 +62,13 @@ class Workbench < ApplicationModel
 
   has_many :document_providers
   has_many :documents, through: :document_providers
-  has_many :processing_rules, -> (w) { workbench.or(workgroup.where('array_length(target_workbench_ids, 1) = 0 OR target_workbench_ids::integer[] @> ARRAY[?]', w.id)) }
+  has_many :processing_rules,  -> (workbench) do
+    workgroup_rules = ProcessingRule.where(workbench_id: workbench.workgroup.workbench_ids)
+  
+    workbench.owner? ?
+      workgroup_rules :
+      workbench_rule.or(workgroup_rules.workgroup_rule.where('array_length(target_workbench_ids, 1) = 0 OR target_workbench_ids::integer[] @> ARRAY[?]', workbench.id))   
+  end
 
   before_validation :create_dependencies, on: :create
   before_validation :create_default_prefix
@@ -247,12 +253,6 @@ class Workbench < ApplicationModel
   def owner?
     workgroup.owner_id == organisation_id
   end
-
-  # def processing_rules
-  #   workgroup.processing_rules
-  #   .then { |collection| owner? ? collection : collection.where('target_workbench_ids::integer[] @> ARRAY[?]', id) }
-  #   .or(super)
-  # end
 
   private
 

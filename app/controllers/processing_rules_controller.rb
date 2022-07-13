@@ -46,9 +46,7 @@ class ProcessingRulesController < ChouetteController
   alias workbench parent
 
   def collection
-    result = workbench.owner? ? workbench.workgroup.processing_rules : workbench.processing_rules
-
-    result.paginate(page: params[:page], per_page: 30)  
+    workbench.processing_rules.paginate(page: params[:page], per_page: 30)  
   end
 
   private

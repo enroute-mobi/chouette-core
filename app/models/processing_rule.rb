@@ -10,8 +10,8 @@ class ProcessingRule < ApplicationModel
 	enumerize :processable_type, in: %w(Macro::List Control::List)
 	enumerize :operation_step, in: %w(after_import before_merge after_merge after_aggregate), scope: :shallow
 
-	scope :workgroup, -> { where(workgroup_rule: true) }
-	scope :workbench, -> { where(workgroup_rule: false) }
+	scope :workgroup_rule, -> { where(workgroup_rule: true) }
+	scope :workbench_rule, -> { where(workgroup_rule: false) }
 	scope :for_macros, -> { where(processable_type: 'Macro::List') }
 	scope :for_controls, -> { where(processable_type: 'Control::List') }
 end

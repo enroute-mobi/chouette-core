@@ -1,20 +1,33 @@
 class PerPageInput < SimpleForm::Inputs::StringInput
-  delegate :content_tag, :concat, :link_to, :javascript_additional_packs, to: :template
+  delegate :content_tag, :concat, :link_to, :request, to: :template
 
-  # Fake input with several links + hidden input
-  # We use AlpineJS to dynamically set hidden input value + submit form when user click on link
-  def input(wrapper_options)
-    content_tag(:div, class: 'flex items-center', 'x-data': "{ #{attribute_name}: #{value} }", 'x-init': "$watch('#{attribute_name}', () => document.querySelector('form').submit())") do
-      concat link_to "30", '', class: "btn-link mx-2", style: "#{value == 30 ? 'font-weight: bold' : ''}", 'x-on:click.prevent': "#{attribute_name} = 30"
-      concat "-"
-      concat link_to "50", '', class: "btn-link mx-2", style: "#{value == 50 ? 'font-weight: bold' : ''}", 'x-on:click.prevent': "#{attribute_name} = 50"
-      concat "-"
-      concat link_to "100", '', class: "btn-link ml-2", style: "#{value == 100 ? 'font-weight: bold' : ''}", 'x-on:click.prevent': "#{attribute_name} = 100" 
-      concat @builder.hidden_field(attribute_name, { 'x-model': attribute_name })
-     end
+  def input(_wrapper_options)
+    content_tag(:div, class: 'flex items-center') do
+      concat per_page_link(30)
+      concat separator
+      concat per_page_link(50)
+      concat separator
+      concat per_page_link(100)
+      concat @builder.hidden_field(attribute_name) # Only used when we submit the search form
+    end
   end
 
   def value
     object.send(attribute_name) if object.respond_to? attribute_name
+  end
+
+  private
+
+  def per_page_link per_page_value
+    link_to(
+      per_page_value,
+      request.params.merge(per_page: per_page_value),
+      class: "btn-link",
+      style: "#{value == per_page_value ? 'font-weight: bold' : ''}"
+    )
+  end
+
+  def separator
+    content_tag :span, "-", class: 'mx-1'
   end
 end

@@ -9,3 +9,4 @@ fr:
         workbench_ids: Espaces de travail
         start_date: "Après : "
         end_date: "Avant : "
+        per_page: "Afficher par"

@@ -88,6 +88,7 @@ module Chouette
               attribute :transport_mode, "bus"
               attribute :transport_submode, "undefined"
               attribute(:number) { |n| n }
+              attribute(:registration_number) { |n| "registration_number_#{n}" } 
 
               transient :codes
 

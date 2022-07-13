@@ -48,6 +48,18 @@ class Api::V1::DatasController < ActionController::Base
     render json: result
   end
 
+  def line_document
+    payload = params.slice(:registration_number, :document_type).merge(referential: published_referential).permit!.to_h.symbolize_keys
+    document = GetLineDocument.call(payload)
+    filename = "#{params[:slug]}-line-#{payload[:registration_number]}-#{payload[:document_type]}-#{document.uuid}.#{document.file.file.extension}"
+
+    send_file document.file.path, filename: filename
+  rescue GetLineDocument::TooManyLinesError
+  rescue GetLineDocument::LineNotFound
+  rescue GetLineDocument::DocumentNotFound
+    render :missing_file_error, layout: 'api', status: 404 
+  end
+
   protected
 
   def set_locale

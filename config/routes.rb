@@ -376,6 +376,7 @@ ChouetteIhm::Application.routes.draw do
       # Don't move after get 'datas/:slug/*key' CHOUETTE-1105
       get 'datas/:slug/lines', to: 'datas#lines', as: :lines
       post 'datas/:slug/graphql', to: "datas#graphql", as: :graphql
+      get 'datas/:slug/documents/lines/:registration_number/:document_type', to: 'datas#line_document', as: :line_document
 
       get 'datas/:slug/*key', to: 'datas#download', :format => false
       get 'datas/:slug.*key', to: 'datas#redirect', :format => false

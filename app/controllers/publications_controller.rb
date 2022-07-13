@@ -10,11 +10,17 @@ class PublicationsController < ChouetteController
 
   before_action :decorate_exports, only: :show
 
+  protected
+
+  def search
+    @search ||= Search::PublicationExport.new(@publication.exports, params)
+  end
+
   private
-  
+
   def decorate_exports
     @exports = ExportDecorator.decorate(
-      @publication.exports,
+      search.collection,
       context: {
         parent: @workgroup
       }

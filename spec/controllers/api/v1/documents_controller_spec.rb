@@ -30,7 +30,7 @@ RSpec.describe Api::V1::DocumentsController, type: :controller do
 								validity_period: {
 									from: '2022-06-17'
 								},
-								document_type: document_type.name,
+								document_type: document_type.short_name,
 								codes: [
 									{ code_space: code_space.short_name, value: 'test' }
 								]

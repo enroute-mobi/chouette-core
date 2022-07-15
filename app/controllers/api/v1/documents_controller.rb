@@ -33,7 +33,7 @@ class Api::V1::DocumentsController < Api::V1::WorkbenchController
 				end
 
 				document_params[:codes_attributes] = document_params.delete(:codes)
-				document_params[:document_type_id] = current_workbench.workgroup.document_types.find_by(name:  document_params.delete('document_type'))&.id
+				document_params[:document_type_id] = current_workbench.workgroup.document_types.find_by(short_name:  document_params.delete('document_type'))&.id
 			end
   end
 end

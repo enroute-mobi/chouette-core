@@ -2,7 +2,7 @@ class Api::V1::DocumentsController < Api::V1::WorkbenchController
   respond_to :json, only: [:create]
 
   def create
-    document = Document.create! document_params
+    document = document_provider.documents.create! document_params
 
     render json: document, status: :created
   rescue ActiveRecord::RecordInvalid => e
@@ -10,6 +10,10 @@ class Api::V1::DocumentsController < Api::V1::WorkbenchController
   end
 
   private
+
+	def document_provider
+    current_workbench.default_document_provider
+  end
 
 	def document_params
 		params
@@ -19,7 +23,6 @@ class Api::V1::DocumentsController < Api::V1::WorkbenchController
 				:description,
 				:file,
 				:document_type,
-				:document_provider,
 				validity_period: [:from, :to],
 				codes: [:code_space, :value],
 			)
@@ -31,7 +34,6 @@ class Api::V1::DocumentsController < Api::V1::WorkbenchController
 
 				document_params[:codes_attributes] = document_params.delete(:codes)
 				document_params[:document_type_id] = current_workbench.workgroup.document_types.find_by(name:  document_params.delete('document_type'))&.id
-				document_params[:document_provider_id] = current_workbench.document_providers.find_by(name: document_params.delete('document_provider'))&.id
 			end
   end
 end

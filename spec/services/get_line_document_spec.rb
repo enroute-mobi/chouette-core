@@ -1,21 +1,24 @@
 RSpec.describe GetLineDocument do
   let(:context) do
     Chouette.create do
-      line :line, registration_number: '1'
+			workgroup do
+				document_type :pdf, name: 'pdf', short_name: 'pdf'
 
-      referential lines: [:line]
+				document_provider do
+					document :first_doc, document_type: :pdf, validity_period: Period.from(Date.today)
+					document :second_doc, document_type: :pdf, validity_period: Period.from(Date.today)
+					document :third_doc, document_type: :pdf, validity_period: Period.from(Date.tomorrow)
+				end
+
+				line :line, registration_number: '1', documents: [:first_doc, :second_doc, :third_doc]
+
+				referential lines: [:line]
+
+			end
     end
   end
 
-	let(:workgroup) { context.workgroup }
-	let(:workbench) { workgroup.workbenches.first }
   let(:referential) { context.referential }
-  let(:line) { referential.lines.first }
-
-	let(:document_provider) { workbench.document_providers.create(name: 'document_provider') }
-	let(:document_type) { workgroup.document_types.create(name: 'test', short_name: 'test') }
-	let(:file) { fixture_file_upload('sample_pdf.pdf') }
-
 	let(:service) { GetLineDocument.new(referential: referential, registration_number: '1', document_type: 'test') }
 
 	describe 'when line is not found' do
@@ -36,21 +39,15 @@ RSpec.describe GetLineDocument do
 		end
 
 		describe 'when document is found' do
-			let(:document1) { Document.create(document_type: document_type, document_provider: document_provider, name: '1', file: file, validity_period: Range.new(Date.today, nil)) }
-			let(:document2) { Document.create(document_type: document_type, document_provider: document_provider, name: '2', file: file, validity_period: Range.new(Date.today + 1.day, nil)) }
-			let(:document3) { Document.create(document_type: document_type, document_provider: document_provider, name: '3', file: file, validity_period: Range.new(Date.today, nil)) }
-
-			before do
-				DocumentMembership.create(document: document1, documentable: line)
-				DocumentMembership.create(document: document2, documentable: line)
-				DocumentMembership.create(document: document3, documentable: line)
-			end
+			let(:document1) { context.document(:first_doc) }
+			let(:document2) { context.document(:second_doc) }
+			let(:document3) { context.document(:third_doc) }
 
 			it 'should return last updated document (with validity period containing current date)' do
 				allow(service).to receive(:registration_number) { '1' }
-				allow(service).to receive(:document_type) { 'test' }
+				allow(service).to receive(:document_type) { 'pdf' }
 
-				expect(service.call).to eq(document3)
+				expect(service.call).to eq(document2)
 
 				document1.touch
 				document1.reload

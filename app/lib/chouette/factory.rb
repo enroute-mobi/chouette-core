@@ -60,6 +60,11 @@ module Chouette
           attribute(:resource_type) { "StopArea" }
         end
 
+        model :document_type do
+          attribute(:name) { |n| "Document Type #{n}"}
+          attribute(:short_name) { |n| "document_type_#{n}" }
+        end
+
         model :workbench do
           attribute(:name) { |n| "Workbench #{n}" }
           attribute(:organisation) { build_root_model :organisation }
@@ -91,11 +96,16 @@ module Chouette
               attribute(:registration_number) { |n| "registration_number_#{n}" } 
 
               transient :codes
+              transient :documents
 
               after do
                 (transient(:codes) || {}).each do |code_space_short_name, value|
                   code_space = new_instance.workgroup.code_spaces.find_by!(short_name: code_space_short_name)
                   new_instance.codes.build(code_space: code_space, value: value)
+                end
+
+                Array(transient(:documents, resolve_instances: true)).each do |document|
+                  DocumentMembership.create(document: document, documentable: new_instance)
                 end
               end
             end
@@ -190,6 +200,29 @@ module Chouette
               end
             end
 
+          end
+
+          model :document_provider do
+            attribute(:name) { |n| "Document Provider #{n}" }
+
+            model :document do
+              attribute(:name) { |n| "Document #{n}" }
+              attribute(:validity_period) { Period.from(Date.today) }
+              transient :file, 'sample_pdf.pdf'
+
+              transient :document_type, 'pdf'
+
+              after do |document|
+                file_path = File.expand_path("spec/fixtures/#{transient(:file)}")
+                uploader = DocumentUploader.new
+                uploader.cache! File.open(file_path)
+
+                new_instance.file = uploader
+
+                document_type = transient(:document_type) || parent.workbench.workgroup.document_types.create_by(name: 'pdf', short_name: 'pdf')
+                new_instance.document_type = document_type
+              end
+            end
           end
 
           model :referential do

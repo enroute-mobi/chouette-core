@@ -11,7 +11,7 @@ class GetLineDocument < ApplicationService
 		document = line
 			.documents
 			.joins(:document_type)
-			.merge(DocumentType.where(name: @document_type))
+			.merge(DocumentType.where(name: document_type))
 			.where('validity_period @> CURRENT_DATE')
 			.order(updated_at: :desc)
 			.first

@@ -33,6 +33,62 @@ RSpec.describe Export::Ara do
   end
 
   describe "Stops export" do
+
+    describe Export::Ara::Stops::Decorator do
+      subject(:decorator) { described_class.new(stop_area) }
+      let(:stop_area) { Chouette::StopArea.new }
+
+      describe "#parent_uuid" do
+        subject { decorator.parent_uuid }
+
+        context "when StopArea parent isn't defined" do
+          before { stop_area.parent = nil }
+
+          it { is_expected.to be_nil }
+        end
+
+        context "when StopArea parent objectid is 'test:StopArea:uuid'" do
+          before { stop_area.parent = Chouette::StopArea.new(objectid: "test:StopArea:uuid") }
+
+          it { is_expected.to eq("uuid")  }
+        end
+      end
+
+      describe "#ara_attributes" do
+        subject { decorator.ara_attributes }
+
+        context "when #parent_uuid is 'uuid'" do
+          before { allow(decorator).to receive(:parent_uuid).and_return("uuid") }
+          it { is_expected.to include(parent_id: 'uuid')}
+        end
+      end
+    end
+
+    let(:export_context) { double stop_area_referential: context.stop_area_referential }
+    let(:target) { [] }
+    subject(:part) { Export::Ara::Stops.new export_scope: scope, target: target, context: export_context }
+    let(:scope) { double stop_areas: context.stop_area_referential.stop_areas, codes: context.workgroup.codes }
+
+    describe "#stop_areas" do
+      subject { part.stop_areas }
+
+      context "when a StopArea has a parent" do
+        let(:context) do
+          Chouette.create do
+            stop_area :parent, area_type: Chouette::AreaType::STOP_PLACE.to_s
+            stop_area :exported, parent: :parent
+          end
+        end
+
+        let(:stop_area) { context.stop_area(:exported) }
+        let(:parent) { stop_area.parent }
+
+        it "includes both Stop Area and its parent" do
+          is_expected.to include(stop_area, parent)
+        end
+      end
+    end
+
     context "when two Stop Areas are exported" do
       let(:context) do
         Chouette.create { stop_area(:first) ; stop_area(:other) }
@@ -41,12 +97,7 @@ RSpec.describe Export::Ara do
       let(:stop_area) { context.stop_area(:first ) }
       let(:other_stop_area) { context.stop_area(:other) }
 
-      let(:scope) { double stop_areas: context.stop_area_referential.stop_areas, codes: context.workgroup.codes }
-      let(:target) { [] }
-
       let(:code_space) { context.workgroup.code_spaces.create! short_name: 'test' }
-
-      let(:part) { Export::Ara::Stops.new export_scope: scope, target: target }
 
       describe "the Ara File target" do
         subject { part.export! ; target }

@@ -80,8 +80,7 @@ module ObjectidSupport
     end
 
     def get_objectid
-      identifier = referential_identifier
-      objectid_formatter.get_objectid read_attribute(:objectid) if identifier.present? && self.class.has_objectid_format?(*identifier) && read_attribute(:objectid)
+      objectid_formatter.get_objectid(raw_objectid) if raw_objectid
     end
 
     def objectid

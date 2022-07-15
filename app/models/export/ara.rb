@@ -53,7 +53,7 @@ class Export::Ara < Export::Base
       target.model_name(day) do |model_name|
         # For each day, each kind of model is exported
         parts.each do |part|
-          part.new(export_scope: daily_scope, target: model_name).export
+          part.new(context: Context.new(self), export_scope: daily_scope, target: model_name).export
         end
       end
     end
@@ -62,6 +62,17 @@ class Export::Ara < Export::Base
 
     export_file.close
     export_file
+  end
+
+  # Provides (restricted) access to Export resources in Part
+  class Context
+    def initialize(export)
+      @export = export
+    end
+    attr_reader :export
+
+    delegate :referential, to: :export
+    delegate :stop_area_referential, to: :referential
   end
 
   # Use Export::Scope::Scheduled which scopes all models according to vehicle_journeys
@@ -247,9 +258,10 @@ class Export::Ara < Export::Base
   end
 
   class Part
-    attr_reader :export_scope, :target
+    attr_reader :context, :export_scope, :target
 
-    def initialize(export_scope:, target:)
+    def initialize(context: nil, export_scope:, target:)
+      @context = context
       @export_scope = export_scope
       @target = target
     end
@@ -266,16 +278,30 @@ class Export::Ara < Export::Base
   end
 
   class Stops < Part
-    delegate :stop_areas, to: :export_scope
+    delegate :stop_area_referential, to: :context
 
     def export!
-      stop_areas.includes(codes: :code_space).find_each do |stop_area|
+      stop_areas.includes(:parent, codes: :code_space).find_each do |stop_area|
         target << Decorator.new(stop_area, code_provider: code_provider).ara_model
       end
     end
 
+    def stop_areas
+      ::Query::StopArea.new(stop_area_referential.stop_areas).
+        self_and_ancestors(export_scope.stop_areas)
+    end
+
+    class CodeScope < SimpleDelegator
+      def initialize(part)
+        @part = part
+        super part.export_scope
+      end
+      attr_reader :part
+      delegate :stop_areas, to: :part
+    end
+
     def code_provider
-      @code_provider ||= CodeProvider::Model.new scope: export_scope, model_class: Chouette::StopArea
+      @code_provider ||= CodeProvider::Model.new scope: CodeScope.new(self), model_class: Chouette::StopArea
     end
 
     # Creates an Ara::StopArea from a StopArea
@@ -295,7 +321,12 @@ class Export::Ara < Export::Base
           id: uuid,
           name: name,
           objectids: ara_codes,
+          parent_id: parent_uuid
         }
+      end
+
+      def parent_uuid
+        parent.get_objectid&.local_id if parent
       end
 
       def ara_model
@@ -304,7 +335,7 @@ class Export::Ara < Export::Base
 
       # TODO To be shared
       def uuid
-        get_objectid.local_id
+        get_objectid&.local_id
       end
 
       # TODO To be shared

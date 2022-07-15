@@ -270,22 +270,19 @@ class Period < Range
   class Type < ActiveRecord::Type::Value
 
     def cast(value)
-      return value if value.is_a?(Period)
-
       case value
-        when NilClass
-          new_value = Period.new(from: nil, to: nil)
         when String
-          new_value = oid_range.cast_value(value)
+          period_from_range oid_range.cast_value(value)
         when Hash
-          new_value = Range.new value[:from], value[:to]
+          period_from_range Range.new value[:from], value[:to]
         when Range
-          date_range_min = value.begin == -Float::INFINITY ? nil : value.begin
-          date_range_max = value.end == Float::INFINITY ? nil : value.end
-          new_value = Period.new(from: date_range_min, to: date_range_max)
+          period_from_range value
+        when Period
+          value
+        else
+          Rails.logger.debug "Could not cast Period from a #{value.class} object"
+          Period.new(from: nil, to: nil)
       end
-
-      cast(new_value)
     end
 
     def serialize(value)
@@ -305,6 +302,10 @@ class Period < Range
       @oid_range ||= ActiveRecord::ConnectionAdapters::PostgreSQL::OID::Range.new(ActiveRecord::ConnectionAdapters::PostgreSQL::OID::Date.new)
     end
 
+    def period_from_range(range)
+      date_range_min = range.begin == -Float::INFINITY ? nil : range.begin
+      date_range_max = range.end == Float::INFINITY ? nil : range.end
+      Period.new(from: date_range_min, to: date_range_max)
+    end
   end
-
 end

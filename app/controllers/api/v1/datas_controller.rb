@@ -53,7 +53,7 @@ class Api::V1::DatasController < ActionController::Base
 
   def line_document
     payload = params.slice(:registration_number, :document_type).merge(referential: published_referential).permit!.to_h.symbolize_keys
-    document = GetLineDocument.call(payload)
+    document = PublicationApis::GetLineDocument.call(payload)
     filename = "#{params[:slug]}-line-#{payload[:registration_number]}-#{payload[:document_type]}-#{document.uuid}.#{document.file.file.extension}"
 
     send_file document.file.path, filename: filename

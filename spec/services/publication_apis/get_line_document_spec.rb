@@ -1,4 +1,4 @@
-RSpec.describe GetLineDocument do
+RSpec.describe PublicationApis::GetLineDocument do
   let(:context) do
     Chouette.create do
 			workgroup do
@@ -19,7 +19,7 @@ RSpec.describe GetLineDocument do
   end
 
   let(:referential) { context.referential }
-	let(:service) { GetLineDocument.new(referential: referential, registration_number: '1', document_type: 'test') }
+	let(:service) { PublicationApis::GetLineDocument.new(referential: referential, registration_number: '1', document_type: 'test') }
 
 	describe 'when line is not found' do
 		it 'should raise PublicationApi::LineNotFoundError' do

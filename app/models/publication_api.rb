@@ -27,4 +27,7 @@ class PublicationApi < ActiveRecord::Base
 
   class InvalidAuthenticationError < RuntimeError; end
   class MissingAuthenticationError < RuntimeError; end
+  class TooManyLinesError < StandardError; end
+  class LineNotFoundError < StandardError; end
+  class DocumentNotFoundError < StandardError; end
 end

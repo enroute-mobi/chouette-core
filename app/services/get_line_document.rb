@@ -8,32 +8,24 @@ class GetLineDocument < ApplicationService
 	end
 
 	def call
-		document = line
+		line
 			.documents
 			.joins(:document_type)
 			.merge(DocumentType.where(name: document_type))
 			.where('validity_period @> CURRENT_DATE')
 			.order(updated_at: :desc)
-			.first
-
-		raise DocumentNotFoundError unless document
-
-		document
+			.first!
+	rescue ActiveRecord::RecordNotFound
+		raise PublicationApi::DocumentNotFoundError
 	end
 
 	def line
 		relation = referential.lines.where(registration_number: registration_number)
 
-		raise TooManyLinesError if relation.many?
+		raise PublicationApi::TooManyLinesError if relation.many?
 
-		line = relation.first
-
-		raise LineNotFoundError unless line
-
-		line
+		relation.first!
+	rescue ActiveRecord::RecordNotFound
+		raise PublicationApi::LineNotFoundError
 	end
-
-	class TooManyLinesError < StandardError; end
-	class LineNotFoundError < StandardError; end
-	class DocumentNotFoundError < StandardError; end
 end

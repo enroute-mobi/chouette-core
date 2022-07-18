@@ -5,6 +5,9 @@ class Api::V1::DatasController < ActionController::Base
 
   rescue_from PublicationApi::InvalidAuthenticationError, with: :invalid_authentication_error
   rescue_from PublicationApi::MissingAuthenticationError, with: :missing_authentication_error
+  rescue_from PublicationApi::TooManyLinesError, with: :missing_file_error
+  rescue_from PublicationApi::LineNotFoundError, with: :missing_file_error
+  rescue_from PublicationApi::DocumentNotFoundError, with: :missing_file_error
 
   def infos
     render layout: 'api'
@@ -54,10 +57,6 @@ class Api::V1::DatasController < ActionController::Base
     filename = "#{params[:slug]}-line-#{payload[:registration_number]}-#{payload[:document_type]}-#{document.uuid}.#{document.file.file.extension}"
 
     send_file document.file.path, filename: filename
-  rescue GetLineDocument::TooManyLinesError
-  rescue GetLineDocument::LineNotFound
-  rescue GetLineDocument::DocumentNotFound
-    render :missing_file_error, layout: 'api', status: 404 
   end
 
   protected

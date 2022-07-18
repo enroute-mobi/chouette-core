@@ -22,19 +22,19 @@ RSpec.describe GetLineDocument do
 	let(:service) { GetLineDocument.new(referential: referential, registration_number: '1', document_type: 'test') }
 
 	describe 'when line is not found' do
-		it 'should raise GetLineDocument::LineNotFoundError' do
+		it 'should raise PublicationApi::LineNotFoundError' do
 			allow(service).to receive(:registration_number) { 'toto' }
-			expect { service.call }.to raise_error(GetLineDocument::LineNotFoundError)
+			expect { service.call }.to raise_error(PublicationApi::LineNotFoundError)
 		end
 	end
 
 	describe 'when line is found' do
 		describe 'when document is not found' do
-			it 'should raise GetLineDocument::DocumentNotFoundError' do
+			it 'should raise PublicationApi::DocumentNotFoundError' do
 				allow(service).to receive(:registration_number) { '1' }
 				allow(service).to receive(:document_type) { '1' }
 
-				expect { service.call }.to raise_error(GetLineDocument::DocumentNotFoundError)
+				expect { service.call }.to raise_error(PublicationApi::DocumentNotFoundError)
 			end
 		end
 

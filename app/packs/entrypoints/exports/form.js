@@ -5,7 +5,7 @@ class Store {
 	constructor({
 		type = '',
 		exportedLines = 'all_line_ids',
-		period = '',
+		period = 'all_periods',
 		referentialId = '',
 		isExport = null,
 		duration = null

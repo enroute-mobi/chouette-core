@@ -459,14 +459,8 @@ class Export::NetexGeneric < Export::Base
           address_line_1: address,
           post_code: zip_code,
           town: city_name,
-          country_name: country_name
+          country_name: country
         )
-      end
-
-      def country_name
-        return if country.blank?
-        country_searched = ISO3166::Country[country.capitalize]
-        country_searched.translations[I18n.locale.to_s] || country
       end
 
       def operating_organisation_view

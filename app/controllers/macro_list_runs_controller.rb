@@ -49,15 +49,27 @@ class MacroListRunsController < ChouetteController
   alias macro_list parent
   alias macro_list_run resource
 
-  def collection
-    workbench.macro_list_runs.paginate(page: params[:page], per_page: 30)
-  end
-
   def build_resource
     super.tap do |macro_list_run|
       macro_list_run.build_with_original_macro_list
     end
   end
+
+  def scope
+    workbench.macro_list_runs
+  end
+
+  def search
+    @search ||= ::Search::MacroListRun.new(scope, params)
+  end
+
+  class Search < Search::Base
+    def query_class
+      Query::MacroListRun
+    end
+  end
+
+  delegate :collection, to: :search
 
   private
 

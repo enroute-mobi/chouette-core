@@ -15,6 +15,8 @@ fr:
   macro_list_runs:
     actions:
       new: "Exécuter un Jeu d'instructions"
+    filters:
+      name: "Indiquez un nom"
   macro_list_run:
     actions:
       new: "Exécuter un Jeu d'instructions"

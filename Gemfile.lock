@@ -66,7 +66,8 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: c2b46f216be49831c0f9f397b7065d22f789c87c
+  revision: 1b2c3169da904c92bb0c7dad46a6b52822b175b4
+  branch: NETEX-55-passing-times-missings-in-the-idfm-profiles
   specs:
     netex (0.1.2)
       activesupport

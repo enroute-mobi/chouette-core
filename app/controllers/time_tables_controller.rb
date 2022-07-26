@@ -15,7 +15,7 @@ class TimeTablesController < ChouetteController
 
   def show
     show! do
-      @year = params[:year] ? params[:year].to_i : @time_table.bounding_dates.first&.cwyear || Date.today.cwyear
+      @year = params[:year] ? params[:year].to_i : year
       @time_table_combination = TimeTableCombination.new
       @time_table = @time_table.decorate(context: {
         referential: @referential
@@ -176,6 +176,22 @@ class TimeTablesController < ChouetteController
   end
 
   private
+
+  def year
+    dates = @time_table.bounding_dates.sort
+    start_year = dates.first&.year
+    end_year = dates.last&.year
+
+    return Date.today.cwyear unless dates.present?
+
+    if start_year > Date.today.cwyear
+      start_year
+    elsif end_year < Date.today.cwyear
+      end_year
+    else
+      Date.today.cwyear
+    end
+  end
 
   def sort_column
     @@valid_cols ||= begin

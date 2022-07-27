@@ -141,7 +141,7 @@ gem 'premailer-rails', '>= 1.11.1'
 gem 'redis-actionpack', '>= 5.3.0'
 
 gem 'gtfs', en_route: 'gtfs'
-gem 'netex', en_route: 'netex', branch: 'NETEX-55-passing-times-missings-in-the-idfm-profiles'
+gem 'netex', en_route: 'netex'
 gem 'rgeo-shapefile'
 gem 'ara-file', '>= 0.1.1', en_route: 'ara-file'
 gem 'neptune', en_route: 'neptune', branch:'NEPTUNE-5-test-file-extension-case'

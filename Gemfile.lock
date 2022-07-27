@@ -66,8 +66,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: 1b2c3169da904c92bb0c7dad46a6b52822b175b4
-  branch: NETEX-55-passing-times-missings-in-the-idfm-profiles
+  revision: d66a845f719d33979c57539c96ef97bb47467e2f
   specs:
     netex (0.1.2)
       activesupport
@@ -411,7 +410,7 @@ GEM
     htmlbeautifier (1.4.1)
     htmlentities (4.3.4)
     httpclient (2.8.3)
-    i18n (1.11.0)
+    i18n (1.12.0)
       concurrent-ruby (~> 1.0)
     i18n-js (3.9.1)
       i18n (>= 0.6.6)
@@ -927,4 +926,4 @@ DEPENDENCIES
   will_paginate-bootstrap
 
 BUNDLED WITH
-   2.2.33
+   2.3.18

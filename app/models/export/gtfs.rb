@@ -612,7 +612,8 @@ class Export::Gtfs < Export::Base
           coach: 200,
           air: 1100,
           taxi: 1500,
-          hireCar: 1506
+          hireCar: 1506,
+          schoolAndPublicServiceBus: 713
         }.with_indifferent_access
       end
 

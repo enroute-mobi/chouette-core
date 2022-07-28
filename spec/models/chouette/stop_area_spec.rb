@@ -379,6 +379,22 @@ RSpec.describe Chouette::StopArea do
       end
 
     end
-
   end
+
+  describe '#quay?' do
+    subject(:stop_area) { Chouette::StopArea.new }
+
+    context "when area type is Quay" do
+      before { stop_area.area_type = Chouette::AreaType::QUAY }
+      it { is_expected.to be_quay }
+    end
+
+    (Chouette::AreaType::COMMERCIAL - [ Chouette::AreaType::QUAY ]).each do |area_type|
+      context "when StopArea is #{area_type}" do
+        before { stop_area.area_type = area_type }
+        it { is_expected.to_not be_quay }
+      end
+    end
+  end
+
 end

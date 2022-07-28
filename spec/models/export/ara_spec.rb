@@ -61,6 +61,16 @@ RSpec.describe Export::Ara do
           before { allow(decorator).to receive(:parent_uuid).and_return("uuid") }
           it { is_expected.to include(parent_id: 'uuid')}
         end
+
+        context "when StopArea is a Quay" do
+          before { stop_area.area_type = Chouette::AreaType::QUAY }
+          it { is_expected.to_not include(collect_children: true) }
+        end
+
+        context "when StopArea isn't a Quay" do
+          before { stop_area.area_type = Chouette::AreaType::STOP_PLACE }
+          it { is_expected.to include(collect_children: true) }
+        end
       end
     end
 

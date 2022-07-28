@@ -233,6 +233,10 @@ module Chouette
       where is_referent: true
     end
 
+    def quay?
+      area_type&.to_sym == Chouette::AreaType::QUAY
+    end
+
     def to_lat_lng
       Geokit::LatLng.new(latitude, longitude) if latitude and longitude
     end

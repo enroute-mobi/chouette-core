@@ -321,8 +321,13 @@ class Export::Ara < Export::Base
           id: uuid,
           name: name,
           objectids: ara_codes,
-          parent_id: parent_uuid
+          parent_id: parent_uuid,
+          collect_children: ara_collect_children?
         }
+      end
+
+      def ara_collect_children?
+        ! quay?
       end
 
       def parent_uuid

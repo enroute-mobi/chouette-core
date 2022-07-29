@@ -612,14 +612,14 @@ class Export::Gtfs < Export::Base
           coach: 200,
           air: 1100,
           taxi: 1500,
-          hireCar: 1506,
-          schoolAndPublicServiceBus: 713
+          hireCar: 1506
         }.with_indifferent_access
       end
 
       def route_type
         unless flexible_service
           return 204 if transport_mode == 'coach' && transport_submode == 'regionalCoach'
+          return 713 if transport_mode == 'bus' && transport_submode == 'schoolAndPublicServiceBus'
           self.class.route_types[transport_mode]
         else
           715

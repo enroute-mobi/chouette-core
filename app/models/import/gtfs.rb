@@ -423,8 +423,9 @@ class Import::Gtfs < Import::Base
           when '200'
             'coach'
           when '713'
-            'schoolAndPublicServiceBus'
-          when ''  
+            [ 'bus', 'schoolAndPublicServiceBus' ]
+          else
+            'bus' 
           end
 
         transport_submode ||= 'undefined'

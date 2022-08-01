@@ -489,7 +489,10 @@ class Export::Ara < Export::Base
           name: published_journey_name,
           objectids: ara_codes,
           line_id: self.line.get_objectid.local_id,
-          direction_type: self.route.wayback
+          direction_type: self.route.wayback,
+          attributes: {
+            "VehicleMode": self.line.transport_mode
+          }
         }
       end
 

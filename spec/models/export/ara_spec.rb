@@ -211,8 +211,12 @@ RSpec.describe Export::Ara do
       describe 'the Ara File target' do
         it { is_expected.to match_array([an_instance_of(Ara::VehicleJourney)]) }
 
-        it 'contains a Vehicle journey having a direction_type attribute' do
+        it 'contains a Vehicle journey having a direction_type' do
           expect(subject.first).to respond_to(:direction_type)
+        end
+
+        it 'contains a Vehicle journey having a VehicleMode attribute' do
+          expect(subject.first.attributes).to eq({'VehicleMode': 'bus'})
         end
       end
     end

@@ -17,6 +17,8 @@ en:
         one: Code format
       control/format_attribute:
         one: Format of attribute
+      control/model_status:
+        one: Model status
     attributes:
       control/base:
         name: Name
@@ -40,3 +42,8 @@ en:
       control/format_attribute:
         target_attribute: Target Attribute
         expected_format: Expected format
+      control/model_status:
+        expected_status: Expected status
+        status_values:
+          enabled: Enabled
+          disabled: Disabled

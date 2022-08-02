@@ -27,6 +27,8 @@ fr:
         processing: Traitement
         information: Information
     search_no_results: "Aucun Rapport de Jeux de contrôles ne correspond à votre recherche"
+    filters:
+      name: "Indiquez un nom"
   activerecord:
     models:
       control/list/run:

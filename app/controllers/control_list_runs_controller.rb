@@ -49,16 +49,27 @@ class ControlListRunsController < ChouetteController
   alias control_list parent
   alias control_list_run resource
 
-  def collection
-    workbench.control_list_runs.order(created_at: :desc).paginate(page: params[:page], per_page: 30)
-  end
-
   def build_resource
     super.tap do |control_list_run|
       control_list_run.workbench = workbench
       control_list_run.build_with_original_control_list
     end
   end
+
+  def scope
+   workbench.control_list_runs
+  end
+
+  def search
+    @search ||= ::Search::ControlListRun.new(scope, params)
+  end
+
+  class Search < Search::Base
+    def query_class
+      Query::ControlListRun
+    end
+  end
+  delegate :collection, to: :search
 
   private
 

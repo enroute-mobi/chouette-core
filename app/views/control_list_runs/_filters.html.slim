@@ -1,0 +1,16 @@
+= simple_form_for @search, url: request.path, method: "GET", html: { class: 'form form-filter py-8' }  do |f|
+  = f.simple_fields_for :order, @search.order, defaults: { wrapper: false } do |form_order|
+    - form_order.object.attributes.keys.each do |attribute|
+      = form_order.input attribute, as: :hidden
+  .ffg-row
+    .input-group.search_bar class=filter_item_class(params[:search], :name_or_short_name)
+      = f.input :name, label: false, class: 'form-control', placeholder: I18n.t('control_list_run.filters.name'), wrapper_html: {class: 'mb-0'}
+      span.input-group-btn
+        button.btn#search_btn type='submit'
+          span.fas.fa-search
+  .actions
+    .flex
+      = f.label :per_page, class: 'control-label'
+      = f.input :per_page, as: :per_page, wrapper_html: {class: "ml-3"}, label: false
+    = link_to t('actions.erase'), workbench_control_list_runs_path(@workbench), class: 'btn btn-link'
+    = f.submit t('actions.filter'), class: 'btn btn-default'

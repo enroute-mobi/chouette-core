@@ -8,7 +8,8 @@ module Search
 		end
 
 		class Order < ::Search::Order
-			attribute :name, default: :desc
+			attribute :name
+			attribute :started_at, default: :desc
 		end
 	end
 end

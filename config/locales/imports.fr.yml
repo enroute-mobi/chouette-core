@@ -45,6 +45,7 @@ fr:
       table:
         test_results: Résultats des tests
         download: Téléchargement
+        error_positions: Positions des erreurs
       gtfs:
         filename: Fichier
     compliance_check_task: "Validation"

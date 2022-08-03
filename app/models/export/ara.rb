@@ -355,13 +355,16 @@ class Export::Ara < Export::Base
 
     def export!
       vehicle_journey_at_stops.includes(:vehicle_journey, stop_point: :stop_area).find_each do |stop_visit|
-        target << Decorator.new(stop_visit).ara_model
+        target << Decorator.new(stop_visit, day: export_scope.day).ara_model
       end
     end
 
     class Decorator < SimpleDelegator
-      def initialize(stop_visit)
+      EXPORT_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S%:z'.freeze
+
+      def initialize(stop_visit, day:)
         super stop_visit
+        @day = day
       end
 
       def ara_attributes
@@ -393,9 +396,9 @@ class Export::Ara < Export::Base
 
       def schedules
         [{
-          "Kind" => "aimed",
-          "ArrivalTime" => arrival_time.strftime('%Y-%m-%dT%H:%M:%S%:z'),
-          "DepartureTime" => departure_time.strftime('%Y-%m-%dT%H:%M:%S%:z')
+          'Kind': 'aimed',
+          'ArrivalTime': format_arrival_date(arrival_time),
+          'DepartureTime': format_departure_date(departure_time)
         }]
       end
 
@@ -405,6 +408,22 @@ class Export::Ara < Export::Base
 
       def ara_codes
         { external: uuid }
+      end
+
+      def format_departure_date(date)
+        (date.change(
+          year: @day.year,
+          month: @day.month,
+          day: @day.day
+        ) + departure_day_offset.days).strftime(EXPORT_TIME_FORMAT)
+      end
+
+      def format_arrival_date(date)
+        (date.change(
+          year: @day.year,
+          month: @day.month,
+          day: @day.day
+        ) + arrival_day_offset.days).strftime(EXPORT_TIME_FORMAT)
       end
     end
   end

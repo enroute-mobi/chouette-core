@@ -80,8 +80,9 @@ class PublicationSetup < ApplicationModel
     end
   end
 
-  def publish(operation)
-    publications.create!(parent: operation)
+  def publish(operation, options = {})
+    attributes = options.merge(parent: operation)
+    publications.create!(attributes)
   end
 
   def export_type

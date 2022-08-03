@@ -62,9 +62,9 @@ module OperationSupport
     referentials.any?(&:contains_urgent_offer?)
   end
 
-  def publish
+  def publish(options = {})
     workgroup.publication_setups.enabled.each do |publication_setup|
-      publication_setup.publish self
+      publication_setup.publish self, options
     end
   end
 

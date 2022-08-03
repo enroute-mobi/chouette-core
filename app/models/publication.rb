@@ -106,4 +106,5 @@ class Publication < ApplicationModel
   def export_output
     export&.file
   end
+  attr_accessor :rollback
 end

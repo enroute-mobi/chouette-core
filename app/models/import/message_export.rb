@@ -39,7 +39,7 @@ class Import::MessageExport
               default: import_message.message_key
             )
           ),
-          *import_message.resource_attributes&.values_at("filename", "line_number", "column_number")
+          *import_message.resource_attributes&.values_at("filename", "line", "column")
         ]
       end
     end

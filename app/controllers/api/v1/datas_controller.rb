@@ -33,40 +33,7 @@ class Api::V1::DatasController < ActionController::Base
   around_action :use_published_referential, only: [:lines, :graphql]
 
   def lines
-    render json: LinesStatus.new(published_referential)
-  end
-
-  class LinesStatus
-
-    def initialize(referential)
-      @referential = referential
-    end
-
-    attr_accessor :referential
-    delegate :lines, :metadatas, to: :referential
-
-    def updated_at_by_lines
-      @updated_at_by_lines ||=
-        begin
-          query = "select line_id, max(created_at) from (#{metadatas.select('unnest(line_ids) as line_id', :created_at).to_sql}) as s group by line_id"
-          ActiveRecord::Base.connection.select_rows(query).to_h
-        end
-    end
-
-    def line_updated_at(line)
-      updated_at_by_lines[line.id]
-    end
-
-    def as_json(_options = nil)
-      lines.map do |line|
-        {
-          objectid: line.objectid,
-          name: line.name,
-          updated_at: line_updated_at(line)
-        }
-      end
-    end
-
+    render json: published_referential.lines_status
   end
 
   def graphql

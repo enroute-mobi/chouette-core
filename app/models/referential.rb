@@ -522,6 +522,50 @@ class Referential < ApplicationModel
     end
   end
 
+  def lines_status
+    @lines_status ||= LinesStatus.new(self)
+  end
+
+  class LinesStatus
+    def initialize(referential)
+      @referential = referential
+    end
+
+    attr_reader :referential
+
+    def updated_at(line)
+      updated_at_by_lines[line.id]
+    end
+
+    def as_json(_options = nil)
+      lines.map do |line|
+        {
+          objectid: line.objectid,
+          name: line.name,
+          updated_at: updated_at(line)
+        }
+      end
+    end
+
+    private
+
+    delegate :lines, :metadatas, to: :referential
+
+    def updated_at_by_lines
+      @updated_at_by_lines ||= ActiveRecord::Base.connection.select_rows(query).map do |line_id, time|
+        [ line_id, database_timezone.parse(time) ]
+      end.to_h
+    end
+
+    def database_timezone
+      @database_timezone ||= Time.find_zone("UTC")
+    end
+
+    def query
+      "select line_id, max(created_at) from (#{metadatas.select('unnest(line_ids) as line_id', :created_at).to_sql}) as s group by line_id"
+    end
+  end
+
   def self.referential_ids_in_periode(range)
     subquery = "SELECT DISTINCT(public.referential_metadata.referential_id) FROM public.referential_metadata, LATERAL unnest(periodes) period "
     subquery << "WHERE period && '#{range_to_string(range)}'"

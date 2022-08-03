@@ -424,8 +424,6 @@ class Import::Gtfs < Import::Base
             'coach'
           when '713'
             [ 'bus', 'schoolAndPublicServiceBus' ]
-          else
-            'bus' 
           end
 
         transport_submode ||= 'undefined'

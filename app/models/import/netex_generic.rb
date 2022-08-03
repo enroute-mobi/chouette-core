@@ -187,7 +187,7 @@ class Import::NetexGeneric < Import::Base
       Rails.logger.debug { "Broadcast Synchronization Event #{event.inspect}" }
       return unless event.resource
 
-      EventProcessor.new(event, resource(event.resource.class)).tap do |processor|
+      EventProcessor.new(event, resource(event.resource.class), import.netex_source).tap do |processor|
         processor.process
 
         if processor.has_error?
@@ -208,13 +208,14 @@ class Import::NetexGeneric < Import::Base
 
     class EventProcessor
 
-      def initialize(event, resource)
+      def initialize(event, resource, source)
         @event = event
         @resource = resource
+        @source = source
         @has_error = false
       end
 
-      attr_reader :event, :resource
+      attr_reader :event, :resource, :source
       attr_writer :has_error
 
       def has_error?
@@ -251,13 +252,23 @@ class Import::NetexGeneric < Import::Base
               message_attributes: {
                 attribute_name: attribute,
                 attribute_value: error[:value]
-              }
+              },
+              resource_attributes: resource_attributes
             )
           end
         end
       end
-    end
 
+      private
+
+      def resource_name
+        resource.name.underscore
+      end
+
+      def resource_attributes
+        source.send(resource_name)&.first&.tags
+      end
+    end
   end
 
   def netex_source

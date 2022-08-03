@@ -5,7 +5,7 @@ module Queries
     type Types::StopAreaType.connection_type, null: false
 
     def resolve
-      context[:target_referential].associated_stop_areas
+      context[:target_referential].stop_areas
     end
   end
 end

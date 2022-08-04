@@ -14,10 +14,6 @@ RSpec.describe Query::ControlListRun do
     Control::List::Run.create referential: context.referential, workbench: context.workbench, original_control_list: control_list, name: "test", creator: "user"
   end
 
-  before do
-    context.referential.switch
-  end
-
   let(:query) { Query::ControlListRun.new(Control::List::Run.all) }
 
   describe '#name' do

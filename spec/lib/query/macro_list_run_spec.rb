@@ -14,10 +14,6 @@ RSpec.describe Query::MacroListRun do
     Macro::List::Run.create referential: context.referential, workbench: context.workbench, original_macro_list: macro_list, name: "test", creator: "user"
   end
 
-  before do
-    context.referential.switch
-  end
-
   let(:query) { Query::MacroListRun.new(Macro::List::Run.all) }
 
   describe '#name' do

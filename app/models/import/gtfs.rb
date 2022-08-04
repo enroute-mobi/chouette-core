@@ -420,6 +420,10 @@ class Import::Gtfs < Import::Base
             'funicular'
           when '204'
             [ 'coach', 'regionalCoach' ]
+          when '200'
+            'coach'
+          when '713'
+            [ 'bus', 'schoolAndPublicServiceBus' ]
           end
 
         transport_submode ||= 'undefined'

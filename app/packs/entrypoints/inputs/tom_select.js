@@ -2,10 +2,10 @@ import TomSelect from 'tom-select'
 class ConfigBuilder {
   static call(select, config) {
     const { type, url, ...payload } = config
-    
+
     let specificConfig
 
-    switch(type) {
+    switch (type) {
       case 'ajax':
         specificConfig = ConfigBuilder.configs.ajax(select, url)
         break
@@ -42,7 +42,7 @@ class ConfigBuilder {
         create: true,
         createOnBlur: true,
         persist: false,
-        createFilter: function(input) {
+        createFilter: function (input) {
           input = input.toLowerCase()
           const isInOptions = input.toLowerCase() in this.options
           const isEmail = Boolean(input.match(/.+\@.+\..+/))
@@ -74,7 +74,7 @@ window.initTomSelect = (select, config) => {
     config.lock && tomSelect.lock()
 
     return tomSelect
-  } catch(e) {
+  } catch (e) {
     return select.tomSelect
   }
 }

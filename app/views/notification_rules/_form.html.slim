@@ -26,7 +26,7 @@
               selected: @notification_rule.user_ids,
               required: true,
               input_html: { multiple: true, ':disabled': "targetType != 'user'" },
-              config: { type: 'ajax', url: users_workbench_autocomplete_index_path(@workbench) }
+              config: { type: 'ajax', url: users_workbench_autocomplete_index_path(@workbench), plugins: ['remove_button', 'clear_button'] }
 
           template[x-if="targetType =='external_email'"]
             = f.input :external_email,

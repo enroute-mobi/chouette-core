@@ -130,8 +130,6 @@ class Publication < ApplicationModel
     exports_builder_class.new(self)
   end
 
-  attr_accessor :rollback
-
   # Manage the creation of Export or Exports for the Publication
   module ExportBuilder
     class Base
@@ -191,9 +189,7 @@ class Publication < ApplicationModel
         end.compact
       end
 
-      def rollback?
-        publication.rollback
-      end
+      delegate :rollback?, to: :publication
 
       def export_scope
         @export_scope ||= Export::Scope::Options.new(referential, publication_setup.export_scope_options).scope

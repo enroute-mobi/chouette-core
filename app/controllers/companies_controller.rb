@@ -95,7 +95,7 @@ class CompaniesController < ChouetteController
     fields += [:house_number, :address_line_1, :address_line_2, :street, :town, :postcode, :postcode_extension ,:country_code]
     fields += permitted_custom_fields_params(Chouette::Company.custom_fields(line_referential.workgroup))
     fields += %w(default_contact private_contact customer_service_contact).product(%w(name email phone url more)).map{ |k| k.join('_')}
-    params.require(:company).permit( fields )
+    params.require(:company).permit(fields, codes_attributes: [:id, :code_space_id, :value, :_destroy])
   end
 
   private

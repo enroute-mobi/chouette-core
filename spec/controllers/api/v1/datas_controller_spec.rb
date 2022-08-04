@@ -400,10 +400,8 @@ RSpec.describe Api::V1::DatasController, type: :controller do
           )
 
           context.line(:first).stop_areas.first.update(custom_field_values: { test: 'foo'})
-          context.line(:first).stop_areas.second.update(custom_field_values: { test: ''})
-          context.line(:first).stop_areas.third.update(custom_field_values: { test: nil})
 
-           query = <<~GQL
+          query = <<~GQL
           {
             stopAreas {
               nodes {
@@ -417,9 +415,7 @@ RSpec.describe Api::V1::DatasController, type: :controller do
           json = JSON.parse response.body
           stop_areas = json['data']['stopAreas']['nodes']
 
-          expect(stop_areas[0]['customFields']).to eq({ 'test' => 'foo' })
-          expect(stop_areas[1]['customFields']).to be_empty
-          expect(stop_areas[2]['customFields']).to be_empty
+          expect(stop_areas).to include({"customFields"=>{"test"=>"foo"}})
         end
       end
     end

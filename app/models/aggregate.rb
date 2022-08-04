@@ -21,7 +21,7 @@ class Aggregate < ApplicationModel
     raise "You cannot rollback to the current version" if current?
     workgroup.output.update current: self.new
     following_aggregates.each(&:cancel!)
-    publish
+    publish rollback: true
     workgroup.aggregated!
   end
 

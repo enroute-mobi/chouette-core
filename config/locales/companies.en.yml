@@ -34,6 +34,7 @@ en:
         other: "companies"
     attributes:
       company:
+        id: ID
         registration_number: "Registration number"
         name: "Name"
         short_name: "Short name"
@@ -78,6 +79,7 @@ en:
         postcode_extension: Postcode Extension
         country_code: Country
         country: Country
+        codes: Codes
     errors:
       models:
         company:

@@ -1,11 +1,10 @@
 describe "/companies/new", type: :view do
 
-  let(:context) { Chouette.create { line_provider } }
+  let(:context) { Chouette.create { company } }
 
   let!(:workbench) { assign :workbench, context.workbench }
   let!(:line_referential) { assign :line_referential, context.line_referential }
-
-  let!(:company) { assign :company, context.line_provider.companies.build(name: 'Test') }
+  let!(:company) { assign :company, context.company }
 
   before do
     allow(view).to receive(:resource) { company }

@@ -8,7 +8,7 @@
     .row
       .col-lg-6.col-md-6.col-sm-6.col-xs-6
         - attributes = { t('id_codif') => @company.get_objectid.try(:short_id) }
-        - %i(name short_name code registration_number default_language time_zone).each do |field|
+        - %i(name short_name code default_language time_zone).each do |field|
           - attributes[Chouette::Company.human_attribute_name(field)] = @company.send(field)
         - @company.custom_fields(current_referential.workgroup).for_section("identification").each do |code, field|
           - attributes.merge!(field.name => field.display_value)
@@ -18,6 +18,15 @@
         - attributes = %w(house_number address_line_1 address_line_2 street town postcode postcode_extension).map { |attr| [Chouette::Company.tmf(attr), @company.send(attr)]}.to_h
         - attributes[Chouette::Company.tmf(:country_code)] = @company.country_code.present? ? label_for_country(@company.country_code) + ISO3166::Country[@company.country_code].translation(I18n.locale) : '-'
         = definition_list t("companies.form.sections.address"), attributes
+
+        = simple_block_for @company, title: Chouette::Company.tmf(:codes) do |d|
+          = d.attribute :registration_number
+          - if @company.codes.empty?
+            .mb-xs
+              = replacement_msg t('companys.no_codes')
+          - else
+            - @company.codes.each do |c|
+              = d.attribute :value, label: c.code_space.short_name, object: c
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         - attributes = %w(name email phone fax url organizational_unit operating_department_name more).map { |attr| [Chouette::Company.tmf("default_contact_#{attr}"), @company.send("default_contact_#{attr}")]}.to_h
@@ -39,9 +48,9 @@
                 thead
                   tr
                     th scope="col"
-                      = Chouette::StopArea.tmf('id')
+                      = Chouette::Company.tmf('id')
                     th scope="col"
-                      = Chouette::StopArea.tmf('name')
+                      = Chouette::Company.tmf('name')
                 tbody
                   - @company.particulars.limit(5).each do |c|
                     tr

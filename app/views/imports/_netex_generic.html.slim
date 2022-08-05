@@ -31,11 +31,6 @@
           sortable: false, \
         ), \
         TableBuilderHelper::Column.new( \
-          name: t('imports.show.table.error_positions') , \
-          attribute: 'error_positions', \
-          sortable: false, \
-        ), \
-        TableBuilderHelper::Column.new( \
           name: t('imports.show.table.download') , \
           attribute: Proc.new { |n| '<i class="fa fa-download" aria-hidden="true"></i>'.html_safe }, \
           sortable: false, \

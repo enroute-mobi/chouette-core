@@ -56,15 +56,4 @@ class Import::Resource < ApplicationModel
     return unless control_set.present?
     referential.compliance_check_sets.where(compliance_control_set_id: control_set.id, referential_id: referential_id).last
   end
-
-  def error_positions
-    messages.map do |message|
-      resource_attributes = message.resource_attributes
-      [
-        I18n.t("import_messages.#{message.message_key}", message.message_attributes.deep_symbolize_keys),
-        "#{::Import::Message.tmf('line').downcase} : #{resource_attributes['line']}",
-        "#{::Import::Message.tmf('column').downcase}: #{resource_attributes['column']}"
-      ].join(', ')
-    end.join('; ')
-  end
 end

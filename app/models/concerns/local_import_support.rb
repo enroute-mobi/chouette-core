@@ -62,6 +62,7 @@ module LocalImportSupport
       end
 
       @progress = nil
+      @status = status if status == 'failed'
       @status ||= 'successful'
       referential&.active!
       update status: @status, ended_at: Time.now

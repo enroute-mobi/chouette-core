@@ -8,6 +8,7 @@ module Imports
 				update status: 'running', started_at: Time.now
 
 				import_without_status
+				@status = status if status == 'failed'
 				@status ||= 'successful'
 
 				update status: @status, ended_at: Time.now

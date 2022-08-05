@@ -38,7 +38,7 @@ class Export::Ara < Export::Base
   end
 
   def parts
-    @parts ||= [ Stops, Lines, VehicleJourneys ].tap do |parts|
+    @parts ||= [ Stops, Lines, Companies, VehicleJourneys ].tap do |parts|
       if has_feature?("export_ara_stop_visits")
         parts << StopVisits
       end
@@ -468,6 +468,55 @@ class Export::Ara < Export::Base
       # TODO To be shared
       def uuid
         get_objectid.local_id
+      end
+
+      # TODO To be shared
+      def ara_codes
+        code_provider.unique_codes __getobj__
+      end
+    end
+  end
+
+  class Companies < Part
+    delegate :companies, to: :export_scope
+
+    def export!
+      companies.find_each do |company|
+        target << Decorator.new(company, code_provider: code_provider).ara_model
+      end
+    end
+
+    def code_provider
+      @code_provider ||= CodeProvider::Model.new scope: export_scope, model_class: Chouette::Company
+    end
+
+    # Creates an Ara::StopArea from a StopArea
+    class Decorator < SimpleDelegator
+      def initialize(company, code_provider: nil)
+        super company
+        @code_provider = code_provider
+      end
+
+      # TODO To be shared
+      def code_provider
+        @code_provider ||= CodeProvider::Model.null
+      end
+
+      def ara_attributes
+        {
+          id: uuid,
+          name: name,
+          objectids: ara_codes,
+        }
+      end
+
+      def ara_model
+        Ara::Operator.new ara_attributes
+      end
+
+      # TODO To be shared
+      def uuid
+        get_objectid&.local_id
       end
 
       # TODO To be shared

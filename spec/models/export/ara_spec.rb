@@ -128,7 +128,7 @@ RSpec.describe Export::Ara do
           it { is_expected.to include(an_object_having_attributes(objectids: {"test" => "dummy"})) }
         end
 
-        context "when all Stop Areas has a code 'test': 'dummy" do
+        context "when all Stop Areas has a code 'test':'dummy" do
           before do
             scope.stop_areas.each do |stop_area|
               stop_area.codes.create! code_space: code_space, value: "dummy"
@@ -179,6 +179,72 @@ RSpec.describe Export::Ara do
           before do
             scope.lines.each do |line|
               line.codes.create! code_space: code_space, value: "dummy"
+            end
+          end
+          it { is_expected.to_not include(an_object_having_attributes(objectids: {"test" => "dummy"})) }
+        end
+      end
+    end
+  end
+
+  describe "Companies export" do
+    describe Export::Ara::Companies::Decorator do
+      subject(:decorator) { described_class.new(company) }
+      let(:company) { Chouette::Company.new }
+
+      describe "#ara_attributes" do
+        subject { decorator.ara_attributes }
+
+        context "when #name is 'Company Sample'" do
+          before { company.name = 'Company Sample' }
+          it { is_expected.to include(name: 'Company Sample')}
+        end
+
+        context "when #objectid is 'test:Company:1234:LOC'" do
+          before { company.objectid = 'test:Company:1234:LOC' }
+          it { is_expected.to include(id: '1234')}
+        end
+      end
+    end
+
+    let(:export_context) { double line_referential: context.line_referential }
+    let(:target) { [] }
+    subject(:part) { Export::Ara::Companies.new export_scope: scope, target: target, context: export_context }
+    let(:scope) { double companies: context.line_referential.companies, codes: context.workgroup.codes }
+
+    context "when two Companies are exported" do
+      let(:context) do
+        Chouette.create { company(:first) ; company(:other) }
+      end
+
+      let(:company) { context.company(:first ) }
+      let(:other_company) { context.company(:other) }
+
+      let(:code_space) { context.workgroup.code_spaces.create! short_name: 'test' }
+
+      describe "the Ara File target" do
+        subject { part.export! ; target }
+        it { is_expected.to match_array([an_instance_of(Ara::Operator)]*2) }
+
+        context "when one of the Company has a registration number 'dummy'" do
+          before { company.update registration_number: "dummy" }
+          it { is_expected.to include(an_object_having_attributes(objectids: {"external" => "dummy"})) }
+        end
+
+        context "when all Company has a registration number 'dummy'" do
+          before { scope.companies.update_all registration_number: "dummy" }
+          it { is_expected.to_not include(an_object_having_attributes(objectids: {"external" => "dummy"})) }
+        end
+
+        context "when one of the Company has a code 'test': 'dummy" do
+          before { company.codes.create!(code_space: code_space, value: "dummy") }
+          it { is_expected.to include(an_object_having_attributes(objectids: {"test" => "dummy"})) }
+        end
+
+        context "when all Companies has a code 'test':'dummy" do
+          before do
+            scope.companies.each do |company|
+              company.codes.create! code_space: code_space, value: "dummy"
             end
           end
           it { is_expected.to_not include(an_object_having_attributes(objectids: {"test" => "dummy"})) }

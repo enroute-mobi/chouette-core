@@ -397,6 +397,9 @@ en:
       JourneyPattern: Journey pattern
       VehicleJourney: Vehicle journey
       Company: Company
+    expected_status:
+      enabled: Enabled
+      disabled: Disabled
     search:
       rule_type: *notification_rule_rule_type
     control:

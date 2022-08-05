@@ -44,6 +44,3 @@ en:
         expected_format: Expected format
       control/model_status:
         expected_status: Expected status
-        status_values:
-          enabled: Enabled
-          disabled: Disabled

@@ -44,6 +44,3 @@ fr:
         expected_format: Format attendu
       control/model_status:
         expected_status: Statut attendu
-        status_values:
-          enabled: Activé
-          disabled: Désactivé

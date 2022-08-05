@@ -1,6 +1,2 @@
-= form.input :target_model, input_html: { 'x-model': 'resource.target_model', 'x-on:change': "resource.expected_status = ''" }
-= form.input :expected_status do
-	select.select.form-control.required name="control_list[controls_status][0][expected_status]" x-model="resource.expected_status" :disabled="!Boolean(resource.target_model) || #{facade.show?}"
-		option value=""
-		template[x-for="option in #{facade.expected_status_options}"]
-			option :selected="'#{form.object.expected_status}' == option.id" :value="option.id" x-text="option.text"
+= form.input :target_model
+= form.input :expected_status

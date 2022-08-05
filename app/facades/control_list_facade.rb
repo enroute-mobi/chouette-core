@@ -65,10 +65,6 @@ class ControlListFacade
 		ModelAttribute.all.map { |m| { id: m.name, text: m.klass.tmf(m.name), resource_type: m.resource_name.to_s.camelcase } }.to_json
 	end
 
-	def expected_status_options
-		[{id: 'enabled', text: I18n.t("activerecord.attributes.control/model_status.status_values.enabled")}, {id: 'disabled', text: I18n.t("activerecord.attributes.control/model_status.status_values.disabled")}].to_json
-	end
-
 	def json_state
 		JSON.generate({
 			name: control_list.name,

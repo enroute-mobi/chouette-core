@@ -18,7 +18,7 @@ fr:
       control/format_attribute:
         one: Format d'un attribut
       control/model_status:
-        one: Statut d'un model
+        one: Statut d'un modèle
     attributes:
       control/base:
         name: Nom

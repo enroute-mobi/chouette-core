@@ -24,6 +24,7 @@ module Control
           control_messages.create({
             message_attributes: {
               name: model.try(:name) || model.id,
+              expected_status: I18n.t("enumerize.expected_status.#{expected_status}")
             },
             criticity: criticity,
             source: model,
@@ -54,40 +55,13 @@ module Control
 
         class Line < Base
           def enabled
-            models.where(deactivated: false).or(active_from_until).or(active_from).or(active_until)
+            models.where(deactivated: false)
           end
 
           def disabled
-            models.where(deactivated: true).or(no_longer_activated).or(not_yet_activated)
+            models.where(deactivated: true)
           end
 
-          private
-
-          def active_from_until
-            models
-              .where("active_from <= ? AND active_until >= ?", current_date, current_date)
-          end
-
-          def active_until
-            models.where("active_from IS NULL AND active_until >= ?", current_date)
-          end
-
-          def no_longer_activated
-            models.where("active_until < ?", current_date)
-          end
-
-          def not_yet_activated
-            models
-              .where("active_from > ? AND active_until > ?", current_date, current_date)
-          end
-
-          def active_from
-            models.where("active_from <= ? AND active_until IS NULL", current_date)
-          end
-
-          def current_date
-            @current_date ||= Date.current
-          end
         end
       end
 

@@ -2,6 +2,13 @@ RSpec.describe Control::ModelStatus do
 
   describe Control::ModelStatus::Run do
 
+    let(:context) do
+      Chouette.create do
+        stop_area
+        referential
+      end
+    end
+
     let(:control_list_run) do
       Control::List::Run.create referential: context.referential, workbench: context.workbench
     end
@@ -23,7 +30,8 @@ RSpec.describe Control::ModelStatus do
         source: source,
         criticity: "warning",
         message_attributes: {
-          "name" => source.name,
+          name: source.name,
+          expected_status: I18n.t("enumerize.expected_status.#{expected_status}")
         },
         message_key: "model_status"
       })
@@ -37,21 +45,15 @@ RSpec.describe Control::ModelStatus do
       let(:stop_area) { context.stop_area }
       let(:source) { stop_area }
 
-      let(:context) do
-        Chouette.create do
-          stop_area
-          referential
-        end
-      end
 
       describe "#enabled" do
         let(:expected_status) { 'enabled' }
 
         context "deleted_at is not nil" do
-          before { stop_area.update deleted_at: DateTime.now }
+          before { stop_area.update confirmed_at: DateTime.now, deleted_at: nil }
 
           it "should create a warning message" do
-            subject
+            control_run.run
 
             expect(control_run.control_messages).to include(expected_message)
           end
@@ -62,10 +64,10 @@ RSpec.describe Control::ModelStatus do
         let(:expected_status) { 'disabled' }
 
         context "confirmed_at is not nil" do
-          before { stop_area.update confirmed_at: DateTime.now }
+          before { stop_area.update  deleted_at: Date.current}
 
           it "should create a warning message" do
-            subject
+            control_run.run
 
             expect(control_run.control_messages).to include(expected_message)
           end
@@ -78,78 +80,29 @@ RSpec.describe Control::ModelStatus do
       let(:line) { referential.lines.first }
       let(:source) { line }
 
-      let(:context) do
-        Chouette.create do
-          referential
-        end
-      end
-
-      before do
-        referential.switch
-      end
-
       describe "#enabled" do
         let(:expected_status) { 'enabled' }
 
         context "when deactivated is true" do
-          before { line.update deactivated: true }
+          before { line.update deactivated: false }
 
           it "should create a warning message" do
-            subject
+            control_run.run
 
             expect(control_run.control_messages).to include(expected_message)
           end
         end
 
-        context "when the line is no longer activated" do
-          before { line.update active_until: '2021-01-01'.to_date }
-
-          it "should create a warning message" do
-            subject
-
-            expect(control_run.control_messages).to include(expected_message)
-          end
-        end
-
-        context "when the line is not yet activated" do
-          before { line.update active_from: '3000-01-01'.to_date,  active_until: '3000-02-02'.to_date}
-
-          it "should create a warning message" do
-            subject
-
-            expect(control_run.control_messages).to include(expected_message)
-          end
-        end
       end
 
       describe "#disabled" do
         let(:expected_status) { 'disabled' }
 
-        context "when current date is between from and until" do
-          before { line.update active_from: '2021-01-01'.to_date,  active_until: '3000-01-01'.to_date}
+       context "when deactivated is false" do
+          before { line.update deactivated: true }
 
           it "should create a warning message" do
-            subject
-
-            expect(control_run.control_messages).to include(expected_message)
-          end
-        end
-
-        context "when current date is < until" do
-          before { line.update active_from: nil,  active_until: '3000-01-01'.to_date}
-
-          it "should create a warning message" do
-            subject
-
-            expect(control_run.control_messages).to include(expected_message)
-          end
-        end
-
-        context "when current date is > active_from and active_from is nil" do
-          before { line.update active_from: '2021-01-01'.to_date,  active_until: nil }
-
-          it "should create a warning message" do
-            subject
+            control_run.run
 
             expect(control_run.control_messages).to include(expected_message)
           end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_08_04_092409) do
+ActiveRecord::Schema.define(version: 2022_08_08_124959) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -85,8 +85,6 @@ ActiveRecord::Schema.define(version: 2022_08_04_092409) do
     t.string "notification_target"
     t.datetime "notified_recipients_at"
     t.bigint "user_id"
-    t.string "type"
-    t.index ["type"], name: "index_aggregates_on_type"
     t.index ["workgroup_id"], name: "index_aggregates_on_workgroup_id"
   end
 
@@ -946,8 +944,8 @@ ActiveRecord::Schema.define(version: 2022_08_04_092409) do
     t.datetime "ended_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["original_macro_list_id"], name: "index_macro_list_runs_on_original_macro_list_id"
     t.string "user_status", null: false
+    t.index ["original_macro_list_id"], name: "index_macro_list_runs_on_original_macro_list_id"
     t.index ["referential_id"], name: "index_macro_list_runs_on_referential_id"
     t.index ["workbench_id"], name: "index_macro_list_runs_on_workbench_id"
   end

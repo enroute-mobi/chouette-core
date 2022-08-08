@@ -1,5 +1,5 @@
 class NotifiableOperationObserver < ActiveRecord::Observer
-  observe Export::Gtfs, Export::Netex, Export::NetexGeneric, Import::Workbench, Aggregate, NightlyAggregate, Merge, ComplianceCheckSet
+  observe Export::Gtfs, Export::Netex, Export::NetexGeneric, Import::Workbench, Aggregate, Merge, ComplianceCheckSet
 
   def after_update(operation)
     begin

@@ -1277,7 +1277,7 @@ RSpec.describe Export::NetexGeneric do
       Chouette.create do
         point_of_interest_category do
           point_of_interest url: "http://www.test.fr", position_input: '2.292 48.858', address: "78 rue des chantiers",
-          zip_code: "78000", city_name: "Versailles", country: "FR", email: "hello@yopmail.com", phone: "0129349878" do
+          zip_code: "78000", city_name: "Versailles", country: "France", email: "hello@yopmail.com", phone: "0129349878" do
             point_of_interest_hours opening_time_of_day: TimeOfDay.new(14), closing_time_of_day: TimeOfDay.new(18)
           end
         end

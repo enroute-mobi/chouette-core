@@ -9,6 +9,7 @@ module Control
       Control::PresenceCustomField,
       Control::CodeFormat,
       Control::FormatAttribute,
+      Control::ModelStatus,
     ]
   end
 end

@@ -38,7 +38,7 @@ class Export::Ara < Export::Base
   end
 
   def parts
-    @parts ||= [ Stops, Lines, VehicleJourneys ].tap do |parts|
+    @parts ||= [ Stops, Lines, Companies, VehicleJourneys ].tap do |parts|
       if has_feature?("export_ara_stop_visits")
         parts << StopVisits
       end
@@ -321,8 +321,13 @@ class Export::Ara < Export::Base
           id: uuid,
           name: name,
           objectids: ara_codes,
-          parent_id: parent_uuid
+          parent_id: parent_uuid,
+          collect_children: ara_collect_children?
         }
+      end
+
+      def ara_collect_children?
+        ! quay?
       end
 
       def parent_uuid
@@ -350,13 +355,16 @@ class Export::Ara < Export::Base
 
     def export!
       vehicle_journey_at_stops.includes(:vehicle_journey, stop_point: :stop_area).find_each do |stop_visit|
-        target << Decorator.new(stop_visit).ara_model
+        target << Decorator.new(stop_visit, day: export_scope.day).ara_model
       end
     end
 
     class Decorator < SimpleDelegator
-      def initialize(stop_visit)
+      EXPORT_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S%:z'.freeze
+
+      def initialize(stop_visit, day:)
         super stop_visit
+        @day = day
       end
 
       def ara_attributes
@@ -388,9 +396,9 @@ class Export::Ara < Export::Base
 
       def schedules
         [{
-          "Kind" => "aimed",
-          "ArrivalTime" => arrival_time.strftime('%Y-%m-%dT%H:%M:%S%:z'),
-          "DepartureTime" => departure_time.strftime('%Y-%m-%dT%H:%M:%S%:z')
+          'Kind': 'aimed',
+          'ArrivalTime': format_arrival_date(arrival_time),
+          'DepartureTime': format_departure_date(departure_time)
         }]
       end
 
@@ -400,6 +408,22 @@ class Export::Ara < Export::Base
 
       def ara_codes
         { external: uuid }
+      end
+
+      def format_departure_date(date)
+        (date.change(
+          year: @day.year,
+          month: @day.month,
+          day: @day.day
+        ) + departure_day_offset.days).strftime(EXPORT_TIME_FORMAT)
+      end
+
+      def format_arrival_date(date)
+        (date.change(
+          year: @day.year,
+          month: @day.month,
+          day: @day.day
+        ) + arrival_day_offset.days).strftime(EXPORT_TIME_FORMAT)
       end
     end
   end
@@ -453,6 +477,55 @@ class Export::Ara < Export::Base
     end
   end
 
+  class Companies < Part
+    delegate :companies, to: :export_scope
+
+    def export!
+      companies.find_each do |company|
+        target << Decorator.new(company, code_provider: code_provider).ara_model
+      end
+    end
+
+    def code_provider
+      @code_provider ||= CodeProvider::Model.new scope: export_scope, model_class: Chouette::Company
+    end
+
+    # Creates an Ara::StopArea from a StopArea
+    class Decorator < SimpleDelegator
+      def initialize(company, code_provider: nil)
+        super company
+        @code_provider = code_provider
+      end
+
+      # TODO To be shared
+      def code_provider
+        @code_provider ||= CodeProvider::Model.null
+      end
+
+      def ara_attributes
+        {
+          id: uuid,
+          name: name,
+          objectids: ara_codes,
+        }
+      end
+
+      def ara_model
+        Ara::Operator.new ara_attributes
+      end
+
+      # TODO To be shared
+      def uuid
+        get_objectid&.local_id
+      end
+
+      # TODO To be shared
+      def ara_codes
+        code_provider.unique_codes __getobj__
+      end
+    end
+  end
+
   class VehicleJourneys < Part
     delegate :vehicle_journeys, to: :export_scope
 
@@ -484,7 +557,10 @@ class Export::Ara < Export::Base
           name: published_journey_name,
           objectids: ara_codes,
           line_id: self.line.get_objectid.local_id,
-          direction_type: self.route.wayback
+          direction_type: self.route.wayback,
+          attributes: {
+            "VehicleMode": self.line.transport_mode
+          }
         }
       end
 

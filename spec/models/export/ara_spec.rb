@@ -61,6 +61,16 @@ RSpec.describe Export::Ara do
           before { allow(decorator).to receive(:parent_uuid).and_return("uuid") }
           it { is_expected.to include(parent_id: 'uuid')}
         end
+
+        context "when StopArea is a Quay" do
+          before { stop_area.area_type = Chouette::AreaType::QUAY }
+          it { is_expected.to_not include(collect_children: true) }
+        end
+
+        context "when StopArea isn't a Quay" do
+          before { stop_area.area_type = Chouette::AreaType::STOP_PLACE }
+          it { is_expected.to include(collect_children: true) }
+        end
       end
     end
 
@@ -118,7 +128,7 @@ RSpec.describe Export::Ara do
           it { is_expected.to include(an_object_having_attributes(objectids: {"test" => "dummy"})) }
         end
 
-        context "when all Stop Areas has a code 'test': 'dummy" do
+        context "when all Stop Areas has a code 'test':'dummy" do
           before do
             scope.stop_areas.each do |stop_area|
               stop_area.codes.create! code_space: code_space, value: "dummy"
@@ -177,6 +187,72 @@ RSpec.describe Export::Ara do
     end
   end
 
+  describe "Companies export" do
+    describe Export::Ara::Companies::Decorator do
+      subject(:decorator) { described_class.new(company) }
+      let(:company) { Chouette::Company.new }
+
+      describe "#ara_attributes" do
+        subject { decorator.ara_attributes }
+
+        context "when #name is 'Company Sample'" do
+          before { company.name = 'Company Sample' }
+          it { is_expected.to include(name: 'Company Sample')}
+        end
+
+        context "when #objectid is 'test:Company:1234:LOC'" do
+          before { company.objectid = 'test:Company:1234:LOC' }
+          it { is_expected.to include(id: '1234')}
+        end
+      end
+    end
+
+    let(:export_context) { double line_referential: context.line_referential }
+    let(:target) { [] }
+    subject(:part) { Export::Ara::Companies.new export_scope: scope, target: target, context: export_context }
+    let(:scope) { double companies: context.line_referential.companies, codes: context.workgroup.codes }
+
+    context "when two Companies are exported" do
+      let(:context) do
+        Chouette.create { company(:first) ; company(:other) }
+      end
+
+      let(:company) { context.company(:first ) }
+      let(:other_company) { context.company(:other) }
+
+      let(:code_space) { context.workgroup.code_spaces.create! short_name: 'test' }
+
+      describe "the Ara File target" do
+        subject { part.export! ; target }
+        it { is_expected.to match_array([an_instance_of(Ara::Operator)]*2) }
+
+        context "when one of the Company has a registration number 'dummy'" do
+          before { company.update registration_number: "dummy" }
+          it { is_expected.to include(an_object_having_attributes(objectids: {"external" => "dummy"})) }
+        end
+
+        context "when all Company has a registration number 'dummy'" do
+          before { scope.companies.update_all registration_number: "dummy" }
+          it { is_expected.to_not include(an_object_having_attributes(objectids: {"external" => "dummy"})) }
+        end
+
+        context "when one of the Company has a code 'test': 'dummy" do
+          before { company.codes.create!(code_space: code_space, value: "dummy") }
+          it { is_expected.to include(an_object_having_attributes(objectids: {"test" => "dummy"})) }
+        end
+
+        context "when all Companies has a code 'test':'dummy" do
+          before do
+            scope.companies.each do |company|
+              company.codes.create! code_space: code_space, value: "dummy"
+            end
+          end
+          it { is_expected.to_not include(an_object_having_attributes(objectids: {"test" => "dummy"})) }
+        end
+      end
+    end
+  end
+
   describe "VehicleJourneys export" do
     subject { part.export! ; target }
 
@@ -201,8 +277,12 @@ RSpec.describe Export::Ara do
       describe 'the Ara File target' do
         it { is_expected.to match_array([an_instance_of(Ara::VehicleJourney)]) }
 
-        it 'contains a Vehicle journey having a direction_type attribute' do
+        it 'contains a Vehicle journey having a direction_type' do
           expect(subject.first).to respond_to(:direction_type)
+        end
+
+        it 'contains a Vehicle journey having a VehicleMode attribute' do
+          expect(subject.first.attributes).to eq({'VehicleMode': 'bus'})
         end
       end
     end
@@ -240,10 +320,14 @@ RSpec.describe Export::Ara do
       let(:target) { [] }
       let(:referential) { context.referential }
       let(:vehicle_journey) { context.vehicle_journey }
+      let(:day) { Time.new(2022, 6, 30, 2, 2, 2, '+02:00') }
 
       let(:part) { Export::Ara::StopVisits.new export_scope: referential, target: target }
 
-      before { referential.switch }
+      before do
+        referential.switch
+        allow(referential).to receive(:day) { day }
+      end
 
       describe "the Ara File target" do
         subject { part.export! ; target }
@@ -253,35 +337,64 @@ RSpec.describe Export::Ara do
         it { is_expected.to match_array([an_instance_of(Ara::StopVisit)] * at_stops_count) }
 
         describe Export::Ara::StopVisits::Decorator do
-
           let(:vehicle_journey_at_stop) {vehicle_journey.vehicle_journey_at_stops.first }
-          let(:stop_visit_decorator) { Export::Ara::StopVisits::Decorator.new vehicle_journey_at_stop }
+          let(:stop_visit_decorator) { Export::Ara::StopVisits::Decorator.new(vehicle_journey_at_stop, day: day) }
 
-          let(:experted_attributes) do
-            an_object_having_attributes({
-              schedules: [{
-                "Kind" => "aimed",
-                "ArrivalTime" => "2000-01-01T19:01:00+00:00",
-                "DepartureTime" => "2000-01-01T15:01:00+00:00"
-              }],
-              passage_order: "0"
-            })
+          let(:expected_attributes) do
+            an_object_having_attributes(
+              {
+                schedules:
+                  [{
+                     'Kind': 'aimed',
+                     'ArrivalTime': '2022-06-30T19:01:00+00:00',
+                     'DepartureTime': '2022-06-30T15:01:00+00:00'
+                  }],
+                passage_order: '0'
+              }
+            )
           end
 
           before do
             vehicle_journey_at_stop.update(
-              arrival_time: "2000-01-01T19:01:00+000".to_datetime,
-              departure_time: "2000-01-01T15:01:00+0000".to_datetime
+              arrival_time: '2000-01-01T19:01:00+000'.to_datetime,
+              departure_time: '2000-01-01T15:01:00+0000'.to_datetime
             )
             vehicle_journey_at_stop.stop_point.update position: 0
           end
 
-          it "should create stop_visits with the correct attributes" do
-            expect([stop_visit_decorator.ara_model]).to include(experted_attributes)
+          it 'should create stop_visits with the correct attributes' do
+            expect([stop_visit_decorator.ara_model]).to include(expected_attributes)
+          end
+
+          describe '#format_departure_date' do
+            let(:test_date) { Time.new(2000, 1, 1, 19, 1, 1, 'Z') }
+            subject(:departure_time) { stop_visit_decorator.format_departure_date(test_date) }
+
+            context 'with zero day offset' do
+              it { is_expected.to eq('2022-06-30T19:01:01+00:00') }
+            end
+
+            context 'with 1 day offset' do
+              before { vehicle_journey_at_stop.update(departure_day_offset: 1) }
+              it { is_expected.to eq('2022-07-01T19:01:01+00:00') }
+            end
+          end
+
+          describe '#format_arrival_date' do
+            let(:test_date) { Time.new(2000, 1, 1, 19, 1, 1, 'Z') }
+            subject(:arrival_time) { stop_visit_decorator.format_arrival_date(test_date) }
+
+            context 'with zero day offset' do
+              it { is_expected.to eq('2022-06-30T19:01:01+00:00') }
+            end
+
+            context 'with 1 day offset' do
+              before { vehicle_journey_at_stop.update(arrival_day_offset: 1) }
+              it { is_expected.to eq('2022-07-01T19:01:01+00:00') }
+            end
           end
         end
       end
     end
   end
-
 end

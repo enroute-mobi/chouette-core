@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_07_05_065413) do
+ActiveRecord::Schema.define(version: 2022_08_04_092409) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -1176,6 +1176,7 @@ ActiveRecord::Schema.define(version: 2022_07_05_065413) do
     t.string "status"
     t.datetime "started_at"
     t.datetime "ended_at"
+    t.boolean "rollback"
     t.index ["parent_type", "parent_id"], name: "index_publications_on_parent_type_and_parent_id"
     t.index ["publication_setup_id"], name: "index_publications_on_publication_setup_id"
   end

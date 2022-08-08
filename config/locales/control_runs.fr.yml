@@ -10,13 +10,15 @@ fr:
       control/presence_attribute/run:
         one: Présence d’un attribut
       control/presence_code/run:
-        one:  Présence d’un code
+        one: Présence d’un code
       control/presence_custom_field/run:
         one: Présence d’un champ personnalisé
       control/code_format/run:
         one: Format d'un code
       control/format_attribute/run:
         one: Format d'un attribut
+      control/model_status/run:
+        one: Statut d'un model
     attributes:
       control/base/run:
         name: Nom
@@ -40,3 +42,5 @@ fr:
         target_code_space_id: Espace de code cible
         target_code_space: Espace de code cible
         expected_format: Format attendu
+      control/model_status/run:
+        expected_status: Statut attendu

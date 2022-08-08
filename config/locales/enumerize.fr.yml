@@ -397,6 +397,9 @@ fr:
       JourneyPattern: Mission
       VehicleJourney: Course
       Company: Transporteur
+    expected_status:
+      enabled: Activé
+      disabled: Désactivé
     search:
       rule_type: *notification_rule_rule_type
     control:

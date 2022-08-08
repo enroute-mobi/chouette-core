@@ -1,6 +1,6 @@
 GIT
   remote: https://bitbucket.org/enroute-mobi/ara-file.git
-  revision: ef54d4da8551b43574c4e2ada3213d163bb0cb90
+  revision: 87b2bf40092f874da7b77cd145c6afab9f7897e5
   specs:
     ara-file (0.1.1)
 
@@ -66,7 +66,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: c2b46f216be49831c0f9f397b7065d22f789c87c
+  revision: d66a845f719d33979c57539c96ef97bb47467e2f
   specs:
     netex (0.1.2)
       activesupport
@@ -410,7 +410,7 @@ GEM
     htmlbeautifier (1.4.1)
     htmlentities (4.3.4)
     httpclient (2.8.3)
-    i18n (1.11.0)
+    i18n (1.12.0)
       concurrent-ruby (~> 1.0)
     i18n-js (3.9.1)
       i18n (>= 0.6.6)
@@ -752,7 +752,7 @@ GEM
     timecop (0.9.4)
     tomlrb (2.0.1)
     trailblazer-option (0.1.2)
-    tzinfo (1.2.9)
+    tzinfo (1.2.10)
       thread_safe (~> 0.1)
     uber (0.1.0)
     uglifier (2.7.2)
@@ -797,7 +797,7 @@ DEPENDENCIES
   acts_as_list
   acts_as_tree
   apartment
-  ara-file (>= 0.1.1)!
+  ara-file!
   awesome_print
   better_errors
   binding_of_caller
@@ -926,4 +926,4 @@ DEPENDENCIES
   will_paginate-bootstrap
 
 BUNDLED WITH
-   2.2.33
+   2.3.18

@@ -5,6 +5,7 @@
     - if params[:q].present? or @macro_list_runs.any?
       .row
         .col-lg-12
+          = render 'filters'
 
     - if @macro_list_runs.any?
       .row
@@ -19,7 +20,6 @@
               TableBuilderHelper::Column.new( \
                 key: :name, \
                 attribute: :name, \
-                sortable: false, \
                 link_to: lambda do |macro_list_run| \
                 workbench_macro_list_run_path( \
                     @workbench, \
@@ -34,9 +34,8 @@
                 sortable: false \
               ), \
               TableBuilderHelper::Column.new( \
-                key: :created_at, \
-                attribute: Proc.new { |n| l(n.created_at, format: :short_with_time) if n.created_at }, \
-                sortable: false,\
+                key: :started_at, \
+                attribute: Proc.new { |n| l(n.started_at, format: :short_with_time) if n.started_at }, \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :duration, \

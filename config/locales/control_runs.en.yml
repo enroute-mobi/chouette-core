@@ -17,6 +17,8 @@ en:
         one: Code format
       control/format_attribute/run:
         one: Format of attribute
+      control/model_status/run:
+        one: Model status
     attributes:
       control/base/run:
         name: Name
@@ -40,3 +42,5 @@ en:
         target_code_space_id: Target code space
         target_code_space: Target code space
         expected_format: Expected format
+      control/model_status/run:
+        expected_status: Expected status

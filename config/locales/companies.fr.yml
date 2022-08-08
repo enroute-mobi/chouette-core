@@ -34,6 +34,7 @@ fr:
         other: "transporteurs"
     attributes:
       company:
+        id: ID
         registration_number: "Numéro d'enregistrement"
         name: "Nom"
         short_name: "Nom court"
@@ -79,6 +80,7 @@ fr:
         postcode_extension: Extension de CP
         country_code: Pays
         country: Pays
+        codes: Codes
     errors:
       models:
         company:

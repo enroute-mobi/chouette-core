@@ -30,6 +30,8 @@ en:
         processing: Processing
         information: Information
     search_no_results: "No Control Runs Reports matching your search"
+    filters:
+      name: Search by name
   activerecord:
     models:
       control/list/run:

@@ -17,6 +17,8 @@ fr:
         one: Format d'un code
       control/format_attribute:
         one: Format d'un attribut
+      control/model_status:
+        one: Statut d'un modèle
     attributes:
       control/base:
         name: Nom
@@ -40,3 +42,5 @@ fr:
       control/format_attribute:
         target_attribute: Attribut cible
         expected_format: Format attendu
+      control/model_status:
+        expected_status: Statut attendu

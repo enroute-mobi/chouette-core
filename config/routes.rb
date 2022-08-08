@@ -379,10 +379,12 @@ ChouetteIhm::Application.routes.draw do
       resources :workbenches, only: [] do
         resources :imports, only: [:index, :show, :create]
         resources :documents, only: [:create]
+        member do
+          post 'stop_area_referential/webhook', to: 'stop_area_referentials#webhook'
+          post 'line_referential/webhook', to: 'line_referentials#webhook'
+        end
       end
 
-      post 'stop_area_referentials/:id/webhook', to: 'stop_area_referentials#webhook'
-      post 'line_referentials/:id/webhook', to: 'line_referentials#webhook'
       get 'browser_environment', to: 'browser_environment#show', defaults: { format: 'json' }
 
       namespace :internals do

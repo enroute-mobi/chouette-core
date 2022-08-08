@@ -47,9 +47,11 @@ class Api::V1::LineReferentialsController < ActionController::Base
   end
 
   def line_referential
-    @line_referential ||= current_workgroup.line_referential.tap do |line_referential|
-      raise ActiveRecord::RecordNotFound unless line_referential.id == params[:id].to_i
-    end
+    @line_referential ||= workbench.line_referential
+  end
+
+  def workbench
+    @workbench = current_workgroup.workbenches.find(params[:id])
   end
 
   def current_workgroup

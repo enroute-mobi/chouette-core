@@ -40,9 +40,11 @@ class Api::V1::StopAreaReferentialsController < ActionController::Base
   end
 
   def stop_area_referential
-    @stop_area_referential ||= current_workgroup.stop_area_referential.tap do |stop_area_referential|
-      raise ActiveRecord::RecordNotFound unless stop_area_referential.id == params[:id].to_i
-    end
+    @stop_area_referential ||= workbench.stop_area_referential
+  end
+
+  def workbench
+    @workbench = current_workgroup.workbenches.find(params[:id])
   end
 
   def current_workgroup

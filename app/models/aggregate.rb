@@ -13,8 +13,6 @@ class Aggregate < ApplicationModel
 
   delegate :output, to: :workgroup
 
-  enumerize :notification_target, in: %w[none workgroup], default: :none
-
   def parent
     workgroup
   end

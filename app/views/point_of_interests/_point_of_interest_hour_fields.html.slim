@@ -3,6 +3,8 @@
     .flex.items-center.justify-center.-ml-48
       = f.input :opening_time_of_day, as: :time_picker
       = f.input :closing_time_of_day, as: :time_picker
-    = f.input :week_days, as: :day_type
+    = f.simple_fields_for :week_days do |days_of_week_form|
+      - Timetable::DaysOfWeek.each_day do |day|
+        = days_of_week_form.input day, as: :boolean
   .flex.mb-28
     = link_to_remove_association '', f, class: 'fa fa-trash'

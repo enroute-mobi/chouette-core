@@ -272,8 +272,9 @@ class Timetable
     include Comparable
 
     # Create empty (no selected day)
-    def initialize
+    def initialize(attributes = {})
       self.days_mask = 0
+      self.attributes = attributes
     end
 
     def enable(*symbolic_days)
@@ -372,11 +373,31 @@ class Timetable
       self.days_mask = (((t << (days%7)) | (t >>(7-(days%7)))) & 127) << 2
     end
 
+    def self.days
+      SYMBOLIC_DAYS
+    end
+
+    def self.each_day(&block)
+      days.each(&block)
+    end
+
+    def persisted?
+      false
+    end
+
+    def attributes=(attributes = {})
+      attributes.each do |attribute, value|
+        send "#{attribute}=", TRUE_VALUES.include?(value)
+      end
+    end
+
     protected
 
     attr_accessor :days_mask
 
     # Private representation
+
+    TRUE_VALUES = [true, '1'].freeze
 
     MONDAY    = 4
     TUESDAY   = 8
@@ -407,11 +428,15 @@ class Timetable
       define_method "#{symbolic_day}=" do |enable|
         change_days_mask day_mask, enable
       end
+      define_method symbolic_day do
+        days_mask_match? day_mask
+      end
       define_method "#{symbolic_day}?" do
         days_mask_match? day_mask
       end
 
       public "#{symbolic_day}="
+      public "#{symbolic_day}"
       public "#{symbolic_day}?"
     end
 

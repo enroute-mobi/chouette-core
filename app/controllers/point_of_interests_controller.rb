@@ -42,7 +42,6 @@ class PointOfInterestsController < ChouetteController
 
   private
 
-
   def decorate_point_of_interest
     object = point_of_interest rescue build_resource
     @point_of_interest = PointOfInterestDecorator.decorate(

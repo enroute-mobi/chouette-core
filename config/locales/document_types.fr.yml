@@ -1,7 +1,7 @@
 fr:
   document_types:
     index:
-      title: Type de documents
+      title: Types de documents
     show:
       title: "%{name}"
     new:
@@ -26,7 +26,7 @@ fr:
       document_type:
         zero:  "Type de document"
         one: "Type de document"
-        other: "Type de documents"
+        other: "Types de document"
     attributes:
       document_type:
         id: "ID"

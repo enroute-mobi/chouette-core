@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # = Period
 #
 # Smart Date Range
@@ -42,15 +44,14 @@
 #   where started_at: period.infinite_time_range
 #
 class Period < Range
-
   extend ActiveModel::Naming
   include ActiveModel::Validations
 
-  alias_method :start_date, :begin
-  alias_method :from, :begin
+  alias start_date begin
+  alias from begin
 
-  alias_method :end_date, :end
-  alias_method :to, :end
+  alias end_date end
+  alias to end
 
   def initialize(from: nil, to: nil)
     from = self.class.to_date(from)
@@ -83,6 +84,10 @@ class Period < Range
     when Range
       new from: definition.begin.to_s, to: definition.end.to_s
     end
+  end
+
+  def self.for_range(range)
+    RangeDecorator.new(range).period
   end
 
   # Period.from(Date.yesterday)
@@ -164,7 +169,7 @@ class Period < Range
   end
 
   def validate!
-    unless(from || to)
+    unless from || to
       errors.add(:from, :invalid_bounds)
       errors.add(:to, :invalid_bounds)
     end
@@ -187,14 +192,14 @@ class Period < Range
 
   # Redefine #size method to compute dates
   def size
-    unless infinite?
+    if infinite?
+      Float::INFINITY
+    else
       if from <= to
         (to - from).to_i + 1
       else
         0
       end
-    else
-      Float::INFINITY
     end
   end
   alias day_count size
@@ -213,7 +218,7 @@ class Period < Range
 
   def time_range
     range_begin = from&.to_datetime
-    range_end = to ? (to+1).to_datetime : nil
+    range_end = to ? (to + 1).to_datetime : nil
 
     range_begin..range_end
   end
@@ -241,9 +246,7 @@ class Period < Range
     end
   end
 
-  private
-
-  # Invokes to_date method if available
+  # Internal - Invokes to_date method if available
   #
   # Special cases:
   #
@@ -251,61 +254,92 @@ class Period < Range
   # * prefix a String with a single number with '0' to make it valid
   #
   def self.to_date(date)
-    if date.is_a? Symbol
-      date = Time.zone.send(date)
-    end
+    date = Time.zone.send(date) if date.is_a? Symbol
 
     # Transforms '1' into '01'. Because single number is an invalid date
-    if date.is_a?(String) && /\A[0-9]\z/ =~ date
-      date = "0#{date}"
+    date = "0#{date}" if date.is_a?(String) && /\A[0-9]\z/ =~ date
+
+    date = date.to_date if date.respond_to?(:to_date)
+
+    date
+  end
+
+  # Internal - Use Period.for_range
+  # Create a Period from a Range
+  class RangeDecorator
+    def initialize(range)
+      @range = range
+    end
+    attr_reader :range
+
+    def period
+      Period.new(from: from, to: to) if from || to
     end
 
-    if date.respond_to?(:to_date)
-      date.to_date
-    else
-      date
+    def from
+      @from ||= range.begin unless beginless?
+    end
+
+    def to
+      @to ||= range.end.to_date - end_correction unless endless?
+    end
+
+    def beginless?
+      range.begin.nil? || range.begin == -Float::INFINITY
+    end
+
+    def endless?
+      range.end.nil? || range.end == Float::INFINITY
+    end
+
+    def end_correction
+      range.exclude_end? ? 1 : 0
     end
   end
 
+  # Uses with ActiveRecord attribute method to store a Period
+  #
+  #   attribute :validity_period, Period::Type.new
+  #
   class Type < ActiveRecord::Type::Value
-
     def cast(value)
+      return nil unless value.present?
+
       case value
-        when String
-          period_from_range oid_range.cast_value(value)
-        when Hash
-          period_from_range Range.new value[:from], value[:to]
-        when Range
-          period_from_range value
-        when Period
-          value
-        else
-          Rails.logger.debug "Could not cast Period from a #{value.class} object"
-          Period.new(from: nil, to: nil)
+      when String
+        Period.for_range oid_range.cast_value(value)
+      when Hash
+        Period.new from: value[:from], to: value[:to]
+      when Range
+        Period.for_range value
+      when Period
+        value
+      else
+        Rails.logger.debug "Could not cast Period from a #{value.class} object"
+        Period.new
       end
     end
 
     def serialize(value)
-      return unless value.present?
-      date_range_serialized = if value.is_a?(Period)
+      if value.is_a?(Period)
+        return nil if value.empty?
+
         date_range = value.infinity_date_range
         oid_range.serialize(date_range)
       else
         value
       end
-      date_range_serialized
     end
-
-    private
 
     def oid_range
-      @oid_range ||= ActiveRecord::ConnectionAdapters::PostgreSQL::OID::Range.new(ActiveRecord::ConnectionAdapters::PostgreSQL::OID::Date.new)
+      self.class.oid_range
     end
 
-    def period_from_range(range)
-      date_range_min = range.begin == -Float::INFINITY ? nil : range.begin
-      date_range_max = range.end == Float::INFINITY ? nil : range.end
-      Period.new(from: date_range_min, to: date_range_max)
+    def self.oid_range
+      @oid_range ||=
+        ActiveRecord::ConnectionAdapters::PostgreSQL::OID::Range.new(
+          ActiveRecord::ConnectionAdapters::PostgreSQL::OID::Date.new
+        )
     end
   end
 end

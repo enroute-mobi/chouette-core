@@ -13,8 +13,8 @@
       h2.my-16
         = t("documents.form.sections.identification")
       = f.input :name
-      = f.input :document_type_id, as: :select, collection: @workbench.workgroup.document_types.map { |dt| [dt.short_name, dt.id] }
-      = f.simple_fields_for :validity_period do |validity_period_form|
+      = f.input :document_type_id, as: :select, collection: @workbench.workgroup.document_types
+      = f.simple_fields_for :validity_period, @document.validity_period || Period.new do |validity_period_form|
         = validity_period_form.input :from, as: :date_picker
         = validity_period_form.input :to, as: :date_picker
 

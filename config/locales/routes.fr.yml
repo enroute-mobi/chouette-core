@@ -31,6 +31,7 @@ fr:
         postal_code: Code Postal
         city: Commune
         comment: Commentaire
+        no_coordinates: Absence de coordonnées
       stop_point:
         boarding:
           normal: Autorisée

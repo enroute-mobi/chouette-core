@@ -18,7 +18,7 @@ class CalendarsController < ChouetteController
 
   def show
     show! do
-      @year = params[:year] ? params[:year].to_i : year
+      @year = params[:year] ? params[:year].to_i : @calendar.presenter.default_year
       @calendar = @calendar.decorate(context: {
         workgroup: workgroup
       })
@@ -43,22 +43,6 @@ class CalendarsController < ChouetteController
   end
 
   private
-
-  def year
-    dates = @calendar.dates.sort
-    start_year = dates.first&.year
-    end_year = dates.last&.year
-
-    return Date.today.cwyear unless dates.present?
-
-    if start_year > Date.today.cwyear
-      start_year
-    elsif end_year < Date.today.cwyear
-      end_year
-    else
-      Date.today.cwyear
-    end
-  end
 
   def decorate_calendars(calendars)
     CalendarDecorator.decorate(

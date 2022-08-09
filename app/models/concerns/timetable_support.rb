@@ -92,6 +92,12 @@ module TimetableSupport
                                 ! excluded_date?(day) }
   end
 
+  # Returns a Period on boundings dates
+  def period
+    from, to = bounding_dates
+    Period.new(from: from, to: to)
+  end
+
   def state_update state
     update_attributes(self.class.state_permited_attributes(state))
     self.tag_list    = state['tags'].collect{|t| t['label']}.join(', ') if state['tags']

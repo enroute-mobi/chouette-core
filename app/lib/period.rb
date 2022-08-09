@@ -246,7 +246,18 @@ class Period < Range
     end
   end
 
+  # Returns the date if included in the Period
+  # Returns Period from if the date is before Period
+  # Returns Period to if the date is after Period
+  def limit(date)
+    [
+      [ date, from ].compact.max,
+      to
+    ].compact.min
+  end
+
   # Internal - Invokes to_date method if available
+  # Invokes to_date method if available
   #
   # Special cases:
   #

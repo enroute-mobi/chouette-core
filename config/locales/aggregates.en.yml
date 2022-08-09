@@ -26,10 +26,6 @@ en:
         zero: "Aggregated offers"
         one: "Aggregated offer"
         other: "Aggregated offers"
-      nightly_aggregate:
-        zero:  "Automated aggregated offers"
-        one:   "Automated aggregated offer"
-        other: "Automated aggregated offers"
     attributes:
       aggregate:
         created_at: Created at

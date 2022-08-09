@@ -24,7 +24,6 @@ class Workgroup < ApplicationModel
   has_many :organisations, through: :workbenches
   has_many :referentials, through: :workbenches
   has_many :aggregates, dependent: :destroy
-  has_many :nightly_aggregates
   has_many :publication_setups, dependent: :destroy
   has_many :publication_apis, dependent: :destroy
   has_many :compliance_check_sets, dependent: :destroy
@@ -165,7 +164,7 @@ class Workgroup < ApplicationModel
 
     Rails.logger.info "[Workgroup ##{id}] Start nightly Aggregate"
 
-    nightly_aggregates.create!(referentials: aggregatable_referentials, creator: 'CRON', notification_target: nightly_aggregate_notification_target)
+    aggregates.create!(referentials: aggregatable_referentials, creator: 'CRON', notification_target: nightly_aggregate_notification_target)
 
   end
 

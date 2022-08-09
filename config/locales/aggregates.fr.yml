@@ -20,20 +20,12 @@ fr:
       failed: Erreur
       running: En cours
       canceled: Annulé
-  nightly_aggregates:
-    show:
-      title: "Agrégation de l'offre %{name}"
-      finalized_offer: "Offre finalisée"
   activerecord:
     models:
       aggregate:
         zero:  "Agrégations d'offre"
         one:   "Agrégation de l'offre"
         other: "Agrégations d'offre"
-      nightly_aggregate:
-        zero:  "Agrégations d'offre automatiques"
-        one:   "Agrégation de l'offre automatique"
-        other: "Agrégations d'offre automatiques"
     attributes:
       aggregate:
         created_at: Créé le

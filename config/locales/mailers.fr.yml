@@ -88,14 +88,6 @@ fr:
         body: |
           Des trous d'offre ont été détectés dans l'offre finalisée "%{referential_name}".<br/>
           Nous vous conseillons d'analyser les données d'offre afin de détecter les problèmes éventuels.
-    nightly_aggregate_mailer:
-      finished:
-        button: Voir l'agrégation automatique
-        subject: L'agrégation automatique est terminée
-        body: |
-          Bonjour, l'agrégation automatique est terminée
-          L'agrégation automatique <strong>"%{agg_name}"</strong> a été effectuée . Elle est maintenant terminée.
-          Pour y accéder :
     publication_mailer:
       publish:
         publication_date: Ces nouvelles données ont été publiées le %{formated_date}.

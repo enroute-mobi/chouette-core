@@ -18,7 +18,7 @@
             = f.input :nightly_aggregate_time, as: :time_picker
             = f.input :nightly_aggregate_days, as: :day_type
             = f.input :nightly_aggregate_notification_target,
-              collection: NightlyAggregate.notification_target_options,
+              collection: Aggregate.notification_target.values.delete_if{|value| value == "user"}.map { |k| [k && "enumerize.notification_target.#{k}".t, k] },
               selected: f.object.nightly_aggregate_notification_target,
               input_html: { style: 'max-width: 350px;' }
       .row

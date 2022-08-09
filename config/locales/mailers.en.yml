@@ -92,14 +92,6 @@ en:
         body: |
           Lack of offer has been detected in the finalized offer %{referential_name}.<br/>
           We encourage you to study offer datas to detect possible problems.<br/><br/>
-    nightly_aggregate_mailer:
-      finished:
-        button: See Nightly Aggregation
-        subject: The nightly aggregation is over
-        body: |
-          Hello, the aggregation is over
-          The automatic aggregation %{agg_name} is now over.
-          The operation status is %{status}<br/><br/>
     publication_mailer:
       publish:
         publication_date: This new data has been published on %{formated_date}.

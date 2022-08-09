@@ -15,7 +15,7 @@ module Macro
 
     def full_message
       I18n.t(
-        "macro_messages.#{message_key || 'default'}",
+        "#{macro_run.class.name.underscore}.messages.#{message_key || 'default'}",
         message_attributes.merge(target_model: source_type.constantize.model_name.human).symbolize_keys
       )
     end

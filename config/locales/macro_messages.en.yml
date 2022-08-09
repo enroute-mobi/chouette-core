@@ -1,11 +1,23 @@
 en:
-  macro_messages:
-    default: "Message on line %{name}"
-    associate_shape: "Shape %{shape_name} has been associated to journey pattern %{journey_pattern_name}"
-    associate_stop_area_referent: "Referent of Stop area %{name} has been updated"
-    create_code: "A code %{code_value} on the code space %{code_space} has been added for a %{target_model} %{name}"
-    create_stop_area_referent: "Referent Stop area %{name} is created"
-    update_stop_area_compass_bearing: "Compass bearing of of Stop area %{name} has been updated with value %{bearing}"
+  macro/dummy/run:
+    messages:
+      default: Simulation is in %{result} for %{name}
+  macro/associate_shape/run:
+    messages:
+      default: "Shape %{shape_name} has been associated to journey pattern %{journey_pattern_name}"
+  macro/associate_stop_area_referent/run:
+    messages:
+      default: "Referent of Stop area %{name} has been updated"
+  macro/create_code/run:
+    messages:
+      default: "A code %{code_value} on the code space %{code_space} has been added for a %{target_model} %{name}"
+  macro/create_stop_area_referent/run:
+    messages:
+      default: "Referent Stop area %{name} is created"
+  macro/update_stop_area_compass_bearing/run:
+    messages:
+      default: "Compass bearing of of Stop area %{name} has been updated with value %{bearing}"
+  macro_messages: 
     search_no_results_for_filter: "No messages found"
     no_address: "No address"
     invalid_address: "Invalid address"

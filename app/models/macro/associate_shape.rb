@@ -4,15 +4,16 @@ module Macro
       def run
         return unless code_space
 
-        journey_patterns.find_each do |journey_pattern|
-          shape = shapes.by_code(code_space, journey_pattern.name).first
-          if shape.present? && journey_pattern.update!(shape: shape)
-            self.macro_messages.create(
-              criticity: "info",
-              message_attributes: { shape_name: shape.uuid, journey_pattern_name: journey_pattern.name},
-              source: journey_pattern,
-              message_key: :associate_shape
-            )
+        ::Macro::Message.transaction do
+          journey_patterns.find_each do |journey_pattern|
+            shape = shapes.by_code(code_space, journey_pattern.name).first
+            if shape.present? && journey_pattern.update!(shape: shape)
+              self.macro_messages.create(
+                criticity: "info",
+                message_attributes: { shape_name: shape.uuid, journey_pattern_name: journey_pattern.name},
+                source: journey_pattern
+              )
+            end
           end
         end
       end

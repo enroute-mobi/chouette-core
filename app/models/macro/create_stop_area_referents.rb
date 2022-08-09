@@ -3,18 +3,19 @@ module Macro
     class Run < Macro::Base::Run
 
       def run
-        geo_clusters.each do |geo_cluster|
-          geo_cluster.compass_bearing_clusters.each do |cluster|
-            if cluster.count > 1
-              builder = ReferentBuilder.create(cluster.stop_areas)
-              if builder
-                if referent = stop_area_provider.stop_areas.create!(builder.attributes)
-                  self.macro_messages.create(
-                    criticity: "info",
-                    message_attributes: { name: referent.name },
-                    source: referent,
-                    message_key: :create_stop_area_referent
-                  )
+        ::Macro::Message.transaction do
+          geo_clusters.each do |geo_cluster|
+            geo_cluster.compass_bearing_clusters.each do |cluster|
+              if cluster.count > 1
+                builder = ReferentBuilder.create(cluster.stop_areas)
+                if builder
+                  if referent = stop_area_provider.stop_areas.create!(builder.attributes)
+                    self.macro_messages.create(
+                      criticity: "info",
+                      message_attributes: { name: referent.name },
+                      source: referent
+                    )
+                  end
                 end
               end
             end

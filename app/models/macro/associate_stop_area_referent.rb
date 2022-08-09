@@ -2,18 +2,19 @@ module Macro
   class AssociateStopAreaReferent < Base
     class Run < Macro::Base::Run
       def run
-        raw_associations.each do |association|
-          particular_id = association["particular_id"]
-          closest_referent_id = association["closest_referent_id"]
+        ::Macro::Message.transaction do
+          raw_associations.each do |association|
+            particular_id = association["particular_id"]
+            closest_referent_id = association["closest_referent_id"]
 
-          stop_area = stop_areas.find(particular_id)
-          if stop_area.update!(referent_id: closest_referent_id)
-            self.macro_messages.create(
-              criticity: "info",
-              message_attributes: { name: stop_area.name },
-              source: stop_area,
-              message_key: :associate_stop_area
-            )
+            stop_area = stop_areas.find(particular_id)
+            if stop_area.update!(referent_id: closest_referent_id)
+              self.macro_messages.create(
+                criticity: "info",
+                message_attributes: { name: stop_area.name },
+                source: stop_area,
+              )
+            end
           end
         end
       end

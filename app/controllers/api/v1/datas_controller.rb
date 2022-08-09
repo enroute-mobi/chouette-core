@@ -1,6 +1,7 @@
 class Api::V1::DatasController < ActionController::Base
   before_action :load_publication_api
   before_action :check_auth_token, except: :infos
+  before_action :set_locale, only: 'infos'
 
   rescue_from PublicationApi::InvalidAuthenticationError, with: :invalid_authentication_error
   rescue_from PublicationApi::MissingAuthenticationError, with: :missing_authentication_error
@@ -48,6 +49,10 @@ class Api::V1::DatasController < ActionController::Base
   end
 
   protected
+
+  def set_locale
+    I18n.locale = LocaleSelector.locale_for(params, session)
+  end
 
   def use_published_referential
     unless published_referential

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Manage time of day like 22:00 without date concept but with support for:
 # * utc_offset / time_zone
 # * day_offset
@@ -20,7 +22,6 @@
 # => "10:02:44 utc_offset:3600"
 # TimeOfDay.now(time_zone: Time.find_zone('Eastern Time (US & Canada)')).to_s
 # => "04:02:47 utc_offset:-18000"
-
 class TimeOfDay
   include Comparable
 
@@ -48,13 +49,14 @@ class TimeOfDay
     end
 
     if minute = attributes.delete(:min)
-      attributes[:minute] = minute
+      attributes[:minute] = minute 
     end
     if second = attributes.delete(:sec)
-      attributes[:second] = second
+      attributes[:second] = second 
     end
 
-    new attributes.fetch(:hour), attributes[:minute], attributes[:second], attributes.except(:hour, :minute, :second)
+    new attributes.fetch(:hour), attributes[:minute], attributes[:second],
+        attributes.except(:hour, :minute, :second)
   end
 
   def self.now(time_zone: Time.zone)
@@ -150,7 +152,10 @@ class TimeOfDay
     ::Time.new(2000, 1, 1, hour, minute, second, '+00:00')
   end
 
-  alias to_time to_vehicle_journey_at_stop_time
+  def to_time(date)
+    ::Time.new(date.year, date.month, date.mday, hour, minute, second,
+               utc_offset) + day_offset.days
+  end
 
   def to_iso_8601
     @iso_8601 ||= ISO8601.new(self).to_s
@@ -173,6 +178,7 @@ class TimeOfDay
   INPUT_HASH_MINUTE = 2
   INPUT_HASH_SECOND = 3
   INPUT_HASH_DAY_OFFSET = 4
+
   def self.from_input_hash(hash)
     TimeOfDay.new(hash[INPUT_HASH_HOUR], hash[INPUT_HASH_MINUTE], hash.fetch(INPUT_HASH_SECOND, 0),
                   day_offset: hash[INPUT_HASH_DAY_OFFSET])
@@ -217,14 +223,15 @@ class TimeOfDay
       :?
       ([0-5]\d)?
       \z
-    /x
+    /x.freeze
 
   def self.parse(definition, attributes = nil)
     return unless PARSE_REGEX =~ definition
 
-    hour = ::Regexp.last_match(1)
-    minute = ::Regexp.last_match(2)
-    second = ::Regexp.last_match(3)
+    hour = Regexp.last_match(1)
+    minute = Regexp.last_match(2)
+    second = Regexp.last_match(3)
+
     new hour, minute, second, attributes || {}
   end
 
@@ -239,6 +246,7 @@ class TimeOfDay
   end
 
   module Type
+    # Cast TimeOfWay without storing the timezone/utc offset
     class TimeWithoutZone < ActiveRecord::Type::Value
       def cast(value)
         return unless value.present?

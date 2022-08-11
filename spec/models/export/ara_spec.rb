@@ -171,8 +171,13 @@ RSpec.describe Export::Ara do
 
     let(:export_context) { double stop_area_referential: context.stop_area_referential }
     let(:target) { [] }
-    subject(:part) { Export::Ara::Stops.new export_scope: scope, target: target, context: export_context }
-    let(:scope) { double stop_areas: context.stop_area_referential.stop_areas, codes: context.workgroup.codes }
+    subject(:part) do
+      Export::Ara::Stops.new export_scope: scope, target: target, context: export_context
+    end
+
+    let(:scope) do
+      double stop_areas: context.stop_area_referential.stop_areas, codes: context.workgroup.codes
+    end
 
     describe '#stop_areas' do
       subject { part.stop_areas }
@@ -226,6 +231,7 @@ RSpec.describe Export::Ara do
 
         context "when one of the Stop Area has a code 'test': 'dummy" do
           before { stop_area.codes.create!(code_space: code_space, value: 'dummy') }
+
           it do
             is_expected.to include(
               an_object_having_attributes(
@@ -287,6 +293,7 @@ RSpec.describe Export::Ara do
 
         context "when one of the Line has a code 'test': 'dummy" do
           before { line.codes.create!(code_space: code_space, value: 'dummy') }
+
           it do
             is_expected.to include(
               an_object_having_attributes(
@@ -330,8 +337,13 @@ RSpec.describe Export::Ara do
 
     let(:export_context) { double line_referential: context.line_referential }
     let(:target) { [] }
-    subject(:part) { Export::Ara::Companies.new export_scope: scope, target: target, context: export_context }
-    let(:scope) { double companies: context.line_referential.companies, codes: context.workgroup.codes }
+    subject(:part) do
+      Export::Ara::Companies.new export_scope: scope, target: target, context: export_context
+    end
+
+    let(:scope) do
+      double companies: context.line_referential.companies, codes: context.workgroup.codes
+    end
 
     context 'when two Companies are exported' do
       let(:context) do
@@ -429,6 +441,7 @@ RSpec.describe Export::Ara do
 
         context "when one of the Vehicle Journey has a code 'test': 'dummy" do
           before { vehicle_journey.codes.create!(code_space: code_space, value: 'dummy') }
+
           it do
             is_expected.to include(
               an_object_having_attributes(codes: { 'test' => 'dummy', 'external' => vehicle_journey.objectid})
@@ -584,6 +597,85 @@ RSpec.describe Export::Ara do
           end
         end
       end
+
+      describe '#schedules' do
+        subject { decorator.schedules }
+
+        context 'when day is 2030-01-01' do
+          before { decorator.day = Date.parse('2030-01-01') }
+
+          context 'when arrival_time is 15:00:00 and departure_time is 15:05:00' do
+            before do
+              vehicle_journey_at_stop.arrival_time = '15:00:00'
+              vehicle_journey_at_stop.departure_time = '15:05:00'
+            end
+
+            let(:expected_schedule) do
+              {
+                Kind: 'aimed',
+                ArrivalTime: '2030-01-01T15:00:00+00:00',
+                DepartureTime: '2030-01-01T15:05:00+00:00'
+              }
+            end
+
+            it { is_expected.to include(expected_schedule) }
+          end
+
+          context 'when the Stop Visit is a departure with departure_time at 15:00:00' do
+            before do
+              allow(vehicle_journey_at_stop).to receive(:departure?).and_return(true)
+              vehicle_journey_at_stop.departure_time = '15:00:00'
+            end
+
+            let(:expected_schedule) do
+              {
+                Kind: 'aimed',
+                DepartureTime: '2030-01-01T15:00:00+00:00'
+              }
+            end
+
+            it { is_expected.to include(expected_schedule) }
+          end
+
+          context 'when the Stop Visit is an arrival with arrival_time at 15:00:00' do
+            before do
+              allow(vehicle_journey_at_stop).to receive(:arrival?).and_return(true)
+              vehicle_journey_at_stop.arrival_time = '15:00:00'
+            end
+
+            let(:expected_schedule) do
+              {
+                Kind: 'aimed',
+                ArrivalTime: '2030-01-01T15:00:00+00:00'
+              }
+            end
+
+            it { is_expected.to include(expected_schedule) }
+          end
+
+          context 'when StopArea time zone is "America/Los_Angeles"' do
+            let(:stop_area) { Chouette::StopArea.new time_zone: 'America/Los_Angeles' }
+            before { vehicle_journey_at_stop.stop_point = Chouette::StopPoint.new(stop_area: stop_area) }
+
+            context 'when arrival_time is 15:00:00 and departure_time is 15:05:00' do
+              before do
+                vehicle_journey_at_stop.arrival_time = '15:00:00'
+                vehicle_journey_at_stop.departure_time = '15:05:00'
+              end
+
+              let(:expected_schedule) do
+                {
+                  Kind: 'aimed',
+                  ArrivalTime: '2030-01-01T15:00:00+00:00',
+                  DepartureTime: '2030-01-01T15:05:00+00:00'
+                }
+              end
+
+              it { is_expected.to include(expected_schedule) }
+            end
+          end
+        end
+      end
     end
 
     context 'when Stop Visits are exported' do
@@ -695,7 +787,10 @@ RSpec.describe Export::Ara do
           end
 
         end
+
+        it { is_expected.to match_array([an_instance_of(Ara::StopVisit)] * at_stops_count) }
       end
     end
+
   end
 end

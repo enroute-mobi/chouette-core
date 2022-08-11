@@ -38,6 +38,19 @@ RSpec.describe Publication, type: :model do
       publication.run
       expect(publication).to be_running
     end
+
+    context 'when the Publication has been already ran' do
+      before { publication.running! }
+
+      it "doesn't start any export" do
+        expect(publication).to_not receive(:run_export)
+        publication.run
+      end
+
+      it 'changes status to failed' do
+        expect { publication.run }.to change(publication, :status).from('running').to('failed')
+      end
+    end
   end
 
   describe '#run_export' do

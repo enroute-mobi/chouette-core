@@ -382,6 +382,7 @@ ChouetteIhm::Application.routes.draw do
 
       resources :workbenches, only: [] do
         resources :imports, only: [:index, :show, :create]
+        resources :documents, only: [:create]
       end
 
       post 'stop_area_referentials/:id/webhook', to: 'stop_area_referentials#webhook'

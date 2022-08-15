@@ -360,23 +360,17 @@ ChouetteIhm::Application.routes.draw do
     end
   end
 
-  # TODO: rename this var
-  if SmartEnv.boolean "BYPASS_AUTH_FOR_SIDEKIQ"
-    match "/delayed_job" => DelayedJobWeb, :anchor => false, :via => [:get, :post]
-  else
-    authenticate :user, lambda { |u| u.can_monitor_sidekiq? } do
-      match "/delayed_job" => DelayedJobWeb, :anchor => false, :via => [:get, :post]
-    end
-  end
-
   namespace :api do
     namespace :v1 do
       get 'datas/:slug', to: 'datas#infos', as: :infos
 
       # Don't move after get 'datas/:slug/*key' CHOUETTE-1105
       get 'datas/:slug/lines', to: 'datas#lines', as: :lines
+
+      get 'datas/:slug/documents/lines/:registration_number/:document_type', to: redirect('/api/v1/datas/%{slug}/lines/%{registration_number}/documents/%{document_type}')
+      get 'datas/:slug/lines/:line_registration_number/documents/:document_type', to: 'publication_api/documents#show'
+
       post 'datas/:slug/graphql', to: "datas#graphql", as: :graphql
-      get 'datas/:slug/documents/lines/:registration_number/:document_type', to: 'datas#line_document', as: :line_document
 
       get 'datas/:slug/*key', to: 'datas#download', :format => false
       get 'datas/:slug.*key', to: 'datas#redirect', :format => false

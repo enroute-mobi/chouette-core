@@ -1,4 +1,5 @@
-# coding: utf-8
+# frozen_string_literal: true
+
 module Chouette
   class Factory
     extend Definition
@@ -53,6 +54,20 @@ module Chouette
           attribute(:short_name) { |n| "code_space_#{n}" }
         end
 
+        model :publication_api do
+          attribute(:slug) { |n| "slug_#{n}" }
+          attribute(:name) { |n| "Publication API #{n}" }
+          attribute(:public) { true }
+
+          transient :without_key
+
+          after do
+            unless new_instance.public? || transient(:without_key)
+              new_instance.api_keys.build name: "Test"
+            end
+          end
+        end
+
         model :custom_field do
           attribute(:name) { |n| "Custom Field #{n}"}
           attribute(:code) { |n| "field_#{n}" }
@@ -93,7 +108,6 @@ module Chouette
               attribute :transport_mode, "bus"
               attribute :transport_submode, "undefined"
               attribute(:number) { |n| n }
-              attribute(:registration_number) { |n| "registration_number_#{n}" } 
 
               transient :codes
               transient :documents
@@ -105,7 +119,7 @@ module Chouette
                 end
 
                 Array(transient(:documents, resolve_instances: true)).each do |document|
-                  DocumentMembership.create(document: document, documentable: new_instance)
+                  new_instance.document_memberships.build document: document
                 end
               end
             end
@@ -207,19 +221,16 @@ module Chouette
 
             model :document do
               attribute(:name) { |n| "Document #{n}" }
-              attribute(:validity_period) { Period.from(Date.today) }
               transient :file, 'sample_pdf.pdf'
+              transient :document_type
 
-              transient :document_type, 'pdf'
-
-              after do |document|
+              after do
                 file_path = File.expand_path("spec/fixtures/#{transient(:file)}")
-                uploader = DocumentUploader.new
-                uploader.cache! File.open(file_path)
+                new_instance.file = File.new(file_path)
 
-                new_instance.file = uploader
+                document_type = transient(:document_type, resolve_instances: true) || 
+                  parent.workbench.workgroup.document_types.create!(name: 'Default', short_name: 'default')
 
-                document_type = transient(:document_type) || parent.workbench.workgroup.document_types.create_by(name: 'pdf', short_name: 'pdf')
                 new_instance.document_type = document_type
               end
             end

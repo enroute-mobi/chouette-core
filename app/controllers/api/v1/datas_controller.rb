@@ -5,9 +5,6 @@ class Api::V1::DatasController < ActionController::Base
 
   rescue_from PublicationApi::InvalidAuthenticationError, with: :invalid_authentication_error
   rescue_from PublicationApi::MissingAuthenticationError, with: :missing_authentication_error
-  rescue_from PublicationApi::TooManyLinesError, with: :missing_file_error
-  rescue_from PublicationApi::LineNotFoundError, with: :missing_file_error
-  rescue_from PublicationApi::DocumentNotFoundError, with: :missing_file_error
 
   def infos
     render layout: 'api'
@@ -49,14 +46,6 @@ class Api::V1::DatasController < ActionController::Base
     }
     result = ChouetteSchema.execute(query, variables: variables, context: context, operation_name: operation_name)
     render json: result
-  end
-
-  def line_document
-    payload = params.slice(:registration_number, :document_type).merge(referential: published_referential).permit!.to_h.symbolize_keys
-    document = PublicationApis::GetLineDocument.call(payload)
-    filename = "#{params[:slug]}-line-#{payload[:registration_number]}-#{payload[:document_type]}-#{document.uuid}.#{document.file.file.extension}"
-
-    send_file document.file.path, filename: filename
   end
 
   protected

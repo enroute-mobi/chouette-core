@@ -69,3 +69,34 @@ class ActiveRecord::ConnectionAdapters::PostgreSQLAdapter
 
 
 end
+
+module ActiveRecord
+  class SoleRecordExceeded < ActiveRecordError
+    attr_reader :record
+
+    def initialize(record = nil)
+      @record = record
+      super "Wanted only one #{record&.name || 'record'}"
+    end
+  end
+end
+
+module ActiveRecordSole
+  extend ActiveSupport::Concern
+
+  module ClassMethods
+    def sole
+      found, undesired = first(2)
+
+      if found.nil?
+        raise ActiveRecord::RecordNotFound
+      elsif undesired.present?
+        raise ActiveRecord::SoleRecordExceeded, self
+      else
+        found
+      end
+    end
+  end
+end
+
+ActiveRecord::Base.include ActiveRecordSole

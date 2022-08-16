@@ -457,7 +457,8 @@ class Export::Ara < Export::Base
         {
           id: uuid,
           name: name,
-          objectids: ara_codes,
+          number: number,
+          objectids: ara_codes
         }
       end
 

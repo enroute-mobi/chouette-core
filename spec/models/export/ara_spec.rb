@@ -160,6 +160,10 @@ RSpec.describe Export::Ara do
         subject { part.export! ; target }
         it { is_expected.to match_array([an_instance_of(Ara::Line)]*2) }
 
+        it 'contains Line having a number' do
+          expect(subject.first).to respond_to(:number)
+        end
+
         context "when one of the Line has a registration number 'dummy'" do
           before { line.update registration_number: "dummy" }
           it { is_expected.to include(an_object_having_attributes(objectids: {"external" => "dummy"})) }

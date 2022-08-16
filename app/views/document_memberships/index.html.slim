@@ -19,18 +19,18 @@
 							), \
 							TableBuilderHelper::Column.new( \
 								name: Document.human_attribute_name(:document_type_id), \
-								attribute: -> (document_membership) { document_membership.document.document_type.short_name }, \
+								attribute: -> (document_membership) { document_membership.document.document_type.name }, \
 								sortable: false, \
 								link_to: -> (document_membership) { workgroup_document_type_path(@workbench.workgroup, document_membership.document.document_type) } \
 							), \
 							TableBuilderHelper::Column.new( \
 								name: Document.human_attribute_name(:from), \
-								attribute: -> (document_membership) { document_membership.document.validity_period.from.present? ? l(document_membership.document.validity_period.from) : '-' }, \
+								attribute: -> (document_membership) { document_membership.document.validity_period&.from.present? ? l(document_membership.document.validity_period.from) : '-' }, \
 								sortable: false,\
 							), \
 							TableBuilderHelper::Column.new( \
 								name: Document.human_attribute_name(:to), \
-								attribute: -> (document_membership) { document_membership.document.validity_period.to.present? ? l(document_membership.document.validity_period.to) : '-' }, \
+								attribute: -> (document_membership) { document_membership.document.validity_period&.to.present? ? l(document_membership.document.validity_period.to) : '-' }, \
 								sortable: false,\
 							) \
 						].compact,

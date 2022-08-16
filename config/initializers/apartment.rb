@@ -45,6 +45,7 @@ Apartment.configure do |config|
     'CrossReferentialIndexEntry',
     'CustomField',
     'Document',
+    'DocumentMembership',
     'DocumentProvider',
     'DocumentType',
     'Delayed::Heartbeat::Worker',

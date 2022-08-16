@@ -1,4 +1,5 @@
-# coding: utf-8
+# frozen_string_literal: true
+
 module Chouette
   class Factory
     extend Definition
@@ -53,11 +54,30 @@ module Chouette
           attribute(:short_name) { |n| "code_space_#{n}" }
         end
 
+        model :publication_api do
+          attribute(:slug) { |n| "slug_#{n}" }
+          attribute(:name) { |n| "Publication API #{n}" }
+          attribute(:public) { true }
+
+          transient :without_key
+
+          after do
+            unless new_instance.public? || transient(:without_key)
+              new_instance.api_keys.build name: "Test"
+            end
+          end
+        end
+
         model :custom_field do
           attribute(:name) { |n| "Custom Field #{n}"}
           attribute(:code) { |n| "field_#{n}" }
           attribute(:field_type) { :string }
           attribute(:resource_type) { "StopArea" }
+        end
+
+        model :document_type do
+          attribute(:name) { |n| "Document Type #{n}"}
+          attribute(:short_name) { |n| "document_type_#{n}" }
         end
 
         model :workbench do
@@ -90,11 +110,16 @@ module Chouette
               attribute(:number) { |n| n }
 
               transient :codes
+              transient :documents
 
               after do
                 (transient(:codes) || {}).each do |code_space_short_name, value|
                   code_space = new_instance.workgroup.code_spaces.find_by!(short_name: code_space_short_name)
                   new_instance.codes.build(code_space: code_space, value: value)
+                end
+
+                Array(transient(:documents, resolve_instances: true)).each do |document|
+                  new_instance.document_memberships.build document: document
                 end
               end
             end
@@ -189,6 +214,26 @@ module Chouette
               end
             end
 
+          end
+
+          model :document_provider do
+            attribute(:name) { |n| "Document Provider #{n}" }
+
+            model :document do
+              attribute(:name) { |n| "Document #{n}" }
+              transient :file, 'sample_pdf.pdf'
+              transient :document_type
+
+              after do
+                file_path = File.expand_path("spec/fixtures/#{transient(:file)}")
+                new_instance.file = File.new(file_path)
+
+                document_type = transient(:document_type, resolve_instances: true) || 
+                  parent.workbench.workgroup.document_types.create!(name: 'Default', short_name: 'default')
+
+                new_instance.document_type = document_type
+              end
+            end
           end
 
           model :referential do

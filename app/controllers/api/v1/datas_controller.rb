@@ -1,4 +1,6 @@
 class Api::V1::DatasController < ActionController::Base
+  include Downloadable
+
   before_action :load_publication_api
   before_action :check_auth_token, except: :infos
   before_action :set_locale, only: 'infos'
@@ -14,7 +16,7 @@ class Api::V1::DatasController < ActionController::Base
     source = @publication_api.publication_api_sources.find_by! key: params[:key]
 
     if source.file.present?
-      store_file_and_clean_cache(source)
+      prepare_for_download source
 
       # fresh_men is invoked before send_file to obtain a valid Cache-Control header
       fresh_when(source, public: @publication_api.public?)
@@ -118,10 +120,5 @@ class Api::V1::DatasController < ActionController::Base
 
   def missing_file_error
     render :missing_file_error, layout: 'api', status: 404
-  end
-
-  def store_file_and_clean_cache(source)
-    source.file.cache_stored_file!
-    CarrierWave.clean_cached_files!
   end
 end

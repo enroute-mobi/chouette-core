@@ -72,11 +72,6 @@ class ApplicationController < ActionController::Base
     new_user_session_path
   end
 
-  def store_file_and_clean_cache(source)
-    source.file.cache_stored_file!
-    CarrierWave.clean_cached_files!
-  end
-
   private
 
   def layout_by_resource

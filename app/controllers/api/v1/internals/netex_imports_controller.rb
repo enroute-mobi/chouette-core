@@ -3,6 +3,7 @@ module Api
     module Internals
       class NetexImportsController < Api::V1::Internals::ApplicationController
         include ControlFlow
+        include Downloadable
 
         before_action :find_workbench, only: :create
 
@@ -29,16 +30,11 @@ module Api
 
         def download
           find_netex_import
-          store_file_and_clean_cache(@netex_import)
+          prepare_for_download @netex_import
           send_file @netex_import.file.path
         end
 
         private
-
-        def store_file_and_clean_cache(source)
-          source.file.cache_stored_file!
-          CarrierWave.clean_cached_files!
-        end
 
         def find_netex_import
           @netex_import = Import::Netex.find(params[:id])

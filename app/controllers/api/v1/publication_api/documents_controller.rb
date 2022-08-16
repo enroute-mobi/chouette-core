@@ -2,6 +2,7 @@
 
 # Provides Documents associated to a Published resource (line / stop area, etc)
 class Api::V1::PublicationApi::DocumentsController < Api::V1::PublicationApi::Base
+  include Downloadable
 
   rescue_from Date::Error do
     render status: :not_acceptable, plain: "Invalid valid_on parameter"
@@ -9,7 +10,10 @@ class Api::V1::PublicationApi::DocumentsController < Api::V1::PublicationApi::Ba
 
   def show
     document = published_resource.documents.with_type(document_type).valid_on(validity_date).most_updated!
+    prepare_for_download document
+
     filename = FilenameBuilder.new(publication_api: publication_api, resource: published_resource, document: document).filename
+
     send_file document.file.path, filename: filename
   end
 

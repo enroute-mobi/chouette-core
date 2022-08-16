@@ -1,5 +1,7 @@
 class ExportsController < ChouetteController
   include PolicyChecker
+  include Downloadable
+
   skip_before_action :authenticate_user!, only: [:upload]
   skip_before_action :verify_authenticity_token, only: [:upload]
   defaults resource_class: Export::Base, collection_name: 'exports', instance_name: 'export'
@@ -53,7 +55,7 @@ class ExportsController < ChouetteController
   end
 
   def download
-    store_file_and_clean_cache(resource)
+    prepare_for_download resource
     send_file resource.file.path, filename: resource.user_file.name, type: resource.user_file.content_type
   end
 

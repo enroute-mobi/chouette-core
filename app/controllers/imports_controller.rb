@@ -1,5 +1,7 @@
 class ImportsController < ChouetteController
   include PolicyChecker
+  include Downloadable
+
   skip_before_action :authenticate_user!, only: [:internal_download]
   defaults resource_class: Import::Base, collection_name: 'imports', instance_name: 'import'
   respond_to :json, :html
@@ -7,7 +9,7 @@ class ImportsController < ChouetteController
   def internal_download
     resource = Import::Base.find params[:id]
     if params[:token] == resource.token_download
-      store_file_and_clean_cache(resource)
+      prepare_for_download resource
       send_file resource.file.path
     else
       user_not_authorized
@@ -15,7 +17,7 @@ class ImportsController < ChouetteController
   end
 
   def download
-    store_file_and_clean_cache(resource)
+    prepare_for_download resource
     send_file resource.file.path, filename: resource.user_file.name, type: resource.user_file.content_type
   end
 

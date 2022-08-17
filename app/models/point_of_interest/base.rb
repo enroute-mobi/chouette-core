@@ -20,6 +20,9 @@ module PointOfInterest
 
     before_validation :define_shape_referential, on: :create
     before_validation :position_from_input
+
+    scope :without_address, -> { where("country_code IS NULL OR street_name IS NULL OR zip_code IS NULL OR address IS NULL") }
+
     def position_from_input
       PositionInput.new(@position_input).change_position(self)
     end
@@ -43,6 +46,13 @@ module PointOfInterest
     end
     def latitude
       position&.y
+    end
+
+    def address_=(address)
+      self.country = address.country_name
+      self.address = [ address.house_number, address.street_name ].join(' ')
+      self.zip_code = address.post_code
+      self.city_name = address.city_name
     end
 
     private

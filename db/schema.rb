@@ -1275,8 +1275,10 @@ ActiveRecord::Schema.define(version: 2022_08_24_165032) do
     t.string "objectid_format"
     t.datetime "merged_at"
     t.datetime "failed_at"
+    t.bigint "shape_referential_id"
     t.index ["created_from_id"], name: "index_referentials_on_created_from_id"
     t.index ["referential_suite_id"], name: "index_referentials_on_referential_suite_id"
+    t.index ["shape_referential_id"], name: "index_referentials_on_shape_referential_id"
     t.index ["slug"], name: "index_referentials_on_slug", unique: true
   end
 
@@ -1780,6 +1782,7 @@ ActiveRecord::Schema.define(version: 2022_08_24_165032) do
   add_foreign_key "macros", "macro_contexts"
   add_foreign_key "point_of_interest_categories", "point_of_interest_categories", column: "parent_id"
   add_foreign_key "referentials", "referential_suites"
+  add_foreign_key "referentials", "shape_referentials"
   add_foreign_key "routes", "routes", column: "opposite_route_id", name: "route_opposite_route_fkey"
   add_foreign_key "stop_areas", "stop_areas", column: "parent_id", name: "area_parent_fkey", on_delete: :nullify
   add_foreign_key "time_table_dates", "time_tables", name: "tm_date_fkey", on_delete: :cascade

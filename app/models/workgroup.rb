@@ -1,4 +1,6 @@
 class Workgroup < ApplicationModel
+  include ReverseGeocode
+
   NIGHTLY_AGGREGATE_CRON_TIME = 5.minutes
   DEFAULT_EXPORT_TYPES = %w[Export::Gtfs Export::NetexGeneric Export::Ara].freeze
 
@@ -60,6 +62,15 @@ class Workgroup < ApplicationModel
   mattr_accessor :workbench_scopes_class
 
   attribute :nightly_aggregate_days, WeekDays.new
+
+  def reverse_geocode
+    @reverse_geocode ||=
+      if owner.has_feature?("reverse_geocode")
+        ReverseGeocode::Cache.new(ReverseGeocode::TomTom.new)
+      else
+        ReverseGeocode::Null.new
+      end
+  end
 
   def custom_fields_definitions
     Hash[*custom_fields.map{|cf| [cf.code, cf]}.flatten]

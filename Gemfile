@@ -136,8 +136,8 @@ gem 'premailer-rails', '>= 1.11.1'
 # Redis session management
 gem 'redis-actionpack', '>= 5.3.0'
 
-gem 'gtfs', en_route: 'gtfs', branch: 'GTFS-34-shapepoint-latitude-longitude-float'
-gem 'netex', en_route: 'netex', branch: 'NETEX-57-update-rgeos-proj4-to-3-x'
+gem 'gtfs', en_route: 'gtfs'
+gem 'netex', en_route: 'netex'
 gem 'rgeo-shapefile'
 gem 'ara-file', '>= 0.1.2', en_route: 'ara-file'
 gem 'neptune', en_route: 'neptune', branch:'NEPTUNE-5-test-file-extension-case'

@@ -71,7 +71,7 @@ gem 'pundit'
 # Map, Geolocalization
 gem 'map_layers', '0.0.4'
 gem 'rgeo'
-gem 'rgeo-proj4', en_route: 'rgeo-proj4'
+gem 'rgeo-proj4'
 # gem 'georuby-ext'
 gem 'geokit'
 gem 'georuby', '2.3.0' # Fix version for georuby-ext because api has changed

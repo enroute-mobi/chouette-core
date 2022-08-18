@@ -75,13 +75,6 @@ GIT
       rubyzip
 
 GIT
-  remote: https://bitbucket.org/enroute-mobi/rgeo-proj4.git
-  revision: 0b678fff18ee668c478293206f7eb0cd91c5aa0b
-  specs:
-    rgeo-proj4 (2.0.0)
-      rgeo (~> 2.0)
-
-GIT
   remote: https://bitbucket.org/enroute-mobi/whenever.git
   revision: b7963381a11243affe4f35881c85be0710f434e3
   specs:
@@ -638,6 +631,8 @@ GEM
     rgeo-activerecord (6.2.2)
       activerecord (>= 5.0)
       rgeo (>= 1.0.0)
+    rgeo-proj4 (3.1.1)
+      rgeo (~> 2.0)
     rgeo-shapefile (3.0.0)
       dbf (~> 4.0)
       rgeo (>= 1.0)
@@ -895,7 +890,7 @@ DEPENDENCIES
   redis-actionpack (>= 5.3.0)
   responders (>= 3.0.1)
   rgeo
-  rgeo-proj4!
+  rgeo-proj4
   rgeo-shapefile
   rmagick
   roo (>= 2.8.3)

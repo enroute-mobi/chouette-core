@@ -69,15 +69,11 @@ gem 'devise_invitable', '>= 2.0.6'
 gem 'pundit'
 
 # Map, Geolocalization
-gem 'map_layers', '0.0.4'
 gem 'rgeo'
-gem 'rgeo-proj4', en_route: 'rgeo-proj4'
-# gem 'georuby-ext'
+gem 'rgeo-proj4'
 gem 'geokit'
 gem 'georuby', '2.3.0' # Fix version for georuby-ext because api has changed
-gem 'ffi-geos'
 
-gem 'ffi'
 gem 'mimemagic', '>= 0.4.3'
 
 # User interface
@@ -146,9 +142,8 @@ gem 'rgeo-shapefile'
 gem 'ara-file', '>= 0.1.2', en_route: 'ara-file'
 gem 'neptune', en_route: 'neptune', branch:'NEPTUNE-5-test-file-extension-case'
 
-gem 'ddtrace'
-
 # Monitoring
+gem 'ddtrace'
 gem 'sentry-raven'
 
 gem 'nest', en_route: 'nest'

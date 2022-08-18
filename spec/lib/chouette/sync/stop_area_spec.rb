@@ -89,10 +89,11 @@ RSpec.describe Chouette::Sync::StopArea do
         object_version: 811108,
         city_name: "Pantin",
         postal_region: "93055",
-        longitude: 2.399185394712145,
-        latitude: 48.8903924223594,
+        longitude: a_value_within(0.0000001).of(2.399185394712145),
+        latitude: a_value_within(0.0000001).of(48.8903924223594),
         status: :confirmed
       }
+
       expect(created_stop_area).to have_attributes(expected_attributes)
     end
 
@@ -105,8 +106,8 @@ RSpec.describe Chouette::Sync::StopArea do
         object_version: 45624,
         city_name: "Pantin",
         postal_region: "93055",
-        longitude: 2.399185394712145,
-        latitude: 48.8903924223594,
+        longitude: a_value_within(0.0000001).of(2.399185394712145),
+        latitude: a_value_within(0.0000001).of(48.8903924223594),
         parent: stop_area("FR::multimodalStopPlace:424920:FR1"),
         status: :confirmed
       }

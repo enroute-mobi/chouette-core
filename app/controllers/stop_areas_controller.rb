@@ -30,7 +30,7 @@ class StopAreasController < ChouetteController
   end
 
   def index
-    request.format.kml? ? @per_page = nil : @per_page = 12
+    @per_page = 25
     @zip_codes = stop_area_referential.stop_areas.where("zip_code is NOT null").distinct.pluck(:zip_code)
 
     index! do |format|
@@ -56,12 +56,6 @@ class StopAreasController < ChouetteController
 
   def show
     show! do |format|
-      unless stop_area.position or params[:default] or params[:routing]
-        format.kml {
-          render :nothing => true, :status => :not_found
-        }
-      end
-
       format.geojson { render 'stop_areas/show.geo' }
 
       format.json do

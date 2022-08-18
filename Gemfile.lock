@@ -6,7 +6,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/gtfs.git
-  revision: d347a347b68e4deefcb85197868bb0a86d826d7c
+  revision: 7acd49f4726404a9b2c24bc952180ef85afe25d7
   specs:
     gtfs (0.3.6)
       msgpack
@@ -24,11 +24,11 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/icar-api.git
-  revision: d7bbb6a53d81b4ac22ebc4e7c3f423064ee5bc19
+  revision: ac862e756595fde3081d78104aec9c6055a51440
   specs:
     icar (0.0.3)
       nokogiri (>= 1.8.5)
-      rgeo (~> 2.0.1)
+      rgeo
       rgeo-proj4
       ruby-filemagic
       rubyzip (>= 1.2.2)
@@ -66,20 +66,13 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: d66a845f719d33979c57539c96ef97bb47467e2f
+  revision: efbacf772a0c67b85fd90d4625a998424a46f408
   specs:
     netex (0.1.2)
       activesupport
       ox
       rgeo-proj4
       rubyzip
-
-GIT
-  remote: https://bitbucket.org/enroute-mobi/rgeo-proj4.git
-  revision: 0b678fff18ee668c478293206f7eb0cd91c5aa0b
-  specs:
-    rgeo-proj4 (2.0.0)
-      rgeo (~> 2.0)
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/whenever.git
@@ -333,8 +326,6 @@ GEM
       faraday (>= 0.7.4, < 1.0)
     ffaker (2.1.0)
     ffi (1.15.5)
-    ffi-geos (2.3.0)
-      ffi (>= 1.0.0)
     font_awesome5_rails (1.5.0)
       nokogiri (>= 1.11.3)
       railties (>= 4.2)
@@ -474,7 +465,6 @@ GEM
     lumberjack (1.2.8)
     mail (2.7.1)
       mini_mime (>= 0.1.1)
-    map_layers (0.0.4)
     marcel (1.0.2)
     memoist (0.16.2)
     memory_profiler (1.0.0)
@@ -490,7 +480,7 @@ GEM
     mini_portile2 (2.8.0)
     mini_racer (0.6.2)
       libv8-node (~> 16.10.0.0)
-    minitest (5.16.2)
+    minitest (5.16.3)
     msgpack (1.5.2)
     multi_json (1.15.0)
     multipart-post (2.1.1)
@@ -501,12 +491,12 @@ GEM
       net-ssh (>= 5.0.0, < 7.0.0)
     net-ssh (6.1.0)
     nio4r (2.5.8)
-    nokogiri (1.13.7)
+    nokogiri (1.13.8)
       mini_portile2 (~> 2.8.0)
       racc (~> 1.4)
-    nokogiri (1.13.7-x86_64-darwin)
+    nokogiri (1.13.8-x86_64-darwin)
       racc (~> 1.4)
-    nokogiri (1.13.7-x86_64-linux)
+    nokogiri (1.13.8-x86_64-linux)
       racc (~> 1.4)
     notiffany (0.1.3)
       nenv (~> 0.1)
@@ -634,10 +624,12 @@ GEM
       railties (>= 5.0)
     retriable (3.1.2)
     rexml (3.2.5)
-    rgeo (2.0.1)
+    rgeo (2.4.0)
     rgeo-activerecord (6.2.2)
       activerecord (>= 5.0)
       rgeo (>= 1.0.0)
+    rgeo-proj4 (3.1.1)
+      rgeo (~> 2.0)
     rgeo-shapefile (3.0.0)
       dbf (~> 4.0)
       rgeo (>= 1.0)
@@ -833,8 +825,6 @@ DEPENDENCIES
   faraday
   faraday_middleware
   ffaker (~> 2.1.0)
-  ffi
-  ffi-geos
   font_awesome5_rails (>= 1.5.0)
   fuubar
   geokit
@@ -861,7 +851,6 @@ DEPENDENCIES
   letter_opener_web (~> 1.4, >= 1.4.1)
   license_finder
   lograge (>= 0.11.2)
-  map_layers (= 0.0.4)
   mimemagic (>= 0.4.3)
   mini_racer
   neptune!
@@ -895,7 +884,7 @@ DEPENDENCIES
   redis-actionpack (>= 5.3.0)
   responders (>= 3.0.1)
   rgeo
-  rgeo-proj4!
+  rgeo-proj4
   rgeo-shapefile
   rmagick
   roo (>= 2.8.3)

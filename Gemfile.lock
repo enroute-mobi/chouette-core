@@ -66,7 +66,8 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: d66a845f719d33979c57539c96ef97bb47467e2f
+  revision: c9cef3e6aa950ef01d837378eff10c5051594e8b
+  branch: NETEX-57-update-rgeos-proj4-to-3-x
   specs:
     netex (0.1.2)
       activesupport
@@ -483,7 +484,7 @@ GEM
     mini_portile2 (2.8.0)
     mini_racer (0.6.2)
       libv8-node (~> 16.10.0.0)
-    minitest (5.16.2)
+    minitest (5.16.3)
     msgpack (1.5.2)
     multi_json (1.15.0)
     multipart-post (2.1.1)

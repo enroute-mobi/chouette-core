@@ -945,7 +945,7 @@ class Import::Gtfs < Import::Base
       attr_reader :shape_provider
 
       def factory
-        @factory ||= RGeo::Geos::FFIFactory.new srid: 4326
+        @factory ||= RGeo::Geos.factory srid: 4326
       end
 
       def code_value

@@ -1,7 +1,7 @@
 # Used by build.sh to customize/add functions
 
-export DEV_PACKAGES="libpq-dev libxml2-dev zlib1g-dev libmagic-dev libmagickwand-dev"
-export RUN_PACKAGES="libpq5 libxml2 zlib1g libmagic1 imagemagick libproj-dev libgeos-c1v5 cron"
+export DEV_PACKAGES="libpq-dev libxml2-dev zlib1g-dev libmagic-dev libmagickwand-dev libproj-dev"
+export RUN_PACKAGES="libpq5 libxml2 zlib1g libmagic1 imagemagick libproj19 libgeos-c1v5 cron"
 
 function docker_assets_precompile() {
     RUBYOPT="-W0" bundle exec rake ci:fix_webpacker assets:precompile i18n:js:export RAILS_DB_ADAPTER=nulldb RAILS_DB_PASSWORD=none RAILS_ENV=production

@@ -919,6 +919,16 @@ class Import::Gtfs < Import::Base
       source.shapes.each_slice(1000).each do |gtfs_shapes|
         Shape.transaction do
           gtfs_shapes.each do |gtfs_shape|
+            if gtfs_shape.points.count > 10000
+              import.messages.create({
+                criticity: :warning,
+                message_key: :unreasonable_shape,
+                message_attributes: { gtfs_shape_id:  gtfs_shape.id }
+              })
+
+              next
+            end
+
             decorator = Decorator.new(gtfs_shape, shape_provider: shape_provider)
 
             shape = shape_provider.shapes.by_code(code_space, decorator.code_value).first

@@ -14,7 +14,6 @@ RSpec.describe Control::List do
 
   it { is_expected.to validate_presence_of(:name) }
   it { is_expected.to belong_to(:workbench).required(true) }
-  it { is_expected.to have_many(:processing_rules) }
 
   describe ".controls"do
     before do

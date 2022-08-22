@@ -418,7 +418,7 @@ fr:
         error: Erreur
         failed: Echec
     processing_rule/workbench:
-      processable_type:
+      processing_type:
         "Macro::List": "Jeu d'instructions"
         "Control::List": Jeu de contrôles
       operation_step:

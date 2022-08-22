@@ -418,7 +418,7 @@ en:
         error: Erreur
         failed: Echec
     processing_rule/workbench:
-      processable_type:
+      processing_type:
         "Macro::List": "Macro List"
         "Control::List": Control List
       operation_step:

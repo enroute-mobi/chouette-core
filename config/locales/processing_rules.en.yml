@@ -14,7 +14,7 @@ en:
       new: "Create a Processing Rule"
       edit: "Edit this Processing Rule"
       destroy: "Delete this Processing Rule"
-    name: "%{operation_step} %{processable_type} %{processable_name}"
+    name: "%{operation_step} %{processing_type} %{processing_name}"
   activerecord:
     models:
       processing_rule/base:
@@ -27,8 +27,8 @@ en:
         other: Processings rules
     attributes:
       processing_rule/workbench:
-        processable_type: Processing Type
-        processable_id: Processing
+        processing_type: Processing Type
+        processing_id: Processing
         operation_step: Operation Step
       processing_rule/workgroup:
         workgroup: Workgroup

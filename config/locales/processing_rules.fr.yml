@@ -14,7 +14,7 @@ fr:
       new: "Créer une Règle de traitement"
       edit: "Editer cette Règle de traitement"
       destroy: "Supprimer cette Règle de traitement"
-    name: "%{operation_step} %{processable_type} %{processable_name}"
+    name: "%{operation_step} %{processing_type} %{processing_name}"
   activerecord:
     models:
       processing_rule/base:
@@ -27,8 +27,8 @@ fr:
         other: Règles de traitement
     attributes:
       processing_rule/workbench:
-        processable_type: Type de traitement
-        processable_id: Traitement
+        processing_type: Type de traitement
+        processing_id: Traitement
         operation_step: Étape
       processing_rule/workgroup:
         workgroup: Groupe de travail

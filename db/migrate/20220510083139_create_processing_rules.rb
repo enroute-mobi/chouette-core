@@ -5,8 +5,7 @@ class CreateProcessingRules < ActiveRecord::Migration[5.2]
         t.references :workgroup
         t.references :workbench
         t.string :type
-        t.string :name
-        t.references :processable, polymorphic: true
+        t.references :processing, polymorphic: true
         t.string :operation_step
         t.bigint :target_workbench_ids, array: true, default: []
         t.timestamps

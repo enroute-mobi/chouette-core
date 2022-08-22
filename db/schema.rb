@@ -917,7 +917,7 @@ ActiveRecord::Schema.define(version: 2022_08_08_124959) do
     t.text "comments"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "type", null: false
+    t.string "type"
     t.index ["macro_list_run_id"], name: "index_macro_context_runs_on_macro_list_run_id"
   end
 
@@ -928,14 +928,12 @@ ActiveRecord::Schema.define(version: 2022_08_08_124959) do
     t.text "comments"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "type", null: false
+    t.string "type"
     t.index ["macro_list_id"], name: "index_macro_contexts_on_macro_list_id"
   end
 
   create_table "macro_list_runs", force: :cascade do |t|
     t.bigint "workbench_id"
-    t.string "name"
-    t.bigint "original_macro_list_id"
     t.bigint "referential_id"
     t.string "status"
     t.string "error_uuid"
@@ -944,15 +942,16 @@ ActiveRecord::Schema.define(version: 2022_08_08_124959) do
     t.datetime "ended_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "original_macro_list_id"
+    t.string "name"
     t.string "user_status", null: false
-    t.index ["original_macro_list_id"], name: "index_macro_list_runs_on_original_macro_list_id"
     t.index ["referential_id"], name: "index_macro_list_runs_on_referential_id"
     t.index ["workbench_id"], name: "index_macro_list_runs_on_workbench_id"
   end
 
   create_table "macro_lists", force: :cascade do |t|
     t.bigint "workbench_id"
-    t.string "name"
+    t.text "name"
     t.text "comments"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -991,7 +990,7 @@ ActiveRecord::Schema.define(version: 2022_08_08_124959) do
     t.string "type", null: false
     t.bigint "macro_list_id"
     t.integer "position", null: false
-    t.string "name"
+    t.text "name"
     t.text "comments"
     t.jsonb "options", default: {}
     t.datetime "created_at", null: false
@@ -1123,17 +1122,19 @@ ActiveRecord::Schema.define(version: 2022_08_08_124959) do
   end
 
   create_table "processing_rules", force: :cascade do |t|
+    t.bigint "workgroup_id"
     t.bigint "workbench_id"
+    t.string "type"
     t.string "name"
     t.string "processable_type"
     t.bigint "processable_id"
     t.string "operation_step"
+    t.bigint "target_workbench_ids", default: [], array: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "workgroup_rule", default: false
-    t.bigint "target_workbench_ids", default: [], array: true
     t.index ["processable_type", "processable_id"], name: "index_processing_rules_on_processable_type_and_processable_id"
     t.index ["workbench_id"], name: "index_processing_rules_on_workbench_id"
+    t.index ["workgroup_id"], name: "index_processing_rules_on_workgroup_id"
   end
 
   create_table "publication_api_keys", force: :cascade do |t|
@@ -1334,7 +1335,7 @@ ActiveRecord::Schema.define(version: 2022_08_08_124959) do
   create_table "shapes", force: :cascade do |t|
     t.string "name"
     t.geometry "geometry", limit: {:srid=>4326, :type=>"line_string"}
-    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
+    t.uuid "uuid", default: -> { "shared_extensions.gen_random_uuid()" }, null: false
     t.bigint "shape_referential_id", null: false
     t.bigint "shape_provider_id", null: false
     t.datetime "created_at", null: false

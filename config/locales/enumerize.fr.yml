@@ -417,12 +417,12 @@ fr:
         warning: Avertissement
         error: Erreur
         failed: Echec
-    processing_rule:
+    processing_rule/workbench:
       processable_type:
-        "Macro::List": "Jeu d’instructions"
+        "Macro::List": "Jeu d'instructions"
         "Control::List": Jeu de contrôles
       operation_step:
-        after_import: Apres import
+        after_import: Après import
         before_merge: Avant finalisation
-        after_merge: Apres finalisation
-        after_aggregate: Apres aggregation
+        after_merge: Après finalisation
+        after_aggregate: Après agrégation

@@ -417,7 +417,7 @@ en:
         warning: Avertissement
         error: Erreur
         failed: Echec
-    processing_rule:
+    processing_rule/workbench:
       processable_type:
         "Macro::List": "Macro List"
         "Control::List": Control List

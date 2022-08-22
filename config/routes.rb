@@ -165,12 +165,7 @@ ChouetteIhm::Application.routes.draw do
     end
 
     resources :documents
-    resources :processing_rules do
-      collection do
-        get :add_workgroup_rule
-        get :get_processables, defaults: { format: 'json' }
-      end
-    end
+    resources :processing_rules, as: 'processing_rule_workbenches'
   end
 
   resource :workbench_confirmation, only: [:new, :create]

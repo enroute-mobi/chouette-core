@@ -1,5 +1,5 @@
 en:
-  processing_rules:
+  processing_rule/workbenches:
     index:
       title: Processing Rules
     show:
@@ -12,20 +12,24 @@ en:
     actions:
       show: "Show this Processing Rule"
       new: "Create a Processing Rule"
-      edit: "Editer cette Processing Rule"
-      destroy: "Supprimer cette Processing Rule"
-      add_workgroup_rule: Add a workgroup rule
-    name: "%{processable_type} %{operation_step} %{processable_name} on %{target_workbenches}"
+      edit: "Edit this Processing Rule"
+      destroy: "Delete this Processing Rule"
+    name: "%{operation_step} %{processable_type} %{processable_name}"
   activerecord:
     models:
-      processing_rule:
+      processing_rule/base:
+        zero: Processings rules
+        one: Processing rules
+        other: Processings rules
+      processing_rule/workbench:
         zero: Processings rules
         one: Processing rules
         other: Processings rules
     attributes:
-      processing_rule:
-        processable_type: Processable Type
-        processable_id: Processable
+      processing_rule/workbench:
+        processable_type: Processing Type
+        processable_id: Processing
         operation_step: Operation Step
+      processing_rule/workgroup:
         workgroup: Workgroup
         target_workbenches: Target(s) workbench(es)

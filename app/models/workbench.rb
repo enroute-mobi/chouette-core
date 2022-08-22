@@ -36,6 +36,7 @@ class Workbench < ApplicationModel
   has_many :merges, dependent: :destroy
   has_many :api_keys, dependent: :destroy
   has_many :source_retrievals, class_name: "Source::Retrieval"
+  has_many :processing_rules, class_name: "ProcessingRule::Workbench"
 
   validates :name, presence: true
   validates :organisation, presence: true, unless: :pending?
@@ -245,10 +246,6 @@ class Workbench < ApplicationModel
 
   def owner?
     workgroup.owner_id == organisation_id
-  end
-
-  def processing_rules
-    ProcessingRule.query.for_workbench(self).scope
   end
 
   private

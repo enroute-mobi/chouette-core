@@ -1,5 +1,5 @@
 fr:
-  processing_rules:
+  processing_rule/workbenches:
     index:
       title: Règles de traitement
     show:
@@ -14,18 +14,22 @@ fr:
       new: "Créer une Règle de traitement"
       edit: "Editer cette Règle de traitement"
       destroy: "Supprimer cette Règle de traitement"
-      add_workgroup_rule: Ajouter un règle de groupe de travail
-    name: "%{processable_type} %{operation_step} %{processable_name} pour %{target_workbenches}"
+    name: "%{operation_step} %{processable_type} %{processable_name}"
   activerecord:
     models:
-      processing_rule:
+      processing_rule/base:
+        zero: Règle de traitement
+        one: Règle de traitement
+        other: Règles de traitement
+      processing_rule/workbench:
         zero: Règle de traitement
         one: Règle de traitement
         other: Règles de traitement
     attributes:
-      processing_rule:
+      processing_rule/workbench:
         processable_type: Type de traitement
         processable_id: Traitement
-        operation_step: Etape
+        operation_step: Étape
+      processing_rule/workgroup:
         workgroup: Groupe de travail
         target_workbenches: Espace(s) de travail cible(s)

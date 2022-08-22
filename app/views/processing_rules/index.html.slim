@@ -2,10 +2,6 @@
 
 .page_content
   .container-fluid
-    - if params[:q].present? or @processing_rules.any?
-      .row
-        .col-lg-12
-
     - if @processing_rules.any?
       .row
         .col-lg-12
@@ -14,11 +10,6 @@
               TableBuilderHelper::Column.new( \
                 key: :operation_step, \
                 attribute: -> (pr) { pr.operation_step.text }, \
-                sortable: false \
-              ), \
-              TableBuilderHelper::Column.new( \
-                key: :workgroup, \
-                attribute: -> (pr) { pr.workgroup_rule ? 'yes'.t : 'no'.t }, \
                 sortable: false \
               ), \
               TableBuilderHelper::Column.new( \
@@ -32,13 +23,7 @@
                 link_to: -> (pr) { url_for([pr.processable.workbench, pr.processable]) }, \
                 sortable: false,\
               ), \
-              TableBuilderHelper::Column.new( \
-                key: :target_workbenches, \
-                attribute: -> (pr) { pr.display_target_workbenches }, \
-                sortable: false,\
-              ) \
-              \
-            ].compact,
+            ],
             cls: 'table has-filter has-search'
 
           = new_pagination @processing_rules, 'pull-right'

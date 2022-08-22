@@ -76,12 +76,12 @@ crumb :new_point_of_interest do |workbench|
 end
 
 crumb :processing_rules do |workbench|
-  link I18n.t('processing_rules.index.title'), workbench_processing_rules_path(workbench)
+  link I18n.t('processing_rule/workbenches.index.title'), workbench_processing_rule_workbenches_path(workbench)
   parent :workbench, workbench
 end
 
 crumb :processing_rule do |workbench, processing_rule|
-  link breadcrumb_name(processing_rule), workbench_processing_rule_path(workbench, processing_rule)
+  link breadcrumb_name(processing_rule), workbench_processing_rule_workbench_path(workbench, processing_rule)
   parent :processing_rules, workbench
 end
 

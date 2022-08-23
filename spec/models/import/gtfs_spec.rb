@@ -1077,4 +1077,58 @@ RSpec.describe Import::Gtfs do
       end
     end
   end
+
+  describe 'Shapes Part' do
+    describe Import::Gtfs::Shapes::Decorator do
+      let(:gtfs_shape) { GTFS::Shape.new }
+      subject(:decorator) { described_class.new gtfs_shape }
+
+      describe '#valid?' do
+        subject { decorator.valid? }
+
+        context 'when an error exists before' do
+          it { is_expected.to be_truthy }
+        end
+
+        context 'when an error is detected' do
+          before { allow(decorator).to receive(:points).and_return(double(count: 1_000_000)) }
+          it { is_expected.to be_falsy }
+        end
+      end
+
+      describe '.maximum_point_count' do
+        subject { described_class.maximum_point_count }
+        it { is_expected.to eq(10_000) }
+      end
+
+      describe '#errors' do
+        describe 'point count validation' do
+          let(:points) { double(count: point_count) }
+          before do
+            allow(decorator).to receive(:points).and_return(points)
+          end
+
+          subject do
+            decorator.valid?
+            decorator.errors end
+
+          context 'when the GTFS Shape has 10000 points' do
+            let(:point_count) { 10_000 }
+            it { is_expected.to be_empty }
+          end
+
+          context 'when the GTFS Shape has 10001 points' do
+            let(:point_count) { 10_001 }
+            it { is_expected.to include(a_hash_including(criticity: :error)) }
+            it { is_expected.to include(a_hash_including(message_key: :unreasonable_shape)) }
+
+            context 'when GTFS shape_id is 42' do
+              before { gtfs_shape.id = 42 }
+              it { is_expected.to include(a_hash_including(message_attributes: { shape_id: 42 })) }
+            end
+          end
+        end
+      end
+    end
+  end
 end

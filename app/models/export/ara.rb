@@ -375,6 +375,7 @@ class Export::Ara < Export::Base
           vehicle_journey_id: vehicle_journey_id,
           passage_order: passage_order,
           schedules: schedules,
+          references: references
         }
       end
 
@@ -383,23 +384,46 @@ class Export::Ara < Export::Base
       end
 
       def stop_area_id
-        stop_point&.stop_area&.get_objectid.local_id
+        stop_point&.stop_area&.get_objectid&.local_id
       end
 
       def vehicle_journey_id
-        vehicle_journey&.get_objectid.local_id
+        vehicle_journey&.get_objectid&.local_id
       end
 
+      def references 
+        { 
+          'Type': 'OperatorRef',
+          'ObjectId': operator_objectid
+        } if operator_objectid
+      end
+
+      def operator_objectid
+        return unless company
+        return { "external" => company.registration_number  } if company.registration_number 
+
+        if code = company.codes.first
+          { code.code_space.short_name => code.value }
+        end
+      end
+
+      def company
+        vehicle_journey&.company || line&.company
+      end
+      delegate :line, to: :vehicle_journey, allow_nil: true
+
       def passage_order
-        stop_point&.position.to_s
+        stop_point&.position&.to_s
       end
 
       def schedules
-        [{
-          'Kind': 'aimed',
+        [
+          {
+          'Kind': "aimed",
           'ArrivalTime': format_arrival_date(arrival_time),
           'DepartureTime': format_departure_date(departure_time)
-        }]
+          } 
+        ] if arrival_time && departure_time
       end
 
       def uuid

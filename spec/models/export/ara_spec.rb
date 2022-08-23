@@ -317,6 +317,126 @@ RSpec.describe Export::Ara do
   end
 
   describe "StopVisit export" do
+
+    describe Export::Ara::StopVisits::Decorator do
+      let(:vehicle_journey_at_stop) { Chouette::VehicleJourneyAtStop.new }
+      subject(:decorator) { Export::Ara::StopVisits::Decorator.new vehicle_journey_at_stop, day: Date.current }
+
+      describe "#line" do
+        subject { decorator.line }
+
+        context "when Vehicle Journey Line is defined" do
+          let(:line) { Chouette::Line.new }
+          
+          before do
+            vehicle_journey_at_stop.vehicle_journey = Chouette::VehicleJourney.new 
+            allow(vehicle_journey_at_stop.vehicle_journey).to receive(:line).and_return(line)
+
+          end
+
+          it "uses this Line" do
+            is_expected.to eq(line)
+          end
+        end
+
+        context "when Vehicle Journey has no line" do 
+          it { is_expected.to be_nil }
+        end
+
+        context "without Vehicle Journey" do 
+          it { is_expected.to be_nil }
+        end
+      end
+      
+      describe "#company" do
+        subject { decorator.company }
+
+        context "when Vehicle Journey has a Company" do 
+          let(:company) { Chouette::Company.new }
+          before do
+            vehicle_journey_at_stop.vehicle_journey = 
+              Chouette::VehicleJourney.new(company: company)
+          end
+          it "uses this Company" do
+             is_expected.to eq(company) 
+          end
+        end
+
+        context "when Vehicle Journey has no Company" do
+          before do
+            vehicle_journey_at_stop.vehicle_journey = Chouette::VehicleJourney.new
+          end
+          it { is_expected.to be_nil }
+
+          context "when Line has a Company" do
+            let(:company) { Chouette::Company.new }
+            before do
+              allow(decorator).to receive(:line).and_return(Chouette::Line.new(company: company))
+            end
+            it "uses this Company" do
+              is_expected.to eq(company)
+            end
+          end
+        end
+      end
+
+      describe "#operator_objectid" do
+        subject { decorator.operator_objectid }
+
+        context "without Company" do
+          it { is_expected.to be_nil }
+        end
+
+        context "when Company has a registration number 'dummy'" do
+          before { allow(decorator).to receive(:company).and_return(double(registration_number: 'dummy')) }
+          it { is_expected.to eq({"external" => "dummy"}) }
+        end
+
+        context "when Company has no registration number" do
+          let(:company) { double(registration_number: nil) }
+          before { allow(decorator).to receive(:company).and_return(company) }
+
+          context "when Company has no code" do 
+            before { allow(company).to receive(:codes).and_return([])} 
+            it { is_expected.to be_nil }
+          end
+
+          context "when Company has a code test:dummy" do 
+            let(:code) { Code.new(code_space: CodeSpace.new(short_name: 'test'), value: 'dummy') }
+            before { allow(company).to receive(:codes).and_return([code])} 
+
+            it { is_expected.to eq({"test" => "dummy"}) }
+          end
+        end
+      end
+
+      describe "#references" do
+        subject { decorator.references }
+
+        context "when operator_objectid {'test': 'dummy'}" do
+          before { allow(decorator).to receive(:operator_objectid).and_return({'test': 'dummy'}) }
+          it { is_expected.to eq({ 'Type': 'OperatorRef', 'ObjectId': {'test': 'dummy'} }) }
+        end
+
+        context "without operator_objectid" do
+          before { allow(decorator).to receive(:operator_objectid) }
+          it { is_expected.to be_nil }
+        end
+      end
+
+      describe "#ara_attributes" do 
+        subject { decorator.ara_attributes }
+
+        context "when references is defined" do
+          let(:references) { double }
+          before { allow(decorator).to receive(:references).and_return(references) }
+          it "includes its value as references attribute" do
+             is_expected.to include(references: references) 
+          end
+        end
+      end
+    end
+
     context "when Stop Visits are exported" do
       let(:context) do
         Chouette.create { vehicle_journey }
@@ -345,17 +465,14 @@ RSpec.describe Export::Ara do
           let(:stop_visit_decorator) { Export::Ara::StopVisits::Decorator.new(vehicle_journey_at_stop, day: day) }
 
           let(:expected_attributes) do
-            an_object_having_attributes(
-              {
-                schedules:
-                  [{
-                     'Kind': 'aimed',
-                     'ArrivalTime': '2022-06-30T19:01:00+00:00',
-                     'DepartureTime': '2022-06-30T15:01:00+00:00'
-                  }],
-                passage_order: '0'
-              }
-            )
+            {
+              schedules: [{
+                    'Kind': 'aimed',
+                    'ArrivalTime': '2022-06-30T19:01:00+00:00',
+                    'DepartureTime': '2022-06-30T15:01:00+00:00'
+              }],
+              passage_order: '0'
+            }
           end
 
           before do
@@ -367,7 +484,7 @@ RSpec.describe Export::Ara do
           end
 
           it 'should create stop_visits with the correct attributes' do
-            expect([stop_visit_decorator.ara_model]).to include(expected_attributes)
+            expect(stop_visit_decorator.ara_model).to have_attributes(expected_attributes)
           end
 
           describe '#format_departure_date' do

@@ -34,7 +34,7 @@ module Chouette
     belongs_to_public :line_notices,
       index_collection: -> { Chouette::VehicleJourney.where.not('line_notice_ids = ARRAY[]::bigint[]') }
 
-    delegate :line, to: :route
+    delegate :line, to: :route, allow_nil: true
 
     has_and_belongs_to_many :footnotes, :class_name => 'Chouette::Footnote'
     has_array_of :ignored_routing_contraint_zones, class_name: 'Chouette::RoutingConstraintZone'

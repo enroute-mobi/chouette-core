@@ -160,14 +160,12 @@ module AF83::Decorator::EnhancedDecorator
   def check_policy policy
     policy_object = policy.to_s == "create" ? object.klass : object
 
-    Rails.logger.debug "check_policy: #{[policy_object, policy, object].inspect}"
-
     if self.class.respond_to?(:policy_class)
       policy_object = self
     end
 
     policy_instance = h.policy(policy_object)
-    Rails.logger.debug "check_policy with #{policy_instance.class} for #{policy_object.class}#"
+    Rails.logger.debug "Check policy with #{policy_instance.class} for #{policy_object.class}##{policy}"
 
     method = "#{policy}?"
     policy_instance.send(method)

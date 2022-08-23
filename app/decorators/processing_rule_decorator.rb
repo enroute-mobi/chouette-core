@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ProcessingRuleDecorator < AF83::Decorator
   decorates ProcessingRule::Workbench
 
@@ -9,14 +11,14 @@ class ProcessingRuleDecorator < AF83::Decorator
 
   with_instance_decorator(&:crud)
 
-	define_instance_method :name do
-		return unless processing
+  define_instance_method :name do
+    return unless processing
 
-		I18n.t(
-			'processing_rule/workbenches.name',
-			processing_type: processing_type.text,
-			operation_step: operation_step.text,
-			processing_name: processing.name
-		)
-	end
+    I18n.t(
+      'processing_rule/workbenches.name',
+      processing_type: processing_type.text,
+      operation_step: operation_step.text,
+      processing_name: processing.name
+    )
+  end
 end

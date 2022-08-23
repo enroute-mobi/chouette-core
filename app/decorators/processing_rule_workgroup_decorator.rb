@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ProcessingRuleWorkgroupDecorator < AF83::Decorator
   decorates ProcessingRule::Workgroup
 
@@ -9,8 +11,8 @@ class ProcessingRuleWorkgroupDecorator < AF83::Decorator
 
   with_instance_decorator(&:crud)
 
-	define_instance_method :name do
-		return unless processing
+  define_instance_method :name do
+    return unless processing
 
     I18n.t(
       'processing_rule/workgroups.name',
@@ -19,7 +21,7 @@ class ProcessingRuleWorkgroupDecorator < AF83::Decorator
       processing_name: processing.name,
       target_workbenches: target_workbench_names
     )
-	end
+  end
 
   define_instance_method :target_workbench_names do
     if object.target_workbenches.empty?

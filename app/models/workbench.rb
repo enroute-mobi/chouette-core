@@ -244,10 +244,6 @@ class Workbench < ApplicationModel
     default_document_provider.save
   end
 
-  def owner?
-    workgroup.owner_id == organisation_id
-  end
-
   private
 
   def create_dependencies

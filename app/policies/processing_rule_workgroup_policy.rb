@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ProcessingRuleWorkgroupPolicy < ApplicationPolicy
   class Scope < Scope
     def resolve
@@ -6,7 +8,6 @@ class ProcessingRuleWorkgroupPolicy < ApplicationPolicy
   end
 
   def create?
-    Rails.logger.debug [ workgroup_owner?, user.has_permission?('processing_rules.create') ].inspect
     workgroup_owner? && user.has_permission?('processing_rules.create')
   end
 

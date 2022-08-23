@@ -91,8 +91,7 @@ crumb :new_processing_rule do |workbench|
 end
 
 crumb :workgroup_processing_rules do |workgroup|
-  link I18n.t('processing_rule/workbenches.index.title')
-
+  link I18n.t('processing_rule/workbenches.index.title'), workgroup_processing_rule_workgroups_path(workgroup)
   parent :workgroup, workgroup
 end
 

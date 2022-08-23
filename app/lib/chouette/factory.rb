@@ -99,6 +99,29 @@ module Chouette
             end
           end
 
+          model :control_list do 
+            attribute(:name) { |n| "Control List #{n}" }
+          end
+
+          model :macro_list do 
+            attribute(:name) { |n| "Macro List #{n}" }
+          end
+
+          model :processing_rule do
+            attribute(:operation_step) { 'after_import' }
+
+            transient :control_list
+            transient :macro_list
+
+            after do
+              processing = transient(:macro_list, resolve_instances: true) || 
+                transient(:control_list, resolve_instances: true) ||
+                new_instance.workbench.control_lists.create!(name: 'Default')
+
+              new_instance.processing = processing
+            end
+          end
+
           model :line_provider do
             attribute(:short_name) { |n| "line_provider_#{n}" }
             attribute(:name) { |n| "Line Provider #{n}" }

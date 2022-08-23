@@ -425,4 +425,11 @@ en:
         after_import: After import
         before_merge: Before merge
         after_merge: After merge
+    processing_rule/workgroup:
+      processing_type:
+        "Control::List": Control List
+      operation_step:
+        after_import: After import
+        before_merge: Before merge
+        after_merge: After merge
         after_aggregate: After aggregate

@@ -3,7 +3,9 @@ class ProcessingRuleDecorator < AF83::Decorator
 
   set_scope { context[:workbench] }
 
-  create_action_link
+  create_action_link do |l|
+    l.content t('processing_rule/workbenches.actions.new')
+  end
 
   with_instance_decorator(&:crud)
 

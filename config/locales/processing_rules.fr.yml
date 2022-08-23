@@ -15,6 +15,24 @@ fr:
       edit: "Editer cette Règle de traitement"
       destroy: "Supprimer cette Règle de traitement"
     name: "%{operation_step} %{processing_type} %{processing_name}"
+
+  processing_rule/workgroups:
+    index:
+      title: Règles de traitement du Groupe de Travail
+    show:
+      title: "%{name}"
+    new:
+      title: "Créer une Règle de traitement"
+    edit:
+      title: "Editer %{name}"
+    search_no_results: "Aucune Règle de traitement ne correspond à votre recherche"
+    actions:
+      show: "Afficher cette Règle de traitement"
+      new: "Créer une Règle de traitement"
+      edit: "Editer cette Règle de traitement"
+      destroy: "Supprimer cette Règle de traitement"
+    name: "%{operation_step} %{processing_type} %{processing_name}"
+
   activerecord:
     models:
       processing_rule/base:
@@ -25,11 +43,20 @@ fr:
         zero: Règle de traitement
         one: Règle de traitement
         other: Règles de traitement
+      processing_rule/workgroup:
+        zero: Règle de traitement
+        one: Règle de traitement
+        other: Règles de traitement
     attributes:
       processing_rule/workbench:
         processing_type: Type de traitement
         processing_id: Traitement
         operation_step: Étape
       processing_rule/workgroup:
+        processing_type: Type de traitement
+        processing_id: Traitement
+        operation_step: Étape
+        control_list_id: Jeu de contrôles
+        control_list: Jeu de contrôles
         workgroup: Groupe de travail
         target_workbenches: Espace(s) de travail cible(s)

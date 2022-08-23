@@ -1,0 +1,14 @@
+= simple_form_for [@workgroup, @processing_rule], as: 'processing_rule', html: { class: 'form-horizontal', id: 'processing_rule_form' }, wrapper: :horizontal_form  do |f|
+  .row
+    .col-lg-12
+      = f.input :operation_step
+      = f.input :target_workbenches,
+        as: :tom_select,
+        required: true,
+        collection: @processing_rule.candidate_target_workbenches.map { |w| { id: w.id, text: w.name } },
+        input_html: { multiple: true },
+        selected: @processing_rule.target_workbench_ids      
+      = f.input :control_list_id, as: :select, collection: @processing_rule.candidate_control_lists.order(:name)
+
+  = cancel_button
+  = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'processing_rule_form'

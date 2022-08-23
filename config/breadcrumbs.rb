@@ -86,23 +86,23 @@ crumb :processing_rule do |workbench, processing_rule|
 end
 
 crumb :new_processing_rule do |workbench|
-  link I18n.t('processing_rules.new.title')
+  link I18n.t('processing_rule/workbenches.new.title')
   parent :processing_rules, workbench
 end
 
 crumb :workgroup_processing_rules do |workgroup|
-  link I18n.t('processing_rules.index.title')
+  link I18n.t('processing_rule/workbenches.index.title')
 
   parent :workgroup, workgroup
 end
 
 crumb :workgroup_processing_rule do |workgroup, processing_rule|
-  link breadcrumb_name(processing_rule), workgroup_processing_rule_path(workgroup, processing_rule)
+  link breadcrumb_name(processing_rule), workgroup_processing_rule_workgroup_path(workgroup, processing_rule)
   parent :workgroup_processing_rules, workgroup
 end
 
 crumb :new_workgroup_processing_rule do |workgroup|
-  link I18n.t('processing_rules.new.title')
+  link I18n.t('processing_rule/workgroups.new.title')
   parent :workgroup_processing_rules, workgroup
 end
 

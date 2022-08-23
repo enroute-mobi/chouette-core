@@ -185,6 +185,7 @@ ChouetteIhm::Application.routes.draw do
     resources :code_spaces, except: :destroy
 
     resources :document_types
+    resources :processing_rules, as: 'processing_rule_workgroups', controller: 'workgroup_processing_rules'
 
     resources :compliance_check_sets, only: [:index, :show] do
       get :executed, on: :member

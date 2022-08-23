@@ -29,6 +29,7 @@
   has_many :compliance_check_sets, dependent: :destroy
   has_many :macro_lists, :through => :workbenches
   has_many :control_lists, :through => :workbenches
+  has_many :processing_rules, class_name: "ProcessingRule::Workgroup"
 
   validates :name, presence: true, uniqueness: true
   validates_uniqueness_of :stop_area_referential_id
@@ -311,10 +312,6 @@
 
       workgroup
     end
-  end
-
-  def processing_rules
-    ProcessingRule.query.for_workgroup(self).scope
   end
 
   private

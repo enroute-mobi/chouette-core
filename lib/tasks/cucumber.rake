@@ -123,8 +123,14 @@ namespace :cucumber do
       organisations.find_each do |organisation|
         unless dry_run
           Organisation.transaction do
-            organisation.workgroups.owned.each(&:destroy!)
-            organisation.destroy!
+            begin
+              organisation.workgroups.owned.each(&:destroy!)
+              organisation.destroy!
+            rescue StandardError => e
+              message = "Can't clean test organisation ##{organisation.id}"
+              puts message
+              Chouette::Safe.capture message, e 
+            end
           end
         else
           puts "Destroy Organisation '#{organisation.name}' ##{organisation.id}"

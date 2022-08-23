@@ -1,4 +1,4 @@
-- breadcrumb :processing_rules, @workbench
+- breadcrumb :workgroup_processing_rules, @workgroup
 
 .page_content
   .container-fluid
@@ -13,14 +13,13 @@
                 sortable: false \
               ), \
               TableBuilderHelper::Column.new( \
-                key: :processing_type, \
-                attribute: -> (pr) { pr.processing_type.text }, \
-                sortable: false,\
+                key: :target_workbenches, \
+                attribute: -> (pr) { pr.target_workbench_names }, \
+                sortable: false \
               ), \
               TableBuilderHelper::Column.new( \
-                key: :processing_id, \
+                key: :control_list, \
                 attribute: -> (pr) { pr.processing.name }, \
-                link_to: -> (pr) { url_for([pr.processing.workbench, pr.processing]) }, \
                 sortable: false,\
               ), \
             ],
@@ -31,4 +30,4 @@
     - unless @processing_rules.any?
       .row.mt-xs
         .col-lg-12
-          = replacement_msg t('processing_rule/workbenches.search_no_results')
+          = replacement_msg t('processing_rule/workgroups.search_no_results')

@@ -89,6 +89,10 @@ module AF83::Decorator::EnhancedDecorator
       @scope
     end
 
+    def inspect
+      "#{name} #{@_action_links.inspect}"
+    end
+
     def t key
       eval  "-> (l){ h.t('#{key}') }"
     end
@@ -156,12 +160,14 @@ module AF83::Decorator::EnhancedDecorator
   def check_policy policy
     policy_object = policy.to_s == "create" ? object.klass : object
 
+    Rails.logger.debug "check_policy: #{[policy_object, policy, object].inspect}"
+
     if self.class.respond_to?(:policy_class)
       policy_object = self
     end
 
     policy_instance = h.policy(policy_object)
-    Rails.logger.debug "check_policy with #{policy_instance.class} for #{policy_object.class}"
+    Rails.logger.debug "check_policy with #{policy_instance.class} for #{policy_object.class}#"
 
     method = "#{policy}?"
     policy_instance.send(method)

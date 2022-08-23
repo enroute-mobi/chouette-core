@@ -13,6 +13,7 @@ module Control
     accepts_nested_attributes_for :control_contexts, allow_destroy: true, reject_if: :all_blank
 
     scope :by_text, ->(text) { text.blank? ? all : where('lower(name) LIKE :t', t: "%#{text.downcase}%") }
+    scope :shared, -> { where(shared: true) }
 
     def self.policy_class
       ControlListPolicy

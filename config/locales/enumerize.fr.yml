@@ -425,4 +425,11 @@ fr:
         after_import: Après import
         before_merge: Avant finalisation
         after_merge: Après finalisation
+    processing_rule/workgroup:
+      processing_type:
+        "Control::List": Jeu de contrôles
+      operation_step:
+        after_import: Après import
+        before_merge: Avant finalisation
+        after_merge: Après finalisation
         after_aggregate: Après agrégation

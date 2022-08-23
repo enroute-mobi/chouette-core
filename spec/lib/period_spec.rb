@@ -300,6 +300,24 @@ RSpec.describe Period do
     end
   end
 
+  describe '#limit' do
+    subject { period.limit(date) }
+
+    context "when period is '2030-01-01..2030-12-31'" do
+      let(:period) { Period.parse '2030-01-01..2030-12-31' }
+      [
+        %w[2030-06-01 2030-06-01],
+        %w[2020-01-01 2030-01-01],
+        %w[2040-01-01 2030-12-31]
+      ].each do |date, expected|
+        context "when the given date is #{date}" do
+          let(:date) { Date.parse(date) }
+          it { is_expected.to eq(Date.parse(expected)) }
+        end
+      end
+    end
+  end
+
   describe '.parse' do
     subject { Period.parse definition }
 

@@ -1,7 +1,7 @@
 class TimeTablePresenter
 
-  def default_year
-    @time_table.period.limit(Date.current).year
+  def default_year(current = Date.current)
+    @time_table.period.limit(current).year
   end
 
   def initialize(time_table)

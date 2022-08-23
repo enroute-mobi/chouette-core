@@ -79,7 +79,7 @@ class Period < Range
     case definition
     when String
       if /\A(.*)\.\.(.*)\z/ =~ definition
-        new from: $1, to: $2
+        new from: Regexp.last_match(1), to: Regexp.last_match(2)
       end
     when Range
       new from: definition.begin.to_s, to: definition.end.to_s
@@ -111,7 +111,7 @@ class Period < Range
         date_or_period
       end
 
-    from date+1
+    from date + 1
   end
 
   # Period.before(date) returns a Period until the day before the given date
@@ -124,7 +124,7 @@ class Period < Range
         date_or_period
       end
 
-    self.until date-1
+    self.until date - 1
   end
 
   def until(to)
@@ -134,6 +134,7 @@ class Period < Range
   # Returns the Time at the middle of the Period
   def mid_time
     return nil if infinite?
+
     from.to_time + duration / 2.0
   end
   alias middle mid_time
@@ -194,18 +195,17 @@ class Period < Range
   def size
     if infinite?
       Float::INFINITY
+    elsif from <= to
+      (to - from).to_i + 1
     else
-      if from <= to
-        (to - from).to_i + 1
-      else
-        0
-      end
+      0
     end
   end
   alias day_count size
 
   def duration
     return nil if infinite?
+
     day_count.days
   end
 
@@ -251,7 +251,7 @@ class Period < Range
   # Returns Period to if the date is after Period
   def limit(date)
     [
-      [ date, from ].compact.max,
+      [date, from].compact.max,
       to
     ].compact.min
   end

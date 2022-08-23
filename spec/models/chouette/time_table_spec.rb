@@ -1590,4 +1590,13 @@ describe "update_attributes on periods and dates" do
 
   end
 
+  describe '#period' do
+    subject { time_table.period }
+    let(:time_table) { Chouette::TimeTable.new int_day_types: ApplicationDaysSupport::EVERYDAY }
+
+    context "when TimeTable covers '2030-01-01..2030-12-31'" do
+      before { time_table.periods.build period_start: Date.parse('2030-01-01'), period_end: Date.parse('2030-12-31') }
+      it { is_expected.to eq(Period.parse('2030-01-01..2030-12-31')) }
+    end
+  end
 end

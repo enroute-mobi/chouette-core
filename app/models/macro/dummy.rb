@@ -23,7 +23,7 @@ module Macro
         ::Macro::Message.transaction do
           models.select(:id, :name).find_each do |model|
             macro_messages.create(
-              message_attributes: { name: model.name, result: options[:expected_result]},
+              message_attributes: { name: model.name },
               criticity: options[:expected_result],
               source: model
             )

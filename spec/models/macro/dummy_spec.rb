@@ -17,15 +17,22 @@ RSpec.describe Macro::Dummy do
       )
     end
 
+    let(:context) do
+      Chouette.create do
+        stop_area
+        referential
+      end
+    end
+
     let(:referential) { context.referential }
 
     subject { macro_run.run }
 
     let(:expected_message) do
       an_object_having_attributes({
+        criticity: macro_run.expected_result,
+        message_attributes: { "name" => source.name },
         source: source,
-        criticity: "warning",
-        message_attributes: { "id" => source.id, "name" => source.name }
       })
     end
 
@@ -34,16 +41,9 @@ RSpec.describe Macro::Dummy do
     describe "#run" do
       let(:target_model) { "StopArea" }
       let(:source) { context.stop_area }
-      let(:context) do
-        Chouette.create do
-          stop_area
-          referential
-        end
-      end
 
       it "should create a warning message" do
         subject
-
         expect(macro_run.macro_messages).to include(expected_message)
       end
     end

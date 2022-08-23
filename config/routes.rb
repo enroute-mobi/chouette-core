@@ -165,6 +165,7 @@ ChouetteIhm::Application.routes.draw do
     end
 
     resources :documents
+    resources :processing_rules, as: 'processing_rule_workbenches'
   end
 
   resource :workbench_confirmation, only: [:new, :create]
@@ -184,6 +185,7 @@ ChouetteIhm::Application.routes.draw do
     resources :code_spaces, except: :destroy
 
     resources :document_types
+    resources :processing_rules, as: 'processing_rule_workgroups', controller: 'workgroup_processing_rules'
 
     resources :compliance_check_sets, only: [:index, :show] do
       get :executed, on: :member

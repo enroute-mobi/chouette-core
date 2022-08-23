@@ -96,6 +96,7 @@ Apartment.configure do |config|
     'PointOfInterest::Base',
     'PointOfInterest::Category',
     'PointOfInterest::Hour',
+    'ProcessingRule::Base',
     'Publication',
     'PublicationApi',
     'PublicationApiKey',

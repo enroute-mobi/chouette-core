@@ -16,7 +16,7 @@ fr:
     actions:
       new: "Créer un Jeu d'instructions"
       show: "Voir les Rapports"
-    search_no_results: "Aucun Jeux d'instructions ne correspond à votre recherche"
+    search_no_results: "Aucun Jeu d'instructions ne correspond à votre recherche"
     errors:
     edit:
       title: "Editer %{name}"
@@ -29,7 +29,7 @@ fr:
     form:
       sections:
         macros: "Jeux d'instructions"
-      macro_placeholder: "Décrivez l’objectif de cette instruction"
+      macro_placeholder: "Décrivez l'objectif de cette instruction"
     filters:
   activerecord:
     models:
@@ -53,7 +53,7 @@ fr:
   simple_form:
     labels:
       macro_list:
-        macro_type: "Type d’instruction"
+        macro_type: "Type d'instruction"
         macro_context_type: Type de contexte
     placeholders:
       macro_list:

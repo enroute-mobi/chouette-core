@@ -48,7 +48,13 @@ module Chouette
         attr_reader :instance, :attributes
 
         def initialize(instance, attributes = {})
-          @instance, @attributes = instance, attributes
+          @instance = instance
+          @attributes = attributes
+          
+          attributes.each do |attribute,value|  
+            method = "#{attribute}="
+            send method, value if respond_to?(method)
+          end
         end
 
         def matches?(options = {})
@@ -56,13 +62,17 @@ module Chouette
             return false
           end
 
-          options[:name] == attributes[:name]
+          options[:name] == name
         end
 
+        attr_accessor :name
+
+        def model_name=(model_name)
+          @model_name = model_name.to_s
+        end
         def model_name
           @model_name ||= instance.class.model_name.singular
         end
-
       end
 
     end

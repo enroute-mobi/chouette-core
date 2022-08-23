@@ -1,4 +1,4 @@
-class Workgroup < ApplicationModel
+ class Workgroup < ApplicationModel
   NIGHTLY_AGGREGATE_CRON_TIME = 5.minutes
   DEFAULT_EXPORT_TYPES = %w[Export::Gtfs Export::NetexGeneric Export::Ara].freeze
 
@@ -27,7 +27,9 @@ class Workgroup < ApplicationModel
   has_many :publication_setups, dependent: :destroy
   has_many :publication_apis, dependent: :destroy
   has_many :compliance_check_sets, dependent: :destroy
+  has_many :macro_lists, :through => :workbenches
   has_many :control_lists, :through => :workbenches
+  has_many :processing_rules, class_name: "ProcessingRule::Workgroup"
 
   validates :name, presence: true, uniqueness: true
   validates_uniqueness_of :stop_area_referential_id

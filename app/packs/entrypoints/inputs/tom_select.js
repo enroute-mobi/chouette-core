@@ -18,8 +18,8 @@ class ConfigBuilder {
 
     return {
       ...ConfigBuilder.configs.default,
-      ...payload,
-      ...specificConfig
+      ...specificConfig,
+      ...payload
     }
   }
 
@@ -68,7 +68,7 @@ class ConfigBuilder {
   }
 }
 
-window.initTomSelect = (select, config) => {
+export const initTomSelect = (select, config) => {
   try {
     const tomSelect = new TomSelect(select, ConfigBuilder.call(select, config))
     config.lock && tomSelect.lock()
@@ -78,3 +78,25 @@ window.initTomSelect = (select, config) => {
     return select.tomSelect
   }
 }
+export class Select {
+  constructor(selectId) {
+    this.select = document.getElementById(selectId)
+
+    this.select.classList.remove('form-control') // Need to do this before initTomSelect to avoid CSS issues
+    this.tomSelect = initTomSelect(this.select, this.params)
+    this.options = this.select.querySelectorAll('option')
+  }
+
+  resetOptions() {
+    this.tomSelect.clear()
+    this.tomSelect.clearOptions()
+  }
+
+  get params() {
+    return {
+      type: 'default'
+    }
+  }
+}
+
+window.initTomSelect = initTomSelect

@@ -14,7 +14,7 @@ RSpec.describe Macro::List do
 
   it { is_expected.to validate_presence_of(:name) }
   it { is_expected.to belong_to(:workbench).required(true) }
-
+  
   describe ".macros"do
     before do
       3.times do |n|

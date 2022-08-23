@@ -75,6 +75,36 @@ crumb :new_point_of_interest do |workbench|
   parent :point_of_interests, workbench
 end
 
+crumb :processing_rules do |workbench|
+  link I18n.t('processing_rule/workbenches.index.title'), workbench_processing_rule_workbenches_path(workbench)
+  parent :workbench, workbench
+end
+
+crumb :processing_rule do |workbench, processing_rule|
+  link breadcrumb_name(processing_rule), workbench_processing_rule_workbench_path(workbench, processing_rule)
+  parent :processing_rules, workbench
+end
+
+crumb :new_processing_rule do |workbench|
+  link I18n.t('processing_rule/workbenches.new.title')
+  parent :processing_rules, workbench
+end
+
+crumb :workgroup_processing_rules do |workgroup|
+  link I18n.t('processing_rule/workbenches.index.title'), workgroup_processing_rule_workgroups_path(workgroup)
+  parent :workgroup, workgroup
+end
+
+crumb :workgroup_processing_rule do |workgroup, processing_rule|
+  link breadcrumb_name(processing_rule), workgroup_processing_rule_workgroup_path(workgroup, processing_rule)
+  parent :workgroup_processing_rules, workgroup
+end
+
+crumb :new_workgroup_processing_rule do |workgroup|
+  link I18n.t('processing_rule/workgroups.new.title')
+  parent :workgroup_processing_rules, workgroup
+end
+
 crumb :point_of_interest_categories do |workbench|
   link I18n.t('point_of_interest_categories.index.title'), workbench_shape_referential_point_of_interest_categories_path(workbench)
   parent :workbench, workbench

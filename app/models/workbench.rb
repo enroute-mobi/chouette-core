@@ -36,6 +36,7 @@ class Workbench < ApplicationModel
   has_many :merges, dependent: :destroy
   has_many :api_keys, dependent: :destroy
   has_many :source_retrievals, class_name: "Source::Retrieval"
+  has_many :processing_rules, class_name: "ProcessingRule::Workbench"
 
   validates :name, presence: true
   validates :organisation, presence: true, unless: :pending?
@@ -115,7 +116,7 @@ class Workbench < ApplicationModel
   end
 
   def referential_to_aggregate
-    locked_referential_to_aggregate || output.current
+    locked_referential_to_aggregate || output. current
   end
 
   def calendars

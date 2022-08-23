@@ -23,6 +23,8 @@
           span = 'activerecord.models.code_space.other'.t.capitalize
         = link_to workgroup_document_types_path(workbench.workgroup), class: 'list-group-item' do
           span = 'activerecord.models.document_type.other'.t.capitalize
+        = link_to workgroup_processing_rule_workgroups_path(workbench.workgroup), class: "list-group-item" do
+          span = ProcessingRule::Workgroup.t
 
     = main_nav_menu_item 'activerecord.models.workbench.one'.t.capitalize do
       = link_to workbench_path(workbench), class: "list-group-item" do
@@ -50,6 +52,8 @@
         span = 'activerecord.models.source.other'.t.capitalize
       = link_to workbench_documents_path(workbench), class: "list-group-item" do
         span = 'activerecord.models.document.other'.t.capitalize
+      = link_to workbench_processing_rule_workbenches_path(workbench), class: "list-group-item" do
+        span = ProcessingRule::Workbench.t
 
     = main_nav_menu_item 'layouts.navbar.stop_area_referential'.t do
       = link_to workbench_stop_area_referential_stop_areas_path(workbench), class: "list-group-item" do

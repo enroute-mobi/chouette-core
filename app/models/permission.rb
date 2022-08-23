@@ -37,6 +37,7 @@ class Permission
         macro_list_runs
         point_of_interests
         point_of_interest_categories
+        processing_rules
         publication_api_keys
         publication_apis
         publication_setups

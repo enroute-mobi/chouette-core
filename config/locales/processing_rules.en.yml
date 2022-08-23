@@ -1,0 +1,61 @@
+en:
+  processing_rule/workbenches:
+    index:
+      title: Processing Rules
+    show:
+      title: "%{name}"
+    new:
+      title: "Create a Processing Rule"
+    edit:
+      title: "Edit %{name}"
+    search_no_results: "No processing rule matches your search"
+    actions:
+      show: "Show this Processing Rule"
+      new: "Create a Processing Rule"
+      edit: "Edit this Processing Rule"
+      destroy: "Delete this Processing Rule"
+    name: "%{operation_step} %{processing_type} %{processing_name}"
+  processing_rule/workgroups:
+    index:
+      title: Workgroup Processing Rules
+    show:
+      title: "%{name}"
+    new:
+      title: "Create a Processing Rule"
+    edit:
+      title: "Edit %{name}"
+    search_no_results: "No processing rule matches your search"
+    actions:
+      show: "Show this Processing Rule"
+      new: "Create a Processing Rule"
+      edit: "Edit this Processing Rule"
+      destroy: "Delete this Processing Rule"
+    name: "%{operation_step} %{processing_type} %{processing_name}"
+
+  activerecord:
+    models:
+      processing_rule/base:
+        zero: Processings rules
+        one: Processing rules
+        other: Processings rules
+      processing_rule/workbench:
+        zero: Processings rules
+        one: Processing rules
+        other: Processings rules
+      processing_rule/workgroup:
+        zero: Processings rules
+        one: Processing rules
+        other: Processings rules
+    attributes:
+      processing_rule/workbench:
+        processing_type: Processing Type
+        processing_id: Processing
+        operation_step: Operation Step
+      processing_rule/workgroup:
+        processing_type: Processing Type
+        processing_id: Processing
+        operation_step: Operation Step
+        control_list_id: Control List
+        control_list: Control List
+        workgroup: Workgroup
+        target_workbenches: Target workbench(es)

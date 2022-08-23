@@ -1,0 +1,17 @@
+- breadcrumb :workgroup_processing_rule, @workgroup, @processing_rule
+
+- page_header_content_for @processing_rule
+- content_for :page_header_title, @processing_rule.name, flush: true
+
+.page_content
+  .container-fluid
+    .row
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = simple_block_for @processing_rule, title: 'Information' do |d|
+          = d.attribute :operation_step, value: @processing_rule.operation_step.text
+          = d.attribute :target_workbenches, value: @processing_rule.target_workbench_names
+          = d.attribute :processing, \
+            as: :association, \
+            label: @processing_rule.processing_type.text
+          = d.attribute :created_at, as: :datetime
+          = d.attribute :updated_at, as: :datetime

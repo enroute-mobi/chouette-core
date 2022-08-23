@@ -1,0 +1,33 @@
+- breadcrumb :workgroup_processing_rules, @workgroup
+
+.page_content
+  .container-fluid
+    - if @processing_rules.any?
+      .row
+        .col-lg-12
+          = table_builder_2 @processing_rules,
+            [ \
+              TableBuilderHelper::Column.new( \
+                key: :operation_step, \
+                attribute: -> (pr) { pr.operation_step.text }, \
+                sortable: false \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :target_workbenches, \
+                attribute: -> (pr) { pr.target_workbench_names }, \
+                sortable: false \
+              ), \
+              TableBuilderHelper::Column.new( \
+                key: :control_list, \
+                attribute: -> (pr) { pr.processing.name }, \
+                sortable: false,\
+              ), \
+            ],
+            cls: 'table has-filter has-search'
+
+          = new_pagination @processing_rules, 'pull-right'
+
+    - unless @processing_rules.any?
+      .row.mt-xs
+        .col-lg-12
+          = replacement_msg t('processing_rule/workgroups.search_no_results')

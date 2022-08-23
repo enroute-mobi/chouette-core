@@ -1122,6 +1122,21 @@ ActiveRecord::Schema.define(version: 2022_08_08_124959) do
     t.index ["shape_referential_id"], name: "index_point_of_interests_on_shape_referential_id"
   end
 
+  create_table "processing_rules", force: :cascade do |t|
+    t.bigint "workgroup_id"
+    t.bigint "workbench_id"
+    t.string "type"
+    t.string "processing_type"
+    t.bigint "processing_id"
+    t.string "operation_step"
+    t.bigint "target_workbench_ids", default: [], array: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["processing_type", "processing_id"], name: "index_processing_rules_on_processing_type_and_processing_id"
+    t.index ["workbench_id"], name: "index_processing_rules_on_workbench_id"
+    t.index ["workgroup_id"], name: "index_processing_rules_on_workgroup_id"
+  end
+
   create_table "publication_api_keys", force: :cascade do |t|
     t.string "name"
     t.string "token"

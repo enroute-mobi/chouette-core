@@ -15,7 +15,7 @@ class TimeTablesController < ChouetteController
 
   def show
     show! do
-      @year = params[:year] ? params[:year].to_i : @time_table.bounding_dates.first&.cwyear || Date.today.cwyear
+      @year = params[:year] ? params[:year].to_i : @time_table.presenter.default_year
       @time_table_combination = TimeTableCombination.new
       @time_table = @time_table.decorate(context: {
         referential: @referential

@@ -389,7 +389,7 @@ class Export::NetexGeneric < Export::Base
       def postal_address
         Netex::PostalAddress.new(
           id: postal_address_objectid,
-          address_line_1: address,
+          address_line_1: address_line_1,
           post_code: zip_code,
           town: city_name,
           country_name: country
@@ -456,7 +456,7 @@ class Export::NetexGeneric < Export::Base
       def postal_address
         Netex::PostalAddress.new(
           id: uuid,
-          address_line_1: address,
+          address_line_1: address_line_1,
           post_code: zip_code,
           town: city_name,
           country_name: country

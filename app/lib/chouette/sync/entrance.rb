@@ -1,14 +1,13 @@
 module Chouette::Sync
   module Entrance
     class Netex < Chouette::Sync::Base
-
       def initialize(options = {})
         default_options = {
           resource_type: :stop_place_entrance,
           resource_id_attribute: :id,
           resource_decorator: Decorator,
           model_type: :entrance,
-          model_id_attribute: :codes,
+          model_id_attribute: :codes
         }
         options.reverse_merge!(default_options)
 
@@ -16,7 +15,6 @@ module Chouette::Sync
       end
 
       class Decorator < Chouette::Sync::Updater::ResourceDecorator
-
         delegate :source, to: :updater
 
         def stop_area_id
@@ -31,7 +29,7 @@ module Chouette::Sync
           "#{latitude} #{longitude}"
         end
 
-        def address
+        def address_line_1 # rubocop:disable Naming/VariableNumber
           postal_address&.address_line_1
         end
 
@@ -47,13 +45,13 @@ module Chouette::Sync
           postal_address&.country_name
         end
 
-        def model_attributes
+        def model_attributes # rubocop:disable Metrics/MethodLength
           {
             name: name,
             short_name: short_name,
             description: description,
             position_input: position,
-            address: address,
+            address_line_1: address_line_1, # rubocop:disable Naming/VariableNumber
             zip_code: zip_code,
             city_name: city_name,
             country: country,
@@ -62,7 +60,7 @@ module Chouette::Sync
             exit_flag: is_exit,
             raw_import_attributes: { content: raw_xml },
             stop_area_id: stop_area_id,
-            stop_area_provider_id: stop_area_provider_id,
+            stop_area_provider_id: stop_area_provider_id
           }
         end
 

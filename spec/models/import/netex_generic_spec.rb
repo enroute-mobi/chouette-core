@@ -826,14 +826,11 @@ RSpec.describe Import::NetexGeneric do
         XML
       end
 
-      context "when no object exists" do
-
-        describe "#models" do
-
-          context "when model is PointOfInterest::Base" do
-
+      context 'when no object exists' do
+        describe '#models' do
+          context 'when model is PointOfInterest::Base' do
             let(:model) { PointOfInterest::Base }
-            let(:shape_provider) {import.workbench.default_shape_provider}
+            let(:shape_provider) { import.workbench.default_shape_provider }
             let!(:category) { shape_provider.point_of_interest_categories.create(name: 'Category 2') }
 
             before { import.part(:shape_referential).import! }
@@ -842,7 +839,7 @@ RSpec.describe Import::NetexGeneric do
               an_object_having_attributes(
                 name: 'Frampton Football Stadium',
                 url: 'http://www.barpark.co.uk',
-                address: '23 Foo St',
+                address_line_1: '23 Foo St',
                 zip_code: 'FGR 1JS',
                 city_name: 'Frampton',
                 country: 'France',

@@ -87,7 +87,7 @@ class EntrancesController < ChouetteController
       :entrance_type,
       :description,
       :position_input,
-      :address,
+      :address_line_1,
       :zip_code,
       :city_name,
       :country,

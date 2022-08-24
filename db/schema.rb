@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_08_08_124959) do
+ActiveRecord::Schema.define(version: 2022_08_24_165032) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -602,7 +602,7 @@ ActiveRecord::Schema.define(version: 2022_08_08_124959) do
     t.string "entrance_type"
     t.string "description"
     t.geography "position", limit: {:srid=>4326, :type=>"st_point", :geographic=>true}
-    t.string "address"
+    t.string "address_line_1"
     t.string "zip_code"
     t.string "city_name"
     t.string "country"
@@ -1108,7 +1108,7 @@ ActiveRecord::Schema.define(version: 2022_08_08_124959) do
     t.string "name", null: false
     t.string "url"
     t.geography "position", limit: {:srid=>4326, :type=>"st_point", :geographic=>true}
-    t.string "address"
+    t.string "address_line_1"
     t.string "zip_code"
     t.string "city_name"
     t.string "country"

@@ -82,7 +82,7 @@ RSpec.describe Chouette::Sync::Entrance do
         entry_flag: false,
         exit_flag: false,
         entrance_type: "opening",
-        address: "Address Line 1",
+        address_line_1: "Address Line 1",
         zip_code: "44300",
         city_name: "Nantes",
         country: "France",

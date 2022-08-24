@@ -117,7 +117,7 @@ RSpec.describe Chouette::Sync::PointOfInterest do
       an_object_having_attributes(
         name: 'Frampton Football Stadium',
         url: 'http://www.barpark.co.uk',
-        address: '23 Foo St',
+        address_line_1: '23 Foo St',
         zip_code: 'FGR 1JS',
         city_name: 'Frampton',
         country: 'France',

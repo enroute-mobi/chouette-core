@@ -2,7 +2,7 @@ fr:
   macros:
     actions:
       duplicate: Dupliquer
-      send_to_top:  Envoyer au début
+      send_to_top: Envoyer au début
       move_up: Remonter
       move_down: Descendre
       send_to_bottom: Envoyer à la fin
@@ -11,8 +11,8 @@ fr:
   activerecord:
     models:
       macro:
-        zero:  "Macros"
-        one:   "Macro"
+        zero: "Macros"
+        one: "Macro"
         other: "Macros"
       macro/create_code:
         one: Créer un code
@@ -26,6 +26,8 @@ fr:
         one: Créer les Arrêts référents
       macro/associate_stop_area_referent:
         one: Associer les Arrêts à un Référent
+      macro/create_shape:
+        one: Créer les Tracés
     attributes:
       macro/base:
         name: Nom
@@ -39,8 +41,6 @@ fr:
         source_pattern: Modèle de source
         target_code_space: Espace code cible
         target_pattern: Modèle de cible
-      macro/dummy:
-        expected_result: Résultat attendu
   simple_form:
     placeholders:
       macro_base:

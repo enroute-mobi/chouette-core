@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Disable WebMock on :
 # - codacy requests
 # - google fonts for mailers

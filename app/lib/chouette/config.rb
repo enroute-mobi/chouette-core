@@ -1,11 +1,13 @@
+# frozen_string_literal: true
+
 module Chouette
   class Config
     class Error < StandardError; end
 
     class << self
       def load
-        if ENV['SKIP_CONFIG'] == "true"
-          puts "Skip config loading"
+        if ENV['SKIP_CONFIG'] == 'true'
+          puts 'Skip config loading'
           return
         end
 
@@ -21,9 +23,7 @@ module Chouette
       end
 
       def method_missing(name, *arguments)
-        if instance && instance.respond_to?(name)
-          return instance.send name, *arguments
-        end
+        return instance.send name, *arguments if instance && instance.respond_to?(name)
 
         super
       end
@@ -35,6 +35,11 @@ module Chouette
 
     def subscription
       @subscription ||= Subscription.new(env)
+    end
+
+    # See Feature.additionals
+    def additional_features
+      @additional_features ||= env.array('FEATURES_ADDITIONAL')
     end
 
     class Subscription
@@ -74,7 +79,7 @@ module Chouette
         @values["CHOUETTE_#{name}"] || @values[name]
       end
 
-      BOOLEAN_VALUES = %w{true TRUE 1}.freeze
+      BOOLEAN_VALUES = %w[true TRUE 1].freeze
       def boolean(name)
         BOOLEAN_VALUES.include? value(name)
       end
@@ -83,14 +88,12 @@ module Chouette
         raw_value = value(name)
         return [] unless raw_value
 
-        raw_value.split(",")
+        raw_value.split(',')
       end
-
     end
 
     private
 
     attr_reader :env
-
   end
 end

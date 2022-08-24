@@ -2,7 +2,7 @@ en:
   macros:
     actions:
       duplicate: Duplicate
-      send_to_top:  Send to top
+      send_to_top: Send to top
       move_up: Move up
       move_down: Move down
       send_to_bottom: Send to bottom
@@ -11,8 +11,8 @@ en:
   activerecord:
     models:
       macro:
-        zero:  "Macros"
-        one:   "Macro"
+        zero: "Macros"
+        one: "Macro"
         other: "Macros"
       macro/create_code:
         one: Create Code
@@ -26,25 +26,23 @@ en:
         one: Create Referent Stop Areas
       macro/associate_stop_area_referent:
         one: Assocate Stop Areas with a Referent
+      macro/create_shape:
+        one: Create Shapes
     attributes:
       macro/base:
         name: Name
         comments: Comments
         options: Options
-      macro/create_code:
-        target_model: Target Model
       macro/dummy:
         expected_result: Expected result
       macro/create_code:
         source_attribute: Source Attribute
         source_pattern: Source Pattern
         target_code_space: Target Code Space
+        target_model: Target Model
         target_pattern: Target Pattern
-        expected_result: Expected result
-      macro/dummy:
         expected_result: Expected result
   simple_form:
     placeholders:
       macro_base:
         name: Describe macro goal
-        

@@ -4,9 +4,12 @@
 module RoutePlanner
   # Use TomTom Routing API to create shape
   class TomTom
+    include Measurable
+
     def shape(points)
       Request.new(points).shape
     end
+    measure :shape
 
     # Performs a Request to the TomTom Routing API
     class Request
@@ -16,6 +19,7 @@ module RoutePlanner
       attr_accessor :points
 
       def shape
+        Rails.logger.debug { "Invoke TomTom Routing API for #{points.size} points" }
         tomtom_linestring
       rescue StandardError => e
         Chouette::Safe.capture "Can't read TomTom Routing API response", e
@@ -62,16 +66,22 @@ module RoutePlanner
 
   # Keep in cache shapes created by another instance
   class Cache
+    include Measurable
+
     def initialize(next_instance)
       @next_instance = next_instance
     end
     attr_reader :next_instance
 
     def shape(points)
-      Rails.cache.fetch(rounded_points(points)) do
+      # TODO: Add skip_nil: true ?
+      Rails.cache.fetch(rounded_points(points), expires_in: time_to_live) do
         next_instance.shape(points)
       end
     end
+    measure :shape
+
+    mattr_accessor :time_to_live, default: 7.days
 
     private
 

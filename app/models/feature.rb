@@ -1,6 +1,9 @@
+# frozen_string_literal: true
+
+# List conditionnal features
 class Feature
-  def self.all
-    %w{
+  def self.base
+    %w[
       consolidated_offers
       core_control_blocks
       costs_in_journey_patterns
@@ -17,6 +20,12 @@ class Feature
       vehicle_journeys_return_route
       stop_area_routing_constraints
       stop_area_connection_links
-    }
+    ]
+  end
+
+  mattr_accessor :additionals, default: Chouette::Config.additional_features
+
+  def self.all
+    @all ||= (base + additionals).uniq
   end
 end

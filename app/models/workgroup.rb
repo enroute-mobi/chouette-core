@@ -1,6 +1,4 @@
 class Workgroup < ApplicationModel
-  include RoutePlanner
-
   NIGHTLY_AGGREGATE_CRON_TIME = 5.minutes
   DEFAULT_EXPORT_TYPES = %w[Export::Gtfs Export::NetexGeneric Export::Ara].freeze
 
@@ -281,12 +279,12 @@ class Workgroup < ApplicationModel
   end
 
   def route_planner
-    if owner.has_feature?("route_planner")
-      instance = RoutePlanner::TomTom.new
-    else
-      instance = RoutePlanner::Null.new
-    end
-    RoutePlanner::Cache.new instance
+    @route_planner ||=
+      if owner.has_feature?('route_planner')
+        RoutePlanner::Cache.new(RoutePlanner::TomTom.new)
+      else
+        RoutePlanner::Null.new
+      end
   end
 
   def self.compliance_control_sets_label(key)

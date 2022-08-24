@@ -43,7 +43,7 @@ fr:
         description: "Description"
         position_input: "Coordonnées"
         coordinates: "Coordonnées"
-        address: "Adresse"
+        address_line_1: "Adresse"
         zip_code: "Code Postal"
         city_name: "Ville"
         country: "Pays"

@@ -42,7 +42,7 @@ fr:
         point_of_interest_category_id: "Catégorie"
         point_of_interest_category: "Catégorie"
         position_input: "Coordonnées"
-        address: "Adresse"
+        address_line_1: "Adresse"
         zip_code: "Code Postal"
         city_name: "Ville"
         country: "Pays"

@@ -23,7 +23,7 @@ module Chouette::Sync
           "#{longitude} #{latitude}"
         end
 
-        def address
+        def address_line_1
           postal_address&.address_line_1
         end
 
@@ -126,7 +126,7 @@ module Chouette::Sync
             name: name,
             url: url,
             position_input: position,
-            address: address,
+            address_line_1: address_line_1,
             zip_code: zip_code,
             city_name: city_name,
             country: country,

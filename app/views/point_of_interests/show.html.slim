@@ -10,7 +10,7 @@
           = d.attribute :url, link: @point_of_interest.url
           = d.attribute :point_of_interest_category, as: :association, link: ->(category) { workbench_shape_referential_point_of_interest_category_path(@workbench, category) }
           = d.attribute :position_input
-          = d.attribute :address
+          = d.attribute :address_line_1
           = d.attribute :zip_code
           = d.attribute :city_name
           = d.attribute :country

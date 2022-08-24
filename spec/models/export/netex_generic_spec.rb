@@ -1276,7 +1276,7 @@ RSpec.describe Export::NetexGeneric do
     let!(:context) do
       Chouette.create do
         point_of_interest_category do
-          point_of_interest url: "http://www.test.fr", position_input: '2.292 48.858', address: "78 rue des chantiers",
+          point_of_interest url: "http://www.test.fr", position_input: '2.292 48.858', address_line_1: "78 rue des chantiers",
           zip_code: "78000", city_name: "Versailles", country: "France", email: "hello@yopmail.com", phone: "0129349878" do
             point_of_interest_hours opening_time_of_day: TimeOfDay.new(14), closing_time_of_day: TimeOfDay.new(18)
           end
@@ -1328,7 +1328,7 @@ RSpec.describe Export::NetexGeneric do
           it 'uses Point of interest\'s postal_address' do
             expect(subject).to have_attributes(
               id: point_of_interest.uuid,
-              address_line_1: point_of_interest.address,
+              address_line_1: point_of_interest.address_line_1,
               post_code: point_of_interest.zip_code,
               town: point_of_interest.city_name,
               country_name: "France"

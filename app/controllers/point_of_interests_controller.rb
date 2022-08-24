@@ -58,7 +58,7 @@ class PointOfInterestsController < ChouetteController
       :name,
       :url,
       :position_input,
-      :address,
+      :address_line_1,
       :zip_code,
       :city_name,
       :country,

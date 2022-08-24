@@ -10,15 +10,21 @@ RSpec.describe Export::Ara do
       end
     end
 
+    let(:time_table) { context.time_table(:default) }
+    let(:referential) { context.referential }
+
     subject(:export) do
       Export::Ara.create! workbench: context.workbench,
                           workgroup: context.workgroup,
-                          referential: context.referential,
+                          referential: referential,
                           name: 'Test',
                           creator: 'test'
     end
 
     before do
+      referential.switch
+      time_table.dates.create(date: Date.current, in_out: true)
+
       export.export
       export.reload
     end

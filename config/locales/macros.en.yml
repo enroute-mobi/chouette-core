@@ -28,6 +28,8 @@ en:
         one: Assocate Stop Areas with a Referent
       macro/create_shape:
         one: Create Shapes
+      macro/define_postal_address:
+        one: Define Postal Address
     attributes:
       macro/base:
         name: Name
@@ -42,6 +44,8 @@ en:
         target_model: Target Model
         target_pattern: Target Pattern
         expected_result: Expected result
+      macro/define_postal_address:
+        target_model: Target Model
   simple_form:
     placeholders:
       macro_base:

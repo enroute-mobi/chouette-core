@@ -61,6 +61,15 @@ class Workgroup < ApplicationModel
 
   attribute :nightly_aggregate_days, WeekDays.new
 
+  def reverse_geocode
+    @reverse_geocode ||=
+      if owner.has_feature?("reverse_geocode")
+        ReverseGeocode::Cache.new(ReverseGeocode::TomTom.new)
+      else
+        ReverseGeocode::Null.new
+      end
+  end
+
   def custom_fields_definitions
     Hash[*custom_fields.map{|cf| [cf.code, cf]}.flatten]
   end

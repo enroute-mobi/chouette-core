@@ -91,7 +91,7 @@
           = d.attribute :zip_code
           = d.attribute :city_name
           = d.attribute :postal_region
-          = d.attribute :country_code
+          = d.attribute :country_code, as: :country
           = d.attribute :time_zone
 
         = simple_block_for @stop_area, title: t("stop_areas.form.sections.usage") do |d|

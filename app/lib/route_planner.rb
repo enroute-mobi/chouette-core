@@ -12,11 +12,12 @@ module RoutePlanner
     measure :shape
 
     # Performs a Request to the TomTom Routing API
-    class Request
+    class Request < ::TomTom::Request
       def initialize(points)
+        super()
         @points = points
       end
-      attr_accessor :points
+      attr_reader :points
 
       def shape
         Rails.logger.debug { "Invoke TomTom Routing API for #{points.size} points" }
@@ -24,10 +25,6 @@ module RoutePlanner
       rescue StandardError => e
         Chouette::Safe.capture "Can't read TomTom Routing API response", e
         nil
-      end
-
-      def response
-        @response ||= JSON.parse(Net::HTTP.get(URI(url)))
       end
 
       def tomtom_points
@@ -59,8 +56,6 @@ module RoutePlanner
           "json?routeType=fastest&traffic=false&travelMode=bus&key=#{api_key}"
         ].join
       end
-
-      mattr_accessor :api_key, default: Rails.application.secrets.tomtom_api_key
     end
   end
 
@@ -74,8 +69,7 @@ module RoutePlanner
     attr_reader :next_instance
 
     def shape(points)
-      # TODO: Add skip_nil: true ?
-      Rails.cache.fetch(rounded_points(points), expires_in: time_to_live) do
+      Rails.cache.fetch(rounded_points(points), skip_nil: true, expires_in: time_to_live) do
         next_instance.shape(points)
       end
     end

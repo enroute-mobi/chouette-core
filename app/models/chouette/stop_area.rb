@@ -40,6 +40,13 @@ module Chouette
     scope :with_compass_bearing, -> { where.not compass_bearing: nil }
     scope :referents, -> { where is_referent: true }
     scope :particulars, -> { where.not is_referent: true }
+    scope :without_address, -> { where country_code: nil,  street_name: nil, zip_code: nil, city_name: nil }
+    scope :without_position, -> { where 'latitude is null or longitude is null' }
+    scope :with_position, -> { where 'latitude is not null and longitude is not null' }
+    
+    # DEPRECATED Use without/with_positon
+    scope :without_geometry, -> { without_position }
+    scope :with_geometry, -> { with_position }
 
     belongs_to :referent, class_name: 'Chouette::StopArea'
     has_many :specific_stops, class_name: 'Chouette::StopArea', foreign_key: 'referent_id'
@@ -343,14 +350,6 @@ module Chouette
       end
     end
 
-    def self.without_geometry
-      where("latitude is null or longitude is null")
-    end
-
-    def self.with_geometry
-      where("latitude is not null and longitude is not null")
-    end
-
     def self.default_geometry!
       count = 0
       where(nil).find_each do |stop_area|
@@ -546,6 +545,13 @@ module Chouette
         extra << send(f) if stop_area_referential.stops_selection_displayed_fields[f.to_s]
       end
       out + extra.select(&:present?).join(' - ')
+    end
+
+    def address=(address)
+      self.country_code = address.country_code
+      self.street_name = address.house_number_and_street_name
+      self.zip_code = address.post_code
+      self.city_name = address.city_name
     end
 
     class << self

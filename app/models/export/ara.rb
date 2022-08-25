@@ -38,11 +38,7 @@ class Export::Ara < Export::Base
   end
 
   def parts
-    @parts ||= [ Stops, Lines, Companies, VehicleJourneys ].tap do |parts|
-      if has_feature?("export_ara_stop_visits")
-        parts << StopVisits
-      end
-    end
+    @parts ||= [ Stops, Lines, Companies, VehicleJourneys, StopVisits ]
   end
 
   def generate_export_file

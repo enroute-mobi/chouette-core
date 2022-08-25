@@ -397,6 +397,8 @@ fr:
       JourneyPattern: Mission
       VehicleJourney: Course
       Company: Transporteur
+      Entrance: Point d'accès
+      PointOfInterest: Point d'intérêt
     expected_status:
       enabled: Activé
       disabled: Désactivé

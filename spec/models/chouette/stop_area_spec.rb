@@ -1,5 +1,153 @@
 # coding: utf-8
 
+RSpec.describe Chouette::StopArea do
+  let(:context) { Chouette.create { stop_area :subject } }
+  subject(:stop_area) { context.stop_area(:subject) }
+
+  describe '#closest_children' do
+    subject { stop_area.closest_children }
+
+    context "when the StopArea has no children" do
+      it { is_expected.to be_empty }
+    end
+
+    context "when the StopArea has children" do
+      let(:context) do
+        Chouette.create do
+          stop_area :subject, latitude: 48.8583736, longitude: 2.2922873, area_type: "zdlp"
+          stop_area :nearest, latitude: 48.85838, longitude: 2.29229, parent: :subject
+          stop_area :farthest, latitude: 48.85839, longitude: 2.29230, parent: :subject
+        end
+      end
+
+      let(:nearest_child) { context.stop_area(:nearest) }
+      let(:farthest_child) { context.stop_area(:farthest) }
+
+      it "returns children ordered by distance" do
+        is_expected.to eq([nearest_child, farthest_child])
+      end
+
+      it { is_expected.to all(having_attributes(distance: a_value)) }
+
+      context "when the StopArea has no defined position" do
+        before { stop_area.latitude = stop_area.longitude = nil }
+        it { is_expected.to be_empty }
+      end
+
+      context "when one of the children has no position" do
+        before { nearest_child.update latitude: nil, longitude: nil }
+        it "this child is returned as last one" do
+          is_expected.to eq([farthest_child, nearest_child])
+        end
+
+        it "this child has a nil distance" do
+          is_expected.to include(an_object_having_attributes(id: nearest_child.id, distance: nil))
+        end
+      end
+
+    end
+  end
+
+  describe '#quay?' do
+    subject(:stop_area) { Chouette::StopArea.new }
+
+    context "when area type is Quay" do
+      before { stop_area.area_type = Chouette::AreaType::QUAY }
+      it { is_expected.to be_quay }
+    end
+
+    (Chouette::AreaType::COMMERCIAL - [ Chouette::AreaType::QUAY ]).each do |area_type|
+      context "when StopArea is #{area_type}" do
+        before { stop_area.area_type = area_type }
+        it { is_expected.to_not be_quay }
+      end
+    end
+  end
+
+  describe '.with_position' do
+    subject { described_class.with_position }
+
+    context 'when StopArea has no latitude' do
+      before { stop_area.update_attribute :latitude, nil }
+      it { is_expected.to_not include(stop_area) }
+    end
+
+    context 'when StopArea has no longitude' do
+      before { stop_area.update_attribute :longitude, nil }
+      it { is_expected.to_not include(stop_area) }
+    end
+
+    context 'when StopArea has both latitude and longitude' do
+      before do
+        stop_area.update_attribute :latitude, 0
+        stop_area.update_attribute :longitude, 0
+      end
+      it { is_expected.to include(stop_area) }
+    end
+  end
+
+  describe '.without_address' do
+    subject { described_class.without_address }
+
+    context 'when StopArea has a country code' do
+      before { stop_area.update_attribute :country_code, 'dummy' }
+      it { is_expected.to_not include(stop_area) }
+    end
+
+    context 'when StopArea has a street name' do
+      before { stop_area.update_attribute :street_name, 'dummy' }
+      it { is_expected.to_not include(stop_area) }
+    end
+
+    context 'when StopArea has a zipcode' do
+      before { stop_area.update_attribute :zip_code, 'dummy' }
+      it { is_expected.to_not include(stop_area) }
+    end
+
+    context 'when StopArea has a city name' do
+      before { stop_area.update_attribute :city_name, 'dummy' }
+      it { is_expected.to_not include(stop_area) }
+    end
+
+    context 'when StopArea has no country code, street name, zipcode or city name' do
+      before { stop_area.update country_code: nil, street_name: nil, zip_code: nil, city_name: nil }
+      it { is_expected.to include(stop_area) }
+    end
+  end
+
+  describe '#address=' do
+    subject { stop_area.address = address }
+
+    let(:stop_area) { Chouette::StopArea.new }
+    let(:address) { Address.new }
+
+    context "when Address country_code is 'dummy'" do
+      before { address.country_code = 'dummy' }
+
+      it { expect { subject }.to change(stop_area, :country_code).to('dummy') }
+    end
+
+    context "when Address house_number_and_street_name is 'dummy'" do
+      before { allow(address).to receive(:house_number_and_street_name).and_return('dummy') }
+
+      it { expect { subject }.to change(stop_area, :street_name).to('dummy') }
+    end
+
+    context "when Address post_code is 'dummy'" do
+      before { address.post_code = 'dummy' }
+
+      it { expect { subject }.to change(stop_area, :zip_code).to('dummy') }
+    end
+
+    context "when Address city_name is 'dummy'" do
+      before { address.city_name = 'dummy' }
+
+      it { expect { subject }.to change(stop_area, :city_name).to('dummy') }
+    end
+  end
+end
+
+# DEPRECATED
 describe Chouette::StopArea, :type => :model do
   subject(:stop_area) { create(:stop_area) }
 
@@ -333,68 +481,3 @@ describe Chouette::StopArea, :type => :model do
   end
 end
 
-RSpec.describe Chouette::StopArea do
-  let(:context) { Chouette.create { stop_area :subject } }
-  subject(:stop_area) { context.stop_area(:subject) }
-
-  describe '#closest_children' do
-    subject { stop_area.closest_children }
-
-    context "when the StopArea has no children" do
-      it { is_expected.to be_empty }
-    end
-
-    context "when the StopArea has children" do
-      let(:context) do
-        Chouette.create do
-          stop_area :subject, latitude: 48.8583736, longitude: 2.2922873, area_type: "zdlp"
-          stop_area :nearest, latitude: 48.85838, longitude: 2.29229, parent: :subject
-          stop_area :farthest, latitude: 48.85839, longitude: 2.29230, parent: :subject
-        end
-      end
-
-      let(:nearest_child) { context.stop_area(:nearest) }
-      let(:farthest_child) { context.stop_area(:farthest) }
-
-      it "returns children ordered by distance" do
-        is_expected.to eq([nearest_child, farthest_child])
-      end
-
-      it { is_expected.to all(having_attributes(distance: a_value)) }
-
-      context "when the StopArea has no defined position" do
-        before { stop_area.latitude = stop_area.longitude = nil }
-        it { is_expected.to be_empty }
-      end
-
-      context "when one of the children has no position" do
-        before { nearest_child.update latitude: nil, longitude: nil }
-        it "this child is returned as last one" do
-          is_expected.to eq([farthest_child, nearest_child])
-        end
-
-        it "this child has a nil distance" do
-          is_expected.to include(an_object_having_attributes(id: nearest_child.id, distance: nil))
-        end
-      end
-
-    end
-  end
-
-  describe '#quay?' do
-    subject(:stop_area) { Chouette::StopArea.new }
-
-    context "when area type is Quay" do
-      before { stop_area.area_type = Chouette::AreaType::QUAY }
-      it { is_expected.to be_quay }
-    end
-
-    (Chouette::AreaType::COMMERCIAL - [ Chouette::AreaType::QUAY ]).each do |area_type|
-      context "when StopArea is #{area_type}" do
-        before { stop_area.area_type = area_type }
-        it { is_expected.to_not be_quay }
-      end
-    end
-  end
-
-end

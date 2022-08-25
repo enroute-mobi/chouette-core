@@ -78,10 +78,6 @@ class Referential < ApplicationModel
   validates_presence_of :stop_area_referential
   has_many :stop_areas, through: :stop_area_referential
   has_many :stop_area_providers, through: :stop_area_referential
-  has_many :entrances, through: :stop_area_referential
-
-  belongs_to :shape_referential
-  has_many :point_of_interests, through: :shape_referential
 
   belongs_to :workbench
 

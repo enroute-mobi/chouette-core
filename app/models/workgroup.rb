@@ -1,6 +1,4 @@
 class Workgroup < ApplicationModel
-  include ReverseGeocode
-
   NIGHTLY_AGGREGATE_CRON_TIME = 5.minutes
   DEFAULT_EXPORT_TYPES = %w[Export::Gtfs Export::NetexGeneric Export::Ara].freeze
 

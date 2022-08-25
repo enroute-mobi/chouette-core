@@ -32,4 +32,17 @@ module TomTom
   def self.matrix(way_costs)
     TomTom::Cache.new(connection).matrix(way_costs)
   end
+
+  # Base class to create TomTom API Request
+  class Request
+    def response
+      @response ||= JSON.parse(Net::HTTP.get(URI(url)))
+    end
+
+    def url
+      raise 'Not Yet Implemented'
+    end
+
+    mattr_accessor :api_key, default: Rails.application.secrets.tomtom_api_key
+  end
 end

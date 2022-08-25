@@ -28,6 +28,8 @@ fr:
         one: Associer les Arrêts à un Référent
       macro/create_shape:
         one: Créer les Tracés
+      macro/define_postal_address:
+        one: Définir l'Adresse postale
     attributes:
       macro/base:
         name: Nom
@@ -41,6 +43,8 @@ fr:
         source_pattern: Modèle de source
         target_code_space: Espace code cible
         target_pattern: Modèle de cible
+      macro/define_postal_address:
+        target_model: Modèle cible
   simple_form:
     placeholders:
       macro_base:

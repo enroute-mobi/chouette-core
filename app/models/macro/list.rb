@@ -75,7 +75,11 @@ module Macro
       end
 
       def base_scope
-        referential || WorkbenchScope.new(workbench)
+        if referential
+          ReferentialScope.new(workbench, referential)
+        else
+          WorkbenchScope.new(workbench)
+        end
       end
 
       def owned_scope
@@ -90,14 +94,9 @@ module Macro
         def initialize(workbench)
           @workbench = workbench
         end
+        attr_reader :workbench
 
-        def lines
-          @workbench.lines
-        end
-
-        def companies
-          @workbench.companies
-        end
+        delegate :lines, :companies, :stop_areas, :entrances, :point_of_interests, :shapes, to: :workbench
 
         def routes
           Chouette::Route.none
@@ -107,10 +106,6 @@ module Macro
           Chouette::StopPoint.none
         end
 
-        def stop_areas
-          @workbench.stop_areas
-        end
-
         def journey_patterns
           Chouette::JourneyPattern.none
         end
@@ -118,6 +113,18 @@ module Macro
         def vehicle_journeys
           Chouette::VehicleJourney.none
         end
+      end
+
+      class ReferentialScope
+        def initialize(workbench, referential)
+          @workbench = workbench
+          @referential = referential
+        end
+        attr_reader :referential, :workbench
+
+        delegate :lines, :companies, :stop_areas, :routes, :stop_points, :journey_patterns, :vehicle_journeys,
+                 to: :referential
+        delegate :entrances, :point_of_interests, :shapes, to: :workbench
       end
 
       class OwnerScope
@@ -133,8 +140,16 @@ module Macro
           scope.stop_areas.where(stop_area_provider: stop_area_providers)
         end
 
+        def entrances
+          scope.entrances.where(stop_area_provider: stop_area_providers)
+        end
+
         def shapes
           scope.shapes.where(shape_provider: shape_providers)
+        end
+
+        def point_of_interests
+          scope.point_of_interests.where(shape_provider: shape_providers)
         end
 
         def lines

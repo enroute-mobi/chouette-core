@@ -5,7 +5,7 @@ module Macro
 
       included do
         option :target_model
-        enumerize :target_model, in: %w{StopArea Entrance PointOfInterest}
+        enumerize :target_model, in: %w[StopArea Entrance PointOfInterest]
         validates :target_model, presence: true
       end
     end
@@ -16,35 +16,28 @@ module Macro
       include Options
 
       def run
-        models.each do |model|
+        models.find_each do |model|
           # Find by position to use the same Address in the same area
-          address = Address.new(workgroup, model.position).address
+          address = reverse_geocode.address(model.position)
           unless address
-            macro_messages.create(
-              criticity: "warning",
-              message_key: "no_address",
-              message_attributes: { name: model.name },
-              source: model
-            )
-
+            create_message model, criticity: 'warning', message_key: 'no_address'
             next
           end
 
-          if model.update address_: address
-            macro_messages.create(
-              criticity: "info",
-              message_attributes: { name: model.name },
-              source: model
-            )
+          if model.update address: address
+            create_message model, criticity: 'info'
           else
-            macro_messages.create(
-              criticity: "warning",
-              message_key: "invalid_address",
-              message_attributes: { name: model.name },
-              source: model
-            )
+            create_message model, criticity: 'warning', message_key: 'invalid_address'
           end
         end
+      end
+
+      def create_message(model, attributes)
+        attributes.merge!(
+          message_attributes: { name: model.name },
+          source: model
+        )
+        macro_messages.create!(attributes)
       end
 
       def model_collection
@@ -52,20 +45,10 @@ module Macro
       end
 
       def models
-        @models ||= scope.send(model_collection).without_address
+        @models ||= scope.send(model_collection).with_position.without_address
       end
 
-      class Address
-        def initialize(workgroup, position)
-          @position = position
-          @workgroup = workgroup
-        end
-        attr_accessor :workgroup, :position
-
-        def address
-          workgroup.reverse_geocode.address(position)
-        end
-      end
+      delegate :reverse_geocode, to: :workgroup
     end
   end
 end

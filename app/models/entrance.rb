@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Entrance < ActiveRecord::Base
   include StopAreaReferentialSupport
   include ObjectidSupport
@@ -10,12 +12,14 @@ class Entrance < ActiveRecord::Base
 
   has_many :codes, as: :resource, dependent: :delete_all
 
-  enumerize :entrance_type, in: %i(opening open_door door swing_door revolving_door automatic_door ticket_barrier gate other), scope: true
+  enumerize :entrance_type,
+            in: %i[opening open_door door swing_door revolving_door automatic_door ticket_barrier gate other], scope: true
 
   validates :name, presence: true
   attr_writer :position_input
 
-  scope :without_address, -> { where("country_code IS NULL OR street_name IS NULL OR zip_code IS NULL OR address IS NULL") }
+  scope :without_address, -> { where country: nil, city_name: nil, zip_code: nil, address_line_1: nil }
+  scope :with_position, -> { where.not position: nil }
 
   def position_input
     @position_input || ("#{position.y} #{position.x}" if position)
@@ -24,6 +28,7 @@ class Entrance < ActiveRecord::Base
   def longitude
     position&.x
   end
+
   def latitude
     position&.y
   end
@@ -41,9 +46,9 @@ class Entrance < ActiveRecord::Base
     PositionInput.new(@position_input).change_position(self)
   end
 
-  def address_=(address)
+  def address=(address)
     self.country = address.country_name
-    self.address = [ address.house_number, address.street_name ].join(' ')
+    self.address_line_1 = address.house_number_and_street_name
     self.zip_code = address.post_code
     self.city_name = address.city_name
   end

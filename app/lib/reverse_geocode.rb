@@ -50,6 +50,31 @@ module ReverseGeocode
         ].join
       end
     end
+
+    class Batch < ::TomTom::Request
+      def initialize(positions)
+        @positions = positions
+      end
+      attr_reader :positions
+
+      def url
+        "https://api.tomtom.com/search/2/batch/sync.json?key=#{api_key}"
+      end
+
+      def body
+        { batchItems: batch_items }.to_json
+      end
+
+      def batch_items
+        positions.map do |position|
+          { query: "/reverseGeocode/#{position.lat},#{position.lon}.json" }
+        end
+      end
+
+      def response
+        @response ||= JSON.parse(call_api(url, { type: 'POST', body: body }))
+      end
+    end
   end
 
   # Keep in cache addresses created by another instance

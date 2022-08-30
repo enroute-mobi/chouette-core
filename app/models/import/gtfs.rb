@@ -903,7 +903,11 @@ class Import::Gtfs < Import::Base
   delegate :connection_links, to: :stop_area_provider
 
   def import_shapes
-    Shapes.new(self).import!
+    resource = create_resource(:shapes)
+    resource.rows_count = source.shapes.count
+    resource.save!
+
+    Shapes.new(WithResource.new(self, resource)).import!
   end
 
   class Shapes
@@ -913,45 +917,34 @@ class Import::Gtfs < Import::Base
     end
 
     attr_reader :import
-    delegate :source, :shape_provider, :shape_referential, :code_space, to: :import
+    delegate :source, :shape_provider, :code_space, :create_message, to: :import
 
     def import!
       source.shapes.each_slice(1000).each do |gtfs_shapes|
         Shape.transaction do
           gtfs_shapes.each do |gtfs_shape|
-            decorator = Decorator.new(gtfs_shape, shape_provider: shape_provider)
+            decorator = Decorator.new(gtfs_shape)
 
             unless decorator.valid?
               decorator.errors.each { |error| create_message error }
               next
             end
 
-            shape = shape_provider.shapes.by_code(code_space, decorator.code_value).first
-            if shape
-              shape.update decorator.shape_attributes
-            else
-              shape = shape_provider.shapes.build decorator.shape_attributes
-              shape.codes.build code_space: code_space, value: decorator.code_value
-            end
-
-            shape.save
+            shape = collection.by_code(code_space, decorator.code_value).first_or_initialize
+            shape.attributes = decorator.shape_attributes
+            shape.save!
           end
         end
       end
     end
 
+    def collection 
+      shape_provider.shapes
+    end    
+
     class Decorator < SimpleDelegator
-
-      def initialize(gtfs_shape, shape_provider: nil)
-        super gtfs_shape
-        @shape_provider = shape_provider
-      end
-
-      attr_reader :shape_provider
-
-      def factory
-        @factory ||= RGeo::Geos.factory srid: 4326
-      end
+      mattr_accessor :maximum_point_count, default: 10_000
+      mattr_reader :factory, default: RGeo::Geos.factory(srid: 4326)
 
       def code_value
         id
@@ -960,8 +953,6 @@ class Import::Gtfs < Import::Base
       def errors
         @errors ||= []
       end
-
-      mattr_accessor :maximum_point_count, default: 10_000
 
       def valid?
         errors.clear
@@ -989,11 +980,9 @@ class Import::Gtfs < Import::Base
 
       def shape_attributes
         {
-          geometry: rgeos_geometry,
-          shape_provider: shape_provider
+          geometry: rgeos_geometry
         }
       end
-
     end
 
   end

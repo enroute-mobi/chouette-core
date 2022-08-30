@@ -1,17 +1,20 @@
-= simple_form_for [@workbench, @processing_rule], as: 'processing_rule', html: { class: 'form-horizontal', id: 'processing_rule_form' }, wrapper: :horizontal_form  do |f|
+= simple_form_for [@workbench, @processing_rule], as: 'processing_rule', html: { class: 'form-horizontal', id: 'processing_rule_form' }, wrapper: :horizontal_form_tailwind  do |f|
   .row
     .col-lg-12
       = f.input :operation_step
 
-      ul x-data="{ processing_type: '#{@processing_rule.processing_type}' }"
-        li
-          = f.radio_button :processing_type, "Control::List", { "x-model" => "processing_type" }
-          = f.label :processing_type_controllist, ProcessingRule::Workbench.processing_type.find_value("Control::List").text
-          = f.input :control_list_id, as: :select, label: false, collection: @processing_rule.candidate_control_lists.order(:name), input_html: { "x-bind:disabled" => "processing_type != 'Control::List'" }
-        li
-          = f.radio_button :processing_type, "Macro::List", { "x-model" => "processing_type" }
-          = f.label :processing_type_macrolist, ProcessingRule::Workbench.processing_type.find_value("Macro::List").text
-          = f.input :macro_list_id, as: :select, label: false, collection: @processing_rule.candidate_macro_lists.order(:name), input_html: { "x-bind:disabled" => "processing_type != 'Macro::List'" }
+      .flex.items-center.mb-10 x-data="{ processing_type: '#{@processing_rule.processing_type}' }"
+        ul.w-full
+          li.flex.justify-end.mb-10
+            .flex.items-center.justify-end.mr-8.w-2/6
+              = f.radio_button :processing_type, "Control::List", { "x-model" => "processing_type" }
+              = f.label :processing_type_controllist, ProcessingRule::Workbench.processing_type.find_value("Control::List").text, class: 'ml-4 mb-0'
+            = f.input :control_list_id, as: :select, label: false, wrapper: false, collection: @processing_rule.candidate_control_lists.order(:name), input_html: { "x-bind:disabled" => "processing_type != 'Control::List'" }
+          li.flex.justify-end.mb-10
+            .flex.items-center.justify-end.mr-8.w-2/6
+              = f.radio_button :processing_type, "Macro::List", { "x-model" => "processing_type" }
+              = f.label :processing_type_macrolist, ProcessingRule::Workbench.processing_type.find_value("Macro::List").text, class: 'ml-4 mb-0'
+            = f.input :macro_list_id, as: :select, label: false, wrapper: false, collection: @processing_rule.candidate_macro_lists.order(:name), input_html: { "x-bind:disabled" => "processing_type != 'Macro::List'" }
 
   = cancel_button
   = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'processing_rule_form'

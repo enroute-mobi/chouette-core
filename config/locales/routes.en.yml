@@ -30,6 +30,7 @@ en:
         postal_code: Zip Code
         city: City
         comment: Comment
+        no_coordinates: No coordinates
       stop_point:
         boarding:
           normal: Normal boarding

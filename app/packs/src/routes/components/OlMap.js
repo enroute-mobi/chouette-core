@@ -33,7 +33,7 @@ const getStyles = () => ({
 const path = new Path('/referentials/:referentialId')
 const { referentialId } = path.partialTest(location.pathname)
 
-export default function StopPointsMap({ index, onSelectMarker, onUpdateViaOlMap, onUnselectMarker, value}) {
+export default function StopPointsMap({ index, onSelectMarker, onUpdateViaOlMap, onUnselectMarker, value }) {
   const styles = getStyles()
   const { latitude, longitude, olMap, stoparea_id } = value
 
@@ -126,7 +126,10 @@ export default function StopPointsMap({ index, onSelectMarker, onUpdateViaOlMap,
         )}
       </div>
       <div className='map_content ol-map'>
-        <MapWrapper features={[feature]} onInit={onMapInit} style={styles.selected} height={300} />
+        {(olMap.json.latitude && olMap.json.longitude) 
+         ? <MapWrapper features={[feature]} onInit={onMapInit} style={styles.selected} height={300} />
+         : <div className='flex justify-center items-center '>{I18n.t('routes.edit.map.no_coordinates')}</div>
+        }
       </div>
     </div>
   )

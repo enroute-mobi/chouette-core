@@ -2,22 +2,34 @@ module Macro
   class CreateShape < Macro::Base
     class Run < Macro::Base::Run
       def run
-        journey_patterns.find_each do |journey_pattern|
-          factory = ShapeFactory.new(journey_pattern, workgroup, shape_provider)
-          next unless factory.waypoints
+        journey_patterns.find_in_batches(batch_size: 100) do |group|
+          batch = workgroup.route_planner
 
-          shape_id = shape_cache[factory.stop_area_ids] || factory.shape&.id
-          journey_pattern.update shape_id: shape_id if shape_id
+          group.each do |journey_pattern|
+            batch.shape journey_pattern.waypoints, key: journey_pattern.id
+          end
+
+          journey_patterns_by_ids = group.map { |journey_pattern| [journey_pattern.id, journey_pattern] }.to_h
+
+          batch.shapes.each do |key, shape|
+            journey_pattern = journey_patterns_by_ids[key]
+            
+            factory = ShapeFactory.new(journey_pattern, shape, shape_provider)
+            next unless factory.waypoints
+
+            shape_id = shape_cache[factory.stop_area_ids] || factory.shape&.id
+            journey_pattern.update shape_id: shape_id if shape_id
+          end
         end
       end
 
       class ShapeFactory
-        def initialize(journey_pattern, workgroup, shape_provider)
+        def initialize(journey_pattern, geometry, shape_provider)
           @journey_pattern = journey_pattern
-          @workgroup = workgroup
+          @geometry = geometry
           @shape_provider = shape_provider
         end
-        attr_accessor :journey_pattern, :workgroup, :shape_provider
+        attr_accessor :journey_pattern, :geometry, :shape_provider
 
         def waypoints
           @waypoints ||= journey_pattern.waypoints
@@ -35,10 +47,6 @@ module Macro
 
         def shape_name
           [journey_pattern.registration_number, journey_pattern.name].select(&:present?).join(' - ')
-        end
-
-        def geometry
-          @geometry ||= workgroup.route_planner.shape(waypoints)
         end
 
         def stop_area_ids

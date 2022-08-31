@@ -72,8 +72,6 @@ module Macro
       def models
         @models ||= scope.send(model_collection).with_position.without_address
       end
-
-      delegate :reverse_geocode, to: :workgroup
     end
   end
 end

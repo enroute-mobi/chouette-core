@@ -11,6 +11,7 @@ module Macro
       Macro::AssociateStopAreaReferent,
       Macro::DefinePostalAddress,
       Macro::Dummy,
+      Macro::DefineAttributeDefaultValue
     ]
   end
 end

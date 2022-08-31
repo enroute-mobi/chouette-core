@@ -30,6 +30,8 @@ fr:
         one: Créer les Tracés
       macro/define_postal_address:
         one: Définir l'Adresse postale
+      macro/define_attribute_default_value:
+        one: Définir Une Valeur Par Défault Pour Un Attribut
     attributes:
       macro/base:
         name: Nom
@@ -45,6 +47,8 @@ fr:
         target_pattern: Modèle de cible
       macro/define_postal_address:
         target_model: Modèle cible
+      macro/define_attribute_default_value:
+        model_attribute_name: Attribut du modèle
   simple_form:
     placeholders:
       macro_base:

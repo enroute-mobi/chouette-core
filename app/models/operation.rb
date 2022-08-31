@@ -229,11 +229,14 @@ class Operation  < ApplicationModel
   end
 
   class Notifier < Callback
-    delegate :workbench, to: :operation
-    delegate :notification_center, to: :workbench
+    # To support operations without workbench
+    def workbench
+      operation.try(:workbench)
+    end
+    delegate :notification_center, to: :workbench, allow_nil: true
 
     def after
-      notification_center.notify(operation)
+      notification_center&.notify(operation)
     end
   end
 

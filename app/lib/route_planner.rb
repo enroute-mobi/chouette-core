@@ -193,10 +193,6 @@ module RoutePlanner
           @uri ||= URI("https://api.tomtom.com/routing/1/batch/sync/json?key=#{api_key}")
         end
 
-        def self.path
-          @path ||= "/routing/1/batch/sync/json"
-        end
-
         def body
           { batchItems: request_batch_items }.to_json
         end
@@ -224,7 +220,7 @@ module RoutePlanner
         end
 
         def request
-          { query: "/calculateRoute/#{locations}/json?routeType=fastest&traffic=false&travelMode=bus" }
+          { query: "/calculateRoute/#{locations}/json?#{options.to_query}" }
         end
 
         def response=(response)

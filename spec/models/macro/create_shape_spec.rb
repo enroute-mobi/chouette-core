@@ -42,8 +42,7 @@ RSpec.describe Macro::CreateShape do
 
         before(:each) do
           shape_response = File.read('spec/fixtures/tomtom-shape-response.json')
-          stub_request(:get, 'https://api.tomtom.com/routing/1/calculateRoute/43.574325,7.091888:43.575067,7.095608:43.574477,7.099041/json?routeType=fastest&traffic=false&travelMode=bus&key=mock_tomtom_api_key')
-            .to_return(status: 200, body: shape_response)
+          stub_request(:post, 'https://api.tomtom.com/routing/1/batch/sync/json?key=mock_tomtom_api_key').to_return(status: 200, body: shape_response)
         end
 
         it 'should create shape' do

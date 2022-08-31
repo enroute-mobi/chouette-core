@@ -16,6 +16,7 @@ fr:
         hole_sentinel: Trou d'offre
         merge: Finalisation
         aggregate: Agrégation
+        source_retrieval: Récupération de données
         import: Import
       operation_statuses:
         all: Tous

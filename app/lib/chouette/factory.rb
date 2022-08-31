@@ -259,6 +259,11 @@ module Chouette
             end
           end
 
+          model :source do
+            attribute(:name) { |n| "Source #{n}" }
+            attribute(:url) { 'https://bitbucket.org/enroute-mobi/chouette-core/downloads/gtfs.zip' }
+          end
+
           model :referential do
             attribute(:name) { |n| "Referential #{n}" }
 

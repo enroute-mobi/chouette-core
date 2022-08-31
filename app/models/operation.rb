@@ -228,6 +228,15 @@ class Operation  < ApplicationModel
     end
   end
 
+  class Notifier < Callback
+    delegate :workbench, to: :operation
+    delegate :notification_center, to: :workbench
+
+    def after
+      notification_center.notify(operation)
+    end
+  end
+
   # Can be overrided by subclass to customize the User Status according internal information (messages, resources, controls, etc)
   def final_user_status
     Operation.user_status.successful
@@ -283,6 +292,7 @@ class Operation  < ApplicationModel
   callback CustomFieldLoader
   callback PerformedSkipper
   callback Benchmarker
+  callback Notifier
   callback StatusChanger
 
   def callbacks

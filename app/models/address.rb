@@ -9,8 +9,9 @@ class Address
   end
 
   def house_number_and_street_name
-    [house_number, street_name].delete_if(&:blank?).join(' ')
+    @house_number_and_street_name ||= [house_number, street_name].delete_if(&:blank?).join(' ')
   end
+  attr_writer :house_number_and_street_name
 
   def country
     return unless country_code

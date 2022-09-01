@@ -5,28 +5,40 @@ module Macro
         journey_patterns.find_in_batches(batch_size: 100) do |group|
           batch = workgroup.route_planner
 
+          factories_by_ids = {}
+
           group.each do |journey_pattern|
-            batch.shape journey_pattern.waypoints, key: journey_pattern.id
-          end
-
-          journey_patterns_by_ids = group.map { |journey_pattern| [journey_pattern.id, journey_pattern] }.to_h
-
-          batch.shapes.each do |key, shape|
-            journey_pattern = journey_patterns_by_ids[key]
-            
-            factory = ShapeFactory.new(journey_pattern, shape, shape_provider)
+            factory = ShapeFactory.new(journey_pattern, shape_provider)
+            # Incomplete geometry
             next unless factory.waypoints
 
-            shape_id = shape_cache[factory.stop_area_ids] || factory.shape&.id
-            journey_pattern.update shape_id: shape_id if shape_id
+            # A shape has been already computed for this sequence
+            if (shape_id = shape_cache[factory.stop_area_ids])
+              journey_pattern.update shape_id: shape_id
+            else
+              batch.shape factory.waypoints, key: journey_pattern.id
+              # Keep the factory in memory
+              factories_by_ids[journey_pattern.id] = factory
+            end
+          end
+
+          batch.shapes.each do |key, geometry|
+            factory = factories_by_ids[key]
+            factory.geometry = geometry
+
+            shape = factory.shape
+            next unless shape
+
+            shape_cache[factory.stop_area_ids] = shape.id
+            journey_pattern = factory.journey_pattern
+            journey_pattern.update shape: shape
           end
         end
       end
 
       class ShapeFactory
-        def initialize(journey_pattern, geometry, shape_provider)
+        def initialize(journey_pattern, shape_provider)
           @journey_pattern = journey_pattern
-          @geometry = geometry
           @shape_provider = shape_provider
         end
         attr_accessor :journey_pattern, :geometry, :shape_provider

@@ -2,7 +2,7 @@
 
 # Create Shape from given points
 module RoutePlanner
-
+  # Regroups waypoints to resolve their shapes
   class Batch
     def shape(points, key: nil)
       item = Item.new(points)
@@ -55,7 +55,7 @@ module RoutePlanner
     end
   end
 
-  # Associates position and resolved shape
+  # Associates waypoints and resolved shape
   class Item
     attr_reader :points
     attr_accessor :shape
@@ -65,7 +65,7 @@ module RoutePlanner
     end
 
     def cache_key
-      @cache_key ||= rounded_points(points)
+      @cache_key ||= rounded_points
     end
 
     def keys
@@ -78,7 +78,7 @@ module RoutePlanner
 
     private
 
-    def rounded_points(points)
+    def rounded_points
       points.map { |point| "#{point.latitude.round(6)},#{point.longitude.round(6)}" }.join(':')
     end
   end
@@ -226,15 +226,11 @@ module RoutePlanner
         def response=(response)
           return unless response['statusCode'] == 200
 
-          self.tomtom_shape(tomtom_points(response['response']))
+          self.tomtom_shape = tomtom_points(response['response'])
         end
 
-        def tomtom_shape(tomtom_points)
-          Rails.logger.debug { "Invoke TomTom Routing API" }
+        def tomtom_shape=(tomtom_points)
           self.shape = rgeo_factory.line_string(tomtom_points)
-        rescue StandardError => e
-          Chouette::Safe.capture "Can't read TomTom Routing API response", e
-          nil
         end
 
         def tomtom_points(response)
@@ -246,11 +242,7 @@ module RoutePlanner
           end
         end
 
-        private
-
-        def rgeo_factory
-          @rgeo_factory ||= RGeo::Geos.factory srid: 4326
-        end
+        mattr_reader :rgeo_factory, default: RGeo::Geos.factory(srid: 4326)
 
         def locations
           points.map { |point| "#{point.latitude},#{point.longitude}" }.join(':')

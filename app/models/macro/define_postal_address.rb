@@ -17,7 +17,7 @@ module Macro
 
       def run
         models.find_in_batches(batch_size: 100) do |group|
-          batch = workgroup.reverse_geocode
+          batch = workgroup.reverse_geocode.batch
 
           group.each do |model|
             batch.address model.position, key: model.id

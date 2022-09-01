@@ -219,6 +219,51 @@ RSpec.describe Workgroup, type: :model do
         expect{record.reload}.to raise_error ActiveRecord::RecordNotFound
       end
     end
+  end
 
+  describe '#route_planner' do
+    subject { workgroup.route_planner }
+
+    it { is_expected.to be_a(RoutePlanner::Config) }
+    it { is_expected.to an_object_responding_to(:batch) }
+
+    context "when owner has the feature 'route_planner'" do
+      before do
+        workgroup.owner.tap { |o| o.features << 'route_planner' }.save
+      end
+
+      it do
+        resolver_classes = a_collection_containing_exactly(RoutePlanner::Resolver::TomTom,
+                                                           RoutePlanner::Resolver::Cache)
+        is_expected.to have_attributes(resolver_classes: resolver_classes)
+      end
+    end
+
+    context "when owner hasn't the feature 'route_planner'" do
+      it { is_expected.to have_attributes(resolver_classes: an_object_satisfying('an empty collection', &:empty?)) }
+    end
+  end
+
+  describe '#reverse_geocode' do
+    subject { workgroup.reverse_geocode }
+
+    it { is_expected.to be_a(ReverseGeocode::Config) }
+    it { is_expected.to an_object_responding_to(:batch) }
+
+    context "when owner has the feature 'reverse_geocode'" do
+      before do
+        workgroup.owner.tap { |o| o.features << 'reverse_geocode' }.save
+      end
+
+      it do
+        resolver_classes = a_collection_containing_exactly(ReverseGeocode::Resolver::TomTom,
+                                                           ReverseGeocode::Resolver::Cache)
+        is_expected.to have_attributes(resolver_classes: resolver_classes)
+      end
+    end
+
+    context "when owner hasn't the feature 'reverse_geocode'" do
+      it { is_expected.to have_attributes(resolver_classes: an_object_satisfying('an empty collection', &:empty?)) }
+    end
   end
 end

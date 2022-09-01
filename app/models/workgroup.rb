@@ -62,10 +62,10 @@ class Workgroup < ApplicationModel
   attribute :nightly_aggregate_days, WeekDays.new
 
   def reverse_geocode
-    @reverse_geocode ||= ReverseGeocode::Batch.new.tap do |batch|
+    @reverse_geocode ||= ReverseGeocode::Config.new do |config|
       if owner.has_feature?("reverse_geocode")
-        batch.resolver_classes << ReverseGeocode::Resolver::TomTom
-        batch.resolver_classes << ReverseGeocode::Resolver::Cache
+        config.resolver_classes << ReverseGeocode::Resolver::TomTom
+        config.resolver_classes << ReverseGeocode::Resolver::Cache
       end
     end
   end
@@ -288,10 +288,10 @@ class Workgroup < ApplicationModel
   end
 
   def route_planner
-    @route_planner ||= RoutePlanner::Batch.new.tap do |batch|
+    @route_planner ||= RoutePlanner::Config.new do |config|
       if owner.has_feature?('route_planner')
-        batch.resolver_classes << RoutePlanner::Resolver::TomTom
-        batch.resolver_classes << RoutePlanner::Resolver::Cache
+        config.resolver_classes << RoutePlanner::Resolver::TomTom
+        config.resolver_classes << RoutePlanner::Resolver::Cache
       end
     end
   end

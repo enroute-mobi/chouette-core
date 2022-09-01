@@ -2,6 +2,23 @@
 
 # Create Shape from given points
 module RoutePlanner
+  # Provides RoutePlanner instances according a given config
+  class Config
+    def initialize
+      yield self if block_given?
+    end
+
+    def resolver_classes
+      @resolver_classes ||= []
+    end
+
+    def batch
+      RoutePlanner::Batch.new.tap do |batch|
+        batch.resolver_classes.concat resolver_classes
+      end
+    end
+  end
+
   # Regroups waypoints to resolve their shapes
   class Batch
     def shape(points, key: nil)
@@ -120,7 +137,7 @@ module RoutePlanner
           cache.write(item.cache_key, item.shape, expires_in: time_to_live)
         end
       end
-      mattr_accessor :time_to_live, default: 7.days
+      mattr_accessor :time_to_live, default: 90.days
 
       def cache
         @cache ||= WithNamespace.new Rails.cache, 'route_planner'

@@ -2,6 +2,23 @@
 
 # Retrieve Address from a position
 module ReverseGeocode
+  # Provides ReverseGeocode instances according a given config
+  class Config
+    def initialize
+      yield self if block_given?
+    end
+
+    def resolver_classes
+      @resolver_classes ||= []
+    end
+
+    def batch
+      ReverseGeocode::Batch.new.tap do |batch|
+        batch.resolver_classes.concat resolver_classes
+      end
+    end
+  end
+
   # Regroups positions to resolve their addresses
   class Batch
     def address(position, key: nil)
@@ -114,7 +131,7 @@ module ReverseGeocode
           cache.write(item.cache_key, item.address, expires_in: time_to_live)
         end
       end
-      mattr_accessor :time_to_live, default: 7.days
+      mattr_accessor :time_to_live, default: 30.days
 
       def cache
         @cache ||= WithNamespace.new Rails.cache, 'reverse-geocode'
@@ -177,7 +194,7 @@ module ReverseGeocode
         def response
           @response ||=
             begin
-              Rails.logger.debug { "Invoke TomTom Batch API with #{items.count} reverseGeocode queries" }
+              Rails.logger.info { "Invoke TomTom Batch API with #{items.count} reverseGeocode queries" }
               JSON.parse(Net::HTTP.post(self.class.uri, body, 'Content-Type' => 'application/json').body)
             end
         end

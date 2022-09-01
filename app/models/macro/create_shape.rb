@@ -3,7 +3,7 @@ module Macro
     class Run < Macro::Base::Run
       def run
         journey_patterns.find_in_batches(batch_size: 100) do |group|
-          batch = workgroup.route_planner
+          batch = workgroup.route_planner.batch
 
           factories_by_ids = {}
 

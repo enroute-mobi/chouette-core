@@ -16,6 +16,9 @@ module Geo
       end
     end
 
+    alias lat latitude
+    alias lon longitude
+
     def to_point
       "POINT(#{x} #{y})"
     end

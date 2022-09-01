@@ -2,22 +2,46 @@ module Macro
   class CreateShape < Macro::Base
     class Run < Macro::Base::Run
       def run
-        journey_patterns.find_each do |journey_pattern|
-          factory = ShapeFactory.new(journey_pattern, workgroup, shape_provider)
-          next unless factory.waypoints
+        journey_patterns.find_in_batches(batch_size: 100) do |group|
+          batch = workgroup.route_planner
 
-          shape_id = shape_cache[factory.stop_area_ids] || factory.shape&.id
-          journey_pattern.update shape_id: shape_id if shape_id
+          factories_by_ids = {}
+
+          group.each do |journey_pattern|
+            factory = ShapeFactory.new(journey_pattern, shape_provider)
+            # Incomplete geometry
+            next unless factory.waypoints
+
+            # A shape has been already computed for this sequence
+            if (shape_id = shape_cache[factory.stop_area_ids])
+              journey_pattern.update shape_id: shape_id
+            else
+              batch.shape factory.waypoints, key: journey_pattern.id
+              # Keep the factory in memory
+              factories_by_ids[journey_pattern.id] = factory
+            end
+          end
+
+          batch.shapes.each do |key, geometry|
+            factory = factories_by_ids[key]
+            factory.geometry = geometry
+
+            shape = factory.shape
+            next unless shape
+
+            shape_cache[factory.stop_area_ids] = shape.id
+            journey_pattern = factory.journey_pattern
+            journey_pattern.update shape: shape
+          end
         end
       end
 
       class ShapeFactory
-        def initialize(journey_pattern, workgroup, shape_provider)
+        def initialize(journey_pattern, shape_provider)
           @journey_pattern = journey_pattern
-          @workgroup = workgroup
           @shape_provider = shape_provider
         end
-        attr_accessor :journey_pattern, :workgroup, :shape_provider
+        attr_accessor :journey_pattern, :geometry, :shape_provider
 
         def waypoints
           @waypoints ||= journey_pattern.waypoints
@@ -35,10 +59,6 @@ module Macro
 
         def shape_name
           [journey_pattern.registration_number, journey_pattern.name].select(&:present?).join(' - ')
-        end
-
-        def geometry
-          @geometry ||= workgroup.route_planner.shape(waypoints)
         end
 
         def stop_area_ids

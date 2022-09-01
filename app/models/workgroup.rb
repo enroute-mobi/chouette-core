@@ -62,12 +62,12 @@ class Workgroup < ApplicationModel
   attribute :nightly_aggregate_days, WeekDays.new
 
   def reverse_geocode
-    @reverse_geocode ||=
+    @reverse_geocode ||= ReverseGeocode::Batch.new.tap do |batch|
       if owner.has_feature?("reverse_geocode")
-        ReverseGeocode::Cache.new(ReverseGeocode::TomTom.new)
-      else
-        ReverseGeocode::Null.new
+        batch.resolver_classes << ReverseGeocode::Resolver::TomTom
+        batch.resolver_classes << ReverseGeocode::Resolver::Cache
       end
+    end
   end
 
   def custom_fields_definitions
@@ -288,12 +288,12 @@ class Workgroup < ApplicationModel
   end
 
   def route_planner
-    @route_planner ||=
+    @route_planner ||= RoutePlanner::Batch.new.tap do |batch|
       if owner.has_feature?('route_planner')
-        RoutePlanner::Cache.new(RoutePlanner::TomTom.new)
-      else
-        RoutePlanner::Null.new
+        batch.resolver_classes << RoutePlanner::Resolver::TomTom
+        batch.resolver_classes << RoutePlanner::Resolver::Cache
       end
+    end
   end
 
   def self.compliance_control_sets_label(key)

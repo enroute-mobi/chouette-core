@@ -16,28 +16,53 @@ module Macro
       include Options
 
       def run
-        models.find_each do |model|
-          # Find by position to use the same Address in the same area
-          address = reverse_geocode.address(model.position)
-          unless address
-            create_message model, criticity: 'warning', message_key: 'no_address'
-            next
+        models.find_in_batches(batch_size: 100) do |group|
+          batch = workgroup.reverse_geocode
+
+          group.each do |model|
+            batch.address model.position, key: model.id
           end
 
-          if model.update address: address
-            create_message model, criticity: 'info'
-          else
-            create_message model, criticity: 'warning', message_key: 'invalid_address'
+          models_by_ids = group.map { |model| [model.id, model] }.to_h
+
+          batch.addresses.each do |key, address|
+            model = models_by_ids[key]
+            Updater.new(model, macro_messages).update(address)
           end
         end
       end
 
-      def create_message(model, attributes)
-        attributes.merge!(
-          message_attributes: { name: model.name },
-          source: model
-        )
-        macro_messages.create!(attributes)
+      # Update a model with a given address with associated message
+      class Updater
+        def initialize(model, messages = nil)
+          @model = model
+          @messages = messages
+        end
+
+        def update(address)
+          unless address
+            create_message criticity: 'warning', message_key: 'no_address'
+            return
+          end
+
+          if model.update address: address
+            create_message criticity: 'info'
+          else
+            create_message criticity: 'warning', message_key: 'invalid_address'
+          end
+        end
+
+        attr_reader :model, :messages
+
+        def create_message(attributes)
+          return unless messages
+
+          attributes.merge!(
+            message_attributes: { name: model.name },
+            source: model
+          )
+          messages.create!(attributes)
+        end
       end
 
       def model_collection
@@ -47,8 +72,6 @@ module Macro
       def models
         @models ||= scope.send(model_collection).with_position.without_address
       end
-
-      delegate :reverse_geocode, to: :workgroup
     end
   end
 end

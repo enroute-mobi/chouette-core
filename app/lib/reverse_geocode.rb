@@ -2,83 +2,242 @@
 
 # Retrieve Address from a position
 module ReverseGeocode
-  # Use TomTom Routing API to find address
-  class TomTom
-    include Measurable
+  # Regroups positions to resolve their addresses
+  class Batch
+    def address(position, key: nil)
+      item = Item.new(position)
 
-    def address(position)
-      Request.new(position).address
+      # Reuse an already defined Item
+      item = (items[item.cache_key] ||= item)
+      raise "Can't manage more than #{maximum_item_count} in a single batch" if items.size > maximum_item_count
+
+      item.keys << key if key
+
+      item
     end
-    measure :address
 
-    # Performs a Request to the TomTom Reverse Geocode API
-    class Request < ::TomTom::Request
-      def initialize(position)
-        super()
-        @position = position
-      end
-      attr_reader :position
+    mattr_accessor :maximum_item_count, default: 100
 
-      def address
-        Rails.logger.debug { "Invoke TomTom Reverse Geocode API for #{position}" }
-        Address.new(address_attributes)
-      rescue StandardError => e
-        Chouette::Safe.capture "Can't read TomTom Reverse Geocode API response", e
-        nil
-      end
+    def items
+      @items ||= {}
+    end
 
-      def tomtom_address
-        @tomtom_address ||= response['addresses'].first['address']
-      end
+    def each_address
+      resolve
 
-      def address_attributes
-        {
-          house_number: tomtom_address['routeNumbers'].join(' '),
-          street_name: tomtom_address['streetName'],
-          post_code: tomtom_address['postalCode'],
-          city_name: tomtom_address['municipality'],
-          country_code: tomtom_address['countryCode']
-        }
-      end
-
-      private
-
-      def url
-        [
-          "https://api.tomtom.com/search/2/reverseGeocode/#{position.lat},#{position.lon}.json?returnSpeedLimit=false&",
-          "radius=20&returnRoadUse=false&allowFreeformNewLine=false&returnMatchType=false&view=Unified&key=#{api_key}"
-        ].join
+      items.each_value do |item|
+        item.keys.each do |key| # rubocop:disable Style/HashEachMethods
+          yield key, item.address
+        end
       end
     end
-  end
 
-  # Keep in cache addresses created by another instance
-  class Cache
-    include Measurable
+    def resolve
+      return if @resolved
 
-    def initialize(next_instance)
-      @next_instance = next_instance
+      @resolved = true
+      resolver.resolve items.values.reject(&:resolved?)
     end
-    attr_reader :next_instance
 
-    def address(position)
-      Rails.cache.fetch(rounded_point(position), skip_nil: true, expires_in: time_to_live) do
-        next_instance.address(position)
-      end
+    def resolver
+      @resolver ||= resolver_classes.inject(nil) do |previous, resolver_class|
+        # Invoke without previous if nil
+        resolver_class.new(*[previous].compact)
+      end || Resolver::Null.new
     end
-    measure :address
 
-    mattr_accessor :time_to_live, default: 7.days
+    def addresses
+      enum_for(:each_address)
+    end
 
-    private
-
-    def rounded_point(position)
-      [position.lat.round(6), position.lon.round(6)]
+    def resolver_classes
+      @resolver_classes ||= []
     end
   end
 
-  # Returns nil
-  class Null
-    def address(*); end
+  # Associates position and resolved address
+  class Item
+    attr_reader :position
+    attr_accessor :address
+
+    def initialize(position)
+      @position = position
+    end
+
+    def cache_key
+      @cache_key ||= [position.lat.round(6), position.lon.round(6)].join('-')
+    end
+
+    def keys
+      @keys ||= Set.new
+    end
+
+    def resolved?
+      address.present?
+    end
+  end
+
+  module Resolver
+    # Doesn't resolve addresses
+    class Null
+      def initialize(next_instance = nil); end
+
+      def resolve(items); end
+    end
+
+    # Keeps in cache addresses created by another instance
+    class Cache
+      include Measurable
+      def initialize(next_instance)
+        @next_instance = next_instance
+      end
+
+      def resolve(items)
+        read items
+        items = items.reject(&:resolved?)
+
+        @next_instance.resolve(items)
+        write items
+      end
+      measure :resolve
+
+      def read(items)
+        items.reject(&:resolved?).each do |item|
+          Rails.logger.debug { "Read #{item.cache_key} in cache" }
+          item.address = cache.read item.cache_key
+        end
+      end
+
+      def write(items)
+        items.select(&:resolved?).each do |item|
+          Rails.logger.debug { "Write #{item.cache_key} in cache" }
+          cache.write(item.cache_key, item.address, expires_in: time_to_live)
+        end
+      end
+      mattr_accessor :time_to_live, default: 7.days
+
+      def cache
+        @cache ||= WithNamespace.new Rails.cache, 'reverse-geocode'
+      end
+
+      # Adds a namespace to read/write method invocations
+      class WithNamespace
+        def initialize(cache, namespace)
+          @cache = cache
+          @namespace = namespace
+        end
+        attr_reader :cache, :namespace
+
+        def read(name, options = {})
+          cache.read name, with_namespace(options)
+        end
+
+        def write(name, value, options = {})
+          cache.write name, value, with_namespace(options)
+        end
+
+        def with_namespace(options)
+          (options || {}).merge(namespace: namespace)
+        end
+      end
+    end
+
+    # Uses TomTom Reverse Geocode API in batch mode to resolve addresses
+    class TomTom
+      include Measurable
+
+      def resolve(items)
+        return if items.empty?
+
+        Request.new(items).resolve
+      end
+      measure :resolve
+
+      # Performs the TomTom API request
+      class Request
+        attr_reader :items
+
+        def initialize(items)
+          @items = items.reject(&:resolved?).map { |item| Item.new(item, radius: radius) }
+        end
+
+        mattr_accessor :radius, default: 30
+
+        def resolve
+          response_batch_items.each_with_index do |response_batch_item, index|
+            item = ordered_items[index]
+            item.response = response_batch_item
+          end
+        end
+
+        def response_batch_items
+          response['batchItems']
+        end
+
+        def response
+          @response ||=
+            begin
+              Rails.logger.debug { "Invoke TomTom Batch API with #{items.count} reverseGeocode queries" }
+              JSON.parse(Net::HTTP.post(self.class.uri, body, 'Content-Type' => 'application/json').body)
+            end
+        end
+
+        mattr_accessor :api_key, default: Rails.application.secrets.tomtom_api_key
+        def self.uri
+          @uri ||= URI("https://api.tomtom.com/search/2/batch/sync.json?key=#{api_key}")
+        end
+
+        def body
+          { batchItems: request_batch_items }.to_json
+        end
+
+        def request_batch_items
+          items.map.with_index do |item, index|
+            item.index = index
+            item.request
+          end
+        end
+
+        def ordered_items
+          @ordered_items ||= items.sort_by(&:index)
+        end
+      end
+
+      # Adds specific attributes to manage the item in TomTom API request/response
+      class Item < SimpleDelegator
+        attr_accessor :index
+        attr_reader :options
+
+        def initialize(item, options = {})
+          super item
+          @options = options
+        end
+
+        def request
+          { query: "/reverseGeocode/#{position.lat},#{position.lon}.json&#{options.to_query}" }
+        end
+
+        def response=(response)
+          return unless response['statusCode'] == 200
+
+          self.tomtom_address = response['response']['addresses'].first['address']
+        end
+
+        def tomtom_address=(tomtom_address)
+          self.address_attributes = {
+            house_number: tomtom_address['streetNumber'],
+            street_name: tomtom_address['streetName'],
+            post_code: tomtom_address['postalCode'],
+            city_name: tomtom_address['municipality'],
+            country_code: tomtom_address['countryCode'],
+            house_number_and_street_name: tomtom_address['streetNameAndNumber']
+          }
+        end
+
+        def address_attributes=(address_attributes)
+          self.address = Address.new(address_attributes)
+        end
+      end
+    end
   end
 end

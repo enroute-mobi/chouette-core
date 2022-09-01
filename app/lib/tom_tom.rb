@@ -36,11 +36,28 @@ module TomTom
   # Base class to create TomTom API Request
   class Request
     def response
-      @response ||= JSON.parse(Net::HTTP.get(URI(url)))
+      @response ||= JSON.parse(call_api(url))
     end
 
     def url
       raise 'Not Yet Implemented'
+    end
+
+    def call_api(url, options = {})
+      uri = URI(url)
+      http = Net::HTTP.new(uri.host, uri.port)
+
+      http.use_ssl = true
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+
+      case options[:type]
+      when /POST/i
+        request = Net::HTTP::Post.new(uri.path, {'Content-Type' => 'application/json'})
+        request.body = options[:body]
+        http.request(request)
+      else # GET
+        Net::HTTP.get(uri)
+      end
     end
 
     mattr_accessor :api_key, default: Rails.application.secrets.tomtom_api_key

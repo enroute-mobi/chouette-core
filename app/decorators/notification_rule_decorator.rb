@@ -21,9 +21,15 @@ class NotificationRuleDecorator < AF83::Decorator
   end
 
   define_instance_method :name do
-    return object.notification_type.capitalize unless object.period
+    notification_type = object.notification_type.text
 
-    NotificationRule.tmf('name', notification_type: "enumerize.notification_rule.notification_type.#{notification_type}".t, from: I18n.l(period.begin), to: I18n.l(period.end))
+    if object.period
+      NotificationRule.tmf('name', notification_type: notification_type,
+                                   from: I18n.l(period.begin),
+                                   to: I18n.l(period.end))
+    else
+      notification_type
+    end
   end
 
   define_instance_method :user_items do

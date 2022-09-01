@@ -1,7 +1,7 @@
 class NotificationRule < ApplicationModel
   extend Enumerize
 
-  enumerize :notification_type, in: %w(import merge aggregate hole_sentinel), default: :import
+  enumerize :notification_type, in: %w(import merge aggregate source_retrieval hole_sentinel), default: :import
   enumerize :target_type, in: %w(workbench user external_email), default: :workbench, predicates: true
   enumerize :rule_type, in: %w(block notify), default: :block
   enumerize :operation_statuses, in: %w(successful warning failed), multiple: true
@@ -22,8 +22,8 @@ class NotificationRule < ApplicationModel
 
   class << self
     def for_operation(operation)
-      operation_scope = for_statuses([operation.status]).
-                        where(notification_type: operation.class.model_name.singular)
+      operation_status = operation.try(:user_status) || operation.status
+      operation_scope = for_statuses([operation_status]).where(notification_type: operation.class.model_name.singular)
 
       if (line_ids = operation.try(:line_ids)).present?
         operation_scope = operation_scope.for_lines line_ids

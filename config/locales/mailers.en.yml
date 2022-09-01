@@ -97,3 +97,11 @@ en:
         publication_date: This new data has been published on %{formated_date}.
         api_link: "You can retrieve online this data on "
         button: Retrieve data
+    source_retrieval_mailer:
+      button: See Source
+      finished:
+        subject: The Source Retrieval is done
+        body: |
+          A Retrieval of Source <strong>"%{source_name}"</strong> has been started.
+          It is now done. <br/>
+          The operation status is <strong>%{status}</strong>

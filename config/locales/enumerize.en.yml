@@ -16,6 +16,7 @@ en:
         hole_sentinel: Hole Sentinel
         merge: Merge
         aggregate: Aggregate
+        source_retrieval: Source Retrieval
         import: Import
       operation_statuses:
         all: All

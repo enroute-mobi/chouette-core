@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# Manage email notifications send when operations are done
 class NotificationCenter
   def initialize(workbench)
     @workbench = workbench
@@ -10,19 +13,15 @@ class NotificationCenter
 
   def notify(operation)
     Rails.logger.debug "Start notification processing for #{operation.class}##{operation.id}"
-    Notification.new(operation, rules: rules.active.for_operation(operation)).deliver
+    Notification.for(operation).new(operation, rules: rules.active.for_operation(operation)).deliver
   end
 
   def recipients(notification_type, line_ids: nil, period: nil, base_recipients: [])
     rules_scope = rules.where(notification_type: notification_type)
 
-    if line_ids.present?
-      rules_scope = rules_scope.for_lines(line_ids)
-    end
+    rules_scope = rules_scope.for_lines(line_ids) if line_ids.present?
 
-    if period
-      rules_scope = rules_scope.covering(period)
-    end
+    rules_scope = rules_scope.covering(period) if period
 
     rules_scope.recipients(base_recipients)
   end
@@ -31,7 +30,11 @@ class NotificationCenter
     recipients(notification_type, line_ids: line_ids, period: period, base_recipients: base_recipients).present?
   end
 
+  # Manage notification for a given Operation
   class Notification
+    def self.for(operation)
+      operation.is_a?(Operation) ? Notification : LegacyNotification
+    end
 
     def initialize(operation, rules: NotificationRule.none)
       @operation = operation
@@ -39,20 +42,31 @@ class NotificationCenter
     end
     attr_reader :operation, :rules
 
+    def operation_recipients
+      operation.try(:notification_recipients) || []
+    end
+
     def recipients
-      rules.recipients(operation.notification_recipients)
+      @recipients ||= rules.recipients(operation_recipients)
+    end
+
+    def current_status
+      operation.user_status
     end
 
     def deliver
-      return if operation.notified_recipients_at
-
-      Rails.logger.info "Notify #{recipients.inspect} for #{operation.class}##{operation.id} (status: #{operation.status})"
-
+      log
       recipients.each do |recipient|
-        mailer.finished(operation.id, recipient, operation.status).deliver_later
+        mailer.finished(operation.id, recipient, current_status).deliver_later
       end
+    end
 
-      operation.update_column :notified_recipients_at, Time.zone.now
+    def log
+      logger.info "Notify #{recipients.inspect} for #{operation.class}##{operation.id} (status: #{current_status})"
+    end
+
+    def logger
+      Rails.logger
     end
 
     def mailer
@@ -63,10 +77,22 @@ class NotificationCenter
       if operation.class.respond_to?(:mailer_name)
         operation.class.mailer_name
       else
-        "#{operation.class.name}Mailer"
+        "#{operation.class.name.gsub('::', '')}Mailer"
       end
     end
-
   end
 
+  # Manage notification for a given legacy Operation (not Operation subclasses)
+  class LegacyNotification < Notification
+    def current_status
+      operation.status
+    end
+
+    def deliver
+      return if operation.notified_recipients_at
+
+      super
+      operation.update_column :notified_recipients_at, Time.zone.now
+    end
+  end
 end

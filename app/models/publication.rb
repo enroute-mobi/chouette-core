@@ -50,6 +50,8 @@ class Publication < ApplicationModel
   end
 
   def run
+    raise 'Publication ran twice' if running?
+
     running!
     run_export
   rescue => e

@@ -414,8 +414,8 @@ RSpec.describe Export::Ara do
         subject { decorator.references }
 
         context "when operator_objectid {'test': 'dummy'}" do
-          before { allow(decorator).to receive(:operator_objectid).and_return({'test': 'dummy'}) }
-          it { is_expected.to eq({ 'Type': 'OperatorRef', 'ObjectId': {'test': 'dummy'} }) }
+          before { allow(decorator).to receive(:operator_objectid).and_return({ 'test': 'dummy' }) }
+          it { is_expected.to eq({ 'OperatorRef': { 'Type': 'OperatorRef', 'ObjectId': { 'test': 'dummy' } } }) }
         end
 
         context "without operator_objectid" do

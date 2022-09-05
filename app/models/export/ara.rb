@@ -387,11 +387,15 @@ class Export::Ara < Export::Base
         vehicle_journey&.get_objectid&.local_id
       end
 
-      def references 
-        { 
-          'Type': 'OperatorRef',
-          'ObjectId': operator_objectid
-        } if operator_objectid
+      def references
+        return unless operator_objectid
+
+        {
+          "OperatorRef": {
+            'Type': 'OperatorRef',
+            'ObjectId': operator_objectid
+          }
+        }
       end
 
       def operator_objectid

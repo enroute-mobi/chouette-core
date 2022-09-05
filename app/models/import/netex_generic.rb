@@ -79,6 +79,8 @@ class Import::NetexGeneric < Import::Base
   end
 
   class SynchronizedPart < Part
+    include Measurable
+
     delegate :netex_source, :event_handler, :code_space, to: :import
 
     def import!
@@ -98,6 +100,8 @@ class Import::NetexGeneric < Import::Base
     ensure
       import.save
     end
+
+    measure :import!, as: ->(part) { part.class.name.demodulize }
   end
 
   # Synchronize models in the StopAreaReferential (StopArea, Entrances, etc)

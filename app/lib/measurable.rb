@@ -16,6 +16,8 @@
 #     # ...
 #   end
 #   measure :foo
+#   measure :foo, as: 'bar'
+#   measure :foo, as: ->(part) { part.class.name.demodulize }
 module Measurable
   extend ActiveSupport::Concern
 
@@ -28,21 +30,38 @@ module Measurable
     # Use #measure when the given methods are invoked
     def measure(*method_names, as: nil) # rubocop:disable Naming/MethodParameterName
       proxy = Module.new do
-        method_names.each do |measured_method|
-          define_method measured_method do |*args, &block|
-            name =
-              if as
-                as.respond_to?(:call) ? as.call(self) : as
-              else
-                measured_method
-              end
-
-            measure(name.to_s) { super(*args, &block) }
-          end
+        method_names.each do |name|
+          Method.new(self, name, as: as).measure
         end
       end
 
       prepend proxy
+    end
+  end
+
+  # Prepares measurement of a given method
+  class Method
+    def initialize(proxy, name, as: nil) # rubocop:disable Naming/MethodParameterName
+      @proxy = proxy
+      @name = name
+      @as = as
+    end
+    attr_reader :proxy, :name, :as
+
+    def alias_name(instance)
+      as.respond_to?(:call) ? as.call(instance) : as
+    end
+
+    def measure_name(instance)
+      (alias_name(instance) || name).to_s
+    end
+
+    def measure
+      # Need a local variable to be invoked in define_method
+      method = self
+      proxy.define_method name do |*args, &block|
+        measure(method.measure_name(self)) { super(*args, &block) }
+      end
     end
   end
 end

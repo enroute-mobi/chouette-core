@@ -1,6 +1,7 @@
 module Chouette
   module Sync
     class Updater
+      include Measurable
 
       def initialize(options = {})
         options.reverse_merge!(update_batch_size: 1000)
@@ -40,6 +41,7 @@ module Chouette
           processed_identifiers.concat batch.resource_ids
         end
       end
+      measure :update_or_create
 
       def processed_identifiers
         @processed_identifiers ||= []
@@ -278,6 +280,7 @@ module Chouette
       end
 
       class Batch
+        include Measurable
 
         attr_reader :resources, :updater
 
@@ -347,6 +350,7 @@ module Chouette
             models.create decorated_resource
           end
         end
+        measure :update_all, :create_all
 
         # Basic resolver implementation
 

@@ -1,3 +1,5 @@
+# frozen
+
 # Provides shortcuts to use Chouette::Benchmark measure method in a Ruby class.
 #
 # To measure a given block:
@@ -14,7 +16,6 @@
 #     # ...
 #   end
 #   measure :foo
-
 module Measurable
   extend ActiveSupport::Concern
 
@@ -24,22 +25,24 @@ module Measurable
   end
 
   class_methods do
-
     # Use #measure when the given methods are invoked
-    def measure(*method_names)
+    def measure(*method_names, as: nil) # rubocop:disable Naming/MethodParameterName
       proxy = Module.new do
         method_names.each do |measured_method|
           define_method measured_method do |*args, &block|
-            measure measured_method do
-              super(*args, &block)
-            end
+            name =
+              if as
+                as.respond_to?(:call) ? as.call(self) : as
+              else
+                measured_method
+              end
+
+            measure(name.to_s) { super(*args, &block) }
           end
         end
       end
 
       prepend proxy
     end
-
   end
-
 end

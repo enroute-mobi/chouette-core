@@ -43,7 +43,6 @@ en:
       table:
         test_results: Test results
         download: Download
-        error_positions: Error positions
       gtfs:
         filename: File
     compliance_check_task: "Validate Report"

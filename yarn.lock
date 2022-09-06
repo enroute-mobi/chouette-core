@@ -8381,6 +8381,11 @@ pbf@3.2.1:
     ieee754 "^1.1.12"
     resolve-protobuf-schema "^2.1.0"
 
+pdfobject@^2.2.8:
+  version "2.2.8"
+  resolved "https://registry.yarnpkg.com/pdfobject/-/pdfobject-2.2.8.tgz#956c8ce254883cdbc7c3cbee3d74d5a017f98d0b"
+  integrity sha512-dB/soWNMLtVGHfXERXnAtsKm0XwC6lyGVYegQcZxL4rw07rNOKvawc9kddBzlGr7TbiBZuGf4Drb3kyRbTf/QA==
+
 performance-now@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/performance-now/-/performance-now-2.1.0.tgz#6309f4e0e5fa913ec1c69307ae364b4b377c9e7b"

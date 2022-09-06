@@ -27,5 +27,3 @@
 				= d.attribute :content_type, value: @document.file.file.content_type
 				= d.attribute :description
 				= d.attribute :preview, value: "<div x-data='filePreview(#{@document.preview_json})'></div>".html_safe
-
-script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.js"

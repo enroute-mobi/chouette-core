@@ -49,8 +49,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/neptune.git
-  revision: 37e9249e2669e38eebca876a1c090c5efb04bc41
-  branch: NEPTUNE-5-test-file-extension-case
+  revision: b312ac293f7fab927bc94df84d0aef4809704b07
   specs:
     neptune (0.1.0)
       ox

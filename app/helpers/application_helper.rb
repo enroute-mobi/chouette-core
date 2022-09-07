@@ -26,9 +26,9 @@ module ApplicationHelper
 
     if object.respond_to?(:name)
       user_identifier = %i{objectid uuid short_name id}.map { |m| object.try(m) }.find(&:itself)
-      t(local, name: object.name || user_identifier).html_safe
+      t(local, name: object.name || user_identifier)
     else
-      t(local).html_safe
+      t(local)
     end
   end
 
@@ -45,11 +45,11 @@ module ApplicationHelper
       info = t('last_update', time: l(object.updated_at))
       if object.try(:has_metadata?)
         author = object.metadata.modifier_username || t('default_whodunnit')
-        info   = "#{info} <br/> #{t('whodunnit', author: author)}"
+        info = safe_join([info, tag(:br), t('whodunnit', author: author)])
       end
-      out += content_tag :div, info.html_safe, class: 'small last-update'
+      out = content_tag :div, info, class: 'small last-update'
     end
-    out.html_safe
+    out
   end
 
   def page_title

@@ -1,12 +1,15 @@
+# frozen_string_literal: true
+
+# Export a dataset into a Ara CSV file
 class Export::Ara < Export::Base
   include LocalExportSupport
 
-  # FIXME Should be shared
+  # FIXME: Should be shared
   option :line_ids, serialize: :map_ids
   option :company_ids, serialize: :map_ids
   option :line_provider_ids, serialize: :map_ids
   option :exported_lines, default_value: 'all_line_ids',
-         enumerize: %w[line_ids company_ids line_provider_ids all_line_ids]
+                          enumerize: %w[line_ids company_ids line_provider_ids all_line_ids]
   option :duration # Ignored by this export .. but required by Export::Scope builder
 
   skip_empty_exports
@@ -16,12 +19,12 @@ class Export::Ara < Export::Base
   end
 
   def file_extension
-    "csv"
+    'csv'
   end
 
-  # TODO Should be shared
+  # TODO: Should be shared
   def export_file
-    @export_file ||= Tempfile.new(["export#{id}",".#{file_extension}"])
+    @export_file ||= Tempfile.new(["export#{id}", ".#{file_extension}"])
   end
 
   def target
@@ -33,16 +36,12 @@ class Export::Ara < Export::Base
     @period ||=
       begin
         today = Time.zone.today
-        today..today+5
+        today..today + 5
       end
   end
 
   def parts
-    @parts ||= [ Stops, Lines, Companies, VehicleJourneys ].tap do |parts|
-      if has_feature?("export_ara_stop_visits")
-        parts << StopVisits
-      end
-    end
+    @parts ||= [Stops, Lines, Companies, VehicleJourneys, StopVisits]
   end
 
   def generate_export_file
@@ -89,11 +88,11 @@ class Export::Ara < Export::Base
     end
   end
 
-  # TODO To be shared
+  # TODO: To be shared
   module CodeProvider
     # Manage all CodeSpace for a Model class (StopArea, VehicleJourney, ...)
     class Model
-      def initialize(scope: , model_class:)
+      def initialize(scope:, model_class:)
         @scope = scope
         @model_class = model_class
       end
@@ -111,7 +110,7 @@ class Export::Ara < Export::Base
             code_provider = code_providers[code_space]
 
             unique_code = code_provider.unique_code(model)
-            [ code_provider.short_name, unique_code ] if unique_code
+            [code_provider.short_name, unique_code] if unique_code
           end.compact.to_h
         end
 
@@ -152,7 +151,7 @@ class Export::Ara < Export::Base
       class Null
         def unique_codes(model)
           model.codes.map do |code|
-            [ code.code_space.short_name, code.value ]
+            [code.code_space.short_name, code.value]
           end.to_h
         end
       end
@@ -167,7 +166,7 @@ class Export::Ara < Export::Base
       attr_reader :scope, :model_class
 
       def short_name
-        "external"
+        'external'
       end
 
       def unique_code(model)
@@ -200,7 +199,6 @@ class Export::Ara < Export::Base
     # Manage a single CodeSpace for a Model class
     # TODO To be used in Export::Gtfs
     class CodeSpace
-
       def initialize(scope:, code_space:, model_class:)
         @scope = scope
         @code_space = code_space
@@ -208,6 +206,7 @@ class Export::Ara < Export::Base
       end
 
       attr_reader :scope, :code_space, :model_class
+
       delegate :short_name, to: :code_space
 
       # Returns the code value for the given Resource if uniq
@@ -252,7 +251,8 @@ class Export::Ara < Export::Base
 
       def duplicated_code_values
         @duplicated_code_values ||=
-          SortedSet.new(model_codes.select(:value, :resource_id).group(:value).having("count(resource_id) > 1").pluck(:value))
+          SortedSet.new(model_codes.select(:value,
+                                           :resource_id).group(:value).having('count(resource_id) > 1').pluck(:value))
       end
     end
   end
@@ -260,7 +260,7 @@ class Export::Ara < Export::Base
   class Part
     attr_reader :context, :export_scope, :target
 
-    def initialize(context: nil, export_scope:, target:)
+    def initialize(export_scope:, target:, context: nil)
       @context = context
       @export_scope = export_scope
       @target = target
@@ -287,8 +287,8 @@ class Export::Ara < Export::Base
     end
 
     def stop_areas
-      ::Query::StopArea.new(stop_area_referential.stop_areas).
-        self_and_ancestors(export_scope.stop_areas)
+      ::Query::StopArea.new(stop_area_referential.stop_areas)
+                       .self_and_ancestors(export_scope.stop_areas)
     end
 
     class CodeScope < SimpleDelegator
@@ -297,6 +297,7 @@ class Export::Ara < Export::Base
         super part.export_scope
       end
       attr_reader :part
+
       delegate :stop_areas, to: :part
     end
 
@@ -311,7 +312,7 @@ class Export::Ara < Export::Base
         @code_provider = code_provider
       end
 
-      # TODO To be shared
+      # TODO: To be shared
       def code_provider
         @code_provider ||= CodeProvider::Model.null
       end
@@ -327,7 +328,7 @@ class Export::Ara < Export::Base
       end
 
       def ara_collect_children?
-        ! quay?
+        !quay?
       end
 
       def parent_uuid
@@ -338,12 +339,12 @@ class Export::Ara < Export::Base
         Ara::StopArea.new ara_attributes
       end
 
-      # TODO To be shared
+      # TODO: To be shared
       def uuid
         get_objectid&.local_id
       end
 
-      # TODO To be shared
+      # TODO: To be shared
       def ara_codes
         code_provider.unique_codes __getobj__
       end
@@ -360,7 +361,7 @@ class Export::Ara < Export::Base
     end
 
     class Decorator < SimpleDelegator
-      EXPORT_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S%:z'.freeze
+      EXPORT_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S%:z'
 
       def initialize(stop_visit, day:)
         super stop_visit
@@ -375,6 +376,7 @@ class Export::Ara < Export::Base
           vehicle_journey_id: vehicle_journey_id,
           passage_order: passage_order,
           schedules: schedules,
+          references: references
         }
       end
 
@@ -383,23 +385,53 @@ class Export::Ara < Export::Base
       end
 
       def stop_area_id
-        stop_point&.stop_area&.get_objectid.local_id
+        stop_point&.stop_area&.get_objectid&.local_id
       end
 
       def vehicle_journey_id
-        vehicle_journey&.get_objectid.local_id
+        vehicle_journey&.get_objectid&.local_id
       end
 
+      def references
+        return unless operator_objectid
+
+        {
+          "OperatorRef": {
+            'Type': 'OperatorRef',
+            'ObjectId': operator_objectid
+          }
+        }
+      end
+
+      def operator_objectid
+        return unless company
+        return { 'external' => company.registration_number } if company.registration_number
+
+        code = company.codes.first
+        return unless code
+
+        { code.code_space.short_name => code.value }
+      end
+
+      def company
+        vehicle_journey&.company || line&.company
+      end
+      delegate :line, to: :vehicle_journey, allow_nil: true
+
       def passage_order
-        stop_point&.position.to_s
+        stop_point&.position&.to_s
       end
 
       def schedules
-        [{
-          'Kind': 'aimed',
-          'ArrivalTime': format_arrival_date(arrival_time),
-          'DepartureTime': format_departure_date(departure_time)
-        }]
+        return unless arrival_time && departure_time
+
+        [
+          {
+            'Kind': 'aimed',
+            'ArrivalTime': format_arrival_date(arrival_time),
+            'DepartureTime': format_departure_date(departure_time)
+          }
+        ]
       end
 
       def uuid
@@ -448,7 +480,7 @@ class Export::Ara < Export::Base
         @code_provider = code_provider
       end
 
-      # TODO To be shared
+      # TODO: To be shared
       def code_provider
         @code_provider ||= CodeProvider::Model.null
       end
@@ -466,12 +498,12 @@ class Export::Ara < Export::Base
         Ara::Line.new ara_attributes
       end
 
-      # TODO To be shared
+      # TODO: To be shared
       def uuid
         get_objectid.local_id
       end
 
-      # TODO To be shared
+      # TODO: To be shared
       def ara_codes
         code_provider.unique_codes __getobj__
       end
@@ -498,7 +530,7 @@ class Export::Ara < Export::Base
         @code_provider = code_provider
       end
 
-      # TODO To be shared
+      # TODO: To be shared
       def code_provider
         @code_provider ||= CodeProvider::Model.null
       end
@@ -507,7 +539,7 @@ class Export::Ara < Export::Base
         {
           id: uuid,
           name: name,
-          objectids: ara_codes,
+          objectids: ara_codes
         }
       end
 
@@ -515,12 +547,12 @@ class Export::Ara < Export::Base
         Ara::Operator.new ara_attributes
       end
 
-      # TODO To be shared
+      # TODO: To be shared
       def uuid
         get_objectid&.local_id
       end
 
-      # TODO To be shared
+      # TODO: To be shared
       def ara_codes
         code_provider.unique_codes __getobj__
       end
@@ -547,7 +579,7 @@ class Export::Ara < Export::Base
         @code_provider = code_provider
       end
 
-      # TODO To be shared
+      # TODO: To be shared
       def code_provider
         @code_provider ||= CodeProvider::Model.null
       end
@@ -557,10 +589,10 @@ class Export::Ara < Export::Base
           id: uuid,
           name: published_journey_name,
           objectids: ara_codes,
-          line_id: self.line.get_objectid.local_id,
-          direction_type: self.route.wayback,
+          line_id: line.get_objectid.local_id,
+          direction_type: route.wayback,
           attributes: {
-            "VehicleMode": self.line.transport_mode
+            "VehicleMode": line.transport_mode
           }
         }
       end
@@ -569,12 +601,12 @@ class Export::Ara < Export::Base
         Ara::VehicleJourney.new ara_attributes
       end
 
-      # TODO To be shared
+      # TODO: To be shared
       def uuid
         get_objectid.local_id
       end
 
-      # TODO To be shared
+      # TODO: To be shared
       def ara_codes
         code_provider.unique_codes __getobj__
       end

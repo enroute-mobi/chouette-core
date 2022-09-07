@@ -262,6 +262,7 @@ module Chouette
           model :source do
             attribute(:name) { |n| "Source #{n}" }
             attribute(:url) { 'https://bitbucket.org/enroute-mobi/chouette-core/downloads/gtfs.zip' }
+            attribute(:retrieval_time_of_day) { TimeOfDay.new(12, 30) }
           end
 
           model :referential do

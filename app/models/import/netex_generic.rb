@@ -190,8 +190,8 @@ class Import::NetexGeneric < Import::Base
       EventProcessor.new(event, resource(event.resource.class)).tap do |processor|
         processor.process
 
-        if processor.has_error? && import.status != 'failed'
-          import.update status: 'failed'
+        if processor.has_error?
+          import.status = 'failed'
         end
       end
     end

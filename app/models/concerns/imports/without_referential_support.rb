@@ -5,7 +5,7 @@ module Imports
     # Overrides #import method to remove referential management
     def import
       Chouette::Benchmark.measure "import_#{import_type}", id: id do
-        update status: 'running', started_at: Time.now
+        update status: 'running', started_at: Time.zone.now
 
         import_without_status
 

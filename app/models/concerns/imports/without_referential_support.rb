@@ -8,12 +8,12 @@ module Imports
 				update status: 'running', started_at: Time.now
 
 				import_without_status
-				@status ||= 'successful'
 
-				update status: @status, ended_at: Time.now
+        self.status = 'successful' if status == 'running'
+        self.ended_at = Time.zone.now
 			end
 		rescue => e
-			update status: 'failed', ended_at: Time.now
+			update status: 'failed', ended_at: Time.zone.now
 			Chouette::Safe.capture "#{self.class.name} ##{id} failed", e
 		ensure
 			save

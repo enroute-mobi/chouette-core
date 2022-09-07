@@ -19,6 +19,53 @@ class Source < ApplicationModel
 
   before_validation :clean, on: :update
 
+  attribute :retrieval_time_of_day, TimeOfDay::Type::TimeWithoutZone.new
+  has_one :scheduled_job, class_name: "::Delayed::Job", dependent: :destroy
+
+  validates :retrieval_time_of_day, presence: true, if: :enabled?
+
+  def reschedule
+    scheduled_job&.destroy
+
+    if enabled?
+      job = ScheduledJob.new(self)
+      self.scheduled_job = Delayed::Job.enqueue(job, cron: job.cron)
+    end
+  end
+
+  def reschedule_needed?
+    enabled_changed? || retrieval_time_of_day_changed?
+  end
+
+  before_save :reschedule, if: :reschedule_needed?
+
+  class ScheduledJob
+    def initialize(source)
+      @source = source
+      @source_id = source.id
+    end
+    attr_reader :source_id
+
+    def encode_with(coder)
+      coder['source_id'] = source_id
+    end
+
+    def cron
+      # minutes hours day-of-month month day-of-week
+      "#{source.retrieval_time_of_day.minute} #{source.retrieval_time_of_day.hour} * * *"
+    end
+
+    def source
+      @source ||= Source.find_by(id: source_id)
+    end
+
+    def perform
+      source.retrieve
+    rescue => e
+      Rails.logger.error "Unable to download source #{url}, error: #{e}"
+    end
+  end
+
   def authorization_downloader_type?
     downloader_type == 'authorization'
   end

@@ -6,7 +6,15 @@ RSpec.describe Source do
 
   let(:workbench) { create(:workbench) }
 
-  let(:source) { Source.create(name: "Source Test", url: "url.com", workbench: workbench) }
+  let(:source) { Source.create(name: "Source Test", url: "url.com", workbench: workbench, retrieval_time_of_day: TimeOfDay.new(7, 30)) }
+
+  describe Source::ScheduledJob do
+    subject { source.scheduled_job.cron }
+
+    it "includes cron in Delayed::Job" do
+      is_expected.to eq("30 7 * * *")
+    end
+  end
 
   subject { source.retrieve }
 

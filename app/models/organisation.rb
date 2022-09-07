@@ -29,6 +29,8 @@ class Organisation < ApplicationModel
   validates_presence_of :name
   validates_uniqueness_of :code
 
+  has_many :delayed_jobs, class_name: "::Delayed::Job"
+
   def find_referential(referential_id)
     organisation_referential = referentials.find_by id: referential_id
     return organisation_referential if organisation_referential

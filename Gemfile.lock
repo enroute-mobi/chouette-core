@@ -248,6 +248,8 @@ GEM
     declarative (0.0.20)
     deep_cloneable (3.2.0)
       activerecord (>= 3.1.0, < 8)
+    delayed_cron_job (0.9.0)
+      fugit (>= 1.5)
     delayed_job (4.1.10)
       activesupport (>= 3.0, < 8.0)
     delayed_job_active_record (4.1.7)
@@ -306,6 +308,8 @@ GEM
     enumerize (2.5.0)
       activesupport (>= 3.2)
     erubi (1.10.0)
+    et-orbi (1.2.7)
+      tzinfo
     execjs (2.8.1)
     factory_bot (6.2.0)
       activesupport (>= 5.0.0)
@@ -324,6 +328,9 @@ GEM
       nokogiri (>= 1.11.3)
       railties (>= 4.2)
     formatador (0.3.0)
+    fugit (1.6.0)
+      et-orbi (~> 1, >= 1.2.7)
+      raabro (~> 1.4)
     fuubar (2.5.1)
       rspec-core (~> 3.0)
       ruby-progressbar (~> 1.4)
@@ -537,6 +544,7 @@ GEM
       activesupport (>= 3.0.0)
     pundit-matchers (1.7.0)
       rspec-rails (>= 3.0.0)
+    raabro (1.4.0)
     rabl (0.15.0)
       activesupport (>= 2.3.14)
     racc (1.6.0)
@@ -808,6 +816,7 @@ DEPENDENCIES
   database_cleaner
   ddtrace
   deep_cloneable
+  delayed_cron_job
   delayed_job_active_record
   delayed_job_heartbeat_plugin
   derailed_benchmarks

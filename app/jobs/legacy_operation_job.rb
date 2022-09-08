@@ -32,7 +32,7 @@ class LegacyOperationJob
   end
 
   def dead_worker
-    # TODO
+    operation.try(:worker_died)
   end
 
   def max_attempts

@@ -323,6 +323,7 @@ class Operation  < ApplicationModel
     end
 
     attr_reader :operation_id, :operation_class_name
+    
     def operation_class
       @operation_class ||= @operation_class_name.constantize
     end
@@ -335,7 +336,7 @@ class Operation  < ApplicationModel
       "#{operation_class_name}(id=#{operation_id})"
     end
 
-    def explain
+    def display_name
       internal_description
     end
 
@@ -354,10 +355,6 @@ class Operation  < ApplicationModel
 
     def max_attempts
       1
-    end
-
-    def max_run_time
-      Delayed::Worker.max_run_time
     end
   end
 

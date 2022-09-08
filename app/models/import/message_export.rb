@@ -29,6 +29,7 @@ class Import::MessageExport
     csv_string = CSV.generate(options) do |csv|
       csv << column_names
       import_messages.each do |import_message|
+        resource_attributes = import_message.resource_attributes&.transform_keys{ |key| key.gsub(/_number$/, '') } || {}
         message_attributes = import_message.message_attributes || {}
         csv << [
           import_message.criticity,
@@ -39,7 +40,7 @@ class Import::MessageExport
               default: import_message.message_key
             )
           ),
-          *import_message.resource_attributes&.values_at("filename", "line", "column")
+          *resource_attributes&.values_at("filename", "line", "column")
         ]
       end
     end

@@ -1416,6 +1416,7 @@ class Export::NetexGeneric < Export::Base
           "vehicle_journeys.data_source_ref AS vehicle_journey_data_source_ref",
           "stop_points.objectid AS stop_point_objectid",
           "stop_areas.objectid AS stop_area_objectid",
+          "stop_points.position AS stop_point_position",
         )
     end
 

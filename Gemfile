@@ -162,7 +162,7 @@ group :development do
   gem 'graphiql-rails', '>= 1.8.0'
 
   gem 'guard-rspec', require: false
-  gem 'rubocop', require: false
+  gem 'rubocop-rails', require: false
 end
 
 group :test do

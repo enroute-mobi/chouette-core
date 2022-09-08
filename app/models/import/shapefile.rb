@@ -63,7 +63,7 @@ class Import::Shapefile < Import::Base
         },
         commit: true
       )
-      @status = 'failed'
+      self.status = 'failed'
     rescue Import::Shapefile::WrongIdAttributeError
       create_message(
         {
@@ -75,7 +75,7 @@ class Import::Shapefile < Import::Base
         },
         commit: true
       )
-      @status = 'failed'
+      self.status = 'failed'
     end
   ensure
     source.close

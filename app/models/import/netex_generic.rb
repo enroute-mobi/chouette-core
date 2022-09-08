@@ -203,6 +203,7 @@ class Import::NetexGeneric < Import::Base
 
       import.resources.find_or_initialize_by(resource_type: human_netex_resource_name) do |resource|
         resource.name = human_netex_resource_name
+        resource.status = "OK"
       end
     end
 
@@ -236,7 +237,6 @@ class Import::NetexGeneric < Import::Base
       end
 
       def process_create_or_update
-        resource.status = "OK"
         resource.inc_rows_count event.count
       end
 
@@ -251,13 +251,13 @@ class Import::NetexGeneric < Import::Base
               message_attributes: {
                 attribute_name: attribute,
                 attribute_value: error[:value]
-              }
+              },
+              resource_attributes: event.resource.tags
             )
           end
         end
       end
     end
-
   end
 
   def netex_source

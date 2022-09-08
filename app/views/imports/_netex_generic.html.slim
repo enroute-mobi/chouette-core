@@ -22,9 +22,9 @@
         ), \
         TableBuilderHelper::Column.new( \
           key: :status, \
-          attribute: Proc.new { |n| import_resource_status(n.status) }, \
-          sortable: false, \
-        ), \
+          attribute: Proc.new { |n| operation_status(n.status, verbose: true, default_status: :pending) }, \
+          sortable: false \
+        ),\
         TableBuilderHelper::Column.new( \
           name: t('imports.show.table.test_results') , \
           attribute: Proc.new { |n| I18n.t('import_resources.index.metrics', n.metrics.deep_symbolize_keys) }, \

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Start an Operation
 #
 #   operation = build_method(user: current_user)
@@ -72,13 +74,13 @@
 # The perform method enables Chouette::Benchmark measure.
 #
 
-class Operation  < ApplicationModel
+class Operation < ApplicationModel
   self.abstract_class = true
 
   extend Enumerize
 
-  enumerize :status, in: %i{new enqueued running done}, default: :new, scope: true
-  enumerize :user_status, in: %i{pending successful warning failed}, default: :pending, scope: true
+  enumerize :status, in: %i[new enqueued running done], default: :new, scope: true
+  enumerize :user_status, in: %i[pending successful warning failed], default: :pending, scope: true
 
   validates :creator, presence: true
 
@@ -90,13 +92,15 @@ class Operation  < ApplicationModel
 
   class NotPersistedError < StandardError
     def message
-      "Operation must be persisted before starting its Job"
+      'Operation must be persisted before starting its Job'
     end
   end
+
   class InvalidStatusError < StandardError
     def initialize(status)
       @status = status
     end
+
     def message
       "Invalid status #{@status}"
     end
@@ -104,7 +108,7 @@ class Operation  < ApplicationModel
 
   def enqueue
     raise NotPersistedError unless persisted?
-    raise InvalidStatusError.new(status) unless status.new?
+    raise InvalidStatusError, status unless status.new?
 
     # We'll certainly need to manage queues
     Delayed::Job.enqueue job
@@ -117,7 +121,7 @@ class Operation  < ApplicationModel
   end
 
   def internal_description
-    "#{self.class.name}(id=#{self.id})"
+    "#{self.class.name}(id=#{id})"
   end
 
   def logger
@@ -165,7 +169,7 @@ class Operation  < ApplicationModel
 
       def call
         callback = next_callback
-        callback.around { self.call }
+        callback.around { call }
       rescue StopIteration
         final_proc.call
       end
@@ -175,18 +179,14 @@ class Operation  < ApplicationModel
   class CustomFieldLoader < Callback
     delegate :workgroup, to: :operation
     def around(&block)
-      CustomFieldsSupport.within_workgroup(workgroup) do
-        yield
-      end
+      CustomFieldsSupport.within_workgroup(workgroup, &block)
     end
   end
 
   class LogTagger < Callback
     delegate :internal_description, to: :operation
     def around(&block)
-      logger.tagged(internal_description) do
-        yield
-      end
+      logger.tagged(internal_description, &block)
     end
   end
 
@@ -194,7 +194,7 @@ class Operation  < ApplicationModel
     delegate :status, to: :operation
 
     def skipped_statuses
-      [ Operation.status.running, Operation.status.done ]
+      [Operation.status.running, Operation.status.done]
     end
 
     def before
@@ -210,9 +210,7 @@ class Operation  < ApplicationModel
   class Benchmarker < Callback
     delegate :id, to: :operation
     def around(&block)
-      Chouette::Benchmark.measure(operation.class.to_s, id: id) do
-        yield
-      end
+      Chouette::Benchmark.measure(operation.class.to_s, id: id, &block)
     end
   end
 
@@ -246,13 +244,11 @@ class Operation  < ApplicationModel
   end
 
   def change_status(status, attributes = {})
-    attributes.delete_if { |_,v| v.nil? }
+    attributes.delete_if { |_, v| v.nil? }
 
     now = Time.zone.now
 
-    if status.running?
-      attributes[:started_at] = now
-    end
+    attributes[:started_at] = now if status.running?
 
     if status.done?
       attributes[:ended_at] = now
@@ -266,7 +262,7 @@ class Operation  < ApplicationModel
       attributes[:user_status] = user_status
     end
 
-    status_log_message = ""
+    status_log_message = ''
     # the operation description is already present when logger is tagged during around_perform
     status_log_message += "[#{internal_description}] " if status.enqueued?
     status_log_message += "Status: #{status}"
@@ -307,11 +303,9 @@ class Operation  < ApplicationModel
 
   def around_perform(&block)
     Callback::Invoker.new(callbacks) do
-      begin
-        block.call
-      rescue => e
-        self.error_uuid = Chouette::Safe.capture("Operation #{internal_description} failed", e)
-      end
+      block.call
+    rescue StandardError => e
+      self.error_uuid = Chouette::Safe.capture("Operation #{internal_description} failed", e)
     end.call
   end
 
@@ -323,6 +317,7 @@ class Operation  < ApplicationModel
     end
 
     attr_reader :operation_id, :operation_class_name
+
     def operation_class
       @operation_class ||= @operation_class_name.constantize
     end
@@ -335,7 +330,7 @@ class Operation  < ApplicationModel
       "#{operation_class_name}(id=#{operation_id})"
     end
 
-    def explain
+    def display_name
       internal_description
     end
 
@@ -355,17 +350,14 @@ class Operation  < ApplicationModel
     def max_attempts
       1
     end
-
-    def max_run_time
-      Delayed::Worker.max_run_time
-    end
   end
 
   # Deprecated. Use Operation.user_status enumerize logic
   class UserStatus
     def initialize(slug, operation_statuses = nil)
-      operation_statuses ||= [ slug ]
-      @slug, @operation_statuses = slug.to_sym, operation_statuses.map(&:to_sym)
+      operation_statuses ||= [slug]
+      @slug = slug.to_sym
+      @operation_statuses = operation_statuses.map(&:to_sym)
 
       operation_statuses.freeze
       freeze
@@ -393,7 +385,7 @@ class Operation  < ApplicationModel
     WARNING = new 'warning'
     SUCCESSFUL = new 'successful'
 
-    ALL = [ PENDING, SUCCESSFUL, WARNING, FAILED ].freeze
+    ALL = [PENDING, SUCCESSFUL, WARNING, FAILED].freeze
 
     def self.pending
       PENDING

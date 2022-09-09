@@ -5,6 +5,9 @@ RSpec.describe Publication, type: :model do
   it { should validate_presence_of :publication_setup }
   it { should validate_presence_of :parent }
 
+  it { is_expected.to have_one(:workgroup) }
+  it { is_expected.to have_one(:organisation) }
+
   let(:export_type) { 'Export::Gtfs' }
   let(:export_options) { { type: export_type, duration: 90, prefer_referent_stop_area: false, ignore_single_stop_station: false } }
   let(:publication_setup) { create :publication_setup, export_options: export_options }

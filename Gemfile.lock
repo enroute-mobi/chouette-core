@@ -256,11 +256,6 @@ GEM
     delayed_job_heartbeat_plugin (0.4.0)
       delayed_job (>= 4.1.0)
       delayed_job_active_record (>= 4.1.0)
-    delayed_job_web (1.4.4)
-      activerecord (> 3.0.0)
-      delayed_job (> 2.0.3)
-      rack-protection (>= 1.5.5)
-      sinatra (>= 1.4.4)
     derailed_benchmarks (2.1.1)
       benchmark-ips (~> 2)
       dead_end
@@ -483,8 +478,6 @@ GEM
     msgpack (1.5.2)
     multi_json (1.15.0)
     multipart-post (2.1.1)
-    mustermann (1.1.1)
-      ruby2_keywords (~> 0.0.1)
     nenv (0.3.0)
     net-sftp (3.0.0)
       net-ssh (>= 5.0.0, < 7.0.0)
@@ -548,8 +541,6 @@ GEM
       activesupport (>= 2.3.14)
     racc (1.6.0)
     rack (2.2.4)
-    rack-protection (2.2.0)
-      rack
     rack-proxy (0.7.2)
       rack
     rack-test (2.0.2)
@@ -719,11 +710,6 @@ GEM
       simplecov (~> 0.19)
     simplecov-html (0.12.3)
     simplecov_json_formatter (0.1.4)
-    sinatra (2.2.0)
-      mustermann (~> 1.0)
-      rack (~> 2.2)
-      rack-protection (= 2.2.0)
-      tilt (~> 2.0)
     sixarm_ruby_unaccent (1.2.0)
     slim (4.1.0)
       temple (>= 0.7.6, < 0.9)
@@ -824,7 +810,6 @@ DEPENDENCIES
   deep_cloneable
   delayed_job_active_record
   delayed_job_heartbeat_plugin
-  delayed_job_web
   derailed_benchmarks
   devise (>= 4.8.1)
   devise-encryptable (>= 0.2.0)

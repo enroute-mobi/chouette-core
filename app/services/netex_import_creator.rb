@@ -186,10 +186,7 @@ class NetexImportCreator
       return
     end
 
-    job = LongRunningJob.new self, method
-    job.max_attempts = 1
-
-    Delayed::Job.enqueue job, queue: :long_jobs
+    super
   end
   attr_accessor :inline_job
 

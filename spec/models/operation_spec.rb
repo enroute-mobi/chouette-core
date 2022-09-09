@@ -434,8 +434,8 @@ RSpec.describe Operation::Job do
     end
   end
 
-  describe '#explain' do
-    subject { job.explain }
+  describe '#display_name' do
+    subject { job.display_name }
 
     before { allow(job).to receive(:internal_description).and_return('internal_description') }
 
@@ -485,15 +485,5 @@ RSpec.describe Operation::Job do
         job.perform
       end
     end
-  end
-
-  describe '#max_attempts' do
-    subject { job.max_attempts }
-    it { is_expected.to eq(1) }
-  end
-
-  describe '#max_run_time' do
-    subject { job.max_run_time }
-    it { is_expected.to eq(Delayed::Worker.max_run_time) }
   end
 end

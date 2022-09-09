@@ -34,19 +34,9 @@ class ApplicationModel < ::ActiveRecord::Base
     end
   end
 
-  def jobs_queue
-    return :long_jobs if self.is_a?(Import::Base)
-    return :long_jobs if self.is_a?(Export::Base)
-    return :long_jobs if self.is_a?(Merge)
-    return :long_jobs if self.is_a?(Aggregate)
-
-    :default
-  end
-
-  def enqueue_job method, args=[], max_attempts: 1, run_at: nil
-    job = LongRunningJob.new(self, method, args)
-    job.max_attempts = max_attempts
-
-    Delayed::Job.enqueue job, queue: jobs_queue, run_at: run_at
+  def enqueue_job(method, *args)
+    job = LegacyOperationJob.new(self, method, *args)
+    logger.info "Enqueue Operation #{job.display_name}"
+    Delayed::Job.enqueue job
   end
 end

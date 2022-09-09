@@ -65,8 +65,8 @@ module ChouetteIhm
     SmartEnv.add_boolean :CHOUETTE_TRANSACTIONAL_CHECKSUMS, default: true
     SmartEnv.add_boolean :ENABLE_DELAYED_JOB_REAPER, default: true
     SmartEnv.add_integer :DELAYED_JOB_MAX_RUN_TIME, default: 24
-    SmartEnv.add :DELAYED_JOB_REAPER_HEARTBEAT_INTERVAL_SECONDS, default: 20
-    SmartEnv.add :DELAYED_JOB_REAPER_HEARTBEAT_TIMEOUT_SECONDS, default: 60
+    SmartEnv.add :DELAYED_JOB_REAPER_HEARTBEAT_INTERVAL_SECONDS, default: 30
+    SmartEnv.add :DELAYED_JOB_REAPER_HEARTBEAT_TIMEOUT_SECONDS, default: 180
     SmartEnv.add_boolean :DELAYED_JOB_REAPER_WORKER_TERMINATION_ENABLED, default: true
     SmartEnv.add :DEFAULT_CONNECTION_SPEED, default: 4.8
     SmartEnv.add :FREQUENT_TRAVELLER_CONNECTION_SPEED, default: 6

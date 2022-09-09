@@ -107,10 +107,6 @@ class Import::Base < ApplicationModel
     ActiveModel::Name.new Import::Base, Import::Base, "Import"
   end
 
-  def operation_type
-    :import
-  end
-
   # call this method to mark an import as failed, as weel as the resulting referential
   def force_failure!
     if parent

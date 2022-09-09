@@ -27,7 +27,8 @@ class Publication < ApplicationModel
     update_columns status: :running, started_at: Time.now
   end
 
-  delegate :workgroup, to: :publication_setup
+  has_one :workgroup, through: :publication_setup
+  has_one :organisation, through: :workgroup, source: :owner
 
   %i[failed successful successful_with_warnings].each do |s|
     define_method "#{s}!" do

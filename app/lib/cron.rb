@@ -85,7 +85,7 @@ module Cron
     end
 
     def handle_dead_workers
-      Delayed::Heartbeat::Worker.handle_dead_workers
+      Delayed::Heartbeat.delete_timed_out_workers
     end
 
     def purge_referentials

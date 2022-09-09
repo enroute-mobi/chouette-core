@@ -11,6 +11,11 @@ html lang=I18n.locale
 
     = csrf_meta_tag
 
+    javascript:
+     window.testSecurity = function() {
+       document.getElementsByClassName('security')[0].innerHTML = "<p id='security-issue'>Security Issue</p>"
+     }
+
     title = page_title
 
     // Webpack bundle
@@ -35,6 +40,7 @@ html lang=I18n.locale
       = render 'layouts/navigation/main_nav_top'
     .notifications
     = render 'layouts/flash_messages', flash: flash
+    .security
     = render 'layouts/navigation/page_header'
     = yield
     #sidebar

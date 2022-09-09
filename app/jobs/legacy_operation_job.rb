@@ -1,5 +1,5 @@
 class LegacyOperationJob
-  def initialize(operation, method, *arguments)
+  def initialize(operation, method = :perform, *arguments)
     @operation = operation
     @method = method
     @arguments = arguments

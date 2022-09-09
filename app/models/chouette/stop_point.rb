@@ -78,5 +78,52 @@ module Chouette
     def self.area_candidates
       Chouette::StopArea.where(:area_type => ['Quay', 'BoardingPosition'])
     end
+
+    def self.find_each_light(&block)
+      stop_point = Light::StopPoint.new
+      each_row do |row|
+        stop_point.attributes = row
+        block.call stop_point
+      end
+    end
+
+    module Light
+      class StopPoint
+
+        attr_accessor :id, :route_id, :stop_area_id, :objectid, :position, :for_boarding, :for_alighting
+
+        def initialize(attributes = {})
+          self.attributes = attributes
+          @attributes = attributes
+        end
+        attr_accessor :attributes
+
+        def attributes=(attributes)
+          @id = attributes["id"]
+          @route_id = attributes["route_id"]
+          @stop_area_id = attributes["stop_area_id"]
+          @objectid = attributes["objectid"]
+          @position = attributes["position"]
+          @for_boarding = attributes["for_boarding"]
+          @for_alighting = attributes["for_alighting"]
+
+          @attributes = attributes
+        end
+
+        def method_missing(name, *args)
+          stringified_name = name.to_s
+          if @attributes.has_key?(stringified_name)
+            return @attributes[stringified_name]
+          end
+
+          super
+        end
+
+        def respond_to?(name, *args)
+          return true if @attributes.has_key?(name.to_s)
+          super
+        end
+      end
+    end
   end
 end

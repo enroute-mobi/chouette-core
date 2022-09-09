@@ -34,7 +34,7 @@ module Delayed
 
       # Returns organisation identifiers associated to more locked jobs than max_workers_per_organisation
       def out_of_bounds_organizations
-        locked.select(:organisation_id).group(:organisation_id).having('count(id) >= ?', max_workers_per_organisation)
+        locked.group(:organisation_id).having('count(id) >= ?', max_workers_per_organisation).pluck(:organisation_id)
       end
     end
 
@@ -42,7 +42,7 @@ module Delayed
 
     # Store the organisation identifier provided by the job
     def store_organisation
-      self.organisation_id = payload_object.try(:organisation_id)
+      self.organisation_id ||= payload_object.try(:organisation_id)
     end
   end
 end

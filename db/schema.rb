@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_09_09_074432) do
+ActiveRecord::Schema.define(version: 2022_09_09_143933) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -511,15 +511,9 @@ ActiveRecord::Schema.define(version: 2022_09_09_074432) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.bigint "organisation_id"
-<<<<<<< HEAD
-=======
-    t.string "operation_type"
     t.string "cron"
-    t.bigint "source_id"
->>>>>>> 706dbad23 (CHOUETTE-2294 Start Source retrieval with Delayed Job Cron)
     t.index ["organisation_id"], name: "index_delayed_jobs_on_organisation_id"
     t.index ["priority", "run_at"], name: "delayed_jobs_priority"
-    t.index ["source_id"], name: "index_delayed_jobs_on_source_id"
   end
 
   create_table "delayed_workers", force: :cascade do |t|
@@ -1778,7 +1772,6 @@ ActiveRecord::Schema.define(version: 2022_09_09_074432) do
   add_foreign_key "control_runs", "control_context_runs"
   add_foreign_key "controls", "control_contexts"
   add_foreign_key "custom_fields", "custom_field_groups"
-  add_foreign_key "delayed_jobs", "sources"
   add_foreign_key "exports", "workgroups"
   add_foreign_key "group_of_lines_lines", "group_of_lines", name: "groupofline_group_fkey", on_delete: :cascade
   add_foreign_key "journey_patterns", "routes", name: "jp_route_fkey", on_delete: :cascade

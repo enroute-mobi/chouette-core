@@ -23,7 +23,7 @@ module Delayed
       end
     end
 
-    module ClassMethods
+    module ClassMethods # rubocop:disable Style/Documentation
       # Overrides Delayed::Backend::ActiveRecord::Job#reserve_with_scope to ignore pending jobs
       # whose the organisation has reached the job limit
       #

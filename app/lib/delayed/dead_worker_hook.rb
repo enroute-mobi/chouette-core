@@ -11,7 +11,7 @@ module Delayed
       end
     end
 
-    module ClassMethods
+    module ClassMethods # rubocop:disable Style/Documentation
       def cleanup_workers(workers, mark_attempt_failed: true)
         Rails.logger.debug "Cleanup workers with dead_worker hook support #{workers.map(&:name).join(',')}"
 

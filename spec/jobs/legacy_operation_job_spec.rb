@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe LegacyOperationJob do
   subject(:job) { LegacyOperationJob.new operation }
   let(:operation) { double }

@@ -45,7 +45,7 @@ RSpec.describe RoutesController, type: :controller do
       post :create, params: {
         line_id: route.line_id,
         referential_id: referential.id,
-        route: { name: "changed", published_name: "published_name"}
+        route: { name: "changed" }
       }
     end
     it_behaves_like "line and referential linked"
@@ -128,7 +128,7 @@ RSpec.describe RoutesController, type: :controller do
 
         new_route = Chouette::Route.last
         expect(new_route.name).to eq(I18n.t('routes.opposite', name: route.name))
-        expect(new_route.published_name).to eq(new_route.name)
+        expect(new_route.published_name).to eq(new_route.published_name)
         expect(new_route.opposite_route).to eq(route)
         expect(new_route.stop_area_ids).to eq route.stop_area_ids.reverse
         route.reload.stop_points.each do |sp|
@@ -150,7 +150,7 @@ RSpec.describe RoutesController, type: :controller do
         end.to change { Chouette::Route.count }.by(1)
 
         expect(Chouette::Route.last.name).to eq(I18n.t('routes.opposite', name: duplicated.name))
-        expect(Chouette::Route.last.published_name).to eq(Chouette::Route.last.name)
+        expect(Chouette::Route.last.published_name).to eq(Chouette::Route.last.published_name)
         expect(Chouette::Route.last.opposite_route).to eq(duplicated)
         expect(Chouette::Route.last.stop_area_ids).to eq duplicated.stop_area_ids.reverse
       end

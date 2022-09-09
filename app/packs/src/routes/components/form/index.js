@@ -38,7 +38,6 @@ export default class RouteForm extends Component {
                 inputId='route_published_name'
                 inputName='route[published_name]'
                 labelText={I18n.t('activerecord.attributes.route.published_name')}
-                required
                 value={route.published_name}
                 onChange={onUpdatePublishedName}
                 hasError={errors.published_name}

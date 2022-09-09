@@ -111,7 +111,6 @@ en:
         registration_number: "Registration number"
         name: "Name"
         published_name: "Published name"
-        registration_number: "Short name"
         number: "Number"
         transport_mode: "Transport mode"
         transport_submode: "Transport Submode"

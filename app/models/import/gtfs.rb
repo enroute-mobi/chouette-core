@@ -663,7 +663,7 @@ class Import::Gtfs < Import::Base
     name = route.published_name = trip.headsign.presence || trip.short_name.presence || route.wayback.to_s.capitalize
     route.name = name
 
-    journey_pattern = route.journey_patterns.build name: name, published_name: name, skip_custom_fields_initialization: true
+    journey_pattern = route.journey_patterns.build name: name, skip_custom_fields_initialization: true
 
     if trip.shape_id
       shape = shape_provider.shapes.by_code(code_space, trip.shape_id).first

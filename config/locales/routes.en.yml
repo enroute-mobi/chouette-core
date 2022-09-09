@@ -80,7 +80,7 @@ en:
         vehicle_journeys: "Vehicle journeys"
         journey_patterns: "Journey patterns"
         name: "Name"
-        published_name: "Published name"
+        published_name: "Direction"
         comment: "Comments"
         number: "Number"
         direction: "Direction"

@@ -85,7 +85,7 @@ fr:
         vehicle_journeys: "Courses"
         journey_patterns: "Missions"
         name: "Nom"
-        published_name: "Nom public"
+        published_name: "Direction"
         number: "Indice"
         comment: "Commentaire"
         direction: "Direction"

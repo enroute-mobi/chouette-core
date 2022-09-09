@@ -23,7 +23,7 @@ namespace :referential do
 
       4.times do |i|
         name = Faker::Name.unique.name
-        route_attrs = { line: line, name: "Route #{name}", published_name: "Published #{name}" }
+        route_attrs = { line: line, name: "Route #{name}" }
 
         if i.even?
           route_attrs[:wayback] = :outbound

@@ -315,7 +315,6 @@ ChouetteIhm::Application.routes.draw do
         end
         resource :vehicle_journeys_collection, :only => [:show, :update]
         resources :vehicle_journeys
-        resources :vehicle_journey_exports
         resources :stop_points, only: :index, controller: 'route_stop_points'
       end
       resources :routing_constraint_zones

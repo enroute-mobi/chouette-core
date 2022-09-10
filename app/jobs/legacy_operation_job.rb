@@ -4,11 +4,11 @@
 class LegacyOperationJob
   def initialize(operation, method = :perform, *arguments)
     @operation = operation
-    @method = method
+    @target_method = method
     @arguments = arguments
   end
 
-  attr_reader :operation, :method, :arguments
+  attr_reader :operation, :target_method, :arguments
 
   # Name used by Delayed::Job
   def display_name
@@ -34,7 +34,7 @@ class LegacyOperationJob
     log
 
     logger.tagged(display_name) do
-      operation.send method, *arguments
+      operation.send target_method, *arguments
     end
   end
 

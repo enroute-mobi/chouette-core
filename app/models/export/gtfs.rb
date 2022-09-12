@@ -892,18 +892,22 @@ class Export::Gtfs < Export::Base
         index.shape_id(journey_pattern&.shape_id)
       end
 
+      def gtfs_headsign
+        journey_pattern&.published_name
+      end
+
       def trip_attributes(service_id)
         {
           route_id: route_id,
-          service_id:  service_id,
+          service_id: service_id,
           id: trip_id(service_id),
           short_name: published_journey_name,
           direction_id: direction_id,
-          shape_id: gtfs_shape_id
-          #headsign: TO DO
-          #block_id: TO DO
-          #wheelchair_accessible: TO DO
-          #bikes_allowed: TO DO
+          shape_id: gtfs_shape_id,
+          headsign: gtfs_headsign
+          # block_id: TO DO
+          # wheelchair_accessible: TO DO
+          # bikes_allowed: TO DO
         }
       end
     end

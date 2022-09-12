@@ -676,16 +676,16 @@ RSpec.describe Import::Gtfs do
     it "should create a Route for each trip" do
       import.import_stop_times
       defined_attributes = [
-        "lines.registration_number", :wayback, :name, :published_name
+        "lines.registration_number", :wayback, :name
       ]
       expected_attributes = [
-        ["AB", "outbound", "to Bullfrog", "to Bullfrog"],
-        ["AB", "inbound", "to Airport", "to Airport"],
-        ["CITY", "inbound", "Inbound", "Inbound"],
-        ["BFC", "outbound", "to Furnace Creek Resort", "to Furnace Creek Resort"],
-        ["BFC", "inbound", "to Bullfrog", "to Bullfrog"],
-        ["AAMV", "outbound", "to Amargosa Valley", "to Amargosa Valley"],
-        ["AAMV", "inbound", "to Airport", "to Airport"],
+        ["AB", "outbound", "to Bullfrog"],
+        ["AB", "inbound", "to Airport"],
+        ["CITY", "inbound", "Inbound"],
+        ["BFC", "outbound", "to Furnace Creek Resort"],
+        ["BFC", "inbound", "to Bullfrog"],
+        ["AAMV", "outbound", "to Amargosa Valley"],
+        ["AAMV", "inbound", "to Airport"],
       ]
       expect(import.referential.routes.includes(:line).pluck(*defined_attributes)).to match_array(expected_attributes)
     end
@@ -693,16 +693,16 @@ RSpec.describe Import::Gtfs do
     it "should create a JourneyPattern for each trip" do
       import.import_stop_times
       defined_attributes = [
-        :name
+        :name, :published_name
       ]
       expected_attributes = [
-        "to Bullfrog",
-        "to Airport",
-        "Inbound",
-        "to Furnace Creek Resort",
-        "to Bullfrog",
-        "to Amargosa Valley",
-        "to Airport",
+        ["to Bullfrog", "to Bullfrog"],
+        ["to Airport", "to Airport"],
+        ["Inbound", nil],
+        ["to Furnace Creek Resort", "to Furnace Creek Resort"],
+        ["to Bullfrog", "to Bullfrog"],
+        ["to Amargosa Valley", "to Amargosa Valley"],
+        ["to Airport", "to Airport"],
       ]
       expect(import.referential.journey_patterns.pluck(*defined_attributes)).to match_array(expected_attributes)
     end

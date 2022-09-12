@@ -20,8 +20,7 @@ class Source < ApplicationModel
   before_validation :clean, on: :update
 
   attribute :retrieval_time_of_day, TimeOfDay::Type::TimeWithoutZone.new
-  has_one :scheduled_job, class_name: "::Delayed::Job", dependent: :destroy
-
+  belongs_to :scheduled_job, class_name: "::Delayed::Job"
   validates :retrieval_time_of_day, presence: true, if: :enabled?
 
   def reschedule

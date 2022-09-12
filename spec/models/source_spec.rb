@@ -6,13 +6,18 @@ RSpec.describe Source do
 
   let(:workbench) { create(:workbench) }
 
-  let(:source) { Source.create(name: "Source Test", url: "url.com", workbench: workbench, retrieval_time_of_day: TimeOfDay.new(7, 30)) }
+  let(:source) { Source.create(name: "Source Test", url: "url.com", workbench: workbench, retrieval_time_of_day: TimeOfDay.new(0, 0)) }
 
   describe Source::ScheduledJob do
-    subject { source.scheduled_job.cron }
+    subject(:job) { source.scheduled_job }
 
-    it "includes cron in Delayed::Job" do
-      is_expected.to eq("30 7 * * *")
+    describe '#cron' do
+      subject { job.cron }
+
+      before { source.update retrieval_time_of_day: TimeOfDay.new(7, 30) }
+      context "when Source retrieval_time_of_day is 7:30" do
+        it { is_expected.to eq("30 7 * * *") }
+      end
     end
   end
 

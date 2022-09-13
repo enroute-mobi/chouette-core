@@ -127,14 +127,17 @@ module ChouetteIhm
     require_relative '../app/lib/rack/reject_bad_encoding'
     config.middleware.insert_before Rack::Runtime, Rack::RejectBadEncoding
 
-    unless Rails.env.production?
-        # Work around sprockets+teaspoon mismatch:
-        Rails.application.config.assets.precompile += %w(spec_helper.js)
-        # Make sure Browserify is triggered when
-        # asked to serve javascript spec files
-        # config.browserify_rails.paths << lambda { |p|
-        #     p.start_with?(Rails.root.join("spec/javascripts").to_s)
-        # }
+    if Rails.env.production?
+      require_relative '../app/lib/rack/cache_settings'
+      config.middleware.insert_after Rack::Sendfile, Rack::CacheSettings
+    else
+      # Work around sprockets+teaspoon mismatch:
+      Rails.application.config.assets.precompile += %w[spec_helper.js]
+      # Make sure Browserify is triggered when
+      # asked to serve javascript spec files
+      # config.browserify_rails.paths << lambda { |p|
+      #     p.start_with?(Rails.root.join("spec/javascripts").to_s)
+      # }
     end
   end
 end

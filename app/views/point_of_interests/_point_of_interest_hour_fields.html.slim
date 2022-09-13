@@ -1,10 +1,12 @@
 .nested-fields.flex.items-center.mb-10
   .flex.flex-col.w-full.mr-6
-    .flex.items-center.justify-center.-ml-48
-      = f.input :opening_time_of_day, as: :time_picker
-      = f.input :closing_time_of_day, as: :time_picker
-    = f.simple_fields_for :week_days do |days_of_week_form|
-      - Timetable::DaysOfWeek.each_day do |day|
-        = days_of_week_form.input day, as: :boolean
+    = f.input :opening_time_of_day, as: :time_picker
+    = f.input :closing_time_of_day, as: :time_picker
+    .flex.items-center
+      = f.label :week_days, class: "flex justify-end w-2/6 mr-8 mb-0 control-label pt-0 required"
+      .flex.items-center
+        = f.simple_fields_for :week_days, wrapper: false do |days_of_week_form|
+          - Timetable::DaysOfWeek.each_day do |day|
+              = days_of_week_form.input day, as: :boolean, boolean_style: :inline, wrapper: :horizontal_boolean_tailwind, wrapper_html: { class: "custom-checkboxes mr-5" }, label_html: { class: "bg-light-grey text-white rounded-lg p-4 mb-0 cursor-pointer" }
   .flex.mb-28
-    = link_to_remove_association '', f, class: 'fa fa-trash'
+    = link_to_remove_association '', f, class: 'fa fa-trash text-red-600'

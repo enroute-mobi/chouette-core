@@ -1059,9 +1059,18 @@ $grp-cbx-size: 34px;
     }
   }
 }
+.custom-checkboxes {
+  input {
+    display: none;
+  }
+  input:checked + label {
+    background-color: $brand-color-secondary !important;
+    border-color: $brand-color-secondary !important;
+    color: #fff !important;
+  }
+}
 // Nested fields
 .nested-fields {
-  margin: 0;
   padding: 0 5px;
 
   &:first-child {

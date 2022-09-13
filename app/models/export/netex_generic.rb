@@ -1413,7 +1413,7 @@ class Export::NetexGeneric < Export::Base
         .select(
           "vehicle_journey_at_stops.*",
           "vehicle_journeys.objectid AS vehicle_journey_objectid",
-          "vehicle_journeys.data_source_ref AS vehicle_journey_data_source_ref",
+          "COALESCE(vehicle_journeys.data_source_ref, 'none') AS vehicle_journey_data_source_ref",
           "stop_points.objectid AS stop_point_objectid",
           "stop_areas.objectid AS stop_area_objectid",
           "stop_points.position AS stop_point_position",
@@ -1454,6 +1454,13 @@ class Export::NetexGeneric < Export::Base
 
       def vehicle_journey_objectid
         __getobj__.try(:vehicle_journey_objectid) || vehicle_journey&.objectid
+      end
+
+      def vehicle_journey_data_source_ref
+        loaded_value = __getobj__.try(:vehicle_journey_data_source_ref)
+        return nil if loaded_value == "none"
+
+        loaded_value || vehicle_journey&.data_source_ref
       end
 
       def scheduled_stop_point_ref

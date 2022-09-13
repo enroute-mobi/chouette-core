@@ -148,7 +148,7 @@ en:
         journey_name: "Name of the vehicle journey"
         journey_pattern_id: "Pattern ID"
         journey_pattern: "Journey Pattern"
-        journey_pattern_published_name: "Journey Pattern published name"
+        journey_pattern_published_name: "Journey Pattern Destination"
         journey_length: "Journey length"
         line: "Line"
         mobility_restricted_suitability: "PRM accessibility"

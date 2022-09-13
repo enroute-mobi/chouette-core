@@ -22,7 +22,7 @@ exports[`stopPointHeader should display the city name 1`] = `
             ID
           </div>
           <div>
-            Code mission
+            Code
           </div>
           <div>
             Nb arrêts
@@ -106,7 +106,7 @@ exports[`stopPointHeader with the "long_distance_routes" feature should display 
             ID
           </div>
           <div>
-            Code mission
+            Code
           </div>
           <div>
             Nb arrêts

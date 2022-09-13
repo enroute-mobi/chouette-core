@@ -25,7 +25,6 @@ module Chouette
 
     validates_presence_of :route
     validates_presence_of :name
-    validates_presence_of :published_name
 
     delegate :line, to: :route
     validates :stop_points, length: { minimum: 2, too_short: :minimum }, on: :update

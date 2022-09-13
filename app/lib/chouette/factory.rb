@@ -300,7 +300,6 @@ module Chouette
 
             model :route do
               attribute(:name) { |n| "Route #{n}" }
-              attribute(:published_name) { |n| "Published Route Name #{n}" }
 
               attribute(:line) { parent.metadatas_lines.first }
 
@@ -344,7 +343,6 @@ module Chouette
 
               model :journey_pattern do
                 attribute(:name) { |n| "JourneyPattern #{n}" }
-                attribute(:published_name) { |n| "Public Name #{n}" }
 
                 after do |journey_pattern|
                   journey_pattern.stop_points = journey_pattern.route.stop_points

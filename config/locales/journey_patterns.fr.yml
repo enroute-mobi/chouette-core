@@ -54,9 +54,9 @@ fr:
       journey_pattern:
         route: "Séquence d'arrêts"
         name: "Nom"
-        published_name: "Nom public"
+        published_name: "Destination"
         comment: "Commentaire"
-        registration_number: "Code mission"
+        registration_number: "Code"
         stop_point_ids: "Sélection des arrêts desservis"
         objectid: "Identifiant Neptune"
         object_version: "Version"

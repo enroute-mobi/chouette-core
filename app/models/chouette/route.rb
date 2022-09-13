@@ -93,7 +93,6 @@ module Chouette
     accepts_nested_attributes_for :stop_points, :allow_destroy => :true
 
     validates_presence_of :name
-    validates_presence_of :published_name
     validates_presence_of :line
     validates :wayback, inclusion: { in: self.wayback.values }
     after_commit :calculate_costs!, on: [:create, :update]
@@ -148,7 +147,6 @@ module Chouette
       if opposite
         atts_for_create[:wayback] = self.opposite_wayback
         atts_for_create[:name] = I18n.t('routes.opposite', name: self.name)
-        atts_for_create[:published_name] = atts_for_create[:name]
         atts_for_create[:opposite_route_id] = self.id
       end
       new_route = self.class.create!(atts_for_create)
@@ -254,27 +252,11 @@ module Chouette
       return true
     end
 
+    # DEPRECATED Only used by legacy specs
     def full_journey_pattern
-      journey_pattern = journey_patterns.find_or_create_by registration_number: self.number, name: self.name do |jp|
-        jp.published_name = self.name
-      end
+      journey_pattern = journey_patterns.find_or_create_by registration_number: self.number, name: self.name
       journey_pattern.stop_points = self.stop_points
       journey_pattern
-    end
-
-    def partial_journey_pattern_with stop_points
-      signature = stop_points.map { |s| s.stop_area&.id }.join('-')
-      candidate = journey_patterns.with_stop_areas_signature(signature).last
-      candidate ||= begin
-        journey_pattern = journey_patterns.build
-        journey_pattern.stop_points = stop_points
-        journey_pattern.registration_number = "#{self.number} - #{journey_patterns.size - 1}"
-        journey_pattern.name = "#{self.name} - #{journey_patterns.size - 1}"
-        journey_pattern.published_name = journey_pattern.name
-        journey_pattern.save!
-        journey_pattern
-      end
-      candidate
     end
 
     def calculate_costs!

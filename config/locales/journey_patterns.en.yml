@@ -54,9 +54,9 @@ en:
       journey_pattern:
         route: "Route"
         name: "Name"
-        published_name: "Published name"
+        published_name: "Destination Display"
         comment: "Comments"
-        registration_number: "Registration number"
+        registration_number: "Code"
         stop_point_ids: "Route's stop selection"
         objectid: "Neptune identifier"
         object_version: "Version"

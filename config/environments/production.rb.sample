@@ -58,6 +58,8 @@ Rails.application.configure do
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   config.force_ssl = true
+  # All our platforms are only accessible via https. But redirection will break internal APIs
+  config.ssl_options = { redirect: false }
 
   # Set to :debug to see everything in the log.
   # config.log_level = :info

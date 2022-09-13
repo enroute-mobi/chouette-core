@@ -238,6 +238,16 @@ module Clean
           dates.delete_all
         end
       end
+
+      class ExcludedWithoutPeriod < Base
+        def dates
+          scope.timetable_dates.where time_table: scope.timetables.without_periods, in_out: false
+        end
+    
+        def clean!
+          dates.delete_all
+        end
+      end
     end
 
     module Period

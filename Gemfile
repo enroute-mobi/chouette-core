@@ -143,7 +143,9 @@ gem 'neptune', en_route: 'neptune'
 
 # Monitoring
 gem 'ddtrace'
-gem 'sentry-raven'
+gem 'sentry-delayed_job'
+gem 'sentry-ruby'
+gem 'sentry-rails'
 
 gem 'nest', en_route: 'nest'
 

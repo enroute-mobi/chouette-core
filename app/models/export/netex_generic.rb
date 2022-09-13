@@ -1456,10 +1456,6 @@ class Export::NetexGeneric < Export::Base
         __getobj__.try(:vehicle_journey_objectid) || vehicle_journey&.objectid
       end
 
-      def vehicle_journey_data_source_ref
-        __getobj__.try(:vehicle_journey_data_source_ref) || vehicle_journey&.data_source_ref
-      end
-
       def scheduled_stop_point_ref
         Netex::Reference.new(stop_point_objectid, type: 'ScheduledStopPointRef')
       end

@@ -56,8 +56,8 @@ RSpec.configure do |config|
   config.filter_run_excluding wip: true
   config.run_all_when_everything_filtered = true
 
-  config.include EmailSpec::Helpers
-  config.include EmailSpec::Matchers
+  config.include EmailSpec::Helpers, type: :mailer
+  config.include EmailSpec::Matchers, type: :mailer
 
   config.filter_run focus: true
   config.run_all_when_everything_filtered = true

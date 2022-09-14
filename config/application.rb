@@ -122,6 +122,9 @@ module ChouetteIhm
       Devise::Mailer.layout 'mailer'
     end
 
+    require_relative '../app/lib/rack/validate_request_params'
+    config.middleware.insert_before Rack::Head, Rack::ValidateRequestParams
+
     unless Rails.env.production?
         # Work around sprockets+teaspoon mismatch:
         Rails.application.config.assets.precompile += %w(spec_helper.js)

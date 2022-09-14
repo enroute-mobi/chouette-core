@@ -9,7 +9,13 @@ describe Rack::CacheSettings do
 
     let(:env) { Rack::MockRequest.env_for(path, method: :get) }
 
-    %w[/packs/static/image.png /packs/css/application.css /packs/js/application.js].each do |path|
+    %w[
+      /packs/static/image.png
+      /packs/css/application.css
+      /packs/js/application.js
+      /assets/application.js
+      /assets/image.png
+    ].each do |path|
       context "when request path is #{path}" do
         let(:path) { path }
 
@@ -24,6 +30,11 @@ describe Rack::CacheSettings do
 
     context 'when given path starts by /packs/' do
       let(:path) { '/packs/...' }
+      it { is_expected.to be_truthy }
+    end
+
+    context 'when given path starts by /assets/' do
+      let(:path) { '/assets/...' }
       it { is_expected.to be_truthy }
     end
 

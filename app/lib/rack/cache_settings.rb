@@ -17,8 +17,14 @@ module Rack
       response.finish
     end
 
+    def prefixes
+      @prefixes ||= %w[packs assets].map { |p| "/#{p}/" }
+    end
+
     def match?(path)
-      path.start_with? '/packs/'
+      prefixes.any? do |prefix|
+        path.start_with? prefix
+      end
     end
 
     def time_to_live

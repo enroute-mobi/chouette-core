@@ -1,6 +1,5 @@
 class ConnectionLinksController < ChouetteController
   include ApplicationHelper
-  include Activatable
   include PolicyChecker
 
   defaults :resource_class => Chouette::ConnectionLink

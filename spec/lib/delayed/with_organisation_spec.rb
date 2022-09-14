@@ -87,6 +87,17 @@ RSpec.describe Delayed::Job do
         before { 3.times { create_job_with_organisation } }
         it { is_expected.to include(organisation_id) }
       end
+
+      context 'when 4 locked jobs are defined without organisation' do 
+        before do
+          4.times do
+            Delayed::Job.create! locked_at: Time.zone.now, handler: double(perform: true)
+          end
+        end
+
+        it { is_expected.to be_empty }
+      end 
+
     end
   end
 

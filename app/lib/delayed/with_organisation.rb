@@ -6,7 +6,7 @@ module Delayed
     # requires Rails 6
     # extend ActiveSupport::Concern
 
-    def self.prepended(base)
+    def self.prepended(base) # rubocop:disable Metrics/AbcSize
       base.before_save :store_organisation, on: :create
 
       # Limit for locked/running jobs for each organisation
@@ -17,6 +17,7 @@ module Delayed
         where.not(organisation_id: all.unscope(:where, :order).out_of_bounds_organizations)
       }
       base.scope :locked, -> { where.not(locked_at: nil) }
+      base.scope :with_organisation, -> { where.not(organisation_id: nil) }
 
       class << base
         prepend ClassMethods
@@ -34,7 +35,8 @@ module Delayed
 
       # Returns organisation identifiers associated to more locked jobs than max_workers_per_organisation
       def out_of_bounds_organizations
-        locked.group(:organisation_id).having('count(id) >= ?', max_workers_per_organisation).pluck(:organisation_id)
+        locked.with_organisation.group(:organisation_id)
+              .having('count(id) >= ?', max_workers_per_organisation).pluck(:organisation_id)
       end
     end
 

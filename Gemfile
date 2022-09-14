@@ -77,7 +77,7 @@ gem 'georuby', '2.3.0' # Fix version for georuby-ext because api has changed
 gem 'mimemagic', '>= 0.4.3'
 
 # User interface
-gem 'language_engine', en_route: 'language_engine'
+gem 'language_engine', en_route: 'language_engine', branch: 'CHOUETTE-2313-redirect-back'
 gem 'calendar_helper', '0.2.5'
 gem 'cocoon'
 gem 'slim-rails', '>= 3.3.0'

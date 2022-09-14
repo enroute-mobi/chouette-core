@@ -29,6 +29,14 @@ fr:
     no_hours: "Ce Point d'intérêt n'a pas d'heures"
     errors:
     filters:
+    days:
+      monday: Lu
+      tuesday: Ma
+      wednesday: Me
+      thursday: Je
+      friday: Ve
+      saturday: Sa
+      sunday: Di
   activerecord:
     models:
       point_of_interest:

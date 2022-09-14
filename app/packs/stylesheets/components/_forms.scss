@@ -2,6 +2,66 @@
 // FORMS //
 //-------//
 
+.tailwind-form{
+  .form-control.time_of_day{
+    width: auto;
+    display: flex;
+  } 
+  
+  .week-day-checkboxes {
+    label {
+      width: 34px;
+      height: 34px;
+    }
+    input {
+      display: none;
+    }
+    input:checked + label {
+      background-color: $brand-color-secondary !important;
+      border-color: $brand-color-secondary !important;
+      color: #fff !important;
+    }
+  }
+}
+
+// Search bar
+.search_bar {
+  position: relative;
+  padding: 7px 15px;
+  width: 100%;
+  padding-right: 60%;
+
+  > .form-control {
+    vertical-align: top;
+    border-color: rgba($grey, 0.3);
+    border-radius: 4px;
+    height: 31px;
+    padding: 4px 31px 5px 12px;
+
+    &:first-child,
+    &:last-child {
+      border-radius: 4px;
+    }
+  }
+  .input-group-btn {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 60%;
+    z-index: 5;
+    width: auto;
+
+    > .btn {
+      margin: 0;
+      padding: 4px 9px 5px 9px;
+      border: none;
+      border-radius: 0;
+      background-color: transparent;
+      height: 100%;
+    }
+  }
+}
+
 input {
   &::-moz-placeholder {
     color: rgba($grey, 0.65);
@@ -184,43 +244,7 @@ input {
     }
   }
 }
-// Search bar
-.search_bar {
-  position: relative;
-  padding: 7px 15px;
-  width: 100%;
-  padding-right: 60%;
 
-  > .form-control {
-    vertical-align: top;
-    border-color: rgba($grey, 0.3);
-    border-radius: 4px;
-    height: 31px;
-    padding: 4px 31px 5px 12px;
-
-    &:first-child,
-    &:last-child {
-      border-radius: 4px;
-    }
-  }
-  .input-group-btn {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 60%;
-    z-index: 5;
-    width: auto;
-
-    > .btn {
-      margin: 0;
-      padding: 4px 9px 5px 9px;
-      border: none;
-      border-radius: 0;
-      background-color: transparent;
-      height: 100%;
-    }
-  }
-}
 // Checkbox
 $cbx-size: 20px;
 $cbx-size-xs: 15px;
@@ -1059,9 +1083,9 @@ $grp-cbx-size: 34px;
     }
   }
 }
+
 // Nested fields
 .nested-fields {
-  margin: 0;
   padding: 0 5px;
 
   &:first-child {

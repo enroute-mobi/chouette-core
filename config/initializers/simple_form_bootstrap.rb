@@ -51,15 +51,6 @@ SimpleForm.setup do |config|
     b.use :hint,  wrap_with: { tag: 'p', class: 'help-block small' }
   end
 
-  config.wrappers :vertical_radio_and_checkboxes_tailwind, tag: 'div', class: 'flex flex-col', error_class: 'has-error' do |b|
-    b.use :html5
-    b.optional :readonly
-    b.use :label, class: 'control-label'
-    b.use :input, class: 'cursor-pointer'
-    b.use :error, wrap_with: { tag: 'span', class: 'help-block small' }
-    b.use :hint,  wrap_with: { tag: 'p', class: 'help-block small' }
-  end
-
   config.wrappers :horizontal_form, tag: 'div', class: 'form-group', error_class: 'has-error' do |b|
     b.use :html5
     b.use :placeholder
@@ -73,22 +64,6 @@ SimpleForm.setup do |config|
       ba.use :input, class: 'form-control'
       ba.use :error, wrap_with: { tag: 'span', class: 'help-block small' }
       ba.use :hint,  wrap_with: { tag: 'p', class: 'help-block small' }
-    end
-  end
-
-  config.wrappers :horizontal_form_tailwind, tag: 'div', class: 'flex items-center mb-10 relative', error_class: 'has-error' do |b|
-    b.use :html5
-    b.use :placeholder
-    b.optional :maxlength
-    b.optional :pattern
-    b.optional :min_max
-    b.optional :readonly
-    b.use :label, class: 'flex justify-end w-2/6 mr-8 mb-0 control-label pt-0'
-
-    b.wrapper tag: 'div', class: 'w-4/6' do |ba|
-      ba.use :input, class: 'form-control'
-      ba.use :error, wrap_with: { tag: 'span', class: 'help-block small absolute ml-2' }
-      ba.use :hint,  wrap_with: { tag: 'p', class: 'help-block small absolute ml-2' }
     end
   end
 
@@ -213,21 +188,55 @@ SimpleForm.setup do |config|
       ba.use :error, wrap_with: { tag: 'span', class: 'help-block small' }
       ba.use :hint,  wrap_with: { tag: 'p', class: 'help-block small' }
     end
- end
+  end
 
- config.wrappers :horizontal_shrinked_input, tag: 'div', class: 'form-group', error_class: 'has-error' do |b|
-   b.use :html5
-   b.use :placeholder
-   b.optional :maxlength
-   b.optional :readonly
-   b.use :label, class: 'col-sm-8 col-xs-7 control-label'
+  config.wrappers :horizontal_shrinked_input, tag: 'div', class: 'form-group', error_class: 'has-error' do |b|
+    b.use :html5
+    b.use :placeholder
+    b.optional :maxlength
+    b.optional :readonly
+    b.use :label, class: 'col-sm-8 col-xs-7 control-label'
 
-   b.wrapper tag: 'div', class: 'col-sm-4 col-xs-5' do |ba|
-     ba.use :input, class: 'form-control'
-     ba.use :error, wrap_with: { tag: 'span', class: 'help-block small' }
-     ba.use :hint,  wrap_with: { tag: 'p', class: 'help-block small' }
-   end
-end
+    b.wrapper tag: 'div', class: 'col-sm-4 col-xs-5' do |ba|
+      ba.use :input, class: 'form-control'
+      ba.use :error, wrap_with: { tag: 'span', class: 'help-block small' }
+      ba.use :hint,  wrap_with: { tag: 'p', class: 'help-block small' }
+    end
+  end
+
+  config.wrappers :horizontal_form_tailwind, tag: 'div', class: 'flex items-center mb-10', error_class: 'has-error' do |b|
+    b.use :html5
+    b.use :placeholder
+    b.optional :maxlength
+    b.optional :pattern
+    b.optional :min_max
+    b.optional :readonly
+    b.use :label, class: 'flex justify-end w-2/6 mr-8 mb-0 control-label pt-0'
+
+    b.wrapper tag: 'div', class: 'w-4/6 flex items-center relative' do |ba|
+      ba.use :input, class: 'form-control'
+      ba.use :error, wrap_with: { tag: 'span', class: 'help-block small absolute top-14 ml-2' }
+      ba.use :hint,  wrap_with: { tag: 'p', class: 'help-block small absolute top-14 ml-2' }
+    end
+  end
+
+  config.wrappers :vertical_radio_and_checkboxes_tailwind, tag: 'div', class: 'flex flex-col', error_class: 'has-error' do |b|
+    b.use :html5
+    b.optional :readonly
+    b.use :label, class: 'control-label'
+    b.use :input, class: 'cursor-pointer'
+    b.use :error, wrap_with: { tag: 'span', class: 'help-block small' }
+    b.use :hint,  wrap_with: { tag: 'p', class: 'help-block small' }
+  end
+
+  config.wrappers :horizontal_boolean_tailwind, tag: 'div', class: '', error_class: 'has-error' do |b|
+    b.use :html5
+    b.optional :readonly
+    b.use :label_input
+    b.use :error, wrap_with: { tag: 'span', class: 'help-block small' }
+    b.use :hint,  wrap_with: { tag: 'p', class: 'help-block small' }
+  end
+
   # Wrappers for forms and inputs using the Bootstrap toolkit.
   # Check the Bootstrap docs (http://getbootstrap.com)
   # to learn about the different styles for forms and inputs,

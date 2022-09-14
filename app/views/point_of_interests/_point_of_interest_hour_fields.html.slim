@@ -1,7 +1,7 @@
 .nested-fields.flex.items-center.mb-10
   .flex.flex-col.w-full.mr-6
-    = f.input :opening_time_of_day, as: :time_picker
-    = f.input :closing_time_of_day, as: :time_picker
+    = f.input :opening_time_of_day, as: :time_of_day
+    = f.input :closing_time_of_day, as: :time_of_day
     .flex.items-center
       = f.label :week_days, class: "flex justify-end w-2/6 mr-8 mb-0 control-label pt-0 required"
       .flex.items-center

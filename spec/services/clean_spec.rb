@@ -286,7 +286,7 @@ RSpec.describe Clean::Metadata::InPeriod do
 
 end
 
-RSpec.describe Clean::Metadata::InPeriod do
+RSpec.describe Clean::Metadata::Before do
   let(:context) do
     Chouette.create do
       3.times { line }
@@ -473,6 +473,40 @@ RSpec.describe Clean::Timetable::Date::InPeriod do
     end
   end
 
+end
+
+RSpec.describe Clean::Timetable::Date::ExcludedWithoutPeriod do
+  let(:context) do
+    Chouette.create do
+      referential do
+        time_table periods: [], dates_excluded: [Date.current]
+      end
+    end
+  end
+  let(:referential) { context.referential }
+  before { referential.switch }
+
+  let(:time_table) { context.time_table }
+  let(:date) { time_table.dates.excluded.first }
+
+  let(:scope) { Clean::Scope::Referential.new referential }
+  subject(:clean) { described_class.new scope }
+
+  describe '#dates' do
+    subject { clean.dates }
+
+    context 'when the TimeTable has a Period' do
+      before { time_table.periods.create! range: Period.from(:today).during(10.days) }
+
+      it { is_expected.to_not include(date) }
+    end
+
+    context 'when the TimeTable has no Period' do
+      before { time_table.periods.delete_all }
+
+      it { is_expected.to include(date) }
+    end
+  end
 end
 
 RSpec.describe Clean::InPeriod do

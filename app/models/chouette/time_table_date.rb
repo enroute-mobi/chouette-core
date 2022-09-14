@@ -11,6 +11,9 @@ module Chouette
     scope :in_dates, -> { where(in_out: true) }
     scope :in_date_range, -> (date_range) { where("date between ? and ?", date_range.min, date_range.max) }
 
+    scope :included, -> { where in_out: true }
+    scope :excluded, -> { where in_out: false }
+
     def self.model_name
       ActiveModel::Name.new Chouette::TimeTableDate, Chouette, "TimeTableDate"
     end

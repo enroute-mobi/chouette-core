@@ -239,11 +239,12 @@ module Clean
         end
       end
 
+      # Remove excluded TimeTable dates when no period is defined into their TimeTable
       class ExcludedWithoutPeriod < Base
         def dates
           scope.timetable_dates.where time_table: scope.timetables.without_periods, in_out: false
         end
-    
+
         def clean!
           dates.delete_all
         end

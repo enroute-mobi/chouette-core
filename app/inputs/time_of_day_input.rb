@@ -6,9 +6,9 @@ class TimeOfDayInput < SimpleForm::Inputs::Base
   def input(wrapper_options = nil)
     merged_input_options = merge_wrapper_options(input_html_options, wrapper_options)
 
-    select_hour(time_of_day, hour_options, merged_input_options) 
-      + content_tag(:span, " : " )
-      + select_minute(time_of_day, minute_options, merged_input_options)
+    select_hour(time_of_day, hour_options, merged_input_options) +
+    content_tag(:span, " : ", class: 'mx-5') +
+    select_minute(time_of_day, minute_options, merged_input_options)
   end
 
   def base_options

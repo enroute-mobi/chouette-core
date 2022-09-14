@@ -213,7 +213,7 @@ SimpleForm.setup do |config|
     b.optional :readonly
     b.use :label, class: 'flex justify-end w-2/6 mr-8 mb-0 control-label pt-0'
 
-    b.wrapper tag: 'div', class: 'w-4/6' do |ba|
+    b.wrapper tag: 'div', class: 'w-4/6 flex items-center' do |ba|
       ba.use :input, class: 'form-control'
       ba.use :error, wrap_with: { tag: 'span', class: 'help-block small absolute ml-2' }
       ba.use :hint,  wrap_with: { tag: 'p', class: 'help-block small absolute ml-2' }

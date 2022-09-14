@@ -124,6 +124,8 @@ module ChouetteIhm
 
     require_relative '../app/lib/rack/validate_request_params'
     config.middleware.insert_before Rack::Head, Rack::ValidateRequestParams
+    require_relative '../app/lib/rack/reject_bad_encoding'
+    config.middleware.insert_before Rack::Runtime, Rack::RejectBadEncoding
 
     unless Rails.env.production?
         # Work around sprockets+teaspoon mismatch:

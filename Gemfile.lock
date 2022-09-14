@@ -42,8 +42,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/language_engine.git
-  revision: da1f9cebd035698136f7a62a91f4985a4fa67969
-  branch: CHOUETTE-2313-redirect-back
+  revision: 9d45ab61d560f42370125610bbc748d1e4de9576
   specs:
     language_engine (0.0.10)
       rails (>= 5.2)
@@ -917,4 +916,4 @@ DEPENDENCIES
   will_paginate-bootstrap
 
 BUNDLED WITH
-   2.3.18
+   2.3.22

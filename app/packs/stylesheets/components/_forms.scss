@@ -1059,7 +1059,11 @@ $grp-cbx-size: 34px;
     }
   }
 }
-.custom-checkboxes {
+.week-day-checkboxes {
+  label {
+    width: 34px;
+    height: 34px;
+  }
   input {
     display: none;
   }

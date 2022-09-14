@@ -39,7 +39,7 @@ class MacroListRunsController < ChouetteController
 
 			success.html do
         @macro_list_run.enqueue
-        redirect_to workbench_macro_list_run_url(workbench, @macro_list_run)
+        redirect_to workbench_macro_list_run_path(workbench, @macro_list_run)
       end
     end
   end

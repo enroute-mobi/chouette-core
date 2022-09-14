@@ -39,7 +39,7 @@ class ControlListRunsController < ChouetteController
 
 			success.html do
         @control_list_run.enqueue
-        redirect_to workbench_control_list_run_url(workbench, @control_list_run)
+        redirect_to workbench_control_list_run_path(workbench, @control_list_run)
       end
     end
   end

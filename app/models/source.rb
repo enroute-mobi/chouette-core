@@ -23,6 +23,15 @@ class Source < ApplicationModel
   belongs_to :scheduled_job, class_name: '::Delayed::Job'
   validates :retrieval_time_of_day, presence: true, if: :enabled?
 
+  # ?? Rails 5 ActiveRecord::AttributeAssignment .. doesn't create an object
+  # by invoke writer with multiparameter attributes (like {1 => 13, 2 => 15})
+  def retrieval_time_of_day=(time_of_day)
+    if time_of_day.is_a?(Hash) && time_of_day.keys == [1,2]
+      time_of_day = TimeOfDay.new(time_of_day[1], time_of_day[2])
+    end
+    super time_of_day
+  end
+
   def reschedule
     scheduled_job&.destroy
 

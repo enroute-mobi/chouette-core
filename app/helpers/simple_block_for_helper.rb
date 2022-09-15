@@ -104,6 +104,8 @@ module SimpleBlockForHelper
             I18n.l(raw_value, format: :short_with_time)
           when :time
             I18n.l(raw_value, format: :hour)
+          when :time_of_day
+            raw_value.to_hm
           when :duration
             raw_value >= 60 ? "#{(raw_value /  1.minute).round} min" : "#{raw_value.round} sec"
           when :enumerize

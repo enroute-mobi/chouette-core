@@ -182,14 +182,16 @@ class Merge < ApplicationModel
       referential: new,
       clean_methods: [:clean_irrelevant_data, :clean_unassociated_calendars]
     }
+    clean_scope = Clean::Scope::Referential.new(new)
+
     if workgroup.enable_purge_merged_data
       last_date = Time.zone.today - [workgroup.maximum_data_age,0].max
-
-      clean_scope = Clean::Scope::Referential.new(new)
       Clean::Metadata::Before.new(clean_scope, last_date-1).clean!
 
       clean_up_options.merge!({ date_type: :before, begin_date: last_date })
     end
+
+    Clean::Timetable::Date::ExcludedWithoutPeriod.new(clean_scope).clean!
     CleanUp.new(clean_up_options).clean
   end
 

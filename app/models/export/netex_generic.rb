@@ -1407,17 +1407,16 @@ class Export::NetexGeneric < Export::Base
     end
 
     def vehicle_journey_at_stops
-      export_scope.vehicle_journey_at_stops
-        .where.not(stop_area: nil)
-        .joins(:vehicle_journey, :stop_point, :stop_area)
-        .select(
-          "vehicle_journey_at_stops.*",
-          "vehicle_journeys.objectid AS vehicle_journey_objectid",
-          "COALESCE(vehicle_journeys.data_source_ref, 'none') AS vehicle_journey_data_source_ref",
-          "stop_points.objectid AS stop_point_objectid",
-          "stop_areas.objectid AS stop_area_objectid",
-          "stop_points.position AS stop_point_position",
-        )
+      export_scope.vehicle_journey_at_stops.where.not(stop_area: nil)
+                  .joins(:vehicle_journey, :stop_point, :stop_area)
+                  .select(
+                    'vehicle_journey_at_stops.*',
+                    'vehicle_journeys.objectid AS vehicle_journey_objectid',
+                    "COALESCE(vehicle_journeys.data_source_ref, 'none') AS vehicle_journey_data_source_ref",
+                    'stop_points.objectid AS stop_point_objectid',
+                    'stop_areas.objectid AS stop_area_objectid',
+                    'stop_points.position AS stop_point_position'
+                  )
     end
 
     class Decorator < SimpleDelegator

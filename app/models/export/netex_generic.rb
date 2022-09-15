@@ -1039,7 +1039,7 @@ class Export::NetexGeneric < Export::Base
     delegate :stop_points, to: :export_scope
 
     def export!
-      stop_points.joins(:route, :stop_area).select(selected).find_each do |stop_point|
+      stop_points.joins(:route, :stop_area).select(selected).find_each_light do |stop_point|
         tags = resource_tagger.tags_for(stop_point.line_id)
         tagged_target = TaggedTarget.new(target, tags)
 

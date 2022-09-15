@@ -1,6 +1,5 @@
 class LinesController < ChouetteController
   include ApplicationHelper
-  include Activatable
   include PolicyChecker
   include TransportModeFilter
 

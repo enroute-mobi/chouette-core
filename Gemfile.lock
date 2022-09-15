@@ -42,7 +42,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/language_engine.git
-  revision: d53da8c876de565a39fcb551ebecc3694c3547de
+  revision: 9d45ab61d560f42370125610bbc748d1e4de9576
   specs:
     language_engine (0.0.10)
       rails (>= 5.2)
@@ -916,4 +916,4 @@ DEPENDENCIES
   will_paginate-bootstrap
 
 BUNDLED WITH
-   2.3.18
+   2.3.22

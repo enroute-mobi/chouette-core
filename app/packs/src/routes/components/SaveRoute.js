@@ -27,9 +27,8 @@ export default class SaveRoute extends SaveButton {
 
     // Check route required attributes
     onValidateField(handleFormValidation('route')('name')(!route.name))
-    onValidateField(handleFormValidation('route')('published_name')(!route.published_name))
 
-    if (stopPoints.length >= 2 && invalidIndexes.length == 0 && !!route.name && !!route.published_name) {
+    if (stopPoints.length >= 2 && invalidIndexes.length == 0 && !!route.name) {
       onSubmitRoute(routeToSubmit, requestMethod)
     }
   }

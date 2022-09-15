@@ -1098,6 +1098,14 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
     end
 
+    describe 'gtfs_headsign' do
+      subject { decorator.gtfs_headsign }
+      
+      context 'when JourneyPattern published_name is "dummy"' do
+        before { allow(decorator).to receive(:journey_pattern).and_return(double(published_name: 'dummy')) }
+        it { is_expected.to eq('dummy') }
+      end
+    end
   end
 
   describe 'Shapes Part' do

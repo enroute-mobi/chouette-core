@@ -647,7 +647,8 @@ class Import::Gtfs < Import::Base
     [
       trip.route_id,
       trip.direction_id,
-      trip.headsign.presence || trip.short_name,
+      trip.headsign,
+      trip.short_name,
       trip.shape_id,
     ] + stop_times.map(&:stop_id)
   end
@@ -658,12 +659,14 @@ class Import::Gtfs < Import::Base
     stop_points = []
 
     line = lines.find_by registration_number: trip.route_id
+
     route = referential.routes.build line: line
     route.wayback = (trip.direction_id == '0' ? :outbound : :inbound)
-    name = route.published_name = trip.headsign.presence || trip.short_name.presence || route.wayback.to_s.capitalize
-    route.name = name
+    route.name = trip.headsign.presence || trip.short_name.presence || route.wayback.to_s.capitalize
 
-    journey_pattern = route.journey_patterns.build name: name, skip_custom_fields_initialization: true
+    journey_pattern = route.journey_patterns.build skip_custom_fields_initialization: true
+    journey_pattern.name = route.name
+    journey_pattern.published_name = trip.headsign
 
     if trip.shape_id
       shape = shape_provider.shapes.by_code(code_space, trip.shape_id).first

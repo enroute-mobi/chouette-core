@@ -20,16 +20,22 @@ class Source < ApplicationModel
   before_validation :clean, on: :update
 
   attribute :retrieval_time_of_day, TimeOfDay::Type::TimeWithoutZone.new
-  belongs_to :scheduled_job, class_name: "::Delayed::Job"
+  belongs_to :scheduled_job, class_name: '::Delayed::Job'
   validates :retrieval_time_of_day, presence: true, if: :enabled?
 
   def reschedule
     scheduled_job&.destroy
 
-    if enabled?
-      job = ScheduledJob.new(self)
-      self.scheduled_job = Delayed::Job.enqueue(job, cron: job.cron)
-    end
+    return unless enabled?
+
+    job = ScheduledJob.new(self)
+    self.scheduled_job = Delayed::Job.enqueue(job, cron: job.cron)
+  end
+
+  # Reschedule and save the Source. Uses this method to force a rescheduling, in migration for example.
+  def reschedule!
+    reschedule
+    save
   end
 
   def reschedule_needed?
@@ -38,6 +44,7 @@ class Source < ApplicationModel
 
   before_save :reschedule, if: :reschedule_needed?
 
+  # Uses to start the Source retrieval at the expected time
   class ScheduledJob
     def initialize(source)
       @source = source
@@ -60,8 +67,8 @@ class Source < ApplicationModel
 
     def perform
       source.retrieve
-    rescue => e
-      Rails.logger.error "Unable to download source #{url}, error: #{e}"
+    rescue StandardError => e
+      Chouette::Safe.capture "Can't start Source##{source_id} retrieval", e
     end
   end
 

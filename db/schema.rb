@@ -511,6 +511,7 @@ ActiveRecord::Schema.define(version: 2022_09_09_074432) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.bigint "organisation_id"
+    t.string "cron"
     t.index ["organisation_id"], name: "index_delayed_jobs_on_organisation_id"
     t.index ["priority", "run_at"], name: "delayed_jobs_priority"
   end
@@ -1374,6 +1375,9 @@ ActiveRecord::Schema.define(version: 2022_09_09_074432) do
     t.datetime "updated_at", null: false
     t.boolean "enabled", default: true
     t.boolean "ignore_checksum", default: false
+    t.time "retrieval_time_of_day"
+    t.bigint "scheduled_job_id"
+    t.index ["scheduled_job_id"], name: "index_sources_on_scheduled_job_id"
     t.index ["workbench_id"], name: "index_sources_on_workbench_id"
   end
 

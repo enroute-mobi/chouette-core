@@ -19,6 +19,59 @@ class Source < ApplicationModel
 
   before_validation :clean, on: :update
 
+  attribute :retrieval_time_of_day, TimeOfDay::Type::TimeWithoutZone.new
+  belongs_to :scheduled_job, class_name: '::Delayed::Job'
+  validates :retrieval_time_of_day, presence: true, if: :enabled?
+
+  def reschedule
+    scheduled_job&.destroy
+
+    return unless enabled?
+
+    job = ScheduledJob.new(self)
+    self.scheduled_job = Delayed::Job.enqueue(job, cron: job.cron)
+  end
+
+  # Reschedule and save the Source. Uses this method to force a rescheduling, in migration for example.
+  def reschedule!
+    reschedule
+    save
+  end
+
+  def reschedule_needed?
+    enabled_changed? || retrieval_time_of_day_changed?
+  end
+
+  before_save :reschedule, if: :reschedule_needed?
+
+  # Uses to start the Source retrieval at the expected time
+  class ScheduledJob
+    def initialize(source)
+      @source = source
+      @source_id = source.id
+    end
+    attr_reader :source_id
+
+    def encode_with(coder)
+      coder['source_id'] = source_id
+    end
+
+    def cron
+      # minutes hours day-of-month month day-of-week
+      "#{source.retrieval_time_of_day.minute} #{source.retrieval_time_of_day.hour} * * *"
+    end
+
+    def source
+      @source ||= Source.find_by(id: source_id)
+    end
+
+    def perform
+      source.retrieve
+    rescue StandardError => e
+      Chouette::Safe.capture "Can't start Source##{source_id} retrieval", e
+    end
+  end
+
   def authorization_downloader_type?
     downloader_type == 'authorization'
   end

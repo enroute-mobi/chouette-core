@@ -25,7 +25,7 @@ en:
         one: Current offer
         other: Current offers
       workbench_outputs:
-        organisation: Organisation offers
+        organisation: Organization offers
         workgroup: Workgroup offers
         edit_workgroup: App configuration
       configuration: Settings

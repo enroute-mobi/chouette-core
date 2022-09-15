@@ -26,7 +26,7 @@ en:
       title: "%{organisation} dashboard"
       offers:
         title: "Transport offers"
-        organisation: "Organisation offers"
+        organisation: "Organization offers"
         idf: "IDF offers"
         referentials: "Referentials"
         calendars: "Calendars"

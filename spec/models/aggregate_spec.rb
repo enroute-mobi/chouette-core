@@ -349,4 +349,37 @@ RSpec.describe Aggregate, type: :model do
       end
     end
   end
+
+  describe '#notification_recipients' do
+    let(:context) do
+      Chouette.create do
+        organisation :owner do
+          user :user1, email: 'user1@chouette.test'
+          user :user2, email: 'user2@chouette.test'
+        end
+        workgroup owner: :owner do
+          workbench organisation: :owner do
+            referential
+          end
+        end
+      end
+    end
+
+    let(:user) { context.user(:user1) }
+    let(:aggregate) { Aggregate.create! workgroup: context.workgroup, referentials: context.referentials, user: user }
+
+    subject { aggregate.notification_recipients }
+
+    context 'when notification_target is "workbench"' do
+      before { aggregate.notification_target = 'workbench' }
+
+      it { is_expected.to contain_exactly('user1@chouette.test', 'user2@chouette.test') }
+    end
+
+    context 'when notification_target is "user"' do
+      before { aggregate.notification_target = 'user' }
+
+      it { is_expected.to contain_exactly('user1@chouette.test') }
+    end
+  end
 end

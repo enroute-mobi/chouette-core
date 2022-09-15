@@ -88,7 +88,7 @@ RSpec.describe Delayed::Job do
         it { is_expected.to include(organisation_id) }
       end
 
-      context 'when 4 locked jobs are defined without organisation' do 
+      context 'when 4 locked jobs are defined without organisation' do
         before do
           4.times do
             Delayed::Job.create! locked_at: Time.zone.now, handler: double(perform: true)
@@ -96,8 +96,7 @@ RSpec.describe Delayed::Job do
         end
 
         it { is_expected.to be_empty }
-      end 
-
+      end
     end
   end
 
@@ -126,10 +125,17 @@ RSpec.describe Delayed::Job do
       it { is_expected.to eq(job) }
     end
 
-    context 'when a job is locked exists for a given organisation and a another is unlocked/waiting' do
+    context 'when a job is locked for a given organisation and a another is unlocked/waiting' do
       let!(:locked_job) { create_job organisation_id: 42, locked_at: Time.zone.now }
       let!(:unlocked_job) { create_job organisation_id: 42 }
       it { is_expected.to be_nil }
+    end
+
+    context 'when a job is locked for a given organisation and a another is unlocked/waiting without organisation' do
+      let!(:locked_job) { create_job organisation_id: 42, locked_at: Time.zone.now }
+      let!(:unlocked_job) { create_job organisation_id: nil }
+
+      it { is_expected.to eq(unlocked_job) }
     end
   end
 end

@@ -6,7 +6,7 @@ module Delayed
     # requires Rails 6
     # extend ActiveSupport::Concern
 
-    def self.prepended(base) # rubocop:disable Metrics/AbcSize
+    def self.prepended(base) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
       base.before_save :store_organisation, on: :create
 
       # Limit for locked/running jobs for each organisation
@@ -14,7 +14,12 @@ module Delayed
 
       base.scope :in_organisation_bounds, lambda {
         # unscope to ensure it can be used as subquery
-        where.not(organisation_id: all.unscope(:where, :order).out_of_bounds_organizations)
+        ignored_organizations = all.unscope(:where, :order).out_of_bounds_organizations
+        if ignored_organizations.present?
+          where('organisation_id not in (?) or organisation_id is null', ignored_organizations)
+        else
+          all
+        end
       }
       base.scope :locked, -> { where.not(locked_at: nil) }
       base.scope :with_organisation, -> { where.not(organisation_id: nil) }

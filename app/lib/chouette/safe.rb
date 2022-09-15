@@ -13,7 +13,7 @@ module Chouette
 
       def capture
         log_capture
-        raven_capture
+        sentry_capture
 
         uuid
       end
@@ -22,8 +22,8 @@ module Chouette
         Rails.logger.error log_message
       end
 
-      def raven_capture
-        Raven.capture_exception error, tags: {uuid: uuid} if ENV['SENTRY_DSN']
+      def sentry_capture
+        Sentry.capture_exception error, tags: {uuid: uuid} if ENV['SENTRY_DSN']
       end
 
       def log_message

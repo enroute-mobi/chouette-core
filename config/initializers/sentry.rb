@@ -1,14 +1,15 @@
+# frozen_string_literal: true
+
 if ENV['SENTRY_DSN']
-  Raven.configure do |config|
-    app = ENV.fetch 'SENTRY_APP', 'chouette-core'
-    config.tags[:app] = app
-
-    service_context = ENV.fetch 'SENTRY_CONTEXT', 'front'
-    config.tags[:service] = "#{app}-#{service_context}"
-
-    puts "Sentry enabled with tags: #{config.tags.inspect}"
-
-    # Made by default
-    # config.dsn = ENV['SENTRY_DSN']
+  Sentry.init do |config|
+    config.breadcrumbs_logger = %i[active_support_logger http_logger]
   end
+
+  app = ENV.fetch 'SENTRY_APP', 'chouette-core'
+  service_context = ENV.fetch 'SENTRY_CONTEXT', 'front'
+
+  tags = { app: app, service: "#{app}-#{service_context}" }
+  Sentry.set_tags(tags)
+
+  puts "Sentry enabled with tags: #{tags.inspect}"
 end

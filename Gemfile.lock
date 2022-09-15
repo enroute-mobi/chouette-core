@@ -687,8 +687,14 @@ GEM
     seedbank (0.4.0)
     select2-rails (4.0.13)
     semantic_range (3.0.0)
-    sentry-raven (2.13.0)
-      faraday (>= 0.7.6, < 1.0)
+    sentry-delayed_job (5.4.2)
+      delayed_job (>= 4.0)
+      sentry-ruby (~> 5.4.2)
+    sentry-rails (5.4.2)
+      railties (>= 5.0)
+      sentry-ruby (~> 5.4.2)
+    sentry-ruby (5.4.2)
+      concurrent-ruby (~> 1.0, >= 1.0.2)
     shellany (0.0.1)
     shoulda-matchers (5.1.0)
       activesupport (>= 5.2.0)
@@ -896,7 +902,9 @@ DEPENDENCIES
   rubyzip
   seedbank (= 0.4.0)
   select2-rails (~> 4.0, >= 4.0.3)
-  sentry-raven
+  sentry-delayed_job
+  sentry-rails
+  sentry-ruby
   shoulda-matchers
   simple_form (>= 5.1.0)
   simplecov

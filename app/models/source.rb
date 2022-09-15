@@ -42,6 +42,8 @@ class Source < ApplicationModel
     enabled_changed? || retrieval_time_of_day_changed?
   end
 
+  # REMOVEME after CHOUETTE-2007
+  before_validation ->(source) { source.retrieval_time_of_day = TimeOfDay.new(0, 0) }, if: :enabled?
   before_save :reschedule, if: :reschedule_needed?
 
   # Uses to start the Source retrieval at the expected time

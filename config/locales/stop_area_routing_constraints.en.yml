@@ -9,7 +9,7 @@ en:
       create: "Add a Stop Area Routing Constraint"
       edit: "Edit Stop Area Routing Constraint"
       update: "Edit Stop Area Routing Constraint"
-      destroy: "Supprimer"
+      destroy: "Destroy"
       destroy_confirm: "Are you sure to destroy Stop Area Routing Constraint?"
     filters:
       stop: Fill Stop Area...

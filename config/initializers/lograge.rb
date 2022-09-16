@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Rails.application.configure do
   config.lograge.enabled = true
 
@@ -15,11 +17,13 @@ Rails.application.configure do
 end
 
 module Lograge
+  # Use to customize lograge payload
   class CustomPayload < Struct.new(:controller)
-
     def current(name)
       method = "current_#{name}"
-      controller.send(method)&.id if respond_to?(method, true)
+      controller.send(method)&.id
+    rescue NoMethodError
+      nil
     end
 
     def user
@@ -34,36 +38,21 @@ module Lograge
       current :workgroup
     end
 
+    def referential
+      current :referential
+    end
+
     def locale
       I18n.locale
     end
 
-    def correlation
-      @correlation ||= Datadog.tracer.active_correlation
-    end
-
-    # From Datadog documentation:
-    # https://docs.datadoghq.com/tracing/connect_logs_and_traces/ruby/#manual-lograge
-    def dd
-      {
-        # To preserve precision during JSON serialization, use strings for large numbers
-        trace_id: correlation.trace_id.to_s,
-        span_id: correlation.span_id.to_s,
-        # See CHOUETTE-1285
-        # env: correlation.env.to_s,
-        # service: correlation.service.to_s,
-        # version: correlation.version.to_s
-      } if correlation && correlation.trace_id != 0
-    end
-
     def payload
       {}.tap do |payload|
-        %i{user workbench workgroup locale dd}.each do |attribute|
+        %i[user workbench workgroup locale].each do |attribute|
           value = send attribute
           payload[attribute] = value if value
         end
       end
     end
-
   end
 end

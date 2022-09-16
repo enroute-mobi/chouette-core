@@ -163,20 +163,14 @@ module Chouette
 
     end
 
+    # Use Datadog tracing API to create span according to benchmark measures
     class Datadog < Base
-
       def self.enabled?
-        @datadog_enabled ||= ENV['DD_AGENT_HOST']
+        @enabled ||= ENV.key?('DD_AGENT_HOST')
       end
 
       def measure
-        ::Datadog.tracer.trace(full_name, datadog_options) do |span|
-          if span.context
-            # .. can be nil .. for long spans
-            span.context.sampling_priority = ::Datadog::Ext::Priority::USER_KEEP
-          end
-          span.set_tag ::Datadog::Ext::ManualTracing::TAG_KEEP, true
-
+        ::Datadog::Tracing.trace(full_name, datadog_options) do |_span|
           next!
         end
       end
@@ -184,7 +178,6 @@ module Chouette
       def datadog_options
         { tags: user_attributes }
       end
-
     end
 
     KERNEL_PAGE_SIZE = `getconf PAGESIZE`.chomp.to_i rescue 4096

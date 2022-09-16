@@ -8,8 +8,8 @@ class TimePickerInput < SimpleForm::Inputs::Base
     input_html_options[:type] = 'text'
     input_html_options[:data] ||= { 'input': ''}
     input_html_options[:style] = 'background-color: white;'
-    
-    content_tag(:div, class: 'time_picker input-group') do
+
+    content_tag(:div, class: 'time_picker_block input-group') do
       concat @builder.text_field(attribute_name, input_html_options)
       concat( content_tag(:div, class: 'input-group-btn') do
         concat clock_button

@@ -1,8 +1,9 @@
 .col-md-8.product_summary
+  .overlay-effect
+  = image_tag "https://source.unsplash.com/collection/40395285/1080x720", class:"img-hp"
   .content
-    h2 = t("devise.sessions.new.baseline")
-    p = link_to t("devise.sessions.new.know_more").html_safe, 'https://enroute.mobi/chouette/', target: :blank
-
+      h2 = t("devise.sessions.new.baseline")
+      p = link_to t("devise.sessions.new.know_more").html_safe, 'https://enroute.mobi/chouette/', target: :blank
 coffee:
   $(document).ready ->
     $('.product_summary').addClass 'loaded'
@@ -12,13 +13,3 @@ coffee:
     setTimeout ->
       $('.product_summary a').removeClass 'shine'
     , 1300
-
-
-    blink = ->
-      $('.product_summary').addClass 'blink'
-      setTimeout ->
-        $('.product_summary').removeClass 'blink'
-      , 300
-      setTimeout blink, 3000 + Math.random() * 3000
-
-    setTimeout blink, 3000 + Math.random() * 3000

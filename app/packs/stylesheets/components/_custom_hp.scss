@@ -4,11 +4,11 @@
       height: calc(100vh - 187px);
     }
     .panel {
-      margin-top: calc((100vh - 188px - 340px)/2 - 1px);
+      margin-top: calc((100vh - 188px - 340px) / 2 - 1px);
     }
     .signup {
       .panel {
-        margin-top: calc((100vh - 188px - 605px)/2);
+        margin-top: calc((100vh - 188px - 605px) / 2);
       }
     }
   }
@@ -17,32 +17,19 @@
 
     .product_summary {
       color: white;
-      background-color: #463593;
-      background-image: url('../images/chouette.png');
-      background-position: 200% 100%;
-      transition: background-position 1s ease-out;
-      background-repeat: no-repeat;
       height: calc(100vh - 147px);
       overflow: hidden;
-      &:before {
-        background-image: url('../images/chouette-blink.png');
-        content: "";
-        width: 1px;
-        height: 1px;
-        position: fixed;
-      }
-      &.blink {
-        background-image: url('../images/chouette-blink.png');
-      }
+      padding: 0;
       .content {
         position: absolute;
         bottom: 90px;
         left: 90px;
-        background-image: url('../images/logo-chouette.svg');
+        background-image: url("../images/logo-chouette-2020-saas-white.png");
         background-position: 0 0;
         background-repeat: no-repeat;
-        background-size: auto 70px;
-        padding-top: 50px;
+        background-size: auto 170px;
+        padding-top: 180px;
+        z-index: 1;
         h2 {
           font-size: 4em;
           line-height: 0em;
@@ -56,7 +43,7 @@
           font-size: 1.5em;
           border-radius: 5px;
           padding: 10px 20px;
-          background-color: rgba(255,255,255,0.1);
+          background-color: rgba(255, 255, 255, 0.1);
           text-decoration: none;
           border: none;
           white-space: nowrap;
@@ -65,11 +52,11 @@
             text-decoration: underline;
           }
           &.shine {
-            background-color: rgba(255,255,255,0.15);
+            background-color: rgba(255, 255, 255, 0.15);
           }
           &:hover {
             color: #463593;
-            background-color: rgba(255,255,255,0.75);
+            background-color: rgba(255, 255, 255, 0.75);
           }
         }
       }
@@ -79,6 +66,24 @@
           h2 {
             line-height: 1.2em;
           }
+        }
+        .overlay-effect {
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          opacity: 0.4;
+          transition: 0.5s ease;
+          background: rgb(106,76,131);
+          background: linear-gradient(0deg, rgba(106,76,131,1) 0%, rgba(255, 255, 255, 1) 100%);
+          overflow: hidden;
+          z-index: 1;
+        }
+        .img-hp {
+          object-fit: cover;
+          width: 100%;
+          height: 100%;
         }
       }
     }
@@ -135,7 +140,7 @@
       }
     }
     .panel {
-      margin-top: calc((100vh - 147px - 340px)/2 - 1px);
+      margin-top: calc((100vh - 147px - 340px) / 2 - 1px);
       @media (max-height: 470px) {
         margin-top: 10px;
         overflow: scroll;
@@ -151,7 +156,7 @@
       overflow: auto;
     }
     .panel {
-      margin-top: calc((100vh - 147px - 605px)/2);
+      margin-top: calc((100vh - 147px - 605px) / 2);
       @media (max-height: 1200px) {
         margin-top: 10px;
       }
@@ -207,4 +212,4 @@
       }
     }
   }
-};
+} ;

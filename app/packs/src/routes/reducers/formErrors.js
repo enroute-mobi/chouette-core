@@ -3,7 +3,6 @@ import { SUBMIT_ROUTE_SUCCESS, SUBMIT_ROUTES_ERROR } from './route'
 export const initialState = {
   route: {
     name: false,
-    published_name: false
   },
   stopPoints: {
     invalidLength: false,

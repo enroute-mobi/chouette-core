@@ -11,6 +11,11 @@ h3 {
   font-weight: 700;
 }
 p {
+  a {
+    color: inherit;
+    border-bottom: 1px dashed rgba($brand-color-secondary, 0.5);
+    transition: 0.2s;
+  }
   &:last-child {
     margin-bottom: 0;
   }

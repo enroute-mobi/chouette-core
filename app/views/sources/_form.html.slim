@@ -1,6 +1,6 @@
 - javascript_additional_packs 'sources/form'
-= simple_form_for [@workbench, @source], html: {class: 'form-horizontal', id: 'source_form', 'x-data': '',
-	'x-init': "$store.source.type = '#{@source.downloader_type}'"}, wrapper: :horizontal_form do |f|
+= simple_form_for [@workbench, @source], html: {class: 'tailwind-form', id: 'source_form', 'x-data': '',
+	'x-init': "$store.source.type = '#{@source.downloader_type}'"}, wrapper: :horizontal_form_tailwind do |f|
   .row
     .col-lg-12
       = f.input :name
@@ -17,6 +17,7 @@
     .simple-separator.mb-5
     .col-lg-12
       = f.input :enabled, as: :switchable_checkbox
+      = f.input :retrieval_time_of_day, as: :time_of_day
       = f.input :ignore_checksum, as: :switchable_checkbox
   .row
     h2

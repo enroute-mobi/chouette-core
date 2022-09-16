@@ -3,11 +3,14 @@
 //-------//
 
 .tailwind-form{
+  label {
+    margin-bottom: 0;
+  }
   .form-control.time_of_day{
     width: auto;
     display: flex;
-  } 
-  
+  }
+
   .week-day-checkboxes {
     label {
       width: 34px;

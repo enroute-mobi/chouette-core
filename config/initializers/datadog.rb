@@ -15,6 +15,7 @@ if ENV['DD_AGENT_HOST']
 
     puts "Enable partial flush: #{partial_flush}"
 
+    c.env = env
     c.service = default_service
     c.tags = { app: app_name }
     c.version = Nest::Version.current.name

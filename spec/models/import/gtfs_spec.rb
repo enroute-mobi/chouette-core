@@ -1078,7 +1078,60 @@ RSpec.describe Import::Gtfs do
     end
   end
 
-  describe 'Shapes Part' do
+  describe Import::Gtfs::Shapes do
+    let(:part) { described_class.new import }
+    let(:import) { double shape_provider: shape_provider, source: source, code_space: code_space }
+
+    let(:context) do
+      Chouette.create do
+        code_space
+        shape_provider
+      end
+    end
+    let(:shape_provider) { context.shape_provider }
+    let(:code_space) { context.code_space }
+
+    let(:source) { double shapes: [] }
+
+    describe '#import!' do
+      context "when a GTFS Shape 'test' is provided by the source" do
+        let(:line) { Geo::Line.from([[48.858093, 2.294694], [8.858094, 2.294695]]) }
+        let(:gtfs_shape) do
+          GTFS::Shape.new(id: 'test').tap do |shape|
+            line.each do |position|
+              shape.points << GTFS::ShapePoint.new(latitude: position.latitude, longitude: position.longitude) 
+            end
+          end
+        end
+        before { source.shapes << gtfs_shape }
+
+        context 'when no Shape exists with the same code' do
+          it { expect { part.import! }.to change { shape_provider.shapes.count }.by(1) }
+
+          describe 'created Shape' do
+            before { part.import! }
+
+            let(:shape) { shape_provider.shapes.last }
+
+            describe 'codes' do
+              subject { shape.codes }
+              it { is_expected.to include(an_object_having_attributes(code_space: code_space, value: 'test')) }
+            end
+
+            describe 'geometry' do 
+              subject { Geo::Line.from_rgeos shape.geometry }
+
+              it { is_expected.to be_within(0.0001).of(line) }
+            end
+          end
+        end
+
+        context 'when a Shape exists with the same code' do
+          # TODO
+        end
+      end
+    end
+
     describe Import::Gtfs::Shapes::Decorator do
       let(:gtfs_shape) { GTFS::Shape.new }
       subject(:decorator) { described_class.new gtfs_shape }
@@ -1099,6 +1152,38 @@ RSpec.describe Import::Gtfs do
       describe '.maximum_point_count' do
         subject { described_class.maximum_point_count }
         it { is_expected.to eq(10_000) }
+      end
+
+      describe '#code_value' do
+        subject { decorator.code_value }
+
+        context 'when GTFS Shape id is "dummy"' do
+          before { gtfs_shape.id = 'dummy' }
+          it { is_expected.to eq('dummy') }
+        end
+      end
+
+      describe '#code' do
+        subject { decorator.code }
+
+        describe 'when code_space is undefined' do
+          it { is_expected.to be_nil }
+        end
+
+        describe 'when code space is defined' do
+          let(:code_space) { CodeSpace.new(short_name: 'test') }
+          let(:code_value) { 'code_value' }
+          before do
+            decorator.code_space = code_space
+            allow(decorator).to receive(:code_value).and_return(code_value)
+          end
+          it do
+            is_expected.to have_attributes(
+              code_space: an_object_having_attributes(short_name: 'test'),
+              value: code_value
+            )
+          end
+        end
       end
 
       describe '#errors' do

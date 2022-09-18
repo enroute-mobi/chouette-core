@@ -926,7 +926,7 @@ class Import::Gtfs < Import::Base
       source.shapes.each_slice(1000).each do |gtfs_shapes|
         Shape.transaction do
           gtfs_shapes.each do |gtfs_shape|
-            decorator = Decorator.new(gtfs_shape)
+            decorator = Decorator.new(gtfs_shape, code_space: code_space)
 
             unless decorator.valid?
               decorator.errors.each { |error| create_message error }
@@ -949,8 +949,20 @@ class Import::Gtfs < Import::Base
       mattr_accessor :maximum_point_count, default: 10_000
       mattr_reader :factory, default: RGeo::Geos.factory(srid: 4326)
 
+      def initialize(shape, code_space: nil)
+        super shape
+
+        @code_space = code_space
+      end
+
+      attr_accessor :code_space
+
       def code_value
         id
+      end
+
+      def code 
+        Code.new(code_space: code_space, value: code_value) if code_space
       end
 
       def errors
@@ -983,7 +995,8 @@ class Import::Gtfs < Import::Base
 
       def shape_attributes
         {
-          geometry: rgeos_geometry
+          geometry: rgeos_geometry,
+          codes: [ code ]
         }
       end
     end

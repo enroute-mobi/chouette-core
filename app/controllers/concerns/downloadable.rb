@@ -9,7 +9,7 @@ module Downloadable
   def prepare_for_download(source)
     Chouette::Benchmark.measure 'prepare_download', id: source.id, type: source.class.name do
       Chouette::Benchmark.measure 'cache_stored_file' do
-        source.file.cache_stored_file!
+        source.file.cache! unless source.file.cached?
       end
       Chouette::Benchmark.measure 'clean_cached_files' do
         CarrierWave.clean_cached_files!

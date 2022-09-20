@@ -6,7 +6,7 @@ en:
       new:
         title: Welcome to Chouette
         commit: Sign in
-        baseline: "Take the control of our static mobility data"
+        baseline: "Take control of your static mobility data"
         know_more: "Find out more about <strong>Chouette</strong>"
         sign_in: Sign In
         support: If you have any question, please contact our Support Team

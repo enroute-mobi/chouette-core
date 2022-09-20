@@ -58,7 +58,7 @@ describe TableBuilderHelper, type: :helper do
             </th>
             <th><a href="/workbenches/#{workbench.id}?direction=desc&amp;sort=name">Nom<span class="orderers"><span class="fa fa-sort-up "></span><span class="fa fa-sort-down "></span></span></a></th>
             <th><a href="/workbenches/#{workbench.id}?direction=desc&amp;sort=status">Etat<span class="orderers"><span class="fa fa-sort-up "></span><span class="fa fa-sort-down "></span></span></a></th>
-            <th><a href="/workbenches/#{workbench.id}?direction=desc&amp;sort=organisation">Organisation<span class="orderers"><span class="fa fa-sort-up "></span><span class="fa fa-sort-down "></span></span></a></th>
+            <th><a href="/workbenches/#{workbench.id}?direction=desc&amp;sort=organisation">Organization<span class="orderers"><span class="fa fa-sort-up "></span><span class="fa fa-sort-down "></span></span></a></th>
             <th><a href="/workbenches/#{workbench.id}?direction=desc&amp;sort=validity_period">Période de validité englobante<span class="orderers"><span class="fa fa-sort-up "></span><span class="fa fa-sort-down "></span></span></a></th>
             <th><a href="/workbenches/#{workbench.id}?direction=desc&amp;sort=lines">Lignes<span class="orderers"><span class="fa fa-sort-up "></span><span class="fa fa-sort-down "></span></span></a></th>
             <th><a href="/workbenches/#{workbench.id}?direction=desc&amp;sort=created_at">Créé le<span class="orderers"><span class="fa fa-sort-up "></span><span class="fa fa-sort-down "></span></span></a></th>

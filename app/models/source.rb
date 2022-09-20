@@ -20,7 +20,7 @@ class Source < ApplicationModel
   before_validation :clean, on: :update
 
   attribute :retrieval_time_of_day, TimeOfDay::Type::TimeWithoutZone.new
-  belongs_to :scheduled_job, class_name: '::Delayed::Job'
+  belongs_to :scheduled_job, class_name: '::Delayed::Job', dependent: :destroy
   validates :retrieval_time_of_day, presence: true, if: :enabled?
 
   # ?? Rails 5 ActiveRecord::AttributeAssignment .. doesn't create an object

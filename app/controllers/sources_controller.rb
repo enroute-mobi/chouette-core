@@ -31,7 +31,7 @@ class SourcesController < ChouetteController
   end
 
   def show
-    @retrievals = @source.retrievals.order(created_at: :desc)
+    @retrievals = @source.retrievals.order(started_at: :desc).limit(20)
   end
 
   def retrieve

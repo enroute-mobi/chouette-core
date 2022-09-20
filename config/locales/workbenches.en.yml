@@ -44,8 +44,8 @@ en:
     new:
       title: Confirm Workgroup participation
       text:  |
-        You received a confirmation code to join the Workgroup from another Organisation.
-        By accepting this invitation, our Organisation will have a new Workbench to collaborate (and provide data) into this Workgroup.
+        You received a confirmation code to join the Workgroup from another Organization.
+        By accepting this invitation, our Organization will have a new Workbench to collaborate (and provide data) into this Workgroup.
 
   activerecord:
     models:
@@ -58,7 +58,7 @@ en:
         import_compliance_control_set_id: Space data before import
         merge_compliance_control_set_id: Space data before merge
         name: Name
-        organisation: Organisation
+        organisation: Organization
         last_merged_data: Last merged data
         priority: Priority
   activemodel:

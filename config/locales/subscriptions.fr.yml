@@ -11,7 +11,7 @@ fr:
       subscription: "compte"
     attributes:
       subscription:
-        organisation_name: "Organisation"
+        organisation_name: "Organization"
         user_name: "Nom complet"
         email: "Adresse mail"
         password: "Mot de passe"

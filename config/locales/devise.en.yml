@@ -53,7 +53,7 @@ en:
       user:
         email: "Email"
         organisation:
-          name: "Organisation name"
+          name: "Organization name"
         name: Full name
         password: Password
         password_confirmation: Password confirmation
@@ -68,7 +68,7 @@ en:
       user:
         email: "Email"
         organisation:
-          name: "Organisation name"
+          name: "Organization name"
         name: Full name
         password: Password
         password_confirmation: Password confirmation

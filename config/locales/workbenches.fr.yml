@@ -26,7 +26,7 @@ fr:
       title: "%{organisation} dashboard"
       offers:
         title: "Offre de transport"
-        organisation: "Offres de mon Organisation"
+        organisation: "Offres de mon Organization"
         idf: "Offres IDF"
         referentials: "Jeux de données"
         calendars: "Calendriers"
@@ -58,7 +58,7 @@ fr:
         import_compliance_control_set_id: Jeu de données après import
         merge_compliance_control_set_id: Jeu de Données avant intégration
         name: Nom
-        organisation: Organisation
+        organisation: Organization
         last_merged_data: Dernière finalisation
         priority: Priorité
         invitation_code: Code de confirmation

@@ -15,7 +15,7 @@ class Source < ApplicationModel
 
   enumerize :downloader_type, in: %i(direct french_nap authorization), default: :direct
 
-  scope :enabled, -> { where.not(retrieval_frequency: true) }
+  scope :enabled, -> { where.not(retrieval_frequency: 'none') }
 
   before_validation :clean, on: :update
 
@@ -30,20 +30,7 @@ class Source < ApplicationModel
   end
 
   def next_retrieval
-    run_at = scheduled_job.run_at
-
-    case retrieval_frequency
-    when 'daily'
-       run_at + 1.day
-    when 'hourly'
-      if run_at < Time.now
-        run_at + 1.hour
-      else
-        run_at
-      end
-    else
-      nil
-    end
+    scheduled_job.run_at
   end
 
   # ?? Rails 5 ActiveRecord::AttributeAssignment .. doesn't create an object

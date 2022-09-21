@@ -210,6 +210,24 @@ class Export::Gtfs < Export::Base
 
   end
 
+  # Regroups a Service identifier (service_id) and its validity period
+  class Service
+    def initialize(id, validity_period: nil)
+      @id = id
+      @validity_period = validity_period
+    end
+
+    attr_accessor :id, :validity_period
+
+    def ==(other)
+      id == other&.id
+    end
+
+    def extend_validity_period(period_or_date)
+      period = Period.for(period_or_date)
+      self.validity_period = validity_period&.extend(period) || period
+    end
+  end
   class Index
 
     def initialize
@@ -217,7 +235,7 @@ class Export::Gtfs < Export::Base
       @route_ids = {}
       @agency_ids = {}
       @trip_ids = Hash.new { |h,k| h[k] = [] }
-      @service_ids = Hash.new { |h,k| h[k] = [] }
+      @services = Hash.new { |h,k| h[k] = [] }
       @vehicle_journey_time_zones = {}
       @trip_index = 0
       @pickup_type = {}
@@ -252,12 +270,12 @@ class Export::Gtfs < Export::Base
       @agency_ids[company.id] = agency_id
     end
 
-    def register_service_ids(time_table, service_ids)
-      @service_ids[time_table.id] = service_ids
+    def register_services(time_table, services)
+      @services[time_table.id] = services
     end
 
-    def service_ids(time_table_id)
-      @service_ids[time_table_id]
+    def services(time_table_id)
+      @services[time_table_id]
     end
 
     def trip_index
@@ -663,7 +681,7 @@ class Export::Gtfs < Export::Base
         decorated_time_table.calendars.each { |c| target.calendars << c }
         decorated_time_table.calendar_dates.each { |cd| target.calendar_dates << cd }
 
-        index.register_service_ids time_table, decorated_time_table.service_ids
+        index.register_services time_table, decorated_time_table.services
       end
     end
 
@@ -672,10 +690,16 @@ class Export::Gtfs < Export::Base
       def initialize(time_table, export_date_range = nil)
         super time_table
         @export_date_range = export_date_range
+
+        @services_by_id ||= Hash.new { |h, service_id| h[service_id] = Service.new(service_id) }
       end
 
-      def service_ids
-        @service_ids ||= Set.new
+      def service(service_id)
+        @services_by_id[service_id]
+      end
+
+      def services
+        @services_by_id.values
       end
 
       def periods
@@ -703,19 +727,21 @@ class Export::Gtfs < Export::Base
       def calendars
         decorated_periods.map do |decorated_period|
           with_service_id decorated_period.calendar_attributes,
-                          period_service_id(decorated_period)
+                          period_service_id(decorated_period),
+                          decorated_period.range
         end
       end
 
       def calendar_dates
         dates.map do |date|
           with_service_id DateDecorator.new(date).calendar_date_attributes,
-                          date_service_id(date)
+                          date_service_id(date),
+                          date.date
         end
       end
 
-      def with_service_id(attributes, service_id)
-        service_ids << service_id
+      def with_service_id(attributes, service_id, period_or_date)
+        service(service_id).extend_validity_period period_or_date
         attributes.merge service_id: service_id
       end
 
@@ -826,8 +852,8 @@ class Export::Gtfs < Export::Base
       vehicle_journeys.includes(:time_tables, :journey_pattern, :codes, route: :line).find_each do |vehicle_journey|
         decorated_vehicle_journey = Decorator.new(vehicle_journey, index: index, code_provider: code_spaces.vehicle_journeys)
 
-        decorated_vehicle_journey.service_ids.each do |service_id|
-          trip_attributes = decorated_vehicle_journey.trip_attributes(service_id)
+        decorated_vehicle_journey.services.each do |service|
+          trip_attributes = decorated_vehicle_journey.trip_attributes(service)
 
           target.trips << trip_attributes
           index.register_trip_id vehicle_journey, trip_attributes[:id]
@@ -854,32 +880,32 @@ class Export::Gtfs < Export::Base
         index.route_id(route.line_id) if route
       end
 
-      def trip_id(suffix = nil)
-        if single_service_id?
+      def trip_id(service)
+        if service == preferred_service
           base_trip_id
         else
-          "#{base_trip_id}-#{suffix}"
+          "#{base_trip_id}-#{service.id}"
         end
       end
 
       def base_trip_id
-        gtfs_code || objectid
+        gtfs_code || objectid 
       end
 
       def gtfs_code
         code_provider.unique_code(self) if code_provider
       end
 
-      def service_ids
+      def services
         return [] unless index
 
-        @service_ids ||= time_table_ids.each_with_object(Set.new) do |time_table_id, all|
-          all.merge index.service_ids(time_table_id)
+        @services ||= time_table_ids.each_with_object(Set.new) do |time_table_id, all|
+          all.merge index.services(time_table_id)
         end
       end
 
-      def single_service_id?
-        @single_service_id ||= service_ids.one?
+      def preferred_service
+        @preferred_service ||= ServiceFinder.new(services).preferred
       end
 
       def direction_id
@@ -896,11 +922,11 @@ class Export::Gtfs < Export::Base
         journey_pattern&.published_name
       end
 
-      def trip_attributes(service_id)
+      def trip_attributes(service)
         {
           route_id: route_id,
-          service_id: service_id,
-          id: trip_id(service_id),
+          service_id: service.id,
+          id: trip_id(service),
           short_name: published_journey_name,
           direction_id: direction_id,
           shape_id: gtfs_shape_id,
@@ -909,6 +935,41 @@ class Export::Gtfs < Export::Base
           # wheelchair_accessible: TO DO
           # bikes_allowed: TO DO
         }
+      end
+    end
+
+    # Find Preferred Service in a collection
+    class ServiceFinder
+      def initialize(services)
+        @services = services
+      end
+
+      def preferred
+        single || current || self.next
+      end
+
+      def single
+        first if one?
+      end
+
+      def current
+        find { |service| service.validity_period.include?(today) }
+      end
+
+      def nexts
+        select { |service| service.validity_period.from > today }
+      end
+
+      def next
+        nexts.min_by { |service| service.validity_period.from }
+      end
+
+      attr_reader :services
+
+      delegate :find, :select, :first, :one?, to: :services
+
+      def today
+        @today ||= Date.current
       end
     end
   end

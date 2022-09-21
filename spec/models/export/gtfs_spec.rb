@@ -842,7 +842,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
     before do
       context.referential.switch
-      index.register_service_ids time_table, [time_table.objectid]
+      index.register_services time_table, [Export::Gtfs::Service.new(time_table.objectid)]
     end
 
     it "registers the GTFS Trip identifiers used for each VehicleJourney" do
@@ -872,6 +872,157 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
   end
 
+  describe Export::Gtfs::VehicleJourneys::ServiceFinder do
+    subject(:finder) { described_class.new services }
+    let(:services) { [] }
+
+    describe '#single' do
+      subject { finder.single }
+
+      let(:service) { Export::Gtfs::Service.new('test') }
+      let(:services) { [service] }
+
+      context 'when a single Service is present' do
+        it 'returns this Service' do
+          is_expected.to eq(service)
+        end
+      end
+
+      context 'when several Services are present' do
+        let(:services) { 3.times.map { double } }
+        it { is_expected.to be_nil }
+      end
+    end
+
+    context 'when today is 2030-01-15' do
+      before { allow(finder).to receive(:today).and_return(today) }
+      let(:today) { Date.parse '2030-01-15' }
+
+      describe '#current' do
+        subject { finder.current }
+
+        context 'when no service is present' do
+          it { is_expected.to be_nil }
+        end
+
+        context 'when a Service validity period includes today' do
+          let(:service) { Export::Gtfs::Service.new('test', validity_period: Period.parse('2030-01-10..2030-01-20')) }
+          let(:services) { [service] }
+
+          it { is_expected.to eq(service) }
+        end
+
+        context 'when no Service validity period includes today' do
+          let(:service) { Export::Gtfs::Service.new('test', validity_period: Period.parse('2030-01-20..2030-01-30')) }
+          let(:services) { [service] }
+
+          it { is_expected.to be_nil }
+        end
+
+        context 'when several services includes today in their validity periods' do
+          let(:first) { Export::Gtfs::Service.new('test', validity_period: Period.parse('2030-01-10..2030-01-20')) }
+          let(:second) { Export::Gtfs::Service.new('second', validity_period: Period.parse('2030-01-10..2030-01-20')) }
+          let(:services) { [first, second] }
+
+          it 'returns the first one' do
+            is_expected.to eq(first)
+          end
+        end
+      end
+
+      describe '#nexts' do
+        subject { finder.nexts }
+
+        context 'when no service is present' do
+          it { is_expected.to be_empty }
+        end
+
+        context 'when a Service is before today' do
+          let(:service) { Export::Gtfs::Service.new('test', validity_period: Period.parse('2030-01-01..2030-01-10')) }
+          let(:services) { [service] }
+
+          it { is_expected.to_not include(service) }
+        end
+
+        context 'when a Service starts before today' do
+          let(:service) { Export::Gtfs::Service.new('test', validity_period: Period.parse('2030-01-01..2030-01-30')) }
+          let(:services) { [service] }
+
+          it { is_expected.to_not include(service) }
+        end
+
+        context 'when a Service starts after today' do
+          let(:service) { Export::Gtfs::Service.new('test', validity_period: Period.parse('2030-01-20..2030-01-30')) }
+          let(:services) { [service] }
+
+          it { is_expected.to include(service) }
+        end
+
+        context 'when several Service start after today' do
+          let(:services) do
+            3.times.map do |n|
+              Export::Gtfs::Service.new("test-#{n}", validity_period: Period.parse('2030-01-20..2030-01-30'))
+            end
+          end
+          it { is_expected.to match_array(services) }
+        end
+      end
+
+      describe '#next' do
+        subject { finder.next }
+
+        before { allow(finder).to receive(:nexts).and_return(nexts) }
+        let(:nexts) { [] }
+
+        context 'when no next service is found' do
+          it { is_expected.to be_nil }
+        end
+
+        context 'when several next services are found' do
+          let(:first) { Export::Gtfs::Service.new('test', validity_period: Period.parse('2030-01-20..2030-01-30')) }
+          let(:second) { Export::Gtfs::Service.new('second', validity_period: Period.parse('2030-01-21..2030-01-30')) }
+          let(:nexts) { [first, second] }
+
+          it 'returns the Service with the nearest start' do
+            is_expected.to eq(first)
+          end
+        end
+      end
+
+      describe '#preferred' do
+        subject { finder.preferred }
+
+        context 'when single is defined' do
+          before { allow(finder).to receive(:single).and_return(double('single')) }
+          it { is_expected.to eq(finder.single) }
+        end
+
+        context 'when single is nil' do
+          before { allow(finder).to receive(:single).and_return(nil) }
+
+          context 'when current is defined' do
+            before { allow(finder).to receive(:current).and_return(double('current')) }
+            it { is_expected.to eq(finder.current) }
+          end
+
+          context 'when current is nil' do
+            before { allow(finder).to receive(:current).and_return(nil) }
+
+            context 'when next is defined' do
+              before { allow(finder).to receive(:next).and_return(double('next')) }
+              it { is_expected.to eq(finder.next) }
+            end
+
+            context 'when next is nil' do
+              before { allow(finder).to receive(:next).and_return(nil) }
+              it { is_expected.to be_nil }
+            end
+          end
+        end
+      end
+    end
+  end
+
   describe 'VehicleJourney Decorator' do
 
     let(:vehicle_journey) { Chouette::VehicleJourney.new }
@@ -898,57 +1049,46 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
     end
 
     describe '#trip_id' do
+      subject { decorator.trip_id(service) }
 
-      subject { decorator.trip_id(suffix) }
-
-      let(:suffix) { 'suffix' }
+      let(:service) { Export::Gtfs::Service.new('service_id') }
       let(:base_trip_id) { 'base_trip_id' }
-      let(:suffixed_base_trip_id) { "#{base_trip_id}-#{suffix}" }
 
       before do
         allow(decorator).to receive(:base_trip_id).and_return(base_trip_id)
       end
 
-      context "when several service identifiers are associated" do
+      context "when the target service isn't the preferred one" do
+        before { allow(decorator).to receive(:preferred_service).and_return(nil) }
 
-        before { allow(decorator).to receive(:single_service_id?).and_return(false) }
-
-        it "uses the base trip id with the given suffix" do
-          is_expected.to eq(suffixed_base_trip_id)
+        it 'uses the base trip id suffixed with service id' do
+          is_expected.to eq('base_trip_id-service_id')
         end
-
       end
 
-      context "when a single service identifier is associated" do
+      context 'when the target service is the preferred one' do
+        before { allow(decorator).to receive(:preferred_service).and_return(service) }
 
-        before do
-          allow(decorator).to receive(:single_service_id?).and_return(true)
-        end
-
-        it "uses the raw base trip id" do
+        it 'uses the raw base trip id' do
           is_expected.to eq(base_trip_id)
         end
-
       end
 
       describe '#trip_attributes' do
-
-        subject { decorator.trip_attributes(service_id) }
-        let(:service_id) { 'service_id' }
+        subject { decorator.trip_attributes(service) }
 
         it 'uses route_id as attribute' do
           allow(decorator).to receive(:route_id).and_return(rand(100))
           is_expected.to include(route_id: decorator.route_id)
         end
 
-        it 'uses the given service_id as attribute' do
-          is_expected.to include(service_id: service_id)
+        it 'uses the given Service id as attribute' do
+          is_expected.to include(service_id: service.id)
         end
 
         it 'uses trip_id (with given service_id) as id attribute' do
-          trip_id = rand(100)
-          allow(decorator).to receive(:trip_id).with(service_id).and_return(trip_id)
-          is_expected.to include(id: trip_id)
+          allow(decorator).to receive(:trip_id).with(service).and_return('trip_id')
+          is_expected.to include(id: 'trip_id')
         end
 
         it 'uses published_journey_name as short_name attribute' do
@@ -965,9 +1105,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
           allow(decorator).to receive(:shape_id).and_return(42)
           is_expected.to include(shape_id: decorator.gtfs_shape_id)
         end
-
       end
-
     end
 
     describe '#gtfs_code' do
@@ -1015,41 +1153,26 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
     end
 
-    describe '#service_ids' do
+    describe '#services' do
+      subject { decorator.services }
 
-      subject { decorator.service_ids }
+      def services(*identifiers)
+        identifiers.flatten!
+        identifiers.map do |identifier|
+          Export::Gtfs::Service.new identifier
+        end.to_set
+      end
 
       before do
-        decorator.index.register_service_ids double(id: 1), %w{a b c}.to_set
-        decorator.index.register_service_ids double(id: 2), %w{d e f}.to_set
+        decorator.index.register_services double(id: 1), services(%w[a b c])
+        decorator.index.register_services double(id: 2), services(%w[d e f])
 
         allow(decorator).to receive(:time_table_ids).and_return([1, 2])
       end
 
-      it "returns all the GTFS service identifiers associated to Vehicle Journey TimeTable identifiers" do
-        is_expected.to match_array(%w{a b c d e f}.to_set)
+      it 'returns all the GTFS service identifiers associated to Vehicle Journey TimeTable identifiers' do
+        is_expected.to match_array(services(%w[a b c d e f]))
       end
-
-    end
-
-    describe '#single_service_id?' do
-
-      subject { decorator.single_service_id? }
-
-      before { allow(decorator).to receive(:service_ids).and_return(service_ids.to_set) }
-
-      context 'when there is a single value returned by service_ids' do
-        let(:service_ids) { %w{a} }
-
-        it { is_expected.to be_truthy }
-      end
-
-      context 'when there are several values returned by service_ids' do
-        let(:service_ids) { %w{a b} }
-
-        it { is_expected.to be_falsy }
-      end
-
     end
 
     describe '#direction_id' do
@@ -1316,6 +1439,60 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
       end
 
+    end
+  end
+
+  describe Export::Gtfs::Service do
+    subject(:service) { Export::Gtfs::Service.new('test') }
+
+    describe '==' do
+      subject { service == other }
+
+      context 'when the given Service has the same id' do
+        let(:other) { Export::Gtfs::Service.new('test') }
+        it { is_expected.to be_truthy }
+      end
+
+      context 'when the given Service has a different id' do
+        let(:other) { Export::Gtfs::Service.new('other') }
+        it { is_expected.to be_falsy }
+      end
+
+      context 'when the given Service is nil' do
+        let(:other) { nil }
+        it { is_expected.to be_falsy }
+      end
+    end
+
+    describe '#extend_validity_period' do
+      context 'when the Service has no validity period' do
+        it 'sets to the validity period to the given period' do
+          period = Period.parse('2030-01-01..2030-01-10')
+          expect { service.extend_validity_period(period) }.to change(service, :validity_period).from(nil).to(period)
+        end
+      end
+
+      context 'when the Service has the validity period "2030-01-10..2030-01-20"' do
+        before { service.validity_period = Period.parse '2030-01-10..2030-01-20' }
+
+        context 'when the period "2030-01-20..2030-01-30" is given' do
+          let(:period) { Period.parse '2030-01-20..2030-01-30' }
+
+          it do
+            expect { service.extend_validity_period(period) }.to change(service, :validity_period)
+              .to(Period.parse('2030-01-10..2030-01-30'))
+          end
+        end
+
+        context 'when the date "2030-01-30" is given' do
+          let(:date) { Date.parse '2030-01-30' }
+
+          it do
+            expect { service.extend_validity_period(date) }.to change(service, :validity_period)
+              .to(Period.parse('2030-01-10..2030-01-30'))
+          end
+        end
+      end
     end
   end
 

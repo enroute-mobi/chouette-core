@@ -1,13 +1,15 @@
 module Chouette::Sync
   module Entrance
     class Netex < Chouette::Sync::Base
+      mattr_accessor :default_model_id_attribute, default: :codes
+
       def initialize(options = {})
         default_options = {
           resource_type: :stop_place_entrance,
           resource_id_attribute: :id,
           resource_decorator: Decorator,
           model_type: :entrance,
-          model_id_attribute: :codes
+          model_id_attribute: default_model_id_attribute
         }
         options.reverse_merge!(default_options)
 

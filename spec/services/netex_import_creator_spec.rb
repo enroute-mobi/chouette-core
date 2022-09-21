@@ -372,4 +372,28 @@ RSpec.describe NetexImportCreator do
 
   end
 
+  describe '.enqueue_job' do
+    subject { creator.enqueue_job }
+
+    context 'when the Creator is in inline mode' do
+      before { creator.inline_job = true }
+
+      it 'invokes the method start' do
+        expect(creator).to receive(:start)
+        subject
+      end
+      it { is_expected.to be_nil }
+    end
+
+    context "when the Creator isn't in inline mode" do
+      before { creator.inline_job = false }
+
+      it { expect { subject }.to change(Delayed::Job, :count).by(1) }
+
+      describe 'created job' do
+        it { is_expected.to have_attributes(target_method: :start) }
+        it { is_expected.to have_attributes(operation: creator) }
+      end
+    end
+  end
 end

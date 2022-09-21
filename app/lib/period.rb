@@ -90,6 +90,21 @@ class Period < Range
     RangeDecorator.new(range).period
   end
 
+  def self.for_date(date)
+    Period.new(from: date, to: date)
+  end
+
+  def self.for(value)
+    case value
+    when Date
+      Period.for_date value
+    when Period
+      value
+    else
+      Period.for_range value
+    end
+  end
+
   # Period.from(Date.yesterday)
   def self.from(from)
     new from: from
@@ -189,7 +204,6 @@ class Period < Range
   def infinite?
     from.nil? || to.nil?
   end
-  alias endless? infinite?
 
   # Redefine #size method to compute dates
   def size
@@ -254,6 +268,23 @@ class Period < Range
       [date, from].compact.max,
       to
     ].compact.min
+  end
+
+  def beginless?
+    from.nil?
+  end
+
+  def endless?
+    to.nil?
+  end
+
+  def extend(other)
+    both = [self, other]
+
+    extended_from = both.map(&:from).min unless both.any?(&:beginless?)
+    extended_to = both.map(&:to).max unless both.any?(&:endless?)
+
+    Period.new(from: extended_from, to: extended_to)
   end
 
   # Internal - Invokes to_date method if available

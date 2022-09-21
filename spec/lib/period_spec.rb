@@ -383,6 +383,95 @@ RSpec.describe Period do
       end
     end
   end
+
+  describe '#beginless?' do
+    [
+      ['2030-01-01..2030-01-12', false],
+      ['2030-01-01..', false],
+      ['..2030-01-12', true]
+    ].each do |definition, expected|
+      context "when Period is #{definition}" do
+        let(:period) { Period.parse definition }
+        subject { period.beginless? }
+        it { is_expected.to eq(expected) }
+      end
+    end
+  end
+
+  describe '#endless?' do
+    [
+      ['2030-01-01..2030-01-12', false],
+      ['2030-01-01..', true],
+      ['..2030-01-12', false]
+    ].each do |definition, expected|
+      context "when Period is #{definition}" do
+        let(:period) { Period.parse definition }
+        subject { period.endless? }
+        it { is_expected.to eq(expected) }
+      end
+    end
+  end
+
+  describe '.extend' do
+    subject { period.extend(other) }
+
+    [
+      ['2030-06-01..2030-06-30', '2030-05-15..2030-06-15', '2030-05-15..2030-06-30'],
+      ['2030-06-01..2030-06-30', '2030-06-15..2030-07-15', '2030-06-01..2030-07-15'],
+      ['2030-06-01..2030-06-30', '2030-06-10..2030-06-20', '2030-06-01..2030-06-30'],
+      ['2030-06-01..2030-06-30', '2030-05-01..2030-07-01', '2030-05-01..2030-07-01'],
+      ['2030-06-01..2030-06-30', '2030-05-01..2030-05-31', '2030-05-01..2030-06-30'],
+      ['2030-06-01..2030-06-30', '2030-07-01..2030-07-31', '2030-06-01..2030-07-31'],
+      ['2030-06-01..', '2030-05-15..2030-06-15', '2030-05-15..'],
+      ['2030-06-01..', '2030-06-15..2030-07-15', '2030-06-01..'],
+      ['2030-06-01..', '2030-06-10..2030-06-20', '2030-06-01..'],
+      ['2030-06-01..', '2030-05-01..2030-07-01', '2030-05-01..'],
+      ['..2030-06-30', '2030-05-15..2030-06-15', '..2030-06-30'],
+      ['..2030-06-30', '2030-06-15..2030-07-15', '..2030-07-15'],
+      ['..2030-06-30', '2030-06-10..2030-06-20', '..2030-06-30'],
+      ['..2030-06-30', '2030-05-01..2030-07-01', '..2030-07-01'],
+      ['2030-06-01..2030-06-30', '2030-05-01..', '2030-05-01..'],
+      ['2030-06-01..2030-06-30', '2030-06-15..', '2030-06-01..'],
+      ['2030-06-01..2030-06-30', '2030-07-15..', '2030-06-01..']
+    ].each do |period, other, expected|
+      context "when Period is #{period}" do
+        let(:period) { Period.parse period }
+
+        context "when the given Period is #{other}" do
+          let(:other) { Period.parse other }
+          it { is_expected.to eq(Period.parse(expected)) }
+        end
+      end
+    end
+  end
+
+  describe '.for_date' do
+    subject { Period.for_date date }
+
+    context 'when given date is 2030-01-01' do
+      let(:date) { Date.parse('2030-01-01') }
+      it { is_expected.to eq(Period.parse('2030-01-01..2030-01-01')) }
+    end
+  end
+
+  describe '.for' do
+    subject { Period.for value }
+
+    context 'when given value is the Date "2030-01-01"' do
+      let(:value) { Date.parse('2030-01-01') }
+      it { is_expected.to eq(Period.parse('2030-01-01..2030-01-01')) }
+    end
+
+    context 'when given value is the Date range "2030-01-01..2030-01-31"' do
+      let(:value) { Date.parse('2030-01-01')..Date.parse('2030-01-31') }
+      it { is_expected.to eq(Period.parse('2030-01-01..2030-01-31')) }
+    end
+
+    context 'when given value is the Period "2030-01-01..2030-01-31"' do
+      let(:value) { Period.parse('2030-01-01..2030-01-31') }
+      it { is_expected.to eq(value) }
+    end
+  end
 end
 
 RSpec.describe Period::Type do

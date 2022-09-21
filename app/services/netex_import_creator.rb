@@ -44,7 +44,7 @@ class NetexImportCreator
 
     measure 'import_netex_creator.create' do
       if valid?
-        enqueue_job :start
+        enqueue_job
       else
         abort
       end
@@ -180,13 +180,16 @@ class NetexImportCreator
     import.create_message criticity: :error, message_key: key, message_attributes: attributes, resource_attributes: resource_attributes
   end
 
-  def enqueue_job(method)
+  def enqueue_job
     if inline_job
-      send method
+      start
       return
     end
 
-    super
+    job = LegacyOperationJob.new(self, :start)
+    Rails.logger.info "Enqueue Operation #{job.display_name}"
+    Delayed::Job.enqueue job
+    job
   end
   attr_accessor :inline_job
 

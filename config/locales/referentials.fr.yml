@@ -132,7 +132,7 @@ fr:
         archived_at: "Archivé"
         archived_at_null: "En préparation"
         created_from: 'Créé à partir de'
-        organisation: 'Organization'
+        organisation: 'Organisation'
         number_of_lines: 'Nb lignes'
         from_current_offer: "Utiliser l'offre finalisée courante"
         urgent: Contient de l'offre urgente

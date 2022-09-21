@@ -30,6 +30,8 @@ class Source < ApplicationModel
   end
 
   def next_retrieval
+    return if retrieval_frequency_none?
+
     scheduled_job.run_at
   end
 

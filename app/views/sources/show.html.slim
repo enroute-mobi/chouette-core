@@ -10,9 +10,6 @@
           = d.attribute :name
           = d.attribute :url, link: @source.url
           = d.attribute :downloader_type, as: :enumerize
-          = d.attribute :enabled, as: :boolean
-          = d.attribute :retrieval_time_of_day, as: :time_of_day
-          = d.attribute :ignore_checksum, as: :boolean
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = simple_block_for @source, title: t('sources.form.sections.import_options') do |d|
@@ -20,10 +17,16 @@
           = d.attribute :import_option_archive_on_fail, as: :boolean
           - if policy(@source).update_workgroup_providers?
             = d.attribute :import_option_update_workgroup_providers, as: :boolean
-
+    .row
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = simple_block_for @source, title: t('sources.form.sections.retrieval') do |d|
+          = d.attribute :retrieval_frequency, as: :enumerize
+          = d.attribute :retrieval_time_of_day, as: :time_of_day
+          = d.attribute :ignore_checksum, as: :boolean
+          = d.attribute :next_retrieval, as: :date
       .row
         .col-lg-12
-          .h3 = t('sources.form.sections.retrieval')
+          .h3 = t('sources.form.sections.last_retrieval')
           - if @retrievals.any?
             = table_builder_2 @retrievals,
               [ \

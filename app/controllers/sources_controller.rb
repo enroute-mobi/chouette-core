@@ -76,7 +76,8 @@ class SourcesController < ChouetteController
       :updated_at,
       :downloader_type,
       :downloader_option_raw_authorization,
-      :retrieval_time_of_day
+      :retrieval_time_of_day,
+      :retrieval_frequency
     ).with_defaults(workbench_id: parent.id)
   end
 end

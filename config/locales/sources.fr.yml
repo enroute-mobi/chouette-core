@@ -19,7 +19,8 @@ fr:
     form:
       sections:
         identification: "Identification"
-        retrieval: "Dernières Récuperations"
+        retrieval: "Récuperations"
+        last_retrieval: "Dernières Récuperations"
         import_options: "Options d'importation"
     filters:
     errors:
@@ -43,6 +44,8 @@ fr:
         import_option_update_workgroup_providers: Autorisation des changements sur les ressources de l'Espace de travail
         enabled: "Activée"
         retrieval_time_of_day: "Heure de récupération"
+        retrieval_frequency: "Récupérer automatiquement"
+        next_retrieval: "Prochaine récupération"
         ignore_checksum: "Ignorer la Signature"
         created_at: "Créé le"
         updated_at: "Edité le"

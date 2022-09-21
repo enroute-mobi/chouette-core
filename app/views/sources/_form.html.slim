@@ -16,7 +16,9 @@
       = t("sources.form.sections.retrieval")
     .simple-separator.mb-5
     .col-lg-12
-      = f.input :enabled, as: :switchable_checkbox
+      .flex.items-center.mb-10
+        = f.label Source.human_attribute_name(:retrieval_frequency), class: 'flex justify-end w-2/6 mr-8 mb-0 control-label pt-0'
+        = f.input :retrieval_frequency, as: :radio_buttons, label: false, wrapper: :vertical_radio_and_checkboxes_tailwind
       = f.input :retrieval_time_of_day, as: :time_of_day
       = f.input :ignore_checksum, as: :switchable_checkbox
   .row

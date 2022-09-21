@@ -19,7 +19,8 @@ en:
     form:
       sections:
         identification: "Identification"
-        retrieval: "Last Retrievals"
+        retrieval: "Retrievals"
+        last_retrieval: "Last Retrievals"
         import_options: "Import Options"
     filters:
     errors:

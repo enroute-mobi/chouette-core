@@ -14,9 +14,24 @@ RSpec.describe Source do
     describe '#cron' do
       subject { job.cron }
 
-      before { source.retrieval_time_of_day = TimeOfDay.new(7, 30) }
-      context 'when Source retrieval_time_of_day is 7:30' do
-        it { is_expected.to eq('30 7 * * *') }
+      describe "#daily" do
+        before do
+          source.retrieval_time_of_day = TimeOfDay.new(7, 30)
+          source.retrieval_frequency = 'daily'
+        end
+
+        context 'when Source retrieval_time_of_day is 7:30' do
+          it { is_expected.to eq('30 7 * * *') }
+        end
+      end
+
+      describe "#hourly" do
+        before do
+          source.retrieval_frequency = 'hourly'
+          source.id = 1
+        end
+
+        it { is_expected.to eq('1 * * * *') }
       end
     end
   end
@@ -28,7 +43,7 @@ RSpec.describe Source do
     subject { source.retrieve }
 
     context 'when source is not enabled' do
-      before { source.enabled = false }
+      before { source.retrieval_frequency = "none" }
 
       it 'should return without creating a Retrieval' do
         expect { subject }.to_not change { source.retrievals.count }.from(0)

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_09_09_074432) do
+ActiveRecord::Schema.define(version: 2022_09_20_203015) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -1373,10 +1373,10 @@ ActiveRecord::Schema.define(version: 2022_09_09_074432) do
     t.jsonb "import_options", default: {}
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "enabled", default: true
     t.boolean "ignore_checksum", default: false
     t.time "retrieval_time_of_day"
     t.bigint "scheduled_job_id"
+    t.string "retrieval_frequency"
     t.index ["scheduled_job_id"], name: "index_sources_on_scheduled_job_id"
     t.index ["workbench_id"], name: "index_sources_on_workbench_id"
   end

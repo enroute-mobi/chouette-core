@@ -15,13 +15,36 @@ class Source < ApplicationModel
 
   enumerize :downloader_type, in: %i(direct french_nap authorization), default: :direct
 
-  scope :enabled, -> { where enabled: true }
+  scope :enabled, -> { where.not(retrieval_frequency: true) }
 
   before_validation :clean, on: :update
 
   attribute :retrieval_time_of_day, TimeOfDay::Type::TimeWithoutZone.new
   belongs_to :scheduled_job, class_name: '::Delayed::Job', dependent: :destroy
-  validates :retrieval_time_of_day, presence: true, if: :enabled?
+  validates :retrieval_time_of_day, presence: true, if: :retrieval_frequency_daily?
+
+  enumerize :retrieval_frequency, in: %w(none hourly daily), predicates: { prefix: true }
+
+  def enabled?
+    !retrieval_frequency_none?
+  end
+
+  def next_retrieval
+    run_at = scheduled_job.run_at
+
+    case retrieval_frequency
+    when 'daily'
+       run_at + 1.day
+    when 'hourly'
+      if run_at < Time.now
+        run_at + 1.hour
+      else
+        run_at
+      end
+    else
+      nil
+    end
+  end
 
   # ?? Rails 5 ActiveRecord::AttributeAssignment .. doesn't create an object
   # by invoke writer with multiparameter attributes (like {1 => 13, 2 => 15})
@@ -48,7 +71,7 @@ class Source < ApplicationModel
   end
 
   def reschedule_needed?
-    enabled_changed? || retrieval_time_of_day_changed?
+    retrieval_frequency_changed? || retrieval_time_of_day_changed?
   end
 
   # REMOVEME after CHOUETTE-2007
@@ -68,8 +91,14 @@ class Source < ApplicationModel
     end
 
     def cron
-      # minutes hours day-of-month month day-of-week
-      "#{source.retrieval_time_of_day.minute} #{source.retrieval_time_of_day.hour} * * *"
+      case source.retrieval_frequency
+      when 'daily'
+        "#{source.retrieval_time_of_day.minute} #{source.retrieval_time_of_day.hour} * * *"
+      when 'hourly'
+        "#{source.id % 60} * * * *"
+      else
+        nil
+      end
     end
 
     def source
@@ -148,7 +177,7 @@ class Source < ApplicationModel
   end
 
   def retrieve
-    if enabled
+    if enabled?
       retrieval = retrievals.create(creator: "Source")
       retrieval.enqueue
       retrievals.delete_older

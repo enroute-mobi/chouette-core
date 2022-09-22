@@ -1,9 +1,10 @@
 # frozen_string_literal: true
+
 RSpec.describe Query::VehicleJourney do
 
   let(:query) { Query::VehicleJourney.new(Chouette::VehicleJourney.all) }
 
-  describe "#text" do
+  describe '#text' do
     let(:context) do
       Chouette.create do
         vehicle_journey
@@ -16,32 +17,32 @@ RSpec.describe Query::VehicleJourney do
       context.referential.switch
     end
 
-    context "when published journey name is the vehicle journey published journey name" do
+    context 'when published journey name is the vehicle journey published journey name' do
       subject { query.text(vehicle_journey.published_journey_name).scope }
 
-      it "includes vehicle journey" do
+      it 'includes vehicle journey' do
         is_expected.to include(vehicle_journey)
       end
     end
 
-    context "when objectid is a part of the vehicle journey objectid" do
+    context 'when objectid is a part of the vehicle journey objectid' do
       subject { query.text(vehicle_journey.objectid.last(20)).scope }
 
-      it "includes vehicle journey" do
+      it 'includes vehicle journey' do
         is_expected.to include(vehicle_journey)
       end
     end
 
-    context "when published journey name is not the vehicle journey published journey name" do
-      subject { query.text("test").scope }
+    context 'when published journey name is not the vehicle journey published journey name' do
+      subject { query.text('test').scope }
 
-      it "not includes vehicle journey" do
+      it 'not includes vehicle journey' do
         is_expected.not_to include(vehicle_journey)
       end
     end
   end
 
-  describe "#company" do
+  describe '#company' do
     let(:context) do
       Chouette.create do
         company :other_company
@@ -58,24 +59,24 @@ RSpec.describe Query::VehicleJourney do
       context.referential.switch
     end
 
-    context "when company is the vehicle journey company" do
+    context 'when company is the vehicle journey company' do
       subject { query.company(company_id).scope }
 
-      it "includes vehicle journey" do
+      it 'includes vehicle journey' do
         is_expected.to include(vehicle_journey)
       end
     end
 
-    context "when company is not the vehicle journey company" do
+    context 'when company is not the vehicle journey company' do
       subject { query.company(other_company_id).scope }
 
-      it "not includes vehicle journey" do
+      it 'not includes vehicle journey' do
         is_expected.not_to include(vehicle_journey)
       end
     end
   end
 
-  describe "#line" do
+  describe '#line' do
     let(:context) do
       Chouette.create do
         vehicle_journey
@@ -92,24 +93,24 @@ RSpec.describe Query::VehicleJourney do
       context.referential.switch
     end
 
-    context "when line is the vehicle journey line" do
+    context 'when line is the vehicle journey line' do
       subject { query.line(line_id).scope }
 
-      it "includes vehicle journey" do
+      it 'includes vehicle journey' do
         is_expected.to include(vehicle_journey)
       end
     end
 
-    context "when line is not the vehicle journey line" do
+    context 'when line is not the vehicle journey line' do
       subject { query.line(other_line_id).scope }
 
-      it "not includes vehicle journey " do
+      it 'not includes vehicle journey ' do
         is_expected.not_to include(vehicle_journey)
       end
     end
   end
 
-  describe "#time_table" do
+  describe '#time_table' do
     let(:context) do
       Chouette.create do
         time_table :time_table
@@ -119,9 +120,9 @@ RSpec.describe Query::VehicleJourney do
     end
 
     let(:vehicle_journey) { context.vehicle_journey }
-    let(:time_table) { context.time_table(:time_table)}
-    let(:included_range) { time_table.start_date..time_table.end_date}
-    let(:excluded_range) { (time_table.end_date + 5.days)..(time_table.end_date + 10.days)}
+    let(:time_table) { context.time_table(:time_table) }
+    let(:included_range) { time_table.start_date..time_table.end_date }
+    let(:excluded_range) { (time_table.end_date + 5.days)..(time_table.end_date + 10.days) }
 
     before(:each) do
       context.referential.switch
@@ -130,7 +131,7 @@ RSpec.describe Query::VehicleJourney do
     context "when range intersects one vehicle journey's timetable" do
       subject { query.time_table(included_range).scope }
 
-      it "includes vehicle journey" do
+      it 'includes vehicle journey' do
         is_expected.to include(vehicle_journey)
       end
     end
@@ -138,13 +139,13 @@ RSpec.describe Query::VehicleJourney do
     context "when range doesn't intersect one vehicle journey's timetable" do
       subject { query.time_table(excluded_range).scope }
 
-      it "not includes vehicle journey " do
+      it 'not includes vehicle journey ' do
         is_expected.not_to include(vehicle_journey)
       end
     end
   end
 
-  describe "#between_stop_areas" do
+  describe '#between_stop_areas' do
     let(:context) do
       Chouette.create do
         vehicle_journey
@@ -162,20 +163,20 @@ RSpec.describe Query::VehicleJourney do
       context.referential.switch
     end
 
-    context "when stop areas are the vehicle journey stop areas" do
-      it "includes vehicle journey with first stop area" do
+    context 'when stop areas are the vehicle journey stop areas' do
+      it 'includes vehicle journey with first stop area' do
         scope = query.between_stop_areas(first_vehicle_journey_stop_area.id, nil).scope
         expect(scope).to include(vehicle_journey)
       end
 
-      it "includes vehicle journey with first and last stop areas" do
+      it 'includes vehicle journey with first and last stop areas' do
         scope = query.between_stop_areas(first_vehicle_journey_stop_area.id, last_vehicle_journey_stop_area.id).scope
         expect(scope).to include(vehicle_journey)
       end
     end
 
-    context "when stop areas are not the vehicle journey stop areas" do
-      it "not includes vehicle journey" do
+    context 'when stop areas are not the vehicle journey stop areas' do
+      it 'not includes vehicle journey' do
         scope = query.between_stop_areas(other_stop_area.id, nil).scope
         expect(scope).not_to include(vehicle_journey)
       end

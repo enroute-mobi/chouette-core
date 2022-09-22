@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module Query
   class VehicleJourney < Base
     def text(value)

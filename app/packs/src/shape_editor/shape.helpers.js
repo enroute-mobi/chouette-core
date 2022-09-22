@@ -80,13 +80,7 @@ const getTolerance = zoom => {
 export const simplifyGeometry = (sectionCollection, map) => {
   const view = map.getView()
 
-  const simplifySection = (section, tolerance) => simplify(section, { tolerance, highQuality: true })
-
-  const extent = flow(
-    view.calculateExtent.bind(view),
-    bboxPolygon,
-    toWgs84
-  )(map.getSize())
+  const extent = flow(view.calculateExtent.bind(view), bboxPolygon, toWgs84)(map.getSize())
 
   const sectionMapper = section => {
     const isInExtent = booleanContains(extent, section) || booleanIntersects(extent, section)
@@ -100,11 +94,9 @@ export const simplifyGeometry = (sectionCollection, map) => {
     )(section)
   }
 
-  return flow(
-    partialRight(featureMap, sectionMapper),
-    flatten,
-    lineString
-  )(sectionCollection)
+  const simplifyCollection = partialRight(featureMap, sectionMapper)
+
+  return flow(simplifyCollection, flatten, lineString)(sectionCollection)
 }
 
 /**

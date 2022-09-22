@@ -1,7 +1,7 @@
 module Search
 	class VehicleJourney < Base
 
-		attribute :name_or_id
+		attribute :text
 		attribute :company
 		attribute :line
 		attribute :start_date, type: Date
@@ -31,11 +31,11 @@ module Search
 		end
 
 		def query
-			Query::VehicleJourney.new(scope).name_or_id(name_or_id).company(company).line(line).time_table(period).between_stop_areas(from_stop_area, to_stop_area)
+			Query::VehicleJourney.new(scope).text(text).company(company).line(line).time_table(period).between_stop_areas(from_stop_area, to_stop_area)
 		end
 
 		class Order < ::Search::Order
-      attribute :name, default: :desc
+      attribute :published_journey_name, default: :asc
     end
 	end
 end

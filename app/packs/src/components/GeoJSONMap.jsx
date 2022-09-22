@@ -12,7 +12,7 @@ const App = ({ urls, callback }) => {
 
 export default {
 	init(urls, selector, callback = () => {}) {
-		
+
 		render(
 			<App urls={urls} callback={callback} />,
 			document.getElementById(selector)

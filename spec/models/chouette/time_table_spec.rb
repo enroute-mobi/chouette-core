@@ -1,6 +1,52 @@
+# frozen_string_literal: true
+
+RSpec.describe Chouette::TimeTable, type: :model do
+  describe '.scheduled_on' do
+    subject { referential.time_tables.scheduled_on(date) }
+
+    let(:context) { Chouette.create { time_table periods: [] } }
+    let(:time_table) { context.time_table }
+    let(:referential) { context.referential }
+
+    before { referential.switch }
+
+    context 'when the given date is Tuesday 2030-01-15' do
+      let(:date) { Date.parse '2030-01-15' }
+
+      context 'when a Time Table has a matching Period "2030-01-10..2030-01-20"' do
+        before { time_table.periods.create! range: Period.parse('2030-01-10..2030-01-20') }
+
+        it { is_expected.to include(time_table) }
+
+        context 'and a unmatching Period "2030-03-01..2030-03-30"' do
+          before { time_table.periods.create! range: Period.parse('2030-03-01..2030-03-30') }
+          it { is_expected.to include(time_table) }
+        end
+
+        context 'when a Time Table Days of Week includes only Sunday' do
+          before { time_table.update days_of_week: Timetable::DaysOfWeek.none.enable(:sunday) }
+          it { is_expected.to_not include(time_table) }
+        end
+
+        context 'when a Time Table excludes the 2030-01-15' do
+          before { time_table.dates.create! date: date, in_out: false }
+          it { is_expected.to_not include(time_table) }
+        end
+      end
+
+      context 'when a Time Table includes the 2030-01-15' do
+        before { time_table.dates.create! date: date, in_out: true }
+        it { is_expected.to include(time_table) }
+      end
+    end
+  end
+end
+
+# DEPRECATED. Complete modern specs above
+
 include Support::TimeTableHelper
 
-describe Chouette::TimeTable, :type => :model do
+RSpec.describe Chouette::TimeTable, :type => :model do
   subject(:time_table) { create(:time_table) }
   let(:subject_periods_to_range) { subject.periods.map{|p| p.period_start..p.period_end } }
 

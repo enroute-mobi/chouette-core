@@ -391,6 +391,10 @@ class Timetable
       end
     end
 
+    def chouette_days_mask
+      days_mask
+    end
+
     protected
 
     attr_accessor :days_mask

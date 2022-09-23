@@ -138,7 +138,7 @@ fr:
       retrieval_frequency:
         none: Jamais
         daily: Quotidiennement
-        hourly: Par heure
+        hourly: Une fois par heure
     stop_area:
       area_type:
         zdep: ZDEp

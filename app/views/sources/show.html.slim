@@ -21,9 +21,10 @@
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = simple_block_for @source, title: t('sources.form.sections.retrieval') do |d|
           = d.attribute :retrieval_frequency, as: :enumerize
-          = d.attribute :retrieval_time_of_day, as: :time_of_day
+          - if @source.retrieval_frequency_daily?
+            = d.attribute :retrieval_time_of_day, as: :time_of_day
           = d.attribute :ignore_checksum, as: :boolean
-          = d.attribute :next_retrieval, as: :date
+          = d.attribute :next_retrieval, as: :datetime
       .row
         .col-lg-12
           .h3 = t('sources.form.sections.last_retrieval')

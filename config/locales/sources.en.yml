@@ -19,7 +19,7 @@ en:
     form:
       sections:
         identification: "Identification"
-        retrieval: "Retrievals"
+        retrieval: "Retrieval"
         last_retrieval: "Last Retrievals"
         import_options: "Import Options"
     filters:
@@ -44,6 +44,8 @@ en:
         import_option_update_workgroup_providers: Allow changes on Workbenches resources
         enabled: "Enabled"
         retrieval_time_of_day: "Retrieval time"
+        retrieval_frequency: "Retrieval Frequency"
+        next_retrieval: "Next Retrieval"
         ignore_checksum: "Ignore checksum"
         created_at: "Created at"
         updated_at: "Updated at"

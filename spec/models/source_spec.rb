@@ -14,7 +14,7 @@ RSpec.describe Source do
     describe '#cron' do
       subject { job.cron }
 
-      describe "#daily" do
+      describe '#daily' do
         before do
           source.retrieval_time_of_day = TimeOfDay.new(7, 30)
           source.retrieval_frequency = 'daily'
@@ -25,7 +25,7 @@ RSpec.describe Source do
         end
       end
 
-      describe "#hourly" do
+      describe '#hourly' do
         before do
           source.retrieval_frequency = 'hourly'
           source.id = 1
@@ -43,7 +43,7 @@ RSpec.describe Source do
     subject { source.retrieve }
 
     context 'when source is not enabled' do
-      before { source.retrieval_frequency = "none" }
+      before { source.retrieval_frequency = 'none' }
 
       it 'should return without creating a Retrieval' do
         expect { subject }.to_not change { source.retrievals.count }.from(0)

@@ -23,7 +23,7 @@ class Source < ApplicationModel
   belongs_to :scheduled_job, class_name: '::Delayed::Job', dependent: :destroy
   validates :retrieval_time_of_day, presence: true, if: :retrieval_frequency_daily?
 
-  enumerize :retrieval_frequency, in: %w(none hourly daily), predicates: { prefix: true }
+  enumerize :retrieval_frequency, in: %w[none hourly daily], predicates: { prefix: true }
 
   def enabled?
     !retrieval_frequency_none?
@@ -85,8 +85,6 @@ class Source < ApplicationModel
         "#{source.retrieval_time_of_day.minute} #{source.retrieval_time_of_day.hour} * * *"
       when 'hourly'
         "#{source.id % 60} * * * *"
-      else
-        nil
       end
     end
 
@@ -166,11 +164,11 @@ class Source < ApplicationModel
   end
 
   def retrieve
-    if enabled?
-      retrieval = retrievals.create(creator: "Source")
-      retrieval.enqueue
-      retrievals.delete_older
-    end
+    return unless enabled?
+
+    retrieval = retrievals.create(creator: 'Source')
+    retrieval.enqueue
+    retrievals.delete_older
   end
 
   module Downloader

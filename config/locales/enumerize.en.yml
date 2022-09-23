@@ -136,6 +136,10 @@ en:
         direct: Direct
         french_nap: French NAP
         authorization: Authorization Header
+      retrieval_frequency:
+        none: None
+        daily: Daily
+        hourly: Hourly
     stop_area:
       area_type:
         zdep: ZDEp

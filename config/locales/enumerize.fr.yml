@@ -135,6 +135,10 @@ fr:
         direct: Direct
         french_nap: French NAP
         authorization: Entête d'authentification
+      retrieval_frequency:
+        none: Jamais
+        daily: Quotidiennement
+        hourly: Une fois par heure
     stop_area:
       area_type:
         zdep: ZDEp

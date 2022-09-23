@@ -23,7 +23,7 @@ class Source < ApplicationModel
   belongs_to :scheduled_job, class_name: '::Delayed::Job', dependent: :destroy
   validates :retrieval_time_of_day, presence: true, if: :retrieval_frequency_daily?
 
-  enumerize :retrieval_frequency, in: %w[none hourly daily], predicates: { prefix: true }
+  enumerize :retrieval_frequency, in: %w[none hourly daily], default: 'none', predicates: { prefix: true }
 
   def enabled?
     !retrieval_frequency_none?
@@ -32,7 +32,7 @@ class Source < ApplicationModel
   def next_retrieval
     return if retrieval_frequency_none?
 
-    scheduled_job.run_at
+    scheduled_job&.run_at
   end
 
   # ?? Rails 5 ActiveRecord::AttributeAssignment .. doesn't create an object

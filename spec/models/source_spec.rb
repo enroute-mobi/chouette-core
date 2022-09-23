@@ -6,6 +6,7 @@ RSpec.describe Source do
   end
 
   it { is_expected.to belong_to(:scheduled_job).class_name('::Delayed::Job').dependent(:destroy) }
+  it { is_expected.to enumerize(:retrieval_frequency).in(:none, :hourly, :daily).with_default(:none) }
 
   describe Source::ScheduledJob do
     subject(:job) { Source::ScheduledJob.new(source) }
@@ -45,22 +46,26 @@ RSpec.describe Source do
       it { is_expected.to be_nil }
     end
 
-    context 'no ScheduleJob is defined' do
-      it { is_expected.to be_nil }
-    end
+    context "when retrieval frequency isn't none" do
+      before { source.retrieval_frequency = 'daily' }
 
-    context 'a ScheduleJob is defined with run_at at "2030-01-01 12:00"' do
-      before do
-        source.scheduled_job = Delayed::Job.new 
-        allow(source.scheduled_job).to receive(:run_at).and_return(Date.parse('2030-01-01 12:00'))
+      context 'no ScheduleJob is defined' do
+        it { is_expected.to be_nil }
       end
 
-      it { is_expected.to eq(source.scheduled_job.run_at) }
+      context 'a ScheduleJob is defined with run_at at "2030-01-01 12:00"' do
+        before do
+          source.scheduled_job = Delayed::Job.new
+          allow(source.scheduled_job).to receive(:run_at).and_return(Date.parse('2030-01-01 12:00'))
+        end
+
+        it { is_expected.to eq(source.scheduled_job.run_at) }
+      end
     end
   end
 
   describe '#retrieve' do
-    let(:context) { Chouette.create { source } }
+    let(:context) { Chouette.create { source retrieval_frequency: 'daily' } }
     let(:source) { context.source }
 
     subject { source.retrieve }

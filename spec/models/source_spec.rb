@@ -36,6 +36,29 @@ RSpec.describe Source do
     end
   end
 
+  describe '.next_retrieval' do
+    subject { source.next_retrieval }
+    let(:source) { Source.new }
+
+    context 'when retrieval frequency is none' do
+      before { source.retrieval_frequency = 'none' }
+      it { is_expected.to be_nil }
+    end
+
+    context 'no ScheduleJob is defined' do
+      it { is_expected.to be_nil }
+    end
+
+    context 'a ScheduleJob is defined with run_at at "2030-01-01 12:00"' do
+      before do
+        source.scheduled_job = Delayed::Job.new 
+        allow(source.scheduled_job).to receive(:run_at).and_return(Date.parse('2030-01-01 12:00'))
+      end
+
+      it { is_expected.to eq(source.scheduled_job.run_at) }
+    end
+  end
+
   describe '#retrieve' do
     let(:context) { Chouette.create { source } }
     let(:source) { context.source }

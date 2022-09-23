@@ -32,7 +32,7 @@ class Source < ApplicationModel
   def next_retrieval
     return if retrieval_frequency_none?
 
-    scheduled_job.run_at
+    scheduled_job&.run_at
   end
 
   # ?? Rails 5 ActiveRecord::AttributeAssignment .. doesn't create an object

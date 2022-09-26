@@ -18,21 +18,30 @@ module Control
       include Options
 
       def run
-        anomaly_service_counts.find_each do |anomaly_service_count|
-          control_messages.create({
-            message_attributes: {
-              date: anomaly_service_count.data
-            },
-            criticity: criticity,
-            source_id: anomaly_service_count.line_id,
-            message_key: :anomaly_service_count
-          })
+        options = { limit: 5000, page: 1 }
+
+        loop do
+          ascs = anomaly_service_counts(options)
+
+          ascs.each do |anomaly_service_count|
+            control_messages.create!({
+              message_attributes: {
+                date: anomaly_service_count['date']
+              },
+              criticity: criticity,
+              source_id: anomaly_service_count['line_id'],
+              source_type: "Chouette::Line",
+              message_key: :anomaly_service_count
+            })
+          end
+
+          break if ascs.count < options[:limit]
+          options[:page] += 1
         end
       end
 
-      def anomaly_service_counts
-        @anomaly_service_counts ||= 
-          context.anomaly_service_counts(weeks_before, weeks_after, maximum_difference)
+      def anomaly_service_counts(options={})
+        context.anomaly_service_counts(weeks_before, weeks_after, maximum_difference, options)
       end
     end
   end

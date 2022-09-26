@@ -327,7 +327,7 @@ class Referential < ApplicationModel
   end
   alias journey_pattern_courses_by_date service_counts
 
-  def anomaly_service_counts(weeks_before, weeks_after, maximum_difference)
+  def anomaly_service_counts(weeks_before, weeks_after, maximum_difference, options={})
     query = <<~SQL
       SELECT
         percentage_difference_table.line_id,
@@ -371,6 +371,8 @@ class Referential < ApplicationModel
         WHERE sum_and_avg_table.sum_count > 0
       ) AS percentage_difference_table
       WHERE percentage_difference_table.percentage_difference > #{maximum_difference}
+      LIMIT #{options[:limit] || 1000}
+      OFFSET #{(options[:limit] || 1000) *  (options[:page] || 1) - (options[:limit] || 1000)}
     SQL
 
     ::ActiveRecord::Base.connection.execute(query)

@@ -327,57 +327,6 @@ class Referential < ApplicationModel
   end
   alias journey_pattern_courses_by_date service_counts
 
-  def anomaly_service_counts(weeks_before, weeks_after, maximum_difference, options={})
-    query = <<~SQL
-      SELECT
-        percentage_difference_table.line_id,
-        percentage_difference_table.date,
-        percentage_difference_table.sum_count,
-        percentage_difference_table.avg_sum,
-        percentage_difference_table.percentage_difference
-      FROM (
-        SELECT
-          sum_and_avg_table.line_id,
-          sum_and_avg_table.date,
-          sum_and_avg_table.sum_count,
-          sum_and_avg_table.avg_sum,
-          ABS((sum_and_avg_table.sum_count - sum_and_avg_table.avg_sum) / sum_and_avg_table.sum_count) * 100 AS percentage_difference
-        FROM (
-          SELECT
-            A.line_id, A.date,
-            SUM(A.count) AS sum_count,
-            (
-              SELECT
-                avg_table.avg_sum
-              FROM (
-                SELECT
-                  sum_table.line_id,
-                  AVG(sum_table.sum_count) AS avg_sum
-                FROM (
-                  SELECT SUM(B.count) AS sum_count, B.line_id, B.date
-                  FROM stat_journey_pattern_courses_by_dates B
-                  WHERE B.date BETWEEN (B.date - #{7 * weeks_before}) AND (B.date + #{7 * weeks_after})
-                  GROUP BY B.line_id, B.date
-                ) AS sum_table
-                WHERE (EXTRACT(dow from sum_table.date) = EXTRACT(dow from A.date))
-                GROUP BY sum_table.line_id
-              ) AS avg_table
-              WHERE (avg_table.line_id = A.line_id)
-            ) AS avg_sum
-          FROM stat_journey_pattern_courses_by_dates A
-          WHERE A.date BETWEEN (A.date - #{7 * weeks_before}) AND (A.date + #{7 * weeks_after})
-          GROUP BY A.line_id, A.date
-        ) AS sum_and_avg_table
-        WHERE sum_and_avg_table.sum_count > 0
-      ) AS percentage_difference_table
-      WHERE percentage_difference_table.percentage_difference > #{maximum_difference}
-      LIMIT #{options[:limit] || 1000}
-      OFFSET #{(options[:limit] || 1000) *  (options[:page] || 1) - (options[:limit] || 1000)}
-    SQL
-
-    ::ActiveRecord::Base.connection.execute(query)
-  end
-
   def workgroup
     @workgroup = begin
       workgroup = workbench&.workgroup

@@ -8,35 +8,6 @@ RSpec.describe Source do
   it { is_expected.to belong_to(:scheduled_job).class_name('::Delayed::Job').dependent(:destroy) }
   it { is_expected.to enumerize(:retrieval_frequency).in(:none, :hourly, :daily).with_default(:none) }
 
-  describe Source::ScheduledJob do
-    subject(:job) { Source::ScheduledJob.new(source) }
-    let(:source) { Source.new }
-
-    describe '#cron' do
-      subject { job.cron }
-
-      describe '#daily' do
-        before do
-          source.retrieval_time_of_day = TimeOfDay.new(7, 30)
-          source.retrieval_frequency = 'daily'
-        end
-
-        context 'when Source retrieval_time_of_day is 7:30' do
-          it { is_expected.to eq('30 7 * * *') }
-        end
-      end
-
-      describe '#hourly' do
-        before do
-          source.retrieval_frequency = 'hourly'
-          source.id = 1
-        end
-
-        it { is_expected.to eq('1 * * * *') }
-      end
-    end
-  end
-
   describe '.next_retrieval' do
     subject { source.next_retrieval }
     let(:source) { Source.new }
@@ -223,6 +194,62 @@ RSpec.describe Source::Downloader::URL do
         .and_return(StringIO.new('dummy'))
 
       downloader.download(path)
+    end
+  end
+end
+
+RSpec.describe Source::ScheduledJob do
+  subject(:job) { Source::ScheduledJob.new(source) }
+  let(:source) { Source.new }
+
+  describe '#cron' do
+    subject { job.cron }
+
+    context 'when frequency is none' do
+      it { is_expected.to be_nil }
+    end
+
+    context 'when frequency is daily' do
+      before { source.retrieval_frequency = 'daily' }
+
+      context 'when Source retrieval_time_of_day is 7:30' do
+        before { source.retrieval_time_of_day = TimeOfDay.new(7, 30) }
+
+        it { is_expected.to eq('30 7 * * *') }
+      end
+
+      context 'when Source retrieval_time_of_day isn\'t defined' do
+        before { source.retrieval_time_of_day = nil }
+
+        it { is_expected.to be_nil }
+      end
+    end
+
+    context 'when frequency is hourly' do
+      before { source.retrieval_frequency = 'hourly' }
+
+      context 'when #hourly_random returns 61' do
+        before { allow(job).to receive(:hourly_random).and_return(61) }
+        it { is_expected.to eq('1 * * * *') }
+      end
+    end
+  end
+
+  describe '#hourly_random' do
+    subject { job.hourly_random }
+
+    context 'when the Source id is 42' do
+      before { source.id = 42 }
+
+      it { is_expected.to eq(42) }
+    end
+
+    context "when the Source id isn't defined" do
+      context 'when the random value is 42' do
+        before { allow(Random).to receive(:rand).with(60).and_return(42) }
+
+        it { is_expected.to eq(42) }
+      end
     end
   end
 end

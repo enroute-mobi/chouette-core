@@ -79,13 +79,19 @@ class Source < ApplicationModel
       coder['source_id'] = source_id
     end
 
+    delegate :retrieval_time_of_day, :retrieval_frequency, to: :source
+
     def cron
-      case source.retrieval_frequency
+      case retrieval_frequency
       when 'daily'
-        "#{source.retrieval_time_of_day.minute} #{source.retrieval_time_of_day.hour} * * *"
+        "#{retrieval_time_of_day.minute} #{retrieval_time_of_day.hour} * * *" if retrieval_time_of_day
       when 'hourly'
-        "#{source.id % 60} * * * *"
+        "#{hourly_random % 60} * * * *"
       end
+    end
+
+    def hourly_random
+      source.id || Random.rand(60)
     end
 
     def source

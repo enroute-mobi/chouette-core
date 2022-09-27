@@ -41,14 +41,6 @@ RSpec.describe Source do
 
     subject { source.retrieve }
 
-    context 'when source is not enabled' do
-      before { source.retrieval_frequency = 'none' }
-
-      it 'should return without creating a Retrieval' do
-        expect { subject }.to_not change { source.retrievals.count }.from(0)
-      end
-    end
-
     context 'when ignore_checksum is enabled' do
       let(:retrieval) { source.retrievals.create creator: 'test' }
 

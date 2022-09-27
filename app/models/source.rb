@@ -99,7 +99,7 @@ class Source < ApplicationModel
     end
 
     def perform
-      source.retrieve
+      source.retrieve if source.enabled?
     rescue StandardError => e
       Chouette::Safe.capture "Can't start Source##{source_id} retrieval", e
     end
@@ -151,12 +151,6 @@ class Source < ApplicationModel
     downloader_options["raw_authorization"] = value
   end
 
-  def self.retrieve_all
-    find_each do |source|
-      source.retrieve
-    end
-  end
-
   def downloader_class
     if downloader_type.present? && downloader_type != :direct
       Downloader.const_get(downloader_type.camelcase)
@@ -170,8 +164,6 @@ class Source < ApplicationModel
   end
 
   def retrieve
-    return unless enabled?
-
     retrieval = retrievals.create(creator: 'Source')
     retrieval.enqueue
     retrievals.delete_older

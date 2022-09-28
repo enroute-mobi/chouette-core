@@ -19,14 +19,14 @@ RSpec.describe LegacyOperationJob do
     context 'when the Operations is an Export' do
       let(:operation) { Export::Gtfs.new organisation: organisation }
 
-      it { is_expected.to eq(organisation_id) }
+      it { is_expected.to be_nil }
     end
 
     context 'when the Operations is an Publication' do
       let(:operation) { Publication.new }
       before { allow(operation).to receive(:organisation).and_return(organisation) }
 
-      it { is_expected.to eq(organisation_id) }
+      it { is_expected.to be_nil }
     end
   end
 end

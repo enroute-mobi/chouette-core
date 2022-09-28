@@ -17,10 +17,10 @@ module Search
     end
 
     validates :period, valid: true
-    validates :company, inclusion: { in: ->(search) { search.candidate_companies } }, allow_nil: true
-    validates :line, inclusion: { in: ->(search) { search.candidate_lines } }, allow_nil: true
-    validates :from_stop_area, inclusion: { in: ->(search) { search.candidate_stop_areas } }, allow_nil: true
-    validates :to_stop_area, inclusion: { in: ->(search) { search.candidate_stop_areas } }, allow_nil: true
+    validates :company, inclusion: { in: ->(search) { search.candidate_companies.pluck(:id).map(&:to_s) } }, allow_blank: true
+    validates :line, inclusion: { in: ->(search) { search.candidate_lines.pluck(:id).map(&:to_s) } }, allow_blank: true
+    validates :from_stop_area, inclusion: { in: ->(search) { search.candidate_stop_areas.pluck(:id).map(&:to_s) } }, allow_blank: true
+    validates :to_stop_area, inclusion: { in: ->(search) { search.candidate_stop_areas.pluck(:id).map(&:to_s) } }, allow_blank: true
 
     def candidate_lines
       referential.lines

@@ -27,6 +27,28 @@
   }
 }
 
+.tailwind-filters{
+  .form-group {
+    margin-bottom: 0;
+  }
+  label {
+    margin-bottom: 0;
+    // margin-right: 6px;
+  }
+  .input-group {
+    display: flex;
+    .form-control {
+      width: auto;
+    }
+  }
+  .input-group-btn {
+    display: flex;
+  }
+  .ts-control {
+    width: 100%;
+  }
+}
+
 // Search bar
 .search_bar {
   position: relative;

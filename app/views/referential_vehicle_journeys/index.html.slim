@@ -3,15 +3,10 @@
 
 .page_content
   .container-fluid
-    .form-group.pull-right
-    /   .per-page-select
-    /     = I18n.t("simple_form.per_page")
-    /     = %w(10 50 100).each_with_index.map{ |v, i| (params[:per_page] == v || params[:per_page].nil? && i == 0) ? "<span class='selected'>#{v}</span>" : link_to(v, referential_vehicle_journeys_path(@referential, q: params.permit(:q), per_page: v)) }.join(' - ').html_safe
-    / - if params[:q].present? or @vehicle_journeys.present?
-    /   .row
-    /     .col-lg-12
-    /       = render 'filters'
-
+    .form-group
+      .row
+        .col-lg-12
+          = render 'filters'
     - if @vehicle_journeys&.any?
       .row
         .col-lg-12

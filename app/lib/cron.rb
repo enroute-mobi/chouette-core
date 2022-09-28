@@ -95,10 +95,5 @@ module Cron
     def purge_workgroups
       Workgroup.purge_all
     end
-
-    def retrieve_all_sources
-      Source.enabled.retrieve_all
-    end
-
   end
 end

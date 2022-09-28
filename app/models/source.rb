@@ -79,13 +79,19 @@ class Source < ApplicationModel
       coder['source_id'] = source_id
     end
 
+    delegate :retrieval_time_of_day, :retrieval_frequency, to: :source
+
     def cron
-      case source.retrieval_frequency
+      case retrieval_frequency
       when 'daily'
-        "#{source.retrieval_time_of_day.minute} #{source.retrieval_time_of_day.hour} * * *"
+        "#{retrieval_time_of_day.minute} #{retrieval_time_of_day.hour} * * *" if retrieval_time_of_day
       when 'hourly'
-        "#{source.id % 60} * * * *"
+        "#{hourly_random % 60} * * * *"
       end
+    end
+
+    def hourly_random
+      source.id || Random.rand(60)
     end
 
     def source
@@ -93,7 +99,7 @@ class Source < ApplicationModel
     end
 
     def perform
-      source.retrieve
+      source.retrieve if source.enabled?
     rescue StandardError => e
       Chouette::Safe.capture "Can't start Source##{source_id} retrieval", e
     end
@@ -145,12 +151,6 @@ class Source < ApplicationModel
     downloader_options["raw_authorization"] = value
   end
 
-  def self.retrieve_all
-    find_each do |source|
-      source.retrieve
-    end
-  end
-
   def downloader_class
     if downloader_type.present? && downloader_type != :direct
       Downloader.const_get(downloader_type.camelcase)
@@ -164,8 +164,6 @@ class Source < ApplicationModel
   end
 
   def retrieve
-    return unless enabled?
-
     retrieval = retrievals.create(creator: 'Source')
     retrieval.enqueue
     retrievals.delete_older

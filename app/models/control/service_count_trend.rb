@@ -1,15 +1,19 @@
 module Control
   class ServiceCountTrend < Control::Base
-
     module Options
       extend ActiveSupport::Concern
 
       included do
         option :weeks_before
         option :weeks_after
-        option :maximum_difference 
+        option :maximum_difference
 
-        validates :weeks_before, :weeks_after, :maximum_difference, numericality: { only_integer: true, greater_than: 0, allow_nil: false }
+        validates(
+          :weeks_before,
+          :weeks_after,
+          :maximum_difference,
+          numericality: { only_integer: true, greater_than: 0, allow_nil: false }
+        )
       end
     end
     include Options
@@ -19,25 +23,33 @@ module Control
 
       def run
         analysis.anomalies.each do |anomaly|
-          control_messages.create!({
-              message_attributes: { date: anomaly.date },
-              criticity: criticity,
-              source_id: anomaly.line_id,
-              source_type: "Chouette::Line"
-            })
+          control_messages.create({
+            message_attributes: {
+              date: anomaly.date
+            },
+            criticity: criticity,
+            source_id: anomaly.line_id,
+            source_type: 'Chouette::Line'
+          })
         end
       end
 
       def analysis
-        @analysis ||=
-          Analysis.new(context, weeks_before: weeks_before, weeks_after: weeks_after, maximum_difference: maximum_difference)
+        @analysis ||= Analysis.new(
+          context,
+          {
+            weeks_before: weeks_before,
+            weeks_after: weeks_after,
+            maximum_difference: maximum_difference
+          }
+        )
       end
 
       class Analysis
 
         def initialize(context, options)
           @context = context
-          options.each { |k,v| send "#{k}=", v rescue nil }
+          options.each { |k,v| send "#{k}=", v }
         end
         attr_accessor :context, :weeks_before, :weeks_after, :maximum_difference
 
@@ -78,7 +90,7 @@ module Control
                     WHERE (avg_table.line_id = A.line_id)
                   ) AS avg_sum
                 FROM stat_journey_pattern_courses_by_dates A
-                WHERE A.date BETWEEN (A.date - #{7 * weeks_before}) AND (A.date + #{7 * weeks_after})
+                WHERE A.date BETWEEN (A.date - #{days_before}) AND (A.date + #{days_after})
                 GROUP BY A.line_id, A.date
               ) AS sum_and_avg_table
               WHERE sum_and_avg_table.sum_count > 0
@@ -87,22 +99,32 @@ module Control
           SQL
         end
 
-        def sum_table_query
-          context.service_counts
-            .group(:line_id, :date)
-            .select('SUM(count) AS sum_count', :line_id, :date)
-            .where("date BETWEEN (date - #{7 * weeks_before}) AND (date + #{7 * weeks_after})")
-            .to_sql
-        end
-
         class Anomaly
           def initialize(attributes)
-            attributes.each { |k,v| send "#{k}=", v rescue nil  }
+            attributes.each { |k,v| send "#{k}=", v if respond_to?(k) }
           end
           attr_accessor :line_id, :date
         end
-      end
 
+        private
+
+        def sum_table_query
+          context
+            .service_counts
+            .group(:line_id, :date)
+            .select('SUM(count) AS sum_count', :line_id, :date)
+            .where("date BETWEEN (date - ?) AND (date + ?)", days_before, days_after)
+            .to_sql
+        end
+
+        def days_before
+          7 * weeks_before
+        end
+
+        def days_after
+          7 * weeks_after
+        end
+      end
     end
   end
 end

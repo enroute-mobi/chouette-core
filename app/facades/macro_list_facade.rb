@@ -14,7 +14,7 @@ class MacroListFacade
 		{
 			wrapper: :horizontal_form_tailwind,
 			html: {
-				class: '',
+				class: 'tailwind-form',
 				id: 'macro_list_form',
 				'x-data': '',
 				'x-init': "$store.macroList.initState(#{json_state})",

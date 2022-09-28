@@ -75,8 +75,12 @@ class LegacyOperationJob
     @workbench_id ||= operation.try(:workbench)&.id
   end
 
+  def restricted_by_organisation?
+    operation.is_a?(Import::Base)
+  end
+
   def organisation_id
-    @organisation_id ||= operation.try(:organisation)&.id
+    @organisation_id ||= operation.try(:organisation)&.id if restricted_by_organisation?
   end
 
   def operation_class

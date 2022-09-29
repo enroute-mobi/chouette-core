@@ -261,7 +261,10 @@ class Import::NetexGeneric < Import::Base
   end
 
   def netex_source
-    @netex_source ||= Netex::Source.read(local_file.path, type: file_extension)
+    @netex_source ||=
+      Netex::Source.new(include_raw_xml: store_xml?).tap do |source|
+        source.parse(local_file, type: file_extension)
+      end
   end
 
   def line_ids

@@ -20,11 +20,13 @@ class Source < ApplicationModel
   before_validation :clean, on: :update
 
   attribute :retrieval_time_of_day, TimeOfDay::Type::TimeWithoutZone.new
+  attribute :retrieval_days_of_week, WeekDays.new
+
   belongs_to :scheduled_job, class_name: '::Delayed::Job', dependent: :destroy
   validates :retrieval_time_of_day, presence: true, if: :retrieval_frequency_daily?
+  validates :retrieval_days_of_week, presence: true, if: :enabled?
 
   enumerize :retrieval_frequency, in: %w[none hourly daily], default: 'none', predicates: { prefix: true }
-
   def enabled?
     !retrieval_frequency_none?
   end
@@ -79,15 +81,24 @@ class Source < ApplicationModel
       coder['source_id'] = source_id
     end
 
-    delegate :retrieval_time_of_day, :retrieval_frequency, to: :source
+    delegate :retrieval_time_of_day, :retrieval_frequency, :retrieval_days_of_week, to: :source
 
     def cron
       case retrieval_frequency
       when 'daily'
-        "#{retrieval_time_of_day.minute} #{retrieval_time_of_day.hour} * * *" if retrieval_time_of_day
+        "#{retrieval_time_of_day.minute} #{retrieval_time_of_day.hour} * * #{retrieval_days}" if retrieval_time_of_day
       when 'hourly'
-        "#{hourly_random % 60} * * * *"
+        "#{hourly_random % 60} * * * #{retrieval_days}"
       end
+    end
+
+    def retrieval_days
+      days = []
+      Timetable::DaysOfWeek::SYMBOLIC_DAYS.each_with_index do |day, i|
+        days << (i + 1) % 7 if retrieval_days_of_week.send(day)
+      end
+
+      days.count == 7 ? '*' : days.join(',')
     end
 
     def hourly_random

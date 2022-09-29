@@ -244,4 +244,17 @@ RSpec.describe Source::ScheduledJob do
       end
     end
   end
+
+  describe '#retrieval_days_of_week' do
+    subject { job.retrieval_days }
+
+    context 'when the days of week are "tuesday", "wednesday", "thursday", "friday" and "saturday"' do
+      before do
+        source.retrieval_days_of_week.monday = false
+        source.retrieval_days_of_week.sunday = false
+      end
+
+      it { is_expected.to eq('2,3,4,5,6') }
+    end
+  end
 end

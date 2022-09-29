@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_09_20_203015) do
+ActiveRecord::Schema.define(version: 2022_09_29_095430) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -1377,6 +1377,7 @@ ActiveRecord::Schema.define(version: 2022_09_20_203015) do
     t.time "retrieval_time_of_day"
     t.bigint "scheduled_job_id"
     t.string "retrieval_frequency"
+    t.bit "retrieval_days_of_week", limit: 7, default: "1111111"
     t.index ["scheduled_job_id"], name: "index_sources_on_scheduled_job_id"
     t.index ["workbench_id"], name: "index_sources_on_workbench_id"
   end

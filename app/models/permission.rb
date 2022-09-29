@@ -92,6 +92,7 @@ class Permission
       permissions << "workgroups.update"
       permissions << "referentials.flag_urgent"
       permissions << "imports.update_workgroup_providers"
+      permissions << "imports.import_netex_store_xml"
       permissions << "stop_area_referentials.update"
       permissions << "workbenches.confirm"
       permissions << "sources.retrieve"

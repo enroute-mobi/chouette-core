@@ -10,6 +10,7 @@ class Import::Workbench < Import::Base
   option :merge_method, collection: %w(legacy experimental), default_value: 'legacy', depends: {option: :import_category, value: "automatic"}
   option :shape_attribute_as_id, type: :string, depends: {option: :import_category, value: "shape_file"}
   option :update_workgroup_providers, default_value: false, type: :boolean
+  option :store_xml, default_value: false, type: :boolean
 
   has_many :compliance_check_sets, -> { where(parent_type: "Import::Workbench") }, foreign_key: :parent_id, dependent: :destroy
 

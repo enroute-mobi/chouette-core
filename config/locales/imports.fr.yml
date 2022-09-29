@@ -126,6 +126,7 @@ fr:
           archive_on_fail: Archivage automatique en cas d'erreur
           flag_urgent: Contient de l'offre urgente
           update_workgroup_providers: Autorisation des changements sur les ressources de l'Espace de travail
+          store_xml: Conserver les definitions XML originelles
           merge_method: Méthode de finalisation
           shape_attribute_as_id: Attribut utilisé comme identifiant
           import_category: Type d'import

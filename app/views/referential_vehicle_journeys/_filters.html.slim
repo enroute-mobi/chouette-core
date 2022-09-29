@@ -5,7 +5,7 @@
 
   .flex.flex-col.w-full.border-r.border-white
     .flex.items-center
-      = f.input :text, label: false, class: 'form-control', placeholder: I18n.t('referential_vehicle_journeys.filters.text'), wrapper_html: {class: "w-2/5"}
+      = f.input :text, label: false, class: 'form-control', placeholder: I18n.t('activemodel.attributes.search.text'), wrapper_html: {class: "w-2/5"}
     .flex.items-center.border-t.border-white
       = f.input :company, class: 'form-control', placeholder: I18n.t('activemodel.attributes.search.stop_area_placeholder'), as: :tom_select, collection: @search.candidate_companies.map { |l| {id: l.id, text: l.name } }, wrapper_html: {class: "w-1/6"}
       = f.input :line, class: 'form-control', placeholder: I18n.t('activemodel.attributes.search.line_placeholder'), as: :tom_select, collection: @search.candidate_lines.map { |l| {id: l.id, text: l.name } }, wrapper_html: {class: "w-1/6"}
@@ -18,11 +18,10 @@
       = f.input :to_stop_area, placeholder: I18n.t('activemodel.attributes.search.stop_area_placeholder'), as: :tom_select, collection: @search.candidate_stop_areas.map { |l| {id: l.id, text: l.name } }, wrapper_html: {class: "w-1/6"}
 
 
-  .actions.ml-auto.py-3
-    .flex.flex-col.items-center
-      = f.label :per_page, class: 'control-label'
-      .py-3
-        = f.input :per_page, as: :per_page, label: false, wrapper: false
+  .flex.flex-col.justify-center.items-center.actions.ml-auto.py-3.w-80
+    .flex.items-center.mb-3
+      = f.label :per_page, class: 'control-label mr-3'
+      = f.input :per_page, as: :per_page, label: false, wrapper: false
     .flex.items-center
       = link_to t('actions.erase'), [@parent, :vehicle_journeys], class: 'btn btn-link'
       = f.submit t('actions.filter'), class: 'btn btn-default'

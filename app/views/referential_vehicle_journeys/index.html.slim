@@ -24,35 +24,31 @@
                   link_to: lambda do |vehicle_journey| \
                     vehicle_journey.route&.line ? referential_line_route_vehicle_journeys_path(@referential, vehicle_journey.route.line, vehicle_journey.route) : '' \
                   end, \
-                  sortable: true \
                 ), \
                 TableBuilderHelper::Column.new( \
                   key: :line, \
                   attribute: Proc.new {|v| v.route.line.name}, \
-                  sortable: true \
+                  sortable: false \
+                ), \
+                TableBuilderHelper::Column.new( \
+                  key: :company, \
+                  attribute: Proc.new {|v| v.route.line.company.name}, \
+                  sortable: false \
                 ), \
                 TableBuilderHelper::Column.new( \
                   key: :route, \
                   attribute: Proc.new {|v| v.route.name}, \
-                  sortable: true \
+                  sortable: false \
                 ), \
                 TableBuilderHelper::Column.new( \
                   key: :departure_time, \
                   attribute: Proc.new {|v| display_time_of_day(v.vehicle_journey_at_stops.first&.departure_local_time_of_day) }, \
-                  sortable: true \
+                  sortable: false \
                 ), \
-                [@starting_stop, @ending_stop].compact.map{|stop| \
-                  TableBuilderHelper::Column.new( \
-                    key: stop.id == @starting_stop&.id ? :starting_stop : :ending_stop, \
-                    attribute: Proc.new {|v| vjas = v.vehicle_journey_at_stops.where("stop_points.stop_area_id" => stop.id).last; vjas && display_time_of_day(vjas.arrival_local_time_of_day) }, \
-                    sortable: true, \
-                    name: stop.name \
-                  )\
-                }, \
                 TableBuilderHelper::Column.new( \
                   key: :arrival_time, \
                   attribute: Proc.new {|v| display_time_of_day(v.vehicle_journey_at_stops.last&.arrival_local_time_of_day) }, \
-                  sortable: true, \
+                  sortable: false \
                 ), \
               ].flatten.compact,
               cls: 'table has-filter has-search'

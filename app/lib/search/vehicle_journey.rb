@@ -5,22 +5,38 @@ module Search
     attr_accessor :referential
 
     attribute :text
-    attribute :company
-    attribute :line
+    attribute :company_id
+    attribute :line_id
     attribute :start_date, type: Date
     attribute :end_date, type: Date
-    attribute :from_stop_area
-    attribute :to_stop_area
+    attribute :from_stop_area_id
+    attribute :to_stop_area_id
 
     def period
       Period.new(from: start_date, to: end_date).presence
     end
 
     validates :period, valid: true
-    validates :company, inclusion: { in: ->(search) { search.candidate_companies.pluck(:id).map(&:to_s) } }, allow_blank: true
-    validates :line, inclusion: { in: ->(search) { search.candidate_lines.pluck(:id).map(&:to_s) } }, allow_blank: true
-    validates :from_stop_area, inclusion: { in: ->(search) { search.candidate_stop_areas.pluck(:id).map(&:to_s) } }, allow_blank: true
-    validates :to_stop_area, inclusion: { in: ->(search) { search.candidate_stop_areas.pluck(:id).map(&:to_s) } }, allow_blank: true
+    validates :company, inclusion: { in: ->(search) { search.candidate_companies } }, allow_blank: true, allow_nil: true
+    validates :line, inclusion: { in: ->(search) { search.candidate_lines } }, allow_blank: true, allow_nil: true
+    validates :from_stop_area, inclusion: { in: ->(search) { search.candidate_stop_areas } }, allow_blank: true, allow_nil: true
+    validates :to_stop_area, inclusion: { in: ->(search) { search.candidate_stop_areas } }, allow_blank: true, allow_nil: true
+
+    def company
+      referential.companies.find(company_id) if company_id.present?
+    end
+
+    def line
+      referential.lines.find(line_id) if line_id.present?
+    end
+
+    def from_stop_area
+      referential.stop_areas.find(from_stop_area_id) if from_stop_area_id.present?
+    end
+
+    def to_stop_area
+      referential.stop_areas.find(to_stop_area_id) if to_stop_area_id.present?
+    end
 
     def candidate_lines
       referential.lines

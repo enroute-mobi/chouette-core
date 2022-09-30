@@ -25,8 +25,4 @@ class SourcePolicy < ApplicationPolicy
     user.has_permission?('imports.update_workgroup_providers')
   end
 
-  def store_xml?
-    user.has_permission?('imports.import_netex_store_xml')
-  end
-
 end

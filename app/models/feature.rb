@@ -20,6 +20,7 @@ class Feature
       vehicle_journeys_return_route
       stop_area_routing_constraints
       stop_area_connection_links
+      import_netex_store_xml
     ]
   end
 

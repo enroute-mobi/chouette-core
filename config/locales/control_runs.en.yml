@@ -19,6 +19,8 @@ en:
         one: Format of attribute
       control/model_status/run:
         one: Model status
+      control/service_count_trend/run:
+        one: Service count trend
     attributes:
       control/base/run:
         name: Name

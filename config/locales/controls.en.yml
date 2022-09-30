@@ -19,6 +19,8 @@ en:
         one: Format of attribute
       control/model_status:
         one: Model status
+      control/service_count_trend:
+        one: Service count trend
     attributes:
       control/base:
         name: Name
@@ -44,3 +46,7 @@ en:
         expected_format: Expected format
       control/model_status:
         expected_status: Expected status
+      control/service_count_trend:
+        weeks_before: Weeks before
+        weeks_after: Weeks after
+        maximum_difference: Maximum difference

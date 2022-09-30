@@ -10,6 +10,7 @@ module Control
       Control::CodeFormat,
       Control::FormatAttribute,
       Control::ModelStatus,
+      Control::ServiceCountTrend,
     ]
   end
 end

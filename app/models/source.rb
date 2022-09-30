@@ -101,6 +101,10 @@ class Source < ApplicationModel
       days.count == 7 ? '*' : days.join(',')
     end
 
+    def retrieval_days_of_week_attributes=(attributes)
+      self.retrieval_days_of_week = Timetable::DaysOfWeek.new(attributes)
+    end
+
     def hourly_random
       source.id || Random.rand(60)
     end

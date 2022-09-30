@@ -25,6 +25,8 @@
             = d.attribute :retrieval_time_of_day, as: :time_of_day
           = d.attribute :ignore_checksum, as: :boolean
           = d.attribute :next_retrieval, as: :datetime
+          = d.attribute :retrieval_days_of_week, value: %w(monday tuesday wednesday thursday friday saturday sunday).collect{ |c| content_tag(:span, t("calendars.days.#{c}"), class: "label label-default #{@source.retrieval_days_of_week.send(c + '?') ? '' : 'disabled'}") }.join.html_safe
+
       .row
         .col-lg-12
           .h3 = t('sources.form.sections.last_retrieval')

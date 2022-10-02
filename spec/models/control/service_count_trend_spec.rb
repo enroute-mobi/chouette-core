@@ -113,9 +113,10 @@ RSpec.describe Control::ServiceCountTrend do
     let(:expected_message) do
       an_object_having_attributes({
         source: line,
-        criticity: "warning",
+        criticity: 'warning',
         message_attributes: {
-          "date"=>"2022-09-20"
+          'date' => '2022-09-20',
+          'line' => line.id
         }
       })
     end

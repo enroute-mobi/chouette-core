@@ -246,7 +246,7 @@ RSpec.describe Source::ScheduledJob do
   end
 
   describe '#retrieval_days_of_week' do
-    subject { job.retrieval_days }
+    subject { job.retrieval_days_of_week_cron }
 
     context 'when the days of week are "tuesday", "wednesday", "thursday", "friday" and "saturday"' do
       before do

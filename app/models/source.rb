@@ -90,13 +90,15 @@ class Source < ApplicationModel
     def cron
       case retrieval_frequency
       when 'daily'
-        "#{retrieval_time_of_day.minute} #{retrieval_time_of_day.hour} * * #{retrieval_days}" if retrieval_time_of_day
+        if retrieval_time_of_day
+          "#{retrieval_time_of_day.minute} #{retrieval_time_of_day.hour} * * #{retrieval_days_of_week_cron}"
+        end
       when 'hourly'
-        "#{hourly_random % 60} * * * #{retrieval_days}"
+        "#{hourly_random % 60} * * * #{retrieval_days_of_week_cron}"
       end
     end
 
-    def retrieval_days
+    def retrieval_days_of_week_cron
       days = []
       Timetable::DaysOfWeek::SYMBOLIC_DAYS.each_with_index do |day, i|
         days << (i + 1) % 7 if retrieval_days_of_week.send(day)

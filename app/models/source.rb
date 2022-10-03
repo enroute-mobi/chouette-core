@@ -65,6 +65,10 @@ class Source < ApplicationModel
     retrieval_frequency_changed? || retrieval_time_of_day_changed?
   end
 
+  def retrieval_days_of_week_attributes=(attributes)
+    self.retrieval_days_of_week = Timetable::DaysOfWeek.new(attributes)
+  end
+
   # REMOVEME after CHOUETTE-2007
   before_validation ->(source) { source.retrieval_time_of_day ||= TimeOfDay.new(0, 0) }, if: :enabled?
   before_save :reschedule, if: :reschedule_needed?
@@ -99,10 +103,6 @@ class Source < ApplicationModel
       end
 
       days.count == 7 ? '*' : days.join(',')
-    end
-
-    def retrieval_days_of_week_attributes=(attributes)
-      self.retrieval_days_of_week = Timetable::DaysOfWeek.new(attributes)
     end
 
     def hourly_random

@@ -77,7 +77,8 @@ class SourcesController < ChouetteController
       :downloader_type,
       :downloader_option_raw_authorization,
       :retrieval_time_of_day,
-      :retrieval_frequency
+      :retrieval_frequency,
+      retrieval_days_of_week_attributes: [:monday, :tuesday, :wednesday, :thursday, :friday, :saturday, :sunday]
     ).with_defaults(workbench_id: parent.id)
   end
 end

@@ -20,11 +20,13 @@ class Source < ApplicationModel
   before_validation :clean, on: :update
 
   attribute :retrieval_time_of_day, TimeOfDay::Type::TimeWithoutZone.new
+  attribute :retrieval_days_of_week, WeekDays.new
+
   belongs_to :scheduled_job, class_name: '::Delayed::Job', dependent: :destroy
   validates :retrieval_time_of_day, presence: true, if: :retrieval_frequency_daily?
+  validates :retrieval_days_of_week, presence: true, if: :enabled?
 
   enumerize :retrieval_frequency, in: %w[none hourly daily], default: 'none', predicates: { prefix: true }
-
   def enabled?
     !retrieval_frequency_none?
   end
@@ -63,6 +65,10 @@ class Source < ApplicationModel
     retrieval_frequency_changed? || retrieval_time_of_day_changed?
   end
 
+  def retrieval_days_of_week_attributes=(attributes)
+    self.retrieval_days_of_week = Timetable::DaysOfWeek.new(attributes)
+  end
+
   # REMOVEME after CHOUETTE-2007
   before_validation ->(source) { source.retrieval_time_of_day ||= TimeOfDay.new(0, 0) }, if: :enabled?
   before_save :reschedule, if: :reschedule_needed?
@@ -79,15 +85,25 @@ class Source < ApplicationModel
       coder['source_id'] = source_id
     end
 
-    delegate :retrieval_time_of_day, :retrieval_frequency, to: :source
+    delegate :retrieval_time_of_day, :retrieval_frequency, :retrieval_days_of_week, to: :source
 
     def cron
       case retrieval_frequency
       when 'daily'
-        "#{retrieval_time_of_day.minute} #{retrieval_time_of_day.hour} * * *" if retrieval_time_of_day
+        if retrieval_time_of_day
+          "#{retrieval_time_of_day.minute} #{retrieval_time_of_day.hour} * * #{retrieval_days_of_week_cron}"
+        end
       when 'hourly'
-        "#{hourly_random % 60} * * * *"
+        "#{hourly_random % 60} * * * #{retrieval_days_of_week_cron}"
       end
+    end
+
+    def retrieval_days_of_week_cron
+      return '*' if retrieval_days_of_week.all?
+
+      retrieval_days_of_week.days.map do |day_of_week| 
+        day_of_week.to_s.first(3)
+      end.join(',')
     end
 
     def hourly_random

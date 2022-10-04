@@ -44,6 +44,7 @@ en:
         import_option_update_workgroup_providers: Allow changes on Workbenches resources
         enabled: "Enabled"
         retrieval_time_of_day: "Retrieval time"
+        retrieval_days_of_week: "Retrieval days"
         retrieval_frequency: "Retrieval Frequency"
         next_retrieval: "Next Retrieval"
         ignore_checksum: "Ignore checksum"

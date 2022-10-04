@@ -439,6 +439,10 @@ module Chouette
 
     def method_missing(method_name, *arguments)
       instances = root_context.registry.dynamic_model_method(method_name, *arguments)
+
+      # Avoid false tests with our models where #empty? method is defined
+      return instances if instances.is_a?(::ActiveRecord::Base)
+
       if instances.present?
         return instances
       end

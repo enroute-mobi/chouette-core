@@ -124,4 +124,8 @@ module ApplicationDaysSupport
     Timetable::DaysOfWeek.from_int_day_types(int_day_types)
   end
 
+  def days_of_week=(days_of_week)
+    self.int_day_types = days_of_week.chouette_days_mask
+  end
+
 end

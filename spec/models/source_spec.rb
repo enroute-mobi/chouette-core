@@ -248,13 +248,28 @@ RSpec.describe Source::ScheduledJob do
   describe '#retrieval_days_of_week' do
     subject { job.retrieval_days_of_week_cron }
 
-    context 'when the days of week are "tuesday", "wednesday", "thursday", "friday" and "saturday"' do
+    context 'when selected Day of Week is Monday"' do
       before do
-        source.retrieval_days_of_week.monday = false
-        source.retrieval_days_of_week.sunday = false
+        source.retrieval_days_of_week = Timetable::DaysOfWeek.none.enable(:monday)
       end
 
-      it { is_expected.to eq('2,3,4,5,6') }
+      it { is_expected.to eq('mon') }
+    end
+
+    context 'when selected Days of Week are Monday and Sunday"' do
+      before do
+        source.retrieval_days_of_week = Timetable::DaysOfWeek.none.enable(:monday).enable(:sunday)
+      end
+
+      it { is_expected.to eq('mon,sun') }
+    end
+
+    context 'when all Days of Week are selected' do
+      before do
+        source.retrieval_days_of_week = Timetable::DaysOfWeek.all
+      end
+
+      it { is_expected.to eq('*') }
     end
   end
 end

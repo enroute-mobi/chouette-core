@@ -332,6 +332,10 @@ class Timetable
       count
     end
 
+    def all?
+      day_count == 7
+    end
+
     def self.none
       new
     end

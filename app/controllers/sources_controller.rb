@@ -30,10 +30,6 @@ class SourcesController < ChouetteController
     end
   end
 
-  # def update
-  #   debugger
-  # end
-
   def show
     @retrievals = @source.retrievals.order(created_at: :desc)
   end

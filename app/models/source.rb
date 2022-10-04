@@ -99,12 +99,11 @@ class Source < ApplicationModel
     end
 
     def retrieval_days_of_week_cron
-      days = []
-      Timetable::DaysOfWeek::SYMBOLIC_DAYS.each_with_index do |day, i|
-        days << (i + 1) % 7 if retrieval_days_of_week.send(day)
-      end
+      return '*' if retrieval_days_of_week.all?
 
-      days.count == 7 ? '*' : days.join(',')
+      retrieval_days_of_week.days.map do |day_of_week| 
+        day_of_week.to_s.first(3)
+      end.join(',')
     end
 
     def hourly_random

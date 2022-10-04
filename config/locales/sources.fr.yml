@@ -44,6 +44,7 @@ fr:
         import_option_update_workgroup_providers: Autorisation des changements sur les ressources de l'Espace de travail
         enabled: "Activée"
         retrieval_time_of_day: "Heure de récupération"
+        retrieval_days_of_week: "Jours de récupération"
         retrieval_frequency: "Récupération automatique"
         next_retrieval: "Prochaine récupération"
         ignore_checksum: "Ignorer la Signature"

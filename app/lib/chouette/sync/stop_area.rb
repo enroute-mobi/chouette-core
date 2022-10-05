@@ -113,6 +113,7 @@ module Chouette::Sync
             latitude: latitude,
             longitude: longitude,
             is_referent: stop_area_is_referent,
+            referent_id: stop_area_referent_id,
             parent_id: stop_area_parent_id,
             status: :confirmed,
             import_xml: raw_xml

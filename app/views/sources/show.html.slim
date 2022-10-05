@@ -43,7 +43,7 @@
                 ), \
                 TableBuilderHelper::Column.new( \
                   key: :import, \
-                  attribute: Proc.new { |retrieval| operation_status(retrieval.import&.status, default_status: :pending) + retrieval.import&.name }, \
+                  attribute: Proc.new { |retrieval| retrieval.import ? (operation_status(retrieval.import&.status) + retrieval.import&.name) : "" }, \
                   link_to: lambda do |retrieval| \
                     workbench_import_path( \
                       @workbench, \

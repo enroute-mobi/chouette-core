@@ -39,16 +39,11 @@
                 ), \
                 TableBuilderHelper::Column.new( \
                   key: :status, \
-                  attribute: Proc.new { |n| n.status.present? ? t("enumerize.operation.status.#{n.try(:status)}") : "-" } \
-                ), \
-                TableBuilderHelper::Column.new( \
-                  key: :duration, \
-                  attribute: Proc.new { |object| object.ended_at.presence && object.started_at.presence && duration_in_words(object.ended_at - object.started_at)}, \
-                  sortable: false, \
+                  attribute: Proc.new { |n| n.user_status.text } \
                 ), \
                 TableBuilderHelper::Column.new( \
                   key: :import, \
-                  attribute: Proc.new { |retrieval| retrieval.import&.name }, \
+                  attribute: Proc.new { |retrieval| retrieval.import ? (operation_status(retrieval.import&.status) + retrieval.import&.name) : "" }, \
                   link_to: lambda do |retrieval| \
                     workbench_import_path( \
                       @workbench, \

@@ -116,6 +116,7 @@ en:
           archive_on_fail: Automatic Archive on failure
           flag_urgent: Contains urgent data
           update_workgroup_providers: Allow changes on Workbenches resources
+          store_xml: Store original XML resources
           merge_method: Merge method
           shape_attribute_as_id: Attribute used as id
           import_category: Import type

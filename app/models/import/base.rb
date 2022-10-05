@@ -51,6 +51,16 @@ class Import::Base < ApplicationModel
     end
   end
 
+  def store_xml?
+    if options['store_xml']
+      true
+    elsif (parent_options = parent&.options).present?
+      parent_options['store_xml'] == 'true'
+    else
+      false
+    end
+  end
+
   PERIOD_EXTREME_VALUE = 15.years
 
   after_create :purge_imports

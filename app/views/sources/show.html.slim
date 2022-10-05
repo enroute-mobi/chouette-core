@@ -17,6 +17,8 @@
           = d.attribute :import_option_archive_on_fail, as: :boolean
           - if policy(@source).update_workgroup_providers?
             = d.attribute :import_option_update_workgroup_providers, as: :boolean
+          - if has_feature?("import_netex_store_xml")
+            = d.attribute :import_option_store_xml, as: :boolean
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = simple_block_for @source, title: t('sources.form.sections.retrieval') do |d|

@@ -143,6 +143,10 @@ class Source < ApplicationModel
     import_options["update_workgroup_providers"]
   end
 
+  def import_option_store_xml
+    import_options["store_xml"]
+  end
+
   def import_option_automatic_merge=(value)
     import_options["automatic_merge"] = value
   end
@@ -155,8 +159,16 @@ class Source < ApplicationModel
     import_options["update_workgroup_providers"] = value
   end
 
+  def import_option_store_xml=(value)
+    import_options["store_xml"] = value
+  end
+
   def update_workgroup_providers?
     import_options["update_workgroup_providers"] == "true"
+  end
+
+  def store_xml?
+    import_options["store_xml"] == "true"
   end
 
   def downloader_option_raw_authorization

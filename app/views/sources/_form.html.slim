@@ -32,12 +32,14 @@
       = t("sources.form.sections.import_options")
     .simple-separator.mb-5
     .col-lg-12
-     = f.input :import_option_automatic_merge, as: :switchable_checkbox
-     = f.input :import_option_archive_on_fail, as: :switchable_checkbox
-     - if policy(@source).update_workgroup_providers? && !@source.update_workgroup_providers?
-      = f.input :import_option_update_workgroup_providers, as: :switchable_checkbox
-     - else
-      = f.input :import_option_update_workgroup_providers, as: :switchable_checkbox, disabled: true
+      = f.input :import_option_automatic_merge, as: :switchable_checkbox
+      = f.input :import_option_archive_on_fail, as: :switchable_checkbox
+      - if policy(@source).update_workgroup_providers? && !@source.update_workgroup_providers?
+        = f.input :import_option_update_workgroup_providers, as: :switchable_checkbox
+      - else
+        = f.input :import_option_update_workgroup_providers, as: :switchable_checkbox, disabled: true
+      - if has_feature?("import_netex_store_xml")
+        = f.input :import_option_store_xml, as: :switchable_checkbox
 
   = cancel_button
   = f.button :submit, t('actions.submit'), class: 'btn btn-default formSubmitr', form: 'source_form'

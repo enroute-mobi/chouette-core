@@ -19,6 +19,8 @@ en:
         one: Format of attribute
       control/model_status/run:
         one: Model status
+      control/service_count_trend/run:
+        one: Service count trend
     attributes:
       control/base/run:
         name: Name
@@ -44,3 +46,7 @@ en:
         expected_format: Expected format
       control/model_status/run:
         expected_status: Expected status
+      control/service_count_trend/run:
+        weeks_before: Weeks before
+        weeks_after: Weeks after
+        maximum_difference: Maximum difference in percentage  

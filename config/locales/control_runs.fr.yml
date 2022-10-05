@@ -49,4 +49,4 @@ fr:
       control/service_count_trend/run:
         weeks_before: Nombre de semaines avant
         weeks_after: Nombre de semaines après
-        maximum_difference: Différence maximale  
+        maximum_difference: Différence maximale en pourcentage

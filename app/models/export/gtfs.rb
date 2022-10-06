@@ -341,24 +341,36 @@ class Export::Gtfs < Export::Base
       end
     end
 
-    # CHOUETTE-960
+    def exported_models
+      send(part_name)
+    end
+
     def duplicated_registration_numbers
       @duplicated_registration_numbers ||=
-        SortedSet.new(referential.send(part_name)
-          .select(:registration_number, :id)
-          .group(:registration_number)
-          .having("count(?) > 1", ActiveRecord::Base.connection.quote_column_name("#{part_name}.id"))
-          .where(id: export_scope.send(part_name))
-          .pluck(:registration_number))
+        begin
+          # With complexe scopes, group by is applying on joins result where several lines, vehicle journeys
+          # are present, giving false duplicated registration numbers
+          #
+          # The subquery allows to retrieve only distinct id and registration_number.
+          query = <<~SQL
+            select registration_number
+            from (#{exported_models.select(:id, :registration_number).distinct.to_sql}) as id_and_registration_number
+            group by registration_number having count(id) > 1;
+          SQL
+
+          SortedSet.new(ActiveRecord::Base.connection.select_values(query))
+        end
     end
   end
 
   class StopAreas < Part
 
-    delegate :exported_stop_areas, to: :export
+    def stop_areas
+      export.exported_stop_areas
+    end
 
     def export!
-      exported_stop_areas.includes(:referent, :parent, :codes).order("parent_id NULLS first").each_instance do |stop_area|
+      stop_areas.includes(:referent, :parent, :codes).order("parent_id NULLS first").each_instance do |stop_area|
         decorated_stop_area = handle_referent(stop_area)
         next if index.has_stop_id? decorated_stop_area
 
@@ -472,17 +484,6 @@ class Export::Gtfs < Export::Base
 
     def companies
       @companies ||= referential.companies.where(id: company_ids-[DEFAULT_AGENCY_ID])
-    end
-
-    # CHOUETTE-2156 Detect duplicated into exported Companies
-    def duplicated_registration_numbers
-      @duplicated_registration_numbers ||=
-        SortedSet.new(companies
-          .select(:registration_number, :id)
-          .group(:registration_number)
-          .having("count(?) > 1", ActiveRecord::Base.connection.quote_column_name("#{part_name}.id"))
-          .where(id: export_scope.send(part_name))
-          .pluck(:registration_number))
     end
 
     def handle_referent(company, duplicated_registration_numbers)

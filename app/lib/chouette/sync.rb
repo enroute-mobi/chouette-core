@@ -7,7 +7,7 @@ module Chouette
       attr_accessor :resource_type, :resource_id_attribute, :resource_decorator
       attr_accessor :model_type, :model_id_attribute, :code_space
 
-      mattr_accessor :default_model_id_attribute, default: :registration_number
+      class_attribute :default_model_id_attribute, default: :registration_number
       include Event::HandlerSupport
 
       def initialize(options = {})

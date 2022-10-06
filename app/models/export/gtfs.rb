@@ -347,11 +347,19 @@ class Export::Gtfs < Export::Base
 
     def duplicated_registration_numbers
       @duplicated_registration_numbers ||=
-        SortedSet.new(exported_models
-          .select(:registration_number, :id)
-          .group(:registration_number)
-          .having('count(?) > 1', ActiveRecord::Base.connection.quote_column_name("#{part_name}.id"))
-          .pluck(:registration_number))
+        begin
+          # With complexe scopes, group by is applying on joins result where several lines, vehicle journeys
+          # are present, giving false duplicated registration numbers
+          #
+          # The subquery allows to retrieve only distinct id and registration_number.
+          query = <<~SQL
+            select registration_number
+            from (#{exported_models.select(:id, :registration_number).distinct.to_sql}) as id_and_registration_number
+            group by registration_number having count(id) > 1;
+          SQL
+
+          SortedSet.new(ActiveRecord::Base.connection.select_values(query))
+        end
     end
   end
 

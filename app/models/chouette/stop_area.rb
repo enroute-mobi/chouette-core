@@ -150,13 +150,7 @@ module Chouette
       !referent?
     end
 
-    before_save :coordinates_to_lat_lng, :update_is_referent
-
-    def update_is_referent
-      return unless referent
-
-      referent.update is_referent: true
-    end
+    before_save :coordinates_to_lat_lng
 
     def combine_lat_lng
       if self.latitude.nil? || self.longitude.nil?

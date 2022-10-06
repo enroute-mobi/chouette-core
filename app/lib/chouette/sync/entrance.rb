@@ -1,7 +1,7 @@
 module Chouette::Sync
   module Entrance
     class Netex < Chouette::Sync::Base
-      mattr_accessor :default_model_id_attribute, default: :codes
+      self.default_model_id_attribute = :codes
 
       def initialize(options = {})
         default_options = {

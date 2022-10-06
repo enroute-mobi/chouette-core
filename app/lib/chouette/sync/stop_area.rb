@@ -33,6 +33,7 @@ module Chouette::Sync
       def after_synchronisation
         [stop_place_updater, quay_updater].each do |updater|
           updater.update_pending_parents
+          updater.update_pending_referents
         end
       end
 
@@ -75,7 +76,7 @@ module Chouette::Sync
           postal_address&.town
         end
 
-        def stop_area_is_referent
+        def stop_area_is_particular
           derived_from_object_ref.present?
         end
 
@@ -93,12 +94,16 @@ module Chouette::Sync
           end
         end
 
-        def stop_area_referent_id
-          return unless stop_area_is_referent
+        def stop_area_is_referent
+          stop_area_is_particular ? false : nil
+        end
 
-          @stop_area_referent_id ||= resolve(:stop_area, derived_from_object_ref).tap do |referent_id|
-            pending_referent id, derived_from_object_ref if referent_id.nil?
-          end
+        def stop_area_referent_id
+          return unless stop_area_is_particular
+
+          pending_referent id, derived_from_object_ref
+
+          nil
         end
 
         def model_attributes
@@ -143,7 +148,7 @@ module Chouette::Sync
       end
 
       def pending_referent_resolver
-        @pending_referent_resolver ||= PendingResolver.new(self, :referent)
+        @pending_referent_resolver ||= PendingReferentResolver.new(self)
       end
       def pending_parent_resolver
         @pending_parent_resolver ||= PendingResolver.new(self, :parent)
@@ -182,6 +187,21 @@ module Chouette::Sync
           end
         end
 
+      end
+
+      class PendingReferentResolver < PendingResolver
+        def initialize(updater)
+          super updater, :referent
+        end
+
+        def update
+          pending_referents.update_all is_referent: true
+          super
+        end
+
+        def pending_referents
+          scope.where(model_id_attribute => pendings.values)
+        end
       end
 
     end

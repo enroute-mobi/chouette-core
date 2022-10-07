@@ -91,6 +91,7 @@ class Import::NetexGeneric < Import::Base
         sync.default_provider = default_provider
 
         sync.update_or_create
+        sync.after_synchronisation
       end
 
       import.resources.each do |resource|

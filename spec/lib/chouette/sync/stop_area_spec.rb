@@ -121,6 +121,48 @@ RSpec.describe Chouette::Sync::StopArea do
       expect(useless_stop_area.reload).to be_deactivated
     end
 
+    describe '#derived_from_object_ref' do
+      let(:xml) do
+        %(
+          <stopPlaces>
+            <StopPlace dataSourceRef="FR1-ARRET_AUTO" id="particular" derivedFromObjectRef="referent">
+              <Name>Particular Sample</Name>
+            </StopPlace>
+            <StopPlace dataSourceRef="FR1-ARRET_AUTO" id="referent">
+              <Name>Referent Sample</Name>
+            </StopPlace>
+          </stopPlaces>
+        )
+      end
+
+      let(:referent_stop_area) do
+        stop_area('referent')
+      end
+
+      let(:particular_stop_area) do
+        stop_area('particular')
+      end
+
+      before { sync.synchronize }
+
+      it 'should create referent stop area' do
+        expected_attributes = {
+          name: 'Referent Sample',
+          is_referent: true
+        }
+
+        expect(referent_stop_area.reload).to have_attributes(expected_attributes)
+      end
+
+      it 'should create particular stop area' do
+        expected_attributes = {
+          name: 'Particular Sample',
+          referent: referent_stop_area
+        }
+
+        expect(particular_stop_area.reload).to have_attributes(expected_attributes)
+      end
+    end
   end
 
 end

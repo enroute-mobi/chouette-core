@@ -22,6 +22,10 @@ module Chouette
         end
       end
 
+      def after_synchronisation
+        syncs.each(&:after_synchronisation)
+      end
+
       def event_handler=(event_handler)
         syncs.each do |sync|
           sync.event_handler = event_handler

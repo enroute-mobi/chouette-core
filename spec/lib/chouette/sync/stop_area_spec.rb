@@ -121,6 +121,54 @@ RSpec.describe Chouette::Sync::StopArea do
       expect(useless_stop_area.reload).to be_deactivated
     end
 
+    describe '#accessibility_assessment' do
+      let(:xml) do
+        %{
+          <quays>
+            <Quay dataSourceRef="FR1-ARRET_AUTO" id="test">
+              <Name>Quay Sample</Name>
+              <AccessibilityAssessment version="any" id="test">
+                <validityConditions>
+                  <ValidityCondition version="any" id="test">
+                    <Description>Description Sample</Description>
+                  </ValidityCondition>
+                </validityConditions>
+                <MobilityImpairedAccess>true</MobilityImpairedAccess>
+                <limitations>
+                  <AccessibilityLimitation>
+                    <WheelchairAccess>true</WheelchairAccess>
+                    <StepFreeAccess>false</StepFreeAccess>
+                    <EscalatorFreeAccess>true</EscalatorFreeAccess>
+                    <LiftFreeAccess>partial</LiftFreeAccess>
+                    <AudibleSignalsAvailable>partial</AudibleSignalsAvailable>
+                    <VisualSignsAvailable>true</VisualSignsAvailable>
+                  </AccessibilityLimitation>
+                </limitations>
+              </AccessibilityAssessment>
+            </Quay>
+          </quays>
+        }
+      end
+
+      let(:quay) { stop_area('test') }
+
+      it 'should create quay with accessibility' do
+        sync.synchronize
+
+        expected_attributes = {
+          name: 'Quay Sample',
+          mobility_impaired_accessibility: "yes",
+          wheelchair_accessibility: "yes",
+          step_free_accessibility: "no",
+          escalator_free_accessibility: "yes",
+          lift_free_accessibility: "partial",
+          audible_signals_availability: "partial",
+          visual_signs_availability: "yes"
+        }
+
+        expect(quay).to have_attributes(expected_attributes)
+      end
+    end
     describe '#derived_from_object_ref' do
       let(:xml) do
         %(

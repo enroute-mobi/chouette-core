@@ -189,6 +189,7 @@ module Chouette::Sync
 
       end
 
+      # Resolve Stop Area referents
       class PendingReferentResolver < PendingResolver
         def initialize(updater)
           super updater, :referent

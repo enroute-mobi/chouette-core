@@ -123,7 +123,7 @@ RSpec.describe Chouette::Sync::StopArea do
 
     describe '#derived_from_object_ref' do
       let(:xml) do
-        %{
+        %(
           <stopPlaces>
             <StopPlace dataSourceRef="FR1-ARRET_AUTO" id="particular" derivedFromObjectRef="referent">
               <Name>Particular Sample</Name>
@@ -132,7 +132,7 @@ RSpec.describe Chouette::Sync::StopArea do
               <Name>Referent Sample</Name>
             </StopPlace>
           </stopPlaces>
-        }
+        )
       end
 
       let(:referent_stop_area) do
@@ -147,7 +147,7 @@ RSpec.describe Chouette::Sync::StopArea do
 
       it 'should create referent stop area' do
         expected_attributes = {
-          name: "Referent Sample",
+          name: 'Referent Sample',
           is_referent: true
         }
 
@@ -156,7 +156,7 @@ RSpec.describe Chouette::Sync::StopArea do
 
       it 'should create particular stop area' do
         expected_attributes = {
-          name: "Particular Sample",
+          name: 'Particular Sample',
           referent: referent_stop_area
         }
 

@@ -62,7 +62,7 @@ class Source < ApplicationModel
   end
 
   def reschedule_needed?
-    retrieval_frequency_changed? || retrieval_time_of_day_changed?
+    retrieval_frequency_changed? || retrieval_time_of_day_changed? || retrieval_days_of_week_changed?
   end
 
   def retrieval_days_of_week_attributes=(attributes)

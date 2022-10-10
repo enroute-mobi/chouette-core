@@ -123,15 +123,15 @@ RSpec.describe Chouette::Sync::StopArea do
 
     describe '#accessibility_assessment' do
       let(:xml) do
-        %{
+        %(
           <quays>
             <Quay dataSourceRef="FR1-ARRET_AUTO" id="test">
               <Name>Quay Sample</Name>
               <AccessibilityAssessment version="any" id="test">
                 <validityConditions>
-                  <ValidityCondition version="any" id="test">
+                  <AvailabilityCondition version="any" id="test">
                     <Description>Description Sample</Description>
-                  </ValidityCondition>
+                  </AvailabilityCondition>
                 </validityConditions>
                 <MobilityImpairedAccess>true</MobilityImpairedAccess>
                 <limitations>
@@ -147,7 +147,7 @@ RSpec.describe Chouette::Sync::StopArea do
               </AccessibilityAssessment>
             </Quay>
           </quays>
-        }
+        )
       end
 
       let(:quay) { stop_area('test') }
@@ -157,13 +157,14 @@ RSpec.describe Chouette::Sync::StopArea do
 
         expected_attributes = {
           name: 'Quay Sample',
-          mobility_impaired_accessibility: "yes",
-          wheelchair_accessibility: "yes",
-          step_free_accessibility: "no",
-          escalator_free_accessibility: "yes",
-          lift_free_accessibility: "partial",
-          audible_signals_availability: "partial",
-          visual_signs_availability: "yes"
+          mobility_impaired_accessibility: 'yes',
+          wheelchair_accessibility: 'yes',
+          step_free_accessibility: 'no',
+          escalator_free_accessibility: 'yes',
+          lift_free_accessibility: 'partial',
+          audible_signals_availability: 'partial',
+          visual_signs_availability: 'yes',
+          accessibility_limitation_description: 'Description Sample'
         }
 
         expect(quay).to have_attributes(expected_attributes)

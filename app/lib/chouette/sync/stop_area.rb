@@ -112,8 +112,8 @@ module Chouette::Sync
           end
           attr_accessor :accessibility_assessment
 
-          def accessibility_limitation
-            accessibility_assessment&.limitations&.first
+          def limitation
+            @limitation ||= accessibility_assessment&.limitations&.first
           end
 
           def transform(value)
@@ -133,33 +133,37 @@ module Chouette::Sync
             transform accessibility_assessment&.mobility_impaired_access
           end
 
+          def description
+            accessibility_assessment&.description
+          end
+
           def wheelchair_access
-            transform accessibility_limitation&.wheelchair_access
+            transform limitation&.wheelchair_access
           end
 
           def step_free_access
-            transform accessibility_limitation&.step_free_access
+            transform limitation&.step_free_access
           end
 
           def escalator_free_access
-            transform accessibility_limitation&.escalator_free_access
+            transform limitation&.escalator_free_access
           end
 
           def lift_free_access
-            transform accessibility_limitation&.lift_free_access
+            transform limitation&.lift_free_access
           end
 
           def audible_signals_available
-            transform accessibility_limitation&.audible_signals_available
+            transform limitation&.audible_signals_available
           end
 
           def visual_signs_available
-            transform accessibility_limitation&.visual_signs_available
+            transform limitation&.visual_signs_available
           end
         end
 
         def accessibility
-          AccessibilityAssessment.new accessibility_assessment
+          @accessibility ||= AccessibilityAssessment.new accessibility_assessment
         end
 
         def model_attributes
@@ -184,6 +188,7 @@ module Chouette::Sync
             lift_free_accessibility: accessibility.lift_free_access,
             audible_signals_availability: accessibility.audible_signals_available,
             visual_signs_availability: accessibility.visual_signs_available,
+            accessibility_limitation_description: accessibility.description,
             import_xml: raw_xml
           }
         end

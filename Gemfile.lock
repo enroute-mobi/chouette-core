@@ -65,8 +65,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: e721f626e45e3d9dd44037b158fc9687ac5bd98c
-  branch: NETEX-59-parse-accessibility-assessment-in-site-resources
+  revision: ff8eb46ae8729718385f11d970fd6c0db8165ca3
   specs:
     netex (0.1.2)
       activesupport

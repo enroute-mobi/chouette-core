@@ -252,11 +252,6 @@ fr:
     dummy_control/dummy:
       description: "Simulation de contrôle"
       prerequisite: "Aucun"
-    company_control/name_is_present:
-      description: "Un transporteur doit avoir un nom commercial"
-      prerequisite: "Aucun"
-      messages:
-        3_company_1: "Le transporteur #%{source_objectid} doit avoir un nom commercial"
     custom_field_control/presence:
       description: "Présence d'un champ personnalisé"
       prerequisite: "Aucun"
@@ -353,8 +348,6 @@ fr:
         one: "Présence de valeur pour un attribut"
       dummy_control/dummy:
         one: "Simulation de contrôle"
-      company_control/name_is_present:
-        one: "Présence du nom des transporteurs"
       stop_area_control/time_zone:
         one: "Les arrêts ont un fuseau horaire"
       custom_field_control/presence:

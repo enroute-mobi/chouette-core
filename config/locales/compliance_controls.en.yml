@@ -252,11 +252,6 @@ en:
     dummy_control/dummy:
       description: "Simulated control"
       prerequisite: "None"
-    company_control/name_is_present:
-      description: "A company must have a name"
-      prerequisite: "None"
-      messages:
-        3_company_1: "The company #%{source_objectid} lacks a name"
     custom_field_control/presence:
       description: "Custom Field is set"
       prerequisite: "None"
@@ -349,8 +344,6 @@ en:
         one: "Attribute presence of an object"
       dummy_control/dummy:
         one: "simulated control"
-      company_control/name_is_present:
-        one: "Company name is present"
       stop_area_control/time_zone:
         one: "StopAreas have a timezone"
       custom_field_control/presence:

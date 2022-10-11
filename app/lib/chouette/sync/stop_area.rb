@@ -106,6 +106,66 @@ module Chouette::Sync
           nil
         end
 
+        class AccessibilityAssessment
+          def initialize(accessibility_assessment)
+            @accessibility_assessment = accessibility_assessment
+          end
+          attr_accessor :accessibility_assessment
+
+          def limitation
+            @limitation ||= accessibility_assessment&.limitations&.first
+          end
+
+          def transform(value)
+            case value
+            when 'true'
+              'yes'
+            when 'false'
+              'no'
+            when nil
+              'unknown'
+            else
+              value
+            end
+          end
+
+          def mobility_impaired_access
+            transform accessibility_assessment&.mobility_impaired_access
+          end
+
+          def description
+            accessibility_assessment&.description
+          end
+
+          def wheelchair_access
+            transform limitation&.wheelchair_access
+          end
+
+          def step_free_access
+            transform limitation&.step_free_access
+          end
+
+          def escalator_free_access
+            transform limitation&.escalator_free_access
+          end
+
+          def lift_free_access
+            transform limitation&.lift_free_access
+          end
+
+          def audible_signals_available
+            transform limitation&.audible_signals_available
+          end
+
+          def visual_signs_available
+            transform limitation&.visual_signs_available
+          end
+        end
+
+        def accessibility
+          @accessibility ||= AccessibilityAssessment.new accessibility_assessment
+        end
+
         def model_attributes
           {
             name: name,
@@ -121,6 +181,14 @@ module Chouette::Sync
             referent_id: stop_area_referent_id,
             parent_id: stop_area_parent_id,
             status: :confirmed,
+            mobility_impaired_accessibility: accessibility.mobility_impaired_access,
+            wheelchair_accessibility: accessibility.wheelchair_access,
+            step_free_accessibility: accessibility.step_free_access,
+            escalator_free_accessibility: accessibility.escalator_free_access,
+            lift_free_accessibility: accessibility.lift_free_access,
+            audible_signals_availability: accessibility.audible_signals_available,
+            visual_signs_availability: accessibility.visual_signs_available,
+            accessibility_limitation_description: accessibility.description,
             import_xml: raw_xml
           }
         end

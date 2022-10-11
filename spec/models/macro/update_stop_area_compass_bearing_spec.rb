@@ -20,6 +20,7 @@ RSpec.describe Macro::UpdateStopAreaCompassBearing do
           stop_area :first, latitude: 43.574325, longitude: 7.091888
           stop_area :middle, latitude: 43.575067, longitude: 7.095608
           stop_area :last, latitude: 43.574477, longitude: 7.099041
+          stop_area :no_relationship_with_shape, latitude: 43.974477, longitude: 7.899041
 
           shape :shape, geometry: %{LINESTRING (7.091885616516534 43.57432715792825,
             7.092105740785468 43.574444133071914, 7.092232913989094 43.57448386864411,
@@ -51,6 +52,14 @@ RSpec.describe Macro::UpdateStopAreaCompassBearing do
 
       def stop_area(name)
         context.stop_area(name).reload
+      end
+
+      describe '#scope' do
+        subject { macro_run.stop_areas.find_by(id: stop_area(:no_relationship_with_shape)) }
+
+        it 'shoud not contain no_relationship_with_shape stop area' do
+          is_expected.to be_nil
+        end
       end
 
       it "should compute and update Stop Area compass bearings" do

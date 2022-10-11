@@ -38,6 +38,7 @@ module Chouette
     scope :by_text, ->(text) { text.blank? ? all : where('lower(stop_areas.name) LIKE :t or lower(stop_areas.objectid) LIKE :t', t: "%#{text.downcase}%") }
     scope :without_compass_bearing, -> { where compass_bearing: nil }
     scope :with_compass_bearing, -> { where.not compass_bearing: nil }
+    scope :relationship_with_shape, -> { joins(stop_points: { journey_patterns: :shape }) }
     scope :referents, -> { where is_referent: true }
     scope :particulars, -> { where.not is_referent: true }
     scope :without_address, -> { where country_code: nil,  street_name: nil, zip_code: nil, city_name: nil }

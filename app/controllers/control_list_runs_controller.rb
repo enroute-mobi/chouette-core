@@ -98,7 +98,9 @@ class ControlListRunsController < ChouetteController
 	end
 
   def select_referentials
-    @referentials ||= workbench.referentials.editable
+    current_workbench_referential = workbench.output.present? ? [workbench.output.current] : []
+    current_workgroup_referential = (workbench.workgroup.output.present? && workbench.workgroup.owner == current_user.organisation) ? [workbench.workgroup.output.current] : []
+    @referentials ||= workbench.referentials.editable + current_workbench_referential + current_workgroup_referential
   end
 
 	def control_list_run_params

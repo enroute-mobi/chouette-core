@@ -46,7 +46,7 @@ class ProcessingRulesController < ChouetteController
 
   def processing_rule_params
     params.require(:processing_rule).permit(
-      :processing_type,
+      :processable_type,
       :control_list_id,
       :macro_list_id,
       :operation_step

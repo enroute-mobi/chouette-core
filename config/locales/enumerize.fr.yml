@@ -425,7 +425,7 @@ fr:
         error: Erreur
         failed: Echec
     processing_rule/workbench:
-      processing_type:
+      processable_type:
         "Macro::List": "Jeu d'instructions"
         "Control::List": Jeu de contrôles
       operation_step:
@@ -433,7 +433,7 @@ fr:
         before_merge: Avant finalisation
         after_merge: Après finalisation
     processing_rule/workgroup:
-      processing_type:
+      processable_type:
         "Control::List": Jeu de contrôles
       operation_step:
         after_import: Après import

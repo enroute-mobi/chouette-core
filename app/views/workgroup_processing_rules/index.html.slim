@@ -19,7 +19,7 @@
               ), \
               TableBuilderHelper::Column.new( \
                 key: :control_list, \
-                attribute: -> (pr) { pr.processing.name }, \
+                attribute: -> (pr) { pr.processable.name }, \
                 sortable: false,\
               ), \
             ],

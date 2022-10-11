@@ -8,6 +8,8 @@ class Import::Base < ApplicationModel
   attr_accessor :code_space
   after_initialize :initialize_space_code
 
+  has_many :processings
+
   scope :unfinished, -> { where 'notified_parent_at IS NULL' }
   scope :having_status, ->(statuses) { where(status: statuses ) }
   scope :started_at_after, ->(date) do

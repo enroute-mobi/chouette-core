@@ -13,14 +13,14 @@
                 sortable: false \
               ), \
               TableBuilderHelper::Column.new( \
-                key: :processing_type, \
-                attribute: -> (pr) { pr.processing_type.text }, \
+                key: :processable_type, \
+                attribute: -> (pr) { pr.processable_type.text }, \
                 sortable: false,\
               ), \
               TableBuilderHelper::Column.new( \
-                key: :processing_id, \
-                attribute: -> (pr) { pr.processing.name }, \
-                link_to: -> (pr) { url_for([pr.processing.workbench, pr.processing]) }, \
+                key: :processable_id, \
+                attribute: -> (pr) { pr.processable.name }, \
+                link_to: -> (pr) { url_for([pr.processable.workbench, pr.processable]) }, \
                 sortable: false,\
               ), \
             ],

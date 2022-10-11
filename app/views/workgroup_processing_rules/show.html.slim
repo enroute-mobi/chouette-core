@@ -10,8 +10,8 @@
         = simple_block_for @processing_rule, title: 'Information' do |d|
           = d.attribute :operation_step, value: @processing_rule.operation_step.text
           = d.attribute :target_workbenches, value: @processing_rule.target_workbench_names
-          = d.attribute :processing, \
+          = d.attribute :processable, \
             as: :association, \
-            label: @processing_rule.processing_type.text
+            label: @processing_rule.processable_type.text
           = d.attribute :created_at, as: :datetime
           = d.attribute :updated_at, as: :datetime

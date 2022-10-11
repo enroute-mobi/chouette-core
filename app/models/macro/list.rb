@@ -18,6 +18,10 @@ module Macro
       MacroListPolicy
     end
 
+    def build_run(referential)      
+      macro_list_runs.new workbench: workbench, name: name, creator: "Webservice", referential: referential
+    end
+
     # macro_list_run = macro_list.build_run user: user, workbench: workbench, referential: target
     #
     # if macro_list_run.save

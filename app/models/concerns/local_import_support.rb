@@ -61,6 +61,20 @@ module LocalImportSupport
         import_without_status
       end
 
+      processing_rules.each do |processing_rule|
+        processing = Processing.create processing_rule: processing_rule, step: :after, operation: import, workbench_id: processing_rule.workbench_id, 
+          workgroup_id: processing_rule.workgroup_id, processed: processing_rule.processable.build_run(import.referential)
+
+        processing = processing_rule.processings.create step: :after, operation: self, workbench_id: processing_rule.workbench_id, 
+          workgroup_id: processing_rule.workgroup_id, processed: processing_rule.processable.build_run(self.referential)
+        # puts processing.inspect
+        # puts processing.errors.inspect    
+        unless processing.perform
+          @status = 'failed'
+          break
+        end
+      end
+
       @progress = nil
       @status ||= 'successful'
       referential&.active!
@@ -90,6 +104,16 @@ module LocalImportSupport
     save
     notify_parent
     notify_state
+  end
+
+  def processing_rules
+    # Returns Processing Rules associated to Import operation with a specific order:
+    #   Macro List first
+    #   Control List
+    #   Workgroup Control List
+    scope = ProcessingRule::Base.where(operation_step: 'after_import')
+    processing_rules = scope.where(workbench_id: workbench_id).or(scope.where(target_workbench_ids: [workbench_id]))
+    processing_rules.order(workgroup_id: :desc, processable_type: :asc)
   end
 
   def worker_died

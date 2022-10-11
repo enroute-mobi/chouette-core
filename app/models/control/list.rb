@@ -19,6 +19,10 @@ module Control
       ControlListPolicy
     end
 
+    def build_run(referential)
+      control_list_runs.new workbench: workbench, name: name, creator: "Webservice", referential: referential
+    end
+
     # control_list_run = control_list.build_run user: user, workbench: workbench, referential: target
     #
     # if control_list_run.save

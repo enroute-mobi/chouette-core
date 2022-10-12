@@ -2,6 +2,9 @@ en:
   macro_messages:
     default: "Message on line %{name}"
     search_no_results_for_filter: "No messages found"
+    no_address: "No address"
+    invalid_address: "Invalid address"
+    invalid: "Invalid"
   activerecord:
     models:
       macro/message:

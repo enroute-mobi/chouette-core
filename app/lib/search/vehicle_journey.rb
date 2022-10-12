@@ -16,6 +16,8 @@ module Search
       Period.new(from: start_date, to: end_date).presence
     end
 
+    validates :start_date, presence: true, if: Proc.new { |search| search.end_date.present? }
+    validates :end_date, presence: true, if: Proc.new { |search| search.start_date.present? }
     validates :period, valid: true
     validates :company, inclusion: { in: ->(search) { search.candidate_companies } }, allow_blank: true, allow_nil: true
     validates :line, inclusion: { in: ->(search) { search.candidate_lines } }, allow_blank: true, allow_nil: true

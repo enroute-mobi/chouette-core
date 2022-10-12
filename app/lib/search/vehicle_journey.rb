@@ -39,11 +39,11 @@ module Search
     end
 
     def candidate_lines
-      referential.lines
+      referential.lines.order(:name)
     end
 
     def candidate_companies
-      referential.companies
+      referential.companies.order(:name)
     end
 
     def candidate_stop_areas

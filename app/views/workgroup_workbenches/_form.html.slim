@@ -3,7 +3,7 @@
     .col-lg-12
       h2.mb-lg= t("metadatas")
       = f.input :name
-      = f.input :organisation_id, as: :select, :collection => Organisation.order(Arel.sql('lower(name) asc')), include_blank: true, required: true, disabled: true
+      = f.association :organisation, disabled: true, collection: [@workbench.organisation]
 
   .separator.section_separator
   .row

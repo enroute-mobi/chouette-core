@@ -50,6 +50,6 @@ class WorkgroupWorkbenchesController < ChouetteController
   end
 
   def workbench_params
-    params.require(:workbench).permit(:name, :organisation_id, restrictions: []).with_defaults(restrictions: [])
+    params.require(:workbench).permit(:name, restrictions: []).with_defaults(restrictions: [])
   end
 end

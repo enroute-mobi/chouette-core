@@ -52,7 +52,7 @@ fr:
         status: Statut
       compliance_check_resource:
         name: Nom de la ligne
-        status: État
+        status: Statut
         metrics: Résultat des tests
         download: Télécharger
     models:

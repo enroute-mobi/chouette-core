@@ -37,7 +37,7 @@ fr:
       results: "%{count} jeu(x) de données validé(s) sur %{total}"
       summary: Bilan des jeux de contrôles d'import
       parent: Parent
-      status: État
+      status: Statut
       referential: Jeu de données
       netex:
         table_title: "État des fichiers analysés"
@@ -106,7 +106,7 @@ fr:
         notification_target: Destinataire(s) des notifications
         resources: "Fichier à importer"
         name: "Nom de l'import"
-        status: "État"
+        status: "Statut"
         no_save: "Pas de sauvegarde"
         references_type: "Données à importer"
         object_id_prefix: "Préfixe d'identifiants"

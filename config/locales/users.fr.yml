@@ -58,7 +58,7 @@ fr:
         username: "Nom d'utilisateur"
         permissions: Permissions
         profile: Profil
-        state: État
+        state: Statut
         last_sign_in_at: Date de dernière connexion
         locked_at: Bloqué le
         created_at: Créé le

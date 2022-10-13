@@ -44,7 +44,7 @@ fr:
         creator: Créé par
         notification_target: Destinataire(s) des notifications
         name: Nom
-        status: "Etat"
+        status: "Statut"
         referentials: "Jeux de données"
         new: Jeu de données finalisé
         operator: Utilisateur

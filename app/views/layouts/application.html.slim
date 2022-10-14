@@ -6,8 +6,6 @@ html lang=I18n.locale
 
     - if @referential.present? && policy(@referential).show?
       meta name="referential_state" content="#{@referential.state}"
-    - (current_user&.workbenches&.uniq || []).each do |workbench|
-      meta name="current_workbench_notifications_channel" content="#{workbench.notifications_channel}"
 
     = csrf_meta_tag
 

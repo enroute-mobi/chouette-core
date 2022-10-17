@@ -55,5 +55,9 @@ en:
       source/retrieval:
         started_at: Started at
         status: Status
+        message_key: Message
         duration: Duration
         import: Import
+        no_import_required: No import required
+        new_content_detected: New content detected
+        url_not_found: Url not found

@@ -338,7 +338,9 @@ class Source < ApplicationModel
 
         create_import
         source.update checksum: checksum
+        update_message message_key: :new_content_detected
       else
+        update_message message_key: :no_import_required
         logger.info "Checksum unchanged. Import is skipped"
       end
     end
@@ -351,7 +353,13 @@ class Source < ApplicationModel
 
     def download
       logger.info "Download with #{downloader.class}"
-      downloader.download downloaded_file
+      begin
+        downloader.download downloaded_file
+      rescue => e
+        if e.message.include? 'No such file or directory'
+          update_message message_key: :url_not_found
+        end
+      end
     end
     measure :download
 
@@ -441,6 +449,10 @@ class Source < ApplicationModel
     end
 
     private
+
+    def update_message(options)
+      update options
+    end
 
     def set_workbench
       self.workbench = self.source&.workbench

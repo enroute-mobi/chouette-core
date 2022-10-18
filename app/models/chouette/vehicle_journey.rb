@@ -155,7 +155,7 @@ module Chouette
     end
 
     def self.scheduled_on(date)
-      joins(:time_tables).merge(Chouette::TimeTable.scheduled_on(date))
+      joins(:time_tables).merge(Chouette::TimeTable.scheduled_on(date)).distinct
     end
 
     # TODO: Remove this validator

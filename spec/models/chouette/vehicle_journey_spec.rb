@@ -1,3 +1,53 @@
+# frozen_string_literal: true
+
+RSpec.describe Chouette::VehicleJourney do
+  describe '.scheduled_on' do
+    subject { referential.vehicle_journeys.scheduled_on(date) }
+    before { referential.switch }
+
+    let(:context) do
+      Chouette.create do
+        time_table :first
+        time_table :second
+        vehicle_journey time_tables: %i[first second]
+      end
+    end
+    let(:referential) { context.referential }
+    let(:vehicle_journey) { context.vehicle_journey }
+
+    let(:date) { double }
+
+    context 'when no TimeTable is schedule on the given date' do
+      before { allow(Chouette::TimeTable).to receive(:scheduled_on).and_return(Chouette::TimeTable.none) }
+
+      it { is_expected.to be_empty }
+    end
+
+    context 'when a TimeTable is scheduled on the given date' do
+      let(:time_table) { referential.time_tables.first }
+      let(:scheduled_time_tables) { referential.time_tables.where(id: time_table) }
+
+      before do
+        allow(Chouette::TimeTable).to receive(:scheduled_on).and_return(scheduled_time_tables)
+      end
+
+      it { is_expected.to contain_exactly(vehicle_journey) }
+    end
+
+    context 'when two TimeTables is scheduled on the given date' do
+      let(:scheduled_time_tables) { referential.time_tables }
+
+      before do
+        allow(Chouette::TimeTable).to receive(:scheduled_on).and_return(scheduled_time_tables)
+      end
+
+      it { is_expected.to contain_exactly(vehicle_journey) }
+    end
+  end
+end
+
+# DEPRECATED
+
 describe Chouette::VehicleJourney, type: :model do
   subject { create(:vehicle_journey) }
   before(:each){

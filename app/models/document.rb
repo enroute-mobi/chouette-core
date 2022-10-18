@@ -23,9 +23,9 @@ class Document < ApplicationModel
 
   scope :with_type, ->(document_type) { where(document_type: document_type) }
   scope :valid_on, -> (date) { where('validity_period is null or validity_period @> DATE ?', date) }
-  
+
   def self.most_updated!
-    order(updated_at: :desc).first! 
+    order(updated_at: :desc).first!
   end
 
   def validity_period_attributes=(validity_period_attributes)
@@ -39,4 +39,25 @@ class Document < ApplicationModel
   def self.file_extension_whitelist
     %w[pdf kml jpg jpeg png]
   end
+
+  # Returns all attributes of the export file from the user point of view
+  def user_file
+    Chouette::UserFile.new basename: name.parameterize, extension: file_extension, content_type: content_type
+  end
+
+  def content_type
+    content_type = file&.content_type
+
+    case content_type
+    when "application/octet-stream"
+      "application/zip"
+    else
+      content_type
+    end
+  end
+
+  def file_extension
+    File.extname(file.path)[1..-1]
+  end
+
 end

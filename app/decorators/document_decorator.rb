@@ -31,4 +31,15 @@ class DocumentDecorator < AF83::Decorator
 		})
 	end
 
+	with_instance_decorator do |instance_decorator|
+    instance_decorator.action_link primary: :show do |l|
+      l.content t('imports.actions.download')
+      l.icon :download
+      l.href   { [:download, scope, object] }
+      l.disabled { !object.file.present? }
+      l.download { [:download, scope, object] }
+      l.target :blank
+    end
+  end
+
 end

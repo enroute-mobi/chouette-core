@@ -45,7 +45,7 @@
                 ), \
                 TableBuilderHelper::Column.new( \
                   key: :message_key, \
-                  attribute: Proc.new { |n| t(n.message_key) } \
+                  attribute: Proc.new { |n| n.show_message } \
                 ), \
                 TableBuilderHelper::Column.new( \
                   key: :import, \

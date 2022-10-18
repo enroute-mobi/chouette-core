@@ -101,7 +101,7 @@ class Source < ApplicationModel
     def retrieval_days_of_week_cron
       return '*' if retrieval_days_of_week.all?
 
-      retrieval_days_of_week.days.map do |day_of_week| 
+      retrieval_days_of_week.days.map do |day_of_week|
         day_of_week.to_s.first(3)
       end.join(',')
     end
@@ -356,12 +356,18 @@ class Source < ApplicationModel
       begin
         downloader.download downloaded_file
       rescue => e
-        if e.message.include? 'No such file or directory'
+        if e.message.include?('404 Not Found') || e.message.include?('No such file or directory')
           update_message message_key: :url_not_found
         end
       end
     end
     measure :download
+
+    def show_message
+      return '-' unless message_key
+
+      Source::Retrieval.tmf(message_key)
+    end
 
     # To be replaced by import features (line selection, ignore parents, etc)
     def process

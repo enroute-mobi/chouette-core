@@ -60,12 +60,12 @@ module Chouette
       end
 
       def event_handler
-        EventHandler.new do |event|
+        Event::Handler.new do |event|
           if event.has_error?
-            resource_part = resource ? " from #{event.resource.inspect}" : ""
+            resource_part = event.resource ? " from #{event.resource.inspect}" : ""
             Rails.logger.warn "Invalid model in synchronization: #{event.model.inspect} #{event.errors.inspect}#{resource_part}"
 
-            increment_count :error, count: event.count
+            increment_count :errors, count: event.count
           else
             increment_count event.type.to_sym, count: event.count
           end

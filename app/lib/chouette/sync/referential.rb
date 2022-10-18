@@ -1,13 +1,13 @@
 module Chouette
   module Sync
     class Referential
-
       attr_reader :target, :options
 
       def initialize(target, options = {})
-        @target, @options = target, options
+        @target = target
+        @options = options
       end
-      attr_accessor :source, :code_space, :default_provider
+      attr_accessor :source, :code_space, :default_provider, :event_handler
 
       def synchronize_with(sync_class)
         sync_classes << sync_class
@@ -26,17 +26,9 @@ module Chouette
         syncs.each(&:after_synchronisation)
       end
 
-      def event_handler=(event_handler)
-        syncs.each do |sync|
-          sync.event_handler = event_handler
-        end
-      end
-
       def delete(resource_type, deleted_ids)
         syncs.each do |sync|
-          if sync.resource_type == resource_type
-            sync.delete deleted_ids
-          end
+          sync.delete deleted_ids if sync.resource_type == resource_type
         end
       end
 
@@ -57,7 +49,13 @@ module Chouette
       end
 
       def sync_options
-        options.merge(target: target, source: source, code_space: code_space, default_provider: default_provider)
+        options.merge({
+                        event_handler: event_handler,
+                        target: target,
+                        source: source,
+                        code_space: code_space,
+                        default_provider: default_provider
+                      })
       end
 
       def create_sync(sync_class)

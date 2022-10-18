@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::V1::StopAreaReferentialsController < ActionController::Base
   respond_to :json, :xml
   wrap_parameters :stop_area_referential, include: [ :type, *WebhookEvent::StopAreaReferential.resource_names ]
@@ -36,20 +38,18 @@ class Api::V1::StopAreaReferentialsController < ActionController::Base
 
   def synchronization
     @synchronization ||=
-      Chouette::Sync::StopArea::Netex.new target: stop_area_referential, event_handler: counters.event_handler
+      Chouette::Sync::StopArea::Netex.new target: stop_area_provider, event_handler: counters.event_handler
   end
 
-  def stop_area_referential
-    @stop_area_referential ||= workbench.stop_area_referential
+  def stop_area_provider
+    @stop_area_provider ||= workbench.default_stop_area_provider
   end
 
   def workbench
     @workbench = current_workgroup.workbenches.find(params[:id])
   end
 
-  def current_workgroup
-    @current_workgroup
-  end
+  attr_reader :current_workgroup
 
   private
 

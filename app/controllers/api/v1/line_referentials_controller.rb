@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 class Api::V1::LineReferentialsController < ActionController::Base
   respond_to :json, :xml
-  wrap_parameters :line_referential, include: [ :type, *WebhookEvent::LineReferential.resource_names ]
+  wrap_parameters :line_referential, include: [:type, *WebhookEvent::LineReferential.resource_names]
 
   layout false
   before_action :authenticate
@@ -36,7 +38,7 @@ class Api::V1::LineReferentialsController < ActionController::Base
   end
 
   def synchronization
-    @synchronization ||= Chouette::Sync::Referential.new(line_referential).tap do |sync|
+    @synchronization ||= Chouette::Sync::Referential.new(line_provider).tap do |sync|
       sync.synchronize_with Chouette::Sync::Company::Netex
       sync.synchronize_with Chouette::Sync::Network::Netex
       sync.synchronize_with Chouette::Sync::LineNotice::Netex
@@ -46,17 +48,15 @@ class Api::V1::LineReferentialsController < ActionController::Base
     end
   end
 
-  def line_referential
-    @line_referential ||= workbench.line_referential
+  def line_provider
+    @line_provider ||= workbench.default_line_provider
   end
 
   def workbench
     @workbench = current_workgroup.workbenches.find(params[:id])
   end
 
-  def current_workgroup
-    @current_workgroup
-  end
+  attr_reader :current_workgroup
 
   private
 
@@ -73,9 +73,9 @@ class Api::V1::LineReferentialsController < ActionController::Base
   #   {"stop_place"=>{}, "stop_places"=>[:id], "quay"=>{}, "quays"=>[:id]}]
   def permitted_attributes
     @permitted_attributes ||= [
-      "type",
+      'type',
       *WebhookEvent::LineReferential.resource_names,
-      Hash[WebhookEvent::LineReferential.resource_names.map { |name| [name, name.end_with?('s') ? [:id] : {} ] }]
+      Hash[WebhookEvent::LineReferential.resource_names.map { |name| [name, name.end_with?('s') ? [:id] : {}] }]
     ]
   end
 

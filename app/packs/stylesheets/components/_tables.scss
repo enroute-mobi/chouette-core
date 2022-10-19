@@ -59,7 +59,6 @@
           vertical-align: middle;
 
           > :first-child:not(.open) {
-            max-width: 300px;
             overflow: hidden;
             text-overflow: ellipsis;
           }

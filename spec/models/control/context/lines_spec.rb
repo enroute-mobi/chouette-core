@@ -101,6 +101,28 @@ RSpec.describe Control::Context::Lines::Run do
       end
     end
 
+    describe "#validation" do
+
+      let(:line_id_outside_workbench) { 9999 }
+      let(:errors) { control_context.errors.details[:line_ids] }
+
+      let!(:control_context) do
+        Control::Context::Lines.create(
+          name: "Control Context Lines 1",
+          control_list: control_list,
+          line_ids: [
+            context.line(:first).id,
+            context.line(:second).id,
+            line_id_outside_workbench
+          ]
+        )
+      end
+
+      it "should be invalid for line_ids" do
+        expect(errors).to match_array([{:error=>:invalid}])
+      end
+    end
+
     describe "#Line" do
       let(:lines) { control_context_run_first.lines }
 

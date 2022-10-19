@@ -1,7 +1,15 @@
 class Control::Context::Lines < Control::Context
   option :line_ids
 
-  validates_presence_of :line_ids
+  validate :workbench_lines_contain_selected_lines
+
+  private
+
+  def  workbench_lines_contain_selected_lines
+    unless workbench.lines.where(id: line_ids).count == line_ids.count
+      errors.add(:line_ids, :invalid)
+    end
+  end
 
   class Run < Control::Context::Run
 
@@ -27,10 +35,6 @@ class Control::Context::Lines < Control::Context
 
     def vehicle_journeys
       context.vehicle_journeys.where(journey_pattern: journey_patterns)
-    end
-
-    def candidate_lines
-      context.lines
     end
   end
 end

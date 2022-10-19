@@ -16,6 +16,7 @@ fr:
       destroy_confirm: "Etes vous sûr de supprimer ce Document ?"
       associate: Associer
       unassociate: Dissocier
+      download: Télécharger
     form:
       placeholders:
         select_file: Sélectionnez

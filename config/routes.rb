@@ -164,7 +164,9 @@ ChouetteIhm::Application.routes.draw do
       resources :point_of_interest_categories
     end
 
-    resources :documents
+    resources :documents do
+      get :download, on: :member
+    end
     resources :processing_rules, as: 'processing_rule_workbenches'
   end
 

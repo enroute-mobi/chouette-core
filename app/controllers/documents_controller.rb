@@ -1,6 +1,7 @@
 class DocumentsController < ChouetteController
   include ApplicationHelper
   include PolicyChecker
+  include Downloadable
 
   defaults resource_class: Document
 
@@ -23,6 +24,11 @@ class DocumentsController < ChouetteController
         )
       end
     end
+  end
+
+  def download
+    prepare_for_download resource
+    send_file resource.file.path, filename: resource.user_file.name, type: resource.user_file.content_type
   end
 
   protected

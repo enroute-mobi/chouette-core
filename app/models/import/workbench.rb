@@ -162,12 +162,21 @@ class Import::Workbench < Import::Base
   end
 
   def create_automatic_merge
-    Merge.create creator: creator,
-                 workbench: workbench,
-                 referentials: referentials,
-                 notification_target: notification_target,
-                 user: user,
-                 automatic_operation: true,
-                 merge_method: merge_method
+    pending_merge = workbench.merges.order(:created_at).pending.first
+    Merge.transaction do
+      if pending_merge.present?
+        pending_merge.referential_ids |= referentials.map(&:id)
+        pending_merge.save!
+      else
+        workbench.merges.create!({
+          creator: creator,
+          notification_target: notification_target,
+          referentials: referentials,
+          user: user,
+          automatic_operation: true,
+          merge_method: merge_method
+        })
+      end
+    end
   end
 end

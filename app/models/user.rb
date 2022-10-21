@@ -58,8 +58,6 @@ class User < ApplicationModel
     end
   end
 
-  after_destroy :check_destroy_organisation
-
   scope :with_organisation, -> { where.not(organisation_id: nil) }
 
   scope :from_workgroup, ->(workgroup_id) { joins(:workbenches).where(workbenches: {workgroup_id: workgroup_id}) }
@@ -187,15 +185,6 @@ class User < ApplicationModel
     generate_invitation_token!
     update invitation_sent_at: Time.now
     UserMailer.invitation_from_user(self, from_user).deliver_now
-  end
-
-  private
-
-  # remove organisation and referentials if last user of it
-  def check_destroy_organisation
-    if organisation.users.empty?
-      organisation.destroy
-    end
   end
 
 end

@@ -363,10 +363,9 @@ class Source < ApplicationModel
     end
     measure :download
 
-    def show_message
+    def user_message
       return '-' unless message_key
-
-      Source::Retrieval.tmf(message_key)
+      I18n.translate message_key, scope: 'source/retrieval.user_message'
     end
 
     # To be replaced by import features (line selection, ignore parents, etc)

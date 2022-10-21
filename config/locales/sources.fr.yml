@@ -24,6 +24,11 @@ fr:
         import_options: "Options d'importation"
     filters:
     errors:
+  source/retrieval:
+    user_message:
+      no_import_required: Aucune importation nécessaire
+      new_content_detected: Nouveau contenu détecté
+      url_not_found: Url non trouvée
   activerecord:
     models:
       source:
@@ -58,6 +63,3 @@ fr:
         message_key: Message
         duration: Durée
         import: Import
-        no_import_required: Aucune importation nécessaire
-        new_content_detected: Nouveau contenu détecté
-        url_not_found: Url non trouvée

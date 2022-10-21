@@ -4,7 +4,6 @@ module ProcessingRule
   # Base model to define Workbench and Workgroup ProcessingRule
   class Base < ApplicationModel
     self.table_name = :processing_rules
-    self.abstract_class = true
 
     extend Enumerize
 

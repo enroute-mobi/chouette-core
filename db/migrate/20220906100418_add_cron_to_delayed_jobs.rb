@@ -6,7 +6,7 @@ class AddCronToDelayedJobs < ActiveRecord::Migration[5.2]
       add_reference :sources, :scheduled_job
 
       Source.reset_column_information
-      Source.enabled.update_all(retrieval_time_of_day: TimeOfDay.new(0, 0))
+      Source.where(enabled: true).update_all(retrieval_time_of_day: TimeOfDay.new(0, 0))
       Source.find_each(&:reschedule!)
     end
   end

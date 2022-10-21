@@ -4,8 +4,3 @@
 .page_content
   .container-fluid
     #import-fragment= render partial: "imports/#{@import.short_type}"
-
-- content_for :javascript do
-  coffee:
-    $ ->
-      notificationCenter.replaceFragment "import-fragment"

@@ -5,8 +5,3 @@
 .page_content
   .container-fluid
     #export-fragment= render partial: "exports/show"
-
-- content_for :javascript do
-  coffee:
-    $ ->
-      notificationCenter.replaceFragment "export-fragment"

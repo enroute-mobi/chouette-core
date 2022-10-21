@@ -1125,7 +1125,7 @@ ActiveRecord::Schema.define(version: 2022_10_19_153821) do
   create_table "processing_rules", force: :cascade do |t|
     t.bigint "workgroup_id"
     t.bigint "workbench_id"
-    t.string "type"
+    t.string "type", null: false
     t.string "processing_type"
     t.bigint "processing_id"
     t.string "operation_step"

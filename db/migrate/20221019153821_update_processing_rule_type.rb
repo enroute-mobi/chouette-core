@@ -12,6 +12,8 @@ class UpdateProcessingRuleType < ActiveRecord::Migration[5.2]
         .where(type: nil)
         .where.not(workbench_id: nil)
         .update_all(type: 'ProcessingRule::Workbench')
-    end
+
+      change_column_null :processing_rules, :type, false
+    end  
   end
 end

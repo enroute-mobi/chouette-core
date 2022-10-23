@@ -338,6 +338,7 @@ GEM
     georuby (2.3.0)
     get_process_mem (0.2.7)
       ffi (~> 1.0)
+    glob (0.3.1)
     globalid (1.0.0)
       activesupport (>= 5.0)
     google-api-client (0.52.0)
@@ -404,8 +405,9 @@ GEM
     httpclient (2.8.3)
     i18n (1.12.0)
       concurrent-ruby (~> 1.0)
-    i18n-js (3.9.1)
-      i18n (>= 0.6.6)
+    i18n-js (4.0.1)
+      glob
+      i18n
     i18n-tasks (0.9.37)
       activesupport (>= 4.0.2)
       ast (>= 2.1.0)

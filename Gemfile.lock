@@ -774,7 +774,7 @@ GEM
     thor (1.2.1)
     thread_safe (0.3.6)
     tilt (2.0.11)
-    timecop (0.9.4)
+    timecop (0.9.5)
     tomlrb (2.0.3)
     trailblazer-option (0.1.2)
     tzinfo (1.2.10)

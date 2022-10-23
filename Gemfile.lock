@@ -189,7 +189,7 @@ GEM
     bummr (0.6.0)
       rainbow
       thor
-    bundler-audit (0.9.0.1)
+    bundler-audit (0.9.1)
       bundler (>= 1.2.0, < 3)
       thor (~> 1.0)
     byebug (11.1.3)

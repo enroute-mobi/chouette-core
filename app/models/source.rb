@@ -198,9 +198,8 @@ class Source < ApplicationModel
   end
 
   module Downloader
-    class Base
-      #include ActiveModel::Validations
 
+    class Base
       attr_reader :url
 
       def initialize(url, options = {})
@@ -209,14 +208,53 @@ class Source < ApplicationModel
       end
     end
 
+    class Error < StandardError
+      def initialize(code)
+          @code = code
+      end
+      attr_reader :code
+
+      def message_key
+        case code
+        when '404'
+          :url_not_found
+        when '401', '403'
+          :authentication_failed
+        when '503'
+          :url_not_available
+        else
+          :download_failed
+        end
+      end
+    end
+
     class URL < Base
       mattr_accessor :timeout, default: 120.seconds
 
+      attr_accessor :use_ssl, :verify_mode
+
+      def uri
+        @uri ||= URI(url)
+      end
+
+      def http
+        @http ||= Net::HTTP.new(uri.host, uri.port).tap do |http|
+          http.use_ssl = use_ssl || true
+          http.verify_mode = verify_mode || OpenSSL::SSL::VERIFY_NONE
+          http.read_timeout = timeout
+        end
+      end
+
       def download(path, options = {})
         options = options.reverse_merge read_timeout: timeout
+        request = Net::HTTP::Get.new(uri.path)
+
+        resp = http.request(request)
+
+        raise Error.new(resp.code) unless resp.code == '200'
 
         File.open(path, "wb") do |file|
-          IO.copy_stream URI.open(url, options), file
+          file.write resp.body
         end
       end
     end
@@ -331,18 +369,21 @@ class Source < ApplicationModel
     def perform
       download
       process
-
       # We could add an option to ignore the checksum / force the import
       if checksum_changed?
         logger.info "Checksum has changed"
 
         create_import
         source.update checksum: checksum
-        update_message message_key: :new_content_detected
+        self.message_key = :new_content_detected
       else
-        update_message message_key: :no_import_required
+        self.message_key = :no_import_required
         logger.info "Checksum unchanged. Import is skipped"
       end
+    rescue Source::Downloader::Error => e
+      self.message_key = e.message_key
+    ensure
+      save
     end
 
     delegate :downloader, :import_options, to: :source
@@ -353,13 +394,7 @@ class Source < ApplicationModel
 
     def download
       logger.info "Download with #{downloader.class}"
-      begin
-        downloader.download downloaded_file
-      rescue => e
-        if e.message.include?('404 Not Found') || e.message.include?('No such file or directory')
-          update_message message_key: :url_not_found
-        end
-      end
+      downloader.download downloaded_file
     end
     measure :download
 

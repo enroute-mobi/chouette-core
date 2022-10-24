@@ -19,7 +19,7 @@ fr:
       title: Tracés
     associations:
       table_headers:
-        status: Status
+        status: État
         dataset: Jeu de données
         type: Type
         id: ID

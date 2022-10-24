@@ -330,7 +330,7 @@ fr:
         4-VehicleJourney-1: "Vérification de contraintes sur les attributs des courses"
         4-VehicleJourney-2: "Vérification des modes de transport des courses"
         severity: "Sévérité"
-        status: "Statut"
+        status: "État"
         rule_level: "Niveau"
         rule_target: "Objet"
         rule_number: "Etape"

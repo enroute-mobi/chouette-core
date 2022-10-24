@@ -15,7 +15,7 @@ fr:
         started_at: Début
         ended_at: Fin
         duration: Durée
-        status: "Statut"
+        status: "État"
         parent: "Source"
         export: "Export"
         name: "%{setup_name} du %{date}"

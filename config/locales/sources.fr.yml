@@ -54,6 +54,6 @@ fr:
         creator_id: "Créé par"
       source/retrieval:
         started_at: Début
-        status: Statut
+        status: État
         duration: Durée
         import: Import

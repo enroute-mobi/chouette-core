@@ -92,7 +92,7 @@ fr:
         notification_target: Destinataire(s) des notifications
         resources: "Fichier à exporter"
         name: "Nom de l'export"
-        status: "Statut"
+        status: "État"
         no_save: "Pas de sauvegarde"
         references_type: "Données à exporter"
         object_id_prefix: "Préfixe d'identifiants"

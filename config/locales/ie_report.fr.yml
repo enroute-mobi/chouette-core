@@ -18,7 +18,7 @@ fr:
       unsaved_lines: 'Lignes non-sauvegardées'
       table:
         line:
-          state: "Statut"
+          state: "État"
           routes: "Séquences d'arrêts"
           lines: "Lignes"
           details: "Détails"
@@ -34,7 +34,7 @@ fr:
     ie_report_file:
       title_default: "Résultat d'%{job} du fichier %{extension}"
       table:
-        state: 'Statut'
+        state: 'État'
         name: 'Nom du fichier'
         error: "Erreur"
         ignored: "Ignoré"

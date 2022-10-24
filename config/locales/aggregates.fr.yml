@@ -35,7 +35,7 @@ fr:
         creator: Créé par
         notification_target: Destinataire(s) des notifications
         name: Nom
-        status: "Statut"
+        status: "État"
         referentials: Offres finalisées
         new: Offre agrégée
         operator: Utilisateur

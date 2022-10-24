@@ -144,7 +144,7 @@ fr:
         creator_id: "Créé par"
         footnotes: "Notes de bas de page"
         stable_id: "Identifiant externe pérenne"
-        status: Statut
+        status: État
         activated: Activée
         deactivated: Désactivée
         active_between: Active du %{from} au %{to}

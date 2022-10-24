@@ -21,6 +21,6 @@ fr:
     attributes:
       import/resource:
         name: "Fichier"
-        status: "Statut"
+        status: "État"
         number_of_resources: Nombre de ressources
         resource_type: Type de ressource

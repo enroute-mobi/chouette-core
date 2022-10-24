@@ -98,7 +98,7 @@ fr:
       validation:
         resources: "Fichier à valider"
         created_at: "Créé le"
-        status: "Status"
+        status: "État"
         no_save: "Pas de sauvegarde"
         references_type: "Sous ensemble"
         object_id_prefix: "Préfixe d'identifiants"

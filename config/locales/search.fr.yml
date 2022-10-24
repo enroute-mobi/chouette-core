@@ -5,7 +5,7 @@ fr:
   activemodel:
     attributes:
       search:
-        statuses: Statut
+        statuses: État
         workbench_ids: Espaces de travail
         start_date: "Après : "
         end_date: "Avant : "

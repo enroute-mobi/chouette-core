@@ -176,7 +176,7 @@ fr:
         city_name: "Commune"
         postal_region: "Région postale"
         waiting_time: Temps de desserte (minutes)
-        status: Statut
+        status: État
         stop_area_provider_id: Fournisseur d'arrêts
         stop_area_provider: Fournisseur d'arrêts
         codes: Codes

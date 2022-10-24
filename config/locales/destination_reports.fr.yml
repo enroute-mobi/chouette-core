@@ -11,7 +11,7 @@ fr:
       destination_report:
         type: "Type d'envoi"
         name: "Nom"
-        status: "Statut"
+        status: "État"
         error_message: "Message d'erreur"
         duration: Durée
         started_at: Début de la transmission

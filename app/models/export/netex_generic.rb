@@ -243,13 +243,12 @@ class Export::NetexGeneric < Export::Base
         public_code: public_code,
         centroid: centroid,
         raw_xml: import_xml,
-        key_list: key_list
+        key_list: key_list,
+        accessibility_assessment: accessibility_assessment
       }.tap do |attributes|
         unless netex_quay?
           attributes[:parent_site_ref] = parent_site_ref
           attributes[:place_types] = place_types
-        else
-          attributes[:accessibility_assessment] = accessibility_assessment
         end
       end
     end

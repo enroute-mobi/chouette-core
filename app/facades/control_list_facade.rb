@@ -33,6 +33,15 @@ class ControlListFacade
 		workgroup.sorted_transport_modes.map { |t| ["enumerize.transport_mode.#{t}".t, t] }
 	end
 
+	def lines_options
+		workbench.lines.map { |l| {id: l.id, text: l.name } }
+	end
+
+	def selected_values
+		# control_list.control_contexts.
+		# Control::List.last.control_contexts.last.options
+	end
+
 	def target_code_space_options
 		workgroup.code_spaces.map { |c| [c.short_name, c.id] }
 	end
@@ -40,10 +49,6 @@ class ControlListFacade
 	def custom_fields_options
 		workgroup.custom_fields.map { |c| { text: c.name, id: c.id, resource_type: c.resource_type } }.to_json
 	end
-
-	def target_code_space_options
-		workgroup.code_spaces.map { |c| [c.short_name, c.id] }
- 	end
 
 	def criticity_options
 		option = Struct.new('Option', :id, :text)

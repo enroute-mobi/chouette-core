@@ -5,8 +5,8 @@ class Control::Context::Lines < Control::Context
 
   private
 
-  def  workbench_lines_contain_selected_lines
-    unless workbench.lines.where(id: line_ids).count == line_ids.count
+  def workbench_lines_contain_selected_lines
+    unless workbench.lines.where(id: line_ids.split(',')).count == line_ids.split(',').count
       errors.add(:line_ids, :invalid)
     end
   end

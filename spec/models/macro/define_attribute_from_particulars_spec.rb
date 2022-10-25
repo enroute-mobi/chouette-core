@@ -1,4 +1,4 @@
-RSpec.describe Macro::DefineAttributeDefaultValue::Run do
+RSpec.describe Macro::DefineAttributeFromParticulars::Run do
 
   let(:macro_list_run) do
     Macro::List::Run.create workbench: context.workbench
@@ -7,7 +7,7 @@ RSpec.describe Macro::DefineAttributeDefaultValue::Run do
 		described_class.create(
 			macro_list_run: macro_list_run,
 			position: 0,
-			options: { target_model: target_model, model_attribute_name: model_attribute_name }
+			options: { target_model: target_model, target_attribute: target_attribute }
 		)
 	end
 
@@ -18,7 +18,7 @@ RSpec.describe Macro::DefineAttributeDefaultValue::Run do
   describe "#run" do
 		let(:referent) { context.stop_area(:referent) }
 		let(:target_model) { 'StopArea' }
-		let(:model_attribute_name) { 'time_zone' }
+		let(:target_attribute) { 'time_zone' }
 
     before(:each) { macro_run.run }
 
@@ -79,7 +79,7 @@ RSpec.describe Macro::DefineAttributeDefaultValue::Run do
 
   describe "#particulars" do
 		let(:target_model) { 'StopArea' }
-		let(:model_attribute_name) { 'time_zone' }
+		let(:target_attribute) { 'time_zone' }
 
     subject { macro_run.particulars }
 
@@ -98,7 +98,7 @@ RSpec.describe Macro::DefineAttributeDefaultValue::Run do
 
   describe "#referents" do
 		let(:target_model) { 'StopArea' }
-		let(:model_attribute_name) { 'time_zone' }
+		let(:target_attribute) { 'time_zone' }
 
     subject { macro_run.referents }
 

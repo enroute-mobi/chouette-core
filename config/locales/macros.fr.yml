@@ -30,7 +30,7 @@ fr:
         one: Créer les Tracés
       macro/define_postal_address:
         one: Définir l'Adresse postale
-      macro/define_attribute_default_value:
+      macro/define_attribute_from_particulars:
         one: Définir un attribut d'un Référent à partir des Particuliers
     attributes:
       macro/base:
@@ -47,9 +47,9 @@ fr:
         target_pattern: Modèle de cible
       macro/define_postal_address:
         target_model: Modèle cible
-      macro/define_attribute_default_value:
-        model_attribute_name: Attribut
+      macro/define_attribute_from_particulars:
+        target_attribute: Attribut
   simple_form:
     placeholders:
       macro_base:
-        name: Décrivez l’objectif de cette instruction
+        name: Décrivez l'objectif de cette instruction

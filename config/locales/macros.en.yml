@@ -30,7 +30,7 @@ en:
         one: Create Shapes
       macro/define_postal_address:
         one: Define Postal Address
-      macro/define_attribute_default_value:
+      macro/define_attribute_from_particulars:
         one: Define Referent attribute from Particulars value
     attributes:
       macro/base:
@@ -48,8 +48,8 @@ en:
         expected_result: Expected result
       macro/define_postal_address:
         target_model: Target Model
-      macro/define_attribute_default_value:
-        model_attribute_name: Attribute
+      macro/define_attribute_from_particulars:
+        target_attribute: Attribute
   simple_form:
     placeholders:
       macro_base:

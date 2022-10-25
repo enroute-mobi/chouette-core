@@ -1,15 +1,15 @@
 module Macro
-  class DefineAttributeDefaultValue < Macro::Base
+  class DefineAttributeFromParticulars < Macro::Base
     module Options
       extend ActiveSupport::Concern
 
       included do
         option :target_model
-        option :model_attribute_name
+        option :target_attribute
 
         enumerize :target_model, in: %w[StopArea Company]
 
-        validates :target_model, :model_attribute_name, presence: true
+        validates :target_model, :target_attribute, presence: true
       end
     end
 
@@ -26,6 +26,9 @@ module Macro
 
         # The current registration number uniqueness makes it impossible
         exclude 'StopArea', :registration_number
+
+        # belongs_to are not supported by the macro
+        exclude 'StopArea', :parent
 
         # Referent .. has no referent
         exclude 'StopArea', :referent
@@ -50,7 +53,7 @@ module Macro
 
           value = values.first
 
-          if referent.update Hash[model_attribute_name, value]
+          if referent.update Hash[target_attribute, value]
             create_message referent, criticity: 'info'
           else
             create_message referent, criticity: 'warning', value: value
@@ -84,14 +87,14 @@ module Macro
       end
 
       def referents
-        @referents ||= models.referents.where(Hash[model_attribute_name, nil])
+        @referents ||= models.referents.where(Hash[target_attribute, nil])
       end
 
       def particular_values
         entries = particulars
-                  .where.not(Hash[model_attribute_name, nil])
+                  .where.not(Hash[target_attribute, nil])
                   .group(:referent_id)
-                  .pluck(:referent_id, "array_agg(DISTINCT #{model_collection}.#{model_attribute_name})")
+                  .pluck(:referent_id, "array_agg(DISTINCT #{model_collection}.#{target_attribute})")
 
         Hash[entries]
       end

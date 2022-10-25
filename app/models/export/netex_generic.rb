@@ -254,20 +254,20 @@ class Export::NetexGeneric < Export::Base
     end
 
     def accessibility_assessment
-      Netex::AccessibilityAssessment.new({
+      Netex::AccessibilityAssessment.new(
         mobility_impaired_access: mobility_impaired_accessibility,
         limitations: [
-          Netex::AccessibilityLimitation.new({
+          Netex::AccessibilityLimitation.new(
             wheelchair_access: wheelchair_accessibility,
             step_free_access: step_free_accessibility,
             escalator_free_access: escalator_free_accessibility,
             lift_free_access: lift_free_accessibility,
             audible_signals_available: audible_signals_availability,
             visual_signs_available: visual_signs_availability
-          })
+          )
         ],
-        validity_conditions: [ Netex::AvailabilityCondition.new(description: accessibility_limitation_description) ]
-      })
+        validity_conditions: [Netex::AvailabilityCondition.new(description: accessibility_limitation_description)]
+      )
     end
 
     def parent_objectid

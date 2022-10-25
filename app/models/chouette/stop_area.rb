@@ -89,9 +89,23 @@ module Chouette
       end
     end
 
-    def self.nullable_attributes
-      [:registration_number, :street_name, :country_code, :fare_code,
-      :nearest_topic_name, :comment, :long_lat_type, :zip_code, :city_name, :url, :time_zone]
+    def self.nullable_attributes # rubocop:disable Metrics/MethodLength
+      %i[
+        accessibility_limitation_description
+        city_name
+        comment
+        country_code
+        fare_code
+        long_lat_type
+        nearest_topic_name
+        postal_region
+        public_code
+        registration_number
+        street_name
+        time_zone
+        url
+        zip_code
+      ]
     end
 
     def localized_names

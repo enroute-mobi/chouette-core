@@ -5,11 +5,35 @@ module Macro
 
       included do
         option :target_model
-				option :model_attribute_name
+        option :model_attribute_name
 
         enumerize :target_model, in: %w[StopArea Company]
 
         validates :target_model, :model_attribute_name, presence: true
+      end
+    end
+
+    def candidate_target_attributes
+      Chouette::ModelAttribute.for(self.class.target_model.values) do
+        # Name attribute is always already defined
+        # The macro can't find referents without name
+        exclude 'StopArea', :name
+        exclude 'Company', :name
+
+        # Status attribute is always already defined
+        # The macro can't find referents without status
+        exclude 'StopArea', :status
+
+        # The current registration number uniqueness makes it impossible
+        exclude 'StopArea', :registration_number
+
+        # Referent .. has no referent
+        exclude 'StopArea', :referent
+        exclude 'Company', :referent
+
+        # Attributes use as criteria to create Stop Area Referent
+        exclude 'StopArea', :coordinates
+        exclude 'StopArea', :compass_bearing
       end
     end
 
@@ -26,9 +50,9 @@ module Macro
 
           value = values.first
 
-          if referent.update Hash[model_attribute_name, value] 
+          if referent.update Hash[model_attribute_name, value]
             create_message referent, criticity: 'info'
-          else 
+          else
             create_message referent, criticity: 'warning', value: value
           end
         end
@@ -65,11 +89,11 @@ module Macro
 
       def particular_values
         entries = particulars
-          .where.not(Hash[model_attribute_name, nil])
-          .group(:referent_id)
-          .pluck(:referent_id, "array_agg(DISTINCT #{model_collection}.#{model_attribute_name})")
+                  .where.not(Hash[model_attribute_name, nil])
+                  .group(:referent_id)
+                  .pluck(:referent_id, "array_agg(DISTINCT #{model_collection}.#{model_attribute_name})")
 
-          Hash[entries]
+        Hash[entries]
       end
     end
   end

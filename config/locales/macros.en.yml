@@ -31,7 +31,7 @@ en:
       macro/define_postal_address:
         one: Define Postal Address
       macro/define_attribute_default_value:
-        one: Define A Default Value For An Attribute 
+        one: Define Referent attribute from Particulars value
     attributes:
       macro/base:
         name: Name
@@ -49,7 +49,7 @@ en:
       macro/define_postal_address:
         target_model: Target Model
       macro/define_attribute_default_value:
-        model_attribute_name: Model Attribute Name
+        model_attribute_name: Attribute
   simple_form:
     placeholders:
       macro_base:

@@ -31,7 +31,7 @@ fr:
       macro/define_postal_address:
         one: Définir l'Adresse postale
       macro/define_attribute_default_value:
-        one: Définir Une Valeur Par Défault Pour Un Attribut
+        one: Définir un attribut d'un Référent à partir des Particuliers
     attributes:
       macro/base:
         name: Nom
@@ -48,7 +48,7 @@ fr:
       macro/define_postal_address:
         target_model: Modèle cible
       macro/define_attribute_default_value:
-        model_attribute_name: Attribut du modèle
+        model_attribute_name: Attribut
   simple_form:
     placeholders:
       macro_base:

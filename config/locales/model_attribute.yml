@@ -1,0 +1,11 @@
+fr:
+  model_attribute:
+    stop_area:
+      waiting_time: Temps d'attente
+      accessibility_limitation_description: Accessibilité Description
+
+en:
+  model_attribute:
+    stop_area:
+      waiting_time: Waiting time
+      accessibility_limitation_description: Accessibility Description

@@ -9,9 +9,9 @@ module Macro
       Macro::UpdateStopAreaCompassBearing,
       Macro::CreateStopAreaReferents,
       Macro::AssociateStopAreaReferent,
+      Macro::DefineAttributeDefaultValue,
       Macro::DefinePostalAddress,
-      Macro::Dummy,
-      Macro::DefineAttributeDefaultValue
+      Macro::Dummy
     ]
   end
 end

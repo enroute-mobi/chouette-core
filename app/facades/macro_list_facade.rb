@@ -31,10 +31,6 @@ class MacroListFacade
 		macro_list.workbench.workgroup.sorted_transport_modes.map { |t| ["enumerize.transport_mode.#{t}".t, t] }
 	end
 
-	def model_attribute_options
-		ModelAttribute.all.map { |m| { id: m.name, text: m.klass.tmf(m.name), resource_type: m.resource_name.to_s.camelcase } }.to_json
-	end
-
 	def json_state
 		JSON.generate({
 			name: macro_list.name,

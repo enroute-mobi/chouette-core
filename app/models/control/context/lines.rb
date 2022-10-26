@@ -3,12 +3,28 @@ class Control::Context::Lines < Control::Context
 
   validate :workbench_lines_contain_selected_lines
 
+  def selected_collection
+    selected_lines.map{|l| {id: l.id, text: "#{l.name} - #{l.registration_number}" }}
+  rescue
+    []
+  end
+
   private
 
   def workbench_lines_contain_selected_lines
-    unless workbench.lines.where(id: line_ids.split(',')).count == line_ids.split(',').count
+    unless selected_lines.count == ids.count
       errors.add(:line_ids, :invalid)
     end
+  end
+
+  def ids
+    return line_ids if line_ids.is_a? Array
+
+    line_ids.to_s.split(',')
+  end
+
+  def selected_lines
+    workbench.lines.distinct.where(id: ids)
   end
 
   class Run < Control::Context::Run

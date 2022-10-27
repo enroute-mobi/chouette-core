@@ -522,7 +522,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
       Chouette.create do
         stop_area :non_commercial, kind: 'non_commercial', area_type: 'deposit'
 
-        stop_area :referent, kind: 'non_commercial', area_type: 'deposit'
+        stop_area :referent, kind: 'non_commercial', area_type: 'deposit', is_referent: true
         stop_area :with_referent_non_commercial, referent: :referent
 
         route with_stops: false do

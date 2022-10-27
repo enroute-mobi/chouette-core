@@ -134,10 +134,10 @@ RSpec.describe Export::NetexGeneric do
       end
     end
 
-    context "when the Export scope contains a StopArea with a referent" do
+    context 'when the Export scope contains a StopArea with a referent' do
       let(:context) do
         Chouette.create do
-          stop_area :referent
+          stop_area :referent, is_referent: true
           stop_area :child, referent: :referent
           referential
         end
@@ -146,18 +146,18 @@ RSpec.describe Export::NetexGeneric do
       let(:referent) { context.stop_area :referent }
       let(:stop_area) { context.stop_area :child }
 
-      it "includes this StopArea and its referent" do
+      it 'includes this StopArea and its referent' do
         is_expected.to include(referent, stop_area)
       end
     end
 
-    context "when the Export scope contains a StopArea with a referent and their parents" do
+    context 'when the Export scope contains a StopArea with a referent and their parents' do
       let(:context) do
         Chouette.create do
-          stop_area :referent_parent, area_type: "zdlp"
-          stop_area :referent, parent: :referent_parent
+          stop_area :referent_parent, area_type: 'zdlp', is_referent: true
+          stop_area :referent, parent: :referent_parent, is_referent: true
 
-          stop_area :parent, area_type: "zdlp"
+          stop_area :parent, area_type: 'zdlp'
           stop_area :child, referent: :referent, parent: :parent
           referential
         end

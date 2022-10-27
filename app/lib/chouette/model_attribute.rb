@@ -20,8 +20,8 @@ module Chouette
     end
 
     # Find an Attribute
-    def self.find(code)
-      all.find { |attribute| attribute.code == code }
+    def self.find_by(attributes)
+      all.find_by attributes
     end
 
     # Returns the localized attribute name ("Nom", "Name", "Transporteur", etc)
@@ -31,6 +31,10 @@ module Chouette
     rescue I18n::MissingTranslationData => e
       puts e
       model_class.human_attribute_name(name)
+    end
+
+    def ==(other)
+      other && code == other.code
     end
 
     def initialize(model_class, name)
@@ -88,6 +92,14 @@ module Chouette
           attribute.match_model?(model_class) && attribute.name == name
         end
       end
+
+      def find_by(attributes)
+        find do |model_attribute|
+          attributes.all? do |k, v|
+            model_attribute.send(k).to_s == v.to_s
+          end
+        end
+      end
     end
 
     def self.all # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
@@ -121,35 +133,32 @@ module Chouette
         define Chouette::Company, :name
         define Chouette::Company, :short_name
         define Chouette::Company, :code
-        define Chouette::Company, :customer_service_contact_email
-        define Chouette::Company, :customer_service_contact_more
-        define Chouette::Company, :customer_service_contact_name
-        define Chouette::Company, :customer_service_contact_phone
-        define Chouette::Company, :customer_service_contact_url
-        define Chouette::Company, :default_contact_email
-        define Chouette::Company, :default_contact_fax
-        define Chouette::Company, :default_contact_more
-        define Chouette::Company, :default_contact_name
-        define Chouette::Company, :default_contact_operating_department_name
-        define Chouette::Company, :default_contact_organizational_unit
-        define Chouette::Company, :default_contact_phone
-        define Chouette::Company, :default_contact_url
+        define Chouette::Company, :registration_number
+        define Chouette::Company, :time_zone
         define Chouette::Company, :default_language
-        define Chouette::Company, :private_contact_email
-        define Chouette::Company, :private_contact_more
-        define Chouette::Company, :private_contact_name
-        define Chouette::Company, :private_contact_phone
-        define Chouette::Company, :private_contact_url
+        define Chouette::Company, :house_number
         define Chouette::Company, :address_line_1 # rubocop:disable Naming/VariableNumber
         define Chouette::Company, :address_line_2 # rubocop:disable Naming/VariableNumber
-        define Chouette::Company, :country_code
-        define Chouette::Company, :house_number
+        define Chouette::Company, :street
         define Chouette::Company, :postcode
         define Chouette::Company, :postcode_extension
-        define Chouette::Company, :registration_number
-        define Chouette::Company, :street
-        define Chouette::Company, :time_zone
         define Chouette::Company, :town
+        define Chouette::Company, :country_code
+        define Chouette::Company, :default_contact_name
+        define Chouette::Company, :default_contact_email
+        define Chouette::Company, :default_contact_phone
+        define Chouette::Company, :default_contact_url
+        define Chouette::Company, :default_contact_more
+        define Chouette::Company, :customer_service_contact_name
+        define Chouette::Company, :customer_service_contact_email
+        define Chouette::Company, :customer_service_contact_phone
+        define Chouette::Company, :customer_service_contact_url
+        define Chouette::Company, :customer_service_contact_more
+        define Chouette::Company, :private_contact_name
+        define Chouette::Company, :private_contact_email
+        define Chouette::Company, :private_contact_phone
+        define Chouette::Company, :private_contact_url
+        define Chouette::Company, :private_contact_more
       end
     end
   end

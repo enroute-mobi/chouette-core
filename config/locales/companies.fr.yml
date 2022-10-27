@@ -38,7 +38,7 @@ fr:
         registration_number: "Numéro d'enregistrement"
         name: "Nom"
         short_name: "Nom court"
-        code: "Code"
+        code: "Code Public"
         time_zone: "Fuseau horaire"
         default_language: "Langue par défaut"
         is_referent: "Référent"
@@ -53,7 +53,6 @@ fr:
         private_contact: Contact privé
         customer_service_contact: Contact du service client
         default_contact_name: Nom de contact par défaut
-        default_contact_url: Page Web
         default_contact_more: Commentaires
         default_contact_organizational_unit: "Nom d'unité dans la société"
         default_contact_operating_department_name: "Nom du département dans la société"

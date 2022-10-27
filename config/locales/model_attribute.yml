@@ -3,9 +3,53 @@ fr:
     stop_area:
       waiting_time: Temps d'attente
       accessibility_limitation_description: Accessibilité Description
+    company:
+      house_number: Adresse - Numéro
+      street: Adresse - Rue
+      town: Adresse - Ville
+      postcode: Adresse - Code Postal
+      postcode_extension: Adresse - Extension de Code Postal
+      country_code: Adresse - Pays
+      default_contact_name: Contact par défaut - Nom
+      default_contact_email: Contact par défaut - Email
+      default_contact_phone: Contact par défaut - Téléphone
+      default_contact_url: Contact par défaut - Page web associée
+      default_contact_more: Contact par défaut - Commentaires
+      customer_service_contact_name: Service Client - Nom
+      customer_service_contact_email: Service Client - Email
+      customer_service_contact_phone: Service Client - Téléphone
+      customer_service_contact_url: Service Client - Page web associée
+      customer_service_contact_more: Service Client - Commentaires
+      private_contact_name: Contact privé - Nom
+      private_contact_email: Contact privé - Email
+      private_contact_phone: Contact privé - Téléphone
+      private_contact_url: Contact privé - Page web associée
+      private_contact_more: Contact privé - Commentaires
 
 en:
   model_attribute:
     stop_area:
       waiting_time: Waiting time
       accessibility_limitation_description: Accessibility Description
+    company:
+      house_number: Address House Number
+      street: Address Street
+      town: Address Town
+      post_code: Address Post Code
+      postcode_extension: Address Postcode Extension
+      country_code: Address Country
+      default_contact_name: Default Contact Name
+      default_contact_email: Default Contact Email
+      default_contact_phone: Default Contact Phone Number
+      default_contact_url: Default Contact Website
+      default_contact_more: Default Contact Comments
+      customer_service_contact_name: Customer Service Contact Name
+      customer_service_contact_email: Customer Service Contact Email
+      customer_service_contact_phone: Customer Service Contact Phone Number
+      customer_service_contact_url: Customer Service Contact Website
+      customer_service_contact_more: Customer Service Contact Comments
+      private_contact_name: Privet Contact Name
+      private_contact_email: Privet Contact Email
+      private_contact_phone: Privet Contact Phone Number
+      private_contact_url: Privet Contact Website
+      private_contact_more: Privet Contact Comments

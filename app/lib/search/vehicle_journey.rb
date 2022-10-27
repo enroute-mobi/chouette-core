@@ -36,8 +36,16 @@ module Search
       referential.stop_areas.find(from_stop_area_id) if from_stop_area_id.present?
     end
 
+    def from_stop_area_name
+      from_stop_area&.name
+    end
+
     def to_stop_area
       referential.stop_areas.find(to_stop_area_id) if to_stop_area_id.present?
+    end
+
+    def to_stop_area_name
+      to_stop_area&.name
     end
 
     def candidate_lines

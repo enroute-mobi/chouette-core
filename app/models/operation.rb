@@ -238,6 +238,17 @@ class Operation < ApplicationModel
     end
   end
 
+  # Reset any Referential switch before/after the operation
+  class Referential < Callback
+    def before
+      ::Referential.reset
+    end
+
+    def after
+      ::Referential.reset
+    end
+  end
+
   # Can be overrided by subclass to customize the User Status according internal information (messages, resources, controls, etc)
   def final_user_status
     Operation.user_status.successful
@@ -292,6 +303,7 @@ class Operation < ApplicationModel
   callback PerformedSkipper
   callback Benchmarker
   callback Notifier
+  callback Referential
   callback StatusChanger
 
   def callbacks

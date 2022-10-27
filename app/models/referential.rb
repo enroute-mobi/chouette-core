@@ -381,6 +381,10 @@ class Referential < ApplicationModel
     end
   end
 
+  def self.reset
+    Apartment::Tenant.reset
+  end
+
   def self.new_from(from, workbench)
     clone = Referential.new(
       name: I18n.t("activerecord.copy", name: from.name),

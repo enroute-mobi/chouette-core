@@ -55,7 +55,7 @@ module Macro
         referents_with_value.find_each do |referent|
           value = particular_values[referent.id]
 
-          if referent.update(target_attribute => value)
+          if referent.update(attribute_name => value)
             create_message referent, criticity: 'info'
           else
             create_message referent, criticity: 'warning', value: value
@@ -65,7 +65,7 @@ module Macro
 
       # Retrieve referents without target attribute in the macro scope
       def referents
-        @referents ||= models.referents.where(target_attribute => nil)
+        @referents ||= models.referents.where(attribute_name => nil)
       end
 
       # Retrieve all particulars associated to the referents (so in the whole scope)
@@ -73,14 +73,14 @@ module Macro
         @particulars ||= macro_list_run.base_scope
                                        .send(model_collection)
                                        .particulars.where(referent: referents)
-                                       .where.not(target_attribute => nil)
+                                       .where.not(attribute_name => nil)
       end
 
       # Load (in memry :-/) only common value for particulars with the same referent
       def particular_values
         @particular_values ||= begin
           values = particulars.group(:referent_id)
-                              .select(:referent_id, "array_agg(DISTINCT #{model_table}.#{target_attribute}) as values")
+                              .select(:referent_id, "array_agg(DISTINCT #{model_table}.#{attribute_column}) as values")
 
           # Uses a subquery to reject multiple values
           query = <<~SQL
@@ -110,6 +110,17 @@ module Macro
       # "public.stop_areas", "public.companies", etc
       def model_table
         model_attribute.model_class.table_name
+      end
+
+      # "name", "waiting_time", etc
+      def attribute_name
+        model_attribute.name
+      end
+
+      # "name", "waiting_time", etc
+      def attribute_column
+        # TODO: should be smarter
+        model_attribute.name
       end
 
       # stop_areas, companies, etc (which could be modified)

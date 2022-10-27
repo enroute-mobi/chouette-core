@@ -61,7 +61,7 @@ gem 'icar', en_route: 'icar-api'
 
 # Authentication
 gem 'devise', '>= 4.8.1'
-gem 'devise_cas_authenticatable', '>= 1.10.4'
+gem 'devise_cas_authenticatable', '~> 1'
 gem 'devise-encryptable', '>= 0.2.0'
 gem 'devise_invitable', '>= 2.0.6'
 

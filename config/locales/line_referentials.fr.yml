@@ -9,7 +9,7 @@ fr:
     show:
       title: 'Référentiel de Lignes'
       synchronized: Synchronisé
-      status: Statut
+      status: État
       message: Message
   activerecord:
     models:

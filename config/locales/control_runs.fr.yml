@@ -18,7 +18,7 @@ fr:
       control/format_attribute/run:
         one: Format d'un attribut
       control/model_status/run:
-        one: Statut d'un model
+        one: État d'un model
       control/service_count_trend/run:
         one: Tendance du nombre de services
     attributes:
@@ -45,7 +45,7 @@ fr:
         target_code_space: Espace de code cible
         expected_format: Format attendu
       control/model_status/run:
-        expected_status: Statut attendu
+        expected_status: État attendu
       control/service_count_trend/run:
         weeks_before: Nombre de semaines avant
         weeks_after: Nombre de semaines après

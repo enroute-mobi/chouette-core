@@ -3,6 +3,6 @@ fr:
     attributes:
       compliance_check_resource:
         name: Nom
-        status: Statut
+        status: État
         metrics: Métriques
         download: Téléchargement

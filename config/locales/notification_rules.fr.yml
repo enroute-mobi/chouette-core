@@ -38,5 +38,5 @@ fr:
         priority: Priorité
         target_type: Destinataire(s) des notifications
         rule_type: Action
-        operation_statuses: Statut(s) des opérations
+        operation_statuses: État(s) des opérations
         external_email: Email externe

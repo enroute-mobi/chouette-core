@@ -7,7 +7,7 @@ fr:
     show:
       title: "Référentiel d'Arrêts"
       synchronized: Synchronisé
-      status: Statut
+      status: État
       message: Message
   activerecord:
     models:

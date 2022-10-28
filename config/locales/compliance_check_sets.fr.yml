@@ -28,7 +28,7 @@ fr:
         compliance_check_set_executed: "Jeu de contrôles exécuté"
         compliance_control_owner: "Propriétaire du jeu de contrôles"
         import: "Rapport d'import"
-        status: Statut
+        status: État
     errors:
       no_parent: "Le jeux de contrôle n'a pas de parent"
   activerecord:
@@ -49,7 +49,7 @@ fr:
         name: Nom
         context: Contexte
         context_i18n: Contexte
-        status: Statut
+        status: État
       compliance_check_resource:
         name: Nom de la ligne
         status: État

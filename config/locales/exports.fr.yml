@@ -82,7 +82,7 @@ fr:
               file:
                 wrong_file_extension: "Le fichier exporté doit être au format zip"
               options:
-                not_supported: L'option %{name} n'est pas valide pour ce type d'export  
+                not_supported: L'option %{name} n'est pas valide pour ce type d'export
     attributes:
       attrs: &attrs
         created_at: Créé le
@@ -92,7 +92,7 @@ fr:
         notification_target: Destinataire(s) des notifications
         resources: "Fichier à exporter"
         name: "Nom de l'export"
-        status: "Etat"
+        status: "État"
         no_save: "Pas de sauvegarde"
         references_type: "Données à exporter"
         object_id_prefix: "Préfixe d'identifiants"

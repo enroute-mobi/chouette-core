@@ -9,7 +9,7 @@ fr:
       title: "Editer le référentiel %{name}"
     show:
       title: 'Référentiel de tracés'
-      status: Statut
+      status: État
       message: Message
   activerecord:
     models:

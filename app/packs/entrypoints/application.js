@@ -19,10 +19,27 @@ const imagePath = (name) => images(name, true)
 
 // loading font awesome
 import "@fortawesome/fontawesome-free/js/all"
-// import "@fortawesome/fontawesome-free/css/all"
 
+import "src/sentry"
 
-import 'flag-icon-css/css/flag-icons.css'
-// import "./application.scss"
+// Loading Alpine
+import Alpine from "alpinejs"
+window.Alpine = Alpine  
+
+document.addEventListener("DOMContentLoaded", function(event) {
+  window.Alpine.start();
+});
+
+//---------------------------
+// Loaded after Alpine start
+//---------------------------
+
+// Loading inputs
+import 'entrypoints/inputs/ajax_select'
+
+// Loading flash message 
+import "src/flash_messages"
+
+import "src/date_filters"
 
 console.log('Hello World from Webpacker 6')

@@ -18,12 +18,12 @@
         as: :ajax_select,
         collection: [[ @search.from_stop_area_id, @search.from_stop_area_name ]],
         selected: @search.from_stop_area_id,
-        input_html: { 'data-url': referential_autocomplete_stop_areas_url(current_referential) }
+        input_html: { 'data-url': stop_areas_referential_autocomplete_index_url(current_referential) }
       = f.input :to_stop_area_id, placeholder: I18n.t('simple_form.placeholders.search.stop_area_id'),
         as: :ajax_select,
         collection: [[ @search.to_stop_area_id, @search.to_stop_area_name ]],
         selected: @search.to_stop_area_id,
-        input_html: { 'data-url': referential_autocomplete_stop_areas_url(current_referential) }
+        input_html: { 'data-url': stop_areas_referential_autocomplete_index_url(current_referential) }
 
 
   .flex.flex-col.justify-center.items-center.actions.ml-auto.py-3.w-80

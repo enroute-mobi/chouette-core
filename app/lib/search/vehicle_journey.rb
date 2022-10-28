@@ -37,7 +37,7 @@ module Search
     end
 
     def from_stop_area_name
-      from_stop_area&.name
+      from_stop_area&.display_name
     end
 
     def to_stop_area
@@ -45,7 +45,7 @@ module Search
     end
 
     def to_stop_area_name
-      to_stop_area&.name
+      to_stop_area&.display_name
     end
 
     def candidate_lines

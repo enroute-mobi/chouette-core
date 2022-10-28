@@ -246,7 +246,7 @@ SimpleForm.setup do |config|
     b.optional :readonly
     b.use :label, class: 'control-label pr-6'
 
-    b.use :input, class: 'form-control'
+    b.use :input, class: 'shadow appearance-none border border-gray-300 rounded w-full py-4 px-3 bg-white focus:outline-none focus:ring-0 focus:border-blue-500 text-gray-400 leading-6 transition-colors duration-200 ease-in-out'
     b.use :error, wrap_with: { tag: 'span', class: 'help-block small' }
     b.use :hint,  wrap_with: { tag: 'p', class: 'help-block small' }
   end

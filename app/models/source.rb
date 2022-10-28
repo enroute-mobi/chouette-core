@@ -207,54 +207,96 @@ class Source < ApplicationModel
         options.each { |k,v| send "#{k}=", v }
       end
     end
-
-    class Error < StandardError
-      def initialize(code)
-          @code = code
-      end
-      attr_reader :code
-
-      def message_key
-        case code
-        when '404'
-          :url_not_found
-        when '401', '403'
-          :authentication_failed
-        when '503'
-          :url_not_available
-        else
-          :download_failed
-        end
-      end
-    end
-
     class URL < Base
       mattr_accessor :timeout, default: 120.seconds
 
-      attr_accessor :use_ssl, :verify_mode
+      def download(path, headers = {})
+        Fetcher.new(url, headers, read_timeout: timeout).fetch(path)
+      end
+    end
+
+    # Downlaod a given URL. Manages redirection
+    class Fetcher
+
+      attr_reader :url, :headers
+      attr_accessor :read_timeout
+      attr_writer :redirection_count
+
+      def initialize(url, headers = {}, options = {})
+        @url = url
+        @headers = headers
+
+        options.each { |k, v| send "#{k}=", v }
+      end
+
+      def request
+        @request ||= Net::HTTP::Get.new(uri).tap do |request|
+          headers.each { |name, value| request[name] = value }
+        end
+      end
+
+      def response
+        http.start do |http|
+          http.request request
+        end
+      end
 
       def uri
         @uri ||= URI(url)
       end
 
+      def use_ssl?
+        uri.instance_of?(URI::HTTPS)
+      end
+
       def http
-        @http ||= Net::HTTP.new(uri.host, uri.port).tap do |http|
-          http.use_ssl = use_ssl || true
-          http.verify_mode = verify_mode || OpenSSL::SSL::VERIFY_NONE
-          http.read_timeout = timeout
+        Net::HTTP.new(uri.hostname, uri.port).tap do |http|
+          http.use_ssl = use_ssl?
+          http.read_timeout = read_timeout if read_timeout
         end
       end
 
-      def download(path, options = {})
-        options = options.reverse_merge read_timeout: timeout
-        request = Net::HTTP::Get.new(uri.path)
+      def error_for(response) # rubocop:disable Metrics/MethodLength
+        Rails.logger.debug { "HTTP response: #{response.code} #{response.body}" }
+        message_key =
+          # TODO: we should/could test the response class
+          case response.code
+          when '404'
+            :url_not_found
+          when '401', '403'
+            :authentication_failed
+          when /^50\d$/
+            :url_not_available
+          else
+            :download_failed
+          end
+        Source::Retrieval::Error.new message_key
+      end
 
-        resp = http.request(request)
+      def redirection_count
+        @redirection_count ||= 10
+      end
 
-        raise Error.new(resp.code) unless resp.code == '200'
+      def allow_redirect?
+        redirection_count > 1
+      end
 
-        File.open(path, "wb") do |file|
-          file.write resp.body
+      def redirect
+        raise Source::Retrieval::Error, :url_not_available unless allow_redirect?
+
+        Fetcher.new(response['location'], headers, redirection_count: redirection_count - 1)
+      end
+
+      def fetch(path)
+        http.start do |http|
+          http.request request do |response|
+            return redirect.fetch(path) if response.is_a?(Net::HTTPRedirection)
+            raise error_for(response) unless response.is_a?(Net::HTTPSuccess)
+
+            File.open(path, 'wb') do |file|
+              response.read_body file
+            end
+          end
         end
       end
     end
@@ -265,7 +307,8 @@ class Source < ApplicationModel
       end
 
       def page
-        Nokogiri::HTML(open(url))
+        # FIXME: this download should be protected
+        Nokogiri::HTML(URI.open(url))
       end
 
       def link
@@ -281,14 +324,15 @@ class Source < ApplicationModel
       #validates_presence_of :raw_authorization
 
       def download(path)
-        URL.new(url).download(path, options)
+        URL.new(url).download(path, headers)
       end
 
       private
 
-      def options
+      def headers
         return {} unless raw_authorization
-        { "Authorization" => raw_authorization }
+
+        { 'Authorization' => raw_authorization }
       end
     end
   end
@@ -366,7 +410,14 @@ class Source < ApplicationModel
     before_validation :set_workbench, on: :create
     delegate :workgroup, to: :workbench
 
+    attr_accessor :source_error
+
     def perform
+      unless source
+        logger.info "Source #{source_id} no longer available"
+        return 
+      end
+
       download
       process
       # We could add an option to ignore the checksum / force the import
@@ -380,10 +431,17 @@ class Source < ApplicationModel
         self.message_key = :no_import_required
         logger.info "Checksum unchanged. Import is skipped"
       end
-    rescue Source::Downloader::Error => e
+    rescue Source::Retrieval::Error => e
+      logger.info "Retrieval failed with user message: #{e.message_key}"
       self.message_key = e.message_key
+      self.source_error = e
     ensure
       save
+    end
+
+    def final_user_status
+      return Operation.user_status.failed if source_error
+      super
     end
 
     delegate :downloader, :import_options, to: :source
@@ -413,6 +471,16 @@ class Source < ApplicationModel
 
     def processor
       Processor::GTFS.new.with_options(processing_options).presence || Processor::Copy.new
+    end
+
+    class Error < StandardError
+      attr_reader :message_key
+
+      def initialize(message_key = nil)
+        super(nil)
+
+        @message_key = message_key
+      end
     end
 
     def processed_file
@@ -489,10 +557,6 @@ class Source < ApplicationModel
     end
 
     private
-
-    def update_message(options)
-      update options
-    end
 
     def set_workbench
       self.workbench = self.source&.workbench

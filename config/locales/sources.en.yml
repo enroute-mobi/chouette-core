@@ -28,7 +28,10 @@ en:
     user_message:
       no_import_required: No import required
       new_content_detected: New content detected
-      url_not_found: Url not found
+      url_not_found: URL not found
+      authentication_failed: Authentication failed
+      url_not_available: URL not available
+      download_failed:  Download failed
   activerecord:
     models:
       source:

@@ -1,10 +1,10 @@
 = form.label Control::Context::Lines.human_attribute_name(:lines), class: 'flex mr-8 pt-0 control-label', required: true
 = form.input :line_ids,
 	as: :tom_select,
-	collection: control_context.selected_collection,
+	collection: control_context.line_collection,
 	input_html: { 'x-model': 'resource.line_ids', ':disabled': '$store.controlList.isShow || resource.isDeleted', multiple: true, style: 'width: 100%' },
 	label: false,
 	wrapper_html: { class: 'mb-0 mx-0 ml-12 flex items-center grow', style: 'padding:10px;'},
-	selected: control_context.selected_collection,
+	selected: control_context.selected_line_ids,
 	label_html: { class: 'pt-0 mr-5' },
 	config: { type: 'ajax', url: lines_workbench_autocomplete_index_path(facade.workbench), placeholder: I18n.t('line_routing_constraint_zones.form.line_placeholder') }

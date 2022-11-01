@@ -1,5 +1,4 @@
 - content_for :additional_packs, 'control_lists/form'
-- javascript_additional_packs 'inputs/tom_select'
 - form_options = local_assigns.fetch(:options, {})
 
 = simple_form_for [@workbench, @control_list], facade.form_options.merge(form_options) do |f|

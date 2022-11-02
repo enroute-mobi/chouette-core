@@ -111,11 +111,7 @@ class ControlListRunsController < ChouetteController
   end
 
   def select_referentials
-    # TODO: Replace by Control::List::Run.candidate_referentials
-    @referentials ||= workbench.referentials.editable.to_a.tap do |referentials|
-      referentials << workbench.output&.current
-      referentials << workbench.workgroup.output&.current if workbench.workgroup.owner == current_user.organisation
-    end.compact
+    @referentials ||= Control::List::Run.candidate_referentials(user: current_user, workbench: workbench)
   end
 
   def control_list_run_params

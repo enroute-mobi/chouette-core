@@ -118,6 +118,63 @@ module Control
         control_runs.each(&:run)
         control_context_runs.each(&:run)
       end
+      def self.candidate_referentials(params={})
+        user, workbench = params[:user], params[:workbench]
+
+        return unless user && workbench
+
+        CandidateReferentials.new(
+          workbench: workbench,
+          workgroup: workbench.workgroup,
+          user: user
+        ).groups
+      end
+
+      class CandidateReferentials
+        def initialize(options= {})
+          options.each do |k, v|
+            send "#{k}=", v
+          end
+        end
+        attr_accessor :workbench, :workgroup, :user
+
+        def groups
+          [].tap do |groups|
+            groups << [
+              :editable_datasets,
+              editable_datasets.map{ |e| [ e.name, e.id ] }
+            ]
+
+            groups << [
+              :merged_datasets,
+              merged_datasets.map{ |e| [ e.name, e.id ] }
+            ]
+
+            groups << [
+              :aggregated_datasets,
+              aggregated_datasets.map{ |e| [ e.name, e.id ] }
+            ]
+          end
+        end
+
+        def editable_datasets
+          workbench.referentials.editable.to_a.tap do |referentials|
+            referentials << workbench.output&.current
+            referentials << workgroup.output&.current if workgroup.owner == user.organisation
+          end.compact
+        end
+
+        def merged_datasets
+          workbench.merges.map(&:referentials).flatten.uniq
+        end
+
+        def aggregated_datasets
+          if user.workgroups.exists?(workgroup.id)
+            workgroup.aggregates.map(&:referentials).flatten.uniq
+          end
+        end
+
+      end
     end
   end
 end

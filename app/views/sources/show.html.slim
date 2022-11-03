@@ -44,6 +44,10 @@
                   attribute: Proc.new { |n| n.user_status.text } \
                 ), \
                 TableBuilderHelper::Column.new( \
+                  key: :message_key, \
+                  attribute: Proc.new { |n| n.user_message } \
+                ), \
+                TableBuilderHelper::Column.new( \
                   key: :import, \
                   attribute: Proc.new { |retrieval| retrieval.import ? (operation_status(retrieval.import&.status) + retrieval.import&.name) : "" }, \
                   link_to: lambda do |retrieval| \

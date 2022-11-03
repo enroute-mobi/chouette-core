@@ -24,6 +24,14 @@ fr:
         import_options: "Options d'importation"
     filters:
     errors:
+  source/retrieval:
+    user_message:
+      no_import_required: Aucune importation nécessaire
+      new_content_detected: Nouveau contenu détecté
+      url_not_found: URL non trouvée
+      authentication_failed: Authentification refusée
+      url_not_available: URL indisponible
+      download_failed: Le téléchargement a échoué
   activerecord:
     models:
       source:
@@ -55,5 +63,6 @@ fr:
       source/retrieval:
         started_at: Début
         status: État
+        message_key: Message
         duration: Durée
         import: Import

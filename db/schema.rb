@@ -1358,6 +1358,7 @@ ActiveRecord::Schema.define(version: 2022_10_21_065517) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "user_status", null: false
+    t.string "message_key"
     t.index ["import_id"], name: "index_source_retrievals_on_import_id"
     t.index ["source_id"], name: "index_source_retrievals_on_source_id"
     t.index ["workbench_id"], name: "index_source_retrievals_on_workbench_id"

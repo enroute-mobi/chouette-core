@@ -847,9 +847,9 @@ RSpec.describe Export::NetexGeneric do
       describe "#netex_attributes" do
         subject { decorator.netex_attributes }
 
-        it "uses StopArea objectid as id" do
-          stop_area.objectid = "dummy"
-          is_expected.to include(id: stop_area.objectid)
+        it 'uses StopArea objectid as id' do
+          stop_area.objectid = 'chouette:StopArea:f387baa1-fcb3-4171-9735-fee0515dde16:LOC'
+          is_expected.to include(id: a_string_eq_to(stop_area.objectid))
         end
 
         context "when netex_quay? is true" do

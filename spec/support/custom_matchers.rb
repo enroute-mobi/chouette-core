@@ -3,11 +3,18 @@
 #   expect(model).to exist_in_database
 #
 RSpec::Matchers.define :exist_in_database do
-
   match do |actual|
     actual.class.exists?(actual.id)
   end
+end
 
+#
+# Usage:
+#   expect(key: something).to include(key: a_string_eq_to("test"))
+RSpec::Matchers.define :a_string_eq_to do |expected|
+  match do |actual|
+    actual.to_s == expected
+  end
 end
 
 RSpec::Matchers.alias_matcher :an_array_including, :include

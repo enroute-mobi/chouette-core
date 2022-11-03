@@ -31,10 +31,6 @@ class ComplianceCheckSet < ApplicationModel
     joins(:compliance_control_set).merge(ComplianceControlSet.assigned_to_slots(organisation, slots))
   end
 
-  after_commit do
-    parent&.try(:notify_state)
-  end
-
   def self.finished_statuses
     %w(successful failed warning aborted canceled)
   end

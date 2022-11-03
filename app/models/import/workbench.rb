@@ -35,7 +35,6 @@ class Import::Workbench < Import::Base
   def launch_worker
     update_column :status, 'running'
     update_column :started_at, Time.now
-    notify_state
 
     file.cache_stored_file!
 
@@ -97,7 +96,6 @@ class Import::Workbench < Import::Base
     update_column :status, 'failed'
     update_column :ended_at, Time.now
     archive_referentials if archive_on_fail
-    notify_state
   end
 
   def archive_referentials

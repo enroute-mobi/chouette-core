@@ -212,20 +212,6 @@ class Export::Base < ApplicationModel
     [polymorphic_url(self.url_for_notifications, only_path: true)]
   end
 
-  def notify_state
-    payload = self.slice(:id, :status, :name)
-    payload.update({
-      status_html: operation_status(self.status).html_safe,
-      message_key: "#{self.class.name.underscore.gsub('/', '.')}.#{self.status}",
-      url: polymorphic_url(url_for_notifications, only_path: true),
-      urls_to_refresh: urls_to_refresh,
-      unique_identifier: "#{self.class.name.underscore.gsub('/', '.')}-#{self.id}"
-    })
-
-    payload[:fragment] = "export-fragment"
-    Notification.create! channel: workbench_for_notifications.notifications_channel, payload: payload
-  end
-
   def notify_progress progress
     # Prevent export notification when export is launched by a publication
     return if (self.class < Export::Base && self.publication.present?)

@@ -106,7 +106,6 @@ module LocalImportSupport
     main_resource&.save
     save
     notify_parent
-    notify_state
   end
 
   def processing_rules

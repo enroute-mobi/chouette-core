@@ -20,7 +20,6 @@ module Imports
 
       # Invoke the freaky logic /o\
       notify_parent
-      notify_state
     end
   end
 end

@@ -235,9 +235,9 @@ class Export::NetexGeneric < Export::Base
 
   class StopDecorator < SimpleDelegator
 
-    def netex_attributes
+    def netex_attributes # rubocop:disable Metrics/MethodLength
       {
-        id: objectid,
+        id: netex_identifier,
         derived_from_object_ref: derived_from_object_ref,
         name: name,
         public_code: public_code,
@@ -253,21 +253,65 @@ class Export::NetexGeneric < Export::Base
       end
     end
 
+    def netex_identifier
+      @netex_identifier ||= Netex::ObjectId.parse(objectid)
+    end
+
     def accessibility_assessment
+      return unless accessibility_assessment?
+
       Netex::AccessibilityAssessment.new(
-        mobility_impaired_access: mobility_impaired_accessibility,
-        limitations: [
-          Netex::AccessibilityLimitation.new(
-            wheelchair_access: wheelchair_accessibility,
-            step_free_access: step_free_accessibility,
-            escalator_free_access: escalator_free_accessibility,
-            lift_free_access: lift_free_accessibility,
-            audible_signals_available: audible_signals_availability,
-            visual_signs_available: visual_signs_availability
-          )
-        ],
-        validity_conditions: [Netex::AvailabilityCondition.new(description: accessibility_limitation_description)]
+        id: netex_identifier.change(type: 'AccessibilityAssessment').to_s,
+        mobility_impaired_access: netex_value(mobility_impaired_accessibility),
+        limitations: [accessibility_limitation].compact,
+        validity_conditions: [availability_condition].compact
       )
+    end
+
+    def accessibility_limitation
+      return unless accessibility_limitation?
+
+      Netex::AccessibilityLimitation.new(
+        wheelchair_access: netex_value(wheelchair_accessibility),
+        step_free_access: netex_value(step_free_accessibility),
+        escalator_free_access: netex_value(escalator_free_accessibility),
+        lift_free_access: netex_value(lift_free_accessibility),
+        audible_signals_available: netex_value(audible_signals_availability),
+        visual_signs_available: netex_value(visual_signs_availability)
+      )
+    end
+
+    def netex_value(value)
+      case value
+      when 'yes'
+        'true'
+      when 'no'
+        'false'
+      else
+        value
+      end
+    end
+
+    def availability_condition
+      return unless accessibility_limitation_description.present?
+
+      Netex::AvailabilityCondition.new(
+        id: netex_identifier.change(type: 'AvailabilityCondition').to_s,
+        description: accessibility_limitation_description
+      )
+    end
+
+    def accessibility_assessment?
+      accessibility_limitation? || availability_condition.present? || mobility_impaired_accessibility != 'unknown'
+    end
+
+    def accessibility_limitation?
+      %i[
+        wheelchair_accessibility step_free_accessibility escalator_free_accessibility
+        lift_free_accessibility audible_signals_availability visual_signs_availability
+      ].any? do |attribute|
+        send(attribute) != :unknown
+      end
     end
 
     def parent_objectid

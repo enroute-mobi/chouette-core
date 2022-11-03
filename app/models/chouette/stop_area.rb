@@ -9,6 +9,7 @@ module Chouette
     include ObjectidSupport
     include CustomFieldsSupport
     include CodeSupport
+    include ReferentSupport
 
     extend Enumerize
     enumerize :area_type, in: Chouette::AreaType::ALL, default: Chouette::AreaType::COMMERCIAL.first
@@ -38,8 +39,6 @@ module Chouette
     scope :by_text, ->(text) { text.blank? ? all : where('lower(stop_areas.name) LIKE :t or lower(stop_areas.objectid) LIKE :t', t: "%#{text.downcase}%") }
     scope :without_compass_bearing, -> { where compass_bearing: nil }
     scope :with_compass_bearing, -> { where.not compass_bearing: nil }
-    scope :referents, -> { where is_referent: true }
-    scope :particulars, -> { where.not is_referent: true }
     scope :without_address, -> { where country_code: nil,  street_name: nil, zip_code: nil, city_name: nil }
     scope :without_position, -> { where 'latitude is null or longitude is null' }
     scope :with_position, -> { where 'latitude is not null and longitude is not null' }
@@ -48,8 +47,10 @@ module Chouette
     scope :without_geometry, -> { without_position }
     scope :with_geometry, -> { with_position }
 
-    belongs_to :referent, class_name: 'Chouette::StopArea'
-    has_many :specific_stops, class_name: 'Chouette::StopArea', foreign_key: 'referent_id'
+    # DEPRECATED. Use particulars relation
+    def specific_stops
+      particulars
+    end
 
     acts_as_tree :foreign_key => 'parent_id', :order => "name"
 
@@ -79,7 +80,6 @@ module Chouette
     validate :area_type_of_right_kind
     validate :registration_number_is_set
     validates_absence_of :parent_id, message: I18n.t('stop_areas.errors.parent_id.must_be_absent'), if: Proc.new { |stop_area| stop_area.kind == 'non_commercial' }
-    validate :valid_referent
 
     validates :registration_number, uniqueness: { scope: :stop_area_provider_id }, allow_blank: true
 
@@ -89,9 +89,23 @@ module Chouette
       end
     end
 
-    def self.nullable_attributes
-      [:registration_number, :street_name, :country_code, :fare_code,
-      :nearest_topic_name, :comment, :long_lat_type, :zip_code, :city_name, :url, :time_zone]
+    def self.nullable_attributes # rubocop:disable Metrics/MethodLength
+      %i[
+        accessibility_limitation_description
+        city_name
+        comment
+        country_code
+        fare_code
+        long_lat_type
+        nearest_topic_name
+        postal_region
+        public_code
+        registration_number
+        street_name
+        time_zone
+        url
+        zip_code
+      ]
     end
 
     def localized_names
@@ -136,18 +150,6 @@ module Chouette
       unless stop_area_referential.validates_registration_number(registration_number)
         errors.add(:registration_number, I18n.t('stop_areas.errors.registration_number.invalid', mask: stop_area_referential.registration_number_format))
       end
-    end
-
-    def valid_referent
-      errors.add(:referent_id, I18n.t('stop_areas.errors.referent_id.cannot_be_referent_and_specific')) if self.referent_id? && (self.is_referent || self.specific_stops.count != 0)
-    end
-
-    def referent?
-      is_referent
-    end
-
-    def particular?
-      !referent?
     end
 
     before_save :coordinates_to_lat_lng
@@ -234,10 +236,6 @@ module Chouette
 
     def self.physical
       where :area_type => [ "BoardingPosition", "Quay" ]
-    end
-
-    def self.referent_only
-      where is_referent: true
     end
 
     def quay?

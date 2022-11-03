@@ -38,7 +38,7 @@ en:
         registration_number: "Registration number"
         name: "Name"
         short_name: "Short name"
-        code: "Code"
+        code: "Public Code"
         time_zone: "Time zone"
         default_language: "Default language"
         is_referent: "Referent"

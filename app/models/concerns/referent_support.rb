@@ -5,6 +5,9 @@ module ReferentSupport
     belongs_to :referent, class_name: name
     validate :valid_referent
 
+    scope :referents, -> { where is_referent: true }
+    scope :particulars, -> { where.not is_referent: true }
+
     has_many :particulars, class_name: name, foreign_key: 'referent_id'
 
     def valid_referent
@@ -31,8 +34,9 @@ module ReferentSupport
   end
 
   module ClassMethods
+    # DEPRECATED. Use referents scope
     def referent_only
-      where is_referent: true
+      referents
     end
   end
 end

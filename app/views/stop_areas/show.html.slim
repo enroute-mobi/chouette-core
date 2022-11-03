@@ -12,6 +12,7 @@
           = d.attribute :name
           - @stop_area.localized_names.keep_if { |key, value| value.present? }.each do |k, v|
             = d.attribute :name, value: v, label: label_for_country(k, Chouette::StopArea.tmf('name'))
+          = d.attribute :public_code
 
         = simple_block_for @stop_area, title: t("stop_areas.form.sections.hierarchy") do |d|
           = d.attribute :area_type, value: "#{Chouette::AreaType.find(@stop_area.area_type).try(:label)} (#{@stop_area.kind})"

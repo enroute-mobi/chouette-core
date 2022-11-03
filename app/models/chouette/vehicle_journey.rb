@@ -56,7 +56,7 @@ module Chouette
     before_validation :set_default_values,
       :calculate_vehicle_journey_at_stop_day_offset
 
-    scope :with_companies, ->(ids){ where(company_id: ids) }
+    scope :with_companies, -> (companies) { joins(route: :line).where(lines: { company_id: companies }) }
 
     scope :with_stop_area_ids, ->(ids){
       _ids = ids.select(&:present?).map(&:to_i)
@@ -123,7 +123,7 @@ module Chouette
     scope :without_any_time_table, -> { joins('LEFT JOIN time_tables_vehicle_journeys ON time_tables_vehicle_journeys.vehicle_journey_id = vehicle_journeys.id LEFT JOIN time_tables ON time_tables.id = time_tables_vehicle_journeys.time_table_id').where(:time_tables => { :id => nil}) }
     scope :without_any_passing_time, -> { joins('LEFT JOIN vehicle_journey_at_stops ON vehicle_journey_at_stops.vehicle_journey_id = vehicle_journeys.id').where(vehicle_journey_at_stops: { id: nil }) }
     scope :scheduled, -> { joins(:time_tables).merge(Chouette::TimeTable.non_empty) }
-    scope :with_lines, -> (lines) { joins(route: :line).where(routes: { line_id: lines }) }
+    scope :with_lines, -> (lines) { joins(:route).where(routes: { line_id: lines }) }
 
     scope :by_text, ->(text) { text.blank? ? all : where('lower(vehicle_journeys.published_journey_name) LIKE :t or lower(vehicle_journeys.objectid) LIKE :t', t: "%#{text.downcase}%") }
 

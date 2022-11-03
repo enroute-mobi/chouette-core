@@ -3,15 +3,10 @@
 
 .page_content
   .container-fluid
-    .form-group.pull-right
-      .per-page-select
-        = I18n.t("simple_form.per_page")
-        = %w(10 50 100).each_with_index.map{ |v, i| (params[:per_page] == v || params[:per_page].nil? && i == 0) ? "<span class='selected'>#{v}</span>" : link_to(v, referential_vehicle_journeys_path(@referential, q: params.permit(:q), per_page: v)) }.join(' - ').html_safe
-    - if params[:q].present? or @vehicle_journeys.present?
+    .form-group
       .row
         .col-lg-12
           = render 'filters'
-
     - if @vehicle_journeys&.any?
       .row
         .col-lg-12
@@ -29,35 +24,38 @@
                   link_to: lambda do |vehicle_journey| \
                     vehicle_journey.route&.line ? referential_line_route_vehicle_journeys_path(@referential, vehicle_journey.route.line, vehicle_journey.route) : '' \
                   end, \
-                  sortable: true \
                 ), \
                 TableBuilderHelper::Column.new( \
                   key: :line, \
                   attribute: Proc.new {|v| v.route.line.name}, \
-                  sortable: true \
+                  sortable: false \
+                ), \
+                TableBuilderHelper::Column.new( \
+                  key: :company, \
+                  attribute: Proc.new {|v| v.route.line.company.name}, \
+                  sortable: false \
                 ), \
                 TableBuilderHelper::Column.new( \
                   key: :route, \
                   attribute: Proc.new {|v| v.route.name}, \
-                  sortable: true \
+                  sortable: false \
                 ), \
                 TableBuilderHelper::Column.new( \
                   key: :departure_time, \
                   attribute: Proc.new {|v| display_time_of_day(v.vehicle_journey_at_stops.first&.departure_local_time_of_day) }, \
-                  sortable: true \
+                  sortable: false \
                 ), \
-                [@starting_stop, @ending_stop].compact.map{|stop| \
+                [@search.from_stop_area, @search.to_stop_area].compact.map{|stop| \
                   TableBuilderHelper::Column.new( \
-                    key: stop.id == @starting_stop&.id ? :starting_stop : :ending_stop, \
                     attribute: Proc.new {|v| vjas = v.vehicle_journey_at_stops.where("stop_points.stop_area_id" => stop.id).last; vjas && display_time_of_day(vjas.arrival_local_time_of_day) }, \
-                    sortable: true, \
+                    sortable: false, \
                     name: stop.name \
                   )\
                 }, \
                 TableBuilderHelper::Column.new( \
                   key: :arrival_time, \
                   attribute: Proc.new {|v| display_time_of_day(v.vehicle_journey_at_stops.last&.arrival_local_time_of_day) }, \
-                  sortable: true, \
+                  sortable: false \
                 ), \
               ].flatten.compact,
               cls: 'table has-filter has-search'

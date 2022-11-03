@@ -10,3 +10,17 @@ en:
         start_date: "After : "
         end_date: "Before : "
         per_page: "Display per"
+        text: "Search by name or id"
+        company_id: "Company"
+        line_id: "Line"
+        timetable: "Timetable"
+        stop_area: "Stop area"
+        from_stop_area_id: "From"
+        to_stop_area_id: "To"
+  simple_form:
+    placeholders:
+      search:
+        text: "Specify a vehicle journey name or id "
+        line_id: "Specify a line name"
+        company_id: "Specify a company name"
+        stop_area_id: "Specify a stop area name"

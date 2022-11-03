@@ -1,3 +1,8 @@
 collection @stop_areas
 
-extends('autocomplete/base', locals: { label_method: :display_name })
+node do |object|
+  {
+    id: object.id,
+    text: object.display_name
+  }
+end

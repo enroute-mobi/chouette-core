@@ -10,3 +10,17 @@ fr:
         start_date: "Après : "
         end_date: "Avant : "
         per_page: "Afficher par"
+        text: "Recherche par nom ou identification"
+        company_id: "Transporteur"
+        line_id: "Ligne"
+        timetable: "Calendrier"
+        stop_area: "Arrêt"
+        from_stop_area_id: "de"
+        to_stop_area_id: "à"        
+  simple_form:
+    placeholders:
+      search:
+        text: "Indiquez un nom ou un identifiant de course"
+        line_id: "Indiquez un nom de ligne"
+        company_id: "Indiquez un nom de transporteur"
+        stop_area_id: "Indiquez un nom d'arrêt"

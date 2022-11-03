@@ -419,7 +419,10 @@ class Export::Ara < Export::Base
       delegate :line, to: :vehicle_journey, allow_nil: true
 
       def passage_order
-        stop_point&.position&.to_s
+        pos = stop_point&.position
+        return '' if pos.nil?
+
+        (pos + 1).to_s
       end
 
       def schedules

@@ -486,7 +486,7 @@ RSpec.describe Export::Ara do
                 'ArrivalTime': '2022-06-30T19:01:00+00:00',
                 'DepartureTime': '2022-06-30T15:01:00+00:00'
               }],
-              passage_order: '0'
+              passage_order: '1'
             }
           end
 

@@ -141,18 +141,26 @@ module Control
         def groups
           [].tap do |groups|
             groups << [
-              :editable_datasets,
-              editable_datasets.map{ |e| [ e.name, e.id ] }
+              I18n.translate(:editable_datasets, scope: 'control_list_run.referentials'),
+              editable_datasets
+                .sort_by(&:name)
+                .pluck(:name, :id)
             ]
 
             groups << [
-              :merged_datasets,
-              merged_datasets.map{ |e| [ e.name, e.id ] }
+              I18n.translate(:merged_datasets, scope: 'control_list_run.referentials'),
+              merged_datasets
+                .sort_by{ |e| e.created_at }
+                .reverse
+                .pluck(:name, :id)
             ]
 
             groups << [
-              :aggregated_datasets,
-              aggregated_datasets.map{ |e| [ e.name, e.id ] }
+              I18n.translate(:aggregated_datasets, scope: 'control_list_run.referentials'),
+              aggregated_datasets
+                .sort_by{ |e| e.created_at }
+                .reverse
+                .pluck(:name, :id)
             ]
           end
         end

@@ -29,6 +29,11 @@ fr:
     search_no_results: "Aucun Rapport de Jeux de contrôles ne correspond à votre recherche"
     filters:
       name: "Indiquez un nom"
+    referentials:
+      editable_datasets: 'Jeux de données modifiables'
+      merged_datasets: 'Jeux de données fusionnés'
+      aggregated_datasets: 'Jeux de données agrégés'
+
   activerecord:
     models:
       control/list/run:

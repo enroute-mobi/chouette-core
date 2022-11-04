@@ -58,7 +58,7 @@ module Macro
           if referent.update(attribute_name => value)
             create_message referent, criticity: 'info'
           else
-            create_message referent, criticity: 'warning', value: value
+            create_message referent, criticity: 'warning', value: value, message_key: :invalid_value
           end
         end
       end

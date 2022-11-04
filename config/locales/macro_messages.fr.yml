@@ -17,6 +17,15 @@ fr:
   macro/update_stop_area_compass_bearing/run:
     messages:
       default: "L'orientation de l'arrêt %{name} a été mis à jour avec la valeur %{bearing}"
+  macro/define_postal_address/run:
+    messages:
+      default: "L'adresse '%{address}' a été mis à jour sur un(e) %{target_model} %{name}"
+      no_address: "Adresse introuvable sur un(e) %{target_model} %{name}"
+      invalid_address: "L'adresse '%{address}' invalide sur un(e) %{target_model} %{name}"
+  macro/define_attribute_from_particulars/run:
+    messages:
+      default: "La value %{value} a été mis à jour sur un(e) %{target_model} %{name}"
+      invalid_value: "La value %{value} invalide sur un(e) %{target_model} %{name}"
   macro_messages:
     search_no_results_for_filter: "Aucun messages"
     no_address: "Aucune adresse"

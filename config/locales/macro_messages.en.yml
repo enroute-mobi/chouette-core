@@ -17,6 +17,15 @@ en:
   macro/update_stop_area_compass_bearing/run:
     messages:
       default: "Compass bearing of of Stop area %{name} has been updated with value %{bearing}"
+  macro/define_postal_address/run:
+    messages:
+      default: "Address '%{address}' has been updated to the %{target_model} %{name}"
+      no_address: "Address not found on the %{target_model} %{name}"
+      invalid_address: "Invalid address '%{address}' on the %{target_model} %{name}"
+  macro/define_attribute_from_particulars/run:
+    messages:
+      default: "The value %{value} has been updated on the %{target_model} %{name}"
+      invalid_value: "Invalid value %{value} on the %{target_model} %{name}"
   macro_messages: 
     search_no_results_for_filter: "No messages found"
     no_address: "No address"

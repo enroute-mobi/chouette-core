@@ -19,12 +19,12 @@ module Macro
       include Options
 
       def run
-        raise "Raise error as expected" if options[:expected_result] == "fail"
+        raise "Raise error as expected" if expected_result == "fail"
         ::Macro::Message.transaction do
           models.select(:id, :name).find_each do |model|
             macro_messages.create(
-              message_attributes: { name: model.name },
-              criticity: options[:expected_result],
+              message_attributes: { name: model.name, result: expected_result },
+              criticity: expected_result,
               source: model
             )
           end

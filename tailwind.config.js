@@ -4,6 +4,7 @@ module.exports = {
       "./app/helpers/**/*.rb",
       "./app/views/**/*.html.slim",
       "./app/decorators/*/*.rb",
+      "./config/initializers/simple_form_bootstrap.rb",
       "./app/facades/*/*.rb",
       "./app/packs/**/*.js",
       "./app/packs/**/*.jsx"

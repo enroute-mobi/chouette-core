@@ -68,10 +68,6 @@ module IevInterfaces::Task
 
   end
 
-  def workbench_for_notifications
-    workbench || referential.workbench || referential.workgroup&.owner_workbench
-  end
-
   def notify_parent
     return false unless finished?
     return false unless parent.present?

@@ -31,8 +31,8 @@ fr:
       name: "Indiquez un nom"
     referentials:
       editable_datasets: 'Jeux de données modifiables'
-      merged_datasets: 'Jeux de données fusionnés'
-      aggregated_datasets: 'Jeux de données agrégés'
+      merged_datasets: 'Offres finalisées'
+      aggregated_datasets: 'Offres agrégées'
 
   activerecord:
     models:

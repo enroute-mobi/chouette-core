@@ -33,7 +33,7 @@ en:
     filters:
       name: Search by name
     referentials:
-      editable_datasets: 'Editable datasets'
+      editable_datasets: 'In Edition'
       merged_datasets: 'Merged datasets'
       aggregated_datasets: 'Aggregated datasets'
   activerecord:

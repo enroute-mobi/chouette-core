@@ -31,7 +31,10 @@ RSpec.describe Macro::Dummy do
     let(:expected_message) do
       an_object_having_attributes({
         criticity: macro_run.expected_result,
-        message_attributes: { "name" => source.name },
+        message_attributes: {
+          "name" => source.name,
+          "result" => "warning"
+        },
         source: source,
       })
     end

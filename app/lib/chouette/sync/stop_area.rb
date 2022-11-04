@@ -242,14 +242,12 @@ module Chouette::Sync
         def update
           pendings.each do |resource_id, reference|
             child = scope.find_by(model_id_attribute => resource_id)
-
             unless child
-              Rails.logger.warn "Can't find child with #{attribute} #{reference} for StopArea #{resource_id}"
+              Rails.logger.debug { "Can't find child #{model_id_attribute}=#{resource_id} to define #{attribute}=#{reference}" }
               next
             end
 
             referenced = scope.find_by(model_id_attribute => reference)
-
             unless referenced
               Rails.logger.warn "Can't find reference with #{attribute} #{reference} for StopArea #{resource_id}"
               next
@@ -260,7 +258,6 @@ module Chouette::Sync
             end
           end
         end
-
       end
 
       # Resolve Stop Area referents

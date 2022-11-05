@@ -4,35 +4,35 @@ class AutocompleteController < ChouetteController
   # Line scope #
   ##############
   def lines
-    @lines = line_scope.lines.order(:name).by_text(text)
+    @lines = line_scope.lines.order(:name).by_text(text).limit(50)
   end
 
   def line_notices
-    @line_notices = line_scope.line_notices.order(:title).by_text(text)
+    @line_notices = line_scope.line_notices.order(:title).by_text(text).limit(50)
   end
 
   def companies
-    @companies = line_scope.companies.order(:name).by_text(text)
+    @companies = line_scope.companies.order(:name).by_text(text).limit(50)
   end
 
   def line_providers
-    @line_providers = line_scope.line_providers.order(:short_name).by_text(text)
+    @line_providers = line_scope.line_providers.order(:short_name).by_text(text).limit(50)
   end
 
   def shapes
-    @shapes ||= shape_referential.shapes.by_text(text)
+    @shapes ||= shape_referential.shapes.by_text(text).limit(50)
   end
 
   def users
-    @users ||= current_organisation.users.by_text(text)
+    @users ||= current_organisation.users.by_text(text).limit(50)
   end
 
   def macro_lists
-    @macro_lists ||= workbench.macro_lists.by_text(text)
+    @macro_lists ||= workbench.macro_lists.by_text(text).limit(50)
   end
 
   def control_lists
-    @control_lists ||= workbench.control_lists.by_text(text)
+    @control_lists ||= workbench.control_lists.by_text(text).limit(50)
   end
 
   ##################
@@ -47,11 +47,11 @@ class AutocompleteController < ChouetteController
   #   @stop_areas
   # end
   def stop_areas
-    @stop_areas = stop_area_scope.stop_areas.order(:name).by_text(text)
+    @stop_areas = stop_area_scope.stop_areas.order(:name).by_text(text).limit(50)
   end
 
   def parent_stop_areas
-    @stop_areas = Chouette::StopArea.all_parents(stop_area_scope.stop_areas).order(:name).by_text(text)
+    @stop_areas = Chouette::StopArea.all_parents(stop_area_scope.stop_areas).order(:name).by_text(text).limit(50)
   end
 
   # def autocomplete
@@ -61,7 +61,7 @@ class AutocompleteController < ChouetteController
   # -    @stop_area_providers
   # -  end
   def stop_area_providers
-    @stop_area_providers = stop_area_scope.stop_area_providers.order(:name).by_text(text)
+    @stop_area_providers = stop_area_scope.stop_area_providers.order(:name).by_text(text).limit(50)
   end
 
   protected

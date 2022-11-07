@@ -13,7 +13,7 @@ class Processing < ApplicationModel
   belongs_to :processed, polymorphic: true, optional: false
 
   # Associated ProcessingRule::Workbench / ProcessingRule::Workgroup
-  belongs_to :processing_rule, polymorphic: true, optional: false
+  belongs_to :processing_rule, class_name: 'ProcessingRule::Base', optional: false
   
   enumerize :step, in: %i{before after}
   

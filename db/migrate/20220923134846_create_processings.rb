@@ -10,7 +10,7 @@ class CreateProcessings < ActiveRecord::Migration[5.2]
         t.references :workgroup
         t.references :operation, polymorphic: true
         t.references :processed, polymorphic: true
-        t.references :processing_rule, polymorphic: true, index: {:name => "idx_processings_on_processing_rule_type_and_processing_rule_id"}
+        t.references :processing_rule
       end
     end
   end

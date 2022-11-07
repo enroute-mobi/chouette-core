@@ -9,7 +9,7 @@ module ProcessingRule
 
     # Macro::List or Control::List to be started
     belongs_to :processable, polymorphic: true, required: true
-    has_many :processings, foreign_key: 'processing_rule_id', as: :processing_rule
+    has_many :processings, foreign_key: 'processing_rule_id'
     
     validates :operation_step, presence: true
 

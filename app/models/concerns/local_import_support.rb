@@ -62,13 +62,8 @@ module LocalImportSupport
       end
 
       processing_rules.each do |processing_rule|
-        processing = Processing.create processing_rule: processing_rule, step: :after, operation: import, workbench_id: processing_rule.workbench_id, 
-          workgroup_id: processing_rule.workgroup_id, processed: processing_rule.processable.build_run(import.referential)
-
         processing = processing_rule.processings.create step: :after, operation: self, workbench_id: processing_rule.workbench_id, 
-          workgroup_id: processing_rule.workgroup_id, processed: processing_rule.processable.build_run(self.referential)
-        # puts processing.inspect
-        # puts processing.errors.inspect    
+          workgroup_id: processing_rule.workgroup_id, processed: processing_rule.processable.build_run(self.referential)  
         unless processing.perform
           @status = 'failed'
           break

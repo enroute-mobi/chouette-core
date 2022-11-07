@@ -1145,11 +1145,10 @@ ActiveRecord::Schema.define(version: 2022_10_21_065517) do
     t.bigint "operation_id"
     t.string "processed_type"
     t.bigint "processed_id"
-    t.string "processing_rule_type"
     t.bigint "processing_rule_id"
     t.index ["operation_type", "operation_id"], name: "index_processings_on_operation_type_and_operation_id"
     t.index ["processed_type", "processed_id"], name: "index_processings_on_processed_type_and_processed_id"
-    t.index ["processing_rule_type", "processing_rule_id"], name: "idx_processings_on_processing_rule_type_and_processing_rule_id"
+    t.index ["processing_rule_id"], name: "index_processings_on_processing_rule_id"
     t.index ["workbench_id"], name: "index_processings_on_workbench_id"
     t.index ["workgroup_id"], name: "index_processings_on_workgroup_id"
   end

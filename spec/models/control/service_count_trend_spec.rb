@@ -107,7 +107,6 @@ RSpec.describe Control::ServiceCountTrend do
         }
       ])
 
-      control_run.run 
     end
 
     let(:expected_message) do
@@ -122,8 +121,52 @@ RSpec.describe Control::ServiceCountTrend do
     end
 
     it 'should detect anomaly at "2022-09-20"' do
+      control_run.run
+
       expect(control_run.control_messages).to include(expected_message)
     end
 
+    describe "#context" do
+
+      let(:control_run) do
+        Control::ServiceCountTrend::Run.create(
+          control_list_run: control_list_run,
+          criticity: "warning",
+          weeks_before: 2,
+          weeks_after: 2,
+          maximum_difference: 20,
+          position: 0,
+          control_context_run: control_context_run
+        )
+      end
+
+      let(:control_context_run) do
+        Control::Context::TransportMode::Run.create name: "Control Context Run 1", control_list_run: control_list_run, options: {transport_mode: "bus"}
+      end
+
+      context 'when transport_mode is bus' do
+        before do
+          line.update transport_mode: 'bus'
+        end
+
+        it 'should detect anomaly at "2022-09-20"' do
+          control_run.run
+
+          expect(control_run.control_messages).to include(expected_message)
+        end
+      end
+
+      context 'when transport_mode is tram' do
+        before do
+          line.update transport_mode: 'tram'
+        end
+
+        it 'should be empty' do
+          control_run.run
+
+          expect(control_run.control_messages).to be_empty
+        end
+      end
+    end
   end
 end

@@ -77,6 +77,12 @@ RSpec.describe Control::Context do
 
         it {is_expected.to match_array(referential_vehicle_journey_ids)}
       end
+
+      context "when model is service_counts" do
+        subject { control_run.context.context.respond_to?('service_counts') }
+
+        it { is_expected.to be_truthy }
+      end
     end
 
     describe "#control_run is created without referential" do

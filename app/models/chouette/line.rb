@@ -120,7 +120,7 @@ module Chouette
     end
 
     def display_name
-      full_display_name.truncate(50)
+      full_display_name.truncate(70)
     end
 
     def company_ids

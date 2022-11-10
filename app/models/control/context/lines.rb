@@ -62,5 +62,9 @@ class Control::Context::Lines < Control::Context
     def vehicle_journeys
       context.vehicle_journeys.where(journey_pattern: journey_patterns)
     end
+
+    def service_counts
+      context.service_counts.where(line: lines)
+    end
   end
 end

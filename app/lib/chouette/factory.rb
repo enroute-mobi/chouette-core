@@ -273,7 +273,7 @@ module Chouette
               line = parent.default_line_provider.lines.create!(name: "Line #{sequence_number}", transport_mode: "bus", transport_submode: "undefined", number: sequence_number)
               [ line ]
             end
-            transient :periods, [ Time.zone.today..1.month.from_now.to_date ]
+            transient :periods, [ Period.from(:today).during(30.days) ]
 
             transient :with_metadatas, true
 
@@ -401,7 +401,7 @@ module Chouette
             model :time_table do
               transient :dates_included, []
               transient :dates_excluded, []
-              transient :periods, [ Time.zone.today..1.month.from_now.to_date ]
+              transient :periods, [ Period.from(:today).during(30.days) ]
 
               attribute(:comment) { |n| "TimeTable #{n}" }
               attribute :int_day_types, TimeTable::EVERYDAY
@@ -414,7 +414,7 @@ module Chouette
                   new_instance.dates.build in_out: false, date: date
                 end
                 Array(transient(:periods)).each do |period|
-                  new_instance.periods.build period_start: period.min, period_end: period.max
+                  new_instance.periods.build range: period
                 end
               end
             end

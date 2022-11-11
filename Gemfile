@@ -61,7 +61,7 @@ gem 'icar', en_route: 'icar-api'
 
 # Authentication
 gem 'devise', '>= 4.8.1'
-gem 'devise_cas_authenticatable', '>= 1.10.4'
+gem 'devise_cas_authenticatable', '~> 1'
 gem 'devise-encryptable', '>= 0.2.0'
 gem 'devise_invitable', '>= 2.0.6'
 
@@ -85,7 +85,7 @@ gem 'simple_form', '>= 5.1.0'
 gem 'will_paginate-bootstrap'
 gem 'gretel', '>= 4.4.0'
 gem 'country_select'
-gem 'i18n-js'
+gem 'i18n-js', '~> 3.9'
 gem 'font_awesome5_rails', '>= 1.5.0'
 
 # Format Output

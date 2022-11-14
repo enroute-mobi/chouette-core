@@ -84,7 +84,6 @@ class Export::NetexGeneric < Export::Base
 
     part_classes.each_with_index do |part_class, index|
       part_class.new(self).export_part
-      notify_progress((index+1)/part_classes.count)
     end
 
     target.close

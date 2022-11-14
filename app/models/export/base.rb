@@ -197,6 +197,10 @@ class Export::Base < ApplicationModel
     ids&.map(&:to_i)
   end
 
+  def workbench_for_notifications
+    workbench || referential.workbench || referential.workgroup&.owner_workbench
+  end
+
   protected
 
   # Expected and used file extension

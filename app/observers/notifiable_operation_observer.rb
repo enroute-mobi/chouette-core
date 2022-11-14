@@ -5,7 +5,7 @@ class NotifiableOperationObserver < ActiveRecord::Observer
     begin
       return unless email_sendable_for?(operation)
 
-      workbench = operation.try(:workbench) || operation.try(:workbench_for_notifications)
+      workbench = operation.try(:workbench)
       return unless workbench
 
       workbench.notification_center.notify(operation)

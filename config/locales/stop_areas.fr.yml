@@ -82,7 +82,6 @@ fr:
       itl_managment: "Gestion des liens de l'ITL"
       stop_managment: "Relations parent-enfant"
       access_managment: "Gestion des accès et liens associés"
-      access_points: "Points d'accès"
       not_editable: "Le type d'arrêt est non modifiable"
       more: "Et %{count} supplémentaire(s)"
       connections:

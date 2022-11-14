@@ -36,7 +36,6 @@ fr:
           connection_links_stats: "Correspondances"
           time_tables_stats: "Calendriers"
           stop_areas_stats: "Zones d'arrèt"
-          access_points_stats: "Accès"
           vehicle_journeys_stats: "Courses"
           journey_patterns_stats: "Missions"
       table:
@@ -47,7 +46,6 @@ fr:
           connection_links: "Correspondances"
           time_tables: "Calendriers"
           stop_areas: "Zones d'arrèt"
-          access_points: "Accès"
           vehicle_journeys: "Courses"
           journey_patterns: "Missions"
           not_saved: "Non Sauvé"

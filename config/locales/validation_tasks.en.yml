@@ -36,7 +36,6 @@ en:
           connection_links_stats: "Connection Links"
           time_tables_stats: "Timetables"
           stop_areas_stats: "Stop Areas"
-          access_points_stats: "Access Points"
           vehicle_journeys_stats: "Vehicle Journeys"
           journey_patterns_stats: "Journey Patterns"
       table:
@@ -47,7 +46,6 @@ en:
           connection_links: "Connection links"
           time_tables: "Time tables"
           stop_areas: "Stop areas"
-          access_points: "Access points"
           vehicle_journeys: "Vehicle journeys"
           journey_patterns: "Journey patterns"
           not_saved: "Not saved"

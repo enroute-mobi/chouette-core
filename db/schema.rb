@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_10_21_065517) do
+ActiveRecord::Schema.define(version: 2022_11_14_153323) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -19,57 +19,6 @@ ActiveRecord::Schema.define(version: 2022_10_21_065517) do
   enable_extension "plpgsql"
   enable_extension "postgis"
   enable_extension "unaccent"
-
-  create_table "access_links", force: :cascade do |t|
-    t.bigint "access_point_id"
-    t.bigint "stop_area_id"
-    t.string "objectid", null: false
-    t.bigint "object_version"
-    t.string "name"
-    t.string "comment"
-    t.decimal "link_distance", precision: 19, scale: 2
-    t.boolean "lift_availability"
-    t.boolean "mobility_restricted_suitability"
-    t.boolean "stairs_availability"
-    t.time "default_duration"
-    t.time "frequent_traveller_duration"
-    t.time "occasional_traveller_duration"
-    t.time "mobility_restricted_traveller_duration"
-    t.string "link_type"
-    t.integer "int_user_needs"
-    t.string "link_orientation"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.jsonb "metadata", default: {}
-    t.index ["objectid"], name: "access_links_objectid_key", unique: true
-  end
-
-  create_table "access_points", force: :cascade do |t|
-    t.string "objectid"
-    t.bigint "object_version"
-    t.string "name"
-    t.string "comment"
-    t.decimal "longitude", precision: 19, scale: 16
-    t.decimal "latitude", precision: 19, scale: 16
-    t.string "long_lat_type"
-    t.string "country_code"
-    t.string "street_name"
-    t.string "contained_in"
-    t.time "openning_time"
-    t.time "closing_time"
-    t.string "access_type"
-    t.boolean "lift_availability"
-    t.boolean "mobility_restricted_suitability"
-    t.boolean "stairs_availability"
-    t.bigint "stop_area_id"
-    t.string "zip_code"
-    t.string "city_name"
-    t.text "import_xml"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.jsonb "metadata", default: {}
-    t.index ["objectid"], name: "access_points_objectid_key", unique: true
-  end
 
   create_table "aggregates", force: :cascade do |t|
     t.bigint "workgroup_id"
@@ -1759,7 +1708,6 @@ ActiveRecord::Schema.define(version: 2022_10_21_065517) do
     t.index ["shape_referential_id"], name: "index_workgroups_on_shape_referential_id"
   end
 
-  add_foreign_key "access_links", "access_points", name: "aclk_acpt_fkey"
   add_foreign_key "compliance_check_blocks", "compliance_check_sets"
   add_foreign_key "compliance_check_messages", "compliance_check_resources"
   add_foreign_key "compliance_check_messages", "compliance_check_sets"

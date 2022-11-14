@@ -17,7 +17,6 @@ fr:
       no_permissions: Aucune permission
       no_restrictions: Aucune restriction
     features:
-      access_points: Accès
       aggregates: Agrégations d'offre
       api_keys: Clés d'accès API
       calendars: Calendriers

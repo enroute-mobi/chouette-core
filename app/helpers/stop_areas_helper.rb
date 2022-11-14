@@ -18,9 +18,6 @@ module StopAreasHelper
     manage_itl || @stop_area.long_lat_type != nil
   end
 
-  def manage_access_points
-    @stop_area.stop_area_type == 'stop_place' || @stop_area.stop_area_type == 'commercial_stop_point'
-  end
   def manage_itl
     @stop_area.stop_area_type == 'itl'
   end

@@ -81,7 +81,6 @@ en:
       itl_managment: "Routing constraint's links managment"
       stop_managment: "Parent-child relations"
       access_managment: "Access Points and Links managment"
-      access_points: "Access Points"
       not_editable: "The area type is not editable"
       more: "and %{count} more"
       connections:

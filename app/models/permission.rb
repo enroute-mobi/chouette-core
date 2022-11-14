@@ -12,7 +12,6 @@ class Permission
 
     def all_resources
       %w[
-        access_points
         aggregates
         api_keys
         calendars

@@ -28,11 +28,11 @@ fr:
         name: Nom
         comments: Commentaire
       control/context/transport_mode: &transport_mode
+        transport_mode: Mode de transport
       control/context/operating_period: &operating_period
         next_days: Prochains jours
-        transport_mode: Mode de transport
       control/context/lines: &lines
-        lines: Lignes
+        line_ids: Lignes
       control/context/run:
         <<: *control_context
       control/context/transport_mode/run:

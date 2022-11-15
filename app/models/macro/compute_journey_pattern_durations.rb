@@ -109,7 +109,7 @@ module Macro
                 SELECT
                   stop_area_pair,
                   journey_pattern_id AS journey_pattern_id,
-                  avg(duration) AS avg_duration
+                  avg(duration)::integer AS avg_duration
                 FROM (
                   SELECT
                     departure.journey_pattern_id AS journey_pattern_id,
@@ -179,7 +179,7 @@ module Macro
       end
 
       def journey_patterns
-        @journey_patterns ||= referential.journey_patterns
+        @journey_patterns ||= scope.journey_patterns
       end
     end
   end

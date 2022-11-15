@@ -62,8 +62,17 @@ module LocalImportSupport
       end
 
       processing_rules.each do |processing_rule|
+        if processing_rule.use_control_list?
+          processed = processing_rule.processable.control_list_runs.new(name: processing_rule.processable.name, creator: "Webservice", referential: self.referential)
+          processed.build_with_original_control_list
+        else
+          processed = processing_rule.processable.macro_list_runs.new(name: processing_rule.processable.name, creator: "Webservice", referential: self.referential)
+          processed.build_with_original_macro_list
+        end
+
         processing = processing_rule.processings.create step: :after, operation: self, workbench_id: processing_rule.workbench_id, 
-          workgroup_id: processing_rule.workgroup_id, processed: processing_rule.processable.build_run(self.referential)  
+          workgroup_id: processing_rule.workgroup_id, processed: processed
+        
         unless processing.perform
           @status = 'failed'
           break
@@ -108,7 +117,7 @@ module LocalImportSupport
     #   Workgroup Control List
     scope = ProcessingRule::Base.where(operation_step: 'after_import')
     processing_rules = scope.where(workbench_id: workbench_id).or(scope.where(target_workbench_ids: [workbench_id]))
-    processing_rules.order(workgroup_id: :desc, processable_type: :asc)
+    processing_rules.order(workgroup_id: :desc, processable_type: :desc)
   end
 
   def worker_died

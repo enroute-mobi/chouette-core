@@ -164,11 +164,6 @@ GEM
       activerecord (>= 3.0.0)
     addressable (2.8.1)
       public_suffix (>= 2.0.2, < 6.0)
-    apartment (2.2.1)
-      activerecord (>= 3.1.2, < 6.0)
-      parallel (>= 0.7.1)
-      public_suffix (>= 2)
-      rack (>= 1.3.6)
     arel (9.0.0)
     ast (2.4.2)
     awesome_print (1.9.2)
@@ -651,6 +646,11 @@ GEM
     roo (2.9.0)
       nokogiri (~> 1)
       rubyzip (>= 1.3.0, < 3.0.0)
+    ros-apartment (2.3.0)
+      activerecord (>= 3.1.2, < 6.1)
+      parallel (>= 0.7.1)
+      public_suffix (>= 2)
+      rack (>= 1.3.6)
     rspec (3.11.0)
       rspec-core (~> 3.11.0)
       rspec-expectations (~> 3.11.0)
@@ -816,7 +816,6 @@ DEPENDENCIES
   acts-as-taggable-on
   acts_as_list
   acts_as_tree
-  apartment
   ara-file (>= 0.1.2)!
   awesome_print
   better_errors
@@ -916,6 +915,7 @@ DEPENDENCIES
   rgeo-shapefile
   rmagick
   roo (>= 2.8.3)
+  ros-apartment
   rspec-benchmark
   rspec-rails (>= 5.1.0)
   rspec-snapshot

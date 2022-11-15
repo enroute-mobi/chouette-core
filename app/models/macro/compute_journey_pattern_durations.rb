@@ -28,7 +28,7 @@ module Macro
 
         def costs
           @costs ||=
-            journey_pattern.costs.deep_merge(durations) do |key, current_value, new_value|
+            journey_pattern.costs.deep_merge(durations) do |_, current_value, new_value|
               current_value ? current_value : new_value
             end
         end
@@ -60,7 +60,7 @@ module Macro
           JourneyPatternFinder.new(
             Query.new(journey_patterns).perform,
             journey_patterns
-          ).find_all
+          ).batch
         end
 
         class JourneyPatternFinder
@@ -70,7 +70,7 @@ module Macro
           end
           attr_reader :journey_pattern_durations, :scope
 
-          def find_all
+          def batch
             journey_pattern_durations.map do |attributes|
               JourneyPatternDuration.new(
                 attributes.merge(

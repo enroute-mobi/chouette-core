@@ -23,6 +23,13 @@ RSpec.describe Macro::ComputeJourneyPatternDurations do
     let!(:fifth_at_stop) { journey_pattern.vehicle_journey_at_stops.fifth }
     let!(:sixth_at_stop) { journey_pattern.vehicle_journey_at_stops.last }
 
+    let!(:first_stop) { first_at_stop.stop_point.stop_area }
+    let!(:second_stop) { second_at_stop.stop_point.stop_area }
+    let!(:third_stop) { third_at_stop.stop_point.stop_area }
+    let!(:fourth_stop) { fourth_at_stop.stop_point.stop_area }
+    let!(:fifth_stop) { fifth_at_stop.stop_point.stop_area }
+    let!(:sixth_stop) { sixth_at_stop.stop_point.stop_area }
+
     let(:time) { Time.now }
 
 
@@ -42,11 +49,11 @@ RSpec.describe Macro::ComputeJourneyPatternDurations do
 
       it "should compute and update Journey Pattern costs" do
         expect { subject }.to change { journey_pattern.reload.costs }.to({
-          "1-2"=>{"time"=>300},
-          "2-3"=>{"time"=>300},
-          "3-4"=>{"time"=>300},
-          "4-5"=>{"time"=>300},
-          "5-6"=>{"time"=>300}
+          "#{first_stop.id}-#{second_stop.id}"=>{"time"=>300},
+          "#{second_stop.id}-#{third_stop.id}"=>{"time"=>300},
+          "#{third_stop.id}-#{fourth_stop.id}"=>{"time"=>300},
+          "#{fourth_stop.id}-#{fifth_stop.id}"=>{"time"=>300},
+          "#{fifth_stop.id}-#{sixth_stop.id}"=>{"time"=>300}
         })
       end
 

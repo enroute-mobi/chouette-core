@@ -1,4 +1,3 @@
-
 RSpec.describe Chouette::Factory do
 
   it "should raise error when type isn't known" do
@@ -474,7 +473,7 @@ RSpec.describe Chouette::Factory do
 
   describe "TimeTables" do
 
-    let(:a_month_from_now) { Time.zone.today..1.month.from_now.to_date }
+    let(:default_period) { Period.from(:today).during(30.days) }
 
     describe "{ time_table }" do
       let(:context) do
@@ -493,7 +492,7 @@ RSpec.describe Chouette::Factory do
           expect(time_table.periods.count).to eq(1)
 
           period = time_table.periods.first
-          expect(period.range).to eq(a_month_from_now)
+          expect(period.range).to eq(default_period)
         end
       end
     end
@@ -515,7 +514,7 @@ RSpec.describe Chouette::Factory do
           expect(time_table.periods.count).to eq(1)
 
           period = time_table.periods.first
-          expect(period.range).to eq(a_month_from_now)
+          expect(period.range).to eq(default_period)
         end
       end
 
@@ -546,7 +545,7 @@ RSpec.describe Chouette::Factory do
 
           expect(time_table.periods.count).to eq(1)
           period = time_table.periods.first
-          expect(period.range).to eq(a_month_from_now)
+          expect(period.range).to eq(default_period)
         end
       end
 

@@ -49,6 +49,12 @@
   }
 }
 
+#macro_list_form, #control_list_form {
+  .ts-input.disabled {
+    opacity: 1;
+  }
+}
+
 // Search bar
 .search_bar {
   position: relative;

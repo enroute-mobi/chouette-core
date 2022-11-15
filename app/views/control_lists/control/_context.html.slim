@@ -3,7 +3,7 @@
 
 = form.simple_fields_for(:control_contexts, control_context) do |control_context_form|
 	.flex.items-center.pt-10 :class="!resource.controls.isEmpty && 'pb-10'"
-		= render "control_lists/#{control_context.model_name.i18n_key.to_s}", form: control_context_form
+		= render "control_lists/#{control_context.model_name.i18n_key.to_s}", form: control_context_form, control_context: control_context
 
 		= render 'operations/context_actions'
 

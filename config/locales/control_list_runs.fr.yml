@@ -43,6 +43,7 @@ fr:
         creator: "Créateur"
         original_control_list: "Jeu de contrôles"
         original_control_list_id: "Jeu de contrôles"
+        line_ids: Lignes
         referential: "Cible"
         referential_id: "Cible"
         started_at: "Date et heure de lancement"

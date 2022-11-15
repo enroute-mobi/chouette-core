@@ -46,6 +46,7 @@ en:
         creator: "Creator"
         original_control_list: "Original control list"
         original_control_list_id: "Original control list"
+        line_ids: Lines
         referential: "Target"
         referential_id: "Target"
         started_at: "Started at"

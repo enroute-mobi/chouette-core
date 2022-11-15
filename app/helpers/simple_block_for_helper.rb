@@ -119,7 +119,7 @@ module SimpleBlockForHelper
               raw_value
             end
           when :country
-            ISO3166::Country[raw_value]&.name || raw_value
+            ISO3166::Country[raw_value]&.translation(I18n.locale) || raw_value
           when :association
             if raw_value.respond_to?(:name)
               [].tap do |parts|

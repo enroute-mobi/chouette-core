@@ -1,0 +1,30 @@
+- if @import.resources.any?
+  - controls = import_controls(@import.workbench)
+  .col-lg-12
+    = table_builder_2 @import.resources,
+      [ \
+        TableBuilderHelper::Column.new( \
+          name: t('imports.show.referential_name'), \
+          attribute: -> (r) { referential_link(r) }, \
+          if: -> (r) { r.referential }, \
+          sortable: false \
+        ), \
+        TableBuilderHelper::Column.new( \
+          key: :status, \
+          attribute: lambda do |n| \
+            url = n.child_import.present? ? [@parent, n.child_import] : [@parent, @import, n]; \
+            link_to_if_i_can(operation_status(n.child_import&.status || n.status, verbose: true, default_status: :pending), url) \
+          end, \
+          sortable: false, \
+        ), *controls \
+      ],
+      cls: 'table',
+      overhead: [ \
+        {}, \
+        {}, \
+        controls.present? ? { \
+          title: I18n.t('imports.show.summary').html_safe, \
+          width: controls.size, \
+          cls: "overheaded-default colspan='#{controls.size}'" \
+        } : nil \
+      ].compact

@@ -8,7 +8,7 @@ class Import::Base < ApplicationModel
   attr_accessor :code_space
   after_initialize :initialize_space_code
 
-  has_many :processings
+  has_many :processings, foreign_key: :operation_id
 
   scope :unfinished, -> { where 'notified_parent_at IS NULL' }
   scope :having_status, ->(statuses) { where(status: statuses ) }
@@ -28,6 +28,18 @@ class Import::Base < ApplicationModel
 
   def file_extension_whitelist
     %w(zip)
+  end
+
+  def worgroup_control_list_run
+    processings.where("workgroup_id IS NOT NULL AND processed_type = ?", 'Control::List::Run').take
+  end
+
+  def workbench_macro_list_run
+    processings.where(processed_type: 'Macro::List::Run', workgroup_id: nil).take
+  end
+
+  def workbench_control_list_run
+    processings.where(processed_type: 'Control::List::Run', workgroup_id: nil).take
   end
 
   def workgroup

@@ -78,6 +78,10 @@ class Workgroup < ApplicationModel
     export_types.include? export_name
   end
 
+  def has_legacy_processing_rules?
+    !processing_rules.present? 
+  end
+
   def self.all_compliance_control_sets
     %i(after_import
       after_import_by_workgroup

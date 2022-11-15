@@ -18,7 +18,8 @@ module Control
     def self.available
       [
         Control::Context::TransportMode,
-        Control::Context::OperatingPeriod
+        Control::Context::OperatingPeriod,
+        Control::Context::Lines
       ]
     end
 

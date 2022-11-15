@@ -7,6 +7,9 @@ en:
           end: days
       transport_mode:
         label: When transport mode is
+      lines:
+        label:  When lines are
+
   activerecord:
     models:
       control/context:
@@ -17,6 +20,9 @@ en:
         one: Transport mode
       control/context/operating_period:
         one: Operating period
+      control/context/lines:
+        one: Lines
+
     attributes:
       control/context: &control_context
         name: Name
@@ -25,9 +31,13 @@ en:
         transport_mode: Transport Mode
       control/context/operating_period: &operating_period
         next_days: Next days
+      control/context/lines: &lines
+        line_ids: Lines
       control/context/run:
         <<: *control_context
       control/context/transport_mode/run:
         <<: *transport_mode
       control/context/operating_period/run:
         <<: *operating_period
+      control/context/lines/run:
+        <<: *lines

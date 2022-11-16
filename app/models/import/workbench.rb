@@ -162,10 +162,12 @@ class Import::Workbench < Import::Base
   end
 
   def create_automatic_merge
-    pending_merge = workbench.merges.order(:created_at).pending.first
     Merge.transaction do
+      pending_merge = workbench.merges.order(:created_at).pending.first
+
       if pending_merge.present?
         pending_merge.referential_ids |= referentials.map(&:id)
+        referentials.each(&:pending!)
         pending_merge.save!
       else
         workbench.merges.create!({

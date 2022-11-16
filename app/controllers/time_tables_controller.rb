@@ -142,7 +142,7 @@ class TimeTablesController < ChouetteController
         ordered_ids =  ActiveRecord::Base.connection.exec_query(query).map {|r| r["id"]}
         order_by = ["CASE"]
         ordered_ids.each_with_index do |id, index|
-          order_by << "WHEN id='#{id}' THEN #{index}"
+          order_by << "WHEN time_tables.id='#{id}' THEN #{index}"
         end
         order_by << "END"
         time_tables = time_tables.order(order_by.join(" "))

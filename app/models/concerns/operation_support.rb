@@ -187,7 +187,10 @@ module OperationSupport
 
   def failed!
     update_columns status: :failed, ended_at: Time.now
-    (try(:workbench_for_notifications) || workbench).notification_center.notify(self)
+
+    workbench = try(:workbench) || try(:workbench_for_notifications)
+    workbench&.notification_center&.notify(self)
+
     new&.failed!
     referentials.each(&:active!)
     run_pending_operations

@@ -17,6 +17,10 @@ class Control::Context::OperatingPeriod < Control::Context
         .where(vehicle_journeys: { id: vehicle_journeys })
     end
 
+    def service_counts
+      context.service_counts.where(line: lines)
+    end
+
     def routes
       context.routes.distinct.joins(:vehicle_journeys)
         .where(vehicle_journeys: { id: vehicle_journeys })

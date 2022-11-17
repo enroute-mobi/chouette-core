@@ -46,6 +46,8 @@ module Macro
 
       has_many :macro_context_runs, class_name: "Macro::Context::Run", dependent: :delete_all, foreign_key: "macro_list_run_id", inverse_of: :macro_list_run
 
+      has_one :processing, as: :processed
+
       validates :name, presence: true
       validates :original_macro_list_id, presence: true, if: :new_record?
 

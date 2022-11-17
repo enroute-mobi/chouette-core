@@ -74,7 +74,6 @@ module LocalImportSupport
           workgroup_id: processing_rule.workgroup_id, processed: processed
         
         unless processing.perform
-          @status = 'failed'
           break
         end
       end

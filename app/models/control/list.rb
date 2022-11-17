@@ -47,10 +47,12 @@ module Control
 
       has_many :control_context_runs, class_name: "Control::Context::Run", dependent: :delete_all, foreign_key: "control_list_run_id", inverse_of: :control_list_run
 
+      has_many :control_messages, class_name: "Control::Message", through: :control_runs
+
+      has_one :processing, as: :processed
+
       validates :name, presence: true
       validates :original_control_list_id, presence: true, if: :new_record?
-
-      has_many :control_messages, class_name: "Control::Message", through: :control_runs
 
       def build_with_original_control_list
         return unless original_control_list

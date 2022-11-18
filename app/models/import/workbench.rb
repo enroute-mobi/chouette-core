@@ -145,9 +145,7 @@ class Import::Workbench < Import::Base
   end
 
   def compute_new_status
-    if compliance_check_sets.blank? && control_list_runs.blank? && macro_list_runs.blank?
-      return children_status
-    elsif compliance_check_sets.present?
+    if compliance_check_sets.present?
       if children_status == 'running' || compliance_check_sets_status == 'running'
         return 'running'
       elsif children_status == 'failed' || compliance_check_sets_status == 'failed'
@@ -157,7 +155,7 @@ class Import::Workbench < Import::Base
       elsif children_status == 'successful' && compliance_check_sets_status == 'successful'
         return 'successful'
       end
-    else
+    elsif control_list_runs.present? || macro_list_runs.present?
       if children_status == 'running' || processed_status == 'running'
         return 'running'
       elsif children_status == 'failed' || processed_status == 'failed'
@@ -167,6 +165,8 @@ class Import::Workbench < Import::Base
       elsif children_status == 'successful' && processed_status == 'successful'
         return 'successful'
       end  
+    else
+      return children_status
     end
   end
 

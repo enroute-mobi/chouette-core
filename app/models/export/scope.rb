@@ -129,7 +129,7 @@ module Export::Scope
 
   class Scheduled < Base
     def vehicle_journeys
-      current_scope.vehicle_journeys.scheduled
+      @vehicle_journeys ||= current_scope.vehicle_journeys.scheduled
     end
 
     def lines
@@ -173,15 +173,22 @@ module Export::Scope
     end
 
     def stop_areas
-      stop_areas_in_routes =
-        current_scope.stop_areas.joins(routes: :vehicle_journeys).distinct
-          .where("vehicle_journeys.id" => vehicle_journeys)
+      @stop_areas ||=
+        begin
+          stop_areas_ids =
+            (stop_areas_in_routes.pluck(:id) + stop_areas_in_specific_vehicle_journey_at_stops.pluck(:id)).uniq
+          current_scope.stop_areas.where(id: stop_areas_ids)
+        end
+    end
 
-      stop_areas_in_specific_vehicle_journey_at_stops =
-        current_scope.stop_areas.joins(:specific_vehicle_journey_at_stops).distinct
-          .where("vehicle_journey_at_stops.vehicle_journey_id" => vehicle_journeys)
+    def stop_areas_in_routes
+      current_scope.stop_areas.joins(routes: :vehicle_journeys).distinct
+                   .where('vehicle_journeys.id' => vehicle_journeys)
+    end
 
-      Chouette::StopArea.union(stop_areas_in_routes, stop_areas_in_specific_vehicle_journey_at_stops)
+    def stop_areas_in_specific_vehicle_journey_at_stops
+      current_scope.stop_areas.joins(:specific_vehicle_journey_at_stops).distinct
+                   .where('vehicle_journey_at_stops.vehicle_journey_id' => vehicle_journeys)
     end
 
     def entrances

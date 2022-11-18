@@ -62,8 +62,10 @@ RSpec.shared_examples_for 'Export::Scope::Base' do
 
       it "select stop areas associated with routes through vehicle journeys" do
         expect(scope.stop_areas).to match_array(stop_areas_in_scope)
+      end
 
-				allow(scope).to receive(:vehicle_journeys) { [selected_vj] }
+      it "select stop areas associated with routes through vehicle journeys (2)" do
+        allow(scope).to receive(:vehicle_journeys) { [selected_vj] }
 
 				expect(scope.stop_areas).not_to match_array(stop_areas_in_scope)
 				expect(scope.stop_areas).to match_array(selected_vj.route.stop_areas)

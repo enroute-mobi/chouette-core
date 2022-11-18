@@ -191,7 +191,9 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
         out_scope_vj = context.vehicle_journey(:no_tt)
         expect(scope.vehicle_journeys).to match_array(in_scope_vjs)
         expect(scope.vehicle_journeys).not_to include(out_scope_vj)
+      end
 
+      it 'should filter in the ones with matching timetables (2)' do
         allow(scope.current_scope).to receive(:date_range) { period_before_daterange }
 
         expect(scope.vehicle_journeys).to be_empty
@@ -203,7 +205,9 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
         tt = context.time_table(:default)
 
         expect(scope.time_tables).to include(tt)
+      end
 
+      it 'should filter in the ones overlap the daterange (2)' do
         allow(scope.current_scope).to receive(:date_range) { period_before_daterange }
 
         expect(scope.time_tables).to be_empty

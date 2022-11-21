@@ -137,7 +137,7 @@ gem 'premailer-rails', '>= 1.11.1'
 gem 'redis-actionpack', '>= 5.3.0'
 
 gem 'gtfs', en_route: 'gtfs'
-gem 'netex', en_route: 'netex'
+gem 'netex', en_route: 'netex', branch: 'CHOUETTE-2482-fix-keys-transform_stop_place'
 gem 'rgeo-shapefile'
 gem 'ara-file', '>= 0.1.2', en_route: 'ara-file'
 gem 'neptune', en_route: 'neptune'

@@ -36,6 +36,20 @@ module Types
       object.codes.map {|c| [c.code_space.short_name, c.value]}.to_h
     end
 
+    field :accessibilities, GraphQL::Types::JSON, null: true
+    def accessibilities
+      {
+        mobility_impaired_accessibility: object.mobility_impaired_accessibility,
+        wheelchair_accessibility: object.wheelchair_accessibility,
+        step_free_accessibility: object.step_free_accessibility,
+        escalator_free_accessibility: object.escalator_free_accessibility,
+        lift_free_accessibility: object.lift_free_accessibility,
+        audible_signals_availability: object.audible_signals_availability,
+        visual_signs_availability: object.visual_signs_availability,
+        accessibility_limitation_description: object.accessibility_limitation_description
+      }
+    end
+
     field :custom_fields, GraphQL::Types::JSON, null: true
     def custom_fields
       object.custom_field_values.delete_if { |_k,v| v.presence.nil? }

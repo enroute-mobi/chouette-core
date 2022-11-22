@@ -33,7 +33,11 @@ module Types
 
     field :codes, GraphQL::Types::JSON, null: true
     def codes
-      object.codes.map {|c| [c.code_space.short_name, c.value]}.to_h
+      object
+        .codes
+        .group_by{ |c| c.code_space.short_name }
+        .map{ |k, v| [ k, v.map(&:value)] }
+        .to_h
     end
 
     field :custom_fields, GraphQL::Types::JSON, null: true

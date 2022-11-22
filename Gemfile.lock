@@ -65,8 +65,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: 6ba60bffd9588761ef40f952230631ac4ab393d2
-  branch: CHOUETTE-2482-fix-keys-transform_stop_place
+  revision: 7a2f2aa6718e9556e2213687252f0e660247e4a9
   specs:
     netex (0.1.2)
       activesupport

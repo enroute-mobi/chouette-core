@@ -7,7 +7,7 @@ definitions:
       memory: 7128
     postgres:
       image:
-        name: eu.gcr.io/enroute-interne/enroute-postgresql:9.6-dev
+        name: eu.gcr.io/enroute-interne/enroute-postgresql:14-dev
         username: _json_key
         password: "$GCLOUD_API_KEYFILE"
       environment:

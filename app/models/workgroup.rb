@@ -28,7 +28,9 @@ class Workgroup < ApplicationModel
   has_many :publication_apis, dependent: :destroy
   has_many :compliance_check_sets, dependent: :destroy
   has_many :macro_lists, :through => :workbenches
+  has_many :macro_list_runs, :through => :workbenches
   has_many :control_lists, :through => :workbenches
+  has_many :control_list_runs, :through => :workbenches
   has_many :processing_rules, class_name: "ProcessingRule::Workgroup"
 
   validates :name, presence: true, uniqueness: true
@@ -79,7 +81,7 @@ class Workgroup < ApplicationModel
   end
 
   def has_legacy_processing_rules?
-    !processing_rules.present? 
+    ProcessingRule::Base.where(workgroup_id: self.id).or(ProcessingRule::Base.where(workbench_id: self.workbenches.pluck(:id))).empty? 
   end
 
   def self.all_compliance_control_sets

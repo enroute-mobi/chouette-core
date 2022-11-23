@@ -613,5 +613,33 @@ module Chouette
         return result.each { |k,v| result[k] = v.round(1) }
       end
     end
+
+    def accessibilities
+      Accessibilities.new(
+        mobility_impaired_accessibility: mobility_impaired_accessibility,
+        wheelchair_accessibility: wheelchair_accessibility,
+        step_free_accessibility: step_free_accessibility,
+        escalator_free_accessibility: escalator_free_accessibility,
+        lift_free_accessibility: lift_free_accessibility,
+        audible_signals_availability: audible_signals_availability,
+        visual_signs_availability: visual_signs_availability,
+        accessibility_limitation_description: accessibility_limitation_description
+      )
+    end
+
+    class Accessibilities
+      def initialize(options={})
+        options.each { |k, v| send "#{k}=", v }
+      end
+      attr_accessor :mobility_impaired_accessibility
+      attr_accessor :wheelchair_accessibility
+      attr_accessor :step_free_accessibility
+      attr_accessor :escalator_free_accessibility
+      attr_accessor :lift_free_accessibility
+      attr_accessor :audible_signals_availability
+      attr_accessor :visual_signs_availability
+      attr_accessor :accessibility_limitation_description
+    end
+
   end
 end

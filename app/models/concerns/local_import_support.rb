@@ -114,9 +114,16 @@ module LocalImportSupport
     #   Macro List first
     #   Control List
     #   Workgroup Control List
-    scope = ProcessingRule::Base.where(operation_step: 'after_import')
-    processing_rules = scope.where(workbench_id: workbench_id).or(scope.where(target_workbench_ids: [workbench_id]))
-    processing_rules.order(workgroup_id: :desc, processable_type: :desc)
+    processing_rules = workbench_processing_rules + workgroup_processing_rules
+  end
+
+  def workbench_processing_rules
+    workbench.processing_rules.where(operation_step: 'after_import').order(processable_type: :desc)
+  end
+
+  def workgroup_processing_rules 
+    wkg_processing_rules = workbench.workgroup.processing_rules.where(operation_step: 'after_import', target_workbench_ids: [workbench_id])
+    wkg_processing_rules.present? ? wkg_processing_rules : workbench.workgroup.processing_rules.where(operation_step: 'after_import', target_workbench_ids: [])
   end
 
   def worker_died

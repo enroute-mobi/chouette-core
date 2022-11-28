@@ -81,7 +81,7 @@ class Workgroup < ApplicationModel
   end
 
   def has_legacy_processing_rules?
-    ProcessingRule::Base.where(workgroup_id: self.id).or(ProcessingRule::Base.where(workbench_id: self.workbenches.pluck(:id))).empty? 
+    processing_rules.empty? || workbenches.map(&:processing_rules).flatten.empty?
   end
 
   def self.all_compliance_control_sets

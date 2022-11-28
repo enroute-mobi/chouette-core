@@ -38,17 +38,17 @@ RSpec.describe Control::Speed do
 
     before do
       referential.switch
-      journey_pattern.update costs: { 
+      journey_pattern.update costs: {
         '1000-2000' => { 'time' => 10, 'distance' => 2160 },
         '2000-3000' => { 'time' => 30, 'distance' => 12000000 },
-        '3000-4000' => { 'time' => 20, 'distance' => 100 } 
-      } 
+        '3000-4000' => { 'time' => 20, 'distance' => 100 }
+      }
     end
 
     def stop_area(name)
       context.stop_area(name).reload
     end
-  
+
     let(:expected_message) do
       an_object_having_attributes({
         source: journey_pattern,

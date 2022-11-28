@@ -10,7 +10,7 @@
     - messages = @import.messages + @import.resources.flat_map(&:messages)
     = render 'shared/iev_interfaces/messages', messages: messages
 
-- if @workbench.workgroup.has_legacy_processing_rules?
+- if (@workgroup || @workbench.workgroup).has_legacy_processing_rules?
   = render 'table_with_legacy_controls'
 - else 
   - if @import.children.any?
@@ -33,21 +33,21 @@
           TableBuilderHelper::Column.new( \
             name: I18n.t('imports.index.workbench_macro_list_run'),
             attribute: lambda do |n| \
-              n.workbench_macro_list_run ? link_to_if_i_can(operation_status(n.workbench_macro_list_run.processed.user_status, verbose: true), [@workbench, n.workbench_macro_list_run.processed]) : '-' \
+              n.workbench_macro_list_run ? link_to_if(@parent.is_a?(Workbench), operation_status(n.workbench_macro_list_run.processed.user_status, verbose: true), [@workbench, n.workbench_macro_list_run.processed]) : '-' \
             end,
             sortable: false,
           ),
           TableBuilderHelper::Column.new( \
             name: I18n.t('imports.index.workbench_control_list_run'),
             attribute: lambda do |n| \
-              n.workbench_control_list_run ? link_to_if_i_can(operation_status(n.workbench_control_list_run.processed.user_status, verbose: true), [@workbench, n.workbench_control_list_run.processed]) : '-' \
+              n.workbench_control_list_run ? link_to_if(@parent.is_a?(Workbench), operation_status(n.workbench_control_list_run.processed.user_status, verbose: true), [@workbench, n.workbench_control_list_run.processed]) : '-' \
             end,
             sortable: false,
           ),
           TableBuilderHelper::Column.new( \
             name: I18n.t('imports.index.workrgroup_control_list_run'),
             attribute: lambda do |n| \
-              n.worgroup_control_list_run ? link_to_if_i_can(operation_status(n.worgroup_control_list_run.processed.user_status, verbose: true), [@workbench, n.worgroup_control_list_run.processed]) : '-' \
+              n.worgroup_control_list_run ? link_to_if(@parent.is_a?(Workbench), operation_status(n.worgroup_control_list_run.processed.user_status, verbose: true), [@workbench, n.worgroup_control_list_run.processed]) : '-' \
             end,
             sortable: false,
           ),

@@ -69,10 +69,10 @@ module Control
             FROM (
               SELECT
                 jp_id, jp_name,
-                (SELECT public.stop_areas.name FROM public.stop_areas WHERE public.stop_areas.id = split_part(from_to, '-', 1)::int LIMIT 1) AS from_stop,
-                (SELECT public.stop_areas.name FROM public.stop_areas WHERE public.stop_areas.id = split_part(from_to, '-', 2)::int LIMIT 1) AS to_stop,
+                (SELECT public.stop_areas.name FROM public.stop_areas WHERE public.stop_areas.id = split_part(from_to, '-', 1)::int) AS from_stop,
+                (SELECT public.stop_areas.name FROM public.stop_areas WHERE public.stop_areas.id = split_part(from_to, '-', 2)::int) AS to_stop,
                 ((costs->>from_to)::json->>'distance')::float as distance,
-                ((costs->>from_to)::json->>'time')::float * ((costs->>from_to)::json->>'distance')::float AS speed
+                ((costs->>from_to)::json->>'distance')::float / ((costs->>from_to)::json->>'time')::float AS speed
               FROM (#{ base_sql }) AS base
             ) AS speed_table
             WHERE speed_table.distance > #{minimum_distance} AND (speed_table.speed > #{maximum_speed} OR speed_table.speed < #{minimum_speed})

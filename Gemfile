@@ -125,7 +125,7 @@ gem 'delayed_cron_job'
 
 gem 'whenever', en_route: 'whenever', require: false
 gem 'rake'
-gem 'apartment'
+gem 'ros-apartment', require: 'apartment'
 gem 'aasm'
 gem 'puma', '>= 5.6.4'
 gem 'postgresql_cursor'

@@ -111,7 +111,6 @@ fr:
         vehicle_journeys: "Courses"
         companies: "Transporteurs"
         stop_areas: "Arrêts"
-        access_points: "points d'accès"
         time_tables: "Calendriers"
         connection_links: "Correspondances"
         quays: "quais"

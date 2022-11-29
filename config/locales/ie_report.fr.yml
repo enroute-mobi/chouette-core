@@ -25,7 +25,6 @@ fr:
           connection_links: "Correspondances"
           time_tables: "Calendriers"
           stop_areas: "Arrèts"
-          access_points: "Accès"
           vehicle_journeys: "Courses"
           journey_patterns: "Missions"
           not_saved: "Non Sauvé"

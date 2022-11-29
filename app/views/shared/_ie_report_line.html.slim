@@ -12,8 +12,8 @@ p.lead
     form.form-inline
       .form-group
         label = t('shared.ie_report.search')
-        input#filter-line.form-control type="text" 
-        
+        input#filter-line.form-control type="text"
+
       .form-group
         label= t('.table.line.state')
         select.filter-line-status.form-control
@@ -32,7 +32,6 @@ p.lead
         th data-hide="all" = t('.table.line.connection_links')
         th data-hide="all" = t('.table.line.time_tables')
         th data-hide="all" = t('.table.line.stop_areas')
-        th data-hide="all" = t('.table.line.access_points')
         th data-hide="all" = t('.table.line.vehicle_journeys')
         th data-hide="all" = t('.table.line.journey_patterns')
 
@@ -48,13 +47,12 @@ p.lead
           td = line_item.connection_links
           td = line_item.time_tables
           td = line_item.stop_areas
-          td = line_item.access_points
           td = line_item.vehicle_journeys
           td = line_item.journey_patterns
-   
+
     tfoot
       tr
-        td colspan="10" 
+        td colspan="10"
           - if line_items.respond_to?(:total_pages)
             = will_paginate line_items, renderer: BootstrapPagination::Rails
           - else

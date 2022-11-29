@@ -65,7 +65,7 @@ module Control
             SELECT 
               speed_table.jp_id AS journey_pattern_id, 
               speed_table.jp_name AS journey_pattern_name,
-              STRING_AGG(CONCAT(from_stop, ' - ', to_stop), '; ') AS faulty_stop_area_pairs
+              STRING_AGG(CONCAT(from_stop, ' - ', to_stop, ' (', speed, ' m/s', ')'), '; ') AS faulty_stop_area_pairs
             FROM (
               SELECT
                 jp_id, jp_name,

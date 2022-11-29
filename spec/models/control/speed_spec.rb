@@ -20,12 +20,12 @@ RSpec.describe Control::Speed do
     let(:context) do
       Chouette.create do
         stop_area :first, id: 1000, name: 'first'
-        stop_area :middle, id: 2000, name: 'second'
+        stop_area :second, id: 2000, name: 'second'
         stop_area :third, id: 3000, name: 'third'
         stop_area :last, id: 4000, name: 'last'
 
         referential do
-          route stop_areas: [:first, :middle, :third, :last] do
+          route stop_areas: [:first, :second, :third, :last] do
             journey_pattern name: 'JP name'
           end
         end
@@ -54,7 +54,7 @@ RSpec.describe Control::Speed do
         source: journey_pattern,
         criticity: 'warning',
         message_attributes: {
-          'faulty_stop_area_pairs' => 'second - third; third - last',
+          'faulty_stop_area_pairs' => 'second - third (400000 m/s); third - last (5 m/s)',
           'journey_pattern_name' => 'JP name'
         }
       })

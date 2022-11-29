@@ -5,9 +5,13 @@ module Control
     belongs_to :workbench, optional: false
     validates :name, presence: true
 
-    has_many :controls, -> { order(position: :asc) }, class_name: "Control::Base", dependent: :delete_all, foreign_key: "control_list_id", inverse_of: :control_list
-    has_many :control_list_runs, class_name: "Control::List::Run", foreign_key: :original_control_list_id
-    has_many :control_contexts, class_name: "Control::Context", foreign_key: "control_list_id", inverse_of: :control_list
+    has_many :controls, -> { order(position: :asc) },
+             class_name: 'Control::Base', dependent: :delete_all,
+             foreign_key: 'control_list_id', inverse_of: :control_list
+    has_many :control_list_runs,
+             class_name: 'Control::List::Run', foreign_key: :original_control_list_id
+    has_many :control_contexts,
+             class_name: 'Control::Context', foreign_key: 'control_list_id', inverse_of: :control_list
 
     accepts_nested_attributes_for :controls, allow_destroy: true, reject_if: :all_blank
     accepts_nested_attributes_for :control_contexts, allow_destroy: true, reject_if: :all_blank

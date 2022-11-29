@@ -114,7 +114,7 @@ module Chouette
             transient :macro_list
 
             after do
-              processable = transient(:macro_list, resolve_instances: true) || 
+              processable = transient(:macro_list, resolve_instances: true) ||
                 transient(:control_list, resolve_instances: true) ||
                 new_instance.workbench.control_lists.create!(name: 'Default')
 

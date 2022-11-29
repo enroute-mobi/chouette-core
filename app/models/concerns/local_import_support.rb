@@ -1,7 +1,7 @@
 module LocalImportSupport
   extend ActiveSupport::Concern
 
-  included do |into|
+  included do |_into|
     include ImportResourcesSupport
     after_commit :import_async, on: :create, unless: :profile?
 
@@ -9,8 +9,8 @@ module LocalImportSupport
   end
 
   module ClassMethods
-    def profile(filepath, profile_options={})
-      import = self.new(creator: 'Profiler', workbench: Workbench.first)
+    def profile(filepath, profile_options = {})
+      import = new(creator: 'Profiler', workbench: Workbench.first)
       import.file = File.open(filepath)
       import.profile = true
       import.profile_options = profile_options
@@ -20,10 +20,10 @@ module LocalImportSupport
       if profile_options[:operations]
         if profile_options[:reuse_referential]
           r = if profile_options[:reuse_referential].is_a?(Referential)
-            profile_options[:reuse_referential]
-          else
-            Referential.where(name: import.referential_name).last
-          end
+                profile_options[:reuse_referential]
+              else
+                Referential.where(name: import.referential_name).last
+              end
           import.referential = r
           r.switch
         else
@@ -34,7 +34,7 @@ module LocalImportSupport
       if profile_options[:operations]
         import.profile_tag 'import' do
           ActiveRecord::Base.cache do
-            import.import_resources *profile_options[:operations]
+            import.import_resources(*profile_options[:operations])
           end
         end
       else
@@ -63,19 +63,19 @@ module LocalImportSupport
 
       processing_rules.each do |processing_rule|
         if processing_rule.use_control_list?
-          processed = processing_rule.processable.control_list_runs.new(name: processing_rule.processable.name, creator: "Webservice", referential: self.referential)
+          processed = processing_rule.processable.control_list_runs.new(name: processing_rule.processable.name,
+                                                                        creator: 'Webservice', referential: referential)
           processed.build_with_original_control_list
         else
-          processed = processing_rule.processable.macro_list_runs.new(name: processing_rule.processable.name, creator: "Webservice", referential: self.referential)
+          processed = processing_rule.processable.macro_list_runs.new(name: processing_rule.processable.name,
+                                                                      creator: 'Webservice', referential: referential)
           processed.build_with_original_macro_list
         end
 
-        processing = processing_rule.processings.create step: :after, operation: self, workbench_id: processing_rule.workbench_id, 
-          workgroup_id: processing_rule.workgroup_id, processed: processed
-        
-        unless processing.perform
-          break
-        end
+        processing = processing_rule.processings.create step: :after, operation: self, workbench_id: processing_rule.workbench_id,
+                                                        workgroup_id: processing_rule.workgroup_id, processed: processed
+
+        break unless processing.perform
       end
 
       @progress = nil
@@ -83,7 +83,7 @@ module LocalImportSupport
       referential&.active!
       update status: @status, ended_at: Time.now
     end
-  rescue => e
+  rescue StandardError => e
     update status: 'failed', ended_at: Time.now
     Chouette::Safe.capture "#{self.class.name} ##{id} failed", e
 
@@ -91,15 +91,15 @@ module LocalImportSupport
       overlapped = Referential.find overlapped_referential_ids.last
       create_message(
         criticity: :error,
-        message_key: "referential_creation_overlapping_existing_referential",
+        message_key: 'referential_creation_overlapping_existing_referential',
         message_attributes: {
           referential_name: referential.name,
           overlapped_name: overlapped.name,
-          overlapped_url:  Rails.application.routes.url_helpers.referential_path(overlapped)
+          overlapped_url: Rails.application.routes.url_helpers.referential_path(overlapped)
         }
       )
     else
-      create_message criticity: :error, message_key: :full_text, message_attributes: {text: e.message}
+      create_message criticity: :error, message_key: :full_text, message_attributes: { text: e.message }
     end
     referential&.failed!
   ensure
@@ -114,27 +114,30 @@ module LocalImportSupport
     #   Macro List first
     #   Control List
     #   Workgroup Control List
-    processing_rules = workbench_processing_rules + workgroup_processing_rules
+    workbench_processing_rules + workgroup_processing_rules
   end
 
   def workbench_processing_rules
     workbench.processing_rules.where(operation_step: 'after_import').order(processable_type: :desc)
   end
 
-  def workgroup_processing_rules 
-    wkg_processing_rules = workbench.workgroup.processing_rules.where(operation_step: 'after_import', target_workbench_ids: [workbench_id])
-    wkg_processing_rules.present? ? wkg_processing_rules : workbench.workgroup.processing_rules.where(operation_step: 'after_import', target_workbench_ids: [])
+  def workgroup_processing_rules
+    dedicated_processing_rules = workbench.workgroup.processing_rules.where(operation_step: 'after_import',
+                                                                  target_workbench_ids: [workbench_id])
+    return dedicated_processing_rules if dedicated_processing_rules.present?
+      
+    workbench.workgroup.processing_rules.where(operation_step: 'after_import', target_workbench_ids: [])
   end
 
   def worker_died
     force_failure!
 
-    Rails.logger.error "#{self.class.name} #{self.inspect} failed due to worker being dead"
+    Rails.logger.error "#{self.class.name} #{inspect} failed due to worker being dead"
   end
 
   def import_resources(*resources)
     resources.each do |resource|
-       Chouette::Benchmark.measure resource do
+      Chouette::Benchmark.measure resource do
         send "import_#{resource}"
 
         notify_operation_progress(resource)
@@ -144,7 +147,7 @@ module LocalImportSupport
 
   def create_referential
     Chouette::Benchmark.measure 'create_referential' do
-      self.referential ||=  Referential.new(
+      self.referential ||= Referential.new(
         name: referential_name,
         organisation_id: workbench.organisation_id,
         workbench_id: workbench.id,
@@ -152,9 +155,7 @@ module LocalImportSupport
         ready: false
       )
 
-      if profile?
-        Referential.find(self.referential.overlapped_referential_ids).each &:archive!
-      end
+      Referential.find(self.referential.overlapped_referential_ids).each(&:archive!) if profile?
       begin
         self.referential.save!
       rescue ActiveRecord::RecordInvalid
@@ -176,17 +177,17 @@ module LocalImportSupport
     Rails.logger.info "#{self.class.name} ##{id}: invoke next_step"
     next_step
 
-    main_resource&.update_status_from_importer self.status
+    main_resource&.update_status_from_importer status
 
     super
   end
 
-  attr_accessor :local_file
+  attr_accessor :local_file, :download_host
+
   def local_file
     @local_file ||= download_local_file
   end
 
-  attr_accessor :download_host
   def download_host
     @download_host ||= Rails.application.config.rails_host
   end
@@ -200,14 +201,14 @@ module LocalImportSupport
       end
   end
 
-  def local_temp_file(&block)
-    file = Tempfile.open("chouette-import", local_temp_directory)
+  def local_temp_file
+    file = Tempfile.open('chouette-import', local_temp_directory)
     file.binmode
     yield file
   end
 
   def download_path
-    # FIXME See CHOUETTE-205
+    # FIXME: See CHOUETTE-205
     Rails.application.routes.url_helpers.internal_download_workbench_import_path(workbench, id, token: token_download)
   end
 
@@ -222,12 +223,10 @@ module LocalImportSupport
 
   def download_local_file
     local_temp_file do |file|
-      begin
-        Net::HTTP.start(download_uri.host, download_uri.port) do |http|
-          http.request_get(download_uri.request_uri) do |response|
-            response.read_body do |segment|
-              file.write segment
-            end
+      Net::HTTP.start(download_uri.host, download_uri.port) do |http|
+        http.request_get(download_uri.request_uri) do |response|
+          response.read_body do |segment|
+            file.write segment
           end
         end
       end
@@ -237,7 +236,7 @@ module LocalImportSupport
     end
   end
 
-  def save_model(model, filename: nil, line_number:  nil, column_number: nil, resource: nil)
+  def save_model(model, filename: nil, line_number: nil, column_number: nil, resource: nil)
     profile_tag "save_model.#{model.class.name}" do
       return unless model.changed?
 
@@ -256,32 +255,32 @@ module LocalImportSupport
         model.errors.details.each do |key, messages|
           messages.uniq.each do |message|
             message.each do |criticity, error|
-              if Import::Message.criticity.values.include?(criticity.to_s)
-                create_message(
-                  {
-                    criticity: criticity,
-                    message_key: error,
-                    message_attributes: {
-                      test_id: key,
-                      object_attribute: key,
-                      source_attribute: key,
-                    },
-                    resource_attributes: {
-                      filename: filename,
-                      line_number: line_number,
-                      column_number: column_number
-                    }
+              next unless Import::Message.criticity.values.include?(criticity.to_s)
+
+              create_message(
+                {
+                  criticity: criticity,
+                  message_key: error,
+                  message_attributes: {
+                    test_id: key,
+                    object_attribute: key,
+                    source_attribute: key
                   },
-                  resource: resource,
-                  commit: true
-                )
-              end
+                  resource_attributes: {
+                    filename: filename,
+                    line_number: line_number,
+                    column_number: column_number
+                  }
+                },
+                resource: resource,
+                commit: true
+              )
             end
           end
         end
         @models_in_error ||= Hash.new { |hash, key| hash[key] = [] }
         @models_in_error[model.class.name] << model_key(model)
-        @status = "failed"
+        @status = 'failed'
         return
       end
 
@@ -298,7 +297,7 @@ module LocalImportSupport
           message_attributes: {
             parent_class: klass,
             parent_key: key,
-            test_id: :parent,
+            test_id: :parent
           },
           resource_attributes: {
             filename: "#{resource.name}.txt",

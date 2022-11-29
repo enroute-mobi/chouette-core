@@ -423,7 +423,7 @@ en:
         error: Erreur
         failed: Echec
     processing_rule/workbench:
-      processing_type:
+      processable_type:
         "Macro::List": "Macro List"
         "Control::List": Control List
       operation_step:
@@ -431,7 +431,7 @@ en:
         before_merge: Before merge
         after_merge: After merge
     processing_rule/workgroup:
-      processing_type:
+      processable_type:
         "Control::List": Control List
       operation_step:
         after_import: After import

@@ -114,11 +114,11 @@ module Chouette
             transient :macro_list
 
             after do
-              processing = transient(:macro_list, resolve_instances: true) || 
+              processable = transient(:macro_list, resolve_instances: true) ||
                 transient(:control_list, resolve_instances: true) ||
                 new_instance.workbench.control_lists.create!(name: 'Default')
 
-              new_instance.processing = processing
+              new_instance.processable = processable
             end
           end
 

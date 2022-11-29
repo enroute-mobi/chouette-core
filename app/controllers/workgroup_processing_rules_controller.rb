@@ -51,6 +51,6 @@ class WorkgroupProcessingRulesController < ChouetteController
       :control_list_id,
       :operation_step,
       target_workbenches: []
-    ).with_defaults(processing_type: Control::List.name)
+    ).with_defaults(processable_type: Control::List.name)
   end
 end

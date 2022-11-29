@@ -14,6 +14,10 @@ class Import::Workbench < Import::Base
 
   has_many :compliance_check_sets, -> { where(parent_type: "Import::Workbench") }, foreign_key: :parent_id, dependent: :destroy
 
+  has_many :processings, through: :children
+  has_many :control_list_runs, through: :processings, source: :processed, source_type: 'Control::List::Run'
+  has_many :macro_list_runs, through: :processings, source: :processed, source_type: 'Macro::List::Run'
+
   def main_resource; self end
 
   def file_extension_whitelist
@@ -126,10 +130,22 @@ class Import::Workbench < Import::Base
     end
   end
 
-  def compute_new_status
-    unless compliance_check_sets.present?
-      return children_status
+  # Compute processed status (Macro::List::Run and Control::List::Run)
+  def processed_status
+    statuses = (control_list_runs.pluck(:user_status) + macro_list_runs.pluck(:user_status)).uniq
+    if statuses.include?('pending')
+      'running'
+    elsif statuses.include?('failed')
+      'failed'
+    elsif statuses.include?('warning')
+      'warning'
     else
+      'successful'
+    end
+  end
+
+  def compute_new_status
+    if compliance_check_sets.present?
       if children_status == 'running' || compliance_check_sets_status == 'running'
         return 'running'
       elsif children_status == 'failed' || compliance_check_sets_status == 'failed'
@@ -139,6 +155,18 @@ class Import::Workbench < Import::Base
       elsif children_status == 'successful' && compliance_check_sets_status == 'successful'
         return 'successful'
       end
+    elsif control_list_runs.present? || macro_list_runs.present?
+      if children_status == 'running' || processed_status == 'running'
+        return 'running'
+      elsif children_status == 'failed' || processed_status == 'failed'
+        return 'failed'
+      elsif children_status == 'warning' || processed_status == 'warning'
+        return 'warning'
+      elsif children_status == 'successful' && processed_status == 'successful'
+        return 'successful'
+      end  
+    else
+      return children_status
     end
   end
 

@@ -12,13 +12,13 @@ class ProcessingRuleDecorator < AF83::Decorator
   with_instance_decorator(&:crud)
 
   define_instance_method :name do
-    return unless processing
+    return unless processable
 
     I18n.t(
       'processing_rule/workbenches.name',
-      processing_type: processing_type.text,
+      processable_type: processable_type.text,
       operation_step: operation_step.text,
-      processing_name: processing.name
+      processable_name: processable.name
     )
   end
 end

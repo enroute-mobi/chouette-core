@@ -1125,16 +1125,32 @@ ActiveRecord::Schema.define(version: 2022_10_21_065517) do
   create_table "processing_rules", force: :cascade do |t|
     t.bigint "workgroup_id"
     t.bigint "workbench_id"
-    t.string "type", null: false
-    t.string "processing_type"
-    t.bigint "processing_id"
+    t.string "type"
+    t.string "processable_type"
+    t.bigint "processable_id"
     t.string "operation_step"
     t.bigint "target_workbench_ids", default: [], array: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["processing_type", "processing_id"], name: "index_processing_rules_on_processing_type_and_processing_id"
+    t.index ["processable_type", "processable_id"], name: "index_processing_rules_on_processable_type_and_processable_id"
     t.index ["workbench_id"], name: "index_processing_rules_on_workbench_id"
     t.index ["workgroup_id"], name: "index_processing_rules_on_workgroup_id"
+  end
+
+  create_table "processings", force: :cascade do |t|
+    t.string "step"
+    t.bigint "workbench_id"
+    t.bigint "workgroup_id"
+    t.string "operation_type"
+    t.bigint "operation_id"
+    t.string "processed_type"
+    t.bigint "processed_id"
+    t.bigint "processing_rule_id"
+    t.index ["operation_type", "operation_id"], name: "index_processings_on_operation_type_and_operation_id"
+    t.index ["processed_type", "processed_id"], name: "index_processings_on_processed_type_and_processed_id"
+    t.index ["processing_rule_id"], name: "index_processings_on_processing_rule_id"
+    t.index ["workbench_id"], name: "index_processings_on_workbench_id"
+    t.index ["workgroup_id"], name: "index_processings_on_workgroup_id"
   end
 
   create_table "publication_api_keys", force: :cascade do |t|

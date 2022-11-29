@@ -10,33 +10,46 @@
     - messages = @import.messages + @import.resources.flat_map(&:messages)
     = render 'shared/iev_interfaces/messages', messages: messages
 
-- if @import.resources.any?
-  - controls = import_controls(@import.workbench)
-  .col-lg-12
-    = table_builder_2 @import.resources,
-      [ \
-        TableBuilderHelper::Column.new( \
-          name: t('imports.show.referential_name'), \
-          attribute: -> (r) { referential_link(r) }, \
-          if: -> (r) { r.referential }, \
-          sortable: false \
-        ), \
-        TableBuilderHelper::Column.new( \
-          key: :status, \
-          attribute: lambda do |n| \
-            url = n.child_import.present? ? [@parent, n.child_import] : [@parent, @import, n]; \
-            link_to_if_i_can(operation_status(n.child_import&.status || n.status, verbose: true, default_status: :pending), url) \
-          end, \
-          sortable: false, \
-        ), *controls \
-      ],
-      cls: 'table',
-      overhead: [ \
-        {}, \
-        {}, \
-        controls.present? ? { \
-          title: I18n.t('imports.show.summary').html_safe, \
-          width: controls.size, \
-          cls: "overheaded-default colspan='#{controls.size}'" \
-        } : nil \
-      ].compact
+- if (@workgroup || @workbench.workgroup).has_legacy_processing_rules?
+  = render 'table_with_legacy_controls'
+- else 
+  - if @import.children.any?
+    .col-lg-12
+      = table_builder_2 @import.children,
+        [ \
+          TableBuilderHelper::Column.new( \
+            name: t('imports.show.referential_name'),
+            attribute: -> (r) { referential_link(r) },
+            if: -> (r) { r.referential },
+            sortable: false,
+          ),
+          TableBuilderHelper::Column.new( \
+            key: :status,
+            attribute: lambda do |n| \
+              link_to_if_i_can(operation_status(n.status, verbose: true, default_status: :pending), [@parent, n]) \
+            end,
+            sortable: false,
+          ),
+          TableBuilderHelper::Column.new( \
+            name: I18n.t('imports.index.workbench_macro_list_run'),
+            attribute: lambda do |n| \
+              n.workbench_macro_list_run ? link_to_if(@parent.is_a?(Workbench), operation_status(n.workbench_macro_list_run.processed.user_status, verbose: true), [@workbench, n.workbench_macro_list_run.processed]) : '-' \
+            end,
+            sortable: false,
+          ),
+          TableBuilderHelper::Column.new( \
+            name: I18n.t('imports.index.workbench_control_list_run'),
+            attribute: lambda do |n| \
+              n.workbench_control_list_run ? link_to_if(@parent.is_a?(Workbench), operation_status(n.workbench_control_list_run.processed.user_status, verbose: true), [@workbench, n.workbench_control_list_run.processed]) : '-' \
+            end,
+            sortable: false,
+          ),
+          TableBuilderHelper::Column.new( \
+            name: I18n.t('imports.index.workrgroup_control_list_run'),
+            attribute: lambda do |n| \
+              n.worgroup_control_list_run ? link_to_if(@parent.is_a?(Workbench), operation_status(n.worgroup_control_list_run.processed.user_status, verbose: true), [@workbench, n.worgroup_control_list_run.processed]) : '-' \
+            end,
+            sortable: false,
+          ),
+        ],
+        cls: 'table'

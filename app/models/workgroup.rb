@@ -27,9 +27,12 @@ class Workgroup < ApplicationModel
   has_many :publication_setups, dependent: :destroy
   has_many :publication_apis, dependent: :destroy
   has_many :compliance_check_sets, dependent: :destroy
-  has_many :macro_lists, :through => :workbenches
-  has_many :control_lists, :through => :workbenches
+  has_many :macro_lists, through: :workbenches
+  has_many :macro_list_runs, through: :workbenches
+  has_many :control_lists, through: :workbenches
+  has_many :control_list_runs, through: :workbenches
   has_many :processing_rules, class_name: "ProcessingRule::Workgroup"
+  has_many :workbench_processing_rules, through: :workbenches, source: :processing_rules
 
   validates :name, presence: true, uniqueness: true
   validates_uniqueness_of :stop_area_referential_id
@@ -76,6 +79,10 @@ class Workgroup < ApplicationModel
 
   def has_export? export_name
     export_types.include? export_name
+  end
+
+  def has_legacy_processing_rules?
+    processing_rules.empty? || workbench_processing_rules.empty?
   end
 
   def self.all_compliance_control_sets

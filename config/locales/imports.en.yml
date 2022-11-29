@@ -15,6 +15,9 @@ en:
     index:
       title: "Imports"
       warning: ""
+      workrgroup_control_list_run: "Control list (Workgroup)"
+      workbench_control_list_run: "Control list"
+      workbench_macro_list_run: "Macro list"
     workgroup_index:
       title: "Workgroup's Imports"
     new:

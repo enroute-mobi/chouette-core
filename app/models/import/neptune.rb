@@ -25,7 +25,6 @@ class Import::Neptune < Import::Base
     import_resources :companies, :networks, :lines
 
     create_referential
-    notify_operation_progress(:create_referential)
     referential.switch
   end
 
@@ -125,8 +124,6 @@ class Import::Neptune < Import::Base
         @imported_line_ids ||= []
         @imported_line_ids << line.id
       end
-
-      notify_sub_operation_progress(:lines, progress)
     end
   end
 
@@ -137,8 +134,6 @@ class Import::Neptune < Import::Base
       company.assign_attributes source_company.slice(:name, :short_name, :code, :default_contact_phone, :default_contact_email, :default_contact_fax, :default_contact_organizational_unit, :default_contact_operating_department_name)
       company.time_zone = DEFAULT_TIME_ZONE
       save_model company
-
-      notify_sub_operation_progress(:companies, progress)
     end
   end
 
@@ -149,8 +144,6 @@ class Import::Neptune < Import::Base
       network.assign_attributes source_network.slice(:name, :comment)
 
       save_model network
-
-      notify_sub_operation_progress(:networks, progress)
     end
   end
 
@@ -173,8 +166,6 @@ class Import::Neptune < Import::Base
       make_enum(source_timetable[:vehicle_journey_id]).each do |vehicle_journey_id|
         @time_tables[vehicle_journey_id] << tt.id
       end
-
-      notify_sub_operation_progress(:time_tables, progress)
     end
   end
 
@@ -309,8 +300,6 @@ class Import::Neptune < Import::Base
           stop_area_registration_numbers << source_stop_area[:object_id]
         end
       end
-
-      notify_sub_operation_progress(:stop_areas, progress)
     end
 
     # Update all StopAreas with their parent
@@ -344,8 +333,6 @@ class Import::Neptune < Import::Base
       @journey_patterns = {}
       import_journey_patterns_in_line(line, line_desc[:journey_pattern])
       import_vehicle_journeys_in_line(line, line_desc[:vehicle_journey])
-
-      notify_sub_operation_progress(:lines_content, progress)
     end
   end
 

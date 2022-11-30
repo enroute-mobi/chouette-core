@@ -124,7 +124,6 @@ class Referential < ApplicationModel
     scope.joins('LEFT JOIN public.referential_metadata ON referential_metadata.referential_source_id = referentials.id').where('referential_metadata.id' => nil)
   }
 
-  after_save :notify_state
   after_destroy :clean_cross_referential_index!
 
   def self.clean!
@@ -196,10 +195,6 @@ class Referential < ApplicationModel
   def audit
     ReferentialAudit::FullReferential.new(self).perform
     nil
-  end
-
-  def notify_state
-    Notification.create! channel: "/referentials/#{self.id}", payload: {state: self.state}
   end
 
   def contains_urgent_offer?
@@ -706,13 +701,12 @@ class Referential < ApplicationModel
   def archive!
     # self.archived = true
     touch :archived_at
-    notify_state
   end
+
   def unarchive!
     return false unless can_unarchive?
     # self.archived = false
     update_column :archived_at, nil
-    notify_state
   end
 
   def can_unarchive?
@@ -750,7 +744,6 @@ class Referential < ApplicationModel
     else
       assign_attributes vals
     end
-    notify_state
   end
 
   def pending!
@@ -774,7 +767,6 @@ class Referential < ApplicationModel
   def merged!
     now = Time.now
     update_columns failed_at: nil, archived_at: now, merged_at: now, ready: true
-    notify_state
   end
 
   def unmerged!

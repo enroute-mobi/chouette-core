@@ -35,13 +35,11 @@ module LocalExportSupport
   def run
     update status: 'running', started_at: Time.now
     export
-    notify_state unless publication.present?
   rescue Exception => e
     Chouette::Safe.capture "Export ##{id} failed", e
 
     messages.create(criticity: :error, message_attributes: { text: e.message }, message_key: :full_text)
     self.update status: :failed, ended_at: Time.now
-    notify_state unless publication.present?
     raise
   end
 

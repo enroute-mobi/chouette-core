@@ -1,7 +1,6 @@
 ChouetteIhm::Application.routes.draw do
   resource :dashboard
   resource :subscriptions, only: :create
-  resources :notifications, only: :index
 
   # FIXME See CHOUETTE-207
   resources :exports, only: :upload do

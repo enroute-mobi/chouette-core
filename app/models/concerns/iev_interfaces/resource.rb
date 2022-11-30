@@ -26,9 +26,6 @@ module IevInterfaces::Resource
 
       inner_block = proc do |item|
         inc_rows_count
-        if self.respond_to?(:import)
-          import.notify_sub_operation_progress(name, rows_count.to_f/total_rows)
-        end
         yield item, self
       end
     else
@@ -37,9 +34,6 @@ module IevInterfaces::Resource
       inner_block = proc do |items|
         items.each do |item|
           inc_rows_count
-          if self.respond_to?(:import)
-            import.notify_sub_operation_progress(name, rows_count.to_f/total_rows)
-          end
           yield item, self
         end
       end

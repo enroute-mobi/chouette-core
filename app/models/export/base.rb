@@ -197,74 +197,9 @@ class Export::Base < ApplicationModel
     ids&.map(&:to_i)
   end
 
-  #
-  # Notification
-  #
   def workbench_for_notifications
     workbench || referential.workbench || referential.workgroup&.owner_workbench
   end
-
-  def url_for_notifications
-    [workbench_for_notifications, self]
-  end
-
-  def urls_to_refresh
-    [polymorphic_url(self.url_for_notifications, only_path: true)]
-  end
-
-  def notify_state
-    payload = self.slice(:id, :status, :name)
-    payload.update({
-      status_html: operation_status(self.status).html_safe,
-      message_key: "#{self.class.name.underscore.gsub('/', '.')}.#{self.status}",
-      url: polymorphic_url(url_for_notifications, only_path: true),
-      urls_to_refresh: urls_to_refresh,
-      unique_identifier: "#{self.class.name.underscore.gsub('/', '.')}-#{self.id}"
-    })
-
-    payload[:fragment] = "export-fragment"
-    Notification.create! channel: workbench_for_notifications.notifications_channel, payload: payload
-  end
-
-  def notify_progress progress
-    # Prevent export notification when export is launched by a publication
-    return if (self.class < Export::Base && self.publication.present?)
-    @previous_progress ||= 0
-    return unless progress - @previous_progress >= 0.01
-    @previous_progress = progress
-
-    payload = self.slice(:id, :status, :name)
-    payload.update({
-      message_key: "#{self.class.name.underscore.gsub('/', '.')}.progress",
-      status_html: operation_status(self.status).html_safe,
-      url: polymorphic_url(url_for_notifications, only_path: true),
-      urls_to_refresh: urls_to_refresh,
-      unique_identifier: "#{self.class.name.underscore.gsub('/', '.')}-#{self.id}",
-      progress: (progress*100).to_i
-    })
-    Notification.create! channel: workbench_for_notifications.notifications_channel, payload: payload
-
-  end
-
-  def operation_progress_weight
-    1
-  end
-
-  def operations_progress_total_weight
-    steps_count
-  end
-
-  def operation_relative_progress_weight(operation_name)
-    operation_progress_weight.to_f/operations_progress_total_weight
-  end
-
-  def notify_operation_progress(operation_name)
-    if @progress
-      @progress += operation_relative_progress_weight(operation_name)
-      notify_progress @progress
-    end
-  end
-
 
   protected
 

@@ -90,7 +90,6 @@ Apartment.configure do |config|
     'Control::Message',
     'Control::Context',
     'Control::Context::Run',
-    'Notification',
     'NotificationRule',
     'Organisation',
     'PointOfInterest::Base',

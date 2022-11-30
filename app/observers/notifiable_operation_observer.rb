@@ -2,16 +2,14 @@ class NotifiableOperationObserver < ActiveRecord::Observer
   observe Export::Gtfs, Export::Netex, Export::NetexGeneric, Import::Workbench, Aggregate, Merge, ComplianceCheckSet
 
   def after_update(operation)
-    begin
-      return unless email_sendable_for?(operation)
+    return unless email_sendable_for?(operation)
 
-      workbench = operation.try(:workbench) || operation.try(:workbench_for_notifications)
-      return unless workbench
+    workbench = operation.try(:workbench) || operation.try(:workbench_for_notifications)
+    return unless workbench
 
-      workbench.notification_center.notify(operation)
-    rescue => e
-      Chouette::Safe.capture "Notification processing failed for #{operation.class}##{operation.id}", e
-    end
+    workbench.notification_center.notify(operation)
+  rescue StandardError => e
+    Chouette::Safe.capture "Notification processing failed for #{operation.class}##{operation.id}", e
   end
 
   private

@@ -106,7 +106,6 @@ module LocalImportSupport
     main_resource&.save
     save
     notify_parent
-    notify_state
   end
 
   def processing_rules
@@ -139,8 +138,6 @@ module LocalImportSupport
     resources.each do |resource|
       Chouette::Benchmark.measure resource do
         send "import_#{resource}"
-
-        notify_operation_progress(resource)
       end
     end
   end

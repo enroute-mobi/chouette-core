@@ -65,7 +65,6 @@ class Import::Gtfs < Import::Base
     import_resources :agencies, :stops, :routes, :shapes
 
     create_referential
-    notify_operation_progress(:create_referential)
     referential.switch
   end
 
@@ -73,9 +72,6 @@ class Import::Gtfs < Import::Base
     prepare_referential
 
     if check_calendar_files_missing_and_create_message
-      notify_operation_progress :calendars
-      notify_operation_progress :calendar_dates
-      notify_operation_progress :calendar_checksums
     else
       import_resources :calendars, :calendar_dates
     end
@@ -941,9 +937,9 @@ class Import::Gtfs < Import::Base
       end
     end
 
-    def collection 
+    def collection
       shape_provider.shapes
-    end    
+    end
 
     class Decorator < SimpleDelegator
       mattr_accessor :maximum_point_count, default: 10_000
@@ -961,7 +957,7 @@ class Import::Gtfs < Import::Base
         id
       end
 
-      def code 
+      def code
         Code.new(code_space: code_space, value: code_value) if code_space
       end
 

@@ -5,7 +5,6 @@ class ControlListRunsController < ChouetteController
   defaults resource_class: Control::List::Run
 
   before_action :decorate_control_list_run, only: %i[show new edit]
-  before_action :select_referentials, only: %i[new create]
 
   before_action :init_facade, only: %i[show]
 

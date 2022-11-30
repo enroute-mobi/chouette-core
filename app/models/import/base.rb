@@ -208,10 +208,6 @@ class Import::Base < ApplicationModel
     referential.metadatas.pluck(:line_ids).flatten.uniq
   end
 
-  def workbench_for_notifications
-    workbench || referential.workbench || referential.workgroup&.owner_workbench
-  end
-
   protected
 
   # Expected and used file extension

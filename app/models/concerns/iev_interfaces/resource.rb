@@ -26,8 +26,6 @@ module IevInterfaces::Resource
 
       inner_block = proc do |item|
         inc_rows_count
-        if self.respond_to?(:import)
-        end
         yield item, self
       end
     else
@@ -36,8 +34,6 @@ module IevInterfaces::Resource
       inner_block = proc do |items|
         items.each do |item|
           inc_rows_count
-          if self.respond_to?(:import)
-          end
           yield item, self
         end
       end

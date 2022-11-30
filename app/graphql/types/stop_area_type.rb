@@ -34,7 +34,7 @@ module Types
     field :codes, GraphQL::Types::JSON, null: true
     def codes
       object.codes.group_by { |c| c.code_space.short_name }.transform_values do |codes|
-        code_values = codes.map(&:value)
+        code_values = codes.map(&:value).sort
 
         if code_values.many?
           code_values

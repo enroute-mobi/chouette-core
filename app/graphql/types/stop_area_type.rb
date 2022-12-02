@@ -69,5 +69,7 @@ module Types
     def lines
       LazyLoading::Lines.new(context, object.id)
     end
+
+    field :accessibilities, Types::AccessibilityType, null: true
   end
 end

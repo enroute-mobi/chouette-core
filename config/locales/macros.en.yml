@@ -32,6 +32,8 @@ en:
         one: Define Postal Address
       macro/define_attribute_from_particulars:
         one: Define Referent attribute from Particulars value
+      macro/compute_journey_pattern_durations:
+        one: Define Journey Pattern durations from passing times
     attributes:
       macro/base:
         name: Name

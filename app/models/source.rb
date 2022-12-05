@@ -1,4 +1,5 @@
 require 'mimemagic_ext'
+require 'net/ftp'
 
 class Source < ApplicationModel
   extend Enumerize
@@ -333,6 +334,23 @@ class Source < ApplicationModel
         return {} unless raw_authorization
 
         { 'Authorization' => raw_authorization }
+      end
+    end
+
+    class Ftp < Base
+      attr_accessor :username, :password, :remote_dir, :remote_filename
+
+      def download(path)
+        ftp.getbinaryfile(remote_filename, path)
+      end
+
+      def ftp
+        @ftp ||= Net::FTP.new.tap do |ftp|
+          ftp.connect url
+          ftp.login username, password
+          ftp.chdir remote_dir
+          ftp.passive = true
+        end
       end
     end
   end

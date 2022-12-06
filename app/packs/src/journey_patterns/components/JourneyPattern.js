@@ -143,23 +143,31 @@ export default function JourneyPattern({
     const cost = journeyPattern.costs[costsKey]
 
     if (cost) return cost
-  
+
     if (!journeyPattern.id) { fetchRouteCosts(costsKey) }
 
     return { distance: 0, time: 0 }
   }
 
-  const formatDistance = distance => parseFloat(Math.round(distance * 100) / 100).toFixed(2) + " km"
-
-  const formatTime = time => {
-    if (time < 60) {
-      return time + " min"
+  const formatDistance = distance => {
+    if (distance < 1000) {
+      return distance + " m"
     }
     else {
-      const hours = parseInt(time / 60)
-      const minutes = (time - 60 * hours)
-      return hours + " h " + (minutes > 0 ? minutes : '')
+      return (distance / 1000).toFixed(2) + " km"
     }
+  }
+
+  const formatTime = time => {
+    time = Number(time);
+    var h = Math.floor(time / 3600);
+    var m = Math.floor(time % 3600 / 60);
+    var s = Math.floor(time % 3600 % 60);
+
+    var hDisplay = h > 0 ? h + (" h ") : "";
+    var mDisplay = m > 0 ? m + (" m ") : "";
+    var sDisplay = s > 0 ? s + (" sec ") : "";
+    return hDisplay + mDisplay + sDisplay;
   }
 
   const renderShapeEditorButtons = () => {
@@ -221,13 +229,13 @@ export default function JourneyPattern({
         <div>{I18n.t('journey_patterns.show.stop_points_count', { count: actions.getChecked(stop_points).length })}</div>
         {hasFeature('costs_in_journey_patterns') &&
           <div className="small row totals">
-            <span className="col-md-6"><i className="fas fa-arrows-alt-h"></i>{totalDistance}</span>
+            <span className="col-md-5"><i className="fas fa-arrows-alt-h"></i>{totalDistance}</span>
             <span className="col-md-6"><i className="fa fa-clock"></i>{totalTime}</span>
           </div>
         }
         {hasFeature('costs_in_journey_patterns') &&
           <div className="small row totals commercial">
-            <span className="col-md-6"><i className="fas fa-arrows-alt-h"></i>{commercialTotalDistance}</span>
+            <span className="col-md-5"><i className="fas fa-arrows-alt-h"></i>{commercialTotalDistance}</span>
             <span className="col-md-6"><i className="fa fa-clock"></i>{commercialTotalTime}</span>
           </div>
         }
@@ -303,12 +311,12 @@ export default function JourneyPattern({
             {hasFeature('costs_in_journey_patterns') && costs && <div className='costs' id={'costs-' + id + '-' + costsKey}>
               {editMode && <div>
                 <p>
-                  <input type="number" value={costs['distance'] || 0} min='0' name="distance" step="0.01" onChange={updateCosts} data-costs-key={costsKey} />
-                  <span>km</span>
+                  <input type="number" value={costs['distance'] || 0} min='0' name="distance" step="1" onChange={updateCosts} data-costs-key={costsKey} />
+                  <span>m</span>
                 </p>
                 <p>
                   <input type="number" value={costs['time'] || 0} min='0' name="time" onChange={updateCosts} data-costs-key={costsKey} />
-                  <span>min</span>
+                  <span>sec</span>
                 </p>
               </div>}
               {!editMode && <div>

@@ -35,6 +35,7 @@ const vehicleJourney= (state = {}, action, keep) => {
         if(computeSchedule){
           if(prevSp && action.selectedJourneyPattern.costs[prevSp.stop_area_id + "-" + sp.stop_area_id]){
             let delta = parseInt(action.selectedJourneyPattern.costs[prevSp.stop_area_id + "-" + sp.stop_area_id].time)
+            delta = _.round(delta / 60);
             current_time = actions.addMinutesToTime(current_time, delta)
             prevSp = sp
             inJourney = true

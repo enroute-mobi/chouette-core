@@ -338,15 +338,42 @@ class Source < ApplicationModel
     end
 
     class Ftp < Base
-      attr_accessor :username, :password, :remote_dir, :remote_filename
 
       def download(path)
         ftp.getbinaryfile(remote_filename, path)
       end
 
+      def uri
+        @uri ||= URI(url)
+      end
+
+      def host
+        @host ||= uri.host
+      end
+
+      def port
+        @port ||= uri.port
+      end
+
+      def username
+        @username ||= uri.user
+      end
+
+      def password
+        @password ||= uri.password
+      end
+
+      def remote_dir
+        @remote_dir ||= ['/', uri.path.gsub(['/', remote_filename].join, '')].join
+      end
+
+      def remote_filename
+        @remote_filename ||= uri.path.split('/').last
+      end
+
       def ftp
         @ftp ||= Net::FTP.new.tap do |ftp|
-          ftp.connect url
+          ftp.connect host, port
           ftp.login username, password
           ftp.chdir remote_dir
           ftp.passive = true

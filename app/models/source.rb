@@ -14,7 +14,7 @@ class Source < ApplicationModel
 
   #validates_associated :downloader
 
-  enumerize :downloader_type, in: %i(direct french_nap authorization), default: :direct
+  enumerize :downloader_type, in: %i(direct french_nap authorization ftp), default: :direct
 
   scope :enabled, -> { where.not(retrieval_frequency: 'none') }
 

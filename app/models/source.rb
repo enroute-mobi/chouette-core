@@ -364,11 +364,11 @@ class Source < ApplicationModel
       end
 
       def remote_dir
-        @remote_dir ||= ['/', uri.path.gsub(['/', remote_filename].join, '')].join
+        @remote_dir ||= File.dirname uri.path
       end
 
       def remote_filename
-        @remote_filename ||= uri.path.split('/').last
+        @remote_filename ||= File.basename uri.path
       end
 
       def ftp

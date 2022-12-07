@@ -19,9 +19,8 @@ export default class VehicleJourney extends Component {
     return this.props.editMode && !this.props.selection.active
   }
 
-
   journey_length() {
-    return this.props.value.journey_pattern.journey_length + "km"
+    return this.formatDistance(this.props.value.journey_pattern.journey_length)
   }
 
   cityNameChecker(sp) {
@@ -67,6 +66,15 @@ export default class VehicleJourney extends Component {
     }
   }
 
+  formatDistance = distance => {
+    if (distance < 1000) {
+      return distance + " m"
+    }
+    else {
+      return (distance / 1000).toFixed(2) + " km"
+    }
+  }
+
   render() {
     this.previousCity = undefined
     let detailed_calendars = this.hasFeature('detailed_calendars') && !this.disabled
@@ -80,6 +88,7 @@ export default class VehicleJourney extends Component {
     } = this.props
 
     const lastSelectedItem = last(selectedItems) || {}
+
 
     return (
       <div className={'t2e-item' + (this.props.value.deletable ? ' disabled' : '') + (this.props.value.errors ? ' has-error': '')}>

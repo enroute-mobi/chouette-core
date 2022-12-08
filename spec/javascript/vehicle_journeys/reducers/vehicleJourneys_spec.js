@@ -396,11 +396,11 @@ describe('vehicleJourneys reducer', () => {
       costs: {
         "1-2": {
           distance: 10,
-          time: 63
+          time: 63*60
         },
         "2-4": {
           distance: 10,
-          time: 30
+          time: 30*60
         }
       }
     }
@@ -520,7 +520,7 @@ describe('vehicleJourneys reducer', () => {
       costs: {
         "2-4": {
           distance: 10,
-          time: 30
+          time: 30*60
         }
       }
     }
@@ -642,11 +642,11 @@ describe('vehicleJourneys reducer', () => {
       costs: {
         "1-2": {
           distance: 10,
-          time: 63
+          time: 63*60
         },
         "2-4": {
           distance: 10,
-          time: 30
+          time: 30*60
         }
       }
     }
@@ -734,7 +734,7 @@ describe('vehicleJourneys reducer', () => {
       costs: {
         "1-2": {
           distance: 10,
-          time: 63
+          time: 63*60
         },
       }
     }
@@ -820,7 +820,7 @@ describe('vehicleJourneys reducer', () => {
       costs: {
         "1-2": {
           distance: 10,
-          time: 63
+          time: 63*60
         },
       }
     }

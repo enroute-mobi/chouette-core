@@ -82,7 +82,7 @@ class Workgroup < ApplicationModel
   end
 
   def has_legacy_processing_rules?
-    processing_rules.empty? || workbench_processing_rules.empty?
+    processing_rules.empty? && workbench_processing_rules.empty?
   end
 
   def self.all_compliance_control_sets

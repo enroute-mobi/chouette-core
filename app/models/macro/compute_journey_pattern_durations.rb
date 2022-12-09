@@ -116,7 +116,8 @@ module Macro
                     departure.vehicle_journey_id AS vehicle_journey_id,
                     (
                       SELECT 
-                        extract(epoch from (arrival.arrival_time - departure.departure_time))
+                      (arrival.arrival_day_offset * 86400 + extract(epoch from arrival.arrival_time)) -
+                      (departure.departure_day_offset * 86400 + extract(epoch from departure.departure_time))
                       FROM (#{sub_query}) AS arrival
                       WHERE (arrival.position - departure.position) = 1
                       AND departure.vehicle_journey_id = arrival.vehicle_journey_id
@@ -156,6 +157,8 @@ module Macro
               vehicle_journey_at_stops.vehicle_journey_id AS vehicle_journey_id,
               vehicle_journey_at_stops.departure_time AS departure_time,
               vehicle_journey_at_stops.arrival_time AS arrival_time,
+              vehicle_journey_at_stops.departure_day_offset AS departure_day_offset,
+              vehicle_journey_at_stops.arrival_day_offset AS arrival_day_offset,
               stop_points.position AS position,
               public.stop_areas.id AS stop_area_id
             SQL

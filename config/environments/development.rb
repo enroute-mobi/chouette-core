@@ -67,8 +67,6 @@ Rails.application.configure do
     Devise::Mailer.layout "mailer"
   end
 
-  config.accept_user_creation = true
-
   config.chouette_authentication_settings = {
     type: "database"
   }

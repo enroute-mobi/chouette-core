@@ -3,7 +3,7 @@ class Subscription
   include ActiveModel::Model
 
   def self.enabled?
-    Rails.application.config.accept_user_creation
+    Chouette::Config.subscription.enabled?
   end
 
   attr_accessor :organisation_name, :user_name, :email, :password, :password_confirmation, :workbench_invitation_code

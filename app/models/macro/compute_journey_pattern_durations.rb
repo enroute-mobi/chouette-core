@@ -2,187 +2,127 @@ module Macro
   class ComputeJourneyPatternDurations < Macro::Base
     class Run < Macro::Base::Run
       def run
-        calculators.journey_pattern_durations.each do |journey_pattern_duration|
-          Updater.new(journey_pattern_duration, macro_messages).update
+        journey_patterns.find_in_batches do |batch|
+          Batch.new(batch).journey_pattern_durations do |journey_pattern, durations|
+            # [ Chouette::JourneyPattern, [{"12-13"=>300}, {"13-14"=>300}, {"14-15"=>300}, {"15-16"=>300}, {"16-17"=>300}] ]
+            durations.each do |departure_arrival_duration| 
+              departure_arrival, duration = departure_arrival_duration.first
+
+              journey_pattern.costs[departure_arrival] ||= {}
+              journey_pattern.costs[departure_arrival][:time] ||= duration
+            end
+
+            journey_pattern.save
+            create_message journey_pattern
+          end
         end
       end
 
-      def calculators
-        @calculators ||= Calculator.new(journey_patterns)
+      # Create a message for the given JourneyPattern
+      # If the JourneyPattern is invalid, a warning message is created.
+      def create_message(journey_pattern)
+        attributes = {
+          criticity: 'info',
+          message_attributes: { name: journey_pattern.name },
+          source: journey_pattern
+        }
+
+        attributes.merge!(criticity: 'warning', message_key: 'invalid_costs') unless journey_pattern.valid?
+
+        macro_messages.create!(attributes)
       end
 
-      class Updater
-        def initialize(journey_pattern_duration, messages = nil)
-          @journey_pattern_duration = journey_pattern_duration
-          @messages = messages
+      # Compute durations for given JourneyPatterns
+      class Batch
+        def initialize(journey_patterns)
+          @journey_patterns = journey_patterns.delete_if(&:full_schedule?)
         end
-        attr_reader :journey_pattern_duration, :messages
+        attr_reader :journey_patterns
 
-        def update
-          if journey_pattern.update costs: costs
-            create_message criticity: 'info'
-          else
-            create_message criticity: 'warning', message_key: 'invalid_costs'
+        def journey_patterns_by_id
+          @journey_patterns_by_id ||= @journey_patterns.map { |j| [j.id, j] }.to_h
+        end
+
+        def journey_pattern_durations(&_block)
+          # [ 42, {"13-14"=>300}, {"14-15"=>300}, {"15-16"=>300}, {"16-17"=>300}] ]
+          query.each do |journey_pattern_id, durations|
+            yield journey_patterns_by_id[journey_pattern_id], durations
           end
         end
 
-        def costs
-          @costs ||=
-            journey_pattern.costs.deep_merge(durations) do |_, current_value, new_value|
-              current_value ? current_value : new_value
-            end
-        end
-
-        def journey_pattern
-          @journey_pattern ||= journey_pattern_duration.journey_pattern
-        end
-
-        def durations
-          journey_pattern_duration.durations
-        end
-
-        def create_message(attributes)
-          attributes.merge!(
-            message_attributes: { name: journey_pattern.name },
-            source: journey_pattern
-          )
-          messages.create!(attributes)
+        def query
+          @query ||= Query.new(journey_patterns)
         end
       end
 
-      class Calculator
+      class Query
         def initialize(journey_patterns)
           @journey_patterns = journey_patterns
         end
         attr_reader :journey_patterns
 
-        def journey_pattern_durations
-          JourneyPatternFinder.new(
-            Query.new(journey_patterns).perform,
-            journey_patterns
-          ).batch
-        end
-
-        class JourneyPatternFinder
-          def initialize(journey_pattern_durations, scope)
-            @journey_pattern_durations = journey_pattern_durations
-            @scope = scope
-          end
-          attr_reader :journey_pattern_durations, :scope
-
-          def batch
-            journey_pattern_durations.map do |attributes|
-              JourneyPatternDuration.new(
-                attributes.merge(
-                  journey_pattern: journey_patterns.find{ |jp| jp.id == attributes['journey_pattern_id'].to_i }
-                ),
-              )
-            end
-          end
-
-          def journey_patterns
-            @journey_patterns ||= scope.where(id: journey_pattern_ids).to_a
-          end
-
-          def journey_pattern_ids
-            @journey_pattern_ids ||= journey_pattern_durations.map { |attributes| attributes['journey_pattern_id'] }
-          end
-        end
-
-        class Query
-          def initialize(scope)
-            @scope = scope
-          end
-          attr_reader :scope
-
-          def perform
-            query = <<~SQL
-              SELECT
-                journey_pattern_id,
-                json_agg(
-                  jsonb_build_object(
-                    stop_area_pair,
-                    jsonb_build_object('time', avg_duration)
-                  )
-                ) AS durations
-              FROM (
-                SELECT
-                  stop_area_pair,
-                  journey_pattern_id AS journey_pattern_id,
-                  avg(duration)::integer AS avg_duration
+        def query
+          <<~SQL
+            SELECT journey_pattern_id,
+              json_agg(
+                jsonb_build_object(departure_arrival_ids, average_duration)
+              ) AS durations
+            FROM (
+                SELECT departure_arrival_ids,
+                  journey_pattern_id,
+                  avg(duration)::integer AS average_duration
                 FROM (
-                  SELECT
-                    departure.journey_pattern_id AS journey_pattern_id,
-                    departure.vehicle_journey_id AS vehicle_journey_id,
-                    (
-                      SELECT 
-                      (arrival.arrival_day_offset * 86400 + extract(epoch from arrival.arrival_time)) -
-                      (departure.departure_day_offset * 86400 + extract(epoch from departure.departure_time))
-                      FROM (#{sub_query}) AS arrival
-                      WHERE (arrival.position - departure.position) = 1
-                      AND departure.vehicle_journey_id = arrival.vehicle_journey_id
-                      AND departure.journey_pattern_id = arrival.journey_pattern_id
-                      LIMIT 1
-                    ) AS duration,
-                    (
-                      SELECT 
-                        concat(departure.stop_area_id, '-', arrival.stop_area_id)
-                      FROM (#{sub_query}) AS arrival 
-                      WHERE (arrival.position - departure.position) = 1
-                      AND departure.vehicle_journey_id = arrival.vehicle_journey_id
-                      AND departure.journey_pattern_id = arrival.journey_pattern_id
-                      LIMIT 1
-                    ) AS stop_area_pair
-                  FROM (#{sub_query}) AS departure
-                ) AS avg_duration_table
+                    SELECT vehicle_journeys.journey_pattern_id,
+                      concat(
+                        LAG(stop_points.stop_area_id) OVER vehicle_journey_stops,
+                        '-',
+                        stop_points.stop_area_id
+                      ) as departure_arrival_ids,
+                      extract(
+                        epoch
+                        from arrival_time
+                      ) - extract(
+                        epoch
+                        from (LAG(departure_time) OVER vehicle_journey_stops)
+                      ) + (
+                        arrival_day_offset - (
+                          LAG(departure_day_offset) OVER vehicle_journey_stops
+                        )
+                      ) * 86400 as duration
+                    FROM vehicle_journey_at_stops
+                      inner join stop_points on vehicle_journey_at_stops.stop_point_id = stop_points.id
+                      inner join vehicle_journeys on vehicle_journeys.journey_pattern_id in (#{journey_pattern_ids})
+                        and vehicle_journey_at_stops.vehicle_journey_id = vehicle_journeys.id
+                      WINDOW vehicle_journey_stops AS (
+                        PARTITION BY vehicle_journey_id
+                        ORDER BY stop_points.position
+                      )
+                  ) as durations_by_vehicle_journey
                 WHERE duration IS NOT NULL
-                GROUP BY stop_area_pair, journey_pattern_id
-              ) AS journey_pattern
-              GROUP BY journey_pattern_id
-            SQL
+                GROUP BY departure_arrival_ids,
+                  journey_pattern_id
+              ) AS durations_by_journey_pattern
+            GROUP BY journey_pattern_id;
+          SQL
+        end
 
-            PostgreSQLCursor::Cursor.new(query).to_a
-          end
-  
-          def sub_query
-            scope
-              .joins(vehicle_journey_at_stops: { stop_point: :stop_area })
-              .select(select)
-              .to_sql
-          end
+        def durations
+          ActiveRecord::Base.connection.select_rows(query)
+        end
 
-          def select
-            <<~SQL
-              journey_patterns.id AS journey_pattern_id,
-              vehicle_journey_at_stops.vehicle_journey_id AS vehicle_journey_id,
-              vehicle_journey_at_stops.departure_time AS departure_time,
-              vehicle_journey_at_stops.arrival_time AS arrival_time,
-              vehicle_journey_at_stops.departure_day_offset AS departure_day_offset,
-              vehicle_journey_at_stops.arrival_day_offset AS arrival_day_offset,
-              stop_points.position AS position,
-              public.stop_areas.id AS stop_area_id
-            SQL
+        def each(&_block)
+          durations.each do |journey_pattern_id, durations_as_json|
+            yield journey_pattern_id, JSON.parse(durations_as_json)
           end
         end
 
-        class JourneyPatternDuration
-          def initialize(attributes)
-            attributes.each { |k, v| send "#{k}=", v if respond_to?(k) }
-          end
-          attr_accessor :journey_pattern
-
-          def durations=(value)
-            @durations = JSON.parse(value).reduce({}, :merge)
-          end
-
-          def durations
-            @durations
-          end
+        def journey_pattern_ids
+          journey_patterns.map(&:id).join(',')
         end
       end
 
       def journey_patterns
-        @journey_patterns ||= scope.journey_patterns
+        @journey_patterns ||= scope.journey_patterns.includes(:route, :stop_points)
       end
     end
   end

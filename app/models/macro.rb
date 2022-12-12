@@ -11,6 +11,7 @@ module Macro
       Macro::AssociateStopAreaReferent,
       Macro::DefineAttributeFromParticulars,
       Macro::DefinePostalAddress,
+      Macro::ComputeJourneyPatternDurations,
       Macro::Dummy
     ]
   end

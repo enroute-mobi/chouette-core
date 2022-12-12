@@ -19,16 +19,15 @@
                   sortable: false \
                 ), \
                 TableBuilderHelper::Column.new( \
-                  key: :published_journey_name, \
-                  attribute: Proc.new {|v| v.published_journey_name.presence||I18n.t('none')}, \
-                  link_to: lambda do |vehicle_journey| \
-                    vehicle_journey.route&.line ? referential_line_route_vehicle_journeys_path(@referential, vehicle_journey.route.line, vehicle_journey.route) : '' \
-                  end, \
-                ), \
+                  key: :published_journey_name,
+                  attribute: Proc.new {|v| v.published_journey_name.presence||I18n.t('none')},
+                  link_to: lambda { |vehicle_journey| referential_line_route_vehicle_journeys_path(@referential, vehicle_journey.route.line, vehicle_journey.route) } \
+                ),
                 TableBuilderHelper::Column.new( \
                   key: :line, \
                   attribute: Proc.new {|v| v.route.line.name}, \
-                  sortable: false \
+                  sortable: false,
+                  link_to: lambda { |vehicle_journey| referential_line_path(@referential, vehicle_journey.route.line) } \
                 ), \
                 TableBuilderHelper::Column.new( \
                   key: :company, \
@@ -36,10 +35,11 @@
                   sortable: false \
                 ), \
                 TableBuilderHelper::Column.new( \
-                  key: :route, \
-                  attribute: Proc.new {|v| v.route.name}, \
-                  sortable: false \
-                ), \
+                  key: :route,
+                  attribute: Proc.new {|v| v.route.name},
+                  sortable: false,
+                  link_to: lambda { |vehicle_journey| referential_line_route_path(@referential, vehicle_journey.route.line, vehicle_journey.route) } \
+                ),
                 TableBuilderHelper::Column.new( \
                   key: :departure_time, \
                   attribute: Proc.new {|v| display_time_of_day(v.vehicle_journey_at_stops.first&.departure_local_time_of_day) }, \

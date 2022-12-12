@@ -32,6 +32,8 @@ fr:
         one: Définir l'Adresse postale
       macro/define_attribute_from_particulars:
         one: Définir un attribut d'un Référent à partir des Particuliers
+      macro/compute_journey_pattern_durations:
+        one: Définir les durées des missions à partir des heures de passage
     attributes:
       macro/base:
         name: Nom

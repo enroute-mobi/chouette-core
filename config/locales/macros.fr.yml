@@ -34,6 +34,8 @@ fr:
         one: Définir un attribut d'un Référent à partir des Particuliers
       macro/compute_journey_pattern_durations:
         one: Définir les durées des missions à partir des heures de passage
+      macro/compute_journey_pattern_distances:
+        one: Définir les distances des missions à partir du tracé
     attributes:
       macro/base:
         name: Nom

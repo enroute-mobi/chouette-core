@@ -109,7 +109,7 @@ module Macro
                 SELECT
                   stop_area_pair,
                   journey_pattern_id AS journey_pattern_id,
-                  avg(distance) AS avg_distance
+                  avg(distance)::integer AS avg_distance
                 FROM (
                   SELECT
                     departure.journey_pattern_id AS journey_pattern_id,

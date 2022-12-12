@@ -1,6 +1,7 @@
-RSpec.describe Macro::ComputeJourneyPatternDurations do
+# frozen_string_literal: true
 
-  it "should be one of the available Macro" do
+RSpec.describe Macro::ComputeJourneyPatternDurations do
+  it 'should be one of the available Macro' do
     expect(Macro.available).to include(described_class)
   end
 
@@ -32,8 +33,7 @@ RSpec.describe Macro::ComputeJourneyPatternDurations do
 
     let(:time) { Time.now }
 
-
-    describe "#run" do
+    describe '#run' do
       subject { macro_run.run }
 
       before do
@@ -47,25 +47,26 @@ RSpec.describe Macro::ComputeJourneyPatternDurations do
         sixth_at_stop.update arrival_time: time + 25.minutes, departure_time: time + 25.minutes
       end
 
-      it "should compute and update Journey Pattern costs" do
-        expect { subject }.to change { journey_pattern.reload.costs }.to({
-          "#{first_stop.id}-#{second_stop.id}"=>{"time"=>300},
-          "#{second_stop.id}-#{third_stop.id}"=>{"time"=>300},
-          "#{third_stop.id}-#{fourth_stop.id}"=>{"time"=>300},
-          "#{fourth_stop.id}-#{fifth_stop.id}"=>{"time"=>300},
-          "#{fifth_stop.id}-#{sixth_stop.id}"=>{"time"=>300}
-        })
+      it 'should compute and update Journey Pattern costs' do
+        exported_costs = {
+          "#{first_stop.id}-#{second_stop.id}" => { 'time' => 300 },
+          "#{second_stop.id}-#{third_stop.id}" => { 'time' => 300 },
+          "#{third_stop.id}-#{fourth_stop.id}" => { 'time' => 300 },
+          "#{fourth_stop.id}-#{fifth_stop.id}" => { 'time' => 300 },
+          "#{fifth_stop.id}-#{sixth_stop.id}" => { 'time' => 300 }
+        }
+        expect { subject }.to change { journey_pattern.reload.costs }.to(exported_costs)
       end
 
-      it "creates a message for each journey_pattern" do
+      it 'creates a message for each journey_pattern' do
         subject
 
         expect(macro_run.macro_messages).to include(
           an_object_having_attributes({
-            criticity: "info",
-            message_attributes: { "name"=>"journey pattern name 1" },
-            source: journey_pattern
-          })
+                                        criticity: 'info',
+                                        message_attributes: { 'name' => 'journey pattern name 1' },
+                                        source: journey_pattern
+                                      })
         )
       end
     end

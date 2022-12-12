@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Macro
   class ComputeJourneyPatternDurations < Macro::Base
     class Run < Macro::Base::Run
@@ -5,7 +7,7 @@ module Macro
         journey_patterns.find_in_batches do |batch|
           Batch.new(batch).journey_pattern_durations do |journey_pattern, durations|
             # [ Chouette::JourneyPattern, [{"12-13"=>300}, {"13-14"=>300}, {"14-15"=>300}, {"15-16"=>300}, {"16-17"=>300}] ]
-            durations.each do |departure_arrival_duration| 
+            durations.each do |departure_arrival_duration|
               departure_arrival, duration = departure_arrival_duration.first
 
               journey_pattern.costs[departure_arrival] ||= {}

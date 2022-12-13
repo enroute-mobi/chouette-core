@@ -53,7 +53,6 @@ RSpec.describe NotificationCenter do
     subject(:notification) { described_class.new(operation) }
 
     let(:operation) { Merge.new }
-    before { allow(operation).to receive(:update_column) }
 
     describe '#current_status' do
       subject { notification.current_status }
@@ -62,6 +61,12 @@ RSpec.describe NotificationCenter do
         it { is_expected.to eq(:successful) }
       end
     end
+  end
+
+  describe NotificationCenter::LegacyWithTimestampNotification do
+    subject(:notification) { described_class.new(operation) }
+    let(:operation) { Merge.new }
+    before { allow(operation).to receive(:update_column) }
 
     describe '#deliver' do
       context 'when operation is already notified' do

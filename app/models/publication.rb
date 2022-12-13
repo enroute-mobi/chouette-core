@@ -62,7 +62,7 @@ class Publication < ApplicationModel
 
     ensure
       workbench = workgroup.owner_workbench
-      workbench.notification_center.notify(self)
+      workbench.notification_center.notify(self) if workbench
   end
 
   def referential

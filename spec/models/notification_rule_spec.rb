@@ -15,7 +15,7 @@ RSpec.describe NotificationRule, type: :model do
 
   it do
     is_expected.to enumerize(:notification_type)
-      .in(:hole_sentinel, :import, :merge, :aggregate, :source_retrieval)
+      .in(:hole_sentinel, :import, :merge, :aggregate, :source_retrieval, :publication)
       .with_default(:import)
   end
   it { is_expected.to enumerize(:target_type).in(:user, :workbench, :external_email).with_default(:workbench) }

@@ -356,11 +356,11 @@ class Source < ApplicationModel
       end
 
       def username
-        @username ||= uri.user
+        @username ||= (uri.user || 'anonymous')
       end
 
       def password
-        @password ||= uri.password
+        @password ||= (uri.password || 'chouette@enroute.mobi')
       end
 
       def remote_dir

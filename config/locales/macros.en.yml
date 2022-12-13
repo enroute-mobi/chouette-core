@@ -34,6 +34,8 @@ en:
         one: Define Referent attribute from Particulars value
       macro/compute_journey_pattern_durations:
         one: Define Journey Pattern durations from passing times
+      macro/compute_journey_pattern_distances:
+        one: Define Journey Pattern distances from Shape
     attributes:
       macro/base:
         name: Name

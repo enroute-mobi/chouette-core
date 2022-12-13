@@ -14,4 +14,11 @@ class SourceDecorator < AF83::Decorator
       l.method :post
     end
   end
+
+  define_instance_method :displayed_url do
+    uri = URI(url)
+    uri.user = 'xxx' if uri.user
+    uri.password = 'xxx' if uri.password
+    uri.to_s
+  end
 end

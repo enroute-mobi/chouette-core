@@ -8,7 +8,7 @@
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = simple_block_for @source, title: t('sources.form.sections.identification') do |d|
           = d.attribute :name
-          = d.attribute :url, link: @source.url
+          = d.attribute :url, as: :url
           = d.attribute :downloader_type, as: :enumerize
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12

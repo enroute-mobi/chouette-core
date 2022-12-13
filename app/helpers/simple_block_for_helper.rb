@@ -141,6 +141,17 @@ module SimpleBlockForHelper
             else
               nil
             end
+          when :url
+            uri = URI(raw_value)
+            uri.user = 'xxx' if uri.user
+            uri.password = 'xxx' if uri.password
+
+            if uri.is_a?(URI::HTTP)
+              options[:link] ||= raw_value
+              uri.to_s.truncate(100)
+            else
+              uri.to_s
+            end
           else
             raw_value
           end

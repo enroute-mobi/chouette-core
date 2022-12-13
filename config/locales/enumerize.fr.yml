@@ -133,8 +133,9 @@ fr:
     source:
       downloader_type:
         direct: Direct
-        french_nap: French NAP
+        french_nap: Point d'Accès National (France)
         authorization: Entête d'authentification
+        ftp: FTP
       retrieval_frequency:
         none: Jamais
         daily: Quotidiennement

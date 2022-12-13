@@ -24,7 +24,7 @@
               ), \
               TableBuilderHelper::Column.new( \
                 key: :url, \
-                attribute: :url, \
+                attribute: Proc.new { |n| n.displayed_url }, \
                 sortable: false \
               ), \
               TableBuilderHelper::Column.new( \

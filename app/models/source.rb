@@ -1,4 +1,5 @@
 require 'mimemagic_ext'
+require 'net/ftp'
 
 class Source < ApplicationModel
   extend Enumerize
@@ -13,7 +14,7 @@ class Source < ApplicationModel
 
   #validates_associated :downloader
 
-  enumerize :downloader_type, in: %i(direct french_nap authorization), default: :direct
+  enumerize :downloader_type, in: %i(direct french_nap authorization ftp), default: :direct
 
   scope :enabled, -> { where.not(retrieval_frequency: 'none') }
 
@@ -333,6 +334,50 @@ class Source < ApplicationModel
         return {} unless raw_authorization
 
         { 'Authorization' => raw_authorization }
+      end
+    end
+
+    class Ftp < Base
+
+      def download(path)
+        ftp.getbinaryfile(remote_filename, path)
+      end
+
+      def uri
+        @uri ||= URI(url)
+      end
+
+      def host
+        @host ||= uri.host
+      end
+
+      def port
+        @port ||= uri.port
+      end
+
+      def username
+        @username ||= (uri.user || 'anonymous')
+      end
+
+      def password
+        @password ||= (uri.password || 'chouette@enroute.mobi')
+      end
+
+      def remote_dir
+        @remote_dir ||= File.dirname uri.path
+      end
+
+      def remote_filename
+        @remote_filename ||= File.basename uri.path
+      end
+
+      def ftp
+        @ftp ||= Net::FTP.new.tap do |ftp|
+          ftp.connect host, port
+          ftp.login username, password
+          ftp.chdir remote_dir
+          ftp.passive = true
+        end
       end
     end
   end

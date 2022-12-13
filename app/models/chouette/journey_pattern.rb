@@ -211,7 +211,7 @@ module Chouette
 
     def full_schedule?
       full = true
-      stop_points.order(:position).inject(nil) do |start, finish|
+      stop_points.sort_by(&:position).inject(nil) do |start, finish|
         next finish unless start.present?
         costs = costs_between(start, finish)
         full = false unless costs.present?
@@ -219,6 +219,15 @@ module Chouette
         finish
       end
       full
+    end
+
+    def known_distance?
+      stop_points.sort_by(&:position).each_cons(2) do |departure, arrival|
+        costs = costs_between(departure, arrival)
+        return false unless costs && costs[:distance] && costs[:distance] > 0
+      end
+      
+      true
     end
 
     def distance_between start, stop

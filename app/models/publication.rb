@@ -55,9 +55,14 @@ class Publication < ApplicationModel
 
     running!
     run_export
-  rescue => e
-    Chouette::Safe.capture "Publication ##{id} failed", e
-    failed!
+
+    rescue => e
+      Chouette::Safe.capture "Publication ##{id} failed", e
+      failed!
+
+    ensure
+      workbench = workgroup.owner_workbench
+      workbench.notification_center.notify(self) if workbench
   end
 
   def referential

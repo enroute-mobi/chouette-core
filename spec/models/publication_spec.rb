@@ -9,7 +9,9 @@ RSpec.describe Publication, type: :model do
   it { is_expected.to have_one(:organisation) }
 
   let(:export_type) { 'Export::Gtfs' }
-  let(:export_options) { { type: export_type, duration: 90, prefer_referent_stop_area: false, ignore_single_stop_station: false } }
+  let(:export_options) do
+    { type: export_type, duration: 90, prefer_referent_stop_area: false, ignore_single_stop_station: false }
+  end
   let(:publication_setup) { create :publication_setup, export_options: export_options }
   let(:publication) { create :publication, parent: operation, publication_setup: publication_setup }
   let(:referential) { first_referential }
@@ -17,20 +19,22 @@ RSpec.describe Publication, type: :model do
 
   before(:each) do
     operation.update status: :successful
-    allow(operation).to receive(:new){ referential }
+    allow(operation).to receive(:new) { referential }
 
     2.times do
-      referential.metadatas.create line_ids: [create(:line, line_referential: referential.line_referential).id], periodes: [Time.now..1.month.from_now]
+      referential.metadatas.create line_ids: [create(:line, line_referential: referential.line_referential).id],
+                                   periodes: [Time.now..1.month.from_now]
     end
 
     publication_setup.destinations.create! type: 'Destination::Dummy', name: 'I will fail', result: :expected_failure
-    publication_setup.destinations.create! type: 'Destination::Dummy', name: 'I will fail unexpectedly', result: :unexpected_failure
+    publication_setup.destinations.create! type: 'Destination::Dummy', name: 'I will fail unexpectedly',
+                                           result: :unexpected_failure
     publication_setup.destinations.create! type: 'Destination::Dummy', name: 'I will succeed', result: :successful
   end
 
   describe '#publish' do
     it 'should create a Delayed::Job' do
-      expect{ publication }.to change{ Delayed::Job.count }.by 1
+      expect { publication }.to change { Delayed::Job.count }.by 1
       expect(publication).to be_pending
     end
   end
@@ -58,7 +62,7 @@ RSpec.describe Publication, type: :model do
 
   describe '#run_export' do
     it 'should create an export' do
-      expect{ publication.run_export }.to change{ Export::Gtfs.count }.by 1
+      expect { publication.run_export }.to change { Export::Gtfs.count }.by 1
       expect_any_instance_of(Export::Gtfs).to receive(:run)
       publication.run_export
       expect(publication.exports).to be_present
@@ -84,8 +88,8 @@ RSpec.describe Publication, type: :model do
 
     context 'when the export raises an error' do
       before(:each) do
-        allow_any_instance_of(Export::Gtfs).to receive(:export) do |obj|
-          raise "ooops"
+        allow_any_instance_of(Export::Gtfs).to receive(:export) do |_obj|
+          raise 'ooops'
         end
       end
 
@@ -122,7 +126,9 @@ RSpec.describe Publication, type: :model do
         expect(destination).to receive(:transmit).with(publication).and_call_original
       end
 
-      expect{ publication.send_to_destinations }.to change{ DestinationReport.where(publication_id: publication.id).count }.by publication_setup.destinations.count
+      expect { publication.send_to_destinations }.to change {
+                                                       DestinationReport.where(publication_id: publication.id).count
+                                                     }.by publication_setup.destinations.count
     end
   end
 
@@ -133,17 +139,17 @@ RSpec.describe Publication, type: :model do
 
     context 'with a failed destination_report' do
       it 'should set status to successful_with_warnings' do
-        expect{ publication.infer_status }.to change{ publication.status }.to 'successful_with_warnings'
+        expect { publication.infer_status }.to change { publication.status }.to 'successful_with_warnings'
       end
     end
 
     context 'with only successful destination_reports' do
       before(:each) do
-        allow_any_instance_of(DestinationReport).to receive(:status){ 'successful' }
+        allow_any_instance_of(DestinationReport).to receive(:status) { 'successful' }
       end
 
       it 'should set status to successful' do
-        expect{ publication.infer_status }.to change{ publication.status }.to 'successful'
+        expect { publication.infer_status }.to change { publication.status }.to 'successful'
       end
     end
   end

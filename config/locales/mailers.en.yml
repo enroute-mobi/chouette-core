@@ -97,6 +97,13 @@ en:
         publication_date: This new data has been published on %{formated_date}.
         api_link: "You can retrieve online this data on "
         button: Retrieve data
+      finished:
+        button: See the publication
+        subject: The publication is over
+        body: |
+          Hello, the publication is over
+          You started a publication %{pub_name}. The operation is now over. It is %{status}
+          The operation status is %{status}<br/><br/>
     source_retrieval_mailer:
       button: See Source
       finished:

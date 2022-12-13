@@ -26,6 +26,7 @@ en:
       rule_type: &notification_rule_rule_type
         block: Block
         notify: Notify
+        publication: Publication
       target_type:
         user: Selected users
         workbench:  All workbench's users

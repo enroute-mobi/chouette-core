@@ -33,7 +33,11 @@ class NotificationCenter
   # Manage notification for a given Operation
   class Notification
     def self.for(operation)
-      operation.is_a?(Operation) ? Notification : LegacyNotification
+      [LegacyWithTimestampNotification, LegacyNotification, Notification].find { |klass| klass.support?(operation) }
+    end
+
+    def self.support?(operation)
+      operation.is_a?(Operation)
     end
 
     def initialize(operation, rules: NotificationRule.none)
@@ -84,8 +88,21 @@ class NotificationCenter
 
   # Manage notification for a given legacy Operation (not Operation subclasses)
   class LegacyNotification < Notification
+    def self.support?(operation)
+      !operation.is_a?(Operation)
+    end
+
     def current_status
       operation.status
+    end
+  end
+
+  # Manage notification for a given legacy Operation with notified_recipients_at
+  class LegacyWithTimestampNotification < LegacyNotification
+    def self.support?(operation)
+      return false unless super(operation)
+
+      operation.respond_to? :notified_recipients_at
     end
 
     def deliver

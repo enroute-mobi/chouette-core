@@ -17,4 +17,10 @@ class PublicationMailer < ApplicationMailer
 
     mail bcc: destination_mail.recipients, subject: @destination_mail.email_title
   end
+
+  def finished(publication_id, recipient, status=nil)
+    @publication = Publication.find(publication_id)
+    @status = status || @publication.status
+    mail to: recipient, subject: t("mailers.#{@publication.class.name.underscore}_mailer.finished.subject")
+  end
 end

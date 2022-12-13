@@ -93,6 +93,13 @@ fr:
         publication_date: Ces nouvelles données ont été publiées le %{formated_date}.
         api_link: "Vous pouvez récupérer ces données publiées à l'adresse "
         button: Récupérer les données
+      finished:
+        button: Voir la publication
+        subject: La Publication est terminée
+        body: |
+          Vous avez lancé la publication <strong>"%{pub_name}"</strong>. <br/>
+          Elle est maintenant terminée.<br/>
+          Le statut de l'opération est : <strong>%{status}</strong>.
     source_retrieval_mailer:
       button: Voir la Source de données
       finished:

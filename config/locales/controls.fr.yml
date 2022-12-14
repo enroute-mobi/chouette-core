@@ -8,11 +8,11 @@ fr:
       control/dummy:
         one: Simuler un contrôle
       control/presence_attribute:
-        one: Présence d’un attribut
+        one: Présence d'un attribut
       control/presence_code:
-        one:  Présence d’un code
+        one:  Présence d'un code
       control/presence_custom_field:
-        one: Présence d’un champ personnalisé
+        one: Présence d'un champ personnalisé
       control/code_format:
         one: Format d'un code
       control/format_attribute:
@@ -20,7 +20,9 @@ fr:
       control/model_status:
         one: État d'un modèle
       control/service_count_trend:
-        one: Tendance du nombre de services
+        one: Tendance du nombre de Services
+      control/journey_pattern_speed:
+        one: Vitesses au sein des Missions
     attributes:
       control/base:
         name: Nom
@@ -32,10 +34,10 @@ fr:
         expected_result: Résultat attendu
       control/presence_attribute:
         target_attribute: Attribut cible
-        description:  "L’attribut sélectionné doit avoir une valeur dans le modèle cible"
+        description:  "L'attribut sélectionné doit avoir une valeur dans le modèle cible"
       control/presence_code:
         target_code_space_id: Espace de code cible
-        description: "L’espace de code sélectionné doit avoir un code dans le modèle cible"
+        description: "L'espace de code sélectionné doit avoir un code dans le modèle cible"
       control/presence_custom_field:
         target_custom_field_id: Champ personnalisé cible
       control/code_format:
@@ -50,3 +52,7 @@ fr:
         weeks_before: Nombre de semaines avant
         weeks_after: Nombre de semaines après
         maximum_difference: Différence maximale en pourcentage
+      control/journey_pattern_speed:
+        minimum_speed: Vitesse minimale
+        maximum_speed: Vitesse maximale
+        minimum_distance: Distance minimale

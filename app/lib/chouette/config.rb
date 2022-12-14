@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Chouette
+  # Provides all configuration attributes
   class Config
     class Error < StandardError; end
 

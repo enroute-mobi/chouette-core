@@ -1,6 +1,19 @@
 RSpec.describe Subscription do
   subject(:subscription) { Subscription.new }
 
+  describe '#enabled?' do
+    subject { Subscription.enabled? }
+
+    context 'when Chouette::Config.subscription is enabled' do
+      before { allow(Chouette::Config.subscription).to receive(:enabled?).and_return(true) }
+      it { is_expected.to be_truthy }
+    end
+    context 'when Chouette::Config.subscription is disabled' do
+      before { allow(Chouette::Config.subscription).to receive(:enabled?).and_return(false) }
+      it { is_expected.to be_falsy }
+    end
+  end
+
   describe "#organisation" do
     subject { subscription.organisation }
 

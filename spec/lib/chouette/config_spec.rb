@@ -30,7 +30,7 @@ RSpec.describe Chouette::Config do
       end
 
       with_rails_env :test do
-        it { is_expected.to be_truthy }
+        it { is_expected.to be_falsy }
       end
 
       with_rails_env :production do

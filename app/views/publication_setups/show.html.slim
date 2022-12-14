@@ -6,9 +6,9 @@
   .container-fluid
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        - metadatas = { PublicationSetup.tmf(:name) => @publication_setup.name }
-        - metadatas.update( PublicationSetup.tmf(:enabled) => boolean_icon(@publication_setup.enabled) )
-        = definition_list t('metadatas'), metadatas
+        = simple_block_for @publication_setup, title:t('metadatas') do |d|
+          = d.attribute :name
+          = d.attribute :enabled, value: boolean_icon(@publication_setup.enabled)
 
         = render @publication_setup.export_type.demodulize.underscore
 

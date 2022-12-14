@@ -2,3 +2,4 @@
 
 = form.simple_fields_for(resource_type, @export) do |sub_form|
   = render 'exports/options/exported_lines', form: sub_form
+  = render 'exports/options/include_stop_visits', form: sub_form

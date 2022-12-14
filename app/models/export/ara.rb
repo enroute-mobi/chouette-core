@@ -11,6 +11,7 @@ class Export::Ara < Export::Base
   option :exported_lines, default_value: 'all_line_ids',
                           enumerize: %w[line_ids company_ids line_provider_ids all_line_ids]
   option :duration # Ignored by this export .. but required by Export::Scope builder
+  option :include_stop_visits
 
   skip_empty_exports
 
@@ -41,7 +42,9 @@ class Export::Ara < Export::Base
   end
 
   def parts
-    @parts ||= [Stops, Lines, Companies, VehicleJourneys, StopVisits]
+    @parts ||= [ Stops, Lines, Companies, VehicleJourneys ].tap do |parts|
+      parts << StopVisits if include_stop_visits?
+    end
   end
 
   def generate_export_file

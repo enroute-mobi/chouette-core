@@ -21,6 +21,8 @@ en:
         one: Model status
       control/service_count_trend:
         one: Service count trend
+      control/journey_pattern_speed:
+        one: Speed into Journey Patterns
     attributes:
       control/base:
         name: Name
@@ -50,3 +52,7 @@ en:
         weeks_before: Weeks before
         weeks_after: Weeks after
         maximum_difference: Maximum difference in percentage
+      control/journey_pattern_speed:
+        minimum_speed: Minimum Speed
+        maximum_speed: Maximum Speed
+        minimum_distance: Minimum Distance

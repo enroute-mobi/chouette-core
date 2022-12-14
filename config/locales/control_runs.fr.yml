@@ -8,11 +8,11 @@ fr:
       control/dummy/run:
         one: Simuler un contrôle
       control/presence_attribute/run:
-        one: Présence d’un attribut
+        one: Présence d'un attribut
       control/presence_code/run:
-        one: Présence d’un code
+        one: Présence d'un code
       control/presence_custom_field/run:
-        one: Présence d’un champ personnalisé
+        one: Présence d'un champ personnalisé
       control/code_format/run:
         one: Format d'un code
       control/format_attribute/run:
@@ -21,6 +21,8 @@ fr:
         one: État d'un model
       control/service_count_trend/run:
         one: Tendance du nombre de services
+      control/journey_pattern_speed/run:
+        one: Vitesses au sein des Missions
     attributes:
       control/base/run:
         name: Nom
@@ -32,11 +34,11 @@ fr:
         expected_result: Résultat attendu
       control/presence_attribute/run:
         target_attribute: Attribut cible
-        description:  "L’attribut sélectionné doit avoir une valeur dans le modèle cible"
+        description:  "L'attribut sélectionné doit avoir une valeur dans le modèle cible"
       control/presence_code/run:
         target_code_space_id: Espace de code cible
         target_code_space: Espace de code cible
-        description: "L’espace de code sélectionné doit avoir un code dans le modèle cible"
+        description: "L'espace de code sélectionné doit avoir un code dans le modèle cible"
       control/presence_custom_field/run:
         target_custom_field_id: Champ personnalisé cible
         custom_field: Champ personnalisé cible

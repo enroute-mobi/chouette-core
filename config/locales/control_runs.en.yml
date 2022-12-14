@@ -21,6 +21,8 @@ en:
         one: Model status
       control/service_count_trend/run:
         one: Service count trend
+      control/journey_pattern_speed/run:
+        one: Speed into Journey Patterns
     attributes:
       control/base/run:
         name: Name

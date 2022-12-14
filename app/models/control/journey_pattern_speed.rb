@@ -1,5 +1,5 @@
 module Control
-  class Speed < Control::Base
+  class JourneyPatternSpeed < Control::Base
     module Options
       extend ActiveSupport::Concern
 
@@ -65,7 +65,7 @@ module Control
             SELECT 
               speed_table.jp_id AS journey_pattern_id, 
               speed_table.jp_name AS journey_pattern_name,
-              STRING_AGG(CONCAT(from_stop, ' - ', to_stop, ' (', speed, ' m/s', ')'), '; ') AS faulty_stop_area_pairs
+              STRING_AGG(CONCAT(from_stop, ' - ', to_stop, ' (', speed, ' km/h', ')'), '; ') AS faulty_stop_area_pairs
             FROM (
               SELECT
                 jp_id, jp_name,
@@ -80,7 +80,7 @@ module Control
                   WHERE public.stop_areas.id = split_part(from_to, '-', 2)::int
                 ) AS to_stop,
                 ((costs->>from_to)::json->>'distance')::float as distance,
-                ((costs->>from_to)::json->>'distance')::float / ((costs->>from_to)::json->>'time')::float AS speed
+                ((costs->>from_to)::json->>'distance')::float / ((costs->>from_to)::json->>'time')::float * 3600 / 1000 AS speed
               FROM (#{ base_sql }) AS base
             ) AS speed_table
             WHERE speed_table.distance > #{minimum_distance}

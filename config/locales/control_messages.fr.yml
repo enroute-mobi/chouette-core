@@ -1,11 +1,12 @@
 fr:
   control_messages:
     default: "Message sur la ligne %{name}"
-    presence_code: "Un(e) %{target_model} %{name} ne possède pas d’espace de code %{code_space_name}"
+    presence_code: "Un(e) %{target_model} %{name} ne possède pas d'espace de code %{code_space_name}"
     presence_custom_field: "Un(e) %{target_model} %{name} ne possède pas de champs personnalisé %{custom_field}"
-    code_format: "Un(e) %{target_model} %{name} ne possède pas d’espace de code %{code_space_name} au format attendu %{expected_format}"
+    code_format: "Un(e) %{target_model} %{name} ne possède pas d'espace de code %{code_space_name} au format attendu %{expected_format}"
     model_status: "Un(e) %{target_model} %{name} doit avoir le statut %{expected_status}"
     service_count_trend: "Une anomalie sur la ligne %{line} le %{date}"
+    speed: "Vitesses non confirmes dans la mission %{journey_pattern_name}: %{faulty_stop_area_pairs}"
   activerecord:
     models:
       control/message:

@@ -1,6 +1,7 @@
+# frozen_string_literal: true
 module Control
-  def self.available
-    # Should be automatic to provide an ordered list
+  def self.available # rubocop:disable Metrics/MethodLength
+    # Should be automatic to provide an *ordered* list
     # Could use groups in the future
     [
       Control::Dummy,
@@ -10,7 +11,8 @@ module Control
       Control::CodeFormat,
       Control::FormatAttribute,
       Control::ModelStatus,
-      Control::ServiceCountTrend,
+      Control::JourneyPatternSpeed,
+      Control::ServiceCountTrend
     ]
   end
 end

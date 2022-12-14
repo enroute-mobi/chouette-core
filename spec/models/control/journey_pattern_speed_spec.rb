@@ -1,15 +1,13 @@
-RSpec.describe Control::Speed do
-
-  describe Control::Speed::Run do
-
+RSpec.describe Control::JourneyPatternSpeed do
+  describe Control::JourneyPatternSpeed::Run do
     let(:control_list_run) do
       Control::List::Run.create referential: referential, workbench: workbench
     end
 
     let(:control_run) do
-      control_run= Control::Speed::Run.create(
+      Control::JourneyPatternSpeed::Run.create(
         control_list_run: control_list_run,
-        criticity: "warning",
+        criticity: 'warning',
         minimum_speed: 144, # 40km/h
         maximum_speed: 216, # 60km/h
         minimum_distance: 1,
@@ -25,7 +23,7 @@ RSpec.describe Control::Speed do
         stop_area :last, id: 4000, name: 'last'
 
         referential do
-          route stop_areas: [:first, :second, :third, :last] do
+          route stop_areas: %i[first second third last] do
             journey_pattern name: 'JP name'
           end
         end
@@ -40,7 +38,7 @@ RSpec.describe Control::Speed do
       referential.switch
       journey_pattern.update costs: {
         '1000-2000' => { 'time' => 10, 'distance' => 2160 },
-        '2000-3000' => { 'time' => 30, 'distance' => 12000000 },
+        '2000-3000' => { 'time' => 30, 'distance' => 12_000_000 },
         '3000-4000' => { 'time' => 20, 'distance' => 100 }
       }
     end
@@ -51,13 +49,13 @@ RSpec.describe Control::Speed do
 
     let(:expected_message) do
       an_object_having_attributes({
-        source: journey_pattern,
-        criticity: 'warning',
-        message_attributes: {
-          'faulty_stop_area_pairs' => 'second - third (400000 m/s); third - last (5 m/s)',
-          'journey_pattern_name' => 'JP name'
-        }
-      })
+                                    source: journey_pattern,
+                                    criticity: 'warning',
+                                    message_attributes: {
+                                      'faulty_stop_area_pairs' => 'second - third (400000 m/s); third - last (5 m/s)',
+                                      'journey_pattern_name' => 'JP name'
+                                    }
+                                  })
     end
 
     it 'should detect anomaly' do

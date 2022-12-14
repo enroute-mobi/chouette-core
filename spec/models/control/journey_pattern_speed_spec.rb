@@ -47,21 +47,26 @@ RSpec.describe Control::JourneyPatternSpeed do
       context.stop_area(name).reload
     end
 
-    let(:expected_message) do
-      an_object_having_attributes({
-                                    source: journey_pattern,
-                                    criticity: 'warning',
-                                    message_attributes: {
-                                      'faulty_stop_area_pairs' => 'second - third (400000 m/s); third - last (5 m/s)',
-                                      'journey_pattern_name' => 'JP name'
-                                    }
-                                  })
+    let(:expected_messages) do
+      [
+        an_object_having_attributes(
+          source: journey_pattern, criticity: 'warning',
+          message_attributes: a_hash_including('departure_name' => 'first', 'arrival_name' => 'second', 'speed' => 777.6, 'journey_pattern_name' => 'JP name')
+        ),
+        an_object_having_attributes(
+          source: journey_pattern, criticity: 'warning',
+          message_attributes: a_hash_including('departure_name' => 'second', 'arrival_name' => 'third', 'speed' => 1_440_000.0, 'journey_pattern_name' => 'JP name')
+        ),
+        an_object_having_attributes(
+          source: journey_pattern, criticity: 'warning',
+          message_attributes: a_hash_including('departure_name' => 'third', 'arrival_name' => 'last', 'speed' => 18.0, 'journey_pattern_name' => 'JP name')
+        )
+      ]
     end
 
     it 'should detect anomaly' do
       control_run.run
-
-      expect(control_run.control_messages).to include(expected_message)
+      expect(control_run.control_messages).to include(*expected_messages)
     end
   end
 end

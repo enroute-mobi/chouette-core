@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Chouette
+  # Provides all configuration attributes
   class Config
     class Error < StandardError; end
 
@@ -55,7 +56,8 @@ module Chouette
       end
 
       def default_enabled?
-        !env.production?
+        # FIXME: Many factories/specs don't support an enabled subscription
+        !env.production? && !env.test?
       end
 
       def notification_recipients

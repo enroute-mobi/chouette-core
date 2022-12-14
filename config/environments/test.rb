@@ -46,8 +46,6 @@ Rails.application.configure do
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
 
-  config.accept_user_creation = false
-
   config.chouette_authentication_settings = {
     type: 'cas',
     cas_server: 'http://cas-portal.example.com/sessions'

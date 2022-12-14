@@ -1,15 +1,16 @@
-# coding: utf-8
+# frozen_string_literal: true
+
 class Subscription
   include ActiveModel::Model
 
   def self.enabled?
-    Rails.application.config.accept_user_creation
+    Chouette::Config.subscription.enabled?
   end
 
   attr_accessor :organisation_name, :user_name, :email, :password, :password_confirmation, :workbench_invitation_code
 
   validate do |subscription|
-    [ OrganisationValidator, UserValidator, WorkbenchConfirmationValidator ].each do |validator|
+    [OrganisationValidator, UserValidator, WorkbenchConfirmationValidator].each do |validator|
       validator.validate subscription
     end
   end
@@ -33,10 +34,10 @@ class Subscription
   end
 
   def workbench_confirmation
-    if workbench_invitation_code.present?
-      @workbench_confirmation ||=
-        organisation.build_workbench_confirmation(invitation_code: workbench_invitation_code)
-    end
+    return unless workbench_invitation_code.present?
+
+    @workbench_confirmation ||=
+      organisation.build_workbench_confirmation(invitation_code: workbench_invitation_code)
   end
 
   def workgroup
@@ -65,12 +66,12 @@ class Subscription
   # ActiveModel::Validator isn't instance oriented ..
   # We can't share methods like add_errors ..
   class Validator
-
     def self.validate(subscription)
       new(subscription).validate
     end
 
     attr_reader :subscription
+
     def initialize(subscription)
       @subscription = subscription
     end

@@ -14,7 +14,7 @@ RSpec.describe Chouette::Config do
   def self.with_env(env, &block)
     description = env.map { |k, v| "#{k} is '#{v}'" }.to_sentence
     context "when #{description}" do
-      before { env.each { |k, v| environment[k.to_s] = v.to_s }  }
+      before { env.each { |k, v| environment[k.to_s] = v.to_s } }
       class_exec(&block)
     end
   end
@@ -30,7 +30,7 @@ RSpec.describe Chouette::Config do
       end
 
       with_rails_env :test do
-        it { is_expected.to be_truthy }
+        it { is_expected.to be_falsy }
       end
 
       with_rails_env :production do
@@ -50,10 +50,10 @@ RSpec.describe Chouette::Config do
       end
     end
 
-    describe "#notification_recipients" do
+    describe '#notification_recipients' do
       subject { subscription.notification_recipients }
 
-      it { is_expected.to eq([])}
+      it { is_expected.to eq([]) }
 
       with_env CHOUETTE_SUBSCRIPTION_NOTIFICATION_RECIPIENTS: 'foo@example.com' do
         it { is_expected.to contain_exactly('foo@example.com') }
@@ -63,7 +63,5 @@ RSpec.describe Chouette::Config do
         it { is_expected.to contain_exactly('foo@example.com', 'bar@example.com') }
       end
     end
-
   end
-
 end

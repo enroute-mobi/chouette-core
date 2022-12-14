@@ -119,7 +119,6 @@ Rails.application.configure do
   config.chouette_email_whitelist = SmartEnv.array('CHOUETTE_EMAIL_WHITELIST')
   config.chouette_email_blacklist = SmartEnv.array('CHOUETTE_EMAIL_BLACKLIST')
 
-  config.accept_user_creation = SmartEnv.boolean('ACCEPT_USER_CREATION')
   config.chouette_authentication_settings = SmartEnv.hash('AUTH_SETTINGS')
 
   config.to_prepare do

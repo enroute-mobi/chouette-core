@@ -31,6 +31,23 @@ class Import::Netex < Import::Base
     main_resource.update_status_from_importer self.status
     update_referential
 
+    processing_rules.each do |processing_rule|
+      if processing_rule.use_control_list?
+        processed = processing_rule.processable.control_list_runs.new(name: processing_rule.processable.name,
+                                                                      creator: 'Webservice', referential: referential)
+        processed.build_with_original_control_list
+      else
+        processed = processing_rule.processable.macro_list_runs.new(name: processing_rule.processable.name,
+                                                                    creator: 'Webservice', referential: referential)
+        processed.build_with_original_macro_list
+      end
+
+      processing = processing_rule.processings.create step: :after, operation: self, workbench_id: processing_rule.workbench_id,
+                                                      workgroup_id: processing_rule.workgroup_id, processed: processed
+
+      break unless processing.perform
+    end
+
     Rails.logger.info "#{self.class.name} ##{id}: invoke next_step"
     next_step
 
@@ -42,6 +59,26 @@ class Import::Netex < Import::Base
   end
 
   private
+
+  def processing_rules
+    # Returns Processing Rules associated to Import operation with a specific order:
+    #   Macro List first
+    #   Control List
+    #   Workgroup Control List
+    workbench_processing_rules + workgroup_processing_rules
+  end
+
+  def workbench_processing_rules
+    workbench.processing_rules.where(operation_step: 'after_import').order(processable_type: :desc)
+  end
+
+  def workgroup_processing_rules
+    dedicated_processing_rules = workbench.workgroup.processing_rules.where(operation_step: 'after_import',
+                                                                  target_workbench_ids: [workbench_id])
+    return dedicated_processing_rules if dedicated_processing_rules.present?
+      
+    workbench.workgroup.processing_rules.where(operation_step: 'after_import', target_workbench_ids: [])
+  end
 
   def update_referential
     if self.status.successful? || self.status.warning?

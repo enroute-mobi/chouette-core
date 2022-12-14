@@ -104,7 +104,7 @@ class ExportsController < ChouetteController
   delegate :collection, to: :search
 
   def export_params
-    params.require(:export).permit(:name, :type, :referential_id, :notification_target, :include_stop_visits, options: {}).tap do |export_params|
+    params.require(:export).permit(:name, :type, :referential_id, :notification_target, options: {}).tap do |export_params|
       export_params[:workbench_id] = workbench&.id
       export_params[:workgroup_id] = workgroup&.id || workbench&.workgroup&.id
       export_params[:creator] = current_user.name

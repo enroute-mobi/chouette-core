@@ -41,9 +41,11 @@ class Export::Ara < Export::Base
       end
   end
 
+  alias include_stop_visits? include_stop_visits
+
   def parts
     @parts ||= [ Stops, Lines, Companies, VehicleJourneys ].tap do |parts|
-      parts << StopVisits if include_stop_visits
+      parts << StopVisits if include_stop_visits?
     end
   end
 

@@ -1,2 +1,3 @@
 = simple_block_for @export, title: PublicationSetup.tmf(:export_options) do |d|
 	= d.attribute :type, value_method: :human_type
+	= d.attribute :include_stop_visits, as: :boolean

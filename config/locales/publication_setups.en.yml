@@ -26,6 +26,7 @@ en:
         export_options: "Export Settings"
         enabled: "Enabled"
         force_daily_publishing: "Force daily publishing"
+        include_stop_visits: "Include stop visits"
         destinations: "Output"
         duration: Duration (in days)
         prefer_referent_stop_area: Prefer Referent Stop Areas

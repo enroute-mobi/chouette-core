@@ -10,25 +10,54 @@ RSpec.describe Export::Ara do
       end
     end
 
-    subject(:export) do
-      Export::Ara.create! workbench: context.workbench,
-                          workgroup: context.workgroup,
-                          referential: context.referential,
-                          name: 'Test',
-                          creator: 'test'
+    describe 'export with include_stop_visits sets to true' do
+      subject(:export) do
+        Export::Ara.create! workbench: context.workbench,
+                            workgroup: context.workgroup,
+                            referential: context.referential,
+                            name: 'Test',
+                            creator: 'test',
+                            options: {include_stop_visits: true}
+
+      end
+
+      before do
+        export.export
+        export.reload
+      end
+
+      it { is_expected.to be_successful }
+
+      describe 'file' do
+        # TODO: Use Ara::File to read the file
+        subject { export.file.read.split("\n") }
+        it { is_expected.to have_attributes(size: 48) }
+      end
     end
 
-    before do
-      export.export
-      export.reload
-    end
+    describe 'export with include_stop_visits sets to false' do
+      subject(:export) do
+        Export::Ara.create! workbench: context.workbench,
+                            workgroup: context.workgroup,
+                            referential: context.referential,
+                            name: 'Test',
+                            creator: 'test',
+                            options: {include_stop_visits: false}
 
-    it { is_expected.to be_successful }
+      end
 
-    describe 'file' do
-      # TODO: Use Ara::File to read the file
-      subject { export.file.read.split("\n") }
-      it { is_expected.to have_attributes(size: 48) }
+      before do
+        export.export
+        export.reload
+      end
+
+      it { is_expected.to be_successful }
+
+      describe 'file' do
+        # TODO: Use Ara::File to read the file
+        subject { export.file.read.split("\n") }
+        it { is_expected.to have_attributes(size: 30) }
+      end
     end
   end
 

@@ -74,7 +74,7 @@ module Chouette
 
       def rails_env
         # Do not use Rails.env to simplify tests
-        @rails_env ||= ActiveSupport::StringInquirer.new(value('RAILS_ENV'))
+        @rails_env ||= ActiveSupport::StringInquirer.new(value('RAILS_ENV') || 'development')
       end
 
       def value(name)

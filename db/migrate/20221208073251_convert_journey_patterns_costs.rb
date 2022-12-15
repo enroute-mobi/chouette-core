@@ -7,8 +7,8 @@ class ConvertJourneyPatternsCosts < ActiveRecord::Migration[5.2]
     Chouette::JourneyPattern.where.not(costs: {}).find_each do |journey_pattern|
       costs = journey_pattern.costs.transform_values do |link_costs|
         link_costs.map do |type, value|
-          [type, convert(type, value)]
-        end.to_h
+          [type, convert(type, value)] unless value.nil?
+        end.compact.to_h
       end
 
       values = { costs: costs }

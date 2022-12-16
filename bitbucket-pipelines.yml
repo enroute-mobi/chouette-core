@@ -70,20 +70,21 @@ pipelines:
 
   branches:
     master:
-      - step: *unit-tests
-      - step:
-          name: Build Docker
-          image:
-            name: eu.gcr.io/enroute-interne/enroute-cloud-sdk:latest
-            username: _json_key
-            password: "$GCLOUD_API_KEYFILE"
-          caches:
-            - docker
-          script:
-            - build.sh gcloud::setup
-            - build.sh bitbucket::docker::build
-          services:
-            - docker
+      - parallel:
+        - step: *unit-tests
+        - step:
+            name: Build Docker
+            image:
+              name: eu.gcr.io/enroute-interne/enroute-cloud-sdk:latest
+              username: _json_key
+              password: "$GCLOUD_API_KEYFILE"
+            caches:
+              - docker
+            script:
+              - build.sh gcloud::setup
+              - build.sh bitbucket::docker::build
+            services:
+              - docker
       - step:
           name: Tag
           script:

@@ -93,10 +93,10 @@ module Control
                       position,
                       (
                         (journey_patterns.costs->>departure_arrival_ids)::jsonb->>'distance'
-                      )::integer as distance,
+                      )::float as distance,
                       (
                         (journey_patterns.costs->>departure_arrival_ids)::jsonb->>'time'
-                      )::integer as duration
+                      )::float as duration
                     from (
                         select journey_pattern_id,
                           position,

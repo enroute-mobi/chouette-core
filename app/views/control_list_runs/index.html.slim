@@ -13,9 +13,9 @@
           = table_builder_2 @control_list_runs,
             [ \
 							TableBuilderHelper::Column.new( \
-                key: :status, \
-                attribute: :status, \
-                attribute: Proc.new { |n| n.status.present? ? t("enumerize.operation.status.#{n.try(:status)}") : "-" } \
+                key: :user_status, \
+                attribute: :user_status, \
+                attribute: Proc.new { |n| n.user_status.text } \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :name, \

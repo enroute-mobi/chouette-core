@@ -40,7 +40,7 @@ en:
         other: "Macro Runs Reports"
     attributes:
       macro/list/run:
-        status: Statut
+        user_status: Status
         name: Name
         created_by: Created by
         creator: "Creator"

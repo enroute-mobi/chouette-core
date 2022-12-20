@@ -60,10 +60,10 @@ class MacroListRunsController < ChouetteController
   end
 
   def search
-    @search ||= ::Search::MacroListRun.new(scope, params)
+    @search ||= Search.new(scope, params)
   end
 
-  class Search < Search::Base
+  class Search < Search::Operation
     def query_class
       Query::MacroListRun
     end

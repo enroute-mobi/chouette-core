@@ -12,7 +12,7 @@ module Macro
     accepts_nested_attributes_for :macros, allow_destroy: true, reject_if: :all_blank
     accepts_nested_attributes_for :macro_contexts, allow_destroy: true, reject_if: :all_blank
 
-    scope :by_text, ->(text) { text.blank? ? all : where('lower(name) LIKE :t', t: "%#{text.downcase}%") } 
+    scope :by_text, ->(text) { text.blank? ? all : where('lower(name) LIKE :t', t: "%#{text.downcase}%") }
 
     def self.policy_class
       MacroListPolicy
@@ -50,6 +50,8 @@ module Macro
 
       validates :name, presence: true
       validates :original_macro_list_id, presence: true, if: :new_record?
+
+      scope :having_status, ->(statuses) { where(status: statuses) }
 
       def build_with_original_macro_list
         return unless original_macro_list

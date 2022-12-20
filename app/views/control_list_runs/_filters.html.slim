@@ -1,13 +1,18 @@
-= simple_form_for @search, url: request.path, method: "GET", html: { class: 'form form-filter py-8' }  do |f|
-  = f.simple_fields_for :order, @search.order, defaults: { wrapper: false } do |form_order|
-    - form_order.object.attributes.keys.each do |attribute|
-      = form_order.input attribute, as: :hidden
+= simple_form_for @search, url: request.path, method: "GET", html: { class: 'form form-filter' }  do |f|
   .ffg-row
-    .input-group.search_bar class=filter_item_class(params[:search], :name_or_short_name)
+    .input-group.search_bar class=filter_item_class(params[:search], :name)
       = f.input :name, label: false, class: 'form-control', placeholder: I18n.t('control_list_run.filters.name'), wrapper_html: {class: 'mb-0'}
       span.input-group-btn
-        button.btn#search_btn type='submit'
-          span.fas.fa-search
+        button.btn.btn-default#search_btn type='submit'
+          span.fa.fa-search
+
+  .ffg-row
+    .form-group.togglable class=filter_item_class(params[:search], :statuses)
+      = f.label :statuses, required: false, class: 'control-label'
+      = f.input :statuses, as: :check_boxes, collection: @search.candidate_statuses.map(&:slug), label: false, label_method: lambda{|slug| ("<span>" + operation_status(slug, verbose: true) + "</span>").html_safe}, wrapper_html: { class: "checkbox_list"}
+    = f.input :start_date, as: :date_picker
+    = f.input :end_date, as: :date_picker
+
   .actions
     .flex
       = f.label :per_page, class: 'control-label'

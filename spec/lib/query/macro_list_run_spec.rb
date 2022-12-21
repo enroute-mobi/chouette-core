@@ -22,4 +22,24 @@ RSpec.describe Query::MacroListRun do
       expect(scope).to eq([macro_list_run1])
     end
   end
+
+  describe "#statuses" do
+    Macro::List::Run.status.values.each do |status|
+      context "when the queried status is #{status}" do
+        subject { query.statuses(status).scope }
+
+        it "includes imports with this status" do
+          macro_list_run1.update_column :status, status
+          is_expected.to include(macro_list_run1)
+        end
+
+        it "excludes imports without this status" do
+          other_status = (Macro::List::Run.status.values - [ status ]).first
+
+          macro_list_run1.update_column :status, other_status
+          is_expected.to_not include(macro_list_run1)
+        end
+      end
+    end
+  end
 end

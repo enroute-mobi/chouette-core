@@ -22,4 +22,24 @@ RSpec.describe Query::ControlListRun do
       expect(scope).to eq([control_list_run1])
     end
   end
+
+  describe "#statuses" do
+    Control::List::Run.status.values.each do |status|
+      context "when the queried status is #{status}" do
+        subject { query.statuses(status).scope }
+
+        it "includes control_list_runs with this status" do
+          control_list_run1.update_column :status, status
+          is_expected.to include(control_list_run1)
+        end
+
+        it "excludes control_list_runs without this status" do
+          other_status = (Control::List::Run.status.values - [ status ]).first
+
+          control_list_run1.update_column :status, other_status
+          is_expected.to_not include(control_list_run1)
+        end
+      end
+    end
+  end
 end

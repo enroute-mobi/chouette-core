@@ -16,7 +16,6 @@ en:
       networks: "networks"
       vehicle_journeys: "vehicle journeys"
       time_tables: "time tables"
-      title: "Data set"
       clean_up: "Clean up"
       api_keys: "Authentification keys for an API REST access"
       show_all_referentials: Show all referentials
@@ -78,7 +77,6 @@ en:
         active:   This data space est désormais en édition, rechargez la page pour pouvoir apporter vos modifications
         archived: This data space vient d'être archivé, vos modifications ne pourront pas être enregistrées
 
-
   activerecord:
     errors:
       models:
@@ -127,12 +125,11 @@ en:
         routing_constraint_zone: Routing constraint zone
         validity_period: "Inclusive validity period"
         updated_at: "Updated"
+        created_at: "Created"
         merged_at: "Merged"
         archived_at: "Archived"
         archived_at_null: "Unarchived"
         created_from: 'Created from'
-        updated_at: "Updated"
-        created_at: "Created"
         organisation: 'Organization'
         number_of_lines: 'No. of lines'
         from_current_offer: "Use current offer"
@@ -160,7 +157,6 @@ en:
           add_period: 'Add a period'
         placeholders:
           select_lines: 'Selection of lignes'
-
   notice:
     referentials:
       deleted: "Datasets has been successfully destroyed"

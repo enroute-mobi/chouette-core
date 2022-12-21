@@ -337,7 +337,7 @@
         &:hover {
           background-color: rgba($brand-color-primary, 0.5);
         }
-        &[title='Supprimer'] {
+        &.delete-button {
           background-color: $red;
 
           &:hover {
@@ -347,7 +347,7 @@
         &.disabled,
         &:disabled {
           &,
-          &[title='Supprimer'],
+          &.delete-button,
           &:hover,
           &:focus {
             background-color: rgba($grey, 0.3);
@@ -366,7 +366,7 @@
   &.noselect {
     > ul > .st_action > a {
       &,
-      &[title='Supprimer'],
+      &.delete-button,
       &:hover,
       &:focus {
         background-color: rgba($grey, 0.3);

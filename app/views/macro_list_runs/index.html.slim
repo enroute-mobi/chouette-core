@@ -13,9 +13,8 @@
           = table_builder_2 @macro_list_runs,
             [ \
 							TableBuilderHelper::Column.new( \
-                key: :user_status, \
-                attribute: :user_status, \
-                attribute: Proc.new { |n| n.user_status.text } \
+                key: :status, \
+                attribute: Proc.new { |macro_list_run| operation_status(macro_list_run&.user_status, verbose: true) }, \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :name, \

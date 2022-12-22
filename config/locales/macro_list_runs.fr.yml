@@ -40,7 +40,7 @@ fr:
         other: "Rapports de jeux d'instructions"
     attributes:
       macro/list/run:
-        user_status: État
+        status: État
         name: Nom
         created_by: Créé par
         creator: "Créateur"

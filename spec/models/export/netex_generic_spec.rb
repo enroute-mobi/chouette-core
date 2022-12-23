@@ -1120,6 +1120,26 @@ RSpec.describe Export::NetexGeneric do
           it { is_expected.to include(public_code: 'dummy') }
         end
       end
+
+      describe '#uniq_vehicle_journey_codes' do
+        subject { decorator.uniq_vehicle_journey_codes }
+
+        let(:vehicle_journey_code) { { id: '42', value: 'uniq' } }
+
+        context 'when no vehicle_journey_codes are provided' do
+          it { is_expected.to be_empty }
+        end
+
+        context 'when a single vehicle_journey_codes is provided' do
+          before { allow(decorator).to receive(:vehicle_journey_codes).and_return([vehicle_journey_code]) }
+          it { is_expected.to contain_exactly(vehicle_journey_code) }
+        end
+
+        context 'when the same vehicle_journey_code is provided twice' do
+          before { allow(decorator).to receive(:vehicle_journey_codes).and_return([vehicle_journey_code] * 2) }
+          it { is_expected.to contain_exactly(vehicle_journey_code) }
+        end
+      end
     end
   end
 

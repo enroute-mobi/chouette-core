@@ -1433,13 +1433,18 @@ class Export::NetexGeneric < Export::Base
       def netex_alternate_identifiers
         return if code_space_keys.blank? || try(:vehicle_journey_codes).blank?
 
-        vehicle_journey_codes.map do |vehicle_journey_code|
+        # Avoid duplicated vehicle_journey_codes
+        uniq_vehicle_journey_codes.map do |vehicle_journey_code|
           Netex::KeyValue.new({
-            key: code_space_key(vehicle_journey_code['id'].to_i),
-            value: vehicle_journey_code['value'],
-            type_of_key: "ALTERNATE_IDENTIFIER"
-          })
+                                key: code_space_key(vehicle_journey_code['id'].to_i),
+                                value: vehicle_journey_code['value'],
+                                type_of_key: 'ALTERNATE_IDENTIFIER'
+                              })
         end
+      end
+
+      def uniq_vehicle_journey_codes
+        try(:vehicle_journey_codes)&.uniq { |c| [c['id'], c['value']] } || []
       end
 
       def journey_pattern_ref

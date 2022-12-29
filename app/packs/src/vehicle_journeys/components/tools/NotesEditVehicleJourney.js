@@ -51,7 +51,7 @@ export default class NotesEditVehicleJourney extends Component {
 
   noteUrl(lf) {
     if(lf.line_notice){
-      return "/line_referentials/" + window.line_referential_id + "/lines/" + window.line_id + "/line_notices/" + lf.id
+      return "/workbenches/" + window.workbench_id + "/line_referential/line_notices/" + lf.id
     }
     else {
       return "/referentials/" + window.referential_id + "/lines/" + window.line_id + "/footnotes"

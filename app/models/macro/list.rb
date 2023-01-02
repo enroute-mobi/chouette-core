@@ -51,7 +51,7 @@ module Macro
       validates :name, presence: true
       validates :original_macro_list_id, presence: true, if: :new_record?
 
-      scope :having_status, ->(statuses) { where(status: statuses) }
+      scope :having_status, ->(statuses) { where(user_status: statuses) }
 
       def build_with_original_macro_list
         return unless original_macro_list

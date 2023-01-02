@@ -23,6 +23,9 @@ fr:
         stop_area_provider_id: Fournisseur d'arrêts
         from_stop_area_id: "de"
         to_stop_area_id: "à"
+        document_type: "Type de Document"
+        valid_before_date: Valide à partir de
+        valid_after_date: Valide jusqu'au
   simple_form:
     placeholders:
       search:
@@ -30,3 +33,5 @@ fr:
         line_id: "Indiquez un nom de ligne"
         company_id: "Indiquez un nom de transporteur"
         stop_area_id: "Indiquez un nom d'arrêt"
+        document_id: "Indiquez un nom de document"
+        document_type_id: "Sélectionnez un Type de document"

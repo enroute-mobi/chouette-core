@@ -33,12 +33,17 @@ class DocumentsController < ChouetteController
 
   protected
 
+  def scope
+    parent.documents
+  end
+
+  def search
+    @search ||= Search::Document.new(scope, params, workgroup: workbench.workgroup)
+  end
+
   alias document resource
   alias workbench parent
-
-  def collection
-    @documents = parent.documents.paginate(page: params[:page], per_page: 30)
-  end
+  delegate :collection, to: :search
 
   private
 

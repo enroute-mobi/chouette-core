@@ -1,0 +1,21 @@
+= simple_form_for @search, url: request.path, method: "GET", html: { class: 'flex items-center tailwind-filters bg-grey relative pr-6' }, wrapper: :filters_form_tailwind  do |f|
+  = f.simple_fields_for :order, @search.order, defaults: { wrapper: false } do |form_order|
+    - form_order.object.attributes.keys.each do |attribute|
+      = form_order.input attribute, as: :hidden
+
+  .flex.flex-col.w-full
+    .flex.items-center.border-r.border-white
+      = f.input :name, label: false, wrapper_html: {class: "w-2/5"}, placeholder: I18n.t('simple_form.placeholders.search.document_id')
+    .flex.items-center.border-t.border-r.border-white
+      = f.input :document_type, placeholder: I18n.t('simple_form.placeholders.search.document_type_id'), as: :tom_select, collection: @search.candidate_document_types.map { |l| {id: l.id, text: l.name } }, wrapper_html: {class: "w-2/6"}
+      = f.input :valid_before_date, as: :date_picker, wrapper_html: {class: "w-1/5"}
+      = f.input :valid_after_date, as: :date_picker, wrapper_html: {class: "w-1/5"}
+
+  .flex.flex-col.justify-center.items-center.actions.ml-auto.py-3.w-80
+    .flex.items-center.mb-3
+      = f.label :per_page, class: 'control-label mr-3'
+      = f.input :per_page, as: :per_page, label: false, wrapper: false
+    .flex.items-center
+      = link_to t('actions.erase'), [@parent, :documents], class: 'btn btn-link'
+      = f.submit t('actions.filter'), class: 'btn btn-default'
+

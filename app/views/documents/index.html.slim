@@ -2,10 +2,9 @@
 
 .page_content
   .container-fluid
-    - if params[:q].present? or @documents.any?
-      .row
-        .col-lg-12
-
+    .row
+      .col-lg-12
+        = render 'filters'
     - if @documents.any?
       .row
         .col-lg-12

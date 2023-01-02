@@ -23,6 +23,9 @@ en:
         stop_area_provider_id: Stop area provider
         from_stop_area_id: "From"
         to_stop_area_id: "To"
+        document_type: "Document type"
+        valid_before_date: Valide before
+        valid_after_date: Valide after
   simple_form:
     placeholders:
       search:
@@ -30,3 +33,5 @@ en:
         line_id: "Specify a line name"
         company_id: "Specify a company name"
         stop_area_id: "Specify a stop area name"
+        document_id: "Specify a document name"
+        document_type_id: "Select a document type"

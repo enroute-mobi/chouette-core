@@ -40,7 +40,7 @@ en:
         other: "Control Runs Reports"
     attributes:
       control/list/run:
-        status: Statut
+        status: Status
         name: Name
         created_by: Created by
         creator: "Creator"

@@ -10,7 +10,7 @@
           = d.attribute :name
           = d.attribute :original_control_list, as: :association, link: (workbench_control_list_path(@workbench, @control_list_run.original_control_list) if @control_list_run.original_control_list)
           = d.attribute :referential, as: :association, link: (referential_path(@control_list_run.referential) if @control_list_run.referential)
-          = d.attribute :status, as: :enumerize
+          = d.attribute :status, value: operation_status(@control_list_run&.user_status, verbose: true)
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = simple_block_for @control_list_run, title: t('control_list_run.show.section.processing') do |d|

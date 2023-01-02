@@ -14,8 +14,7 @@
             [ \
 							TableBuilderHelper::Column.new( \
                 key: :status, \
-                attribute: :status, \
-                attribute: Proc.new { |n| n.status.present? ? t("enumerize.operation.status.#{n.try(:status)}") : "-" } \
+                attribute: Proc.new { |macro_list_run| operation_status(macro_list_run&.user_status, verbose: true) }, \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :name, \

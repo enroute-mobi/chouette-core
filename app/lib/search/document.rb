@@ -15,9 +15,10 @@ module Search
       Period.new(from: valid_after_date, to: valid_before_date).presence
     end
 
+    validates :period, valid: true
+
     def query
-      Query::Document.new(scope).name(name).document_type(document_type)
-      # Query::Document.new(scope).name(name).document_type(document_type).in_period(period)
+      Query::Document.new(scope).name(name).document_type(document_type).in_period(period)
     end
 
     class Order < ::Search::Order

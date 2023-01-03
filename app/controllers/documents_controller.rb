@@ -12,10 +12,6 @@ class DocumentsController < ChouetteController
   def index
     index! do |format|
       format.html do
-        if collection.out_of_bounds?
-          redirect_to params.merge(:page => 1)
-        end
-
         @documents = DocumentDecorator.decorate(
           collection,
           context: {

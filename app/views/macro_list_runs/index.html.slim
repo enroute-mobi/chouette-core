@@ -2,10 +2,9 @@
 
 .page_content
   .container-fluid
-    - if params[:q].present? or @macro_list_runs.any?
-      .row
-        .col-lg-12
-          = render 'filters'
+    .row
+      .col-lg-12
+        = render 'filters'
 
     - if @macro_list_runs.any?
       .row

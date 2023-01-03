@@ -1,5 +1,5 @@
 module Query
-  class MacroListRun < Base
+  class MacroListRun < Query::Operation
     def name(value)
       where(value, :matches, :name)
     end

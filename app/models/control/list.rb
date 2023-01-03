@@ -58,6 +58,8 @@ module Control
       validates :name, presence: true
       validates :original_control_list_id, presence: true, if: :new_record?
 
+      scope :having_status, ->(statuses) { where(user_status: statuses) }
+
       def build_with_original_control_list
         return unless original_control_list
 

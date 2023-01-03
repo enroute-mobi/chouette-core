@@ -61,10 +61,10 @@ class ControlListRunsController < ChouetteController
   end
 
   def search
-    @search ||= ::Search::ControlListRun.new(scope, params)
+    @search ||= Search.new(scope, params)
   end
 
-  class Search < Search::Base
+  class Search < Search::Operation
     def query_class
       Query::ControlListRun
     end

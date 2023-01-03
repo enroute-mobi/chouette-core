@@ -1,5 +1,5 @@
 module Query
-  class ControlListRun < Base
+  class ControlListRun < Query::Operation
     def name(value)
       where(value, :matches, :name)
     end

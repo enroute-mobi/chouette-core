@@ -10,6 +10,7 @@ class Export::Gtfs < Export::Base
   option :prefer_referent_stop_area, required: true, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
   option :ignore_single_stop_station, required: true, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
   option :prefer_referent_company, required: true, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
+  option :ignore_parent_stop_places, required: true, default_value: false, enumerize: [true, false], serialize: ActiveModel::Type::Boolean
 
 
   DEFAULT_AGENCY_ID = "chouette_default"
@@ -78,9 +79,15 @@ class Export::Gtfs < Export::Base
     Companies.new(self).export_part
   end
 
+  alias ignore_parent_stop_places? ignore_parent_stop_places
+
   def exported_stop_areas
-    parents = Chouette::StopArea.all_parents(export_scope.stop_areas.where(area_type: 'zdep'), ignore_mono_parent: ignore_single_stop_station)
-    Chouette::StopArea.union(export_scope.stop_areas, parents).where(kind: :commercial)
+    unless ignore_parent_stop_places?
+      parents = Chouette::StopArea.all_parents(export_scope.stop_areas.where(area_type: 'zdep'), ignore_mono_parent: ignore_single_stop_station)
+      Chouette::StopArea.union(export_scope.stop_areas, parents).where(kind: :commercial)
+    else
+      export_scope.stop_areas
+    end
   end
 
   def export_stop_areas_to(target)

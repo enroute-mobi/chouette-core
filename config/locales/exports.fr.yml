@@ -113,6 +113,7 @@ fr:
         prefer_referent_company: Préférer les transporteurs Référents
         ignore_single_stop_station: "Ignorer les Zones de Lieux avec une Zone d’Embarquement unique"
         include_stop_visits: "Inclure les Passages aux Arrêts"
+        ignore_parent_stop_places: "Ignorer les arrêts Parents"
         period: Période exportée
       export:
         <<: *attrs

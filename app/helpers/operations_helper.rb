@@ -1,4 +1,5 @@
 module OperationsHelper
+  # WARNING : This method should not be used anymore and we should use the new one below operation_user_status
   def operation_status(status, verbose: false, default_status: nil, i18n_prefix: nil)
     status = status.status if status.respond_to?(:status)
     status ||= default_status
@@ -24,6 +25,26 @@ module OperationsHelper
     end
     if verbose
       out += content_tag :span , txt
+    end
+    out
+  end
+
+  def operation_user_status(status, verbose: false)
+    i18n_status = status.text
+    out = if 'pending' == status
+      render_icon "fa fa-clock #{status}", i18n_status
+    else
+      cls = ''
+      cls = 'success' if status == 'successful'
+      cls = 'warning' if status == 'warning'
+      cls = 'disabled' if status == 'canceled'
+      cls = 'danger' if status == 'failed'
+
+      render_icon "fa fa-circle text-#{cls}", i18n_status
+    end
+
+    if verbose
+      out += content_tag :span , i18n_status
     end
     out
   end

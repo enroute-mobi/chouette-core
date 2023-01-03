@@ -43,9 +43,8 @@ module OperationsHelper
       render_icon "fa fa-circle text-#{cls}", i18n_status
     end
 
-    if verbose
-      out += content_tag :span , i18n_status
-    end
+    out += content_tag :span , i18n_status if verbose
+    
     out
   end
 

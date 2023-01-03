@@ -75,7 +75,7 @@ class Import::Base < ApplicationModel
     end
   end
 
-  PERIOD_EXTREME_VALUE = 15.years
+  PERIOD_EXTREME_VALUE = 25.years
 
   after_create :purge_imports
 

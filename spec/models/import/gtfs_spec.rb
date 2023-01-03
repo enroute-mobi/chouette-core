@@ -1056,7 +1056,7 @@ RSpec.describe Import::Gtfs do
     context "when dates are over the extremes" do
       before do
         allow(import.source).to receive(:calendars).and_return([
-          double(start_date: (Date.current - 20.years).to_s, end_date: (Date.current + 20.years).to_s)
+          double(start_date: (Date.current - 30.years).to_s, end_date: (Date.current + 30.years).to_s)
         ])
       end
 

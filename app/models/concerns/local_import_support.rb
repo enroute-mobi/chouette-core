@@ -64,7 +64,10 @@ module LocalImportSupport
       processing_rules.each do |processing_rule|
         if processing_rule.use_control_list?
           processed = processing_rule.processable.control_list_runs.new(name: processing_rule.processable.name,
-                                                                        creator: 'Webservice', referential: referential)
+                                                                        creator: 'Webservice',
+                                                                        referential: referential,
+                                                                        workbench: workbench
+                                                                      )
           processed.build_with_original_control_list
         else
           processed = processing_rule.processable.macro_list_runs.new(name: processing_rule.processable.name,

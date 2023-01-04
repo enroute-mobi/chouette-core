@@ -13,7 +13,7 @@
             [ \
 							TableBuilderHelper::Column.new( \
                 key: :status, \
-                attribute: Proc.new { |control_list_run| operation_status(control_list_run&.user_status, verbose: true) }, \
+                attribute: Proc.new { |control_list_run| operation_user_status(control_list_run) }, \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :name, \

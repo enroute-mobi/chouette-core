@@ -1,4 +1,5 @@
 module OperationsHelper
+  # WARNING : This method should not be used anymore and we should use the new one below operation_user_status
   def operation_status(status, verbose: false, default_status: nil, i18n_prefix: nil)
     status = status.status if status.respond_to?(:status)
     status ||= default_status
@@ -26,6 +27,54 @@ module OperationsHelper
       out += content_tag :span , txt
     end
     out
+  end
+
+  def operation_user_status(operation)
+    UserStatusRenderer.new(operation.user_status).render if operation
+  end
+
+  # Render a Operation#user_status with icon (and text)
+  class UserStatusRenderer
+    attr_reader :user_status
+
+    include IconHelper
+    include ActionView::Helpers::TagHelper
+
+    def initialize(user_status)
+      @user_status = user_status
+    end
+
+    delegate :text, to: :user_status
+
+    def icon
+      render_icon "fa #{icon_class}", text
+    end
+
+    def pending?
+      user_status == 'pending'
+    end
+
+    mattr_reader :icon_text_classes, default: {
+      'successful' => 'success',
+      'warning' => 'warning',
+      'failed' => 'danger'
+    }
+
+    def icon_text_class
+      icon_text_classes[user_status]
+    end
+
+    def icon_class
+      if pending?
+        "fa-clock #{user_status}"
+      else
+        "fa-circle text-#{icon_text_class}"
+      end
+    end
+
+    def render
+      icon + content_tag(:span, text)
+    end
   end
 
   def processing_helper(object)

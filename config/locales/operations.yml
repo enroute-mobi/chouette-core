@@ -4,7 +4,7 @@ fr:
       user_status:
         successful: "Succès"
         warning: "Avertissement"
-        failed: "Échoué"
+        failed: "Échec"
         pending: "En cours"
 
 en:

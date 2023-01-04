@@ -29,23 +29,52 @@ module OperationsHelper
     out
   end
 
-  def operation_user_status(status, verbose: false)
-    i18n_status = status.text
-    out = if 'pending' == status
-      render_icon "fa fa-clock #{status}", i18n_status
-    else
-      cls = ''
-      cls = 'success' if status == 'successful'
-      cls = 'warning' if status == 'warning'
-      cls = 'disabled' if status == 'canceled'
-      cls = 'danger' if status == 'failed'
+  def operation_user_status(operation)
+    UserStatusRenderer.new(operation.user_status).render if operation
+  end
 
-      render_icon "fa fa-circle text-#{cls}", i18n_status
+  # Render a Operation#user_status with icon (and text)
+  class UserStatusRenderer
+    attr_reader :user_status
+
+    include IconHelper
+    include ActionView::Helpers::TagHelper
+
+    def initialize(user_status)
+      @user_status = user_status
     end
 
-    out += content_tag :span , i18n_status if verbose
-    
-    out
+    delegate :text, to: :user_status
+
+    def icon
+      render_icon "fa #{icon_class}", text
+    end
+
+    def pending?
+      user_status == 'pending'
+    end
+
+    mattr_reader :icon_text_classes, default: {
+      'successful' => 'success',
+      'warning' => 'warning',
+      'failed' => 'danger'
+    }
+
+    def icon_text_class
+      icon_text_classes[user_status]
+    end
+
+    def icon_class
+      if pending?
+        "fa-clock #{user_status}"
+      else
+        "fa-circle text-#{icon_text_class}"
+      end
+    end
+
+    def render
+      icon + content_tag(:span, text)
+    end
   end
 
   def processing_helper(object)

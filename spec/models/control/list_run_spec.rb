@@ -24,7 +24,7 @@ RSpec.describe Control::List::Run::UserStatusFinalizer do
     end
 
     let(:control_list_run) do
-      attributes = { name: "Test", original_control_list: control_list, creator: "test" }
+      attributes = { name: "Test", original_control_list: control_list, creator: "test", workbench: context.workbench}
       source = context.stop_area
 
       context.workbench.control_list_runs.create!(attributes) do |control_list_run|

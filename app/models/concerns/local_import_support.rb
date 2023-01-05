@@ -64,7 +64,10 @@ module LocalImportSupport
       processing_rules.each do |processing_rule|
         if processing_rule.use_control_list?
           processed = processing_rule.processable.control_list_runs.new(name: processing_rule.processable.name,
-                                                                        creator: 'Webservice', referential: referential)
+                                                                        creator: 'Webservice',
+                                                                        referential: referential,
+                                                                        workbench: workbench
+                                                                      )
           processed.build_with_original_control_list
         else
           processed = processing_rule.processable.macro_list_runs.new(name: processing_rule.processable.name,
@@ -106,26 +109,6 @@ module LocalImportSupport
     main_resource&.save
     save
     notify_parent
-  end
-
-  def processing_rules
-    # Returns Processing Rules associated to Import operation with a specific order:
-    #   Macro List first
-    #   Control List
-    #   Workgroup Control List
-    workbench_processing_rules + workgroup_processing_rules
-  end
-
-  def workbench_processing_rules
-    workbench.processing_rules.where(operation_step: 'after_import').order(processable_type: :desc)
-  end
-
-  def workgroup_processing_rules
-    dedicated_processing_rules = workbench.workgroup.processing_rules.where(operation_step: 'after_import',
-                                                                  target_workbench_ids: [workbench_id])
-    return dedicated_processing_rules if dedicated_processing_rules.present?
-      
-    workbench.workgroup.processing_rules.where(operation_step: 'after_import', target_workbench_ids: [])
   end
 
   def worker_died

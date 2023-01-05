@@ -70,8 +70,6 @@ module Control
         original_control_list.control_contexts.each do |control_context|
           self.control_context_runs << control_context.build_run
         end
-
-        self.workbench = original_control_list.workbench
       end
 
       def final_user_status

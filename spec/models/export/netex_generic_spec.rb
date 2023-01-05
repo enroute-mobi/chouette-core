@@ -1008,12 +1008,18 @@ RSpec.describe Export::NetexGeneric do
 
     let(:context) do
       Chouette.create do
-        3.times { vehicle_journey }
+        company :parent_company
+        line :parent_line, company: :parent_company
+
+        route line: :parent_line do
+          3.times { vehicle_journey }
+        end
       end
     end
 
     let(:vehicle_journeys) { context.vehicle_journeys }
     let(:vehicle_journey_at_stops) { vehicle_journeys.flat_map { |vj| vj.vehicle_journey_at_stops } }
+    let(:line) { vehicle_journeys.first.line }
 
     before { context.referential.switch }
 
@@ -1022,6 +1028,8 @@ RSpec.describe Export::NetexGeneric do
         vehicle_journey_at_stops.each do |vjas|
           vjas.update(stop_area: vjas.stop_point.stop_area)
         end
+
+        export.resource_tagger.register_tag_for line
       end
 
       it 'should create a Netex::VehicleJourneyStopAssignment' do
@@ -1037,6 +1045,9 @@ RSpec.describe Export::NetexGeneric do
           expect(vjas_assignment.quay_ref).to be_kind_of(Netex::Reference)
           expect(vjas_assignment.vehicle_journey_refs).to be_kind_of(Array)
           expect(vjas_assignment.vehicle_journey_refs.size).to eq(1)
+          expect(vjas_assignment.tag(:line_id)).to eq(line.objectid)
+          expect(vjas_assignment.tag(:line_name)).to eq(line.name)
+          expect(vjas_assignment.tag(:operator_name)).to eq(line.company.name)
         end
       end
     end

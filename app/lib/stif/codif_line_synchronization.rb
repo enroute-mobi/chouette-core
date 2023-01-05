@@ -22,6 +22,8 @@ module Stif
       end
 
       def synchronize
+        return false if Rails.application.config.try(:ilico_api_url).blank?
+        
         reset_counts
         start_time = Process.clock_gettime(Process::CLOCK_MONOTONIC, :second)
         # Fetch Codifline data

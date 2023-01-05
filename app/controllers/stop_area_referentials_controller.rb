@@ -22,11 +22,13 @@ class StopAreaReferentialsController < ChouetteController
 
   def sync
     authorize resource, :synchronize?
-    @sync = resource.stop_area_referential_syncs.build
-    if @sync.save
-      flash[:notice] = t('notice.stop_area_referential_sync.created')
-    else
-      flash[:error] = @sync.errors.full_messages.to_sentence
+    unless Rails.application.config.try(:icar_api_url).blank?
+      @sync = resource.stop_area_referential_syncs.build
+      if @sync.save
+        flash[:notice] = t('notice.stop_area_referential_sync.created')
+      else
+        flash[:error] = @sync.errors.full_messages.to_sentence
+      end
     end
     redirect_to [ @workbench, :stop_area_referential ]
   end

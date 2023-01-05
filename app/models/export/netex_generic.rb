@@ -1465,24 +1465,31 @@ class Export::NetexGeneric < Export::Base
   end
 
   class VehicleJourneyStopAssignments < Part
-
     def export!
       vehicle_journey_at_stops.find_each do |vehicle_journey_at_stop|
-        target << Decorator.new(vehicle_journey_at_stop).netex_resource
+        tags = resource_tagger.tags_for(vehicle_journey_at_stop.line_id)
+        tagged_target = TaggedTarget.new(target, tags)
+
+        netex_resource = Decorator.new(vehicle_journey_at_stop).netex_resource
+        tagged_target << netex_resource
       end
     end
 
     def vehicle_journey_at_stops
       export_scope.vehicle_journey_at_stops.where.not(stop_area: nil)
-                  .joins(:vehicle_journey, :stop_point, :stop_area)
-                  .select(
-                    'vehicle_journey_at_stops.*',
-                    'vehicle_journeys.objectid AS vehicle_journey_objectid',
-                    "COALESCE(vehicle_journeys.data_source_ref, 'none') AS vehicle_journey_data_source_ref",
-                    'stop_points.objectid AS stop_point_objectid',
-                    'stop_areas.objectid AS stop_area_objectid',
-                    'stop_points.position AS stop_point_position'
-                  )
+                  .joins(:stop_point, :stop_area, vehicle_journey: :route)
+                  .select(*selected_columns)
+    end
+
+    def selected_columns
+      ['vehicle_journey_at_stops.*',
+       'vehicle_journeys.objectid AS vehicle_journey_objectid',
+       "COALESCE(vehicle_journeys.data_source_ref, 'none') AS vehicle_journey_data_source_ref",
+       'stop_points.objectid AS stop_point_objectid',
+       'stop_areas.objectid AS stop_area_objectid',
+       'stop_points.position AS stop_point_position',
+       'routes.line_id as line_id'
+      ]
     end
 
     class Decorator < SimpleDelegator
@@ -1498,11 +1505,11 @@ class Export::NetexGeneric < Export::Base
       end
 
       def netex_resource
-        Netex::VehicleJourneyStopAssignment.new netex_attributes
+        Netex::VehicleJourneyStopAssignment.new(netex_attributes)
       end
 
       def objectid
-        Netex::ObjectId.merge(vehicle_journey_objectid, stop_point_position, type: "VehicleJourneyStopAssignment").to_s
+        Netex::ObjectId.merge(vehicle_journey_objectid, stop_point_position, type: 'VehicleJourneyStopAssignment').to_s
       end
 
       def stop_point_position
@@ -1523,7 +1530,7 @@ class Export::NetexGeneric < Export::Base
 
       def vehicle_journey_data_source_ref
         loaded_value = __getobj__.try(:vehicle_journey_data_source_ref)
-        return nil if loaded_value == "none"
+        return nil if loaded_value == 'none'
 
         loaded_value || vehicle_journey&.data_source_ref
       end
@@ -1544,7 +1551,6 @@ class Export::NetexGeneric < Export::Base
         [Netex::Reference.new(vehicle_journey_objectid, type: 'ServiceJourney')]
       end
     end
-
   end
 
   class TimeTableDecorator < SimpleDelegator

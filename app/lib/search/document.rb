@@ -12,7 +12,7 @@ module Search
     end
 
     def period
-      Period.new(from: valid_before_date , to: valid_after_date ).presence
+      Period.new(from: valid_before_date, to: valid_after_date).presence
     end
 
     validates :period, valid: true

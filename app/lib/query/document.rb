@@ -12,7 +12,7 @@ module Query
 
     def in_period(period)
       change_scope(if: period.present?) do |scope|
-        scope.where("validity_period && ?", period.to_postgresql_daterange)
+        scope.where("validity_period && ? OR validity_period IS NULL", period.to_postgresql_daterange)
       end
     end
 

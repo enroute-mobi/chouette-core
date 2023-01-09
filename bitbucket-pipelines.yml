@@ -7,7 +7,7 @@ definitions:
       memory: 7128
     postgres:
       image:
-        name: eu.gcr.io/enroute-interne/enroute-postgresql:14-dev
+        name: us.gcr.io/enroute-interne/enroute-postgresql:14-dev
         username: _json_key
         password: "$GCLOUD_API_KEYFILE"
       environment:
@@ -26,7 +26,7 @@ definitions:
     - step: &unit-tests
         name: Unit tests
         image:
-          name: eu.gcr.io/enroute-interne/enroute-ruby:2.7-dev
+          name: us.gcr.io/enroute-interne/enroute-ruby:2.7-dev
           username: _json_key
           password: "$GCLOUD_API_KEYFILE"
         caches:
@@ -49,7 +49,7 @@ pipelines:
       - step:
           name: Update gems
           image:
-            name: eu.gcr.io/enroute-interne/enroute-ruby:2.7-dev
+            name: us.gcr.io/enroute-interne/enroute-ruby:2.7-dev
             username: _json_key
             password: "$GCLOUD_API_KEYFILE"
           caches:
@@ -75,7 +75,7 @@ pipelines:
         - step:
             name: Build Docker
             image:
-              name: eu.gcr.io/enroute-interne/enroute-cloud-sdk:latest
+              name: us.gcr.io/enroute-interne/enroute-cloud-sdk:latest
               username: _json_key
               password: "$GCLOUD_API_KEYFILE"
             caches:
@@ -109,7 +109,7 @@ pipelines:
                 CUSTOM_PIPELINE_NAME: "merge"
       - step:
           name: Deploy to test
-          image: google/cloud-sdk:latest
+          image: eu.gcr.io/enroute-interne/enroute-cloud-sdk:latest
           deployment: test
           script:
             - git clone git@bitbucket.org:enroute-mobi/chouette-env.git env

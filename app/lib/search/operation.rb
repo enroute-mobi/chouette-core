@@ -36,6 +36,9 @@ module Search
     end
 
     class Order < ::Search::Order
+      # Use for Macro::List::Run and Control::List::Run
+      attribute :user_status
+      # Use for Import and Export classes and should migrate to user_status
       attribute :status
       attribute :name
       attribute :started_at, default: :desc

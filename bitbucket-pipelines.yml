@@ -109,7 +109,10 @@ pipelines:
                 CUSTOM_PIPELINE_NAME: "merge"
       - step:
           name: Deploy to test
-          image: eu.gcr.io/enroute-interne/enroute-cloud-sdk:latest
+          image:
+              name: us.gcr.io/enroute-interne/enroute-cloud-sdk:latest
+              username: _json_key
+              password: "$GCLOUD_API_KEYFILE"
           deployment: test
           script:
             - git clone git@bitbucket.org:enroute-mobi/chouette-env.git env

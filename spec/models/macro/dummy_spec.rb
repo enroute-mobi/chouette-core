@@ -11,7 +11,7 @@ RSpec.describe Macro::Dummy do
         macro_list_run: macro_list_run,
         position: 0,
         options: {
-          expected_result: "warning",
+          expected_result: "error",
           target_model: target_model
         }
       )
@@ -33,7 +33,7 @@ RSpec.describe Macro::Dummy do
         criticity: macro_run.expected_result,
         message_attributes: {
           "name" => source.name,
-          "result" => "warning"
+          "result" => "error"
         },
         source: source,
       })
@@ -45,7 +45,7 @@ RSpec.describe Macro::Dummy do
       let(:target_model) { "StopArea" }
       let(:source) { context.stop_area }
 
-      it "should create a warning message" do
+      it "should create an error message" do
         subject
         expect(macro_run.macro_messages).to include(expected_message)
       end

@@ -398,6 +398,18 @@ fr:
       ticket_barrier: "Portillon à ticket"
       gate: "Barrière"
       other: "Autre"
+    area_type:
+      zdep: "Zone d'Embarquement"
+      zder: ZDEr
+      zdlp: "Zone de Lieu"
+      zdlr: ZDLr
+      lda: "Lieu d'Arrêt"
+      gdl: "Groupe de Lieux"
+      deposit: Dépôt
+      border: Frontière
+      service_area: Aire de service / Pause
+      relief: Point de relève
+      other: Autre
     target_model:
       Line: Ligne
       StopArea: Arrêt

@@ -398,6 +398,18 @@ en:
       ticket_barrier: "Ticket Barrier"
       gate: "Gate"
       other: "Other"
+    area_type:
+      zdep: "Quay"
+      zder: ZDEr
+      zdlp: "Monomodal Stop Place"
+      zdlr: ZDLr
+      lda: "Stop Place"
+      gdl: "Group of Stop Places"
+      deposit: Deposit
+      border: Border
+      service_area: Service Area
+      relief: Relief point
+      other: Other
     target_model:
       Line: Line
       StopArea: Stop area

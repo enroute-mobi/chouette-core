@@ -76,8 +76,57 @@ module Query
       scope.where(country_code: nil)
     end
 
+    def name(value)
+      where(value, :matches, :name)
+    end
+
+    def area_type(value)
+      where(value, :in, :area_type)
+    end
+
+    def stop_area_id(value)
+      where(value, :eq, :stop_area_id)
+    end
+
+    def zip_code(value)
+      where(value, :matches, :zip_code)
+    end
+
+    def city_name(value)
+      where(value, :matches, :city_name)
+    end
+
+    def stop_area_provider(value)
+      where(value, :eq, :stop_area_provider)
+    end
+
+    def is_referent(value)
+      where(value, :eq, :is_referent)
+    end
+
+    def status(value)
+      where(value, :in, :status)
+    end
+
+    def parent(value)
+      where(value, :eq, :parent)
+    end
+
     # TODO Could use a nice RecurviseQuery common object
     delegate :table_name, to: Chouette::StopArea
     private :table_name
+
+    # private
+
+    # def convert_status(value)
+    #   case value
+    #   when :in_creation
+    #     nil
+    #   when :deactivated
+    #     :deactivate
+    #   when :confirmed
+    #     :activate
+    #   end
+    # end
   end
 end

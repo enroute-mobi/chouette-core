@@ -5,7 +5,7 @@ module Macro
 
       included do
         option :expected_result
-        enumerize :expected_result, in: %w{info warning error fail}, default: "info"
+        enumerize :expected_result, in: %w{info error failed}, default: "info"
 
         option :target_model
         enumerize :target_model, in: %w{Line StopArea JourneyPattern Company}, default: "Line"

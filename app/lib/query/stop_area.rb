@@ -106,12 +106,6 @@ module Query
 
     def statuses(statuses)
       change_scope(if: statuses.present?) do |scope|
-        status = {
-          in_creation: statuses.include?('in_creation'),
-          confirmed: statuses.include?('confirmed'),
-          deactivated: statuses.include?('deactivated'),
-        }
-
         query = []
         query << "deleted_at IS NOT NULL" if statuses.include?('deactivated')
         query << "(confirmed_at IS NULL AND deleted_at IS NULL)" if statuses.include?('in_creation')

@@ -7,13 +7,13 @@ module Search
     attribute :zip_code
     attribute :city_name
     attribute :area_type
-    attribute :status
+    attribute :statuses
     attribute :is_referent
     attribute :parent
     attribute :stop_area_provider
 
-		enumerize :area_type, in: Chouette::AreaType::ALL
-		enumerize :status, in: %i[in_creation confirmed deactivated]
+		enumerize :area_type, in: ::Chouette::AreaType::ALL
+		enumerize :statuses, in: ::Chouette::StopArea.statuses, multiple: true
 
     def query
 			Query::StopArea.new(scope)
@@ -21,7 +21,7 @@ module Search
 				.zip_code(zip_code)
 				.city_name(city_name)
 				.area_type(area_type)
-				.status(status)
+				.statuses(statuses)
 				.is_referent(is_referent)
 				.parent(parent)
 				.stop_area_provider(stop_area_provider)
@@ -38,9 +38,7 @@ module Search
 		private
 
 		def flag(value)
-			(value || [])
-				.map { |v| ActiveModel::Type::Boolean.new.cast(value) }
-				.compact
+			ActiveModel::Type::Boolean.new.cast(value)
 		end
 
     class Order < ::Search::Order

@@ -152,7 +152,7 @@ en:
       kind:
         commercial: Commercial
         non_commercial: Non-commercial
-      status:
+      status: &stop_area_status
         in_creation: In creation
         confirmed: Confirmed
         deactivated: Deactivated
@@ -421,6 +421,7 @@ en:
       disabled: Disabled
     search:
       rule_type: *notification_rule_rule_type
+      statuses: *stop_area_status
     control:
       criticity:
         warning: Warning

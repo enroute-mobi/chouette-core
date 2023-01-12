@@ -193,6 +193,7 @@ class Import::Workbench < Import::Base
 
       if pending_merge.present?
         pending_merge.referential_ids |= referentials.map(&:id)
+        logger.info("Add referentials #{pending_merge.referential_ids} to pending merge #{pending_merge.name}")
         referentials.each(&:pending!)
         pending_merge.save!
       else

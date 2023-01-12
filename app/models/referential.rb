@@ -742,6 +742,7 @@ class Referential < ApplicationModel
     if self.persisted?
       update_columns vals
     else
+      logger.info("Can't update columns for referential #{name} with #{vals} because referential is not persisted")
       assign_attributes vals
     end
   end

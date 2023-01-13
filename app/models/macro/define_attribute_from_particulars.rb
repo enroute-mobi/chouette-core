@@ -56,7 +56,7 @@ module Macro
           value = particular_values[referent.id]
 
           referent.update(attribute_name => value)
-          create_message referent
+          create_message referent, value
         end
       end
 

@@ -9,14 +9,14 @@ module Macro
           # If no shape found Chouette goes to the next journey_pattern
           if shape.present?
             journey_pattern.update(shape: shape)
-            create_message(journey_pattern)
+            create_message(journey_pattern, shape)
           end
         end
       end
 
       # Create a message for the given JourneyPattern
       # If the JourneyPattern is invalid, an error message is created.
-      def create_message(journey_pattern)
+      def create_message(journey_pattern, shape)
         attributes = {
           criticity: 'info',
           message_attributes: { shape_name: shape.uuid, journey_pattern_name: journey_pattern.name},

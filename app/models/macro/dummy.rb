@@ -5,7 +5,7 @@ module Macro
 
       included do
         option :expected_result
-        enumerize :expected_result, in: %w{info error failed}, default: "info"
+        enumerize :expected_result, in: %w{info warning error failed}, default: "info"
 
         option :target_model
         enumerize :target_model, in: %w{Line StopArea JourneyPattern Company}, default: "Line"
@@ -19,15 +19,13 @@ module Macro
       include Options
 
       def run
-        raise "Raise error as expected" if expected_result == "fail"
-        ::Macro::Message.transaction do
-          models.select(:id, :name).find_each do |model|
-            macro_messages.create(
-              message_attributes: { name: model.name, result: expected_result },
-              criticity: expected_result,
-              source: model
-            )
-          end
+        raise "Raise error as expected" if expected_result == "failed"
+        models.select(:id, :name).find_each do |model|
+          macro_messages.create(
+            message_attributes: { name: model.name, result: expected_result },
+            criticity: expected_result,
+            source: model
+          )
         end
       end
 

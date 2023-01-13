@@ -3,15 +3,13 @@ module Macro
     class Run < Macro::Base::Run
 
       def run
-        ::Macro::Message.transaction do
-          geo_clusters.each do |geo_cluster|
-            geo_cluster.compass_bearing_clusters.each do |cluster|
-              if cluster.count > 1
-                builder = ReferentBuilder.create(cluster.stop_areas)
-                if builder
-                  referent = stop_area_provider.stop_areas.create(builder.attributes)
-                  create_message(referent)
-                end
+        geo_clusters.each do |geo_cluster|
+          geo_cluster.compass_bearing_clusters.each do |cluster|
+            if cluster.count > 1
+              builder = ReferentBuilder.create(cluster.stop_areas)
+              if builder
+                referent = stop_area_provider.stop_areas.create(builder.attributes)
+                create_message(referent)
               end
             end
           end

@@ -61,10 +61,11 @@ module Macro
       end
 
       def create_message(referent, value = nil)
-        attributes.merge!(
+        attributes = {
+          criticity: 'info',
           message_attributes: { name: referent.name, value: value },
           source: referent
-        )
+        }
 
         attributes.merge!(criticity: 'error', message_key: 'error') unless referent.valid?
 

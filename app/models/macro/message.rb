@@ -13,8 +13,6 @@ module Macro
     scope :warning, -> { where(criticity: :warning) }
     scope :error, -> { where(criticity: :error) }
 
-    def 
-    
     def full_message
       I18n.t(
         "#{macro_run.class.name.underscore}.messages.#{message_key || 'default'}",

@@ -46,6 +46,8 @@ module Macro
 
       has_many :macro_context_runs, class_name: "Macro::Context::Run", dependent: :delete_all, foreign_key: "macro_list_run_id", inverse_of: :macro_list_run
 
+      has_many :macro_messages, class_name: "Macro::Message", through: :macro_runs
+
       has_one :processing, as: :processed
 
       validates :name, presence: true
@@ -76,6 +78,41 @@ module Macro
 
         macro_runs.each(&:run)
         macro_context_runs.each(&:run)
+      end
+
+      def final_user_status
+        UserStatusFinalizer.new(self).user_status
+      end
+
+      class UserStatusFinalizer
+        def initialize(macro_list_run)
+          @macro_list_run = macro_list_run
+        end
+        attr_reader :macro_list_run
+
+        delegate :macro_messages, to: :macro_list_run
+
+        def criticities
+          # reorder! to avoid problems with default order and pluck
+          @criticities ||= macro_messages.reorder!.distinct.pluck(:criticity)
+        end
+
+        def worst_criticity
+          %w{error warning}.find do |criticity|
+            criticity.in?(criticities)
+          end
+        end
+
+        def user_status
+          case worst_criticity
+          when "error"
+            Operation.user_status.failed
+          when "warning"
+            Operation.user_status.warning
+          else
+            Operation.user_status.successful
+          end
+        end
       end
 
       def base_scope

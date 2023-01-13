@@ -1,31 +1,47 @@
 en:
-  macro/dummy/run:
-    messages:
-      default: Simulation is in %{result} for %{name}
   macro/associate_shape/run:
     messages:
       default: "Shape %{shape_name} has been associated to journey pattern %{journey_pattern_name}"
+      error: "Shape %{shape_name} can't be associated to journey pattern %{journey_pattern_name}"
   macro/associate_stop_area_referent/run:
     messages:
       default: "Referent of Stop area %{name} has been updated"
+      error: "Referent of Stop area %{name} can't be updated"
+  macro/compute_journey_pattern_distances/run:
+    messages:
+      default: "Distances between stops for journey pattern %{name} has been updated"
+      error: "Distances between stops for journey pattern %{name} can't be updated"
+  macro/compute_journey_pattern_durations/run:
+    messages:
+      default: "Durations between stops for journey pattern %{name} has been updated"
+      error: "Durations between stops for journey pattern %{name} can't be updated"
   macro/create_code/run:
     messages:
       default: "A code %{code_value} on the code space %{code_space} has been added for a %{target_model} %{name}"
+  macro/create_shape/run:
+    messages:
+      default: "Shape %{shape_name} has been created for journey pattern %{journey_pattern_name}"
+      error: "Shape %{shape_name} can't be created for journey pattern %{journey_pattern_name}"
   macro/create_stop_area_referent/run:
     messages:
-      default: "Referent Stop area %{name} is created"
-  macro/update_stop_area_compass_bearing/run:
-    messages:
-      default: "Compass bearing of of Stop area %{name} has been updated with value %{bearing}"
-  macro/define_postal_address/run:
-    messages:
-      default: "Address '%{address}' has been updated to the %{target_model} %{name}"
-      no_address: "Address not found on the %{target_model} %{name}"
-      invalid_address: "Invalid address '%{address}' on the %{target_model} %{name}"
+      default: "Referent %{name} has been created"
+      error: "Referent %{name} can't be created"
   macro/define_attribute_from_particulars/run:
     messages:
       default: "The value %{value} has been updated on the %{target_model} %{name}"
-      invalid_value: "Invalid value %{value} on the %{target_model} %{name}"
+      error: "The value %{value} is invalid on the %{target_model} %{name}"
+  macro/define_postal_address/run:
+    messages:
+      default: "Address '%{address}' has been updated on the %{target_model} %{name}"
+      error: "Address '%{address}' can't be updated on the %{target_model} %{name}"
+      no_address: "Address not found on the %{target_model} %{name}"      
+  macro/dummy/run:
+    messages:
+      default: Simulation is in %{result} for %{name}         
+  macro/update_stop_area_compass_bearing/run:
+    messages:
+      default: "Compass bearing of of Stop area %{name} has been updated with value %{bearing}"
+      error: "Compass bearing of of Stop area %{name} can't be updated with value %{bearing}"
   macro_messages: 
     search_no_results_for_filter: "No messages found"
     no_address: "No address"

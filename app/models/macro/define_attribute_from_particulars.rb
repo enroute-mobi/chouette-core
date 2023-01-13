@@ -55,12 +55,20 @@ module Macro
         referents_with_value.find_each do |referent|
           value = particular_values[referent.id]
 
-          if referent.update(attribute_name => value)
-            create_message referent, criticity: 'info'
-          else
-            create_message referent, criticity: 'warning', value: value, message_key: :invalid_value
-          end
+          referent.update(attribute_name => value)
+          create_message referent
         end
+      end
+
+      def create_message(referent, value = nil)
+        attributes.merge!(
+          message_attributes: { name: referent.name, value: value },
+          source: referent
+        )
+
+        attributes.merge!(criticity: 'error', message_key: 'error') unless referent.valid?
+
+        macro_messages.create!(attributes)
       end
 
       # Retrieve referents without target attribute in the macro scope
@@ -128,13 +136,6 @@ module Macro
         @models ||= scope.send(model_collection)
       end
 
-      def create_message(model, attributes, value = nil)
-        attributes.merge!(
-          message_attributes: { name: model.name, value: value },
-          source: model
-        )
-        macro_messages.create!(attributes)
-      end
     end
   end
 end

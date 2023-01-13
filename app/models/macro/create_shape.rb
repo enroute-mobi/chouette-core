@@ -32,8 +32,23 @@ module Macro
             shape_cache[factory.stop_area_ids] = shape.id
             journey_pattern = factory.journey_pattern
             journey_pattern.update shape: shape
+            create_message(journey_pattern)
           end
         end
+      end
+
+      # Create a message for the given JourneyPattern
+      # If the JourneyPattern is invalid, an error message is created.
+      def create_message(journey_pattern)
+        attributes = {
+          criticity: 'info',
+          message_attributes: { shape_name: shape.uuid, journey_pattern_name: journey_pattern.name },
+          source: journey_pattern
+        }
+
+        attributes.merge!(criticity: 'error', message_key: 'error') unless journey_pattern.valid?
+
+        macro_messages.create!(attributes)
       end
 
       class ShapeFactory

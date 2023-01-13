@@ -9,18 +9,27 @@ module Macro
               if cluster.count > 1
                 builder = ReferentBuilder.create(cluster.stop_areas)
                 if builder
-                  if referent = stop_area_provider.stop_areas.create!(builder.attributes)
-                    self.macro_messages.create(
-                      criticity: "info",
-                      message_attributes: { name: referent.name },
-                      source: referent
-                    )
-                  end
+                  referent = stop_area_provider.stop_areas.create(builder.attributes)
+                  create_message(referent)
                 end
               end
             end
           end
         end
+      end
+
+      # Create a message for the given StopArea
+      # If the StopArea is invalid, an error message is created.
+      def create_message(stop_area)
+        attributes = {
+          criticity: "info",
+          message_attributes: { name: stop_area.name },
+          source: stop_area
+        }
+
+        attributes.merge!(criticity: 'error', message_key: 'error') unless stop_area.valid?
+
+        macro_messages.create!(attributes)
       end
 
       def stop_area_provider

@@ -2,21 +2,29 @@ module Macro
   class AssociateStopAreaReferent < Base
     class Run < Macro::Base::Run
       def run
-        ::Macro::Message.transaction do
-          raw_associations.each do |association|
-            particular_id = association["particular_id"]
-            closest_referent_id = association["closest_referent_id"]
+        raw_associations.each do |association|
+          particular_id = association["particular_id"]
+          closest_referent_id = association["closest_referent_id"]
 
-            stop_area = stop_areas.find(particular_id)
-            if stop_area.update!(referent_id: closest_referent_id)
-              self.macro_messages.create(
-                criticity: "info",
-                message_attributes: { name: stop_area.name },
-                source: stop_area,
-              )
-            end
+          stop_area = stop_areas.find(particular_id)
+          stop_area.update(referent_id: closest_referent_id)
+          create_message(stop_area)
           end
         end
+      end
+
+      # Create a message for the given StopArea
+      # If the StopArea is invalid, an error message is created.
+      def create_message(stop_area)
+        attributes = {
+          criticity: "info",
+          message_attributes: { name: stop_area.name },
+          source: stop_area,
+        }
+
+        attributes.merge!(criticity: 'error', message_key: 'error') unless stop_area.valid?
+
+        macro_messages.create!(attributes)
       end
 
       def stop_areas

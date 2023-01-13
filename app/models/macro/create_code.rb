@@ -27,28 +27,35 @@ module Macro
         # - read all source value (with cursor)
         # - compute all target value
         # - create all required codes with inserter ?
-        ::Macro::Message.transaction do
-          models_without_code.find_in_batches do |batch|
-            model_class.transaction do
-              batch.each do |model|
-                if source_value = source.value(model)
-                  code_value = target.value(source_value)
-                  if model.codes.create!(code_space: code_space, value: code_value)
-                    self.macro_messages.create(
-                      criticity: "info",
-                      message_attributes: {
-                        code_value: code_value,
-                        code_space: code_space,
-                        model_name: model.try(:name) || model.id
-                      },
-                      source: model
-                    )
-                  end
-                end
+        models_without_code.find_in_batches do |batch|
+          model_class.transaction do
+            batch.each do |model|
+              if source_value = source.value(model)
+                code_value = target.value(source_value)
+                model.codes.create(code_space: code_space, value: code_value)
+                create_message(model, code_value, code_space)
               end
             end
           end
         end
+      end
+
+      # Create a message for the given Model
+      # If the Model is invalid, an error message is created.
+      def create_message(model, code_value, code_space)
+        attributes = {
+          criticity: "info",
+          message_attributes: {
+            code_value: code_value,
+            code_space: code_space,
+            model_name: model.try(:name) || model.id
+          },
+          source: model
+        }
+
+        attributes.merge!(criticity: 'error', message_key: 'error') unless model.valid?
+
+        macro_messages.create!(attributes)
       end
 
       def source

@@ -4,18 +4,28 @@ module Macro
       def run
         return unless code_space
 
-        ::Macro::Message.transaction do
-          journey_patterns.find_each do |journey_pattern|
-            shape = shapes.by_code(code_space, journey_pattern.name).first
-            if shape.present? && journey_pattern.update!(shape: shape)
-              self.macro_messages.create(
-                criticity: "info",
-                message_attributes: { shape_name: shape.uuid, journey_pattern_name: journey_pattern.name},
-                source: journey_pattern
-              )
-            end
+        journey_patterns.find_each do |journey_pattern|
+          shape = shapes.by_code(code_space, journey_pattern.name).first
+          # If no shape found Chouette goes to the next journey_pattern
+          if shape.present?
+            journey_pattern.update(shape: shape)
+            create_message(journey_pattern)
           end
         end
+      end
+
+      # Create a message for the given JourneyPattern
+      # If the JourneyPattern is invalid, an error message is created.
+      def create_message(journey_pattern)
+        attributes = {
+          criticity: 'info',
+          message_attributes: { shape_name: shape.uuid, journey_pattern_name: journey_pattern.name},
+          source: journey_pattern
+        }
+
+        attributes.merge!(criticity: 'error', message_key: 'error') unless journey_pattern.valid?
+
+        macro_messages.create!(attributes)
       end
 
       def journey_patterns

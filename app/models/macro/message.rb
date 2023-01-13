@@ -9,10 +9,12 @@ module Macro
 
     validates_inclusion_of :criticity, in: [ "info", "warning", "error" ]
 
-    scope :info, -> { where(criticity: :info )  }
-    scope :warning, -> { where(criticity: :warning )  }
-    scope :error, -> { where(criticity: :error ) }
+    scope :info, -> { where(criticity: :info) }
+    scope :warning, -> { where(criticity: :warning) }
+    scope :error, -> { where(criticity: :error) }
 
+    def 
+    
     def full_message
       I18n.t(
         "#{macro_run.class.name.underscore}.messages.#{message_key || 'default'}",

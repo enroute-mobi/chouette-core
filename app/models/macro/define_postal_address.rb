@@ -49,7 +49,7 @@ module Macro
           if model.update address: address
             create_message criticity: 'info'
           else
-            create_message criticity: 'warning', message_key: 'invalid_address'
+            create_message criticity: 'error', message_key: 'error'
           end
         end
 

@@ -9,7 +9,6 @@ module Macro
           stop_area = stop_areas.find(particular_id)
           stop_area.update(referent_id: closest_referent_id)
           create_message(stop_area)
-          end
         end
       end
 

@@ -6,10 +6,8 @@ RSpec.describe Macro::CreateShape do
   end
 
   describe Macro::CreateShape::Run do
-    let(:macro_list_run) do
-      Macro::List::Run.new referential: context.referential, workbench: context.workbench
-    end
-    subject(:macro_run) { Macro::CreateShape::Run.new macro_list_run: macro_list_run }
+    let(:macro_list_run) { Macro::List::Run.create referential: context.referential, workbench: context.workbench }
+    let(:macro_run) { Macro::CreateShape::Run.create macro_list_run: macro_list_run, position: 0 }
 
     describe '.run' do
       subject { macro_run.run }
@@ -42,7 +40,9 @@ RSpec.describe Macro::CreateShape do
 
         before(:each) do
           shape_response = File.read('spec/fixtures/tomtom-shape-response.json')
-          stub_request(:post, 'https://api.tomtom.com/routing/1/batch/sync/json?key=mock_tomtom_api_key').to_return(status: 200, body: shape_response)
+          stub_request(:post, 'https://api.tomtom.com/routing/1/batch/sync/json?key=mock_tomtom_api_key').to_return(
+            status: 200, body: shape_response
+          )
         end
 
         it 'should create shape' do
@@ -55,6 +55,17 @@ RSpec.describe Macro::CreateShape do
           subject
 
           expect change { journey_pattern.reload.shape }.from(nil).to(shape)
+        end
+
+        it 'should create macro message when Journey Pattern creates Shape' do
+          subject
+          expect change { macro_list_run.macro_messages.count }.from(0).to(1)
+          expect(macro_run.macro_messages).to include(an_object_having_attributes({
+                                                                                    criticity: 'info',
+                                                                                    message_attributes: { 'shape_name' => shape.reload.uuid,
+                                                                                                          'journey_pattern_name' => journey_pattern.name },
+                                                                                    source: journey_pattern
+                                                                                  }))
         end
       end
     end

@@ -6,7 +6,7 @@ module Macro
 
         journey_patterns.find_each do |journey_pattern|
           shape = shapes.by_code(code_space, journey_pattern.name).first
-          # If no shape found Chouette goes to the next journey_pattern
+          #  If no shape found Chouette goes to the next journey_pattern
           if shape.present?
             journey_pattern.update(shape: shape)
             create_message(journey_pattern, shape)
@@ -19,7 +19,7 @@ module Macro
       def create_message(journey_pattern, shape)
         attributes = {
           criticity: 'info',
-          message_attributes: { shape_name: shape.uuid, journey_pattern_name: journey_pattern.name},
+          message_attributes: { shape_name: shape.uuid, journey_pattern_name: journey_pattern.name },
           source: journey_pattern
         }
 
@@ -37,7 +37,7 @@ module Macro
       end
 
       def code_space
-        @code_space ||= workgroup.code_spaces.find_by(short_name: "external")
+        @code_space ||= workgroup.code_spaces.find_by(short_name: 'external')
       end
     end
   end

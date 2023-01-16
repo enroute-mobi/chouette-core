@@ -56,14 +56,14 @@ module Macro
           value = particular_values[referent.id]
 
           referent.update(attribute_name => value)
-          create_message referent, value
+          create_message referent, attribute_name, value
         end
       end
 
-      def create_message(referent, value = nil)
+      def create_message(referent, attribute_name, attribute_value = nil)
         attributes = {
           criticity: 'info',
-          message_attributes: { name: referent.name, value: value },
+          message_attributes: { name: referent.name, attribute_name: referent.class.human_attribute_name(attribute_name), attribute_value: attribute_value },
           source: referent
         }
 

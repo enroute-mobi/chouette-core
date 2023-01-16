@@ -1,16 +1,15 @@
 module Macro
   class CreateStopAreaReferents < Base
     class Run < Macro::Base::Run
-
       def run
         geo_clusters.each do |geo_cluster|
           geo_cluster.compass_bearing_clusters.each do |cluster|
-            if cluster.count > 1
-              builder = ReferentBuilder.create(cluster.stop_areas)
-              if builder
-                referent = stop_area_provider.stop_areas.create(builder.attributes)
-                create_message(referent)
-              end
+            next unless cluster.count > 1
+
+            builder = ReferentBuilder.create(cluster.stop_areas)
+            if builder
+              referent = stop_area_provider.stop_areas.create(builder.attributes)
+              create_message(referent)
             end
           end
         end
@@ -18,14 +17,14 @@ module Macro
 
       # Create a message for the given StopArea
       # If the StopArea is invalid, an error message is created.
-      def create_message(stop_area)
+      def create_message(referent)
         attributes = {
-          criticity: "info",
-          message_attributes: { name: stop_area.name },
-          source: stop_area
+          criticity: 'info',
+          message_attributes: { name: referent.name },
+          source: referent
         }
 
-        attributes.merge!(criticity: 'error', message_key: 'error') unless stop_area.valid?
+        attributes.merge!(criticity: 'error', message_key: 'error') unless referent.valid?
 
         macro_messages.create!(attributes)
       end
@@ -39,8 +38,8 @@ module Macro
       end
 
       def stop_areas
-        scope.stop_areas.where(area_type: Chouette::AreaType::QUAY).
-          where.not(latitude: nil, longitude: nil, compass_bearing: nil)
+        scope.stop_areas.where(area_type: Chouette::AreaType::QUAY)
+             .where.not(latitude: nil, longitude: nil, compass_bearing: nil)
       end
 
       # Creates a cluster with ~20 meters between two positions
@@ -65,7 +64,7 @@ module Macro
 
       def geo_clusters
         [].tap do |clusters|
-          raw_clusterized_stop_areas.group_by { |r| r.delete "geo_cluster" }.map do |_, stop_areas_attributes|
+          raw_clusterized_stop_areas.group_by { |r| r.delete 'geo_cluster' }.map do |_, stop_areas_attributes|
             cluster = GeoCluster.new
 
             stop_areas_attributes.each do |stop_area_attributes|
@@ -111,7 +110,7 @@ module Macro
         end
 
         def accept?(stop_area)
-          angle_delta = ((stop_area.compass_bearing-compass_bearing+180) % 360 - 180).abs
+          angle_delta = ((stop_area.compass_bearing - compass_bearing + 180) % 360 - 180).abs
           angle_delta <= compass_bearing_delta
         end
 
@@ -161,9 +160,9 @@ module Macro
       end
 
       class ReferentBuilder
-
         def self.create(stop_areas)
           return nil if stop_areas.any?(&:referent?)
+
           new stop_areas
         end
 

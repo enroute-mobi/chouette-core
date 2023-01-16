@@ -1,7 +1,5 @@
 RSpec.describe Macro::Dummy do
-
   describe Macro::Dummy::Run do
-
     let(:macro_list_run) do
       Macro::List::Run.create referential: context.referential, workbench: context.workbench
     end
@@ -11,7 +9,7 @@ RSpec.describe Macro::Dummy do
         macro_list_run: macro_list_run,
         position: 0,
         options: {
-          expected_result: "error",
+          expected_result: 'error',
           target_model: target_model
         }
       )
@@ -30,22 +28,22 @@ RSpec.describe Macro::Dummy do
 
     let(:expected_message) do
       an_object_having_attributes({
-        criticity: macro_run.expected_result,
-        message_attributes: {
-          "name" => source.name,
-          "result" => "error"
-        },
-        source: source,
-      })
+                                    criticity: macro_run.expected_result,
+                                    message_attributes: {
+                                      'name' => source.name,
+                                      'result' => 'error'
+                                    },
+                                    source: source
+                                  })
     end
 
     before { referential.switch }
 
-    describe "#run" do
-      let(:target_model) { "StopArea" }
+    describe '#run' do
+      let(:target_model) { 'StopArea' }
       let(:source) { context.stop_area }
 
-      it "should create an error message" do
+      it 'should create an error message' do
         subject
         expect(macro_run.macro_messages).to include(expected_message)
       end

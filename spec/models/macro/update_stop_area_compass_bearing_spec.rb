@@ -1,6 +1,5 @@
 RSpec.describe Macro::UpdateStopAreaCompassBearing do
-
-  it "should be one of the available Macro" do
+  it 'should be one of the available Macro' do
     expect(Macro.available).to include(described_class)
   end
 
@@ -11,7 +10,7 @@ RSpec.describe Macro::UpdateStopAreaCompassBearing do
       Macro::List::Run.create referential: context.referential, workbench: context.workbench
     end
 
-    describe "#run" do
+    describe '#run' do
       subject { macro_run.run }
 
       let(:context) do
@@ -38,35 +37,39 @@ RSpec.describe Macro::UpdateStopAreaCompassBearing do
           }
 
           referential do
-            route stop_areas: [:first, :middle, :last] do
+            route stop_areas: %i[first middle last] do
               journey_pattern shape: :shape
             end
           end
         end
       end
+      let(:first_stop_area) { context.stop_area(:first) }
+      let(:middle_stop_area) { context.stop_area(:middle) }
+      let(:last_stop_area) { context.stop_area(:last) }
 
       before do
         context.referential.switch
       end
 
-      def stop_area(name)
-        context.stop_area(name).reload
+      it 'should compute and update Stop Area compass bearings' do
+        expect { subject }.to change { first_stop_area.reload.compass_bearing }.to(62.0)
+                          .and change { middle_stop_area.reload.compass_bearing }.to(96.4)
+                          .and change { last_stop_area.reload.compass_bearing }.to(125.7)
       end
 
-      it "should compute and update Stop Area compass bearings" do
-        expect { subject }.to change { stop_area(:first).reload.compass_bearing }.to(62.0)
-                                .and change { stop_area(:middle).compass_bearing }.to(96.4)
-                                       .and change { stop_area(:last).compass_bearing }.to(125.7)
-      end
-
-      it "creates a message for each Stop Area" do
+      it 'creates a message for each Stop Area' do
         subject
 
-        expected_messages = %i{first middle last}.map do |stop_area_name|
-          an_object_having_attributes(source: stop_area(stop_area_name))
+        [first_stop_area, middle_stop_area, last_stop_area].each do |stop_area|          
+          expect(macro_run.macro_messages).to include(an_object_having_attributes({
+            criticity: 'info',
+            message_attributes: {
+              'name' => stop_area.name,
+              'bearing' => stop_area.reload.compass_bearing
+            },
+            source: stop_area
+          }))
         end
-
-        expect(macro_run.macro_messages).to include(*expected_messages)
       end
     end
   end

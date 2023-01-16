@@ -15,6 +15,12 @@ en:
         line_id: "Line"
         timetable: "Timetable"
         stop_area: "Stop area"
+        area_type: "Area type"
+        is_referent: "Referent"
+        zip_code: "Zip code"
+        city_name: "City name"
+        parent_id: "Parent"
+        stop_area_provider_id: Stop area provider
         from_stop_area_id: "From"
         to_stop_area_id: "To"
   simple_form:

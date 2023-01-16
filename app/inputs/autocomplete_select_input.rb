@@ -3,8 +3,8 @@ class AutocompleteSelectInput < SimpleForm::Inputs::CollectionSelectInput
 
   def input(wrapper_options)
     label_method, value_method = detect_collection_methods
-
-    merged_input_options = merge_wrapper_options(input_html_options, wrapper_options)
+    # reset wrapper_options with {} (remove double div around the input)
+    merged_input_options = merge_wrapper_options(input_html_options, {})
 
     javascript_additional_packs 'inputs/autocomplete_select'
 

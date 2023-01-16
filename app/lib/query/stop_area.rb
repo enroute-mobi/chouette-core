@@ -96,8 +96,8 @@ module Query
       where(value, :matches, :city_name)
     end
 
-    def stop_area_provider(value)
-      where(value, :eq, :stop_area_provider)
+    def stop_area_provider_id(value)
+      where(value, :eq, :stop_area_provider_id)
     end
 
     def is_referent(value)
@@ -115,8 +115,8 @@ module Query
       end
     end
 
-    def parent(value)
-      where(value, :eq, :parent)
+    def parent_id(value)
+      where(value, :eq, :parent_id)
     end
 
     # TODO Could use a nice RecurviseQuery common object

@@ -120,7 +120,7 @@ class StopAreasController < ChouetteController
   end
 
   def search
-    @search ||= Search::StopArea.new(scope, params)
+    @search ||= Search::StopArea.new(scope, params, stop_area_referential: stop_area_referential)
   end
 
   delegate :collection, to: :search

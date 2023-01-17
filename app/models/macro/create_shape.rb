@@ -32,7 +32,7 @@ module Macro
             shape_cache[factory.stop_area_ids] = shape.id
             journey_pattern = factory.journey_pattern
             journey_pattern.update shape: shape
-            create_message(journey_pattern, shape)
+            create_message(journey_pattern, shape.reload)
           end
         end
       end

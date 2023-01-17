@@ -65,6 +65,7 @@ class Export::Gtfs < Export::Base
 
     VehicleJourneyCompany.new(self).export_part
 
+    FeedInfo.new(self).export_part
     target.close
   end
 
@@ -1234,6 +1235,38 @@ class Export::Gtfs < Export::Base
       def is_operator
         1
       end
+    end
+  end
+
+  class FeedInfo < Part
+    delegate :companies, to: :export_scope
+    delegate :referential, to: :export_scope
+
+    def export!
+      target.feed_infos << Decorator.new(company, referential).feed_info_attributes
+    end
+
+    class Decorator
+      attr_reader :company, :referential
+
+      def initialize(company, referential)
+        @company = company
+        @referential = referential
+      end
+
+      def feed_info_attributes
+        {
+          start_date: referential.validity_period.min.to_s,
+          end_date: referential.validity_period.max.to_s,
+          publisher_name: company.name,
+          publisher_url: company.default_contact_url,
+          lang: company.default_language
+        }
+      end
+    end
+
+    def company
+      companies.first
     end
   end
 end

@@ -28,8 +28,8 @@ en:
       error: "Referent %{name} can't be created"
   macro/define_attribute_from_particulars/run:
     messages:
-      default: "The value %{value} has been updated on the %{target_model} %{name}"
-      error: "The value %{value} is invalid on the %{target_model} %{name}"
+      default: "Attribute %{attribute_name} for referent %{name} has been updated with value %{attribute_value}"
+      error: "Attribute %{attribute_name} for referent %{name} can't be updated with value %{attribute_value}"
   macro/define_postal_address/run:
     messages:
       default: "Address '%{address}' has been updated on the %{target_model} %{name}"

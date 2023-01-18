@@ -59,11 +59,14 @@ RSpec.describe Macro::CreateShape do
 
         it 'should create macro message when Journey Pattern creates Shape' do
           subject
+          
           expect change { macro_list_run.macro_messages.count }.from(0).to(1)
           expect(macro_run.macro_messages).to include(an_object_having_attributes({
                                                                                     criticity: 'info',
-                                                                                    message_attributes: { 'shape_name' => shape.reload.uuid,
-                                                                                                          'journey_pattern_name' => journey_pattern.name },
+                                                                                    message_attributes: {
+                                                                                      'shape_name' => shape.uuid,
+                                                                                      'journey_pattern_name' => journey_pattern.name
+                                                                                    },
                                                                                     source: journey_pattern
                                                                                   }))
         end

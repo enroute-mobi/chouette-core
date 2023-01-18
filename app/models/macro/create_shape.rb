@@ -48,7 +48,7 @@ module Macro
 
         attributes.merge!(criticity: 'error', message_key: 'error') unless journey_pattern.valid?
 
-        macro_messages.create!(attributes)
+        macro_messages.create(attributes)
       end
 
       class ShapeFactory

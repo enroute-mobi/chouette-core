@@ -57,7 +57,7 @@ module Macro
 
         def create_message(attributes)
           return unless messages
-
+          
           attributes.merge!(
             message_attributes: { name: model.name, address: address.to_s},
             source: model

@@ -28,8 +28,8 @@ fr:
       error:  "Le référent %{name} n'a pas pu être créé"
   macro/define_attribute_from_particulars/run:
     messages:
-      default: "La value %{value} a été mis à jour sur un(e) %{target_model} %{name}"
-      error: "La value %{value} est invalide sur un(e) %{target_model} %{name}"
+      default: "L'attribut %{attribute_name} du référent %{name} a été mis à jour avec la valeur %{attribute_value}"
+      error: "L'attribut %{attribute_name} du référent %{name} n'a pas pu être mise à jour avec la valeur %{attribute_value}"
   macro/define_postal_address/run:
     messages:
       default: "L'adresse '%{address}' a été mise à jour sur un(e) %{target_model} %{name}"

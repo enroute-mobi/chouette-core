@@ -31,7 +31,7 @@ module Macro
 
         attributes.merge!(criticity: 'error', message_key: 'error') unless journey_pattern.valid?
 
-        macro_messages.new(attributes)
+        macro_messages.create!(attributes)
       end
 
       # Compute durations for given JourneyPatterns

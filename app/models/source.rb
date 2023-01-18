@@ -28,6 +28,7 @@ class Source < ApplicationModel
   validates :retrieval_days_of_week, presence: true, if: :enabled?
 
   enumerize :retrieval_frequency, in: %w[none hourly daily], default: 'none', predicates: { prefix: true }
+
   def enabled?
     !retrieval_frequency_none?
   end
@@ -49,11 +50,17 @@ class Source < ApplicationModel
 
   def reschedule
     scheduled_job&.destroy
+    schedule
+  end
 
+  def schedule
     return unless enabled?
 
     job = ScheduledJob.new(self)
-    self.scheduled_job = Delayed::Job.enqueue(job, cron: job.cron)
+    scheduled_job = Delayed::Job.enqueue(job, cron: job.cron)
+
+    # To avoid a new save sequence
+    update_column :scheduled_job_id, scheduled_job.id
   end
 
   # Reschedule and save the Source. Uses this method to force a rescheduling, in migration for example.
@@ -72,7 +79,8 @@ class Source < ApplicationModel
 
   # REMOVEME after CHOUETTE-2007
   before_validation ->(source) { source.retrieval_time_of_day ||= TimeOfDay.new(0, 0) }, if: :enabled?
-  before_save :reschedule, if: :reschedule_needed?
+  before_update :reschedule, if: :reschedule_needed?
+  after_commit :schedule, on: :create, if: :enabled?
 
   # Uses to start the Source retrieval at the expected time
   class ScheduledJob

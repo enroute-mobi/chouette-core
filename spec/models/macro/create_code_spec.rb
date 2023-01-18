@@ -301,8 +301,8 @@ RSpec.describe Macro::CreateCode do
           it { is_expected.to eq('dummy') }
         end
 
-        context "when pattern is 'prefix %<value>s suffix'" do
-          before { target.pattern = 'prefix %<value>s suffix' }
+        context "when pattern is 'prefix %{value} suffix'" do
+          before { target.pattern = 'prefix %{value} suffix' }
           it { is_expected.to eq('prefix dummy suffix') }
         end
 

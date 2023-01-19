@@ -414,7 +414,7 @@ RSpec.describe Import::Workbench do
         expect(merge.creator).to eq(import_workbench.creator)
       end
       it 'has the same user than the Import' do
-        import_workbench.user = User.new
+        import_workbench.user = User.first
         expect(merge.user).to eq(import_workbench.user)
       end
       it 'has the same workbench than the Import' do

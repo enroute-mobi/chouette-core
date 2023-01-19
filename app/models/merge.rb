@@ -46,16 +46,20 @@ class Merge < ApplicationModel
   end
 
   def merge
-    # Step 1 : Before
-    update_column :started_at, Time.now
-    update_column :status, :running
+    with_lock do
+      # Step 1 : Before
+      update_column :started_at, Time.now
 
-    referentials.each(&:pending!)
+      Rails.logger.info "Change Merge##{id} status to running"
+      update_column :status, :running
 
-    if before_merge_compliance_control_sets.present?
-      create_before_merge_compliance_check_sets
-    else
-      enqueue_job :merge!
+      referentials.each(&:pending!)
+
+      if before_merge_compliance_control_sets.present?
+        create_before_merge_compliance_check_sets
+      else
+        enqueue_job :merge!
+      end
     end
   end
   alias run merge
@@ -89,6 +93,8 @@ class Merge < ApplicationModel
   end
 
   def merge!
+    Rails.logger.info "Start Merge##{id} merge for #{referential_ids}"
+
     CustomFieldsSupport.within_workgroup(workgroup) do
       Chouette::Benchmark.measure("merge", merge: id) do
         Chouette::Benchmark.measure("prepare_new") do

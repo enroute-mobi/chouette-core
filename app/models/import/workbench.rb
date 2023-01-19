@@ -189,14 +189,15 @@ class Import::Workbench < Import::Base
 
   def create_automatic_merge
     Merge.transaction do
-      pending_merge = workbench.merges.order(:created_at).pending.first
+      pending_merge = workbench.merges.order(:created_at).pending.lock.first
 
       if pending_merge.present?
         pending_merge.referential_ids |= referentials.map(&:id)
-        logger.info("Add referentials #{pending_merge.referential_ids} to pending merge #{pending_merge.name}")
+        logger.info "Add referentials #{referentials.map(&:id)} to pending merge #{pending_merge.id}"
         referentials.each(&:pending!)
         pending_merge.save!
       else
+        logger.info "Create new merge"
         workbench.merges.create!({
           creator: creator,
           notification_target: notification_target,

@@ -284,7 +284,7 @@ describe Merge do
       let(:merge){Merge.create(workbench: workbench, referentials: [referential, referential]) }
 
       before(:each) do
-        workbench.output.update current_id: Referential.last.id + 1
+        workbench.output.update current_id: nil
         expect(workbench.output.current).to be_nil
       end
 
@@ -303,7 +303,9 @@ describe Merge do
       it "should create a referential with ready: false" do
         merge.update created_at: Time.now
         merge.prepare_new
-        expect(workbench.output.new.ready).to be false
+
+        expect(workbench.output.reload.new.ready).to be false
+
         merge.referentials.each do |referential|
           Merge::Referential::Legacy.new(merge, referential).merge_metadata
         end
@@ -337,7 +339,7 @@ describe Merge do
           Merge::Referential::Legacy.new(merge, referential).merge_metadata
         end
 
-        new_referential = workbench.output.new
+        new_referential = workbench.output.reload.new
         expect(new_referential.contains_urgent_offer?).to be_truthy
 
         workbench.output.update current: new_referential

@@ -357,7 +357,25 @@ class Export::Ara < Export::Base
   end
 
   class StopVisits < Part
-    delegate :vehicle_journey_at_stops, to: :export_scope
+
+    def vehicle_journey_at_stops
+      sql_query = <<~SQL
+        (
+          SELECT
+            vehicle_journey_at_stops.*,
+            LAG(vehicle_journey_at_stops.id) OVER vehicle_journey_stops AS departure,
+            LEAD(vehicle_journey_at_stops.id) OVER vehicle_journey_stops AS arrival
+          FROM vehicle_journey_at_stops
+          INNER JOIN stop_points ON vehicle_journey_at_stops.stop_point_id = stop_points.id
+          WINDOW vehicle_journey_stops AS (
+            PARTITION BY vehicle_journey_id
+            ORDER BY stop_points.position
+          )
+        ) vehicle_journey_at_stops
+      SQL
+
+      export_scope.vehicle_journey_at_stops.select('*').from(sql_query)
+    end
 
     def export!
       vehicle_journey_at_stops.includes(:vehicle_journey, stop_point: :stop_area).find_each do |stop_visit|
@@ -371,6 +389,28 @@ class Export::Ara < Export::Base
       def initialize(stop_visit, day:)
         super stop_visit
         @day = day
+      end
+
+      def vehicle_journey_at_stop
+        __getobj__
+      end
+
+      def arrival?
+        vehicle_journey_at_stop.try(:arrival?) ||
+        vehicle_journey&.vehicle_journey_at_stops&.last == vehicle_journey_at_stop
+      end
+
+      def departure?
+        vehicle_journey_at_stop.try(:departure?) ||
+        vehicle_journey&.vehicle_journey_at_stops&.first == vehicle_journey_at_stop
+      end
+
+      def arrival_time
+        super unless departure?
+      end
+
+      def departure_time
+        super unless arrival?
       end
 
       def ara_attributes
@@ -431,13 +471,13 @@ class Export::Ara < Export::Base
       end
 
       def schedules
-        return unless arrival_time && departure_time
+        return unless arrival_time || departure_time
 
         [
           {
             'Kind': 'aimed',
-            'ArrivalTime': format_arrival_date(arrival_time),
-            'DepartureTime': format_departure_date(departure_time)
+            'ArrivalTime': (format_arrival_date(arrival_time) if arrival_time),
+            'DepartureTime': (format_departure_date(departure_time) if departure_time)
           }
         ]
       end

@@ -1,0 +1,25 @@
+en:
+  activerecord:
+    models:
+      code_space:
+        zero: "Code Space"
+        one: "Code Spaces"
+        other: "Code Spaces"
+    attributes:
+      code_space:
+        short_name: Short Name
+        name: Name
+        description: Description
+  code_spaces:
+    actions:
+      new: Add Code Space
+    index:
+      title: Code Spaces
+    show:
+      title: Code Space %{name}
+    edit:
+      title: Edit Code Space %{name}
+    new:
+      title: Create new Code Space
+    create:
+      title: Create new Code Space

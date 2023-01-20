@@ -17,6 +17,16 @@ en:
         one: Create stop area referent
       macro/associate_stop_area_referent/run:
         one: Associate stop area referent
+      macro/create_shape/run:
+        one: Create Shapes
+      macro/define_postal_address/run:
+        one: Define Postal Address
+      macro/define_attribute_from_particulars/run:
+        one: Define Referent attribute from Particulars value
+      macro/compute_journey_pattern_durations/run:
+        one: Define Journey Pattern durations from passing times
+      macro/compute_journey_pattern_distances/run:
+        one: Define Journey Pattern distances from Shape
     attributes:
       macro/base/run:
         name: Name

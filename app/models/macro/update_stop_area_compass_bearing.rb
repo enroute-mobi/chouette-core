@@ -15,7 +15,6 @@ module Macro
       # If the StopArea is invalid, an error message is created.
       def create_message(stop_area)
         attributes = {
-          criticity: "info",
           message_attributes: { name: stop_area.name, bearing: stop_area.compass_bearing },
           source: stop_area
         }

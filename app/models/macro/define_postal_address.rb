@@ -47,7 +47,7 @@ module Macro
           end
 
           if model.update address: address
-            create_message criticity: 'info'
+            create_message
           else
             create_message criticity: 'error', message_key: 'error'
           end
@@ -55,7 +55,7 @@ module Macro
 
         attr_reader :model, :messages, :address
 
-        def create_message(attributes)
+        def create_message(attributes = {})
           return unless messages
           
           attributes.merge!(

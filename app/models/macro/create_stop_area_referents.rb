@@ -19,7 +19,6 @@ module Macro
       # If the StopArea is invalid, an error message is created.
       def create_message(referent)
         attributes = {
-          criticity: 'info',
           message_attributes: { name: referent.name },
           source: referent
         }

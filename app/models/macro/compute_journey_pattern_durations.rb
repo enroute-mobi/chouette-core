@@ -24,7 +24,6 @@ module Macro
       # If the JourneyPattern is invalid, an error message is created.
       def create_message(journey_pattern)
         attributes = {
-          criticity: 'info',
           message_attributes: { name: journey_pattern.name },
           source: journey_pattern
         }

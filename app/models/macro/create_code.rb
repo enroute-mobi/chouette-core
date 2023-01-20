@@ -44,7 +44,6 @@ module Macro
       # If the Model is invalid, an error message is created.
       def create_message(model, code_value, code_space)
         attributes = {
-          criticity: "info",
           message_attributes: {
             code_value: code_value,
             code_space: code_space,

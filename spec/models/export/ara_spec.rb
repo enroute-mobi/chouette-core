@@ -513,7 +513,6 @@ RSpec.describe Export::Ara do
               {
                 schedules: [{
                   'Kind': 'aimed',
-                  'ArrivalTime': nil,
                   'DepartureTime': '2022-06-30T15:01:00+00:00'
                 }],
                 passage_order: '1'
@@ -569,8 +568,7 @@ RSpec.describe Export::Ara do
               {
                 schedules: [{
                   'Kind': 'aimed',
-                  'ArrivalTime':   '2022-06-30T19:01:00+00:00',
-                  'DepartureTime': nil
+                  'ArrivalTime': '2022-06-30T19:01:00+00:00'
                 }],
                 passage_order: '3'
               }

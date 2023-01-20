@@ -358,13 +358,13 @@ class Export::Ara < Export::Base
 
   class StopVisits < Part
 
-    def vehicle_journey_at_stops
+    def vehicle_journey_at_stops # rubocop:disable Metrics/MethodLength
       sql_query = <<~SQL
         (
           SELECT
             vehicle_journey_at_stops.*,
-            LAG(vehicle_journey_at_stops.id) OVER vehicle_journey_stops AS departure,
-            LEAD(vehicle_journey_at_stops.id) OVER vehicle_journey_stops AS arrival
+            (LAG(vehicle_journey_at_stops.id) OVER vehicle_journey_stops) IS NULL AS departure,
+            (LEAD(vehicle_journey_at_stops.id) OVER vehicle_journey_stops) IS NULL AS arrival
           FROM vehicle_journey_at_stops
           INNER JOIN stop_points ON vehicle_journey_at_stops.stop_point_id = stop_points.id
           WINDOW vehicle_journey_stops AS (
@@ -396,13 +396,19 @@ class Export::Ara < Export::Base
       end
 
       def arrival?
-        vehicle_journey_at_stop.try(:arrival?) ||
-        vehicle_journey&.vehicle_journey_at_stops&.last == vehicle_journey_at_stop
+        if vehicle_journey_at_stop.respond_to?(:arrival?)
+          vehicle_journey_at_stop.arrival?
+        else
+          vehicle_journey&.vehicle_journey_at_stops&.last == vehicle_journey_at_stop
+        end
       end
 
       def departure?
-        vehicle_journey_at_stop.try(:departure?) ||
-        vehicle_journey&.vehicle_journey_at_stops&.first == vehicle_journey_at_stop
+        if vehicle_journey_at_stop.respond_to?(:departure?)
+          vehicle_journey_at_stop.departure?
+        else
+          vehicle_journey&.vehicle_journey_at_stops&.first == vehicle_journey_at_stop
+        end
       end
 
       def arrival_time
@@ -473,13 +479,11 @@ class Export::Ara < Export::Base
       def schedules
         return unless arrival_time || departure_time
 
-        [
-          {
-            'Kind': 'aimed',
-            'ArrivalTime': (format_arrival_date(arrival_time) if arrival_time),
-            'DepartureTime': (format_departure_date(departure_time) if departure_time)
-          }
-        ]
+        aimed_schedule = { 'Kind': 'aimed' }
+        aimed_schedule[:ArrivalTime] = format_arrival_date(arrival_time) if arrival_time
+        aimed_schedule[:DepartureTime] = format_departure_date(departure_time) if departure_time
+
+        [aimed_schedule]
       end
 
       def uuid

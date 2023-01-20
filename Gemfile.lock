@@ -6,7 +6,8 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/gtfs.git
-  revision: 7acd49f4726404a9b2c24bc952180ef85afe25d7
+  revision: 1c756c0a518aa29c437b4d32d3e8e9384f6242a7
+  branch: GTFS-35-rewriter-should-deal-with-attribution-file
   specs:
     gtfs (0.3.6)
       msgpack

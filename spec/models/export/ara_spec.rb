@@ -505,59 +505,88 @@ RSpec.describe Export::Ara do
         it { is_expected.to match_array([an_instance_of(Ara::StopVisit)] * at_stops_count) }
 
         describe Export::Ara::StopVisits::Decorator do
-          let(:vehicle_journey_at_stop) { vehicle_journey.vehicle_journey_at_stops.first }
-          let(:stop_visit_decorator) { Export::Ara::StopVisits::Decorator.new(vehicle_journey_at_stop, day: day) }
+          context 'with the first stop_visit' do
+            let(:vehicle_journey_at_stop) { vehicle_journey.vehicle_journey_at_stops.first }
+            let(:stop_visit_decorator) { Export::Ara::StopVisits::Decorator.new(vehicle_journey_at_stop, day: day) }
 
-          let(:expected_attributes) do
-            {
-              schedules: [{
-                'Kind': 'aimed',
-                'ArrivalTime': '2022-06-30T19:01:00+00:00',
-                'DepartureTime': '2022-06-30T15:01:00+00:00'
-              }],
-              passage_order: '1'
-            }
-          end
-
-          before do
-            vehicle_journey_at_stop.update(
-              arrival_time: '2000-01-01T19:01:00+000'.to_datetime,
-              departure_time: '2000-01-01T15:01:00+0000'.to_datetime
-            )
-            vehicle_journey_at_stop.stop_point.update position: 0
-          end
-
-          it 'should create stop_visits with the correct attributes' do
-            expect(stop_visit_decorator.ara_model).to have_attributes(expected_attributes)
-          end
-
-          describe '#format_departure_date' do
-            let(:test_date) { Time.new(2000, 1, 1, 19, 1, 1, 'Z') }
-            subject(:departure_time) { stop_visit_decorator.format_departure_date(test_date) }
-
-            context 'with zero day offset' do
-              it { is_expected.to eq('2022-06-30T19:01:01+00:00') }
+            let(:expected_attributes) do
+              {
+                schedules: [{
+                  'Kind': 'aimed',
+                  'DepartureTime': '2022-06-30T15:01:00+00:00'
+                }],
+                passage_order: '1'
+              }
             end
 
-            context 'with 1 day offset' do
-              before { vehicle_journey_at_stop.update(departure_day_offset: 1) }
-              it { is_expected.to eq('2022-07-01T19:01:01+00:00') }
+            before do
+              vehicle_journey_at_stop.update(
+                arrival_time: '2000-01-01T19:01:00+000'.to_datetime,
+                departure_time: '2000-01-01T15:01:00+0000'.to_datetime
+              )
+              vehicle_journey_at_stop.stop_point.update position: 0
+            end
+
+            it 'should create stop_visits with the correct attributes' do
+              expect(stop_visit_decorator.ara_model).to have_attributes(expected_attributes)
+            end
+
+            describe '#format_departure_date' do
+              let(:test_date) { Time.new(2000, 1, 1, 19, 1, 1, 'Z') }
+              subject(:departure_time) { stop_visit_decorator.format_departure_date(test_date) }
+
+              context 'with zero day offset' do
+                it { is_expected.to eq('2022-06-30T19:01:01+00:00') }
+              end
+
+              context 'with 1 day offset' do
+                before { vehicle_journey_at_stop.update(departure_day_offset: 1) }
+                it { is_expected.to eq('2022-07-01T19:01:01+00:00') }
+              end
+            end
+
+            describe '#format_arrival_date' do
+              let(:test_date) { Time.new(2000, 1, 1, 19, 1, 1, 'Z') }
+              subject(:arrival_time) { stop_visit_decorator.format_arrival_date(test_date) }
+
+              context 'with zero day offset' do
+                it { is_expected.to eq('2022-06-30T19:01:01+00:00') }
+              end
+
+              context 'with 1 day offset' do
+                before { vehicle_journey_at_stop.update(arrival_day_offset: 1) }
+                it { is_expected.to eq('2022-07-01T19:01:01+00:00') }
+              end
             end
           end
 
-          describe '#format_arrival_date' do
-            let(:test_date) { Time.new(2000, 1, 1, 19, 1, 1, 'Z') }
-            subject(:arrival_time) { stop_visit_decorator.format_arrival_date(test_date) }
+          context 'with the last stop_visit' do
+            let(:vehicle_journey_at_stop) { vehicle_journey.vehicle_journey_at_stops.last }
+            let(:stop_visit_decorator) { Export::Ara::StopVisits::Decorator.new(vehicle_journey_at_stop, day: day) }
 
-            context 'with zero day offset' do
-              it { is_expected.to eq('2022-06-30T19:01:01+00:00') }
+            let(:expected_attributes) do
+              {
+                schedules: [{
+                  'Kind': 'aimed',
+                  'ArrivalTime': '2022-06-30T19:01:00+00:00'
+                }],
+                passage_order: '3'
+              }
             end
 
-            context 'with 1 day offset' do
-              before { vehicle_journey_at_stop.update(arrival_day_offset: 1) }
-              it { is_expected.to eq('2022-07-01T19:01:01+00:00') }
+            before do
+              vehicle_journey_at_stop.update(
+                arrival_time: '2000-01-01T19:01:00+000'.to_datetime,
+                departure_time: '2000-01-01T15:01:00+0000'.to_datetime
+              )
+              vehicle_journey_at_stop.stop_point.update position: 2
+            end
+
+            it 'should create stop_visits with the correct attributes' do
+              expect(stop_visit_decorator.ara_model).to have_attributes(expected_attributes)
             end
           end
+
         end
       end
     end

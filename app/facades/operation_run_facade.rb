@@ -1,5 +1,6 @@
 class OperationRunFacade
 	include Rails.application.routes.url_helpers
+  include ActionView::Helpers::TagHelper
 
 	attr_reader :resource, :workbench
 
@@ -17,11 +18,16 @@ class OperationRunFacade
 
 		color = color_map[criticity.to_sym]
 
-		%{<div class="span fa fa-circle text-enroute-chouette-#{color}"></span>}
+    content_tag(:span, '', class: "span fa fa-circle text-enroute-chouette-#{color}") + criticity.text
 	end
 
 	def message_table_params
-		criticity = TableBuilderHelper::Column.new(key: :criticity, attribute: -> (m) { criticity_span(m.criticity).html_safe }, sortable: false)		
+		criticity = TableBuilderHelper::Column.new(
+      key: :criticity, 
+      attribute: -> (m) { criticity_span(m.criticity) }, 
+      sortable: false
+    )
+
 		columns = [
 			TableBuilderHelper::Column.new(key: :message, attribute: :full_message, sortable: false),
 			TableBuilderHelper::Column.new(

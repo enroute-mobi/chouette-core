@@ -109,4 +109,23 @@ RSpec.describe Query::StopArea do
       is_expected.to include(group_of_stop_places)
     end
   end
+
+  let(:query) { Query::StopArea.new(Chouette::StopArea.all) }
+
+  describe '#name' do
+    let(:context) do
+      Chouette.create do
+        stop_area :selected, name: "Stop area selected"
+        stop_area name: "Stop area 1"
+        stop_area name: "Stop area 2"
+      end
+    end
+
+    let(:selected) { context.stop_area :selected }
+
+    it 'includes the StopArea selected' do
+      scope = query.name(selected.name).scope
+      expect(scope).to match_array([selected])
+    end
+  end
 end

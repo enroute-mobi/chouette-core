@@ -45,7 +45,9 @@ fr:
         created_by: Créé par
         creator: "Créateur"
         original_macro_list_id: "Jeu d'instructions"
+        original_macro_list: "Jeu d'instructions"
         referential_id: "Cible"
+        referential: "Cible"
         started_at: "Date et heure de lancement"
         duration: Durée
         created_at: "Crée le"

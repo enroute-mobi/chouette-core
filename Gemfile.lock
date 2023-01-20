@@ -6,8 +6,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/gtfs.git
-  revision: 1c756c0a518aa29c437b4d32d3e8e9384f6242a7
-  branch: GTFS-35-rewriter-should-deal-with-attribution-file
+  revision: bf3c36842e447c351e0ea4e1984437a9d1656df9
   specs:
     gtfs (0.3.6)
       msgpack
@@ -955,4 +954,4 @@ DEPENDENCIES
   will_paginate-bootstrap
 
 BUNDLED WITH
-   2.4.1
+   2.3.26

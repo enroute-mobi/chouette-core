@@ -6,7 +6,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/gtfs.git
-  revision: 7acd49f4726404a9b2c24bc952180ef85afe25d7
+  revision: bf3c36842e447c351e0ea4e1984437a9d1656df9
   specs:
     gtfs (0.3.6)
       msgpack
@@ -954,4 +954,4 @@ DEPENDENCIES
   will_paginate-bootstrap
 
 BUNDLED WITH
-   2.4.1
+   2.3.26

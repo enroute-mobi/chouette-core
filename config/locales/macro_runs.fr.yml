@@ -14,9 +14,9 @@ fr:
       macro/update_stop_area_compass_bearing/run:
         one: Définir l'Orientation des Arrêts selon les Tracés
       macro/create_stop_area_referents/run:
-        one: Créer les arrêts référent
+        one: Créer les Arrêts référents
       macro/associate_stop_area_referent/run:
-        one: Associer les arrêts référent
+        one: Associer les Arrêts à un Référent
       macro/create_shape/run:
         one: Créer les Tracés
       macro/define_postal_address/run:

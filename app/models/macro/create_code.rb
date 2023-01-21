@@ -33,7 +33,7 @@ module Macro
               if source_value = source.value(model)
                 code_value = target.value(source_value)
                 model.codes.create(code_space: code_space, value: code_value)
-                create_message(model, code_value, code_space)
+                create_message(model, code_value, source_value)
               end
             end
           end
@@ -42,12 +42,11 @@ module Macro
 
       # Create a message for the given Model
       # If the Model is invalid, an error message is created.
-      def create_message(model, code_value, code_space)
+      def create_message(model, code_value, source_value)
         attributes = {
           message_attributes: {
             code_value: code_value,
-            code_space: code_space,
-            model_name: model.try(:name) || model.id
+            name: model.try(:name) || model.try(:published_name) || source_value
           },
           source: model
         }

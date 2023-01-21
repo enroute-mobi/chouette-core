@@ -7,8 +7,8 @@
 
     .grow
       - if macro_run.name.present?
-        = truncate(macro_run.name, length: 60)
-        span.human_model_name = "(#{macro_run.model_name.human})"
+        span.name = truncate(macro_run.name, length: 60)
+        span.human_model_name = " (#{macro_run.model_name.human})"
       - else 
         span.human_model_name = macro_run.model_name.human
 

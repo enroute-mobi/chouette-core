@@ -17,7 +17,7 @@ en:
       error: "Durations between stops for journey pattern %{name} can't be updated"
   macro/create_code/run:
     messages:
-      default: "A code %{code_value} on the code space %{code_space} has been added for a %{target_model} %{name}"
+      default: "A code %{code_value} has been added for a %{target_model} %{name}"
   macro/create_shape/run:
     messages:
       default: "Shape %{shape_name} has been created for journey pattern %{journey_pattern_name}"

@@ -22,7 +22,7 @@ fr:
     messages:
       default: "Le tracé %{shape_name} a été créé pour la mission %{journey_pattern_name}"
       error: "Le tracé %{shape_name} n'a pas pu être créé pour la mission %{journey_pattern_name}"
-  macro/create_stop_area_referent/run:
+  macro/create_stop_area_referents/run:
     messages:
       default: "Le référent %{name} a été créé"
       error:  "Le référent %{name} n'a pas pu être créé"

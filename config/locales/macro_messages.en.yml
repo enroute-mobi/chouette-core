@@ -22,7 +22,7 @@ en:
     messages:
       default: "Shape %{shape_name} has been created for journey pattern %{journey_pattern_name}"
       error: "Shape %{shape_name} can't be created for journey pattern %{journey_pattern_name}"
-  macro/create_stop_area_referent/run:
+  macro/create_stop_area_referents/run:
     messages:
       default: "Referent %{name} has been created"
       error: "Referent %{name} can't be created"

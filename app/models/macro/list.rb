@@ -1,13 +1,17 @@
+# frozen_string_literal: true
+
 module Macro
   class List < ApplicationModel
-    self.table_name = "macro_lists"
+    self.table_name = 'macro_lists'
 
     belongs_to :workbench, optional: false
     validates :name, presence: true
 
-    has_many :macros, -> { order(position: :asc) }, class_name: "Macro::Base", dependent: :delete_all, foreign_key: "macro_list_id", inverse_of: :macro_list
-    has_many :macro_list_runs, class_name: "Macro::List::Run", foreign_key: :original_macro_list_id
-    has_many :macro_contexts, class_name: "Macro::Context", foreign_key: "macro_list_id", inverse_of: :macro_list
+    has_many :macros, lambda {
+                        order(position: :asc)
+                      }, class_name: 'Macro::Base', dependent: :delete_all, foreign_key: 'macro_list_id', inverse_of: :macro_list
+    has_many :macro_list_runs, class_name: 'Macro::List::Run', foreign_key: :original_macro_list_id
+    has_many :macro_contexts, class_name: 'Macro::Context', foreign_key: 'macro_list_id', inverse_of: :macro_list
 
     accepts_nested_attributes_for :macros, allow_destroy: true, reject_if: :all_blank
     accepts_nested_attributes_for :macro_contexts, allow_destroy: true, reject_if: :all_blank
@@ -28,7 +32,7 @@ module Macro
 
     class Run < Operation
       # The Workbench where macros are executed
-      self.table_name = "macro_list_runs"
+      self.table_name = 'macro_list_runs'
 
       belongs_to :workbench, optional: false
       delegate :workgroup, to: :workbench
@@ -41,12 +45,13 @@ module Macro
       # Should only used to provide a link in the UI
       belongs_to :original_macro_list, optional: true, foreign_key: :original_macro_list_id, class_name: 'Macro::List'
 
-      has_many :macro_runs, -> { order(position: :asc) }, class_name: "Macro::Base::Run",
-               dependent: :delete_all, foreign_key: "macro_list_run_id"
+      has_many :macro_runs, -> { order(position: :asc) }, class_name: 'Macro::Base::Run',
+                                                          dependent: :delete_all, foreign_key: 'macro_list_run_id'
 
-      has_many :macro_context_runs, class_name: "Macro::Context::Run", dependent: :delete_all, foreign_key: "macro_list_run_id", inverse_of: :macro_list_run
+      has_many :macro_context_runs, class_name: 'Macro::Context::Run', dependent: :delete_all,
+                                    foreign_key: 'macro_list_run_id', inverse_of: :macro_list_run
 
-      has_many :macro_messages, class_name: "Macro::Message", through: :macro_runs
+      has_many :macro_messages, class_name: 'Macro::Message', through: :macro_runs
 
       has_one :processing, as: :processed
 
@@ -63,7 +68,7 @@ module Macro
         end
 
         original_macro_list.macro_contexts.each do |macro_context|
-          self.macro_context_runs << macro_context.build_run
+          macro_context_runs << macro_context.build_run
         end
 
         self.workbench = original_macro_list.workbench
@@ -98,16 +103,16 @@ module Macro
         end
 
         def worst_criticity
-          %w{error warning}.find do |criticity|
+          %w[error warning].find do |criticity|
             criticity.in?(criticities)
           end
         end
 
         def user_status
           case worst_criticity
-          when "error"
+          when 'error'
             Operation.user_status.failed
-          when "warning"
+          when 'warning'
             Operation.user_status.warning
           else
             Operation.user_status.successful
@@ -221,7 +226,6 @@ module Macro
           scope.stop_points
         end
       end
-
     end
   end
 end

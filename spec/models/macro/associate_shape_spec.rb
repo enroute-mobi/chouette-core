@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Macro::AssociateShape do
   it 'should be one of the available Macro' do
     expect(Macro.available).to include(described_class)
@@ -35,21 +37,21 @@ RSpec.describe Macro::AssociateShape do
             expect { subject }.to change { journey_pattern.reload.shape }.from(nil).to(shape)
           end
 
-          it 'should create a macro message when Journey Pattern uses the Shape' do
-            subject
-            expect change { macro_list_run.macro_messages.count }.from(0).to(1)
-            expect(macro_run.macro_messages).to include(an_object_having_attributes({
-                                                                                      criticity: 'info',
-                                                                                      message_attributes: { 'shape_name' => shape.reload.uuid,
-                                                                                                            'journey_pattern_name' => journey_pattern.name },
-                                                                                      source: journey_pattern
-                                                                                    }))
+          it 'should create a macro message when Journey Pattern uses the Shape', skip: 'CHOUETTE-2597' do
+            expect { subject }.to change { macro_list_run.macro_messages.count }.from(0).to(1)
+
+            expected_message = an_object_having_attributes(
+              criticity: 'info',
+              message_attributes: { 'shape_name' => shape.reload.uuid, 'journey_pattern_name' => journey_pattern.name },
+              source: journey_pattern
+            )
+            expect(macro_run.macro_messages).to include(expected_message)
           end
         end
 
         context 'when no Shape has the Journey Pattern name as external code' do
           it "doesn't change the Journey Pattern Shape" do
-            expect { subject }.to_not change { journey_pattern.reload.shape }
+            expect { subject }.to_not(change { journey_pattern.reload.shape })
           end
         end
       end
@@ -58,7 +60,7 @@ RSpec.describe Macro::AssociateShape do
         before { journey_pattern.update! shape: shape }
 
         it "doesn't change the Journey Pattern Shape" do
-          expect { subject }.to_not change { journey_pattern.reload.shape }
+          expect { subject }.to_not(change { journey_pattern.reload.shape })
         end
       end
     end

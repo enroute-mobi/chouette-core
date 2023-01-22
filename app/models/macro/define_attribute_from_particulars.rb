@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 module Macro
   class DefineAttributeFromParticulars < Macro::Base
     module Options
@@ -62,7 +61,11 @@ module Macro
 
       def create_message(referent, attribute_name, attribute_value = nil)
         attributes = {
-          message_attributes: { name: referent.name, attribute_name: referent.class.human_attribute_name(attribute_name), attribute_value: attribute_value },
+          message_attributes: {
+            name: referent.name, attribute_name:
+            referent.class.human_attribute_name(attribute_name),
+            attribute_value: attribute_value
+          },
           source: referent
         }
 

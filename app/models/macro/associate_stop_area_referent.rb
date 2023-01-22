@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 module Macro
   class AssociateStopAreaReferent < Base
     class Run < Macro::Base::Run
       def run
         raw_associations.each do |association|
-          particular_id = association["particular_id"]
-          closest_referent_id = association["closest_referent_id"]
+          particular_id = association['particular_id']
+          closest_referent_id = association['closest_referent_id']
 
           stop_area = stop_areas.find(particular_id)
           stop_area.update(referent_id: closest_referent_id)
@@ -17,7 +19,7 @@ module Macro
       def create_message(stop_area)
         attributes = {
           message_attributes: { name: stop_area.name },
-          source: stop_area,
+          source: stop_area
         }
 
         attributes.merge!(criticity: 'error', message_key: 'error') unless stop_area.valid?
@@ -30,8 +32,8 @@ module Macro
       end
 
       def selected_attributes
-        position_as = "ST_SetSRID(ST_Point(longitude, latitude), 4326) as position"
-        [ :id, :area_type, :compass_bearing, position_as ]
+        position_as = 'ST_SetSRID(ST_Point(longitude, latitude), 4326) as position'
+        [:id, :area_type, :compass_bearing, position_as]
       end
 
       def particulars
@@ -50,8 +52,8 @@ module Macro
         7.5
       end
 
-      def raw_associations
-         query = <<~SQL
+      def raw_associations # rubocop:disable Metrics/MethodLength
+        query = <<~SQL
            SELECT particulars.id AS particular_id, closest_referent.id AS closest_referent_id
            FROM (#{particulars.to_sql}) AS particulars
            CROSS JOIN LATERAL(
@@ -67,9 +69,9 @@ module Macro
                abs(referents.compass_bearing - particulars.compass_bearing)
             LIMIT 1
           ) AS closest_referent;
-         SQL
+        SQL
 
-         PostgreSQLCursor::Cursor.new(query)
+        PostgreSQLCursor::Cursor.new(query)
       end
     end
   end

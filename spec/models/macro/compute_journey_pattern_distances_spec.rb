@@ -6,7 +6,6 @@ RSpec.describe Macro::ComputeJourneyPatternDistances do
   end
 
   describe Macro::ComputeJourneyPatternDistances::Run do
-
     let(:context) do
       Chouette.create do
         shape :shape, geometry: %{LINESTRING (7.091885616516534 43.57432715792825,
@@ -68,7 +67,6 @@ RSpec.describe Macro::ComputeJourneyPatternDistances do
       end
 
       it 'should compute and update Journey Pattern costs' do
-
         expected_costs = {
           "#{first_stop.id}-#{second_stop.id}" => { 'distance' => 327 },
           "#{second_stop.id}-#{third_stop.id}" => { 'distance' => 306 },
@@ -76,7 +74,6 @@ RSpec.describe Macro::ComputeJourneyPatternDistances do
           "#{fourth_stop.id}-#{fifth_stop.id}" => { 'distance' => 131 }
         }
         expect { subject }.to change { journey_pattern.reload.costs }.to(expected_costs)
-
       end
 
       it 'creates a message for each journey_pattern' do

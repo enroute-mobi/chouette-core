@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Macro
   class UpdateStopAreaCompassBearing < Macro::Base
     class Run < Macro::Base::Run
@@ -23,7 +25,6 @@ module Macro
 
         macro_messages.create!(attributes)
       end
-
 
       def stop_areas
         scope.stop_areas.without_compass_bearing

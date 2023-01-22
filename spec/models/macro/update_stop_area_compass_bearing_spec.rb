@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Macro::UpdateStopAreaCompassBearing do
   it 'should be one of the available Macro' do
     expect(Macro.available).to include(described_class)
@@ -60,15 +62,16 @@ RSpec.describe Macro::UpdateStopAreaCompassBearing do
       it 'creates a message for each Stop Area' do
         subject
 
-        [first_stop_area, middle_stop_area, last_stop_area].each do |stop_area|          
-          expect(macro_run.macro_messages).to include(an_object_having_attributes({
+        [first_stop_area, middle_stop_area, last_stop_area].each do |stop_area|
+          expected_message = an_object_having_attributes(
             criticity: 'info',
             message_attributes: {
               'name' => stop_area.name,
               'bearing' => stop_area.reload.compass_bearing
             },
             source: stop_area
-          }))
+          )
+          expect(macro_run.macro_messages).to include(expected_message)
         end
       end
     end

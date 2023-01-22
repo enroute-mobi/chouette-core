@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Macro
   class DefinePostalAddress < Macro::Base
     module Options
@@ -57,9 +59,9 @@ module Macro
 
         def create_message(attributes = {})
           return unless messages
-          
+
           attributes.merge!(
-            message_attributes: { name: model.name, address: address.to_s},
+            message_attributes: { name: model.name, address: address.to_s },
             source: model
           )
           messages.create!(attributes)

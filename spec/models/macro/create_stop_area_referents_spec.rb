@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Macro::CreateStopAreaReferents::Run do
   let(:macro_list_run) do
     Macro::List::Run.create workbench: context.workbench
@@ -14,12 +16,13 @@ RSpec.describe Macro::CreateStopAreaReferents::Run do
         # Distance between them: 9.999385455380681 meters
         stop_area :first, coordinates: '43.9856,5.118601', compass_bearing: 129
         stop_area coordinates: '43.98568803,5.118576', compass_bearing: 131
-        stop_area coordinates: '43.98568803,6.118576', compass_bearing: 4 # Required because Postgis has a bug in 3.0.X  https://trac.osgeo.org/postgis/ticket/4853
+        # Required because Postgis has a bug in 3.0.X  https://trac.osgeo.org/postgis/ticket/4853
+        stop_area coordinates: '43.98568803,6.118576', compass_bearing: 4
       end
     end
 
     subject { macro_run.run }
-    let(:stop_area) { context.stop_area(:first)}
+    let(:stop_area) { context.stop_area(:first) }
 
     it 'creates a Referent Stop Area' do
       expect { subject }.to change { context.stop_area_referential.stop_areas.referents.count }.from(0).to(1)
@@ -27,13 +30,15 @@ RSpec.describe Macro::CreateStopAreaReferents::Run do
 
     it 'creates a message for referent creation' do
       expect { subject }.to change { macro_run.macro_messages.count }.from(0).to(1)
-      
+
       referent = context.stop_area_referential.stop_areas.referents.first!
-      expect(macro_run.macro_messages).to include(an_object_having_attributes({
-                                                                                criticity: 'info',
-                                                                                message_attributes: { 'name' => referent.name },
-                                                                                source: referent
-                                                                              }))
+
+      expected_message = an_object_having_attributes(
+        criticity: 'info',
+        message_attributes: { 'name' => referent.name },
+        source: referent
+      )
+      expect(macro_run.macro_messages).to include(expected_message)
     end
 
     describe 'created Referent' do

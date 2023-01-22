@@ -1287,18 +1287,18 @@ class Export::Gtfs < Export::Base
       end
 
       def publisher_name
-        company.name
+        company&.name
       end
 
       def publisher_url
-        company.default_contact_url
+        company&.default_contact_url
       end
 
       DEFAULT_LANGUAGE = 'fr'
       def language
         # For the moment, we need to use a default language to avoid
         # invalid feedwhen the user is not aware of this feature
-        company.default_language.presence || DEFAULT_LANGUAGE
+        company&.default_language.presence || DEFAULT_LANGUAGE
       end
     end
   end

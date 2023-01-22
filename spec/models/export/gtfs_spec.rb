@@ -1371,6 +1371,12 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
           it { is_expected.to eq(company.name) }
         end
+
+        context 'no company is not available' do
+          let(:company) { nil }
+
+          it { is_expected.to be_nil }
+        end
       end
 
       describe '#publisher_url' do
@@ -1381,6 +1387,12 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
           it { is_expected.to eq(company.default_contact_url) }
         end
+
+        context 'no company is not available' do
+          let(:company) { nil }
+
+          it { is_expected.to be_nil }
+        end
       end
 
       describe '#language' do
@@ -1390,6 +1402,12 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
           before { company.default_language = 'en' }
 
           it { is_expected.to eq(company.default_language) }
+        end
+
+        context 'no company is not available' do
+          let(:company) { nil }
+
+          it { is_expected.to eq('fr') }
         end
 
         context 'when company default language is not defined' do

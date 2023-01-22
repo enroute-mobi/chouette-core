@@ -1321,6 +1321,86 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
     end
   end
 
+  describe 'FeedInfo' do
+    describe Export::Gtfs::FeedInfo::Decorator do
+      let(:decorator) { Export::Gtfs::FeedInfo::Decorator.new(company: company, referential: referential) }
+      let(:referential) { Referential.new }
+      let(:company) { Chouette::Company.new }
+
+      describe '#start_date' do
+        subject { decorator.start_date }
+
+        context 'when Referential validity period starts on 2030-01-01' do
+          before { allow(referential).to receive(:validity_period).and_return(Period.from('2030-01-01')) }
+          it { is_expected.to eq(Date.parse('2030-01-01')) }
+        end
+      end
+
+      describe '#end_date' do
+        subject { decorator.end_date }
+
+        context 'when Referential validity period starts on 2030-12-31' do
+          before { allow(referential).to receive(:validity_period).and_return(Period.from(:today).until('2030-12-31')) }
+          it { is_expected.to eq(Date.parse('2030-12-31')) }
+        end
+      end
+
+      describe '#gtfs_start_date' do
+        subject { decorator.gtfs_start_date }
+
+        context 'when start date is 2030-01-15' do
+          before { allow(decorator).to receive(:start_date).and_return(Date.parse('2030-01-15')) }
+          it { is_expected.to eq('20300115') }
+        end
+      end
+
+      describe '#gtfs_end_date' do
+        subject { decorator.gtfs_end_date }
+
+        context 'when end date is 2030-01-15' do
+          before { allow(decorator).to receive(:end_date).and_return(Date.parse('2030-01-15')) }
+          it { is_expected.to eq('20300115') }
+        end
+      end
+
+      describe '#publisher_name' do
+        subject { decorator.publisher_name }
+
+        context 'when company name is "dummy"' do
+          before { company.name = 'dummy' }
+
+          it { is_expected.to eq(company.name) }
+        end
+      end
+
+      describe '#publisher_url' do
+        subject { decorator.publisher_url }
+
+        context 'when company default contact url is "http://example.com"' do
+          before { company.default_contact_url = 'http://example.com' }
+
+          it { is_expected.to eq(company.default_contact_url) }
+        end
+      end
+
+      describe '#language' do
+        subject { decorator.language }
+
+        context 'when company default language is "en"' do
+          before { company.default_language = 'en' }
+
+          it { is_expected.to eq(company.default_language) }
+        end
+
+        context 'when company default language is not defined' do
+          before { company.default_language = '' }
+
+          it { is_expected.to eq('fr') }
+        end
+      end
+    end
+  end
+
   describe 'CodeSpaces' do
 
     let(:export_scope) { Export::Scope::All.new context.referential }

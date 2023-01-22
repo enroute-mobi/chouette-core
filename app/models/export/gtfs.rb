@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Export::Gtfs < Export::Base
   include LocalExportSupport
 
@@ -1243,30 +1245,61 @@ class Export::Gtfs < Export::Base
     delegate :referential, to: :export_scope
 
     def export!
-      target.feed_infos << Decorator.new(company, referential).feed_info_attributes
+      target.feed_infos << Decorator.new(company: company, referential: referential).feed_info_attributes
+    end
+
+    def company
+      companies.first
     end
 
     class Decorator
       attr_reader :company, :referential
 
-      def initialize(company, referential)
+      def initialize(company:, referential:)
         @company = company
         @referential = referential
       end
 
       def feed_info_attributes
         {
-          start_date: referential.validity_period.min.to_s,
-          end_date: referential.validity_period.max.to_s,
-          publisher_name: company.name,
-          publisher_url: company.default_contact_url,
-          lang: company.default_language
+          start_date: gtfs_start_date,
+          end_date: gtfs_end_date,
+          publisher_name: publisher_name,
+          publisher_url: publisher_url,
+          lang: language
         }
       end
-    end
 
-    def company
-      companies.first
+      def start_date
+        referential.validity_period.min
+      end
+
+      def gtfs_start_date
+        start_date.strftime('%Y%m%d')
+      end
+
+      def end_date
+        referential.validity_period.max
+      end
+
+      def gtfs_end_date
+        end_date.strftime('%Y%m%d')
+      end
+
+      def publisher_name
+        company.name
+      end
+
+      def publisher_url
+        company.default_contact_url
+      end
+
+      DEFAULT_LANGUAGE = 'fr'
+      def language
+        # For the moment, we need to use a default language to avoid
+        # invalid feedwhen the user is not aware of this feature
+        company.default_language.presence || DEFAULT_LANGUAGE
+      end
     end
   end
 end

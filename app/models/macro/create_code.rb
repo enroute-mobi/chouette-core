@@ -32,12 +32,28 @@ module Macro
             batch.each do |model|
               if source_value = source.value(model)
                 code_value = target.value(source_value)
-                Rails.logger.debug { "Create code '#{code_value}' for #{model.class}##{model.id}" }
-                model.codes.create! code_space: code_space, value: code_value
+                model.codes.create(code_space: code_space, value: code_value)
+                create_message(model, code_value, source_value)
               end
             end
           end
         end
+      end
+
+      # Create a message for the given Model
+      # If the Model is invalid, an error message is created.
+      def create_message(model, code_value, source_value)
+        attributes = {
+          message_attributes: {
+            code_value: code_value,
+            name: model.try(:name) || model.try(:published_name) || source_value
+          },
+          source: model
+        }
+
+        attributes.merge!(criticity: 'error', message_key: 'error') unless model.valid?
+
+        macro_messages.create!(attributes)
       end
 
       def source

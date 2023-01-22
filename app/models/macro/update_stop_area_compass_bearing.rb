@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Macro
   class UpdateStopAreaCompassBearing < Macro::Base
     class Run < Macro::Base::Run
@@ -6,15 +8,22 @@ module Macro
           compass_bearing = average_bearings[stop_area.id]
           next unless compass_bearing
 
-          if stop_area.update compass_bearing: compass_bearing
-            macro_messages.create(
-              criticity: 'info', source: stop_area,
-              message_attributes: { name: stop_area.name, bearing: stop_area.compass_bearing }
-            )
-          else
-            macro_messages.create criticity: 'error', message_key: 'invalid', source: stop_area
-          end
+          stop_area.update compass_bearing: compass_bearing
+          create_message(stop_area)
         end
+      end
+
+      # Create a message for the given StopArea
+      # If the StopArea is invalid, an error message is created.
+      def create_message(stop_area)
+        attributes = {
+          message_attributes: { name: stop_area.name, bearing: stop_area.compass_bearing },
+          source: stop_area
+        }
+
+        attributes.merge!(criticity: 'error', message_key: 'error') unless stop_area.valid?
+
+        macro_messages.create!(attributes)
       end
 
       def stop_areas

@@ -1,7 +1,7 @@
 module Control
   class Dummy < Control::Base
     option :expected_result
-    enumerize :expected_result, in: %w{warning error fail}, default: "warning"
+    enumerize :expected_result, in: %w{warning error failed}, default: "warning"
 
     option :target_model
     enumerize :target_model, in: %w{Line StopArea JourneyPattern Company}, default: "Line"

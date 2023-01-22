@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Macro
   class Dummy < Base
     module Options
@@ -5,10 +7,10 @@ module Macro
 
       included do
         option :expected_result
-        enumerize :expected_result, in: %w{info warning error fail}, default: "info"
+        enumerize :expected_result, in: %w[info warning error failed], default: 'info'
 
         option :target_model
-        enumerize :target_model, in: %w{Line StopArea JourneyPattern Company}, default: "Line"
+        enumerize :target_model, in: %w[Line StopArea JourneyPattern Company], default: 'Line'
         validates :target_model, presence: true
       end
     end
@@ -19,12 +21,12 @@ module Macro
       include Options
 
       def run
-        raise "Raise error as expected" if options[:expected_result] == "fail"
+        raise 'Raise error as expected' if expected_result == 'failed'
 
         models.select(:id, :name).find_each do |model|
           macro_messages.create(
-            message_attributes: model.attributes,
-            criticity: options[:expected_result],
+            message_attributes: { name: model.name, result: expected_result },
+            criticity: expected_result,
             source: model
           )
         end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Macro::DefineAttributeFromParticulars::Run do
   let(:macro_list_run) do
     Macro::List::Run.create workbench: context.workbench
@@ -31,6 +33,21 @@ RSpec.describe Macro::DefineAttributeFromParticulars::Run do
 
       it 'should update referent attribute with particular value' do
         expect(referent.reload.time_zone).to eq('Europe/Paris')
+      end
+
+      it 'should create a macro message', skip: 'CHOUETTE-2597' do
+        expect { subject }.to change { macro_list_run.macro_messages.count }.from(0).to(1)
+
+        expected_message = an_object_having_attributes(
+          criticity: 'info',
+          message_attributes: {
+            'name' => referent.name,
+            'attribute_name' => referent.class.human_attribute_name('time_zone'),
+            'attribute_value' => 'Europe/Paris'
+          },
+          source: referent
+        )
+        expect(macro_run.macro_messages).to include(expected_message)
       end
     end
 

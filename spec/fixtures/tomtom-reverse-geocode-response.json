@@ -1,0 +1,70 @@
+{
+  "batchItems": [
+    {
+      "statusCode": 200,
+      "response": {
+        "addresses": [
+          {
+            "address": {
+              "routeNumbers": [1],
+              "streetNumber": "100",
+              "streetName": "Santa Cruz Street",
+              "countryCode": "US",
+              "countrySubdivision": "CA",
+              "countrySecondarySubdivision": "Santa Cruz",
+              "municipality": "Santa Cruz",
+              "postalName": "Santa Cruz",
+              "postalCode": "95065",
+              "country": "United States",
+              "countryCodeISO3": "USA",
+              "freeformAddress": "Santa Cruz, CA 95065",
+              "boundingBox": {
+                "northEast": "37.085762,-121.949375",
+                "southWest": "36.983408,-122.013236",
+                "entity": "position"
+              },
+              "countrySubdivisionName": "California"
+            },
+            "position": "36.988171,-121.974876",
+            "dataSources": {
+              "geometry": {
+                "id": "00005543-3300-3c00-0000-00004dc8b8e5"
+              }
+            },
+            "entityType": "PostalCodeArea",
+            "mapcodes": [
+              {
+                "type": "Local",
+                "fullMapcode": "US-CA FS.WRG0",
+                "territory": "US-CA",
+                "code": "FS.WRG0"
+              },
+              {
+                "type": "International",
+                "fullMapcode": "S4ZW4.89XV"
+              },
+              {
+                "type": "Alternative",
+                "fullMapcode": "US-CA 4349.S7L",
+                "territory": "US-CA",
+                "code": "4349.S7L"
+              },
+              {
+                "type": "Alternative",
+                "fullMapcode": "US-CA JJCH.H9CF",
+                "territory": "US-CA",
+                "code": "JJCH.H9CF"
+              },
+              {
+                "type": "Alternative",
+                "fullMapcode": "USA JJCH.H9CF",
+                "territory": "USA",
+                "code": "JJCH.H9CF"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

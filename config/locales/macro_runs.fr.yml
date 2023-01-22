@@ -2,9 +2,9 @@ fr:
   activerecord:
     models:
       macro/base/run:
-        zero: "rapport d'instructions"
-        one: "rapport d'instructions"
-        other: "rapports d'instructions"
+        zero: "Rapport d'instructions"
+        one: "Rapport d'instructions"
+        other: "Rapports d'instructions"
       macro/create_code/run:
         one: Créer un code
       macro/dummy/run:
@@ -14,9 +14,19 @@ fr:
       macro/update_stop_area_compass_bearing/run:
         one: Définir l'Orientation des Arrêts selon les Tracés
       macro/create_stop_area_referents/run:
-        one: Créer les arrêts référent
+        one: Créer les Arrêts référents
       macro/associate_stop_area_referent/run:
-        one: Associer les arrêts référent
+        one: Associer les Arrêts à un Référent
+      macro/create_shape/run:
+        one: Créer les Tracés
+      macro/define_postal_address/run:
+        one: Définir l'Adresse postale
+      macro/define_attribute_from_particulars/run:
+        one: Définir un attribut d'un Référent à partir des Particuliers
+      macro/compute_journey_pattern_durations/run:
+        one: Définir les durées des missions à partir des heures de passage
+      macro/compute_journey_pattern_distances/run:
+        one: Définir les distances des missions à partir du tracé
     attributes:
       macro/base/run:
         name: Nom

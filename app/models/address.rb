@@ -26,4 +26,13 @@ class Address
   end
 
   alias postal_code post_code
+
+  def to_s
+    [
+      house_number_and_street_name,
+      post_code,
+      city_name,
+      country_name
+    ].reject(&:blank?).join(', ')
+  end
 end

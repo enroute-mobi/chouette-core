@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 module Macro
   class DefineAttributeFromParticulars < Macro::Base
     module Options
@@ -55,12 +54,24 @@ module Macro
         referents_with_value.find_each do |referent|
           value = particular_values[referent.id]
 
-          if referent.update(attribute_name => value)
-            create_message referent, criticity: 'info'
-          else
-            create_message referent, criticity: 'warning', value: value
-          end
+          referent.update(attribute_name => value)
+          create_message referent, attribute_name, value
         end
+      end
+
+      def create_message(referent, attribute_name, attribute_value = nil)
+        attributes = {
+          message_attributes: {
+            name: referent.name, attribute_name:
+            referent.class.human_attribute_name(attribute_name),
+            attribute_value: attribute_value
+          },
+          source: referent
+        }
+
+        attributes.merge!(criticity: 'error', message_key: 'error') unless referent.valid?
+
+        macro_messages.create!(attributes)
       end
 
       # Retrieve referents without target attribute in the macro scope
@@ -128,13 +139,6 @@ module Macro
         @models ||= scope.send(model_collection)
       end
 
-      def create_message(model, attributes, value = nil)
-        attributes.merge!(
-          message_attributes: { name: model.name, value: value },
-          source: model
-        )
-        macro_messages.create!(attributes)
-      end
     end
   end
 end

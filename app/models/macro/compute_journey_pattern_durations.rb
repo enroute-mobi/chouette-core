@@ -21,15 +21,14 @@ module Macro
       end
 
       # Create a message for the given JourneyPattern
-      # If the JourneyPattern is invalid, a warning message is created.
+      # If the JourneyPattern is invalid, an error message is created.
       def create_message(journey_pattern)
         attributes = {
-          criticity: 'info',
           message_attributes: { name: journey_pattern.name },
           source: journey_pattern
         }
 
-        attributes.merge!(criticity: 'warning', message_key: 'invalid_costs') unless journey_pattern.valid?
+        attributes.merge!(criticity: 'error', message_key: 'error') unless journey_pattern.valid?
 
         macro_messages.create!(attributes)
       end

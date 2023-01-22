@@ -6,10 +6,8 @@ RSpec.describe Macro::CreateShape do
   end
 
   describe Macro::CreateShape::Run do
-    let(:macro_list_run) do
-      Macro::List::Run.new referential: context.referential, workbench: context.workbench
-    end
-    subject(:macro_run) { Macro::CreateShape::Run.new macro_list_run: macro_list_run }
+    let(:macro_list_run) { Macro::List::Run.create referential: context.referential, workbench: context.workbench }
+    let(:macro_run) { Macro::CreateShape::Run.create macro_list_run: macro_list_run, position: 0 }
 
     describe '.run' do
       subject { macro_run.run }
@@ -37,24 +35,35 @@ RSpec.describe Macro::CreateShape do
       end
 
       context 'when the JourneyPattern has no Shape' do
-        let(:shape) { Shape.first }
         let(:geom) { journey_pattern.reload.shape&.geometry.to_s }
 
         before(:each) do
           shape_response = File.read('spec/fixtures/tomtom-shape-response.json')
-          stub_request(:post, 'https://api.tomtom.com/routing/1/batch/sync/json?key=mock_tomtom_api_key').to_return(status: 200, body: shape_response)
+          stub_request(:post, 'https://api.tomtom.com/routing/1/batch/sync/json?key=mock_tomtom_api_key').to_return(
+            status: 200, body: shape_response
+          )
         end
 
         it 'should create shape' do
-          subject
-
-          expect change { Shape.count }.from(0).to(1)
+          expect { subject }.to change { Shape.count }.from(0).to(1)
         end
 
         it 'should update association between Journey Pattern and Shape' do
-          subject
+          expect { subject }.to change { journey_pattern.reload.shape }.to(an_instance_of(Shape))
+        end
 
-          expect change { journey_pattern.reload.shape }.from(nil).to(shape)
+        it 'should create macro message when Journey Pattern creates Shape', skip: 'CHOUETTE-2597' do
+          expect { subject }.to change { macro_list_run.macro_messages.count }.from(0).to(1)
+
+          expected_message = an_object_having_attributes(
+            criticity: 'info',
+            message_attributes: {
+              'shape_name' => shape.uuid,
+              'journey_pattern_name' => journey_pattern.name
+            },
+            source: journey_pattern
+          )
+          expect(macro_run.macro_messages).to include(expected_message)
         end
       end
     end

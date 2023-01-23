@@ -47,7 +47,7 @@ module Chouette
     end
 
     def self.for(*model_classes, &block)
-      all.for(*model_classes, &block)
+      empty.for(*model_classes, &block)
     end
 
     class Collection
@@ -93,17 +93,7 @@ module Chouette
         end
       end
 
-      def find_by(attributes)
-        find do |model_attribute|
-          attributes.all? do |k, v|
-            model_attribute.send(k).to_s == v.to_s
-          end
-        end
-      end
-    end
-
-    def self.all # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
-      @all ||= Collection.new do # rubocop:disable Metrics/BlockLength
+      def all # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
         define Chouette::StopArea, :name
         define Chouette::StopArea, :parent
         define Chouette::StopArea, :referent
@@ -159,7 +149,21 @@ module Chouette
         define Chouette::Company, :private_contact_phone
         define Chouette::Company, :private_contact_url
         define Chouette::Company, :private_contact_more
+
+        self
       end
+
+      def find_by(attributes)
+        find do |model_attribute|
+          attributes.all? do |k, v|
+            model_attribute.send(k).to_s == v.to_s
+          end
+        end
+      end
+    end
+
+    def self.empty(&block)
+      Collection.new [], &block
     end
   end
 end

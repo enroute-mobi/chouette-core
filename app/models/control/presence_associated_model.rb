@@ -20,7 +20,7 @@ module Control
       validate :minimum_or_maximum
 
       def candidate_collections
-        Chouette::ModelAttribute.for(self.class.target_model.values) do
+        Chouette::ModelAttribute.empty do
           define Referential, :lines
           define Referential, :routes
           define Referential, :vehicle_journeys

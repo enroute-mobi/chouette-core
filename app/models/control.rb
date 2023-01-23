@@ -12,7 +12,8 @@ module Control
       Control::FormatAttribute,
       Control::ModelStatus,
       Control::JourneyPatternSpeed,
-      Control::ServiceCountTrend
+      Control::ServiceCountTrend,
+      Control::PresenceAssociatedModel,
     ]
   end
 end

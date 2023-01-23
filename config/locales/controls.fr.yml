@@ -23,6 +23,8 @@ fr:
         one: Tendance du nombre de Services
       control/journey_pattern_speed:
         one: Vitesses au sein des Missions
+      control/presence_associated_model:
+        one: Vérification de la présence d'un modèle associé
     attributes:
       control/base:
         name: Nom
@@ -56,3 +58,7 @@ fr:
         minimum_speed: Vitesse minimale
         maximum_speed: Vitesse maximale
         minimum_distance: Distance minimale
+      control/presence_associated_model:
+        collection: Collection
+        minimum: Nombre de modèle minimale
+        maximum: Nombre de modèle maximale

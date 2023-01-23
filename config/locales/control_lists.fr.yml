@@ -29,7 +29,7 @@ fr:
     form:
       sections:
         controls: "Jeux de contrôle"
-      control_placeholder: "Décrivez l’objectif de ce contrôle"
+      control_placeholder: "Décrivez l'objectif de ce contrôle"
     filters:
   activerecord:
     models:

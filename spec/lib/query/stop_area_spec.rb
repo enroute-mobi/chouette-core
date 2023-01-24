@@ -137,8 +137,8 @@ RSpec.describe Query::StopArea do
 
     subject { scope == [selected] }
 
-    describe '#name' do
-      let(:criteria_id) { 'name' }
+    describe '#text' do
+      let(:criteria_id) { 'text' }
       let(:criteria_value) { 'Stop area selected' }
 
       it { is_expected.to be_truthy }

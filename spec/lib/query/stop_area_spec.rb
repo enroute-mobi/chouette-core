@@ -165,13 +165,6 @@ RSpec.describe Query::StopArea do
       it { is_expected.to be_truthy }
     end
 
-    describe '#stop_area_id' do
-      let(:criteria_id) { 'id' }
-      let(:criteria_value) { 9999999 }
-
-      xit { is_expected.to be_truthy }
-    end
-
     describe '#stop_area_provider_id' do
       let(:stop_area_provider_selected) { context.stop_area_provider(:stop_area_provider_selected) }
       let(:criteria_id) { 'stop_area_provider_id' }

@@ -154,7 +154,7 @@ en:
         non_commercial: Non-commercial
       status: &stop_area_status
         in_creation: In creation
-        confirmed: Confirmed
+        confirmed: Activated
         deactivated: Deactivated
       mobility_impaired_accessibility:
         unknown: Unknown

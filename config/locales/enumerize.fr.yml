@@ -153,7 +153,7 @@ fr:
         non_commercial: Non commercial
       status: &stop_area_status
         in_creation: En création
-        confirmed: Confirmé
+        confirmed: Activé
         deactivated: Désactivé
       mobility_impaired_accessibility:
         unknown: Inconnu

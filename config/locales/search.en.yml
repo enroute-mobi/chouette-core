@@ -26,7 +26,7 @@ en:
   simple_form:
     placeholders:
       search:
-        text: "Specify a vehicle journey name or id "
+        text: "Specify a name or id"
         line_id: "Specify a line name"
         company_id: "Specify a company name"
         stop_area_id: "Specify a stop area name"

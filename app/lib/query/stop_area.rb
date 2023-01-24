@@ -76,16 +76,16 @@ module Query
       scope.where(country_code: nil)
     end
 
-    def name(value)
-      where(value, :matches, :name)
+    def text(value)
+      change_scope(if: value.present?) do |scope|
+        name = scope.arel_table[:name]
+        objectid = scope.arel_table[:objectid]
+        scope.where(name.matches("%#{value}%")).or( scope.where(objectid.matches("%#{value}%")))
+      end
     end
 
     def area_type(value)
       where(value, :in, :area_type)
-    end
-
-    def stop_area_id(value)
-      where(value, :eq, :stop_area_id)
     end
 
     def zip_code(value)

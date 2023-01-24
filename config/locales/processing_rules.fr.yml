@@ -60,3 +60,9 @@ fr:
         control_list: Jeu de contrôles
         workgroup: Groupe de travail
         target_workbenches: Espace(s) de travail cible(s)
+  simple_form:
+    hints:
+      processing_rule:
+        target_workbenches: Tous les espaces de travail sont sélectionnés par défaut
+        
+

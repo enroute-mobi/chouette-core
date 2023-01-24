@@ -59,3 +59,7 @@ en:
         control_list: Control List
         workgroup: Workgroup
         target_workbenches: Target workbench(es)
+  simple_form:
+    hints:
+      processing_rule:
+        target_workbenches : All wokbenches are selected by default          

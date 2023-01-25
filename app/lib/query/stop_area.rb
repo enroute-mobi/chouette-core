@@ -76,8 +76,54 @@ module Query
       scope.where(country_code: nil)
     end
 
+    def text(value)
+      change_scope(if: value.present?) do |scope|
+        name = scope.arel_table[:name]
+        objectid = scope.arel_table[:objectid]
+        scope.where(name.matches("%#{value}%")).or( scope.where(objectid.matches("%#{value}%")))
+      end
+    end
+
+    def area_type(value)
+      where(value, :in, :area_type)
+    end
+
+    def zip_code(value)
+      where(value, :matches, :zip_code)
+    end
+
+    def city_name(value)
+      where(value, :matches, :city_name)
+    end
+
+    def stop_area_provider_id(value)
+      where(value, :eq, :stop_area_provider_id)
+    end
+
+    def is_referent(value)
+      where(value, :eq, :is_referent)
+    end
+
+    def statuses(statuses)
+      change_scope(if: statuses.present?) do |scope|
+        query = []
+        query << "deleted_at IS NOT NULL" if statuses.include?('deactivated')
+        query << "(confirmed_at IS NULL AND deleted_at IS NULL)" if statuses.include?('in_creation')
+        query << "(confirmed_at IS NOT NULL AND deleted_at IS NULL)" if statuses.include?('confirmed')
+
+        scope.where(query.join(' OR '))
+      end
+    end
+
+    def parent_id(value)
+      where(value, :eq, :parent_id)
+    end
+
     # TODO Could use a nice RecurviseQuery common object
     delegate :table_name, to: Chouette::StopArea
     private :table_name
+
+    # private
+
   end
 end

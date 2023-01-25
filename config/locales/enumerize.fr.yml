@@ -151,9 +151,9 @@ fr:
       kind:
         commercial: Commercial
         non_commercial: Non commercial
-      status:
+      status: &stop_area_status
         in_creation: En création
-        confirmed: Confirmé
+        confirmed: Activé
         deactivated: Désactivé
       mobility_impaired_accessibility:
         unknown: Inconnu
@@ -398,6 +398,18 @@ fr:
       ticket_barrier: "Portillon à ticket"
       gate: "Barrière"
       other: "Autre"
+    area_type:
+      zdep: "Zone d'Embarquement"
+      zder: ZDEr
+      zdlp: "Zone de Lieu"
+      zdlr: ZDLr
+      lda: "Lieu d'Arrêt"
+      gdl: "Groupe de Lieux"
+      deposit: Dépôt
+      border: Frontière
+      service_area: Aire de service / Pause
+      relief: Point de relève
+      other: Autre
     target_model:
       Line: Ligne
       StopArea: Arrêt
@@ -411,6 +423,7 @@ fr:
       disabled: Désactivé
     search:
       rule_type: *notification_rule_rule_type
+      statuses: *stop_area_status
     control:
       criticity:
         warning: Avertissement

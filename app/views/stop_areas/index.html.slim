@@ -2,10 +2,9 @@
 
 .page_content
   .container-fluid
-    - if params[:q].present? or @stop_areas.any?
-      .row
-        .col-lg-12
-          = render partial: 'filters'
+    .row
+      .col-lg-12
+        = render partial: 'filters'
 
     - if @stop_areas.any?
       .row
@@ -40,7 +39,8 @@
                 attribute: Proc.new { |s| s.stop_area_provider&.name }, \
                 link_to: lambda do |s| \
                   workbench_stop_area_referential_stop_area_provider_path(@workbench, s.stop_area_provider) \
-                end \
+                end, \
+                sortable: false \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :zip_code, \

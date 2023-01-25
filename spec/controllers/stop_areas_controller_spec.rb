@@ -16,29 +16,8 @@ RSpec.describe StopAreasController, :type => :controller do
   let(:stop_area_provider) { context.stop_area_provider }
   let(:stop_area) { context.stop_area }
 
-  describe "GET index" do
-    it "filters by registration number" do
-      matched = stop_area_provider.stop_areas.create name: "Match", registration_number: 'E34'
-
-      get :index, params: {
-        workbench_id: workbench,
-        q: {
-          name_or_objectid_or_registration_number_cont: matched.registration_number
-        }
-      }
-
-      expect(assigns(:stop_areas)).to contain_exactly(matched)
-    end
-
-    it "doesn't filter when the name filter is empty" do
-      get :index, params: {
-        workbench_id: workbench,
-        q: {
-          name_or_objectid_or_registration_number_cont: ''
-        }
-      }
-
-      expect(assigns(:stop_areas)).to match_array(stop_area_referential.stop_areas)
-    end
+  describe "#search" do
+    let(:scope) { double }
+    subject(:search) { Search::StopArea.new scope }
   end
 end

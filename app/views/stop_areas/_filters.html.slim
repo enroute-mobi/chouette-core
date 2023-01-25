@@ -1,35 +1,30 @@
-= search_form_for @q, url: workbench_stop_area_referential_stop_areas_path(@workbench), html: {method: :get}, class: 'form form-filter' do |f|
-  .ffg-row
-    .input-group.search_bar class=filter_item_class(params[:q], :name_or_short_id_or_registration_number_cont)
-      = f.search_field :name_or_short_id_or_registration_number_cont,
-          value: params[:q].try(:[],:name_or_short_id_or_registration_number_cont),
-          placeholder: t('.name_or_objectid'),
-          class: 'form-control'
-      span.input-group-btn
-        button.btn.btn-default#search-btn type='submit'
-          span.fa.fa-search
+= simple_form_for @search, url: request.path, method: "GET", html: { class: 'flex items-center tailwind-filters bg-grey relative pr-6' }, wrapper: :filters_form_tailwind  do |f|
+  = f.simple_fields_for :order, @search.order, defaults: { wrapper: false } do |form_order|
+    - form_order.object.attributes.keys.each do |attribute|
+      = form_order.input attribute, as: :hidden
 
-  .ffg-row
-    = f.input :zip_code_cont, placeholder: t('.zip_code'), label: Chouette::StopArea.tmf('zip_code'), required: false, wrapper_html: {class: filter_item_class(params[:q], :zip_code_cont)}
-    = f.input :city_name_cont, placeholder: t('.city_name'), label: Chouette::StopArea.tmf('city_name'), required: false, wrapper_html: {class: filter_item_class(params[:q], :city_name_cont)}
-    = f.input :parent_id_eq, placeholder: t('.parent'), label: Chouette::StopArea.tmf('parent_id'), as: :autocomplete_select, autocomplete_url: parent_stop_areas_workbench_autocomplete_index_path(@workbench, format: :json), load_url: parent_stop_areas_workbench_autocomplete_index_path(@workbench), required: false
-    = f.input :stop_area_provider_id_eq, placeholder: StopAreaProvider.ts, label: Chouette::StopArea.tmf('stop_area_provider_id'), as: :autocomplete_select, autocomplete_url: stop_area_providers_workgroup_autocomplete_index_path(@workbench.workgroup, format: :json), load_url: stop_area_providers_workgroup_autocomplete_index_path(@workbench.workgroup), required: false
-    
-  .ffg-row
-    .form-group.togglable class=filter_item_class(params[:q], :area_type_eq_any)
-      = f.label Chouette::StopArea.tmf('area_type'), required: false, class: 'control-label'
-      = f.input :area_type_eq_any, checked: params[:q] && params[:q][:area_type_eq_any], collection: area_type_options, as: :check_boxes, label: false, label_method: lambda{|w| ("<span>" + w[0] + "</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list' }
+  .flex.flex-col.w-full
+    .flex.items-center.border-r.border-white
+      = f.input :text, label: false, wrapper_html: {class: "w-2/5"}
+    .flex.items-center.border-r.border-white  
+      = f.input :zip_code, label: Chouette::StopArea.tmf('zip_code'), required: false, wrapper_html: {class: filter_item_class(params[:search], :zip_code)}, wrapper_html: {class: "w-1/5"}
+      = f.input :city_name, label: Chouette::StopArea.tmf('city_name'), required: false, wrapper_html: {class: filter_item_class(params[:search], :city_name)}, wrapper_html: {class: "w-1/5"}
+      = f.input :area_type, as: :autocomplete_select, wrapper_html: {class: "w-1/5"}
+      = f.input :statuses, as: :autocomplete_select, wrapper_html: {class: "w-1/5"}, input_html: { multiple: true, style: 'width: 100%' }
+      = f.input :is_referent, as: :autocomplete_select, wrapper_html: {class: "w-1/5"}
+    .flex.items-center.border-t.border-r.border-white
+      = f.input :parent_id,
+        as: :ajax_select,
+        collection: [[ @search.parent_id, @search.parent_stop_area_name ]],
+        selected: @search.parent_stop_area,
+        input_html: { 'data-url': parent_stop_areas_workbench_autocomplete_index_path(@workbench, format: :json) },
+        wrapper_html: {class: "w-2/5"}
+      = f.input :stop_area_provider_id, as: :autocomplete_select, collection: @search.candidate_stop_area_providers, wrapper_html: {class: "w-2/5"}
 
-    .form-group.togglable class=filter_item_class(params[:q], :is_referent_true)
-      = f.label Chouette::StopArea.tmf('referent'), required: false, class: 'control-label'
-      .form-group.checkbox_list
-        = f.input :is_referent_true, as: :boolean, label: ("<span>#{I18n.t('yes')}</span>").html_safe, wrapper_html: { class: 'checkbox-wrapper' }
-        = f.input :is_referent_false, as: :boolean, label: ("<span>#{I18n.t('no')}</span>").html_safe, wrapper_html: { class: 'checkbox-wrapper' }
-
-    .form-group.togglable class=filter_item_class(params[:q], :by_status)
-      = f.label Chouette::StopArea.tmf('status'), required: false, class: 'control-label'
-      = f.input :by_status, checked: params[:q] && params[:q][:by_status], collection: [:in_creation, :confirmed, :deactivated], as: :check_boxes, label: false, label_method: lambda{|w| ("<span>" + stop_area_status(w) + "</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list' }
-
-  .actions
-    = link_to t('actions.erase'), workbench_stop_area_referential_stop_areas_path(@workbench), class: 'btn btn-link'
-    = f.submit t('actions.filter'), class: 'btn btn-default'
+  .flex.flex-col.justify-center.items-center.actions.ml-auto.py-3.w-80
+    .flex.items-center.mb-3
+      = f.label :per_page, class: 'control-label mr-3'
+      = f.input :per_page, as: :per_page, label: false, wrapper: false
+    .flex.items-center
+      = link_to t('actions.erase'), workbench_stop_area_referential_stop_areas_path(@workbench), class: 'btn btn-link'
+      = f.submit t('actions.filter'), class: 'btn btn-default'

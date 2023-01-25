@@ -152,9 +152,9 @@ en:
       kind:
         commercial: Commercial
         non_commercial: Non-commercial
-      status:
+      status: &stop_area_status
         in_creation: In creation
-        confirmed: Confirmed
+        confirmed: Activated
         deactivated: Deactivated
       mobility_impaired_accessibility:
         unknown: Unknown
@@ -398,6 +398,18 @@ en:
       ticket_barrier: "Ticket Barrier"
       gate: "Gate"
       other: "Other"
+    area_type:
+      zdep: "Quay"
+      zder: ZDEr
+      zdlp: "Monomodal Stop Place"
+      zdlr: ZDLr
+      lda: "Stop Place"
+      gdl: "Group of Stop Places"
+      deposit: Deposit
+      border: Border
+      service_area: Service Area
+      relief: Relief point
+      other: Other
     target_model:
       Line: Line
       StopArea: Stop area
@@ -409,6 +421,7 @@ en:
       disabled: Disabled
     search:
       rule_type: *notification_rule_rule_type
+      statuses: *stop_area_status
     control:
       criticity:
         warning: Warning

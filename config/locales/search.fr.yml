@@ -15,12 +15,18 @@ fr:
         line_id: "Ligne"
         timetable: "Calendrier"
         stop_area: "Arrêt"
+        area_type: "Type d'arrêt"
+        is_referent: "Référent"
+        zip_code: "Code Postal"
+        city_name: "Commune"
+        parent_id: "Parent"
+        stop_area_provider_id: Fournisseur d'arrêts
         from_stop_area_id: "de"
-        to_stop_area_id: "à"        
+        to_stop_area_id: "à"
   simple_form:
     placeholders:
       search:
-        text: "Indiquez un nom ou un identifiant de course"
+        text: "Indiquez un nom ou un identifiant"
         line_id: "Indiquez un nom de ligne"
         company_id: "Indiquez un nom de transporteur"
         stop_area_id: "Indiquez un nom d'arrêt"

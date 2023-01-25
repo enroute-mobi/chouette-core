@@ -12,7 +12,8 @@ module Chouette
     include ReferentSupport
 
     extend Enumerize
-    enumerize :area_type, in: Chouette::AreaType::ALL, default: Chouette::AreaType::COMMERCIAL.first
+    enumerize :area_type, in: Chouette::AreaType::ALL, default: Chouette::AreaType::COMMERCIAL.first, scope: true
+    enumerize :status, in: %i[in_creation confirmed deactivated], default: :in_creation, scope: true
     enumerize :kind, in: %i(commercial non_commercial), default: :commercial
     enumerize :mobility_impaired_accessibility, in: %i(unknown yes no partial), default: :unknown
     enumerize :wheelchair_accessibility, in: %i(unknown yes no partial), default: :unknown
@@ -42,7 +43,7 @@ module Chouette
     scope :without_address, -> { where country_code: nil,  street_name: nil, zip_code: nil, city_name: nil }
     scope :without_position, -> { where 'latitude is null or longitude is null' }
     scope :with_position, -> { where 'latitude is not null and longitude is not null' }
-    
+
     # DEPRECATED Use without/with_positon
     scope :without_geometry, -> { without_position }
     scope :with_geometry, -> { with_position }

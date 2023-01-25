@@ -34,11 +34,12 @@ class StopAreasController < ChouetteController
 
     index! do |format|
       format.html {
-        if collection.out_of_bounds?
-          redirect_to params.merge(:page => 1)
-        end
-
-        @stop_areas = StopAreaDecorator.decorate(@stop_areas, context: { workbench: @workbench })
+        @stop_areas = StopAreaDecorator.decorate(
+          collection,
+          context: {
+            workbench: @workbench
+            }
+          )
       }
     end
   end
@@ -110,39 +111,19 @@ class StopAreasController < ChouetteController
     end
   end
 
+  def scope
+    parent.stop_areas
+  end
+
   def collection
-    scope = parent.present? ? parent.stop_areas : referential.stop_areas
-    scope = is_referent_scope(scope)
-    @q = scope.ransack(params[:q]&.except(:is_referent_true, :is_referent_false))
-
-    @stop_areas ||=
-      begin
-        if sort_column == "area_type"
-          sorted_area_type_labels = Chouette::AreaType.options.sort.transpose.last
-          sorted_area_type_labels = sorted_area_type_labels.reverse if sort_direction != 'asc'
-          order_by = ["CASE"]
-          sorted_area_type_labels.each_with_index do |area_type, index|
-            order_by << "WHEN area_type='#{area_type}' THEN #{index}"
-          end
-          order_by << "END"
-          stop_areas = @q.result.order(order_by.join(" "))
-        else
-          stop_areas = sort_result(@q.result)
-        end
-        stop_areas = stop_areas.paginate(:page => params[:page], :per_page => @per_page) if @per_page.present?
-        stop_areas
-      end
+    @stop_areas = parent.stop_areas.paginate(page: params[:page], per_page: 30)
   end
 
-  def is_referent_scope scope
-    return scope unless params[:q]
-
-    if params[:q][:is_referent_true] != params[:q][:is_referent_false]
-      scope = scope.where(is_referent: (params[:q][:is_referent_true] == '1'))
-    end
-
-    scope
+  def search
+    @search ||= Search::StopArea.new(scope, params, stop_area_referential: stop_area_referential)
   end
+
+  delegate :collection, to: :search
 
   private
 

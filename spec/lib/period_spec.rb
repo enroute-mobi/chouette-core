@@ -412,6 +412,21 @@ RSpec.describe Period do
     end
   end
 
+  describe '#to_postgresql_daterange' do
+    [
+      ['2030-01-01..2030-12-31', '[2030-01-01,2030-12-31]'],
+      ['2030-01-01..', '[2030-01-01,infinity]'],
+      ['..2030-12-31', '[-infinity,2030-12-31]'],
+      ['..', '[-infinity,infinity]']
+    ].each do |definition, expected|
+      context "when Period is #{definition}" do
+        let(:period) { Period.parse definition }
+        subject { period.to_postgresql_daterange }
+        it { is_expected.to eq(expected) }
+      end
+    end
+  end
+
   describe '.extend' do
     subject { period.extend(other) }
 

@@ -43,6 +43,10 @@
 #
 #   where started_at: period.infinite_time_range
 #
+# To intersect a daterange attribute:
+#
+#   where "validity_period && ?", period.to_postgresql_daterange
+#
 class Period < Range
   extend ActiveModel::Naming
   include ActiveModel::Validations
@@ -244,6 +248,20 @@ class Period < Range
     range_end = range.end || Float::INFINITY
 
     Range.new range_begin, range_end
+  end
+
+  # Returns a PostgreSQL daterange expression like:
+  #  * '[2030-01-01,2030-12-31]'
+  #  * '[2022-12-31,infinity]'
+  #  * '[-infinity,2022-12-31]'
+  #  * '[-infinity,infinity]'
+  #
+  # Use infinite PostgreSQL date range if needed
+  # See https://www.postgresql.org/docs/current/rangetypes.html#RANGETYPES-INFINITE
+  def to_postgresql_daterange
+    lower = beginless? ? '-infinity' : from
+    upper = endless? ? 'infinity' : to
+    "[#{lower},#{upper}]"
   end
 
   def include?(date)

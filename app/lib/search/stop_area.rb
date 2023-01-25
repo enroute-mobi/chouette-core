@@ -58,7 +58,12 @@ module Search
 		end
 
     class Order < ::Search::Order
-      attribute :name, default: :desc
+      attribute :name, default: :asc
+      attribute :registration_number
+      attribute :status
+      attribute :zip_code
+      attribute :city_name
+      attribute :area_type
     end
   end
 end

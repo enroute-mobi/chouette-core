@@ -39,7 +39,8 @@
                 attribute: Proc.new { |s| s.stop_area_provider&.name }, \
                 link_to: lambda do |s| \
                   workbench_stop_area_referential_stop_area_provider_path(@workbench, s.stop_area_provider) \
-                end \
+                end, \
+                sortable: false \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :zip_code, \

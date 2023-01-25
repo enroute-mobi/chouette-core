@@ -259,8 +259,8 @@ class Period < Range
   # Use infinite PostgreSQL date range if needed
   # See https://www.postgresql.org/docs/current/rangetypes.html#RANGETYPES-INFINITE
   def to_postgresql_daterange
-    lower = beginless? ? '-infinity': from
-    upper = endless? ? 'infinity': to
+    lower = beginless? ? '-infinity' : from
+    upper = endless? ? 'infinity' : to
     "[#{lower},#{upper}]"
   end
 

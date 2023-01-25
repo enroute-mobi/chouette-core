@@ -22,7 +22,7 @@ module Search
     end
 
     class Order < ::Search::Order
-      attribute :name, default: :desc
+      attribute :name, default: :asc
     end
   end
 end

@@ -1269,12 +1269,20 @@ class Export::Gtfs < Export::Base
         }
       end
 
+      def start_date
+        validity_period&.start_date
+      end
+
       def gtfs_start_date
-        validity_period.start_date.strftime('%Y%m%d')
+        start_date&.strftime('%Y%m%d')
+      end
+
+      def end_date
+        validity_period&.end_date
       end
 
       def gtfs_end_date
-        validity_period.end_date.strftime('%Y%m%d')
+        end_date&.strftime('%Y%m%d')
       end
 
       def publisher_name

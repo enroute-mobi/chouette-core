@@ -107,6 +107,10 @@ module Export::Scope
     def lines
       (workbench || line_referential).lines
     end
+
+    def validity_period
+      Period.for_range(referential.validity_period)
+    end
   end
 
   # By default a Scope uses the current_scope collection.
@@ -215,6 +219,10 @@ module Export::Scope
 
     def metadatas
       current_scope.metadatas.include_daterange(date_range)
+    end
+
+    def validity_period
+      current_scope.validity_period & date_range
     end
   end
 

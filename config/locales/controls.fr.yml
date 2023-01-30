@@ -24,7 +24,7 @@ fr:
       control/journey_pattern_speed:
         one: Vitesses au sein des Missions
       control/presence_associated_model:
-        one: Vérification de la présence d'un modèle associé
+        one: Présence de modèles associés
     attributes:
       control/base:
         name: Nom
@@ -59,6 +59,6 @@ fr:
         maximum_speed: Vitesse maximale
         minimum_distance: Distance minimale
       control/presence_associated_model:
-        collection: Collection
-        minimum: Nombre de modèle minimale
-        maximum: Nombre de modèle maximale
+        collection: Modèles associés
+        minimum: Nombre minimal
+        maximum: Nombre maximal

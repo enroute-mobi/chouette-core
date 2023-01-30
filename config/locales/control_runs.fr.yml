@@ -24,7 +24,7 @@ fr:
       control/journey_pattern_speed/run:
         one: Vitesses au sein des Missions
       control/presence_associated_model/run:
-        one: Vérification de la présence d'un modèle associé
+        one: Présence de modèles associés
     attributes:
       control/base/run:
         name: Nom
@@ -55,6 +55,6 @@ fr:
         weeks_after: Nombre de semaines après
         maximum_difference: Différence maximale en pourcentage
       control/presence_associated_model/run:
-        collection: Collection
-        minimum: Nombre de modèle minimale
-        maximum: Nombre de modèle maximale
+        collection: Modèles associés
+        minimum: Nombre minimal
+        maximum: Nombre maximal

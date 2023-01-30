@@ -418,6 +418,9 @@ fr:
       Company: Transporteur
       Entrance: Point d'accès
       PointOfInterest: Point d'intérêt
+      Route: Itinéraire
+      TimeTable: Calendrier
+      Referential: Jeu de donnée
     expected_status:
       enabled: Activé
       disabled: Désactivé

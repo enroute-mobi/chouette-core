@@ -24,7 +24,7 @@ en:
       control/journey_pattern_speed:
         one: Speed into Journey Patterns
       control/presence_associated_model:
-        one: Presence of associated model
+        one: Presence of associated models
     attributes:
       control/base:
         name: Name
@@ -59,6 +59,6 @@ en:
         maximum_speed: Maximum Speed
         minimum_distance: Minimum Distance
       control/presence_associated_model:
-        collection: Collection
-        minimum: Number of model minimale
-        maximum: Number of model maximale
+        collection: Associated Models
+        minimum: Minimum count
+        maximum: Maximal count

@@ -85,7 +85,7 @@ en:
         number: "Number"
         direction: "Direction"
         wayback: "Direction"
-        stop_points: "Nb Stop areas"
+        stop_points: "Stop Points"
         opposite_route: "Reversed route"
         opposite_route_id: "Reversed route"
         objectid: "Neptune identifier"

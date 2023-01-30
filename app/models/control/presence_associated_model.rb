@@ -61,20 +61,25 @@ module Control
 
         def run
           faulty_models.each do |model|
-            control_messages.create({
-              message_attributes: {
-                name: model.try(:name) || model.id,
-              },
-              criticity: criticity,
-              source: model,
-              message_key: :presence_associated_model
-            })
+            control_messages.create(message_attributes: { name: model.try(:name) || model.id },
+                                    criticity: criticity,
+                                    source: model,
+                                    message_key: :presence_associated_model)
+          end
+        end
+
+        def context_collection
+          case [target_model, collection]
+          when %w[JourneyPattern stop_points]
+            'journey_pattern_stop_points'
+          else
+            collection
           end
         end
 
         def faulty_models
           context
-            .send(collection)
+            .send(context_collection)
             .group(target_model.underscore)
             .having(condition, { minimum: minimum, maximum: maximum })
             .count

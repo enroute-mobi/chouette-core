@@ -69,7 +69,13 @@ module Control
       end
 
       def context
-        control_context_run || referential || workbench
+        if control_context_run
+          control_context_run
+        elsif referential
+          Scope::Referential.new(workbench, referential)
+        else
+          Scope::Workbench.new(workbench)
+        end
       end
 
       protected

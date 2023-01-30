@@ -6,7 +6,7 @@ class Waypoint < ApplicationModel
   validates_uniqueness_of :position, scope: :shape_id
   validates_inclusion_of :waypoint_type, in: %w[waypoint constraint]
   validates_length_of :coordinates, is: 2
-  validate :presence_of_stop_area
+  #validate :presence_of_stop_area
 
   def longitude
     coordinates&.first

@@ -14,6 +14,7 @@ module Macro
       Macro::ComputeJourneyPatternDurations,
       Macro::ComputeJourneyPatternDistances,
       Macro::AssociateShapeAccordingWaypoints,
+      Macro::UpdateAttributeFromReferentToParticulars,
       Macro::DeleteVehicleJourneys,
       Macro::Dummy # Keep this dummy last
     ]

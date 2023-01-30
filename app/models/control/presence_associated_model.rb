@@ -10,7 +10,7 @@ module Control
           option :minimum
           option :maximum
 
-          enumerize :target_model, in: %w{Referential Line StopArea JourneyPattern VehicleJourney Company Route TimeTable}
+          enumerize :target_model, in: %w{Referential Line StopArea Company Route JourneyPattern VehicleJourney TimeTable}
           validates :target_model, :collection, presence: true
           validates :minimum, :maximum, numericality: { only_integer: true, allow_nil: true }
         end

@@ -28,8 +28,7 @@ module Chouette
     def human_name
       # Do not store the value (depend on the current locale)
       I18n.translate! name, scope: ['model_attribute', resource_name]
-    rescue I18n::MissingTranslationData => e
-      puts e
+    rescue I18n::MissingTranslationData
       model_class.human_attribute_name(name)
     end
 

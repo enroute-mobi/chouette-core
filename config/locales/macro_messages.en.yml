@@ -46,6 +46,10 @@ en:
     messages:
       default: "Shape '%{shape}' has been associated to Journey pattern '%{name}'"
       error: "Shape '%{shape}' can't be associated to Journey pattern '%{name}'"
+  macro/update_attribute_from_referent_to_particulars/run:
+    messages:
+      default: "Attribute %{attribute_name} for paticular %{name} has been updated with value %{attribute_value}"
+      error: "Attribute %{attribute_name} for paticular %{name} can't be updated with value %{attribute_value}"
   macro/delete_vehicle_journeys/run:
     messages:
       default: "%{count} Vehicle Journeys have been deleted"

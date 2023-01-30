@@ -38,6 +38,8 @@ fr:
         one: Définir les distances des missions à partir du tracé
       macro/associate_shape_according_waypoints:
         one: Associer les Tracés selon les arrêts
+      macro/update_attribute_from_referent_to_particulars:
+        one: Mettre à jour l'attribut du référent aux Particuliers
       macro/delete_vehicle_journeys:
         one: Supprimer toutes les courses
     attributes:
@@ -57,6 +59,9 @@ fr:
         target_model: Modèle cible
       macro/define_attribute_from_particulars:
         target_attribute: Attribut
+      macro/update_attribute_from_referent_to_particulars:
+        target_attribute: Attribut
+        override_existing_value: remplacer la valeur existante
   simple_form:
     placeholders:
       macro_base:

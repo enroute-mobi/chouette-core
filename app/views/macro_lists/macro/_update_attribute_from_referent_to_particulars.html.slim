@@ -4,4 +4,4 @@
 		option value=""
 		template[x-for="option in #{form.object.candidate_target_attributes.map { |m| { id: m.name, text: m.human_name, resource_type: m.model_name } }.to_json}"]
 			option :selected="'#{form.object.target_attribute}' == option.id" :value="option.id" x-text="option.text" x-show="option.resource_type == resource.target_model"
-= form.input :override_existing_value, input_html: { 'x-model': 'resource.override_existing_value', 'x-on:change': "resource.override_existing_value = true" }
+= form.input :override_existing_value, input_html: { 'x-model': 'resource.override_existing_value'}, as: :switchable_checkbox

@@ -59,10 +59,6 @@ class Publication < ApplicationModel
     rescue => e
       Chouette::Safe.capture "Publication ##{id} failed", e
       failed!
-
-    ensure
-      workbench = workgroup.owner_workbench
-      workbench.notification_center.notify(self) if workbench
   end
 
   def referential
@@ -95,6 +91,9 @@ class Publication < ApplicationModel
 
       send_to_destinations
       infer_status
+      # Send notification for synchronous exports (Publication Netex Generic, GTFS...)
+      workbench = workgroup.owner_workbench
+      workbench.notification_center.notify(self) if workbench
     end
   end
 
@@ -108,6 +107,9 @@ class Publication < ApplicationModel
     if exports.all?(&:finished?) && running?
       send_to_destinations
       infer_status
+      # Send notification for asynchronous exports (Publication Netex java)
+      workbench = workgroup.owner_workbench
+      workbench.notification_center.notify(self) if workbench
     end
   end
 

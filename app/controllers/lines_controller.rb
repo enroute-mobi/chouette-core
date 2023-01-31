@@ -8,39 +8,23 @@ class LinesController < ChouetteController
   belongs_to :workbench
   belongs_to :line_referential, singleton: true
 
-  respond_to :html
-  respond_to :xml
-  respond_to :json
+  respond_to :html, :xml, :json
   respond_to :kml, :only => :show
   respond_to :js, :only => :index
 
   def index
-    @hide_group_of_line = line_referential.group_of_lines.empty?
-
-    # Selected2 autocompletion purpose
-    respond_to do |format|
-      format.json do
-        @lines = line_referential.lines
-        @lines = @lines.where("id IN (#{@lines.by_name(params[:q]).select(:id).to_sql}) OR id IN (#{@lines.ransack(number_or_company_name_cont: params[:q]).result.select(:id).to_sql})") if (params[:q].present?)
-      end
-
-      format.html do
-        index! do
-          @lines = LineDecorator.decorate(
-            @lines,
-            context: {
-              workbench: @workbench,
-              line_referential: @line_referential,
-              # TODO Remove me ?
-              current_organisation: current_organisation
-            }
-          )
-
-          if collection.out_of_bounds?
-            redirect_to params.merge(:page => 1)
-          end
-        end
-      end
+    index! do |format|
+      format.html {
+        @lines = LineDecorator.decorate(
+          collection,
+          context: {
+            workbench: @workbench,
+            line_referential: @line_referential,
+            # TODO Remove me ?
+            current_organisation: current_organisation
+          }
+        )
+      }
     end
   end
 
@@ -105,37 +89,15 @@ class LinesController < ChouetteController
     end
   end
 
-  def filtered_lines_maps
-    filtered_lines.collect do |line|
-      { :id => line.id, :name => (line.published_name ? line.published_name : line.name) }
-    end
+  def scope
+    parent.lines
   end
 
-  def filtered_lines
-    line_referential.lines.by_text(params[:q])
+  def search
+    @search ||= Search::Line.new(scope, params, line_referential: line_referential)
   end
 
-  def collection
-    @lines ||= begin
-      %w(network_id company_id group_of_lines_id comment_id).each do |filter|
-        if params[:q] && params[:q]["#{filter}_eq"] == '-1'
-          params[:q]["#{filter}_eq"] = ''
-          params[:q]["#{filter}_blank"] = '1'
-        end
-      end
-
-      scope = ransack_status line_referential.lines
-      scope = ransack_transport_mode scope
-      @q = scope.ransack(params[:q])
-
-      if sort_column && sort_direction
-        lines ||= @q.result(:distinct => true).order(sort_column + ' ' + sort_direction).paginate(:page => params[:page]).includes([:network, :company])
-      else
-        lines ||= @q.result(:distinct => true).order(:number).paginate(:page => params[:page]).includes([:network, :company])
-      end
-      lines
-    end
-  end
+  delegate :collection, to: :search
 
   def workbench
     @workbench
@@ -145,13 +107,6 @@ class LinesController < ChouetteController
   delegate :workgroup, to: :workbench, allow_nil: true
 
   private
-
-  def sort_column
-    (Chouette::Line.column_names + ['companies.name', 'networks.name']).include?(params[:sort]) ? params[:sort] : 'number'
-  end
-  def sort_direction
-    %w[asc desc].include?(params[:direction]) ?  params[:direction] : 'asc'
-  end
 
   alias_method :current_referential, :line_referential
   helper_method :current_referential
@@ -170,7 +125,6 @@ class LinesController < ChouetteController
       :name,
       :number,
       :published_name,
-      :transport_mode,
       :registration_number,
       :comment,
       :mobility_restricted_suitability,
@@ -193,30 +147,6 @@ class LinesController < ChouetteController
     out[:line_notice_ids] = out[:line_notice_ids].split(',') if out[:line_notice_ids]
     out[:secondary_company_ids] = (out[:secondary_company_ids] || []).select(&:present?)
     out
-  end
-
-   # Fake ransack filter
-  def ransack_status scope
-    return scope unless params[:q].try(:[], :status)
-    return scope if params[:q][:status] == 'all'
-
-    scope_root = params[:q][:status] == 'activated' ? 'active' : 'not_active'
-    full_status_scope = true
-    @status_from = params[:q][:status_from_enabled] == 'true' && params[:q]['status_from(1i)'] && Date.new(params[:q]['status_from(1i)'].to_i, params[:q]['status_from(2i)'].to_i, params[:q]['status_from(3i)'].to_i)
-    @status_until = params[:q][:status_until_enabled] == 'true' && params[:q]['status_until(1i)'] && Date.new(params[:q]['status_until(1i)'].to_i, params[:q]['status_until(2i)'].to_i, params[:q]['status_until(3i)'].to_i)
-    if @status_from
-      if @status_until
-        scope = scope.send("#{scope_root}_between", @status_from, @status_until)
-      else
-        scope = scope.send("#{scope_root}_after", @status_from)
-      end
-      full_status_scope = false
-    elsif @status_until
-      scope = scope.send("#{scope_root}_before", @status_until)
-      full_status_scope = false
-    end
-    scope = scope.send(params[:q][:status]) if full_status_scope
-    scope
   end
 
 end

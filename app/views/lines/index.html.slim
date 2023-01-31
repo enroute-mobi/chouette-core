@@ -3,10 +3,9 @@
 
 .page_content
   .container-fluid
-    - if params[:q].present? or @lines.any?
-      .row
-        .col-lg-12
-          = render 'filters'
+    .row
+      .col-lg-12
+        = render partial: 'filters'
 
     - if @lines.any?
       .row

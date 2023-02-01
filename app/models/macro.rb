@@ -13,6 +13,7 @@ module Macro
       Macro::DefinePostalAddress,
       Macro::ComputeJourneyPatternDurations,
       Macro::ComputeJourneyPatternDistances,
+      Macro::AssociateShapeAccordingWaypoints,
       Macro::Dummy
     ]
   end

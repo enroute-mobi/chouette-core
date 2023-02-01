@@ -120,6 +120,7 @@ en:
           flag_urgent: Contains urgent data
           update_workgroup_providers: Allow changes on Workbenches resources
           store_xml: Store original XML resources
+          disable_missing_resources: Disable missing Stop Areas and Lines
           merge_method: Merge method
           shape_attribute_as_id: Attribute used as id
           import_category: Import type

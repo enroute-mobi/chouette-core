@@ -11,6 +11,7 @@ class Import::Workbench < Import::Base
   option :shape_attribute_as_id, type: :string, depends: {option: :import_category, value: "shape_file"}
   option :update_workgroup_providers, default_value: false, type: :boolean
   option :store_xml, default_value: false, type: :boolean
+  option :disable_missing_resources, default_value: false, type: :boolean
 
   has_many :compliance_check_sets, -> { where(parent_type: "Import::Workbench") }, foreign_key: :parent_id, dependent: :destroy
 
@@ -162,7 +163,7 @@ class Import::Workbench < Import::Base
         return 'warning'
       elsif children_status == 'successful' && processed_status == 'successful'
         return 'successful'
-      end  
+      end
     else
       return children_status
     end

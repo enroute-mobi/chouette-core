@@ -103,10 +103,10 @@ RSpec.describe Query::Line do
 
       before do
         selected.update active_from: today + 1, active_until: today + 2
-        other.update active_from: today + 1, active_until: today + 2
+        other.update active_from: today + 3, active_until: today + 4
       end
 
-      xit { is_expected.to be_truthy }
+      it { is_expected.to be_truthy }
     end
   end
 end

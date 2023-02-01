@@ -18,7 +18,7 @@
         #vehicle_journeys_wip
 
 = javascript_tag do
-  | window.workbench_id = #{@referential.workbench_id};
+  | window.default_line_notices_path = '#{default_line_notices_path(@referential.line_referential)}';
   | window.route_id = #{params[:route_id]};
   | window.referential_id = #{@referential.id};
   | window.companiesPath = '#{default_companies_path(@referential.line_referential)}';

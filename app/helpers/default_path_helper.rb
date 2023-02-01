@@ -45,6 +45,12 @@ module DefaultPathHelper
     end
   end
 
+  def default_line_notices_path(line_referential)
+    with_default_workbench do
+      workbench_line_referential_line_notices_path default_workbench(line_referential: line_referential)
+    end
+  end
+
   def default_shapes_path(shape_referential)
     with_default_workbench do
       workbench_shape_referential_shapes_path default_workbench(shape_referential: shape_referential)

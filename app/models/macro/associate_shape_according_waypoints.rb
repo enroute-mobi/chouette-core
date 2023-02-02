@@ -74,7 +74,7 @@ module Macro
         def shapes
           @shapes ||=
             {}.tap do |shapes|
-              ::Shape.select('*').from(custom_from).find do |shape|
+              ::Shape.select('stop_area_sequence, id, uuid').from(custom_from).each do |shape|
                 if stop_area_sequence = shape.stop_area_sequence.presence
                   shapes[stop_area_sequence] = { id: shape.id, uuid: shape.uuid }
                 end
@@ -92,11 +92,11 @@ module Macro
                 FROM (#{base_sql}) AS shapes
                 GROUP BY shapes.stop_area_sequence
               )
-              SELECT 
+              SELECT
                 public.shapes.*,
                 latest_shapes.stop_area_sequence
               FROM latest_shapes INNER JOIN public.shapes ON latest_shapes.id = public.shapes.id
-            ) AS "public.shapes"
+            ) AS shapes
           SQL
         end
 

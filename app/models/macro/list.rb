@@ -70,8 +70,6 @@ module Macro
         original_macro_list.macro_contexts.each do |macro_context|
           macro_context_runs << macro_context.build_run
         end
-
-        self.workbench = original_macro_list.workbench
       end
 
       def self.policy_class

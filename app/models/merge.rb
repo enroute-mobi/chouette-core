@@ -3,14 +3,12 @@ class Merge < ApplicationModel
   include NotifiableSupport
 
   belongs_to :workbench
-
-  validates :workbench, presence: true
-
-  has_many :compliance_check_sets, -> { where(parent_type: "Merge") }, foreign_key: :parent_id, dependent: :destroy
+  has_many :compliance_check_sets, -> { where(parent_type: 'Merge') }, foreign_key: :parent_id, dependent: :destroy
 
   delegate :output, to: :workbench
-
   delegate :workgroup, to: :workbench
+
+  validates :workbench, presence: true
 
   EXPERIMENTAL_METHOD = 'experimental'
   enumerize :merge_method, in: ['legacy', EXPERIMENTAL_METHOD], default: 'legacy'
@@ -24,9 +22,10 @@ class Merge < ApplicationModel
   end
 
   def rollback!
-    raise "You cannot rollback to the current version" if current?
-    workbench.output.update current: self.new
-    self.following_merges.each(&:cancel!)
+    raise 'You cannot rollback to the current version' if current?
+
+    workbench.output.update current: new
+    following_merges.each(&:cancel!)
   end
 
   def cancel!
@@ -36,7 +35,7 @@ class Merge < ApplicationModel
   end
 
   def following_merges
-    following_referentials = self.workbench.output.referentials.where('created_at > ?', self.new.created_at)
+    following_referentials = workbench.output.referentials.where('created_at > ?', new.created_at)
     workbench.merges.where(new_id: following_referentials.pluck(:id))
   end
 
@@ -55,7 +54,9 @@ class Merge < ApplicationModel
 
       referentials.each(&:pending!)
 
-      if before_merge_compliance_control_sets.present?
+      if processing_rules_before_merge.present?
+        processor.before(referentials)
+      elsif before_merge_compliance_control_sets.present?
         create_before_merge_compliance_check_sets
       else
         enqueue_job :merge!
@@ -96,29 +97,31 @@ class Merge < ApplicationModel
     Rails.logger.info "Start Merge##{id} merge for #{referential_ids}"
 
     CustomFieldsSupport.within_workgroup(workgroup) do
-      Chouette::Benchmark.measure("merge", merge: id) do
-        Chouette::Benchmark.measure("prepare_new") do
+      Chouette::Benchmark.measure('merge', merge: id) do
+        Chouette::Benchmark.measure('prepare_new') do
           prepare_new
         end
 
         referentials.each do |referential|
-          Chouette::Benchmark.measure("referential", referential: referential.id) do
+          Chouette::Benchmark.measure('referential', referential: referential.id) do
             merge_referential_method_class.new(self, referential).merge!
           end
         end
 
-        Chouette::Benchmark.measure("clean_new") do
+        Chouette::Benchmark.measure('clean_new') do
           clean_new
         end
 
-        if after_merge_compliance_control_sets.present?
+        if processing_rules_after_merge.present?
+          processor.after([new])
+        elsif after_merge_compliance_control_sets.present?
           create_after_merge_compliance_check_sets
         else
           save_current
         end
       end
     end
-  rescue => e
+  rescue StandardError => e
     Chouette::Safe.capture "Merge ##{id} failed", e
     raise e if Rails.env.test?
 
@@ -135,7 +138,7 @@ class Merge < ApplicationModel
 
   def prepare_new
     if Rails.env.test? && new.present?
-      Rails.logger.debug "Use existing new for test"
+      Rails.logger.debug 'Use existing new for test'
       return
     end
 
@@ -148,13 +151,14 @@ class Merge < ApplicationModel
       else
         if workbench.merges.successful.count > 0
           # there had been previous merges, we should have a current output
-          raise "Trying to create a new referential to merge into from Merge##{self.id}, while there had been previous merges in the same workbench"
+          raise "Trying to create a new referential to merge into from Merge##{id}, while there had been previous merges in the same workbench"
         end
+
         Rails.logger.debug "Merge ##{id}: Create a new output"
         # 'empty' one
         attributes = {
           workbench: workbench,
-          organisation: workbench.organisation, # TODO could be workbench.organisation by default
+          organisation: workbench.organisation # TODO: could be workbench.organisation by default
         }
         workbench.output.referentials.new attributes
       end
@@ -162,15 +166,13 @@ class Merge < ApplicationModel
     new.referential_suite = output
     new.workbench = workbench
     new.organisation = workbench.organisation
-    new.name = I18n.t("merges.referential_name", date: I18n.l(created_at, format: :short_with_time))
+    new.name = I18n.t('merges.referential_name', date: I18n.l(created_at, format: :short_with_time))
 
-    unless new.valid?
-      Rails.logger.error "Merge ##{id}: New referential isn't valid : #{new.errors.inspect}"
-    end
+    Rails.logger.error "Merge ##{id}: New referential isn't valid : #{new.errors.inspect}" unless new.valid?
 
     begin
       new.save!
-    rescue
+    rescue StandardError
       Rails.logger.debug "Merge ##{id}: Errors on new referential: #{new.errors.messages}"
       raise
     end
@@ -186,13 +188,13 @@ class Merge < ApplicationModel
   def clean_new
     clean_up_options = {
       referential: new,
-      clean_methods: [:clean_irrelevant_data, :clean_unassociated_calendars]
+      clean_methods: %i[clean_irrelevant_data clean_unassociated_calendars]
     }
     clean_scope = Clean::Scope::Referential.new(new)
 
     if workgroup.enable_purge_merged_data
-      last_date = Time.zone.today - [workgroup.maximum_data_age,0].max
-      Clean::Metadata::Before.new(clean_scope, last_date-1).clean!
+      last_date = Time.zone.today - [workgroup.maximum_data_age, 0].max
+      Clean::Metadata::Before.new(clean_scope, last_date - 1).clean!
 
       clean_up_options.merge!({ date_type: :before, begin_date: last_date })
     end
@@ -226,15 +228,46 @@ class Merge < ApplicationModel
     end
 
     aggregated_referentials = parent.workgroup.aggregates.flat_map(&:referential_ids).compact.uniq
-    if aggregated_referentials.present?
-      scope = scope.where.not(new_id: aggregated_referentials)
-    end
+    scope = scope.where.not(new_id: aggregated_referentials) if aggregated_referentials.present?
 
     scope
   end
 
   def concurent_operations
-    parent.merges.where.not(id: self.id)
+    parent.merges.where.not(id: id)
   end
 
+  def processor
+    @processor ||= Processor.new(self)
+  end
+
+  def processing_rules_before_merge
+    workbench_processing_rules_before_merge + workgroup_processing_rules_before_merge
+  end
+
+  def workbench_processing_rules_before_merge
+    workbench.processing_rules.where(operation_step: 'before_merge').order(processable_type: :desc)
+  end
+
+  def workgroup_processing_rules_before_merge
+    dedicated_processing_rules = workbench.workgroup.processing_rules.where(operation_step: 'before_merge').with_target_workbenches_containing(workbench_id)
+    return dedicated_processing_rules if dedicated_processing_rules.present?
+
+    workbench.workgroup.processing_rules.where(operation_step: 'before_merge', target_workbench_ids: [])
+  end
+
+  def processing_rules_after_merge
+    workbench_processing_rules_after_merge + workgroup_processing_rules_after_merge
+  end
+
+  def workbench_processing_rules_after_merge
+    workbench.processing_rules.where(operation_step: 'after_merge').order(processable_type: :desc)
+  end
+
+  def workgroup_processing_rules_after_merge
+    dedicated_processing_rules = workbench.workgroup.processing_rules.where(operation_step: 'after_merge').with_target_workbenches_containing(workbench_id)
+    return dedicated_processing_rules if dedicated_processing_rules.present?
+
+    workbench.workgroup.processing_rules.where(operation_step: 'after_merge', target_workbench_ids: [])
+  end
 end

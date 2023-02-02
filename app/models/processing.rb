@@ -2,7 +2,7 @@
 
 class Processing < ApplicationModel
   extend Enumerize
-  
+
   belongs_to :workgroup, optional: true
   belongs_to :workbench, optional: true
 
@@ -14,12 +14,11 @@ class Processing < ApplicationModel
 
   # Associated ProcessingRule::Workbench / ProcessingRule::Workgroup
   belongs_to :processing_rule, class_name: 'ProcessingRule::Base', optional: false
-  
-  enumerize :step, in: %i{before after}
-  
-  
+
+  enumerize :step, in: %i[before after]
+
   def perform
     processed.perform
-    processed.user_status.successful?
+    processed.user_status.successful? || processed.user_status.warning?
   end
 end

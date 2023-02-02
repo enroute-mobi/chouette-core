@@ -12,6 +12,8 @@ module ProcessingRule
     has_many :processings, foreign_key: 'processing_rule_id'
 
     validates :operation_step, presence: true
+    validates :control_list_id, presence: true, if: :use_control_list?
+    validates :processable, inclusion: { in: ->(rule) { rule.candidate_control_lists } }, if: :use_control_list?
 
     def use_control_list?
       processable_type == Control::List.name
@@ -25,8 +27,33 @@ module ProcessingRule
       self.processable_id = control_list_id
     end
 
-    validates :control_list_id, presence: true, if: :use_control_list?
-    validates :processable, inclusion: { in: ->(rule) { rule.candidate_control_lists } }, if: :use_control_list?
+    def perform(operation: nil, referential: nil, operation_workbench: nil)
+      if use_control_list?
+        processed = processable.control_list_runs.new(name: processable.name,
+                                                      creator: 'Webservice',
+                                                      referential: referential,
+                                                      workbench: operation_workbench)
+        processed.build_with_original_control_list
+      else
+        processed = processable.macro_list_runs.new(name: processable.name,
+                                                    creator: 'Webservice',
+                                                    referential: referential,
+                                                    workbench: operation_workbench)
+        processed.build_with_original_macro_list
+      end
+
+      processing = processings.create step: processing_step,
+                                      operation: operation,
+                                      workbench_id: operation_workbench.id,
+                                      workgroup_id: workgroup_id,
+                                      processed: processed
+    
+      processing.perform
+    end
+
+    def processing_step
+      operation_step.split('_').first if operation_step.present?
+    end 
   end
 
   # Workbench ProcessingRule managed as Workbench#processing_rules

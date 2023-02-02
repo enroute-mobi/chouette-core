@@ -31,30 +31,16 @@ class Import::Netex < Import::Base
     main_resource.update_status_from_importer self.status
     update_referential
 
-    processing_rules.each do |processing_rule|
-      if processing_rule.use_control_list?
-        processed = processing_rule.processable.control_list_runs.new(name: processing_rule.processable.name,
-                                                                      creator: 'Webservice',
-                                                                      referential: referential,
-                                                                      workbench: workbench
-                                                                    )
-        processed.build_with_original_control_list
-      else
-        processed = processing_rule.processable.macro_list_runs.new(name: processing_rule.processable.name,
-                                                                    creator: 'Webservice', referential: referential)
-        processed.build_with_original_macro_list
-      end
-
-      processing = processing_rule.processings.create step: :after, operation: self, workbench_id: processing_rule.workbench_id,
-                                                      workgroup_id: processing_rule.workgroup_id, processed: processed
-
-      break unless processing.perform
-    end
+    processor.after([referential])
 
     Rails.logger.info "#{self.class.name} ##{id}: invoke next_step"
     next_step
 
     super
+  end
+  
+  def processor
+    @processor ||= Processor.new(self)
   end
 
   def line_ids

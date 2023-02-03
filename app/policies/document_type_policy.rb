@@ -11,10 +11,10 @@ class DocumentTypePolicy < ApplicationPolicy
 
   def destroy?
     # A DocumentType should not be destroyed if they are linked to a document (mandatory attribute)
-    user.has_permission?('document_types.destroy') && record.documents.empty?
+    user.has_permission?('document_types.destroy') && record.documents.empty? && current_workgroup == record.workgroup
   end
 
   def update?
-    user.has_permission?('document_types.update')
+    user.has_permission?('document_types.update') && current_workgroup == record.workgroup
   end
 end

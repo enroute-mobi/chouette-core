@@ -1323,15 +1323,16 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
 
   describe 'FeedInfo' do
     describe Export::Gtfs::FeedInfo::Decorator do
-      let(:decorator) { Export::Gtfs::FeedInfo::Decorator.new(company: company, referential: referential) }
-      let(:referential) { Referential.new }
+      let(:decorator) { Export::Gtfs::FeedInfo::Decorator.new(company: company, validity_period: validity_period) }
       let(:company) { Chouette::Company.new }
+      let(:validity_period) { Period.from(:today) }
 
       describe '#start_date' do
         subject { decorator.start_date }
 
         context 'when Referential validity period starts on 2030-01-01' do
-          before { allow(referential).to receive(:validity_period).and_return(Period.from('2030-01-01')) }
+          let(:validity_period) { Period.from('2030-01-01') }
+
           it { is_expected.to eq(Date.parse('2030-01-01')) }
         end
       end
@@ -1340,7 +1341,8 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
         subject { decorator.end_date }
 
         context 'when Referential validity period starts on 2030-12-31' do
-          before { allow(referential).to receive(:validity_period).and_return(Period.from(:today).until('2030-12-31')) }
+          let(:validity_period) { Period.from(:today).until('2030-12-31') }
+
           it { is_expected.to eq(Date.parse('2030-12-31')) }
         end
       end
@@ -1349,7 +1351,8 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
         subject { decorator.gtfs_start_date }
 
         context 'when start date is 2030-01-15' do
-          before { allow(decorator).to receive(:start_date).and_return(Date.parse('2030-01-15')) }
+          let(:validity_period) { Period.from('2030-01-15') }
+
           it { is_expected.to eq('20300115') }
         end
       end
@@ -1358,7 +1361,8 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
         subject { decorator.gtfs_end_date }
 
         context 'when end date is 2030-01-15' do
-          before { allow(decorator).to receive(:end_date).and_return(Date.parse('2030-01-15')) }
+          let(:validity_period) { Period.from(:today).until('2030-01-15') }
+
           it { is_expected.to eq('20300115') }
         end
       end

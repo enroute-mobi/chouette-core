@@ -679,7 +679,7 @@ class Export::Gtfs < Export::Base
 
     def export!
       time_tables.includes(:periods, :dates).find_each do |time_table|
-        decorated_time_table = TimeTableDecorator.new(time_table, date_range)
+        decorated_time_table = TimeTableDecorator.new(time_table, export_scope.validity_period)
 
         decorated_time_table.calendars.each { |c| target.calendars << c }
         decorated_time_table.calendar_dates.each { |cd| target.calendar_dates << cd }
@@ -1241,11 +1241,10 @@ class Export::Gtfs < Export::Base
   end
 
   class FeedInfo < Part
-    delegate :companies, to: :export_scope
-    delegate :referential, to: :export_scope
+    delegate :companies, :validity_period, to: :export_scope
 
     def export!
-      target.feed_infos << Decorator.new(company: company, referential: referential).feed_info_attributes
+      target.feed_infos << Decorator.new(company: company, validity_period: validity_period).feed_info_attributes
     end
 
     def company
@@ -1253,11 +1252,11 @@ class Export::Gtfs < Export::Base
     end
 
     class Decorator
-      attr_reader :company, :referential
+      attr_reader :company, :validity_period
 
-      def initialize(company:, referential:)
+      def initialize(company:, validity_period:)
         @company = company
-        @referential = referential
+        @validity_period = validity_period
       end
 
       def feed_info_attributes
@@ -1271,19 +1270,19 @@ class Export::Gtfs < Export::Base
       end
 
       def start_date
-        referential.validity_period.min
+        validity_period&.min
       end
 
       def gtfs_start_date
-        start_date.strftime('%Y%m%d')
+        start_date&.strftime('%Y%m%d')
       end
 
       def end_date
-        referential.validity_period.max
+        validity_period&.max
       end
 
       def gtfs_end_date
-        end_date.strftime('%Y%m%d')
+        end_date&.strftime('%Y%m%d')
       end
 
       def publisher_name

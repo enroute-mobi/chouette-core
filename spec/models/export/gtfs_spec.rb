@@ -1361,7 +1361,7 @@ RSpec.describe Export::Gtfs, type: [:model, :with_exportable_referential] do
         subject { decorator.gtfs_end_date }
 
         context 'when end date is 2030-01-15' do
-          let(:validity_period) { Period.until('2030-01-15') }
+          let(:validity_period) { Period.from(:today).until('2030-01-15') }
 
           it { is_expected.to eq('20300115') }
         end

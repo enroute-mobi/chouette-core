@@ -10,7 +10,7 @@ class Export::NetexGeneric < Export::Base
   option :exported_lines, default_value: 'all_line_ids', enumerize: %w[line_ids company_ids line_provider_ids all_line_ids]
 
   def target
-    @target ||= Netex::Target.build export_file, profile: netex_profile, validity_periods: export_scope.validity_period
+    @target ||= Netex::Target.build export_file, profile: netex_profile, validity_periods: [export_scope.validity_period]
   end
   attr_writer :target
 

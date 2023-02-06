@@ -1270,7 +1270,7 @@ class Export::Gtfs < Export::Base
       end
 
       def start_date
-        validity_period&.start_date
+        validity_period&.min
       end
 
       def gtfs_start_date
@@ -1278,7 +1278,7 @@ class Export::Gtfs < Export::Base
       end
 
       def end_date
-        validity_period&.end_date
+        validity_period&.max
       end
 
       def gtfs_end_date

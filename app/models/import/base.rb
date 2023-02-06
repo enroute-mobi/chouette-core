@@ -75,6 +75,16 @@ class Import::Base < ApplicationModel
     end
   end
 
+  def disable_missing_resources?
+    if options['disable_missing_resources']
+      true
+    elsif (parent_options = parent&.options).present?
+      parent_options['disable_missing_resources'] == 'true'
+    else
+      false
+    end
+  end
+
   PERIOD_EXTREME_VALUE = 25.years
 
   after_create :purge_imports
@@ -224,7 +234,7 @@ class Import::Base < ApplicationModel
     dedicated_processing_rules = workbench.workgroup.processing_rules.where(operation_step: 'after_import',
                                                                   target_workbench_ids: [workbench_id])
     return dedicated_processing_rules if dedicated_processing_rules.present?
-      
+
     workbench.workgroup.processing_rules.where(operation_step: 'after_import', target_workbench_ids: [])
   end
 

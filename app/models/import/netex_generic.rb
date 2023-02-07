@@ -91,6 +91,7 @@ class Import::NetexGeneric < Import::Base
         sync.default_provider = default_provider
 
         sync.update_or_create
+        sync.delete_after_update_or_create if disable_missing_resources?
         sync.after_synchronisation
       end
 

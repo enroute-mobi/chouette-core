@@ -81,7 +81,7 @@ class Import::NetexGeneric < Import::Base
   class SynchronizedPart < Part
     include Measurable
 
-    delegate :netex_source, :event_handler, :code_space, to: :import
+    delegate :netex_source, :event_handler, :code_space, :disable_missing_resources?, to: :import
 
     def import!
       synchronization.tap do |sync|

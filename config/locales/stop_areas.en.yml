@@ -177,6 +177,8 @@ en:
         stop_area_provider: Stop Area provider
         codes: "Codes"
         distance: Distance
+        lines: Lines
+        routes: Routes
   formtastic:
     titles:
       stop_area:

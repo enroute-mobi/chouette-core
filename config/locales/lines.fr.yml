@@ -154,6 +154,7 @@ fr:
         active_until: "Active jusqu'au"
         associated_notices: Notes de ligne associées
         codes: Codes
+        routes: Itinéraires
   formtastic:
     titles:
       line:

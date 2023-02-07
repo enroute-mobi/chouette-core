@@ -153,6 +153,7 @@ en:
         active_until: Active until
         associated_notices: Associated notices
         codes: Codes
+        routes: Routes
   formtastic:
     titles:
       line:

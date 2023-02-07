@@ -180,6 +180,8 @@ fr:
         stop_area_provider: Fournisseur d'arrêts
         codes: Codes
         distance: Distance
+        lines: Lignes
+        routes: Itinéraires
   formtastic:
     titles:
       stop_area:

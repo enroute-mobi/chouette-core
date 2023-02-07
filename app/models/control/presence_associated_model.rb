@@ -78,12 +78,18 @@ module Control
         end
 
         def faulty_models
-          context
-            .send(context_collection)
-            .group(target_model.underscore)
-            .having(condition, { minimum: minimum, maximum: maximum })
-            .count
-            .keys
+          associatied_models = context.send(context_collection)
+
+          grouped_by_target_model =
+            case [target_model, collection]
+            when %w[VehicleJourney time_tables]
+              # Vehicle Journeys have many and belongs to Time Tables
+              associatied_models.joins(:vehicle_journeys).group(:vehicle_journey_id)
+            else
+              associatied_models.group(target_model.underscore)
+            end
+
+          grouped_by_target_model.having(condition, { minimum: minimum, maximum: maximum }).count.keys
         end
 
         def condition

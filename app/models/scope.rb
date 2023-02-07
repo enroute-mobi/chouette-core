@@ -31,6 +31,10 @@ module Scope
       Chouette::VehicleJourney.none
     end
 
+    def time_tables
+      Chouette::TimeTable.none
+    end
+
     private
 
     attr_reader :workbench
@@ -43,7 +47,7 @@ module Scope
     end
 
     delegate :lines, :companies, :stop_areas, :routes, :stop_points, 
-             :journey_patterns, :journey_pattern_stop_points, :vehicle_journeys,
+             :journey_patterns, :journey_pattern_stop_points, :vehicle_journeys, :time_tables,
              to: :referential
     delegate :entrances, :point_of_interests, :shapes, to: :workbench
 

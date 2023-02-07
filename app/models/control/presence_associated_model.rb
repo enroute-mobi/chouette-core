@@ -72,6 +72,10 @@ module Control
           case [target_model, collection]
           when %w[JourneyPattern stop_points]
             'journey_pattern_stop_points'
+          when %w[TimeTable periods]
+            'time_table_periods'
+          when %w[TimeTable dates]
+            'time_table_dates'
           else
             collection
           end

@@ -130,7 +130,7 @@ fr:
           flag_urgent: Contient de l'offre urgente
           update_workgroup_providers: Autorisation des changements sur les ressources de l'Espace de travail
           store_xml: Conserver les definitions XML originelles
-          disable_missing_resources: Désactiver les arrêts et lines manquantes
+          disable_missing_resources: Désactiver les arrêts et lignes manquantes
           merge_method: Méthode de finalisation
           shape_attribute_as_id: Attribut utilisé comme identifiant
           import_category: Type d'import

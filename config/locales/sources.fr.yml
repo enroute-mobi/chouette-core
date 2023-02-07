@@ -51,7 +51,7 @@ fr:
         import_option_archive_on_fail: Archivage automatique en cas d'erreur
         import_option_update_workgroup_providers: Autorisation des changements sur les ressources de l'Espace de travail
         import_option_store_xml: Conserver les definitions XML originelles
-        import_option_disable_missing_resources: Désactiver les arrêts et lines manquantes
+        import_option_disable_missing_resources: Désactiver les arrêts et lignes manquantes
         enabled: "Activée"
         retrieval_time_of_day: "Heure de récupération"
         retrieval_days_of_week: "Jours de récupération"

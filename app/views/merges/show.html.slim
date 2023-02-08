@@ -16,14 +16,14 @@
             = table_builder_2 @merge.referentials,
               [ \
                 TableBuilderHelper::Column.new( \
-                  name: t('imports.show.referential_name'),
+                  name: t('.table_headers.referentials'),
                   attribute: lambda do |referential| \
                     link_to(decorate_referential_name(referential), referential_path(referential)) \
                   end,
                   sortable: false,
                 ),
                 TableBuilderHelper::Column.new( \
-                  name: I18n.t('imports.index.workbench_macro_list_run'),
+                  name: t('.table_headers.workbench_macro_list_run'),
                   attribute: lambda do |referential| \
                     workbench_macro_list_run = @referential_processings[referential.id]['workbench_macro_list_run']; \
                     link_to_if_table(workbench_macro_list_run.present?, operation_status(workbench_macro_list_run&.user_status, verbose: true), [@workbench, workbench_macro_list_run]) \
@@ -31,7 +31,7 @@
                   sortable: false,
                 ),
                 TableBuilderHelper::Column.new( \
-                  name: I18n.t('imports.index.workbench_control_list_run'),
+                  name: t('.table_headers.workbench_control_list_run'),
                   attribute: lambda do |referential| \
                     workbench_control_list_run = @referential_processings[referential.id]['workbench_control_list_run']; \
                     link_to_if_table(workbench_control_list_run.present?, operation_status(workbench_control_list_run&.user_status, verbose: true), [@workbench, workbench_control_list_run]) \
@@ -39,7 +39,7 @@
                   sortable: false,
                 ),
                 TableBuilderHelper::Column.new( \
-                  name: I18n.t('imports.index.workrgroup_control_list_run'),
+                  name: t('.table_headers.workrgroup_control_list_run'),
                   attribute: lambda do |referential| \
                     workgroup_control_list_run = @referential_processings[referential.id]['workgroup_control_list_run']; \                    
                     link_to_if_table(workgroup_control_list_run.present?, operation_status(workgroup_control_list_run&.user_status, verbose: true), [@workbench, workgroup_control_list_run]) \                  
@@ -54,14 +54,14 @@
             = table_builder_2 [@merge.new],
               [ \
                 TableBuilderHelper::Column.new( \
-                  name: t('imports.show.referential_name'),
+                  name: t('.table_headers.merged_referential'),
                   attribute: lambda do |referential| \
                     link_to(decorate_referential_name(referential), referential_path(referential)) \
                   end,
                   sortable: false,
                 ),
                  TableBuilderHelper::Column.new( \
-                  name: I18n.t('imports.index.workbench_control_list_run'),
+                  name: t('.table_headers.workbench_control_list_run'),
                   attribute: lambda do |referential| \
                     workbench_control_list_run = @referential_processings[referential.id]['workbench_control_list_run']; \
                     link_to_if_table(workbench_control_list_run.present?, operation_status(workbench_control_list_run&.user_status, verbose: true), [@workbench, workbench_control_list_run]) \
@@ -69,7 +69,7 @@
                   sortable: false,
                 ),
                 TableBuilderHelper::Column.new( \
-                  name: I18n.t('imports.index.workrgroup_control_list_run'),
+                  name: t('table_headers.workrgroup_control_list_run'),
                   attribute: lambda do |referential| \
                     workgroup_control_list_run = @referential_processings[referential.id]['workgroup_control_list_run']; \                    
                     link_to_if_table(workgroup_control_list_run.present?, operation_status(workgroup_control_list_run&.user_status, verbose: true), [@workbench, workgroup_control_list_run]) \                  

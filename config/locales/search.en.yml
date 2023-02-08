@@ -6,6 +6,7 @@ en:
     attributes:
       search:
         statuses: Status
+        line_status: Status
         workbench_ids: Workbench
         start_date: "After : "
         end_date: "Before : "
@@ -19,8 +20,11 @@ en:
         is_referent: "Referent"
         zip_code: "Zip code"
         city_name: "City name"
+        network_id: "Network"
+        transport_mode: "Transport mode"
         parent_id: "Parent"
         stop_area_provider_id: Stop area provider
+        line_provider_id: Line provider
         from_stop_area_id: "From"
         to_stop_area_id: "To"
         document_type: "Document type"

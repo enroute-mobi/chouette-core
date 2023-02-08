@@ -1,60 +1,25 @@
-= search_form_for @q, url: workbench_line_referential_lines_path(@workbench), html: {method: :get}, class: 'form form-filter' do |f|
-  .ffg-row
-    .input-group.search_bar class=filter_item_class(params[:q], :name_or_number_or_short_id_cont)
-      = f.search_field :name_or_number_or_short_id_cont,
-        placeholder: t('lines.index.name_or_number_or_short_id'), class: 'form-control',
-        value: params[:q].try(:[],:name_or_number_or_short_id_cont)
-      span.input-group-btn
-        button.btn.btn-default#search-btn type='submit'
-          span.fa.fa-search
+= simple_form_for @search, url: request.path, method: "GET", html: { class: 'flex items-center tailwind-filters bg-grey relative pr-6' }, wrapper: :filters_form_tailwind  do |f|
+  = f.simple_fields_for :order, @search.order, defaults: { wrapper: false } do |form_order|
+    - form_order.object.attributes.keys.each do |attribute|
+      = form_order.input attribute, as: :hidden
 
-  .ffg-row
-    .form-group.togglable class=filter_item_class(params[:q], :network_id_eq_any)
-      = f.label Chouette::Line.tmf(:network_id), required: false, class: 'control-label'
-      = f.input :network_id_eq_any, collection: @line_referential.networks.order(name: :asc), as: :check_boxes, label: false, label_method: lambda{|l| ("<span>" + l.name + "</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list'}
+  .flex.flex-col.w-full
+    .flex.items-center.border-r.border-white
+      = f.input :text, label: false, wrapper_html: {class: "w-2/5"}, placeholder: I18n.t('simple_form.placeholders.search.document_id')
+    .flex.items-center.border-t.border-r.border-white
+      = f.input :network_id, as: :autocomplete_select, collection: @search.candidate_networks, wrapper_html: {class: "w-2/5"}
+      = f.input :company_id, as: :autocomplete_select, collection: @search.candidate_companies, wrapper_html: {class: "w-2/5"}
+      = f.input :line_provider_id, as: :autocomplete_select, collection: @search.candidate_line_providers, wrapper_html: {class: "w-2/5"}
+    .flex.items-center.border-t.border-r.border-white
+      = f.input :transport_mode, as: :autocomplete_select, wrapper_html: {class: "w-1/5"}, input_html: { multiple: true, style: 'width: 100%' }
+      = f.input :line_status, as: :autocomplete_select, wrapper_html: {class: "w-1/5"}, input_html: { style: 'width: 100%' }
+      = f.input :valid_before_date, as: :date_picker
+      = f.input :valid_after_date, as: :date_picker
 
-    .form-group.togglable class=filter_item_class(params[:q], :company_id_eq_any)
-      = f.label Chouette::Line.tmf(:company_id), required: false, class: 'control-label'
-      = f.input :company_id_eq_any, collection: @line_referential.companies.order(name: :asc), as: :check_boxes, label: false, label_method: lambda{|l| ("<span>" + l.name + "</span>").html_safe}, required: false, wrapper_html: { class: 'checkbox_list'}
-
-    .form-group.togglable class=filter_item_class(params[:q], :transport_mode)
-      = f.label Chouette::Line.tmf(:transport_mode), required: false, class: 'control-label'
-      .form-group.checkbox_list.js-transport-mode-checkboxes
-        = f.simple_fields_for :transport_mode do |p|
-          - referential.workgroup.sorted_transport_modes.each do |mode, _|
-            = p.input mode.to_sym,
-              label: ("<span>" + t("enumerize.transport_mode.#{mode}") + "</span>").html_safe,
-              as: :boolean,
-              wrapper_html: { class: 'checkbox-wrapper'},
-              checked_value: true,
-              unchecked_value: false,
-              input_html: { checked: @transport_modes&.include?(mode), data: { transport_mode: mode } }
-    .form-group.togglable class=filter_item_class(params[:q], :transport_submode)
-      = f.label Chouette::Line.tmf(:transport_submode), required: false, class: 'control-label'
-      .form-group.checkbox_list.js-transport-submode-checkboxes data-transport_submodes=referential.workgroup.formatted_submodes_for_transports.to_json
-        = f.simple_fields_for :transport_submode do |p|
-          - referential.workgroup.sorted_transport_submodes.each do |submode|
-            = p.input submode.to_sym,
-              label: ("<span>" + t("enumerize.transport_submode.#{submode}") + "</span>").html_safe,
-              as: :boolean,
-              wrapper_html: { class: 'checkbox-wrapper' },
-              checked_value: true,
-              unchecked_value: false,
-              input_html: { checked: @transport_submodes&.include?(submode), data: { transport_submode: submode } }
-
-    .form-group.togglable class=filter_item_class(params[:q], :status)
-      = f.label Chouette::Line.tmf(:status), required: false, class: 'control-label'
-      .form-group.checkbox_list.line_status x-data="{ lineStatusFromActivated: #{status_from_active?}, lineStatusUntilActivated: #{status_until_active?} }"
-        = f.input :status, as: :radio_buttons, collection: %w(all activated deactivated).map{|status| [("<span>#{t("enumerize.line.status.#{status}")}#{status_symbol(status)}</span>").html_safe, status] }, checked: params[:q] && params[:q][:status] || "all", label: false, wrapper_html: { class: 'radiobox-wrapper' }
-        hr
-        .col-md-3
-          = f.input :status_from_enabled, as: :switchable_checkbox, input_html: { checked: status_from_active?, 'x-on:click': 'lineStatusFromActivated = !lineStatusFromActivated' }, label: false
-        .col-md-9
-          = f.input :status_from, as: :date, selected: @status_from || Time.now, label: 'lines.filters.status_from'.t, wrapper_html: { class: 'inline-form', 'x-bind:class': "{ 'disabled': !lineStatusFromActivated }" }, input_html:{ 'x-bind:disabled': "!lineStatusFromActivated" }, required: false
-        .col-md-3
-          = f.input :status_until_enabled, as: :switchable_checkbox, input_html: { checked: status_until_active?, 'x-on:click': 'lineStatusUntilActivated = !lineStatusUntilActivated' }, label: false
-        .col-md-9
-          = f.input :status_until, as: :date, selected: @status_until || Time.now, label: 'lines.filters.status_to'.t, wrapper_html: { class: 'inline-form', 'x-bind:class': "{ 'disabled': !lineStatusUntilActivated }"}, input_html:{ 'x-bind:disabled': "!lineStatusUntilActivated" }, required: false
-  .actions
-    = link_to t('actions.erase'), workbench_line_referential_lines_path(@workbench), class: 'btn btn-link'
-    = f.submit t('actions.filter'), class: 'btn btn-default'
+  .flex.flex-col.justify-center.items-center.actions.ml-auto.py-3.w-80
+    .flex.items-center.mb-3
+      = f.label :per_page, class: 'control-label mr-3'
+      = f.input :per_page, as: :per_page, label: false, wrapper: false
+    .flex.items-center
+      = link_to t('actions.erase'), workbench_line_referential_lines_path(@workbench), class: 'btn btn-link'
+      = f.submit t('actions.filter'), class: 'btn btn-default'

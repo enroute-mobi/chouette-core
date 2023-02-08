@@ -2,11 +2,11 @@
 // FORMS //
 //-------//
 
-.tailwind-form{
+.tailwind-form {
   label {
     margin-bottom: 0;
   }
-  .form-control.time_of_day{
+  .form-control.time_of_day {
     width: auto;
     display: flex;
   }
@@ -27,7 +27,7 @@
   }
 }
 
-.tailwind-filters{
+.tailwind-filters {
   .form-group {
     margin-bottom: 0;
   }
@@ -46,10 +46,18 @@
   }
   .ts-control {
     width: 100%;
+    .multi {
+      .ts-input {
+        > div {
+          margin: 0 3px 0 0;
+        }
+      }
+    }
   }
 }
 
-#macro_list_form, #control_list_form {
+#macro_list_form,
+#control_list_form {
   .ts-input.disabled {
     opacity: 1;
   }
@@ -182,7 +190,7 @@ input {
 .control-label {
   &.is-required {
     &:after {
-      content: ' *';
+      content: " *";
       display: inline;
       color: #a94442;
     }
@@ -192,11 +200,11 @@ input {
   &:required {
     &:focus:invalid {
       border-color: #d43f3a;
-      box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 6px #d9534f;
+      box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #d9534f;
     }
     &:focus:valid {
       border-color: #4cae4c;
-      box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 6px #5cb85c;
+      box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #5cb85c;
     }
   }
 }
@@ -215,7 +223,7 @@ input {
       }
     }
     > .control-label {
-      &[class*='col-sm-'] {
+      &[class*="col-sm-"] {
         float: none;
         padding-top: 0;
         position: absolute;
@@ -224,7 +232,7 @@ input {
         top: 50%;
         transform: translateY(-50%);
 
-        + [class*='col-sm-'] {
+        + [class*="col-sm-"] {
           float: right;
         }
       }
@@ -263,7 +271,7 @@ input {
         padding: 0;
 
         input.color_selector,
-        input[type='radio'] {
+        input[type="radio"] {
           position: absolute;
           cursor: pointer;
           z-index: 1;
@@ -287,8 +295,8 @@ $cbx-size-xs: 15px;
   margin: 0 auto;
 
   > input {
-    &[type='checkbox']:not(:checked),
-    &[type='checkbox']:checked {
+    &[type="checkbox"]:not(:checked),
+    &[type="checkbox"]:checked {
       position: absolute;
       margin: 0;
       left: -9999px;
@@ -303,7 +311,7 @@ $cbx-size-xs: 15px;
         padding-left: $cbx-size;
 
         &:before {
-          content: '';
+          content: "";
           position: absolute;
           left: 0;
           top: 50%;
@@ -315,7 +323,7 @@ $cbx-size-xs: 15px;
           border-radius: 3px;
         }
         &:after {
-          content: '\f00c';
+          content: "\f00c";
           font-family: "Font Awesome 5 Free";
           font-weight: 600;
           font-size: inherit;
@@ -334,10 +342,10 @@ $cbx-size-xs: 15px;
         }
       }
     }
-    &[type='checkbox']:checked + label:before {
+    &[type="checkbox"]:checked + label:before {
       background-color: $darkgrey;
     }
-    &[type='checkbox']:disabled + label {
+    &[type="checkbox"]:disabled + label {
       &:before {
         border-color: $grey;
         background-color: $lightgrey;
@@ -350,7 +358,7 @@ $cbx-size-xs: 15px;
   }
 }
 // Table adjustments
-  table,
+table,
 .table {
   .td,
   td,
@@ -387,8 +395,8 @@ $cbx-size-xs: 15px;
         width: $cbx-size-xs;
 
         > input {
-          &[type='checkbox']:not(:checked),
-          &[type='checkbox']:checked {
+          &[type="checkbox"]:not(:checked),
+          &[type="checkbox"]:checked {
             + label {
               height: $cbx-size-xs;
               padding-left: $cbx-size-xs;
@@ -422,7 +430,7 @@ $cbx-size-xs: 15px;
   margin: 0 auto;
   transition: transform 0.2s, background-color 0.2s;
 
-  > input[type='checkbox'] {
+  > input[type="checkbox"] {
     &:not(:checked),
     &:checked {
       position: absolute;
@@ -479,7 +487,7 @@ $cbx-size-xs: 15px;
         padding: 0;
         margin: 0;
 
-        > input[type='checkbox'] {
+        > input[type="checkbox"] {
           position: absolute;
           left: -9999px;
           margin: 0;
@@ -496,7 +504,7 @@ $cbx-size-xs: 15px;
             line-height: 30px;
 
             &:before {
-              content: '';
+              content: "";
               position: absolute;
               left: 0;
               top: 0;
@@ -507,7 +515,7 @@ $cbx-size-xs: 15px;
               border-radius: 18px;
             }
             &:after {
-              content: '';
+              content: "";
               position: absolute;
               left: 0;
               top: 0;
@@ -555,7 +563,7 @@ $cbx-size-xs: 15px;
       height: 22px;
       line-height: 22px;
 
-      > label > input[type='checkbox'] {
+      > label > input[type="checkbox"] {
         + .switch-label {
           width: 37px;
           height: 22px;
@@ -739,7 +747,7 @@ $cbx-size-xs: 15px;
         }
       }
       &:before {
-        content: '\f078';
+        content: "\f078";
         font-family: "Font Awesome 5 Free";
         font-weight: 600;
         font-size: inherit;
@@ -755,7 +763,7 @@ $cbx-size-xs: 15px;
         line-height: 41px;
       }
       &.open:before {
-        content: '\f077';
+        content: "\f077";
         color: #fff;
       }
       > .control-label + * {
@@ -867,7 +875,7 @@ $cbx-size-xs: 15px;
             input:checked + * {
               overflow: visible;
               &:before {
-                content: '';
+                content: "";
                 background-color: transparentize($green, 0.5);
                 position: absolute;
                 left: -1000px;
@@ -909,8 +917,8 @@ $cbx-size-xs: 15px;
             background-color: whitesmoke;
           }
           > input {
-            &[type='checkbox']:not(:checked),
-            &[type='checkbox']:checked {
+            &[type="checkbox"]:not(:checked),
+            &[type="checkbox"]:checked {
               position: absolute;
               left: -9999px;
               margin: 0;
@@ -932,7 +940,7 @@ $cbx-size-xs: 15px;
                   margin-left: 5px;
                 }
                 &:before {
-                  content: '';
+                  content: "";
                   position: absolute;
                   left: 0;
                   top: 50%;
@@ -944,7 +952,7 @@ $cbx-size-xs: 15px;
                   border-radius: 3px;
                 }
                 &:after {
-                  content: '\f00c';
+                  content: "\f00c";
                   font-family: "Font Awesome 5 Free";
                   font-weight: 600;
                   font-size: inherit;
@@ -962,7 +970,7 @@ $cbx-size-xs: 15px;
                 }
               }
             }
-            &[type='checkbox'] {
+            &[type="checkbox"] {
               &:checked {
                 + span:before {
                   background-color: $darkgrey;
@@ -1081,8 +1089,8 @@ $grp-cbx-size: 34px;
         margin: 0;
 
         > input {
-          &[type='checkbox']:not(:checked),
-          &[type='checkbox']:checked {
+          &[type="checkbox"]:not(:checked),
+          &[type="checkbox"]:checked {
             position: absolute;
             left: -9999px;
             margin: 0;
@@ -1104,7 +1112,7 @@ $grp-cbx-size: 34px;
               border-radius: 3px;
             }
           }
-          &[type='checkbox']:checked + .lcbx-group-item-label {
+          &[type="checkbox"]:checked + .lcbx-group-item-label {
             background-color: $brand-color-secondary;
             border-color: $brand-color-secondary;
             color: #fff;
@@ -1122,7 +1130,7 @@ $grp-cbx-size: 34px;
   &:first-child {
     border-top: none;
   }
-  &[class*='col'] {
+  &[class*="col"] {
     border: none;
     padding: 0 15px;
     margin: 0;
@@ -1140,7 +1148,7 @@ $grp-cbx-size: 34px;
       &:last-child {
         width: 34px;
       }
-      &[class*='actions-'] {
+      &[class*="actions-"] {
         .btn {
           &,
           & + .btn {
@@ -1248,7 +1256,7 @@ $grp-cbx-size: 34px;
   text-align: right;
   clear: both;
 
-  [class*='col'] ~ & {
+  [class*="col"] ~ & {
     margin: 0 15px;
   }
   .subform + & {
@@ -1269,7 +1277,7 @@ $grp-cbx-size: 34px;
       margin: 0 0 10px 0;
       padding: 0;
 
-      + [class*='col'] {
+      + [class*="col"] {
         width: 100%;
         padding: 0;
       }
@@ -1333,7 +1341,7 @@ $grp-cbx-size: 34px;
 
   .fade {
     transition: height 500ms 250ms, opacity 500ms 250ms;
-    opacity: 0.0;
+    opacity: 0;
     height: 0px;
   }
 }

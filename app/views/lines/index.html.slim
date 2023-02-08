@@ -3,10 +3,9 @@
 
 .page_content
   .container-fluid
-    - if params[:q].present? or @lines.any?
-      .row
-        .col-lg-12
-          = render 'filters'
+    .row
+      .col-lg-12
+        = render partial: 'filters'
 
     - if @lines.any?
       .row
@@ -37,11 +36,13 @@
               ), \
               TableBuilderHelper::Column.new( \
                 key: 'networks.name', \
-                attribute: Proc.new { |n| n.try(:network).try(:name) } \
+                attribute: Proc.new { |n| n.try(:network).try(:name) }, \
+                sortable: false \
               ), \
               TableBuilderHelper::Column.new( \
                 key: 'companies.name', \
-                attribute: Proc.new { |n| n&.company&.name || "-" } \
+                attribute: Proc.new { |n| n&.company&.name || "-" }, \
+                sortable: false \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :transport_mode, \

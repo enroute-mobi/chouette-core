@@ -37,7 +37,7 @@ fr:
       none:       Aucune notification
       workgroup:  Tous les utilisateurs du groupe de travail
     line:
-      status:
+      status: &line_status
         all: Tous
         activated: Activée
         deactivated: Désactivée
@@ -424,6 +424,7 @@ fr:
     search:
       rule_type: *notification_rule_rule_type
       statuses: *stop_area_status
+      line_status: *line_status
     control:
       criticity:
         warning: Avertissement

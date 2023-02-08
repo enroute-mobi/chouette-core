@@ -171,6 +171,10 @@ module Chouette
       activated? ? :activated : :deactivated
     end
 
+    def self.statuses
+      %i{activated deactivated}
+    end
+
     def activate
       update deactivated: false
     end

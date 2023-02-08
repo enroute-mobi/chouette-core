@@ -37,7 +37,7 @@ en:
       none:       None
       workgroup:  All workgroup's users
     line:
-      status:
+      status: &line_status
         all: Tous
         activated: Activated
         deactivated: Deactivated
@@ -422,6 +422,7 @@ en:
     search:
       rule_type: *notification_rule_rule_type
       statuses: *stop_area_status
+      line_status: *line_status
     control:
       criticity:
         warning: Warning

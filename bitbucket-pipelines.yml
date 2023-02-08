@@ -110,13 +110,16 @@ pipelines:
       - step:
           name: Deploy to test
           image:
-              name: us.gcr.io/enroute-interne/enroute-cloud-sdk:latest
+              name: eu.gcr.io/enroute-interne/enroute-cloud-sdk:latest
               username: _json_key
               password: "$GCLOUD_API_KEYFILE"
           deployment: test
+          runs-on:
+            - self.hosted
+            - env.interne
           script:
             - git clone git@bitbucket.org:enroute-mobi/chouette-env.git env
-            - env/deploy.sh
+            - env/deploy-with-runner.sh
             - pipe: atlassian/datadog-send-event:1.1.3
               variables:
                 API_KEY: $DATADOG_KEY

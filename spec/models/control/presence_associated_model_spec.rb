@@ -1,7 +1,5 @@
 RSpec.describe Control::PresenceAssociatedModel do
-
   describe Control::PresenceAssociatedModel::Run do
-
     let(:control_list_run) do
       Control::List::Run.create referential: context.referential, workbench: context.workbench
     end
@@ -9,7 +7,7 @@ RSpec.describe Control::PresenceAssociatedModel do
     let(:control_run) do
       Control::PresenceAssociatedModel::Run.create(
         control_list_run: control_list_run,
-        criticity: "warning",
+        criticity: 'warning',
         options: {
           target_model: target_model,
           collection: collection,
@@ -20,7 +18,7 @@ RSpec.describe Control::PresenceAssociatedModel do
       )
     end
 
-    describe "#run" do
+    describe '#run' do
       subject { control_run.run }
 
       let(:context) do
@@ -37,11 +35,9 @@ RSpec.describe Control::PresenceAssociatedModel do
       let(:referential) { context.referential }
 
       let(:expected_message) do
-        an_object_having_attributes({
-          source: source,
-          criticity: criticity,
-          message_attributes: {"name" => attribute_name}
-        })
+        an_object_having_attributes(source: source,
+                                    criticity: criticity,
+                                    message_attributes: { 'name' => attribute_name, 'count' => 1 })
       end
 
       before do

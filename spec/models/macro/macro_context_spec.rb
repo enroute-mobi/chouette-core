@@ -1,21 +1,22 @@
 RSpec.describe Macro::Context do
   let(:macro_list) do
-    Macro::List.create name: "Macro List 1", workbench: context.workbench
+    Macro::List.create name: 'Macro List 1', workbench: context.workbench
   end
 
   let(:macro_context) do
-    Macro::Context.create name: "Macro Context 1", macro_list: macro_list
+    Macro::Context.create name: 'Macro Context 1', macro_list: macro_list
   end
 
   let(:macro_context_run) do
-    Macro::Context::Run.create name: "Macro Context Run 1", macro_list_run: macro_list_run, options: {transport_mode: "bus"}, type: "Macro::Context::Run"
+    Macro::Context::Run.create name: 'Macro Context Run 1', macro_list_run: macro_list_run,
+                               options: { transport_mode: 'bus' }, type: 'Macro::Context::Run'
   end
 
-  let(:macro_run) { Macro::Base::Run.new macro_list_run: macro_list_run, macro_context_run: macro_context_run}
+  let(:macro_run) { Macro::Base::Run.new macro_list_run: macro_list_run, macro_context_run: macro_context_run }
 
   subject { model.pluck(:id) }
 
-  describe ".context" do
+  describe '.context' do
     let(:context) do
       Chouette.create do
         referential do
@@ -26,100 +27,100 @@ RSpec.describe Macro::Context do
 
     before { context.referential.switch }
 
-    describe "#macro_run is created with referential" do
+    describe '#macro_run is created with referential' do
       let(:macro_list_run) do
         Macro::List::Run.create(
-          name: "Macro List Run 1",
+          name: 'Macro List Run 1',
           referential: context.referential,
           workbench: context.workbench,
           original_macro_list: macro_list
         )
       end
 
-      context "when model is stop_areas" do
-        let(:model) { macro_run.scope.scope.stop_areas }
+      context 'when model is stop_areas' do
+        let(:model) { macro_run.scope.stop_areas }
         let(:referential_stop_area_ids) { context.referential.stop_areas.pluck(:id) }
 
-        it {is_expected.to match_array(referential_stop_area_ids)}
+        it { is_expected.to match_array(referential_stop_area_ids) }
       end
 
-      context "when model is lines" do
-        let(:model) { macro_run.scope.scope.lines }
+      context 'when model is lines' do
+        let(:model) { macro_run.scope.lines }
         let(:referential_line_ids) { context.referential.lines.pluck(:id) }
 
-        it {is_expected.to match_array(referential_line_ids)}
+        it { is_expected.to match_array(referential_line_ids) }
       end
 
-      context "when model is routes" do
-        let(:model) { macro_run.scope.scope.routes }
+      context 'when model is routes' do
+        let(:model) { macro_run.scope.routes }
         let(:referential_route_ids) { context.referential.routes.pluck(:id) }
 
-        it {is_expected.to match_array(referential_route_ids)}
+        it { is_expected.to match_array(referential_route_ids) }
       end
 
-      context "when model is stop_points" do
-        let(:model) { macro_run.scope.scope.stop_points }
+      context 'when model is stop_points' do
+        let(:model) { macro_run.scope.stop_points }
         let(:referential_stop_point_ids) { context.referential.stop_points.pluck(:id) }
 
-        it {is_expected.to match_array(referential_stop_point_ids)}
+        it { is_expected.to match_array(referential_stop_point_ids) }
       end
 
-      context "when model is journey_patterns" do
-        let(:model) { macro_run.scope.scope.journey_patterns }
+      context 'when model is journey_patterns' do
+        let(:model) { macro_run.scope.journey_patterns }
         let(:referential_journey_pattern_ids) { context.referential.journey_patterns.pluck(:id) }
 
-        it {is_expected.to match_array(referential_journey_pattern_ids)}
+        it { is_expected.to match_array(referential_journey_pattern_ids) }
       end
 
-      context "when model is vehicle_journeys" do
-        let(:model) { macro_run.scope.scope.vehicle_journeys }
+      context 'when model is vehicle_journeys' do
+        let(:model) { macro_run.scope.vehicle_journeys }
         let(:referential_vehicle_journey_ids) { context.referential.vehicle_journeys.pluck(:id) }
 
-        it {is_expected.to match_array(referential_vehicle_journey_ids)}
+        it { is_expected.to match_array(referential_vehicle_journey_ids) }
       end
     end
 
-    describe "#macro_run is created without referential" do
+    describe '#macro_run is created without referential' do
       let(:macro_list_run) do
-        Macro::List::Run.create name: "Macro List Run 1", workbench: context.workbench, original_macro_list: macro_list
+        Macro::List::Run.create name: 'Macro List Run 1', workbench: context.workbench, original_macro_list: macro_list
       end
 
-      context "when model is stop_areas" do
-        let(:model) { macro_run.scope.scope.stop_areas }
+      context 'when model is stop_areas' do
+        let(:model) { macro_run.scope.stop_areas }
         let(:workbench_stop_area_ids) { context.workbench.stop_areas.pluck(:id) }
 
-        it {is_expected.to match_array(workbench_stop_area_ids)}
+        it { is_expected.to match_array(workbench_stop_area_ids) }
       end
 
-      context "when model is lines" do
-        let(:model) { macro_run.scope.scope.lines }
+      context 'when model is lines' do
+        let(:model) { macro_run.scope.lines }
         let(:workbench_line_ids) { context.workbench.lines.pluck(:id) }
 
-        it {is_expected.to match_array(workbench_line_ids)}
+        it { is_expected.to match_array(workbench_line_ids) }
       end
 
-      context "when model is routes" do
-        let(:model) { macro_run.scope.scope.routes }
+      context 'when model is routes' do
+        let(:model) { macro_run.scope.routes }
 
-        it {is_expected.to match_array([])}
+        it { is_expected.to match_array([]) }
       end
 
-      context "when model is stop_points" do
-        let(:model) { macro_run.scope.scope.stop_points }
+      context 'when model is stop_points' do
+        let(:model) { macro_run.scope.stop_points }
 
-        it {is_expected.to match_array([])}
+        it { is_expected.to match_array([]) }
       end
 
-      context "when model is journey_patterns" do
-        let(:model) { macro_run.scope.scope.journey_patterns }
+      context 'when model is journey_patterns' do
+        let(:model) { macro_run.scope.journey_patterns }
 
-        it {is_expected.to match_array([])}
+        it { is_expected.to match_array([]) }
       end
 
-      context "when model is vehicle_journeys" do
-        let(:model) { macro_run.scope.scope.vehicle_journeys }
+      context 'when model is vehicle_journeys' do
+        let(:model) { macro_run.scope.vehicle_journeys }
 
-        it {is_expected.to match_array([])}
+        it { is_expected.to match_array([]) }
       end
     end
   end

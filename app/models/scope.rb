@@ -43,6 +43,10 @@ module Scope
       Chouette::TimeTableDate.none
     end
 
+    def service_counts
+      Stat::JourneyPatternCoursesByDate.none
+    end
+
     private
 
     attr_reader :workbench
@@ -56,7 +60,7 @@ module Scope
 
     delegate :lines, :companies, :stop_areas, :routes, :stop_points, 
              :journey_patterns, :journey_pattern_stop_points, :vehicle_journeys, 
-             :time_tables, :time_table_periods, :time_table_dates, to: :referential
+             :time_tables, :time_table_periods, :time_table_dates, :service_counts, to: :referential
     delegate :entrances, :point_of_interests, :shapes, to: :workbench
 
     private

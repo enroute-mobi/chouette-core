@@ -10,6 +10,7 @@ class MergesController < ChouetteController
   respond_to :html
 
   def show
+    @referential_processings = MergeProcessings.new(@merge).build
     @merge = @merge.decorate(context: {workbench: parent})
   end
 
@@ -44,4 +45,41 @@ class MergesController < ChouetteController
     merge_params[:user_id] ||= current_user.id
     merge_params
   end
+
+  class MergeProcessings
+    attr_reader :merge
+    
+    def initialize(merge)
+      @merge = merge
+    end
+
+    def build
+      referential_processings = {}
+
+      merge.processings.each do |processing|
+        processed = processing.processed 
+        referential_id = processed.referential_id
+        
+        if referential_processings[referential_id].blank?   
+          referential_processings[referential_id] = {
+                                                      'workbench_macro_list_run' => nil,
+                                                      'workbench_control_list_run' => nil,
+                                                      'workgroup_control_list_run' => nil,
+                                                    } 
+        end
+
+        if processing.processed_type == "Macro::List::Run"
+          referential_processings[referential_id]['workbench_macro_list_run'] = processed
+        elsif processing.processed_type == "Control::List::Run" && processing.workgroup_id == nil
+          referential_processings[referential_id]['workbench_control_list_run'] = processed
+        else
+          referential_processings[referential_id]['workgroup_control_list_run'] = processed
+        end
+      end  
+      puts referential_processings.inspect
+      referential_processings
+    end
+
+  end
+
 end

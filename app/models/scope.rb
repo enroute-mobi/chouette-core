@@ -58,8 +58,8 @@ module Scope
       @referential = referential
     end
 
-    delegate :lines, :companies, :stop_areas, :routes, :stop_points, 
-             :journey_patterns, :journey_pattern_stop_points, :vehicle_journeys, 
+    delegate :lines, :companies, :stop_areas, :routes, :stop_points,
+             :journey_patterns, :journey_pattern_stop_points, :vehicle_journeys,
              :time_tables, :time_table_periods, :time_table_dates, :service_counts, to: :referential
     delegate :entrances, :point_of_interests, :shapes, to: :workbench
 

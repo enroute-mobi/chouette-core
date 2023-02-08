@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Control::PresenceAssociatedModel do
   describe Control::PresenceAssociatedModel::Run do
     let(:control_list_run) do

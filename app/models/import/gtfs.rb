@@ -304,6 +304,12 @@ class Import::Gtfs < Import::Base
   def import_stops
     sorted_stops = source.stops.sort_by { |s| s.parent_station.present? ? 1 : 0 }
     @stop_areas_id_by_registration_number = {}
+
+    if disable_missing_resources?
+      unknown_stop_areas = stop_area_provider.stop_areas.where.not(registration_number: @stop_areas_id_by_registration_number.keys)
+      unknown_stop_areas.update_all deleted_at: Time.current
+    end
+
     CustomFieldsSupport.within_workgroup(workbench.workgroup) do
       create_resource(:stops).each(sorted_stops, slice: 100, transaction: true) do |stop, resource|
         stop_area = stop_areas.find_or_initialize_by(registration_number: stop.id)
@@ -382,6 +388,13 @@ class Import::Gtfs < Import::Base
   end
 
   def import_routes
+    @lines_by_registration_number = {}
+
+    if disable_missing_resources?
+      unknown_lines = line_provider.lines.where.not(registration_number: @lines_by_registration_number.keys)
+      unknown_lines.update_all deactivated: true
+    end
+
     CustomFieldsSupport.within_workgroup(workbench.workgroup) do
       create_resource(:routes).each(source.routes, transaction: true) do |route, resource|
         if route.agency_id.present?

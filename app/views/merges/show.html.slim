@@ -47,7 +47,7 @@
                   sortable: false,
                 ),
               ],
-            cls: 'table'
+              cls: 'table'
 
         - if @merge.new.present?    
           .col-lg-12
@@ -60,7 +60,7 @@
                   end,
                   sortable: false,
                 ),
-                 TableBuilderHelper::Column.new( \
+                TableBuilderHelper::Column.new( \
                   name: t('.table_headers.workbench_control_list_run'),
                   attribute: lambda do |referential| \
                     workbench_control_list_run = @referential_processings[referential.id]['workbench_control_list_run']; \
@@ -77,5 +77,5 @@
                   sortable: false,
                 ),
               ],
-            cls: 'table'
+              model: Referential, cls: 'table'
  

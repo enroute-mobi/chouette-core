@@ -58,8 +58,16 @@ class Merge < ApplicationModel
       referentials.each(&:pending!)
 
       if processing_rules_before_merge.present?
-        processor.before(referentials)
-      elsif before_merge_compliance_control_sets.present?
+        continue_after_processings = processor.before(referentials)
+        # Check processed status and stop merge if one failed
+        unless continue_after_processings
+          referentials.each &:active!
+          update status: :failed, ended_at: Time.now
+          return
+        end
+      end  
+
+      if before_merge_compliance_control_sets.present?
         create_before_merge_compliance_check_sets
       else
         enqueue_job :merge!
@@ -67,6 +75,8 @@ class Merge < ApplicationModel
     end
   end
   alias run merge
+
+  
 
   def before_merge_compliance_control_sets
     workbench.workgroup.before_merge_compliance_control_sets.map do |key, _|
@@ -116,8 +126,16 @@ class Merge < ApplicationModel
         end
 
         if processing_rules_after_merge.present?
-          processor.after([new])
-        elsif after_merge_compliance_control_sets.present?
+          continue_after_processings = processor.after([new])
+          # Check processed status and stop merge if one failed
+          unless continue_after_processings
+            referentials.each &:active!
+            update status: :failed, ended_at: Time.now
+            return
+          end
+        end
+        
+        if after_merge_compliance_control_sets.present?
           create_after_merge_compliance_check_sets
         else
           save_current

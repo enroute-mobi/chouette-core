@@ -14,17 +14,19 @@ class Processor
   def before(referentials)
     referentials.each do |referential|
       before_processing_rules.each do |processing_rule|
-        break unless processing_rule.perform operation: operation, referential: referential, operation_workbench: workbench
+        return false unless processing_rule.perform operation: operation, referential: referential, operation_workbench: workbench
       end
     end
+    true
   end
 
   def after(referentials)
     referentials.each do |referential|
       after_processing_rules.each do |processing_rule|
-        break unless processing_rule.perform operation: operation, referential: referential, operation_workbench: workbench
+        return false unless processing_rule.perform operation: operation, referential: referential, operation_workbench: workbench
       end
     end
+    true
   end
 
   def before_processing_rules

@@ -1,0 +1,7 @@
+= simple_block_for destination, title: Destination.ts do |d|
+	= d.attribute :type, value: destination.human_type
+	= d.attribute :name
+	= d.attribute :host
+	= d.attribute :port, default_value: 22
+	= d.attribute :directory
+	= d.attribute :username

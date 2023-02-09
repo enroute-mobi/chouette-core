@@ -80,6 +80,14 @@ fr:
         attached_export_file: Fichier exporté en pièce jointe
       destination/dummy:
         result: Résultat attendu
+      destination/sftp:
+        host: Hôte
+        port: Port
+        directory: Répertoire
+        username: Nom d'utilisateur
+      destination/googlecloudstorage:
+        project: Projet
+        bucket:  Bucket
     errors:
       models:
         destination/mail:

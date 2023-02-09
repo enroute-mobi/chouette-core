@@ -33,13 +33,6 @@ fr:
         ignore_single_stop_station: Ignorer les stations avec un arrêt unique
         ignore_parent_stop_places: "Ignorer les arrêts Parents"
         publish_per_line: Publier Par Ligne
-      destination:
-        host: Hôte
-        port: Port
-        directory: Répertoire
-        username: Nom d'utilisateur
-        project: Projet
-        bucket:  Bucket
     errors:
       models:
         publication_setups:

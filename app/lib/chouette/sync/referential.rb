@@ -22,6 +22,15 @@ module Chouette
         end
       end
 
+      def delete_after_update_or_create
+        syncs.each do |sync|
+          sync.code_space = code_space
+          sync.default_provider = default_provider
+
+          sync.delete_after_update_or_create
+        end
+      end
+
       def after_synchronisation
         syncs.each(&:after_synchronisation)
       end

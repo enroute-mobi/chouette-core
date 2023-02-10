@@ -33,14 +33,14 @@ module Chouette
         deleter.delete resource_identifiers
       end
 
+      def delete_after_update_or_create
+        deleter.delete_from(updater)
+      end
+
       # To be overrided
       def after_synchronisation; end
 
       protected
-
-      def delete_after_update_or_create
-        deleter.delete_from(updater)
-      end
 
       def updater_class
         @updater_class ||=

@@ -23,6 +23,8 @@ fr:
         one: Tendance du nombre de services
       control/journey_pattern_speed/run:
         one: Vitesses au sein des Missions
+      control/presence_associated_model/run:
+        one: Présence de modèles associés
     attributes:
       control/base/run:
         name: Nom
@@ -52,3 +54,7 @@ fr:
         weeks_before: Nombre de semaines avant
         weeks_after: Nombre de semaines après
         maximum_difference: Différence maximale en pourcentage
+      control/presence_associated_model/run:
+        collection: Modèles associés
+        minimum: Nombre minimal
+        maximum: Nombre maximal

@@ -7,6 +7,7 @@ fr:
     model_status: "Un(e) %{target_model} %{name} doit avoir le statut %{expected_status}"
     service_count_trend: "Une anomalie sur la ligne %{line} le %{date}"
     speed: "Vitesse non conforme de %{speed} km/h dans la mission '%{journey_pattern_name}' entre '%{departure_name}' et '%{arrival_name}' (%{position})"
+    presence_associated_model: "Nombre invalide (%{count}) pour %{name}"
   activerecord:
     models:
       control/message:

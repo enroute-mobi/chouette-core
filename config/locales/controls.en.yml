@@ -23,6 +23,8 @@ en:
         one: Service count trend
       control/journey_pattern_speed:
         one: Speed into Journey Patterns
+      control/presence_associated_model:
+        one: Presence of associated models
     attributes:
       control/base:
         name: Name
@@ -56,3 +58,7 @@ en:
         minimum_speed: Minimum Speed
         maximum_speed: Maximum Speed
         minimum_distance: Minimum Distance
+      control/presence_associated_model:
+        collection: Associated Models
+        minimum: Minimum count
+        maximum: Maximal count

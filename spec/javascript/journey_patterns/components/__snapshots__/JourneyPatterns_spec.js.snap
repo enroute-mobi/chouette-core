@@ -25,7 +25,7 @@ exports[`stopPointHeader should display the city name 1`] = `
             Code
           </div>
           <div>
-            Nb arrêts
+            Points d'arrêt
           </div>
         </div>
         <div
@@ -109,7 +109,7 @@ exports[`stopPointHeader with the "long_distance_routes" feature should display 
             Code
           </div>
           <div>
-            Nb arrêts
+            Points d'arrêt
           </div>
         </div>
         <div

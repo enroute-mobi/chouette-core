@@ -416,6 +416,11 @@ en:
       JourneyPattern: Journey pattern
       VehicleJourney: Vehicle journey
       Company: Company
+      Entrance: Entrance
+      PointOfInterest: Point of Interest
+      Route: Route
+      TimeTable: Timetable
+      Referential: DataSet
     expected_status:
       enabled: Enabled
       disabled: Disabled

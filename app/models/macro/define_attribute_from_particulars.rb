@@ -16,7 +16,7 @@ module Macro
       end
 
       def candidate_target_attributes # rubocop:disable Metrics/MethodLength
-        Chouette::ModelAttribute.for(self.class.target_model.values) do
+        Chouette::ModelAttribute.for(self.class.target_model.values).all do
           # Name attribute is always already defined
           # The macro can't find referents without name
           exclude 'StopArea', :name

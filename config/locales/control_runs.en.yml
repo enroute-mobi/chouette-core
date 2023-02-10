@@ -23,6 +23,8 @@ en:
         one: Service count trend
       control/journey_pattern_speed/run:
         one: Speed into Journey Patterns
+      control/presence_associated_model/run:
+        one: Presence of associated models
     attributes:
       control/base/run:
         name: Name
@@ -52,3 +54,7 @@ en:
         weeks_before: Weeks before
         weeks_after: Weeks after
         maximum_difference: Maximum difference in percentage  
+      control/presence_associated_model/run:
+        collection: Associated Models
+        minimum: Minimum count
+        maximum: Maximal count

@@ -7,6 +7,7 @@ en:
     model_status: "The %{target_model} %{name} should have the status %{expected_status}"
     service_count_trend: "An anomaly on the line %{line} at %{date}"
     speed: "Improper Speed with %{speed} km/h in Journey Pattern '%{journey_pattern_name}' between '%{departure_name}' and '%{arrival_name}' (%{position})"
+    presence_associated_model: "Invalid count (%{count}) for %{name}"
   activerecord:
     models:
       control/message:

@@ -164,7 +164,7 @@ en:
         route: "Route"
         time_slot: "Time Slot"
         time_table_ids: "Calendar list"
-        time_tables: "Calendars"
+        time_tables: "Timetables"
         train_number: "Train number"
         transport_mode: "Transport Mode"
         transport_submode: "Transport Submode"

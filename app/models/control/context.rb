@@ -55,47 +55,13 @@ module Control
       delegate :referential, :workbench, to: :control_list_run
 
       def context
-        referential || WorkbenchScope.new(workbench)
+        referential || Scope::Workbench.new(workbench)
       end
 
       def run
         logger.tagged "#{self.class.to_s}(id:#{id||object_id})" do
           control_runs.each(&:run)
         end
-      end
-    end
-
-    class WorkbenchScope
-      def initialize(workbench)
-        @workbench = workbench
-      end
-
-      def lines
-        @workbench.lines
-      end
-
-      def companies
-        @workbench.companies
-      end
-
-      def routes
-        Chouette::Route.none
-      end
-
-      def stop_points
-        Chouette::StopPoint.none
-      end
-
-      def stop_areas
-        @workbench.stop_areas
-      end
-
-      def journey_patterns
-        Chouette::JourneyPattern.none
-      end
-
-      def vehicle_journeys
-        Chouette::VehicleJourney.none
       end
     end
   end

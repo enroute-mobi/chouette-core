@@ -19,7 +19,7 @@ en:
       macro/dummy:
         one: Simulate Macro
       macro/associate_shape:
-        one: Associate Shapes
+        one: Associate Shapes according Code 
       macro/update_stop_area_compass_bearing:
         one: Define Stop Area compass bearing from Shapes
       macro/create_stop_area_referents:
@@ -36,6 +36,8 @@ en:
         one: Define Journey Pattern durations from passing times
       macro/compute_journey_pattern_distances:
         one: Define Journey Pattern distances from Shape
+      macro/associate_shape_according_waypoints:
+        one: Associate Shapes according Stop Areas
     attributes:
       macro/base:
         name: Name

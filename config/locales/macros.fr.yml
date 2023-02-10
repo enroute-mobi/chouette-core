@@ -19,7 +19,7 @@ fr:
       macro/dummy:
         one: Simuler une instruction
       macro/associate_shape:
-        one: Associer les Tracés
+        one: Associer les Tracés selon leur code
       macro/update_stop_area_compass_bearing:
         one: Définir l'Orientation des Arrêts selon les Tracés
       macro/create_stop_area_referents:
@@ -36,6 +36,8 @@ fr:
         one: Définir les durées des missions à partir des heures de passage
       macro/compute_journey_pattern_distances:
         one: Définir les distances des missions à partir du tracé
+      macro/associate_shape_according_waypoints:
+        one: Associer les Tracés selon les arrêts
     attributes:
       macro/base:
         name: Nom

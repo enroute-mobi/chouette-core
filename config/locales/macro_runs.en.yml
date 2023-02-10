@@ -27,6 +27,8 @@ en:
         one: Define Journey Pattern durations from passing times
       macro/compute_journey_pattern_distances/run:
         one: Define Journey Pattern distances from Shape
+      macro/associate_shape_according_waypoints/run:
+        one: Associate Shapes according Stop Areas
     attributes:
       macro/base/run:
         name: Name

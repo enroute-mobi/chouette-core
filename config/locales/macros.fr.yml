@@ -40,6 +40,8 @@ fr:
         one: Associer les Tracés selon les arrêts
       macro/update_attribute_from_referent_to_particulars:
         one: Mettre à jour l'attribut du référent aux Particuliers
+      macro/associate_shape_according_waypoints:
+        one: Associer les Tracés selon les arrêts
       macro/delete_vehicle_journeys:
         one: Supprimer toutes les courses
     attributes:

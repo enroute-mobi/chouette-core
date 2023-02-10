@@ -31,6 +31,8 @@ en:
         one: Associate Shapes according Stop Areas
       macro/update_attribute_from_referent_to_particulars/run:
         one: Update attribute from Referent to Particulars
+      macro/associate_shape_according_waypoints/run:
+        one: Associate Shapes according Stop Areas
       macro/delete_vehicle_journeys/run:
         one: Delete all Vehicle journeys
     attributes:

@@ -10,8 +10,9 @@ class MergesController < ChouetteController
   respond_to :html
 
   def show
-    @referential_processings = MergeProcessings.new(@merge).build
-    @merge = @merge.decorate(context: { workbench: parent })
+    @merge = merge.decorate(context: { workbench: workbench })
+    @referential_processings = MergeProcessings.new(merge).build
+    show!
   end
 
   def available_referentials
@@ -33,13 +34,18 @@ class MergesController < ChouetteController
     redirect_to %i[workbench output]
   end
 
-  private
+  protected
+  
+  alias merge resource
+  alias workbench parent
 
   def build_resource
     super.tap do |merge|
       merge.creator = current_user.name
     end
   end
+
+  private
 
   def merge_params
     merge_params = params.require(:merge).permit(:referential_ids, :notification_target, :merge_method)
@@ -55,9 +61,15 @@ class MergesController < ChouetteController
       @merge = merge
     end
 
+    def referential_ids
+      referential_ids = merge.referential_ids
+      referential_ids += [merge.new.id] if merge.new.present?
+      referential_ids
+    end
+    
     def referential_processings
       @referential_processings ||= {}.tap do |referential_processings|
-        merge.referential_ids.each do |referential_id|
+        referential_ids.each do |referential_id|
           referential_processings[referential_id] = {
             'workbench_macro_list_run' => nil,
             'workbench_control_list_run' => nil,
@@ -71,14 +83,6 @@ class MergesController < ChouetteController
       merge.processings.each do |processing|
         processed = processing.processed
         referential_id = processed.referential_id
-
-        if referential_processings[referential_id].blank?
-          referential_processings[referential_id] = {
-            'workbench_macro_list_run' => nil,
-            'workbench_control_list_run' => nil,
-            'workgroup_control_list_run' => nil
-          }
-        end
 
         if processing.processed_type == 'Macro::List::Run'
           referential_processings[referential_id]['workbench_macro_list_run'] = processed

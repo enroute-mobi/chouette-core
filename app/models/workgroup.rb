@@ -5,6 +5,7 @@ class Workgroup < ApplicationModel
   belongs_to :line_referential, dependent: :destroy, required: true
   belongs_to :stop_area_referential, dependent: :destroy, required: true
   belongs_to :shape_referential, dependent: :destroy, required: true
+  belongs_to :fare_referential, dependent: :destroy, required: true, class_name: 'Fare::Referential'
 
   # Ensure StopAreaReferential and LineReferential (and their contents)
   # are destroyed before other relations
@@ -38,6 +39,7 @@ class Workgroup < ApplicationModel
   validates_uniqueness_of :stop_area_referential_id
   validates_uniqueness_of :line_referential_id
   validates_uniqueness_of :shape_referential_id
+  validates_uniqueness_of :fare_referential_id
 
   validates :output, presence: true
   before_validation :create_dependencies, on: :create
@@ -350,7 +352,12 @@ class Workgroup < ApplicationModel
 
   def create_dependencies
     self.output ||= ReferentialSuite.create
-    self.shape_referential ||= ShapeReferential.create unless self.shape_referential_id
+    self.shape_referential ||= ShapeReferential.create
+    create_fare_referenial
+  end
+
+  def create_fare_referenial
+    self.fare_referential ||= Fare::Referential.create
   end
 
 end

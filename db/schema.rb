@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_12_08_073251) do
+ActiveRecord::Schema.define(version: 2023_01_24_150645) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -460,9 +460,11 @@ ActiveRecord::Schema.define(version: 2022_12_08_073251) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.bigint "organisation_id"
+    t.bigint "source_id"
     t.string "cron"
     t.index ["organisation_id"], name: "index_delayed_jobs_on_organisation_id"
     t.index ["priority", "run_at"], name: "delayed_jobs_priority"
+    t.index ["source_id"], name: "index_delayed_jobs_on_source_id"
   end
 
   create_table "delayed_workers", force: :cascade do |t|
@@ -616,6 +618,66 @@ ActiveRecord::Schema.define(version: 2022_12_08_073251) do
     t.index ["referential_id"], name: "index_exports_on_referential_id"
     t.index ["workbench_id"], name: "index_exports_on_workbench_id"
     t.index ["workgroup_id"], name: "index_exports_on_workgroup_id"
+  end
+
+  create_table "fare_products", force: :cascade do |t|
+    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
+    t.bigint "fare_provider_id"
+    t.string "name"
+    t.bigint "company_id"
+    t.float "price"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["company_id"], name: "index_fare_products_on_company_id"
+    t.index ["fare_provider_id"], name: "index_fare_products_on_fare_provider_id"
+  end
+
+  create_table "fare_products_validities", force: :cascade do |t|
+    t.bigint "fare_product_id"
+    t.bigint "fare_validity_id"
+    t.index ["fare_product_id"], name: "index_fare_products_validities_on_fare_product_id"
+    t.index ["fare_validity_id"], name: "index_fare_products_validities_on_fare_validity_id"
+  end
+
+  create_table "fare_providers", force: :cascade do |t|
+    t.string "short_name"
+    t.bigint "workbench_id"
+    t.bigint "fare_referential_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["fare_referential_id"], name: "index_fare_providers_on_fare_referential_id"
+    t.index ["workbench_id"], name: "index_fare_providers_on_workbench_id"
+  end
+
+  create_table "fare_referentials", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "fare_stop_areas_zones", force: :cascade do |t|
+    t.bigint "fare_zone_id"
+    t.bigint "stop_area_id"
+    t.index ["fare_zone_id"], name: "index_fare_stop_areas_zones_on_fare_zone_id"
+    t.index ["stop_area_id"], name: "index_fare_stop_areas_zones_on_stop_area_id"
+  end
+
+  create_table "fare_validities", force: :cascade do |t|
+    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
+    t.bigint "fare_provider_id"
+    t.string "name"
+    t.jsonb "expression"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["fare_provider_id"], name: "index_fare_validities_on_fare_provider_id"
+  end
+
+  create_table "fare_zones", force: :cascade do |t|
+    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
+    t.bigint "fare_provider_id"
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["fare_provider_id"], name: "index_fare_zones_on_fare_provider_id"
   end
 
   create_table "footnotes", force: :cascade do |t|
@@ -866,7 +928,7 @@ ActiveRecord::Schema.define(version: 2022_12_08_073251) do
     t.text "comments"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "type", null: false
+    t.string "type"
     t.index ["macro_list_run_id"], name: "index_macro_context_runs_on_macro_list_run_id"
   end
 
@@ -877,14 +939,12 @@ ActiveRecord::Schema.define(version: 2022_12_08_073251) do
     t.text "comments"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "type", null: false
+    t.string "type"
     t.index ["macro_list_id"], name: "index_macro_contexts_on_macro_list_id"
   end
 
   create_table "macro_list_runs", force: :cascade do |t|
     t.bigint "workbench_id"
-    t.string "name"
-    t.bigint "original_macro_list_id"
     t.bigint "referential_id"
     t.string "status"
     t.string "error_uuid"
@@ -893,15 +953,16 @@ ActiveRecord::Schema.define(version: 2022_12_08_073251) do
     t.datetime "ended_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "original_macro_list_id"
+    t.string "name"
     t.string "user_status", null: false
-    t.index ["original_macro_list_id"], name: "index_macro_list_runs_on_original_macro_list_id"
     t.index ["referential_id"], name: "index_macro_list_runs_on_referential_id"
     t.index ["workbench_id"], name: "index_macro_list_runs_on_workbench_id"
   end
 
   create_table "macro_lists", force: :cascade do |t|
     t.bigint "workbench_id"
-    t.string "name"
+    t.text "name"
     t.text "comments"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -940,7 +1001,7 @@ ActiveRecord::Schema.define(version: 2022_12_08_073251) do
     t.string "type", null: false
     t.bigint "macro_list_id"
     t.integer "position", null: false
-    t.string "name"
+    t.text "name"
     t.text "comments"
     t.jsonb "options", default: {}
     t.datetime "created_at", null: false
@@ -1066,7 +1127,7 @@ ActiveRecord::Schema.define(version: 2022_12_08_073251) do
   create_table "processing_rules", force: :cascade do |t|
     t.bigint "workgroup_id"
     t.bigint "workbench_id"
-    t.string "type"
+    t.string "type", null: false
     t.string "processable_type"
     t.bigint "processable_id"
     t.string "operation_step"
@@ -1294,7 +1355,7 @@ ActiveRecord::Schema.define(version: 2022_12_08_073251) do
   create_table "shapes", force: :cascade do |t|
     t.string "name"
     t.geometry "geometry", limit: {:srid=>4326, :type=>"line_string"}
-    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
+    t.uuid "uuid", default: -> { "shared_extensions.gen_random_uuid()" }, null: false
     t.bigint "shape_referential_id", null: false
     t.bigint "shape_provider_id", null: false
     t.datetime "created_at", null: false
@@ -1662,7 +1723,9 @@ ActiveRecord::Schema.define(version: 2022_12_08_073251) do
     t.float "coordinates", array: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "stop_area_id"
     t.index ["shape_id"], name: "index_waypoints_on_shape_id"
+    t.index ["stop_area_id"], name: "index_waypoints_on_stop_area_id"
   end
 
   create_table "workbenches", force: :cascade do |t|
@@ -1713,6 +1776,8 @@ ActiveRecord::Schema.define(version: 2022_12_08_073251) do
     t.bigint "shape_referential_id", null: false
     t.bit "nightly_aggregate_days", limit: 7, default: "1111111"
     t.string "description"
+    t.bigint "fare_referential_id", null: false
+    t.index ["fare_referential_id"], name: "index_workgroups_on_fare_referential_id"
     t.index ["shape_referential_id"], name: "index_workgroups_on_shape_referential_id"
   end
 
@@ -1732,6 +1797,7 @@ ActiveRecord::Schema.define(version: 2022_12_08_073251) do
   add_foreign_key "control_runs", "control_context_runs"
   add_foreign_key "controls", "control_contexts"
   add_foreign_key "custom_fields", "custom_field_groups"
+  add_foreign_key "delayed_jobs", "sources"
   add_foreign_key "exports", "workgroups"
   add_foreign_key "group_of_lines_lines", "group_of_lines", name: "groupofline_group_fkey", on_delete: :cascade
   add_foreign_key "journey_patterns", "routes", name: "jp_route_fkey", on_delete: :cascade

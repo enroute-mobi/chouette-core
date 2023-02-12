@@ -54,6 +54,7 @@ class Workbench < ApplicationModel
   has_many :shape_providers, dependent: :destroy
   has_many :line_providers, dependent: :destroy
   has_many :stop_area_providers, dependent: :destroy
+  has_many :fare_providers, dependent: :destroy, class_name: 'Fare::Provider'
 
   has_many :macro_lists, class_name: "Macro::List", dependent: :destroy
   has_many :macro_list_runs, class_name: "Macro::List::Run", dependent: :destroy
@@ -152,6 +153,16 @@ class Workbench < ApplicationModel
     @default_shape_provider ||= shape_providers.find_or_initialize_by(short_name: DEFAULT_PROVIDER_SHORT_NAME) do |p|
       p.shape_referential_id = workgroup.shape_referential_id
     end
+  end
+
+  def default_fare_provider
+    @default_fare_provider ||= fare_providers.find_or_initialize_by(short_name: DEFAULT_PROVIDER_SHORT_NAME) do |p|
+      p.fare_referential_id = workgroup.fare_referential_id
+    end
+  end
+
+  def create_default_fare_provider
+    default_fare_provider.save
   end
 
   def default_line_provider
@@ -261,6 +272,8 @@ class Workbench < ApplicationModel
       default_shape_provider
       default_line_provider
       default_stop_area_provider
+      
+      create_default_fare_provider
       create_default_document_provider
     end
   end

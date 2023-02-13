@@ -57,16 +57,6 @@ class Merge < ApplicationModel
 
       referentials.each(&:pending!)
 
-      if processing_rules_before_merge.present?
-        continue_after_processings = processor.before(referentials)
-        # Check processed status and stop merge if one failed
-        unless continue_after_processings
-          referentials.each &:active!
-          update status: :failed, ended_at: Time.now
-          return
-        end
-      end  
-
       if before_merge_compliance_control_sets.present?
         create_before_merge_compliance_check_sets
       else
@@ -111,6 +101,17 @@ class Merge < ApplicationModel
 
     CustomFieldsSupport.within_workgroup(workgroup) do
       Chouette::Benchmark.measure('merge', merge: id) do
+        
+        if processing_rules_before_merge.present?
+          continue_after_processings = processor.before(referentials)
+          # Check processed status and stop merge if one failed
+          unless continue_after_processings
+            referentials.each &:active!
+            update status: :failed, ended_at: Time.now
+            return
+          end
+        end
+        
         Chouette::Benchmark.measure('prepare_new') do
           prepare_new
         end

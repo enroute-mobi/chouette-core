@@ -99,7 +99,7 @@ RSpec.describe Macro::AssociateShapeAccordingWaypoints do
           criticity: 'info',
           message_attributes: {
             'name' => updated_journey_pattern.name,
-            'shape' => selected_shape.reload.uuid
+            'shape' => selected_shape.reload.name
           },
           source: updated_journey_pattern
         )

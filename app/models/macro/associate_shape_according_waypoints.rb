@@ -14,7 +14,7 @@ module Macro
 
       def create_message(journey_pattern, shape)
         attributes = {
-          message_attributes: { name: journey_pattern.name, shape: shape.uuid },
+          message_attributes: { name: journey_pattern.name, shape: shape.user_name },
           source: journey_pattern
         }
 
@@ -41,11 +41,11 @@ module Macro
         end
 
         class Shape
-          def initialize(id: nil, uuid: nil)
+          def initialize(id: nil, user_name: nil)
             @id = id
-            @uuid = uuid
+            @user_name = user_name
           end
-          attr_reader :id, :uuid
+          attr_reader :id, :user_name
         end
       end
 
@@ -72,11 +72,10 @@ module Macro
         delegate :shape_referential, to: :workgroup
 
         def shapes
-          @shapes ||=
             {}.tap do |shapes|
-              ::Shape.select('stop_area_sequence, id, uuid').from(custom_from).each do |shape|
+              ::Shape.select('stop_area_sequence, id, name, uuid').from(custom_from).each do |shape|
                 if stop_area_sequence = shape.stop_area_sequence.presence
-                  shapes[stop_area_sequence] = { id: shape.id, uuid: shape.uuid }
+                  shapes[stop_area_sequence] = { id: shape.id, user_name: (shape.name || shape.uuid) }
                 end
               end
             end
@@ -103,8 +102,8 @@ module Macro
         private
 
         def base_sql
-          select = "shapes.*, array_to_string(array_agg(waypoints.stop_area_id),'-') AS stop_area_sequence"
-          scope.select(select).group(:id).joins(:waypoints).to_sql
+          select = "public.shapes.*, array_to_string(array_agg(public.waypoints.stop_area_id order by position),'-') AS stop_area_sequence"
+          scope.select(select).group(:id).joins(:waypoints).where.not('waypoints.stop_area_id' => nil).to_sql
         end
 
         def scope

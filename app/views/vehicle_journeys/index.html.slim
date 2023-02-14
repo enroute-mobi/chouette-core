@@ -18,11 +18,11 @@
         #vehicle_journeys_wip
 
 = javascript_tag do
+  | window.default_line_notices_path = '#{default_line_notices_path(@referential.line_referential)}';
   | window.route_id = #{params[:route_id]};
   | window.referential_id = #{@referential.id};
   | window.companiesPath = '#{default_companies_path(@referential.line_referential)}';
   | window.line_id = #{@line.id};
-  | window.line_referential_id = #{@referential.line_referential_id};
   | window.stopPoints = #{(@stop_points_list.to_json).html_safe};
   | window.returnStopPoints = #{(@return_stop_points_list.to_json).html_safe};
   | window.jpOrigin = #{(@jp_origin.present? ? @jp_origin.attributes.update({full_schedule: @jp_origin.full_schedule?}).to_json  : "null").html_safe};

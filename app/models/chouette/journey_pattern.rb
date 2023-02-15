@@ -316,7 +316,13 @@ module Chouette
 
         return nil unless longitude && latitude
 
-        Waypoint.new name: stop_area.name, position: position, waypoint_type: "waypoint", coordinates: [longitude, latitude]
+        Waypoint.new({
+          name: stop_area.name,
+          position: position,
+          waypoint_type: "waypoint",
+          coordinates: [longitude, latitude],
+          stop_area: stop_area
+        })
       end
     end
   end

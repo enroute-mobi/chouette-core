@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_12_08_073251) do
+ActiveRecord::Schema.define(version: 2023_01_24_150645) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -1662,7 +1662,9 @@ ActiveRecord::Schema.define(version: 2022_12_08_073251) do
     t.float "coordinates", array: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "stop_area_id"
     t.index ["shape_id"], name: "index_waypoints_on_shape_id"
+    t.index ["stop_area_id"], name: "index_waypoints_on_stop_area_id"
   end
 
   create_table "workbenches", force: :cascade do |t|

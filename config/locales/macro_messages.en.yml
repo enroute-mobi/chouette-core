@@ -42,6 +42,10 @@ en:
     messages:
       default: "Compass bearing of of Stop area %{name} has been updated with value %{bearing}"
       error: "Compass bearing of of Stop area %{name} can't be updated with value %{bearing}"
+  macro/associate_shape_according_waypoints/run:
+    messages:
+      default: "Shape '%{shape}' has been associated to Journey pattern '%{name}'"
+      error: "Shape '%{shape}' can't be associated to Journey pattern '%{name}'"
   macro_messages: 
     search_no_results_for_filter: "No messages found"
     no_address: "No address"

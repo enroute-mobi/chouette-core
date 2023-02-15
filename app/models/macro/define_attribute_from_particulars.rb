@@ -76,7 +76,7 @@ module Macro
 
       # Retrieve referents without target attribute in the macro scope
       def referents
-        @referents ||= models.referents.where(attribute_name => nil)
+        @referents ||= models.referents.where(attribute_name => [nil, 'unknown'])
       end
 
       # Retrieve all particulars associated to the referents (so in the whole scope)

@@ -9,7 +9,7 @@ module Fare
     has_one :fare_referential, through: :fare_provider
     has_one :workbench, through: :fare_provider
 
-    has_many :codes, as: :resource, dependent: :delete_all
+    include CodeSupport
 
     belongs_to :company, class_name: 'Chouette::Company', optional: true
     has_and_belongs_to_many :validities, class_name: 'Fare::Validity', 

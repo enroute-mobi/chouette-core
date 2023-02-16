@@ -9,9 +9,11 @@ module Fare
     has_one :fare_referential, through: :fare_provider
     has_one :workbench, through: :fare_provider
 
-    has_many :codes, as: :resource, dependent: :delete_all
-    has_and_belongs_to_many :products, class_name: 'Fare::Product',
-                                       foreign_key: 'fare_validity_id', association_foreign_key: 'fare_product_id', join_table: :fare_products_validities
+    include CodeSupport
+
+    has_many :product_validities, class_name: 'Fare::ProductValidity', foreign_key: 'fare_validity_id'
+    has_many :products, through: :product_validities
+    # foreign_key: 'fare_validity_id', association_foreign_key: 'fare_product_id'
 
     validates :name, :products, :expression, presence: true
     validates_associated :expression
@@ -72,7 +74,7 @@ module Fare
 
         def as_json(options = {})
           super(options).tap do |attributes|
-            attributes['type'] = self.class.name.demodulize.parameterize
+            attributes['type'] = self.class.name.demodulize.underscore
             attributes.except! 'scope', 'validation_context', 'errors'
           end
         end
@@ -97,6 +99,11 @@ module Fare
           :and
         end
 
+        def scope=(scope)
+          @scope = scope
+          expressions.each { |expression| expression.scope = scope }
+        end
+
         def expressions
           @expressions ||= []
         end
@@ -119,6 +126,10 @@ module Fare
         def line
           scope.lines.find(line_id)
         end
+
+        def line=(line)
+          self.line_id = line&.id
+        end
       end
 
       class Zone < Base
@@ -128,6 +139,10 @@ module Fare
 
         def zone
           scope.fare_zones.find(zone_id)
+        end
+
+        def zone=(zone)
+          self.zone_id = zone&.id
         end
       end
 
@@ -141,11 +156,19 @@ module Fare
         validates :to, presence: true, if: :to_id
 
         def from
-          scope.fare_zones.find(from_id)
+          scope.fare_zones.find(from_id) if from_id
+        end
+
+        def from=(from)
+          self.from_id = from&.id
         end
 
         def to
-          scope.fare_zones.find(to_id)
+          scope.fare_zones.find(to_id) if to_id
+        end
+
+        def to=(to)
+          self.to_id = to&.id
         end
       end
     end

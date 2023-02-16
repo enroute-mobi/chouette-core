@@ -9,7 +9,7 @@ module Fare
     has_one :fare_referential, through: :fare_provider
     has_one :workbench, through: :fare_provider
 
-    has_many :codes, as: :resource, dependent: :delete_all
+    include CodeSupport
 
     validates :name, presence: true
 

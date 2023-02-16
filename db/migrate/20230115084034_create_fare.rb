@@ -59,7 +59,7 @@ class CreateFare < ActiveRecord::Migration[5.2]
 
         t.string :name
         t.references :company
-        t.float :price
+        t.integer :price_cents
 
         t.timestamps
       end

@@ -1,4 +1,4 @@
-class Import::Gtfs < Import::Base
+class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
   include LocalImportSupport
 
   after_commit :update_main_resource_status, on:  [:create, :update]
@@ -62,7 +62,7 @@ class Import::Gtfs < Import::Base
   end
 
   def prepare_referential
-    import_resources :agencies, :stops, :routes, :shapes
+    import_resources :agencies, :stops, :routes, :shapes, :fare_products, :fare_validities
 
     create_referential
     referential.switch
@@ -907,6 +907,10 @@ class Import::Gtfs < Import::Base
     workbench.default_shape_provider
   end
 
+  def fare_provider
+    workbench.default_fare_provider
+  end
+
   def stop_area_provider
     workbench.default_stop_area_provider
   end
@@ -1012,5 +1016,255 @@ class Import::Gtfs < Import::Base
 
   end
 
+  def import_fare_products
+    resource = create_resource(:fare_attributes)
+    resource.rows_count = source.fare_attributes.count
+    resource.save!
 
+    FareProducts.new(self).import!
+  end
+
+  class FareProducts
+    def initialize(import)
+      @import = import
+    end
+
+    attr_reader :import
+
+    delegate :code_space, :companies, :source, :fare_provider, to: :import
+
+    def import!
+      source.fare_attributes.each do |fare_atribute|
+        decorator = Decorator.new(
+          fare_atribute,
+          code_space: code_space,
+          company_scope: companies,
+          fare_provider: fare_provider
+        )
+
+        product = decorator.build_or_update
+        product.save
+      end
+    end
+
+    class Decorator < SimpleDelegator
+      def initialize(fare_attribute, code_space: nil, company_scope: nil, fare_provider: nil)
+        super fare_attribute
+
+        @code_space = code_space
+        @company_scope = company_scope
+        @fare_provider = fare_provider
+      end
+
+      attr_accessor :code_space, :company_scope, :fare_provider
+
+      def build_or_update
+        return unless fare_provider
+
+        fare_provider.fare_products.by_code(code_space, code_value).first_or_initialize.tap do |product|
+          product.attributes = attributes
+        end
+      end
+
+      def code_value
+        fare_id
+      end
+
+      def name
+        fare_id
+      end
+
+      def price_cents
+        price.to_f * 100
+      end
+
+      def company
+        return unless agency_id.present? && company_scope
+
+        company_scope.find_by(registration_number: agency_id)
+      end
+
+      def code
+        Code.new(code_space: code_space, value: code_value) if code_space
+      end
+
+      def attributes
+        # Managed: fare_id, price, agency_id
+        # Ignored: currency_type, payment_method, transfers, transfer_duration
+
+        {
+          name: name,
+          price_cents: price_cents,
+          company: company,
+          codes: [code]
+        }
+      end
+    end
+  end
+
+  def import_fare_validities
+    resource = create_resource(:fare_rules)
+    resource.rows_count = source.fare_rules.count
+    resource.save!
+
+    FareValidities.new(self).import!
+  end
+
+  class FareValidities
+    def initialize(import)
+      @import = import
+    end
+
+    attr_reader :import
+
+    delegate :code_space, :lines, :source, :fare_provider, to: :import
+
+    def import!
+      source.fare_rules.each do |fare_rule|
+        decorator = Decorator.new(
+          fare_rule,
+          code_space: code_space,
+          fare_provider: fare_provider,
+          line_scope: lines
+        )
+
+        validity = decorator.build_or_update
+        validity.save
+      end
+
+      # TODO: delete useless Validities
+    end
+
+    class Decorator < SimpleDelegator
+      def initialize(fare_rule, code_space: nil, line_scope: nil, fare_provider: nil)
+        super fare_rule
+
+        @code_space = code_space
+        @line_scope = line_scope
+        @fare_provider = fare_provider
+      end
+
+      attr_accessor :code_space, :line_scope, :fare_provider
+
+      delegate :fare_validities, :fare_products, :fare_zones, to: :fare_provider, allow_nil: true
+
+      def build_or_update
+        return unless fare_validities
+
+        fare_validities.by_code(code_space, code_value).first_or_initialize.tap do |validity|
+          validity.attributes = attributes
+        end
+      end
+
+      def code_value
+        # GTFS Fare Rules have no id
+        # The primary key is defined as "*" ...
+
+        "#{fare_id}-#{route_id}-#{origin_id}-#{destination_id}-#{contains_id}"
+      end
+
+      def attributes
+        {
+          name: name,
+          products: [product],
+          expression: expression
+        }
+      end
+
+      def name
+        NameBuilder.new(self).name
+      end
+
+      # Create a Validity name like "C2 - Zones A > D - Zone B"
+      class NameBuilder
+        def initialize(decorator)
+          @decorator = decorator
+        end
+
+        attr_accessor :decorator
+
+        delegate :line, :origin_zone, :destination_zone, :contains_zone, to: :decorator
+
+        def name
+          [
+            line_name,
+            zone_to_zone_name,
+            zone_name
+          ].compact.join(' - ')
+        end
+
+        def line_name
+          line&.name
+        end
+
+        def zone_to_zone_name
+          return unless origin_zone || destination_zone
+
+          parts = ['Zones', origin_zone&.name, '>', destination_zone&.name]
+          parts.compact.join(' ')
+        end
+
+        def zone_name
+          "Zone #{contains_zone&.name}" if contains_zone
+        end
+      end
+
+      def product
+        return unless fare_products && fare_id.present?
+
+        fare_products.by_code(code_space, fare_id).first
+      end
+
+      def line
+        line_scope.find_by(registration_number: route_id) if line_scope && route_id.present?
+      end
+
+      def find_or_create_zone(zone_id)
+        return unless fare_zones && zone_id.present?
+
+        fare_zones.by_code(code_space, zone_id).first_or_create do |zone|
+          zone.name = zone_id
+          zone.codes = [Code.new(code_space: code_space, value: zone_id)]
+        end
+      end
+
+      def origin_zone
+        find_or_create_zone(origin_id)
+      end
+
+      def destination_zone
+        find_or_create_zone(destination_id)
+      end
+
+      def contains_zone
+        find_or_create_zone(contains_id)
+      end
+
+      def line_expression
+        Fare::Validity::Expression::Line.new(line: line) if line
+      end
+
+      def zone_to_zone_expression
+        return unless origin_zone || destination_zone
+
+        Fare::Validity::Expression::ZoneToZone.new(from: origin_zone, to: destination_zone)
+      end
+
+      def zone_expression
+        Fare::Validity::Expression::Zone.new(zone: contains_zone) if contains_zone
+      end
+
+      def expressions
+        @expressions ||= [line_expression, zone_to_zone_expression, zone_expression].compact
+      end
+
+      def expression
+        if expressions.many?
+          Fare::Validity::Expression::Composite.new(expressions: expressions)
+        else
+          expressions.first
+        end
+      end
+    end
+  end
 end

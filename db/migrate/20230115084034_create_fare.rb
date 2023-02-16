@@ -49,8 +49,8 @@ class CreateFare < ActiveRecord::Migration[5.2]
       end
 
       create_table :fare_stop_areas_zones do |t| # rubocop:disable Rails/CreateTableWithTimestamps
-        t.references :fare_zone
-        t.references :stop_area
+        t.references :fare_zone, null: false
+        t.references :stop_area, null: false
       end
 
       create_table :fare_products do |t|
@@ -75,8 +75,8 @@ class CreateFare < ActiveRecord::Migration[5.2]
       end
 
       create_table :fare_products_validities do |t| # rubocop:disable Rails/CreateTableWithTimestamps
-        t.references :fare_product
-        t.references :fare_validity
+        t.references :fare_product, null: false
+        t.references :fare_validity, null: false
       end
     end
   end

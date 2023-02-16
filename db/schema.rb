@@ -633,8 +633,8 @@ ActiveRecord::Schema.define(version: 2023_01_24_150645) do
   end
 
   create_table "fare_products_validities", force: :cascade do |t|
-    t.bigint "fare_product_id"
-    t.bigint "fare_validity_id"
+    t.bigint "fare_product_id", null: false
+    t.bigint "fare_validity_id", null: false
     t.index ["fare_product_id"], name: "index_fare_products_validities_on_fare_product_id"
     t.index ["fare_validity_id"], name: "index_fare_products_validities_on_fare_validity_id"
   end
@@ -655,8 +655,8 @@ ActiveRecord::Schema.define(version: 2023_01_24_150645) do
   end
 
   create_table "fare_stop_areas_zones", force: :cascade do |t|
-    t.bigint "fare_zone_id"
-    t.bigint "stop_area_id"
+    t.bigint "fare_zone_id", null: false
+    t.bigint "stop_area_id", null: false
     t.index ["fare_zone_id"], name: "index_fare_stop_areas_zones_on_fare_zone_id"
     t.index ["stop_area_id"], name: "index_fare_stop_areas_zones_on_stop_area_id"
   end

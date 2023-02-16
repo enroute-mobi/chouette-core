@@ -34,7 +34,8 @@ module Chouette
     has_many :entrances, dependent: :delete_all
     has_many :macro_messages, as: :source, class_name: "::Macro::Message", foreign_key: :source_id
 
-    has_and_belongs_to_many :fare_zones, join_table: :fare_stop_areas_zones
+    has_many :stop_area_zones, class_name: 'Fare::StopAreaZone', dependent: :delete_all
+    has_many :fare_zones, through: :stop_area_zones, source: :zone
 
     scope :light, ->{ select(:id, :name, :city_name, :zip_code, :time_zone, :registration_number, :kind, :area_type, :time_zone, :stop_area_referential_id, :objectid) }
     scope :with_time_zone, -> { where.not time_zone: nil }

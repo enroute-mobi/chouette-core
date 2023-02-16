@@ -13,6 +13,7 @@ module Fare
 
     validates :name, presence: true
 
-    has_and_belongs_to_many :stop_areas, class_name: 'Chouette::StopArea', join_table: :fare_stop_areas_zones
+    has_many :stop_area_zones, class_name: 'Fare::StopAreaZone', foreign_key: 'fare_zone_id', dependent: :delete_all
+    has_many :stop_areas, through: :stop_area_zones
   end
 end

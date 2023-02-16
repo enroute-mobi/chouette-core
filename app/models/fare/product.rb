@@ -12,8 +12,10 @@ module Fare
     include CodeSupport
 
     belongs_to :company, class_name: 'Chouette::Company', optional: true
-    has_and_belongs_to_many :validities, class_name: 'Fare::Validity', 
-      foreign_key: 'fare_product_id', association_foreign_key: 'fare_validity_id', join_table: :fare_products_validities
+
+    has_many :product_validities, class_name: 'Fare::ProductValidity',
+                                  foreign_key: 'fare_product_id', dependent: :delete_all
+    has_many :validites, through: :product_validities
 
     validates :name, presence: true
   end

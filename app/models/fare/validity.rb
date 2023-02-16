@@ -11,9 +11,9 @@ module Fare
 
     include CodeSupport
 
-    has_many :product_validities, class_name: 'Fare::ProductValidity', foreign_key: 'fare_validity_id'
+    has_many :product_validities, class_name: 'Fare::ProductValidity', foreign_key: 'fare_validity_id',
+                                  dependent: :delete_all
     has_many :products, through: :product_validities
-    # foreign_key: 'fare_validity_id', association_foreign_key: 'fare_product_id'
 
     validates :name, :products, :expression, presence: true
     validates_associated :expression

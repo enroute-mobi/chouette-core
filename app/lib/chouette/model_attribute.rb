@@ -97,17 +97,6 @@ module Chouette
         end
       end
 
-<<<<<<< HEAD
-=======
-      def find_by(attributes)
-        find do |model_attribute|
-          attributes.all? do |k, v|
-            model_attribute.send(k).to_s == v.to_s
-          end
-        end
-      end
-
->>>>>>> 81becaa1a (CHOUETTE-2604 add Update attribute from referent to particulars macro)
       def all # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
         # Chouette::StopArea
         define Chouette::StopArea, :name
@@ -177,10 +166,6 @@ module Chouette
           end
         end
       end
-    end
-
-    def self.empty(&block)
-      Collection.new [], &block
     end
 
     def self.empty(&block)

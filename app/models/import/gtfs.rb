@@ -918,6 +918,24 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
   delegate :stop_areas, to: :stop_area_provider
   delegate :connection_links, to: :stop_area_provider
 
+  def index
+    @index ||= Index.new
+  end
+
+  class Index 
+    def initialize
+      @fare_ids ||= {}
+    end
+
+    def register_fare_id(fare_product, fare_id)
+      @fare_ids[fare_product.id] = fare_id
+    end
+
+    def fare_product_ids
+      @fare_ids.keys
+    end
+  end
+
   def import_shapes
     resource = create_resource(:shapes)
     resource.rows_count = source.shapes.count
@@ -1031,19 +1049,19 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
 
     attr_reader :import
 
-    delegate :code_space, :companies, :source, :fare_provider, to: :import
+    delegate :code_space, :companies, :source, :fare_provider, :index, to: :import
 
     def import!
       source.fare_attributes.each do |fare_atribute|
-        decorator = Decorator.new(
-          fare_atribute,
-          code_space: code_space,
-          company_scope: companies,
-          fare_provider: fare_provider
-        )
+        decorator = Decorator.new(fare_atribute, code_space: code_space, company_scope: companies, fare_provider: fare_provider)
 
         product = decorator.build_or_update
-        product.save
+        unless product.save
+          Rails.logger.warn "Can't save Fare Product #{product.inspect}"
+          next
+        end
+
+        index.register_fare_id product, decorator.code_value
       end
     end
 
@@ -1061,7 +1079,7 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
       def build_or_update
         return unless fare_provider
 
-        fare_provider.fare_products.by_code(code_space, code_value).first_or_initialize.tap do |product|
+        fare_provider.fare_products.first_or_initialize_by_code(code_space, code_value).tap do |product|
           product.attributes = attributes
         end
       end
@@ -1084,10 +1102,6 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
         company_scope.find_by(registration_number: agency_id)
       end
 
-      def code
-        Code.new(code_space: code_space, value: code_value) if code_space
-      end
-
       def attributes
         # Managed: fare_id, price, agency_id
         # Ignored: currency_type, payment_method, transfers, transfer_duration
@@ -1095,8 +1109,7 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
         {
           name: name,
           price_cents: price_cents,
-          company: company,
-          codes: [code]
+          company: company
         }
       end
     end
@@ -1117,22 +1130,35 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
 
     attr_reader :import
 
-    delegate :code_space, :lines, :source, :fare_provider, to: :import
+    delegate :code_space, :lines, :source, :fare_provider, :index, to: :import
 
     def import!
       source.fare_rules.each do |fare_rule|
-        decorator = Decorator.new(
-          fare_rule,
-          code_space: code_space,
-          fare_provider: fare_provider,
-          line_scope: lines
-        )
+        decorator = Decorator.new(fare_rule, code_space: code_space, fare_provider: fare_provider, line_scope: lines)
 
         validity = decorator.build_or_update
-        validity.save
+        unless validity.save
+          Rails.logger.warn "Can't save Fare Validity #{product.inspect}"
+          next
+        end
+
+        fare_validity_ids << validity.id
       end
 
-      # TODO: delete useless Validities
+      clean_fare_validities
+    end
+
+    def fare_validity_ids
+      @fare_validity_ids ||= []
+    end
+
+    def clean_fare_validities
+      Rails.logger.debug "fare_validity_ids: #{fare_validity_ids.inspect}"
+
+      imported_products = fare_provider.fare_products.where(id: index.fare_product_ids)
+      not_imported_fare_validities = fare_provider.fare_validities.where.not(id: fare_validity_ids)
+
+      not_imported_fare_validities.by_products(imported_products).destroy_all
     end
 
     class Decorator < SimpleDelegator
@@ -1151,7 +1177,7 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
       def build_or_update
         return unless fare_validities
 
-        fare_validities.by_code(code_space, code_value).first_or_initialize.tap do |validity|
+        fare_validities.first_or_initialize_by_code(code_space, code_value).tap do |validity|
           validity.attributes = attributes
         end
       end
@@ -1222,9 +1248,8 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
       def find_or_create_zone(zone_id)
         return unless fare_zones && zone_id.present?
 
-        fare_zones.by_code(code_space, zone_id).first_or_create do |zone|
+        fare_zones.first_or_create_by_code(code_space, zone_id) do |zone|
           zone.name = zone_id
-          zone.codes = [Code.new(code_space: code_space, value: zone_id)]
         end
       end
 

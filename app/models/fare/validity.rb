@@ -18,6 +18,11 @@ module Fare
     validates :name, :products, :expression, presence: true
     validates_associated :expression
 
+    scope :by_products, ->(products) { joins(:products).where(fare_products: {id: products}) }
+    class << self
+      alias by_product by_products
+    end
+
     def scope
       @scope ||= Expression::Scope.new(workbench)
     end

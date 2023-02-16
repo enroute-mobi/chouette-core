@@ -76,12 +76,13 @@ module Export::Scope
     end
 
     delegate :workgroup, :workbench, :line_referential, :stop_area_referential, :metadatas, to: :referential
-    delegate :shape_referential, to: :workgroup
+    delegate :shape_referential, :fare_referential, to: :workgroup
 
     delegate :companies, :networks, to: :line_referential
     delegate :entrances, to: :stop_area_referential
 
     delegate :shapes, to: :shape_referential
+    delegate :fare_zones, :fare_products, :fare_validities, to: :fare_referential
 
     delegate :codes, to: :workgroup
 

@@ -68,6 +68,10 @@ class Export::Gtfs < Export::Base
     VehicleJourneyCompany.new(self).export_part
 
     FeedInfo.new(self).export_part
+
+    FareProducts.new(self).export_part
+    FareValidities.new(self).export_part
+
     target.close
   end
 
@@ -1298,6 +1302,149 @@ class Export::Gtfs < Export::Base
         # For the moment, we need to use a default language to avoid
         # invalid feedwhen the user is not aware of this feature
         company&.default_language.presence || DEFAULT_LANGUAGE
+      end
+    end
+  end
+  class FareProducts < Part
+    delegate :code_space, to: :export
+    delegate :fare_products, to: :export_scope
+
+    def export!
+      fare_products.find_each do |fare_product|
+        decorated_product = Decorator.new(fare_product, index: index, code_space: code_space)
+        target.fare_attributes << decorated_product.fare_attribute
+      end
+    end
+
+    class Decorator < SimpleDelegator
+      def initialize(fare_product, index: nil, code_space: nil)
+        super fare_product
+        @index = index
+        @code_space = code_space
+      end
+
+      attr_accessor :index, :code_space
+
+      def gtfs_attributes
+        {
+          fare_id: gtfs_id,
+          price: gtfs_price,
+          agency_id: gtfs_agency_id,
+          # Not managed for the moment
+          currency_type: 'EUR',
+          payment_method: 1,
+          transfers: 0,
+          transfer_duration: nil
+        }
+      end
+
+      def gtfs_id
+        gtfs_code || uuid
+      end
+
+      def gtfs_price
+        price_cents.to_f / 100
+      end
+
+      def gtfs_agency_id
+        index.agency_id(company.id) if index && company
+      end
+
+      def gtfs_code
+        codes.where(code_space: code_space).first&.value
+        # code_provider.unique_code(self) if code_provider
+      end
+
+      def fare_attribute
+        GTFS::FareAttribute.new gtfs_attributes
+      end
+    end
+  end
+
+  class FareValidities < Part
+    delegate :code_space, to: :export
+    delegate :fare_validities, to: :export_scope
+
+    def export!
+      fare_validities.includes(:products).find_each do |fare_validity|
+        decorated_validity = Decorator.new(fare_validity, index: index, code_space: code_space)
+
+        decorated_validity.fare_rules.each do |fare_rule|
+          target.fare_rules << fare_rule
+        end
+      end
+    end
+
+    class Decorator < SimpleDelegator
+      def initialize(fare_validity, index: nil, code_space: nil)
+        super fare_validity
+        @index = index
+        @code_space = code_space
+      end
+
+      attr_accessor :index, :code_space
+
+      def fare_rules
+        products.map do |fare_product|
+          GTFS::FareRule.new attributes.merge(fare_id: fare_id(fare_product))
+        end
+      end
+
+      def fare_id(fare_product)
+        fare_product.codes.where(code_space: code_space).first&.value || fare_product.uuid
+      end
+
+      def attributes
+        {
+          route_id: route_id,
+          origin_id: origin_id,
+          destination_id: destination_id,
+          contains_id: contains_id
+        }
+      end
+
+      def route_id
+        index.route_id(line_expression.line_id) if line_expression
+      end
+
+      def origin_id
+        zone_gtfs_code zone_to_zone_expression&.from
+      end
+
+      def destination_id
+        zone_gtfs_code zone_to_zone_expression&.to
+      end
+
+      def contains_id
+        zone_gtfs_code zone_expression&.zone
+      end
+
+      def zone_gtfs_code(zone)
+        return nil unless zone
+
+        zone.codes.where(code_space: code_space).first&.value || zone.uuid
+      end
+
+      def find_expression(klass)
+        return expression if expression.is_a?(klass)
+
+        if expression.is_a?(Fare::Validity::Expression::Composite) && expression.logical_link == :and
+          return expression.expressions.find { |expression| expression.is_a?(klass) }
+        end
+
+        nil
+      end
+
+      def line_expression
+        @line_expression ||= find_expression Fare::Validity::Expression::Line
+      end
+
+      def zone_expression
+        @zone_expression ||= find_expression Fare::Validity::Expression::Zone
+      end
+
+      def zone_to_zone_expression
+        @zone_to_zone_expression ||= find_expression Fare::Validity::Expression::ZoneToZone
       end
     end
   end

@@ -39,7 +39,7 @@
                   sortable: false,
                 ),
                 TableBuilderHelper::Column.new( \
-                  name: t('.table_headers.workrgroup_control_list_run'),
+                  name: t('.table_headers.workgroup_control_list_run'),
                   attribute: lambda do |referential| \
                     workgroup_control_list_run = @referential_processings[referential.id]['workgroup_control_list_run']; \                    
                     link_to_if_table(workgroup_control_list_run.present?, operation_status(workgroup_control_list_run&.user_status, verbose: true), [@workbench, workgroup_control_list_run]) \                  
@@ -69,7 +69,7 @@
                   sortable: false,
                 ),
                 TableBuilderHelper::Column.new( \
-                  name: t('table_headers.workrgroup_control_list_run'),
+                  name: t('.table_headers.workgroup_control_list_run'),
                   attribute: lambda do |referential| \
                     workgroup_control_list_run = @referential_processings[referential.id]['workgroup_control_list_run']; \                    
                     link_to_if_table(workgroup_control_list_run.present?, operation_status(workgroup_control_list_run&.user_status, verbose: true), [@workbench, workgroup_control_list_run]) \                  

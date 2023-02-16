@@ -17,7 +17,7 @@ fr:
         merged_referential: Offre finalisée
         workbench_macro_list_run: Jeux d'instructions
         workbench_control_list_run: Jeux de contrôles
-        workrgroup_control_list_run: Jeu de contrôles (Groupe de travail)
+        workgroup_control_list_run: Jeu de contrôles (Groupe de travail)
       table:
         state:
           title: Dernière offre finalisée

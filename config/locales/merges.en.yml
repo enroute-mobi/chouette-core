@@ -17,7 +17,7 @@ en:
         merged_referential: Merged dataset
         workbench_macro_list_run: Macro list
         workbench_control_list_run: Control list
-        workrgroup_control_list_run: Control list (Workgroup)
+        workgroup_control_list_run: Control list (Workgroup)
       table:
         state:
           title: Worbench current output

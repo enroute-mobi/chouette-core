@@ -10,9 +10,9 @@ module Macro
         option :override_existing_value
 
         enumerize :target_model, in: %w[StopArea Company]
-        enumerize :override_existing_value, in: [ true, false ]
+        enumerize :override_existing_value, in: %w[true false]
 
-        validates :target_model, :target_attribute, :override_existing_value, presence: true
+        validates :target_model, :target_attribute, presence: true
       end
 
       def model_attribute
@@ -83,7 +83,6 @@ module Macro
           value = referent.send(attribute_name)
 
           referent.particulars.find_each do |particular|
-
             particular.update(attribute_name => value)
             create_message(particular, attribute_name, value)
           end

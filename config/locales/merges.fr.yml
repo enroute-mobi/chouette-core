@@ -12,6 +12,12 @@ fr:
       title: "Nouvelle finalisation de l'offre"
     show:
       title: "Finalisation de l'offre %{name}"
+      table_headers: 
+        referentials: Référentiels
+        merged_referential: Offre finalisée
+        workbench_macro_list_run: Jeux d'instructions
+        workbench_control_list_run: Jeux de contrôles
+        workgroup_control_list_run: Jeu de contrôles (Groupe de travail)
       table:
         state:
           title: Dernière offre finalisée

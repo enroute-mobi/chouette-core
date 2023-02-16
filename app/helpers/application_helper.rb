@@ -159,4 +159,9 @@ module ApplicationHelper
       label
     end
   end
+
+  def link_to_if_table condition, label, url
+     condition == false ? label = '-' : label
+     link_to_if(condition, label, url)
+  end
 end

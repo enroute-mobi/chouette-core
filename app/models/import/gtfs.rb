@@ -942,6 +942,8 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
     resource.save!
 
     Shapes.new(WithResource.new(self, resource)).import!
+
+    resource.update_status_from_messages
   end
 
   class Shapes
@@ -1040,6 +1042,8 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
     resource.save!
 
     FareProducts.new(self).import!
+
+    resource.update_status_from_messages
   end
 
   class FareProducts
@@ -1093,7 +1097,7 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
       end
 
       def price_cents
-        price.to_f * 100
+        (price.to_f * 100).round
       end
 
       def company
@@ -1121,6 +1125,8 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
     resource.save!
 
     FareValidities.new(self).import!
+
+    resource.update_status_from_messages
   end
 
   class FareValidities
@@ -1138,7 +1144,7 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
 
         validity = decorator.build_or_update
         unless validity.save
-          Rails.logger.warn "Can't save Fare Validity #{product.inspect}"
+          Rails.logger.warn "Can't save Fare Validity #{validity.inspect}"
           next
         end
 
@@ -1153,8 +1159,6 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
     end
 
     def clean_fare_validities
-      Rails.logger.debug "fare_validity_ids: #{fare_validity_ids.inspect}"
-
       imported_products = fare_provider.fare_products.where(id: index.fare_product_ids)
       not_imported_fare_validities = fare_provider.fare_validities.where.not(id: fare_validity_ids)
 

@@ -1,4 +1,3 @@
-require 'pry'
 class Processor
   attr_reader :operation, :workbench
 
@@ -65,5 +64,4 @@ class Processor
   def after_operation_step
     "after_#{operation.model_name.singular}"
   end
-  
 end

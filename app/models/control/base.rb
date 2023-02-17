@@ -2,15 +2,15 @@ module Control
   class Base < ApplicationModel
     include OptionsSupport # Check which methods are/should be deprecated
 
-    self.table_name = "controls"
+    self.table_name = 'controls'
 
-    belongs_to :control_context, class_name: "Control::Context", optional: true, inverse_of: :controls
-    belongs_to :control_list, class_name: "Control::List", optional: true, inverse_of: :controls
+    belongs_to :control_context, class_name: 'Control::Context', optional: true, inverse_of: :controls
+    belongs_to :control_list, class_name: 'Control::List', optional: true, inverse_of: :controls
     acts_as_list scope: 'control_list_id #{control_list_id ? "= #{control_list_id}" : "IS NULL"} AND control_context_id #{control_context_id ? "= #{control_context_id}" : "IS NULL"}'
 
     store :options, coder: JSON
 
-		enumerize :criticity, in: %w(warning error), default: "warning"
+    enumerize :criticity, in: %w[warning error], default: 'warning'
 
     def build_run
       run_attributes = {
@@ -39,15 +39,19 @@ module Control
     delegate :workgroup, to: :workbench
 
     class Run < ApplicationModel
-      self.table_name = "control_runs"
+      self.table_name = 'control_runs'
 
-      belongs_to :control_context_run, class_name: "Control::Context::Run", optional: true, inverse_of: :control_runs
-      belongs_to :control_list_run, class_name: "Control::List::Run", inverse_of: :control_runs
+      with_options(inverse_of: :control_runs) do
+        belongs_to :control_context_run, class_name: 'Control::Context::Run', optional: true
+        belongs_to :control_list_run, class_name: 'Control::List::Run'
+      end
 
-      has_many :control_messages, class_name: "Control::Message", foreign_key: "control_run_id", inverse_of: :control_run
+      with_options(foreign_key: 'control_run_id', inverse_of: :control_run) do
+        has_many :control_messages, class_name: 'Control::Message', dependent: :delete_all
+      end
 
       store :options, coder: JSON
-      # TODO Retrieve options definition from Conrtol class
+      # TODO: Retrieve options definition from Conrtol class
       include OptionsSupport
 
       def parent
@@ -81,12 +85,12 @@ module Control
       protected
 
       def around_run(&block)
-        logger.tagged "#{self.class.to_s}(id:#{id||object_id})" do
-          logger.info "Started"
+        logger.tagged "#{self.class}(id:#{id || object_id})" do
+          logger.info 'Started'
           Chouette::Benchmark.measure(self.class.to_s, id: id) do
             block.call
           end
-          logger.info "Done"
+          logger.info 'Done'
         end
       end
     end

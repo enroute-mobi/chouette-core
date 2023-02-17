@@ -1,17 +1,18 @@
 module Control
   class List < ApplicationModel
-    self.table_name = "control_lists"
+    self.table_name = 'control_lists'
 
     belongs_to :workbench, optional: false
     validates :name, presence: true
 
-    has_many :controls, -> { order(position: :asc) },
-             class_name: 'Control::Base', dependent: :delete_all,
-             foreign_key: 'control_list_id', inverse_of: :control_list
-    has_many :control_list_runs,
-             class_name: 'Control::List::Run', foreign_key: :original_control_list_id
-    has_many :control_contexts,
-             class_name: 'Control::Context', foreign_key: 'control_list_id', inverse_of: :control_list
+    with_options(inverse_of: :control_list) do
+      with_options(foreign_key: 'control_list_id') do
+        has_many :controls, -> { order(position: :asc) }, class_name: 'Control::Base', dependent: :delete_all
+        has_many :control_contexts, class_name: 'Control::Context', dependent: :destroy
+      end
+
+      has_many :control_list_runs, class_name: 'Control::List::Run', foreign_key: :original_control_list_id
+    end
 
     accepts_nested_attributes_for :controls, allow_destroy: true, reject_if: :all_blank
     accepts_nested_attributes_for :control_contexts, allow_destroy: true, reject_if: :all_blank
@@ -33,7 +34,7 @@ module Control
 
     class Run < Operation
       # The Workbench where controls are executed
-      self.table_name = "control_list_runs"
+      self.table_name = 'control_list_runs'
 
       belongs_to :workbench, optional: false
       delegate :workgroup, to: :workbench
@@ -44,14 +45,14 @@ module Control
 
       # The original control list definition. This control list can have been modified or deleted since.
       # Should only used to provide a link in the UI
-      belongs_to :original_control_list, optional: true, foreign_key: :original_control_list_id, class_name: 'Control::List'
+      belongs_to :original_control_list,
+                 optional: true, foreign_key: :original_control_list_id, class_name: 'Control::List'
 
-      has_many :control_runs, -> { order(position: :asc) }, class_name: "Control::Base::Run",
-               dependent: :delete_all, foreign_key: "control_list_run_id"
-
-      has_many :control_context_runs, class_name: "Control::Context::Run", dependent: :delete_all, foreign_key: "control_list_run_id", inverse_of: :control_list_run
-
-      has_many :control_messages, class_name: "Control::Message", through: :control_runs
+      with_options(foreign_key: 'control_list_run_id', dependent: :destroy, inverse_of: :control_list_run) do
+        has_many :control_runs, -> { order(position: :asc) }, class_name: 'Control::Base::Run'
+        has_many :control_context_runs, class_name: 'Control::Context::Run'
+      end
+      has_many :control_messages, class_name: 'Control::Message', through: :control_runs
 
       has_one :processing, as: :processed
 
@@ -90,16 +91,16 @@ module Control
         end
 
         def worst_criticity
-          %w{error warning}.find do |criticity|
+          %w[error warning].find do |criticity|
             criticity.in?(criticities)
           end
         end
 
         def user_status
           case worst_criticity
-          when "error"
+          when 'error'
             Operation.user_status.failed
-          when "warning"
+          when 'warning'
             Operation.user_status.warning
           else
             Operation.user_status.successful
@@ -112,12 +113,11 @@ module Control
       end
 
       def perform
-        referential.switch if referential
+        referential&.switch
 
         control_runs.each(&:run)
         control_context_runs.each(&:run)
       end
-
     end
   end
 end

@@ -52,6 +52,7 @@ class MacroListRunsController < ChouetteController
   def build_resource
     super.tap do |macro_list_run|
       macro_list_run.build_with_original_macro_list
+      macro_list_run.workbench = workbench
     end
   end
 

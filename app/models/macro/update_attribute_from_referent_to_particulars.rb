@@ -69,6 +69,7 @@ module Macro
           define Chouette::Company, :private_contact_phone
           define Chouette::Company, :private_contact_url
           define Chouette::Company, :private_contact_more
+          define Chouette::Company, :default_language
         end
       end
     end

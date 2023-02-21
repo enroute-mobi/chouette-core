@@ -2,7 +2,8 @@
 class AuditMailerPreview < ActionMailer::Preview
 
   def audit
-    AuditMailer.audit()
+    AuditMailer.audit('')
+    # AuditMailer.audit(job.payload_object.mail_content).deliver_now
   end
 
 end

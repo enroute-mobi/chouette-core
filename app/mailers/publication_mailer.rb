@@ -15,12 +15,12 @@ class PublicationMailer < ApplicationMailer
       attachments[filename] = used_exports.first.file.read
     end
 
-    mail bcc: destination_mail.recipients, subject: @destination_mail.email_title
+    mail bcc: destination_mail.recipients, subject: mail_subject(@destination_mail.email_title)
   end
 
   def finished(publication_id, recipient, status=nil)
     @publication = Publication.find(publication_id)
     @status = status || @publication.status
-    mail to: recipient, subject: t("mailers.#{@publication.class.name.underscore}_mailer.finished.subject")
+    mail to: recipient, subject: mail_subject("mailers.#{@publication.class.name.underscore}_mailer.finished.subject")
   end
 end

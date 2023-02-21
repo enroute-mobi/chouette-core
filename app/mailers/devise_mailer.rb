@@ -7,24 +7,24 @@ class DeviseMailer < Devise::Mailer
   def confirmation_instructions(user, token, opts={})
     @user  = user
     @token = token
-    mail to: @user.email, subject: t('mailers.confirmation_mailer.subject')
+    mail to: @user.email, subject: mail_subject('mailers.confirmation_mailer.subject')
   end
 
   def invitation_instructions(user, token, opts={})
     @user  = user
     @token = token
-    mail to: @user.email, subject: t('mailers.invitation_mailer.subject')
+    mail to: @user.email, subject: mail_subject('mailers.invitation_mailer.subject')
   end
 
   def unlock_instructions(user, token, opts={})
     @user  = user
     @token = token
-    mail to: @user.email, subject: t('mailers.unlock_mailer.subject')
+    mail to: @user.email, subject: mail_subject('mailers.unlock_mailer.subject')
   end
 
   def reset_password_instructions(user, token, opts={})
     @user  = user
     @token = token
-    mail to: @user.email, subject: t('mailers.password_mailer.updated.subject')
+    mail to: @user.email, subject: mail_subject('mailers.password_mailer.updated.subject')
   end
 end

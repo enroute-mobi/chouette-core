@@ -38,6 +38,10 @@ module Chouette
       @subscription ||= Subscription.new(env)
     end
 
+    def mailer
+      @mailer ||= Mailer.new(env)
+    end
+
     # See Feature.additionals
     def additional_features
       @additional_features ||= env.array('FEATURES_ADDITIONAL')
@@ -62,6 +66,25 @@ module Chouette
 
       def notification_recipients
         env.array('SUBSCRIPTION_NOTIFICATION_RECIPIENTS')
+      end
+    end
+
+    class Mailer
+      def initialize(env)
+        @env = env
+      end
+      attr_reader :env
+
+      def subject_prefix
+        env.array('MAILER_SUBJECT_PREFIX')
+      end
+
+      def from
+        return TEST_FROM if env.test?
+
+        env.string('MAILER_FROM') ||
+          env.string('MAIL_FROM') ||
+          DEFAULT_FROM
       end
     end
 

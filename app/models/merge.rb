@@ -106,8 +106,7 @@ class Merge < ApplicationModel
           continue_after_processings = processor.before(referentials)
           # Check processed status and stop merge if one failed
           unless continue_after_processings
-            referentials.each &:active!
-            update status: :failed, ended_at: Time.now
+            failed!
             return
           end
         end
@@ -130,8 +129,7 @@ class Merge < ApplicationModel
           continue_after_processings = processor.after([new])
           # Check processed status and stop merge if one failed
           unless continue_after_processings
-            referentials.each &:active!
-            update status: :failed, ended_at: Time.now
+            failed!
             return
           end
         end

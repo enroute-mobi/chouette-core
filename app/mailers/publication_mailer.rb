@@ -15,7 +15,7 @@ class PublicationMailer < ApplicationMailer
       attachments[filename] = used_exports.first.file.read
     end
 
-    mail bcc: destination_mail.recipients, subject: mail_subject(@destination_mail.email_title)
+    mail bcc: destination_mail.recipients, subject: @destination_mail.email_title
   end
 
   def finished(publication_id, recipient, status=nil)

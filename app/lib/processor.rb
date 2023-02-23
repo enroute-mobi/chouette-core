@@ -13,7 +13,8 @@ class Processor
   def before(referentials)
     referentials.each do |referential|
       before_processing_rules.each do |processing_rule|
-        return false unless processing_rule.perform operation: operation, referential: referential, operation_workbench: workbench
+        return false unless processing_rule.perform operation: operation, referential: referential,
+                                                    operation_workbench: workbench
       end
     end
     true
@@ -22,7 +23,8 @@ class Processor
   def after(referentials)
     referentials.each do |referential|
       after_processing_rules.each do |processing_rule|
-        return false unless processing_rule.perform operation: operation, referential: referential, operation_workbench: workbench
+        return false unless processing_rule.perform operation: operation, referential: referential,
+                                                    operation_workbench: workbench
       end
     end
     true
@@ -51,7 +53,11 @@ class Processor
   end
 
   def workgroup_processing_rules(operation_step)
+    # Specific case when operation step is "after_aggregate" and operation is "Aggregate"
+    return workgroup.processing_rules.where(operation_step: operation_step) if workbench.blank?
+
     dedicated_processing_rules = workgroup.processing_rules.where(operation_step: operation_step).with_target_workbenches_containing(workbench.id)
+
     return dedicated_processing_rules if dedicated_processing_rules.present?
 
     workgroup.processing_rules.where(operation_step: operation_step, target_workbench_ids: [])

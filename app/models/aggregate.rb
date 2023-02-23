@@ -9,6 +9,7 @@ class Aggregate < ApplicationModel
   belongs_to :workgroup
   has_many :compliance_check_sets, -> { where(parent_type: "Aggregate") }, foreign_key: :parent_id, dependent: :destroy
   has_many :resources, class_name: 'Aggregate::Resource'
+  has_many :processings, as: :operation
 
   validates :workgroup, presence: true
 
@@ -127,6 +128,15 @@ class Aggregate < ApplicationModel
           end
         end
 
+        if processing_rules_after_aggregate.present?
+          continue_after_processings = processor.after([new])
+          # Check processed status and stop aggregate if one failed
+          unless continue_after_processings
+            failed!
+            return
+          end
+        end
+
         if after_aggregate_compliance_control_set.present?
           create_after_aggregate_compliance_check_set
         else
@@ -138,6 +148,14 @@ class Aggregate < ApplicationModel
     Chouette::Safe.capture "Aggregate ##{id} failed", e
     failed!
     raise e if Rails.env.test?
+  end
+
+  def processor
+    @processor ||= Processor.new(self)
+  end
+
+  def processing_rules_after_aggregate
+    workgroup.processing_rules.where(operation_step: 'after_aggregate')
   end
 
   def workbench_for_notifications

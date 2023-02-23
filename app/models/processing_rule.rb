@@ -44,7 +44,7 @@ module ProcessingRule
 
       processing = processings.create step: processing_step,
                                       operation: operation,
-                                      workbench_id: operation_workbench.id,
+                                      workbench: operation_workbench,
                                       workgroup_id: workgroup_id,
                                       processed: processed
     

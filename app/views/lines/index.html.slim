@@ -37,12 +37,10 @@
               TableBuilderHelper::Column.new( \
                 key: 'networks.name', \
                 attribute: Proc.new { |n| n.try(:network).try(:name) }, \
-                sortable: false \
               ), \
               TableBuilderHelper::Column.new( \
                 key: 'companies.name', \
                 attribute: Proc.new { |n| n&.company&.name || "-" }, \
-                sortable: false \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :transport_mode, \

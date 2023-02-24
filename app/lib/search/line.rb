@@ -58,6 +58,8 @@ module Search
       attribute :deactivated
       attribute :transport_mode
       attribute :transport_submode
+			attribute :company, joins: :company, column: 'companies.name'
+    	attribute :network, joins: :network, column: 'networks.name'
     end
   end
 end

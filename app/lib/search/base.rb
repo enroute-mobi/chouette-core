@@ -104,7 +104,7 @@ module Search
 
     def collection
       if valid?
-        query.scope.order(order.to_hash).paginate(paginate_attributes)
+        order.order(query.scope).paginate(paginate_attributes)
       else
         Rails.logger.debug "[Search] invalid attributes: #{errors.full_messages}"
         scope.none
@@ -125,9 +125,26 @@ module Search
   end
 
   class Order
+    attr_reader :attributes
+
     def initialize(attributes = {})
       self.attributes = attributes
     end
+
+    def self.defaults
+      attributes.inject({}) do |attribute, defaults|
+        defaults.merge(attribute.name => attribute.default) if attribute.default?
+      end
+    end
+
+    # def attributes
+    #   self.class.attributes.map do |attribute|
+    #     if (attribute_order = send(attribute))
+    #       [ attribute, attribute_order ]
+    #     end
+    #   end.compact.to_h
+    # end
+    # alias to_hash attributes
 
     def attributes=(attributes = {})
       attributes.each do |attribute, attribute_order|
@@ -141,6 +158,11 @@ module Search
       self.attributes = self.class.defaults
     end
 
+    def order(scope, joins=nil)
+      scope = scope.joins(joins) if joins.present?
+      scope.order(attributes)
+    end
+
     class_attribute :attributes, instance_accessor: false, default: []
     class_attribute :defaults, instance_accessor: false, default: {}
 
@@ -150,36 +172,47 @@ module Search
     # Attributes can be set with nil, 0 to have the nil value
     #
     # These methods ensures that the sort attribute is supported and valid
-    def self.attribute(name, default: nil)
-      name = name.to_sym
+    def self.attribute(name, options = {})
+      attribute = Attribute.new(name, options)
 
       define_method "#{name}=" do |value|
-        value =
-          if ASCENDANT_VALUES.include?(value)
-            :asc
-          elsif DESCENDANT_VALUES.include?(value)
-            :desc
-          end
+        value = attribute.order(value)
         instance_variable_set "@#{name}", value
       end
       attr_reader name
 
       # Don't use attributes << name, see class_attribute documentation
-      self.attributes += [ name ]
-      self.defaults = defaults.merge(name => default) if default
+      self.attributes += [ attribute ]
     end
 
-    ASCENDANT_VALUES = [:asc, "asc", 1].freeze
-    DESCENDANT_VALUES = [:desc, "desc", -1].freeze
+    class Attribute
 
-    def attributes
-      self.class.attributes.map do |attribute|
-        if (attribute_order = send(attribute))
-          [ attribute, attribute_order ]
+      ASCENDANT_VALUES = [:asc, "asc", 1].freeze
+      DESCENDANT_VALUES = [:desc, "desc", -1].freeze
+
+      def initialize(name, options)
+        @name = name
+        @options = options
+      end
+
+      attr_reader :name
+
+      def joins=(joins)
+        @joins = Array(joins)
+      end
+
+      attr_writer :column
+      def column
+        @column ||= name
+      end
+
+      def order(value)
+        if ASCENDANT_VALUES.include?(value)
+          :asc
+        elsif DESCENDANT_VALUES.include?(value)
+          :desc
         end
-      end.compact.to_h
+      end
     end
-    alias to_hash attributes
-
   end
 end

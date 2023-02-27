@@ -845,7 +845,7 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
   end
 
   def find_stop_parent_or_create_message(stop_area_name, parent_station, resource)
-    parent = stop_area_referential.stop_areas.find_by(registration_number: parent_station)
+    parent = stop_areas.find_by(registration_number: parent_station)
     unless parent
       create_message(
         {

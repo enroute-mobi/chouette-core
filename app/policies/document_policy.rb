@@ -9,12 +9,16 @@ class DocumentPolicy < ApplicationPolicy
     user.has_permission?('documents.create')
   end
 
-	def update?
-    user.has_permission?('documents.update') && current_workbench.document_providers.exists?(id: record.document_provider)
+  def update?
+    user.has_permission?('documents.update') && workbench_match?
   end
 
   def destroy?
-    user.has_permission?('documents.destroy') && current_workbench.document_providers.exists?(id: record.document_provider)
+    user.has_permission?('documents.destroy') && workbench_match?
+  end
+
+  def workbench_match?
+    current_workbench.document_providers.exists?(id: record.document_provider)
   end
 
 end

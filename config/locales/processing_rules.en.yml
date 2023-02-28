@@ -62,4 +62,4 @@ en:
   simple_form:
     hints:
       processing_rule:
-        target_workbenches : All workbenches are selected by default
+        target_workbenches: All workbenches are selected by default

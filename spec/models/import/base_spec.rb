@@ -1,27 +1,28 @@
 RSpec.describe Import::Base, type: :model do
-
   subject(:import) { Import::Base.new }
 
   it { should belong_to(:referential) }
   it { should belong_to(:workbench) }
   it { should belong_to(:parent) }
 
-  it { should enumerize(:status).in("aborted", "canceled", "failed", "new", "pending", "running", "successful", "warning") }
+  it {
+    should enumerize(:status).in('aborted', 'canceled', 'failed', 'new', 'pending', 'running', 'successful', 'warning')
+  }
 
   it { should validate_presence_of(:workbench) }
   it { should validate_presence_of(:creator) }
 
-  describe ".purge_imports" do
+  describe '.purge_imports' do
     let(:workbench) { create(:workbench) }
     let(:other_workbench) { create(:workbench) }
 
-    it "removes files from imports older than 60 days" do
+    it 'removes files from imports older than 60 days' do
       file_purgeable = Timecop.freeze(60.days.ago) do
         create(:workbench_import, workbench: workbench)
       end
 
       other_file_purgeable = Timecop.freeze(60.days.ago) do
-        create( :workbench_import, workbench: other_workbench )
+        create(:workbench_import, workbench: other_workbench)
       end
 
       Import::Workbench.new(workbench: workbench).purge_imports
@@ -30,7 +31,7 @@ RSpec.describe Import::Base, type: :model do
       expect(other_file_purgeable.reload.file_url).not_to be_nil
     end
 
-    it "removes imports older than 90 days" do
+    it 'removes imports older than 90 days' do
       old_import = Timecop.freeze(90.days.ago) do
         create(:workbench_import, workbench: workbench)
       end
@@ -45,14 +46,13 @@ RSpec.describe Import::Base, type: :model do
     end
   end
 
-  context "#user_file" do
-
+  context '#user_file' do
     before do
-      subject.name = "Dummy Import Example"
+      subject.name = 'Dummy Import Example'
     end
 
     it 'uses a parameterized version of the Import name as base name' do
-      expect(subject.user_file.basename).to eq("dummy-import-example")
+      expect(subject.user_file.basename).to eq('dummy-import-example')
     end
 
     it 'uses the Import content_type' do
@@ -62,19 +62,18 @@ RSpec.describe Import::Base, type: :model do
     it 'uses the Import file_extension' do
       expect(subject.user_file.extension).to eq(subject.send(:file_extension))
     end
-
   end
 
-  describe "#file_extension" do
+  describe '#file_extension' do
     subject { import.send(:file_extension) }
 
     [
-      [ nil, nil ],
-      [ "dummy", nil ],
-      [ "application/x-zip-compressed", "zip" ],
-      [ "application/zip", "zip" ],
-      [ "application/xml", "xml" ],
-      [ "text/xml", "xml" ],
+      [nil, nil],
+      ['dummy', nil],
+      ['application/x-zip-compressed', 'zip'],
+      ['application/zip', 'zip'],
+      ['application/xml', 'xml'],
+      ['text/xml', 'xml']
     ].each do |content_type, expected_file_extension|
       context "when content type is #{content_type.inspect}" do
         before { allow(import).to receive(:content_type).and_return(content_type) }

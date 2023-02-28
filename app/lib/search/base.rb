@@ -125,26 +125,37 @@ module Search
   end
 
   class Order
-    attr_reader :attributes
-
     def initialize(attributes = {})
       self.attributes = attributes
     end
 
     def self.defaults
-      attributes.inject({}) do |attribute, defaults|
-        defaults.merge(attribute.name => attribute.default) if attribute.default?
+      attributes.each_with_object({}) do |attribute, defaults|
+        defaults.merge!(attribute.name => attribute.default) if attribute.default?
       end
     end
 
-    # def attributes
-    #   self.class.attributes.map do |attribute|
-    #     if (attribute_order = send(attribute))
-    #       [ attribute, attribute_order ]
-    #     end
-    #   end.compact.to_h
-    # end
-    # alias to_hash attributes
+    def attributes
+      self.class.attributes.map do |attribute|
+        if (attribute_order = send(attribute.name))
+          [attribute.name, attribute_order]
+        end
+      end.compact.to_h
+    end
+
+    def order_hash
+      self.class.attributes.map do |attribute|
+        if (attribute_order = send(attribute.name))
+          [attribute.column, attribute_order]
+        end
+      end.compact.to_h
+    end
+
+    def joins
+      self.class.attributes.map do |attribute|
+        attribute.joins if send(attribute.name)
+      end.compact.flatten
+    end
 
     def attributes=(attributes = {})
       attributes.each do |attribute, attribute_order|
@@ -158,13 +169,12 @@ module Search
       self.attributes = self.class.defaults
     end
 
-    def order(scope, joins=nil)
+    def order(scope)
       scope = scope.joins(joins) if joins.present?
-      scope.order(attributes)
+      scope.order(order_hash)
     end
 
     class_attribute :attributes, instance_accessor: false, default: []
-    class_attribute :defaults, instance_accessor: false, default: {}
 
     # TODO: Attributes can only return values :asc, :desc or nil (for securiy reason)
     # Attributes can be set with "asc", :asc, 1 to have the :asc value
@@ -182,17 +192,20 @@ module Search
       attr_reader name
 
       # Don't use attributes << name, see class_attribute documentation
-      self.attributes += [ attribute ]
+      self.attributes += [attribute]
     end
 
+    # Describe a given atribute (name, etc) and its options (default, etc)
     class Attribute
-
-      ASCENDANT_VALUES = [:asc, "asc", 1].freeze
-      DESCENDANT_VALUES = [:desc, "desc", -1].freeze
+      ASCENDANT_VALUES = [:asc, 'asc', 1].freeze
+      DESCENDANT_VALUES = [:desc, 'desc', -1].freeze
 
       def initialize(name, options)
         @name = name
-        @options = options
+
+        options.each do |option, value|
+          send "#{option}=", value
+        end
       end
 
       attr_reader :name
@@ -201,9 +214,20 @@ module Search
         @joins = Array(joins)
       end
 
+      def joins
+        @joins ||= []
+      end
+
       attr_writer :column
+
       def column
         @column ||= name
+      end
+
+      attr_accessor :default
+
+      def default?
+        @default.present?
       end
 
       def order(value)

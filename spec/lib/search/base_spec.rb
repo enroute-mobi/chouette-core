@@ -5,7 +5,7 @@ RSpec.describe Search::Base do
     attr_accessor :context
 
     class Order < ::Search::Order
-      attribute :name
+      attribute :name, column: 'column'
       attr_accessor :context
     end
   end
@@ -111,9 +111,8 @@ RSpec.describe Search::Base do
       end
 
       it "is ordered with order hash" do
-        search.order.name = :desc
-
-        expect(scope).to receive(:order).with(name: :desc).and_return(scope)
+        allow(search.order).to receive(:order_hash).and_return(name: :desc)
+        expect(scope).to receive(:order).with(search.order.order_hash).and_return(scope)
 
         subject
       end
@@ -257,7 +256,7 @@ RSpec.describe Search::Base do
     end
 
     describe "attribute writer method" do
-      Search::Order::ASCENDANT_VALUES.each do |value|
+      Search::Order::Attribute::ASCENDANT_VALUES.each do |value|
         context "when the attribute value is #{value}" do
           it "change the attribute value to :asc" do
             expect { order.name = value }.to change(order, :name).to(:asc)
@@ -265,7 +264,7 @@ RSpec.describe Search::Base do
         end
       end
 
-      Search::Order::DESCENDANT_VALUES.each do |value|
+      Search::Order::Attribute::DESCENDANT_VALUES.each do |value|
         context "when the attribute value is #{value}" do
           it "change the attribute value to :desc" do
             expect { order.name = value }.to change(order, :name).to(:desc)
@@ -278,23 +277,44 @@ RSpec.describe Search::Base do
       subject { self.class::Search::Order.attributes }
 
       it "contains all defined attributes" do
-        is_expected.to contain_exactly(:name)
+        is_expected.to contain_exactly(an_object_having_attributes(name: :name))
       end
     end
 
-    describe "#to_hash" do
-      subject { order.to_hash }
+    describe "#order_hash" do
+      subject { order.order_hash }
 
-      context "when attribute name is :asc" do
+      context "when attribute name is :asc (and column 'column')" do
         before { order.name = :asc }
-        it { is_expected.to eq(name: :asc) }
+        it { is_expected.to eq('column' => :asc) }
       end
-      context "when attribute name is :desc" do
+      context "when attribute name is :desc (and column 'column')" do
         before { order.name = :desc }
-        it { is_expected.to eq(name: :desc) }
+        it { is_expected.to eq('column' => :desc) }
       end
       context "when attribute name is not defined" do
         before { order.name = nil }
+        it { is_expected.to be_empty }
+      end
+    end
+
+    describe '#joins' do
+      let(:order_class) do 
+        Class.new(::Search::Order) do
+          attribute :dummy, joins: :other
+        end
+      end
+      let(:order) { order_class.new }
+      subject { order.joins }
+
+      it { is_expected.to be_an_instance_of(Array) }
+
+      context 'when the attribute with joins option is included' do 
+        let(:order) { order_class.new(dummy: :asc) }
+        it { is_expected.to contain_exactly(:other) }
+      end
+
+      context "when the attribute with joins option isn't included" do 
         it { is_expected.to be_empty }
       end
     end
@@ -311,7 +331,7 @@ RSpec.describe Search::Base do
           order_class = Class.new(::Search::Order) do
             attribute :dummy
           end
-          expect(order_class.attributes).to contain_exactly(:dummy)
+          expect(order_class.attributes).to contain_exactly(an_object_having_attributes(name: :dummy))
         end
 
         it "defines defaults specific the Order class" do

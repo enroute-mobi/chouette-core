@@ -31,6 +31,12 @@ RSpec.describe Aggregate, type: :model do
 
         before { aggregate.aggregate! }
 
+        describe "#aggregate_resources" do
+          it "contains two resources" do
+            expect(aggregate.reload.resources.count).to eq(2)
+          end
+        end
+
         context "the aggregated dataset" do
           subject(:aggregated_dataset) { aggregate.new }
           before { aggregated_dataset.switch }

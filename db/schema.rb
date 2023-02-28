@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_01_24_150645) do
+ActiveRecord::Schema.define(version: 2023_02_28_132902) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
@@ -19,6 +19,16 @@ ActiveRecord::Schema.define(version: 2023_01_24_150645) do
   enable_extension "plpgsql"
   enable_extension "postgis"
   enable_extension "unaccent"
+
+  create_table "aggregate_resources", force: :cascade do |t|
+    t.string "workbench_name"
+    t.integer "position"
+    t.integer "priority"
+    t.json "metrics"
+    t.datetime "referential_creation_date"
+    t.bigint "aggregate_id"
+    t.index ["aggregate_id"], name: "index_aggregate_resources_on_aggregate_id"
+  end
 
   create_table "aggregates", force: :cascade do |t|
     t.bigint "workgroup_id"

@@ -99,12 +99,12 @@ module Search
     end
 
     def query
-      raise "Not yet implemented"
+      raise 'Not yet implemented'
     end
 
     def collection
       if valid?
-        query.scope.order(order.to_hash).paginate(paginate_attributes)
+        order.order(query.scope).paginate(paginate_attributes)
       else
         Rails.logger.debug "[Search] invalid attributes: #{errors.full_messages}"
         scope.none
@@ -113,7 +113,7 @@ module Search
 
     def order
       # Use the local/specific Order class
-      @order ||= self.class.const_get("Order").new
+      @order ||= self.class.const_get('Order').new
     end
 
     attribute :page, type: Integer
@@ -129,6 +129,34 @@ module Search
       self.attributes = attributes
     end
 
+    def self.defaults
+      attributes.each_with_object({}) do |attribute, defaults|
+        defaults.merge!(attribute.name => attribute.default) if attribute.default?
+      end
+    end
+
+    def attributes
+      self.class.attributes.map do |attribute|
+        if (attribute_order = send(attribute.name))
+          [attribute.name, attribute_order]
+        end
+      end.compact.to_h
+    end
+
+    def order_hash
+      self.class.attributes.map do |attribute|
+        if (attribute_order = send(attribute.name))
+          [attribute.column, attribute_order]
+        end
+      end.compact.to_h
+    end
+
+    def joins
+      self.class.attributes.map do |attribute|
+        attribute.joins if send(attribute.name)
+      end.compact.flatten
+    end
+
     def attributes=(attributes = {})
       attributes.each do |attribute, attribute_order|
         attribute_method = "#{attribute}="
@@ -141,8 +169,12 @@ module Search
       self.attributes = self.class.defaults
     end
 
+    def order(scope)
+      scope = scope.joins(joins) if joins.present?
+      scope.order(order_hash)
+    end
+
     class_attribute :attributes, instance_accessor: false, default: []
-    class_attribute :defaults, instance_accessor: false, default: {}
 
     # TODO: Attributes can only return values :asc, :desc or nil (for securiy reason)
     # Attributes can be set with "asc", :asc, 1 to have the :asc value
@@ -150,36 +182,61 @@ module Search
     # Attributes can be set with nil, 0 to have the nil value
     #
     # These methods ensures that the sort attribute is supported and valid
-    def self.attribute(name, default: nil)
-      name = name.to_sym
+    def self.attribute(name, options = {})
+      attribute = Attribute.new(name, options)
 
       define_method "#{name}=" do |value|
-        value =
-          if ASCENDANT_VALUES.include?(value)
-            :asc
-          elsif DESCENDANT_VALUES.include?(value)
-            :desc
-          end
+        value = attribute.order(value)
         instance_variable_set "@#{name}", value
       end
       attr_reader name
 
       # Don't use attributes << name, see class_attribute documentation
-      self.attributes += [ name ]
-      self.defaults = defaults.merge(name => default) if default
+      self.attributes += [attribute]
     end
 
-    ASCENDANT_VALUES = [:asc, "asc", 1].freeze
-    DESCENDANT_VALUES = [:desc, "desc", -1].freeze
+    # Describe a given atribute (name, etc) and its options (default, etc)
+    class Attribute
+      ASCENDANT_VALUES = [:asc, 'asc', 1].freeze
+      DESCENDANT_VALUES = [:desc, 'desc', -1].freeze
 
-    def attributes
-      self.class.attributes.map do |attribute|
-        if (attribute_order = send(attribute))
-          [ attribute, attribute_order ]
+      def initialize(name, options)
+        @name = name
+
+        options.each do |option, value|
+          send "#{option}=", value
         end
-      end.compact.to_h
-    end
-    alias to_hash attributes
+      end
 
+      attr_reader :name
+
+      def joins=(joins)
+        @joins = Array(joins)
+      end
+
+      def joins
+        @joins ||= []
+      end
+
+      attr_writer :column
+
+      def column
+        @column ||= name
+      end
+
+      attr_accessor :default
+
+      def default?
+        @default.present?
+      end
+
+      def order(value)
+        if ASCENDANT_VALUES.include?(value)
+          :asc
+        elsif DESCENDANT_VALUES.include?(value)
+          :desc
+        end
+      end
+    end
   end
 end

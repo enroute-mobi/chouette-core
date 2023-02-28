@@ -35,14 +35,12 @@
                 attribute: Proc.new { |n| line_status(n) } \
               ), \
               TableBuilderHelper::Column.new( \
-                key: 'networks.name', \
-                attribute: Proc.new { |n| n.try(:network).try(:name) }, \
-                sortable: false \
+                key: 'network', \
+                attribute: Proc.new { |n| n&.network&.name }, \
               ), \
               TableBuilderHelper::Column.new( \
-                key: 'companies.name', \
+                key: 'company', \
                 attribute: Proc.new { |n| n&.company&.name || "-" }, \
-                sortable: false \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :transport_mode, \

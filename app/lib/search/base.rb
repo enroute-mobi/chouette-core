@@ -99,7 +99,7 @@ module Search
     end
 
     def query
-      raise "Not yet implemented"
+      raise 'Not yet implemented'
     end
 
     def collection
@@ -113,7 +113,7 @@ module Search
 
     def order
       # Use the local/specific Order class
-      @order ||= self.class.const_get("Order").new
+      @order ||= self.class.const_get('Order').new
     end
 
     attribute :page, type: Integer

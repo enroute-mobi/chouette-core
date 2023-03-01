@@ -218,6 +218,12 @@ ChouetteIhm::Application.routes.draw do
       end
     end
 
+    resources :control_list_runs, controller: :workgroup_control_list_runs, only: %w(show index) do
+      resources :control_runs, only: [] do
+        resources :control_messages, controller: :workgroup_control_messages, only: :index
+      end
+    end
+
     resources :autocomplete, only: %i[lines companies line_providers stop_areas parent_stop_areas stop_area_providers] do
       get :lines, on: :collection, defaults: { format: 'json' }
       get :companies, on: :collection, defaults: { format: 'json' }

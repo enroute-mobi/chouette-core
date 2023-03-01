@@ -19,6 +19,8 @@
           span = 'activerecord.models.export.other'.t.capitalize
         = link_to workgroup_compliance_check_sets_path(workbench.workgroup), class: "list-group-item" do
           span = 'activerecord.models.compliance_check_set.other'.t.capitalize
+        = link_to workgroup_control_list_runs_path(workbench.workgroup), class: "list-group-item" do
+          span = Control::List::Run.model_name.human(count: 2) + ' (bêta)'
         = link_to workgroup_code_spaces_path(workbench.workgroup), class: 'list-group-item' do
           span = 'activerecord.models.code_space.other'.t.capitalize
         = link_to workgroup_document_types_path(workbench.workgroup), class: 'list-group-item' do

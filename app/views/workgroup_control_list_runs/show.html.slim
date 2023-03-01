@@ -1,0 +1,35 @@
+- breadcrumb :workgroup_control_list_run, @workgroup, @control_list_run
+- page_header_content_for @control_list_run
+
+/ PageContent
+.page_content
+  .container-fluid
+    .row
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = simple_block_for @control_list_run, title: t('control_list_run.show.section.information') do |d|
+          = d.attribute :name
+          = d.attribute :workbench, as: :association
+          / = d.attribute :original_control_list, as: :association, link: (workgroup_control_list_run_path(@workgroup, @control_list_run.original_control_list) if @control_list_run.original_control_list)
+          = d.attribute :referential, as: :association, link: (referential_path(@control_list_run.referential) if @control_list_run.referential)
+          = d.attribute :user_status, value: operation_user_status(@control_list_run)
+
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = simple_block_for @control_list_run, title: t('control_list_run.show.section.processing') do |d|
+          = d.attribute :created_at, as: :datetime
+          = d.attribute :created_by, value_method: :creator
+					- unless @control_list_run.status == 'new'
+						= d.attribute :duration, as: :duration
+          = d.attribute :started_at, as: :datetime
+          = d.attribute :ended_at, as: :datetime
+
+
+    .flex.flex-col.items-center.w-full.ml-auto.mr-auto
+      .definition-list.w-full
+        .dl-head
+          = I18n.t('other', scope: 'activerecord.models.control/run').capitalize
+
+      - @control_list_run.control_context_runs.each do |context|
+        = render 'control_context_run', control_context_run: context
+
+      - @control_list_run.control_runs.each do |control_run|
+        = render 'control_run', control_run: control_run, messages_base_url: workgroup_control_list_run_control_run_control_messages_path(@workgroup, @control_list_run, control_run)

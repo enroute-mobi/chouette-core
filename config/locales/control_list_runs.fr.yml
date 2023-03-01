@@ -43,6 +43,7 @@ fr:
         creator: "Créateur"
         original_control_list: "Jeu de contrôles"
         original_control_list_id: "Jeu de contrôles"
+        workbench: "Espace de travail"
         line_ids: Lignes
         referential: "Cible"
         referential_id: "Cible"

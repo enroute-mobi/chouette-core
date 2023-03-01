@@ -10,9 +10,9 @@ module Control
         has_many :controls, -> { order(position: :asc) }, class_name: 'Control::Base', dependent: :delete_all
         has_many :control_contexts, class_name: 'Control::Context', dependent: :destroy
       end
-
-      has_many :control_list_runs, class_name: 'Control::List::Run', foreign_key: :original_control_list_id
     end
+
+    has_many :control_list_runs, class_name: 'Control::List::Run', foreign_key: :original_control_list_id
 
     accepts_nested_attributes_for :controls, allow_destroy: true, reject_if: :all_blank
     accepts_nested_attributes_for :control_contexts, allow_destroy: true, reject_if: :all_blank

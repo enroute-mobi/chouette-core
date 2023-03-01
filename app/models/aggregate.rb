@@ -72,19 +72,15 @@ class Aggregate < ApplicationModel
     end
 
     def aggregate_resourse
-      return @aggregate_resourse if @aggregate_resourse
-
-      new.switch do
-        @aggregate_resourse = Aggregate::Resource.new(
-          priority: priority,
-          workbench_name: workbench.name,
-          referential_creation_date: new.created_at,
-          metrics: {
-            vehicle_journey_count: new.vehicle_journeys.count,
-            overlapping_period_count: overlapping_periods.count
-          }
-        )
-      end
+      @aggregate_resourse ||= Aggregate::Resource.new(
+        priority: priority,
+        workbench_name: workbench.name,
+        referential_creation_date: new.created_at,
+        metrics: {
+          vehicle_journey_count: new.vehicle_journeys.count,
+          overlapping_period_count: overlapping_periods.count
+        }
+      )
     end
 
     def clean!

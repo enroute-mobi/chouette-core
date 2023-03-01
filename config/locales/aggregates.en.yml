@@ -42,6 +42,13 @@ en:
         available_referentials: "Available data sets"
         selected_referentials: "Selected data sets"
         contains_urgent_offer: Handles urgent offer
+      aggregate/resource:
+        workbench_name: "Workbench name"
+        priority: "Priority"
+        vehicle_journey_count: "Vehicle journey count"
+        duration: "Duration"
+        referential_creation_date: "Merged offer"
+        overlapping_period_count: "Cleaned period"
     errors:
       models:
         aggregate:

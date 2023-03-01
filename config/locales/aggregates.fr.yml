@@ -42,6 +42,13 @@ fr:
         available_referentials: "Jeux de données disponibles"
         selected_referentials: "Jeux de données selectionnés"
         contains_urgent_offer: Prise en compte d'une offre urgente
+      aggregate/resource:
+        workbench_name: "Espace de travail"
+        priority: "Priorité"
+        vehicle_journey_count: "Nombre de course"
+        duration: "Duration"
+        referential_creation_date: "Offre finalisée"
+        overlapping_period_count: "Nomber de période nettoyé"
     errors:
       models:
         aggregate:

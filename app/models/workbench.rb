@@ -166,9 +166,14 @@ class Workbench < ApplicationModel
   end
 
   def default_line_provider
-    @default_line_provider ||= line_providers.find_or_initialize_by(name: DEFAULT_PROVIDER_NAME) do |p|
+    @default_line_provider ||= line_providers.first || create_default_line_provide
+  end
+
+  def create_default_line_provider
+    line_providers.find_or_initialize_by(name: DEFAULT_PROVIDER_NAME) do |p|
       p.line_referential_id = workgroup.line_referential_id
       p.short_name = DEFAULT_PROVIDER_SHORT_NAME
+      p.save
     end
   end
 
@@ -191,10 +196,6 @@ class Workbench < ApplicationModel
 
   def create_default_shape_provider
     default_shape_provider.save
-  end
-
-  def create_default_line_provider
-    default_line_provider.save
   end
 
   def create_invitation_code

@@ -108,7 +108,7 @@ class Aggregate < ApplicationModel
         end
       end
 
-      aggregate_resourse.metrics.merge!(duration: duration)
+      aggregate_resourse.metrics.merge!(duration: [ duration.round(2), ' sec' ].join)
 
       self
     end

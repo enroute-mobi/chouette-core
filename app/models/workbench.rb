@@ -166,7 +166,7 @@ class Workbench < ApplicationModel
   end
 
   def default_line_provider
-    @default_line_provider ||= line_providers.first || create_default_line_provide
+    @default_line_provider ||= line_providers.first || create_default_line_provider
   end
 
   def create_default_line_provider

@@ -173,7 +173,6 @@ class Workbench < ApplicationModel
     line_providers.find_or_initialize_by(name: DEFAULT_PROVIDER_NAME) do |p|
       p.line_referential_id = workgroup.line_referential_id
       p.short_name = DEFAULT_PROVIDER_SHORT_NAME
-      p.save
     end
   end
 

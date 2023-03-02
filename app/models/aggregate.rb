@@ -77,7 +77,7 @@ class Aggregate < ApplicationModel
         workbench_name: workbench.name,
         referential_creation_date: new.name,
         metrics: {
-          vehicle_journey_count: referential.vehicle_journeys.count,
+          vehicle_journey_count: new.switch { |n| n.vehicle_journeys.count },
           overlapping_period_count: overlapping_periods.count
         }
       )

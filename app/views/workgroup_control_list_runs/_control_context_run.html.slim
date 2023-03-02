@@ -12,4 +12,4 @@
 				- control_context_run.control_runs.each do |control_run|
 					= render 'control_run',
 					control_run: control_run,
-					messages_base_url: workbench_control_list_run_control_context_run_control_run_control_messages_path(@workbench, @control_list_run, control_context_run, control_run)
+					messages_base_url: workgroup_control_list_run_control_run_control_messages_path(@workgroup, @control_list_run, control_run)

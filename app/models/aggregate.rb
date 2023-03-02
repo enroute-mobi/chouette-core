@@ -68,16 +68,16 @@ class Aggregate < ApplicationModel
     end
 
     def overlapping_periods
-      overlaps.overlapping_periods
+      @overlapping_periods ||= overlaps.overlapping_periods
     end
 
     def aggregate_resourse
       @aggregate_resourse ||= Aggregate::Resource.new(
         priority: priority,
         workbench_name: workbench.name,
-        referential_creation_date: new.created_at,
+        referential_creation_date: new.name,
         metrics: {
-          vehicle_journey_count: new.vehicle_journeys.count,
+          vehicle_journey_count: referential.vehicle_journeys.count,
           overlapping_period_count: overlapping_periods.count
         }
       )
@@ -108,7 +108,7 @@ class Aggregate < ApplicationModel
         end
       end
 
-      aggregate_resourse.metrics.merge!(duration: [ duration.round(2), ' sec' ].join)
+      aggregate_resourse.duration = duration.round
 
       self
     end
@@ -170,6 +170,28 @@ class Aggregate < ApplicationModel
 
     belongs_to :aggregate
     acts_as_list scope: :aggregate
+
+    def decorated_metrics
+      [ vehicle_journey_count, overlapping_period_count ].compact.join(', ')
+    end
+
+    def vehicle_journey_count
+      return unless metrics['vehicle_journey_count'] > 0
+
+      [
+        metrics['vehicle_journey_count'],
+        self.class.tmf(metrics['vehicle_journey_count'] == 1 ? :vehicle_journey : :vehicle_journeys)
+      ].join(' ')
+    end
+
+    def overlapping_period_count
+      return unless metrics['overlapping_period_count'] > 0
+
+      [
+        metrics['overlapping_period_count'],
+        self.class.tmf(metrics['cleaned_period'] == 1 ? :cleaned_period : :cleaned_periods)
+      ].join(' ')
+    end
   end
 
   private

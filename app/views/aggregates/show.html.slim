@@ -28,43 +28,36 @@ ruby:
 					= d.attribute :contains_urgent_offer, value: boolean_icon(@aggregate.contains_urgent_offer?)
       = processing_helper(@aggregate)
 
-    - @aggregate.referentials.each do |referential|
-      - referential.switch do
-        - if @aggregate.resources.any?
-          .col-lg-12
-            = table_builder_2 @aggregate.resources,
-              [ \
-                TableBuilderHelper::Column.new( \
-                  name: Aggregate::Resource.tmf(:workbench_name), \
-                  attribute: Proc.new {|item| item.workbench_name }, \
-                  sortable: false, \
-                ), \
-                TableBuilderHelper::Column.new( \
-                  name: Aggregate::Resource.tmf(:referential_creation_date), \
-                  attribute: Proc.new {|item| item.referential_creation_date }, \
-                  sortable: false, \
-                ), \
-                TableBuilderHelper::Column.new( \
-                  name: Aggregate::Resource.tmf(:priority), \
-                  attribute: Proc.new {|item| item.priority }, \
-                  sortable: false, \
-                ), \
-                TableBuilderHelper::Column.new( \
-                  name: Aggregate::Resource.tmf(:duration), \
-                  attribute: Proc.new {|item| item.metrics['duration'] }, \
-                  sortable: false, \
-                ), \
-                TableBuilderHelper::Column.new( \
-                  name: Aggregate::Resource.tmf(:vehicle_journey_count), \
-                  attribute: Proc.new {|item| item.metrics['vehicle_journey_count'] }, \
-                  sortable: false, \
-                ), \
-                TableBuilderHelper::Column.new( \
-                  name: Aggregate::Resource.tmf(:overlapping_period_count), \
-                  attribute: Proc.new {|item| item.metrics['overlapping_period_count'] }, \
-                  sortable: false, \
-                )\
-              ], cls: 'table'
+    - if @aggregate.resources.any?
+      .col-lg-12
+        = table_builder_2 @aggregate.resources,
+          [ \
+            TableBuilderHelper::Column.new( \
+              name: Aggregate::Resource.tmf(:workbench_name), \
+              attribute: Proc.new {|item| item.workbench_name }, \
+              sortable: false, \
+            ), \
+            TableBuilderHelper::Column.new( \
+              name: Aggregate::Resource.tmf(:referential_creation_date), \
+              attribute: Proc.new {|item| item.referential_creation_date }, \
+              sortable: false, \
+            ), \
+            TableBuilderHelper::Column.new( \
+              name: Aggregate::Resource.tmf(:priority), \
+              attribute: Proc.new {|item| item.priority }, \
+              sortable: false, \
+            ), \
+            TableBuilderHelper::Column.new( \
+              name: Aggregate::Resource.tmf(:duration), \
+              attribute: Proc.new {|item| item.duration }, \
+              sortable: false, \
+            ), \
+            TableBuilderHelper::Column.new( \
+              name: Aggregate::Resource.tmf(:metrics), \
+              attribute: Proc.new { |item| item.decorated_metrics }, \
+              sortable: false, \
+            )\
+          ], cls: 'table'
 
     - if @aggregate.new
       .col-lg-12

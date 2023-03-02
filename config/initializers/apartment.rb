@@ -19,6 +19,7 @@ Apartment.configure do |config|
   #
   config.excluded_models = [
     'Aggregate',
+    'Aggregate::Resource',
     'ApiKey',
     'Calendar',
     'Chouette::LineNoticeMembership',

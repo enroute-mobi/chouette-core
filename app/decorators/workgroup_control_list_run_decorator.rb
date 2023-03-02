@@ -14,15 +14,14 @@ class WorkgroupControlListRunDecorator < AF83::Decorator
   end
 
   define_instance_method :control_list_options do
-		control_list ? [{ id: control_list.id, text: control_list.name }] : []
+    control_list ? [{ id: control_list.id, text: control_list.name }] : []
   end
 
-	define_instance_method :duration do
-		return '-' unless object.started_at
+  define_instance_method :duration do
+    return '-' unless object.started_at
 
-		end_date = object.ended_at.presence || Time.now
+    end_date = object.ended_at.presence || Time.now
 
-		(end_date - object.started_at).minutes
-	end
-
+    (end_date - object.started_at).minutes
+  end
 end

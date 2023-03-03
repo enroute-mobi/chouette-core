@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics/BlockLength
+
 module Chouette
-  class Factory
+  class Factory # rubocop:disable Metrics/ClassLength
     extend Definition
 
     define do
@@ -46,9 +48,8 @@ module Chouette
           end
         end
 
-        model :shape_referential, required: true, singleton: true do
-
-        end
+        model :shape_referential, required: true, singleton: true
+        model :fare_referential, required: true, singleton: true
 
         model :code_space do
           attribute(:short_name) { |n| "code_space_#{n}" }
@@ -255,6 +256,27 @@ module Chouette
                   parent.workbench.workgroup.document_types.create!(name: 'Default', short_name: 'default')
 
                 new_instance.document_type = document_type
+              end
+            end
+          end
+
+          model :fare_provider do
+            attribute(:short_name) { |n| "fare_provider_#{n}" }
+
+            model :fare_product do
+              attribute(:name) { |n| "Fare Product #{n}" }
+            end
+            model :fare_validity do
+              attribute(:name) { |n| "Fare Validity #{n}" }
+              attribute(:expression) { Fare::Validity::Expression::All.new }
+
+              transient :products
+
+              after do
+                products = transient(:products, resolve_instances: true)
+                products = [new_instance.fare_provider.fare_products.create(name: 'Default')] unless products.present?
+
+                new_instance.products = products
               end
             end
           end

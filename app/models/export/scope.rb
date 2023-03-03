@@ -205,7 +205,7 @@ module Export::Scope
     end
 
     def fare_products
-      current_scope.fare_products.where(company: companies)
+      current_scope.fare_products.where(company: companies).or(current_scope.fare_products.where(company: nil))
     end
 
     def fare_validities

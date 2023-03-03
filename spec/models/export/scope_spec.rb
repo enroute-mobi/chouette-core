@@ -141,6 +141,133 @@ RSpec.describe Export::Scope, use_chouette_factory: true do
       end
     end
 
+    describe '#fare_products' do
+      subject { scope.fare_products }
+
+      context 'when no Company is scoped' do
+        let(:context) do
+          Chouette.create do
+            company :exported
+            referential
+            fare_product company: :exported
+          end
+        end
+
+        before { allow(scope).to receive(:companies).and_return([]) }
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'when a Fare Product is associated to a scoped Company' do
+        let(:context) do
+          Chouette.create do
+            company :exported
+            referential
+            fare_product company: :exported
+          end
+        end
+
+        let(:fare_product) { context.fare_product }
+        before { allow(scope).to receive(:companies).and_return([fare_product.company]) }
+
+        it 'includes this Fare Product' do
+          is_expected.to include(fare_product)
+        end
+      end
+
+      context 'when a Fare Product is not associated to a scoped Company' do
+        let(:context) do
+          Chouette.create do
+            referential
+
+            company :exported
+
+            company :not_exported
+            fare_product company: :not_exported
+          end
+        end
+
+        let(:fare_product) { context.fare_product }
+        let(:exported_company) { context.company(:exported) }
+        before { allow(scope).to receive(:companies).and_return([exported_company]) }
+
+        it 'includes this Fare Product' do
+          is_expected.to be_empty
+        end
+      end
+
+      context 'when a Fare Product is not associated to a Company' do
+        let(:context) do
+          Chouette.create do
+            referential
+            company :exported
+            fare_product company: :nil
+          end
+        end
+
+        let(:fare_product) { context.fare_product }
+        let(:exported_company) { context.company(:exported) }
+        before { allow(scope).to receive(:companies).and_return([exported_company]) }
+
+        it 'includes this Fare Product' do
+          is_expected.to include(fare_product)
+        end
+      end
+    end
+
+    describe '#fare_validities' do
+      subject { scope.fare_validities }
+
+      context 'when no Fare Product is scoped' do
+        let(:context) do
+          Chouette.create do
+            referential
+            fare_validity
+          end
+        end
+
+        before { allow(scope).to receive(:fare_products).and_return([]) }
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'when a Fare Validity is associated to a scoped Fare Product' do
+        let(:context) do
+          Chouette.create do
+            referential
+            fare_validity
+          end
+        end
+
+        let(:fare_validity) { context.fare_validity }
+        before { allow(scope).to receive(:companies).and_return(fare_validity.products) }
+
+        it 'includes this Fare Validity' do
+          is_expected.to include(fare_validity)
+        end
+      end
+
+      context 'when a Fare Validity is not associated to a scoped Fare Product' do
+        let(:context) do
+          Chouette.create do
+            referential
+            fare_product :exported
+
+            fare_product :not_exported
+            fare_validity products: [:not_exported]
+          end
+        end
+
+        let(:fare_validity) { context.fare_validity }
+        let(:exported_fare_product) { context.fare_product :exported }
+        before { allow(scope).to receive(:fare_products).and_return([exported_fare_product]) }
+
+        it "doesn't include this Fare Validity" do
+          is_expected.to_not include(fare_validity)
+        end
+      end
+    end
+
     describe '#routing_constraint_zones' do
       subject { scope.routing_constraint_zones }
 

@@ -108,7 +108,7 @@ class Aggregate < ApplicationModel
         end
       end
 
-      aggregate_resourse.duration = duration.round
+      aggregate_resource.duration = duration.round
 
       self
     end
@@ -123,7 +123,7 @@ class Aggregate < ApplicationModel
         measure 'referential_copies' do
           referentials_by_priority.each do |source|
             copy = WorkbenchCopy.new(source, new).copy!
-            resources << copy.aggregate_resourse
+            resources << copy.aggregate_resource
           end
         end
 

@@ -49,7 +49,7 @@ ruby:
             ), \
             TableBuilderHelper::Column.new( \
               name: Aggregate::Resource.tmf(:duration), \
-              attribute: Proc.new { |item| Aggregate::Resource.tmf(:duration_value, count: item.duration) }, \
+              attribute: Proc.new { |item| decorated_duration(item.duration) }, \
               sortable: false, \
             ), \
             TableBuilderHelper::Column.new( \

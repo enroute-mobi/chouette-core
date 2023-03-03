@@ -6,6 +6,10 @@ module AggregatesHelper
     end
   end
 
+  def decorated_duration(duration)
+    Aggregate::Resource.tmf(:duration_value, count: duration)
+  end
+
   def decorated_metrics(metrics)
     Metrics.new(metrics).decorated_metrics
   end

@@ -198,7 +198,7 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
 
     attr_reader :import
     delegate :source, :companies, :create_message, :save_model,
-             :default_company_id=, :default_time_zone, :default_time_zone=, to: :import
+             :default_company=, :default_time_zone, :default_time_zone=, to: :import
 
     def import!
       source.agencies.each do |agency|
@@ -215,7 +215,7 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
 
         save_model company
 
-        self.default_company_id = company.id if default_agency?
+        self.default_company = company if default_agency?
         self.default_time_zone = decorated_agency.time_zone # TODO Company should support real TimeZone object ..
       end
     end
@@ -299,7 +299,7 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
 
   end
 
-  attr_accessor :default_time_zone, :default_company_id
+  attr_accessor :default_time_zone, :default_company
 
   def import_stops
     sorted_stops = source.stops.sort_by { |s| s.parent_station.present? ? 1 : 0 }
@@ -400,8 +400,8 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
         line.number = route.short_name
         line.published_name = route.long_name
 
-        if route.agency_id.blank? && default_company_id
-          line.company_id = default_company_id
+        if route.agency_id.blank? && default_company
+          line.company = default_company
         else
           unless route.agency_id == line.company&.registration_number
             line.company = companies.find_by(registration_number: route.agency_id) if route.agency_id.present?
@@ -1053,11 +1053,12 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
 
     attr_reader :import
 
-    delegate :code_space, :companies, :source, :fare_provider, :index, to: :import
+    delegate :code_space, :companies, :source, :fare_provider, :index, :default_company, to: :import
 
     def import!
       source.fare_attributes.each do |fare_atribute|
-        decorator = Decorator.new(fare_atribute, code_space: code_space, company_scope: companies, fare_provider: fare_provider)
+        decorator = Decorator.new(fare_atribute, code_space: code_space, company_scope: companies,
+                                                 default_company: default_company, fare_provider: fare_provider)
 
         product = decorator.build_or_update
         unless product.save
@@ -1070,15 +1071,16 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
     end
 
     class Decorator < SimpleDelegator
-      def initialize(fare_attribute, code_space: nil, company_scope: nil, fare_provider: nil)
+      def initialize(fare_attribute, code_space: nil, company_scope: nil, default_company: nil, fare_provider: nil)
         super fare_attribute
 
         @code_space = code_space
         @company_scope = company_scope
         @fare_provider = fare_provider
+        @default_company = default_company
       end
 
-      attr_accessor :code_space, :company_scope, :fare_provider
+      attr_accessor :code_space, :company_scope, :fare_provider, :default_company
 
       def build_or_update
         return unless fare_provider
@@ -1101,9 +1103,11 @@ class Import::Gtfs < Import::Base # rubocop:disable Metrics/ClassLength
       end
 
       def company
-        return unless agency_id.present? && company_scope
-
-        company_scope.find_by(registration_number: agency_id)
+        if agency_id.blank?
+          default_company
+        else
+          company_scope&.find_by(registration_number: agency_id)
+        end
       end
 
       def attributes

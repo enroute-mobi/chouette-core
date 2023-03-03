@@ -34,22 +34,22 @@ ruby:
           [ \
             TableBuilderHelper::Column.new( \
               name: Aggregate::Resource.tmf(:workbench_name), \
-              attribute: Proc.new {|item| item.workbench_name }, \
+              attribute: Proc.new { |item| item.workbench_name }, \
               sortable: false, \
             ), \
             TableBuilderHelper::Column.new( \
               name: Aggregate::Resource.tmf(:referential_name), \
-              attribute: Proc.new {|item| item.referential_name }, \
+              attribute: Proc.new { |item| item.referential_name }, \
               sortable: false, \
             ), \
             TableBuilderHelper::Column.new( \
               name: Aggregate::Resource.tmf(:priority), \
-              attribute: Proc.new {|item| item.priority }, \
+              attribute: Proc.new { |item| item.priority }, \
               sortable: false, \
             ), \
             TableBuilderHelper::Column.new( \
               name: Aggregate::Resource.tmf(:duration), \
-              attribute: Proc.new {|item| item.duration }, \
+              attribute: Proc.new { |item| Aggregate::Resource.tmf(:duration_value, count: item.duration) }, \
               sortable: false, \
             ), \
             TableBuilderHelper::Column.new( \

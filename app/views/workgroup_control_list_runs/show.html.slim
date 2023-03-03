@@ -31,4 +31,4 @@
         = render 'control_context_run', control_context_run: context
 
       - @control_list_run.control_runs.each do |control_run|
-        = render 'control_run', control_run: control_run, messages_base_url: workgroup_control_list_run_control_run_control_messages_path(@workgroup, @control_list_run, control_run)
+        = render 'control_list_runs/control_run', control_run: control_run, messages_base_url: workgroup_control_list_run_control_run_control_messages_path(@workgroup, @control_list_run, control_run)

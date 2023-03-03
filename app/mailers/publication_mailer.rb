@@ -21,6 +21,6 @@ class PublicationMailer < ApplicationMailer
   def finished(publication_id, recipient, status=nil)
     @publication = Publication.find(publication_id)
     @status = status || @publication.status
-    mail to: recipient, subject: mail_subject("mailers.#{@publication.class.name.underscore}_mailer.finished.subject")
+    mail to: recipient, subject: mail_subject
   end
 end

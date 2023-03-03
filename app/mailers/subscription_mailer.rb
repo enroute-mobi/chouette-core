@@ -15,6 +15,6 @@ class SubscriptionMailer < ApplicationMailer
 
   def created user_id
     @user = User.find(user_id)
-    mail to: self.class.recipients, subject: mail_subject('mailers.subscription_mailer.created.subject')
+    mail to: self.class.recipients, subject: mail_subject('created')
   end
 end

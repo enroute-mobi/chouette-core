@@ -45,12 +45,14 @@ fr:
       aggregate/resource:
         workbench_name: "Espace de travail"
         priority: "Priorité"
-        vehicle_journey: "Course"
-        vehicle_journeys: "Courses"
+        vehicle_journey_count:
+          one: "%{count} course"
+          other: "%{count} courses"
         duration: "Durée"
         referential_creation_date: "Offre finalisée"
-        cleaned_period: "période nettoyée"
-        cleaned_periods: "périodes nettoyées"
+        overlapping_period_count:
+          one: "%{count} période nettoyée"
+          other: "%{count} périodes nettoyées"
         metrics: "Resources"
     errors:
       models:

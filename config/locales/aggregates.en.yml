@@ -45,12 +45,14 @@ en:
       aggregate/resource:
         workbench_name: "Workbench name"
         priority: "Priority"
-        vehicle_journey: "Vehicle journey(s)"
-        vehicle_journeys: "Vehicle journeys"
+        vehicle_journey_count:
+          one: "%{count} vehicle journey"
+          other: "%{count} vehicle journeys"
         duration: "Duration"
         referential_creation_date: "Merged dataset"
-        cleaned_period: "Cleaned period"
-        cleaned_periods: "Cleaned periods"
+        overlapping_period_count:
+          one: "%{count} cleaned period"
+          other: "%{count} cleaned periods"
         metrics: "Metrics"
     errors:
       models:

@@ -49,7 +49,7 @@ en:
           one: "%{count} vehicle journey"
           other: "%{count} vehicle journeys"
         duration: "Duration"
-        referential_creation_date: "Merged dataset"
+        referential_name: "Merged dataset"
         overlapping_period_count:
           one: "%{count} cleaned period"
           other: "%{count} cleaned periods"

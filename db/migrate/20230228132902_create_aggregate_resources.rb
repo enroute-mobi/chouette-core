@@ -7,7 +7,7 @@ class CreateAggregateResources < ActiveRecord::Migration[5.2]
         t.integer :priority
         t.integer :duration
         t.jsonb :metrics
-        t.string :referential_creation_date
+        t.string :referential_name
         t.references :aggregate
       end
     end

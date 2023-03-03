@@ -49,7 +49,7 @@ fr:
           one: "%{count} course"
           other: "%{count} courses"
         duration: "Durée"
-        referential_creation_date: "Offre finalisée"
+        referential_name: "Offre finalisée"
         overlapping_period_count:
           one: "%{count} période nettoyée"
           other: "%{count} périodes nettoyées"

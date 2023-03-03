@@ -26,6 +26,17 @@ ActiveRecord::Schema.define(version: 2023_02_28_132902) do
     t.integer "priority"
     t.integer "duration"
     t.jsonb "metrics"
+    t.string "referential_name"
+    t.bigint "aggregate_id"
+    t.index ["aggregate_id"], name: "index_aggregate_resources_on_aggregate_id"
+  end
+
+  create_table "aggregate_resources", force: :cascade do |t|
+    t.string "workbench_name"
+    t.integer "position"
+    t.integer "priority"
+    t.integer "duration"
+    t.jsonb "metrics"
     t.string "referential_creation_date"
     t.bigint "aggregate_id"
     t.index ["aggregate_id"], name: "index_aggregate_resources_on_aggregate_id"

@@ -71,8 +71,8 @@ class Aggregate < ApplicationModel
       @overlapping_periods ||= overlaps.overlapping_periods
     end
 
-    def aggregate_resourse
-      @aggregate_resourse ||= Aggregate::Resource.new(
+    def aggregate_resource
+      @aggregate_resource ||= Aggregate::Resource.new(
         priority: priority,
         workbench_name: workbench.name,
         referential_name: new.name,

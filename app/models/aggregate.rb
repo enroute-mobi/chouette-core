@@ -189,7 +189,7 @@ class Aggregate < ApplicationModel
 
       [
         metrics['overlapping_period_count'],
-        self.class.tmf(metrics['cleaned_period'] == 1 ? :cleaned_period : :cleaned_periods)
+        self.class.tmf(metrics['overlapping_period_count'] == 1 ? :cleaned_period : :cleaned_periods)
       ].join(' ')
     end
   end

@@ -54,7 +54,7 @@ ruby:
             ), \
             TableBuilderHelper::Column.new( \
               name: Aggregate::Resource.tmf(:metrics), \
-              attribute: Proc.new { |item| item.decorated_metrics }, \
+              attribute: Proc.new { |item| decorated_metrics(item.metrics) }, \
               sortable: false, \
             )\
           ], cls: 'table'

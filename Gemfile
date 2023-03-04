@@ -6,6 +6,7 @@ git_source(:en_route) { |name| "https://bitbucket.org/enroute-mobi/#{name}.git" 
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.2.8.1'
+gem 'bootsnap', require: false
 
 gem 'health_check', '>= 3.1.0'
 

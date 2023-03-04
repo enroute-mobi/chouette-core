@@ -56,6 +56,8 @@ COPY --from=assets-builder /app/public/packs/ public/packs/
 ARG VERSION
 RUN build.sh docker::whenever docker::version
 
+RUN bundle exec bootsnap precompile --gemfile app/ lib/
+
 VOLUME /app/public/uploads
 
 EXPOSE 3000

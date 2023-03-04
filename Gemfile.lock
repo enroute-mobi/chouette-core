@@ -186,6 +186,8 @@ GEM
       smart_properties
     binding_of_caller (1.0.0)
       debug_inspector (>= 0.0.1)
+    bootsnap (1.16.0)
+      msgpack (~> 1.2)
     builder (3.2.4)
     bulk_insert (1.9.0)
       activerecord (>= 3.2.0)
@@ -828,6 +830,7 @@ DEPENDENCIES
   awesome_print
   better_errors
   binding_of_caller
+  bootsnap
   bulk_insert
   bummr
   bundler-audit

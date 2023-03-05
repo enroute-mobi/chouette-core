@@ -60,6 +60,7 @@ VOLUME /app/public/uploads
 
 EXPOSE 3000
 ENV RAILS_ENV=production RAILS_SERVE_STATIC_FILES=true RAILS_LOG_TO_STDOUT=true
+ENV LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2
 
 ENTRYPOINT ["./script/docker-entrypoint.sh"]
 # Use front by default. async and sync 'modes' are available

@@ -217,7 +217,15 @@ RSpec.describe Workbench, type: :model do
         is_expected.to eq(workbench.line_providers.first)
       end
 
-      it { is_expected.to have_attributes(short_name: 'default') }
+      it { is_expected.to have_attributes(short_name: 'default', name: 'default') }
+
+      context "when default line provider name is changed" do
+        before { subject.update name: 'line_provider', short_name: 'line_provider' }
+
+        it "must find the default line provider" do
+          is_expected.to eq(workbench.line_providers.first)
+        end
+      end
     end
 
     describe "default Stop Area Provider" do

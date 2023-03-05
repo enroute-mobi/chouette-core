@@ -12,7 +12,7 @@ class ReferentialOverlaps
   attr_accessor :priority
 
   def overlapping_periods
-    Query.new(source, target, max_priority: priority)
+    @query ||= Query.new(source, target, max_priority: priority)
   end
 
   class Query

@@ -8,6 +8,7 @@ class Aggregate < ApplicationModel
 
   belongs_to :workgroup
   has_many :compliance_check_sets, -> { where(parent_type: "Aggregate") }, foreign_key: :parent_id, dependent: :destroy
+  has_many :resources, class_name: 'Aggregate::Resource'
 
   validates :workgroup, presence: true
 
@@ -67,7 +68,19 @@ class Aggregate < ApplicationModel
     end
 
     def overlapping_periods
-      overlaps.overlapping_periods
+      @overlapping_periods ||= overlaps.overlapping_periods
+    end
+
+    def aggregate_resource
+      @aggregate_resource ||= Aggregate::Resource.new(
+        priority: priority,
+        workbench_name: workbench.name,
+        referential_name: new.name,
+        metrics: {
+          vehicle_journey_count: new.switch { |n| n.vehicle_journeys.count },
+          overlapping_period_count: overlapping_periods.count
+        }
+      )
     end
 
     def clean!
@@ -85,13 +98,19 @@ class Aggregate < ApplicationModel
     measure :clean!
 
     def copy!
-      measure :copy, workbench_id: workbench.id do
-        Rails.logger.tagged("Workbench ##{workbench.id}") do
-          Rails.logger.info "Aggregate Referential##{referential.id} with priority #{priority}"
-          clean!
-          ReferentialCopy.new(source: referential, target: new, source_priority: priority).copy!
+      duration = ::Benchmark.realtime do
+        measure :copy, workbench_id: workbench.id do
+          Rails.logger.tagged("Workbench ##{workbench.id}") do
+            Rails.logger.info "Aggregate Referential##{referential.id} with priority #{priority}"
+            clean!
+            ReferentialCopy.new(source: referential, target: new, source_priority: priority).copy!
+          end
         end
       end
+
+      aggregate_resource.duration = duration.round
+
+      self
     end
 
   end
@@ -103,7 +122,8 @@ class Aggregate < ApplicationModel
 
         measure 'referential_copies' do
           referentials_by_priority.each do |source|
-            WorkbenchCopy.new(source, new).copy!
+            copy = WorkbenchCopy.new(source, new).copy!
+            resources << copy.aggregate_resource
           end
         end
 
@@ -143,6 +163,13 @@ class Aggregate < ApplicationModel
   def handle_queue
     concurent_operations.pending.where('created_at < ?', created_at).each(&:cancel!)
     super
+  end
+
+  class Resource < ApplicationModel
+    self.table_name = 'aggregate_resources'
+
+    belongs_to :aggregate
+    acts_as_list scope: :aggregate
   end
 
   private

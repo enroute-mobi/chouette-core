@@ -28,22 +28,36 @@ ruby:
 					= d.attribute :contains_urgent_offer, value: boolean_icon(@aggregate.contains_urgent_offer?)
       = processing_helper(@aggregate)
 
-    .col-lg-12
-      = table_builder_2 @aggregate.referentials,
-        [ \
-          TableBuilderHelper::Column.new( \
-            name: I18n.t('aggregates.show.finalized_offer'), \
-            attribute: Proc.new do |item| \
-              link_to_if_i_can(decorate_referential_name(item), item) \
-            end, \
-            sortable: false \
-          ), \
-          TableBuilderHelper::Column.new( \
-            name: Workbench.ts.capitalize, \
-            attribute: Proc.new {|item| item.workbench.name }, \
-            sortable: false, \
-          )\
-        ], cls: 'table'
+    - if @aggregate.resources.any?
+      .col-lg-12
+        = table_builder_2 @aggregate.resources,
+          [ \
+            TableBuilderHelper::Column.new( \
+              name: Aggregate::Resource.tmf(:workbench_name), \
+              attribute: Proc.new { |item| item.workbench_name }, \
+              sortable: false, \
+            ), \
+            TableBuilderHelper::Column.new( \
+              name: Aggregate::Resource.tmf(:referential_name), \
+              attribute: Proc.new { |item| item.referential_name }, \
+              sortable: false, \
+            ), \
+            TableBuilderHelper::Column.new( \
+              name: Aggregate::Resource.tmf(:priority), \
+              attribute: Proc.new { |item| item.priority }, \
+              sortable: false, \
+            ), \
+            TableBuilderHelper::Column.new( \
+              name: Aggregate::Resource.tmf(:duration), \
+              attribute: Proc.new { |item| decorated_duration(item.duration) }, \
+              sortable: false, \
+            ), \
+            TableBuilderHelper::Column.new( \
+              name: Aggregate::Resource.tmf(:metrics), \
+              attribute: Proc.new { |item| decorated_metrics(item.metrics) }, \
+              sortable: false, \
+            )\
+          ], cls: 'table'
 
     - if @aggregate.new
       .col-lg-12

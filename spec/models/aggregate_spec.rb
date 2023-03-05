@@ -12,7 +12,7 @@ RSpec.describe Aggregate, type: :model do
               vehicle_journey time_tables: [:time_table_1]
             end
           end
-          workbench do
+          workbench :other_workbench do
             referential lines: [ :line ], periods: [ Date.parse("2030-06-01")..Date.parse("2030-06-30") ] do
               time_table :time_table_2, periods: [ Date.parse("2030-06-01")..Date.parse("2030-06-30") ]
               vehicle_journey time_tables: [:time_table_2]
@@ -22,6 +22,8 @@ RSpec.describe Aggregate, type: :model do
       end
 
       let(:workbench) { context.workbench(:workbench) }
+      let(:other_workbench) { context.workbench(:other_workbench) }
+
       let(:aggregate) { Aggregate.create! workgroup: context.workgroup, referentials: context.referentials }
 
       let(:workbench_priority) { 1 }
@@ -30,6 +32,39 @@ RSpec.describe Aggregate, type: :model do
       context "after aggregate" do
 
         before { aggregate.aggregate! }
+
+        describe "#aggregate_resources" do
+          let(:aggregate_resources) { aggregate.reload.resources }
+          let(:workbench_names) { aggregate_resources.map(&:workbench_name) }
+          let(:first_vehicle_journey_count) { context.referentials.first.switch { |ref| ref.vehicle_journeys.count } }
+          let(:last_vehicle_journey_count) { context.referentials.last.switch { |ref| ref.vehicle_journeys.count } }
+
+          it "aggregate resources contain workbench names" do
+            expect(workbench_names).to match_array([ workbench.name, other_workbench.name ])
+          end
+
+          it "calculate metrics for the first referential" do
+            expect(aggregate_resources).to include(
+              an_object_having_attributes(
+                metrics: {
+                  'vehicle_journey_count' => first_vehicle_journey_count,
+                  'overlapping_period_count' => 0
+                }
+              )
+            )
+          end
+
+          it "calculate metrics for the last referential" do
+            expect(aggregate_resources).to include(
+              an_object_having_attributes(
+                metrics: {
+                  'vehicle_journey_count' => last_vehicle_journey_count,
+                  'overlapping_period_count' => 0
+                }
+              )
+            )
+          end
+        end
 
         context "the aggregated dataset" do
           subject(:aggregated_dataset) { aggregate.new }

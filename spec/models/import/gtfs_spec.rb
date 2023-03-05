@@ -1216,4 +1216,34 @@ RSpec.describe Import::Gtfs do
       end
     end
   end
+
+  describe Import::Gtfs::FareProducts::Decorator do
+    subject(:decorator) { described_class.new(fare_attribute) }
+
+    let(:fare_attribute) { GTFS::FareAttribute.new }
+
+    describe '#company' do
+      subject { decorator.company }
+
+      context 'when no agency_id is defined' do
+        before { allow(decorator).to receive(:default_company).and_return(double('Default Company')) }
+        it { is_expected.to eq(decorator.default_company) }
+      end
+
+      context 'when agency_id is defined' do
+        before { fare_attribute.agency_id = 'dummy' }
+
+        before do
+          decorator.company_scope = company_scope
+          allow(company_scope).to receive(:find_by)
+            .with(registration_number: decorator.agency_id)
+            .and_return(company)
+        end
+        let(:company_scope) { double }
+        let(:company) { double('Company with agency_id as registration_number') }
+
+        it { is_expected.to eq(company) }
+      end
+    end
+  end
 end

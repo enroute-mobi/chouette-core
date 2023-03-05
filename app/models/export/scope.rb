@@ -203,6 +203,15 @@ module Export::Scope
     def routing_constraint_zones
       current_scope.routing_constraint_zones.where(route: routes)
     end
+
+    def fare_products
+      current_scope.fare_products.where(company: companies).or(current_scope.fare_products.where(company: nil))
+    end
+
+    def fare_validities
+      # TODO: we should filter Validities according zones & exported stop areas
+      current_scope.fare_validities.by_products(fare_products)
+    end
   end
 
   # Selects VehicleJourneys in a Date range

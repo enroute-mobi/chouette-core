@@ -15,5 +15,11 @@ module Fare
       has_many :fare_products, class_name: 'Fare::Product'
       has_many :fare_validities, class_name: 'Fare::Validity'
     end
+
+    before_validation :define_fare_referential, on: :create
+
+    def define_fare_referential
+      self.fare_referential ||= workbench&.fare_referential
+    end
   end
 end

@@ -18,6 +18,7 @@ class Workbench < ApplicationModel
   belongs_to :line_referential
   belongs_to :stop_area_referential
   has_one :shape_referential, through: :workgroup
+  has_one :fare_referential, through: :workgroup
   belongs_to :output, class_name: 'ReferentialSuite', dependent: :destroy
   belongs_to :locked_referential_to_aggregate, class_name: 'Referential'
 

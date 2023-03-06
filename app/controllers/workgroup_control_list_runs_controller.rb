@@ -50,12 +50,10 @@ class WorkgroupControlListRunsController < ChouetteController
   private
 
   def init_facade
-    object = begin
-      control_list_run
-    rescue StandardError
-      Control::List::Run.new(workgroup: workgroup)
+    @facade ||= begin
+      display_referential_links = control_list_run.referential.present? && policy(control_list_run.referential).show?
+      OperationRunFacade.new(control_list_run, display_referential_links)
     end
-    @facade ||= OperationRunFacade.new(object)
   end
 
   alias facade init_facade

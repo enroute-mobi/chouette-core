@@ -722,6 +722,22 @@ class Referential < ApplicationModel
     merged_at.present?
   end
 
+  def referential_suite?
+    referential_suite.present?
+  end
+
+  def editable?
+    !referential_suite? && !merged?
+  end
+
+  def aggregate_output?
+    referential_suite? && !merged?
+  end
+
+  def merge_output?
+    merged?
+  end
+
   def self.not_merged
     where merged_at: nil
   end

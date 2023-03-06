@@ -16,7 +16,7 @@ class Import::Resource < ApplicationModel
   end
 
   def next_step
-    return if workbench.workgroup.processing_rules.exists?
+    return if workgroup.processing_rules.exists? || workbench.processing_rules.exists?
     
     Rails.logger.info "#{self.class.name} ##{child_import.id}: next_step"
 

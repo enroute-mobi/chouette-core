@@ -1551,11 +1551,10 @@ class Export::NetexGeneric < Export::Base
 
   class PeriodDecorator < SimpleDelegator
 
-    attr_accessor :day_type_ref, :time_table, :validity_period
-    def initialize(period, day_type_ref, validity_period=nil)
+    attr_accessor :day_type_ref, :time_table
+    def initialize(period, day_type_ref)
       super period
       @day_type_ref = day_type_ref
-      @validity_period = validity_period
 
       @time_table = period.time_table
     end
@@ -1603,17 +1602,6 @@ class Export::NetexGeneric < Export::Base
       Netex::Reference.new(operating_period_id, type: 'OperatingPeriodRef')
     end
 
-    def period_start
-      return __getobj__.period_start unless validity_period
-
-      [ __getobj__.period_start, validity_period.min ].max
-    end
-
-    def period_end
-      return __getobj__.period_end unless validity_period
-
-      [ __getobj__.period_end, validity_period.max ].min
-    end
   end
 
   class DateDecorator < SimpleDelegator
@@ -1709,10 +1697,28 @@ class Export::NetexGeneric < Export::Base
         decorated_periods.map(&:operating_period) + decorated_periods.map(&:day_type_assignment)
       end
 
+      def candidate_periods
+        @candidate_periods ||= periods.select { |period| period.intersect?(validity_period) }
+      end
+
       def decorated_periods
-        @decorated_periods ||= periods.map do |period|
-          PeriodDecorator.new(period, day_type_ref, validity_period)
+        @decorated_periods ||= candidate_periods.map do |period|
+          PeriodDecorator.new(period, day_type_ref)
         end
+      end
+
+      def candidate_excluded_dates
+        dates.excluded.select do |date|
+          candidate_periods.any? { |period| period.include? date.date }
+        end
+      end
+
+      def candidate_included_dates
+        dates.included.select { |date| validity_period.include? date.date }
+      end
+
+      def candidate_dates
+        candidate_excluded_dates + candidate_included_dates
       end
 
       def exported_dates
@@ -1720,7 +1726,7 @@ class Export::NetexGeneric < Export::Base
       end
 
       def decorated_dates
-        @decorated_dates ||= dates.map do |date|
+        @decorated_dates ||= candidate_dates.map do |date|
           DateDecorator.new(date, day_type_ref)
         end
       end

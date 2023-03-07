@@ -1207,7 +1207,7 @@ RSpec.describe Export::NetexGeneric do
           expect(ops_count).to eq(time_table.periods.count)
         end
 
-        context 'when a validity period exsite' do
+        context 'when a validity period exists' do
           let(:validity_period) { '2023-02-10'.to_date..'2023-02-14'.to_date }
 
           let(:context) do
@@ -1219,12 +1219,25 @@ RSpec.describe Export::NetexGeneric do
           let(:referential) { context.referential }
 
           let(:decorated_time_table) { Export::NetexGeneric::TimeTables::Decorator.new(time_table, validity_period) }
-          subject { decorated_time_table.exported_periods.find { |ep| ep&.from_date == '2023-02-10'.to_date && ep&.to_date == '2023-02-14'.to_date }.present? }
 
           before { referential.switch }
 
-          it 'should use validity period to calculate OperatingPeriod' do
-            is_expected.to be_truthy
+          context 'when an period intersects the validity period' do
+            subject { decorated_time_table.exported_periods.find { |ep| ep&.from_date == '2023-02-01'.to_date && ep&.to_date == '2023-02-15'.to_date }.present? }
+
+            it 'should use period with the rang 2023-02-01..2023-02-15' do
+              is_expected.to be_truthy
+            end
+          end
+
+          context 'when an period does not intersect the validity period' do
+            let(:validity_period) { '2023-01-10'.to_date..'2023-01-14'.to_date }
+
+            subject { decorated_time_table.exported_periods.present? }
+
+            it 'should skip period with the rang 2023-02-01..2023-02-15' do
+              is_expected.to be_falsy
+            end
           end
         end
       end
@@ -1232,6 +1245,66 @@ RSpec.describe Export::NetexGeneric do
       describe '#exported_dates' do
         it 'should have have the same number of dates' do
           expect(time_table.dates.count).to eq(decorated_tt.exported_dates.count)
+        end
+
+        context 'when a date and a validity period exist' do
+          let(:validity_period) { '2023-02-10'.to_date..'2023-02-14'.to_date }
+
+          let(:context) do
+            Chouette.create do
+              time_table periods: ['2023-02-01'.to_date..'2023-02-15'.to_date], int_day_types: 272, start_date: '2023-02-01', end_date: '2023-02-15'
+            end
+          end
+          let(:time_table) { context.time_table }
+          let(:referential) { context.referential }
+
+          let(:decorated_time_table) { Export::NetexGeneric::TimeTables::Decorator.new(time_table, validity_period) }
+
+          before { referential.switch }
+
+          context 'when an included date is in validity period' do
+            let(:date) { '2023-02-10'.to_date }
+            before { time_table.dates.create(date: date, in_out: true) }
+
+            subject { decorated_time_table.exported_dates.find { |exported_date| exported_date.date == date }.present? }
+
+            it 'should export the included date' do
+              is_expected.to be_truthy
+            end
+          end
+
+          context 'when an included date is not in validity period' do
+            let(:date) { '2023-02-09'.to_date }
+            before { time_table.dates.create(date: date, in_out: true) }
+
+            subject { decorated_time_table.exported_dates.find { |exported_date| exported_date.date == date }.present? }
+
+            it 'should not export the included date' do
+              is_expected.to be_falsy
+            end
+          end
+
+          context 'when a excluded date is in exported period' do
+            let(:date) { '2023-02-09'.to_date }
+            before { time_table.dates.create(date: date, in_out: false) }
+
+            subject { decorated_time_table.exported_dates.find { |exported_date| exported_date.date == date }.present? }
+
+            it 'should export the excluded date' do
+              is_expected.to be_truthy
+            end
+          end
+
+          context 'when an excluded date is not in validity period' do
+            let(:date) { '2023-01-01'.to_date }
+            before { time_table.dates.create(date: date, in_out: true) }
+
+            subject { decorated_time_table.exported_dates.find { |exported_date| exported_date.date == date }.present? }
+
+            it 'should not export the excluded date' do
+              is_expected.to be_falsy
+            end
+          end
         end
       end
     end

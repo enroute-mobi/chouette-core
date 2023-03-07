@@ -8,6 +8,9 @@ en:
     show:
       title: "Aggregated offer %{name}"
       finalized_offer: "Merged offer"
+      table_headers:
+        aggregated_referential: Aggregated dataset
+        workgroup_control_list_run: Control list (Workgroup)
     actions:
       show: See
       create: Aggregate data sets

@@ -8,6 +8,9 @@ fr:
     show:
       title: "Agrégation de l'offre %{name}"
       finalized_offer: "Offre finalisée"
+      table_headers:
+        aggregated_referential: Offre agrégée
+        workgroup_control_list_run: Jeu de contrôles (Groupe de travail)
     actions:
       show: Consulter
       create: Agréger l'Offre

@@ -1,22 +1,6 @@
 - breadcrumb :aggregate, @aggregate
 - page_header_content_for @aggregate
 
-ruby:
- after_controls = Workgroup.compliance_control_sets_for_workgroup.map do |key, label|
-   TableBuilderHelper::Column.new(
-     name: label,
-     attribute: lambda do |item|
-       ccs = @aggregate.compliance_check_set(key)
-       ccs ? operation_status(ccs.status, verbose: true) : '-'
-     end,
-     sortable: false,
-     link_to: lambda do |item|
-       ccs = @aggregate.compliance_check_set(key)
-       ccs && [@aggregate.workgroup, ccs]
-    end
-    )
-  end
-
 .page_content
   .container-fluid
     .row
@@ -58,17 +42,29 @@ ruby:
               sortable: false, \
             )\
           ], cls: 'table'
+    
+    - if @workgroup.has_legacy_processing_rules?
+      = render 'table_with_legacy_controls'
+    - else 
+      - if @aggregate.new
+        .col-lg-12
+          = table_builder_2 [@aggregate.new],
+            [ \
+              TableBuilderHelper::Column.new( \
+                name: t('.table_headers.aggregated_referential'),
+                attribute: lambda do |referential| \
+                  link_to(decorate_referential_name(referential), referential_path(referential)) \
+                end,
+                sortable: false,
+              ),
+              TableBuilderHelper::Column.new( \
+                name: t('.table_headers.workgroup_control_list_run'),
+                attribute: lambda do |referential| \
+                  workgroup_control_list_run = @processing&.processed; \
+                  link_to_if_table(workgroup_control_list_run.present?, operation_status(workgroup_control_list_run&.user_status, verbose: true), [@workbench, workgroup_control_list_run]) \
+                end,
+                sortable: false,
+              ),
+            ],
+            model: Referential, cls: 'table'
 
-    - if @aggregate.new
-      .col-lg-12
-        = table_builder_2 Referential.where(id: @aggregate.new),
-          [ \
-            TableBuilderHelper::Column.new( \
-              name: @aggregate.class.tmf(:new), \
-              attribute: 'name', \
-              sortable: false, \
-              link_to: lambda do |item| \
-                referential_path(item) \
-              end \
-            ), *after_controls \
-          ], cls: 'table'

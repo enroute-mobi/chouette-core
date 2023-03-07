@@ -8,6 +8,8 @@ class AggregatesController < ChouetteController
 
   def show
     @aggregate = @aggregate.decorate(context: {workgroup: parent})
+    @workbench = workgroup.owner_workbench
+    @processing = processing
   end
 
   def rollback
@@ -17,6 +19,13 @@ class AggregatesController < ChouetteController
   end
 
   private
+
+  alias_method :workgroup, :parent
+
+  # Only one processing for aggregate
+  def processing
+    @aggregate.processings.first
+  end
 
   def build_resource
     super.tap do |aggregate|

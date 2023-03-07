@@ -1,0 +1,29 @@
+ruby:
+ after_controls = Workgroup.compliance_control_sets_for_workgroup.map do |key, label|
+   TableBuilderHelper::Column.new(
+     name: label,
+     attribute: lambda do |item|
+       ccs = @aggregate.compliance_check_set(key)
+       ccs ? operation_status(ccs.status, verbose: true) : '-'
+     end,
+     sortable: false,
+     link_to: lambda do |item|
+       ccs = @aggregate.compliance_check_set(key)
+       ccs && [@aggregate.workgroup, ccs]
+    end
+    )
+  end
+
+- if @aggregate.new
+  .col-lg-12
+    = table_builder_2 Referential.where(id: @aggregate.new),
+      [ \
+        TableBuilderHelper::Column.new( \
+          name: @aggregate.class.tmf(:new), \
+          attribute: 'name', \
+          sortable: false, \
+          link_to: lambda do |item| \
+            referential_path(item) \
+          end \
+        ), *after_controls \
+      ], cls: 'table'

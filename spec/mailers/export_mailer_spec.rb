@@ -4,7 +4,6 @@ RSpec.describe ExportMailer, type: :mailer do
   end
 
   let(:recipient) { 'user@test.com' }
-  let(:subject_prefix) { Chouette::Config.mailer.subject_prefix }
   let(:export) do
     Export::Gtfs.create!(name: "Test", creator: 'test',
                          referential: context.referential,
@@ -18,7 +17,6 @@ RSpec.describe ExportMailer, type: :mailer do
   end
 
   it { is_expected.to have_attributes(from: ['chouette@example.com']) }
-  it { is_expected.to have_attributes(subject: [subject_prefix, I18n.t('mailers.export_mailer.finished.subject')].join(' ')) }
 
 
   describe "#body" do

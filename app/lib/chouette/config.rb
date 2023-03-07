@@ -82,9 +82,7 @@ module Chouette
       def from
         return TEST_FROM if env.test?
 
-        env.string('MAILER_FROM') ||
-          env.string('MAIL_FROM') ||
-          DEFAULT_FROM
+        env.string('MAILER_FROM') || env.string('MAIL_FROM')
       end
     end
 

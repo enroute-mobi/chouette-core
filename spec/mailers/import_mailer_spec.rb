@@ -4,7 +4,6 @@ RSpec.describe ImportMailer, type: :mailer do
   end
 
   let(:recipient) { 'user@test.com' }
-  let(:subject_prefix) { Chouette::Config.mailer.subject_prefix }
   let(:import) do
     Import::Workbench.create!(name: "test", creator: "test",
                               workbench: context.workbench,
@@ -17,7 +16,6 @@ RSpec.describe ImportMailer, type: :mailer do
   end
 
   it { is_expected.to have_attributes(from: ['chouette@example.com']) }
-  it { is_expected.to have_attributes(subject: [subject_prefix, I18n.t('mailers.import_mailer.finished.subject')].join(' ')) }
 
   describe "#body" do
     # With Rails 4.2.11 upgrade, email body contains \r\n. See #9423

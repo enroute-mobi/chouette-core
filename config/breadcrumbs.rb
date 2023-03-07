@@ -195,6 +195,16 @@ crumb :new_control_list_run do |workbench|
   parent :control_list_runs, workbench
 end
 
+crumb :workgroup_control_list_runs do |workgroup|
+  link I18n.t('control/list/runs.index.title'), workgroup_control_list_runs_path(workgroup)
+  parent :workgroup, workgroup
+end
+
+crumb :workgroup_control_list_run do |workgroup, control_list_run|
+  link breadcrumb_name(control_list_run), workgroup_control_list_run_path(workgroup, control_list_run)
+  parent :workgroup_control_list_runs, workgroup
+end
+
 crumb :merge do |merge|
   link breadcrumb_name(merge), workbench_merge_path(merge.workbench, merge)
   parent :merges, merge.workbench

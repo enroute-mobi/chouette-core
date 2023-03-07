@@ -28,4 +28,4 @@
       = render "control_options/#{control_run.control_class.short_type}", d: d, control_run: control_run
 
   .control_messages x-show="showMessages" x-transition.delay.50ms=""
-    = render 'control_messages', messages: control_run.control_messages.paginate(page: 1, per_page: 15)
+    = render 'control_list_runs/control_messages', messages: control_run.control_messages.paginate(page: 1, per_page: 15)

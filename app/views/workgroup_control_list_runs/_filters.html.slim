@@ -1,0 +1,24 @@
+= simple_form_for @search, url: request.path, method: "GET", html: { class: 'form form-filter' }  do |f|
+  .ffg-row
+    .input-group.search_bar class=filter_item_class(params[:search], :name)
+      = f.input :name, label: false, class: 'form-control', placeholder: I18n.t('control_list_run.filters.name'), wrapper_html: {class: 'mb-0'}
+      span.input-group-btn
+        button.btn.btn-default#search_btn type='submit'
+          span.fa.fa-search
+
+  .ffg-row
+    .form-group.togglable class=filter_item_class(params[:search], :statuses)
+      = f.label :statuses, required: false, class: 'control-label'
+      = f.input :statuses, as: :check_boxes, collection: @search.candidate_statuses.map(&:slug), label: false, label_method: lambda{|slug| ("<span>" + operation_status(slug, verbose: true) + "</span>").html_safe}, wrapper_html: { class: "checkbox_list"}
+    .form-group.togglable class=filter_item_class(params[:search], :workbench_ids)
+      = f.label :workbench_ids, class: 'control-label'
+      = f.input :workbench_ids, as: :check_boxes, collection: @search.candidate_workbenches.order('name'), label: false, label_method: lambda{|workbench| ("<span>" + workbench.name + "</span>").html_safe}, value_method: lambda{|workbench| workbench.id.to_s}, wrapper_html: { class: "checkbox_list"}
+    = f.input :start_date, as: :date_picker
+    = f.input :end_date, as: :date_picker
+
+  .actions
+    .flex
+      = f.label :per_page, class: 'control-label'
+      = f.input :per_page, as: :per_page, wrapper_html: {class: "ml-3"}, label: false
+    = link_to t('actions.erase'), workgroup_control_list_runs_path(@workgroup), class: 'btn btn-link'
+    = f.submit t('actions.filter'), class: 'btn btn-default'

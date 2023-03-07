@@ -186,15 +186,21 @@ module OperationSupport
   end
 
   def failed!
+    internal_failed
+    new&.failed!
+  end
+  
+  # Uses when a Control List Run or Macro List Run report error
+  def internal_failed
     update_columns status: :failed, ended_at: Time.now
 
     workbench = try(:workbench) || try(:workbench_for_notifications)
     workbench&.notification_center&.notify(self)
 
-    new&.failed!
     referentials.each(&:active!)
     run_pending_operations
   end
+  alias failed_on_processings internal_failed
 
   def worker_died
     failed!

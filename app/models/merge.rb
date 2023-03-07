@@ -106,7 +106,7 @@ class Merge < ApplicationModel
           continue_after_processings = processor.before(referentials)
           # Check processed status and stop merge if one failed
           unless continue_after_processings
-            failed!
+            failed_on_processings
             return
           end
         end
@@ -129,7 +129,7 @@ class Merge < ApplicationModel
           continue_after_processings = processor.after([new])
           # Check processed status and stop merge if one failed
           unless continue_after_processings
-            failed!
+            failed_on_processings
             return
           end
         end

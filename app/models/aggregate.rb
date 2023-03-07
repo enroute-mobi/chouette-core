@@ -132,7 +132,7 @@ class Aggregate < ApplicationModel
           continue_after_processings = processor.after([new])
           # Check processed status and stop aggregate if one failed
           unless continue_after_processings
-            failed!
+            failed_on_processings
             return
           end
         end

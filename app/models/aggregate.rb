@@ -76,7 +76,7 @@ class Aggregate < ApplicationModel
       @aggregate_resource ||= Aggregate::Resource.new(
         priority: priority,
         workbench_name: workbench.name,
-        referential_name: new.name,
+        referential_name: referential.name,
         metrics: {
           vehicle_journey_count: new.switch { |n| n.vehicle_journeys.count },
           overlapping_period_count: overlapping_periods.count

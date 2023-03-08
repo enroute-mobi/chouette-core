@@ -52,7 +52,7 @@ class WorkgroupControlListRunsController < ChouetteController
   def init_facade
     @facade ||= begin
       display_referential_links = control_list_run.referential.present? && policy(control_list_run.referential).show?
-      OperationRunFacade.new(control_list_run, display_referential_links)
+      OperationRunFacade.new(control_list_run, display_referential_links: display_referential_links)
     end
   end
 

@@ -76,8 +76,8 @@ class ControlListRunsController < ChouetteController
   def init_facade
     object = control_list_run rescue Control::List::Run.new(workbench: workbench)
     display_referential_links = object.referential.present? && policy(object.referential).show?
-    
-    @facade ||= OperationRunFacade.new(object, display_referential_links)
+
+    @facade ||= OperationRunFacade.new(object, display_referential_links: display_referential_links)
   end
 
   alias facade init_facade

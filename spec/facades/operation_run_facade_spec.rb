@@ -2,7 +2,7 @@ describe OperationRunFacade do
 	let(:workbench) { instance_double('Workbench', id: 1) }
 	let(:macro_list_run) { instance_double('Macro::List::Run', id: 2, workbench: workbench) }
 	let(:macro_run) { instance_double('Macro::Dummy::Run', id: 3) }
-	let(:facade) { OperationRunFacade.new(macro_list_run, true)}
+	let(:facade) { OperationRunFacade.new(macro_list_run, display_referential_links: true)}
 
 	describe '#message_table_params' do
 		it 'should have 3 columns' do

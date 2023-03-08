@@ -5,7 +5,7 @@ class OperationRunFacade
 
   attr_reader :resource, :workbench, :display_referential_links
 
-  def initialize(resource, display_referential_links)
+  def initialize(resource, display_referential_links: true)
     @resource = resource
     @display_referential_links = display_referential_links
     @workbench = resource.workbench

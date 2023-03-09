@@ -7,8 +7,8 @@
     .flex.items-center.border-r.border-white
       = f.input :text, label: false, wrapper_html: {class: "w-2/5"}
     .flex.items-center.border-t.border-r.border-white
-      = f.input :company_id, placeholder: I18n.t('simple_form.placeholders.search.company_id'), as: :tom_select, collection: @search.candidate_companies.map { |l| {id: l.id, text: l.name } }, wrapper_html: {class: "w-2/6"}
-      = f.input :line_id, placeholder: I18n.t('simple_form.placeholders.search.line_id'), as: :tom_select, collection: @search.candidate_lines.map { |l| {id: l.id, text: l.name } }, wrapper_html: {class: "w-2/6"}
+      = f.input :company_id, placeholder: I18n.t('simple_form.placeholders.search.company_id'), as: :tom_select, collection: @search.candidate_companies.map { |l| {id: l.id, text: l.display_name } }, wrapper_html: {class: "w-2/6"}
+      = f.input :line_id, placeholder: I18n.t('simple_form.placeholders.search.line_id'), as: :tom_select, collection: @search.candidate_lines.map { |l| {id: l.id, text: l.display_name } }, wrapper_html: {class: "w-2/6"}
     .flex.items-center.border-t.border-white
       = f.label :timetable, class: 'pl-6 whitespace-nowrap'
       = f.input :start_date, as: :date_picker, wrapper_html: {class: "w-1/3"}

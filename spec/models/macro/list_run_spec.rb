@@ -10,7 +10,6 @@ RSpec.describe Macro::List::Run do
 
         referential :target
         stop_area
-        line
 
         macro_list :original_macro_list do
           macro type: 'Macro::Dummy', target_model: 'StopArea', expected_result: 'error', target_model: 'StopArea'
@@ -23,7 +22,7 @@ RSpec.describe Macro::List::Run do
 
     let(:macro_list_run) { context.macro_list_run }
     let(:stop_area) { context.stop_area }
-    let(:line) { context.line }
+    let(:line) { context.referential(:target).lines.first }
 
     before do
       macro_list_run.build_with_original_macro_list

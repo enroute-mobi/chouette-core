@@ -106,6 +106,14 @@ module Chouette
 
           model :macro_list do 
             attribute(:name) { |n| "Macro List #{n}" }
+            model :macro do
+              attribute(:name) { |n| "Marco #{n}" }
+            end
+          end
+
+          model :macro_list_run do
+            attribute(:name) { |n| "Macro List Run #{n}" }
+            attribute(:creator) { |n| "User #{n}" }
           end
 
           model :processing_rule do

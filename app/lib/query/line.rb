@@ -7,8 +7,9 @@ module Query
         name = table[:name].matches("%#{value}%")
         objectid = table[:objectid].matches("%#{value}%")
         registration_number = table[:registration_number].matches("%#{value}%")
+        number = table[:number].matches("%#{value}%")
 
-        scope.where(name.or(objectid).or(registration_number))
+        scope.where(name.or(objectid).or(registration_number).or(number))
       end
     end
 

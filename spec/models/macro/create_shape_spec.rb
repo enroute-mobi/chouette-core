@@ -28,6 +28,7 @@ RSpec.describe Macro::CreateShape do
 
       let(:journey_pattern) { context.journey_pattern }
       let(:workgroup) { context.workgroup }
+      let(:shape) { journey_pattern.reload.shape }
 
       before do
         context.referential.switch
@@ -52,8 +53,8 @@ RSpec.describe Macro::CreateShape do
           expect { subject }.to change { journey_pattern.reload.shape }.to(an_instance_of(Shape))
         end
 
-        it 'should create macro message when Journey Pattern creates Shape', skip: 'CHOUETTE-2597' do
-          expect { subject }.to change { macro_list_run.macro_messages.count }.from(0).to(1)
+        it 'should create macro message when Journey Pattern creates Shape' do
+          expect { subject }.to change { macro_run.macro_messages.count }.from(0).to(1)
 
           expected_message = an_object_having_attributes(
             criticity: 'info',

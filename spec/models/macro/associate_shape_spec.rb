@@ -37,8 +37,8 @@ RSpec.describe Macro::AssociateShape do
             expect { subject }.to change { journey_pattern.reload.shape }.from(nil).to(shape)
           end
 
-          it 'should create a macro message when Journey Pattern uses the Shape', skip: 'CHOUETTE-2597' do
-            expect { subject }.to change { macro_list_run.macro_messages.count }.from(0).to(1)
+          it 'should create a macro message when Journey Pattern uses the Shape' do
+            expect { subject }.to change { macro_run.macro_messages.count }.from(0).to(1)
 
             expected_message = an_object_having_attributes(
               criticity: 'info',

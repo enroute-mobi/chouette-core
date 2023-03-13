@@ -1,11 +1,15 @@
 module Query
   class Line < Base
-
     def text(value)
       change_scope(if: value.present?) do |scope|
-        name = scope.arel_table[:name]
-        objectid = scope.arel_table[:objectid]
-        scope.where(name.matches("%#{value}%")).or( scope.where(objectid.matches("%#{value}%")))
+        table = scope.arel_table
+
+        name = table[:name].matches("%#{value}%")
+        objectid = table[:objectid].matches("%#{value}%")
+        registration_number = table[:registration_number].matches("%#{value}%")
+        number = table[:number].matches("%#{value}%")
+
+        scope.where(name.or(objectid).or(registration_number).or(number))
       end
     end
 

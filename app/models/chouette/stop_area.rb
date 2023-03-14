@@ -28,7 +28,7 @@ module Chouette
     # WARNING Only effective in the current Referential
     has_many :stop_points
     has_many :routes, through: :stop_points
-    has_many :lines, through: :routes
+    has_many :lines, -> { distinct }, through: :routes
     has_many :specific_vehicle_journey_at_stops, :class_name => 'Chouette::VehicleJourneyAtStop', :foreign_key => "stop_area_id"
     has_many :specific_vehicle_journeys, through: :specific_vehicle_journey_at_stops, class_name: 'Chouette::VehicleJourney', source: :vehicle_journey
     has_many :entrances, dependent: :delete_all

@@ -82,12 +82,30 @@ RSpec.describe Export::Ara do
         end
       end
 
+      describe '#line_uuids' do
+        subject { decorator.line_uuids }
+
+        context 'when StopArea is not associated to a Line' do
+          it { is_expected.to be_empty }
+        end
+
+        context "when StopArea is associated to a Line identified by 'chouette:Line:uuid:LOC'" do
+          before { allow(stop_area).to receive(:lines) { [Chouette::Line.new(objectid: 'chouette:Line:uuid:LOC')] } }
+          it { is_expected.to contain_exactly('uuid') }
+        end
+      end
+
       describe '#ara_attributes' do
         subject { decorator.ara_attributes }
 
         context "when #parent_uuid is 'uuid'" do
           before { allow(decorator).to receive(:parent_uuid).and_return('uuid') }
           it { is_expected.to include(parent_id: 'uuid') }
+        end
+
+        context "when #line_uuids is ['uuid']" do
+          before { allow(decorator).to receive(:line_uuids).and_return(['uuid']) }
+          it { is_expected.to include(line_ids: ['uuid']) }
         end
 
         context 'when StopArea is a Quay' do

@@ -286,7 +286,7 @@ class Export::Ara < Export::Base
     delegate :stop_area_referential, to: :context
 
     def export!
-      stop_areas.includes(:parent, codes: :code_space).find_each do |stop_area|
+      stop_areas.includes(:parent, :lines, codes: :code_space).find_each do |stop_area|
         target << Decorator.new(stop_area, code_provider: code_provider).ara_model
       end
     end
@@ -328,6 +328,7 @@ class Export::Ara < Export::Base
           name: name,
           objectids: ara_codes,
           parent_id: parent_uuid,
+          line_ids: line_uuids,
           collect_children: ara_collect_children?
         }
       end
@@ -336,8 +337,12 @@ class Export::Ara < Export::Base
         !quay?
       end
 
+      def line_uuids
+        lines.map { |line| line.get_objectid&.local_id }
+      end
+
       def parent_uuid
-        parent.get_objectid&.local_id if parent
+        parent&.get_objectid&.local_id
       end
 
       def ara_model
@@ -357,7 +362,6 @@ class Export::Ara < Export::Base
   end
 
   class StopVisits < Part
-
     def vehicle_journey_at_stops # rubocop:disable Metrics/MethodLength
       sql_query = <<~SQL
         (

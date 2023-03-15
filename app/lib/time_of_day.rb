@@ -199,13 +199,15 @@ class TimeOfDay
       ([0-5]\d)?
       :?
       ([0-5]\d)?
+      (\sday:\d)?
       \z
     /x
 
   def self.parse(definition, attributes = nil)
     if PARSE_REGEX =~ definition
-      hour, minute, second = $1, $2, $3
-      new hour, minute, second, attributes || {}
+      hour, minute, second, day_offset = $1, $2, $3, $4
+      day_offset = day_offset.match(/\d/)[0] if day_offset
+      new hour, minute, second, attributes || { day_offset: day_offset }
     end
   end
 

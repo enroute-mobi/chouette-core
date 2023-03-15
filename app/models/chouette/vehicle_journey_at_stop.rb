@@ -262,7 +262,33 @@ module Chouette
       end
     end
 
+    def self.departures
+      select('*').where(departure: true).from(departure_arrival_base_query)
+    end
+
+    def self.arrivals
+      select('*').where(arrival: true).from(departure_arrival_base_query)
+    end
+
+    def self.departure_arrival_base_query
+      <<~SQL
+        (
+          SELECT
+            vehicle_journey_at_stops.*,
+            (LAG(vehicle_journey_at_stops.id) OVER vehicle_journey_stops) IS NULL AS departure,
+            (LEAD(vehicle_journey_at_stops.id) OVER vehicle_journey_stops) IS NULL AS arrival
+          FROM vehicle_journey_at_stops
+          INNER JOIN stop_points ON vehicle_journey_at_stops.stop_point_id = stop_points.id
+          WINDOW vehicle_journey_stops AS (
+            PARTITION BY vehicle_journey_id
+            ORDER BY stop_points.position
+          )
+        ) vehicle_journey_at_stops
+      SQL
+    end
+
     private
+
     def local_time time, offset=nil
       return nil unless time
       (time + (offset || time_zone_offset)).utc

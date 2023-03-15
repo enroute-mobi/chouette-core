@@ -367,21 +367,7 @@ class Export::Ara < Export::Base
 
   class StopVisits < Part
     def vehicle_journey_at_stops # rubocop:disable Metrics/MethodLength
-      sql_query = <<~SQL
-        (
-          SELECT
-            vehicle_journey_at_stops.*,
-            (LAG(vehicle_journey_at_stops.id) OVER vehicle_journey_stops) IS NULL AS departure,
-            (LEAD(vehicle_journey_at_stops.id) OVER vehicle_journey_stops) IS NULL AS arrival
-          FROM vehicle_journey_at_stops
-          INNER JOIN stop_points ON vehicle_journey_at_stops.stop_point_id = stop_points.id
-          WINDOW vehicle_journey_stops AS (
-            PARTITION BY vehicle_journey_id
-            ORDER BY stop_points.position
-          )
-        ) vehicle_journey_at_stops
-      SQL
-
+      sql_query = export_scope.vehicle_journey_at_stops.departure_arrival_base_query
       export_scope.vehicle_journey_at_stops.select('*').from(sql_query)
     end
 

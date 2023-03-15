@@ -22,12 +22,12 @@ class Processor
 
   def after(referentials)
     # Specific case when operation is "Aggregate" and there is no workbench defined
-    workbench = workgroup.owner_workbench if workbench.blank? && workgroup.present?
+    operation_workbench = workbench.blank? && workgroup.present? ? workgroup.owner_workbench : workbench
 
     referentials.each do |referential|
       after_processing_rules.each do |processing_rule|
         return false unless processing_rule.perform operation: operation, referential: referential,
-                                                    operation_workbench: workbench
+                                                    operation_workbench: operation_workbench
       end
     end
     true

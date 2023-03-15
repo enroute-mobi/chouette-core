@@ -10,6 +10,8 @@ module CustomFieldsSupport
       Rails.logger.info "within_workgroup used twice"
     end
 
+    Rails.logger.debug "Set current workgroup: #{workgroup&.id}"
+
     value = nil
     begin
       Thread.current.thread_variable_set(THREAD_VARIABLE_NAME, workgroup)
@@ -17,6 +19,9 @@ module CustomFieldsSupport
     ensure
       Thread.current.thread_variable_set(THREAD_VARIABLE_NAME, nil)
     end
+
+    Rails.logger.debug "Reset current workgroup"
+
     value
   end
 
@@ -62,7 +67,7 @@ module CustomFieldsSupport
     end
 
     def method_missing method_name, *args
-      if !@custom_fields_initialized && method_name =~ /custom_field_*/ && method_name.to_sym != :custom_field_values
+      if !@custom_fields_initialized && (method_name =~ /custom_field_*/ || method_name =~ /remove_custom_field_*/) && method_name.to_sym != :custom_field_values
         initialize_custom_fields
         send method_name, *args
       else

@@ -9,6 +9,8 @@ class StopAreasController < ChouetteController
   respond_to :html, :kml, :geojson, :xml, :json
   respond_to :js, :only => :index
 
+  around_action :set_current_workgroup
+
   def autocomplete
     scope = stop_area_referential.stop_areas.where(deleted_at: nil)
     scope = scope.referent_only if params[:referent_only]
@@ -124,6 +126,13 @@ class StopAreasController < ChouetteController
   end
 
   delegate :collection, to: :search
+
+  def set_current_workgroup(&block)
+    # Ensure that InheritedResources has defined parents (workbench, etc)
+    association_chain
+
+    CustomFieldsSupport.within_workgroup current_workgroup, &block
+  end
 
   private
 

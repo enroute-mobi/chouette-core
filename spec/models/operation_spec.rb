@@ -322,7 +322,7 @@ end
 RSpec.describe Operation::CustomFieldLoader do
   subject(:callback) { described_class.new(operation) }
   let(:operation) { double workgroup: workgroup }
-  let(:workgroup) { double }
+  let(:workgroup) { double(id: 'test') }
 
   describe '#around' do
     it 'invokes the given block by changing current workgroup (CustomFieldsSupport.within_workgroup)' do

@@ -13,7 +13,8 @@ module StopAreaReferentialSupport
   end
 
   def workgroup
-    @workgroup ||= (self.class.current_workgroup rescue nil) || Workgroup.where(stop_area_referential_id: stop_area_referential_id).last
+    @workgroup ||= CustomFieldsSupport.current_workgroup ||
+                   Workgroup.where(stop_area_referential_id: stop_area_referential_id).last
   end
 
   private

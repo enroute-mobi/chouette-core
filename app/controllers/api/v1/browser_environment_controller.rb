@@ -6,7 +6,8 @@ class Api::V1::BrowserEnvironmentController < ActionController::Base
     browser_environment = {
       sentry_dsn: ENV['SENTRY_DSN'],
       sentry_environment: ENV['SENTRY_CURRENT_ENV'],
-      sentry_app: ENV['SENTRY_APP']
+      sentry_app: ENV['SENTRY_APP'],
+      version: Nest::Version.current.name
     }
     render json: browser_environment.to_json
   end

@@ -18,6 +18,7 @@ let browser_environment = fetch("/api/v1/browser_environment.json")
           // of transactions for performance monitoring.
           // We recommend adjusting this value in production
           tracesSampleRate: 1.0,
+          release: browser_environment["version"]
       });
       var sentry_app = browser_environment["sentry_app"] || "chouette-core"
       Sentry.setTag("service", sentry_app + "-browser" );

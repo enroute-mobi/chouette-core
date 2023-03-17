@@ -36,7 +36,8 @@ module Query
 
     def in_period(period)
       change_scope(if: period.present?) do |scope|
-        scope.joins(:metadatas).where("referential_metadata && ? ", period.to_postgresql_daterange)
+        # scope.joins(:metadatas).where("referential_metadata.periodes && daterange(?) ", period.to_postgresql_daterange)
+        scope.joins(:metadatas).where("referential_metadata.periodes[1] && ?", period.to_postgresql_daterange)
       end
     end
   end

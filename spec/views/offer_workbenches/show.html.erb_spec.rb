@@ -25,7 +25,7 @@ RSpec.describe "workbenches/show", :type => :view do
   let!(:same_organisation_referential) { context.referential(:user_referential) }
   let!(:different_organisation_referential) { context.referential(:other_referential) }
   let!(:referentials) { assign :wbench_refs, paginate_collection(workbench.all_referentials, ReferentialDecorator) }
-  let!(:q) { assign :q_for_form, Ransack::Search.new(Referential) }
+  let!(:search) {assign :search, Search::Workbench.new(referentials, {}, workbench: workbench) }
 
   before :each do
     allow(view).to receive(:resource_class).and_return(Workbench)

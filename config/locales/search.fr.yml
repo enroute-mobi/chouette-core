@@ -6,14 +6,18 @@ fr:
     attributes:
       search:
         statuses: État
+        states: État
         line_status: État
         workbench_ids: Espaces de travail
+        workbench_id: Espace de travail
+        workbench: Espace de travail
         start_date: "Après : "
         end_date: "Avant : "
         per_page: "Afficher par"
         text: "Recherche par nom ou identification"
         company_id: "Transporteur"
         line_id: "Ligne"
+        line: "Ligne"
         timetable: "Calendrier"
         stop_area: "Arrêt"
         area_type: "Type d'arrêt"
@@ -39,3 +43,4 @@ fr:
         stop_area_id: "Indiquez un nom d'arrêt"
         document_id: "Indiquez un nom de document"
         document_type_id: "Sélectionnez un Type de document"
+        workbench_id: "Indiquez un nom d'espace de travail"

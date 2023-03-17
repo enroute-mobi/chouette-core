@@ -30,7 +30,7 @@
                 end \
               ), \
               TableBuilderHelper::Column.new( \
-                key: :state, \
+                key: :states, \
                 name: Referential.tmf('status'), \
                 attribute: Proc.new {|w| referential_status(w) } \
               ), \
@@ -41,12 +41,14 @@
               ), \
               TableBuilderHelper::Column.new( \
                 key: :validity_period, \
-                attribute: Proc.new {|w| w.validity_period.nil? ? '-' : t('validity_range', debut: l(w.try(:validity_period).try(:begin)), end: l(w.try(:validity_period).try(:end)))} \
+                attribute: Proc.new {|w| w.validity_period.nil? ? '-' : t('validity_range', debut: l(w.try(:validity_period).try(:begin)), end: l(w.try(:validity_period).try(:end)))}, \
+                sortable: false \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :lines, \
                 name: Referential.tmf('number_of_lines'), \
-                attribute: Proc.new {|w| w.lines.count} \
+                attribute: Proc.new {|w| w.lines.count}, \
+                sortable: false \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :created_at, \

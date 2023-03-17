@@ -55,11 +55,16 @@ module Macro
           value = particular_values[referent.id]
 
           referent.update(attribute_name => value)
-          create_message referent, attribute_name, value
+          create_message referent, attribute_name
         end
       end
 
-      def create_message(referent, attribute_name, attribute_value = nil)
+      def create_message(referent, attribute_name)
+        attribute_value = referent.send(attribute_name)
+
+        # When value is an enumerize value
+        attribute_value = attribute_value.text if attribute_value.respond_to?(:text)
+
         attributes = {
           message_attributes: {
             name: referent.name, attribute_name:
@@ -76,7 +81,13 @@ module Macro
 
       # Retrieve referents without target attribute in the macro scope
       def referents
-        @referents ||= models.referents.where(attribute_name => nil)
+        @referents ||= models.referents.where(attribute_name => undefined_value)
+      end
+
+      def undefined_value
+        # For example Chouette::StopArea.wheelchair_accessibility.default_value => "unknown"
+        # or nil ...
+        model_attribute.model_class.try(attribute_name).try(:default_value)
       end
 
       # Retrieve all particulars associated to the referents (so in the whole scope)

@@ -19,76 +19,117 @@ RSpec.describe Macro::DefineAttributeFromParticulars::Run do
   describe '#run' do
     let(:referent) { context.stop_area(:referent) }
     let(:target_model) { 'StopArea' }
-    let(:target_attribute) { 'time_zone' }
 
-    before(:each) { macro_run.run }
+    subject { macro_run.run }
 
-    context 'when referent attribute is undefined and one particular have defined value' do
-      let(:context) do
-        Chouette.create do
-          stop_area :referent, is_referent: true, time_zone: nil
-          stop_area time_zone: 'Europe/Paris', referent: :referent
+    describe '#time_zone' do
+      let(:target_attribute) { 'time_zone' }
+
+      context 'when referent attribute is undefined and one particular have defined value' do
+        let(:context) do
+          Chouette.create do
+            stop_area :referent, is_referent: true, time_zone: nil
+            stop_area time_zone: 'Europe/Paris', referent: :referent
+          end
+        end
+
+        it 'should update referent attribute with particular value' do
+          expect { subject }.to change { referent.reload.time_zone }.from(nil).to('Europe/Paris')
+        end
+
+        it 'should create a macro message' do
+          expect { subject }.to change { macro_run.macro_messages.count }.from(0).to(1)
+
+          expected_message = an_object_having_attributes(
+            criticity: 'info',
+            message_attributes: {
+              'name' => referent.name,
+              'attribute_name' => referent.class.human_attribute_name('time_zone'),
+              'attribute_value' => 'Europe/Paris'
+            },
+            source: referent
+          )
+          expect(macro_run.macro_messages).to include(expected_message)
         end
       end
 
-      it 'should update referent attribute with particular value' do
-        expect(referent.reload.time_zone).to eq('Europe/Paris')
+      context 'when referent attribute is undefined and all particulars have the same defined value' do
+        let(:context) do
+          Chouette.create do
+            stop_area :referent, is_referent: true, time_zone: nil
+            stop_area time_zone: 'Europe/Paris', referent: :referent
+            stop_area time_zone: 'Europe/Paris', referent: :referent
+          end
+        end
+
+        it 'should update referent attribute with particulars value' do
+          expect { subject }.to change { referent.reload.time_zone }.from(nil).to('Europe/Paris')
+        end
       end
 
-      it 'should create a macro message', skip: 'CHOUETTE-2597' do
-        expect { subject }.to change { macro_list_run.macro_messages.count }.from(0).to(1)
+      context 'when referent attribute is undefined and particulars have different defined value' do
+        let(:context) do
+          Chouette.create do
+            stop_area :referent, is_referent: true, time_zone: nil
+            stop_area time_zone: 'Europe/Paris', referent: :referent
+            stop_area time_zone: 'Europe/London', referent: :referent
+          end
+        end
 
-        expected_message = an_object_having_attributes(
-          criticity: 'info',
-          message_attributes: {
-            'name' => referent.name,
-            'attribute_name' => referent.class.human_attribute_name('time_zone'),
-            'attribute_value' => 'Europe/Paris'
-          },
-          source: referent
-        )
-        expect(macro_run.macro_messages).to include(expected_message)
+        it 'should not update referent attribute' do
+          expect { subject }.to_not change { referent.reload.time_zone }
+        end
+      end
+
+      context 'when referent attribute is already defined' do
+        let(:context) do
+          Chouette.create do
+            stop_area :referent, is_referent: true, time_zone: 'Europe/Paris'
+            stop_area time_zone: 'Europe/London', referent: :referent
+          end
+        end
+
+        it 'should not update referent attribute' do
+          expect { subject }.to_not change { referent.time_zone }
+        end
       end
     end
 
-    context 'when referent attribute is undefined and all particulars have the same defined value' do
-      let(:context) do
-        Chouette.create do
-          stop_area :referent, is_referent: true, time_zone: nil
-          stop_area time_zone: 'Europe/Paris', referent: :referent
-          stop_area time_zone: 'Europe/Paris', referent: :referent
+    { mobility_impaired_accessibility: 'yes', wheelchair_accessibility: 'yes', step_free_accessibility: 'yes',
+      escalator_free_accessibility: 'yes', lift_free_accessibility: 'yes', audible_signals_availability: 'yes',
+      visual_signs_availability: 'yes', accessibility_limitation_description: 'Accessibility limitation description' }.each do |target_attribute, attribute_value|
+      describe "##{target_attribute}" do
+        let(:target_attribute) { target_attribute }
+        let(:context) do
+          Chouette.create do
+            stop_area :referent, is_referent: true
+            stop_area target_attribute => attribute_value, referent: :referent
+          end
         end
-      end
 
-      it 'should update referent attribute with particulars value' do
-        expect(referent.reload.time_zone).to eq('Europe/Paris')
-      end
-    end
+        let(:old_attribute_value) { referent.send(target_attribute) }
 
-    context 'when referent attribute is undefined and particulars have different defined value' do
-      let(:context) do
-        Chouette.create do
-          stop_area :referent, is_referent: true, time_zone: nil
-          stop_area time_zone: 'Europe/Paris', referent: :referent
-          stop_area time_zone: 'Europe/London', referent: :referent
+        it "should update referent '#{target_attribute}' with particular value '#{attribute_value}'" do
+          expect { subject }.to change {
+                                  referent.reload.send(target_attribute)
+                                }.from(old_attribute_value).to(attribute_value)
         end
-      end
 
-      it 'should not update referent attribute' do
-        expect(referent.reload.time_zone).to be_nil
-      end
-    end
+        it 'should create a macro message' do
+          expect { subject }.to change { macro_run.macro_messages.count }.from(0).to(1)
 
-    context 'when referent attribute is already defined' do
-      let(:context) do
-        Chouette.create do
-          stop_area :referent, is_referent: true, time_zone: 'Europe/Paris'
-          stop_area time_zone: 'Europe/London', referent: :referent
+          localized_value = referent.reload.send(target_attribute).try(:text) || attribute_value
+          expected_message = an_object_having_attributes(
+            criticity: 'info',
+            message_attributes: {
+              'name' => referent.name,
+              'attribute_name' => referent.class.human_attribute_name(target_attribute.to_s),
+              'attribute_value' => localized_value
+            },
+            source: referent
+          )
+          expect(macro_run.macro_messages).to include(expected_message)
         end
-      end
-
-      it 'should not update referent attribute' do
-        expect(referent.reload.time_zone).to eq('Europe/Paris')
       end
     end
   end

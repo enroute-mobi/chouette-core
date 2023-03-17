@@ -17,21 +17,30 @@ module Query
       end
     end
 
-    # def line_status(status)
-    #   change_scope(if: status.present?) do |scope|
-    #     if status == "deactivated"
-    #       scope.where(deactivated: true)
-    #     else
-    #       scope.where(deactivated: false)
-    #     end
-    #   end
-    # end
-
-    def in_period(period)
-      change_scope(if: period.present?) do |scope|
-        scope.where('daterange(created_at, merged_at) && ? OR (created_at IS NULL AND merged_at IS NULL)', period.to_postgresql_daterange)
+    def states(states)
+      change_scope(if: states.present?) do |scope|
+        if states.to_s == "failed"
+          scope.where.not(failed_at: nil)
+        elsif states.to_s == "archived"
+          scope.where.not(archived_at: nil)
+        elsif states.to_s == "pending"
+          scope.where(ready: false)
+        else
+          scope.where(ready: true)
+        end
       end
     end
+
+    def workbench_id(value)
+      debugger
+      where(value, :eq, :workbench_id)
+    end
+
+    # def in_period(period)
+    #   change_scope(if: period.present?) do |scope|
+    #     scope.joins(:metadatas).where("daterange(begin, end) && ? OR (begin IS NULL AND end IS NULL)", period.to_postgresql_daterange)
+    #   end
+    # end
 
     # TODO Could use a nice RecurviseQuery common object
     # delegate :table_name, to: Workbench

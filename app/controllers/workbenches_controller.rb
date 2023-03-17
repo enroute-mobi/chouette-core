@@ -48,7 +48,7 @@ class WorkbenchesController < ChouetteController
   end
 
   def search
-    @search ||= Search::Workbench.new(scope, params, workbench: @workbench, line_referential: @line_referential)
+    @search ||= Search::Workbench.new(scope, params, workbench: @workbench)
   end
 
   delegate :collection, to: :search

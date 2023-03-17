@@ -1,23 +1,22 @@
 module Search
   class Workbench < Base
 		attr_accessor :workbench
-		attr_accessor :line_referential
 		extend Enumerize
 
     # All search attributes
     attribute :text
     attribute :line
-    # attribute :status
-    # attribute :workbench
-		attribute :valid_after_date, type: Date
-    attribute :valid_before_date, type: Date
+    attribute :states
+    attribute :workbench_id
+		# attribute :valid_after_date, type: Date
+    # attribute :valid_before_date, type: Date
 
     # enumerize :transport_mode, in: TransportModeEnumerations.transport_modes, multiple: true
-		# enumerize :line_status, in: ::Chouette::Line.statuses
+		enumerize :states, in: Referential.states, multiple: true
 
-		def period
-      Period.new(from: valid_before_date, to: valid_after_date).presence
-    end
+		# def period
+    #   Period.new(from: valid_before_date, to: valid_after_date).presence
+    # end
 
     # validates :period, valid: true
 
@@ -25,13 +24,17 @@ module Search
 			Query::Workbench.new(scope)
 				.text(text)
 				.line(line)
-				.in_period(period)
-				# .status(status)
-				# .workbench(workbench)
+				.states(states)
+				.workbench_id(workbench_id)
+				# .in_period(period)
     end
 
     def candidate_lines
-      workbench.line_referential.lines.order(:name)
+      workbench.lines.order(:name)
+    end
+
+    def candidate_workbenches
+      ::Workbench.all.order(:name)
     end
 
 		private

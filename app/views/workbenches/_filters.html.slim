@@ -7,12 +7,14 @@
     .flex.items-center.border-r.border-white
       = f.input :text, label: false, wrapper_html: {class: "w-2/5"}, placeholder: I18n.t('simple_form.placeholders.search.text')
     .flex.items-center.border-t.border-r.border-white
-      / = f.input :lines, as: :autocomplete_select, collection: @search.candidate_lines, wrapper_html: {class: "w-2/5"}
       = f.input :line, placeholder: I18n.t('simple_form.placeholders.search.line_id'), as: :tom_select, collection: @search.candidate_lines.map { |l| {id: l.id, text: l.display_name } }, wrapper_html: {class: "w-2/5"}
+      / = f.input :states, placeholder: I18n.t('simple_form.placeholders.search.status'), as: :tom_select, collection: @search.candidate_lines.map { |l| {id: l.id, text: l.display_name } }, wrapper_html: {class: "w-2/5"}
+      = f.input :states, as: :autocomplete_select, wrapper_html: {class: "w-1/5"}, input_html: { multiple: true, style: 'width: 100%' }
+      = f.input :workbench, placeholder: I18n.t('simple_form.placeholders.search.workbench_ids'), as: :tom_select, collection: @search.candidate_workbenches.map { |l| {id: l.id, text: l.name } }, wrapper_html: {class: "w-2/5"}
 
     .flex.items-center.border-t.border-r.border-white
-      = f.input :valid_before_date, as: :date_picker
-      = f.input :valid_after_date, as: :date_picker
+      / = f.input :valid_before_date, as: :date_picker
+      / = f.input :valid_after_date, as: :date_picker
 
   .flex.flex-col.justify-center.items-center.actions.ml-auto.py-3.w-80
     .flex.items-center.mb-3

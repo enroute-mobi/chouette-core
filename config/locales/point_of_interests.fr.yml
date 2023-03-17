@@ -53,6 +53,7 @@ fr:
         address_line_1: "Adresse"
         zip_code: "Code Postal"
         city_name: "Ville"
+        postal_region: Région postale
         country: "Pays"
         email: "Email"
         phone: "Téléphone"

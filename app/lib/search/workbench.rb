@@ -1,6 +1,8 @@
 module Search
   class Workbench < Base
 		attr_accessor :workbench
+    attr_accessor :user
+
 		extend Enumerize
 
     # All search attributes
@@ -34,7 +36,7 @@ module Search
     end
 
     def candidate_workbenches
-      ::Workbench.all.order(:name)
+      user.workbenches.order(:name)
     end
 
 		private

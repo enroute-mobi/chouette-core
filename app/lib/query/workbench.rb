@@ -19,34 +19,25 @@ module Query
 
     def states(states)
       change_scope(if: states.present?) do |scope|
-        if states.to_s == "failed"
-          scope.where.not(failed_at: nil)
-        elsif states.to_s == "archived"
-          scope.where.not(archived_at: nil)
-        elsif states.to_s == "pending"
-          scope.where(ready: false)
-        else
-          scope.where(ready: true)
-        end
+        query = []
+
+        query << '(failed_at IS NOT NULL)' if states.include?('failed')
+        query << '(archived_at IS NOT NULL)' if states.include?('archived')
+        query << '(ready = false)' if states.include?('pending')
+        query << '(ready = true)' if states.include?('active')
+
+        scope.where(query.join(' OR '))
       end
     end
 
     def workbench_id(value)
-      debugger
       where(value, :eq, :workbench_id)
     end
 
-    # def in_period(period)
-    #   change_scope(if: period.present?) do |scope|
-    #     scope.joins(:metadatas).where("daterange(begin, end) && ? OR (begin IS NULL AND end IS NULL)", period.to_postgresql_daterange)
-    #   end
-    # end
-
-    # TODO Could use a nice RecurviseQuery common object
-    # delegate :table_name, to: Workbench
-    # private :table_name
-
-    # private
-
+    def in_period(period)
+      change_scope(if: period.present?) do |scope|
+        scope.joins(:metadatas).where("referential_metadata && ? ", period.to_postgresql_daterange)
+      end
+    end
   end
 end

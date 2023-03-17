@@ -13,7 +13,7 @@ module Query
 
     def line(value)
       change_scope(if: value.present?) do |scope|
-        scope.joins(line_referential: :lines).where('lines.id IN (?)', value).distinct
+        scope.joins(:metadatas).where("? = ANY(referential_metadata.line_ids)", value).distinct
       end
     end
 

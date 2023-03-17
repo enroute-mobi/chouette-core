@@ -97,8 +97,7 @@ RSpec.describe Macro::DefineAttributeFromParticulars::Run do
 
     { mobility_impaired_accessibility: 'yes', wheelchair_accessibility: 'yes', step_free_accessibility: 'yes',
       escalator_free_accessibility: 'yes', lift_free_accessibility: 'yes', audible_signals_availability: 'yes',
-      visual_signs_availability: 'yes', accessibility_limitation_description: 'Accessibility limitation description'
-    }.each do |target_attribute, attribute_value|
+      visual_signs_availability: 'yes', accessibility_limitation_description: 'Accessibility limitation description' }.each do |target_attribute, attribute_value|
       describe "##{target_attribute}" do
         let(:target_attribute) { target_attribute }
         let(:context) do
@@ -111,18 +110,21 @@ RSpec.describe Macro::DefineAttributeFromParticulars::Run do
         let(:old_attribute_value) { referent.send(target_attribute) }
 
         it "should update referent '#{target_attribute}' with particular value '#{attribute_value}'" do
-          expect { subject }.to change { referent.reload.send(target_attribute) }.from(old_attribute_value).to(attribute_value)
+          expect { subject }.to change {
+                                  referent.reload.send(target_attribute)
+                                }.from(old_attribute_value).to(attribute_value)
         end
 
         it 'should create a macro message' do
           expect { subject }.to change { macro_run.macro_messages.count }.from(0).to(1)
 
+          localized_value = referent.reload.send(target_attribute).try(:text) || attribute_value
           expected_message = an_object_having_attributes(
             criticity: 'info',
             message_attributes: {
               'name' => referent.name,
               'attribute_name' => referent.class.human_attribute_name(target_attribute.to_s),
-              'attribute_value' => attribute_value
+              'attribute_value' => localized_value
             },
             source: referent
           )

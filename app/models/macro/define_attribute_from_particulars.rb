@@ -55,11 +55,16 @@ module Macro
           value = particular_values[referent.id]
 
           referent.update(attribute_name => value)
-          create_message referent, attribute_name, value
+          create_message referent, attribute_name
         end
       end
 
-      def create_message(referent, attribute_name, attribute_value = nil)
+      def create_message(referent, attribute_name)
+        attribute_value = referent.send(attribute_name)
+
+        # When value is an enumerize value
+        attribute_value = attribute_value.text if attribute_value.respond_to?(:text)
+
         attributes = {
           message_attributes: {
             name: referent.name, attribute_name:

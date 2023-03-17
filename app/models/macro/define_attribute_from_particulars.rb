@@ -76,7 +76,13 @@ module Macro
 
       # Retrieve referents without target attribute in the macro scope
       def referents
-        @referents ||= models.referents.where(attribute_name => [nil, 'unknown'])
+        @referents ||= models.referents.where(attribute_name => undefined_value)
+      end
+
+      def undefined_value
+        # For example Chouette::StopArea.wheelchair_accessibility.default_value => "unknown"
+        # or nil ...
+        model_attribute.model_class.try(attribute_name).try(:default_value)
       end
 
       # Retrieve all particulars associated to the referents (so in the whole scope)

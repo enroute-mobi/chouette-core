@@ -295,6 +295,7 @@ GEM
     digest-crc (0.6.4)
       rake (>= 12.0.0, < 14.0.0)
     docile (1.4.0)
+    dogstatsd-ruby (5.5.0)
     dotenv (2.8.1)
     dotenv-rails (2.8.1)
       dotenv (= 2.8.1)
@@ -367,6 +368,9 @@ GEM
       google-cloud-core (~> 1.2)
       googleauth (>= 0.6.2, < 0.10.0)
       mime-types (~> 3.0)
+    google-protobuf (3.22.2)
+    google-protobuf (3.22.2-x86_64-darwin)
+    google-protobuf (3.22.2-x86_64-linux)
     googleauth (0.9.0)
       faraday (~> 0.12)
       jwt (>= 1.4, < 3.0)
@@ -854,6 +858,7 @@ DEPENDENCIES
   devise-i18n (>= 1.10.2)
   devise_cas_authenticatable (~> 1)
   devise_invitable (>= 2.0.6)
+  dogstatsd-ruby
   dotenv-rails (>= 2.7.6)
   draper (>= 4.0.2)
   email_spec
@@ -868,6 +873,7 @@ DEPENDENCIES
   geokit
   georuby (= 2.3.0)
   google-cloud-storage (> 1.4.0)
+  google-protobuf (~> 3.0)
   graphiql-rails (>= 1.8.0)
   graphql (~> 1.12.19)
   gretel (>= 4.4.0)

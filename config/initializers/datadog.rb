@@ -35,4 +35,9 @@ if ENV['DD_AGENT_HOST']
 
     c.logger.instance = Logger.new('log/datadog.log') if ENV['DD_TRACE_DEBUG']
   end
+
+  if (ENV['DD_PROFILING_ENABLED'] = 'true')
+    puts 'Enable Datadog profiler'
+    require 'datadog/profiling/preload'
+  end
 end

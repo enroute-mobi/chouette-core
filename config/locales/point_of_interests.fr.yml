@@ -54,6 +54,7 @@ fr:
         zip_code: "Code Postal"
         city_name: "Ville"
         country: "Pays"
+        postal_region: Région Postale
         email: "Email"
         phone: "Téléphone"
         shape_provider: "Fournisseur Topologique"

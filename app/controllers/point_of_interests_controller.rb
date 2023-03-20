@@ -60,6 +60,7 @@ class PointOfInterestsController < ChouetteController
       :address_line_1,
       :zip_code,
       :city_name,
+      :postal_region,
       :country,
       :email,
       :phone,

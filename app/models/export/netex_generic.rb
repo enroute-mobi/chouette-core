@@ -516,6 +516,7 @@ class Export::NetexGeneric < Export::Base
           address_line_1: address_line_1,
           post_code: zip_code,
           town: city_name,
+          postal_region: postal_region,
           country_name: country
         )
       end

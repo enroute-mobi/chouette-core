@@ -1,4 +1,31 @@
 RSpec.describe Chouette::Sync::PointOfInterest do
+  describe Chouette::Sync::PointOfInterest::Netex::Decorator do
+    let(:point_of_interest) { Netex::PointOfInterest.new }
+    subject(:decorator) { described_class.new(point_of_interest) }
+
+    describe '#postal_region' do
+      subject { decorator.postal_region }
+
+      context "when NeTex postal address isn't defined" do
+        before { point_of_interest.postal_address = nil }
+        it { is_expected.to be_nil }
+      end
+
+      context 'when NeTex postal address is defined' do
+        before { point_of_interest.postal_address = Netex::PostalAddress.new }
+
+        context "when postal region isn't defined" do
+          it { is_expected.to be_nil }
+        end
+
+        context "when postal region is 'dummy'" do
+          before { point_of_interest.postal_address.postal_region = 'dummy' }
+
+          it { is_expected.to eq('dummy') }
+        end
+      end
+    end
+  end
 
   describe Chouette::Sync::PointOfInterest::Netex do
 

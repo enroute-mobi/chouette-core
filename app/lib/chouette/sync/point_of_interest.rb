@@ -1,21 +1,19 @@
 module Chouette::Sync
   module PointOfInterest
     class Netex < Chouette::Sync::Base
-
       def initialize(options = {})
         default_options = {
           resource_type: :point_of_interest,
           resource_id_attribute: :id,
           model_type: :point_of_interest,
           resource_decorator: Decorator,
-          model_id_attribute: :codes,
+          model_id_attribute: :codes
         }
         options.reverse_merge!(default_options)
         super options
       end
 
       class Decorator < Chouette::Sync::Updater::ResourceDecorator
-
         delegate :contact_details, to: :operating_organisation_view, allow_nil: true
         delegate :target, to: :updater
 
@@ -23,9 +21,7 @@ module Chouette::Sync
           "#{longitude} #{latitude}"
         end
 
-        def address_line_1
-          postal_address&.address_line_1
-        end
+        delegate :postal_region, :address_line_1, to: :postal_address, allow_nil: true
 
         def zip_code
           postal_address&.post_code
@@ -39,22 +35,16 @@ module Chouette::Sync
           postal_address&.country_name
         end
 
-        def email
-          contact_details&.email
-        end
-
-        def phone
-          contact_details&.phone
-        end
+        delegate :email, :phone, to: :contact_details, allow_nil: true
 
         def point_of_interest_category_name
           classifications.first&.name
         end
 
         def point_of_interest_category
-          if point_of_interest_category_name.present?
-            point_of_interest_categories.find_by(name: point_of_interest_category_name)
-          end
+          return unless point_of_interest_category_name.present?
+
+          point_of_interest_categories.find_by(name: point_of_interest_category_name)
         end
 
         def point_of_interest_category_id
@@ -67,6 +57,7 @@ module Chouette::Sync
 
         def codes_attributes
           return [] unless key_list.present?
+
           key_list.map do |netex_code|
             {
               short_name: netex_code.key,
@@ -121,7 +112,7 @@ module Chouette::Sync
           Hour.new(validity_conditions).hours_attributes
         end
 
-        def model_attributes
+        def model_attributes # rubocop:disable Metrics/MethodLength
           {
             name: name,
             url: url,
@@ -129,6 +120,7 @@ module Chouette::Sync
             address_line_1: address_line_1,
             zip_code: zip_code,
             city_name: city_name,
+            postal_region: postal_region,
             country: country,
             phone: phone,
             email: email,

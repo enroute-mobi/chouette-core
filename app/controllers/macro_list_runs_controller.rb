@@ -46,8 +46,15 @@ class MacroListRunsController < ChouetteController
 
   protected
 
-  alias macro_list parent
   alias macro_list_run resource
+
+  def macro_list
+    parent if parent.is_a?(Macro::List)
+  end
+
+  def workbench
+    @workbench ||= parent.is_a?(Workbench) ? parent : parent&.workbench
+  end
 
   def build_resource
     super.tap do |macro_list_run|
@@ -93,10 +100,6 @@ class MacroListRunsController < ChouetteController
       }
     )
   end
-
-	def workbench
-		@workbench ||= Workbench.find(params[:workbench_id])
-	end
 
   def select_referentials
     @referentials ||= workbench.referentials.editable

@@ -46,8 +46,15 @@ class ControlListRunsController < ChouetteController
 
   protected
 
-  alias control_list parent
   alias control_list_run resource
+
+  def control_list
+    parent if parent.is_a?(Control::List)
+  end
+
+  def workbench
+    @workbench ||= parent.is_a?(Workbench) ? parent : parent&.workbench
+  end
 
   def build_resource
     super.tap do |control_list_run|
@@ -94,10 +101,6 @@ class ControlListRunsController < ChouetteController
       }
     )
   end
-
-	def workbench
-		@workbench ||= Workbench.find(params[:workbench_id])
-	end
 
   def select_referentials
     # TODO: Replace by Control::List::Run.candidate_referentials

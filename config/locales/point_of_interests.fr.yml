@@ -53,8 +53,8 @@ fr:
         address_line_1: "Adresse"
         zip_code: "Code Postal"
         city_name: "Ville"
-        postal_region: Région postale
         country: "Pays"
+        postal_region: Région Postale
         email: "Email"
         phone: "Téléphone"
         shape_provider: "Fournisseur Topologique"

@@ -53,7 +53,7 @@ en:
         address_line_1: "Address"
         zip_code: "Zip Code"
         city_name: "City name"
-        postal_region: Postal region
+        postal_region: Postal Region
         country: "Country"
         email: "Email"
         phone: "Phone"

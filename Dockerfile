@@ -55,6 +55,7 @@ RUN build.sh docker::env::production
 COPY --from=assets-builder /app/public/assets/ public/assets/
 COPY --from=assets-builder /app/public/packs/ public/packs/
 
+ARG VERSION
 RUN build.sh docker::whenever docker::version
 
 RUN bundle exec bootsnap precompile --gemfile app/ lib/

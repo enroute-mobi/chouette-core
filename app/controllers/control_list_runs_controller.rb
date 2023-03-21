@@ -2,15 +2,15 @@ class ControlListRunsController < ChouetteController
   include ApplicationHelper
   include PolicyChecker
 
-  defaults :resource_class => Control::List::Run
+  defaults resource_class: Control::List::Run
 
   before_action :decorate_control_list_run, only: %i[show new edit]
-  before_action :select_referentials, only: %i{new create}
+  before_action :select_referentials, only: %i[new create]
 
   before_action :init_facade, only: %i[show]
 
-	belongs_to :workbench
-	belongs_to :control_list, optional: true, collection_name: :control_lists_shared_with_workgroup
+  belongs_to :workbench
+  belongs_to :control_list, optional: true, collection_name: :control_lists_shared_with_workgroup
 
   respond_to :html, :json
 
@@ -21,9 +21,7 @@ class ControlListRunsController < ChouetteController
 
         @control_list_runs = ControlListRunDecorator.decorate(
           collection,
-          context: {
-            workbench: @workbench
-          }
+          context: { workbench: @workbench }
         )
       end
     end
@@ -37,7 +35,7 @@ class ControlListRunsController < ChouetteController
         render 'new'
       end
 
-			success.html do
+      success.html do
         @control_list_run.enqueue
         redirect_to workbench_control_list_run_path(workbench, @control_list_run)
       end
@@ -49,10 +47,16 @@ class ControlListRunsController < ChouetteController
   alias control_list_run resource
 
   def control_list
+    # Ensure parent is loaded
+    association_chain
+
     parent if parent.is_a?(Control::List)
   end
 
   def workbench
+    # Ensure parent is loaded
+    association_chain
+
     @workbench ||= parent.is_a?(Workbench) ? parent : parent&.workbench
   end
 
@@ -64,7 +68,7 @@ class ControlListRunsController < ChouetteController
   end
 
   def scope
-   workbench.control_list_runs
+    workbench.control_list_runs
   end
 
   def search
@@ -92,12 +96,16 @@ class ControlListRunsController < ChouetteController
   helper_method :facade
 
   def decorate_control_list_run
-    object = control_list_run rescue build_resource
+    object = begin
+      control_list_run
+    rescue StandardError
+      build_resource
+    end
     @control_list_run = ControlListRunDecorator.decorate(
       object,
       context: {
         workbench: workbench,
-				control_list: control_list
+        control_list: control_list
       }
     )
   end
@@ -110,11 +118,11 @@ class ControlListRunsController < ChouetteController
     end.compact
   end
 
-	def control_list_run_params
-		params
+  def control_list_run_params
+    params
       .require(:control_list_run)
       .permit(:name, :original_control_list_id, :referential_id)
       .with_defaults(creator: current_user.name)
-      .delete_if { |_,v| v.blank? }
-	end
+      .delete_if { |_, v| v.blank? }
+  end
 end

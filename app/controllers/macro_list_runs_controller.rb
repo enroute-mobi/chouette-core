@@ -2,28 +2,26 @@ class MacroListRunsController < ChouetteController
   include ApplicationHelper
   include PolicyChecker
 
-  defaults :resource_class => Macro::List::Run
+  defaults resource_class: Macro::List::Run
 
   before_action :decorate_macro_list_run, only: %i[show new edit]
-  before_action :select_referentials, only: %i{new create}
+  before_action :select_referentials, only: %i[new create]
 
   before_action :init_facade, only: %i[show]
 
-	belongs_to :workbench
-	belongs_to :macro_list, optional: true
+  belongs_to :workbench
+  belongs_to :macro_list, optional: true
 
   respond_to :html, :json
 
   def index
     index! do |format|
       format.html do
-        redirect_to params.merge(:page => 1) if collection.out_of_bounds?
+        redirect_to params.merge(page: 1) if collection.out_of_bounds?
 
         @macro_list_runs = MacroListRunDecorator.decorate(
           collection,
-          context: {
-            workbench: @workbench
-          }
+          context: { workbench: @workbench }
         )
       end
     end
@@ -37,7 +35,7 @@ class MacroListRunsController < ChouetteController
         render 'new'
       end
 
-			success.html do
+      success.html do
         @macro_list_run.enqueue
         redirect_to workbench_macro_list_run_path(workbench, @macro_list_run)
       end
@@ -49,10 +47,16 @@ class MacroListRunsController < ChouetteController
   alias macro_list_run resource
 
   def macro_list
+    # Ensure parent is loaded
+    association_chain
+
     parent if parent.is_a?(Macro::List)
   end
 
   def workbench
+    # Ensure parent is loaded
+    association_chain
+
     @workbench ||= parent.is_a?(Workbench) ? parent : parent&.workbench
   end
 
@@ -105,11 +109,11 @@ class MacroListRunsController < ChouetteController
     @referentials ||= workbench.referentials.editable
   end
 
-	def macro_list_run_params
-		params
+  def macro_list_run_params
+    params
       .require(:macro_list_run)
       .permit(:name, :original_macro_list_id, :referential_id)
       .with_defaults(creator: current_user.name)
-      .delete_if { |_,v| v.blank? }
-	end
+      .delete_if { |_, v| v.blank? }
+  end
 end

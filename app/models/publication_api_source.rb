@@ -1,5 +1,4 @@
 class PublicationApiSource < ActiveRecord::Base
-  include RemoteFilesHandler
 
   belongs_to :publication_api
   belongs_to :publication

@@ -1,6 +1,5 @@
 class Destination < ApplicationModel
   include OptionsSupport
-  include RemoteFilesHandler
 
   belongs_to :publication_setup, inverse_of: :destinations
   has_many :reports, class_name: 'DestinationReport', dependent: :destroy
@@ -29,7 +28,7 @@ class Destination < ApplicationModel
     begin
       do_transmit publication, report
       report.success! unless report.failed?
-    rescue => e
+    rescue StandardError => e
       Chouette::Safe.capture "Destination ##{id} transmission failed for Publication #{publication.id}", e
       report.failed! message: e.message, backtrace: e.backtrace
     end
@@ -44,15 +43,8 @@ class Destination < ApplicationModel
   end
 
   def self.human_type
-    self.ts
+    ts
   end
-
-  def local_secret_file
-    return unless self[:secret_file].present?
-
-    local_temp_file secret_file
-  end
-
 end
 
 require_dependency './destination/dummy'

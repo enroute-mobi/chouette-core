@@ -61,7 +61,7 @@ module Control
 
       scope :having_status, ->(statuses) { where(user_status: statuses) }
 
-      validates :referential, inclusion: { in: :candidate_referentials }
+      validates :referential, inclusion: { in: :candidate_referentials }, allow_nil: true
 
       def candidate_referentials
         [].tap do |candidate_referentials|

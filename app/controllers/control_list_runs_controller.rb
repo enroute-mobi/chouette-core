@@ -109,12 +109,8 @@ class ControlListRunsController < ChouetteController
     )
   end
 
-  def select_referentials
-    @referentials ||= Control::List::Run.candidate_referentials(user: current_user, workbench: workbench)
-  end
-
-  def control_list_run_params
-    params
+	def control_list_run_params
+		params
       .require(:control_list_run)
       .permit(:name, :original_control_list_id, :referential_id)
       .with_defaults(creator: current_user.name)

@@ -44,7 +44,7 @@ class WorkbenchesController < ChouetteController
   protected
 
   def scope
-    @workbench.referentials
+    @workbench.all_referentials
   end
 
   def search

@@ -23,7 +23,7 @@ module Query
 
         query << '(failed_at IS NOT NULL)' if states.include?('failed')
         query << '(archived_at IS NOT NULL)' if states.include?('archived')
-        query << '(ready = false)' if states.include?('pending')
+        query << '(ready = false AND failed_at IS NULL)' if states.include?('pending')
         query << '(ready = true)' if states.include?('active')
 
         scope.where(query.join(' OR '))

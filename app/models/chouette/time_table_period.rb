@@ -58,6 +58,14 @@ module Chouette
       (p.period_start >= self.period_start && p.period_end <= self.period_end)
     end
 
+    def intersect?(other)
+      (range & other).present?
+    end
+
+    def include?(date)
+      range.include? date
+    end
+
     def range
       period_start..period_end
     end

@@ -1550,60 +1550,6 @@ class Export::NetexGeneric < Export::Base
     end
   end
 
-  class TimeTableDecorator < SimpleDelegator
-
-    def netex_resources
-      [day_type] + exported_periods + exported_dates
-    end
-
-    def day_type
-      Netex::DayType.new day_type_attributes
-    end
-
-    def day_type_attributes
-      {
-        id: objectid,
-        data_source_ref: data_source_ref,
-        name: comment,
-        properties: properties
-      }
-    end
-
-    def day_type_ref
-      @day_type_ref ||= Netex::Reference.new(objectid, type: 'DayTypeRef')
-    end
-
-    def properties
-      [Netex::PropertyOfDay.new(days_of_week: days_of_week)]
-    end
-
-    DAYS = %w{monday tuesday wednesday thursday friday saturday sunday}
-    def days_of_week
-      DAYS.map { |day| day.capitalize if send(day) }.compact.join(' ')
-    end
-
-    def exported_periods
-      decorated_periods.map(&:operating_period) + decorated_periods.map(&:day_type_assignment)
-    end
-
-    def decorated_periods
-      @decorated_periods ||= periods.map do |period|
-        PeriodDecorator.new(period, day_type_ref)
-      end
-    end
-
-    def exported_dates
-      decorated_dates.map(&:day_type_assignment)
-    end
-
-    def decorated_dates
-      @decorated_dates ||= dates.map do |date|
-        DateDecorator.new(date, day_type_ref)
-      end
-    end
-
-  end
-
   class PeriodDecorator < SimpleDelegator
 
     attr_accessor :day_type_ref, :time_table
@@ -1695,16 +1641,94 @@ class Export::NetexGeneric < Export::Base
 
   class TimeTables < Part
     delegate :time_tables, to: :export_scope
+    delegate :validity_period, to: :export_scope
 
     def export!
       time_tables.includes(:periods, :dates, :lines).find_each do |time_table|
-        decorated_time_table = TimeTableDecorator.new(time_table)
+        decorated_time_table = Decorator.new(time_table, validity_period)
 
         tags = resource_tagger.tags_for_lines(time_table.line_ids)
         tagged_target = TaggedTarget.new(target, tags)
 
         decorated_time_table.netex_resources.each do |resource|
           tagged_target << resource
+        end
+      end
+    end
+
+    class Decorator < SimpleDelegator
+
+      def initialize(time_table, validity_period=nil)
+        super time_table
+        @validity_period = validity_period
+      end
+      attr_accessor :validity_period
+
+      def netex_resources
+        [day_type] + exported_periods + exported_dates
+      end
+
+      def day_type
+        Netex::DayType.new day_type_attributes
+      end
+
+      def day_type_attributes
+        {
+          id: objectid,
+          data_source_ref: data_source_ref,
+          name: comment,
+          properties: properties
+        }
+      end
+
+      def day_type_ref
+        @day_type_ref ||= Netex::Reference.new(objectid, type: 'DayTypeRef')
+      end
+
+      def properties
+        [Netex::PropertyOfDay.new(days_of_week: days_of_week)]
+      end
+
+      DAYS = %w{monday tuesday wednesday thursday friday saturday sunday}
+      def days_of_week
+        DAYS.map { |day| day.capitalize if send(day) }.compact.join(' ')
+      end
+
+      def exported_periods
+        decorated_periods.map(&:operating_period) + decorated_periods.map(&:day_type_assignment)
+      end
+
+      def candidate_periods
+        @candidate_periods ||= periods.select { |period| period.intersect?(validity_period) }
+      end
+
+      def decorated_periods
+        @decorated_periods ||= candidate_periods.map do |period|
+          PeriodDecorator.new(period, day_type_ref)
+        end
+      end
+
+      def candidate_excluded_dates
+        dates.excluded.select do |date|
+          candidate_periods.any? { |period| period.include? date.date }
+        end
+      end
+
+      def candidate_included_dates
+        dates.included.select { |date| validity_period.include? date.date }
+      end
+
+      def candidate_dates
+        candidate_excluded_dates + candidate_included_dates
+      end
+
+      def exported_dates
+        decorated_dates.map(&:day_type_assignment)
+      end
+
+      def decorated_dates
+        @decorated_dates ||= candidate_dates.map do |date|
+          DateDecorator.new(date, day_type_ref)
         end
       end
     end

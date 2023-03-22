@@ -9,12 +9,12 @@ module Search
     # All search attributes
     attribute :text
     attribute :line
-    attribute :states
+    attribute :statuses
     attribute :workbench_id
 		attribute :valid_after_date, type: Date
     attribute :valid_before_date, type: Date
 
-		enumerize :states, in: Referential.states, multiple: true
+		enumerize :statuses, in: Referential.states, multiple: true, i18n_scope: "referentials.states"
 
 		def period
       Period.new(from: valid_before_date, to: valid_after_date).presence
@@ -26,7 +26,7 @@ module Search
 			Query::Workbench.new(scope)
 				.text(text)
 				.line(line)
-				.states(states)
+				.statuses(statuses)
 				.workbench_id(workbench_id)
 				.in_period(period)
     end
@@ -43,7 +43,6 @@ module Search
 
     class Order < ::Search::Order
       attribute :name, default: :asc
-      attribute :states
     	attribute :workbench, joins: :workbench, column: 'workbenches.name'
     end
   end

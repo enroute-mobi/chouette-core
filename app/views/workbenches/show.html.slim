@@ -32,7 +32,7 @@
               TableBuilderHelper::Column.new( \
                 key: :states, \
                 name: Referential.tmf('status'), \
-                attribute: Proc.new {|w| referential_status(w) } \
+                attribute: Proc.new {|referential| referential_status(referential) } \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :organisation_name, \

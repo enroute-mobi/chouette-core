@@ -13,18 +13,18 @@ module Query
 
     def line(value)
       change_scope(if: value.present?) do |scope|
-        scope.joins(:metadatas).where("? = ANY(referential_metadata.line_ids)", value).distinct
+        scope.include_metadatas_lines([value])
       end
     end
 
-    def states(states)
-      change_scope(if: states.present?) do |scope|
+    def statuses(statuses)
+      change_scope(if: statuses.present?) do |scope|
         query = []
 
-        query << '(failed_at IS NOT NULL)' if states.include?('failed')
-        query << '(archived_at IS NOT NULL)' if states.include?('archived')
-        query << '(ready = false AND failed_at IS NULL)' if states.include?('pending')
-        query << '(ready = true)' if states.include?('active')
+        query << '(ready = false AND failed_at IS NOT NULL)' if statuses.include?('failed')
+        query << '(archived_at IS NOT NULL)' if statuses.include?('archived')
+        query << '(ready = false AND failed_at IS NULL AND archived_at IS NULL)' if statuses.include?('pending')
+        query << '(ready = true)' if statuses.include?('active')
 
         scope.where(query.join(' OR '))
       end
@@ -36,8 +36,7 @@ module Query
 
     def in_period(period)
       change_scope(if: period.present?) do |scope|
-        # scope.joins(:metadatas).where("referential_metadata.periodes && daterange(?) ", period.to_postgresql_daterange)
-        scope.joins(:metadatas).where("referential_metadata.periodes[1] && ?", period.to_postgresql_daterange)
+        scope.include_metadatas_period(period)
       end
     end
   end

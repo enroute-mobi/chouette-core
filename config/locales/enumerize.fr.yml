@@ -11,12 +11,6 @@ fr:
         running: En cours
         enqueued: En file d'attente
         done: Terminé
-    workbench:
-      states: &referential_states
-        pending: En cours de traitement
-        failed: En erreur
-        active: En édition
-        archived: Archivé
     notification_rule:
       notification_type:
         hole_sentinel: Trou d'offre
@@ -434,7 +428,6 @@ fr:
       rule_type: *notification_rule_rule_type
       statuses: *stop_area_status
       line_status: *line_status
-      states: *referential_states
     control:
       criticity:
         warning: Avertissement

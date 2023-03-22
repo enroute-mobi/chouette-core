@@ -35,6 +35,7 @@ module ReferentialsHelper
     render_icon klass, nil
   end
 
+  # Avoid to use this helper with specific render div
   def referential_state referential, icon: true
     state_icon = icon && icon_for_referential_state(@referential.state)
     "<div class='td-block'>#{state_icon}<span>#{"referentials.states.#{referential.state}".t}</span></div>".html_safe
@@ -51,12 +52,10 @@ module ReferentialsHelper
     render_icon 'fa fa-flag', Referential.tmf(:urgent), 'color: #da2f36'
   end
 
-  def referential_status(referential)
-    content_tag :span, '' do
-      out = content_tag(:span, title: "referentials.states.#{referential.state}".t) do
-        icon_for_referential_state(referential.state)
-      end
-      out
+  def referential_status(referential, icon: true)
+    content_tag(:span) do
+      concat content_tag(:span, icon_for_referential_state(referential.state)) if icon
+      concat content_tag(:span, I18n.t("referentials.states.#{referential.state}"))
     end
   end
 

@@ -11,12 +11,6 @@ en:
           running: Running
           enqueued: Enqueued
           done: Done
-    workbench:
-      states: &referential_states
-        pending:  Pending
-        failed:   Failed
-        active:   Ready
-        archived: Archived
     notification_rule:
       notification_type:
         hole_sentinel: Hole Sentinel
@@ -434,7 +428,6 @@ en:
       rule_type: *notification_rule_rule_type
       statuses: *stop_area_status
       line_status: *line_status
-      states: *referential_states
     control:
       criticity:
         warning: Warning

@@ -65,18 +65,44 @@ module Control
       end
 
       def faulty_models
-        vehicle_journey_at_stops.where(
-          "departure_time < :start_date OR arrival_time > :end_date",
-          { start_date: start_date, end_date: end_date }
-        )
+        vehicle_journey_at_stops
+          .select('*')
+          .from(base_query)
+          .where(
+            "after_second_offset < :after_second_offset OR before_second_offset > :before_second_offset",
+            {
+              before_second_offset: before_second_offset,
+              after_second_offset: after_second_offset
+            }
+          )
       end
 
-      def start_date
-        "#{(Date.current + after.day_offset.days)} #{after.hour}:#{after.min}"
+      def base_query
+        <<~SQL
+          (
+            SELECT
+              vehicle_journey_at_stops.*,
+              ((#{after_day_offset} * 24 + date_part( 'hour', departure_time)::int) * 60 + date_part('min', departure_time)::int) * 60 AS after_second_offset,
+              ((#{before_day_offset} * 24 + date_part( 'hour', arrival_time)::int) * 60 + date_part('min', arrival_time)::int) * 60 AS before_second_offset
+            FROM vehicle_journey_at_stops
+          ) AS vehicle_journey_at_stops
+        SQL
       end
 
-      def end_date
-        "#{(Date.current + before.day_offset.days)} #{before.hour}:#{before.min}"
+      def after_day_offset
+        after.day_offset
+      end
+
+      def before_day_offset
+        before.day_offset
+      end
+
+      def after_second_offset
+        after.second_offset
+      end
+
+      def before_second_offset
+        before.second_offset
       end
 
       def vehicle_journey_at_stops

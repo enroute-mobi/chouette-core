@@ -39,7 +39,12 @@ if (process.env.SENTRY_AUTH_TOKEN) {
       project: "chouette",
 
       // Specify the directory containing build artifacts
-      include: "./public/packs/js",
+      include: [
+        {
+          paths: ['./public/packs/js'],
+          urlPrefix: '~/packs/js',
+        },
+      ],
 
       // Auth tokens can be obtained from https://sentry.io/settings/account/api/auth-tokens/
       // and needs the `project:releases` and `org:read` scopes

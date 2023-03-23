@@ -69,7 +69,7 @@ module Control
           .select('*')
           .from(base_query)
           .where(
-            "after_second_offset < :after_second_offset OR before_second_offset > :before_second_offset",
+            "departure_second_offset < :after_second_offset OR arrival_second_offset > :before_second_offset",
             before_second_offset: before_second_offset, after_second_offset: after_second_offset
           )
       end
@@ -79,8 +79,8 @@ module Control
           (
             SELECT
               vehicle_journey_at_stops.*,
-              ((departure_day_offset * 24 + date_part( 'hour', departure_time)::int) * 60 + date_part('min', departure_time)::int) * 60 AS after_second_offset,
-              ((arrival_day_offset * 24 + date_part( 'hour', arrival_time)::int) * 60 + date_part('min', arrival_time)::int) * 60 AS before_second_offset
+              ((departure_day_offset * 24 + date_part( 'hour', departure_time)) * 60 + date_part('min', departure_time)) * 60 AS departure_second_offset,
+              ((arrival_day_offset * 24 + date_part( 'hour', arrival_time)) * 60 + date_part('min', arrival_time)) * 60 AS arrival_second_offset
             FROM vehicle_journey_at_stops
           ) AS vehicle_journey_at_stops
         SQL

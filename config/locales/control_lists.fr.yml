@@ -58,9 +58,9 @@ fr:
         control_context_type: Type de contexte
     placeholders:
       control_list:
-        control_type: "Ajouter une nouvelle instruction en sélectionnant son type"
+        control_type: "Ajouter un nouveau contrôle en sélectionnant son type"
         control_context_type: "Ajouter un nouveau contexte de contrôle en sélectionnant son type"
     buttons:
       control_list:
-        control_type: "Ajouter une nouvelle instruction"
+        control_type: "Ajouter un nouveau contrôle"
         control_context_type: "Ajouter un nouveau contexte"

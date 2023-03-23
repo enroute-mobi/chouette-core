@@ -36,4 +36,6 @@ if Rails.env.development?
 
   # Reload code before each job
   # Delayed::Worker.plugins << Delayed::ReloaderPlugin
+
+  Delayed::Worker.plugins << Delayed::Metrics
 end

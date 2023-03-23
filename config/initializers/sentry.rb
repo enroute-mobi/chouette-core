@@ -3,6 +3,7 @@
 if ENV['SENTRY_DSN']
   Sentry.init do |config|
     config.breadcrumbs_logger = %i[active_support_logger http_logger]
+    config.release = Nest::Version.current.name
   end
 
   app = ENV.fetch 'SENTRY_APP', 'chouette-core'

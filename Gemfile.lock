@@ -230,6 +230,8 @@ GEM
       sixarm_ruby_unaccent (~> 1.1)
     country_select (8.0.0)
       countries (~> 5.0)
+    coverband (5.2.5)
+      redis (>= 3.0)
     crack (0.4.5)
       rexml
     crass (1.0.6)
@@ -846,6 +848,7 @@ DEPENDENCIES
   codifligne!
   coffee-rails (>= 5.0.0)
   country_select
+  coverband
   database_cleaner
   ddtrace
   deep_cloneable

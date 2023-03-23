@@ -163,6 +163,7 @@ group :development do
   gem 'better_errors'
   gem 'binding_of_caller'
   gem 'derailed_benchmarks'
+  gem "coverband"
 
   gem 'bummr'
   gem 'graphiql-rails', '>= 1.8.0'

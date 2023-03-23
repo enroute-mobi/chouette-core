@@ -455,8 +455,8 @@ ChouetteIhm::Application.routes.draw do
     get "/snap" => "snapshots#show"
   end
 
-  if Rails.env.development?
-    mount GraphiQL::Rails::Engine, at: "/graphiql", graphql_path: "/graphql"
+  if ENV['COVERBAND_REDIS_URL']
+    Rails.application.routes.draw { mount Coverband::Reporters::Web.new, at: "/coverband" if Rails.env.development? }
   end
 
   match '/404', to: 'errors#not_found', via: :all, as: 'not_found'

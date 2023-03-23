@@ -92,7 +92,6 @@ fr:
     attributes:
       referential:
         name: "Nom"
-        state: "État"
         status: "État"
         slug: "Code"
         prefix: "Préfixe des identifiants Neptune"

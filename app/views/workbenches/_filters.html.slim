@@ -9,7 +9,7 @@
     .flex.items-center.border-t.border-r.border-white
       = f.input :line, placeholder: I18n.t('simple_form.placeholders.search.line_id'), as: :tom_select, collection: @search.candidate_lines.map { |l| {id: l.id, text: l.display_name } }, wrapper_html: {class: "w-2/5"}
       = f.input :statuses, as: :autocomplete_select, wrapper_html: {class: "w-1/5"}, input_html: { multiple: true, style: 'width: 100%' }
-      = f.input :workbench_id, placeholder: I18n.t('simple_form.placeholders.search.workbench_id'), as: :tom_select, collection: @search.candidate_workbenches.map { |l| {id: l.id, text: l.name } }, wrapper_html: {class: "w-2/5"}
+      = f.input :workbench_ids, as: :autocomplete_select, collection: @search.candidate_workbenches, placeholder: I18n.t('simple_form.placeholders.search.workbench_id'), input_html: { multiple: true, style: 'width: 100%' }, wrapper_html: {class: "w-2/5"}
 
     .flex.items-center.border-t.border-r.border-white
       = f.input :valid_before_date, as: :date_picker

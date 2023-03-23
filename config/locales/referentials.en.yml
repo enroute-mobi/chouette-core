@@ -92,7 +92,6 @@ en:
     attributes:
       referential:
         name: "Name"
-        state: "Status"
         status: "Status"
         slug: "Code"
         prefix: "Neptune Object Id prefix"

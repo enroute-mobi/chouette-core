@@ -13,8 +13,7 @@ class WorkbenchesController < ChouetteController
       collection,
       context: {
         current_workbench_id: params[:id],
-        workbench: @workbench,
-        line_referential: @line_referential
+        workbench: @workbench
       }
     )
   end
@@ -34,7 +33,9 @@ class WorkbenchesController < ChouetteController
   private
 
   def workbench_params
-    params.require(:workbench).permit(compliance_control_set_ids: @workbench.workgroup.compliance_control_sets_by_workbench.keys)
+    params
+      .require(:workbench)
+      .permit(compliance_control_set_ids: @workbench.workgroup.compliance_control_sets_by_workbench.keys)
   end
 
   def resource
@@ -48,7 +49,10 @@ class WorkbenchesController < ChouetteController
   end
 
   def search
-    @search ||= Search::Workbench.new(scope, params, workbench: @workbench)
+    # Select workbench linked to current user by default
+    params["search"] = {} if params["search"].blank?
+    params["search"]["workbench_ids"] = [@workbench.id] if params["search"]["workbench_ids"].blank?
+    @search ||= Search::Referential.new(scope, params, workbench: @workbench)
   end
 
   delegate :collection, to: :search

@@ -787,10 +787,6 @@ class Referential < ApplicationModel
     end
   end
 
-  def self.states
-    STATES.map(&:to_s)
-  end
-
   def pending_while
     if pending?
       yield

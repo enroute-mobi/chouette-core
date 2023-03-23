@@ -30,9 +30,9 @@
                 end \
               ), \
               TableBuilderHelper::Column.new( \
-                key: :states, \
-                name: Referential.tmf('status'), \
+                key: :status, \
                 attribute: Proc.new {|referential| referential_status(referential) } \
+                sortable: false \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :organisation_name, \

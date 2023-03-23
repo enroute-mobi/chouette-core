@@ -1,5 +1,5 @@
 module Query
-  class Workbench < Base
+  class Referential < Base
     def text(value)
       change_scope(if: value.present?) do |scope|
         table = scope.arel_table
@@ -30,8 +30,10 @@ module Query
       end
     end
 
-    def workbench_id(value)
-      where(value, :eq, :workbench_id)
+    def workbenches(workbench_ids)
+      change_scope(unless: workbench_ids.blank?) do |scope|
+        scope.where(workbench_id: workbench_ids)
+      end
     end
 
     def in_period(period)

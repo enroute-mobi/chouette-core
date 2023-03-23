@@ -6,7 +6,6 @@ en:
     attributes:
       search:
         statuses: Status
-        states: Status
         line_status: Status
         workbench_ids: Workbench
         workbench_id: Workbench

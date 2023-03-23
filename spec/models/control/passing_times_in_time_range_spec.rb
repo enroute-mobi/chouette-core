@@ -35,7 +35,7 @@ RSpec.describe Control::PassingTimesInTimeRange do
     describe '#run' do
 
       let(:after) { "16:10 day:0" }
-      let(:before) { "20:10 day:1" }
+      let(:before) { "20:10 day:0" }
 
       let(:expected_message) do
         an_object_having_attributes(
